@@ -61,7 +61,7 @@
 <translation id="2570922361219980984">‏גם הגישה למיקום כבויה בשביל המכשיר הזה. יש להפעיל אותה ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">מורחב - לחץ כדי לכווץ.</translation>
 <translation id="2586657967955657006">לוח</translation>
-<translation id="2621115761605608342">‏אפשר JavaScript לאתר ספציפי.</translation>
+<translation id="2621115761605608342">‏אישור JavaScript לאתר ספציפי.</translation>
 <translation id="2653659639078652383">שליחה</translation>
 <translation id="2677748264148917807">יציאה</translation>
 <translation id="2687403674020088961">‏חסימה של כל קובצי ה-cookie (לא מומלץ)</translation>
@@ -187,7 +187,7 @@
 <translation id="6295158916970320988">כל האתרים</translation>
 <translation id="6320088164292336938">רטט</translation>
 <translation id="6388207532828177975">ניקוי ואיפוס</translation>
-<translation id="6398765197997659313">צא ממסך מלא</translation>
+<translation id="6398765197997659313">יציאה ממסך מלא</translation>
 <translation id="6423924377271166037">‏ניקוי קובצי cookie</translation>
 <translation id="6439114592976064011">תיחסם האפשרות של אתרים להשתמש במכשיר המציאות המדומה ובנתוני המציאות המדומה</translation>
 <translation id="6447842834002726250">‏קובצי Cookie</translation>
@@ -201,7 +201,7 @@
 <translation id="6643016212128521049">ניקוי</translation>
 <translation id="6689172468748959065">תמונות פרופיל</translation>
 <translation id="6697925417670533197">הורדות פעילות</translation>
-<translation id="6746124502594467657">הזז למטה</translation>
+<translation id="6746124502594467657">העברה למטה</translation>
 <translation id="6766622839693428701">החלקה מטה סוגרת.</translation>
 <translation id="6790428901817661496">הפעל</translation>
 <translation id="6818926723028410516">בחירת פריטים</translation>

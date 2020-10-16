@@ -41,6 +41,11 @@
 
       Cette règle ne concerne que les utilisateurs dont le domaine correspond au domaine d'inscription de l'appareil. Pour tous les autres utilisateurs, les cookies définis par le fournisseur d'identification ne sont transférés au profil de l'utilisateur lors de sa première connexion que sur l'appareil.</translation>
 <translation id="1029052664284722254">Forcer le redémarrage de l'appareil en cas de déconnexion de l'utilisateur</translation>
+<translation id="1032533786864478457">Si cette règle est activée, les utilisateurs peuvent configurer la synchronisation des SMS entre leur appareil et leur Chromebook. Les utilisateurs doivent explicitement activer cette fonctionnalité en suivant une procédure de configuration, à l'issue de laquelle ils pourront envoyer et recevoir des SMS sur leur Chromebook.
+
+      Si cette règle est désactivée, les utilisateurs ne peuvent pas configurer la synchronisation des SMS.
+
+      Si cette règle n'est pas définie, cela signifie que, par défaut, la fonctionnalité n'est pas autorisée pour les utilisateurs gérés, mais qu'elle est accessible aux autres utilisateurs.</translation>
 <translation id="1040446814317236570">Activer la suppression des URL via PAC (pour "https://")</translation>
 <translation id="1046484220783400299">Activer les fonctionnalités obsolètes de la plate-forme Web pour une durée limitée</translation>
 <translation id="1047128214168693844">Interdire à tous les sites de suivre la position géographique des utilisateurs</translation>
@@ -671,6 +676,9 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="2057317273526988987">Autoriser l'accès à une liste d'URL</translation>
 <translation id="2061810934846663491">Configurer les noms de domaines requis pour les hôtes d'accès à distance</translation>
 <translation id="2067011586099792101">Bloquer l'accès aux sites en dehors des packs de contenu</translation>
+<translation id="2069350366303315077">Si cette règle est activée, <ph name="PRODUCT_NAME" /> force l'ouverture des sessions Invité et empêche les connexions de profils. Les connexions en mode Invité sont des profils <ph name="PRODUCT_NAME" /> où les fenêtres s'ouvrent en mode navigation privée.
+
+      Si cette règle est désactivée ou qu'elle n'est pas configurée, ou si le mode Invité du navigateur est désactivé (via <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />), l'utilisation de nouveaux profils ou de profils existants est autorisée.</translation>
 <translation id="2073552873076775140">Autoriser la connexion à <ph name="PRODUCT_NAME" /></translation>
 <translation id="2075732129949889165">Playbook Crostini Ansible</translation>
 <translation id="2077129598763517140">Utiliser l'accélération matérielle si disponible</translation>
@@ -1010,6 +1018,11 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="2482676533225429905">Messagerie native</translation>
 <translation id="2483146640187052324">Prédire les actions réseau lors d'une connexion au réseau</translation>
 <translation id="2498238926436517902">Toujours masquer automatiquement l'étagère</translation>
+<translation id="250022556568924228">Si cette règle est activée, <ph name="PRODUCT_OS_NAME" /> télécharge les conditions d'utilisation et les présente aux utilisateurs dès qu'une session d'un compte local de l'appareil s'ouvre. Les utilisateurs ne peuvent se connecter à cette session qu'après avoir accepté lesdites conditions d'utilisation.
+
+      Si cette règle n'est pas configurée, les conditions d'utilisation ne sont pas présentées aux utilisateurs.
+
+      La règle doit être définie sur une URL à partir de laquelle <ph name="PRODUCT_OS_NAME" /> peut télécharger les conditions d'utilisation. Ces conditions doivent être en texte brut et proposées au format texte/brut au type MIME. Aucun balisage n'est autorisé.</translation>
 <translation id="2502467045153796624">Comportement de retour à une version antérieure</translation>
 <translation id="250670737672448119">Active la fonctionnalité d'accessibilité de mise en surbrillance du curseur de saisie.
 
@@ -1194,6 +1207,13 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       Cette règle permet d'assurer la transition vers Chrome 88, après quoi elle sera supprimée.</translation>
 <translation id="2759224876420453487">Contrôler le comportement de l'utilisateur lors d'une session à plusieurs profils</translation>
+<translation id="2759426227259007018">Permet de spécifier les applications que les utilisateurs peuvent activer comme applications de prise de notes sur l'écran de verrouillage <ph name="PRODUCT_OS_NAME" />.
+
+      Si l'application de prise de notes préférée est activée sur l'écran de verrouillage, un élément d'interface utilisateur destiné à la lancer s'affiche à l'écran. Une fois démarrée, l'application peut ouvrir une fenêtre en haut de l'écran de verrouillage et créer des notes dans ce contexte. L'application peut importer les notes créées dans la session de l'utilisateur principal (lorsque la session est déverrouillée). Seules les applications de prise de notes <ph name="PRODUCT_NAME" /> sont acceptées sur l'écran de verrouillage.
+
+      Si cette règle est configurée, les utilisateurs ne peuvent activer une application sur l'écran de verrouillage que si l'ID d'extension de cette application figure dans la liste d'autorisation de la règle. Par conséquent, si la liste est vide, la prise de notes est désactivée sur l'écran de verrouillage. Lorsque la règle inclut un ID d'application, cela ne signifie pas nécessairement que les utilisateurs peuvent activer l'application en question comme application de prise de notes sur l'écran de verrouillage. Par exemple, dans <ph name="PRODUCT_NAME" /> 61, l'accès de l'ensemble des applications disponibles est également limité par la plate-forme.
+
+      Si cette règle n'est pas configurée, aucune restriction qu'elle impose n'est appliquée à l'ensemble des applications que les utilisateurs peuvent activer sur l'écran de verrouillage.</translation>
 <translation id="2761483219396643566">Délai d'inactivité avant l'affichage d'un avertissement (en cas d'utilisation de la batterie)</translation>
 <translation id="2765601181281280493">Permet de répertorier les formats d'URL indiquant les sites non autorisés à demander aux utilisateurs d'accéder à un port série.
 
@@ -1532,6 +1552,9 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="3251500716404598358">Configurer les règles pour passer d'un navigateur à l'autre.
 
       Les sites Web configurés s'ouvrent automatiquement dans un navigateur autre que <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3255624750680556186">Si cette règle est activée ou qu'elle n'est pas configurée, l'appareil peut lancer Powerwash.
+
+      Si cette règle est désactivée, l'appareil ne peut pas lancer cette fonction. Exception : Si la règle <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> est définie sur une valeur permettant de mettre à jour le micrologiciel TPM et que celui-ci n'a pas encore été mis à jour, l'appareil peut alors lancer Powerwash.</translation>
 <translation id="3255762580838224124">Si cette règle est configurée, chaque écran pivote en fonction de l'orientation spécifiée, à chaque redémarrage ainsi que la première fois qu'il est affiché après une modification de la valeur de cette règle. Une fois connectés, les utilisateurs peuvent modifier le paramètre de rotation d'écran. Toutefois, le paramètre initial sera rétabli au redémarrage suivant. Cette règle s'applique à l'écran principal, ainsi qu'aux écrans secondaires.
 
       Si cette règle n'est pas configurée, la valeur par défaut est de 0 degré, et les utilisateurs sont libres de la modifier. Dans ce cas, la valeur par défaut n'est pas rétablie au redémarrage.</translation>
@@ -2649,6 +2672,9 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
       Si cette règle est désactivée, l'appel d'API de partage d'écran échoue systématiquement
       et génère une erreur.</translation>
+<translation id="5025239932007658691">Si cette règle est activée ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> envoie des requêtes occasionnelles à un serveur Google pour récupérer un horodatage précis.
+
+      Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> cesse d'envoyer ces requêtes.</translation>
 <translation id="5032164758660626397">Empêcher l'utilisateur de transférer des fichiers volumineux</translation>
 <translation id="5047604665028708335">Autoriser l'accès aux sites en dehors des packs de contenu</translation>
 <translation id="5056708224511062314">Loupe désactivée</translation>
@@ -3426,6 +3452,9 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="6034341625190551415">Contrôle les types de comptes kiosque et les sessions publiques.</translation>
 <translation id="6034603289689965535">Autorise une page à afficher des fenêtres contextuelles pendant son déchargement</translation>
 <translation id="6036523166753287175">Activer la traversée de pare-feu depuis l'hôte d'accès à distance</translation>
+<translation id="603768430528561926">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs d'appareils d'entreprise peuvent profiter d'offres via le service d'enregistrement <ph name="PRODUCT_OS_NAME" />.
+
+      Si elle est désactivée, ils ne peuvent pas en bénéficier.</translation>
 <translation id="6038407313189625985">Si cette règle est activée ou si elle n'est pas définie, la règle d'intégrité du code du moteur de rendu est activée. Cette règle ne doit être désactivée qu'en cas de problèmes de compatibilité avec le logiciel tiers qui doit s'exécuter dans les processus du moteur de rendu de Chrome.
 
       Désactiver cette règle affectera la sécurité et la stabilité de Chrome, car des codes inconnus et potentiellement dangereux pourront être chargés dans les processus de son moteur de rendu. Consultez la page https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies pour en savoir plus.</translation>
@@ -3642,6 +3671,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       Si cette règle n'est pas configurée ou qu'aucune entrée ne figure dans la liste, tous les schémas sont accessibles dans <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6338982178236723271">Transmettre les informations système</translation>
 <translation id="6342187235303612558">Empêcher les utilisateurs d'importer ou de télécharger des fichiers qui ne sont actuellement pas acceptés dans le cadre de la Protection contre la perte de données ou d'une analyse pour détecter d'éventuels logiciels malveillants.</translation>
+<translation id="6353890097388312479">Si la règle est définie sur "All (0)" (Tous (0)) ou qu'elle n'est pas configurée, les utilisateurs peuvent modifier les paramètres de confiance de tous les certificats CA, importer des certificats et supprimer ceux qu'ils ont importés via le gestionnaire de certificats. Si elle est définie sur "UserOnly (1)" (UtilisateurUniquement (1)), les utilisateurs ne peuvent gérer que les certificats qu'ils ont importés, et ils ne sont pas autorisés à modifier les paramètres de confiance des certificats intégrés. Si cette règle est définie sur "None (2)" (Aucun (2)), les utilisateurs peuvent uniquement consulter les certificats CA (sans pouvoir les gérer).</translation>
 <translation id="6366574325767783825">Si cette règle est définie sur "True" ou si elle n'est pas configurée, <ph name="PRODUCT_NAME" /> accepte la diffusion de contenus Web en tant que Signed HTTP Exchanges.
 
       Si cette règle est définie sur "False", les Signed HTTP Exchanges ne peuvent pas être chargés.</translation>
@@ -3733,6 +3763,15 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
           Pour verrouiller l'écran en cas d'inactivité, il est recommandé d'activer le verrouillage de l'écran lors de l'arrêt temporaire, et de configurer l'arrêt temporaire de <ph name="PRODUCT_OS_NAME" /> au terme du délai d'inactivité. Cette règle ne doit être utilisée que lorsque le verrouillage de l'écran doit intervenir bien avant l'arrêt temporaire de l'appareil ou lorsque l'utilisateur ne souhaite absolument pas que l'appareil soit arrêté temporairement en cas d'inactivité.
 
           La valeur de la règle doit être indiquée en millisecondes. Elle doit également être inférieure au délai d'inactivité.</translation>
+<translation id="6506239283767807745">Cette règle étant obsolète, veuillez utiliser la règle <ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST" /> à la place.
+
+      Permet de spécifier les applications que les utilisateurs peuvent activer comme applications de prise de notes sur l'écran de verrouillage <ph name="PRODUCT_OS_NAME" />.
+
+      Si l'application de prise de notes préférée est activée sur l'écran de verrouillage, un élément d'interface utilisateur destiné à la lancer s'affiche à l'écran. Une fois démarrée, l'application peut ouvrir une fenêtre en haut de l'écran de verrouillage et créer des notes dans ce contexte. L'application peut importer les notes créées dans la session de l'utilisateur principal (lorsque la session est déverrouillée). Seules les applications de prise de notes <ph name="PRODUCT_NAME" /> sont acceptées sur l'écran de verrouillage.
+
+      Si cette règle est configurée, les utilisateurs ne peuvent activer une application sur l'écran de verrouillage que si l'ID d'extension de cette application figure dans la liste d'autorisation de la règle. Par conséquent, si la liste est vide, la prise de notes est désactivée sur l'écran de verrouillage. Lorsque la règle inclut un ID d'application, cela ne signifie pas nécessairement que les utilisateurs peuvent activer l'application en question comme application de prise de notes sur l'écran de verrouillage. Par exemple, dans <ph name="PRODUCT_NAME" /> 61, l'accès de l'ensemble des applications disponibles est également limité par la plate-forme.
+
+      Si cette règle n'est pas configurée, aucune restriction qu'elle impose n'est appliquée à l'ensemble des applications que les utilisateurs peuvent activer sur l'écran de verrouillage.</translation>
 <translation id="6506486086262398387">Si cette règle est activée, la fonctionnalité Partages de fichiers en réseau de <ph name="PRODUCT_OS_NAME" /> utilise le protocole NTLM pour s'authentifier sur les partages SMB, si nécessaire. Si elle est désactivée, l'authentification NTLM sur les partages SMB l'est également.
 
       Si cette règle n'est pas configurée, le protocole est, par défaut, désactivé pour les utilisateurs gérés et activé pour les autres.</translation>

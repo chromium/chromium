@@ -16,6 +16,7 @@
 <translation id="1105960400813249514">التقاط الشاشة</translation>
 <translation id="1111673857033749125">ستظهر هنا الإشارات التي تم حفظها على أجهزتك الأخرى.</translation>
 <translation id="1113597929977215864">إظهار العرض المبسَّط</translation>
+<translation id="1123070903960493543">‏كيفية التفاعل مع Chrome والإعدادات التي اختَرتها وتفاصيل الأعطال في Chrome</translation>
 <translation id="1126809382673880764">‏لا يوفّر لك هذا الوضع حماية من الإضافات أو عمليات التنزيل أو المواقع الإلكترونية الضارة. وستظل تستفيد من ميزة "التصفّح الآمن" عند توفّرها في خدمات Google الأخرى، مثل Gmail و"بحث Google".</translation>
 <translation id="1129510026454351943">التفاصيل: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1141800923049248244">{FILE_COUNT,plural, =1{هناك عملية تنزيل واحدة مُعلَّقة.}zero{هناك # عملية تنزيل مُعلَّقة.}two{هناك عمليتا تنزيل (#) مُعلَّقتان.}few{هناك # عمليات تنزيل مُعلَّقة.}many{هناك # عملية تنزيل مُعلَّقة.}other{هناك # عملية تنزيل مُعلَّقة.}}</translation>
@@ -72,6 +73,7 @@
 <translation id="1450753235335490080">تعذَّرت مشاركة <ph name="CONTENT_TYPE" />.</translation>
 <translation id="1477626028522505441">تعذّر تنزيل الملف <ph name="FILE_NAME" /> بسبب مشاكل بالخادم.</translation>
 <translation id="1506061864768559482">محرك البحث</translation>
+<translation id="151267239139452619">إضافة إلى عمليات التنزيل</translation>
 <translation id="1513352483775369820">الإشارات المرجعية وسجلّ الويب</translation>
 <translation id="1513858653616922153">حذف كلمة المرور</translation>
 <translation id="1521774566618522728">نشط اليوم</translation>
@@ -157,6 +159,7 @@
 <translation id="2131665479022868825">تم توفير <ph name="DATA" /></translation>
 <translation id="213279576345780926">تم إغلاق <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">الإضافة إلى الشاشة الرئيسية</translation>
+<translation id="214888715418183969">‏اختَر ما تريد مشاركته في Chrome. وسيتم استخدام المقاييس التي تشاركها للمساعدة في تحسين ميزات Chrome وأدائه وثباته.</translation>
 <translation id="2154484045852737596">تعديل البطاقة</translation>
 <translation id="2154710561487035718">‏نسخ عنوان URL</translation>
 <translation id="2156074688469523661">المواقع المتبقية (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -166,6 +169,7 @@
 <translation id="2175927920773552910">رمز الاستجابة السريعة</translation>
 <translation id="218608176142494674">المشاركة</translation>
 <translation id="2195339740518523951">‏الحصول على أعلى مستوى من الحماية في متصفِّح Chrome</translation>
+<translation id="2200113223741723867">إدارة مشاركة بيانات الاستخدام</translation>
 <translation id="2227444325776770048">المتابعة باسم <ph name="USER_FULL_NAME" /></translation>
 <translation id="2234876718134438132">‏خدمات Google والمزامنة</translation>
 <translation id="2239812875700136898">يمكنك التحكُّم بقصصك عبر زر "خيارات الاقتراحات".</translation>
@@ -370,12 +374,14 @@
 <translation id="3771290962915251154">لقد تم إيقاف هذا الإعداد بسبب تفعيل "أدوات الرقابة الأبوية".</translation>
 <translation id="3771694256347217732">‏بنود خدمة Google</translation>
 <translation id="3773755127849930740"><ph name="BEGIN_LINK" />تفعيل البلوتوث<ph name="END_LINK" /> للسماح بالإقران</translation>
+<translation id="3773856050682458546">البيانات الأساسية بالإضافة إلى معلومات حول المواقع الالكترونية التي تزورها والتطبيقات التي تستخدمها</translation>
 <translation id="3775705724665058594">إرسال إلى أجهزتك</translation>
 <translation id="3778956594442850293">تمت الإضافة إلى الشاشة الرئيسية</translation>
 <translation id="3789841737615482174">تثبيت</translation>
 <translation id="3810838688059735925">الفيديوهات</translation>
 <translation id="3810973564298564668">إدارة محرّكات البحث</translation>
 <translation id="3819178904835489326">تم إلغاء <ph name="NUMBER_OF_DOWNLOADS" /> من عمليات التنزيل</translation>
+<translation id="3848957262889631524">‏تطبيق <ph name="APP_NAME" /> من Google كمفتاح أمان</translation>
 <translation id="3856096718352044181">يُرجى إثبات صلاحية مقدّم الخدمة أو المحاولة مجددًا.</translation>
 <translation id="3861633093716975811">الفيديوهات الرائجة</translation>
 <translation id="3892148308691398805">نسخ النص</translation>
@@ -403,7 +409,9 @@
 <translation id="3988466920954086464">الاطلاع على نتائج البحث الفورية في هذه اللوحة</translation>
 <translation id="4000212216660919741">الصفحة الرئيسية بلا اتصال بالإنترنت</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{ساعة واحدة (#)}zero{# ساعة}two{ساعتان (#)}few{# ساعات}many{# ساعةً}other{# ساعة}}</translation>
+<translation id="4045764304651014138">بيانات الاستخدام</translation>
 <translation id="4056223980640387499">بني داكن</translation>
+<translation id="4057643060762047384">إضافة إلى:</translation>
 <translation id="4060598801229743805">الخيارات متاحة بالقرب من أعلى الشاشة</translation>
 <translation id="4062305924942672200">المعلومات القانونية</translation>
 <translation id="4084682180776658562">إشارة</translation>
@@ -544,6 +552,7 @@
 <translation id="5039804452771397117">سماح</translation>
 <translation id="5040262127954254034">الخصوصية</translation>
 <translation id="5087580092889165836">إضافة بطاقة</translation>
+<translation id="5091249083535528968">بيانات الاستخدام الموسَّعة</translation>
 <translation id="509429900233858213">حدث خطأ.</translation>
 <translation id="510275257476243843">يتبقى ساعة واحدة</translation>
 <translation id="5123685120097942451">علامة تبويب "التصفُّح المتخفي"</translation>
@@ -650,6 +659,7 @@
 <translation id="5833984609253377421">مشاركة الرابط</translation>
 <translation id="5836192821815272682">‏جارٍ تنزيل تحديث Chrome…</translation>
 <translation id="5853623416121554550">متوقف مؤقتًا</translation>
+<translation id="5854512288214985237">‏لا يتم إرسال تقارير الأعطال أو الإحصاءات إلى Google.</translation>
 <translation id="5854790677617711513">مرّ عليها أكثر من 30 يومًا</translation>
 <translation id="5855546874025048181">تحسين: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">‏يتعذر على Chrome تشغيل محوّل البلوتوث</translation>
@@ -722,6 +732,7 @@
 <translation id="6303969859164067831">تسجيل الخروج وإيقاف المزامنة</translation>
 <translation id="6312687380483398334">تطبيقات الويب (غير مزعجة)</translation>
 <translation id="6316139424528454185">‏إصدار Android غير متوافق</translation>
+<translation id="6321526113093607004">إضافة إلى الإشارات المرجعية</translation>
 <translation id="6324034347079777476">‏تمّ إيقاف مزامنة نظام Android</translation>
 <translation id="6333140779060797560">المشاركة عن طريق <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">ترميز</translation>
@@ -739,6 +750,7 @@
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> في <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">تعديل الإشارة المرجعية</translation>
 <translation id="6406506848690869874">المزامنة</translation>
+<translation id="6410404864818553978">بيانات الاستخدام الأساسية</translation>
 <translation id="6410883413783534063">يمكنك فتح علامات تبويب لزيارة صفحات مختلفة في آنٍ واحد.</translation>
 <translation id="6412673304250309937">‏يعمل على التحقّق من عناوين URL التي تحتوي على قائمة بمواقع إلكترونية غير آمنة مُخزّنة في Chrome. وإذا حاول موقع إلكتروني سرقة كلمة المرور أو إذا نزّلت ملفًا ضارًا، قد يرسل متصفّح Chrome أيضًا عناوين URL تتضمّن أجزاء من محتوى الصفحة إلى "التصفّح الآمن".</translation>
 <translation id="641643625718530986">طباعة…</translation>
@@ -832,6 +844,7 @@
 <translation id="7015203776128479407">لم ينتهِ إعداد المزامنة الأولية. تم إيقاف المزامنة.</translation>
 <translation id="7022756207310403729">فتح في المتصفح</translation>
 <translation id="702463548815491781">‏يُوصى به عند تفعيل TalkBack أو الوصول عبر مفتاح التحويل</translation>
+<translation id="7027549951530753705">تمّت استعادة <ph name="ITEM_TITLE" />.</translation>
 <translation id="7029809446516969842">كلمات المرور</translation>
 <translation id="703523980599857277">تغيير الصفحة الرئيسية</translation>
 <translation id="7054588988317389591">هل تريد عرض أوصاف الصور؟</translation>
@@ -1013,6 +1026,7 @@
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> ومواقع أخرى</translation>
 <translation id="8327155640814342956">‏للحصول على أفضل تجربة للتصفّح، يُرجى الفتح لتحديث Chrome.</translation>
 <translation id="8349013245300336738">الترتيب حسب مقدار البيانات المُستخدَمة</translation>
+<translation id="835847953965672673">تمّت استعادة <ph name="NUMBER_OF_DOWNLOADS" /> عملية تنزيل.</translation>
 <translation id="8364299278605033898">عرض المواقع الإلكترونية الشائعة</translation>
 <translation id="8368027906805972958">جهاز غير معروف أو غير متوافق (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381">تم تنزيل حزمة اللغة <ph name="LANG" />.</translation>
@@ -1121,6 +1135,7 @@
 <translation id="9148126808321036104">تسجيل الدخول مرة أخرى</translation>
 <translation id="9155898266292537608">يمكنك أيضًا البحث بنقرة سريعة على كلمة</translation>
 <translation id="9169507124922466868">سجلّ التنقل مفتوح جزئيًا</translation>
+<translation id="9191031968346938109">إضافة إلى…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{تمّ إجراء عملية التحقُّق قبل دقيقة واحدة.}zero{تمّ إجراء عملية التحقُّق قبل # دقيقة.}two{تمّ إجراء عملية التحقُّق قبل دقيقتَين.}few{تمّ إجراء عملية التحقُّق قبل # دقائق.}many{تمّ إجراء عملية التحقُّق قبل # دقيقة.}other{تمّ إجراء عملية التحقُّق قبل # دقيقة.}}</translation>
 <translation id="9204836675896933765">ملف واحد متبقٍ</translation>
 <translation id="9206873250291191720">A</translation>
@@ -1133,6 +1148,7 @@
 <translation id="938850635132480979">الخطأ: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">إدخال عبارة المرور</translation>
 <translation id="95817756606698420">‏يمكن لـ Chrome استخدام <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> للبحث في الصين. ويمكنك تغيير هذا في <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
+<translation id="962979164594783469">تثبيت هذا التطبيق</translation>
 <translation id="968900484120156207">يتم عرض الصفحات التي تزورها هنا.</translation>
 <translation id="970715775301869095">عدد الدقائق المتبقية: <ph name="MINUTES" /></translation>
 <translation id="974555521953189084">إدخال عبارة المرور لبدء المزامنة</translation>

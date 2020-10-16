@@ -41,6 +41,11 @@
 
       . Questa norma è valida soltanto per gli utenti il cui dominio corrisponde al dominio di registrazione del dispositivo. Per tutti gli altri utenti, i cookie impostati dall'IdP vengono trasferiti al profilo dell'utente soltanto durante il primo accesso sul dispositivo.</translation>
 <translation id="1029052664284722254">Forza il riavvio del dispositivo all'uscita dell'utente</translation>
+<translation id="1032533786864478457">Se il criterio viene impostato su Attivato, gli utenti possono configurare i propri dispositivi per sincronizzare gli SMS con i Chromebook. Gli utenti devono attivare esplicitamente questa funzionalità completando un flusso di configurazione. Una volta completato, gli utenti possono inviare e ricevere SMS sui propri Chromebook.
+
+      Se il criterio viene impostato su Disattivato, gli utenti non possono configurare la sincronizzazione dei messaggi.
+
+      Se non viene configurato, per impostazione predefinita, la funzionalità non è consentita per gli utenti gestiti, ma può essere utilizzata dagli altri utenti.</translation>
 <translation id="1040446814317236570">Attiva la rimozione per gli URL PAC (https://)</translation>
 <translation id="1046484220783400299">Consente di attivare le funzioni della piattaforma web obsolete per un periodo di tempo limitato</translation>
 <translation id="1047128214168693844">Non consentire ad alcun sito di monitorare la posizione fisica degli utenti</translation>
@@ -650,6 +655,9 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 <translation id="2057317273526988987">Consenti l'accesso a un elenco di URL</translation>
 <translation id="2061810934846663491">Configura i nomi di dominio richiesti per gli host di accesso remoto</translation>
 <translation id="2067011586099792101">Blocca l'accesso ai siti non presenti nei pacchetti di contenuti</translation>
+<translation id="2069350366303315077">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_NAME" /> applica le sessioni Ospite e impedisce gli accessi ai profili. Gli accessi Ospite sono profili di <ph name="PRODUCT_NAME" /> in cui le finestre sono nella modalità di navigazione in incognito.
+
+      Se il criterio viene impostato su Disattivato, se non viene configurato o se la modalità Ospite del browser viene disattivata (tramite il criterio <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />), è possibile utilizzare profili nuovi ed esistenti.</translation>
 <translation id="2073552873076775140">Consenti di eseguire l'accesso a <ph name="PRODUCT_NAME" /></translation>
 <translation id="2075732129949889165">Playbook Ansible di Crostini</translation>
 <translation id="2077129598763517140">Usa accelerazione hardware quando disponibile</translation>
@@ -986,6 +994,11 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="2482676533225429905">Messaggi nativi</translation>
 <translation id="2483146640187052324">Prevedi le azioni di rete su qualsiasi connessione di rete</translation>
 <translation id="2498238926436517902">Nascondi sempre automaticamente lo shelf</translation>
+<translation id="250022556568924228">Se il criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> scarica i Termini di servizio e li presenta agli utenti a ogni avvio di sessione con un account locale del dispositivo. Gli utenti possono accedere alla sessione dopo aver accettato i Termini di servizio.
+
+      Se il criterio non viene configurato, i Termini di servizio non vengono visualizzati.
+
+      Il criterio deve essere impostato su un URL da cui <ph name="PRODUCT_OS_NAME" /> può scaricare i Termini di servizio. I Termini di servizio devono essere composti da testo normale e pubblicati come testo di tipo MIME/semplice. Non sono consentiti markup.</translation>
 <translation id="2502467045153796624">Comportamento del downgrade del canale</translation>
 <translation id="250670737672448119">Consente di attivare la funzione di accessibilità di evidenziazione del cursore di testo.
 
@@ -1170,6 +1183,13 @@ Se questa norma non viene impostata, l'utente potrà scegliere se utilizzare o m
 
       Questo criterio aziendale è finalizzato al periodo di transizione e verrà rimosso in Chrome 88.</translation>
 <translation id="2759224876420453487">Controlla il comportamento dell'utente in una sessione profilo multiplo</translation>
+<translation id="2759426227259007018">La configurazione del criterio consente di specificare le app che gli utenti possono attivare come app per scrivere note nella schermata di blocco di <ph name="PRODUCT_OS_NAME" />.
+
+      Se l'app preferita si trova nella schermata di blocco, sullo schermo viene visualizzato un elemento UI per l'avvio di tale app. Quando viene avviata, l'app può creare una finestra sopra la schermata di blocco e creare note in questo contesto. L'app può importare le note create nella sessione dell'utente principale quando la sessione è sbloccata. Nella schermata di blocco sono supportate solo le app per scrivere note di <ph name="PRODUCT_NAME" />.
+
+      La configurazione del criterio consente agli utenti di attivare un'app nella schermata di blocco se l'ID estensione dell'app è presente come valore nell'elenco del criterio. Pertanto, se il criterio viene impostato su un elenco vuoto, l'opzione per scrivere note nella schermata di blocco viene disattivata. L'esistenza dell'ID di un'app nel criterio non implica necessariamente che gli utenti possano attivare l'app come app per scrivere note nella schermata di blocco. Ad esempio, in <ph name="PRODUCT_NAME" /> 61, il gruppo di app disponibili viene limitato anche dalla piattaforma.
+
+      Se il criterio non viene configurato, non vengono applicate limitazioni imposte da tale criterio al gruppo di app che gli utenti possono attivare nella schermata di blocco.</translation>
 <translation id="2761483219396643566">Ritardo avviso inattività in caso di utilizzo della batteria</translation>
 <translation id="2765601181281280493">Se il criterio viene configurato, puoi elencare i pattern URL che specificano i siti che non possono chiedere agli utenti l'autorizzazione di accesso a una porta seriale.
 
@@ -1508,6 +1528,9 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="3251500716404598358">Configura le norme per passare da un browser all'altro.
 
       I siti web configurati verranno aperti automaticamente in un browser diverso da <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3255624750680556186">Se il criterio viene impostato su Attivato o se non viene configurato, la funzione Powerwash può essere attivata da un dispositivo.
+
+      Se viene impostato su Disattivato, la funzione non può essere attivata da un dispositivo. Si può verificare un'eccezione per l'attivazione della funzione Powerwash, se il criterio <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> viene impostato su un valore che consente l'aggiornamento del firmware TPM, ma tale firmware non è ancora stato aggiornato.</translation>
 <translation id="3255762580838224124">La configurazione del criterio comporta la rotazione di ogni display nell'orientamento specificato a ogni riavvio e la prima volta che viene eseguita la connessione del display dopo la modifica del valore del criterio. Gli utenti possono modificare la rotazione del display tramite la pagina delle impostazioni dopo aver effettuato l'accesso, ma la rotazione tornerà allo stato precedente al riavvio successivo. Questo criterio si applica ai display primari e secondari.
 
       Se non viene configurato, il valore predefinito è 0 e gli utenti sono liberi di modificarlo. In questo caso, il valore predefinito non viene applicato nuovamente al riavvio.</translation>
@@ -2627,6 +2650,9 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="5023555740504506178">Se il criterio è attivato o non configurato (impostazione predefinita), una pagina web può usare le API di condivisione schermo (ad esempio, getDisplayMedia() o l'API dell'estensione Desktop Capture) per richiedere all'utente di selezionare una scheda, una finestra o un desktop da acquisire.
 
       Se questo criterio viene disattivato, le chiamate alle API di condivisione schermo restituiranno un errore.</translation>
+<translation id="5025239932007658691">Se il criterio viene impostato su Attivato o se non viene configurato, <ph name="PRODUCT_NAME" /> invia query occasionali a un server di Google per recuperare un timestamp accurato.
+
+      Se viene impostato su Disattivato, <ph name="PRODUCT_NAME" /> smette di inviare queste query.</translation>
 <translation id="5032164758660626397">Impedisci all'utente di trasferire file di grandi dimensioni</translation>
 <translation id="5047604665028708335">Consenti l'accesso ai siti non presenti nei pacchetti di contenuti</translation>
 <translation id="5056708224511062314">Ingrandimento dello schermo disattivato</translation>
@@ -3407,6 +3433,9 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 <translation id="6034341625190551415">Consente di controllare tipi di account kiosk e sessioni pubbliche.</translation>
 <translation id="6034603289689965535">Consente a una pagina di mostrare i popup durante l'unload.</translation>
 <translation id="6036523166753287175">Abilita attraversamento firewall da host di accesso remoto</translation>
+<translation id="603768430528561926">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti dei dispositivi aziendali possono riscattare le offerte tramite la registrazione a <ph name="PRODUCT_OS_NAME" />.
+
+      Se viene impostato su Disattivato, gli utenti non possono riscattare tali offerte.</translation>
 <translation id="6038407313189625985">Se questo criterio viene attivato o non viene impostato, l'integrità del codice del renderer viene attivata. Questo criterio dovrebbe essere disattivato solo se si riscontrano problemi di compatibilità con software di terze parti che devono essere eseguiti all'interno dei processi del renderer di Chrome.
 
       La disattivazione di questo criterio ha un effetto negativo sulla sicurezza e sulla stabilità di Chrome, in quanto verrà consentito il caricamento di codice sconosciuto e potenzialmente dannoso all'interno dei processi del renderer di Chrome. Per ulteriori informazioni, consulta la pagina https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies.</translation>
@@ -3627,6 +3656,7 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
       Se questo criterio non viene impostato o se l'elenco è vuoto, sarà possibile accedere a tutti gli schemi in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6338982178236723271">Segnala informazioni sul sistema</translation>
 <translation id="6342187235303612558">Consente di impedire agli utenti di caricare o scaricare file attualmente non supportati per la scansione di DLP o malware.</translation>
+<translation id="6353890097388312479">Se il criterio viene impostato su All (0) o se non viene configurato, gli utenti possono modificare le impostazioni di attendibilità per tutti i certificati CA, rimuovere i certificati importati dagli utenti e importare certificati tramite Gestione certificati. Se viene impostato su UserOnly (1), gli utenti possono gestire solo i certificati importati dagli utenti, ma non possono modificare le impostazioni di attendibilità dei certificati integrati. Se viene impostato su None (2), gli utenti possono visualizzare i certificati CA, ma non possono gestirli.</translation>
 <translation id="6366574325767783825">Se il criterio viene impostato su True o non viene impostato, <ph name="PRODUCT_NAME" /> accetterà i contenuti web pubblicati con la tecnologia Signed HTTP Exchange.
 
       Se il criterio viene impostato su False, i contenuti pubblicati con la tecnologia Signed HTTP Exchange non vengono caricati.</translation>
@@ -3718,6 +3748,15 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
           Il metodo consigliato per bloccare lo schermo in caso di inattività consiste nell'attivare il blocco dello schermo in caso di sospensione e fare in modo che <ph name="PRODUCT_OS_NAME" /> entri in sospensione dopo il ritardo di inattività. Questo criterio dovrebbe essere usato soltanto quando il blocco dello schermo dovrebbe avvenire molto tempo prima della sospensione o quando non si vuole affatto la sospensione in caso di inattività.
 
           Il valore del criterio deve essere specificato in millisecondi. I valori devono essere inferiori al ritardo di inattività.</translation>
+<translation id="6506239283767807745">Questo criterio è deprecato. Usa il criterio <ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST" />.
+
+      La configurazione del criterio consente di specificare le app che gli utenti possono attivare come app per scrivere note nella schermata di blocco di <ph name="PRODUCT_OS_NAME" />.
+
+      Se l'app preferita si trova nella schermata di blocco, sullo schermo viene visualizzato un elemento UI per l'avvio di tale app. Quando viene avviata, l'app può creare una finestra sopra la schermata di blocco e creare note in questo contesto. L'app può importare le note create nella sessione dell'utente principale quando la sessione è sbloccata. Nella schermata di blocco sono supportate solo le app per scrivere note di <ph name="PRODUCT_NAME" />.
+
+      La configurazione del criterio consente agli utenti di attivare un'app nella schermata di blocco se l'ID estensione dell'app è presente come valore nell'elenco del criterio. Pertanto, se il criterio viene impostato su un elenco vuoto, l'opzione per scrivere note nella schermata di blocco viene disattivata. L'esistenza dell'ID di un'app nel criterio non implica necessariamente che gli utenti possano attivare l'app come app per scrivere note nella schermata di blocco. Ad esempio, in <ph name="PRODUCT_NAME" /> 61, il gruppo di app disponibili viene limitato anche dalla piattaforma.
+
+      Se il criterio non viene configurato, non vengono applicate limitazioni imposte da tale criterio al gruppo di app che gli utenti possono attivare nella schermata di blocco.</translation>
 <translation id="6506486086262398387">Se il criterio viene impostato su Attivato, la funzionalità Condivisione file di rete di <ph name="PRODUCT_OS_NAME" /> utilizza l'autenticazione NTLM per le condivisioni SMB, se necessario. Se viene impostato su Disattivato, l'autenticazione NTLM per le condivisioni SMB viene disattivata.
 
       Se non viene configurato, il comportamento predefinito è off per gli utenti gestiti e on per gli altri utenti.</translation>

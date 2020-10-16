@@ -207,6 +207,7 @@
 <translation id="3252266817569339921">Ֆրանսիական</translation>
 <translation id="3254434849914415189">Ընտրեք կանխադրված հավելված <ph name="FILE_TYPE" /> ֆայլերի համար:</translation>
 <translation id="3264582393905923483">Համատեքստ</translation>
+<translation id="3272909651715601089">Չհաջողվեց բացել «<ph name="PATH" />» արխիվը</translation>
 <translation id="3280431534455935878">Ֆայլի պատրաստում</translation>
 <translation id="3280987981688031357">Վինիլային ձայնապնակ</translation>
 <translation id="3296763833017966289">Վրացական</translation>
@@ -309,6 +310,7 @@
 <translation id="4477219268485577442">Բուլղարական հնչյունային</translation>
 <translation id="4479812471636796472">ԱՄՆ Դվորակի ստեղնաշար</translation>
 <translation id="4522570452068850558">Մանրամասներ</translation>
+<translation id="4527800702232535228">Այս պանակը հասանելի է Parallels Desktop-ին</translation>
 <translation id="4552678318981539154">Գնեք լրացուցիչ պահեստ</translation>
 <translation id="4559767610552730302">Բոկե</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ֆայլ</translation>
@@ -326,6 +328,7 @@
 <translation id="4694604912444486114">Կապիկ</translation>
 <translation id="4697043402264950621">Ֆայլերի ցանկը տեսակավորված է ըստ «<ph name="COLUMN_NAME" />» ցուցանիշի՝ աճման կարգով։</translation>
 <translation id="4711094779914110278">Թուրքական</translation>
+<translation id="4712283082407695269">«<ph name="PATH" />» արխիվը բացվում է</translation>
 <translation id="4713544552769165154">Այս ֆայլը նախատեսված է Macintosh ծրագրակազմով համակարգչի համար: Այն համատեղելի չէ ձեր սարքի հետ, որի վրա տեղադրված է Chrome OS-ը: Ավելի հարմար փոխարինող հավելված կարող եք որոնել <ph name="BEGIN_LINK" />Chrome Վեբ խանութում<ph name="END_LINK" />:<ph name="BEGIN_LINK_HELP" />Իմանալ ավելին<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">Կրկնօրինակվեց <ph name="FILE_COUNT" /> լուսանկար</translation>
 <translation id="4725511304875193254">Կորգի</translation>
@@ -524,6 +527,7 @@
 <translation id="6558280019477628686">Սխալ առաջացավ: Հնարավոր է՝ որոշ տարրեր չեն ջնջվել:</translation>
 <translation id="656398493051028875">«<ph name="FILENAME" />»-ը ջնջվում է…</translation>
 <translation id="6581162200855843583">Google Drive-ի հղում</translation>
+<translation id="6594855146910089723">Այս պանակը հասանելի է Լինուքսին և Parallels Desktop-ին</translation>
 <translation id="6607272825297743757">Ֆայլի տվյալներ</translation>
 <translation id="6609332149380188670">Parallels Desktop-ին հասանելի է դարձել <ph name="NUMBER_OF_ITEMS" /> պանակ</translation>
 <translation id="6629841649550503054">Բոլոր ֆայլերը կրկնօրինակվեցին <ph name="BEGIN_LINK" />Google Drive-ում<ph name="END_LINK" /></translation>

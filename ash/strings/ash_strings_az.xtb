@@ -100,6 +100,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> ayırdetmə dəqiqliyini dəstəkləmir (<ph name="SPECIFIED_REFRESH_RATE" /> Hs). Ayırdetmə dəqiqliyi <ph name="FALLBACK_RESOLUTION" /> ilə dəyişdirilib (<ph name="FALLBACK_REFRESH_RATE" />). Dəyişiklikləri saxlamaq üçün "Təsdiq" seçiminə toxunun. Əvvəlki ayarlar <ph name="TIMEOUT_SECONDS" /> ərzində bərpa ediləcək.</translation>
 <translation id="1919743966458266018">Task menecerini açmaq üçün qısayol dəyişilib. <ph name="OLD_SHORTCUT" /> əvəzinə <ph name="NEW_SHORTCUT" /> istifadə edin.</translation>
 <translation id="1923539912171292317">Avtomatik kliklər</translation>
+<translation id="1924640696879807758">Telefondan</translation>
 <translation id="1928739107511554905">Güncəlləməni əldə etmək məqsədilə əlavə edilən klavatura ilə Chromebook'u yenidən başlatmaq üçün toxunuş ekranından istifadə edin.</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -686,6 +687,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="7904094684485781019">Administrator bu hesab üçün çoxsaylı girişlərə icazə verməyib.</translation>
 <translation id="7933084174919150729">Google Assistent yalnız ilkin profildə əlçatandır.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> və <ph name="SECOND_PARENT_EMAIL" /> tərəfindən idarə edilən hesab</translation>
+<translation id="793716872548410480">Mübadilə buferinə baxmaq üçün <ph name="SHORTCUT_KEY_NAME" /> + V düyməsinə basın. Kopyaladığınız sonuncu 5 element mübadilə buferində saxlanılıb.</translation>
 <translation id="7955885781510802139">Yüksək kontrast rejimi</translation>
 <translation id="7977927628060636163">Mobil şəbəkələr axtarılır...</translation>
 <translation id="7980780401175799550">Chrome ƏS-də naviqasiyanın yeni yollarını sınayın</translation>

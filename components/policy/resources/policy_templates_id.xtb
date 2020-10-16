@@ -41,6 +41,11 @@
 
       Kebijakan ini memengaruhi pengguna yang domainnya cocok dengan domain pendaftaran perangkat saja. Untuk pengguna lainnya, cookie yang ditetapkan oleh IdP akan ditransfer ke profil pengguna selama proses masuk pertamanya hanya di perangkat.</translation>
 <translation id="1029052664284722254">Reboot paksa perangkat saat pengguna logout</translation>
+<translation id="1032533786864478457">Jika kebijakan disetel ke Aktif, pengguna akan dapat menyiapkan perangkatnya untuk menyinkronkan SMS mereka ke Chromebook. Pengguna harus secara eksplisit memilih untuk menggunakan fitur ini dengan menyelesaikan alur penyiapan. Setelah selesai, pengguna dapat mengirim dan menerima SMS di Chromebook mereka.
+
+      Jika kebijakan disetel ke Nonaktif, pengguna tidak akan dapat menyiapkan sinkronisasi SMS.
+
+      Jika kebijakan tidak disetel, secara default fitur tidak diizinkan bagi pengguna terkelola tetapi diizinkan bagi pengguna lainnya.</translation>
 <translation id="1040446814317236570">Aktifkan penyembunyian URL PAC (untuk https://)</translation>
 <translation id="1046484220783400299">Aktifkan fitur platform web usang untuk waktu yang terbatas</translation>
 <translation id="1047128214168693844">Jangan izinkan situs mana pun melacak lokasi fisik pengguna</translation>
@@ -669,6 +674,9 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="2057317273526988987">Izinkan akses ke daftar URL</translation>
 <translation id="2061810934846663491">Mengonfigurasi nama domain wajib untuk host akses jarak jauh</translation>
 <translation id="2067011586099792101">Memblokir akses ke situs di luar paket konten</translation>
+<translation id="2069350366303315077">Jika kebijakan disetel ke Aktif, <ph name="PRODUCT_NAME" /> akan menerapkan sesi tamu dan mencegah login profil. Login tamu adalah profil <ph name="PRODUCT_NAME" /> saat semua jendela berada dalam mode Samaran.
+
+      Jika kebijakan disetel ke Nonaktif atau tidak disetel, atau Mode tamu browser dinonaktifkan (melalui <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />), penggunaan profil baru atau yang sudah ada akan diizinkan.</translation>
 <translation id="2073552873076775140">Izinkan login ke <ph name="PRODUCT_NAME" /></translation>
 <translation id="2075732129949889165">Playbook Crostini Ansible</translation>
 <translation id="2077129598763517140">Gunakan akselerasi hardware jika tersedia</translation>
@@ -1004,6 +1012,11 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2482676533225429905">Perpesanan Asli</translation>
 <translation id="2483146640187052324">Prediksi tindakan jaringan di koneksi jaringan apa pun</translation>
 <translation id="2498238926436517902">Selalu sembunyikan rak secara otomatis</translation>
+<translation id="250022556568924228">Jika kebijakan disetel, <ph name="PRODUCT_OS_NAME" /> akan mendownload Persyaratan Layanan dan menampilkannya kepada pengguna saat sesi akun lokal perangkat dimulai. Pengguna hanya dapat login ke sesi setelah menerima Persyaratan Layanan.
+
+      Jika kebijakan tidak disetel, Persyaratan Layanan tidak akan muncul.
+
+      Kebijakan harus disetel ke URL tempat <ph name="PRODUCT_OS_NAME" /> dapat mendownload Persyaratan Layanan. Persyaratan Layanan harus berupa teks biasa, yang ditayangkan sebagai text/plain jenis MIME. Markup tidak diizinkan.</translation>
 <translation id="2502467045153796624">Perilaku downgrade saluran rilis</translation>
 <translation id="250670737672448119">Mengaktifkan fitur aksesibilitas sorotan tanda sisipan.
 
@@ -1188,6 +1201,13 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
       Kebijakan perusahaan ini berlaku untuk adaptasi jangka pendek dan akan dihapus di Chrome 88.</translation>
 <translation id="2759224876420453487">Mengontrol perilaku pengguna pada sesi multiprofil</translation>
+<translation id="2759426227259007018">Menyetel kebijakan akan menentukan aplikasi yang dapat diaktifkan pengguna sebagai aplikasi pencatat di layar kunci <ph name="PRODUCT_OS_NAME" />.
+
+      Jika aplikasi pilihan berada di layar kunci, elemen UI untuk meluncurkan aplikasi pencatat pilihan akan muncul di layar. Saat diluncurkan, aplikasi dapat membuat jendela di bagian atas layar kunci dan membuat catatan di konteks ini. Saat sesi dibuka, aplikasi dapat mengimpor catatan yang dibuat ke sesi pengguna utama. Hanya aplikasi pencatat <ph name="PRODUCT_NAME" /> yang didukung di layar kunci.
+
+      Jika kebijakan disetel, pengguna akan dapat mengaktifkan aplikasi di layar kunci jika ID ekstensi aplikasi tercantum dalam nilai daftar kebijakan. Oleh karena itu, menyetel kebijakan ke daftar kosong akan menonaktifkan pencatatan di layar kunci. Kebijakan dengan ID aplikasi tidak selalu berarti bahwa pengguna dapat mengaktifkan aplikasi sebagai aplikasi pencatat di layar kunci. Misalnya, di <ph name="PRODUCT_NAME" /> 61, kumpulan aplikasi yang tersedia juga dibatasi oleh platform.
+
+      Jika kebijakan tidak disetel, tidak akan ada batasan pada kumpulan aplikasi yang dapat diaktifkan pengguna di layar kunci sebagaimana diberlakukan oleh kebijakan.</translation>
 <translation id="2761483219396643566">Menunda peringatan waktu menganggur saat menggunakan daya baterai</translation>
 <translation id="2765601181281280493">Jika menyetel kebijakan ini, Anda akan dapat menyetel daftar pola URL yang menentukan situs mana yang tidak dapat meminta izin pengguna untuk mengakses port serial.
 
@@ -1526,6 +1546,9 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="3251500716404598358">Konfigurasikan kebijakan untuk beralih ke browser lain.
 
       Situs yang dikonfigurasi akan otomatis terbuka di browser selain <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3255624750680556186">Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat akan dapat memicu powerwash.
+
+      Jika kebijakan disetel ke Nonaktif, perangkat tidak akan dapat memicu powerwash. Meski demikian, powerwash masih dapat terjadi jika <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> disetel ke nilai yang mengizinkan update firmware TPM, tetapi firmware belum diupdate.</translation>
 <translation id="3255762580838224124">Jika kebijakan disetel, tiap tampilan akan diputar sesuai dengan setelan orientasi layar setiap kali mulai ulang dan saat pertama kali terhubung setelah nilai kebijakan berubah. Pengguna dapat mengubah rotasi tampilan melalui halaman setelan setelah login, tetapi tampilan akan kembali berubah saat mulai ulang berikutnya. Kebijakan ini akan berlaku untuk tampilan utama dan sekunder.
 
       Jika tidak disetel, nilai default adalah 0 derajat dan pengguna bebas mengubahnya. Dalam hal ini, nilai default tidak diterapkan kembali saat mulai ulang.</translation>
@@ -2648,6 +2671,9 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 <translation id="5023555740504506178">Jika diaktifkan atau tidak dikonfigurasi (default), suatu Halaman web dapat menggunakan API berbagi layar (mis. getDisplayMedia() atau API ekstensi Desktop Capture) untuk meminta pengguna memilih tab, jendela, atau desktop yang akan direkam.
 
       Ketika kebijakan ini dinonaktifkan, setiap panggilan untuk API berbagi layar akan gagal dengan error.</translation>
+<translation id="5025239932007658691">Jika kebijakan disetel ke Aktif atau tidak disetel, <ph name="PRODUCT_NAME" /> akan sesekali mengirimkan kueri ke server Google untuk mengambil stempel waktu yang akurat.
+
+      Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> akan berhenti mengirimkan kueri tersebut.</translation>
 <translation id="5032164758660626397">Mencegah pengguna mentransfer file berukuran besar</translation>
 <translation id="5047604665028708335">Memungkinkan akses ke situs di luar paket konten</translation>
 <translation id="5056708224511062314">Lup dinonaktifkan</translation>
@@ -3427,6 +3453,9 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 <translation id="6034341625190551415">Mengontrol sesi publik dan jenis akun kios.</translation>
 <translation id="6034603289689965535">Mengizinkan halaman menampilkan pop-up saat kontennya dibuka</translation>
 <translation id="6036523166753287175">Mengaktifkan firewall traversal dari host akses jarak jauh</translation>
+<translation id="603768430528561926">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna perangkat perusahaan akan dapat menukarkan penawaran melalui Pendaftaran <ph name="PRODUCT_OS_NAME" />.
+
+      Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat menukarkan penawaran ini.</translation>
 <translation id="6038407313189625985">Jika kebijakan ini diaktifkan atau tidak ditetapkan, Integritas Kode Perender akan diaktifkan. Kebijakan ini harus dinonaktifkan jika masalah kompatibilitas dialami oleh software pihak ketiga yang harus berjalan di dalam proses perender Chrome.
 
       Menonaktifkan kebijakan ini akan merugikan bagi keamanan dan stabilitas Chrome karena kode yang tidak dikenal dan berpotensi berbahaya akan diizinkan untuk dimuat di dalam proses perender Chrome. Lihat https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies untuk info lebih lanjut.</translation>
@@ -3647,6 +3676,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
       Jika kebijakan ini tidak disetel atau daftar kosong, semua skema akan dapat diakses di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6338982178236723271">Melaporkan info sistem</translation>
 <translation id="6342187235303612558">Memblokir pengguna agar tidak mengupload atau mendownload file yang saat ini tidak didukung untuk DLP atau pemindaian malware.</translation>
+<translation id="6353890097388312479">Jika kebijakan disetel ke Semua (0) atau tidak disetel, pengguna akan dapat mengedit setelan kepercayaan untuk semua Sertifikat CA, menghapus sertifikat yang diimpor oleh pengguna, dan mengimpor sertifikat menggunakan Pengelola Sertifikat. Jika kebijakan disetel ke Khusus Pengguna (1), pengguna hanya dapat mengelola sertifikat yang diimpor pengguna, dan tidak dapat mengubah setelan kepercayaan dari sertifikat bawaan. Jika kebijakan disetel ke Tidak Ada (2), pengguna akan dapat melihat (tidak mengelola) Sertifikat CA.</translation>
 <translation id="6366574325767783825">Jika kebijakan disetel ke True (Benar) atau tidak disetel, <ph name="PRODUCT_NAME" /> akan menerima konten web yang ditayangkan sebagai Signed HTTP Exchange.
 
       Jika kebijakan disetel ke Salah (False), Signed HTTP Exchange tidak akan dimuat.</translation>
@@ -3738,6 +3768,15 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
           Cara yang direkomendasikan untuk mengunci layar saat tidak ada aktivitas adalah dengan mengaktifkan penguncian layar selama penangguhan dan menangguhkan <ph name="PRODUCT_OS_NAME" /> setelah penundaan waktu tidak ada aktivitas. Kebijakan ini sebaiknya hanya digunakan jika penguncian layar terjadi pada waktu yang jauh lebih awal daripada penangguhan, atau saat penangguhan pada waktu tidak ada aktivitas tidak diinginkan sama sekali.
 
           Nilai kebijakan harus ditentukan dalam milidetik. Nilai dikunci agar kurang dari penundaan waktu tidak ada aktivitas.</translation>
+<translation id="6506239283767807745">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST" />.
+
+      Menyetel kebijakan akan menentukan aplikasi yang dapat diaktifkan pengguna sebagai aplikasi pencatat di layar kunci <ph name="PRODUCT_OS_NAME" />.
+
+      Jika aplikasi pilihan berada di layar kunci, elemen UI untuk meluncurkan aplikasi pencatat pilihan akan muncul di layar. Saat diluncurkan, aplikasi dapat membuat jendela di bagian atas layar kunci dan membuat catatan di konteks ini. Saat sesi dibuka, aplikasi dapat mengimpor catatan yang dibuat ke sesi pengguna utama. Hanya aplikasi pencatat <ph name="PRODUCT_NAME" /> yang didukung di layar kunci.
+
+      Jika kebijakan disetel, pengguna akan dapat mengaktifkan aplikasi di layar kunci jika ID ekstensi aplikasi tercantum dalam nilai daftar kebijakan. Oleh karena itu, menyetel kebijakan ke daftar kosong akan menonaktifkan pencatatan di layar kunci. Kebijakan dengan ID aplikasi tidak selalu berarti bahwa pengguna dapat mengaktifkan aplikasi sebagai aplikasi pencatat di layar kunci. Misalnya, di <ph name="PRODUCT_NAME" /> 61, kumpulan aplikasi yang tersedia juga dibatasi oleh platform.
+
+      Jika kebijakan tidak disetel, tidak akan ada batasan pada kumpulan aplikasi yang dapat diaktifkan pengguna di layar kunci sebagaimana diberlakukan oleh kebijakan.</translation>
 <translation id="6506486086262398387">Menyetel kebijakan ke Aktif berarti fitur Berbagi File Jaringan untuk <ph name="PRODUCT_OS_NAME" /> akan menggunakan NTLM sebagai autentikasi untuk berbagi SMB jika perlu. Jika kebijakan disetel ke Nonaktif, autentikasi NTLM untuk berbagi SMB akan dinonaktifkan.
 
       Jika kebijakan tidak disetel, perilaku default akan dinonaktifkan bagi pengguna terkelola dan aktif bagi pengguna lainnya.</translation>

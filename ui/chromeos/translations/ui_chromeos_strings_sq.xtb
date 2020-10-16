@@ -60,6 +60,7 @@
 <translation id="1538729222189715449">Po hapen skedarët e Linux...</translation>
 <translation id="1547964879613821194">Anglishte kanadeze</translation>
 <translation id="1556189134700913550">Zbatoje për të gjitha</translation>
+<translation id="1561842594491319104">Pajisjet e Chrome</translation>
 <translation id="1572585716423026576">Vendose si imazh sfondi</translation>
 <translation id="158809615184981282">Tastiera në faroisht</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
@@ -189,6 +190,7 @@
 <translation id="3064388234319122767">Transliterim (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Skedarët e Windows</translation>
 <translation id="3078461028045006476">Ndaje me <ph name="EXTENSION_NAME" /></translation>
+<translation id="3083975830683400843">Pajisjet Chromebit</translation>
 <translation id="3116361045094675131">Tastierë britanike</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">U KRYE</translation>
@@ -344,6 +346,7 @@
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4823651846660089135">Pajisja është vetëm për lexim</translation>
 <translation id="4839847978919684242">U zgjodhën <ph name="SELCTED_FILES_COUNT" /> artikuj</translation>
+<translation id="4843566743023903107">Pajisjet Chromebase</translation>
 <translation id="4849981557599196363">gjermanisht (Belgjikë)</translation>
 <translation id="4850886885716139402">Pamja</translation>
 <translation id="485316830061041779">Gjermanisht</translation>
@@ -472,6 +475,7 @@
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5949281959820712067">Jepu aplikacioneve të Linux autorizim për të modifikuar skedarë në "Diskun e Google". Ndryshimet do të sinkronizohen në pajisjet e tua të tjera.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> artikuj</translation>
+<translation id="5957366693331451795">Pajisjet Chromebox</translation>
 <translation id="5982621672636444458">Opsionet e renditjes</translation>
 <translation id="6005282720244019462">Tastiera amerikano-latine</translation>
 <translation id="6007237601604674381">Lëvizja dështoi. <ph name="ERROR_MESSAGE" /></translation>
@@ -632,6 +636,7 @@
     <ph name="MARKUP_4" />fshi skedarët nga dosja "Shkarkimet"<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">Formato pajisjen</translation>
 <translation id="7799329977874311193">Dokument HTML</translation>
+<translation id="7801354353640549019">Pajisjet Chromebook</translation>
 <translation id="7805768142964895445">Statusi</translation>
 <translation id="7821462174190887129"><ph name="FILE_COUNT" /> të gjetura.
     <ph name="LINE_BREAK1" />

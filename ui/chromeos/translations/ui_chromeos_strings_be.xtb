@@ -207,6 +207,7 @@
 <translation id="3252266817569339921">Французская</translation>
 <translation id="3254434849914415189">Выберыце стандартную праграму для файлаў <ph name="FILE_TYPE" />:</translation>
 <translation id="3264582393905923483">Кантэкст</translation>
+<translation id="3272909651715601089">Не ўдалося адкрыць архіў "<ph name="PATH" />"</translation>
 <translation id="3280431534455935878">Ідзе падрыхтоўка</translation>
 <translation id="3280987981688031357">Вінілавая пласцінка</translation>
 <translation id="3296763833017966289">Грузінская</translation>
@@ -309,6 +310,7 @@
 <translation id="4477219268485577442">Балгарская фанетычная</translation>
 <translation id="4479812471636796472">Клавіятура Дворака (ЗША)</translation>
 <translation id="4522570452068850558">Падрабязнасці</translation>
+<translation id="4527800702232535228">Гэта папка абагулена з Parallels Desktop</translation>
 <translation id="4552678318981539154">Купіце больш месца ў сховішчы</translation>
 <translation id="4559767610552730302">Эфект баке</translation>
 <translation id="4572815280350369984">Файл <ph name="FILE_TYPE" /></translation>
@@ -326,6 +328,7 @@
 <translation id="4694604912444486114">Малпа</translation>
 <translation id="4697043402264950621">Файлы ў спісе адсартаваны па параметры "<ph name="COLUMN_NAME" />" (у пачатку будуць даўно змененыя).</translation>
 <translation id="4711094779914110278">Турэцкая</translation>
+<translation id="4712283082407695269">Ідзе адкрыццё архіва "<ph name="PATH" />"</translation>
 <translation id="4713544552769165154">Гэты файл прызначаны для камп'ютара з праграмным забеспячэннем Macintosh. Ён несумяшчальны з вашай прыладай на Chrome OS. Пашукайце ў <ph name="BEGIN_LINK" />Вэб-краме Chrome<ph name="END_LINK" /> адпаведную праграму на замену. <ph name="BEGIN_LINK_HELP" />Даведацца больш<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">Створана рэзервовая копія фота ў колькасці <ph name="FILE_COUNT" /></translation>
 <translation id="4725511304875193254">Коргі</translation>
@@ -524,6 +527,7 @@
 <translation id="6558280019477628686">Адбылася памылка. Некаторыя элементы маглі не выдаліцца.</translation>
 <translation id="656398493051028875">Ідзе выдаленне файла "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Спасылка на Google Дыск</translation>
+<translation id="6594855146910089723">Гэта папка абагулена з Linux і Parallels Desktop</translation>
 <translation id="6607272825297743757">Інфармацыя пра файл</translation>
 <translation id="6609332149380188670">Абагулена папак з Parallels Desktop: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="6629841649550503054">Усе даныя скапіраваны на <ph name="BEGIN_LINK" />Google Дыск!<ph name="END_LINK" /></translation>

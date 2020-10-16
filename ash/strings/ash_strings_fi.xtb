@@ -100,6 +100,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> ei tue resoluutiota <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Resoluutioksi vaihdettiin <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Pidä muutokset voimassa valitsemalla Vahvista. Aiemman asetuksen palauttamiseen menee <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1919743966458266018">Tehtävänhallinnan avaamisen pikanäppäin on muuttunut. Käytä uutta pikanäppäintä <ph name="NEW_SHORTCUT" /> vanhan (<ph name="OLD_SHORTCUT" />) sijaan.</translation>
 <translation id="1923539912171292317">Automaattiset klikkaukset</translation>
+<translation id="1924640696879807758">Puhelimesta</translation>
 <translation id="1928739107511554905">Voit asentaa päivityksen käynnistämällä Chromebookisi uudelleen kosketusnäytön avulla niin, että näppäimistö on kytkettynä.</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -688,6 +689,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="7904094684485781019">Tämän tilin järjestelmänvalvoja on estänyt useisiin tileihin kirjautumisen.</translation>
 <translation id="7933084174919150729">Google Assistant on käytettävissä vain ensisijaisella profiililla.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> ja <ph name="SECOND_PARENT_EMAIL" /> hallinnoivat tiliä</translation>
+<translation id="793716872548410480">Katso leikepöytä painamalla <ph name="SHORTCUT_KEY_NAME" /> + V. Viisi viimeksi kopioimaasi kohdetta tallennetaan leikepöydälle.</translation>
 <translation id="7955885781510802139">Suurikontrastinen tila</translation>
 <translation id="7977927628060636163">Haetaan mobiiliverkkoja…</translation>
 <translation id="7980780401175799550">Kokeile Chrome-käyttöjärjestelmän uusia navigointitapoja</translation>

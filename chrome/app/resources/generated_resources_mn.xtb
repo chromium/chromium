@@ -866,6 +866,7 @@
 <translation id="1976307821760494606"><ph name="DOMAIN" /> ADB дебагийг идэвхгүй болгосон. Энэ нь таны <ph name="DEVICE_TYPE" />-г 24 цагийн дотор шинэчлэнэ. Та хадгалахыг хүссэн файлуудаа хуулбарлана уу.</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" />-н түгжээг тайлахын тулд утсаа ойртуулна уу.</translation>
 <translation id="1978006917103730774">Программ хангамж болон аюулгүй байдлын цаашдын шинэчлэлтийг автоматаар суулгана.</translation>
+<translation id="1978057560491495741">Хаяг хасах</translation>
 <translation id="1979095679518582070">Энэ онцлогийг унтраах нь системийн шинэчлэлт, аюулгүй байдал зэрэг чухал үйлчилгээнд шаардлагатай мэдээлэл илгээх энэ төхөөрөмжийн чадварт нөлөөлөхгүй.</translation>
 <translation id="1979280758666859181">Та сувгаа <ph name="PRODUCT_NAME" />-ийн хуучин хувилбар луу сольж байна. Сувгийн хувилбар нь одоогоор таны төхөөрөмж дээр суулгасан хувилбартай таарч байгаа үед сувгийн өөрчлөлт хэрэгжинэ.</translation>
 <translation id="197989455406964291">KDC нь шифрлэлтийн төрлийг дэмждэггүй</translation>
@@ -1067,6 +1068,7 @@
 <translation id="2224444042887712269">Энэ тохиргоо нь <ph name="OWNER_EMAIL" />-д хамаатай.</translation>
 <translation id="2224551243087462610">Хавтасны нэрийг засах</translation>
 <translation id="2225864335125757863">Бүртгэлээ аюулгүй байлгахын тулд эдгээр нууц үгийг нэн даруй өөрчилнө үү:</translation>
+<translation id="2226204716217107988">Өөр профайл руу сэлгэх үү?</translation>
 <translation id="2226449515541314767">Энэ сайтад MIDI төхөөрөмжүүдийг бүрэн хянахыг хориглосон байна.</translation>
 <translation id="2226907662744526012">ПИН-г оруулмагц түгжээг автоматаар тайлах</translation>
 <translation id="222704500187107962">Таныг одоогийн нууцлалтай харилцан үйлдлээс гарах үед энэ онцгой тохиолдлыг автоматаар хасах болно</translation>
@@ -1136,6 +1138,7 @@
 <translation id="2307462900900812319">Сүлжээг тохируулах</translation>
 <translation id="230927227160767054">Энэ хуудас нь үйлчилгээний зохицуулагчийг суулгахыг хүсч байна.</translation>
 <translation id="2309620859903500144">Энэ сайтад таны хөдөлгөөн болон гэрлийн мэдрэгчид хандахыг хориглосон байна.</translation>
+<translation id="2312219318583366810">Хуудасны URL</translation>
 <translation id="2314165183524574721">Одоогийн харагдцын тохиргоог нуусан байна</translation>
 <translation id="2314774579020744484">Хуудсыг орчуулахад ашигладаг хэл</translation>
 <translation id="2315414688463285945">Linux-н файлуудыг тохируулахад алдаа гарлаа. Дахин оролдоно уу.</translation>
@@ -2338,6 +2341,7 @@
 <translation id="3713047097299026954">Энэ аюулгүй байдлын түлхүүрт ямар нэгэн нэвтрэх өгөгдөл алга байна</translation>
 <translation id="3714195043138862580">Энэ демо төхөөрөмжийн нэвтрэх эрхийг хүчингүй болгосон байна.</translation>
 <translation id="3714633008798122362">веб хуанли</translation>
+<translation id="3715954932774762075">Олон хэл дээр ашиглах боломжтой апп болон вебсайтууд энэ жагсаалтын эхний дэмжигдсэн хэлийг ашиглана. Эдгээр сонголтыг таны хөтчийн тохиргоотой синк хийдэг. <ph name="BEGIN_LINK_LEARN_MORE" />Нэмэлт мэдээлэл авах<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Нүүр хуудас</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Та болон Google</translation>
@@ -2498,6 +2502,7 @@
 <translation id="3882165008614329320">Камер эсвэл файлд байгаа видео</translation>
 <translation id="3886446263141354045">Таны энэ сайтад нэвтрэх хүсэлтийг <ph name="NAME" />-д илгээсэн</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" />-р тэмдэглэл бичиж байна</translation>
+<translation id="3890064827463908288">Wi-Fi синкийг ашиглахын тулд Chrome Синкийг асаана уу</translation>
 <translation id="3892414795099177503">Нээлттэй VPN / L2TP-г нэмэх...</translation>
 <translation id="3893536212201235195">Хандалт хийх тохиргоог унших, өөрчлөх</translation>
 <translation id="3893630138897523026">ChromeVox (ярьдаг санал хүсэлт)</translation>
@@ -3768,6 +3773,7 @@
 <translation id="5449588825071916739">Бүх цонхнуудыг хадгалах</translation>
 <translation id="5449716055534515760">Цонхыг хаах</translation>
 <translation id="5452974209916053028">Одоогийн нууцлалтай харилцан үйлдэл: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
+<translation id="5454005855577728171">Тайлбарын бөмбөлгийг хөндлөнгөөр <ph name="POSITION_ON_SCREEN_FROM_LEFT" />%, доош<ph name="POSITION_ON_SCREEN_FROM_TOP" />% зөөсөн</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" />-тэй</translation>
 <translation id="5457113250005438886">Хүчингүй</translation>
 <translation id="5457459357461771897">Компьютероосоо зураг, хөгжим болон бусад медиаг уншуулах эсвэл устгах</translation>
@@ -3911,6 +3917,7 @@
 <translation id="5602765853043467355">Энэ төхөөрөмжөөс хавчуурга, түүх, нууц үг болон бусад зүйлийг устгах</translation>
 <translation id="5605623530403479164">Бусад хайлтын систем</translation>
 <translation id="5605758115928394442">Таныг мөн эсэхийг баталгаажуулах зорилгоор таны утсанд мэдэгдэл илгээсэн болно.</translation>
+<translation id="560834977503641186">Wi-Fi синк, Нэмэлт мэдээлэл авах</translation>
 <translation id="5608580678041221894">Тайрсан хэсгийг тохируулах эсвэл зөөхийн тулд дараах түлхүүрийг товшино уу</translation>
 <translation id="5609231933459083978">Энэхүү апп нь хүчин төгөлдөр бус апп байж болзошгүй байна.</translation>
 <translation id="5610038042047936818">Камерын горим руу сэлгэх</translation>
@@ -4102,6 +4109,7 @@
 <translation id="5841270259333717135">Ethernet-г тохируулах</translation>
 <translation id="5842497610951477805">Bluetooth-г идэвхжүүлэх</translation>
 <translation id="5843706793424741864">Фаренгейт</translation>
+<translation id="584451707753263735">Шууд тайлбар харагдана, фокусыг тааруулахын тулд F6 дээр дарна уу</translation>
 <translation id="5844574845205796324">Судлах шинэ контент санал болгох</translation>
 <translation id="5846200638699387931">Холбоосын дүрмийн алдаа: <ph name="ERROR_LINE" /></translation>
 <translation id="5846807460505171493">Шинэчлэлт болон аппыг суулгана уу. Үргэлжлүүлснээр та энэ төхөөрөмж нь мөн мобайл дата ашиглан Google, таны оператор компани, таны төхөөрөмжийн үйлдвэрлэгчээс шинэчлэлт болон аппыг автоматаар татаж суулгаж болохыг зөвшөөрч байна. Эдгээр аппын зарим нь апликейшний худалдан авалтыг санал болгож болзошгүй.</translation>
@@ -5355,6 +5363,7 @@
 <translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> нь одоо дэлгэц дүүрэн харагдаж байна.</translation>
 <translation id="7340650977506865820">Сайт таны дэлгэцийг хуваалцаж байна</translation>
 <translation id="7341834142292923918">Энэ сайтад хандахыг хүсэж байна</translation>
+<translation id="7343372807593926528">Санал хүсэлтийг илгээхийн өмнө асуудлыг тайлбарлана уу.</translation>
 <translation id="7345706641791090287">Нууц үгээ баталгаажуулна уу</translation>
 <translation id="7346909386216857016">OK, ойлголоо</translation>
 <translation id="7347452120014970266">Энэ нь <ph name="ORIGIN_NAME" /> болон үүний суулгасан аппуудын хадгалсан бүх өгөгдөл, күүкийг арилгана</translation>
@@ -5770,6 +5779,7 @@
 <translation id="7819857487979277519">PSK (WPA эсвэл RSN)</translation>
 <translation id="7819992334107904369">Chrome синк</translation>
 <translation id="782057141565633384">Видео хаягийг хуулах</translation>
+<translation id="7822187537422052256">Та энэ хаягийг хасахдаа итгэлтэй байна уу?</translation>
 <translation id="7824864914877854148">Алдааны улмаас нөөцлөлтийг дуусгаж чадсангүй</translation>
 <translation id="7825666486843191125">Дэлгэцийн тань түгжээ тайлагдсан үед таны ойролцоо байх бүх харилцагч</translation>
 <translation id="782590969421016895">Одоогийн хуудсуудыг ашигла</translation>
@@ -6293,6 +6303,7 @@
 <translation id="8419098111404128271">'<ph name="SEARCH_TEXT" />'-н хайлтын үр дүн</translation>
 <translation id="8419368276599091549"><ph name="DEVICE_TYPE" />-дээ тавтай морил!</translation>
 <translation id="8420308167132684745">Толь бичгийн оролтыг засах</translation>
+<translation id="8421361468937925547">Шууд тайлбар (Зөвхөн Англи хэл)</translation>
 <translation id="8422787418163030046">Тавиур алга байна</translation>
 <translation id="8425213833346101688">Өөрчлөлт</translation>
 <translation id="8425492902634685834">Taskbar-ыг эхэнд байрлуулах</translation>
@@ -6321,6 +6332,7 @@
 <translation id="8449036207308062757">Хадгалах санг удирдах</translation>
 <translation id="8452135315243592079">SIM карт олдсонгүй</translation>
 <translation id="8455026683977728932">ADB зурагт тайлбарыг идэвхжүүлж чадсангүй</translation>
+<translation id="8456398879271637452">Шууд тайлбарыг харагдана, фокусыг тааруулахын тулд Ctrl + Буцах эсвэл Ctrl + Урагшлуулах дээр дарна уу</translation>
 <translation id="845702320058262034">Холбогдож чадсангүй. Утасныхаа Bluetooth-г асаасан эсэхээ шалгана уу.</translation>
 <translation id="8457451314607652708">Хавчуургыг татаж авчрах</translation>
 <translation id="8458627787104127436">Бүгдийг (<ph name="URL_COUNT" />) шинэ цонхонд нээх</translation>
@@ -6829,6 +6841,7 @@
 <translation id="9027459031423301635">Холбоосыг шинэ цонхонд нээ</translation>
 <translation id="9030515284705930323">Танай байгууллага Google Play Дэлгүүрийг таны бүртгэлд идэвхжүүлээгүй байна. Дэлгэрэнгүй мэдээлэл авахын тулд админтайгаа холбогдоно уу.</translation>
 <translation id="9030785788945687215">Gmail</translation>
+<translation id="9030855135435061269"><ph name="PLUGIN_NAME" />-г цаашид дэмжихээ больсон</translation>
 <translation id="9031549947500880805">Google Драйвд хуулбарлана уу. Өгөгдлөө амархан сэргээх эсвэл хүссэн үедээ төхөөрөмж хооронд сэлгэнэ үү. Таны нөөцлөлтөд аппын өгөгдөл багтана.</translation>
 <translation id="9033765790910064284">Ямартай ч үргэлжлүүлэх</translation>
 <translation id="9033857511263905942">&amp;Наах</translation>
@@ -6837,6 +6850,7 @@
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{Танд нэг оролдлого үлдлээ.}other{Танд # оролдлого үлдлээ.}}</translation>
 <translation id="9039663905644212491">PEAP /Хамгаалагдсан өргөжих боломжтой таниулах протокол/</translation>
 <translation id="9040661932550800571"><ph name="ORIGIN" />-н нууц үгийг шинэчлэх үү?</translation>
+<translation id="9041049756004505730">Шууд тайлбар харагдана, фокусыг тааруулахын тулд ⌘ + Сонголт + Дээш заасан сум эсвэл Доош заасан сум дээр дарна уу</translation>
 <translation id="9041692268811217999">Таны админ төхөөрөмжийн дотоод файлд хандах тохиргоог идэвхгүй болгосон</translation>
 <translation id="904224458472510106">Энэ үйлдлийг буцаах боломжгүй</translation>
 <translation id="9042893549633094279">Нууцлал, аюулгүй байдал</translation>
@@ -6875,6 +6889,7 @@
 <translation id="9088446193279799727">Linux-г тохируулж чадсангүй. Интернэтэд холбогдоод, дахин оролдоно уу.</translation>
 <translation id="9088917181875854783">Энэхүү түлхүүр үг нь <ph name="DEVICE_NAME" /> дээр харагдаж байгаа гэдгийг баталгаажуулна уу:</translation>
 <translation id="9089416786594320554">Оролтын аргууд</translation>
+<translation id="909108997331068008"><ph name="EXISTING_USER" />-н профайл <ph name="NEW_USER" />-д аль хэдийн нэвтэрсэн байна</translation>
 <translation id="9093429538970210897">Сайжруулалтыг дуусгаж чадахгүй тохиолдлыг бодолцож файлуудаа хуулбарлахыг санал болгодог. Сайжруулалтыг эхлүүлснээр Linux (Бэта) унтарна. Үргэлжлүүлэхийн өмнө нээлттэй байгаа файлуудаа хадгална уу.</translation>
 <translation id="9094033019050270033">Нууц үг шинэчлэх</translation>
 <translation id="9094038138851891550">Хэрэглэгчийн нэр буруу</translation>
@@ -7048,5 +7063,6 @@
 <translation id="994289308992179865">&amp; Гогцоо</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Аюулгүй холболт хийж байна...</translation>
+<translation id="99731366405731005">Wi-Fi синкийг ашиглахын тулд <ph name="LINK1_BEGIN" />Chrome Синк<ph name="LINK1_END" />-ийг асаана уу. <ph name="LINK2_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">Шалгах</translation>
 </translationbundle>

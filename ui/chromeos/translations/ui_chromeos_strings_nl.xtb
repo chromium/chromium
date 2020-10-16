@@ -207,6 +207,7 @@
 <translation id="3252266817569339921">Frans</translation>
 <translation id="3254434849914415189">Kies de standaardapp voor <ph name="FILE_TYPE" />-bestanden:</translation>
 <translation id="3264582393905923483">Context</translation>
+<translation id="3272909651715601089">Kan '<ph name="PATH" />' niet openen</translation>
 <translation id="3280431534455935878">Voorbereiden</translation>
 <translation id="3280987981688031357">Lp</translation>
 <translation id="3296763833017966289">Georgisch</translation>
@@ -309,6 +310,7 @@
 <translation id="4477219268485577442">Bulgaars fonetisch</translation>
 <translation id="4479812471636796472">Amerikaans Dvorak-toetsenbord</translation>
 <translation id="4522570452068850558">Details</translation>
+<translation id="4527800702232535228">Deze map is gedeeld met Parallels Desktop</translation>
 <translation id="4552678318981539154">Meer opslagruimte kopen</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" />-bestand</translation>
@@ -326,6 +328,7 @@
 <translation id="4694604912444486114">Aap</translation>
 <translation id="4697043402264950621">Lijst met bestanden gesorteerd op <ph name="COLUMN_NAME" /> in oplopende volgorde.</translation>
 <translation id="4711094779914110278">Turks</translation>
+<translation id="4712283082407695269">'<ph name="PATH" />' openen</translation>
 <translation id="4713544552769165154">Dit bestand is ontworpen voor een computer met Macintosh-software. Dit is niet compatibel met je apparaat met Chrome OS. Zoek in de <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> naar een geschikte, vervangende app.<ph name="BEGIN_LINK_HELP" />Meer informatie<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">Er is een back-up van <ph name="FILE_COUNT" /> foto's gemaakt</translation>
 <translation id="4725511304875193254">Corgi</translation>
@@ -526,6 +529,7 @@
 <translation id="6558280019477628686">Er is een fout opgetreden. Sommige items zijn mogelijk niet verwijderd.</translation>
 <translation id="656398493051028875"><ph name="FILENAME" /> verwijderen...</translation>
 <translation id="6581162200855843583">Google Drive-link</translation>
+<translation id="6594855146910089723">Deze map wordt gedeeld met Linux en Parallels Desktop</translation>
 <translation id="6607272825297743757">Bestandsinformatie</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> mappen gedeeld met Parallels Desktop</translation>
 <translation id="6629841649550503054">Er is een back-up van alles gemaakt in <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>

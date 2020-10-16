@@ -871,6 +871,7 @@
 <translation id="1976307821760494606"><ph name="DOMAIN" /> կայքն անջատել է ADB վրիպազերծումը։ 24 ժամ հետո ձեր <ph name="DEVICE_TYPE" /> սարքը կվերակայվի։ Պահուստավորեք ֆայլերը, որոնք ուզում եք պահել։</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" /> սարքն ապակողպելու համար մոտեցրեք հեռախոսը։</translation>
 <translation id="1978006917103730774">Ծրագրակազմի և անվտանգության համակարգի հետագա թարմացումները կտեղադրվեն ավտոմատ կերպով:</translation>
+<translation id="1978057560491495741">Հասցեի հեռացում</translation>
 <translation id="1979095679518582070">Այս գործառույթն անջատելու դեպքում ձեր սարքը նախկինի պես կուղարկի տվյալներ, որոնք անհրաժեշտ են հիմնական ծառայություններին (օրինակ՝ համակարգային թարմացումներին ու անվտանգությանը)։</translation>
 <translation id="1979280758666859181">Դուք անցնում եք <ph name="PRODUCT_NAME" />-ի ավելի թողարկման վարկածի, որի տարբերակն ավելի հին է: Որպեսզի փոփոխությունը կիրառվի, տարբերակը պետք է համընկնի ձեր սարքում տեղադրված տարբերակի հետ:</translation>
 <translation id="197989455406964291">KDC-ն չի աջակցում գաղտնագրման տեսակը</translation>
@@ -1072,6 +1073,7 @@
 <translation id="2224444042887712269">Այս կարգավորման հեղինակը <ph name="OWNER_EMAIL" />-ն է:</translation>
 <translation id="2224551243087462610">Պանակի անվան փոփոխում</translation>
 <translation id="2225864335125757863">Ձեր հաշիվը պաշտպանելու համար փոխեք այս գաղտնաբառերը՝</translation>
+<translation id="2226204716217107988">Անցնե՞լ մյուս պրոֆիլ</translation>
 <translation id="2226449515541314767">Այս կայքին արգելված է ամբողջությամբ վերահսկել MIDI սարքերը:</translation>
 <translation id="2226907662744526012">Ավտոմատ ապակողպել, երբ մուտքագրվում է PIN կոդը</translation>
 <translation id="222704500187107962">Երբ դուրս գաք ընթացիկ ինկոգնիտո աշխատաշրջանից, այս բացառությունն ավտոմատ կհեռացվի։</translation>
@@ -1141,6 +1143,7 @@
 <translation id="2307462900900812319">Կազմաձևել ցանցը</translation>
 <translation id="230927227160767054">Այս էջը ծառայության մշակիչ է ուզում տեղադրել:</translation>
 <translation id="2309620859903500144">Այս կայքին արգելված է օգտագործել շարժման և լույսի ձեր տվիչները:</translation>
+<translation id="2312219318583366810">Էջի URL</translation>
 <translation id="2314165183524574721">Տեսանելիության ընթացիկ կարգավորումը՝ «Թաքցված»</translation>
 <translation id="2314774579020744484">Լեզուն, որն օգտագործվում է էջերը թարգմանելու համար</translation>
 <translation id="2315414688463285945">Չհաջողվեց կարգավորել Լինուքսի ֆայլերը: Նորից փորձեք:</translation>
@@ -2344,6 +2347,7 @@
 <translation id="3713047097299026954">Անվտանգության այս բանալին մուտքի տվյալներ չունի</translation>
 <translation id="3714195043138862580">Այս դեմո սարքի տրամադրումը չեղարկվել է։</translation>
 <translation id="3714633008798122362">վեբ օրացույց</translation>
+<translation id="3715954932774762075">Մի քանի լեզուներով հասանելի հավելվածներն ու կայքերը կօգտագործեն ցանկում նշված աջակցվող առաջին լեզուն։ Այս պարամետրերը համաժամացվում են ձեր դիտարկիչի կարգավորումների հետ։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Գլխավոր էջ</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Դուք և Google-ը</translation>
@@ -2504,6 +2508,7 @@
 <translation id="3882165008614329320">Տեսանյութ տեսախցիկից կամ ֆայլից</translation>
 <translation id="3886446263141354045">Այս կայք մուտք գործելու ձեր հարցումն ուղարկվել է <ph name="NAME" />-ին</translation>
 <translation id="3888550877729210209">Կատարեք նշումներ <ph name="LOCK_SCREEN_APP_NAME" />-ի միջոցով</translation>
+<translation id="3890064827463908288">Միացրեք Chrome Sync-ը՝ Wi-Fi համաժամացումն օգտագործելու համար։</translation>
 <translation id="3892414795099177503">Ավելացնել OpenVPN կամ L2TP...</translation>
 <translation id="3893536212201235195">Կարդալ և փոփոխել ձեր մատչելիության կարգավորումները</translation>
 <translation id="3893630138897523026">ChromeVox (ձայնային ուղեկցում)</translation>
@@ -3778,6 +3783,7 @@
 <translation id="5449588825071916739">Բոլոր ներդիրների էջանշում</translation>
 <translation id="5449716055534515760">Փակել պա&amp;տուհանը</translation>
 <translation id="5452974209916053028">Ընթացիկ ինկոգնիտո աշխատաշրջանը՝ <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
+<translation id="5454005855577728171">Ենթագրերը տեղաշարժվել են <ph name="POSITION_ON_SCREEN_FROM_LEFT" />%-ով կողք և <ph name="POSITION_ON_SCREEN_FROM_TOP" />%-ով ներքև</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" />-ի հետ</translation>
 <translation id="5457113250005438886">Անվավեր</translation>
 <translation id="5457459357461771897">Դիտել և ջնջել լուսանկարները, երաժշտությունը և այլ մեդիա ֆայլերը ձեր համակարգչից</translation>
@@ -3921,6 +3927,7 @@
 <translation id="5602765853043467355">Մաքրել այս սարքի էջանիշները, պատմությունը, գաղտնաբառերն ու մյուս տվյալները</translation>
 <translation id="5605623530403479164">Այլ որոնիչներ</translation>
 <translation id="5605758115928394442">Ձեր ինքնությունը հաստատելու համար ձեր հեռախոսին ծանուցում է ուղարկվել:</translation>
+<translation id="560834977503641186">Մանրամասն Wi-Fi համաժամացման մասին</translation>
 <translation id="5608580678041221894">Սեղմեք հետևյալ ստեղները` եզրատվող տարածքը ճշգրտելու կամ տեղաշարժելու համար</translation>
 <translation id="5609231933459083978">Հավելվածն անվավեր է:</translation>
 <translation id="5610038042047936818">Միացնել ֆոտոխցիկի ռեժիմը</translation>
@@ -4111,6 +4118,7 @@
 <translation id="5841270259333717135">Կարգավորել Ethernet-ը</translation>
 <translation id="5842497610951477805">Միացնել/անջատել Bluetooth-ը</translation>
 <translation id="5843706793424741864">Ֆարենհայտ</translation>
+<translation id="584451707753263735">Հասանելի են կենդանի ենթագրեր։ Սեղմեք F6 ստեղնը՝ մյուս ամպիկ անցնելու համար։</translation>
 <translation id="5844574845205796324">Առաջարկել նոր բովանդակություն ուսումնասիրման համար</translation>
 <translation id="5846200638699387931">Հարաբերությունների շարահյուսության սխալ՝ <ph name="ERROR_LINE" /></translation>
 <translation id="5846807460505171493">Թարմացումների և հավելվածների տեղադրում։ Շարունակելով՝ դուք համաձայնում եք, որ այս սարքը նույնպես կարող է ավտոմատ ներբեռնել և տեղադրել Google-ի, ձեր օպերատորի և սարքի արտադրողի կողմից տրամադրվող թարմացումները և հավելվածները (նաև բջջային ինտերնետի միջոցով)։ Որոշ հավելվածներում կարող է առաջարկվել վճարովի բովանդակություն։</translation>
@@ -5365,6 +5373,7 @@
 <translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" />-ն այժմ լիաէկրան ռեժիմում է:</translation>
 <translation id="7340650977506865820">Կայքը ցուցադրում է ձեր սարքի էկրանը</translation>
 <translation id="7341834142292923918">Ընդլայնումն այս կայքի հասանելիություն է հարցում</translation>
+<translation id="7343372807593926528">Կարծիքն ուղարկելուց առաջ նկարագրեք խնդիրը։</translation>
 <translation id="7345706641791090287">Հաստատեք ձեր գաղտնաբառը</translation>
 <translation id="7346909386216857016">Եղավ</translation>
 <translation id="7347452120014970266"><ph name="ORIGIN_NAME" /> խմբի կայքերի և դրանց տեղադրած հավելվածների կողմից պահված բոլոր տվյալներն ու քուքիները կջնջվեն։</translation>
@@ -5780,6 +5789,7 @@
 <translation id="7819857487979277519">PSK (WPA կամ RSN)</translation>
 <translation id="7819992334107904369">Chrome Sync</translation>
 <translation id="782057141565633384">Պատճենել տեսանյութի հասցեն</translation>
+<translation id="7822187537422052256">Իսկապե՞ս ուզում եք հեռացնել այս հաշիվը։</translation>
 <translation id="7824864914877854148">Չհաջողվեց ավարտել սխալի պատճառով</translation>
 <translation id="7825666486843191125">Մոտակայքում գտնվող բոլոր կոնտակտները, երբ ձեր սարքն ապակողպված է</translation>
 <translation id="782590969421016895">Օգտագործել ընթացիկ էջերը</translation>
@@ -6305,6 +6315,7 @@
 <translation id="8419098111404128271">«<ph name="SEARCH_TEXT" />» որոնման արդյունքներ</translation>
 <translation id="8419368276599091549">Բարի գալուստ <ph name="DEVICE_TYPE" /> սարք</translation>
 <translation id="8420308167132684745">Փոփոխել բառարանի գրառումները</translation>
+<translation id="8421361468937925547">Կենդանի ենթագրեր (միայն անգլերենով)</translation>
 <translation id="8422787418163030046">Թղթի դարակը բացակայում է</translation>
 <translation id="8425213833346101688">Փոխել</translation>
 <translation id="8425492902634685834">Ամրացնել խնդրագոտուն</translation>
@@ -6333,6 +6344,7 @@
 <translation id="8449036207308062757">Կառավարել հիշողությունը</translation>
 <translation id="8452135315243592079">SIM քարտը բացակայում է</translation>
 <translation id="8455026683977728932">Չհաջողվեց միացնել ADB պատկերը</translation>
+<translation id="8456398879271637452">Հասանելի են կենդանի ենթագրեր։ Սեղմեք Ctrl + Back կամ Ctrl + Forward՝ մյուս ամպիկ անցնելու համար</translation>
 <translation id="845702320058262034">Կապ չկա։ Համոզվեք, որ հեռախոսի Bluetooth-ը միացված է։</translation>
 <translation id="8457451314607652708">Ներմուծել էջանիշներ</translation>
 <translation id="8458627787104127436">Բացել բոլորը (<ph name="URL_COUNT" />) նոր պատուհանում</translation>
@@ -6843,6 +6855,7 @@
 <translation id="9027459031423301635">Բացել հղումը նոր &amp;ներդիրով</translation>
 <translation id="9030515284705930323">Ձեր կազմակերպությունը Google Play Խանութը ձեր հաշվի համար չի միացրել: Լրացուցիչ տեղեկությունների համար կապվեք ձեր ադմինիստրատորի հետ:</translation>
 <translation id="9030785788945687215">Gmail</translation>
+<translation id="9030855135435061269"><ph name="PLUGIN_NAME" />-ն այլևս չի աջակցվում</translation>
 <translation id="9031549947500880805">Կրկնօրինակ Google Drive-ում։ Ցանկացած ժամանակ հեշտությամբ վերականգնեք ձեր տվյալները կամ տեղափոխեք մեկ այլ սարք։ Պահուստավորումը ներառում է հավելվածների տվյալները։</translation>
 <translation id="9033765790910064284">Շարունակել</translation>
 <translation id="9033857511263905942">&amp;Տեղադրել</translation>
@@ -6851,6 +6864,7 @@
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{Դուք ունեք ևս մեկ փորձ։}one{Դուք ունեք ևս # փորձ։}other{Դուք ունեք ևս # փորձ։}}</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9040661932550800571">Թարմացնե՞լ <ph name="ORIGIN" /> կայքի գաղտնաբառը</translation>
+<translation id="9041049756004505730">Հասանելի են կենդանի ենթագրեր։ Մյուս ամպիկ անցնելու համար սեղմեք ⌘ + Option + վերև կամ ներքև նայող սլաքը։</translation>
 <translation id="9041692268811217999">Ադմինիստրատորն արգելափակել է ձեր համակարգչի տեղային ֆայլերի օգտագործումը</translation>
 <translation id="904224458472510106">Այս գործողությունը հնարավոր չէ հետարկել</translation>
 <translation id="9042893549633094279">Գաղտնիություն և անվտանգություն</translation>
@@ -6889,6 +6903,7 @@
 <translation id="9088446193279799727">Չհաջողվեց կարգավորել Լինուքսը։ Միացեք ինտերնետին և նորից փորձեք։</translation>
 <translation id="9088917181875854783">Հաստատեք անցաբառը, որը ցուցադրված է ձեր «<ph name="DEVICE_NAME" />»-ում՝</translation>
 <translation id="9089416786594320554">Ներածման եղանակներ</translation>
+<translation id="909108997331068008"><ph name="EXISTING_USER" />-ն արդեն մտել է <ph name="NEW_USER" /> հաշիվ</translation>
 <translation id="9093429538970210897">Ֆայլերը խորհուրդ է տրվում պահուստավորել այն դեպքերի համար, երբ թարմացումը չի հաջողվում ավարտել։ Թարմացումը սկսելու դեպքում Լինուքսը (բետա) կանջատվի։ Նախքան շարունակելը պահեք բացված ֆայլերը։</translation>
 <translation id="9094033019050270033">Թարմացնել գաղտնաբառը</translation>
 <translation id="9094038138851891550">Օգտանունն անվավեր է</translation>
@@ -7062,5 +7077,6 @@
 <translation id="994289308992179865">&amp;Կրկնություն</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Ապահով կապակցում…</translation>
+<translation id="99731366405731005">Միացրեք <ph name="LINK1_BEGIN" />Chrome Sync<ph name="LINK1_END" />-ը՝ համաժամացումն օգտագործելու համար։ <ph name="LINK2_BEGIN" />Իմանալ ավելին<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">Ստուգել</translation>
 </translationbundle>

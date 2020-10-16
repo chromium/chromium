@@ -41,6 +41,11 @@
 
       Dit beleid is alleen van invloed op gebruikers waarvan het domein overeenkomt met het inschrijvingsdomein van het apparaat. Voor alle overige gebruikers worden cookies die zijn ingesteld door de IdP, alleen de eerste keer dat de gebruiker inlogt op een apparaat, overgedragen naar het profiel van de gebruiker.</translation>
 <translation id="1029052664284722254">Apparaat gedwongen opnieuw opstarten wanneer gebruiker uitlogt</translation>
+<translation id="1032533786864478457">Als je dit beleid inschakelt, kunnen gebruikers hun apparaten instellen zodat hun sms-berichten worden gesynchroniseerd met Chromebooks. Gebruikers moeten zich expliciet aanmelden voor deze functie door een instelprocedure te voltooien. Na voltooiing kunnen gebruikers op hun Chromebooks sms-berichten sturen en ontvangen.
+
+      Als je het beleid uitschakelt, kunnen gebruikers sms-synchronisatie niet instellen.
+
+      Als je dit beleid niet instelt, is de functie standaard niet toegestaan voor beheerde gebruikers maar wel toegestaan voor andere gebruikers.</translation>
 <translation id="1040446814317236570">Verwijderen van gegevens uit PAC-URL's toestaan (voor https://)</translation>
 <translation id="1046484220783400299">Verouderde webplatformfuncties beperkte tijd inschakelen</translation>
 <translation id="1047128214168693844">Niet toestaan dat sites de fysieke locatie van gebruikers bijhouden</translation>
@@ -646,6 +651,9 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
 <translation id="2057317273526988987">Toegang verlenen aan een lijst met URL's</translation>
 <translation id="2061810934846663491">De vereiste domeinnamen configureren voor hosts voor externe toegang</translation>
 <translation id="2067011586099792101">Toegang blokkeren naar sites die zich niet in inhoudspakketten bevinden</translation>
+<translation id="2069350366303315077">Als je dit beleid inschakelt, dwingt <ph name="PRODUCT_NAME" /> gastsessies af en wordt voorkomen dat gebruikers inloggen bij profielen. Gastlogins zijn <ph name="PRODUCT_NAME" />-profielen waarbij alle vensters in de incognitomodus zijn.
+
+      Als je het beleid uitschakelt, niet instelt of de gastmodus voor de browser uitschakelt (via <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />), is het gebruik van nieuwe en bestaande profielen toegestaan.</translation>
 <translation id="2073552873076775140">Inloggen bij <ph name="PRODUCT_NAME" /> toestaan</translation>
 <translation id="2075732129949889165">Crostini Ansible-playbook</translation>
 <translation id="2077129598763517140">Hardwareversnelling gebruiken indien beschikbaar</translation>
@@ -981,6 +989,11 @@ Als dit beleid niet is ingesteld, is het privacyscherm in eerste instantie uitge
 <translation id="2482676533225429905">Systeemeigen berichten</translation>
 <translation id="2483146640187052324">Netwerkacties voorspellen voor elke netwerkverbinding</translation>
 <translation id="2498238926436517902">Archief altijd automatisch verbergen</translation>
+<translation id="250022556568924228">Als je het beleid instelt, downloadt <ph name="PRODUCT_OS_NAME" /> de servicevoorwaarden en geeft deze aan gebruikers weer als er een lokale accountsessie op het apparaat wordt gestart. Gebruikers kunnen alleen inloggen bij de sessie nadat ze de servicevoorwaarden hebben geaccepteerd.
+
+      Als je het beleid niet instelt, worden er geen servicevoorwaarden weergegeven.
+
+      Het beleid moet worden ingesteld op een URL waar <ph name="PRODUCT_OS_NAME" /> de servicevoorwaarden kan downloaden. De servicevoorwaarden moeten in platte tekst zijn, weergegeven als MIME-type text/plain. Er is geen opmaak toegestaan.</translation>
 <translation id="2502467045153796624">Downgradegedrag voor kanalen</translation>
 <translation id="250670737672448119">De toegankelijkheidsfunctie voor markering van het caret-teken inschakelen.
 
@@ -1165,6 +1178,13 @@ Als dit beleid niet is ingesteld, is het privacyscherm in eerste instantie uitge
 
       Dit bedrijfsbeleid is voor kortdurende aanpassing en wordt verwijderd in Chrome 88.</translation>
 <translation id="2759224876420453487">Het gebruikersgedrag beheren in een multiprofielsessie</translation>
+<translation id="2759426227259007018">Als je het beleid instelt, geef je de apps op die gebruikers kunnen inschakelen als notitie-app op het vergrendelscherm van <ph name="PRODUCT_OS_NAME" />.
+
+      Als de voorkeurs-app op het vergrendelscherm staat, wordt er een UI-element voor het starten van de gewenste notitie-app op het scherm weergegeven. Als de app wordt gestart, kan deze een venster bovenop het vergrendelscherm maken en notities maken in deze context. De app kan gemaakte notities importeren naar de primaire gebruikerssessie als de sessie ontgrendeld is. Alleen notitie-apps voor <ph name="PRODUCT_NAME" /> worden ondersteund op het vergrendelscherm.
+
+      Als je het beleid instelt, kunnen gebruikers een app inschakelen op het vergrendelscherm als de extensie-ID van de app is opgenomen in de beleidslijstwaarde. Dit betekent dat als je dit beleid instelt op een lege lijst, het maken van notities op het vergrendelscherm wordt uitgeschakeld. Het beleid met een app-ID betekent niet noodzakelijkerwijs dat gebruikers de app als notitie-app op het vergrendelscherm kunnen inschakelen. In <ph name="PRODUCT_NAME" /> 61 wordt de reeks beschikbare apps bijvoorbeeld ook beperkt door het platform.
+
+      Als je het beleid niet instelt, gelden er geen beleidsbeperkingen voor de reeks apps die de gebruiker kan inschakelen op het vergrendelscherm.</translation>
 <translation id="2761483219396643566">Inactieve waarschuwingsvertraging wanneer op de batterij wordt gewerkt</translation>
 <translation id="2765601181281280493">Als je het beleid instelt, kun je een lijst met URL-patronen maken om op te geven welke sites gebruikers niet mogen vragen om toegang tot een seriële poort.
 
@@ -1503,6 +1523,9 @@ Dit beleid kan alleen worden ingesteld via de Google Beheerdersconsole.</transla
 <translation id="3251500716404598358">Configureer de beleidsregels om te schakelen tussen browsers.
 
       Geconfigureerde websites worden automatisch geopend in een andere browser dan <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3255624750680556186">Als je het beleid inschakelt of niet instelt, kan een apparaat Powerwash activeren.
+
+      Als je het beleid uitschakelt of niet instelt, kan een apparaat Powerwash niet activeren. Een uitzondering waarbij Powerwash nog wel is toegestaan, is als <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> is ingesteld op een waarde die de TPM-firmware-update toestaat en de TPM-firmware nog niet is geüpdatet.</translation>
 <translation id="3255762580838224124">Als je het beleid instelt, wordt elk scherm naar de opgegeven stand gedraaid: elke keer dat er opnieuw wordt opgestart en de eerste keer dat het scherm wordt verbonden nadat de beleidswaarde is gewijzigd. Gebruikers kunnen na inloggen de rotatie van het scherm wijzigen op de pagina met instellingen, maar de rotatie wordt bij de volgende keer opnieuw opstarten weer teruggezet. Dit beleid is van toepassing op primaire en secundaire schermen.
 
       Als je het beleid niet instelt, is de standaardwaarde 0 graden en kunnen gebruikers dit wijzigen. In dat geval wordt de standaardwaarde niet opnieuw toegepast bij opnieuw opstarten.</translation>
@@ -2616,6 +2639,9 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="5023555740504506178">Als dit beleid is ingeschakeld of niet is geconfigureerd (standaard), kan een webpagina API's voor het delen van schermen (bijvoorbeeld getDisplayMedia() of de API voor de extensie 'Bureaublad streamen') de gebruiker vragen om een tabblad, venster of bureaublad te selecteren om vast te leggen.
 
       Als dit beleid is ingeschakeld, mislukken aanroepen aan API's voor het delen van schermen en wordt er een fout weergegeven.</translation>
+<translation id="5025239932007658691">Als je het beleid inschakelt of niet instelt, stuurt <ph name="PRODUCT_NAME" /> af en toe query's naar een Google-server om een nauwkeurig tijdstempel op te halen.
+
+      Als je het beleid uitschakelt, stopt <ph name="PRODUCT_NAME" /> met het sturen van deze query's.</translation>
 <translation id="5032164758660626397">Overdracht van grote bestanden door de gebruiker voorkomen</translation>
 <translation id="5047604665028708335">Toegang toestaan tot sites die zich niet in de inhoudspakketten bevinden</translation>
 <translation id="5056708224511062314">Vergrootglas uitgeschakeld</translation>
@@ -3394,6 +3420,9 @@ Dit gedrag wordt niet geactiveerd als Safe Browsing is uitgeschakeld (door het b
 <translation id="6034341625190551415">Beheert accounttypen voor openbare sessies en kiosken.</translation>
 <translation id="6034603289689965535">Hiermee wordt toegestaan dat een pagina pop-upvensters weergeeft tijdens het unloaden</translation>
 <translation id="6036523166753287175">Firewallpassage vanaf host voor externe toegang inschakelen</translation>
+<translation id="603768430528561926">Als je het beleid inschakelt of niet instelt, kunnen gebruikers van zakelijke apparaten aanbiedingen inwisselen via <ph name="PRODUCT_OS_NAME" />-registratie.
+
+      Als je het beleid uitschakelt, kunnen gebruikers deze aanbiedingen niet inwisselen.</translation>
 <translation id="6038407313189625985">Als dit beleid is ingeschakeld of niet is ingesteld, is code-integriteit van weergaveprogramma ingeschakeld. Dit moet alleen worden uitgeschakeld als er compatibiliteitsproblemen zijn met software van derden die in de processen van het weergaveprogramma van Chrome moeten worden uitgevoerd.
 
       De uitschakeling van dit beleid heeft een nadelige invloed op de beveiliging en stabiliteit van Chrome omdat onbekende, potentieel schadelijke code kan worden geladen in de processen van het weergaveprogramma van Chrome. Ga naar https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies voor meer informatie.</translation>
@@ -3611,6 +3640,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
       Als dit beleid niet is ingesteld of als de lijst leeg is, zijn alle schema's toegankelijk in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6338982178236723271">Systeemgegevens rapporteren</translation>
 <translation id="6342187235303612558">Hiermee voorkom je dat gebruikers bestanden uploaden of downloaden die op dit moment niet worden ondersteund voor een DLP- of malwarescan.</translation>
+<translation id="6353890097388312479">Als je het beleid instelt op All (0) of niet instelt, kunnen gebruikers vertrouwensinstellingen bewerken voor alle CA-certificaten, door de gebruiker geïmporteerde certificaten verwijderen en certificaten importeren met Certificaatbeheer. Als je het beleid instelt op UserOnly (1), kunnen gebruikers alleen door de gebruiker geïmporteerde certificaten beheren, maar niet de vertrouwensinstellingen van ingebouwde certificaten wijzigen. Als je het beleid instelt op None (2), kunnen gebruikers CA-certificaten bekijken (maar niet beheren).</translation>
 <translation id="6366574325767783825">Als je het beleid instelt op True of niet instelt, accepteert <ph name="PRODUCT_NAME" /> webcontent die wordt weergegeven als Signed HTTP Exchange.
 
       Als je het beleid instelt op False, worden Signed HTTP Exchanges niet geladen.</translation>
@@ -3702,6 +3732,15 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
           De aanbevolen manier om het scherm te vergrendelen bij inactiviteit is door schermvergrendeling bij opschorting in te schakelen en <ph name="PRODUCT_OS_NAME" /> te laten opschorten na een inactieve vertraging. Dit beleid moet uitsluitend worden gebruikt als het scherm aanzienlijk sneller moet worden vergrendeld dan de opschortingstijd of als opschorting bij inactiviteit helemaal niet gewenst is.
 
           De beleidswaarde moet worden gespecificeerd in milliseconden. De opgegeven waarden moeten kleiner zijn dan de inactieve vertraging.</translation>
+<translation id="6506239283767807745">Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST" />.
+
+      Als je het beleid instelt, geef je de apps op die gebruikers kunnen inschakelen als notitie-app op het vergrendelscherm van <ph name="PRODUCT_OS_NAME" />.
+
+      Als de voorkeurs-app op het vergrendelscherm staat, wordt er een UI-element voor het starten van de gewenste notitie-app op het scherm weergegeven. Als de app wordt gestart, kan deze een venster bovenop het vergrendelscherm maken en notities maken in deze context. De app kan gemaakte notities importeren naar de primaire gebruikerssessie als de sessie ontgrendeld is. Alleen notitie-apps voor <ph name="PRODUCT_NAME" /> worden ondersteund op het vergrendelscherm.
+
+      Als je het beleid instelt, kunnen gebruikers een app inschakelen op het vergrendelscherm als de extensie-ID van de app is opgenomen in de beleidslijstwaarde. Dit betekent dat als je dit beleid instelt op een lege lijst, het maken van notities op het vergrendelscherm wordt uitgeschakeld. Het beleid met een app-ID betekent niet noodzakelijkerwijs dat gebruikers de app als notitie-app op het vergrendelscherm kunnen inschakelen. In <ph name="PRODUCT_NAME" /> 61 wordt de reeks beschikbare apps bijvoorbeeld ook beperkt door het platform.
+
+      Als je het beleid niet instelt, gelden er geen beperkingen voor de reeks apps die de gebruiker kan inschakelen op het vergrendelscherm.</translation>
 <translation id="6506486086262398387">Als je het beleid inschakelt, gebruikt de functie Network File Shares voor <ph name="PRODUCT_OS_NAME" /> waar nodig NTLM om SMB-fileshares te verifiëren. Als je het beleid uitschakelt, wordt NTLM-verificatie voor SMB-fileshares uitgeschakeld.
 
       Als je dit beleid niet instelt, wordt dit gedrag standaard uitgeschakeld voor beheerde gebruikers en ingeschakeld voor andere gebruikers.</translation>

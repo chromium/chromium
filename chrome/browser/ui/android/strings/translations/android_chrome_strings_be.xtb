@@ -16,6 +16,7 @@
 <translation id="1105960400813249514">Здымак экрана</translation>
 <translation id="1111673857033749125">Тут з'явяцца закладкі, захаваныя на вашых іншых прыладах.</translation>
 <translation id="1113597929977215864">Паказаць у спрошчаным выглядзе</translation>
+<translation id="1123070903960493543">Звесткі пра тое, як вы ўзаемадзейнічаеце з Chrome, пра выбраныя вамі налады, а таксама падрабязныя звесткі пра збоі Chrome</translation>
 <translation id="1126809382673880764">Не абараняе ад небяспечных вэб-сайтаў, спамповак і пашырэнняў. Вы застаняцеся пад абаронай Бяспечнага прагляду пры карыстанні іншымі сэрвісамі Google, у якіх ён даступны, такімі як Gmail і Пошук.</translation>
 <translation id="1129510026454351943">Падрабязнасці: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1141800923049248244">{FILE_COUNT,plural, =1{Чакаецца 1 спампоўка.}one{Чакаецца # спампоўка.}few{Чакаецца # спампоўкі.}many{Чакаецца # спамповак.}other{Чакаецца # спампоўкі.}}</translation>
@@ -72,6 +73,7 @@
 <translation id="1450753235335490080">Не ўдалося абагуліць наступнае змесціва: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">Збой спампоўкі файла "<ph name="FILE_NAME" />" з-за праблем на серверы.</translation>
 <translation id="1506061864768559482">Пошукавая сістэма</translation>
+<translation id="151267239139452619">Дадаць у Спампоўкі?</translation>
 <translation id="1513352483775369820">Закладкі і гісторыя вэб-пошуку</translation>
 <translation id="1513858653616922153">Выдаліць пароль</translation>
 <translation id="1521774566618522728">Апошнія дзеянні адбываліся сёння</translation>
@@ -157,6 +159,7 @@
 <translation id="2131665479022868825">Эканомія: <ph name="DATA" /></translation>
 <translation id="213279576345780926">Закрыта ўкладка <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">Дадаць на галоўны экран</translation>
+<translation id="214888715418183969">Выберыце, што вы хочаце абагульваць з Chrome. Паказчыкі, якія вы з намі абагуліце, будуць выкарыстаны для паляпшэння функцый браўзера Chrome, стабільнасці і эфектыўнасці яго работы.</translation>
 <translation id="2154484045852737596">Рэдагаваць картку</translation>
 <translation id="2154710561487035718">Скапіраваць URL-адрас</translation>
 <translation id="2156074688469523661">Астатнія сайты (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -166,6 +169,7 @@
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="218608176142494674">Абагульванне</translation>
 <translation id="2195339740518523951">Засцеражыце браўзер Chrome ад небяспек</translation>
+<translation id="2200113223741723867">Кіруйце наладамі абагульвання даных пра выкарыстанне</translation>
 <translation id="2227444325776770048">Працягнуць як <ph name="USER_FULL_NAME" /></translation>
 <translation id="2234876718134438132">Сінхранізацыя і сэрвісы Google</translation>
 <translation id="2239812875700136898">Кіруйце паказам артыкулаў з дапамогай кнопкі "Параметры рэкамендацый"</translation>
@@ -370,12 +374,14 @@
 <translation id="3771290962915251154">Гэта налада выключана, бо ўключаны бацькоўскі кантроль</translation>
 <translation id="3771694256347217732">Умовы выкарыстання Google</translation>
 <translation id="3773755127849930740">Каб дазволіць спалучэнне, <ph name="BEGIN_LINK" />уключыце Bluetooth<ph name="END_LINK" /></translation>
+<translation id="3773856050682458546">Асноўныя даныя і інфармацыя пра вэб-сайты, якія вы наведваеце, і праграмы, якімі карыстаецеся</translation>
 <translation id="3775705724665058594">Адпраўка на вашы прылады</translation>
 <translation id="3778956594442850293">Дададзена на Галоўны экран</translation>
 <translation id="3789841737615482174">Усталяваць</translation>
 <translation id="3810838688059735925">Відэа</translation>
 <translation id="3810973564298564668">Кіраваць</translation>
 <translation id="3819178904835489326">Выдалена спамповак: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
+<translation id="3848957262889631524">Google <ph name="APP_NAME" /> як ключ бяспекі</translation>
 <translation id="3856096718352044181">Праверце, ці сапраўдны гэта аператар, або паўтарыце спробу</translation>
 <translation id="3861633093716975811">Папулярныя відэа</translation>
 <translation id="3892148308691398805">Скапіраваць тэкст</translation>
@@ -403,7 +409,9 @@
 <translation id="3988466920954086464">Імгненныя вынікі пошуку будуць паказвацца ў гэтай панэлі</translation>
 <translation id="4000212216660919741">Пазасеткавы рэжым</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# гадз}one{# гадз}few{# гадз}many{# гадз}other{# гадз}}</translation>
+<translation id="4045764304651014138">Даныя пра выкарыстанне</translation>
 <translation id="4056223980640387499">Сепія</translation>
+<translation id="4057643060762047384">Куды дадаць:</translation>
 <translation id="4060598801229743805">Параметры даступныя ўверсе экрана</translation>
 <translation id="4062305924942672200">Юрыдычная інфармацыя</translation>
 <translation id="4084682180776658562">Дадаць у закладкі</translation>
@@ -544,6 +552,7 @@
 <translation id="5039804452771397117">Дазволіць</translation>
 <translation id="5040262127954254034">Прыватнасць</translation>
 <translation id="5087580092889165836">Дадаць картку</translation>
+<translation id="5091249083535528968">Пашыраныя даныя пра выкарыстанне</translation>
 <translation id="509429900233858213">Адбылася памылка.</translation>
 <translation id="510275257476243843">Засталася 1 гадзіна</translation>
 <translation id="5123685120097942451">Укладка інкогніта</translation>
@@ -650,6 +659,7 @@
 <translation id="5833984609253377421">Абагуліць спасылку</translation>
 <translation id="5836192821815272682">Спампоўваецца абнаўленне Chrome…</translation>
 <translation id="5853623416121554550">прыпынена</translation>
+<translation id="5854512288214985237">Статыстыка і справаздачы аб збоях не адпраўляюцца ў Google</translation>
 <translation id="5854790677617711513">Даныя, старэйшыя за 30 дзён</translation>
 <translation id="5855546874025048181">Удакладніць: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Браўзеру Chrome не ўдалося ўключыць Bluetooth-адаптар</translation>
@@ -722,6 +732,7 @@
 <translation id="6303969859164067831">Выйсці і выключыць сінхранізацыю</translation>
 <translation id="6312687380483398334">Вэб-праграмы (бязгучныя)</translation>
 <translation id="6316139424528454185">Версія Android не падтрымлів.</translation>
+<translation id="6321526113093607004">Дадаць у Закладкі</translation>
 <translation id="6324034347079777476">Сінхранізацыя сістэмы Android выключана</translation>
 <translation id="6333140779060797560">Абагуліць праз <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Шыфраванне</translation>
@@ -739,6 +750,7 @@
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> на <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">Змяніце закладку</translation>
 <translation id="6406506848690869874">Сінхранізаваць</translation>
+<translation id="6410404864818553978">Асноўныя даныя пра выкарыстанне</translation>
 <translation id="6410883413783534063">Каб праглядаць некалькі старонак адначасова, карыстайцеся ўкладкамі</translation>
 <translation id="6412673304250309937">Правярае, ці знаходзяцца URL-адрасы ў спісе небяспечных сайтаў, захаваным у Chrome. Пры спробе сайта выкрасці пароль або пры спампоўванні шкоднага файла браўзер Chrome можа таксама адпраўляць у Бяспечны прагляд URL-адрасы, уключаючы фрагменты змесціва старонкі.</translation>
 <translation id="641643625718530986">Друк…</translation>
@@ -832,6 +844,7 @@
 <translation id="7015203776128479407">Першапачатковая наладка сінхранізацыі не завершана. Сінхранізацыя выключана.</translation>
 <translation id="7022756207310403729">Адкрыць у браўзеры</translation>
 <translation id="702463548815491781">Рэкамендуецца, калі ўключаны TalkBack або доступ праз пераключальнікі</translation>
+<translation id="7027549951530753705">Адноўлена: <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Паролі</translation>
 <translation id="703523980599857277">Змяніць галоўную старонку</translation>
 <translation id="7054588988317389591">Атрымліваць апісанні відарысаў?</translation>
@@ -1013,6 +1026,7 @@
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> і іншыя сайты</translation>
 <translation id="8327155640814342956">Каб карыстацца найлепшымі функцыямі, адкрыйце і абнавіце Chrome</translation>
 <translation id="8349013245300336738">Сартаваць па аб'ёме выкарыстанага трафіка</translation>
+<translation id="835847953965672673">Спамповак адноўлена: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="8364299278605033898">Праглядайце папулярныя вэб-сайты</translation>
 <translation id="8368027906805972958">Прылада невядомая або не падтрымліваецца (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381">Моўны пакет (<ph name="LANG" />) спампаваны.</translation>
@@ -1121,6 +1135,7 @@
 <translation id="9148126808321036104">Увайсці зноў</translation>
 <translation id="9155898266292537608">Запусціць пошук таксама можна, коратка націснуўшы на слова</translation>
 <translation id="9169507124922466868">Гісторыя навігацыі адкрыта напалову</translation>
+<translation id="9191031968346938109">Дадаць у…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Праверка праводзілася хвіліну таму}one{Праверка праводзілася # хвіліну таму}few{Праверка праводзілася # хвіліны таму}many{Праверка праводзілася # хвілін таму}other{Праверка праводзілася # хвіліны таму}}</translation>
 <translation id="9204836675896933765">Застаўся 1 файл</translation>
 <translation id="9206873250291191720">A</translation>
@@ -1133,6 +1148,7 @@
 <translation id="938850635132480979">Памылка: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Увядзіце фразу-пароль</translation>
 <translation id="95817756606698420">Для пошуку ў Кітаі Chrome можа выкарыстоўваць <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />. Гэта можна змяніць у <ph name="BEGIN_LINK" />Наладах<ph name="END_LINK" />.</translation>
+<translation id="962979164594783469">Усталяваць гэту праграму</translation>
 <translation id="968900484120156207">Тут будуць паказвацца наведаныя вамі старонкі</translation>
 <translation id="970715775301869095">Засталося часу: <ph name="MINUTES" /> хв</translation>
 <translation id="974555521953189084">Каб пачаць сінхранізацыю, увядзіце фразу-пароль</translation>

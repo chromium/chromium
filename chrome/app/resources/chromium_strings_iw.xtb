@@ -59,7 +59,7 @@
 <translation id="3103660991484857065">‏המתקין לא הצליח לבטל את דחיסת הארכיון. הורד שוב את Chromium.</translation>
 <translation id="3130323860337406239">‏Chromium משתמש במיקרופון שלך.</translation>
 <translation id="3155163173539279776">‏הפעל מחדש את Chromium</translation>
-<translation id="3179665906251668410">‏פתח את הקישור בחלון &amp;גלישה בסתר של Chromium</translation>
+<translation id="3179665906251668410">‏פתיחת הקישור בחלון &amp;אנונימי של Chromium</translation>
 <translation id="3190315855212034486">‏וואו! Chromium קרס. להפעיל מחדש עכשיו?</translation>
 <translation id="3229526316128325841">‏Chromium רוצה לייצא את הסיסמאות שלך.</translation>
 <translation id="3258596308407688501">‏Chromium אינו יכול לקרוא ולכתוב בספריית הנתונים שלו: <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -68,7 +68,7 @@
 <translation id="3296368748942286671">‏המשך הפעלת יישומים ברקע כאשר Chromium סגור</translation>
 <translation id="331951419404882060">‏מערכת ההפעלה של Chromium לא הצליחה לסנכרן את הנתונים שלך עקב שגיאה בתהליך הכניסה.</translation>
 <translation id="347328004046849135">‏אם מערכת Chromium תזהה שנכנסת עם סיסמה שנחשפה, היא תתריע לך על כך</translation>
-<translation id="3474745554856756813">‏פעולה זו תמחק <ph name="ITEMS_COUNT" /> פריטים מהמכשיר. כדי לשחזר את הנתונים מאוחר יותר, היכנס אל Chromium עם <ph name="USER_EMAIL" />.</translation>
+<translation id="3474745554856756813">‏פעולה זו תמחק <ph name="ITEMS_COUNT" /> פריטים מהמכשיר. כדי לשחזר את הנתונים מאוחר יותר, יש להיכנס אל Chromium עם <ph name="USER_EMAIL" />.</translation>
 <translation id="3509308970982693815">‏סגור את כל חלונות Chromium ונסה שוב.</translation>
 <translation id="3527440529060401414">‏Chromium יכול לבדוק אם יש תוכנות מזיקות במחשב שלך</translation>
 <translation id="3575459661164320785">‏יש במחשב שלך תוכנה מזיקה. Chromium יכול להסיר אותה, לשחזר את ההגדרות שלך ולהשבית תוספים כדי שהדפדפן יחזור שוב לפעולה רגילה.</translation>
@@ -88,7 +88,7 @@
 <translation id="4050175100176540509">הגרסה החדשה כוללת שיפורי בטיחות חשובים ותכונות חדשות.</translation>
 <translation id="4136604564421273381">‏Chromium מסיר תוכנה מזיקה מהמחשב שלך…</translation>
 <translation id="419998258129752635">‏<ph name="PAGE_TITLE" /> – כניסה לרשת – Chromium</translation>
-<translation id="421369550622382712">‏גלה יישומים, משחקים, תוספים ועיצובים מעולים בשביל Chromium.</translation>
+<translation id="421369550622382712">‏אפליקציות, משחקים, תוספים ועיצובים מעולים בשביל Chromium.</translation>
 <translation id="4216212958613226427">‏זו השפה שבה מוצג ממשק המשתמש של Chromium</translation>
 <translation id="4230135487732243613">‏האם לקשר את הנתונים שלך ב-Chromium לחשבון זה?</translation>
 <translation id="4271805377592243930">‏קבל עזרה בנושא Chromium</translation>
@@ -114,7 +114,7 @@
 <translation id="4893632094755846570">‏הפעולה הזו תמחק באופן סופי את נתוני הגלישה שלך במכשיר הזה. כדי לשחזר את הנתונים, יש להיכנס ל-Chromium בתור</translation>
 <translation id="4943838377383847465">‏Chromium נמצא במצב רקע.</translation>
 <translation id="4987820182225656817">‏אורחים יכולים להשתמש ב-Chromium בלי להשאיר דבר מאחור.</translation>
-<translation id="4994636714258228724">‏הוסף את עצמך ל-Chromium</translation>
+<translation id="4994636714258228724">‏הוספת החשבון שלך ל-Chromium</translation>
 <translation id="5080135079858647714">‏רוצה ליצור פרופיל ב-Chromium?</translation>
 <translation id="5224391634244552924">‏אין סיסמאות שמורות. Chromium יכול לבדוק את הסיסמאות שלך רק אם שמרת אותן.</translation>
 <translation id="5277894862589591112">‏כדי להחיל את השינויים שביצעת, יש להפעיל מחדש את Chromium</translation>

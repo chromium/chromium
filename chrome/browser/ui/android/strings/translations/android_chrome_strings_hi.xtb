@@ -16,6 +16,7 @@
 <translation id="1105960400813249514">स्‍क्रीन कैप्‍चर</translation>
 <translation id="1111673857033749125">आपके अन्‍य डिवाइस पर सहेजे गए बुकमार्क यहां दिखाई देंगे.</translation>
 <translation id="1113597929977215864">सरल बनाया गया व्यू दिखाएं</translation>
+<translation id="1123070903960493543">इसमें Chrome के साथ आपके इंटरैक्शन की जानकारी, आपकी चुनी गई सेटिंग, और Chrome बंद होने की गड़बड़ी की जानकारी शामिल है</translation>
 <translation id="1126809382673880764">इस मोड में आपको नुकसान पहुंचाने वाली वेबसाइटों, डाउनलोड, और एक्सटेंशन से सुरक्षा नहीं मिलती. Gmail और Search जैसी दूसरी Google की सेवाओं में, आपको अब भी सुरक्षित ब्राउज़िंग की सुरक्षा मिल सकती है.</translation>
 <translation id="1129510026454351943">विवरण: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1141800923049248244">{FILE_COUNT,plural, =1{1 डाउनलोड बाकी है.}one{# डाउनलोड बाकी हैं.}other{# डाउनलोड बाकी हैं.}}</translation>
@@ -72,6 +73,7 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> शेयर नहीं किया जा सकता</translation>
 <translation id="1477626028522505441">सर्वर संबधी समस्‍याओं के कारण <ph name="FILE_NAME" /> डाउनलोड विफल रहा.</translation>
 <translation id="1506061864768559482">सर्च इंजन</translation>
+<translation id="151267239139452619">डाउनलोड में जोड़ें</translation>
 <translation id="1513352483775369820">बुकमार्क और वेब इतिहास</translation>
 <translation id="1513858653616922153">पासवर्ड मिटाएं</translation>
 <translation id="1521774566618522728">आज सक्रिय है</translation>
@@ -157,6 +159,7 @@
 <translation id="2131665479022868825"><ph name="DATA" /> बचाया गया</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> बंद है</translation>
 <translation id="2139186145475833000">होम स्क्रीन में जोड़ें</translation>
+<translation id="214888715418183969">चुनें कि Chrome के साथ आपकी क्या जानकारी शेयर की जाए. आपकी शेयर की गई मेट्रिक का इस्तेमाल, Chrome की सुविधाओं और परफ़ॉर्मेंस को बेहतर बनाने और गड़बड़ियों को ठीक करने के लिए किया जाएगा.</translation>
 <translation id="2154484045852737596">कार्ड में बदलाव करें</translation>
 <translation id="2154710561487035718">URL की कॉपी बनाएं</translation>
 <translation id="2156074688469523661">बाकी साइटें (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -166,6 +169,7 @@
 <translation id="2175927920773552910">क्यूआर कोड</translation>
 <translation id="218608176142494674">शेयर किया जा रहा है</translation>
 <translation id="2195339740518523951">Chrome की सबसे मज़बूत सुरक्षा पाएं</translation>
+<translation id="2200113223741723867">इस्तेमाल के बारे में डेटा शेयर करने की सेटिंग प्रबंधित करें</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> के रूप में जारी रखें</translation>
 <translation id="2234876718134438132">सिंक और Google सेवाएं</translation>
 <translation id="2239812875700136898">डिस्कवर बटन के विकल्पों से सामग्री को नियंत्रित करें</translation>
@@ -370,12 +374,14 @@
 <translation id="3771290962915251154">यह सेटिंग बंद है, क्योंकि 'माता-पिता के नियंत्रण में' सुविधा चालू है</translation>
 <translation id="3771694256347217732">Google की सेवा की शर्तें</translation>
 <translation id="3773755127849930740">युग्मन की अनुमति देने के लिए <ph name="BEGIN_LINK" />ब्लूटूथ चालू करें<ph name="END_LINK" /></translation>
+<translation id="3773856050682458546">इसमें बुनियादी डेटा और उन वेबसाइटों की जानकारी शामिल है जिन पर आप जाते हैं. इसमें आपके इस्तेमाल किए गए ऐप्लिकेशन की जानकारी भी शामिल है</translation>
 <translation id="3775705724665058594">अपने डिवाइस पर भेजें</translation>
 <translation id="3778956594442850293">होम स्‍क्रीन में जोड़ा गया</translation>
 <translation id="3789841737615482174">इंस्‍टॉल करें</translation>
 <translation id="3810838688059735925">वीडियो</translation>
 <translation id="3810973564298564668">प्रबंधित करें</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोड हटाए गए</translation>
+<translation id="3848957262889631524">Google <ph name="APP_NAME" /> सुरक्षा कुंजी</translation>
 <translation id="3856096718352044181">कृपया पुष्टि करें कि यह एक मान्य डीएनएस सेवा है या थोड़ी देर बाद कोशिश करें</translation>
 <translation id="3861633093716975811">लोकप्रिय वीडियो</translation>
 <translation id="3892148308691398805">टेक्स्ट कॉपी करें</translation>
@@ -403,7 +409,9 @@
 <translation id="3988466920954086464">झटपट खोज नतीजे इस पैनल में देखें</translation>
 <translation id="4000212216660919741">ऑफ़लाइन होम</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# घंटा}one{# घंटे}other{# घंटे}}</translation>
+<translation id="4045764304651014138">इस्तेमाल के बारे में डेटा</translation>
 <translation id="4056223980640387499">Sepia</translation>
+<translation id="4057643060762047384">इनमें जोड़ें:</translation>
 <translation id="4060598801229743805">स्क्रीन के शीर्ष भाग में मौजूद विकल्प</translation>
 <translation id="4062305924942672200">कानूनी जानकारी</translation>
 <translation id="4084682180776658562">बुकमार्क</translation>
@@ -544,6 +552,7 @@
 <translation id="5039804452771397117">अनुमति दें</translation>
 <translation id="5040262127954254034">निजता</translation>
 <translation id="5087580092889165836">कार्ड जोड़ें</translation>
+<translation id="5091249083535528968">इस्तेमाल के बारे में ज़्यादा डेटा</translation>
 <translation id="509429900233858213">कोई गड़बड़ी हुई.</translation>
 <translation id="510275257476243843">1 घंटा शेष</translation>
 <translation id="5123685120097942451">गुप्त टैब</translation>
@@ -650,6 +659,7 @@
 <translation id="5833984609253377421">लिंक शेयर करें</translation>
 <translation id="5836192821815272682">Chrome का अपडेट डाउनलोड हो रहा है…</translation>
 <translation id="5853623416121554550">रोका गया</translation>
+<translation id="5854512288214985237">Google को आंकड़े या क्रैश रिपोर्ट नहीं भेजी जातीं</translation>
 <translation id="5854790677617711513">30 दिनों से ज़्यादा पुराना</translation>
 <translation id="5855546874025048181">बेहतर बनाएं: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome, ब्लूटूथ एडाप्टर को चालू नहीं कर सका</translation>
@@ -722,6 +732,7 @@
 <translation id="6303969859164067831">साइन आउट करें और सिंक बंद करें</translation>
 <translation id="6312687380483398334">वेब ऐप्लिकेशन (म्यूट)</translation>
 <translation id="6316139424528454185">Android वर्शन काम नहीं कर रहा है</translation>
+<translation id="6321526113093607004">बुकमार्क में जोड़ें</translation>
 <translation id="6324034347079777476">Android सिस्टम समन्वयन अक्षम है</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> के द्वारा शेयर करें</translation>
 <translation id="6337234675334993532">सुरक्षित करने का तरीका</translation>
@@ -739,6 +750,7 @@
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> पर <ph name="ERROR_CODE" /></translation>
 <translation id="6404511346730675251">बुकमार्क में बदलाव करें</translation>
 <translation id="6406506848690869874">सिंक</translation>
+<translation id="6410404864818553978">इस्तेमाल के बारे में बुनियादी डेटा</translation>
 <translation id="6410883413783534063">एक ही समय में अलग-अलग पेजों पर जाने के लिए कई टैब खोलें</translation>
 <translation id="6412673304250309937">Chrome में पहले से सेव असुरक्षित साइटों के साथ यूआरएल की जांच करता है. अगर कोई साइट आपका पासवर्ड चुराने की कोशिश करती है या आप कोई नुकसान पहुंचाने वाली फ़ाइल डाउनलोड करते हैं, तो Chrome सुरक्षित ब्राउज़िंग की सेवा को उनका यूआरएल भेजता है. यूआरएल के साथ इनमें उन पेज की कुछ सामग्री भी शामिल होती है.</translation>
 <translation id="641643625718530986">प्रिंट करें…</translation>
@@ -832,6 +844,7 @@
 <translation id="7015203776128479407">शुरुआती सिंक सेटअप पूरा नहीं हुआ. सिंक बंद है.</translation>
 <translation id="7022756207310403729">ब्राउज़र में खोलें</translation>
 <translation id="702463548815491781">उस समय के लिए सुझाया गया जब 'टॉकबैक' या 'ऐक्सेस करने का तरीका बदलें' चालू हों</translation>
+<translation id="7027549951530753705"><ph name="ITEM_TITLE" /> को पहले जैसा किया गया</translation>
 <translation id="7029809446516969842">पासवर्ड</translation>
 <translation id="703523980599857277">होम पेज बदलें</translation>
 <translation id="7054588988317389591">क्या आप इमेज की जानकारी पाना चाहते हैं?</translation>
@@ -1013,6 +1026,7 @@
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> और कई साइटें</translation>
 <translation id="8327155640814342956">बेहतरीन ब्राउज़िंग अनुभव के लिए, Chrome अपडेट करें</translation>
 <translation id="8349013245300336738">इस्तेमाल किए गए डेटा की मात्रा के हिसाब से क्रम में लगाएं</translation>
+<translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोड को पहले जैसा किया गया</translation>
 <translation id="8364299278605033898">लोकप्रिय वेबसाइटें देखें</translation>
 <translation id="8368027906805972958">अज्ञात या काम न करने वाला डिवाइस (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> इस्तेमाल के लिए तैयार है.</translation>
@@ -1121,6 +1135,7 @@
 <translation id="9148126808321036104">फिर से साइन इन करें</translation>
 <translation id="9155898266292537608">आप किसी शब्द पर बस एक टैप करके भी खोज सकते हैं</translation>
 <translation id="9169507124922466868">नेविगेशन का इतिहास आधी स्क्रीन में खुला हुआ है</translation>
+<translation id="9191031968346938109">इनमें जोड़ें…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{जांच 1 मिनट पहले की गई}one{जांच # मिनट पहले की गई}other{जांच # मिनट पहले की गई}}</translation>
 <translation id="9204836675896933765">1 फ़ाइल बची है</translation>
 <translation id="9206873250291191720">A</translation>
@@ -1133,6 +1148,7 @@
 <translation id="938850635132480979">गड़बड़ी: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">'पासफ़्रेज़' दर्ज करें</translation>
 <translation id="95817756606698420">चीन में खोज करने के लिए Chrome, <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> का इस्तेमाल कर सकता है. आप इसे <ph name="BEGIN_LINK" />सेटिंग<ph name="END_LINK" /> में बदल सकते हैं.</translation>
+<translation id="962979164594783469">यह ऐप्लिकेशन इंस्टॉल करें</translation>
 <translation id="968900484120156207">आप जिन पेजों पर जाएंगे वे यहां दिखाई देंगे</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> मिनट शेष</translation>
 <translation id="974555521953189084">सिंक शुरू करने के लिए अपना 'पासफ़्रेज़' डालें</translation>

@@ -30,6 +30,7 @@
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">Baumraster</translation>
 <translation id="1822429046913737220">AM/PM</translation>
+<translation id="1823704031293214298">Fußzeile</translation>
 <translation id="1832974991323546415">auf Remote-Gerät wiedergeben</translation>
 <translation id="190587075670221089">Löschen</translation>
 <translation id="1907737156431278478">Beispiel</translation>
@@ -105,6 +106,7 @@
 <translation id="4201051445878709314">Vorherigen Monat anzeigen</translation>
 <translation id="421884353938374759">color picker</translation>
 <translation id="4248100235867064564">Menüleiste</translation>
+<translation id="4293574643247337246">Kopfzeile</translation>
 <translation id="4360991593054037559">Geben Sie einen gültigen Wert ein. Die zwei nächstliegenden gültigen Werte sind <ph name="VALID_VALUE_LOW" /> und <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4384583879834880242">Fragen und Antworten</translation>
 <translation id="4444765639179266822">Es sieht aus wie: <ph name="OCR_TEXT" /></translation>

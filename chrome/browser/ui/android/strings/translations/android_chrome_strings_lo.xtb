@@ -16,6 +16,7 @@
 <translation id="1105960400813249514">ການຖ່າຍຮູບໜ້າຈໍ</translation>
 <translation id="1111673857033749125">ບຸກມາກທີ່ບັນທຶກໄວ້ຢູ່ໃນອຸປະກອນອື່ນຂອງທ່ານຈະປາກົດຢູ່ທີ່ນີ້.</translation>
 <translation id="1113597929977215864">ສະແດງມຸມມອງງ່າຍດາຍ</translation>
+<translation id="1123070903960493543">ວິທີທີ່ທ່ານໂຕ້ຕອບກັບ Chrome, ການຕັ້ງຄ່າທີ່ທ່ານເລືອກ, ລາຍລະອຽດການຂັດຂ້ອງຂອງ Chrome</translation>
 <translation id="1126809382673880764">ບໍ່ປົກປ້ອງທ່ານຈາກເວັບໄຊ, ການດາວໂຫຼດ ແລະ ສ່ວນຂະຫຍາຍທີ່ເປັນອັນຕະລາຍ. ທ່ານຈະຍັງໄດ້ຮັບການປົກປ້ອງຈາກ Safe Browsing ຢູ່ບ່ອນທີ່ໃຊ້ໄດ້, ຢູ່ໃນການບໍລິການອື່ນຂອງ Google ເຊັ່ນ: Gmail ແລະ ຊອກຫາ.</translation>
 <translation id="1129510026454351943">ລາຍລະອຽດ: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1141800923049248244">{FILE_COUNT,plural, =1{1 ການດາວໂຫຼດຍັງຄ້າງຢູ່.}other{# ການດາວໂຫຼດຍັງຄ້າງຢູ່.}}</translation>
@@ -72,6 +73,7 @@
 <translation id="1450753235335490080">ບໍ່ສາມາດແບ່ງປັນ <ph name="CONTENT_TYPE" /> ໄດ້</translation>
 <translation id="1477626028522505441">ການ​ດາວ​ໂຫຼ​ດ <ph name="FILE_NAME" /> ລົ້ມເຫລວເນື່ອງ​ຈາກ​ບັນຫາ​ເຊີບ​ເວີ.</translation>
 <translation id="1506061864768559482">ເຄື່ອງ​ຈັກ​ຄົ້ນ​ຫາ</translation>
+<translation id="151267239139452619">ເພີ່ມໃສ່ດາວໂຫລດ</translation>
 <translation id="1513352483775369820">ບຸກມາກສ໌ ​ແລະ​ປະ​ຫວັດ​ເວັບ​</translation>
 <translation id="1513858653616922153">ລຶບລະຫັດຜ່ານ</translation>
 <translation id="1521774566618522728">ເປີດນຳໃຊ້ມື້ນີ້</translation>
@@ -157,6 +159,7 @@
 <translation id="2131665479022868825">ປະຢັດໄດ້ <ph name="DATA" /></translation>
 <translation id="213279576345780926">ປິດ <ph name="TAB_TITLE" /> ແລ້ວ</translation>
 <translation id="2139186145475833000">ເພີ່ມໃສ່ໜ້າຈໍຫຼັກ</translation>
+<translation id="214888715418183969">ເລືອກສິ່ງທີ່ທ່ານສະບາຍໃຈຈະແບ່ງປັນກັບ Chrome. ການວັດແທກທີ່ທ່ານແບ່ງປັນຈະຖືກໃຊ້ເພື່ອຊ່ວຍປັບປຸງຄຸນສົມບັດ, ປະສິດທິພາບ ແລະ ຄວາມສະຖຽນຂອງ Chrome.</translation>
 <translation id="2154484045852737596">ແກ້ໄຂບັດ</translation>
 <translation id="2154710561487035718">ກັອບ​ປີ້ URL</translation>
 <translation id="2156074688469523661">ເວັບໄຊທີ່ຍັງເຫຼືອ (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -166,6 +169,7 @@
 <translation id="2175927920773552910">ລະຫັດ QR</translation>
 <translation id="218608176142494674">ການແບ່ງປັນ</translation>
 <translation id="2195339740518523951">ຮັບຄວາມປອດໄພທີ່ແຂງແກ່ນທີ່ສຸດຂອງ Chrome</translation>
+<translation id="2200113223741723867">ຈັດການການແບ່ງປັນຂໍ້ມູນການນຳໃຊ້</translation>
 <translation id="2227444325776770048">ສືບຕໍ່ໃຊ້ໃນຊື່ <ph name="USER_FULL_NAME" /></translation>
 <translation id="2234876718134438132">ການບໍລິການຊິ້ງຂໍ້ມູນ ແລະ Google</translation>
 <translation id="2239812875700136898">ຄວບຄຸມເລື່ອງລາວຂອງທ່ານຈາກປຸ່ມຕົວເລືອກສຳລັບ Discover</translation>
@@ -370,12 +374,14 @@
 <translation id="3771290962915251154">ການຕັ້ງຄ່ານີ້ຖືກປິດການນຳໃຊ້ເນື່ອງຈາກວ່າການຄວບຄຸມຂອງພໍ່ແມ່ເປີດຢູ່</translation>
 <translation id="3771694256347217732">ຂໍ້ກຳນົດການບໍລິການຂອງ Google</translation>
 <translation id="3773755127849930740"><ph name="BEGIN_LINK" />ເປີດ Bluetooth<ph name="END_LINK" /> ເພື່ອອະນຸຍາດການຈັບຄູ່</translation>
+<translation id="3773856050682458546">ຂໍ້ມູນພື້ນຖານພ້ອມກັບຂໍ້ມູນກ່ຽວກັບເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງ ແລະ ແອັບທີ່ທ່ານໃຊ້</translation>
 <translation id="3775705724665058594">ສົ່ງຫາອຸປະກອນຂອງທ່ານ</translation>
 <translation id="3778956594442850293">ເພີ່ມໃສ່ໜ້າຈໍຫຼັກແລ້ວ</translation>
 <translation id="3789841737615482174">​ຕິດ​ຕັ້ງ</translation>
 <translation id="3810838688059735925">ວິ​ດີ​ໂອ</translation>
 <translation id="3810973564298564668">ຈັດການ</translation>
 <translation id="3819178904835489326">ລຶບ <ph name="NUMBER_OF_DOWNLOADS" /> ການດາວໂຫຼດແລ້ວ</translation>
+<translation id="3848957262889631524">Google <ph name="APP_NAME" /> ເປັນກະແຈຄວາມປອດໄພ</translation>
 <translation id="3856096718352044181">ກະລຸນາຢັ້ງຢືນວ່ານີ້ແມ່ນຜູ້ໃຫ້ບໍລິການທີ່ຖືກຕ້ອງ ຫຼື ລອງໃໝ່ໃນພາຍຫຼັງ</translation>
 <translation id="3861633093716975811">ວິດີໂອຍອດນິຍົມ</translation>
 <translation id="3892148308691398805">ສຳເນົາຂໍ້ຄວາມ</translation>
@@ -403,7 +409,9 @@
 <translation id="3988466920954086464">ເບິ່ງຜົນການຊອກຫາທັນທີໃນແຜງນີ້</translation>
 <translation id="4000212216660919741">ໜ້າຫຼັກອອບລາຍຢູ່</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ຊົ່ວໂມງ}other{# ຊົ່ວໂມງ}}</translation>
+<translation id="4045764304651014138">ຂໍ້ມູນການນຳໃຊ້</translation>
 <translation id="4056223980640387499">ສີນໍ້າຕານດໍາ</translation>
+<translation id="4057643060762047384">ເພີ່ມໃສ່:</translation>
 <translation id="4060598801229743805">ຕົວເລືອກຕ່າງໆມີໃຫ້ນຳໃຊ້ຢູ່ໃກ້ສ່ວນເທິງຂອງໜ້າຈໍ</translation>
 <translation id="4062305924942672200">ຂໍ້​ມູນ​ທາງດ້ານ​ກົດ​ຫມາຍ</translation>
 <translation id="4084682180776658562">ບຸກມາກຄ໌</translation>
@@ -544,6 +552,7 @@
 <translation id="5039804452771397117">ອະ​ນຸ​ຍາດ​</translation>
 <translation id="5040262127954254034">ຄວາມ​ເປັນ​ສ່ວນ​ຕົວ</translation>
 <translation id="5087580092889165836">ເພີ່ມບັດ</translation>
+<translation id="5091249083535528968">ຂໍ້ມູນການນຳໃຊ້ເພີ່ມເຕີມ</translation>
 <translation id="509429900233858213">ເກີດຄວາມຜິດພາດຂຶ້ນ.</translation>
 <translation id="510275257476243843">ຍັງເຫຼືອ 1 ຊົ່ວໂມງ</translation>
 <translation id="5123685120097942451">ແຖບທີ່ບໍ່ເຜີຍຕົວຕົນ</translation>
@@ -650,6 +659,7 @@
 <translation id="5833984609253377421">ແບ່ງປັນລິ້ງ</translation>
 <translation id="5836192821815272682">ກຳລັງດາວໂຫຼດການອັບເດດ Chrome…</translation>
 <translation id="5853623416121554550">ຢຸດຊົ່ວຄາວແລ້ວ</translation>
+<translation id="5854512288214985237">ບໍ່ມີການສົ່ງສະຖິຕິ ຫຼື ລາຍງານການຂັດຂ້ອງໃຫ້ Google</translation>
 <translation id="5854790677617711513">ເກົ່າກວ່າ 30 ມື້</translation>
 <translation id="5855546874025048181">ປັບປ່ຽນ: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome ບໍ່ສາມາດເປີດອະແດັບເຕີ Bluetooth ໄດ້</translation>
@@ -722,6 +732,7 @@
 <translation id="6303969859164067831">ອອກຈາກລະບົບ ແລະ ປິດການຊິ້ງຂໍ້ມູນ</translation>
 <translation id="6312687380483398334">ແອັບເວັບ (ມິດງຽບ)</translation>
 <translation id="6316139424528454185">ບໍ່ຮອງຮັບເວີຊັນ Android</translation>
+<translation id="6321526113093607004">ເພີ່ມໃສ່ບຸກມາກ</translation>
 <translation id="6324034347079777476">ການຊິ້ງຂໍ້ມູນລະບົບ Android ປິດນຳໃຊ້ຢູ່</translation>
 <translation id="6333140779060797560">ແຊຣ໌ຜ່ານ <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">ການເຂົ້າລະຫັດ</translation>
@@ -739,6 +750,7 @@
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> ໃນ <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">ແກ້​ໄຂບຸກມາກສ໌</translation>
 <translation id="6406506848690869874">ຊິງຄ໌</translation>
+<translation id="6410404864818553978">ຂໍ້ມູນການນຳໃຊ້ພື້ນຖານ</translation>
 <translation id="6410883413783534063">ເປີດແຖບເພື່ອເຂົ້າເບິ່ງໜ້າຕ່າງໆໄດ້ພ້ອມກັນ</translation>
 <translation id="6412673304250309937">ກວດສອບ URL ກັບລາຍການເວັບໄຊທີ່ບໍ່ປອດໄພທີ່ເກັບໄວ້ໃນ Chrome. ຖ້າເວັບໄຊພະຍາຍາມລັກເອົາລະຫັດຜ່ານຂອງທ່ານ ຫຼື ເມື່ອທ່ານດາວໂຫຼດໄຟລ໌ອັນຕະລາຍ, Chrome ອາດຈະສົ່ງ URL, ຮວມທັງເນື້ອຫາບາງສ່ວນໃນໜ້າໄປໃຫ້ Safe Browsing.</translation>
 <translation id="641643625718530986">ພິມ</translation>
@@ -832,6 +844,7 @@
 <translation id="7015203776128479407">ການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນເບື້ອງຕົ້ນບໍ່ທັນສຳເລັດ. ການຊິ້ງຂໍ້ມູນປິດຢູ່.</translation>
 <translation id="7022756207310403729">ເປີດໃນໂປຣແກຣມທ່ອງເວັບ</translation>
 <translation id="702463548815491781">ແນະນຳເມື່ອ TalkBack ຫຼື ການເຂົ້າເຖິງດ້ວຍປຸ່ມເປີດຢູ່</translation>
+<translation id="7027549951530753705">ກູ້ຂໍ້ມູນເມື່ອ <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">ລະ​ຫັດ​ຜ່ານ</translation>
 <translation id="703523980599857277">ປ່ຽນໜ້າຫຼັກ</translation>
 <translation id="7054588988317389591">ຮັບຄຳອະທິບາຍຮູບບໍ?</translation>
@@ -1013,6 +1026,7 @@
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> ແລະ ເວັບໄຊອື່ນໆອີກ</translation>
 <translation id="8327155640814342956">ເພື່ອປະສົບການທ່ອງເວັບທີ່ດີສຸດ, ໃຫ້ເປີດເພື່ອອັບເດດ Chrome</translation>
 <translation id="8349013245300336738">ຮຽງຕາມປະລິມານອິນເຕີເນັດທີ່ໃຊ້</translation>
+<translation id="835847953965672673">ກູ້ຄືນການດາວໂຫຼດ <ph name="NUMBER_OF_DOWNLOADS" /> ລາຍການແລ້ວ</translation>
 <translation id="8364299278605033898">ເບິ່ງເວັບໄຊຍອດນິຍົມ</translation>
 <translation id="8368027906805972958">ອຸປະກອນທີ່ບໍ່ຮູ້ຈັກ ຫຼື ບໍ່ຮອງຮັບ (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> ພ້ອມແລ້ວ.</translation>
@@ -1121,6 +1135,7 @@
 <translation id="9148126808321036104">ລົງຊື່ເຂົ້າ​ໃຊ້ອີກ</translation>
 <translation id="9155898266292537608">ທ່ານສາມາດຊອກຫາດ້ວຍການແຕະດ່ວນໃສ່ຄຳສັບໃດໜຶ່ງໄດ້ເຊັ່ນກັນ</translation>
 <translation id="9169507124922466868">ປະຫວັດການນຳທາງເປີດຢູ່ເຄິ່ງໜຶ່ງ</translation>
+<translation id="9191031968346938109">ເພີ່ມໃສ່…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{ກວດແລ້ວເມື່ອ 1 ນາທີກ່ອນ}other{ກວດແລ້ວເມື່ອ # ນາທີກ່ອນ}}</translation>
 <translation id="9204836675896933765">ຍັງເຫຼືອ 1 ໄຟລ໌</translation>
 <translation id="9206873250291191720">ກ</translation>
@@ -1133,6 +1148,7 @@
 <translation id="938850635132480979">ຜິດພາດ: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">ປ້ອນວະລີຜ່ານໃສ່</translation>
 <translation id="95817756606698420">Chrome ສາມາດໃຊ້ <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> ສຳລັບການຊອກຫາໃນປະເທດຈີນ. ທ່ານສາມາດປ່ຽນສິ່ງນີ້ໄດ້ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ<ph name="END_LINK" />.</translation>
+<translation id="962979164594783469">ຕິດຕັ້ງແອັບນີ້</translation>
 <translation id="968900484120156207">ໜ້າທີ່ທ່ານເຂົ້າເບິ່ງປາກົດຢູ່ບ່ອນນີ້</translation>
 <translation id="970715775301869095">ຍັງເຫຼືອ <ph name="MINUTES" /> ນາທີ</translation>
 <translation id="974555521953189084">ປ້ອນວະລີຜ່ານຂອງທ່ານເພື່ອເລີ່ມການຊິ້ງຂໍ້ມູນ</translation>

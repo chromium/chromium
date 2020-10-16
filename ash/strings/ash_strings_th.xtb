@@ -100,6 +100,7 @@
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> ไม่รองรับ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) ความละเอียดเปลี่ยนเป็น <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) แล้ว คลิก "ยืนยัน" เพื่อเก็บการเปลี่ยนแปลงไว้ ระบบจะคืนการตั้งค่าก่อนหน้าใน <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="1919743966458266018">มีการเปลี่ยนแปลงทางลัดที่ใช้เปิดตัวจัดการงาน โปรดใช้ <ph name="NEW_SHORTCUT" /> แทน <ph name="OLD_SHORTCUT" /></translation>
 <translation id="1923539912171292317">การคลิกอัตโนมัติ</translation>
+<translation id="1924640696879807758">จากโทรศัพท์</translation>
 <translation id="1928739107511554905">หากต้องการรับอัปเดต ให้ใช้หน้าจอสัมผัสเพื่อรีสตาร์ท Chromebook ในขณะที่ยังเชื่อมต่อกับแป้นพิมพ์</translation>
 <translation id="1951012854035635156">ผู้ช่วย</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -686,6 +687,7 @@
 <translation id="7904094684485781019">ผู้ดูแลระบบของบัญชีนี้ไม่อนุญาตการลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี</translation>
 <translation id="7933084174919150729">Google Assistant ใช้งานได้กับโปรไฟล์หลักเท่านั้น</translation>
 <translation id="79341161159229895">บัญชีที่จัดการโดย <ph name="FIRST_PARENT_EMAIL" /> และ <ph name="SECOND_PARENT_EMAIL" /></translation>
+<translation id="793716872548410480">กด <ph name="SHORTCUT_KEY_NAME" /> + V เพื่อดูคลิปบอร์ด ระบบจะบันทึก 5 รายการล่าสุดที่คุณคัดลอกไว้ในคลิปบอร์ด</translation>
 <translation id="7955885781510802139">โหมดคอนทราสต์สูง</translation>
 <translation id="7977927628060636163">กำลังค้นหาเครือข่ายมือถือ...</translation>
 <translation id="7980780401175799550">ลองใช้วิธีใหม่ในการไปยังส่วนต่างๆ ของ Chrome OS</translation>

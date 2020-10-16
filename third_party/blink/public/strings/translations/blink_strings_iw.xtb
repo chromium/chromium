@@ -96,7 +96,7 @@
 <translation id="383465348367842624">חלק ולאחריו '<ph name="ATSIGN" />' לא אמור לכלול את הסמל '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="3846214748874656680">צא ממסך מלא</translation>
 <translation id="3920932319529768807">סיכום</translation>
-<translation id="3924558731517983934">יישום</translation>
+<translation id="3924558731517983934">אפליקציה</translation>
 <translation id="3944740393230681990">פרולוג</translation>
 <translation id="3960700977367013758">סרגל גלילה</translation>
 <translation id="4103419683916926126">אלפיות שנייה</translation>
@@ -130,8 +130,8 @@
 <translation id="4950364064308314478">הצגה של בוחר התאריך והשעה על סמך אזור הזמן המקומי</translation>
 <translation id="4971739861736909480">הפריט <ph name="ACCNAME" /> נבחר</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> נבחרו</translation>
-<translation id="4992066212339426712">בטל השתקה</translation>
-<translation id="49969490063480558">הזן חלק ולאחריו '<ph name="ATSIGN" />'‏. השדה '<ph name="INVALIDADDRESS" />' אינו מלא.</translation>
+<translation id="4992066212339426712">ביטול השתקה</translation>
+<translation id="49969490063480558">יש להזין חלק ואחריו '<ph name="ATSIGN" />'. השדה '<ph name="INVALIDADDRESS" />' אינו מלא.</translation>
 <translation id="5022314756875057021">קבוצת שורות</translation>
 <translation id="5034860022980953847">סימן ויזואלי להתקדמות</translation>
 <translation id="5090250355906949916">מחוון זמן הסרטון</translation>
@@ -204,7 +204,7 @@
 <translation id="689129560213475294">קולופון</translation>
 <translation id="6934078000481955284">‏רכיב blockquote</translation>
 <translation id="693476918119313863">כותרת</translation>
-<translation id="6941933287844615239">הורד מדיה</translation>
+<translation id="6941933287844615239">הורדת מדיה</translation>
 <translation id="6981594929165378967">הוספה</translation>
 <translation id="6989848892321993519">עליך להאריך את הטקסט ל-<ph name="MIN_CHARACTERS" /> תווים או יותר (אתה משתמש כרגע בתו אחד).</translation>
 <translation id="7034405885550056553">הצעה</translation>
@@ -213,7 +213,7 @@
 <translation id="7139483182332611405">הקדמה</translation>
 <translation id="7214187073215825913">פרטי תוכן</translation>
 <translation id="7238347055216017155">דגש</translation>
-<translation id="7263440858009898357">בחר פריט מהרשימה.</translation>
+<translation id="7263440858009898357">יש לבחור פריט מהרשימה.</translation>
 <translation id="727747134524199931">כותרת עמודה</translation>
 <translation id="7320576522385648310">אגירה</translation>
 <translation id="7341556277900466204">דוגמית צבע</translation>

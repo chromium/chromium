@@ -16,6 +16,7 @@
 <translation id="1105960400813249514">Screen Capture</translation>
 <translation id="1111673857033749125">Dito lalabas ang mga naka-save na bookmark sa iba mo pang mga device.</translation>
 <translation id="1113597929977215864">Ipakita ang pinasimpleng view</translation>
+<translation id="1123070903960493543">Paano ka makipag-ugnayan sa Chrome, ang mga setting na pinili mo, ang mga detalye ng mga pag-crash ng Chrome</translation>
 <translation id="1126809382673880764">Hindi ka pinoprotektahan laban sa mga mapanganib na website, download, at extension. Magkakaroon ka pa rin ng proteksyon ng Ligtas na Pag-browse, kung available, sa iba pang serbisyo ng Google, tulad ng Gmail at Search.</translation>
 <translation id="1129510026454351943">Mga Detalye: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1141800923049248244">{FILE_COUNT,plural, =1{Nakabinbin ang 1 pag-download.}one{Nakabinbin ang # pag-download.}other{Nakabinbin ang # na pag-download.}}</translation>
@@ -72,6 +73,7 @@
 <translation id="1450753235335490080">Hindi maibahagi ang <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">Hindi na-download ang <ph name="FILE_NAME" /> dahil sa mga isyu sa server.</translation>
 <translation id="1506061864768559482">Search engine</translation>
+<translation id="151267239139452619">Idagdag sa Mga Download</translation>
 <translation id="1513352483775369820">Bookmark at history ng web</translation>
 <translation id="1513858653616922153">I-delete ang password</translation>
 <translation id="1521774566618522728">Aktibo ngayong araw</translation>
@@ -157,6 +159,7 @@ Mag-tap ng anumang salita para maghanap. Para pinuhin ang iyong paghahanap, pind
 <translation id="2131665479022868825"><ph name="DATA" /> ang natipid</translation>
 <translation id="213279576345780926">Isinarang <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">Idagdag sa Home screen</translation>
+<translation id="214888715418183969">Piliin kung ano ang kumportable kang ibahagi sa Chrome. Gagamitin ang mga sukatang ibabahagi mo para makatulong sa pagpapahusay ng mga feature, performance, at stability ng Chrome.</translation>
 <translation id="2154484045852737596">I-edit ang card</translation>
 <translation id="2154710561487035718">Kopyahin ang URL</translation>
 <translation id="2156074688469523661">Mga natitirang site (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -166,6 +169,7 @@ Mag-tap ng anumang salita para maghanap. Para pinuhin ang iyong paghahanap, pind
 <translation id="2175927920773552910">QR Code</translation>
 <translation id="218608176142494674">Pagbabahagi</translation>
 <translation id="2195339740518523951">Kunin ang pinakamahusay na seguridad ng Chrome</translation>
+<translation id="2200113223741723867">Pamahalaan ang pagbabahagi ng data ng paggamit</translation>
 <translation id="2227444325776770048">Magpatuloy bilang si <ph name="USER_FULL_NAME" /></translation>
 <translation id="2234876718134438132">Sync at mga serbisyo ng Google</translation>
 <translation id="2239812875700136898">Kontrolin ang iyong mga kuwento mula sa Mga Opsyon para sa button na I-discover</translation>
@@ -370,12 +374,14 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="3771290962915251154">Naka-disable ang setting na ito dahil naka-on ang parental controls</translation>
 <translation id="3771694256347217732">Mga Tuntunin ng Serbisyo ng Google</translation>
 <translation id="3773755127849930740"><ph name="BEGIN_LINK" />I-on ang Bluetooth<ph name="END_LINK" /> upang payagan ang pagpapares</translation>
+<translation id="3773856050682458546">Basic na data pati ang impormasyon tungkol sa mga website na iyong binibisita at ang mga app na ginagamit mo</translation>
 <translation id="3775705724665058594">Ipadala sa iyong mga device</translation>
 <translation id="3778956594442850293">Idinagdag sa Home screen</translation>
 <translation id="3789841737615482174">Mag-install</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Mamahala</translation>
 <translation id="3819178904835489326">Na-delete ang <ph name="NUMBER_OF_DOWNLOADS" /> (na) pag-download</translation>
+<translation id="3848957262889631524">Google <ph name="APP_NAME" /> bilang Security Key</translation>
 <translation id="3856096718352044181">Paki-verify na valid na provider ito o subukan ulit sa ibang pagkakataon</translation>
 <translation id="3861633093716975811">Mga sikat na video</translation>
 <translation id="3892148308691398805">Kopyahin ang text</translation>
@@ -403,7 +409,9 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="3988466920954086464">Tingnan ang mga instant na resulta ng paghahanap sa panel na ito</translation>
 <translation id="4000212216660919741">Offline Home</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# oras}one{# oras}other{# na oras}}</translation>
+<translation id="4045764304651014138">Data ng paggamit</translation>
 <translation id="4056223980640387499">Sepia</translation>
+<translation id="4057643060762047384">Idagdag sa:</translation>
 <translation id="4060598801229743805">Available ang mga opsyon malapit sa bandang itaas ng screen</translation>
 <translation id="4062305924942672200">Impormasyong legal</translation>
 <translation id="4084682180776658562">Bookmark</translation>
@@ -544,6 +552,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5039804452771397117">Payagan</translation>
 <translation id="5040262127954254034">Privacy</translation>
 <translation id="5087580092889165836">Magdagdag ng card</translation>
+<translation id="5091249083535528968">Pinalawak na data ng paggamit</translation>
 <translation id="509429900233858213">May naganap na error.</translation>
 <translation id="510275257476243843">1 oras na lang ang natitira</translation>
 <translation id="5123685120097942451">Tab na incognito</translation>
@@ -650,6 +659,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5833984609253377421">Ibahagi ang link</translation>
 <translation id="5836192821815272682">Dina-download ang Update sa Chrome…</translation>
 <translation id="5853623416121554550">naka-pause</translation>
+<translation id="5854512288214985237">Walang naipadalang istatistika o ulat ng pag-crash sa Google</translation>
 <translation id="5854790677617711513">Mas matagal sa 30 araw</translation>
 <translation id="5855546874025048181">Pinuhin: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Hindi ma-on ng Chrome ang Bluetooth adapter</translation>
@@ -722,6 +732,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6303969859164067831">Mag-sign out at i-off ang pag-sync</translation>
 <translation id="6312687380483398334">Mga web app (tahimik)</translation>
 <translation id="6316139424528454185">Hindi sinusuportahan ang bersyon ng Android</translation>
+<translation id="6321526113093607004">Idagdag sa Mga Bookmark</translation>
 <translation id="6324034347079777476">Naka-disable ang pag-sync ng Android system</translation>
 <translation id="6333140779060797560">Ibahagi sa pamamagitan ng <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Pag-encrypt</translation>
@@ -739,6 +750,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> sa <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">I-edit ang bookmark</translation>
 <translation id="6406506848690869874">Pag-sync</translation>
+<translation id="6410404864818553978">Basic na data ng paggamit</translation>
 <translation id="6410883413783534063">Magbukas ng mga tab para mabisita ang iba't ibang page nang sabay-sabay</translation>
 <translation id="6412673304250309937">Sinusuri ang mga URL sa pamamagitan ng listahan ng mga hindi ligtas na site na naka-store sa Chrome. Kung susubukan ng site na nakawin ang iyong password, o kapag nag-download ka ng mapaminsalang file, posible ring magpadala ang Chrome sa Ligtas na Pag-browse ng mga URL, kabilang ang ilang content ng page</translation>
 <translation id="641643625718530986">I-print…</translation>
@@ -832,6 +844,7 @@ Maki-clear lang sa Chrome ang data sa iyong Incognito na session kapag <ph name=
 <translation id="7015203776128479407">Hindi natapos ang pag-set up ng unang pag-sync. Naka-off ang pag-sync.</translation>
 <translation id="7022756207310403729">Buksan sa browser</translation>
 <translation id="702463548815491781">Inirerekomenda kapag naka-on ang TalkBack o Switch Access</translation>
+<translation id="7027549951530753705">Na-restore noong <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Mga Password</translation>
 <translation id="703523980599857277">Baguhin ang homepage</translation>
 <translation id="7054588988317389591">Makakuha ng mga paglalarawan ng larawan?</translation>
@@ -1013,6 +1026,7 @@ Maki-clear lang sa Chrome ang data sa iyong Incognito na session kapag <ph name=
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> at higit pang site</translation>
 <translation id="8327155640814342956">Para sa pinakamagandang karanasan sa pag-browse, buksan para i-update ang Chrome</translation>
 <translation id="8349013245300336738">Pagbukud-bukurin ayon sa dami ng data na nagamit</translation>
+<translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> (na) download ang na-restore</translation>
 <translation id="8364299278605033898">Tingnan ang mga sikat na website</translation>
 <translation id="8368027906805972958">Hindi alam o hindi sinusuportahang device (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381">Handa na ang <ph name="LANG" />.</translation>
@@ -1121,6 +1135,7 @@ Maki-clear lang sa Chrome ang data sa iyong Incognito na session kapag <ph name=
 <translation id="9148126808321036104">Muling mag-sign in</translation>
 <translation id="9155898266292537608">Makakapaghanap ka rin gamit ang mabilisang pag-tap sa isang salita</translation>
 <translation id="9169507124922466868">Nakabukas nang kalahati ang history ng pag-navigate</translation>
+<translation id="9191031968346938109">Idagdag sa…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Nagsuri 1 minuto ang nakalipas}one{Nagsuri # minuto ang nakalipas}other{Nagsuri # na minuto ang nakalipas}}</translation>
 <translation id="9204836675896933765">1 file ang natitira</translation>
 <translation id="9206873250291191720">A</translation>
@@ -1133,6 +1148,7 @@ Maki-clear lang sa Chrome ang data sa iyong Incognito na session kapag <ph name=
 <translation id="938850635132480979">Error: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Ilagay ang passphrase</translation>
 <translation id="95817756606698420">Maaaring gamitin ng Chrome ang <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> para sa paghahanap sa China. Maaari mo itong baguhin sa <ph name="BEGIN_LINK" />Mga Setting<ph name="END_LINK" />.</translation>
+<translation id="962979164594783469">I-install ang app na ito</translation>
 <translation id="968900484120156207">Lalabas dito ang mga page na binibisita mo</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> (na) minuto na lang ang natitira</translation>
 <translation id="974555521953189084">Ilagay ang iyong passphrase upang simulan ang pag-sync</translation>

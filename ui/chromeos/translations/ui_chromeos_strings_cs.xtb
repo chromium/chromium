@@ -207,6 +207,7 @@
 <translation id="3252266817569339921">francouzština</translation>
 <translation id="3254434849914415189">Vyberte pro soubory <ph name="FILE_TYPE" /> výchozí aplikaci:</translation>
 <translation id="3264582393905923483">Kontext</translation>
+<translation id="3272909651715601089">Soubor „<ph name="PATH" />“ nelze otevřít</translation>
 <translation id="3280431534455935878">Příprava</translation>
 <translation id="3280987981688031357">Gramofonová deska</translation>
 <translation id="3296763833017966289">gruzínština</translation>
@@ -309,6 +310,7 @@
 <translation id="4477219268485577442">Bulharská fonetická klávesnice</translation>
 <translation id="4479812471636796472">Americká klávesnice s rozložením Dvorak</translation>
 <translation id="4522570452068850558">Podrobnosti</translation>
+<translation id="4527800702232535228">Tato složka je sdílena s nástrojem Parallels Desktop</translation>
 <translation id="4552678318981539154">Koupit větší úložiště</translation>
 <translation id="4559767610552730302">Rozostření</translation>
 <translation id="4572815280350369984">Soubor <ph name="FILE_TYPE" /></translation>
@@ -326,6 +328,7 @@
 <translation id="4694604912444486114">Opice</translation>
 <translation id="4697043402264950621">Seznam souborů seřazený vzestupně podle sloupce <ph name="COLUMN_NAME" />.</translation>
 <translation id="4711094779914110278">turečtina</translation>
+<translation id="4712283082407695269">Otevírání souboru „<ph name="PATH" />“</translation>
 <translation id="4713544552769165154">Tento soubor je určen pro počítač se softwarem Macintosh. Není kompatibilní s vaším zařízením se systémem Chrome OS. Vyhledejte v <ph name="BEGIN_LINK" />Internetovém obchodě Chrome<ph name="END_LINK" /> vhodnou náhradní aplikaci.<ph name="BEGIN_LINK_HELP" />Další informace<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">Počet zálohovaných fotek: <ph name="FILE_COUNT" /></translation>
 <translation id="4725511304875193254">Pes corgi</translation>
@@ -524,6 +527,7 @@
 <translation id="6558280019477628686">Došlo k chybě. Některé položky možná nebyly smazány.</translation>
 <translation id="656398493051028875">Mazání souboru <ph name="FILENAME" />...</translation>
 <translation id="6581162200855843583">Odkaz na Disk Google</translation>
+<translation id="6594855146910089723">Tato složka je sdílena se systémem Linux a nástrojem Parallels Desktop</translation>
 <translation id="6607272825297743757">Informace o souboru</translation>
 <translation id="6609332149380188670">Složky sdílené s nástrojem Parallels Desktop: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="6629841649550503054">Vše je zálohováno na <ph name="BEGIN_LINK" />Disku Google<ph name="END_LINK" />!</translation>

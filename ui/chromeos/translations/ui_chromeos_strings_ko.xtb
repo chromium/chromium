@@ -207,6 +207,7 @@
 <translation id="3252266817569339921">프랑스어</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> 파일의 기본 앱 선택:</translation>
 <translation id="3264582393905923483">컨텍스트</translation>
+<translation id="3272909651715601089">'<ph name="PATH" />' 파일을 열 수 없음</translation>
 <translation id="3280431534455935878">준비 중</translation>
 <translation id="3280987981688031357">레코드판</translation>
 <translation id="3296763833017966289">그루지야어</translation>
@@ -309,6 +310,7 @@
 <translation id="4477219268485577442">불가리아어 표음</translation>
 <translation id="4479812471636796472">영어(미국식) 드보락 키보드</translation>
 <translation id="4522570452068850558">세부정보</translation>
+<translation id="4527800702232535228">Parallels Desktop과 공유된 폴더</translation>
 <translation id="4552678318981539154">추가 저장용량 구입</translation>
 <translation id="4559767610552730302">흐리게 처리</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> 파일</translation>
@@ -326,6 +328,7 @@
 <translation id="4694604912444486114">원숭이</translation>
 <translation id="4697043402264950621">파일 목록이 <ph name="COLUMN_NAME" /> 기준 오름차순으로 정렬되어 있습니다.</translation>
 <translation id="4711094779914110278">터키어</translation>
+<translation id="4712283082407695269">‘<ph name="PATH" />’ 여는 중</translation>
 <translation id="4713544552769165154">이 파일은 Macintosh 소프트웨어를 사용하는 컴퓨터용으로 설계되었으며 Chrome OS를 실행하는 기기와 호환될 수 없습니다. 적합한 대체 앱을 찾으려면 <ph name="BEGIN_LINK" />Chrome 웹 스토어<ph name="END_LINK" />를 검색하세요. <ph name="BEGIN_LINK_HELP" />자세히 알아보기<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">사진 <ph name="FILE_COUNT" />장을 백업했습니다.</translation>
 <translation id="4725511304875193254">웰시 코기</translation>
@@ -525,6 +528,7 @@
 <translation id="6558280019477628686">오류가 발생했습니다. 일부 항목이 삭제되지 않았을 수 있습니다.</translation>
 <translation id="656398493051028875">'<ph name="FILENAME" />' 삭제 중...</translation>
 <translation id="6581162200855843583">Google 드라이브 링크</translation>
+<translation id="6594855146910089723">Linux 및 Parallels Desktop과 공유된 폴더</translation>
 <translation id="6607272825297743757">파일 정보</translation>
 <translation id="6609332149380188670">폴더 <ph name="NUMBER_OF_ITEMS" />개가 Parallels Desktop과 공유됨</translation>
 <translation id="6629841649550503054">모두 <ph name="BEGIN_LINK" />Google 드라이브<ph name="END_LINK" />에 백업했습니다.</translation>

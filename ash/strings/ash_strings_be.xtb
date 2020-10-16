@@ -100,6 +100,7 @@
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> не падтрымлівае раздзяляльнасць <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц). Зададзена раздзяляльнасць <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Каб захаваць змяненні, націсніце "Пацвердзіць". Папярэднія налады будуць адноўлены праз <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1919743966458266018">Спалучэнне клавіш для адкрыцця менеджара заданняў змянілася. Замест <ph name="OLD_SHORTCUT" /> выкарыстоўвайце <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Аўтаматычныя націсканні</translation>
+<translation id="1924640696879807758">З тэлефона</translation>
 <translation id="1928739107511554905">Для абнаўлення падключыце клавіятуру і перазапусціце Chromebook, выкарыстоўваючы сэнсарны экран.</translation>
 <translation id="1951012854035635156">Памочнік</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -686,6 +687,7 @@
 <translation id="7904094684485781019">Адміністратар уліковага запісу забараніў уваход у некалькі ўліковых запісаў.</translation>
 <translation id="7933084174919150729">Памочнік Google даступны толькі ў асноўным профілі.</translation>
 <translation id="79341161159229895">Уліковым запісам кіруюць <ph name="FIRST_PARENT_EMAIL" /> і <ph name="SECOND_PARENT_EMAIL" /></translation>
+<translation id="793716872548410480">Каб прагледзець буфер абмену, націсніце <ph name="SHORTCUT_KEY_NAME" /> + V. Апошнія 5 скапіраваных вамі элементаў захоўваюцца ў буферы абмену.</translation>
 <translation id="7955885781510802139">Рэжым высокай кантраснасці</translation>
 <translation id="7977927628060636163">Ідзе пошук мабільных сетак...</translation>
 <translation id="7980780401175799550">Апрабуйце новыя магчымасці навігацыі ў Chrome OS</translation>

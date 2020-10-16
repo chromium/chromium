@@ -207,6 +207,7 @@
 <translation id="3252266817569339921">Franceză</translation>
 <translation id="3254434849914415189">Alegeți aplicația prestabilită pentru fișierele <ph name="FILE_TYPE" />:</translation>
 <translation id="3264582393905923483">Context</translation>
+<translation id="3272909651715601089">Nu se poate deschide „<ph name="PATH" />”</translation>
 <translation id="3280431534455935878">Se pregătește</translation>
 <translation id="3280987981688031357">Disc de vinil</translation>
 <translation id="3296763833017966289">Georgiană</translation>
@@ -309,6 +310,7 @@
 <translation id="4477219268485577442">Bulgară fonetică</translation>
 <translation id="4479812471636796472">Tastatură S.U.A. Dvorak</translation>
 <translation id="4522570452068850558">Detalii</translation>
+<translation id="4527800702232535228">Parallels Desktop are acces la acest dosar</translation>
 <translation id="4552678318981539154">Cumpărați mai mult spațiu de stocare</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984">Fișier <ph name="FILE_TYPE" /></translation>
@@ -326,6 +328,7 @@
 <translation id="4694604912444486114">Maimuță</translation>
 <translation id="4697043402264950621">Lista de fișiere este sortată după coloana <ph name="COLUMN_NAME" /> în ordine crescătoare.</translation>
 <translation id="4711094779914110278">Turcă</translation>
+<translation id="4712283082407695269">Se deschide „<ph name="PATH" />”</translation>
 <translation id="4713544552769165154">Acest fișier este creat pentru un computer care folosește software Macintosh. Nu este compatibil cu dispozitivul tău, care rulează sistemul de operare Chrome. Caută o aplicație adecvată similară în <ph name="BEGIN_LINK" />Magazinul web Chrome<ph name="END_LINK" />.<ph name="BEGIN_LINK_HELP" />Află mai multe<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">S-a făcut backup pentru <ph name="FILE_COUNT" /> fotografii</translation>
 <translation id="4725511304875193254">Corgi</translation>
@@ -525,6 +528,7 @@
 <translation id="6558280019477628686">A apărut o eroare. Este posibil ca unele elemente să nu fi fost șterse.</translation>
 <translation id="656398493051028875">Se șterge „<ph name="FILENAME" />”...</translation>
 <translation id="6581162200855843583">Link Disc Google</translation>
+<translation id="6594855146910089723">Linux și Parallels Desktop au acces la acest dosar</translation>
 <translation id="6607272825297743757">Informațiile fișierului</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> dosare cu acces permis pentru Parallels Desktop</translation>
 <translation id="6629841649550503054">Toate fișierele cu backup pe <ph name="BEGIN_LINK" />Google Drive!<ph name="END_LINK" /></translation>

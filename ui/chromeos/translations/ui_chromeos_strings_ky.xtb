@@ -207,6 +207,7 @@
 <translation id="3252266817569339921">Французча</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> файлдары үчүн демейки колдонмону тандаңыз:</translation>
 <translation id="3264582393905923483">Контекст</translation>
+<translation id="3272909651715601089">"<ph name="PATH" />" ачылбай койду</translation>
 <translation id="3280431534455935878">Даярдалууда</translation>
 <translation id="3280987981688031357">Винилдик пластинка</translation>
 <translation id="3296763833017966289">Грузинче</translation>
@@ -309,6 +310,7 @@
 <translation id="4477219268485577442">Болгарча фонетикалык</translation>
 <translation id="4479812471636796472">АКШ Dvorak баскычтобу</translation>
 <translation id="4522570452068850558">Чоо-жайлары</translation>
+<translation id="4527800702232535228">Бул папка Parallels Desktop менен бөлүшүлдү</translation>
 <translation id="4552678318981539154">Көбүрөөк сактоо мейкиндигин сатып алыңыз…</translation>
 <translation id="4559767610552730302">Боке</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> файл</translation>
@@ -326,6 +328,7 @@
 <translation id="4694604912444486114">Маймыл</translation>
 <translation id="4697043402264950621"><ph name="COLUMN_NAME" /> тилкесиндеги файлдардын тизмеси чоңойгон ыраатта иреттелди.</translation>
 <translation id="4711094779914110278">Түркчө</translation>
+<translation id="4712283082407695269">"<ph name="PATH" />" ачылууда</translation>
 <translation id="4713544552769165154">Бул файл Macintosh программасын колдонгон компьютерге ылайыкташкан жана Chrome OS иштеткен түзмөгүңүзгө дал келбейт. <ph name="BEGIN_LINK" />Chrome Желе дүкөнүнөн<ph name="END_LINK" />анын ордуна ылайык келе турган колдонмону издеп көрүңүз.<ph name="BEGIN_LINK_HELP" />Көбүрөөк билүү<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> сүрөттүн камдык көчүрмөсү сакталды</translation>
 <translation id="4725511304875193254">Корги</translation>
@@ -524,6 +527,7 @@
 <translation id="6558280019477628686">Ката кетти. Айрым элементтер өчкөн жок окшойт.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />"… жок кылуу</translation>
 <translation id="6581162200855843583">Google Drive шилтемеси</translation>
+<translation id="6594855146910089723">Бул папка Linux жана Parallels Desktop менен бөлүшүлдү</translation>
 <translation id="6607272825297743757">Файл тууралуу маалымат</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> папка Parallels Desktop менен бөлүшүлдү</translation>
 <translation id="6629841649550503054">Бардык нерселердин камдык көчүрмөсү <ph name="BEGIN_LINK" />Google Drive'га<ph name="END_LINK" /> сакталды!</translation>

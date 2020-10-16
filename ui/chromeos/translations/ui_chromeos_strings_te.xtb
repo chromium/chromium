@@ -207,6 +207,7 @@
 <translation id="3252266817569339921">ఫ్రెంచ్</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> ఫైల్‌ల కోసం డిఫాల్ట్ యాప్‌ను ఎంచుకోండి:</translation>
 <translation id="3264582393905923483">సందర్భం</translation>
+<translation id="3272909651715601089">"<ph name="PATH" />"ను తెరవడం సాధ్యపడలేదు</translation>
 <translation id="3280431534455935878">సిద్ధం చేస్తోంది</translation>
 <translation id="3280987981688031357">వినైల్ రికార్డ్</translation>
 <translation id="3296763833017966289">జార్జియన్</translation>
@@ -309,6 +310,7 @@
 <translation id="4477219268485577442">బల్గేరియన్ ఫోనెటిక్</translation>
 <translation id="4479812471636796472">US డ్వొరక్ కీబోర్డ్</translation>
 <translation id="4522570452068850558">వివరాలు</translation>
+<translation id="4527800702232535228">ఈ ఫోల్డర్ Parallels Desktopతో షేర్ చేయబడింది</translation>
 <translation id="4552678318981539154">మరింత నిల్వను కొనుగోలు చేయండి</translation>
 <translation id="4559767610552730302">బొకే</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ఫైల్</translation>
@@ -326,6 +328,7 @@
 <translation id="4694604912444486114">కోతి</translation>
 <translation id="4697043402264950621">ఫైల్ జాబితా <ph name="COLUMN_NAME" /> ప్రకారం ఆరోహణ క్రమంలో వర్గీకరించబడింది.</translation>
 <translation id="4711094779914110278">టర్కిష్</translation>
+<translation id="4712283082407695269">"<ph name="PATH" />"ను తెరుస్తోంది</translation>
 <translation id="4713544552769165154">ఈ ఫైల్ Macintosh సాఫ్ట్‌వేర్‌ను ఉపయోగించే కంప్యూటర్ కోసం రూపొందించబడింది. ఇది Chrome OSను అమలు చేసే మీ పరికరానికి అనుకూలమైనది కాదు. దయచేసి తగిన ప్రత్యామ్నాయ యాప్‌ కోసం <ph name="BEGIN_LINK" />Chrome వెబ్ స్టోర్<ph name="END_LINK" />లో శోధించండి.<ph name="BEGIN_LINK_HELP" />మరింత తెలుసుకోండి<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> ఫోటోలు బ్యాకప్ చేయబడ్డాయి</translation>
 <translation id="4725511304875193254">కార్గి</translation>
@@ -525,6 +528,7 @@
 <translation id="6558280019477628686">ఎర్రర్ ఏర్పడింది. కొన్ని అంశాలు తొలగించబడి ఉండకపోవచ్చు.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />"ని తొలగిస్తోంది...</translation>
 <translation id="6581162200855843583">Google డిస్క్ లింక్</translation>
+<translation id="6594855146910089723">ఈ ఫోల్డర్ Linux ఇంకా Parallels Desktopతో షేర్ చేయబడింది</translation>
 <translation id="6607272825297743757">ఫైల్ సమాచారం</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> ఫోల్డర్‌లు Parallels Desktopతో చేర్చబడ్డాయి</translation>
 <translation id="6629841649550503054">అన్నీ <ph name="BEGIN_LINK" />Google డిస్క్<ph name="END_LINK" />కి బ్యాకప్ చేయబడ్డాయి!</translation>

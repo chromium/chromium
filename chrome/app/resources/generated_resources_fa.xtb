@@ -107,7 +107,7 @@
 <translation id="1119447706177454957">خطای داخلی</translation>
 <translation id="1122068467107743258">کار</translation>
 <translation id="1122198203221319518">&amp;ابزارها</translation>
-<translation id="1122242684574577509">‏احراز هویت انجام نشد. کلیک کنید تا به صفحه ورود به سیستم شبکه Wi-Fi مورد استفاده‌تان بروید (<ph name="NETWORK_ID" />).</translation>
+<translation id="1122242684574577509">‏اصالت‌سنجی انجام نشد. کلیک کنید تا به صفحه ورود به سیستم شبکه Wi-Fi مورد استفاده‌تان بروید (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122960773616686544">نام نشانک</translation>
 <translation id="1123753900084781868">درحال‌حاضر «زیرنویس ناشنوایان زنده» در دسترس نیست</translation>
 <translation id="1124772482545689468">کاربر</translation>
@@ -508,7 +508,7 @@
 <translation id="1580772913177567930">با سرپرستتان تماس بگیرید</translation>
 <translation id="1581962803218266616">‏نمایش در Finder</translation>
 <translation id="1582955169539260415">حذف [<ph name="FINGERPRINT_NAME" />]</translation>
-<translation id="1584990664401018068">‏شبکه Wi-Fi مورد استفاده شما (<ph name="NETWORK_ID" />) احتمالاً نیاز به احراز هویت دارد.</translation>
+<translation id="1584990664401018068">‏شبکه Wi-Fi مورد استفاده شما (<ph name="NETWORK_ID" />) احتمالاً نیاز به اصالت‌سنجی دارد.</translation>
 <translation id="1585717515139318619">‏برنامه دیگری در رایانه شما یک طرح زمینه اضافه کرده است که ممکن است نحوه کارکرد Chrome را تغییر دهد.
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -630,7 +630,7 @@
 <translation id="1708338024780164500">(غیرفعال)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (شناسه: <ph name="ID_PH" />)</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (اصلی)</translation>
-<translation id="1709217939274742847">بلیتی انتخاب کنید تا برای احراز هویت از آن استفاده کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
+<translation id="1709217939274742847">بلیتی انتخاب کنید تا برای اصالت‌سنجی از آن استفاده کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="1711935594505774770">با این کار همه داده‌ها و کوکی‌هایی که توسط <ph name="SITE_GROUP_NAME" />، سایت‌های زیرمجموعه آن، و برنامه‌های نصب‌شده آن ذخیره شده‌اند پاک می‌شود</translation>
 <translation id="1714644264617423774">ویژگی‌های دسترس‌پذیری را برای استفاده آسان‌تر از دستگاهتان فعال کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="1717218214683051432">حسگرهای حرکتی</translation>
@@ -783,7 +783,7 @@
 <translation id="1875386316419689002">‏این برگه به دستگاه HID متصل است.</translation>
 <translation id="1875387611427697908">این مورد را فقط می‌توان از <ph name="CHROME_WEB_STORE" /> اضافه کرد</translation>
 <translation id="1877377290348678128">برچسب (اختیاری)</translation>
-<translation id="1877520246462554164">کد احراز هویت دریافت نشد. لطفاً از سیستم خارج شوید و برای امتحان مجدد دوباره به سیستم وارد شوید.</translation>
+<translation id="1877520246462554164">کد اصالت‌سنجی دریافت نشد. لطفاً از سیستم خارج شوید و برای امتحان مجدد دوباره به سیستم وارد شوید.</translation>
 <translation id="1877860345998737529">تغییر وضعیت اختصاص دادن کلیدها به کنش‌ها</translation>
 <translation id="1878155070920054810">‏به‌نظر می‌رسد شارژ Chromebook شما پیش از اتمام به‌روزرسانی تمام خواهد شد. برای جلوگیری از قطع شدن به‌روزرسانی، مطمئن شوید Chromebook به‌درستی شارژ می‌شود.</translation>
 <translation id="1879000426787380528">ورود به سیستم به‌عنوان</translation>
@@ -911,7 +911,7 @@
 درغیر این‌صورت، همین‌الان از سیستم خارج شوید تا تغییرات این حساب در این دستگاه نشان داده شود.
 
 با نصب برنامه Family Link در دستگاهتان می‌توانید تنظیمات این حساب را مدیریت کنید.  دستورالعمل‌ها در قالب ایمیل برایتان ارسال کردیم.</translation>
-<translation id="2040460856718599782">وای! هنگام احراز هویت شما مشکلی پیش آمد. لطفاً اطلاعات کاربری ورود به سیستمتان را دوباره بررسی کرده و دوباره امتحان نمایید.</translation>
+<translation id="2040460856718599782">وای! هنگام اصالت‌سنجی شما مشکلی پیش آمد. لطفاً اطلاعات کاربری ورود به سیستمتان را دوباره بررسی کرده و دوباره امتحان نمایید.</translation>
 <translation id="2040859730880153754">{COUNT,plural, =1{۱ گذرواژه لورفته دارید}one{# گذرواژه لورفته دارید}other{# گذرواژه لورفته دارید}}</translation>
 <translation id="2040863272941698761">‏راه‌اندازی Linux</translation>
 <translation id="204497730941176055">‏نام الگوی گواهی Microsoft</translation>
@@ -1527,7 +1527,7 @@
 <translation id="2749756011735116528">ورود به سیستم <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749881179542288782">بررسی گرامر با املا</translation>
 <translation id="2751131328353405138">‏درحال نشاندن sshfs محتوی Linux</translation>
-<translation id="2751739896257479635">‏احراز هویت مرحله ۲ EAP</translation>
+<translation id="2751739896257479635">‏اصالت‌سنجی مرحله ۲ EAP</translation>
 <translation id="2753677631968972007">اجازه‌های سایت را به‌طور دستی کنترل کنید.</translation>
 <translation id="2755367719610958252">مدیریت قابلیت‌های دسترس‌پذیری</translation>
 <translation id="275662540872599901">صفحه خاموش است</translation>
@@ -2111,7 +2111,7 @@
 <translation id="3458451003193188688">به‌دلیل خطای شبکه، دستگاه مجازی نصب نشد. لطفاً دوباره امتحان کنید، یا با سرپرست تماس بگیرید. کد خطا: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">لغو هم‌رسانی انجام نشد</translation>
 <translation id="3459509316159669723">درحال چاپ</translation>
-<translation id="3459697287128633276">‏برای فعال کردن حسابتان جهت دسترسی به «فروشگاه Google Play»، لطفاً با استفاده از «ارائه‌دهنده هویت» احراز هویت کنید.</translation>
+<translation id="3459697287128633276">‏برای فعال کردن حسابتان جهت دسترسی به «فروشگاه Google Play»، لطفاً با استفاده از «ارائه‌دهنده هویت» اصالت‌سنجی کنید.</translation>
 <translation id="3462311546193741693">‏شما از سیستم بیشتر سایت‌ها خارج می‌کند. از حساب Google خارج نخواهید شد بنابراین می‌توانید داده‌های همگام‌سازی‌شده‌تان را پاک کنید.</translation>
 <translation id="3462413494201477527">راه‌اندازی حساب لغو شود؟</translation>
 <translation id="346431825526753">این یک حساب مخصوص بچه‌ها است که توسط <ph name="CUSTODIAN_EMAIL" /> مدیریت می‌شود.</translation>
@@ -2652,7 +2652,7 @@
 <translation id="4046013316139505482">این افزونه‌ها نیازی به مشاهده و تغییر اطلاعات در این سایت ندارند.</translation>
 <translation id="4046123991198612571">آهنگ بعدی</translation>
 <translation id="4047726037116394521">رفتن به صفحه اصلی</translation>
-<translation id="4050225813016893843">روش احراز هویت</translation>
+<translation id="4050225813016893843">روش اصالت‌سنجی</translation>
 <translation id="4052120076834320548">بسیار کوچک</translation>
 <translation id="4056908315660577142">‏به حداکثر زمانی که ولی‌تان برای برنامه Chrome‏ <ph name="APP_NAME" /> تنظیم کرده است رسیده‌اید. می‌توانید فردا به‌مدت <ph name="TIME_LIMIT" /> از آن استفاده کنید.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
@@ -3381,7 +3381,7 @@
 <translation id="494286511941020793">راهنمای پیکربندی پراکسی</translation>
 <translation id="4943368462779413526">فوتبال</translation>
 <translation id="4943691134276646401">«<ph name="CHROME_EXTENSION_NAME" />» می‌خواهد به یک درگاه سریالی متصل شود</translation>
-<translation id="4944310289250773232">این خدمات احراز هویت توسط <ph name="SAML_DOMAIN" /> میزبانی می‌شود</translation>
+<translation id="4944310289250773232">این خدمات اصالت‌سنجی توسط <ph name="SAML_DOMAIN" /> میزبانی می‌شود</translation>
 <translation id="495170559598752135">کنش‌ها</translation>
 <translation id="4953808748584563296">چهره‌نمای پیش‌فرض نارنجی</translation>
 <translation id="4955710816792587366">پین خودتان را انتخاب کنید</translation>
@@ -3528,7 +3528,7 @@
 <translation id="5139955368427980650">&amp;بازکردن</translation>
 <translation id="5141421572306659464">حساب اصلی</translation>
 <translation id="5142793792982256885">سرعت پیمایش صفحه لمسی</translation>
-<translation id="5142961317498132443">احراز هویت</translation>
+<translation id="5142961317498132443">اصالت‌سنجی</translation>
 <translation id="5143374789336132547">افزونه «<ph name="EXTENSION_NAME" />»، صفحه‌ای را با کلیک روی دکمه صفحه اصلی نمایش داده می‌شود، تغییر داده است.</translation>
 <translation id="5143612243342258355">این فایل خطرناک است</translation>
 <translation id="5143712164865402236">رفتن به حالت تمام صفحه</translation>
@@ -4390,7 +4390,7 @@
 <translation id="6155141482566063812">برگه پس‌زمینه درحال هم‌رسانی صفحه‌نمایش است</translation>
 <translation id="6156323911414505561">نمایش نوار نشانک‌ها</translation>
 <translation id="6156863943908443225">حافظهٔ پنهان اسکریپت</translation>
-<translation id="6160625263637492097">ارائه گواهی برای احراز هویت</translation>
+<translation id="6160625263637492097">ارائه گواهی برای اصالت‌سنجی</translation>
 <translation id="6163363155248589649">&amp;عادی</translation>
 <translation id="6163376401832887457">‏تنظیمات Kerberos</translation>
 <translation id="6163522313638838258">بزرگ کردن همه...</translation>
@@ -4775,7 +4775,7 @@
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> محتوای حساس یا خطرناک دارد. از مالک بخواهید مشکل را برطرف کند.</translation>
 <translation id="6624687053722465643">شیرین</translation>
 <translation id="6628328486509726751">زمان بارگذاری <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
-<translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> خواستار دسترسی دائم به یک گواهی است تا خودش را از طرف شما احراز هویت کند.</translation>
+<translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> خواستار دسترسی دائم به یک گواهی است تا خودش را از طرف شما اصالت‌سنجی کند.</translation>
 <translation id="6635944431854494329">‏مالک می‌تواند این ویژگی را در «تنظیمات &gt; پیشرفته &gt; ارسال خودکار داده‌های تشخیصی و میزان استفاده به Google» کنترل کند.</translation>
 <translation id="6635956300022133031">انتخاب و سفارشی‌سازی صداهای نوشتار به گفتار</translation>
 <translation id="6636588250634969791">قبل از ادامه، سیم‌کارت را وارد کنید</translation>
@@ -4784,7 +4784,7 @@
 <translation id="664290675870910564">انتخاب شبکه</translation>
 <translation id="6643016212128521049">پاک کردن</translation>
 <translation id="6644512095122093795">پیشنهاد برای ذخیره رمزهای ورود</translation>
-<translation id="6644513150317163574">‏قالب نشانی وب نامعتبر است. وقتی از احراز هویت SSO استفاده می‌شود، سرور باید به‌عنوان یک نام میزبان مشخص شود.</translation>
+<translation id="6644513150317163574">‏قالب نشانی وب نامعتبر است. وقتی از اصالت‌سنجی SSO استفاده می‌شود، سرور باید به‌عنوان یک نام میزبان مشخص شود.</translation>
 <translation id="6644846457769259194">درحال به‌روزرسانی دستگاه شما (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6645437135153136856">‏دستگاه Google Cloud Print انتخاب‌شده دیگر پشتیبانی نمی‌شود. <ph name="BR" /> چاپگر را در تنظیمات سیستم رایانه‌تان راه‌اندازی کنید.</translation>
 <translation id="6647228709620733774">‏نشانی وب ابطال ارائه دهنده مجوز Netscape</translation>
@@ -5329,7 +5329,7 @@
 <translation id="7295614427631867477">‏توجه داشته باشید Android، ‏Play و برنامه‌های مرتبط تحت‌کنترل خط‌مشی‌های جمع‌آوری و استفاده داده مربوط به خودشان هستند.</translation>
 <translation id="729583233778673644">‏مجاز کردن رمزگذاری AES و RC4. استفاده از این گزینه احتمال خطر را بالا می‌برد، زیرا رمزهای RC4 امن نیست.</translation>
 <translation id="7296774163727375165">شرایط <ph name="DOMAIN" /></translation>
-<translation id="7297443947353982503">‏نام کاربری/گذرواژه نادرست است یا احراز هویت EAP ناموفق بود</translation>
+<translation id="7297443947353982503">‏نام کاربری/گذرواژه نادرست است یا اصالت‌سنجی EAP ناموفق بود</translation>
 <translation id="729761647156315797">انتخاب زبان و صفحه‌کلید</translation>
 <translation id="7297726121602187087">سبز تیره</translation>
 <translation id="7299337219131431707">فعال کردن مرور به‌عنوان مهمان</translation>
@@ -5935,7 +5935,7 @@
 <translation id="7970882136539140748">درحال‌حاضر نمی‌توان کارت را ذخیره کرد</translation>
 <translation id="7972714317346275248">‏PKCS #1 SHA-384 با رمزگذاری RSA</translation>
 <translation id="797394244396603170">انتخاب دستگاه موردنظر برای هم‌رسانی فایل‌ها</translation>
-<translation id="7973962044839454485">‏احراز هویت PPP به دلیل نام کاربری یا گذرواژه نادرست انجام نشد</translation>
+<translation id="7973962044839454485">‏اصالت‌سنجی PPP به دلیل نام کاربری یا گذرواژه نادرست انجام نشد</translation>
 <translation id="7974566588408714340">تلاش مجدد با <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974936243149753750">تصویر بزرگ‌تر از صفحه</translation>
 <translation id="7977404132325989121">&amp;نام‌گذاری پنجره…</translation>
@@ -6098,7 +6098,7 @@
 <translation id="8151638057146502721">پیکربندی</translation>
 <translation id="8152091997436726702">زمان مجاز ثبت‌نام چاپگر پایان یافت. برای ثبت یک چاپگر، باید ثبت را در چاپگر تأیید کنید.</translation>
 <translation id="8154790740888707867">فایلی وجود ندارد</translation>
-<translation id="815491593104042026">وای! احراز هویت انجام نشد زیرا برای استفاده از نشانی وب غیر امن (<ph name="BLOCKED_URL" />) پیکربندی شده بود. لطفاً با سرپرستتان تماس بگیرید.</translation>
+<translation id="815491593104042026">وای! اصالت‌سنجی انجام نشد زیرا برای استفاده از نشانی وب غیر امن (<ph name="BLOCKED_URL" />) پیکربندی شده بود. لطفاً با سرپرستتان تماس بگیرید.</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{گذرواژه لورفته‌ای پیدا نشد}=1{{COUNT} گذرواژه لورفته}one{{COUNT} گذرواژه لورفته}other{{COUNT} گذرواژه لورفته}}</translation>
 <translation id="8157704005178149728">درحال راه‌اندازی نظارت</translation>
 <translation id="8158117992543756526">این دستگاه در <ph name="MONTH_AND_YEAR" /> دیگر به‌روزرسانی خودکار نرم‌افزار و امنیتی را دریافت نکرد. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>

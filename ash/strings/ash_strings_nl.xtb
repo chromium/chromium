@@ -100,6 +100,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> ondersteunt <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) niet. De resolutie is gewijzigd in <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Klik om te bevestigen en de wijzigingen op te slaan. De vorige instellingen worden over <ph name="TIMEOUT_SECONDS" /> hersteld.</translation>
 <translation id="1919743966458266018">De sneltoets om Taakbeheer te openen is gewijzigd. Gebruik <ph name="NEW_SHORTCUT" /> in plaats van <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatische klikken</translation>
+<translation id="1924640696879807758">Van telefoon</translation>
 <translation id="1928739107511554905">Als je de update wilt downloaden, sluit je het toetsenbord aan en start je je Chromebook opnieuw op via het touchscreen.</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -686,6 +687,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="7904094684485781019">De beheerder van dit account heeft toegang tot meerdere accounts niet toegestaan.</translation>
 <translation id="7933084174919150729">De Google Assistent is alleen beschikbaar voor het primaire profiel.</translation>
 <translation id="79341161159229895">Account wordt beheerd door <ph name="FIRST_PARENT_EMAIL" /> en <ph name="SECOND_PARENT_EMAIL" /></translation>
+<translation id="793716872548410480">Druk op <ph name="SHORTCUT_KEY_NAME" /> + V om het klembord te bekijken. De laatste 5 items die je hebt gekopieerd, worden opgeslagen op het klembord.</translation>
 <translation id="7955885781510802139">Modus voor hoog contrast</translation>
 <translation id="7977927628060636163">Mobiele netwerken zoeken…</translation>
 <translation id="7980780401175799550">Probeer nieuwe manieren om te navigeren in Chrome OS</translation>

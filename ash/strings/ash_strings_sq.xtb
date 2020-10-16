@@ -315,6 +315,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4072264167173457037">Sinjal mesatar</translation>
 <translation id="4112140312785995938">Kërko prapa</translation>
 <translation id="4114315158543974537">Aktivizo "Qendrën e telefonit"</translation>
+<translation id="4121728057981832179">Një pajisje virtuale po përdor mikrofonin tënd</translation>
 <translation id="4129129681837227511">Për të parë njoftime në ekranin e kyçjes, shkyçe për të ndryshuar cilësimin</translation>
 <translation id="4146833061457621061">Luaj muzikë</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> menaxhohet nga <ph name="DOMAIN" /></translation>
@@ -329,6 +330,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4217571870635786043">Diktimi</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4261870227682513959">Shfaq cilësimet e njoftimeve. Njoftimet janë joaktive</translation>
+<translation id="4267383818855338811">Një pajisje virtuale po përdor kamerën tënde</translation>
 <translation id="4269883910223712419">Administratori i kësaj pajisjeje ka aftësinë që:</translation>
 <translation id="4279490309300973883">Pasqyrim</translation>
 <translation id="4285498937028063278">Zhgozhdo</translation>
@@ -364,6 +366,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4513946894732546136">Komente</translation>
 <translation id="4527045527269911712">Pajisja me Bluetooth "<ph name="DEVICE_NAME" />" kërkon leje për çiftim.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> derisa të mbushet</translation>
+<translation id="4544483149666270818">Zgjidh një dritare për të regjistruar</translation>
 <translation id="4560576029703263363">Aktiv</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Fshih fjalëkalimin</translation>
@@ -403,6 +406,15 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4918086044614829423">Prano</translation>
 <translation id="4924411785043111640">Rinis dhe rivendos</translation>
 <translation id="4925542575807923399">Administratori për këtë llogari kërkon që ajo të jetë llogaria e parë e identifikimit në një sesion me identifikime të shumëfishta.</translation>
+<translation id="4942878304446937978">Tabakaja e statusit, ora <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
+<translation id="4946376291507881335">Regjistrimi</translation>
 <translation id="495046168593986294">Lëviz lart</translation>
 <translation id="4961318399572185831">Ekrani i transmetimit</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> orë e <ph name="MINUTES" /> min. e <ph name="SECONDS" /> sek.</translation>
@@ -448,6 +460,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="554893713779400387">Ndërro diktimin</translation>
 <translation id="556042886152191864">Buton</translation>
 <translation id="5571066253365925590">Bluetooth-i u aktivizua</translation>
+<translation id="558849140439112033">Zvarrite për të zgjedhur një zonë për të regjistruar</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Shtyp Ctrl + Alt + Z për të çaktivizuar komentet me zë.</translation>
 <translation id="5625955975703555628">LTE+</translation>
@@ -475,9 +488,11 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5860033963881614850">Çaktivizuar</translation>
 <translation id="5876666360658629066">Fut kodin e prindit</translation>
 <translation id="5895138241574237353">Rinis</translation>
+<translation id="589817443623831496">Skanimi me pika</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Tavolinë pune joaktive.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5915278665499293471">Kliko diku për të regjistruar ekranin e plotë</translation>
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5920710855273935292">Mikrofoni është i çaktivizuar.</translation>
 <translation id="594179686076170922">Po lidhet me telefonin tënd...</translation>
@@ -535,6 +550,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6490471652906364588">Pajisja USB-C (porta djathtas)</translation>
 <translation id="649452524636452238">Kodi PIN i kartës inteligjente</translation>
 <translation id="6501401484702599040">Po transmeton ekranin te <ph name="RECEIVER_NAME" /></translation>
+<translation id="6520517963145875092">Zgjidh një dritare për të regjistruar</translation>
 <translation id="652139407789908527">Ekrani yt do të jetë bosh për një kohë më të gjatë se zakonisht (deri në një minutë) gjatë këtij përditësimi. Mos e shtyp butonin e energjisë kur përditësimi është në vazhdim.</translation>
 <translation id="6528179044667508675">Mos shqetëso</translation>
 <translation id="65320610082834431">Emoji</translation>
@@ -563,6 +579,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6751052314767925245">E zbatuar nga administratori yt</translation>
 <translation id="6751826523481687655">Gjurmimi i cilësisë së funksionimit është aktivizuar</translation>
 <translation id="6752912906630585008">Tavolina e punës <ph name="REMOVED_DESK" /> u hoq dhe u shkri me tavolinën e punës <ph name="RECEIVE_DESK" /></translation>
+<translation id="6757237461819837179">Nuk po luhet asnjë media</translation>
 <translation id="6777216307882431711">Po furnizon me energji pajisjet e lidhura USB-C</translation>
 <translation id="6790428901817661496">Luaj</translation>
 <translation id="6803622936009808957">Nuk mundi të pasqyrojë ekranet sepse nuk u gjetën rezolucione të mbështetura. Në vend të kësaj kaloi në desktopin e zgjeruar.</translation>
@@ -611,6 +628,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7348093485538360975">Tastiera në ekran</translation>
 <translation id="735745346212279324">Rrjeti VPN u shkëput</translation>
 <translation id="7377169924702866686">Kyçja e kapitaleve është aktive.</translation>
+<translation id="7378203170292176219">Zvarrite për të zgjedhur një zonë për të regjistruar</translation>
 <translation id="7378594059915113390">Kontrollet e klipeve media</translation>
 <translation id="7398254312354928459">Lidhja e rrjetit u ndërrua</translation>
 <translation id="7405710164030118432">Për të shkyçur pajisjen, fut kodin e qasjes së prindit për Family Link</translation>
@@ -637,6 +655,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7618774594543487847">Neutrale</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Shfaq cilësimet e "Ndarjes në afërsi".</translation>
+<translation id="7641938616688887143">Regjistro</translation>
 <translation id="7642647758716480637">Hap cilësimet për <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (zotëruesi)</translation>
 <translation id="7647488630410863958">Shkyçe pajisjen për të parë njoftimet e tua</translation>
@@ -734,6 +753,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8563862697512465947">Cilësimet e njoftimeve</translation>
 <translation id="857201607579416096">Menyja u zhvendos në këndin poshtë djathtas të ekranit.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
+<translation id="861041328460089089">Trokit diku për të regjistruar ekranin e plotë</translation>
 <translation id="8627191004499078455">I lidhur me <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Cilësimet e qasshmërisë</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, menaxhuar nga administratori yt</translation>

@@ -1,14 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
-<translation id="1009046985747440431">‏אפשר לעבור בין האפשרויות על ידי הקשה על החיצים למעלה או למטה, ולהפעיל אפשרות על ידי הקשה על Enter</translation>
+<translation id="1009046985747440431">‏ניתן לעבור בין האפשרויות על ידי הקשה על החיצים למעלה או למטה, ולהפעיל אפשרות על ידי הקשה על Enter</translation>
 <translation id="1011903154582639569">כדי להקליד, מקישים על המקש הרצוי ומרפים ממנו</translation>
 <translation id="1012173283529841972">פריט רשימה</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">החלקה ימינה עם שתי אצבעות</translation>
 <translation id="1016393160682012902">‏ניתן ללחוץ על מקש במקלדת QWERTY, על מקש בצג ברייל או על תנועת מגע כדי להבין מה תפקידם. אפשר ללחוץ על Control ו-W או על Escape כדי לצאת.</translation>
 <translation id="1022586497894531524">‏האם זה השימוש הראשון שלך בקורא המסך הקולי ChromeVox? המדריך הקצר הזה מסביר את עקרונות הבסיס של ChromeVox למתחילים.</translation>
-<translation id="1025074108959230262">מצב אתר דביק מושבת</translation>
+<translation id="1025074108959230262">מצב 'הקשה ביד אחת' מושבת</translation>
 <translation id="1031961866430398710">לאחר מכן</translation>
 <translation id="1038643060055067718">שורות:</translation>
 <translation id="1038795173450935438">כדי לעבור קדימה בין פריטים בדף, הקש על מקש החיפוש ועל מקש החץ ימינה. כדי לחזור אחורה, הקש על מקש החיפוש ועל מקש החץ שמאלה. כדי לעבור אל השורה הבאה, הקש על מקש החיפוש ועל מקש החץ למטה. כדי לעבור אל השורה הקודמת, הקש על מקש החיפוש ועל מקש החץ למעלה. אם הגעת לפריט שאתה רוצה ללחוץ עליו, הקש על מקש החיפוש ועל מקש הרווח.</translation>
@@ -156,7 +156,7 @@
 <translation id="2127747486437921899">נטוי</translation>
 <translation id="2163782704988363449">תיקוני טעויות</translation>
 <translation id="2169714232367507776">לחץ על הפריט הנוכחי</translation>
-<translation id="2179452035581866348">‏ChromeVox משתמש בצליל כדי לספק לך מידע נוסף וחשוב. למד מה המשמעות של כל צליל כדי להשתמש בצלילים האלו לניווט מהיר יותר. אחרי שתתרגל לצלילים, תוכל להשבית תיאורים מילוליים בדיבור ולהפעיל אותם רק כדי לקבל מידע חשוב על הדף. הנה רשימה של כל הצלילים והמשמעות שלהם.</translation>
+<translation id="2179452035581866348">‏ChromeVox משתמש בצליל כדי לספק לך מידע נוסף וחשוב. כדאי ללמוד את המשמעות של כל צליל כדי להשתמש בצלילים האלו לניווט מהיר יותר. אחרי שמתרגלים לצלילים, אפשר להשבית את התיאורים המילוליים ולהפעיל אותם רק כדי לקבל מידע חשוב על הדף. הנה רשימה של כל הצלילים והמשמעות שלהם.</translation>
 <translation id="2188751878842439466">{COUNT,plural, =1{סגור סוגריים}two{# סימני סגור סוגריים}many{# סימני סגור סוגריים}other{# סימני סגור סוגריים}}</translation>
 <translation id="2197863150503783129">חום אוכף</translation>
 <translation id="2199994615414171367">הביטוי המתמטי הקודם</translation>
@@ -214,7 +214,7 @@
 <translation id="2661530546602071611">הודעה</translation>
 <translation id="2673280813984708147">בעריכה</translation>
 <translation id="267442004702508783">רענון</translation>
-<translation id="2675533876313964202">תרוג</translation>
+<translation id="2675533876313964202">ירקרק</translation>
 <translation id="2684412629217766642">‏סגור את מערך השיעור של ChromeVox</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{פתח סוגריים}two{# סימני פתח סוגריים}many{# סימני פתח סוגריים}other{# סימני פתח סוגריים}}</translation>
@@ -260,7 +260,7 @@
 <translation id="2972205263822847197">הסבר קצר</translation>
 <translation id="297825089465017871">החלקה שמאלה עם שתי אצבעות</translation>
 <translation id="2998131015536248178">התו הקודם</translation>
-<translation id="2999559350546931576">הורד את גובה הצליל</translation>
+<translation id="2999559350546931576">הורדת גובה הצליל</translation>
 <translation id="3009352964623081324">‏מקש החיפוש + O, ואז S. אפשר להשתמש במקשי הקיצור האלה לצורך התקנה, ניהול והתאמה אישית של קולות.</translation>
 <translation id="3014130421870723208">‏‎@עריכה 8 נק'‎</translation>
 <translation id="3030432017085518523">לחצן בחירה של פריט בתפריט</translation>
@@ -370,7 +370,7 @@
 <translation id="371302509916403935">קו תחתון</translation>
 <translation id="3716845769494773620">שורות מרובות</translation>
 <translation id="3735039640698208086">בהשמעת אודיו...</translation>
-<translation id="3762198587642264450">עבור לסוף השורה הנוכחית</translation>
+<translation id="3762198587642264450">מעבר לסוף השורה הנוכחית</translation>
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">שלג</translation>
 <translation id="3781428340399460090">ורוד בוהק</translation>
@@ -630,7 +630,7 @@
 <translation id="5850707923114094062">הזז לאחור</translation>
 <translation id="5851548754964597211">רשימת כרטיסיות</translation>
 <translation id="5866042630553435010">מסומן חלקית</translation>
-<translation id="5867591286054666064">בזמן מערך השיעור תוכל להקיש על המקשים כדי לשמוע את שמם.</translation>
+<translation id="5867591286054666064">בזמן השיעור אפשר להקיש על המקשים כדי לשמוע את שמם.</translation>
 <translation id="5869546221129391014">רשת</translation>
 <translation id="5876817486144482042">החלשת עוצמת הדיבור</translation>
 <translation id="5878908838135392163">כחול חיוור</translation>
@@ -658,7 +658,7 @@
 <translation id="602001110135236999">גלילה שמאלה</translation>
 <translation id="6034000775414344507">אפור בהיר</translation>
 <translation id="6036135911048686884">עיון במגע</translation>
-<translation id="6037602951055904232">הזז קדימה</translation>
+<translation id="6037602951055904232">הזזה קדימה</translation>
 <translation id="6044160928851315051">החשך את המסך</translation>
 <translation id="6082768461603900813">ניווט בסיסי</translation>
 <translation id="609281021724813947">אין מחוון קודם</translation>
@@ -808,7 +808,7 @@
 <translation id="7308519659008003150">אין שדה טופס קודם</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7317017974771324508">נבחר באופן חלקי</translation>
-<translation id="7356165926712028380">עבור לברייל 8 נקודות</translation>
+<translation id="7356165926712028380">מעבר לברייל 8 נקודות</translation>
 <translation id="7356610683936413584">פרטי רשימת תיאורים</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{אמפרסנד (&amp;)}two{# סימני אמפרסנד (&amp;)}many{# סימני אמפרסנד (&amp;)}other{# סימני אמפרסנד (&amp;)}}</translation>
 <translation id="737396357417333429">clk</translation>
@@ -981,7 +981,7 @@
 <translation id="8749988712346667988">כסף</translation>
 <translation id="875769700429317857">ההורדה של <ph name="FILE_NAME" /> הושלמה</translation>
 <translation id="8767968232364267681">הכותרת הבאה של רמה 4</translation>
-<translation id="8770473310765924354">צא מתוכן מובנה, כמו טבלאות</translation>
+<translation id="8770473310765924354">יציאה מתוכן מובנה, כמו טבלאות</translation>
 <translation id="8779057862865475116">אין קישור קודם</translation>
 <translation id="8796411681063377102">הכותרת הבאה של רמה 3</translation>
 <translation id="8823311177246872527">דף <ph name="CURRENTPAGE" /> מתוך <ph name="TOTALPAGES" /></translation>

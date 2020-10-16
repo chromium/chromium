@@ -870,6 +870,7 @@
 <translation id="1976307821760494606"><ph name="DOMAIN" /> 已停用 ADB 偵錯。這會讓系統在 24 小時後重設 <ph name="DEVICE_TYPE" />。請備份你要保留的檔案。</translation>
 <translation id="1977965994116744507">讓你的手機靠近 <ph name="DEVICE_TYPE" />，即可將其解鎖。</translation>
 <translation id="1978006917103730774">日後系統會自動安裝新版軟體和安全性更新。</translation>
+<translation id="1978057560491495741">移除位址</translation>
 <translation id="1979095679518582070">即使關閉了這項功能，這部裝置仍然可以傳送基本服務 (例如系統更新和安全性) 所需的資訊。</translation>
 <translation id="1979280758666859181">你即將變更為較舊版本的 <ph name="PRODUCT_NAME" />。該版本的版本號與你電腦上所安裝的版本號必須相符，系統才會套用版本變更。</translation>
 <translation id="197989455406964291">KDC 不支援加密類型</translation>
@@ -1071,6 +1072,7 @@
 <translation id="2224444042887712269">這項設定屬於 <ph name="OWNER_EMAIL" />。</translation>
 <translation id="2224551243087462610">編輯資料夾名稱</translation>
 <translation id="2225864335125757863">請立即變更這些密碼，確保帳戶安全：</translation>
+<translation id="2226204716217107988">要切換至其他設定檔嗎？</translation>
 <translation id="2226449515541314767">這個網站已遭封鎖，無法完整控制 MIDI 裝置。</translation>
 <translation id="2226907662744526012">輸入 PIN 碼後自動解鎖</translation>
 <translation id="222704500187107962">當你結束目前的無痕模式工作階段後，系統將自動移除這個例外設定</translation>
@@ -1140,6 +1142,7 @@
 <translation id="2307462900900812319">設定網路</translation>
 <translation id="230927227160767054">這個網頁想要安裝服務處理常式。</translation>
 <translation id="2309620859903500144">這個網站已遭封鎖，無法存取你的動作感應器或光源感應器。</translation>
+<translation id="2312219318583366810">網頁網址</translation>
 <translation id="2314165183524574721">目前的瀏覽權限設為「隱藏」</translation>
 <translation id="2314774579020744484">翻譯網頁內容所使用的語言</translation>
 <translation id="2315414688463285945">設定 Linux 檔案時發生錯誤，請再試一次。</translation>
@@ -2342,6 +2345,7 @@
 <translation id="3713047097299026954">此安全金鑰未儲存任何登入資料</translation>
 <translation id="3714195043138862580">這個示範裝置已設為取消佈建狀態。</translation>
 <translation id="3714633008798122362">網路日曆</translation>
+<translation id="3715954932774762075">支援多種語言的應用程式和網站會使用這個清單上第一個支援的語言。這些偏好設定會與你的瀏覽器設定同步。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">首頁</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">你與 Google</translation>
@@ -2502,6 +2506,7 @@
 <translation id="3882165008614329320">相機或檔案中的現有影片</translation>
 <translation id="3886446263141354045">你想存取這個網站的要求已傳送給<ph name="NAME" /></translation>
 <translation id="3888550877729210209">使用「<ph name="LOCK_SCREEN_APP_NAME" />」寫筆記</translation>
+<translation id="3890064827463908288">開啟 Chrome 同步功能以使用 Wi-Fi 同步功能</translation>
 <translation id="3892414795099177503">新增 OpenVPN/L2TP...</translation>
 <translation id="3893536212201235195">讀取及變更你的無障礙設定</translation>
 <translation id="3893630138897523026">ChromeVox (互動朗讀)</translation>
@@ -3772,6 +3777,7 @@
 <translation id="5449588825071916739">將所有分頁加入書籤</translation>
 <translation id="5449716055534515760">關閉視窗(&amp;D)</translation>
 <translation id="5452974209916053028">目前的無痕模式工作階段：<ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />、<ph name="RECENT_PERMISSIONS_CHANGE_1" />、<ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
+<translation id="5454005855577728171">已將說明文字對話框橫移至 <ph name="POSITION_ON_SCREEN_FROM_LEFT" />%、下移至 <ph name="POSITION_ON_SCREEN_FROM_TOP" />%</translation>
 <translation id="5454166040603940656">提供者：<ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">無效</translation>
 <translation id="5457459357461771897">讀取及刪除你電腦中的相片、音樂及其他媒體</translation>
@@ -3915,6 +3921,7 @@
 <translation id="5602765853043467355">清除這個裝置的書籤、歷史記錄、密碼和其他設定</translation>
 <translation id="5605623530403479164">其他搜尋引擎</translation>
 <translation id="5605758115928394442">為了確認你的身分，系統已傳送通知到你的手機。</translation>
+<translation id="560834977503641186">Wi-Fi 同步功能，瞭解詳情</translation>
 <translation id="5608580678041221894">輕觸下列按鍵可調整或移動裁剪區域</translation>
 <translation id="5609231933459083978">這似乎是無效的應用程式。</translation>
 <translation id="5610038042047936818">切換至相機模式</translation>
@@ -4105,6 +4112,7 @@
 <translation id="5841270259333717135">設定乙太網路</translation>
 <translation id="5842497610951477805">啟用藍牙</translation>
 <translation id="5843706793424741864">華氏</translation>
+<translation id="584451707753263735">已顯示即時字幕，按下 F6 鍵即可循環切換焦點</translation>
 <translation id="5844574845205796324">建議新的探索內容</translation>
 <translation id="5846200638699387931">關聯語法錯誤：<ph name="ERROR_LINE" /></translation>
 <translation id="5846807460505171493">安裝更新內容和應用程式。如果您選擇繼續，即表示您允許這部裝置自動下載及安裝來自 Google、您的電信業者和裝置製造商的更新內容和應用程式，且可能會使用行動數據進行下載。部分應用程式可能會提供內購項目。</translation>
@@ -5359,6 +5367,7 @@
 <translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> 已顯示為全螢幕。</translation>
 <translation id="7340650977506865820">網站正在分享你的螢幕畫面</translation>
 <translation id="7341834142292923918">需要這個網站的存取權限</translation>
+<translation id="7343372807593926528">請先說明問題再傳送意見回饋。</translation>
 <translation id="7345706641791090287">確認您的密碼</translation>
 <translation id="7346909386216857016">好，我知道了</translation>
 <translation id="7347452120014970266">這會清除 <ph name="ORIGIN_NAME" /> 儲存的所有資料和 Cookie，以及該網站所安裝的應用程式資料和 Cookie</translation>
@@ -5775,6 +5784,7 @@
 <translation id="7819857487979277519">PSK (WPA 或 RSN)</translation>
 <translation id="7819992334107904369">Chrome 同步</translation>
 <translation id="782057141565633384">複製影片位址(&amp;O)</translation>
+<translation id="7822187537422052256">確定要移除這個位址嗎？</translation>
 <translation id="7824864914877854148">發生錯誤，因此無法完成備份程序</translation>
 <translation id="7825666486843191125">螢幕處於解鎖狀態時，位於附近的所有聯絡人皆可與你分享內容</translation>
 <translation id="782590969421016895">使用目前的網頁</translation>
@@ -6300,6 +6310,7 @@
 <translation id="8419098111404128271">「<ph name="SEARCH_TEXT" />」的搜尋結果</translation>
 <translation id="8419368276599091549">歡迎使用你的 <ph name="DEVICE_TYPE" />！</translation>
 <translation id="8420308167132684745">編輯字典條目</translation>
+<translation id="8421361468937925547">即時字幕 (僅支援英文)</translation>
 <translation id="8422787418163030046">缺少紙匣</translation>
 <translation id="8425213833346101688">變更</translation>
 <translation id="8425492902634685834">固定至工作列</translation>
@@ -6328,6 +6339,7 @@
 <translation id="8449036207308062757">管理儲存空間</translation>
 <translation id="8452135315243592079">找不到 SIM 卡</translation>
 <translation id="8455026683977728932">無法啟用 ADB 圖例</translation>
+<translation id="8456398879271637452">已顯示即時字幕，按下 Ctrl + 返回鍵或 Ctrl + 前進鍵即可循環切換焦點</translation>
 <translation id="845702320058262034">無法連線。請確認手機的藍牙功能已開啟。</translation>
 <translation id="8457451314607652708">匯入書籤</translation>
 <translation id="8458627787104127436">在新視窗中開啟所有 (<ph name="URL_COUNT" /> 個) 網址</translation>
@@ -6838,6 +6850,7 @@
 <translation id="9027459031423301635">在新分頁中開啟連結(T)</translation>
 <translation id="9030515284705930323">貴機構尚未為您的帳戶啟用 Google Play 商店。如需瞭解詳情，請與您的管理員聯絡。</translation>
 <translation id="9030785788945687215">Gmail</translation>
+<translation id="9030855135435061269">已不再支援「<ph name="PLUGIN_NAME" />」</translation>
 <translation id="9031549947500880805">使用 Google 雲端硬碟備份你的資料。你隨時可以輕鬆還原資料或切換裝置。備份項目包含應用程式資料。</translation>
 <translation id="9033765790910064284">仍要繼續</translation>
 <translation id="9033857511263905942">貼上(&amp;P)</translation>
@@ -6846,6 +6859,7 @@
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{你還可以再試 1 次。}other{你還可以再試 # 次。}}</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9040661932550800571">要更新 <ph name="ORIGIN" /> 的密碼嗎？</translation>
+<translation id="9041049756004505730">已顯示即時字幕，按下 ⌘ + Option + 向上鍵或向下鍵即可循環切換焦點</translation>
 <translation id="9041692268811217999">管理員停用了電腦本機檔案的存取權</translation>
 <translation id="904224458472510106">這項操作無法復原</translation>
 <translation id="9042893549633094279">隱私權和安全性</translation>
@@ -6884,6 +6898,7 @@
 <translation id="9088446193279799727">無法設定 Linux。請連線至網際網路，然後再試一次。</translation>
 <translation id="9088917181875854783">請確認以下密碼金鑰是否顯示於「<ph name="DEVICE_NAME" />」上：</translation>
 <translation id="9089416786594320554">輸入法</translation>
+<translation id="909108997331068008">「<ph name="EXISTING_USER" />」的設定檔已登入 <ph name="NEW_USER" /></translation>
 <translation id="9093429538970210897">建議你先備份檔案，以免系統無法完成升級。啟動升級作業會關閉 Linux (Beta 版)，請先儲存已開啟的檔案再繼續。</translation>
 <translation id="9094033019050270033">更新密碼</translation>
 <translation id="9094038138851891550">使用者名稱無效</translation>
@@ -7057,5 +7072,6 @@
 <translation id="994289308992179865">循環播放(&amp;L)</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">正在建立安全連線...</translation>
+<translation id="99731366405731005">開啟 <ph name="LINK1_BEGIN" />Chrome 同步功能<ph name="LINK1_END" />以使用 Wi-Fi 同步功能。<ph name="LINK2_BEGIN" />瞭解詳情<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">檢查(&amp;N)</translation>
 </translationbundle>

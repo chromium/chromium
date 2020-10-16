@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
-<translation id="1000498691615767391">בחר תיקיה לפתיחה</translation>
+<translation id="1000498691615767391">בחירת תיקייה לפתיחה</translation>
 <translation id="1023220960495960452">‏תעתוק (vanakkam → வணக்கம்)</translation>
 <translation id="1035094536595558507">תצוגת שקופיות</translation>
 <translation id="1045157690796831147">‏תעתוק (namaskar → നമസ്കാരം)</translation>
@@ -39,7 +39,7 @@
 <translation id="1337036551624197047">מקלדת צ'כית</translation>
 <translation id="1338950911836659113">מוחק...</translation>
 <translation id="1346748346194534595">ימינה</translation>
-<translation id="1351692861129622852">מייבא <ph name="FILE_COUNT" /> קבצים...</translation>
+<translation id="1351692861129622852">מתבצע ייבוא של <ph name="FILE_COUNT" /> קבצים...</translation>
 <translation id="1352103415082130575">‏מקלדת תאילנדית (Pattachote)</translation>
 <translation id="1358735829858566124">לא ניתן להשתמש בקובץ או בספרייה.</translation>
 <translation id="1363028406613469049">רצועה</translation>
@@ -145,7 +145,7 @@
 <translation id="2542049655219295786">‏טבלה של Google</translation>
 <translation id="2547921442987553570">הוסף אל <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">ארה"ב - בינלאומית</translation>
-<translation id="2562685439590298522">מסמכים</translation>
+<translation id="2562685439590298522">Google Docs</translation>
 <translation id="2563185590376525700">צפרדע</translation>
 <translation id="2614589611416690597">קובץ וידאו בפורמט <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">‏לא ניתן להגיע אל Google Drive בשלב זה.</translation>
@@ -210,7 +210,7 @@
 <translation id="3280431534455935878">מכין</translation>
 <translation id="3280987981688031357">תקליט</translation>
 <translation id="3296763833017966289">גרוזינית</translation>
-<translation id="3326821416087822643">מכווץ את <ph name="FILE_NAME" />...</translation>
+<translation id="3326821416087822643">מתבצע כיווץ של <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">שנת הקלטה</translation>
 <translation id="3338239663705455570">מקלדת סלובנית</translation>
 <translation id="3353984535370177728">בחר תיקיה להעלאה</translation>
@@ -365,7 +365,7 @@
 <translation id="4973970068702235170">הכיווץ נכשל, שגיאה לא צפויה: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4988205478593450158">הקובץ "<ph name="FILE_NAME" />" יימחק. להמשיך?</translation>
 <translation id="498902553138568924">פרפר אדום</translation>
-<translation id="4992066212339426712">בטל השתקה</translation>
+<translation id="4992066212339426712">ביטול השתקה</translation>
 <translation id="5004584466530475658"><ph name="FILE_COUNT" /> תמונות חדשות</translation>
 <translation id="5010406651457630570">מחשבים</translation>
 <translation id="5011233892417813670">Chromebook</translation>
@@ -437,7 +437,7 @@
 <translation id="5522908512596376669">רשימת הקבצים מוצגת עכשיו בתצוגת רשימה.</translation>
 <translation id="5524517123096967210">הקובץ לא ניתן לקריאה.</translation>
 <translation id="5533102081734025921">תמונה בפורמט <ph name="IMAGE_TYPE" /></translation>
-<translation id="5534520101572674276">מחשב גודל</translation>
+<translation id="5534520101572674276">המערכת מחשבת את הגודל</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5605830556594064952">‏ארה"ב - Dvorak</translation>
 <translation id="5640179856859982418">מקלדת שוויצרית</translation>
@@ -486,7 +486,7 @@
 <translation id="6054173164583630569">מקלדת צרפתית</translation>
 <translation id="6074825444536523002">Google Forms</translation>
 <translation id="6096979789310008754">טקסט החיפוש נוקה, מוצגים עכשיו כל הקבצים והתיקיות.</translation>
-<translation id="610101264611565198">מעביר את <ph name="FILE_NAME" /> אל <ph name="FOLDER_NAME" /></translation>
+<translation id="610101264611565198">מתבצעת העברה של <ph name="FILE_NAME" /> אל <ph name="FOLDER_NAME" /></translation>
 <translation id="6111770213269631447">‏תעתוק (namaskar → নমস্কার)</translation>
 <translation id="6129953537138746214">רווח</translation>
 <translation id="6133173853026656527">מעביר את <ph name="FILE_NAME" />...</translation>
@@ -501,7 +501,7 @@
 <translation id="6227235786875481728">לא ניתן להפעיל קובץ זה.</translation>
 <translation id="6248400709929739064">הפעל כתוביות</translation>
 <translation id="6264347891387618177">‏תעתוק (selam → ሰላም)</translation>
-<translation id="6287852322318138013">בחירת יישום לפתיחת הקובץ</translation>
+<translation id="6287852322318138013">בחירת אפליקציה לפתיחת הקובץ</translation>
 <translation id="6305012486838822927">מקלדת לאית</translation>
 <translation id="6339034549827494595">‏מקלדת רוסית פונטית (AATSEEL)</translation>
 <translation id="6339145975392024142">‏מקלדת ארה"ב בינלאומית (PC)</translation>
@@ -511,7 +511,7 @@
 <translation id="6358884629796491903">דרקון</translation>
 <translation id="637062427944097960">הקובץ הזה נפתח בשולחן עבודה שונה. עבור אל <ph name="USER_NAME" />‏ (<ph name="MAIL_ADDRESS" />) כדי לראות אותו.</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> פריטים</translation>
-<translation id="6398765197997659313">צא ממסך מלא</translation>
+<translation id="6398765197997659313">יציאה ממסך מלא</translation>
 <translation id="642282551015776456">ייתכן שלא ניתן להשתמש בשם זה כשם קובץ או תיקייה</translation>
 <translation id="6462109140674788769">מקלדת יוונית</translation>
 <translation id="6466492211071551451">מקלדת אירית</translation>
@@ -648,7 +648,7 @@
 <translation id="7853966320808728790">‏BÉPO - צרפתית</translation>
 <translation id="7864662577698025113">הוספת שירות חדש</translation>
 <translation id="7873831373602885875">לא ניתן לשמור בתיקייה <ph name="FOLDER_NAME" />. כל העריכות יישמרו בתיקייה<ph name="DOWNLOADS_FOLDER" /> שנמצאת בתיקיית ההורדות.</translation>
-<translation id="7881969471599061635">השבת כתוביות</translation>
+<translation id="7881969471599061635">השבתת כתוביות</translation>
 <translation id="78946041517601018">‏כונני Drive משותפים</translation>
 <translation id="7896906914454843592">מקלדת מורחבת של ארה"ב</translation>
 <translation id="7898607018410277265">מקלדת גוג'אראטי (פונטית חדשה)</translation>

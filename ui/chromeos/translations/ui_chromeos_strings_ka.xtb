@@ -207,6 +207,7 @@
 <translation id="3252266817569339921">ფრანგული</translation>
 <translation id="3254434849914415189">აირჩიეთ ნაგულისხმევი პროგრამა <ph name="FILE_TYPE" /> ფაილებისთვის:</translation>
 <translation id="3264582393905923483">კონტექსტი</translation>
+<translation id="3272909651715601089">„<ph name="PATH" />“ ვერ გაიხსნა</translation>
 <translation id="3280431534455935878">მომზადება</translation>
 <translation id="3280987981688031357">გრამფირფიტა</translation>
 <translation id="3296763833017966289">ქართული</translation>
@@ -309,6 +310,7 @@
 <translation id="4477219268485577442">ბულგარული ფონეტიკური</translation>
 <translation id="4479812471636796472">შეერთებული შტატების Dvorak კლავიატურა</translation>
 <translation id="4522570452068850558">დეტალები</translation>
+<translation id="4527800702232535228">ეს საქაღალდე გაზიარებულია Parallels Desktop-თან</translation>
 <translation id="4552678318981539154">მეტი მეხსიერების ყიდვა</translation>
 <translation id="4559767610552730302">ბოკე</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ფაილი</translation>
@@ -326,6 +328,7 @@
 <translation id="4694604912444486114">მაიმუნი</translation>
 <translation id="4697043402264950621">„<ph name="COLUMN_NAME" />“-ში ფაილების სია დალაგებულია ზრდადი მიმდევრობით.</translation>
 <translation id="4711094779914110278">თურქული</translation>
+<translation id="4712283082407695269">მიმდინარეობს „<ph name="PATH" />“-ის გახსნა</translation>
 <translation id="4713544552769165154">ეს ფაილი შემუშავებულია კომპიუტერისთვის, რომელიც იყენებს Macintosh პროგრამულ უზრუნველყოფას. იგი არ არის თავსებადი თქვენს მოწყობილობასთან, რომელშიც გაშვებულია Chrome OS. შესაფერისი პროგრამა მოძებნეთ <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />-ში.<ph name="BEGIN_LINK_HELP" />შეიტყვეთ მეტი<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> ფოტოს სარეზერვო ასლი შენახულია</translation>
 <translation id="4725511304875193254">კორგი</translation>
@@ -524,6 +527,7 @@
 <translation id="6558280019477628686">მოხდა შეცდომა. ზოგიერთი ერთეული შეიძლება არ წაშლილიყო.</translation>
 <translation id="656398493051028875">„<ph name="FILENAME" />“-ის წაშლა…</translation>
 <translation id="6581162200855843583">Google Drive-ის ბმული</translation>
+<translation id="6594855146910089723">ეს საქაღალდე გაზიარებულია Linux-სა და Parallels Desktop-თან</translation>
 <translation id="6607272825297743757">ფაილის ინფორმაცია</translation>
 <translation id="6609332149380188670">Parallels Desktop-თან გაზიარებულია <ph name="NUMBER_OF_ITEMS" /> საქაღალდე</translation>
 <translation id="6629841649550503054">ყველაფრის სარეზერვო ასლი შენახულია <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />-ში</translation>

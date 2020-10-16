@@ -870,6 +870,7 @@
 <translation id="1976307821760494606"><ph name="DOMAIN" /> ได้ปิดใช้การแก้ไขข้อบกพร่อง ADB ซึ่งจะเป็นการรีเซ็ต <ph name="DEVICE_TYPE" /> ของคุณใน 24 ชั่วโมง โปรดสำรองข้อมูลไฟล์ที่ต้องการเก็บไว้</translation>
 <translation id="1977965994116744507">นำโทรศัพท์เข้ามาใกล้ๆ เพื่อปลดล็อก <ph name="DEVICE_TYPE" /></translation>
 <translation id="1978006917103730774">การอัปเดตซอฟต์แวร์และการรักษาความปลอดภัยในอนาคตจะติดตั้งโดยอัตโนมัติ</translation>
+<translation id="1978057560491495741">นำที่อยู่ออก</translation>
 <translation id="1979095679518582070">การปิดฟีเจอร์นี้จะไม่ส่งผลต่อความสามารถของอุปกรณ์ในการส่งข้อมูลที่จำเป็นต่อบริการสำคัญ เช่น การอัปเดตระบบและการรักษาความปลอดภัย</translation>
 <translation id="1979280758666859181">คุณกำลังเปลี่ยนเป็นช่องที่มี <ph name="PRODUCT_NAME" /> เวอร์ชันเก่ากว่า การเปลี่ยนช่องจะถูกนำมาใช้เมื่อเวอร์ชันของช่องตรงกับเวอร์ชันที่ติดตั้งอยู่ในอุปกรณ์ของคุณในปัจจุบัน</translation>
 <translation id="197989455406964291">KDC ไม่รองรับการเข้ารหัสประเภทนี้</translation>
@@ -1071,6 +1072,7 @@
 <translation id="2224444042887712269">การตั้งค่านี้เป็นของ <ph name="OWNER_EMAIL" /></translation>
 <translation id="2224551243087462610">แก้ไขชื่อโฟลเดอร์</translation>
 <translation id="2225864335125757863">เปลี่ยนรหัสผ่านเหล่านี้ทันทีเพื่อรักษาความปลอดภัยของบัญชี</translation>
+<translation id="2226204716217107988">ต้องการเปลี่ยนไปใช้โปรไฟล์อื่นไหม</translation>
 <translation id="2226449515541314767">ไซต์นี้ถูกบล็อกจากการมีสิทธิ์ควบคุมอุปกรณ์ MIDI เต็มรูปแบบ</translation>
 <translation id="2226907662744526012">ปลดล็อกโดยอัตโนมัติเมื่อมีการป้อน PIN</translation>
 <translation id="222704500187107962">ระบบจะนำข้อยกเว้นนี้ออกโดยอัตโนมัติหลังคุณออกจากเซสชันที่ไม่ระบุตัวตนในปัจจุบัน</translation>
@@ -1140,6 +1142,7 @@
 <translation id="2307462900900812319">กำหนดค่าเครือข่าย</translation>
 <translation id="230927227160767054">หน้าเว็บนี้ต้องการติดตั้งเครื่องจัดการบริการ</translation>
 <translation id="2309620859903500144">เว็บไซต์นี้ถูกบล็อกไม่ให้เข้าถึงเซ็นเซอร์ตรวจจับการเคลื่อนไหวหรือแสง</translation>
+<translation id="2312219318583366810">URL ของหน้าเว็บ</translation>
 <translation id="2314165183524574721">การตั้งค่าระดับการเข้าถึงปัจจุบันซ่อนอยู่</translation>
 <translation id="2314774579020744484">ภาษาที่ใช้เมื่อแปลหน้า</translation>
 <translation id="2315414688463285945">เกิดข้อผิดพลาดขณะกำหนดค่าไฟล์ Linux โปรดลองอีกครั้ง</translation>
@@ -2343,6 +2346,7 @@
 <translation id="3713047097299026954">คีย์ความปลอดภัยนี้ไม่มีข้อมูลการลงชื่อเข้าใช้ใดๆ</translation>
 <translation id="3714195043138862580">อุปกรณ์สาธิตนี้ได้รับการกำหนดไว้ให้อยู่ในสถานะยกเลิกการจัดสรร</translation>
 <translation id="3714633008798122362">ปฏิทินเว็บ</translation>
+<translation id="3715954932774762075">แอปและเว็บไซต์ที่มีหลายภาษาจะใช้ภาษาแรกที่รองรับจากรายการนี้ ระบบจะซิงค์ค่ากำหนดเหล่านี้กับการตั้งค่าเบราว์เซอร์ <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">หน้าแรก</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">คุณและ Google</translation>
@@ -2503,6 +2507,7 @@
 <translation id="3882165008614329320">วิดีโอที่มีอยู่จากกล้องหรือไฟล์</translation>
 <translation id="3886446263141354045">ระบบส่งคำขอเข้าถึงเว็บไซต์นี้ของคุณให้ <ph name="NAME" /> แล้ว</translation>
 <translation id="3888550877729210209">จดโน้ตด้วย <ph name="LOCK_SCREEN_APP_NAME" /></translation>
+<translation id="3890064827463908288">เปิดการซิงค์ของ Chrome เพื่อใช้การซิงค์ Wi-Fi</translation>
 <translation id="3892414795099177503">เพิ่ม OpenVPN/L2TP...</translation>
 <translation id="3893536212201235195">อ่านและเปลี่ยนการตั้งค่าการเข้าถึง</translation>
 <translation id="3893630138897523026">ChromeVox (การตอบสนองด้วยเสียง)</translation>
@@ -3774,6 +3779,7 @@
 <translation id="5449588825071916739">บุ๊กมาร์กแท็บทั้งหมด</translation>
 <translation id="5449716055534515760">ปิดหน้าต่&amp;าง</translation>
 <translation id="5452974209916053028">เซสชันไม่ระบุตัวตนปัจจุบัน: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" /> <ph name="RECENT_PERMISSIONS_CHANGE_1" /> <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
+<translation id="5454005855577728171">ย้ายลูกโป่งคำบรรยายไปที่ <ph name="POSITION_ON_SCREEN_FROM_LEFT" />% ในแนวนอนและ <ph name="POSITION_ON_SCREEN_FROM_TOP" />% ในแนวตั้งแล้ว</translation>
 <translation id="5454166040603940656">กับ <ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">ไม่ถูกต้อง</translation>
 <translation id="5457459357461771897">อ่านและลบรูปภาพ เพลง และสื่ออื่นๆ จากคอมพิวเตอร์ของคุณ</translation>
@@ -3917,6 +3923,7 @@
 <translation id="5602765853043467355">ล้างบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และอื่นๆ จากอุปกรณ์นี้</translation>
 <translation id="5605623530403479164">เครื่องมือค้นหาอื่นๆ</translation>
 <translation id="5605758115928394442">เราส่งการแจ้งเตือนให้คุณทางโทรศัพท์แล้วเพื่อยืนยันตัวตน</translation>
+<translation id="560834977503641186">การซิงค์ Wi-Fi ดูข้อมูลเพิ่มเติม</translation>
 <translation id="5608580678041221894">แตะแป้นต่อไปนี้เพื่อปรับหรือเลื่อนพื้นที่ครอบตัด</translation>
 <translation id="5609231933459083978">ดูเหมือนแอปพลิเคชันไม่ถูกต้อง</translation>
 <translation id="5610038042047936818">เปลี่ยนเป็นโหมดกล้อง</translation>
@@ -4107,6 +4114,7 @@
 <translation id="5841270259333717135">กำหนดค่าอีเทอร์เน็ต</translation>
 <translation id="5842497610951477805">เปิดใช้บลูทูธ</translation>
 <translation id="5843706793424741864">ฟาเรนไฮต์</translation>
+<translation id="584451707753263735">มองเห็นคำบรรยายสดอยู่ กด F6 เพื่อเปลี่ยนโฟกัส</translation>
 <translation id="5844574845205796324">แนะนำเนื้อหาใหม่ให้สำรวจ</translation>
 <translation id="5846200638699387931">ข้อผิดพลาดทางไวยากรณ์ที่แสดงความสัมพันธ์: <ph name="ERROR_LINE" /></translation>
 <translation id="5846807460505171493">ติดตั้งอัปเดตและแอป การดำเนินการต่อหมายความว่าคุณยินยอมให้อุปกรณ์เครื่องนี้ดาวน์โหลดและติดตั้งอัปเดตและแอปจาก Google, ผู้ให้บริการ และผู้ผลิตอุปกรณ์ของคุณโดยอัตโนมัติด้วย ซึ่งอาจมีการใช้อินเทอร์เน็ตมือถือ แอปบางแอปอาจมีการซื้อในแอป</translation>
@@ -5361,6 +5369,7 @@
 <translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> แสดงแบบเต็มหน้าจออยู่</translation>
 <translation id="7340650977506865820">เว็บไซต์กำลังแชร์หน้าจอของคุณ</translation>
 <translation id="7341834142292923918">ต้องการเข้าถึงเว็บไซต์นี้</translation>
+<translation id="7343372807593926528">โปรดอธิบายปัญหาก่อนส่งความคิดเห็น</translation>
 <translation id="7345706641791090287">ยืนยันรหัสผ่าน</translation>
 <translation id="7346909386216857016">รับทราบ</translation>
 <translation id="7347452120014970266">การดำเนินการนี้จะล้างข้อมูลและคุกกี้ทั้งหมดที่ <ph name="ORIGIN_NAME" /> และแอปที่ติดตั้งโดยกลุ่มนี้จัดเก็บไว้</translation>
@@ -5777,6 +5786,7 @@
 <translation id="7819857487979277519">PSK (WPA หรือ RSN)</translation>
 <translation id="7819992334107904369">การซิงค์ของ Chrome</translation>
 <translation id="782057141565633384">คัด&amp;ลอกที่อยู่วิดีโอ</translation>
+<translation id="7822187537422052256">คุณแน่ใจไหมว่าต้องการนำที่อยู่นี้ออก</translation>
 <translation id="7824864914877854148">สำรองข้อมูลให้เสร็จสมบูรณ์ไม่ได้เนื่องจากเกิดข้อผิดพลาด</translation>
 <translation id="7825666486843191125">รายชื่อติดต่อทั้งหมดที่อยู่ใกล้ๆ เมื่อหน้าจอของคุณไม่ได้ล็อกอยู่</translation>
 <translation id="782590969421016895">ใช้หน้าเว็บปัจจุบัน</translation>
@@ -6303,6 +6313,7 @@
 <translation id="8419098111404128271">ผลการค้นหาของ "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="8419368276599091549">ยินดีต้อนรับสู่ <ph name="DEVICE_TYPE" />!</translation>
 <translation id="8420308167132684745">แก้ไขรายการในพจนานุกรม</translation>
+<translation id="8421361468937925547">คำบรรยายสด (ภาษาอังกฤษเท่านั้น)</translation>
 <translation id="8422787418163030046">ไม่มีถาด</translation>
 <translation id="8425213833346101688">เปลี่ยน</translation>
 <translation id="8425492902634685834">กำหนดลงบนทาสก์บาร์</translation>
@@ -6331,6 +6342,7 @@
 <translation id="8449036207308062757">จัดการพื้นที่เก็บข้อมูล</translation>
 <translation id="8452135315243592079">ไม่มีซิมการ์ด</translation>
 <translation id="8455026683977728932">เปิดใช้ภาพ ADB ไม่สำเร็จ</translation>
+<translation id="8456398879271637452">มองเห็นคำบรรยายสดอยู่ กด Ctrl + ย้อนกลับ หรือ Ctrl + ไปข้างหน้าเพื่อเปลี่ยนโฟกัส</translation>
 <translation id="845702320058262034">เชื่อมต่อไม่ได้ ตรวจสอบว่าบลูทูธโทรศัพท์เปิดอยู่</translation>
 <translation id="8457451314607652708">นำเข้าบุ๊กมาร์ก</translation>
 <translation id="8458627787104127436">เปิดทั้งหมด (<ph name="URL_COUNT" />) ในหน้าต่างใหม่</translation>
@@ -6841,6 +6853,7 @@
 <translation id="9027459031423301635">เปิดลิงก์ในแ&amp;ท็บใหม่</translation>
 <translation id="9030515284705930323">องค์กรของคุณยังไม่ได้เปิดใช้ Google Play Store สำหรับบัญชีของคุณ โปรดสอบถามข้อมูลเพิ่มเติมจากผู้ดูแลระบบ</translation>
 <translation id="9030785788945687215">Gmail</translation>
+<translation id="9030855135435061269">ระบบไม่รองรับ <ph name="PLUGIN_NAME" /> อีกต่อไป</translation>
 <translation id="9031549947500880805">สำรองข้อมูลไปที่ Google ไดรฟ์ กู้คืนข้อมูลหรือเปลี่ยนอุปกรณ์ได้ง่ายๆ ทุกเมื่อ ข้อมูลสำรองจะมีข้อมูลแอปอยู่ด้วย</translation>
 <translation id="9033765790910064284">ดำเนินการต่อ</translation>
 <translation id="9033857511263905942">&amp;วาง</translation>
@@ -6849,6 +6862,7 @@
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{คุณใช้ลายนิ้วมือได้อีก 1 ครั้ง}other{คุณใช้ลายนิ้วมือได้อีก # ครั้ง}}</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9040661932550800571">อัปเดตรหัสผ่านสำหรับ <ph name="ORIGIN" /> ไหม</translation>
+<translation id="9041049756004505730">มองเห็นคำบรรยายสดอยู่ กด ⌘ + Option + ลูกศรขึ้นหรือลูกศรลงเพื่อเปลี่ยนโฟกัส</translation>
 <translation id="9041692268811217999">ผู้ดูแลระบบปิดการเข้าถึงไฟล์ในเครื่องของคุณ</translation>
 <translation id="904224458472510106">การดำเนินการนี้เลิกทำไม่ได้</translation>
 <translation id="9042893549633094279">ข้อมูลส่วนบุคคลและความปลอดภัย</translation>
@@ -6887,6 +6901,7 @@
 <translation id="9088446193279799727">กำหนดค่า Linux ไม่ได้ เชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง</translation>
 <translation id="9088917181875854783">โปรดยืนยันว่ารหัสผ่านนี้แสดงบน "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9089416786594320554">วิธีป้อนข้อมูล</translation>
+<translation id="909108997331068008">โปรไฟล์ของ <ph name="EXISTING_USER" /> ได้ลงชื่อเข้าใช้ <ph name="NEW_USER" /> อยู่แล้ว</translation>
 <translation id="9093429538970210897">ขอแนะนำให้ทำการสำรองไฟล์เผื่อในกรณีที่ทำการอัปเกรดไม่สำเร็จ เมื่อเริ่มการอัปเกรดจะทำให้ Linux (เบต้า) ปิดลง โปรดบันทึกไฟล์ที่เปิดอยู่ก่อนดำเนินการต่อ</translation>
 <translation id="9094033019050270033">อัปเดตรหัสผ่าน</translation>
 <translation id="9094038138851891550">ชื่อผู้ใช้ไม่ถูกต้อง</translation>
@@ -7060,5 +7075,6 @@
 <translation id="994289308992179865">ว&amp;นกลับ</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">กำลังทำการเชื่อมต่ออย่างปลอดภัย...</translation>
+<translation id="99731366405731005">เปิด<ph name="LINK1_BEGIN" />การซิงค์ของ Chrome<ph name="LINK1_END" /> เพื่อใช้การซิงค์ Wi-Fi <ph name="LINK2_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">&amp;ตรวจสอบ</translation>
 </translationbundle>

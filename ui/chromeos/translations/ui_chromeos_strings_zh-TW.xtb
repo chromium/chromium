@@ -207,6 +207,7 @@
 <translation id="3252266817569339921">法文</translation>
 <translation id="3254434849914415189">選擇開啟 <ph name="FILE_TYPE" /> 檔案的預設應用程式：</translation>
 <translation id="3264582393905923483">內容</translation>
+<translation id="3272909651715601089">無法開啟「<ph name="PATH" />」</translation>
 <translation id="3280431534455935878">準備中</translation>
 <translation id="3280987981688031357">黑膠唱片</translation>
 <translation id="3296763833017966289">喬治亞文</translation>
@@ -309,6 +310,7 @@
 <translation id="4477219268485577442">保加利亞文 (拼音)</translation>
 <translation id="4479812471636796472">美式 Dvorak 鍵盤</translation>
 <translation id="4522570452068850558">詳細資訊</translation>
+<translation id="4527800702232535228">已與 Parallls Desktop 共用這個資料夾</translation>
 <translation id="4552678318981539154">購買更多儲存空間</translation>
 <translation id="4559767610552730302">散景</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> 檔案</translation>
@@ -326,6 +328,7 @@
 <translation id="4694604912444486114">猴子</translation>
 <translation id="4697043402264950621">檔案清單已依<ph name="COLUMN_NAME" />遞增排序。</translation>
 <translation id="4711094779914110278">土耳其文</translation>
+<translation id="4712283082407695269">正在開啟「<ph name="PATH" />」</translation>
 <translation id="4713544552769165154">這個檔案是專為使用 Macintosh 軟體的電腦所設計，與搭載 Chrome 作業系統的裝置不相容。請前往 <ph name="BEGIN_LINK" />Chrome 線上應用程式商店<ph name="END_LINK" />尋找適合的替代應用程式。<ph name="BEGIN_LINK_HELP" />瞭解詳情<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">已備份 <ph name="FILE_COUNT" /> 張相片</translation>
 <translation id="4725511304875193254">柯基犬</translation>
@@ -525,6 +528,7 @@
 <translation id="6558280019477628686">發生錯誤，系統可能尚未刪除部分項目。</translation>
 <translation id="656398493051028875">正在刪除「<ph name="FILENAME" />」...</translation>
 <translation id="6581162200855843583">Google 雲端硬碟連結</translation>
+<translation id="6594855146910089723">已與 Linux 和 Parallels Desktop 共用這個資料夾</translation>
 <translation id="6607272825297743757">檔案資訊</translation>
 <translation id="6609332149380188670">已與 Parallels Desktop 共用 <ph name="NUMBER_OF_ITEMS" /> 個資料夾</translation>
 <translation id="6629841649550503054">所有檔案都已備份到 <ph name="BEGIN_LINK" />Google 雲端硬碟<ph name="END_LINK" />！</translation>

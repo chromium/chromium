@@ -870,6 +870,7 @@
 <translation id="1976307821760494606"><ph name="DOMAIN" /> ने ADB को डीबग करने की सुविधा बंद कर दी है. इससे आपका <ph name="DEVICE_TYPE" />, 24 घंटे में रीसेट हो जाएगा. आप जिन फ़ाइलों को सेव रखना चाहते हैं उनका बैक अप लें.</translation>
 <translation id="1977965994116744507">अपने <ph name="DEVICE_TYPE" /> को अनलॉक करने के लिए अपने फ़ोन को पास लाएं.</translation>
 <translation id="1978006917103730774">आने वाले सॉफ़्टवेयर और सुरक्षा के अपडेट अपने आप इंस्टॉल हो जाएंगे.</translation>
+<translation id="1978057560491495741">पता हटाएं</translation>
 <translation id="1979095679518582070">इस सुविधा को बंद करने के बाद भी यह डिवाइस, सिस्टम अपडेट, और सुरक्षा जैसी ज़रूरी सेवाएं पाने के लिए जानकारी भेज सकेगा.</translation>
 <translation id="1979280758666859181">आप <ph name="PRODUCT_NAME" /> के पुराने वर्शन वाले चैनल में बदल रहे हैं. चैनल बदलाव तब लागू किया जाएगा जब चैनल का वर्शन आपके डिवाइस पर वर्तमान में इंस्टॉल किए गए वर्शन से मिलान करेगा.</translation>
 <translation id="197989455406964291">केडीसी में सुरक्षित करने का यह तरीका इस्तेमाल नहीं किया जा सकता.</translation>
@@ -1071,6 +1072,7 @@
 <translation id="2224444042887712269">यह सेटिंग <ph name="OWNER_EMAIL" /> से संबंधित है.</translation>
 <translation id="2224551243087462610">फ़ोल्डर के नाम में बदलाव करें</translation>
 <translation id="2225864335125757863">अपने खाते को सुरक्षित रखने के लिए, इन पासवर्ड को तुरंत बदलें:</translation>
+<translation id="2226204716217107988">क्या आप प्रोफ़ाइल बदलना चाहते हैं?</translation>
 <translation id="2226449515541314767">इस साइट को MIDI डिवाइस का पूरा नियंत्रण रखने से ब्लॉक कर दिया गया है.</translation>
 <translation id="2226907662744526012">पिन डालकर अपने-आप अनलॉक होने की सुविधा चालू करें</translation>
 <translation id="222704500187107962">आपके मौजूदा गुप्त सेशन से बाहर आने के बाद यह अपवाद अपने-आप हट जाएगा</translation>
@@ -1140,6 +1142,7 @@
 <translation id="2307462900900812319">नेटवर्क कॉन्फ़िगर करें</translation>
 <translation id="230927227160767054">यह पेज सेवा हैंडलर इंस्टॉल करना चाहता है.</translation>
 <translation id="2309620859903500144">इस साइट को आपके डिवाइस के गति या रोशनी के सेंसर ऐक्सेस करने से ब्लॉक कर दिया गया है.</translation>
+<translation id="2312219318583366810">पेज का यूआरएल</translation>
 <translation id="2314165183524574721">'डिवाइस किसको दिखाई दे' सेटिंग अभी इस पर सेट है: छिपा हुआ</translation>
 <translation id="2314774579020744484">पेजों के अनुवाद के लिए इस्तेमाल की गई भाषा</translation>
 <translation id="2315414688463285945">Linux फ़ाइलें कॉन्फ़िगर करने में गड़बड़ी. कृपया फिर से कोशिश करें.</translation>
@@ -2343,6 +2346,7 @@
 <translation id="3713047097299026954">इस सुरक्षा कुंजी में साइन इन का कोई डेटा मौजूद नहीं है</translation>
 <translation id="3714195043138862580">इस डेमो डिवाइस को इस्तेमाल से बाहर कर दिया गया है.</translation>
 <translation id="3714633008798122362">वेब कैलेंडर</translation>
+<translation id="3715954932774762075">कई भाषाओं में काम करने वाले ऐप्लिकेशन और वेबसाइटें, इस सूची में दी गई पहली भाषा का इस्तेमाल करेंगी. इन प्राथमिकताओं को आपके ब्राउज़र की सेटिंग के साथ सिंक किया जाता है. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">होमपेज</translation>
 <translation id="372062398998492895">CUPS प्रिंटर</translation>
 <translation id="3721119614952978349">आप और Google</translation>
@@ -2503,6 +2507,7 @@
 <translation id="3882165008614329320">कैमरा या फ़ाइल से मौजूदा वीडियो</translation>
 <translation id="3886446263141354045">यह साइट एक्सेस करने का आपका अनुरोध <ph name="NAME" /> को भेज दिया गया है</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> से नोट लेना</translation>
+<translation id="3890064827463908288">'वाई-फ़ाई सिंक' इस्तेमाल करने के लिए 'Chrome सिंक' चालू करें</translation>
 <translation id="3892414795099177503">OpenVPN / L2TP जोड़ें...</translation>
 <translation id="3893536212201235195">अपनी सुलभता सेटिंग पढ़ें और उसमें बदलाव करें</translation>
 <translation id="3893630138897523026">ChromeVox (बोला गया फ़ीडबैक)</translation>
@@ -3773,6 +3778,7 @@
 <translation id="5449588825071916739">सभी टैब बुकमार्क करें</translation>
 <translation id="5449716055534515760">विं&amp;डो बंद करें</translation>
 <translation id="5452974209916053028">मौजूदा गुप्त सत्र: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
+<translation id="5454005855577728171">कैप्शन बबल को बाईं से दाईं ओर <ph name="POSITION_ON_SCREEN_FROM_LEFT" />% और ऊपर से नीचे की ओर <ph name="POSITION_ON_SCREEN_FROM_TOP" />% ले जाया गया</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> के साथ</translation>
 <translation id="5457113250005438886">अमान्य</translation>
 <translation id="5457459357461771897">अपने कंप्यूटर से फ़ोटो, संगीत और दूसरे मीडिया पढ़ें और मिटाएं</translation>
@@ -3916,6 +3922,7 @@
 <translation id="5602765853043467355">इस डिवाइस से बुकमार्क, इतिहास, पासवर्ड वगैरह साफ़ करें</translation>
 <translation id="5605623530403479164">दूसरे सर्च इंजन</translation>
 <translation id="5605758115928394442">आपकी पहचान की पुष्टि करने के लिए, आपके फ़ोन पर एक सूचना भेजी गई थी.</translation>
+<translation id="560834977503641186">'वाई-फ़ाई सिंक' के बारे में ज़्यादा जानें</translation>
 <translation id="5608580678041221894">काटे जाने वाले क्षेत्र को एडजस्ट करने या उसकी जगह बदलने के लिए इन कुंजियों पर टैप करें</translation>
 <translation id="5609231933459083978">ऐप्लिकेशन अमान्य मालूम होता है.</translation>
 <translation id="5610038042047936818">कैमरा मोड में स्विच करें</translation>
@@ -4106,6 +4113,7 @@
 <translation id="5841270259333717135">ईथरनेट कॉन्फ़िगर करें</translation>
 <translation id="5842497610951477805">ब्लूटूथ चालू है</translation>
 <translation id="5843706793424741864">फ़ैरनहाइट</translation>
+<translation id="584451707753263735">लाइव कैप्शन की सुविधा चालू है, फ़ोकस को किसी दूसरे डायलॉग पर ले जाने के लिए F6 दबाएं</translation>
 <translation id="5844574845205796324">एक्सप्लोर करने के लिए नया कॉन्टेंट सुझाएं</translation>
 <translation id="5846200638699387931">रिलेशन सिंटैक्स गड़बड़ी: <ph name="ERROR_LINE" /></translation>
 <translation id="5846807460505171493">अपडेट और ऐप्लिकेशन इंस्टॉल करें. जारी रखकर, आप इस बात की इजाज़त देते हैं कि यह डिवाइस Google, आपको मोबाइल और इंटरनेट सेवा देने वाली कंपनी, और आपका डिवाइस बनाने वाली कंपनी से अपने-आप अपडेट और ऐप्लिकेशन डाउनलोड और उन्हें इंस्टॉल कर सकता है. इसके लिए, शायद आपके मोबाइल डेटा का इस्तेमाल किया जाए. इनमें से कुछ ऐप्लिकेशन में इन-ऐप्लिकेशन खरीदारी की सुविधा भी हो सकती है.</translation>
@@ -5360,6 +5368,7 @@
 <translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> अब फ़ुल स्‍क्रीन है.</translation>
 <translation id="7340650977506865820">साइट आपकी स्क्रीन शेयर कर रही है</translation>
 <translation id="7341834142292923918">इस साइट का ऐक्सेस चाहिए</translation>
+<translation id="7343372807593926528">'भेजें' बटन पर क्लिक करने से पहले, समस्या के बारे में बताएं.</translation>
 <translation id="7345706641791090287">अपने पासवर्ड की पुष्टि करें</translation>
 <translation id="7346909386216857016">ठीक है, समझ लिया</translation>
 <translation id="7347452120014970266">इससे वे सभी डेटा और कुकी मिट जाएंगे जिन्हें <ph name="ORIGIN_NAME" /> और इंस्टॉल किए गए ऐप्लिकेशन ने सेव किया है</translation>
@@ -5775,6 +5784,7 @@
 <translation id="7819857487979277519">PSK (WPA या RSN)</translation>
 <translation id="7819992334107904369">Chrome सिंक</translation>
 <translation id="782057141565633384">वीडियो के पते को कॉ&amp;पी करें</translation>
+<translation id="7822187537422052256">क्या आप वाकई इस पते को हटाना चाहते हैं?</translation>
 <translation id="7824864914877854148">गड़बड़ी की वजह से बैकअप पूरा नहीं किया जा सका</translation>
 <translation id="7825666486843191125">डिवाइस की स्क्रीन अनलॉक होने पर, आस-पास शेयर करने की सुविधा 'किसको दिखाई दे' की सेटिंग अभी इस पर सेट है: सभी संपर्क</translation>
 <translation id="782590969421016895">वर्तमान पृष्ठों का उपयोग करें</translation>
@@ -6301,6 +6311,7 @@
 <translation id="8419098111404128271">'<ph name="SEARCH_TEXT" />' के खोज नतीजे</translation>
 <translation id="8419368276599091549">आपके <ph name="DEVICE_TYPE" /> में स्वागत है!</translation>
 <translation id="8420308167132684745">शब्दकोश के लिए लिखी गई चीज़ों में बदलाव करें</translation>
+<translation id="8421361468937925547">लाइव कैप्शन की सुविधा (सिर्फ़ अंग्रेज़ी में उपलब्ध)</translation>
 <translation id="8422787418163030046">प्रिंटर में ट्रे नहीं है</translation>
 <translation id="8425213833346101688">बदलें</translation>
 <translation id="8425492902634685834">टास्कबार में पिन करें</translation>
@@ -6329,6 +6340,7 @@
 <translation id="8449036207308062757">जगह प्रबंधित करें</translation>
 <translation id="8452135315243592079">अनुपलब्ध SIM कार्ड</translation>
 <translation id="8455026683977728932">ADB इलस्ट्रेशन चालू नहीं किया जा सका</translation>
+<translation id="8456398879271637452">लाइव कैप्शन की सुविधा चालू है, फ़ोकस को किसी दूसरे डायलॉग पर ले जाने के लिए Ctrl + Back या Ctrl + Forward बटन दबाएं</translation>
 <translation id="845702320058262034">कनेक्ट नहीं किया जा सकता. देखें कि आपके फ़ोन का ब्लूटूथ चालू है या नहीं.</translation>
 <translation id="8457451314607652708">बुकमार्क आयात करें</translation>
 <translation id="8458627787104127436">सभी यूआरएल (<ph name="URL_COUNT" />) नई विंडो में खोलें</translation>
@@ -6839,6 +6851,7 @@
 <translation id="9027459031423301635">नए &amp;टैब में लिंक खोलें</translation>
 <translation id="9030515284705930323">आपके संगठन ने आपके खाते के लिए Google Play स्टोर को सक्षम नहीं किया है. ज़्यादा जानकारी के लिए अपने व्यवस्थापक से संपर्क करें.</translation>
 <translation id="9030785788945687215">Gmail</translation>
+<translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> अब काम नहीं करता</translation>
 <translation id="9031549947500880805">'Google डिस्क' में बैक अप लें. अपना डेटा आसानी से वापस लाएं या किसी भी समय डिवाइस बदलें. आपके बैक अप में ऐप्लिकेशन डेटा शामिल होता है.</translation>
 <translation id="9033765790910064284">फिर भी जारी रखें</translation>
 <translation id="9033857511263905942">&amp;चिपकाएं</translation>
@@ -6847,6 +6860,7 @@
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{आप एक बार और कोशिश कर सकते हैं.}one{आप # बार और कोशिश कर सकते हैं.}other{आप # बार और कोशिश कर सकते हैं.}}</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9040661932550800571"><ph name="ORIGIN" /> के लिए पासवर्ड अपडेट करें?</translation>
+<translation id="9041049756004505730">लाइव कैप्शन की सुविधा चालू है, फ़ोकस को किसी दूसरे डायलॉग पर ले जाने के लिए ⌘ + Option + ऊपर या नीचे की ओर तीर का निशान दबाएं</translation>
 <translation id="9041692268811217999">आपके एडमिन ने आपकी मशीन पर स्थानीय फ़ाइलों की एक्सेस बंद कर दी है</translation>
 <translation id="904224458472510106">इस बदलाव को पहले जैसा नहीं किया जा सकता</translation>
 <translation id="9042893549633094279">निजता और सुरक्षा</translation>
@@ -6885,6 +6899,7 @@
 <translation id="9088446193279799727">Linux को कॉन्फ़िगर नहीं किया जा सका. इंटरनेट से जोड़ें और फिर से कोशिश करें.</translation>
 <translation id="9088917181875854783">कृपया पुष्टि करें कि यह पासकुंजी "<ph name="DEVICE_NAME" />" पर दिखाई गई है:</translation>
 <translation id="9089416786594320554">इनपुट के तरीके</translation>
+<translation id="909108997331068008"><ph name="EXISTING_USER" /> की प्रोफ़ाइल से <ph name="NEW_USER" /> में पहले ही साइन इन किया जा चुका है</translation>
 <translation id="9093429538970210897">अपग्रेड पूरा न होने की स्थिति में फ़ाइलों के बैक अप लेने का सुझाव दिया जाता है. अपग्रेड चालू करने से, Linux (बीटा) पूरी तरह बंद हो जाएगा. प्रोसेस शुरू करने से पहले, कृपया खुली हुई फ़ाइलें सेव कर लें.</translation>
 <translation id="9094033019050270033">पासवर्ड अपडेट करें</translation>
 <translation id="9094038138851891550">उपयोगकर्ता का नाम अमान्य है</translation>
@@ -7058,5 +7073,6 @@
 <translation id="994289308992179865">&amp;लूप</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">सुरक्षित कनेक्शन स्थापित कर रहा है...</translation>
+<translation id="99731366405731005">'वाई-फ़ाई सिंक' इस्तेमाल करने के लिए, <ph name="LINK1_BEGIN" />Chrome सिंक<ph name="LINK1_END" /> चालू करें. <ph name="LINK2_BEGIN" />ज़्यादा जानें<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">नि&amp;रीक्षण करें</translation>
 </translationbundle>

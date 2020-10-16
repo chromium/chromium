@@ -52,7 +52,7 @@
 <translation id="2192232475740621500">שימוש בדחיסות נמוכה</translation>
 <translation id="219905428774326614">מפעיל האפליקציות, כל האפליקציות</translation>
 <translation id="2267918077332197517">חסימת כל ההודעות מהאתר הזה</translation>
-<translation id="2289052229480071835">הקש על יעדי המגע במסך.</translation>
+<translation id="2289052229480071835">יש להקיש על יעדי המגע במסך.</translation>
 <translation id="2295140143284145483">סקר</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
 <translation id="2353636109065292463">בדיקת חיבור האינטרנט</translation>
@@ -111,14 +111,14 @@
 <translation id="3909791450649380159">גז&amp;ור</translation>
 <translation id="3990502903496589789">קצה ימני</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{הודעה אחת שלא נקראה}two{2 הודעות שלא נקראו}many{# הודעות שלא נקראו}other{# הודעות שלא נקראו}}</translation>
-<translation id="4202807286478387388">קפוץ</translation>
+<translation id="4202807286478387388">קפיצה</translation>
 <translation id="4250229828105606438">צילום מסך</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{לפני חודש אחד}two{לפני חודשיים}many{לפני # חודשים}other{לפני # חודשים}}</translation>
 <translation id="4289300219472526559">התחל לדבר</translation>
 <translation id="430191667033048642">האפליקציה <ph name="MOVED_APP_NAME" /> הועברה אל התיקייה <ph name="FOLDER_NAME" />.</translation>
 <translation id="4316910396681052118">כל האפליקציות</translation>
 <translation id="4491109536499578614">תמונה</translation>
-<translation id="4588090240171750605">גלול ימינה</translation>
+<translation id="4588090240171750605">גלילה ימינה</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, דירוג כוכבים: <ph name="RATING_SCORE" /></translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, המלצה על אפליקציה</translation>
 <translation id="4690510401873698237">המדף בחלק התחתון</translation>
@@ -127,7 +127,7 @@
 <translation id="4788285488841504513">{MONTHS,plural, =1{נותר חודש אחד}two{נותרו חודשיים}many{נותרו # חודשים}other{נותרו # חודשים}}</translation>
 <translation id="4888938634149558681">התקשרות</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{שנייה אחת}two{# שניות}many{# שניות}other{# שניות}}</translation>
-<translation id="4971687151119236543">רצועה קודמת במדיה</translation>
+<translation id="4971687151119236543">טראק קודם במדיה</translation>
 <translation id="5046499563572181734">הקש כאן</translation>
 <translation id="5076340679995252485">&amp;הדבק</translation>
 <translation id="5198715732953550718">האפליקציה <ph name="MOVED_APP_NAME" /> משולבת ביחד עם האפליקציה <ph name="IN_PLACE_APP" /> ליצירת תיקייה חדשה.</translation>
@@ -234,7 +234,7 @@
 <translation id="8328145009876646418">קצה שמאלי</translation>
 <translation id="8331626408530291785">גלול למעלה</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{שנה אחת}two{שנתיים}many{# שנים}other{# שנים}}</translation>
-<translation id="838869780401515933">סמן</translation>
+<translation id="838869780401515933">סימון</translation>
 <translation id="8393700583063109961">שלח הודעה</translation>
 <translation id="8394908167088220973">הפעלה/השהיה של המדיה</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{שנה}two{# שנ}many{# שנ}other{# שנ}}</translation>

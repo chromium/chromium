@@ -207,6 +207,7 @@
 <translation id="3252266817569339921">Французька</translation>
 <translation id="3254434849914415189">Вибрати програму за умовчанням для файлів <ph name="FILE_TYPE" />:</translation>
 <translation id="3264582393905923483">Контекст</translation>
+<translation id="3272909651715601089">Не вдалося відкрити файл "<ph name="PATH" />"</translation>
 <translation id="3280431534455935878">Підготовка</translation>
 <translation id="3280987981688031357">Вінілова платівка</translation>
 <translation id="3296763833017966289">Грузинська</translation>
@@ -309,6 +310,7 @@
 <translation id="4477219268485577442">Болгарська (фонетична)</translation>
 <translation id="4479812471636796472">Розкладка Дворака (США)</translation>
 <translation id="4522570452068850558">Деталі</translation>
+<translation id="4527800702232535228">Додаток Parallels Desktop має доступ до цієї папки</translation>
 <translation id="4552678318981539154">Придбати більше об’єму пам’яті</translation>
 <translation id="4559767610552730302">Боке</translation>
 <translation id="4572815280350369984">Файл <ph name="FILE_TYPE" /></translation>
@@ -326,6 +328,7 @@
 <translation id="4694604912444486114">Мавпа</translation>
 <translation id="4697043402264950621">Список файлів відсортовано в порядку зростання за таким критерієм: <ph name="COLUMN_NAME" />.</translation>
 <translation id="4711094779914110278">Турецька</translation>
+<translation id="4712283082407695269">Файл "<ph name="PATH" />" відкривається</translation>
 <translation id="4713544552769165154">Цей файл створено для комп’ютерів, на яких використовується програмне забезпечення Macintosh. Він несумісний із вашим пристроєм, оскільки на ньому встановлено ОС Chrome. Знайдіть відповідний додаток у <ph name="BEGIN_LINK" />Веб-магазині Chrome<ph name="END_LINK" />.<ph name="BEGIN_LINK_HELP" />Докладніше<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">Імпортовано <ph name="FILE_COUNT" /> фото</translation>
 <translation id="4725511304875193254">Коргі</translation>
@@ -525,6 +528,7 @@
 <translation id="6558280019477628686">Сталася помилка. Можливо, не всі елементи було видалено.</translation>
 <translation id="656398493051028875">Видалення файлу "<ph name="FILENAME" />"…</translation>
 <translation id="6581162200855843583">Посилання Google Диска</translation>
+<translation id="6594855146910089723">Linux і Parallels Desktop мають доступ до цієї папки</translation>
 <translation id="6607272825297743757">Інформація про файл</translation>
 <translation id="6609332149380188670">Додатку Parallels Desktop надано доступ до папок (<ph name="NUMBER_OF_ITEMS" />)</translation>
 <translation id="6629841649550503054">Усі файли імпортовано на <ph name="BEGIN_LINK" />Google Диск.<ph name="END_LINK" /></translation>
