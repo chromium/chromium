@@ -125,12 +125,8 @@
 }
 
 - (void)addAccountViewControllerDidTapSignIn {
-  // Fake sign-in is used to show a fake add an account screen. In this
-  // case _fakeIdentity will be nil.
-  if (_fakeIdentity) {
-    ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
-        ->AddIdentity(_fakeIdentity);
-  }
+  ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
+      ->AddIdentity(_fakeIdentity);
   [self dismissAndRunCompletionCallbackWithError:nil
                                         animated:YES
                                       completion:nil];
