@@ -748,7 +748,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.BulkCheck.PasswordCheckReferrerAndroid"
-    enum="PasswordCheckReferrerAndroid" expires_after="M88">
+    enum="PasswordCheckReferrerAndroid" expires_after="M90">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
@@ -1914,7 +1914,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.SaveUIDismissalReasonAfterUnblacklisting"
-    enum="PasswordManagerUIDismissalReason" expires_after="M88">
+    enum="PasswordManagerUIDismissalReason" expires_after="M90">
   <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>

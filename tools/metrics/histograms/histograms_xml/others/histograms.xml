@@ -7299,27 +7299,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="KeyboardAccessory.AccessorySheetToggleClicked"
-    enum="AccessoryToggleType" expires_after="M88">
-  <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
-  <summary>
-    Android only. Records how often the user clicks on a certain toggle when
-    opening an accessory sheet together with the state the toggle was in before
-    clicking.
-  </summary>
-</histogram>
-
-<histogram name="KeyboardAccessory.AccessorySheetToggleImpression"
-    enum="AccessoryToggleType" expires_after="M88">
-  <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
-  <summary>
-    Android only. Records how often the user sees a certain toggle when opening
-    an accessory sheet together with the state the toggle was in.
-  </summary>
-</histogram>
-
 <histogram name="KeyboardAccessory.AccessorySheetTriggered"
     enum="AccessorySheetTrigger" expires_after="2021-03-21">
   <owner>fhorschig@chromium.org</owner>
@@ -7330,8 +7309,29 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="KeyboardAccessory.AccessoryToggleClicked"
+    enum="AccessoryToggleType" expires_after="M90">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Android only. Records how often the user clicks on a certain toggle when
+    opening an accessory sheet together with the state the toggle was in before
+    clicking.
+  </summary>
+</histogram>
+
+<histogram name="KeyboardAccessory.AccessoryToggleImpression"
+    enum="AccessoryToggleType" expires_after="M90">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Android only. Records how often the user sees a certain toggle when opening
+    an accessory sheet together with the state the toggle was in.
+  </summary>
+</histogram>
+
 <histogram name="KeyboardAccessory.DisabledSavingAccessoryImpressions"
-    enum="BooleanShown" expires_after="M88">
+    enum="BooleanShown" expires_after="M90">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
