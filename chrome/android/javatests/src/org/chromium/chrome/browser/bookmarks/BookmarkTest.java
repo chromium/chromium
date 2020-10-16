@@ -51,7 +51,6 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
@@ -259,7 +258,6 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
-    @DisableIf.Build(sdk_is_less_than = 21, message = "crbug.com/807807")
     public void testAddBookmark() {
         mActivityTestRule.loadUrl(mTestPage);
         // Check partner bookmarks are lazily loaded.
@@ -290,7 +288,6 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
-    @DisableIf.Build(sdk_is_less_than = 21, message = "crbug.com/807807")
     public void testAddBookmarkSnackbar() {
         mActivityTestRule.loadUrl(mTestPage);
         // Check partner bookmarks are lazily loaded.
@@ -323,7 +320,6 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
-    @DisableIf.Build(sdk_is_less_than = 21, message = "crbug.com/807807")
     public void testAddBookmarkToOtherFolder() {
         mActivityTestRule.loadUrl(mTestPage);
         readPartnerBookmarks();
