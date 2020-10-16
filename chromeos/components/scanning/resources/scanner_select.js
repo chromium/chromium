@@ -15,9 +15,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
 import {ScannerArr} from './scanning_app_types.js';
 import {tokenToString} from './scanning_app_util.js';
-
-/** @type {number} */
-const NUM_REQUIRED_SCANNERS = 2;
+import {SelectBehavior} from './select_behavior.js';
 
 /**
  * @fileoverview
@@ -28,7 +26,7 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
-  behaviors: [I18nBehavior],
+  behaviors: [I18nBehavior, SelectBehavior],
 
   properties: {
     /** @type {!ScannerArr} */
@@ -44,16 +42,9 @@ Polymer({
     },
 
     loaded: Boolean,
-
-    settingsDisabled: Boolean,
-
-    /** @private */
-    disabled_: Boolean,
   },
 
-  observers: [
-    'updateDisabled_(scanners.length, settingsDisabled)',
-  ],
+  observers: ['onNumOptionsChange(scanners.length)'],
 
   /**
    * @param {!chromeos.scanning.mojom.Scanner} scanner
@@ -74,15 +65,5 @@ Polymer({
    */
   getTokenAsString_(scanner) {
     return tokenToString(scanner.id);
-  },
-
-  /**
-   * Disables the dropdown if settings are disabled or the number of available
-   * scanners is less than the number of required scanners.
-   * @private
-   */
-  updateDisabled_() {
-    this.disabled_ =
-        this.settingsDisabled || this.scanners.length < NUM_REQUIRED_SCANNERS;
   },
 });

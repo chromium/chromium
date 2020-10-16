@@ -9,6 +9,8 @@ import './strings.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SelectBehavior} from './select_behavior.js';
+
 /**
  * @fileoverview
  * 'file-type-select' displays the available file types in a dropdown.
@@ -18,7 +20,7 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
-  behaviors: [I18nBehavior],
+  behaviors: [I18nBehavior, SelectBehavior],
 
   properties: {
     /** @type {chromeos.scanning.mojom.FileType|undefined} */
@@ -26,10 +28,11 @@ Polymer({
       type: chromeos.scanning.mojom.FileType,
       notify: true,
     },
+  },
 
-    /**
-     * Indicates whether all settings have been disabled by the parent element.
-     */
-    settingsDisabled: Boolean,
+  /** @override */
+  created() {
+    // The dropdown always contains one option per FileType.
+    this.numOptions = chromeos.scanning.mojom.FileType.MAX_VALUE + 1;
   },
 });

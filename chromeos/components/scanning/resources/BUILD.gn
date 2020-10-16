@@ -18,6 +18,7 @@ js_type_check("closure_compile_module") {
     ":scanning_app",
     ":scanning_app_types",
     ":scanning_app_util",
+    ":select_behavior",
     ":source_select",
   ]
 }
@@ -25,6 +26,7 @@ js_type_check("closure_compile_module") {
 js_library("color_mode_select") {
   deps = [
     ":scanning_app_util",
+    ":select_behavior",
     "//chromeos/components/scanning/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -33,6 +35,7 @@ js_library("color_mode_select") {
 
 js_library("file_type_select") {
   deps = [
+    ":select_behavior",
     "//chromeos/components/scanning/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -41,6 +44,7 @@ js_library("file_type_select") {
 
 js_library("resolution_select") {
   deps = [
+    ":select_behavior",
     "//chromeos/components/scanning/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -52,6 +56,7 @@ js_library("scanner_select") {
   deps = [
     ":scanning_app_types",
     ":scanning_app_util",
+    ":select_behavior",
     "//chromeos/components/scanning/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -79,9 +84,13 @@ js_library("scanning_app_types") {
 js_library("scanning_app_util") {
 }
 
+js_library("select_behavior") {
+}
+
 js_library("source_select") {
   deps = [
     ":scanning_app_util",
+    ":select_behavior",
     "//chromeos/components/scanning/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",

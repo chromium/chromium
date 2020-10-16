@@ -10,8 +10,7 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @type {number} */
-const NUM_REQUIRED_RESOLUTIONS = 2;
+import {SelectBehavior} from './select_behavior.js';
 
 /**
  * @fileoverview
@@ -22,7 +21,7 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
-  behaviors: [I18nBehavior],
+  behaviors: [I18nBehavior, SelectBehavior],
 
   properties: {
     /** @type {!Array<number>} */
@@ -36,21 +35,9 @@ Polymer({
       type: Number,
       notify: true,
     },
-
-    /**
-     * Indicates whether all settings have been disabled by the parent element.
-     */
-    settingsDisabled: Boolean,
-
-    /**
-     * Controls whether the dropdown is disabled.
-     * @private
-     */
-    disabled_: {
-      type: Boolean,
-      computed: 'computeDisabled_(resolutions.length, settingsDisabled)',
-    },
   },
+
+  observers: ['onNumOptionsChange(resolutions.length)'],
 
   /**
    * @param {number} resolution
@@ -60,16 +47,5 @@ Polymer({
   getResolutionString_(resolution) {
     return loadTimeData.getStringF(
         'resolutionOptionText', resolution.toString());
-  },
-
-  /**
-   * Disables the dropdown if settings are disabled or the number of available
-   * resolutions is less than the number of required resolutions.
-   * @return {boolean}
-   * @private
-   */
-  computeDisabled_() {
-    return this.settingsDisabled ||
-        this.resolutions.length < NUM_REQUIRED_RESOLUTIONS;
   },
 });

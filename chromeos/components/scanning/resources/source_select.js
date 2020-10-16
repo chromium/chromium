@@ -10,9 +10,7 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getSourceTypeString} from './scanning_app_util.js';
-
-/** @type {number} */
-const NUM_REQUIRED_SOURCES = 2;
+import {SelectBehavior} from './select_behavior.js';
 
 /**
  * @fileoverview
@@ -23,7 +21,7 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
-  behaviors: [I18nBehavior],
+  behaviors: [I18nBehavior, SelectBehavior],
 
   properties: {
     /** @type {!Array<!chromeos.scanning.mojom.ScanSource>} */
@@ -37,16 +35,9 @@ Polymer({
       type: String,
       notify: true,
     },
-
-    settingsDisabled: Boolean,
-
-    /** @private */
-    disabled_: Boolean,
   },
 
-  observers: [
-    'updateDisabled_(sources.length, settingsDisabled)',
-  ],
+  observers: ['onNumOptionsChange(sources.length)'],
 
   /**
    * @param {number} mojoSourceType
@@ -55,15 +46,5 @@ Polymer({
    */
   getSourceTypeString_(mojoSourceType) {
     return getSourceTypeString(mojoSourceType);
-  },
-
-  /**
-   * Disables the dropdown if settings are disabled or the number of available
-   * sources is less than the number of required sources.
-   * @private
-   */
-  updateDisabled_() {
-    this.disabled_ =
-        this.settingsDisabled || this.sources.length < NUM_REQUIRED_SOURCES;
   },
 });
