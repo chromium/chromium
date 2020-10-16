@@ -379,7 +379,10 @@ wtf_size_t NGGridBlockTrackCollection::RangeCount() const {
 // 'auto', but we will normalize it directly as 'minmax(auto, max-content)'.
 NGGridSet::NGGridSet(wtf_size_t track_count, bool is_collapsed)
     : track_count_(track_count),
-      track_size_(Length::Auto(), Length::MaxContent()) {
+      track_size_(Length::Auto(), Length::MaxContent()),
+      growth_limit_(kIndefiniteSize),
+      fit_content_limit_(kIndefiniteSize),
+      is_infinitely_growable_(false) {
   if (is_collapsed) {
     // From https://drafts.csswg.org/css-grid-1/#collapsed-track: "A collapsed
     // track is treated as having a fixed track sizing function of '0px'".
@@ -390,7 +393,11 @@ NGGridSet::NGGridSet(wtf_size_t track_count, bool is_collapsed)
 NGGridSet::NGGridSet(wtf_size_t track_count,
                      const GridTrackSize& track_size,
                      bool is_content_box_size_indefinite)
-    : track_count_(track_count), track_size_(track_size) {
+    : track_count_(track_count),
+      track_size_(track_size),
+      growth_limit_(kIndefiniteSize),
+      fit_content_limit_(kIndefiniteSize),
+      is_infinitely_growable_(false) {
   if (track_size_.IsFitContent()) {
     DCHECK(track_size_.FitContentTrackBreadth().IsLength());
 
@@ -430,15 +437,39 @@ NGGridSet::NGGridSet(wtf_size_t track_count,
          track_size_.GetType() == kMinMaxTrackSizing);
 }
 
+bool NGGridSet::IsGrowthLimitLessThanBaseSize() const {
+  return growth_limit_ != kIndefiniteSize && growth_limit_ < base_size_;
+}
+
+void NGGridSet::EnsureGrowthLimitIsNotLessThanBaseSize() {
+  if (IsGrowthLimitLessThanBaseSize())
+    growth_limit_ = base_size_;
+}
+
+LayoutUnit NGGridSet::BaseSize() const {
+  DCHECK(!IsGrowthLimitLessThanBaseSize());
+  return base_size_;
+}
+
 void NGGridSet::SetBaseSize(LayoutUnit base_size) {
-  DCHECK_NE(base_size_, kIndefiniteSize);
+  // Expect base size to always grow monotonically.
+  DCHECK_NE(base_size, kIndefiniteSize);
   DCHECK_LE(base_size_, base_size);
   base_size_ = base_size;
+  EnsureGrowthLimitIsNotLessThanBaseSize();
+}
+
+LayoutUnit NGGridSet::GrowthLimit() const {
+  DCHECK(!IsGrowthLimitLessThanBaseSize());
+  return growth_limit_;
 }
 
 void NGGridSet::SetGrowthLimit(LayoutUnit growth_limit) {
-  DCHECK(growth_limit_ == kIndefiniteSize || growth_limit == kIndefiniteSize ||
-         growth_limit_ <= growth_limit);
+  // Growth limit is initialized as infinity; expect it to change from infinity
+  // to a definite value and then to always grow monotonically.
+  DCHECK_NE(growth_limit, kIndefiniteSize);
+  DCHECK(!IsGrowthLimitLessThanBaseSize());
+  DCHECK(growth_limit_ == kIndefiniteSize || growth_limit_ <= growth_limit);
   growth_limit_ = growth_limit;
 }
 
@@ -577,13 +608,23 @@ NGGridLayoutAlgorithmTrackCollection::GetSetIterator() {
 }
 
 NGGridLayoutAlgorithmTrackCollection::SetIterator
-NGGridLayoutAlgorithmTrackCollection::IteratorForRange(wtf_size_t range_index) {
-  DCHECK_LT(range_index, RangeCount());
+NGGridLayoutAlgorithmTrackCollection::GetSetIterator(wtf_size_t begin_set_index,
+                                                     wtf_size_t end_set_index) {
+  DCHECK_LE(end_set_index, SetCount());
+  DCHECK_LE(begin_set_index, end_set_index);
+  return SetIterator(this, begin_set_index, end_set_index);
+}
 
-  const Range& range = ranges_[range_index];
-  DCHECK_LE(range.starting_set_index + range.set_count, SetCount());
-  return SetIterator(this, range.starting_set_index,
-                     range.starting_set_index + range.set_count);
+wtf_size_t NGGridLayoutAlgorithmTrackCollection::RangeSetCount(
+    wtf_size_t range_index) const {
+  DCHECK_LT(range_index, RangeCount());
+  return ranges_[range_index].set_count;
+}
+
+wtf_size_t NGGridLayoutAlgorithmTrackCollection::RangeStartingSetIndex(
+    wtf_size_t range_index) const {
+  DCHECK_LT(range_index, RangeCount());
+  return ranges_[range_index].starting_set_index;
 }
 
 bool NGGridLayoutAlgorithmTrackCollection::IsRangeSpanningIntrinsicTrack(

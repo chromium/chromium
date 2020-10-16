@@ -180,21 +180,39 @@ class CORE_EXPORT NGGridSet {
   wtf_size_t TrackCount() const { return track_count_; }
   const GridTrackSize& TrackSize() const { return track_size_; }
 
-  LayoutUnit BaseSize() const { return base_size_; }
-  LayoutUnit GrowthLimit() const { return growth_limit_; }
+  LayoutUnit BaseSize() const;
+  LayoutUnit GrowthLimit() const;
+  LayoutUnit PlannedIncrease() const { return planned_increase_; }
+  LayoutUnit FitContentLimit() const { return fit_content_limit_; }
+  LayoutUnit ItemIncurredIncrease() const { return item_incurred_increase_; }
+  bool IsInfinitelyGrowable() const { return is_infinitely_growable_; }
 
-  // The following setters expect their respective member variables to grow
-  // monotonically; however, |growth_limit_| can also change from a definite
-  // value to |kIndefiniteSize| and vice versa.
   void SetBaseSize(LayoutUnit base_size);
   void SetGrowthLimit(LayoutUnit growth_limit);
+  void SetPlannedIncrease(LayoutUnit planned_increase) {
+    planned_increase_ = planned_increase;
+  }
+  void SetItemIncurredIncrease(LayoutUnit item_incurred_increase) {
+    item_incurred_increase_ = item_incurred_increase;
+  }
+  void SetInfinitelyGrowable(bool infinitely_growable) {
+    is_infinitely_growable_ = infinitely_growable;
+  }
 
  private:
+  bool IsGrowthLimitLessThanBaseSize() const;
+  void EnsureGrowthLimitIsNotLessThanBaseSize();
+
   wtf_size_t track_count_;
   GridTrackSize track_size_;
 
+  // Fields used by the track sizing algorithm.
   LayoutUnit base_size_;
   LayoutUnit growth_limit_;
+  LayoutUnit planned_increase_;
+  LayoutUnit fit_content_limit_;
+  LayoutUnit item_incurred_increase_;
+  bool is_infinitely_growable_ : 1;
 };
 
 class CORE_EXPORT NGGridLayoutAlgorithmTrackCollection
@@ -215,6 +233,7 @@ class CORE_EXPORT NGGridLayoutAlgorithmTrackCollection
     bool is_collapsed : 1;
   };
 
+  // Note that this iterator can alter any set's data.
   class CORE_EXPORT SetIterator {
    public:
     SetIterator(NGGridLayoutAlgorithmTrackCollection* collection,
@@ -238,13 +257,19 @@ class CORE_EXPORT NGGridLayoutAlgorithmTrackCollection
       const NGGridBlockTrackCollection& block_track_collection,
       bool is_content_box_size_indefinite);
 
+  // Returns the number of sets in the collection.
+  wtf_size_t SetCount() const;
   // Returns a reference to the set located at position |set_index|.
   NGGridSet& SetAt(wtf_size_t set_index);
   // Returns an iterator for all the sets contained in this collection.
   SetIterator GetSetIterator();
-  // Returns an iterator for all the sets contained within the |range_index|-th
-  // range of the collection. Note that this iterator can alter any set's data.
-  SetIterator IteratorForRange(wtf_size_t range_index);
+  // Returns an iterator for every set in this collection's |sets_| located at
+  // an index in the interval [begin_set_index, end_set_index).
+  SetIterator GetSetIterator(wtf_size_t begin_set_index,
+                             wtf_size_t end_set_index);
+
+  wtf_size_t RangeSetCount(wtf_size_t range_index) const;
+  wtf_size_t RangeStartingSetIndex(wtf_size_t range_index) const;
 
   // Returns true if the range contains a set with an intrinsic sizing function.
   bool IsRangeSpanningIntrinsicTrack(wtf_size_t range_index) const;
@@ -263,9 +288,6 @@ class CORE_EXPORT NGGridLayoutAlgorithmTrackCollection
       const NGGridBlockTrackCollection::Range& block_track_range,
       const NGGridTrackList& specified_track_list,
       bool is_content_box_size_indefinite);
-
-  // Returns the number of sets in the collection.
-  wtf_size_t SetCount() const;
 
   Vector<Range> ranges_;
   // A vector of every set element that compose the entire collection's ranges;

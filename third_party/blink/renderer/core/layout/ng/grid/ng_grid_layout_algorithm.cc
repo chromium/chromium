@@ -35,6 +35,7 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
         SetSpecifiedTracks();
         DetermineExplicitTrackStarts();
         ConstructAndAppendGridItems();
+
         // TODO(janewman): Split placement into its own GridLayoutAlgorithmState
         NGGridPlacement(
             automatic_row_repetitions_, automatic_column_repetitions_,
@@ -61,6 +62,7 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
         algorithm_row_track_collection_ = NGGridLayoutAlgorithmTrackCollection(
             block_row_track_collection_, is_content_box_block_size_indefinite);
 
+        CacheItemSetIndices();
         state_ = GridLayoutAlgorithmState::kResolvingInlineSize;
         break;
       }
@@ -155,10 +157,19 @@ wtf_size_t NGGridLayoutAlgorithm::GridItemData::EndLine(
   return span.EndLine();
 }
 
+wtf_size_t NGGridLayoutAlgorithm::GridItemData::SpanSize(
+    GridTrackSizingDirection track_direction) const {
+  const GridSpan& span = (track_direction == kForColumns)
+                             ? resolved_position.columns
+                             : resolved_position.rows;
+  DCHECK(span.IsTranslatedDefinite());
+  return span.IntegerSpan();
+}
+
 const GridSpan& NGGridLayoutAlgorithm::GridItemData::Span(
-    GridTrackSizingDirection direction) const {
-  return (direction == kForColumns) ? resolved_position.columns
-                                    : resolved_position.rows;
+    GridTrackSizingDirection track_direction) const {
+  return (track_direction == kForColumns) ? resolved_position.columns
+                                          : resolved_position.rows;
 }
 
 void NGGridLayoutAlgorithm::GridItemData::SetSpan(
@@ -182,6 +193,12 @@ NGGridLayoutAlgorithm::ReorderedGridItems::Iterator::Iterator(
 bool NGGridLayoutAlgorithm::ReorderedGridItems::Iterator::operator!=(
     const Iterator& other) const {
   return items_ != other.items_ || current_index_ != other.current_index_;
+}
+
+NGGridLayoutAlgorithm::GridItemData*
+NGGridLayoutAlgorithm::ReorderedGridItems::Iterator::operator->() {
+  DCHECK_LT(*current_index_, items_->size());
+  return &(items_->at(*current_index_));
 }
 
 NGGridLayoutAlgorithm::GridItemData&
@@ -220,6 +237,43 @@ NGGridLayoutAlgorithmTrackCollection& NGGridLayoutAlgorithm::TrackCollection(
     GridTrackSizingDirection track_direction) {
   return (track_direction == kForColumns) ? algorithm_column_track_collection_
                                           : algorithm_row_track_collection_;
+}
+
+NGGridLayoutAlgorithmTrackCollection::SetIterator
+NGGridLayoutAlgorithm::GetSetIteratorForItem(
+    const GridItemData& item,
+    GridTrackSizingDirection track_direction) {
+  auto& track_collection = TrackCollection(track_direction);
+  return track_collection.GetSetIterator(
+      (track_direction == kForColumns) ? item.columns_begin_set_index
+                                       : item.rows_begin_set_index,
+      (track_direction == kForColumns) ? item.columns_end_set_index
+                                       : item.rows_end_set_index);
+}
+
+// TODO(ethavar): Current implementation of this method simply returns the
+// preferred size of the grid item in the relevant direction. We should follow
+// the definitions from https://drafts.csswg.org/css-grid-1/#algo-spanning-items
+// (i.e. compute minimum, min-content, and max-content contributions).
+LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
+    const GridItemData& grid_item,
+    GridTrackSizingDirection track_direction,
+    NGGridItemContributionType contribution_type) const {
+  const ComputedStyle& grid_item_style = grid_item.node.Style();
+  GridTrackSizingDirection grid_item_track_direction = track_direction;
+
+  bool is_orthogonal_grid_item = Style().IsHorizontalWritingMode() ==
+                                 grid_item_style.IsHorizontalWritingMode();
+  if (is_orthogonal_grid_item) {
+    grid_item_track_direction =
+        (track_direction == kForColumns) ? kForRows : kForColumns;
+  }
+
+  Length length = (grid_item_track_direction == kForColumns)
+                      ? grid_item_style.LogicalWidth()
+                      : grid_item_style.LogicalHeight();
+  return length.IsFixed() ? MinimumValueForLength(length, kIndefiniteSize)
+                          : LayoutUnit();
 }
 
 void NGGridLayoutAlgorithm::ConstructAndAppendGridItems() {
@@ -346,6 +400,41 @@ void NGGridLayoutAlgorithm::DetermineExplicitTrackStarts() {
   }
 }
 
+void NGGridLayoutAlgorithm::CacheItemSetIndices() {
+  auto CacheItemSetIndices = [this](GridTrackSizingDirection track_direction) {
+    const auto& track_collection = TrackCollection(track_direction);
+    for (GridItemData& item : items_) {
+      wtf_size_t first_spanned_range =
+          track_collection.RangeIndexFromTrackNumber(
+              item.StartLine(track_direction));
+      wtf_size_t last_spanned_range =
+          track_collection.RangeIndexFromTrackNumber(
+              item.EndLine(track_direction) - 1);
+
+      DCHECK_LE(first_spanned_range, last_spanned_range);
+      wtf_size_t begin_set_index =
+          track_collection.RangeStartingSetIndex(first_spanned_range);
+      wtf_size_t end_set_index =
+          track_collection.RangeStartingSetIndex(last_spanned_range) +
+          track_collection.RangeSetCount(last_spanned_range);
+
+      DCHECK_LE(begin_set_index, end_set_index);
+      DCHECK_LE(end_set_index, track_collection.SetCount());
+
+      if (track_direction == kForColumns) {
+        item.columns_begin_set_index = begin_set_index;
+        item.columns_end_set_index = end_set_index;
+      } else {
+        item.rows_begin_set_index = begin_set_index;
+        item.rows_end_set_index = end_set_index;
+      }
+    }
+  };
+
+  CacheItemSetIndices(kForColumns);
+  CacheItemSetIndices(kForRows);
+}
+
 void NGGridLayoutAlgorithm::DetermineGridItemsSpanningIntrinsicOrFlexTracks(
     GridTrackSizingDirection track_direction) {
   auto CompareGridItemsByStartLine =
@@ -410,8 +499,7 @@ void NGGridLayoutAlgorithm::DetermineGridItemsSpanningIntrinsicOrFlexTracks(
 // https://drafts.csswg.org/css-grid-1/#algo-track-sizing
 void NGGridLayoutAlgorithm::ComputeUsedTrackSizes(
     GridTrackSizingDirection track_direction) {
-  NGGridLayoutAlgorithmTrackCollection& track_collection =
-      TrackCollection(track_direction);
+  auto& track_collection = TrackCollection(track_direction);
   LayoutUnit content_box_size = (track_direction == kForColumns)
                                     ? child_percentage_size_.inline_size
                                     : child_percentage_size_.block_size;
@@ -429,7 +517,7 @@ void NGGridLayoutAlgorithm::ComputeUsedTrackSizes(
 
       // A fixed sizing function: Resolve to an absolute length and use that
       // size as the track’s initial base size.
-      LayoutUnit fixed_min_breadth = ValueForLength(
+      LayoutUnit fixed_min_breadth = MinimumValueForLength(
           track_size.MinTrackBreadth().length(), content_box_size);
       current_set.SetBaseSize(fixed_min_breadth * current_set.TrackCount());
     } else {
@@ -438,6 +526,8 @@ void NGGridLayoutAlgorithm::ComputeUsedTrackSizes(
       current_set.SetBaseSize(LayoutUnit());
     }
 
+    // Note that, since |NGGridSet| initializes its growth limit as indefinite,
+    // an intrinsic or flexible sizing function needs no further resolution.
     if (track_size.HasFixedMaxTrackBreadth()) {
       DCHECK(!track_size.MaxTrackBreadth().HasPercentage() ||
              content_box_size != kIndefiniteSize);
@@ -445,17 +535,434 @@ void NGGridLayoutAlgorithm::ComputeUsedTrackSizes(
       // A fixed sizing function: Resolve to an absolute length and use that
       // size as the track’s initial growth limit; if the growth limit is less
       // than the base size, increase the growth limit to match the base size.
-      LayoutUnit fixed_max_breadth = ValueForLength(
+      LayoutUnit fixed_max_breadth = MinimumValueForLength(
           track_size.MaxTrackBreadth().length(), content_box_size);
       current_set.SetGrowthLimit(
           std::max(current_set.BaseSize(),
                    fixed_max_breadth * current_set.TrackCount()));
-    } else {
-      // An intrinsic or flexible sizing function: Use an initial growth limit
-      // of infinity.
-      current_set.SetGrowthLimit(kIndefiniteSize);
     }
   }
+
+  // 2. Resolve intrinsic track sizing functions to absolute lengths.
+  DetermineGridItemsSpanningIntrinsicOrFlexTracks(track_direction);
+  ResolveIntrinsicTrackSizes(track_direction);
+}
+
+// Helpers for the track sizing algorithm.
+namespace {
+
+// Returns the corresponding size to be increased by accommodating a grid item's
+// contribution; for intrinsic min track sizing functions, return the base size.
+// For intrinsic max track sizing functions, return the growth limit.
+static LayoutUnit AffectedSizeForContribution(
+    const NGGridSet& set,
+    NGGridItemContributionType contribution_type) {
+  switch (contribution_type) {
+    case NGGridItemContributionType::kForIntrinsicMinimums:
+    case NGGridItemContributionType::kForContentBasedMinimums:
+    case NGGridItemContributionType::kForMaxContentMinimums:
+      return set.BaseSize();
+    case NGGridItemContributionType::kForIntrinsicMaximums:
+    case NGGridItemContributionType::kForMaxContentMaximums:
+      LayoutUnit growth_limit = set.GrowthLimit();
+      // For infinite growth limits, substitute with the track's base size.
+      if (growth_limit == kIndefiniteSize)
+        return set.BaseSize();
+      return growth_limit;
+  }
+}
+
+static void GrowAffectedSizeByPlannedIncrease(
+    NGGridSet& set,
+    NGGridItemContributionType contribution_type) {
+  switch (contribution_type) {
+    case NGGridItemContributionType::kForIntrinsicMinimums:
+    case NGGridItemContributionType::kForContentBasedMinimums:
+    case NGGridItemContributionType::kForMaxContentMinimums:
+      set.SetBaseSize(set.BaseSize() + set.PlannedIncrease());
+      break;
+    case NGGridItemContributionType::kForIntrinsicMaximums:
+    case NGGridItemContributionType::kForMaxContentMaximums:
+      LayoutUnit growth_limit = set.GrowthLimit();
+      // If the affected size to grow is an infinite growth limit, set it to the
+      // track's base size plus the planned increase.
+      if (growth_limit == kIndefiniteSize)
+        set.SetGrowthLimit(set.BaseSize() + set.PlannedIncrease());
+      else
+        set.SetGrowthLimit(growth_limit + set.PlannedIncrease());
+      break;
+  }
+}
+
+// Returns true if a set should increase its used size according to the steps in
+// https://drafts.csswg.org/css-grid-1/#algo-spanning-items; false otherwise.
+static bool IsContributionAppliedToSet(
+    const NGGridSet& set,
+    NGGridItemContributionType contribution_type) {
+  switch (contribution_type) {
+    case NGGridItemContributionType::kForIntrinsicMinimums:
+      return set.TrackSize().HasIntrinsicMinTrackBreadth();
+    case NGGridItemContributionType::kForContentBasedMinimums:
+      return set.TrackSize().HasMinOrMaxContentMinTrackBreadth();
+    case NGGridItemContributionType::kForMaxContentMinimums:
+      // TODO(ethavar): Check if the grid container is being sized under a
+      // 'max-content' constraint to consider 'auto' min track sizing functions,
+      // see https://drafts.csswg.org/css-grid-1/#track-size-max-content-min.
+      return set.TrackSize().HasMaxContentMinTrackBreadth();
+    case NGGridItemContributionType::kForIntrinsicMaximums:
+      return set.TrackSize().HasIntrinsicMaxTrackBreadth();
+    case NGGridItemContributionType::kForMaxContentMaximums:
+      return set.TrackSize().HasMaxContentOrAutoMaxTrackBreadth();
+  }
+}
+
+// https://drafts.csswg.org/css-grid-1/#extra-space
+// Returns true if a set's used size should be consider to grow beyond its limit
+// (see the "Distribute space beyond limits" section); otherwise, false.
+// Note that we will deliberately return false in cases where we don't have a
+// collection of tracks different than "all affected tracks".
+static bool ShouldUsedSizeGrowBeyondLimit(
+    const NGGridSet& set,
+    NGGridItemContributionType contribution_type) {
+  // This function assumes that we already determined that extra space
+  // distribution will be applied to the specified set.
+  DCHECK(IsContributionAppliedToSet(set, contribution_type));
+
+  switch (contribution_type) {
+    case NGGridItemContributionType::kForIntrinsicMinimums:
+    case NGGridItemContributionType::kForContentBasedMinimums:
+      return set.TrackSize().HasIntrinsicMaxTrackBreadth();
+    case NGGridItemContributionType::kForMaxContentMinimums:
+      return set.TrackSize().HasMaxContentMaxTrackBreadth();
+    case NGGridItemContributionType::kForIntrinsicMaximums:
+    case NGGridItemContributionType::kForMaxContentMaximums:
+      return false;
+  }
+}
+
+static bool IsDistributionForGrowthLimits(
+    NGGridItemContributionType contribution_type) {
+  switch (contribution_type) {
+    case NGGridItemContributionType::kForIntrinsicMinimums:
+    case NGGridItemContributionType::kForContentBasedMinimums:
+    case NGGridItemContributionType::kForMaxContentMinimums:
+      return false;
+    case NGGridItemContributionType::kForIntrinsicMaximums:
+    case NGGridItemContributionType::kForMaxContentMaximums:
+      return true;
+  }
+}
+
+enum class InfinitelyGrowableBehavior { kEnforce, kIgnore };
+
+// We define growth potential = limit - affected size; for base sizes, the limit
+// is its growth limit. For growth limits, the limit is infinity if it is marked
+// as "infinitely growable", and equal to the growth limit otherwise.
+static LayoutUnit GrowthPotentialForSet(
+    const NGGridSet& set,
+    NGGridItemContributionType contribution_type,
+    InfinitelyGrowableBehavior infinitely_growable_behavior =
+        InfinitelyGrowableBehavior::kEnforce) {
+  switch (contribution_type) {
+    case NGGridItemContributionType::kForIntrinsicMinimums:
+    case NGGridItemContributionType::kForContentBasedMinimums:
+    case NGGridItemContributionType::kForMaxContentMinimums: {
+      LayoutUnit growth_limit = set.GrowthLimit();
+      return (growth_limit == kIndefiniteSize) ? kIndefiniteSize
+                                               : growth_limit - set.BaseSize();
+    }
+    case NGGridItemContributionType::kForIntrinsicMaximums:
+    case NGGridItemContributionType::kForMaxContentMaximums: {
+      if (infinitely_growable_behavior ==
+              InfinitelyGrowableBehavior::kEnforce &&
+          !set.IsInfinitelyGrowable()) {
+        // If the affected size was a growth limit and the track is not marked
+        // infinitely growable, then the item-incurred increase will be zero.
+        return LayoutUnit();
+      }
+
+      LayoutUnit growth_limit = set.GrowthLimit();
+      LayoutUnit fit_content_limit = set.FitContentLimit();
+      DCHECK(growth_limit >= 0 || growth_limit == kIndefiniteSize);
+      DCHECK(fit_content_limit >= 0 || fit_content_limit == kIndefiniteSize);
+
+      // The max track sizing function of a 'fit-content' track is treated as
+      // 'max-content' until it reaches the limit specified as the 'fit-content'
+      // argument, after which it is treated as having a fixed sizing function
+      // of that argument (with a growth potential of zero).
+      if (fit_content_limit != kIndefiniteSize) {
+        LayoutUnit growth_potential = (growth_limit != kIndefiniteSize)
+                                          ? fit_content_limit - growth_limit
+                                          : fit_content_limit;
+        return growth_potential.ClampNegativeToZero();
+      }
+      // Otherwise, this set has infinite growth potential.
+      return kIndefiniteSize;
+    }
+  }
+}
+
+}  // namespace
+
+// Follow the definitions from https://drafts.csswg.org/css-grid-1/#extra-space;
+// notice that this method replaces the notion of "tracks" with "sets".
+void NGGridLayoutAlgorithm::DistributeExtraSpaceToSets(
+    LayoutUnit extra_space,
+    NGGridItemContributionType contribution_type,
+    NGGridSetVector* sets_to_grow,
+    NGGridSetVector* sets_to_grow_beyond_limit) {
+  DCHECK(sets_to_grow && extra_space >= 0);
+  if (!extra_space)
+    return;
+
+#if DCHECK_IS_ON()
+  if (IsDistributionForGrowthLimits(contribution_type))
+    DCHECK_EQ(sets_to_grow, sets_to_grow_beyond_limit);
+#endif
+
+  wtf_size_t total_track_count = 0;
+  for (NGGridSet* set : *sets_to_grow) {
+    set->SetItemIncurredIncrease(LayoutUnit());
+
+    // From the first note in https://drafts.csswg.org/css-grid-1/#extra-space:
+    //   - If the affected size was a growth limit and the track is not marked
+    //   "infinitely growable", then each item-incurred increase will be zero.
+    //
+    // When distributing space to growth limits, we need to increase each track
+    // up to its 'fit-content' limit. However, because of the note above, first
+    // we should only grow tracks marked as "infinitely growable" up to limits
+    // and then grow all affected tracks beyond limits.
+    //
+    // We can correctly resolve every scenario by doing a single sort of
+    // |sets_to_grow|, purposely ignoring the "infinitely growable" flag, then
+    // filtering out which sets count toward the total track count at each step;
+    // for base sizes this is not required, but if there are no tracks with
+    // growth potential > 0, we can optimize by not sorting the sets.
+    LayoutUnit growth_potential =
+        GrowthPotentialForSet(*set, contribution_type);
+    DCHECK(growth_potential >= 0 || growth_potential == kIndefiniteSize);
+    if (growth_potential)
+      total_track_count += set->TrackCount();
+  }
+
+  // We will sort the tracks by growth potential in non-decreasing order to
+  // distribute space up to limits; notice that if we start distributing space
+  // equally among all tracks we will eventually reach the limit of a track or
+  // run out of space to distribute. If the former scenario happens, it should
+  // be easy to see that the group of tracks that will reach its limit first
+  // will be that with the least growth potential. Otherwise, if tracks in such
+  // group does not reach their limit, every upcoming track with greater growth
+  // potential must be able to increase its size by the same amount.
+  if (total_track_count || IsDistributionForGrowthLimits(contribution_type)) {
+    auto CompareSetsByGrowthPotential = [contribution_type](NGGridSet* set_a,
+                                                            NGGridSet* set_b) {
+      LayoutUnit growth_potential_a = GrowthPotentialForSet(
+          *set_a, contribution_type, InfinitelyGrowableBehavior::kIgnore);
+      LayoutUnit growth_potential_b = GrowthPotentialForSet(
+          *set_b, contribution_type, InfinitelyGrowableBehavior::kIgnore);
+
+      if (growth_potential_a == kIndefiniteSize ||
+          growth_potential_b == kIndefiniteSize) {
+        // At this point we know that there is at least one set with infinite
+        // growth potential; if |set_a| has a definite value, then |set_b| must
+        // have infinite growth potential, and thus, |set_a| < |set_b|.
+        return growth_potential_a != kIndefiniteSize;
+      }
+      // Straightforward comparison of definite growth potentials.
+      return growth_potential_a < growth_potential_b;
+    };
+    std::sort(sets_to_grow->begin(), sets_to_grow->end(),
+              CompareSetsByGrowthPotential);
+  }
+
+  auto ClampSize = [](LayoutUnit& size, LayoutUnit limit) {
+    size = (limit != kIndefiniteSize) ? std::min(size, limit) : size;
+  };
+
+  // Distribute space up to limits:
+  //   - For base sizes, grow the base size up to the growth limit.
+  //   - For growth limits, the only case where a growth limit should grow at
+  //   this step is when the set has already been marked "infinitely growable".
+  //   Increase the growth limit up to the 'fit-content' argument (if any); note
+  //   that these arguments could prevent this step to fulfill the entirety of
+  //   the extra space and further distribution would be needed.
+  if (total_track_count) {
+    for (NGGridSet* set : *sets_to_grow) {
+      LayoutUnit growth_potential =
+          GrowthPotentialForSet(*set, contribution_type);
+
+      if (growth_potential) {
+        wtf_size_t set_track_count = set->TrackCount();
+        LayoutUnit extra_space_share =
+            (extra_space * set_track_count) / total_track_count;
+        DCHECK_GE(extra_space_share, 0);
+
+        ClampSize(extra_space_share, growth_potential);
+        set->SetItemIncurredIncrease(extra_space_share);
+
+        total_track_count -= set_track_count;
+        extra_space -= extra_space_share;
+        DCHECK_GE(total_track_count, 0u);
+        DCHECK_GE(extra_space, 0);
+      }
+    }
+  }
+
+  // Distribute space beyond limits:
+  //   - For base sizes, every affected track can grow indefinitely.
+  //   - For growth limits, grow tracks up to their 'fit-content' argument.
+  if (sets_to_grow_beyond_limit && extra_space) {
+    total_track_count = 0;
+    for (NGGridSet* set : *sets_to_grow_beyond_limit)
+      total_track_count += set->TrackCount();
+
+    for (NGGridSet* set : *sets_to_grow_beyond_limit) {
+      wtf_size_t set_track_count = set->TrackCount();
+      LayoutUnit extra_space_share =
+          (extra_space * set_track_count) / total_track_count;
+      DCHECK_GE(extra_space_share, 0);
+
+      // Ignore the "infinitely growable" flag and grow all affected tracks.
+      if (IsDistributionForGrowthLimits(contribution_type)) {
+        LayoutUnit growth_potential = GrowthPotentialForSet(
+            *set, contribution_type, InfinitelyGrowableBehavior::kIgnore);
+        ClampSize(extra_space_share, growth_potential);
+      }
+      set->SetItemIncurredIncrease(set->ItemIncurredIncrease() +
+                                   extra_space_share);
+
+      total_track_count -= set_track_count;
+      extra_space -= extra_space_share;
+      DCHECK_GE(total_track_count, 0u);
+      DCHECK_GE(extra_space, 0);
+    }
+  }
+
+  // For each affected track, if the track's item-incurred increase is larger
+  // than its planned increase, set the planned increase to that value.
+  for (NGGridSet* set : *sets_to_grow) {
+    set->SetPlannedIncrease(
+        std::max(set->ItemIncurredIncrease(), set->PlannedIncrease()));
+  }
+}
+
+void NGGridLayoutAlgorithm::IncreaseTrackSizesToAccommodateGridItems(
+    GridTrackSizingDirection track_direction,
+    ReorderedGridItems::Iterator group_begin,
+    ReorderedGridItems::Iterator group_end,
+    NGGridItemContributionType contribution_type) {
+  auto& track_collection = TrackCollection(track_direction);
+  for (auto set_iterator = track_collection.GetSetIterator();
+       !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
+    set_iterator.CurrentSet().SetPlannedIncrease(LayoutUnit());
+  }
+
+  NGGridSetVector sets_to_grow;
+  NGGridSetVector sets_to_grow_beyond_limit;
+  for (auto grid_item = group_begin; grid_item != group_end; ++grid_item) {
+    // TODO(ethavar): Remove the |IsOutOfFlowPositioned| condition once the
+    // out-of-flow items are stored separately.
+    if (!grid_item->is_spanning_intrinsic_track ||
+        grid_item->node.IsOutOfFlowPositioned()) {
+      // Don't consider items not spanning intrinsic tracks in this step;
+      // absolute positioned items don't affect track sizing.
+      continue;
+    }
+
+    sets_to_grow.Shrink(0);
+    sets_to_grow_beyond_limit.Shrink(0);
+
+    LayoutUnit spanned_tracks_size =
+        GridGap(track_direction) * (grid_item->SpanSize(track_direction) - 1);
+    for (auto set_iterator = GetSetIteratorForItem(*grid_item, track_direction);
+         !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
+      NGGridSet& current_set = set_iterator.CurrentSet();
+
+      spanned_tracks_size +=
+          AffectedSizeForContribution(current_set, contribution_type);
+      if (IsContributionAppliedToSet(current_set, contribution_type)) {
+        sets_to_grow.push_back(&current_set);
+        if (ShouldUsedSizeGrowBeyondLimit(current_set, contribution_type))
+          sets_to_grow_beyond_limit.push_back(&current_set);
+      }
+    }
+
+    if (sets_to_grow.IsEmpty())
+      continue;
+
+    // Subtract the corresponding size (base size or growth limit) of every
+    // spanned track from the grid item's size contribution to find the item's
+    // remaining size contribution. For infinite growth limits, substitute with
+    // the track's base size. This is the space to distribute, floor it at zero.
+    LayoutUnit extra_space = ContributionSizeForGridItem(
+        *grid_item, track_direction, contribution_type);
+    extra_space -= spanned_tracks_size;
+
+    DistributeExtraSpaceToSets(
+        extra_space.ClampNegativeToZero(), contribution_type, &sets_to_grow,
+        sets_to_grow_beyond_limit.IsEmpty() ? &sets_to_grow
+                                            : &sets_to_grow_beyond_limit);
+  }
+
+  for (auto set_iterator = track_collection.GetSetIterator();
+       !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
+    GrowAffectedSizeByPlannedIncrease(set_iterator.CurrentSet(),
+                                      contribution_type);
+  }
+}
+
+// https://drafts.csswg.org/css-grid-1/#algo-content
+void NGGridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
+    GridTrackSizingDirection track_direction) {
+  // Reorder grid items to process them as follows:
+  //   - First, consider items spanning a single non-flexible track.
+  //   - Next, consider items with span size of 2 not spanning a flexible track.
+  //   - Repeat incrementally for items with greater span sizes until all items
+  //   not spanning a flexible track have been considered.
+  //   - Finally, consider all items spanning a flexible track.
+  auto CompareGridItemsForIntrinsicTrackResolution =
+      [this, track_direction](wtf_size_t index_a, wtf_size_t index_b) -> bool {
+    if (items_[index_a].is_spanning_flex_track ||
+        items_[index_b].is_spanning_flex_track) {
+      // Ignore span sizes if one of the items spans a track with a flexible
+      // sizing function; items not spanning such tracks should come first.
+      return !items_[index_a].is_spanning_flex_track;
+    }
+    return items_[index_a].SpanSize(track_direction) <
+           items_[index_b].SpanSize(track_direction);
+  };
+  std::sort(reordered_item_indices_.begin(), reordered_item_indices_.end(),
+            CompareGridItemsForIntrinsicTrackResolution);
+
+  // First, process the items that don't span a flexible track.
+  ReorderedGridItems grid_items = GetReorderedGridItems();
+  ReorderedGridItems::Iterator current_group_begin = grid_items.begin();
+
+  while (current_group_begin != grid_items.end() &&
+         !current_group_begin->is_spanning_flex_track) {
+    // Each iteration considers all items with the same span size.
+    wtf_size_t current_group_span_size =
+        current_group_begin->SpanSize(track_direction);
+    ReorderedGridItems::Iterator current_group_end = current_group_begin;
+    do {
+      DCHECK(!current_group_end->is_spanning_flex_track);
+      ++current_group_end;
+    } while (current_group_end != grid_items.end() &&
+             !current_group_end->is_spanning_flex_track &&
+             current_group_end->SpanSize(track_direction) ==
+                 current_group_span_size);
+
+    IncreaseTrackSizesToAccommodateGridItems(
+        track_direction, current_group_begin, current_group_end,
+        NGGridItemContributionType::kForIntrinsicMinimums);
+
+    // TODO(ethavar): Add remaining stages, mark infinitely growable sets...
+    current_group_begin = current_group_end;
+  }
+
+  // TODO(ethavar): drafts.csswg.org/css-grid-1/#algo-spanning-flex-items
+  // Repeat the previous step instead considering (together, rather than grouped
+  // by span) all items that do span a track with a flexible sizing function.
 }
 
 void NGGridLayoutAlgorithm::SetAutomaticTrackRepetitionsForTesting(
@@ -559,7 +1066,7 @@ LayoutUnit NGGridLayoutAlgorithm::GridGap(
   // auto-sized grids.
   if (gap->IsPercentOrCalc() && available_size == kIndefiniteSize)
     return LayoutUnit();
-  return ValueForLength(*gap, available_size);
+  return MinimumValueForLength(*gap, available_size);
 }
 
 }  // namespace blink
