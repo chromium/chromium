@@ -58,22 +58,23 @@ AbstractTextureImplOnSharedContext::AbstractTextureImplOnSharedContext(
 }
 
 AbstractTextureImplOnSharedContext::~AbstractTextureImplOnSharedContext() {
+  bool have_context = true;
+  base::Optional<ui::ScopedMakeCurrent> scoped_make_current;
   if (cleanup_cb_)
     std::move(cleanup_cb_).Run(this);
 
   // If the shared context is lost, |shared_context_state_| will be null.
   if (!shared_context_state_) {
-    texture_->RemoveLightweightRef(false);
+    have_context = false;
   } else {
-    base::Optional<ui::ScopedMakeCurrent> scoped_make_current;
     if (!shared_context_state_->IsCurrent(nullptr)) {
       scoped_make_current.emplace(shared_context_state_->context(),
                                   shared_context_state_->surface());
+      have_context = scoped_make_current->IsContextCurrent();
     }
-    texture_->RemoveLightweightRef(true);
     shared_context_state_->RemoveContextLostObserver(this);
   }
-  texture_ = nullptr;
+  texture_->RemoveLightweightRef(have_context);
 }
 
 TextureBase* AbstractTextureImplOnSharedContext::GetTextureBase() const {
@@ -154,13 +155,9 @@ AbstractTextureImplOnSharedContextPassthrough::
 
 AbstractTextureImplOnSharedContextPassthrough::
     ~AbstractTextureImplOnSharedContextPassthrough() {
+  base::Optional<ui::ScopedMakeCurrent> scoped_make_current;
   if (cleanup_cb_)
     std::move(cleanup_cb_).Run(this);
-
-  // Save the current context and make it current again after deleting the
-  // |texture_|.
-  scoped_refptr<gl::GLContext> previous_context = gl::GLContext::GetCurrent();
-  scoped_refptr<gl::GLSurface> previous_surface = gl::GLSurface::GetCurrent();
 
   // If the shared context is lost, |shared_context_state_| will be null and the
   // |texture_| is already marked to have lost its context.
@@ -170,16 +167,17 @@ AbstractTextureImplOnSharedContextPassthrough::
     // destructor is not guaranteed to be called on the context on which the
     // |texture_| was created.
     if (!shared_context_state_->IsCurrent(nullptr)) {
-      shared_context_state_->MakeCurrent(shared_context_state_->surface(),
-                                         true /* needs_gl */);
+      scoped_make_current.emplace(shared_context_state_->context(),
+                                  shared_context_state_->surface());
+
+      // If |shared_context_state_|'s context is not current, then mark context
+      // lost for the |texture_|.
+      if (!scoped_make_current->IsContextCurrent())
+        texture_->MarkContextLost();
     }
     shared_context_state_->RemoveContextLostObserver(this);
   }
   texture_.reset();
-
-  // Make the previous context current again.
-  if (previous_context && !previous_context->IsCurrent(previous_surface.get()))
-    previous_context->MakeCurrent(previous_surface.get());
 }
 
 TextureBase* AbstractTextureImplOnSharedContextPassthrough::GetTextureBase()

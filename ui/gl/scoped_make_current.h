@@ -28,11 +28,15 @@ class GL_EXPORT ScopedMakeCurrent {
   ScopedMakeCurrent(gl::GLContext* context, gl::GLSurface* surface);
   ~ScopedMakeCurrent();
 
+  // Returns whether the |context_| is current.
+  bool IsContextCurrent() { return is_context_current_; }
+
  private:
   scoped_refptr<gl::GLContext> previous_context_;
   scoped_refptr<gl::GLSurface> previous_surface_;
   scoped_refptr<gl::GLContext> context_;
   scoped_refptr<gl::GLSurface> surface_;
+  bool is_context_current_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedMakeCurrent);
 };
