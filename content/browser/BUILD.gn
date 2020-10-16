@@ -208,7 +208,6 @@ source_set("browser") {
     "//third_party/blink/public:scaled_resources",
     "//third_party/blink/public/common",
     "//third_party/blink/public/common:font_enumeration_table_proto",
-    "//third_party/blink/public/mojom:mojom_broadcastchannel_bindings",
     "//third_party/blink/public/mojom/dom_storage",
     "//third_party/blink/public/mojom/frame",
     "//third_party/blink/public/strings",
@@ -261,6 +260,7 @@ source_set("browser") {
     "//ipc",
     "//media/mojo/mojom:remoting",
     "//third_party/blink/public/mojom:embedded_frame_sink_mojo_bindings",
+    "//third_party/blink/public/mojom:mojom_broadcastchannel_bindings",
     "//third_party/leveldatabase",
   ]
 
