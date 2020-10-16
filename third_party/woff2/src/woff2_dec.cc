@@ -111,6 +111,16 @@ int WithSign(int flag, int baseval) {
   return (flag & 1) ? baseval : -baseval;
 }
 
+bool _SafeIntAddition(int a, int b, int* result) {
+  if (PREDICT_FALSE(
+          ((a > 0) && (b > std::numeric_limits<int>::max() - a)) ||
+          ((a < 0) && (b < std::numeric_limits<int>::min() - a)))) {
+    return false;
+  }
+  *result = a + b;
+  return true;
+}
+
 bool TripletDecode(const uint8_t* flags_in, const uint8_t* in, size_t in_size,
     unsigned int n_points, Point* result, size_t* in_bytes_consumed) {
   int x = 0;
@@ -166,9 +176,12 @@ bool TripletDecode(const uint8_t* flags_in, const uint8_t* in, size_t in_size,
           (in[triplet_index + 2] << 8) + in[triplet_index + 3]);
     }
     triplet_index += n_data_bytes;
-    // Possible overflow but coordinate values are not security sensitive
-    x += dx;
-    y += dy;
+    if (!_SafeIntAddition(x, dx, &x)) {
+      return false;
+    }
+    if (!_SafeIntAddition(y, dy, &y)) {
+      return false;
+    }
     *result++ = {x, y, on_curve};
   }
   *in_bytes_consumed = triplet_index;
