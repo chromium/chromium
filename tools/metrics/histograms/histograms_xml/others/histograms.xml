@@ -16135,7 +16135,7 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="VRSessionTime" units="ms" expires_after="2021-01-10">
+<histogram name="VRSessionTime" units="ms" expires_after="2021-05-10">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>
@@ -16144,7 +16144,7 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="VRSessionVideoCount" units="units" expires_after="2020-11-08">
+<histogram name="VRSessionVideoCount" units="units" expires_after="2021-05-10">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>
@@ -16153,7 +16153,7 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="VRSessionVideoTime" units="ms" expires_after="2020-11-08">
+<histogram name="VRSessionVideoTime" units="ms" expires_after="2021-05-10">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>
@@ -16163,7 +16163,7 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="VRViewerType" enum="VRViewerType" expires_after="2021-03-15">
+<histogram name="VRViewerType" enum="VRViewerType" expires_after="2021-05-10">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>The type of headset being used for VR.</summary>
