@@ -85,12 +85,6 @@ class ChromeLocationBarModelDelegate : public LocationBarModelDelegate {
   // Helper method that returns the state of URL elision in the omnibox.
   ElisionConfig GetElisionConfig() const;
 
-  // Records ElisionConfig in UMA histogram once for this object.
-  void RecordElisionConfig();
-
-  // Whether elision metrics have already been recorded for this object.
-  bool elision_config_recorded_ = false;
-
   DISALLOW_COPY_AND_ASSIGN(ChromeLocationBarModelDelegate);
 };
 

@@ -71,7 +71,6 @@ bool ChromeLocationBarModelDelegate::GetURL(GURL* url) const {
 }
 
 bool ChromeLocationBarModelDelegate::ShouldPreventElision() {
-  RecordElisionConfig();
   if (GetElisionConfig() != ELISION_CONFIG_DEFAULT) {
     return true;
   }
@@ -235,18 +234,6 @@ ChromeLocationBarModelDelegate::GetElisionConfig() const {
     return ELISION_CONFIG_TURNED_OFF_BY_PREF;
   }
   return ELISION_CONFIG_DEFAULT;
-}
-
-void ChromeLocationBarModelDelegate::RecordElisionConfig() {
-  Profile* const profile = GetProfile();
-  // Only record metrics once for this object, and only record if the profile
-  // has already been created to avoid false logging of the default config.
-  if (elision_config_recorded_ || !profile) {
-    return;
-  }
-  UMA_HISTOGRAM_ENUMERATION("Omnibox.ElisionConfig", GetElisionConfig(),
-                            ELISION_CONFIG_MAX);
-  elision_config_recorded_ = true;
 }
 
 AutocompleteClassifier*

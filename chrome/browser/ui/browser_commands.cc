@@ -1394,7 +1394,6 @@ void ToggleShowFullURLs(Browser* browser) {
       omnibox::kPreventUrlElisionsInOmnibox);
   browser->profile()->GetPrefs()->SetBoolean(
       omnibox::kPreventUrlElisionsInOmnibox, !pref_enabled);
-  UMA_HISTOGRAM_BOOLEAN("Omnibox.ShowFullUrlsEnabled", !pref_enabled);
 }
 
 void ShowAppMenu(Browser* browser) {
