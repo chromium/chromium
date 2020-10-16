@@ -525,7 +525,6 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
             // If the engine was shut down since the dialog was opened, do nothing.
             return;
         }
-        mProfileSyncService.enableEncryptEverything();
         mProfileSyncService.setEncryptionPassphrase(passphrase);
         // Save the current state of data types - this tells the sync engine to
         // apply our encryption configuration changes.

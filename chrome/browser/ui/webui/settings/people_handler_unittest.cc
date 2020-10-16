@@ -1094,9 +1094,6 @@ TEST_F(PeopleHandlerTest, TurnOnEncryptAllDisallowed) {
   list_args.AppendString(args);
 
   EXPECT_CALL(*mock_sync_service_->GetMockUserSettings(),
-              EnableEncryptEverything())
-      .Times(0);
-  EXPECT_CALL(*mock_sync_service_->GetMockUserSettings(),
               SetEncryptionPassphrase(_))
       .Times(0);
 

@@ -199,6 +199,8 @@ cr.define('settings', function() {
      * @param {!settings.SyncPrefs} syncPrefs
      * @return {!Promise<!settings.PageStatus>}
      */
+    // TODO(crbug.com/1139060): Use a clear signature which doesn't rely on
+    // syncPrefs.
     setSyncEncryption(syncPrefs) {}
 
     /**

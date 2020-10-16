@@ -139,7 +139,7 @@ Polymer({
     chrome.metricsPrivate.recordUserAction('Sync_SaveNewPassphraseClicked');
     // Might happen within the transient time between the request to
     // |setSyncEncryption| and receiving the response.
-    if (this.syncPrefs.encryptAllData) {
+    if (this.syncPrefs.setNewPassphrase) {
       return;
     }
     // If a new password has been entered but it is invalid, do not send the
@@ -148,7 +148,6 @@ Polymer({
       return;
     }
 
-    this.syncPrefs.encryptAllData = true;
     this.syncPrefs.setNewPassphrase = true;
     this.syncPrefs.passphrase = this.passphrase_;
 

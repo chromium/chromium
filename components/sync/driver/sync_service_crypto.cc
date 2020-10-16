@@ -279,16 +279,6 @@ bool SyncServiceCrypto::IsTrustedVaultRecoverabilityDegraded() const {
          RequiredUserAction::kTrustedVaultRecoverabilityDegraded;
 }
 
-void SyncServiceCrypto::EnableEncryptEverything() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(state_.engine);
-
-  // TODO(atwilson): Persist the encryption_pending flag to address the various
-  // problems around cancelling encryption in the background (crbug.com/119649).
-  if (!state_.encrypt_everything)
-    state_.encryption_pending = true;
-}
-
 bool SyncServiceCrypto::IsEncryptEverythingEnabled() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(state_.engine);

@@ -328,7 +328,6 @@ const CGFloat kSpinnerButtonPadding = 18;
       [self hideDecryptionProgress];
     }
   } else {
-    service->GetUserSettings()->EnableEncryptEverything();
     service->GetUserSettings()->SetEncryptionPassphrase(passphrase);
   }
   [self reloadData];

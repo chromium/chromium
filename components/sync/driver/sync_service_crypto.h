@@ -50,7 +50,6 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   bool IsUsingSecondaryPassphrase() const;
   bool IsTrustedVaultKeyRequired() const;
   bool IsTrustedVaultRecoverabilityDegraded() const;
-  void EnableEncryptEverything();
   bool IsEncryptEverythingEnabled() const;
   void SetEncryptionPassphrase(const std::string& passphrase);
   bool SetDecryptionPassphrase(const std::string& passphrase);

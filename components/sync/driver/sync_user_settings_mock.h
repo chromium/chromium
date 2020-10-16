@@ -44,7 +44,6 @@ class SyncUserSettingsMock : public SyncUserSettings {
 
   MOCK_CONST_METHOD0(IsEncryptEverythingAllowed, bool());
   MOCK_CONST_METHOD0(IsEncryptEverythingEnabled, bool());
-  MOCK_METHOD0(EnableEncryptEverything, void());
 
   MOCK_CONST_METHOD0(GetEncryptedDataTypes, ModelTypeSet());
   MOCK_CONST_METHOD0(IsPassphraseRequired, bool());

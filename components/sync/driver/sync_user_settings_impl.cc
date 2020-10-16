@@ -173,11 +173,6 @@ bool SyncUserSettingsImpl::IsEncryptEverythingEnabled() const {
   return crypto_->IsEncryptEverythingEnabled();
 }
 
-void SyncUserSettingsImpl::EnableEncryptEverything() {
-  DCHECK(IsEncryptEverythingAllowed());
-  crypto_->EnableEncryptEverything();
-}
-
 bool SyncUserSettingsImpl::IsPassphraseRequired() const {
   return crypto_->IsPassphraseRequired();
 }

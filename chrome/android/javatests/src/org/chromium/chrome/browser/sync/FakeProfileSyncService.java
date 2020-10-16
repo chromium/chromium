@@ -128,11 +128,6 @@ public class FakeProfileSyncService extends ProfileSyncService {
     }
 
     @Override
-    public void enableEncryptEverything() {
-        mEncryptEverythingEnabled = true;
-    }
-
-    @Override
     public boolean canSyncFeatureStart() {
         return mCanSyncFeatureStart;
     }
@@ -148,5 +143,9 @@ public class FakeProfileSyncService extends ProfileSyncService {
 
     public void setRequiresClientUpgrade(boolean requiresClientUpgrade) {
         mRequiresClientUpgrade = requiresClientUpgrade;
+    }
+
+    public void setEncryptEverythingEnabled(boolean encryptEverythingEnabled) {
+        mEncryptEverythingEnabled = encryptEverythingEnabled;
     }
 }

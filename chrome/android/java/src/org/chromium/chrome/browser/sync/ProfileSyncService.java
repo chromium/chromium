@@ -498,16 +498,6 @@ public class ProfileSyncService {
                 mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
     }
 
-    /**
-     * Turns on encryption of all data types. This only takes effect after sync configuration is
-     * completed and setChosenDataTypes() is invoked.
-     */
-    public void enableEncryptEverything() {
-        assert isEngineInitialized();
-        ProfileSyncServiceJni.get().enableEncryptEverything(
-                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
-    }
-
     public void setEncryptionPassphrase(String passphrase) {
         assert isEngineInitialized();
         ProfileSyncServiceJni.get().setEncryptionPassphrase(
@@ -674,8 +664,6 @@ public class ProfileSyncService {
         boolean isEncryptEverythingEnabled(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         boolean isTransportStateActive(
-                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
-        void enableEncryptEverything(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         boolean isPassphraseRequiredForPreferredDataTypes(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);

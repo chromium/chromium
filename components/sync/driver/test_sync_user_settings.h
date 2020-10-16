@@ -48,7 +48,6 @@ class TestSyncUserSettings : public SyncUserSettings {
 
   bool IsEncryptEverythingAllowed() const override;
   bool IsEncryptEverythingEnabled() const override;
-  void EnableEncryptEverything() override;
 
   syncer::ModelTypeSet GetEncryptedDataTypes() const override;
   bool IsPassphraseRequired() const override;

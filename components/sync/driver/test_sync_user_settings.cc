@@ -149,8 +149,6 @@ bool TestSyncUserSettings::IsEncryptEverythingEnabled() const {
   return false;
 }
 
-void TestSyncUserSettings::EnableEncryptEverything() {}
-
 ModelTypeSet TestSyncUserSettings::GetEncryptedDataTypes() const {
   if (!IsUsingSecondaryPassphrase()) {
     // PASSWORDS and WIFI_CONFIGURATIONS are always encrypted.

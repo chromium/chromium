@@ -87,8 +87,6 @@ class ProfileSyncServiceAndroid : public syncer::SyncServiceObserver {
   jboolean IsEncryptEverythingEnabled(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
-  void EnableEncryptEverything(JNIEnv* env,
-                               const base::android::JavaParamRef<jobject>& obj);
   jboolean IsPassphraseRequiredForPreferredDataTypes(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);

@@ -211,7 +211,7 @@ public class SyncErrorCardPreferenceTest {
     public void testSyncErrorCardForTrustedVaultKey(boolean nightModeEnabled) throws Exception {
         mFakeProfileSyncService.setEngineInitialized(true);
         mFakeProfileSyncService.setTrustedVaultKeyRequiredForPreferredDataTypes(true);
-        mFakeProfileSyncService.enableEncryptEverything();
+        mFakeProfileSyncService.setEncryptEverythingEnabled(true);
         when(mAndroidSyncSettingsMock.doesMasterSyncSettingAllowChromeSync()).thenReturn(true);
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(mFakeProfileSyncService);
         TestThreadUtils.runOnUiThreadBlocking(

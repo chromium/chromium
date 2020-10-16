@@ -278,13 +278,6 @@ jboolean ProfileSyncServiceAndroid::IsEncryptEverythingEnabled(
   return sync_service_->GetUserSettings()->IsEncryptEverythingEnabled();
 }
 
-void ProfileSyncServiceAndroid::EnableEncryptEverything(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  sync_service_->GetUserSettings()->EnableEncryptEverything();
-}
-
 jboolean ProfileSyncServiceAndroid::IsPassphraseRequiredForPreferredDataTypes(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
