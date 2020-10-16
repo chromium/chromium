@@ -57,8 +57,7 @@ import org.chromium.base.test.util.Feature;
 public class DeveloperUiTest {
     // The package name of the test shell. This is acting both as the client app and the WebView
     // provider.
-    public static final String TEST_WEBVIEW_PACKAGE_NAME = "org.chromium.android_webview.shell";
-    public static final String TEST_WEBVIEW_APPLICATION_LABEL = "AwShellApplication";
+    private static final String TEST_WEBVIEW_PACKAGE_NAME = "org.chromium.android_webview.shell";
 
     @Rule
     public IntentsTestRule mRule = new IntentsTestRule<MainActivity>(MainActivity.class);
