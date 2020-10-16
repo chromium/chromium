@@ -7,7 +7,6 @@
 
 #include "base/single_thread_task_runner.h"
 #include "third_party/blink/renderer/modules/mediarecorder/video_track_recorder.h"
-
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/libvpx/source/libvpx/vpx/vp8cx.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_encoder.h"
@@ -43,6 +42,7 @@ class VpxEncoder final : public VideoTrackRecorder::Encoder {
   void ConfigureEncoderOnEncodingTaskRunner(const gfx::Size& size,
                                             vpx_codec_enc_cfg_t* codec_config,
                                             ScopedVpxCodecCtxPtr* encoder);
+
   void DoEncode(vpx_codec_ctx_t* const encoder,
                 const gfx::Size& frame_size,
                 uint8_t* const data,
@@ -55,7 +55,8 @@ class VpxEncoder final : public VideoTrackRecorder::Encoder {
                 const base::TimeDelta& duration,
                 bool force_keyframe,
                 std::string& output_data,
-                bool* const keyframe);
+                bool* const keyframe,
+                vpx_img_fmt_t img_fmt);
 
   // Returns true if |codec_config| has been filled in at least once.
   bool IsInitialized(const vpx_codec_enc_cfg_t& codec_config) const;

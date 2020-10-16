@@ -72,8 +72,13 @@ void VpxEncoder::EncodeOnEncodingTaskRunner(scoped_refptr<VideoFrame> frame,
   TRACE_EVENT0("media", "VpxEncoder::EncodeOnEncodingTaskRunner");
   DCHECK(encoding_task_runner_->BelongsToCurrentThread());
 
-  if (frame->storage_type() == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER)
-    frame = ConvertToI420ForSoftwareEncoder(frame);
+  if (frame->format() == media::PIXEL_FORMAT_NV12 &&
+      frame->storage_type() == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER)
+    frame = WrapMappedGpuMemoryBufferVideoFrame(frame);
+  if (!frame) {
+    LOG(WARNING) << "Invalid video frame to encode";
+    return;
+  }
 
   const gfx::Size frame_size = frame->visible_rect().size();
   base::TimeDelta duration = EstimateFrameDuration(*frame);
@@ -84,54 +89,85 @@ void VpxEncoder::EncodeOnEncodingTaskRunner(scoped_refptr<VideoFrame> frame,
     ConfigureEncoderOnEncodingTaskRunner(frame_size, &codec_config_, &encoder_);
   }
 
-  const bool frame_has_alpha = frame->format() == media::PIXEL_FORMAT_I420A;
-  // Split the duration between two encoder instances if alpha is encoded.
-  duration = frame_has_alpha ? duration / 2 : duration;
-  if (frame_has_alpha && (!IsInitialized(alpha_codec_config_) ||
-                          gfx::Size(alpha_codec_config_.g_w,
-                                    alpha_codec_config_.g_h) != frame_size)) {
-    ConfigureEncoderOnEncodingTaskRunner(frame_size, &alpha_codec_config_,
-                                         &alpha_encoder_);
-    u_plane_stride_ = media::VideoFrame::RowBytes(
-        VideoFrame::kUPlane, frame->format(), frame_size.width());
-    v_plane_stride_ = media::VideoFrame::RowBytes(
-        VideoFrame::kVPlane, frame->format(), frame_size.width());
-    v_plane_offset_ = media::VideoFrame::PlaneSize(
-                          frame->format(), VideoFrame::kUPlane, frame_size)
-                          .GetArea();
-    alpha_dummy_planes_.resize(SafeCast<wtf_size_t>(
-        v_plane_offset_ + media::VideoFrame::PlaneSize(
-                              frame->format(), VideoFrame::kVPlane, frame_size)
-                              .GetArea()));
-    // It is more expensive to encode 0x00, so use 0x80 instead.
-    std::fill(alpha_dummy_planes_.begin(), alpha_dummy_planes_.end(), 0x80);
-  }
-  // If we introduced a new alpha frame, force keyframe.
-  const bool force_keyframe = frame_has_alpha && !last_frame_had_alpha_;
-  last_frame_had_alpha_ = frame_has_alpha;
-
-  std::string data;
   bool keyframe = false;
-  DoEncode(encoder_.get(), frame_size, frame->data(VideoFrame::kYPlane),
-           frame->visible_data(VideoFrame::kYPlane),
-           frame->stride(VideoFrame::kYPlane),
-           frame->visible_data(VideoFrame::kUPlane),
-           frame->stride(VideoFrame::kUPlane),
-           frame->visible_data(VideoFrame::kVPlane),
-           frame->stride(VideoFrame::kVPlane), duration, force_keyframe, data,
-           &keyframe);
-
+  bool force_keyframe = false;
+  bool alpha_keyframe = false;
+  std::string data;
   std::string alpha_data;
-  if (frame_has_alpha) {
-    bool alpha_keyframe = false;
-    DoEncode(alpha_encoder_.get(), frame_size, frame->data(VideoFrame::kAPlane),
-             frame->visible_data(VideoFrame::kAPlane),
-             frame->stride(VideoFrame::kAPlane), alpha_dummy_planes_.data(),
-             SafeCast<int>(u_plane_stride_),
-             alpha_dummy_planes_.data() + v_plane_offset_,
-             SafeCast<int>(v_plane_stride_), duration, keyframe, alpha_data,
-             &alpha_keyframe);
-    DCHECK_EQ(keyframe, alpha_keyframe);
+  switch (frame->format()) {
+    case media::PIXEL_FORMAT_NV12: {
+      last_frame_had_alpha_ = false;
+      DoEncode(encoder_.get(), frame_size, frame->data(VideoFrame::kYPlane),
+               frame->visible_data(VideoFrame::kYPlane),
+               frame->stride(VideoFrame::kYPlane),
+               frame->visible_data(VideoFrame::kUVPlane),
+               frame->stride(VideoFrame::kUVPlane),
+               frame->visible_data(VideoFrame::kUVPlane) + 1,
+               frame->stride(VideoFrame::kUVPlane), duration, force_keyframe,
+               data, &keyframe, VPX_IMG_FMT_NV12);
+      break;
+    }
+    case media::PIXEL_FORMAT_I420: {
+      last_frame_had_alpha_ = false;
+      DoEncode(encoder_.get(), frame_size, frame->data(VideoFrame::kYPlane),
+               frame->visible_data(VideoFrame::kYPlane),
+               frame->stride(VideoFrame::kYPlane),
+               frame->visible_data(VideoFrame::kUPlane),
+               frame->stride(VideoFrame::kUPlane),
+               frame->visible_data(VideoFrame::kVPlane),
+               frame->stride(VideoFrame::kVPlane), duration, force_keyframe,
+               data, &keyframe, VPX_IMG_FMT_I420);
+      break;
+    }
+    case media::PIXEL_FORMAT_I420A: {
+      // Split the duration between two encoder instances if alpha is encoded.
+      duration = duration / 2;
+      if ((!IsInitialized(alpha_codec_config_) ||
+           gfx::Size(alpha_codec_config_.g_w, alpha_codec_config_.g_h) !=
+               frame_size)) {
+        ConfigureEncoderOnEncodingTaskRunner(frame_size, &alpha_codec_config_,
+                                             &alpha_encoder_);
+        u_plane_stride_ = media::VideoFrame::RowBytes(
+            VideoFrame::kUPlane, frame->format(), frame_size.width());
+        v_plane_stride_ = media::VideoFrame::RowBytes(
+            VideoFrame::kVPlane, frame->format(), frame_size.width());
+        v_plane_offset_ = media::VideoFrame::PlaneSize(
+                              frame->format(), VideoFrame::kUPlane, frame_size)
+                              .GetArea();
+        alpha_dummy_planes_.resize(SafeCast<wtf_size_t>(
+            v_plane_offset_ + media::VideoFrame::PlaneSize(frame->format(),
+                                                           VideoFrame::kVPlane,
+                                                           frame_size)
+                                  .GetArea()));
+        // It is more expensive to encode 0x00, so use 0x80 instead.
+        std::fill(alpha_dummy_planes_.begin(), alpha_dummy_planes_.end(), 0x80);
+      }
+      // If we introduced a new alpha frame, force keyframe.
+      force_keyframe = !last_frame_had_alpha_;
+      last_frame_had_alpha_ = true;
+
+      DoEncode(encoder_.get(), frame_size, frame->data(VideoFrame::kYPlane),
+               frame->visible_data(VideoFrame::kYPlane),
+               frame->stride(VideoFrame::kYPlane),
+               frame->visible_data(VideoFrame::kUPlane),
+               frame->stride(VideoFrame::kUPlane),
+               frame->visible_data(VideoFrame::kVPlane),
+               frame->stride(VideoFrame::kVPlane), duration, force_keyframe,
+               data, &keyframe, VPX_IMG_FMT_I420);
+
+      DoEncode(alpha_encoder_.get(), frame_size,
+               frame->data(VideoFrame::kAPlane),
+               frame->visible_data(VideoFrame::kAPlane),
+               frame->stride(VideoFrame::kAPlane), alpha_dummy_planes_.data(),
+               SafeCast<int>(u_plane_stride_),
+               alpha_dummy_planes_.data() + v_plane_offset_,
+               SafeCast<int>(v_plane_stride_), duration, keyframe, alpha_data,
+               &alpha_keyframe, VPX_IMG_FMT_I420);
+      DCHECK_EQ(keyframe, alpha_keyframe);
+      break;
+    }
+    default:
+      NOTREACHED() << media::VideoPixelFormatToString(frame->format());
   }
   frame = nullptr;
 
@@ -156,13 +192,15 @@ void VpxEncoder::DoEncode(vpx_codec_ctx_t* const encoder,
                           const base::TimeDelta& duration,
                           bool force_keyframe,
                           std::string& output_data,
-                          bool* const keyframe) {
+                          bool* const keyframe,
+                          vpx_img_fmt_t img_fmt) {
   DCHECK(encoding_task_runner_->BelongsToCurrentThread());
+  DCHECK(img_fmt == VPX_IMG_FMT_I420 || img_fmt == VPX_IMG_FMT_NV12);
 
   vpx_image_t vpx_image;
   vpx_image_t* const result =
-      vpx_img_wrap(&vpx_image, VPX_IMG_FMT_I420, frame_size.width(),
-                   frame_size.height(), 1 /* align */, data);
+      vpx_img_wrap(&vpx_image, img_fmt, frame_size.width(), frame_size.height(),
+                   1 /* align */, data);
   DCHECK_EQ(result, &vpx_image);
   vpx_image.planes[VPX_PLANE_Y] = y_plane;
   vpx_image.planes[VPX_PLANE_U] = u_plane;

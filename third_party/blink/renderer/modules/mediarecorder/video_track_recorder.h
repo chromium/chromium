@@ -200,6 +200,12 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     scoped_refptr<media::VideoFrame> ConvertToI420ForSoftwareEncoder(
         scoped_refptr<media::VideoFrame> frame);
 
+    // A helper function to map GpuMemoryBuffer-based VideoFrame. This function
+    // maps the given GpuMemoryBuffer of |frame| as-is without converting pixel
+    // format. The returned VideoFrame owns the |frame|.
+    static scoped_refptr<media::VideoFrame> WrapMappedGpuMemoryBufferVideoFrame(
+        scoped_refptr<media::VideoFrame> frame);
+
     // Used to shutdown properly on the same thread we were created.
     const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
 
