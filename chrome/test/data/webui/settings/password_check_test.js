@@ -122,7 +122,9 @@ function validateInsecurePasswordsList(
   const listElements = isCompromised ?
       checkPasswordSection.$.leakedPasswordList :
       checkPasswordSection.$.weakPasswordList;
-  assertEquals(listElements.items.length, insecureCredentials.length);
+  assertEquals(
+      listElements.querySelector('dom-repeat').items.length,
+      insecureCredentials.length);
   const nodes = checkPasswordSection.shadowRoot.querySelectorAll(
       'password-check-list-item');
   for (let index = 0; index < insecureCredentials.length; ++index) {
@@ -1330,7 +1332,7 @@ suite('PasswordsCheckSection', function() {
     await passwordManager.whenCalled('getCompromisedCredentials');
     flush();
     const listElements = checkPasswordSection.$.leakedPasswordList;
-    const node = listElements.children[1];
+    const node = listElements.children[0];
 
     // Open the more actions menu and click 'Edit Password'.
     node.$.more.click();
@@ -1358,7 +1360,7 @@ suite('PasswordsCheckSection', function() {
     await passwordManager.whenCalled('getCompromisedCredentials');
     flush();
     const listElements = checkPasswordSection.$.leakedPasswordList;
-    const node = listElements.children[1];
+    const node = listElements.children[0];
 
     // Open the more actions menu and click 'Edit Password'.
     node.$.more.click();
@@ -1443,7 +1445,7 @@ suite('PasswordsCheckSection', function() {
 
     flush();
     const listElements = checkPasswordSection.$.leakedPasswordList;
-    const node = listElements.children[1];
+    const node = listElements.children[0];
     assertEquals('password', node.$.insecurePassword.type);
     assertNotEquals('test4', node.$.insecurePassword.value);
 
@@ -1480,7 +1482,7 @@ suite('PasswordsCheckSection', function() {
 
     flush();
     const listElements = checkPasswordSection.$.leakedPasswordList;
-    const node = listElements.children[1];
+    const node = listElements.children[0];
     assertEquals('password', node.$.insecurePassword.type);
     assertNotEquals('test4', node.$.insecurePassword.value);
 
@@ -1501,7 +1503,7 @@ suite('PasswordsCheckSection', function() {
     await passwordManager.whenCalled('getCompromisedCredentials');
     flush();
     const listElements = checkPasswordSection.$.leakedPasswordList;
-    const passwordCheckListItem = listElements.children[1];
+    const passwordCheckListItem = listElements.children[0];
 
     assertFalse(isElementVisible(passwordCheckListItem.$$('#alreadyChanged')));
     passwordCheckListItem.$$('#changePasswordButton').click();
@@ -1520,7 +1522,7 @@ suite('PasswordsCheckSection', function() {
 
     flush();
     const listElements = checkPasswordSection.$.leakedPasswordList;
-    const node = listElements.children[1];
+    const node = listElements.children[0];
     // Clicking change password to show "Already changed password" link
     node.$$('#changePasswordButton').click();
     flush();
@@ -1549,7 +1551,7 @@ suite('PasswordsCheckSection', function() {
 
       flush();
       const listElements = checkPasswordSection.$.leakedPasswordList;
-      const node = listElements.children[1];
+      const node = listElements.children[0];
 
       // Open the more actions menu and click 'Show Password'.
       node.$.more.click();
