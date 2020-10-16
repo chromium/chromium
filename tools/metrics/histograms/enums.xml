@@ -16626,6 +16626,19 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="90" label="timeline.save-to-file"/>
   <int value="91" label="timeline.show-history"/>
   <int value="92" label="timeline.toggle-recording"/>
+  <int value="93" label="sources.increment-css"/>
+  <int value="94" label="sources.increment-css-by-ten"/>
+  <int value="95" label="sources.decrement-css"/>
+  <int value="96" label="sources.decrement-css-by-ten"/>
+  <int value="97" label="layers.reset-view"/>
+  <int value="98" label="layers.pan-mode"/>
+  <int value="99" label="layers.rotate-mode"/>
+  <int value="100" label="layers.zoom-in"/>
+  <int value="101" label="layers.zoom-out"/>
+  <int value="102" label="layers.up"/>
+  <int value="103" label="layers.down"/>
+  <int value="104" label="layers.left"/>
+  <int value="105" label="layers.right"/>
 </enum>
 
 <enum name="DevToolsPanel">
