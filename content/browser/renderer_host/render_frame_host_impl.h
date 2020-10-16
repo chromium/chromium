@@ -2158,8 +2158,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // committed navigation.
   network::mojom::URLLoaderFactoryParamsPtr
   CreateURLLoaderFactoryParamsForMainWorld(
-      NavigationRequest* navigation_request,
-      base::StringPiece debug_tag);
+      NavigationRequest* navigation_request);
 
   // Creates a Network Service-backed factory from appropriate |NetworkContext|
   // and sets a connection error handler to trigger

@@ -2492,8 +2492,7 @@ void NetworkHandler::LoadNetworkResource(
         frame, frame->GetLastCommittedOrigin(),
         mojo::Clone(frame->last_committed_client_security_state()),
         /**coep_reporter=*/mojo::NullRemote(), frame->GetProcess(),
-        network::mojom::TrustTokenRedemptionPolicy::kForbid,
-        "NetworkHandler::LoadNetworkResource");
+        network::mojom::TrustTokenRedemptionPolicy::kForbid);
 
     auto factory =
         CreateNetworkFactoryForDevTools(frame->GetProcess(), std::move(params));

@@ -332,8 +332,7 @@ void WorkerScriptFetchInitiator::CreateScriptLoader(
     network::mojom::URLLoaderFactoryParamsPtr factory_params =
         URLLoaderFactoryParamsHelper::CreateForWorker(
             factory_process, request_initiator, trusted_isolation_info,
-            /*coep_reporter=*/mojo::NullRemote(),
-            /*debug_tag=*/"WorkerScriptFetchInitiator::CreateScriptLoader");
+            /*coep_reporter=*/mojo::NullRemote());
 
     mojo::PendingReceiver<network::mojom::URLLoaderFactory>
         default_factory_receiver =

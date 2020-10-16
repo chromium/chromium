@@ -51,8 +51,7 @@ class URLLoaderFactoryParamsHelper {
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
       RenderProcessHost* process,
-      network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy,
-      base::StringPiece debug_tag);
+      network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy);
 
   // Creates URLLoaderFactoryParams to be used by |isolated_world_origin| hosted
   // within the |frame|.
@@ -74,8 +73,7 @@ class URLLoaderFactoryParamsHelper {
       const url::Origin& request_initiator,
       const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-          coep_reporter,
-      base::StringPiece debug_tag);
+          coep_reporter);
 
   // TODO(kinuko, lukasza): https://crbug.com/1114822: Remove, once all
   // URLLoaderFactories vended to a renderer process are associated with a
