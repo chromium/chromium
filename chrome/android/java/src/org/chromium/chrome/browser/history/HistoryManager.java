@@ -124,10 +124,12 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
                 || ChromeAccessibilityUtil.isHardwareKeyboardAttached(
                         mActivity.getResources().getConfiguration());
 
-        Profile profile = Profile.getLastUsedRegularProfile();
-        if (isIncognito) profile = profile.getOffTheRecordProfile();
         mSelectionDelegate = new SelectionDelegate<>();
         mSelectionDelegate.addObserver(this);
+
+        // History service is not keyed for Incognito profiles and {@link HistoryServiceFactory}
+        // explicitly redirects to use regular profile for Incognito case.
+        Profile profile = Profile.getLastUsedRegularProfile();
         mHistoryAdapter = new HistoryAdapter(mSelectionDelegate, this,
                 sProviderForTests != null ? sProviderForTests : new BrowsingHistoryBridge(profile));
 
