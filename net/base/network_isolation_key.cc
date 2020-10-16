@@ -67,6 +67,9 @@ NetworkIsolationKey::NetworkIsolationKey()
 NetworkIsolationKey::NetworkIsolationKey(
     const NetworkIsolationKey& network_isolation_key) = default;
 
+NetworkIsolationKey::NetworkIsolationKey(
+    NetworkIsolationKey&& network_isolation_key) = default;
+
 NetworkIsolationKey::~NetworkIsolationKey() = default;
 
 NetworkIsolationKey& NetworkIsolationKey::operator=(
