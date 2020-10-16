@@ -101,6 +101,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
 
   int GetItemIndex() const;
   int GetItemCount() const;
+  int GetSelectedItemCount() const;
 
   bool CanScrollForward() const;
   bool CanScrollBackward() const;

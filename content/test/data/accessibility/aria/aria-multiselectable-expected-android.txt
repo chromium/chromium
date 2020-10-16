@@ -1,5 +1,5 @@
 android.webkit.WebView focusable focused scrollable
-++android.widget.ListView role_description='list box' clickable collection focusable multiselectable name='My Listbox' state_description='multiselectable, none selected.' item_count=4 row_count=4
+++android.widget.ListView role_description='list box' clickable collection focusable multiselectable name='My Listbox' state_description='multiselectable, none selected. 4 items' item_count=4 row_count=4
 ++++android.view.View clickable collection_item focusable name='Example 1' state_description='in list, item 1 of 4'
 ++++android.view.View clickable collection_item focusable name='Example 2' state_description='in list, item 2 of 4' item_index=1 row_index=1
 ++++android.view.View clickable collection_item focusable name='Example 3' state_description='in list, item 3 of 4' item_index=2 row_index=2

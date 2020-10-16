@@ -549,30 +549,37 @@ base::string16 BrowserAccessibilityAndroid::GetHint() const {
 }
 
 base::string16 BrowserAccessibilityAndroid::GetStateDescription() const {
+  std::vector<base::string16> state_descs;
+
   // For multiselectable state, generate a state description. We do not set a
   // state description for pop up/<select> to prevent double utterances.
   if (IsMultiselectable() && GetRole() != ax::mojom::Role::kPopUpButton)
-    return GetMultiselectableStateDescription();
-
-  // For Toggle buttons, we will append "on"/"off" in the state description.
-  if (GetRole() == ax::mojom::Role::kToggleButton)
-    return GetToggleButtonStateDescription();
+    state_descs.push_back(GetMultiselectableStateDescription());
 
   // For Checkboxes, if we are in a kMixed state, we will communicate
-  // "partially checked" through the state description.
-  if (IsCheckable() && !IsReportingCheckable())
-    return GetCheckboxStateDescription();
+  // "partially checked" through the state description. This is mutually
+  // exclusive with the on/off of toggle buttons below.
+  if (IsCheckable() && !IsReportingCheckable()) {
+    state_descs.push_back(GetCheckboxStateDescription());
+  } else if (GetRole() == ax::mojom::Role::kToggleButton) {
+    // For Toggle buttons, we will append "on"/"off" in the state description.
+    state_descs.push_back(GetToggleButtonStateDescription());
+  }
 
-  // For list boxes, use state description to communicate child item count.
-  if (GetRole() == ax::mojom::Role::kListBox)
-    return GetListBoxStateDescription();
+  // For list boxes, use state description to communicate child item count. We
+  // will not communicate this in the case that the listbox is also
+  // multiselectable and has some items selected, since the same info would be
+  // communicated as "x of y selected".
+  if (GetRole() == ax::mojom::Role::kListBox &&
+      (!IsMultiselectable() || !GetSelectedItemCount()))
+    state_descs.push_back(GetListBoxStateDescription());
 
   // For list box items, use state description to communicate index of item.
   if (GetRole() == ax::mojom::Role::kListBoxOption)
-    return GetListBoxItemStateDescription();
+    state_descs.push_back(GetListBoxItemStateDescription());
 
-  // Otherwise we will not use state description
-  return base::string16();
+  // Concatenate all state descriptions and return.
+  return base::JoinString(state_descs, base::ASCIIToUTF16(" "));
 }
 
 base::string16 BrowserAccessibilityAndroid::GetMultiselectableStateDescription()
@@ -1313,6 +1320,20 @@ int BrowserAccessibilityAndroid::GetItemCount() const {
       count = *node()->GetSetSize();
   }
   return count;
+}
+
+int BrowserAccessibilityAndroid::GetSelectedItemCount() const {
+  // Count the number of selected children.
+  int selected_count = 0;
+  for (PlatformChildIterator it = PlatformChildrenBegin();
+       it != PlatformChildrenEnd(); ++it) {
+    BrowserAccessibilityAndroid* child =
+        static_cast<BrowserAccessibilityAndroid*>(it.get());
+    if (child->IsSelected())
+      selected_count++;
+  }
+
+  return selected_count;
 }
 
 bool BrowserAccessibilityAndroid::CanScrollForward() const {
