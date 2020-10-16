@@ -14,13 +14,9 @@
 #include "base/test/simple_test_clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/subresource_filter/chrome_subresource_filter_client.h"
-#include "chrome/browser/subresource_filter/subresource_filter_profile_context.h"
-#include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -31,24 +27,31 @@ class SubresourceFilterContentSettingsManagerTest : public testing::Test {
  public:
   SubresourceFilterContentSettingsManagerTest() {}
 
+  // Creates and configures the SubresourceFilterContentSettingsManager instance
+  // used by the tests, first creating the dependencies that need to be supplied
+  // to that instance.
   void SetUp() override {
+    HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
+    settings_map_ = new HostContentSettingsMap(
+        &prefs_, false /* is_off_the_record */, false /* store_last_modified */,
+        false /* restore_session */);
+
     settings_manager_ =
-        SubresourceFilterProfileContextFactory::GetForProfile(&testing_profile_)
-            ->settings_manager();
+        std::make_unique<SubresourceFilterContentSettingsManager>(
+            settings_map_.get());
+
     settings_manager_->set_should_use_smart_ui_for_testing(true);
   }
 
-  HostContentSettingsMap* GetSettingsMap() {
-    return HostContentSettingsMapFactory::GetForProfile(profile());
-  }
+  void TearDown() override { settings_map_->ShutdownOnUIThread(); }
+
+  HostContentSettingsMap* GetSettingsMap() { return settings_map_.get(); }
 
   const base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
   SubresourceFilterContentSettingsManager* settings_manager() {
-    return settings_manager_;
+    return settings_manager_.get();
   }
-
-  TestingProfile* profile() { return &testing_profile_; }
 
   ContentSetting GetContentSettingMatchingUrlWithEmptyPath(const GURL& url) {
     ContentSettingsForOneType host_settings;
@@ -71,10 +74,15 @@ class SubresourceFilterContentSettingsManagerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
-  TestingProfile testing_profile_;
 
-  // Owned by the testing_profile_.
-  SubresourceFilterContentSettingsManager* settings_manager_ = nullptr;
+  // Used by the HostContentSettingsMap instance.
+  sync_preferences::TestingPrefServiceSyncable prefs_;
+
+  // Used by the SubresourceFilterContentSettingsManager instance.
+  scoped_refptr<HostContentSettingsMap> settings_map_;
+
+  // Instance under test.
+  std::unique_ptr<SubresourceFilterContentSettingsManager> settings_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(SubresourceFilterContentSettingsManagerTest);
 };

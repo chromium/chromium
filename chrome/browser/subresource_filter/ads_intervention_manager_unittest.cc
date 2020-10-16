@@ -8,10 +8,10 @@
 
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
-#include "chrome/browser/subresource_filter/subresource_filter_profile_context.h"
-#include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
-#include "chrome/test/base/testing_profile.h"
+#include "chrome/browser/subresource_filter/subresource_filter_content_settings_manager.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -25,24 +25,44 @@ class AdsInterventionManagerTest : public testing::Test {
   AdsInterventionManagerTest& operator=(const AdsInterventionManagerTest&) =
       delete;
 
+  // Creates and configures the AdsInterventionManager instance used by the
+  // tests, first creating the dependencies that need to be supplied to that
+  // instance.
   void SetUp() override {
+    HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
+    settings_map_ = new HostContentSettingsMap(
+        &prefs_, false /* is_off_the_record */, false /* store_last_modified */,
+        false /* restore_session */);
+    settings_manager_ =
+        std::make_unique<SubresourceFilterContentSettingsManager>(
+            settings_map_.get());
+
     ads_intervention_manager_ =
-        SubresourceFilterProfileContextFactory::GetForProfile(&testing_profile_)
-            ->ads_intervention_manager();
+        std::make_unique<AdsInterventionManager>(settings_manager_.get());
 
     test_clock_ = std::make_unique<base::SimpleTestClock>();
     ads_intervention_manager_->set_clock_for_testing(test_clock_.get());
   }
 
+  void TearDown() override { settings_map_->ShutdownOnUIThread(); }
+
   base::SimpleTestClock* test_clock() { return test_clock_.get(); }
 
  protected:
-  // Owned by the testing_profile_.
-  AdsInterventionManager* ads_intervention_manager_ = nullptr;
+  // Used by the HostContentSettingsMap instance.
+  sync_preferences::TestingPrefServiceSyncable prefs_;
+
+  // Used by the SubresourceFilterContentSettingsManager instance.
+  scoped_refptr<HostContentSettingsMap> settings_map_;
+
+  // Used by the AdsInterventionManager instance.
+  std::unique_ptr<SubresourceFilterContentSettingsManager> settings_manager_;
+
+  // Instance under test.
+  std::unique_ptr<AdsInterventionManager> ads_intervention_manager_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile testing_profile_;
 
   std::unique_ptr<base::SimpleTestClock> test_clock_;
 };
