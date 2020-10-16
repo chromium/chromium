@@ -123,7 +123,6 @@ static_library("safe_browsing") {
     deps += [
       ":url_lookup_service_factory",
       ":verdict_cache_manager_factory",
-      "//chrome/browser/engagement:mojo_bindings",
       "//chrome/common/safe_browsing:proto",
       "//components/safe_browsing/content",
       "//components/safe_browsing/content/browser",
@@ -141,6 +140,7 @@ static_library("safe_browsing") {
       "//components/safe_browsing/core/db:metadata_proto",
       "//components/safe_browsing/core/triggers",
       "//components/safe_browsing/core/triggers:trigger_throttler",
+      "//components/site_engagement/core/mojom:mojo_bindings",
       "//services/preferences/public/mojom:mojom",
     ]
     if (safe_browsing_mode == 1) {

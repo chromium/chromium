@@ -7,8 +7,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/engagement/site_engagement_details.mojom.h"
 #include "chrome/browser/engagement/site_engagement_score.h"
+#include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
 
 namespace {
 

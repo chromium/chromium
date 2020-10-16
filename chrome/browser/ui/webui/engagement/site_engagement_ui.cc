@@ -12,11 +12,11 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "chrome/browser/engagement/site_engagement_details.mojom.h"
 #include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/dev_ui_browser_resources.h"
+#include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -87,7 +87,8 @@ SiteEngagementUI::SiteEngagementUI(content::WebUI* web_ui)
       content::WebUIDataSource::Create(chrome::kChromeUISiteEngagementHost));
   source->AddResourcePath("site_engagement.js", IDR_SITE_ENGAGEMENT_JS);
   source->AddResourcePath(
-      "chrome/browser/engagement/site_engagement_details.mojom-lite.js",
+      "components/site_engagement/core/mojom/"
+      "site_engagement_details.mojom-lite.js",
       IDR_SITE_ENGAGEMENT_DETAILS_MOJOM_LITE_JS);
   source->SetDefaultResource(IDR_SITE_ENGAGEMENT_HTML);
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source.release());

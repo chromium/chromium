@@ -1,0 +1,7 @@
+This directory contains shared code for determining engaged sites.
+
+Site engagement will be a layered component (https://www.chromium.org/developers/design-documents/layered-components-design) with the following structure:
+
+- core/: shared code with no //chrome or //content dependencies
+- content/: driver for the shared code that depends on the content layer
+- ios/: driver for the shared code based on src/ios

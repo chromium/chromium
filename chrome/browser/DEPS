@@ -264,6 +264,7 @@ include_rules = [
   "+components/sessions/core",
   "+components/signin/core/browser",
   "+components/signin/public",
+  "+components/site_engagement",
   "+components/site_isolation",
   "+components/soda",
   "+components/spellcheck",

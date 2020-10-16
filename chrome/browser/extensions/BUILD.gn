@@ -771,7 +771,6 @@ static_library("extensions") {
     "//chrome/browser:ntp_background_proto",
     "//chrome/browser:theme_properties",
     "//chrome/browser/devtools",
-    "//chrome/browser/engagement:mojo_bindings",
     "//chrome/browser/image_decoder",
     "//chrome/browser/media/router",
     "//chrome/browser/media/router/discovery",
@@ -780,6 +779,7 @@ static_library("extensions") {
     "//chrome/browser/safe_browsing",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/components",
+    "//components/site_engagement/core/mojom:mojo_bindings",
 
     # TODO(crbug.com/1065748): Remove this dependency:
     "//chrome/browser/web_applications/extensions",

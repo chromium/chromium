@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/engagement/site_engagement_details.mojom.h"
 #include "chrome/browser/lookalikes/lookalike_url_blocking_page.h"
+#include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"

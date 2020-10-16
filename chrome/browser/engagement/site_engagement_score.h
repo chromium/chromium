@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/engagement/site_engagement_details.mojom-forward.h"
+#include "components/site_engagement/core/mojom/site_engagement_details.mojom-forward.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom-forward.h"
 #include "url/gurl.h"
 

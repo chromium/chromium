@@ -12,9 +12,9 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/engagement/site_engagement_details.mojom-forward.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
+#include "components/site_engagement/core/mojom/site_engagement_details.mojom-forward.h"
 #include "components/url_formatter/url_formatter.h"
 
 class Profile;

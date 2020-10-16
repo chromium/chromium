@@ -10,7 +10,7 @@ js_type_check("closure_compile") {
 
 js_library("site_engagement") {
   deps = [
-    "//chrome/browser/engagement:mojo_bindings_js_library_for_compile",
+    "//components/site_engagement/core/mojom:mojo_bindings_js_library_for_compile",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:util",
   ]

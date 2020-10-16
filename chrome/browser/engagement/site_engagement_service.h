@@ -15,10 +15,10 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/engagement/site_engagement_details.mojom.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
 #include "ui/base/page_transition_types.h"
 

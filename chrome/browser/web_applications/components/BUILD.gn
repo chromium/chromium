@@ -136,13 +136,13 @@ source_set("components") {
     # chrome/browser/engagement: gn parts (like mojo_bindings) to fix this.
     #
     # TODO(crbug.com/1039736): Refactor AppBannerManager to remove this dep.
-    "//chrome/browser/engagement:mojo_bindings",
     "//chrome/browser/web_applications:web_app_group",
     "//chrome/common",
     "//components/crx_file",
     "//components/keyed_service/content",
     "//components/pref_registry",
     "//components/services/app_service/public/mojom",
+    "//components/site_engagement/core/mojom:mojo_bindings",
     "//components/user_manager:user_manager",
     "//content/public/browser",
     "//extensions/common:common_constants",
