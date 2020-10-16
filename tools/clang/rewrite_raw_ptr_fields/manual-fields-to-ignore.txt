@@ -33,6 +33,7 @@ safe_browsing::(anonymous namespace)::(anonymous struct)::feature
 tracing::MessageInfo::accepted_field_ids
 tracing::MessageInfo::sub_messages
 ui::(anonymous namespace)::I18nTestParam::test
+(anonymous namespace)::Node::next # from nt_registry.cc
 
 # Populated manually - double implicit-cast required.
 PaintManager::instance_
@@ -165,6 +166,7 @@ DownloadItemView::scan_button_
 # Populated manually - other compile-time reasons
 logging::CheckOpResult::message_  # cyclic #include
 views::internal::ClassPropertySetter::property_  # passed to templated param T*
+(anonymous namespace)::ScopedFunctionHelper::function_ # function pointer template
 
 #######
 # CheckedPtr2/MTECheckedPtr-specific sections
