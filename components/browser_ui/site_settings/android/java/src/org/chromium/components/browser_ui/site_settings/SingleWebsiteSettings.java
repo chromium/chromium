@@ -830,7 +830,9 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         listPreference.setEntryValues(keys);
         listPreference.setEntries(descriptions);
         listPreference.setOnPreferenceChangeListener(this);
-        listPreference.setSummary(isEmbargoed ? getString(R.string.automatically_blocked) : "%s");
+        listPreference.setSummary(isEmbargoed
+                        ? getString(R.string.automatically_blocked)
+                        : getString(ContentSettingsResources.getCategorySummary(value)));
         // TODO(crbug.com/735110): Figure out if this is the correct thing to do - here we are
         // effectively treating non-ALLOW values as BLOCK.
         int index = (value == ContentSettingValues.ALLOW ? 0 : 1);
@@ -1015,13 +1017,13 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         @ContentSettingValues
         int permission = ContentSetting.fromString((String) newValue);
-        // Embargoed permission preserves summary. Refresh it manually.
-        preference.setSummary("%s");
         BrowserContextHandle browserContextHandle =
                 getSiteSettingsClient().getBrowserContextHandle();
         int type = getContentSettingsTypeFromPreferenceKey(preference.getKey());
         if (type != ContentSettingsType.DEFAULT) {
             mSite.setContentSetting(browserContextHandle, type, permission);
+            preference.setSummary(
+                    getString(ContentSettingsResources.getCategorySummary(permission)));
 
             if (mWebsiteSettingsObserver != null) {
                 mWebsiteSettingsObserver.onPermissionChanged();
