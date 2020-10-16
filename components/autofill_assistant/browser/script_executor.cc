@@ -27,6 +27,7 @@
 #include "components/autofill_assistant/browser/web/element_finder.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
 #include "components/strings/grit/components_strings.h"
+#include "net/http/http_status_code.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill_assistant {
@@ -809,13 +810,14 @@ base::WeakPtr<ActionDelegate> ScriptExecutor::GetWeakPtr() const {
 }
 
 void ScriptExecutor::OnGetActions(base::TimeTicks start_time,
-                                  bool result,
+                                  int http_status,
                                   const std::string& response) {
+  VLOG(2) << __func__ << " http-status=" << http_status;
   batch_start_time_ = base::TimeTicks::Now();
   roundtrip_timing_stats_.set_roundtrip_time_ms(
       (batch_start_time_ - start_time).InMilliseconds());
-  bool success = result && ProcessNextActionResponse(response);
-  VLOG(2) << __func__ << " result=" << result;
+  bool success =
+      http_status == net::HTTP_OK && ProcessNextActionResponse(response);
   if (should_stop_script_) {
     // The last action forced the script to stop. Sending the result of the
     // action is considered best effort in this situation. Report a successful

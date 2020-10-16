@@ -20,6 +20,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gtest_util.h"
 #include "base/test/mock_callback.h"
+#include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
@@ -54,7 +55,7 @@ class LiteServiceTest : public testing::Test {
                       Service::ResponseCallback& callback) {
           std::string serialized_response;
           get_actions_response_.SerializeToString(&serialized_response);
-          std::move(callback).Run(true, serialized_response);
+          std::move(callback).Run(net::HTTP_OK, serialized_response);
         });
   }
   ~LiteServiceTest() override {}
@@ -72,7 +73,8 @@ class LiteServiceTest : public testing::Test {
     stop.add_actions()->mutable_stop();
     std::string serialized_stop;
     stop.SerializeToString(&serialized_stop);
-    EXPECT_CALL(mock_response_callback_, Run(true, serialized_stop)).Times(1);
+    EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, serialized_stop))
+        .Times(1);
     EXPECT_CALL(mock_finished_callback_, Run(state));
   }
 
@@ -80,7 +82,7 @@ class LiteServiceTest : public testing::Test {
       mock_finished_callback_;
   base::MockCallback<base::RepeatingCallback<void(bool)>>
       mock_script_running_callback_;
-  base::MockCallback<base::OnceCallback<void(bool, const std::string&)>>
+  base::MockCallback<base::OnceCallback<void(int, const std::string&)>>
       mock_response_callback_;
   MockService* mock_native_service_ = nullptr;
   std::unique_ptr<LiteService> lite_service_;
@@ -103,9 +105,9 @@ TEST_F(LiteServiceTest, RunsNotificationOnDelete) {
 }
 
 TEST_F(LiteServiceTest, GetScriptsForUrl) {
-  EXPECT_CALL(mock_response_callback_, Run(true, _))
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, _))
       .Times(1)
-      .WillOnce([](bool success, const std::string& response) {
+      .WillOnce([](int http_status, const std::string& response) {
         SupportsScriptResponseProto proto;
         ASSERT_TRUE(proto.ParseFromString(response));
 
@@ -163,7 +165,7 @@ TEST_F(LiteServiceTest, StopsOnGetActionsFailed) {
                     const std::string& global_payload,
                     const std::string& script_payload,
                     Service::ResponseCallback& callback) {
-        std::move(callback).Run(false, std::string());
+        std::move(callback).Run(net::HTTP_UNAUTHORIZED, std::string());
       });
 
   EXPECT_CALL(mock_script_running_callback_, Run).Times(0);
@@ -183,7 +185,7 @@ TEST_F(LiteServiceTest, StopsOnGetActionsParsingError) {
                     const std::string& global_payload,
                     const std::string& script_payload,
                     Service::ResponseCallback& callback) {
-        std::move(callback).Run(true, std::string("invalid proto"));
+        std::move(callback).Run(net::HTTP_OK, std::string("invalid proto"));
       });
   EXPECT_CALL(mock_script_running_callback_, Run).Times(0);
   lite_service_->GetActions(kFakeScriptPath, GURL(kFakeUrl),
@@ -206,7 +208,7 @@ TEST_F(LiteServiceTest, StopsOnGetActionsContainsUnsafeActions) {
 TEST_F(LiteServiceTest, GetActionsSucceedsForMinimalViableScript) {
   get_actions_response_.add_actions()->mutable_prompt()->set_browse_mode(true);
   get_actions_response_.add_actions()->mutable_prompt();
-  EXPECT_CALL(mock_response_callback_, Run(true, _));
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, _));
   EXPECT_CALL(mock_script_running_callback_, Run(/*ui_shown =*/false)).Times(1);
   lite_service_->GetActions(kFakeScriptPath, GURL(kFakeUrl),
                             TriggerContextImpl(), "", "",
@@ -233,9 +235,9 @@ TEST_F(LiteServiceTest, GetActionsSplitsActionsResponseAtLastBrowse) {
   }
 
   std::vector<ProcessedActionProto> processed_actions;
-  EXPECT_CALL(mock_response_callback_, Run(true, _))
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, _))
       .Times(1)
-      .WillOnce([&](bool result, const std::string& response) {
+      .WillOnce([&](int http_status, const std::string& response) {
         // Can't directly compare the protos here, because the lite service
         // will have automatically assigned unique payloads to prompts.
         ActionsResponseProto proto;
@@ -269,9 +271,9 @@ TEST_F(LiteServiceTest, GetActionsSplitsActionsResponseAtLastBrowse) {
                             TriggerContextImpl(), "", "",
                             mock_response_callback_.Get());
 
-  EXPECT_CALL(mock_response_callback_, Run(true, _))
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, _))
       .Times(1)
-      .WillOnce([&](bool result, const std::string& response) {
+      .WillOnce([&](int http_result, const std::string& response) {
         ActionsResponseProto proto;
         ASSERT_TRUE(proto.ParseFromString(response));
         ASSERT_TRUE(proto.actions().size() == 1);
@@ -314,7 +316,7 @@ TEST_F(LiteServiceTest, GetNextActionsFirstPartSucceedsOnAutoSelectChoice) {
   processed_actions.back().mutable_prompt_choice()->set_server_payload(
       "payload");
 
-  EXPECT_CALL(mock_response_callback_, Run(true, ""));
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, ""));
   EXPECT_CALL(mock_script_running_callback_, Run(/*ui_shown =*/true)).Times(1);
   lite_service_->GetNextActions(TriggerContextImpl(), "", "", processed_actions,
                                 RoundtripTimingStats(),
@@ -334,7 +336,7 @@ TEST_F(LiteServiceTest, GetNextActionsSecondPartOnlyServedOnce) {
   processed_actions.back().mutable_prompt_choice()->set_server_payload(
       "payload");
 
-  EXPECT_CALL(mock_response_callback_, Run(true, "")).Times(1);
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "")).Times(1);
   lite_service_->GetNextActions(TriggerContextImpl(), "", "", processed_actions,
                                 RoundtripTimingStats(),
                                 mock_response_callback_.Get());

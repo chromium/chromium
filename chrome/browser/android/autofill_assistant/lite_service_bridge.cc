@@ -48,15 +48,17 @@ jlong JNI_AutofillAssistantLiteService_CreateLiteService(
   }
 
   ServerUrlFetcher url_fetcher{ServerUrlFetcher::GetDefaultServerUrl()};
+  auto request_sender = std::make_unique<ServiceRequestSender>(
+      web_contents->GetBrowserContext(), /* access_token_fetcher = */ nullptr,
+      std::make_unique<NativeURLLoaderFactory>(),
+      ApiKeyFetcher().GetAPIKey(chrome::GetChannel()),
+      /* auth_enabled = */ false, /* disable_auth_if_no_access_token = */ true);
+
   return reinterpret_cast<jlong>(new LiteService(
-      std::make_unique<ServiceImpl>(
-          ApiKeyFetcher().GetAPIKey(chrome::GetChannel()),
-          url_fetcher.GetSupportsScriptEndpoint(),
-          url_fetcher.GetNextActionsEndpoint(),
-          web_contents->GetBrowserContext(),
-          std::make_unique<EmptyClientContext>(),
-          /* access_token_fetcher = */ nullptr,
-          /* auth_enabled = */ false),
+      std::make_unique<ServiceImpl>(std::move(request_sender),
+                                    url_fetcher.GetSupportsScriptEndpoint(),
+                                    url_fetcher.GetNextActionsEndpoint(),
+                                    std::make_unique<EmptyClientContext>()),
       base::android::ConvertJavaStringToUTF8(env, jtrigger_script_path),
       base::BindOnce(&OnFinished, base::android::ScopedJavaGlobalRef<jobject>(
                                       java_lite_service)),

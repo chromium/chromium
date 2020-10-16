@@ -380,7 +380,7 @@ class ScriptExecutor : public ActionDelegate,
   };
 
   void OnGetActions(base::TimeTicks start_time,
-                    bool result,
+                    int http_status,
                     const std::string& response);
   bool ProcessNextActionResponse(const std::string& response);
   void ReportPayloadsToListener();

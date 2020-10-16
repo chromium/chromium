@@ -15,6 +15,7 @@ include_rules = [
   "+google_apis",
   "+net",
   "+services/network/public/cpp",
+  "+services/network/public/mojom",
   "+third_party/blink/public/mojom/payments/payment_request.mojom.h",
   "+third_party/icu/source/common/unicode",
   "+third_party/libaddressinput/chromium/addressinput_util.h",

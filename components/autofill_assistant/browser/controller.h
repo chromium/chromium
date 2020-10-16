@@ -268,7 +268,9 @@ class Controller : public ScriptExecutorDelegate,
   // once right now and schedule regular checks. Otherwise, do nothing.
   void GetOrCheckScripts();
 
-  void OnGetScripts(const GURL& url, bool result, const std::string& response);
+  void OnGetScripts(const GURL& url,
+                    int http_status,
+                    const std::string& response);
 
   // Execute |script_path| and, if execution succeeds, enter |end_state| and
   // call |on_success|.

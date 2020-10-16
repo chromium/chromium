@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "net/http/http_status_code.h"
 
 namespace autofill_assistant {
 
@@ -50,7 +51,7 @@ void LiteService::GetScriptsForUrl(const GURL& url,
 
   std::string serialized_response;
   response.SerializeToString(&serialized_response);
-  std::move(callback).Run(true, serialized_response);
+  std::move(callback).Run(net::HTTP_OK, serialized_response);
 }
 
 void LiteService::GetActions(const std::string& script_path,
@@ -78,9 +79,9 @@ void LiteService::GetActions(const std::string& script_path,
 }
 
 void LiteService::OnGetActions(ResponseCallback callback,
-                               bool result,
+                               int http_status,
                                const std::string& response) {
-  if (!result) {
+  if (http_status != net::HTTP_OK) {
     StopWithoutErrorMessage(
         std::move(callback),
         Metrics::LiteScriptFinishedState::LITE_SCRIPT_GET_ACTIONS_FAILED);
@@ -131,7 +132,7 @@ void LiteService::OnGetActions(ResponseCallback callback,
 
   std::string serialized_first_part;
   split_actions->first.SerializeToString(&serialized_first_part);
-  std::move(callback).Run(result, serialized_first_part);
+  std::move(callback).Run(http_status, serialized_first_part);
   notify_script_running_callback_.Run(/*ui_shown = */ false);
 }
 
@@ -146,7 +147,7 @@ void LiteService::GetNextActions(
     // The lite script has already terminated. We need to run |callback| with
     // |success|=true and an empty response to ensure a graceful stop of the
     // script (i.e., without error message).
-    std::move(callback).Run(true, std::string());
+    std::move(callback).Run(net::HTTP_OK, std::string());
     return;
   }
 
@@ -179,7 +180,7 @@ void LiteService::GetNextActions(
         std::string serialized_second_part;
         trigger_script_second_part_->SerializeToString(&serialized_second_part);
         trigger_script_second_part_.reset();
-        std::move(callback).Run(true, serialized_second_part);
+        std::move(callback).Run(net::HTTP_OK, serialized_second_part);
         notify_script_running_callback_.Run(/*ui_shown = */ true);
         return;
     }
@@ -234,7 +235,7 @@ void LiteService::StopWithoutErrorMessage(
   response.add_actions()->mutable_stop();
   std::string serialized_response;
   response.SerializeToString(&serialized_response);
-  std::move(callback).Run(true, serialized_response);
+  std::move(callback).Run(net::HTTP_OK, serialized_response);
 }
 
 }  // namespace autofill_assistant

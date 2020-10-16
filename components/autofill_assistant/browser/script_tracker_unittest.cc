@@ -14,6 +14,7 @@
 #include "components/autofill_assistant/browser/service/mock_service.h"
 #include "components/autofill_assistant/browser/service/service.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
+#include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
@@ -43,7 +44,7 @@ class ScriptTrackerTest : public testing::Test, public ScriptTracker::Listener {
 
     // Scripts run, but have no actions.
     ON_CALL(mock_service_, OnGetActions(_, _, _, _, _, _))
-        .WillByDefault(RunOnceCallback<5>(true, ""));
+        .WillByDefault(RunOnceCallback<5>(net::HTTP_OK, ""));
   }
 
  protected:
@@ -303,9 +304,9 @@ TEST_F(ScriptTrackerTest, UpdateScriptList) {
 
   EXPECT_CALL(mock_service_,
               OnGetActions(StrEq("runnable name"), _, _, _, _, _))
-      .WillOnce(RunOnceCallback<5>(true, Serialize(actions_response)));
+      .WillOnce(RunOnceCallback<5>(net::HTTP_OK, Serialize(actions_response)));
   EXPECT_CALL(mock_service_, OnGetNextActions(_, _, _, _, _, _))
-      .WillOnce(RunOnceCallback<5>(true, ""));
+      .WillOnce(RunOnceCallback<5>(net::HTTP_OK, ""));
 
   base::MockCallback<ScriptExecutor::RunScriptCallback> execute_callback;
   EXPECT_CALL(execute_callback,
@@ -345,9 +346,9 @@ TEST_F(ScriptTrackerTest, UpdateScriptListFromInterrupt) {
 
   EXPECT_CALL(mock_service_,
               OnGetActions(StrEq("runnable name"), _, _, _, _, _))
-      .WillOnce(RunOnceCallback<5>(true, Serialize(actions_response)));
+      .WillOnce(RunOnceCallback<5>(net::HTTP_OK, Serialize(actions_response)));
   EXPECT_CALL(mock_service_, OnGetNextActions(_, _, _, _, _, _))
-      .WillOnce(RunOnceCallback<5>(true, ""));
+      .WillOnce(RunOnceCallback<5>(net::HTTP_OK, ""));
 
   base::MockCallback<ScriptExecutor::RunScriptCallback> execute_callback;
   EXPECT_CALL(execute_callback,
@@ -384,16 +385,16 @@ TEST_F(ScriptTrackerTest, UpdateInterruptList) {
   interrupt_proto->mutable_presentation()->set_interrupt(true);
 
   EXPECT_CALL(mock_service_, OnGetActions("main", _, _, _, _, _))
-      .WillOnce(RunOnceCallback<5>(true, Serialize(actions_response)));
+      .WillOnce(RunOnceCallback<5>(net::HTTP_OK, Serialize(actions_response)));
   EXPECT_CALL(mock_service_, OnGetNextActions(_, _, _, _, _, _))
-      .WillRepeatedly(RunOnceCallback<5>(true, ""));
+      .WillRepeatedly(RunOnceCallback<5>(net::HTTP_OK, ""));
 
   ActionsResponseProto actions_interrupt;
   actions_response.set_script_payload("from interrupt");
   actions_response.add_actions()->mutable_tell()->set_message("interrupt");
 
   EXPECT_CALL(mock_service_, OnGetActions("interrupt", _, _, _, _, _))
-      .WillOnce(RunOnceCallback<5>(true, Serialize(actions_interrupt)));
+      .WillOnce(RunOnceCallback<5>(net::HTTP_OK, Serialize(actions_interrupt)));
 
   base::MockCallback<ScriptExecutor::RunScriptCallback> execute_callback;
   EXPECT_CALL(execute_callback,

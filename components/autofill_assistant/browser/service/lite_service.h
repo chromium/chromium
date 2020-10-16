@@ -69,7 +69,7 @@ class LiteService : public Service {
   friend class LiteServiceTest;
 
   void OnGetActions(ResponseCallback callback,
-                    bool result,
+                    int http_status,
                     const std::string& response);
 
   // Stops the script and closes autofill assistant without showing an error

@@ -12,6 +12,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "net/http/http_status_code.h"
 
 namespace autofill_assistant {
 
@@ -41,7 +42,7 @@ void JavaService::GetScriptsForUrl(const GURL& url,
       base::android::ConvertUTF8ToJavaString(env, url.spec()));
   std::string response;
   base::android::JavaByteArrayToString(env, jresponse, &response);
-  std::move(callback).Run(true, response);
+  std::move(callback).Run(net::HTTP_OK, response);
 }
 
 void JavaService::GetActions(const std::string& script_path,
@@ -59,7 +60,7 @@ void JavaService::GetActions(const std::string& script_path,
       base::android::ToJavaByteArray(env, script_payload));
   std::string response;
   base::android::JavaByteArrayToString(env, jresponse, &response);
-  std::move(callback).Run(true, response);
+  std::move(callback).Run(net::HTTP_OK, response);
 }
 
 void JavaService::GetNextActions(
@@ -87,7 +88,7 @@ void JavaService::GetNextActions(
       jprocessed_actions);
   std::string response;
   base::android::JavaByteArrayToString(env, jresponse, &response);
-  std::move(callback).Run(true, response);
+  std::move(callback).Run(net::HTTP_OK, response);
 }
 
 }  // namespace autofill_assistant

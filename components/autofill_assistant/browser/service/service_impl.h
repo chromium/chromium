@@ -17,6 +17,7 @@
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/service/access_token_fetcher.h"
 #include "components/autofill_assistant/browser/service/service.h"
+#include "components/autofill_assistant/browser/service/service_request_sender.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -43,15 +44,12 @@ class ServiceImpl : public Service {
 
   bool IsLiteService() const override;
 
-  // |context| and |access_token_fetcher| must remain valid for the lifetime of
-  // the service instance.
-  ServiceImpl(const std::string& api_key,
+  ServiceImpl(std::unique_ptr<ServiceRequestSender> request_sender,
               const GURL& script_server_url,
               const GURL& action_server_url,
-              content::BrowserContext* context,
-              std::unique_ptr<ClientContext> client_context,
-              AccessTokenFetcher* access_token_fetcher,
-              bool auth_enabled);
+              std::unique_ptr<ClientContext> client_context);
+  ServiceImpl(const ServiceImpl&) = delete;
+  ServiceImpl& operator=(const ServiceImpl&) = delete;
   ~ServiceImpl() override;
 
   // Get scripts for a given |url|, which should be a valid URL.
@@ -78,69 +76,17 @@ class ServiceImpl : public Service {
       ResponseCallback callback) override;
 
  private:
-  friend class ServiceImplTest;
+  // The request sender responsible for communicating with a remote endpoint.
+  std::unique_ptr<ServiceRequestSender> request_sender_;
 
-  // Struct to store scripts and actions request.
-  struct Loader {
-    Loader();
-    ~Loader();
-
-    GURL url;
-    std::string request_body;
-    ResponseCallback callback;
-    std::unique_ptr<::network::SimpleURLLoader> loader;
-    bool retried_with_fresh_access_token;
-  };
-
-  void SendRequest(Loader* loader);
-
-  // Creates a loader and adds it to |loaders_|.
-  Loader* AddLoader(const GURL& url,
-                    const std::string& request_body,
-                    ResponseCallback callback);
-
-  // Sends a request with the given loader, using the current auth token, if one
-  // is available.
-  void StartLoader(Loader* loader);
-  void OnURLLoaderComplete(Loader* loader,
-                           std::unique_ptr<std::string> response_body);
-
-  // Fetches the access token and, once this is done, starts all pending loaders
-  // in |loaders_|.
-  void FetchAccessToken();
-  void OnFetchAccessToken(bool success, const std::string& access_token);
-
-  content::BrowserContext* context_;
+  // The RPC endpoints to send requests to.
   GURL script_server_url_;
   GURL script_action_server_url_;
-
-  // Destroying this object will cancel ongoing requests.
-  std::map<Loader*, std::unique_ptr<Loader>> loaders_;
-
-  // API key to add to the URL of unauthenticated requests.
-  std::string api_key_;
 
   // The client context to send to the backend.
   std::unique_ptr<ClientContext> client_context_;
 
-  // Pointer must remain valid for the lifetime of the Service instance.
-  AccessTokenFetcher* access_token_fetcher_;
-
-  // True while waiting for a response from AccessTokenFetcher.
-  bool fetching_token_ = false;
-
-  // Whether requests should be authenticated.
-  bool auth_enabled_ = true;
-
-  // An OAuth 2 token. Empty if not fetched yet or if the token has been
-  // invalidated.
-  std::string access_token_;
-
   base::WeakPtrFactory<ServiceImpl> weak_ptr_factory_{this};
-
-  FRIEND_TEST_ALL_PREFIXES(ServiceImplTestSignedInStatus, SetsSignedInStatus);
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceImpl);
 };
 
 }  // namespace autofill_assistant

@@ -31,6 +31,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "net/http/http_status_code.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -885,7 +886,7 @@ void Controller::OnPeriodicScriptCheck() {
 }
 
 void Controller::OnGetScripts(const GURL& url,
-                              bool result,
+                              int http_status,
                               const std::string& response) {
   if (state_ == AutofillAssistantState::STOPPED)
     return;
@@ -895,11 +896,13 @@ void Controller::OnGetScripts(const GURL& url,
   if (!HasSameDomainAs(script_url_, url))
     return;
 
-  if (!result) {
+  if (http_status != net::HTTP_OK) {
 #ifdef NDEBUG
-    VLOG(1) << "Failed to get assistant scripts for <redacted>";
+    VLOG(1) << "Failed to get assistant scripts for <redacted>, http-status="
+            << http_status;
 #else
-    VLOG(1) << "Failed to get assistant scripts for " << script_url_.host();
+    VLOG(1) << "Failed to get assistant scripts for " << script_url_.host()
+            << ", http-status=" << http_status;
 #endif
     OnFatalError(l10n_util::GetStringUTF8(IDS_AUTOFILL_ASSISTANT_DEFAULT_ERROR),
                  Metrics::DropOutReason::GET_SCRIPTS_FAILED);
