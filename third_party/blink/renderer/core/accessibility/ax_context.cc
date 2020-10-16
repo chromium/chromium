@@ -29,4 +29,8 @@ bool AXContext::HasActiveDocument() {
   return document_ && document_->IsActive();
 }
 
+Document* AXContext::GetDocument() {
+  return document_;
+}
+
 }  // namespace blink

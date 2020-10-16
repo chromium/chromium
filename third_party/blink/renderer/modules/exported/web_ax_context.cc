@@ -24,6 +24,9 @@ WebAXObject WebAXContext::Root() const {
   if (!private_->HasActiveDocument())
     return WebAXObject();
 
+  // Make sure that layout is updated before a root ax object is created.
+  WebAXObject::UpdateLayout(WebDocument(private_->GetDocument()));
+
   return WebAXObject(
       static_cast<AXObjectCacheImpl*>(&private_->GetAXObjectCache())->Root());
 }
