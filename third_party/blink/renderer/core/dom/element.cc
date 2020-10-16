@@ -2195,10 +2195,7 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
     }
   } else if (name == html_names::kClassAttr) {
     ClassAttributeChanged(params.new_value);
-    if (HasRareData() && GetElementRareData()->GetClassList()) {
-      GetElementRareData()->GetClassList()->DidUpdateAttributeValue(
-          params.old_value, params.new_value);
-    }
+    UpdateClassList(params.old_value, params.new_value);
   } else if (name == html_names::kNameAttr) {
     SetHasName(!params.new_value.IsNull());
   } else if (name == html_names::kPartAttr) {
@@ -2300,6 +2297,14 @@ void Element::ClassAttributeChanged(const AtomicString& new_class_string) {
     else
       GetElementData()->ClearClass();
   }
+}
+
+void Element::UpdateClassList(const AtomicString& old_class_string,
+                              const AtomicString& new_class_string) {
+  if (!HasRareData())
+    return;
+  if (DOMTokenList* class_list = GetElementRareData()->GetClassList())
+    class_list->DidUpdateAttributeValue(old_class_string, new_class_string);
 }
 
 bool Element::ShouldInvalidateDistributionWhenAttributeChanged(

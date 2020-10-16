@@ -926,7 +926,8 @@ void SVGElement::AttributeChanged(const AttributeModificationParams& params) {
   if (params.name == html_names::kStyleAttr)
     return;
 
-  SvgAttributeBaseValChanged(params.name);
+  SvgAttributeChanged(params.name);
+  UpdateWebAnimatedAttributeOnBaseValChange(params.name);
 }
 
 void SVGElement::SvgAttributeChanged(const QualifiedName& attr_name) {
@@ -944,8 +945,15 @@ void SVGElement::SvgAttributeChanged(const QualifiedName& attr_name) {
   }
 }
 
-void SVGElement::SvgAttributeBaseValChanged(const QualifiedName& attribute) {
+void SVGElement::BaseValueChanged(
+    const SVGAnimatedPropertyBase& animated_property) {
+  const QualifiedName& attribute = animated_property.AttributeName();
+  EnsureUniqueElementData().SetSvgAttributesAreDirty(true);
   SvgAttributeChanged(attribute);
+  if (class_name_ == &animated_property) {
+    UpdateClassList(g_null_atom,
+                    AtomicString(class_name_->BaseValue()->Value()));
+  }
   UpdateWebAnimatedAttributeOnBaseValChange(attribute);
 }
 
