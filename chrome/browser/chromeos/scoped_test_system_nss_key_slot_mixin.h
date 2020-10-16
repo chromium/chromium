@@ -6,18 +6,20 @@
 #define CHROME_BROWSER_CHROMEOS_SCOPED_TEST_SYSTEM_NSS_KEY_SLOT_MIXIN_H_
 
 #include <pk11pub.h>
+
 #include <memory>
 
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-
-namespace crypto {
-class ScopedTestSystemNSSKeySlot;
-}
+#include "crypto/scoped_nss_types.h"
 
 namespace chromeos {
 
-// Owns a persistent NSS software database in a temporary directory and the
+// Owns a persistent NSS software database in the user directory and the
 // association of the system slot with this database.
+// Note: The database is persisted in the user data directory
+// (chrome::DIR_USER_DATA) so it persists between PRE_ and non-PRE_ tests. This
+// allows simulating browser restarts after doing some operations on the
+// database without losing its state.
 //
 // This mixin performs the blocking initialization/destruction in the
 // {SetUp|TearDown}OnMainThread methods.
@@ -30,14 +32,7 @@ class ScopedTestSystemNSSKeySlotMixin final : public InProcessBrowserTestMixin {
       const ScopedTestSystemNSSKeySlotMixin&) = delete;
   ~ScopedTestSystemNSSKeySlotMixin() override;
 
-  crypto::ScopedTestSystemNSSKeySlot* scoped_test_system_nss_key_slot() {
-    return scoped_test_system_nss_key_slot_.get();
-  }
-  const crypto::ScopedTestSystemNSSKeySlot* scoped_test_system_nss_key_slot()
-      const {
-    return scoped_test_system_nss_key_slot_.get();
-  }
-  PK11SlotInfo* slot();
+  PK11SlotInfo* slot() { return slot_.get(); }
 
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
@@ -46,8 +41,7 @@ class ScopedTestSystemNSSKeySlotMixin final : public InProcessBrowserTestMixin {
   void InitializeOnIo(bool* out_success);
   void DestroyOnIo();
 
-  std::unique_ptr<crypto::ScopedTestSystemNSSKeySlot>
-      scoped_test_system_nss_key_slot_;
+  crypto::ScopedPK11Slot slot_;
 };
 
 }  // namespace chromeos
