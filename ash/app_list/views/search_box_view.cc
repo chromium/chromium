@@ -280,6 +280,17 @@ void SearchBoxView::RecordSearchBoxActivationHistogram(
   }
 }
 
+void SearchBoxView::OnSearchBoxActiveChanged(bool active) {
+  if (active) {
+    search_box()->SetAccessibleName(base::string16());
+  } else {
+    search_box()->SetAccessibleName(l10n_util::GetStringUTF16(
+        is_tablet_mode_
+            ? IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_TABLET
+            : IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_CLAMSHELL));
+  }
+}
+
 void SearchBoxView::OnKeyEvent(ui::KeyEvent* event) {
   app_list_view_->RedirectKeyEventToSearchBox(event);
 
@@ -492,6 +503,13 @@ void SearchBoxView::ClearAutocompleteText() {
   ResetHighlightRange();
 }
 
+void SearchBoxView::OnBeforeUserAction(views::Textfield* sender) {
+  if (a11y_selection_on_search_result_) {
+    a11y_selection_on_search_result_ = false;
+    search_box()->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
+  }
+}
+
 void SearchBoxView::ContentsChanged(views::Textfield* sender,
                                     const base::string16& new_contents) {
   if (IsTrimmedQueryEmpty(current_query_) && !IsSearchBoxTrimmedQueryEmpty()) {
@@ -565,6 +583,7 @@ void SearchBoxView::ClearSearchAndDeactivateSearchBox() {
   contents_view_->search_results_page_view()
       ->result_selection_controller()
       ->ClearSelection();
+  a11y_selection_on_search_result_ = false;
   ClearSearch();
   SetSearchBoxActive(false, ui::ET_UNKNOWN);
 }
@@ -691,6 +710,9 @@ bool SearchBoxView::HandleKeyEvent(views::Textfield* sender,
 
       DCHECK(close_button()->GetVisible());
       close_button()->RequestFocus();
+      close_button()->NotifyAccessibilityEvent(ax::mojom::Event::kSelection,
+                                               true);
+      a11y_selection_on_search_result_ = false;
       break;
     case ResultSelectionController::MoveResult::kResultChanged:
       UpdateSearchBoxTextForSelectedResult(

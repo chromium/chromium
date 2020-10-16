@@ -161,10 +161,8 @@ void PrivacyInfoView::OnKeyEvent(ui::KeyEvent* event) {
 void PrivacyInfoView::SelectInitialResultAction(bool reverse_tab_order) {
   if (!reverse_tab_order) {
     selected_action_ = Action::kTextLink;
-    text_view_->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
   } else {
     selected_action_ = Action::kCloseButton;
-    close_button_->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
   }
 
   // Update visual indicators for focus.
@@ -179,12 +177,10 @@ bool PrivacyInfoView::SelectNextResultAction(bool reverse_tab_order) {
   if (!reverse_tab_order && selected_action_ == Action::kTextLink) {
     // Move selection forward from the text view to the close button.
     selected_action_ = Action::kCloseButton;
-    close_button_->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
     action_changed = true;
   } else if (reverse_tab_order && selected_action_ == Action::kCloseButton) {
     // Move selection backward from the close button to the text view.
     selected_action_ = Action::kTextLink;
-    text_view_->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
     action_changed = true;
   } else {
     selected_action_ = Action::kNone;
@@ -196,17 +192,14 @@ bool PrivacyInfoView::SelectNextResultAction(bool reverse_tab_order) {
   return action_changed;
 }
 
-void PrivacyInfoView::NotifyA11yResultSelected() {
+views::View* PrivacyInfoView::GetSelectedView() {
   switch (selected_action_) {
     case Action::kTextLink:
-      text_view_->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
-      break;
+      return text_view_;
     case Action::kCloseButton:
-      close_button_->NotifyAccessibilityEvent(ax::mojom::Event::kSelection,
-                                              true);
-      break;
+      return close_button_;
     case Action::kNone:
-      break;
+      return this;
   }
 }
 

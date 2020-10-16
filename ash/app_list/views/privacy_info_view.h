@@ -38,7 +38,7 @@ class PrivacyInfoView : public SearchResultBaseView {
   // SearchResultBaseView:
   void SelectInitialResultAction(bool reverse_tab_order) override;
   bool SelectNextResultAction(bool reverse_tab_order) override;
-  void NotifyA11yResultSelected() override;
+  views::View* GetSelectedView() override;
 
   virtual void LinkClicked() = 0;
   virtual void CloseButtonPressed() = 0;

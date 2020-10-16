@@ -75,7 +75,7 @@ constexpr int kSearchBoxSearchResultShadowElevation = 12;
 // The amount of time by which notifications to accessibility framework about
 // result page changes are delayed.
 constexpr base::TimeDelta kNotifyA11yDelay =
-    base::TimeDelta::FromMilliseconds(500);
+    base::TimeDelta::FromMilliseconds(1500);
 
 // A container view that ensures the card background and the shadow are painted
 // in the correct order.
@@ -341,6 +341,7 @@ void SearchResultPageView::SetIgnoreResultChangesForA11y(bool ignore) {
   ignore_result_changes_for_a11y_ = ignore;
 
   GetViewAccessibility().OverrideIsLeaf(ignore);
+  GetViewAccessibility().OverrideIsIgnored(ignore);
   NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
 }
 
@@ -370,8 +371,20 @@ void SearchResultPageView::NotifySelectedResultChanged() {
     return;
   }
 
+  SearchBoxView* search_box = AppListPage::contents_view()->GetSearchBoxView();
+  // Ignore result selection change if the focus moved away from the search boc
+  // textfield, for example to the close button.
+  if (!search_box->search_box()->HasFocus())
+    return;
+
+  views::View* selected_view =
+      result_selection_controller_->selected_result()->GetSelectedView();
+  if (!selected_view)
+    return;
+
+  selected_view->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
   NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
-  result_selection_controller_->selected_result()->NotifyA11yResultSelected();
+  search_box->set_a11y_selection_on_search_result(true);
 }
 
 void SearchResultPageView::OnSearchResultContainerResultsChanging() {

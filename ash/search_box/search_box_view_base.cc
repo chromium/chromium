@@ -349,6 +349,7 @@ void SearchBoxViewBase::SetSearchBoxActive(bool active,
   if (event_type != ui::ET_KEY_PRESSED && event_type != ui::ET_KEY_RELEASED)
     UpdateKeyboardVisibility();
   UpdateButtonsVisisbility();
+  OnSearchBoxActiveChanged(active);
 
   NotifyActiveChanged();
 
@@ -437,6 +438,8 @@ void SearchBoxViewBase::ClearSearch() {
   UpdateModel(false);
   NotifyQueryChanged();
 }
+
+void SearchBoxViewBase::OnSearchBoxActiveChanged(bool active) {}
 
 void SearchBoxViewBase::NotifyQueryChanged() {
   DCHECK(delegate_);

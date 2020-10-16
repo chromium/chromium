@@ -341,7 +341,6 @@ void SearchResultView::OnGestureEvent(ui::GestureEvent* event) {
       if (actions_view()->IsValidActionIndex(
               OmniBoxZeroStateAction::kRemoveSuggestion)) {
         ScrollRectToVisible(GetLocalBounds());
-        NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
         SetSelected(true, base::nullopt);
         confirm_remove_by_long_press_ = true;
         OnSearchResultActionActivated(OmniBoxZeroStateAction::kRemoveSuggestion,

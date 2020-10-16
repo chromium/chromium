@@ -118,6 +118,9 @@ class SearchBoxViewBase : public views::WidgetDelegateView,
 
   virtual void ClearSearch();
 
+  // Called when the search box active state changes.
+  virtual void OnSearchBoxActiveChanged(bool active);
+
  protected:
   // Fires query change notification.
   void NotifyQueryChanged();

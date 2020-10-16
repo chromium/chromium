@@ -254,16 +254,16 @@ bool SearchResultActionsView::SelectNextAction(bool reverse_tab_order) {
   return true;
 }
 
-void SearchResultActionsView::NotifyA11yResultSelected() {
+views::View* SearchResultActionsView::GetSelectedView() {
   DCHECK(HasSelectedAction());
 
   int selected_action = GetSelectedAction();
   for (views::View* child : children()) {
-    if (static_cast<views::Button*>(child)->tag() == selected_action) {
-      child->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
-      return;
-    }
+    if (static_cast<views::Button*>(child)->tag() == selected_action)
+      return child;
   }
+
+  return nullptr;
 }
 
 void SearchResultActionsView::ClearSelectedAction() {

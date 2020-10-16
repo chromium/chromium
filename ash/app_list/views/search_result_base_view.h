@@ -45,11 +45,10 @@ class APP_LIST_EXPORT SearchResultBaseView : public views::Button,
   // Returns whether the selected result action was changed.
   virtual bool SelectNextResultAction(bool reverse_tab_order);
 
-  // If the search result is currently selected, sends the appropriate
-  // kSelection view accessibility event. For example, if a result action is
-  // selected, the notification will be sent for the selected action button
-  // view.
-  virtual void NotifyA11yResultSelected();
+  // Returns the view that is currently selected - for example, if the result
+  // supports action views and an action view is currently selected, this
+  // should return the action view, otherwise it should return `this`.
+  virtual views::View* GetSelectedView();
 
   SearchResult* result() const { return result_; }
   void SetResult(SearchResult* result);

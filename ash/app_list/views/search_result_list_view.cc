@@ -249,9 +249,6 @@ void SearchResultListView::SearchResultActionActivated(SearchResultView* view,
       view_delegate_->InvokeSearchResultAction(view->result()->id(),
                                                action_index, event_flags);
     } else if (action == OmniBoxZeroStateAction::kAppendSuggestion) {
-      // Make sure ChromeVox will focus on the search box.
-      main_view_->search_box_view()->search_box()->NotifyAccessibilityEvent(
-          ax::mojom::Event::kSelection, true);
       main_view_->search_box_view()->UpdateQuery(view->result()->title());
     }
   }
