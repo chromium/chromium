@@ -3465,6 +3465,7 @@
     },
 
     'linux_ozone_x11_only_gtests': {
+      'interactive_ui_tests': {},
       'ozone_x11_unittests': {},
       'x11_unittests': {},
     },
