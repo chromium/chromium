@@ -5109,10 +5109,7 @@
         'os_type': 'win',
         'browser_config': 'release',
         'mixins': [
-          'gpu-swarming-pool',
-          'no_gpu',
-          'x86-64',
-          'win10',
+          'win10_gce_gpu_pool',
         ],
         'test_suites': {
           'gpu_telemetry_tests': 'gpu_swangle_telemetry_tests',
@@ -5121,10 +5118,7 @@
       'win-swangle-tot-angle-x64' : {
         'os_type': 'win',
         'mixins': [
-          'gpu-swarming-pool',
-          'no_gpu',
-          'x86-64',
-          'win10',
+          'win10_gce_gpu_pool',
           'timeout_15m',
         ],
         'test_suites': {
@@ -5134,10 +5128,7 @@
       'win-swangle-tot-angle-x86' : {
         'os_type': 'win',
         'mixins': [
-          'gpu-swarming-pool',
-          'no_gpu',
-          'x86-64',
-          'win10',
+          'win10_gce_gpu_pool',
           'timeout_15m',
         ],
         'test_suites': {
@@ -5147,10 +5138,7 @@
       'win-swangle-tot-swiftshader-x64' : {
         'os_type': 'win',
         'mixins': [
-          'gpu-swarming-pool',
-          'no_gpu',
-          'x86-64',
-          'win10',
+          'win10_gce_gpu_pool',
           'timeout_15m',
         ],
         'test_suites': {
@@ -5160,10 +5148,7 @@
       'win-swangle-tot-swiftshader-x86' : {
         'os_type': 'win',
         'mixins': [
-          'gpu-swarming-pool',
-          'no_gpu',
-          'x86-64',
-          'win10',
+          'win10_gce_gpu_pool',
           'timeout_15m',
         ],
         'test_suites': {
@@ -5173,10 +5158,7 @@
       'win-swangle-x64' : {
         'os_type': 'win',
         'mixins': [
-          'gpu-swarming-pool',
-          'no_gpu',
-          'x86-64',
-          'win10',
+          'win10_gce_gpu_pool',
           'timeout_15m',
         ],
         'test_suites': {
@@ -5186,10 +5168,7 @@
       'win-swangle-x86' : {
         'os_type': 'win',
         'mixins': [
-          'gpu-swarming-pool',
-          'no_gpu',
-          'x86-64',
-          'win10',
+          'win10_gce_gpu_pool',
           'timeout_15m',
         ],
         'test_suites': {

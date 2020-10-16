@@ -1562,7 +1562,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1594,7 +1594,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1623,7 +1623,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1650,7 +1650,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1678,7 +1678,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1706,7 +1706,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1734,7 +1734,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1761,7 +1761,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1788,7 +1788,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1815,7 +1815,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1847,7 +1847,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1874,7 +1874,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1902,7 +1902,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1930,7 +1930,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1958,7 +1958,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1985,7 +1985,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2012,7 +2012,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2039,7 +2039,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2071,7 +2071,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2098,7 +2098,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2126,7 +2126,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2154,7 +2154,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2182,7 +2182,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2209,7 +2209,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2236,7 +2236,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2263,7 +2263,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2295,7 +2295,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2322,7 +2322,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2350,7 +2350,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2378,7 +2378,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2406,7 +2406,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2433,7 +2433,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2460,7 +2460,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2487,7 +2487,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2519,7 +2519,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2546,7 +2546,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2574,7 +2574,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2602,7 +2602,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2630,7 +2630,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2657,7 +2657,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2684,7 +2684,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2711,7 +2711,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2743,7 +2743,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2770,7 +2770,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2798,7 +2798,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2826,7 +2826,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2854,7 +2854,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2881,7 +2881,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2908,7 +2908,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2935,7 +2935,7 @@
             {
               "cpu": "x86-64",
               "gpu": "none",
-              "os": "Windows-10-15063",
+              "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
           ],

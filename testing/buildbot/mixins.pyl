@@ -825,6 +825,16 @@
       },
     },
   },
+  'win10_gce_gpu_pool': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'x86-64',
+        'gpu': 'none',
+        'os': 'Windows-10',
+        'pool': 'chromium.tests.gpu',
+      },
+    },
+  },
   'win10_intel_hd_630_experimental': {
     'swarming': {
       'dimensions': {
