@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_position.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_range.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -237,6 +238,10 @@ AXObject* AXInlineTextBox::PreviousOnLine() const {
 void AXInlineTextBox::GetDocumentMarkers(
     Vector<DocumentMarker::MarkerType>* marker_types,
     Vector<AXRange>* marker_ranges) const {
+  if (!RuntimeEnabledFeatures::
+          AccessibilityUseAXPositionForDocumentMarkersEnabled())
+    return;
+
   if (IsDetached())
     return;
   if (!GetDocument() ||

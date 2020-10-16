@@ -76,6 +76,8 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableAccessibilityExposeHTMLElement(bool);
   BLINK_PLATFORM_EXPORT static void EnableAccessibilityExposeIgnoredNodes(bool);
   BLINK_PLATFORM_EXPORT static void EnableAccessibilityObjectModel(bool);
+  BLINK_PLATFORM_EXPORT static void
+  EnableAccessibilityUseAXPositionForDocumentMarkers(bool);
   BLINK_PLATFORM_EXPORT static void EnableAdTagging(bool);
   BLINK_PLATFORM_EXPORT static void EnableAllowActivationDelegationAttr(bool);
   BLINK_PLATFORM_EXPORT static void EnableAudioOutputDevices(bool);

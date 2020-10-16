@@ -130,6 +130,10 @@
       status: "experimental",
     },
     {
+      name: "AccessibilityUseAXPositionForDocumentMarkers",
+      status: "test",
+    },
+    {
       name: "AddressSpace",
       status: "experimental",
       implied_by: ["CorsRFC1918"],

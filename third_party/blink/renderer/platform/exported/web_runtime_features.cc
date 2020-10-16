@@ -129,6 +129,12 @@ void WebRuntimeFeatures::EnableAccessibilityObjectModel(bool enable) {
   RuntimeEnabledFeatures::SetAccessibilityObjectModelEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableAccessibilityUseAXPositionForDocumentMarkers(
+    bool enable) {
+  RuntimeEnabledFeatures::
+      SetAccessibilityUseAXPositionForDocumentMarkersEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableAdTagging(bool enable) {
   RuntimeEnabledFeatures::SetAdTaggingEnabled(enable);
 }

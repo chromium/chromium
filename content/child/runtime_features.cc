@@ -258,6 +258,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      features::kEnableAccessibilityExposeHTMLElement},
     {wf::EnableAccessibilityExposeIgnoredNodes,
      features::kEnableAccessibilityExposeIgnoredNodes},
+    {wf::EnableAccessibilityUseAXPositionForDocumentMarkers,
+     features::kUseAXPositionForDocumentMarkers},
     {wf::EnableAllowSyncXHRInPageDismissal,
      blink::features::kAllowSyncXHRInPageDismissal},
     {wf::EnableAutoplayIgnoresWebAudio, media::kAutoplayIgnoreWebAudio},
