@@ -449,6 +449,15 @@ SystemNetworkContextManager::GetStubResolverConfigReader() {
 
 void SystemNetworkContextManager::OnNetworkServiceCreated(
     network::mojom::NetworkService* network_service) {
+  // On network service restart, it's possible for |url_loader_factory_| to not
+  // be disconnected yet (so any consumers of GetURLLoaderFactory() in network
+  // service restart handling code could end up getting the old factory, which
+  // will then get disconnected later). Resetting the Remote is a no-op for the
+  // initial creation of the network service, but for restarts this guarantees
+  // that GetURLLoaderFactory() works as expected.
+  // (See crbug.com/1131803 for a motivating example and investigation.)
+  url_loader_factory_.reset();
+
   // Disable QUIC globally, if needed.
   if (!is_quic_allowed_)
     network_service->DisableQuic();

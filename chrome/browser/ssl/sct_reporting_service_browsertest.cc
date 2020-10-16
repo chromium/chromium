@@ -17,6 +17,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/common/network_service_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -258,9 +259,8 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
 
 // Tests that reports are still sent for opted-in profiles after the network
 // service crashes and is restarted.
-// Disabled due to high flake rate; see https://crbug.com/1131803.
 IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
-                       DISABLED_ReportsSentAfterNetworkServiceRestart) {
+                       ReportsSentAfterNetworkServiceRestart) {
   // This test is only applicable to out-of-process network service because it
   // tests what happens when the network service crashes and restarts.
   if (content::IsInProcessNetworkService()) {
@@ -271,6 +271,19 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
 
   // Crash the NetworkService to force it to restart.
   SimulateNetworkServiceCrash();
+  // Flush the network interface to make sure it notices the crash.
+  content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+      ->FlushNetworkInterfaceForTesting();
+  g_browser_process->system_network_context_manager()
+      ->FlushNetworkInterfaceForTesting();
+
+  // The mock cert verify result will be lost when the network service restarts,
+  // so set back up the necessary rule for the test host.
+  net::CertVerifyResult verify_result;
+  verify_result.verified_cert = https_server()->GetCertificate().get();
+  verify_result.is_issued_by_known_root = true;
+  mock_cert_verifier()->AddResultForCertAndHost(
+      https_server()->GetCertificate().get(), "a.test", verify_result, net::OK);
 
   // Visit an HTTPS page and wait for the report to be sent.
   ui_test_utils::NavigateToURL(browser(),
