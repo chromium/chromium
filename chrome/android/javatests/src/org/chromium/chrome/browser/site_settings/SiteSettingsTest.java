@@ -418,6 +418,7 @@ public class SiteSettingsTest {
     // Todo(eokoyomon) figure out how to set and test third party cookie setting in this test
     // @EnableFeatures(
     //         ContentSettingsFeatureList.IMPROVED_COOKIE_CONTROLS_FOR_THIRD_PARTY_COOKIE_BLOCKING)
+    @FlakyTest(message = "https://crbug.com/1139480")
     public void testSiteExceptionCookiesBlocked() throws Exception {
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
