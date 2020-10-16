@@ -371,11 +371,20 @@ MockFeedback = class {
    * When all expectations are satisfied and registered callbacks called,
    * the finish callbcak, if any, is called.
    * This function may only be called once.
+   * @return {!Promise} Mandatory to await on if used in async functions.
    */
   replay() {
     assertFalse(this.replaying_);
     this.replaying_ = true;
+
+    const promise = new Promise((resolve, reject) => {
+      this.resolve_ = resolve;
+      this.reject_ = reject;
+    });
+
     this.process_();
+
+    return promise;
   }
 
   /**
@@ -448,6 +457,7 @@ MockFeedback = class {
           this.finishedCallback_();
           this.finishedCallback_ = null;
         }
+        this.resolve_();
       } else {
         // If there are pending actions and no matching feedback for a few
         // seconds, log the pending state to ease debugging.
@@ -456,6 +466,9 @@ MockFeedback = class {
               window.setTimeout(this.logPendingState_.bind(this), 2000);
         }
       }
+    } catch (e) {
+      this.reject_(e);
+      throw e;
     } finally {
       this.inProcess_ = false;
     }

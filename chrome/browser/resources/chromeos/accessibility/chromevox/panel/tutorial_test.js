@@ -507,7 +507,7 @@ TEST_F('ChromeVoxTutorialTest', 'QuickOrientationLessonTest', function() {
     };
 
     let firstLessonNode;
-    mockFeedback.expectSpeech('Choose your tutorial experience')
+    await mockFeedback.expectSpeech('Choose your tutorial experience')
         .call(doCmd('nextObject'))
         .expectSpeech('Quick orientation')
         .call(doCmd('forceClickOnCurrentItem'))

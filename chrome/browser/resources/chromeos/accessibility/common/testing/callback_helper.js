@@ -35,11 +35,19 @@ CallbackHelper.prototype = {
         if (!(result instanceof Promise)) {
           throw new Error('Only support return type of Promise');
         }
-        result.then(() => {
-          if (--this.pendingCallbacks_ <= 0) {
-            CallbackHelper.testDone_();
-          }
-        });
+        result
+            .then(
+                () => {
+                  if (--this.pendingCallbacks_ <= 0) {
+                    CallbackHelper.testDone_();
+                  }
+                },
+                reason => {
+                  CallbackHelper.testDone_([false, reason.toString()]);
+                })
+            .catch(reason => {
+              CallbackHelper.testDone_([false, reason.toString()]);
+            });
       } else {
         if (--this.pendingCallbacks_ <= 0) {
           CallbackHelper.testDone_();
