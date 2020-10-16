@@ -44,9 +44,15 @@ DeepScanningFailureModalDialog::DeepScanningFailureModalDialog(
                      IDS_DEEP_SCANNING_TIMED_OUT_DIALOG_CANCEL_BUTTON));
   SetAcceptCallback(std::move(accept_callback));
   SetCancelCallback(std::move(cancel_callback));
-  open_now_button_ = SetExtraView(std::make_unique<views::MdTextButton>(
-      this, l10n_util::GetStringUTF16(
-                IDS_DEEP_SCANNING_INFO_DIALOG_OPEN_NOW_BUTTON)));
+  SetExtraView(std::make_unique<views::MdTextButton>(
+      base::BindRepeating(
+          [](DeepScanningFailureModalDialog* dialog) {
+            std::move(dialog->open_now_callback_).Run();
+            dialog->CancelDialog();
+          },
+          base::Unretained(this)),
+      l10n_util::GetStringUTF16(
+          IDS_DEEP_SCANNING_INFO_DIALOG_OPEN_NOW_BUTTON)));
 
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::TEXT, views::TEXT));
@@ -84,14 +90,6 @@ bool DeepScanningFailureModalDialog::ShouldShowCloseButton() const {
 
 ui::ModalType DeepScanningFailureModalDialog::GetModalType() const {
   return ui::MODAL_TYPE_CHILD;
-}
-
-void DeepScanningFailureModalDialog::ButtonPressed(views::Button* sender,
-                                                   const ui::Event& event) {
-  if (sender == open_now_button_) {
-    std::move(open_now_callback_).Run();
-    CancelDialog();
-  }
 }
 
 }  // namespace safe_browsing

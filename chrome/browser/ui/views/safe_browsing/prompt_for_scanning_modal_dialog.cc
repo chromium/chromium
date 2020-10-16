@@ -43,8 +43,7 @@ PromptForScanningModalDialog::PromptForScanningModalDialog(
     content::WebContents* web_contents,
     const base::string16& filename,
     base::OnceClosure accept_callback,
-    base::OnceClosure open_now_callback)
-    : filename_(filename), open_now_callback_(std::move(open_now_callback)) {
+    base::OnceClosure open_now_callback) {
   SetTitle(IDS_DEEP_SCANNING_INFO_DIALOG_TITLE);
   SetButtonLabel(
       ui::DIALOG_BUTTON_OK,
@@ -53,9 +52,15 @@ PromptForScanningModalDialog::PromptForScanningModalDialog(
       ui::DIALOG_BUTTON_CANCEL,
       l10n_util::GetStringUTF16(IDS_DEEP_SCANNING_INFO_DIALOG_CANCEL_BUTTON));
   SetAcceptCallback(std::move(accept_callback));
-  open_now_button_ = SetExtraView(std::make_unique<views::MdTextButton>(
-      this, l10n_util::GetStringUTF16(
-                IDS_DEEP_SCANNING_INFO_DIALOG_OPEN_NOW_BUTTON)));
+  SetExtraView(std::make_unique<views::MdTextButton>(
+      base::BindRepeating(
+          [](PromptForScanningModalDialog* dialog) {
+            std::move(dialog->open_now_callback_).Run();
+            dialog->CancelDialog();
+          },
+          base::Unretained(this)),
+      l10n_util::GetStringUTF16(
+          IDS_DEEP_SCANNING_INFO_DIALOG_OPEN_NOW_BUTTON)));
 
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::TEXT, views::TEXT));
@@ -74,7 +79,7 @@ PromptForScanningModalDialog::PromptForScanningModalDialog(
   base::string16 message_text = base::ReplaceStringPlaceholders(
       base::ASCIIToUTF16("$1 $2"),
       {l10n_util::GetStringFUTF16(IDS_DEEP_SCANNING_INFO_DIALOG_MESSAGE,
-                                  filename_),
+                                  filename),
        l10n_util::GetStringUTF16(IDS_LEARN_MORE)},
       &offsets);
 
@@ -115,14 +120,6 @@ bool PromptForScanningModalDialog::ShouldShowCloseButton() const {
 
 ui::ModalType PromptForScanningModalDialog::GetModalType() const {
   return ui::MODAL_TYPE_CHILD;
-}
-
-void PromptForScanningModalDialog::ButtonPressed(views::Button* sender,
-                                                 const ui::Event& event) {
-  if (sender == open_now_button_) {
-    std::move(open_now_callback_).Run();
-    CancelDialog();
-  }
 }
 
 }  // namespace safe_browsing
