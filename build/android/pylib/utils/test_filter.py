@@ -50,9 +50,9 @@ def AddFilterOptions(parser):
       '--gtest-filter-file',
       # New argument.
       '--test-launcher-filter-file',
-      dest='test_filter_file', type=os.path.realpath,
+      dest='test_filter_file',
       help='Path to file that contains googletest-style filter strings. '
-           'See also //testing/buildbot/filters/README.md.')
+      'See also //testing/buildbot/filters/README.md.')
 
   filter_group = parser.add_mutually_exclusive_group()
   filter_group.add_argument(
@@ -126,14 +126,16 @@ def InitializeFilterFromArgs(args):
         '', args.test_filter.replace('#', '.'))
 
   if args.test_filter_file:
-    with open(args.test_filter_file, 'r') as f:
-      positive_file_patterns, negative_file_patterns = ParseFilterFile(f)
-      if positive_file_patterns and HasPositivePatterns(test_filter):
-        raise ConflictingPositiveFiltersException(
-            'Cannot specify positive pattern in both filter file and ' +
-            'filter command line argument')
-      test_filter = AppendPatternsToFilter(test_filter,
-          positive_patterns=positive_file_patterns,
-          negative_patterns=negative_file_patterns)
+    for test_filter_file in args.test_filter_file.split(';'):
+      with open(test_filter_file, 'r') as f:
+        positive_file_patterns, negative_file_patterns = ParseFilterFile(f)
+        if positive_file_patterns and HasPositivePatterns(test_filter):
+          raise ConflictingPositiveFiltersException(
+              'Cannot specify positive pattern in both filter file and ' +
+              'filter command line argument')
+        test_filter = AppendPatternsToFilter(
+            test_filter,
+            positive_patterns=positive_file_patterns,
+            negative_patterns=negative_file_patterns)
 
   return test_filter

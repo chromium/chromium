@@ -460,6 +460,7 @@ class BBJSONGenerator(object):
     #   --extra-browser-args=arg1 arg2
     arr = self.merge_command_line_args(arr, '--enable-features=', ',')
     arr = self.merge_command_line_args(arr, '--extra-browser-args=', ' ')
+    arr = self.merge_command_line_args(arr, '--test-launcher-filter-file=', ';')
     return arr
 
   def substitute_magic_args(self, test_config):
