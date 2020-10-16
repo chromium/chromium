@@ -13,6 +13,7 @@
 #include "base/stl_util.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity_manager.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_client.h"
+#include "components/cast_channel/enum_table.h"
 #include "url/origin.h"
 
 using blink::mojom::PresentationConnectionCloseReason;
@@ -111,7 +112,10 @@ void AppActivity::CreateMediaController(
     if (session) {
       media_controller_->SetSession(*session);
       base::Value status_request(base::Value::Type::DICTIONARY);
-      status_request.SetKey("type", base::Value("MEDIA_GET_STATUS"));
+      status_request.SetStringKey(
+          "type", cast_util::EnumToString<
+                      cast_channel::V2MessageType,
+                      cast_channel::V2MessageType::kMediaGetStatus>());
       message_handler_->SendMediaRequest(cast_channel_id(), status_request,
                                          media_controller_->sender_id(),
                                          session->transport_id());
