@@ -19,6 +19,7 @@
 #include "components/metrics/metrics_log.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/translate/core/browser/translate_infobar_delegate.h"
+#include "components/translate/core/common/translate_constants.h"
 #import "ios/chrome/browser/infobars/infobar_controller+protected.h"
 #include "ios/chrome/browser/infobars/infobar_controller_delegate.h"
 #include "ios/chrome/browser/translate/language_selection_context.h"
@@ -100,7 +101,7 @@ typedef NS_ENUM(NSInteger, LanguageSelectionState) {
             infoBarDelegate, self);
     _userAction = UserActionNone;
 
-    [self recordInfobarEvent:InfobarEvent::INFOBAR_IMPRESSION];
+    [self recordInfobarEvent:translate::InfobarEvent::INFOBAR_IMPRESSION];
   }
   return self;
 }
@@ -165,7 +166,7 @@ typedef NS_ENUM(NSInteger, LanguageSelectionState) {
   }
   self.lastTranslateTime = [NSDate date];
 
-  [self recordInfobarEvent:InfobarEvent::INFOBAR_REVERT];
+  [self recordInfobarEvent:translate::InfobarEvent::INFOBAR_REVERT];
   [self incrementAndRecordTranslationsCount];
 
   self.infoBarDelegate->RevertWithoutClosingInfobar();
@@ -189,13 +190,14 @@ typedef NS_ENUM(NSInteger, LanguageSelectionState) {
   }
   self.lastTranslateTime = [NSDate date];
 
-  [self recordInfobarEvent:InfobarEvent::INFOBAR_TARGET_TAB_TRANSLATE];
+  [self
+      recordInfobarEvent:translate::InfobarEvent::INFOBAR_TARGET_TAB_TRANSLATE];
   [self
       recordLanguageDataHistogram:kLanguageHistogramTranslate
                      languageCode:self.infoBarDelegate->target_language_code()];
 
   if (self.infoBarDelegate->ShouldAutoAlwaysTranslate()) {
-    [self recordInfobarEvent:InfobarEvent::
+    [self recordInfobarEvent:translate::InfobarEvent::
                                  INFOBAR_SNACKBAR_AUTO_ALWAYS_IMPRESSION];
 
     // Page will be translated once the snackbar finishes showing.
@@ -214,7 +216,7 @@ typedef NS_ENUM(NSInteger, LanguageSelectionState) {
 
   self.userAction |= UserActionExpandMenu;
 
-  [self recordInfobarEvent:InfobarEvent::INFOBAR_OPTIONS];
+  [self recordInfobarEvent:translate::InfobarEvent::INFOBAR_OPTIONS];
 
   [self showTranslateOptionSelector];
 }
@@ -224,11 +226,11 @@ typedef NS_ENUM(NSInteger, LanguageSelectionState) {
     return;
 
   if (self.userAction == UserActionNone) {
-    [self recordInfobarEvent:InfobarEvent::INFOBAR_DECLINE];
+    [self recordInfobarEvent:translate::InfobarEvent::INFOBAR_DECLINE];
   }
 
   if (self.infoBarDelegate->ShouldAutoNeverTranslate()) {
-    [self recordInfobarEvent:InfobarEvent::
+    [self recordInfobarEvent:translate::InfobarEvent::
                                  INFOBAR_SNACKBAR_AUTO_NEVER_IMPRESSION];
 
     // Infobar will dismiss once the snackbar finishes showing.
@@ -252,7 +254,8 @@ typedef NS_ENUM(NSInteger, LanguageSelectionState) {
     self.infoBarDelegate->UpdateOriginalLanguage(languageCode);
     _infobarView.sourceLanguage = self.sourceLanguage;
   } else {
-    [self recordInfobarEvent:InfobarEvent::INFOBAR_MORE_LANGUAGES_TRANSLATE];
+    [self recordInfobarEvent:translate::InfobarEvent::
+                                 INFOBAR_MORE_LANGUAGES_TRANSLATE];
     [self recordLanguageDataHistogram:kLanguageHistogramMoreLanguages
                          languageCode:languageCode];
 
@@ -281,7 +284,7 @@ typedef NS_ENUM(NSInteger, LanguageSelectionState) {
 
   self.userAction |= UserActionExpandMenu;
 
-  [self recordInfobarEvent:InfobarEvent::INFOBAR_MORE_LANGUAGES];
+  [self recordInfobarEvent:translate::InfobarEvent::INFOBAR_MORE_LANGUAGES];
 
   [_infobarView updateUIForPopUpMenuDisplayed:NO];
 
@@ -299,12 +302,13 @@ typedef NS_ENUM(NSInteger, LanguageSelectionState) {
   [_infobarView updateUIForPopUpMenuDisplayed:NO];
 
   if (self.infoBarDelegate->ShouldAlwaysTranslate()) {
-    [self recordInfobarEvent:InfobarEvent::INFOBAR_ALWAYS_TRANSLATE_UNDO];
+    [self recordInfobarEvent:translate::InfobarEvent::
+                                 INFOBAR_ALWAYS_TRANSLATE_UNDO];
 
     self.infoBarDelegate->ToggleAlwaysTranslate();
   } else {
-    [self recordInfobarEvent:InfobarEvent::INFOBAR_ALWAYS_TRANSLATE];
-    [self recordInfobarEvent:InfobarEvent::
+    [self recordInfobarEvent:translate::InfobarEvent::INFOBAR_ALWAYS_TRANSLATE];
+    [self recordInfobarEvent:translate::InfobarEvent::
                                  INFOBAR_SNACKBAR_ALWAYS_TRANSLATE_IMPRESSION];
     [self recordLanguageDataHistogram:kLanguageHistogramAlwaysTranslate
                          languageCode:self.infoBarDelegate
@@ -328,8 +332,8 @@ typedef NS_ENUM(NSInteger, LanguageSelectionState) {
   [_infobarView updateUIForPopUpMenuDisplayed:NO];
 
   if (self.infoBarDelegate->IsTranslatableLanguageByPrefs()) {
-    [self recordInfobarEvent:InfobarEvent::INFOBAR_NEVER_TRANSLATE];
-    [self recordInfobarEvent:InfobarEvent::
+    [self recordInfobarEvent:translate::InfobarEvent::INFOBAR_NEVER_TRANSLATE];
+    [self recordInfobarEvent:translate::InfobarEvent::
                                  INFOBAR_SNACKBAR_NEVER_TRANSLATE_IMPRESSION];
     [self recordLanguageDataHistogram:kLanguageHistogramNeverTranslate
                          languageCode:self.infoBarDelegate
@@ -353,9 +357,11 @@ typedef NS_ENUM(NSInteger, LanguageSelectionState) {
   [_infobarView updateUIForPopUpMenuDisplayed:NO];
 
   if (!self.infoBarDelegate->IsSiteBlacklisted()) {
-    [self recordInfobarEvent:InfobarEvent::INFOBAR_NEVER_TRANSLATE_SITE];
+    [self recordInfobarEvent:translate::InfobarEvent::
+                                 INFOBAR_NEVER_TRANSLATE_SITE];
     [self recordInfobarEvent:
-              InfobarEvent::INFOBAR_SNACKBAR_NEVER_TRANSLATE_SITE_IMPRESSION];
+              translate::InfobarEvent::
+                  INFOBAR_SNACKBAR_NEVER_TRANSLATE_SITE_IMPRESSION];
 
     // Infobar will dismiss once the snackbar finishes showing.
     [self.translateNotificationHandler
@@ -372,7 +378,7 @@ typedef NS_ENUM(NSInteger, LanguageSelectionState) {
 
   self.userAction |= UserActionExpandMenu;
 
-  [self recordInfobarEvent:InfobarEvent::INFOBAR_PAGE_NOT_IN];
+  [self recordInfobarEvent:translate::InfobarEvent::INFOBAR_PAGE_NOT_IN];
 
   [_infobarView updateUIForPopUpMenuDisplayed:NO];
 
@@ -417,26 +423,28 @@ typedef NS_ENUM(NSInteger, LanguageSelectionState) {
                            notificationType:(TranslateNotificationType)type {
   switch (type) {
     case TranslateNotificationTypeAlwaysTranslate:
-      [self recordInfobarEvent:InfobarEvent::INFOBAR_SNACKBAR_CANCEL_ALWAYS];
+      [self recordInfobarEvent:translate::InfobarEvent::
+                                   INFOBAR_SNACKBAR_CANCEL_ALWAYS];
       break;
     case TranslateNotificationTypeAutoAlwaysTranslate:
-      [self
-          recordInfobarEvent:InfobarEvent::INFOBAR_SNACKBAR_CANCEL_AUTO_ALWAYS];
+      [self recordInfobarEvent:translate::InfobarEvent::
+                                   INFOBAR_SNACKBAR_CANCEL_AUTO_ALWAYS];
       break;
     case TranslateNotificationTypeNeverTranslate:
-      [self recordInfobarEvent:InfobarEvent::INFOBAR_SNACKBAR_CANCEL_NEVER];
+      [self recordInfobarEvent:translate::InfobarEvent::
+                                   INFOBAR_SNACKBAR_CANCEL_NEVER];
       break;
     case TranslateNotificationTypeAutoNeverTranslate:
-      [self
-          recordInfobarEvent:InfobarEvent::INFOBAR_SNACKBAR_CANCEL_AUTO_NEVER];
+      [self recordInfobarEvent:translate::InfobarEvent::
+                                   INFOBAR_SNACKBAR_CANCEL_AUTO_NEVER];
       // Remove the infobar even if the user tapped "Undo" since user explicitly
       // dismissed the infobar.
       self.infoBarDelegate->InfoBarDismissed();
       self.delegate->RemoveInfoBar();
       break;
     case TranslateNotificationTypeNeverTranslateSite:
-      [self
-          recordInfobarEvent:InfobarEvent::INFOBAR_SNACKBAR_CANCEL_NEVER_SITE];
+      [self recordInfobarEvent:translate::InfobarEvent::
+                                   INFOBAR_SNACKBAR_CANCEL_NEVER_SITE];
       break;
     case TranslateNotificationTypeError:
       // No-op.
@@ -520,7 +528,7 @@ typedef NS_ENUM(NSInteger, LanguageSelectionState) {
   [_infobarView updateUIForPopUpMenuDisplayed:YES];
 }
 
-- (void)recordInfobarEvent:(InfobarEvent)event {
+- (void)recordInfobarEvent:(translate::InfobarEvent)event {
   UMA_HISTOGRAM_ENUMERATION(kEventHistogram, event);
 }
 

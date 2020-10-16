@@ -69,6 +69,7 @@ source_set("translate") {
     "//components/metrics",
     "//components/strings:components_strings_grit",
     "//components/translate/core/browser",
+    "//components/translate/core/common",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/translate:public",
