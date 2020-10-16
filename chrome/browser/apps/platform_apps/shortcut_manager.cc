@@ -11,6 +11,7 @@
 #include "base/one_shot_event.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -36,13 +37,23 @@ using extensions::Extension;
 
 namespace {
 
+#if defined(OS_MAC)
 // This version number is stored in local prefs to check whether app shortcuts
 // need to be recreated. This might happen when we change various aspects of app
 // shortcuts like command-line flags or associated icons, binaries, etc.
-#if defined(OS_MAC)
 const int kCurrentAppShortcutsVersion = APP_SHIM_VERSION_NUMBER;
+
+// The architecture that was last used to create app shortcuts for this user
+// directory.
+std::string CurrentAppShortcutsArch() {
+  return base::SysInfo::OperatingSystemArchitecture();
+}
 #else
+// Non-mac platforms do not update shortcuts.
 const int kCurrentAppShortcutsVersion = 0;
+std::string CurrentAppShortcutsArch() {
+  return "";
+}
 #endif
 
 // Delay in seconds before running UpdateShortcutsForAllApps.
@@ -75,6 +86,7 @@ void AppShortcutManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   // Indicates whether app shortcuts have been created.
   registry->RegisterIntegerPref(prefs::kAppShortcutsVersion, 0);
+  registry->RegisterStringPref(prefs::kAppShortcutsArch, "");
 }
 
 AppShortcutManager::AppShortcutManager(Profile* profile)
@@ -169,6 +181,8 @@ void AppShortcutManager::UpdateShortcutsForAllAppsNow() {
 void AppShortcutManager::SetCurrentAppShortcutsVersion() {
   profile_->GetPrefs()->SetInteger(prefs::kAppShortcutsVersion,
                                    kCurrentAppShortcutsVersion);
+  profile_->GetPrefs()->SetString(prefs::kAppShortcutsArch,
+                                  CurrentAppShortcutsArch());
 }
 
 void AppShortcutManager::UpdateShortcutsForAllAppsIfNeeded() {
@@ -179,8 +193,13 @@ void AppShortcutManager::UpdateShortcutsForAllAppsIfNeeded() {
 
   int last_version =
       profile_->GetPrefs()->GetInteger(prefs::kAppShortcutsVersion);
-  if (last_version >= kCurrentAppShortcutsVersion)
+  std::string last_arch =
+      profile_->GetPrefs()->GetString(prefs::kAppShortcutsArch);
+
+  if (last_version == kCurrentAppShortcutsVersion &&
+      last_arch == CurrentAppShortcutsArch()) {
     return;
+  }
 
   content::GetUIThreadTaskRunner({})->PostDelayedTask(
       FROM_HERE,

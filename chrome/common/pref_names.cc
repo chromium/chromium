@@ -2602,6 +2602,12 @@ const char kAppListLocalState[] = "app_list.local_state";
 // Increasing this causes all app shortcuts to be recreated.
 const char kAppShortcutsVersion[] = "apps.shortcuts_version";
 
+// A string indicating the architecture in which app shortcuts have been
+// created. If this changes (e.g, due to migrating one's home directory
+// from an Intel mac to an ARM mac), then this will cause all shortcuts to be
+// re-created.
+const char kAppShortcutsArch[] = "apps.shortcuts_arch";
+
 // A string pref for storing the salt used to compute the pepper device ID.
 const char kDRMSalt[] = "settings.privacy.drm_salt";
 // A boolean pref that enables the (private) pepper GetDeviceID() call and
