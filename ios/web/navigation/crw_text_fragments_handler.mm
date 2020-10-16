@@ -7,6 +7,7 @@
 #import "base/json/json_writer.h"
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #import "ios/web/common/features.h"
 #import "ios/web/navigation/text_fragments_utils.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -23,6 +24,9 @@ namespace {
 
 const char kScriptCommandPrefix[] = "textFragments";
 const char kScriptResponseCommand[] = "textFragments.response";
+
+const double kMinSelectorCount = 0.0;
+const double kMaxSelectorCount = 200.0;
 
 }  // namespace
 
@@ -72,10 +76,14 @@ const char kScriptResponseCommand[] = "textFragments.response";
   base::Value parsedFragments =
       web::ParseTextFragments(self.webStateImpl->GetLastCommittedURL());
 
-  if (parsedFragments.type() == base::Value::Type::NONE)
+  if (parsedFragments.type() == base::Value::Type::NONE) {
     return;
+  }
 
-  // TODO (crbug.com/1099268): Log the origin and number of fragments metrics.
+  shared_highlighting::LogTextFragmentSelectorCount(
+      parsedFragments.GetList().size());
+  shared_highlighting::LogTextFragmentLinkOpenSource(referrer.url);
+
   std::string fragmentParam;
   base::JSONWriter::Write(parsedFragments, &fragmentParam);
 
@@ -91,8 +99,9 @@ const char kScriptResponseCommand[] = "textFragments.response";
 
 // Returns NO if fragments highlighting is not allowed in the current |context|.
 - (BOOL)areTextFragmentsAllowedInContext:(web::NavigationContext*)context {
-  if (!base::FeatureList::IsEnabled(web::features::kScrollToTextIOS))
+  if (!base::FeatureList::IsEnabled(web::features::kScrollToTextIOS)) {
     return NO;
+  }
 
   if (self.isBeingDestroyed) {
     return NO;
@@ -121,7 +130,34 @@ const char kScriptResponseCommand[] = "textFragments.response";
     return;
   }
 
-  // TODO (crbug.com/1099268): Log the success/failure metric.
+  // Log success metrics.
+  base::Optional<double> optionalFragmentCount =
+      response.FindDoublePath("result.fragmentsCount");
+  base::Optional<double> optionalSuccessCount =
+      response.FindDoublePath("result.successCount");
+
+  // Since the response can't be trusted, don't log metrics if the results look
+  // invalid.
+  if (!optionalFragmentCount ||
+      optionalFragmentCount.value() > kMaxSelectorCount ||
+      optionalFragmentCount.value() <= kMinSelectorCount) {
+    return;
+  }
+  if (!optionalSuccessCount ||
+      optionalSuccessCount.value() > kMaxSelectorCount ||
+      optionalSuccessCount.value() < kMinSelectorCount) {
+    return;
+  }
+  if (optionalSuccessCount.value() > optionalFragmentCount.value()) {
+    return;
+  }
+
+  int fragmentCount = static_cast<int>(optionalFragmentCount.value());
+  int successCount = static_cast<int>(optionalSuccessCount.value());
+
+  shared_highlighting::LogTextFragmentMatchRate(successCount, fragmentCount);
+  shared_highlighting::LogTextFragmentAmbiguousMatch(
+      /*ambiguous_match=*/successCount != fragmentCount);
 }
 
 @end
