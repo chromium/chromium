@@ -1023,7 +1023,6 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
   }
 
   if (cur_version == 10) {
-    SCOPED_UMA_HISTOGRAM_TIMER("Cookie.TimeDatabaseMigrationToV11");
     sql::Transaction transaction(db());
     if (!transaction.Begin())
       return base::nullopt;
