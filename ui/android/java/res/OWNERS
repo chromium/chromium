@@ -6,6 +6,3 @@ file://ui/android/java/res/LAYOUT_OWNERS
 
 per-file *color*.xml=lazzzis@google.com
 per-file *style*.xml=lazzzis@google.com
-
-# COMPONENT: UI>Browser>Mobile
-# OS: Android
