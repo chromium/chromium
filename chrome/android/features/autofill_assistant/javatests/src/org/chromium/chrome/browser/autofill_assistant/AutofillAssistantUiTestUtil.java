@@ -12,6 +12,7 @@ import static org.chromium.content_public.browser.test.util.CriteriaHelper.DEFAU
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
@@ -716,6 +717,22 @@ class AutofillAssistantUiTestUtil {
         javascriptHelper.waitUntilHasValue();
         JSONArray result = new JSONArray(javascriptHelper.getJsonResultAndClear());
         return result.getString(0);
+    }
+
+    /**
+     * Converts a view into a bitmap.
+     */
+    public static Bitmap getBitmapFromView(View view) {
+        Bitmap resultBitmap =
+                Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
+        Drawable backgroundDrawable = view.getBackground();
+        if (backgroundDrawable == null) {
+            return resultBitmap;
+        }
+        Canvas canvas = new Canvas(resultBitmap);
+        backgroundDrawable.draw(canvas);
+        view.draw(canvas);
+        return resultBitmap;
     }
 
     private static String getElementSelectorString(String[] elementIds) {

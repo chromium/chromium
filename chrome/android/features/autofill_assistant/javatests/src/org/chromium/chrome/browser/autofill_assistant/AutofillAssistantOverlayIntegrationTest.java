@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -15,12 +16,15 @@ import static org.hamcrest.Matchers.is;
 
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.checkElementExists;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.checkElementOnScreen;
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.getBitmapFromView;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.startAutofillAssistant;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.tapElement;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntil;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
 
 import android.support.test.InstrumentationRegistry;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.test.filters.MediumTest;
 
@@ -30,13 +34,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.BitmapDrawableProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.ClientDimensionProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.ClientSettingsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ConfigureUiStateProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ConfigureUiStateProto.OverlayBehavior;
+import org.chromium.chrome.browser.autofill_assistant.proto.DrawableProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ElementAreaProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ElementAreaProto.Rectangle;
 import org.chromium.chrome.browser.autofill_assistant.proto.FocusElementProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.OverlayImageProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto.Choice;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto;
@@ -430,6 +440,61 @@ public class AutofillAssistantOverlayIntegrationTest {
         // Tapping on the element should be blocked by the overlay.
         tapElement(mTestRule, "touch_area_four");
         assertThat(checkElementExists(mTestRule.getWebContents(), "touch_area_four"), is(true));
+    }
+
+    /**
+     * Tests that an image works with an overlay
+     */
+    @Test
+    @MediumTest
+    public void testShowImageOnOverlay() throws Exception {
+        String redDotBase64Url =
+                "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
+        int imageSize = 50;
+        ClientSettingsProto clientSettings =
+                (ClientSettingsProto) ClientSettingsProto.newBuilder()
+                        .setOverlayImage(
+                                OverlayImageProto.newBuilder()
+                                        .setImageDrawable(DrawableProto.newBuilder().setBitmap(
+                                                BitmapDrawableProto.newBuilder()
+                                                        .setUrl(redDotBase64Url)
+                                                        .setWidth(ClientDimensionProto.newBuilder()
+                                                                          .setDp(imageSize))
+                                                        .setHeight(ClientDimensionProto.newBuilder()
+                                                                           .setDp(imageSize))))
+                                        .setImageSize(
+                                                ClientDimensionProto.newBuilder().setDp(imageSize)))
+                        .build();
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
+                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                        .setPath("autofill_assistant_target_website.html")
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
+                                ChipProto.newBuilder().setText("Done")))
+                        .build(),
+                new ArrayList<>());
+        AutofillAssistantTestService testService =
+                new AutofillAssistantTestService(Collections.singletonList(script), clientSettings);
+        startAutofillAssistant(mTestRule.getActivity(), testService);
+
+        ViewGroup chromeCoordinatorView = mTestRule.getActivity().findViewById(R.id.coordinator);
+        View scrim = mTestRule.getActivity()
+                             .getRootUiCoordinatorForTesting()
+                             .getScrimCoordinator()
+                             .getViewForTesting();
+
+        onView(is(scrim)).check(matches(isCompletelyDisplayed()));
+        int image_center_x = scrim.getWidth() / 2;
+        int yTopContentOffset = mTestRule.getActivity()
+                                        .getRootUiCoordinatorForTesting()
+                                        .getBrowserControlsManager()
+                                        .getContentOffset();
+        int image_center_y = yTopContentOffset + imageSize / 2;
+
+        // Testing that central pixel of overlay image is different from (0,0) pixel
+        waitUntil(()
+                          -> getBitmapFromView(scrim).getPixel(image_center_x, image_center_y)
+                        != getBitmapFromView(scrim).getPixel(0, 0));
     }
 
     private void runScript(AutofillAssistantTestScript script) {
