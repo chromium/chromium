@@ -147,6 +147,27 @@
             ]
         }
     ],
+    "AndroidInProductHelpContextualSearchPromoteLongpress": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "PromoteLongpressExperiment",
+                    "params": {
+                        "availability": "any",
+                        "event_trigger": "name:longpress_bubble_shown;comparator:<6;window:90;storage:90",
+                        "event_used": "name:contextual_search_panel_opened_after_longpress;comparator:==0;window:365;storage:365",
+                        "session_rate": "<1"
+                    },
+                    "enable_features": [
+                        "IPH_ContextualSearchTappedButShouldLongpress"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidInProductHelpContextualSearchPromotePanelOpen": [
         {
             "platforms": [
@@ -1829,16 +1850,8 @@
             "experiments": [
                 {
                     "name": "ContextualSearchLongpressResolve",
-                    "params": {
-                        "availability": "any",
-                        "event_longpress_opened": "name:contextual_search_panel_opened_after_longpress;comparator:==0;window:365;storage:365",
-                        "event_trigger": "name:longpress_bubble_shown;comparator:<3;window:90;storage:90",
-                        "event_used": "name:contextual_search_triggered_by_longpress;comparator:==0;window:90;storage:90",
-                        "session_rate": "any"
-                    },
                     "enable_features": [
-                        "ContextualSearchLongpressResolve",
-                        "IPH_ContextualSearchTappedButShouldLongpress"
+                        "ContextualSearchLongpressResolve"
                     ]
                 }
             ]
@@ -1852,8 +1865,15 @@
             "experiments": [
                 {
                     "name": "ContextualSearchTranslations",
+                    "params": {
+                        "availability": "any",
+                        "event_trigger": "name:translations_bubble_shown;comparator:<5;window:90;storage:90",
+                        "event_used": "name:contextual_search_enabled_opt_in;comparator:==0;window:365;storage:365",
+                        "session_rate": "<1"
+                    },
                     "enable_features": [
-                        "ContextualSearchTranslations"
+                        "ContextualSearchTranslations",
+                        "IPH_ContextualSearchTranslationEnable"
                     ]
                 }
             ]
