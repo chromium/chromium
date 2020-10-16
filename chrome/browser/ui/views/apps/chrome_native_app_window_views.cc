@@ -325,6 +325,7 @@ void ChromeNativeAppWindowViews::UpdateShape(
       region->op(gfx::RectToSkIRect(input_rect), SkRegion::kUnion_Op);
   }
   shape_ = std::move(region);
+  OnWidgetHasHitTestMaskChanged();
   widget()->SetShape(shape() ? std::make_unique<ShapeRects>(*shape_rects_)
                              : nullptr);
   widget()->OnSizeConstraintsChanged();
