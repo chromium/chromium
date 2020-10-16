@@ -97,11 +97,6 @@ component("gtk") {
 
   public_deps = [ ":gtk_ui_delegate" ]
 
-  if (use_x11 || ozone_platform_x11) {
-    # select_file_dialog_impl_kde.cc still refers to XID
-    deps += [ "//ui/gfx/x" ]
-  }
-
   # TODO: This should be removed.
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
