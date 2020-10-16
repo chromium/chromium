@@ -157,53 +157,37 @@ void PrefService::SchedulePendingLossyWrites() {
 bool PrefService::GetBoolean(const std::string& path) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  bool result = false;
-
   const base::Value* value = GetPreferenceValueChecked(path);
-  if (!value)
-    return result;
-  bool rv = value->GetAsBoolean(&result);
-  DCHECK(rv);
-  return result;
+  if (!value || !value->is_bool())
+    return false;
+  return value->GetBool();
 }
 
 int PrefService::GetInteger(const std::string& path) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  int result = 0;
-
   const base::Value* value = GetPreferenceValueChecked(path);
-  if (!value)
-    return result;
-  bool rv = value->GetAsInteger(&result);
-  DCHECK(rv);
-  return result;
+  if (!value || !value->is_int())
+    return 0;
+  return value->GetInt();
 }
 
 double PrefService::GetDouble(const std::string& path) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  double result = 0.0;
-
   const base::Value* value = GetPreferenceValueChecked(path);
-  if (!value)
-    return result;
-  bool rv = value->GetAsDouble(&result);
-  DCHECK(rv);
-  return result;
+  if (!value || !value->is_double())
+    return 0.0;
+  return value->GetDouble();
 }
 
 std::string PrefService::GetString(const std::string& path) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::string result;
-
   const base::Value* value = GetPreferenceValueChecked(path);
-  if (!value)
-    return result;
-  bool rv = value->GetAsString(&result);
-  DCHECK(rv);
-  return result;
+  if (!value || !value->is_string())
+    return std::string();
+  return value->GetString();
 }
 
 base::FilePath PrefService::GetFilePath(const std::string& path) const {
@@ -309,11 +293,7 @@ bool PrefService::IsUserModifiablePreference(
 
 const base::Value* PrefService::Get(const std::string& path) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const base::Value* value = GetPreferenceValueChecked(path);
-  if (!value)
-    return nullptr;
-  return value;
+  return GetPreferenceValueChecked(path);
 }
 
 const base::DictionaryValue* PrefService::GetDictionary(
@@ -524,15 +504,12 @@ uint64_t PrefService::GetUint64(const std::string& path) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const base::Value* value = GetPreferenceValueChecked(path);
-  if (!value)
+  if (!value || !value->is_string())
     return 0;
-  std::string result("0");
-  bool rv = value->GetAsString(&result);
-  DCHECK(rv);
 
-  uint64_t val;
-  base::StringToUint64(result, &val);
-  return val;
+  uint64_t result;
+  base::StringToUint64(value->GetString(), &result);
+  return result;
 }
 
 void PrefService::SetTime(const std::string& path, base::Time value) {
@@ -721,19 +698,19 @@ const base::Value* PrefService::GetPreferenceValue(
   CHECK(pref_value_store_);
 
   const base::Value* default_value = nullptr;
-  if (pref_registry_->defaults()->GetValue(path, &default_value)) {
-    const base::Value* found_value = nullptr;
-    base::Value::Type default_type = default_value->type();
-    if (pref_value_store_->GetValue(path, default_type, &found_value)) {
-      DCHECK(found_value->type() == default_type);
-      return found_value;
-    } else {
-      // Every registered preference has at least a default value.
-      NOTREACHED() << "no valid value found for registered pref " << path;
-    }
+  if (!pref_registry_->defaults()->GetValue(path, &default_value))
+    return nullptr;
+
+  const base::Value* found_value = nullptr;
+  base::Value::Type default_type = default_value->type();
+  if (!pref_value_store_->GetValue(path, default_type, &found_value)) {
+    // Every registered preference has at least a default value.
+    NOTREACHED() << "no valid value found for registered pref " << path;
+    return nullptr;
   }
 
-  return nullptr;
+  DCHECK_EQ(found_value->type(), default_type);
+  return found_value;
 }
 
 const base::Value* PrefService::GetPreferenceValueChecked(
