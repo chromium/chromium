@@ -5,11 +5,14 @@
 #ifndef PRINTING_BACKEND_PRINT_BACKEND_H_
 #define PRINTING_BACKEND_PRINT_BACKEND_H_
 
+#include <stdint.h>
+
 #include <map>
 #include <string>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "printing/mojom/print.mojom.h"
@@ -28,6 +31,8 @@ class DictionaryValue;
 // This is the interface for platform-specific code for a print backend
 namespace printing {
 
+using PrinterBasicInfoOptions = std::map<std::string, std::string>;
+
 struct PRINTING_EXPORT PrinterBasicInfo {
   PrinterBasicInfo();
   PrinterBasicInfo(const PrinterBasicInfo& other);
@@ -42,8 +47,8 @@ struct PRINTING_EXPORT PrinterBasicInfo {
   std::string display_name;
   std::string printer_description;
   int printer_status = 0;
-  int is_default = false;
-  std::map<std::string, std::string> options;
+  bool is_default = false;
+  PrinterBasicInfoOptions options;
 };
 
 using PrinterList = std::vector<PrinterBasicInfo>;
