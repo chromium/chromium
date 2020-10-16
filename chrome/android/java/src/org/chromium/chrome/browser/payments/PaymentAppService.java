@@ -46,6 +46,12 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
         mFactories.add(factory);
     }
 
+    /** Resets the instance, used by //clank tests. */
+    @VisibleForTesting
+    public void resetForTest() {
+        sInstance = null;
+    }
+
     // PaymentAppFactoryInterface implementation.
     @Override
     public void create(PaymentAppFactoryDelegate delegate) {
