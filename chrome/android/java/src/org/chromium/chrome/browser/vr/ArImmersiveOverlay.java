@@ -24,8 +24,7 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.compositor.CompositorView;
+import org.chromium.components.webxr.ArCompositorDelegate;
 import org.chromium.content_public.browser.ScreenOrientationDelegate;
 import org.chromium.content_public.browser.ScreenOrientationProvider;
 import org.chromium.content_public.browser.WebContents;
@@ -45,7 +44,8 @@ public class ArImmersiveOverlay
     private static final boolean DEBUG_LOGS = false;
 
     private ArCoreJavaUtils mArCoreJavaUtils;
-    private ChromeActivity mActivity;
+    private ArCompositorDelegate mArCompositorDelegate;
+    private Activity mActivity;
     private boolean mSurfaceReportedReady;
     private Integer mRestoreOrientation;
     private boolean mCleanupInProgress;
@@ -57,13 +57,15 @@ public class ArImmersiveOverlay
     // ID of primary pointer (if present).
     private Integer mPrimaryPointerId;
 
-    public void show(
+    public void show(@NonNull ArCompositorDelegate compositorDelegate,
             @NonNull WebContents webContents, @NonNull ArCoreJavaUtils caller, boolean useOverlay) {
         if (DEBUG_LOGS) Log.i(TAG, "constructor");
         mArCoreJavaUtils = caller;
 
         mWebContents = webContents;
-        mActivity = ChromeActivity.fromWebContents(webContents);
+        mArCompositorDelegate = compositorDelegate;
+
+        mActivity = ArCoreJavaUtils.getActivity(webContents);
 
         mPointerIdToData = new HashMap<Integer, PointerData>();
         mPrimaryPointerId = null;
@@ -163,7 +165,6 @@ public class ArImmersiveOverlay
 
     private class SurfaceUiCompositor implements SurfaceUiWrapper {
         private SurfaceView mSurfaceView;
-        private CompositorView mCompositorView;
         private WebContentsObserver mWebContentsObserver;
 
         public SurfaceUiCompositor() {
@@ -182,12 +183,12 @@ public class ArImmersiveOverlay
             ViewGroup group = (ViewGroup) content.getParent();
             group.addView(mSurfaceView);
 
-            mCompositorView = mActivity.getCompositorViewHolder().getCompositorView();
-
             // Enable alpha channel for the compositor and make the background
             // transparent. (A variant of CompositorView::SetOverlayVideoMode.)
-            if (DEBUG_LOGS) Log.i(TAG, "calling mCompositorView.setOverlayImmersiveArMode(true)");
-            mCompositorView.setOverlayImmersiveArMode(true);
+            if (DEBUG_LOGS) {
+                Log.i(TAG, "calling mArCompositorDelegate.setOverlayImmersiveArMode(true)");
+            }
+            mArCompositorDelegate.setOverlayImmersiveArMode(true);
 
             mWebContentsObserver = new WebContentsObserver() {
                 @Override
@@ -213,8 +214,7 @@ public class ArImmersiveOverlay
 
         @Override // SurfaceUiWrapper
         public void forwardMotionEvent(MotionEvent ev) {
-            View contentView = mActivity.getCompositorViewHolder();
-            contentView.dispatchTouchEvent(ev);
+            mArCompositorDelegate.dispatchTouchEvent(ev);
         }
 
         @Override // SurfaceUiWrapper
@@ -224,7 +224,7 @@ public class ArImmersiveOverlay
             ViewGroup group = (ViewGroup) content.getParent();
             group.removeView(mSurfaceView);
             mSurfaceView = null;
-            mCompositorView.setOverlayImmersiveArMode(false);
+            mArCompositorDelegate.setOverlayImmersiveArMode(false);
         }
     }
 

@@ -392,7 +392,7 @@ specific_include_rules = {
   "SuspendedTab\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "ArImmersiveOverlay\.java": [
+  "ArCompositorDelegateImpl\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
   "WebApkActivityCoordinator\.java": [

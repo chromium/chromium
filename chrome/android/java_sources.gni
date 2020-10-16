@@ -42,6 +42,8 @@ chrome_junit_test_java_sources += share_junit_test_java_sources
 
 if (enable_arcore) {
   chrome_java_sources += [
+    "java/src/org/chromium/chrome/browser/vr/ArCompositorDelegateImpl.java",
+    "java/src/org/chromium/chrome/browser/vr/ArCompositorDelegateProviderImpl.java",
     "java/src/org/chromium/chrome/browser/vr/ArCoreDeviceUtils.java",
     "java/src/org/chromium/chrome/browser/vr/ArCoreJavaUtils.java",
     "java/src/org/chromium/chrome/browser/vr/ArDelegateImpl.java",

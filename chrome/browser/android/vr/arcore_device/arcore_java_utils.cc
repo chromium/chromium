@@ -17,7 +17,9 @@ using base::android::ScopedJavaLocalRef;
 
 namespace vr {
 
-ArCoreJavaUtils::ArCoreJavaUtils() {
+ArCoreJavaUtils::ArCoreJavaUtils(
+    webxr::ArCompositorDelegateProvider compositor_delegate_provider)
+    : compositor_delegate_provider_(compositor_delegate_provider) {
   JNIEnv* env = AttachCurrentThread();
   if (!env)
     return;
@@ -48,7 +50,7 @@ void ArCoreJavaUtils::RequestArSession(
   surface_destroyed_callback_ = std::move(destroyed_callback);
 
   Java_ArCoreJavaUtils_startSession(
-      env, j_arcore_java_utils_,
+      env, j_arcore_java_utils_, compositor_delegate_provider_.GetJavaObject(),
       webxr::GetJavaWebContents(render_process_id, render_frame_id),
       use_overlay);
 }

@@ -11,13 +11,15 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "components/webxr/android/ar_compositor_delegate_provider.h"
 #include "device/vr/android/arcore/arcore_session_utils.h"
 
 namespace vr {
 
 class ArCoreJavaUtils : public ArCoreSessionUtils {
  public:
-  ArCoreJavaUtils();
+  explicit ArCoreJavaUtils(
+      webxr::ArCompositorDelegateProvider compositor_delegate_provider);
   ~ArCoreJavaUtils() override;
 
   // ArCoreSessionUtils:
@@ -52,6 +54,8 @@ class ArCoreJavaUtils : public ArCoreSessionUtils {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> j_arcore_java_utils_;
+
+  webxr::ArCompositorDelegateProvider compositor_delegate_provider_;
 
   SurfaceReadyCallback surface_ready_callback_;
   SurfaceTouchCallback surface_touch_callback_;

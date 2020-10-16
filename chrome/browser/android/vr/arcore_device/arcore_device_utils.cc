@@ -4,8 +4,10 @@
 
 #include <memory>
 
+#include "chrome/browser/android/vr/ar_jni_headers/ArCompositorDelegateProviderImpl_jni.h"
 #include "chrome/browser/android/vr/ar_jni_headers/ArCoreDeviceUtils_jni.h"
 #include "chrome/browser/android/vr/arcore_device/arcore_device_provider.h"
+#include "components/webxr/android/ar_compositor_delegate_provider.h"
 #include "device/vr/android/arcore/arcore_device_provider_factory.h"
 
 namespace vr {
@@ -24,7 +26,13 @@ class ArCoreDeviceProviderFactoryImpl
 
 std::unique_ptr<device::VRDeviceProvider>
 ArCoreDeviceProviderFactoryImpl::CreateDeviceProvider() {
-  return std::make_unique<device::ArCoreDeviceProvider>();
+  base::android::ScopedJavaLocalRef<jobject> j_ar_compositor_delegate_provider =
+      vr::Java_ArCompositorDelegateProviderImpl_Constructor(
+          base::android::AttachCurrentThread());
+
+  return std::make_unique<device::ArCoreDeviceProvider>(
+      webxr::ArCompositorDelegateProvider(
+          std::move(j_ar_compositor_delegate_provider)));
 }
 
 }  // namespace

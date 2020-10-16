@@ -175,6 +175,7 @@ group("module_factory") {
 if (enable_arcore) {
   generate_jni("ar_jni_headers") {
     sources = [
+      "//chrome/android/java/src/org/chromium/chrome/browser/vr/ArCompositorDelegateProviderImpl.java",
       "//chrome/android/java/src/org/chromium/chrome/browser/vr/ArCoreDeviceUtils.java",
       "//chrome/android/java/src/org/chromium/chrome/browser/vr/ArCoreJavaUtils.java",
     ]

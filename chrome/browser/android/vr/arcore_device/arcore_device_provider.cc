@@ -13,7 +13,9 @@
 
 namespace device {
 
-ArCoreDeviceProvider::ArCoreDeviceProvider() = default;
+ArCoreDeviceProvider::ArCoreDeviceProvider(
+    webxr::ArCompositorDelegateProvider compositor_delegate_provider)
+    : compositor_delegate_provider_(compositor_delegate_provider) {}
 
 ArCoreDeviceProvider::~ArCoreDeviceProvider() = default;
 
@@ -27,11 +29,12 @@ void ArCoreDeviceProvider::Initialize(
     base::OnceClosure initialization_complete) {
   if (vr::IsArCoreSupported()) {
     DVLOG(2) << __func__ << ": ARCore is supported, creating device";
+
     arcore_device_ = std::make_unique<ArCoreDevice>(
         std::make_unique<ArCoreImplFactory>(),
         std::make_unique<ArImageTransportFactory>(),
         std::make_unique<webxr::MailboxToSurfaceBridgeFactoryImpl>(),
-        std::make_unique<vr::ArCoreJavaUtils>());
+        std::make_unique<vr::ArCoreJavaUtils>(compositor_delegate_provider_));
 
     add_device_callback.Run(
         arcore_device_->GetId(), arcore_device_->GetVRDisplayInfo(),

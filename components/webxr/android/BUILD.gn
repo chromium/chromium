@@ -21,6 +21,8 @@ source_set("android_utils") {
 
 source_set("android") {
   sources = [
+    "ar_compositor_delegate_provider.cc",
+    "ar_compositor_delegate_provider.h",
     "xr_install_helper_delegate.h",
     "xr_install_infobar.cc",
     "xr_install_infobar.h",
@@ -63,6 +65,8 @@ android_library("ar_java_base") {
   ]
 
   sources = [
+    "//components/webxr/android/java/src/org/chromium/components/webxr/ArCompositorDelegate.java",
+    "//components/webxr/android/java/src/org/chromium/components/webxr/ArCompositorDelegateProvider.java",
     "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreInstallUtils.java",
     "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreShim.java",
   ]

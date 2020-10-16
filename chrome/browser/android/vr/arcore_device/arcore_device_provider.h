@@ -7,6 +7,7 @@
 
 #include <memory>
 #include "base/macros.h"
+#include "components/webxr/android/ar_compositor_delegate_provider.h"
 #include "device/vr/public/cpp/vr_device_provider.h"
 #include "device/vr/vr_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -17,7 +18,8 @@ class ArCoreDevice;
 
 class ArCoreDeviceProvider : public VRDeviceProvider {
  public:
-  ArCoreDeviceProvider();
+  explicit ArCoreDeviceProvider(
+      webxr::ArCompositorDelegateProvider compositor_delegate_provider);
   ~ArCoreDeviceProvider() override;
   void Initialize(
       base::RepeatingCallback<void(mojom::XRDeviceId,
@@ -30,6 +32,8 @@ class ArCoreDeviceProvider : public VRDeviceProvider {
   bool Initialized() override;
 
  private:
+  webxr::ArCompositorDelegateProvider compositor_delegate_provider_;
+
   std::unique_ptr<ArCoreDevice> arcore_device_;
   bool initialized_ = false;
   DISALLOW_COPY_AND_ASSIGN(ArCoreDeviceProvider);
