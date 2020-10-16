@@ -141,7 +141,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
     return last_root_render_pass_scissor_rect_;
   }
 
-  DelegatedInkPointRendererBase* GetDelegatedInkPointRenderer();
+  virtual DelegatedInkPointRendererBase* GetDelegatedInkPointRenderer();
   void SetDelegatedInkMetadata(std::unique_ptr<DelegatedInkMetadata> metadata);
 
   // Returns true if composite time tracing is enabled. This measures a detailed
@@ -151,9 +151,13 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   // Puts the draw time wall in trace file relative to the |ready_timestamp|.
   virtual void AddCompositeTimeTraces(base::TimeTicks ready_timestamp);
 
+  // Return the bounding rect of previously drawn delegated ink trail.
+  gfx::Rect GetDelegatedInkTrailDamageRect();
+
  protected:
   friend class BspWalkActionDrawPolygon;
-  FRIEND_TEST_ALL_PREFIXES(DisplayTest, SkiaDelegatedInkRenderer);
+  friend class SkiaDelegatedInkRendererTest;
+  friend class DelegatedInkPointPixelTestHelper;
 
   enum SurfaceInitializationMode {
     SURFACE_INITIALIZATION_MODE_PRESERVE,
@@ -333,9 +337,10 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   // actually created or not. If the renderer doesn't support drawing delegated
   // ink trails, then the delegated ink renderer won't be created.
   virtual bool CreateDelegatedInkPointRenderer();
-  std::unique_ptr<DelegatedInkPointRendererBase> delegated_ink_point_renderer_;
 
  private:
+  virtual void DrawDelegatedInkTrail();
+
   bool initialized_ = false;
 #if DCHECK_IS_ON()
   bool overdraw_feedback_support_missing_logged_once_ = false;

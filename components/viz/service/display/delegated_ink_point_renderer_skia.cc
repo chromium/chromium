@@ -4,28 +4,147 @@
 
 #include "components/viz/service/display/delegated_ink_point_renderer_skia.h"
 
+#include <vector>
+
+#include "base/metrics/histogram_macros.h"
+#include "base/trace_event/trace_event.h"
 #include "components/viz/common/delegated_ink_metadata.h"
+#include "third_party/skia/include/core/SkCanvas.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/skia_util.h"
 
 namespace viz {
 
-void DelegatedInkPointRendererSkia::DrawDelegatedInkTrailInternal() {
+void DelegatedInkPointRendererSkia::DrawDelegatedInkTrail(SkCanvas* canvas) {
+  TRACE_EVENT1("viz", "DelegatedInkPointRendererSkia::DrawDelegatedInkTrail",
+               "points", path_.countPoints());
+
+  if (!metadata_)
+    return;
+
+  if (!path_.isEmpty() && canvas) {
+    SkRect bounds = gfx::RectFToSkRect(metadata_->presentation_area());
+    canvas->saveLayer(SkCanvas::SaveLayerRec(&bounds, nullptr));
+
+    SkPaint paint;
+    paint.setAntiAlias(true);
+    paint.setBlendMode(SkBlendMode::kSrcOver);
+    paint.setColor(metadata_->color());
+    paint.setFilterQuality(kNone_SkFilterQuality);
+    paint.setStrokeCap(SkPaint::kRound_Cap);
+    paint.setStrokeJoin(SkPaint::kRound_Join);
+    paint.setStrokeWidth(SkScalar(metadata_->diameter()));
+    paint.setStyle(SkPaint::kStroke_Style);
+
+    canvas->drawPath(path_, paint);
+
+    canvas->restore();
+
+    path_.rewind();
+  }
+
+  // Always reset |metadata_| regardless of if the draw occurred or not so that
+  // the trail is never incorrectly drawn if the aggregated frame did not
+  // contain delegated ink metadata.
+  metadata_.reset();
+}
+
+gfx::Rect DelegatedInkPointRendererSkia::GetDamageRect() {
+  if (old_trail_damage_rect_.IsEmpty() && new_trail_damage_rect_.IsEmpty())
+    return gfx::Rect();
+
+  gfx::RectF damage_rect_f = old_trail_damage_rect_;
+
+  damage_rect_f.Union(new_trail_damage_rect_);
+
+  return gfx::ToEnclosingRect(damage_rect_f);
+}
+
+void DelegatedInkPointRendererSkia::FinalizePathForDraw() {
+  // Always rewind the path first so that a path isn't drawn twice.
+  path_.rewind();
+
+  // Setting the damage rect to empty ensures that the damage rect is cleared
+  // when trails are not being drawn so that extra drawing doesn't occur.
+  if (!metadata_) {
+    SetDamageRect(gfx::RectF());
+    return;
+  }
+
   // First, filter the delegated ink points so that only ones that have a
   // timestamp that is equal to or later than the metadata still exist.
   FilterPoints();
 
-  if (points_.size() == 0)
-    return;
+  // TODO(1052145): Predict points.
 
-  // Prediction will occur here. The CL to move prediction to ui/base must land
-  // first in order for this to happen.
+  base::TimeDelta improvement =
+      static_cast<int>(points_.size()) > 0
+          ? points_.rbegin()->first - metadata_->timestamp()
+          : base::TimeDelta::FromMilliseconds(0);
+  UMA_HISTOGRAM_TIMES(
+      "Renderer.DelegatedInkTrail.LatencyImprovement.Skia.WithoutPrediction",
+      improvement);
 
   // If there is only one point total between |points_| and predicted points,
   // then it will match the metadata point and therefore doesn't need to be
   // drawn in this way, as it will be rendered normally.
-  // TODO(1052145): Early out here if the above condition is met.
+  if (points_.size() <= 1) {
+    SetDamageRect(gfx::RectF());
+    return;
+  }
 
-  // TODO(1052145): Draw the all remaining points in |points_| with bezier
-  // curves between them onto the skia canvas.
+  std::vector<SkPoint> sk_points;
+  for (auto it : points_)
+    sk_points.emplace_back(gfx::PointFToSkPoint(it.second));
+
+  path_.moveTo(sk_points[0]);
+  switch (sk_points.size()) {
+    case 2:
+      path_.lineTo(sk_points[1]);
+      break;
+    case 3:
+      path_.quadTo(sk_points[1], sk_points[2]);
+      break;
+    case 4:
+      path_.cubicTo(sk_points[1], sk_points[2], sk_points[3]);
+      break;
+    default:
+      // The connection between two cubic bezier curves will be smooth only if
+      // the second control point of the first curve, the end point of the first
+      // curve/first control point of the second curve, and the second control
+      // point of the second curve are colinear. Since this is unlikely to be
+      // the case, and in general it is unlikely to be common that more than 4
+      // points exist in |points_|, connecting all four points via lines should
+      // be acceptable.
+      for (uint64_t i = 1; i < sk_points.size(); ++i)
+        path_.lineTo(sk_points[i]);
+      break;
+  }
+
+  // path_.computeTightBounds() returns a rect that contains the points and
+  // curves, but it isn't guaranteed to contain the drawn stroke, resulting in
+  // the stroke sometimes existing outside of the damage_rect. Therefore, expand
+  // it here to ensure that the stroke is included, then intersect with the
+  // presentation area so that is can't extend beyond the drawable area.
+  gfx::RectF damage_rect = gfx::SkRectToRectF(path_.computeTightBounds());
+  const float kRadius = metadata_->diameter() / 2.f;
+  damage_rect.Inset(-kRadius, -kRadius);
+  damage_rect.Intersect(metadata_->presentation_area());
+
+  TRACE_EVENT_INSTANT1(
+      "viz", "DelegatedInkPointRendererSkia::FinalizePathForDraw",
+      TRACE_EVENT_SCOPE_THREAD, "damage_rect", damage_rect.ToString());
+
+  SetDamageRect(damage_rect);
+}
+
+void DelegatedInkPointRendererSkia::SetDamageRect(gfx::RectF damage_rect) {
+  old_trail_damage_rect_ = new_trail_damage_rect_;
+  new_trail_damage_rect_ = damage_rect;
+}
+
+int DelegatedInkPointRendererSkia::GetPathPointCountForTest() const {
+  return path_.countPoints();
 }
 
 }  // namespace viz

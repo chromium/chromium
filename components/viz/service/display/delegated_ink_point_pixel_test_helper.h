@@ -1,0 +1,60 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_DELEGATED_INK_POINT_PIXEL_TEST_HELPER_H_
+#define COMPONENTS_VIZ_SERVICE_DISPLAY_DELEGATED_INK_POINT_PIXEL_TEST_HELPER_H_
+
+#include <vector>
+
+#include "components/viz/common/delegated_ink_metadata.h"
+
+namespace viz {
+
+class DelegatedInkPoint;
+class DelegatedInkPointRendererBase;
+class DirectRenderer;
+
+// Helper class for running pixel tests to flex the delegated ink point
+// renderers. |renderer_| must be supplied, either when constructed or later
+// after cc::PixelTest::SetUp() has run, which creates the renderer. Then it
+// can be used to create and give ink metadata and points to |renderer_|'s
+// delegated ink point renderer. The metadata and points are stored so that the
+// information can be used for future points and metadata (i.e. when a point
+// needs to match the metadata for the first point of a trail) or when
+// determining the damage rect to apply to a render pass.
+class DelegatedInkPointPixelTestHelper {
+ public:
+  DelegatedInkPointPixelTestHelper();
+  ~DelegatedInkPointPixelTestHelper();
+
+  explicit DelegatedInkPointPixelTestHelper(DirectRenderer* renderer);
+  void SetRendererAndCreateInkRenderer(DirectRenderer* renderer);
+  DelegatedInkPointRendererBase* GetInkRenderer();
+
+  void CreateAndSendMetadata(const gfx::PointF& point,
+                             float diameter,
+                             SkColor color,
+                             const gfx::RectF& presentation_area);
+
+  void CreateAndSendMetadataFromLastPoint();
+
+  void CreateAndSendPoint(const gfx::PointF& point, base::TimeTicks timestamp);
+  void CreateAndSendPointFromMetadata();
+  // Used when sending multiple points to be drawn as a single trail, so it uses
+  // the most recently provided point's timestamp to determine the new one.
+  void CreateAndSendPointFromLastPoint(const gfx::PointF& point);
+
+  gfx::Rect GetDelegatedInkDamageRect();
+
+  const DelegatedInkMetadata& metadata() { return metadata_; }
+
+ private:
+  DirectRenderer* renderer_ = nullptr;
+  std::vector<DelegatedInkPoint> ink_points_;
+  DelegatedInkMetadata metadata_;
+};
+
+}  // namespace viz
+
+#endif  // COMPONENTS_VIZ_SERVICE_DISPLAY_DELEGATED_INK_POINT_PIXEL_TEST_HELPER_H_

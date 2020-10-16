@@ -1748,11 +1748,15 @@ AggregatedFrame SurfaceAggregator::Aggregate(
   // The root render pass damage might have been expanded by target_damage (the
   // area that might need to be recomposited on the target surface). We restrict
   // the damage_rect of the root render pass to the one caused by the source
-  // surfaces.
+  // surfaces, except when drawing delegated ink trails.
   // The damage on the root render pass should not include the expanded area
-  // since Renderer and OverlayProcessor expect the non expanded damage.
+  // since Renderer and OverlayProcessor expect the non expanded damage. The
+  // only exception is when delegated ink trails are being drawn, in which case
+  // the root render pass needs to contain the expanded area, as |target_damage|
+  // also reflects the delegated ink trail damage rect.
   auto* last_pass = dest_pass_list_->back().get();
-  if (!color_usage_changed &&
+
+  if (!color_usage_changed && !last_frame_had_delegated_ink_ &&
       !RenderPassNeedsFullDamage(last_pass->id, last_pass->cache_render_pass))
     dest_pass_list_->back()->damage_rect.Intersect(surfaces_damage_rect);
 
@@ -1781,7 +1785,12 @@ AggregatedFrame SurfaceAggregator::Aggregate(
     }
   }
 
-  frame.delegated_ink_metadata = std::move(delegated_ink_metadata_);
+  if (delegated_ink_metadata_) {
+    frame.delegated_ink_metadata = std::move(delegated_ink_metadata_);
+    last_frame_had_delegated_ink_ = true;
+  } else {
+    last_frame_had_delegated_ink_ = false;
+  }
 
   if (frame_annotator_)
     frame_annotator_->AnnotateAggregatedFrame(&frame);

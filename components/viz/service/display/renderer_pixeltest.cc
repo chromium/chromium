@@ -29,6 +29,7 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/resource_format_utils.h"
+#include "components/viz/service/display/delegated_ink_point_pixel_test_helper.h"
 #include "components/viz/service/display/gl_renderer.h"
 #include "components/viz/service/display/software_renderer.h"
 #include "components/viz/service/display/viz_pixel_test.h"
@@ -5168,6 +5169,173 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::ValuesIn(dst_color_spaces),
                      testing::Bool()));
 
+class DelegatedInkTest : public VizPixelTestWithParam,
+                         public DelegatedInkPointPixelTestHelper {
+ public:
+  void SetUp() override {
+    // Partial swap must be enabled or else the test will pass even if the
+    // delegated ink trail damage rect is wrong, because the whole frame is
+    // always redrawn otherwise.
+    renderer_settings_.partial_swap_enabled = true;
+    VizPixelTestWithParam::SetUp();
+    EXPECT_TRUE(VizPixelTestWithParam::renderer_->use_partial_swap());
+
+    SetRendererAndCreateInkRenderer(VizPixelTestWithParam::renderer_.get());
+  }
+
+  std::unique_ptr<AggregatedRenderPass> CreateTestRootRenderPass(
+      AggregatedRenderPassId id,
+      const gfx::Rect& output_rect,
+      const gfx::Rect& damage_rect) {
+    auto pass = std::make_unique<AggregatedRenderPass>();
+    const gfx::Transform transform_to_root_target;
+    pass->SetNew(id, output_rect, damage_rect, transform_to_root_target);
+    return pass;
+  }
+
+  bool DrawAndTestTrail(base::FilePath::StringPieceType file) {
+    gfx::Rect rect(this->device_viewport_size_);
+
+    // Minimize the root render pass damage rect so that it has to be expanded
+    // by the delegated ink trail damage rect to confirm that it is the right
+    // size to remove old trails and add new ones.
+    gfx::Rect damage_rect(0, 0, 1, 1);
+    AggregatedRenderPassId id{1};
+    std::unique_ptr<AggregatedRenderPass> pass =
+        CreateTestRootRenderPass(id, rect, damage_rect);
+
+    SharedQuadState* shared_state = CreateTestSharedQuadState(
+        gfx::Transform(), rect, pass.get(), gfx::RRectF());
+
+    SolidColorDrawQuad* color_quad =
+        pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+    color_quad->SetNew(shared_state, rect, rect, SK_ColorWHITE, false);
+
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+
+    return this->RunPixelTest(&pass_list, base::FilePath(file),
+                              cc::FuzzyPixelOffByOneComparator(true));
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         DelegatedInkTest,
+                         testing::ValuesIn(GetRendererTypesSkiaOnly()),
+                         testing::PrintToStringParamName());
+
+// Draw a single trail and erase it, making sure that no bits of trail are left
+// behind.
+TEST_P(DelegatedInkTest, DrawOneTrailAndErase) {
+  // First provide the metadata required to draw the trail, numbers arbitrary.
+  CreateAndSendMetadata(gfx::PointF(10, 10), 3.5f, SK_ColorBLACK,
+                        gfx::RectF(0, 0, 175, 172));
+
+  // Then provide some points for the trail to draw. Numbers chosen arbitrarily
+  // after the first point, which must match the metadata.
+  CreateAndSendPointFromMetadata();
+  CreateAndSendPointFromLastPoint(gfx::PointF(50, 30));
+  CreateAndSendPointFromLastPoint(gfx::PointF(75, 62));
+
+  // Confirm that the trail was drawn.
+  EXPECT_TRUE(
+      DrawAndTestTrail(FILE_PATH_LITERAL("delegated_ink_one_trail.png")));
+
+  // The metadata should have been cleared after drawing, so confirm that there
+  // is no trail after another draw.
+  EXPECT_TRUE(DrawAndTestTrail(FILE_PATH_LITERAL("white.png")));
+}
+
+// Confirm that drawing a second trail completely removes the first trail.
+TEST_P(DelegatedInkTest, DrawTwoTrailsAndErase) {
+  // First provide the metadata required to draw the trail, numbers arbitrary.
+  CreateAndSendMetadata(gfx::PointF(140, 48), 8.2f, SK_ColorMAGENTA,
+                        gfx::RectF(0, 0, 200, 200));
+
+  // Then provide some points for the trail to draw. Numbers chosen arbitrarily
+  // after the first point, which must match the metadata.
+  CreateAndSendPointFromMetadata();
+  CreateAndSendPointFromLastPoint(gfx::PointF(115, 85));
+  CreateAndSendPointFromLastPoint(gfx::PointF(92, 60));
+  CreateAndSendPointFromLastPoint(gfx::PointF(45.54f, 93.4f));
+  CreateAndSendPointFromLastPoint(gfx::PointF(13.f, 116.245f));
+
+  // Confirm that the trail was drawn correctly.
+  EXPECT_TRUE(DrawAndTestTrail(
+      FILE_PATH_LITERAL("delegated_ink_two_trails_first.png")));
+
+  // Now provide new metadata and points to draw a new trail. Just use the last
+  // point draw above as the starting point for the new trail.
+  CreateAndSendMetadataFromLastPoint();
+  CreateAndSendPointFromLastPoint(gfx::PointF(134, 100));
+
+  // Confirm the first trail is gone and only the second remains.
+  EXPECT_TRUE(DrawAndTestTrail(
+      FILE_PATH_LITERAL("delegated_ink_two_trails_second.png")));
+
+  // Confirm all trails are gone.
+  EXPECT_TRUE(DrawAndTestTrail(FILE_PATH_LITERAL("white.png")));
+}
+
+// Confirm that the trail can't be drawn beyond the presentation area.
+TEST_P(DelegatedInkTest, TrailExtendsBeyondPresentationArea) {
+  const gfx::RectF kPresentationArea(30, 30, 100, 100);
+  CreateAndSendMetadata(gfx::PointF(50.2f, 89.999f), 15.22f, SK_ColorCYAN,
+                        kPresentationArea);
+
+  // Send points such that some extend beyond the presentation area to confirm
+  // that the trail is clipped correctly.
+  CreateAndSendPointFromMetadata();
+  CreateAndSendPointFromLastPoint(gfx::PointF(80.7f, 149.6f));
+  CreateAndSendPointFromLastPoint(gfx::PointF(128.999f, 110.01f));
+  CreateAndSendPointFromLastPoint(gfx::PointF(50, 50));
+  CreateAndSendPointFromLastPoint(gfx::PointF(10.1f, 30.3f));
+  CreateAndSendPointFromLastPoint(gfx::PointF(29.98f, 66));
+  CreateAndSendPointFromLastPoint(gfx::PointF(52.3456f, 2.31f));
+  CreateAndSendPointFromLastPoint(gfx::PointF(97, 36.9f));
+  EXPECT_TRUE(DrawAndTestTrail(FILE_PATH_LITERAL(
+      "delegated_ink_trail_clipped_by_presentation_area.png")));
+}
+
+// Confirm that the trail appears on top of everything, including batched quads
+// that are drawn as part of the call to FinishDrawingQuadList.
+TEST_P(DelegatedInkTest, DelegatedInkTrailAfterBatchedQuads) {
+  gfx::Rect rect(this->device_viewport_size_);
+
+  AggregatedRenderPassId id{1};
+  auto pass = CreateTestRootRenderPass(id, rect, rect);
+
+  SharedQuadState* shared_state = CreateTestSharedQuadState(
+      gfx::Transform(), rect, pass.get(), gfx::RRectF());
+
+  CreateTestTextureDrawQuad(
+      !is_software_renderer(), gfx::Rect(this->device_viewport_size_),
+      SkColorSetARGB(128, 0, 255, 0),  // Texel color.
+      SK_ColorTRANSPARENT,             // Background color.
+      true,                            // Premultiplied alpha.
+      shared_state, this->resource_provider_.get(),
+      this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
+      this->child_context_provider_, pass.get());
+
+  auto* color_quad = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+  color_quad->SetNew(shared_state, rect, rect, SK_ColorWHITE, false);
+
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(pass));
+
+  const gfx::RectF kPresentationArea(0, 0, 200, 200);
+  CreateAndSendMetadata(gfx::PointF(34.f, 72.f), 7.77f, SK_ColorDKGRAY,
+                        kPresentationArea);
+  CreateAndSendPointFromMetadata();
+  CreateAndSendPointFromLastPoint(gfx::PointF(79, 101));
+  CreateAndSendPointFromLastPoint(gfx::PointF(134, 114));
+
+  EXPECT_TRUE(this->RunPixelTest(
+      &pass_list,
+      base::FilePath(
+          FILE_PATH_LITERAL("delegated_ink_trail_on_batched_quads.png")),
+      cc::ExactPixelComparator(true)));
+}
 #endif  // !defined(OS_ANDROID)
 
 }  // namespace

@@ -452,6 +452,11 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   // a surface contains delegated ink metadata on its frame, and it is cleared
   // after it is placed on the final aggregated frame during aggregation.
   std::unique_ptr<DelegatedInkMetadata> delegated_ink_metadata_;
+  // Whether the last aggregated frame contained delegated ink metadata or not.
+  // Used to determine if the root render pass needs to remain expanded by the
+  // target damage or not, because that allows a frame to be drawn after inking
+  // is finished to remove the last drawn ink trail.
+  bool last_frame_had_delegated_ink_ = false;
 
   // A helper class used to remap render pass IDs from the surface namespace to
   // a common space, to avoid collisions.

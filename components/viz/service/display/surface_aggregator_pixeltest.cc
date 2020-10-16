@@ -12,6 +12,7 @@
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/service/display/aggregated_frame.h"
+#include "components/viz/service/display/delegated_ink_point_pixel_test_helper.h"
 #include "components/viz/service/display/surface_aggregator.h"
 #include "components/viz/service/display/viz_pixel_test.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
@@ -333,6 +334,71 @@ TEST_P(SurfaceAggregatorPixelTest, DrawAggregatedFrameWithSurfaceTransforms) {
       pass_list,
       base::FilePath(FILE_PATH_LITERAL("four_blue_green_checkers.png")),
       pixel_comparator));
+}
+
+// Draw a simple frame with a delegated ink trail on top of it, then confirm
+// that it is erased by the next aggregation.
+TEST_P(SurfaceAggregatorPixelTest, DrawAndEraseDelegatedInkTrail) {
+  // DelegatedInkTrail isn't supported on non-Skia renderers.
+  if (renderer_type() == RendererType::kGL)
+    return;
+
+  DelegatedInkPointPixelTestHelper delegated_ink_helper(renderer_.get());
+
+  // Create and send metadata and points to the renderer that will be drawn.
+  // Points and timestamps are chosen arbitrarily.
+  delegated_ink_helper.CreateAndSendMetadata(
+      gfx::PointF(10, 10), 7.7f, SK_ColorWHITE, gfx::RectF(0, 0, 200, 200));
+  delegated_ink_helper.CreateAndSendPointFromMetadata();
+  delegated_ink_helper.CreateAndSendPointFromLastPoint(gfx::PointF(26, 37));
+  delegated_ink_helper.CreateAndSendPointFromLastPoint(gfx::PointF(45, 87));
+
+  gfx::Rect rect(this->device_viewport_size_);
+  CompositorRenderPassId id{1};
+  auto pass = CompositorRenderPass::Create();
+  pass->SetNew(id, rect, rect, gfx::Transform());
+
+  CreateAndAppendTestSharedQuadState(pass.get(), gfx::Transform(),
+                                     this->device_viewport_size_);
+
+  auto* color_quad = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+  bool force_anti_aliasing_off = false;
+  color_quad->SetNew(pass->shared_quad_state_list.back(), rect, rect,
+                     SK_ColorGREEN, force_anti_aliasing_off);
+
+  auto root_frame =
+      CompositorFrameBuilder().AddRenderPass(std::move(pass)).Build();
+
+  this->root_allocator_.GenerateId();
+  SurfaceId root_surface_id(this->support_->frame_sink_id(),
+                            this->root_allocator_.GetCurrentLocalSurfaceId());
+  this->support_->SubmitCompositorFrame(
+      this->root_allocator_.GetCurrentLocalSurfaceId(), std::move(root_frame));
+
+  SurfaceAggregator aggregator(this->manager_.surface_manager(),
+                               this->resource_provider_.get(), true, false);
+  auto aggregated_frame = aggregator.Aggregate(
+      root_surface_id, this->GetNextDisplayTime(), gfx::OVERLAY_TRANSFORM_NONE);
+
+  bool discard_alpha = false;
+  cc::ExactPixelComparator pixel_comparator(discard_alpha);
+  auto* pass_list = &aggregated_frame.render_pass_list;
+  EXPECT_TRUE(this->RunPixelTest(
+      pass_list, base::FilePath(FILE_PATH_LITERAL("delegated_ink_trail.png")),
+      pixel_comparator));
+
+  // Providing the damage rect as the target damage ensures that aggregation
+  // occurs and DrawFrame() has something new to draw. If this doesn't cause
+  // anything to be aggregated, a black square is drawn. If it does, the result
+  // should just erase the previously drawn trail completely.
+  aggregated_frame = aggregator.Aggregate(
+      root_surface_id, this->GetNextDisplayTime(), gfx::OVERLAY_TRANSFORM_NONE,
+      delegated_ink_helper.GetDelegatedInkDamageRect());
+  pass_list = &aggregated_frame.render_pass_list;
+
+  EXPECT_TRUE(this->RunPixelTest(pass_list,
+                                 base::FilePath(FILE_PATH_LITERAL("green.png")),
+                                 pixel_comparator));
 }
 
 }  // namespace

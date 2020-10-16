@@ -30,7 +30,7 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/service/display/aggregated_frame.h"
-#include "components/viz/service/display/delegated_ink_point_renderer_base.h"
+#include "components/viz/service/display/delegated_ink_point_renderer_skia.h"
 #include "components/viz/service/display/direct_renderer.h"
 #include "components/viz/service/display/display_client.h"
 #include "components/viz/service/display/display_scheduler.h"
@@ -4513,87 +4513,221 @@ TEST_F(DisplayTest, DisplaySizeMismatch) {
   }
 }
 
-// Testing the delegated ink renderer when the skia renderer is in use.
-TEST_F(DisplayTest, SkiaDelegatedInkRenderer) {
-  // First set up the display to use the Skia renderer.
-  RendererSettings settings;
-  settings.use_skia_renderer = true;
-  SetUpGpuDisplaySkia(settings);
+class SkiaDelegatedInkRendererTest : public DisplayTest {
+ public:
+  void SetUpRenderers() {
+    // First set up the display to use the Skia renderer.
+    RendererSettings settings;
+    settings.use_skia_renderer = true;
+    SetUpGpuDisplaySkia(settings);
 
-  // Initialize the renderer and create an ink renderer.
-  StubDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
-  display_->renderer_for_testing()->CreateDelegatedInkPointRenderer();
+    // Initialize the renderer and create an ink renderer.
+    StubDisplayClient client;
+    display_->Initialize(&client, manager_.surface_manager());
+    display_->renderer_for_testing()->CreateDelegatedInkPointRenderer();
+  }
 
-  std::unique_ptr<DelegatedInkPointRendererBase>& ink_renderer =
-      display_->renderer_for_testing()->delegated_ink_point_renderer_;
+  DelegatedInkPointRendererBase* ink_renderer() {
+    return display_->renderer_for_testing()->GetDelegatedInkPointRenderer();
+  }
 
-  const std::map<base::TimeTicks, gfx::PointF>& stored_points =
-      ink_renderer->GetPointsMapForTest();
+  const std::map<base::TimeTicks, gfx::PointF>& stored_points() {
+    return ink_renderer()->GetPointsMapForTest();
+  }
+
+  void CreateAndStoreDelegatedInkPoint(const gfx::PointF& point,
+                                       base::TimeTicks timestamp) {
+    ink_points_.emplace_back(point, timestamp);
+    ink_renderer()->StoreDelegatedInkPoint(ink_points_.back());
+  }
+
+  void StoreAlreadyCreatedDelegatedInkPoints() {
+    for (DelegatedInkPoint ink_point : ink_points_)
+      ink_renderer()->StoreDelegatedInkPoint(ink_point);
+  }
+
+  DelegatedInkMetadata MakeAndSendMetadataFromStoredInkPoint(
+      int index,
+      float diameter,
+      SkColor color,
+      const gfx::RectF& presentation_area) {
+    EXPECT_GE(index, 0);
+    EXPECT_LT(index, ink_points_size());
+
+    DelegatedInkMetadata metadata(ink_points_[index].point(), diameter, color,
+                                  ink_points_[index].timestamp(),
+                                  presentation_area);
+    ink_renderer()->SetDelegatedInkMetadata(
+        std::make_unique<DelegatedInkMetadata>(metadata));
+    return metadata;
+  }
+
+  // |expected_bucket| containing base::TimeDelta::Min() is interpreted to mean
+  // that expected total count of the histogram should be 0.
+  void FinalizePathAndCheckHistograms(base::TimeDelta expected_bucket) {
+    base::HistogramTester histograms;
+    ink_renderer()->FinalizePathForDraw();
+
+    if (expected_bucket == base::TimeDelta::Min()) {
+      histograms.ExpectTotalCount(
+          "Renderer.DelegatedInkTrail.LatencyImprovement.Skia."
+          "WithoutPrediction",
+          0);
+    } else {
+      histograms.ExpectTotalCount(
+          "Renderer.DelegatedInkTrail.LatencyImprovement.Skia."
+          "WithoutPrediction",
+          1);
+
+      histograms.ExpectTimeBucketCount(
+          "Renderer.DelegatedInkTrail.LatencyImprovement.Skia."
+          "WithoutPrediction",
+          expected_bucket, 1);
+    }
+  }
+
+  void DrawDelegatedInkTrail() {
+    SkCanvas canvas;
+    static_cast<DelegatedInkPointRendererSkia*>(ink_renderer())
+        ->DrawDelegatedInkTrail(&canvas);
+  }
+
+  int GetPathPointCount() { return ink_renderer()->GetPathPointCountForTest(); }
+
+  // Explicitly get the metadata that is stored on the renderer.
+  const DelegatedInkMetadata* GetMetadataFromRenderer() {
+    return ink_renderer()->GetMetadataForTest();
+  }
+
+  const DelegatedInkPoint& ink_point(int index) {
+    EXPECT_GE(index, 0);
+    EXPECT_LT(index, ink_points_size());
+    return ink_points_[index];
+  }
+
+  int ink_points_size() { return ink_points_.size(); }
+
+ private:
+  std::vector<DelegatedInkPoint> ink_points_;
+};
+
+// Testing filtering points in the the delegated ink renderer when the skia
+// renderer is in use.
+TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkRendererFilteringPoints) {
+  SetUpRenderers();
 
   // First, a sanity check.
-  EXPECT_EQ(0, static_cast<int>(stored_points.size()));
+  EXPECT_EQ(0, static_cast<int>(stored_points().size()));
 
   // Insert 3 arbitrary points into the ink renderer to confirm that they go
   // where we expect and are all stored correctly.
+  const int kInitialDelegatedPoints = 3;
   base::TimeTicks timestamp = base::TimeTicks::Now();
-  std::vector<DelegatedInkPoint> ink_points;
-  ink_points.emplace_back(gfx::PointF(10, 10), timestamp);
-  ink_points.emplace_back(gfx::PointF(20, 20),
-                          timestamp + base::TimeDelta::FromMicroseconds(5));
-  ink_points.emplace_back(gfx::PointF(30, 30),
-                          timestamp + base::TimeDelta::FromMicroseconds(10));
-  const int initial_delegated_points = 3;
+  gfx::PointF point(10, 10);
+  for (int i = 0; i < kInitialDelegatedPoints; ++i) {
+    CreateAndStoreDelegatedInkPoint(point, timestamp);
+    point.Offset(10, 10);
+    timestamp += base::TimeDelta::FromMilliseconds(5);
+  }
 
-  for (DelegatedInkPoint point : ink_points)
-    ink_renderer->StoreDelegatedInkPoint(point);
-
-  EXPECT_EQ(initial_delegated_points, static_cast<int>(stored_points.size()));
+  EXPECT_EQ(kInitialDelegatedPoints, static_cast<int>(stored_points().size()));
 
   // No metadata has been provided yet, so filtering shouldn't occur and all
-  // points should still exist after a DrawDelegatedInkTrail() call.
-  ink_renderer->DrawDelegatedInkTrail();
+  // points should still exist after a FinalizePath() call.
+  FinalizePathAndCheckHistograms(base::TimeDelta::Min());
 
-  EXPECT_EQ(initial_delegated_points, static_cast<int>(stored_points.size()));
+  EXPECT_EQ(kInitialDelegatedPoints, static_cast<int>(stored_points().size()));
 
   // Now provide metadata with a timestamp matching one of the points to
   // confirm that earlier points are removed and later points remain.
-  const int ink_point_for_metadata = 1;
-  DelegatedInkMetadata metadata(
-      ink_points[ink_point_for_metadata].point(), 1, SK_ColorBLACK,
-      ink_points[ink_point_for_metadata].timestamp(), gfx::RectF());
-  ink_renderer->SetDelegatedInkMetadata(
-      std::make_unique<DelegatedInkMetadata>(metadata));
-  ink_renderer->DrawDelegatedInkTrail();
+  const int kInkPointForMetadata = 1;
+  const float kDiameter = 1.f;
+  DelegatedInkMetadata metadata = MakeAndSendMetadataFromStoredInkPoint(
+      kInkPointForMetadata, kDiameter, SK_ColorBLACK, gfx::RectF());
 
-  EXPECT_EQ(initial_delegated_points - ink_point_for_metadata,
-            static_cast<int>(stored_points.size()));
-  EXPECT_EQ(metadata.point(), stored_points.begin()->second);
-  EXPECT_EQ(ink_points[ink_points.size() - 1].point(),
-            stored_points.rbegin()->second);
-  EXPECT_FALSE(ink_renderer->GetMetadataForTest());
+  // The histogram should count one in the bucket that is the difference between
+  // the latest point stored and the metadata.
+  FinalizePathAndCheckHistograms(ink_point(ink_points_size() - 1).timestamp() -
+                                 metadata.timestamp());
+
+  EXPECT_EQ(kInitialDelegatedPoints - kInkPointForMetadata,
+            static_cast<int>(stored_points().size()));
+  EXPECT_EQ(metadata.point(), stored_points().begin()->second);
+  EXPECT_EQ(ink_point(ink_points_size() - 1).point(),
+            stored_points().rbegin()->second);
+
+  // Confirm that the metadata is cleared when DrawDelegatedInkTrail() is
+  // called.
+  DrawDelegatedInkTrail();
+  EXPECT_FALSE(GetMetadataFromRenderer());
 
   // Finally, add more points than the maximum that will be stored to confirm
   // only the max is stored and the correct ones are removed first.
-  const int points_beyond_max_allowed = 2;
-  for (DelegatedInkPoint point : ink_points)
-    ink_renderer->StoreDelegatedInkPoint(point);
-  while (ink_points.size() <
-         kMaximumDelegatedInkPointsStored + points_beyond_max_allowed) {
-    gfx::PointF pt = ink_points[ink_points.size() - 1].point();
-    pt.Offset(5, 5);
-    base::TimeTicks ts = ink_points[ink_points.size() - 1].timestamp() +
-                         base::TimeDelta::FromMicroseconds(5);
-    ink_points.emplace_back(pt, ts);
-    ink_renderer->StoreDelegatedInkPoint(ink_points[ink_points.size() - 1]);
+  const int kPointsBeyondMaxAllowed = 2;
+  StoreAlreadyCreatedDelegatedInkPoints();
+  while (ink_points_size() <
+         kMaximumDelegatedInkPointsStored + kPointsBeyondMaxAllowed) {
+    CreateAndStoreDelegatedInkPoint(point, timestamp);
+    point.Offset(10, 10);
+    timestamp += base::TimeDelta::FromMilliseconds(10);
   }
 
   EXPECT_EQ(kMaximumDelegatedInkPointsStored,
-            static_cast<int>(stored_points.size()));
-  EXPECT_EQ(ink_points[points_beyond_max_allowed].point(),
-            stored_points.begin()->second);
-  EXPECT_EQ(ink_points[ink_points.size() - 1].point(),
-            stored_points.rbegin()->second);
+            static_cast<int>(stored_points().size()));
+  EXPECT_EQ(ink_point(kPointsBeyondMaxAllowed).point(),
+            stored_points().begin()->second);
+  EXPECT_EQ(ink_point(ink_points_size() - 1).point(),
+            stored_points().rbegin()->second);
+}
+
+// Confirm that the delegated ink trail histograms record latency correctly.
+TEST_F(SkiaDelegatedInkRendererTest, LatencyHistograms) {
+  SetUpRenderers();
+
+  // Confirm that nothing is counted in histogram when there is no metadata or
+  // points to draw.
+  FinalizePathAndCheckHistograms(base::TimeDelta::Min());
+
+  // Insert 4 arbitrary points into the ink renderer to later draw.
+  base::TimeTicks timestamp = base::TimeTicks::Now();
+  CreateAndStoreDelegatedInkPoint(gfx::PointF(20, 19), timestamp);
+  CreateAndStoreDelegatedInkPoint(
+      gfx::PointF(15, 19), timestamp + base::TimeDelta::FromMilliseconds(8));
+  CreateAndStoreDelegatedInkPoint(
+      gfx::PointF(16, 28), timestamp + base::TimeDelta::FromMilliseconds(16));
+  CreateAndStoreDelegatedInkPoint(
+      gfx::PointF(29, 35), timestamp + base::TimeDelta::FromMilliseconds(24));
+
+  // Provide a metadata so that points can be drawn, based on the first ink
+  // point that was sent.
+  const float kDiameter = 11.99f;
+  MakeAndSendMetadataFromStoredInkPoint(/*index*/ 0, kDiameter, SK_ColorBLACK,
+                                        gfx::RectF());
+
+  // 24 ms bucket should have one counted because that's the difference between
+  // the latest point and the metadata.
+  FinalizePathAndCheckHistograms(base::TimeDelta::FromMilliseconds(24));
+
+  // Now provide metadata that matches the final ink point provided, so that
+  // everything earlier is filtered out. Then the histogram will count 1 in the
+  // 0 ms bucket.
+  MakeAndSendMetadataFromStoredInkPoint(/*index*/ 3, kDiameter, SK_ColorBLACK,
+                                        gfx::RectF());
+  FinalizePathAndCheckHistograms(base::TimeDelta::FromMilliseconds(0));
+
+  // DrawDelegatedInkTrail should clear the metadata, so finalizing the path
+  // shouldn't record anything in the histogram.
+  DrawDelegatedInkTrail();
+  FinalizePathAndCheckHistograms(base::TimeDelta::Min());
+
+  // Send a few more points but no metadata to confirm that nothing is counted.
+  timestamp = base::TimeTicks::Now();
+  CreateAndStoreDelegatedInkPoint(gfx::PointF(85, 56), timestamp);
+  CreateAndStoreDelegatedInkPoint(
+      gfx::PointF(96, 70), timestamp + base::TimeDelta::FromMilliseconds(2));
+  CreateAndStoreDelegatedInkPoint(
+      gfx::PointF(112, 94), timestamp + base::TimeDelta::FromMilliseconds(10));
+  FinalizePathAndCheckHistograms(base::TimeDelta::Min());
 }
 
 }  // namespace viz

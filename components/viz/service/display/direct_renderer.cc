@@ -286,6 +286,21 @@ void DirectRenderer::DrawFrame(
     current_frame()->root_damage_rect.Union(
         overlay_processor_->GetAndResetOverlayDamage());
   }
+  if (DelegatedInkPointRendererBase* ink_renderer =
+          GetDelegatedInkPointRenderer()) {
+    // The path must be finalized before GetDamageRect() can return an accurate
+    // rect that will allow the old trail to be removed and the new trail to
+    // be drawn at the same time.
+    ink_renderer->FinalizePathForDraw();
+    gfx::Rect delegated_ink_damage_rect = ink_renderer->GetDamageRect();
+
+    // The viewport could have changed size since the presentation area was
+    // created and propagated, such as if is window was resized. Intersect the
+    // viewport here to ensure the damage rect doesn't extend beyond the current
+    // viewport.
+    delegated_ink_damage_rect.Intersect(gfx::Rect(device_viewport_size));
+    current_frame()->root_damage_rect.Union(delegated_ink_damage_rect);
+  }
   current_frame()->root_damage_rect.Intersect(gfx::Rect(device_viewport_size));
   current_frame()->device_viewport_size = device_viewport_size;
   current_frame()->display_color_spaces = display_color_spaces;
@@ -718,9 +733,6 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
 
     DoDrawQuad(&quad, nullptr);
   }
-  if (is_root_render_pass && delegated_ink_point_renderer_)
-    delegated_ink_point_renderer_->DrawDelegatedInkTrail();
-
   FlushPolygons(&poly_list, render_pass_scissor_in_draw_space,
                 render_pass_requires_scissor);
   FinishDrawingQuadList();
@@ -949,18 +961,19 @@ bool DirectRenderer::CreateDelegatedInkPointRenderer() {
 }
 
 DelegatedInkPointRendererBase* DirectRenderer::GetDelegatedInkPointRenderer() {
-  if (!delegated_ink_point_renderer_ && !CreateDelegatedInkPointRenderer())
-    return nullptr;
-
-  return delegated_ink_point_renderer_.get();
+  return nullptr;
 }
 
 void DirectRenderer::SetDelegatedInkMetadata(
     std::unique_ptr<DelegatedInkMetadata> metadata) {
-  if (!delegated_ink_point_renderer_ && !CreateDelegatedInkPointRenderer())
+  if (!GetDelegatedInkPointRenderer() && !CreateDelegatedInkPointRenderer())
     return;
 
-  delegated_ink_point_renderer_->SetDelegatedInkMetadata(std::move(metadata));
+  GetDelegatedInkPointRenderer()->SetDelegatedInkMetadata(std::move(metadata));
+}
+
+void DirectRenderer::DrawDelegatedInkTrail() {
+  NOTREACHED();
 }
 
 bool DirectRenderer::CompositeTimeTracingEnabled() {
@@ -968,5 +981,12 @@ bool DirectRenderer::CompositeTimeTracingEnabled() {
 }
 
 void DirectRenderer::AddCompositeTimeTraces(base::TimeTicks ready_timestamp) {}
+
+gfx::Rect DirectRenderer::GetDelegatedInkTrailDamageRect() {
+  if (!GetDelegatedInkPointRenderer())
+    return gfx::Rect();
+
+  return GetDelegatedInkPointRenderer()->GetDamageRect();
+}
 
 }  // namespace viz

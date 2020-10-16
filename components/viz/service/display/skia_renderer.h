@@ -25,6 +25,8 @@ class SkRuntimeEffect;
 namespace viz {
 class AggregatedRenderPassDrawQuad;
 class DebugBorderDrawQuad;
+class DelegatedInkPointRendererBase;
+class DelegatedInkPointRendererSkia;
 class PictureDrawQuad;
 class SkiaOutputSurface;
 class SolidColorDrawQuad;
@@ -55,6 +57,8 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   void SetDisablePictureQuadImageFiltering(bool disable) {
     disable_picture_quad_image_filtering_ = disable;
   }
+
+  DelegatedInkPointRendererBase* GetDelegatedInkPointRenderer() override;
 
  protected:
   bool CanPartialSwap() override;
@@ -87,6 +91,8 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   void FinishDrawingQuadList() override;
   void GenerateMipmap() override;
   bool CreateDelegatedInkPointRenderer() override;
+
+  std::unique_ptr<DelegatedInkPointRendererSkia> delegated_ink_point_renderer_;
 
  private:
   enum class BypassMode;
@@ -220,6 +226,8 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // blend mode or image filtering.
   const DrawQuad* CanPassBeDrawnDirectly(
       const AggregatedRenderPass* pass) override;
+
+  void DrawDelegatedInkTrail() override;
 
   // Get a color filter that converts from |src| color space to |dst| color
   // space using a shader constructed from gfx::ColorTransform.  The color

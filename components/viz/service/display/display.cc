@@ -642,6 +642,11 @@ bool Display::DrawAndSwap(base::TimeTicks expected_display_time) {
     if (output_surface_->capabilities().supports_target_damage)
       target_damage_bounding_rect = renderer_->GetTargetDamageBoundingRect();
 
+    // Ensure that the surfaces that were damaged by any delegated ink trail are
+    // aggregated again so that the trail exists for a single frame.
+    target_damage_bounding_rect.Union(
+        renderer_->GetDelegatedInkTrailDamageRect());
+
     frame = aggregator_->Aggregate(
         current_surface_id_, expected_display_time, current_display_transform,
         target_damage_bounding_rect, ++swapped_trace_id_);
@@ -988,10 +993,10 @@ void Display::DidFinishFrame(const BeginFrameAck& ack) {
   for (auto& observer : observers_)
     observer.OnDisplayDidFinishFrame(ack);
 
-  // Only used with experimental de-jelly effect. Forces us to produce a new
-  // un-skewed frame if the last one had a de-jelly skew applied. This prevents
-  // de-jelly skew from staying on screen for more than one frame.
-  if (aggregator_->last_frame_had_jelly()) {
+  // Prevent de-jelly skew or a delegated ink trail from staying on the screen
+  // for more than one frame by forcing a new frame to be produced.
+  if (aggregator_->last_frame_had_jelly() ||
+      !renderer_->GetDelegatedInkTrailDamageRect().IsEmpty()) {
     scheduler_->SetNeedsOneBeginFrame(true);
   }
 }

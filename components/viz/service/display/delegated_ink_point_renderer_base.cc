@@ -27,23 +27,16 @@ void DelegatedInkPointRendererBase::InitMessagePipeline(
   receiver_.Bind(std::move(receiver));
 }
 
-void DelegatedInkPointRendererBase::DrawDelegatedInkTrail() {
-  if (!metadata_)
-    return;
-
-  DrawDelegatedInkTrailInternal();
-
-  // Always reset |metadata_| regardless of the outcome of
-  // DrawDelegatedInkPathInternal() so that the trail is never incorrectly
-  // drawn if the aggregated frame did not contain delegated ink metadata.
-  metadata_.reset();
-}
-
 void DelegatedInkPointRendererBase::FilterPoints() {
   if (points_.size() == 0)
     return;
 
+  // |first_valid_point| is the first point in |points_| that will be drawn.
+  // It will match |metadata_|'s timestamp and point because the app rendered
+  // ink stroke and the delegated ink trail must overlap on the final point of
+  // the ink stroke in order to connect seamlessly.
   auto first_valid_point = points_.find(metadata_->timestamp());
+
   // It is possible that this results in |points_| being empty. This occurs when
   // the points being forwarded from the browser process lose the race against
   // the ink metadata arriving in Display, including the point that matches the
@@ -51,6 +44,14 @@ void DelegatedInkPointRendererBase::FilterPoints() {
   // get here, but none of them match the metadata point, so they are all
   // erased.
   points_.erase(points_.begin(), first_valid_point);
+
+  // TODO(1052145): Add additional filtering to prevent points in |points_| from
+  // having a timestamp that is far ahead of |metadata_|'s timestamp. This could
+  // occur if the renderer stalls before sending a metadata while the browser
+  // continues to pump points through to viz. Then when the renderer starts back
+  // up again, the metadata it sends may be significantly older than the points
+  // stored here, resulting in a long possibly incorrect trail if the max
+  // number of points to store was reached.
 
   TRACE_EVENT_INSTANT1("viz", "Filtered points for delegated ink trail",
                        TRACE_EVENT_SCOPE_THREAD, "points", points_.size());

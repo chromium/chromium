@@ -469,6 +469,8 @@ viz_source_set("unit_tests") {
   sources = [
     "display/bsp_tree_unittest.cc",
     "display/copy_output_scaling_pixeltest.cc",
+    "display/delegated_ink_point_pixel_test_helper.cc",
+    "display/delegated_ink_point_pixel_test_helper.h",
     "display/display_damage_tracker_unittest.cc",
     "display/display_resource_provider_unittest.cc",
     "display/display_scheduler_unittest.cc",

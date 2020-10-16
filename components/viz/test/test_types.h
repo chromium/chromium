@@ -31,6 +31,9 @@ std::vector<RendererType> GetRendererTypesNoDawn();
 std::vector<RendererType> GetGpuRendererTypes();
 std::vector<RendererType> GetGpuRendererTypesNoDawn();
 
+// Returns a list containing all Skia RendererTypes applicable to the platform.
+std::vector<RendererType> GetRendererTypesSkiaOnly();
+
 }  // namespace viz
 
 #endif  // COMPONENTS_VIZ_TEST_TEST_TYPES_H_

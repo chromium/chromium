@@ -27,12 +27,14 @@ const char* RendererTypeTestSuffix(RendererType type) {
 }
 
 std::vector<RendererType> GetRendererTypes(bool include_software,
-                                           bool include_dawn) {
+                                           bool include_dawn,
+                                           bool skia_only) {
   std::vector<RendererType> types;
-  if (include_software)
+  if (include_software && !skia_only)
     types.push_back(RendererType::kSoftware);
 #if BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
-  types.push_back(RendererType::kGL);
+  if (!skia_only)
+    types.push_back(RendererType::kGL);
   types.push_back(RendererType::kSkiaGL);
 #endif
 #if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
@@ -52,19 +54,23 @@ void PrintTo(RendererType type, std::ostream* os) {
 }
 
 std::vector<RendererType> GetRendererTypes() {
-  return GetRendererTypes(true, true);
+  return GetRendererTypes(true, true, false);
 }
 
 std::vector<RendererType> GetRendererTypesNoDawn() {
-  return GetRendererTypes(true, false);
+  return GetRendererTypes(true, false, false);
 }
 
 std::vector<RendererType> GetGpuRendererTypes() {
-  return GetRendererTypes(false, true);
+  return GetRendererTypes(false, true, false);
 }
 
 std::vector<RendererType> GetGpuRendererTypesNoDawn() {
-  return GetRendererTypes(false, false);
+  return GetRendererTypes(false, false, false);
+}
+
+std::vector<RendererType> GetRendererTypesSkiaOnly() {
+  return GetRendererTypes(false, true, true);
 }
 
 }  // namespace viz

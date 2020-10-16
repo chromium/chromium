@@ -45,7 +45,8 @@ class VIZ_SERVICE_EXPORT DelegatedInkPointRendererBase
     metadata_ = std::move(metadata);
   }
 
-  void DrawDelegatedInkTrail();
+  virtual void FinalizePathForDraw() = 0;
+  virtual gfx::Rect GetDamageRect() = 0;
 
  protected:
   // |points_| is not emptied each time after the points are drawn, because one
@@ -56,12 +57,14 @@ class VIZ_SERVICE_EXPORT DelegatedInkPointRendererBase
   void FilterPoints();
 
   std::unique_ptr<DelegatedInkMetadata> metadata_;
+
+  // The points that will be drawn as part of the ink stroke. After being
+  // filtered in FilterPoints(), but before drawing, the first point in this map
+  // will match |metadata_|'s point, or it will be empty.
   std::map<base::TimeTicks, gfx::PointF> points_;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(DisplayTest, SkiaDelegatedInkRenderer);
-
-  void virtual DrawDelegatedInkTrailInternal() = 0;
+  friend class SkiaDelegatedInkRendererTest;
 
   const std::map<base::TimeTicks, gfx::PointF>& GetPointsMapForTest() const {
     return points_;
@@ -70,6 +73,8 @@ class VIZ_SERVICE_EXPORT DelegatedInkPointRendererBase
   const DelegatedInkMetadata* GetMetadataForTest() const {
     return metadata_.get();
   }
+
+  virtual int GetPathPointCountForTest() const = 0;
 
   mojo::Receiver<mojom::DelegatedInkPointRenderer> receiver_{this};
 };

@@ -2498,6 +2498,12 @@ void SkiaRenderer::FinishDrawingQuadList() {
   if (!batched_quads_.empty())
     FlushBatchedQuads();
 
+  // Drawing the delegated ink trail must happen after the final
+  // FlushBatchedQuads() call so that the trail can always be on top of
+  // everything else that has already been drawn on the page.
+  if (delegated_ink_point_renderer_)
+    DrawDelegatedInkTrail();
+
   base::OnceClosure on_finished_callback;
   // Signal |current_frame_resource_fence_| when the root render pass is
   // finished.
@@ -2729,6 +2735,17 @@ bool SkiaRenderer::CreateDelegatedInkPointRenderer() {
   delegated_ink_point_renderer_ =
       std::make_unique<DelegatedInkPointRendererSkia>();
   return true;
+}
+
+void SkiaRenderer::DrawDelegatedInkTrail() {
+  delegated_ink_point_renderer_->DrawDelegatedInkTrail(current_canvas_);
+}
+
+DelegatedInkPointRendererBase* SkiaRenderer::GetDelegatedInkPointRenderer() {
+  if (!delegated_ink_point_renderer_ && !CreateDelegatedInkPointRenderer())
+    return nullptr;
+
+  return delegated_ink_point_renderer_.get();
 }
 
 #if defined(OS_APPLE)

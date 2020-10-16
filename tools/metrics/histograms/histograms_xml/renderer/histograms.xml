@@ -33,6 +33,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram
+    name="Renderer.DelegatedInkTrail.LatencyImprovement.{Renderer}.{Prediction}"
+    units="ms" expires_after="2021-01-01">
+  <owner>dlibby@chromium.org</owner>
+  <owner>mabian@microsoft.com</owner>
+  <summary>
+    The latency improvement provided by the delegated ink trail API, both with
+    and without prediction, in milliseconds. This latency improvement is the
+    difference between the timestamp of the pointerevent provided to the API,
+    and the final point of the trail that is drawn. Points are forwarded from
+    the browser to viz when this API is being used, so viz will have points
+    ahead of what the app provided the API, and they are used to draw the trail.
+  </summary>
+  <token key="Renderer">
+    <variant name="Skia"/>
+  </token>
+  <token key="Prediction">
+    <variant name="WithoutPrediction"/>
+  </token>
+</histogram>
+
 <histogram name="Renderer.Hung.Duration" units="ms" expires_after="M85">
   <obsolete>
     Expired in M85, removed in M88.
