@@ -31,6 +31,7 @@ class ProxyTabsDataTypeController : public syncer::DataTypeController {
   void Stop(syncer::ShutdownReason shutdown_reason,
             StopCallback callback) override;
   State state() const override;
+  bool ShouldRunInTransportOnlyMode() const override;
   void DeactivateDataType(syncer::ModelTypeConfigurer* configurer) override;
   void GetAllNodes(AllNodesCallback callback) override;
   void RecordMemoryUsageAndCountsHistograms() override;

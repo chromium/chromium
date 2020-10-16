@@ -47,19 +47,14 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/common/autofill_features.h"
-#include "components/browser_sync/browser_sync_switches.h"
-#include "components/invalidation/impl/invalidation_switches.h"
 #include "components/invalidation/impl/profile_identity_provider.h"
 #include "components/invalidation/impl/profile_invalidation_provider.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/network_time/network_time_tracker.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/buildflags/buildflags.h"
@@ -190,7 +185,8 @@ KeyedService* ProfileSyncServiceFactory::BuildServiceInstanceFor(
           : std::make_unique<browser_sync::ChromeSyncClient>(profile);
 
   init_params.sync_client = std::move(sync_client);
-  init_params.network_time_update_callback = base::Bind(&UpdateNetworkTime);
+  init_params.network_time_update_callback =
+      base::BindRepeating(&UpdateNetworkTime);
   init_params.url_loader_factory =
       content::BrowserContext::GetDefaultStoragePartition(profile)
           ->GetURLLoaderFactoryForBrowserProcess();
@@ -198,11 +194,6 @@ KeyedService* ProfileSyncServiceFactory::BuildServiceInstanceFor(
       content::GetNetworkConnectionTracker();
   init_params.channel = chrome::GetChannel();
   init_params.debug_identifier = profile->GetDebugName();
-  init_params.autofill_enable_account_wallet_storage =
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableAccountWalletStorage);
-  init_params.enable_passwords_account_storage = base::FeatureList::IsEnabled(
-      password_manager::features::kEnablePasswordsAccountStorage);
 
   bool local_sync_backend_enabled = false;
 

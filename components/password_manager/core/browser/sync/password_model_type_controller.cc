@@ -14,8 +14,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/driver/sync_client.h"
 #include "components/sync/driver/sync_service.h"
+#include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/model/model_type_controller_delegate.h"
 
 namespace password_manager {
@@ -138,6 +138,16 @@ PasswordModelTypeController::GetPreconditionState() const {
   return features_util::IsOptedInForAccountStorage(pref_service_, sync_service_)
              ? PreconditionState::kPreconditionsMet
              : PreconditionState::kMustStopAndClearData;
+}
+
+bool PasswordModelTypeController::ShouldRunInTransportOnlyMode() const {
+  if (!base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage)) {
+    return false;
+  }
+  if (sync_service_->GetUserSettings()->IsUsingSecondaryPassphrase()) {
+    return false;
+  }
+  return true;
 }
 
 void PasswordModelTypeController::OnStateChanged(syncer::SyncService* sync) {

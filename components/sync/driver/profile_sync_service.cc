@@ -217,10 +217,6 @@ ProfileSyncService::ProfileSyncService(InitParams init_params)
                               base::Unretained(this)))),
       channel_(init_params.channel),
       debug_identifier_(init_params.debug_identifier),
-      autofill_enable_account_wallet_storage_(
-          init_params.autofill_enable_account_wallet_storage),
-      enable_passwords_account_storage_(
-          init_params.enable_passwords_account_storage),
       sync_service_url_(
           GetSyncServiceURL(*base::CommandLine::ForCurrentProcess(), channel_)),
       crypto_(
@@ -1359,42 +1355,15 @@ ModelTypeSet ProfileSyncService::GetRegisteredDataTypes() const {
 }
 
 ModelTypeSet ProfileSyncService::GetModelTypesForTransportOnlyMode() const {
-  ModelTypeSet allowed_types = {
-      DEVICE_INFO,
-      SECURITY_EVENTS,
-      SHARING_MESSAGE,
-      SUPERVISED_USER_SETTINGS,
-      SUPERVISED_USER_ALLOWLISTS,
-      USER_CONSENTS,
-  };
-
-  if (autofill_enable_account_wallet_storage_) {
-    if (!GetUserSettings()->IsUsingSecondaryPassphrase() ||
-        base::FeatureList::IsEnabled(
-            switches::
-                kSyncAllowWalletDataInTransportModeWithCustomPassphrase)) {
-      allowed_types.Put(AUTOFILL_WALLET_DATA);
+  // Collect the types from all controllers that support transport-only mode.
+  ModelTypeSet allowed_types;
+  for (const auto& type_and_controller : data_type_controllers_) {
+    ModelType type = type_and_controller.first;
+    const DataTypeController* controller = type_and_controller.second.get();
+    if (controller->ShouldRunInTransportOnlyMode()) {
+      allowed_types.Put(type);
     }
   }
-
-  if (enable_passwords_account_storage_ &&
-      !GetUserSettings()->IsUsingSecondaryPassphrase()) {
-    allowed_types.Put(PASSWORDS);
-  }
-
-  // Outside the #if so non-Chrome OS developers will hit it before uploading.
-  static_assert(41 == ModelType::NUM_ENTRIES,
-                "If a new ModelType is Chrome OS-only and uses OS sync "
-                "consent, add it below.");
-#if defined(OS_CHROMEOS)
-  // Chrome OS system types are not tied to browser sync-the-feature.
-  if (chromeos::features::IsSplitSettingsSyncEnabled()) {
-    allowed_types.PutAll({APP_LIST, APP_SETTINGS, APPS, ARC_PACKAGE,
-                          OS_PREFERENCES, OS_PRIORITY_PREFERENCES, PRINTERS,
-                          WEB_APPS, WIFI_CONFIGURATIONS});
-  }
-#endif  // defined(OS_CHROMEOS)
-
   return allowed_types;
 }
 

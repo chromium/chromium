@@ -208,6 +208,14 @@ DataTypeController::State ModelTypeController::state() const {
   return state_;
 }
 
+bool ModelTypeController::ShouldRunInTransportOnlyMode() const {
+  // By default, running in transport-only mode is enabled if the corresponding
+  // delegate exists, i.e. the controller is aware of transport-only mode and
+  // supports it in principle. Subclass can still override this with more
+  // specific logic.
+  return delegate_map_.count(SyncMode::kTransportOnly) != 0;
+}
+
 void ModelTypeController::GetAllNodes(AllNodesCallback callback) {
   DCHECK(delegate_);
   delegate_->GetAllNodesForDebugging(std::move(callback));

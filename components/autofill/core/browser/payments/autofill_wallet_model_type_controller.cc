@@ -14,13 +14,10 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/driver/sync_auth_util.h"
+#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-
-namespace {
-
-}  // namespace
 
 namespace browser_sync {
 
@@ -109,6 +106,22 @@ AutofillWalletModelTypeController::GetPreconditionState() const {
 #endif
   return preconditions_met ? PreconditionState::kPreconditionsMet
                            : PreconditionState::kMustStopAndClearData;
+}
+
+bool AutofillWalletModelTypeController::ShouldRunInTransportOnlyMode() const {
+  if (type() != syncer::AUTOFILL_WALLET_DATA) {
+    return false;
+  }
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableAccountWalletStorage)) {
+    return false;
+  }
+  if (sync_service_->GetUserSettings()->IsUsingSecondaryPassphrase() &&
+      !base::FeatureList::IsEnabled(
+          switches::kSyncAllowWalletDataInTransportModeWithCustomPassphrase)) {
+    return false;
+  }
+  return true;
 }
 
 void AutofillWalletModelTypeController::OnUserPrefChanged() {

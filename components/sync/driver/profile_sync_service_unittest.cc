@@ -179,14 +179,20 @@ class ProfileSyncServiceTest : public ::testing::Test {
   void SignIn() { identity_test_env()->MakePrimaryAccountAvailable(kTestUser); }
 
   void CreateService(ProfileSyncService::StartBehavior behavior,
-                     ModelTypeSet registered_types =
-                         ModelTypeSet(BOOKMARKS, SUPERVISED_USER_SETTINGS)) {
+                     std::vector<std::pair<ModelType, bool>>
+                         registered_types_and_transport_mode_support = {
+                             {BOOKMARKS, false},
+                             {DEVICE_INFO, true}}) {
     DCHECK(!service_);
 
     // Default includes a regular controller and a transport-mode controller.
     DataTypeController::TypeVector controllers;
-    for (const ModelType type : registered_types) {
-      controllers.push_back(std::make_unique<FakeDataTypeController>(type));
+    for (const auto& type_and_transport_mode_support :
+         registered_types_and_transport_mode_support) {
+      ModelType type = type_and_transport_mode_support.first;
+      bool transport_mode_support = type_and_transport_mode_support.second;
+      controllers.push_back(std::make_unique<FakeDataTypeController>(
+          type, transport_mode_support));
     }
 
     std::unique_ptr<SyncClientMock> sync_client =
@@ -211,8 +217,8 @@ class ProfileSyncServiceTest : public ::testing::Test {
     // Include a regular controller and a transport-mode controller.
     DataTypeController::TypeVector controllers;
     controllers.push_back(std::make_unique<FakeDataTypeController>(BOOKMARKS));
-    controllers.push_back(
-        std::make_unique<FakeDataTypeController>(SUPERVISED_USER_SETTINGS));
+    controllers.push_back(std::make_unique<FakeDataTypeController>(
+        DEVICE_INFO, /*enable_transport_only_modle=*/true));
 
     std::unique_ptr<SyncClientMock> sync_client =
         profile_sync_service_bundle_.CreateSyncClientMock();
@@ -468,7 +474,7 @@ TEST_F(ProfileSyncServiceTest, ModelTypesForTransportMode) {
   EXPECT_FALSE(service()->GetActiveDataTypes().Has(BOOKMARKS));
 
   // ModelTypes for sync-the-transport are configured.
-  EXPECT_TRUE(service()->GetActiveDataTypes().Has(SUPERVISED_USER_SETTINGS));
+  EXPECT_TRUE(service()->GetActiveDataTypes().Has(DEVICE_INFO));
 }
 
 // Verify that the SetSetupInProgress function call updates state
@@ -1634,7 +1640,7 @@ MATCHER(ContainsSessions, "") {
 TEST_F(ProfileSyncServiceTestWithSyncInvalidationsServiceCreated,
        ShouldEnableAndDisableInvalidationsForSessions) {
   CreateService(ProfileSyncService::AUTO_START,
-                ModelTypeSet(SESSIONS, TYPED_URLS));
+                {{SESSIONS, false}, {TYPED_URLS, false}});
   SignIn();
   InitializeForNthSync();
 

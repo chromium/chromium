@@ -47,6 +47,7 @@ class AutofillWalletModelTypeController : public syncer::ModelTypeController,
   void Stop(syncer::ShutdownReason shutdown_reason,
             StopCallback callback) override;
   PreconditionState GetPreconditionState() const override;
+  bool ShouldRunInTransportOnlyMode() const override;
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;

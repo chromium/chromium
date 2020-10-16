@@ -61,6 +61,10 @@ syncer::DataTypeController::State ProxyTabsDataTypeController::state() const {
   return state_;
 }
 
+bool ProxyTabsDataTypeController::ShouldRunInTransportOnlyMode() const {
+  return false;
+}
+
 void ProxyTabsDataTypeController::DeactivateDataType(
     syncer::ModelTypeConfigurer* configurer) {
   if (state_ == RUNNING) {
