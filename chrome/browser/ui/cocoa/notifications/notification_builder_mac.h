@@ -19,7 +19,7 @@
 //     base::scoped_nsobject<NotificationBuilder> builder(
 //         [[NotificationBuilder alloc] initWithCloseLabel:@"Close"
 //                                            optionsLabel:@"Options"
-//                                           settingsLabel:@"Settings")]);
+//                                           settingsLabel:@"Settings"]);
 //     [builder setTitle:@"Hello"];
 //
 //     // Build a notification out of the data.
@@ -33,11 +33,6 @@
 //     base::scoped_nsobject<NotificationBuilder> finalBuilder(
 //         [[NotificationBuilder alloc] initWithData:notificationData]);
 @interface NotificationBuilder : NotificationBuilderBase
-
-// Initializes a builder with default values for the button labels.
-- (instancetype)initWithCloseLabel:(NSString*)closeLabel
-                      optionsLabel:(NSString*)optionsLabel
-                     settingsLabel:(NSString*)settingsLabel;
 
 // Sets the icon that is displayed in the notification if present
 - (void)setIcon:(NSImage*)icon;

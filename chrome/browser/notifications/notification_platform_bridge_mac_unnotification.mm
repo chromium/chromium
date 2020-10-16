@@ -19,18 +19,12 @@
 #import "chrome/browser/ui/cocoa/notifications/unnotification_response_builder_mac.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "third_party/blink/public/common/notifications/notification_constants.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 @class UNMutableNotificationContent;
 @class UNUserNotificationCenter;
-
-namespace {
-
-NSString* const kCloseAndSettingsCategory = @"CLOSE_AND_SETTINGS";
-NSString* const kCloseCategory = @"CLOSE";
-
-}  // namespace
 
 // A Cocoa class that represents the delegate of UNUserNotificationCenter and
 // can forward commands to C++.
@@ -49,12 +43,12 @@ NotificationPlatformBridgeMacUNNotification::
     NotificationPlatformBridgeMacUNNotification(
         UNUserNotificationCenter* notification_center)
     : delegate_([UNNotificationCenterDelegate alloc]),
-      notification_center_([notification_center retain]) {
+      notification_center_([notification_center retain]),
+      categories_([[NSMutableSet alloc] init]) {
   [notification_center_ setDelegate:delegate_.get()];
 
   // TODO(crbug/1129366): Determine when to request permission
   NotificationPlatformBridgeMacUNNotification::RequestPermission();
-  NotificationPlatformBridgeMacUNNotification::CreateDefaultCategories();
 }
 
 NotificationPlatformBridgeMacUNNotification::
@@ -68,8 +62,12 @@ void NotificationPlatformBridgeMacUNNotification::Display(
     Profile* profile,
     const message_center::Notification& notification,
     std::unique_ptr<NotificationCommon::Metadata> metadata) {
-  base::scoped_nsobject<UNNotificationBuilder> builder(
-      [[UNNotificationBuilder alloc] init]);
+  base::scoped_nsobject<UNNotificationBuilder> builder([[UNNotificationBuilder
+      alloc]
+      initWithCloseLabel:l10n_util::GetNSString(IDS_NOTIFICATION_BUTTON_CLOSE)
+            optionsLabel:l10n_util::GetNSString(IDS_NOTIFICATION_BUTTON_MORE)
+           settingsLabel:l10n_util::GetNSString(
+                             IDS_NOTIFICATION_BUTTON_SETTINGS)]);
 
   base::string16 context_message =
       notification.items().empty()
@@ -97,6 +95,18 @@ void NotificationPlatformBridgeMacUNNotification::Display(
     [builder setIconPath:base::SysUTF8ToNSString(path.value())];
   }
 
+  [builder setShowSettingsButton:notification.should_show_settings_button()];
+  const std::vector<message_center::ButtonInfo>& buttons =
+      notification.buttons();
+  if (!buttons.empty()) {
+    DCHECK_LE(buttons.size(), blink::kNotificationMaxActions);
+    NSString* buttonOne = base::SysUTF16ToNSString(buttons[0].title);
+    NSString* buttonTwo = nullptr;
+    if (buttons.size() > 1)
+      buttonTwo = base::SysUTF16ToNSString(buttons[1].title);
+    [builder setButtons:buttonOne secondaryButton:buttonTwo];
+  }
+
   [builder setOrigin:base::SysUTF8ToNSString(notification.origin_url().spec())];
   [builder setNotificationId:base::SysUTF8ToNSString(notification.id())];
   [builder setProfileId:base::SysUTF8ToNSString(GetProfileId(profile))];
@@ -108,14 +118,13 @@ void NotificationPlatformBridgeMacUNNotification::Display(
       setNotificationType:[NSNumber numberWithInteger:static_cast<NSInteger>(
                                                           notification_type)]];
 
-  UNMutableNotificationContent* content = [builder buildUserNotification];
+  UNNotificationCategory* category = [builder buildCategory];
+  [categories_ addObject:category];
+  // TODO(crbug/1138470): Determine when to remove UNNotificationCategory so
+  // that they do not accumulate during browser lifetime
+  [notification_center_ setNotificationCategories:categories_];
 
-  // TODO(crbug/1136061): Add support for complex categories and move setting
-  // the categories to the place that will be building the complex categories
-  if (notification.should_show_settings_button())
-    [content setCategoryIdentifier:kCloseAndSettingsCategory];
-  else
-    [content setCategoryIdentifier:kCloseCategory];
+  UNMutableNotificationContent* content = [builder buildUserNotification];
 
   UNNotificationRequest* request = [UNNotificationRequest
       requestWithIdentifier:base::SysUTF8ToNSString(notification.id())
@@ -215,38 +224,6 @@ void NotificationPlatformBridgeMacUNNotification::RequestPermission() {
                         LOG(WARNING) << "Requesting permission did not succeed";
                       }
                     }];
-}
-
-void NotificationPlatformBridgeMacUNNotification::CreateDefaultCategories() {
-  UNNotificationAction* closeButton = [UNNotificationAction
-      actionWithIdentifier:notification_constants::kNotificationCloseButtonTag
-                     title:l10n_util::GetNSString(IDS_NOTIFICATION_BUTTON_CLOSE)
-                   options:UNNotificationActionOptionNone];
-
-  UNNotificationAction* settingsButton = [UNNotificationAction
-      actionWithIdentifier:notification_constants::
-                               kNotificationSettingsButtonTag
-                     title:l10n_util::GetNSString(
-                               IDS_NOTIFICATION_BUTTON_SETTINGS)
-                   options:UNNotificationActionOptionForeground];
-
-  // The actions in categories are ordered by LIFO. So having closeButton at the
-  // end ensures that it is always the button on top.
-  UNNotificationCategory* closeAndSettingsCategory = [UNNotificationCategory
-      categoryWithIdentifier:kCloseAndSettingsCategory
-                     actions:@[ settingsButton, closeButton ]
-           intentIdentifiers:@[]
-                     options:UNNotificationCategoryOptionCustomDismissAction];
-
-  UNNotificationCategory* closeCategory = [UNNotificationCategory
-      categoryWithIdentifier:kCloseCategory
-                     actions:@[ closeButton ]
-           intentIdentifiers:@[]
-                     options:UNNotificationCategoryOptionCustomDismissAction];
-
-  [notification_center_
-      setNotificationCategories:[NSSet setWithObjects:closeAndSettingsCategory,
-                                                      closeCategory, nil]];
 }
 
 // /////////////////////////////////////////////////////////////////////////////

@@ -13,23 +13,6 @@
 
 @implementation NotificationBuilder
 
-- (instancetype)initWithCloseLabel:(NSString*)closeLabel
-                      optionsLabel:(NSString*)optionsLabel
-                     settingsLabel:(NSString*)settingsLabel {
-  if ((self = [super init])) {
-    [_notificationData
-        setObject:closeLabel
-           forKey:notification_constants::kNotificationCloseButtonTag];
-    [_notificationData
-        setObject:optionsLabel
-           forKey:notification_constants::kNotificationOptionsButtonTag];
-    [_notificationData
-        setObject:settingsLabel
-           forKey:notification_constants::kNotificationSettingsButtonTag];
-  }
-  return self;
-}
-
 - (void)setIcon:(NSImage*)icon {
   if (!icon)
     return;
