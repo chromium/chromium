@@ -73,7 +73,8 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) ChromeOsCdmFactory
       const media::SessionKeysChangeCB& session_keys_change_cb,
       const media::SessionExpirationUpdateCB& session_expiration_update_cb,
       media::CdmCreatedCB cdm_created_cb);
-  void OnMojoConnectionError();
+  void OnFactoryMojoConnectionError();
+  void OnVerificationMojoConnectionError();
 
   media::mojom::FrameInterfaceFactory* frame_interfaces_;
   mojo::Remote<cdm::mojom::CdmFactory> remote_factory_;

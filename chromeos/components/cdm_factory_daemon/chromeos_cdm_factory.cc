@@ -73,6 +73,9 @@ void ChromeOsCdmFactory::Create(
   if (!platform_verification_) {
     frame_interfaces_->BindEmbedderReceiver(mojo::GenericPendingReceiver(
         platform_verification_.BindNewPipeAndPassReceiver()));
+    platform_verification_.set_disconnect_handler(
+        base::BindOnce(&ChromeOsCdmFactory::OnVerificationMojoConnectionError,
+                       weak_factory_.GetWeakPtr()));
   }
   platform_verification_->IsVerifiedAccessEnabled(base::BindOnce(
       &ChromeOsCdmFactory::OnVerifiedAccessEnabled, weak_factory_.GetWeakPtr(),
@@ -147,7 +150,7 @@ void ChromeOsCdmFactory::OnCreateFactory(
   if (!remote_factory_) {
     remote_factory_.Bind(std::move(remote_factory));
     remote_factory_.set_disconnect_handler(
-        base::BindOnce(&ChromeOsCdmFactory::OnMojoConnectionError,
+        base::BindOnce(&ChromeOsCdmFactory::OnFactoryMojoConnectionError,
                        weak_factory_.GetWeakPtr()));
   }
 
@@ -202,9 +205,14 @@ void ChromeOsCdmFactory::CreateCdm(
       FROM_HERE, base::BindOnce(std::move(cdm_created_cb), std::move(cdm), ""));
 }
 
-void ChromeOsCdmFactory::OnMojoConnectionError() {
+void ChromeOsCdmFactory::OnFactoryMojoConnectionError() {
   DVLOG(1) << __func__;
   remote_factory_.reset();
+}
+
+void ChromeOsCdmFactory::OnVerificationMojoConnectionError() {
+  DVLOG(1) << __func__;
+  platform_verification_.reset();
 }
 
 }  // namespace chromeos
