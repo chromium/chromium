@@ -203,6 +203,22 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
   }
 };
 
+// Subclass of DumpAccessibilityTreeTest that exposes ignored nodes.
+class DumpAccessibilityTreeTestWithIgnoredNodes
+    : public DumpAccessibilityTreeTest {
+ protected:
+  // Override from DumpAccessibilityTreeTest.
+  void ChooseFeatures(std::vector<base::Feature>* enabled_features,
+                      std::vector<base::Feature>* disabled_features) override {
+    // http://crbug.com/1063155 - temporary until this is enabled
+    // everywhere.
+    enabled_features->emplace_back(
+        features::kEnableAccessibilityExposeIgnoredNodes);
+    DumpAccessibilityTreeTest::ChooseFeatures(enabled_features,
+                                              disabled_features);
+  }
+};
+
 void DumpAccessibilityTreeTest::AddDefaultFilters(
     std::vector<AXPropertyFilter>* property_filters) {
   AddPropertyFilter(property_filters, "value='*'");
@@ -239,6 +255,13 @@ struct DumpAccessibilityTreeTestPassToString {
 INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityTreeTest,
+    ::testing::Range(size_t{0},
+                     AccessibilityTreeFormatter::GetTestPasses().size()),
+    DumpAccessibilityTreeTestPassToString());
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DumpAccessibilityTreeTestWithIgnoredNodes,
     ::testing::Range(size_t{0},
                      AccessibilityTreeFormatter::GetTestPasses().size()),
     DumpAccessibilityTreeTestPassToString());
@@ -1829,7 +1852,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputRadio) {
   RunHtmlTest(FILE_PATH_LITERAL("input-radio.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTestWithIgnoredNodes,
                        AccessibilityInputRadioCheckboxLabel) {
   RunHtmlTest(FILE_PATH_LITERAL("input-radio-checkbox-label.html"));
 }

@@ -812,8 +812,8 @@ bool AXLayoutObject::CanIgnoreSpaceNextTo(LayoutObject* layout,
 }
 
 bool AXLayoutObject::CanIgnoreTextAsEmpty() const {
-  DCHECK(layout_object_->IsText());
-  DCHECK(layout_object_->Parent());
+  if (!layout_object_ || !layout_object_->IsText() || !layout_object_->Parent())
+    return false;
 
   LayoutText* layout_text = ToLayoutText(layout_object_);
 

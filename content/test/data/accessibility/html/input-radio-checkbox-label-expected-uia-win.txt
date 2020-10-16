@@ -5,8 +5,6 @@ Document
 ++++Text Name='label exposed for radio button '
 ++++++Text Name='label exposed for radio button '
 ++++++RadioButton Name='label exposed for radio button' SelectionItem.IsSelected=false
-++++++Text Name=' '
 ++++Text Name='label exposed for checkbox '
 ++++++Text Name='label exposed for checkbox '
 ++++++CheckBox Name='label exposed for checkbox' Toggle.ToggleState='Off'
-++++++Text Name=' '

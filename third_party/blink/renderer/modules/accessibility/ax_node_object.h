@@ -60,6 +60,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   AXObjectInclusion ShouldIncludeBasedOnSemantics(
       IgnoredReasons* = nullptr) const;
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
+  bool CanIgnoreTextAsEmpty() const override;
   const AXObject* InheritsPresentationalRoleFrom() const override;
   ax::mojom::blink::Role DetermineTableSectionRole() const;
   ax::mojom::blink::Role DetermineTableCellRole() const;

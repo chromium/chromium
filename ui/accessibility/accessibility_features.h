@@ -24,6 +24,13 @@ AX_BASE_EXPORT extern const base::Feature kEnableAccessibilityExposeHTMLElement;
 // browser process AXTree (as an ignored node).
 AX_BASE_EXPORT bool IsAccessibilityExposeHTMLElementEnabled();
 
+AX_BASE_EXPORT extern const base::Feature
+    kEnableAccessibilityExposeIgnoredNodes;
+
+// Returns true if all ignored nodes are exposed by Blink in the
+// accessibility tree.
+AX_BASE_EXPORT bool IsAccessibilityExposeIgnoredNodesEnabled();
+
 AX_BASE_EXPORT extern const base::Feature kEnableAccessibilityLanguageDetection;
 
 // Return true if language detection should be used to determine the language

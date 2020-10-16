@@ -28,6 +28,18 @@ bool IsAccessibilityExposeHTMLElementEnabled() {
       ::features::kEnableAccessibilityExposeHTMLElement);
 }
 
+// Enable exposing ignored nodes from Blink to the browser process AXTree.
+// This will allow us to simplify logic by eliminating the distiction between
+// "ignored and included in the tree" from "ignored and not included in the
+// tree".
+const base::Feature kEnableAccessibilityExposeIgnoredNodes{
+    "AccessibilityExposeIgnoredNodes", base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsAccessibilityExposeIgnoredNodesEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kEnableAccessibilityExposeIgnoredNodes);
+}
+
 // Enable language detection to determine language used in page text, exposed
 // on the browser process AXTree.
 const base::Feature kEnableAccessibilityLanguageDetection{

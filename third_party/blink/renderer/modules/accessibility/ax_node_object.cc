@@ -505,6 +505,14 @@ bool AXNodeObject::ComputeAccessibilityIsIgnored(
   return true;
 }
 
+bool AXNodeObject::CanIgnoreTextAsEmpty() const {
+  // Note: it's safe to call AXNodeObject::ComputeAccessibilityIsIgnored,
+  // since that has just the logic we need - but note that
+  // AXLayoutObject::ComputeAccessibilityIsIgnored calls CanIgnoreTextAsEmpty
+  // so that'd create a loop.
+  return ComputeAccessibilityIsIgnored();
+}
+
 static bool IsListElement(Node* node) {
   return IsA<HTMLUListElement>(*node) || IsA<HTMLOListElement>(*node) ||
          IsA<HTMLDListElement>(*node);
@@ -3396,10 +3404,23 @@ void AXNodeObject::AddChildren() {
          child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
       if (child->IsMarkerPseudoElement() && AccessibilityIsIgnored())
         continue;
-      AddChild(AXObjectCache().GetOrCreate(child));
+      AXObject* child_obj = AXObjectCache().GetOrCreate(child);
+
+      if (RuntimeEnabledFeatures::AccessibilityExposeIgnoredNodesEnabled() &&
+          child_obj &&
+          child_obj->RoleValue() == ax::mojom::blink::Role::kStaticText &&
+          child_obj->CanIgnoreTextAsEmpty())
+        continue;
+
+      AddChild(child_obj);
     }
   } else {
     for (AXObject* obj = RawFirstChild(); obj; obj = obj->RawNextSibling()) {
+      if (RuntimeEnabledFeatures::AccessibilityExposeIgnoredNodesEnabled() &&
+          obj && obj->RoleValue() == ax::mojom::blink::Role::kStaticText &&
+          obj->CanIgnoreTextAsEmpty())
+        continue;
+
       AddChild(obj);
     }
   }

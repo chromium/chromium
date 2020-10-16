@@ -123,6 +123,9 @@
       name: "AccessibilityExposeHTMLElement",
     },
     {
+      name: "AccessibilityExposeIgnoredNodes",
+    },
+    {
       name: "AccessibilityObjectModel",
       status: "experimental",
     },

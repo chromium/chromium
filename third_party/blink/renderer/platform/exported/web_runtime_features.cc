@@ -121,6 +121,10 @@ void WebRuntimeFeatures::EnableAccessibilityExposeHTMLElement(bool enable) {
   RuntimeEnabledFeatures::SetAccessibilityExposeHTMLElementEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableAccessibilityExposeIgnoredNodes(bool enable) {
+  RuntimeEnabledFeatures::SetAccessibilityExposeIgnoredNodesEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableAccessibilityObjectModel(bool enable) {
   RuntimeEnabledFeatures::SetAccessibilityObjectModelEnabled(enable);
 }

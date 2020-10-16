@@ -102,6 +102,7 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
   AXObjectInclusion DefaultObjectInclusion(
       IgnoredReasons* = nullptr) const override;
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
+  bool CanIgnoreTextAsEmpty() const override;
 
   // Properties of static elements.
   ax::mojom::blink::ListStyle GetListStyle() const final;
@@ -192,7 +193,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
   bool FindAllTableCellsWithRole(ax::mojom::blink::Role, AXObjectVector&) const;
 
   LayoutRect ComputeElementRect() const;
-  bool CanIgnoreTextAsEmpty() const;
   bool CanIgnoreSpaceNextTo(LayoutObject*, bool is_after) const;
   bool HasAriaCellRole(Element*) const;
   bool IsPlaceholder() const;

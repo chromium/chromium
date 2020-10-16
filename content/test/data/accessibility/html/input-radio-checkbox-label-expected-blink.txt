@@ -1,17 +1,20 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer
-++++++radioButton name='label ignored for radio button' checkedState=false
-++++++checkBox name='label ignored for checkbox' checkedState=false
+++++++labelText ignored
+++++++++staticText ignored name='label ignored for radio button '
+++++++++++inlineTextBox ignored name='label ignored for radio button '
+++++++++radioButton name='label ignored for radio button' checkedState=false
+++++++labelText ignored
+++++++++staticText ignored name='label ignored for checkbox '
+++++++++++inlineTextBox ignored name='label ignored for checkbox '
+++++++++checkBox name='label ignored for checkbox' checkedState=false
 ++++++labelText name='label exposed for radio button '
 ++++++++staticText name='label exposed for radio button '
 ++++++++++inlineTextBox name='label exposed for radio button '
 ++++++++radioButton name='label exposed for radio button' checkedState=false
-++++++++staticText name=' '
-++++++++++inlineTextBox name=' '
 ++++++labelText name='label exposed for checkbox '
 ++++++++staticText name='label exposed for checkbox '
 ++++++++++inlineTextBox name='label exposed for '
 ++++++++++inlineTextBox name='checkbox '
 ++++++++checkBox name='label exposed for checkbox' checkedState=false
-++++++++staticText name=' '

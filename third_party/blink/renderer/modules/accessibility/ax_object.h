@@ -526,6 +526,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const {
     return true;
   }
+  virtual bool CanIgnoreTextAsEmpty() const { return false; }
   bool AccessibilityIsIgnoredByDefault(IgnoredReasons* = nullptr) const;
   virtual AXObjectInclusion DefaultObjectInclusion(
       IgnoredReasons* = nullptr) const;

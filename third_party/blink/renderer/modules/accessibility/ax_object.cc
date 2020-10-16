@@ -1740,6 +1740,9 @@ const AXObject* AXObject::DisabledAncestor() const {
 }
 
 bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
+  if (RuntimeEnabledFeatures::AccessibilityExposeIgnoredNodesEnabled())
+    return true;
+
   if (AXObjectCache().IsAriaOwned(this)) {
     // Always include an aria-owned object. It must be a child of the
     // element with aria-owns.
