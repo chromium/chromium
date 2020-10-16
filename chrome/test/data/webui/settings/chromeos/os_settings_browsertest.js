@@ -687,6 +687,10 @@ TEST_F('OSSettingsDevicePageTest', 'PointersTest', () => {
   mocha.grep(assert(device_page_tests.TestNames.Pointers)).run();
 });
 
+TEST_F('OSSettingsDevicePageTest', 'PointersWithPointingStickTest', () => {
+  mocha.grep(assert(device_page_tests.TestNames.PointingStick)).run();
+});
+
 TEST_F('OSSettingsDevicePageTest', 'PowerTest', () => {
   mocha.grep(assert(device_page_tests.TestNames.Power)).run();
 });

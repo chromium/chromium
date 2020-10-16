@@ -51,7 +51,20 @@ Polymer({
      */
     showMouseSection_: {
       type: Boolean,
-      computed: 'computeShowMouseSection_(hasMouse, hasPointingStick)',
+      computed: 'computeShowMouseSection_(separatePointingStickSettings_, ' +
+          'hasMouse, hasPointingStick)',
+    },
+
+    showHeadings_: {
+      type: Boolean,
+      computed: 'computeShowHeadings_(separatePointingStickSettings_, ' +
+          'hasMouse, hasPointingStick, hasTouchpad)',
+    },
+
+    subsectionClass_: {
+      type: String,
+      computed: 'computeSubsectionClass_(separatePointingStickSettings_, ' +
+          'hasMouse, hasPointingStick, hasTouchpad)',
     },
 
     /**
@@ -90,6 +103,18 @@ Polymer({
     },
 
     /**
+     * TODO(crbug.com/1114828): Remove this conditional once the feature is
+     * launched.
+     * @private
+     */
+    separatePointingStickSettings_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('separatePointingStickSettings');
+      },
+    },
+
+    /**
      * Used by DeepLinkingBehavior to focus this page's deep links.
      * @type {!Set<!chromeos.settings.mojom.Setting>}
      */
@@ -112,11 +137,49 @@ Polymer({
   },
 
   /**
+   * @param {boolean} separateSettings
    * @param {boolean} hasMouse
    * @param {boolean} hasPointingStick
    */
-  computeShowMouseSection_(hasMouse, hasPointingStick) {
-    return hasMouse || hasPointingStick;
+  computeShowMouseSection_(separateSettings, hasMouse, hasPointingStick) {
+    return separateSettings ? hasMouse : hasMouse || hasPointingStick;
+  },
+
+  /**
+   * Headings should only be visible if more than one subsection is present.
+   * @param {boolean} separateSettings
+   * @param {boolean} hasMouse
+   * @param {boolean} hasPointingStick
+   * @param {boolean} hasTouchpad
+   * @return {boolean}
+   * @private
+   */
+  computeShowHeadings_(
+      separateSettings, hasMouse, hasPointingStick, hasTouchpad) {
+    if (!separateSettings) {
+      return (hasMouse || hasPointingStick) && hasTouchpad;
+    }
+    const sectionVisibilities = [hasMouse, hasPointingStick, hasTouchpad];
+    // Count the number of true values in sectionVisibilities.
+    const numVisibleSections = sectionVisibilities.filter(x => x).length;
+    return numVisibleSections > 1;
+  },
+
+  /**
+   * Mouse, pointing stick, and touchpad sections are only subsections if more
+   * than one is present.
+   * @param {boolean} separateSettings
+   * @param {boolean} hasMouse
+   * @param {boolean} hasPointingStick
+   * @param {boolean} hasTouchpad
+   * @return {string}
+   * @private
+   */
+  computeSubsectionClass_(
+      separateSettings, hasMouse, hasPointingStick, hasTouchpad) {
+    const subsections = this.computeShowHeadings_(
+        separateSettings, hasMouse, hasPointingStick, hasTouchpad);
+    return subsections ? 'subsection' : '';
   },
 
   /**
@@ -130,17 +193,6 @@ Polymer({
     }
 
     this.attemptDeepLink();
-  },
-
-  /**
-   * Mouse and touchpad sections are only subsections if they are both present.
-   * @param {boolean} showMouseSection
-   * @param {boolean} hasTouchpad
-   * @return {string}
-   * @private
-   */
-  getSubsectionClass_(showMouseSection, hasTouchpad) {
-    return showMouseSection && hasTouchpad ? 'subsection' : '';
   },
 
   /**

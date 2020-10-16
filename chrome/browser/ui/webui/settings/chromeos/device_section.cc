@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/settings/chromeos/device_display_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/device_keyboard_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/device_pointer_handler.h"
@@ -1133,6 +1134,7 @@ void DeviceSection::AddDevicePointersStrings(
     content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kPointersStrings[] = {
       {"mouseTitle", IDS_SETTINGS_MOUSE_TITLE},
+      {"pointingStickTitle", IDS_SETTINGS_POINTING_STICK_TITLE},
       {"touchpadTitle", IDS_SETTINGS_TOUCHPAD_TITLE},
       {"mouseAndTouchpadTitle", IDS_SETTINGS_MOUSE_AND_TOUCHPAD_TITLE},
       {"touchpadTapToClickEnabledLabel",
@@ -1166,6 +1168,9 @@ void DeviceSection::AddDevicePointersStrings(
   html_source->AddBoolean(
       "allowScrollSettings",
       base::FeatureList::IsEnabled(::chromeos::features::kAllowScrollSettings));
+  html_source->AddBoolean(
+      "separatePointingStickSettings",
+      base::FeatureList::IsEnabled(::features::kSeparatePointingStickSettings));
 }
 
 }  // namespace settings

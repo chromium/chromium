@@ -10,6 +10,7 @@ cr.define('device_page_tests', function() {
     Keyboard: 'keyboard',
     NightLight: 'night light',
     Pointers: 'pointers',
+    PointingStick: 'pointing stick',
     Power: 'power',
     Storage: 'storage',
     Stylus: 'stylus',
@@ -737,6 +738,101 @@ cr.define('device_page_tests', function() {
         assertEquals(
             deepLinkElement, getDeepActiveElement(),
             'Touchpad speed slider should be focused for settingId=405.');
+      });
+    });
+
+    suite(assert(TestNames.PointingStick), function() {
+      // TODO(crbug.com/1114828): merge this suite into the Pointers one when
+      // the flag is removed.
+      let pointersPage;
+
+      setup(function() {
+        // We have to set separatePointingStickSettings here so it's in effect
+        // when the template is rendered.
+        loadTimeData.overrideValues({separatePointingStickSettings: true});
+        return showAndGetDeviceSubpage('pointers', settings.routes.POINTERS)
+            .then(function(page) {
+              pointersPage = page;
+            });
+      });
+
+      test('subpage responds to pointer attach/detach', function() {
+        const assertElementVisible = (element) => {
+          assertNotEquals(element, null, 'element should exist');
+          // offsetWidth and offsetHeight reflect more ways that an element
+          // could be hidden than checking the hidden attribute directly.
+          assertTrue(
+              element.offsetWidth > 0 && element.offsetHeight > 0,
+              'element should be visible');
+        };
+
+        const assertElementHidden = (element) => {
+          assertNotEquals(element, null, 'element should exist');
+          assertTrue(
+              element.offsetWidth === 0 && element.offsetHeight === 0,
+              'element should be hidden');
+        };
+
+        assertEquals(
+            settings.routes.POINTERS,
+            settings.Router.getInstance().getCurrentRoute());
+        assertElementVisible(pointersPage.$$('#mouse'));
+        assertElementVisible(pointersPage.$$('#mouse h2'));
+        assertElementVisible(pointersPage.$$('#pointingStick'));
+        assertElementVisible(pointersPage.$$('#pointingStick h2'));
+        assertElementVisible(pointersPage.$$('#touchpad'));
+        assertElementVisible(pointersPage.$$('#touchpad h2'));
+
+        cr.webUIListenerCallback('has-touchpad-changed', false);
+        assertEquals(
+            settings.routes.POINTERS,
+            settings.Router.getInstance().getCurrentRoute());
+        assertElementVisible(pointersPage.$$('#mouse'));
+        assertElementVisible(pointersPage.$$('#mouse h2'));
+        assertElementVisible(pointersPage.$$('#pointingStick'));
+        assertElementVisible(pointersPage.$$('#pointingStick h2'));
+        assertElementHidden(pointersPage.$$('#touchpad'));
+        assertElementHidden(pointersPage.$$('#touchpad h2'));
+
+        cr.webUIListenerCallback('has-pointing-stick-changed', false);
+        assertEquals(
+            settings.routes.POINTERS,
+            settings.Router.getInstance().getCurrentRoute());
+        assertElementVisible(pointersPage.$$('#mouse'));
+        assertElementHidden(pointersPage.$$('#mouse h2'));
+        assertElementHidden(pointersPage.$$('#pointingStick'));
+        assertElementHidden(pointersPage.$$('#pointingStick h2'));
+        assertElementHidden(pointersPage.$$('#touchpad'));
+        assertElementHidden(pointersPage.$$('#touchpad h2'));
+
+        cr.webUIListenerCallback('has-mouse-changed', false);
+        assertEquals(
+            settings.routes.DEVICE,
+            settings.Router.getInstance().getCurrentRoute());
+        assertElementHidden(devicePage.$$('#main #pointersRow'));
+
+        cr.webUIListenerCallback('has-touchpad-changed', true);
+        assertElementVisible(devicePage.$$('#main #pointersRow'));
+        return showAndGetDeviceSubpage('pointers', settings.routes.POINTERS)
+            .then(function(page) {
+              assertElementHidden(page.$$('#mouse'));
+              assertElementHidden(page.$$('#mouse h2'));
+              assertElementHidden(page.$$('#pointingStick'));
+              assertElementHidden(page.$$('#pointingStick h2'));
+              assertElementVisible(page.$$('#touchpad'));
+              assertElementHidden(page.$$('#touchpad h2'));
+
+              cr.webUIListenerCallback('has-mouse-changed', true);
+              assertEquals(
+                  settings.routes.POINTERS,
+                  settings.Router.getInstance().getCurrentRoute());
+              assertElementVisible(page.$$('#mouse'));
+              assertElementVisible(page.$$('#mouse h2'));
+              assertElementHidden(page.$$('#pointingStick'));
+              assertElementHidden(page.$$('#pointingStick h2'));
+              assertElementVisible(page.$$('#touchpad'));
+              assertElementVisible(page.$$('#touchpad h2'));
+            });
       });
     });
 

@@ -36,9 +36,9 @@
       }
     </style>
     <div id="mouse" hidden$="[[!showMouseSection_]]">
-      <!-- Subsection title only appears if both mouse and touchpad exist. -->
-      <h2 hidden$="[[!hasTouchpad]]">$i18n{mouseTitle}</h2>
-      <div class$="[[getSubsectionClass_(showMouseSection_, hasTouchpad)]]">
+      <!-- Subsection title only appears if multiple sections are visible. -->
+      <h2 hidden$="[[!showHeadings_]]">$i18n{mouseTitle}</h2>
+      <div class$="[[subsectionClass_]]">
         <!-- Do not change the mouse button pref before the mouse is released.
              See crbug.com/686949 -->
         <div class="settings-box">
@@ -108,10 +108,19 @@
         </div>
       </div>
     </div>
+    <template is="dom-if" if="[[separatePointingStickSettings_]]">
+      <div id="pointingStick" hidden$="[[!hasPointingStick]]">
+        <!-- Subsection title only appears if multiple sections are visible. -->
+        <h2 hidden$="[[!showHeadings_]]">$i18n{pointingStickTitle}</h2>
+        <div class$="[[subsectionClass_]]">
+          (Settings not implemented yet)
+        </div>
+      </div>
+    </template>
     <div id="touchpad" hidden$="[[!hasTouchpad]]">
-      <!-- Subsection title only appears if both mouse and touchpad exist. -->
-      <h2 hidden$="[[!showMouseSection_]]">$i18n{touchpadTitle}</h2>
-      <div class$="[[getSubsectionClass_(showMouseSection_, hasTouchpad)]]">
+      <!-- Subsection title only appears if multiple sections are visible. -->
+      <h2 hidden$="[[!showHeadings_]]">$i18n{touchpadTitle}</h2>
+      <div class$="[[subsectionClass_]]">
         <settings-toggle-button id="enableTapToClick"
             pref="{{prefs.settings.touchpad.enable_tap_to_click}}"
             label="$i18n{touchpadTapToClickEnabledLabel}"
