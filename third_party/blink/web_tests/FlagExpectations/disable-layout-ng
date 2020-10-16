@@ -463,6 +463,8 @@ crbug.com/591099 external/wpt/css/css-flexbox/flexbox_align-items-stretch-3.html
 crbug.com/591099 external/wpt/css/css-flexbox/percentage-heights-006.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-flexbox/percentage-heights-014.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-flexbox/flex-minimum-height-flex-items-023.html [ Failure ]
+crbug.com/1132627 external/wpt/css/css-flexbox/flex-minimum-height-flex-items-007.xht [ Failure ]
+crbug.com/1132627 external/wpt/css/css-flexbox/flex-aspect-ratio-img-column-011.html [ Failure ]
 crbug.com/721123 css3/flexbox/flexitem.html [ Failure ]
 crbug.com/721123 external/wpt/css/css-flexbox/flexitem-stretch-image.html [ Failure ]
 crbug.com/721123 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-intrinsic-ratio-001.html [ Failure ]

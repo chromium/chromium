@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_layout_algorithm.h"
 
 #include <memory>
+#include "base/optional.h"
 #include "third_party/blink/renderer/core/layout/flexible_box_algorithm.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_button.h"
@@ -466,6 +467,7 @@ LayoutUnit ComputeIntrinsicInlineSizeForAspectRatioElement(
 LayoutUnit ComputeIntrinsicBlockSizeForAspectRatioElement(
     const NGBlockNode& node,
     const NGConstraintSpace& space,
+    const base::Optional<LayoutUnit> definite_inline_size,
     const MinMaxSizes& used_min_max_inline_sizes) {
   DCHECK(node.HasAspectRatio());
   LogicalSize aspect_ratio = node.GetAspectRatio();
@@ -473,45 +475,49 @@ LayoutUnit ComputeIntrinsicBlockSizeForAspectRatioElement(
   NGBoxStrut border_padding =
       ComputeBorders(space, node) + ComputePadding(space, style);
 
-  DCHECK_NE(style.LogicalWidth().GetType(), Length::Type::kFixed)
-      << "Flex will not use this function if the inline size of the replaced "
-         "element is definite.";
-
   base::Optional<LayoutUnit> intrinsic_inline;
   base::Optional<LayoutUnit> intrinsic_block;
-  node.IntrinsicSize(&intrinsic_inline, &intrinsic_block);
 
-  // intrinsic_inline and intrinsic_block can be empty independent of each
-  // other.
-  if (intrinsic_inline) {
-    LayoutUnit intrinsic_inline_border_box =
-        *intrinsic_inline + border_padding.InlineSum();
-    intrinsic_inline_border_box =
-        used_min_max_inline_sizes.ClampSizeToMinAndMax(
-            intrinsic_inline_border_box);
+  base::Optional<LayoutUnit> inline_size_border_box;
+  if (definite_inline_size.has_value()) {
+    inline_size_border_box = definite_inline_size;
+  } else {
+    node.IntrinsicSize(&intrinsic_inline, &intrinsic_block);
+    if (intrinsic_inline) {
+      inline_size_border_box = *intrinsic_inline + border_padding.InlineSum();
+    }
+  }
+
+  if (inline_size_border_box) {
+    // Clamping block size to the transferred inline min/max sizes might be
+    // uninentionally unspecified. See
+    // https://github.com/w3c/csswg-drafts/issues/5583
+    LayoutUnit clamped_intrinsic_inline_border_box =
+        used_min_max_inline_sizes.ClampSizeToMinAndMax(*inline_size_border_box);
     return BlockSizeFromAspectRatio(border_padding, aspect_ratio,
                                     EBoxSizing::kContentBox,
-                                    intrinsic_inline_border_box);
+                                    clamped_intrinsic_inline_border_box);
   }
 
   if (intrinsic_block) {
-    MinMaxSizes block_min_max = {LayoutUnit(), LayoutUnit::Max()};
+    MinMaxSizes transferred_block_min_max = {LayoutUnit(), LayoutUnit::Max()};
     if (used_min_max_inline_sizes.min_size > LayoutUnit()) {
-      block_min_max.min_size = BlockSizeFromAspectRatio(
+      transferred_block_min_max.min_size = BlockSizeFromAspectRatio(
           border_padding, aspect_ratio, EBoxSizing::kContentBox,
           used_min_max_inline_sizes.min_size);
     }
     if (used_min_max_inline_sizes.max_size != LayoutUnit::Max()) {
-      block_min_max.max_size = BlockSizeFromAspectRatio(
+      transferred_block_min_max.max_size = BlockSizeFromAspectRatio(
           border_padding, aspect_ratio, EBoxSizing::kContentBox,
           used_min_max_inline_sizes.max_size);
     }
     // Minimum size wins over maximum size.
-    block_min_max.max_size =
-        std::max(block_min_max.max_size, block_min_max.min_size);
+    transferred_block_min_max.max_size = std::max(
+        transferred_block_min_max.max_size, transferred_block_min_max.min_size);
     LayoutUnit intrinsic_block_border_box =
         *intrinsic_block + border_padding.BlockSum();
-    return block_min_max.ClampSizeToMinAndMax(intrinsic_block_border_box);
+    return transferred_block_min_max.ClampSizeToMinAndMax(
+        intrinsic_block_border_box);
   }
 
   // If control flow reaches here, the item has aspect ratio only, no natural
@@ -721,8 +727,14 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
             RuntimeEnabledFeatures::FlexAspectRatioEnabled()) {
           // Legacy uses the post-layout size for this case, which isn't always
           // correct.
+          // ComputeIntrinsicBlockSizeForAspectRatioElement would honor the
+          // definite inline size parameter by multipying it by the aspect
+          // ratio, but if control flow reaches here, we know we don't have a
+          // definite inline size. If we did, we would have fallen into the
+          // "part B" section above, not this "part C, D, E" section.
           flex_base_border_box = ComputeIntrinsicBlockSizeForAspectRatioElement(
-              child, flex_basis_space, min_max_sizes_in_cross_axis_direction);
+              child, flex_basis_space, base::nullopt /* definite_inline_size */,
+              min_max_sizes_in_cross_axis_direction);
         } else {
           flex_base_border_box = IntrinsicBlockSizeFunc();
         }
@@ -761,15 +773,30 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
       } else {
         LayoutUnit intrinsic_block_size;
         if (child.IsReplaced()) {
-          base::Optional<LayoutUnit> computed_inline_size;
-          base::Optional<LayoutUnit> computed_block_size;
-          child.IntrinsicSize(&computed_inline_size, &computed_block_size);
+          if (child.HasAspectRatio() &&
+              RuntimeEnabledFeatures::FlexAspectRatioEnabled()) {
+            base::Optional<LayoutUnit> definite_inline_size;
+            if (!child_style.LogicalWidth().IsAuto()) {
+              definite_inline_size =
+                  ResolveMainInlineLength(flex_basis_space, child_style,
+                                          border_padding_in_child_writing_mode,
+                                          MinMaxSizesFunc, length_to_resolve);
+            }
+            intrinsic_block_size =
+                ComputeIntrinsicBlockSizeForAspectRatioElement(
+                    child, flex_basis_space, definite_inline_size,
+                    min_max_sizes_in_cross_axis_direction);
+          } else {
+            base::Optional<LayoutUnit> computed_inline_size;
+            base::Optional<LayoutUnit> computed_block_size;
+            child.IntrinsicSize(&computed_inline_size, &computed_block_size);
 
-          // The 150 is for replaced elements that have no size, which SVG
-          // can have (maybe others?).
-          intrinsic_block_size =
-              computed_block_size.value_or(LayoutUnit(150)) +
-              border_padding_in_child_writing_mode.BlockSum();
+            // The 150 is for replaced elements that have no size, which SVG
+            // can have (maybe others?).
+            intrinsic_block_size =
+                computed_block_size.value_or(LayoutUnit(150)) +
+                border_padding_in_child_writing_mode.BlockSum();
+          }
         } else {
           intrinsic_block_size = IntrinsicBlockSizeFunc();
         }
