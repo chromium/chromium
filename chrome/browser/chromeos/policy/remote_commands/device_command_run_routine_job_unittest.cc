@@ -1331,4 +1331,63 @@ TEST_F(DeviceCommandRunRoutineJobTest, RunSignalStrengthRoutineSuccess) {
       })));
 }
 
+// Note that the gateway can be pinged routine has no parameters, so we only
+// need to test that it can be run successfully.
+TEST_F(DeviceCommandRunRoutineJobTest, RunGatewayCanBePingedRoutineSuccess) {
+  auto run_routine_response =
+      chromeos::cros_healthd::mojom::RunRoutineResponse::New(kId, kStatus);
+  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetRunRoutineResponseForTesting(run_routine_response);
+  base::Value params_dict(base::Value::Type::DICTIONARY);
+  EXPECT_TRUE(RunJob(
+      chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kGatewayCanBePinged,
+      std::move(params_dict),
+      base::BindLambdaForTesting([](RemoteCommandJob* job) {
+        EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
+        std::unique_ptr<std::string> payload = job->GetResultPayload();
+        EXPECT_TRUE(payload);
+        EXPECT_EQ(CreateSuccessPayload(kId, kStatus), *payload);
+      })));
+}
+
+// Note that the has secure WiFi connection routine has no parameters, so we
+// only need to test that it can be run successfully.
+TEST_F(DeviceCommandRunRoutineJobTest,
+       RunHasSecureWiFiConnectionRoutineSuccess) {
+  auto run_routine_response =
+      chromeos::cros_healthd::mojom::RunRoutineResponse::New(kId, kStatus);
+  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetRunRoutineResponseForTesting(run_routine_response);
+  base::Value params_dict(base::Value::Type::DICTIONARY);
+  EXPECT_TRUE(RunJob(chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::
+                         kHasSecureWiFiConnection,
+                     std::move(params_dict),
+                     base::BindLambdaForTesting([](RemoteCommandJob* job) {
+                       EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
+                       std::unique_ptr<std::string> payload =
+                           job->GetResultPayload();
+                       EXPECT_TRUE(payload);
+                       EXPECT_EQ(CreateSuccessPayload(kId, kStatus), *payload);
+                     })));
+}
+
+// Note that the DNS resolver present routine has no parameters, so we only need
+// to test that it can be run successfully.
+TEST_F(DeviceCommandRunRoutineJobTest, RunDnsResolverPresentRoutineSuccess) {
+  auto run_routine_response =
+      chromeos::cros_healthd::mojom::RunRoutineResponse::New(kId, kStatus);
+  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetRunRoutineResponseForTesting(run_routine_response);
+  base::Value params_dict(base::Value::Type::DICTIONARY);
+  EXPECT_TRUE(RunJob(
+      chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kDnsResolverPresent,
+      std::move(params_dict),
+      base::BindLambdaForTesting([](RemoteCommandJob* job) {
+        EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
+        std::unique_ptr<std::string> payload = job->GetResultPayload();
+        EXPECT_TRUE(payload);
+        EXPECT_EQ(CreateSuccessPayload(kId, kStatus), *payload);
+      })));
+}
+
 }  // namespace policy

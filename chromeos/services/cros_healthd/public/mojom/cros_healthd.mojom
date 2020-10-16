@@ -347,6 +347,16 @@ interface CrosHealthdDiagnosticsService {
   // * |response| - contains a unique identifier and status for the created
   //                routine.
   RunHasSecureWiFiConnectionRoutine() => (RunRoutineResponse response);
+
+  // Requests that the DnsResolverPresent routine is created and started on the
+  // platform. This routine checks whether a DNS resolver is available to the
+  // browser. This routine is only available if GetAvailableRoutines returned
+  // kDnsResolverPresent.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunDnsResolverPresentRoutine() => (RunRoutineResponse response);
 };
 
 // Event interface exposed by the cros_healthd daemon.

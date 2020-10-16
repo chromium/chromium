@@ -116,6 +116,9 @@ class ServiceConnectionImpl : public ServiceConnection {
   void RunHasSecureWiFiConnectionRoutine(
       mojom::CrosHealthdDiagnosticsService::
           RunHasSecureWiFiConnectionRoutineCallback callback) override;
+  void RunDnsResolverPresentRoutine(
+      mojom::CrosHealthdDiagnosticsService::RunDnsResolverPresentRoutineCallback
+          callback) override;
   void AddBluetoothObserver(
       mojo::PendingRemote<mojom::CrosHealthdBluetoothObserver> pending_observer)
       override;
@@ -398,6 +401,15 @@ void ServiceConnectionImpl::RunHasSecureWiFiConnectionRoutine(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindCrosHealthdDiagnosticsServiceIfNeeded();
   cros_healthd_diagnostics_service_->RunHasSecureWiFiConnectionRoutine(
+      std::move(callback));
+}
+
+void ServiceConnectionImpl::RunDnsResolverPresentRoutine(
+    mojom::CrosHealthdDiagnosticsService::RunDnsResolverPresentRoutineCallback
+        callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  BindCrosHealthdDiagnosticsServiceIfNeeded();
+  cros_healthd_diagnostics_service_->RunDnsResolverPresentRoutine(
       std::move(callback));
 }
 

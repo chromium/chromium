@@ -106,6 +106,8 @@ class FakeCrosHealthdService final
       RunGatewayCanBePingedRoutineCallback callback) override;
   void RunHasSecureWiFiConnectionRoutine(
       RunHasSecureWiFiConnectionRoutineCallback callback) override;
+  void RunDnsResolverPresentRoutine(
+      RunDnsResolverPresentRoutineCallback callback) override;
 
   // CrosHealthdEventService overrides:
   void AddBluetoothObserver(

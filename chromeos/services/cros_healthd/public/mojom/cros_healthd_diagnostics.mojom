@@ -35,6 +35,7 @@ enum DiagnosticRoutineEnum {
   kSignalStrength = 16,
   kGatewayCanBePinged = 17,
   kHasSecureWiFiConnection = 18,
+  kDnsResolverPresent = 19,
 };
 
 // Enumeration of the possible DiskRead routine's command type
