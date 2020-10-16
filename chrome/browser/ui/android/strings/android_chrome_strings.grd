@@ -3999,7 +3999,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 
       <message name="IDS_CABLEV2_ACTIVITY_TITLE"
         desc="The label of the Activity for using your phone as a security key. A 'security key' in this context is generally a small USB device that is used for logging into websites. This feature allows Chrome on an Android phone to act as a security key. A user may see it in Android permissions prompts (see screenshot).">
-         Google <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph> as a Security Key
+         Google Chrome as a Security Key
       </message>
 
       <!-- QR Code -->
