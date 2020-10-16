@@ -93,6 +93,7 @@ import org.chromium.base.CollectionUtil;
 import org.chromium.base.IntStringCallback;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -1852,6 +1853,7 @@ public class PasswordSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     @EnableFeatures(ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS)
+    @FlakyTest(message = "https://crbug.com/1139520")
     public void testEditSavedPasswordIconVisibleInActionBarWithFeature() {
         setPasswordSource( // Initialize preferences
                 new SavedPasswordEntry("https://example.com", "test user", "test password"));
