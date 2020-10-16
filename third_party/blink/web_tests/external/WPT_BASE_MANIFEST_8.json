@@ -173059,6 +173059,16 @@
      []
     ]
    },
+   "cors-rfc1918": {
+    "META.yml": [
+     "7f0d420a0e6f040497827a1cf19cb7b39d55922a",
+     []
+    ],
+    "README.md": [
+     "f641b61971e8b09de644476d2e04a1e45890b633",
+     []
+    ]
+   },
    "credential-management": {
     "META.yml": [
      "7b1860921312cc9d9934aa803e3f639df21423a0",
