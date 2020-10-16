@@ -4,7 +4,7 @@
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 
-import {isForceSigninEnabled, isSignInProfileCreationSupported} from './policy_helper.js';
+import {isBrowserSigninAllowed, isForceSigninEnabled, isSignInProfileCreationSupported} from './policy_helper.js';
 
 /**
  * ProfilePickerPages enum.
@@ -50,8 +50,7 @@ function computeStep(route) {
       return 'mainView';
     case Routes.NEW_PROFILE:
       // TODO(msalama): Adjust once sign in profile creation is supported.
-      // Check DisallowSignIn policy.
-      if (!isSignInProfileCreationSupported()) {
+      if (!isSignInProfileCreationSupported() || !isBrowserSigninAllowed()) {
         assert(!isForceSigninEnabled());
         return ProfileCreationSteps.LOCAL_PROFILE_CUSTOMIZATION;
       }

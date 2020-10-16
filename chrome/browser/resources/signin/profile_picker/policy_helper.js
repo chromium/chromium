@@ -17,6 +17,11 @@ export function isProfileCreationAllowed() {
 }
 
 /** @return {boolean} */
+export function isBrowserSigninAllowed() {
+  return loadTimeData.getBoolean('isBrowserSigninAllowed');
+}
+
+/** @return {boolean} */
 export function isForceSigninEnabled() {
   const enabled = loadTimeData.getBoolean('isForceSigninEnabled');
   // Force sign in policy is not supported yet. The picker should not be shown
