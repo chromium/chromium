@@ -338,6 +338,9 @@
       name: "CompositeAfterPaint",
     },
     {
+      name: "CompositeBGColorAnimation",
+    },
+    {
       name: "CompositedSelectionUpdate",
       status: {"Android": "stable"},
     },
