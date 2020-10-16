@@ -88,6 +88,12 @@ Polymer({
     },
 
     /** @private */
+    dataEncrypted_: {
+      type: Boolean,
+      computed: 'computeDataEncrypted_(syncPrefs.encryptAllData)'
+    },
+
+    /** @private */
     encryptionExpanded_: {
       type: Boolean,
       value: false,
@@ -140,7 +146,7 @@ Polymer({
   },
 
   observers: [
-    'expandEncryptionIfNeeded_(syncPrefs.encryptAllData, forceEncryptionExpanded)',
+    'expandEncryptionIfNeeded_(dataEncrypted_, forceEncryptionExpanded)',
   ],
 
   /** @private {?settings.SyncBrowserProxy} */
@@ -441,6 +447,14 @@ Polymer({
   },
 
   /**
+   * @return {boolean}
+   * @private
+   */
+  computeDataEncrypted_() {
+    return !!this.syncPrefs && this.syncPrefs.encryptAllData;
+  },
+
+  /**
    * Whether the encryption dropdown should be expanded by default.
    * @private
    */
@@ -451,8 +465,8 @@ Polymer({
       this.encryptionExpanded_ = true;
       return;
     }
-    this.encryptionExpanded_ =
-        !!this.syncPrefs && this.syncPrefs.encryptAllData;
+
+    this.encryptionExpanded_ = this.dataEncrypted_;
   },
 
   /**

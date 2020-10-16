@@ -217,6 +217,12 @@ suite('SyncSettingsTests', function() {
     encryptionDescription.click();
     assertTrue(encryptionCollapse.opened);
 
+    // Push sync prefs with |prefs.encryptAllData| unchanged. The encryption
+    // menu should not collapse.
+    webUIListenerCallback('sync-prefs-changed', getSyncAllPrefs());
+    flush();
+    assertTrue(encryptionCollapse.opened);
+
     encryptionDescription.click();
     assertFalse(encryptionCollapse.opened);
 
