@@ -17,7 +17,6 @@
 #include "base/strings/string16.h"
 #include "components/sync/model/string_ordinal.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "services/content/public/mojom/navigable_contents_factory.mojom.h"
 #include "ui/base/models/simple_menu_model.h"
 
 namespace ash {
@@ -121,13 +120,6 @@ class ASH_PUBLIC_EXPORT AppListClient {
   // |notify_visibility_change| was set on the SearchResultMetadata.
   virtual void OnSearchResultVisibilityChanged(const std::string& id,
                                                bool visibility) = 0;
-
-  // Acquires a NavigableContentsFactory (indirectly) from the Content Service
-  // to allow the app list to display embedded web contents. Currently used only
-  // for answer card search results.
-  virtual void GetNavigableContentsFactory(
-      mojo::PendingReceiver<content::mojom::NavigableContentsFactory>
-          receiver) = 0;
 
   // TODO(crbug.com/1076270): This method exists for chrome-side logging of UI
   // actions, and can be folded into the AppListNotifier once it is

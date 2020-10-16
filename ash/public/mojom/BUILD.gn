@@ -19,7 +19,6 @@ mojom("mojom") {
     "//components/account_id/mojom",
     "//components/sync/mojom",
     "//mojo/public/mojom/base",
-    "//services/content/public/mojom",
     "//services/preferences/public/mojom",
     "//skia/public/mojom",
     "//ui/display/mojom:mojom",

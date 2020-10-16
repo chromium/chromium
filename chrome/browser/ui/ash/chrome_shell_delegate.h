@@ -38,9 +38,6 @@ class ChromeShellDelegate : public ash::ShellDelegate {
       override;
   void BindFingerprint(
       mojo::PendingReceiver<device::mojom::Fingerprint> receiver) override;
-  void BindNavigableContentsFactory(
-      mojo::PendingReceiver<content::mojom::NavigableContentsFactory> receiver)
-      override;
   void BindMultiDeviceSetup(
       mojo::PendingReceiver<
           chromeos::multidevice_setup::mojom::MultiDeviceSetup> receiver)

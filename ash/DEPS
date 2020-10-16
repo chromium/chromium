@@ -27,7 +27,6 @@ include_rules = [
   "+gpu/config",
   "+media",
   "+mojo/public",
-  "+services/content/public",
   "+services/device/public",
   "+services/data_decoder/public",
   "+services/media_session/public",

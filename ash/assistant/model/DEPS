@@ -6,6 +6,5 @@ include_rules = [
   "+ash/public/cpp/assistant",
   "+ash/public/mojom",
   "+chromeos/services/assistant/public" ,
-  "+services/content/public",
   "+ui/gfx/geometry",
 ]

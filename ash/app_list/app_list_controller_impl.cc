@@ -1351,12 +1351,6 @@ bool AppListControllerImpl::ShouldDismissImmediately() {
   return current_y > ideal_shelf_y;
 }
 
-void AppListControllerImpl::GetNavigableContentsFactory(
-    mojo::PendingReceiver<content::mojom::NavigableContentsFactory> receiver) {
-  if (client_)
-    client_->GetNavigableContentsFactory(std::move(receiver));
-}
-
 int AppListControllerImpl::GetTargetYForAppListHide(aura::Window* root_window) {
   DCHECK(Shell::HasInstance());
   gfx::Point top_center =

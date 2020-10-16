@@ -20,7 +20,6 @@
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "services/content/public/cpp/test/fake_navigable_contents_factory.h"
 #include "ui/base/models/simple_menu_model.h"
 
 namespace ash {
@@ -48,10 +47,6 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   // Sets the number of apps that the model will be created with the next time
   // SetProfileByPath() is called.
   void set_next_profile_app_count(int apps) { next_profile_app_count_ = apps; }
-
-  content::FakeNavigableContentsFactory& fake_navigable_contents_factory() {
-    return fake_navigable_contents_factory_;
-  }
 
   // Sets whether the search engine is Google or not.
   void SetSearchEngineIsGoogle(bool is_google);
@@ -101,9 +96,6 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   bool ProcessHomeLauncherGesture(ui::GestureEvent* event) override;
   bool CanProcessEventsOnApplistViews() override;
   bool ShouldDismissImmediately() override;
-  void GetNavigableContentsFactory(
-      mojo::PendingReceiver<content::mojom::NavigableContentsFactory> receiver)
-      override;
   int GetTargetYForAppListHide(aura::Window* root_window) override;
   ash::AssistantViewDelegate* GetAssistantViewDelegate() override;
   void OnSearchResultVisibilityChanged(const std::string& id,
@@ -157,7 +149,6 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   std::unique_ptr<AppListTestModel> model_;
   std::unique_ptr<SearchModel> search_model_;
   std::vector<SkColor> wallpaper_prominent_colors_;
-  content::FakeNavigableContentsFactory fake_navigable_contents_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(AppListTestViewDelegate);
 };

@@ -90,6 +90,7 @@ static_library("exo") {
     "//services/viz/privileged/mojom/compositing",
     "//skia",
     "//third_party/blink/public/common",
+    "//ui/accessibility:ax_base",
     "//ui/aura",
     "//ui/base/cursor",
     "//ui/base/ime",

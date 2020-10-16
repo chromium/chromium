@@ -99,7 +99,6 @@ component("ui") {
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/mojom",
     "//chromeos/ui/vector_icons",
-    "//services/content/public/cpp",
     "//ui/aura",
     "//ui/compositor",
     "//ui/gfx",

@@ -79,9 +79,6 @@ class AppListClientImpl
   void OnFolderDeleted(int profile_id,
                        std::unique_ptr<ash::AppListItemMetadata> item) override;
   void OnPageBreakItemDeleted(int profile_id, const std::string& id) override;
-  void GetNavigableContentsFactory(
-      mojo::PendingReceiver<content::mojom::NavigableContentsFactory> receiver)
-      override;
   void OnSearchResultVisibilityChanged(const std::string& id,
                                        bool visible) override;
   void OnQuickSettingsChanged(

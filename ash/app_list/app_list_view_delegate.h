@@ -16,7 +16,6 @@
 #include "base/callback_forward.h"
 #include "base/strings/string16.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "services/content/public/mojom/navigable_contents_factory.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/events/event_constants.h"
@@ -156,13 +155,6 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
 
   // Returns whether the AppListView should dismiss immediately.
   virtual bool ShouldDismissImmediately() = 0;
-
-  // Acquires a factory interface from the client which can be used to acquire
-  // initialize new NavigableContents objects for embedding web contents into
-  // the app list UI.
-  virtual void GetNavigableContentsFactory(
-      mojo::PendingReceiver<content::mojom::NavigableContentsFactory>
-          receiver) = 0;
 
   // Gets the ideal y position for the close animation, which depends on
   // autohide state.

@@ -283,12 +283,6 @@ void AppListClientImpl::OnPageBreakItemDeleted(int profile_id,
   requested_model_updater->OnPageBreakItemDeleted(id);
 }
 
-void AppListClientImpl::GetNavigableContentsFactory(
-    mojo::PendingReceiver<content::mojom::NavigableContentsFactory> receiver) {
-  if (profile_)
-    profile_->BindNavigableContentsFactory(std::move(receiver));
-}
-
 void AppListClientImpl::OnSearchResultVisibilityChanged(const std::string& id,
                                                         bool visibility) {
   if (!search_controller_)
