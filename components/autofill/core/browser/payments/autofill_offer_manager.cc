@@ -62,14 +62,8 @@ void AutofillOfferManager::UpdateSuggestionsWithOffers(
   for (auto& suggestion : suggestions) {
     std::string id = suggestion.backend_id;
     if (eligible_offers_map.count(id)) {
-      base::string16 reward_amount =
-          base::UTF8ToUTF16(eligible_offers_map[id]->offer_reward_amount);
-
-      auto string_id = (reward_amount.find('%') == std::string::npos)
-                           ? IDS_AUTOFILL_OFFERS_DISCOUNT
-                           : IDS_AUTOFILL_OFFERS_CASHBACK;
       suggestion.offer_label =
-          l10n_util::GetStringFUTF16(string_id, reward_amount);
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_OFFERS_CASHBACK);
     }
   }
 }

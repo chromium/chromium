@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/strings/grit/components_strings.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -87,18 +88,6 @@ class AutofillOfferManagerTest : public testing::Test {
   std::unique_ptr<AutofillOfferManager> autofill_offer_manager_ = nullptr;
 };
 
-TEST_F(AutofillOfferManagerTest, UpdateSuggestionsWithOffers_EligibleDiscount) {
-  CreditCard card = CreateCreditCard(kTestGuid);
-  CreateCreditCardOfferForCard(card, "$4");
-
-  std::vector<Suggestion> suggestions = {Suggestion()};
-  suggestions[0].backend_id = kTestGuid;
-  autofill_offer_manager_->UpdateSuggestionsWithOffers(GURL(kTestUrlWithParam),
-                                                       suggestions);
-
-  EXPECT_EQ(suggestions[0].offer_label, base::UTF8ToUTF16("$4 Off"));
-}
-
 TEST_F(AutofillOfferManagerTest, UpdateSuggestionsWithOffers_EligibleCashback) {
   CreditCard card = CreateCreditCard(kTestGuid);
   CreateCreditCardOfferForCard(card, "5%");
@@ -108,7 +97,8 @@ TEST_F(AutofillOfferManagerTest, UpdateSuggestionsWithOffers_EligibleCashback) {
   autofill_offer_manager_->UpdateSuggestionsWithOffers(GURL(kTestUrlWithParam),
                                                        suggestions);
 
-  EXPECT_EQ(suggestions[0].offer_label, base::UTF8ToUTF16("5% Cash Back"));
+  EXPECT_EQ(suggestions[0].offer_label,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_OFFERS_CASHBACK));
 }
 
 TEST_F(AutofillOfferManagerTest, UpdateSuggestionsWithOffers_ExpiredOffer) {

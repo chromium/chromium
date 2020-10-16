@@ -507,10 +507,7 @@
 
   <!-- Credit card offers and rewards related strings -->
   <message name="IDS_AUTOFILL_OFFERS_CASHBACK" desc="Displays that a cashback offer will be rewarded if credit card is used on current page. Part of Autofill suggestions popup.">
-    <ph name="PERCENT">$1<ex>5%</ex></ph> Cash Back
-  </message>
-  <message name="IDS_AUTOFILL_OFFERS_DISCOUNT" desc="Displays a discount that will be rewarded if credit card is used on current page. Part of Autofill suggestions popup.">
-    <ph name="DISCOUNT">$1<ex>$$3</ex></ph> Off
+    Cashback linked
   </message>
 
 </grit-part>
