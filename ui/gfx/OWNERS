@@ -60,6 +60,3 @@ per-file *vector_icon*=estade@chromium.org
 
 # If you're doing structural changes get a review from one of the OWNERS.
 per-file BUILD.gn=*
-
-# COMPONENT: UI>GFX
-# TEAM: graphics-dev@chromium.org
