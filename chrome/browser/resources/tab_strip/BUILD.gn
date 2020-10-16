@@ -3,7 +3,68 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_grit.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+preprocess_folder = "preprocessed"
+preprocess_manifest = "preprocessed_manifest.json"
+preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+
+generate_grd("build_grd") {
+  grd_prefix = "tab_strip"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+  input_files = [
+    "alert_indicators/picture_in_picture_alt.svg",
+    "alert_indicators/serial_port.svg",
+    "alert_indicators/tab_audio_muting_rounded.svg",
+    "alert_indicators/tab_audio_rounded.svg",
+    "alert_indicators/tab_bluetooth_connected.svg",
+    "alert_indicators/tab_hid_connected.svg",
+    "alert_indicators/tab_media_capturing_with_arrow.svg",
+    "alert_indicators/tab_media_recording.svg",
+    "alert_indicators/tab_usb_connected.svg",
+    "alert_indicators/vr_headset.svg",
+    "tab_strip.html",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  deps = [
+    ":preprocess",
+    ":preprocess_generated",
+  ]
+  manifest_files = [
+    "$target_gen_dir/$preprocess_manifest",
+    "$target_gen_dir/$preprocess_gen_manifest",
+  ]
+}
+
+preprocess_grit("preprocess") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_manifest"
+  in_files = [
+    "custom_element.js",
+    "drag_manager.js",
+    "tab_strip_embedder_proxy.js",
+    "tab_swiper.js",
+    "tabs_api_proxy.js",
+  ]
+}
+
+preprocess_grit("preprocess_generated") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
+  in_files = [
+    "alert_indicator.js",
+    "alert_indicators.js",
+    "tab_group.js",
+    "tab_list.js",
+    "tab.js",
+  ]
+}
 
 js_type_check("closure_compile") {
   uses_js_modules = true
