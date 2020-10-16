@@ -519,6 +519,10 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
   // maximize and native window restore events.
   RegisterGlobalEventHook(EVENT_OBJECT_STATECHANGE, EVENT_OBJECT_STATECHANGE);
 
+  // Cloaking and uncloaking of windows should trigger an occlusion calculation.
+  // In particular, switching virtual desktops seems to generate these events.
+  RegisterGlobalEventHook(EVENT_OBJECT_CLOAKED, EVENT_OBJECT_UNCLOAKED);
+
   // Determine which subset of processes to set EVENT_OBJECT_LOCATIONCHANGE on
   // because otherwise event throughput is very high, as it generates events
   // for location changes of all objects, including the mouse moving on top of a
