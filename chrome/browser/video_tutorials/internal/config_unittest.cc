@@ -29,8 +29,9 @@ TEST(VideoTutorialsConfigTest, ConfigDefaultParams) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kVideoTutorials);
   EXPECT_EQ(Config::GetTutorialsServerURL().spec(),
-            "https://chromeupboarding-pa.googleapis.com/v1/videotutorials");
-  EXPECT_EQ(Config::GetDefaultPreferredLocale(), "hi");
+            "https://staging-gsaprototype-pa.sandbox.googleapis.com/v1/"
+            "videotutorials");
+  EXPECT_EQ(Config::GetDefaultPreferredLocale(), "en");
 }
 
 }  // namespace video_tutorials

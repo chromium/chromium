@@ -20,7 +20,9 @@ TutorialServiceImpl::TutorialServiceImpl(
     PrefService* pref_service)
     : tutorial_manager_(std::move(tutorial_manager)),
       tutorial_fetcher_(std::move(tutorial_fetcher)),
-      pref_service_(pref_service) {}
+      pref_service_(pref_service) {
+  StartFetchIfNecessary();
+}
 
 TutorialServiceImpl::~TutorialServiceImpl() = default;
 
@@ -61,7 +63,8 @@ void TutorialServiceImpl::StartFetchIfNecessary() {
 void TutorialServiceImpl::OnFetchFinished(
     bool success,
     std::unique_ptr<std::string> response_body) {
-  // TODO(shaktisahu): Save tutorials to the database.
+  pref_service_->SetTime(kLastUpdatedTimeKey, base::Time::Now());
+
   if (!success || !response_body)
     return;
 

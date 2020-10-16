@@ -11,13 +11,14 @@
 namespace video_tutorials {
 
 // Default base URL string for the server.
-constexpr char kDefaultBaseURL[] = "https://chromeupboarding-pa.googleapis.com";
+constexpr char kDefaultBaseURL[] =
+    "https://staging-gsaprototype-pa.sandbox.googleapis.com";
 
 // Default URL string for GetTutorials RPC.
 constexpr char kDefaultGetTutorialsPath[] = "/v1/videotutorials";
 
 // Hindi is the default locale.
-constexpr char kDefaultPreferredLocale[] = "hi";
+constexpr char kDefaultPreferredLocale[] = "en";
 
 // Finch parameter key for base server URL to retrieve the tutorials.
 constexpr char kBaseURLKey[] = "base_url";

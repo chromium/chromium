@@ -161,6 +161,7 @@ TEST_F(TutorialManagerTest, InitAndGetTutorials) {
 
   auto languages = manager()->GetSupportedLanguages();
   EXPECT_EQ(languages.size(), 2u);
+  manager()->SetPreferredLocale("hi");
   GetTutorials();
   EXPECT_EQ(last_results().size(), 2u);
 }
@@ -171,6 +172,7 @@ TEST_F(TutorialManagerTest, SaveNewData) {
   tutorial_store->InitStoreData("hi", groups);
   CreateTutorialManager(std::move(tutorial_store));
 
+  manager()->SetPreferredLocale("hi");
   auto languages = manager()->GetSupportedLanguages();
   EXPECT_EQ(languages.size(), 2u);
   GetTutorials();
