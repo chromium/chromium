@@ -5,7 +5,6 @@
 #include "content/browser/loader/prefetch_url_loader_service.h"
 
 #include "base/bind.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/time/default_tick_clock.h"
 #include "content/browser/loader/prefetch_url_loader.h"
@@ -27,14 +26,6 @@
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
-
-namespace {
-void DumpWithoutCrashing(const network::ResourceRequest& request) {
-  DEBUG_ALIAS_FOR_GURL(prefetch_buf, request.url);
-  DEBUG_ALIAS_FOR_GURL(initiator_buf, request.request_initiator->GetURL());
-  base::debug::DumpWithoutCrashing();
-}
-}  // namespace
 
 namespace content {
 
@@ -170,18 +161,9 @@ void PrefetchURLLoaderService::CreateLoaderAndStart(
 
   // Recursive prefetch from a cross-origin main resource prefetch.
   if (resource_request.recursive_prefetch_token) {
-    // A request's |recursive_prefetch_token| is only provided if the request is
-    // a recursive prefetch. This means it is expected that the current
-    // context's |cross_origin_factory| was already created.
+    // TODO(crbug.com/1123715): Figure out why we're seeing this condition hold
+    // true in the field.
     if (!current_context.cross_origin_factory) {
-      // This could happen due to a compromised renderer passing in a recursive
-      // prefetch token for a request that's not a recursive prefetch. Cancel
-      // the request.
-      DVLOG(1) << "Recursive prefetch token unexpectedly set.";
-      DumpWithoutCrashing(resource_request);
-      mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
-          ->OnComplete(
-              network::URLLoaderCompletionStatus(net::ERR_INVALID_ARGUMENT));
       return;
     }
 
@@ -195,8 +177,6 @@ void PrefetchURLLoaderService::CreateLoaderAndStart(
     // a request in a special way. We'll cancel the request.
     if (isolation_info_iterator ==
         current_context.prefetch_isolation_infos.end()) {
-      DVLOG(1) << "Recursive prefetch request is missing prefetch isolation";
-      DumpWithoutCrashing(resource_request);
       mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
           ->OnComplete(
               network::URLLoaderCompletionStatus(net::ERR_INVALID_ARGUMENT));
