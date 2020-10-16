@@ -4,15 +4,14 @@
 
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_ash.h"
 
-#include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/macros.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/ash/tablet_mode_page_behavior.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/immersive/immersive_revealed_lock.h"
 #include "content/public/browser/web_contents.h"
@@ -125,7 +124,7 @@ void ImmersiveModeControllerAsh::OnFindBarVisibleBoundsChanged(
 
 bool ImmersiveModeControllerAsh::ShouldStayImmersiveAfterExitingFullscreen() {
   return !browser_view_->CanSupportTabStrip() &&
-         ash::TabletMode::Get()->InTabletMode();
+         chromeos::TabletState::Get()->InTabletMode();
 }
 
 void ImmersiveModeControllerAsh::OnWidgetActivationChanged(
@@ -134,7 +133,7 @@ void ImmersiveModeControllerAsh::OnWidgetActivationChanged(
   if (browser_view_->CanSupportTabStrip())
     return;
 
-  if (!ash::TabletMode::Get()->InTabletMode())
+  if (!chromeos::TabletState::Get()->InTabletMode())
     return;
 
   // Don't use immersive mode as long as we are in the locked fullscreen mode
