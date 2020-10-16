@@ -40,6 +40,10 @@ class SharedImageGLBackingProduceDawnTest : public WebGPUTest {
     WebGPUTest::Options option;
     Initialize(option);
 
+    if (ShouldSkipTest()) {
+      return;
+    }
+
     gpu::ContextCreationAttribs attributes;
     attributes.alpha_size = 8;
     attributes.depth_size = 24;

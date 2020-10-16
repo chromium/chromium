@@ -86,7 +86,6 @@ class WebGPUTest : public testing::Test {
   // SharedImages on macOS require a valid image factory.
   GpuMemoryBufferFactoryIOSurface image_factory_;
 #endif
-  bool is_initialized_ = false;
 
   webgpu::DawnDeviceClientID next_device_client_id_ = 1;
 };

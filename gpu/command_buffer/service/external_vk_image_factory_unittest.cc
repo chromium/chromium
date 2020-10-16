@@ -41,7 +41,15 @@ namespace {
 
 class ExternalVkImageFactoryTest : public testing::Test {
  protected:
+  bool VulkanSupported() const {
+    // crbug.com(941685, 1139366): Vulkan driver crashes on Linux FYI Release
+    // (AMD R7 240).
+    return !GPUTestBotConfig::CurrentConfigMatches("Linux AMD");
+  }
   void SetUp() override {
+    if (!VulkanSupported()) {
+      return;
+    }
     // Set up the Vulkan implementation and context provider.
     vulkan_implementation_ = gpu::CreateVulkanImplementation();
     DCHECK(vulkan_implementation_) << "Failed to create Vulkan implementation";
@@ -129,6 +137,10 @@ class ExternalVkImageFactoryTest : public testing::Test {
 #if BUILDFLAG(USE_DAWN)
 
 TEST_F(ExternalVkImageFactoryTest, DawnWrite_SkiaVulkanRead) {
+  if (!VulkanSupported()) {
+    DLOG(ERROR) << "Test skipped because Vulkan isn't supported.";
+    return;
+  }
   // Create a backing using mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
   const auto format = viz::ResourceFormat::RGBA_8888;
@@ -242,6 +254,10 @@ TEST_F(ExternalVkImageFactoryTest, DawnWrite_SkiaVulkanRead) {
 }
 
 TEST_F(ExternalVkImageFactoryTest, SkiaVulkanWrite_DawnRead) {
+  if (!VulkanSupported()) {
+    DLOG(ERROR) << "Test skipped because Vulkan isn't supported.";
+    return;
+  }
   // Create a backing using mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
   const auto format = viz::ResourceFormat::RGBA_8888;

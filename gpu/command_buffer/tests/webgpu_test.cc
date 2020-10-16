@@ -39,8 +39,6 @@ WebGPUTest::WebGPUTest() = default;
 WebGPUTest::~WebGPUTest() = default;
 
 bool WebGPUTest::WebGPUSupported() const {
-  DCHECK(is_initialized_);  // Did you call WebGPUTest::Initialize?
-
   // crbug.com(941685): Vulkan driver crashes on Linux FYI Release (AMD R7 240).
   // Win7 does not support WebGPU
   if (GPUTestBotConfig::CurrentConfigMatches("Linux AMD") ||
@@ -63,6 +61,10 @@ bool WebGPUTest::WebGPUSharedImageSupported() const {
 }
 
 void WebGPUTest::SetUp() {
+  if (!WebGPUSupported()) {
+    return;
+  }
+
   gpu::GpuPreferences gpu_preferences;
   gpu_preferences.enable_webgpu = true;
 #if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && BUILDFLAG(USE_DAWN)
@@ -81,8 +83,6 @@ void WebGPUTest::TearDown() {
 }
 
 void WebGPUTest::Initialize(const Options& options) {
-  is_initialized_ = true;
-
   if (!WebGPUSupported()) {
     return;
   }
@@ -175,24 +175,24 @@ WebGPUTest::DeviceAndClientID WebGPUTest::GetNewDeviceAndClientID() {
 }
 
 TEST_F(WebGPUTest, FlushNoCommands) {
-  Initialize(WebGPUTest::Options());
-
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped because WebGPU isn't supported";
     return;
   }
+
+  Initialize(WebGPUTest::Options());
 
   webgpu()->FlushCommands();
 }
 
 // Referred from GLES2ImplementationTest/ReportLoss
 TEST_F(WebGPUTest, ReportLoss) {
-  Initialize(WebGPUTest::Options());
-
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped because WebGPU isn't supported";
     return;
   }
+
+  Initialize(WebGPUTest::Options());
 
   GpuControlClient* webgpu_as_client = webgpu();
   int lost_count = 0;
@@ -207,12 +207,12 @@ TEST_F(WebGPUTest, ReportLoss) {
 
 // Referred from GLES2ImplementationTest/ReportLossReentrant
 TEST_F(WebGPUTest, ReportLossReentrant) {
-  Initialize(WebGPUTest::Options());
-
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped because WebGPU isn't supported";
     return;
   }
+
+  Initialize(WebGPUTest::Options());
 
   GpuControlClient* webgpu_as_client = webgpu();
   int lost_count = 0;
@@ -226,12 +226,12 @@ TEST_F(WebGPUTest, ReportLossReentrant) {
 }
 
 TEST_F(WebGPUTest, RequestAdapterAfterContextLost) {
-  Initialize(WebGPUTest::Options());
-
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped because WebGPU isn't supported";
     return;
   }
+
+  Initialize(WebGPUTest::Options());
 
   webgpu()->OnGpuControlLostContext();
   ASSERT_FALSE(
@@ -240,12 +240,12 @@ TEST_F(WebGPUTest, RequestAdapterAfterContextLost) {
 }
 
 TEST_F(WebGPUTest, RequestDeviceAfterContextLost) {
-  Initialize(WebGPUTest::Options());
-
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped because WebGPU isn't supported";
     return;
   }
+
+  Initialize(WebGPUTest::Options());
 
   webgpu()->OnGpuControlLostContext();
   ASSERT_FALSE(webgpu()->RequestDeviceAsync(
