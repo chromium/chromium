@@ -24,20 +24,21 @@ import {Viewport} from './viewport.js';
  */
 let ViewerInkHostElement;
 
-// Controller for annotation mode, on Chrome OS only. Fires the following events
-// from its event target:
-// has-unsaved-changes: Fired to indicate there are ink annotations that have
-//     not been saved.
-// set-annotation-undo-state: Contains information about whether undo or redo
-//     options are available.
-export class InkController extends ContentController {
+/**
+ * Controller for annotation mode, on Chrome OS only. Fires the following events
+ * from its event target:
+ *   has-unsaved-changes: Fired to indicate there are ink annotations that have
+ *       not been saved.
+ *   set-annotation-undo-state: Contains information about whether undo or redo
+ *       options are available.
+ *  @implements {ContentController}
+ */
+export class InkController {
   /**
    * @param {!Viewport} viewport
    * @param {!HTMLDivElement} contentElement
    */
   constructor(viewport, contentElement) {
-    super();
-
     /** @private {!Viewport} */
     this.viewport_ = viewport;
 
@@ -66,6 +67,12 @@ export class InkController extends ContentController {
       this.inkHost_.setAnnotationTool(tool);
     }
   }
+
+  beforeZoom() {}
+
+  afterZoom() {}
+
+  print() {}
 
   /** @override */
   rotateClockwise() {

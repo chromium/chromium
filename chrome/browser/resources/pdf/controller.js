@@ -62,7 +62,7 @@ function createToken() {
       .join('');
 }
 
-/** @abstract */
+/** @interface */
 export class ContentController {
   constructor() {}
 
@@ -72,22 +72,14 @@ export class ContentController {
 
   viewportChanged() {}
 
-  /** @abstract */
   rotateClockwise() {}
 
-  /** @abstract */
   rotateCounterclockwise() {}
 
-  /**
-   * @param {boolean} displayAnnotations
-   * @abstract
-   */
+  /** @param {boolean} displayAnnotations */
   setDisplayAnnotations(displayAnnotations) {}
 
-  /**
-   * @param {boolean} enableTwoUpView
-   * @abstract
-   */
+  /** @param {boolean} enableTwoUpView */
   setTwoUpView(enableTwoUpView) {}
 
   /** Triggers printing of the current document. */
@@ -104,8 +96,7 @@ export class ContentController {
    * @param {!SaveRequestType} requestType The type of save request. If
    *     ANNOTATION, a response is required, otherwise the controller may save
    *     the document to disk internally.
-   * @return {Promise<{fileName: string, dataToSave: ArrayBuffer}>}
-   * @abstract
+   * @return {!Promise<!{fileName: string, dataToSave: !ArrayBuffer}>}
    */
   save(requestType) {}
 
@@ -121,22 +112,21 @@ export class ContentController {
    * Loads PDF document from `data` activates UI.
    * @param {string} fileName
    * @param {!ArrayBuffer} data
-   * @return {Promise<void>}
-   * @abstract
+   * @return {!Promise<void>}
    */
   load(fileName, data) {}
 
-  /**
-   * Unloads the current document and removes the UI.
-   * @abstract
-   */
+  /** Unloads the current document and removes the UI. */
   unload() {}
 }
 
-// PDF plugin controller, responsible for communicating with the embedded plugin
-// element. Dispatches a 'plugin-message' event containing the message from the
-// plugin, if a message type not handled by this controller is received.
-export class PluginController extends ContentController {
+/**
+ * PDF plugin controller, responsible for communicating with the embedded plugin
+ * element. Dispatches a 'plugin-message' event containing the message from the
+ * plugin, if a message type not handled by this controller is received.
+ * @implements {ContentController}
+ */
+export class PluginController {
   /**
    * @param {!HTMLEmbedElement} plugin
    * @param {!Viewport} viewport
@@ -144,8 +134,6 @@ export class PluginController extends ContentController {
    * @param {function():?Promise} getLoadedCallback
    */
   constructor(plugin, viewport, getIsUserInitiatedCallback, getLoadedCallback) {
-    super();
-
     /** @private {!HTMLEmbedElement} */
     this.plugin_ = plugin;
 
@@ -196,6 +184,12 @@ export class PluginController extends ContentController {
   updateScroll(x, y) {
     this.postMessage_({type: 'updateScroll', x, y});
   }
+
+  viewportChanged() {}
+
+  redo() {}
+
+  undo() {}
 
   /**
    * Notify the plugin to stop reacting to scroll events while zoom is taking
