@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/buildflags.h"
@@ -79,6 +80,15 @@ class TestingProfile : public Profile {
   // directory. Unit-tests, though, should use |kInitialProfile|, which is
   // always "Default", because they are runnining without logged-in user.
   static const char kTestUserProfileDir[];
+
+  // Sets the feature list to enable/disable ephemeral Guest profiles.
+  // Returns true if ephemeral Guest profiles are supported on the platform and
+  // feature list is initialized.
+  // TODO(https://crbug.com/1125474): Expand to cover ChromeOS when ChromeOS
+  // code supports ephemeral Guest profiles.
+  static bool SetScopedFeatureListForEphemeralGuestProfiles(
+      base::test::ScopedFeatureList& scoped_feature_list,
+      bool enabled);
 
   // Default constructor that cannot be used with multi-profiles.
   TestingProfile();

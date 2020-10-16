@@ -54,6 +54,7 @@
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -184,6 +185,26 @@ const char TestingProfile::kTestUserProfileDir[] = "test-user";
 #else
 const char TestingProfile::kTestUserProfileDir[] = "Default";
 #endif
+
+// static
+bool TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
+    base::test::ScopedFeatureList& scoped_feature_list,
+    bool enabled) {
+// This feature is now only supported on Windows, Linux, and Mac.
+#if defined(OS_WIN) || defined(OS_MAC) || \
+    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+  if (enabled)
+    scoped_feature_list.InitAndEnableFeature(
+        features::kEnableEphemeralGuestProfilesOnDesktop);
+  else
+    scoped_feature_list.InitAndDisableFeature(
+        features::kEnableEphemeralGuestProfilesOnDesktop);
+  return true;
+#else
+  return false;
+#endif  // defined(OS_WIN) || defined(OS_MAC) || (defined(OS_LINUX) &&
+        // !defined(OS_CHROMEOS))
+}
 
 TestingProfile::TestingProfile() : TestingProfile(base::FilePath()) {}
 

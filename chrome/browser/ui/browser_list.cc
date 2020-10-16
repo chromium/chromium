@@ -95,9 +95,8 @@ void BrowserList::AddBrowser(Browser* browser) {
 
   if (browser->profile()->IsGuestSession() ||
       browser->profile()->IsEphemeralGuestProfile()) {
-    base::UmaHistogramCounts100(
-        "Browser.WindowCount.Guest",
-        GetOffTheRecordBrowsersActiveForProfile(browser->profile()));
+    base::UmaHistogramCounts100("Browser.WindowCount.Guest",
+                                GetGuestBrowserCount());
   } else if (browser->profile()->IsIncognitoProfile()) {
     base::UmaHistogramCounts100(
         "Browser.WindowCount.Incognito",
