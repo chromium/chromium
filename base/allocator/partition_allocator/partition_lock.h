@@ -115,15 +115,14 @@ class LOCKABLE MaybeSpinLock<true> {
       // Note that we don't rely on a DCHECK() in base::Lock(), as it would
       // itself allocate. Meaning that without this code, a reentrancy issue
       // hangs on Linux.
-      if (UNLIKELY(TS_UNCHECKED_READ(owning_thread_ref_.load(
-                       std::memory_order_relaxed)) == current_thread)) {
+      if (UNLIKELY(TS_UNCHECKED_READ(owning_thread_ref_) == current_thread)) {
         // Trying to acquire lock while it's held by this thread: reentrancy
         // issue.
         IMMEDIATE_CRASH();
       }
       lock_.Acquire();
     }
-    owning_thread_ref_.store(current_thread, std::memory_order_relaxed);
+    owning_thread_ref_ = current_thread;
 #else
     lock_.Acquire();
 #endif
@@ -131,7 +130,7 @@ class LOCKABLE MaybeSpinLock<true> {
 
   void Unlock() UNLOCK_FUNCTION() {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && DCHECK_IS_ON()
-    owning_thread_ref_.store(PlatformThreadRef(), std::memory_order_relaxed);
+    owning_thread_ref_ = PlatformThreadRef();
 #endif
     lock_.Release();
   }
@@ -149,7 +148,7 @@ class LOCKABLE MaybeSpinLock<true> {
 #endif  // defined(PA_HAS_SPINNING_MUTEX)
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && DCHECK_IS_ON()
-  std::atomic<PlatformThreadRef> owning_thread_ref_ GUARDED_BY(lock_);
+  PlatformThreadRef owning_thread_ref_ GUARDED_BY(lock_);
 #endif
 };
 // We want PartitionRoot to not have a global destructor, so this should not
