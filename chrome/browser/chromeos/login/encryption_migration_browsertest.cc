@@ -59,11 +59,6 @@ const test::UIPath kInsufficientSpaceSkipButton = {
 const test::UIPath kInsufficientSpaceRestartButton = {
     kEncryptionMigrationId, "insufficient-space-restart-button"};
 
-OobeUI* GetOobeUI() {
-  auto* host = LoginDisplayHost::default_host();
-  return host ? host->GetOobeUI() : nullptr;
-}
-
 }  // namespace
 
 class EncryptionMigrationTest : public OobeBaseTest {
