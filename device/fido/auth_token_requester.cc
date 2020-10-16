@@ -1,0 +1,326 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "device/fido/auth_token_requester.h"
+
+#include <set>
+#include <utility>
+
+#include "base/bind.h"
+#include "base/logging.h"
+#include "base/stl_util.h"
+#include "components/device_event_log/device_event_log.h"
+#include "device/fido/authenticator_supported_options.h"
+#include "device/fido/fido_authenticator.h"
+
+namespace device {
+
+using ClientPinAvailability =
+    AuthenticatorSupportedOptions::ClientPinAvailability;
+using UserVerificationAvailability =
+    AuthenticatorSupportedOptions::UserVerificationAvailability;
+using BioEnrollmentAvailability =
+    AuthenticatorSupportedOptions::BioEnrollmentAvailability;
+
+AuthTokenRequester::Delegate::~Delegate() = default;
+
+AuthTokenRequester::Options::Options() = default;
+AuthTokenRequester::Options::Options(Options&&) = default;
+AuthTokenRequester::Options& AuthTokenRequester::Options::operator=(Options&&) =
+    default;
+AuthTokenRequester::Options::~Options() = default;
+
+AuthTokenRequester::AuthTokenRequester(Delegate* delegate,
+                                       FidoAuthenticator* authenticator,
+                                       Options options)
+    : delegate_(delegate),
+      authenticator_(authenticator),
+      options_(std::move(options)) {
+  DCHECK(delegate_);
+  DCHECK(authenticator_);
+  DCHECK(authenticator_->Options());
+  DCHECK(!options_.token_permissions.empty());
+  DCHECK(!options_.rp_id || !options_.rp_id->empty());
+  // Authenticators with CTAP2.0-style pinToken support only support certain
+  // default permissions.
+  DCHECK(
+      authenticator_->Options()->supports_pin_uv_auth_token ||
+      base::STLSetDifference<std::set<pin::Permissions>>(
+          options_.token_permissions,
+          std::set<pin::Permissions>{pin::Permissions::kMakeCredential,
+                                     pin::Permissions::kGetAssertion,
+                                     pin::Permissions::kBioEnrollment,
+                                     pin::Permissions::kCredentialManagement})
+          .empty());
+}
+
+AuthTokenRequester::~AuthTokenRequester() = default;
+
+void AuthTokenRequester::ObtainPINUVAuthToken() {
+  if (authenticator_->Options()->supports_pin_uv_auth_token) {
+    // Only attempt to obtain a token through internal UV if the authenticator
+    // supports CTAP 2.1 pinUvAuthTokens. If it does not, it could be a 2.0
+    // authenticator that supports UV without any sort of token.
+    const UserVerificationAvailability user_verification_availability =
+        authenticator_->Options()->user_verification_availability;
+    switch (user_verification_availability) {
+      case UserVerificationAvailability::kNotSupported:
+      case UserVerificationAvailability::kSupportedButNotConfigured:
+        // Try PIN first.
+        break;
+      case UserVerificationAvailability::kSupportedAndConfigured:
+        ObtainTokenFromInternalUV();
+        return;
+    }
+  }
+
+  const ClientPinAvailability client_pin_availability =
+      authenticator_->Options()->client_pin_availability;
+  switch (client_pin_availability) {
+    case ClientPinAvailability::kNotSupported:
+      delegate_->HavePINUVAuthTokenResultForAuthenticator(
+          authenticator_, Result::kPreTouchUnsatisfiableRequest, base::nullopt);
+      return;
+    case ClientPinAvailability::kSupportedAndPinSet:
+      if (options_.skip_pin_touch) {
+        ObtainTokenFromPIN();
+        return;
+      }
+      authenticator_->GetTouch(base::BindOnce(
+          &AuthTokenRequester::ObtainTokenFromPIN, weak_factory_.GetWeakPtr()));
+      return;
+    case ClientPinAvailability::kSupportedButPinNotSet:
+      if (options_.skip_pin_touch) {
+        ObtainTokenFromNewPIN();
+        return;
+      }
+      authenticator_->GetTouch(
+          base::BindOnce(&AuthTokenRequester::ObtainTokenFromNewPIN,
+                         weak_factory_.GetWeakPtr()));
+      return;
+  }
+}
+
+void AuthTokenRequester::ObtainTokenFromInternalUV() {
+  authenticator_->GetUvRetries(base::BindOnce(
+      &AuthTokenRequester::OnGetUVRetries, weak_factory_.GetWeakPtr()));
+}
+
+void AuthTokenRequester::OnGetUVRetries(
+    CtapDeviceResponseCode status,
+    base::Optional<pin::RetriesResponse> response) {
+  if (status != CtapDeviceResponseCode::kSuccess) {
+    delegate_->HavePINUVAuthTokenResultForAuthenticator(
+        authenticator_, Result::kPreTouchAuthenticatorResponseInvalid,
+        base::nullopt);
+    return;
+  }
+
+  if (response->retries == 0) {
+    // The authenticator was locked prior to calling
+    // ObtainTokenFromInternalUV(). Fall back to PIN if able.
+    if (authenticator_->Options()->client_pin_availability ==
+        ClientPinAvailability::kSupportedAndPinSet) {
+      delegate_->InternalUVLockedForAuthToken();
+      if (options_.skip_pin_touch) {
+        ObtainTokenFromPIN();
+        return;
+      }
+      authenticator_->GetTouch(base::BindOnce(
+          &AuthTokenRequester::ObtainTokenFromPIN, weak_factory_.GetWeakPtr()));
+      return;
+    }
+    authenticator_->GetTouch(base::BindOnce(
+        &AuthTokenRequester::NotifyAuthenticatorSelectedAndFailWithResult,
+        weak_factory_.GetWeakPtr(),
+        Result::kPostTouchAuthenticatorInternalUVLock));
+    return;
+  }
+
+  delegate_->PromptForInternalUVRetry(response->retries);
+  authenticator_->GetUvToken({std::begin(options_.token_permissions),
+                              std::end(options_.token_permissions)},
+                             options_.rp_id,
+                             base::BindOnce(&AuthTokenRequester::OnGetUVToken,
+                                            weak_factory_.GetWeakPtr()));
+}
+
+void AuthTokenRequester::OnGetUVToken(
+    CtapDeviceResponseCode status,
+    base::Optional<pin::TokenResponse> response) {
+  if (!base::Contains(
+          std::set<CtapDeviceResponseCode>{
+              CtapDeviceResponseCode::kCtap2ErrUvInvalid,
+              CtapDeviceResponseCode::kCtap2ErrOperationDenied,
+              CtapDeviceResponseCode::kCtap2ErrUvBlocked,
+              CtapDeviceResponseCode::kSuccess},
+          status)) {
+    // The request was rejected outright, no touch occurred.
+    FIDO_LOG(ERROR) << "Ignoring status " << static_cast<int>(status)
+                    << " from " << authenticator_->GetDisplayName();
+    delegate_->HavePINUVAuthTokenResultForAuthenticator(
+        authenticator_, Result::kPreTouchAuthenticatorResponseInvalid,
+        base::nullopt);
+    return;
+  }
+
+  NotifyAuthenticatorSelected();
+
+  if (status == CtapDeviceResponseCode::kCtap2ErrOperationDenied) {
+    // The user explicitly denied to the operation on an authenticator with
+    // a display.
+    delegate_->HavePINUVAuthTokenResultForAuthenticator(
+        authenticator_, Result::kPostTouchAuthenticatorOperationDenied,
+        base::nullopt);
+    return;
+  }
+
+  if (status == CtapDeviceResponseCode::kCtap2ErrUvInvalid) {
+    authenticator_->GetUvRetries(base::BindOnce(
+        &AuthTokenRequester::OnGetUVRetries, weak_factory_.GetWeakPtr()));
+    return;
+  }
+
+  if (status == CtapDeviceResponseCode::kCtap2ErrUvBlocked) {
+    // Fall back to PIN if able.
+    if (authenticator_->Options()->client_pin_availability ==
+        ClientPinAvailability::kSupportedAndPinSet) {
+      delegate_->InternalUVLockedForAuthToken();
+      ObtainTokenFromPIN();
+      return;
+    }
+    // This can be returned pre-touch if the authenticator was already locked at
+    // the time GetUvToken() was called. However, we checked the number of
+    // remaining retries just before that to handle that case.
+    delegate_->HavePINUVAuthTokenResultForAuthenticator(
+        authenticator_, Result::kPostTouchAuthenticatorInternalUVLock,
+        base::nullopt);
+    return;
+  }
+
+  if (status != CtapDeviceResponseCode::kSuccess) {
+    NOTREACHED();
+    return;
+  }
+
+  delegate_->HavePINUVAuthTokenResultForAuthenticator(
+      authenticator_, Result::kSuccess, *response);
+}
+
+void AuthTokenRequester::ObtainTokenFromPIN() {
+  NotifyAuthenticatorSelected();
+  authenticator_->GetPinRetries(base::BindOnce(
+      &AuthTokenRequester::OnGetPINRetries, weak_factory_.GetWeakPtr()));
+}
+
+void AuthTokenRequester::OnGetPINRetries(
+    CtapDeviceResponseCode status,
+    base::Optional<pin::RetriesResponse> response) {
+  if (status != CtapDeviceResponseCode::kSuccess) {
+    delegate_->HavePINUVAuthTokenResultForAuthenticator(
+        authenticator_, Result::kPostTouchAuthenticatorResponseInvalid,
+        base::nullopt);
+    return;
+  }
+  if (response->retries == 0) {
+    delegate_->HavePINUVAuthTokenResultForAuthenticator(
+        authenticator_, Result::kPostTouchAuthenticatorPINHardLock,
+        base::nullopt);
+    return;
+  }
+  delegate_->CollectExistingPIN(
+      response->retries,
+      base::BindOnce(&AuthTokenRequester::HavePIN, weak_factory_.GetWeakPtr()));
+}
+
+void AuthTokenRequester::HavePIN(std::string pin) {
+  DCHECK(pin::IsValid(pin));
+  authenticator_->GetPINToken(std::move(pin),
+                              {std::begin(options_.token_permissions),
+                               std::end(options_.token_permissions)},
+                              options_.rp_id,
+                              base::BindOnce(&AuthTokenRequester::OnGetPINToken,
+                                             weak_factory_.GetWeakPtr()));
+  return;
+}
+
+void AuthTokenRequester::OnGetPINToken(
+    CtapDeviceResponseCode status,
+    base::Optional<pin::TokenResponse> response) {
+  if (status == CtapDeviceResponseCode::kCtap2ErrPinInvalid) {
+    ObtainTokenFromPIN();
+    return;
+  }
+
+  if (status != CtapDeviceResponseCode::kSuccess) {
+    Result ret;
+    switch (status) {
+      case CtapDeviceResponseCode::kCtap2ErrPinAuthBlocked:
+        ret = Result::kPostTouchAuthenticatorPINSoftLock;
+        break;
+      case CtapDeviceResponseCode::kCtap2ErrPinBlocked:
+        ret = Result::kPostTouchAuthenticatorPINHardLock;
+        break;
+      default:
+        ret = Result::kPostTouchAuthenticatorResponseInvalid;
+        break;
+    }
+    delegate_->HavePINUVAuthTokenResultForAuthenticator(authenticator_, ret,
+                                                        base::nullopt);
+    return;
+  }
+
+  delegate_->HavePINUVAuthTokenResultForAuthenticator(
+      authenticator_, Result::kSuccess, std::move(*response));
+}
+
+void AuthTokenRequester::ObtainTokenFromNewPIN() {
+  NotifyAuthenticatorSelected();
+  delegate_->CollectNewPIN(base::BindOnce(&AuthTokenRequester::HaveNewPIN,
+                                          weak_factory_.GetWeakPtr()));
+}
+
+void AuthTokenRequester::HaveNewPIN(const std::string pin) {
+  DCHECK(pin::IsValid(pin));
+  authenticator_->SetPIN(pin, base::BindOnce(&AuthTokenRequester::OnSetPIN,
+                                             weak_factory_.GetWeakPtr(), pin));
+  return;
+}
+
+void AuthTokenRequester::OnSetPIN(std::string pin,
+                                  CtapDeviceResponseCode status,
+                                  base::Optional<pin::EmptyResponse> response) {
+  if (status != CtapDeviceResponseCode::kSuccess) {
+    delegate_->HavePINUVAuthTokenResultForAuthenticator(
+        authenticator_, Result::kPostTouchAuthenticatorResponseInvalid,
+        base::nullopt);
+    return;
+  }
+
+  // Having just set the PIN, we need to immediately turn around and use it to
+  // get a PIN token.
+  authenticator_->GetPINToken(std::move(pin),
+                              {std::begin(options_.token_permissions),
+                               std::end(options_.token_permissions)},
+                              options_.rp_id,
+                              base::BindOnce(&AuthTokenRequester::OnGetPINToken,
+                                             weak_factory_.GetWeakPtr()));
+}
+
+void AuthTokenRequester::NotifyAuthenticatorSelected() {
+  if (authenticator_was_selected_) {
+    return;
+  }
+  authenticator_was_selected_ = true;
+  delegate_->AuthenticatorSelectedForPINUVAuthToken(authenticator_);
+}
+
+void AuthTokenRequester::NotifyAuthenticatorSelectedAndFailWithResult(
+    Result result) {
+  NotifyAuthenticatorSelected();
+  delegate_->HavePINUVAuthTokenResultForAuthenticator(authenticator_, result,
+                                                      base::nullopt);
+}
+
+}  // namespace device

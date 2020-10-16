@@ -287,6 +287,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TokenResponse {
       base::span<const uint8_t> client_data_hash) const;
 
   PINUVAuthProtocol protocol() const { return protocol_; }
+  const std::vector<uint8_t>& token_for_testing() const { return token_; }
 
  private:
   explicit TokenResponse(PINUVAuthProtocol protocol);

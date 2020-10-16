@@ -147,6 +147,7 @@ test("device_unittests") {
   if (!is_android) {
     sources += [
       "fido/attestation_statement_formats_unittest.cc",
+      "fido/auth_token_requester_unittest.cc",
       "fido/bio/enrollment_handler_unittest.cc",
       "fido/ble_adapter_manager_unittest.cc",
       "fido/cable/fido_ble_connection_unittest.cc",

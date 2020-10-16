@@ -82,6 +82,8 @@ component("fido") {
       "attestation_statement.h",
       "attestation_statement_formats.cc",
       "attestation_statement_formats.h",
+      "auth_token_requester.cc",
+      "auth_token_requester.h",
       "authenticator_data.cc",
       "authenticator_data.h",
       "authenticator_get_assertion_response.cc",
