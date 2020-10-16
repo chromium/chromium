@@ -115,7 +115,7 @@ Polymer({
    * @private
    */
   shouldAllowUrlsEdit_() {
-    return this.get('prefs.session.startup_urls.enforcement') !=
+    return this.get('prefs.session.startup_urls.enforcement') !==
         chrome.settingsPrivate.Enforcement.ENFORCED;
   },
 });
