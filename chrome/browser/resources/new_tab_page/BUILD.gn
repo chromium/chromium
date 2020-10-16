@@ -11,6 +11,8 @@ import("//ui/webui/webui_features.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
+  closure_flags = default_closure_args + [ "browser_resolver_prefix_replacements=\"chrome://kaleidoscope/=../../chrome/browser/media/kaleidoscope/internal/resources\"" ]
+
   deps = [
     ":app",
     ":browser_proxy",

@@ -50,8 +50,6 @@ js_modules_args = [
   "browser_resolver_prefix_replacements=\"chrome://resources/=./\"",
   "browser_resolver_prefix_replacements=\"//resources/=./\"",
 
-  "browser_resolver_prefix_replacements=\"chrome://kaleidoscope/=../../chrome/browser/media/kaleidoscope/internal/resources\"",
-
   # Turn off primarily because cr.define() should not be used in any JS Modules
   # based code, and secondarily because of b/133333578.
   "chrome_pass=false",
