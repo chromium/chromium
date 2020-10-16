@@ -6,6 +6,7 @@ import("//build/config/android/rules.gni")
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable-ldrtl/text_icon.xml",
     "java/res/drawable/camera_img.xml",
     "java/res/drawable/custom_toast_background.xml",
     "java/res/drawable/delete_icon.xml",
