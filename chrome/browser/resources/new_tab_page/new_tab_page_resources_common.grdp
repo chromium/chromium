@@ -43,6 +43,8 @@
       file="icons/mail.svg" type="BINDATA" />
   <include name="IDR_NEW_TAB_PAGE_UPLOAD_SVG" file="icons/upload.svg"
       type="BINDATA" />
+  <include name="IDR_NEW_TAB_PAGE_CART_SVG" file="icons/cart.svg"
+      type="BINDATA" />
   <include name="IDR_NEW_TAB_PAGE_NEW_TAB_PAGE_HTML"
       file="new_tab_page.html" type="BINDATA" />
   <include name="IDR_NEW_TAB_PAGE_SHARED_VARS_CSS"

@@ -23,6 +23,8 @@ const char* kAddToCart[] = {
   "ajax=add_to_cart",
   "action: woocommerce_add_to_cart",
   "add-to-cart: 123",
+  "queryString=submit.addToCart",
+  "queryString=submit.AddToCart",
 };
 
 const char* kNotAddToCart[] = {

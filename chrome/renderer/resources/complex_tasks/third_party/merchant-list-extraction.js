@@ -656,6 +656,16 @@ function documentPositionComparator (a, b) {
 
 function extractAllItems(root, overlay=false) {
   let items = [];
+  // Root element being null could be due to the
+  // fact that the cart is emptied, or the cart
+  // element has not been loaded yet.
+  if (root == null) {
+    if (document.readyState == 'complete') {
+      return [];
+    } else {
+      return false;
+    }
+  }
 
   if (items.length == 0) {
     // Generic pattern
@@ -733,6 +743,11 @@ function getCartRootElement() {
     return document.querySelector('div.cart-list.cart-list-active');
   } else if (hostname.endsWith('amazon.com')) {
     return document.getElementById('activeCartViewForm');
+  } else if (hostname.endsWith('bestbuy.com')) {
+    return document.getElementsByClassName('item-list')[0];
+  } else if (hostname.endsWith('homedepot.com')) {
+    cartContainer =  document.getElementsByClassName("cart-main-container")[0];
+    return cartContainer == null ? null : cartContainer.getElementsByClassName("grid")[4];
   }
   return document;
 }

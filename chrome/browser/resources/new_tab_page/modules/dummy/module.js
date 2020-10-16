@@ -57,26 +57,12 @@ class DummyModuleElement extends PolymerElement {
     return faviconUrl.href;
   }
 
-  shouldShowThumbnailGrid_(length) {
-    return length > 1;
-  }
-
-  shouldShowExtraItemCard_(length) {
-    return length > 4;
-  }
-
-  getTextForExtraItemCard_(length) {
-    return '+' + (length - 3);
+  shouldShowFallback_(length) {
+    return length === 0;
   }
 
   getImagesToShow_(imageUrls) {
-    if (imageUrls.length === 1) {
-      return imageUrls[0];
-    } else if (imageUrls.length > 4) {
-      return imageUrls.slice(0, 3);
-    } else {
-      return imageUrls;
-    }
+    return imageUrls.slice(0, 3);
   }
 }
 

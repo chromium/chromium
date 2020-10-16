@@ -1,6 +1,6 @@
 <style>
   .tile-item {
-    border: 2px solid var(--ntp-border-color);
+    border: 1px solid var(--ntp-border-color);
     border-radius: 8px;
     color: var(--cr-primary-text-color);
     height: 146px;
@@ -10,11 +10,14 @@
   }
 
   .tile-item-title {
-    align-items: center;
     color: var(--ntp-theme-text-color);
-    display: flex;
+    display: block;
     font-size: 12px;
-    height: 40px;
+    height: 20px;
+    margin-inline-end: auto;
+    margin-inline-start: auto;
+    margin-top: 6px;
+    text-align: center;
     width: 72px;
   }
 
@@ -33,60 +36,47 @@
 
   .favicon-image {
     border-radius: 2px;
-    float: left;
+    display: block;
     height: 24px;
-    margin: 8px 8px 8px 6px;
+    margin-inline-end: auto;
+    margin-inline-start: auto;
+    margin-top: 16px;
     width: 24px;
-  }
-
-  .thumbnail-grid {
-    height: 108px;
-    width: 114px;
   }
 
   .cart-grid {
     --cr-grid-gap: 0;
   }
 
-  div.grid-thumbnail-img-container {
-    background-color: var(--ntp-border-color);
-    border-radius: 8px;
+  .thumbnail-container {
+    height: auto;
+    margin-top: 12px;
+    text-align: center;
+    width: auto;
+  }
+
+  .thumbnail-container ul {
+    list-style-type: none;
+    margin-inline-start: -24px;
+    padding: 0;
+  }
+
+  .thumbnail-container li {
+    display: inline;
+    margin-inline-end: -24px;
+  }
+
+  .thumbnail-img {
+    border: 2px solid white;
+    border-radius: 50%;
+    height: 46px;
+    object-fit: cover;
+    width: 46px;
+  }
+
+  #thumbnail-fallback {
     height: 48px;
-    margin: 3px 4px;
-    text-align: center;
-    width: 48px;
-  }
-
-  div.grid-thumbnail-img-container img {
-    height: auto;
-    max-height: 46px;
-    max-width: 46px;
-    width: auto;
-  }
-
-  div.grid-thumbnail-img-container div {
-    max-width: 48px;
-    overflow: hidden;
-    position: relative;
-    text-overflow: ellipsis;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-
-  div.single-thumbnail-img-container {
-    background-color: var(--ntp-border-color);
-    border-radius: 8px;
-    height: 102px;
-    margin: 0 8px 6px 6px;
-    text-align: center;
     width: 102px;
-  }
-
-  div.single-thumbnail-img-container img {
-    height: auto;
-    max-height: 102px;
-    max-width: 102px;
-    width: auto;
   }
 
 </style>
@@ -101,31 +91,25 @@
           <span id="itemCount">&nbsp•&nbsp[[item.imageUrls.length]]</span>
         </template>
       </div>
-      <template is="dom-if" 
-        if="[[shouldShowThumbnailGrid_(item.imageUrls.length)]]">
-        <cr-grid class="thumbnail-grid" id="tiles" columns="2">
-          <template id="thumbnailGrid" is="dom-repeat"
-            items="[[getImagesToShow_(item.imageUrls)]]">
-            <div class="grid-thumbnail-img-container">
-              <img class="grid-thumbnail-img" is="ntp-img"
+      <div class="thumbnail-container">
+        <template is="dom-if"
+          if="[[!shouldShowFallback_(item.imageUrls.length)]]">
+          <ul>
+            <template id="thumbnailGrid"
+            is="dom-repeat" items="[[getImagesToShow_(item.imageUrls)]]">
+              <li>
+                <img class="thumbnail-img" is="ntp-img"
                 auto-src="[[item]]"></img>
-            </div>
-          </template>
-          <template is="dom-if"
-            if="[[shouldShowExtraItemCard_(item.imageUrls.length)]]">
-            <div class="grid-thumbnail-img-container">
-              <div>[[getTextForExtraItemCard_(item.imageUrls.length)]]</div>
-            </div>
-          </template>
-        </cr-grid>
-      </template>
-      <template is="dom-if"
-        if="[[!shouldShowThumbnailGrid_(item.imageUrls.length)]]">
-        <div class="single-thumbnail-img-container">
-          <img class="single-thumbnail-img" is="ntp-img" 
-            auto-src="[[getImagesToShow_(item.imageUrls)]]"></img>
-        </div>
-      </template>
+              </li>
+            </template>
+          </ul>
+        </template>
+        <template is="dom-if"
+          if="[[shouldShowFallback_(item.imageUrls.length)]]">
+          <img id="thumbnail-fallback" 
+          src="chrome://new-tab-page/icons/cart.svg">
+        </template>
+      </div>
     </a>
   </template>
 </cr-grid>

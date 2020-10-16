@@ -35,7 +35,7 @@ namespace complex_tasks {
 
 namespace {
 
-constexpr unsigned kLengthLimit = 1024;
+constexpr unsigned kLengthLimit = 4096;
 constexpr char kAmazonDomain[] = "amazon.com";
 
 // TODO: dedup with chrome/browser/complex_tasks/commerce_hint_service.cc
@@ -148,10 +148,13 @@ bool PartialMatch(base::StringPiece str, const re2::RE2& re) {
 // platforms.
 
 const re2::RE2& GetAddToCartPattern() {
+  re2::RE2::Options options;
+  options.set_case_sensitive(false);
   static base::NoDestructor<re2::RE2> instance(
-      "(\\b|[^a-zA-Z])"
+      "(\\b|[^a-z])"
       "((add[_-]?to[_-]?(cart|basket))|(cart\\/add))"
-      "(\\b|[^a-zA-Z])");
+      "(\\b|[^a-z])",
+      options);
   return *instance;
 }
 
@@ -318,7 +321,8 @@ void CommerceHintAgent::OnProductsExtracted(
   std::string json;
   base::JSONWriter::Write(*results, &json);
   VLOG(2) << "OnProductsExtracted: " << json;
-
+  // Don't update cart when the return value is not a list. This could be due to
+  // that the cart is not loaded.
   if (!results->is_list())
     return;
   std::vector<mojom::ProductPtr> products;

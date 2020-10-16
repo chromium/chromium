@@ -39,6 +39,7 @@ const std::map<std::string, std::string>& GetDomainToTitle() {
       {"hm.com", "H&M"},
       {"homedepot.com", "Home Depot"},
       {"lowes.com", "Lowe's"},
+      {"bestbuy.com", "BestBuy"},
   });
   return *table;
 }
@@ -47,6 +48,12 @@ const std::map<std::string, std::string>& GetDomainToCart() {
   static const base::NoDestructor<std::map<std::string, std::string>> table({
       // TODO: add more
       {"walmart.com", "https://walmart.com/cart"},
+      {"amazon.com", "https://www.amazon.com/gp/cart/view.html"},
+      {"hm.com", "https://www2.hm.com/en_us/cart"},
+      {"ebay.com", "https://cart.payments.ebay.com/"},
+      {"etsy.com", "https://www.etsy.com/cart"},
+      {"bestbuy.com", "https://www.bestbuy.com/cart"},
+      {"homedepot.com", "https://www.homedepot.com/mycart/home"},
   });
   return *table;
 }
