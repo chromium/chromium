@@ -36,6 +36,8 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"cpuTemp", IDS_DIAGNOSTICS_CPU_TEMPERATURE_LABEL},
       {"cpuTitle", IDS_DIAGNOSTICS_CPU_TITLE},
       {"cpuUsage", IDS_DIAGNOSTICS_CPU_USAGE_LABEL},
+      {"cpuUsageSystem", IDS_DIAGNOSTICS_CPU_USAGE_SYSTEM_LABEL},
+      {"cpuUsageUser", IDS_DIAGNOSTICS_CPU_USAGE_USER_LABEL},
       {"currentNow", IDS_DIAGNOSTICS_CURRENT_NOW_LABEL},
       {"cycleCount", IDS_DIAGNOSTICS_CYCLE_COUNT_LABEL},
       {"diagnosticsTitle", IDS_DIAGNOSTICS_TITLE},
