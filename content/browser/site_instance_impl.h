@@ -124,7 +124,7 @@ class CONTENT_EXPORT SiteInfo {
 
   bool is_guest() const { return is_guest_; }
 
-  // Returns false if the site_url() is empty.
+  // Returns true if the site_url() is empty.
   bool is_empty() const { return site_url().possibly_invalid_spec().empty(); }
 
   SiteInfo& operator=(const SiteInfo& rhs);
