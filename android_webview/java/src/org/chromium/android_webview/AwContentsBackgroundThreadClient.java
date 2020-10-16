@@ -7,6 +7,7 @@ package org.chromium.android_webview;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 
 /**
  * Delegate for handling callbacks. All methods are called on the background thread.
@@ -16,7 +17,7 @@ import org.chromium.base.annotations.JNINamespace;
 public abstract class AwContentsBackgroundThreadClient {
     private static final String TAG = "AwBgThreadClient";
 
-    public abstract AwWebResourceResponse shouldInterceptRequest(
+    public abstract WebResourceResponseInfo shouldInterceptRequest(
             AwContentsClient.AwWebResourceRequest request);
 
     // Protected methods ---------------------------------------------------------------------------

@@ -17,7 +17,6 @@ import com.android.webview.chromium.WebViewDelegateFactory.WebViewDelegate;
 import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.AwHistogramRecorder;
 import org.chromium.android_webview.AwRenderProcess;
-import org.chromium.android_webview.AwWebResourceResponse;
 import org.chromium.android_webview.SafeBrowsingAction;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
 import org.chromium.base.Callback;
@@ -25,6 +24,7 @@ import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.compat.ApiHelperForN;
+import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.support_lib_boundary.util.Features;
 import org.chromium.support_lib_callback_glue.SupportLibWebViewContentsClientAdapter;
 
@@ -213,7 +213,8 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
     }
 
     @Override
-    public void onReceivedHttpError(AwWebResourceRequest request, AwWebResourceResponse response) {
+    public void onReceivedHttpError(
+            AwWebResourceRequest request, WebResourceResponseInfo response) {
         try {
             TraceEvent.begin("WebViewContentsClientAdapter.onReceivedHttpError");
             if (TRACE) Log.i(TAG, "onReceivedHttpError=" + request.url);

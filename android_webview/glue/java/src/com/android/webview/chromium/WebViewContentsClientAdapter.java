@@ -43,7 +43,6 @@ import org.chromium.android_webview.AwGeolocationPermissions;
 import org.chromium.android_webview.AwHistogramRecorder;
 import org.chromium.android_webview.AwHttpAuthHandler;
 import org.chromium.android_webview.AwRenderProcessGoneDetail;
-import org.chromium.android_webview.AwWebResourceResponse;
 import org.chromium.android_webview.JsPromptResultReceiver;
 import org.chromium.android_webview.JsResultReceiver;
 import org.chromium.android_webview.permission.AwPermissionRequest;
@@ -54,6 +53,7 @@ import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.task.PostTask;
+import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.lang.ref.WeakReference;
@@ -218,7 +218,7 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
      * @see AwContentsClient#shouldInterceptRequest(java.lang.String)
      */
     @Override
-    public AwWebResourceResponse shouldInterceptRequest(AwWebResourceRequest request) {
+    public WebResourceResponseInfo shouldInterceptRequest(AwWebResourceRequest request) {
         try {
             TraceEvent.begin("WebViewContentsClientAdapter.shouldInterceptRequest");
             if (TRACE) Log.i(TAG, "shouldInterceptRequest=" + request.url);
@@ -226,16 +226,12 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
                     mWebView, new WebResourceRequestAdapter(request));
             if (response == null) return null;
 
-            // AwWebResourceResponse should support null headers. b/16332774.
+            // WebResourceResponseInfo should support null headers. b/16332774.
             Map<String, String> responseHeaders = response.getResponseHeaders();
             if (responseHeaders == null) responseHeaders = new HashMap<String, String>();
 
-            return new AwWebResourceResponse(
-                    response.getMimeType(),
-                    response.getEncoding(),
-                    response.getData(),
-                    response.getStatusCode(),
-                    response.getReasonPhrase(),
+            return new WebResourceResponseInfo(response.getMimeType(), response.getEncoding(),
+                    response.getData(), response.getStatusCode(), response.getReasonPhrase(),
                     responseHeaders);
         } finally {
             TraceEvent.end("WebViewContentsClientAdapter.shouldInterceptRequest");

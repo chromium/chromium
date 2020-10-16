@@ -7,6 +7,7 @@ package org.chromium.android_webview;
 import android.content.Context;
 
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
+import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 
 /**
  * Manages clients and settings for Service Workers.
@@ -94,7 +95,7 @@ public class AwServiceWorkerController {
             extends AwContentsBackgroundThreadClient {
         // All methods are called on the background thread.
         @Override
-        public AwWebResourceResponse shouldInterceptRequest(
+        public WebResourceResponseInfo shouldInterceptRequest(
                 AwContentsClient.AwWebResourceRequest request) {
             // TODO: Consider analogy with AwContentsClient, i.e.
             //  - do we need an onloadresource callback?

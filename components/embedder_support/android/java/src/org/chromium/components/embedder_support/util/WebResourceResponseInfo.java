@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.android_webview;
+package org.chromium.components.embedder_support.util;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -13,8 +13,8 @@ import java.util.Map;
 /**
  * The response information that is to be returned for a particular resource fetch.
  */
-@JNINamespace("android_webview")
-public class AwWebResourceResponse {
+@JNINamespace("embedder_support")
+public class WebResourceResponseInfo {
     private String mMimeType;
     private String mCharset;
     private InputStream mData;
@@ -24,13 +24,13 @@ public class AwWebResourceResponse {
     private String[] mResponseHeaderNames;
     private String[] mResponseHeaderValues;
 
-    public AwWebResourceResponse(String mimeType, String encoding, InputStream data) {
+    public WebResourceResponseInfo(String mimeType, String encoding, InputStream data) {
         mMimeType = mimeType;
         mCharset = encoding;
         mData = data;
     }
 
-    public AwWebResourceResponse(String mimeType, String encoding, InputStream data,
+    public WebResourceResponseInfo(String mimeType, String encoding, InputStream data,
             int statusCode, String reasonPhrase, Map<String, String> responseHeaders) {
         this(mimeType, encoding, data);
 

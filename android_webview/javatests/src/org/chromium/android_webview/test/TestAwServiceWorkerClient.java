@@ -6,8 +6,8 @@ package org.chromium.android_webview.test;
 
 import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
 import org.chromium.android_webview.AwServiceWorkerClient;
-import org.chromium.android_webview.AwWebResourceResponse;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +45,7 @@ public class TestAwServiceWorkerClient extends AwServiceWorkerClient {
     }
 
     @Override
-    public AwWebResourceResponse shouldInterceptRequest(AwWebResourceRequest request) {
+    public WebResourceResponseInfo shouldInterceptRequest(AwWebResourceRequest request) {
         mShouldInterceptRequestHelper.notifyCalled(request);
         return null;
     }

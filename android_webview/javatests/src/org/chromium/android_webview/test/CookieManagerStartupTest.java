@@ -20,11 +20,11 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwCookieManager;
-import org.chromium.android_webview.AwWebResourceResponse;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.CookieUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Feature;
+import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.net.test.util.TestWebServer;
 
 /**
@@ -161,7 +161,7 @@ public class CookieManagerStartupTest {
         String url = "http://www.example.com";
         TestAwContentsClient contentsClient = new TestAwContentsClient() {
             @Override
-            public AwWebResourceResponse shouldInterceptRequest(AwWebResourceRequest request) {
+            public WebResourceResponseInfo shouldInterceptRequest(AwWebResourceRequest request) {
                 (new AwCookieManager()).getCookie("www.example.com");
                 return null;
             }

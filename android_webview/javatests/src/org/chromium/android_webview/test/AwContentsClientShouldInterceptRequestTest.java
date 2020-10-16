@@ -22,13 +22,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.AwWebResourceResponse;
 import org.chromium.android_webview.test.util.AwTestTouchUtils;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.TestFileUtil;
+import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnReceivedErrorHelper;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.net.test.util.WebServer;
@@ -67,19 +67,19 @@ public class AwContentsClientShouldInterceptRequestTest {
                 CommonResources.ABOUT_HTML);
     }
 
-    private AwWebResourceResponse stringWithHeadersToAwWebResourceResponse(
+    private WebResourceResponseInfo stringWithHeadersToWebResourceResponseInfo(
             String input, Map<String, String> responseHeaders) throws Throwable {
         final String mimeType = "text/html";
         final String encoding = "UTF-8";
         final int statusCode = 200;
         final String reasonPhrase = "OK";
-        return new AwWebResourceResponse(mimeType, encoding,
+        return new WebResourceResponseInfo(mimeType, encoding,
                 new ByteArrayInputStream(input.getBytes(encoding)), statusCode, reasonPhrase,
                 responseHeaders);
     }
 
-    private AwWebResourceResponse stringToAwWebResourceResponse(String input) throws Throwable {
-        return stringWithHeadersToAwWebResourceResponse(input, null /* responseHeaders */);
+    private WebResourceResponseInfo stringToWebResourceResponseInfo(String input) throws Throwable {
+        return stringWithHeadersToWebResourceResponseInfo(input, null /* responseHeaders */);
     }
 
     private TestWebServer mWebServer;
@@ -266,7 +266,7 @@ public class AwContentsClientShouldInterceptRequestTest {
         final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
 
         mShouldInterceptRequestHelper.setReturnValue(
-                new AwWebResourceResponse("text/html", "UTF-8", null));
+                new WebResourceResponseInfo("text/html", "UTF-8", null));
         int callCount = mShouldInterceptRequestHelper.getCallCount();
         mActivityTestRule.loadUrlAsync(mAwContents, aboutPageUrl);
         mShouldInterceptRequestHelper.waitForCallback(callCount);
@@ -280,7 +280,7 @@ public class AwContentsClientShouldInterceptRequestTest {
         final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
 
         mShouldInterceptRequestHelper.setReturnValue(
-                new AwWebResourceResponse(null, null, new ByteArrayInputStream(new byte[0])));
+                new WebResourceResponseInfo(null, null, new ByteArrayInputStream(new byte[0])));
         int callCount = mShouldInterceptRequestHelper.getCallCount();
         mActivityTestRule.loadUrlAsync(mAwContents, aboutPageUrl);
         mShouldInterceptRequestHelper.waitForCallback(callCount);
@@ -292,8 +292,7 @@ public class AwContentsClientShouldInterceptRequestTest {
     public void testDoesNotCrashOnInvalidData_NullMimeEncodingAndInputStream() throws Throwable {
         final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
 
-        mShouldInterceptRequestHelper.setReturnValue(
-                new AwWebResourceResponse(null, null, null));
+        mShouldInterceptRequestHelper.setReturnValue(new WebResourceResponseInfo(null, null, null));
         int callCount = mShouldInterceptRequestHelper.getCallCount();
         mActivityTestRule.loadUrlAsync(mAwContents, aboutPageUrl);
         mShouldInterceptRequestHelper.waitForCallback(callCount);
@@ -305,9 +304,9 @@ public class AwContentsClientShouldInterceptRequestTest {
     public void testDoesNotCrashOnInvalidData_ResponseWithAllNullValues() throws Throwable {
         final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
 
-        mShouldInterceptRequestHelper.setReturnValue(new AwWebResourceResponse(null /* mime type */,
-                null /* encoding */, null /* input stream */, 0 /* status code */,
-                null /* reason phrase */, null /* response headers */));
+        mShouldInterceptRequestHelper.setReturnValue(new WebResourceResponseInfo(
+                null /* mime type */, null /* encoding */, null /* input stream */,
+                0 /* status code */, null /* reason phrase */, null /* response headers */));
         int callCount = mShouldInterceptRequestHelper.getCallCount();
         mActivityTestRule.loadUrlAsync(mAwContents, aboutPageUrl);
         mShouldInterceptRequestHelper.waitForCallback(callCount);
@@ -350,7 +349,7 @@ public class AwContentsClientShouldInterceptRequestTest {
         final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
 
         mShouldInterceptRequestHelper.setReturnValue(
-                new AwWebResourceResponse("text/html", "UTF-8", new EmptyInputStream()));
+                new WebResourceResponseInfo("text/html", "UTF-8", new EmptyInputStream()));
         int shouldInterceptRequestCallCount = mShouldInterceptRequestHelper.getCallCount();
         int onPageFinishedCallCount = mContentsClient.getOnPageFinishedHelper().getCallCount();
 
@@ -394,7 +393,7 @@ public class AwContentsClientShouldInterceptRequestTest {
         final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
 
         mShouldInterceptRequestHelper.setReturnValue(
-                new AwWebResourceResponse("text/html", "UTF-8", new ThrowingInputStream()));
+                new WebResourceResponseInfo("text/html", "UTF-8", new ThrowingInputStream()));
         int shouldInterceptRequestCallCount = mShouldInterceptRequestHelper.getCallCount();
         int onPageFinishedCallCount = mContentsClient.getOnPageFinishedHelper().getCallCount();
 
@@ -404,11 +403,11 @@ public class AwContentsClientShouldInterceptRequestTest {
         mContentsClient.getOnPageFinishedHelper().waitForCallback(onPageFinishedCallCount);
     }
 
-    private static class SlowAwWebResourceResponse extends AwWebResourceResponse {
+    private static class SlowWebResourceResponseInfo extends WebResourceResponseInfo {
         private CallbackHelper mReadStartedCallbackHelper = new CallbackHelper();
         private CountDownLatch mLatch = new CountDownLatch(1);
 
-        public SlowAwWebResourceResponse(String mimeType, String encoding, InputStream data) {
+        public SlowWebResourceResponseInfo(String mimeType, String encoding, InputStream data) {
             super(mimeType, encoding, data);
         }
 
@@ -439,14 +438,14 @@ public class AwContentsClientShouldInterceptRequestTest {
         final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
         final String aboutPageData = makePageWithTitle("some title");
         final String encoding = "UTF-8";
-        final SlowAwWebResourceResponse slowAwWebResourceResponse =
-                new SlowAwWebResourceResponse("text/html", encoding,
+        final SlowWebResourceResponseInfo slowWebResourceResponseInfo =
+                new SlowWebResourceResponseInfo("text/html", encoding,
                         new ByteArrayInputStream(aboutPageData.getBytes(encoding)));
 
-        mShouldInterceptRequestHelper.setReturnValue(slowAwWebResourceResponse);
-        int callCount = slowAwWebResourceResponse.getReadStartedCallbackHelper().getCallCount();
+        mShouldInterceptRequestHelper.setReturnValue(slowWebResourceResponseInfo);
+        int callCount = slowWebResourceResponseInfo.getReadStartedCallbackHelper().getCallCount();
         mActivityTestRule.loadUrlAsync(mAwContents, aboutPageUrl);
-        slowAwWebResourceResponse.getReadStartedCallbackHelper().waitForCallback(callCount);
+        slowWebResourceResponseInfo.getReadStartedCallbackHelper().waitForCallback(callCount);
 
         // Now the AwContents is "stuck" waiting for the SlowInputStream to finish reading so we
         // delete it to make sure that the dangling 'read' task doesn't cause a crash. Unfortunately
@@ -457,7 +456,7 @@ public class AwContentsClientShouldInterceptRequestTest {
         mActivityTestRule.destroyAwContentsOnMainSync(mAwContents);
         mActivityTestRule.pollUiThread(() -> AwContents.getNativeInstanceCount() == 0);
 
-        slowAwWebResourceResponse.unblockReads();
+        slowWebResourceResponseInfo.unblockReads();
     }
 
     @Test
@@ -481,19 +480,19 @@ public class AwContentsClientShouldInterceptRequestTest {
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), aboutPageUrl);
 
         mShouldInterceptRequestHelper.setReturnValue(
-                new AwWebResourceResponse("text/html", "UTF-8", null));
+                new WebResourceResponseInfo("text/html", "UTF-8", null));
         Assert.assertEquals("\"[404][Not Found]\"",
                 mActivityTestRule.executeJavaScriptAndWaitForResult(
                         mAwContents, mContentsClient, syncGetJs));
 
         mShouldInterceptRequestHelper.setReturnValue(
-                new AwWebResourceResponse("text/html", "UTF-8", new EmptyInputStream()));
+                new WebResourceResponseInfo("text/html", "UTF-8", new EmptyInputStream()));
         Assert.assertEquals("\"[200][OK]\"",
                 mActivityTestRule.executeJavaScriptAndWaitForResult(
                         mAwContents, mContentsClient, syncGetJs));
 
         mShouldInterceptRequestHelper.setReturnValue(
-                new AwWebResourceResponse("text/html", "UTF-8", new EmptyInputStream(),
+                new WebResourceResponseInfo("text/html", "UTF-8", new EmptyInputStream(),
                         TEAPOT_STATUS_CODE, TEAPOT_RESPONSE_PHRASE, new HashMap<String, String>()));
         Assert.assertEquals("\"[" + TEAPOT_STATUS_CODE + "][" + TEAPOT_RESPONSE_PHRASE + "]\"",
                 mActivityTestRule.executeJavaScriptAndWaitForResult(
@@ -538,11 +537,11 @@ public class AwContentsClientShouldInterceptRequestTest {
         // The response header is set regardless of whether the embedder has provided a
         // valid resource stream.
         mShouldInterceptRequestHelper.setReturnValue(
-                new AwWebResourceResponse("text/html", "UTF-8", null));
+                new WebResourceResponseInfo("text/html", "UTF-8", null));
         Assert.assertEquals(clientResponseHeaderValue,
                 getHeaderValue(mAwContents, mContentsClient, syncGetUrl, clientResponseHeaderName));
         mShouldInterceptRequestHelper.setReturnValue(
-                new AwWebResourceResponse("text/html", "UTF-8", new EmptyInputStream()));
+                new WebResourceResponseInfo("text/html", "UTF-8", new EmptyInputStream()));
         Assert.assertEquals(clientResponseHeaderValue,
                 getHeaderValue(mAwContents, mContentsClient, syncGetUrl, clientResponseHeaderName));
     }
@@ -563,7 +562,7 @@ public class AwContentsClientShouldInterceptRequestTest {
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), aboutPageUrl);
 
         mShouldInterceptRequestHelper.setReturnValue(
-                new AwWebResourceResponse("text/html", "UTF-8", null, 0, null, headers));
+                new WebResourceResponseInfo("text/html", "UTF-8", null, 0, null, headers));
         Assert.assertEquals(clientResponseHeaderValue,
                 getHeaderValue(mAwContents, mContentsClient, syncGetUrl, clientResponseHeaderName));
     }
@@ -580,7 +579,7 @@ public class AwContentsClientShouldInterceptRequestTest {
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), aboutPageUrl);
 
         mShouldInterceptRequestHelper.setReturnValue(
-                new AwWebResourceResponse("text/html", "UTF-8", null, 0, null, null));
+                new WebResourceResponseInfo("text/html", "UTF-8", null, 0, null, null));
         Assert.assertEquals(
                 null, getHeaderValue(mAwContents, mContentsClient, syncGetUrl, "Some-Header"));
     }
@@ -597,8 +596,7 @@ public class AwContentsClientShouldInterceptRequestTest {
         final String expectedTitle = "testShouldInterceptRequestCanInterceptMainFrame";
         final String expectedPage = makePageWithTitle(expectedTitle);
 
-        mShouldInterceptRequestHelper.setReturnValue(
-                stringToAwWebResourceResponse(expectedPage));
+        mShouldInterceptRequestHelper.setReturnValue(stringToWebResourceResponseInfo(expectedPage));
 
         final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
 
@@ -614,7 +612,7 @@ public class AwContentsClientShouldInterceptRequestTest {
     @Feature({"AndroidWebView"})
     public void testDoesNotChangeReportedUrl() throws Throwable {
         mShouldInterceptRequestHelper.setReturnValue(
-                stringToAwWebResourceResponse(makePageWithTitle("some title")));
+                stringToWebResourceResponseInfo(makePageWithTitle("some title")));
 
         final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
 
@@ -633,7 +631,7 @@ public class AwContentsClientShouldInterceptRequestTest {
                 mContentsClient.getOnReceivedErrorHelper();
 
         mShouldInterceptRequestHelper.setReturnValue(
-                new AwWebResourceResponse("text/html", "UTF-8", null));
+                new WebResourceResponseInfo("text/html", "UTF-8", null));
 
         final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
         final int callCount = onReceivedErrorHelper.getCallCount();
@@ -667,7 +665,7 @@ public class AwContentsClientShouldInterceptRequestTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testOnReceivedErrorCallback() throws Throwable {
-        mShouldInterceptRequestHelper.setReturnValue(new AwWebResourceResponse(null, null, null));
+        mShouldInterceptRequestHelper.setReturnValue(new WebResourceResponseInfo(null, null, null));
         OnReceivedErrorHelper onReceivedErrorHelper = mContentsClient.getOnReceivedErrorHelper();
         int onReceivedErrorHelperCallCount = onReceivedErrorHelper.getCallCount();
         mActivityTestRule.loadUrlSync(
@@ -686,7 +684,7 @@ public class AwContentsClientShouldInterceptRequestTest {
                 addPageToTestServer(mWebServer, "/page_with_image.html",
                         CommonResources.getOnImageLoadedHtml(CommonResources.FAVICON_FILENAME));
         mShouldInterceptRequestHelper.setReturnValueForUrl(
-                imageUrl, new AwWebResourceResponse(null, null, null));
+                imageUrl, new WebResourceResponseInfo(null, null, null));
         OnReceivedErrorHelper onReceivedErrorHelper = mContentsClient.getOnReceivedErrorHelper();
         int onReceivedErrorHelperCallCount = onReceivedErrorHelper.getCallCount();
         mActivityTestRule.loadUrlSync(
@@ -858,7 +856,7 @@ public class AwContentsClientShouldInterceptRequestTest {
         }
 
         @Override
-        public AwWebResourceResponse shouldInterceptRequest(AwWebResourceRequest request) {
+        public WebResourceResponseInfo shouldInterceptRequest(AwWebResourceRequest request) {
             mReady.countDown();
             try {
                 mWait.await();
@@ -1132,7 +1130,7 @@ public class AwContentsClientShouldInterceptRequestTest {
         Map<String, String> headersForInjectedResponse = new HashMap<String, String>();
         headersForInjectedResponse.put("access-control-allow-origin", "http://some.origin.test");
 
-        AwWebResourceResponse response = new AwWebResourceResponse(
+        WebResourceResponseInfo response = new WebResourceResponseInfo(
                 "text/plain", "utf-8", null /* data */, 200, "OK", headersForInjectedResponse);
         mShouldInterceptRequestHelper.setReturnValueForUrl(destinationUrl, response);
 
@@ -1159,7 +1157,7 @@ public class AwContentsClientShouldInterceptRequestTest {
 
         // Injecting a response which doesn't have a matching access-control-allow-origin
         Map<String, String> headersForInjectedResponse = new HashMap<String, String>();
-        AwWebResourceResponse response = new AwWebResourceResponse(
+        WebResourceResponseInfo response = new WebResourceResponseInfo(
                 "text/plain", "utf-8", null /* data */, 200, "OK", headersForInjectedResponse);
         mShouldInterceptRequestHelper.setReturnValueForUrl(destinationUrl, response);
 
@@ -1188,7 +1186,7 @@ public class AwContentsClientShouldInterceptRequestTest {
         Map<String, String> headersForInjectedResponse = new HashMap<String, String>();
         headersForInjectedResponse.put("access-control-allow-origin", "http://some.origin.test");
         headersForInjectedResponse.put("access-control-allow-methods", "PUT");
-        AwWebResourceResponse response = new AwWebResourceResponse(
+        WebResourceResponseInfo response = new WebResourceResponseInfo(
                 "text/plain", "utf-8", null /* data */, 200, "OK", headersForInjectedResponse);
         mShouldInterceptRequestHelper.setReturnValueForUrl(destinationUrl, response);
 
@@ -1220,7 +1218,7 @@ public class AwContentsClientShouldInterceptRequestTest {
 
         // Injecting a response which doesn't have a matching access-control-allow-origin
         Map<String, String> headersForInjectedResponse = new HashMap<String, String>();
-        AwWebResourceResponse response = new AwWebResourceResponse(
+        WebResourceResponseInfo response = new WebResourceResponseInfo(
                 "text/plain", "utf-8", null /* data */, 200, "OK", headersForInjectedResponse);
         mShouldInterceptRequestHelper.setReturnValueForUrl(destinationUrl, response);
 
@@ -1245,7 +1243,7 @@ public class AwContentsClientShouldInterceptRequestTest {
         }
         final String fetchUrl = mWebServer.setResponse(fetchPath, "", responseHeaders);
         mShouldInterceptRequestHelper.setReturnValueForUrl(
-                pageUrl, stringToAwWebResourceResponse("" /* input*/));
+                pageUrl, stringToWebResourceResponseInfo("" /* input*/));
 
         final Future<String> future = loadUrlAndFetch(pageUrl, fetchUrl);
         Assert.assertEquals("fetch result check", fetchResult,
@@ -1298,14 +1296,14 @@ public class AwContentsClientShouldInterceptRequestTest {
         final String pageUrl = "foo://main";
         final String fetchUrl = "bar://test";
         mShouldInterceptRequestHelper.setReturnValueForUrl(
-                pageUrl, stringToAwWebResourceResponse("" /* input */));
+                pageUrl, stringToWebResourceResponseInfo("" /* input */));
 
         // Prepare a response to allow CORS accesses just in case, but should not be reached as
         // Blink rejects such non-http(s) requests before making actual request.
         final Map<String, String> responseHeaders = new HashMap<String, String>();
         responseHeaders.put("Access-Control-Allow-Origin", "*");
-        final AwWebResourceResponse response =
-                stringWithHeadersToAwWebResourceResponse("" /* input */, responseHeaders);
+        final WebResourceResponseInfo response =
+                stringWithHeadersToWebResourceResponseInfo("" /* input */, responseHeaders);
         mShouldInterceptRequestHelper.setReturnValueForUrl(fetchUrl, response);
 
         final Future<String> future = loadUrlAndFetch(pageUrl, fetchUrl);
@@ -1324,7 +1322,7 @@ public class AwContentsClientShouldInterceptRequestTest {
         final String customScheme = "foo://";
         final String pageUrl = customScheme + "main";
         mShouldInterceptRequestHelper.setReturnValueForUrl(
-                pageUrl, stringToAwWebResourceResponse("" /* input */));
+                pageUrl, stringToWebResourceResponseInfo("" /* input */));
         final String fetchPathToFail = "/fail";
         final String fetchUrlToFail = mWebServer.setEmptyResponse(fetchPathToFail);
         final String preflightTriggeringMethod = "PUT";
@@ -1354,7 +1352,7 @@ public class AwContentsClientShouldInterceptRequestTest {
         final String customScheme = "foo://";
         final String pageUrl = customScheme + "main";
         mShouldInterceptRequestHelper.setReturnValueForUrl(
-                pageUrl, stringToAwWebResourceResponse("" /* input */));
+                pageUrl, stringToWebResourceResponseInfo("" /* input */));
 
         // Craft the expected CORS responses to pass.
         final String fetchPathToPass = "/pass";

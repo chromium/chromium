@@ -19,10 +19,10 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
-import org.chromium.android_webview.AwWebResourceResponse;
 import org.chromium.android_webview.test.util.AwTestTouchUtils;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.base.test.util.Feature;
+import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.util.ArrayList;
@@ -78,7 +78,7 @@ public class ClientOnReceivedHttpErrorTest {
 
         @Override
         public void onReceivedHttpError(
-                AwWebResourceRequest request, AwWebResourceResponse response) {
+                AwWebResourceRequest request, WebResourceResponseInfo response) {
             if (!mBypass) {
                 Assert.assertEquals("onReceivedHttpError called twice for " + request.url, false,
                         mIsOnReceivedHttpErrorCalled);
@@ -116,7 +116,7 @@ public class ClientOnReceivedHttpErrorTest {
         Assert.assertFalse(request.requestHeaders.isEmpty());
         Assert.assertTrue(request.isMainFrame);
         Assert.assertFalse(request.hasUserGesture);
-        AwWebResourceResponse response = onReceivedHttpErrorHelper.getResponse();
+        WebResourceResponseInfo response = onReceivedHttpErrorHelper.getResponse();
         Assert.assertEquals(404, response.getStatusCode());
         Assert.assertEquals("Not Found", response.getReasonPhrase());
         Assert.assertEquals("text/html", response.getMimeType());
@@ -160,7 +160,7 @@ public class ClientOnReceivedHttpErrorTest {
         Assert.assertFalse(request.requestHeaders.isEmpty());
         Assert.assertTrue(request.isMainFrame);
         Assert.assertTrue(request.hasUserGesture);
-        AwWebResourceResponse response = onReceivedHttpErrorHelper.getResponse();
+        WebResourceResponseInfo response = onReceivedHttpErrorHelper.getResponse();
         Assert.assertEquals(404, response.getStatusCode());
         Assert.assertEquals("Not Found", response.getReasonPhrase());
         Assert.assertEquals("text/html", response.getMimeType());
@@ -194,7 +194,7 @@ public class ClientOnReceivedHttpErrorTest {
         Assert.assertFalse(request.requestHeaders.isEmpty());
         Assert.assertFalse(request.isMainFrame);
         Assert.assertFalse(request.hasUserGesture);
-        AwWebResourceResponse response = onReceivedHttpErrorHelper.getResponse();
+        WebResourceResponseInfo response = onReceivedHttpErrorHelper.getResponse();
         Assert.assertEquals(404, response.getStatusCode());
         Assert.assertEquals("Not Found", response.getReasonPhrase());
         Assert.assertEquals("text/html", response.getMimeType());
@@ -252,7 +252,7 @@ public class ClientOnReceivedHttpErrorTest {
         Assert.assertFalse(request.requestHeaders.isEmpty());
         Assert.assertTrue(request.isMainFrame);
         Assert.assertFalse(request.hasUserGesture);
-        AwWebResourceResponse response = onReceivedHttpErrorHelper.getResponse();
+        WebResourceResponseInfo response = onReceivedHttpErrorHelper.getResponse();
         Assert.assertEquals(404, response.getStatusCode());
         Assert.assertEquals("Not Found", response.getReasonPhrase());
         Assert.assertEquals("text/html", response.getMimeType());
