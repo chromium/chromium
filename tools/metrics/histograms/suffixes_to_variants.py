@@ -54,28 +54,56 @@ def _UpdateSummary(histogram, histogram_suffixes_name):
       '%s {%s}' % (summary.firstChild.data.strip(), histogram_suffixes_name))
 
 
-def _GetSuffixesDictWithSingleAffectedHistogram(nodes):
-  """Gets a dict of histogram-suffixes with a single affected histogram.
+def _AreAllAffectedHistogramsFound(affected_histograms, histograms):
+  """Checks that are all affected histograms found in |histograms|."""
+  histogram_names = [histogram.getAttribute('name') for histogram in histograms]
+  return all(
+      affected_histogram.getAttribute('name') in histogram_names
+      for affected_histogram in affected_histograms)
 
-  Returns a dict where the keys are the histogram-suffixes' affected histogram
-  name and the values are the histogram_suffixes nodes that have only one
+
+def _GetSuffixesDict(nodes, all_histograms):
+  """Gets a dict of simple histogram-suffixes to be used in the migration.
+
+  Returns two dicts of histogram-suffixes to be migrated to the new patterned
+  histograms syntax.
+
+  The first dict: the keys are the histogram-suffixes' affected histogram name
+  and the values are the histogram_suffixes nodes that have only one
   affected-histogram. These histograms-suffixes can be converted to inline
   patterned histograms.
 
+  The second dict: the keys are the histogram_suffixes name and the values
+  are the histogram_suffixes nodes whose affected-histograms are all present in
+  the |all_histograms|. These histogram suffixes can be converted to out-of-line
+  variants.
+
   Args:
     nodes: A Nodelist of histograms_suffixes nodes.
+    all_histograms: A Nodelist of all chosen histograms.
 
   Returns:
     A dict of histograms-suffixes nodes keyed by their names.
   """
-  histogram_suffixes_dict = {}
+
+  single_affected = {}
+  all_affected_found = {}
   for histogram_suffixes in nodes:
     affected_histograms = histogram_suffixes.getElementsByTagName(
         'affected-histogram')
     if len(affected_histograms) == 1:
       affected_histogram = affected_histograms[0].getAttribute('name')
-      histogram_suffixes_dict[affected_histogram] = histogram_suffixes
-  return histogram_suffixes_dict
+      single_affected[affected_histogram] = histogram_suffixes
+    elif _AreAllAffectedHistogramsFound(affected_histograms, all_histograms):
+      for affected_histogram in affected_histograms:
+        affected_histogram = affected_histogram.getAttribute('name')
+        if affected_histogram in all_affected_found:
+          logging.warning(
+              'Histogram %s is already associated with other suffixes. '
+              'Please manually migrate it.', affected_histogram)
+          continue
+        all_affected_found[affected_histogram] = histogram_suffixes
+  return single_affected, all_affected_found
 
 
 def _GetBaseVariant(doc, histogram):
@@ -125,18 +153,26 @@ def _PopulateVariantsWithSuffixes(doc, node, histogram_suffixes):
   """
   separator = histogram_suffixes.getAttribute('separator')
   suffixes_owners = _ExtractOwnerNodes(histogram_suffixes)
+  suffixes_name = histogram_suffixes.getAttribute('name')
   for suffix in histogram_suffixes.getElementsByTagName('suffix'):
     # The base suffix is a much more complicated case. It might require manually
     # effort to migrate them so skip this case for now.
-    if suffix.hasAttribute('base'):
-      return False
     suffix_name = suffix.getAttribute('name')
+    if suffix.hasAttribute('base'):
+      logging.warning(
+          'suffix: %s in histogram_suffixes %s has base attribute. Please '
+          'manually migrate it.', suffix_name, suffixes_name)
+      return False
     # Suffix name might be empty. In this case, in order not to collide with the
     # base variant, remove the base variant first before populating this.
     if not suffix_name:
-      base_variant = node.firstChild
-      if not base_variant.getAttribute('name'):
-        node.removeChild(base_variant)
+      logging.warning(
+          'histogram suffixes: %s contains empty string suffix and thus we '
+          'have to manually update the empty string variant in these base '
+          'histograms: %s.', suffixes_name, ','.join(
+              h.getAttribute('name') for h in
+              histogram_suffixes.getElementsByTagName('affected-histogram')))
+      return False
     variant = doc.createElement('variant')
     if histogram_suffixes.hasAttribute('ordering'):
       variant.setAttribute('name', suffix_name + separator)
@@ -150,7 +186,7 @@ def _PopulateVariantsWithSuffixes(doc, node, histogram_suffixes):
       variant.appendChild(obsolete)
     # Populate owner's node from histogram suffixes to each new variant.
     for owner in suffixes_owners:
-      variant.appendChild(owner)
+      variant.appendChild(owner.cloneNode(deep=True))
     node.appendChild(variant)
   return True
 
@@ -193,8 +229,8 @@ def MigrateToInlinePatterenedHistogram(doc, histogram, histogram_suffixes):
 
   # Popluate <variant>s to the inline <token> node.
   if not _PopulateVariantsWithSuffixes(doc, token, histogram_suffixes):
-    logging.info('histogram_suffixes: %s needs manually effort',
-                 histogram_suffixes_name)
+    logging.warning('histogram_suffixes: %s needs manually effort',
+                    histogram_suffixes_name)
     histograms = histogram.parentNode
     histograms.removeChild(histogram)
     # Restore old histogram when we the script fails to migrate it.
@@ -204,6 +240,42 @@ def MigrateToInlinePatterenedHistogram(doc, histogram, histogram_suffixes):
     histogram_suffixes.parentNode.removeChild(histogram_suffixes)
     # Remove obsolete comments from the histogram node.
     _RemoveSuffixesComment(histogram, histogram_suffixes_name)
+
+
+def MigrateToOutOflinePatterenedHistogram(doc, histogram, histogram_suffixes):
+  """Migates a histogram suffixes to out-of-line patterned histogram."""
+  # Update histogram's name with the histogram_suffixes' name.
+  histogram_suffixes_name = histogram_suffixes.getAttribute('name')
+  _UpdateHistogramName(histogram, histogram_suffixes)
+
+  # Append |histogram_suffixes_name| placeholder string to the summary text.
+  _UpdateSummary(histogram, histogram_suffixes_name)
+
+  # Create a <token> node that links to an out-of-line <variants>.
+  token = doc.createElement('token')
+  token.setAttribute('key', histogram_suffixes_name)
+  token.setAttribute('variants', histogram_suffixes_name)
+  token.appendChild(_GetBaseVariant(doc, histogram))
+  histogram.appendChild(token)
+  # Remove obsolete comments from the histogram node.
+  _RemoveSuffixesComment(histogram, histogram_suffixes_name)
+
+
+def _MigrateOutOfLineVariants(doc, histograms, suffixes_to_convert):
+  """Converts a histogram-suffixes node to an out-of-line variants."""
+  histograms_node = histograms.getElementsByTagName('histograms')
+  assert len(histograms_node) == 1, (
+      'Every histograms.xml should have only one <histograms> node.')
+  for suffixes in suffixes_to_convert:
+    histogram_suffixes_name = suffixes.getAttribute('name')
+    variants = doc.createElement('variants')
+    variants.setAttribute('name', histogram_suffixes_name)
+    if not _PopulateVariantsWithSuffixes(doc, variants, suffixes):
+      logging.warning('histogram_suffixes: %s needs manually effort',
+                      histogram_suffixes_name)
+    else:
+      histograms_node[0].appendChild(variants)
+      suffixes.parentNode.removeChild(suffixes)
 
 
 def ChooseFiles(args):
@@ -226,18 +298,24 @@ def SuffixesToVariantsMigration(args):
   histogram_suffixes_nodes = histogram_suffixes_list.getElementsByTagName(
       'histogram_suffixes')
 
-  single_affected_histogram = _GetSuffixesDictWithSingleAffectedHistogram(
-      histogram_suffixes_nodes)
-
   doc = minidom.Document()
   for histograms_file in ChooseFiles(args):
     histograms = minidom.parse(open(histograms_file))
+    single_affected, all_affected_found = _GetSuffixesDict(
+        histogram_suffixes_nodes, histograms.getElementsByTagName('histogram'))
+    suffixes_to_convert = set()
     for histogram in histograms.getElementsByTagName('histogram'):
       name = histogram.getAttribute('name')
       # Migrate inline patterned histograms.
-      if name in single_affected_histogram.keys():
+      if name in single_affected.keys():
         MigrateToInlinePatterenedHistogram(doc, histogram,
-                                           single_affected_histogram[name])
+                                           single_affected[name])
+      elif name in all_affected_found.keys():
+        suffixes_to_convert.add(all_affected_found[name])
+        MigrateToOutOflinePatterenedHistogram(doc, histogram,
+                                              all_affected_found[name])
+
+    _MigrateOutOfLineVariants(doc, histograms, suffixes_to_convert)
 
     # Update histograms.xml with patterned histograms.
     with open(histograms_file, 'w') as f:
