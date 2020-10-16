@@ -39,10 +39,8 @@ promise_test(async () => {
 
     // Wheel event will scroll by one page
     await smoothScrollWithXY(givenScrollDelta, givenScrollDelta, 100, 110, source, SPEED_INSTANT, false, true);
-    await waitFor( () => {
-        return approx_equal(document.scrollingElement.scrollLeft, window.expectedScrollLeft) &&
-               approx_equal(document.scrollingElement.scrollTop, window.expectedScrollTop);
-    });
+    await waitForAnimationEndTimeBased(() => { return document.scrollingElement.scrollLeft; });
+    await waitForAnimationEndTimeBased(() => { return document.scrollingElement.scrollTop; });
 
     await conditionHolds( () => {
         return approx_equal(document.scrollingElement.scrollLeft, window.expectedScrollLeft) &&
