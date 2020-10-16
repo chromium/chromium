@@ -11,6 +11,9 @@ found in the LICENSE file. -->
   <template>
     <style include="oobe-dialog-host">
       cr-card-radio-button {
+        /* Removes the highlight that appears on tap. It has sharp
+         * corners, which don't match the rounded corners of the card. */
+        -webkit-tap-highlight-color: transparent;
         border-radius: 16px;
         height: 210px;
         margin-bottom: 20px;
