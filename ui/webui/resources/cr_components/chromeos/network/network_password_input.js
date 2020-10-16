@@ -90,6 +90,12 @@ Polymer({
    * @private
    */
   onShowPasswordTap_(event) {
+    if (event.type === 'touchend') {
+      // Prevent touch from producing secondary mouse events
+      // that may cause the tooltip to appear unnecessarily.
+      event.preventDefault();
+    }
+
     if (this.isShowingPlaceholder_()) {
       // Never show the actual placeholder, clear the field instead.
       this.value = '';
