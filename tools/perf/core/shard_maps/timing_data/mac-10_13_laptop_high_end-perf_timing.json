@@ -4180,10 +4180,6 @@
         "name": "webrtc/pause_play_peerconnections"
     },
     {
-        "duration": "60.0",
-        "name": "net_perftests/_gtest_"
-    },
-    {
         "duration": "67.0",
         "name": "performance_browser_tests/_gtest_"
     },

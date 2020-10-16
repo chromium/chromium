@@ -812,9 +812,6 @@ GTEST_BENCHMARKS = {
         'Internals>SequenceManager',
         ('https://chromium.googlesource.com/chromium/src/+/HEAD/base/' +
          'README.md#performance-testing')),
-    'net_perftests': BenchmarkMetadata(
-        'net-dev@chromium.org',
-        'Internals>Network'),
     'gpu_perftests': BenchmarkMetadata(
         'reveman@chromium.org, chrome-gpu-perf-owners@chromium.org',
         'Internals>GPU'),

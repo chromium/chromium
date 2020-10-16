@@ -280,11 +280,6 @@ def _media_perftests(estimated_runtime=16):
       ],
       estimated_runtime=estimated_runtime)
 
-
-def _net_perftests(estimated_runtime=60):
-  return ExecutableConfig('net_perftests', estimated_runtime=estimated_runtime)
-
-
 def _performance_browser_tests(estimated_runtime=67):
   return ExecutableConfig(
       'performance_browser_tests',
@@ -324,7 +319,6 @@ _LINUX_EXECUTABLE_CONFIGS = frozenset([
     _base_perftests(10),
     _load_library_perf_tests(),
     _media_perftests(),
-    _net_perftests(),
     _performance_browser_tests(),
     _tracing_perftests(),
 ])
@@ -336,7 +330,6 @@ _MAC_HIGH_END_EXECUTABLE_CONFIGS = frozenset([
     _base_perftests(10),
     _dawn_perf_tests(330),
     _media_perftests(),
-    _net_perftests(),
     _performance_browser_tests(),
     _views_perftests(),
 ])

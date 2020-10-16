@@ -4192,10 +4192,6 @@
         "name": "base_perftests/_gtest_"
     },
     {
-        "duration": "60.0",
-        "name": "net_perftests/_gtest_"
-    },
-    {
         "duration": "16.0",
         "name": "media_perftests/_gtest_"
     },

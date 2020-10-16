@@ -17,7 +17,6 @@ UNDOCUMENTED_BENCHMARKS = {
   'load_library_perf_tests',
   'media_perftests',
   'memory.desktop',
-  'net_perftests',
   'octane',
   'performance_browser_tests',
   'speedometer',

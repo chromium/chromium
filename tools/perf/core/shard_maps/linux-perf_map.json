@@ -162,9 +162,6 @@
             }
         },
         "executables": {
-            "net_perftests": {
-                "path": "net_perftests"
-            },
             "performance_browser_tests": {
                 "path": "browser_tests",
                 "arguments": [

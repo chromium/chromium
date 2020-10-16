@@ -36,7 +36,6 @@ media.desktop,dalecurtis@chromium.org,Internals>Media,https://chromium.googlesou
 media.mobile,dalecurtis@chromium.org,Internals>Media,https://chromium.googlesource.com/chromium/src/+/master/docs/speed/benchmark/harnesses/media.md,"aac,audio_only,audio_video,background,beginning_to_end,busyjs,cns,h264,mp3,mse,opus,seek,src,video_only,vorbis,vp9"
 media_perftests,"liberato@chromium.org, dalecurtis@chromium.org",Internals>Media,,
 memory.desktop,erikchen@chromium.org,,,
-net_perftests,net-dev@chromium.org,Internals>Network,,
 octane,hablich@chromium.org,Blink>JavaScript,,
 performance_browser_tests,miu@chromium.org,Internals>Media>ScreenCapture,,
 power.desktop,brucedawson@chromium.org,,https://bit.ly/power-benchmarks,
