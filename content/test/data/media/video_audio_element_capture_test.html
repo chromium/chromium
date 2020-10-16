@@ -23,10 +23,11 @@ function testCaptureFromMediaElement(filename,
                                 : document.getElementById('video');
   assertTrue(element, 'Error resolving tag');
 
-  element.src = filename;
   element.onerror = function(e) {
     failTest("error playing back [" + filename + "] " + e);
   }
+
+  element.src = filename;
 
   var recorded_events = 0;
   element.onloadedmetadata = function() {
@@ -37,6 +38,10 @@ function testCaptureFromMediaElement(filename,
 
     const recorder = new MediaRecorder(stream);
     assertTrue(recorder, 'Error creating recorder out of the MediaStream');
+
+    recorder.onerror = function(e) {
+      failTest("error recording [" + filename + "] " + e);
+    }
 
     recorder.ondataavailable = function(event) {
       if (++recorded_events > NUMBER_OF_EVENTS_TO_RECORD)
