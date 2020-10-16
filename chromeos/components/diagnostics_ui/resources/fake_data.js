@@ -78,7 +78,27 @@ export const fakeCpuUsage = [
     cpu_temp_degrees_celcius: 109,
     percent_usage_system: 55,
     percent_usage_user: 24,
-  }
+  },
+  {
+    cpu_temp_degrees_celcius: 109,
+    percent_usage_system: 49,
+    percent_usage_user: 10,
+  },
+  {
+    cpu_temp_degrees_celcius: 161,
+    percent_usage_system: 1,
+    percent_usage_user: 99,
+  },
+  {
+    cpu_temp_degrees_celcius: 118,
+    percent_usage_system: 35,
+    percent_usage_user: 37,
+  },
+  {
+    cpu_temp_degrees_celcius: 110,
+    percent_usage_system: 26,
+    percent_usage_user: 30,
+  },
 ];
 
 /* @type {!Array<!MemoryUsage>} */

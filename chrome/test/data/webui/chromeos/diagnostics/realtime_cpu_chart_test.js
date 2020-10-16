@@ -62,12 +62,44 @@ suite('RealtimeCpuChartTest', () => {
     return initializeRealtimeCpuChart(user, system).then(() => {
       const svg = realtimeCpuChartElement.$$('#chart');
       const boundary = realtimeCpuChartElement.$$('#defClip>rect');
+
+      // Chart area boundary must fit within svg.
       assertGT(
           Number(svg.getAttribute('width')),
           Number(boundary.getAttribute('width')));
       assertGT(
           Number(svg.getAttribute('height')),
           Number(boundary.getAttribute('height')));
+
+      const chartGroup = realtimeCpuChartElement.$$('#chartGroup');
+
+      // Margins are in effect.
+      assertEquals(
+          `translate(${realtimeCpuChartElement.margin_.left},${
+              realtimeCpuChartElement.margin_.top})`,
+          chartGroup.getAttribute('transform'));
+    });
+  });
+
+  test('InitializePlot', () => {
+    const user = 10;
+    const system = 30;
+    return initializeRealtimeCpuChart(user, system).then(() => {
+      // yAxis is drawn.
+      assertTrue(!!realtimeCpuChartElement.$$('#gridLines>path.domain'));
+
+      // Correct number of yAxis ticks drawn.
+      assertEquals(
+          3,
+          realtimeCpuChartElement.shadowRoot
+              .querySelectorAll('#gridLines>g.tick')
+              .length);
+
+      // Plot lines are drawn.
+      assertTrue(!!realtimeCpuChartElement.$$('#plotGroup>path.user-line')
+                       .getAttribute('d'));
+      assertTrue(!!realtimeCpuChartElement.$$('#plotGroup>path.system-line')
+                       .getAttribute('d'));
     });
   });
 });
