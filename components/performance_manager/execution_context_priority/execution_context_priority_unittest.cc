@@ -235,5 +235,21 @@ TEST(ExecutionContextPriorityTest, VoteReceiptsWork) {
   EXPECT_FALSE(consumer.votes_[0].IsValid());
 }
 
+// Tests that an overwritten vote receipt will property clean up its state.
+TEST(ExecutionContextPriorityTest, OverwriteVoteReceipt) {
+  test::DummyVoteConsumer consumer;
+
+  VotingChannel voting_channel =
+      consumer.voting_channel_factory_.BuildVotingChannel();
+
+  VoteReceipt receipt = voting_channel.SubmitVote(
+      Vote(kDummyExecutionContext1, base::TaskPriority::HIGHEST, kReason1));
+  receipt = voting_channel.SubmitVote(
+      Vote(kDummyExecutionContext2, base::TaskPriority::HIGHEST, kReason1));
+
+  // The first vote was invalidated because its vote receipt was cleaned up.
+  consumer.ExpectInvalidVote(0);
+}
+
 }  // namespace execution_context_priority
 }  // namespace performance_manager

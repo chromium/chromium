@@ -163,6 +163,8 @@ VoteReceipt::VoteReceipt(AcceptedVote* vote) : vote_(vote) {
 }
 
 void VoteReceipt::Take(VoteReceipt&& rhs) {
+  Reset();
+
   vote_ = rhs.vote_;
 
   // Update the back-pointer from the vote.
