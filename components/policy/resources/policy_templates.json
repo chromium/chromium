@@ -21484,6 +21484,7 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
+        'cloud_only': True,
       },
       'id': 697,
       'supported_on': ['chrome.*:84-', 'chrome_os:84-'],
@@ -21521,6 +21522,7 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
+        'cloud_only': True,
       },
       'id': 699,
       'supported_on': ['chrome.*:84-', 'chrome_os:84-'],
@@ -21559,7 +21561,8 @@
       ],
       'features': {
         'dynamic_refresh': True,
-        'per_profile': True,
+        'per_profile': False,
+        'cloud_only': True,
       },
       'example_value': 1,
       'id': 728,
