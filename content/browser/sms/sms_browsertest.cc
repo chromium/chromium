@@ -808,7 +808,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, UpdateRenderFrameHostWithWebOTPUsage) {
   EXPECT_TRUE(render_frame_host->DocumentUsedWebOTP());
 }
 
-IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordPendingOriginCount) {
+// Disabled test: https://crbug.com/1134455
+IN_PROC_BROWSER_TEST_F(SmsBrowserTest, DISABLED_RecordPendingOriginCount) {
   base::HistogramTester histogram_tester;
   auto provider = std::make_unique<MockSmsProvider>();
   MockSmsProvider* mock_provider_ptr = provider.get();
