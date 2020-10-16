@@ -228,9 +228,8 @@ void AXEventGenerator::OnNodeDataChanged(AXTree* tree,
   if (new_node_data.child_ids != old_node_data.child_ids &&
       !ui::IsText(new_node_data.role)) {
     AXNode* node = tree_->GetFromId(new_node_data.id);
-    tree_events_[node].emplace(Event::CHILDREN_CHANGED,
-                               ax::mojom::EventFrom::kNone,
-                               tree_->event_intents());
+    if (node)
+      AddEvent(node, Event::CHILDREN_CHANGED);
   }
 
   // If the ignored state of a node has changed, the inclusion/exclusion of that
@@ -604,6 +603,7 @@ void AXEventGenerator::OnTreeDataChanged(AXTree* tree,
                                          const AXTreeData& old_tree_data,
                                          const AXTreeData& new_tree_data) {
   DCHECK_EQ(tree_, tree);
+  DCHECK(tree->root());
 
   if (new_tree_data.loaded && !old_tree_data.loaded &&
       ShouldFireLoadEvents(tree->root())) {
@@ -652,6 +652,7 @@ void AXEventGenerator::OnAtomicUpdateFinished(
     bool root_changed,
     const std::vector<Change>& changes) {
   DCHECK_EQ(tree_, tree);
+  DCHECK(tree->root());
 
   if (root_changed && ShouldFireLoadEvents(tree->root())) {
     if (tree->data().loaded)
@@ -661,6 +662,7 @@ void AXEventGenerator::OnAtomicUpdateFinished(
   }
 
   for (const auto& change : changes) {
+    DCHECK(change.node);
     if (change.type == SUBTREE_CREATED) {
       AddEvent(change.node, Event::SUBTREE_CREATED);
     } else if (change.type != NODE_CREATED) {
@@ -684,6 +686,7 @@ void AXEventGenerator::OnAtomicUpdateFinished(
 void AXEventGenerator::AddEventsForTesting(
     AXNode* node,
     const std::set<EventParams>& events) {
+  DCHECK(node);
   tree_events_[node] = events;
 }
 
@@ -880,6 +883,7 @@ void AXEventGenerator::PostprocessEvents() {
 
     // TODO(http://crbug.com/2279799): remove all of the cases that could
     // add a null node to |tree_events|.
+    DCHECK(node);
     if (!node)
       continue;
 
