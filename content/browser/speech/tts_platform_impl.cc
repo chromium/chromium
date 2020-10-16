@@ -55,4 +55,6 @@ void TtsPlatformImpl::SetError(const std::string& error) {
   error_ = error;
 }
 
+void TtsPlatformImpl::Shutdown() {}
+
 }  // namespace content

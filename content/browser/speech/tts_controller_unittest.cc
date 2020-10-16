@@ -66,6 +66,7 @@ class MockTtsPlatformImpl : public TtsPlatform {
   void SetError(const std::string& error) override { error_ = error; }
   std::string GetError() override { return error_; }
   void ClearError() override { error_.clear(); }
+  void Shutdown() override {}
 
   // Returns the amount of calls to Mock API.
   int pause_called() const { return pause_called_; }

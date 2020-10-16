@@ -65,6 +65,8 @@ class CONTENT_EXPORT TtsControllerImpl : public TtsController,
   void SetTtsEngineDelegate(TtsEngineDelegate* delegate) override;
   TtsEngineDelegate* GetTtsEngineDelegate() override;
 
+  void Shutdown();
+
   // Called directly by ~BrowserContext, because a raw BrowserContext pointer
   // is stored in an Utterance.
   void OnBrowserContextDestroyed(BrowserContext* browser_context);

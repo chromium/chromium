@@ -85,6 +85,7 @@
 #include "content/browser/screenlock_monitor/screenlock_monitor_device_source.h"
 #include "content/browser/sms/sms_provider.h"
 #include "content/browser/speech/speech_recognition_manager_impl.h"
+#include "content/browser/speech/tts_controller_impl.h"
 #include "content/browser/startup_data_impl.h"
 #include "content/browser/startup_task_runner.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
@@ -1063,10 +1064,14 @@ void BrowserMainLoop::ShutdownThreadsAndCleanUp() {
     midi_service_->Shutdown();
   }
 
-  TRACE_EVENT0("shutdown",
-               "BrowserMainLoop::Subsystem:SpeechRecognitionManager");
-  io_thread_->task_runner()->DeleteSoon(FROM_HERE,
-                                        speech_recognition_manager_.release());
+  {
+    TRACE_EVENT0("shutdown",
+                 "BrowserMainLoop::Subsystem:SpeechRecognitionManager");
+    io_thread_->task_runner()->DeleteSoon(
+        FROM_HERE, speech_recognition_manager_.release());
+  }
+
+  TtsControllerImpl::GetInstance()->Shutdown();
 
   memory_pressure_monitor_.reset();
 

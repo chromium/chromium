@@ -344,6 +344,11 @@ TtsEngineDelegate* TtsControllerImpl::GetTtsEngineDelegate() {
   return engine_delegate_;
 }
 
+void TtsControllerImpl::Shutdown() {
+  if (tts_platform_)
+    tts_platform_->Shutdown();
+}
+
 void TtsControllerImpl::OnBrowserContextDestroyed(
     BrowserContext* browser_context) {
   bool did_clear_utterances = false;

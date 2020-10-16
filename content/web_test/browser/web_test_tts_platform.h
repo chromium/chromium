@@ -35,6 +35,7 @@ class WebTestTtsPlatform : public content::TtsPlatform {
   std::string GetError() override;
   void ClearError() override;
   void SetError(const std::string& error) override;
+  void Shutdown() override;
 
  private:
   WebTestTtsPlatform();

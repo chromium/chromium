@@ -116,6 +116,8 @@ class MockTtsPlatformImpl : public content::TtsPlatform {
     voices->push_back(voice);
   }
 
+  void Shutdown() override {}
+
   void set_should_fake_get_voices(bool val) { should_fake_get_voices_ = val; }
 
   void SetErrorToEpicFail() { SetError("epic fail"); }

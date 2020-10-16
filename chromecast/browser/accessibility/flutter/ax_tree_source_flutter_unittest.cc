@@ -67,6 +67,7 @@ class MockTtsPlatformImpl : public TtsPlatform {
   void ClearError() override {}
   const std::string& GetLastSpokenUtterance() { return last_spoken_utterance_; }
   void ClearLastSpokenUtterance() { last_spoken_utterance_ = ""; }
+  void Shutdown() override {}
 
  private:
   std::vector<VoiceData> voices_;

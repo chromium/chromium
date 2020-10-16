@@ -63,6 +63,8 @@ void WebTestTtsPlatform::ClearError() {}
 
 void WebTestTtsPlatform::SetError(const std::string& error) {}
 
+void WebTestTtsPlatform::Shutdown() {}
+
 WebTestTtsPlatform::WebTestTtsPlatform() {}
 
 WebTestTtsPlatform::~WebTestTtsPlatform() {}

@@ -74,6 +74,10 @@ class CONTENT_EXPORT TtsPlatform {
   virtual std::string GetError() = 0;
   virtual void ClearError() = 0;
   virtual void SetError(const std::string& error) = 0;
+
+  // If supported, the platform shutdown its internal state. After that call,
+  // other methods may no-op.
+  virtual void Shutdown() = 0;
 };
 
 }  // namespace content

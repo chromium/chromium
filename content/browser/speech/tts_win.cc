@@ -56,6 +56,8 @@ class TtsPlatformImplWin : public TtsPlatformImpl {
 
   void GetVoices(std::vector<VoiceData>* out_voices) override;
 
+  void Shutdown() override;
+
   // Get the single instance of this class.
   static TtsPlatformImplWin* GetInstance();
 
@@ -265,6 +267,9 @@ void TtsPlatformImplWin::GetVoices(std::vector<VoiceData>* out_voices) {
 }
 
 void TtsPlatformImplWin::OnSpeechEvent() {
+  if (!speech_synthesizer_.Get())
+    return;
+
   TtsController* controller = TtsController::GetInstance();
   SPEVENT event;
   while (S_OK == speech_synthesizer_->GetEvents(1, &event, NULL)) {
@@ -306,6 +311,9 @@ void TtsPlatformImplWin::SetVoiceFromName(const std::string& name) {
   if (name.empty() || name == last_voice_name_)
     return;
 
+  if (!speech_synthesizer_.Get())
+    return;
+
   last_voice_name_ = name;
 
   Microsoft::WRL::ComPtr<IEnumSpObjectTokens> voice_tokens;
@@ -328,6 +336,12 @@ void TtsPlatformImplWin::SetVoiceFromName(const std::string& name) {
       break;
     }
   }
+}
+
+void TtsPlatformImplWin::Shutdown() {
+  // This is required to ensures the object is released before the COM is
+  // uninitialized. Otherwise, this is causing shutdown hangs.
+  speech_synthesizer_ = nullptr;
 }
 
 TtsPlatformImplWin::TtsPlatformImplWin() {
