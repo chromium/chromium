@@ -416,6 +416,10 @@ AccessibilityPrivateMoveMagnifierToRectFunction::Run() {
   std::unique_ptr<accessibility_private::MoveMagnifierToRect::Params> params =
       accessibility_private::MoveMagnifierToRect::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(params);
+  if (!::switches::
+          IsExperimentalAccessibilityMagnifierNewFocusFollowingEnabled()) {
+    return RespondNow(NoArguments());
+  }
   accessibility_private::ScreenRect rect = std::move(params->rect);
   gfx::Rect bounds(rect.left, rect.top, rect.width, rect.height);
 

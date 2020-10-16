@@ -64,6 +64,11 @@ bool IsExperimentalAccessibilitySwitchAccessTextEnabled() {
       ::switches::kEnableExperimentalAccessibilitySwitchAccessText);
 }
 
+bool IsExperimentalAccessibilityMagnifierNewFocusFollowingEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ::switches::kEnableExperimentalAccessibilityMagnifierNewFocusFollowing);
+}
+
 bool IsSwitchAccessPointScanningEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ::switches::kEnableSwitchAccessPointScanning);

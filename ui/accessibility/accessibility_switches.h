@@ -39,6 +39,11 @@ IsExperimentalAccessibilityLanguageDetectionDynamicEnabled();
 // Returns true if experimental accessibility Switch Access text is enabled.
 AX_BASE_EXPORT bool IsExperimentalAccessibilitySwitchAccessTextEnabled();
 
+// Returns true if experimental accessibility Magnifier new focus following is
+// enabled.
+AX_BASE_EXPORT bool
+IsExperimentalAccessibilityMagnifierNewFocusFollowingEnabled();
+
 #if defined(OS_WIN)
 AX_BASE_EXPORT extern const char kEnableExperimentalUIAutomation[];
 #endif
