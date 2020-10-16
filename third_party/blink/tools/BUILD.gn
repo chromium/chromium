@@ -58,15 +58,32 @@ group("wpt_tests_android_isolate") {
   ]
 }
 
-group("wpt_tests_mojo_bindings") {
+group("wpt_tests_base_mojo_bindings") {
   testonly = true
   data_deps = [
     "//:layout_test_data_mojo_bindings",
     "//:layout_test_data_mojo_bindings_lite",
+    "//content/test:mojo_bindings_web_test_mojom_js_data_deps",
     "//content/test:mojo_web_test_bindings_js_data_deps",
-    "//device/vr/public/mojom:mojom_js_data_deps",
     "//mojo/public/interfaces/bindings/tests:test_data_deps",
     "//mojo/public/js/ts/bindings/tests:test_interfaces_js_data_deps",
     "//mojo/public/mojom/base:base_js_data_deps",
+  ]
+}
+
+group("wpt_tests_mojo_bindings") {
+  testonly = true
+  data_deps = [
+    ":wpt_tests_base_mojo_bindings",
+    "//device/bluetooth/public/mojom:fake_bluetooth_interfaces_js_data_deps",
+    "//device/vr/public/mojom:mojom_js_data_deps",
+    "//media/capture/mojom:image_capture_js_data_deps",
+    "//media/midi:mojo_js_data_deps",
+    "//services/device/public/mojom:generic_sensor_js_data_deps",
+    "//services/device/public/mojom:mojom_js_data_deps",
+    "//services/device/public/mojom:usb_js_data_deps",
+    "//services/shape_detection/public/mojom:mojom_js_data_deps",
+    "//skia/public/mojom:mojom_js_data_deps",
+    "//third_party/blink/public/mojom:mojom_platform_js_data_deps",
   ]
 }
