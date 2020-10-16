@@ -137,10 +137,9 @@
 
   // Verify the correct number of bookmarks exist.
   base::string16 matchString = base::SysNSStringToUTF16(title);
-  std::vector<bookmarks::TitledUrlMatch> matches;
-  int const kMaxCountOfBoomarks = 50;
-  bookmarkModel->GetBookmarksMatching(matchString, kMaxCountOfBoomarks,
-                                      &matches);
+  int const kMaxCountOfBookmarks = 50;
+  std::vector<bookmarks::TitledUrlMatch> matches =
+      bookmarkModel->GetBookmarksMatching(matchString, kMaxCountOfBookmarks);
   if (matches.size() != expectedCount)
     return testing::NSErrorWithLocalizedDescription(
         @"Unexpected number of bookmarks");

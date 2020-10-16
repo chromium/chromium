@@ -1228,10 +1228,9 @@ TEST_F(BookmarkModelTest, RenamedFolderNodeExcludedFromIndex) {
   model_->SetTitle(folder, ASCIIToUTF16("MyBookmarks"));
 
   // There should be no matching bookmarks.
-  std::vector<TitledUrlMatch> matches;
-  model_->GetBookmarksMatching(ASCIIToUTF16("MyB"), /*max_count = */ 1,
-                               query_parser::MatchingAlgorithm::DEFAULT,
-                               &matches);
+  std::vector<TitledUrlMatch> matches =
+      model_->GetBookmarksMatching(ASCIIToUTF16("MyB"), /*max_count=*/1,
+                                   query_parser::MatchingAlgorithm::DEFAULT);
   EXPECT_TRUE(matches.empty());
 }
 
@@ -1260,10 +1259,8 @@ TEST(BookmarkModelLoadTest, TitledUrlIndexPopulatedOnLoad) {
   model->Load(nullptr, tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
 
-  std::vector<TitledUrlMatch> matches;
-  model->GetBookmarksMatching(base::ASCIIToUTF16("user"), 1,
-                              query_parser::MatchingAlgorithm::DEFAULT,
-                              &matches);
+  std::vector<TitledUrlMatch> matches = model->GetBookmarksMatching(
+      base::ASCIIToUTF16("user"), 1, query_parser::MatchingAlgorithm::DEFAULT);
   ASSERT_EQ(1u, matches.size());
   EXPECT_EQ(node_url, matches[0].node->GetTitledUrlNodeUrl());
 }

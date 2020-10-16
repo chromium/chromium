@@ -134,12 +134,10 @@ class ProfileWriterTest : public testing::Test {
   void VerifyBookmarksCount(const std::vector<UrlAndTitle>& bookmarks_record,
                             BookmarkModel* bookmark_model,
                             size_t expected) {
-    std::vector<TitledUrlMatch> matches;
-    for (size_t i = 0; i < bookmarks_record.size(); ++i) {
-      bookmark_model->GetBookmarksMatching(
-          bookmarks_record[i].title, 10, &matches);
+    for (auto bookmark : bookmarks_record) {
+      std::vector<TitledUrlMatch> matches =
+          bookmark_model->GetBookmarksMatching(bookmark.title, 10);
       EXPECT_EQ(expected, matches.size());
-      matches.clear();
     }
   }
 

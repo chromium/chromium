@@ -81,21 +81,20 @@ void TitledUrlIndex::Remove(const TitledUrlNode* node) {
     UnregisterNode(terms[i], node);
 }
 
-void TitledUrlIndex::GetResultsMatching(
+std::vector<TitledUrlMatch> TitledUrlIndex::GetResultsMatching(
     const base::string16& input_query,
     size_t max_count,
-    query_parser::MatchingAlgorithm matching_algorithm,
-    std::vector<TitledUrlMatch>* results) {
+    query_parser::MatchingAlgorithm matching_algorithm) {
   const base::string16 query = Normalize(input_query);
   std::vector<base::string16> terms = ExtractQueryWords(query);
   if (terms.empty())
-    return;
+    return {};
 
   TitledUrlNodeSet matches;
   for (size_t i = 0; i < terms.size(); ++i) {
     if (!GetResultsMatchingTerm(terms[i], i == 0, matching_algorithm,
                                 &matches)) {
-      return;
+      return {};
     }
   }
 
@@ -114,10 +113,15 @@ void TitledUrlIndex::GetResultsMatching(
   // that calculates result relevance in HistoryContentsProvider::ConvertResults
   // will run backwards to assure higher relevance will be attributed to the
   // best matches.
+  std::vector<TitledUrlMatch> results;
   for (TitledUrlNodes::const_iterator i = sorted_nodes.begin();
-       i != sorted_nodes.end() && results->size() < max_count;
-       ++i)
-    AddMatchToResults(*i, &parser, query_nodes, results);
+       i != sorted_nodes.end() && results.size() < max_count; ++i) {
+    base::Optional<TitledUrlMatch> match =
+        MatchTitledUrlNodeWithQuery(*i, &parser, query_nodes);
+    if (match)
+      results.push_back(match.value());
+  }
+  return results;
 }
 
 void TitledUrlIndex::SortMatches(const TitledUrlNodeSet& matches,
@@ -129,13 +133,12 @@ void TitledUrlIndex::SortMatches(const TitledUrlNodeSet& matches,
   }
 }
 
-void TitledUrlIndex::AddMatchToResults(
+base::Optional<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodeWithQuery(
     const TitledUrlNode* node,
     query_parser::QueryParser* parser,
-    const query_parser::QueryNodeVector& query_nodes,
-    std::vector<TitledUrlMatch>* results) {
+    const query_parser::QueryNodeVector& query_nodes) {
   if (!node) {
-    return;
+    return base::nullopt;
   }
   // Check that the result matches the query.  The previous search
   // was a simple per-word search, while the more complex matching
@@ -156,7 +159,7 @@ void TitledUrlIndex::AddMatchToResults(
         node->HasMatchIn(title_words, &title_matches);
     const bool has_url_matches = node->HasMatchIn(url_words, &url_matches);
     if (!has_title_matches && !has_url_matches)
-      return;
+      return base::nullopt;
     query_parser::QueryParser::SortAndCoalesceMatchPositions(&title_matches);
     query_parser::QueryParser::SortAndCoalesceMatchPositions(&url_matches);
   }
@@ -177,7 +180,7 @@ void TitledUrlIndex::AddMatchToResults(
       TitledUrlMatch::ReplaceOffsetsInMatchPositions(url_matches, offsets);
   match.url_match_positions.swap(url_matches);
   match.node = node;
-  results->push_back(match);
+  return match;
 }
 
 bool TitledUrlIndex::GetResultsMatchingTerm(

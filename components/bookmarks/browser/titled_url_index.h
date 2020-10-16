@@ -13,6 +13,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "base/strings/string16.h"
 #include "components/bookmarks/browser/titled_url_node_sorter.h"
 #include "components/query_parser/query_parser.h"
@@ -47,10 +48,10 @@ class TitledUrlIndex {
 
   // Returns up to |max_count| of matches containing each term from the text
   // |query| in either the title or the URL.
-  void GetResultsMatching(const base::string16& query,
-                          size_t max_count,
-                          query_parser::MatchingAlgorithm matching_algorithm,
-                          std::vector<TitledUrlMatch>* results);
+  std::vector<TitledUrlMatch> GetResultsMatching(
+      const base::string16& query,
+      size_t max_count,
+      query_parser::MatchingAlgorithm matching_algorithm);
 
  private:
   using TitledUrlNodes = std::vector<const TitledUrlNode*>;
@@ -62,11 +63,12 @@ class TitledUrlIndex {
   void SortMatches(const TitledUrlNodeSet& matches,
                    TitledUrlNodes* sorted_nodes) const;
 
-  // Add |node| to |results| if the node matches the query.
-  void AddMatchToResults(const TitledUrlNode* node,
-                         query_parser::QueryParser* parser,
-                         const query_parser::QueryNodeVector& query_nodes,
-                         std::vector<TitledUrlMatch>* results);
+  // Finds |query_nodes| matches in |node| and returns a TitledUrlMatch
+  // containing |node| and the matches.
+  base::Optional<TitledUrlMatch> MatchTitledUrlNodeWithQuery(
+      const TitledUrlNode* node,
+      query_parser::QueryParser* parser,
+      const query_parser::QueryNodeVector& query_nodes);
 
   // Populates |matches| for the specified term. If |first_term| is true, this
   // is the first term in the query. Returns true if there is at least one node

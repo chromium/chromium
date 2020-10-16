@@ -54,7 +54,6 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
   if (!bookmark_model_)
     return;
 
-  TitledUrlMatches matches;
   // Retrieve enough bookmarks so that we have a reasonable probability of
   // suggesting the one that the user desires.
   const size_t kMaxBookmarkMatches = 50;
@@ -78,12 +77,11 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
   // Please refer to the code for TitledUrlIndex::GetResultsMatching for
   // complete details of how searches are performed against the user's
   // bookmarks.
-  bookmark_model_->GetBookmarksMatching(
+  std::vector<TitledUrlMatch> matches = bookmark_model_->GetBookmarksMatching(
       input.text(), kMaxBookmarkMatches,
       OmniboxFieldTrial::IsShortBookmarkSuggestionsEnabled()
           ? query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH
-          : query_parser::MatchingAlgorithm::DEFAULT,
-      &matches);
+          : query_parser::MatchingAlgorithm::DEFAULT);
   if (matches.empty())
     return;  // There were no matches.
   const base::string16 fixed_up_input(FixupUserInput(input).second);

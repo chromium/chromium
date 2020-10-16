@@ -246,16 +246,15 @@ class BookmarkModel : public BookmarkUndoProvider,
 
   // Returns up to |max_count| of bookmarks containing each term from |text|
   // in either the title or the URL. It uses default matching algorithm.
-  void GetBookmarksMatching(const base::string16& text,
-                            size_t max_count,
-                            std::vector<TitledUrlMatch>* matches);
+  std::vector<TitledUrlMatch> GetBookmarksMatching(const base::string16& text,
+                                                   size_t max_count);
 
   // Returns up to |max_count| of bookmarks containing each term from |text|
   // in either the title or the URL.
-  void GetBookmarksMatching(const base::string16& text,
-                            size_t max_count,
-                            query_parser::MatchingAlgorithm matching_algorithm,
-                            std::vector<TitledUrlMatch>* matches);
+  std::vector<TitledUrlMatch> GetBookmarksMatching(
+      const base::string16& text,
+      size_t max_count,
+      query_parser::MatchingAlgorithm matching_algorithm);
 
   // Sets the store to NULL, making it so the BookmarkModel does not persist
   // any changes to disk. This is only useful during testing to speed up
@@ -319,8 +318,8 @@ class BookmarkModel : public BookmarkUndoProvider,
                           size_t index,
                           std::unique_ptr<BookmarkNode> node) override;
 
-  // Notifies the observers for adding every descedent of |node|.
-  void NotifyNodeAddedForAllDescendents(const BookmarkNode* node);
+  // Notifies the observers for adding every descendant of |node|.
+  void NotifyNodeAddedForAllDescendants(const BookmarkNode* node);
 
   // Removes the node from internal maps and recurses through all children. If
   // the node is a url, its url is added to removed_urls.
@@ -337,8 +336,8 @@ class BookmarkModel : public BookmarkUndoProvider,
                         size_t index,
                         std::unique_ptr<BookmarkNode> node);
 
-  // Adds |node| to |index_| and recursisvely invokes this for all children.
-  void AddNodeToIndexRecursive(BookmarkNode* node);
+  // Adds |node| to |index_| and recursively invokes this for all children.
+  void AddNodeToIndexRecursive(const BookmarkNode* node);
 
   // Returns true if the parent and index are valid.
   bool IsValidIndex(const BookmarkNode* parent, size_t index, bool allow_end);
