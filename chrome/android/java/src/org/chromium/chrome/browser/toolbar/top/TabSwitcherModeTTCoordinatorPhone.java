@@ -4,13 +4,9 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.view.View;
 import android.view.ViewStub;
-
 import androidx.annotation.Nullable;
-
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -129,71 +125,7 @@ class TabSwitcherModeTTCoordinatorPhone {
         if (mTabSwitcherModeToolbar != null) {
             mTabSwitcherModeToolbar.setTabModelSelector(selector);
         }
-    }
 
-    /**
-     * @param provider The provider used to determine incognito state.
-     */
-    void setIncognitoStateProvider(IncognitoStateProvider provider) {
-        mIncognitoStateProvider = provider;
-        if (mTabSwitcherModeToolbar != null) {
-            mTabSwitcherModeToolbar.setIncognitoStateProvider(provider);
-        }
-    }
-
-    /** Called when accessibility status changes. */
-    void onAccessibilityStatusChanged(boolean enabled) {
-        mAccessibilityEnabled = enabled;
-        if (mTabSwitcherModeToolbar != null) {
-            mTabSwitcherModeToolbar.onAccessibilityStatusChanged(enabled);
-        }
-    }
-
-    void setTabSwitcherToolbarVisibility(boolean shouldShowTabSwitcherToolbar) {
-        if (mTabSwitcherModeToolbar == null
-                || (mTabSwitcherModeToolbar.getVisibility() == View.VISIBLE)
-                        == shouldShowTabSwitcherToolbar) {
-            return;
-        }
-
-        final float targetAlpha = shouldShowTabSwitcherToolbar ? 1.0f : 0.0f;
-        mTabSwitcherModeToolbar.animate()
-                .alpha(targetAlpha)
-                .setDuration(TopToolbarCoordinator.TAB_SWITCHER_MODE_NORMAL_ANIMATION_DURATION_MS)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                        if (shouldShowTabSwitcherToolbar) {
-                            mTabSwitcherModeToolbar.setVisibility(View.VISIBLE);
-                        }
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        if (!shouldShowTabSwitcherToolbar) {
-                            mTabSwitcherModeToolbar.setVisibility(View.GONE);
-                        }
-                    }
-                });
-    }
-
-    private void initializeTabSwitcherToolbar() {
-        mTabSwitcherModeToolbar = (TabSwitcherModeTTPhone) mTabSwitcherToolbarStub.inflate();
-        mMenuButtonCoordinator.setMenuButton(
-                mTabSwitcherModeToolbar.findViewById(R.id.menu_button_wrapper));
-
-        // It's expected that these properties are set by the time the tab switcher is entered.
-        assert mTabSwitcherListener != null;
-        mTabSwitcherModeToolbar.setOnTabSwitcherClickHandler(mTabSwitcherListener);
-
-        assert mNewTabListener != null;
-        mTabSwitcherModeToolbar.setOnNewTabClickHandler(mNewTabListener);
-
-        assert mTabCountProvider != null;
-        mTabSwitcherModeToolbar.setTabCountProvider(mTabCountProvider);
-
-        assert mTabModelSelector != null;
-        mTabSwitcherModeToolbar.setTabModelSelector(mTabModelSelector);
         if (isNewTabVariationEnabled()) {
             mTabModelObserver = new TabModelObserver() {
                 @Override
@@ -216,16 +148,63 @@ class TabSwitcherModeTTCoordinatorPhone {
 
                 private void updateIncognitoTabsCount() {
                     int incognitoTabsCount = mTabModelSelector.getModel(true).getCount();
-                    mTabSwitcherModeToolbar.onIncognitoTabsCountChanged(incognitoTabsCount);
+                    if (mTabSwitcherModeToolbar != null) {
+                        mTabSwitcherModeToolbar.onIncognitoTabsCountChanged(incognitoTabsCount);
+                    }
                 }
             };
             TabModel incognitoTabModel = mTabModelSelector.getModel(true);
             incognitoTabModel.addObserver(mTabModelObserver);
-            mTabSwitcherModeToolbar.onIncognitoTabsCountChanged(incognitoTabModel.getCount());
+            if (mTabSwitcherModeToolbar != null) {
+                mTabSwitcherModeToolbar.onIncognitoTabsCountChanged(incognitoTabModel.getCount());
+            }
         }
+    }
+
+    /**
+     * @param provider The provider used to determine incognito state.
+     */
+    void setIncognitoStateProvider(IncognitoStateProvider provider) {
+        mIncognitoStateProvider = provider;
+        if (mTabSwitcherModeToolbar != null) {
+            mTabSwitcherModeToolbar.setIncognitoStateProvider(provider);
+        }
+    }
+
+    /** Called when accessibility status changes. */
+    void onAccessibilityStatusChanged(boolean enabled) {
+        mAccessibilityEnabled = enabled;
+        if (mTabSwitcherModeToolbar != null) {
+            mTabSwitcherModeToolbar.onAccessibilityStatusChanged(enabled);
+        }
+    }
+
+    private void initializeTabSwitcherToolbar() {
+        mTabSwitcherModeToolbar = (TabSwitcherModeTTPhone) mTabSwitcherToolbarStub.inflate();
+        mMenuButtonCoordinator.setMenuButton(
+                mTabSwitcherModeToolbar.findViewById(R.id.menu_button_wrapper));
+
+        // It's expected that these properties are set by the time the tab switcher is entered.
+        assert mTabSwitcherListener != null;
+        mTabSwitcherModeToolbar.setOnTabSwitcherClickHandler(mTabSwitcherListener);
+
+        assert mNewTabListener != null;
+        mTabSwitcherModeToolbar.setOnNewTabClickHandler(mNewTabListener);
+
+        assert mTabCountProvider != null;
+        mTabSwitcherModeToolbar.setTabCountProvider(mTabCountProvider);
+
+        assert mTabModelSelector != null;
+        mTabSwitcherModeToolbar.setTabModelSelector(mTabModelSelector);
 
         assert mIncognitoStateProvider != null;
         mTabSwitcherModeToolbar.setIncognitoStateProvider(mIncognitoStateProvider);
+
+        if (isNewTabVariationEnabled()) {
+            int incognitoTabsCount =
+                    mTabModelSelector == null ? 0 : mTabModelSelector.getModel(true).getCount();
+            mTabSwitcherModeToolbar.onIncognitoTabsCountChanged(incognitoTabsCount);
+        }
 
         if (mAccessibilityEnabled) {
             mTabSwitcherModeToolbar.onAccessibilityStatusChanged(mAccessibilityEnabled);
