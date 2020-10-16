@@ -193,6 +193,10 @@ void GattClientManagerImpl::EnqueueReadRemoteRssiRequest(
 bool GattClientManagerImpl::SetGattClientConnectable(bool connectable) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
 
+  if (gatt_client_connectable_ == connectable) {
+    return false;
+  }
+
   if (connectable) {
     if (disconnect_all_pending_) {
       LOG(ERROR) << "Can't enable GATT client connectability while "
