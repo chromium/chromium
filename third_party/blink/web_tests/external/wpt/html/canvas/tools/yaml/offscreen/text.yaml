@@ -1210,6 +1210,7 @@
         @assert ctx.measureText('ABCD').emHeightDescent === 12.5;
         @assert ctx.measureText('ABCD').emHeightDescent + ctx.measureText('ABCD').emHeightAscent === 50;
     }).then(t_pass, t_fail);
+
 - name: 2d.text.measure.baselines
   desc: Testing baselines for OffscreenCanvas
   testing:
@@ -1233,4 +1234,27 @@
        @assert ctx.measureText('ABCD').getBaselines().ideographic === -39;
        @assert ctx.measureText('ABCD').getBaselines().hanging === 68;
     }).then(t_pass, t_fail);
+
+- name: 2d.text.drawing.style.spacing
+  desc: Testing baselines
+  testing:
+  - 2d.text.drawing.style.spacing
+  code: |
+    @assert ctx.textLetterSpacing === 0;
+    @assert ctx.textWordSpacing === 0;
+
+    ctx.textLetterSpacing = 3;
+    @assert ctx.textLetterSpacing === 3;
+    @assert ctx.textWordSpacing === 0;
+
+    ctx.textWordSpacing = 5;
+    @assert ctx.textLetterSpacing === 3;
+    @assert ctx.textWordSpacing === 5;
+
+    ctx.textLetterSpacing = -1;
+    ctx.textWordSpacing = -1;
+    @assert ctx.textLetterSpacing === -1;
+    @assert ctx.textWordSpacing === -1;
+    t.done();
+
 # TODO: shadows, alpha, composite, clip

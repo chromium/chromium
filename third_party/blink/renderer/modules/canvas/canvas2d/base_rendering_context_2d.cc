@@ -2012,6 +2012,14 @@ void BaseRenderingContext2D::CheckOverdraw(
   WillOverwriteCanvas();
 }
 
+double BaseRenderingContext2D::textLetterSpacing() const {
+  return GetState().GetTextLetterSpacing();
+}
+
+double BaseRenderingContext2D::textWordSpacing() const {
+  return GetState().GetTextWordSpacing();
+}
+
 float BaseRenderingContext2D::GetFontBaseline(
     const SimpleFontData& font_data) const {
   return TextMetrics::GetFontBaseline(GetState().GetTextBaseline(), font_data);

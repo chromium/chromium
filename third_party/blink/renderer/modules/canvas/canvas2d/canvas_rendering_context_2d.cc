@@ -793,6 +793,25 @@ void CanvasRenderingContext2D::setDirection(const String& direction_string) {
   ModifiableState().SetDirection(direction);
 }
 
+void CanvasRenderingContext2D::setTextLetterSpacing(
+    const double letter_spacing) {
+  if (!GetState().HasRealizedFont())
+    setFont(font());
+
+  float letter_spacing_float = clampTo<float>(letter_spacing);
+  ModifiableState().SetTextLetterSpacing(letter_spacing_float,
+                                         Host()->GetFontSelector());
+}
+
+void CanvasRenderingContext2D::setTextWordSpacing(const double word_spacing) {
+  if (!GetState().HasRealizedFont())
+    setFont(font());
+
+  float word_spacing_float = clampTo<float>(word_spacing);
+  ModifiableState().SetTextWordSpacing(word_spacing_float,
+                                       Host()->GetFontSelector());
+}
+
 void CanvasRenderingContext2D::fillText(const String& text,
                                         double x,
                                         double y) {

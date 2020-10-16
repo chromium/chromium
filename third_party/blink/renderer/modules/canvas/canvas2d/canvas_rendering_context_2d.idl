@@ -159,6 +159,8 @@ interface CanvasRenderingContext2D {
     attribute DOMString textAlign; // "start", "end", "left", "right", "center" (default: "start")
     attribute DOMString textBaseline; // "top", "hanging", "middle", "alphabetic", "ideographic", "bottom" (default: "alphabetic")
     attribute DOMString direction; // "inherit", "rtl", "ltr" (default: "inherit")
+    [RuntimeEnabled=NewCanvas2DAPI] attribute unrestricted double textLetterSpacing; // length in pixel (default: 0)
+    [RuntimeEnabled=NewCanvas2DAPI] attribute unrestricted double textWordSpacing; // length in pixel (default: 0)
 };
 
 CanvasRenderingContext2D includes CanvasPath;

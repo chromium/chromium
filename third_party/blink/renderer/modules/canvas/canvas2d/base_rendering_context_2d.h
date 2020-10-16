@@ -263,6 +263,10 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
   String textBaseline() const;
   void setTextBaseline(const String&);
 
+  double textLetterSpacing() const;
+
+  double textWordSpacing() const;
+
   void Trace(Visitor*) const override;
 
   enum DrawCallType {

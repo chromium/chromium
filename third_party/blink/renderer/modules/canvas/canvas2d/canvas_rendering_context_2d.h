@@ -129,6 +129,9 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   String direction() const;
   void setDirection(const String&);
 
+  void setTextLetterSpacing(const double letter_spacing);
+  void setTextWordSpacing(const double word_spacing);
+
   void fillText(const String& text, double x, double y);
   void fillText(const String& text, double x, double y, double max_width);
   void strokeText(const String& text, double x, double y);

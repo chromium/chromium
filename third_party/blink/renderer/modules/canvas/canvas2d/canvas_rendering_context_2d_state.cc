@@ -47,7 +47,6 @@ CanvasRenderingContext2DState::CanvasRenderingContext2DState()
       unparsed_filter_(defaultFilter),
       text_align_(kStartTextAlign),
       text_baseline_(kAlphabeticTextBaseline),
-      direction_(kDirectionInherit),
       realized_font_(false),
       is_transform_invertible_(true),
       has_clip_(false),
@@ -103,6 +102,8 @@ CanvasRenderingContext2DState::CanvasRenderingContext2DState(
       text_align_(other.text_align_),
       text_baseline_(other.text_baseline_),
       direction_(other.direction_),
+      letter_spacing_(other.letter_spacing_),
+      word_spacing_(other.word_spacing_),
       realized_font_(other.realized_font_),
       is_transform_invertible_(other.is_transform_invertible_),
       has_clip_(other.has_clip_),
@@ -647,6 +648,25 @@ bool CanvasRenderingContext2DState::PatternIsAccelerated(
     PaintType paint_type) const {
   DCHECK(HasPattern(paint_type));
   return Style(paint_type)->GetCanvasPattern()->GetPattern()->IsTextureBacked();
+}
+
+void CanvasRenderingContext2DState::SetTextLetterSpacing(
+    float letter_spacing,
+    FontSelector* selector) {
+  DCHECK(realized_font_);
+  FontDescription font_description(GetFontDescription());
+  font_description.SetLetterSpacing(letter_spacing);
+  letter_spacing_ = letter_spacing;
+  SetFont(font_description, selector);
+}
+
+void CanvasRenderingContext2DState::SetTextWordSpacing(float word_spacing,
+                                                       FontSelector* selector) {
+  DCHECK(realized_font_);
+  FontDescription font_description(GetFontDescription());
+  font_description.SetWordSpacing(word_spacing);
+  word_spacing_ = word_spacing;
+  SetFont(font_description, selector);
 }
 
 }  // namespace blink

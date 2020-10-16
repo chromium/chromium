@@ -738,4 +738,25 @@
         }), 500);
     });
 
+- name: 2d.text.drawing.style.spacing
+  desc: Testing baselines
+  testing:
+  - 2d.text.drawing.style.spacing
+  code: |
+    @assert ctx.textLetterSpacing === 0;
+    @assert ctx.textWordSpacing === 0;
+
+    ctx.textLetterSpacing = 3;
+    @assert ctx.textLetterSpacing === 3;
+    @assert ctx.textWordSpacing === 0;
+
+    ctx.textWordSpacing = 5;
+    @assert ctx.textLetterSpacing === 3;
+    @assert ctx.textWordSpacing === 5;
+
+    ctx.textLetterSpacing = -1;
+    ctx.textWordSpacing = -1;
+    @assert ctx.textLetterSpacing === -1;
+    @assert ctx.textWordSpacing === -1;
+
 # TODO: shadows, alpha, composite, clip
