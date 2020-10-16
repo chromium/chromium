@@ -9,11 +9,11 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/frame_header.h"
-#include "ash/public/cpp/immersive/immersive_fullscreen_controller_delegate.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/scoped_observer.h"
+#include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_delegate.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -42,10 +42,11 @@ enum class FrameBackButtonState;
 
 // View which paints the frame header (title, caption buttons...). It slides off
 // and on screen in immersive fullscreen.
-class ASH_EXPORT HeaderView : public views::View,
-                              public ImmersiveFullscreenControllerDelegate,
-                              public TabletModeObserver,
-                              public aura::WindowObserver {
+class ASH_EXPORT HeaderView
+    : public views::View,
+      public chromeos::ImmersiveFullscreenControllerDelegate,
+      public TabletModeObserver,
+      public aura::WindowObserver {
  public:
   // |target_widget| is the widget that the caption buttons act on.
   // |target_widget| is not necessarily the same as the widget the header is

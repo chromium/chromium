@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/immersive/immersive_fullscreen_controller_test_api.h"
+#include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
 
-#include "ash/public/cpp/immersive/immersive_fullscreen_controller.h"
-#include "ash/public/cpp/immersive/immersive_fullscreen_controller_delegate.h"
+#include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
+#include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_delegate.h"
 #include "ui/aura/env.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace ash {
+namespace chromeos {
 
 ImmersiveFullscreenControllerTestApi::ImmersiveFullscreenControllerTestApi(
     ImmersiveFullscreenController* controller)
@@ -54,4 +54,4 @@ ImmersiveFullscreenControllerTestApi::GlobalAnimationDisabler::
       false;
 }
 
-}  // namespace ash
+}  // namespace chromeos

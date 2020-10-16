@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_IMMERSIVE_IMMERSIVE_FOCUS_WATCHER_H_
-#define ASH_PUBLIC_CPP_IMMERSIVE_IMMERSIVE_FOCUS_WATCHER_H_
+#ifndef CHROMEOS_UI_FRAME_IMMERSIVE_IMMERSIVE_FOCUS_WATCHER_H_
+#define CHROMEOS_UI_FRAME_IMMERSIVE_IMMERSIVE_FOCUS_WATCHER_H_
 
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/client/transient_window_client_observer.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/wm/public/activation_change_observer.h"
 
-namespace ash {
+namespace chromeos {
 class ImmersiveFullscreenController;
 class ImmersiveRevealedLock;
 
@@ -76,6 +76,6 @@ class ImmersiveFocusWatcher
   DISALLOW_COPY_AND_ASSIGN(ImmersiveFocusWatcher);
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // ASH_PUBLIC_CPP_IMMERSIVE_IMMERSIVE_FOCUS_WATCHER_H_
+#endif  // CHROMEOS_UI_FRAME_IMMERSIVE_IMMERSIVE_FOCUS_WATCHER_H_

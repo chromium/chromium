@@ -19,7 +19,6 @@
 
 namespace ash {
 class NonClientFrameViewAsh;
-class ImmersiveFullscreenController;
 class RoundedCornerDecorator;
 class WideFrameView;
 
@@ -27,6 +26,10 @@ namespace mojom {
 enum class WindowPinType;
 }
 }  // namespace ash
+
+namespace chromeos {
+class ImmersiveFullscreenController;
+}  // namespace chromeos
 
 namespace exo {
 class Surface;
@@ -351,7 +354,7 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
 
   bool can_maximize_ = true;
 
-  std::unique_ptr<ash::ImmersiveFullscreenController>
+  std::unique_ptr<chromeos::ImmersiveFullscreenController>
       immersive_fullscreen_controller_;
 
   std::unique_ptr<ash::WideFrameView> wide_frame_;

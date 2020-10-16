@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_IMMERSIVE_IMMERSIVE_CONTEXT_H_
-#define ASH_PUBLIC_CPP_IMMERSIVE_IMMERSIVE_CONTEXT_H_
+#ifndef CHROMEOS_UI_FRAME_IMMERSIVE_IMMERSIVE_CONTEXT_H_
+#define CHROMEOS_UI_FRAME_IMMERSIVE_IMMERSIVE_CONTEXT_H_
 
-#include "ash/public/cpp/ash_public_export.h"
+#include "base/component_export.h"
 
 namespace gfx {
 class Rect;
@@ -15,13 +15,13 @@ namespace views {
 class Widget;
 }
 
-namespace ash {
+namespace chromeos {
 
 class ImmersiveFullscreenController;
 
 // ImmersiveContext abstracts away all the windowing related calls so that
 // ImmersiveFullscreenController does not depend upon aura or ash.
-class ASH_PUBLIC_EXPORT ImmersiveContext {
+class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveContext {
  public:
   virtual ~ImmersiveContext();
 
@@ -45,6 +45,6 @@ class ASH_PUBLIC_EXPORT ImmersiveContext {
   ImmersiveContext();
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // ASH_PUBLIC_CPP_IMMERSIVE_IMMERSIVE_CONTEXT_H_
+#endif  // CHROMEOS_UI_FRAME_IMMERSIVE_IMMERSIVE_CONTEXT_H_

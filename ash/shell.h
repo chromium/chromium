@@ -33,6 +33,7 @@ class Window;
 }  // namespace aura
 
 namespace chromeos {
+class ImmersiveContext;
 class SnapController;
 }  // namespace chromeos
 
@@ -126,7 +127,6 @@ class HighlighterController;
 class HoldingSpaceController;
 class HomeScreenController;
 class ImeControllerImpl;
-class ImmersiveContext;
 class InSessionAuthDialogControllerImpl;
 class KeyAccessibilityEnabler;
 class KeyboardBrightnessControlDelegate;
@@ -693,7 +693,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<HoldingSpaceController> holding_space_controller_;
   std::unique_ptr<HomeScreenController> home_screen_controller_;
   std::unique_ptr<ImeControllerImpl> ime_controller_;
-  std::unique_ptr<ImmersiveContext> immersive_context_;
+  std::unique_ptr<chromeos::ImmersiveContext> immersive_context_;
   std::unique_ptr<InSessionAuthDialogControllerImpl>
       in_session_auth_dialog_controller_;
   std::unique_ptr<KeyboardBrightnessControlDelegate>

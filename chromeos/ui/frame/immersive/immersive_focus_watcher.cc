@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/immersive/immersive_focus_watcher.h"
+#include "chromeos/ui/frame/immersive/immersive_focus_watcher.h"
 
-#include "ash/public/cpp/immersive/immersive_fullscreen_controller.h"
+#include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "ui/aura/client/transient_window_client.h"
 #include "ui/aura/window.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -12,7 +12,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/public/activation_client.h"
 
-namespace ash {
+namespace chromeos {
 
 namespace {
 
@@ -276,7 +276,7 @@ void ImmersiveFocusWatcher::OnTransientChildWindowAdded(
       immersive_fullscreen_controller_->top_container()->Contains(anchor)) {
     // Observe the aura::Window because the BubbleDelegateView may not be
     // parented to the widget's root view yet so |bubble_delegate->GetWidget()|
-    // may still return NULL.
+    // may still return null.
     bubble_observer_->StartObserving(transient);
   }
 }
@@ -287,4 +287,4 @@ void ImmersiveFocusWatcher::OnTransientChildWindowRemoved(
   bubble_observer_->StopObserving(transient);
 }
 
-}  // namespace ash
+}  // namespace chromeos

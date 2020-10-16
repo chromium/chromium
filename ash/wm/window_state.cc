@@ -52,6 +52,7 @@
 namespace ash {
 namespace {
 
+using ::chromeos::kImmersiveIsActive;
 using ::chromeos::WindowStateType;
 
 bool IsTabletModeEnabled() {

@@ -22,8 +22,8 @@
 #include "ui/views/controls/webview/webview.h"
 
 #if defined(OS_CHROMEOS)
-#include "ash/public/cpp/immersive/immersive_fullscreen_controller.h"
-#include "ash/public/cpp/immersive/immersive_fullscreen_controller_test_api.h"
+#include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
+#include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
 #endif  // defined(OS_CHROMEOS)
 
 class WebUITabStripInteractiveTest : public InProcessBrowserTest {
@@ -138,8 +138,8 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest, CanUseInImmersiveMode) {
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser());
 
-  ash::ImmersiveFullscreenControllerTestApi immersive_test_api(
-      ash::ImmersiveFullscreenController::Get(browser_view->GetWidget()));
+  chromeos::ImmersiveFullscreenControllerTestApi immersive_test_api(
+      chromeos::ImmersiveFullscreenController::Get(browser_view->GetWidget()));
   immersive_test_api.SetupForTest();
 
   ImmersiveModeController* const immersive_mode_controller =

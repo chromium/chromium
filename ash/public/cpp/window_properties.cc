@@ -4,12 +4,12 @@
 
 #include "ash/public/cpp/window_properties.h"
 
-#include "ash/public/cpp/immersive/immersive_fullscreen_controller.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/public/cpp/window_pin_type.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/aura/window.h"
 #include "ui/wm/core/window_properties.h"
@@ -34,15 +34,6 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kExcludeInMruKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHideInOverviewKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHideInShelfKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHideShelfWhenFullscreenKey, true)
-DEFINE_UI_CLASS_PROPERTY_KEY(bool, kImmersiveImpliedByFullscreen, true)
-DEFINE_UI_CLASS_PROPERTY_KEY(bool, kImmersiveIsActive, false)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect,
-                                   kImmersiveTopContainerBoundsInScreen,
-                                   nullptr)
-DEFINE_UI_CLASS_PROPERTY_KEY(
-    int,
-    kImmersiveWindowType,
-    ImmersiveFullscreenController::WindowType::WINDOW_TYPE_OTHER)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsDeferredTabDraggingTargetWindowKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsDraggingTabsKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHideInDeskMiniViewKey, false)

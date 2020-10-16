@@ -7,27 +7,27 @@
 
 #include <memory>
 
-#include "ash/public/cpp/immersive/immersive_fullscreen_controller.h"
-#include "ash/public/cpp/immersive/immersive_fullscreen_controller_delegate.h"
 #include "base/macros.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
+#include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
+#include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/geometry/rect.h"
 
 class ImmersiveModeControllerAsh
     : public ImmersiveModeController,
-      public ash::ImmersiveFullscreenControllerDelegate,
+      public chromeos::ImmersiveFullscreenControllerDelegate,
       public FullscreenObserver,
       public aura::WindowObserver {
  public:
   ImmersiveModeControllerAsh();
   ~ImmersiveModeControllerAsh() override;
 
-  ash::ImmersiveFullscreenController* controller() { return &controller_; }
+  chromeos::ImmersiveFullscreenController* controller() { return &controller_; }
 
   // ImmersiveModeController overrides:
   void Init(BrowserView* browser_view) override;
@@ -65,7 +65,7 @@ class ImmersiveModeControllerAsh
                                intptr_t old) override;
   void OnWindowDestroying(aura::Window* window) override;
 
-  ash::ImmersiveFullscreenController controller_;
+  chromeos::ImmersiveFullscreenController controller_;
 
   BrowserView* browser_view_ = nullptr;
 

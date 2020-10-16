@@ -2817,7 +2817,10 @@ if (!is_android) {
         "../browser/policy/cloud/chrome_browser_cloud_management_browsertest.cc",
       ]
 
-      deps += [ "//components/crash/content/browser/error_reporting:mock_crash_endpoint" ]
+      deps += [
+        "//chromeos/ui/frame:test_support",
+        "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
+      ]
     } else {  # !is_chromeos
       sources -= [
         "../browser/invalidation/profile_invalidation_provider_factory_browsertest.cc",
@@ -6595,6 +6598,7 @@ if (!is_android) {
       deps += [
         "//chrome/browser/media/router:test_support",
         "//chromeos/dbus",
+        "//chromeos/ui/frame:test_support",
       ]
       sources -=
           [ "../browser/ui/signin_view_controller_interactive_uitest.cc" ]

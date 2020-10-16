@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/immersive/immersive_fullscreen_controller.h"
+#include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 
 #include <set>
 
-#include "ash/public/cpp/immersive/immersive_context.h"
-#include "ash/public/cpp/immersive/immersive_focus_watcher.h"
-#include "ash/public/cpp/immersive/immersive_fullscreen_controller_delegate.h"
-#include "ash/public/cpp/window_properties.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/frame/immersive/immersive_context.h"
+#include "chromeos/ui/frame/immersive/immersive_focus_watcher.h"
+#include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_delegate.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/env.h"
@@ -28,9 +28,9 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
-DEFINE_UI_CLASS_PROPERTY_TYPE(ash::ImmersiveFullscreenController*)
+DEFINE_UI_CLASS_PROPERTY_TYPE(chromeos::ImmersiveFullscreenController*)
 
-namespace ash {
+namespace chromeos {
 
 DEFINE_UI_CLASS_PROPERTY_KEY(ImmersiveFullscreenController*,
                              kImmersiveFullscreenControllerKey,
@@ -463,8 +463,8 @@ void ImmersiveFullscreenController::UpdateLocatedEventRevealedLock(
   for (size_t i = 0; i < hit_bounds_in_screen.size(); ++i) {
     // Allow the cursor to move slightly off the top-of-window views before
     // sliding closed. In the case of ImmersiveModeControllerAsh, this helps
-    // when the user is attempting to click on the bookmark bar and overshoots
-    // slightly.
+    // when the user is attempting to click on the bookmark bar and
+    // overshoots slightly.
     if (event && event->type() == ui::ET_MOUSE_MOVED) {
       const int kBoundsOffsetY = 8;
       hit_bounds_in_screen[i].Inset(0, 0, 0, -kBoundsOffsetY);
@@ -768,6 +768,7 @@ void ImmersiveFullscreenController::UpdateEnabled() {
   }
 
   if (enabled_) {
+    // TODO(https://crbug.com/1138662): Remove this expired histogram entry.
     UMA_HISTOGRAM_ENUMERATION(
         "Ash.ImmersiveFullscreen.WindowType",
         static_cast<WindowType>(
@@ -784,4 +785,4 @@ void ImmersiveFullscreenController::EnableTouchInsets(bool enable) {
       {}, gfx::Insets(enable ? kImmersiveFullscreenTopEdgeInset : 0, 0, 0, 0));
 }
 
-}  // namespace ash
+}  // namespace chromeos

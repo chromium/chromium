@@ -12,7 +12,6 @@
 #include "ash/frame/wide_frame_view.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/default_frame_header.h"
-#include "ash/public/cpp/immersive/immersive_fullscreen_controller.h"
 #include "ash/public/cpp/rounded_corner_decorator.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_backdrop.h"
@@ -39,6 +38,7 @@
 #include "base/trace_event/traced_value.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
+#include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
@@ -567,7 +567,7 @@ void ClientControlledShellSurface::UpdateAutoHideFrame() {
     bool enabled = (frame_type_ == SurfaceFrameType::AUTOHIDE &&
                     (GetWindowState()->IsMaximizedOrFullscreenOrPinned() ||
                      GetWindowState()->IsSnapped()));
-    ash::ImmersiveFullscreenController::EnableForWidget(widget_, enabled);
+    chromeos::ImmersiveFullscreenController::EnableForWidget(widget_, enabled);
   }
 }
 
@@ -798,7 +798,7 @@ ClientControlledShellSurface::CreateNonClientFrameView(views::Widget* widget) {
   auto frame_view =
       CreateNonClientFrameViewInternal(widget, /*client_controlled=*/true);
   immersive_fullscreen_controller_ =
-      std::make_unique<ash::ImmersiveFullscreenController>();
+      std::make_unique<chromeos::ImmersiveFullscreenController>();
   static_cast<ash::NonClientFrameViewAsh*>(frame_view.get())
       ->InitImmersiveFullscreenControllerForView(
           immersive_fullscreen_controller_.get());
@@ -1259,7 +1259,7 @@ void ClientControlledShellSurface::UpdateFrame() {
     if (!wide_frame_) {
       update_frame = true;
       wide_frame_ = std::make_unique<ash::WideFrameView>(widget_);
-      ash::ImmersiveFullscreenController::EnableForWidget(widget_, false);
+      chromeos::ImmersiveFullscreenController::EnableForWidget(widget_, false);
       wide_frame_->Init(immersive_fullscreen_controller_.get());
       wide_frame_->header_view()->GetFrameHeader()->SetFrameTextOverride(
           GetFrameView()
@@ -1278,7 +1278,7 @@ void ClientControlledShellSurface::UpdateFrame() {
   } else {
     if (wide_frame_) {
       update_frame = true;
-      ash::ImmersiveFullscreenController::EnableForWidget(widget_, false);
+      chromeos::ImmersiveFullscreenController::EnableForWidget(widget_, false);
       wide_frame_.reset();
       GetFrameView()->InitImmersiveFullscreenControllerForView(
           immersive_fullscreen_controller_.get());

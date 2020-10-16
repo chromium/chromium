@@ -2,20 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_IMMERSIVE_IMMERSIVE_FULLSCREEN_CONTROLLER_DELEGATE_H_
-#define ASH_PUBLIC_CPP_IMMERSIVE_IMMERSIVE_FULLSCREEN_CONTROLLER_DELEGATE_H_
+#ifndef CHROMEOS_UI_FRAME_IMMERSIVE_IMMERSIVE_FULLSCREEN_CONTROLLER_DELEGATE_H_
+#define CHROMEOS_UI_FRAME_IMMERSIVE_IMMERSIVE_FULLSCREEN_CONTROLLER_DELEGATE_H_
 
 #include <vector>
 
-#include "ash/public/cpp/ash_public_export.h"
+#include "base/component_export.h"
 
 namespace gfx {
 class Rect;
 }
 
-namespace ash {
+namespace chromeos {
 
-class ASH_PUBLIC_EXPORT ImmersiveFullscreenControllerDelegate {
+class COMPONENT_EXPORT(CHROMEOS_UI_FRAME)
+    ImmersiveFullscreenControllerDelegate {
  public:
   // Called when a reveal of the top-of-window views starts.
   virtual void OnImmersiveRevealStarted() = 0;
@@ -49,6 +50,6 @@ class ASH_PUBLIC_EXPORT ImmersiveFullscreenControllerDelegate {
   virtual ~ImmersiveFullscreenControllerDelegate() {}
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // ASH_PUBLIC_CPP_IMMERSIVE_IMMERSIVE_FULLSCREEN_CONTROLLER_DELEGATE_H_
+#endif  // CHROMEOS_UI_FRAME_IMMERSIVE_IMMERSIVE_FULLSCREEN_CONTROLLER_DELEGATE_H_

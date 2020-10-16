@@ -13,6 +13,10 @@ template <typename T>
 using WindowProperty = ui::ClassProperty<T>;
 }  // namespace aura
 
+namespace gfx {
+class Rect;
+}
+
 namespace chromeos {
 
 enum class WindowStateType;
@@ -20,6 +24,26 @@ enum class WindowStateType;
 // Shell-specific window property keys for use by ash and lacros clients.
 
 // Alphabetical sort.
+
+// Whether entering fullscreen means that a window should automatically enter
+// immersive mode. This is false for some client windows, such as Chrome Apps.
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+extern const aura::WindowProperty<bool>* const kImmersiveImpliedByFullscreen;
+
+// Whether immersive is currently active (in ImmersiveFullscreenController
+// parlance, "enabled").
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+extern const aura::WindowProperty<bool>* const kImmersiveIsActive;
+
+// The bounds of the top container in screen coordinates.
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+extern const aura::WindowProperty<gfx::Rect*>* const
+    kImmersiveTopContainerBoundsInScreen;
+
+// The type of window for logging immersive metrics. Type:
+// ImmersiveFullscreenController::WindowType.
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+extern const aura::WindowProperty<int>* const kImmersiveWindowType;
 
 // If true, the window is currently showing in overview mode.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)

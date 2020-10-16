@@ -85,25 +85,6 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
     kHideShelfWhenFullscreenKey;
 
-// Whether entering fullscreen means that a window should automatically enter
-// immersive mode. This is false for some client windows, such as Chrome Apps.
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
-    kImmersiveImpliedByFullscreen;
-
-// Whether immersive is currently active (in ImmersiveFullscreenController
-// parlance, "enabled").
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
-    kImmersiveIsActive;
-
-// The bounds of the top container in screen coordinates.
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<gfx::Rect*>* const
-    kImmersiveTopContainerBoundsInScreen;
-
-// The type of window for logging immersive metrics. Type:
-// ImmersiveFullscreenController::WindowType.
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<int>* const
-    kImmersiveWindowType;
-
 // If true, the window is the target window for the tab-dragged window. The key
 // is used by overview to show a highlight indication to indicate which overview
 // window the dragged tabs will merge into when the user releases the pointer.

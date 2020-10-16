@@ -23,8 +23,8 @@
 #include "ui/views/test/widget_test.h"
 
 #if defined(OS_CHROMEOS)
-#include "ash/public/cpp/immersive/immersive_fullscreen_controller_test_api.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_ash.h"
+#include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
 #endif
 
 #if defined(OS_MAC)
@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, ImmersiveFullscreen) {
 
   ImmersiveModeController* immersive_controller =
       browser_view->immersive_mode_controller();
-  ash::ImmersiveFullscreenControllerTestApi(
+  chromeos::ImmersiveFullscreenControllerTestApi(
       static_cast<ImmersiveModeControllerAsh*>(immersive_controller)
           ->controller())
       .SetupForTest();

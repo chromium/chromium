@@ -20,6 +20,15 @@ source_set("frame") {
     "caption_buttons/frame_size_button_delegate.h",
     "caption_buttons/snap_controller.cc",
     "caption_buttons/snap_controller.h",
+    "immersive/immersive_context.cc",
+    "immersive/immersive_context.h",
+    "immersive/immersive_focus_watcher.cc",
+    "immersive/immersive_focus_watcher.h",
+    "immersive/immersive_fullscreen_controller.cc",
+    "immersive/immersive_fullscreen_controller.h",
+    "immersive/immersive_fullscreen_controller_delegate.h",
+    "immersive/immersive_revealed_lock.cc",
+    "immersive/immersive_revealed_lock.h",
   ]
 
   deps = [
@@ -30,6 +39,27 @@ source_set("frame") {
     "//ui/aura",
     "//ui/base",
     "//ui/strings:ui_strings_grit",
+    "//ui/views",
+    "//ui/wm/public",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "immersive/immersive_fullscreen_controller_test_api.cc",
+    "immersive/immersive_fullscreen_controller_test_api.h",
+  ]
+
+  deps = [
+    ":frame",
+    "//base",
+    "//services/device/public/cpp:test_support",
+    "//services/network/public/cpp:cpp",
+    "//ui/aura",
+    "//ui/aura:test_support",
+    "//ui/gfx",
+    "//ui/gfx:test_support",
     "//ui/views",
   ]
 }

@@ -24,6 +24,7 @@
 
 #if defined(OS_CHROMEOS)
 #include "ash/public/cpp/window_properties.h"
+#include "chromeos/ui/base/window_properties.h"
 #endif  // defined(OS_CHROMEOS)
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(exo::Permission*)
@@ -118,7 +119,7 @@ const std::string* GetShellStartupId(aura::Window* window) {
 
 void SetShellUseImmersiveForFullscreen(aura::Window* window, bool value) {
 #if defined(OS_CHROMEOS)
-  window->SetProperty(ash::kImmersiveImpliedByFullscreen, value);
+  window->SetProperty(chromeos::kImmersiveImpliedByFullscreen, value);
 
   // Ensure the shelf is fully hidden in plain fullscreen, but shown
   // (auto-hides based on mouse movement) when in immersive fullscreen.

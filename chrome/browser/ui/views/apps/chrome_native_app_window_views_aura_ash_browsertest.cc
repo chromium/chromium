@@ -4,9 +4,7 @@
 
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views_aura_ash.h"
 
-#include "ash/public/cpp/immersive/immersive_fullscreen_controller.h"
 #include "ash/public/cpp/test/shell_test_api.h"
-#include "ash/public/cpp/window_properties.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
@@ -17,6 +15,8 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/login/login_state/scoped_test_public_session_login_state.h"
+#include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -66,7 +66,7 @@ class ChromeNativeAppWindowViewsAuraAshBrowserTest
 
   bool IsImmersiveActive() {
     return window()->widget()->GetNativeWindow()->GetProperty(
-        ash::kImmersiveIsActive);
+        chromeos::kImmersiveIsActive);
   }
 
   ChromeNativeAppWindowViewsAuraAsh* window() {

@@ -6,12 +6,16 @@
 #define ASH_FRAME_WIDE_FRAME_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/immersive/immersive_fullscreen_controller_delegate.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
+#include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_delegate.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
 #include "ui/views/widget/widget_delegate.h"
+
+namespace chromeos {
+class ImmersiveFullscreenController;
+}
 
 namespace views {
 class Widget;
@@ -19,7 +23,6 @@ class Widget;
 
 namespace ash {
 class HeaderView;
-class ImmersiveFullscreenController;
 
 // WideFrameView is used for the case where the widget's maximzed/fullscreen
 // doesn't cover the entire workarea/display area but the caption frame should
@@ -31,17 +34,18 @@ class ImmersiveFullscreenController;
 // the target widget because ImmersiveFullscreenController is not owned by
 // NonClientFrameViewAsh. Investigate if we integrate this into
 // NonClientFrameViewAsh.
-class ASH_EXPORT WideFrameView : public views::WidgetDelegateView,
-                                 public aura::WindowObserver,
-                                 public display::DisplayObserver,
-                                 public ImmersiveFullscreenControllerDelegate {
+class ASH_EXPORT WideFrameView
+    : public views::WidgetDelegateView,
+      public aura::WindowObserver,
+      public display::DisplayObserver,
+      public chromeos::ImmersiveFullscreenControllerDelegate {
  public:
   explicit WideFrameView(views::Widget* target);
   ~WideFrameView() override;
 
   // Initialize |immersive_fullscreen_controller| so that the controller reveals
   // and |hides_header_| in immersive mode.
-  void Init(ImmersiveFullscreenController* controller);
+  void Init(chromeos::ImmersiveFullscreenController* controller);
 
   // Set the caption model for caption buttions on this frame.
   void SetCaptionButtonModel(

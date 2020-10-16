@@ -5,7 +5,6 @@
 #include "ash/accelerators/accelerator_commands.h"
 
 #include "ash/public/cpp/test/shell_test_api.h"
-#include "ash/public/cpp/window_properties.h"
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "build/build_config.h"
@@ -18,6 +17,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
@@ -34,7 +34,7 @@ using testing::WithParamInterface;
 namespace {
 
 bool IsInImmersive(aura::Window* window) {
-  return window->GetProperty(ash::kImmersiveIsActive);
+  return window->GetProperty(chromeos::kImmersiveIsActive);
 }
 
 }  // namespace

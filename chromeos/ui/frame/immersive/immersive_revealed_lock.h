@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_IMMERSIVE_IMMERSIVE_REVEALED_LOCK_H_
-#define ASH_PUBLIC_CPP_IMMERSIVE_IMMERSIVE_REVEALED_LOCK_H_
+#ifndef CHROMEOS_UI_FRAME_IMMERSIVE_IMMERSIVE_REVEALED_LOCK_H_
+#define CHROMEOS_UI_FRAME_IMMERSIVE_IMMERSIVE_REVEALED_LOCK_H_
 
-#include "ash/public/cpp/ash_public_export.h"
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
-namespace ash {
+namespace chromeos {
 
 // Class which keeps the top-of-window views revealed for the duration of its
 // lifetime. If acquiring the lock causes a reveal, the top-of-window views
 // will animate according to the |animate_reveal| parameter passed in the
 // constructor. See ImmersiveFullscreenController::GetRevealedLock() for more
 // details.
-class ASH_PUBLIC_EXPORT ImmersiveRevealedLock {
+class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveRevealedLock {
  public:
-  class ASH_PUBLIC_EXPORT Delegate {
+  class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) Delegate {
    public:
     enum AnimateReveal { ANIMATE_REVEAL_YES, ANIMATE_REVEAL_NO };
 
@@ -39,6 +39,6 @@ class ASH_PUBLIC_EXPORT ImmersiveRevealedLock {
   DISALLOW_COPY_AND_ASSIGN(ImmersiveRevealedLock);
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // ASH_PUBLIC_CPP_IMMERSIVE_IMMERSIVE_REVEALED_LOCK_H_
+#endif  // CHROMEOS_UI_FRAME_IMMERSIVE_IMMERSIVE_REVEALED_LOCK_H_

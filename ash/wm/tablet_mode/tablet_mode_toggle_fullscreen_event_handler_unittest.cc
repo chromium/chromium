@@ -4,11 +4,11 @@
 
 #include "ash/wm/tablet_mode/tablet_mode_toggle_fullscreen_event_handler.h"
 
-#include "ash/public/cpp/window_properties.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window.h"
 
 namespace ash {
@@ -44,7 +44,7 @@ class TabletModeToggleFullscreenEventHandlerTest : public AshTestBase {
   void ToggleFullscreen(aura::Window* window, bool immersive) {
     WMEvent toggle_fullscreen(WM_EVENT_TOGGLE_FULLSCREEN);
     WindowState::Get(window)->OnWMEvent(&toggle_fullscreen);
-    window->SetProperty(kImmersiveIsActive, immersive);
+    window->SetProperty(chromeos::kImmersiveIsActive, immersive);
   }
 
   bool IsFullscreen(aura::Window* window) const {

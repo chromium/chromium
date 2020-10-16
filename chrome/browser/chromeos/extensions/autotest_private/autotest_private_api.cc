@@ -24,7 +24,6 @@
 #include "ash/public/cpp/default_frame_header.h"
 #include "ash/public/cpp/desks_helper.h"
 #include "ash/public/cpp/frame_header.h"
-#include "ash/public/cpp/immersive/immersive_fullscreen_controller.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/overview_test_api.h"
@@ -123,6 +122,7 @@
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/policy/core/browser/policy_conversions.h"
@@ -3622,7 +3622,7 @@ AutotestPrivateGetAppWindowListFunction::Run() {
     }
 
     // Frame information
-    auto* immersive_controller = ash::ImmersiveFullscreenController::Get(
+    auto* immersive_controller = chromeos::ImmersiveFullscreenController::Get(
         views::Widget::GetWidgetForNativeWindow(window));
     if (immersive_controller) {
       // The widget that hosts the immersive frame can be different from the

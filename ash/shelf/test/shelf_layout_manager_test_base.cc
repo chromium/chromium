@@ -16,6 +16,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/workspace_controller.h"
 #include "chromeos/constants/chromeos_switches.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_parenting_client.h"
@@ -27,6 +28,9 @@
 
 namespace ash {
 namespace {
+
+using ::chromeos::kImmersiveIsActive;
+
 ShelfWidget* GetShelfWidget() {
   return AshTestBase::GetPrimaryShelf()->shelf_widget();
 }

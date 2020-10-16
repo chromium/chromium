@@ -7,7 +7,6 @@
 #include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/default_frame_header.h"
 #include "ash/public/cpp/frame_header.h"
-#include "ash/public/cpp/immersive/immersive_fullscreen_controller_test_api.h"
 #include "ash/public/cpp/shelf_test_api.h"
 #include "ash/public/cpp/split_view_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -74,6 +73,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
 #include "components/account_id/account_id.h"
 #include "components/autofill/core/common/password_form.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -481,7 +481,7 @@ class ImmersiveModeBrowserViewTest
 
     BrowserView::SetDisableRevealerDelayForTesting(true);
 
-    ash::ImmersiveFullscreenControllerTestApi(
+    chromeos::ImmersiveFullscreenControllerTestApi(
         static_cast<ImmersiveModeControllerAsh*>(
             BrowserView::GetBrowserViewForBrowser(browser())
                 ->immersive_mode_controller())
@@ -680,7 +680,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
   ASSERT_TRUE(browser->is_type_app());
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
 
-  ash::ImmersiveFullscreenControllerTestApi(
+  chromeos::ImmersiveFullscreenControllerTestApi(
       static_cast<ImmersiveModeControllerAsh*>(
           browser_view->immersive_mode_controller())
           ->controller())

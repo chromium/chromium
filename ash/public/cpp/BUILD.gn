@@ -154,15 +154,6 @@ component("cpp") {
     "ime_controller_client.h",
     "ime_info.cc",
     "ime_info.h",
-    "immersive/immersive_context.cc",
-    "immersive/immersive_context.h",
-    "immersive/immersive_focus_watcher.cc",
-    "immersive/immersive_focus_watcher.h",
-    "immersive/immersive_fullscreen_controller.cc",
-    "immersive/immersive_fullscreen_controller.h",
-    "immersive/immersive_fullscreen_controller_delegate.h",
-    "immersive/immersive_revealed_lock.cc",
-    "immersive/immersive_revealed_lock.h",
     "in_session_auth_dialog_client.h",
     "in_session_auth_dialog_controller.cc",
     "in_session_auth_dialog_controller.h",
@@ -403,8 +394,6 @@ source_set("unit_tests") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "immersive/immersive_fullscreen_controller_test_api.cc",
-    "immersive/immersive_fullscreen_controller_test_api.h",
     "test/test_ambient_client.cc",
     "test/test_ambient_client.h",
     "test/test_image_downloader.cc",

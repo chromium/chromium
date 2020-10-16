@@ -6,19 +6,20 @@
 #define ASH_WM_IMMERSIVE_CONTEXT_ASH_H_
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/immersive/immersive_context.h"
 #include "base/macros.h"
+#include "chromeos/ui/frame/immersive/immersive_context.h"
 
 namespace ash {
 
-class ASH_EXPORT ImmersiveContextAsh : public ImmersiveContext {
+class ASH_EXPORT ImmersiveContextAsh : public chromeos::ImmersiveContext {
  public:
   ImmersiveContextAsh();
   ~ImmersiveContextAsh() override;
 
   // ImmersiveContext:
-  void OnEnteringOrExitingImmersive(ImmersiveFullscreenController* controller,
-                                    bool entering) override;
+  void OnEnteringOrExitingImmersive(
+      chromeos::ImmersiveFullscreenController* controller,
+      bool entering) override;
   gfx::Rect GetDisplayBoundsInScreen(views::Widget* widget) override;
   bool DoesAnyWindowHaveCapture() override;
 

@@ -5,10 +5,10 @@
 #include "components/exo/ui_lock_controller.h"
 
 #include "ash/public/cpp/app_types.h"
-#include "ash/public/cpp/window_properties.h"
 #include "ash/wm/window_state.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/exo/seat.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
@@ -67,7 +67,7 @@ bool FocusedWindowIsNonImmersiveFullscreen(Seat* seat) {
     return false;
 
   aura::Window* window = widget->GetNativeWindow();
-  if (!window || window->GetProperty(ash::kImmersiveImpliedByFullscreen))
+  if (!window || window->GetProperty(chromeos::kImmersiveImpliedByFullscreen))
     return false;
 
   // TODO(b/165865831): Add the Borealis AppType if/when we add one.

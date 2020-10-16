@@ -19,6 +19,7 @@
 
 namespace chromeos {
 class FrameCaptionButtonContainerView;
+class ImmersiveFullscreenController;
 }
 
 namespace views {
@@ -27,7 +28,6 @@ class Widget;
 
 namespace ash {
 
-class ImmersiveFullscreenController;
 class NonClientFrameViewAshImmersiveHelper;
 
 // A NonClientFrameView used for packaged apps, dialogs and other non-browser
@@ -59,7 +59,7 @@ class ASH_EXPORT NonClientFrameViewAsh : public views::NonClientFrameView {
   // NonClientFrameViewAsh does not take ownership of
   // |immersive_fullscreen_controller|.
   void InitImmersiveFullscreenControllerForView(
-      ImmersiveFullscreenController* immersive_fullscreen_controller);
+      chromeos::ImmersiveFullscreenController* immersive_fullscreen_controller);
 
   // Sets the active and inactive frame colors. Note the inactive frame color
   // will have some transparency added when the frame is drawn.

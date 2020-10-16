@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/immersive/immersive_fullscreen_controller_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/macros.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -26,6 +25,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "net/cert/mock_cert_verifier.h"
@@ -71,7 +71,7 @@ class ImmersiveModeControllerAshWebAppBrowserTest
 
     // Disable animations in immersive fullscreen before we show the window,
     // which triggers an animation.
-    ash::ImmersiveFullscreenControllerTestApi(
+    chromeos::ImmersiveFullscreenControllerTestApi(
         static_cast<ImmersiveModeControllerAsh*>(controller_)->controller())
         .SetupForTest();
 

@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_IMMERSIVE_IMMERSIVE_FULLSCREEN_CONTROLLER_TEST_API_H_
-#define ASH_PUBLIC_CPP_IMMERSIVE_IMMERSIVE_FULLSCREEN_CONTROLLER_TEST_API_H_
+#ifndef CHROMEOS_UI_FRAME_IMMERSIVE_IMMERSIVE_FULLSCREEN_CONTROLLER_TEST_API_H_
+#define CHROMEOS_UI_FRAME_IMMERSIVE_IMMERSIVE_FULLSCREEN_CONTROLLER_TEST_API_H_
 
+#include "base/component_export.h"
 #include "base/macros.h"
 
-namespace ash {
+namespace chromeos {
 
 class ImmersiveFullscreenController;
 
 // Use by tests to access private state of ImmersiveFullscreenController.
-class ImmersiveFullscreenControllerTestApi {
+class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveFullscreenControllerTestApi {
  public:
   explicit ImmersiveFullscreenControllerTestApi(
       ImmersiveFullscreenController* controller);
@@ -20,7 +21,7 @@ class ImmersiveFullscreenControllerTestApi {
 
   // Disables animations for any ImmersiveFullscreenControllers created while
   // GlobalAnimationDisabler exists.
-  class GlobalAnimationDisabler {
+  class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) GlobalAnimationDisabler {
    public:
     GlobalAnimationDisabler();
     ~GlobalAnimationDisabler();
@@ -41,6 +42,6 @@ class ImmersiveFullscreenControllerTestApi {
   DISALLOW_COPY_AND_ASSIGN(ImmersiveFullscreenControllerTestApi);
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // ASH_PUBLIC_CPP_IMMERSIVE_IMMERSIVE_FULLSCREEN_CONTROLLER_TEST_API_H_
+#endif  // CHROMEOS_UI_FRAME_IMMERSIVE_IMMERSIVE_FULLSCREEN_CONTROLLER_TEST_API_H_

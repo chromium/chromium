@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_IMMERSIVE_IMMERSIVE_FULLSCREEN_CONTROLLER_H_
-#define ASH_PUBLIC_CPP_IMMERSIVE_IMMERSIVE_FULLSCREEN_CONTROLLER_H_
+#ifndef CHROMEOS_UI_FRAME_IMMERSIVE_IMMERSIVE_FULLSCREEN_CONTROLLER_H_
+#define CHROMEOS_UI_FRAME_IMMERSIVE_IMMERSIVE_FULLSCREEN_CONTROLLER_H_
 
 #include <memory>
 #include <vector>
 
-#include "ash/public/cpp/ash_public_export.h"
-#include "ash/public/cpp/immersive/immersive_revealed_lock.h"
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "base/timer/timer.h"
+#include "chromeos/ui/frame/immersive/immersive_revealed_lock.h"
 #include "ui/aura/window_observer.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/event_observer.h"
@@ -22,7 +22,11 @@
 
 namespace aura {
 class WindowTargeter;
-}
+}  // namespace aura
+
+namespace ash {
+class ImmersiveFullscreenControllerTest;
+}  // namespace ash
 
 namespace gfx {
 class Point;
@@ -40,13 +44,15 @@ class View;
 class Widget;
 }  // namespace views
 
-namespace ash {
+namespace chromeos {
 
 class ImmersiveFocusWatcher;
 class ImmersiveFullscreenControllerDelegate;
 class ImmersiveFullscreenControllerTestApi;
 
-class ASH_PUBLIC_EXPORT ImmersiveFullscreenController
+// This class is tested as part of //ash, eg ImmersiveFullscreenControllerTest,
+// which inherits from AshTestBase.
+class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveFullscreenController
     : public aura::WindowObserver,
       public gfx::AnimationDelegate,
       public ui::EventObserver,
@@ -130,7 +136,7 @@ class ASH_PUBLIC_EXPORT ImmersiveFullscreenController
   void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationProgressed(const gfx::Animation* animation) override;
 
-  // ash::ImmersiveRevealedLock::Delegate overrides:
+  // chromeos::ImmersiveRevealedLock::Delegate overrides:
   void LockRevealedState(AnimateReveal animate_reveal) override;
   void UnlockRevealedState() override;
 
@@ -139,7 +145,7 @@ class ASH_PUBLIC_EXPORT ImmersiveFullscreenController
   static ImmersiveFullscreenController* Get(views::Widget* widget);
 
  private:
-  friend class ImmersiveFullscreenControllerTest;
+  friend class ash::ImmersiveFullscreenControllerTest;
   friend class ImmersiveFullscreenControllerTestApi;
 
   enum Animate {
@@ -179,7 +185,7 @@ class ASH_PUBLIC_EXPORT ImmersiveFullscreenController
 
   // Updates |located_event_revealed_lock_| based on the current mouse state and
   // the current touch state.
-  // |event| is NULL if the source event is not known.
+  // |event| is null if the source event is not known.
   void UpdateLocatedEventRevealedLock(const ui::LocatedEvent* event,
                                       const gfx::Point& location_in_screen);
 
@@ -309,6 +315,6 @@ class ASH_PUBLIC_EXPORT ImmersiveFullscreenController
   DISALLOW_COPY_AND_ASSIGN(ImmersiveFullscreenController);
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // ASH_PUBLIC_CPP_IMMERSIVE_IMMERSIVE_FULLSCREEN_CONTROLLER_H_
+#endif  // CHROMEOS_UI_FRAME_IMMERSIVE_IMMERSIVE_FULLSCREEN_CONTROLLER_H_
