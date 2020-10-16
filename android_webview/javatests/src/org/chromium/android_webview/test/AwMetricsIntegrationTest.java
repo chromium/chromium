@@ -4,6 +4,10 @@
 
 package org.chromium.android_webview.test;
 
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.MULTI_PROCESS;
+
+import android.support.test.InstrumentationRegistry;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -19,12 +23,14 @@ import org.chromium.android_webview.metrics.AwMetricsServiceClient;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.metrics.ChromeUserMetricsExtensionProtos.ChromeUserMetricsExtension;
 import org.chromium.components.metrics.MetricsSwitches;
 import org.chromium.components.metrics.SystemProfileProtos.SystemProfileProto;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -304,5 +310,57 @@ public class AwMetricsIntegrationTest {
         // assertNoMetricsLogs() however, because it's possible we got a metrics log between
         // onPageStarted & onPageFinished, in which case onPageFinished would *also* wake up the
         // metrics service, and we might potentially have a third metrics log in the queue.
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @OnlyRunIn(MULTI_PROCESS) // This test is specific to the OOP-renderer
+    public void testRendererHistograms() throws Throwable {
+        EmbeddedTestServer embeddedTestServer = EmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getContext());
+        try {
+            // Discard initial log since the renderer process hasn't been created yet.
+            mPlatformServiceBridge.waitForNextMetricsLog();
+
+            final CallbackHelper helper = new CallbackHelper();
+            int finalMetricsCollectedCount = helper.getCallCount();
+
+            // Load a page and wait for final metrics collection.
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                AwMetricsServiceClient.setOnFinalMetricsCollectedListenerForTesting(
+                        () -> { helper.notifyCalled(); });
+            });
+
+            // Load a page to ensure the renderer process is created.
+            mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+                    embeddedTestServer.getURL("/simple_page.html"));
+            helper.waitForCallback(finalMetricsCollectedCount, 1);
+
+            // At this point we know one of two things must be true:
+            //
+            // 1. The renderer process completed startup (logging the expected histogram) before
+            //    subprocess histograms were collected. In this case, we know the desired histogram
+            //    has been copied into the browser process.
+            // 2. Subprocess histograms were collected before the renderer process completed
+            //    startup. While we don't know if our histogram was copied over, we do know the
+            //    page load has finished and this woke up the metrics service, so MetricsService
+            //    will collect subprocess metrics again.
+            //
+            // Load a page and wait for another final log collection. We know this log collection
+            // must be triggered by either the second page load start (scenario 1) or the first page
+            // load finish (scenario 2), either of which ensures the renderer startup histogram must
+            // have been copied into the browser process.
+
+            mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+                    embeddedTestServer.getURL("/simple_page.html"));
+            helper.waitForCallback(finalMetricsCollectedCount, 2);
+
+            Assert.assertEquals(1,
+                    RecordHistogram.getHistogramTotalCountForTesting(
+                            "Android.SeccompStatus.RendererSandbox"));
+        } finally {
+            embeddedTestServer.stopAndDestroyServer();
+        }
     }
 }

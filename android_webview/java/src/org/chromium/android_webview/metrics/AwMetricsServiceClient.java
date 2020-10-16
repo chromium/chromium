@@ -72,10 +72,19 @@ public class AwMetricsServiceClient {
         AwMetricsServiceClientJni.get().setUploadIntervalForTesting(uploadIntervalMs);
     }
 
+    /**
+     * Sets a callback to run each time after final metrics have been collected.
+     */
+    @VisibleForTesting
+    public static void setOnFinalMetricsCollectedListenerForTesting(Runnable listener) {
+        AwMetricsServiceClientJni.get().setOnFinalMetricsCollectedListenerForTesting(listener);
+    }
+
     @NativeMethods
     interface Natives {
         void setHaveMetricsConsent(boolean userConsent, boolean appConsent);
         void setFastStartupForTesting(boolean fastStartupForTesting);
         void setUploadIntervalForTesting(long uploadIntervalMs);
+        void setOnFinalMetricsCollectedListenerForTesting(Runnable listener);
     }
 }

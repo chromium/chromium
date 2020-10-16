@@ -190,6 +190,20 @@ std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
   return file_metrics_provider;
 }
 
+base::OnceClosure CreateChainedClosure(base::OnceClosure cb1,
+                                       base::OnceClosure cb2) {
+  return base::BindOnce(
+      [](base::OnceClosure cb1, base::OnceClosure cb2) {
+        if (cb1) {
+          std::move(cb1).Run();
+        }
+        if (cb2) {
+          std::move(cb2).Run();
+        }
+      },
+      std::move(cb1), std::move(cb2));
+}
+
 }  // namespace
 
 // Needs to be kept in sync with the writer in
@@ -442,8 +456,11 @@ void AndroidMetricsServiceClient::CollectFinalMetricsForLog(
   // Set up the callback task to call after we receive histograms from all
   // child processes. |timeout| specifies how long to wait before absolutely
   // calling us back on the task.
-  content::FetchHistogramsAsynchronously(base::ThreadTaskRunnerHandle::Get(),
-                                         std::move(done_callback), timeout);
+  content::FetchHistogramsAsynchronously(
+      base::ThreadTaskRunnerHandle::Get(),
+      CreateChainedClosure(std::move(done_callback),
+                           on_final_metrics_collected_listener_),
+      timeout);
 
   if (collect_final_metrics_for_log_closure_)
     std::move(collect_final_metrics_for_log_closure_).Run();
@@ -517,6 +534,11 @@ void AndroidMetricsServiceClient::Observe(
 void AndroidMetricsServiceClient::SetCollectFinalMetricsForLogClosureForTesting(
     base::OnceClosure closure) {
   collect_final_metrics_for_log_closure_ = std::move(closure);
+}
+
+void AndroidMetricsServiceClient::SetOnFinalMetricsCollectedListenerForTesting(
+    base::RepeatingClosure listener) {
+  on_final_metrics_collected_listener_ = std::move(listener);
 }
 
 int AndroidMetricsServiceClient::GetSampleBucketValue() {
