@@ -36,10 +36,19 @@ class TestPrintBackend : public PrintBackend {
   // Set a default printer.  The default is the empty string.
   void SetDefaultPrinterName(const std::string& printer_name);
 
-  // Add a printer to satisfy IsValidPrinter and
-  // GetPrinterSemanticCapsAndDefualts.
+  // Add a printer to satisfy IsValidPrinter(), EnumeratePrinters(),
+  // GetPrinterBasicInfo(), and GetPrinterSemanticCapsAndDefaults().
+  // While `caps` can be null, it will cause queries for the capabilities to
+  // fail, and thus is likely not of interest for most tests.  IsValidPrinter()
+  // will still show true even if `caps` is null, which provides the benefit of
+  // simulating a printer that exists in the system but cannot be queried.
+  // `info` can be null, which will result in empty information being provided
+  // for any queries.
+  // Calling EnumeratePrinters() will include the identified `printer_name`
+  // even if either parameter is null.
   void AddValidPrinter(const std::string& printer_name,
-                       std::unique_ptr<PrinterSemanticCapsAndDefaults> caps);
+                       std::unique_ptr<PrinterSemanticCapsAndDefaults> caps,
+                       std::unique_ptr<PrinterBasicInfo> info);
 
  protected:
   ~TestPrintBackend() override;

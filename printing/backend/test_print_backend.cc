@@ -72,7 +72,10 @@ void TestPrintBackend::SetDefaultPrinterName(const std::string& printer_name) {
 
 void TestPrintBackend::AddValidPrinter(
     const std::string& printer_name,
-    std::unique_ptr<PrinterSemanticCapsAndDefaults> caps) {
+    std::unique_ptr<PrinterSemanticCapsAndDefaults> caps,
+    std::unique_ptr<PrinterBasicInfo> info) {
+  // TODO(crbug.com/809738) Utilize the extra `info` parameter to improve
+  // TestPrintBackend internal consistency.
   valid_printers_[printer_name] = std::move(caps);
 }
 

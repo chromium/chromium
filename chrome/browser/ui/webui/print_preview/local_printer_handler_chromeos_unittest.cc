@@ -241,7 +241,8 @@ TEST_F(LocalPrinterHandlerChromeosTest, StartGetCapabilityValidPrinter) {
   // Add printer capabilities to |test_backend_|.
   PrinterSemanticCapsAndDefaults caps;
   test_backend_->AddValidPrinter(
-      "printer1", std::make_unique<PrinterSemanticCapsAndDefaults>(caps));
+      "printer1", std::make_unique<PrinterSemanticCapsAndDefaults>(caps),
+      std::make_unique<printing::PrinterBasicInfo>());
 
   std::unique_ptr<base::Value> fetched_caps;
   local_printer_handler_->StartGetCapability(
@@ -268,7 +269,8 @@ TEST_F(LocalPrinterHandlerChromeosTest, StartGetCapabilityPrinterNotInstalled) {
   // Add printer capabilities to |test_backend_|.
   PrinterSemanticCapsAndDefaults caps;
   test_backend_->AddValidPrinter(
-      "printer1", std::make_unique<PrinterSemanticCapsAndDefaults>(caps));
+      "printer1", std::make_unique<PrinterSemanticCapsAndDefaults>(caps),
+      std::make_unique<printing::PrinterBasicInfo>());
 
   std::unique_ptr<base::Value> fetched_caps;
   local_printer_handler_->StartGetCapability(

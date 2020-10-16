@@ -131,7 +131,9 @@ TEST_F(PrinterCapabilitiesProviderTest, GetPrinterInfo_NotInstalledPrinter) {
   capabilities->copies_max = 2;
   capabilities->color_changeable = true;
   // Add printer capabilities to |test_backend_|.
-  test_backend_->AddValidPrinter(kPrinterId, std::move(capabilities));
+  test_backend_->AddValidPrinter(
+      kPrinterId, std::move(capabilities),
+      std::make_unique<printing::PrinterBasicInfo>());
 
   base::RunLoop run_loop;
   printer_capabilities_provider_->GetPrinterCapabilities(
@@ -157,7 +159,8 @@ TEST_F(PrinterCapabilitiesProviderTest, GetPrinterInfo_InstalledPrinter) {
 
   // Add printer capabilities to |test_backend_|.
   test_backend_->AddValidPrinter(
-      kPrinterId, std::make_unique<printing::PrinterSemanticCapsAndDefaults>());
+      kPrinterId, std::make_unique<printing::PrinterSemanticCapsAndDefaults>(),
+      std::make_unique<printing::PrinterBasicInfo>());
 
   base::RunLoop run_loop;
   printer_capabilities_provider_->GetPrinterCapabilities(
@@ -181,7 +184,8 @@ TEST_F(PrinterCapabilitiesProviderTest, GetPrinterInfo_CachedCapabilities) {
 
   // Add printer capabilities to |test_backend_|.
   test_backend_->AddValidPrinter(
-      kPrinterId, std::make_unique<printing::PrinterSemanticCapsAndDefaults>());
+      kPrinterId, std::make_unique<printing::PrinterSemanticCapsAndDefaults>(),
+      std::make_unique<printing::PrinterBasicInfo>());
 
   base::RunLoop run_loop;
   printer_capabilities_provider_->GetPrinterCapabilities(

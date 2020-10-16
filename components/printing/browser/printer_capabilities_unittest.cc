@@ -123,7 +123,9 @@ TEST_F(PrinterCapabilitiesTest, ProvidedCapabilitiesUsed) {
   // Set a capability and add a valid printer.
   auto caps = std::make_unique<PrinterSemanticCapsAndDefaults>();
   caps->dpis = {{600, 600}};
-  print_backend()->AddValidPrinter(printer_name, std::move(caps));
+  print_backend()->AddValidPrinter(
+      printer_name, std::move(caps),
+      std::make_unique<printing::PrinterBasicInfo>(basic_info));
 
   base::Value settings_dictionary =
       GetSettingsOnBlockingTaskRunnerAndWaitForResults(
@@ -153,7 +155,8 @@ TEST_F(PrinterCapabilitiesTest, NullCapabilitiesExcluded) {
   PrinterSemanticCapsAndDefaults::Papers no_user_defined_papers;
 
   // Return false when attempting to retrieve capabilities.
-  print_backend()->AddValidPrinter(printer_name, nullptr);
+  print_backend()->AddValidPrinter(printer_name, /*caps=*/nullptr,
+                                   /*info=*/nullptr);
 
   base::Value settings_dictionary =
       GetSettingsOnBlockingTaskRunnerAndWaitForResults(
@@ -177,7 +180,9 @@ TEST_F(PrinterCapabilitiesTest, UserDefinedPapers) {
   auto caps = std::make_unique<PrinterSemanticCapsAndDefaults>();
   caps->papers.push_back({"printer_foo", "printer_vendor", {100, 234}});
   caps->dpis = {{600, 600}};
-  print_backend()->AddValidPrinter(printer_name, std::move(caps));
+  print_backend()->AddValidPrinter(
+      printer_name, std::move(caps),
+      std::make_unique<printing::PrinterBasicInfo>(basic_info));
 
   // Add some more paper sizes.
   PrinterSemanticCapsAndDefaults::Papers user_defined_papers;
@@ -224,7 +229,9 @@ TEST_F(PrinterCapabilitiesTest, HasNotSecureProtocol) {
   // Set a capability and add a valid printer.
   auto caps = std::make_unique<PrinterSemanticCapsAndDefaults>();
   caps->pin_supported = true;
-  print_backend()->AddValidPrinter(printer_name, std::move(caps));
+  print_backend()->AddValidPrinter(
+      printer_name, std::move(caps),
+      std::make_unique<printing::PrinterBasicInfo>(basic_info));
 
   base::Value settings_dictionary =
       GetSettingsOnBlockingTaskRunnerAndWaitForResults(

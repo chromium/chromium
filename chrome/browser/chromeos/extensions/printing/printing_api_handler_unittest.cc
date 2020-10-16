@@ -301,7 +301,9 @@ class PrintingAPIHandlerUnittest : public testing::Test {
     AddUnavailablePrinter(printer_id);
 
     // Add printer capabilities to |test_backend_|.
-    test_backend_->AddValidPrinter(printer_id, std::move(capabilities));
+    test_backend_->AddValidPrinter(
+        printer_id, std::move(capabilities),
+        std::make_unique<printing::PrinterBasicInfo>());
   }
 
   void OnJobSubmitted(base::RepeatingClosure run_loop_closure,
