@@ -634,11 +634,10 @@ void StyleCascade::ForceColors() {
   // Preserve the author/user defined background alpha channel.
   style->SetBackgroundColor(
       StyleColor(style->BackgroundColor().ResolveWithAlpha(
-          style->GetCurrentColor(), mojom::blink::ColorScheme::kLight,
-          bg_color_alpha)));
+          style->GetCurrentColor(), ColorScheme::kLight, bg_color_alpha)));
   style->SetInternalVisitedBackgroundColor(
       StyleColor(style->InternalVisitedBackgroundColor().ResolveWithAlpha(
-          style->GetCurrentColor(), mojom::blink::ColorScheme::kLight,
+          style->GetCurrentColor(), ColorScheme::kLight,
           visited_bg_color_alpha)));
 }
 

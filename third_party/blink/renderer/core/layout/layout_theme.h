@@ -23,7 +23,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_THEME_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_THEME_H_
 
-#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
+#include "third_party/blink/public/common/css/color_scheme.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
@@ -91,28 +91,20 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   virtual bool SupportsCalendarPicker(const AtomicString&) const;
 
   // Text selection colors.
-  Color ActiveSelectionBackgroundColor(
-      mojom::blink::ColorScheme color_scheme) const;
-  Color InactiveSelectionBackgroundColor(
-      mojom::blink::ColorScheme color_scheme) const;
-  Color ActiveSelectionForegroundColor(
-      mojom::blink::ColorScheme color_scheme) const;
-  Color InactiveSelectionForegroundColor(
-      mojom::blink::ColorScheme color_scheme) const;
+  Color ActiveSelectionBackgroundColor(ColorScheme color_scheme) const;
+  Color InactiveSelectionBackgroundColor(ColorScheme color_scheme) const;
+  Color ActiveSelectionForegroundColor(ColorScheme color_scheme) const;
+  Color InactiveSelectionForegroundColor(ColorScheme color_scheme) const;
   virtual void SetSelectionColors(Color active_background_color,
                                   Color active_foreground_color,
                                   Color inactive_background_color,
                                   Color inactive_foreground_color) {}
 
   // List box selection colors
-  Color ActiveListBoxSelectionBackgroundColor(
-      mojom::blink::ColorScheme color_scheme) const;
-  Color ActiveListBoxSelectionForegroundColor(
-      mojom::blink::ColorScheme color_scheme) const;
-  Color InactiveListBoxSelectionBackgroundColor(
-      mojom::blink::ColorScheme color_scheme) const;
-  Color InactiveListBoxSelectionForegroundColor(
-      mojom::blink::ColorScheme color_scheme) const;
+  Color ActiveListBoxSelectionBackgroundColor(ColorScheme color_scheme) const;
+  Color ActiveListBoxSelectionForegroundColor(ColorScheme color_scheme) const;
+  Color InactiveListBoxSelectionBackgroundColor(ColorScheme color_scheme) const;
+  Color InactiveListBoxSelectionForegroundColor(ColorScheme color_scheme) const;
 
   virtual Color PlatformSpellingMarkerUnderlineColor() const;
   virtual Color PlatformGrammarMarkerUnderlineColor() const;
@@ -120,13 +112,12 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   Color PlatformActiveSpellingMarkerHighlightColor() const;
 
   // Highlight and text colors for TextMatches.
-  Color PlatformTextSearchHighlightColor(
-      bool active_match,
-      bool in_forced_colors_mode,
-      mojom::blink::ColorScheme color_scheme) const;
+  Color PlatformTextSearchHighlightColor(bool active_match,
+                                         bool in_forced_colors_mode,
+                                         ColorScheme color_scheme) const;
   Color PlatformTextSearchColor(bool active_match,
                                 bool in_forced_colors_mode,
-                                mojom::blink::ColorScheme color_scheme) const;
+                                ColorScheme color_scheme) const;
 
   virtual Color FocusRingColor() const;
   virtual Color PlatformFocusRingColor() const { return Color(0, 0, 0); }
@@ -147,8 +138,7 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
 
   // System fonts and colors for CSS.
   void SystemFont(CSSValueID system_font_id, FontDescription&);
-  virtual Color SystemColor(CSSValueID,
-                            mojom::blink::ColorScheme color_scheme) const;
+  virtual Color SystemColor(CSSValueID, ColorScheme color_scheme) const;
 
   virtual void AdjustSliderThumbSize(ComputedStyle&) const;
 
@@ -188,22 +178,22 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
  protected:
   // The platform selection color.
   virtual Color PlatformActiveSelectionBackgroundColor(
-      mojom::blink::ColorScheme color_scheme) const;
+      ColorScheme color_scheme) const;
   virtual Color PlatformInactiveSelectionBackgroundColor(
-      mojom::blink::ColorScheme color_scheme) const;
+      ColorScheme color_scheme) const;
   virtual Color PlatformActiveSelectionForegroundColor(
-      mojom::blink::ColorScheme color_scheme) const;
+      ColorScheme color_scheme) const;
   virtual Color PlatformInactiveSelectionForegroundColor(
-      mojom::blink::ColorScheme color_scheme) const;
+      ColorScheme color_scheme) const;
 
   virtual Color PlatformActiveListBoxSelectionBackgroundColor(
-      mojom::blink::ColorScheme color_scheme) const;
+      ColorScheme color_scheme) const;
   virtual Color PlatformInactiveListBoxSelectionBackgroundColor(
-      mojom::blink::ColorScheme color_scheme) const;
+      ColorScheme color_scheme) const;
   virtual Color PlatformActiveListBoxSelectionForegroundColor(
-      mojom::blink::ColorScheme color_scheme) const;
+      ColorScheme color_scheme) const;
   virtual Color PlatformInactiveListBoxSelectionForegroundColor(
-      mojom::blink::ColorScheme color_scheme) const;
+      ColorScheme color_scheme) const;
 
   // Methods for each appearance value.
   virtual void AdjustCheckboxStyle(ComputedStyle&) const;

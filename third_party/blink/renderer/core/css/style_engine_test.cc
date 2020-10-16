@@ -2216,7 +2216,7 @@ TEST_F(StyleEngineTest, ColorSchemeBaseBackgroundChange) {
   color_scheme_helper.SetForcedColors(GetDocument(), ForcedColors::kActive);
   UpdateAllLifecyclePhases();
   Color system_background_color = LayoutTheme::GetTheme().SystemColor(
-      CSSValueID::kCanvas, mojom::blink::ColorScheme::kLight);
+      CSSValueID::kCanvas, ColorScheme::kLight);
 
   EXPECT_EQ(system_background_color,
             GetDocument().View()->BaseBackgroundColor());
@@ -2234,7 +2234,7 @@ TEST_F(StyleEngineTest, ColorSchemeOverride) {
   UpdateAllLifecyclePhases();
 
   EXPECT_EQ(
-      mojom::blink::ColorScheme::kLight,
+      ColorScheme::kLight,
       GetDocument().documentElement()->GetComputedStyle()->UsedColorScheme());
 
   GetDocument().GetPage()->SetMediaFeatureOverride("prefers-color-scheme",
@@ -2242,7 +2242,7 @@ TEST_F(StyleEngineTest, ColorSchemeOverride) {
 
   UpdateAllLifecyclePhases();
   EXPECT_EQ(
-      mojom::blink::ColorScheme::kDark,
+      ColorScheme::kDark,
       GetDocument().documentElement()->GetComputedStyle()->UsedColorScheme());
 }
 
@@ -2849,7 +2849,7 @@ TEST_F(StyleEngineTest, PrintNoDarkColorScheme) {
 
   EXPECT_EQ(Color::kWhite, root->GetComputedStyle()->VisitedDependentColor(
                                GetCSSPropertyColor()));
-  EXPECT_EQ(mojom::blink::ColorScheme::kDark,
+  EXPECT_EQ(ColorScheme::kDark,
             root->GetComputedStyle()->UsedColorSchemeForInitialColors());
   EXPECT_EQ(MakeRGB(255, 0, 0), body->GetComputedStyle()->VisitedDependentColor(
                                     GetCSSPropertyColor()));
@@ -2858,7 +2858,7 @@ TEST_F(StyleEngineTest, PrintNoDarkColorScheme) {
   GetDocument().GetFrame()->StartPrinting(page_size, page_size, 1);
   EXPECT_EQ(Color::kBlack, root->GetComputedStyle()->VisitedDependentColor(
                                GetCSSPropertyColor()));
-  EXPECT_EQ(mojom::blink::ColorScheme::kLight,
+  EXPECT_EQ(ColorScheme::kLight,
             root->GetComputedStyle()->UsedColorSchemeForInitialColors());
   EXPECT_EQ(MakeRGB(0, 128, 0), body->GetComputedStyle()->VisitedDependentColor(
                                     GetCSSPropertyColor()));
@@ -2866,7 +2866,7 @@ TEST_F(StyleEngineTest, PrintNoDarkColorScheme) {
   GetDocument().GetFrame()->EndPrinting();
   EXPECT_EQ(Color::kWhite, root->GetComputedStyle()->VisitedDependentColor(
                                GetCSSPropertyColor()));
-  EXPECT_EQ(mojom::blink::ColorScheme::kDark,
+  EXPECT_EQ(ColorScheme::kDark,
             root->GetComputedStyle()->UsedColorSchemeForInitialColors());
   EXPECT_EQ(MakeRGB(255, 0, 0), body->GetComputedStyle()->VisitedDependentColor(
                                     GetCSSPropertyColor()));
@@ -3297,14 +3297,14 @@ TEST_F(StyleEngineSimTest, OwnerColorScheme) {
       To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
   auto* frame_document = frame_element->contentDocument();
   ASSERT_TRUE(frame_document);
-  EXPECT_EQ(mojom::blink::ColorScheme::kDark,
+  EXPECT_EQ(ColorScheme::kDark,
             frame_document->GetStyleEngine().GetOwnerColorScheme());
 
   frame_element->SetInlineStyleProperty(CSSPropertyID::kColorScheme, "light");
 
   test::RunPendingTasks();
   Compositor().BeginFrame();
-  EXPECT_EQ(mojom::blink::ColorScheme::kLight,
+  EXPECT_EQ(ColorScheme::kLight,
             frame_document->GetStyleEngine().GetOwnerColorScheme());
 }
 

@@ -214,7 +214,7 @@ const CSSValue& StyleResolverState::ResolveLightDarkPair(
   if (const auto* pair = DynamicTo<CSSLightDarkValuePair>(value)) {
     if (!property.IsInherited())
       Style()->SetHasNonInheritedLightDarkValue();
-    if (Style()->UsedColorScheme() == mojom::blink::ColorScheme::kLight)
+    if (Style()->UsedColorScheme() == ColorScheme::kLight)
       return pair->First();
     return pair->Second();
   }

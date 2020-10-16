@@ -2727,8 +2727,7 @@ TEST_F(VisualViewportSimTest, UsedColorSchemeFromRootElement) {
   const VisualViewport& visual_viewport =
       WebView().GetPage()->GetVisualViewport();
 
-  EXPECT_EQ(mojom::blink::ColorScheme::kLight,
-            visual_viewport.UsedColorScheme());
+  EXPECT_EQ(ColorScheme::kLight, visual_viewport.UsedColorScheme());
 
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -2740,8 +2739,7 @@ TEST_F(VisualViewportSimTest, UsedColorSchemeFromRootElement) {
       )HTML");
   Compositor().BeginFrame();
 
-  EXPECT_EQ(mojom::blink::ColorScheme::kDark,
-            visual_viewport.UsedColorScheme());
+  EXPECT_EQ(ColorScheme::kDark, visual_viewport.UsedColorScheme());
 }
 
 TEST_P(VisualViewportTest, SetLocationBeforePrePaint) {

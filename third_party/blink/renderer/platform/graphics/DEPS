@@ -73,8 +73,5 @@ specific_include_rules = {
   ".*_test.cc": [
     "+components/viz/test",
   ],
-  "(graphics_context|skia_utils)\.cc" : [ "+ui/base/ui_base_features.h" ],
-  "graphics_context.h": [
-    "+third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h",
-  ],
+  "(graphics_context|skia_utils)\.cc" : [ "+ui/base/ui_base_features.h" ]
 }

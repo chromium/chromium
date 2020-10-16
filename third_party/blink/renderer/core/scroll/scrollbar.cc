@@ -833,7 +833,7 @@ bool Scrollbar::ContainerIsRightToLeft() const {
   return false;
 }
 
-mojom::blink::ColorScheme Scrollbar::UsedColorScheme() const {
+ColorScheme Scrollbar::UsedColorScheme() const {
   return scrollable_area_->UsedColorScheme();
 }
 

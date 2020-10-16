@@ -260,7 +260,7 @@ bool CSSParser::ParseColor(Color& color, const String& string, bool strict) {
 
 bool CSSParser::ParseSystemColor(Color& color,
                                  const String& color_string,
-                                 mojom::blink::ColorScheme color_scheme) {
+                                 ColorScheme color_scheme) {
   CSSValueID id = CssValueKeywordID(color_string);
   if (!StyleColor::IsSystemColor(id))
     return false;

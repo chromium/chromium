@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PARSER_H_
 
 #include <memory>
-#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
+#include "third_party/blink/public/common/css/color_scheme.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
@@ -101,9 +101,7 @@ class CORE_EXPORT CSSParser {
   // The color will only be changed when string contains a valid CSS color, so
   // callers can set it to a default color and ignore the boolean result.
   static bool ParseColor(Color&, const String&, bool strict = false);
-  static bool ParseSystemColor(Color&,
-                               const String&,
-                               mojom::blink::ColorScheme color_scheme);
+  static bool ParseSystemColor(Color&, const String&, ColorScheme color_scheme);
 
   static void ParseSheetForInspector(const CSSParserContext*,
                                      StyleSheetContents*,

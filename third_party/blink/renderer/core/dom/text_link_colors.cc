@@ -29,7 +29,6 @@
 
 #include "third_party/blink/renderer/core/dom/text_link_colors.h"
 
-#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_color_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_light_dark_value_pair.h"
@@ -61,12 +60,11 @@ void TextLinkColors::SetTextColor(const Color& color) {
   has_custom_text_color_ = true;
 }
 
-Color TextLinkColors::TextColor(mojom::blink::ColorScheme color_scheme) const {
+Color TextLinkColors::TextColor(ColorScheme color_scheme) const {
   return has_custom_text_color_
              ? text_color_
-             : color_scheme == mojom::blink::ColorScheme::kLight
-                   ? Color::kBlack
-                   : Color::kWhite;
+             : color_scheme == ColorScheme::kLight ? Color::kBlack
+                                                   : Color::kWhite;
 }
 
 void TextLinkColors::SetLinkColor(const Color& color) {
@@ -74,13 +72,11 @@ void TextLinkColors::SetLinkColor(const Color& color) {
   has_custom_link_color_ = true;
 }
 
-const Color& TextLinkColors::LinkColor(
-    mojom::blink::ColorScheme color_scheme) const {
+const Color& TextLinkColors::LinkColor(ColorScheme color_scheme) const {
   return has_custom_link_color_
              ? link_color_
-             : color_scheme == mojom::blink::ColorScheme::kLight
-                   ? kDefaultLinkColorLight
-                   : kDefaultLinkColorDark;
+             : color_scheme == ColorScheme::kLight ? kDefaultLinkColorLight
+                                                   : kDefaultLinkColorDark;
 }
 
 void TextLinkColors::SetVisitedLinkColor(const Color& color) {
@@ -88,13 +84,11 @@ void TextLinkColors::SetVisitedLinkColor(const Color& color) {
   has_custom_visited_link_color_ = true;
 }
 
-const Color& TextLinkColors::VisitedLinkColor(
-    mojom::blink::ColorScheme color_scheme) const {
-  return has_custom_visited_link_color_
-             ? visited_link_color_
-             : color_scheme == mojom::blink::ColorScheme::kLight
-                   ? kDefaultVisitedLinkColorLight
-                   : kDefaultVisitedLinkColorDark;
+const Color& TextLinkColors::VisitedLinkColor(ColorScheme color_scheme) const {
+  return has_custom_visited_link_color_ ? visited_link_color_
+                                        : color_scheme == ColorScheme::kLight
+                                              ? kDefaultVisitedLinkColorLight
+                                              : kDefaultVisitedLinkColorDark;
 }
 
 void TextLinkColors::SetActiveLinkColor(const Color& color) {
@@ -102,26 +96,23 @@ void TextLinkColors::SetActiveLinkColor(const Color& color) {
   has_custom_active_link_color_ = true;
 }
 
-const Color& TextLinkColors::ActiveLinkColor(
-    mojom::blink::ColorScheme color_scheme) const {
-  return has_custom_active_link_color_
-             ? active_link_color_
-             : color_scheme == mojom::blink::ColorScheme::kLight
-                   ? kDefaultActiveLinkColorLight
-                   : kDefaultActiveLinkColorDark;
+const Color& TextLinkColors::ActiveLinkColor(ColorScheme color_scheme) const {
+  return has_custom_active_link_color_ ? active_link_color_
+                                       : color_scheme == ColorScheme::kLight
+                                             ? kDefaultActiveLinkColorLight
+                                             : kDefaultActiveLinkColorDark;
 }
 
 Color TextLinkColors::ColorFromCSSValue(const CSSValue& value,
                                         Color current_color,
-                                        mojom::blink::ColorScheme color_scheme,
+                                        ColorScheme color_scheme,
                                         bool for_visited_link) const {
   if (auto* color_value = DynamicTo<cssvalue::CSSColorValue>(value))
     return color_value->Value();
 
   if (auto* pair = DynamicTo<CSSLightDarkValuePair>(value)) {
     const CSSValue& color_value =
-        color_scheme == mojom::blink::ColorScheme::kLight ? pair->First()
-                                                          : pair->Second();
+        color_scheme == ColorScheme::kLight ? pair->First() : pair->Second();
     return ColorFromCSSValue(color_value, current_color, color_scheme,
                              for_visited_link);
   }

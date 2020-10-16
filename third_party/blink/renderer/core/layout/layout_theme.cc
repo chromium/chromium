@@ -305,43 +305,43 @@ String LayoutTheme::ExtraFullscreenStyleSheet() {
 }
 
 Color LayoutTheme::ActiveSelectionBackgroundColor(
-    mojom::blink::ColorScheme color_scheme) const {
+    ColorScheme color_scheme) const {
   return PlatformActiveSelectionBackgroundColor(color_scheme).BlendWithWhite();
 }
 
 Color LayoutTheme::InactiveSelectionBackgroundColor(
-    mojom::blink::ColorScheme color_scheme) const {
+    ColorScheme color_scheme) const {
   return PlatformInactiveSelectionBackgroundColor(color_scheme)
       .BlendWithWhite();
 }
 
 Color LayoutTheme::ActiveSelectionForegroundColor(
-    mojom::blink::ColorScheme color_scheme) const {
+    ColorScheme color_scheme) const {
   return PlatformActiveSelectionForegroundColor(color_scheme);
 }
 
 Color LayoutTheme::InactiveSelectionForegroundColor(
-    mojom::blink::ColorScheme color_scheme) const {
+    ColorScheme color_scheme) const {
   return PlatformInactiveSelectionForegroundColor(color_scheme);
 }
 
 Color LayoutTheme::ActiveListBoxSelectionBackgroundColor(
-    mojom::blink::ColorScheme color_scheme) const {
+    ColorScheme color_scheme) const {
   return PlatformActiveListBoxSelectionBackgroundColor(color_scheme);
 }
 
 Color LayoutTheme::InactiveListBoxSelectionBackgroundColor(
-    mojom::blink::ColorScheme color_scheme) const {
+    ColorScheme color_scheme) const {
   return PlatformInactiveListBoxSelectionBackgroundColor(color_scheme);
 }
 
 Color LayoutTheme::ActiveListBoxSelectionForegroundColor(
-    mojom::blink::ColorScheme color_scheme) const {
+    ColorScheme color_scheme) const {
   return PlatformActiveListBoxSelectionForegroundColor(color_scheme);
 }
 
 Color LayoutTheme::InactiveListBoxSelectionForegroundColor(
-    mojom::blink::ColorScheme color_scheme) const {
+    ColorScheme color_scheme) const {
   return PlatformInactiveListBoxSelectionForegroundColor(color_scheme);
 }
 
@@ -358,47 +358,47 @@ Color LayoutTheme::PlatformActiveSpellingMarkerHighlightColor() const {
 }
 
 Color LayoutTheme::PlatformActiveSelectionBackgroundColor(
-    mojom::blink::ColorScheme color_scheme) const {
+    ColorScheme color_scheme) const {
   // Use a blue color by default if the platform theme doesn't define anything.
   return Color(0, 0, 255);
 }
 
 Color LayoutTheme::PlatformActiveSelectionForegroundColor(
-    mojom::blink::ColorScheme color_scheme) const {
+    ColorScheme color_scheme) const {
   // Use a white color by default if the platform theme doesn't define anything.
   return Color::kWhite;
 }
 
 Color LayoutTheme::PlatformInactiveSelectionBackgroundColor(
-    mojom::blink::ColorScheme color_scheme) const {
+    ColorScheme color_scheme) const {
   // Use a grey color by default if the platform theme doesn't define anything.
   // This color matches Firefox's inactive color.
   return Color(176, 176, 176);
 }
 
 Color LayoutTheme::PlatformInactiveSelectionForegroundColor(
-    mojom::blink::ColorScheme color_scheme) const {
+    ColorScheme color_scheme) const {
   // Use a black color by default.
   return Color::kBlack;
 }
 
 Color LayoutTheme::PlatformActiveListBoxSelectionBackgroundColor(
-    mojom::blink::ColorScheme color_scheme) const {
+    ColorScheme color_scheme) const {
   return PlatformActiveSelectionBackgroundColor(color_scheme);
 }
 
 Color LayoutTheme::PlatformActiveListBoxSelectionForegroundColor(
-    mojom::blink::ColorScheme color_scheme) const {
+    ColorScheme color_scheme) const {
   return PlatformActiveSelectionForegroundColor(color_scheme);
 }
 
 Color LayoutTheme::PlatformInactiveListBoxSelectionBackgroundColor(
-    mojom::blink::ColorScheme color_scheme) const {
+    ColorScheme color_scheme) const {
   return PlatformInactiveSelectionBackgroundColor(color_scheme);
 }
 
 Color LayoutTheme::PlatformInactiveListBoxSelectionForegroundColor(
-    mojom::blink::ColorScheme color_scheme) const {
+    ColorScheme color_scheme) const {
   return PlatformInactiveSelectionForegroundColor(color_scheme);
 }
 
@@ -587,7 +587,7 @@ void LayoutTheme::SystemFont(CSSValueID system_font_id,
 }
 
 Color LayoutTheme::SystemColor(CSSValueID css_value_id,
-                               mojom::blink::ColorScheme color_scheme) const {
+                               ColorScheme color_scheme) const {
   switch (css_value_id) {
     case CSSValueID::kActiveborder:
       return 0xFFFFFFFF;
@@ -596,36 +596,29 @@ Color LayoutTheme::SystemColor(CSSValueID css_value_id,
     case CSSValueID::kActivetext:
       return 0xFFFF0000;
     case CSSValueID::kAppworkspace:
-      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFF000000
-                                                              : 0xFFFFFFFF;
+      return color_scheme == ColorScheme::kDark ? 0xFF000000 : 0xFFFFFFFF;
     case CSSValueID::kBackground:
       return 0xFF6363CE;
     case CSSValueID::kButtonface:
-      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFF444444
-                                                              : 0xFFDDDDDD;
+      return color_scheme == ColorScheme::kDark ? 0xFF444444 : 0xFFDDDDDD;
     case CSSValueID::kButtonhighlight:
       return 0xFFDDDDDD;
     case CSSValueID::kButtonshadow:
       return 0xFF888888;
     case CSSValueID::kButtontext:
-      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFAAAAAA
-                                                              : 0xFF000000;
+      return color_scheme == ColorScheme::kDark ? 0xFFAAAAAA : 0xFF000000;
     case CSSValueID::kCaptiontext:
-      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFFFFFFF
-                                                              : 0xFF000000;
+      return color_scheme == ColorScheme::kDark ? 0xFFFFFFFF : 0xFF000000;
     case CSSValueID::kField:
-      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFF000000
-                                                              : 0xFFFFFFFF;
+      return color_scheme == ColorScheme::kDark ? 0xFF000000 : 0xFFFFFFFF;
     case CSSValueID::kFieldtext:
-      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFFFFFFF
-                                                              : 0xFF000000;
+      return color_scheme == ColorScheme::kDark ? 0xFFFFFFFF : 0xFF000000;
     case CSSValueID::kGraytext:
       return 0xFF808080;
     case CSSValueID::kHighlight:
       return 0xFFB5D5FF;
     case CSSValueID::kHighlighttext:
-      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFFFFFFF
-                                                              : 0xFF000000;
+      return color_scheme == ColorScheme::kDark ? 0xFFFFFFFF : 0xFF000000;
     case CSSValueID::kInactiveborder:
       return 0xFFFFFFFF;
     case CSSValueID::kInactivecaption:
@@ -633,24 +626,19 @@ Color LayoutTheme::SystemColor(CSSValueID css_value_id,
     case CSSValueID::kInactivecaptiontext:
       return 0xFF7F7F7F;
     case CSSValueID::kInfobackground:
-      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFB46E32
-                                                              : 0xFFFBFCC5;
+      return color_scheme == ColorScheme::kDark ? 0xFFB46E32 : 0xFFFBFCC5;
     case CSSValueID::kInfotext:
-      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFFFFFFF
-                                                              : 0xFF000000;
+      return color_scheme == ColorScheme::kDark ? 0xFFFFFFFF : 0xFF000000;
     case CSSValueID::kLinktext:
       return 0xFF0000EE;
     case CSSValueID::kMenu:
-      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFF404040
-                                                              : 0xFFF7F7F7;
+      return color_scheme == ColorScheme::kDark ? 0xFF404040 : 0xFFF7F7F7;
     case CSSValueID::kMenutext:
-      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFFFFFFF
-                                                              : 0xFF000000;
+      return color_scheme == ColorScheme::kDark ? 0xFFFFFFFF : 0xFF000000;
     case CSSValueID::kScrollbar:
       return 0xFFFFFFFF;
     case CSSValueID::kText:
-      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFFFFFFF
-                                                              : 0xFF000000;
+      return color_scheme == ColorScheme::kDark ? 0xFFFFFFFF : 0xFF000000;
     case CSSValueID::kThreeddarkshadow:
       return 0xFF666666;
     case CSSValueID::kThreedface:
@@ -665,14 +653,12 @@ Color LayoutTheme::SystemColor(CSSValueID css_value_id,
       return 0xFF551A8B;
     case CSSValueID::kWindow:
     case CSSValueID::kCanvas:
-      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFF000000
-                                                              : 0xFFFFFFFF;
+      return color_scheme == ColorScheme::kDark ? 0xFF000000 : 0xFFFFFFFF;
     case CSSValueID::kWindowframe:
       return 0xFFCCCCCC;
     case CSSValueID::kWindowtext:
     case CSSValueID::kCanvastext:
-      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFFFFFFF
-                                                              : 0xFF000000;
+      return color_scheme == ColorScheme::kDark ? 0xFFFFFFFF : 0xFF000000;
     case CSSValueID::kInternalActiveListBoxSelection:
       return ActiveListBoxSelectionBackgroundColor(color_scheme);
     case CSSValueID::kInternalActiveListBoxSelectionText:
@@ -691,7 +677,7 @@ Color LayoutTheme::SystemColor(CSSValueID css_value_id,
 Color LayoutTheme::PlatformTextSearchHighlightColor(
     bool active_match,
     bool in_forced_colors_mode,
-    mojom::blink::ColorScheme color_scheme) const {
+    ColorScheme color_scheme) const {
   if (active_match) {
     if (in_forced_colors_mode)
       return GetTheme().SystemColor(CSSValueID::kHighlight, color_scheme);
@@ -700,10 +686,9 @@ Color LayoutTheme::PlatformTextSearchHighlightColor(
   return Color(255, 255, 0);     // Yellow.
 }
 
-Color LayoutTheme::PlatformTextSearchColor(
-    bool active_match,
-    bool in_forced_colors_mode,
-    mojom::blink::ColorScheme color_scheme) const {
+Color LayoutTheme::PlatformTextSearchColor(bool active_match,
+                                           bool in_forced_colors_mode,
+                                           ColorScheme color_scheme) const {
   if (in_forced_colors_mode && active_match)
     return GetTheme().SystemColor(CSSValueID::kHighlighttext, color_scheme);
   return Color::kBlack;

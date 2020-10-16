@@ -34,8 +34,8 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/common/css/color_scheme.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
-#include "third_party/blink/public/mojom/frame/color_scheme.mojom-shared.h"
 #include "third_party/blink/public/platform/web_scrollbar_overlay_color_theme.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
@@ -189,7 +189,7 @@ class WebThemeEngine {
   struct ScrollbarExtraParams {
     bool is_hovering;
     bool is_overlay;
-    mojom::ColorScheme scrollbar_theme;
+    ColorScheme scrollbar_theme;
     ScrollbarOrientation orientation;
   };
 #endif
@@ -246,7 +246,7 @@ class WebThemeEngine {
                      State,
                      const gfx::Rect&,
                      const ExtraParams*,
-                     blink::mojom::ColorScheme) {}
+                     blink::ColorScheme) {}
 
   virtual base::Optional<SkColor> GetSystemColor(
       SystemThemeColor system_theme) const {

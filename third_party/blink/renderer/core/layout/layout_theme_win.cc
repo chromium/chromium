@@ -21,9 +21,8 @@ LayoutTheme& LayoutTheme::NativeTheme() {
   return *layout_theme;
 }
 
-Color LayoutThemeWin::SystemColor(
-    CSSValueID css_value_id,
-    mojom::blink::ColorScheme color_scheme) const {
+Color LayoutThemeWin::SystemColor(CSSValueID css_value_id,
+                                  ColorScheme color_scheme) const {
   blink::WebThemeEngine::SystemThemeColor theme_color;
   switch (css_value_id) {
     case CSSValueID::kActivetext:

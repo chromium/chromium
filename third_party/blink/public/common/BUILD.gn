@@ -70,6 +70,7 @@ source_set("headers") {
     "context_menu_data/edit_flags.h",
     "context_menu_data/input_field_type.h",
     "context_menu_data/media_type.h",
+    "css/color_scheme.h",
     "css/forced_colors.h",
     "css/navigation_controls.h",
     "css/page_orientation.h",

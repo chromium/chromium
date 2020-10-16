@@ -3549,8 +3549,7 @@ TEST_F(StyleCascadeTest, ForcedVisitedBackgroundColor) {
   cascade.Apply();
 
   Color forced_bg_color =
-      StyleColor(CSSValueID::kCanvas)
-          .Resolve(Color(), mojom::blink::ColorScheme::kLight);
+      StyleColor(CSSValueID::kCanvas).Resolve(Color(), ColorScheme::kLight);
   Color expected_bg_color =
       Color(forced_bg_color.Red(), forced_bg_color.Green(),
             forced_bg_color.Blue(), 0xdd);
