@@ -12,10 +12,8 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/win/object_watcher.h"
-#include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
 
 namespace base {

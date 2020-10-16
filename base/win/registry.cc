@@ -8,16 +8,19 @@
 
 #include <algorithm>
 #include <memory>
-
 #include <string>
 #include <utility>
+#include <vector>
 
+#include "base/callback.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/win/object_watcher.h"
+#include "base/win/scoped_handle.h"
 #include "base/win/shlwapi.h"
 #include "base/win/windows_version.h"
 
@@ -51,9 +54,10 @@ class RegKey::Watcher : public ObjectWatcher::Delegate {
 
   bool StartWatching(HKEY key, ChangeCallback callback);
 
-  // Implementation of ObjectWatcher::Delegate.
+  // ObjectWatcher::Delegate:
   void OnObjectSignaled(HANDLE object) override {
-    DCHECK(watch_event_.IsValid() && watch_event_.Get() == object);
+    DCHECK(watch_event_.IsValid());
+    DCHECK_EQ(watch_event_.Get(), object);
     std::move(callback_).Run();
   }
 
@@ -74,12 +78,13 @@ bool RegKey::Watcher::StartWatching(HKEY key, ChangeCallback callback) {
   if (!watch_event_.IsValid())
     return false;
 
-  DWORD filter = REG_NOTIFY_CHANGE_NAME | REG_NOTIFY_CHANGE_ATTRIBUTES |
-                 REG_NOTIFY_CHANGE_LAST_SET | REG_NOTIFY_CHANGE_SECURITY;
+  const DWORD filter = REG_NOTIFY_CHANGE_NAME | REG_NOTIFY_CHANGE_ATTRIBUTES |
+                       REG_NOTIFY_CHANGE_LAST_SET | REG_NOTIFY_CHANGE_SECURITY;
 
   // Watch the registry key for a change of value.
   LONG result =
-      RegNotifyChangeKeyValue(key, TRUE, filter, watch_event_.Get(), TRUE);
+      RegNotifyChangeKeyValue(key, /*bWatchSubtree=*/TRUE, filter,
+                              watch_event_.Get(), /*fAsynchronous=*/TRUE);
   if (result != ERROR_SUCCESS) {
     watch_event_.Close();
     return false;
