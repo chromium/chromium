@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "components/grit/sync_driver_resources.h"
-#include "components/sync/driver/about_sync_util.h"
+#include "components/sync/driver/sync_internals_util.h"
 #include "ios/components/webui/sync_internals/sync_internals_message_handler.h"
 #include "ios/components/webui/web_ui_url_constants.h"
 #include "ios/web/public/browser_state.h"

@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "components/grit/sync_driver_resources.h"
-#include "components/sync/driver/about_sync_util.h"
+#include "components/sync/driver/sync_internals_util.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"

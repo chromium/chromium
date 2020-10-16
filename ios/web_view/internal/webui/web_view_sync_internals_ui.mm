@@ -4,7 +4,7 @@
 
 #import "ios/web_view/internal/webui/web_view_sync_internals_ui.h"
 
-#include "components/sync/driver/about_sync_util.h"
+#include "components/sync/driver/sync_internals_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

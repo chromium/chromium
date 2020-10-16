@@ -5,7 +5,7 @@
 #include <memory>
 
 #include "base/values.h"
-#include "components/sync/driver/about_sync_util.h"
+#include "components/sync/driver/sync_internals_util.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

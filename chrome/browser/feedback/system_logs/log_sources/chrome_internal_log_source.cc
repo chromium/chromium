@@ -29,7 +29,7 @@
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/driver/about_sync_util.h"
+#include "components/sync/driver/sync_internals_util.h"
 #include "components/sync/driver/sync_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/power/power_api.h"

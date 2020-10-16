@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_DRIVER_ABOUT_SYNC_UTIL_H_
-#define COMPONENTS_SYNC_DRIVER_ABOUT_SYNC_UTIL_H_
+#ifndef COMPONENTS_SYNC_DRIVER_SYNC_INTERNALS_UTIL_H_
+#define COMPONENTS_SYNC_DRIVER_SYNC_INTERNALS_UTIL_H_
 
 #include <memory>
 
@@ -83,4 +83,4 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_DRIVER_ABOUT_SYNC_UTIL_H_
+#endif  // COMPONENTS_SYNC_DRIVER_SYNC_INTERNALS_UTIL_H_
