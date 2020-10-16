@@ -186,7 +186,7 @@ void TextFragmentSelectorGenerator::BindTextFragmentSelectorProducer(
       selection_frame_->GetTaskRunner(blink::TaskType::kInternalDefault));
 }
 
-void TextFragmentSelectorGenerator::CompleteSelection() {
+void TextFragmentSelectorGenerator::AdjustSelection() {
   if (!selection_range_)
     return;
 
@@ -195,35 +195,67 @@ void TextFragmentSelectorGenerator::CompleteSelection() {
       ephemeral_range.StartPosition().ComputeContainerNode();
   Node* end_container = ephemeral_range.EndPosition().ComputeContainerNode();
 
-  String start_text = start_container->textContent();
-  int selection_start_pos =
+  // If start node has no text or given start position point to the last visible
+  // text in its containiner node, use the following visible node for selection
+  // start. This has to happen before generation, so that selection is correctly
+  // classified as same block or not.
+  Node* corrected_start = start_container;
+  int corrected_start_offset =
       ephemeral_range.StartPosition().ComputeOffsetInContainerNode();
-  start_text.Ensure16Bit();
-  int first_word_start = FindWordStartBoundary(
-      start_text.Characters16(), start_text.length(), selection_start_pos);
-
-  String end_text = end_container->textContent();
-  int selection_end_pos =
-      ephemeral_range.EndPosition().ComputeOffsetInContainerNode();
-  end_text.Ensure16Bit();
-
-  // If |selection_end_pos| is at the beginning of a new word then don't search
-  // for the word end as it will be the end of the next word, which was not
-  // included in the selection.
-  int last_word_end = selection_end_pos;
-  if (selection_end_pos != FindWordStartBoundary(end_text.Characters16(),
-                                                 end_text.length(),
-                                                 selection_end_pos)) {
-    last_word_end = FindWordEndBoundary(end_text.Characters16(),
-                                        end_text.length(), selection_end_pos);
+  if (IsLastVisiblePosition(corrected_start, corrected_start_offset)) {
+    corrected_start = FirstNonEmptyVisibleTextNode(
+        FlatTreeTraversal::NextSkippingChildren(*corrected_start));
+    corrected_start_offset = 0;
+  } else {
+    // if node change was not necessary move start and end positions to
+    // contain full words. This is not necessary when node change happened
+    // because block limits are also word limits.
+    String start_text = corrected_start->textContent();
+    start_text.Ensure16Bit();
+    corrected_start_offset = FindWordStartBoundary(
+        start_text.Characters16(), start_text.length(), corrected_start_offset);
   }
 
-  if (first_word_start != selection_start_pos ||
-      last_word_end != selection_end_pos) {
-    selection_range_ =
-        MakeGarbageCollected<Range>(selection_range_->OwnerDocument(),
-                                    Position(start_container, first_word_start),
-                                    Position(end_container, last_word_end));
+  // If end node has no text or given end position point to the first visible
+  // text in its containiner node, use the previous visible node for selection
+  // end. This has to happen before generation, so that selection is correctly
+  // classified as same block or not.
+  Node* corrected_end = end_container;
+  int corrected_end_offset =
+      ephemeral_range.EndPosition().ComputeOffsetInContainerNode();
+  if (IsFirstVisiblePosition(corrected_end, corrected_end_offset)) {
+    corrected_end = BackwardNonEmptyVisibleTextNode(
+        FlatTreeTraversal::PreviousSkippingChildren(*corrected_end));
+    if (corrected_end)
+      corrected_end_offset = corrected_end->textContent().length();
+  } else {
+    // if node change was not necessary move start and end positions to
+    // contain full words. This is not necessary when node change happened
+    // because block limits are also word limits.
+    String end_text = corrected_end->textContent();
+    end_text.Ensure16Bit();
+
+    // If |selection_end_pos| is at the beginning of a new word then don't
+    // search for the word end as it will be the end of the next word, which was
+    // not included in the selection.
+    if (corrected_end_offset != FindWordStartBoundary(end_text.Characters16(),
+                                                      end_text.length(),
+                                                      corrected_end_offset)) {
+      corrected_end_offset = FindWordEndBoundary(
+          end_text.Characters16(), end_text.length(), corrected_end_offset);
+    }
+  }
+
+  if (corrected_start != start_container ||
+      corrected_start_offset !=
+          ephemeral_range.StartPosition().ComputeOffsetInContainerNode() ||
+      corrected_end != end_container ||
+      corrected_end_offset !=
+          ephemeral_range.EndPosition().ComputeOffsetInContainerNode()) {
+    selection_range_ = MakeGarbageCollected<Range>(
+        selection_range_->OwnerDocument(),
+        Position(corrected_start, corrected_start_offset),
+        Position(corrected_end, corrected_end_offset));
   }
 }
 
@@ -244,7 +276,7 @@ void TextFragmentSelectorGenerator::GenerateSelector(
   num_suffix_words_ = 0;
   iteration_ = 0;
 
-  CompleteSelection();
+  AdjustSelection();
   UMA_HISTOGRAM_COUNTS_1000(
       "SharedHighlights.LinkGenerated.SelectionLength",
       PlainText(EphemeralRange(selection_range_)).length());
@@ -369,7 +401,6 @@ void TextFragmentSelectorGenerator::Trace(Visitor* visitor) const {
 void TextFragmentSelectorGenerator::GenerateExactSelector() {
   DCHECK_EQ(kExact, step_);
   DCHECK_EQ(kNeedsNewCandidate, state_);
-
   EphemeralRangeInFlatTree ephemeral_range(selection_range_);
   Node* start_container =
       ephemeral_range.StartPosition().ComputeContainerNode();
