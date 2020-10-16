@@ -251,11 +251,13 @@ suite('ScanningAppTest', () => {
               tokenToString(firstScannerId), scanningApp.selectedScannerId);
           assertEquals(
               firstCapabilities.sources[0].name, scanningApp.selectedSource);
-          assertEquals(FileType.PDF, scanningApp.selectedFileType);
+          assertEquals(FileType.PDF.toString(), scanningApp.selectedFileType);
           assertEquals(
-              firstCapabilities.colorModes[0], scanningApp.selectedColorMode);
+              firstCapabilities.colorModes[0].toString(),
+              scanningApp.selectedColorMode);
           assertEquals(
-              firstCapabilities.resolutions[0], scanningApp.selectedResolution);
+              firstCapabilities.resolutions[0].toString(),
+              scanningApp.selectedResolution);
 
           // Before the scan button is clicked, the settings and scan button
           // should be enabled, and there should be no scan status.

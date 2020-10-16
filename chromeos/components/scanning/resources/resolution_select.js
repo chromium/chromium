@@ -30,9 +30,9 @@ Polymer({
       value: () => [],
     },
 
-    /** @type {number|undefined} */
+    /** @type {?string} */
     selectedResolution: {
-      type: Number,
+      type: String,
       notify: true,
     },
   },

@@ -23,9 +23,9 @@ Polymer({
   behaviors: [I18nBehavior, SelectBehavior],
 
   properties: {
-    /** @type {chromeos.scanning.mojom.FileType|undefined} */
+    /** @type {?string} */
     selectedFileType: {
-      type: chromeos.scanning.mojom.FileType,
+      type: String,
       notify: true,
     },
   },

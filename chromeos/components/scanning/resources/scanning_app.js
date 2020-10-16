@@ -12,11 +12,12 @@ import './resolution_select.js';
 import './scanner_select.js';
 import './source_select.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {getScanService} from './mojo_interface_provider.js';
 import {ScannerArr} from './scanning_app_types.js';
-import {tokenToString} from './scanning_app_util.js';
+import {colorModeFromString, tokenToString} from './scanning_app_util.js';
 
 /**
  * @fileoverview
@@ -57,14 +58,14 @@ Polymer({
     /** @type {?string} */
     selectedSource: String,
 
-    /** @type {chromeos.scanning.mojom.FileType|undefined} */
-    selectedFileType: chromeos.scanning.mojom.FileType,
+    /** @type {?string} */
+    selectedFileType: String,
 
-    /** @type {chromeos.scanning.mojom.ColorMode|undefined} */
-    selectedColorMode: chromeos.scanning.mojom.ColorMode,
+    /** @type {?string} */
+    selectedColorMode: String,
 
-    /** @type {number|undefined} */
-    selectedResolution: Number,
+    /** @type {?string} */
+    selectedResolution: String,
 
     /**
      * @type {?string}
@@ -117,11 +118,11 @@ Polymer({
     // Set the first options as the selected options since they will be the
     // first options in the dropdowns.
     this.selectedSource = this.capabilities_.sources[0].name;
-    this.selectedColorMode = this.capabilities_.colorModes[0];
-    this.selectedResolution = this.capabilities_.resolutions[0];
+    this.selectedColorMode = this.capabilities_.colorModes[0].toString();
+    this.selectedResolution = this.capabilities_.resolutions[0].toString();
 
     // PDF is the default file type.
-    this.selectedFileType = chromeos.scanning.mojom.FileType.kPdf;
+    this.selectedFileType = chromeos.scanning.mojom.FileType.kPdf.toString();
 
     this.scanButtonDisabled_ = false;
   },
@@ -171,9 +172,8 @@ Polymer({
   /** @private */
   onScanClick_() {
     if (!this.selectedScannerId || !this.selectedSource ||
-        this.selectedFileType === undefined ||
-        this.selectedColorMode === undefined ||
-        this.selectedResolution === undefined) {
+        !this.selectedFileType || !this.selectedColorMode ||
+        !this.selectedResolution) {
       // TODO(jschettler): Replace status text with finalized i18n strings.
       this.statusText_ = 'Failed to start scan.';
       return;
@@ -188,8 +188,8 @@ Polymer({
     const settings = {
       'sourceName': this.selectedSource,
       'fileType': chromeos.scanning.mojom.FileType.kPng,
-      'colorMode': this.selectedColorMode,
-      'resolutionDpi': this.selectedResolution,
+      'colorMode': colorModeFromString(this.selectedColorMode),
+      'resolutionDpi': Number(this.selectedResolution),
     };
     this.scanService_
         .scan(this.scannerIds_.get(this.selectedScannerId), settings)

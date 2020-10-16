@@ -30,9 +30,9 @@ Polymer({
       value: () => [],
     },
 
-    /** @type {chromeos.scanning.mojom.ColorMode|undefined} */
+    /** @type {?string} */
     selectedColorMode: {
-      type: chromeos.scanning.mojom.ColorMode,
+      type: String,
       notify: true,
     },
   },

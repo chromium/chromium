@@ -5,6 +5,26 @@
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 
 /**
+ * Converts a chromeos.scanning.mojom.ColorMode string to the corresponding enum
+ * value.
+ * @param {!string} colorModeString
+ * @return {chromeos.scanning.mojom.ColorMode}
+ */
+export function colorModeFromString(colorModeString) {
+  switch (colorModeString) {
+    case chromeos.scanning.mojom.ColorMode.kBlackAndWhite.toString():
+      return chromeos.scanning.mojom.ColorMode.kBlackAndWhite;
+    case chromeos.scanning.mojom.ColorMode.kGrayscale.toString():
+      return chromeos.scanning.mojom.ColorMode.kGrayscale;
+    case chromeos.scanning.mojom.ColorMode.kColor.toString():
+      return chromeos.scanning.mojom.ColorMode.kColor;
+    default:
+      assertNotReached();
+      return chromeos.scanning.mojom.ColorMode.kColor;
+  }
+}
+
+/**
  * Converts a chromeos.scanning.mojom.ColorMode to a string that can be
  * displayed in the color mode dropdown.
  * @param {number} mojoColorMode
