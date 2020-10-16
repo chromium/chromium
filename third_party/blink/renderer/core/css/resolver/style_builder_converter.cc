@@ -1931,8 +1931,9 @@ static const CSSValue& ComputeRegisteredPropertyValue(
     if (value_id == CSSValueID::kCurrentcolor)
       return value;
     if (StyleColor::IsColorKeyword(value_id)) {
-      ColorScheme scheme =
-          state ? state->Style()->UsedColorScheme() : ColorScheme::kLight;
+      mojom::blink::ColorScheme scheme =
+          state ? state->Style()->UsedColorScheme()
+                : mojom::blink::ColorScheme::kLight;
       Color color = document.GetTextLinkColors().ColorFromCSSValue(
           value, Color(), scheme, false);
       return *cssvalue::CSSColorValue::Create(color.Rgb());

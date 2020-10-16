@@ -197,7 +197,8 @@ TEST_F(LocalFrameViewTest, CanHaveScrollbarsIfScrollingAttrEqualsNoChanged) {
   EXPECT_FALSE(ChildDocument().View()->CanHaveScrollbars());
 
   ChildDocument().WillChangeFrameOwnerProperties(
-      0, 0, mojom::blink::ScrollbarMode::kAlwaysOn, false, ColorScheme::kLight);
+      0, 0, mojom::blink::ScrollbarMode::kAlwaysOn, false,
+      mojom::blink::ColorScheme::kLight);
   EXPECT_TRUE(ChildDocument().View()->CanHaveScrollbars());
 }
 

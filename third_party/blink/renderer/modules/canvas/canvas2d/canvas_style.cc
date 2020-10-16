@@ -52,7 +52,7 @@ enum ColorParseResult {
 
 static ColorParseResult ParseColor(Color& parsed_color,
                                    const String& color_string,
-                                   ColorScheme color_scheme) {
+                                   mojom::blink::ColorScheme color_scheme) {
   if (EqualIgnoringASCIICase(color_string, "currentcolor"))
     return kParsedCurrentColor;
   const bool kUseStrictParsing = true;
@@ -72,7 +72,7 @@ static Color CurrentColor(HTMLCanvasElement* canvas) {
   return color;
 }
 
-static ColorScheme ColorScheme(HTMLCanvasElement* canvas) {
+static mojom::blink::ColorScheme ColorScheme(HTMLCanvasElement* canvas) {
   if (canvas && canvas->isConnected()) {
     if (auto* style = canvas->GetComputedStyle())
       return style->UsedColorScheme();

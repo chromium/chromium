@@ -1808,7 +1808,7 @@
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       style_builder_custom_functions: ["initial", "inherit", "value"],
       inherited: true,
-      include_paths: ["third_party/blink/public/common/css/color_scheme.h"],
+      include_paths: ["third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"],
       type_name: "Vector<AtomicString>",
       default_value: "Vector<AtomicString, 0>()",
       field_template: "external",

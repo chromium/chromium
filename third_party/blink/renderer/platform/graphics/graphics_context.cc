@@ -32,6 +32,7 @@
 #include "build/build_config.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
 #include "skia/ext/platform_canvas.h"
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
@@ -459,14 +460,14 @@ void GraphicsContext::DrawFocusRing(const Vector<IntRect>& rects,
                                     float border_radius,
                                     float min_border_width,
                                     const Color& color,
-                                    ColorScheme color_scheme) {
+                                    mojom::blink::ColorScheme color_scheme) {
 #if defined(OS_MAC)
-  const Color& inner_color = color_scheme == ColorScheme::kDark
+  const Color& inner_color = color_scheme == mojom::blink::ColorScheme::kDark
                                  ? SkColorSetRGB(0x99, 0xC8, 0xFF)
                                  : color;
 #else
   const Color& inner_color =
-      color_scheme == ColorScheme::kDark ? SK_ColorWHITE : color;
+      color_scheme == mojom::blink::ColorScheme::kDark ? SK_ColorWHITE : color;
 #endif
   if (::features::IsFormControlsRefreshEnabled()) {
     // The focus ring is made of two borders which have a 2:1 ratio.
@@ -478,7 +479,7 @@ void GraphicsContext::DrawFocusRing(const Vector<IntRect>& rects,
     if (min_border_width >= inside_border_width) {
       offset -= inside_border_width;
     }
-    const Color& outer_color = color_scheme == ColorScheme::kDark
+    const Color& outer_color = color_scheme == mojom::blink::ColorScheme::kDark
                                    ? SkColorSetRGB(0x10, 0x10, 0x10)
                                    : SK_ColorWHITE;
     // The outer ring is drawn first, and we overdraw to ensure no gaps or AA

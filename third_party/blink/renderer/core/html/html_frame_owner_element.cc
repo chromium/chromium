@@ -670,13 +670,14 @@ bool HTMLFrameOwnerElement::IsAdRelated() const {
   return content_frame_->IsAdSubframe();
 }
 
-ColorScheme HTMLFrameOwnerElement::GetColorScheme() const {
+mojom::blink::ColorScheme HTMLFrameOwnerElement::GetColorScheme() const {
   if (const auto* style = GetComputedStyle())
     return style->UsedColorSchemeForInitialColors();
-  return ColorScheme::kLight;
+  return mojom::blink::ColorScheme::kLight;
 }
 
-void HTMLFrameOwnerElement::SetColorScheme(ColorScheme color_scheme) {
+void HTMLFrameOwnerElement::SetColorScheme(
+    mojom::blink::ColorScheme color_scheme) {
   Document* doc = contentDocument();
   if (doc && doc->GetFrame()) {
     doc->WillChangeFrameOwnerProperties(MarginWidth(), MarginHeight(),

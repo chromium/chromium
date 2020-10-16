@@ -108,7 +108,7 @@ void ScrollbarTheme::PaintScrollCorner(
     const Scrollbar* vertical_scrollbar,
     const DisplayItemClient& display_item_client,
     const IntRect& corner_rect,
-    ColorScheme color_scheme) {
+    mojom::blink::ColorScheme color_scheme) {
   if (corner_rect.IsEmpty())
     return;
 

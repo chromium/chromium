@@ -86,22 +86,22 @@ String LayoutThemeDefault::ExtraQuirksStyleSheet() {
 }
 
 Color LayoutThemeDefault::PlatformActiveSelectionBackgroundColor(
-    ColorScheme color_scheme) const {
+    mojom::blink::ColorScheme color_scheme) const {
   return active_selection_background_color_;
 }
 
 Color LayoutThemeDefault::PlatformInactiveSelectionBackgroundColor(
-    ColorScheme color_scheme) const {
+    mojom::blink::ColorScheme color_scheme) const {
   return inactive_selection_background_color_;
 }
 
 Color LayoutThemeDefault::PlatformActiveSelectionForegroundColor(
-    ColorScheme color_scheme) const {
+    mojom::blink::ColorScheme color_scheme) const {
   return active_selection_foreground_color_;
 }
 
 Color LayoutThemeDefault::PlatformInactiveSelectionForegroundColor(
-    ColorScheme color_scheme) const {
+    mojom::blink::ColorScheme color_scheme) const {
   return inactive_selection_foreground_color_;
 }
 

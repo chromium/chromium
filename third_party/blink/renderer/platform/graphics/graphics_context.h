@@ -31,7 +31,7 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "third_party/blink/public/common/css/color_scheme.h"
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_filter.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
@@ -368,7 +368,7 @@ class PLATFORM_EXPORT GraphicsContext {
                      float border_radius,
                      float min_border_width,
                      const Color&,
-                     ColorScheme color_scheme);
+                     mojom::blink::ColorScheme color_scheme);
   void DrawFocusRing(const Path&, float width, int offset, const Color&);
 
   enum Edge {
