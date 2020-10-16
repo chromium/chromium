@@ -475,3 +475,28 @@ QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_key_update_supported, false)
 // If true, address is validated by successfully processing a HANDSHAKE or 1-RTT
 // packet.
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_fix_address_validation, false)
+
+// If true, QuicStream will explicitly specify which RST_STREAM, STOP_SENDING
+// frame to send.
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_split_up_send_rst, false)
+
+// If true, send HTTP/3 GOAWAY frame when sending CONNECTION_CLOSE.
+QUIC_FLAG(bool,
+          FLAGS_quic_reloadable_flag_quic_send_goaway_with_connection_close,
+          false)
+
+// If true, ack frequency frame can be sent from server to client.
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_can_send_ack_frequency, false)
+
+// If true, QUIC BBRv2 will support NetworkParams.max_initial_congestion_window
+// when bootstrapping cwnd.
+QUIC_FLAG(bool,
+          FLAGS_quic_reloadable_flag_quic_bbr2_support_max_bootstrap_cwnd,
+          false)
+
+// If true, QUIC BBR2 will not exit STARTUP on excessive loss, if there was
+// enough bandwidth growth in round.
+QUIC_FLAG(
+    bool,
+    FLAGS_quic_reloadable_flag_quic_bbr2_no_exit_startup_on_loss_with_bw_growth,
+    false)
