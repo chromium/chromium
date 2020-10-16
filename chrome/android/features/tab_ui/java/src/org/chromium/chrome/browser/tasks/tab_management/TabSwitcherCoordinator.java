@@ -154,9 +154,9 @@ public class TabSwitcherCoordinator
 
         PropertyModel containerViewModel = new PropertyModel(TabListContainerProperties.ALL_KEYS);
 
-        mMediator =
-                new TabSwitcherMediator(this, containerViewModel, tabModelSelector, browserControls,
-                        container, tabContentManager, this, multiWindowModeStateDispatcher, mode);
+        mMediator = new TabSwitcherMediator(context, this, containerViewModel, tabModelSelector,
+                browserControls, container, tabContentManager, this, multiWindowModeStateDispatcher,
+                mode);
 
         mMultiThumbnailCardProvider =
                 new MultiThumbnailCardProvider(context, tabContentManager, tabModelSelector);

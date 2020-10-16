@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BOTTOM_CONTROLS_HEIGHT;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BOTTOM_PADDING;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.INITIAL_SCROLL_INDEX;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_VISIBLE;
@@ -13,6 +14,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerP
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.VISIBILITY_LISTENER;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -51,7 +53,9 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
+import org.chromium.chrome.tab_ui.R;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -185,6 +189,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
 
     /**
      * Basic constructor for the Mediator.
+     * @param context The context to use for accessing {@link android.content.res.Resources}.
      * @param resetHandler The {@link ResetHandler} that handles reset for this Mediator.
      * @param containerViewModel The {@link PropertyModel} to keep state on the View containing the
      *         grid or carousel.
@@ -196,8 +201,8 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
      *         for multi-window related changes.
      * @param mode One of the {@link TabListCoordinator.TabListMode}.
      */
-    TabSwitcherMediator(ResetHandler resetHandler, PropertyModel containerViewModel,
-            TabModelSelector tabModelSelector,
+    TabSwitcherMediator(Context context, ResetHandler resetHandler,
+            PropertyModel containerViewModel, TabModelSelector tabModelSelector,
             BrowserControlsStateProvider browserControlsStateProvider, ViewGroup containerView,
             TabContentManager tabContentManager, MessageItemsController messageItemsController,
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
@@ -355,6 +360,11 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
             updateTopControlsProperties();
             mContainerViewModel.set(
                     BOTTOM_CONTROLS_HEIGHT, browserControlsStateProvider.getBottomControlsHeight());
+        }
+
+        if (mMode == TabListMode.GRID) {
+            mContainerViewModel.set(BOTTOM_PADDING,
+                    (int) context.getResources().getDimension(R.dimen.tab_grid_bottom_padding));
         }
 
         mContainerView = containerView;

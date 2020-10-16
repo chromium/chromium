@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BOTTOM_CONTROLS_HEIGHT;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BOTTOM_PADDING;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.INITIAL_SCROLL_INDEX;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_VISIBLE;
@@ -61,6 +62,8 @@ class TabListContainerViewBinder {
             view.requestLayout();
         } else if (SHADOW_TOP_OFFSET == propertyKey) {
             view.setShadowTopOffset(model.get(SHADOW_TOP_OFFSET));
+        } else if (BOTTOM_PADDING == propertyKey) {
+            view.setBottomPadding(model.get(BOTTOM_PADDING));
         }
     }
 }

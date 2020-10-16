@@ -198,7 +198,7 @@ public class TabSwitcherMediatorUnitTest {
 
         mModel = new PropertyModel(TabListContainerProperties.ALL_KEYS);
         mModel.addObserver(mPropertyObserver);
-        mMediator = new TabSwitcherMediator(mResetHandler, mModel, mTabModelSelector,
+        mMediator = new TabSwitcherMediator(mContext, mResetHandler, mModel, mTabModelSelector,
                 mBrowserControlsStateProvider, mCompositorViewHolder, null, mMessageItemsController,
                 mMultiWindowModeStateDispatcher, TabListCoordinator.TabListMode.GRID);
         mMediator.initWithNative(null);

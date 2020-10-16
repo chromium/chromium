@@ -279,6 +279,10 @@ class TabListRecyclerView
         }
     }
 
+    void setBottomPadding(int bottomPadding) {
+        setPadding(getPaddingLeft(), getPaddingTop(), getPaddingRight(), bottomPadding);
+    }
+
     /**
      * @return The ID for registering and using the dynamic resource in compositor.
      */
