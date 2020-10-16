@@ -25066,6 +25066,7 @@ Called by update_extension_histograms.py.-->
   <int value="1520" label="ACCESSIBILITY_PRIVATE_ENABLEPOINTSCAN"/>
   <int value="1521" label="AUTOTESTPRIVATE_ACTIVATEADJACENTDESKSTOTARGETINDEX"/>
   <int value="1522" label="DECLARATIVENETREQUEST_GETAVAILABLESTATICRULECOUNT"/>
+  <int value="1523" label="CHROMEOSINFOPRIVATE_ISTABLETMODEENABLED"/>
 </enum>
 
 <enum name="ExtensionIconState">

@@ -11,6 +11,7 @@
 
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/stylus_utils.h"
+#include "ash/public/cpp/tablet_mode.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -467,6 +468,18 @@ ExtensionFunction::ResponseAction ChromeosInfoPrivateSetFunction::Run() {
   }
 
   return RespondNow(NoArguments());
+}
+
+ChromeosInfoPrivateIsTabletModeEnabledFunction::
+    ChromeosInfoPrivateIsTabletModeEnabledFunction() {}
+
+ChromeosInfoPrivateIsTabletModeEnabledFunction::
+    ~ChromeosInfoPrivateIsTabletModeEnabledFunction() {}
+
+ExtensionFunction::ResponseAction
+ChromeosInfoPrivateIsTabletModeEnabledFunction::Run() {
+  return RespondNow(OneArgument(
+      std::make_unique<base::Value>(ash::TabletMode::Get()->InTabletMode())));
 }
 
 }  // namespace extensions

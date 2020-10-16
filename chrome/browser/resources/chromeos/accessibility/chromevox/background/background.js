@@ -192,13 +192,20 @@ Background = class extends ChromeVoxState {
           }
 
           chrome.loginState.getSessionState((sessionState) => {
-            // If starting ChromeVox from OOBE, start the ChromeVox tutorial.
+            // If starting ChromeVox from OOBE, start the tutorial.
             // Use a timeout to allow ChromeVox to initialize first.
             if (sessionState ===
                 chrome.loginState.SessionState.IN_OOBE_SCREEN) {
-              setTimeout(() => {
-                (new PanelCommand(PanelCommandType.TUTORIAL)).send();
-              }, 1000);
+              chrome.chromeosInfoPrivate.isTabletModeEnabled((enabled) => {
+                // Only start the tutorial if we are not in tablet mode. This
+                // is a temporary workaround until we implement a touch-specific
+                // tutorial.
+                if (!enabled) {
+                  setTimeout(() => {
+                    (new PanelCommand(PanelCommandType.TUTORIAL)).send();
+                  }, 1000);
+                }
+              });
             }
           });
         });

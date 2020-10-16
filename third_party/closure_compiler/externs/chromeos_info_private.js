@@ -136,3 +136,10 @@ chrome.chromeosInfoPrivate.get = function(propertyNames, callback) {};
  * @param {*} propertyValue Chrome OS system property value
  */
 chrome.chromeosInfoPrivate.set = function(propertyName, propertyValue) {};
+
+/**
+ * Called to request tablet mode enabled status from the Chrome OS system.
+ * @param {function(boolean): void} callback Returns tablet mode enabled status
+ *     as a boolean.
+ */
+chrome.chromeosInfoPrivate.isTabletModeEnabled = function(callback) {};

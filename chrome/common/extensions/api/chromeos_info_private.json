@@ -149,6 +149,24 @@
             "description": "Chrome OS system property value"
           }
         ]
+      },
+      {
+        "name": "isTabletModeEnabled",
+        "type": "function",
+        "description": "Called to request tablet mode enabled status from the Chrome OS system.",
+        "parameters": [
+          {
+            "name": "callback",
+            "type": "function",
+            "description": "Returns tablet mode enabled status as a boolean.",
+            "parameters": [
+              {
+                "name": "tabletModeEnabled",
+                "type": "boolean"
+              }
+            ]
+          }
+        ]
       }
     ]
   }
