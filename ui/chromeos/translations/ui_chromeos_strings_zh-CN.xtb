@@ -60,6 +60,7 @@
 <translation id="1538729222189715449">正在打开 Linux 文件…</translation>
 <translation id="1547964879613821194">加拿大英语</translation>
 <translation id="1556189134700913550">全部应用</translation>
+<translation id="1561842594491319104">Chrome 设备</translation>
 <translation id="1572585716423026576">设为壁纸</translation>
 <translation id="158809615184981282">法罗语键盘</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
@@ -189,6 +190,7 @@
 <translation id="3064388234319122767">音译(zdravo → здраво)</translation>
 <translation id="3067790092342515856">Windows 文件</translation>
 <translation id="3078461028045006476">使用“<ph name="EXTENSION_NAME" />”分享</translation>
+<translation id="3083975830683400843">Chromebit</translation>
 <translation id="3116361045094675131">英语（英国）键盘</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">完成</translation>
@@ -341,6 +343,7 @@
 <translation id="4804827417948292437">牛油果</translation>
 <translation id="4823651846660089135">设备目前处于只读模式</translation>
 <translation id="4839847978919684242">已经选择 <ph name="SELCTED_FILES_COUNT" /> 个文件或目录</translation>
+<translation id="4843566743023903107">Chromebase</translation>
 <translation id="4849981557599196363">德语（比利时）</translation>
 <translation id="4850886885716139402">视图</translation>
 <translation id="485316830061041779">德语</translation>
@@ -465,6 +468,7 @@
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5949281959820712067">授权 Linux 应用修改您 Google 云端硬盘中的文件。相关更改会同步到您的其他设备。</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> 项内容</translation>
+<translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">排序选项</translation>
 <translation id="6005282720244019462">拉丁美洲文键盘</translation>
 <translation id="6007237601604674381">移动失败。<ph name="ERROR_MESSAGE" /></translation>
@@ -624,6 +628,7 @@
     <ph name="MARKUP_4" />删除“下载内容”文件夹中的文件<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">格式化设备</translation>
 <translation id="7799329977874311193">HTML 文档</translation>
+<translation id="7801354353640549019">Chromebook</translation>
 <translation id="7805768142964895445">状态</translation>
 <translation id="7821462174190887129">找到了 <ph name="FILE_COUNT" />。
     <ph name="LINE_BREAK1" />

@@ -207,6 +207,7 @@
 <translation id="3252266817569339921">Francúzština</translation>
 <translation id="3254434849914415189">Zvoľte pre súbory <ph name="FILE_TYPE" /> predvolenú aplikáciu:</translation>
 <translation id="3264582393905923483">Kontext</translation>
+<translation id="3272909651715601089"><ph name="PATH" /> sa nepodarilo otvoriť</translation>
 <translation id="3280431534455935878">Prebieha príprava</translation>
 <translation id="3280987981688031357">Vinylová platňa</translation>
 <translation id="3296763833017966289">Gruzínčina</translation>
@@ -309,6 +310,7 @@
 <translation id="4477219268485577442">Bulharská fonetická klávesnica</translation>
 <translation id="4479812471636796472">americká klávesnica s rozložením klávesov Dvorak</translation>
 <translation id="4522570452068850558">Podrobnosti</translation>
+<translation id="4527800702232535228">Tento priečinok je zdieľaný aplikáciou Parallels Desktop</translation>
 <translation id="4552678318981539154">Kúpiť väčší ukladací priestor</translation>
 <translation id="4559767610552730302">Rozostrenie</translation>
 <translation id="4572815280350369984">Súbor <ph name="FILE_TYPE" /></translation>
@@ -326,6 +328,7 @@
 <translation id="4694604912444486114">Opica</translation>
 <translation id="4697043402264950621">Zoznam súborov je usporiadaný podľa stĺpca <ph name="COLUMN_NAME" /> vo vzostupnom poradí.</translation>
 <translation id="4711094779914110278">Turečtina</translation>
+<translation id="4712283082407695269">Otvára sa <ph name="PATH" /></translation>
 <translation id="4713544552769165154">Tento súbor je určený pre počítač so softvérom Macintosh. Nie je kompatibilný s vaším zariadením používajúcim OS Chrome. Vyhľadajte vhodnú náhradnú aplikáciu v <ph name="BEGIN_LINK" />Internetovom obchode Chrome<ph name="END_LINK" />.<ph name="BEGIN_LINK_HELP" />Ďalšie informácie<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">Počet zálohovaných fotiek: <ph name="FILE_COUNT" /></translation>
 <translation id="4725511304875193254">Corgi</translation>
@@ -525,6 +528,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6558280019477628686">Vyskytla sa chyba. Niektoré položky sa nemuseli odstrániť.</translation>
 <translation id="656398493051028875">Prebieha odstraňovanie súboru <ph name="FILENAME" />...</translation>
 <translation id="6581162200855843583">Odkaz na službu Disk Google</translation>
+<translation id="6594855146910089723">Tento priečinok je zdieľaný systémom Linux a aplikáciou Parallels Desktop</translation>
 <translation id="6607272825297743757">Informácie o súbore</translation>
 <translation id="6609332149380188670">Aplikáciou Parallels Desktop zdieľate tento počet priečinkov: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="6629841649550503054">Všetko bolo zálohované na <ph name="BEGIN_LINK" />Disk Google<ph name="END_LINK" /></translation>

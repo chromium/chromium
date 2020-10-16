@@ -224,7 +224,6 @@
 <translation id="1244303850296295656">拡張機能のエラー</translation>
 <translation id="1246158006305844142">Google アカウントでログインしているすべての Chrome OS デバイス間でアプリや設定が同期されます。ブラウザの同期オプションについては、<ph name="LINK_BEGIN" />Chrome の設定<ph name="LINK_END" />をご覧ください。</translation>
 <translation id="1246905108078336582">クリップボードから候補を削除してもよろしいですか？</translation>
-<translation id="1249643471736608405"><ph name="PLUGIN_NAME" /> はバージョンが古いためブロックされました</translation>
 <translation id="1251366534849411931">開始の中かっこがありません: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">サイトにより保存された <ph name="TOTAL_USAGE" /> のデータとインストールされたアプリが削除されます</translation>
 <translation id="125220115284141797">デフォルト</translation>
@@ -279,7 +278,6 @@
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">ホーム ネットワーク、ローミングなし</translation>
 <translation id="1315056510003830387">Flash の使用を許可しないサイト</translation>
-<translation id="1315144594965013365">両方のデバイスでロックが解除されていること、お互いが近くにあること、Bluetooth が有効になっていることを確認してください。Chromebook でファイルを共有する場合は、Chromebook でニアバイシェアが有効になっていることも確認してください（時刻を選択してステータス領域を開き、ニアバイシェアを選択します）。</translation>
 <translation id="1316136264406804862">検索しています...</translation>
 <translation id="1316495628809031177">同期は一時停止中です</translation>
 <translation id="1317637799698924700">ドッキング ステーションは USB Type-C 互換モードで動作します。</translation>
@@ -1037,7 +1035,6 @@
 <translation id="2178614541317717477">認証局が侵害された</translation>
 <translation id="2182058453334755893">クリップボードにコピーされました</translation>
 <translation id="2184515124301515068">サイトで音声が再生される可能性がある場合、Chrome で自動的に許可またはブロックする（推奨）</translation>
-<translation id="2187243482123994665">ユーザーのアクティブ状態</translation>
 <translation id="2187675480456493911">アカウントの他のデバイスと同期しています。他のユーザーが変更した設定は同期されません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">サーバー証明書インポート エラー</translation>
 <translation id="2187906491731510095">拡張機能が更新されました</translation>
@@ -2705,7 +2702,6 @@
 <translation id="4104163789986725820">エクスポート(&amp;X)</translation>
 <translation id="4107048419833779140">ストレージ デバイスの認識と取り外し</translation>
 <translation id="4109135793348361820"><ph name="USER_NAME" />（<ph name="USER_EMAIL" />）にウィンドウを移動</translation>
-<translation id="411031910327788420">字幕のサイズとスタイルをカスタマイズして、この設定をサポートしているアプリに適用します</translation>
 <translation id="4110490973560452005">ダウンロードが完了しました（<ph name="FILE_NAME" />）。ダウンロード バーの領域に切り替えるには Shift+F6 キーを押してください。</translation>
 <translation id="4110686435123617899">アルバム「<ph name="TITLE" />」の <ph name="DESC" />を選択</translation>
 <translation id="4110895898888439383">ハイ コントラスト モードでウェブをブラウジングする</translation>
@@ -2918,7 +2914,6 @@
 <translation id="4400632832271803360">キーボードの最上段にあるキーの動作を切り替えるには、ランチャー キーを押したままにします</translation>
 <translation id="4400963414856942668">スターアイコンをクリックしてタブをブックマークに追加できます</translation>
 <translation id="4403775189117163360">別のフォルダを選択</translation>
-<translation id="440391631796167175">脆弱なパスワードは検出されませんでした</translation>
 <translation id="4404136731284211429">再スキャン</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> は保護者によってブロックされています。このアプリを使用するには、保護者の許可が必要です。</translation>
 <translation id="4405117686468554883">*.jpeg、*.jpg、*.png</translation>
@@ -4459,8 +4454,6 @@
 <translation id="6242852299490624841">このタブをフォーカス</translation>
 <translation id="6243280677745499710">現在設定されている壁紙</translation>
 <translation id="6243774244933267674">サーバーを使用できません</translation>
-<translation id="6244185221716469155">脆弱なパスワードは簡単に推測されてしまいます。安全なパスワードを作成してください。
-    <ph name="BEGIN_LINK" />セキュリティに関する他のヒントを見る<ph name="END_LINK" /></translation>
 <translation id="6244245036423700521">ONC ファイルのインポート</translation>
 <translation id="6246790815526961700">デバイスからアップロード</translation>
 <translation id="6247620186971210352">アプリが見つかりません</translation>
@@ -6208,6 +6201,7 @@
 <translation id="8281886186245836920">スキップ</translation>
 <translation id="8283475148136688298">「<ph name="DEVICE_NAME" />」への接続中に、認証コードが拒否されました。</translation>
 <translation id="8284279544186306258"><ph name="WEBSITE_1" /> の全サイト</translation>
+<translation id="8284326494547611709">字幕</translation>
 <translation id="8286036467436129157">ログイン</translation>
 <translation id="8286963743045814739">シークレット ウィンドウを使って、シークレット モードで閲覧できます</translation>
 <translation id="8287902281644548111">API 呼び出しまたは URL で検索</translation>

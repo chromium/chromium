@@ -224,7 +224,6 @@
 <translation id="1244303850296295656">Erro de extensión</translation>
 <translation id="1246158006305844142">As túas aplicacións e opcións de configuración sincronizaranse en todos os dispositivos Chrome OS nos que teñas a sesión iniciada na túa Conta de Google. Para ver as opción de sincronización do navegador, accede á <ph name="LINK_BEGIN" />configuración de Chrome<ph name="LINK_END" />.</translation>
 <translation id="1246905108078336582">Queres quitar a suxestión do portapapeis?</translation>
-<translation id="1249643471736608405">O complemento <ph name="PLUGIN_NAME" /> bloqueouse porque quedou obsoleto</translation>
 <translation id="1251366534849411931">Falta unha chave de apertura: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Ao realizar esta acción, borraranse <ph name="TOTAL_USAGE" /> dos datos que almacenasen os sitios e as aplicacións instaladas</translation>
 <translation id="125220115284141797">Predeterminadas</translation>
@@ -279,7 +278,6 @@
 <translation id="1314565355471455267">VPN de Android</translation>
 <translation id="131461803491198646">Rede doméstica, sen itinerancia</translation>
 <translation id="1315056510003830387">Sitios que non poden usar Flash</translation>
-<translation id="1315144594965013365">Asegúrate de que os dous dispositivos estean desbloqueados, preto o un do outro e co Bluetooth activado. Se vas compartir contido cun Chromebook, asegúrate de que teña activada a función Compartir por Nearby (abre a área de estado seleccionando a hora e, a continuación, selecciona Compartir por Nearby).</translation>
 <translation id="1316136264406804862">Buscando...</translation>
 <translation id="1316495628809031177">A sincronización púxose en pausa</translation>
 <translation id="1317637799698924700">A túa base funcionará no modo de compatibilidade con USB tipo C.</translation>
@@ -1036,7 +1034,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2178614541317717477">Compromiso de entidade emisora de certificados</translation>
 <translation id="2182058453334755893">Copiouse o contido no teu portapapeis</translation>
 <translation id="2184515124301515068">Permite que Chrome decida cando poden reproducir son os sitios (opción recomendada)</translation>
-<translation id="2187243482123994665">Estado de actividade do usuario</translation>
 <translation id="2187675480456493911">A rede está sincronizada con outros dispositivos da túa conta. Non se sincronizarán as opcións de configuración modificadas por outros usuarios. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Erro de importación do certificado do servidor</translation>
 <translation id="2187906491731510095">Actualizáronse as extensións</translation>
@@ -2704,7 +2701,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="4104163789986725820">E&amp;xportar...</translation>
 <translation id="4107048419833779140">Identificar e expulsar dispositivos de almacenamento</translation>
 <translation id="4109135793348361820">Mover ventá a <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
-<translation id="411031910327788420">Personaliza o tamaño e o estilo dos subtítulos para as aplicacións compatibles con esta opción de configuración</translation>
 <translation id="4110490973560452005">Completouse a descarga: <ph name="FILE_NAME" />. Preme Maiús+F6 para acceder á área da barra de descargas.</translation>
 <translation id="4110686435123617899">Seleccionar álbum <ph name="TITLE" /> (<ph name="DESC" />)</translation>
 <translation id="4110895898888439383">Navega pola web no modo de contraste alto</translation>
@@ -2917,7 +2913,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="4400632832271803360">Mantén premida a tecla do menú de aplicacións para cambiar o comportamento das teclas da fila superior</translation>
 <translation id="4400963414856942668">Podes facer clic na estrela para engadir unha pestana aos marcadores</translation>
 <translation id="4403775189117163360">Escoller un cartafol diferente</translation>
-<translation id="440391631796167175">Non se atopou ningún contrasinal pouco seguro</translation>
 <translation id="4404136731284211429">Buscar de novo</translation>
 <translation id="4404843640767531781">O teu pai ou nai bloqueou <ph name="APP_NAME" />. Pídelle permiso para utilizar esta aplicación.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg e *.png</translation>
@@ -4458,8 +4453,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6242852299490624841">Enfocar esta pestana</translation>
 <translation id="6243280677745499710">Establecido actualmente</translation>
 <translation id="6243774244933267674">Servidor non dispoñible</translation>
-<translation id="6244185221716469155">Os contrasinais pouco seguros son fáciles de adiviñar. Asegúrate de crear contrasinais seguros.
-    <ph name="BEGIN_LINK" />Ver máis consellos de seguranza<ph name="END_LINK" />.</translation>
 <translation id="6244245036423700521">Importar ficheiro ONC</translation>
 <translation id="6246790815526961700">Cargar desde o dispositivo</translation>
 <translation id="6247620186971210352">Non se atoparon aplicacións</translation>
@@ -6206,6 +6199,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8281886186245836920">Omitir</translation>
 <translation id="8283475148136688298">Código de autenticación rexeitado durante a conexión con "<ph name="DEVICE_NAME" />".</translation>
 <translation id="8284279544186306258">todos os sitios de <ph name="WEBSITE_1" /></translation>
+<translation id="8284326494547611709">Subtítulos</translation>
 <translation id="8286036467436129157">Iniciar sesión</translation>
 <translation id="8286963743045814739">Podes navegar de forma privada usando unha ventá do modo de incógnito</translation>
 <translation id="8287902281644548111">Busca por URL ou chamada de API</translation>

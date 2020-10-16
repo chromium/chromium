@@ -179,7 +179,7 @@
 <translation id="6737557815519435616">Веб-переглядач Chromium не виявив відомого шкідливого програмного забезпечення на вашому комп'ютері. Востаннє перевірено щойно.</translation>
 <translation id="6762551859069255163">Різні профілі в Chromium дають змогу розділити веб-перегляд для робочих і особистих цілей або для різних користувачів цього пристрою</translation>
 <translation id="6774082503108938489">Хтось із твоїх батьків вимкнув "Дозволи для сайтів, додатків і розширень" у Chromium. Вмикати це <ph name="EXTENSION_TYPE_PARAMETER" /> заборонено.</translation>
-<translation id="6847869444787758381">Chromium повідомляє, коли ваші паролі зламують</translation>
+<translation id="6847869444787758381">Якщо ваші паролі колись викрадуть, Chromium повідомить вас про це</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (скопійовано в Chromium)</translation>
 <translation id="6893813176749746474">Chromium оновлено, проте ви не користувалися цим веб-переглядачем щонайменше 30 днів.</translation>

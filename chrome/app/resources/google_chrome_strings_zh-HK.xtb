@@ -19,7 +19,7 @@
 <translation id="1355000804395496115">在 Chrome 使用不同的設定檔，以便將工作和個人瀏覽區分開，或讓不同的使用者共用此裝置</translation>
 <translation id="137466361146087520">Google Chrome 測試版</translation>
 <translation id="1399397803214730675">這部電腦已安裝較新的 Google Chrome 版本，如果軟件無法工作，請解除安裝 Google Chrome，然後再試一次。</translation>
-<translation id="140541193409212341">Chrome 對電腦進行有害軟件檢查時發生錯誤</translation>
+<translation id="140541193409212341">Chrome 為電腦檢查有害軟件時發生錯誤</translation>
 <translation id="1434626383986940139">Chrome Canary 應用程式</translation>
 <translation id="1513277449617685876">如要將個人瀏覽與 <ph name="NEW_USER" /> 的瀏覽區分開，請在 Chrome 中建立新的設定檔</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
@@ -276,7 +276,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8834965163890861871">Google Chrome 正在嘗試編輯密碼。如果您同意，請輸入 Windows 密碼。</translation>
 <translation id="884296878221830158">這個擴充功能也會管制 Chrome 啟動時或您按一下 [主頁] 按鈕時所顯示的網頁。</translation>
 <translation id="8862326446509486874">您沒有在系統層級進行安裝的權限，請以管理員的身分執行安裝程式。</translation>
-<translation id="8907906903932240086">Chrome 可對電腦進行有害軟件檢查</translation>
+<translation id="8907906903932240086">Chrome 可為電腦檢查有害軟件</translation>
 <translation id="8914504000324227558">重新啟動 Chrome</translation>
 <translation id="8922193594870374009">如要將號碼從 <ph name="ORIGIN" /> 傳送至 Android 手機，請在這兩部裝置上登入 Chrome。</translation>
 <translation id="8999208279178790196">{0,plural, =0{有可用的 Chrome 更新}=1{有可用的 Chrome 更新}other{Chrome 更新已發佈 # 天}}</translation>

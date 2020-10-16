@@ -315,6 +315,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4072264167173457037">Señal media</translation>
 <translation id="4112140312785995938">Buscar más atrás</translation>
 <translation id="4114315158543974537">Activa Phone Hub</translation>
+<translation id="4121728057981832179">Una máquina virtual está usando el micrófono</translation>
 <translation id="4129129681837227511">Para ver notificaciones en la pantalla bloqueada, desbloquéala para cambiar la configuración</translation>
 <translation id="4146833061457621061">Reproducir música</translation>
 <translation id="4149156641122542261">Dispositivo <ph name="DEVICE_TYPE" /> administrado por <ph name="DOMAIN" /></translation>
@@ -329,6 +330,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4217571870635786043">Dictado</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4261870227682513959">Mostrar la configuración de las notificaciones: Están desactivadas</translation>
+<translation id="4267383818855338811">Una máquina virtual está usando la cámara</translation>
 <translation id="4269883910223712419">El administrador de este dispositivo puede hacer lo siguiente:</translation>
 <translation id="4279490309300973883">Duplicando</translation>
 <translation id="4285498937028063278">No fijar</translation>
@@ -364,6 +366,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4513946894732546136">Comentario</translation>
 <translation id="4527045527269911712">El dispositivo Bluetooth "<ph name="DEVICE_NAME" />" solicita permiso para sincronizarse.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> para completar carga</translation>
+<translation id="4544483149666270818">Selecciona una ventana que quieras grabar</translation>
 <translation id="4560576029703263363">Sí</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Ocultar contraseña</translation>
@@ -403,6 +406,15 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4918086044614829423">Aceptar</translation>
 <translation id="4924411785043111640">Reiniciar y restablecer</translation>
 <translation id="4925542575807923399">El administrador de esta cuenta requiere que sea la primera a la que se acceda al crear una sesión de acceso múltiple.</translation>
+<translation id="4942878304446937978">Bandeja de estado, hora <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
+<translation id="4946376291507881335">Captura</translation>
 <translation id="495046168593986294">Desplazar hacia arriba</translation>
 <translation id="4961318399572185831">Transmitir pantalla</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
@@ -448,6 +460,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="554893713779400387">Activar o desactivar el dictado</translation>
 <translation id="556042886152191864">Botón</translation>
 <translation id="5571066253365925590">Bluetooth activado</translation>
+<translation id="558849140439112033">Arrastra el cursor para seleccionar un área que quieras capturar</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Presiona Ctrl + Alt + Z para inhabilitar los comentarios por voz.</translation>
 <translation id="5625955975703555628">LTE+</translation>
@@ -475,9 +488,11 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5860033963881614850">Desactivado</translation>
 <translation id="5876666360658629066">Ingresa el código parental</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
+<translation id="589817443623831496">Búsqueda puntual</translation>
 <translation id="5901316534475909376">Mayúscula + Esc</translation>
 <translation id="5909862606227538307">Escritorio inactivo.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5915278665499293471">Haz clic en cualquier parte para capturar la pantalla completa</translation>
 <translation id="5916664084637901428">Activado</translation>
 <translation id="5920710855273935292">El micrófono está silenciado.</translation>
 <translation id="594179686076170922">Conectando con tu teléfono…</translation>
@@ -535,6 +550,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (puerto derecho)</translation>
 <translation id="649452524636452238">PIN de la tarjeta inteligente</translation>
 <translation id="6501401484702599040">Transmitiendo pantalla a <ph name="RECEIVER_NAME" /></translation>
+<translation id="6520517963145875092">Selecciona una ventana que quieras capturar</translation>
 <translation id="652139407789908527">Durante esta actualización, se apagará la pantalla por más tiempo que lo usual (hasta un minuto). Mientras se realiza la actualización, no presiones el botón de encendido.</translation>
 <translation id="6528179044667508675">No interrumpir</translation>
 <translation id="65320610082834431">Emojis</translation>
@@ -563,6 +579,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6751052314767925245">El administrador controla la función</translation>
 <translation id="6751826523481687655">Se activó el registro del rendimiento</translation>
 <translation id="6752912906630585008">Se quitó el escritorio <ph name="REMOVED_DESK" /> y se combinó con el <ph name="RECEIVE_DESK" /></translation>
+<translation id="6757237461819837179">No se está reproduciendo nada</translation>
 <translation id="6777216307882431711">Se están cargando los dispositivos USB-C conectados</translation>
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="6803622936009808957">No se pudieron reflejar las pantallas porque no se encontraron resoluciones compatibles. En su lugar, se activó el escritorio extendido.</translation>
@@ -611,6 +628,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="7348093485538360975">Teclado en pantalla</translation>
 <translation id="735745346212279324">VPN desconectada</translation>
 <translation id="7377169924702866686">Bloq Mayús está activado.</translation>
+<translation id="7378203170292176219">Arrastra para seleccionar un área que quieras grabar</translation>
 <translation id="7378594059915113390">Controles de contenido multimedia</translation>
 <translation id="7398254312354928459">Se cambió la conexión de red</translation>
 <translation id="7405710164030118432">Para desbloquear el dispositivo, ingresa el código de acceso para padres de Family Link</translation>
@@ -637,6 +655,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="7618774594543487847">Neutro</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7633755430369750696">Mostrar la configuración de Compartir con Nearby</translation>
+<translation id="7641938616688887143">Graba</translation>
 <translation id="7642647758716480637">Abrir la configuración para <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (propietario/a)</translation>
 <translation id="7647488630410863958">Desbloquea el dispositivo para ver tus notificaciones</translation>
@@ -733,6 +752,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="8563862697512465947">Configuración de notificación</translation>
 <translation id="857201607579416096">El menú se movió a la esquina inferior derecha de la pantalla.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
+<translation id="861041328460089089">Presiona en cualquier parte para capturar la pantalla completa</translation>
 <translation id="8627191004499078455">Conectado a <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Configuración de accesibilidad</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, administrada por tu administrador</translation>

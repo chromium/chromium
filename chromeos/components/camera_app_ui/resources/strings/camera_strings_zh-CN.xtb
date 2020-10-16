@@ -3,6 +3,7 @@
 <translationbundle lang="zh-CN">
 <translation id="1276998909102132017">图库图片</translation>
 <translation id="1430915738399379752">打印</translation>
+<translation id="1473110567575736769">3 秒计时器</translation>
 <translation id="1620510694547887537">摄像头</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">未记录任何数据</translation>
@@ -30,6 +31,7 @@
 <translation id="3517926952904427380">无法拍摄纵向照片</translation>
 <translation id="3569311554794739032">确定要移除“<ph name="FILE" />”吗？</translation>
 <translation id="3810838688059735925">视频</translation>
+<translation id="4000398125663085899">现在，新照片和视频会保存到“文件”应用中的文件夹：“我的文件”&gt;“相机”</translation>
 <translation id="4118525110028899586">暂停录制</translation>
 <translation id="4279490309300973883">正在镜像</translation>
 <translation id="4329152592498422850">切换到正方形照片拍摄模式</translation>
@@ -62,6 +64,7 @@
 <translation id="6965382102122355670">确定</translation>
 <translation id="698156982839284926">3 秒</translation>
 <translation id="712848772518857951">确定要移除这 <ph name="COUNT" /> 个文件吗？</translation>
+<translation id="7134221860976209830">10 秒计时器</translation>
 <translation id="7243947652761655814">视频分辨率</translation>
 <translation id="7337660886763914220">文件系统出错。</translation>
 <translation id="7557677699350329807">切换到下一个摄像头</translation>

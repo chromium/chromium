@@ -207,6 +207,7 @@
 <translation id="3252266817569339921">Fransk</translation>
 <translation id="3254434849914415189">Vælg standardappen for <ph name="FILE_TYPE" />-filer:</translation>
 <translation id="3264582393905923483">Kontekst</translation>
+<translation id="3272909651715601089">"<ph name="PATH" />" kunne ikke åbnes</translation>
 <translation id="3280431534455935878">Forbereder</translation>
 <translation id="3280987981688031357">Vinylplade</translation>
 <translation id="3296763833017966289">Georgisk</translation>
@@ -309,6 +310,7 @@
 <translation id="4477219268485577442">Bulgarsk (fonetisk)</translation>
 <translation id="4479812471636796472">Amerikansk (Dvorak) tastatur</translation>
 <translation id="4522570452068850558">Detaljer</translation>
+<translation id="4527800702232535228">Denne mappe er delt med Parallels Desktop</translation>
 <translation id="4552678318981539154">Køb mere lagerplads</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" />-fil</translation>
@@ -326,6 +328,7 @@
 <translation id="4694604912444486114">Abe</translation>
 <translation id="4697043402264950621">Listen med filer er sorteret efter <ph name="COLUMN_NAME" /> i stigende rækkefølge.</translation>
 <translation id="4711094779914110278">Tyrkisk</translation>
+<translation id="4712283082407695269">Åbner "<ph name="PATH" />"</translation>
 <translation id="4713544552769165154">Denne fil er designet til en computer, der bruger Macintosh-software. Den er ikke kompatibel med din enhed, som kører Chrome OS. Find en tilsvarende app i <ph name="BEGIN_LINK" />Chrome Webshop<ph name="END_LINK" /> i stedet.<ph name="BEGIN_LINK_HELP" />Få flere oplysninger<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> billeder blev sikkerhedskopieret</translation>
 <translation id="4725511304875193254">Corgi</translation>
@@ -525,6 +528,7 @@
 <translation id="6558280019477628686">Der opstod en fejl. Nogle elementer blev muligvis ikke slettet.</translation>
 <translation id="656398493051028875">Slettter "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Link til Google Drev</translation>
+<translation id="6594855146910089723">Denne mappe er delt med Linux og Parallels Desktop</translation>
 <translation id="6607272825297743757">Filoplysninger</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> mapper blev delt med Parallels Desktop</translation>
 <translation id="6629841649550503054">Alt er sikkerhedskopieret til <ph name="BEGIN_LINK" />Google Drev<ph name="END_LINK" />.</translation>

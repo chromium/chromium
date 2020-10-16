@@ -224,7 +224,6 @@
 <translation id="1244303850296295656">Памылка пашырэння</translation>
 <translation id="1246158006305844142">Праграмы і налады будуць сінхранізавацца на ўсіх прыладах Chrome OS, з якіх вы ўвайшлі ва Уліковы запіс Google. Параметры сінхранізацыі браўзера можна выбраць у <ph name="LINK_BEGIN" />наладах Chrome<ph name="LINK_END" />.</translation>
 <translation id="1246905108078336582">Выдаліць прапанову з буфера абмену?</translation>
-<translation id="1249643471736608405">Убудова "<ph name="PLUGIN_NAME" />" заблакіравана, бо яна састарэлая</translation>
 <translation id="1251366534849411931">Чакалася пачатковая фігурная дужка: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Будуць выдалены даныя (<ph name="TOTAL_USAGE" />), захаваныя сайтамі і ўсталяванымі імі праграмамі</translation>
 <translation id="125220115284141797">Стандартныя</translation>
@@ -279,7 +278,6 @@
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Хатняя сетка, не ў роўмінгу</translation>
 <translation id="1315056510003830387">Не дазволена выкарыстоўваць Flash</translation>
-<translation id="1315144594965013365">Упэўніцеся, што абедзве прылады разблакіраваны, знаходзяцца адна пры адной і на іх уключаны Bluetooth. Пры абагульванні з дапамогай Chromebook упэўніцеся, што ўключана функцыя "Абагульванне паблізу" (адкрыйце панэль стану, націснуўшы на гадзіннік, і выберыце "Абагульванне паблізу").</translation>
 <translation id="1316136264406804862">Ідзе пошук...</translation>
 <translation id="1316495628809031177">Сінхранізацыя прыпынена</translation>
 <translation id="1317637799698924700">Док-станцыя будзе працаваць у рэжыме, сумяшчальным з USB Type-C.</translation>
@@ -1037,7 +1035,6 @@
 <translation id="2178614541317717477">Кампраметацыя ЦС</translation>
 <translation id="2182058453334755893">Скапіравана ў буфер абмену</translation>
 <translation id="2184515124301515068">Дазволіць браўзеру Chrome вызначаць, калі сайты могуць прайграваць гук (рэкамендуецца)</translation>
-<translation id="2187243482123994665">Прысутнасць карыстальніка</translation>
 <translation id="2187675480456493911">Сінхранізавана з іншымі прыладамі ў вашым уліковым запісе. Налады, змененыя іншымі карыстальнікамі, не будуць сінхранізавацца. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Памылка імпарту сертыфіката сервера</translation>
 <translation id="2187906491731510095">Пашырэнні абноўлены</translation>
@@ -2705,7 +2702,6 @@
 <translation id="4104163789986725820">Ідзе э&amp;кспарт...</translation>
 <translation id="4107048419833779140">Вызначыць і выдаліць прылады сховішча</translation>
 <translation id="4109135793348361820">Перамясціць акно карыстальніку <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
-<translation id="411031910327788420">Наладжванне памеру і стылю субцітраў для праграм, якія падтрымліваюць гэту наладу</translation>
 <translation id="4110490973560452005">Спампоўванне завершана: "<ph name="FILE_NAME" />". Каб перамяшчацца па панэлі спамповак, націскайце Shift+F6.</translation>
 <translation id="4110686435123617899">Выберыце альбом "<ph name="TITLE" />" (<ph name="DESC" />)</translation>
 <translation id="4110895898888439383">Прагляд вэб-сайтаў у рэжыме высокай кантраснасці</translation>
@@ -2918,7 +2914,6 @@
 <translation id="4400632832271803360">Утрымлівайце клавішу запуску, каб змяніць значэнні клавіш верхняга рада</translation>
 <translation id="4400963414856942668">Каб дадаць укладку ў закладкі, націсніце на зорку</translation>
 <translation id="4403775189117163360">Выбраць іншую папку</translation>
-<translation id="440391631796167175">Ненадзейныя паролі не знойдзены</translation>
 <translation id="4404136731284211429">Паўтарыць праверку</translation>
 <translation id="4404843640767531781">Бацькі заблакіравалі праграму "<ph name="APP_NAME" />" – запытайце ў іх дазвол на яе выкарыстанне.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -4459,8 +4454,6 @@
 <translation id="6242852299490624841">Перайсці на гэту ўкладку</translation>
 <translation id="6243280677745499710">Цяпер зададзеныя</translation>
 <translation id="6243774244933267674">Сервер недаступны</translation>
-<translation id="6244185221716469155">Ненадзейныя паролі лёгка адгадаць. Выкарыстоўвайце толькі надзейныя паролі.
-    <ph name="BEGIN_LINK" />Праглядзець іншыя парады па бяспецы.<ph name="END_LINK" /></translation>
 <translation id="6244245036423700521">Імпартаваць файл ONC</translation>
 <translation id="6246790815526961700">Запампаваць з прылады</translation>
 <translation id="6247620186971210352">Праграмы не знойдзены</translation>
@@ -6207,6 +6200,7 @@
 <translation id="8281886186245836920">Прапусціць</translation>
 <translation id="8283475148136688298">Пры падключэнні да прылады "<ph name="DEVICE_NAME" />" код аўтэнтыфікацыі быў адхілены.</translation>
 <translation id="8284279544186306258">усе сайты <ph name="WEBSITE_1" /></translation>
+<translation id="8284326494547611709">Субцітры</translation>
 <translation id="8286036467436129157">Увайсці</translation>
 <translation id="8286963743045814739">Прыватны прагляд вэб-старонак магчымы ў акне ў рэжыме інкогніта</translation>
 <translation id="8287902281644548111">Пошук па URL-адрасе або выкліку API</translation>

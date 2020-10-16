@@ -225,7 +225,6 @@
 <translation id="1244303850296295656">Ընդլայնման սխալ</translation>
 <translation id="1246158006305844142">Ձեր հավելվածներն ու կարգավորումները կհամաժամացվեն բոլոր Chrome OS սարքերում, որոնցում մտած եք ձեր Google հաշիվ։ Դիտարկիչներում համաժամացման տարբերակներին ծանոթանալու համար անցեք <ph name="LINK_BEGIN" />Chrome-ի կարգավորումներ<ph name="LINK_END" />։</translation>
 <translation id="1246905108078336582">Հեռացնե՞լ առաջարկը սեղմատախտակից:</translation>
-<translation id="1249643471736608405"><ph name="PLUGIN_NAME" />-ն արգելափակվել է, քանի որ այն հնացած է</translation>
 <translation id="1251366534849411931">Պակասում է բացող ձևավոր փակագիծ՝ <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Կայքերի և տեղադրված հավելվածների կողմից պահված <ph name="TOTAL_USAGE" /> ծավալով տվյալները կջնջվեն։</translation>
 <translation id="125220115284141797">Կանխադրված</translation>
@@ -280,7 +279,6 @@
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Տնային ցանց, առանց ռոումինգի</translation>
 <translation id="1315056510003830387">Չի թույլատրվում օգտագործել Flash բովանդակություն</translation>
-<translation id="1315144594965013365">Համոզվեք, որ երկու սարքերն ապակողպված են, միմյանց մոտ են, և սարքերում միացված է Bluetooth-ը։ Եթե դուք կիսվում եք ֆայլերով Chromebook սարքի հետ, համոզվեք, որ այնտեղ միացված է «Փոխանակում մոտակա սարքերի հետ» գործառույթը (բացեք վիճակի տարածքը՝ սեղմելով ժամացույցի վրա, ապա ընտրեք «Փոխանակում մոտակա սարքերի հետ»)։</translation>
 <translation id="1316136264406804862">Որոնում...</translation>
 <translation id="1316495628809031177">Համաժամացումն ընդհատված է</translation>
 <translation id="1317637799698924700">Ձեր դոկ-կայանը կաշխատի USB Type-C-ի հետ համատեղելի ռեժիմում:</translation>
@@ -1038,7 +1036,6 @@
 <translation id="2178614541317717477">Բացահայտված հավաստագրման կենտրոն</translation>
 <translation id="2182058453334755893">Պատճենվեց սեղմատախտակին</translation>
 <translation id="2184515124301515068">Թույլ տալ Chrome-ին ընտրել՝ որ կայքերում ձայն նվագարկվի (խորհուրդ է տրվում)</translation>
-<translation id="2187243482123994665">Օգտատիրոջ ներկայություն</translation>
 <translation id="2187675480456493911">Համաժամացված է ձեր հաշվին կցված այլ սարքերի հետ։ Այլ օգտատերերի կողմից փոփոխված կարգավորումները չեն համաժամացվի։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Սերվերի վկայագրի ներմուծման սխալ</translation>
 <translation id="2187906491731510095">Ընդլայնումները թարմացվել են</translation>
@@ -2706,7 +2703,6 @@
 <translation id="4104163789986725820">Ար&amp;տահանել…</translation>
 <translation id="4107048419833779140">Գտնել և անջատել հիշասարքերը</translation>
 <translation id="4109135793348361820">Տեղափոխել պատուհանը <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
-<translation id="411031910327788420">Անհատականացրեք ենթագրերի չափսը և ոճը այն հավելվածների համար, որոնք աջակցում են այս գործառույթը</translation>
 <translation id="4110490973560452005">Ներբեռնումն ավարտվեց. <ph name="FILE_NAME" />: Սեղմեք Shift+F6՝ ներբեռնումների գոտու տարածք անցնելու համար:</translation>
 <translation id="4110686435123617899">Ընտրեք ալբոմը՝ «<ph name="TITLE" />» (<ph name="DESC" />)</translation>
 <translation id="4110895898888439383">Կայքերի բարձր կոնտրաստի ռեժիմ</translation>
@@ -2919,7 +2915,6 @@
 <translation id="4400632832271803360">Վերևի շարքի ստեղները փոխարկելու համար սեղմած պահեք գործարկիչի ստեղնը</translation>
 <translation id="4400963414856942668">Ներդիրն էջանշելու համար սեղմեք աստղը</translation>
 <translation id="4403775189117163360">Ընտրեք մեկ այլ պանակ</translation>
-<translation id="440391631796167175">Թույլ գաղտնաբառեր չեն գտնվել</translation>
 <translation id="4404136731284211429">Նորից ստուգել</translation>
 <translation id="4404843640767531781">Ձեր ծնողն արգելափակել է <ph name="APP_NAME" /> հավելվածը։ Խնդրեք նրան տրամադրել ձեզ հավելվածի օգտագործման թույլտվություն։</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -4463,8 +4458,6 @@
 <translation id="6242852299490624841">Անցնել այս ներդիրին</translation>
 <translation id="6243280677745499710">Այժմ տեղադրված է</translation>
 <translation id="6243774244933267674">Սերվերը մատչելի չէ</translation>
-<translation id="6244185221716469155">Թույլ գաղտնաբառերը հեշտ է գուշակել։ Համոզվեք, որ հուսալի գաղտնաբառեր եք ստեղծում։
-    <ph name="BEGIN_LINK" />Դիտել հաշվի պաշտպանության այլ խորհուրդներ<ph name="END_LINK" /></translation>
 <translation id="6244245036423700521">Ներմուծել ONC ֆայլ</translation>
 <translation id="6246790815526961700">Վերբեռնել սարքից</translation>
 <translation id="6247620186971210352">Հավելվածներ չեն գտնվել</translation>
@@ -6210,6 +6203,7 @@
 <translation id="8281886186245836920">Բաց թողնել</translation>
 <translation id="8283475148136688298">«<ph name="DEVICE_NAME" />» սարքին կապակցվելիս իսկորոշման կոդը մերժվեց:</translation>
 <translation id="8284279544186306258">բոլոր <ph name="WEBSITE_1" /> կայքերը</translation>
+<translation id="8284326494547611709">Ենթագրեր</translation>
 <translation id="8286036467436129157">Մուտք գործել</translation>
 <translation id="8286963743045814739">Գաղտնի դիտարկման համար օգտագործեք ինկոգնիտո պատուհան:</translation>
 <translation id="8287902281644548111">Որոնեք ըստ URL-ի կամ API-ի հարցման</translation>

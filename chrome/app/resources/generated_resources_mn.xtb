@@ -224,7 +224,6 @@
 <translation id="1244303850296295656">Өргөтгөлийн алдаа</translation>
 <translation id="1246158006305844142">Таны Google бүртгэлээрээ нэвтэрсэн Chrome үйлдлийн системтэй бүх төхөөрөмж дээр таны аппууд болон тохиргоог синк хийнэ. Хөтчийг синк хийх сонголтыг харах бол<ph name="LINK_BEGIN" />Chrome-н тохиргоо<ph name="LINK_END" /> руу очно уу.</translation>
 <translation id="1246905108078336582">Түр санах ойгоос зөвлөмжийг устгах уу?</translation>
-<translation id="1249643471736608405"><ph name="PLUGIN_NAME" /> хуучирсан тул үүнийг хориглосон байна</translation>
 <translation id="1251366534849411931">Хээтэй хаалтыг нээхээр хүлээж байсан <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Энэ нь сайтууд болон суулгасан аппуудын хадгалсан <ph name="TOTAL_USAGE" />-н өгөгдлийг арилгана</translation>
 <translation id="125220115284141797">Өгөгдмөл</translation>
@@ -279,7 +278,6 @@
 <translation id="1314565355471455267">Андройд VPN</translation>
 <translation id="131461803491198646">Үндсэн сүлжээ, роуминг биш</translation>
 <translation id="1315056510003830387">Flash ашиглахыг зөвшөөрөөгүй</translation>
-<translation id="1315144594965013365">Хоёр төхөөрөмжийн түгжээг хоёуланг нь тайлсан эсэх, хоорондоо ойрхон эсэх, Bluetooth-г нь асаасан эсэхээ шалгана уу. Та Chromebook-тэй хуваалцаж байгаа бол Ойролцоо хуваалцах онцлог нь асаалттай байгаа эсэхийг шалгана уу (цаг сонгож төлөв байдал илэрхийлэгчийг нээгээд, Ойролцоо хуваалцах онцлогийг сонгоно уу).</translation>
 <translation id="1316136264406804862">Хайж байна...</translation>
 <translation id="1316495628809031177">Синк хийхийг түр зогсоосон</translation>
 <translation id="1317637799698924700">Таны холбогч станц USB C-Төрлийн тохирох горимд ажиллана.</translation>
@@ -1033,7 +1031,6 @@
 <translation id="2178614541317717477">CA Compromise</translation>
 <translation id="2182058453334755893">Түр санах ой руу хуулсан</translation>
 <translation id="2184515124301515068">Сайтуудад дуу тоглуулах боломжтой үеийг сонгох зөвшөөрлийг Chrome-д олгох (санал болгосон)</translation>
-<translation id="2187243482123994665">Хэрэглэгч байгаа эсэх</translation>
 <translation id="2187675480456493911">Таны бүртгэл дээрх бусад төхөөрөмжтэй синк хийдэг. Бусад хэрэглэгчийн өөрчилсөн тохиргоог синк хийхгүй. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Серверийн Гэрчилгээг Импортлох үеийн алдаа</translation>
 <translation id="2187906491731510095">Өргөтгөлийг шинэчилсэн</translation>
@@ -2699,7 +2696,6 @@
 <translation id="4104163789986725820">Экспортлох ...</translation>
 <translation id="4107048419833779140">Хадгалах төхөөрөмжийг таних, салгах</translation>
 <translation id="4109135793348361820">Цонхыг  <ph name="USER_NAME" /> ( <ph name="USER_EMAIL" /> ) руу зөөх</translation>
-<translation id="411031910327788420">Энэ тохиргоог дэмждэг аппуудад зориулж хадмалын хэмжээ болон загварыг тохируулах</translation>
 <translation id="4110490973560452005">Татаж дууссан: <ph name="FILE_NAME" />. Татаж авсан файл хадгалах эсвэл нээх хэсэгт гүйлгэхийн тулд Shift+F6-г дарна уу.</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> цомгийг <ph name="DESC" /> сонгох</translation>
 <translation id="4110895898888439383">Вебийг өндөр нягтшилтай горимд хөтлөх</translation>
@@ -2912,7 +2908,6 @@
 <translation id="4400632832271803360">Дээд мөрний түлхүүрийн функцийг сэлгэхийн тулд Эхлүүлэгч түлхүүрийг дарна уу</translation>
 <translation id="4400963414856942668">Энэ табыг тэмдэглэхийн тулд одыг товшино уу</translation>
 <translation id="4403775189117163360">Өөр фолдер сонгоно уу</translation>
-<translation id="440391631796167175">Сул нууц үг олдсонгүй</translation>
 <translation id="4404136731284211429">Дахин скан хийх</translation>
 <translation id="4404843640767531781">Таны эцэг эх <ph name="APP_NAME" />-г блоклосон байна. Энэ аппыг ашиглах зөвшөөрлийг эцэг эхээсээ хүснэ үү.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -4453,8 +4448,6 @@
 <translation id="6242852299490624841">Энэ табын фокусыг тохируулах</translation>
 <translation id="6243280677745499710">Одоогийн тохируулсан ханын зураг</translation>
 <translation id="6243774244933267674">Серверүүд боломжгүй байна</translation>
-<translation id="6244185221716469155">Сул нууц үгийг таахад хялбар байдаг. Сайн нууц үг үүсгэж байгаа эсэхээ шалгаарай.
-    <ph name="BEGIN_LINK" />Аюулгүй байдлын бусад зөвлөгөөг харна уу.<ph name="END_LINK" /></translation>
 <translation id="6244245036423700521">ONC файлыг импорт хийх</translation>
 <translation id="6246790815526961700">Төхөөрөмжөөс байршуулах</translation>
 <translation id="6247620186971210352">Апп олдсонгүй</translation>
@@ -6198,6 +6191,7 @@
 <translation id="8281886186245836920">Алгасах</translation>
 <translation id="8283475148136688298">"<ph name="DEVICE_NAME" />" руу холбогдож байх явцад таниулах кодыг буцаасан.</translation>
 <translation id="8284279544186306258">бүх <ph name="WEBSITE_1" /> сайтууд</translation>
+<translation id="8284326494547611709">Тайлбар</translation>
 <translation id="8286036467436129157">Нэвтрэх</translation>
 <translation id="8286963743045814739">Та нууцлалтай цонх ашиглан хувийн хайлт хийх боломжтой</translation>
 <translation id="8287902281644548111">API дуудлага/URL-р хайх</translation>

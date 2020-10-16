@@ -60,6 +60,7 @@
 <translation id="1538729222189715449">Abriendo archivos de Linux…</translation>
 <translation id="1547964879613821194">Inglés (Canadá)</translation>
 <translation id="1556189134700913550">Aplicar a todo</translation>
+<translation id="1561842594491319104">Dispositivos Chrome</translation>
 <translation id="1572585716423026576">Establecer como fondo de pantalla</translation>
 <translation id="158809615184981282">Teclado feroés</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
@@ -189,6 +190,7 @@
 <translation id="3064388234319122767">Transliteración (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Archivos de Windows</translation>
 <translation id="3078461028045006476">Compartir con <ph name="EXTENSION_NAME" /></translation>
+<translation id="3083975830683400843">Las Chromebits</translation>
 <translation id="3116361045094675131">Teclado en inglés del Reino Unido</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">LISTO</translation>
@@ -341,6 +343,7 @@
 <translation id="4804827417948292437">Aguacate</translation>
 <translation id="4823651846660089135">El dispositivo es de solo lectura</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> elementos seleccionados</translation>
+<translation id="4843566743023903107">Las Chromebases</translation>
 <translation id="4849981557599196363">Alemán (Bélgica)</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="485316830061041779">Alemán</translation>
@@ -470,6 +473,7 @@
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5949281959820712067">Permite que las apps de Linux modifiquen archivos en tu cuenta de Google Drive. Los cambios se sincronizarán con tus otros dispositivos.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elementos</translation>
+<translation id="5957366693331451795">Las Chromeboxes</translation>
 <translation id="5982621672636444458">Ordenar opciones</translation>
 <translation id="6005282720244019462">Teclado latinoamericano</translation>
 <translation id="6007237601604674381">Se produjo un error en al mover el archivo (<ph name="ERROR_MESSAGE" />).</translation>
@@ -629,6 +633,7 @@
     <ph name="MARKUP_4" />Elimina archivos de la carpeta de descargas.<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">Formato del dispositivo</translation>
 <translation id="7799329977874311193">Documento HTML</translation>
+<translation id="7801354353640549019">Las Chromebooks</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7821462174190887129">Se encontró un total de <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />

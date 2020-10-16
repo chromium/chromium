@@ -224,7 +224,6 @@
 <translation id="1244303850296295656">Extension error</translation>
 <translation id="1246158006305844142">Your apps and settings will sync across all Chrome OS devices where you are signed in with your Google Account. For browser sync options, go to<ph name="LINK_BEGIN" />Chrome settings<ph name="LINK_END" />.</translation>
 <translation id="1246905108078336582">Remove suggestion from clipboard?</translation>
-<translation id="1249643471736608405"><ph name="PLUGIN_NAME" /> was blocked because it is deprecated</translation>
 <translation id="1251366534849411931">Expected opening curly bracket: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">This will clear <ph name="TOTAL_USAGE" /> of data stored by sites and installed apps</translation>
 <translation id="125220115284141797">Default</translation>
@@ -279,7 +278,6 @@
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Home network, not roaming</translation>
 <translation id="1315056510003830387">Not allowed to use Flash</translation>
-<translation id="1315144594965013365">Make sure that both devices are unlocked, close together and have Bluetooth turned on. If you’re sharing with a Chromebook, make sure that it has Nearby Sharing turned on (open the status area by selecting the time, then select Nearby Share).</translation>
 <translation id="1316136264406804862">Searching...</translation>
 <translation id="1316495628809031177">Sync is paused</translation>
 <translation id="1317637799698924700">Your docking station will operate in USB Type-C compatible mode.</translation>
@@ -1038,7 +1036,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2178614541317717477">CA Compromise</translation>
 <translation id="2182058453334755893">Copied to your Clipboard</translation>
 <translation id="2184515124301515068">Let Chrome choose when sites can play sound (recommended)</translation>
-<translation id="2187243482123994665">User presence</translation>
 <translation id="2187675480456493911">Synced with other devices on your account. Settings modified by other users will not be synced. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Server Certificate Import Error</translation>
 <translation id="2187906491731510095">Extensions updated</translation>
@@ -2710,7 +2707,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4104163789986725820">E&amp;xport...</translation>
 <translation id="4107048419833779140">Identify and eject storage devices</translation>
 <translation id="4109135793348361820">Move window to <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
-<translation id="411031910327788420">Customise caption size and style for apps that support this setting</translation>
 <translation id="4110490973560452005">Download complete: <ph name="FILE_NAME" />. Press Shift+F6 to cycle to the downloads bar area.</translation>
 <translation id="4110686435123617899">Select album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4110895898888439383">Browse the web in high contrast mode</translation>
@@ -2923,7 +2919,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4400632832271803360">Hold the Launcher key to switch the behaviour of the top-row keys</translation>
 <translation id="4400963414856942668">You can click the star to bookmark a tab</translation>
 <translation id="4403775189117163360">Choose a different folder</translation>
-<translation id="440391631796167175">No weak passwords found</translation>
 <translation id="4404136731284211429">Scan again</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> is blocked by your parent. Ask your parent for permission to use this app.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -4467,8 +4462,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6242852299490624841">Focus this tab</translation>
 <translation id="6243280677745499710">Currently set</translation>
 <translation id="6243774244933267674">Server unavailable</translation>
-<translation id="6244185221716469155">Weak passwords are easy to guess. Make sure that you’re creating strong passwords.
-    <ph name="BEGIN_LINK" />See more security tips.<ph name="END_LINK" /></translation>
 <translation id="6244245036423700521">Import ONC file</translation>
 <translation id="6246790815526961700">Upload from device</translation>
 <translation id="6247620186971210352">No apps found.</translation>
@@ -6218,6 +6211,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8281886186245836920">Skip</translation>
 <translation id="8283475148136688298">Authentication code rejected while connecting to "<ph name="DEVICE_NAME" />".</translation>
 <translation id="8284279544186306258">all <ph name="WEBSITE_1" /> sites</translation>
+<translation id="8284326494547611709">Captions</translation>
 <translation id="8286036467436129157">Sign In</translation>
 <translation id="8286963743045814739">You can browse privately using an incognito window</translation>
 <translation id="8287902281644548111">Search by API call/URL</translation>

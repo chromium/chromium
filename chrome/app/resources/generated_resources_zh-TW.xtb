@@ -224,7 +224,6 @@
 <translation id="1244303850296295656">擴充功能錯誤</translation>
 <translation id="1246158006305844142">當你使用 Google 帳戶登入後，所有 Chrome 作業系統裝置上的應用程式和設定都會保持同步。如要查看瀏覽器同步處理選項，請前往 <ph name="LINK_BEGIN" />Chrome 設定<ph name="LINK_END" />。</translation>
 <translation id="1246905108078336582">要從剪貼簿中移除建議嗎？</translation>
-<translation id="1249643471736608405">「<ph name="PLUGIN_NAME" />」因已淘汰而遭封鎖</translation>
 <translation id="1251366534849411931">缺少左大括弧：<ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">這會清除網站儲存的資料 (共 <ph name="TOTAL_USAGE" />)，以及所安裝的應用程式</translation>
 <translation id="125220115284141797">預設值</translation>
@@ -279,7 +278,6 @@
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">家用網路，非漫遊狀態</translation>
 <translation id="1315056510003830387">不得使用 Flash</translation>
-<translation id="1315144594965013365">請確認兩部裝置都已解鎖且彼此相鄰，並已開啟藍牙功能。如果要與 Chromebook 分享內容，請確認該 Chromebook 已開啟鄰近分享功能 (按一下電腦右下角顯示的時間欄位就能開啟狀態區，接著可以從中選取鄰近分享)。</translation>
 <translation id="1316136264406804862">搜尋中...</translation>
 <translation id="1316495628809031177">已暫停同步處理</translation>
 <translation id="1317637799698924700">你的座架將以 USB Type-C 相容模式執行。</translation>
@@ -1037,7 +1035,6 @@
 <translation id="2178614541317717477">CA 洩露</translation>
 <translation id="2182058453334755893">已複製到剪貼簿</translation>
 <translation id="2184515124301515068">讓 Chrome 自行判斷何時允許網站播放音訊 (建議使用)</translation>
-<translation id="2187243482123994665">使用者狀態</translation>
 <translation id="2187675480456493911">已與你帳戶中的其他裝置同步。系統不會同步處理其他使用者修改的設定。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">伺服器憑證匯入錯誤</translation>
 <translation id="2187906491731510095">擴充功能已更新</translation>
@@ -2703,7 +2700,6 @@
 <translation id="4104163789986725820">匯出(&amp;X)...</translation>
 <translation id="4107048419833779140">識別並退出儲存裝置</translation>
 <translation id="4109135793348361820">將視窗傳送給 <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
-<translation id="411031910327788420">針對支援這項設定的應用程式自訂字幕大小和風格</translation>
 <translation id="4110490973560452005">下載完成：<ph name="FILE_NAME" />。按下 Shift+F6 即可回到下載內容列區域。</translation>
 <translation id="4110686435123617899">選取相簿「<ph name="TITLE" />，<ph name="DESC" />」</translation>
 <translation id="4110895898888439383">以高對比模式瀏覽網路</translation>
@@ -2916,7 +2912,6 @@
 <translation id="4400632832271803360">按住啟動器鍵即可切換最上排按鍵的行為</translation>
 <translation id="4400963414856942668">按一下星號即可將分頁加入書籤</translation>
 <translation id="4403775189117163360">選擇其他資料夾</translation>
-<translation id="440391631796167175">未發現任何低強度密碼</translation>
 <translation id="4404136731284211429">重新掃描</translation>
 <translation id="4404843640767531781">貴家長已封鎖「<ph name="APP_NAME" />」。如要使用這個應用程式，請要求家長授予權限。</translation>
 <translation id="4405117686468554883">*.jpeg、*.jpg、*.png</translation>
@@ -4457,8 +4452,6 @@
 <translation id="6242852299490624841">將焦點移至這個分頁</translation>
 <translation id="6243280677745499710">目前設定的桌布</translation>
 <translation id="6243774244933267674">無法與伺服器連線</translation>
-<translation id="6244185221716469155">低強度密碼很容易讓有心人士猜中，請務必設定高強度密碼。
-    <ph name="BEGIN_LINK" />查看更多安全性提示。<ph name="END_LINK" /></translation>
 <translation id="6244245036423700521">匯入 ONC 檔案</translation>
 <translation id="6246790815526961700">從裝置上傳</translation>
 <translation id="6247620186971210352">找不到應用程式</translation>
@@ -6205,6 +6198,7 @@
 <translation id="8281886186245836920">略過</translation>
 <translation id="8283475148136688298">驗證代碼在連線至「<ph name="DEVICE_NAME" />」時遭拒。</translation>
 <translation id="8284279544186306258">所有 <ph name="WEBSITE_1" /> 網站</translation>
+<translation id="8284326494547611709">字幕</translation>
 <translation id="8286036467436129157">登入</translation>
 <translation id="8286963743045814739">使用無痕式視窗，安心進行私密瀏覽</translation>
 <translation id="8287902281644548111">依 API 呼叫/網址搜尋</translation>

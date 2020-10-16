@@ -224,7 +224,6 @@
 <translation id="1244303850296295656">확장 프로그램 오류</translation>
 <translation id="1246158006305844142">앱 및 설정은 Google 계정으로 로그인한 모든 Chrome OS 기기와 동기화됩니다. 브라우저 동기화 옵션을 보려면 <ph name="LINK_BEGIN" />Chrome 설정<ph name="LINK_END" />으로 이동하세요.</translation>
 <translation id="1246905108078336582">클립보드에서 추천 항목을 삭제하시겠습니까?</translation>
-<translation id="1249643471736608405"><ph name="PLUGIN_NAME" />이(가) 지원 중단되어 차단되었습니다.</translation>
 <translation id="1251366534849411931">열림 중괄호 누락: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">사이트 및 설치된 앱에서 저장한 <ph name="TOTAL_USAGE" />의 데이터가 삭제됩니다.</translation>
 <translation id="125220115284141797">기본</translation>
@@ -279,7 +278,6 @@
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">홈 네트워크 로밍 안함</translation>
 <translation id="1315056510003830387">플래시 사용이 허용되지 않음</translation>
-<translation id="1315144594965013365">두 기기 모두 잠금 해제되어 있고 가까이에 있으며 블루투스가 켜져 있어야 합니다. Chromebook과 공유하는 경우 Chromebook의 Nearby Share가 사용 설정되어 있는지 확인하세요. 시간, Nearby Share를 차례로 선택하면 상태 영역에서 확인할 수 있습니다.</translation>
 <translation id="1316136264406804862">검색 중...</translation>
 <translation id="1316495628809031177">동기화 일시중지됨</translation>
 <translation id="1317637799698924700">현재 도킹 스테이션은 USB 타입-C 호환 모드에서 작동합니다.</translation>
@@ -1037,7 +1035,6 @@
 <translation id="2178614541317717477">CA 손상</translation>
 <translation id="2182058453334755893">클립보드에 복사됨</translation>
 <translation id="2184515124301515068">사이트의 소리 재생 여부를 Chrome이 결정(권장)</translation>
-<translation id="2187243482123994665">사용자 접속 상태</translation>
 <translation id="2187675480456493911">계정에 연결된 다른 기기와 동기화되어 있습니다. 다른 사용자가 수정한 설정은 동기화되지 않습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">서버 인증서 가져오기 오류</translation>
 <translation id="2187906491731510095">확장 프로그램 업데이트됨</translation>
@@ -2703,7 +2700,6 @@
 <translation id="4104163789986725820">내보내기(&amp;X)...</translation>
 <translation id="4107048419833779140">외부 저장장치 식별 및 제거</translation>
 <translation id="4109135793348361820">창을 <ph name="USER_NAME" />(<ph name="USER_EMAIL" />)님에게로 이동</translation>
-<translation id="411031910327788420">이 설정을 지원하는 앱에 적용할 자막 크기와 스타일을 맞춤설정합니다.</translation>
 <translation id="4110490973560452005">다운로드 완료: <ph name="FILE_NAME" />. 다운로드바 영역으로 이동하려면 Shift+F6를 누르세요.</translation>
 <translation id="4110686435123617899">앨범 <ph name="TITLE" /> <ph name="DESC" /> 선택</translation>
 <translation id="4110895898888439383">고대비 모드로 웹 탐색</translation>
@@ -2916,7 +2912,6 @@
 <translation id="4400632832271803360">맨 윗 줄 키의 동작을 전환하려면 런처 키를 길게 누르세요.</translation>
 <translation id="4400963414856942668">별표를 클릭하여 탭을 북마크에 추가할 수 있습니다.</translation>
 <translation id="4403775189117163360">다른 폴더 선택</translation>
-<translation id="440391631796167175">취약한 비밀번호 없음</translation>
 <translation id="4404136731284211429">다시 검색</translation>
 <translation id="4404843640767531781">부모님이 <ph name="APP_NAME" /> 앱을 차단했습니다. 이 앱을 사용하려면 부모님에게 권한을 요청하세요.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -4457,8 +4452,6 @@
 <translation id="6242852299490624841">이 탭에 포커스</translation>
 <translation id="6243280677745499710">현재 설정</translation>
 <translation id="6243774244933267674">서버를 사용할 수 없음</translation>
-<translation id="6244185221716469155">취약한 비밀번호는 추측하기 쉽습니다. 안전한 비밀번호를 설정하세요.
-    <ph name="BEGIN_LINK" />보안 도움말 더보기<ph name="END_LINK" /></translation>
 <translation id="6244245036423700521">ONC 파일 가져오기</translation>
 <translation id="6246790815526961700">기기에서 업로드</translation>
 <translation id="6247620186971210352">앱이 없습니다.</translation>
@@ -6206,6 +6199,7 @@
 <translation id="8281886186245836920">건너뛰기</translation>
 <translation id="8283475148136688298">'<ph name="DEVICE_NAME" />'에 연결하는 동안 인증 코드가 거부되었습니다.</translation>
 <translation id="8284279544186306258">모든 <ph name="WEBSITE_1" /> 사이트</translation>
+<translation id="8284326494547611709">자막</translation>
 <translation id="8286036467436129157">로그인</translation>
 <translation id="8286963743045814739">시크릿 창을 사용하면 비공개로 탐색할 수 있습니다.</translation>
 <translation id="8287902281644548111">API 호출/URL로 검색</translation>

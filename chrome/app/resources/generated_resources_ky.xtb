@@ -224,7 +224,6 @@
 <translation id="1244303850296295656">Кеңейтүү катасы</translation>
 <translation id="1246158006305844142">Колдонмолор менен жөндөөлөр Google аккаунтуңуз менен кирип турган бардык Chrome OS түзмөктөрүндө шайкештирилет. Серепчини шайкештирүү параметрлерин көрүү үчүн <ph name="LINK_BEGIN" />Chrome жөндөөлөрүнө<ph name="LINK_END" /> өтүңүз.</translation>
 <translation id="1246905108078336582">Сунуш алмашуу буферинен өчүрүлсүнбү?</translation>
-<translation id="1249643471736608405"><ph name="PLUGIN_NAME" /> жоюлгандыктан, бөгөттөлдү</translation>
 <translation id="1251366534849411931">Ачуучу ийри кашаа жетишпейт: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Ушуну менен сайттар менен колдонмолор ээлеп турган <ph name="TOTAL_USAGE" /> орун бошотулат</translation>
 <translation id="125220115284141797">Демейки</translation>
@@ -279,7 +278,6 @@
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Үй тармагы, роуминг жок</translation>
 <translation id="1315056510003830387">Flash'ти колдоно албайт</translation>
-<translation id="1315144594965013365">Эки түзмөктүн тең кулпусу ачылып, бири-бирине жакын жайгашып, Bluetooth күйүп турушу керек. Chromebook менен бөлүшүп жатсаңыз, андагы Nearby Sharing күйүк экенин текшериңиз (убакытты тандоо менен статус аймагын ачып, Nearby Share функциясын тандаңыз).</translation>
 <translation id="1316136264406804862">Изделүүдө…</translation>
 <translation id="1316495628809031177">Шайкештирүү тындырылды</translation>
 <translation id="1317637799698924700">Док бекетиңиз C тибиндеги USB менен шайкеш режимде иштейт.</translation>
@@ -1037,7 +1035,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2178614541317717477">ТБ компрометациясы</translation>
 <translation id="2182058453334755893">Алмашуу буферине көчүрүлдү</translation>
 <translation id="2184515124301515068">Сайттардын добушун чыгарууну Chrome'го табыштаңыз (сунушталат)</translation>
-<translation id="2187243482123994665">Колдонуучунун сайтта же сайтта эместиги</translation>
 <translation id="2187675480456493911">Аккаунтуңуздагы башка түзмөктөр менен шайкештирилди. Башка колдонуучу өзгөрткөн жөндөө шайкештирилбейт. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Сервердин тастыктамасын импорттоо катасы.</translation>
 <translation id="2187906491731510095">Кеңейтүүлөр жаңырды</translation>
@@ -2705,7 +2702,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4104163789986725820">Э&amp;кспорттоо…</translation>
 <translation id="4107048419833779140">Сактагыч түзмөктөрү аныкталып, чыгарылсын</translation>
 <translation id="4109135793348361820">Терезени буга <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) жылдыруу</translation>
-<translation id="411031910327788420">Бул жөндөө иштеген колдонмолордо коштомо жазуулардын өлчөмүн жана стилин ыңгайлаштыруу</translation>
 <translation id="4110490973560452005">Жүктөп алуу аяктады: <ph name="FILE_NAME" />. Жүктөлүп алынган файлдар тилкесине өтүү үчүн Shift+F6 баскычтарын басыңыз.</translation>
 <translation id="4110686435123617899">Альбом тандаңыз <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4110895898888439383">Интернетти жогорку контраст режиминде серептеңиз</translation>
@@ -2918,7 +2914,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4400632832271803360">Жогорку катардагы баскычтардын аракеттерин которуштуруу үчүн, Жүргүзгүч баскычын басып туруңуз</translation>
 <translation id="4400963414856942668">Өтмөктү кыстармаларга кошуу үчүн жылдызчаны чыкылдатып коюңуз</translation>
 <translation id="4403775189117163360">Башка папканы тандоо</translation>
-<translation id="440391631796167175">Начар сырсөздөр табылган жок</translation>
 <translation id="4404136731284211429">Кайра текшерүү</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> колдонмосун ата-энең бөгөттөп койгон. Ата-энеңден бул колдонмону иштетүүгө уруксат сура.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -4459,8 +4454,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6242852299490624841">Бул өтмөктү фокустоо</translation>
 <translation id="6243280677745499710">Учурда тушкагаз катары орнотулган</translation>
 <translation id="6243774244933267674">Сервер жеткиликсиз.</translation>
-<translation id="6244185221716469155">Начар сырсөздөрдү билип алуу оңой. Татаал сырсөздөрдү түзүңүз.
-    <ph name="BEGIN_LINK" />Дагы башка коопсуздук кеңештерин алуу.<ph name="END_LINK" /></translation>
 <translation id="6244245036423700521">ONC файлын өткөрүп алуу</translation>
 <translation id="6246790815526961700">Түзмөктөн жүктөп берүү</translation>
 <translation id="6247620186971210352">Колдонмолор табылган жок</translation>
@@ -6207,6 +6200,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8281886186245836920">Өткөрүп жиберүү</translation>
 <translation id="8283475148136688298">"<ph name="DEVICE_NAME" />" туташып жатканда аныктыкты текшерүү коду четке кагылды.</translation>
 <translation id="8284279544186306258">бардык <ph name="WEBSITE_1" /> сайттар</translation>
+<translation id="8284326494547611709">Коштомо жазуулар</translation>
 <translation id="8286036467436129157">Кириңиз</translation>
 <translation id="8286963743045814739">Жашыруун терезени ачып алып, купуя серептей аласыз</translation>
 <translation id="8287902281644548111">API чалуу/URL боюнча издөө</translation>

@@ -223,7 +223,6 @@
 <translation id="1244303850296295656">ଏକ୍ସଟେନ୍‌ସନ୍ ତ୍ରୁଟି</translation>
 <translation id="1246158006305844142">ଆପଣ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ସହିତ ସାଇନ୍ ଇନ୍ କରିଥିବା ସମସ୍ତ Chrome OS ଡିଭାଇସରେ ଆପଣଙ୍କର ଆପ୍ସ ଏବଂ ସେଟିଂସ୍ ସିଙ୍କ୍ ହେବ। ବ୍ରାଉଜର୍ ସିଙ୍କ୍ ବିକଳ୍ପଗୁଡ଼ିକ ପାଇଁ, <ph name="LINK_BEGIN" />Chrome ସେଟିଂସ<ph name="LINK_END" />କୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="1246905108078336582">କ୍ଲିପ୍‍‍ବୋର୍ଡରୁ ପ୍ରସ୍ତାବ କାଢ଼ି ଦେବେ?</translation>
-<translation id="1249643471736608405"><ph name="PLUGIN_NAME" /> ବ୍ଲକ୍ କରାଯାଇଥିଲା କାରଣ ଏହାକୁ ଅଗ୍ରାହ୍ୟ କରାଯାଇଛି</translation>
 <translation id="1251366534849411931">ପ୍ରତ୍ୟାଶିତ ଖୋଲାଥିବା କୁଟିଳ ବନ୍ଧନୀ: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">ଏହା ସାଇଟ୍ ଏବଂ ଇନଷ୍ଟଲ୍ କରାଯାଇଥିବା ଆପଗୁଡ଼ିକ ଦ୍ୱାରା ଷ୍ଟୋର୍ କରାଯାଇଥିବା <ph name="TOTAL_USAGE" /> ଡାଟାକୁ ଖାଲି କରିଦେବ</translation>
 <translation id="125220115284141797">ଡିଫଲ୍ଟ</translation>
@@ -278,7 +277,6 @@
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">ହୋମ୍ ନେଟ୍‌ୱର୍କ, ରୋମିଂ ନୁହେଁ</translation>
 <translation id="1315056510003830387">ଫ୍ଲାସ୍ ବ୍ୟବହାର କରିବାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
-<translation id="1315144594965013365">ଉଭୟ ଡିଭାଇସକୁ ଅନଲକ୍ କରାଯାଇଛି, ସେଗୁଡ଼ିକ ପାଖାପାଖି ରହିଛି ଏବଂ ବ୍ଲୁଟୁଥ୍ ଚାଲୁ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ। ଯଦି ଆପଣ ଏକ Chromebook ସହ ସେୟାର୍ କରୁଛନ୍ତି, ତେବେ ସେଥିରେ Nearby Share ଚାଲୁ କରାଯାଇଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ (ସମୟ ଚୟନ କରି ସ୍ଥିତି କ୍ଷେତ୍ର ଖୋଲନ୍ତୁ, ତା'ପରେ Nearby Share ଚୟନ କରନ୍ତୁ)।</translation>
 <translation id="1316136264406804862">ସନ୍ଧାନ କରୁଛି…</translation>
 <translation id="1316495628809031177">ସିଙ୍କ୍‌ ବିରତ ଅଛି</translation>
 <translation id="1317637799698924700">USB ପ୍ରକାର-C ସୁସଙ୍ଗତ ମୋଡ୍‌ରେ ଆପଣଙ୍କର ଡକିଂ ଷ୍ଟେସନ୍ କାର୍ଯ୍ୟ କରିବ।</translation>
@@ -1031,7 +1029,6 @@
 <translation id="2178614541317717477">CA କମ୍ପ୍ରୋମାଇଜ୍</translation>
 <translation id="2182058453334755893">ଆପଣଙ୍କର କ୍ଲିପ୍‌ବୋର୍ଡକୁ କପି କରାଯାଇଛି</translation>
 <translation id="2184515124301515068">ସାଇଟ୍‌ଗୁଡ଼ିକ କେତେବେଳେ ସାଉଣ୍ଡ୍ ଚାଲୁ କରିବେ ତାହା Chromeକୁ ବାଛିବାକୁ ଦିଅନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
-<translation id="2187243482123994665">ଉପଯୋଗକର୍ତ୍ତାଙ୍କ ସକ୍ରିୟତା</translation>
 <translation id="2187675480456493911">ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକ ସହ ସିଙ୍କ୍ ହୋଇଛି। ଅନ୍ୟ ଉପଯୋଗକର୍ତ୍ତାଙ୍କ ଦ୍ୱାରା ପରିବର୍ତ୍ତନ କରାଯାଇଥିବା ସେଟିଂସ୍ ସିଙ୍କ୍ ହେବ ନାହିଁ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">ସର୍ଭର୍ ସାର୍ଟିଫିକେଟ୍ ଇମ୍ପୋର୍ଟ କରିବାରେ ତ୍ରୁଟି</translation>
 <translation id="2187906491731510095">ଏକ୍ସଟେନ୍‌ସନ୍‌ଗୁଡ଼ିକ ଅପ୍‌ଡେଟ୍ କରାଯାଇଛି</translation>
@@ -2697,7 +2694,6 @@
 <translation id="4104163789986725820">ଏକ୍ସପୋର୍ଟ...</translation>
 <translation id="4107048419833779140">ଷ୍ଟୋରେଜ୍‌ ଡିଭାଇସ୍‌ଗୁଡ଼ିକ ଚିହ୍ନଟ କରନ୍ତୁ ଏବଂ ବାହାର କରନ୍ତୁ</translation>
 <translation id="4109135793348361820"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)କୁ ୱିଣ୍ଡୋ ନିଅନ୍ତୁ</translation>
-<translation id="411031910327788420">ଏହି ସେଟିଂକୁ ସମର୍ଥନ କରୁଥିବା ଆପଗୁଡ଼ିକ ପାଇଁ କ୍ୟାପ୍ସନର ଆକାର ଏବଂ ଷ୍ଟାଇଲକୁ କଷ୍ଟମାଇଜ୍ କରନ୍ତୁ</translation>
 <translation id="4110490973560452005">ଡାଉନ୍‌ଲୋଡ୍ ଶେଷ ହୋଇଛି: <ph name="FILE_NAME" />। ଡାଉନ୍‌ଲୋଡ୍ ବାର୍ କ୍ଷେତ୍ରକୁ ଯିବାକୁ Shift+F6କୁ ଦବାନ୍ତୁ।</translation>
 <translation id="4110686435123617899">ଆଲବମ୍ <ph name="TITLE" /> <ph name="DESC" /> ଚୟନ କରନ୍ତୁ</translation>
 <translation id="4110895898888439383">ଉଚ୍ଚ କଣ୍ଟ୍ରାଷ୍ଟ ମୋଡ୍‌ରେ ୱେବ୍ ବ୍ରାଉଜ୍ କରନ୍ତୁ</translation>
@@ -2910,7 +2906,6 @@
 <translation id="4400632832271803360">ଶୀର୍ଷ-ଧାଡିରେ ଥିବା କୀଗୁଡ଼ିକର ଆଚରଣ ସ୍ୱିଚ୍‍ କରିବାକୁ ଲଞ୍ଚର୍ କୀ ଧରି ରଖନ୍ତୁ</translation>
 <translation id="4400963414856942668">ଏକ ଟାବ୍‌କୁ ବୁକ୍‌ମାର୍କ କରିବା ପାଇଁ ଆପଣ ତାରା ଚିହ୍ନରେ କ୍ଲିକ୍ କରିପାରିବେ</translation>
 <translation id="4403775189117163360">ଏକ ଭିନ୍ନ ଫୋଲ୍ଡର୍ ବାଛନ୍ତୁ</translation>
-<translation id="440391631796167175">କୌଣସି ଦୁର୍ବଳ ପାସୱାର୍ଡ ମିଳିଲା ନାହିଁ</translation>
 <translation id="4404136731284211429">ପୁଣି ସ୍କାନ୍ କରନ୍ତୁ</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> ଆପଣଙ୍କ ବାପାମାଙ୍କ ଦ୍ୱାରା ବ୍ଲକ୍ କରାଯାଇଛି। ଏହି ଆପ୍ ବ୍ୟବହାର କରିବା ପାଇଁ ଅନୁମତି ଦେବାକୁ ଆପଣଙ୍କ ବାପାମାଙ୍କୁ କୁହନ୍ତୁ।</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -4451,8 +4446,6 @@
 <translation id="6242852299490624841">ଏହି ଟାବ୍ ପ୍ରତି ଧ୍ୟାନ ଦିଅନ୍ତୁ</translation>
 <translation id="6243280677745499710">ବର୍ତ୍ତମାନ ସେଟ୍ ହୋଇଛି</translation>
 <translation id="6243774244933267674">ସର୍ଭର୍‌ ଉପଲବ୍ଧ ନାହିଁ</translation>
-<translation id="6244185221716469155">ଦୁର୍ବଳ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଅନୁମାନ କରିବା ସହଜ ଅଟେ। ଆପଣ ଜଟିଳ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ତିଆରି କରିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ।
-    <ph name="BEGIN_LINK" />ଅଧିକ ସୁରକ୍ଷା ଟିପ୍ସ ଦେଖନ୍ତୁ।<ph name="END_LINK" /></translation>
 <translation id="6244245036423700521">ONC ଫାଇଲ୍ ଇମ୍ପୋର୍ଟ କରନ୍ତୁ</translation>
 <translation id="6246790815526961700">ଡିଭାଇସ୍‌ରୁ ଅପ୍‌ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="6247620186971210352">କୌଣସି ଆପ୍ ମିଳିଲା ନାହିଁ</translation>
@@ -6199,6 +6192,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8281886186245836920">ଛାଡ଼ିଦିଅନ୍ତୁ</translation>
 <translation id="8283475148136688298">"<ph name="DEVICE_NAME" />"କୁ ସଂଯୋଗ କରୁଥିବା ସମୟରେ ପ୍ରମାଣିକତା କୋଡ୍ ଅଗ୍ରାହ୍ୟ କରାଗଲା।</translation>
 <translation id="8284279544186306258">ସମସ୍ତ <ph name="WEBSITE_1" /> ସାଇଟ୍</translation>
+<translation id="8284326494547611709">କ୍ୟାପସନ୍</translation>
 <translation id="8286036467436129157">ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="8286963743045814739">ଆପଣ ଏକ ଇନ୍‍କଗ୍ନିଟୋ ୱିଣ୍ଡୋ ବ୍ୟବହାର କରି ବ୍ୟକ୍ତିଗତ ଭାବେ ବ୍ରାଉଜ୍ କରିପାରିବେ</translation>
 <translation id="8287902281644548111">API କଲ୍/URL ଦ୍ୱାରା ସନ୍ଧାନ କରନ୍ତୁ</translation>

@@ -18,6 +18,7 @@
 <translation id="1979103255016296513">Adgangskoden mangler at blive ændret</translation>
 <translation id="2049639323467105390">Denne enhed administreres af <ph name="DOMAIN" />.</translation>
 <translation id="2161394479394250669">Annuller udskriftsjob</translation>
+<translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Slå Bluetooth til for at opdage enheder i nærheden</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> forsøg tilbage</translation>
 <translation id="2517472476991765520">Scan</translation>
@@ -80,6 +81,7 @@
 <translation id="6747215703636344499">Stoppet – Fuld udskriftsbakke</translation>
 <translation id="7162487448488904999">Galleri</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7359657277149375382">Filtype</translation>
 <translation id="7561454561030345039">Denne handling administreres af din administrator</translation>
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7690294790491645610">Bekræft den nye adgangskode</translation>

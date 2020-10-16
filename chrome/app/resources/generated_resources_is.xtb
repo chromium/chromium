@@ -224,7 +224,6 @@
 <translation id="1244303850296295656">Villa í viðbót</translation>
 <translation id="1246158006305844142">Forritin þín og stillingarnar verða samstillt í öllum Chrome OS tækjum sem þú skráðir þig inn á með Google reikningnum þínum. Valkostir fyrir samstillingu vafra má finna í <ph name="LINK_BEGIN" />Stillingar Chrome<ph name="LINK_END" />.</translation>
 <translation id="1246905108078336582">Fjarlægja tillögu af klippiborði?</translation>
-<translation id="1249643471736608405">Lokað var á <ph name="PLUGIN_NAME" /> vegna þess að hún er úrelt</translation>
 <translation id="1251366534849411931">Búist var við opnum slaufusviga: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Þetta hreinsar <ph name="TOTAL_USAGE" /> af gögnum sem vefsvæði og uppsett forrit geyma</translation>
 <translation id="125220115284141797">Sjálfgefið</translation>
@@ -279,7 +278,6 @@
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Heimanet, ekki í reiki</translation>
 <translation id="1315056510003830387">Mega ekki nota Flash</translation>
-<translation id="1315144594965013365">Gakktu úr skugga um að hvorugt tækið sé læst, settu þau nálægt hvort öðru og hafðu kveikt á Bluetooth. Ef þú deilir með Chromebook skaltu tryggja að kveikt sé á nærdeilingu í henni (opnaðu stöðusvæðið með því að velja tíma og síðan nærdeilingu).</translation>
 <translation id="1316136264406804862">Leitar...</translation>
 <translation id="1316495628809031177">Hlé er á samstillingu</translation>
 <translation id="1317637799698924700">Tengd dokka virkar í samhæfisstillingu USB (C-gerð).</translation>
@@ -1038,7 +1036,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2178614541317717477">CA-öryggisbrestur</translation>
 <translation id="2182058453334755893">Afritað á klippiborðið</translation>
 <translation id="2184515124301515068">Leyfa Chrome að velja hvenær vefsvæði geta spilað hljóð (ráðlagt)</translation>
-<translation id="2187243482123994665">Viðvera notanda</translation>
 <translation id="2187675480456493911">Samstillt við önnur tæki á reikningnum. Breytingar annarra notenda á stillingum verða ekki samstilltar. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Villa við innflutning á vottorði þjóns</translation>
 <translation id="2187906491731510095">Viðbætur uppfærðar</translation>
@@ -2710,7 +2707,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4104163789986725820">Flytja út...</translation>
 <translation id="4107048419833779140">Bera kennsl á og aftengja geymslutæki</translation>
 <translation id="4109135793348361820">Færa glugga á <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
-<translation id="411031910327788420">Sérsníða stærð og stíl skjátexta fyrir forrit sem styðja þessa stillingu</translation>
 <translation id="4110490973560452005">Niðurhali lokið: <ph name="FILE_NAME" />. Ýttu á Shift+F6 til að fara á niðurhalsstikuna.</translation>
 <translation id="4110686435123617899">Velja albúm <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4110895898888439383">Nota stillingu fyrir mikil birtuskil við vefskoðun</translation>
@@ -2923,7 +2919,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4400632832271803360">Haltu ræsihnappinum inni til að breyta hegðun lykla í efstu röðinni</translation>
 <translation id="4400963414856942668">Þú getur smellt á stjörnuna til að bókamerkja flipa</translation>
 <translation id="4403775189117163360">Velja aðra möppu</translation>
-<translation id="440391631796167175">Engin léleg aðgangsorð fundust</translation>
 <translation id="4404136731284211429">Leita aftur</translation>
 <translation id="4404843640767531781">Foreldri þitt hefur sett <ph name="APP_NAME" /> á bannlista. Biddu foreldri þitt um leyfi til að nota þetta forrit.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -4467,8 +4462,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6242852299490624841">Setja þennan flipa í fókus</translation>
 <translation id="6243280677745499710">Valið núna</translation>
 <translation id="6243774244933267674">Ekki næst í netþjóninn</translation>
-<translation id="6244185221716469155">Léleg aðgangsorð eru þau sem auðvelt er að giska á. Gakktu úr skugga um að þú búir til traust aðgangsorð.
-    <ph name="BEGIN_LINK" />Sjá fleiri öryggisábendingar.<ph name="END_LINK" /></translation>
 <translation id="6244245036423700521">Flytja ONC-skrá inn</translation>
 <translation id="6246790815526961700">Hlaða upp úr tæki</translation>
 <translation id="6247620186971210352">Engin forrit fundust</translation>
@@ -6217,6 +6210,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8281886186245836920">Sleppa</translation>
 <translation id="8283475148136688298">Staðfestingarkóða hafnað þegar reynt var að tengjast „<ph name="DEVICE_NAME" />“.</translation>
 <translation id="8284279544186306258">öllum vefsvæðum <ph name="WEBSITE_1" /></translation>
+<translation id="8284326494547611709">Skjátextar</translation>
 <translation id="8286036467436129157">Skrá inn</translation>
 <translation id="8286963743045814739">Þú getur vafrað í leyni með því að nota huliðsglugga</translation>
 <translation id="8287902281644548111">Leita eftir forritaskilakalli / vefslóð</translation>

@@ -18,6 +18,7 @@
 <translation id="1979103255016296513">Срокът за промяна на паролата е изтекъл</translation>
 <translation id="2049639323467105390">Това устройство се управлява от <ph name="DOMAIN" />.</translation>
 <translation id="2161394479394250669">Анулиране на заданието за отпечатване</translation>
+<translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Включете Bluetooth, за да бъдат открити устройствата в близост</translation>
 <translation id="2375079107209812402">Остават <ph name="ATTEMPTS_LEFT" /> опита</translation>
 <translation id="2517472476991765520">Сканиране</translation>
@@ -81,6 +82,7 @@
 <translation id="6747215703636344499">Спряло – изходният контейнер е пълен</translation>
 <translation id="7162487448488904999">Галерия</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7359657277149375382">Файлов тип</translation>
 <translation id="7561454561030345039">Това действие се управлява от администратора ви</translation>
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="7690294790491645610">Потвърдете новата парола</translation>
