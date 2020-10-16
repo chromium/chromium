@@ -3,7 +3,7 @@
 <translationbundle lang="iw">
 <translation id="1012876632442809908">‏מכשיר עם יציאת USB-C (יציאה קדמית)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> השתנה ל-<ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> הרץ). לשמירת השינויים, יש ללחוץ על 'אישור'. ההגדרות הקודמות ישוחזרו בעוד <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="1013923882670373915">‏מכשיר ה-Bluetooth ‏"<ph name="DEVICE_NAME" />" מבקש הרשאה לבצע התאמה. הזן את קוד ה-PIN הבא במכשיר הזה: <ph name="PINCODE" /></translation>
+<translation id="1013923882670373915">‏מכשיר ה-Bluetooth ‏"<ph name="DEVICE_NAME" />" מבקש הרשאה לבצע התאמה. יש להזין את קוד האימות הבא במכשיר: <ph name="PINCODE" /></translation>
 <translation id="1032891413405719768">סוללת הסטיילוס חלשה</translation>
 <translation id="1036672894875463507">‏אני ה-Google Assistant שלך, ואוכל לעזור לך לכל אורך היום!
 הנה כמה דברים שאפשר לנסות בתור התחלה.</translation>
@@ -64,7 +64,7 @@
 <translation id="1510238584712386396">מרכז האפליקציות</translation>
 <translation id="1516740043221086139">מצב 'נא לא להפריע' מופעל.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{צפייה בהגדרות של הודעות. ההודעות מושבתות באפליקציה אחת}two{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}many{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}other{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}}</translation>
-<translation id="1525508553941733066">סגור</translation>
+<translation id="1525508553941733066">סגירה</translation>
 <translation id="15373452373711364">סמן עכבר גדול</translation>
 <translation id="1546492247443594934">שולחן עבודה 2</translation>
 <translation id="1550523713251050646">לחץ לקבלת אפשרויות נוספות</translation>
@@ -149,7 +149,7 @@
 <translation id="2390318262976603432">הגדרות שילוב של שפה ואזור</translation>
 <translation id="2391579633712104609">180°</translation>
 <translation id="2405664212338326887">לא מחובר</translation>
-<translation id="2408955596600435184">‏הזן את מספר ה-PIN</translation>
+<translation id="2408955596600435184">יש להזין את קוד האימות</translation>
 <translation id="2412593942846481727">יש עדכון זמין</translation>
 <translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> הוא סשן מנוהל שמנוהל על-ידי <ph name="DOMAIN" /></translation>
 <translation id="2427507373259914951">לחיצה שמאלית</translation>
@@ -181,7 +181,7 @@
 <translation id="2727175239389218057">מענה</translation>
 <translation id="2727977024730340865">מחובר למטען בעל מתח נמוך. ייתכן שטעינת הסוללה לא תהיה אמינה.</translation>
 <translation id="2792498699870441125">‏Alt + חיפוש</translation>
-<translation id="2819276065543622893">תצא עכשיו מהחשבון.</translation>
+<translation id="2819276065543622893">המערכת תוציא אותך עכשיו מהחשבון.</translation>
 <translation id="2825224105325558319">התצוגה של <ph name="DISPLAY_NAME" /> לא תומכת ברזולוציה <ph name="SPECIFIED_RESOLUTION" />. הרזולוציה שונתה ל-<ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">מדף</translation>
 <translation id="2841907151129139818">עברת למצב טאבלט</translation>
@@ -394,7 +394,7 @@
 <translation id="4804818685124855865">נתק</translation>
 <translation id="4814539958450445987">מסך הכניסה</translation>
 <translation id="4831034276697007977">הקליקים האוטומטיים יושבתו. האם להמשיך?</translation>
-<translation id="4836108105469522644">‏הפעלת התראות מטלפון Android שלך</translation>
+<translation id="4836108105469522644">‏הפעלת התראות מטלפון ה-Android שלך</translation>
 <translation id="4849058404725798627">הדגשה של האובייקט במיקוד המקלדת</translation>
 <translation id="485592688953820832">ללא פעולה (השהיה)</translation>
 <translation id="4868492592575313542">מופעלת</translation>
@@ -519,11 +519,11 @@
 <translation id="6237231532760393653">‎1X‎</translation>
 <translation id="6254629735336163724">נעול במצב אופקי</translation>
 <translation id="6259254695169772643">כדי לבחור יש להשתמש בסטיילוס</translation>
-<translation id="6267036997247669271"><ph name="NAME" />: מפעיל...</translation>
+<translation id="6267036997247669271"><ph name="NAME" />: בהפעלה...</translation>
 <translation id="6283712521836204486">מצב 'נא לא להפריע' מושבת.</translation>
 <translation id="6284232397434400372">הרזולוציה השתנתה</translation>
 <translation id="6288235558961782912">ניתן יהיה להוסיף את <ph name="USER_EMAIL_ADDRESS" /> מחדש מאוחר יותר לאחר שיתקבל אישור של הורה.</translation>
-<translation id="6297287540776456956">בחר אזור באמצעות הסטיילוס</translation>
+<translation id="6297287540776456956">יש לבחור אזור באמצעות הסטיילוס</translation>
 <translation id="6310121235600822547">בוצע סיבוב של <ph name="DISPLAY_NAME" /> אל <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">קול</translation>
 <translation id="6376931439017688372">‏Bluetooth פועל</translation>
@@ -534,7 +534,7 @@
 <translation id="642644398083277086">ניקוי כל ההודעות</translation>
 <translation id="643147933154517414">הפעולה הושלמה</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> במכשיר <ph name="RECEIVER_NAME" /></translation>
-<translation id="6452181791372256707">דחה</translation>
+<translation id="6452181791372256707">דחייה</translation>
 <translation id="6453179446719226835">שינוי השפה הסתיים</translation>
 <translation id="6459472438155181876">מרחיב את המסך אל <ph name="DISPLAY_NAME" /></translation>
 <translation id="6482559668224714696">זכוכית מגדלת במסך מלא</translation>
@@ -649,7 +649,7 @@
 <translation id="7633755430369750696">הצגה של הרשאות שיתוף בקרבת מקום.</translation>
 <translation id="7642647758716480637">פתיחת ההגדרות של <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (בעלים)</translation>
-<translation id="7647488630410863958">בטל את נעילת המכשיר כדי להציג את ההודעות</translation>
+<translation id="7647488630410863958">יש לבטל את נעילת המכשיר כדי להציג את ההודעות</translation>
 <translation id="7649070708921625228">עזרה</translation>
 <translation id="7654687942625752712">כדי להשבית את קורא המסך הקולי, צריך ללחוץ על שני לחצני עוצמת הקול למשך חמש שניות.</translation>
 <translation id="7658239707568436148">ביטול</translation>
@@ -704,7 +704,7 @@
 <translation id="8152092012181020186">‏כדי לסגור, יש להקיש על Ctrl + W.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ההגדרה הזו מנוהלת על-ידי מנהל המערכת שלך.</translation>
 <translation id="8167567890448493835">המיקום הנוכחי הוא<ph name="LOCALE_NAME" /></translation>
-<translation id="8192202700944119416">ההודעות מוסתרות.</translation>
+<translation id="8192202700944119416">ההתראות מוסתרות.</translation>
 <translation id="8196787716797768628">‏במצב טאבלט אפשר לעבור במהירות בין אפליקציות ולבצע פעולות שונות ב-Chromebook באמצעות תנועות.</translation>
 <translation id="8200772114523450471">חדש</translation>
 <translation id="8203795194971602413">לחיצה ימנית</translation>
@@ -789,7 +789,7 @@
 <translation id="8938800817013097409">‏מכשיר עם יציאת USB-C (יציאה ימנית מאחור)</translation>
 <translation id="8940956008527784070">‏סוללה חלשה (‎<ph name="PERCENTAGE" />%‎)</translation>
 <translation id="8983038754672563810">HSPA</translation>
-<translation id="8990809378771970590">סוג מקלדת בשימוש - <ph name="IME_NAME" /></translation>
+<translation id="8990809378771970590">מקלדת בשימוש: <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">יש לבטל את נעילת המכשיר כ-<ph name="LOGIN_ID" /> על מנת לבצע את פעולת ההודעה</translation>
 <translation id="9017320285115481645">‏יש להזין את קוד הגישה להורים של Family Link.</translation>
 <translation id="9029474291399787231">‏יש עדכון בשביל Adobe Flash Player</translation>
@@ -820,7 +820,7 @@
 <translation id="9211681782751733685"><ph name="TIME_REMAINING" /> עד לטעינה מלאה של הסוללה.</translation>
 <translation id="9215934040295798075">הגדר טפט</translation>
 <translation id="921989828232331238">הורה נעל את המכשיר שלך להיום</translation>
-<translation id="9220525904950070496">הסר חשבון</translation>
+<translation id="9220525904950070496">הסרת חשבון</translation>
 <translation id="923686485342484400">‏הקש פעמיים על Control Shift Q כדי לצאת.</translation>
 <translation id="938963181863597773">אירועים קרובים ביומן שלי</translation>
 <translation id="945522503751344254"> שליחת משוב</translation>

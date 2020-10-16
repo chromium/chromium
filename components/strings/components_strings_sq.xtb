@@ -22,6 +22,7 @@
 <translation id="1058479211578257048">Po ruhen kartat...</translation>
 <translation id="10614374240317010">Nuk u ruaj asnjëherë</translation>
 <translation id="1062160989074299343">Prc10 (Zarf)</translation>
+<translation id="1066573427009091463"><ph name="PERCENT" /> kthim parash</translation>
 <translation id="106701514854093668">Faqeshënuesit e desktopit</translation>
 <translation id="1068672505746868501">Mos përkthe asnjëherë faqet që janë në <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070901266639972381">Natë</translation>
@@ -493,6 +494,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2955913368246107853">Mbylle shiritin e gjetjes</translation>
 <translation id="2969319727213777354">Për të krijuar një lidhje të sigurt, ora duhet të vendoset në mënyrë të saktë. Kjo ndodh sepse certifikatat që përdorin faqet e internetit për t'u identifikuar janë të vlefshme vetëm për periudha të caktuara kohore. Meqenëse ora e pajisjes është e pasaktë, Google Chrome nuk mund t'i verifikojë këto certifikata.</translation>
 <translation id="2972581237482394796">&amp;Ribëje</translation>
+<translation id="2975775789586780239"><ph name="DISCOUNT" /> ulje</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, aktualisht e zgjedhur. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">Nëse aktivizohet, Chromium do të ruajë një kopje të kartës tënde në këtë pajisje për plotësim më të shpejtë të formularit.</translation>
 <translation id="2985398929374701810">Fut një adresë të vlefshme</translation>
@@ -1884,6 +1886,7 @@ Detaje shtesë:
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">E disponueshme</translation>
 <translation id="868922510921656628">Faqe për grup</translation>
+<translation id="8697373104056314601">Për të marrë nivelin më të lartë të sigurisë së Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />aktivizo mbrojtjen e përmirësuar<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="869891660844655955">Data e skadimit</translation>
 <translation id="8699041776323235191">Pajisje HID</translation>
 <translation id="8703575177326907206">Lidhja me <ph name="DOMAIN" /> nuk është e enkriptuar.</translation>

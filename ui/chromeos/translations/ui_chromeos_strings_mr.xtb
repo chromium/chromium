@@ -243,7 +243,7 @@
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> आयटम हलवले.</translation>
 <translation id="3645531960514756307">फोल्डर अनपिन करा</translation>
 <translation id="3678559383040232393">माल्टीज कीबोर्ड</translation>
-<translation id="3685122418104378273">मोबाईल डेटा वापरला जातो, तेव्हा Google ड्राइव्ह सिंक बाय डीफॉल्ट बंद केले जाते.</translation>
+<translation id="3685122418104378273">मोबाइल डेटा वापरला जातो, तेव्हा Google ड्राइव्ह सिंक बाय डीफॉल्ट बंद केले जाते.</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> रद्द करा.</translation>
 <translation id="3726463242007121105">हे डिव्हाइस उघडले जाऊ शकत नाही कारण त्याचे फाइलसिस्टम समर्थित नाही.</translation>
 <translation id="3741243925913727067">Google ड्राइव्हवर तुमच्या मीडिया डिव्हाइसच्या फोटो आणि व्हिडिओंचा बॅकअप घ्या.</translation>
@@ -559,11 +559,11 @@ Google ड्राइव्ह मधील फाइल अपडेट के
     <ph name="FILE_COUNT" />आढळले</translation>
 <translation id="6935521024859866267">उलट सुलट</translation>
 <translation id="6939777852457331078">यूएस कामगार कीबोर्ड</translation>
-<translation id="696203921837389374">मोबाईल डेटावर संकालन सुरू करा</translation>
+<translation id="696203921837389374">मोबाइल डेटावर संकालन सुरू करा</translation>
 <translation id="6965382102122355670">ठीक आहे</translation>
 <translation id="6970230597523682626">बल्गेरियन</translation>
 <translation id="6973630695168034713">फोल्डर</translation>
-<translation id="6978611942794658017">ही फाईल Windows सॉफ्‍टवेअर वापरून PC साठी डीझाइन केली आहे. ही Chrome OS चालविणार्‍या आपल्‍या डिव्‍हाइससह सुसंगत नाही. कृपया एका योग्य प्रतिस्थापन अ‍ॅपसाठी Chrome वेब स्‍टोअर शोधा.</translation>
+<translation id="6978611942794658017">ही फाईल Windows सॉफ्‍टवेअर वापरून PC साठी डिझाइन केली आहे. ही Chrome OS चालविणार्‍या आपल्‍या डिव्‍हाइससह सुसंगत नाही. कृपया एका योग्य प्रतिस्थापन अ‍ॅपसाठी Chrome वेब स्‍टोअर शोधा.</translation>
 <translation id="6979158407327259162">Google ड्राइव्ह</translation>
 <translation id="6990081529015358884">तुमची जागा समाप्त झाली आहे</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> फोल्डर निवडली</translation>
@@ -674,7 +674,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8137331602592933310">"<ph name="FILENAME" />" आपल्यासह शेअर केले गेले आहे. हे आपल्या मालकीचे नसल्यामुळे तुम्ही ते हटवू शकत नाही.</translation>
 <translation id="8145409227593688472">वुबी इनपुट पद्धत</translation>
 <translation id="8148264977957212129">पिनयिन इनपुट पद्धत</translation>
-<translation id="8151638057146502721">कॉन्फिगर करा</translation>
+<translation id="8151638057146502721">कॉंफिगर करा</translation>
 <translation id="8153607920959057464">ही फाइल प्रदर्श‍ित केली जाणे शक्य झाले नाही.</translation>
 <translation id="8154842056504218462">सर्व नोंदी निवडल्या आहेत.</translation>
 <translation id="8157684860301034423">ॲप माहिती पुन्हा मिळवता आली नाही.</translation>
@@ -757,7 +757,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />' चे सदस्य या आयटमचा ॲक्सेस मिळवतील.</translation>
 <translation id="9131598836763251128">एक किंवा अधिक फाइल निवडा</translation>
 <translation id="9133055936679483811">झिप करणे अयशस्वी. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">ही फाइल Macintosh सॉफ्टवेअर वापरणार्‍या कॉंप्युटरचा डीझाइन केली आहे. ही Chrome OS चालवणार्‍या तुमच्या डिव्हाइसशी सुसंगत नाही. कृपया एका योग्य रिप्लेसमेंट अ‍ॅपसाठी Chrome वेब स्टोअर शोधा.</translation>
+<translation id="9134524245363717059">ही फाइल Macintosh सॉफ्टवेअर वापरणार्‍या कॉंप्युटरचा डिझाइन केली आहे. ही Chrome OS चालवणार्‍या तुमच्या डिव्हाइसशी सुसंगत नाही. कृपया एका योग्य रिप्लेसमेंट अ‍ॅपसाठी Chrome वेब स्टोअर शोधा.</translation>
 <translation id="913758436357682283">म्यानमार म्यानसान कीबोर्ड</translation>
 <translation id="9148058034647219655">निर्गमन</translation>
 <translation id="9153744823707037316">ॲरे इनपुट पद्धत</translation>

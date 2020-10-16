@@ -35,14 +35,14 @@
 <translation id="2647232381348739934">‏سرویس کار با Chrome</translation>
 <translation id="2676780859508944670">در حال انجام...</translation>
 <translation id="2699970397166997657">‏کار با Chrome</translation>
-<translation id="2758123043070977469">مشکلی در احراز هویت وجود داشت، لطفاً دوباره به سیستم وارد شوید.</translation>
+<translation id="2758123043070977469">مشکلی در اصالت‌سنجی وجود داشت، لطفاً دوباره به سیستم وارد شوید.</translation>
 <translation id="2803375539583399270">پین را وارد کنید</translation>
 <translation id="2919669478609886916">‏شما در حال اشتراک‌گذاری این سیستم با کاربر دیگری هستید. آیا می‎خواهید اشتراک‎گذاری ادامه یابد؟</translation>
-<translation id="2939145106548231838">احراز هویت به میزبان</translation>
+<translation id="2939145106548231838">اصالت‌سنجی به میزبان</translation>
 <translation id="3027681561976217984">حالت لمسی</translation>
 <translation id="3106379468611574572">‏رایانه راه دور به درخواست اتصال پاسخ نمی‌‎دهد. لطفاً بررسی کنید این رایانه آنلاین باشد و دوباره امتحان کنید.</translation>
 <translation id="3150823315463303127">میزبان نتوانست خط‌مشی را بخواند.</translation>
-<translation id="3171922709365450819">این دستگاه توسط این کارخواه پشتیبیانی نمی‌شود چون نیاز به احراز هویت شخص ثالث دارد.</translation>
+<translation id="3171922709365450819">این دستگاه توسط این کارخواه پشتیبیانی نمی‌شود چون نیاز به اصالت‌سنجی شخص ثالث دارد.</translation>
 <translation id="3197730452537982411">رایانه ازراه‌دور</translation>
 <translation id="324272851072175193">ارسال این دستورالعمل با ایمیل</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> می‌خواهد تغییراتی ایجاد کند.</translation>
@@ -77,7 +77,7 @@
 <translation id="4635770493235256822">دستگاه‌های کنترل ازراه‌دور</translation>
 <translation id="4660011489602794167">نمایش صفحه‌کلید</translation>
 <translation id="4703799847237267011">‏جلسه کار با Chrome پایان یافته است.</translation>
-<translation id="4741792197137897469">‏احراز هویت انجام نشد. لطفاً دوباره وارد سیستم Chrome شوید.</translation>
+<translation id="4741792197137897469">‏اصالت‌سنجی انجام نشد. لطفاً دوباره وارد سیستم Chrome شوید.</translation>
 <translation id="4784508858340177375">‏سرور X خراب شد یا راه‌اندازی نشد.</translation>
 <translation id="4798680868612952294">گزینه‌های موشواره</translation>
 <translation id="4804818685124855865">قطع اتصال</translation>
@@ -146,7 +146,7 @@
 <translation id="7868137160098754906">لطفاً پین خودتان را برای رایانه راه دور وارد کنید.</translation>
 <translation id="7895403300744144251">خط‌مشی‌های امنیتی در رایانه راه دور به اتصالات از حساب شما اجازه نمی‌دهد.</translation>
 <translation id="7936528439960309876">متصل کردن در چپ</translation>
-<translation id="7970576581263377361">‏احراز هویت انجام نشد. لطفاً دوباره وارد سیستم Chromium شوید.</translation>
+<translation id="7970576581263377361">‏اصالت‌سنجی انجام نشد. لطفاً دوباره وارد سیستم Chromium شوید.</translation>
 <translation id="7981525049612125370">وقت جلسه راه دور تمام شد.</translation>
 <translation id="8038111231936746805">(پیش‌‏فرض)</translation>
 <translation id="8041089156583427627">ارسال بازخورد</translation>
