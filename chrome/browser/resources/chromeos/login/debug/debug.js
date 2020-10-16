@@ -675,6 +675,7 @@ cr.define('cr.ui.login.debug', function() {
     {
       id: 'encryption-migration',
       kind: ScreenKind.OTHER,
+      handledSteps: 'ready,migrating,not-enough-space',
       states: [
         {
           id: 'ready',
@@ -700,23 +701,12 @@ cr.define('cr.ui.login.debug', function() {
           },
         },
         {
-          id: 'migration-failed',
-          trigger: (screen) => {
-            screen.setUIState(3);
-          },
-        },
-        {
           id: 'not-enough-space',
           trigger: (screen) => {
             screen.setUIState(4);
-            screen.setAvailableSpaceInString('1 GB');
-            screen.setNecessarySpaceInString('2 GB');
-          },
-        },
-        {
-          id: 'migrating-minimal',
-          trigger: (screen) => {
-            screen.setUIState(5);
+            screen.setSpaceInfoInString(
+                '1 GB' /* availableSpaceSize */,
+                '2 GB' /* necessarySpaceSize */);
           },
         },
       ],

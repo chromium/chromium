@@ -9,7 +9,7 @@
 /**
  * Enum for the UI states corresponding to sub steps inside migration screen.
  * These values must be kept in sync with
- * EncryptionMigrationScreenHandler::UIState in C++ code and the order of the
+ * EncryptionMigrationScreenView::UIState in C++ code and the order of the
  * enum must be the same.
  * @enum {string}
  */
@@ -38,8 +38,7 @@ Polymer({
     'setIsResuming',
     'setBatteryState',
     'setNecessaryBatteryPercent',
-    'setAvailableSpaceInString',
-    'setNecessarySpaceInString',
+    'setSpaceInfoInString',
   ],
 
   properties: {
@@ -166,19 +165,14 @@ Polymer({
   },
 
   /**
-   * Updates the string representation of available space size.
-   * @param {string} space
+   * Updates the string representation of available space size and necessary
+   * space size.
+   * @param {string} availableSpaceSize
+   * @param {string} necessarySpaceSize
    */
-  setAvailableSpaceInString(space) {
-    this.availableSpaceInString = space;
-  },
-
-  /**
-   * Updates the string representation of necessary space size.
-   * @param {string} space
-   */
-  setNecessarySpaceInString(space) {
-    this.necessarySpaceInString = space;
+  setSpaceInfoInString(availableSpaceSize, necessarySpaceSize) {
+    this.availableSpaceInString = availableSpaceSize;
+    this.necessarySpaceInString = necessarySpaceSize;
   },
 
   /**
@@ -276,7 +270,7 @@ Polymer({
   onUpgrade_() {
     // TODO(crbug.com/1133705) Move the logic from handler to screen object and
     // use userActed call.
-    chrome.send('startMigration');
+    this.userActed('startMigration');
   },
 
   /**
@@ -285,7 +279,7 @@ Polymer({
    */
   onSkip_() {
     this.isSkipped = true;
-    chrome.send('skipMigration');
+    this.userActed('skipMigration');
   },
 
   /**
@@ -293,7 +287,7 @@ Polymer({
    * @private
    */
   onRestartOnLowStorage_() {
-    chrome.send('requestRestartOnLowStorage');
+    this.userActed('requestRestartOnLowStorage');
   },
 
   /**
@@ -301,7 +295,7 @@ Polymer({
    * @private
    */
   onRestartOnFailure_() {
-    chrome.send('requestRestartOnFailure');
+    this.userActed('requestRestartOnFailure');
   },
 
   /**
@@ -309,6 +303,6 @@ Polymer({
    * @private
    */
   onReportAnIssue_() {
-    chrome.send('openFeedbackDialog');
+    this.userActed('openFeedbackDialog');
   },
 });

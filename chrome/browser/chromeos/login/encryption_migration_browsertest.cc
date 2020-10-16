@@ -13,6 +13,7 @@
 #include "chrome/browser/chromeos/arc/policy/arc_policy_util.h"
 #include "chrome/browser/chromeos/login/login_wizard.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
+#include "chrome/browser/chromeos/login/screens/encryption_migration_screen.h"
 #include "chrome/browser/chromeos/login/test/js_checker.h"
 #include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
 #include "chrome/browser/chromeos/login/test/oobe_base_test.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/chromeos/login/test/user_policy_mixin.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
-#include "chrome/browser/ui/webui/chromeos/login/encryption_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chromeos/constants/chromeos_switches.h"
@@ -83,11 +83,12 @@ class EncryptionMigrationTest : public OobeBaseTest {
 
     FakeCryptohomeClient::Get()->set_run_default_dircrypto_migration(false);
 
-    // Configure encryption migration screen handler for test.
-    auto* handler = GetOobeUI()->GetHandler<EncryptionMigrationScreenHandler>();
-    handler->SetFreeDiskSpaceFetcherForTesting(base::BindRepeating(
+    // Configure encryption migration screen for test.
+    EncryptionMigrationScreen* screen = EncryptionMigrationScreen::Get(
+        WizardController::default_controller()->screen_manager());
+    screen->set_tick_clock_for_testing(&tick_clock_);
+    screen->set_free_disk_space_fetcher_for_testing(base::BindRepeating(
         &EncryptionMigrationTest::GetFreeSpace, base::Unretained(this)));
-    handler->SetTickClockForTesting(&tick_clock_);
   }
 
  protected:

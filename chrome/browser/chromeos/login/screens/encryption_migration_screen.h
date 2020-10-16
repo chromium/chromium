@@ -5,19 +5,48 @@
 #ifndef CHROME_BROWSER_CHROMEOS_LOGIN_SCREENS_ENCRYPTION_MIGRATION_SCREEN_H_
 #define CHROME_BROWSER_CHROMEOS_LOGIN_SCREENS_ENCRYPTION_MIGRATION_SCREEN_H_
 
+#include <memory>
+#include <string>
+
 #include "base/callback_forward.h"
+#include "base/macros.h"
+#include "base/optional.h"
+#include "base/scoped_observer.h"
 #include "chrome/browser/chromeos/login/screens/base_screen.h"
 #include "chrome/browser/chromeos/login/screens/encryption_migration_mode.h"
+#include "chrome/browser/ui/webui/chromeos/login/encryption_migration_screen_handler.h"
+#include "chromeos/cryptohome/cryptohome_parameters.h"
+#include "chromeos/dbus/cryptohome/cryptohome_client.h"
+#include "chromeos/dbus/cryptohome/rpc.pb.h"
+#include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/login/auth/user_context.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/device/public/mojom/wake_lock.mojom.h"
+#include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
+
+namespace base {
+class TickClock;
+class TimeTicks;
+}  // namespace base
 
 namespace chromeos {
 
 class EncryptionMigrationScreenView;
+class LoginFeedback;
+class ScreenManager;
 class UserContext;
 
-class EncryptionMigrationScreen : public BaseScreen {
+class EncryptionMigrationScreen : public BaseScreen,
+                                  public PowerManagerClient::Observer,
+                                  public CryptohomeClient::Observer {
  public:
   using ContinueLoginCallback = base::OnceCallback<void(const UserContext&)>;
   using RestartLoginCallback = base::OnceCallback<void(const UserContext&)>;
+
+  // Callback that can be used to check free disk space.
+  using FreeDiskSpaceFetcher = base::RepeatingCallback<int64_t()>;
+
+  static EncryptionMigrationScreen* Get(ScreenManager* manager);
 
   explicit EncryptionMigrationScreen(EncryptionMigrationScreenView* view);
   ~EncryptionMigrationScreen() override;
@@ -32,24 +61,145 @@ class EncryptionMigrationScreen : public BaseScreen {
   // Sets the migration mode.
   void SetMode(EncryptionMigrationMode mode);
 
-  // Sets a callback, which should be called when the user want to log in to the
-  // session from the migration UI.
-  void SetContinueLoginCallback(ContinueLoginCallback callback);
-
-  // Sets a callback, which should be called when the user should re-enter their
-  // password.
-  void SetRestartLoginCallback(RestartLoginCallback callback);
+  // Sets continue login callback and restart log in callback, which should be
+  // called when the user want to log in to the session from the migration UI
+  // and when the user should re-enter their password.
+  void SetOperationCallbacks(ContinueLoginCallback continue_login_callback,
+                             RestartLoginCallback restart_login_callback);
 
   // Setup the initial view in the migration UI.
   // This should be called after other state like UserContext, etc... are set.
   void SetupInitialView();
 
+  // Testing only: Sets the free disk space fetcher.
+  void set_free_disk_space_fetcher_for_testing(
+      FreeDiskSpaceFetcher free_disk_space_fetcher) {
+    free_disk_space_fetcher_ = std::move(free_disk_space_fetcher);
+  }
+
+  // Testing only: Sets the tick clock used to measure elapsed time during
+  // migration.
+  // This doesn't take the ownership of the clock. |tick_clock| must outlive
+  // the EncryptionMigrationScreenHandler instance.
+  void set_tick_clock_for_testing(const base::TickClock* tick_clock) {
+    tick_clock_ = tick_clock;
+  }
+
+ protected:
+  virtual device::mojom::WakeLock* GetWakeLock();
+
  private:
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
+  void OnUserAction(const std::string& action_id) override;
+
+  // PowerManagerClient::Observer implementation:
+  void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
+
+  // CryptohomeClient::Observer implementation:
+  void DircryptoMigrationProgress(cryptohome::DircryptoMigrationStatus status,
+                                  uint64_t current,
+                                  uint64_t total) override;
+  // Handlers for user actions.
+  void HandleStartMigration();
+  void HandleSkipMigration();
+  void HandleRequestRestartOnLowStorage();
+  void HandleRequestRestartOnFailure();
+  void HandleOpenFeedbackDialog();
+
+  // Updates UI state.
+  void UpdateUIState(EncryptionMigrationScreenView::UIState state);
+
+  void CheckAvailableStorage();
+  void OnGetAvailableStorage(int64_t size);
+  void WaitBatteryAndMigrate();
+  void StartMigration();
+  void OnMountExistingVault(base::Optional<cryptohome::BaseReply> reply);
+  // Removes cryptohome and shows the error screen after the removal finishes.
+  void RemoveCryptohome();
+  void OnRemoveCryptohome(base::Optional<cryptohome::BaseReply> reply);
+
+  // Creates authorization request for MountEx method using |user_context_|.
+  cryptohome::AuthorizationRequest CreateAuthorizationRequest();
+
+  // True if the session is in ARC kiosk mode.
+  bool IsArcKiosk() const;
+
+  // Handlers for cryptohome API callbacks.
+  void OnMigrationRequested(bool success);
+
+  // Records UMA about visible screen after delay.
+  void OnDelayedRecordVisibleScreen(
+      EncryptionMigrationScreenView::UIState state);
+
+  // True if |mode_| suggests that we are resuming an incomplete migration.
+  bool IsResumingIncompleteMigration() const;
+
+  // True if |mode_| suggests that migration should start immediately.
+  bool IsStartImmediately() const;
+
+  // True if |mode_| suggests that we are starting or resuming a minimal
+  // migration.
+  bool IsMinimalMigration() const;
+
+  // Returns the UIState we should be in when migration is in progress.
+  // This will be different between regular and minimal migration.
+  EncryptionMigrationScreenView::UIState GetMigratingUIState() const;
+
+  // Stop forcing migration if it was forced by policy.
+  void MaybeStopForcingMigration();
 
   EncryptionMigrationScreenView* view_;
+
+  // The current UI state which should be refrected in the web UI.
+  EncryptionMigrationScreenView::UIState current_ui_state_ =
+      EncryptionMigrationScreenView::INITIAL;
+
+  // The current user's UserContext, which is used to request the migration to
+  // cryptohome.
+  UserContext user_context_;
+
+  // The callback which is used to log in to the session from the migration UI.
+  ContinueLoginCallback continue_login_callback_;
+
+  // The callback which is used to require the user to re-enter their password.
+  RestartLoginCallback restart_login_callback_;
+
+  // The migration mode (ask user / start migration automatically / resume
+  // incomplete migratoin).
+  EncryptionMigrationMode mode_ = EncryptionMigrationMode::ASK_USER;
+
+  // The current battery level.
+  base::Optional<double> current_battery_percent_;
+
+  // True if the migration should start immediately once the battery level gets
+  // sufficient.
+  bool should_migrate_on_enough_battery_ = false;
+
+  // The battery level at the timing that the migration starts.
+  double initial_battery_percent_ = 0.0;
+
+  // Point in time when minimal migration started, as reported by |tick_clock_|.
+  base::TimeTicks minimal_migration_start_;
+
+  mojo::Remote<device::mojom::WakeLock> wake_lock_;
+
+  std::unique_ptr<LoginFeedback> login_feedback_;
+
+  // Used to measure elapsed time during migration.
+  const base::TickClock* tick_clock_;
+
+  FreeDiskSpaceFetcher free_disk_space_fetcher_;
+
+  std::unique_ptr<ScopedObserver<CryptohomeClient, CryptohomeClient::Observer>>
+      cryptohome_observer_;
+
+  std::unique_ptr<
+      ScopedObserver<PowerManagerClient, PowerManagerClient::Observer>>
+      power_manager_observer_;
+
+  base::WeakPtrFactory<EncryptionMigrationScreen> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(EncryptionMigrationScreen);
 };

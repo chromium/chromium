@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/chromeos/arc/arc_migration_constants.h"
 #include "chrome/browser/chromeos/login/screens/encryption_migration_mode.h"
+#include "chrome/browser/chromeos/login/screens/encryption_migration_screen.h"
 #include "chrome/browser/chromeos/login/users/mock_user_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/encryption_migration_screen_handler.h"
@@ -39,7 +40,7 @@ using ::testing::WithArgs;
 namespace chromeos {
 namespace {
 
-// Fake WakeLock implementation, required by EncryptionMigrationScreenHandler.
+// Fake WakeLock implementation, required by EncryptionMigrationScreen.
 class FakeWakeLock : public device::mojom::WakeLock {
  public:
   FakeWakeLock() {}
@@ -64,25 +65,18 @@ class FakeWakeLock : public device::mojom::WakeLock {
   bool has_wakelock_ = false;
 };
 
-// Allows access to testing-only methods of EncryptionMigrationScreenHandler.
-class TestEncryptionMigrationScreenHandler
-    : public EncryptionMigrationScreenHandler {
+// Allows access to testing-only methods of EncryptionMigrationScreen.
+class TestEncryptionMigrationScreen : public EncryptionMigrationScreen {
  public:
-  explicit TestEncryptionMigrationScreenHandler(
-      JSCallsContainer* js_calls_container)
-      : EncryptionMigrationScreenHandler(js_calls_container) {
-    SetFreeDiskSpaceFetcherForTesting(base::BindRepeating(
-        &TestEncryptionMigrationScreenHandler::FreeDiskSpaceFetcher,
+  explicit TestEncryptionMigrationScreen(EncryptionMigrationScreenView* view)
+      : EncryptionMigrationScreen(view) {
+    set_free_disk_space_fetcher_for_testing(base::BindRepeating(
+        &TestEncryptionMigrationScreen::FreeDiskSpaceFetcher,
         base::Unretained(this)));
-    SetTickClockForTesting(&testing_tick_clock_);
+    set_tick_clock_for_testing(&testing_tick_clock_);
   }
 
-  // Sets the testing WebUI.
-  void set_test_web_ui(content::TestWebUI* test_web_ui) {
-    set_web_ui(test_web_ui);
-  }
-
-  // Sets the free disk space seen by EncryptionMigrationScreenHandler.
+  // Sets the free disk space seen by EncryptionMigrationScreen.
   void set_free_disk_space(int64_t free_disk_space) {
     free_disk_space_ = free_disk_space;
   }
@@ -111,10 +105,30 @@ class TestEncryptionMigrationScreenHandler
   int64_t free_disk_space_;
 };
 
-class EncryptionMigrationScreenHandlerTest : public testing::Test {
+class MockEncryptionMigrationScreenView : public EncryptionMigrationScreenView {
  public:
-  EncryptionMigrationScreenHandlerTest() = default;
-  ~EncryptionMigrationScreenHandlerTest() override = default;
+  MockEncryptionMigrationScreenView() = default;
+  ~MockEncryptionMigrationScreenView() override = default;
+
+  MOCK_METHOD(void, Show, ());
+  MOCK_METHOD(void, Hide, ());
+  MOCK_METHOD(void, SetDelegate, (EncryptionMigrationScreen * delegate));
+  MOCK_METHOD(void,
+              SetBatteryState,
+              (double batteryPercent, bool isEnoughBattery, bool isCharging));
+  MOCK_METHOD(void, SetIsResuming, (bool isResuming));
+  MOCK_METHOD(void, SetUIState, (UIState state));
+  MOCK_METHOD(void,
+              SetSpaceInfoInString,
+              (int64_t availableSpaceSize, int64_t necessarySpaceSize));
+  MOCK_METHOD(void, SetNecessaryBatteryPercent, (double batteryPercent));
+  MOCK_METHOD(void, SetMigrationProgress, (double progress));
+};
+
+class EncryptionMigrationScreenTest : public testing::Test {
+ public:
+  EncryptionMigrationScreenTest() = default;
+  ~EncryptionMigrationScreenTest() override = default;
 
   void SetUp() override {
     // Set up a MockUserManager.
@@ -123,7 +137,7 @@ class EncryptionMigrationScreenHandlerTest : public testing::Test {
         std::make_unique<user_manager::ScopedUserManager>(
             base::WrapUnique(mock_user_manager));
 
-    // This is used by EncryptionMigrationScreenHandler to remove the existing
+    // This is used by EncryptionMigrationScreen to remove the existing
     // cryptohome. Ownership of mock_async_method_caller_ is transferred to
     // AsyncMethodCaller::InitializeForTesting.
     mock_async_method_caller_ = new cryptohome::MockAsyncMethodCaller;
@@ -142,24 +156,20 @@ class EncryptionMigrationScreenHandlerTest : public testing::Test {
     user_context_.SetKey(
         Key(Key::KeyType::KEY_TYPE_SALTED_SHA256, "salt", "secret"));
 
-    js_calls_container_.ExecuteDeferredJSCalls(&test_web_ui_);
-    encryption_migration_screen_handler_ =
-        std::make_unique<TestEncryptionMigrationScreenHandler>(
-            &js_calls_container_);
-    encryption_migration_screen_handler_->set_test_web_ui(&test_web_ui_);
-    encryption_migration_screen_handler_->SetContinueLoginCallback(
-        base::BindOnce(&EncryptionMigrationScreenHandlerTest::OnContinueLogin,
+    encryption_migration_screen_ =
+        std::make_unique<TestEncryptionMigrationScreen>(&mock_view_);
+    encryption_migration_screen_->SetOperationCallbacks(
+        base::BindOnce(&EncryptionMigrationScreenTest::OnContinueLogin,
+                       base::Unretained(this)),
+        base::BindOnce(&EncryptionMigrationScreenTest::OnRestartLogin,
                        base::Unretained(this)));
-    encryption_migration_screen_handler_->SetRestartLoginCallback(
-        base::BindOnce(&EncryptionMigrationScreenHandlerTest::OnRestartLogin,
-                       base::Unretained(this)));
-    encryption_migration_screen_handler_->set_free_disk_space(
+    encryption_migration_screen_->set_free_disk_space(
         arc::kMigrationMinimumAvailableStorage);
-    encryption_migration_screen_handler_->SetUserContext(user_context_);
+    encryption_migration_screen_->SetUserContext(user_context_);
   }
 
   void TearDown() override {
-    encryption_migration_screen_handler_.reset();
+    encryption_migration_screen_.reset();
 
     PowerPolicyController::Shutdown();
     PowerManagerClient::Shutdown();
@@ -168,16 +178,18 @@ class EncryptionMigrationScreenHandlerTest : public testing::Test {
   }
 
  protected:
+  // A pointer to the EncryptionMigrationScreen used in this test.
+  std::unique_ptr<TestEncryptionMigrationScreen> encryption_migration_screen_;
+
+  // Accessory objects needed by EncryptionMigrationScreen.
+  MockEncryptionMigrationScreenView mock_view_;
+
   // Must be the first member.
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_enabler_;
   FakeCryptohomeClient* fake_cryptohome_client_ = nullptr;  // unowned
   cryptohome::MockAsyncMethodCaller* mock_async_method_caller_ = nullptr;
-  JSCallsContainer js_calls_container_;
-  std::unique_ptr<TestEncryptionMigrationScreenHandler>
-      encryption_migration_screen_handler_;
-  content::TestWebUI test_web_ui_;
 
   // Will be set to true in ContinueLogin.
   bool continue_login_callback_called_ = false;
@@ -189,7 +201,7 @@ class EncryptionMigrationScreenHandlerTest : public testing::Test {
   UserContext user_context_;
 
  private:
-  // This will be called by EncryptionMigrationScreenHandler upon finished
+  // This will be called by EncryptionMigrationScreen upon finished
   // minimal migration when sign-in should continue.
   void OnContinueLogin(const UserContext& user_context) {
     EXPECT_FALSE(continue_login_callback_called_)
@@ -200,7 +212,7 @@ class EncryptionMigrationScreenHandlerTest : public testing::Test {
     continue_login_callback_called_ = true;
   }
 
-  // This will be called by EncryptionMigrationScreenHandler upon finished
+  // This will be called by EncryptionMigrationScreen upon finished
   // minimal migration when the user should re-enter their password.
   void OnRestartLogin(const UserContext& user_context) {
     EXPECT_FALSE(continue_login_callback_called_)
@@ -215,22 +227,20 @@ class EncryptionMigrationScreenHandlerTest : public testing::Test {
 }  // namespace
 
 // Tests handling of a minimal migration run that finishes immediately.
-TEST_F(EncryptionMigrationScreenHandlerTest, MinimalMigration) {
-  encryption_migration_screen_handler_->SetMode(
+TEST_F(EncryptionMigrationScreenTest, MinimalMigration) {
+  encryption_migration_screen_->SetMode(
       EncryptionMigrationMode::START_MINIMAL_MIGRATION);
-  encryption_migration_screen_handler_->SetupInitialView();
+  encryption_migration_screen_->SetupInitialView();
 
   task_environment_.RunUntilIdle();
 
-  EXPECT_TRUE(
-      encryption_migration_screen_handler_->fake_wake_lock()->HasWakeLock());
+  EXPECT_TRUE(encryption_migration_screen_->fake_wake_lock()->HasWakeLock());
   fake_cryptohome_client_->NotifyDircryptoMigrationProgress(
       cryptohome::DircryptoMigrationStatus::DIRCRYPTO_MIGRATION_SUCCESS,
       0 /* current */, 0 /* total */);
 
   EXPECT_TRUE(continue_login_callback_called_);
-  EXPECT_FALSE(
-      encryption_migration_screen_handler_->fake_wake_lock()->HasWakeLock());
+  EXPECT_FALSE(encryption_migration_screen_->fake_wake_lock()->HasWakeLock());
   EXPECT_TRUE(fake_cryptohome_client_->to_migrate_from_ecryptfs());
   EXPECT_TRUE(fake_cryptohome_client_->minimal_migration());
   EXPECT_EQ(cryptohome::CreateAccountIdentifierFromAccountId(
@@ -244,10 +254,10 @@ TEST_F(EncryptionMigrationScreenHandlerTest, MinimalMigration) {
 // Tests handling of a resumed minimal migration run. This should behave the
 // same way that a freshly started minimal migration does (only UMA stats are
 // different, but we don't test that at the moment).
-TEST_F(EncryptionMigrationScreenHandlerTest, ResumeMinimalMigration) {
-  encryption_migration_screen_handler_->SetMode(
+TEST_F(EncryptionMigrationScreenTest, ResumeMinimalMigration) {
+  encryption_migration_screen_->SetMode(
       EncryptionMigrationMode::RESUME_MINIMAL_MIGRATION);
-  encryption_migration_screen_handler_->SetupInitialView();
+  encryption_migration_screen_->SetupInitialView();
 
   task_environment_.RunUntilIdle();
 
@@ -267,16 +277,16 @@ TEST_F(EncryptionMigrationScreenHandlerTest, ResumeMinimalMigration) {
 }
 
 // Tests handling of a minimal migration run that takes a long time to finish.
-// We expect that EncryptionMigrationScreenHandler will require the user to
-// re-enter their password.
-TEST_F(EncryptionMigrationScreenHandlerTest, MinimalMigrationSlow) {
-  encryption_migration_screen_handler_->SetMode(
+// We expect that EncryptionMigrationScreen will require the user to re-enter
+// their password.
+TEST_F(EncryptionMigrationScreenTest, MinimalMigrationSlow) {
+  encryption_migration_screen_->SetMode(
       EncryptionMigrationMode::START_MINIMAL_MIGRATION);
-  encryption_migration_screen_handler_->SetupInitialView();
+  encryption_migration_screen_->SetupInitialView();
 
   task_environment_.RunUntilIdle();
 
-  encryption_migration_screen_handler_->testing_tick_clock()->Advance(
+  encryption_migration_screen_->testing_tick_clock()->Advance(
       base::TimeDelta::FromMinutes(1));
   fake_cryptohome_client_->NotifyDircryptoMigrationProgress(
       cryptohome::DircryptoMigrationStatus::DIRCRYPTO_MIGRATION_SUCCESS,
@@ -294,14 +304,14 @@ TEST_F(EncryptionMigrationScreenHandlerTest, MinimalMigrationSlow) {
 }
 
 // Tests handling of a minimal migration run that fails.
-TEST_F(EncryptionMigrationScreenHandlerTest, MinimalMigrationFails) {
-  encryption_migration_screen_handler_->SetMode(
+TEST_F(EncryptionMigrationScreenTest, MinimalMigrationFails) {
+  encryption_migration_screen_->SetMode(
       EncryptionMigrationMode::START_MINIMAL_MIGRATION);
-  encryption_migration_screen_handler_->SetupInitialView();
+  encryption_migration_screen_->SetupInitialView();
 
   task_environment_.RunUntilIdle();
 
-  encryption_migration_screen_handler_->testing_tick_clock()->Advance(
+  encryption_migration_screen_->testing_tick_clock()->Advance(
       base::TimeDelta::FromMinutes(1));
   fake_cryptohome_client_->NotifyDircryptoMigrationProgress(
       cryptohome::DircryptoMigrationStatus::DIRCRYPTO_MIGRATION_FAILED,

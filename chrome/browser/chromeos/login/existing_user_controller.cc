@@ -955,11 +955,11 @@ void ExistingUserController::ShowEncryptionMigrationScreen(
   DCHECK(migration_screen);
   migration_screen->SetUserContext(user_context);
   migration_screen->SetMode(migration_mode);
-  migration_screen->SetContinueLoginCallback(base::BindOnce(
-      &ExistingUserController::ContinuePerformLogin, weak_factory_.GetWeakPtr(),
-      login_performer_->auth_mode()));
-  migration_screen->SetRestartLoginCallback(base::BindOnce(
-      &ExistingUserController::RestartLogin, weak_factory_.GetWeakPtr()));
+  migration_screen->SetOperationCallbacks(
+      base::BindOnce(&ExistingUserController::ContinuePerformLogin,
+                     weak_factory_.GetWeakPtr(), login_performer_->auth_mode()),
+      base::BindOnce(&ExistingUserController::RestartLogin,
+                     weak_factory_.GetWeakPtr()));
   migration_screen->SetupInitialView();
 }
 
