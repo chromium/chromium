@@ -48,6 +48,7 @@ const char* kBuildRevisionKey = "git-revision";
 const char* kIssueKey = "gerrit-issue";
 const char* kPatchSetKey = "gerrit-patchset";
 const char* kJobIdKey = "buildbucket-id";
+const char* kCodeReviewSystemKey = "code-review-system";
 
 const char* kNoLuciAuth = "no-luci-auth";
 const char* kBypassSkiaGoldFunctionality = "bypass-skia-gold-functionality";
@@ -175,7 +176,7 @@ void SkiaGoldPixelDiff::InitSkiaGold() {
     cmd.AppendSwitchASCII("issue", issue_);
     cmd.AppendSwitchASCII("patchset", patchset_);
     cmd.AppendSwitchASCII("jobid", job_id_);
-    cmd.AppendSwitchASCII("crs", "gerrit");
+    cmd.AppendSwitchASCII("crs", code_review_system_);
     cmd.AppendSwitchASCII("cis", "buildbucket");
   }
 
@@ -205,6 +206,10 @@ void SkiaGoldPixelDiff::Init(const std::string& screenshot_prefix,
     issue_ = cmd_line->GetSwitchValueASCII(kIssueKey);
     patchset_ = cmd_line->GetSwitchValueASCII(kPatchSetKey);
     job_id_ = cmd_line->GetSwitchValueASCII(kJobIdKey);
+    code_review_system_ = cmd_line->GetSwitchValueASCII(kCodeReviewSystemKey);
+    if (code_review_system_.empty()) {
+      code_review_system_ = "gerrit";
+    }
   }
   if (cmd_line->HasSwitch(kNoLuciAuth)) {
     luci_auth_ = false;

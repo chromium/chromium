@@ -80,6 +80,9 @@ class SkiaGoldPixelDiff {
   std::string patchset_;
   // Buildbucket build id.
   std::string job_id_;
+  // Which code review system is being used, typically "gerrit" for Chromium
+  // and "gerrit-internal" for Chrome.
+  std::string code_review_system_;
   // The working dir for goldctl. It's the dir for storing temporary files.
   base::FilePath working_dir_;
 

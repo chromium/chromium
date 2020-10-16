@@ -201,5 +201,56 @@ TEST_F(SkiaGoldPixelDiffTest, ExplicitCorpus) {
   EXPECT_TRUE(ret);
 }
 
+TEST_F(SkiaGoldPixelDiffTest, DefaultCodeReviewSystem) {
+  auto* cmd_line = base::CommandLine::ForCurrentProcess();
+  cmd_line->AppendSwitchASCII("gerrit-issue", "1");
+  cmd_line->AppendSwitchASCII("gerrit-patchset", "2");
+  cmd_line->AppendSwitchASCII("buildbucket-id", "3");
+
+  SkBitmap bitmap;
+  SkImageInfo info =
+      SkImageInfo::Make(10, 10, SkColorType::kBGRA_8888_SkColorType,
+                        SkAlphaType::kPremul_SkAlphaType);
+  bitmap.allocPixels(info, 10 * 4);
+
+  MockSkiaGoldPixelDiff mock_pixel;
+  EXPECT_CALL(mock_pixel, LaunchProcess(_)).Times(AnyNumber());
+  EXPECT_CALL(
+      mock_pixel,
+      LaunchProcess(AllOf(Property(&base::CommandLine::GetCommandLineString,
+                                   HasSubstr(FILE_PATH_LITERAL("gerrit"))))))
+      .Times(1);
+  mock_pixel.Init("Prefix");
+  bool ret = mock_pixel.CompareScreenshot("test", bitmap);
+  EXPECT_TRUE(ret);
+}
+
+TEST_F(SkiaGoldPixelDiffTest, ExplicitCodeReviewSystem) {
+  auto* cmd_line = base::CommandLine::ForCurrentProcess();
+  cmd_line->AppendSwitchASCII("gerrit-issue", "1");
+  cmd_line->AppendSwitchASCII("gerrit-patchset", "2");
+  cmd_line->AppendSwitchASCII("buildbucket-id", "3");
+  cmd_line->AppendSwitchASCII("code-review-system", "new-crs");
+
+  SkBitmap bitmap;
+  SkImageInfo info =
+      SkImageInfo::Make(10, 10, SkColorType::kBGRA_8888_SkColorType,
+                        SkAlphaType::kPremul_SkAlphaType);
+  bitmap.allocPixels(info, 10 * 4);
+
+  MockSkiaGoldPixelDiff mock_pixel;
+  EXPECT_CALL(mock_pixel, LaunchProcess(_)).Times(AnyNumber());
+  EXPECT_CALL(mock_pixel,
+              LaunchProcess(
+                  AllOf(Property(&base::CommandLine::GetCommandLineString,
+                                 HasSubstr(FILE_PATH_LITERAL("new-crs"))),
+                        Property(&base::CommandLine::GetCommandLineString,
+                                 Not(HasSubstr(FILE_PATH_LITERAL("gerrit")))))))
+      .Times(1);
+  mock_pixel.Init("Prefix");
+  bool ret = mock_pixel.CompareScreenshot("test", bitmap);
+  EXPECT_TRUE(ret);
+}
+
 }  // namespace test
 }  // namespace ui
