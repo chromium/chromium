@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "media/audio/wav_audio_handler.h"
 #include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,6 +41,8 @@ class SodaClientUnitTest : public testing::Test {
  protected:
   void SetUp() override;
 
+  // The root directory for test files.
+  base::FilePath test_data_dir_;
   std::unique_ptr<soda::SodaClient> soda_client_;
   std::vector<std::string> recognition_results_;
 };
@@ -58,7 +61,8 @@ void SodaClientUnitTest::AddRecognitionResult(std::string result) {
 }
 
 void SodaClientUnitTest::SetUp() {
-  auto libsoda_path = base::FilePath(kSodaResourcesDir)
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir_));
+  auto libsoda_path = test_data_dir_.Append(base::FilePath(kSodaResourcesDir))
                           .Append(base::FilePath(kSodaTestBinaryRelativePath));
   ASSERT_TRUE(base::PathExists(libsoda_path));
   soda_client_ = std::make_unique<soda::SodaClient>(libsoda_path);
@@ -67,7 +71,7 @@ void SodaClientUnitTest::SetUp() {
 }
 
 TEST_F(SodaClientUnitTest, CreateSodaClient) {
-  auto audio_file = base::FilePath(kSodaResourcesDir)
+  auto audio_file = test_data_dir_.Append(base::FilePath(kSodaResourcesDir))
                         .Append(base::FilePath(kSodaTestAudioRelativePath));
   ASSERT_TRUE(base::PathExists(audio_file));
 
@@ -79,7 +83,7 @@ TEST_F(SodaClientUnitTest, CreateSodaClient) {
   ASSERT_EQ(handler->num_channels(), 1);
 
   auto config_file_path =
-      base::FilePath(kSodaResourcesDir)
+      test_data_dir_.Append(base::FilePath(kSodaResourcesDir))
           .Append(base::FilePath(kSodaTestonfigRelativePath));
   ASSERT_TRUE(base::PathExists(config_file_path));
   SodaConfig config;

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -44,6 +45,9 @@ class SpeechRecognitionServiceTest
   }
   ~SpeechRecognitionServiceTest() override = default;
 
+  // InProcessBrowserTest
+  void SetUp() override;
+
   // media::mojom::SpeechRecognitionRecognizerClient
   void OnSpeechRecognitionRecognitionEvent(
       media::mojom::SpeechRecognitionResultPtr result) override;
@@ -56,6 +60,10 @@ class SpeechRecognitionServiceTest
 
  protected:
   void LaunchService();
+
+  // The root directory for test files.
+  base::FilePath test_data_dir_;
+
   base::test::ScopedFeatureList scoped_feature_list_;
   mojo::Remote<media::mojom::SpeechRecognitionContext>
       speech_recognition_context_;
@@ -70,6 +78,11 @@ class SpeechRecognitionServiceTest
 
   DISALLOW_COPY_AND_ASSIGN(SpeechRecognitionServiceTest);
 };
+
+void SpeechRecognitionServiceTest::SetUp() {
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir_));
+  InProcessBrowserTest::SetUp();
+}
 
 void SpeechRecognitionServiceTest::OnSpeechRecognitionRecognitionEvent(
     media::mojom::SpeechRecognitionResultPtr result) {
@@ -112,14 +125,16 @@ void SpeechRecognitionServiceTest::LaunchService() {
 IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, RecognizePhrase) {
   ProfileManager::GetActiveUserProfile()->GetPrefs()->SetFilePath(
       prefs::kSodaBinaryPath,
-      base::FilePath(kSodaResourcesDir).Append(kSodaBinaryRelativePath));
+      test_data_dir_.Append(base::FilePath(kSodaResourcesDir))
+          .Append(kSodaBinaryRelativePath));
   ProfileManager::GetActiveUserProfile()->GetPrefs()->SetFilePath(
       prefs::kSodaEnUsConfigPath,
-      base::FilePath(kSodaResourcesDir).Append(kSodaLanguagePackRelativePath));
+      test_data_dir_.Append(base::FilePath(kSodaResourcesDir))
+          .Append(kSodaLanguagePackRelativePath));
   LaunchService();
 
   std::string buffer;
-  auto audio_file = base::FilePath(kSodaResourcesDir)
+  auto audio_file = test_data_dir_.Append(base::FilePath(kSodaResourcesDir))
                         .Append(base::FilePath(kSodaTestAudioRelativePath));
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
