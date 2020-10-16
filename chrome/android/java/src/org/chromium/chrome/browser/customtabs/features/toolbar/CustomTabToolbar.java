@@ -150,6 +150,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private View mLiteStatusSeparatorView;
     private UrlBarCoordinator mUrlCoordinator;
     private TextView mTitleBar;
+    private ImageButton mIncognitoButton;
     private ImageButton mSecurityButton;
     private LinearLayout mCustomActionButtons;
     private ImageButton mCloseButton;
@@ -206,6 +207,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mLocationBarFrameLayout = findViewById(R.id.location_bar_frame_layout);
         mTitleUrlContainer = findViewById(R.id.title_url_container);
         mTitleUrlContainer.setOnLongClickListener(this);
+        mIncognitoButton = findViewById(R.id.incognito_cct_logo_button);
         mSecurityButton = findViewById(R.id.security_button);
         mCustomActionButtons = findViewById(R.id.action_buttons);
         mCloseButton = findViewById(R.id.close_button);
@@ -395,6 +397,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     private void updateToolbarLayoutMargin() {
+        // We show the Incognito logo for Incognito CCT case
+        if (mToolbarDataProvider.isIncognito()) mIncognitoButton.setVisibility(VISIBLE);
+
         int startMargin = calculateStartMarginWhenCloseButtonVisibilityGone();
 
         updateStartMarginOfVisibleElementsUntilLocationBarFrameLayout(startMargin);

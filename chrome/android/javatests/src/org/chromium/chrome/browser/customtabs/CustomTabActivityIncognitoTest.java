@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -31,6 +36,7 @@ import android.widget.RemoteViews;
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -181,6 +187,24 @@ public class CustomTabActivityIncognitoTest {
         Intent intent = createMinimalIncognitoCustomTabIntent();
         CustomTabActivity activity = launchIncognitoCustomTab(intent);
         assertEquals(getIncognitoThemeColor(activity), getToolbarColor(activity));
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
+    public void toolbarHasIncognitoLogo() throws Exception {
+        Intent intent = createMinimalIncognitoCustomTabIntent();
+        launchIncognitoCustomTab(intent);
+        Espresso.onView(withId(R.id.incognito_cct_logo_button)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Features.DisableFeatures({ChromeFeatureList.CCT_INCOGNITO})
+    public void toolbarDoesNotHaveIncognitoLogo() throws Exception {
+        Intent intent = createMinimalIncognitoCustomTabIntent();
+        launchIncognitoCustomTab(intent);
+        Espresso.onView(withId(R.id.incognito_cct_logo_button)).check(matches(not(isDisplayed())));
     }
 
     @Test
