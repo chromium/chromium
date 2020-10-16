@@ -8,6 +8,7 @@
 
 #include <fuchsia/sys/cpp/fidl.h>
 #include <lib/fdio/directory.h>
+#include <lib/fdio/fd.h>
 #include <lib/sys/cpp/component_context.h>
 #include <zircon/processargs.h>
 #include <utility>
