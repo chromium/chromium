@@ -6657,6 +6657,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kKaleidoscopeModuleDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(media::kKaleidoscopeModule)},
 
+    {"insert-key-toggle-mode", flag_descriptions::kInsertKeyToggleModeName,
+     flag_descriptions::kInsertKeyToggleModeDescription,
+     kOsWin | kOsLinux | kOsCrOS,
+     FEATURE_VALUE_TYPE(blink::features::kInsertKeyToggleMode)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

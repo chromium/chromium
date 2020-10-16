@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/editing/commands/editor_command.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
@@ -718,8 +719,14 @@ static bool ExecuteToggleOverwrite(LocalFrame& frame,
                                    Event*,
                                    EditorCommandSource,
                                    const String&) {
-  frame.GetEditor().ToggleOverwriteModeEnabled();
-  return true;
+  // Overwrite mode is disabled by-default. We only return true
+  // if the flag is enabled explicitly by the user in about:flags page.
+  if (base::FeatureList::IsEnabled(features::kInsertKeyToggleMode)) {
+    frame.GetEditor().ToggleOverwriteModeEnabled();
+    return true;
+  }
+  // We return false to match the expectation of the ExecCommand.
+  return false;
 }
 
 static bool ExecutePrint(LocalFrame& frame,

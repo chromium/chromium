@@ -1293,6 +1293,11 @@ const char kInProductHelpDemoModeChoiceName[] = "In-Product Help Demo Mode";
 const char kInProductHelpDemoModeChoiceDescription[] =
     "Selects the In-Product Help demo mode.";
 
+const char kInsertKeyToggleModeName[] = "Insert key toggles Overwrite mode";
+const char kInsertKeyToggleModeDescription[] =
+    "Toggles Overwrite mode on or off each time the Insert key is pressed in a "
+    "text editor.";
+
 const char kInstalledAppsInCbdName[] = "Installed Apps in Clear Browsing Data";
 const char kInstalledAppsInCbdDescription[] =
     "Adds the installed apps warning dialog to the clear browsing data flow "

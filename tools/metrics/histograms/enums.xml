@@ -44378,6 +44378,7 @@ from previous Chrome versions.
   <int value="731779469" label="BlinkHeapUnifiedGarbageCollection:enabled"/>
   <int value="732703958" label="enable-gesture-tap-highlight"/>
   <int value="734900932" label="RecurrentInterstitialFeature:enabled"/>
+  <int value="735393448" label="InsertKeyToggleMode:disabled"/>
   <int value="736911267" label="ExperimentalCrostiniUI:disabled"/>
   <int value="737421745" label="enable-accessibility-object-model"/>
   <int value="738868972" label="GdiTextPrinting:disabled"/>
@@ -44839,6 +44840,7 @@ from previous Chrome versions.
   <int value="1216286283" label="tint-composited-content"/>
   <int value="1216452475" label="SyncUSSAutofillProfile:disabled"/>
   <int value="1217907443" label="spurious-power-button-keyboard-accel"/>
+  <int value="1219199527" label="InsertKeyToggleMode:enabled"/>
   <int value="1219317631" label="ContextualSuggestionsAboveArticles:disabled"/>
   <int value="1219628795" label="PrintScaling:disabled"/>
   <int value="1219826373" label="ServiceWorkerNavigationPreload:enabled"/>

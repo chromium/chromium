@@ -2884,6 +2884,14 @@
     "expiry_milestone": 84
   },
   {
+    "name": "insert-key-toggle-mode",
+    "owners": [ "snianu", "ericlaw" ],
+    // This flag is temporary as we want to eventually remove the support for
+    // Overwrite mode when insert key is pressed. Currently it is disabled
+    // by-default.
+    "expiry_milestone": 91
+  },
+  {
     "name": "installable-ink-drop",
     "owners": [ "collinbaker", "pbos" ],
     "expiry_milestone": 90

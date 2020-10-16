@@ -162,6 +162,11 @@ const base::Feature kImplicitRootScroller {
 #endif
 };
 
+// Enables toggling overwrite mode when insert key is pressed.
+// https://crbug.com/1030231.
+const base::Feature kInsertKeyToggleMode = {"InsertKeyToggleMode",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables Raw Clipboard. https://crbug.com/897289.
 const base::Feature kRawClipboard{"RawClipboard",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
