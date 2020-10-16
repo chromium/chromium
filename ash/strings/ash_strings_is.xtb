@@ -61,6 +61,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1479909375538722835">Fljótandi aðgengisvalmynd</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">Þessi eigandareikningur verður að vera fyrsti innskráði reikningurinn í lotu fyrir margar innskráningar.</translation>
+<translation id="1510238584712386396">Ræsiforrit</translation>
 <translation id="1516740043221086139">Kveikt er á „Ónáðið ekki“.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Sýna tilkynningastillingar. Slökkt er á tilkynningum fyrir forrit}one{Sýna tilkynningastillingar. Slökkt er á tilkynningum fyrir # forrit}other{Sýna tilkynningastillingar. Slökkt er á tilkynningum fyrir # forrit}}</translation>
 <translation id="1525508553941733066">LOKA</translation>
@@ -675,6 +676,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="7904094684485781019">Stjórnandi þessa reiknings hefur gert innskráningu á marga reikninga óvirka.</translation>
 <translation id="7933084174919150729">Google hjálparinn er aðeins í boði fyrir aðalprófíl.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> og <ph name="SECOND_PARENT_EMAIL" /> stjórna þessum reikningi</translation>
+<translation id="793716872548410480">Ýttu á <ph name="SHORTCUT_KEY_NAME" /> + V til að skoða klippiborðið. Síðustu 5 atriðin sem þú afritaðir eru vistuð á klippiborðinu.</translation>
 <translation id="7955885781510802139">Mikil birtuskil</translation>
 <translation id="7977927628060636163">Leitar að farsímakerfum...</translation>
 <translation id="7980780401175799550">Prófaðu nýjar leiðir til að nota Chrome OS</translation>

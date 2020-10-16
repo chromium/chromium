@@ -61,6 +61,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1479909375538722835">Floating accessibility menu</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">This owner account has to be the first signed-in account in a multiple sign-in session.</translation>
+<translation id="1510238584712386396">Launcher</translation>
 <translation id="1516740043221086139">Do Not Disturb is on.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Show notification settings. Notifications are off for an app}other{Show notification settings. Notifications are off for # apps}}</translation>
 <translation id="1525508553941733066">DISMISS</translation>
@@ -675,6 +676,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="7904094684485781019">The administrator for this account has disallowed multiple sign-in.</translation>
 <translation id="7933084174919150729">The Google Assistant is only available for primary profile.</translation>
 <translation id="79341161159229895">Account managed by <ph name="FIRST_PARENT_EMAIL" /> and <ph name="SECOND_PARENT_EMAIL" /></translation>
+<translation id="793716872548410480">Press <ph name="SHORTCUT_KEY_NAME" /> + V to view your clipboard. The last five items that you've copied are saved to your clipboard.</translation>
 <translation id="7955885781510802139">High-contrast mode</translation>
 <translation id="7977927628060636163">Searching for mobile networks...</translation>
 <translation id="7980780401175799550">Try new ways to navigate Chrome OS</translation>

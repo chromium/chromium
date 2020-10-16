@@ -2795,6 +2795,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="425573743389990240">Tasa de descarga de batería en vatios (un valor negativo significa que la batería se está cargando)</translation>
 <translation id="4256316378292851214">Guardar &amp;video como...</translation>
 <translation id="4258348331913189841">Sistemas de archivos</translation>
+<translation id="4259388776256904261">Esta acción puede demorar unos minutos</translation>
 <translation id="4260182282978351200">Es posible que el archivo <ph name="FILE_NAME" /> sea peligroso. ¿Quieres enviarlo al Programa de Protección Avanzada de Google para que lo analicemos? Presiona mayúscula + F6 para ir al área de la barra de descargas.</translation>
 <translation id="4263223596040212967">Comprueba el diseño de tu teclado y vuelve a intentarlo.</translation>
 <translation id="4263757076580287579">Se canceló el registro de la impresora.</translation>
@@ -2902,6 +2903,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4400632832271803360">Mantén presionada la tecla de Launcher para cambiar el comportamiento de las teclas en la fila superior</translation>
 <translation id="4400963414856942668">Puedes hacer clic en la estrella para agregar una pestaña a favoritos</translation>
 <translation id="4403775189117163360">Elegir otra carpeta</translation>
+<translation id="440391631796167175">No se encontraron contraseñas poco seguras</translation>
 <translation id="4404136731284211429">Volver a analizar</translation>
 <translation id="4404843640767531781">Tu padre o madre bloquearon <ph name="APP_NAME" />. Si quieres usar esa app, pídeles permiso.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -5055,6 +5057,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6995899638241819463">Advertirme si quedan expuestas las contraseñas ante una violación de la seguridad de los datos</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" />: Registro de actividad</translation>
 <translation id="6997707937646349884">En tus dispositivos:</translation>
+<translation id="6998093258894828179">Ocultar tarjetas</translation>
 <translation id="6998793565256476099">Inscribe el dispositivo para realizar videoconferencias</translation>
 <translation id="6999956497249459195">Grupo nuevo</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> está conectada, pero debe configurarse</translation>
@@ -5725,6 +5728,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7798844538707273832">Se bloqueó automáticamente <ph name="PERMISSION" /></translation>
 <translation id="7799299114731150374">Se estableció el fondo de pantalla correctamente</translation>
 <translation id="7800518121066352902">Girar &amp;a la izquierda</translation>
+<translation id="7802539296536804623">No se muestran tarjetas en esta página</translation>
 <translation id="780301667611848630">No, gracias</translation>
 <translation id="7804072833593604762">Pestaña cerrada</translation>
 <translation id="7805768142964895445">Estado</translation>
@@ -6177,6 +6181,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8300011035382349091">Edita el favorito para esta pestaña</translation>
 <translation id="8300374739238450534">Azul noche</translation>
 <translation id="8300849813060516376">OTASP falló</translation>
+<translation id="8304383784961451596">No tienes autorización para usar este dispositivo. Comunícate con el administrador para solicitar permiso de acceso o bien accede con una Cuenta de Google supervisada por Family Link.</translation>
 <translation id="8308179586020895837">Preguntar si <ph name="HOST" /> quiere acceder a la cámara</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">El certificado ya existe</translation>

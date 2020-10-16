@@ -61,6 +61,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1479909375538722835">Plutajući meni za pristupačnost</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">Ovaj vlasnik računa mora biti prvi prijavljeni račun u sesiji višestruke prijave.</translation>
+<translation id="1510238584712386396">Pokretač</translation>
 <translation id="1516740043221086139">Uključen je način rada Ne ometaj.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Prikaži postavke obavještenja. Obavještenja aplikacije su isključena.}one{Prikaži postavke obavještenja. Obavještenja za # aplikaciju su isključena.}few{Prikaži postavke obavještenja. Obavještenja za # aplikacije su isključena.}other{Prikaži postavke obavještenja. Obavještenja za # aplikacija su isključena.}}</translation>
 <translation id="1525508553941733066">ODBACI</translation>
@@ -675,6 +676,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="7904094684485781019">Administrator ovog računa nije dozvolio višestruku prijavu.</translation>
 <translation id="7933084174919150729">Google Asistent je dostupan samo za primarni profil.</translation>
 <translation id="79341161159229895">Računom upravlja <ph name="FIRST_PARENT_EMAIL" /> i <ph name="SECOND_PARENT_EMAIL" /></translation>
+<translation id="793716872548410480">Pritisnite <ph name="SHORTCUT_KEY_NAME" /> + V da vidite međumemoriju. Posljednjih 5 kopiranih stavki se pohranjuje u međumemoriju.</translation>
 <translation id="7955885781510802139">Način rada visokog kontrasta</translation>
 <translation id="7977927628060636163">Traženje mobilnih mreža...</translation>
 <translation id="7980780401175799550">Isprobajte nove načine navigiranja Chrome OS-om</translation>

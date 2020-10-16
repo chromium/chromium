@@ -61,6 +61,7 @@
 <translation id="1479909375538722835">悬浮无障碍功能菜单</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">在多帐号登录会话中，此所有者帐号必须是最先登录的帐号。</translation>
+<translation id="1510238584712386396">启动器</translation>
 <translation id="1516740043221086139">“勿扰”模式已开启。</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{显示通知设置。针对 1 个应用关闭通知}other{显示通知设置。针对 # 个应用关闭通知}}</translation>
 <translation id="1525508553941733066">关闭</translation>

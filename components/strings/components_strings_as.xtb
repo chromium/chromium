@@ -22,6 +22,7 @@
 <translation id="1058479211578257048">কার্ডসমূহ ছেভ কৰি থকা হৈছে...</translation>
 <translation id="10614374240317010">কেতিয়াও ছেভ কৰা নহয়</translation>
 <translation id="1062160989074299343">Prc10 (লেফাফা)</translation>
+<translation id="1066573427009091463"><ph name="PERCENT" /> কেশ্ব বেক</translation>
 <translation id="106701514854093668">ডেস্কটপ বুকমার্ক</translation>
 <translation id="1068672505746868501">পৃষ্ঠা <ph name="SOURCE_LANGUAGE" />লৈ কেতিয়াও অনুবাদ নকৰিব</translation>
 <translation id="1070901266639972381">নিশা</translation>
@@ -496,6 +497,7 @@
 <translation id="2955913368246107853">সন্ধান কৰা বাৰ বন্ধ কৰক</translation>
 <translation id="2969319727213777354">কোনো সুৰক্ষিত সংযোগ স্থাপন কৰিবলৈ আপোনাৰ ডিভাইচৰ ঘড়ীটো সঠিককৈ ছেট কৰাৰ আৱশ্যক। ইয়াৰ কাৰণ হৈছে যে ৱেবছাইটসমূহে নিজৰ পৰিচয় চিনাক্ত কৰিবলৈ ব্যৱহাৰ কৰা প্ৰমাণপত্ৰসমূহ কোনো নির্দিষ্ট সময়ৰ পৰিসৰৰ বাবেহে মান্য হয়। আপোনাৰ ডিভাইচৰ ঘড়ীটো অশুদ্ধ হোৱাৰ বাবে Google Chromeএ প্ৰমাণপত্ৰসমূহ সত্যাপন কৰিব নোৱাৰে।</translation>
 <translation id="2972581237482394796">&amp;ৰিডু কৰক</translation>
+<translation id="2975775789586780239"><ph name="DISCOUNT" /> ৰেহাই</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, বর্তমান বাছনি কৰা হৈছে। <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">যদি সক্ষম কৰা হয়, তেন্তে দ্ৰুতভাৱে ফৰ্ম পূৰাবলৈ Chromiumএ আপোনাৰ কার্ডৰ এটা প্ৰতিলিপি এই ডিভাইচটোত ষ্ট’ৰ কৰিব।</translation>
 <translation id="2985398929374701810">এটা মান্য ঠিকনা দিয়ক</translation>
@@ -1880,6 +1882,7 @@
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">উপলব্ধ</translation>
 <translation id="868922510921656628">প্ৰতিটো ছেটত পৃষ্ঠাৰ সংখ্যা</translation>
+<translation id="8697373104056314601">Chromeৰ সৰ্বোচ্চ স্তৰৰ সুৰক্ষা লাভ কৰিবলৈ <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />বৰ্ধিত সুৰক্ষাৰ সুবিধাটো অন কৰক<ph name="END_ENHANCED_PROTECTION_LINK" />।</translation>
 <translation id="869891660844655955">ম্যাদ উকলাৰ তাৰিখ</translation>
 <translation id="8699041776323235191">HID ডিভাইচ</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" />লৈ আপোনাৰ সংযোগ এনক্ৰিপ্ট কৰা হোৱা নাই।</translation>

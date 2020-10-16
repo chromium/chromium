@@ -22,6 +22,7 @@
 <translation id="1058479211578257048">Guardando tarjetas…</translation>
 <translation id="10614374240317010">Nunca guardado</translation>
 <translation id="1062160989074299343">Prc10 (Envelope)</translation>
+<translation id="1066573427009091463"><ph name="PERCENT" /> de reembolso</translation>
 <translation id="106701514854093668">Favoritos de escritorio</translation>
 <translation id="1068672505746868501">No traducir nunca páginas en <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070901266639972381">Noche</translation>
@@ -490,6 +491,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2955913368246107853">Cerrar la barra de búsqueda</translation>
 <translation id="2969319727213777354">Para establecer una conexión segura, el reloj se debe configurar correctamente. Esto se debe a que los certificados que usan los sitios web para su identificación solo son válidos por períodos de tiempo específicos. Debido a que la configuración del reloj del dispositivo es incorrecta, Google Chrome no puede verificar estos certificados.</translation>
 <translation id="2972581237482394796">&amp;Rehacer</translation>
+<translation id="2975775789586780239"><ph name="DISCOUNT" /> de descuento</translation>
 <translation id="2977665033722899841">Fila <ph name="ROW_NAME" /> seleccionada. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">Si se habilita esta opción, Chromium almacenará una copia de la tarjeta en el dispositivo para completar más rápidamente los formularios.</translation>
 <translation id="2985398929374701810">Ingresa una dirección válida</translation>
@@ -1881,6 +1883,7 @@ Detalles adicionales:
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">Disponible</translation>
 <translation id="868922510921656628">Páginas por conjunto</translation>
+<translation id="8697373104056314601">Para acceder al nivel más alto de seguridad de Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />activa la protección mejorada<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="869891660844655955">Fecha de vencimiento</translation>
 <translation id="8699041776323235191">Dispositivo HID</translation>
 <translation id="8703575177326907206">Tu conexión a <ph name="DOMAIN" /> no está cifrada.</translation>

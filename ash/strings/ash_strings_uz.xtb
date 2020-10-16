@@ -61,6 +61,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1479909375538722835">Erkin harakatlanuvchi maxsus imkoniyatlar menyusi</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">Birdaniga bir nechta hisobdan ishlash vaqtida birinchi o‘rinda hisob egasi kirishi kerak.</translation>
+<translation id="1510238584712386396">Ishga tushirish paneli</translation>
 <translation id="1516740043221086139">Bezovta qilinmasin rejimi yoniq.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Bildirishnoma sozlamalarini ochish. Ilova uchun bildirishnomalar yoqilmagan}other{Bildirishnoma sozlamalarini ochish. # ta ilova uchun bildirishnomalar yoqilmagan}}</translation>
 <translation id="1525508553941733066">YOPISH</translation>
@@ -675,6 +676,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="7904094684485781019">Administrator bu hisobga boshqa hisoblar bilan birdaniga kirishni taqiqlab qo‘ygan.</translation>
 <translation id="7933084174919150729">Google Assistent faqat asosiy profilda ishlaydi xolos.</translation>
 <translation id="79341161159229895">Hisobni <ph name="FIRST_PARENT_EMAIL" /> va <ph name="SECOND_PARENT_EMAIL" /> boshqaradi</translation>
+<translation id="793716872548410480">Klipbordni koʻrish uchun <ph name="SHORTCUT_KEY_NAME" /> + V tugmalarini bosing. Nusxalangan oxirgi 5 ta element klipbordga saqlandi.</translation>
 <translation id="7955885781510802139">Yuqori kontrastli rejim</translation>
 <translation id="7977927628060636163">Mobil tarmoqlar qidirilmoqda...</translation>
 <translation id="7980780401175799550">Chrome OS tizimini yangi usulda boshqaring</translation>

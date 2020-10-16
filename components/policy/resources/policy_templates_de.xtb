@@ -1694,10 +1694,10 @@ Wird die Richtlinie auf "False" gesetzt , verwendet <ph name="PRODUCT_NAME" /> k
       Unabhängig davon, wie diese Richtlinie festgelegt wird, verhindert der Browser nicht, dass Drittanbieter-Software ausführbaren Code in seine Prozesse auf Computern einfügt, die sich in einer <ph name="MS_AD_NAME" />-Domain befinden.</translation>
 <translation id="3459509316159669723">Drucken</translation>
 <translation id="3461279434465463233">Status der Stromversorgung melden</translation>
-<translation id="346731943813722404">Damit legen Sie fest, ob die erste Aktivität des Nutzers in einer Sitzung als Ausgangspunkt für Verzögerungen beim Stromsparmodus und Begrenzungen der Sitzungslänge verwendet werden soll.
-          Wenn diese Richtlinie auf "true" gesetzt ist, wie die erste Aktivität des Nutzers in einer Sitzung als Ausgangspunkt für Verzögerungen beim Stromsparmodus und Begrenzungen der Sitzungslänge verwendet.
+<translation id="346731943813722404">Damit legen Sie fest, ob die erste Aktivität des Nutzers in einer Sitzung als Ausgangspunkt für Verzögerungen beim Energiesparmodus und Begrenzungen der Sitzungslänge verwendet werden soll.
+          Wenn diese Richtlinie auf "true" gesetzt ist, wie die erste Aktivität des Nutzers in einer Sitzung als Ausgangspunkt für Verzögerungen beim Energiesparmodus und Begrenzungen der Sitzungslänge verwendet.
 
-          Ist die Richtlinie auf "false" gesetzt oder nicht definiert, wird der Start der Sitzung als Ausgangspunkt für Verzögerungen beim Stromsparmodus und Begrenzungen der Sitzungslänge verwendet.</translation>
+          Ist die Richtlinie auf "false" gesetzt oder nicht definiert, wird der Start der Sitzung als Ausgangspunkt für Verzögerungen beim Energiesparmodus und Begrenzungen der Sitzungslänge verwendet.</translation>
 <translation id="3478024346823118645">Nutzerdaten bei Abmeldung löschen</translation>
 <translation id="3480961938508521469">Lädt den Akku mit normaler Geschwindigkeit vollständig auf.</translation>
 <translation id="348110646151632565">Hiermit wird die Bedienungshilfe "Vorlesen" auf dem Anmeldebildschirm aktiviert.
@@ -3711,7 +3711,7 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
 Die Richtlinie erlaubt dem Nutzer die Anmeldung in <ph name="PRODUCT_NAME" />.
 
 Durch Festlegen dieser Richtlinie bestimmen Sie, ob sich ein Nutzer in <ph name="PRODUCT_NAME" /> anmelden darf oder nicht. Wenn Sie für diese Richtlinie "False" festlegen, funktionieren Apps und Erweiterungen nicht mehr, die die chrome.identity API verwenden. Aus diesem Grund ist es empfehlenswert, stattdessen "SyncDisabled" zu verwenden.</translation>
-<translation id="6378076389057087301">Angaben zum Einfluss von Audioaktivitäten auf den Stromsparmodus</translation>
+<translation id="6378076389057087301">Angaben zum Einfluss von Audioaktivitäten auf den Energiesparmodus</translation>
 <translation id="6378393933102834628">Wenn die Richtlinie auf "True" gesetzt ist, wird die Apps-Verknüpfung eingeblendet. Ist sie auf "False" gesetzt, wird die Verknüpfung nie eingeblendet.
 
       Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern nicht geändert werden. Wenn die Richtlinie nicht konfiguriert ist, können Nutzer die Apps-Verknüpfung über das Kontextmenü der Lesezeichenleiste ein- und ausblenden.</translation>
@@ -4024,7 +4024,7 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, werden Nutzer durch den 
       Ist sie deaktiviert, melden registrierte Geräte den Status des Entwicklermodus nicht.</translation>
 <translation id="6795485990775913659">Drucken nur ohne PIN zulassen</translation>
 <translation id="6810445994095397827">JavaScript auf diesen Websites blockieren</translation>
-<translation id="6813263547126514821">Stromsparmodus und Herunterfahren</translation>
+<translation id="6813263547126514821">Energiesparmodus und Herunterfahren</translation>
 <translation id="681446116407619279">Unterstützte Authentifizierungsschemas</translation>
 <translation id="6815483833848348029">Wenn die Richtlinie aktiviert oder nicht konfiguriert und ein lokales Gerätekonto für die automatische Anmeldung ohne Verzögerung bei einem Gerät im Offlinemodus konfiguriert ist, zeigt <ph name="PRODUCT_OS_NAME" /> eine Eingabeaufforderung zur Netzwerkkonfiguration an.
 
@@ -5763,7 +5763,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 
       Ist die Richtlinie deaktiviert, werden die Zeiten von registrierten Geräten weder aufgezeichnet noch gemeldet.</translation>
 <translation id="9077227880520270584">Timer für automatische Anmeldung in lokalem Gerätekonto</translation>
-<translation id="9084985621503260744">Angaben zum Einfluss von Videoaktivitäten auf den Stromsparmodus</translation>
+<translation id="9084985621503260744">Angaben zum Einfluss von Videoaktivitäten auf den Energiesparmodus</translation>
 <translation id="9088433379343318874">Contentanbieter für betreute Nutzer aktivieren</translation>
 <translation id="9088444059179765143">Methode für die automatische Erkennung der Zeitzone konfigurieren</translation>
 <translation id="9096086085182305205">Zulassungsliste für Authentifizierungsserver</translation>

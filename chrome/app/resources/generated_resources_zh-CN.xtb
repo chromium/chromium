@@ -2793,6 +2793,7 @@
 <translation id="425573743389990240">电池放电率（单位为瓦，负值表示电池正在充电）</translation>
 <translation id="4256316378292851214">视频存储为(&amp;V)...</translation>
 <translation id="4258348331913189841">文件系统</translation>
+<translation id="4259388776256904261">该过程可能需要一点时间</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> 可能含有危险内容。发送给 Google 高级保护进行扫描？按 Shift+F6 可切换到“下载内容栏”区域。</translation>
 <translation id="4263223596040212967">请检查键盘布局，然后重试。</translation>
 <translation id="4263757076580287579">已取消注册打印机。</translation>
@@ -2900,6 +2901,7 @@
 <translation id="4400632832271803360">按住启动器键可切换顶行键的行为</translation>
 <translation id="4400963414856942668">点击星形图标即可为标签页添加书签</translation>
 <translation id="4403775189117163360">另选一个文件夹</translation>
+<translation id="440391631796167175">未发现任何安全系数低的密码</translation>
 <translation id="4404136731284211429">重新扫描</translation>
 <translation id="4404843640767531781">“<ph name="APP_NAME" />”已被您的家长禁用。请让您的家长授权您使用此应用。</translation>
 <translation id="4405117686468554883">*.jpeg、*.jpg、*.png</translation>
@@ -5053,6 +5055,7 @@
 <translation id="6995899638241819463">在密码遭遇数据泄露时，向您发出警告</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - 活动日志</translation>
 <translation id="6997707937646349884">在您的设备上：</translation>
+<translation id="6998093258894828179">隐藏卡片</translation>
 <translation id="6998793565256476099">注册设备以进行视频会议</translation>
 <translation id="6999956497249459195">新建群组</translation>
 <translation id="7000206553895739324">“<ph name="PRINTER_NAME" />”已建立连接但需要配置</translation>
@@ -5723,6 +5726,7 @@
 <translation id="7798844538707273832">已自动禁用<ph name="PERMISSION" /></translation>
 <translation id="7799299114731150374">已成功设置壁纸</translation>
 <translation id="7800518121066352902">逆时针旋转(&amp;O)</translation>
+<translation id="7802539296536804623">不在本页上显示卡片</translation>
 <translation id="780301667611848630">不用了，谢谢</translation>
 <translation id="7804072833593604762">已关闭标签页</translation>
 <translation id="7805768142964895445">状态</translation>
@@ -6174,6 +6178,7 @@
 <translation id="8300011035382349091">为此标签页修改书签</translation>
 <translation id="8300374739238450534">深夜蓝</translation>
 <translation id="8300849813060516376">OTASP 失败</translation>
+<translation id="8304383784961451596">您无权使用此设备。请与管理员联系以获取登录权限，或者使用受 Family Link 监管的 Google 帐号登录。</translation>
 <translation id="8308179586020895837">当 <ph name="HOST" /> 想要使用摄像头时询问我</translation>
 <translation id="830868413617744215">测试版</translation>
 <translation id="8309458809024885768">证书已存在</translation>

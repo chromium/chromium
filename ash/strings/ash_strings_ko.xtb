@@ -61,6 +61,7 @@
 <translation id="1479909375538722835">플로팅 접근성 메뉴</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" />(HDMI/DP)</translation>
 <translation id="1503394326855300303">이 소유자 계정이 멀티 로그인 세션에서 처음으로 로그인하는 계정이 되어야 합니다.</translation>
+<translation id="1510238584712386396">런처</translation>
 <translation id="1516740043221086139">방해 금지 모드가 사용 설정되어 있습니다.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{알림 설정을 표시합니다. 앱 1개의 알림이 사용 중지되어 있습니다.}other{알림 설정을 표시합니다. 앱 #개의 알림이 사용 중지되어 있습니다.}}</translation>
 <translation id="1525508553941733066">닫기</translation>

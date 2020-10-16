@@ -1102,7 +1102,7 @@
 <translation id="9040142327097499898">יש הרשאה להצגת הודעות. המיקום כבוי בשביל המכשיר הזה.</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{סרטון אחד (#)}two{# סרטונים}many{# סרטונים}other{# סרטונים}}</translation>
 <translation id="9042893549633094279">פרטיות ואבטחה</translation>
-<translation id="9050666287014529139">משפט-סיסמה</translation>
+<translation id="9050666287014529139">ביטוי סיסמה</translation>
 <translation id="9063523880881406963">כיבוי של 'בקשת אתר עבור מחשב שולחני'</translation>
 <translation id="9065203028668620118">עריכה</translation>
 <translation id="9065383040763568503">‏נתונים מאוחסנים שלא מוגדרים כחשובים ב-Chrome (למשל: אתרים ללא הגדרות שמורות או כאלה שתדירות הביקור בהם נמוכה)</translation>

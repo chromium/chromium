@@ -61,6 +61,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1479909375538722835">Plávajúca ponuka dostupnosti</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">Tento účet vlastníka musí byť prvým prihláseným účtom v relácii viacerých prihlásení.</translation>
+<translation id="1510238584712386396">Spúšťač</translation>
 <translation id="1516740043221086139">Režim Nerušiť je zapnutý.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Zobraziť nastavenia upozornení. Upozornenia sú pre aplikáciu vypnuté}few{Zobraziť nastavenia upozornení. Upozornenia sú vypnuté pre # aplikácie}many{Show notification settings. Notifications are off for # apps}other{Zobraziť nastavenia upozornení. Upozornenia sú vypnuté pre # aplikácií}}</translation>
 <translation id="1525508553941733066">ZATVORIŤ</translation>
@@ -675,6 +676,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="7904094684485781019">Správca tohto účtu zakázal viacnásobné prihlásenie.</translation>
 <translation id="7933084174919150729">Asistent Google je k dispozícii iba pre primárny profil.</translation>
 <translation id="79341161159229895">Správcovia účtu: <ph name="FIRST_PARENT_EMAIL" /> a <ph name="SECOND_PARENT_EMAIL" /></translation>
+<translation id="793716872548410480">Schránku zobrazíte klávesmi <ph name="SHORTCUT_KEY_NAME" /> + V. Posledných päť skopírovaných položiek sa uloží do vašej schránky.</translation>
 <translation id="7955885781510802139">Režim s vysokým kontrastom</translation>
 <translation id="7977927628060636163">Hľadajú sa mobilné siete...</translation>
 <translation id="7980780401175799550">Vyskúšajte nové spôsoby navigácie v systéme Chrome OS</translation>
