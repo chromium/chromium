@@ -107,7 +107,7 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
         manager->gpu_memory_buffer_factory();
     context_group_ = new gles2::ContextGroup(
         manager->gpu_preferences(), gles2::PassthroughCommandDecoderSupported(),
-        manager->mailbox_manager(), CreateMemoryTracker(init_params),
+        manager->mailbox_manager(), CreateMemoryTracker(),
         manager->shader_translator_cache(),
         manager->framebuffer_completeness_cache(), feature_info,
         init_params.attribs.bind_generates_resource, channel_->image_manager(),

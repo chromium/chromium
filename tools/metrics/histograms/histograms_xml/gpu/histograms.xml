@@ -273,6 +273,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.ContextMemory" units="MB" expires_after="2020-09-13">
+  <obsolete>
+    Obsoleted since 2020/10/15. Unused and expired. Replaced by
+    Memory.Gpu.PrivateMemoryFootprint, Memory.GPU.PeakMemoryUsage, and
+    Memory.GPU.PeakMemoryAllocationSource.
+  </obsolete>
   <owner>ericrk@chromium.org</owner>
   <summary>The amount of memory used by a GL Context.</summary>
 </histogram>

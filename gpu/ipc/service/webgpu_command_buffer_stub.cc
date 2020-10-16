@@ -106,7 +106,7 @@ gpu::ContextResult WebGPUCommandBufferStub::Initialize(
   share_group_ = manager->share_group();
   use_virtualized_gl_context_ = false;
 
-  memory_tracker_ = CreateMemoryTracker(init_params);
+  memory_tracker_ = CreateMemoryTracker();
 
   command_buffer_ =
       std::make_unique<CommandBufferService>(this, memory_tracker_.get());

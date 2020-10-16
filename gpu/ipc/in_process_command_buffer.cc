@@ -358,7 +358,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
         base::trace_event::MemoryDumpManager::GetInstance()
             ->GetTracingProcessId();
     memory_tracker = std::make_unique<GpuCommandBufferMemoryTracker>(
-        command_buffer_id_, client_tracing_id, params.attribs.context_type,
+        command_buffer_id_, client_tracing_id,
         base::ThreadTaskRunnerHandle::Get(), /* obserer=*/nullptr);
   }
 

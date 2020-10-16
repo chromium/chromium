@@ -106,8 +106,7 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   void HandleReturnData(base::span<const uint8_t> data) override;
 
   using MemoryTrackerFactory =
-      base::RepeatingCallback<std::unique_ptr<MemoryTracker>(
-          const GPUCreateCommandBufferConfig&)>;
+      base::RepeatingCallback<std::unique_ptr<MemoryTracker>()>;
 
   // Overrides the way CreateMemoryTracker() uses to create a MemoryTracker.
   // This is intended for mocking the MemoryTracker in tests.
@@ -146,8 +145,7 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
  protected:
   virtual bool HandleMessage(const IPC::Message& message) = 0;
 
-  std::unique_ptr<MemoryTracker> CreateMemoryTracker(
-      const GPUCreateCommandBufferConfig& init_params) const;
+  std::unique_ptr<MemoryTracker> CreateMemoryTracker() const;
 
   // Must be called during Initialize(). Takes ownership to co-ordinate
   // teardown in Destroy().

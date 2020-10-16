@@ -100,8 +100,7 @@ struct ExpectedCacheEntry {
   SkISize dimensions;
 };
 
-std::unique_ptr<MemoryTracker> CreateMockMemoryTracker(
-    const GPUCreateCommandBufferConfig& init_params) {
+std::unique_ptr<MemoryTracker> CreateMockMemoryTracker() {
   return std::make_unique<NiceMock<gles2::MockMemoryTracker>>();
 }
 
