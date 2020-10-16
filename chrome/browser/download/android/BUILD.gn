@@ -16,6 +16,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/download/DownloadFilter.java",
     "java/src/org/chromium/chrome/browser/download/DownloadInfo.java",
     "java/src/org/chromium/chrome/browser/download/DownloadLaterMetrics.java",
+    "java/src/org/chromium/chrome/browser/download/DownloadLocationDialogMetrics.java",
     "java/src/org/chromium/chrome/browser/download/DownloadManagerBridge.java",
     "java/src/org/chromium/chrome/browser/download/DownloadStartupUtils.java",
     "java/src/org/chromium/chrome/browser/download/DownloadStatus.java",

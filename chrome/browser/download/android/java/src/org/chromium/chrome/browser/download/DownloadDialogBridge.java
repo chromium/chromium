@@ -232,6 +232,12 @@ public class DownloadDialogBridge
     @Override
     public void onDownloadLocationDialogComplete(String returnedPath) {
         mSuggestedPath = returnedPath;
+
+        if (mLocationDialogType == DownloadLocationDialogType.LOCATION_SUGGESTION) {
+            boolean isSelected = !mSuggestedPath.equals(getDownloadDefaultDirectory());
+            DownloadLocationDialogMetrics.recordDownloadLocationSuggestionChoice(isSelected);
+        }
+
         // The location dialog is triggered automatically, complete the flow.
         if (!mEditLocation) {
             onComplete();

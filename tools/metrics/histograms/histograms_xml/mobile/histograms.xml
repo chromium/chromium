@@ -579,6 +579,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="MobileDownload.Location.Dialog.SuggestionSelected"
+    enum="BooleanSelected" expires_after="2021-03-01">
+  <owner>xingliu@chromium.org</owner>
+  <owner>clank-downloads@google.com</owner>
+  <summary>Records the download location suggestion choice.</summary>
+</histogram>
+
 <histogram name="MobileDownload.Location.Dialog.Type"
     enum="DownloadLocationDialogType" expires_after="2021-03-01">
   <owner>xingliu@chromium.org</owner>
