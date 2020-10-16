@@ -5,11 +5,9 @@
 package org.chromium.chrome.browser.base;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.os.Build;
 
+import org.chromium.base.BundleUtils;
 import org.chromium.base.annotations.IdentifierNameString;
-import org.chromium.base.compat.ApiHelperForO;
 
 /** Utils for compatibility with isolated splits. */
 public class SplitCompatUtils {
@@ -26,17 +24,7 @@ public class SplitCompatUtils {
 
     /** Creates a context which can be used to load code and resources in the chrome split. */
     public static Context createChromeContext(Context base) {
-        // Isolated splits are only supported in O+, so just return the base context on other
-        // versions, since this will have access to all splits.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            return base;
-        }
-        try {
-            return ApiHelperForO.createContextForSplit(base, "chrome");
-        } catch (PackageManager.NameNotFoundException e) {
-            // This application class should not be used if the chrome split does not exist.
-            throw new RuntimeException(e);
-        }
+        return BundleUtils.createIsolatedSplitContext(base, "chrome");
     }
 
     /**

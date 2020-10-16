@@ -4,9 +4,16 @@
 
 package org.chromium.base;
 
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Build;
+
 import dalvik.system.BaseDexClassLoader;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.compat.ApiHelperForO;
+
+import java.util.Arrays;
 
 /**
  * Utils for working with android app bundles.
@@ -53,6 +60,40 @@ public final class BundleUtils {
 
     public static void setIsBundle(boolean isBundle) {
         sIsBundle = isBundle;
+    }
+
+    /**
+     * Returns whether splitName is installed. Note, this will return false on Android versions
+     * below O, where isolated splits are not supported.
+     */
+    public static boolean isIsolatedSplitInstalled(Context context, String splitName) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return false;
+        }
+
+        String[] splitNames = ApiHelperForO.getSplitNames(context.getApplicationInfo());
+        return splitNames != null && Arrays.asList(splitNames).contains(splitName);
+    }
+
+    /**
+     * Returns a context for the isolated split with the name splitName. This will throw a
+     * RuntimeException if isolated splits are enabled and the split is not installed. If the
+     * current Android version does not support isolated splits, the original context will be
+     * returned. If isolated splits are not enabled for this APK/bundle, the underlying ContextImpl
+     * from the base context will be returned.
+     */
+    public static Context createIsolatedSplitContext(Context base, String splitName) {
+        // Isolated splits are only supported in O+, so just return the base context on other
+        // versions, since this will have access to all splits.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return base;
+        }
+
+        try {
+            return ApiHelperForO.createContextForSplit(base, splitName);
+        } catch (PackageManager.NameNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /* Returns absolute path to a native library in a feature module. */

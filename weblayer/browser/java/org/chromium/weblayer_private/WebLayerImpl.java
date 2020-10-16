@@ -42,7 +42,6 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.metrics.RecordHistogram;
@@ -219,7 +218,6 @@ public final class WebLayerImpl extends IWebLayer.Stub {
             notifyWebViewRunningInProcess(remoteContext.getClassLoader());
         }
 
-        remoteContext = processRemoteContext(remoteContext);
         Context appContext = minimalInitForContext(
                 ObjectWrapper.unwrap(appContextWrapper, Context.class), remoteContext);
         PackageInfo packageInfo = WebViewFactory.getLoadedPackageInfo();
@@ -374,7 +372,7 @@ public final class WebLayerImpl extends IWebLayer.Stub {
         StrictModeWorkaround.apply();
         // This is a no-op if init has already happened.
         minimalInitForContext(ObjectWrapper.unwrap(appContext, Context.class),
-                processRemoteContext(ObjectWrapper.unwrap(remoteContext, Context.class)));
+                ObjectWrapper.unwrap(remoteContext, Context.class));
         return CrashReporterControllerImpl.getInstance();
     }
 
@@ -425,7 +423,7 @@ public final class WebLayerImpl extends IWebLayer.Stub {
         assert ContextUtils.getApplicationContext() == null;
         CommandLine.init(null);
         minimalInitForContext(ObjectWrapper.unwrap(appContext, Context.class),
-                processRemoteContext(ObjectWrapper.unwrap(remoteContext, Context.class)));
+                ObjectWrapper.unwrap(remoteContext, Context.class));
         LibraryLoader.getInstance().setLibraryProcessType(
                 LibraryProcessType.PROCESS_WEBLAYER_CHILD);
         LibraryLoader.getInstance().ensureInitialized();
@@ -854,18 +852,6 @@ public final class WebLayerImpl extends IWebLayer.Stub {
         } catch (Exception e) {
             Log.w(TAG, "Unable to notify WebView running in process.");
         }
-    }
-
-    private static Context processRemoteContext(Context remoteContext) {
-        // If WebLayer is in a DFM, make sure the correct resources are used.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            try {
-                return ApiHelperForO.createContextForSplit(remoteContext, "weblayer");
-            } catch (PackageManager.NameNotFoundException e) {
-                // WebLayer is not in a split, the original context will have the resources.
-            }
-        }
-        return remoteContext;
     }
 
     private static Context createContextForMode(Context remoteContext, int uiMode) {

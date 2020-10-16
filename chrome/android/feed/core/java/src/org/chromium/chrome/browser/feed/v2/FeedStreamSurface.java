@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.feed.v2;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Handler;
 import android.view.ContextThemeWrapper;
 import android.view.View;
@@ -19,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemAnimator.ItemAnimatorFinishedListener;
 
+import org.chromium.base.BundleUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -27,7 +26,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
@@ -73,7 +71,6 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -1017,24 +1014,10 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
     }
 
     private static Context createFeedContext(Context context) {
-        // Isolated splits are only supported in O+, so just return the base context on other
-        // versions, since it will have access to all splits.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+        if (!BundleUtils.isIsolatedSplitInstalled(context, FEED_SPLIT_NAME)) {
             return context;
         }
-
-        // If the feed split does not exist, return the original context.
-        String[] splitNames = ApiHelperForO.getSplitNames(context.getApplicationInfo());
-        if (splitNames == null || !Arrays.asList(splitNames).contains(FEED_SPLIT_NAME)) {
-            return context;
-        }
-
-        try {
-            return ApiHelperForO.createContextForSplit(context, FEED_SPLIT_NAME);
-        } catch (PackageManager.NameNotFoundException e) {
-            // Feed is not in a split.
-            return context;
-        }
+        return BundleUtils.createIsolatedSplitContext(context, FEED_SPLIT_NAME);
     }
 
     // Detects animation finishes in RecyclerView.
