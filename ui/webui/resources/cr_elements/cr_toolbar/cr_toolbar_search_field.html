@@ -50,7 +50,7 @@
       }
 
       #prompt {
-        --cr-toolbar-search-field-prompt-opacity: .7;
+        color: var(--cr-toolbar-search-field-prompt-color, white);
         opacity: 0;
       }
 
@@ -138,11 +138,11 @@
       }
 
       :host(:not([narrow]):not([showing-search])) #icon {
-        opacity: .7;
+        opacity: var(--cr-toolbar-search-field-icon-opacity, .7);
       }
 
       :host(:not([narrow])) #prompt {
-        opacity: var(--cr-toolbar-search-field-prompt-opacity);
+        opacity: var(--cr-toolbar-search-field-prompt-opacity, .7);
       }
 
       :host([narrow]) #prompt {

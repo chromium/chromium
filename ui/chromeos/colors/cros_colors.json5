@@ -193,7 +193,7 @@
     error_color: "$google_red_700",
     success_color: "$google_green_700",
 
-    search_page_question_icon_color: "$google_grey_500",
+    search_page_question_icon_color: "$google_grey_600",
     app_management_permission_icon_color: "$google_grey_600",
 
     user_icon_color_secondary: "rgb(210, 210, 212)",
