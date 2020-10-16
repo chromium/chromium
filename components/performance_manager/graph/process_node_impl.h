@@ -14,7 +14,6 @@
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/time/time.h"
-#include "base/util/type_safety/pass_key.h"
 #include "components/performance_manager/graph/node_attached_data.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/graph/properties.h"
@@ -45,8 +44,6 @@ class ProcessNodeImpl
       public TypedNodeBase<ProcessNodeImpl, ProcessNode, ProcessNodeObserver>,
       public mojom::ProcessCoordinationUnit {
  public:
-  using PassKey = util::PassKey<ProcessNodeImpl>;
-
   static constexpr NodeTypeEnum Type() { return NodeTypeEnum::kProcess; }
 
   ProcessNodeImpl(content::ProcessType process_type,
@@ -120,8 +117,6 @@ class ProcessNodeImpl
   base::WeakPtr<ProcessNodeImpl> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
-
-  static PassKey CreatePassKeyForTesting() { return PassKey(); }
 
  protected:
   void SetProcessImpl(base::Process process,

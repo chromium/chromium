@@ -76,12 +76,6 @@ bool IsWorkletToken(const blink::ExecutionContextToken& token) {
          token.Is<blink::PaintWorkletToken>();
 }
 
-bool IsWorkerToken(const blink::ExecutionContextToken& token) {
-  return token.Is<blink::DedicatedWorkerToken>() ||
-         token.Is<blink::ServiceWorkerToken>() ||
-         token.Is<blink::SharedWorkerToken>();
-}
-
 const execution_context::ExecutionContext* GetExecutionContext(
     const blink::ExecutionContextToken& token,
     Graph* graph) {

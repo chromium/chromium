@@ -59,8 +59,6 @@ class FrameNodeImpl
       public TypedNodeBase<FrameNodeImpl, FrameNode, FrameNodeObserver>,
       public mojom::DocumentCoordinationUnit {
  public:
-  using PassKey = util::PassKey<FrameNodeImpl>;
-
   static const char kDefaultPriorityReason[];
   static constexpr NodeTypeEnum Type() { return NodeTypeEnum::kFrame; }
 
@@ -162,8 +160,6 @@ class FrameNodeImpl
       util::PassKey<execution_context::ExecutionContextAccess> key) {
     return &execution_context_;
   }
-
-  static PassKey CreatePassKeyForTesting() { return PassKey(); }
 
  private:
   friend class ExecutionContextPriorityAccess;

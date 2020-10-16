@@ -42,14 +42,6 @@ class V8ContextTrackerInternalTest : public GraphTestHarness {
   MockSinglePageWithMultipleProcessesGraph mock_graph_;
 };
 
-V8ContextDescription MakeMatchingV8ContextDescription(
-    ExecutionContextData* ec_data) {
-  DCHECK(ec_data);
-  V8ContextDescription v8_desc;
-  v8_desc.execution_context_token = ec_data->GetToken();
-  return v8_desc;
-}
-
 using V8ContextTrackerInternalDeathTest = V8ContextTrackerInternalTest;
 
 }  // namespace
@@ -63,35 +55,6 @@ TEST_F(V8ContextTrackerInternalDeathTest,
           process_data, mock_graph_.frame->frame_token(), base::nullopt);
   EXPECT_TRUE(ec_data->ShouldDestroy());
   EXPECT_DCHECK_DEATH(data_store()->Pass(std::move(ec_data)));
-}
-
-TEST_F(V8ContextTrackerInternalDeathTest,
-       MultipleMainWorldsForExecutionContextFails) {
-  auto* process_data = ProcessData::GetOrCreate(
-      static_cast<ProcessNodeImpl*>(mock_graph_.process.get()));
-  std::unique_ptr<ExecutionContextData> ec_data =
-      std::make_unique<ExecutionContextData>(
-          process_data, mock_graph_.frame->frame_token(), base::nullopt);
-  EXPECT_TRUE(ec_data->ShouldDestroy());
-  EXPECT_FALSE(ec_data->main_world_seen());
-
-  V8ContextDescription v8_desc;
-  v8_desc.world_type = V8ContextWorldType::kMain;
-  v8_desc.execution_context_token = ec_data->GetToken();
-
-  std::unique_ptr<V8ContextData> v8_data =
-      std::make_unique<V8ContextData>(process_data, v8_desc, ec_data.get());
-  EXPECT_TRUE(v8_data->IsMainV8Context());
-  EXPECT_TRUE(data_store()->Pass(std::move(v8_data)));
-  EXPECT_TRUE(ec_data->main_world_seen());
-
-  v8_desc.token = blink::V8ContextToken();
-  v8_data =
-      std::make_unique<V8ContextData>(process_data, v8_desc, ec_data.get());
-  EXPECT_TRUE(v8_data->IsMainV8Context());
-  EXPECT_FALSE(data_store()->Pass(std::move(v8_data)));
-
-  data_store()->Pass(std::move(ec_data));
 }
 
 TEST_F(V8ContextTrackerInternalDeathTest, SameProcessRemoteFrameDataExplodes) {
@@ -115,10 +78,9 @@ TEST_F(V8ContextTrackerInternalDeathTest, CrossProcessV8ContextDataExplodes) {
       std::make_unique<ExecutionContextData>(
           process_data, mock_graph_.frame->frame_token(), base::nullopt);
   std::unique_ptr<V8ContextData> v8_data;
-  EXPECT_DCHECK_DEATH(v8_data = std::make_unique<V8ContextData>(
-                          other_process_data,
-                          MakeMatchingV8ContextDescription(ec_data.get()),
-                          ec_data.get()));
+  EXPECT_DCHECK_DEATH(
+      v8_data = std::make_unique<V8ContextData>(
+          other_process_data, V8ContextDescription(), ec_data.get()));
 }
 
 TEST_F(V8ContextTrackerInternalTest, ExecutionContextDataShouldDestroy) {
@@ -144,16 +106,14 @@ TEST_F(V8ContextTrackerInternalTest, ExecutionContextDataShouldDestroy) {
 
   // Adding a V8ContextData should also keep the object alive.
   std::unique_ptr<V8ContextData> v8_data1 = std::make_unique<V8ContextData>(
-      process_data, MakeMatchingV8ContextDescription(ec_data.get()),
-      ec_data.get());
+      process_data, V8ContextDescription(), ec_data.get());
   EXPECT_TRUE(ec_data->remote_frame_data());
   EXPECT_EQ(1u, ec_data->v8_context_count());
   EXPECT_FALSE(ec_data->ShouldDestroy());
 
   // Add another V8ContextData.
   std::unique_ptr<V8ContextData> v8_data2 = std::make_unique<V8ContextData>(
-      process_data, MakeMatchingV8ContextDescription(ec_data.get()),
-      ec_data.get());
+      process_data, V8ContextDescription(), ec_data.get());
   EXPECT_TRUE(ec_data->remote_frame_data());
   EXPECT_EQ(2u, ec_data->v8_context_count());
   EXPECT_FALSE(ec_data->ShouldDestroy());
@@ -234,14 +194,13 @@ TEST_F(V8ContextTrackerInternalTest,
 
   // Create a V8ContextData.
   std::unique_ptr<V8ContextData> v8_data = std::make_unique<V8ContextData>(
-      process_data, MakeMatchingV8ContextDescription(ec_data.get()),
-      ec_data.get());
+      process_data, V8ContextDescription(), ec_data.get());
   auto* raw_v8_data = v8_data.get();
   EXPECT_FALSE(v8_data->IsTracked());
 
   // Pass both of these to the Impl.
   data_store()->Pass(std::move(ec_data));
-  EXPECT_TRUE(data_store()->Pass(std::move(v8_data)));
+  data_store()->Pass(std::move(v8_data));
   EXPECT_TRUE(raw_ec_data->IsTracked());
   EXPECT_TRUE(raw_v8_data->IsTracked());
   EXPECT_EQ(1u, data_store()->GetExecutionContextDataCount());
@@ -272,17 +231,15 @@ TEST_F(V8ContextTrackerInternalTest, ContextCounts) {
   auto* raw_ec_data = ec_data.get();
 
   std::unique_ptr<V8ContextData> v8_data1 = std::make_unique<V8ContextData>(
-      process_data, MakeMatchingV8ContextDescription(ec_data.get()),
-      ec_data.get());
+      process_data, V8ContextDescription(), ec_data.get());
   auto* raw_v8_data1 = v8_data1.get();
 
   std::unique_ptr<V8ContextData> v8_data2 = std::make_unique<V8ContextData>(
-      process_data, MakeMatchingV8ContextDescription(ec_data.get()),
-      ec_data.get());
+      process_data, V8ContextDescription(), ec_data.get());
 
   data_store()->Pass(std::move(ec_data));
-  EXPECT_TRUE(data_store()->Pass(std::move(v8_data1)));
-  EXPECT_TRUE(data_store()->Pass(std::move(v8_data2)));
+  data_store()->Pass(std::move(v8_data1));
+  data_store()->Pass(std::move(v8_data2));
 
   EXPECT_EQ(1u, data_store()->GetExecutionContextDataCount());
   EXPECT_EQ(0u, data_store()->GetDestroyedExecutionContextDataCount());
@@ -298,9 +255,8 @@ TEST_F(V8ContextTrackerInternalTest, ContextCounts) {
   EXPECT_TRUE(raw_ec_data->destroyed);
 
   EXPECT_FALSE(raw_v8_data1->detached);
-  EXPECT_TRUE(data_store()->MarkDetached(raw_v8_data1));
+  data_store()->MarkDetached(raw_v8_data1);
   EXPECT_TRUE(raw_v8_data1->detached);
-  EXPECT_FALSE(data_store()->MarkDetached(raw_v8_data1));
 
   EXPECT_EQ(1u, data_store()->GetExecutionContextDataCount());
   EXPECT_EQ(1u, data_store()->GetDestroyedExecutionContextDataCount());
@@ -370,11 +326,11 @@ class V8ContextTrackerInternalTearDownOrderTest
 
     // Create a couple V8ContextDatas.
     std::unique_ptr<V8ContextData> v8_data = std::make_unique<V8ContextData>(
-        process_data_, MakeMatchingV8ContextDescription(ec_data_), ec_data_);
-    EXPECT_TRUE(data_store()->Pass(std::move(v8_data)));
-    v8_data = std::make_unique<V8ContextData>(
-        process_data_, MakeMatchingV8ContextDescription(ec_data_), ec_data_);
-    EXPECT_TRUE(data_store()->Pass(std::move(v8_data)));
+        process_data_, V8ContextDescription(), ec_data_);
+    data_store()->Pass(std::move(v8_data));
+    v8_data = std::make_unique<V8ContextData>(process_data_,
+                                              V8ContextDescription(), ec_data_);
+    data_store()->Pass(std::move(v8_data));
 
     EXPECT_EQ(1u, data_store()->GetExecutionContextDataCount());
     EXPECT_EQ(1u, data_store()->GetRemoteFrameDataCount());
