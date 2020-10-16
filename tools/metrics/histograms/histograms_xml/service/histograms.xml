@@ -369,15 +369,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="ServiceWorker.FetchRespondWithDataPipeCreation.Time"
-    units="ms" expires_after="M85">
-  <owner>wanderview@chromium.org</owner>
-  <summary>
-    Measures how long the service worker thread is blocked creating a
-    mojo::DataPipe during FetchEvent.respondWith() processing.
-  </summary>
-</histogram>
-
 <histogram name="ServiceWorker.GetAllOriginsInfoTime" units="ms"
     expires_after="2021-01-24">
   <owner>bashi@chromium.org</owner>
@@ -1100,19 +1091,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Records successes and failures of purging a stale resource in
     ServiceWorkerStorage.
-  </summary>
-</histogram>
-
-<histogram name="ServiceWorker.SubresourceNotifyStartLoadingResponseBodyDelay"
-    units="ms" expires_after="M85">
-  <owner>wanderview@chromium.org</owner>
-  <summary>
-    The time between when the ServiceWorkerSubresourceLoader receives a Response
-    and when it notifies the loader's client that the body has started loading.
-    This is different from SubresourceStartBlobReadingDelay in that notifying
-    the client about the Response may take place some time later than when the
-    blob body reading begins. This will be triggered for every successful
-    subresource load handled by a ServiceWorker with servification enabled.
   </summary>
 </histogram>
 

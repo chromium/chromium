@@ -755,13 +755,6 @@ void ServiceWorkerSubresourceLoader::OnSideDataReadingComplete(
     url_loader_client_->OnReceiveCachedMetadata(std::move(metadata.value()));
 
   DCHECK(data_pipe.is_valid());
-
-  base::TimeDelta delay =
-      base::TimeTicks::Now() - response_head_->response_start;
-  UMA_HISTOGRAM_TIMES(
-      "ServiceWorker.SubresourceNotifyStartLoadingResponseBodyDelay", delay);
-
-  DCHECK(data_pipe.is_valid());
   CommitResponseBody(std::move(data_pipe));
 
   // If the blob reading completed before the side data reading, then we

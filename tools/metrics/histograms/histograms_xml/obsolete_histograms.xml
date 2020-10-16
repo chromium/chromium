@@ -72831,6 +72831,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.FetchRespondWithDataPipeCreation.Time"
+    units="ms" expires_after="M85">
+  <obsolete>
+    Expired after M85.
+  </obsolete>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    Measures how long the service worker thread is blocked creating a
+    mojo::DataPipe during FetchEvent.respondWith() processing.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.ForeignFetch.OriginCount" units="units"
     expires_after="2018-04-09">
   <obsolete>
@@ -73433,6 +73445,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Records the final result of diskcache migration in ServiceWorkerStorage.
     ServiceWorker.DiskCacheMigrator.MigrationResult records more detailed status
     of migration operations.
+  </summary>
+</histogram>
+
+<histogram name="ServiceWorker.SubresourceNotifyStartLoadingResponseBodyDelay"
+    units="ms" expires_after="M85">
+  <obsolete>
+    Expired after M85.
+  </obsolete>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    The time between when the ServiceWorkerSubresourceLoader receives a Response
+    and when it notifies the loader's client that the body has started loading.
+    This is different from SubresourceStartBlobReadingDelay in that notifying
+    the client about the Response may take place some time later than when the
+    blob body reading begins. This will be triggered for every successful
+    subresource load handled by a ServiceWorker with servification enabled.
   </summary>
 </histogram>
 
