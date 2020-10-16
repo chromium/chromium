@@ -8,8 +8,6 @@ import org.chromium.chrome.browser.browserservices.BrowserServicesStore;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
-import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationState;
-import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
 import org.chromium.chrome.browser.browserservices.ui.controller.DisclosureController;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
@@ -21,7 +19,6 @@ import javax.inject.Inject;
  */
 public class TrustedWebActivityDisclosureController extends DisclosureController {
     private final BrowserServicesStore mBrowserServicesStore;
-    private final CurrentPageVerifier mCurrentPageVerifier;
     private final TrustedWebActivityUmaRecorder mRecorder;
     private final ClientPackageNameProvider mClientPackageNameProvider;
 
@@ -30,22 +27,10 @@ public class TrustedWebActivityDisclosureController extends DisclosureController
             TrustedWebActivityModel model, ActivityLifecycleDispatcher lifecycleDispatcher,
             CurrentPageVerifier currentPageVerifier, TrustedWebActivityUmaRecorder recorder,
             ClientPackageNameProvider clientPackageNameProvider) {
-        super(model, lifecycleDispatcher, clientPackageNameProvider.get());
+        super(model, lifecycleDispatcher, currentPageVerifier, clientPackageNameProvider.get());
         mBrowserServicesStore = browserServicesStore;
-        mCurrentPageVerifier = currentPageVerifier;
         mRecorder = recorder;
         mClientPackageNameProvider = clientPackageNameProvider;
-        currentPageVerifier.addVerificationObserver(this::onVerificationStatusChanged);
-    }
-
-    private void onVerificationStatusChanged() {
-        if (shouldShowInCurrentState()) {
-            setDisclosureScope(mCurrentPageVerifier.getState().scope);
-            showIfNeeded();
-        } else {
-            setDisclosureScope(null);
-            dismiss();
-        }
     }
 
     @Override
@@ -74,11 +59,5 @@ public class TrustedWebActivityDisclosureController extends DisclosureController
     protected boolean isFirstTime() {
         return !mBrowserServicesStore.hasUserSeenTwaDisclosureForPackage(
                 mClientPackageNameProvider.get());
-    }
-
-    @Override
-    protected boolean shouldShowInCurrentState() {
-        VerificationState state = mCurrentPageVerifier.getState();
-        return state != null && state.status != VerificationStatus.FAILURE;
     }
 }

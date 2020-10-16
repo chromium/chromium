@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
+import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.DisclosureController;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -34,10 +35,12 @@ public class WebappDisclosureController extends DisclosureController {
 
     @Inject
     public WebappDisclosureController(ChromeActivity<?> activity,
-            BrowserServicesIntentDataProvider intentDataProvider, TrustedWebActivityModel model,
+            BrowserServicesIntentDataProvider intentDataProvider,
             WebappDeferredStartupWithStorageHandler deferredStartupWithStorageHandler,
-            ActivityLifecycleDispatcher lifecycleDispatcher) {
-        super(model, lifecycleDispatcher, intentDataProvider.getClientPackageName());
+            TrustedWebActivityModel model, ActivityLifecycleDispatcher lifecycleDispatcher,
+            CurrentPageVerifier currentPageVerifier) {
+        super(model, lifecycleDispatcher, currentPageVerifier,
+                intentDataProvider.getClientPackageName());
         mIntentDataProvider = intentDataProvider;
 
         deferredStartupWithStorageHandler.addTask((storage, didCreateStorage) -> {
@@ -97,12 +100,5 @@ public class WebappDisclosureController extends DisclosureController {
         // TODO(crbug.com/1128675): isFirstTime is used for showing notification disclosure for
         // TWAs, not used in Webapk for now.
         return false;
-    }
-
-    @Override
-    protected boolean shouldShowInCurrentState() {
-        // TODO(crbug.com/1128675): TWA hides snackbar when move out of verified origin, we should
-        // do the same for WebApk.
-        return true;
     }
 }

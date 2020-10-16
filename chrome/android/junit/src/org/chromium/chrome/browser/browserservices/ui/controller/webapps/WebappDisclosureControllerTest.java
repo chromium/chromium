@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.browserservices.ui.controller.webapps;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_EVENTS_CALLBACK;
@@ -19,6 +21,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.android.util.concurrent.RoboExecutorService;
@@ -29,6 +33,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
+import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
+import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationState;
+import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.webapps.WebappActivity;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
@@ -44,16 +51,29 @@ import org.chromium.components.webapk.lib.common.WebApkConstants;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class WebappDisclosureControllerTest {
+    private static final String UNBOUND_PACKAGE = "unbound";
+    private static final String BOUND_PACKAGE = WebApkConstants.WEBAPK_PACKAGE_PREFIX + ".bound";
+    private static final String SCOPE = "https://www.example.com";
+
     @Mock
     public WebappActivity mActivity;
+    @Mock
+    public CurrentPageVerifier mCurrentPageVerifier;
 
-    public TrustedWebActivityModel mModel;
+    @Captor
+    public ArgumentCaptor<Runnable> mVerificationObserverCaptor;
+
+    public TrustedWebActivityModel mModel = new TrustedWebActivityModel();
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         // Run AsyncTasks synchronously.
         PostTask.setPrenativeThreadPoolExecutorForTesting(new RoboExecutorService());
+
+        doNothing()
+                .when(mCurrentPageVerifier)
+                .addVerificationObserver(mVerificationObserverCaptor.capture());
     }
 
     @After
@@ -65,10 +85,9 @@ public class WebappDisclosureControllerTest {
         BrowserServicesIntentDataProvider intentDataProvider =
                 new WebApkIntentDataProviderBuilder(webApkPackageName, "https://pwa.rocks/")
                         .build();
-        mModel = new TrustedWebActivityModel();
-        return new WebappDisclosureController(mActivity, intentDataProvider, mModel,
-                mock(WebappDeferredStartupWithStorageHandler.class),
-                mock(ActivityLifecycleDispatcher.class));
+        return new WebappDisclosureController(mActivity, intentDataProvider,
+                mock(WebappDeferredStartupWithStorageHandler.class), mModel,
+                mock(ActivityLifecycleDispatcher.class), mCurrentPageVerifier);
     }
 
     private WebappDataStorage registerStorageForWebApk(String packageName) {
@@ -80,6 +99,7 @@ public class WebappDisclosureControllerTest {
     public void verifyShownThenDismissedOnNewCreateStorage(String packageName) {
         WebappDisclosureController controller = buildControllerForWebApk(packageName);
         WebappDataStorage storage = registerStorageForWebApk(packageName);
+        setVerificationStatus(VerificationStatus.SUCCESS);
 
         // Simulates the case that shows the disclosure when creating a new storage.
         controller.onDeferredStartupWithStorage(storage, true /* didCreateStorage */);
@@ -98,6 +118,7 @@ public class WebappDisclosureControllerTest {
     public void verifyShownThenDismissedOnRestart(String packageName) {
         WebappDisclosureController controller = buildControllerForWebApk(packageName);
         WebappDataStorage storage = registerStorageForWebApk(packageName);
+        setVerificationStatus(VerificationStatus.SUCCESS);
 
         // Simulates the case that shows the disclosure when finish native initialization.
         storage.setShowDisclosure();
@@ -153,30 +174,78 @@ public class WebappDisclosureControllerTest {
         assertEquals(DISCLOSURE_STATE_NOT_SHOWN, mModel.get(DISCLOSURE_STATE));
     }
 
+    private void setVerificationStatus(@VerificationStatus int status) {
+        VerificationState state = new VerificationState(SCOPE, status);
+        doReturn(state).when(mCurrentPageVerifier).getState();
+
+        for (Runnable observer : mVerificationObserverCaptor.getAllValues()) {
+            observer.run();
+        }
+    }
+
     @Test
     @Feature({"Webapps"})
     public void testUnboundWebApkShowDisclosure() {
-        String packageName = "unbound";
-        verifyShownThenDismissedOnNewCreateStorage(packageName);
+        verifyShownThenDismissedOnNewCreateStorage(UNBOUND_PACKAGE);
     }
 
     @Test
     @Feature({"Webapps"})
     public void testUnboundWebApkShowDisclosure2() {
-        String packageName = "unbound";
-        verifyShownThenDismissedOnRestart(packageName);
+        verifyShownThenDismissedOnRestart(UNBOUND_PACKAGE);
     }
 
     @Test
     @Feature({"Webapps"})
     public void testUnboundWebApkNoDisclosureOnExistingStorage() {
-        verifyNotShownOnExistingStorageWithoutShouldShowDisclosure("unbound");
+        verifyNotShownOnExistingStorageWithoutShouldShowDisclosure(UNBOUND_PACKAGE);
     }
 
     @Test
     @Feature({"Webapps"})
     public void testBoundWebApkNoDisclosure() {
-        String packageName = WebApkConstants.WEBAPK_PACKAGE_PREFIX + ".bound";
-        verifyNeverShown(packageName);
+        verifyNeverShown(BOUND_PACKAGE);
+    }
+
+    @Test
+    @Feature({"Webapps"})
+    public void testNotShowDisclosureWhenNotVerifiedOrigin() {
+        WebappDisclosureController controller = buildControllerForWebApk(UNBOUND_PACKAGE);
+        WebappDataStorage storage = registerStorageForWebApk(UNBOUND_PACKAGE);
+
+        setVerificationStatus(VerificationStatus.FAILURE);
+        controller.onDeferredStartupWithStorage(storage, true /* didCreateStorage */);
+        assertTrue(storage.shouldShowDisclosure());
+
+        assertSnackbarNotShown();
+    }
+
+    @Test
+    @Feature({"Webapps"})
+    public void testDismissDisclosureWhenLeavingVerifiedOrigin() {
+        WebappDisclosureController controller = buildControllerForWebApk(UNBOUND_PACKAGE);
+        WebappDataStorage storage = registerStorageForWebApk(UNBOUND_PACKAGE);
+        storage.setShowDisclosure();
+        controller.onFinishNativeInitialization();
+
+        setVerificationStatus(VerificationStatus.SUCCESS);
+        assertSnackbarShown();
+
+        setVerificationStatus(VerificationStatus.FAILURE);
+        assertSnackbarNotShown();
+    }
+
+    @Test
+    @Feature({"Webapps"})
+    public void testShowsAgainWhenReenteringTrustedOrigin() {
+        WebappDisclosureController controller = buildControllerForWebApk(UNBOUND_PACKAGE);
+        WebappDataStorage storage = registerStorageForWebApk(UNBOUND_PACKAGE);
+        storage.setShowDisclosure();
+        controller.onFinishNativeInitialization();
+
+        setVerificationStatus(VerificationStatus.SUCCESS);
+        setVerificationStatus(VerificationStatus.FAILURE);
+        setVerificationStatus(VerificationStatus.SUCCESS);
+        assertSnackbarShown();
     }
 }
