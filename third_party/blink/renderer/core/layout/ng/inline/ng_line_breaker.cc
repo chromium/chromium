@@ -1008,8 +1008,10 @@ void NGLineBreaker::HandleTrailingSpacesIfNeeded(NGLineInfo* line_info) {
   if (item_index_ >= items.size())
     return;
   const NGInlineItem& item = items[item_index_];
-  if (const ShapeResult* shape_result = item.TextShapeResult())
-    HandleTrailingSpaces(item, *shape_result, line_info);
+  const ShapeResult* shape_result = item.TextShapeResult();
+  // TODO(kojii): We need to call |HandleTrailingSpaces| even when
+  // |shape_result| is |nullptr|. Clean this up.
+  HandleTrailingSpaces(item, *shape_result, line_info);
 }
 
 inline void NGLineBreaker::HandleTrailingSpaces(const NGInlineItem& item,
