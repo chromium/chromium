@@ -775,8 +775,7 @@ android_aar_prebuilt("androidx_tvprovider_tvprovider_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("androidx_vectordrawable_vectordrawable_java") {
-  aar_path =
-      "libs/androidx_vectordrawable_vectordrawable/vectordrawable-1.1.0.aar"
+  aar_path = "libs/androidx_vectordrawable_vectordrawable/vectordrawable-1.2.0-SNAPSHOT.aar"
   info_path = "libs/androidx_vectordrawable_vectordrawable/androidx_vectordrawable_vectordrawable.info"
   deps = [
     ":androidx_annotation_annotation_java",
@@ -789,7 +788,7 @@ android_aar_prebuilt("androidx_vectordrawable_vectordrawable_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("androidx_vectordrawable_vectordrawable_animated_java") {
-  aar_path = "libs/androidx_vectordrawable_vectordrawable_animated/vectordrawable-animated-1.1.0.aar"
+  aar_path = "libs/androidx_vectordrawable_vectordrawable_animated/vectordrawable-animated-1.2.0-SNAPSHOT.aar"
   info_path = "libs/androidx_vectordrawable_vectordrawable_animated/androidx_vectordrawable_vectordrawable_animated.info"
   deps = [
     ":androidx_collection_collection_java",
