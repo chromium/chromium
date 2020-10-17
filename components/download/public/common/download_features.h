@@ -16,6 +16,10 @@ namespace features {
 // network.
 constexpr char kDownloadLaterRequireCellular[] = "require_cellular";
 
+// The Finch parameter for download later feature to enable only in lite
+// mode(data saver).
+constexpr char kDownloadLaterRequireLiteMode[] = "require_lite_mode";
+
 // Whether offline content provider should be used for the downloads UI..
 COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature
     kUseDownloadOfflineContentProvider;

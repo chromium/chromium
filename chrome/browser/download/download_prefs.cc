@@ -414,6 +414,17 @@ bool DownloadPrefs::PromptDownloadLater() const {
   return false;
 }
 
+bool DownloadPrefs::HasDownloadLaterPromptShown() const {
+#ifdef OS_ANDROID
+  if (base::FeatureList::IsEnabled(download::features::kDownloadLater)) {
+    return *prompt_for_download_later_ !=
+           static_cast<int>(DownloadLaterPromptStatus::kShowInitial);
+  }
+#endif
+
+  return false;
+}
+
 bool DownloadPrefs::IsDownloadPathManaged() const {
   return download_path_.IsManaged();
 }

@@ -448,3 +448,30 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
   }
 }
 #endif  // OS_CHROMEOS
+
+#ifdef OS_ANDROID
+TEST(DownloadPrefsTest, DownloadLaterPrefs) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(download::features::kDownloadLater);
+
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile;
+  DownloadPrefs prefs(&profile);
+
+  EXPECT_TRUE(prefs.PromptDownloadLater());
+  EXPECT_FALSE(prefs.HasDownloadLaterPromptShown());
+
+  profile.GetPrefs()->SetInteger(
+      prefs::kDownloadLaterPromptStatus,
+      static_cast<int>(DownloadLaterPromptStatus::kShowPreference));
+  EXPECT_TRUE(prefs.PromptDownloadLater());
+  EXPECT_TRUE(prefs.HasDownloadLaterPromptShown());
+
+  profile.GetPrefs()->SetInteger(
+      prefs::kDownloadLaterPromptStatus,
+      static_cast<int>(DownloadLaterPromptStatus::kDontShow));
+  EXPECT_FALSE(prefs.PromptDownloadLater());
+  EXPECT_TRUE(prefs.HasDownloadLaterPromptShown());
+}
+
+#endif  // OS_ANDROID
