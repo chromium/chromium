@@ -11,6 +11,8 @@ extern const char kKaleidoscopeUIURL[];
 
 extern const char kKaleidoscopeUntrustedContentUIURL[];
 
+extern const char kKaleidoscopeUntrustedPALChildURL[];
+
 // The current latest version of the first run experience.
 extern const int kKaleidoscopeFirstRunLatestVersion;
 

@@ -203,6 +203,27 @@ void OnStringsRequest(const std::string& path,
   std::move(callback).Run(ref_contents);
 }
 
+content::WebUIDataSource* CreateUntrustedPALChildWebUIDataSource() {
+  content::WebUIDataSource* untrusted_source =
+      content::WebUIDataSource::Create(kKaleidoscopeUntrustedPALChildURL);
+  untrusted_source->DisableDenyXFrameOptions();
+
+  // Allow scripts from Google.
+  untrusted_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src https://imasdk.googleapis.com 'unsafe-inline' 'self';");
+  untrusted_source->DisableTrustedTypesCSP();
+
+#if BUILDFLAG(ENABLE_KALEIDOSCOPE)
+  untrusted_source->AddResourcePath("pal-child.html",
+                                    IDR_KALEIDOSCOPE_PAL_CHILD_HTML);
+  untrusted_source->AddResourcePath("pal-child.js",
+                                    IDR_KALEIDOSCOPE_PAL_CHILD_JS);
+#endif  // BUILDFLAG(ENABLE_KALEIDOSCOPE)
+
+  return untrusted_source;
+}
+
 }  // anonymous namespace
 
 // We set |enable_chrome_send| to true since we need it for browser tests.
@@ -214,6 +235,8 @@ KaleidoscopeUI::KaleidoscopeUI(content::WebUI* web_ui)
   content::WebUIDataSource::Add(browser_context, CreateWebUIDataSource());
   content::WebUIDataSource::Add(browser_context,
                                 CreateUntrustedWebUIDataSource());
+  content::WebUIDataSource::Add(browser_context,
+                                CreateUntrustedPALChildWebUIDataSource());
 }
 
 KaleidoscopeUI::~KaleidoscopeUI() {
@@ -312,7 +335,8 @@ content::WebUIDataSource* KaleidoscopeUI::CreateUntrustedWebUIDataSource() {
   // Allow YouTube videos to be embedded.
   untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ChildSrc,
-      "child-src https://www.youtube.com;");
+      "child-src https://www.youtube.com "
+      "chrome-untrusted://kaleidoscope-pal-generator;");
 
   // Add the URL to the backend.
   untrusted_source->AddString("googleApiUrl", backend_url.spec());

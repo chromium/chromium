@@ -11,4 +11,7 @@ const char kKaleidoscopeUIURL[] = "chrome://kaleidoscope";
 const char kKaleidoscopeUntrustedContentUIURL[] =
     "chrome-untrusted://kaleidoscope/";
 
+const char kKaleidoscopeUntrustedPALChildURL[] =
+    "chrome-untrusted://kaleidoscope-pal-generator/";
+
 const int kKaleidoscopeFirstRunLatestVersion = 2;
