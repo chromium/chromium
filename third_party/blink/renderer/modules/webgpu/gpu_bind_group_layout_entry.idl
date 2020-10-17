@@ -36,5 +36,6 @@ enum GPUBindingType {
 enum GPUTextureComponentType {
     "float",
     "sint",
-    "uint"
+    "uint",
+    "depth-comparison"
 };

@@ -64,6 +64,9 @@ WGPUTextureComponentType AsDawnEnum<WGPUTextureComponentType>(
   if (webgpu_enum == "sint") {
     return WGPUTextureComponentType_Sint;
   }
+  if (webgpu_enum == "depth-comparison") {
+    return WGPUTextureComponentType_DepthComparison;
+  }
   NOTREACHED();
   return WGPUTextureComponentType_Force32;
 }
