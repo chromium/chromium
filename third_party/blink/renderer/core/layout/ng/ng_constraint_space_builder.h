@@ -331,6 +331,15 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
     space_.EnsureRareData()->SetIsTableCellHiddenForPaint(is_hidden_for_paint);
   }
 
+  void SetHasTableCellCollapsedBorder(bool is_collapsed_border) {
+#if DCHECK_IS_ON()
+    DCHECK(!is_table_cell_collapsed_border_set_);
+    is_table_cell_collapsed_border_set_ = true;
+#endif
+    space_.EnsureRareData()->SetIsTableCellWithCollapsedBorders(
+        is_collapsed_border);
+  }
+
   void SetTableCellChildLayoutMode(
       NGTableCellChildLayoutMode table_cell_child_layout_mode) {
     space_.bitfields_.table_cell_child_layout_mode =
@@ -454,6 +463,7 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
   bool is_table_cell_alignment_baseline_set_ = false;
   bool is_table_cell_column_index_set_ = false;
   bool is_table_cell_hidden_for_paint_set_ = false;
+  bool is_table_cell_collapsed_border_set_ = false;
   bool is_custom_layout_data_set_ = false;
   bool is_lines_until_clamp_set_ = false;
   bool is_table_row_data_set_ = false;

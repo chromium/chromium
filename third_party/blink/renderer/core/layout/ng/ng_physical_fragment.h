@@ -172,6 +172,9 @@ class CORE_EXPORT NGPhysicalFragment
   // Returns whether the fragment should be atomically painted.
   bool IsPaintedAtomically() const { return is_painted_atomically_; }
 
+  // Returns whether the fragment is a table part with collapsed borders.
+  bool HasCollapsedBorders() const { return has_collapsed_borders_; }
+
   bool IsFormattingContextRoot() const {
     return (IsBox() && BoxType() >= NGBoxType::kMinimumFormattingContextRoot) ||
            IsLegacyLayoutRoot();
@@ -491,6 +494,7 @@ class CORE_EXPORT NGPhysicalFragment
   unsigned is_fieldset_container_ : 1;
   unsigned is_legacy_layout_root_ : 1;
   unsigned is_painted_atomically_ : 1;
+  unsigned has_collapsed_borders_ : 1;
   unsigned has_baseline_ : 1;
   unsigned has_last_baseline_ : 1;
 

@@ -93,6 +93,7 @@ scoped_refptr<const NGLayoutResult> NGTableRowLayoutAlgorithm::Layout() {
     builder.SetTableCellBorders(cell_data.border_box_borders);
     builder.SetTableCellAlignmentBaseline(row_baseline);
     builder.SetTableCellColumnIndex(start_column);
+    builder.SetHasTableCellCollapsedBorder(table_data.has_collapsed_borders);
     builder.SetNeedsBaseline(true);
     builder.SetIsTableCellHiddenForPaint(
         table_data.column_locations[*cell_location_start_column].is_collapsed &&

@@ -51,6 +51,8 @@ class CORE_EXPORT NGFragmentBuilder {
 
   void SetIsHiddenForPaint(bool value) { is_hidden_for_paint_ = value; }
 
+  void SetHasCollapsedBorders(bool value) { has_collapsed_borders_ = value; }
+
   const LayoutObject* GetLayoutObject() const { return layout_object_; }
 
  protected:
@@ -80,7 +82,7 @@ class CORE_EXPORT NGFragmentBuilder {
   LayoutObject* layout_object_ = nullptr;
   scoped_refptr<NGBreakToken> break_token_;
   bool is_hidden_for_paint_ = false;
-
+  bool has_collapsed_borders_ = false;
   friend class NGPhysicalFragment;
 };
 

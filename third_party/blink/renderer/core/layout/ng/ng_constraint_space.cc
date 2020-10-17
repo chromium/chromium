@@ -107,6 +107,9 @@ NGConstraintSpace NGConstraintSpace::CreateFromLayoutObject(
     builder.SetHideTableCellIfEmpty(
         cell_style.EmptyCells() == EEmptyCells::kHide &&
         table_style.BorderCollapse() == EBorderCollapse::kSeparate);
+    builder.SetHasTableCellCollapsedBorder(
+        cell_block.Parent()->Parent()->Parent()->StyleRef().BorderCollapse() ==
+        EBorderCollapse::kCollapse);
   }
 
   if (block.IsAtomicInlineLevel() || block.IsFlexItem() || block.IsGridItem() ||

@@ -3222,9 +3222,8 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   // !Table()->ShouldCollapseBorders().
   bool HasNonCollapsedBorderDecoration() const {
     NOT_DESTROYED();
-    // We can only ensure this flag is up-to-date after PrePaint.
     DCHECK_GE(GetDocument().Lifecycle().GetState(),
-              DocumentLifecycle::kPrePaintClean);
+              DocumentLifecycle::kInPerformLayout);
     return bitfields_.HasNonCollapsedBorderDecoration();
   }
   void SetHasNonCollapsedBorderDecoration(bool b) {

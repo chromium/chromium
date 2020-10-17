@@ -320,6 +320,11 @@ class CORE_EXPORT NGConstraintSpace final {
     return HasRareData() ? rare_data_->IsTableCellHiddenForPaint() : false;
   }
 
+  bool IsTableCellWithCollapsedBorders() const {
+    return HasRareData() ? rare_data_->IsTableCellWithCollapsedBorders()
+                         : false;
+  }
+
   const NGTableConstraintSpaceData* TableData() const {
     return HasRareData() ? rare_data_->TableData() : nullptr;
   }
@@ -970,6 +975,15 @@ class CORE_EXPORT NGConstraintSpace final {
       EnsureTableCellData()->is_hidden_for_paint = is_hidden_for_paint;
     }
 
+    bool IsTableCellWithCollapsedBorders() const {
+      return data_union_type == kTableCellData &&
+             table_cell_data_.has_collapsed_border;
+    }
+
+    void SetIsTableCellWithCollapsedBorders(bool has_collapsed_border) {
+      EnsureTableCellData()->has_collapsed_border = has_collapsed_border;
+    }
+
     void SetTableRowData(
         scoped_refptr<const NGTableConstraintSpaceData> table_data,
         wtf_size_t row_index) {
@@ -1089,7 +1103,8 @@ class CORE_EXPORT NGConstraintSpace final {
                table_cell_alignment_baseline ==
                    other.table_cell_alignment_baseline &&
                table_cell_column_index == other.table_cell_column_index &&
-               is_hidden_for_paint == other.is_hidden_for_paint;
+               is_hidden_for_paint == other.is_hidden_for_paint &&
+               has_collapsed_border == other.has_collapsed_border;
       }
 
       bool IsInitialForMaySkipLayout() const {
@@ -1098,7 +1113,7 @@ class CORE_EXPORT NGConstraintSpace final {
                table_cell_intrinsic_padding_block_end == LayoutUnit() &&
                table_cell_column_index == kNotFound &&
                table_cell_alignment_baseline == base::nullopt &&
-               !is_hidden_for_paint;
+               !is_hidden_for_paint && !has_collapsed_border;
       }
 
       NGBoxStrut table_cell_borders;
@@ -1107,6 +1122,7 @@ class CORE_EXPORT NGConstraintSpace final {
       wtf_size_t table_cell_column_index = kNotFound;
       base::Optional<LayoutUnit> table_cell_alignment_baseline;
       bool is_hidden_for_paint = false;
+      bool has_collapsed_border = false;
     };
 
     struct TableRowData {

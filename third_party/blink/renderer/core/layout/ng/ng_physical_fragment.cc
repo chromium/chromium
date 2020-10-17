@@ -278,6 +278,7 @@ NGPhysicalFragment::NGPhysicalFragment(NGFragmentBuilder* builder,
       is_fieldset_container_(false),
       is_legacy_layout_root_(false),
       is_painted_atomically_(false),
+      has_collapsed_borders_(builder->has_collapsed_borders_),
       has_baseline_(false) {
   CHECK(builder->layout_object_);
 }
@@ -300,6 +301,7 @@ NGPhysicalFragment::NGPhysicalFragment(LayoutObject* layout_object,
       is_fieldset_container_(false),
       is_legacy_layout_root_(false),
       is_painted_atomically_(false),
+      has_collapsed_borders_(false),
       has_baseline_(false),
       has_last_baseline_(false) {
   CHECK(layout_object);
@@ -341,6 +343,7 @@ NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other)
       is_fieldset_container_(other.is_fieldset_container_),
       is_legacy_layout_root_(other.is_legacy_layout_root_),
       is_painted_atomically_(other.is_painted_atomically_),
+      has_collapsed_borders_(other.has_collapsed_borders_),
       has_baseline_(other.has_baseline_),
       has_last_baseline_(other.has_last_baseline_),
       ink_overflow_computed_(other.ink_overflow_computed_) {

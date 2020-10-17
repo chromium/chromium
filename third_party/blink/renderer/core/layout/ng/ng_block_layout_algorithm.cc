@@ -868,6 +868,13 @@ scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::FinishLayout(
       border_box_size.inline_size);
   container_builder_.SetFragmentsTotalBlockSize(border_box_size.block_size);
 
+  // At this point, we need to perform any final table-cell adjustments
+  // needed.
+  if (ConstraintSpace().IsTableCell()) {
+    container_builder_.SetHasCollapsedBorders(
+        ConstraintSpace().IsTableCellWithCollapsedBorders());
+  }
+
   // If our BFC block-offset is still unknown, we check:
   //  - If we have a non-zero block-size (margins don't collapse through us).
   //  - If we have a break token. (Even if we are self-collapsing we position
