@@ -76,22 +76,6 @@ class HoverButtonTest : public ChromeViewsTestBase {
   DISALLOW_COPY_AND_ASSIGN(HoverButtonTest);
 };
 
-class TestButtonListener : public views::ButtonListener {
- public:
-  TestButtonListener() = default;
-  ~TestButtonListener() override = default;
-
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override {
-    last_sender_ = sender;
-  }
-
-  views::View* last_sender() { return last_sender_; }
-
- private:
-  views::View* last_sender_ = nullptr;
-  DISALLOW_COPY_AND_ASSIGN(TestButtonListener);
-};
-
 // Double check the length of the strings used for testing are either over or
 // under the width used for the following tests.
 TEST_F(HoverButtonTest, ValidateTestData) {
@@ -155,22 +139,22 @@ TEST_F(HoverButtonTest, CreateButtonWithSubtitleAndIcons) {
   EXPECT_TRUE(button.Contains(secondary_icon_raw));
 }
 
-// Tests that the listener is notified on mouse release rather than mouse press.
+// Tests that the button is activated on mouse release rather than mouse press.
 TEST_F(HoverButtonTest, ActivatesOnMouseReleased) {
-  TestButtonListener button_listener;
+  bool clicked = false;
   HoverButton* button = widget()->SetContentsView(std::make_unique<HoverButton>(
-      &button_listener, CreateIcon(), base::ASCIIToUTF16("Title"),
-      base::string16()));
+      base::BindRepeating([](bool* clicked) { *clicked = true; }, &clicked),
+      CreateIcon(), base::ASCIIToUTF16("Title"), base::string16()));
   button->SetBoundsRect(gfx::Rect(100, 100, 200, 200));
   widget()->Show();
 
   // ButtonListener should not be activated on press.
   generator()->PressLeftButton();
-  EXPECT_EQ(nullptr, button_listener.last_sender());
+  EXPECT_FALSE(clicked);
 
   // ButtonListener should be activated on release.
   generator()->ReleaseLeftButton();
-  EXPECT_EQ(button, button_listener.last_sender());
+  EXPECT_TRUE(clicked);
 
   widget()->Close();
 }

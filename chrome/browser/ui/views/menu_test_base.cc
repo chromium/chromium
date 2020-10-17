@@ -72,7 +72,8 @@ void MenuTestBase::TearDown() {
 
 std::unique_ptr<views::View> MenuTestBase::CreateContentsView() {
   auto button = std::make_unique<views::MenuButton>(
-      this, base::ASCIIToUTF16("Menu Test"));
+      base::BindRepeating(&MenuTestBase::ButtonPressed, base::Unretained(this)),
+      base::ASCIIToUTF16("Menu Test"));
   button_ = button.get();
   return button;
 }
@@ -85,13 +86,10 @@ gfx::Size MenuTestBase::GetPreferredSizeForContents() const {
   return button_->GetPreferredSize();
 }
 
-void MenuTestBase::ButtonPressed(views::Button* source,
-                                 const ui::Event& event) {
-  gfx::Point screen_location;
-  views::View::ConvertPointToScreen(source, &screen_location);
-  gfx::Rect bounds(screen_location, source->size());
-  menu_runner_->RunMenuAt(source->GetWidget(), button_->button_controller(),
-                          bounds, views::MenuAnchorPosition::kTopLeft,
+void MenuTestBase::ButtonPressed() {
+  menu_runner_->RunMenuAt(button_->GetWidget(), button_->button_controller(),
+                          button_->GetBoundsInScreen(),
+                          views::MenuAnchorPosition::kTopLeft,
                           ui::MENU_SOURCE_NONE);
 }
 

@@ -120,7 +120,9 @@ CertificateSelector::CertificateSelector(net::ClientCertIdentityList identities,
   CHECK(web_contents_);
 
   view_cert_button_ = SetExtraView(std::make_unique<views::MdTextButton>(
-      this, l10n_util::GetStringUTF16(IDS_PAGE_INFO_CERT_INFO_BUTTON)));
+      base::BindRepeating(&CertificateSelector::ViewCertButtonPressed,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_CERT_INFO_BUTTON)));
 
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::TEXT, views::CONTROL));
@@ -283,16 +285,12 @@ ui::ModalType CertificateSelector::GetModalType() const {
   return ui::MODAL_TYPE_CHILD;
 }
 
-void CertificateSelector::ButtonPressed(views::Button* sender,
-                                        const ui::Event& event) {
-  if (sender == view_cert_button_) {
-    net::ClientCertIdentity* const cert = GetSelectedCert();
-    if (cert) {
-      ShowCertificateViewer(web_contents_,
-                            web_contents_->GetTopLevelNativeWindow(),
-                            cert->certificate());
-    }
-  }
+void CertificateSelector::ViewCertButtonPressed() {
+  net::ClientCertIdentity* const cert = GetSelectedCert();
+  if (!cert)
+    return;
+  ShowCertificateViewer(web_contents_, web_contents_->GetTopLevelNativeWindow(),
+                        cert->certificate());
 }
 
 void CertificateSelector::OnSelectionChanged() {

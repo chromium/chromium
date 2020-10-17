@@ -18,7 +18,7 @@
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/gfx/image/image.h"
-#include "ui/views/controls/button/button.h"
+#include "ui/views/animation/ink_drop_state.h"
 #include "url/origin.h"
 
 namespace content {
@@ -59,8 +59,7 @@ class PageActionIconView;
 //   |     [Use app] [Stay in Chrome] |
 //   +--------------------------------+
 
-class IntentPickerBubbleView : public LocationBarBubbleDelegateView,
-                               public views::ButtonListener {
+class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
  public:
   METADATA_HEADER(IntentPickerBubbleView);
 
@@ -144,12 +143,11 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView,
   // views::BubbleDialogDelegateView overrides:
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  // views::ButtonListener overrides:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
+  void AppButtonPressed(size_t index, const ui::Event& event);
 
-  // Similar to ButtonPressed, except this controls the up/down/right/left input
-  // while focusing on the |scroll_view_|.
-  void ArrowButtonPressed(int index);
+  // Similar to AppButtonPressed, except this controls the up/down/right/left
+  // input while focusing on the |scroll_view_|.
+  void ArrowButtonPressed(size_t index);
 
   // ui::EventHandler overrides:
   void OnKeyEvent(ui::KeyEvent* event) override;
@@ -184,7 +182,7 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView,
 
   // Set the new app selection, use the |event| (if provided) to show a more
   // accurate ripple effect w.r.t. the user's input.
-  void SetSelectedAppIndex(int index, const ui::Event* event);
+  void SetSelectedAppIndex(size_t index, const ui::Event* event);
 
   // Calculate the next app to select given the current selection and |delta|.
   size_t CalculateNextAppIndex(int delta);

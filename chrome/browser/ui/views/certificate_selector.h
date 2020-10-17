@@ -10,7 +10,6 @@
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "net/ssl/client_cert_identity.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/table/table_view_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -36,7 +35,6 @@ namespace chrome {
 // The currently selected certificate can be obtained using |GetSelectedCert()|.
 // The explanatory text shown to the user must be provided to |InitWithText()|.
 class CertificateSelector : public views::DialogDelegateView,
-                            public views::ButtonListener,
                             public views::TableViewObserver {
  public:
   // Indicates if the dialog can be successfully shown.
@@ -70,9 +68,6 @@ class CertificateSelector : public views::DialogDelegateView,
   views::View* GetInitiallyFocusedView() override;
   ui::ModalType GetModalType() const override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // views::TableViewObserver:
   void OnSelectionChanged() override;
   void OnDoubleClick() override;
@@ -91,6 +86,8 @@ class CertificateSelector : public views::DialogDelegateView,
 
  private:
   class CertificateTableModel;
+
+  void ViewCertButtonPressed();
 
   net::ClientCertIdentityList identities_;
 

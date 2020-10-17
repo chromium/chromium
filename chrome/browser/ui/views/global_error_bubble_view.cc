@@ -58,7 +58,6 @@ GlobalErrorBubbleView::GlobalErrorBubbleView(
     Browser* browser,
     const base::WeakPtr<GlobalErrorWithStandardBubble>& error)
     : BubbleDialogDelegateView(anchor_view, arrow),
-      browser_(browser),
       error_(error) {
   // error_ is a WeakPtr, but it's always non-null during construction.
   DCHECK(error_);
@@ -81,14 +80,17 @@ GlobalErrorBubbleView::GlobalErrorBubbleView(
   // nothing if they are invoked after its destruction.
   SetAcceptCallback(base::BindOnce(
       &GlobalErrorWithStandardBubble::BubbleViewAcceptButtonPressed, error,
-      base::Unretained(browser_)));
+      base::Unretained(browser)));
   SetCancelCallback(base::BindOnce(
       &GlobalErrorWithStandardBubble::BubbleViewCancelButtonPressed, error,
-      base::Unretained(browser_)));
+      base::Unretained(browser)));
 
   if (!error_->GetBubbleViewDetailsButtonLabel().empty()) {
     SetExtraView(std::make_unique<views::MdTextButton>(
-        this, error_->GetBubbleViewDetailsButtonLabel()));
+        base::BindRepeating(
+            &GlobalErrorWithStandardBubble::BubbleViewDetailsButtonPressed,
+            error_, browser),
+        error_->GetBubbleViewDetailsButtonLabel()));
   }
 
   chrome::RecordDialogCreation(chrome::DialogIdentifier::GLOBAL_ERROR);
@@ -144,10 +146,4 @@ void GlobalErrorBubbleView::OnDialogInitialized() {
 
 void GlobalErrorBubbleView::CloseBubbleView() {
   GetWidget()->Close();
-}
-
-void GlobalErrorBubbleView::ButtonPressed(views::Button* sender,
-                                          const ui::Event& event) {
-  if (error_)
-    error_->BubbleViewDetailsButtonPressed(browser_);
 }

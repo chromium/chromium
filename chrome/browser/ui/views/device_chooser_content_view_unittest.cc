@@ -21,6 +21,7 @@
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/controls/table/table_view_observer.h"
 #include "ui/views/controls/throbber.h"
+#include "ui/views/test/button_test_api.h"
 
 namespace {
 
@@ -278,7 +279,7 @@ TEST_F(DeviceChooserContentViewTest, ClickRescanButton) {
   const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, point, point,
                              ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                              ui::EF_LEFT_MOUSE_BUTTON);
-  content_view()->ButtonPressed(re_scan_button(), event);
+  views::test::ButtonTestApi(re_scan_button()).NotifyClick(event);
 }
 
 TEST_F(DeviceChooserContentViewTest, ClickHelpButton) {
@@ -291,7 +292,7 @@ TEST_F(DeviceChooserContentViewTest, ClickHelpButton) {
   const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, point, point,
                              ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                              ui::EF_LEFT_MOUSE_BUTTON);
-  content_view()->ButtonPressed(help_button, event);
+  views::test::ButtonTestApi(help_button).NotifyClick(event);
 }
 
 TEST_F(DeviceChooserContentViewTest, SetTableViewAlwaysDisabled) {

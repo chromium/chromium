@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class Profile;
@@ -27,8 +26,7 @@ class Checkbox;
 
 // A dialog allowing the user to create a desktop shortcut pointing to Chrome
 // app.
-class CreateChromeApplicationShortcutView : public views::DialogDelegateView,
-                                            public views::ButtonListener {
+class CreateChromeApplicationShortcutView : public views::DialogDelegateView {
  public:
   CreateChromeApplicationShortcutView(
       Profile* profile,
@@ -49,16 +47,15 @@ class CreateChromeApplicationShortcutView : public views::DialogDelegateView,
   ui::ModalType GetModalType() const override;
   base::string16 GetWindowTitle() const override;
 
-  // ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
  private:
   CreateChromeApplicationShortcutView(Profile* profile,
                                       const base::Callback<void(bool)>& cb);
 
   // Creates a new check-box with the given text and checked state.
   std::unique_ptr<views::Checkbox> AddCheckbox(const base::string16& text,
-                                               bool checked);
+                                               const std::string& pref_path);
+
+  void CheckboxPressed(std::string pref_path, views::Checkbox* checkbox);
 
   // Called when the app's ShortcutInfo (with icon) is loaded.
   void OnAppInfoLoaded(std::unique_ptr<web_app::ShortcutInfo> shortcut_info);

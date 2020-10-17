@@ -565,7 +565,9 @@ SadTabView::SadTabView(content::WebContents* web_contents, SadTabKind kind)
   layout->AddView(std::move(help_link), 1.0, 1.0, views::GridLayout::LEADING,
                   views::GridLayout::CENTER);
   auto action_button = std::make_unique<views::MdTextButton>(
-      this, l10n_util::GetStringUTF16(GetButtonTitle()));
+      base::BindRepeating(&SadTabView::PerformAction, base::Unretained(this),
+                          Action::BUTTON),
+      l10n_util::GetStringUTF16(GetButtonTitle()));
   action_button->SetProminent(true);
   action_button_ =
       layout->AddView(std::move(action_button), 1.0, 1.0,
@@ -599,11 +601,6 @@ void SadTabView::ReinstallInWebView() {
     owner_ = nullptr;
   }
   AttachToWebView();
-}
-
-void SadTabView::ButtonPressed(views::Button* sender, const ui::Event& event) {
-  DCHECK_EQ(action_button_, sender);
-  PerformAction(Action::BUTTON);
 }
 
 void SadTabView::OnPaint(gfx::Canvas* canvas) {

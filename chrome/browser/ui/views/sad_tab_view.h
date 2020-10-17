@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_SAD_TAB_VIEW_H_
 
 #include "chrome/browser/ui/sad_tab.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
 namespace content {
@@ -31,9 +30,7 @@ class SadTabViewTestApi;
 //  "sad tab" in the browser window when a renderer is destroyed unnaturally.
 //
 ///////////////////////////////////////////////////////////////////////////////
-class SadTabView : public SadTab,
-                   public views::View,
-                   public views::ButtonListener {
+class SadTabView : public SadTab, public views::View {
  public:
   METADATA_HEADER(SadTabView);
 
@@ -45,9 +42,6 @@ class SadTabView : public SadTab,
 
   // Overridden from views::View:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-
-  // Overridden from views::ButtonListener:
-  void ButtonPressed(views::Button* source, const ui::Event& event) override;
 
  protected:
   // Overridden from views::View:

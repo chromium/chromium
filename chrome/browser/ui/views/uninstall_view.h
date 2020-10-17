@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "ui/base/models/combobox_model.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
@@ -24,16 +23,12 @@ class Label;
 // UninstallView implements the dialog that confirms Chrome uninstallation
 // and asks whether to delete Chrome profile. Also if currently Chrome is set
 // as default browser, it asks users whether to set another browser as default.
-class UninstallView : public views::ButtonListener,
-                      public views::DialogDelegateView,
+class UninstallView : public views::DialogDelegateView,
                       public ui::ComboboxModel {
  public:
   explicit UninstallView(int* user_selection,
                          const base::Closure& quit_closure);
   ~UninstallView() override;
-
-  // Overridden form views::ButtonListener.
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // Overridden from ui::ComboboxModel:
   int GetItemCount() const override;

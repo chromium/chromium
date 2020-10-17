@@ -13,11 +13,9 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/accessibility/ax_event_observer.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 
 namespace views {
-class Button;
 class MenuItemView;
 class MenuRunner;
 }
@@ -38,7 +36,6 @@ class MenuRunner;
 // close in time.
 class MenuTestBase : public ViewEventTestBase,
                      public views::AXEventObserver,
-                     public views::ButtonListener,
                      public views::MenuDelegate {
  public:
   MenuTestBase();
@@ -81,15 +78,14 @@ class MenuTestBase : public ViewEventTestBase,
   void DoTestOnMessageLoop() override;
   gfx::Size GetPreferredSizeForContents() const override;
 
-  // views::ButtonListener implementation
-  void ButtonPressed(views::Button* source, const ui::Event& event) override;
-
   // views::MenuDelegate implementation
   void ExecuteCommand(int id) override;
 
   int GetAXEventCount(ax::mojom::Event event_type) const;
 
  private:
+  void ButtonPressed();
+
   views::MenuButton* button_ = nullptr;
   views::MenuItemView* menu_ = nullptr;
   std::unique_ptr<views::MenuRunner> menu_runner_;

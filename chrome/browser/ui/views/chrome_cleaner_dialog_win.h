@@ -10,7 +10,6 @@
 
 #include "base/macros.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class Browser;
@@ -35,7 +34,6 @@ class LabelButton;
 // class's description for more details.
 class ChromeCleanerDialog
     : public views::DialogDelegateView,
-      public views::ButtonListener,
       public safe_browsing::ChromeCleanerController::Observer {
  public:
   // The |controller| object manages its own lifetime and is not owned by
@@ -57,9 +55,6 @@ class ChromeCleanerDialog
   // views::View overrides.
   gfx::Size CalculatePreferredSize() const override;
 
-  // views::ButtonListener overrides.
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // safe_browsing::ChromeCleanerController::Observer overrides.
   void OnIdle(
       safe_browsing::ChromeCleanerController::IdleReason idle_reason) override;
@@ -74,6 +69,9 @@ class ChromeCleanerDialog
 
   void HandleDialogInteraction(DialogInteractionResult result);
   void Abort();
+
+  void DetailsButtonPressed();
+  void LogsPermissionCheckboxPressed();
 
   Browser* browser_ = nullptr;
   // The pointer will be set to nullptr once the controller has been notified of

@@ -535,8 +535,16 @@ void ContentSettingBubbleContents::Init() {
 
   if (bubble_content.manage_text_style ==
       ContentSettingBubbleModel::ManageTextStyle::kCheckbox) {
-    auto manage_checkbox =
-        std::make_unique<views::Checkbox>(bubble_content.manage_text, this);
+    auto manage_checkbox = std::make_unique<views::Checkbox>(
+        bubble_content.manage_text,
+        base::BindRepeating(
+            [](ContentSettingBubbleContents* bubble) {
+              bubble->content_setting_bubble_model_->OnManageCheckboxChecked(
+                  bubble->manage_checkbox_->GetChecked());
+              // Toggling the check state may change the dialog button text.
+              bubble->DialogModelChanged();
+            },
+            base::Unretained(this)));
     manage_checkbox_ = manage_checkbox.get();
     rows.push_back({std::move(manage_checkbox), LayoutRowType::DEFAULT});
   }
@@ -579,7 +587,12 @@ ContentSettingBubbleContents::CreateHelpAndManageView() {
   std::vector<std::unique_ptr<views::View>> extra_views;
   // Optionally add a help icon if the view wants to link to a help page.
   if (bubble_content.show_learn_more) {
-    auto learn_more_button = views::CreateVectorImageButton(this);
+    auto learn_more_button = views::CreateVectorImageButton(base::BindRepeating(
+        [](ContentSettingBubbleContents* bubble) {
+          bubble->GetWidget()->Close();
+          bubble->content_setting_bubble_model_->OnLearnMoreClicked();
+        },
+        base::Unretained(this)));
     learn_more_button->SetFocusForPlatform();
     learn_more_button->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_LEARN_MORE));
@@ -594,7 +607,14 @@ ContentSettingBubbleContents::CreateHelpAndManageView() {
     base::string16 title = bubble_content.manage_text;
     if (title.empty())
       title = l10n_util::GetStringUTF16(IDS_MANAGE);
-    auto manage_button = std::make_unique<views::MdTextButton>(this, title);
+    auto manage_button = std::make_unique<views::MdTextButton>(
+        base::BindRepeating(
+            [](ContentSettingBubbleContents* bubble) {
+              bubble->GetWidget()->Close();
+              bubble->content_setting_bubble_model_->OnManageButtonClicked();
+            },
+            base::Unretained(this)),
+        title);
     manage_button->SetMinSize(gfx::Size(
         layout->GetDistanceMetric(views::DISTANCE_DIALOG_BUTTON_MINIMUM_WIDTH),
         0));
@@ -653,26 +673,6 @@ void ContentSettingBubbleContents::WebContentsDestroyed() {
   // it). Subsequent event listener methods should not be invoked on hidden
   // widgets.
   GetWidget()->Close();
-}
-
-void ContentSettingBubbleContents::ButtonPressed(views::Button* sender,
-                                                 const ui::Event& event) {
-  DCHECK(content_setting_bubble_model_);
-  if (sender == manage_checkbox_) {
-    content_setting_bubble_model_->OnManageCheckboxChecked(
-        manage_checkbox_->GetChecked());
-
-    // Toggling the check state may change the dialog button text.
-    DialogModelChanged();
-  } else if (sender == learn_more_button_) {
-    GetWidget()->Close();
-    content_setting_bubble_model_->OnLearnMoreClicked();
-  } else if (sender == manage_button_) {
-    GetWidget()->Close();
-    content_setting_bubble_model_->OnManageButtonClicked();
-  } else {
-    NOTREACHED();
-  }
 }
 
 void ContentSettingBubbleContents::OnPerformAction(views::Combobox* combobox) {

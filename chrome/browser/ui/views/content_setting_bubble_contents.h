@@ -15,7 +15,6 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/radio_button.h"
 
@@ -37,7 +36,6 @@ class LabelButton;
 // more or fewer controls than this.
 class ContentSettingBubbleContents : public content::WebContentsObserver,
                                      public views::BubbleDialogDelegateView,
-                                     public views::ButtonListener,
                                      public ContentSettingBubbleModel::Owner {
  public:
   ContentSettingBubbleContents(
@@ -85,10 +83,6 @@ class ContentSettingBubbleContents : public content::WebContentsObserver,
       content::NavigationHandle* navigation_handle) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
   void WebContentsDestroyed() override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
 
   // Provides data for this bubble.
   std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model_;

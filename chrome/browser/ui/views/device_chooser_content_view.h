@@ -12,7 +12,6 @@
 #include "chrome/browser/chooser_controller/chooser_controller.h"
 #include "ui/base/models/table_model.h"
 #include "ui/gfx/range/range.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
 class BluetoothStatusContainer;
@@ -28,8 +27,7 @@ class Throbber;
 // Used for WebUSB/WebBluetooth device selection for Chrome and extensions.
 class DeviceChooserContentView : public views::View,
                                  public ui::TableModel,
-                                 public ChooserController::View,
-                                 public views::ButtonListener {
+                                 public ChooserController::View {
  public:
   DeviceChooserContentView(
       views::TableViewObserver* table_view_observer,
@@ -52,9 +50,6 @@ class DeviceChooserContentView : public views::View,
   void OnOptionUpdated(size_t index) override;
   void OnAdapterEnabledChanged(bool enabled) override;
   void OnRefreshStateChanged(bool refreshing) override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // Note that there is no way to update the window title - for any given
   // instance of DeviceChooserContentView, this method is only called once to

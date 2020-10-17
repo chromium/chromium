@@ -9,15 +9,13 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/global_error/global_error_bubble_view_base.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/controls/button/button.h"
 
 class Browser;
 class ElevationIconSetter;
 class GlobalErrorWithStandardBubble;
 
 class GlobalErrorBubbleView : public views::BubbleDialogDelegateView,
-                              public GlobalErrorBubbleViewBase,
-                              public views::ButtonListener {
+                              public GlobalErrorBubbleViewBase {
  public:
   GlobalErrorBubbleView(
       views::View* anchor_view,
@@ -33,11 +31,7 @@ class GlobalErrorBubbleView : public views::BubbleDialogDelegateView,
   // GlobalErrorBubbleViewBase implementation.
   void CloseBubbleView() override;
 
-  // ButtonListener implementation.
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
  private:
-  Browser* const browser_;
   base::WeakPtr<GlobalErrorWithStandardBubble> error_;
 
   std::unique_ptr<ElevationIconSetter> elevation_icon_setter_;

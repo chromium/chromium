@@ -91,10 +91,10 @@ std::unique_ptr<views::View> CreateOriginView(const url::Origin& origin,
 // A button that represents a candidate intent handler.
 class IntentPickerLabelButton : public views::LabelButton {
  public:
-  IntentPickerLabelButton(views::ButtonListener* listener,
+  IntentPickerLabelButton(PressedCallback callback,
                           const gfx::Image* icon,
                           const std::string& display_name)
-      : LabelButton(listener,
+      : LabelButton(std::move(callback),
                     base::UTF8ToUTF16(base::StringPiece(display_name))) {
     SetHorizontalAlignment(gfx::ALIGN_LEFT);
     SetMinSize(gfx::Size(kMaxIntentPickerLabelButtonWidth, kRowHeight));
@@ -320,13 +320,13 @@ void IntentPickerBubbleView::OnWidgetDestroying(views::Widget* widget) {
                             false);
 }
 
-void IntentPickerBubbleView::ButtonPressed(views::Button* sender,
-                                           const ui::Event& event) {
-  SetSelectedAppIndex(sender->tag(), &event);
+void IntentPickerBubbleView::AppButtonPressed(size_t index,
+                                              const ui::Event& event) {
+  SetSelectedAppIndex(index, &event);
   RequestFocus();
 }
 
-void IntentPickerBubbleView::ArrowButtonPressed(int index) {
+void IntentPickerBubbleView::ArrowButtonPressed(size_t index) {
   SetSelectedAppIndex(index, nullptr);
   AdjustScrollViewVisibleRegion();
 }
@@ -379,8 +379,9 @@ void IntentPickerBubbleView::Initialize() {
     }
 #endif  // defined(OS_CHROMEOS)
     auto app_button = std::make_unique<IntentPickerLabelButton>(
-        this, &app_info.icon, app_info.display_name);
-    app_button->set_tag(i);
+        base::BindRepeating(&IntentPickerBubbleView::AppButtonPressed,
+                            base::Unretained(this), i),
+        &app_info.icon, app_info.display_name);
     scrollable_view->AddChildViewAt(std::move(app_button), i++);
   }
 
@@ -500,12 +501,10 @@ void IntentPickerBubbleView::AdjustScrollViewVisibleRegion() {
   }
 }
 
-void IntentPickerBubbleView::SetSelectedAppIndex(int index,
+void IntentPickerBubbleView::SetSelectedAppIndex(size_t index,
                                                  const ui::Event* event) {
-  // The selected app must be a value in the range [0, app_info_.size()-1].
   DCHECK(HasCandidates());
-  DCHECK_LT(static_cast<size_t>(index), app_info_.size());
-  DCHECK_GE(static_cast<size_t>(index), 0u);
+  DCHECK_LT(index, app_info_.size());
 
   GetIntentPickerLabelButtonAt(selected_app_tag_)->MarkAsUnselected(nullptr);
   selected_app_tag_ = index;
@@ -556,9 +555,7 @@ views::InkDropState IntentPickerBubbleView::GetInkDropStateForTesting(
 
 void IntentPickerBubbleView::PressButtonForTesting(size_t index,
                                                    const ui::Event& event) {
-  views::Button* button =
-      static_cast<views::Button*>(GetIntentPickerLabelButtonAt(index));
-  ButtonPressed(button, event);
+  AppButtonPressed(index, event);
 }
 
 BEGIN_METADATA(IntentPickerBubbleView, LocationBarBubbleDelegateView)
