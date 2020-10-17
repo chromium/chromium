@@ -61,8 +61,6 @@ JSONWriter::JSONWriter(int options, std::string* json, size_t max_depth)
 
 bool JSONWriter::BuildJSONString(const Value& node, size_t depth) {
   internal::StackMarker depth_check(max_depth_, &stack_depth_);
-  if (depth_check.IsTooDeep())
-    return false;
 
   switch (node.type()) {
     case Value::Type::NONE:
@@ -113,6 +111,9 @@ bool JSONWriter::BuildJSONString(const Value& node, size_t depth) {
       return true;
 
     case Value::Type::LIST: {
+      if (depth_check.IsTooDeep())
+        return false;
+
       json_string_->push_back('[');
       if (pretty_print_)
         json_string_->push_back(' ');
@@ -142,6 +143,9 @@ bool JSONWriter::BuildJSONString(const Value& node, size_t depth) {
     }
 
     case Value::Type::DICTIONARY: {
+      if (depth_check.IsTooDeep())
+        return false;
+
       json_string_->push_back('{');
       if (pretty_print_)
         json_string_->append(kPrettyPrintLineEnding);
