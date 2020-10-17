@@ -469,4 +469,17 @@ void ShellContentBrowserClient::ConfigureNetworkContextParamsForShell(
     context_params->cors_exempt_header_list.push_back(exempt_header);
 }
 
+void ShellContentBrowserClient::GetHyphenationDictionary(
+    base::OnceCallback<void(const base::FilePath&)> callback) {
+  // If we have the source tree, return the dictionary files in the tree.
+  base::FilePath dir;
+  if (base::PathService::Get(base::DIR_SOURCE_ROOT, &dir)) {
+    dir = dir.AppendASCII("third_party")
+              .AppendASCII("hyphenation-patterns")
+              .AppendASCII("hyb");
+    std::move(callback).Run(dir);
+  }
+  // No need to callback if there were no dictionaries.
+}
+
 }  // namespace content

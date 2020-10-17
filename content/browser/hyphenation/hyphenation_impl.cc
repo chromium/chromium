@@ -10,6 +10,7 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -35,7 +36,8 @@ struct Dictionaries {
     DVLOG(1) << __func__ << " " << new_dir;
     DCHECK(hyphenation::HyphenationImpl::GetTaskRunner()
                ->RunsTasksInCurrentSequence());
-    if (new_dir == dir)
+    DCHECK(!new_dir.empty());
+    if (new_dir == dir || !base::PathExists(new_dir))
       return;
     dir = new_dir;
     cache.clear();
