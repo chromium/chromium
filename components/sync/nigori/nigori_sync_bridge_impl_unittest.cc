@@ -306,7 +306,6 @@ class MockObserver : public SyncEncryptionHandler::Observer {
   MOCK_METHOD2(OnBootstrapTokenUpdated,
                void(const std::string&, BootstrapTokenType type));
   MOCK_METHOD2(OnEncryptedTypesChanged, void(ModelTypeSet, bool));
-  MOCK_METHOD0(OnEncryptionComplete, void());
   MOCK_METHOD2(OnCryptographerStateChanged,
                void(Cryptographer*, bool has_pending_keys));
   MOCK_METHOD2(OnPassphraseTypeChanged, void(PassphraseType, base::Time));

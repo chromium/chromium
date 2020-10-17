@@ -276,10 +276,6 @@ void SyncManagerImpl::OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
   allstatus_.SetEncryptedTypes(encrypted_types);
 }
 
-void SyncManagerImpl::OnEncryptionComplete() {
-  // Does nothing.
-}
-
 void SyncManagerImpl::OnCryptographerStateChanged(Cryptographer* cryptographer,
                                                   bool has_pending_keys) {
   allstatus_.SetCryptographerCanEncrypt(cryptographer->CanEncrypt());

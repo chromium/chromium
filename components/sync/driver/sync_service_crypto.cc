@@ -138,13 +138,6 @@ class SyncEncryptionObserverProxy : public SyncEncryptionHandler::Observer {
             observer_, encrypted_types, encrypt_everything));
   }
 
-  void OnEncryptionComplete() override {
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&SyncEncryptionHandler::Observer::OnEncryptionComplete,
-                       observer_));
-  }
-
   void OnCryptographerStateChanged(Cryptographer* cryptographer,
                                    bool has_pending_keys) override {
     task_runner_->PostTask(
@@ -547,17 +540,6 @@ void SyncServiceCrypto::OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
   DCHECK(state_.encrypted_types.Has(WIFI_CONFIGURATIONS));
 
   notify_observers_.Run();
-}
-
-void SyncServiceCrypto::OnEncryptionComplete() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(1) << "Encryption complete";
-  if (state_.encryption_pending && state_.encrypt_everything) {
-    state_.encryption_pending = false;
-    // This is to nudge the integration tests when encryption is
-    // finished.
-    notify_observers_.Run();
-  }
 }
 
 void SyncServiceCrypto::OnCryptographerStateChanged(

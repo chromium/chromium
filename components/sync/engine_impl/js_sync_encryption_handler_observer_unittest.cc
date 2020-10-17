@@ -45,17 +45,6 @@ class JsSyncEncryptionHandlerObserverTest : public testing::Test {
   void PumpLoop() { base::RunLoop().RunUntilIdle(); }
 };
 
-TEST_F(JsSyncEncryptionHandlerObserverTest, NoArgNotifiations) {
-  InSequence dummy;
-
-  EXPECT_CALL(
-      mock_js_event_handler_,
-      HandleJsEvent("onEncryptionComplete", HasDetails(JsEventDetails())));
-
-  js_sync_encryption_handler_observer_.OnEncryptionComplete();
-  PumpLoop();
-}
-
 TEST_F(JsSyncEncryptionHandlerObserverTest, OnPassphraseRequired) {
   InSequence dummy;
 

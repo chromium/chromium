@@ -209,8 +209,6 @@ void ModelTypeRegistry::OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
   OnEncryptionStateChanged();
 }
 
-void ModelTypeRegistry::OnEncryptionComplete() {}
-
 void ModelTypeRegistry::OnCryptographerStateChanged(
     Cryptographer* cryptographer,
     bool has_pending_keys) {

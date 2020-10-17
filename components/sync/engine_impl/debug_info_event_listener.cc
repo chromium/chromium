@@ -102,11 +102,6 @@ void DebugInfoEventListener::OnEncryptedTypesChanged(
   CreateAndAddEvent(sync_pb::SyncEnums::ENCRYPTED_TYPES_CHANGED);
 }
 
-void DebugInfoEventListener::OnEncryptionComplete() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CreateAndAddEvent(sync_pb::SyncEnums::ENCRYPTION_COMPLETE);
-}
-
 void DebugInfoEventListener::OnCryptographerStateChanged(
     Cryptographer* cryptographer,
     bool has_pending_keys) {

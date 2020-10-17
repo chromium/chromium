@@ -87,14 +87,6 @@ void JsSyncEncryptionHandlerObserver::OnEncryptedTypesChanged(
   HandleJsEvent(FROM_HERE, "onEncryptedTypesChanged", JsEventDetails(&details));
 }
 
-void JsSyncEncryptionHandlerObserver::OnEncryptionComplete() {
-  if (!event_handler_.IsInitialized()) {
-    return;
-  }
-  base::DictionaryValue details;
-  HandleJsEvent(FROM_HERE, "onEncryptionComplete", JsEventDetails());
-}
-
 void JsSyncEncryptionHandlerObserver::OnCryptographerStateChanged(
     Cryptographer* cryptographer,
     bool has_pending_keys) {

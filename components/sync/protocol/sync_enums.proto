@@ -34,7 +34,7 @@ message SyncEnums {
     // the server in the absence of bugs.
     STOP_SYNCING_PERMANENTLY = 6;
     // Client has finished encrypting all data.
-    ENCRYPTION_COMPLETE = 7;
+    DEPRECATED_ENCRYPTION_COMPLETE = 7 [deprecated = true];
     // Client received an actionable error.
     ACTIONABLE_ERROR = 8;
     // Set of encrypted types has changed.

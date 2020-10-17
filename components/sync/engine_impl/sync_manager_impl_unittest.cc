@@ -122,7 +122,6 @@ class SyncEncryptionHandlerObserverMock
   MOCK_METHOD2(OnBootstrapTokenUpdated,
                void(const std::string&, BootstrapTokenType type));  // NOLINT
   MOCK_METHOD2(OnEncryptedTypesChanged, void(ModelTypeSet, bool));  // NOLINT
-  MOCK_METHOD0(OnEncryptionComplete, void());                       // NOLINT
   MOCK_METHOD2(OnCryptographerStateChanged,
                void(Cryptographer*, bool));  // NOLINT
   MOCK_METHOD2(OnPassphraseTypeChanged,

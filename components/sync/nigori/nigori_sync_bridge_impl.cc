@@ -397,12 +397,6 @@ class NigoriSyncBridgeImpl::BroadcastingObserver
     }
   }
 
-  void OnEncryptionComplete() override {
-    for (auto& observer : observers_) {
-      observer.OnEncryptionComplete();
-    }
-  }
-
   void OnCryptographerStateChanged(Cryptographer* cryptographer,
                                    bool has_pending_keys) override {
     for (auto& observer : observers_) {

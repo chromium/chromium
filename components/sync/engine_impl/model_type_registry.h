@@ -58,7 +58,6 @@ class ModelTypeRegistry : public ModelTypeConnector,
                                BootstrapTokenType type) override;
   void OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
                                bool encrypt_everything) override;
-  void OnEncryptionComplete() override;
   void OnCryptographerStateChanged(Cryptographer* cryptographer,
                                    bool has_pending_keys) override;
   void OnPassphraseTypeChanged(PassphraseType type,

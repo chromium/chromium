@@ -80,9 +80,8 @@ class SyncEncryptionHandler {
                                          BootstrapTokenType type) = 0;
 
     // Called when the set of encrypted types or the encrypt
-    // everything flag has been changed.  Note that encryption isn't
-    // complete until the OnEncryptionComplete() notification has been
-    // sent (see below).
+    // everything flag has been changed. Note that this doesn't imply the
+    // encryption is complete.
     //
     // |encrypted_types| will always be a superset of
     // AlwaysEncryptedUserTypes().  If |encrypt_everything| is
@@ -93,10 +92,6 @@ class SyncEncryptionHandler {
     // encrypt everything flag is false.
     virtual void OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
                                          bool encrypt_everything) = 0;
-
-    // Called after we finish encrypting the current set of encrypted
-    // types.
-    virtual void OnEncryptionComplete() = 0;
 
     // The cryptographer has been updated and/or the presence of pending keys
     // changed.

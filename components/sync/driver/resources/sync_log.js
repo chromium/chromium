@@ -25,7 +25,6 @@ cr.define('chrome.sync', function() {
       'onChangesComplete',
       'onConnectionStatusChange',
       'onEncryptedTypesChanged',
-      'onEncryptionComplete',
       'onInitializationComplete',
       'onPassphraseAccepted',
       'onPassphraseRequired',
