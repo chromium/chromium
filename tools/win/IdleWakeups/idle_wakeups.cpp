@@ -61,6 +61,20 @@ T GetMedian(ResultVector* results, T (*getter)(const Result&)) {
   }
 }
 
+template <typename T>
+T GetAverage(const ResultVector& results, T (*getter)(const Result&)) {
+  // |sum| is a 64-bit type (uint64_t if |T| is an integral type, double if not)
+  // to minimize the risk of overflow.
+  typedef typename std::conditional<std::is_integral<T>::value, uint64_t,
+                                    double>::type SumType;
+  SumType sum = SumType();
+  const size_t size = results.size();
+  for (size_t i = 0; i < size; i++) {
+    sum += getter(results[i]);
+  }
+  return static_cast<T>(sum / size);
+}
+
 // Count newly created processes: those in |processes| but not
 // |previous_processes|.
 size_t GetNumProcessesCreated(const ProcessDataMap& previous_processes,
@@ -294,17 +308,22 @@ int wmain(int argc, wchar_t* argv[]) {
   wchar_t* target_process_name = nullptr;
   bool cpu_usage_in_seconds = false;
   bool stop_on_exit = false;
+  bool tabbed_summary_only = false;
   for (int i = 1; i < argc; i++) {
     if (wcscmp(argv[i], L"--cpu-seconds") == 0)
       cpu_usage_in_seconds = true;
     else if (wcscmp(argv[i], L"--stop-on-exit") == 0)
       stop_on_exit = true;
+    else if (wcscmp(argv[i], L"--tabbed") == 0)
+      tabbed_summary_only = true;
     else if (!target_process_name)
       target_process_name = argv[i];
 
     // Stop parsing if all possible args have been found.
-    if (cpu_usage_in_seconds && stop_on_exit && target_process_name)
+    if (cpu_usage_in_seconds && stop_on_exit && tabbed_summary_only &&
+        target_process_name) {
       break;
+    }
   }
   const char cpu_usage_unit = cpu_usage_in_seconds ? 's' : '%';
   SystemInformationSampler system_information_sampler(
@@ -319,20 +338,18 @@ int wmain(int argc, wchar_t* argv[]) {
       previous_snapshot->processes.size();
   size_t final_number_of_processes = initial_number_of_processes;
 
-  ULONG cumulative_idle_wakeups_per_sec = 0;
-  double cumulative_cpu_usage_percent = 0.0;
   double cumulative_cpu_usage_seconds = 0.0;
-  ULONGLONG cumulative_working_set = 0;
-  double cumulative_energy = 0.0;
   size_t cumulative_processes_created = 0;
   int num_idle_snapshots = 0;
 
   ResultVector results;
 
-  printf("Capturing perf data for all processes matching %ls\n",
-         system_information_sampler.target_process_name_filter());
+  if (!tabbed_summary_only) {
+    printf("Capturing perf data for all processes matching %ls\n",
+           system_information_sampler.target_process_name_filter());
 
-  PrintHeader();
+    PrintHeader();
+  }
 
   bool target_process_seen = false;
   for (;;) {
@@ -354,18 +371,16 @@ int wmain(int argc, wchar_t* argv[]) {
     power_sampler.SampleCPUPowerState();
     result.power = power_sampler.get_power(L"Processor");
 
-    printf("%9u processes" RESULT_FORMAT_STRING, (DWORD)number_of_processes,
-           result.idle_wakeups_per_sec,
-           cpu_usage_in_seconds ? result.cpu_usage_seconds
-                                : result.cpu_usage_percent,
-           cpu_usage_unit, result.working_set / 1024.0, result.power);
+    if (!tabbed_summary_only) {
+      printf("%9zu processes" RESULT_FORMAT_STRING, number_of_processes,
+             result.idle_wakeups_per_sec,
+             cpu_usage_in_seconds ? result.cpu_usage_seconds
+                                  : result.cpu_usage_percent,
+             cpu_usage_unit, result.working_set / 1024.0, result.power);
+    }
 
     if (number_of_processes > 0) {
-      cumulative_idle_wakeups_per_sec += result.idle_wakeups_per_sec;
-      cumulative_cpu_usage_percent += result.cpu_usage_percent;
       cumulative_cpu_usage_seconds += result.cpu_usage_seconds;
-      cumulative_working_set += result.working_set;
-      cumulative_energy += result.power;
       results.push_back(result);
       target_process_seen = true;
     } else {
@@ -377,30 +392,51 @@ int wmain(int argc, wchar_t* argv[]) {
 
   CloseHandle(ctrl_c_pressed);
 
-  ULONG sample_count = (ULONG)results.size();
-  if (sample_count == 0)
+  if (results.empty())
     return 0;
+
+  Result average_result;
+  average_result.idle_wakeups_per_sec =
+      GetAverage(results, GetIdleWakeupsPerSec);
+  average_result.cpu_usage_percent = GetAverage(results, GetCpuUsagePercent);
+  average_result.cpu_usage_seconds = GetAverage(results, GetCpuUsageSeconds);
+  average_result.working_set = GetAverage(results, GetWorkingSet);
+  average_result.power = GetAverage(results, GetPower);
+
+  const size_t cumulative_processes_destroyed = initial_number_of_processes +
+                                                cumulative_processes_created -
+                                                final_number_of_processes;
+
+  if (tabbed_summary_only) {
+    printf(
+        "Processes created\tProcesses destroyed\t"
+        "Context switches/sec, average\tCPU usage (%%), average\t"
+        "CPU usage (s)\tPrivate working set (MiB), average\t"
+        "Power (W), average\n");
+    printf("%zu\t%zu\t%20lu\t%8.2f\t%8.2f\t%7.2f\t%5.2f\n",
+           cumulative_processes_created, cumulative_processes_destroyed,
+           average_result.idle_wakeups_per_sec,
+           average_result.cpu_usage_percent, cumulative_cpu_usage_seconds,
+           average_result.working_set / 1024.0, average_result.power);
+    return 0;
+  }
 
   PrintHeader();
 
   printf("            Average" RESULT_FORMAT_STRING,
-         cumulative_idle_wakeups_per_sec / sample_count,
-         (cpu_usage_in_seconds ? cumulative_cpu_usage_seconds
-                               : cumulative_cpu_usage_percent) /
-             sample_count,
-         cpu_usage_unit, (cumulative_working_set / 1024.0) / sample_count,
-         cumulative_energy / sample_count);
+         average_result.idle_wakeups_per_sec,
+         cpu_usage_in_seconds ? average_result.cpu_usage_seconds
+                              : average_result.cpu_usage_percent,
+         cpu_usage_unit, average_result.working_set / 1024.0,
+         average_result.power);
 
   Result median_result;
-
   median_result.idle_wakeups_per_sec =
-      GetMedian<ULONG>(&results, GetIdleWakeupsPerSec);
-  median_result.cpu_usage_percent =
-      GetMedian<double>(&results, GetCpuUsagePercent);
-  median_result.cpu_usage_seconds =
-      GetMedian<double>(&results, GetCpuUsageSeconds);
-  median_result.working_set = GetMedian<ULONGLONG>(&results, GetWorkingSet);
-  median_result.power = GetMedian<double>(&results, GetPower);
+      GetMedian(&results, GetIdleWakeupsPerSec);
+  median_result.cpu_usage_percent = GetMedian(&results, GetCpuUsagePercent);
+  median_result.cpu_usage_seconds = GetMedian(&results, GetCpuUsageSeconds);
+  median_result.working_set = GetMedian(&results, GetWorkingSet);
+  median_result.power = GetMedian(&results, GetPower);
 
   printf("             Median" RESULT_FORMAT_STRING,
          median_result.idle_wakeups_per_sec,
@@ -418,9 +454,7 @@ int wmain(int argc, wchar_t* argv[]) {
   if (num_idle_snapshots > 0)
     printf("Idle snapshots:      %d\n", num_idle_snapshots);
   printf("Processes created:   %zu\n", cumulative_processes_created);
-  printf("Processes destroyed: %zu\n", initial_number_of_processes +
-                                           cumulative_processes_created -
-                                           final_number_of_processes);
+  printf("Processes destroyed: %zu\n", cumulative_processes_destroyed);
 
   return 0;
 }

@@ -35,3 +35,6 @@ Optional command-line flags:
 * `--cpu-seconds`: display CPU time in seconds rather than by percentage.
 
 * `--stop-on-exit`: stop measurement automatically when target process exits.
+
+* `--tabbed`: output summary only, in tab-delimited format; useful for copying
+  to a spreadsheet.
