@@ -398,6 +398,9 @@ BUILDERS = {
     'mac-builder-perf': {
         'additional_compile_targets': ['chromedriver', 'chromium_builder_perf'],
     },
+    'mac-arm-builder-perf': {
+        'additional_compile_targets': ['chromedriver', 'chromium_builder_perf'],
+    },
     'win32-builder-perf': {
         'additional_compile_targets': ['chromedriver', 'chromium_builder_perf'],
     },
@@ -631,7 +634,24 @@ BUILDERS = {
             'MacBookAir7,2_x86-64-i5-5350U_Intel Broadwell HD Graphics 6000_8192_APPLE SSD SM0128G'
         },
     },
-    'mac-arm_dtk-perf': {
+    'mac-arm_dtk_x86-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'mac',
+        'dimension': {
+            'cpu': 'arm',
+            'os': 'Mac',
+            'pool': 'chrome.tests.perf',
+        },
+    },
+    'mac-arm_dtk_arm-perf': {
         'tests': [
             {
                 'isolate': 'performance_test_suite',

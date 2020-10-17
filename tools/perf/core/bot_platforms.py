@@ -468,9 +468,15 @@ MAC_LOW_END = PerfPlatform(
     26,
     'mac',
     executables=_MAC_LOW_END_EXECUTABLE_CONFIGS)
-MAC_ARM_DTK = PerfPlatform(
-    'mac-arm_dtk-perf',
-    'Mac ARM DTK',
+MAC_ARM_DTK_X86 = PerfPlatform(
+    'mac-arm_dtk_x86-perf',
+    'Mac ARM DTK (X86 Chrome)',
+    _MAC_ARM_DTK_BENCHMARK_CONFIGS,
+    1,
+    'mac')
+MAC_ARM_DTK_ARM = PerfPlatform(
+    'mac-arm_dtk_arm-perf',
+    'Mac ARM DTK (ARM Chrome)',
     _MAC_ARM_DTK_BENCHMARK_CONFIGS,
     1,
     'mac')
