@@ -5236,7 +5236,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "PasswordEditingInSettings"
+                        "EditPasswordsInSettings"
                     ]
                 }
             ]
