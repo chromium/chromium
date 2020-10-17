@@ -12,7 +12,7 @@
 #include "chrome/browser/sharing/features.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
-#include "components/sync/model/mock_model_type_change_processor.h"
+#include "components/sync/test/model/mock_model_type_change_processor.h"
 #include "net/base/network_change_notifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

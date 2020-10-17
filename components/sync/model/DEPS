@@ -4,4 +4,6 @@ include_rules = [
   "+components/sync/engine",
   "+components/sync/model_impl",
   "+components/sync/protocol",
+  # TODO(crbug.com/948661): remove when all classes are moved.
+  "+components/sync/test/model",
 ]

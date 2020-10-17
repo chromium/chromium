@@ -20,8 +20,8 @@
 #include "components/history/core/browser/in_memory_history_backend.h"
 #include "components/history/core/test/test_history_database.h"
 #include "components/sync/model/data_batch.h"
-#include "components/sync/model/mock_model_type_change_processor.h"
 #include "components/sync/model/sync_metadata_store.h"
+#include "components/sync/test/model/mock_model_type_change_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

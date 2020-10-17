@@ -361,8 +361,6 @@ static_library("test_support_model") {
     "model/fake_model_type_sync_bridge.h",
     "model/fake_sync_change_processor.cc",
     "model/fake_sync_change_processor.h",
-    "model/mock_model_type_change_processor.cc",
-    "model/mock_model_type_change_processor.h",
     "model/model_type_store_test_util.cc",
     "model/model_type_store_test_util.h",
     "model/stub_model_type_sync_bridge.cc",
@@ -373,6 +371,8 @@ static_library("test_support_model") {
     "model/sync_error_factory_mock.h",
     "model/test_model_type_store_service.cc",
     "model/test_model_type_store_service.h",
+    "test/model/mock_model_type_change_processor.cc",
+    "test/model/mock_model_type_change_processor.h",
   ]
 
   public_deps = [ "//components/sync/base:test_support" ]

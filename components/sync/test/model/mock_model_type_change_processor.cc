@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/model/mock_model_type_change_processor.h"
+#include "components/sync/test/model/mock_model_type_change_processor.h"
 
 #include <utility>
 
@@ -13,8 +13,8 @@
 namespace syncer {
 namespace {
 
-using testing::Invoke;
 using testing::_;
+using testing::Invoke;
 
 class ForwardingModelTypeChangeProcessor : public ModelTypeChangeProcessor {
  public:

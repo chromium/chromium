@@ -32,9 +32,9 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/entity_data.h"
-#include "components/sync/model/mock_model_type_change_processor.h"
 #include "components/sync/model_impl/client_tag_based_model_type_processor.h"
 #include "components/sync/protocol/sync.pb.h"
+#include "components/sync/test/model/mock_model_type_change_processor.h"
 #include "components/webdata/common/web_database.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

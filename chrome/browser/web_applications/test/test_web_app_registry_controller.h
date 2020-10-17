@@ -13,7 +13,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_install_delegate.h"
 #include "components/sync/model/metadata_batch.h"
-#include "components/sync/model/mock_model_type_change_processor.h"
+#include "components/sync/test/model/mock_model_type_change_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
