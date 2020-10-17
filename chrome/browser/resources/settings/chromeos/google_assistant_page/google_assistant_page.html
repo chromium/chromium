@@ -71,48 +71,51 @@
           </settings-toggle-button>
         </div>
       </template>
-      <settings-toggle-button id="google-assistant-hotword-enable"
-          class="hr"
-          pref="{{prefs.settings.voice_interaction.hotword.enabled}}"
-          label="$i18n{googleAssistantEnableHotword}"
-          sub-label="$i18n{googleAssistantEnableHotwordDescription}"
-          on-settings-boolean-control-change="onEnableHotwordChange_"
-          hidden="[[!hotwordDspAvailable_]]"
-          deep-link-focus-id$="[[Setting.kAssistantOkGoogle]]">
-      </settings-toggle-button>
-      <div class="settings-box" id="dsp-hotword-container"
-          hidden="[[hotwordDspAvailable_]]">
-        <div class="start text-area settings-box-text" aria-hidden="true">
-          <div class="label" id="googleAssistantEnableHotword">
-            $i18n{googleAssistantEnableHotword}
+      <template is="dom-if" if="[[hotwordDspAvailable_]]" restamp>
+        <settings-toggle-button id="google-assistant-hotword-enable"
+            class="hr"
+            pref="{{prefs.settings.voice_interaction.hotword.enabled}}"
+            label="$i18n{googleAssistantEnableHotword}"
+            sub-label="$i18n{googleAssistantEnableHotwordDescription}"
+            on-settings-boolean-control-change="onEnableHotwordChange_"
+            deep-link-focus-id$="[[Setting.kAssistantOkGoogle]]">
+        </settings-toggle-button>
+      </template>
+      <template is="dom-if" if="[[!hotwordDspAvailable_]]" restamp>
+        <div class="settings-box" id="dsp-hotword-container">
+          <div class="start text-area settings-box-text" aria-hidden="true">
+            <div class="label" id="googleAssistantEnableHotword">
+              $i18n{googleAssistantEnableHotword}
+            </div>
+            <div class="secondary label"
+                id="googleAssistantEnableHotwordDescription">
+              $i18n{googleAssistantEnableHotwordWithoutDspDescription}
+            </div>
           </div>
-          <div class="secondary label"
-              id="googleAssistantEnableHotwordDescription">
-            $i18n{googleAssistantEnableHotwordWithoutDspDescription}
-          </div>
-        </div>
-        <template is="dom-if" if="[[hotwordEnforced_]]" restamp>
-          <cr-policy-pref-indicator id="hotword-policy-pref-indicator"
-              pref="{{prefs.settings.voice_interaction.hotword.enabled}}">
-          </cr-policy-pref-indicator>
-        </template>
-        <!-- We don't use the settings_dropdown_menu for the dspHotwordState
-             drop down, because the dspHotwordState manages 2 preferences.
-             The settings_dropdown_menu is designed to manage only a single
-             preference. -->
-        <select id="dsp-hotword-state" class="md-select"
-            aria-labelledby="googleAssistantEnableHotword"
-            aria-describedby="googleAssistantEnableHotwordDescription"
-            on-change="onDspHotwordStateChange_"
-            disabled="[[hotwordEnforced_]]">
-          <template is="dom-repeat" items="[[hotwordDropdownList_]]">
-            <option value="[[item.value]]"
-                selected="[[isDspHotwordStateMatch_(item.value)]]">
-              [[item.name]]
-            </option>
+          <template is="dom-if" if="[[hotwordEnforced_]]" restamp>
+            <cr-policy-pref-indicator id="hotword-policy-pref-indicator"
+                pref="{{prefs.settings.voice_interaction.hotword.enabled}}">
+            </cr-policy-pref-indicator>
           </template>
-        </select>
-      </div>
+          <!-- We don't use the settings_dropdown_menu for the dspHotwordState
+               drop down, because the dspHotwordState manages 2 preferences.
+               The settings_dropdown_menu is designed to manage only a single
+               preference. -->
+          <select id="dsp-hotword-state" class="md-select"
+              aria-labelledby="googleAssistantEnableHotword"
+              aria-describedby="googleAssistantEnableHotwordDescription"
+              on-change="onDspHotwordStateChange_"
+              disabled="[[hotwordEnforced_]]"
+              deep-link-focus-id$="[[Setting.kAssistantOkGoogle]]">
+            <template is="dom-repeat" items="[[hotwordDropdownList_]]">
+              <option value="[[item.value]]"
+                  selected="[[isDspHotwordStateMatch_(item.value)]]">
+                [[item.name]]
+              </option>
+            </template>
+          </select>
+        </div>
+      </template>
       <template is="dom-if" if="[[shouldShowVoiceMatchSettings_]]">
         <div class="settings-box continuation embedded">
           <div class="start text-area settings-box-text">

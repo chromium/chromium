@@ -56,6 +56,15 @@ const std::vector<SearchConcept>& GetAssistantSearchConcepts() {
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kAssistant}},
+      {IDS_OS_SETTINGS_TAG_ASSISTANT_OK_GOOGLE,
+       mojom::kAssistantSubpagePath,
+       mojom::SearchResultIcon::kAssistant,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kAssistantOkGoogle},
+       {IDS_OS_SETTINGS_TAG_ASSISTANT_OK_GOOGLE_ALT1,
+        IDS_OS_SETTINGS_TAG_ASSISTANT_OK_GOOGLE_ALT2,
+        SearchConcept::kAltTagEnd}},
   });
   return *tags;
 }
@@ -113,21 +122,6 @@ const std::vector<SearchConcept>& GetAssistantQuickAnswersSearchConcepts() {
        mojom::SearchResultDefaultRank::kLow,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kAssistantQuickAnswers}},
-  });
-  return *tags;
-}
-
-const std::vector<SearchConcept>& GetAssistantHotwordDspSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_ASSISTANT_OK_GOOGLE,
-       mojom::kAssistantSubpagePath,
-       mojom::SearchResultIcon::kAssistant,
-       mojom::SearchResultDefaultRank::kLow,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kAssistantOkGoogle},
-       {IDS_OS_SETTINGS_TAG_ASSISTANT_OK_GOOGLE_ALT1,
-        IDS_OS_SETTINGS_TAG_ASSISTANT_OK_GOOGLE_ALT2,
-        SearchConcept::kAltTagEnd}},
   });
   return *tags;
 }
@@ -341,7 +335,6 @@ void SearchSection::UpdateAssistantSearchTags() {
   updater.RemoveSearchTags(GetAssistantOnSearchConcepts());
   updater.RemoveSearchTags(GetAssistantOffSearchConcepts());
   updater.RemoveSearchTags(GetAssistantQuickAnswersSearchConcepts());
-  updater.RemoveSearchTags(GetAssistantHotwordDspSearchConcepts());
   updater.RemoveSearchTags(GetAssistantVoiceMatchSearchConcepts());
 
   ash::AssistantState* assistant_state = ash::AssistantState::Get();
@@ -360,9 +353,6 @@ void SearchSection::UpdateAssistantSearchTags() {
       assistant_state->context_enabled().value()) {
     updater.AddSearchTags(GetAssistantQuickAnswersSearchConcepts());
   }
-
-  if (IsHotwordDspAvailable())
-    updater.AddSearchTags(GetAssistantHotwordDspSearchConcepts());
 
   if (IsVoiceMatchAllowed() && assistant_state->hotword_enabled() &&
       assistant_state->hotword_enabled().value() &&
