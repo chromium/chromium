@@ -457,10 +457,6 @@ UpdateCheckDriver::~UpdateCheckDriver() {
       base::UmaHistogramSparse("GoogleUpdate.ErrorHresult",
                                update_state_.hresult);
     }
-    if (update_state_.installer_exit_code) {
-      base::UmaHistogramSparse("GoogleUpdate.InstallerExitCode",
-                               *update_state_.installer_exit_code);
-    }
   }
 
   // Clear the driver before calling the delegates because they might call

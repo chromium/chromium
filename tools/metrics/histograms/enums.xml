@@ -38146,6 +38146,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 </enum>
 
 <enum name="InstallStatus">
+  <obsolete>
+    Removed in M88.
+  </obsolete>
   <int value="0" label="FIRST_INSTALL_SUCCESS"/>
   <int value="1" label="INSTALL_REPAIRED"/>
   <int value="2" label="NEW_VERSION_UPDATED"/>

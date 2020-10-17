@@ -119,6 +119,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="GoogleUpdate.InstallerExitCode" enum="InstallStatus"
     expires_after="M86">
+  <obsolete>
+    Removed in M88.
+  </obsolete>
   <owner>grt@chromium.org</owner>
   <owner>ydago@chromium.org</owner>
   <summary>
