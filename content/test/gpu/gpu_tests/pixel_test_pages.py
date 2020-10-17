@@ -130,7 +130,8 @@ class PixelTestPages(object):
     # combine into a single set of parameters.
     general_mp4_algo = algo.SobelMatchingAlgorithm(max_different_pixels=56300,
                                                    pixel_delta_threshold=35,
-                                                   edge_threshold=80)
+                                                   edge_threshold=80,
+                                                   ignored_border_thickness=1)
 
     return [
         PixelTestPage('pixel_background_image.html',
@@ -200,7 +201,8 @@ class PixelTestPages(object):
                       matching_algorithm=algo.SobelMatchingAlgorithm(
                           max_different_pixels=41700,
                           pixel_delta_threshold=15,
-                          edge_threshold=40)),
+                          edge_threshold=40,
+                          ignored_border_thickness=1)),
         PixelTestPage('pixel_video_mp4_four_colors_rot_90.html',
                       base_name + '_Video_MP4_FourColors_Rot_90',
                       test_rect=[0, 0, 270, 240],
@@ -219,14 +221,16 @@ class PixelTestPages(object):
                       matching_algorithm=algo.SobelMatchingAlgorithm(
                           max_different_pixels=30500,
                           pixel_delta_threshold=15,
-                          edge_threshold=70)),
+                          edge_threshold=70,
+                          ignored_border_thickness=1)),
         PixelTestPage('pixel_video_vp9.html',
                       base_name + '_Video_VP9',
                       test_rect=[0, 0, 240, 135],
                       matching_algorithm=algo.SobelMatchingAlgorithm(
                           max_different_pixels=114000,
                           pixel_delta_threshold=30,
-                          edge_threshold=20)),
+                          edge_threshold=20,
+                          ignored_border_thickness=1)),
         PixelTestPage('pixel_video_vp9.html',
                       base_name + '_Video_VP9_DXVA',
                       browser_args=[cba.DISABLE_FEATURES_D3D11_VIDEO_DECODER],
@@ -234,7 +238,8 @@ class PixelTestPages(object):
                       matching_algorithm=algo.SobelMatchingAlgorithm(
                           max_different_pixels=31100,
                           pixel_delta_threshold=30,
-                          edge_threshold=250)),
+                          edge_threshold=250,
+                          ignored_border_thickness=1)),
         PixelTestPage(
             'pixel_video_media_stream_incompatible_stride.html',
             base_name + '_Video_Media_Stream_Incompatible_Stride',
@@ -266,7 +271,8 @@ class PixelTestPages(object):
                       matching_algorithm=algo.SobelMatchingAlgorithm(
                           max_different_pixels=54400,
                           pixel_delta_threshold=30,
-                          edge_threshold=250),
+                          edge_threshold=250,
+                          ignored_border_thickness=1),
                       expected_per_process_crashes={
                           CRASH_TYPE_GPU: 1,
                       }),
