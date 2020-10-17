@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/strings/stringprintf.h"
@@ -197,13 +198,17 @@ void DataUseMeasurement::MaybeRecordNetworkBytesOS(bool force_record_metrics) {
       if (bytes > rx_bytes_os_) {
         int64_t incremental_bytes = bytes - rx_bytes_os_;
         // Do not record samples with value 0.
-        UMA_HISTOGRAM_COUNTS_1M("DataUse.BytesReceived.OS", incremental_bytes);
+        base::UmaHistogramCustomCounts("DataUse.BytesReceived2.OS",
+                                       incremental_bytes, 50, 10 * 1000 * 1000,
+                                       50);
         if (IsInForeground(app_state_)) {
-          UMA_HISTOGRAM_COUNTS_1M("DataUse.BytesReceived.OS.Foreground",
-                                  incremental_bytes);
+          base::UmaHistogramCustomCounts("DataUse.BytesReceived2.OS.Foreground",
+                                         incremental_bytes, 50,
+                                         10 * 1000 * 1000, 50);
         } else {
-          UMA_HISTOGRAM_COUNTS_1M("DataUse.BytesReceived.OS.Background",
-                                  incremental_bytes);
+          base::UmaHistogramCustomCounts("DataUse.BytesReceived2.OS.Background",
+                                         incremental_bytes, 50,
+                                         10 * 1000 * 1000, 50);
         }
       }
     }

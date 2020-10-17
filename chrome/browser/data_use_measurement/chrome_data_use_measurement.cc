@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
@@ -100,8 +101,9 @@ void ChromeDataUseMeasurement::ReportNetworkServiceDataUse(
     int64_t recv_bytes,
     int64_t sent_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Negative byte numbres is not a critical problem (i.e. should have no security implications) but
-  // is not expected. TODO(rajendrant): remove these DCHECKs or consider using uint in Mojo instead.
+  // Negative byte numbers is not a critical problem (i.e., should have no
+  // security implications) but is not expected. TODO(rajendrant): remove these
+  // DCHECKs or consider using uint in Mojo instead.
   DCHECK_GE(recv_bytes, 0);
   DCHECK_GE(sent_bytes, 0);
 
@@ -125,7 +127,8 @@ void ChromeDataUseMeasurement::ReportNetworkServiceDataUse(
       observer.OnServicesDataUse(network_traffic_annotation_id_hash, recv_bytes,
                                  sent_bytes);
   }
-  UMA_HISTOGRAM_COUNTS_1M("DataUse.BytesReceived.Delegate", recv_bytes);
+  base::UmaHistogramCustomCounts("DataUse.BytesReceived2.Delegate", recv_bytes,
+                                 50, 10 * 1000 * 1000, 50);
   UMA_HISTOGRAM_COUNTS_1M("DataUse.BytesSent.Delegate", sent_bytes);
 }
 

@@ -4486,6 +4486,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="As reported by the operating system. Currently logged only on
              Android."/>
   <affected-histogram name="DataUse.BytesReceived"/>
+  <affected-histogram name="DataUse.BytesReceived2"/>
   <affected-histogram name="DataUse.BytesSent"/>
 </histogram_suffixes>
 
@@ -4493,8 +4494,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Background"
       label="Data use was recorded with Chrome in background."/>
   <suffix name="Foreground"
-      label="Data use was recorded with Chrome in foregorund."/>
-  <affected-histogram name="DataUse.BytesReceived.OS"/>
+      label="Data use was recorded with Chrome in foreground."/>
+  <affected-histogram name="DataUse.BytesReceived.OS">
+    <obsolete>
+      Replaced by DataUse.BytesReceived2.OS in October, 2020.
+    </obsolete>
+  </affected-histogram>
+  <affected-histogram name="DataUse.BytesReceived2.OS"/>
   <affected-histogram name="DataUse.BytesSent.OS"/>
 </histogram_suffixes>
 
