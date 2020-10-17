@@ -6,10 +6,10 @@ module.exports = {
   'root': true,
   'env': {
     'browser': true,
-    'es6': true,
+    'es2020': true,
   },
   'parserOptions': {
-    'ecmaVersion': 2017,
+    'ecmaVersion': 2020,
     'sourceType': 'module',
   },
   'rules': {
