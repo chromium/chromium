@@ -34,6 +34,16 @@ gfx::Size TabScrollContainerFlexRule(const views::View* tab_strip,
                    preferred_size.height());
 }
 
+std::unique_ptr<views::ImageButton> CreateScrollButton(
+    views::Button::PressedCallback callback) {
+  auto scroll_button =
+      std::make_unique<views::ImageButton>(std::move(callback));
+  scroll_button->SetImageVerticalAlignment(
+      views::ImageButton::VerticalAlignment::ALIGN_MIDDLE);
+  scroll_button->SetHasInkDropActionOnClick(true);
+  scroll_button->SetInkDropMode(views::Button::InkDropMode::ON);
+  return scroll_button;
+}
 }  // namespace
 
 TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
@@ -67,14 +77,12 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
         views::FlexSpecification(base::BindRepeating(
             &TabScrollContainerFlexRule, base::Unretained(tab_strip_))));
 
-    auto leading_scroll_button = std::make_unique<views::ImageButton>(
+    leading_scroll_button_ = AddChildView(CreateScrollButton(
         base::BindRepeating(&TabStripRegionView::ScrollTowardsLeadingTab,
-                            base::Unretained(this)));
-    auto trailing_scroll_button = std::make_unique<views::ImageButton>(
+                            base::Unretained(this))));
+    trailing_scroll_button_ = AddChildView(CreateScrollButton(
         base::BindRepeating(&TabStripRegionView::ScrollTowardsTrailingTab,
-                            base::Unretained(this)));
-    leading_scroll_button_ = AddChildView(std::move(leading_scroll_button));
-    trailing_scroll_button_ = AddChildView(std::move(trailing_scroll_button));
+                            base::Unretained(this))));
   } else {
     tab_strip_container_ = AddChildView(std::move(tab_strip));
 
