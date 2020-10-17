@@ -55,8 +55,9 @@ def main():
   try:
     with GetDeploymentTargetForArgs(additional_target_args) as target:
       target.Start()
-      _, fuchsia_ssh_port = target._GetEndpoint()
+      fuchsia_device_address, fuchsia_ssh_port = target._GetEndpoint()
       gpu_script.extend(['--chromium-output-directory', args.out_dir])
+      gpu_script.extend(['--fuchsia-device-address', fuchsia_device_address])
       gpu_script.extend(['--fuchsia-ssh-config', target._GetSshConfigPath()])
       if fuchsia_ssh_port:
         gpu_script.extend(['--fuchsia-ssh-port', str(fuchsia_ssh_port)])
