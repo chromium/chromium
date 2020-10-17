@@ -244,7 +244,14 @@ void SameThreadMediaSourceAttachment::CompleteAttachingToMediaElement(
 void SameThreadMediaSourceAttachment::Close(MediaSourceTracer* tracer) {
   // The media element may have already notified us that its context is
   // destroyed, so VerifyCalledWhileContextIsAliveForDebugging() is unusable in
-  // this scope.
+  // this scope. Note that we might be called during main thread context
+  // destruction, and the ordering of MediaSource versus HTMLMediaElement
+  // context destruction notification is nondeterminate. MediaSource closes
+  // itself on its context destruction notification, so elide calling Close()
+  // again on it in that case. This affords stronger guarantees on when
+  // MediaSource::Close is callable by an attachment.
+  if (media_source_context_destroyed_)
+    return;
 
   GetMediaSource(tracer)->Close();
 }
@@ -253,14 +260,24 @@ WebTimeRanges SameThreadMediaSourceAttachment::BufferedInternal(
     MediaSourceTracer* tracer) const {
   VerifyCalledWhileContextsAliveForDebugging();
 
-  return GetMediaSource(tracer)->BufferedInternal();
+  // Since the attached MediaSource, HTMLMediaElement and the element's player's
+  // underlying demuxer are all owned by the main thread in this SameThread
+  // attachment, it is safe to get an ExclusiveKey here to pass to the attached
+  // MediaSource to let it know it is safe to access the underlying demuxer to
+  // tell us what is currently buffered.
+  return GetMediaSource(tracer)->BufferedInternal(GetExclusiveKey());
 }
 
 WebTimeRanges SameThreadMediaSourceAttachment::SeekableInternal(
     MediaSourceTracer* tracer) const {
   VerifyCalledWhileContextsAliveForDebugging();
 
-  return GetMediaSource(tracer)->SeekableInternal();
+  // Since the attached MediaSource, HTMLMediaElement and the element's player's
+  // underlying demuxer are all owned by the main thread in this SameThread
+  // attachment, it is safe to get an ExclusiveKey here to pass to the attached
+  // MediaSource to let it know it is safe to access the underlying demuxer to
+  // tell us what is currently seekable.
+  return GetMediaSource(tracer)->SeekableInternal(GetExclusiveKey());
 }
 
 void SameThreadMediaSourceAttachment::OnTrackChanged(MediaSourceTracer* tracer,

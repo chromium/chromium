@@ -32,4 +32,23 @@ void MediaSourceAttachmentSupplement::AddMainThreadVideoTrackToMediaElement(
   NOTIMPLEMENTED();
 }
 
+bool MediaSourceAttachmentSupplement::RunExclusively(
+    bool /* abort_if_not_fully_attached */,
+    RunExclusivelyCB cb) {
+  std::move(cb).Run(ExclusiveKey());
+  return true;  // Indicates that we ran |cb|.
+}
+
+void MediaSourceAttachmentSupplement::
+    AssertCrossThreadMutexIsAcquiredForDebugging() {
+  DCHECK(false)
+      << "This should only be called on a CrossThreadMediaSourceAttachment";
+}
+
+// protected
+MediaSourceAttachmentSupplement::ExclusiveKey
+MediaSourceAttachmentSupplement::GetExclusiveKey() const {
+  return ExclusiveKey();
+}
+
 }  // namespace blink

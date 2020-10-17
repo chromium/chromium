@@ -20,17 +20,21 @@
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/track/audio_track_list.h"
 #include "third_party/blink/renderer/core/html/track/video_track_list.h"
+#include "third_party/blink/renderer/modules/mediasource/cross_thread_media_source_attachment.h"
+#include "third_party/blink/renderer/modules/mediasource/same_thread_media_source_attachment.h"
 #include "third_party/blink/renderer/modules/mediasource/same_thread_media_source_tracer.h"
 #include "third_party/blink/renderer/modules/mediasource/source_buffer_track_base_supplement.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/network/mime/content_type.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 using blink::WebMediaSource;
 using blink::WebSourceBuffer;
@@ -108,6 +112,7 @@ MediaSource::MediaSource(ExecutionContext* context)
       async_event_queue_(
           MakeGarbageCollected<EventQueue>(context,
                                            TaskType::kMediaElementEvent)),
+      context_already_destroyed_(false),
       source_buffers_(
           MakeGarbageCollected<SourceBufferList>(GetExecutionContext(),
                                                  async_event_queue_.Get())),
@@ -193,22 +198,50 @@ SourceBuffer* MediaSource::addSourceBuffer(const String& type,
     return nullptr;
   }
 
+  // Do remainder of steps only if attachment is usable and underlying demuxer
+  // is protected from destruction (applicable especially for MSE-in-Worker
+  // case).
+  SourceBuffer* source_buffer = nullptr;
+
+  // Note, here we must be open, therefore we must have an attachment.
+  if (!RunUnlessElementGoneOrClosingUs(
+          WTF::Bind(&MediaSource::AddSourceBuffer_Locked, WrapPersistent(this),
+                    type, WTF::Unretained(&exception_state),
+                    WTF::Unretained(&source_buffer)))) {
+    // TODO(https://crbug.com/878133): Determine in specification what the
+    // specific, app-visible, exception should be for this case.
+    LogAndThrowDOMException(exception_state,
+                            DOMExceptionCode::kInvalidStateError,
+                            "Worker MediaSource attachment is closing");
+  }
+
+  return source_buffer;
+}
+
+void MediaSource::AddSourceBuffer_Locked(
+    const String& type,
+    ExceptionState* exception_state,
+    SourceBuffer** created_buffer,
+    MediaSourceAttachmentSupplement::ExclusiveKey pass_key) {
+  AssertAttachmentsMutexHeldIfCrossThreadForDebugging();
+
   // 5. Create a new SourceBuffer object and associated resources.
   ContentType content_type(type);
   String codecs = content_type.Parameter("codecs");
   std::unique_ptr<WebSourceBuffer> web_source_buffer =
-      CreateWebSourceBuffer(content_type.GetType(), codecs, exception_state);
+      CreateWebSourceBuffer(content_type.GetType(), codecs, *exception_state);
 
   if (!web_source_buffer) {
-    DCHECK(exception_state.CodeAs<DOMExceptionCode>() ==
+    DCHECK(exception_state->CodeAs<DOMExceptionCode>() ==
                DOMExceptionCode::kNotSupportedError ||
-           exception_state.CodeAs<DOMExceptionCode>() ==
+           exception_state->CodeAs<DOMExceptionCode>() ==
                DOMExceptionCode::kQuotaExceededError);
     // 2. If type contains a MIME type that is not supported ..., then throw a
     //    NotSupportedError exception and abort these steps.
     // 3. If the user agent can't handle any more SourceBuffer objects then
     //    throw a QuotaExceededError exception and abort these steps
-    return nullptr;
+    *created_buffer = nullptr;
+    return;
   }
 
   bool generate_timestamps_flag =
@@ -222,19 +255,22 @@ SourceBuffer* MediaSource::addSourceBuffer(const String& type,
 
   // Steps 6 and 7 (Set the SourceBuffer's mode attribute based on the byte
   // stream format's generate timestamps flag). We do this after adding to
-  // sourceBuffers (step 8) to enable direct reuse of the setMode() logic here,
-  // which depends on |buffer| being in |source_buffers_| in our
+  // sourceBuffers (step 8) to enable direct reuse of the SetMode_Locked() logic
+  // here, which depends on |buffer| being in |source_buffers_| in our
   // implementation.
   if (generate_timestamps_flag) {
-    buffer->setMode(SourceBuffer::SequenceKeyword(), exception_state);
+    buffer->SetMode_Locked(SourceBuffer::SequenceKeyword(), exception_state,
+                           pass_key);
   } else {
-    buffer->setMode(SourceBuffer::SegmentsKeyword(), exception_state);
+    buffer->SetMode_Locked(SourceBuffer::SegmentsKeyword(), exception_state,
+                           pass_key);
   }
 
   // 9. Return the new object to the caller.
   DVLOG(3) << __func__ << " this=" << this << " type=" << type << " -> "
            << buffer;
-  return buffer;
+  *created_buffer = buffer;
+  return;
 }
 
 void MediaSource::removeSourceBuffer(SourceBuffer* buffer,
@@ -252,6 +288,26 @@ void MediaSource::removeSourceBuffer(SourceBuffer* buffer,
         "The SourceBuffer provided is not contained in this MediaSource.");
     return;
   }
+
+  // Do remainder of steps only if attachment is usable and underlying demuxer
+  // is protected from destruction (applicable especially for MSE-in-Worker
+  // case). Note, we must not be closed (since closing clears our SourceBuffer
+  // collections), therefore we must have an attachment.
+  if (!RunUnlessElementGoneOrClosingUs(
+          WTF::Bind(&MediaSource::RemoveSourceBuffer_Locked,
+                    WrapPersistent(this), WrapPersistent(buffer)))) {
+    // TODO(https://crbug.com/878133): Determine in specification what the
+    // specific, app-visible, exception should be for this case.
+    LogAndThrowDOMException(exception_state,
+                            DOMExceptionCode::kInvalidStateError,
+                            "Worker MediaSource attachment is closing");
+  }
+}
+
+void MediaSource::RemoveSourceBuffer_Locked(
+    SourceBuffer* buffer,
+    MediaSourceAttachmentSupplement::ExclusiveKey /* passkey */) {
+  AssertAttachmentsMutexHeldIfCrossThreadForDebugging();
 
   // Steps 2-8 are implemented by SourceBuffer::removedFromMediaSource.
   buffer->RemovedFromMediaSource();
@@ -290,8 +346,11 @@ void MediaSource::OnReadyStateChange(const ReadyState old_state,
     source_buffers_->item(i)->RemovedFromMediaSource();
   source_buffers_->Clear();
 
-  media_source_attachment_.reset();
-  attachment_tracer_ = nullptr;
+  {
+    MutexLocker lock(attachment_link_lock_);
+    media_source_attachment_.reset();
+    attachment_tracer_ = nullptr;
+  }
 
   ScheduleEvent(event_type_names::kSourceclose);
 }
@@ -384,41 +443,107 @@ ExecutionContext* MediaSource::GetExecutionContext() const {
   return ExecutionContextLifecycleObserver::GetExecutionContext();
 }
 
+// TODO(https://crbug.com/878133): Consider using macros or virtual methods to
+// skip the Bind+Run of |cb| when on same-thread, and to instead just run the
+// method directly.
+bool MediaSource::RunUnlessElementGoneOrClosingUs(
+    MediaSourceAttachmentSupplement::RunExclusivelyCB cb) {
+  scoped_refptr<MediaSourceAttachmentSupplement> attachment;
+  MediaSourceTracer* tracer;
+  std::tie(attachment, tracer) = AttachmentAndTracer();
+  DCHECK(IsMainThread() ||
+         !tracer);  // Cross-thread attachments do not use a tracer.
+
+  // TODO(https://crbug.com/878133): Relax to DCHECK once clear that same-thread
+  // indeed always has attachment here and is not regressed by requiring one to
+  // run |cb|.
+  CHECK(attachment) << "Attempt to run operation requiring attachment, but "
+                       "without having one.";
+
+  if (!attachment->RunExclusively(true /* abort if not fully attached */,
+                                  std::move(cb))) {
+    DVLOG(1) << __func__ << ": element is gone or is closing us.";
+    // Only in cross-thread case might we not be attached fully.
+    DCHECK(!IsMainThread());
+    return false;
+  }
+
+  return true;
+}
+
+void MediaSource::AssertAttachmentsMutexHeldIfCrossThreadForDebugging() const {
+#if DCHECK_IS_ON()
+  MutexLocker lock(attachment_link_lock_);
+  DCHECK(media_source_attachment_);
+  if (!IsMainThread()) {
+    DCHECK(!attachment_tracer_);  // Cross-thread attachments use no tracer;
+    media_source_attachment_->AssertCrossThreadMutexIsAcquiredForDebugging();
+  }
+#endif  // DCHECK_IS_ON()
+}
+
 void MediaSource::Trace(Visitor* visitor) const {
   visitor->Trace(async_event_queue_);
-  visitor->Trace(attachment_tracer_);
+  {
+    MutexLocker lock(attachment_link_lock_);
+    visitor->Trace(attachment_tracer_);
+    visitor->Trace(live_seekable_range_);
+  }
   visitor->Trace(source_buffers_);
   visitor->Trace(active_source_buffers_);
-  visitor->Trace(live_seekable_range_);
   EventTargetWithInlineData::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 void MediaSource::CompleteAttachingToMediaElement(
     std::unique_ptr<WebMediaSource> web_media_source) {
-  TRACE_EVENT_NESTABLE_ASYNC_END0("media",
-                                  "MediaSource::StartAttachingToMediaElement",
-                                  TRACE_ID_LOCAL(this));
-  DCHECK(web_media_source);
-  DCHECK(!web_media_source_);
-  DCHECK(media_source_attachment_);
-  DCHECK_EQ(!attachment_tracer_, !IsMainThread());
+  AssertAttachmentsMutexHeldIfCrossThreadForDebugging();
 
-  web_media_source_ = std::move(web_media_source);
+  {
+    MutexLocker lock(attachment_link_lock_);
+
+    DCHECK_EQ(!attachment_tracer_, !IsMainThread());
+
+    if (attachment_tracer_) {
+      // Use of a tracer means we must be using same-thread attachment.
+      TRACE_EVENT_NESTABLE_ASYNC_END0(
+          "media", "MediaSource::StartAttachingToMediaElement",
+          TRACE_ID_LOCAL(this));
+    } else {
+      // Otherwise, we must be using a cross-thread MSE-in-Workers attachment.
+      TRACE_EVENT_NESTABLE_ASYNC_END0(
+          "media", "MediaSource::StartWorkerAttachingToMainThreadMediaElement",
+          TRACE_ID_LOCAL(this));
+    }
+    DCHECK(web_media_source);
+    DCHECK(!web_media_source_);
+    DCHECK(media_source_attachment_);
+
+    web_media_source_ = std::move(web_media_source);
+  }
+
   SetReadyState(ReadyState::kOpen);
 }
 
 double MediaSource::duration() const {
-  return IsClosed() ? std::numeric_limits<float>::quiet_NaN()
-                    : web_media_source_->Duration();
+  if (IsClosed())
+    return std::numeric_limits<float>::quiet_NaN();
+
+  AssertAttachmentsMutexHeldIfCrossThreadForDebugging();
+  return web_media_source_->Duration();
 }
 
-WebTimeRanges MediaSource::BufferedInternal() const {
+WebTimeRanges MediaSource::BufferedInternal(
+    MediaSourceAttachmentSupplement::ExclusiveKey pass_key) const {
+  AssertAttachmentsMutexHeldIfCrossThreadForDebugging();
+
   // Implements MediaSource algorithm for HTMLMediaElement.buffered.
   // https://dvcs.w3.org/hg/html-media/raw-file/default/media-source/media-source.html#htmlmediaelement-extensions
   Vector<WebTimeRanges> ranges(active_source_buffers_->length());
-  for (unsigned i = 0; i < active_source_buffers_->length(); ++i)
-    ranges[i] = active_source_buffers_->item(i)->buffered();
+
+  for (unsigned i = 0; i < active_source_buffers_->length(); ++i) {
+    active_source_buffers_->item(i)->GetBuffered_Locked(&ranges[i], pass_key);
+  }
 
   WebTimeRanges intersection_ranges;
 
@@ -465,14 +590,17 @@ WebTimeRanges MediaSource::BufferedInternal() const {
   return intersection_ranges;
 }
 
-TimeRanges* MediaSource::Buffered() const {
-  return MakeGarbageCollected<TimeRanges>(BufferedInternal());
-}
-
-WebTimeRanges MediaSource::SeekableInternal() const {
-  DCHECK(media_source_attachment_)
-      << "Seekable should only be used when attached to HTMLMediaElement";
-  DCHECK_EQ(!attachment_tracer_, !IsMainThread());
+WebTimeRanges MediaSource::SeekableInternal(
+    MediaSourceAttachmentSupplement::ExclusiveKey pass_key) const {
+  AssertAttachmentsMutexHeldIfCrossThreadForDebugging();
+  {
+    MutexLocker lock(attachment_link_lock_);
+    DCHECK(media_source_attachment_)
+        << "Seekable should only be used when attached to HTMLMediaElement";
+  }
+  // Even if we are attached with a CrossThreadMediaSourceAttachment and owned
+  // by a worker thread, the attachment will call this on the main thread.
+  DCHECK(IsMainThread());
 
   // Implements MediaSource algorithm for HTMLMediaElement.seekable.
   // http://w3c.github.io/media-source/#htmlmediaelement-extensions
@@ -485,28 +613,37 @@ WebTimeRanges MediaSource::SeekableInternal() const {
 
   // If duration equals positive Infinity:
   if (source_duration == std::numeric_limits<double>::infinity()) {
-    WebTimeRanges buffered = BufferedInternal();
+    WebTimeRanges buffered = BufferedInternal(pass_key);
 
-    // 1. If live seekable range is not empty:
-    if (live_seekable_range_->length() != 0) {
-      // 1.1. Let union ranges be the union of live seekable range and the
-      //      HTMLMediaElement.buffered attribute.
-      // 1.2. Return a single range with a start time equal to the
-      //      earliest start time in union ranges and an end time equal to
-      //      the highest end time in union ranges and abort these steps.
-      if (buffered.empty()) {
-        ranges.emplace_back(live_seekable_range_->start(0, ASSERT_NO_EXCEPTION),
-                            live_seekable_range_->end(0, ASSERT_NO_EXCEPTION));
+    {
+      // If cross-thread, protect against concurrent usage of
+      // |live_seekable_range_|, since that member is updated without taking the
+      // attachment's internal |attachment_state_lock_|.
+      MutexLocker lock(attachment_link_lock_);
+
+      // 1. If live seekable range is not empty:
+      if (live_seekable_range_->length() != 0) {
+        // 1.1. Let union ranges be the union of live seekable range and the
+        //      HTMLMediaElement.buffered attribute.
+        // 1.2. Return a single range with a start time equal to the
+        //      earliest start time in union ranges and an end time equal to
+        //      the highest end time in union ranges and abort these steps.
+        if (buffered.empty()) {
+          ranges.emplace_back(
+              live_seekable_range_->start(0, ASSERT_NO_EXCEPTION),
+              live_seekable_range_->end(0, ASSERT_NO_EXCEPTION));
+          return ranges;
+        }
+
+        ranges.emplace_back(
+            std::min(live_seekable_range_->start(0, ASSERT_NO_EXCEPTION),
+                     buffered.front().start),
+            std::max(live_seekable_range_->end(0, ASSERT_NO_EXCEPTION),
+                     buffered.back().end));
         return ranges;
       }
-
-      ranges.emplace_back(
-          std::min(live_seekable_range_->start(0, ASSERT_NO_EXCEPTION),
-                   buffered.front().start),
-          std::max(live_seekable_range_->end(0, ASSERT_NO_EXCEPTION),
-                   buffered.back().end));
-      return ranges;
     }
+
     // 2. If the HTMLMediaElement.buffered attribute returns an empty TimeRanges
     //    object, then return an empty TimeRanges object and abort these steps.
     if (buffered.empty())
@@ -526,6 +663,11 @@ WebTimeRanges MediaSource::SeekableInternal() const {
 }
 
 void MediaSource::OnTrackChanged(TrackBase* track) {
+  // TODO(https://crbug.com/878133): Support this in MSE-in-Worker once
+  // TrackBase and TrackListBase are usable on worker and do not explicitly
+  // require an HTMLMediaElement.
+  DCHECK(IsMainThread());
+
   DCHECK(HTMLMediaElement::MediaTracksEnabledInternally());
   SourceBuffer* source_buffer =
       SourceBufferTrackBaseSupplement::sourceBuffer(*track);
@@ -575,11 +717,26 @@ void MediaSource::setDuration(double duration,
 
   // 4. Run the duration change algorithm with new duration set to the value
   //    being assigned to this attribute.
-  DurationChangeAlgorithm(duration, exception_state);
+  // Do remainder of steps only if attachment is usable and underlying demuxer
+  // is protected from destruction (applicable especially for MSE-in-Worker
+  // case). Note, we must be open, therefore we must have an attachment.
+  if (!RunUnlessElementGoneOrClosingUs(
+          WTF::Bind(&MediaSource::DurationChangeAlgorithm, WrapPersistent(this),
+                    duration, WTF::Unretained(&exception_state)))) {
+    // TODO(https://crbug.com/878133): Determine in specification what the
+    // specific, app-visible, exception should be for this case.
+    LogAndThrowDOMException(exception_state,
+                            DOMExceptionCode::kInvalidStateError,
+                            "Worker MediaSource attachment is closing");
+  }
 }
 
-void MediaSource::DurationChangeAlgorithm(double new_duration,
-                                          ExceptionState& exception_state) {
+void MediaSource::DurationChangeAlgorithm(
+    double new_duration,
+    ExceptionState* exception_state,
+    MediaSourceAttachmentSupplement::ExclusiveKey /* passkey */) {
+  AssertAttachmentsMutexHeldIfCrossThreadForDebugging();
+
   // http://w3c.github.io/media-source/#duration-change-algorithm
   // 1. If the current value of duration is equal to new duration, then return.
   if (new_duration == duration())
@@ -601,7 +758,7 @@ void MediaSource::DurationChangeAlgorithm(double new_duration,
   if (new_duration < highest_buffered_presentation_timestamp) {
     if (RuntimeEnabledFeatures::MediaSourceNewAbortAndDurationEnabled()) {
       LogAndThrowDOMException(
-          exception_state, DOMExceptionCode::kInvalidStateError,
+          *exception_state, DOMExceptionCode::kInvalidStateError,
           "Setting duration below highest presentation timestamp of any "
           "buffered coded frames is disallowed. Instead, first do asynchronous "
           "remove(newDuration, oldDuration) on all sourceBuffers, where "
@@ -643,8 +800,10 @@ void MediaSource::DurationChangeAlgorithm(double new_duration,
 
   // 6. Update the media controller duration to new duration and run the
   //    HTMLMediaElement duration change algorithm.
-  media_source_attachment_->NotifyDurationChanged(attachment_tracer_,
-                                                  new_duration);
+  scoped_refptr<MediaSourceAttachmentSupplement> attachment;
+  MediaSourceTracer* tracer;
+  std::tie(attachment, tracer) = AttachmentAndTracer();
+  attachment->NotifyDurationChanged(tracer, new_duration);
 }
 
 void MediaSource::SetReadyState(const ReadyState state) {
@@ -686,12 +845,25 @@ void MediaSource::endOfStream(const AtomicString& error,
     return;
 
   // 3. Run the end of stream algorithm with the error parameter set to error.
+  WebMediaSource::EndOfStreamStatus status;
   if (error == "network")
-    EndOfStreamAlgorithm(WebMediaSource::kEndOfStreamStatusNetworkError);
+    status = WebMediaSource::kEndOfStreamStatusNetworkError;
   else if (error == "decode")
-    EndOfStreamAlgorithm(WebMediaSource::kEndOfStreamStatusDecodeError);
+    status = WebMediaSource::kEndOfStreamStatusDecodeError;
   else  // "" is allowed internally but not by IDL bindings.
-    EndOfStreamAlgorithm(WebMediaSource::kEndOfStreamStatusNoError);
+    status = WebMediaSource::kEndOfStreamStatusNoError;
+
+  // Do remainder of steps only if attachment is usable and underlying demuxer
+  // is protected from destruction (applicable especially for MSE-in-Worker
+  // case). Note, we must be open, therefore we must have an attachment.
+  if (!RunUnlessElementGoneOrClosingUs(WTF::Bind(
+          &MediaSource::EndOfStreamAlgorithm, WrapPersistent(this), status))) {
+    // TODO(https://crbug.com/878133): Determine in specification what the
+    // specific, app-visible, exception should be for this case.
+    LogAndThrowDOMException(exception_state,
+                            DOMExceptionCode::kInvalidStateError,
+                            "Worker MediaSource attachment is closing");
+  }
 }
 
 void MediaSource::endOfStream(ExceptionState& exception_state) {
@@ -729,7 +901,16 @@ void MediaSource::setLiveSeekableRange(double start,
   // 4. Set live seekable range to be a new normalized TimeRanges object
   //    containing a single range whose start position is start and end
   //    position is end.
-  live_seekable_range_ = MakeGarbageCollected<TimeRanges>(start, end);
+  {
+    // If we are cross-thread, then main thread could be running
+    // SeekableInternal simultaneously, if attached fully. Here, for simplicity,
+    // we don't need to take the full attachment exclusive
+    // |attachment_state_lock_| so long as we
+    // fully protect access to |live_seekable_range_| read/write with
+    // |attachment_link_lock_|.
+    MutexLocker lock(attachment_link_lock_);
+    live_seekable_range_ = MakeGarbageCollected<TimeRanges>(start, end);
+  }
 }
 
 void MediaSource::clearLiveSeekableRange(ExceptionState& exception_state) {
@@ -748,8 +929,17 @@ void MediaSource::clearLiveSeekableRange(ExceptionState& exception_state) {
 
   // 3. If live seekable range contains a range, then set live seekable range
   //    to be a new empty TimeRanges object.
-  if (live_seekable_range_->length() != 0)
-    live_seekable_range_ = MakeGarbageCollected<TimeRanges>();
+  {
+    // If we are cross-thread, then main thread could be running
+    // SeekableInternal simultaneously, if attached fully. Here, for simplicity,
+    // we don't need to take the full attachment exclusive
+    // |attachment_state_lock_|so long as we
+    // fully protect access to |live_seekable_range_| read/write with
+    // |attachment_link_lock_|.
+    MutexLocker lock(attachment_link_lock_);
+    if (live_seekable_range_->length() != 0)
+      live_seekable_range_ = MakeGarbageCollected<TimeRanges>();
+  }
 }
 
 bool MediaSource::IsOpen() const {
@@ -788,11 +978,15 @@ void MediaSource::SetSourceBufferActive(SourceBuffer* source_buffer,
 
 std::pair<scoped_refptr<MediaSourceAttachmentSupplement>, MediaSourceTracer*>
 MediaSource::AttachmentAndTracer() const {
+  MutexLocker lock(attachment_link_lock_);
   return std::make_pair(media_source_attachment_, attachment_tracer_);
 }
 
 void MediaSource::EndOfStreamAlgorithm(
-    const WebMediaSource::EndOfStreamStatus eos_status) {
+    const WebMediaSource::EndOfStreamStatus eos_status,
+    MediaSourceAttachmentSupplement::ExclusiveKey /* passkey */) {
+  AssertAttachmentsMutexHeldIfCrossThreadForDebugging();
+
   // https://www.w3.org/TR/media-source/#end-of-stream-algorithm
   // 1. Change the readyState attribute value to "ended".
   // 2. Queue a task to fire a simple event named sourceended at the
@@ -821,8 +1015,10 @@ void MediaSource::EndOfStreamAlgorithm(
     // to just mark end of stream, and move the duration reduction logic to here
     // so we can just run DurationChangeAlgorithm(...) here.
     double new_duration = duration();
-    media_source_attachment_->NotifyDurationChanged(attachment_tracer_,
-                                                    new_duration);
+    scoped_refptr<MediaSourceAttachmentSupplement> attachment;
+    MediaSourceTracer* tracer;
+    std::tie(attachment, tracer) = AttachmentAndTracer();
+    attachment->NotifyDurationChanged(tracer, new_duration);
   }
 }
 
@@ -831,16 +1027,22 @@ bool MediaSource::IsClosed() const {
 }
 
 void MediaSource::Close() {
+  AssertAttachmentsMutexHeldIfCrossThreadForDebugging();
   SetReadyState(ReadyState::kClosed);
 }
 
 MediaSourceTracer* MediaSource::StartAttachingToMediaElement(
-    scoped_refptr<MediaSourceAttachmentSupplement> attachment,
+    scoped_refptr<SameThreadMediaSourceAttachment> attachment,
     HTMLMediaElement* element) {
+  MutexLocker lock(attachment_link_lock_);
+
+  DCHECK(IsMainThread());
+
   if (media_source_attachment_ || attachment_tracer_) {
     return nullptr;
   }
 
+  DCHECK(!context_already_destroyed_);
   DCHECK(IsClosed());
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media",
@@ -852,9 +1054,45 @@ MediaSourceTracer* MediaSource::StartAttachingToMediaElement(
   return attachment_tracer_;
 }
 
+bool MediaSource::StartWorkerAttachingToMainThreadMediaElement(
+    scoped_refptr<CrossThreadMediaSourceAttachment> attachment) {
+  MutexLocker lock(attachment_link_lock_);
+
+  // Even in worker-owned MSE, the CrossThreadMediaSourceAttachment calls this
+  // on the main thread.
+  DCHECK(IsMainThread());
+  DCHECK(!attachment_tracer_);  // A worker-owned MediaSource has no tracer.
+
+  if (context_already_destroyed_) {
+    return false;  // See comments in ContextDestroyed().
+  }
+
+  if (media_source_attachment_ || attachment_tracer_) {
+    return false;  // Already attached.
+  }
+
+  DCHECK(IsClosed());
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+      "media", "MediaSource::StartWorkerAttachingToMainThreadMediaElement",
+      TRACE_ID_LOCAL(this));
+  media_source_attachment_ = attachment;
+  return true;
+}
+
 void MediaSource::OpenIfInEndedState() {
   if (ready_state_ != ReadyState::kEnded)
     return;
+
+  // All callers of this method (see SourceBuffer methods) must have already
+  // confirmed they are still associated with us, and therefore we must not be
+  // closed. In one edge case (!notify_close version of our
+  // DetachWorkerOnContextDestruction_Locked), any associated SourceBuffers are
+  // not told they're dissociated with us in that method, but it is run on the
+  // worker thread that is also synchronously destructing the SourceBuffers'
+  // context). Therefore the following should never fail here.
+  DCHECK(!IsClosed());
+
+  AssertAttachmentsMutexHeldIfCrossThreadForDebugging();
 
   SetReadyState(ReadyState::kOpen);
   web_media_source_->UnmarkEndOfStream();
@@ -868,14 +1106,151 @@ bool MediaSource::HasPendingActivity() const {
   // it has the objectUrl in a string somewhere, for example. This is yet
   // further motivation for apps to properly revokeObjectUrl and for the MSE
   // spec, implementations and API users to transition to using HTMLME srcObject
-  // for MSE attachment instead of objectUrl.
+  // for MSE attachment instead of objectUrl. For at least
+  // SameThreadMediaSourceAttachments, the RevokeMediaSourceObjectURLOnAttach
+  // feature assists in automating this case. But for
+  // CrossThreadMediaSourceAttachments, the attachment holds strong references
+  // to each side until explicitly detached (or contexts destroyed).
   return async_event_queue_->HasPendingEvents();
 }
 
 void MediaSource::ContextDestroyed() {
   DVLOG(1) << __func__ << " this=" << this;
-  if (media_source_attachment_)
+
+  // In same-thread case, we just close ourselves if not already closed. This is
+  // historically the same logic as before MSE-in-Workers. Note that we cannot
+  // inspect GetExecutionContext() to determine Window vs Worker here, so we use
+  // IsMainThread(). There is no need to RunExclusively() either, because we are
+  // on the same thread as the media element.
+  if (IsMainThread()) {
+    {
+      MutexLocker lock(attachment_link_lock_);
+      if (media_source_attachment_) {
+        DCHECK(attachment_tracer_);  // Same-thread attachment uses tracer.
+        // No need to release |attachment_link_lock_| and RunExclusively(),
+        // since it is a same-thread attachment.
+        media_source_attachment_->OnMediaSourceContextDestroyed();
+      }
+
+      // For consistency, though redundant for same-thread operation, prevent
+      // subsequent attachment start from succeeding. This flag is meaningful in
+      // cross-thread attachment usage.
+      context_already_destroyed_ = true;
+    }
+
+    if (!IsClosed()) {
+      SetReadyState(ReadyState::kClosed);
+    }
+    web_media_source_.reset();
+    return;
+  }
+
+  // Worker context destruction could race CrossThreadMediaSourceAttachment's
+  // StartAttachingToMediaElement on the main thread: we could finish
+  // ContextDestroyed() here, and in the case of not yet ever having been
+  // attached using a particular CrossThreadMediaSourceAttachent, then receive a
+  // StartWorkerAttachingToMainThreadMediaElement() call before unregistration
+  // of us has completed. Therefore, we use our |attachment_link_lock_| to also
+  // protect a flag here that lets us know to fail any future attempt to start
+  // attaching to us.
+  scoped_refptr<MediaSourceAttachmentSupplement> attachment;
+  {
+    MutexLocker lock(attachment_link_lock_);
+    context_already_destroyed_ = true;
+
+    // If not yet attached, the flag, above, will prevent us from ever
+    // successfully attaching, and we can return. There is no attachment on
+    // which we need (or can) call OnMediaSourceContextDestroyed() here. And any
+    // attachments owned by this context will soon (or have already been)
+    // unregistered.
+    attachment = media_source_attachment_;
+    if (!attachment) {
+      DCHECK(IsClosed());
+      DCHECK(!web_media_source_);
+      return;
+    }
+  }
+
+  // We need to let our current attachment know that our context is destroyed.
+  // This will let it handle cases like returning sane values for
+  // BufferedInternal and SeekableInternal and stop further use of us via the
+  // attachment. We need to hold the attachment's |attachment_state_lock_| when
+  // doing this detachment.
+  bool cb_ran = attachment->RunExclusively(
+      true /* abort if unsafe to use underlying demuxer */,
+      WTF::Bind(&MediaSource::DetachWorkerOnContextDestruction_Locked,
+                WrapPersistent(this),
+                true /* safe to notify underlying demuxer */));
+
+  if (!cb_ran) {
+    // Main-thread is already detaching or destructing the underlying demuxer.
+    CHECK(attachment->RunExclusively(
+        false /* do not abort */,
+        WTF::Bind(&MediaSource::DetachWorkerOnContextDestruction_Locked,
+                  WrapPersistent(this),
+                  false /* do not notify underlying demuxer */)));
+  }
+}
+
+void MediaSource::DetachWorkerOnContextDestruction_Locked(
+    bool notify_close,
+    MediaSourceAttachmentSupplement::ExclusiveKey /* passkey */) {
+  AssertAttachmentsMutexHeldIfCrossThreadForDebugging();
+
+  {
+    MutexLocker lock(attachment_link_lock_);
+
+    DCHECK(!IsMainThread());  // Called only on the worker thread.
+
+    DVLOG(1) << __func__ << " this=" << this
+             << ", notify_close=" << notify_close;
+
+    // Close() could not race our dispatch: it must happen on worker thread, on
+    // which we're called synchronously only if we're attached.
+    DCHECK(media_source_attachment_);
+
+    // We're only called for CrossThread attachments, which use no tracer.
+    DCHECK(!attachment_tracer_);
+
+    // Let the attachment know to prevent further operations on us.
     media_source_attachment_->OnMediaSourceContextDestroyed();
+
+    if (!notify_close) {
+      // In this case, not only is our context shutting down, but the media
+      // element is also at least tearing down the WebMediaPlayer (and the
+      // underlying demuxer owned by it) already. We can do some simple cleanup,
+      // but must not access |*web_media_source_| or our SourceBuffers'
+      // |*web_source_buffer_|'s. We're helped by the demuxer not calling us or
+      // our SourceBuffers unless in scope of a call initiated by a SourceBuffer
+      // during media parsing, which cannot occur after our context destruction.
+      // Underlying buffered media is removed during demuxer teardown itself,
+      // which is certain to be happening already or soon in this case.
+      media_source_attachment_.reset();
+      attachment_tracer_ = nullptr;  // For consistency with same-thread usage.
+      if (!IsClosed()) {
+        ready_state_ = ReadyState::kClosed;
+        web_media_source_.reset();
+        active_source_buffers_->Clear();
+        source_buffers_->Clear();
+      }
+      return;
+    }
+  }
+
+  // TODO(https://crbug.com/878133): Here, if we have a |web_media_source_|,
+  // determine how to specify notification of a "defunct" worker-thread
+  // MediaSource in the case where it was serving as the source for a media
+  // element. Directly notifying an error via the |web_media_source_| may be the
+  // appropriate route here, but MarkEndOfStream internally has constraints
+  // (already initialized demuxer, not already "ended", etc) which make it
+  // unsuitable currently for this purpose. Currently, we prevent further usage
+  // of the underlying demuxer and return sane values to the element for its
+  // queries (nothing buffered, nothing seekable) once the attached media
+  // source's context is destroyed. See similar case in
+  // CrossThreadMediaSourceAttachment's
+  // CompleteAttachingToMediaElementOnWorkerThread(). For now, we'll just do the
+  // historical steps to shutdown the MediaSource and SourceBuffers on context
+  // destruction.
   if (!IsClosed())
     SetReadyState(ReadyState::kClosed);
   web_media_source_.reset();
@@ -885,6 +1260,8 @@ std::unique_ptr<WebSourceBuffer> MediaSource::CreateWebSourceBuffer(
     const String& type,
     const String& codecs,
     ExceptionState& exception_state) {
+  AssertAttachmentsMutexHeldIfCrossThreadForDebugging();
+
   WebSourceBuffer* web_source_buffer = nullptr;
 
   switch (

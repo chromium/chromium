@@ -5,13 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASOURCE_MEDIA_SOURCE_ATTACHMENT_SUPPLEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASOURCE_MEDIA_SOURCE_ATTACHMENT_SUPPLEMENT_H_
 
+#include "base/util/type_safety/pass_key.h"
 #include "third_party/blink/renderer/core/html/media/media_source_attachment.h"
 #include "third_party/blink/renderer/core/html/media/media_source_tracer.h"
 #include "third_party/blink/renderer/core/html/track/audio_track.h"
 #include "third_party/blink/renderer/core/html/track/video_track.h"
-#include "third_party/blink/renderer/modules/mediasource/media_source.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -25,13 +26,18 @@ class VideoTrackList;
 // members common to all concrete attachments.
 class MediaSourceAttachmentSupplement : public MediaSourceAttachment {
  public:
+  using ExclusiveKey = util::PassKey<MediaSourceAttachmentSupplement>;
+  using RunExclusivelyCB = base::OnceCallback<void(ExclusiveKey)>;
+
   // Communicates a change in the media resource duration to the attached media
   // element. In a same-thread attachment, communicates this information
-  // synchronously. In a cross-thread attachment, communicates asynchronously to
-  // the media element. Same-thread synchronous notification here is primarily
-  // to preserve compliance of API behavior when not using MSE-in-Worker
-  // (setting MediaSource.duration should be synchronously in agreement with
-  // subsequent retrieval of MediaElement.duration, all on the main thread).
+  // synchronously. In a cross-thread attachment, underlying WebMediaSource
+  // should already be asynchronously communicating this information to the
+  // media element, so attachment operation is a no-op. Same-thread synchronous
+  // notification here is primarily to preserve compliance of API behavior when
+  // not using MSE-in-Worker (setting MediaSource.duration should be
+  // synchronously in agreement with subsequent retrieval of
+  // MediaElement.duration, all on the main thread).
   virtual void NotifyDurationChanged(MediaSourceTracer* tracer,
                                      double duration) = 0;
 
@@ -90,9 +96,32 @@ class MediaSourceAttachmentSupplement : public MediaSourceAttachment {
 
   virtual void OnMediaSourceContextDestroyed() = 0;
 
+  // Default is to just run the cb (e.g., for same-thread implementation of the
+  // attachment, since both the media element and the MSE API operate on the
+  // same thread and no mutex is required.) Cross-thread implementation will
+  // first take a lock, then run the cb conditionally on
+  // |abort_if_not_fully_attached|, then release a lock (all synchronously on
+  // the same thread.) Any return values needed by the caller should be passed
+  // by pointer, aka as "out" arguments. For cross-thread case, see further
+  // detail in it's override declaration and implementation. PassKey pattern
+  // usage (with ExclusiveKey instance passed to |cb| when running it)
+  // statically ensures that only a MediaSourceAttachmentSupplement
+  // implementation can run such a |cb|. |cb| can then be assured that it is run
+  // within the scope of this method.
+  virtual bool RunExclusively(bool abort_if_not_fully_attached,
+                              RunExclusivelyCB cb);
+
+  // Default implementation fails DCHECK. See CrossThreadMediaSourceAttachment
+  // for override. MediaSource and SourceBuffer use this to help verify they
+  // only use underlying demuxer in cross-thread debug case while the
+  // cross-thread mutex is held.
+  virtual void AssertCrossThreadMutexIsAcquiredForDebugging();
+
  protected:
   MediaSourceAttachmentSupplement();
   ~MediaSourceAttachmentSupplement() override;
+
+  ExclusiveKey GetExclusiveKey() const;
 
   DISALLOW_COPY_AND_ASSIGN(MediaSourceAttachmentSupplement);
 };
