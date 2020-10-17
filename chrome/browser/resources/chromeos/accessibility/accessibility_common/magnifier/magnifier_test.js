@@ -16,9 +16,16 @@ MagnifierE2ETest = class extends E2ETestBase {
     chrome.accessibilityPrivate = this.mockAccessibilityPrivate;
 
     window.RoleType = chrome.automation.RoleType;
+    window.getNextMagnifierLocation = this.getNextMagnifierLocation;
 
     // Re-initialize AccessibilityCommon with mock AccessibilityPrivate API.
     window.accessibilityCommon = new AccessibilityCommon();
+  }
+
+  async getNextMagnifierLocation() {
+    return new Promise(resolve => {
+      chrome.accessibilityPrivate.registerMoveMagnifierToRectCallback(resolve);
+    });
   }
 
   /** @override */
@@ -44,6 +51,27 @@ MagnifierE2ETest = class extends E2ETestBase {
   }
 };
 
+TEST_F('MagnifierE2ETest', 'MovesScreenMagnifierToFocusedElement', function() {
+  const site = `
+        <button id="apple">Apple</button>
+        <button id="banana">Banana</button>
+      `;
+  this.runWithLoadedTree(site, async function(root) {
+    // Validate magnifier wants to move to root.
+    const rootLocation = await getNextMagnifierLocation();
+    assertTrue(RectUtil.equal(rootLocation, root.location));
+
+    // Focus banana node.
+    const banana =
+        root.find({role: RoleType.BUTTON, attributes: {name: 'Banana'}});
+    banana.focus();
+
+    // Validate magnifier wants to move to banana.
+    const bananaLocation = await getNextMagnifierLocation();
+    assertTrue(RectUtil.equal(bananaLocation, banana.location));
+  });
+});
+
 TEST_F(
     'MagnifierE2ETest', 'MovesScreenMagnifierToActiveDescendant', function() {
       const site = `
@@ -64,14 +92,11 @@ TEST_F(
         parent.doDefault();
 
         // Register and wait for rect from magnifier.
-        const rect = await new Promise(resolve => {
-          this.mockAccessibilityPrivate.registerMoveMagnifierToRectCallback(
-              resolve);
-        });
+        const rect = await getNextMagnifierLocation();
 
         // Validate rect from magnifier is rect of banana.
         const bananaNode =
             root.find({role: RoleType.TREE_ITEM, attributes: {name: 'Banana'}});
         assertTrue(RectUtil.equal(rect, bananaNode.location));
-      }, {returnPage: true});
+      });
     });

@@ -57,7 +57,9 @@ var MockAccessibilityPrivate = {
    * @param {!chrome.accessibilityPrivate.ScreenRect} rect
    */
   moveMagnifierToRect: (rect) => {
-    MockAccessibilityPrivate.moveMagnifierToRectCallback_(rect);
+    if (MockAccessibilityPrivate.moveMagnifierToRectCallback_) {
+      MockAccessibilityPrivate.moveMagnifierToRectCallback_(rect);
+    }
   },
 
   /**

@@ -8,6 +8,9 @@
 class Magnifier {
   constructor() {
     /** @private {!EventHandler} */
+    this.focusHandler_ = new EventHandler(
+        [], chrome.automation.EventType.FOCUS, this.onFocus_.bind(this));
+
     this.activeDescendantHandler_ = new EventHandler(
         [], chrome.automation.EventType.ACTIVE_DESCENDANT_CHANGED,
         this.onActiveDescendantChanged_.bind(this));
@@ -17,6 +20,7 @@ class Magnifier {
 
   /** Destructor to remove listener. */
   onMagnifierDisabled() {
+    this.focusHandler_.stop();
     this.activeDescendantHandler_.stop();
   }
 
@@ -26,9 +30,34 @@ class Magnifier {
    */
   init_() {
     chrome.automation.getDesktop(desktop => {
+      this.focusHandler_.setNodes(desktop);
+      this.focusHandler_.start();
       this.activeDescendantHandler_.setNodes(desktop);
       this.activeDescendantHandler_.start();
     });
+  }
+
+  /**
+   * Listener for when focus is updated. Moves magnifier to include focused
+   * element in viewport.
+   *
+   * TODO(accessibility): There is a bit of magnifier shakiness on arrow down in
+   * omnibox - probably focus following fighting with caret following - maybe
+   * add timer for last focus event so that fast-following caret updates don't
+   * shake screen.
+   * TODO(accessibility): On page load, sometimes viewport moves to center of
+   * webpage instead of spotlighting first focusable page element.
+   *
+   * @param {!chrome.automation.AutomationEvent} event
+   * @private
+   */
+  onFocus_(event) {
+    const {location} = event.target;
+    if (!location) {
+      return;
+    }
+
+    chrome.accessibilityPrivate.moveMagnifierToRect(location);
   }
 
   /**
