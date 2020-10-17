@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/insecure_form_blocking_page.h"
+#include "components/security_interstitials/content/insecure_form_tab_storage.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/core/features.h"
 #include "components/security_interstitials/core/pref_names.h"
@@ -51,6 +52,13 @@ InsecureFormNavigationThrottle::WillStartRequest() {
     return content::NavigationThrottle::PROCEED;
   }
 
+  // If user has just chosen to proceed on an interstitial, we don't show
+  // another one.
+  InsecureFormTabStorage* tab_storage =
+      InsecureFormTabStorage::GetOrCreate(contents);
+  if (tab_storage->IsProceeding())
+    return content::NavigationThrottle::PROCEED;
+
   std::unique_ptr<InsecureFormBlockingPage> blocking_page =
       blocking_page_factory_->CreateInsecureFormBlockingPage(contents,
                                                              handle->GetURL());
@@ -64,6 +72,17 @@ InsecureFormNavigationThrottle::WillStartRequest() {
 content::NavigationThrottle::ThrottleCheckResult
 InsecureFormNavigationThrottle::WillRedirectRequest() {
   return WillStartRequest();
+}
+
+content::NavigationThrottle::ThrottleCheckResult
+InsecureFormNavigationThrottle::WillProcessResponse() {
+  // If there is an InsecureFormTabStorage associated to |web_contents_|, clear
+  // the IsProceeding flag.
+  InsecureFormTabStorage* tab_storage = InsecureFormTabStorage::FromWebContents(
+      navigation_handle()->GetWebContents());
+  if (tab_storage)
+    tab_storage->SetIsProceeding(false);
+  return content::NavigationThrottle::PROCEED;
 }
 
 const char* InsecureFormNavigationThrottle::GetNameForLogging() {

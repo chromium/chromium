@@ -26,6 +26,7 @@ class InsecureFormNavigationThrottle : public content::NavigationThrottle {
   // content::NavigationThrottle:
   ThrottleCheckResult WillStartRequest() override;
   ThrottleCheckResult WillRedirectRequest() override;
+  ThrottleCheckResult WillProcessResponse() override;
   const char* GetNameForLogging() override;
 
   static std::unique_ptr<InsecureFormNavigationThrottle>

@@ -37,6 +37,8 @@ static_library("security_interstitial_page") {
     "insecure_form_blocking_page.h",
     "insecure_form_navigation_throttle.cc",
     "insecure_form_navigation_throttle.h",
+    "insecure_form_tab_storage.cc",
+    "insecure_form_tab_storage.h",
     "known_interception_disclosure_ui.cc",
     "known_interception_disclosure_ui.h",
     "legacy_tls_blocking_page.cc",
