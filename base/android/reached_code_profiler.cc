@@ -62,7 +62,7 @@ constexpr const char kDumpToFileFlag[] = "reached-code-profiler-dump-to-file";
 
 constexpr uint64_t kIterationsBeforeSkipping = 50;
 constexpr uint64_t kIterationsBetweenUpdates = 100;
-constexpr int kProfilerSignal = SIGURG;
+constexpr int kProfilerSignal = SIGWINCH;
 
 constexpr base::TimeDelta kSamplingInterval =
     base::TimeDelta::FromMilliseconds(10);
