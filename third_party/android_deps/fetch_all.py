@@ -71,6 +71,7 @@ _JETIFY_CONFIG = os.path.join(_CHROMIUM_SRC, 'third_party',
 
 # The list of git-controlled files that are checked or updated by this tool.
 _UPDATED_ANDROID_DEPS_FILES = [
+    os.path.join('..', '..', 'DEPS'),
     _BUILD_GN,
     _BUILD_GRADLE,
     _ADDITIONAL_README_PATHS,
@@ -168,7 +169,7 @@ def RunCommandAndGetOutput(args):
 
 def MakeDirectory(dir_path):
     """Make directory |dir_path| recursively if necessary."""
-    if not os.path.isdir(dir_path):
+    if dir_path != '' and not os.path.isdir(dir_path):
         logging.debug('mkdir [%s]', dir_path)
         os.makedirs(dir_path)
 
@@ -182,6 +183,8 @@ def DeleteDirectory(dir_path):
 
 def CopyFileOrDirectory(src_path, dst_path):
     """Copy file or directory |src_path| into |dst_path| exactly."""
+    src_path = os.path.normpath(src_path)
+    dst_path = os.path.normpath(dst_path)
     logging.debug('copy [%s -> %s]', src_path, dst_path)
     MakeDirectory(os.path.dirname(dst_path))
     if os.path.isdir(src_path):
@@ -468,8 +471,6 @@ def main():
     # The list of files and dirs that are copied to the build directory by this
     # script. Should not include _UPDATED_ANDROID_DEPS_FILES.
     copied_paths = {
-        os.path.join(args.android_deps_dir, "..", "..", "DEPS"):
-        "DEPS",
         _GLOBAL_GRADLE_BUILDSRC_PATH:
         os.path.join(args.android_deps_dir, "buildSrc"),
         _GLOBAL_GRADLE_SUPRESSIONS_PATH:
