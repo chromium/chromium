@@ -45,7 +45,8 @@ class FeedNetworkingHost {
   // status code(if the request succeeded in reaching the server).
   using ResponseCallback =
       base::OnceCallback<void(int32_t status_code,
-                              std::vector<uint8_t> response_bytes)>;
+                              std::vector<uint8_t> response_bytes,
+                              bool is_signed_in)>;
 
   FeedNetworkingHost(
       signin::IdentityManager* identity_manager,
@@ -74,7 +75,8 @@ class FeedNetworkingHost {
   void NetworkFetchFinished(NetworkFetch* fetch,
                             ResponseCallback callback,
                             int32_t http_code,
-                            std::vector<uint8_t> response_body);
+                            std::vector<uint8_t> response_body,
+                            bool isSignedIn);
 
   base::flat_set<std::unique_ptr<NetworkFetch>, base::UniquePtrComparator>
       pending_requests_;

@@ -265,12 +265,13 @@ public class FeedRequestManagerImpl implements FeedRequestManager {
                         "FeedRequestManagerImpl consumer", () -> consumer.accept(Result.failure()));
                 return;
             }
-            handleResponseBytes(input.getResponseBody(), consumer, isRefreshRequest);
+            handleResponseBytes(
+                    input.getResponseBody(), consumer, isRefreshRequest, input.isSignedIn());
         });
     }
 
     private void handleResponseBytes(final byte[] responseBytes,
-            final Consumer<Result<Model>> consumer, boolean isRefreshRequest) {
+            final Consumer<Result<Model>> consumer, boolean isRefreshRequest, boolean isSignedIn) {
         mTaskQueue.execute(Task.HANDLE_RESPONSE_BYTES, TaskType.IMMEDIATE, () -> {
             Response response;
             boolean isLengthPrefixed = mConfiguration.getValueOrDefault(
@@ -287,8 +288,14 @@ public class FeedRequestManagerImpl implements FeedRequestManager {
                 return;
             }
             logServerCapabilities(response, isRefreshRequest);
-            mMainThreadRunner.execute("FeedRequestManagerImpl consumer",
-                    () -> consumer.accept(mProtocolAdapter.createModel(response)));
+            mMainThreadRunner.execute("FeedRequestManagerImpl consumer", () -> {
+                // Update the signed in pref only when the request is a refresh. It shouldn't be
+                // done for other requests such as load more.
+                if (isRefreshRequest) {
+                    updateLastRefreshSignedPref(isSignedIn);
+                }
+                consumer.accept(mProtocolAdapter.createModel(response));
+            });
         });
     }
 
@@ -308,6 +315,11 @@ public class FeedRequestManagerImpl implements FeedRequestManager {
     private void updateNoticeCardPref(boolean hasNoticeCard) {
         UserPrefs.get(Profile.getLastUsedRegularProfile())
                 .setBoolean(Pref.LAST_FETCH_HAD_NOTICE_CARD, hasNoticeCard);
+    }
+
+    private void updateLastRefreshSignedPref(boolean isSignedIn) {
+        UserPrefs.get(Profile.getLastUsedRegularProfile())
+                .setBoolean(Pref.LAST_REFRESH_WAS_SIGNED_IN, isSignedIn);
     }
 
     private static final class RequestBuilder {

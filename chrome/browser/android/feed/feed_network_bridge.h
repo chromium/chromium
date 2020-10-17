@@ -42,7 +42,8 @@ class FeedNetworkBridge {
  private:
   void OnResult(const base::android::ScopedJavaGlobalRef<jobject>& j_callback,
                 int32_t http_code,
-                std::vector<uint8_t> response_bytes);
+                std::vector<uint8_t> response_bytes,
+                bool is_signed_in);
 
   FeedNetworkingHost* networking_host_;
 

@@ -46,16 +46,20 @@ class MockResponseDoneCallback {
  public:
   MockResponseDoneCallback() : has_run(false), code(0) {}
 
-  void Done(int32_t http_code, std::vector<uint8_t> response) {
+  void Done(int32_t http_code,
+            std::vector<uint8_t> response,
+            bool is_signed_in) {
     EXPECT_FALSE(has_run);
     has_run = true;
     code = http_code;
     response_bytes = std::move(response);
+    is_signed_in_result = is_signed_in;
   }
 
   bool has_run;
   int32_t code;
   std::vector<uint8_t> response_bytes;
+  bool is_signed_in_result;
 };
 
 }  // namespace
@@ -264,6 +268,15 @@ TEST_F(FeedNetworkingHostTest, ShouldSetHeadersCorrectly) {
 
   EXPECT_EQ(content_encoding, "gzip");
   EXPECT_EQ(authorization, "Bearer access_token");
+}
+
+TEST_F(FeedNetworkingHostTest, ProvideIsSignedInBitInResult) {
+  MockResponseDoneCallback done_callback;
+  SendRequestAndRespond("http://foobar.com/feed", "POST", "body", "",
+                        net::HTTP_OK, network::URLLoaderCompletionStatus(),
+                        &done_callback);
+
+  EXPECT_TRUE(done_callback.is_signed_in_result);
 }
 
 TEST_F(FeedNetworkingHostTest, ShouldNotSendContentEncodingForEmptyBody) {

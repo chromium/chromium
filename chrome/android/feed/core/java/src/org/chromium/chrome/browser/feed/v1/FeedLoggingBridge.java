@@ -95,11 +95,11 @@ public class FeedLoggingBridge implements BasicLoggingApi {
 
     @Override
     public void onContentViewed(ContentLoggingData data) {
-        onShownSlice(data.getPositionInStream());
-
         // Bridge could have been destroyed for policy when this is called.
         // See https://crbug.com/901414.
         if (mNativeFeedLoggingBridge == 0) return;
+
+        onShownSlice(data.getPositionInStream());
 
         FeedLoggingBridgeJni.get().onContentViewed(mNativeFeedLoggingBridge, FeedLoggingBridge.this,
                 data.getPositionInStream(),
@@ -112,12 +112,19 @@ public class FeedLoggingBridge implements BasicLoggingApi {
         if (mHasReachedShownIndexesThreshold) {
             return;
         }
-
+        if (!lastRefreshWasSignedIn()) {
+            return;
+        }
         if (index + 1 >= SHOWN_INDEX_THRESHOLD) {
             mHasReachedShownIndexesThreshold = true;
             UserPrefs.get(Profile.getLastUsedRegularProfile())
                     .setBoolean(Pref.HAS_REACHED_CLICK_AND_VIEW_ACTIONS_UPLOAD_CONDITIONS, true);
         }
+    }
+
+    private boolean lastRefreshWasSignedIn() {
+        return UserPrefs.get(Profile.getLastUsedRegularProfile())
+                .getBoolean(Pref.LAST_REFRESH_WAS_SIGNED_IN);
     }
 
     @Override

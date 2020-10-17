@@ -56,6 +56,10 @@ extern const char kHasReachedClickAndViewActionsUploadConditions[];
 // detected. Currently only used in V1.
 extern const char kLastFetchHadNoticeCard[];
 
+// The pref name for the bit that determines whether the last refresh request
+// was signed in.
+extern const char kLastRefreshWasSignedIn[];
+
 // The following prefs are used only by v2.
 
 // The pref name for the request throttler counts.

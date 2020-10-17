@@ -36,6 +36,7 @@ const char kHostOverrideBlessNonce[] = "feed.host_override.bless_nonce";
 const char kHasReachedClickAndViewActionsUploadConditions[] =
     "feed.clicks_and_views_upload_conditions_reached";
 const char kLastFetchHadNoticeCard[] = "feed.last_fetch_had_notice_card";
+const char kLastRefreshWasSignedIn[] = "feed.last_refresh_was_signed_in";
 
 const char kThrottlerRequestCountListPrefName[] =
     "feedv2.request_throttler.request_counts";
@@ -68,6 +69,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       feed::prefs::kHasReachedClickAndViewActionsUploadConditions, false);
   registry->RegisterBooleanPref(feed::prefs::kLastFetchHadNoticeCard, true);
+  registry->RegisterBooleanPref(feed::prefs::kLastRefreshWasSignedIn, false);
   UserClassifier::RegisterProfilePrefs(registry);
 }
 

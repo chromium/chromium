@@ -43,7 +43,7 @@ public class FeedNetworkBridge implements NetworkClient {
     @Override
     public void send(HttpRequest request, Consumer<HttpResponse> responseConsumer) {
         if (mNativeBridge == 0) {
-            responseConsumer.accept(createHttpResponse(500, new byte[0]));
+            responseConsumer.accept(createHttpResponse(500, new byte[0], false));
         } else {
             FeedNetworkBridgeJni.get().sendNetworkRequest(mNativeBridge, FeedNetworkBridge.this,
                     request.getUri().toString(), request.getMethod(), request.getBody(),
@@ -61,8 +61,8 @@ public class FeedNetworkBridge implements NetworkClient {
     }
 
     @CalledByNative
-    private static HttpResponse createHttpResponse(int code, byte[] body) {
-        return new HttpResponse(code, body);
+    private static HttpResponse createHttpResponse(int code, byte[] body, boolean isSignedIn) {
+        return new HttpResponse(code, body, isSignedIn);
     }
 
     @NativeMethods

@@ -454,7 +454,7 @@ public class FeedActionUploadRequestManagerTest {
         codedOutputStream.writeUInt32NoTag(rawResponse.length);
         codedOutputStream.writeRawBytes(rawResponse);
         codedOutputStream.flush();
-        return new HttpResponse(responseCode, buffer.array());
+        return new HttpResponse(responseCode, buffer.array(), false);
     }
 
     private ActionRequest getActionRequestFromHttpRequest(HttpRequest httpRequest)

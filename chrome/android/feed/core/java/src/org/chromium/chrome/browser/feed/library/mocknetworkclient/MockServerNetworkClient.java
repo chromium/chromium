@@ -56,7 +56,7 @@ public final class MockServerNetworkClient implements NetworkClient {
     public void send(HttpRequest httpRequest, Consumer<HttpResponse> responseConsumer) {
         try {
             if (isAirplaneModeOn()) {
-                delayedAccept(new HttpResponse(400, new byte[] {}), responseConsumer);
+                delayedAccept(new HttpResponse(400, new byte[] {}, false), responseConsumer);
                 return;
             }
             Request request = getRequest(httpRequest);
@@ -80,7 +80,7 @@ public final class MockServerNetworkClient implements NetworkClient {
         } catch (IOException e) {
             // TODO : handle errors here
             Logger.e(TAG, e.getMessage());
-            delayedAccept(new HttpResponse(400, new byte[] {}), responseConsumer);
+            delayedAccept(new HttpResponse(400, new byte[] {}, false), responseConsumer);
         }
     }
 
@@ -121,7 +121,7 @@ public final class MockServerNetworkClient implements NetworkClient {
 
     private HttpResponse createHttpResponse(Response response) {
         if (response == null) {
-            return new HttpResponse(500, new byte[] {});
+            return new HttpResponse(500, new byte[] {}, false);
         }
 
         try {
@@ -131,10 +131,10 @@ public final class MockServerNetworkClient implements NetworkClient {
             codedOutputStream.writeUInt32NoTag(rawResponse.length);
             codedOutputStream.writeRawBytes(rawResponse);
             codedOutputStream.flush();
-            return new HttpResponse(200, newResponse);
+            return new HttpResponse(200, newResponse, false);
         } catch (IOException e) {
             Logger.e(TAG, "Error creating response", e);
-            return new HttpResponse(500, new byte[] {});
+            return new HttpResponse(500, new byte[] {}, false);
         }
     }
 }

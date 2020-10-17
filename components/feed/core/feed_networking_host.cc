@@ -345,7 +345,8 @@ void NetworkFetch::OnSimpleLoaderComplete(
                             static_cast<int>(response_body.size() / 1024));
   }
 
-  std::move(done_callback_).Run(status_code, std::move(response_body));
+  std::move(done_callback_)
+      .Run(status_code, std::move(response_body), !access_token_.empty());
 }
 
 FeedNetworkingHost::FeedNetworkingHost(
@@ -388,12 +389,13 @@ void FeedNetworkingHost::NetworkFetchFinished(
     NetworkFetch* fetch,
     ResponseCallback callback,
     int32_t http_code,
-    std::vector<uint8_t> response_body) {
+    std::vector<uint8_t> response_body,
+    bool is_signed_in) {
   auto fetch_iterator = pending_requests_.find(fetch);
   CHECK(fetch_iterator != pending_requests_.end());
   pending_requests_.erase(fetch_iterator);
 
-  std::move(callback).Run(http_code, std::move(response_body));
+  std::move(callback).Run(http_code, std::move(response_body), is_signed_in);
 }
 
 }  // namespace feed

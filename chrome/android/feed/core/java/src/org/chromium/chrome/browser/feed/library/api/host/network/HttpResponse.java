@@ -8,10 +8,12 @@ package org.chromium.chrome.browser.feed.library.api.host.network;
 public final class HttpResponse {
     private final int mResponseCode;
     private final byte[] mResponseBody;
+    private final boolean mIsSignedIn;
 
-    public HttpResponse(int responseCode, byte[] responseBody) {
+    public HttpResponse(int responseCode, byte[] responseBody, boolean isSignedIn) {
         this.mResponseCode = responseCode;
         this.mResponseBody = responseBody;
+        this.mIsSignedIn = isSignedIn;
     }
 
     /**
@@ -27,5 +29,9 @@ public final class HttpResponse {
     /** Gets the body for the response. */
     public byte[] getResponseBody() {
         return mResponseBody;
+    }
+
+    public boolean isSignedIn() {
+        return mIsSignedIn;
     }
 }

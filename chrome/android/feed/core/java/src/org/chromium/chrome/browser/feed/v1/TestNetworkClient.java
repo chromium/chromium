@@ -151,7 +151,7 @@ public class TestNetworkClient implements NetworkClient {
             codedOutputStream.writeUInt32NoTag(rawResponse.length);
             codedOutputStream.writeRawBytes(rawResponse);
             codedOutputStream.flush();
-            return new HttpResponse(200, newResponse);
+            return new HttpResponse(200, newResponse, /* isSignedIn= */ false);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -265,14 +265,14 @@ public class FeedRequestManagerImplTest {
                                                 Capability.REPORT_FEED_USER_ACTIONS_NOTICE_CARD)
                                         .build())
                         .build();
-        mFakeNetworkClient.addResponse(new HttpResponse(200, response.toByteArray()));
+        mFakeNetworkClient.addResponse(new HttpResponse(200, response.toByteArray(), false));
         mRequestManager.triggerRefresh(RequestReason.HOST_REQUESTED, input -> {});
 
         verify(mPrefService, times(1)).setBoolean(Pref.LAST_FETCH_HAD_NOTICE_CARD, true);
     }
 
     @Test
-    public void testLoadMore_setNoticeCardPref() throws Exception {
+    public void testTriggerRefresh_setLastRefreshWasSignedInPref() throws Exception {
         // Skip the read of the int that determines the length of the encoded proto. This is to
         // avoid having to encode the length which is a feature we don't want to test here.
         Configuration configuration =
@@ -287,7 +287,29 @@ public class FeedRequestManagerImplTest {
                 mFakeTooltipSupportedApi);
 
         mFakeNetworkClient.addResponse(
-                new HttpResponse(200, Response.getDefaultInstance().toByteArray()));
+                new HttpResponse(200, Response.getDefaultInstance().toByteArray(), true));
+        mRequestManager.triggerRefresh(RequestReason.HOST_REQUESTED, input -> {});
+
+        verify(mPrefService, times(1)).setBoolean(Pref.LAST_REFRESH_WAS_SIGNED_IN, true);
+    }
+
+    @Test
+    public void testLoadMore_dontSetNoticeCardPref() throws Exception {
+        // Skip the read of the int that determines the length of the encoded proto. This is to
+        // avoid having to encode the length which is a feature we don't want to test here.
+        Configuration configuration =
+                new Configuration.Builder()
+                        .put(ConfigKey.FEED_SERVER_RESPONSE_LENGTH_PREFIXED, false)
+                        .build();
+
+        mRequestManager = new FeedRequestManagerImpl(configuration, mFakeNetworkClient,
+                mFakeProtocolAdapter, new FeedExtensionRegistry(ArrayList::new), mScheduler,
+                mFakeTaskQueue, mTimingUtils, mFakeThreadUtils, mFakeActionReader, mContext,
+                mApplicationInfo, mFakeMainThreadRunner, mFakeBasicLoggingApi,
+                mFakeTooltipSupportedApi);
+
+        mFakeNetworkClient.addResponse(
+                new HttpResponse(200, Response.getDefaultInstance().toByteArray(), false));
         StreamToken token =
                 StreamToken.newBuilder()
                         .setNextPageToken(ByteString.copyFrom("abc", Charset.defaultCharset()))
@@ -296,6 +318,33 @@ public class FeedRequestManagerImplTest {
         mRequestManager.loadMore(token, ConsistencyToken.getDefaultInstance(), input -> {});
 
         verify(mPrefService, never()).setBoolean(Pref.LAST_FETCH_HAD_NOTICE_CARD, true);
+    }
+
+    @Test
+    public void testLoadMore_dontSetLastRefreshWasSignedInPref() throws Exception {
+        // Skip the read of the int that determines the length of the encoded proto. This is to
+        // avoid having to encode the length which is a feature we don't want to test here.
+        Configuration configuration =
+                new Configuration.Builder()
+                        .put(ConfigKey.FEED_SERVER_RESPONSE_LENGTH_PREFIXED, false)
+                        .build();
+
+        mRequestManager = new FeedRequestManagerImpl(configuration, mFakeNetworkClient,
+                mFakeProtocolAdapter, new FeedExtensionRegistry(ArrayList::new), mScheduler,
+                mFakeTaskQueue, mTimingUtils, mFakeThreadUtils, mFakeActionReader, mContext,
+                mApplicationInfo, mFakeMainThreadRunner, mFakeBasicLoggingApi,
+                mFakeTooltipSupportedApi);
+
+        mFakeNetworkClient.addResponse(
+                new HttpResponse(200, Response.getDefaultInstance().toByteArray(), false));
+        StreamToken token =
+                StreamToken.newBuilder()
+                        .setNextPageToken(ByteString.copyFrom("abc", Charset.defaultCharset()))
+                        .build();
+        mFakeThreadUtils.enforceMainThread(false);
+        mRequestManager.loadMore(token, ConsistencyToken.getDefaultInstance(), input -> {});
+
+        verify(mPrefService, never()).setBoolean(Pref.LAST_REFRESH_WAS_SIGNED_IN, true);
     }
 
     @Test
@@ -791,7 +840,7 @@ public class FeedRequestManagerImplTest {
     @Test
     public void testHandleResponse_missingLengthPrefixNotSupported() {
         mFakeNetworkClient.addResponse(new HttpResponse(
-                /* responseCode= */ 200, Response.getDefaultInstance().toByteArray()));
+                /* responseCode= */ 200, Response.getDefaultInstance().toByteArray(), false));
         mRequestManager.triggerRefresh(RequestReason.HOST_REQUESTED, mConsumer);
         assertThat(mConsumer.isCalled()).isTrue();
         assertThat(mConsumedResult.isSuccessful()).isFalse();
@@ -949,7 +998,7 @@ public class FeedRequestManagerImplTest {
         codedOutputStream.writeUInt32NoTag(rawResponse.length);
         codedOutputStream.writeRawBytes(rawResponse);
         codedOutputStream.flush();
-        return new HttpResponse(responseCode, buffer.array());
+        return new HttpResponse(responseCode, buffer.array(), false);
     }
 
     private static DismissActionWithSemanticProperties buildDismissAction(

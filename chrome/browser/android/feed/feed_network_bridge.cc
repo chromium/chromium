@@ -74,7 +74,8 @@ void FeedNetworkBridge::CancelRequests(JNIEnv* env,
 
 void FeedNetworkBridge::OnResult(const ScopedJavaGlobalRef<jobject>& j_callback,
                                  int32_t http_code,
-                                 std::vector<uint8_t> response_bytes) {
+                                 std::vector<uint8_t> response_bytes,
+                                 bool isSignedIn) {
   // TODO(ssid): Remove after fixing https://crbug.com/916791.
   TRACE_EVENT0("browser", "FeedNetworkBridge::OnResult");
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -82,7 +83,7 @@ void FeedNetworkBridge::OnResult(const ScopedJavaGlobalRef<jobject>& j_callback,
       base::android::ToJavaByteArray(env, response_bytes);
   ScopedJavaLocalRef<jobject> j_http_response =
       Java_FeedNetworkBridge_createHttpResponse(env, http_code,
-                                                j_response_bytes);
+                                                j_response_bytes, isSignedIn);
   TRACE_EVENT0("browser", "FeedNetworkBridge::OnResult_Callback");
   base::android::RunObjectCallbackAndroid(j_callback, j_http_response);
 }

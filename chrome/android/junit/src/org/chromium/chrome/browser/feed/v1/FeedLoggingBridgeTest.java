@@ -4,6 +4,7 @@
 package org.chromium.chrome.browser.feed.v1;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -76,10 +77,13 @@ public class FeedLoggingBridgeTest {
         MockitoAnnotations.initMocks(this);
         ShadowRecordHistogram.reset();
         mocker.mock(FeedLoggingBridgeJni.TEST_HOOKS, mFeedLoggingBridgeJniMock);
+        when(mFeedLoggingBridgeJniMock.init(any(), any())).thenReturn((long) 1);
 
         mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
         Profile.setLastUsedProfileForTesting(mProfile);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
+
+        when(mPrefService.getBoolean(Pref.LAST_REFRESH_WAS_SIGNED_IN)).thenReturn(true);
 
         Profile profile = null;
         mFakeClock = new FakeClock();
@@ -213,6 +217,20 @@ public class FeedLoggingBridgeTest {
     @Features.DisableFeatures(ChromeFeatureList.INTEREST_FEEDV1_CLICKS_AND_VIEWS_CONDITIONAL_UPLOAD)
     public void onContentViewed_dontSetPref_whenReachLoggingThresholdAndFeatureDisabled()
             throws Exception {
+        ContentLoggingData data = makeContentData(2);
+        mFeedLoggingBridge.onContentViewed(data);
+
+        verify(mPrefService, never())
+                .setBoolean(Pref.HAS_REACHED_CLICK_AND_VIEW_ACTIONS_UPLOAD_CONDITIONS, true);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Feed"})
+    @Features.EnableFeatures(ChromeFeatureList.INTEREST_FEEDV1_CLICKS_AND_VIEWS_CONDITIONAL_UPLOAD)
+    public void onContentViewed_dontSetPref_whenLastRefreshWasNotSignedIn() throws Exception {
+        when(mPrefService.getBoolean(Pref.LAST_REFRESH_WAS_SIGNED_IN)).thenReturn(false);
+
         ContentLoggingData data = makeContentData(2);
         mFeedLoggingBridge.onContentViewed(data);
 
