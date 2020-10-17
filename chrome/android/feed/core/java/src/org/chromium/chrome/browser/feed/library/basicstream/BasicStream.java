@@ -308,7 +308,7 @@ public class BasicStream implements Stream, ModelProviderObserver, OnLayoutChang
         mStreamOfflineMonitor.onDestroy();
         mUiSessionRequestLogger.onDestroy();
         mActionManager.setViewport(null);
-        mActionManager.setCanUploadClicksAndViewsWhenNoticeCardIsPresent(false);
+        mActionManager.setCanUploadClicksAndViewsWhenNoticeCardIsPresent(canUpload());
         mIsDestroyed = true;
     }
 

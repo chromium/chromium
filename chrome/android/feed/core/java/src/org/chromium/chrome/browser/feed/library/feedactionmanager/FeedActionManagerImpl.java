@@ -505,6 +505,10 @@ public class FeedActionManagerImpl implements ActionManager {
     }
 
     private boolean canUploadClicksAndViews() {
+        if (!ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.INTEREST_FEEDV1_CLICKS_AND_VIEWS_CONDITIONAL_UPLOAD)) {
+            return true;
+        }
         boolean wasNoticePresent = UserPrefs.get(Profile.getLastUsedRegularProfile())
                                            .getBoolean(Pref.LAST_FETCH_HAD_NOTICE_CARD);
         return mCanUploadClicksAndViewsWhenNoticePresent || !wasNoticePresent;

@@ -591,6 +591,16 @@ public class BasicStreamTest {
     }
 
     @Test
+    @Features.EnableFeatures(ChromeFeatureList.INTEREST_FEEDV1_CLICKS_AND_VIEWS_CONDITIONAL_UPLOAD)
+    public void testOnDestroy_setReachedUploadConditionsBitInActionManager_whenFeatureEnabled() {
+        mBasicStream.onDestroy();
+
+        // Verify that the upload bit is updated one time on #setupRecyclerView and one time
+        // on #onDestroy.
+        verify(mActionManager, times(2)).setCanUploadClicksAndViewsWhenNoticeCardIsPresent(true);
+    }
+
+    @Test
     public void testGetSavedInstanceStateString_beforeShow() throws InvalidProtocolBufferException {
         StreamSavedInstanceState savedInstanceState = StreamSavedInstanceState.parseFrom(
                 decodeSavedInstanceStateString(mBasicStream.getSavedInstanceStateString()));
