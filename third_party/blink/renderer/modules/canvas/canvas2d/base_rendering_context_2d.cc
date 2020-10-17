@@ -33,6 +33,9 @@ const char BaseRenderingContext2D::kDefaultFont[] = "10px sans-serif";
 const char BaseRenderingContext2D::kInheritDirectionString[] = "inherit";
 const char BaseRenderingContext2D::kRtlDirectionString[] = "rtl";
 const char BaseRenderingContext2D::kLtrDirectionString[] = "ltr";
+const char BaseRenderingContext2D::kAutoKerningString[] = "auto";
+const char BaseRenderingContext2D::kNormalKerningString[] = "normal";
+const char BaseRenderingContext2D::kNoneKerningString[] = "none";
 const double BaseRenderingContext2D::kCDeviceScaleFactor = 1.0;
 
 BaseRenderingContext2D::BaseRenderingContext2D()
@@ -2053,6 +2056,10 @@ void BaseRenderingContext2D::setTextBaseline(const String& s) {
   if (GetState().GetTextBaseline() == baseline)
     return;
   ModifiableState().SetTextBaseline(baseline);
+}
+
+String BaseRenderingContext2D::fontKerning() const {
+  return FontDescription::ToString(GetState().GetFontKerning());
 }
 
 void BaseRenderingContext2D::Trace(Visitor* visitor) const {

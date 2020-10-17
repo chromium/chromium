@@ -136,6 +136,10 @@ class CanvasRenderingContext2DState final
   void SetTextWordSpacing(float word_space, FontSelector* selector);
   float GetTextWordSpacing() const { return word_spacing_; }
 
+  void SetFontKerning(FontDescription::Kerning font_kerning,
+                      FontSelector* selector);
+  FontDescription::Kerning GetFontKerning() const { return font_kerning_; }
+
   void SetLineWidth(double line_width) {
     stroke_flags_.setStrokeWidth(clampTo<float>(line_width));
   }
@@ -247,10 +251,11 @@ class CanvasRenderingContext2DState final
 
   // Text state.
   TextAlign text_align_;
-  TextBaseline text_baseline_;
+  TextBaseline text_baseline_{kAlphabeticTextBaseline};
   Direction direction_{kDirectionInherit};
   float letter_spacing_{0};
   float word_spacing_{0};
+  FontDescription::Kerning font_kerning_{FontDescription::kAutoKerning};
 
   bool realized_font_ : 1;
   bool is_transform_invertible_ : 1;

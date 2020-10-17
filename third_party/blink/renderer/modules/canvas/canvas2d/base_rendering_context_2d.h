@@ -266,6 +266,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
   double textLetterSpacing() const;
 
   double textWordSpacing() const;
+  String fontKerning() const;
 
   void Trace(Visitor*) const override;
 
@@ -382,6 +383,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
   static const char kInheritDirectionString[];
   static const char kRtlDirectionString[];
   static const char kLtrDirectionString[];
+  static const char kAutoKerningString[];
+  static const char kNormalKerningString[];
+  static const char kNoneKerningString[];
   // Canvas is device independent
   static const double kCDeviceScaleFactor;
 

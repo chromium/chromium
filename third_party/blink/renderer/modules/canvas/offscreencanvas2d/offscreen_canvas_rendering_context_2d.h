@@ -84,6 +84,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
 
   void setTextLetterSpacing(const double letter_spacing);
   void setTextWordSpacing(const double word_spacing);
+  void setFontKerning(const String&);
 
   void fillText(const String& text, double x, double y);
   void fillText(const String& text, double x, double y, double max_width);

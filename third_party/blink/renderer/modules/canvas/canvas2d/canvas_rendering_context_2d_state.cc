@@ -45,7 +45,6 @@ CanvasRenderingContext2DState::CanvasRenderingContext2DState()
       unparsed_font_(defaultFont),
       unparsed_filter_(defaultFilter),
       text_align_(kStartTextAlign),
-      text_baseline_(kAlphabeticTextBaseline),
       realized_font_(false),
       is_transform_invertible_(true),
       has_clip_(false),
@@ -103,6 +102,7 @@ CanvasRenderingContext2DState::CanvasRenderingContext2DState(
       direction_(other.direction_),
       letter_spacing_(other.letter_spacing_),
       word_spacing_(other.word_spacing_),
+      font_kerning_(other.font_kerning_),
       realized_font_(other.realized_font_),
       is_transform_invertible_(other.is_transform_invertible_),
       has_clip_(other.has_clip_),
@@ -276,6 +276,16 @@ const FontDescription& CanvasRenderingContext2DState::GetFontDescription()
     const {
   DCHECK(realized_font_);
   return font_.GetFontDescription();
+}
+
+void CanvasRenderingContext2DState::SetFontKerning(
+    FontDescription::Kerning font_kerning,
+    FontSelector* selector) {
+  DCHECK(realized_font_);
+  FontDescription font_description(GetFontDescription());
+  font_description.SetKerning(font_kerning);
+  font_kerning_ = font_kerning;
+  SetFont(font_description, selector);
 }
 
 void CanvasRenderingContext2DState::SetTransform(

@@ -985,6 +985,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter fillStyle
 [Worker]     getter filter
 [Worker]     getter font
+[Worker]     getter fontKerning
 [Worker]     getter globalAlpha
 [Worker]     getter globalCompositeOperation
 [Worker]     getter imageSmoothingEnabled
@@ -1051,6 +1052,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter fillStyle
 [Worker]     setter filter
 [Worker]     setter font
+[Worker]     setter fontKerning
 [Worker]     setter globalAlpha
 [Worker]     setter globalCompositeOperation
 [Worker]     setter imageSmoothingEnabled

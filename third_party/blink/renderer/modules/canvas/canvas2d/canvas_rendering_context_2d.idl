@@ -161,6 +161,7 @@ interface CanvasRenderingContext2D {
     attribute DOMString direction; // "inherit", "rtl", "ltr" (default: "inherit")
     [RuntimeEnabled=NewCanvas2DAPI] attribute unrestricted double textLetterSpacing; // length in pixel (default: 0)
     [RuntimeEnabled=NewCanvas2DAPI] attribute unrestricted double textWordSpacing; // length in pixel (default: 0)
+    [RuntimeEnabled=NewCanvas2DAPI] attribute DOMString fontKerning; // "auto", "normal", "none" (default: "auto")
 };
 
 CanvasRenderingContext2D includes CanvasPath;
