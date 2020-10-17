@@ -13,7 +13,7 @@
 
 'use strict';
 
-const NUMBER_OF_EVENTS_TO_RECORD = 25;
+const NUMBER_OF_EVENTS_TO_RECORD = 5;
 
 function testCaptureFromMediaElement(filename,
                                      has_video,
@@ -25,8 +25,9 @@ function testCaptureFromMediaElement(filename,
 
   element.onerror = function(e) {
     failTest("error playing back [" + filename + "] " + e);
-  }
+  };
 
+  element.preload = "auto"; // Ensures element doesn't suspend on load.
   element.src = filename;
 
   var recorded_events = 0;
@@ -41,11 +42,17 @@ function testCaptureFromMediaElement(filename,
 
     recorder.onerror = function(e) {
       failTest("error recording [" + filename + "] " + e);
-    }
+    };
 
     recorder.ondataavailable = function(event) {
-      if (++recorded_events > NUMBER_OF_EVENTS_TO_RECORD)
+      if (++recorded_events > NUMBER_OF_EVENTS_TO_RECORD || element.ended)
         reportTestSuccess();
+    };
+
+    element.onended = function() {
+      console.log('Playback ended before event count saturated.');
+      // This will trigger a final ondataavailable().
+      recorder.stop();
     };
 
     recorder.start(0);
