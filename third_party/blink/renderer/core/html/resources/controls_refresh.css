@@ -125,7 +125,7 @@ meter::-webkit-meter-bar {
   grid-row-start: line1;
   grid-row-end: line2;
   border-style: solid;
-  border-color: -internal-light-dark(rgba(118, 118, 118, 0.3), #858585);
+  border-color: rgba(118, 118, 118, 0.3);
   border-radius: 20px;
   box-sizing: border-box;
   overflow: hidden;
@@ -220,7 +220,7 @@ select:-internal-list-box:focus option:checked:hover {
   /* TODO(crbug.com/1129658): The dark mode color here should be handled
      within LayoutTheme::ActiveListBoxSelectionBackgroundColor(). */
   background-color: -internal-light-dark(-internal-active-list-box-selection, #99C8FF) !important;
-  color: -internal-light-dark(-internal-active-list-box-selection-text, #3B3B3B) !important;
+  color: -internal-light-dark(-internal-active-list-box-selection-text, #FFFFFF) !important;
 }
 
 select:-internal-list-box:focus option:checked:disabled {
