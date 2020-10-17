@@ -2020,8 +2020,6 @@ FloatSize GetRatioFromList(const CSSValueList& list) {
   float height = 1;
   if (ratio_list->length() == 2u)
     height = To<CSSPrimitiveValue>(ratio_list->Item(1)).GetFloatValue();
-  if (width == 0 && height == 0)
-    width = 1;
   return FloatSize(width, height);
 }
 

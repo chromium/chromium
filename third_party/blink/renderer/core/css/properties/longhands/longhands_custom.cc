@@ -417,8 +417,11 @@ const CSSValue* AspectRatio::ParseSingleValue(
   if (css_parsing_utils::ConsumeSlashIncludingWhitespace(range)) {
     height = css_parsing_utils::ConsumeNumber(range, context,
                                               kValueRangeNonNegative);
+  } else {
+    // A missing height is treated as 1.
+    height = CSSNumericLiteralValue::Create(
+        1.0f, CSSPrimitiveValue::UnitType::kNumber);
   }
-  // missing height is legal (treated as 1)
 
   CSSValueList* ratio_list = CSSValueList::CreateSlashSeparated();
   ratio_list->Append(*width);
@@ -451,10 +454,8 @@ const CSSValue* AspectRatio::CSSValueFromComputedStyleInternal(
   CSSValueList* ratio_list = CSSValueList::CreateSlashSeparated();
   ratio_list->Append(*CSSNumericLiteralValue::Create(
       ratio.GetRatio().Width(), CSSPrimitiveValue::UnitType::kNumber));
-  if (ratio.GetRatio().Height() != 1.0f) {
-    ratio_list->Append(*CSSNumericLiteralValue::Create(
-        ratio.GetRatio().Height(), CSSPrimitiveValue::UnitType::kNumber));
-  }
+  ratio_list->Append(*CSSNumericLiteralValue::Create(
+      ratio.GetRatio().Height(), CSSPrimitiveValue::UnitType::kNumber));
   if (ratio.GetTypeForComputedStyle() == EAspectRatioType::kRatio)
     return ratio_list;
 
