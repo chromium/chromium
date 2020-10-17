@@ -114,6 +114,7 @@ export function getFilenameFromURL(url) {
 /** @type {string} */
 const LOCAL_STORAGE_SIDENAV_COLLAPSED_KEY = 'sidenavCollapsed';
 
+/** @polymer */
 export class PDFViewerElement extends PDFViewerBaseElement {
   static get is() {
     return 'pdf-viewer';
@@ -125,6 +126,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
   static get properties() {
     return {
+      /** @private */
       annotationAvailable_: {
         type: Boolean,
         computed: 'computeAnnotationAvailable_(' +
@@ -132,56 +134,142 @@ export class PDFViewerElement extends PDFViewerBaseElement {
             'twoUpViewEnabled_)',
       },
 
+      /** @private */
       annotationMode_: {
         type: Boolean,
         value: false,
       },
 
-      attachments_: Array,
+      /** @private {!Array<!Attachment>} */
+      attachments_: {
+        type: Array,
+        value: () => [],
+      },
 
-      bookmarks_: Array,
+      /** @private {!Array<!Bookmark>} */
+      bookmarks_: {
+        type: Array,
+        value: () => [],
+      },
 
-      clockwiseRotations_: Number,
+      /** @private */
+      canSerializeDocument_: {
+        type: Boolean,
+        value: false,
+      },
 
+      /** @private */
+      clockwiseRotations_: {
+        type: Number,
+        value: 0,
+      },
+
+      /**
+       * The number of pages in the PDF document.
+       * @private
+       */
+      docLength_: Number,
+
+      /** @private */
       documentHasFocus_: {
         type: Boolean,
         value: false,
       },
 
+      /** @private */
+      hadPassword_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
       hasEdits_: {
         type: Boolean,
         value: false,
       },
 
+      /** @private */
       hasEnteredAnnotationMode_: {
         type: Boolean,
         value: false,
       },
 
-      hadPassword_: Boolean,
+      /** @private */
+      isFormFieldFocused_: {
+        type: Boolean,
+        value: false,
+      },
 
-      canSerializeDocument_: Boolean,
+      /**
+       * The current loading progress of the PDF document (0 - 100).
+       * @private
+       */
+      loadProgress_: Number,
 
-      title_: String,
+      /**
+       * The number of the page being viewed (1-based).
+       * @private
+       */
+      pageNo_: Number,
 
-      sidenavCollapsed_: Boolean,
-      twoUpViewEnabled_: Boolean,
+      /** @private */
+      pdfAnnotationsEnabled_: {
+        type: Boolean,
+        value: false,
+      },
 
-      isFormFieldFocused_: Boolean,
+      /** @private */
+      pdfFormSaveEnabled_: {
+        type: Boolean,
+        value: false,
+      },
 
+      /** @private */
       pdfViewerUpdateEnabled_: Boolean,
 
-      docLength_: Number,
+      /** @private */
+      printingEnabled_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
+      sidenavCollapsed_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
+      title_: {
+        type: String,
+        value: '',
+      },
+
+      /** @private */
+      twoUpViewEnabled_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
+      viewportZoom_: {
+        type: Number,
+        value: 1,
+      },
+
+      /** @private {!{ min: number, max: number }} */
+      zoomBounds_: {
+        type: Object,
+        value: () => ({min: 0, max: 0}),
+      },
+
       // <if expr="chromeos">
-      inkController_: Object,
+      /** @private {?InkController} */
+      inkController_: {
+        type: Object,
+        value: null,
+      },
       // </if>
-      loadProgress_: Number,
-      pageNo_: Number,
-      pdfFormSaveEnabled_: Boolean,
-      pdfAnnotationsEnabled_: Boolean,
-      printingEnabled_: Boolean,
-      viewportZoom_: Number,
-      zoomBounds_: Object,
     };
   }
 
@@ -189,72 +277,22 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     super();
 
     // Polymer properties
-    /** @private {boolean} */
-    this.annotationAvailable_;
 
-    /** @private {boolean} */
-    this.annotationMode_ = false;
+    this.pdfViewerUpdateEnabled_ =
+        document.documentElement.hasAttribute('pdf-viewer-update-enabled');
 
-    /** @private {!Array<!Attachment>} */
-    this.attachments_ = [];
-
-    /** @private {!Array<!Bookmark>} */
-    this.bookmarks_ = [];
-
-    /** @private {number} */
-    this.clockwiseRotations_ = 0;
-
-    /** @private {boolean} */
-    this.documentHasFocus_ = false;
-
-    /** @private {boolean} */
-    this.hasEdits_ = false;
-
-    /** @private {boolean} */
-    this.hasEnteredAnnotationMode_ = false;
-
-    /** @private {boolean} */
-    this.hadPassword_ = false;
-
-    /** @private {boolean} */
-    this.canSerializeDocument_ = false;
-
-    /** @private {string} */
-    this.title_ = '';
-
-    /** @private {boolean} */
-    this.twoUpViewEnabled_ = false;
-
-    /** @private {boolean} */
-    this.isFormFieldFocused_ = false;
-
-    // <if expr="chromeos">
-    /** @private {?InkController} */
-    this.inkController_ = null;
-    // </if>
-
-    /** @private {boolean} */
-    this.pdfAnnotationsEnabled_ = false;
-
-    /** @private {boolean} */
-    this.pdfFormSaveEnabled_ = false;
-
-    /** @private {boolean} */
-    this.printingEnabled_ = false;
-
-    /** @private {number} */
-    this.viewportZoom_ = 1;
-
-    /** @private {!{ min: number, max: number }} */
-    this.zoomBounds_ = {min: 0, max: 0};
+    if (this.pdfViewerUpdateEnabled_) {
+      // TODO(dpapad): Add tests after crbug.com/1111459 is fixed.
+      this.sidenavCollapsed_ = Boolean(Number.parseInt(
+          LocalStorageProxyImpl.getInstance().getItem(
+              LOCAL_STORAGE_SIDENAV_COLLAPSED_KEY),
+          10));
+    }
 
     // Non-Polymer properties
 
     /** @type {number} */
     this.beepCount = 0;
-
-    /** @private {boolean} */
-    this.hadPassword_ = false;
 
     /** @private {boolean} */
     this.toolbarEnabled_ = false;
@@ -265,47 +303,11 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     /** @private {?PdfNavigator} */
     this.navigator_ = null;
 
-    /** @private {string} */
-    this.title_ = '';
-
-    /**
-     * The number of pages in the PDF document.
-     * @private {number}
-     */
-    this.docLength_;
-
-    /**
-     * The number of the page being viewed (1-based).
-     * @private {number}
-     */
-    this.pageNo_;
-
-    /**
-     * The current loading progress of the PDF document (0 - 100).
-     * @private {number}
-     */
-    this.loadProgress_;
-
-    /** @private {boolean} */
-    this.pdfViewerUpdateEnabled_ =
-        document.documentElement.hasAttribute('pdf-viewer-update-enabled');
-
-    /** @private {boolean} */
-    this.sidenavCollapsed_ = false;
-
     /**
      * The state to restore sidenavCollapsed_ to after exiting annotation mode.
      * @private {boolean}
      */
     this.sidenavRestoreState_ = false;
-
-    if (this.pdfViewerUpdateEnabled_) {
-      // TODO(dpapad): Add tests after crbug.com/1111459 is fixed.
-      this.sidenavCollapsed_ = Boolean(Number.parseInt(
-          LocalStorageProxyImpl.getInstance().getItem(
-              LOCAL_STORAGE_SIDENAV_COLLAPSED_KEY),
-          10));
-    }
 
     FocusOutlineManager.forDocument(document);
   }

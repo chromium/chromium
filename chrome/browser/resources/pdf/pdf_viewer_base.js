@@ -44,15 +44,13 @@ export class PDFViewerBaseElement extends PolymerElement {
 
   static get properties() {
     return {
+      /** @protected {Object|undefined} */
       strings: Object,
     };
   }
 
   constructor() {
     super();
-
-    /** @protected {Object|undefined} */
-    this.strings = undefined;
 
     /** @protected {?BrowserApi} */
     this.browserApi = null;
