@@ -179,6 +179,13 @@ Polymer({
       return;
     }
 
+    // TODO(jschettler): Remove this once ScanService supports other file types.
+    if (this.selectedFileType !==
+        chromeos.scanning.mojom.FileType.kPng.toString()) {
+      this.statusText_ = 'PNG is the only supported file type.';
+      return;
+    }
+
     this.statusText_ = 'Scanning...';
     this.settingsDisabled_ = true;
     this.scanButtonDisabled_ = true;

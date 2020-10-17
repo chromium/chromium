@@ -277,6 +277,11 @@ suite('ScanningAppTest', () => {
           assertFalse(scanButton.disabled);
           const statusText = scanningApp.$$('#statusText');
           assertEquals('', statusText.textContent.trim());
+
+          // PNG is currently the only supported file type.
+          fileTypeSelect.value = FileType.PNG.toString();
+          fileTypeSelect.dispatchEvent(new CustomEvent('change'));
+          flush();
           scanButton.click();
 
           // After the scan button is clicked, the settings and scan button
