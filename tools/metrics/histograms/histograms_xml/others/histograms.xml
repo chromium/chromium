@@ -12014,7 +12014,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SB2.RemoteCall.CheckDelta" units="microseconds"
-    expires_after="2020-11-08">
+    expires_after="2021-11-08">
   <owner>vakh@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
