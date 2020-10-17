@@ -675,7 +675,7 @@ const base::Feature MEDIA_EXPORT kAVFoundationCaptureV2{
 // Controls whether or not the V2 capturer exports IOSurfaces for zero-copy.
 // This feature only has any effect if kAVFoundationCaptureV2 is also enabled.
 const base::Feature MEDIA_EXPORT kAVFoundationCaptureV2ZeroCopy{
-    "AVFoundationCaptureV2ZeroCopy", base::FEATURE_ENABLED_BY_DEFAULT};
+    "AVFoundationCaptureV2ZeroCopy", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature MEDIA_EXPORT kVideoToolboxVp9Decoding{
     "VideoToolboxVp9Decoding", base::FEATURE_DISABLED_BY_DEFAULT};
