@@ -42,8 +42,11 @@ InsecureFormNavigationThrottle::WillStartRequest() {
   if (!handle->IsFormSubmission())
     return content::NavigationThrottle::PROCEED;
   content::WebContents* contents = handle->GetWebContents();
+
+  url::Origin form_originating_origin =
+      handle->GetInitiatorOrigin().value_or(url::Origin());
   if (!IsInsecureFormAction(handle->GetURL()) ||
-      !contents->GetLastCommittedURL().SchemeIs(url::kHttpsScheme)) {
+      !(form_originating_origin.scheme() == url::kHttpsScheme)) {
     // Currently we only warn for insecure forms in secure pages.
     return content::NavigationThrottle::PROCEED;
   }
