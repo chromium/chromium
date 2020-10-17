@@ -42,8 +42,11 @@ CAPTURE_EXPORT
   // The capture format that best matches the above attributes.
   base::scoped_nsobject<AVCaptureDeviceFormat> _bestCaptureFormat;
 
-  base::Lock _lock;  // Protects concurrent setting and using |frameReceiver_|.
-  media::VideoCaptureDeviceAVFoundationFrameReceiver* _frameReceiver;  // weak.
+  // Protects concurrent setting and using |frameReceiver_|. Note that the
+  // GUARDED_BY decoration below does not have any effect.
+  base::Lock _lock;
+  media::VideoCaptureDeviceAVFoundationFrameReceiver* _frameReceiver
+      GUARDED_BY(_lock);  // weak.
 
   base::scoped_nsobject<AVCaptureSession> _captureSession;
 

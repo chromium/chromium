@@ -553,6 +553,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   char* baseAddress = 0;
   size_t frameSize = 0;
   media::ExtractBaseAddressAndLength(&baseAddress, &frameSize, sampleBuffer);
+  _lock.AssertAcquired();
   _frameReceiver->ReceiveFrame(reinterpret_cast<const uint8_t*>(baseAddress),
                                frameSize, captureFormat, colorSpace, 0, 0,
                                timestamp);
@@ -588,6 +589,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   frameSize = CVPixelBufferGetDataSize(pixelBuffer);
   // Only contiguous buffers are supported.
   CHECK(frameSize);
+  _lock.AssertAcquired();
   _frameReceiver->ReceiveFrame(reinterpret_cast<const uint8_t*>(baseAddress),
                                frameSize, captureFormat, colorSpace, 0, 0,
                                timestamp);
@@ -608,6 +610,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   handle.mach_port.reset(IOSurfaceCreateMachPort(ioSurface));
   if (!handle.mach_port)
     return NO;
+  _lock.AssertAcquired();
   _frameReceiver->ReceiveExternalGpuMemoryBufferFrame(
       std::move(handle),
       std::make_unique<CMSampleBufferScopedAccessPermission>(sampleBuffer),
@@ -622,6 +625,13 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
            fromConnection:(AVCaptureConnection*)connection {
   VLOG(3) << __func__;
+
+  // Concurrent calls into |_frameReceiver| are not supported, so take |_lock|
+  // before any of the subsequent paths.
+  base::AutoLock lock(_lock);
+  if (!_frameReceiver)
+    return;
+
   // We have certain format expectation for capture output:
   // For MJPEG, |sampleBuffer| is expected to always be a CVBlockBuffer.
   // For other formats, |sampleBuffer| may be either CVBlockBuffer or
