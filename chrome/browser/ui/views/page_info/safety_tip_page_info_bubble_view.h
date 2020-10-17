@@ -8,6 +8,7 @@
 #include "chrome/browser/reputation/safety_tip_ui.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "components/security_state/core/security_state.h"
+#include "content/public/browser/visibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/styled_label.h"
 
@@ -60,6 +61,8 @@ class SafetyTipPageInfoBubbleView : public PageInfoBubbleViewBase,
   views::Button* GetLeaveButtonForTesting() { return leave_button_; }
 
   // WebContentsObserver:
+  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
+  void OnVisibilityChanged(content::Visibility visibility) override;
   void DidStartNavigation(content::NavigationHandle* handle) override;
   void DidChangeVisibleSecurityState() override;
 

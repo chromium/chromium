@@ -263,6 +263,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Security.SafetyTips.OpenTime.CloseTab" units="ms"
+    expires_after="M90">
+  <owner>jdeblasio@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Records the amount of time a Safety Tip bubble is open, for cases where the
+    user closed the tab.
+  </summary>
+</histogram>
+
 <histogram name="Security.SafetyTips.OpenTime.Dismiss" units="ms"
     expires_after="M90">
   <owner>jdeblasio@chromium.org</owner>
@@ -320,13 +330,33 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Security.SafetyTips.OpenTime.NoActionTaken" units="ms"
+<histogram name="Security.SafetyTips.OpenTime.NoAction" units="ms"
     expires_after="M90">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>
     Records the amount of time a Safety Tip bubble is open, for cases where the
     user did not dismiss or take action in the bubble.
+  </summary>
+</histogram>
+
+<histogram name="Security.SafetyTips.OpenTime.StartNewNavigation" units="ms"
+    expires_after="M90">
+  <owner>jdeblasio@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Records the amount of time a Safety Tip bubble is open, for cases where the
+    user started a new navigation in the same tab.
+  </summary>
+</histogram>
+
+<histogram name="Security.SafetyTips.OpenTime.SwitchTab" units="ms"
+    expires_after="M90">
+  <owner>jdeblasio@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Records the amount of time a Safety Tip bubble is open, for cases where the
+    user switched tabs.
   </summary>
 </histogram>
 

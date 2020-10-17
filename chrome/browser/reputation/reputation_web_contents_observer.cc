@@ -61,6 +61,7 @@ void OnSafetyTipClosed(ReputationCheckResult result,
                        Profile* profile,
                        const GURL& url,
                        security_state::SafetyTipStatus status,
+                       base::OnceClosure safety_tip_close_callback_for_testing,
                        SafetyTipInteraction action) {
   std::string action_suffix;
   bool warning_dismissed = false;
@@ -96,6 +97,15 @@ void OnSafetyTipClosed(ReputationCheckResult result,
       // Do nothing because the OnSafetyTipClosed should never be called if the
       // safety tip is not shown.
       break;
+    case SafetyTipInteraction::kCloseTab:
+      action_suffix = "CloseTab";
+      break;
+    case SafetyTipInteraction::kSwitchTab:
+      action_suffix = "SwitchTab";
+      break;
+    case SafetyTipInteraction::kStartNewNavigation:
+      action_suffix = "StartNewNavigation";
+      break;
   }
   if (warning_dismissed) {
     ReputationService::Get(profile)->SetUserIgnore(url);
@@ -127,6 +137,10 @@ void OnSafetyTipClosed(ReputationCheckResult result,
       base::TimeDelta::FromHours(1), 100);
 
   RecordHeuristicsUKMData(result, navigation_source_id, action);
+
+  if (!safety_tip_close_callback_for_testing.is_null()) {
+    std::move(safety_tip_close_callback_for_testing).Run();
+  }
 }
 
 // Safety Tips does not use starts_active (since flagged sites are so rare to
@@ -249,6 +263,11 @@ void ReputationWebContentsObserver::RegisterReputationCheckCallbackForTesting(
   reputation_check_callback_for_testing_ = std::move(callback);
 }
 
+void ReputationWebContentsObserver::RegisterSafetyTipCloseCallbackForTesting(
+    base::OnceClosure callback) {
+  safety_tip_close_callback_for_testing_ = std::move(callback);
+}
+
 ReputationWebContentsObserver::ReputationWebContentsObserver(
     content::WebContents* web_contents)
     : WebContentsObserver(web_contents),
@@ -367,7 +386,8 @@ void ReputationWebContentsObserver::HandleReputationCheckResult(
       web_contents(), result.safety_tip_status, result.suggested_url,
       base::BindOnce(OnSafetyTipClosed, result, base::Time::Now(),
                      navigation_source_id, profile_, result.url,
-                     result.safety_tip_status));
+                     result.safety_tip_status,
+                     std::move(safety_tip_close_callback_for_testing_)));
   MaybeCallReputationCheckCallback(true);
 }
 
