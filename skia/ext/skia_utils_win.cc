@@ -8,6 +8,7 @@
 #include <windows.h>
 
 #include "base/debug/gdi_debug_util_win.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkTypes.h"
@@ -179,9 +180,11 @@ SkImageInfo PrepareAllocation(HDC context, BITMAP* backing) {
 sk_sp<SkSurface> MapPlatformSurface(HDC context) {
   BITMAP backing;
   const SkImageInfo size(PrepareAllocation(context, &backing));
-  return size.isEmpty() ? nullptr
-                        : SkSurface::MakeRasterDirect(size, backing.bmBits,
-                                                      backing.bmWidthBytes);
+  SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
+  return size.isEmpty()
+             ? nullptr
+             : SkSurface::MakeRasterDirect(size, backing.bmBits,
+                                           backing.bmWidthBytes, &props);
 }
 
 SkBitmap MapPlatformBitmap(HDC context) {

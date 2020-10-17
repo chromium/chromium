@@ -68,7 +68,7 @@ TEST(MetafileSkiaTest, TestFrameContent) {
   EXPECT_TRUE(pic->cullRect() == page_rect);
   SkBitmap bitmap;
   bitmap.allocN32Pixels(kPageSideLen, kPageSideLen);
-  SkCanvas bitmap_canvas(bitmap);
+  SkCanvas bitmap_canvas(bitmap, SkSurfaceProps{});
   pic->playback(&bitmap_canvas);
   // Check top left pixel color of the red square.
   EXPECT_EQ(bitmap.getColor(0, 0), SK_ColorRED);

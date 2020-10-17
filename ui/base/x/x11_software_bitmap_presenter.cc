@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -173,7 +174,8 @@ void X11SoftwareBitmapPresenter::Resize(const gfx::Size& pixel_size) {
     SkImageInfo info = SkImageInfo::Make(viewport_pixel_size_.width(),
                                          viewport_pixel_size_.height(),
                                          color_type, kOpaque_SkAlphaType);
-    surface_ = SkSurface::MakeRaster(info);
+    SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
+    surface_ = SkSurface::MakeRaster(info, &props);
   }
 }
 

@@ -9,6 +9,7 @@
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/gl_bindings.h"
@@ -99,7 +100,7 @@ void SkiaOutputDeviceWebView::InitSkiaSurface(unsigned int fbo) {
   last_frame_buffer_object_ = fbo;
 
   SkSurfaceProps surface_props =
-      SkSurfaceProps(0, SkSurfaceProps::kLegacyFontHost_InitType);
+      skia::LegacyDisplayGlobals::GetSkSurfaceProps();
 
   GrGLFramebufferInfo framebuffer_info;
   framebuffer_info.fFBOID = fbo;

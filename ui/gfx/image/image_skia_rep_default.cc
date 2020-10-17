@@ -9,6 +9,7 @@
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/record_paint_canvas.h"
 #include "cc/paint/skia_paint_canvas.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/color_palette.h"
 
@@ -98,7 +99,7 @@ const SkBitmap& ImageSkiaRep::GetBitmap() const {
     // as it forces a rasterization on the UI thread.
     bitmap_.allocN32Pixels(pixel_width(), pixel_height());
     bitmap_.eraseColor(SK_ColorTRANSPARENT);
-    SkCanvas canvas(bitmap_);
+    SkCanvas canvas(bitmap_, skia::LegacyDisplayGlobals::GetSkSurfaceProps());
     paint_record_->Playback(&canvas);
     bitmap_.setImmutable();
   }

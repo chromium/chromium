@@ -40,7 +40,7 @@ void QRCodeGeneratorServiceImpl::InitializeDinoBitmap() {
 
   dino_bitmap_.allocN32Pixels(dino_image::kDinoWidth, dino_image::kDinoHeight);
   dino_bitmap_.eraseARGB(0xFF, 0xFF, 0xFF, 0xFF);
-  SkCanvas canvas(dino_bitmap_);
+  SkCanvas canvas(dino_bitmap_, SkSurfaceProps{});
   SkPaint paint;
   paint.setColor(SK_ColorBLACK);
 
@@ -176,7 +176,7 @@ void QRCodeGeneratorServiceImpl::RenderBitmap(
   bitmap.allocN32Pixels(data_size.width() * kModuleSizePixels,
                         data_size.height() * kModuleSizePixels);
   bitmap.eraseARGB(0xFF, 0xFF, 0xFF, 0xFF);
-  SkCanvas canvas(bitmap);
+  SkCanvas canvas(bitmap, SkSurfaceProps{});
   SkPaint paint_black;
   paint_black.setColor(SK_ColorBLACK);
   SkPaint paint_white;

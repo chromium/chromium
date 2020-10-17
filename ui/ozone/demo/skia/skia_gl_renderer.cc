@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
@@ -83,9 +84,8 @@ bool SkiaGlRenderer::Initialize() {
 void SkiaGlRenderer::RenderFrame() {
   TRACE_EVENT0("ozone", "SkiaGlRenderer::RenderFrame");
 
-  // LegacyFontHost will get LCD text and skia figures out what type to use.
   SkSurfaceProps surface_props =
-      SkSurfaceProps(0, SkSurfaceProps::kLegacyFontHost_InitType);
+      skia::LegacyDisplayGlobals::GetSkSurfaceProps();
 
   if (!sk_surface_) {
     GrGLFramebufferInfo framebuffer_info;

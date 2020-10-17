@@ -1460,6 +1460,7 @@ source_set("unit_tests") {
     ":unit_test_support",
     "//components/paint_preview/common:common",
     "//mojo/public/cpp/system",
+    "//skia",
     "//skia:skcms",
     "//testing/gmock",
     "//testing/gtest",

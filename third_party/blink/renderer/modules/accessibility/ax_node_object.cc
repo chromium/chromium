@@ -1941,7 +1941,7 @@ String AXNodeObject::ImageDataUrl(const IntSize& max_size) const {
   } else {
     bitmap.allocPixels(
         SkImageInfo::MakeN32(width, height, kPremul_SkAlphaType));
-    SkCanvas canvas(bitmap);
+    SkCanvas canvas(bitmap, SkSurfaceProps{});
     canvas.clear(SK_ColorTRANSPARENT);
     canvas.drawImageRect(image, SkRect::MakeIWH(width, height), nullptr);
   }

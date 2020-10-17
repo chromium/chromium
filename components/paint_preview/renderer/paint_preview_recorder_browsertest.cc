@@ -138,7 +138,7 @@ TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureMainFrameAndClipping) {
   SkBitmap bitmap;
   ASSERT_TRUE(bitmap.tryAllocN32Pixels(pic->cullRect().width(),
                                        pic->cullRect().height()));
-  SkCanvas canvas(bitmap);
+  SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.drawPicture(pic);
   // This should be inside the top right corner of the first top level div.
   // Success means there was no horizontal clipping as this region is red,
@@ -191,7 +191,7 @@ TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureMainFrameWithScroll) {
   SkBitmap bitmap;
   ASSERT_TRUE(bitmap.tryAllocN32Pixels(pic->cullRect().width(),
                                        pic->cullRect().height()));
-  SkCanvas canvas(bitmap);
+  SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.drawPicture(pic);
   // This should be inside the top right corner of the top div. Success means
   // there was no horizontal or vertical clipping as this region is red,

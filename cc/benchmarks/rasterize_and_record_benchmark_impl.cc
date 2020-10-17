@@ -18,6 +18,7 @@
 #include "cc/raster/raster_buffer_provider.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -56,7 +57,7 @@ void RunBenchmark(RasterSource* raster_source,
       SkBitmap bitmap;
       bitmap.allocPixels(SkImageInfo::MakeN32Premul(content_rect.width(),
                                                     content_rect.height()));
-      SkCanvas canvas(bitmap);
+      SkCanvas canvas(bitmap, skia::LegacyDisplayGlobals::GetSkSurfaceProps());
 
       // Pass an empty settings to make sure that the decode cache is used to
       // replace all images.

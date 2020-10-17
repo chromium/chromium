@@ -10,7 +10,7 @@
 
 #include "build/build_config.h"
 #include "device/vr/buildflags/buildflags.h"
-#include "third_party/skia/include/core/SkFontLCDConfig.h"
+#include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/gfx_export.h"
 
@@ -71,9 +71,7 @@ struct GFX_EXPORT FontRenderParams {
   // subpixel order.
   SubpixelRendering subpixel_rendering = SUBPIXEL_RENDERING_NONE;
 
-  static SkFontLCDConfig::LCDOrder SubpixelRenderingToSkiaLCDOrder(
-      SubpixelRendering subpixel_rendering);
-  static SkFontLCDConfig::LCDOrientation SubpixelRenderingToSkiaLCDOrientation(
+  static SkPixelGeometry SubpixelRenderingToSkiaPixelGeometry(
       SubpixelRendering subpixel_rendering);
 };
 

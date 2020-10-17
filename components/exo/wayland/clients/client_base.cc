@@ -32,6 +32,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/unguessable_token.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -884,10 +885,11 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateBuffer(
       return nullptr;
     }
 
+    SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
     buffer->sk_surface = SkSurface::MakeRasterDirect(
         SkImageInfo::Make(size.width(), size.height(), kColorType,
                           kOpaque_SkAlphaType),
-        mapped_data, stride);
+        mapped_data, stride, &props);
     DCHECK(buffer->sk_surface);
   }
 

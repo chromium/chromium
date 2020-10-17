@@ -10,6 +10,7 @@
 
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/linux/drm_util_linux.h"
@@ -222,8 +223,9 @@ class Buffer final : public ui::GbmBuffer {
       return nullptr;
     SkImageInfo info =
         SkImageInfo::MakeN32Premul(size_.width(), size_.height());
-    return SkSurface::MakeRasterDirectReleaseProc(info, addr, stride,
-                                                  &Buffer::UnmapGbmBo, this);
+    SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
+    return SkSurface::MakeRasterDirectReleaseProc(
+        info, addr, stride, &Buffer::UnmapGbmBo, this, &props);
   }
 
  private:

@@ -30,6 +30,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "crypto/sha2.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -184,7 +185,7 @@ void PhishingClassifier::ExtractVisualFeatures() {
       SkAlphaType::kUnpremul_SkAlphaType, rec2020);
   if (!bitmap_->tryAllocPixels(bitmap_info))
     return VisualExtractionFinished(/*success=*/false);
-  SkCanvas sk_canvas(*bitmap_);
+  SkCanvas sk_canvas(*bitmap_, skia::LegacyDisplayGlobals::GetSkSurfaceProps());
   cc::SkiaPaintCanvas cc_canvas(&sk_canvas);
   auto tracker = std::make_unique<paint_preview::PaintPreviewTracker>(
       base::UnguessableToken::Create(), frame->GetEmbeddingToken(),

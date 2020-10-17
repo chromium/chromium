@@ -98,7 +98,7 @@ class VideoCaptureOverlayTest : public testing::Test {
         kTestImageSize.width(), kTestImageSize.height(),
         GetLinearSRGB().ToSkColorSpace());
     CHECK(result.tryAllocPixels(info, info.minRowBytes()));
-    SkCanvas canvas(result);
+    SkCanvas canvas(result, SkSurfaceProps{});
     canvas.drawColor(kTestImageBackground);
     for (size_t i = 0; i < base::size(kTestImageColors); ++i) {
       const size_t idx = (i + cycle) % base::size(kTestImageColors);

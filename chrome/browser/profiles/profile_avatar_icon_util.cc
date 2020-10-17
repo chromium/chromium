@@ -760,7 +760,7 @@ SkBitmap GetBadgedWinIconBitmapForAvatar(const SkBitmap& app_icon_bitmap,
   SkBitmap badged_bitmap;
   badged_bitmap.allocN32Pixels(app_icon_bitmap.width(),
                                app_icon_bitmap.height());
-  SkCanvas offscreen_canvas(badged_bitmap);
+  SkCanvas offscreen_canvas(badged_bitmap, SkSurfaceProps{});
   offscreen_canvas.clear(SK_ColorTRANSPARENT);
   offscreen_canvas.drawBitmap(app_icon_bitmap, 0, 0);
 
