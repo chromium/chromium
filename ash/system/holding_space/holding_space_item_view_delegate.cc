@@ -15,7 +15,6 @@
 #include "ash/system/holding_space/holding_space_drag_util.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "base/bind.h"
-#include "base/i18n/rtl.h"
 #include "net/base/mime_util.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -238,11 +237,10 @@ void HoldingSpaceItemViewDelegate::WriteDragDataForView(
       GetItems(selection), holding_space_metrics::ItemAction::kDrag);
 
   // Drag image.
-  gfx::ImageSkia drag_image = holding_space_util::CreateDragImage(selection);
-  data->provider().SetDragImage(std::move(drag_image),
-                                /*image_offset=*/base::i18n::IsRTL()
-                                    ? gfx::Vector2d(drag_image.width(), 0)
-                                    : gfx::Vector2d());
+  gfx::ImageSkia drag_image;
+  gfx::Vector2d drag_offset;
+  holding_space_util::CreateDragImage(selection, &drag_image, &drag_offset);
+  data->provider().SetDragImage(std::move(drag_image), drag_offset);
 
   // Payload.
   std::vector<ui::FileInfo> filenames;
