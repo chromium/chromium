@@ -1,1 +1,1 @@
-chromeos-chrome-amd64-silvermont-87-4277.0-1602498224-benchmark-87.0.4280.22-r1-redacted.afdo.xz
+chromeos-chrome-amd64-silvermont-87-4277.0-1602498224-benchmark-87.0.4280.23-r1-redacted.afdo.xz
