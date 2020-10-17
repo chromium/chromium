@@ -319,7 +319,7 @@ _LINUX_EXECUTABLE_CONFIGS = frozenset([
     _base_perftests(10),
     _load_library_perf_tests(),
     _media_perftests(),
-    _performance_browser_tests(),
+    _performance_browser_tests(165),
     _tracing_perftests(),
 ])
 _MAC_HIGH_END_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
@@ -330,7 +330,7 @@ _MAC_HIGH_END_EXECUTABLE_CONFIGS = frozenset([
     _base_perftests(10),
     _dawn_perf_tests(330),
     _media_perftests(),
-    _performance_browser_tests(),
+    _performance_browser_tests(190),
     _views_perftests(),
 ])
 _MAC_LOW_END_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
@@ -339,7 +339,7 @@ _MAC_LOW_END_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
 ])
 _MAC_LOW_END_EXECUTABLE_CONFIGS = frozenset([
     _load_library_perf_tests(),
-    _performance_browser_tests(),
+    _performance_browser_tests(210),
 ])
 _MAC_ARM_DTK_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('blink_perf.css')
