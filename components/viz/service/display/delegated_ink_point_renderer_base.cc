@@ -27,23 +27,11 @@ void DelegatedInkPointRendererBase::InitMessagePipeline(
   receiver_.Bind(std::move(receiver));
 }
 
-void DelegatedInkPointRendererBase::FilterPoints() {
+std::vector<DelegatedInkPoint> DelegatedInkPointRendererBase::FilterPoints() {
   if (points_.size() == 0)
-    return;
+    return {};
 
-  // |first_valid_point| is the first point in |points_| that will be drawn.
-  // It will match |metadata_|'s timestamp and point because the app rendered
-  // ink stroke and the delegated ink trail must overlap on the final point of
-  // the ink stroke in order to connect seamlessly.
-  auto first_valid_point = points_.find(metadata_->timestamp());
-
-  // It is possible that this results in |points_| being empty. This occurs when
-  // the points being forwarded from the browser process lose the race against
-  // the ink metadata arriving in Display, including the point that matches the
-  // metadata. There may still be old points in |points_| allowing execution to
-  // get here, but none of them match the metadata point, so they are all
-  // erased.
-  points_.erase(points_.begin(), first_valid_point);
+  DCHECK(metadata_);
 
   // TODO(1052145): Add additional filtering to prevent points in |points_| from
   // having a timestamp that is far ahead of |metadata_|'s timestamp. This could
@@ -53,8 +41,56 @@ void DelegatedInkPointRendererBase::FilterPoints() {
   // stored here, resulting in a long possibly incorrect trail if the max
   // number of points to store was reached.
 
-  TRACE_EVENT_INSTANT1("viz", "Filtered points for delegated ink trail",
-                       TRACE_EVENT_SCOPE_THREAD, "points", points_.size());
+  // First remove all points from |points_| with timestamps earlier than
+  // |metadata_|, as they have already been rendered by the app and are no
+  // longer useful for a trail.
+  // After that, there are three possible state of |points_|:
+  //   1. The earliest DelegatedInkPoint in |points_| matches |metadata_|'s
+  //      timestamp. All the points in |points_| can be used to draw a trail.
+  //   2. |points_| is empty. No DelegatedInkPoints arrived from the browser
+  //      process with a timestamp equal to or later than |metadata_|'s, so we
+  //      don't have any points to make a trail from.
+  //   3. There are DelegatedInkPoints in |points_|, but the earliest one is
+  //      later than |metadata_|. This can happen most often when the API is
+  //      first used, as the browser process did not know to send the point
+  //      to viz before it was used to make the metadata in the renderer. So
+  //      although it didn't send the DelegatedInkPoint matching |metadata_|, it
+  //      still may have sent future points before the metadata propagated all
+  //      the way here. In this case, we choose not to use the points in
+  //      |points_| to draw, as we have no way of confirming that there
+  //      shouldn't be any extra points between |metadata_| and the beginning
+  //      of |points_|. So instead, just leave everything after |metadata_| in
+  //      |points_| so that they may be used in future trails and don't draw
+  //      any trail for the current |metadata_|.
+  // So if |points_| contains a timestamp that matches |metadata_|'s timestamp,
+  // add it and every point after it to |points_to_draw| and return it for
+  // drawing. If it doesn't, just return an empty vector and leave any point
+  // with a timestamp later than |metadata_|'s in |points_|.
+  std::vector<DelegatedInkPoint> points_to_draw;
+
+  auto it = points_.begin();
+  while (points_.size() > 0 && it != points_.end()) {
+    if (it->first < metadata_->timestamp()) {
+      // Sanity check to confirm that we always find the points that are before
+      // |metadata_|'s timestamp at the beginning of |points_| since it should
+      // be sorted.
+      DCHECK(it == points_.begin());
+      it = points_.erase(it);
+    } else {
+      if (it->first == metadata_->timestamp() || points_to_draw.size() > 0) {
+        points_to_draw.emplace_back(it->second, it->first);
+        it++;
+      } else {
+        // If we find a point that is later than |metadata_|'s timestamp before
+        // finding one that matches |metadata_|'s timestamp, that means that
+        // it doesn't exist in |points_|, so return an empty vector as there are
+        // no valid points to draw.
+        break;
+      }
+    }
+  }
+
+  return points_to_draw;
 }
 
 void DelegatedInkPointRendererBase::StoreDelegatedInkPoint(

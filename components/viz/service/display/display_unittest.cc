@@ -4548,6 +4548,11 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
       ink_renderer()->StoreDelegatedInkPoint(ink_point);
   }
 
+  void SendMetadata(DelegatedInkMetadata metadata) {
+    ink_renderer()->SetDelegatedInkMetadata(
+        std::make_unique<DelegatedInkMetadata>(metadata));
+  }
+
   DelegatedInkMetadata MakeAndSendMetadataFromStoredInkPoint(
       int index,
       float diameter,
@@ -4559,8 +4564,7 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
     DelegatedInkMetadata metadata(ink_points_[index].point(), diameter, color,
                                   ink_points_[index].timestamp(),
                                   presentation_area);
-    ink_renderer()->SetDelegatedInkMetadata(
-        std::make_unique<DelegatedInkMetadata>(metadata));
+    SendMetadata(metadata);
     return metadata;
   }
 
@@ -4663,8 +4667,8 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkRendererFilteringPoints) {
   DrawDelegatedInkTrail();
   EXPECT_FALSE(GetMetadataFromRenderer());
 
-  // Finally, add more points than the maximum that will be stored to confirm
-  // only the max is stored and the correct ones are removed first.
+  // Add more points than the maximum that will be stored to confirm only the
+  // max is stored and the correct ones are removed first.
   const int kPointsBeyondMaxAllowed = 2;
   StoreAlreadyCreatedDelegatedInkPoints();
   while (ink_points_size() <
@@ -4680,6 +4684,14 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkRendererFilteringPoints) {
             stored_points().begin()->second);
   EXPECT_EQ(ink_point(ink_points_size() - 1).point(),
             stored_points().rbegin()->second);
+
+  // Now send metadata with a timestamp before all of the points that are
+  // currently stored to confirm that no points are filtered out and the number
+  // stored remains the same while the histogram records 0 improvement.
+  const uint64_t kExpectedPoints = stored_points().size();
+  SendMetadata(metadata);
+  FinalizePathAndCheckHistograms(base::TimeDelta::FromMilliseconds(0));
+  EXPECT_EQ(kExpectedPoints, stored_points().size());
 }
 
 // Confirm that the delegated ink trail histograms record latency correctly.

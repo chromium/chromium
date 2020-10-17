@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "components/viz/service/viz_service_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -54,14 +55,9 @@ class VIZ_SERVICE_EXPORT DelegatedInkPointRendererBase
   // ink trail. However, if a point has a timestamp that is earlier than the
   // timestamp on the metadata, then the point has already been drawn, and
   // therefore should be removed from |points_| before drawing.
-  void FilterPoints();
+  std::vector<DelegatedInkPoint> FilterPoints();
 
   std::unique_ptr<DelegatedInkMetadata> metadata_;
-
-  // The points that will be drawn as part of the ink stroke. After being
-  // filtered in FilterPoints(), but before drawing, the first point in this map
-  // will match |metadata_|'s point, or it will be empty.
-  std::map<base::TimeTicks, gfx::PointF> points_;
 
  private:
   friend class SkiaDelegatedInkRendererTest;
@@ -75,6 +71,10 @@ class VIZ_SERVICE_EXPORT DelegatedInkPointRendererBase
   }
 
   virtual int GetPathPointCountForTest() const = 0;
+
+  // The points that arrived from the browser process and may be drawn as part
+  // of the ink trail.
+  std::map<base::TimeTicks, gfx::PointF> points_;
 
   mojo::Receiver<mojom::DelegatedInkPointRenderer> receiver_{this};
 };

@@ -73,29 +73,33 @@ void DelegatedInkPointRendererSkia::FinalizePathForDraw() {
 
   // First, filter the delegated ink points so that only ones that have a
   // timestamp that is equal to or later than the metadata still exist.
-  FilterPoints();
+  std::vector<DelegatedInkPoint> points_to_draw = FilterPoints();
+
+  TRACE_EVENT_INSTANT1("viz", "Filtered points for delegated ink trail",
+                       TRACE_EVENT_SCOPE_THREAD, "points",
+                       points_to_draw.size());
 
   // TODO(1052145): Predict points.
 
   base::TimeDelta improvement =
-      static_cast<int>(points_.size()) > 0
-          ? points_.rbegin()->first - metadata_->timestamp()
+      static_cast<int>(points_to_draw.size()) > 0
+          ? points_to_draw.back().timestamp() - metadata_->timestamp()
           : base::TimeDelta::FromMilliseconds(0);
   UMA_HISTOGRAM_TIMES(
       "Renderer.DelegatedInkTrail.LatencyImprovement.Skia.WithoutPrediction",
       improvement);
 
-  // If there is only one point total between |points_| and predicted points,
-  // then it will match the metadata point and therefore doesn't need to be
-  // drawn in this way, as it will be rendered normally.
-  if (points_.size() <= 1) {
+  // If there is only one point total after filtering and predicting, then it
+  // will match the metadata point and therefore doesn't need to be drawn in
+  // this way, as it will be rendered normally.
+  if (points_to_draw.size() <= 1) {
     SetDamageRect(gfx::RectF());
     return;
   }
 
   std::vector<SkPoint> sk_points;
-  for (auto it : points_)
-    sk_points.emplace_back(gfx::PointFToSkPoint(it.second));
+  for (auto ink_point : points_to_draw)
+    sk_points.emplace_back(gfx::PointFToSkPoint(ink_point.point()));
 
   path_.moveTo(sk_points[0]);
   switch (sk_points.size()) {
@@ -113,9 +117,7 @@ void DelegatedInkPointRendererSkia::FinalizePathForDraw() {
       // the second control point of the first curve, the end point of the first
       // curve/first control point of the second curve, and the second control
       // point of the second curve are colinear. Since this is unlikely to be
-      // the case, and in general it is unlikely to be common that more than 4
-      // points exist in |points_|, connecting all four points via lines should
-      // be acceptable.
+      // the case, connecting all four points via lines should be acceptable.
       for (uint64_t i = 1; i < sk_points.size(); ++i)
         path_.lineTo(sk_points[i]);
       break;
