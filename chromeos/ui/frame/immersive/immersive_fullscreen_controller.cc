@@ -7,7 +7,6 @@
 #include <set>
 
 #include "base/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/immersive/immersive_context.h"
 #include "chromeos/ui/frame/immersive/immersive_focus_watcher.h"
@@ -765,15 +764,6 @@ void ImmersiveFullscreenController::UpdateEnabled() {
     widget_->GetNativeWindow()->SetEventTargeter(std::move(normal_targeter_));
 
     delegate_->OnImmersiveFullscreenExited();
-  }
-
-  if (enabled_) {
-    // TODO(https://crbug.com/1138662): Remove this expired histogram entry.
-    UMA_HISTOGRAM_ENUMERATION(
-        "Ash.ImmersiveFullscreen.WindowType",
-        static_cast<WindowType>(
-            widget_->GetNativeWindow()->GetProperty(kImmersiveWindowType)),
-        WINDOW_TYPE_COUNT);
   }
 }
 

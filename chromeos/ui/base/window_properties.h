@@ -40,11 +40,6 @@ COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 extern const aura::WindowProperty<gfx::Rect*>* const
     kImmersiveTopContainerBoundsInScreen;
 
-// The type of window for logging immersive metrics. Type:
-// ImmersiveFullscreenController::WindowType.
-COMPONENT_EXPORT(CHROMEOS_UI_BASE)
-extern const aura::WindowProperty<int>* const kImmersiveWindowType;
-
 // If true, the window is currently showing in overview mode.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 extern const aura::WindowProperty<bool>* const kIsShowingInOverviewKey;

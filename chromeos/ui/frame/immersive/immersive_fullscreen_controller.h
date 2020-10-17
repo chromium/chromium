@@ -60,16 +60,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveFullscreenController
       public views::ViewObserver,
       public ImmersiveRevealedLock::Delegate {
  public:
-  // The enum is used for an enumerated histogram. New items should be only
-  // added to the end.
-  enum WindowType {
-    WINDOW_TYPE_OTHER,
-    WINDOW_TYPE_BROWSER,
-    WINDOW_TYPE_HOSTED_APP,
-    WINDOW_TYPE_PACKAGED_APP,
-    WINDOW_TYPE_COUNT
-  };
-
   // How many pixels are reserved for touch-events towards the top of an
   // immersive-fullscreen window.
   static const int kImmersiveFullscreenTopEdgeInset;

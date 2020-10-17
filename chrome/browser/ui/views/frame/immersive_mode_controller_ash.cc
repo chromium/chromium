@@ -67,13 +67,6 @@ void ImmersiveModeControllerAsh::Init(BrowserView* browser_view) {
                    browser_view_->top_container());
 
   observed_windows_.Add(browser_view_->GetNativeWindow());
-
-  browser_view_->GetNativeWindow()->SetProperty(
-      chromeos::kImmersiveWindowType,
-      static_cast<int>(
-          browser_view_->browser()->deprecated_is_app()
-              ? chromeos::ImmersiveFullscreenController::WINDOW_TYPE_HOSTED_APP
-              : chromeos::ImmersiveFullscreenController::WINDOW_TYPE_BROWSER));
 }
 
 void ImmersiveModeControllerAsh::SetEnabled(bool enabled) {

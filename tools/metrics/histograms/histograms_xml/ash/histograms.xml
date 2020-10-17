@@ -712,6 +712,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Ash.ImmersiveFullscreen.WindowType" enum="WindowType"
     expires_after="M77">
+  <obsolete>
+    Removed 10/2020 in Issue 1138662 - its recording code was deleted. This
+    histogram entry was added long time ago, likely when immersive fullscreen
+    was first added (circa 2014), and there is no records of what was learned.
+  </obsolete>
   <owner>kuscher@google.com</owner>
   <summary>
     The type of the window which is put into immersive fullscreen. Immersive
