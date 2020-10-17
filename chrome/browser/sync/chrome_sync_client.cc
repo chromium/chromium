@@ -652,8 +652,6 @@ ChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
           ->GetControllerDelegate();
     case syncer::USER_EVENTS:
       return browser_sync::UserEventServiceFactory::GetForProfile(profile_)
-          ->GetSyncBridge()
-          ->change_processor()
           ->GetControllerDelegate();
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     case syncer::WEB_APPS: {

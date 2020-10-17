@@ -15,7 +15,7 @@
 
 namespace syncer {
 
-class ModelTypeSyncBridge;
+class ModelTypeControllerDelegate;
 
 class UserEventService : public KeyedService {
  public:
@@ -31,7 +31,8 @@ class UserEventService : public KeyedService {
       const sync_pb::UserEventSpecifics& specifics) = 0;
 
   // Returns the underlying Sync integration point.
-  virtual ModelTypeSyncBridge* GetSyncBridge() = 0;
+  virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  GetControllerDelegate() = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(UserEventService);

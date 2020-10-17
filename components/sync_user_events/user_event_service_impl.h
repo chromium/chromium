@@ -16,7 +16,6 @@
 
 namespace syncer {
 
-class ModelTypeSyncBridge;
 class UserEventSyncBridge;
 
 class UserEventServiceImpl : public UserEventService {
@@ -31,7 +30,8 @@ class UserEventServiceImpl : public UserEventService {
   void RecordUserEvent(
       std::unique_ptr<sync_pb::UserEventSpecifics> specifics) override;
   void RecordUserEvent(const sync_pb::UserEventSpecifics& specifics) override;
-  ModelTypeSyncBridge* GetSyncBridge() override;
+  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+      override;
 
  private:
   // Checks dynamic or event specific conditions.

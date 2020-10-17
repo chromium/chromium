@@ -20,7 +20,6 @@
 #include "chrome/browser/chromeos/printing/synced_printers_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/sync/model/fake_model_type_change_processor.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_store_test_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"

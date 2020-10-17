@@ -79,8 +79,9 @@ void UserEventServiceImpl::RecordUserEvent(
   RecordUserEvent(std::make_unique<UserEventSpecifics>(specifics));
 }
 
-ModelTypeSyncBridge* UserEventServiceImpl::GetSyncBridge() {
-  return bridge_.get();
+base::WeakPtr<syncer::ModelTypeControllerDelegate>
+UserEventServiceImpl::GetControllerDelegate() {
+  return bridge_->change_processor()->GetControllerDelegate();
 }
 
 bool UserEventServiceImpl::ShouldRecordEvent(

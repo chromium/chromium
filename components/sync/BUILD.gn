@@ -355,8 +355,6 @@ static_library("test_support_model") {
   sources = [
     "model/data_type_error_handler_mock.cc",
     "model/data_type_error_handler_mock.h",
-    "model/fake_model_type_change_processor.cc",
-    "model/fake_model_type_change_processor.h",
     "model/fake_model_type_controller_delegate.cc",
     "model/fake_model_type_controller_delegate.h",
     "model/fake_model_type_sync_bridge.cc",

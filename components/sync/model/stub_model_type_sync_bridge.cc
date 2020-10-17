@@ -7,13 +7,9 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "components/sync/model/fake_model_type_change_processor.h"
+#include "components/sync/model/metadata_change_list.h"
 
 namespace syncer {
-
-StubModelTypeSyncBridge::StubModelTypeSyncBridge()
-    : StubModelTypeSyncBridge(
-          std::make_unique<FakeModelTypeChangeProcessor>()) {}
 
 StubModelTypeSyncBridge::StubModelTypeSyncBridge(
     std::unique_ptr<ModelTypeChangeProcessor> change_processor)

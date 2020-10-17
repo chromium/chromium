@@ -13,8 +13,6 @@
 
 namespace syncer {
 
-class ModelTypeSyncBridge;
-
 // This implementation is used when we know event should never be recorded,
 // such as in incognito mode.
 class NoOpUserEventService : public UserEventService {
@@ -26,7 +24,8 @@ class NoOpUserEventService : public UserEventService {
   void RecordUserEvent(
       std::unique_ptr<sync_pb::UserEventSpecifics> specifics) override;
   void RecordUserEvent(const sync_pb::UserEventSpecifics& specifics) override;
-  ModelTypeSyncBridge* GetSyncBridge() override;
+  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+      override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(NoOpUserEventService);

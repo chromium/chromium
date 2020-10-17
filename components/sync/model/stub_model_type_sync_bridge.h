@@ -17,7 +17,6 @@ namespace syncer {
 // testing purposes.
 class StubModelTypeSyncBridge : public ModelTypeSyncBridge {
  public:
-  StubModelTypeSyncBridge();
   explicit StubModelTypeSyncBridge(
       std::unique_ptr<ModelTypeChangeProcessor> change_processor);
   ~StubModelTypeSyncBridge() override;

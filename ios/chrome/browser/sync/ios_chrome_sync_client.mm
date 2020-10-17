@@ -229,8 +229,6 @@ IOSChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
           ->GetControllerDelegate();
     case syncer::USER_EVENTS:
       return IOSUserEventServiceFactory::GetForBrowserState(browser_state_)
-          ->GetSyncBridge()
-          ->change_processor()
           ->GetControllerDelegate();
 
     // We don't exercise this function for certain datatypes, because their

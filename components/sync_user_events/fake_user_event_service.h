@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "components/sync/model/fake_model_type_sync_bridge.h"
+#include "components/sync/model/fake_model_type_controller_delegate.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
 #include "components/sync_user_events/user_event_service.h"
 
@@ -27,18 +27,14 @@ class FakeUserEventService : public UserEventService {
   void RecordUserEvent(
       std::unique_ptr<sync_pb::UserEventSpecifics> specifics) override;
   void RecordUserEvent(const sync_pb::UserEventSpecifics& specifics) override;
-  // TODO(crbug.com/895340): This is hard to mock, replace it (in the base
-  // class) by GetControllerDelegate(), then we can get rid of |fake_bridge_|.
-  // Maybe we can also expose a raw pointer to be consumed by
-  // ForwardingModelTypeControllerDelegate and not care about WeakPtrs anymore
-  // (but we need a nice solution for SyncClient).
-  ModelTypeSyncBridge* GetSyncBridge() override;
+  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+      override;
 
   const std::vector<sync_pb::UserEventSpecifics>& GetRecordedUserEvents() const;
 
  private:
   std::vector<sync_pb::UserEventSpecifics> recorded_user_events_;
-  FakeModelTypeSyncBridge fake_bridge_;
+  FakeModelTypeControllerDelegate fake_controller_delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeUserEventService);
 };
