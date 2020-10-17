@@ -752,6 +752,7 @@ crbug.com/1130117 [ mac apple-apple-a12z no-asan ] deqp/functional/gles3/multisa
 crbug.com/1130118 [ mac apple-apple-a12z ] conformance2/rendering/blitframebuffer-filter-srgb.html [ Failure ]
 crbug.com/1130118 [ mac apple-apple-a12z ] deqp/functional/gles3/framebufferblit/rect_03.html [ Failure ]
 crbug.com/1130118 [ mac apple-apple-a12z ] deqp/functional/gles3/framebufferblit/rect_04.html [ Failure ]
+crbug.com/1130118 [ mac apple-apple-a12z ] deqp/functional/gles3/framebufferblit/default_framebuffer_00.html [ Failure ]
 crbug.com/1130119 [ mac apple-apple-a12z ] conformance2/glsl3/vector-dynamic-indexing.html [ Failure ]
 crbug.com/1130119 [ mac apple-apple-a12z ] conformance2/textures/misc/tex-base-level-bug.html [ Failure ]
 crbug.com/1130119 [ mac apple-apple-a12z ] conformance2/rendering/framebuffer-completeness-unaffected.html [ Failure ]
