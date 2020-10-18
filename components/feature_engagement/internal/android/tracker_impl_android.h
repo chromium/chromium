@@ -102,6 +102,14 @@ class TrackerImplAndroid : public base::SupportsUserData::Data {
       const base::android::JavaRef<jobject>& jobj,
       const base::android::JavaParamRef<jobject>& j_callback_obj);
 
+  /**
+   * Injects a Java tracker for encapsulation. For further details, see
+   * WrappingTestTracker::InjectTracker.
+   */
+  void InjectTracker(JNIEnv* env,
+                     const base::android::JavaRef<jobject>& jobj,
+                     const base::android::JavaRef<jobject>& jtracker);
+
  private:
   // A map from the feature name to the base::Feature, to ensure that the Java
   // version of the API can use the string name. If base::Feature becomes a Java

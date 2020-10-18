@@ -202,6 +202,9 @@ public final class EventConstants {
     /** Reengagement events. */
     public static final String STARTED_FROM_MAIN_INTENT = "started_from_main_intent";
 
+    /** PWA install events. */
+    public static final String PWA_INSTALL_MENU_SELECTED = "pwa_install_menu_clicked";
+
     /**
      * Do not instantiate.
      */

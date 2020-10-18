@@ -13,9 +13,12 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "components/feature_engagement/internal/android/wrapping_test_tracker.h"
 #include "components/feature_engagement/internal/jni_headers/TrackerImpl_jni.h"
+#include "components/feature_engagement/internal/switches.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/public/tracker.h"
 
@@ -173,6 +176,20 @@ void TrackerImplAndroid::AddOnInitializedCallback(
   tracker_impl_->AddOnInitializedCallback(base::BindOnce(
       &base::android::RunBooleanCallbackAndroid,
       base::android::ScopedJavaGlobalRef<jobject>(j_callback_obj)));
+}
+
+void TrackerImplAndroid::InjectTracker(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& jobj,
+    const base::android::JavaRef<jobject>& jtracker) {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(switches::kUseJavaProxyTracker)) {
+    NOTREACHED();
+    return;
+  }
+  WrappingTestTracker* test_tracker_ =
+      static_cast<WrappingTestTracker*>(tracker_impl_);
+  test_tracker_->InjectTracker(jtracker);
 }
 
 DisplayLockHandleAndroid::DisplayLockHandleAndroid(

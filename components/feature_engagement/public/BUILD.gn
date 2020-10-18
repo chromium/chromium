@@ -48,15 +48,18 @@ source_set("unit_tests") {
 if (is_android) {
   android_library("public_java") {
     sources = [
+      "android/java/src/org/chromium/components/feature_engagement/CppWrappedTestTracker.java",
       "android/java/src/org/chromium/components/feature_engagement/EventConstants.java",
       "android/java/src/org/chromium/components/feature_engagement/FeatureConstants.java",
       "android/java/src/org/chromium/components/feature_engagement/Tracker.java",
     ]
 
     deps = [
+      ":jni_headers",
       "//base:base_java",
       "//third_party/android_deps:androidx_annotation_annotation_java",
     ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
     srcjar_deps = [ ":public_java_enums_srcjar" ]
   }
@@ -65,5 +68,9 @@ if (is_android) {
     visibility = [ ":*" ]
 
     sources = [ "tracker.h" ]
+  }
+
+  generate_jni("jni_headers") {
+    sources = [ "android/java/src/org/chromium/components/feature_engagement/CppWrappedTestTracker.java" ]
   }
 }

@@ -8,12 +8,14 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/user_metrics.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "components/feature_engagement/internal/availability_model_impl.h"
 #include "components/feature_engagement/internal/chrome_variations_configuration.h"
 #include "components/feature_engagement/internal/display_lock_controller_impl.h"
@@ -30,10 +32,15 @@
 #include "components/feature_engagement/internal/persistent_event_store.h"
 #include "components/feature_engagement/internal/proto/availability.pb.h"
 #include "components/feature_engagement/internal/stats.h"
+#include "components/feature_engagement/internal/switches.h"
 #include "components/feature_engagement/internal/system_time_provider.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+
+#if defined(OS_ANDROID)
+#include "components/feature_engagement/internal/android/wrapping_test_tracker.h"
+#endif
 
 namespace feature_engagement {
 
@@ -132,6 +139,16 @@ Tracker* Tracker::Create(
 
   auto availability_model = std::make_unique<AvailabilityModelImpl>(
       std::move(availability_store_loader));
+
+#if defined(OS_ANDROID)
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kUseJavaProxyTracker)) {
+    return new WrappingTestTracker(
+        std::move(event_model), std::move(availability_model),
+        std::move(configuration), std::make_unique<DisplayLockControllerImpl>(),
+        std::move(condition_validator), std::move(time_provider));
+  }
+#endif
 
   return new TrackerImpl(
       std::move(event_model), std::move(availability_model),

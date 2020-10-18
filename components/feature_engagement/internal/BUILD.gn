@@ -58,6 +58,8 @@ static_library("internal") {
     "single_invalid_configuration.h",
     "stats.cc",
     "stats.h",
+    "switches.cc",
+    "switches.h",
     "system_time_provider.cc",
     "system_time_provider.h",
     "time_provider.h",
@@ -78,9 +80,14 @@ static_library("internal") {
     sources += [
       "android/tracker_impl_android.cc",
       "android/tracker_impl_android.h",
+      "android/wrapping_test_tracker.cc",
+      "android/wrapping_test_tracker.h",
     ]
 
-    deps += [ ":jni_headers" ]
+    deps += [
+      ":jni_headers",
+      "//components/feature_engagement/public:jni_headers",
+    ]
   }
 }
 

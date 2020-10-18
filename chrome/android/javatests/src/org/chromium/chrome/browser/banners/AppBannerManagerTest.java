@@ -4,6 +4,17 @@
 
 package org.chromium.chrome.browser.banners;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+
+import static org.chromium.chrome.test.util.ViewUtils.waitForView;
+
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
@@ -18,9 +29,12 @@ import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiSelector;
 import android.view.View;
 
+import androidx.test.espresso.ViewInteraction;
+import androidx.test.espresso.matcher.RootMatchers;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
+import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
@@ -36,6 +50,7 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
@@ -46,6 +61,7 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.engagement.SiteEngagementService;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
@@ -53,6 +69,8 @@ import org.chromium.chrome.browser.infobar.InstallableAmbientBadgeInfoBar;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -61,6 +79,9 @@ import org.chromium.chrome.test.util.InfoBarUtil;
 import org.chromium.chrome.test.util.browser.TabLoadObserver;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
+import org.chromium.components.feature_engagement.CppWrappedTestTracker;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.infobars.InfoBarAnimationListener;
 import org.chromium.components.infobars.InfoBarUiItem;
@@ -82,7 +103,7 @@ import java.util.List;
  * Tests the app banners.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "use-java-proxy-tracker"})
 public class AppBannerManagerTest {
     @Rule
     public ChromeTabbedActivityTestRule mTabbedActivityTestRule =
@@ -93,6 +114,12 @@ public class AppBannerManagerTest {
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
+    // A callback that fires when the IPH system sends an event.
+    private final CallbackHelper mOnEventCallback = new CallbackHelper();
+
+    // The ID of the last event received.
+    private String mLastNotifyEvent;
 
     private static final String NATIVE_APP_MANIFEST_WITH_ID =
             "/chrome/test/data/banners/play_app_manifest.json";
@@ -183,6 +210,7 @@ public class AppBannerManagerTest {
     private PackageManager mPackageManager;
     private EmbeddedTestServer mTestServer;
     private UiDevice mUiDevice;
+    private CppWrappedTestTracker mTracker;
 
     @Before
     public void setUp() throws Exception {
@@ -198,8 +226,20 @@ public class AppBannerManagerTest {
         mTabbedActivityTestRule.startMainActivityOnBlankPage();
         // Must be set after native has loaded.
         mDetailsDelegate = new MockAppDetailsDelegate();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> { AppBannerManager.setAppDetailsDelegate(mDetailsDelegate); });
+        mTracker = new CppWrappedTestTracker(FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE) {
+            @Override
+            public void notifyEvent(String event) {
+                super.notifyEvent(event);
+                mOnEventCallback.notifyCalled();
+            }
+        };
+
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            AppBannerManager.setAppDetailsDelegate(mDetailsDelegate);
+
+            Profile profile = Profile.getLastUsedRegularProfile();
+            TrackerFactory.getTrackerForProfile(profile).injectTracker(mTracker);
+        });
 
         AppBannerManager.ignoreChromeChannelForTesting();
         AppBannerManager.setTotalEngagementForTesting(10);
@@ -209,7 +249,9 @@ public class AppBannerManagerTest {
 
     @After
     public void tearDown() {
-        mTestServer.stopAndDestroyServer();
+        if (mTestServer != null) {
+            mTestServer.stopAndDestroyServer();
+        }
     }
 
     private void resetEngagementForUrl(final String url, final double engagement) {
@@ -655,5 +697,44 @@ public class AppBannerManagerTest {
                 WebappTestPage.getServiceWorkerUrlWithManifestAndAction(mTestServer,
                         WEB_APP_MANIFEST_WITH_UNSUPPORTED_PLATFORM, "call_stashed_prompt_on_click"),
                 false);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AppBanners"})
+    @CommandLineFlags.Add("enable-features=" + ChromeFeatureList.INSTALLABLE_AMBIENT_BADGE_INFOBAR)
+    public void testInProductHelp() throws Exception {
+        // Visit a site that is a PWA. The ambient badge should show.
+        String webBannerUrl = WebappTestPage.getServiceWorkerUrl(mTestServer);
+        resetEngagementForUrl(webBannerUrl, 10);
+
+        InfoBarContainer container = mTabbedActivityTestRule.getInfoBarContainer();
+        final InfobarListener listener = new InfobarListener();
+        container.addAnimationListener(listener);
+
+        Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
+        new TabLoadObserver(tab).fullyLoadUrl(webBannerUrl);
+        waitUntilAmbientBadgeInfoBarAppears(mTabbedActivityTestRule);
+
+        waitForHelpBubble(withText(R.string.iph_pwa_install_available_text)).perform(click());
+        assertThat(mTracker.wasDismissed(), is(true));
+
+        int callCount = mOnEventCallback.getCallCount();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AppMenuCoordinator coordinator = mTabbedActivityTestRule.getAppMenuCoordinator();
+            AppMenuTestSupport.showAppMenu(coordinator, null, false);
+            AppMenuTestSupport.callOnItemClick(coordinator, R.id.add_to_homescreen_id);
+        });
+        mOnEventCallback.waitForCallback(callCount, 1);
+
+        assertThat(mTracker.getLastEvent(), is(EventConstants.PWA_INSTALL_MENU_SELECTED));
+    }
+
+    private ViewInteraction waitForHelpBubble(Matcher<View> matcher) {
+        View mainDecorView = mTabbedActivityTestRule.getActivity().getWindow().getDecorView();
+        return onView(isRoot())
+                .inRoot(RootMatchers.withDecorView(not(is(mainDecorView))))
+                .check(waitForView(matcher));
     }
 }

@@ -127,4 +127,11 @@ public interface Tracker {
      * ready to receive calls.
      */
     void addOnInitializedCallback(Callback<Boolean> callback);
+
+    /**
+     * Instructs the tracker in C++ to start proxying calls to Java. See {@link
+     * CppWrappedTestTracker} for usage and details.
+     * @param tracker The tracker object that should be receiving the calls.
+     */
+    void injectTracker(Tracker tracker);
 }

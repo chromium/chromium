@@ -128,6 +128,12 @@ public class TrackerImpl implements Tracker {
         TrackerImplJni.get().addOnInitializedCallback(mNativePtr, TrackerImpl.this, callback);
     }
 
+    @Override
+    public void injectTracker(Tracker tracker) {
+        assert mNativePtr != 0;
+        TrackerImplJni.get().injectTracker(mNativePtr, TrackerImpl.this, tracker);
+    }
+
     @CalledByNative
     private void clearNativePtr() {
         mNativePtr = 0;
@@ -155,6 +161,7 @@ public class TrackerImpl implements Tracker {
         boolean isInitialized(long nativeTrackerImplAndroid, TrackerImpl caller);
         void addOnInitializedCallback(
                 long nativeTrackerImplAndroid, TrackerImpl caller, Callback<Boolean> callback);
+        void injectTracker(long nativeTrackerImplAndroid, TrackerImpl caller, Tracker tracker);
         void release(long nativeDisplayLockHandleAndroid);
     }
 }

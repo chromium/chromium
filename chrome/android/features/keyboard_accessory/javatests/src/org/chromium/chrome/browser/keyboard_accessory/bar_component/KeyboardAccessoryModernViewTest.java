@@ -158,6 +158,11 @@ public class KeyboardAccessoryModernViewTest {
         public void addOnInitializedCallback(Callback<Boolean> callback) {
             assert false : "Implement addOnInitializedCallback if you need it.";
         }
+
+        @Override
+        public void injectTracker(Tracker tracker) {
+            assert false : "This should only be called on a production tracker";
+        }
     }
 
     @Before
