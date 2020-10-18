@@ -1366,6 +1366,7 @@ _GENERIC_PYDEPS_FILES = [
     'build/android/test_wrapper/logdog_wrapper.pydeps',
     'build/lacros/lacros_resource_sizes.pydeps',
     'build/protoc_java.pydeps',
+    'chrome/android/monochrome/scripts/monochrome_python_tests.pydeps',
     'chrome/test/chromedriver/log_replay/client_replay_unittest.pydeps',
     'chrome/test/chromedriver/test/run_py_tests.pydeps',
     'components/cronet/tools/generate_javadoc.pydeps',

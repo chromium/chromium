@@ -12,6 +12,7 @@ This script should be compatible with Python 2 and Python 3.
 """
 
 import argparse
+import fnmatch
 import os
 import pipes
 import sys
@@ -63,12 +64,13 @@ def _NormalizeCommandLine(options):
   return ' '.join(pipes.quote(x) for x in args)
 
 
-def _FindPythonInDirectory(directory):
+def _FindPythonInDirectory(directory, allow_test):
   """Returns an iterable of all non-test python files in the given directory."""
   files = []
   for root, _dirnames, filenames in os.walk(directory):
     for filename in filenames:
-      if filename.endswith('.py') and not filename.endswith('_test.py'):
+      if filename.endswith('.py') and (allow_test
+                                       or not filename.endswith('_test.py')):
         yield os.path.join(root, filename)
 
 
@@ -99,6 +101,8 @@ def _GetTargetPythonVersion(module):
 
 def _ImportModuleByPath(module_path):
   """Imports a module by its source file."""
+  # Replace the path entry for print_python_deps.py with the one for the given
+  # module.
   sys.path[0] = os.path.dirname(module_path)
   if sys.version_info[0] == 2:
     import imp  # Python 2 only, since it's deprecated in Python 3.
@@ -146,8 +150,17 @@ def main():
     options.output = options.module + 'deps'
     options.root = os.path.dirname(options.module)
 
-  target_version = _GetTargetPythonVersion(options.module)
+  modules = [options.module]
+  if os.path.isdir(options.module):
+    modules = list(_FindPythonInDirectory(options.module, allow_test=True))
+  if not modules:
+    parser.error('Input directory does not contain any python files!')
+
+  target_versions = [_GetTargetPythonVersion(m) for m in modules]
+  target_version = target_versions[0]
   assert target_version in [2, 3]
+  assert all(v == target_version for v in target_versions)
+
   current_version = sys.version_info[0]
 
   # Trybots run with vpython as default Python, but with a different config
@@ -167,10 +180,11 @@ def main():
     vpython_to_use = {2: 'vpython', 3: 'vpython3'}[target_version]
     os.execvp(vpython_to_use, [vpython_to_use] + sys.argv + ['--did-relaunch'])
 
-  # Replace the path entry for print_python_deps.py with the one for the given
-  # module.
+  paths_set = set()
   try:
-    _ImportModuleByPath(options.module)
+    for module in modules:
+      _ImportModuleByPath(module)
+      paths_set.update(ComputePythonDependencies())
   except Exception:
     # Output extra diagnostics when loading the script fails.
     sys.stderr.write('Error running print_python_deps.py.\n')
@@ -179,9 +193,10 @@ def main():
     sys.stderr.write('python={}\n'.format(sys.executable))
     raise
 
-  paths_set = ComputePythonDependencies()
   for path in options.whitelists:
-    paths_set.update(os.path.abspath(p) for p in _FindPythonInDirectory(path))
+    paths_set.update(
+        os.path.abspath(p)
+        for p in _FindPythonInDirectory(path, allow_test=False))
 
   paths = [os.path.relpath(p, options.root) for p in paths_set]
 
