@@ -1385,14 +1385,14 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
     }
 
     /**
+     * @param options The payment options specified in the payment request.
      * @return true when there is exactly one available payment app which can provide all requested
      * information including shipping address and payer's contact information whenever needed.
      */
-    public boolean onlySingleAppCanProvideAllRequiredInformation() {
+    public boolean onlySingleAppCanProvideAllRequiredInformation(PaymentOptions options) {
         assert mPaymentMethodsSection != null;
 
-        if (mParams.hasClosed()) return false;
-        if (!PaymentOptionsUtils.requestAnyInformation(mParams.getPaymentOptions())) {
+        if (!PaymentOptionsUtils.requestAnyInformation(options)) {
             return mPaymentMethodsSection.getSize() == 1
                     && !((PaymentApp) mPaymentMethodsSection.getItem(0)).isAutofillInstrument();
         }
@@ -1401,11 +1401,10 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         int sectionSize = mPaymentMethodsSection.getSize();
         for (int i = 0; i < sectionSize; i++) {
             PaymentApp app = (PaymentApp) mPaymentMethodsSection.getItem(i);
-            if ((!mParams.getPaymentOptions().requestShipping || app.handlesShippingAddress())
-                    && (!mParams.getPaymentOptions().requestPayerName || app.handlesPayerName())
-                    && (!mParams.getPaymentOptions().requestPayerPhone || app.handlesPayerPhone())
-                    && (!mParams.getPaymentOptions().requestPayerEmail
-                            || app.handlesPayerEmail())) {
+            if ((!options.requestShipping || app.handlesShippingAddress())
+                    && (!options.requestPayerName || app.handlesPayerName())
+                    && (!options.requestPayerPhone || app.handlesPayerPhone())
+                    && (!options.requestPayerEmail || app.handlesPayerEmail())) {
                 // There is more than one available app that can provide all merchant requested
                 // information information.
                 if (anAppCanProvideAllInfo) return false;
@@ -1448,10 +1447,11 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
      *         identifier is specified in payment request.
      * @param skipUiForNonUrlPaymentMethodIdentifiers True when skip UI is available for non-url
      *         based payment method identifiers (e.g., basic-card).
+     * @param options The payment options specified in the payment request.
      */
     public void calculateWhetherShouldSkipShowingPaymentRequestUi(boolean isUserGestureShow,
             boolean urlPaymentMethodIdentifiersSupported,
-            boolean skipUiForNonUrlPaymentMethodIdentifiers) {
+            boolean skipUiForNonUrlPaymentMethodIdentifiers, PaymentOptions options) {
         assert mPaymentMethodsSection != null;
         PaymentApp selectedApp = (PaymentApp) mPaymentMethodsSection.getSelectedItem();
 
@@ -1465,7 +1465,7 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
                 // the payment request UI, thus can't be skipped.
                 && (urlPaymentMethodIdentifiersSupported || skipUiForNonUrlPaymentMethodIdentifiers)
                 && mPaymentMethodsSection.getSize() >= 1
-                && onlySingleAppCanProvideAllRequiredInformation()
+                && onlySingleAppCanProvideAllRequiredInformation(options)
                 // Skip to payment app only if it can be pre-selected.
                 && selectedApp != null
                 // Skip to payment app only if user gesture is provided when it is required to

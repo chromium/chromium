@@ -413,7 +413,8 @@ public class ChromePaymentRequestService
             // request.show() is called.
             mPaymentUiService.calculateWhetherShouldSkipShowingPaymentRequestUi(mIsUserGestureShow,
                     mURLPaymentMethodIdentifiersSupported,
-                    mPaymentRequestService.skipUiForNonUrlPaymentMethodIdentifiers());
+                    mPaymentRequestService.skipUiForNonUrlPaymentMethodIdentifiers(),
+                    mPaymentOptions);
             if (!buildUI(chromeActivity)) return;
             if (!mPaymentUiService.shouldSkipShowingPaymentRequestUi()
                     && mSkipToGPayHelper == null) {
@@ -1570,7 +1571,8 @@ public class ChromePaymentRequestService
             assert mIsFinishedQueryingPaymentApps;
             mPaymentUiService.calculateWhetherShouldSkipShowingPaymentRequestUi(mIsUserGestureShow,
                     mURLPaymentMethodIdentifiersSupported,
-                    mPaymentRequestService.skipUiForNonUrlPaymentMethodIdentifiers());
+                    mPaymentRequestService.skipUiForNonUrlPaymentMethodIdentifiers(),
+                    mPaymentOptions);
             if (!buildUI(chromeActivity)) return;
             if (!mPaymentUiService.shouldSkipShowingPaymentRequestUi()
                     && mSkipToGPayHelper == null) {
