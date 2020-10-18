@@ -270,6 +270,7 @@ import java.lang.annotation.RetentionPolicy;
     // Implement WebContentsObserver:
     @Override
     public void didFailLoad(boolean isMainFrame, int errorCode, String failingUrl) {
+        if (!isMainFrame) return;
         mHandler.post(() -> {
             mCloseReason = CloseReason.FAIL_LOAD;
             mHider.run();
