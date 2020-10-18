@@ -21,19 +21,27 @@ namespace borealis {
 namespace {
 
 MATCHER(IsSuccessResult, "") {
-  return arg.Ok();
+  return arg.Ok() && arg.Success().vm_name() == "test_vm_name";
 }
 
 MATCHER(IsFailureResult, "") {
-  return !arg.Ok();
+  return !arg.Ok() && arg.Failure() == BorealisContextManager::kStartVmFailed &&
+         arg.FailureReason() == "Something went wrong!";
 }
 
 class MockTask : public BorealisTask {
  public:
   explicit MockTask(bool success) : success_(success) {}
   void Run(BorealisContext* context,
-           base::OnceCallback<void(bool)> callback) override {
-    std::move(callback).Run(/*should_continue=*/success_);
+           BorealisTask::CompletionStatusCallback callback) override {
+    if (success_) {
+      context->set_vm_name("test_vm_name");
+      std::move(callback).Run(BorealisContextManager::kSuccess, "");
+    } else {
+      // Just use a random error.
+      std::move(callback).Run(BorealisContextManager::kStartVmFailed,
+                              "Something went wrong!");
+    }
   }
   bool success_ = true;
 };
@@ -108,6 +116,18 @@ TEST_F(BorealisContextManagerTest, GetTasksReturnsCorrectTaskList) {
   BorealisContextManagerImpl context_manager(profile_.get());
   base::queue<std::unique_ptr<BorealisTask>> tasks = context_manager.GetTasks();
   EXPECT_FALSE(tasks.empty());
+}
+
+TEST_F(BorealisContextManagerTest, NoTasksImpliesSuccess) {
+  testing::StrictMock<ResultCallbackHandler> callback_expectation;
+
+  BorealisContextManagerImplForTesting context_manager(
+      profile_.get(), /*tasks=*/0, /*success=*/true);
+  EXPECT_CALL(callback_expectation, Callback(testing::_))
+      .WillOnce(testing::Invoke(
+          [](BorealisContextManager::Result result) { result.Ok(); }));
+  context_manager.StartBorealis(callback_expectation.GetCallback());
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(BorealisContextManagerTest, StartupSucceedsForSuccessfulTask) {

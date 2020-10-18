@@ -17,7 +17,12 @@ class BorealisContext;
 class BorealisContextManager : public KeyedService {
  public:
   // A list of possible outcomes for an attempt to startup borealis.
-  enum Status { kSuccess = 0, kMountFailed = 1 };
+  enum Status {
+    kSuccess = 0,
+    kMountFailed = 1,
+    kDiskImageFailed = 2,
+    kStartVmFailed = 3,
+  };
 
   // An attempt to launch borealis. If the launch succeeds, holds a reference to
   // the context created for that launch, otherwise holds an error.
@@ -42,7 +47,7 @@ class BorealisContextManager : public KeyedService {
 
     // In the event of a successful launch, returns a handle to the context
     // created for that launch.
-    const BorealisContext& Success();
+    const BorealisContext& Success() const;
 
    private:
     Status status_;

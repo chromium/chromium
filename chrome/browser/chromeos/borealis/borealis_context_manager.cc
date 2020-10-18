@@ -35,7 +35,7 @@ const std::string& BorealisContextManager::Result::FailureReason() const {
   return failure_reason_;
 }
 
-const BorealisContext& BorealisContextManager::Result::Success() {
+const BorealisContext& BorealisContextManager::Result::Success() const {
   DCHECK(Ok());
   return *ctx_;
 }

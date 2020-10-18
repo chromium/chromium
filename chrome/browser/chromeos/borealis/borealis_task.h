@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_BOREALIS_BOREALIS_TASK_H_
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/chromeos/borealis/borealis_context_manager.h"
 #include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 
@@ -17,9 +18,11 @@ class BorealisContext;
 // Borealis Context Manager.
 class BorealisTask {
  public:
-  // Callback to be run when the task completes. The |bool| should reflect
-  // if the task succeeded (true) or failed (false).
-  using CompletionStatusCallback = base::OnceCallback<void(bool)>;
+  // Callback to be run when the task completes. The |status| should reflect
+  // if the task succeeded with kSuccess and an empty string. If it fails, a
+  // different status should be used, and an error string provided.
+  using CompletionStatusCallback =
+      base::OnceCallback<void(BorealisContextManager::Status, std::string)>;
   BorealisTask() = default;
   BorealisTask(const BorealisTask&) = delete;
   BorealisTask& operator=(const BorealisTask&) = delete;

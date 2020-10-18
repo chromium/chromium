@@ -4,9 +4,29 @@
 
 #include "chrome/browser/chromeos/borealis/borealis_context_manager_impl.h"
 
+#include <ostream>
+
 #include "base/logging.h"
 #include "chrome/browser/chromeos/borealis/borealis_context_manager.h"
 #include "chrome/browser/chromeos/borealis/borealis_task.h"
+
+namespace {
+
+std::ostream& operator<<(std::ostream& stream,
+                         borealis::BorealisContextManager::Status status) {
+  switch (status) {
+    case borealis::BorealisContextManager::kSuccess:
+      return stream << "Success";
+    case borealis::BorealisContextManager::kMountFailed:
+      return stream << "Mount Failed";
+    case borealis::BorealisContextManager::kDiskImageFailed:
+      return stream << "Disk Image Failed";
+    case borealis::BorealisContextManager::kStartVmFailed:
+      return stream << "Start VM Failed";
+  }
+}
+
+}  // namespace
 
 namespace borealis {
 
@@ -24,7 +44,7 @@ void BorealisContextManagerImpl::StartBorealis(ResultCallback callback) {
   if (!is_borealis_starting_) {
     is_borealis_starting_ = true;
     task_queue_ = GetTasks();
-    NextTask(/*should_continue=*/true);
+    NextTask();
   }
 }
 
@@ -41,17 +61,7 @@ void BorealisContextManagerImpl::AddCallback(ResultCallback callback) {
   callback_queue_.push(std::move(callback));
 }
 
-void BorealisContextManagerImpl::NextTask(bool should_continue) {
-  if (!should_continue) {
-    // TODO(b/168425531): Error handling should be expanded to give more
-    // information about which task failed, why it failed and what should happen
-    // as a result.
-    // For now just use some random error.
-    startup_status_ = kMountFailed;
-    startup_error_ = "A task failed when trying to start Borealis.";
-    OnQueueComplete();
-    return;
-  }
+void BorealisContextManagerImpl::NextTask() {
   if (task_queue_.empty()) {
     context_.set_borealis_running(true);
     is_borealis_running_ = true;
@@ -62,8 +72,21 @@ void BorealisContextManagerImpl::NextTask(bool should_continue) {
   current_task_ = std::move(task_queue_.front());
   task_queue_.pop();
   current_task_->Run(&context_,
-                     base::BindOnce(&BorealisContextManagerImpl::NextTask,
+                     base::BindOnce(&BorealisContextManagerImpl::TaskCallback,
                                     weak_factory_.GetWeakPtr()));
+}
+
+void BorealisContextManagerImpl::TaskCallback(Status status,
+                                              std::string error) {
+  startup_status_ = status;
+  if (startup_status_ == kSuccess) {
+    NextTask();
+    return;
+  }
+  startup_error_ = error;
+  LOG(ERROR) << "Startup failed: failure=" << startup_status_
+             << " message=" << startup_error_;
+  OnQueueComplete();
 }
 
 void BorealisContextManagerImpl::OnQueueComplete() {

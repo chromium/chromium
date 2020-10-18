@@ -33,7 +33,8 @@ class BorealisContextManagerImpl : public BorealisContextManager {
 
  private:
   void AddCallback(ResultCallback callback);
-  void NextTask(bool should_continue);
+  void NextTask();
+  void TaskCallback(Status status, std::string error);
   void OnQueueComplete();
 
   // Returns the result of the startup (i.e. the context if it succeeds, or an

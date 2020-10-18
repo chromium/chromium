@@ -31,7 +31,7 @@ class BorealisContext {
   bool borealis_running() const { return borealis_running_; }
   void set_borealis_running(bool success) { borealis_running_ = success; }
 
-  const std::string& vm_name() { return vm_name_; }
+  const std::string& vm_name() const { return vm_name_; }
   void set_vm_name(std::string vm_name) { vm_name_ = std::move(vm_name); }
 
   const std::string& root_path() const { return root_path_; }
