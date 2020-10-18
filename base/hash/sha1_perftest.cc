@@ -6,11 +6,11 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <algorithm>
 #include <string>
 #include <vector>
 
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -48,7 +48,7 @@ void Timing(const size_t len) {
       utime[i] = TimeTicks::Now() - start;
       total_test_time += utime[i];
     }
-    std::sort(utime.begin(), utime.end());
+    ranges::sort(utime);
   }
 
   reporter.AddResult(kMetricRuntime, total_test_time.InMicrosecondsF());
@@ -67,8 +67,8 @@ void Timing(const size_t len) {
 
   // Convert to a comma-separated string so we can report every data point.
   std::vector<std::string> rate_strings(utime.size());
-  std::transform(utime.cbegin(), utime.cend(), rate_strings.begin(),
-                 [rate](const auto& t) { return NumberToString(rate(t)); });
+  ranges::transform(utime, rate_strings.begin(),
+                    [rate](const auto& t) { return NumberToString(rate(t)); });
   reporter.AddResultList(kMetricThroughput, JoinString(rate_strings, ","));
 }
 

@@ -4,10 +4,10 @@
 
 #include "base/containers/unique_ptr_adapters.h"
 
-#include <algorithm>
 #include <memory>
 #include <vector>
 
+#include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -76,19 +76,19 @@ TEST(UniquePtrMatcherTest, Basic) {
   v.push_back(std::move(foo_ptr2));
 
   {
-    auto iter = std::find_if(v.begin(), v.end(), UniquePtrMatcher<Foo>(foo1));
+    auto iter = ranges::find_if(v, UniquePtrMatcher<Foo>(foo1));
     ASSERT_TRUE(iter != v.end());
     EXPECT_EQ(foo1, iter->get());
   }
 
   {
-    auto iter = std::find_if(v.begin(), v.end(), UniquePtrMatcher<Foo>(foo2));
+    auto iter = ranges::find_if(v, UniquePtrMatcher<Foo>(foo2));
     ASSERT_TRUE(iter != v.end());
     EXPECT_EQ(foo2, iter->get());
   }
 
   {
-    auto iter = std::find_if(v.begin(), v.end(), MatchesUniquePtr(foo2));
+    auto iter = ranges::find_if(v, MatchesUniquePtr(foo2));
     ASSERT_TRUE(iter != v.end());
     EXPECT_EQ(foo2, iter->get());
   }
@@ -110,22 +110,19 @@ TEST(UniquePtrMatcherTest, Deleter) {
   v.push_back(std::move(foo_ptr2));
 
   {
-    auto iter = std::find_if(v.begin(), v.end(),
-                             UniquePtrMatcher<Foo, TestDeleter>(foo1));
+    auto iter = ranges::find_if(v, UniquePtrMatcher<Foo, TestDeleter>(foo1));
     ASSERT_TRUE(iter != v.end());
     EXPECT_EQ(foo1, iter->get());
   }
 
   {
-    auto iter = std::find_if(v.begin(), v.end(),
-                             UniquePtrMatcher<Foo, TestDeleter>(foo2));
+    auto iter = ranges::find_if(v, UniquePtrMatcher<Foo, TestDeleter>(foo2));
     ASSERT_TRUE(iter != v.end());
     EXPECT_EQ(foo2, iter->get());
   }
 
   {
-    auto iter = std::find_if(v.begin(), v.end(),
-                             MatchesUniquePtr<Foo, TestDeleter>(foo2));
+    auto iter = ranges::find_if(v, MatchesUniquePtr<Foo, TestDeleter>(foo2));
     ASSERT_TRUE(iter != v.end());
     EXPECT_EQ(foo2, iter->get());
   }

@@ -17,6 +17,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/notreached.h"
 #include "base/observer_list_internal.h"
+#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
 
@@ -279,9 +280,8 @@ class ObserverList {
   // not in this list.
   void RemoveObserver(const ObserverType* obs) {
     DCHECK(obs);
-    const auto it =
-        std::find_if(observers_.begin(), observers_.end(),
-                     [obs](const auto& o) { return o.IsEqual(obs); });
+    const auto it = ranges::find_if(
+        observers_, [obs](const auto& o) { return o.IsEqual(obs); });
     if (it == observers_.end())
       return;
 
@@ -300,9 +300,9 @@ class ObserverList {
     // probably DCHECK, but some client code currently does pass null.
     if (obs == nullptr)
       return false;
-    return std::find_if(observers_.begin(), observers_.end(),
-                        [obs](const auto& o) { return o.IsEqual(obs); }) !=
-           observers_.end();
+    return ranges::find_if(observers_, [obs](const auto& o) {
+             return o.IsEqual(obs);
+           }) != observers_.end();
   }
 
   // Removes all the observers from this list.

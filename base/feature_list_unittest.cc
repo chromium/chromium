@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -14,6 +13,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/persistent_memory_allocator.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -39,7 +39,7 @@ struct Feature kFeatureOffByDefault {
 std::string SortFeatureListString(const std::string& feature_list) {
   std::vector<base::StringPiece> features =
       FeatureList::SplitFeatureListString(feature_list);
-  std::sort(features.begin(), features.end());
+  ranges::sort(features);
   return JoinString(features, ",");
 }
 

@@ -4,12 +4,12 @@
 
 #include "base/task/common/checked_lock_impl.h"
 
-#include <algorithm>
 #include <unordered_map>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/lazy_instance.h"
+#include "base/ranges/algorithm.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/task/common/checked_lock.h"
 #include "base/threading/platform_thread.h"
@@ -44,8 +44,7 @@ class SafeAcquisitionTracker {
 
   void RecordRelease(const CheckedLockImpl* const lock) {
     LockVector* acquired_locks = GetAcquiredLocksOnCurrentThread();
-    const auto iter_at_lock =
-        std::find(acquired_locks->begin(), acquired_locks->end(), lock);
+    const auto iter_at_lock = ranges::find(*acquired_locks, lock);
     DCHECK(iter_at_lock != acquired_locks->end());
     acquired_locks->erase(iter_at_lock);
   }

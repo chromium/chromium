@@ -18,6 +18,7 @@
 #include "base/no_destructor.h"
 #include "base/optional.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/sequence_manager/real_time_domain.h"
 #include "base/task/sequence_manager/task_time_observer.h"
 #include "base/task/sequence_manager/thread_controller_impl.h"
@@ -542,8 +543,7 @@ void SequenceManagerImpl::LogTaskDebugInfo(
     case Settings::TaskLogging::kEnabledWithBacktrace: {
       std::array<const void*, PendingTask::kTaskBacktraceLength + 1> task_trace;
       task_trace[0] = task->posted_from.program_counter();
-      std::copy(task->task_backtrace.begin(), task->task_backtrace.end(),
-                task_trace.begin() + 1);
+      ranges::copy(task->task_backtrace, task_trace.begin() + 1);
       size_t length = 0;
       while (length < task_trace.size() && task_trace[length])
         ++length;

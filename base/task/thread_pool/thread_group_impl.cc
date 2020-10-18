@@ -22,6 +22,7 @@
 #include "base/metrics/histogram.h"
 #include "base/numerics/clamped_math.h"
 #include "base/optional.h"
+#include "base/ranges/algorithm.h"
 #include "base/sequence_token.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -82,10 +83,10 @@ constexpr TimeDelta kBackgroundBlockedWorkersPoll = TimeDelta::FromSeconds(12);
 // Only used in DCHECKs.
 bool ContainsWorker(const std::vector<scoped_refptr<WorkerThread>>& workers,
                     const WorkerThread* worker) {
-  auto it = std::find_if(workers.begin(), workers.end(),
-                         [worker](const scoped_refptr<WorkerThread>& i) {
-                           return i.get() == worker;
-                         });
+  auto it =
+      ranges::find_if(workers, [worker](const scoped_refptr<WorkerThread>& i) {
+        return i.get() == worker;
+      });
   return it != workers.end();
 }
 
@@ -720,8 +721,7 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::CleanupLockRequired(
   outer_->idle_workers_stack_.Remove(worker);
 
   // Remove the worker from |workers_|.
-  auto worker_iter =
-      std::find(outer_->workers_.begin(), outer_->workers_.end(), worker);
+  auto worker_iter = ranges::find(outer_->workers_, worker);
   DCHECK(worker_iter != outer_->workers_.end());
   outer_->workers_.erase(worker_iter);
 }

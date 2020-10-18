@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <utility>
 
+#include "base/ranges/algorithm.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -124,8 +125,7 @@ class TestThread : public SimpleThread {
       }
       if (!was_started)
         continue;
-      if (std::any_of(tokens.begin(), tokens.end(),
-                      [](const auto& token) { return !token; })) {
+      if (ranges::any_of(tokens, [](const auto& token) { return !token; })) {
         break;
       }
     }

@@ -30,6 +30,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/pattern.h"
@@ -695,7 +696,7 @@ void TestRunner::Run(const std::vector<std::string>& test_names) {
   CHECK_GT(runner_count_, 0u);
   tests_to_run_ = test_names;
   // Reverse test order to avoid coping the whole vector when removing tests.
-  std::reverse(tests_to_run_.begin(), tests_to_run_.end());
+  ranges::reverse(tests_to_run_);
   runners_done_ = 0;
   task_runners_.clear();
   for (size_t i = 0; i < runner_count_; i++) {
@@ -1591,7 +1592,7 @@ bool TestLauncher::ShuffleTests(CommandLine* command_line) {
 
     std::mt19937 randomizer;
     randomizer.seed(shuffle_seed);
-    std::shuffle(tests_.begin(), tests_.end(), randomizer);
+    ranges::shuffle(tests_, randomizer);
 
     fprintf(stdout, "Randomizing with seed %u\n", shuffle_seed);
     fflush(stdout);

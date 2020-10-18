@@ -4,7 +4,6 @@
 
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 
-#include <algorithm>
 #include <atomic>
 #include <cmath>
 #include <memory>
@@ -17,6 +16,7 @@
 #include "base/no_destructor.h"
 #include "base/partition_alloc_buildflags.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 
 #if defined(OS_APPLE) || defined(OS_ANDROID)
@@ -571,8 +571,7 @@ void PoissonAllocationSampler::SuppressRandomnessForTest(bool suppress) {
 void PoissonAllocationSampler::AddSamplesObserver(SamplesObserver* observer) {
   ScopedMuteThreadSamples no_reentrancy_scope;
   AutoLock lock(mutex_);
-  DCHECK(std::find(observers_.begin(), observers_.end(), observer) ==
-         observers_.end());
+  DCHECK(ranges::find(observers_, observer) == observers_.end());
   observers_.push_back(observer);
   InstallAllocatorHooksOnce();
   g_running = !observers_.empty();
@@ -582,7 +581,7 @@ void PoissonAllocationSampler::RemoveSamplesObserver(
     SamplesObserver* observer) {
   ScopedMuteThreadSamples no_reentrancy_scope;
   AutoLock lock(mutex_);
-  auto it = std::find(observers_.begin(), observers_.end(), observer);
+  auto it = ranges::find(observers_, observer);
   DCHECK(it != observers_.end());
   observers_.erase(it);
   g_running = !observers_.empty();

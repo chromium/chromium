@@ -16,6 +16,7 @@
 #include "base/profiler/stack_copier.h"
 #include "base/profiler/suspendable_thread_delegate.h"
 #include "base/profiler/unwinder.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 
 // IMPORTANT NOTE: Some functions within this implementation are invoked while
@@ -169,11 +170,10 @@ std::vector<Frame> StackSamplerImpl::WalkStack(
   do {
     // Choose an authoritative unwinder for the current module. Use the first
     // unwinder that thinks it can unwind from the current frame.
-    auto unwinder =
-        std::find_if(unwinders.begin(), unwinders.end(),
-                     [&stack](const std::unique_ptr<Unwinder>& unwinder) {
-                       return unwinder->CanUnwindFrom(stack.back());
-                     });
+    auto unwinder = ranges::find_if(
+        unwinders, [&stack](const std::unique_ptr<Unwinder>& unwinder) {
+          return unwinder->CanUnwindFrom(stack.back());
+        });
     if (unwinder == unwinders.end())
       return stack;
 

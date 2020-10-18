@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/test/move_only_int.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -214,7 +215,7 @@ TEST(FlatMap, InsertOrAssignMoveOnlyKey) {
   base::flat_map<MoveOnlyInt, int> map;
   for (int i : {3, 1, 5, 6, 8, 7, 0, 9, 4, 2}) {
     map.insert_or_assign(MoveOnlyInt(i), i);
-    EXPECT_TRUE(std::is_sorted(map.begin(), map.end()));
+    EXPECT_TRUE(ranges::is_sorted(map));
   }
 }
 
@@ -249,7 +250,7 @@ TEST(FlatMap, InsertOrAssignMoveOnlyKeyWithHint) {
   base::flat_map<MoveOnlyInt, int> map;
   for (int i : {3, 1, 5, 6, 8, 7, 0, 9, 4, 2}) {
     map.insert_or_assign(map.end(), MoveOnlyInt(i), i);
-    EXPECT_TRUE(std::is_sorted(map.begin(), map.end()));
+    EXPECT_TRUE(ranges::is_sorted(map));
   }
 }
 
@@ -294,7 +295,7 @@ TEST(FlatMap, TryEmplaceMoveOnlyKey) {
   base::flat_map<MoveOnlyInt, int> map;
   for (int i : {3, 1, 5, 6, 8, 7, 0, 9, 4, 2}) {
     map.try_emplace(MoveOnlyInt(i), i);
-    EXPECT_TRUE(std::is_sorted(map.begin(), map.end()));
+    EXPECT_TRUE(ranges::is_sorted(map));
   }
 }
 
@@ -340,7 +341,7 @@ TEST(FlatMap, TryEmplaceMoveOnlyKeyWithHint) {
   base::flat_map<MoveOnlyInt, int> map;
   for (int i : {3, 1, 5, 6, 8, 7, 0, 9, 4, 2}) {
     map.try_emplace(map.end(), MoveOnlyInt(i), i);
-    EXPECT_TRUE(std::is_sorted(map.begin(), map.end()));
+    EXPECT_TRUE(ranges::is_sorted(map));
   }
 }
 

@@ -6,7 +6,6 @@
 
 #include <string.h>
 
-#include <algorithm>
 #include <cmath>
 #include <new>
 #include <ostream>
@@ -18,6 +17,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1554,7 +1554,7 @@ bool ListValue::Remove(size_t index, std::unique_ptr<Value>* out_value) {
 }
 
 bool ListValue::Remove(const Value& value, size_t* index) {
-  auto it = std::find(list().begin(), list().end(), value);
+  auto it = ranges::find(list(), value);
 
   if (it == list().end())
     return false;
@@ -1626,7 +1626,7 @@ bool ListValue::Insert(size_t index, std::unique_ptr<Value> in_value) {
 }
 
 ListValue::const_iterator ListValue::Find(const Value& value) const {
-  return std::find(GetList().begin(), GetList().end(), value);
+  return ranges::find(GetList(), value);
 }
 
 void ListValue::Swap(ListValue* other) {

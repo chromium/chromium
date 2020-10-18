@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/common/scoped_defer_task_posting.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
@@ -1418,7 +1419,7 @@ void TaskQueueImpl::DelayedIncomingQueue::SweepCancelledTasks() {
 
   // If we deleted something, re-enforce the heap property.
   if (task_deleted)
-    std::make_heap(queue_.c.begin(), queue_.c.end(), queue_.comp);
+    ranges::make_heap(queue_.c, queue_.comp);
 }
 
 Value TaskQueueImpl::DelayedIncomingQueue::AsValue(TimeTicks now) const {

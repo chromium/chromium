@@ -8,6 +8,7 @@
 #include <initializer_list>
 #include <type_traits>
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -151,9 +152,9 @@ TEST(CheckedContiguousRange, Mutable_Data) {
   std::vector<int> vector = {3, 1, 4, 2, 5};
   CheckedContiguousRange<std::vector<int>> range(vector);
 
-  EXPECT_FALSE(std::is_sorted(vector.begin(), vector.end()));
+  EXPECT_FALSE(ranges::is_sorted(vector));
   std::sort(range.data(), range.data() + range.size());
-  EXPECT_TRUE(std::is_sorted(vector.begin(), vector.end()));
+  EXPECT_TRUE(ranges::is_sorted(vector));
 }
 
 TEST(CheckedContiguousRange, DataSizeEmpty_Constexpr) {

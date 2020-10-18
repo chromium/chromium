@@ -4,9 +4,10 @@
 
 #include "base/profiler/module_cache.h"
 
-#include <algorithm>
 #include <iterator>
 #include <utility>
+
+#include "base/ranges/algorithm.h"
 
 namespace base {
 
@@ -69,8 +70,8 @@ void ModuleCache::UpdateNonNativeModules(
   //
   // stable_partition is O(m*log(r)) where m is the number of current modules
   // and r is the number of modules to remove. insert and erase are both O(r).
-  auto first_module_defunct_modules = std::stable_partition(
-      non_native_modules_.begin(), non_native_modules_.end(),
+  auto first_module_defunct_modules = ranges::stable_partition(
+      non_native_modules_,
       [&defunct_modules_set](const std::unique_ptr<const Module>& module) {
         return defunct_modules_set.find(module.get()) ==
                defunct_modules_set.end();

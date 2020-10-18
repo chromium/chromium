@@ -4,12 +4,12 @@
 
 #include "base/test/scoped_feature_list.h"
 
-#include <algorithm>
 #include <utility>
 #include <vector>
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_param_associator.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -71,10 +71,10 @@ struct Features {
 // with GetFeatureName() and also could be without parameters.
 bool ContainsFeature(const std::vector<StringPiece>& feature_vector,
                      StringPiece feature_name) {
-  auto iter = std::find_if(feature_vector.begin(), feature_vector.end(),
-                           [&feature_name](const StringPiece& a) {
-                             return GetFeatureName(a) == feature_name;
-                           });
+  auto iter =
+      ranges::find_if(feature_vector, [&feature_name](const StringPiece& a) {
+        return GetFeatureName(a) == feature_name;
+      });
   return iter != feature_vector.end();
 }
 

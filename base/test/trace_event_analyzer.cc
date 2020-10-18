@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
 #include "base/trace_event/trace_buffer.h"
@@ -775,7 +776,7 @@ bool TraceAnalyzer::SetEvents(const std::string& json_events) {
   raw_events_.clear();
   if (!ParseEventsFromJson(json_events, &raw_events_))
     return false;
-  std::stable_sort(raw_events_.begin(), raw_events_.end());
+  base::ranges::stable_sort(raw_events_);
   ParseMetadata();
   return true;
 }
@@ -964,7 +965,7 @@ bool GetRateStats(const TraceEventVector& events,
     deltas.push_back(delta);
   }
 
-  std::sort(deltas.begin(), deltas.end());
+  base::ranges::sort(deltas);
 
   if (options) {
     if (options->trim_min + options->trim_max > events.size() - kMinEvents) {
@@ -980,8 +981,8 @@ bool GetRateStats(const TraceEventVector& events,
   for (size_t i = 0; i < num_deltas; ++i)
     delta_sum += deltas[i];
 
-  stats->min_us = *std::min_element(deltas.begin(), deltas.end());
-  stats->max_us = *std::max_element(deltas.begin(), deltas.end());
+  stats->min_us = *base::ranges::min_element(deltas);
+  stats->max_us = *base::ranges::max_element(deltas);
   stats->mean_us = delta_sum / static_cast<double>(num_deltas);
 
   double sum_mean_offsets_squared = 0.0;

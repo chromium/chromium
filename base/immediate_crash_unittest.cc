@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/optional.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
@@ -207,7 +208,7 @@ TEST(ImmediateCrashTest, ExpectedOpcodeSequence) {
   ASSERT_NO_FATAL_FAILURE(GetTestFunctionInstructions(&body));
   SCOPED_TRACE(HexEncode(body.data(), body.size() * sizeof(Instruction)));
 
-  auto it = std::find(body.begin(), body.end(), kRet);
+  auto it = ranges::find(body, kRet);
   ASSERT_NE(body.end(), it) << "Failed to find return opcode";
   it++;
 

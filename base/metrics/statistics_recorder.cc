@@ -16,6 +16,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/record_histogram_checker.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -366,7 +367,7 @@ StatisticsRecorder::Histograms StatisticsRecorder::GetHistograms() {
 
 // static
 StatisticsRecorder::Histograms StatisticsRecorder::Sort(Histograms histograms) {
-  std::sort(histograms.begin(), histograms.end(), &HistogramNameLesser);
+  ranges::sort(histograms, &HistogramNameLesser);
   return histograms;
 }
 
@@ -376,12 +377,12 @@ StatisticsRecorder::Histograms StatisticsRecorder::WithName(
     const std::string& query) {
   // Need a C-string query for comparisons against C-string histogram name.
   const char* const query_string = query.c_str();
-  histograms.erase(std::remove_if(histograms.begin(), histograms.end(),
-                                  [query_string](const HistogramBase* const h) {
-                                    return !strstr(h->histogram_name(),
-                                                   query_string);
-                                  }),
-                   histograms.end());
+  histograms.erase(
+      ranges::remove_if(histograms,
+                        [query_string](const HistogramBase* const h) {
+                          return !strstr(h->histogram_name(), query_string);
+                        }),
+      histograms.end());
   return histograms;
 }
 
@@ -389,10 +390,11 @@ StatisticsRecorder::Histograms StatisticsRecorder::WithName(
 StatisticsRecorder::Histograms StatisticsRecorder::NonPersistent(
     Histograms histograms) {
   histograms.erase(
-      std::remove_if(histograms.begin(), histograms.end(),
-                     [](const HistogramBase* const h) {
-                       return (h->flags() & HistogramBase::kIsPersistent) != 0;
-                     }),
+      ranges::remove_if(histograms,
+                        [](const HistogramBase* const h) {
+                          return (h->flags() & HistogramBase::kIsPersistent) !=
+                                 0;
+                        }),
       histograms.end());
   return histograms;
 }

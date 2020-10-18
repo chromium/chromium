@@ -4,13 +4,13 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <limits>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/debug/activity_tracker.h"
 #include "base/optional.h"
+#include "base/ranges/algorithm.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
@@ -265,7 +265,7 @@ size_t WaitableEvent::WaitMany(WaitableEvent** raw_waitables,
 
   DCHECK_EQ(count, waitables.size());
 
-  sort(waitables.begin(), waitables.end(), cmp_fst_addr);
+  ranges::sort(waitables, cmp_fst_addr);
 
   // The set of waitables must be distinct. Since we have just sorted by
   // address, we can check this cheaply by comparing pairs of consecutive

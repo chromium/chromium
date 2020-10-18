@@ -4,13 +4,13 @@
 
 #include "base/debug/task_trace.h"
 
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 
 #if defined(OS_ANDROID)
 #include <android/log.h>
 #endif  // OS_ANDROID
 
-#include <algorithm>
 #include <iostream>
 #include <sstream>
 
@@ -55,8 +55,7 @@ TaskTrace::TaskTrace() {
     return;
   std::array<const void*, PendingTask::kTaskBacktraceLength + 1> task_trace;
   task_trace[0] = current_task->posted_from.program_counter();
-  std::copy(current_task->task_backtrace.begin(),
-            current_task->task_backtrace.end(), task_trace.begin() + 1);
+  ranges::copy(current_task->task_backtrace, task_trace.begin() + 1);
   size_t length = 0;
   while (length < task_trace.size() && task_trace[length])
     ++length;

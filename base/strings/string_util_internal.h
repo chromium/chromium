@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/third_party/icu/icu_utf.h"
 
@@ -580,8 +581,7 @@ StringType DoReplaceStringPlaceholders(
             ReplacementOffset r_offset(index,
                                        static_cast<int>(formatted.size()));
             r_offsets.insert(
-                std::upper_bound(r_offsets.begin(), r_offsets.end(), r_offset,
-                                 &CompareParameter),
+                ranges::upper_bound(r_offsets, r_offset, &CompareParameter),
                 r_offset);
           }
           if (index < substitutions)

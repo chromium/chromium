@@ -7,10 +7,10 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <vector>
 
 #include "base/check.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 
 // ScopedObserver is used to keep track of the set of sources an object has
@@ -56,7 +56,7 @@ class ScopedObserver {
 
   // Remove the object passed to the constructor as an observer from |source|.
   void Remove(Source* source) {
-    auto it = std::find(sources_.begin(), sources_.end(), source);
+    auto it = base::ranges::find(sources_, source);
     DCHECK(it != sources_.end());
     sources_.erase(it);
     (source->*RemoveObsFn)(observer_);

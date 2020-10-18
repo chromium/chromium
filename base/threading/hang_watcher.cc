@@ -4,7 +4,6 @@
 
 #include "base/threading/hang_watcher.h"
 
-#include <algorithm>
 #include <atomic>
 #include <utility>
 
@@ -16,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
@@ -413,10 +413,10 @@ HangWatcher::WatchStateSnapShot::WatchStateSnapShot(
 
   // Sort |hung_watch_state_copies_| by order of decreasing hang severity so the
   // most severe hang is first in the list.
-  std::sort(hung_watch_state_copies_.begin(), hung_watch_state_copies_.end(),
-            [](const WatchStateCopy& lhs, const WatchStateCopy& rhs) {
-              return lhs.deadline < rhs.deadline;
-            });
+  ranges::sort(hung_watch_state_copies_,
+               [](const WatchStateCopy& lhs, const WatchStateCopy& rhs) {
+                 return lhs.deadline < rhs.deadline;
+               });
 }
 
 HangWatcher::WatchStateSnapShot::WatchStateSnapShot(
@@ -476,8 +476,8 @@ void HangWatcher::Monitor() {
   // atomically. This is fine. Detecting a hang is generally best effort and
   // if a thread resumes from hang in the time it takes to move on to
   // capturing then its ID will be absent from the crash keys.
-  bool any_thread_hung = std::any_of(
-      watch_states_.cbegin(), watch_states_.cend(),
+  bool any_thread_hung = ranges::any_of(
+      watch_states_,
       [this, now](const std::unique_ptr<internal::HangWatchState>& state) {
         uint64_t flags;
         base::TimeTicks deadline;
@@ -595,12 +595,12 @@ void HangWatcher::UnregisterThread() {
   internal::HangWatchState* current_hang_watch_state =
       internal::HangWatchState::GetHangWatchStateForCurrentThread()->Get();
 
-  auto it =
-      std::find_if(watch_states_.cbegin(), watch_states_.cend(),
-                   [current_hang_watch_state](
-                       const std::unique_ptr<internal::HangWatchState>& state) {
-                     return state.get() == current_hang_watch_state;
-                   });
+  auto it = ranges::find_if(
+      watch_states_,
+      [current_hang_watch_state](
+          const std::unique_ptr<internal::HangWatchState>& state) {
+        return state.get() == current_hang_watch_state;
+      });
 
   // Thread should be registered to get unregistered.
   DCHECK(it != watch_states_.end());

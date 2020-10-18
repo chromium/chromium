@@ -4,9 +4,8 @@
 
 #include "base/task/thread_pool/worker_thread_stack.h"
 
-#include <algorithm>
-
 #include "base/check_op.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/task/thread_pool/worker_thread.h"
 
@@ -47,7 +46,7 @@ bool WorkerThreadStack::Contains(const WorkerThread* worker) const {
 void WorkerThreadStack::Remove(const WorkerThread* worker) {
   DCHECK(!IsEmpty());
   DCHECK_NE(worker, stack_.back());
-  auto it = std::find(stack_.begin(), stack_.end(), worker);
+  auto it = ranges::find(stack_, worker);
   DCHECK(it != stack_.end());
   DCHECK_NE(TimeTicks(), (*it)->GetLastUsedTime());
   stack_.erase(it);

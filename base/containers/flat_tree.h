@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/template_util.h"
 
@@ -756,11 +757,10 @@ template <class Key, class Value, class GetKeyFromValue, class KeyCompare>
 void flat_tree<Key, Value, GetKeyFromValue, KeyCompare>::replace(
     underlying_type&& body) {
   // Ensure that |body| is sorted and has no repeated elements.
-  DCHECK(std::is_sorted(body.begin(), body.end(), value_comp()));
-  DCHECK(std::adjacent_find(body.begin(), body.end(),
-                            [this](const auto& lhs, const auto& rhs) {
-                              return !value_comp()(lhs, rhs);
-                            }) == body.end());
+  DCHECK(ranges::is_sorted(body, value_comp()));
+  DCHECK(ranges::adjacent_find(body, [this](const auto& lhs, const auto& rhs) {
+           return !value_comp()(lhs, rhs);
+         }) == body.end());
   impl_.body_ = std::move(body);
 }
 
@@ -886,7 +886,7 @@ auto flat_tree<Key, Value, GetKeyFromValue, KeyCompare>::lower_bound(
   const KeyTypeOrK<K>& key_ref = key;
 
   KeyValueCompare key_value(impl_.get_key_comp());
-  return std::lower_bound(begin(), end(), key_ref, key_value);
+  return ranges::lower_bound(*this, key_ref, key_value);
 }
 
 template <class Key, class Value, class GetKeyFromValue, class KeyCompare>
@@ -907,7 +907,7 @@ auto flat_tree<Key, Value, GetKeyFromValue, KeyCompare>::upper_bound(
   const KeyTypeOrK<K>& key_ref = key;
 
   KeyValueCompare key_value(impl_.get_key_comp());
-  return std::upper_bound(begin(), end(), key_ref, key_value);
+  return ranges::upper_bound(*this, key_ref, key_value);
 }
 
 // ----------------------------------------------------------------------------
@@ -981,7 +981,7 @@ size_t EraseIf(
     base::internal::flat_tree<Key, Value, GetKeyFromValue, KeyCompare>&
         container,
     Predicate pred) {
-  auto it = std::remove_if(container.begin(), container.end(), pred);
+  auto it = ranges::remove_if(container, pred);
   size_t removed = std::distance(it, container.end());
   container.erase(it, container.end());
   return removed;

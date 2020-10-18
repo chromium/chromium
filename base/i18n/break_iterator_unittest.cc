@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <vector>
 
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -414,8 +415,7 @@ TEST(BreakIteratorTest, IsSentenceBoundary) {
   sentence_breaks.push_back(24);
   sentence_breaks.push_back(42);
   for (size_t i = 0; i < str.size(); i++) {
-    if (std::find(sentence_breaks.begin(), sentence_breaks.end(), i) !=
-        sentence_breaks.end()) {
+    if (ranges::find(sentence_breaks, i) != sentence_breaks.end()) {
       EXPECT_TRUE(iter.IsSentenceBoundary(i)) << " at index=" << i;
     } else {
       EXPECT_FALSE(iter.IsSentenceBoundary(i)) << " at index=" << i;

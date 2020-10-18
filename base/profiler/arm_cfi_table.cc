@@ -4,7 +4,7 @@
 
 #include "base/profiler/arm_cfi_table.h"
 
-#include <algorithm>
+#include "base/ranges/algorithm.h"
 
 namespace base {
 
@@ -91,8 +91,7 @@ Optional<ArmCFITable::FrameEntry> ArmCFITable::FindEntryForAddress(
   // Find the required function address in UNW_INDEX as the last function lower
   // or equal to |address| (the value right before the result of upper_bound(),
   // if any).
-  auto func_it = std::upper_bound(function_addresses_.begin(),
-                                  function_addresses_.end(), address);
+  auto func_it = ranges::upper_bound(function_addresses_, address);
   // If no function comes before |address|, no CFI entry  is returned.
   if (func_it == function_addresses_.begin())
     return nullopt;

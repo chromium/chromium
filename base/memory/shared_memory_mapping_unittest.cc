@@ -6,12 +6,12 @@
 
 #include <stdint.h>
 
-#include <algorithm>
 #include <limits>
 
 #include "base/containers/span.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -67,7 +67,7 @@ TEST_F(SharedMemoryMappingTest, SpanWithAutoDeducedElementCount) {
   span<const uint32_t> read_span = read_mapping_.GetMemoryAsSpan<uint32_t>();
   ASSERT_EQ(2u, read_span.size());
 
-  std::fill(write_span.begin(), write_span.end(), 0);
+  ranges::fill(write_span, 0);
   EXPECT_EQ(0u, read_span[0]);
   EXPECT_EQ(0u, read_span[1]);
 
@@ -92,7 +92,7 @@ TEST_F(SharedMemoryMappingTest, SpanWithExplicitElementCount) {
   span<const uint32_t> read_span_2 = read_mapping_.GetMemoryAsSpan<uint32_t>(1);
   ASSERT_EQ(1u, read_span_2.size());
 
-  std::fill(write_span.begin(), write_span.end(), 0);
+  ranges::fill(write_span, 0);
   EXPECT_EQ(0u, read_span[0]);
   EXPECT_EQ(0u, read_span[1]);
   EXPECT_EQ(0u, read_span_2[0]);
@@ -103,7 +103,7 @@ TEST_F(SharedMemoryMappingTest, SpanWithExplicitElementCount) {
   EXPECT_EQ(0x08070605u, read_span[1]);
   EXPECT_EQ(0x04030201u, read_span_2[0]);
 
-  std::fill(write_span_2.begin(), write_span_2.end(), 0);
+  ranges::fill(write_span_2, 0);
   EXPECT_EQ(0u, read_span[0]);
   EXPECT_EQ(0x08070605u, read_span[1]);
   EXPECT_EQ(0u, read_span_2[0]);
