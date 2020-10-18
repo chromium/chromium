@@ -10,6 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -29,7 +30,8 @@ class Layer;
 // highlight the focused UI element for accessibility.
 class AccessibilityFocusHighlight : public ui::LayerDelegate,
                                     public ui::CompositorAnimationObserver,
-                                    public content::NotificationObserver {
+                                    public content::NotificationObserver,
+                                    public TabStripModelObserver {
  public:
   explicit AccessibilityFocusHighlight(BrowserView* browser_view);
   ~AccessibilityFocusHighlight() override;
@@ -56,8 +58,8 @@ class AccessibilityFocusHighlight : public ui::LayerDelegate,
   // Get rid of the layer and stop animation.
   void RemoveLayer();
 
-  // Handle preference changes by adding or removing the layer as necessary.
-  void AddOrRemoveFocusObserver();
+  // Handle preference changes by adding or removing observers as necessary.
+  void AddOrRemoveObservers();
 
   // content::NotificationObserver overrides:
   void Observe(int type,
@@ -72,6 +74,11 @@ class AccessibilityFocusHighlight : public ui::LayerDelegate,
   // CompositorAnimationObserver overrides:
   void OnAnimationStep(base::TimeTicks timestamp) override;
   void OnCompositingShuttingDown(ui::Compositor* compositor) override;
+
+  // TabStripModelObserver
+  void OnTabStripModelChanged(TabStripModel*,
+                              const TabStripModelChange&,
+                              const TabStripSelectionChange&) override;
 
   // Compute the highlight color based on theme colors and defaults.
   SkColor GetHighlightColor();

@@ -89,12 +89,12 @@ AccessibilityFocusHighlight::AccessibilityFocusHighlight(
   profile_pref_registrar_.Init(browser_view_->browser()->profile()->GetPrefs());
   profile_pref_registrar_.Add(
       prefs::kAccessibilityFocusHighlightEnabled,
-      base::BindRepeating(
-          &AccessibilityFocusHighlight::AddOrRemoveFocusObserver,
-          base::Unretained(this)));
+      base::BindRepeating(&AccessibilityFocusHighlight::AddOrRemoveObservers,
+                          base::Unretained(this)));
 
-  // Initialise focus observer based on current preferences.
-  AddOrRemoveFocusObserver();
+  // Initialise focus and tab strip model observers based on current
+  // preferences.
+  AddOrRemoveObservers();
 
   // One-time initialization of statics the first time an instance is created.
   if (fade_in_time_.is_zero()) {
@@ -215,8 +215,10 @@ void AccessibilityFocusHighlight::RemoveLayer() {
   }
 }
 
-void AccessibilityFocusHighlight::AddOrRemoveFocusObserver() {
-  PrefService* prefs = browser_view_->browser()->profile()->GetPrefs();
+void AccessibilityFocusHighlight::AddOrRemoveObservers() {
+  Browser* browser = browser_view_->browser();
+  PrefService* prefs = browser->profile()->GetPrefs();
+  TabStripModel* tab_strip_model = browser->tab_strip_model();
 
   if (prefs->GetBoolean(prefs::kAccessibilityFocusHighlightEnabled)) {
     // Listen for focus changes. Automatically deregisters when destroyed,
@@ -224,15 +226,18 @@ void AccessibilityFocusHighlight::AddOrRemoveFocusObserver() {
     notification_registrar_.Add(this,
                                 content::NOTIFICATION_FOCUS_CHANGED_IN_PAGE,
                                 content::NotificationService::AllSources());
-    return;
-  }
 
-  if (notification_registrar_.IsRegistered(
+    tab_strip_model->AddObserver(this);
+    return;
+  } else {
+    if (notification_registrar_.IsRegistered(
+            this, content::NOTIFICATION_FOCUS_CHANGED_IN_PAGE,
+            content::NotificationService::AllSources())) {
+      notification_registrar_.Remove(
           this, content::NOTIFICATION_FOCUS_CHANGED_IN_PAGE,
-          content::NotificationService::AllSources())) {
-    notification_registrar_.Remove(this,
-                                   content::NOTIFICATION_FOCUS_CHANGED_IN_PAGE,
-                                   content::NotificationService::AllSources());
+          content::NotificationService::AllSources());
+    }
+    tab_strip_model->RemoveObserver(this);
   }
 }
 
@@ -389,4 +394,11 @@ void AccessibilityFocusHighlight::OnCompositingShuttingDown(
     compositor->RemoveAnimationObserver(this);
     compositor_ = nullptr;
   }
+}
+
+void AccessibilityFocusHighlight::OnTabStripModelChanged(
+    TabStripModel*,
+    const TabStripModelChange&,
+    const TabStripSelectionChange&) {
+  RemoveLayer();
 }
