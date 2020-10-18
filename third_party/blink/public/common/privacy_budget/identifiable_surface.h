@@ -229,8 +229,8 @@ class IdentifiableSurface {
   };
 
   enum class ScrollbarSurface : uint64_t {
-    kBodyOffsetWidth = 0,
-    kBodyOffsetHeight = 1,
+    kScrollingElementWidth = 0,
+    kScrollingElementHeight = 1,
     kElemScrollbarWidth = 2,
     kElemScrollbarHeight = 3,
   };
