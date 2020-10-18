@@ -58,10 +58,8 @@ class CMSampleBufferScopedAccessPermission
     : public media::VideoCaptureDevice::Client::Buffer::ScopedAccessPermission {
  public:
   CMSampleBufferScopedAccessPermission(CMSampleBufferRef buffer)
-      : buffer_(buffer, base::scoped_policy::RETAIN) {
-    buffer_.reset();
-  }
-  ~CMSampleBufferScopedAccessPermission() override {}
+      : buffer_(buffer, base::scoped_policy::RETAIN) {}
+  ~CMSampleBufferScopedAccessPermission() override { buffer_.reset(); }
 
  private:
   base::ScopedCFTypeRef<CMSampleBufferRef> buffer_;
