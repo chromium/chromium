@@ -616,7 +616,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.PeakAnalysis.StopAfterAccountStateChanged" units="hits"
-    expires_after="M88">
+    expires_after="2020-10-15">
+  <obsolete>
+    Removed 2020-10.
+  </obsolete>
   <owner>tschumann@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -630,7 +633,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.PeakAnalysis.StopAfterCredentialsChanged" units="hits"
-    expires_after="M88">
+    expires_after="2020-10-15">
+  <obsolete>
+    Removed 2020-10.
+  </obsolete>
   <owner>tschumann@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -643,7 +649,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.PeakAnalysis.StopOnSyncManagedPrefChange" units="hits"
-    expires_after="M88">
+    expires_after="2020-10-15">
+  <obsolete>
+    Removed 2020-10.
+  </obsolete>
   <owner>tschumann@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -655,7 +664,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.PeakAnalysis.StopOnSyncPermanentlyDisabled" units="hits"
-    expires_after="M88">
+    expires_after="2020-10-15">
+  <obsolete>
+    Removed 2020-10.
+  </obsolete>
   <owner>tschumann@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
