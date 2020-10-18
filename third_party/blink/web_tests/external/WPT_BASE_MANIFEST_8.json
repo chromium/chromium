@@ -59793,7 +59793,7 @@
       ]
      ],
      "align-items-007.html": [
-      "01e8f001a8a39c8726cf9a9453dfad07d0e1b83a",
+      "704c82fc6ad92410ff50ba4e5bbe02913ab33fe9",
       [
        null,
        [
@@ -61706,7 +61706,7 @@
       ]
      ],
      "flex-minimum-height-flex-items-007.xht": [
-      "e0e612627482d576acb6dd0857cc9f78f7cfa9e4",
+      "790ecb9141e40ecd583d0541cabb52939d5cfa37",
       [
        null,
        [
@@ -196009,12 +196009,6 @@
       []
      ],
      "aspect-ratio": {
-      "parsing": {
-       "contain-intrinsic-size-valid-expected.txt": [
-        "034b6db192f1fbc3b4c4b544602a6672b325f695",
-        []
-       ]
-      },
       "reference": {
        "ref-filled-green-100x20-rect.html": [
         "5d8ebce4ec5a42533cb82829b778e1f65029d7e4",
@@ -210124,7 +210118,7 @@
      []
     ],
     "density-corrected-size-bg-ref.html": [
-     "758ca8edc60adccf491f7db3aa40dbba9d75798b",
+     "154c1344444c45180628d858ed053434fbd9cab2",
      []
     ],
     "density-corrected-size-img-ref.html": [
@@ -219332,7 +219326,7 @@
          []
         ],
         "drawing-text-to-the-canvas.yaml": [
-         "550746bbc230f13ae55367751965370d1f42be21",
+         "a00caef1764fcced8f51673e08e4738d95df6a4f",
          []
         ],
         "fill-and-stroke-styles.yaml": [
@@ -219426,7 +219420,7 @@
          []
         ],
         "text.yaml": [
-         "d204a562c2fdc74bc37b2aaff8dd0799ff849521",
+         "280f4335ae2bae7bfa09ff1d87951f2bcfe3af53",
          []
         ],
         "the-canvas-state.yaml": [
@@ -232807,7 +232801,7 @@
       []
      ],
      "mediasource-worker-util.js": [
-      "e0c4bdc0e10bb5707f7af75bf6cafa293a6f7b9b",
+      "4cee4862fa4e6c39c43fee7af1a332e8a7cd7ce2",
       []
      ]
     },
@@ -284759,7 +284753,14 @@
       ]
      ],
      "flex-aspect-ratio-img-column-011.html": [
-      "66cb0e015f6618eb7cc3daee99f29ddbf7ed4729",
+      "6a0adb70dfd4886d25036104c1d72be90b564718",
+      [
+       null,
+       {}
+      ]
+     ],
+     "flex-aspect-ratio-img-column-017.html": [
+      "b2b97f0a31cfc7e67a67946b1cbad6ef0fbdbda8",
       [
        null,
        {}
@@ -295153,21 +295154,21 @@
      "aspect-ratio": {
       "parsing": {
        "contain-intrinsic-size-computed.html": [
-        "76fb5842ae691de4025795bc80777a61ceebbb6e",
+        "6a1f08a8a205222100a06d2fc3ff918564a3140a",
         [
          null,
          {}
         ]
        ],
        "contain-intrinsic-size-invalid.html": [
-        "e13c3ad07e1c25777cc9533407c0e57f6c6e5ddb",
+        "d85df5a844850d354621e835134a5c81d8b77ea7",
         [
          null,
          {}
         ]
        ],
        "contain-intrinsic-size-valid.html": [
-        "12f035d26f1e0d19e12fde8f981c05f36afb2c0e",
+        "7860e7556eca33c3f043bb553cefb9f71ae1b506",
         [
          null,
          {}
@@ -334402,6 +334403,20 @@
          {}
         ]
        ],
+       "2d.text.drawing.style.fontKerning.html": [
+        "b422b311276e854f5b9f0633bfba52fc7bc967c2",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.fontKerning.with.uppercase.html": [
+        "db4adf73f09bf895e95b3e81b20962772ee7799e",
+        [
+         null,
+         {}
+        ]
+       ],
        "2d.text.drawing.style.spacing.html": [
         "a4ec083311ba0cdb32babf9b4e3351111c29ade5",
         [
@@ -348805,6 +348820,34 @@
         "ff429ce56483fb87d266f5234e1af88a827249fc",
         [
          "html/canvas/offscreen/text/2d.text.draw.stroke.unaffected.worker.html",
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.fontKerning.html": [
+        "88b56c7562d388762d837a00e0f8389b8709c0d8",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.fontKerning.with.uppercase.html": [
+        "5e394dba50a74da6c4ef07c40af1e4cbb7163df2",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.fontKerning.with.uppercase.worker.js": [
+        "df3cd661884c38058326dd2e61084a9312fb952c",
+        [
+         "html/canvas/offscreen/text/2d.text.drawing.style.fontKerning.with.uppercase.worker.html",
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.fontKerning.worker.js": [
+        "d26bdec6ccf09e2153e393fadb594cf99e972fa7",
+        [
+         "html/canvas/offscreen/text/2d.text.drawing.style.fontKerning.worker.html",
          {}
         ]
        ],
@@ -372580,15 +372623,22 @@
      ]
     ],
     "dedicated-worker": {
-     "mediasource-worker-attach.html": [
-      "b09f05c248531029b9b787597af1ae84e0b65ccd",
+     "mediasource-worker-objecturl.html": [
+      "382a9a4f3632a53cd2a94dab121fe34a07d9238d",
       [
        null,
        {}
       ]
      ],
-     "mediasource-worker-objecturl.html": [
-      "382a9a4f3632a53cd2a94dab121fe34a07d9238d",
+     "mediasource-worker-play-terminate-worker.html": [
+      "d1c1c3d3fe8b0feba9eebb8c4796e904c0bcbf2f",
+      [
+       null,
+       {}
+      ]
+     ],
+     "mediasource-worker-play.html": [
+      "200f8a851bfc396861ad93b501bcebd7209dffd6",
       [
        null,
        {}
