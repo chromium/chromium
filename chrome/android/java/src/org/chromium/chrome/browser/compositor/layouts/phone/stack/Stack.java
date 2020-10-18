@@ -1727,7 +1727,7 @@ public abstract class Stack {
             mStackTabs = new StackTab[count];
 
             final boolean isIncognito = mTabList.isIncognito();
-            final boolean needTitle = !mLayout.isHiding();
+            final boolean needTitle = !mLayout.isStartingToHide();
             for (int i = 0; i < count; ++i) {
                 Tab tab = mTabList.getTabAt(i);
                 int tabId = tab != null ? tab.getId() : Tab.INVALID_TAB_ID;

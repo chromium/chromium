@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.compositor.layouts;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -21,6 +23,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -53,6 +56,9 @@ public class SceneOverlayTest {
     @Mock
     private ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
 
+    @Mock
+    private OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderOneshotSupplier;
+
     private LayoutManager mLayoutManager;
 
     @Before
@@ -62,9 +68,10 @@ public class SceneOverlayTest {
         when(mLayoutManagerHost.getContext()).thenReturn(mContext);
         when(mContext.getResources()).thenReturn(mResources);
         when(mResources.getDisplayMetrics()).thenReturn(mDisplayMetrics);
+        doNothing().when(mLayoutStateProviderOneshotSupplier).set(any());
 
-        mLayoutManager =
-                new LayoutManager(mLayoutManagerHost, mContainerView, mTabContentManagerSupplier);
+        mLayoutManager = new LayoutManager(mLayoutManagerHost, mContainerView,
+                mTabContentManagerSupplier, mLayoutStateProviderOneshotSupplier);
     }
 
     @Test
