@@ -13,6 +13,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/file_manager/grit/file_manager_resources.h"
 
 namespace chromeos {
 
@@ -24,6 +25,12 @@ content::WebUIDataSource* CreateMediaAppUntrustedDataSource(
   source->AddResourcePath("app.html", IDR_MEDIA_APP_APP_HTML);
   source->AddResourcePath("media_app_app_scripts.js",
                           IDR_MEDIA_APP_APP_SCRIPTS_JS);
+  source->AddResourcePath("piex_module_scripts.js",
+                          IDR_MEDIA_APP_PIEX_MODULE_SCRIPTS_JS);
+
+  // Add shared resources from chromeos_file_manager_resources.pak.
+  source->AddResourcePath("piex/piex.js.wasm", IDR_IMAGE_LOADER_PIEX_WASM_JS);
+  source->AddResourcePath("piex/piex.out.wasm", IDR_IMAGE_LOADER_PIEX_WASM);
 
   // Add resources from chromeos_media_app_bundle_resources.pak that are also
   // needed for mocks. If enable_cros_media_app = true, then these calls will
@@ -59,6 +66,12 @@ content::WebUIDataSource* CreateMediaAppUntrustedDataSource(
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,
       "style-src 'self' 'unsafe-inline';");
+
+  // Allow wasm.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src 'self' 'wasm-eval';");
+
   // TODO(crbug.com/1098685): Trusted Type remaining WebUI.
   source->DisableTrustedTypesCSP();
   return source;

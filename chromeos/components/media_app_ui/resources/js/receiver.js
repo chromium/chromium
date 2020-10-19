@@ -239,6 +239,23 @@ const DELEGATE = {
    */
   async openFile() {
     await parentMessagePipe.sendMessage(Message.OPEN_FILE);
+  },
+  /**
+   * @param {!Blob} file
+   * @return {!Promise<!File>}
+   */
+  async extractPreview(file) {
+    try {
+      const [buffer] = /** @type {!Array<!ArrayBuffer>} */ (
+          await Promise.all([file.arrayBuffer(), loadPiex()]));
+      return await extractFromRawImageBuffer(buffer);
+    } catch (/** @type {!Error} */ e) {
+      console.warn(e);
+      if (e.name === 'Error') {
+        e.name = 'JpegNotFound';
+      }
+      throw e;
+    }
   }
 };
 

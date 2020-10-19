@@ -601,6 +601,15 @@ async function getFileFromHandle(fileSystemHandle) {
 }
 
 /**
+ * Returns whether `filename` has an extension indicating a possible RAW image.
+ * @param {string} filename
+ * @return {boolean}
+ */
+function isRawImageFile(filename) {
+  return /\.(arw|cr2|dng|nef|nrw|orf|raf|rw2)$/.test(filename.toLowerCase());
+}
+
+/**
  * Returns whether `file` is a video or image file.
  * @param {!File} file
  * @return {boolean}
@@ -609,7 +618,7 @@ function isVideoOrImage(file) {
   // Check for .mkv explicitly because it is not a web-supported type, but is in
   // common use on ChromeOS.
   return /^(image)|(video)\//.test(file.type) ||
-      /\.mkv$/.test(file.name.toLowerCase());
+      /\.mkv$/.test(file.name.toLowerCase()) || isRawImageFile(file.name);
 }
 
 /**

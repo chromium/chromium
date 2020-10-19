@@ -25,10 +25,10 @@ const createVideoChild = async (blobSrc) => {
 };
 
 /** @type {ModuleHandler} */
-const createImgChild = async (blobSrc, altText) => {
+const createImgChild = async (blobSrc, fileName) => {
   const img = /** @type {!HTMLImageElement} */ (document.createElement('img'));
   img.src = blobSrc;
-  img.alt = altText;
+  img.alt = fileName;
   try {
     await img.decode();
   } catch (error) {
@@ -55,12 +55,30 @@ class BacklightApp extends HTMLElement {
     this.appendChild(this.currentMedia);
     /** @type {?mediaApp.AbstractFileList} */
     this.files;
+    /** @type {?mediaApp.ClientApiDelegate} */
+    this.delegate;
+  }
+
+  /**
+   * Emulates the preprocessing done in the "real" BacklightApp to hook in the
+   * RAW file converter. See go/media-app-element.
+   *
+   * @param {?mediaApp.AbstractFile} file
+   * @private
+   */
+  async preprocessFile(file) {
+    // This mock is only used for tests (which only test a .orf RAW file). We
+    // don't maintain the full list of RAW extensions here.
+    if (file && file.name.toLowerCase().endsWith('.orf')) {
+      file.blob = await this.delegate.extractPreview(file.blob);
+    }
   }
 
   /** @override  */
   async loadFiles(files) {
     let child;
     const file = files.item(0);
+    await this.preprocessFile(file);
     if (file) {
       const isVideo = file.mimeType.match('^video/');
       const factory = isVideo ? createVideoChild : createImgChild;
@@ -88,7 +106,9 @@ class BacklightApp extends HTMLElement {
   }
 
   /** @override */
-  setDelegate(delegate) {}
+  setDelegate(delegate) {
+    this.delegate = delegate;
+  }
 
   /** @param {!mediaApp.AbstractFileList} files */
   onNewFiles(files) {

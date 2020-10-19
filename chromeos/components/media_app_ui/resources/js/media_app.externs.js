@@ -166,6 +166,13 @@ mediaApp.ClientApiDelegate.prototype.requestSaveFile = function(
  * @return {!Promise<undefined>}
  */
 mediaApp.ClientApiDelegate.prototype.openFile = function() {};
+/**
+ * Attempts to extract a JPEG "preview" from a RAW image file. Throws on any
+ * failure. Note this is typically a full-sized preview, not a thumbnail.
+ * @param {!Blob} file
+ * @return {!Promise<!File>} A Blob-backed File with type: image/jpeg.
+ */
+mediaApp.ClientApiDelegate.prototype.extractPreview = function(file) {};
 
 /**
  * The client Api for interacting with the media app instance.

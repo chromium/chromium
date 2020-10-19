@@ -1033,6 +1033,8 @@ void RenderThreadImpl::RegisterSchemes() {
       chrome_untrusted_scheme);
   WebSecurityPolicy::RegisterURLSchemeAsSupportingFetchAPI(
       chrome_untrusted_scheme);
+  WebSecurityPolicy::RegisterURLSchemeAsAllowingWasmEvalCSP(
+      chrome_untrusted_scheme);
 
   // devtools:
   WebString devtools_scheme(WebString::FromASCII(kChromeDevToolsScheme));

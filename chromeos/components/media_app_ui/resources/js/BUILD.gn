@@ -56,10 +56,19 @@ js_library("error_reporter") {
   externs_list = [ "$externs_path/crash_report_private.js" ]
 }
 
+js_library("piex_module_loader") {
+}
+
+js_library("piex_module") {
+  deps = [ "//ui/file_manager/image_loader:piex_loader" ]
+}
+
 js_library("receiver") {
   externs_list = [ "media_app.externs.js" ]
   deps = [
     ":message_types",
+    ":piex_module",
+    ":piex_module_loader",
     "//chromeos/components/system_apps/public/js:message_pipe",
     "//ui/webui/resources/js:load_time_data",
   ]

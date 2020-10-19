@@ -27,6 +27,7 @@
       <!-- Unprivileged guest contents. -->
       <include name="IDR_MEDIA_APP_APP_HTML" file="app.html" type="BINDATA" />
       <include name="IDR_MEDIA_APP_APP_SCRIPTS_JS" file="js/media_app_app_scripts.js" flattenhtml="true" compress="brotli" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_PIEX_MODULE_SCRIPTS_JS" file="js/piex_module_scripts.js" flattenhtml="true" compress="brotli" type="BINDATA" />
     </includes>
   </release>
 </grit>

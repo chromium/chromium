@@ -223,6 +223,7 @@ TEST_F(WebUIDataSourceTest, MimeType) {
   const char* html = "text/html";
   const char* js = "application/javascript";
   const char* png = "image/png";
+
   EXPECT_EQ(GetMimeType(std::string()), html);
   EXPECT_EQ(GetMimeType("foo"), html);
   EXPECT_EQ(GetMimeType("foo.html"), html);
@@ -243,6 +244,14 @@ TEST_F(WebUIDataSourceTest, MimeType) {
   EXPECT_EQ(GetMimeType("foo.html?abc?abc"), html);
   EXPECT_EQ(GetMimeType("foo.css?abc?abc"), css);
   EXPECT_EQ(GetMimeType("foo.js?abc?abc"), js);
+
+  EXPECT_EQ(GetMimeType("foo.json"), "application/json");
+  EXPECT_EQ(GetMimeType("foo.pdf"), "application/pdf");
+  EXPECT_EQ(GetMimeType("foo.svg"), "image/svg+xml");
+  EXPECT_EQ(GetMimeType("foo.jpg"), "image/jpeg");
+  EXPECT_EQ(GetMimeType("foo.mp4"), "video/mp4");
+  EXPECT_EQ(GetMimeType("foo.js.wasm"), "application/wasm");
+  EXPECT_EQ(GetMimeType("foo.out.wasm"), "application/wasm");
 }
 
 TEST_F(WebUIDataSourceTest, ShouldServeMimeTypeAsContentTypeHeader) {

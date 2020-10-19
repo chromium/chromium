@@ -43,6 +43,10 @@ constexpr char kFilePng800x600[] = "image.png";
 // A 640x480 image/jpeg (all green pixels).
 constexpr char kFileJpeg640x480[] = "image3.jpg";
 
+// A RAW file from an Olympus camera with the original preview/thumbnail data
+// swapped out with "exif.jpg".
+constexpr char kRaw378x272[] = "raw.orf";
+
 // A 1-second long 648x486 VP9-encoded video with stereo Opus-encoded audio.
 constexpr char kFileVideoVP9[] = "world.webm";
 
@@ -170,6 +174,19 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchWithFile) {
   LaunchAppWithoutWaiting(params);
 
   EXPECT_EQ("640x480", WaitForImageAlt(app, kFileJpeg640x480));
+}
+
+// Test that the MediaApp can load a RAW file passed on launch params.
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, HandleRawFile) {
+  WaitForTestSystemAppInstall();
+  auto params = LaunchParamsForApp(web_app::SystemAppType::MEDIA);
+
+  // Add the handcrafted RAW file to launch params and launch.
+  params.launch_files.push_back(TestFile(kRaw378x272));
+  content::WebContents* web_ui = LaunchApp(params);
+  PrepareAppForTest(web_ui);
+
+  EXPECT_EQ("378x272", WaitForImageAlt(web_ui, kRaw378x272));
 }
 
 // Ensures that chrome://media-app is available as a file task for the ChromeOS
