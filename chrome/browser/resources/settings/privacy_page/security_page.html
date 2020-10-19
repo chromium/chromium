@@ -160,13 +160,17 @@
           class="hr"
           label="$i18n{securityKeysTitle}"
           sub-label="$i18n{securityKeysDesc}"
-          on-click="onSecurityKeysClick_"></cr-link-row>
+          on-click="onSecurityKeysClick_"
+          role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
     </template>
 <if expr="use_nss_certs or is_win or is_macosx">
     <cr-link-row id="manageCertificates"
         class="hr"
 <if expr="not use_nss_certs">
         external
+</if>
+<if expr="use_nss_certs">
+        role-description="$i18n{subpageArrowRoleDescription}"
 </if>
         label="$i18n{manageCertificates}"
         sub-label="$i18n{manageCertificatesDescription}"

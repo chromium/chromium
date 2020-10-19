@@ -377,7 +377,8 @@
         external></cr-link-row>
     <cr-link-row class="hr"
         id="extensionsActivityLogLink" hidden$="[[!showActivityLog]]"
-        label="$i18n{viewActivityLog}" on-click="onActivityLogTap_">
+        label="$i18n{viewActivityLog}" on-click="onActivityLogTap_"
+        role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
     <cr-link-row class="hr" hidden="[[!data.manifestHomePageUrl.length]]"
         id="extensionWebsite" label="$i18n{extensionWebsite}"
