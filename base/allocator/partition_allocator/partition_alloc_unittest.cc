@@ -150,6 +150,34 @@ const size_t kRealAllocSize = kTestAllocSize + kExtraAllocSize;
 
 const char* type_name = nullptr;
 
+class ScopedPageAllocation {
+ public:
+  ScopedPageAllocation(
+      PartitionAllocator<base::internal::ThreadSafe>& allocator,
+      base::CheckedNumeric<size_t> npages)
+      : allocator_(allocator),
+        npages_(npages),
+        ptr_(reinterpret_cast<char*>(allocator_.root()->Alloc(
+            (npages * SystemPageSize() - kExtraAllocSize).ValueOrDie(),
+            type_name))) {}
+
+  ~ScopedPageAllocation() { allocator_.root()->Free(ptr_); }
+
+  void TouchAllPages() {
+    memset(ptr_, 'A',
+           ((npages_ * SystemPageSize()) - kExtraAllocSize).ValueOrDie());
+  }
+
+  void* PageAtIndex(size_t index) {
+    return ptr_ - kPointerOffset + (SystemPageSize() * index);
+  }
+
+ private:
+  PartitionAllocator<base::internal::ThreadSafe>& allocator_;
+  const base::CheckedNumeric<size_t> npages_;
+  char* ptr_;
+};
+
 class PartitionAllocTest : public testing::Test {
  protected:
   PartitionAllocTest() = default;
@@ -2067,75 +2095,48 @@ TEST_F(PartitionAllocTest, PurgeDiscardableNonPageSizedAlloc) {
 }
 
 TEST_F(PartitionAllocTest, PurgeDiscardableManyPages) {
-// When SystemPageSize() = 16384 (as on _MIPS_ARCH_LOONGSON), 64 *
-// SystemPageSize() (see the #else branch below) caused this test to OOM.
-// Therefore, for systems with 16 KiB pages, use 32 * SystemPageSize().
-//
-// TODO(palmer): Refactor this to branch on page size instead of architecture,
-// for clarity of purpose and for applicability to more architectures.
-#if defined(_MIPS_ARCH_LOONGSON)
-  char* ptr1 = reinterpret_cast<char*>(allocator.root()->Alloc(
-      (32 * SystemPageSize()) - kExtraAllocSize, type_name));
-  memset(ptr1, 'A', (32 * SystemPageSize()) - kExtraAllocSize);
-  allocator.root()->Free(ptr1);
-  ptr1 = reinterpret_cast<char*>(allocator.root()->Alloc(
-      (31 * SystemPageSize()) - kExtraAllocSize, type_name));
+  // On systems with large pages, use less pages because:
+  // 1) There must be a bucket for kFirstAllocPages * SystemPageSize(), and
+  // 2) On low-end systems, using too many large pages can OOM during the test
+  const bool kHasLargePages = SystemPageSize() > 4096;
+  const size_t kFirstAllocPages = kHasLargePages ? 32 : 64;
+  const size_t kSecondAllocPages = kHasLargePages ? 31 : 61;
+
+  // Detect case (1) from above.
+  DCHECK_LT(kFirstAllocPages * SystemPageSize(), 1UL << kMaxBucketedOrder);
+
+  const size_t kDeltaPages = kFirstAllocPages - kSecondAllocPages;
+
   {
-    MockPartitionStatsDumper dumper;
-    allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
-                                &dumper);
-    EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
-
-    const PartitionBucketMemoryStats* stats =
-        dumper.GetBucketStats(32 * SystemPageSize());
-    EXPECT_TRUE(stats);
-    EXPECT_TRUE(stats->is_valid);
-    EXPECT_EQ(0u, stats->decommittable_bytes);
-    EXPECT_EQ(SystemPageSize(), stats->discardable_bytes);
-    EXPECT_EQ(31 * SystemPageSize(), stats->active_bytes);
-    EXPECT_EQ(32 * SystemPageSize(), stats->resident_bytes);
+    ScopedPageAllocation p(allocator, kFirstAllocPages);
+    p.TouchAllPages();
   }
-  CheckPageInCore(ptr1 - kPointerOffset + (SystemPageSize() * 30), true);
-  CheckPageInCore(ptr1 - kPointerOffset + (SystemPageSize() * 31), true);
+
+  ScopedPageAllocation p(allocator, kSecondAllocPages);
+
+  MockPartitionStatsDumper dumper;
+  allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
+                              &dumper);
+  EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
+
+  const PartitionBucketMemoryStats* stats =
+      dumper.GetBucketStats(kFirstAllocPages * SystemPageSize());
+  EXPECT_TRUE(stats);
+  EXPECT_TRUE(stats->is_valid);
+  EXPECT_EQ(0u, stats->decommittable_bytes);
+  EXPECT_EQ(kDeltaPages * SystemPageSize(), stats->discardable_bytes);
+  EXPECT_EQ(kSecondAllocPages * SystemPageSize(), stats->active_bytes);
+  EXPECT_EQ(kFirstAllocPages * SystemPageSize(), stats->resident_bytes);
+
+  for (size_t i = 0; i < kFirstAllocPages; i++)
+    CHECK_PAGE_IN_CORE(p.PageAtIndex(i), true);
+
   allocator.root()->PurgeMemory(PartitionPurgeDiscardUnusedSystemPages);
-  CheckPageInCore(ptr1 - kPointerOffset + (SystemPageSize() * 30), true);
-  CheckPageInCore(ptr1 - kPointerOffset + (SystemPageSize() * 31), false);
 
-  allocator.root()->Free(ptr1);
-#else
-  char* ptr1 = reinterpret_cast<char*>(allocator.root()->Alloc(
-      (64 * SystemPageSize()) - kExtraAllocSize, type_name));
-  memset(ptr1, 'A', (64 * SystemPageSize()) - kExtraAllocSize);
-  allocator.root()->Free(ptr1);
-  ptr1 = reinterpret_cast<char*>(allocator.root()->Alloc(
-      (61 * SystemPageSize()) - kExtraAllocSize, type_name));
-  {
-    MockPartitionStatsDumper dumper;
-    allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
-                                &dumper);
-    EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
-
-    const PartitionBucketMemoryStats* stats =
-        dumper.GetBucketStats(64 * SystemPageSize());
-    EXPECT_TRUE(stats);
-    EXPECT_TRUE(stats->is_valid);
-    EXPECT_EQ(0u, stats->decommittable_bytes);
-    EXPECT_EQ(3 * SystemPageSize(), stats->discardable_bytes);
-    EXPECT_EQ(61 * SystemPageSize(), stats->active_bytes);
-    EXPECT_EQ(64 * SystemPageSize(), stats->resident_bytes);
-  }
-  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 60), true);
-  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 61), true);
-  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 62), true);
-  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 63), true);
-  allocator.root()->PurgeMemory(PartitionPurgeDiscardUnusedSystemPages);
-  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 60), true);
-  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 61), false);
-  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 62), false);
-  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 63), false);
-
-  allocator.root()->Free(ptr1);
-#endif
+  for (size_t i = 0; i < kSecondAllocPages; i++)
+    CHECK_PAGE_IN_CORE(p.PageAtIndex(i), true);
+  for (size_t i = kSecondAllocPages; i < kFirstAllocPages; i++)
+    CHECK_PAGE_IN_CORE(p.PageAtIndex(i), false);
 }
 
 TEST_F(PartitionAllocTest, PurgeDiscardableWithFreeListRewrite) {
