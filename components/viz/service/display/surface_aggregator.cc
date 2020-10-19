@@ -1224,11 +1224,6 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
   if (in_moved_pixel_rp)
     moved_pixel_passes_.insert(remapped_pass_id);
 
-  gfx::Transform root_to_target_transform(gfx::Transform::kSkipInitialization);
-  const bool transform_inverted =
-      target_to_root_transform.GetInverse(&root_to_target_transform);
-  DCHECK(transform_inverted);
-
   const CompositorFrame& frame = surface->GetActiveFrame();
   CompositorRenderPass* last_pass = frame.render_pass_list.back().get();
   gfx::Rect full_damage = last_pass->output_rect;
@@ -1240,8 +1235,12 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
   gfx::Rect surface_root_rp_damage =
       DamageRectForSurface(surface, *last_pass, full_damage);
   if (!surface_root_rp_damage.IsEmpty()) {
-    surface_root_rp_damage = cc::MathUtil::ProjectEnclosingClippedRect(
-        root_to_target_transform, surface_root_rp_damage);
+    gfx::Transform root_to_target_transform(
+        gfx::Transform::kSkipInitialization);
+    if (target_to_root_transform.GetInverse(&root_to_target_transform)) {
+      surface_root_rp_damage = cc::MathUtil::ProjectEnclosingClippedRect(
+          root_to_target_transform, surface_root_rp_damage);
+    }
   }
 
   gfx::Rect damage_rect;
