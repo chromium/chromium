@@ -329,20 +329,10 @@ ScriptEvaluationResult WorkerOrWorkletScriptController::EvaluateAndReturnValue(
   // Use default ReferrerScriptInfo here, as
   // - A work{er,let} script doesn't have a nonce, and
   // - a work{er,let} script is always "not parser inserted".
-  // TODO(crbug/1114988): After crbug/1114988 is fixed, this can be the
-  // default ScriptFetchOptions(). Currently the default ScriptFetchOptions()
-  // is not used because it has CredentialsMode::kOmit.
-  // TODO(crbug/1114989): Plumb this from ClassicScript.
-  ScriptFetchOptions script_fetch_options(
-      String(), IntegrityMetadataSet(), String(),
-      ParserDisposition::kNotParserInserted,
-      network::mojom::CredentialsMode::kSameOrigin,
-      network::mojom::ReferrerPolicy::kDefault,
-      mojom::blink::FetchImportanceMode::kImportanceAuto);
-
+  // TODO(crbug/1114989): Plumb ScriptFetchOptions from ClassicScript.
   ScriptEvaluationResult result = V8ScriptRunner::CompileAndRunScript(
       isolate_, script_state_, global_scope_, source_code, base_url,
-      sanitize_script_errors, script_fetch_options, v8_cache_options,
+      sanitize_script_errors, ScriptFetchOptions(), v8_cache_options,
       std::move(rethrow_errors));
 
   if (result.GetResultType() == ScriptEvaluationResult::ResultType::kAborted)

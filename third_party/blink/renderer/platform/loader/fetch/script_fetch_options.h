@@ -32,14 +32,11 @@ class PLATFORM_EXPORT ScriptFetchOptions final {
   // https://html.spec.whatwg.org/C/#default-classic-script-fetch-options
   // "The default classic script fetch options are a script fetch options whose
   // cryptographic nonce is the empty string, integrity metadata is the empty
-  // string, parser metadata is "not-parser-inserted", and credentials mode
-  // is "omit"." [spec text]
-  // TODO(domfarolino): Update this to use probably "include" or "same-origin"
-  // credentials mode, once spec decision is made at
-  // https://github.com/whatwg/html/pull/3656.
+  // string, parser metadata is "not-parser-inserted", credentials mode is
+  // "same-origin", and referrer policy is the empty string." [spec text]
   ScriptFetchOptions()
       : parser_state_(ParserDisposition::kNotParserInserted),
-        credentials_mode_(network::mojom::CredentialsMode::kOmit),
+        credentials_mode_(network::mojom::CredentialsMode::kSameOrigin),
         referrer_policy_(network::mojom::ReferrerPolicy::kDefault),
         importance_(mojom::FetchImportanceMode::kImportanceAuto) {}
 
