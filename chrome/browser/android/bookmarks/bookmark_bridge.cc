@@ -920,6 +920,9 @@ bool BookmarkBridge::IsEditable(const BookmarkNode* node) const {
     return false;
   if (partner_bookmarks_shim_->IsPartnerBookmark(node))
     return partner_bookmarks_shim_->IsEditable(node);
+  if (reading_list_manager_->IsReadingListBookmark(node))
+    return reading_list_manager_->GetRoot() != node;
+
   return managed_bookmark_service_->CanBeEditedByUser(node);
 }
 

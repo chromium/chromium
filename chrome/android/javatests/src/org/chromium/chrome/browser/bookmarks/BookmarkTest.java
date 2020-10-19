@@ -1479,15 +1479,19 @@ public class BookmarkTest {
         openBookmarkManager();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mManager.openFolder(mBookmarkModel.getRootFolderId()));
-
+        RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
         Assert.assertEquals("Wrong number of top level folders.", 2, getAdapter().getItemCount());
-        Assert.assertEquals("The first view should be reading list.", BookmarkType.READING_LIST,
-                getIdByPosition(0).getType());
-        Assert.assertEquals("The second view should be a normal folder.", BookmarkType.NORMAL,
-                getIdByPosition(1).getType());
 
         // Reading list should show in the root folder.
+        View readingListRow = mItemsContainer.findViewHolderForAdapterPosition(0).itemView;
+        Assert.assertEquals("No overflow menu for reading list folder.", View.GONE,
+                readingListRow.findViewById(R.id.more).getVisibility());
+        Assert.assertEquals("The first view should be reading list.", BookmarkType.READING_LIST,
+                getIdByPosition(0).getType());
         onView(withText("Reading list")).check(matches(isDisplayed()));
+
+        Assert.assertEquals("The second view should be a normal folder.", BookmarkType.NORMAL,
+                getIdByPosition(1).getType());
     }
 
     /**
