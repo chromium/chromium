@@ -171,9 +171,33 @@ Status StorageQueue::Init() {
     // data, but must have metadata for the last data, because metadata is only
     // removed once data is written. So we are picking the metadata matching the
     // last sequencing number and load both digest and generation id from there.
-    // If there is no match, we bail out for now; later on we will instead
-    // start a new generation from the next sequencing number (with no digest!)
-    RETURN_IF_ERROR(RestoreMetadata(&used_files_set));
+    const Status status = RestoreMetadata(&used_files_set);
+    // If there is no match, clear up everything we've found before and start
+    // a new generation from scratch.
+    // In the future we could possibly consider preserving the previous
+    // generation data, but will need to resolve multiple issues:
+    // 1) we would need to send the old generation before starting to send
+    //    the new one, which could trigger a loss of data in the new generation.
+    // 2) we could end up with 3 or more generations, if the loss of metadata
+    //    repeats. Which of them should be sent first (which one is expected
+    //    by the server)?
+    // 3) different generations might include the same sequencing ids;
+    //    how do we resolve file naming then? Should we add generation id
+    //    to the file name too?
+    // Because of all this, for now we just drop the old generation data
+    // and start the new one from scratch.
+    if (!status.ok()) {
+      LOG(ERROR) << "Failed to restore metadata, status=" << status;
+      // Reset all parameters as they were at the beginning of Init().
+      // Some of them might have been changed earlier.
+      next_seq_number_ = 0;
+      first_seq_number_ = 0;
+      first_unconfirmed_seq_number_ = base::nullopt;
+      last_record_digest_ = base::nullopt;
+      // Delete all files.
+      files_.clear();
+      used_files_set.clear();
+    }
   }
   // Delete all files except used ones.
   DeleteUnusedFiles(used_files_set);
@@ -532,7 +556,7 @@ Status StorageQueue::RestoreMetadata(
                   base::StrCat({"Cannot read metafile=", meta_file->name(),
                                 " status=", read_result.status().ToString()}));
   }
-  generation_id_ =
+  const uint64_t generation_id =
       *reinterpret_cast<const uint64_t*>(read_result.ValueOrDie().data());
   // Read last record digest.
   read_result =
@@ -543,6 +567,8 @@ Status StorageQueue::RestoreMetadata(
                   base::StrCat({"Cannot read metafile=", meta_file->name(),
                                 " status=", read_result.status().ToString()}));
   }
+  // Everything read successfully, set the queue up.
+  generation_id_ = generation_id;
   last_record_digest_ = std::string(read_result.ValueOrDie());
   // Store used metadata file.
   used_files_set->emplace(meta_file_path);

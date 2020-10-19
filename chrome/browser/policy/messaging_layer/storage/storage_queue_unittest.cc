@@ -9,6 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/optional.h"
 #include "base/strings/strcat.h"
@@ -35,6 +37,9 @@ using ::testing::WithArg;
 
 namespace reporting {
 namespace {
+
+// Metadata file name prefix.
+const base::FilePath::CharType METADATA_NAME[] = FILE_PATH_LITERAL("META");
 
 // Usage (in tests only):
 //
@@ -98,13 +103,15 @@ class MockUploadClient : public StorageQueue::UploaderInterface {
     if (generation_id_.has_value() &&
         generation_id_.value() != sequencing_information.generation_id()) {
       std::move(processed_cb)
-          .Run(UploadRecordFailure(Status(
-              error::DATA_LOSS,
-              base::StrCat({"Generation id mismatch, expected=",
-                            base::NumberToString(generation_id_.value()),
-                            " actual=",
-                            base::NumberToString(
-                                sequencing_information.generation_id())}))));
+          .Run(UploadRecordFailure(
+              sequencing_information.sequencing_id(),
+              Status(
+                  error::DATA_LOSS,
+                  base::StrCat(
+                      {"Generation id mismatch, expected=",
+                       base::NumberToString(generation_id_.value()), " actual=",
+                       base::NumberToString(
+                           sequencing_information.generation_id())}))));
       return;
     }
     if (!generation_id_.has_value()) {
@@ -122,9 +129,16 @@ class MockUploadClient : public StorageQueue::UploaderInterface {
       if (record_digest != wrapped_record.record_digest()) {
         std::move(processed_cb)
             .Run(UploadRecordFailure(
+                sequencing_information.sequencing_id(),
                 Status(error::DATA_LOSS, "Record digest mismatch")));
         return;
       }
+      // Store record digest for the next record in sequence to verify.
+      last_record_digest_map_->emplace(
+          std::make_pair(sequencing_information.sequencing_id(),
+                         sequencing_information.generation_id()),
+          record_digest);
+      // If last record digest is present, match it and validate.
       if (wrapped_record.has_last_record_digest()) {
         auto it = last_record_digest_map_->find(
             std::make_pair(sequencing_information.sequencing_id() - 1,
@@ -134,14 +148,11 @@ class MockUploadClient : public StorageQueue::UploaderInterface {
              it->second.value() != wrapped_record.last_record_digest())) {
           std::move(processed_cb)
               .Run(UploadRecordFailure(
+                  sequencing_information.sequencing_id(),
                   Status(error::DATA_LOSS, "Last record digest mismatch")));
           return;
         }
       }
-      last_record_digest_map_->emplace(
-          std::make_pair(sequencing_information.sequencing_id(),
-                         sequencing_information.generation_id()),
-          record_digest);
     }
 
     std::move(processed_cb)
@@ -156,13 +167,15 @@ class MockUploadClient : public StorageQueue::UploaderInterface {
     if (generation_id_.has_value() &&
         generation_id_.value() != sequencing_information.generation_id()) {
       std::move(processed_cb)
-          .Run(UploadRecordFailure(Status(
-              error::DATA_LOSS,
-              base::StrCat({"Generation id mismatch, expected=",
-                            base::NumberToString(generation_id_.value()),
-                            " actual=",
-                            base::NumberToString(
-                                sequencing_information.generation_id())}))));
+          .Run(UploadRecordFailure(
+              sequencing_information.sequencing_id(),
+              Status(
+                  error::DATA_LOSS,
+                  base::StrCat(
+                      {"Generation id mismatch, expected=",
+                       base::NumberToString(generation_id_.value()), " actual=",
+                       base::NumberToString(
+                           sequencing_information.generation_id())}))));
       return;
     }
     if (!generation_id_.has_value()) {
@@ -181,7 +194,7 @@ class MockUploadClient : public StorageQueue::UploaderInterface {
   void Completed(Status status) override { UploadComplete(status); }
 
   MOCK_METHOD(bool, UploadRecord, (uint64_t, base::StringPiece), (const));
-  MOCK_METHOD(bool, UploadRecordFailure, (Status), (const));
+  MOCK_METHOD(bool, UploadRecordFailure, (uint64_t, Status), (const));
   MOCK_METHOD(bool, UploadGap, (uint64_t, uint64_t), (const));
   MOCK_METHOD(void, UploadComplete, (Status), (const));
 
@@ -191,9 +204,6 @@ class MockUploadClient : public StorageQueue::UploaderInterface {
    public:
     explicit SetUp(MockUploadClient* client) : client_(client) {}
     ~SetUp() {
-      EXPECT_CALL(*client_, UploadRecordFailure(_))
-          .Times(0)
-          .InSequence(client_->test_upload_sequence_);
       EXPECT_CALL(*client_, UploadComplete(Eq(Status::StatusOK())))
           .Times(1)
           .InSequence(client_->test_upload_sequence_);
@@ -228,6 +238,13 @@ class MockUploadClient : public StorageQueue::UploaderInterface {
           .Times(Between(0, 1))
           .InSequence(client_->test_upload_sequence_)
           .WillRepeatedly(Return(true));
+      return *this;
+    }
+
+    SetUp& Failure(uint64_t sequence_number, Status error) {
+      EXPECT_CALL(*client_, UploadRecordFailure(Eq(sequence_number), Eq(error)))
+          .InSequence(client_->test_upload_sequence_)
+          .WillOnce(Return(true));
       return *this;
     }
 
@@ -425,6 +442,110 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndUpload) {
             .Required(4, more_data[1])
             .Required(5, more_data[2]);
       }));
+
+  // Trigger upload.
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+}
+
+TEST_P(StorageQueueTest,
+       WriteIntoNewStorageQueueReopenWithMissingMetadataWriteMoreAndUpload) {
+  CreateStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  WriteStringOrDie(data[0]);
+  WriteStringOrDie(data[1]);
+  WriteStringOrDie(data[2]);
+
+  // Save copy of options.
+  const StorageQueue::Options options = storage_queue_->options();
+
+  storage_queue_.reset();
+
+  // Delete all metadata files.
+  base::FileEnumerator dir_enum(
+      options.directory(),
+      /*recursive=*/false, base::FileEnumerator::FILES,
+      base::StrCat({METADATA_NAME, FILE_PATH_LITERAL(".*")}));
+  base::FilePath full_name;
+  while (full_name = dir_enum.Next(), !full_name.empty()) {
+    base::DeleteFile(full_name);
+  }
+
+  // Reopen, starting a new generation.
+  CreateStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  WriteStringOrDie(more_data[0]);
+  WriteStringOrDie(more_data[1]);
+  WriteStringOrDie(more_data[2]);
+
+  // Set uploader expectations. Previous data is all lost.
+  EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+      .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
+        MockUploadClient::SetUp(mock_upload_client)
+            .Required(0, more_data[0])
+            .Required(1, more_data[1])
+            .Required(2, more_data[2]);
+      }));
+
+  // Trigger upload.
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+}
+
+TEST_P(StorageQueueTest,
+       WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload) {
+  CreateStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  WriteStringOrDie(data[0]);
+  WriteStringOrDie(data[1]);
+  WriteStringOrDie(data[2]);
+
+  // Save copy of options.
+  const StorageQueue::Options options = storage_queue_->options();
+
+  storage_queue_.reset();
+
+  // Reopen with the same generation and sequencing information.
+  CreateStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+
+  // Delete the first data file.
+  base::FilePath full_name = options.directory().Append(
+      base::StrCat({options.file_prefix(), FILE_PATH_LITERAL(".0")}));
+  base::DeleteFile(full_name);
+
+  // Write more data.
+  WriteStringOrDie(more_data[0]);
+  WriteStringOrDie(more_data[1]);
+  WriteStringOrDie(more_data[2]);
+
+  // Set uploader expectations. Previous data is all lost.
+  // The expected results depend on the test configuration.
+  switch (options.single_file_size()) {
+    case 1:  // single record in file - deletion killed the first record
+      EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+          .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
+            MockUploadClient::SetUp(mock_upload_client)
+                .PossibleGap(0, 1)
+                .Required(1, data[1])
+                .Required(2, data[2])
+                .Required(3, more_data[0])
+                .Required(4, more_data[1])
+                .Required(5, more_data[2]);
+          }));
+      break;
+    case 256:  // two records in file - deletion killed the first two records.
+      EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+          .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
+            MockUploadClient::SetUp(mock_upload_client)
+                .PossibleGap(0, 2)
+                .Failure(
+                    2, Status(error::DATA_LOSS, "Last record digest mismatch"))
+                .Required(3, more_data[0])
+                .Required(4, more_data[1])
+                .Required(5, more_data[2]);
+          }));
+      break;
+    default:  // UNlimited file size - deletion above killed all the data.
+      EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+          .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
+            MockUploadClient::SetUp(mock_upload_client).PossibleGap(0, 1);
+          }));
+  }
 
   // Trigger upload.
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
@@ -849,8 +970,8 @@ TEST_P(StorageQueueTest, WriteEncryptFailure) {
 INSTANTIATE_TEST_SUITE_P(VaryingFileSize,
                          StorageQueueTest,
                          testing::Values(128 * 1024LL * 1024LL,
-                                         64 /* two records in file */,
-                                         32 /* single record in file */));
+                                         256 /* two records in file */,
+                                         1 /* single record in file */));
 
 // TODO(b/157943006): Additional tests:
 // 1) Options object with a bad path.

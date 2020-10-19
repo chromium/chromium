@@ -185,6 +185,9 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   // Test only: makes specified records fail on reading.
   void TestInjectBlockReadErrors(std::initializer_list<uint64_t> seq_numbers);
 
+  // Access queue options.
+  const Options& options() const { return options_; }
+
   StorageQueue(const StorageQueue& other) = delete;
   StorageQueue& operator=(const StorageQueue& other) = delete;
 
