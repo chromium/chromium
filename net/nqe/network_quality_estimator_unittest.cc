@@ -3071,21 +3071,28 @@ TEST_F(NetworkQualityEstimatorTest, TestPeerToPeerConnectionsCountObserver) {
 
 // Tests that the signal strength API is not called too frequently.
 TEST_F(NetworkQualityEstimatorTest, MAYBE_CheckSignalStrength) {
-  base::HistogramTester histogram_tester;
   constexpr char histogram_name[] = "NQE.SignalStrengthQueried.WiFi";
   constexpr int kWiFiSignalStrengthQueryIntervalSeconds = 30 * 60;
 
   std::map<std::string, std::string> variation_params;
   variation_params["get_signal_strength_and_detailed_network_id"] = "true";
   TestNetworkQualityEstimator estimator(variation_params);
+
   estimator.SimulateNetworkChange(
       NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI, "test");
 
   base::SimpleTestTickClock tick_clock;
-  tick_clock.SetNowTicks(base::TimeTicks::Now());
+  // SimulateNetworkChange() above can produce entries in the histogram bucket
+  // if the test system has real wifi or cellular connections, and can also
+  // leave the NQE inside its timeout. To avoid that, fastforward fake time for
+  // more than the query interval.
+  tick_clock.SetNowTicks(base::TimeTicks::Now() +
+                         base::TimeDelta::FromSeconds(
+                             kWiFiSignalStrengthQueryIntervalSeconds * 2));
 
   estimator.SetTickClockForTesting(&tick_clock);
 
+  base::HistogramTester histogram_tester;
   base::Optional<int32_t> signal_strength =
       estimator.GetCurrentSignalStrengthWithThrottling();
 
