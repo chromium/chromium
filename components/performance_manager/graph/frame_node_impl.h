@@ -124,12 +124,14 @@ class FrameNodeImpl
   bool had_form_interaction() const;
   bool is_audible() const;
   const base::Optional<gfx::Rect>& viewport_intersection() const;
+  Visibility visibility() const;
 
   // Setters are not thread safe.
   void SetIsCurrent(bool is_current);
   void SetIsHoldingWebLock(bool is_holding_weblock);
   void SetIsHoldingIndexedDBLock(bool is_holding_indexeddb_lock);
   void SetIsAudible(bool is_audible);
+  void SetVisibility(Visibility visibility);
 
   // Invoked when a navigation is committed in the frame.
   void OnNavigationCommitted(const GURL& url, bool same_document);
@@ -197,6 +199,7 @@ class FrameNodeImpl
   bool HadFormInteraction() const override;
   bool IsAudible() const override;
   const base::Optional<gfx::Rect>& GetViewportIntersection() const override;
+  Visibility GetVisibility() const override;
 
   // Properties associated with a Document, which are reset when a
   // different-document navigation is committed in the frame.
@@ -257,6 +260,10 @@ class FrameNodeImpl
   bool HasFrameNodeInAncestors(FrameNodeImpl* frame_node) const;
   bool HasFrameNodeInDescendants(FrameNodeImpl* frame_node) const;
   bool HasFrameNodeInTree(FrameNodeImpl* frame_node) const;
+
+  // Returns the initial visibility of this frame. Should only be called when
+  // the frame node joins the graph.
+  Visibility GetInitialFrameVisibility() const;
 
   mojo::Receiver<mojom::DocumentCoordinationUnit> receiver_{this};
 
@@ -353,6 +360,14 @@ class FrameNodeImpl
       base::Optional<gfx::Rect>,
       &FrameNodeObserver::OnViewportIntersectionChanged>
       viewport_intersection_;
+
+  // Indicates if the frame is visible. This is initialized in
+  // FrameNodeImpl::OnJoiningGraph() and then maintained by
+  // FrameVisibilityDecorator.
+  ObservedProperty::NotifiesOnlyOnChanges<
+      Visibility,
+      &FrameNodeObserver::OnFrameVisibilityChanged>
+      visibility_{Visibility::kUnknown};
 
   // Inline storage for ExecutionContext.
   std::unique_ptr<NodeAttachedData> execution_context_;

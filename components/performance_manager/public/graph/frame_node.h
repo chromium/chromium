@@ -64,6 +64,12 @@ class FrameNode : public Node {
 
   static const char* kDefaultPriorityReason;
 
+  enum class Visibility {
+    kUnknown,
+    kVisible,
+    kNotVisible,
+  };
+
   FrameNode();
   ~FrameNode() override;
 
@@ -180,6 +186,10 @@ class FrameNode : public Node {
   // intersection is first calculated. May only be called for a child frame.
   virtual const base::Optional<gfx::Rect>& GetViewportIntersection() const = 0;
 
+  // Returns true if the frame is visible. This value is based on the viewport
+  // intersection of the frame, and the visibility of the page.
+  virtual Visibility GetVisibility() const = 0;
+
   // Returns a proxy to the RenderFrameHost associated with this node. The
   // proxy may only be dereferenced on the UI thread.
   virtual const RenderFrameHostProxy& GetRenderFrameHostProxy() const = 0;
@@ -250,6 +260,9 @@ class FrameNodeObserver {
   // Invoked when a frame's intersection with the viewport changes
   virtual void OnViewportIntersectionChanged(const FrameNode* frame_node) = 0;
 
+  // Invoked when the visibility property changes.
+  virtual void OnFrameVisibilityChanged(const FrameNode* frame_node) = 0;
+
   // Events with no property changes.
 
   // Invoked when a non-persistent notification has been issued by the frame.
@@ -298,6 +311,7 @@ class FrameNode::ObserverDefaultImpl : public FrameNodeObserver {
   void OnHadFormInteractionChanged(const FrameNode* frame_node) override {}
   void OnIsAudibleChanged(const FrameNode* frame_node) override {}
   void OnViewportIntersectionChanged(const FrameNode* frame_node) override {}
+  void OnFrameVisibilityChanged(const FrameNode* frame_node) override {}
   void OnNonPersistentNotificationCreated(
       const FrameNode* frame_node) override {}
   void OnFirstContentfulPaint(

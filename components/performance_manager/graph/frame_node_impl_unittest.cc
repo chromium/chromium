@@ -151,6 +151,7 @@ class LenientMockObserver : public FrameNodeImpl::Observer {
   MOCK_METHOD1(OnHadFormInteractionChanged, void(const FrameNode*));
   MOCK_METHOD1(OnIsAudibleChanged, void(const FrameNode*));
   MOCK_METHOD1(OnViewportIntersectionChanged, void(const FrameNode*));
+  MOCK_METHOD1(OnFrameVisibilityChanged, void(const FrameNode*));
   MOCK_METHOD1(OnNonPersistentNotificationCreated, void(const FrameNode*));
   MOCK_METHOD2(OnFirstContentfulPaint, void(const FrameNode*, base::TimeDelta));
 
@@ -389,6 +390,22 @@ TEST_F(FrameNodeImplTest, ViewportIntersection) {
   graph()->RemoveFrameNodeObserver(&obs);
 }
 
+TEST_F(FrameNodeImplTest, Visibility) {
+  auto process = CreateNode<ProcessNodeImpl>();
+  auto page = CreateNode<PageNodeImpl>();
+  auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
+
+  MockObserver obs;
+  graph()->AddFrameNodeObserver(&obs);
+
+  EXPECT_CALL(obs, OnFrameVisibilityChanged(frame_node.get()));
+
+  frame_node->SetVisibility(FrameNode::Visibility::kVisible);
+  EXPECT_EQ(frame_node->visibility(), FrameNode::Visibility::kVisible);
+
+  graph()->RemoveFrameNodeObserver(&obs);
+}
+
 TEST_F(FrameNodeImplTest, FirstContentfulPaint) {
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
@@ -456,6 +473,7 @@ TEST_F(FrameNodeImplTest, PublicInterface) {
   // viewport intersection of the main frame is not tracked.
   EXPECT_EQ(child_frame_node->viewport_intersection(),
             public_child_frame_node->GetViewportIntersection());
+  EXPECT_EQ(frame_node->visibility(), public_frame_node->GetVisibility());
 }
 
 TEST_F(FrameNodeImplTest, VisitChildFrameNodes) {

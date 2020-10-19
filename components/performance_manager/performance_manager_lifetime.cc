@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "components/performance_manager/decorators/frame_visibility_decorator.h"
 #include "components/performance_manager/decorators/page_load_tracker_decorator.h"
 #include "components/performance_manager/execution_context/execution_context_registry_impl.h"
 #include "components/performance_manager/graph/frame_node_impl_describer.h"
@@ -32,6 +33,7 @@ void DefaultGraphCreatedCallback(
   graph->PassToGraph(
       std::make_unique<execution_context::ExecutionContextRegistryImpl>());
   graph->PassToGraph(std::make_unique<FrameNodeImplDescriber>());
+  graph->PassToGraph(std::make_unique<FrameVisibilityDecorator>());
   graph->PassToGraph(std::make_unique<PageLiveStateDecorator>());
   graph->PassToGraph(std::make_unique<PageLoadTrackerDecorator>());
   graph->PassToGraph(std::make_unique<PageNodeImplDescriber>());

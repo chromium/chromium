@@ -236,6 +236,11 @@ const base::Optional<gfx::Rect>& FrameNodeImpl::viewport_intersection() const {
   return viewport_intersection_.value();
 }
 
+FrameNode::Visibility FrameNodeImpl::visibility() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return visibility_.value();
+}
+
 void FrameNodeImpl::SetIsCurrent(bool is_current) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_current_.SetAndMaybeNotify(this, is_current);
@@ -287,6 +292,11 @@ void FrameNodeImpl::SetViewportIntersection(
   // The viewport intersection of the main frame is not tracked.
   DCHECK(!IsMainFrame());
   viewport_intersection_.SetAndMaybeNotify(this, viewport_intersection);
+}
+
+void FrameNodeImpl::SetVisibility(Visibility visibility) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  visibility_.SetAndMaybeNotify(this, visibility);
 }
 
 void FrameNodeImpl::OnNavigationCommitted(const GURL& url, bool same_document) {
@@ -518,6 +528,11 @@ const base::Optional<gfx::Rect>& FrameNodeImpl::GetViewportIntersection()
   return viewport_intersection();
 }
 
+FrameNode::Visibility FrameNodeImpl::GetVisibility() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return visibility();
+}
+
 void FrameNodeImpl::AddChildFrame(FrameNodeImpl* child_frame_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(child_frame_node);
@@ -548,6 +563,12 @@ void FrameNodeImpl::OnJoiningGraph() {
   // Enable querying this node using process and frame routing ids.
   graph()->RegisterFrameNodeForId(process_node_->GetRenderProcessId(),
                                   render_frame_id_, this);
+
+  // Set the initial frame visibility. This is done on the graph because the
+  // page node must be accessed. OnFrameNodeAdded() has not been called yet for
+  // this frame, so it is important to avoid sending a notification for this
+  // property change.
+  visibility_.Set(GetInitialFrameVisibility());
 
   // Wire this up to the other nodes in the graph.
   if (parent_frame_node_)
@@ -642,6 +663,25 @@ bool FrameNodeImpl::HasFrameNodeInDescendants(FrameNodeImpl* frame_node) const {
 bool FrameNodeImpl::HasFrameNodeInTree(FrameNodeImpl* frame_node) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetFrameTreeRoot() == frame_node->GetFrameTreeRoot();
+}
+
+FrameNode::Visibility FrameNodeImpl::GetInitialFrameVisibility() const {
+  DCHECK(!viewport_intersection_.value());
+
+  // If the page hosting this frame is not visible, then the frame is also not
+  // visible.
+  if (!page_node()->is_visible())
+    return FrameNode::Visibility::kNotVisible;
+
+  // The visibility of the frame depends on the viewport intersection of said
+  // frame. Since a main frame has no viewport intersection, it is always
+  // visible in the page.
+  if (IsMainFrame())
+    return FrameNode::Visibility::kVisible;
+
+  // Since the viewport intersection of a frame is not initially available, the
+  // visibility of a child frame is initially unknown.
+  return FrameNode::Visibility::kUnknown;
 }
 
 FrameNodeImpl::DocumentProperties::DocumentProperties() = default;

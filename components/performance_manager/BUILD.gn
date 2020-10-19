@@ -10,6 +10,8 @@ proto_library("site_data_proto") {
 
 static_library("performance_manager") {
   sources = [
+    "decorators/frame_visibility_decorator.cc",
+    "decorators/frame_visibility_decorator.h",
     "decorators/page_live_state_decorator.cc",
     "decorators/page_load_tracker_decorator.cc",
     "decorators/page_load_tracker_decorator.h",
@@ -202,6 +204,7 @@ source_set("unit_tests") {
 
   sources = [
     "decorators/decorators_utils_unittest.cc",
+    "decorators/frame_visibility_decorator_unittest.cc",
     "decorators/page_live_state_decorator_unittest.cc",
     "decorators/page_load_tracker_decorator_unittest.cc",
     "decorators/tab_properties_decorator_unittest.cc",

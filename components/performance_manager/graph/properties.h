@@ -43,6 +43,12 @@ class ObservedPropertyImpl {
         ((observer)->*(NotifyFunctionPtr))(node);
     }
 
+    // Sets the property without sending a notification.
+    template <typename U = PropertyType>
+    void Set(U&& value) {
+      value_ = std::forward<U>(value);
+    }
+
     const PropertyType& value() const { return value_; }
 
    private:
@@ -75,6 +81,12 @@ class ObservedPropertyImpl {
       for (auto* observer : node->GetObservers())
         ((observer)->*(NotifyFunctionPtr))(node);
       return true;
+    }
+
+    // Sets the property without sending a notification.
+    template <typename U = PropertyType>
+    void Set(U&& value) {
+      value_ = std::forward<U>(value);
     }
 
     const PropertyType& value() const { return value_; }
@@ -113,6 +125,12 @@ class ObservedPropertyImpl {
       for (auto* observer : node->GetObservers())
         ((observer)->*(NotifyFunctionPtr))(node, previous_value);
       return true;
+    }
+
+    // Sets the property without sending a notification.
+    template <typename U = PropertyType>
+    void Set(U&& value) {
+      value_ = std::forward<U>(value);
     }
 
     const PropertyType& value() const { return value_; }

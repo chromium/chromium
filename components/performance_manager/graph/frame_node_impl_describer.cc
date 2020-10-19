@@ -56,6 +56,18 @@ std::string ViewportIntersectionToString(
   return viewport_intersection->ToString();
 }
 
+std::string FrameNodeVisibilityToString(FrameNode::Visibility visibility) {
+  switch (visibility) {
+    // using FrameNode::Visibility;
+    case FrameNode::Visibility::kUnknown:
+      return "Unknown";
+    case FrameNode::Visibility::kVisible:
+      return "Visible";
+    case FrameNode::Visibility::kNotVisible:
+      return "Not visible";
+  }
+}
+
 }  // namespace
 
 FrameNodeImplDescriber::~FrameNodeImplDescriber() = default;
@@ -109,6 +121,8 @@ base::Value FrameNodeImplDescriber::DescribeFrameNodeData(
   ret.SetStringKey(
       "viewport_intersection",
       ViewportIntersectionToString(impl->viewport_intersection_.value()));
+  ret.SetStringKey("visibility",
+                   FrameNodeVisibilityToString(impl->visibility_.value()));
 
   return ret;
 }
