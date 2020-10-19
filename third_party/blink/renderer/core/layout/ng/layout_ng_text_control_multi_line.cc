@@ -12,9 +12,21 @@ namespace blink {
 LayoutNGTextControlMultiLine::LayoutNGTextControlMultiLine(Element* element)
     : LayoutNGBlockFlow(element) {}
 
+HTMLElement* LayoutNGTextControlMultiLine::InnerEditorElement() const {
+  return To<TextControlElement>(GetNode())->InnerEditorElement();
+}
+
 bool LayoutNGTextControlMultiLine::IsOfType(LayoutObjectType type) const {
   return type == kLayoutObjectNGTextControlMultiLine ||
          LayoutNGBlockFlow::IsOfType(type);
+}
+
+void LayoutNGTextControlMultiLine::StyleDidChange(
+    StyleDifference style_diff,
+    const ComputedStyle* old_style) {
+  LayoutNGBlockFlow::StyleDidChange(style_diff, old_style);
+  LayoutTextControl::StyleDidChange(InnerEditorElement(), old_style,
+                                    StyleRef());
 }
 
 bool LayoutNGTextControlMultiLine::NodeAtPoint(
@@ -30,8 +42,7 @@ bool LayoutNGTextControlMultiLine::NodeAtPoint(
   if (stop_node && stop_node->NodeForHitTest() == result.InnerNode())
     return true;
 
-  HTMLElement* inner_editor =
-      To<TextControlElement>(GetNode())->InnerEditorElement();
+  HTMLElement* inner_editor = InnerEditorElement();
   if (result.InnerNode() == GetNode() || result.InnerNode() == inner_editor) {
     LayoutTextControl::HitInnerEditorElement(
         *this, *inner_editor, result, hit_test_location, accumulated_offset);

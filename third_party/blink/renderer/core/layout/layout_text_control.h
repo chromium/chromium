@@ -49,6 +49,9 @@ class CORE_EXPORT LayoutTextControl : public LayoutBlockFlow {
     return true;
   }
 
+  static void StyleDidChange(HTMLElement* inner_editor,
+                             const ComputedStyle* old_style,
+                             const ComputedStyle& new_style);
   static int ScrollbarThickness(const LayoutBox& box);
   static float GetAvgCharWidth(const ComputedStyle& style);
   static bool HasValidAvgCharWidth(const Font& font);

@@ -15,6 +15,8 @@ class LayoutNGTextControlMultiLine final : public LayoutNGBlockFlow {
   explicit LayoutNGTextControlMultiLine(Element* element);
 
  private:
+  HTMLElement* InnerEditorElement() const;
+
   bool IsOfType(LayoutObjectType) const override;
 
   const char* GetName() const override {
@@ -26,6 +28,8 @@ class LayoutNGTextControlMultiLine final : public LayoutNGBlockFlow {
     NOT_DESTROYED();
     return true;
   }
+
+  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
   bool NodeAtPoint(HitTestResult& result,
                    const HitTestLocation& hit_test_location,

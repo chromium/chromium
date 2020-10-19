@@ -7,12 +7,19 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
 namespace {
 
-class LayoutTextControlTest : public RenderingTest {
+class LayoutTextControlTest : public testing::WithParamInterface<bool>,
+                              public RenderingTest {
+ public:
+  LayoutTextControlTest()
+      : scoped_text_area_flag_(GetParam()),
+        scoped_text_field_flag_(GetParam()) {}
+
  protected:
   TextControlElement* GetTextControlElementById(const char* id) {
     return To<TextControlElement>(GetDocument().getElementById(id));
@@ -42,9 +49,15 @@ class LayoutTextControlTest : public RenderingTest {
     UpdateAllLifecyclePhasesForTest();
     EXPECT_FALSE(selected_text.ShouldInvalidateSelection());
   }
+
+ private:
+  ScopedLayoutNGTextAreaForTest scoped_text_area_flag_;
+  ScopedLayoutNGTextFieldForTest scoped_text_field_flag_;
 };
 
-TEST_F(LayoutTextControlTest,
+INSTANTIATE_TEST_SUITE_P(All, LayoutTextControlTest, testing::Bool());
+
+TEST_P(LayoutTextControlTest,
        ChangingPseudoSelectionStyleShouldInvalidateSelectionSingle) {
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -61,7 +74,7 @@ TEST_F(LayoutTextControlTest,
   CheckSelectionInvalidationChanges(*selected_text);
 }
 
-TEST_F(LayoutTextControlTest,
+TEST_P(LayoutTextControlTest,
        ChangingPseudoSelectionStyleShouldInvalidateSelectionMulti) {
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -78,7 +91,7 @@ TEST_F(LayoutTextControlTest,
   CheckSelectionInvalidationChanges(*selected_text);
 }
 
-TEST_F(LayoutTextControlTest,
+TEST_P(LayoutTextControlTest,
        AddingPseudoSelectionStyleShouldInvalidateSelectionSingle) {
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -94,7 +107,7 @@ TEST_F(LayoutTextControlTest,
   CheckSelectionInvalidationChanges(*selected_text);
 }
 
-TEST_F(LayoutTextControlTest,
+TEST_P(LayoutTextControlTest,
        AddingPseudoSelectionStyleShouldInvalidateSelectionMulti) {
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -110,7 +123,7 @@ TEST_F(LayoutTextControlTest,
   CheckSelectionInvalidationChanges(*selected_text);
 }
 
-TEST_F(LayoutTextControlTest,
+TEST_P(LayoutTextControlTest,
        RemovingPseudoSelectionStyleShouldInvalidateSelectionSingle) {
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -126,7 +139,7 @@ TEST_F(LayoutTextControlTest,
   CheckSelectionInvalidationChanges(*selected_text);
 }
 
-TEST_F(LayoutTextControlTest,
+TEST_P(LayoutTextControlTest,
        RemovingPseudoSelectionStyleShouldInvalidateSelectionMulti) {
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -142,7 +155,7 @@ TEST_F(LayoutTextControlTest,
   CheckSelectionInvalidationChanges(*selected_text);
 }
 
-TEST_F(LayoutTextControlTest, HitTestSearchInput) {
+TEST_P(LayoutTextControlTest, HitTestSearchInput) {
   SetBodyInnerHTML(R"HTML(
     <input id="input" type="search"
            style="border-width: 20px; font-size: 30px; padding: 0">

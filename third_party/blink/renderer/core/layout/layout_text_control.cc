@@ -54,7 +54,13 @@ void LayoutTextControl::StyleDidChange(StyleDifference diff,
                                        const ComputedStyle* old_style) {
   NOT_DESTROYED();
   LayoutBlockFlow::StyleDidChange(diff, old_style);
-  TextControlInnerEditorElement* inner_editor = InnerEditorElement();
+  StyleDidChange(InnerEditorElement(), old_style, StyleRef());
+}
+
+// static
+void LayoutTextControl::StyleDidChange(HTMLElement* inner_editor,
+                                       const ComputedStyle* old_style,
+                                       const ComputedStyle& new_style) {
   if (!inner_editor)
     return;
   LayoutBlock* inner_editor_layout_object =
@@ -65,7 +71,7 @@ void LayoutTextControl::StyleDidChange(StyleDifference diff,
     // (See TextControlInnerEditorElement::CreateInnerEditorStyle()).
     {
       StyleEngine::AllowMarkStyleDirtyFromRecalcScope scope(
-          GetDocument().GetStyleEngine());
+          inner_editor->GetDocument().GetStyleEngine());
       inner_editor->SetNeedsStyleRecalc(
           kLocalStyleChange,
           StyleChangeReasonForTracing::Create(style_change_reason::kControl));
@@ -75,7 +81,7 @@ void LayoutTextControl::StyleDidChange(StyleDifference diff,
     // (see: GetUncachedSelectionStyle in SelectionPaintingUtils.cpp) so ensure
     // the inner editor selection is invalidated anytime style changes and a
     // ::selection style is or was present on LayoutTextControl.
-    if (StyleRef().HasPseudoElementStyle(kPseudoIdSelection) ||
+    if (new_style.HasPseudoElementStyle(kPseudoIdSelection) ||
         (old_style && old_style->HasPseudoElementStyle(kPseudoIdSelection))) {
       inner_editor_layout_object->InvalidateSelectedChildrenOnStyleChange();
     }
