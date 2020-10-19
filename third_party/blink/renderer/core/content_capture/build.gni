@@ -1,0 +1,16 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+blink_core_sources_content_capture = [
+  "content_capture_manager.cc",
+  "content_capture_manager.h",
+  "content_capture_task.cc",
+  "content_capture_task.h",
+  "content_capture_task_histogram_reporter.cc",
+  "content_capture_task_histogram_reporter.h",
+  "content_holder.cc",
+  "content_holder.h",
+  "task_session.cc",
+  "task_session.h",
+]

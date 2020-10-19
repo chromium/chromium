@@ -1,0 +1,32 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+blink_core_sources_fileapi = [
+  "blob.cc",
+  "blob.h",
+  "file.cc",
+  "file.h",
+  "file_error.cc",
+  "file_error.h",
+  "file_list.cc",
+  "file_list.h",
+  "file_reader.cc",
+  "file_reader.h",
+  "file_reader_loader.cc",
+  "file_reader_loader.h",
+  "file_reader_loader_client.h",
+  "file_reader_sync.cc",
+  "file_reader_sync.h",
+  "public_url_manager.cc",
+  "public_url_manager.h",
+  "url_file_api.cc",
+  "url_file_api.h",
+  "url_registry.h",
+]
+
+blink_core_tests_fileapi = [
+  "file_list_test.cc",
+  "file_test.cc",
+  "public_url_manager_test.cc",
+]

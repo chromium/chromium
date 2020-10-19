@@ -1,0 +1,18 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+blink_core_sources_trustedtypes = [
+  "trusted_html.cc",
+  "trusted_html.h",
+  "trusted_script.cc",
+  "trusted_script.h",
+  "trusted_script_url.cc",
+  "trusted_script_url.h",
+  "trusted_type_policy.cc",
+  "trusted_type_policy.h",
+  "trusted_type_policy_factory.cc",
+  "trusted_type_policy_factory.h",
+  "trusted_types_util.cc",
+  "trusted_types_util.h",
+]

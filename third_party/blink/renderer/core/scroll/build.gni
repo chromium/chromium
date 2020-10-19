@@ -1,0 +1,63 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/core/core.gni")
+
+blink_core_sources_scroll = [
+  "ns_scroller_imp_details.h",
+  "programmatic_scroll_animator.cc",
+  "programmatic_scroll_animator.h",
+  "scroll_alignment.cc",
+  "scroll_alignment.h",
+  "scroll_animator_base.cc",
+  "scroll_animator_base.h",
+  "scroll_animator_compositor_coordinator.cc",
+  "scroll_animator_compositor_coordinator.h",
+  "scroll_customization.cc",
+  "scroll_customization.h",
+  "scroll_state_data.h",
+  "scroll_types.h",
+  "scrollable_area.cc",
+  "scrollable_area.h",
+  "scrollbar.cc",
+  "scrollbar.h",
+  "scrollbar_layer_delegate.cc",
+  "scrollbar_layer_delegate.h",
+  "scrollbar_test_suite.h",
+  "scrollbar_theme.cc",
+  "scrollbar_theme.h",
+  "scrollbar_theme_overlay.cc",
+  "scrollbar_theme_overlay.h",
+  "scrollbar_theme_overlay_mobile.cc",
+  "scrollbar_theme_overlay_mobile.h",
+  "scrollbar_theme_overlay_mock.h",
+  "smooth_scroll_sequencer.cc",
+  "smooth_scroll_sequencer.h",
+]
+
+if (is_android) {
+  blink_core_sources_scroll += [ "scrollbar_theme_android.cc" ]
+}
+
+if (is_mac) {
+  blink_core_sources_scroll += [
+    "scroll_animator_mac.h",
+    "scroll_animator_mac.mm",
+    "scrollbar_theme_mac.h",
+    "scrollbar_theme_mac.mm",
+    "web_scrollbar_theme.mm",
+  ]
+} else {
+  blink_core_sources_scroll += [
+    "scroll_animator.cc",
+    "scroll_animator.h",
+  ]
+}
+
+if (use_aura) {
+  blink_core_sources_scroll += [
+    "scrollbar_theme_aura.cc",
+    "scrollbar_theme_aura.h",
+  ]
+}

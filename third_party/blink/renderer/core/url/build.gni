@@ -1,0 +1,14 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+blink_core_sources_url = [
+  "dom_url.cc",
+  "dom_url.h",
+  "dom_url_utils.cc",
+  "dom_url_utils.h",
+  "dom_url_utils_read_only.cc",
+  "dom_url_utils_read_only.h",
+  "url_search_params.cc",
+  "url_search_params.h",
+]

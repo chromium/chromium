@@ -1,0 +1,16 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+blink_core_sources_mojo = [
+  "mojo.cc",
+  "mojo.h",
+  "mojo_handle.cc",
+  "mojo_handle.h",
+  "mojo_watcher.cc",
+  "mojo_watcher.h",
+  "test/mojo_interface_interceptor.cc",
+  "test/mojo_interface_interceptor.h",
+  "test/mojo_interface_request_event.cc",
+  "test/mojo_interface_request_event.h",
+]

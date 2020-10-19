@@ -5,34 +5,6 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/blink/renderer/core/core.gni")
 
-blink_core_sources("mojo") {
-  configs += [ "//build/config/compiler:noshadowing" ]
-
-  sources = [
-    "mojo.cc",
-    "mojo.h",
-    "mojo_handle.cc",
-    "mojo_handle.h",
-    "mojo_watcher.cc",
-    "mojo_watcher.h",
-    "test/mojo_interface_interceptor.cc",
-    "test/mojo_interface_interceptor.h",
-    "test/mojo_interface_request_event.cc",
-    "test/mojo_interface_request_event.h",
-  ]
-
-  deps = [
-    "//mojo/public/cpp/system",
-    "//services/service_manager/public/cpp",
-    "//third_party/blink/renderer/core/dom:dom",
-    "//third_party/blink/renderer/core/execution_context:execution_context",
-    "//third_party/blink/renderer/core/frame:frame",
-    "//third_party/blink/renderer/core/typed_arrays:typed_arrays",
-    "//third_party/blink/renderer/core/workers:workers",
-  ]
-  public_deps = [ "//third_party/blink/renderer/core:core_generated" ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [ "tests/js_to_cpp_test.cc" ]

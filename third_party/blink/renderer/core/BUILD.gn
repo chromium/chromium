@@ -7,13 +7,60 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/ui.gni")
 import("//build/toolchain/toolchain.gni")
+import("//printing/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/blink/renderer/bindings/bindings.gni")
 import("//third_party/blink/renderer/bindings/modules/v8/generated.gni")
 import("//third_party/blink/renderer/bindings/scripts/scripts.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/blink/renderer/config.gni")
+import("//third_party/blink/renderer/core/accessibility/build.gni")
+import("//third_party/blink/renderer/core/animation/build.gni")
+import("//third_party/blink/renderer/core/animation_frame/build.gni")
+import("//third_party/blink/renderer/core/aom/build.gni")
+import("//third_party/blink/renderer/core/clipboard/build.gni")
+import("//third_party/blink/renderer/core/content_capture/build.gni")
+import("//third_party/blink/renderer/core/context_features/build.gni")
 import("//third_party/blink/renderer/core/core.gni")
+import("//third_party/blink/renderer/core/css/build.gni")
+import("//third_party/blink/renderer/core/display_lock/build.gni")
+import("//third_party/blink/renderer/core/dom/build.gni")
+import("//third_party/blink/renderer/core/editing/build.gni")
+import("//third_party/blink/renderer/core/events/build.gni")
+import("//third_party/blink/renderer/core/execution_context/build.gni")
+import("//third_party/blink/renderer/core/feature_policy/build.gni")
+import("//third_party/blink/renderer/core/fetch/build.gni")
+import("//third_party/blink/renderer/core/fileapi/build.gni")
+import("//third_party/blink/renderer/core/frame/build.gni")
+import("//third_party/blink/renderer/core/fullscreen/build.gni")
+import("//third_party/blink/renderer/core/geometry/build.gni")
+import("//third_party/blink/renderer/core/html/build.gni")
+import("//third_party/blink/renderer/core/imagebitmap/build.gni")
+import("//third_party/blink/renderer/core/input/build.gni")
+import("//third_party/blink/renderer/core/inspector/build.gni")
+import("//third_party/blink/renderer/core/intersection_observer/build.gni")
+import("//third_party/blink/renderer/core/layout/build.gni")
+import("//third_party/blink/renderer/core/loader/build.gni")
+import("//third_party/blink/renderer/core/mathml/build.gni")
+import("//third_party/blink/renderer/core/messaging/build.gni")
+import("//third_party/blink/renderer/core/mojo/build.gni")
+import("//third_party/blink/renderer/core/offscreencanvas/build.gni")
+import("//third_party/blink/renderer/core/origin_trials/build.gni")
+import("//third_party/blink/renderer/core/page/build.gni")
+import("//third_party/blink/renderer/core/paint/build.gni")
+import("//third_party/blink/renderer/core/resize_observer/build.gni")
+import("//third_party/blink/renderer/core/script/build.gni")
+import("//third_party/blink/renderer/core/scroll/build.gni")
+import("//third_party/blink/renderer/core/streams/build.gni")
+import("//third_party/blink/renderer/core/style/build.gni")
+import("//third_party/blink/renderer/core/svg/build.gni")
+import("//third_party/blink/renderer/core/timezone/build.gni")
+import("//third_party/blink/renderer/core/timing/build.gni")
+import("//third_party/blink/renderer/core/trustedtypes/build.gni")
+import("//third_party/blink/renderer/core/url/build.gni")
+import("//third_party/blink/renderer/core/workers/build.gni")
+import("//third_party/blink/renderer/core/xml/build.gni")
+import("//third_party/blink/renderer/core/xmlhttprequest/build.gni")
 import("//third_party/blink/renderer/modules/modules_idl_files.gni")
 import("//third_party/blink/renderer/platform/platform_generated.gni")
 import("//third_party/protobuf/proto_library.gni")
@@ -117,94 +164,136 @@ source_set("prerequisites") {
   ]
 }
 
-# Note that this is a source set rather than a group, even though it has no
-# sources. A group would implicitly forward all direct dependent configs
-# through it, but we want to keep our internal targets' public_configs private
-# and only forward some of them.
 component("core") {
   output_name = "blink_core"
 
   visibility = []  # Allow re-assignment of list.
   visibility = [ "//third_party/blink/*" ]
 
-  # If you create a new subdirectory, make a new BUILD file for that directory
-  # and reference it in the deps below rather than adding the sources here.
   sources = [
     "core_initializer.cc",
     "core_initializer.h",
   ]
+
+  # If you create a new subdirectory 'foo', make 'foo/build.gni' to define
+  # blink_core_sources_foo, and include it here. Add any dependencies in the
+  # deps section below. For unit tests, do the same thing in the "unit_tests"
+  # component. If the directory contains sources that should be compiled with
+  # extra optimization flags, see the "core_hot" target below.
+  sources += rebase_path(blink_core_sources_accessibility, "", "accessibility")
+  sources +=
+      rebase_path(blink_core_sources_animation_frame, "", "animation_frame")
+  sources += rebase_path(blink_core_sources_aom, "", "aom")
+  sources += rebase_path(blink_core_sources_clipboard, "", "clipboard")
+  sources +=
+      rebase_path(blink_core_sources_content_capture, "", "content_capture")
+  sources +=
+      rebase_path(blink_core_sources_context_features, "", "context_features")
+  sources += rebase_path(blink_core_sources_css, "", "css")
+  sources += rebase_path(blink_core_sources_display_lock, "", "display_lock")
+  sources += rebase_path(blink_core_sources_dom, "", "dom")
+  sources += rebase_path(blink_core_sources_editing, "", "editing")
+  sources += rebase_path(blink_core_sources_events, "", "events")
+  sources +=
+      rebase_path(blink_core_sources_execution_context, "", "execution_context")
+  sources +=
+      rebase_path(blink_core_sources_feature_policy, "", "feature_policy")
+  sources += rebase_path(blink_core_sources_fetch, "", "fetch")
+  sources += rebase_path(blink_core_sources_fileapi, "", "fileapi")
+  sources += rebase_path(blink_core_sources_frame, "", "frame")
+  sources += rebase_path(blink_core_sources_fullscreen, "", "fullscreen")
+  sources += rebase_path(blink_core_sources_geometry, "", "geometry")
+  sources += rebase_path(blink_core_sources_html, "", "html")
+  sources += rebase_path(blink_core_sources_imagebitmap, "", "imagebitmap")
+  sources += rebase_path(blink_core_sources_input, "", "input")
+  sources += rebase_path(blink_core_sources_inspector, "", "inspector")
+  sources += rebase_path(blink_core_sources_intersection_observer,
+                         "",
+                         "intersection_observer")
+  sources += rebase_path(blink_core_sources_layout, "", "layout")
+  sources += rebase_path(blink_core_sources_loader, "", "loader")
+  sources += rebase_path(blink_core_sources_mathml, "", "mathml")
+  sources += rebase_path(blink_core_sources_messaging, "", "messaging")
+  sources += rebase_path(blink_core_sources_mojo, "", "mojo")
+  sources +=
+      rebase_path(blink_core_sources_offscreencanvas, "", "offscreencanvas")
+  sources += rebase_path(blink_core_sources_origin_trials, "", "origin_trials")
+  sources += rebase_path(blink_core_sources_page, "", "page")
+  sources += rebase_path(blink_core_sources_paint, "", "paint")
+  sources +=
+      rebase_path(blink_core_sources_resize_observer, "", "resize_observer")
+  sources += rebase_path(blink_core_sources_script, "", "script")
+  sources += rebase_path(blink_core_sources_scroll, "", "scroll")
+  sources += rebase_path(blink_core_sources_streams, "", "streams")
+  sources += rebase_path(blink_core_sources_style, "", "style")
+  sources += rebase_path(blink_core_sources_svg, "", "svg")
+  sources += rebase_path(blink_core_sources_timezone, "", "timezone")
+  sources += rebase_path(blink_core_sources_timing, "", "timing")
+  sources += rebase_path(blink_core_sources_trustedtypes, "", "trustedtypes")
+  sources += rebase_path(blink_core_sources_url, "", "url")
+  sources += rebase_path(blink_core_sources_workers, "", "workers")
+  sources += rebase_path(blink_core_sources_xml, "", "xml")
+  sources +=
+      rebase_path(blink_core_sources_xmlhttprequest, "", "xmlhttprequest")
 
   configs -= core_config_remove
   configs += core_config_add
 
   public_deps = [
     ":core_generated",
+    ":core_hot",
     "//skia",
     "//third_party/blink/public/mojom:mojom_broadcastchannel_bindings_blink",
+    "//third_party/blink/public/mojom:mojom_core_blink",
     "//third_party/blink/renderer/bindings/core/v8",
-    "//third_party/blink/renderer/core/accessibility",
+    "//third_party/blink/renderer/bindings/core/v8:bindings_core_v8_generated",
     "//third_party/blink/renderer/core/animation",
-    "//third_party/blink/renderer/core/animation_frame",
-    "//third_party/blink/renderer/core/aom",
-    "//third_party/blink/renderer/core/clipboard",
-    "//third_party/blink/renderer/core/content_capture",
-    "//third_party/blink/renderer/core/context_features",
-    "//third_party/blink/renderer/core/css",
-    "//third_party/blink/renderer/core/display_lock",
-    "//third_party/blink/renderer/core/dom",
-    "//third_party/blink/renderer/core/editing",
-    "//third_party/blink/renderer/core/events",
-    "//third_party/blink/renderer/core/execution_context",
     "//third_party/blink/renderer/core/exported",
-    "//third_party/blink/renderer/core/feature_policy",
-    "//third_party/blink/renderer/core/fetch",
-    "//third_party/blink/renderer/core/fileapi",
-    "//third_party/blink/renderer/core/frame",
-    "//third_party/blink/renderer/core/fullscreen",
-    "//third_party/blink/renderer/core/geometry",
-    "//third_party/blink/renderer/core/html",
-    "//third_party/blink/renderer/core/html/parser:parser",
-    "//third_party/blink/renderer/core/imagebitmap",
-    "//third_party/blink/renderer/core/input",
-    "//third_party/blink/renderer/core/inspector",
-    "//third_party/blink/renderer/core/intersection_observer",
-    "//third_party/blink/renderer/core/layout",
-    "//third_party/blink/renderer/core/layout/svg:svg_layout",
-    "//third_party/blink/renderer/core/loader",
-    "//third_party/blink/renderer/core/mathml",
-    "//third_party/blink/renderer/core/messaging",
-    "//third_party/blink/renderer/core/mojo",
-    "//third_party/blink/renderer/core/offscreencanvas",
-    "//third_party/blink/renderer/core/origin_trials",
-    "//third_party/blink/renderer/core/page",
-    "//third_party/blink/renderer/core/paint",
     "//third_party/blink/renderer/core/probe",
-    "//third_party/blink/renderer/core/resize_observer",
-    "//third_party/blink/renderer/core/script",
-    "//third_party/blink/renderer/core/scroll",
-    "//third_party/blink/renderer/core/streams",
-    "//third_party/blink/renderer/core/style:rendering",
-    "//third_party/blink/renderer/core/style:svg_style",
-    "//third_party/blink/renderer/core/svg",
-    "//third_party/blink/renderer/core/timezone",
-    "//third_party/blink/renderer/core/timing",
-    "//third_party/blink/renderer/core/trustedtypes",
     "//third_party/blink/renderer/core/typed_arrays",
-    "//third_party/blink/renderer/core/url",
-    "//third_party/blink/renderer/core/workers",
-    "//third_party/blink/renderer/core/xml",
-    "//third_party/blink/renderer/core/xmlhttprequest",
+    "//third_party/blink/renderer/platform",
+    "//ui/base/cursor:cursor_base",
     "//url",
     "//v8",
   ]
   deps = [
     "//components/paint_preview/common",
+    "//gpu/config",
+    "//mojo/public/cpp/bindings:bindings",
+    "//mojo/public/cpp/system",
+    "//printing/buildflags",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//services/metrics/public/mojom",
+    "//services/service_manager/public/cpp",
+    "//skia",
+    "//skia:skcms",
+    "//third_party/blink/public:buildflags",
+    "//third_party/blink/public:resources",
     "//third_party/blink/public/common",
+    "//third_party/blink/public/strings",
+    "//third_party/blink/renderer/core/typed_arrays:typed_arrays",
+    "//third_party/blink/renderer/core/xml:xpath_generated",
     "//third_party/blink/renderer/platform",
     "//third_party/blink/renderer/platform/wtf",
+    "//ui/accessibility:ax_base",
+    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor/mojom:cursor_type_blink",
+    "//ui/base/dragdrop/mojom:mojom_blink",
+    "//ui/gfx:geometry_skia",
+    "//ui/gfx/geometry",
   ]
 
-  allow_circular_includes_from = [ "//third_party/blink/renderer/core/xml:xml" ]
+  if (is_mac) {
+    deps += [ "//ui/base/mojom" ]
+  }
+
+  if (enable_basic_printing) {
+    deps += [ "//printing" ]
+  }
+
+  allow_circular_includes_from =
+      [ "//third_party/blink/renderer/core/xml:xpath_generated" ]
 
   public_configs = [ ":core_include_dirs" ]
 
@@ -213,6 +302,23 @@ component("core") {
       "AppKit.framework",
       "Carbon.framework",
     ]
+  }
+}
+
+# Certain sources should be compiled with heavy optimization enabled.
+# Define them in 'foo/build.gni' as blink_core_hot_sources_foo, and include it
+# here.
+blink_core_sources("core_hot") {
+  sources = []
+  sources += rebase_path(blink_core_hot_sources_dom, "", "dom")
+  sources += rebase_path(blink_core_hot_sources_html, "", "html")
+
+  # TODO(ajwong) this is of mirror
+  # https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/renderer/core/core.gni;l=26
+  # to undo the configs which is fragile. Find a better way.
+  if (is_android && !is_debug) {
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:optimize_max" ]
   }
 }
 
@@ -1445,6 +1551,18 @@ source_set("unit_tests") {
     "xml/xpath_functions_test.cc",
   ]
 
+  # If you create a new subdirectory 'foo' that contains unit tets, list them in
+  # 'foo/build.gni' to define blink_core_tests_foo, and add any dependencies in
+  # the deps section below.
+  sources += rebase_path(blink_core_tests_accessibility, "", "accessibility")
+  sources += rebase_path(blink_core_tests_animation, "", "animation")
+  sources += rebase_path(blink_core_tests_clipboard, "", "clipboard")
+  sources += rebase_path(blink_core_tests_css, "", "css")
+  sources += rebase_path(blink_core_tests_editing, "", "editing")
+  sources += rebase_path(blink_core_tests_fileapi, "", "fileapi")
+  sources += rebase_path(blink_core_tests_html, "", "html")
+  sources += rebase_path(blink_core_tests_style, "", "style")
+
   if (is_debug || dcheck_always_on) {
     sources += [ "exported/web_disallow_transition_scope_test.cc" ]
   }
@@ -1460,18 +1578,17 @@ source_set("unit_tests") {
     ":unit_test_support",
     "//components/paint_preview/common:common",
     "//mojo/public/cpp/system",
+    "//services/network/trust_tokens:test_support",
     "//skia",
     "//skia:skcms",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/blink/renderer/core/accessibility:unit_tests",
-    "//third_party/blink/renderer/core/animation:unit_tests",
-    "//third_party/blink/renderer/core/clipboard:unit_tests",
-    "//third_party/blink/renderer/core/css:unit_tests",
-    "//third_party/blink/renderer/core/editing:unit_tests",
-    "//third_party/blink/renderer/core/fileapi:unit_tests",
-    "//third_party/blink/renderer/core/html:unit_tests",
-    "//third_party/blink/renderer/core/style:unit_tests",
+    "//third_party/blink/renderer/controller:blink_bindings_test_sources",
+    "//third_party/blink/renderer/core",
+    "//third_party/blink/renderer/core:testing",
+    "//third_party/blink/renderer/core:unit_test_support",
+    "//third_party/blink/renderer/platform:test_support",
+    "//ui/accessibility:ax_base",
     "//ui/base/cursor:cursor_base",
     "//ui/base/cursor/mojom:cursor_type_blink",
   ]

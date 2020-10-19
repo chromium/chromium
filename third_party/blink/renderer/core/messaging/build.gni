@@ -1,0 +1,18 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+blink_core_sources_messaging = [
+  "blink_cloneable_message.cc",
+  "blink_cloneable_message.h",
+  "blink_cloneable_message_mojom_traits.cc",
+  "blink_cloneable_message_mojom_traits.h",
+  "blink_transferable_message.cc",
+  "blink_transferable_message.h",
+  "blink_transferable_message_mojom_traits.cc",
+  "blink_transferable_message_mojom_traits.h",
+  "message_channel.cc",
+  "message_channel.h",
+  "message_port.cc",
+  "message_port.h",
+]

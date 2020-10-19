@@ -194,55 +194,10 @@ no_check_targets = [
   "//sandbox/win:*",  # 7 errors
 
   # //third_party/blink/*, https://crbug.com/800764
-  "//third_party/blink/renderer/core/accessibility:*",  # 27 errors
   "//third_party/blink/renderer/core/animation:*",  # 506 errors
-  "//third_party/blink/renderer/core/animation_frame:*",  # 4 errors
-  "//third_party/blink/renderer/core/aom:*",  # 23 errors
-  "//third_party/blink/renderer/core/clipboard:*",  # 43 errors
-  "//third_party/blink/renderer/core/content_capture:*",  # 12 errors
-  "//third_party/blink/renderer/core/context_features:*",  # 3 errors
-  "//third_party/blink/renderer/core/css:*",  # 835 errors
-  "//third_party/blink/renderer/core/display_lock:*",  # 36 errors
-  "//third_party/blink/renderer/core/dom:*",  # 706 errors
-  "//third_party/blink/renderer/core/editing:*",  # 847 errors
-  "//third_party/blink/renderer/core/events:*",  # 173 errors
-  "//third_party/blink/renderer/core/execution_context:*",  # 48 errors
   "//third_party/blink/renderer/core/exported:*",  # 470 errors
-  "//third_party/blink/renderer/core/feature_policy:*",  # 15 errors
-  "//third_party/blink/renderer/core/fetch:*",  # 134 errors
-  "//third_party/blink/renderer/core/fileapi:*",  # 55 errors
-  "//third_party/blink/renderer/core/frame:*",  # 864 errors
-  "//third_party/blink/renderer/core/fullscreen:*",  # 32 errors
-  "//third_party/blink/renderer/core/geometry:*",  # 39 errors
-  "//third_party/blink/renderer/core/html/parser:*",  # 133 errors
-  "//third_party/blink/renderer/core/html:*",  # 1662 errors
-  "//third_party/blink/renderer/core/imagebitmap:*",  # 34 errors
-  "//third_party/blink/renderer/core/input:*",  # 240 errors
-  "//third_party/blink/renderer/core/inspector:*",  # 594 errors
-  "//third_party/blink/renderer/core/intersection_observer:*",  # 50 errors
-  "//third_party/blink/renderer/core/layout/svg:*",  # 193 errors
-  "//third_party/blink/renderer/core/layout:*",  # 920 errors
-  "//third_party/blink/renderer/core/loader:*",  # 421 errors
-  "//third_party/blink/renderer/core/mathml:*",  # 11 errors
-  "//third_party/blink/renderer/core/messaging:*",  # 30 errors
-  "//third_party/blink/renderer/core/offscreencanvas:*",  # 22 errors
-  "//third_party/blink/renderer/core/origin_trials:*",  # 12 errors
-  "//third_party/blink/renderer/core/page:*",  # 500 errors
-  "//third_party/blink/renderer/core/paint:*",  # 788 errors
   "//third_party/blink/renderer/core/probe:*",  # 9 errors
-  "//third_party/blink/renderer/core/resize_observer:*",  # 29 errors
-  "//third_party/blink/renderer/core/script:*",  # 155 errors
-  "//third_party/blink/renderer/core/scroll:*",  # 29 errors
-  "//third_party/blink/renderer/core/streams:*",  # 75 errors
-  "//third_party/blink/renderer/core/style:*",  # 86 errors
-  "//third_party/blink/renderer/core/svg:*",  # 297 errors
-  "//third_party/blink/renderer/core/timezone:*",  # 8 errors
-  "//third_party/blink/renderer/core/timing:*",  # 170 errors
-  "//third_party/blink/renderer/core/trustedtypes:*",  # 27 errors
   "//third_party/blink/renderer/core/typed_arrays:*",  # 24 errors
-  "//third_party/blink/renderer/core/url:*",  # 7 errors
-  "//third_party/blink/renderer/core/workers:*",  # 289 errors
-  "//third_party/blink/renderer/core/xmlhttprequest:*",  # 49 errors
   "//third_party/blink/renderer/core:*",  # 823 errors
   "//third_party/blink/renderer/modules/peerconnection:*",  # 43 errors
 

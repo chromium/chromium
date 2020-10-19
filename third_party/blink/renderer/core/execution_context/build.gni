@@ -1,0 +1,26 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+blink_core_sources_execution_context = [
+  "agent.cc",
+  "agent.h",
+  "agent_metrics_collector.cc",
+  "agent_metrics_collector.h",
+  "execution_context.cc",
+  "execution_context.h",
+  "execution_context_lifecycle_observer.cc",
+  "execution_context_lifecycle_observer.h",
+  "execution_context_lifecycle_state_observer.cc",
+  "execution_context_lifecycle_state_observer.h",
+  "remote_security_context.cc",
+  "remote_security_context.h",
+  "security_context.cc",
+  "security_context.h",
+  "security_context_init.cc",
+  "security_context_init.h",
+  "window_agent.cc",
+  "window_agent.h",
+  "window_agent_factory.cc",
+  "window_agent_factory.h",
+]

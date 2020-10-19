@@ -1,0 +1,12 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+blink_core_sources_display_lock = [
+  "display_lock_context.cc",
+  "display_lock_context.h",
+  "display_lock_document_state.cc",
+  "display_lock_document_state.h",
+  "display_lock_utilities.cc",
+  "display_lock_utilities.h",
+]
