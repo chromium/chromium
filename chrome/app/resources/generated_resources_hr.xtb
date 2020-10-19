@@ -4437,8 +4437,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="6242852299490624841">Fokusiraj tu karticu</translation>
 <translation id="6243280677745499710">Trenutačno postavljeno</translation>
 <translation id="6243774244933267674">Poslužitelj nije dostupan</translation>
-<translation id="6244185221716469155">Slabe zaporke lako je pogoditi. Neka vaše zaporke obavezno budu snažne.
-    <ph name="BEGIN_LINK" />Pročitajte još sigurnosnih savjeta<ph name="END_LINK" />.</translation>
 <translation id="6244245036423700521">Uvoz ONC datoteke</translation>
 <translation id="6246790815526961700">Prijenos s uređaja</translation>
 <translation id="6247620186971210352">Aplikacije nisu pronađene</translation>
@@ -5366,6 +5364,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="7375235221357833624">{0,plural, =1{Ažurirajte uređaj u roku od sat vremena}one{Ažurirajte uređaj u roku od # sata}few{Ažurirajte uređaj u roku od # sata}other{Ažurirajte uređaj u roku od # sati}}</translation>
 <translation id="7376553024552204454">Istakni pokazivač miša kada se kreće</translation>
 <translation id="7377451353532943397">Nastavi blokirati pristup senzorima</translation>
+<translation id="7378611153938412599">Slabe zaporke lako je pogoditi. Neka vaše zaporke obavezno budu snažne. <ph name="BEGIN_LINK" />Pročitajte još sigurnosnih savjeta<ph name="END_LINK" />.</translation>
 <translation id="73786666777299047">Otvori Chrome web-trgovinu</translation>
 <translation id="7378812711085314936">Dohvaćanje podatkovne veze</translation>
 <translation id="7380622428988553498">Naziv uređaja sadrži nevažeće znakove</translation>

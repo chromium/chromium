@@ -4436,8 +4436,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="6242852299490624841">Označiť túto kartu</translation>
 <translation id="6243280677745499710">Práve nastavená</translation>
 <translation id="6243774244933267674">Server je nedostupný</translation>
-<translation id="6244185221716469155">Slabé heslá sa dajú ľahko uhádnuť. Vždy sa snažte vytvárať silné heslá.
-    <ph name="BEGIN_LINK" />Ďalšie tipy na zabezpečenie<ph name="END_LINK" /></translation>
 <translation id="6244245036423700521">Importovať súbor ONC</translation>
 <translation id="6246790815526961700">Nahrať zo zariadenia</translation>
 <translation id="6247620186971210352">Nenašli sa žiadne aplikácie</translation>
@@ -5365,6 +5363,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="7375235221357833624">{0,plural, =1{Aktualizujte zariadenie do hodiny}few{Aktualizujte zariadenie do # hodín}many{Aktualizujte zariadenie do # hodiny}other{Aktualizujte zariadenie do # hodín}}</translation>
 <translation id="7376553024552204454">Zvýrazňovať kurzor myši, keď sa hýbe</translation>
 <translation id="7377451353532943397">Naďalej blokovať prístup k senzorom</translation>
+<translation id="7378611153938412599">Slabé heslá sa dajú ľahko uhádnuť. Vždy sa snažte vytvárať silné heslá. <ph name="BEGIN_LINK" />Ďalšie tipy na zabezpečenie<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Otvoriť Internetový obchod Chrome</translation>
 <translation id="7378812711085314936">Získať dátové pripojenie</translation>
 <translation id="7380622428988553498">Názov zariadenia obsahuje neplatné znaky</translation>

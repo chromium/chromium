@@ -180,6 +180,7 @@
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium จะตรวจหาซอฟต์แวร์ไม่พึงประสงค์สัปดาห์ละครั้ง ตรวจสอบล่าสุด: 1 วันที่ผ่านมา}other{Chromium จะตรวจหาซอฟต์แวร์ไม่พึงประสงค์สัปดาห์ละครั้ง ตรวจสอบล่าสุด: {NUM_DAYS} วันที่ผ่านมา}}</translation>
 <translation id="6893813176749746474">Chromium ได้รับการอัปเดตแล้ว แต่คุณไม่ได้ใช้งานมาไม่ต่ำกว่า 30 วันแล้ว</translation>
 <translation id="6964305034639999644">เปิดลิงก์ในหน้าต่างที่ไม่ระบุตัวตนของ Chromium</translation>
+<translation id="6978145336957848883">รหัสผ่านที่ไม่รัดกุมนั้นคาดเดาได้ง่าย ให้ Chromium <ph name="BEGIN_LINK" />สร้างและจดจำรหัสผ่านที่รัดกุมให้คุณ<ph name="END_LINK" /></translation>
 <translation id="6990124437352146030">Chromium ต้องการสิทธิ์เข้าถึงไมโครโฟนของคุณสำหรับเว็บไซต์นี้</translation>
 <translation id="701244094609242530">Chromium ตรวจสอบส่วนขยายของคุณไม่ได้ โปรดลองอีกครั้งภายหลัง</translation>
 <translation id="705851970750939768">อัปเดต Chromium</translation>

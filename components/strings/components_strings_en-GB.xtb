@@ -22,7 +22,6 @@
 <translation id="1058479211578257048">Saving cards...</translation>
 <translation id="10614374240317010">Never saved</translation>
 <translation id="1062160989074299343">Prc10 (Envelope)</translation>
-<translation id="1066573427009091463"><ph name="PERCENT" /> cashback</translation>
 <translation id="106701514854093668">Desktop Bookmarks</translation>
 <translation id="1068672505746868501">Never translate pages in <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070901266639972381">Night</translation>
@@ -496,7 +495,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2955913368246107853">Close find bar</translation>
 <translation id="2969319727213777354">To establish a secure connection, your clock needs to be set correctly. This is because the certificates that websites use to identify themselves are only valid for specific periods of time. Since your device's clock is incorrect, Google Chrome cannot verify these certificates.</translation>
 <translation id="2972581237482394796">&amp;Redo</translation>
-<translation id="2975775789586780239"><ph name="DISCOUNT" /> off</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, currently selected. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">If enabled, Chromium will store a copy of your card on this device for faster form filling.</translation>
 <translation id="2985398929374701810">Enter a valid address</translation>
@@ -908,6 +906,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4597348597567598915">Size 8</translation>
 <translation id="4600854749408232102">C6/C5 (Envelope)</translation>
 <translation id="4628948037717959914">Photo</translation>
+<translation id="4631649115723685955">Cashback linked</translation>
 <translation id="464342062220857295">Search features</translation>
 <translation id="4644670975240021822">Reverse order face down</translation>
 <translation id="4646534391647090355">Take me there now</translation>

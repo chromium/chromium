@@ -4435,8 +4435,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6242852299490624841">Stavi ovu karticu u fokus</translation>
 <translation id="6243280677745499710">Trenutno podešena</translation>
 <translation id="6243774244933267674">Server je nedostupan</translation>
-<translation id="6244185221716469155">Slabe lozinke lako mogu da se pogode. Obavezno napravite jake lozinke.
-    <ph name="BEGIN_LINK" />Pogledajte još saveta za bezbednost.<ph name="END_LINK" /></translation>
 <translation id="6244245036423700521">Uvezi ONC datoteku</translation>
 <translation id="6246790815526961700">Otpremite sa uređaja</translation>
 <translation id="6247620186971210352">Nije pronađena nijedna aplikacija</translation>
@@ -5364,6 +5362,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7375235221357833624">{0,plural, =1{Ažurirajte uređaj u roku od jednog sata}one{Ažurirajte uređaj u roku od # sata}few{Ažurirajte uređaj u roku od # sata}other{Ažurirajte uređaj u roku od # sati}}</translation>
 <translation id="7376553024552204454">Ističi kursor miša dok se kreće</translation>
 <translation id="7377451353532943397">Nastavi da blokiraš pristup senzorima</translation>
+<translation id="7378611153938412599">Slabe lozinke lako mogu da se pogode. Obavezno napravite jake lozinke. <ph name="BEGIN_LINK" />Pogledajte još saveta za bezbednost.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Otvorite Chrome veb-prodavnicu</translation>
 <translation id="7378812711085314936">Korišćenje veze za prenos podataka</translation>
 <translation id="7380622428988553498">Ime uređaja sadrži nevažeće znakove</translation>

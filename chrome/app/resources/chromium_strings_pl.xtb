@@ -178,6 +178,7 @@ Niektóre funkcje mogą być niedostępne. Podaj inny katalog z profilem lub uż
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Raz w tygodniu Chromium sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: 1 dzień temu.}few{Raz w tygodniu Chromium sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: {NUM_DAYS} dni temu.}many{Raz w tygodniu Chromium sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: {NUM_DAYS} dni temu.}other{Raz w tygodniu Chromium sprawdza, czy nie masz zainstalowanego niechcianego oprogramowania. Sprawdzano: {NUM_DAYS} dnia temu.}}</translation>
 <translation id="6893813176749746474">Przeglądarka Chromium została zaktualizowana, ale nie była przez Ciebie używana przez co najmniej 30 dni.</translation>
 <translation id="6964305034639999644">Otwórz link w oknie inco&amp;gnito Chromium</translation>
+<translation id="6978145336957848883">Słabe hasła są łatwe do odgadnięcia. Pozwól Chromium <ph name="BEGIN_LINK" />utworzyć i zapamiętać silne hasła<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium potrzebuje uprawnień dostępu do mikrofonu na tej stronie</translation>
 <translation id="701244094609242530">Chromium nie może sprawdzić Twoich rozszerzeń. Spróbuj później.</translation>
 <translation id="705851970750939768">Zaktualizuj Chromium</translation>

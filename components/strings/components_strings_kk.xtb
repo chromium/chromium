@@ -22,7 +22,6 @@
 <translation id="1058479211578257048">Карталар сақталуда...</translation>
 <translation id="10614374240317010">Ешқашан сақталмайды</translation>
 <translation id="1062160989074299343">Prc10 (Envelope)</translation>
-<translation id="1066573427009091463"><ph name="PERCENT" /> кешбэк</translation>
 <translation id="106701514854093668">Жұмыс үстелі бетбелгілері</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> тіліндегі беттер ешқашан аударылмасын</translation>
 <translation id="1070901266639972381">Түн</translation>
@@ -497,7 +496,6 @@
 <translation id="2955913368246107853">Іздеу жолағын жабу</translation>
 <translation id="2969319727213777354">Қауіпсіз байланыс орнату үшін сағатыңыз дұрыс орнатылуы қажет. Себебі веб сайттар өзін анықтау үшін пайдаланатын сертификаттар көрсетілген уақыт мерзімінде ғана жарамды болады. Құрылғыңыздың сағаты дұрыс емес болғандықтан, Chrome бұл сертификаттарды растай алмайды.</translation>
 <translation id="2972581237482394796">&amp;Қайта орындау</translation>
-<translation id="2975775789586780239"><ph name="DISCOUNT" /> жеңілдік</translation>
 <translation id="2977665033722899841">Ағымдағы таңдалғаны: <ph name="ROW_NAME" />, <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">Іске қосылса, Chromium нысанды жылдамырақ толтыру үшін картаңыздың көшірмесін осы құрылғыға сақтайды.</translation>
 <translation id="2985398929374701810">Дұрыс мекенжайды енгізіңіз</translation>
@@ -908,6 +906,7 @@
 <translation id="4597348597567598915">Өлшемі: 8</translation>
 <translation id="4600854749408232102">C6/C5 (Envelope)</translation>
 <translation id="4628948037717959914">Фотосурет</translation>
+<translation id="4631649115723685955">Байланыстырылған кешбэк</translation>
 <translation id="464342062220857295">Іздеу функциялары</translation>
 <translation id="4644670975240021822">Кері ретпен артқы жағында</translation>
 <translation id="4646534391647090355">Қазір өту</translation>

@@ -4435,8 +4435,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6242852299490624841">Shu varaqni fokuslash</translation>
 <translation id="6243280677745499710">Hozirda tanlangan</translation>
 <translation id="6243774244933267674">Server ish faoliyatida emas</translation>
-<translation id="6244185221716469155">Kuchsiz parollar oson topiladi. Kuchli parol yarating.
-    <ph name="BEGIN_LINK" />Xavfsizlikka oid boshqa maslahatlar bilan tanishing.<ph name="END_LINK" /></translation>
 <translation id="6244245036423700521">ONC faylni import qilish</translation>
 <translation id="6246790815526961700">Qurilmadan yuklash</translation>
 <translation id="6247620186971210352">Hech qanday ilova topilmadi</translation>
@@ -5364,6 +5362,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7375235221357833624">{0,plural, =1{Qurilmani bir soat ichida oʻchirib yoqish kerak}other{Qurilmani # soat ichida oʻchirib yoqish kerak}}</translation>
 <translation id="7376553024552204454">Sichqoncha siljiganda ajratib ko‘rsatilsin</translation>
 <translation id="7377451353532943397">Sensor doim bloklansin</translation>
+<translation id="7378611153938412599">Kuchsiz parollar oson topiladi. Kuchli parol yarating. <ph name="BEGIN_LINK" />Xavfsizlikka oid boshqa maslahatlar bilan tanishing.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Chrome internet-do‘konida ochish</translation>
 <translation id="7378812711085314936">Mobil internetga ulanish</translation>
 <translation id="7380622428988553498">Qurilma nomida yaroqsiz belgilar mavjud</translation>

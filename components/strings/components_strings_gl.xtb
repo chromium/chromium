@@ -22,7 +22,6 @@
 <translation id="1058479211578257048">Gardando tarxetas…</translation>
 <translation id="10614374240317010">Contrasinais que non se gardan nunca</translation>
 <translation id="1062160989074299343">Prc10 (sobre)</translation>
-<translation id="1066573427009091463">Devolución do <ph name="PERCENT" /></translation>
 <translation id="106701514854093668">Marcadores do escritorio</translation>
 <translation id="1068672505746868501">Non traducir nunca páxinas en <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070901266639972381">Noite</translation>
@@ -494,7 +493,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2955913368246107853">Pecha a barra de busca</translation>
 <translation id="2969319727213777354">Para establecer unha conexión segura, é necesario que o reloxo estea correctamente axustado. Isto débese a que os certificados utilizados polos sitios web para identificarse só son válidos durante períodos de tempo específicos. Debido a que o reloxo do dispositivo está incorrectamente axustado, Chrome non pode verificar estes certificados.</translation>
 <translation id="2972581237482394796">&amp;Refacer</translation>
-<translation id="2975775789586780239"><ph name="DISCOUNT" /> de desconto</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />: opción actualmente seleccionada. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">Se se activa esta opción, Chromium almacenará unha copia da túa tarxeta neste dispositivo para completar os formularios máis rápido.</translation>
 <translation id="2985398929374701810">Introduce un enderezo válido</translation>
@@ -906,6 +904,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4597348597567598915">Tamaño 8</translation>
 <translation id="4600854749408232102">C6/C5 (sobre)</translation>
 <translation id="4628948037717959914">Foto</translation>
+<translation id="4631649115723685955">Devolución de cartos vinculada</translation>
 <translation id="464342062220857295">Busca funcións</translation>
 <translation id="4644670975240021822">Orde inversa cara abaixo</translation>
 <translation id="4646534391647090355">Visitar agora</translation>

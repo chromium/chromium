@@ -4437,8 +4437,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="6242852299490624841">Tõsta see vaheleht esile</translation>
 <translation id="6243280677745499710">Praegu määratud</translation>
 <translation id="6243774244933267674">Server ei ole saadaval</translation>
-<translation id="6244185221716469155">Nõrku paroole on lihtne ära arvata. Veenduge, et looksite tugevad paroolid.
-    <ph name="BEGIN_LINK" />Vaadake rohkem turvanõuandeid.<ph name="END_LINK" /></translation>
 <translation id="6244245036423700521">Impordi ONC-fail</translation>
 <translation id="6246790815526961700">Seadmest üleslaadimine</translation>
 <translation id="6247620186971210352">Ühtegi rakendust ei leitud</translation>
@@ -5366,6 +5364,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="7375235221357833624">{0,plural, =1{Värskendage seadet tunni jooksul}other{Värskendage seadet # tunni jooksul}}</translation>
 <translation id="7376553024552204454">Tõsta hiirekursor esile, kui see liigub</translation>
 <translation id="7377451353532943397">Blokeeri ka edaspidi juurdepääs anduritele</translation>
+<translation id="7378611153938412599">Nõrku paroole on lihtne ära arvata. Veenduge, et looksite tugevad paroolid. <ph name="BEGIN_LINK" />Vaadake rohkem turvanõuandeid.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Ava Chrome'i veebipood</translation>
 <translation id="7378812711085314936">Andmesideühenduse hankimine</translation>
 <translation id="7380622428988553498">Seadme nimi sisaldab sobimatuid tähemärke</translation>

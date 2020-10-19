@@ -182,6 +182,7 @@ Sommige kenmerke sal dalk nie beskikbaar wees nie. Spesifiseer 'n ander profielg
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium kyk een keer per week vir ongewenste sagteware. Laas nagegaan: 1 dag gelede.}other{Chromium kyk een keer per week vir ongewenste sagteware. Laas nagegaan: {NUM_DAYS} dae gelede.}}</translation>
 <translation id="6893813176749746474">Chromium is opgedateer, maar jy het dit vir minstens 30 dae nie gebruik nie.</translation>
 <translation id="6964305034639999644">Maak skakel in 'n incognitovenster in Chromium oop</translation>
+<translation id="6978145336957848883">Swak wagwoorde is maklik om te raai. Laat Chromium <ph name="BEGIN_LINK" />sterk wagwoorde vir jou skep en onthou<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium het toestemming nodig om toegang te kry tot jou mikrofoon vir hierdie werf</translation>
 <translation id="701244094609242530">Chromium kan nie jou uitbreidings nagaan nie. Probeer later weer.</translation>
 <translation id="705851970750939768">Dateer Chromium op</translation>

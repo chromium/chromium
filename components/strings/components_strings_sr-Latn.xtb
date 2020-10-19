@@ -22,7 +22,6 @@
 <translation id="1058479211578257048">Kartice se čuvaju...</translation>
 <translation id="10614374240317010">Nikada se ne čuva</translation>
 <translation id="1062160989074299343">Prc10 (koverat)</translation>
-<translation id="1066573427009091463">Povraćaj gotovine od <ph name="PERCENT" /></translation>
 <translation id="106701514854093668">Obeleživači na računaru</translation>
 <translation id="1068672505746868501">Nikad ne prevodi stranice na jeziku <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070901266639972381">Noć</translation>
@@ -497,7 +496,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2955913368246107853">Zatvorite traku za pronalaženje</translation>
 <translation id="2969319727213777354">Da biste uspostavili bezbednu vezu, sat na uređaju mora da bude tačan. To je zato što sertifikati koje veb-sajtovi koriste za identifikaciju važe samo za određene vremenske periode. Pošto sat na vašem uređaju nije tačan, Google Chrome ne može da verifikuje te sertifikate.</translation>
 <translation id="2972581237482394796">&amp;Ponovi radnju</translation>
-<translation id="2975775789586780239"><ph name="DISCOUNT" /> popusta</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, trenutno izabrano. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">Ako omogućite ovu opciju, Chromium će skladištiti kopiju kartice na ovom uređaju radi bržeg popunjavanja obrazaca.</translation>
 <translation id="2985398929374701810">Unesite važeću adresu</translation>
@@ -909,6 +907,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4597348597567598915">Veličina 8</translation>
 <translation id="4600854749408232102">C6/C5 (koverat)</translation>
 <translation id="4628948037717959914">Slika</translation>
+<translation id="4631649115723685955">Povezan je povraćaj gotovine</translation>
 <translation id="464342062220857295">Funkcije pretrage</translation>
 <translation id="4644670975240021822">Obrnutim redosledom sa odštampanom stranom nadole</translation>
 <translation id="4646534391647090355">Odvedi me tamo</translation>

@@ -22,7 +22,6 @@
 <translation id="1058479211578257048">Se salvează cardurile…</translation>
 <translation id="10614374240317010">Nu se salvează niciodată</translation>
 <translation id="1062160989074299343">Prc10 (Plic)</translation>
-<translation id="1066573427009091463"><ph name="PERCENT" /> returnare de numerar</translation>
 <translation id="106701514854093668">Marcaje desktop</translation>
 <translation id="1068672505746868501">Nu traduce niciodată paginile în <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070901266639972381">Noapte</translation>
@@ -495,7 +494,6 @@
 <translation id="2955913368246107853">Închide Bara de căutare</translation>
 <translation id="2969319727213777354">Pentru a stabili o conexiune securizată, ceasul trebuie să fie setat corect, deoarece certificatele pe care site-urile le folosesc pentru a se identifica sunt valabile numai pentru anumite intervale de timp. Din moment ce ora de pe dispozitiv este incorectă, Google Chrome nu poate verifica aceste certificate.</translation>
 <translation id="2972581237482394796">&amp;Repetă</translation>
-<translation id="2975775789586780239"><ph name="DISCOUNT" /> reducere</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" /> selectat(ă). <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">Dacă opțiunea este activată, Chromium va stoca o copie a cardului pe dispozitiv pentru a completa formularul mai rapid.</translation>
 <translation id="2985398929374701810">Introdu o adresă validă</translation>
@@ -907,6 +905,7 @@
 <translation id="4597348597567598915">Mărimea 8</translation>
 <translation id="4600854749408232102">C6/C5 (Plic)</translation>
 <translation id="4628948037717959914">Fotografie</translation>
+<translation id="4631649115723685955">Ofertă cu returnare de bani</translation>
 <translation id="464342062220857295">Funcții de căutare</translation>
 <translation id="4644670975240021822">În ordine inversă, cu fața în jos</translation>
 <translation id="4646534391647090355">Accesez acum</translation>

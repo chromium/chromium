@@ -182,6 +182,7 @@
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium ຈະກວດຫາຊອບແວທີ່ບໍ່ຕ້ອງການໜຶ່ງຄັ້ງຕໍ່ອາທິດ. ກວດຄັ້ງຫຼ້າສຸດ: 1 ມື້ກ່ອນ.}other{Chromium ຈະກວດຫາຊອບແວທີ່ບໍ່ຕ້ອງການໜຶ່ງຄັ້ງຕໍ່ອາທິດ. ກວດຄັ້ງຫຼ້າສຸດ: {NUM_DAYS} ມື້ກ່ອນ.}}</translation>
 <translation id="6893813176749746474">ອັບເດດ Chromium ແລ້ວ, ແຕ່ທ່ານບໍ່ໄດ້ໃຊ້ມັນເປັນເວລາຢ່າງໜ້ອຍ 30 ວັນແລ້ວ​.</translation>
 <translation id="6964305034639999644">ເປີດລິ້ງໃນໜ້າຈໍທີ່ບໍ່ເຜີຍຕົວຕົນຂອງ Chromium</translation>
+<translation id="6978145336957848883">ລະຫັດຜ່ານງ່າຍແມ່ນລະຫັດຜ່ານທີ່ເດົາໄດ້ງ່າຍ. ອະນຸຍາດໃຫ້ Chromium <ph name="BEGIN_LINK" />ສ້າງ ແລະ ຈື່ລະຫັດຜ່ານຍາກສຳລັບທ່ານ<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium ຕ້ອງການການອະນຸຍາດເພື່ອເຂົ້າເຖິງໄມໂຄຣໂຟນຂອງທ່ານສຳລັບເວັບໄຊນີ້</translation>
 <translation id="701244094609242530">Chromium ບໍ່ສາມາດກວດສ່ວນຂະຫຍາຍຂອງທ່ານໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫລັງ.</translation>
 <translation id="705851970750939768">ອັບເດດ Chromium</translation>

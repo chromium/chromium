@@ -182,6 +182,7 @@
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium проверува дали има несакан софтвер еднаш неделно. Последна проверка: пред 1 ден.}one{Chromium проверува дали има несакан софтвер еднаш неделно. Последна проверка: пред {NUM_DAYS} ден.}other{Chromium проверува дали има несакан софтвер еднаш неделно. Последна проверка: пред {NUM_DAYS} дена.}}</translation>
 <translation id="6893813176749746474">Chromium се ажурираше, но не сте го употребиле најмалку 30 дена.</translation>
 <translation id="6964305034639999644">Отвори го линкот во инко&amp;гнито прозорец на Chromium</translation>
+<translation id="6978145336957848883">Слабите лозинки се лесни за погаѓање. Дозволете Chromium да ви <ph name="BEGIN_LINK" />создаде и запомни силни лозинки<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">На Chromium му треба дозвола за да пристапи до микрофонот за сајтов</translation>
 <translation id="701244094609242530">Chromium не може да ги провери вашите екстензии. Обидете се пак подоцна.</translation>
 <translation id="705851970750939768">Ажурирај го Chromium</translation>

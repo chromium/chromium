@@ -4437,8 +4437,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6242852299490624841">Focus op dit tabblad plaatsen</translation>
 <translation id="6243280677745499710">Momenteel ingesteld</translation>
 <translation id="6243774244933267674">Server is niet beschikbaar</translation>
-<translation id="6244185221716469155">Zwakke wachtwoorden zijn makkelijk te raden. Stel sterke wachtwoorden in.
-    <ph name="BEGIN_LINK" />Meer beveiligingstips bekijken<ph name="END_LINK" /></translation>
 <translation id="6244245036423700521">ONC-bestand importeren</translation>
 <translation id="6246790815526961700">Uploaden via apparaat</translation>
 <translation id="6247620186971210352">Geen apps gevonden</translation>
@@ -5366,6 +5364,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7375235221357833624">{0,plural, =1{Apparaat binnen een uur updaten}other{Apparaat binnen # uur updaten}}</translation>
 <translation id="7376553024552204454">De muisaanwijzer markeren terwijl deze beweegt</translation>
 <translation id="7377451353532943397">Toegang tot sensoren blijven blokkeren</translation>
+<translation id="7378611153938412599">Zwakke wachtwoorden zijn makkelijk te raden. Stel sterke wachtwoorden in. <ph name="BEGIN_LINK" />Meer beveiligingstips bekijken<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Chrome Web Store openen</translation>
 <translation id="7378812711085314936">Dataverbinding ophalen</translation>
 <translation id="7380622428988553498">Apparaatnaam bevat ongeldige tekens</translation>

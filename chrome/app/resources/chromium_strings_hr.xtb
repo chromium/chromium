@@ -180,6 +180,7 @@ Neke su značajke možda nedostupne. Navedite neki drugi direktorij profila ili 
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium provjerava ima li neželjenog softvera jednom tjedno. Posljednja provjera bila je jučer.}one{Chromium provjerava ima li neželjenog softvera jednom tjedno. Posljednja provjera bila je prije {NUM_DAYS} dana.}few{Chromium provjerava ima li neželjenog softvera jednom tjedno. Posljednja provjera bila je prije {NUM_DAYS} dana.}other{Chromium provjerava ima li neželjenog softvera jednom tjedno. Posljednja provjera bila je prije {NUM_DAYS} dana.}}</translation>
 <translation id="6893813176749746474">Chromium je ažuriran, ali vi ga niste upotrebljavali najmanje 30 dana.</translation>
 <translation id="6964305034639999644">Otvori vezu u ano&amp;nimnom prozoru Chromiuma</translation>
+<translation id="6978145336957848883">Slabe zaporke lako je pogoditi. Neka Chromium <ph name="BEGIN_LINK" />izradi i zapamti snažne zaporke za vas<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium treba dopuštenje za pristup mikrofonu za ovu web-lokaciju</translation>
 <translation id="701244094609242530">Chromium ne može provjeriti vaša proširenja. Pokušajte ponovno kasnije.</translation>
 <translation id="705851970750939768">Ažuriraj Chromium</translation>

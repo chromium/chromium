@@ -176,6 +176,7 @@
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{O Chromium verifica se há softwares indesejados uma vez por semana. Última verificação: 1 dia atrás.}one{O Chromium verifica se há softwares indesejados uma vez por semana. Última verificação: {NUM_DAYS} dia atrás.}other{O Chromium verifica se há softwares indesejados uma vez por semana. Última verificação: {NUM_DAYS} dias atrás.}}</translation>
 <translation id="6893813176749746474">O Chromium foi atualizado, mas não é utilizado há pelo menos 30 dias.</translation>
 <translation id="6964305034639999644">Abrir link na janela &amp;sem rastros do Chromium</translation>
+<translation id="6978145336957848883">Senhas fracas são fáceis de adivinhar. Deixe o Chromium <ph name="BEGIN_LINK" />criar e guardar senhas fortes para você<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">O Chromium precisa de permissão para este site acessar seu microfone</translation>
 <translation id="701244094609242530">O Chromium não pode verificar suas extensões. Tente mais tarde.</translation>
 <translation id="705851970750939768">Atualizar o Chromium</translation>

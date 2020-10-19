@@ -182,6 +182,7 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium checks for unwanted software once a week. Last checked: 1 day ago.}other{Chromium checks for unwanted software once a week. Last checked: {NUM_DAYS} days ago.}}</translation>
 <translation id="6893813176749746474">Chromium has been updated, but you haven't used it for 30 days or more.</translation>
 <translation id="6964305034639999644">Open link in Chromium inco&amp;gnito window</translation>
+<translation id="6978145336957848883">Weak passwords are easy to guess. Let Chromium <ph name="BEGIN_LINK" />create and remember strong passwords for you<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium needs permission to access your microphone for this site</translation>
 <translation id="701244094609242530">Chromium can't check your extensions. Try again later.</translation>
 <translation id="705851970750939768">Update Chromium</translation>

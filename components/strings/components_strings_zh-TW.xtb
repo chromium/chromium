@@ -22,7 +22,6 @@
 <translation id="1058479211578257048">正在儲存卡片...</translation>
 <translation id="10614374240317010">一律不儲存</translation>
 <translation id="1062160989074299343">Prc10 (信封)</translation>
-<translation id="1066573427009091463"><ph name="PERCENT" /> 現金回饋</translation>
 <translation id="106701514854093668">電腦版書籤</translation>
 <translation id="1068672505746868501">一律不翻譯<ph name="SOURCE_LANGUAGE" />網頁</translation>
 <translation id="1070901266639972381">晚上</translation>
@@ -491,7 +490,6 @@
 <translation id="2955913368246107853">關閉搜尋列</translation>
 <translation id="2969319727213777354">您必須正確設定時鐘，才能建立安全連線。這是因為網站驗證身分時所使用的憑證僅於特定一段時間內有效。由於您裝置的時鐘不正確，因此 Google Chrome 無法驗證這些憑證。</translation>
 <translation id="2972581237482394796">重做(&amp;R)</translation>
-<translation id="2975775789586780239">折抵 <ph name="DISCOUNT" /></translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />，目前已選取。<ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">啟用後，Chromium 會將您的信用卡資料儲存在這個裝置上，以加快表單填寫速度。</translation>
 <translation id="2985398929374701810">請輸入有效的地址</translation>
@@ -898,6 +896,7 @@
 <translation id="4597348597567598915">粗細：8</translation>
 <translation id="4600854749408232102">C6/C5 (信封)</translation>
 <translation id="4628948037717959914">相片</translation>
+<translation id="4631649115723685955">已連結現金回饋</translation>
 <translation id="464342062220857295">搜尋功能</translation>
 <translation id="4644670975240021822">相反順序 (正面朝下)</translation>
 <translation id="4646534391647090355">立即前往下載中心</translation>

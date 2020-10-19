@@ -4432,8 +4432,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6242852299490624841">Fokusér på denne fanen</translation>
 <translation id="6243280677745499710">Nåværende bakgrunn</translation>
 <translation id="6243774244933267674">Tjeneren er ikke tilgjengelig</translation>
-<translation id="6244185221716469155">Svake passord er enkle å gjette. Sørg for at du lager sterke passord.
-    <ph name="BEGIN_LINK" />Se flere sikkerhetstips.<ph name="END_LINK" /></translation>
 <translation id="6244245036423700521">Importér ONC-fil</translation>
 <translation id="6246790815526961700">Last opp fra enheten</translation>
 <translation id="6247620186971210352">Fant ingen apper</translation>
@@ -5361,6 +5359,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7375235221357833624">{0,plural, =1{Oppdater enheten innen en time}other{Oppdater enheten innen # timer}}</translation>
 <translation id="7376553024552204454">Fremhev musepekeren når den beveger seg</translation>
 <translation id="7377451353532943397">Fortsett blokkering av sensortilgang</translation>
+<translation id="7378611153938412599">Svake passord er enkle å gjette. Sørg for at du lager sterke passord. <ph name="BEGIN_LINK" />Se flere sikkerhetstips.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Åpne Chrome Nettmarked</translation>
 <translation id="7378812711085314936">Få datatilkobling</translation>
 <translation id="7380622428988553498">Enhetsnavnet inneholder ugyldige tegn</translation>

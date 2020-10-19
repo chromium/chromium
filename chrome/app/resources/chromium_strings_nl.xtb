@@ -182,6 +182,7 @@ Sommige functies zijn mogelijk niet beschikbaar. Geef een andere profieldirector
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium checkt één keer per week op ongewenste software. Laatst gecheckt: 1 dag geleden.}other{Chromium checkt één keer per week op ongewenste software. Laatst gecheckt: {NUM_DAYS} dagen geleden.}}</translation>
 <translation id="6893813176749746474">Chromium is bijgewerkt, maar je hebt het programma minstens 30 dagen niet gebruikt.</translation>
 <translation id="6964305034639999644">Link openen in een Chromium-inco&amp;gnitovenster</translation>
+<translation id="6978145336957848883">Zwakke wachtwoorden zijn makkelijk te raden. Laat Chromium <ph name="BEGIN_LINK" />sterke wachtwoorden voor je instellen en onthouden<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium heeft toegangsrechten voor je microfoon nodig voor deze site</translation>
 <translation id="701244094609242530">Chromium kan je extensies niet checken. Probeer het later opnieuw.</translation>
 <translation id="705851970750939768">Chromium updaten</translation>

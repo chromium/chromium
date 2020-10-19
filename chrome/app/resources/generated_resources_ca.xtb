@@ -4437,8 +4437,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6242852299490624841">Posa el focus en aquesta pestanya</translation>
 <translation id="6243280677745499710">Establert actualment</translation>
 <translation id="6243774244933267674">El servidor no està disponible</translation>
-<translation id="6244185221716469155">Les contrasenyes poc segures són fàcils d'endevinar. Assegura't de crear-ne de segures.
-    <ph name="BEGIN_LINK" />Consulta més consells de seguretat<ph name="END_LINK" />.</translation>
 <translation id="6244245036423700521">Importa un fitxer ONC</translation>
 <translation id="6246790815526961700">Penja des del dispositiu</translation>
 <translation id="6247620186971210352">No s'ha trobat cap aplicació</translation>
@@ -5366,6 +5364,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7375235221357833624">{0,plural, =1{Actualitza el dispositiu en 1 hora}other{Actualitza el dispositiu en # hores}}</translation>
 <translation id="7376553024552204454">Destaca el cursor del ratolí quan es mogui</translation>
 <translation id="7377451353532943397">Continua bloquejant l'accés als sensors</translation>
+<translation id="7378611153938412599">Les contrasenyes poc segures són fàcils d'endevinar. Assegura't de crear-ne de segures. <ph name="BEGIN_LINK" />Consulta més consells de seguretat<ph name="END_LINK" />.</translation>
 <translation id="73786666777299047">Obre Chrome Web Store</translation>
 <translation id="7378812711085314936">Obtén la connexió de dades</translation>
 <translation id="7380622428988553498">El nom del dispositiu conté caràcters que no són vàlids</translation>

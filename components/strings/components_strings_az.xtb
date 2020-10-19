@@ -22,7 +22,6 @@
 <translation id="1058479211578257048">Kartlar yadda saxlanılır...</translation>
 <translation id="10614374240317010">Heç vaxt saxlanılmır</translation>
 <translation id="1062160989074299343">Prc10 (Zərf)</translation>
-<translation id="1066573427009091463"><ph name="PERCENT" /> Keşbek</translation>
 <translation id="106701514854093668">Masaüstü əlfəcinləri</translation>
 <translation id="1068672505746868501">Heç vaxt <ph name="SOURCE_LANGUAGE" /> dilində olan səhifələri tərcümə etməyin</translation>
 <translation id="1070901266639972381">Gecə</translation>
@@ -497,7 +496,6 @@
 <translation id="2955913368246107853">Tapmaq panelini qapadın</translation>
 <translation id="2969319727213777354">Güvənli bağlantı yaratmaq üçün saatınız düzgün ayarlanmalıdır. Çünki saytların işlətdikləri sertifikatlar zamana bağlıdır. Saatınız düzgün işləmədiyi halda Google Chrome bu sertifikatları doğrulaya bilmir.</translation>
 <translation id="2972581237482394796">&amp;Yenidən edin</translation>
-<translation id="2975775789586780239"><ph name="DISCOUNT" /> Deaktiv</translation>
 <translation id="2977665033722899841">Hazırda <ph name="ROW_NAME" /> seçilib. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">Aktiv edildiyi halda Chromium kartınızın kopyasını bu cihazda saxlayacaq ki, forma doldurmaq daha sürətli olsun.</translation>
 <translation id="2985398929374701810">Düzgün ünvan daxil edin</translation>
@@ -904,6 +902,7 @@
 <translation id="4597348597567598915">Ölçü 8</translation>
 <translation id="4600854749408232102">C6/C5 (Zərf)</translation>
 <translation id="4628948037717959914">Foto</translation>
+<translation id="4631649115723685955">Keşbek əlaqələndirilib</translation>
 <translation id="464342062220857295">Axtarış funksiyaları</translation>
 <translation id="4644670975240021822">Tərs sıra ilə üzü aşağı</translation>
 <translation id="4646534391647090355">İndi giriş edilsin</translation>

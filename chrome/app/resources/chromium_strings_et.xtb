@@ -180,6 +180,7 @@ On võimalik, et mõni funktsioon ei ole saadaval. Määrake muu profiilikataloo
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium kontrollib soovimatu tarkvara olemasolu kord nädalas. Viimati kontrolliti: 1 päev tagasi.}other{Chromium kontrollib soovimatu tarkvara olemasolu kord nädalas. Viimati kontrolliti: {NUM_DAYS} päeva tagasi.}}</translation>
 <translation id="6893813176749746474">Chromiumi on värskendatud, kuid te ei ole seda kasutanud vähemalt 30 päeva.</translation>
 <translation id="6964305034639999644">Ava link Chromiumi inko&amp;gnito aknas</translation>
+<translation id="6978145336957848883">Nõrku paroole on lihtne ära arvata. Laske Chromiumil <ph name="BEGIN_LINK" />teie jaoks luua ja meelde jätta tugevaid paroole<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium vajab selle saidi puhul luba, et teie mikrofonile juurde pääseda</translation>
 <translation id="701244094609242530">Chromium ei saa teie laiendusi kontrollida. Proovige hiljem uuesti.</translation>
 <translation id="705851970750939768">Värskenda Chromiumi</translation>

@@ -22,7 +22,6 @@
 <translation id="1058479211578257048">Се зачувуваат картички…</translation>
 <translation id="10614374240317010">Никогаш не е зачувано</translation>
 <translation id="1062160989074299343">Prc10 (плик)</translation>
-<translation id="1066573427009091463">Поврат на готовина од <ph name="PERCENT" /></translation>
 <translation id="106701514854093668">Обележувачи на десктоп</translation>
 <translation id="1068672505746868501">Никогаш не преведувај страници на <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070901266639972381">Вечер</translation>
@@ -497,7 +496,6 @@
 <translation id="2955913368246107853">Затвори лента за наоѓање</translation>
 <translation id="2969319727213777354">За воспоставување безбедна врска, вашиот часовник треба да биде правилно поставен. Ова е така затоа што сертификатите што веб-сајтовите ги користат за да се идентификуваат важат само определени периоди на време. Бидејќи часовникот на вашиот уред не е точен, Google Chrome не може да ги потврди овие сертификати.</translation>
 <translation id="2972581237482394796">&amp;Повтори</translation>
-<translation id="2975775789586780239">Попуст од <ph name="DISCOUNT" /></translation>
 <translation id="2977665033722899841">Моментално избрано: <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">Ако е овозможено, Chromium ќе складира копија од вашата картичка на уредов за побрзо пополнување формулари.</translation>
 <translation id="2985398929374701810">Внесете важечка адреса</translation>
@@ -909,6 +907,7 @@
 <translation id="4597348597567598915">Големина 8</translation>
 <translation id="4600854749408232102">C6/C5 (плик)</translation>
 <translation id="4628948037717959914">Фотографија</translation>
+<translation id="4631649115723685955">Со поврат на готовина</translation>
 <translation id="464342062220857295">Функции за пребарување</translation>
 <translation id="4644670975240021822">Обратен редослед со лицето надолу</translation>
 <translation id="4646534391647090355">Однеси ме таму сега</translation>

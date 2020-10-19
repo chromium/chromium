@@ -22,7 +22,6 @@
 <translation id="1058479211578257048">Картите се запазват...</translation>
 <translation id="10614374240317010">Незапазвани никога</translation>
 <translation id="1062160989074299343">Prc10 (плик)</translation>
-<translation id="1066573427009091463">Връщане на пари (<ph name="PERCENT" />) при покупка</translation>
 <translation id="106701514854093668">Настолни отметки</translation>
 <translation id="1068672505746868501">Страниците на <ph name="SOURCE_LANGUAGE" /> да не се превеждат</translation>
 <translation id="1070901266639972381">През нощта</translation>
@@ -493,7 +492,6 @@
 <translation id="2955913368246107853">Затваряне на лентата за търсене</translation>
 <translation id="2969319727213777354">За установяване на сигурна връзка е необходимо часовникът ви да е верен. Това е така, защото сертификатите, с които уебсайтовете се идентифицират, са валидни само за конкретни периоди от време. Тъй като часовникът на устройството ви не е верен, Google Chrome не може да потвърди тези сертификати.</translation>
 <translation id="2972581237482394796">&amp;Възстановяване</translation>
-<translation id="2975775789586780239">Отстъпка от <ph name="DISCOUNT" /></translation>
 <translation id="2977665033722899841">Понастоящем сте избрали реда „<ph name="ROW_NAME" />“. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">Ако настройката е активирана, Chromium ще съхранява на това устройство копие на картата ви с цел по-бързо попълване на формуляри.</translation>
 <translation id="2985398929374701810">Въведете валиден адрес</translation>
@@ -905,6 +903,7 @@
 <translation id="4597348597567598915">Размер 8</translation>
 <translation id="4600854749408232102">C6/C5 (плик)</translation>
 <translation id="4628948037717959914">Снимка</translation>
+<translation id="4631649115723685955">Опцията за връщане на пари при покупка е свързана</translation>
 <translation id="464342062220857295">Функции за търсене</translation>
 <translation id="4644670975240021822">В обратен ред с отпечатаната страна надолу</translation>
 <translation id="4646534391647090355">Към изтеглянията</translation>

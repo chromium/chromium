@@ -182,6 +182,7 @@ Niektoré funkcie nemusia byť k dispozícii. Zadajte iný adresár profilu aleb
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium kontroluje prítomnosť nechceného softvéru raz za týždeň. Posledná kontrola prebehla včera.}few{Chromium kontroluje prítomnosť nechceného softvéru raz za týždeň. Naposledy bola skontrolovaná pred {NUM_DAYS} dňami.}many{Chromium kontroluje prítomnosť nechceného softvéru raz za týždeň. Naposledy bola skontrolovaná pred {NUM_DAYS} dňa.}other{Chromium kontroluje prítomnosť nechceného softvéru raz za týždeň. Naposledy bola skontrolovaná pred {NUM_DAYS} dňami.}}</translation>
 <translation id="6893813176749746474">Prehliadač Chromium bol aktualizovaný, ale najmenej 30 dní ste ho nepoužili.</translation>
 <translation id="6964305034639999644">Otvoriť odkaz v okne inko&amp;gnito prehliadača Chromium</translation>
+<translation id="6978145336957848883">Slabé heslá sa dajú ľahko uhádnuť. Povoľte prehliadaču Chromium, <ph name="BEGIN_LINK" />aby vám vytváral silné heslá a pamätal si ich<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium potrebuje povolenie pre tento web na prístup k mikrofónu</translation>
 <translation id="701244094609242530">Chromium nemôže skontrolovať rozšírenia. Skúste to znova neskôr.</translation>
 <translation id="705851970750939768">Aktualizovať Chromium</translation>

@@ -4434,8 +4434,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6242852299490624841">Enfocar esta pestaña</translation>
 <translation id="6243280677745499710">Establecido actualmente</translation>
 <translation id="6243774244933267674">Servidor no disponible</translation>
-<translation id="6244185221716469155">Las contraseñas poco seguras son fáciles de adivinar. Asegúrate de crear contraseñas seguras.
-    <ph name="BEGIN_LINK" />Obtén más sugerencias de seguridad.<ph name="END_LINK" /></translation>
 <translation id="6244245036423700521">Importar archivo ONC</translation>
 <translation id="6246790815526961700">Subir desde el dispositivo</translation>
 <translation id="6247620186971210352">No se encontraron apps</translation>

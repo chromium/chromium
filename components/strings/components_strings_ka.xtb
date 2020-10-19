@@ -22,7 +22,6 @@
 <translation id="1058479211578257048">მიმდინარეობს ბარათების შენახვა...</translation>
 <translation id="10614374240317010">არასოდეს შენახული</translation>
 <translation id="1062160989074299343">Prc10 (კონვერტი)</translation>
-<translation id="1066573427009091463"><ph name="PERCENT" />-იანი ქეშბექი</translation>
 <translation id="106701514854093668">სამუშაო დაფის სანიშნები</translation>
 <translation id="1068672505746868501">არასოდეს ითარგმნოს <ph name="SOURCE_LANGUAGE" /> გვერდები</translation>
 <translation id="1070901266639972381">ღამე</translation>
@@ -491,7 +490,6 @@
 <translation id="2955913368246107853">ძებნის ზოლის დახურვა</translation>
 <translation id="2969319727213777354">უსაფრთხო კავშირის დასამყარებლად, საჭიროა საათის გასწორება. ამის მიზეზია ის, რომ სერტიფიკატები, რომლებსაც ვებსაიტები იდენტიფიცირების მიზნით იყენებს, მხოლოდ გარკვეული პერიოდის განმავლობაში მოქმედებს. რადგან თქვენი მოწყობილობის საათი არასწორია, Google Chrome ვერ დაადასტურებს ამგვარ სერტიფიკატებს.</translation>
 <translation id="2972581237482394796">&amp;გამეორება</translation>
-<translation id="2975775789586780239"><ph name="DISCOUNT" />-იანი ფასდაკლება</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, ამჟამად არჩეულია. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">ჩართვის შემთხვევაში, Chromium ფორმების უფრო სწრაფად შევსების მიზნით, თქვენი ბარათის ასლს ამ მოწყობილობაში შეინახავს.</translation>
 <translation id="2985398929374701810">შეიყვანეთ სწორი მისამართი</translation>
@@ -898,6 +896,7 @@
 <translation id="4597348597567598915">ზომა 8</translation>
 <translation id="4600854749408232102">C6/C5 (კონვერტი)</translation>
 <translation id="4628948037717959914">ფოტო</translation>
+<translation id="4631649115723685955">ქეშბექი მიბმულია</translation>
 <translation id="464342062220857295">ძიების ფუნქციები</translation>
 <translation id="4644670975240021822">უკუმიმდევრობა ნაბეჭდი მხარით დაღმა</translation>
 <translation id="4646534391647090355">ახლავე გადასვლა</translation>

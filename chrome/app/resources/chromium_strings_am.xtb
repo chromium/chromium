@@ -182,6 +182,7 @@
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium በሳምንት አንድ ጊዜ የማይፈለጉ ሶፍትዌሮች ካሉ ይፈትሻል። መጨረሻ የተፈተሸው፦ ከ1 ቀን በፊት።}one{Chromium በሳምንት አንድ ጊዜ የማይፈለጉ ሶፍትዌሮች ካሉ ይፈትሻል። መጨረሻ የተፈተሸው፦ ከ{NUM_DAYS} ቀኖች በፊት።}other{Chromium በሳምንት አንድ ጊዜ የማይፈለጉ ሶፍትዌሮች ካሉ ይፈትሻል። መጨረሻ የተፈተሸው፦ ከ{NUM_DAYS} ቀኖች በፊት።}}</translation>
 <translation id="6893813176749746474">Chromium ተዘምኗል፣ ግን ቢያንስ ለ30 ቀኖች አልተጠቀሙበትም።</translation>
 <translation id="6964305034639999644">አገናኙን በChromium ማን&amp;ነትን በማያሳውቅ መስኮት ውስጥ ክፈት</translation>
+<translation id="6978145336957848883">ደካማ የይለፍ ቃላት ለመገመት ቀላል ናቸው። Chromium <ph name="BEGIN_LINK" /> ለእርስዎ ጠንካራ የይለፍ ቃላትን እንዲፈጥር እና እንዲያስታውስ<ph name="END_LINK" /> ይፍቀዱ።</translation>
 <translation id="6990124437352146030">Chromium ለዚህ ጣቢያ የእርስዎን ማይክሮፎን ለመድረስ ፈቃድ ያስፈልገዋል</translation>
 <translation id="701244094609242530">Chromium የእርስዎን ቅጥያዎች መፈተሽ አይችልም። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="705851970750939768">Chromiumን አዘምን</translation>

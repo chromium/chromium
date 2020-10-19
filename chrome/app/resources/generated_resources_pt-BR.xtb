@@ -4440,8 +4440,6 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="6242852299490624841">Focar esta guia</translation>
 <translation id="6243280677745499710">Definido no momento</translation>
 <translation id="6243774244933267674">Servidor não disponível</translation>
-<translation id="6244185221716469155">Senhas fracas são fáceis de adivinhar. Crie senhas fortes.
-    <ph name="BEGIN_LINK" />Veja mais dicas de segurança<ph name="END_LINK" />.</translation>
 <translation id="6244245036423700521">Importar arquivo ONC</translation>
 <translation id="6246790815526961700">Upload do dispositivo</translation>
 <translation id="6247620186971210352">Nenhum app encontrado</translation>
@@ -5369,6 +5367,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7375235221357833624">{0,plural, =1{Atualize o dispositivo em uma hora}one{Atualize o dispositivo em # hora}other{Atualize o dispositivo em # horas}}</translation>
 <translation id="7376553024552204454">Destacar o cursor do mouse quando ele estiver se movendo</translation>
 <translation id="7377451353532943397">Continuar bloqueando o acesso ao sensor</translation>
+<translation id="7378611153938412599">Senhas fracas são fáceis de adivinhar. Crie senhas fortes. <ph name="BEGIN_LINK" />Veja mais dicas de segurança<ph name="END_LINK" />.</translation>
 <translation id="73786666777299047">Abrir a Chrome Web Store</translation>
 <translation id="7378812711085314936">Usar conexão de dados</translation>
 <translation id="7380622428988553498">O nome do dispositivo contém caracteres inválidos</translation>

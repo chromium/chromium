@@ -180,6 +180,7 @@
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium comprova si hi ha programari no desitjat un cop per setmana. Darrera comprovació: fa 1 dia.}other{Chromium comprova si hi ha programari no desitjat un cop per setmana. Darrera comprovació: fa {NUM_DAYS} dies.}}</translation>
 <translation id="6893813176749746474">S'ha actualitzat Chromium, però fa almenys 30 dies que no l'heu utilitzat.</translation>
 <translation id="6964305034639999644">Obre l'enllaç en una finestra d'incò&amp;gnit a Chromium</translation>
+<translation id="6978145336957848883">Les contrasenyes poc segures són fàcils d'endevinar. Deixa que Chromium <ph name="BEGIN_LINK" />creï i recordi contrasenyes segures en nom teu<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Per visitar aquest lloc web, Chromium necessita permís per accedir al micròfon</translation>
 <translation id="701244094609242530">Chromium no pot comprovar les teves extensions. Torna-ho a provar més tard.</translation>
 <translation id="705851970750939768">Actualitza Chromium</translation>
