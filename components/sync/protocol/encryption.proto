@@ -30,5 +30,5 @@ package sync_pb;
 // node.
 message EncryptedData {
   optional string key_name = 1;
-  optional string blob = 2;
+  optional string blob = 2;  // base64-encoded.
 }
