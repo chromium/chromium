@@ -19,7 +19,6 @@
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle_core.h"
 #include "content/public/browser/browser_task_traits.h"
-#include "content/public/common/content_client.h"
 #include "content/public/common/origin_util.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -175,17 +174,7 @@ void MaybeCreateLoaderOnCoreThread(
                      std::move(fallback_callback)));
 }
 
-bool SchemeMaySupportRedirectingToHTTPS(BrowserContext* browser_context,
-                                        const GURL& url) {
-  // If there is a registered protocol handler for this scheme, the embedder is
-  // expected to redirect `url` to a registered URL in a URLLoaderThrottle, and
-  // the interceptor will operate on the registered URL. Note that the HTML
-  // specification requires that the registered URL is HTTPS.
-  // https://html.spec.whatwg.org/multipage/system-state.html#normalize-protocol-handler-parameters
-  if (GetContentClient()->browser()->HasCustomSchemeHandler(browser_context,
-                                                            url.scheme()))
-    return true;
-
+bool SchemeMaySupportRedirectingToHTTPS(const GURL& url) {
 #if defined(OS_CHROMEOS)
   return url.SchemeIs(kExternalFileScheme);
 #else   // OS_CHROMEOS
@@ -213,8 +202,7 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForNavigation(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!ShouldCreateForNavigation(
-          url, request_info.begin_params->request_destination,
-          navigation_handle->context_wrapper()->browser_context())) {
+          url, request_info.begin_params->request_destination)) {
     return nullptr;
   }
 
@@ -389,8 +377,7 @@ ServiceWorkerMainResourceLoaderInterceptor::
 // static
 bool ServiceWorkerMainResourceLoaderInterceptor::ShouldCreateForNavigation(
     const GURL& url,
-    network::mojom::RequestDestination request_destination,
-    BrowserContext* browser_context) {
+    network::mojom::RequestDestination request_destination) {
   // <embed> and <object> navigations must bypass the service worker, per the
   // discussion in https://w3c.github.io/ServiceWorker/#implementer-concerns.
   if (request_destination == network::mojom::RequestDestination::kEmbed ||
@@ -398,10 +385,10 @@ bool ServiceWorkerMainResourceLoaderInterceptor::ShouldCreateForNavigation(
     return false;
   }
 
-  // Create the interceptor even for insecure HTTP since it's used in the
+  // Create the handler even for insecure HTTP since it's used in the
   // case of redirect to HTTPS.
   return url.SchemeIsHTTPOrHTTPS() || OriginCanAccessServiceWorkers(url) ||
-         SchemeMaySupportRedirectingToHTTPS(browser_context, url);
+         SchemeMaySupportRedirectingToHTTPS(url);
 }
 
 void ServiceWorkerMainResourceLoaderInterceptor::RequestHandlerWrapper(

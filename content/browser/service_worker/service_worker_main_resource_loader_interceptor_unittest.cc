@@ -4,8 +4,6 @@
 
 #include "content/browser/service_worker/service_worker_main_resource_loader_interceptor.h"
 
-#include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -13,28 +11,12 @@ namespace content {
 
 class ServiceWorkerMainResourceLoaderInterceptorTest : public testing::Test {
  public:
-  ServiceWorkerMainResourceLoaderInterceptorTest() = default;
-  ServiceWorkerMainResourceLoaderInterceptorTest(
-      const ServiceWorkerMainResourceLoaderInterceptorTest&) = delete;
-  ServiceWorkerMainResourceLoaderInterceptorTest& operator=(
-      const ServiceWorkerMainResourceLoaderInterceptorTest&) = delete;
-  ~ServiceWorkerMainResourceLoaderInterceptorTest() override = default;
-
-  void SetUp() override {
-    browser_context_ = std::make_unique<TestBrowserContext>();
-  }
-
   bool ShouldCreateForNavigation(
       const GURL& url,
       network::mojom::RequestDestination request_destination) {
     return ServiceWorkerMainResourceLoaderInterceptor::
-        ShouldCreateForNavigation(url, request_destination,
-                                  browser_context_.get());
+        ShouldCreateForNavigation(url, request_destination);
   }
-
- private:
-  BrowserTaskEnvironment task_environment_{BrowserTaskEnvironment::IO_MAINLOOP};
-  std::unique_ptr<TestBrowserContext> browser_context_;
 };
 
 TEST_F(ServiceWorkerMainResourceLoaderInterceptorTest,
