@@ -393,7 +393,14 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
   EXPECT_EQ(color_before_focus, omnibox_view()->GetBackgroundColor());
 }
 
-IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest, EmitAccessibilityEvents) {
+// Flaky on Mac: https://crbug.com/1140153.
+#if defined(OS_MAC)
+#define MAYBE_EmitAccessibilityEvents DISABLED_EmitAccessibilityEvents
+#else
+#define MAYBE_EmitAccessibilityEvents EmitAccessibilityEvents
+#endif
+IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
+                       MAYBE_EmitAccessibilityEvents) {
   // Creation and population of the popup should not result in a text/name
   // change accessibility event.
   TestAXEventObserver observer;
