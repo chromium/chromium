@@ -110,18 +110,21 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     // Discard results if tab is not on foreground anymore.
     @Override
     public void onHidden(Tab tab, @TabHidingType int type) {
+        LinkToTextMetricsBridge.logGenerateErrorTabHidden();
         cleanup();
     }
 
     // Discard results if tab content is changed by typing new URL in omnibox.
     @Override
     public void onUpdateUrl(Tab tab, String url) {
+        LinkToTextMetricsBridge.logGenerateErrorOmniboxNavigation();
         cleanup();
     }
 
     // Discard results if tab content crashes.
     @Override
     public void onCrash(Tab tab) {
+        LinkToTextMetricsBridge.logGenerateErrorTabCrash();
         cleanup();
     }
 

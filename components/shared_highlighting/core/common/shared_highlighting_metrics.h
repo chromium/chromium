@@ -18,7 +18,11 @@ enum class LinkGenerationError {
   kContextLimitReached,
   kEmptySelection,
 
-  kMaxValue = kEmptySelection,
+  kTabHidden,
+  kOmniboxNavigation,
+  kTabCrash,
+
+  kMaxValue = kTabCrash
 };
 
 // Update corresponding |TextFragmentLinkOpenSource| in enums.xml.
@@ -44,6 +48,15 @@ void LogTextFragmentMatchRate(int matches, int text_fragments);
 
 // Records the total |count| of text fragment selectors in the URL param.
 void LogTextFragmentSelectorCount(int count);
+
+// Records when tab is hidden before generation is complete.
+void LogGenerateErrorTabHidden();
+
+// Records when new navigation happens on the tab by user typing in the omnibox.
+void LogGenerateErrorOmniboxNavigation();
+
+// Records when tab crashes before generation is complete.
+void LogGenerateErrorTabCrash();
 
 }  // namespace shared_highlighting
 

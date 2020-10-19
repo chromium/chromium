@@ -11,6 +11,7 @@ source_set("share") {
     "bitmap_download_request.cc",
     "features.cc",
     "features.h",
+    "link_to_text_metrics_bridge.cc",
     "qr_code_generation_request.cc",
     "qr_code_generation_request.h",
   ]
@@ -19,6 +20,7 @@ source_set("share") {
     "//chrome/browser/share/android:jni_headers",
     "//chrome/services/qrcode_generator/public/cpp",
     "//chrome/services/qrcode_generator/public/mojom",
+    "//components/shared_highlighting/core/common",
     "//content/public/browser",
     "//skia",
     "//ui/gfx",

@@ -35,6 +35,7 @@ android_resources("java_resources") {
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/share/BitmapDownloadRequest.java",
+    "java/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextMetricsBridge.java",
     "java/src/org/chromium/chrome/browser/share/qrcode/QRCodeGenerationRequest.java",
     "java/src/org/chromium/chrome/browser/share/send_tab_to_self/NotificationManager.java",
     "java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfAndroidBridge.java",
