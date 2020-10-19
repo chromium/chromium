@@ -81,7 +81,8 @@ suite('RealtimeCpuChartTest', () => {
     });
   });
 
-  test('InitializePlot', () => {
+  // Flaky: https://crbug.com/1139523
+  test.skip('InitializePlot', () => {
     const user = 10;
     const system = 30;
     return initializeRealtimeCpuChart(user, system).then(() => {
