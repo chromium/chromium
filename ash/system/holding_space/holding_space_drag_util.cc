@@ -312,6 +312,49 @@ class DragImageView : public views::View {
   DragImageView& operator=(const DragImageView&) = delete;
   ~DragImageView() override = default;
 
+  // Paints this view to a `gfx::ImageSkia` for use as a drag image.
+  gfx::ImageSkia GetDragImage(float scale, bool is_pixel_canvas) {
+#if DCHECK_IS_ON()
+    // NOTE: This method will *not* paint `ui::Layer`s, so it is expected that
+    // all views in this view hierarchy *not* paint to layers.
+    AssertNoLayers(this);
+#endif  // DCHECK_IS_ON()
+    SkBitmap bitmap;
+    Paint(views::PaintInfo::CreateRootPaintInfo(
+        ui::CanvasPainter(&bitmap, size(), scale,
+                          /*clear_color=*/SK_ColorTRANSPARENT, is_pixel_canvas)
+            .context(),
+        size()));
+    return gfx::ImageSkia(gfx::ImageSkiaRep(bitmap, scale));
+  }
+
+  // Returns the drag offset to use when rendering this view as a drag image.
+  // This offset will position the cursor directly over the top left hand corner
+  // of the first dragged item (or flipped for RTL).
+  gfx::Vector2d GetDragOffset() const {
+    DCHECK(first_drag_image_item_view_);
+    const gfx::Rect contents_bounds =
+        first_drag_image_item_view_->GetContentsBounds();
+
+    // Use the contents origin of the first dragged item instead of its local
+    // bounds origin to exclude the region reserved for its shadow margins.
+    gfx::Point contents_origin = contents_bounds.origin();
+    views::View::ConvertPointToTarget(first_drag_image_item_view_->parent(),
+                                      /*target=*/this, &contents_origin);
+
+    gfx::Vector2d drag_offset = contents_origin.OffsetFromOrigin();
+
+    // In RTL, its necessary to offset by the contents width of the first
+    // dragged item so that the cursor is positioned over its top right hand
+    // corner. Again, contents width is used instead of local bounds width to
+    // exclude shadow margins.
+    if (base::i18n::IsRTL())
+      drag_offset += gfx::Vector2d(contents_bounds.width(), 0);
+
+    return drag_offset;
+  }
+
+ private:
   // views::View:
   gfx::Insets GetInsets() const override {
     if (!drag_image_overflow_badge_)
@@ -345,23 +388,6 @@ class DragImageView : public views::View {
         gfx::Rect(badge_origin, badge_size));
   }
 
-  // Paints this view to a `gfx::ImageSkia`.
-  gfx::ImageSkia PaintToImageSkia(float scale, bool is_pixel_canvas) {
-#if DCHECK_IS_ON()
-    // NOTE: This method will *not* paint `ui::Layer`s, so it is expected that
-    // all views in this view hierarchy *not* paint to layers.
-    AssertNoLayers(this);
-#endif  // DCHECK_IS_ON()
-    SkBitmap bitmap;
-    Paint(views::PaintInfo::CreateRootPaintInfo(
-        ui::CanvasPainter(&bitmap, size(), scale,
-                          /*clear_color=*/SK_ColorTRANSPARENT, is_pixel_canvas)
-            .context(),
-        size()));
-    return gfx::ImageSkia(gfx::ImageSkiaRep(bitmap, scale));
-  }
-
- private:
   void InitLayout(const std::vector<const HoldingSpaceItem*>& items) {
     auto* layout = SetLayoutManager(std::make_unique<views::FillLayout>());
     AddDragImageItemViews(items);
@@ -435,15 +461,8 @@ void CreateDragImage(const std::vector<const HoldingSpaceItemView*>& views,
   DragImageView drag_image_view(GetHoldingSpaceItems(views));
   drag_image_view.SetSize(drag_image_view.GetPreferredSize());
 
-  *drag_image = drag_image_view.PaintToImageSkia(scale, is_pixel_canvas);
-
-  // The `drag_offset` should correct for the extra space that may have been
-  // added to layout the overflow badge (if present). Doing so will position the
-  // cursor at the top left hand corner of the first dragged item (or flipped
-  // for RTL).
-  *drag_offset =
-      gfx::Vector2d(base::i18n::IsRTL() ? drag_image_view.width() : 0,
-                    drag_image_view.GetInsets().top());
+  *drag_image = drag_image_view.GetDragImage(scale, is_pixel_canvas);
+  *drag_offset = drag_image_view.GetDragOffset();
 }
 
 }  // namespace holding_space_util
