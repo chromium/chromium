@@ -5671,7 +5671,7 @@ crbug.com/965495 external/wpt/permissions-policy/experimental-features/focus-wit
 
 # Temporary suppression to allow devtools-frontend changes
 crbug.com/1029489 http/tests/devtools/elements/elements-linkify-attributes.js [ Pass Failure Timeout ]
-crbug.com/1029567 [ Debug ] virtual/threaded/external/wpt/web-animations/timing-model/animations/updating-the-finished-state.html [ Pass Failure Timeout ]
+crbug.com/1029567 [ Debug Mac10.15 ] virtual/threaded/external/wpt/web-animations/timing-model/animations/updating-the-finished-state.html [ Pass Failure Timeout ]
 crbug.com/1030258 http/tests/devtools/network/network-cookies-pane.js [ Pass Failure ]
 crbug.com/1041830 http/tests/devtools/tracing/timeline-js/timeline-js-line-level-profile.js [ Pass Failure ]
 
