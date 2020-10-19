@@ -8,6 +8,8 @@ static_library("demographics") {
   sources = [
     "demographic_metrics_provider.cc",
     "demographic_metrics_provider.h",
+    "user_demographics.cc",
+    "user_demographics.h",
   ]
 
   public_deps = [ "//third_party/metrics_proto" ]
@@ -15,6 +17,8 @@ static_library("demographics") {
   deps = [
     "//base",
     "//components/metrics",
+    "//components/pref_registry",
+    "//components/prefs",
     "//components/sync/base",
     "//components/sync/driver",
   ]
@@ -22,7 +26,10 @@ static_library("demographics") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "demographic_metrics_provider_unittest.cc" ]
+  sources = [
+    "demographic_metrics_provider_unittest.cc",
+    "user_demographics_unittest.cc",
+  ]
   deps = [
     ":demographics",
     "//base",
@@ -31,6 +38,7 @@ source_set("unit_tests") {
     "//components/sync/base",
     "//components/sync/driver",
     "//components/sync/driver:test_support",
+    "//components/sync_preferences:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/metrics_proto",
@@ -47,10 +55,10 @@ static_library("test_support") {
   deps = [
     "//base",
     "//components/metrics",
+    "//components/metrics/demographics",
     "//components/network_time",
     "//components/prefs",
     "//components/sync",
-    "//components/sync/base",
     "//components/sync/test/fake_server",
     "//third_party/metrics_proto",
     "//third_party/zlib/google:compression_utils",

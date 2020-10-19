@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_BASE_USER_DEMOGRAPHICS_H_
-#define COMPONENTS_SYNC_BASE_USER_DEMOGRAPHICS_H_
+#ifndef COMPONENTS_METRICS_DEMOGRAPHICS_USER_DEMOGRAPHICS_H_
+#define COMPONENTS_METRICS_DEMOGRAPHICS_USER_DEMOGRAPHICS_H_
 
 #include "base/time/time.h"
 #include "third_party/metrics_proto/user_demographics.pb.h"
@@ -12,17 +12,16 @@ class PrefService;
 
 namespace user_prefs {
 class PrefRegistrySyncable;
-}
+}  // namespace user_prefs
 
-namespace syncer {
+namespace metrics {
 
 // Default value for user gender when no value has been set.
 constexpr int kUserDemographicsGenderDefaultValue = -1;
 
 // Default value for user gender enum when no value has been set.
-constexpr metrics::UserDemographicsProto_Gender
-    kUserDemographicGenderDefaultEnumValue =
-        metrics::UserDemographicsProto_Gender_Gender_MIN;
+constexpr UserDemographicsProto_Gender kUserDemographicGenderDefaultEnumValue =
+    UserDemographicsProto_Gender_Gender_MIN;
 
 // Default value for user gender when no value has been set.
 constexpr int kUserDemographicsBirthYearDefaultValue = -1;
@@ -54,8 +53,7 @@ extern const char kSyncDemographicsGenderPath[];
 // Container of user demographics.
 struct UserDemographics {
   int birth_year = 0;
-  metrics::UserDemographicsProto_Gender gender =
-      metrics::UserDemographicsProto::Gender_MIN;
+  UserDemographicsProto_Gender gender = UserDemographicsProto::Gender_MIN;
 };
 
 // Represents the status of providing user demographics (noised birth year and
@@ -78,10 +76,10 @@ enum class UserDemographicsStatus {
   // Could not get the time needed to compute the user's age.
   kCannotGetTime = 3,
   // There is more than one Profile for the Chrome browser. This entry is used
-  // by the metrics::DemographicMetricsProvider client.
+  // by the DemographicMetricsProvider client.
   kMoreThanOneProfile = 4,
   // There is no sync service available for the loaded Profile. This entry is
-  // used by the metrics::DemographicMetricsProvider client.
+  // used by the DemographicMetricsProvider client.
   kNoSyncService = 5,
   // Upper boundary of the enum that is needed for the histogram.
   kMaxValue = kNoSyncService
@@ -136,6 +134,6 @@ UserDemographicsResult GetUserNoisedBirthYearAndGenderFromPrefs(
     base::Time now,
     PrefService* pref_service);
 
-}  // namespace syncer
+}  // namespace metrics
 
-#endif  // COMPONENTS_SYNC_BASE_USER_DEMOGRAPHICS_H_
+#endif  // COMPONENTS_METRICS_DEMOGRAPHICS_USER_DEMOGRAPHICS_H_

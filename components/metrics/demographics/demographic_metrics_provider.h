@@ -8,13 +8,15 @@
 #include <memory>
 
 #include "base/time/time.h"
+#include "components/metrics/demographics/user_demographics.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/ukm_demographic_metrics_provider.h"
-#include "components/sync/base/user_demographics.h"
 #include "components/sync/driver/sync_service.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "third_party/metrics_proto/user_demographics.pb.h"
+
+class PrefService;
 
 namespace base {
 struct Feature;
@@ -42,8 +44,13 @@ class DemographicMetricsProvider : public MetricsProvider,
     // for the browser.
     virtual int GetNumberOfProfilesOnDisk() = 0;
 
-    // Gets a weak pointer to the ProfileSyncService of the Profile.
+    // Gets a pointer to the SyncService of the profile, which is required to
+    // determine whether priority preferences carrying demographics information
+    // is being synced.
     virtual syncer::SyncService* GetSyncService() = 0;
+
+    // Gets a pointer to the PrefService of the profile.
+    virtual PrefService* GetPrefService() = 0;
 
     // Gets the network time that represents now.
     virtual base::Time GetNetworkTime() const = 0;
@@ -63,7 +70,7 @@ class DemographicMetricsProvider : public MetricsProvider,
   void ProvideSyncedUserNoisedBirthYearAndGender(ReportType* report) {
     DCHECK(report);
 
-    base::Optional<syncer::UserDemographics> user_demographics =
+    base::Optional<UserDemographics> user_demographics =
         ProvideSyncedUserNoisedBirthYearAndGender();
     if (user_demographics.has_value()) {
       report->mutable_user_demographics()->set_birth_year(
@@ -84,15 +91,11 @@ class DemographicMetricsProvider : public MetricsProvider,
   // Feature switch to report user's noised birth year and gender.
   static const base::Feature kDemographicMetricsReporting;
 
- protected:
-  // Provides the synced user's noised birth year and gender. Virtual for
-  // testing.
-  virtual base::Optional<syncer::UserDemographics>
-  ProvideSyncedUserNoisedBirthYearAndGender();
-
  private:
-  void LogUserDemographicsStatusInHistogram(
-      syncer::UserDemographicsStatus status);
+  // Provides the synced user's noised birth year and gender.
+  base::Optional<UserDemographics> ProvideSyncedUserNoisedBirthYearAndGender();
+
+  void LogUserDemographicsStatusInHistogram(UserDemographicsStatus status);
 
   std::unique_ptr<ProfileClient> profile_client_;
 

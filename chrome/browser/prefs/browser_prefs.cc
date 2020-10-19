@@ -111,6 +111,7 @@
 #include "components/language/content/browser/ulp_language_code_locator/ulp_language_code_locator.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
+#include "components/metrics/demographics/user_demographics.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/network_time/network_time_tracker.h"
 #include "components/ntp_tiles/most_visited_sites.h"
@@ -776,6 +777,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   MediaDeviceIDSalt::RegisterProfilePrefs(registry);
   MediaEngagementService::RegisterProfilePrefs(registry);
   MediaStorageIdSalt::RegisterProfilePrefs(registry);
+  metrics::RegisterDemographicsProfilePrefs(registry);
   NotificationDisplayServiceImpl::RegisterProfilePrefs(registry);
   NotifierStateTracker::RegisterProfilePrefs(registry);
   ntp_tiles::MostVisitedSites::RegisterProfilePrefs(registry);

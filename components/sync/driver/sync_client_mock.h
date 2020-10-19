@@ -43,6 +43,7 @@ class SyncClientMock : public SyncClient {
               GetPreferenceProvider,
               (),
               (override));
+  MOCK_METHOD(void, OnLocalSyncTransportDataCleared, (), (override));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SyncClientMock);

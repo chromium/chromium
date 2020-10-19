@@ -16,6 +16,7 @@
 #include "components/history/core/common/pref_names.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/language/core/browser/language_prefs.h"
+#include "components/metrics/demographics/user_demographics.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/in_memory_pref_store.h"
@@ -166,6 +167,7 @@ void WebViewBrowserState::RegisterPrefs(
   pref_registry->RegisterBooleanPref(prefs::kSavingBrowserHistoryDisabled,
                                      true);
   language::LanguagePrefs::RegisterProfilePrefs(pref_registry);
+  metrics::RegisterDemographicsProfilePrefs(pref_registry);
   translate::TranslatePrefs::RegisterProfilePrefs(pref_registry);
   autofill::prefs::RegisterProfilePrefs(pref_registry);
   password_manager::PasswordManager::RegisterProfilePrefs(pref_registry);

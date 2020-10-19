@@ -27,7 +27,7 @@ DemographicMetricsProvider::DemographicMetricsProvider(
 
 DemographicMetricsProvider::~DemographicMetricsProvider() {}
 
-base::Optional<syncer::UserDemographics>
+base::Optional<UserDemographics>
 DemographicMetricsProvider::ProvideSyncedUserNoisedBirthYearAndGender() {
   // Skip if feature disabled.
   if (!base::FeatureList::IsEnabled(kDemographicMetricsReporting))
@@ -38,7 +38,7 @@ DemographicMetricsProvider::ProvideSyncedUserNoisedBirthYearAndGender() {
   // cannot determine if there is more than 1 distinct user using the Profile.
   if (profile_client_->GetNumberOfProfilesOnDisk() != 1) {
     LogUserDemographicsStatusInHistogram(
-        syncer::UserDemographicsStatus::kMoreThanOneProfile);
+        UserDemographicsStatus::kMoreThanOneProfile);
     return base::nullopt;
   }
 
@@ -46,13 +46,19 @@ DemographicMetricsProvider::ProvideSyncedUserNoisedBirthYearAndGender() {
   // Skip if no sync service.
   if (!sync_service) {
     LogUserDemographicsStatusInHistogram(
-        syncer::UserDemographicsStatus::kNoSyncService);
+        UserDemographicsStatus::kNoSyncService);
     return base::nullopt;
   }
 
-  syncer::UserDemographicsResult demographics_result =
-      sync_service->GetUserNoisedBirthYearAndGender(
-          profile_client_->GetNetworkTime());
+  if (!sync_service->CanUploadDemographicsToGoogle()) {
+    LogUserDemographicsStatusInHistogram(
+        UserDemographicsStatus::kSyncNotEnabled);
+    return base::nullopt;
+  }
+
+  UserDemographicsResult demographics_result =
+      GetUserNoisedBirthYearAndGenderFromPrefs(
+          profile_client_->GetNetworkTime(), profile_client_->GetPrefService());
   LogUserDemographicsStatusInHistogram(demographics_result.status());
 
   if (demographics_result.IsSuccess())
@@ -72,7 +78,7 @@ void DemographicMetricsProvider::
 }
 
 void DemographicMetricsProvider::LogUserDemographicsStatusInHistogram(
-    syncer::UserDemographicsStatus status) {
+    UserDemographicsStatus status) {
   switch (metrics_service_type_) {
     case MetricsLogUploader::MetricServiceType::UMA:
       base::UmaHistogramEnumeration("UMA.UserDemographics.Status", status);

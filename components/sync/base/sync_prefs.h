@@ -20,10 +20,8 @@
 #include "build/build_config.h"
 #include "components/prefs/pref_member.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/base/user_demographics.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/protocol/sync.pb.h"
-#include "third_party/metrics_proto/user_demographics.pb.h"
 
 class PrefService;
 

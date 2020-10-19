@@ -155,10 +155,8 @@ void FakeSyncService::AddTrustedVaultRecoveryMethodFromWeb(
     const std::vector<uint8_t>& public_key,
     base::OnceClosure callback) {}
 
-UserDemographicsResult FakeSyncService::GetUserNoisedBirthYearAndGender(
-    base::Time now) {
-  return UserDemographicsResult::ForStatus(
-      UserDemographicsStatus::kIneligibleDemographicsData);
+bool FakeSyncService::CanUploadDemographicsToGoogle() {
+  return false;
 }
 
 void FakeSyncService::Shutdown() {}

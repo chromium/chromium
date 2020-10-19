@@ -20,6 +20,7 @@ class ChromeBrowserStateClient
   // DemographicMetricsProvider::ProfileClient:
   int GetNumberOfProfilesOnDisk() override;
   syncer::SyncService* GetSyncService() override;
+  PrefService* GetPrefService() override;
   base::Time GetNetworkTime() const override;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeBrowserStateClient);

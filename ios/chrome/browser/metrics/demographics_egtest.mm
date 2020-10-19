@@ -196,7 +196,7 @@ const metrics::UserDemographicsProto::Gender kTestGender =
                  @"The report should contain the specified user demographics");
 
   const int success =
-      static_cast<int>(syncer::UserDemographicsStatus::kSuccess);
+      static_cast<int>(metrics::UserDemographicsStatus::kSuccess);
   GREYAssertNil([MetricsAppInterface
                     expectUniqueSampleWithCount:1
                                       forBucket:success
@@ -250,7 +250,7 @@ const metrics::UserDemographicsProto::Gender kTestGender =
                  @"The report should contain the specified user demographics");
 
   const int success =
-      static_cast<int>(syncer::UserDemographicsStatus::kSuccess);
+      static_cast<int>(metrics::UserDemographicsStatus::kSuccess);
   GREYAssertNil([MetricsAppInterface
                     expectUniqueSampleWithCount:1
                                       forBucket:success

@@ -4,10 +4,8 @@ include_rules = [
   "+components/os_crypt",
   "+components/pref_registry",
   "+components/prefs",
-  "+components/reading_list/features",
   "+components/sync/protocol",
   "+components/sync_preferences",
-  "+third_party/metrics_proto",
   "+third_party/zlib",  # For UniquePosition compression
   "+net",
   "+ui/base",

@@ -64,6 +64,7 @@
 #include "components/history/core/common/pref_names.h"
 #include "components/invalidation/impl/invalidation_switches.h"
 #include "components/invalidation/impl/profile_invalidation_provider.h"
+#include "components/metrics/demographics/user_demographics.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
@@ -699,6 +700,10 @@ syncer::SyncTypePreferenceProvider* ChromeSyncClient::GetPreferenceProvider() {
 #else
   return nullptr;
 #endif
+}
+
+void ChromeSyncClient::OnLocalSyncTransportDataCleared() {
+  metrics::ClearDemographicsPrefs(profile_->GetPrefs());
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

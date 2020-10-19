@@ -274,6 +274,7 @@ source_set("web_view_sources") {
     "//components/language/ios/browser",
     "//components/leveldb_proto",
     "//components/metrics:library_support",
+    "//components/metrics/demographics",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:affiliation",
     "//components/password_manager/core/common",

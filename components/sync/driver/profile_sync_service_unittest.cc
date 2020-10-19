@@ -24,7 +24,6 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/sync_util.h"
-#include "components/sync/base/user_demographics.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/configure_context.h"
 #include "components/sync/driver/fake_data_type_controller.h"
@@ -40,7 +39,6 @@
 #include "components/version_info/version_info_values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/metrics_proto/user_demographics.pb.h"
 
 using testing::_;
 using testing::ByMove;
@@ -51,15 +49,8 @@ namespace syncer {
 
 namespace {
 
-// Age of a user that is old enough to provide demographics when now time is
-// |kNowTimeInStringFormat|.
-constexpr int kOldEnoughForDemographicsUserBirthYear = 1983;
-
 constexpr char kTestUser[] = "test_user@gmail.com";
 constexpr char kTestCacheGuid[] = "test_cache_guid";
-
-// Now time in string format.
-constexpr char kNowTimeInStringFormat[] = "23 Mar 2019 16:00:00 UDT";
 
 class FakeDataTypeManager : public DataTypeManager {
  public:
@@ -197,6 +188,7 @@ class ProfileSyncServiceTest : public ::testing::Test {
 
     std::unique_ptr<SyncClientMock> sync_client =
         profile_sync_service_bundle_.CreateSyncClientMock();
+    sync_client_ = sync_client.get();
     ON_CALL(*sync_client, CreateDataTypeControllers(_))
         .WillByDefault(Return(ByMove(std::move(controllers))));
 
@@ -222,6 +214,7 @@ class ProfileSyncServiceTest : public ::testing::Test {
 
     std::unique_ptr<SyncClientMock> sync_client =
         profile_sync_service_bundle_.CreateSyncClientMock();
+    sync_client_ = sync_client.get();
     ON_CALL(*sync_client, CreateDataTypeControllers(_))
         .WillByDefault(Return(ByMove(std::move(controllers))));
 
@@ -308,6 +301,8 @@ class ProfileSyncServiceTest : public ::testing::Test {
 
   ProfileSyncService* service() { return service_.get(); }
 
+  SyncClientMock* sync_client() { return sync_client_; }
+
   sync_preferences::TestingPrefServiceSyncable* prefs() {
     return profile_sync_service_bundle_.pref_service();
   }
@@ -320,34 +315,11 @@ class ProfileSyncServiceTest : public ::testing::Test {
     return profile_sync_service_bundle_.sync_invalidations_service();
   }
 
-  void SetDemographics(int birth_year,
-                       metrics::UserDemographicsProto_Gender gender) {
-    base::DictionaryValue dict;
-    dict.SetIntPath(kSyncDemographicsBirthYearPath, birth_year);
-    dict.SetIntPath(kSyncDemographicsGenderPath, static_cast<int>(gender));
-    prefs()->Set(kSyncDemographicsPrefName, dict);
-  }
-
-  static bool HasBirthYearDemographic(const PrefService* pref_service) {
-    return pref_service->HasPrefPath(kSyncDemographicsPrefName) &&
-           pref_service->GetDictionary(kSyncDemographicsPrefName)
-               ->FindIntPath(kSyncDemographicsBirthYearPath);
-  }
-
-  static bool HasGenderDemographic(const PrefService* pref_service) {
-    return pref_service->HasPrefPath(kSyncDemographicsPrefName) &&
-           pref_service->GetDictionary(kSyncDemographicsPrefName)
-               ->FindIntPath(kSyncDemographicsGenderPath);
-  }
-
-  static bool HasBirthYearOffset(const PrefService* pref_service) {
-    return pref_service->HasPrefPath(kSyncDemographicsBirthYearOffsetPrefName);
-  }
-
  private:
   base::test::TaskEnvironment task_environment_;
   ProfileSyncServiceBundle profile_sync_service_bundle_;
   std::unique_ptr<ProfileSyncService> service_;
+  SyncClientMock* sync_client_;  // Owned by |service_|.
 };
 
 class ProfileSyncServiceTestWithStopSyncInPausedState
@@ -377,14 +349,6 @@ class ProfileSyncServiceTestWithSyncInvalidationsServiceCreated
  private:
   base::test::ScopedFeatureList override_features_;
 };
-
-// Gets the now time used for testing user demographics.
-base::Time GetNowTime() {
-  base::Time now;
-  bool result = base::Time::FromString(kNowTimeInStringFormat, &now);
-  DCHECK(result);
-  return now;
-}
 
 // Verify that the server URLs are sane.
 TEST_F(ProfileSyncServiceTest, InitialState) {
@@ -949,18 +913,9 @@ TEST_F(ProfileSyncServiceTest, ClearDataOnSignOut) {
   ASSERT_LT(base::Time::Now() - last_synced_time,
             base::TimeDelta::FromMinutes(1));
 
-  // Set demographic prefs that are normally fetched from server when syncing.
-  SetDemographics(kOldEnoughForDemographicsUserBirthYear,
-                  metrics::UserDemographicsProto_Gender_GENDER_FEMALE);
-
-  // Set the birth year offset pref that would be normally set when calling
-  // GetUserNoisedBirthYearAndGenderFromPrefs().
-  prefs()->SetInteger(kSyncDemographicsBirthYearOffsetPrefName, 2);
-
-  // Verify that the demographics prefs exist (i.e., that the test is set up).
-  ASSERT_TRUE(HasBirthYearDemographic(prefs()));
-  ASSERT_TRUE(HasGenderDemographic(prefs()));
-  ASSERT_TRUE(HasBirthYearOffset(prefs()));
+  // Local transport data should be cleared and the client notified.
+  EXPECT_CALL(*sync_client(), OnLocalSyncTransportDataCleared())
+      .Times(testing::AtLeast(1));
 
   // Sign out.
   service()->StopAndClear();
@@ -972,50 +927,19 @@ TEST_F(ProfileSyncServiceTest, ClearDataOnSignOut) {
   EXPECT_FALSE(service()->IsSyncFeatureEnabled());
 
   EXPECT_NE(service()->GetLastSyncedTimeForDebugging(), last_synced_time);
-
-  // Check that the demographic prefs are cleared.
-  EXPECT_FALSE(prefs()->HasPrefPath(kSyncDemographicsPrefName));
-  EXPECT_FALSE(HasBirthYearDemographic(prefs()));
-  EXPECT_FALSE(HasGenderDemographic(prefs()));
-
-  // Verify that the random offset is preserved. If the user signs in again,
-  // we don't want them to start reporting a different randomized birth year
-  // as this could narrow down or ever reveal their true birth year.
-  EXPECT_TRUE(HasBirthYearOffset(prefs()));
 }
 
 // Verify that demographic prefs are cleared when the service is initializing
 // and account is signed out.
 TEST_F(ProfileSyncServiceTest, ClearDemographicsOnInitializeWhenSignedOut) {
-  // Set demographic prefs that are leftovers from previous sync. We can imagine
-  // that due to some crash, sync service did not clear demographics when
-  // account was signed out.
-  SetDemographics(kOldEnoughForDemographicsUserBirthYear,
-                  metrics::UserDemographicsProto_Gender_GENDER_FEMALE);
-
-  // Set the birth year offset pref that would be normally set when calling
-  // GetUserNoisedBirthYearAndGenderFromPrefs().
-  prefs()->SetInteger(kSyncDemographicsBirthYearOffsetPrefName, 2);
-
-  // Verify that the demographics prefs exist (i.e., that the test is set up).
-  ASSERT_TRUE(HasBirthYearDemographic(prefs()));
-  ASSERT_TRUE(HasGenderDemographic(prefs()));
-  ASSERT_TRUE(HasBirthYearOffset(prefs()));
-
   // Don't sign-in before creating the service.
   CreateService(ProfileSyncService::AUTO_START);
-  // Initialize when signed out to trigger clearing of demographic prefs.
+
+  // Local transport data should be cleared and the client notified.
+  EXPECT_CALL(*sync_client(), OnLocalSyncTransportDataCleared());
+
+  // Initialize when signed out to trigger clearing of prefs.
   InitializeForNthSync();
-
-  // Verify that the demographic prefs are cleared.
-  EXPECT_FALSE(prefs()->HasPrefPath(kSyncDemographicsPrefName));
-  EXPECT_FALSE(HasBirthYearDemographic(prefs()));
-  EXPECT_FALSE(HasGenderDemographic(prefs()));
-
-  // Verify that the random offset is preserved. If the user signs in again,
-  // we don't want them to start reporting a different randomized birth year
-  // as this could narrow down or ever reveal their true birth year.
-  EXPECT_TRUE(HasBirthYearOffset(prefs()));
 }
 
 TEST_F(ProfileSyncServiceTest, CancelSyncAfterSignOut) {
@@ -1366,26 +1290,7 @@ TEST_F(ProfileSyncServiceTest, GetUserNoisedBirthYearAndGender_SyncEnabled) {
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 
-  const int user_demographics_birth_year =
-      kOldEnoughForDemographicsUserBirthYear;
-  const int birth_year_offset = 2;
-  const metrics::UserDemographicsProto_Gender user_demographics_gender =
-      metrics::UserDemographicsProto_Gender_GENDER_FEMALE;
-
-  // Set demographic prefs that are normally fetched from server when syncing.
-  SetDemographics(user_demographics_birth_year, user_demographics_gender);
-
-  // Directly set birth year offset in demographic prefs to avoid it being set
-  // with a random value when calling GetUserNoisedBirthYearAndGender().
-  prefs()->SetInteger(kSyncDemographicsBirthYearOffsetPrefName,
-                      birth_year_offset);
-
-  UserDemographicsResult user_demographics_result =
-      service()->GetUserNoisedBirthYearAndGender(GetNowTime());
-  ASSERT_TRUE(user_demographics_result.IsSuccess());
-  EXPECT_EQ(user_demographics_birth_year + birth_year_offset,
-            user_demographics_result.value().birth_year);
-  EXPECT_EQ(user_demographics_gender, user_demographics_result.value().gender);
+  EXPECT_TRUE(service()->CanUploadDemographicsToGoogle());
 }
 
 // Test whether sync service does not provide user demographics when sync is
@@ -1397,20 +1302,7 @@ TEST_F(ProfileSyncServiceTest, GetUserNoisedBirthYearAndGender_SyncTurnedOff) {
   ASSERT_EQ(SyncService::TransportState::DISABLED,
             service()->GetTransportState());
 
-  // Set demographic prefs that should normally be cleared when sync is
-  // disabled. We keep the demographic prefs available in this test to make
-  // sure that they are not provided when sync is disabled (we want
-  // base::nullopt in any case).
-  SetDemographics(kOldEnoughForDemographicsUserBirthYear,
-                  metrics::UserDemographicsProto_Gender_GENDER_FEMALE);
-
-  // Verify that demographic prefs exist (i.e., the test is set up).
-  ASSERT_TRUE(HasBirthYearDemographic(prefs()));
-  ASSERT_TRUE(HasGenderDemographic(prefs()));
-
-  // Verify that we don't get demographics when sync is off.
-  EXPECT_FALSE(
-      service()->GetUserNoisedBirthYearAndGender(GetNowTime()).IsSuccess());
+  EXPECT_FALSE(service()->CanUploadDemographicsToGoogle());
 }
 
 // Test whether sync service does not provide user demographics and does not
@@ -1423,25 +1315,7 @@ TEST_F(ProfileSyncServiceTest,
   InitializeForNthSync();
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
-
-  const int user_demographics_birth_year =
-      kOldEnoughForDemographicsUserBirthYear;
-  const int birth_year_offset = 2;
-  const metrics::UserDemographicsProto_Gender user_demographics_gender =
-      metrics::UserDemographicsProto_Gender_GENDER_FEMALE;
-
-  // Set demographic prefs that are normally fetched from server when syncing.
-  SetDemographics(user_demographics_birth_year, user_demographics_gender);
-
-  // Set birth year noise offset that is usually set when calling
-  // GetUserNoisedBirthYearAndGenderFromPrefs().
-  prefs()->SetInteger(kSyncDemographicsBirthYearOffsetPrefName,
-                      static_cast<int>(birth_year_offset));
-
-  // Verify that demographic prefs exist (i.e., the test is set up).
-  ASSERT_TRUE(HasBirthYearDemographic(prefs()));
-  ASSERT_TRUE(HasGenderDemographic(prefs()));
-  ASSERT_TRUE(HasBirthYearOffset(prefs()));
+  ASSERT_TRUE(service()->CanUploadDemographicsToGoogle());
 
   // Temporarily disable sync without turning it off.
   service()->GetUserSettings()->SetSyncRequested(false);
@@ -1450,16 +1324,7 @@ TEST_F(ProfileSyncServiceTest,
       SyncService::DisableReasonSet(SyncService::DISABLE_REASON_USER_CHOICE),
       service()->GetDisableReasons());
 
-  // Verify that sync service does not provide demographics when it is
-  // temporarily disabled.
-  UserDemographicsResult user_demographics_result =
-      service()->GetUserNoisedBirthYearAndGender(GetNowTime());
-  EXPECT_FALSE(user_demographics_result.IsSuccess());
-
-  // Verify that demographic prefs are not cleared.
-  EXPECT_TRUE(HasBirthYearDemographic(prefs()));
-  EXPECT_TRUE(HasGenderDemographic(prefs()));
-  EXPECT_TRUE(HasBirthYearOffset(prefs()));
+  EXPECT_FALSE(service()->CanUploadDemographicsToGoogle());
 }
 
 // Test whether sync service does not provide user demographics and does not
@@ -1475,22 +1340,13 @@ TEST_F(ProfileSyncServiceTest,
   // Initialize service with sync enabled at start.
   SignIn();
   CreateService(ProfileSyncService::AUTO_START);
+
+  // Local transport data should not be cleared.
+  EXPECT_CALL(*sync_client(), OnLocalSyncTransportDataCleared()).Times(0);
+
   InitializeForNthSync();
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
-
-  // Set demographic prefs that are normally fetched from server when syncing.
-  SetDemographics(kOldEnoughForDemographicsUserBirthYear,
-                  metrics::UserDemographicsProto_Gender_GENDER_FEMALE);
-
-  // Set birth year noise offset that is usually set when calling
-  // GetUserNoisedBirthYearAndGenderFromPrefs().
-  prefs()->SetInteger(kSyncDemographicsBirthYearOffsetPrefName, 2);
-
-  // Verify that demographic prefs exist (i.e., the test is set up).
-  ASSERT_TRUE(HasBirthYearDemographic(prefs()));
-  ASSERT_TRUE(HasGenderDemographic(prefs()));
-  ASSERT_TRUE(HasBirthYearOffset(prefs()));
 
   // Simulate sign out using an invalid auth error.
   identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
@@ -1499,14 +1355,7 @@ TEST_F(ProfileSyncServiceTest,
   ASSERT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
 
   // Verify that sync service does not provide demographics when sync is paused.
-  UserDemographicsResult user_demographics_result =
-      service()->GetUserNoisedBirthYearAndGender(GetNowTime());
-  EXPECT_FALSE(user_demographics_result.IsSuccess());
-
-  // Verify that demographic prefs are not cleared.
-  EXPECT_TRUE(HasBirthYearDemographic(prefs()));
-  EXPECT_TRUE(HasGenderDemographic(prefs()));
-  EXPECT_TRUE(HasBirthYearOffset(prefs()));
+  EXPECT_FALSE(service()->CanUploadDemographicsToGoogle());
 }
 
 // Test whether sync service does not provide user demographics and does not
@@ -1522,22 +1371,13 @@ TEST_F(ProfileSyncServiceTest,
   // Initialize service with sync enabled at start.
   SignIn();
   CreateService(ProfileSyncService::AUTO_START);
+
+  // Local transport data should not be cleared.
+  EXPECT_CALL(*sync_client(), OnLocalSyncTransportDataCleared()).Times(0);
+
   InitializeForNthSync();
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
-
-  // Set demographic prefs that are normally fetched from server when syncing.
-  SetDemographics(kOldEnoughForDemographicsUserBirthYear,
-                  metrics::UserDemographicsProto_Gender_GENDER_FEMALE);
-
-  // Set birth year noise offset that is usually set when calling
-  // GetUserNoisedBirthYearAndGenderFromPrefs().
-  prefs()->SetInteger(kSyncDemographicsBirthYearOffsetPrefName, 2);
-
-  // Verify that demographic prefs exist (i.e., the test is set up).
-  ASSERT_TRUE(HasBirthYearDemographic(prefs()));
-  ASSERT_TRUE(HasGenderDemographic(prefs()));
-  ASSERT_TRUE(HasBirthYearOffset(prefs()));
 
   // Simulate sign out using an invalid auth error.
   identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
@@ -1548,14 +1388,7 @@ TEST_F(ProfileSyncServiceTest,
   ASSERT_TRUE(service()->GetDisableReasons().Empty());
 
   // Verify that sync service does not provide demographics when sync is paused.
-  UserDemographicsResult user_demographics_result =
-      service()->GetUserNoisedBirthYearAndGender(GetNowTime());
-  EXPECT_FALSE(user_demographics_result.IsSuccess());
-
-  // Verify that demographic prefs are not cleared.
-  EXPECT_TRUE(HasBirthYearDemographic(prefs()));
-  EXPECT_TRUE(HasGenderDemographic(prefs()));
-  EXPECT_TRUE(HasBirthYearOffset(prefs()));
+  EXPECT_FALSE(service()->CanUploadDemographicsToGoogle());
 }
 
 TEST_F(ProfileSyncServiceTest, GenerateCacheGUID) {

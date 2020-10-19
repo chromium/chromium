@@ -7,8 +7,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
+#include "components/metrics/demographics/user_demographics.h"
 #include "components/metrics/log_decoder.h"
-#include "components/sync/base/user_demographics.h"
 #include "components/sync/engine_impl/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
@@ -22,13 +22,13 @@ void AddUserBirthYearAndGenderToSyncServer(
     UserDemographicsProto::Gender gender) {
   sync_pb::EntitySpecifics specifics;
   specifics.mutable_priority_preference()->mutable_preference()->set_name(
-      syncer::kSyncDemographicsPrefName);
+      kSyncDemographicsPrefName);
   specifics.mutable_priority_preference()->mutable_preference()->set_value(
       base::StringPrintf("{\"birth_year\":%d,\"gender\":%d}", birth_year,
                          static_cast<int>(gender)));
   fake_server->InjectEntity(
       syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-          /*non_unique_name=*/syncer::kSyncDemographicsPrefName,
+          /*non_unique_name=*/kSyncDemographicsPrefName,
           /*client_tag=*/specifics.preference().name(), specifics,
           /*creation_time=*/0,
           /*last_modified_time=*/0));
@@ -60,9 +60,8 @@ void UpdateNetworkTime(const base::Time& now,
 }
 
 int GetMaximumEligibleBirthYear(const base::Time& now) {
-  constexpr int kEligibleAge =
-      syncer::kUserDemographicsMinAgeInYears +
-      syncer::kUserDemographicsBirthYearNoiseOffsetRange;
+  constexpr int kEligibleAge = kUserDemographicsMinAgeInYears +
+                               kUserDemographicsBirthYearNoiseOffsetRange;
 
   base::Time::Exploded exploded_time;
   now.UTCExplode(&exploded_time);
@@ -78,7 +77,7 @@ int GetMaximumEligibleBirthYear(const base::Time& now) {
 
 int GetNoisedBirthYear(const PrefService& pref_service, int raw_birth_year) {
   int birth_year_offset =
-      pref_service.GetInteger(syncer::kSyncDemographicsBirthYearOffsetPrefName);
+      pref_service.GetInteger(kSyncDemographicsBirthYearOffsetPrefName);
   return birth_year_offset + raw_birth_year;
 }
 

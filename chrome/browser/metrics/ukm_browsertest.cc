@@ -658,7 +658,7 @@ IN_PROC_BROWSER_TEST_P(UkmBrowserTestWithDemographics,
         report->user_demographics().birth_year());
     EXPECT_EQ(test_gender, report->user_demographics().gender());
     histogram.ExpectUniqueSample("UKM.UserDemographics.Status",
-                                 syncer::UserDemographicsStatus::kSuccess, 1);
+                                 UserDemographicsStatus::kSuccess, 1);
   } else {
     EXPECT_FALSE(report->has_user_demographics());
     histogram.ExpectTotalCount("UKM.UserDemographics.Status", /*count=*/0);

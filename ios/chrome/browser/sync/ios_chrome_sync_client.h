@@ -57,6 +57,7 @@ class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
   GetControllerDelegateForModelType(syncer::ModelType type) override;
   syncer::SyncApiComponentFactory* GetSyncApiComponentFactory() override;
   syncer::SyncTypePreferenceProvider* GetPreferenceProvider() override;
+  void OnLocalSyncTransportDataCleared() override;
 
  private:
   ChromeBrowserState* const browser_state_;

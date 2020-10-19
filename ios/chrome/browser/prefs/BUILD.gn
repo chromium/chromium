@@ -44,6 +44,7 @@ source_set("browser_prefs") {
     "//components/invalidation/impl:impl",
     "//components/language/core/browser",
     "//components/metrics",
+    "//components/metrics/demographics",
     "//components/network_time",
     "//components/ntp_snippets",
     "//components/ntp_tiles",

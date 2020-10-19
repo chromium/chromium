@@ -14,6 +14,7 @@ include_rules = [
   "+components/language/core/browser",
   "+components/language/core/common",
   "+components/leveldb_proto/public",
+  "+components/metrics/demographics",
   "+components/metrics/library_support",
   "+components/net_log",
   "+components/password_manager/core",

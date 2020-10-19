@@ -391,6 +391,14 @@ class ProfileClientImpl
     return g_browser_process->profile_manager()->GetNumberOfProfiles();
   }
 
+  PrefService* GetPrefService() override {
+    Profile* profile = cached_metrics_profile_.GetMetricsProfile();
+    if (!profile)
+      return nullptr;
+
+    return profile->GetPrefs();
+  }
+
   syncer::SyncService* GetSyncService() override {
     Profile* profile = cached_metrics_profile_.GetMetricsProfile();
     if (!profile)

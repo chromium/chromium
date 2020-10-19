@@ -39,9 +39,7 @@ TestSyncService::TestSyncService()
     : user_settings_(this),
       preferred_data_types_(ModelTypeSet::All()),
       active_data_types_(ModelTypeSet::All()),
-      last_cycle_snapshot_(MakeDefaultCycleSnapshot()),
-      user_demographics_result_(UserDemographicsResult::ForStatus(
-          UserDemographicsStatus::kIneligibleDemographicsData)) {}
+      last_cycle_snapshot_(MakeDefaultCycleSnapshot()) {}
 
 TestSyncService::~TestSyncService() = default;
 
@@ -97,11 +95,6 @@ void TestSyncService::SetLastCycleSnapshot(const SyncCycleSnapshot& snapshot) {
   last_cycle_snapshot_ = snapshot;
 }
 
-void TestSyncService::SetUserDemographics(
-    const UserDemographicsResult& user_demographics_result) {
-  user_demographics_result_ = user_demographics_result;
-}
-
 void TestSyncService::SetEmptyLastCycleSnapshot() {
   SetLastCycleSnapshot(SyncCycleSnapshot());
 }
@@ -136,6 +129,10 @@ void TestSyncService::SetTrustedVaultKeyRequiredForPreferredDataTypes(
 
 void TestSyncService::SetIsUsingSecondaryPassphrase(bool enabled) {
   user_settings_.SetIsUsingSecondaryPassphrase(enabled);
+}
+
+void TestSyncService::SetCanUploadDemographicsToGoogle(bool value) {
+  can_upload_demographics_to_google_ = value;
 }
 
 void TestSyncService::FireStateChanged() {
@@ -298,9 +295,8 @@ void TestSyncService::AddTrustedVaultRecoveryMethodFromWeb(
     const std::vector<uint8_t>& public_key,
     base::OnceClosure callback) {}
 
-UserDemographicsResult TestSyncService::GetUserNoisedBirthYearAndGender(
-    base::Time now) {
-  return user_demographics_result_;
+bool TestSyncService::CanUploadDemographicsToGoogle() {
+  return can_upload_demographics_to_google_;
 }
 
 void TestSyncService::Shutdown() {}

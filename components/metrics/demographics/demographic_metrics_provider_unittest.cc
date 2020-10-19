@@ -10,10 +10,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
+#include "components/metrics/demographics/user_demographics.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/sync/base/sync_prefs.h"
-#include "components/sync/base/user_demographics.h"
 #include "components/sync/driver/test_sync_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
@@ -22,19 +23,45 @@
 namespace metrics {
 namespace {
 
+constexpr int kTestBirthYear = 1983;
+constexpr UserDemographicsProto::Gender kTestGender =
+    UserDemographicsProto::GENDER_FEMALE;
+
+enum TestSyncServiceState {
+  NULL_SYNC_SERVICE,
+  SYNC_SERVICE_NOT_ENABLED,
+  SYNC_SERVICE_ENABLED
+};
+
 // Profile client for testing that gets fake Profile information and services.
 class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
  public:
   ~TestProfileClient() override = default;
 
-  TestProfileClient(std::unique_ptr<syncer::SyncService> sync_service,
-                    int number_of_profiles)
-      : sync_service_(std::move(sync_service)),
-        number_of_profiles_(number_of_profiles) {}
+  TestProfileClient(int number_of_profiles,
+                    TestSyncServiceState sync_service_state)
+      : number_of_profiles_(number_of_profiles) {
+    RegisterDemographicsProfilePrefs(pref_service_.registry());
+
+    switch (sync_service_state) {
+      case NULL_SYNC_SERVICE:
+        break;
+      case SYNC_SERVICE_NOT_ENABLED:
+        sync_service_ = std::make_unique<syncer::TestSyncService>();
+        sync_service_->SetCanUploadDemographicsToGoogle(false);
+        break;
+      case SYNC_SERVICE_ENABLED:
+        sync_service_ = std::make_unique<syncer::TestSyncService>();
+        sync_service_->SetCanUploadDemographicsToGoogle(true);
+        break;
+    }
+  }
 
   int GetNumberOfProfilesOnDisk() override { return number_of_profiles_; }
 
   syncer::SyncService* GetSyncService() override { return sync_service_.get(); }
+
+  PrefService* GetPrefService() override { return &pref_service_; }
 
   base::Time GetNetworkTime() const override {
     base::Time time;
@@ -43,68 +70,62 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
     return time;
   }
 
+  void SetDemographicsInPrefs(int birth_year,
+                              metrics::UserDemographicsProto_Gender gender) {
+    base::DictionaryValue dict;
+    dict.SetIntPath(kSyncDemographicsBirthYearPath, birth_year);
+    dict.SetIntPath(kSyncDemographicsGenderPath, static_cast<int>(gender));
+    pref_service_.Set(kSyncDemographicsPrefName, dict);
+  }
+
  private:
-  std::unique_ptr<syncer::SyncService> sync_service_;
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
+  std::unique_ptr<syncer::TestSyncService> sync_service_;
   const int number_of_profiles_;
   base::SimpleTestClock clock_;
 
   DISALLOW_COPY_AND_ASSIGN(TestProfileClient);
 };
 
-// Make arbitrary user demographics to provide.
-syncer::UserDemographicsResult GetDemographics() {
-  syncer::UserDemographics user_demographics;
-  user_demographics.birth_year = 1983;
-  user_demographics.gender = UserDemographicsProto::GENDER_FEMALE;
-  return syncer::UserDemographicsResult::ForValue(std::move(user_demographics));
-}
-
-std::unique_ptr<TestProfileClient> MakeTestProfileClient(
-    const syncer::UserDemographicsResult& user_demographics_result,
-    int number_of_profiles,
-    bool has_sync_service) {
-  std::unique_ptr<syncer::TestSyncService> sync_service = nullptr;
-  if (has_sync_service) {
-    sync_service = std::make_unique<syncer::TestSyncService>();
-    sync_service->SetUserDemographics(user_demographics_result);
-  }
-  return std::make_unique<TestProfileClient>(std::move(sync_service),
-                                             number_of_profiles);
-}
-
 TEST(DemographicMetricsProviderTest,
      ProvideSyncedUserNoisedBirthYearAndGender_FeatureEnabled) {
   base::HistogramTester histogram;
 
+  auto client = std::make_unique<TestProfileClient>(/*number_of_profiles=*/1,
+                                                    SYNC_SERVICE_ENABLED);
+  client->SetDemographicsInPrefs(kTestBirthYear, kTestGender);
+
+  // Set birth year noise offset to not have it randomized.
+  const int kBirthYearOffset = 3;
+  client->GetPrefService()->SetInteger(kSyncDemographicsBirthYearOffsetPrefName,
+                                       kBirthYearOffset);
+
   // Run demographics provider.
   DemographicMetricsProvider provider(
-      MakeTestProfileClient(GetDemographics(), /*number_of_profiles=*/1,
-                            /*has_sync_service=*/true),
-      MetricsLogUploader::MetricServiceType::UMA);
+      std::move(client), MetricsLogUploader::MetricServiceType::UMA);
   ChromeUserMetricsExtension uma_proto;
   provider.ProvideSyncedUserNoisedBirthYearAndGender(&uma_proto);
 
   // Verify provided demographics.
-  EXPECT_EQ(GetDemographics().value().birth_year,
+  EXPECT_EQ(kTestBirthYear + kBirthYearOffset,
             uma_proto.user_demographics().birth_year());
-  EXPECT_EQ(GetDemographics().value().gender,
-            uma_proto.user_demographics().gender());
+  EXPECT_EQ(kTestGender, uma_proto.user_demographics().gender());
 
   // Verify histograms.
   histogram.ExpectUniqueSample("UMA.UserDemographics.Status",
-                               syncer::UserDemographicsStatus::kSuccess, 1);
+                               UserDemographicsStatus::kSuccess, 1);
 }
 
 TEST(DemographicMetricsProviderTest,
      ProvideSyncedUserNoisedBirthYearAndGender_NoSyncService) {
   base::HistogramTester histogram;
 
+  auto client = std::make_unique<TestProfileClient>(/*number_of_profiles=*/1,
+                                                    NULL_SYNC_SERVICE);
+
   // Run demographics provider.
   DemographicMetricsProvider provider(
-      MakeTestProfileClient(GetDemographics(),
-                            /*number_of_profiles=*/1,
-                            /*has_sync_service=*/false),
-      MetricsLogUploader::MetricServiceType::UMA);
+      std::move(client), MetricsLogUploader::MetricServiceType::UMA);
   ChromeUserMetricsExtension uma_proto;
   provider.ProvideSyncedUserNoisedBirthYearAndGender(&uma_proto);
 
@@ -114,8 +135,29 @@ TEST(DemographicMetricsProviderTest,
 
   // Verify histograms.
   histogram.ExpectUniqueSample("UMA.UserDemographics.Status",
-                               syncer::UserDemographicsStatus::kNoSyncService,
-                               1);
+                               UserDemographicsStatus::kNoSyncService, 1);
+}
+
+TEST(DemographicMetricsProviderTest,
+     ProvideSyncedUserNoisedBirthYearAndGender_SyncNotEnabled) {
+  base::HistogramTester histogram;
+
+  auto client = std::make_unique<TestProfileClient>(/*number_of_profiles=*/1,
+                                                    SYNC_SERVICE_NOT_ENABLED);
+
+  // Run demographics provider.
+  DemographicMetricsProvider provider(
+      std::move(client), MetricsLogUploader::MetricServiceType::UMA);
+  ChromeUserMetricsExtension uma_proto;
+  provider.ProvideSyncedUserNoisedBirthYearAndGender(&uma_proto);
+
+  // Expect the proto fields to be not set and left to default.
+  EXPECT_FALSE(uma_proto.user_demographics().has_birth_year());
+  EXPECT_FALSE(uma_proto.user_demographics().has_gender());
+
+  // Verify histograms.
+  histogram.ExpectUniqueSample("UMA.UserDemographics.Status",
+                               UserDemographicsStatus::kSyncNotEnabled, 1);
 }
 
 TEST(DemographicMetricsProviderTest,
@@ -127,11 +169,13 @@ TEST(DemographicMetricsProviderTest,
 
   base::HistogramTester histogram;
 
+  auto client = std::make_unique<TestProfileClient>(/*number_of_profiles=*/1,
+                                                    SYNC_SERVICE_ENABLED);
+  client->SetDemographicsInPrefs(kTestBirthYear, kTestGender);
+
   // Run demographics provider.
   DemographicMetricsProvider provider(
-      MakeTestProfileClient(GetDemographics(), /*number_of_profiles=*/1,
-                            /*has_sync_service=*/true),
-      MetricsLogUploader::MetricServiceType::UMA);
+      std::move(client), MetricsLogUploader::MetricServiceType::UMA);
   ChromeUserMetricsExtension uma_proto;
   provider.ProvideSyncedUserNoisedBirthYearAndGender(&uma_proto);
 
@@ -147,11 +191,13 @@ TEST(DemographicMetricsProviderTest,
      ProvideSyncedUserNoisedBirthYearAndGender_NotExactlyOneProfile) {
   base::HistogramTester histogram;
 
+  auto client = std::make_unique<TestProfileClient>(/*number_of_profiles=*/2,
+                                                    SYNC_SERVICE_ENABLED);
+  client->SetDemographicsInPrefs(kTestBirthYear, kTestGender);
+
   // Run demographics provider with not exactly one Profile on disk.
   DemographicMetricsProvider provider(
-      MakeTestProfileClient(GetDemographics(), /*number_of_profiles=*/2,
-                            /*has_sync_service=*/true),
-      MetricsLogUploader::MetricServiceType::UMA);
+      std::move(client), MetricsLogUploader::MetricServiceType::UMA);
   ChromeUserMetricsExtension uma_proto;
   provider.ProvideSyncedUserNoisedBirthYearAndGender(&uma_proto);
 
@@ -160,24 +206,24 @@ TEST(DemographicMetricsProviderTest,
   EXPECT_FALSE(uma_proto.user_demographics().has_gender());
 
   // Verify histograms.
-  histogram.ExpectUniqueSample(
-      "UMA.UserDemographics.Status",
-      syncer::UserDemographicsStatus::kMoreThanOneProfile, 1);
+  histogram.ExpectUniqueSample("UMA.UserDemographics.Status",
+                               UserDemographicsStatus::kMoreThanOneProfile, 1);
 }
 
 TEST(DemographicMetricsProviderTest,
      ProvideSyncedUserNoisedBirthYearAndGender_NoUserDemographics) {
   base::HistogramTester histogram;
 
+  auto client = std::make_unique<TestProfileClient>(/*number_of_profiles=*/1,
+                                                    SYNC_SERVICE_ENABLED);
+  // Set some ineligible values to prefs.
+  client->SetDemographicsInPrefs(/*birth_year=*/-17,
+                                 UserDemographicsProto::GENDER_UNKNOWN);
+
   // Run demographics provider with a ProfileClient that does not provide
   // demographics because of some error.
   DemographicMetricsProvider provider(
-      MakeTestProfileClient(
-          syncer::UserDemographicsResult::ForStatus(
-              syncer::UserDemographicsStatus::kIneligibleDemographicsData),
-          /*number_of_profiles=*/1,
-          /*has_sync_service=*/true),
-      MetricsLogUploader::MetricServiceType::UMA);
+      std::move(client), MetricsLogUploader::MetricServiceType::UMA);
   ChromeUserMetricsExtension uma_proto;
   provider.ProvideSyncedUserNoisedBirthYearAndGender(&uma_proto);
 
@@ -185,34 +231,39 @@ TEST(DemographicMetricsProviderTest,
   EXPECT_FALSE(uma_proto.user_demographics().has_birth_year());
   EXPECT_FALSE(uma_proto.user_demographics().has_gender());
 
-  // Verify that there are no histograms for user demographics. We expect
-  // histograms to be logged by the sync libraries.
+  // Verify that there are no histograms for user demographics.
   histogram.ExpectUniqueSample(
       "UMA.UserDemographics.Status",
-      syncer::UserDemographicsStatus::kIneligibleDemographicsData, 1);
+      UserDemographicsStatus::kIneligibleDemographicsData, 1);
 }
 
 TEST(DemographicMetricsProviderTest,
-     ProvideSyncedUserNoisedBirthYearAndGenderToReport) {
+     ProvideSyncedUserNoisedBirthYearAndGenderToUkmReport) {
   base::HistogramTester histogram;
+
+  auto client = std::make_unique<TestProfileClient>(/*number_of_profiles=*/1,
+                                                    SYNC_SERVICE_ENABLED);
+  client->SetDemographicsInPrefs(kTestBirthYear, kTestGender);
+
+  // Set birth year noise offset to not have it randomized.
+  const int kBirthYearOffset = 3;
+  client->GetPrefService()->SetInteger(kSyncDemographicsBirthYearOffsetPrefName,
+                                       kBirthYearOffset);
 
   // Run demographics provider.
   DemographicMetricsProvider provider(
-      MakeTestProfileClient(GetDemographics(), /*number_of_profiles=*/1,
-                            /*has_sync_service=*/true),
-      MetricsLogUploader::MetricServiceType::UKM);
+      std::move(client), MetricsLogUploader::MetricServiceType::UKM);
   ukm::Report report;
   provider.ProvideSyncedUserNoisedBirthYearAndGenderToReport(&report);
 
   // Verify provided demographics.
-  EXPECT_EQ(GetDemographics().value().birth_year,
+  EXPECT_EQ(kTestBirthYear + kBirthYearOffset,
             report.user_demographics().birth_year());
-  EXPECT_EQ(GetDemographics().value().gender,
-            report.user_demographics().gender());
+  EXPECT_EQ(kTestGender, report.user_demographics().gender());
 
   // Verify histograms.
   histogram.ExpectUniqueSample("UKM.UserDemographics.Status",
-                               syncer::UserDemographicsStatus::kSuccess, 1);
+                               UserDemographicsStatus::kSuccess, 1);
 }
 
 }  // namespace

@@ -17,7 +17,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/base/enum_set.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/base/user_demographics.h"
 #include "components/sync/driver/sync_service_observer.h"
 
 struct CoreAccountInfo;
@@ -371,14 +370,11 @@ class SyncService : public KeyedService {
   // USER DEMOGRAPHICS
   //////////////////////////////////////////////////////////////////////////////
 
-  // Gets the synced user’s noised birth year and gender, see doc of
-  // metrics::DemographicMetricsProvider in
-  // components/metrics/demographics/demographic_metrics_provider.h for more
-  // details. Returns an error status with an empty value when the user's birth
-  // year or gender cannot be provided. You need to provide an accurate |now|
-  // time that represents the current time.
-  virtual UserDemographicsResult GetUserNoisedBirthYearAndGender(
-      base::Time now) = 0;
+  // Returns whether sync's current state allows uploading demographics data to
+  // servers.
+  // TODO(crbug.com/1137346): Remove this API in favor of integrating with
+  // GetUploadToGoogleState.
+  virtual bool CanUploadDemographicsToGoogle() = 0;
 
   //////////////////////////////////////////////////////////////////////////////
   // OBSERVERS

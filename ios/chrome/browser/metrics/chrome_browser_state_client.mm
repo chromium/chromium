@@ -41,6 +41,16 @@ syncer::SyncService* ChromeBrowserStateClient::GetSyncService() {
           ->GetOriginalChromeBrowserState());
 }
 
+PrefService* ChromeBrowserStateClient::GetPrefService() {
+  // Get PrefService from BrowserState that was the last to be used. Will create
+  // a new BrowserState if no BrowserState exists.
+  return GetApplicationContext()
+      ->GetChromeBrowserStateManager()
+      ->GetLastUsedBrowserState()
+      ->GetOriginalChromeBrowserState()
+      ->GetPrefs();
+}
+
 int ChromeBrowserStateClient::GetNumberOfProfilesOnDisk() {
   // Return 1 because there should be only one Profile available.
   return 1;

@@ -527,7 +527,7 @@ void ProfileSyncService::StartUpSlowEngineComponents() {
     // everything away and start from scratch with a new cache GUID, which also
     // cascades into datatypes throwing away their dangling sync metadata due to
     // cache GUID mismatches.
-    sync_prefs_.ClearLocalSyncTransportData();
+    ClearLocalTransportDataAndNotify();
     sync_prefs_.SetCacheGuid(GenerateCacheGUID());
     sync_prefs_.SetGaiaId(authenticated_account_info.gaia);
   }
@@ -615,7 +615,8 @@ void ProfileSyncService::ShutdownImpl(ShutdownReason reason) {
         sync_client_->GetSyncApiComponentFactory()
             ->DeleteLegacyDirectoryFilesAndNigoriStorage();
       }
-      sync_prefs_.ClearLocalSyncTransportData();
+
+      ClearLocalTransportDataAndNotify();
     }
     return;
   }
@@ -666,7 +667,7 @@ void ProfileSyncService::ShutdownImpl(ShutdownReason reason) {
   }
 
   if (reason == ShutdownReason::DISABLE_SYNC) {
-    sync_prefs_.ClearLocalSyncTransportData();
+    ClearLocalTransportDataAndNotify();
   }
 
   NotifyObservers();
@@ -1725,18 +1726,11 @@ void ProfileSyncService::AddTrustedVaultRecoveryMethodFromWeb(
       gaia_id, public_key, std::move(callback));
 }
 
-UserDemographicsResult ProfileSyncService::GetUserNoisedBirthYearAndGender(
-    base::Time now) {
+bool ProfileSyncService::CanUploadDemographicsToGoogle() {
   // Do not provide the synced user’s birth year and gender when sync is
   // disabled or paused because the user’s birth year and gender should only be
   // provided when the sync prefs are synced with the sync server.
-  if (!IsSyncFeatureEnabled() || auth_manager_->IsSyncPaused()) {
-    return UserDemographicsResult::ForStatus(
-        UserDemographicsStatus::kSyncNotEnabled);
-  }
-
-  return GetUserNoisedBirthYearAndGenderFromPrefs(
-      now, sync_client_->GetPrefService());
+  return IsSyncFeatureEnabled() && !auth_manager_->IsSyncPaused();
 }
 
 base::WeakPtr<JsController> ProfileSyncService::GetJsController() {
@@ -1955,6 +1949,11 @@ void ProfileSyncService::OnRequiredUserActionChanged() {
           user_settings_->IsTrustedVaultKeyRequiredForPreferredDataTypes());
     }
   }
+}
+
+void ProfileSyncService::ClearLocalTransportDataAndNotify() {
+  sync_prefs_.ClearLocalSyncTransportData();
+  sync_client_->OnLocalSyncTransportDataCleared();
 }
 
 }  // namespace syncer

@@ -191,8 +191,6 @@ void SyncPrefs::RegisterProfilePrefs(
                                 false);
 #endif  // defined(OS_ANDROID)
 
-  RegisterDemographicsProfilePrefs(registry);
-
   // Obsolete prefs that will be removed after a grace period.
   RegisterObsoleteUserTypePrefs(registry);
   registry->RegisterBooleanPref(kSyncPassphraseEncryptionTransitionInProgress,
@@ -217,8 +215,6 @@ void SyncPrefs::RemoveSyncPrefObserver(SyncPrefObserver* sync_pref_observer) {
 
 void SyncPrefs::ClearLocalSyncTransportData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  ClearDemographicsPrefs(pref_service_);
 
   pref_service_->ClearPref(prefs::kSyncLastSyncedTime);
   pref_service_->ClearPref(prefs::kSyncLastPollTime);

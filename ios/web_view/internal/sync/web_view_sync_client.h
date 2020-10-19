@@ -61,6 +61,7 @@ class WebViewSyncClient : public browser_sync::BrowserSyncClient {
   GetControllerDelegateForModelType(syncer::ModelType type) override;
   syncer::SyncApiComponentFactory* GetSyncApiComponentFactory() override;
   syncer::SyncTypePreferenceProvider* GetPreferenceProvider() override;
+  void OnLocalSyncTransportDataCleared() override;
 
  private:
   autofill::AutofillWebDataService* profile_web_data_service_;

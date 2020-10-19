@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/base/user_demographics.h"
+#include "components/metrics/demographics/user_demographics.h"
 
 #include <utility>
 
@@ -10,7 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/user_demographics.pb.h"
 
-namespace syncer {
+namespace metrics {
 
 namespace {
 
@@ -28,8 +28,7 @@ base::Time GetNowTime() {
 
 TEST(UserDemographicsTest, UserDemographicsResult_ForValue) {
   int user_birth_year = 1982;
-  metrics::UserDemographicsProto_Gender user_gender =
-      metrics::UserDemographicsProto::GENDER_MALE;
+  UserDemographicsProto_Gender user_gender = UserDemographicsProto::GENDER_MALE;
 
   UserDemographics user_demographics;
   user_demographics.birth_year = user_birth_year;
@@ -60,8 +59,7 @@ class UserDemographicsPrefsTest : public testing::Test {
     RegisterDemographicsProfilePrefs(pref_service_.registry());
   }
 
-  void SetDemographics(int birth_year,
-                       metrics::UserDemographicsProto::Gender gender) {
+  void SetDemographics(int birth_year, UserDemographicsProto::Gender gender) {
     base::DictionaryValue dict;
     dict.SetIntPath(kSyncDemographicsBirthYearPath, birth_year);
     dict.SetIntPath(kSyncDemographicsGenderPath, static_cast<int>(gender));
@@ -73,8 +71,8 @@ class UserDemographicsPrefsTest : public testing::Test {
 
 TEST_F(UserDemographicsPrefsTest, ReadDemographicsWithRandomOffset) {
   int user_demographics_birth_year = 1983;
-  metrics::UserDemographicsProto_Gender user_demographics_gender =
-      metrics::UserDemographicsProto::GENDER_MALE;
+  UserDemographicsProto_Gender user_demographics_gender =
+      UserDemographicsProto::GENDER_MALE;
 
   // Set user demographic prefs.
   SetDemographics(user_demographics_birth_year, user_demographics_gender);
@@ -113,7 +111,7 @@ TEST_F(UserDemographicsPrefsTest, ReadAndClearUserDemographicPreferences) {
   // Set demographic prefs directly from the pref service interface because
   // demographic prefs will only be set on the server-side. The SyncPrefs
   // interface cannot set demographic prefs.
-  SetDemographics(1983, metrics::UserDemographicsProto::GENDER_FEMALE);
+  SetDemographics(1983, UserDemographicsProto::GENDER_FEMALE);
 
   // Set birth year noise offset to not have it randomized.
   pref_service_.SetInteger(kSyncDemographicsBirthYearOffsetPrefName, 2);
@@ -148,8 +146,7 @@ struct DemographicsTestParam {
   int birth_year_offset = kUserDemographicsBirthYearNoiseOffsetDefaultValue;
 
   // Gender of the user.
-  metrics::UserDemographicsProto_Gender gender =
-      kUserDemographicGenderDefaultEnumValue;
+  UserDemographicsProto_Gender gender = kUserDemographicGenderDefaultEnumValue;
 
   // Status of the retrieval of demographics.
   UserDemographicsStatus status = UserDemographicsStatus::kMaxValue;
@@ -198,21 +195,21 @@ INSTANTIATE_TEST_SUITE_P(
         DemographicsTestParam{
             /*birth_year=*/1997,
             /*birth_year_offset=*/2,
-            /*gender=*/metrics::UserDemographicsProto::GENDER_FEMALE,
+            /*gender=*/UserDemographicsProto::GENDER_FEMALE,
             /*status=*/UserDemographicsStatus::kIneligibleDemographicsData},
         // Test where birth year should not be provided because |birth_year| - 2
         // > 1998.
         DemographicsTestParam{
             /*birth_year=*/2001,
             /*birth_year_offset=*/-2,
-            /*gender=*/metrics::UserDemographicsProto::GENDER_FEMALE,
+            /*gender=*/UserDemographicsProto::GENDER_FEMALE,
             /*status=*/UserDemographicsStatus::kIneligibleDemographicsData},
         // Test where birth year should not be provided because age of user is
         // |kUserDemographicsMaxAge| + 1, which is over the max age.
         DemographicsTestParam{
             /*birth_year=*/1933,
             /*birth_year_offset=*/0,
-            /*gender=*/metrics::UserDemographicsProto::GENDER_FEMALE,
+            /*gender=*/UserDemographicsProto::GENDER_FEMALE,
             /*status=*/UserDemographicsStatus::kIneligibleDemographicsData},
         // Test where gender should not be provided because it has a low
         // population that can have their privacy compromised because of high
@@ -220,49 +217,43 @@ INSTANTIATE_TEST_SUITE_P(
         DemographicsTestParam{
             /*birth_year=*/1986,
             /*birth_year_offset=*/0,
-            /*gender=*/metrics::UserDemographicsProto::GENDER_CUSTOM_OR_OTHER,
+            /*gender=*/UserDemographicsProto::GENDER_CUSTOM_OR_OTHER,
             /*status=*/UserDemographicsStatus::kIneligibleDemographicsData},
         // Test where birth year can be provided because |birth_year| + 2 ==
         // 1998.
-        DemographicsTestParam{
-            /*birth_year=*/1996,
-            /*birth_year_offset=*/2,
-            /*gender=*/metrics::UserDemographicsProto::GENDER_FEMALE,
-            /*status=*/UserDemographicsStatus::kSuccess},
+        DemographicsTestParam{/*birth_year=*/1996,
+                              /*birth_year_offset=*/2,
+                              /*gender=*/UserDemographicsProto::GENDER_FEMALE,
+                              /*status=*/UserDemographicsStatus::kSuccess},
         // Test where birth year can be provided because |birth_year| - 2 ==
         // 1998.
-        DemographicsTestParam{
-            /*birth_year=*/2000,
-            /*birth_year_offset=*/-2,
-            /*gender=*/metrics::UserDemographicsProto::GENDER_MALE,
-            /*status=*/UserDemographicsStatus::kSuccess},
+        DemographicsTestParam{/*birth_year=*/2000,
+                              /*birth_year_offset=*/-2,
+                              /*gender=*/UserDemographicsProto::GENDER_MALE,
+                              /*status=*/UserDemographicsStatus::kSuccess},
         // Test where birth year can be provided because |birth_year| + 2 <
         // 1998.
-        DemographicsTestParam{
-            /*birth_year=*/1995,
-            /*birth_year_offset=*/2,
-            /*gender=*/metrics::UserDemographicsProto::GENDER_FEMALE,
-            /*status=*/UserDemographicsStatus::kSuccess},
+        DemographicsTestParam{/*birth_year=*/1995,
+                              /*birth_year_offset=*/2,
+                              /*gender=*/UserDemographicsProto::GENDER_FEMALE,
+                              /*status=*/UserDemographicsStatus::kSuccess},
         // Test where birth year can be provided because |birth_year| - 2 <
         // 1998.
-        DemographicsTestParam{
-            /*birth_year=*/1999,
-            /*birth_year_offset=*/-2,
-            /*gender=*/metrics::UserDemographicsProto::GENDER_MALE,
-            /*status=*/UserDemographicsStatus::kSuccess},
+        DemographicsTestParam{/*birth_year=*/1999,
+                              /*birth_year_offset=*/-2,
+                              /*gender=*/UserDemographicsProto::GENDER_MALE,
+                              /*status=*/UserDemographicsStatus::kSuccess},
         // Test where gender can be provided because it is part of a large
         // population with a low entropy.
-        DemographicsTestParam{
-            /*birth_year=*/1986,
-            /*birth_year_offset=*/0,
-            /*gender=*/metrics::UserDemographicsProto::GENDER_FEMALE,
-            /*status=*/UserDemographicsStatus::kSuccess},
+        DemographicsTestParam{/*birth_year=*/1986,
+                              /*birth_year_offset=*/0,
+                              /*gender=*/UserDemographicsProto::GENDER_FEMALE,
+                              /*status=*/UserDemographicsStatus::kSuccess},
         // Test where gender can be provided because it is part of a large
         // population with a low entropy.
-        DemographicsTestParam{
-            /*birth_year=*/1986,
-            /*birth_year_offset=*/0,
-            /*gender=*/metrics::UserDemographicsProto::GENDER_MALE,
-            /*status=*/UserDemographicsStatus::kSuccess}));
+        DemographicsTestParam{/*birth_year=*/1986,
+                              /*birth_year_offset=*/0,
+                              /*gender=*/UserDemographicsProto::GENDER_MALE,
+                              /*status=*/UserDemographicsStatus::kSuccess}));
 
-}  // namespace syncer
+}  // namespace metrics

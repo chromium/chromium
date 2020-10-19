@@ -136,8 +136,7 @@ class ProfileSyncService : public SyncService,
       const std::string& gaia_id,
       const std::vector<uint8_t>& public_key,
       base::OnceClosure callback) override;
-  UserDemographicsResult GetUserNoisedBirthYearAndGender(
-      base::Time now) override;
+  bool CanUploadDemographicsToGoogle() override;
   void AddObserver(SyncServiceObserver* observer) override;
   void RemoveObserver(SyncServiceObserver* observer) override;
   bool HasObserver(const SyncServiceObserver* observer) const override;
@@ -365,7 +364,8 @@ class ProfileSyncService : public SyncService,
   // Called by SyncServiceCrypto when its required user action changes.
   void OnRequiredUserActionChanged();
 
-  std::string GetExperimentalAuthenticationSecret() const;
+  // Helper function to prevent future bugs that avoid notyfing while clearing.
+  void ClearLocalTransportDataAndNotify();
 
   // This profile's SyncClient, which abstracts away non-Sync dependencies and
   // the Sync API component factory.

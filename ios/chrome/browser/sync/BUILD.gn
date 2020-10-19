@@ -48,6 +48,7 @@ source_set("sync") {
     "//components/invalidation/impl",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
+    "//components/metrics/demographics",
     "//components/network_time",
     "//components/password_manager/core/browser",
     "//components/pref_registry",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/base/user_demographics.h"
+#include "components/metrics/demographics/user_demographics.h"
 
 #include <utility>
 
@@ -13,7 +13,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 
-namespace syncer {
+namespace metrics {
 
 // Root dictionary pref to store the user's birth year and gender that are
 // provided by the sync server. This is a read-only syncable priority pref, sent
@@ -40,7 +40,7 @@ const char kSyncDemographicsBirthYearPath[] = "birth_year";
 // This pref value is subordinate to the kSyncDemographics dictionary pref and
 // is synced to the client. It stores the self-reported gender of the syncing
 // user, as provided by the sync server. The gender is encoded using the Gender
-// enum defined in metrics::UserDemographicsProto
+// enum defined in UserDemographicsProto
 // (see third_party/metrics_proto/user_demographics.proto).
 const char kSyncDemographicsGenderPath[] = "gender";
 
@@ -63,9 +63,8 @@ int GetBirthYearOffset(PrefService* pref_service) {
 
 // Determines whether the synced user has provided a birth year to Google which
 // is eligible, once aggregated and anonymized, to measure usage of Chrome
-// features by age groups. See doc of metrics::DemographicMetricsProvider in
-// components/metrics/demographics/demographic_metrics_provider.h for more
-// details.
+// features by age groups. See doc of DemographicMetricsProvider in
+// demographic_metrics_provider.h for more details.
 bool HasEligibleBirthYear(base::Time now, int user_birth_year, int offset) {
   // Compute user age.
   base::Time::Exploded exploded_now_time;
@@ -100,8 +99,7 @@ bool HasEligibleBirthYear(base::Time now, int user_birth_year, int offset) {
 }
 
 // Gets the synced user's birth year from synced prefs, see doc of
-// metrics::DemographicMetricsProvider in
-// components/metrics/demographics/demographic_metrics_provider.h for more
+// DemographicMetricsProvider in demographic_metrics_provider.h for more
 // details.
 base::Optional<int> GetUserBirthYear(
     const base::DictionaryValue* demographics) {
@@ -119,10 +117,9 @@ base::Optional<int> GetUserBirthYear(
 }
 
 // Gets the synced user's gender from synced prefs, see doc of
-// metrics::DemographicMetricsProvider in
-// components/metrics/demographics/demographic_metrics_provider.h for more
+// DemographicMetricsProvider in demographic_metrics_provider.h for more
 // details.
-base::Optional<metrics::UserDemographicsProto_Gender> GetUserGender(
+base::Optional<UserDemographicsProto_Gender> GetUserGender(
     const base::DictionaryValue* demographics) {
   const base::Value* value =
       demographics->FindPath(kSyncDemographicsGenderPath);
@@ -136,15 +133,15 @@ base::Optional<metrics::UserDemographicsProto_Gender> GetUserGender(
 
   // Verify that the gender number is a valid UserDemographicsProto_Gender
   // encoding.
-  if (!metrics::UserDemographicsProto_Gender_IsValid(gender_int))
+  if (!UserDemographicsProto_Gender_IsValid(gender_int))
     return base::nullopt;
 
-  auto gender = metrics::UserDemographicsProto_Gender(gender_int);
+  auto gender = UserDemographicsProto_Gender(gender_int);
 
   // Verify that the gender is in a large enough population set to preserve
   // anonymity.
-  if (gender != metrics::UserDemographicsProto::GENDER_FEMALE &&
-      gender != metrics::UserDemographicsProto::GENDER_MALE) {
+  if (gender != UserDemographicsProto::GENDER_FEMALE &&
+      gender != UserDemographicsProto::GENDER_MALE) {
     return base::nullopt;
   }
 
@@ -216,7 +213,7 @@ UserDemographicsResult GetUserNoisedBirthYearAndGenderFromPrefs(
   // Get the synced user’s noised birth year and gender from synced prefs. Only
   // one error status code should be used to represent the case where
   // demographics are ineligible, see doc of UserDemographicsStatus in
-  // components/sync/base/user_demographics.h for more details.
+  // user_demographics.h for more details.
 
   // Get the pref that contains the user's birth year and gender.
   const base::DictionaryValue* demographics =
@@ -231,7 +228,7 @@ UserDemographicsResult GetUserNoisedBirthYearAndGenderFromPrefs(
   }
 
   // Get the user's gender.
-  base::Optional<metrics::UserDemographicsProto_Gender> gender =
+  base::Optional<UserDemographicsProto_Gender> gender =
       GetUserGender(demographics);
   if (!gender.has_value()) {
     return UserDemographicsResult::ForStatus(
@@ -253,4 +250,4 @@ UserDemographicsResult GetUserNoisedBirthYearAndGenderFromPrefs(
   return UserDemographicsResult::ForValue(std::move(user_demographics));
 }
 
-}  // namespace syncer
+}  // namespace metrics

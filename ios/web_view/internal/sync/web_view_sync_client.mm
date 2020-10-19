@@ -16,6 +16,7 @@
 #include "components/history/core/common/pref_names.h"
 #include "components/invalidation/impl/profile_invalidation_provider.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/metrics/demographics/user_demographics.h"
 #include "components/sync/base/sync_util.h"
 #include "components/sync/driver/data_type_controller.h"
 #include "components/sync/driver/sync_api_component_factory.h"
@@ -206,6 +207,11 @@ WebViewSyncClient::GetSyncApiComponentFactory() {
 
 syncer::SyncTypePreferenceProvider* WebViewSyncClient::GetPreferenceProvider() {
   return nullptr;
+}
+
+void WebViewSyncClient::OnLocalSyncTransportDataCleared() {
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  metrics::ClearDemographicsPrefs(pref_service_);
 }
 
 }  // namespace ios_web_view
