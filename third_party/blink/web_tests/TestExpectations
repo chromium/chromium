@@ -6463,3 +6463,7 @@ crbug.com/1138591 [ Mac10.15 ] http/tests/dom/raf-throttling-out-of-view-cross-o
 
 # WebRTC: Payload demuxing times out in Plan B. This is expected.
 crbug.com/1139052 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/protocol/unbundled-pt-demuxing.https.html [ Timeout ]
+
+# DevTools roll
+crbug.com/1011811 http/tests/devtools/indexeddb/database-structure.js [ Skip ]
+crbug.com/1011811 http/tests/devtools/indexeddb/database-version-number.js [ Skip ]
