@@ -6,11 +6,6 @@
 
 namespace arc {
 
-// Controls whether ARC++ app runtime performance statistics collection is
-// enabled.
-const base::Feature kAppRuntimePerormanceStatistics{
-    "AppRuntimePerormanceStatistics", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls ACTION_BOOT_COMPLETED broadcast for third party applications on ARC.
 // When disabled, third party apps will not receive this broadcast.
 const base::Feature kBootCompletedBroadcastFeature {
