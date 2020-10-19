@@ -51,37 +51,43 @@ function setOriginCheckbox(value) {
 
   // Grid should have an entry now.
   backgroundServiceModel.backgroundServiceEventReceived({
-    timestamp: 1556889085,  // 2019-05-03 14:11:25.000.
-    origin: 'http://127.0.0.1:8000/',
-    serviceWorkerRegistrationId: 42,  // invalid.
-    service: Protocol.BackgroundService.ServiceName.BackgroundFetch,
-    eventName: 'Event1',
-    instanceId: 'Instance1',
-    eventMetadata: [],
+    backgroundServiceEvent: {
+      timestamp: 1556889085,  // 2019-05-03 14:11:25.000.
+      origin: 'http://127.0.0.1:8000/',
+      serviceWorkerRegistrationId: 42,  // invalid.
+      service: Protocol.BackgroundService.ServiceName.BackgroundFetch,
+      eventName: 'Event1',
+      instanceId: 'Instance1',
+      eventMetadata: [],
+    },
   });
   dumpBackgroundServiceGrid();
 
   // Event from a different service is ignored.
   backgroundServiceModel.backgroundServiceEventReceived({
-    timestamp: 1556889085,  // 2019-05-03 14:11:25.000.
-    origin: 'http://127.0.0.1:8000/',
-    serviceWorkerRegistrationId: 42,  // invalid.
-    service: Protocol.BackgroundService.ServiceName.BackgroundSync,
-    eventName: 'Event1',
-    instanceId: 'Instance2',
-    eventMetadata: [],
+    backgroundServiceEvent: {
+      timestamp: 1556889085,  // 2019-05-03 14:11:25.000.
+      origin: 'http://127.0.0.1:8000/',
+      serviceWorkerRegistrationId: 42,  // invalid.
+      service: Protocol.BackgroundService.ServiceName.BackgroundSync,
+      eventName: 'Event1',
+      instanceId: 'Instance2',
+      eventMetadata: [],
+    },
   });
   dumpBackgroundServiceGrid();
 
   // Event from a different origin is ignored.
   backgroundServiceModel.backgroundServiceEventReceived({
-    timestamp: 1556889085,  // 2019-05-03 14:11:25.000.
-    origin: 'http://127.0.0.1:8080/',
-    serviceWorkerRegistrationId: 42,  // invalid.
-    service: Protocol.BackgroundService.ServiceName.BackgroundFetch,
-    eventName: 'Event2',
-    instanceId: 'Instance1',
-    eventMetadata: [],
+    backgroundServiceEvent: {
+      timestamp: 1556889085,  // 2019-05-03 14:11:25.000.
+      origin: 'http://127.0.0.1:8080/',
+      serviceWorkerRegistrationId: 42,  // invalid.
+      service: Protocol.BackgroundService.ServiceName.BackgroundFetch,
+      eventName: 'Event2',
+      instanceId: 'Instance1',
+      eventMetadata: [],
+    },
   });
   dumpBackgroundServiceGrid();
 

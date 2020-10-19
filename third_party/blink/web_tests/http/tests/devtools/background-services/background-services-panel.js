@@ -55,22 +55,26 @@ async function toggleRecord(model) {
   dumpPreviewPanel();
 
   backgroundServiceModel.backgroundServiceEventReceived({
-    timestamp: 1556889085,  // 2019-05-03 14:11:25.000.
-    origin: 'http://127.0.0.1:8000/',
-    serviceWorkerRegistrationId: 42,  // invalid.
-    service: Protocol.BackgroundService.ServiceName.BackgroundFetch,
-    eventName: 'Event1',
-    instanceId: 'Instance1',
-    eventMetadata: [],
+    backgroundServiceEvent: {
+      timestamp: 1556889085,  // 2019-05-03 14:11:25.000.
+      origin: 'http://127.0.0.1:8000/',
+      serviceWorkerRegistrationId: 42,  // invalid.
+      service: Protocol.BackgroundService.ServiceName.BackgroundFetch,
+      eventName: 'Event1',
+      instanceId: 'Instance1',
+      eventMetadata: [],
+    }
   });
   backgroundServiceModel.backgroundServiceEventReceived({
-    timestamp: 1556889085,  // 2019-05-03 14:11:25.000.
-    origin: 'http://127.0.0.1:8000/',
-    serviceWorkerRegistrationId: 42,  // invalid.
-    service: Protocol.BackgroundService.ServiceName.BackgroundFetch,
-    eventName: 'Event2',
-    instanceId: 'Instance1',
-    eventMetadata: [{key: 'key', value: 'value'}],
+    backgroundServiceEvent: {
+      timestamp: 1556889085,  // 2019-05-03 14:11:25.000.
+      origin: 'http://127.0.0.1:8000/',
+      serviceWorkerRegistrationId: 42,  // invalid.
+      service: Protocol.BackgroundService.ServiceName.BackgroundFetch,
+      eventName: 'Event2',
+      instanceId: 'Instance1',
+      eventMetadata: [{key: 'key', value: 'value'}],
+    }
   });
   dumpPreviewPanel();
 
