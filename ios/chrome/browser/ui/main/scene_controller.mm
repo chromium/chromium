@@ -78,6 +78,7 @@
 #import "ios/chrome/browser/url_loading/scene_url_loading_service.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
+#include "ios/chrome/browser/web_state_list/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
@@ -2366,6 +2367,15 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     breakpad::StopMonitoringBreadcrumbManagerService(
         BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
             mainBrowserState->GetOffTheRecordChromeBrowserState()));
+  }
+
+  // Record off-the-record metrics before detroying the BrowserState.
+  if (mainBrowserState->HasOffTheRecordChromeBrowserState()) {
+    ChromeBrowserState* otrBrowserState =
+        mainBrowserState->GetOffTheRecordChromeBrowserState();
+
+    SessionMetrics::FromBrowserState(otrBrowserState)
+        ->RecordAndClearSessionMetrics(MetricsToRecordFlags::kNoMetrics);
   }
 
   // Destroy and recreate the off-the-record BrowserState.
