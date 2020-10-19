@@ -993,8 +993,8 @@ Status ExecuteElementScreenshot(Session* session,
   // view port. However, CaptureScreenshot expects a location relative to the
   // document origin. We make the adjustment using the scroll amount of the top
   // level window. Scrolling of frames has already been included in |location|.
-  // Scroll information can be in either document.documentElement or
-  // document.body, depending on document compatibility mode. The parentheses
+  // Use window.pageXOffset and widnow.pageYOffset for scroll information,
+  // should always return scroll amount regardless of doctype. The parentheses
   // around the JavaScript code below is needed because JavaScript syntax
   // doesn't allow a statement to start with an object literal.
   // document.documentElement.clientHeight and Width provide viewport height
@@ -1002,8 +1002,8 @@ Status ExecuteElementScreenshot(Session* session,
   std::unique_ptr<base::Value> browser_info;
   status = web_view->EvaluateScript(
       std::string(),
-      "({x: document.documentElement.scrollLeft || document.body.scrollLeft,"
-      "  y: document.documentElement.scrollTop || document.body.scrollTop,"
+      "({x: window.pageXOffset,"
+      "  y: window.pageYOffset,"
       "  height: document.documentElement.clientHeight,"
       "  width: document.documentElement.clientWidth,"
       "  device_pixel_ratio: window.devicePixelRatio})",
