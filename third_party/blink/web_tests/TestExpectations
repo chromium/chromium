@@ -5831,7 +5831,6 @@ crbug.com/1044545 [ Release ] http/tests/devtools/service-workers/service-worker
 crbug.com/1044561 [ Release ] http/tests/devtools/elements/styles/show-all-properties.js [ Pass Timeout ]
 crbug.com/1044562 [ Release Win ] http/tests/devtools/modify-cross-domain-rule.js [ Pass Timeout ]
 crbug.com/1044562 [ Release Mac ] http/tests/devtools/modify-cross-domain-rule.js [ Pass Timeout ]
-crbug.com/1044563 [ Release ] http/tests/devtools/background-services/background-services-panel.js [ Pass Timeout ]
 crbug.com/1044805 [ Release ] http/tests/devtools/elements/styles-2/inject-stylesheet.js [ Pass Timeout ]
 crbug.com/1044822 [ Release ] http/tests/devtools/cache-storage/cache-entry-deletion.js [ Pass Timeout ]
 #crbug.com/1044823 [ Release ] http/tests/devtools/extensions/extensions-timeline-api.js [ Pass Timeout ]
@@ -6303,6 +6302,10 @@ crbug.com/1107944 [ Mac ] http/tests/devtools/tracing/timeline-paint/timeline-pa
 
 # Temporarily disable tests to allow a fix in devtools frontend
 crbug.com/1011811 http/tests/devtools/modules-load-initial.js [ Pass Failure ]
+
+# Temporarily disable tests to allow updating devtools frontend
+crbug.com/1138492 http/tests/devtools/background-services/background-services-panel.js [ Pass Failure Timeout ]
+crbug.com/1138492 http/tests/devtools/background-services/background-service-grid.js [ Pass Failure Timeout ]
 
 crbug.com/1092794 fast/canvas/OffscreenCanvas-2d-placeholder-willReadFrequently.html [ Pass Failure ]
 
