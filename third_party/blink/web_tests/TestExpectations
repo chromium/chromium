@@ -6458,3 +6458,5 @@ crbug.com/1137716 [ Mac10.12 ] fast/events/mouse-cursor-image-set.html [ Pass Fa
 crbug.com/1138589 [ Mac10.15 ] fast/events/mouse-cursor-image-set-svg.html [ Failure ]
 crbug.com/1138591 [ Mac10.15 ] http/tests/dom/raf-throttling-out-of-view-cross-origin-page.html [ Failure ]
 
+# WebRTC: Payload demuxing times out in Plan B. This is expected.
+crbug.com/1139052 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/protocol/unbundled-pt-demuxing.https.html [ Timeout ]
