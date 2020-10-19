@@ -164,8 +164,7 @@ void UserInputMonitorWinCore::StopMonitor() {
 
   // Stop receiving raw input.
   std::unique_ptr<RAWINPUTDEVICE> device(
-      GetRawInputDevices(window_->hwnd(), RIDEV_REMOVE));
-
+      GetRawInputDevices(nullptr, RIDEV_REMOVE));
   if (!RegisterRawInputDevices(device.get(), 1, sizeof(*device))) {
     PLOG(INFO) << "RegisterRawInputDevices() failed for RIDEV_REMOVE";
   }
