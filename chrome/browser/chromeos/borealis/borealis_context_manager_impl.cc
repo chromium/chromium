@@ -54,6 +54,7 @@ BorealisContextManagerImpl::GetTasks() {
   task_queue.push(std::make_unique<MountDlc>());
   task_queue.push(std::make_unique<CreateDiskImage>());
   task_queue.push(std::make_unique<StartBorealisVm>());
+  task_queue.push(std::make_unique<AwaitBorealisStartup>());
   return task_queue;
 }
 

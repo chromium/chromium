@@ -79,6 +79,13 @@ class StartBorealisVm : public BorealisTask {
   base::WeakPtrFactory<StartBorealisVm> weak_factory_{this};
 };
 
+// Waits for the startup daemon to signal completion.
+class AwaitBorealisStartup : public BorealisTask {
+ public:
+  void Run(BorealisContext* context,
+           CompletionStatusCallback callback) override;
+};
+
 }  // namespace borealis
 
 #endif  // CHROME_BROWSER_CHROMEOS_BOREALIS_BOREALIS_TASK_H_

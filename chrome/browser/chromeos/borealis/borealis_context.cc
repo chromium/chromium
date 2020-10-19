@@ -6,6 +6,7 @@
 
 namespace borealis {
 
+BorealisContext::~BorealisContext() = default;
 BorealisContext::BorealisContext() = default;
 BorealisContext::BorealisContext(Profile* profile) : profile_(profile) {}
 

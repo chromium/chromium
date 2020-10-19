@@ -147,4 +147,12 @@ void StartBorealisVm::OnStartBorealisVm(
           base::NumberToString(response->status()) + ")");
 }
 
+void AwaitBorealisStartup::Run(BorealisContext* context,
+                               CompletionStatusCallback callback) {
+  // TODO(b/170696557): Refactor to use the LaunchWatcher which is not finished
+  // yet. In our case the name is hard-coded, so we can use that.
+  context->set_container_name("penguin");
+  std::move(callback).Run(BorealisContextManager::kSuccess, "");
+}
+
 }  // namespace borealis

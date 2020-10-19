@@ -19,7 +19,7 @@ class BorealisContext {
  public:
   BorealisContext(const BorealisContext&) = delete;
   BorealisContext& operator=(const BorealisContext&) = delete;
-  ~BorealisContext() = default;
+  ~BorealisContext();
 
   static BorealisContext* CreateBorealisContextForTesting() {
     return new BorealisContext();
@@ -33,6 +33,11 @@ class BorealisContext {
 
   const std::string& vm_name() const { return vm_name_; }
   void set_vm_name(std::string vm_name) { vm_name_ = std::move(vm_name); }
+
+  const std::string& container_name() const { return container_name_; }
+  void set_container_name(std::string container_name) {
+    container_name_ = std::move(container_name);
+  }
 
   const std::string& root_path() const { return root_path_; }
   void set_root_path(std::string path) { root_path_ = std::move(path); }
@@ -49,6 +54,7 @@ class BorealisContext {
   Profile* profile_ = nullptr;
   bool borealis_running_ = false;
   std::string vm_name_;
+  std::string container_name_;
   std::string root_path_;
   base::FilePath disk_path_;
 };
