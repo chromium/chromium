@@ -26,10 +26,6 @@
 #include "third_party/skia/include/core/SkSurfaceCharacterization.h"
 #include "third_party/skia/include/core/SkYUVAIndex.h"
 
-namespace base {
-class WaitableEvent;
-}
-
 namespace viz {
 
 class ImageContextImpl;
@@ -164,7 +160,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
  private:
   bool Initialize();
   void InitializeOnGpuThread(GpuVSyncCallback vsync_callback_runner,
-                             base::WaitableEvent* event,
                              bool* result);
   SkSurfaceCharacterization CreateSkSurfaceCharacterization(
       const gfx::Size& surface_size,
@@ -179,8 +174,12 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   // Provided as a callback for the GPU thread.
   void OnGpuVSync(base::TimeTicks timebase, base::TimeDelta interval);
 
-  void ScheduleGpuTask(base::OnceClosure callback,
-                       std::vector<gpu::SyncToken> sync_tokens);
+  using GpuTask = base::OnceClosure;
+  void EnqueueGpuTask(GpuTask task,
+                      std::vector<gpu::SyncToken> sync_tokens,
+                      bool make_current,
+                      bool need_framebuffer);
+  void FlushGpuTasks(bool wait_for_finish);
   GrBackendFormat GetGrBackendFormatForTexture(
       ResourceFormat resource_format,
       uint32_t gl_texture_target,
@@ -292,9 +291,14 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
 
   bool should_measure_next_post_task_ = false;
 
-  // We defer the draw to the framebuffer until SwapBuffers or CopyOutput
-  // to avoid the expense of posting a task and calling MakeCurrent.
-  base::OnceCallback<bool()> deferred_framebuffer_draw_closure_;
+  // GPU tasks pending for flush.
+  std::vector<GpuTask> gpu_tasks_;
+  // GPU sync tokens which are depended by |gpu_tasks_|.
+  std::vector<gpu::SyncToken> gpu_task_sync_tokens_;
+  // True if _any_ of |gpu_tasks_| need a GL context.
+  bool make_current_ = false;
+  // True if _any_ of |gpu_tasks_| need to access the framebuffer.
+  bool need_framebuffer_ = false;
 
   bool use_damage_area_from_skia_output_device_ = false;
   // Damage area of the current buffer. Differ to the last submit buffer.

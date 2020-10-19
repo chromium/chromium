@@ -443,7 +443,7 @@ SkiaOutputSurfaceImplOnGpu::~SkiaOutputSurfaceImplOnGpu() {
 
     // |context_provider_| and clients want either the context to be lost or
     // made current on destruction.
-    if (MakeCurrent(false /* need_fbo0 */)) {
+    if (MakeCurrent(/*need_framebuffer=*/false)) {
       // This ensures any outstanding callbacks for promise images are
       // performed.
       gr_context()->flushAndSubmit();
@@ -464,7 +464,7 @@ void SkiaOutputSurfaceImplOnGpu::Reshape(const gfx::Size& size,
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(gr_context());
 
-  if (!MakeCurrent(!dependency_->IsOffscreen() /* need_fbo0 */))
+  if (context_is_lost_)
     return;
 
   size_ = size;
@@ -472,11 +472,10 @@ void SkiaOutputSurfaceImplOnGpu::Reshape(const gfx::Size& size,
   if (!output_device_->Reshape(size_, device_scale_factor, color_space, format,
                                transform)) {
     MarkContextLost(CONTEXT_LOST_RESHAPE_FAILED);
-    return;
   }
 }
 
-bool SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
+void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
     sk_sp<SkDeferredDisplayList> ddl,
     sk_sp<SkDeferredDisplayList> overdraw_ddl,
     std::vector<ImageContextImpl*> image_contexts,
@@ -488,20 +487,19 @@ bool SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!scoped_output_device_paint_);
 
-  bool need_fbo0 = gl_surface_ && !gl_surface_->IsSurfaceless();
-  if (!MakeCurrent(need_fbo0))
-    return false;
+  if (context_is_lost_)
+    return;
 
   if (!ddl) {
     MarkContextLost(CONTEXT_LOST_UNKNOWN);
-    return false;
+    return;
   }
 
   if (draw_rectangle) {
     if (!output_device_->SetDrawRectangle(*draw_rectangle)) {
       MarkContextLost(
           ContextLostReason::CONTEXT_LOST_SET_DRAW_RECTANGLE_FAILED);
-      return false;
+      return;
     }
   }
 
@@ -576,11 +574,10 @@ bool SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
         !(begin_semaphores.empty() && end_semaphores.empty())) {
       // TODO(penghuang): handle vulkan device lost.
       DLOG(ERROR) << "output_sk_surface()->flush() failed.";
-      return false;
+      return;
     }
   }
   ReleaseFenceSyncAndPushTextureUpdates(sync_fence_release);
-  return true;
 }
 
 void SkiaOutputSurfaceImplOnGpu::ScheduleOutputSurfaceAsOverlay(
@@ -592,8 +589,7 @@ void SkiaOutputSurfaceImplOnGpu::ScheduleOutputSurfaceAsOverlay(
 
 void SkiaOutputSurfaceImplOnGpu::SwapBuffers(
     base::TimeTicks post_task_timestamp,
-    OutputSurfaceFrame frame,
-    base::OnceCallback<bool()> deferred_framebuffer_draw_closure) {
+    OutputSurfaceFrame frame) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::SwapBuffers");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -601,13 +597,12 @@ void SkiaOutputSurfaceImplOnGpu::SwapBuffers(
     output_device_->SetDrawTimings(post_task_timestamp, base::TimeTicks::Now());
   }
 
-  SwapBuffersInternal(std::move(deferred_framebuffer_draw_closure), &frame);
+  SwapBuffersInternal(&frame);
 }
 
-void SkiaOutputSurfaceImplOnGpu::SwapBuffersSkipped(
-    base::OnceCallback<bool()> deferred_framebuffer_draw_closure) {
+void SkiaOutputSurfaceImplOnGpu::SwapBuffersSkipped() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  SwapBuffersInternal(std::move(deferred_framebuffer_draw_closure));
+  SwapBuffersInternal();
 }
 
 void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
@@ -625,7 +620,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     output_device_->SetDrawTimings(post_task_timestamp, base::TimeTicks::Now());
   }
 
-  if (!MakeCurrent(false /* need_fbo0 */))
+  if (context_is_lost_)
     return;
 
   if (!ddl) {
@@ -707,38 +702,31 @@ static void PostTaskFromMainToImplThread(
       FROM_HERE, base::BindOnce(std::move(callback), sync_token, is_lost));
 }
 
-bool SkiaOutputSurfaceImplOnGpu::CopyOutput(
+void SkiaOutputSurfaceImplOnGpu::CopyOutput(
     AggregatedRenderPassId id,
     copy_output::RenderPassGeometry geometry,
     const gfx::ColorSpace& color_space,
-    std::unique_ptr<CopyOutputRequest> request,
-    base::OnceCallback<bool()> deferred_framebuffer_draw_closure) {
+    std::unique_ptr<CopyOutputRequest> request) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::CopyOutput");
   // TODO(crbug.com/898595): Do this on the GPU instead of CPU with Vulkan.
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (deferred_framebuffer_draw_closure) {
-    // returns false if context not set to current, i.e lost
-    if (!std::move(deferred_framebuffer_draw_closure).Run())
-      return false;
-    DCHECK(context_state_->IsCurrent(nullptr /* surface */));
-  } else {
-    if (!MakeCurrent(true /* need_fbo0 */))
-      return false;
-  }
+  if (context_is_lost_)
+    return;
 
-  bool from_fbo0 = !id;
-  DCHECK(scoped_output_device_paint_ || !from_fbo0);
+  bool from_framebuffer = !id;
+  DCHECK(scoped_output_device_paint_ || !from_framebuffer);
 
-  DCHECK(from_fbo0 ||
+  DCHECK(from_framebuffer ||
          offscreen_surfaces_.find(id) != offscreen_surfaces_.end());
-  auto* surface =
-      from_fbo0 ? output_sk_surface() : offscreen_surfaces_[id].surface();
+  auto* surface = from_framebuffer ? output_sk_surface()
+                                   : offscreen_surfaces_[id].surface();
 
   // If a platform doesn't support RGBX_8888 format, we will use RGBA_8888
   // instead. In this case, we need discard alpha channel (modify the alpha
   // value to 0xff, but keep other channel not changed).
-  bool need_discard_alpha = from_fbo0 && (output_device_->is_emulated_rgbx());
+  bool need_discard_alpha =
+      from_framebuffer && (output_device_->is_emulated_rgbx());
   if (need_discard_alpha) {
     base::Optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
     if (dependency_->GetGrShaderCache()) {
@@ -845,7 +833,7 @@ bool SkiaOutputSurfaceImplOnGpu::CopyOutput(
         gpu::kNullSurfaceHandle, kUsage);
     if (!result) {
       DLOG(ERROR) << "Failed to create shared image.";
-      return false;
+      return;
     }
 
     auto representation = dependency_->GetSharedImageManager()->ProduceSkia(
@@ -888,7 +876,7 @@ bool SkiaOutputSurfaceImplOnGpu::CopyOutput(
         !(begin_semaphores.empty() && end_semaphores.empty())) {
       // TODO(penghuang): handle vulkan device lost.
       DLOG(ERROR) << "dest_surface->flush() failed.";
-      return false;
+      return;
     }
     auto release_callback = base::BindOnce(
         &SkiaOutputSurfaceImplOnGpu::DestroySharedImageOnImplThread,
@@ -904,7 +892,6 @@ bool SkiaOutputSurfaceImplOnGpu::CopyOutput(
     NOTREACHED();
   }
   ScheduleCheckReadbackCompletion();
-  return true;
 }
 
 void SkiaOutputSurfaceImplOnGpu::DestroySharedImageOnImplThread(
@@ -978,7 +965,7 @@ void SkiaOutputSurfaceImplOnGpu::ReleaseImageContexts(
   DCHECK(!image_contexts.empty());
   // The window could be destroyed already, and the MakeCurrent will fail with
   // an destroyed window, so MakeCurrent without requiring the fbo0.
-  if (!MakeCurrent(false /* need_fbo0 */)) {
+  if (context_is_lost_) {
     for (const auto& context : image_contexts)
       context->OnContextLost();
   }
@@ -991,20 +978,7 @@ void SkiaOutputSurfaceImplOnGpu::ScheduleOverlays(
     SkiaOutputSurface::OverlayList overlays,
     std::vector<ImageContextImpl*> image_contexts) {
 #if defined(OS_APPLE)
-  DCHECK(context_state_->GrContextIsGL());
-
-  // If |image_contexts| is not empty, it means there is at least one render
-  // pass overlays
-  bool has_render_pass_overlays =
-      !image_contexts.empty() ||
-      std::find_if(overlays.begin(), overlays.end(),
-                   [](const CALayerOverlay& overlay) {
-                     return !!overlay.ddl;
-                   }) != overlays.end();
-
-  // If there are render pass overlays, then a gl context is needed for drawing
-  // the overlay render passes to a backing for being scanned out.
-  if (has_render_pass_overlays && !MakeCurrent(false /* need_fbo0 */))
+  if (context_is_lost_)
     return;
 
   std::vector<GrBackendSemaphore> begin_semaphores;
@@ -1056,7 +1030,7 @@ void SkiaOutputSurfaceImplOnGpu::ScheduleOverlays(
 }
 
 void SkiaOutputSurfaceImplOnGpu::SetEnableDCLayers(bool enable) {
-  if (!MakeCurrent(false /* need_fbo0 */))
+  if (context_is_lost_)
     return;
   output_device_->SetEnableDCLayers(enable);
 }
@@ -1072,7 +1046,6 @@ void SkiaOutputSurfaceImplOnGpu::SetFrameRate(float frame_rate) {
 
 void SkiaOutputSurfaceImplOnGpu::SetCapabilitiesForTesting(
     const OutputSurface::Capabilities& capabilities) {
-  MakeCurrent(false /* need_fbo0 */);
   // Check that we're using an offscreen surface.
   DCHECK(dependency_->IsOffscreen());
   output_device_ = std::make_unique<SkiaOutputDeviceOffscreen>(
@@ -1145,7 +1118,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
     if (!gl_surface_)
       return false;
 
-    if (MakeCurrent(true /* need_fbo0 */)) {
+    if (MakeCurrent(/*need_framebuffer=*/true)) {
       if (gl_surface_->IsSurfaceless()) {
 #if !defined(OS_WIN)
         output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
@@ -1289,9 +1262,15 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
   return true;
 }
 
-bool SkiaOutputSurfaceImplOnGpu::MakeCurrent(bool need_fbo0) {
+bool SkiaOutputSurfaceImplOnGpu::MakeCurrent(bool need_framebuffer) {
+  // If GL is not being used or GLSurface is not surfaceless, we can ignore
+  // making current the GLSurface for better performance.
+  bool need_fbo0 = need_framebuffer && context_state_->GrContextIsGL() &&
+                   gl_surface_ && !gl_surface_->IsSurfaceless();
+
   // need_fbo0 implies need_gl too.
   bool need_gl = need_fbo0;
+
   // Only make current with |gl_surface_|, if following operations will use
   // fbo0.
   auto* gl_surface = need_fbo0 ? gl_surface_.get() : nullptr;
@@ -1304,6 +1283,13 @@ bool SkiaOutputSurfaceImplOnGpu::MakeCurrent(bool need_fbo0) {
         gpu::error::kLostContext, *context_state_->context_lost_reason()));
     return false;
   }
+
+  // Some GLSurface implements OnMakeCurrent() to tracing current GLContext,
+  // even if framebuffer is not needed, we still call OnMakeCurrent() so
+  // GLSurface implementation will know the current GLContext.
+  if (gl_surface_ && !need_fbo0)
+    gl_surface_->OnMakeCurrent(context_state_->context());
+
   context_state_->set_need_context_state_reset(true);
   return true;
 }
@@ -1342,20 +1328,12 @@ void SkiaOutputSurfaceImplOnGpu::ReleaseFenceSyncAndPushTextureUpdates(
 }
 
 void SkiaOutputSurfaceImplOnGpu::SwapBuffersInternal(
-    base::OnceCallback<bool()> deferred_framebuffer_draw_closure,
     OutputSurfaceFrame* frame) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(output_device_);
 
-  if (deferred_framebuffer_draw_closure) {
-    // Returns false if context not set to current, i.e lost
-    if (!std::move(deferred_framebuffer_draw_closure).Run())
-      return;
-    DCHECK(context_state_->IsCurrent(nullptr /* surface */));
-  } else {
-    if (!MakeCurrent(!dependency_->IsOffscreen() /* need_fbo0 */))
-      return;
-  }
+  if (context_is_lost_)
+    return;
 
   ResetStateOfImages();
   output_device_->PreGrContextSubmit();
@@ -1519,7 +1497,7 @@ void SkiaOutputSurfaceImplOnGpu::CheckReadbackCompletion() {
 
   // If there are no pending readback requests or we can't make the context
   // current then exit. There is no thing to do here.
-  if (num_readbacks_pending_ == 0 || !MakeCurrent(/*need_fbo0=*/false))
+  if (num_readbacks_pending_ == 0 || !MakeCurrent(/*need_framebuffer=*/false))
     return;
 
   gr_context()->checkAsyncWorkCompletion();

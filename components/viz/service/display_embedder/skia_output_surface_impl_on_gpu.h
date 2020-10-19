@@ -119,7 +119,7 @@ class SkiaOutputSurfaceImplOnGpu
                gfx::BufferFormat format,
                bool use_stencil,
                gfx::OverlayTransform transform);
-  bool FinishPaintCurrentFrame(sk_sp<SkDeferredDisplayList> ddl,
+  void FinishPaintCurrentFrame(sk_sp<SkDeferredDisplayList> ddl,
                                sk_sp<SkDeferredDisplayList> overdraw_ddl,
                                std::vector<ImageContextImpl*> image_contexts,
                                std::vector<gpu::SyncToken> sync_tokens,
@@ -129,14 +129,11 @@ class SkiaOutputSurfaceImplOnGpu
   void ScheduleOutputSurfaceAsOverlay(
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane&
           output_surface_plane);
-  void SwapBuffers(
-      base::TimeTicks post_task_timestamp,
-      OutputSurfaceFrame frame,
-      base::OnceCallback<bool()> deferred_framebuffer_draw_closure);
+  void SwapBuffers(base::TimeTicks post_task_timestamp,
+                   OutputSurfaceFrame frame);
   // Runs |deferred_framebuffer_draw_closure| when SwapBuffers() or CopyOutput()
   // will not.
-  void SwapBuffersSkipped(
-      base::OnceCallback<bool()> deferred_framebuffer_draw_closure);
+  void SwapBuffersSkipped();
   void EnsureBackbuffer() { output_device_->EnsureBackbuffer(); }
   void DiscardBackbuffer() { output_device_->DiscardBackbuffer(); }
   void FinishPaintRenderPass(base::TimeTicks post_task_timestamp,
@@ -150,11 +147,10 @@ class SkiaOutputSurfaceImplOnGpu
   void RemoveRenderPassResource(
       std::vector<AggregatedRenderPassId> ids,
       std::vector<std::unique_ptr<ImageContextImpl>> image_contexts);
-  bool CopyOutput(AggregatedRenderPassId id,
+  void CopyOutput(AggregatedRenderPassId id,
                   copy_output::RenderPassGeometry geometry,
                   const gfx::ColorSpace& color_space,
-                  std::unique_ptr<CopyOutputRequest> request,
-                  base::OnceCallback<bool()> deferred_framebuffer_draw_closure);
+                  std::unique_ptr<CopyOutputRequest> request);
 
   void BeginAccessImages(const std::vector<ImageContextImpl*>& image_contexts,
                          std::vector<GrBackendSemaphore>* begin_semaphores,
@@ -209,6 +205,10 @@ class SkiaOutputSurfaceImplOnGpu
 
   gpu::MemoryTracker* GetMemoryTracker() { return memory_tracker_; }
 
+  // Make context current for GL, and return false if the context is lost.
+  // It will do nothing when Vulkan is used.
+  bool MakeCurrent(bool need_framebuffer);
+
  private:
   class OffscreenSurface;
   class DisplayContext;
@@ -224,9 +224,6 @@ class SkiaOutputSurfaceImplOnGpu
 
   DidSwapBufferCompleteCallback GetDidSwapBuffersCompleteCallback();
 
-  // Make context current for GL, and return false if the context is lost.
-  // It will do nothing when Vulkan is used.
-  bool MakeCurrent(bool need_fbo0);
   void MarkContextLost(ContextLostReason reason);
 
   void DestroySharedImageOnImplThread(
@@ -239,9 +236,7 @@ class SkiaOutputSurfaceImplOnGpu
 
   void ReleaseFenceSyncAndPushTextureUpdates(uint64_t sync_fence_release);
 
-  void SwapBuffersInternal(
-      base::OnceCallback<bool()> deferred_framebuffer_draw_closure,
-      OutputSurfaceFrame* frame = nullptr);
+  void SwapBuffersInternal(OutputSurfaceFrame* frame = nullptr);
 
   GrDirectContext* gr_context() { return context_state_->gr_context(); }
 
