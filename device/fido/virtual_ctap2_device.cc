@@ -58,7 +58,6 @@ constexpr std::array<uint8_t, kAaguidLength> kDeviceAaguid = {
     {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04,
      0x05, 0x06, 0x07, 0x08}};
 
-
 struct PinUvAuthTokenPermissions {
   uint8_t permissions;
   base::Optional<std::string> rp_id;
@@ -1779,7 +1778,9 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
         return base::nullopt;
       }
       if (!config_.user_verification_succeeds) {
-        return CtapDeviceResponseCode::kCtap2ErrUvInvalid;
+        return mutable_state()->uv_retries > 0
+                   ? CtapDeviceResponseCode::kCtap2ErrUvInvalid
+                   : CtapDeviceResponseCode::kCtap2ErrUvBlocked;
       }
 
       mutable_state()->pin_retries = kMaxPinRetries;

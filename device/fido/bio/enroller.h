@@ -46,6 +46,7 @@ class BioEnroller {
   void Cancel();
 
   pin::TokenResponse token() { return token_; }
+  FidoAuthenticator* authenticator() { return authenticator_; }
 
  private:
   enum State {

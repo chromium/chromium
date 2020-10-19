@@ -28,6 +28,11 @@
 
 namespace device {
 
+using ClientPinAvailability =
+    AuthenticatorSupportedOptions::ClientPinAvailability;
+using UserVerificationAvailability =
+    AuthenticatorSupportedOptions::UserVerificationAvailability;
+
 namespace {
 
 // Helper method for determining correct bio enrollment version.
@@ -106,8 +111,7 @@ void FidoDeviceAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
   // request can be translated to U2F.
   if (!request.pin_auth &&
       options_->user_verification_availability ==
-          AuthenticatorSupportedOptions::UserVerificationAvailability::
-              kSupportedAndConfigured &&
+          UserVerificationAvailability::kSupportedAndConfigured &&
       !request.is_u2f_only) {
     request.user_verification = UserVerificationRequirement::kRequired;
   } else {
@@ -151,8 +155,7 @@ void FidoDeviceAuthenticator::DoGetAssertion(CtapGetAssertionRequest request,
                                              GetAssertionCallback callback) {
   if (!request.pin_auth &&
       options_->user_verification_availability ==
-          AuthenticatorSupportedOptions::UserVerificationAvailability::
-              kSupportedAndConfigured &&
+          UserVerificationAvailability::kSupportedAndConfigured &&
       request.user_verification != UserVerificationRequirement::kDiscouraged) {
     request.user_verification = UserVerificationRequirement::kRequired;
   } else {
@@ -197,7 +200,7 @@ void FidoDeviceAuthenticator::GetTouch(base::OnceCallback<void()> callback) {
 void FidoDeviceAuthenticator::GetPinRetries(GetRetriesCallback callback) {
   DCHECK(Options());
   DCHECK(Options()->client_pin_availability !=
-         AuthenticatorSupportedOptions::ClientPinAvailability::kNotSupported);
+         ClientPinAvailability::kNotSupported);
   DCHECK(chosen_pin_uv_auth_protocol_);
 
   RunOperation<pin::PinRetriesRequest, pin::RetriesResponse>(
@@ -209,10 +212,10 @@ void FidoDeviceAuthenticator::GetPinRetries(GetRetriesCallback callback) {
 void FidoDeviceAuthenticator::GetEphemeralKey(
     GetEphemeralKeyCallback callback) {
   DCHECK(Options());
-  DCHECK(
-      Options()->client_pin_availability !=
-          AuthenticatorSupportedOptions::ClientPinAvailability::kNotSupported ||
-      Options()->supports_pin_uv_auth_token || SupportsHMACSecretExtension());
+  DCHECK(Options()->client_pin_availability !=
+             ClientPinAvailability::kNotSupported ||
+         Options()->supports_pin_uv_auth_token ||
+         SupportsHMACSecretExtension());
   DCHECK(chosen_pin_uv_auth_protocol_);
 
   RunOperation<pin::KeyAgreementRequest, pin::KeyAgreementResponse>(
@@ -227,7 +230,7 @@ void FidoDeviceAuthenticator::GetPINToken(
     GetTokenCallback callback) {
   DCHECK(Options());
   DCHECK(Options()->client_pin_availability !=
-         AuthenticatorSupportedOptions::ClientPinAvailability::kNotSupported);
+         ClientPinAvailability::kNotSupported);
   DCHECK_NE(permissions.size(), 0u);
   DCHECK(!((base::Contains(permissions, pin::Permissions::kMakeCredential)) ||
            base::Contains(permissions, pin::Permissions::kGetAssertion)) ||
@@ -274,7 +277,7 @@ void FidoDeviceAuthenticator::SetPIN(const std::string& pin,
                                      SetPINCallback callback) {
   DCHECK(Options());
   DCHECK(Options()->client_pin_availability !=
-         AuthenticatorSupportedOptions::ClientPinAvailability::kNotSupported);
+         ClientPinAvailability::kNotSupported);
 
   GetEphemeralKey(base::BindOnce(
       &FidoDeviceAuthenticator::OnHaveEphemeralKeyForSetPIN,
@@ -301,7 +304,7 @@ void FidoDeviceAuthenticator::ChangePIN(const std::string& old_pin,
                                         SetPINCallback callback) {
   DCHECK(Options());
   DCHECK(Options()->client_pin_availability !=
-         AuthenticatorSupportedOptions::ClientPinAvailability::kNotSupported);
+         ClientPinAvailability::kNotSupported);
 
   GetEphemeralKey(
       base::BindOnce(&FidoDeviceAuthenticator::OnHaveEphemeralKeyForChangePIN,
@@ -325,25 +328,22 @@ void FidoDeviceAuthenticator::OnHaveEphemeralKeyForChangePIN(
       std::move(callback), base::BindOnce(&pin::EmptyResponse::Parse));
 }
 
-FidoAuthenticator::MakeCredentialPINDisposition
-FidoDeviceAuthenticator::WillNeedPINToMakeCredential(
+FidoAuthenticator::MakeCredentialPINUVDisposition
+FidoDeviceAuthenticator::PINUVDispositionForMakeCredential(
     const CtapMakeCredentialRequest& request,
     const FidoRequestHandlerBase::Observer* observer) {
-  using ClientPinAvailability =
-      AuthenticatorSupportedOptions::ClientPinAvailability;
-
-  const auto device_support = Options()->client_pin_availability;
   const bool can_collect_pin = observer && observer->SupportsPIN();
+  const bool pin_supported = Options()->client_pin_availability !=
+                             ClientPinAvailability::kNotSupported;
+  const bool pin_configured = Options()->client_pin_availability ==
+                              ClientPinAvailability::kSupportedAndPinSet;
 
-  // Authenticators with built-in UV can use that.
-  if (Options()->user_verification_availability ==
-      AuthenticatorSupportedOptions::UserVerificationAvailability::
-          kSupportedAndConfigured) {
-    return device_support == ClientPinAvailability::kSupportedAndPinSet &&
-                   can_collect_pin
-               ? MakeCredentialPINDisposition::kUsePINForFallback
-               : MakeCredentialPINDisposition::kNoPIN;
-  }
+  const bool uv_configured =
+      Options()->user_verification_availability ==
+      UserVerificationAvailability::kSupportedAndConfigured;
+
+  const bool can_get_token =
+      (can_collect_pin && pin_supported) || CanGetUvToken();
 
   // CTAP 2.0 requires a PIN for credential creation once a PIN has been set.
   // Thus, if fallback to U2F isn't possible, a PIN will be needed if set.
@@ -352,48 +352,29 @@ FidoDeviceAuthenticator::WillNeedPINToMakeCredential(
       device()->device_info()->versions.contains(ProtocolVersion::kU2f) &&
       IsConvertibleToU2fRegisterCommand(request) &&
       !ShouldPreferCTAP2EvenIfItNeedsAPIN(request);
-  if (device_support == ClientPinAvailability::kSupportedAndPinSet &&
-      !u2f_fallback_possible) {
-    if (can_collect_pin) {
-      return MakeCredentialPINDisposition::kUsePIN;
-    } else {
-      return MakeCredentialPINDisposition::kUnsatisfiable;
-    }
+  const bool uv_required =
+      request.user_verification == UserVerificationRequirement::kRequired ||
+      (pin_configured && !u2f_fallback_possible);
+  const bool uv_preferred =
+      request.user_verification == UserVerificationRequirement::kPreferred;
+
+  if (!uv_required && !(uv_preferred && (pin_configured || uv_configured))) {
+    return MakeCredentialPINUVDisposition::kNoUV;
   }
 
-  // If a PIN cannot be collected, and UV is required, then this request cannot
-  // be met.
-  if (request.user_verification == UserVerificationRequirement::kRequired &&
-      (!can_collect_pin ||
-       device_support == ClientPinAvailability::kNotSupported)) {
-    return MakeCredentialPINDisposition::kUnsatisfiable;
+  // Authenticators with built-in UV that don't support UV token should try
+  // sending the request as-is with uv=true first.
+  if (uv_configured && !CanGetUvToken()) {
+    return (can_collect_pin && pin_supported)
+               ? MakeCredentialPINUVDisposition::kNoTokenInternalUVPINFallback
+               : MakeCredentialPINUVDisposition::kNoTokenInternalUV;
   }
 
-  // If UV is required and a PIN can be set, set it during the MakeCredential
-  // process.
-  if (device_support == ClientPinAvailability::kSupportedButPinNotSet &&
-      request.user_verification == UserVerificationRequirement::kRequired) {
-    return MakeCredentialPINDisposition::kSetPIN;
+  if (can_get_token) {
+    return MakeCredentialPINUVDisposition::kGetToken;
   }
 
-  // If discouraged, then either a PIN isn't set (thus we don't use one), or
-  // else the device supports U2F (because the alternative was handled above)
-  // and we'll use a U2F fallback to create a credential without a PIN.
-  DCHECK(device_support != ClientPinAvailability::kSupportedAndPinSet ||
-         u2f_fallback_possible);
-  // TODO(agl): perhaps CTAP2 is indicated when, for example, hmac-secret is
-  // requested?
-  if (request.user_verification == UserVerificationRequirement::kDiscouraged) {
-    return MakeCredentialPINDisposition::kNoPIN;
-  }
-
-  // Otherwise, a PIN will be used only if set.
-  if (device_support == ClientPinAvailability::kSupportedAndPinSet &&
-      can_collect_pin) {
-    return MakeCredentialPINDisposition::kUsePIN;
-  }
-
-  return MakeCredentialPINDisposition::kNoPIN;
+  return MakeCredentialPINUVDisposition::kUnsatisfiable;
 }
 
 FidoAuthenticator::GetAssertionPINDisposition
@@ -409,8 +390,7 @@ FidoDeviceAuthenticator::WillNeedPINToGetAssertion(
 
   // Authenticators with built-in UV can use that.
   if (Options()->user_verification_availability ==
-      AuthenticatorSupportedOptions::UserVerificationAvailability::
-          kSupportedAndConfigured) {
+      UserVerificationAvailability::kSupportedAndConfigured) {
     return can_use_pin ? GetAssertionPINDisposition::kUsePINForFallback
                        : GetAssertionPINDisposition::kNoPIN;
   }
@@ -1022,8 +1002,7 @@ void FidoDeviceAuthenticator::SetTaskForTesting(
 void FidoDeviceAuthenticator::GetUvRetries(GetRetriesCallback callback) {
   DCHECK(Options());
   DCHECK(Options()->user_verification_availability !=
-         AuthenticatorSupportedOptions::UserVerificationAvailability::
-             kNotSupported);
+         UserVerificationAvailability::kNotSupported);
   DCHECK(chosen_pin_uv_auth_protocol_);
 
   RunOperation<pin::UvRetriesRequest, pin::RetriesResponse>(

@@ -177,8 +177,8 @@ void AuthTokenRequester::OnGetUVToken(
   }
 
   if (status == CtapDeviceResponseCode::kCtap2ErrUvInvalid) {
-    authenticator_->GetUvRetries(base::BindOnce(
-        &AuthTokenRequester::OnGetUVRetries, weak_factory_.GetWeakPtr()));
+    // The attempt failed, but a retry is possible.
+    ObtainTokenFromInternalUV();
     return;
   }
 
@@ -199,10 +199,7 @@ void AuthTokenRequester::OnGetUVToken(
     return;
   }
 
-  if (status != CtapDeviceResponseCode::kSuccess) {
-    NOTREACHED();
-    return;
-  }
+  DCHECK_EQ(status, CtapDeviceResponseCode::kSuccess);
 
   delegate_->HavePINUVAuthTokenResultForAuthenticator(
       authenticator_, Result::kSuccess, *response);

@@ -137,28 +137,29 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
                          const std::string& new_pin,
                          SetPINCallback callback);
 
-  // MakeCredentialPINDisposition enumerates the possible interactions between
-  // a user-verification level, the PIN configuration of an authenticator, and
-  // whether the embedder is capable of collecting PINs from the user.
-  enum class MakeCredentialPINDisposition {
-    // kNoPIN means that a PIN will not be needed to make this credential.
-    kNoPIN,
-    // kUsePIN means that a PIN must be gathered and used to make this
+  // MakeCredentialPINUVDisposition enumerates the possible options for
+  // obtaining user verification when making a credential.
+  enum class MakeCredentialPINUVDisposition {
+    // No UV (neither clientPIN nor internal) is needed to make this
     // credential.
-    kUsePIN,
-    // kUsePINForFallback means that a PIN may be used for fallback if internal
-    // user verification fails.
-    kUsePINForFallback,
-    // kSetPIN means that the operation should set and then use a PIN to
-    // make this credential.
-    kSetPIN,
-    // kUnsatisfiable means that the request cannot be satisfied by this
-    // authenticator.
+    kNoUV,
+    // A PIN/UV Auth Token should be used to make this credential. The token
+    // needs to be obtained via clientPIN or internal UV, depending on which
+    // modality the device supports. The modality may need to be set up first.
+    kGetToken,
+    // The request should be sent with the `uv` bit set to true, in order to
+    // perform internal user verification without a PIN/UV Auth Token.
+    kNoTokenInternalUV,
+    // Same as kNoTokenInternalUV, but a PIN can be used as a fallback. (A PIN
+    // may have to be set first.)
+    kNoTokenInternalUVPINFallback,
+    // The request cannot be satisfied by this authenticator.
     kUnsatisfiable,
   };
-  // WillNeedPINToMakeCredential returns what type of PIN intervention will be
-  // needed to serve the given request on this authenticator.
-  virtual MakeCredentialPINDisposition WillNeedPINToMakeCredential(
+  // PINUVDispositionForMakeCredential returns whether and how user verification
+  // should be obtained in order to serve the given request on this
+  // authenticator.
+  virtual MakeCredentialPINUVDisposition PINUVDispositionForMakeCredential(
       const CtapMakeCredentialRequest& request,
       const FidoRequestHandlerBase::Observer* observer);
 

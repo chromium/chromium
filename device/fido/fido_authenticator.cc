@@ -59,11 +59,11 @@ void FidoAuthenticator::ChangePIN(const std::string& old_pin,
   NOTREACHED();
 }
 
-FidoAuthenticator::MakeCredentialPINDisposition
-FidoAuthenticator::WillNeedPINToMakeCredential(
+FidoAuthenticator::MakeCredentialPINUVDisposition
+FidoAuthenticator::PINUVDispositionForMakeCredential(
     const CtapMakeCredentialRequest& request,
     const FidoRequestHandlerBase::Observer* observer) {
-  return MakeCredentialPINDisposition::kNoPIN;
+  return MakeCredentialPINUVDisposition::kNoUV;
 }
 
 FidoAuthenticator::GetAssertionPINDisposition
