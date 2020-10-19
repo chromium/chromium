@@ -108,6 +108,36 @@ TEST_F(ActionDelegateUtilTest, FindElementAndExecuteMultipleActions) {
                                           base::Unretained(this)));
 }
 
+TEST_F(ActionDelegateUtilTest,
+       FindElementAndExecuteMultipleActionsAbortsOnError) {
+  InSequence sequence;
+
+  Selector expected_selector({"#element"});
+  auto expected_element =
+      test_util::MockFindElement(mock_action_delegate_, expected_selector);
+
+  EXPECT_CALL(*this, MockIndexedAction(1, EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<2>(OkClientStatus()));
+  EXPECT_CALL(*this, MockIndexedAction(2, EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<2>(ClientStatus(UNEXPECTED_JS_ERROR)));
+  EXPECT_CALL(*this, MockIndexedAction(3, EqualsElement(expected_element), _))
+      .Times(0);
+  EXPECT_CALL(*this, MockDone(EqualsStatus(ClientStatus(UNEXPECTED_JS_ERROR))));
+
+  auto actions = std::make_unique<ElementActionVector>();
+  actions->emplace_back(base::BindOnce(
+      &ActionDelegateUtilTest::MockIndexedAction, base::Unretained(this), 1));
+  actions->emplace_back(base::BindOnce(
+      &ActionDelegateUtilTest::MockIndexedAction, base::Unretained(this), 2));
+  actions->emplace_back(base::BindOnce(
+      &ActionDelegateUtilTest::MockIndexedAction, base::Unretained(this), 3));
+
+  FindElementAndPerformAll(&mock_action_delegate_, expected_selector,
+                           std::move(actions),
+                           base::BindOnce(&ActionDelegateUtilTest::MockDone,
+                                          base::Unretained(this)));
+}
+
 TEST_F(ActionDelegateUtilTest, ActionDelegateDeletedDuringExecution) {
   InSequence sequence;
 

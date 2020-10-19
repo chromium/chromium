@@ -650,6 +650,9 @@ message ProcessedActionStatusDetailsProto {
 
   // More information included for |SetFormFieldValueProto| related errors.
   optional SetFormFieldErrorInfoProto form_field_error_info = 4;
+
+  // Additional information from the |WebController|.
+  optional WebControllerErrorInfoProto web_controller_error_info = 5;
 }
 
 message NavigationInfoProto {
@@ -759,6 +762,63 @@ message AutofillErrorInfoProto {
 message SetFormFieldErrorInfoProto {
   // The index of |keypress| that caused the action to be invalid.
   optional int32 invalid_keypress_index = 1;
+}
+
+// Message to report errors related to WebController execution.
+message WebControllerErrorInfoProto {
+  enum WebAction {
+    UNSPECIFIED_WEB_ACTION = 0;
+
+    // Scroll an element into view by centering it on the page. This uses
+    // native JS functionality.
+    SCROLL_INTO_VIEW = 1;
+
+    // Waiting for the document ready state to be interactive.
+    WAIT_FOR_DOCUMENT_TO_BECOME_INTERACTIVE = 2;
+
+    // Send a click or tap event to an element.
+    CLICK_OR_TAP_ELEMENT = 3;
+
+    // Select an option from an HTML dropdown.
+    SELECT_OPTION = 4;
+
+    // Set the element's style to be highlighted by adding a BoxShadow to the
+    // element.
+    HIGHLIGHT_ELEMENT = 5;
+
+    // Scroll the element into view with padding. This does not use native JS
+    // functionality but calculates the scrolling manually.
+    SCROLL_INTO_VIEW_WITH_PADDING = 6;
+
+    // Get the |value| attribute of an element.
+    GET_FIELD_VALUE = 7;
+
+    // Get any attribute of an element.
+    GET_STRING_ATTRIBUTE = 8;
+
+    // Select an element's value. This does only work for text elements.
+    SELECT_FIELD_VALUE = 9;
+
+    // Set the |value| attribute of an element.
+    SET_VALUE_ATTRIBUTE = 10;
+
+    // Set any attribute of an element.
+    SET_ATTRIBUTE = 11;
+
+    // Send a series of keystroke inputs. This requires an element to have
+    // focus to receive them.
+    SEND_KEYBOARD_INPUT = 12;
+
+    // Get the outer HTML of an element.
+    GET_OUTER_HTML = 13;
+
+    // Get the tag of an element.
+    GET_ELEMENT_TAG = 14;
+  }
+
+  // The web-action that failed. This is usually a step in an execution chain
+  // for an action.
+  optional WebAction failed_web_action = 1;
 }
 
 // The pseudo type values come from

@@ -10,6 +10,7 @@
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/types_runtime.h"
 #include "components/autofill_assistant/browser/devtools/devtools_client.h"
+#include "components/autofill_assistant/browser/service.pb.h"
 
 namespace autofill_assistant {
 
@@ -56,6 +57,11 @@ ClientStatus CheckJavaScriptResult(
 
 // Fills a ClientStatus with appropriate details for a Chrome Autofill error.
 ClientStatus FillAutofillErrorStatus(ClientStatus status);
+
+// Fills a ClientStatus with appropriate details from the
+void FillWebControllerErrorInfo(
+    WebControllerErrorInfoProto::WebAction failed_web_action,
+    ClientStatus* status);
 
 // Safely gets an object id from a RemoteObject
 bool SafeGetObjectId(const runtime::RemoteObject* result, std::string* out);

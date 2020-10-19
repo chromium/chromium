@@ -5,6 +5,7 @@
 #include "components/autofill_assistant/browser/web/web_controller_util.h"
 
 #include "components/autofill_assistant/browser/devtools/devtools/domains/types_runtime.h"
+#include "components/autofill_assistant/browser/service.pb.h"
 
 namespace autofill_assistant {
 
@@ -54,6 +55,14 @@ ClientStatus FillAutofillErrorStatus(ClientStatus status) {
       ->mutable_autofill_error_info()
       ->set_autofill_error_status(status.proto_status());
   return status;
+}
+
+void FillWebControllerErrorInfo(
+    WebControllerErrorInfoProto::WebAction failed_web_action,
+    ClientStatus* status) {
+  status->mutable_details()
+      ->mutable_web_controller_error_info()
+      ->set_failed_web_action(failed_web_action);
 }
 
 bool SafeGetObjectId(const runtime::RemoteObject* result, std::string* out) {
