@@ -48,6 +48,11 @@ WebStateListMetricsBrowserAgent::WebStateListMetricsBrowserAgent(
   DCHECK(session_metrics_);
   browser->AddObserver(this);
   web_state_list_->AddObserver(this);
+  for (int index = 0; index < web_state_list_->count(); ++index) {
+    web::WebState* web_state = web_state_list_->GetWebStateAt(index);
+    web_state->AddObserver(this);
+  }
+
   SessionRestorationBrowserAgent* restoration_agent =
       SessionRestorationBrowserAgent::FromBrowser(browser);
   if (restoration_agent)
@@ -70,6 +75,7 @@ void WebStateListMetricsBrowserAgent::WebStateInsertedAt(
     web::WebState* web_state,
     int index,
     bool activating) {
+  web_state->AddObserver(this);
   if (metric_collection_paused_)
     return;
   base::RecordAction(base::UserMetricsAction("MobileNewTabOpened"));
@@ -80,6 +86,7 @@ void WebStateListMetricsBrowserAgent::WebStateDetachedAt(
     WebStateList* web_state_list,
     web::WebState* web_state,
     int index) {
+  web_state->RemoveObserver(this);
   if (metric_collection_paused_)
     return;
   base::RecordAction(base::UserMetricsAction("MobileTabClosed"));
@@ -99,6 +106,15 @@ void WebStateListMetricsBrowserAgent::WebStateActivatedAt(
     return;
 
   base::RecordAction(base::UserMetricsAction("MobileTabSwitched"));
+}
+
+void WebStateListMetricsBrowserAgent::WebStateReplacedAt(
+    WebStateList* web_state_list,
+    web::WebState* old_web_state,
+    web::WebState* new_web_state,
+    int index) {
+  old_web_state->RemoveObserver(this);
+  new_web_state->AddObserver(this);
 }
 
 // web::WebStateObserver
@@ -182,11 +198,17 @@ void WebStateListMetricsBrowserAgent::PageLoaded(
 void WebStateListMetricsBrowserAgent::BrowserDestroyed(Browser* browser) {
   DCHECK_EQ(browser->GetWebStateList(), web_state_list_);
 
-  web_state_list_->RemoveObserver(this);
-  browser->RemoveObserver(this);
   SessionRestorationBrowserAgent* restoration_agent =
       SessionRestorationBrowserAgent::FromBrowser(browser);
   if (restoration_agent)
     restoration_agent->RemoveObserver(this);
+
+  for (int index = 0; index < web_state_list_->count(); ++index) {
+    web::WebState* web_state = web_state_list_->GetWebStateAt(index);
+    web_state->RemoveObserver(this);
+  }
+  web_state_list_->RemoveObserver(this);
   web_state_list_ = nullptr;
+
+  browser->RemoveObserver(this);
 }
