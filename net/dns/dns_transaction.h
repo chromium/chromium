@@ -104,14 +104,12 @@ class NET_EXPORT_PRIVATE DnsTransactionFactory {
   // |secure| specifies whether DNS lookups should be performed using DNS-over-
   // HTTPS (DoH) or using plaintext DNS.
   //
-  // |fast_timeout| Not yet implemented. When true (and implemented), the
-  // transaction will timeout quickly after making its DNS attempts, without
-  // necessarily waiting long enough to allow slower-than-average requests to
-  // complete. Intended as an optimization for cases where the caller has
-  // reasonable fallback options to the transaction and it would be beneficial
-  // to move on to those options sooner on signals that the transaction is
-  // potentially slow or problematic.
-  // TODO(crbug.com/1109792): Implement it.
+  // When |fast_timeout| is true, the transaction will timeout quickly after
+  // making its DNS attempts, without necessarily waiting long enough to allow
+  // slower-than-average requests to complete. Intended as an optimization for
+  // cases where the caller has reasonable fallback options to the transaction
+  // and it would be beneficial to move on to those options sooner on signals
+  // that the transaction is potentially slow or problematic.
   virtual std::unique_ptr<DnsTransaction> CreateTransaction(
       const std::string& hostname,
       uint16_t qtype,

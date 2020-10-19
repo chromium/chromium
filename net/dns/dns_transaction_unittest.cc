@@ -1173,7 +1173,7 @@ TEST_F(DnsTransactionTest, NoDomain) {
   helper0.RunUntilComplete();
 }
 
-TEST_F(DnsTransactionTestWithMockTime, Timeout) {
+TEST_F(DnsTransactionTestWithMockTime, Timeout_FastTimeout) {
   config_.attempts = 3;
   ConfigureFactory();
 
@@ -1182,8 +1182,13 @@ TEST_F(DnsTransactionTestWithMockTime, Timeout) {
   AddHangingQuery(kT0HostName, kT0Qtype);
 
   TransactionHelper helper0(ERR_DNS_TIMED_OUT);
-  helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
-                           false /* secure */, resolve_context_.get());
+  std::unique_ptr<DnsTransaction> transaction =
+      transaction_factory_->CreateTransaction(
+          kT0HostName, kT0Qtype, helper0.CompletionCallback(),
+          NetLogWithSource(), false /* secure */, SecureDnsMode::kOff,
+          resolve_context_.get(), true /* fast_timeout */);
+
+  helper0.StartTransaction(std::move(transaction));
 
   // Finish when the third attempt expires its fallback period.
   base::RunLoop().RunUntilIdle();
@@ -2552,8 +2557,50 @@ TEST_F(DnsTransactionTest, HttpsPostLookupWithLog) {
 }
 
 // Test for when a slow DoH response is delayed until after the initial fallback
-// period and no more attempts are configured.
+// period (but succeeds before the full timeout period).
 TEST_F(DnsTransactionTestWithMockTime, SlowHttpsResponse_SingleAttempt) {
+  config_.doh_attempts = 1;
+  ConfigureDohServers(false /* use_post */);
+
+  // Assume fallback period is less than timeout.
+  ASSERT_LT(resolve_context_->NextDohFallbackPeriod(0 /* doh_server_index */,
+                                                    session_.get()),
+            resolve_context_->SecureTransactionTimeout(SecureDnsMode::kSecure,
+                                                       session_.get()));
+
+  // Simulate a slow response by using an ERR_IO_PENDING read error to delay
+  // until SequencedSocketData::Resume() is called.
+  auto data = std::make_unique<DnsSocketData>(
+      0 /* id */, kT0HostName, kT0Qtype, ASYNC, Transport::HTTPS,
+      nullptr /* opt_rdata */, DnsQuery::PaddingStrategy::BLOCK_LENGTH_128);
+  data->AddReadError(ERR_IO_PENDING, ASYNC);
+  data->AddResponseData(kT0ResponseDatagram, base::size(kT0ResponseDatagram),
+                        ASYNC);
+  SequencedSocketData* sequenced_socket_data = data->GetProvider();
+  AddSocketData(std::move(data), false /* enqueue_transaction_id */);
+
+  TransactionHelper helper(kT0RecordCount);
+  std::unique_ptr<DnsTransaction> transaction =
+      transaction_factory_->CreateTransaction(
+          kT0HostName, kT0Qtype, helper.CompletionCallback(),
+          NetLogWithSource(), true /* secure */, SecureDnsMode::kSecure,
+          resolve_context_.get(), false /* fast_timeout */);
+
+  helper.StartTransaction(std::move(transaction));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(helper.has_completed());
+  FastForwardBy(resolve_context_->NextDohFallbackPeriod(
+      0 /* doh_server_index */, session_.get()));
+  EXPECT_FALSE(helper.has_completed());
+
+  sequenced_socket_data->Resume();
+  helper.RunUntilComplete();
+}
+
+// Test for when a slow DoH response is delayed until after the initial fallback
+// period but fast timeout is enabled, resulting in timeout failure.
+TEST_F(DnsTransactionTestWithMockTime,
+       SlowHttpsResponse_SingleAttempt_FastTimeout) {
   config_.doh_attempts = 1;
   ConfigureDohServers(false /* use_post */);
 
@@ -2562,13 +2609,17 @@ TEST_F(DnsTransactionTestWithMockTime, SlowHttpsResponse_SingleAttempt) {
                   false /* enqueue_transaction_id */);
 
   TransactionHelper helper(ERR_DNS_TIMED_OUT);
-  helper.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
-                          true /* secure */, resolve_context_.get());
+  std::unique_ptr<DnsTransaction> transaction =
+      transaction_factory_->CreateTransaction(
+          kT0HostName, kT0Qtype, helper.CompletionCallback(),
+          NetLogWithSource(), true /* secure */, SecureDnsMode::kSecure,
+          resolve_context_.get(), true /* fast_timeout */);
+  helper.StartTransaction(std::move(transaction));
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(helper.has_completed());
 
-  // Only one attempt configured, so expect immediate failure after fallback
-  // period.
+  // Only one attempt configured and fast timeout enabled, so expect immediate
+  // failure after fallback period.
   FastForwardBy(resolve_context_->NextDohFallbackPeriod(
       0 /* doh_server_index */, session_.get()));
   EXPECT_TRUE(helper.has_completed());
@@ -2592,8 +2643,13 @@ TEST_F(DnsTransactionTestWithMockTime, SlowHttpsResponse_TwoAttempts) {
   AddSocketData(std::move(data), false /* enqueue_transaction_id */);
 
   TransactionHelper helper(kT0RecordCount);
-  helper.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
-                          true /* secure */, resolve_context_.get());
+  std::unique_ptr<DnsTransaction> transaction =
+      transaction_factory_->CreateTransaction(
+          kT0HostName, kT0Qtype, helper.CompletionCallback(),
+          NetLogWithSource(), true /* secure */, SecureDnsMode::kSecure,
+          resolve_context_.get(), false /* fast_timeout */);
+
+  helper.StartTransaction(std::move(transaction));
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(helper.has_completed());
   ASSERT_TRUE(sequenced_socket_data->IsPaused());
@@ -2610,6 +2666,330 @@ TEST_F(DnsTransactionTestWithMockTime, SlowHttpsResponse_TwoAttempts) {
   // Expect first attempt to continue in parallel with retry, so expect the
   // transaction to complete when the first query is allowed to resume.
   sequenced_socket_data->Resume();
+  helper.RunUntilComplete();
+}
+
+// Test for when a slow DoH response is delayed until after the full timeout
+// period.
+TEST_F(DnsTransactionTestWithMockTime, HttpsTimeout) {
+  config_.doh_attempts = 1;
+  ConfigureDohServers(false /* use_post */);
+
+  // Assume fallback period is less than timeout.
+  ASSERT_LT(resolve_context_->NextDohFallbackPeriod(0 /* doh_server_index */,
+                                                    session_.get()),
+            resolve_context_->SecureTransactionTimeout(SecureDnsMode::kSecure,
+                                                       session_.get()));
+
+  AddHangingQuery(kT0HostName, kT0Qtype,
+                  DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, 0 /* id */,
+                  false /* enqueue_transaction_id */);
+
+  TransactionHelper helper(ERR_DNS_TIMED_OUT);
+  std::unique_ptr<DnsTransaction> transaction =
+      transaction_factory_->CreateTransaction(
+          kT0HostName, kT0Qtype, helper.CompletionCallback(),
+          NetLogWithSource(), true /* secure */, SecureDnsMode::kSecure,
+          resolve_context_.get(), false /* fast_timeout */);
+  helper.StartTransaction(std::move(transaction));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(helper.has_completed());
+
+  // Stop a tiny bit short to ensure transaction doesn't finish early.
+  const base::TimeDelta kTimeHoldback = base::TimeDelta::FromMilliseconds(5);
+  base::TimeDelta timeout = resolve_context_->SecureTransactionTimeout(
+      SecureDnsMode::kSecure, session_.get());
+  ASSERT_LT(kTimeHoldback, timeout);
+  FastForwardBy(timeout - kTimeHoldback);
+  EXPECT_FALSE(helper.has_completed());
+
+  FastForwardBy(kTimeHoldback);
+  EXPECT_TRUE(helper.has_completed());
+}
+
+// Test for when two slow DoH responses are delayed until after the full timeout
+// period.
+TEST_F(DnsTransactionTestWithMockTime, HttpsTimeout2) {
+  config_.doh_attempts = 2;
+  ConfigureDohServers(false /* use_post */);
+
+  // Assume fallback period is less than timeout.
+  ASSERT_LT(resolve_context_->NextDohFallbackPeriod(0 /* doh_server_index */,
+                                                    session_.get()),
+            resolve_context_->SecureTransactionTimeout(SecureDnsMode::kSecure,
+                                                       session_.get()));
+
+  AddHangingQuery(kT0HostName, kT0Qtype,
+                  DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, 0 /* id */,
+                  false /* enqueue_transaction_id */);
+  AddHangingQuery(kT0HostName, kT0Qtype,
+                  DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, 0 /* id */,
+                  false /* enqueue_transaction_id */);
+
+  TransactionHelper helper(ERR_DNS_TIMED_OUT);
+  std::unique_ptr<DnsTransaction> transaction =
+      transaction_factory_->CreateTransaction(
+          kT0HostName, kT0Qtype, helper.CompletionCallback(),
+          NetLogWithSource(), true /* secure */, SecureDnsMode::kSecure,
+          resolve_context_.get(), false /* fast_timeout */);
+  helper.StartTransaction(std::move(transaction));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(helper.has_completed());
+
+  base::TimeDelta fallback_period = resolve_context_->NextDohFallbackPeriod(
+      0 /* doh_server_index */, session_.get());
+  FastForwardBy(fallback_period);
+  EXPECT_FALSE(helper.has_completed());
+
+  // Timeout is from start of transaction, so need to keep track of the
+  // remainder after other fast forwards.
+  base::TimeDelta timeout = resolve_context_->SecureTransactionTimeout(
+      SecureDnsMode::kSecure, session_.get());
+  base::TimeDelta timeout_remainder = timeout - fallback_period;
+
+  // Fallback period for second attempt.
+  fallback_period = resolve_context_->NextDohFallbackPeriod(
+      0 /* doh_server_index */, session_.get());
+  ASSERT_LT(fallback_period, timeout_remainder);
+  FastForwardBy(fallback_period);
+  EXPECT_FALSE(helper.has_completed());
+  timeout_remainder -= fallback_period;
+
+  // Stop a tiny bit short to ensure transaction doesn't finish early.
+  const base::TimeDelta kTimeHoldback = base::TimeDelta::FromMilliseconds(5);
+  ASSERT_LT(kTimeHoldback, timeout_remainder);
+  FastForwardBy(timeout_remainder - kTimeHoldback);
+  EXPECT_FALSE(helper.has_completed());
+
+  FastForwardBy(kTimeHoldback);
+  EXPECT_TRUE(helper.has_completed());
+}
+
+// Test for when attempt fallback periods go beyond the full timeout period.
+TEST_F(DnsTransactionTestWithMockTime, LongHttpsTimeouts) {
+  const int kNumAttempts = 20;
+  config_.doh_attempts = kNumAttempts;
+  ConfigureDohServers(false /* use_post */);
+
+  // Assume sum of fallback periods is greater than timeout.
+  ASSERT_GT(kNumAttempts * resolve_context_->NextDohFallbackPeriod(
+                               0 /* doh_server_index */, session_.get()),
+            resolve_context_->SecureTransactionTimeout(SecureDnsMode::kSecure,
+                                                       session_.get()));
+
+  for (int i = 0; i < kNumAttempts; ++i) {
+    AddHangingQuery(kT0HostName, kT0Qtype,
+                    DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, 0 /* id */,
+                    false /* enqueue_transaction_id */);
+  }
+
+  TransactionHelper helper(ERR_DNS_TIMED_OUT);
+  std::unique_ptr<DnsTransaction> transaction =
+      transaction_factory_->CreateTransaction(
+          kT0HostName, kT0Qtype, helper.CompletionCallback(),
+          NetLogWithSource(), true /* secure */, SecureDnsMode::kSecure,
+          resolve_context_.get(), false /* fast_timeout */);
+  helper.StartTransaction(std::move(transaction));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(helper.has_completed());
+
+  for (int i = 0; i < kNumAttempts - 1; ++i) {
+    FastForwardBy(resolve_context_->NextDohFallbackPeriod(
+        0 /* doh_server_index */, session_.get()));
+    EXPECT_FALSE(helper.has_completed());
+  }
+
+  // Expect transaction to time out immediately after the last fallback period.
+  FastForwardBy(resolve_context_->NextDohFallbackPeriod(
+      0 /* doh_server_index */, session_.get()));
+  EXPECT_TRUE(helper.has_completed());
+}
+
+// Test for when the last of multiple HTTPS attempts fails (SERVFAIL) before
+// a previous attempt succeeds.
+TEST_F(DnsTransactionTestWithMockTime, LastHttpsAttemptFails) {
+  config_.doh_attempts = 2;
+  ConfigureDohServers(false /* use_post */);
+
+  // Simulate a slow response by using an ERR_IO_PENDING read error to delay
+  // until SequencedSocketData::Resume() is called.
+  auto data = std::make_unique<DnsSocketData>(
+      0 /* id */, kT0HostName, kT0Qtype, ASYNC, Transport::HTTPS,
+      nullptr /* opt_rdata */, DnsQuery::PaddingStrategy::BLOCK_LENGTH_128);
+  data->AddReadError(ERR_IO_PENDING, ASYNC);
+  data->AddResponseData(kT0ResponseDatagram, base::size(kT0ResponseDatagram),
+                        ASYNC);
+  SequencedSocketData* sequenced_socket_data = data->GetProvider();
+  AddSocketData(std::move(data), false /* enqueue_transaction_id */);
+
+  AddQueryAndRcode(kT0HostName, kT0Qtype, dns_protocol::kRcodeSERVFAIL,
+                   SYNCHRONOUS, Transport::HTTPS,
+                   DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, 0 /* id */,
+                   false /* enqueue_transaction_id */);
+
+  TransactionHelper helper(kT0RecordCount);
+  std::unique_ptr<DnsTransaction> transaction =
+      transaction_factory_->CreateTransaction(
+          kT0HostName, kT0Qtype, helper.CompletionCallback(),
+          NetLogWithSource(), true /* secure */, SecureDnsMode::kSecure,
+          resolve_context_.get(), false /* fast_timeout */);
+  helper.StartTransaction(std::move(transaction));
+
+  // Wait for one timeout period to start (and fail) the second attempt.
+  FastForwardBy(resolve_context_->NextDohFallbackPeriod(
+      0 /* doh_server_index */, session_.get()));
+  EXPECT_FALSE(helper.has_completed());
+
+  // Complete the first attempt and expect immediate success.
+  sequenced_socket_data->Resume();
+  helper.RunUntilComplete();
+}
+
+// Test for when the last of multiple HTTPS attempts fails (SERVFAIL), and a
+// previous attempt never completes.
+TEST_F(DnsTransactionTestWithMockTime, LastHttpsAttemptFails_Timeout) {
+  config_.doh_attempts = 2;
+  ConfigureDohServers(false /* use_post */);
+
+  AddHangingQuery(kT0HostName, kT0Qtype,
+                  DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, 0 /* id */,
+                  false /* enqueue_transaction_id */);
+  AddQueryAndRcode(kT0HostName, kT0Qtype, dns_protocol::kRcodeSERVFAIL,
+                   SYNCHRONOUS, Transport::HTTPS,
+                   DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, 0 /* id */,
+                   false /* enqueue_transaction_id */);
+
+  TransactionHelper helper(ERR_DNS_TIMED_OUT);
+  std::unique_ptr<DnsTransaction> transaction =
+      transaction_factory_->CreateTransaction(
+          kT0HostName, kT0Qtype, helper.CompletionCallback(),
+          NetLogWithSource(), true /* secure */, SecureDnsMode::kSecure,
+          resolve_context_.get(), false /* fast_timeout */);
+
+  helper.StartTransaction(std::move(transaction));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(helper.has_completed());
+
+  // Second attempt fails immediately after first fallback period, but because
+  // fast timeout is disabled, the transaction will attempt to wait for the
+  // first attempt.
+  base::TimeDelta fallback_period = resolve_context_->NextDohFallbackPeriod(
+      0 /* doh_server_index */, session_.get());
+  FastForwardBy(fallback_period);
+  EXPECT_FALSE(helper.has_completed());
+
+  // Timeout is from start of transaction, so need to keep track of the
+  // remainder after other fast forwards.
+  base::TimeDelta timeout = resolve_context_->SecureTransactionTimeout(
+      SecureDnsMode::kSecure, session_.get());
+  base::TimeDelta timeout_remainder = timeout - fallback_period;
+
+  // Stop a tiny bit short to ensure transaction doesn't finish early.
+  const base::TimeDelta kTimeHoldback = base::TimeDelta::FromMilliseconds(5);
+  ASSERT_LT(kTimeHoldback, timeout_remainder);
+  FastForwardBy(timeout_remainder - kTimeHoldback);
+  EXPECT_FALSE(helper.has_completed());
+
+  FastForwardBy(kTimeHoldback);
+  EXPECT_TRUE(helper.has_completed());
+}
+
+// Test for when the last of multiple HTTPS attempts fails (SERVFAIL) before
+// a previous attempt can complete, but fast timeouts is enabled.
+TEST_F(DnsTransactionTestWithMockTime, LastHttpsAttemptFails_FastTimeout) {
+  config_.doh_attempts = 2;
+  ConfigureDohServers(false /* use_post */);
+
+  AddHangingQuery(kT0HostName, kT0Qtype,
+                  DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, 0 /* id */,
+                  false /* enqueue_transaction_id */);
+  AddQueryAndRcode(kT0HostName, kT0Qtype, dns_protocol::kRcodeSERVFAIL,
+                   SYNCHRONOUS, Transport::HTTPS,
+                   DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, 0 /* id */,
+                   false /* enqueue_transaction_id */);
+
+  TransactionHelper helper(ERR_DNS_SERVER_FAILED);
+  std::unique_ptr<DnsTransaction> transaction =
+      transaction_factory_->CreateTransaction(
+          kT0HostName, kT0Qtype, helper.CompletionCallback(),
+          NetLogWithSource(), true /* secure */, SecureDnsMode::kSecure,
+          resolve_context_.get(), true /* fast_timeout */);
+
+  helper.StartTransaction(std::move(transaction));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(helper.has_completed());
+
+  // With fast timeout enabled, expect the transaction to complete with failure
+  // immediately on failure of the last transaction.
+  FastForwardBy(resolve_context_->NextDohFallbackPeriod(
+      0 /* doh_server_index */, session_.get()));
+  EXPECT_TRUE(helper.has_completed());
+}
+
+// Test for when the last of multiple HTTPS attempts fails (SERVFAIL) before
+// a previous attempt later fails as well.
+TEST_F(DnsTransactionTestWithMockTime, LastHttpsAttemptFailsFirst) {
+  config_.doh_attempts = 2;
+  ConfigureDohServers(false /* use_post */);
+
+  // Simulate a slow response by using an ERR_IO_PENDING read error to delay
+  // until SequencedSocketData::Resume() is called.
+  auto data = std::make_unique<DnsSocketData>(
+      0 /* id */, kT0HostName, kT0Qtype, ASYNC, Transport::HTTPS,
+      nullptr /* opt_rdata */, DnsQuery::PaddingStrategy::BLOCK_LENGTH_128);
+  data->AddReadError(ERR_IO_PENDING, ASYNC);
+  data->AddRcode(dns_protocol::kRcodeSERVFAIL, ASYNC);
+  SequencedSocketData* sequenced_socket_data = data->GetProvider();
+  AddSocketData(std::move(data), false /* enqueue_transaction_id */);
+
+  AddQueryAndRcode(kT0HostName, kT0Qtype, dns_protocol::kRcodeSERVFAIL,
+                   SYNCHRONOUS, Transport::HTTPS,
+                   DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, 0 /* id */,
+                   false /* enqueue_transaction_id */);
+
+  TransactionHelper helper(ERR_DNS_SERVER_FAILED);
+  std::unique_ptr<DnsTransaction> transaction =
+      transaction_factory_->CreateTransaction(
+          kT0HostName, kT0Qtype, helper.CompletionCallback(),
+          NetLogWithSource(), true /* secure */, SecureDnsMode::kSecure,
+          resolve_context_.get(), false /* fast_timeout */);
+  helper.StartTransaction(std::move(transaction));
+
+  // Wait for one timeout period to start (and fail) the second attempt.
+  FastForwardBy(resolve_context_->NextDohFallbackPeriod(
+      0 /* doh_server_index */, session_.get()));
+  EXPECT_FALSE(helper.has_completed());
+
+  // Complete the first attempt and expect immediate completion.
+  sequenced_socket_data->Resume();
+  helper.RunUntilComplete();
+}
+
+// Test for when multiple HTTPS attempts fail (SERVFAIL) in order, making the
+// last started attempt also the last attempt to be pending.
+TEST_F(DnsTransactionTestWithMockTime, LastHttpsAttemptFailsLast) {
+  config_.doh_attempts = 2;
+  ConfigureDohServers(false /* use_post */);
+
+  AddQueryAndRcode(kT0HostName, kT0Qtype, dns_protocol::kRcodeSERVFAIL,
+                   SYNCHRONOUS, Transport::HTTPS,
+                   DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, 0 /* id */,
+                   false /* enqueue_transaction_id */);
+  AddQueryAndRcode(kT0HostName, kT0Qtype, dns_protocol::kRcodeSERVFAIL,
+                   SYNCHRONOUS, Transport::HTTPS,
+                   DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, 0 /* id */,
+                   false /* enqueue_transaction_id */);
+
+  TransactionHelper helper(ERR_DNS_SERVER_FAILED);
+  std::unique_ptr<DnsTransaction> transaction =
+      transaction_factory_->CreateTransaction(
+          kT0HostName, kT0Qtype, helper.CompletionCallback(),
+          NetLogWithSource(), true /* secure */, SecureDnsMode::kSecure,
+          resolve_context_.get(), false /* fast_timeout */);
+  helper.StartTransaction(std::move(transaction));
+
+  // Expect both attempts will run quickly without waiting for fallbacks or
+  // transaction timeout.
   helper.RunUntilComplete();
 }
 
