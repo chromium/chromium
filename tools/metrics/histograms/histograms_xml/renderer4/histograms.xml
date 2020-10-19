@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="Renderer4.Browser.RasterTaskSchedulingDelayNoAtRasterDecodes"
-    units="microseconds" expires_after="2020-11-30">
+    units="microseconds" expires_after="2021-09-30">
   <owner>andrescj@chromium.org</owner>
   <owner>chromeos-gfx@google.com</owner>
   <summary>
@@ -222,7 +222,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer4.Renderer.RasterTaskSchedulingDelayNoAtRasterDecodes"
-    units="microseconds" expires_after="2020-11-30">
+    units="microseconds" expires_after="2021-09-30">
   <owner>andrescj@chromium.org</owner>
   <owner>chromeos-gfx@google.com</owner>
   <summary>
