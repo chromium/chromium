@@ -5,79 +5,76 @@
 #ifndef BASE_CONTAINERS_CONTIGUOUS_ITERATOR_H_
 #define BASE_CONTAINERS_CONTIGUOUS_ITERATOR_H_
 
+#include <array>
 #include <iterator>
+#include <string>
 #include <type_traits>
+#include <vector>
 
 #include "base/containers/checked_iterators.h"
+#include "base/template_util.h"
 
 namespace base {
 
 namespace internal {
 
-// By default a class is not a contiguous iterator.
 template <typename T>
-struct IsContiguousIteratorImpl : std::false_type {};
+struct PointsToObject : std::is_object<iter_value_t<T>> {};
 
-// A pointer to an object is a contiguous iterator.
-//
+// A pointer is a contiguous iterator.
 // Reference: https://wg21.link/iterator.traits#5
 template <typename T>
-struct IsContiguousIteratorImpl<T*> : std::is_object<T> {};
+struct IsPointer : std::is_pointer<T> {};
 
-#if defined(_LIBCPP_VERSION)
+// An iterator to std::basic_string is contiguous.
+// Reference: https://wg21.link/basic.string.general#2
+template <typename T, typename StringT = std::basic_string<iter_value_t<T>>>
+struct IsStringIter
+    : conjunction<std::is_trivial<iter_value_t<T>>,
+                  disjunction<std::is_same<T, typename StringT::const_iterator>,
+                              std::is_same<T, typename StringT::iterator>>> {};
 
-// libc++ uses std::__wrap_iter for STL iterators. For contiguous iterators
-// these wrap raw pointers.
-template <typename Iter>
-struct IsContiguousIteratorImpl<std::__wrap_iter<Iter>>
-    : IsContiguousIteratorImpl<Iter> {};
+// An iterator to std::array is contiguous.
+// Reference: https://wg21.link/array.overview#1
+template <typename T, typename ArrayT = std::array<iter_value_t<T>, 1>>
+struct IsArrayIter
+    : disjunction<std::is_same<T, typename ArrayT::const_iterator>,
+                  std::is_same<T, typename ArrayT::iterator>> {};
 
-#elif defined(__GLIBCXX__)
+// An iterator to a non-bool std::vector is contiguous.
+// Reference: https://wg21.link/vector.overview#2
+template <typename T, typename VectorT = std::vector<iter_value_t<T>>>
+struct IsVectorIter
+    : conjunction<negation<std::is_same<iter_value_t<T>, bool>>,
+                  disjunction<std::is_same<T, typename VectorT::const_iterator>,
+                              std::is_same<T, typename VectorT::iterator>>> {};
 
-// libstdc++ uses __gnu_cxx::__normal_iterator for STL iterators. For contiguous
-// iterators these wrap raw pointers.
-template <typename Iter, typename Cont>
-struct IsContiguousIteratorImpl<__gnu_cxx::__normal_iterator<Iter, Cont>>
-    : IsContiguousIteratorImpl<Iter> {};
-
-#elif defined(_MSC_VER)
-
-// Microsoft's STL does not have a single iterator wrapper class. Explicitly
-// instantiate the template for all STL containers that are contiguous.
-
-// All std::vector<T> have contiguous iterators, except for std::vector<bool>.
-// Note: MSVC's std::vector<bool> uses `std::_Vb_iterator` as its iterator type,
-// thus this won't treat these iterators as contiguous.
-template <typename Vec>
-struct IsContiguousIteratorImpl<std::_Vector_iterator<Vec>> : std::true_type {};
-template <typename Vec>
-struct IsContiguousIteratorImpl<std::_Vector_const_iterator<Vec>>
-    : std::true_type {};
-
-// All std::array<T, N> have contiguous iterators.
-template <typename T, size_t N>
-struct IsContiguousIteratorImpl<std::_Array_iterator<T, N>> : std::true_type {};
-template <typename T, size_t N>
-struct IsContiguousIteratorImpl<std::_Array_const_iterator<T, N>>
-    : std::true_type {};
-
-// All std::basic_string<CharT> have contiguous iterators.
-template <typename Str>
-struct IsContiguousIteratorImpl<std::_String_iterator<Str>> : std::true_type {};
-template <typename Str>
-struct IsContiguousIteratorImpl<std::_String_const_iterator<Str>>
-    : std::true_type {};
-
-// Note: std::valarray<T> also has contiguous storage, but does not expose a
-// nested iterator type. In MSVC's implementation `std::begin(valarray<T>)` is
-// of type T*, thus it is already covered by the explicit instantiation for
-// pointers above.
-#endif
-
-// base's CheckedContiguousIterator is a contiguous iterator as well.
+// The result of passing a std::valarray to std::begin is a contiguous iterator.
+// Note: Since all common standard library implementations (i.e. libc++,
+// stdlibc++ and MSVC's STL) just use a pointer here, we perform a similar
+// optimization. The corresponding unittest still ensures that this is working
+// as intended.
+// Reference: https://wg21.link/valarray.range#1
 template <typename T>
-struct IsContiguousIteratorImpl<base::CheckedContiguousIterator<T>>
-    : std::true_type {};
+struct IsValueArrayIter : std::is_pointer<T> {};
+
+// base's CheckedContiguousIterator is a contiguous iterator.
+template <typename T, typename ValueT = iter_value_t<T>>
+struct IsCheckedContiguousIter
+    : disjunction<std::is_same<T, base::CheckedContiguousConstIterator<ValueT>>,
+                  std::is_same<T, base::CheckedContiguousIterator<ValueT>>> {};
+
+// Check that the iterator points to an actual object, and is one of the
+// iterator types mentioned above.
+template <typename T>
+struct IsContiguousIteratorImpl
+    : conjunction<PointsToObject<T>,
+                  disjunction<IsPointer<T>,
+                              IsStringIter<T>,
+                              IsArrayIter<T>,
+                              IsVectorIter<T>,
+                              IsValueArrayIter<T>,
+                              IsCheckedContiguousIter<T>>> {};
 
 }  // namespace internal
 
@@ -87,8 +84,8 @@ struct IsContiguousIteratorImpl<base::CheckedContiguousIterator<T>>
 // explicitly instantiating the type with iterators that are supposed to be
 // contiguous iterators.
 // References:
-// - https://eel.is/c++draft/iterator.concept.contiguous
-// - https://eel.is/c++draft/std.iterator.tags#lib:contiguous_iterator_tag
+// - https://wg21.link/iterator.concept.contiguous
+// - https://wg21.link/std.iterator.tags#lib:contiguous_iterator_tag
 // - https://wg21.link/n4284
 template <typename T>
 struct IsContiguousIterator
