@@ -118,7 +118,7 @@ dependencies {
     compile "com.google.android.gms:play-services-tasks:${gmsVersion}"
     compile "com.google.android.gms:play-services-base:${gmsVersion}"
     compile "com.google.android.gms:play-services-auth-base:${gmsVersion}"
-    compile "com.google.android.gms:play-services-auth-api-phone:17.1.0"
+    compile "com.google.android.gms:play-services-auth-api-phone:17.5.0"
     compile "com.google.android.gms:play-services-auth:${gmsVersion}"
     compile "com.google.android.gms:play-services-cast:${gmsVersion}"
     compile "com.google.android.gms:play-services-cast-framework:${gmsVersion}"

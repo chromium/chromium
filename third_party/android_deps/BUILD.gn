@@ -1117,7 +1117,7 @@ android_aar_prebuilt("google_play_services_auth_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("google_play_services_auth_api_phone_java") {
-  aar_path = "libs/com_google_android_gms_play_services_auth_api_phone/play-services-auth-api-phone-17.1.0.aar"
+  aar_path = "libs/com_google_android_gms_play_services_auth_api_phone/play-services-auth-api-phone-17.5.0.aar"
   info_path = "libs/com_google_android_gms_play_services_auth_api_phone/com_google_android_gms_play_services_auth_api_phone.info"
   deps = [
     ":google_play_services_base_java",
@@ -1146,7 +1146,7 @@ android_aar_prebuilt("google_play_services_auth_base_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("google_play_services_base_java") {
-  aar_path = "libs/com_google_android_gms_play_services_base/play-services-base-17.0.0.aar"
+  aar_path = "libs/com_google_android_gms_play_services_base/play-services-base-17.1.0.aar"
   info_path = "libs/com_google_android_gms_play_services_base/com_google_android_gms_play_services_base.info"
   deps = [
     ":androidx_collection_collection_java",
@@ -1162,7 +1162,7 @@ android_aar_prebuilt("google_play_services_base_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("google_play_services_basement_java") {
-  aar_path = "libs/com_google_android_gms_play_services_basement/play-services-basement-17.0.0.aar"
+  aar_path = "libs/com_google_android_gms_play_services_basement/play-services-basement-17.1.0.aar"
   info_path = "libs/com_google_android_gms_play_services_basement/com_google_android_gms_play_services_basement.info"
   deps = [
     ":androidx_collection_collection_java",
