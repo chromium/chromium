@@ -24,7 +24,9 @@ enum UserActivationNotificationType {
   // An extension API caused the notification call through GuestView.
   kExtensionGuestView,
 
-  // An extension messaging API caused the notification call.
+  // An extension messaging API caused the notification call.  This enum value
+  // is deprecated by more specific enums kExtensionMessaging* below, we are
+  // preserving this enum value only for UMA consistency.
   kExtensionMessaging,
 
   // A media API caused the notification call.
@@ -47,5 +49,24 @@ enum UserActivationNotificationType {
   kWebScriptExec,
 
   // Android voice search API caused the notification call.
-  kVoiceSearch
+  kVoiceSearch,
+
+  // An extension messaging API caused the notification call, where the script
+  // contexts of both the sender and the receiver of the message are privileged.
+  kExtensionMessagingBothPrivileged,
+
+  // An extension messaging API caused the notification call, where the script
+  // context of only the sender (and not the receiver) of the message is
+  // privileged.
+  kExtensionMessagingSenderPrivileged,
+
+  // An extension messaging API caused the notification call, where the script
+  // context of only the receiver (and not the sender) of the message is
+  // privileged.
+  kExtensionMessagingReceiverPrivileged,
+
+  // An extension messaging API caused the notification call, where the script
+  // context of neither the sender nor the receiver of the message is
+  // privileged.
+  kExtensionMessagingNeitherPrivileged
 };

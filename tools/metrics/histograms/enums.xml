@@ -72975,6 +72975,10 @@ Full version information for the fingerprint enum values:
   <int value="9" label="kTest"/>
   <int value="10" label="kWebScriptExec"/>
   <int value="11" label="kVoiceSearch"/>
+  <int value="12" label="kExtensionMessagingBothPrivileged"/>
+  <int value="13" label="kExtensionMessagingSenderPrivileged"/>
+  <int value="14" label="kExtensionMessagingReceiverPrivileged"/>
+  <int value="15" label="kExtensionMessagingNeitherPrivileged"/>
 </enum>
 
 <enum name="UserCertContentDisposition">

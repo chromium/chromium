@@ -20,6 +20,7 @@
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/common/features/feature.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
 #include "extensions/renderer/api_activity_logger.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
@@ -40,6 +41,8 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_scoped_window_focus_allowed_indicator.h"
 #include "v8/include/v8.h"
+
+using blink::mojom::UserActivationNotificationType;
 
 namespace extensions {
 
@@ -317,9 +320,26 @@ void NativeRendererMessagingService::DeliverMessageToScriptContext(
   std::unique_ptr<blink::WebScopedWindowFocusAllowedIndicator>
       allow_window_focus;
   if (message.user_gesture && script_context->web_frame()) {
-    // TODO(mustaq): Split this further for trusted/untrusted cases.
-    script_context->web_frame()->NotifyUserActivation(
-        blink::mojom::UserActivationNotificationType::kExtensionMessaging);
+    bool sender_is_privileged = message.from_privileged_context;
+    bool receiver_is_privileged =
+        script_context->context_type() ==
+        extensions::Feature::BLESSED_EXTENSION_CONTEXT;
+    UserActivationNotificationType notification_type;
+    if (sender_is_privileged && receiver_is_privileged) {
+      notification_type =
+          UserActivationNotificationType::kExtensionMessagingBothPrivileged;
+    } else if (sender_is_privileged && !receiver_is_privileged) {
+      notification_type =
+          UserActivationNotificationType::kExtensionMessagingSenderPrivileged;
+    } else if (!sender_is_privileged && receiver_is_privileged) {
+      notification_type =
+          UserActivationNotificationType::kExtensionMessagingReceiverPrivileged;
+    } else /* !sender_is_privileged && !receiver_is_privileged */ {
+      notification_type =
+          UserActivationNotificationType::kExtensionMessagingNeitherPrivileged;
+    }
+
+    script_context->web_frame()->NotifyUserActivation(notification_type);
 
     blink::WebDocument document = script_context->web_frame()->GetDocument();
     allow_window_focus =

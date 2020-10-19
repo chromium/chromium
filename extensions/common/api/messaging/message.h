@@ -10,13 +10,20 @@ namespace extensions {
 // A message consists of both the data itself as well as a user gesture state.
 struct Message {
   std::string data;
-  bool user_gesture;
+  bool user_gesture = false;
+  bool from_privileged_context = false;
 
-  Message() : data(), user_gesture(false) {}
-  Message(const std::string& data, bool user_gesture)
-      : data(data), user_gesture(user_gesture) {}
+  Message() = default;
+  Message(const std::string& data,
+          bool user_gesture,
+          bool from_privileged_context = false)
+      : data(data),
+        user_gesture(user_gesture),
+        from_privileged_context(from_privileged_context) {}
 
   bool operator==(const Message& other) const {
+    // Skipping the equality check for |from_privileged_context| here
+    // because this field is used only for histograms.
     return data == other.data && user_gesture == other.user_gesture;
   }
 };
