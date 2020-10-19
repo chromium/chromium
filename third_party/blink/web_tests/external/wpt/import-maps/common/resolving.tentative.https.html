@@ -2,9 +2,12 @@
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
 <body>
 <script type="module">
-import { runTestsFromJSON } from "./resources/common-test-helper.js";
+import { runTestsFromJSON, setupGlobalCleanup } from "./resources/common-test-helper.js";
+
+const promises = [];
 
 for (const json of [
   'resources/scopes.json',
@@ -17,8 +20,13 @@ for (const json of [
   'resources/overlapping-entries.json',
   'resources/resolving-null.json',
 ]) {
-  promise_test(() =>
-    runTestsFromJSON(json),
+  promise_test(() => {
+      const promise = runTestsFromJSON(json);
+      promises.push(promise);
+      return promise;
+    },
     "Test helper: fetching and sanity checking test JSON: " + json);
 }
+
+Promise.all(promises).then(setupGlobalCleanup);
 </script>
