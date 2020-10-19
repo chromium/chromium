@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -127,9 +128,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
      */
     public void requestOpenSheet(String url, String title, boolean isIncognito) {
         mUrl = url;
-        Profile profile = isIncognito ? Profile.getLastUsedRegularProfile().getOffTheRecordProfile()
-                                      : Profile.getLastUsedRegularProfile();
-
+        Profile profile = getProfile(isIncognito);
         if (mMediator == null) {
             float topControlsHeight =
                     mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
@@ -139,7 +138,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
         }
         if (mWebContents == null) {
             assert mSheetContent == null;
-            createWebContents(isIncognito);
+            createWebContents(profile);
             mSheetObserver = new EmptyBottomSheetObserver() {
                 private int mCloseReason;
 
@@ -208,11 +207,18 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
         if (tracker.isInitialized()) tracker.notifyEvent(EventConstants.EPHEMERAL_TAB_USED);
     }
 
-    private void createWebContents(boolean incognito) {
+    private Profile getProfile(boolean isIncognito) {
+        if (!isIncognito) return Profile.getLastUsedRegularProfile();
+        Profile otrProfile = IncognitoUtils.getNonPrimaryOTRProfileFromWindowAndroid(mWindow);
+        return (otrProfile == null) ? Profile.getLastUsedRegularProfile().getPrimaryOTRProfile()
+                                    : otrProfile;
+    }
+
+    private void createWebContents(Profile profile) {
         assert mWebContents == null;
 
         // Creates an initially hidden WebContents which gets shown when the panel is opened.
-        mWebContents = WebContentsFactory.createWebContents(incognito, true);
+        mWebContents = WebContentsFactory.createWebContents(profile, true);
 
         mContentView = ContentView.createContentView(
                 mContext, null /* eventOffsetHandler */, mWebContents);
