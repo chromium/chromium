@@ -44,7 +44,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="UMA.CleanExitBeaconConsistency" enum="UmaCleanExitConsistency"
     expires_after="M85">
-  <owner>siggi@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     Reports the combined state of distinct clean exit beacons stored in Local
