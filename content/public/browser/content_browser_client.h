@@ -463,6 +463,13 @@ class CONTENT_EXPORT ContentBrowserClient {
   // protocol handlers.
   virtual bool IsHandledURL(const GURL& url);
 
+  // Returns whether a custom handler is registered for the scheme of the
+  // specified URL scheme.
+  // https://html.spec.whatwg.org/multipage/system-state.html#custom-handlers
+  // TODO(crbug.com/1139176) Move custom protocol handler code to content.
+  virtual bool HasCustomSchemeHandler(content::BrowserContext* browser_context,
+                                      const std::string& scheme);
+
   // Returns whether the given process is allowed to commit |url|.  This is a
   // more conservative check than IsSuitableHost, since it is used after a
   // navigation has committed to ensure that the process did not exceed its
