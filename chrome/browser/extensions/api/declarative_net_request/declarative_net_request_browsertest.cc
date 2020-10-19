@@ -4887,8 +4887,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestGlobalRulesBrowserTest_Packed,
   ASSERT_EQ(ExtensionLoadType::PACKED, GetParam());
 
   // Sanity check that the extension can index and enable up to
-  // |rule_limit_override| + |global_limit_override| rules.
-  ASSERT_EQ(3, GetStaticRuleLimit());
+  // |rule_limit_override_| + |global_limit_override_| rules.
+  ASSERT_EQ(3, GetMaximumRulesPerRuleset());
 
   auto create_rule = [](int id) {
     TestRule rule = CreateGenericRule();
@@ -4949,7 +4949,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestGlobalRulesBrowserTest_Packed,
 
   // Sanity check that the extension can index and enable up to
   // |rule_limit_override| + |global_limit_override| rules.
-  ASSERT_EQ(3, GetStaticRuleLimit());
+  ASSERT_EQ(3, GetMaximumRulesPerRuleset());
 
   const ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   std::map<std::string, size_t> allocated_rule_counts;

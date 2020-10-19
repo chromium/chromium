@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
@@ -388,10 +389,9 @@ class SingleRulesetTest : public DeclarativeNetRequestUnittest {
     else
       rules_count = rules_list_.size();
 
-    // We only index up to GetStaticRuleLimit() rules per ruleset.
+    // We only index up to GetMaximumRulesPerRuleset() rules per ruleset.
     rules_count =
-        std::min(rules_count, static_cast<size_t>(GetStaticRuleLimit()));
-
+        std::min(rules_count, static_cast<size_t>(GetMaximumRulesPerRuleset()));
     DeclarativeNetRequestUnittest::LoadAndExpectSuccess(rules_count,
                                                         rules_count, true);
   }
@@ -975,28 +975,33 @@ class SingleRulesetGlobalRulesTest : public SingleRulesetTest {
         kDeclarativeNetRequestGlobalRules);
   }
 
+  // SingleRulesetTest override.
+  void SetUp() override {
+    SingleRulesetTest::SetUp();
+
+    // Sanity check that the extension can index and enable up to
+    // |rule_limit_override_| + |global_limit_override_| rules.
+    ASSERT_EQ(300, GetMaximumRulesPerRuleset());
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+
+  // Override the API guaranteed minimum to prevent a timeout on loading the
+  // extension.
+  base::AutoReset<int> guaranteed_minimum_override_ =
+      CreateScopedStaticGuaranteedMinimumOverrideForTesting(100);
+
+  // Similarly, override the global limit to prevent a timeout.
+  base::AutoReset<int> global_limit_override_ =
+      CreateScopedGlobalStaticRuleLimitOverrideForTesting(200);
 };
 
 // Ensure that we can add up to the |dnr_api::GUARANTEED_MINIMUM_STATIC_RULES| +
 // |kMaxStaticRulesPerProfile| rules if the global rules feature is enabled.
 TEST_P(SingleRulesetGlobalRulesTest, RuleCountLimitMatched) {
-  // Override the API guaranteed minimum to prevent a timeout on loading the
-  // extension.
-  base::AutoReset<int> guaranteed_minimum_override =
-      CreateScopedStaticGuaranteedMinimumOverrideForTesting(100);
-
-  // Similarly, override the global limit to prevent a timeout.
-  base::AutoReset<int> global_limit_override =
-      CreateScopedGlobalStaticRuleLimitOverrideForTesting(200);
-
-  // Sanity check that the extension can index and enable up to
-  // |rule_limit_override| + |global_limit_override| rules.
-  ASSERT_EQ(300, GetStaticRuleLimit());
-
   TestRule rule = CreateGenericRule();
-  for (int i = 0; i < GetStaticRuleLimit(); ++i) {
+  for (int i = 0; i < GetMaximumRulesPerRuleset(); ++i) {
     rule.id = kMinValidID + i;
     rule.condition->url_filter = std::to_string(i);
     AddRule(rule);
@@ -1021,19 +1026,8 @@ TEST_P(SingleRulesetGlobalRulesTest, RuleCountLimitMatched) {
 
 // Ensure that an extension's allocation will be kept when it is disabled.
 TEST_P(SingleRulesetGlobalRulesTest, AllocationKeptWhenDisabled) {
-  // Override the API guaranteed minimum to prevent a timeout on loading the
-  // extension.
-  base::AutoReset<int> guaranteed_minimum_override =
-      CreateScopedStaticGuaranteedMinimumOverrideForTesting(100);
-
-  // Similarly, override the global limit to prevent a timeout.
-  base::AutoReset<int> global_limit_override =
-      CreateScopedGlobalStaticRuleLimitOverrideForTesting(200);
-
-  ASSERT_EQ(300, GetStaticRuleLimit());
-
   TestRule rule = CreateGenericRule();
-  for (int i = 0; i < GetStaticRuleLimit(); ++i) {
+  for (int i = 0; i < GetMaximumRulesPerRuleset(); ++i) {
     rule.id = kMinValidID + i;
     rule.condition->url_filter = std::to_string(i);
     AddRule(rule);
@@ -1075,19 +1069,8 @@ TEST_P(SingleRulesetGlobalRulesTest, AllocationKeptWhenDisabled) {
 // Ensure that we get an install warning on exceeding the rule count limit and
 // that no rules are indexed.
 TEST_P(SingleRulesetGlobalRulesTest, RuleCountLimitExceeded) {
-  // Override the API guaranteed minimum to prevent a timeout on loading the
-  // extension.
-  base::AutoReset<int> guaranteed_minimum_override =
-      CreateScopedStaticGuaranteedMinimumOverrideForTesting(100);
-
-  // Similarly, override the global limit to prevent a timeout.
-  base::AutoReset<int> global_limit_override =
-      CreateScopedGlobalStaticRuleLimitOverrideForTesting(200);
-
-  ASSERT_EQ(300, GetStaticRuleLimit());
-
   TestRule rule = CreateGenericRule();
-  for (int i = 1; i <= GetStaticRuleLimit() + 1; ++i) {
+  for (int i = 1; i <= GetMaximumRulesPerRuleset() + 1; ++i) {
     rule.id = kMinValidID + i;
     rule.condition->url_filter = std::to_string(i);
     AddRule(rule);
@@ -1178,14 +1161,15 @@ class MultipleRulesetsTest : public DeclarativeNetRequestUnittest {
       const base::Optional<size_t>& expected_rules_count = base::nullopt,
       const base::Optional<size_t>& expected_enabled_rules_count =
           base::nullopt) {
+    size_t static_rule_limit = GetMaximumRulesPerRuleset();
     size_t rules_count = 0u;
     size_t rules_enabled_count = 0u;
     for (const TestRulesetInfo& info : rulesets_) {
       size_t count = info.rules_value.GetList().size();
 
-      // We only index up to GetStaticRuleLimit() rules per ruleset, but may
-      // index more rules than this limit across rulesets.
-      count = std::min(count, static_cast<size_t>(GetStaticRuleLimit()));
+      // We only index up to |static_rule_limit| rules per ruleset, but
+      // may index more rules than this limit across rulesets.
+      count = std::min(count, static_rule_limit);
 
       rules_count += count;
       if (info.enabled)
@@ -1437,62 +1421,6 @@ TEST_P(MultipleRulesetsTest, RegexRuleCountExceeded) {
           Pointee(Property(&RulesetMatcher::GetRulesCount, 20 + 20))));
 }
 
-// Ensure that a ruleset which causes the extension to go over the global rule
-// limit is correctly ignored.
-TEST_P(MultipleRulesetsTest, GlobalRules_RulesetIgnored) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kDeclarativeNetRequestGlobalRules);
-
-  // Override the API guaranteed minimum to prevent a timeout on loading the
-  // extension.
-  base::AutoReset<int> guaranteed_minimum_override =
-      CreateScopedStaticGuaranteedMinimumOverrideForTesting(100);
-
-  // Similarly, override the global limit to prevent a timeout.
-  base::AutoReset<int> global_limit_override =
-      CreateScopedGlobalStaticRuleLimitOverrideForTesting(200);
-
-  ASSERT_EQ(300, GetStaticRuleLimit());
-
-  AddRuleset(CreateRuleset(kId1, 90, 0, true));
-  AddRuleset(CreateRuleset(kId2, 150, 0, true));
-
-  // This ruleset should not be loaded because it would exceed the global limit.
-  AddRuleset(CreateRuleset(kId3, 100, 0, true));
-
-  AddRuleset(CreateRuleset(kId4, 60, 0, true));
-
-  RulesetManagerObserver ruleset_waiter(manager());
-
-  // This logs the number of rules the extension has specified to be enabled in
-  // the manifest, which may be different than the actual number of rules
-  // enabled.
-  DeclarativeNetRequestUnittest::LoadAndExpectSuccess(
-      400, 400, true /* expect_rulesets_indexed */);
-
-  ExtensionId extension_id = extension()->id();
-  ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
-  CompositeMatcher* composite_matcher =
-      manager()->GetMatcherForExtension(extension_id);
-  ASSERT_TRUE(composite_matcher);
-
-  VerifyPublicRulesetIDs(*extension(), {kId1, kId2, kId4});
-
-  EXPECT_THAT(composite_matcher->matchers(),
-              UnorderedElementsAre(
-                  Pointee(Property(&RulesetMatcher::GetRulesCount, 90)),
-                  Pointee(Property(&RulesetMatcher::GetRulesCount, 150)),
-                  Pointee(Property(&RulesetMatcher::GetRulesCount, 60))));
-
-  // 200 rules should contribute to the global pool.
-  const GlobalRulesTracker& global_rules_tracker =
-      RulesMonitorService::Get(browser_context())->global_rules_tracker();
-  EXPECT_EQ(200u, global_rules_tracker.GetAllocatedGlobalRuleCountForTesting());
-
-  // Check that the extra static rule count is also persisted in prefs.
-  CheckExtensionAllocationInPrefs(extension_id, 200);
-}
-
 TEST_P(MultipleRulesetsTest, UpdateEnabledRulesets_InvalidRulesetID) {
   AddRuleset(CreateRuleset(kId1, 10, 10, true));
   AddRuleset(CreateRuleset(kId2, 10, 10, false));
@@ -1667,24 +1595,31 @@ class MultipleRulesetsGlobalRulesTest : public MultipleRulesetsTest {
         kDeclarativeNetRequestGlobalRules);
   }
 
+  // MultipleRulesetsTest override.
+  void SetUp() override {
+    MultipleRulesetsTest::SetUp();
+
+    // Sanity check that the extension can index and enable up to
+    // |rule_limit_override_| + |global_limit_override_| rules.
+    ASSERT_EQ(300, GetMaximumRulesPerRuleset());
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+
+  // Override the API guaranteed minimum to prevent a timeout on loading the
+  // extension.
+  base::AutoReset<int> guaranteed_minimum_override_ =
+      CreateScopedStaticGuaranteedMinimumOverrideForTesting(100);
+
+  // Similarly, override the global limit to prevent a timeout.
+  base::AutoReset<int> global_limit_override_ =
+      CreateScopedGlobalStaticRuleLimitOverrideForTesting(200);
 };
 
 // Ensure that only rulesets which exceed the rules count limit will not have
 // their rules indexed and will raise an install warning.
 TEST_P(MultipleRulesetsGlobalRulesTest, StaticRuleCountExceeded) {
-  // Override the API guaranteed minimum to prevent a timeout on loading the
-  // extension.
-  base::AutoReset<int> guaranteed_minimum_override =
-      CreateScopedStaticGuaranteedMinimumOverrideForTesting(100);
-
-  // Similarly, override the global limit to prevent a timeout.
-  base::AutoReset<int> global_limit_override =
-      CreateScopedGlobalStaticRuleLimitOverrideForTesting(200);
-
-  ASSERT_EQ(300, GetStaticRuleLimit());
-
   // Ruleset should not be indexed as it exceeds the limit.
   AddRuleset(CreateRuleset(kId1, 301, 0, true));
 
@@ -1740,20 +1675,51 @@ TEST_P(MultipleRulesetsGlobalRulesTest, StaticRuleCountExceeded) {
       extension()->id(), static_sources[1].id()));
 }
 
+// Ensure that a ruleset which causes the extension to go over the global rule
+// limit is correctly ignored.
+TEST_P(MultipleRulesetsGlobalRulesTest, RulesetIgnored) {
+  AddRuleset(CreateRuleset(kId1, 90, 0, true));
+  AddRuleset(CreateRuleset(kId2, 150, 0, true));
+
+  // This ruleset should not be loaded because it would exceed the global limit.
+  AddRuleset(CreateRuleset(kId3, 100, 0, true));
+
+  AddRuleset(CreateRuleset(kId4, 60, 0, true));
+
+  RulesetManagerObserver ruleset_waiter(manager());
+
+  // This logs the number of rules the extension has specified to be enabled in
+  // the manifest, which may be different than the actual number of rules
+  // enabled.
+  DeclarativeNetRequestUnittest::LoadAndExpectSuccess(
+      400, 400, true /* expect_rulesets_indexed */);
+
+  ExtensionId extension_id = extension()->id();
+  ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
+  CompositeMatcher* composite_matcher =
+      manager()->GetMatcherForExtension(extension_id);
+  ASSERT_TRUE(composite_matcher);
+
+  VerifyPublicRulesetIDs(*extension(), {kId1, kId2, kId4});
+
+  EXPECT_THAT(composite_matcher->matchers(),
+              UnorderedElementsAre(
+                  Pointee(Property(&RulesetMatcher::GetRulesCount, 90)),
+                  Pointee(Property(&RulesetMatcher::GetRulesCount, 150)),
+                  Pointee(Property(&RulesetMatcher::GetRulesCount, 60))));
+
+  // 200 rules should contribute to the global pool.
+  const GlobalRulesTracker& global_rules_tracker =
+      RulesMonitorService::Get(browser_context())->global_rules_tracker();
+  EXPECT_EQ(200u, global_rules_tracker.GetAllocatedGlobalRuleCountForTesting());
+
+  // Check that the extra static rule count is also persisted in prefs.
+  CheckExtensionAllocationInPrefs(extension_id, 200);
+}
+
 // Ensure that the global rule count is counted correctly for multiple
 // extensions.
 TEST_P(MultipleRulesetsGlobalRulesTest, MultipleExtensions) {
-  // Override the API guaranteed minimum to prevent a timeout on loading the
-  // extension.
-  base::AutoReset<int> guaranteed_minimum_override =
-      CreateScopedStaticGuaranteedMinimumOverrideForTesting(100);
-
-  // Similarly, override the global limit to prevent a timeout.
-  base::AutoReset<int> global_limit_override =
-      CreateScopedGlobalStaticRuleLimitOverrideForTesting(200);
-
-  ASSERT_EQ(300, GetStaticRuleLimit());
-
   // Load an extension with 90 rules.
   AddRuleset(CreateRuleset(kId1, 90, 0, true));
   RulesetManagerObserver ruleset_waiter(manager());
@@ -1815,17 +1781,6 @@ TEST_P(MultipleRulesetsGlobalRulesTest, MultipleExtensions) {
 // Ensure that the global rules limit is enforced correctly for multiple
 // extensions.
 TEST_P(MultipleRulesetsGlobalRulesTest, MultipleExtensionsRuleLimitExceeded) {
-  // Override the API guaranteed minimum to prevent a timeout on loading the
-  // extension.
-  base::AutoReset<int> guaranteed_minimum_override =
-      CreateScopedStaticGuaranteedMinimumOverrideForTesting(100);
-
-  // Similarly, override the global limit to prevent a timeout.
-  base::AutoReset<int> global_limit_override =
-      CreateScopedGlobalStaticRuleLimitOverrideForTesting(200);
-
-  ASSERT_EQ(300, GetStaticRuleLimit());
-
   // Load an extension with 300 rules, which reaches the global rules limit.
   AddRuleset(CreateRuleset(kId1, 300, 0, true));
   RulesetManagerObserver ruleset_waiter(manager());
@@ -1907,17 +1862,6 @@ TEST_P(MultipleRulesetsGlobalRulesTest, MultipleExtensionsRuleLimitExceeded) {
 }
 
 TEST_P(MultipleRulesetsGlobalRulesTest, UpdateAndGetEnabledRulesets_Success) {
-  // Override the API guaranteed minimum to prevent a timeout on loading the
-  // extension.
-  base::AutoReset<int> guaranteed_minimum_override =
-      CreateScopedStaticGuaranteedMinimumOverrideForTesting(100);
-
-  // Similarly, override the global limit to prevent a timeout.
-  base::AutoReset<int> global_limit_override =
-      CreateScopedGlobalStaticRuleLimitOverrideForTesting(200);
-
-  ASSERT_EQ(300, GetStaticRuleLimit());
-
   AddRuleset(CreateRuleset(kId1, 90, 0, false));
   AddRuleset(CreateRuleset(kId2, 60, 0, true));
   AddRuleset(CreateRuleset(kId3, 150, 0, true));
@@ -1974,17 +1918,6 @@ TEST_P(MultipleRulesetsGlobalRulesTest, UpdateAndGetEnabledRulesets_Success) {
 
 TEST_P(MultipleRulesetsGlobalRulesTest,
        UpdateAndGetEnabledRulesets_RuleCountExceeded) {
-  // Override the API guaranteed minimum to prevent a timeout on loading the
-  // extension.
-  base::AutoReset<int> guaranteed_minimum_override =
-      CreateScopedStaticGuaranteedMinimumOverrideForTesting(100);
-
-  // Similarly, override the global limit to prevent a timeout.
-  base::AutoReset<int> global_limit_override =
-      CreateScopedGlobalStaticRuleLimitOverrideForTesting(200);
-
-  ASSERT_EQ(300, GetStaticRuleLimit());
-
   AddRuleset(CreateRuleset(kId1, 250, 0, true));
   AddRuleset(CreateRuleset(kId2, 40, 0, true));
   AddRuleset(CreateRuleset(kId3, 50, 0, false));
@@ -2025,17 +1958,6 @@ TEST_P(MultipleRulesetsGlobalRulesTest,
 // Test that getAvailableStaticRuleCount returns the correct number of rules an
 // extension can still enable.
 TEST_P(MultipleRulesetsGlobalRulesTest, GetAvailableStaticRuleCount) {
-  // Override the API guaranteed minimum to prevent a timeout on loading the
-  // extension.
-  base::AutoReset<int> guaranteed_minimum_override =
-      CreateScopedStaticGuaranteedMinimumOverrideForTesting(100);
-
-  // Similarly, override the global limit to prevent a timeout.
-  base::AutoReset<int> global_limit_override =
-      CreateScopedGlobalStaticRuleLimitOverrideForTesting(200);
-
-  ASSERT_EQ(300, GetStaticRuleLimit());
-
   AddRuleset(CreateRuleset(kId1, 50, 0, true));
   AddRuleset(CreateRuleset(kId2, 100, 0, false));
 
@@ -2074,9 +1996,9 @@ TEST_P(MultipleRulesetsGlobalRulesTest, GetAvailableStaticRuleCount) {
       temp_dir().GetPath().Append(FILE_PATH_LITERAL("test_extension_2")));
   ClearRulesets();
 
-  AddRuleset(CreateRuleset(kId3, GetStaticRuleLimit(), 0, true));
+  AddRuleset(CreateRuleset(kId3, GetMaximumRulesPerRuleset(), 0, true));
   DeclarativeNetRequestUnittest::LoadAndExpectSuccess(
-      GetStaticRuleLimit(), GetStaticRuleLimit(),
+      GetMaximumRulesPerRuleset(), GetMaximumRulesPerRuleset(),
       true /* expect_rulesets_indexed */);
 
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(2);

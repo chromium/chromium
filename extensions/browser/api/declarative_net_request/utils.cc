@@ -306,12 +306,17 @@ int GetGlobalStaticRuleLimit() {
 }
 
 int GetStaticRuleLimit() {
-  if (base::FeatureList::IsEnabled(kDeclarativeNetRequestGlobalRules))
-    return GetStaticGuaranteedMinimumRuleCount() + GetGlobalStaticRuleLimit();
-
+  DCHECK(!base::FeatureList::IsEnabled(kDeclarativeNetRequestGlobalRules));
   return g_static_rule_limit_for_testing == kInvalidRuleLimit
              ? dnr_api::MAX_NUMBER_OF_RULES
              : g_static_rule_limit_for_testing;
+}
+
+int GetMaximumRulesPerRuleset() {
+  return base::FeatureList::IsEnabled(kDeclarativeNetRequestGlobalRules)
+             ? GetStaticGuaranteedMinimumRuleCount() +
+                   GetGlobalStaticRuleLimit()
+             : GetStaticRuleLimit();
 }
 
 int GetDynamicRuleLimit() {

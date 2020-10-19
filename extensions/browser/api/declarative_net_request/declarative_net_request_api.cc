@@ -454,7 +454,7 @@ DeclarativeNetRequestGetAvailableStaticRuleCountFunction::Run() {
   size_t enabled_static_rule_count =
       GetEnabledStaticRuleCount(composite_matcher);
   size_t static_rule_limit =
-      static_cast<size_t>(declarative_net_request::GetStaticRuleLimit());
+      static_cast<size_t>(declarative_net_request::GetMaximumRulesPerRuleset());
   DCHECK_LE(enabled_static_rule_count, static_rule_limit);
 
   size_t available_static_rule_count = 0;

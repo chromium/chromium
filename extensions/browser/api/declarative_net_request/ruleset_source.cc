@@ -352,7 +352,7 @@ RulesetSource RulesetSource::CreateStatic(
       extension.path().Append(info.relative_path),
       extension.path().Append(
           file_util::GetIndexedRulesetRelativePath(info.id.value())),
-      info.id, GetStaticRuleLimit(), extension.id(), info.enabled);
+      info.id, GetMaximumRulesPerRuleset(), extension.id(), info.enabled);
 }
 
 // static

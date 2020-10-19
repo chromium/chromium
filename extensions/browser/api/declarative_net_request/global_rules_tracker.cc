@@ -88,11 +88,10 @@ size_t GlobalRulesTracker::GetAllocatedGlobalRuleCountForTesting() const {
 bool GlobalRulesTracker::OnExtensionRuleCountUpdated(
     const ExtensionId& extension_id,
     size_t new_rule_count) {
-  // Each extension ruleset is allowed to have up to |GetStaticRuleLimit()|
-  // rules during indexing.
-  DCHECK_LE(new_rule_count,
-            static_cast<size_t>(GetStaticRuleLimit() *
-                                dnr_api::MAX_NUMBER_OF_STATIC_RULESETS));
+  // Each extension ruleset is allowed to have up to
+  // |GetMaximumRulesPerRuleset()| rules during indexing.
+  DCHECK_LE(new_rule_count, static_cast<size_t>(GetMaximumRulesPerRuleset()) *
+                                dnr_api::MAX_NUMBER_OF_STATIC_RULESETS);
 
   if (new_rule_count <=
       static_cast<size_t>(GetStaticGuaranteedMinimumRuleCount())) {

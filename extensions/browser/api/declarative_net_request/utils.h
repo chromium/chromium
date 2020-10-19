@@ -107,8 +107,13 @@ int GetStaticGuaranteedMinimumRuleCount();
 // single profile.
 int GetGlobalStaticRuleLimit();
 
-// Returns the maximum number of rules a valid static ruleset can have.
+// Returns the maximum number of static rules an extension can enable. Only
+// valid if global rules are disabled.
 int GetStaticRuleLimit();
+
+// Returns the maximum number of rules a valid static ruleset can have. This is
+// also the maximum number of static rules an extension can enable at any point.
+int GetMaximumRulesPerRuleset();
 
 // Returns the per-extension dynamic rule limit.
 int GetDynamicRuleLimit();
