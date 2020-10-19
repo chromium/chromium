@@ -237,6 +237,11 @@
     "expiry_milestone": 78
   },
   {
+    "name": "audio-player-js-modules",
+    "owners": [ "lucmult", "jboulic", "simmonsjosh" ],
+    "expiry_milestone": 91
+  },
+  {
     "name": "audio-worklet-realtime-thread",
     "owners": [ "//third_party/blink/renderer/modules/webaudio/OWNERS" ],
     "expiry_milestone": 90
@@ -2511,6 +2516,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "files-js-modules",
+    "owners": [ "lucmult", "jboulic", "simmonsjosh" ],
+    "expiry_milestone": 91
+  },
+  {
     "name": "files-ng",
     "owners": [ "adanilo", "noel" ],
     "expiry_milestone": 88
@@ -4676,6 +4686,11 @@
     "name": "username-first-flow",
     "owners": [ "jdoerrie" ],
     "expiry_milestone": 88
+  },
+  {
+    "name": "video-player-js-modules",
+    "owners": [ "lucmult", "jboulic", "simmonsjosh" ],
+    "expiry_milestone": 91
   },
   {
     "name": "video-tutorials",

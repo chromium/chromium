@@ -272,6 +272,18 @@ const base::Feature kFilesCameraFolder{"FilesCameraFolder",
 // Enables the next generation file manager.
 const base::Feature kFilesNG{"FilesNG", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables JS modules for Files app.
+const base::Feature kFilesJsModules{"FilesJsModules",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables JS modules for Audio Player.
+const base::Feature kAudioPlayerJsModules{"AudioPlayerJsModules",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables JS modules for Video Player.
+const base::Feature kVideoPlayerJsModules{"VideoPlayerJsModules",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables partitioning of removable disks in file manager.
 const base::Feature kFilesSinglePartitionFormat{
     "FilesSinglePartitionFormat", base::FEATURE_DISABLED_BY_DEFAULT};

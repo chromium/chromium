@@ -131,6 +131,11 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kFamilyLinkOnSchoolDevice;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kFilesCameraFolder;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const base::Feature kFilesJsModules;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kAudioPlayerJsModules;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kVideoPlayerJsModules;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const base::Feature kFilesNG;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kFilesSinglePartitionFormat;

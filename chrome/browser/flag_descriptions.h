@@ -2340,6 +2340,15 @@ extern const char kTrimOnFreezeDescription[];
 extern const char kTrimOnMemoryPressureName[];
 extern const char kTrimOnMemoryPressureDescription[];
 
+extern const char kFilesJsModulesName[];
+extern const char kFilesJsModulesDescription[];
+
+extern const char kAudioPlayerJsModulesName[];
+extern const char kAudioPlayerJsModulesDescription[];
+
+extern const char kVideoPlayerJsModulesName[];
+extern const char kVideoPlayerJsModulesDescription[];
+
 extern const char kEnableSuggestedFilesName[];
 extern const char kEnableSuggestedFilesDescription[];
 

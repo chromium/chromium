@@ -41931,6 +41931,7 @@ from previous Chrome versions.
   <int value="-1722208902" label="CCTModuleCustomRequestHeader:disabled"/>
   <int value="-1720653947" label="WebRtcHybridAgc:disabled"/>
   <int value="-1719833926" label="disable-answers-in-suggest"/>
+  <int value="-1719699712" label="AudioPlayerJsModules:enabled"/>
   <int value="-1718074215" label="HomepageSettingsUIConversion:enabled"/>
   <int value="-1716654100" label="tab-capture-downscale-quality"/>
   <int value="-1716140224" label="EnableEmbeddedAssistantUI:disabled"/>
@@ -43129,6 +43130,7 @@ from previous Chrome versions.
   <int value="-547301855" label="SyncPseudoUSSSupervisedUsers:enabled"/>
   <int value="-544685871" label="NewOsSettingsSearch:enabled"/>
   <int value="-544629557" label="CSSBackdropFilter:enabled"/>
+  <int value="-541764089" label="AudioPlayerJsModules:disabled"/>
   <int value="-541611402" label="OfflinePagesPrefetching:enabled"/>
   <int value="-540150399" label="TapVisualizerApp:enabled"/>
   <int value="-538141684" label="SafetyTip:enabled"/>
@@ -43233,6 +43235,7 @@ from previous Chrome versions.
   <int value="-457292000" label="HappinessTrackingSurveysForDesktop:enabled"/>
   <int value="-457174225" label="Av1Decoder:enabled"/>
   <int value="-456321929" label="ForceEnableSystemAec:disabled"/>
+  <int value="-455413094" label="FilesJsModules:enabled"/>
   <int value="-455203267" label="use_new_features_summary"/>
   <int value="-454362199" label="HelpAppV2:disabled"/>
   <int value="-450976085"
@@ -43286,6 +43289,7 @@ from previous Chrome versions.
   <int value="-396046249" label="PhotoPickerVideoSupport:enabled"/>
   <int value="-395606844" label="enable-site-settings"/>
   <int value="-395454065" label="DisablePostScriptPrinting:disabled"/>
+  <int value="-395259448" label="VideoPlayerJsModules:disabled"/>
   <int value="-394734604" label="FillingPasswordsFromAnyOrigin:disabled"/>
   <int value="-389664522"
       label="OmniboxUIExperimentHideSteadyStateUrlPathQueryAndRefOnInteraction:enabled"/>
@@ -43810,6 +43814,7 @@ from previous Chrome versions.
   <int value="128086566" label="D3D11VideoDecoder:enabled"/>
   <int value="128323385" label="WebUIOmniboxPopup:enabled"/>
   <int value="129458360" label="LiteVideo:disabled"/>
+  <int value="130939792" label="FilesJsModules:disabled"/>
   <int value="131881947" label="D3DVsync:enabled"/>
   <int value="132560299"
       label="OmniboxUIExperimentHideSteadyStateUrlScheme:disabled"/>
@@ -43895,6 +43900,7 @@ from previous Chrome versions.
   <int value="245896533" label="SearchSuggestionsOnLocalNtp:enabled"/>
   <int value="247200195" label="EnhancedProtectionPromoCard:enabled"/>
   <int value="250855010" label="WebAssemblyBaseline:disabled"/>
+  <int value="254497185" label="VideoPlayerJsModules:enabled"/>
   <int value="255375615" label="stop-non-timers-in-background:enabled"/>
   <int value="258621334"
       label="HappinessTrackingSurveysForDesktopDemo:disabled"/>
