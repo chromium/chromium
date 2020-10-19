@@ -12,5 +12,6 @@ python_library("monochrome_public_apk_checker") {
     "//android_webview:system_webview_apk",
     "//chrome/android:chrome_public_apk",
     "//chrome/android:monochrome_public_apk",
+    "//testing:run_isolated_script_test",
   ]
 }

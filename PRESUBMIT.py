@@ -1375,6 +1375,7 @@ _GENERIC_PYDEPS_FILES = [
     'content/public/android/generate_child_service.pydeps',
     'net/tools/testserver/testserver.pydeps',
     'testing/scripts/run_android_wpt.pydeps',
+    'testing/scripts/run_isolated_script_test.pydeps',
     'third_party/android_platform/development/scripts/stack.pydeps',
     'third_party/blink/renderer/bindings/scripts/build_web_idl_database.pydeps',
     'third_party/blink/renderer/bindings/scripts/collect_idl_files.pydeps',
