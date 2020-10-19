@@ -594,10 +594,15 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
                                  style.BoxSizing(), *inline_size);
     // Apply the automatic minimum size for aspect ratio:
     // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-minimum
+    // We also check for LayoutUnit::Max() because flexbox uses that as a
+    // "placeholder" to compute the flex line length while still respecting
+    // max-block-size.
     if (style.LogicalMinHeight().IsAuto() &&
         style.OverflowBlockDirection() == EOverflow::kVisible &&
-        intrinsic_size != kIndefiniteSize)
+        intrinsic_size != kIndefiniteSize &&
+        intrinsic_size != LayoutUnit::Max()) {
       min_max.min_size = intrinsic_size;
+    }
   } else if (extent == kIndefiniteSize) {
     DCHECK_EQ(intrinsic_size, kIndefiniteSize);
     return extent;

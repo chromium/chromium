@@ -1300,6 +1300,7 @@ LayoutUnit LayoutBox::ConstrainLogicalHeightByMinMax(
   if (logical_min_height.IsAuto() &&
       ShouldComputeLogicalHeightFromAspectRatio() &&
       intrinsic_content_height != kIndefiniteSize &&
+      intrinsic_content_height != LayoutUnit::Max() &&
       StyleRef().OverflowBlockDirection() == EOverflow::kVisible) {
     logical_min_height = Length::Fixed(intrinsic_content_height);
   }
