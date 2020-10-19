@@ -16,6 +16,14 @@
 
 namespace blink {
 
+namespace {
+
+bool IsBidiControl(StringView string) {
+  return string.length() == 1 && Character::IsBidiControl(string[0]);
+}
+
+}  // namespace
+
 inline void NGInlineCursor::MoveToItem(const ItemsSpan::iterator& iter) {
   DCHECK(IsItemCursor());
   DCHECK(iter >= items_.begin() && iter <= items_.end());
@@ -942,6 +950,14 @@ PositionWithAffinity NGInlineCursor::PositionForPointInChild(
   return PositionWithAffinity();
 }
 
+PositionWithAffinity NGInlineCursor::PositionForPointInText(
+    unsigned text_offset) const {
+  DCHECK(Current().IsText()) << this;
+  if (IsItemCursor())
+    return CurrentItem()->PositionForPointInText(text_offset, *this);
+  return CurrentPaintFragment()->PositionForPointInText(text_offset);
+}
+
 PositionWithAffinity NGInlineCursor::PositionForStartOfLine() const {
   DCHECK(Current().IsLineBox());
   const PhysicalOffset point_in_line = Current().LineStartPoint();
@@ -954,12 +970,27 @@ PositionWithAffinity NGInlineCursor::PositionForStartOfLine() const {
 
 PositionWithAffinity NGInlineCursor::PositionForEndOfLine() const {
   DCHECK(Current().IsLineBox());
-  const PhysicalOffset point_in_line = Current().LineEndPoint();
-  if (IsItemCursor()) {
-    return PositionForPointInInlineBox(point_in_line +
-                                       Current().OffsetInContainerBlock());
+  NGInlineCursor last_leaf = CursorForDescendants();
+  if (IsLtr(Current().BaseDirection()))
+    last_leaf.MoveToLastNonPseudoLeaf();
+  else
+    last_leaf.MoveToFirstNonPseudoLeaf();
+  if (!last_leaf)
+    return PositionWithAffinity();
+  Node* const node = last_leaf.Current().GetLayoutObject()->NonPseudoNode();
+  if (!node) {
+    NOTREACHED() << "MoveToLastLeaf returns invalid node: " << last_leaf;
+    return PositionWithAffinity();
   }
-  return CurrentPaintFragment()->PositionForPoint(point_in_line);
+  if (IsA<HTMLBRElement>(node))
+    return PositionWithAffinity(Position::BeforeNode(*node));
+  if (!IsA<Text>(node))
+    return PositionWithAffinity(Position::AfterNode(*node));
+  const unsigned text_offset =
+      Current().BaseDirection() == last_leaf.Current().ResolvedDirection()
+          ? last_leaf.Current().TextOffset().end
+          : last_leaf.Current().TextOffset().start;
+  return last_leaf.PositionForPointInText(text_offset);
 }
 
 void NGInlineCursor::MoveTo(const NGInlineCursorPosition& position) {
@@ -1110,6 +1141,27 @@ void NGInlineCursor::MoveToFirstLogicalLeaf() {
     continue;
 }
 
+void NGInlineCursor::MoveToFirstNonPseudoLeaf() {
+  for (NGInlineCursor cursor = *this; cursor; cursor.MoveToNext()) {
+    if (!cursor.Current().GetLayoutObject()->NonPseudoNode())
+      continue;
+    if (cursor.Current().IsText()) {
+      // Note: We should not skip bidi control only text item to return
+      // position after bibi control character, e.g.
+      // <p dir=rtl>&#x202B;xyz ABC.&#x202C;</p>
+      // See "editing/selection/home-end.html".
+      DCHECK(!cursor.Current().IsLayoutGeneratedText()) << cursor;
+      *this = cursor;
+      return;
+    }
+    if (cursor.Current().IsInlineLeaf()) {
+      *this = cursor;
+      return;
+    }
+  }
+  MakeNull();
+}
+
 void NGInlineCursor::MoveToLastChild() {
   DCHECK(Current().CanHaveChildren());
   if (!TryToMoveToLastChild())
@@ -1142,6 +1194,44 @@ void NGInlineCursor::MoveToLastLogicalLeaf() {
     continue;
 }
 
+void NGInlineCursor::MoveToLastNonPseudoLeaf() {
+  // TODO(yosin): We should introduce |IsTruncated()| to avoid to use
+  // |in_hidden_for_paint|. See also |LayoutText::GetTextBoxInfo()|.
+  // When "text-overflow:ellipsis" specified, items are:
+  //  [i+0] original non-truncated text (IsHiddenForPaint()=true)
+  //  [i+1] truncated text
+  //  [i+2] ellipsis (IsLayoutGeneratedText())
+  NGInlineCursor last_leaf;
+  bool in_hidden_for_paint = false;
+  for (NGInlineCursor cursor = *this; cursor; cursor.MoveToNext()) {
+    if (!cursor.Current().GetLayoutObject()->NonPseudoNode())
+      continue;
+    if (cursor.Current().IsLineBreak() && last_leaf)
+      break;
+    if (cursor.Current().IsText()) {
+      DCHECK(!cursor.Current().IsLayoutGeneratedText());
+      if (in_hidden_for_paint && !cursor.Current().IsHiddenForPaint()) {
+        // |cursor| is at truncated text.
+        break;
+      }
+      in_hidden_for_paint = cursor.Current().IsHiddenForPaint();
+      // Exclude bidi control only fragment, e.g.
+      // <p dir=ltr>&#x202B;xyz ABC.&#x202C;</p> has
+      //  [0] "\u202Bxyz "
+      //  [1] "ABC"
+      //  [2] "."
+      //  [3] "\u202C"
+      // See "editing/selection/home-end.html"
+      if (IsBidiControl(cursor.Current().Text(cursor)))
+        continue;
+      last_leaf = cursor;
+      continue;
+    }
+    if (cursor.Current().IsInlineLeaf())
+      last_leaf = cursor;
+  }
+  *this = last_leaf;
+}
 void NGInlineCursor::MoveToNext() {
   if (root_paint_fragment_)
     return MoveToNextPaintFragment();

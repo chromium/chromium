@@ -367,6 +367,9 @@ class CORE_EXPORT NGFragmentItem {
   PositionWithAffinity PositionForPointInText(
       const PhysicalOffset& point,
       const NGInlineCursor& cursor) const;
+  PositionWithAffinity PositionForPointInText(
+      unsigned text_offset,
+      const NGInlineCursor& cursor) const;
   unsigned TextOffsetForPoint(const PhysicalOffset& point,
                               const NGFragmentItems& items) const;
 

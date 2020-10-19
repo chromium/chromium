@@ -328,6 +328,9 @@ class CORE_EXPORT NGInlineCursor {
   PositionWithAffinity PositionForPointInChild(
       const PhysicalOffset& point_in_container) const;
 
+  // Returns |PositionWithAffinity| in current text at |text_offset|
+  PositionWithAffinity PositionForPointInText(unsigned text_offset) const;
+
   // Returns first/last position of |this| line. |this| should be line box.
   PositionWithAffinity PositionForStartOfLine() const;
   PositionWithAffinity PositionForEndOfLine() const;
@@ -361,8 +364,13 @@ class CORE_EXPORT NGInlineCursor {
   void MoveToFirstLine();
 
   // Move to first logical leaf of current line box. If current line box has
-  // no children, curosr becomes null.
+  // no children, cursor becomes null.
   void MoveToFirstLogicalLeaf();
+
+  // Move to first leaf from current position.
+  // Unlike |MoveToFirstLogicalLeaf()|, this function ignores pseudo node and
+  // stops at non-truncated text.
+  void MoveToFirstNonPseudoLeaf();
 
   // Move to last child of current container box. If the current position is
   // at fragment without children, this cursor points nothing.
@@ -374,8 +382,13 @@ class CORE_EXPORT NGInlineCursor {
   void MoveToLastLine();
 
   // Move to last logical leaf of current line box. If current line box has
-  // no children, curosr becomes null.
+  // no children, cursor becomes null.
   void MoveToLastLogicalLeaf();
+
+  // Move to last leaf from current position.
+  // Unlike |MoveToLastLogicalLeaf()|, this
+  // function ignores pseudo node and stops at non-truncated text.
+  void MoveToLastNonPseudoLeaf();
 
   // Move the current position to the next fragment in pre-order DFS. When
   // the current position is at last fragment, this cursor points nothing.

@@ -619,7 +619,17 @@ PositionWithAffinity NGFragmentItem::PositionForPointInText(
   DCHECK_EQ(cursor.CurrentItem(), this);
   if (IsGeneratedText())
     return PositionWithAffinity();
-  const unsigned text_offset = TextOffsetForPoint(point, cursor.Items());
+  return PositionForPointInText(TextOffsetForPoint(point, cursor.Items()),
+                                cursor);
+}
+
+PositionWithAffinity NGFragmentItem::PositionForPointInText(
+    unsigned text_offset,
+    const NGInlineCursor& cursor) const {
+  DCHECK_EQ(Type(), kText);
+  DCHECK_EQ(cursor.CurrentItem(), this);
+  DCHECK(!IsGeneratedText());
+  DCHECK_LE(text_offset, EndOffset());
   const NGCaretPosition unadjusted_position{
       cursor, NGCaretPositionType::kAtTextOffset, text_offset};
   if (RuntimeEnabledFeatures::BidiCaretAffinityEnabled())

@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL line_width_numeric_overflow resources/testharness.js:2001:25)
-	 expected <div style="white-space: pre-wrap">|<select style="margin-left: 1e9px"><option>ab</option></select>xy</div>,
-	 but got  <div style="white-space: pre-wrap"><select style="margin-left: 1e9px"><option>ab</option></select>|xy</div>,
-	 sameupto <div style="white-space: pre-wrap">
-Harness: the test ran to completion.
-

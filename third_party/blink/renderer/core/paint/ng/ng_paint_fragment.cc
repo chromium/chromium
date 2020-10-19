@@ -734,7 +734,13 @@ PositionWithAffinity NGPaintFragment::PositionForPointInText(
   const auto& text_fragment = To<NGPhysicalTextFragment>(PhysicalFragment());
   if (text_fragment.IsGeneratedText())
     return PositionWithAffinity();
-  const unsigned text_offset = text_fragment.TextOffsetForPoint(point);
+  return PositionForPointInText(text_fragment.TextOffsetForPoint(point));
+}
+
+PositionWithAffinity NGPaintFragment::PositionForPointInText(
+    unsigned text_offset) const {
+  const auto& text_fragment = To<NGPhysicalTextFragment>(PhysicalFragment());
+  DCHECK(!text_fragment.IsGeneratedText());
   NGInlineCursor cursor;
   cursor.MoveTo(*this);
   const NGCaretPosition unadjusted_position{

@@ -217,6 +217,7 @@ class CORE_EXPORT NGPaintFragment : public RefCounted<NGPaintFragment>,
   // Converts the given point, relative to the fragment itself, into a position
   // in DOM tree.
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const;
+  PositionWithAffinity PositionForPointInText(unsigned text_offset) const;
 
   // A range of fragments for |FragmentsFor()|.
   class TraverseNextForSameLayoutObject {
