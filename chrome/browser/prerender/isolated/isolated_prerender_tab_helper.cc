@@ -21,6 +21,7 @@
 #include "chrome/browser/prerender/isolated/isolated_prerender_features.h"
 #include "chrome/browser/prerender/isolated/isolated_prerender_network_context_client.h"
 #include "chrome/browser/prerender/isolated/isolated_prerender_params.h"
+#include "chrome/browser/prerender/isolated/isolated_prerender_prefetch_metrics_collector.h"
 #include "chrome/browser/prerender/isolated/isolated_prerender_proxy_configurator.h"
 #include "chrome/browser/prerender/isolated/isolated_prerender_service.h"
 #include "chrome/browser/prerender/isolated/isolated_prerender_service_factory.h"
@@ -348,6 +349,16 @@ void IsolatedPrerenderTabHelper::NotifyPrefetchProbeLatency(
   page_->probe_latency_ = probe_latency;
 }
 
+void IsolatedPrerenderTabHelper::ReportProbeResult(
+    const GURL& url,
+    IsolatedPrerenderProbeResult result) {
+  if (!page_->prefetch_metrics_collector_) {
+    return;
+  }
+  page_->prefetch_metrics_collector_->OnMainframeNavigationProbeResult(url,
+                                                                       result);
+}
+
 void IsolatedPrerenderTabHelper::OnPrefetchStatusUpdate(
     const GURL& url,
     IsolatedPrerenderPrefetchStatus usage) {
@@ -381,6 +392,7 @@ IsolatedPrerenderTabHelper::MaybeUpdatePrefetchStatusWithNSPContext(
     case IsolatedPrerenderPrefetchStatus::kPrefetchFailedNotHTML:
     case IsolatedPrerenderPrefetchStatus::kPrefetchSuccessful:
     case IsolatedPrerenderPrefetchStatus::kNavigatedToLinkNotOnSRP:
+    case IsolatedPrerenderPrefetchStatus::kSubresourceThrottled:
       return status;
     // These statuses we are going to update to, and this is the only place that
     // they are set so they are not expected to be passed in.
@@ -554,6 +566,8 @@ void IsolatedPrerenderTabHelper::DidFinishNavigation(
       std::make_unique<CurrentPageLoad>(navigation_handle);
 
   if (page_->srp_metrics_->predicted_urls_count_ > 0) {
+    page_->prefetch_metrics_collector_->OnMainframeNavigatedTo(url);
+
     // If the previous page load was a Google SRP, the AfterSRPMetrics class
     // needs to be created now from the SRP's |page_| and then set on the new
     // one when we set it at the end of this method.
@@ -790,6 +804,13 @@ void IsolatedPrerenderTabHelper::OnPrefetchComplete(
   base::UmaHistogramSparse("IsolatedPrerender.Prefetch.Mainframe.NetError",
                            std::abs(loader->NetError()));
 
+  if (loader->CompletionStatus()) {
+    page_->prefetch_metrics_collector_->OnMainframeResourcePrefetched(
+        url, page_->original_prediction_ordering_.find(url)->second,
+        loader->ResponseInfo() ? loader->ResponseInfo()->Clone() : nullptr,
+        loader->CompletionStatus().value());
+  }
+
   if (loader->NetError() != net::OK) {
     OnPrefetchStatusUpdate(
         url, IsolatedPrerenderPrefetchStatus::kPrefetchFailedNetError);
@@ -805,6 +826,7 @@ void IsolatedPrerenderTabHelper::OnPrefetchComplete(
     DCHECK(!head->proxy_server.is_direct());
 
     HandlePrefetchResponse(url, isolation_info, std::move(head),
+
                            std::move(body));
   }
 
@@ -938,6 +960,8 @@ void IsolatedPrerenderTabHelper::DoNoStatePrefetch() {
       service->OnAboutToNoStatePrefetch(url, CopyPrefetchResponseForNSP(url));
   DCHECK_EQ(manager, service->GetSubresourceManagerForURL(url));
 
+  manager->SetPrefetchMetricsCollector(page_->prefetch_metrics_collector_);
+
   manager->SetCreateIsolatedLoaderFactoryCallback(base::BindRepeating(
       &IsolatedPrerenderTabHelper::CreateNewURLLoaderFactory,
       weak_factory_.GetWeakPtr()));
@@ -1065,6 +1089,13 @@ void IsolatedPrerenderTabHelper::OnPredictionUpdated(
     return;
   }
 
+  if (!page_->prefetch_metrics_collector_) {
+    page_->prefetch_metrics_collector_ =
+        base::MakeRefCounted<IsolatedPrerenderPrefetchMetricsCollector>(
+            page_->navigation_start_,
+            web_contents()->GetMainFrame()->GetPageUkmSourceId());
+  }
+
   // It's very likely we'll prefetch something at this point, so inform PLM to
   // start tracking metrics.
   InformPLMOfLikelyPrefetching(web_contents());
@@ -1189,6 +1220,10 @@ void IsolatedPrerenderTabHelper::OnGotEligibilityResult(
   if (!eligible) {
     if (status) {
       OnPrefetchStatusUpdate(url, status.value());
+
+      DCHECK(page_->prefetch_metrics_collector_);
+      page_->prefetch_metrics_collector_->OnMainframeResourceNotEligible(
+          url, page_->original_prediction_ordering_.find(url)->second, *status);
     }
     return;
   }

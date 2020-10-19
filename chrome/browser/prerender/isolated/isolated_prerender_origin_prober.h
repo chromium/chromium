@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "chrome/browser/prerender/isolated/isolated_prerender_probe_result.h"
 #include "net/base/address_list.h"
 #include "url/gurl.h"
 
@@ -30,7 +31,7 @@ class IsolatedPrerenderOriginProber {
   ~IsolatedPrerenderOriginProber();
 
   // Returns true if a probe needs to be done before using prefetched resources.
-  bool ShouldProbeOrigins();
+  bool ShouldProbeOrigins() const;
 
   // Sets the probe url override delegate for testing.
   void SetProbeURLOverrideDelegateOverrideForTesting(
@@ -43,9 +44,10 @@ class IsolatedPrerenderOriginProber {
   // Tells whether a DNS canary check is active. Used for testing.
   bool IsDNSCanaryCheckActiveForTesting() const;
 
-  // Starts a probe to |url| and calls |callback| with a bool to indicate
-  // success (when true) or failure (when false).
-  using OnProbeResultCallback = base::OnceCallback<void(bool)>;
+  // Starts a probe to |url| and calls |callback| with an
+  // |IsolatedPrerenderProbeResult| to indicate success.
+  using OnProbeResultCallback =
+      base::OnceCallback<void(IsolatedPrerenderProbeResult)>;
   void Probe(const GURL& url, OnProbeResultCallback callback);
 
  private:

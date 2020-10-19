@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/prerender/isolated/isolated_prerender_prefetch_status.h"
+#include "chrome/browser/prerender/isolated/isolated_prerender_probe_result.h"
 #include "chrome/browser/prerender/isolated/prefetched_mainframe_response_container.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -27,11 +28,13 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "url/gurl.h"
 
 class IsolatedPrerenderPageLoadMetricsObserver;
+class IsolatedPrerenderPrefetchMetricsCollector;
 class IsolatedPrerenderSubresourceManager;
 class Profile;
 
@@ -193,6 +196,10 @@ class IsolatedPrerenderTabHelper
   // Called by the URLLoaderInterceptor to update |page_.probe_latency_|.
   void NotifyPrefetchProbeLatency(base::TimeDelta probe_latency);
 
+  // Called by the URLLoaderInterceptor to report the outcome of an origin
+  // probe.
+  void ReportProbeResult(const GURL& url, IsolatedPrerenderProbeResult result);
+
   // When a previously prefetched page is navigated to, any cookies set on that
   // page load should be copied over to the normal profile. While this copy is
   // in progress, this method returns true to indicate to the navigation loader
@@ -252,6 +259,12 @@ class IsolatedPrerenderTabHelper
     // The metrics pertaining to how the prefetch is used after the Google SRP.
     // Only set for pages after a Google SRP.
     std::unique_ptr<AfterSRPMetrics> after_srp_metrics_;
+
+    // Collects metrics on all prefetching. This is a scoped refptr so that it
+    // can also be shared with subresource managers until all pointers to it are
+    // destroyed, at which time it logs UKM.
+    scoped_refptr<IsolatedPrerenderPrefetchMetricsCollector>
+        prefetch_metrics_collector_;
 
     // The status of each prefetch.
     std::map<GURL, IsolatedPrerenderPrefetchStatus> prefetch_status_by_url_;
