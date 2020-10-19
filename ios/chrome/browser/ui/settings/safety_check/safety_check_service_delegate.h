@@ -15,6 +15,9 @@
 // Called when item is tapped.
 - (void)didSelectItem:(TableViewItem*)item;
 
+// Determines if selection animation should be shown for |item|.
+- (BOOL)isItemClickable:(TableViewItem*)item;
+
 // Checks if |item| should have an error popover.
 - (BOOL)isItemWithErrorInfo:(TableViewItem*)item;
 
