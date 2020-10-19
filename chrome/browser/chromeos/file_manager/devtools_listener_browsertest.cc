@@ -79,9 +79,12 @@ class DevToolsListenerBrowserTest : public content::DevToolsAgentHostObserver,
 
  private:
   base::ScopedTempDir tmp_dir_;
+
+  using DevToolsAgentMap =  // agent hosts: have a unique devtools listener
+      std::map<content::DevToolsAgentHost*, std::unique_ptr<DevToolsListener>>;
+
+  DevToolsAgentMap devtools_agent_;
   uint32_t process_id_ = 0;
-  std::map<content::DevToolsAgentHost*, std::unique_ptr<DevToolsListener>>
-      devtools_agent_;
 
   DISALLOW_COPY_AND_ASSIGN(DevToolsListenerBrowserTest);
 };
