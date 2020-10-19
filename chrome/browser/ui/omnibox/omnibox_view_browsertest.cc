@@ -738,8 +738,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest,
 }
 
 // Verifies that https://crbug.com/45260 doesn't regress.
-IN_PROC_BROWSER_TEST_F(OmniboxViewTest,
-                       RendererInitiatedFocusSelectsAllWhenStartingBlurred) {
+IN_PROC_BROWSER_TEST_F(
+    OmniboxViewTest,
+    DISABLED_RendererInitiatedFocusSelectsAllWhenStartingBlurred) {
   ASSERT_NO_FATAL_FAILURE(NavigateExpectUrl(GURL("about:blank")));
 
   OmniboxView* omnibox_view = nullptr;
