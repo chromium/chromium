@@ -1,4 +1,3 @@
-#include "build/build_config.h"
 #include <stdint.h>
 
 #define CHAR62 '+'
