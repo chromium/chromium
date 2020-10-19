@@ -633,7 +633,7 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
 #define MAYBE_LeaveSiteStillWarnsAfter LeaveSiteStillWarnsAfter
 #endif
 IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
-                       LeaveSiteStillWarnsAfter) {
+                       MAYBE_LeaveSiteStillWarnsAfter) {
   auto kNavigatedUrl = GetURL("site1.com");
 
   if (!IsSuspiciousSiteWarningEnabled()) {
@@ -861,7 +861,7 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
 #define MAYBE_SafetyTipShownHistogram SafetyTipShownHistogram
 #endif
 IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
-                       SafetyTipShownHistogram) {
+                       MAYBE_SafetyTipShownHistogram) {
   const char kHistogramName[] = "Security.SafetyTips.SafetyTipShown";
   base::HistogramTester histograms;
 
@@ -1032,7 +1032,7 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
 #define MAYBE_TimeOpenHistogram TimeOpenHistogram
 #endif
 IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
-                       TimeOpenHistogram) {
+                       MAYBE_TimeOpenHistogram) {
   if (!IsSuspiciousSiteWarningEnabled()) {
     return;
   }
@@ -1284,7 +1284,7 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
   WarningDismissalCausesUkmRecordingForBlocklist
 #endif
 IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
-                       WarningDismissalCausesUkmRecordingForBlocklist) {
+                       MAYBE_WarningDismissalCausesUkmRecordingForBlocklist) {
   // Only test when any UI is actually enabled.
   if (!IsSuspiciousSiteWarningEnabled()) {
     return;
