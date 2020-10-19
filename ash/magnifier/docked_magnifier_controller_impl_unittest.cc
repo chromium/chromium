@@ -32,12 +32,14 @@
 #include "base/command_line.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/session_manager_types.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
@@ -142,7 +144,145 @@ class DockedMagnifierTest : public NoSessionAshTestBase {
     auto* generator = GetEventGenerator();
     generator->GestureTapAt(touch_point_in_screen);
   }
+
+  std::unique_ptr<views::Widget> CreateLockSystemModalWindow(
+      const gfx::Rect& bounds) {
+    auto* widget_delegate_view = new views::WidgetDelegateView();
+    widget_delegate_view->SetModalType(ui::MODAL_TYPE_SYSTEM);
+    return CreateTestWidget(widget_delegate_view,
+                            kShellWindowId_LockSystemModalContainer, bounds);
+  }
+
+  // Test that display work area and a modal window is adjusted correctly
+  // after enabling and disabling a docked magnifier.
+  void TestDisplayWorkAreaAndLockSystemModalBoundsUpdated() {
+    // Start with the docked magnifier disabled.
+    EXPECT_FALSE(controller()->GetEnabled());
+
+    // Create a lock system modal window.
+    auto lock_system_modal_widget =
+        CreateLockSystemModalWindow(gfx::Rect(800, 600));
+
+    // Enable the docked magnifier.
+    controller()->SetEnabled(true);
+    EXPECT_TRUE(controller()->GetEnabled());
+
+    // Expect that the modal window fits inside the shrunk valid area.
+    const gfx::Rect modal_bounds =
+        lock_system_modal_widget->GetWindowBoundsInScreen();
+    const gfx::Rect valid_area =
+        display::Screen::GetScreen()
+            ->GetDisplayNearestWindow(Shell::GetPrimaryRootWindow())
+            .work_area();
+    const gfx::Rect docked_magnifier_bounds =
+        controller()->GetViewportWidgetForTesting()->GetWindowBoundsInScreen();
+    // Check that display work area does not overlap with a docked magnifier.
+    EXPECT_FALSE(docked_magnifier_bounds.Intersects(valid_area));
+    // Check that modal window fits inside the display work area, |valid_area|,
+    // to make sure the |modal_bounds| size does not overflow.
+    EXPECT_TRUE(valid_area.Contains(modal_bounds));
+
+    // Disable the docked magnifier.
+    controller()->SetEnabled(false);
+    EXPECT_FALSE(controller()->GetEnabled());
+
+    const gfx::Rect modal_bounds_no_magnifier =
+        lock_system_modal_widget->GetWindowBoundsInScreen();
+
+    // Expect that the window stays inside the valid area.
+    const gfx::Rect valid_area_no_magnifier =
+        display::Screen::GetScreen()
+            ->GetDisplayNearestWindow(Shell::GetPrimaryRootWindow())
+            .work_area();
+    EXPECT_TRUE(valid_area_no_magnifier.Contains(modal_bounds_no_magnifier));
+    // With larger work area, |modal_bounds_no_magnifier| size must not shrink.
+    // Even stricter, the size must remain the same as |modal_bounds| size
+    // because a centered system modal only shrinks but never expands according
+    // to SystemModalContainerLayoutManager::GetCenteredAndOrFittedBounds()
+    // ClampToCenteredSize.
+    EXPECT_EQ(modal_bounds.size(), modal_bounds_no_magnifier.size());
+    // Expect y offset of the modal window to be centered correctly.
+    EXPECT_EQ((valid_area_no_magnifier.height() -
+               modal_bounds_no_magnifier.height()) /
+                  2,
+              modal_bounds_no_magnifier.y());
+  }
+
+  // Test that bounds of a modal window are the same when initially created and
+  // updated. views::NativeWidgetAura::CenterWindow() sets the initial modal
+  // bounds, while
+  // SystemModalContainerLayoutManager::GetCenteredAndOrFittedBounds() updates
+  // the modal window bounds. Thus, this test makes sure the bounds are the same
+  // in both cases.
+  void TestLockSystemModalBoundUpdateAndCreationConsistency() {
+    // Start with the docked magnifier disabled.
+    EXPECT_FALSE(controller()->GetEnabled());
+
+    // Create a lock system modal window for an update case.
+    auto lock_system_modal_widget_update_case =
+        CreateLockSystemModalWindow(gfx::Rect(800, 600));
+
+    // Enable the docked magnifier.
+    controller()->SetEnabled(true);
+    EXPECT_TRUE(controller()->GetEnabled());
+
+    // Create a lock system modal window for a creation case.
+    auto lock_system_modal_widget =
+        CreateLockSystemModalWindow(gfx::Rect(800, 600));
+
+    // Expect that both modal windows fit inside the shrunk area
+    // and have the exact same bounds.
+    const gfx::Rect modal_bounds =
+        lock_system_modal_widget->GetWindowBoundsInScreen();
+    const gfx::Rect modal_bounds_update_case =
+        lock_system_modal_widget_update_case->GetWindowBoundsInScreen();
+    const gfx::Rect valid_area =
+        display::Screen::GetScreen()
+            ->GetDisplayNearestWindow(Shell::GetPrimaryRootWindow())
+            .work_area();
+    const gfx::Rect docked_magnifier_bounds =
+        controller()->GetViewportWidgetForTesting()->GetWindowBoundsInScreen();
+    EXPECT_FALSE(docked_magnifier_bounds.Intersects(valid_area));
+    EXPECT_TRUE(valid_area.Contains(modal_bounds));
+    EXPECT_EQ(modal_bounds, modal_bounds_update_case);
+
+    // Disable the docked magnifier.
+    controller()->SetEnabled(false);
+    EXPECT_FALSE(controller()->GetEnabled());
+  }
 };
+
+// If not signed in, test that display work area and window bounds
+// are updated correctly after enabling and disabling a docked magnifier.
+TEST_F(DockedMagnifierTest, WindowBoundsChangeInNonActiveState) {
+  UpdateDisplay("800x600");
+
+  struct {
+    std::string trace;
+    session_manager::SessionState state;
+  } kNonActiveStatesTestCases[] = {
+      {"oobe", session_manager::SessionState::OOBE},
+      {"login_primary", session_manager::SessionState::LOGIN_PRIMARY},
+      {"locked", session_manager::SessionState::LOCKED},
+      {"login_secondary", session_manager::SessionState::LOGIN_SECONDARY},
+  };
+
+  // For each of the states which is not ACTIVE, LOGGED_IN_NOT_ACTIVE, and
+  // UNKNOWN, set the session state and make sure that work area and window
+  // bounds are as expected after enabling and disabling the docked magnifier.
+  // In LOGGED_IN_NOT_ACTIVE state, no window can be added to
+  // LockSystemModalContainer.
+  for (auto test_case : kNonActiveStatesTestCases) {
+    SCOPED_TRACE(test_case.trace);
+    GetSessionControllerClient()->SetSessionState(test_case.state);
+    // Test that display work area and the modal window position is dynamically
+    // adjusted regarding the existence of a docked magnifier.
+    TestDisplayWorkAreaAndLockSystemModalBoundsUpdated();
+    // Test that bounds of a lock system modal window are
+    // the same during creation and update.
+    TestLockSystemModalBoundUpdateAndCreationConsistency();
+  }
+}
 
 // Tests that the Fullscreen and Docked Magnifiers are mutually exclusive.
 // TODO(afakhry): Update this test to use ash::MagnificationController once

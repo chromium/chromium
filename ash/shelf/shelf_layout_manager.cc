@@ -1572,21 +1572,26 @@ void ShelfLayoutManager::UpdateBoundsAndOpacity(bool animate) {
           shelf_widget_->GetNativeWindow());
       bool in_overview =
           Shell::Get()->overview_controller()->InOverviewSession();
-      if (!in_overview && !state_.IsScreenLocked() &&
-          (shelf_->alignment() != ShelfAlignment::kBottomLocked ||
-           display_.work_area() == display_.bounds())) {
-        gfx::Insets insets;
-        // If user session is blocked (login to new user session or add user to
-        // the existing session - multi-profile) then give 100% of work area
-        // only if keyboard is not shown.
-        // TODO(agawronska): Could this be called from WorkAreaInsets?
-        const WorkAreaInsets* const work_area =
-            WorkAreaInsets::ForWindow(shelf_widget_->GetNativeWindow());
-        if (!state_.IsAddingSecondaryUser() || work_area->IsKeyboardShown())
-          insets = work_area->user_work_area_insets();
-
-        Shell::Get()->SetDisplayWorkAreaInsets(shelf_widget_->GetNativeWindow(),
-                                               insets);
+      const WorkAreaInsets* const work_area =
+          WorkAreaInsets::ForWindow(shelf_widget_->GetNativeWindow());
+      if (state_.IsActiveSessionState()) {
+        if (!in_overview &&
+            (shelf_->alignment() != ShelfAlignment::kBottomLocked ||
+             display_.work_area() == display_.bounds())) {
+          gfx::Insets insets;
+          // If user session is blocked (login to new user session or add user
+          // to the existing session - multi-profile) then give 100% of work
+          // area only if keyboard is not shown.
+          // TODO(agawronska): Could this be called from WorkAreaInsets?
+          if (!state_.IsAddingSecondaryUser() || work_area->IsKeyboardShown())
+            insets = work_area->user_work_area_insets();
+          Shell::Get()->SetDisplayWorkAreaInsets(
+              shelf_widget_->GetNativeWindow(), insets);
+        }
+      } else {
+        Shell::Get()->SetDisplayWorkAreaInsets(
+            shelf_widget_->GetNativeWindow(),
+            work_area->GetAccessibilityInsets());
       }
     }
   }

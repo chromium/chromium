@@ -11,8 +11,11 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
+#include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_observer.h"
 #include "ash/wm/wm_default_layout_manager.h"
 #include "base/macros.h"
+#include "base/scoped_observer.h"
 #include "ui/aura/window_observer.h"
 
 namespace gfx {
@@ -27,6 +30,7 @@ class WindowDimmer;
 // when the container size changes.
 class ASH_EXPORT SystemModalContainerLayoutManager
     : public WmDefaultLayoutManager,
+      public ShelfObserver,
       public aura::WindowObserver,
       public KeyboardControllerObserver {
  public:
@@ -70,6 +74,9 @@ class ASH_EXPORT SystemModalContainerLayoutManager
   // Is the |window| modal background?
   static bool IsModalBackground(aura::Window* window);
 
+  // ShelfObserver:
+  void WillChangeVisibilityState(ShelfVisibilityState new_state) override;
+
  private:
   void AddModalWindow(aura::Window* window);
 
@@ -111,6 +118,9 @@ class ASH_EXPORT SystemModalContainerLayoutManager
   // Windows contained in this set are centered. Windows are automatically
   // added to this based on IsBoundsCentered().
   std::set<const aura::Window*> windows_to_center_;
+
+  // A shelf observer to update position of modals when work area is updated.
+  ScopedObserver<Shelf, ShelfObserver> shelf_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SystemModalContainerLayoutManager);
 };

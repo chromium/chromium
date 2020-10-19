@@ -17,6 +17,7 @@
 #include "base/stl_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -45,7 +46,10 @@ bool HasTransientAncestor(const aura::Window* window,
 
 SystemModalContainerLayoutManager::SystemModalContainerLayoutManager(
     aura::Window* container)
-    : container_(container) {}
+    : container_(container) {
+  Shelf* shelf = RootWindowController::ForWindow(container_)->shelf();
+  shelf_observer_.Add(shelf);
+}
 
 SystemModalContainerLayoutManager::~SystemModalContainerLayoutManager() {
   auto* keyboard_controller = keyboard::KeyboardUIController::Get();
@@ -190,6 +194,15 @@ bool SystemModalContainerLayoutManager::IsModalBackground(
          layout_manager->window_dimmer_->window() == window;
 }
 
+// This is invoked when the work area changes.
+//  * SystemModalContainerLayoutManager windows depend on
+//    changes to the accessibility panel insets, which are
+//    stored and handled globally via ShelfLayoutManager.
+void SystemModalContainerLayoutManager::WillChangeVisibilityState(
+    ShelfVisibilityState new_state) {
+  PositionDialogsAfterWorkAreaResize();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // SystemModalContainerLayoutManager, private:
 
@@ -255,6 +268,18 @@ gfx::Rect SystemModalContainerLayoutManager::GetUsableDialogArea() const {
   // windows. This way we avoid flashing lines upon resize animation and if the
   // keyboard will not fill left to right, the background is still covered.
   gfx::Rect valid_bounds = container_->bounds();
+  const auto& display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(container_);
+  gfx::Rect work_area = display.work_area();
+  // Convert work area in screen global coordinates to root local coordinates.
+  wm::ConvertRectFromScreen(container_->GetRootWindow(), &work_area);
+
+  // Similarly to NativeWidgetAura::CenterWindow, when centering window,
+  // we take the intersection of the host and the container bounds.
+  // The existing tests, SystemModalContainerLayoutManagerTest.KeepVisible and
+  // KeepCentered, include the cases that container bounds are resizable.
+  valid_bounds.Intersect(work_area);
+
   keyboard::KeyboardUIController* keyboard_controller =
       keyboard::KeyboardUIController::Get();
   if (keyboard_controller->IsEnabled()) {
@@ -279,7 +304,7 @@ gfx::Rect SystemModalContainerLayoutManager::GetCenteredAndOrFittedBounds(
     target_bounds = window->bounds();
     target_bounds.AdjustToFit(usable_area);
   }
-  if (usable_area != container_->bounds()) {
+  if (keyboard::KeyboardUIController::Get()->IsEnabled()) {
     // Don't clamp the dialog for the keyboard. Keep the size as it is but make
     // sure that the top remains visible.
     // TODO(skuhne): M37 should add over scroll functionality to address this.

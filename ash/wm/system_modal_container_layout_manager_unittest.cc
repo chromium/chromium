@@ -11,6 +11,7 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
@@ -21,6 +22,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/run_loop.h"
+#include "components/session_manager/session_manager_types.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
@@ -568,13 +570,14 @@ TEST_F(SystemModalContainerLayoutManagerTest, KeepVisible) {
   GetModalContainer()->SetBounds(gfx::Rect(0, 0, 1024, 768));
   std::unique_ptr<aura::Window> main(
       ShowTestWindowWithParent(GetModalContainer(), true));
-  main->SetBounds(gfx::Rect(924, 668, 100, 100));
+  const int shelf_height = ShelfConfig::Get()->shelf_size();
+  main->SetBounds(gfx::Rect(924, 668 - shelf_height, 100, 100));
   // We set now the bounds of the root window to something new which will
   // Then trigger the repos operation.
   GetModalContainer()->SetBounds(gfx::Rect(0, 0, 800, 600));
 
   gfx::Rect bounds = main->bounds();
-  EXPECT_EQ(bounds, gfx::Rect(700, 500, 100, 100));
+  EXPECT_EQ(bounds, gfx::Rect(700, 500 - shelf_height, 100, 100));
 }
 
 // Verifies that centered windows will remain centered after the visible screen
@@ -588,11 +591,45 @@ TEST_F(SystemModalContainerLayoutManagerTest, KeepCentered) {
 
   // We set now the bounds of the root window to something new which will
   // Then trigger the reposition operation.
-  GetModalContainer()->SetBounds(gfx::Rect(0, 0, 1024, 768));
+  GetModalContainer()->SetBounds(gfx::Rect(0, 0, 600, 400));
 
   // The window should still be centered.
   gfx::Rect bounds = main->bounds();
-  EXPECT_EQ(bounds.ToString(), gfx::Rect(256, 256, 512, 256).ToString());
+  EXPECT_EQ(bounds.ToString(),
+            gfx::Rect((600 - 512) / 2, (400 - 256) / 2, 512, 256).ToString());
+}
+
+// Verifies that centered windows will remain centered in the secondary screen
+// with correct global position in screen coordinate system and local position
+// relative to root window.
+TEST_F(SystemModalContainerLayoutManagerTest, KeepCenteredSecondaryScreen) {
+  UpdateDisplay("800x600,800+0-800x600");
+
+  // Create a lock modal window in a lock state.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::OOBE);
+  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
+  aura::Window* secondary_display_modal_container = Shell::GetContainer(
+      root_windows[1], kShellWindowId_LockSystemModalContainer);
+  secondary_display_modal_container->SetBounds(gfx::Rect(0, 0, 800, 600));
+  std::unique_ptr<aura::Window> modal(
+      ShowTestWindowWithParent(secondary_display_modal_container, true));
+
+  // Center the window.
+  modal->SetBounds(gfx::Rect((800 - 512) / 2, (600 - 256) / 2, 512, 256));
+
+  // We set now the bounds of the root window to something new which will
+  // Then trigger the reposition operation.
+  secondary_display_modal_container->SetBounds(gfx::Rect(0, 0, 600, 400));
+
+  // The window should still be centered with global and local coordinates.
+  gfx::Rect modal_bounds_in_screen = modal->GetBoundsInScreen();
+  EXPECT_EQ(
+      modal_bounds_in_screen.ToString(),
+      gfx::Rect(800 + (600 - 512) / 2, (400 - 256) / 2, 512, 256).ToString());
+  gfx::Rect modal_bounds_in_root = modal->bounds();
+  EXPECT_EQ(modal_bounds_in_root.ToString(),
+            gfx::Rect((600 - 512) / 2, (400 - 256) / 2, 512, 256).ToString());
 }
 
 TEST_F(SystemModalContainerLayoutManagerTest, ShowNormalBackgroundOrLocked) {
