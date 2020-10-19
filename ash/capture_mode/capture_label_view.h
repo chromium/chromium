@@ -5,7 +5,10 @@
 #ifndef ASH_CAPTURE_MODE_CAPTURE_LABEL_VIEW_H_
 #define ASH_CAPTURE_MODE_CAPTURE_LABEL_VIEW_H_
 
+#include <vector>
+
 #include "ash/ash_export.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
@@ -13,6 +16,10 @@ namespace views {
 class LabelButton;
 class Label;
 }  // namespace views
+
+namespace ui {
+class CallbackLayerAnimationObserver;
+}
 
 namespace ash {
 
@@ -30,10 +37,6 @@ class ASH_EXPORT CaptureLabelView : public views::View,
   CaptureLabelView(const CaptureLabelView&) = delete;
   CaptureLabelView& operator=(const CaptureLabelView&) = delete;
   ~CaptureLabelView() override;
-
-  // Function to be called to set a short time interval for countdown in tests
-  // so that we don't have to wait over 3 seconds to start video recording.
-  static void SetUseDelayForTesting(bool use_delay);
 
   // Update icon and text according to current capture source and type.
   void UpdateIconAndText();
@@ -57,9 +60,16 @@ class ASH_EXPORT CaptureLabelView : public views::View,
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
  private:
-  static constexpr int kCountDownSeconds = 3;
+  // Start performing countdown to number |timout_count_down_| animation.
+  void ScheduleCountDownAnimation();
+  // Called when each number's countdown animation is completed.
+  bool OnCountDownAnimationCompleted(
+      const ui::CallbackLayerAnimationObserver& observer);
 
-  void CountDown();
+  // Starts the layer animation sequences for the countdown label.
+  void StartLabelLayerAnimationSequences();
+  // Starts the layer animation sequences for the entire widget if applicable.
+  void StartWidgetLayerAnimationSequences();
 
   // The label button that displays an icon and a text message. Can be user
   // interactable. When clicking/tapping on the button, start perform image or
@@ -69,16 +79,18 @@ class ASH_EXPORT CaptureLabelView : public views::View,
   // The label that displays a text message. Not user interactable.
   views::Label* label_ = nullptr;
 
-  // Count down timer.
-  base::RepeatingTimer count_down_timer_;
-  int timeout_count_down_ = kCountDownSeconds;
+  int timeout_count_down_;
 
   // Callback function to be called after countdown if finished.
   base::OnceClosure countdown_finished_callback_;
+  // Observe the countdown animation.
+  std::unique_ptr<ui::CallbackLayerAnimationObserver> animation_observer_;
 
   // Pointer to the current capture mode session. Not nullptr during this
   // lifecycle.
   CaptureModeSession* capture_mode_session_;
+
+  base::WeakPtrFactory<CaptureLabelView> weak_factory_{this};
 };
 
 }  // namespace ash

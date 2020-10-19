@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "ash/capture_mode/capture_label_view.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_close_button.h"
 #include "ash/capture_mode/capture_mode_controller.h"
@@ -26,6 +25,7 @@
 #include "ash/wm/window_state.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/insets.h"
@@ -262,6 +262,10 @@ TEST_F(CaptureModeTest, ChangeTypeAndSourceFromUI) {
 }
 
 TEST_F(CaptureModeTest, VideoRecordingUiBehavior) {
+  // We need a non-zero duration to avoid infinite loop on countdown.
+  ui::ScopedAnimationDurationScaleMode animatin_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
   auto* controller = CaptureModeController::Get();
   // Start Capture Mode in a fullscreen video recording mode.
   controller->SetSource(CaptureModeSource::kFullscreen);
@@ -270,7 +274,6 @@ TEST_F(CaptureModeTest, VideoRecordingUiBehavior) {
   EXPECT_TRUE(controller->IsActive());
   EXPECT_FALSE(controller->is_recording_in_progress());
   EXPECT_FALSE(IsCursorCompositingEnabled());
-  CaptureLabelView::SetUseDelayForTesting(true);
 
   // Hit Enter to begin recording.
   auto* event_generator = GetEventGenerator();

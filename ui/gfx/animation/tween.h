@@ -22,18 +22,19 @@ namespace gfx {
 class ANIMATION_EXPORT Tween {
  public:
   enum Type {
-    LINEAR,              // Linear.
-    EASE_OUT,            // Fast in, slow out (default).
-    EASE_OUT_2,          // Variant of EASE_OUT that ends slower than EASE_OUT.
-    EASE_IN,             // Slow in, fast out.
-    EASE_IN_2,           // Variant of EASE_IN that starts out slower than
-                         // EASE_IN.
-    EASE_IN_OUT,         // Slow in and out, fast in the middle.
-    EASE_IN_OUT_2,       // Variant of EASE_IN_OUT that starts and ends slower
-                         // than EASE_IN_OUT.
-    SMOOTH_IN_OUT,       // Smooth, consistent speeds in and out (sine wave).
-    FAST_OUT_SLOW_IN,    // Variant of EASE_IN_OUT which should be used in most
-                         // cases.
+    LINEAR,            // Linear.
+    EASE_OUT,          // Fast in, slow out (default).
+    EASE_OUT_2,        // Variant of EASE_OUT that ends slower than EASE_OUT.
+    EASE_OUT_3,        // Variant of EASE_OUT that ends slower than EASE_OUT_2.
+    EASE_IN,           // Slow in, fast out.
+    EASE_IN_2,         // Variant of EASE_IN that starts out slower than
+                       // EASE_IN.
+    EASE_IN_OUT,       // Slow in and out, fast in the middle.
+    EASE_IN_OUT_2,     // Variant of EASE_IN_OUT that starts and ends slower
+                       // than EASE_IN_OUT.
+    SMOOTH_IN_OUT,     // Smooth, consistent speeds in and out (sine wave).
+    FAST_OUT_SLOW_IN,  // Variant of EASE_IN_OUT which should be used in most
+                       // cases.
     FAST_OUT_SLOW_IN_2,  // Variant of FAST_OUT_SLOW_IN that starts out quicker.
     LINEAR_OUT_SLOW_IN,  // Variant of EASE_OUT which should be used for
                          // fading in from 0% or motion when entering a scene.

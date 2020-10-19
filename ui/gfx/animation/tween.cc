@@ -42,6 +42,9 @@ double Tween::CalculateValue(Tween::Type type, double state) {
     case EASE_IN_OUT_2:
       return gfx::CubicBezier(0.33, 0, 0.67, 1).Solve(state);
 
+    case EASE_OUT_3:
+      return gfx::CubicBezier(0.6, 0, 0, 1).Solve(state);
+
     case LINEAR:
       return state;
 
