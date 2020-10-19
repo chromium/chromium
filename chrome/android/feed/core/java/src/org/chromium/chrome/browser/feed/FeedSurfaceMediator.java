@@ -57,6 +57,8 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 
+import java.util.Locale;
+
 /**
  * A mediator for the {@link FeedSurfaceCoordinator} responsible for interacting with the
  * native library and handling business logic.
@@ -615,8 +617,8 @@ public class FeedSurfaceMediator
             FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_TOGGLED_FEED);
             SuggestionsMetrics.recordArticlesListVisible();
         } else {
-            assert false
-                : String.format("Cannot handle action for item in the menu with id %d", itemId);
+            assert false : String.format(Locale.ENGLISH,
+                                   "Cannot handle action for item in the menu with id %d", itemId);
         }
     }
 

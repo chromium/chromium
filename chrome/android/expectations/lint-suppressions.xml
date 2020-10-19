@@ -16,37 +16,10 @@ Still reading?
   <issue id="AcceptsUserCertificates">
     <!-- See https://crbug.com/827265 and comment in the file for context. -->
     <ignore regexp="chrome/android/java/res_base/xml/network_security_config.xml"/>
-    <ignore regexp="android_webview/tools/system_webview_shell/apk/res/xml/network_security_config.xml"/>
   </issue>
-  <issue id="CustomViewStyleable">
-    <!-- TODO(crbug.com/1077861): Old code, good to fix. -->
-    <ignore regexp="components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/BoundedLinearLayout.java"/>
-  </issue>
-  <issue id="DefaultLocale">
-    <ignore regexp="clank"/>
-    <ignore regexp="com/android/tv"/>
-    <!-- TODO(crbug.com/1081240): Fix -->
-    <ignore regexp="chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceMediator.java"/>
-    <!-- TODO(crbug.com/1082222): Fix -->
-    <ignore regexp="chrome/android/java/src/org/chromium/chrome/browser/omnibox/suggestions/header/HeaderProcessor.java"/>
-  </issue>
-  <issue id="DrawAllocation">
-    <ignore regexp="content/public/android/java/src/org/chromium/content/browser/ContentViewRenderView.java"/>
-    <ignore regexp="content/public/android/java/src/org/chromium/content/browser/PopupZoomer.java"/>
-  </issue>
-  <!-- TODO(crbug.com/804432): Remove this and fix the offending xml files. -->
-  <issue id="EllipsizeMaxLines" severity="ignore"/>
   <issue id="ExifInterface">
-    <!-- TODO(crbug.com/804438): Cannot update until android.media.ExifInterface supports file descriptors -->
-    <ignore regexp="components/browser_ui/photo_picker/android/java/src/org/chromium/components/browser_ui/photo_picker/BitmapUtils.java"/>
-  </issue>
-  <issue id="ExportedContentProvider" severity="ignore"/>
-  <issue id="ExportedService" severity="ignore"/>
-  <issue id="HandlerLeak">
-    <ignore regexp="android_webview/glue/java/src/com/android/webview/chromium/WebViewContentsClientAdapter.java"/>
-  </issue>
-  <issue id="IconColors">
-    <ignore regexp="tools/android/audio_focus_grabber/java/res/drawable-.*/notification_icon.png"/>
+      <!-- TODO(crbug.com/804438): Update to androidx ExifInterface. -->
+      <ignore regexp="components/browser_ui/photo_picker/android/java/src/org/chromium/components/browser_ui/photo_picker/BitmapUtils.java"/>
   </issue>
   <issue id="IconDensities">
     <!-- This is intentional to reduce APK size. See: http://crrev/c/1352161 -->
@@ -68,10 +41,6 @@ Still reading?
   <issue id="IconDuplicates">
     <!-- Filed https://crbug.com/1073963 -->
     <ignore regexp="clank/java/res_default/mipmap-.*/app_shortcut_icon.png"/>
-  </issue>
-  <issue id="IconLauncherFormat" severity="ignore"/>
-  <issue id="IconLauncherShape">
-    <ignore regexp="chrome/android/webapk/shell_apk/res/mipmap-mdpi/ic_launcher_background.png"/>
   </issue>
   <issue id="IconLocation">
     <!-- It is OK for content_shell_apk to have missing assets. -->
@@ -99,22 +68,16 @@ Still reading?
   <issue id="InsecureBaseConfiguration">
     <!-- See https://crbug.com/827265 and comment in the file for context. -->
     <ignore regexp="chrome/android/java/res_base/xml/network_security_config.xml"/>
-    <ignore regexp="android_webview/tools/system_webview_shell/apk/res/xml/network_security_config.xml"/>
   </issue>
-  <issue id="Instantiatable" severity="ignore"/>
   <issue id="InconsistentArrays">
     <ignore regexp="android_webview/locale_paks.resources.zip/values/locale-paks.xml"/>
     <ignore regexp="chrome/android/chrome_locale_paks.resources.zip/values/locale-paks.xml"/>
     <ignore regexp="preloaded_fonts.xml"/>
   </issue>
-  <issue id="InconsistentLayout" severity="ignore"/>
   <issue id="InefficientWeight">
     <ignore regexp="android_webview/tools/system_webview_shell/apk/res/layout/activity_webview_browser.xml"/>
   </issue>
-  <issue id="InflateParams" severity="ignore"/>
-  <issue id="InlinedApi" severity="ignore"/>
   <issue id="InvalidVectorPath" severity="ignore"/>
-  <issue id="JobSchedulerService" severity="ignore"/>
   <issue id="LabelFor">
     <ignore regexp="android_webview/tools/system_webview_shell/apk/res/layout/activity_webview_browser.xml"/>
   </issue>

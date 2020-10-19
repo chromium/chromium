@@ -106,8 +106,9 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
      *
      * @param webView the {@link WebView} instance that this adapter is serving.
      */
-    WebViewContentsClientAdapter(WebView webView, Context context,
-            WebViewDelegate webViewDelegate) {
+    @SuppressWarnings("HandlerLeak")
+    WebViewContentsClientAdapter(
+            WebView webView, Context context, WebViewDelegate webViewDelegate) {
         super(webView, webViewDelegate, context);
         try (ScopedSysTraceEvent event =
                         ScopedSysTraceEvent.scoped("WebViewContentsClientAdapter.constructor")) {
@@ -746,6 +747,7 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
     }
 
     @Override
+    @SuppressWarnings("HandlerLeak")
     public void onReceivedSslError(final Callback<Boolean> callback, SslError error) {
         try {
             TraceEvent.begin("WebViewContentsClientAdapter.onReceivedSslError");

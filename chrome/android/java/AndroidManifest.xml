@@ -1130,7 +1130,8 @@ by a child template that "extends" this file.
              payment method, shipping address, or shipping option -->
         <service
             android:name="org.chromium.components.payments.PaymentDetailsUpdateService"
-            android:exported="true"/>
+            android:exported="true"
+            tools:ignore="ExportedService"/>
 
         <receiver android:name="org.chromium.chrome.browser.announcement.AnnouncementNotificationManager$Receiver"
             android:exported="false"/>

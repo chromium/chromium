@@ -4,7 +4,7 @@
      found in the LICENSE file. -->
 
 <resources>
-    <declare-styleable name="BoundedView">
+    <declare-styleable name="BoundedLinearLayout">
         <attr name="maxWidthLandscape" format="dimension" />
         <attr name="maxWidthPortrait" format="dimension" />
         <attr name="maxHeight" format="dimension" />

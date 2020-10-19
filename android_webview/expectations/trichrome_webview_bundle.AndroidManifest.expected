@@ -67,14 +67,16 @@
         android:exported="true"
         android:grantUriPermissions="true"
         android:name="org.chromium.android_webview.nonembedded.LicenseContentProvider"
-        android:process=":webview_apk">
+        android:process=":webview_apk"
+        tools:ignore="ExportedContentProvider">
     </provider>  # DIFF-ANCHOR: a5e78e63
     <provider  # DIFF-ANCHOR: bfe37944
         android:authorities="$PACKAGE.DeveloperModeContentProvider"
         android:exported="true"
         android:name="org.chromium.android_webview.services.DeveloperModeContentProvider"
         android:process=":webview_service"
-        android:visibleToInstantApps="true">
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedContentProvider">
     </provider>  # DIFF-ANCHOR: bfe37944
     <receiver  # DIFF-ANCHOR: 1091f66b
         android:exported="false"
@@ -103,7 +105,8 @@
     <service  # DIFF-ANCHOR: 5cda9608
         android:exported="true"
         android:name="org.chromium.android_webview.services.CrashReceiverService"
-        android:process=":webview_service">
+        android:process=":webview_service"
+        tools:ignore="ExportedService">
     </service>  # DIFF-ANCHOR: 5cda9608
     <service  # DIFF-ANCHOR: adce9ea1
         android:exported="false"
@@ -114,12 +117,14 @@
         android:exported="true"
         android:name="org.chromium.android_webview.services.MetricsBridgeService"
         android:process=":webview_service"
-        android:visibleToInstantApps="true">
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService">
     </service>  # DIFF-ANCHOR: eecf2fee
     <service  # DIFF-ANCHOR: dc926e35
         android:exported="true"
         android:name="org.chromium.android_webview.services.VariationsSeedServer"
-        android:process=":webview_service">
+        android:process=":webview_service"
+        tools:ignore="ExportedService">
     </service>  # DIFF-ANCHOR: dc926e35
     <service  # DIFF-ANCHOR: b1e3e8bd
         android:exported="true"

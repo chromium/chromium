@@ -29,7 +29,7 @@ if (enable_java_templates) {
   }
 
   android_lint("android_lint_test") {
-    lint_expected_warnings = "InlinedApi,NewApi"
+    lint_expected_warnings = "DefaultLocale,NewApi"
     _test_apk_target = ":lint_test_apk"
     deps = [ "${_test_apk_target}__java" ]
     build_config_dep = "$_test_apk_target$build_config_target_suffix"

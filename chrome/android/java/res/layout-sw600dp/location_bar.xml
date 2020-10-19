@@ -6,7 +6,8 @@
 <!-- The location bar also know as URL bar -->
 <merge
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <include layout="@layout/location_status" />
 
@@ -20,7 +21,8 @@
         android:layout_marginEnd="80dp"
         android:layout_gravity="center_vertical"
         android:nextFocusForward="@+id/menu_button"
-        layout="@layout/url_bar" />
+        tools:ignore="InconsistentLayout"
+        layout="@layout/url_bar"/>
 
     <include layout="@layout/url_action_container" />
 

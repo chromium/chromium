@@ -844,14 +844,16 @@
         android:exported="true"
         android:grantUriPermissions="true"
         android:name="org.chromium.android_webview.nonembedded.LicenseContentProvider"
-        android:process=":webview_apk">
+        android:process=":webview_apk"
+        tools:ignore="ExportedContentProvider">
     </provider>  # DIFF-ANCHOR: a5e78e63
     <provider  # DIFF-ANCHOR: bfe37944
         android:authorities="$PACKAGE.DeveloperModeContentProvider"
         android:exported="true"
         android:name="org.chromium.android_webview.services.DeveloperModeContentProvider"
         android:process=":webview_service"
-        android:visibleToInstantApps="true">
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedContentProvider">
     </provider>  # DIFF-ANCHOR: bfe37944
     <provider  # DIFF-ANCHOR: 97e158a1
         android:authorities="$PACKAGE.DownloadFileProvider"
@@ -1056,7 +1058,8 @@
     <service  # DIFF-ANCHOR: 5cda9608
         android:exported="true"
         android:name="org.chromium.android_webview.services.CrashReceiverService"
-        android:process=":webview_service">
+        android:process=":webview_service"
+        tools:ignore="ExportedService">
     </service>  # DIFF-ANCHOR: 5cda9608
     <service  # DIFF-ANCHOR: adce9ea1
         android:exported="false"
@@ -1067,12 +1070,14 @@
         android:exported="true"
         android:name="org.chromium.android_webview.services.MetricsBridgeService"
         android:process=":webview_service"
-        android:visibleToInstantApps="true">
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService">
     </service>  # DIFF-ANCHOR: eecf2fee
     <service  # DIFF-ANCHOR: dc926e35
         android:exported="true"
         android:name="org.chromium.android_webview.services.VariationsSeedServer"
-        android:process=":webview_service">
+        android:process=":webview_service"
+        tools:ignore="ExportedService">
     </service>  # DIFF-ANCHOR: dc926e35
     <service  # DIFF-ANCHOR: c34d99ad
         android:exported="true"
@@ -1210,10 +1215,11 @@
         android:name="org.chromium.components.background_task_scheduler.internal.BackgroundTaskJobService"
         android:permission="android.permission.BIND_JOB_SERVICE">
     </service>  # DIFF-ANCHOR: a550decc
-    <service  # DIFF-ANCHOR: 2ce68981
+    <service  # DIFF-ANCHOR: 2a1cd701
         android:exported="true"
-        android:name="org.chromium.components.payments.PaymentDetailsUpdateService">
-    </service>  # DIFF-ANCHOR: 2ce68981
+        android:name="org.chromium.components.payments.PaymentDetailsUpdateService"
+        tools:ignore="ExportedService">
+    </service>  # DIFF-ANCHOR: 2a1cd701
     <service  # DIFF-ANCHOR: 0c6c4fd9
         android:exported="false"
         android:isolatedProcess="false"

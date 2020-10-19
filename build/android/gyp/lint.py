@@ -28,6 +28,8 @@ _LINT_MD_URL = 'https://chromium.googlesource.com/chromium/src/+/master/build/an
 _DISABLED_ALWAYS = [
     "AppCompatResource",  # Lint does not correctly detect our appcompat lib.
     "Assert",  # R8 --force-enable-assertions is used to enable java asserts.
+    "InflateParams",  # Null is ok when inflating views for dialogs.
+    "InlinedApi",  # Constants are copied so they are always available.
     "LintBaseline",  # Don't warn about using baseline.xml files.
     "MissingApplicationIcon",  # False positive for non-production targets.
     "SwitchIntDef",  # Many C++ enums are not used at all in java.

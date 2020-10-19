@@ -1117,10 +1117,11 @@
         android:name="org.chromium.components.background_task_scheduler.internal.BackgroundTaskJobService"
         android:permission="android.permission.BIND_JOB_SERVICE">
     </service>  # DIFF-ANCHOR: a550decc
-    <service  # DIFF-ANCHOR: 2ce68981
+    <service  # DIFF-ANCHOR: 2a1cd701
         android:exported="true"
-        android:name="org.chromium.components.payments.PaymentDetailsUpdateService">
-    </service>  # DIFF-ANCHOR: 2ce68981
+        android:name="org.chromium.components.payments.PaymentDetailsUpdateService"
+        tools:ignore="ExportedService">
+    </service>  # DIFF-ANCHOR: 2a1cd701
     <service  # DIFF-ANCHOR: 0c6c4fd9
         android:exported="false"
         android:isolatedProcess="false"

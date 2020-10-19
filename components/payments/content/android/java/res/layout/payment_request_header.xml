@@ -49,7 +49,6 @@
                 android:paddingStart="6dp"
                 android:gravity="center_vertical"
                 android:ellipsize="start"
-                android:maxLines="1"
                 android:singleLine="true"
                 android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
         </LinearLayout>
