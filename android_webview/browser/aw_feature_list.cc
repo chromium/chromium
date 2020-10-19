@@ -26,6 +26,7 @@ namespace {
 const base::Feature* kFeaturesExposedToJava[] = {
     &features::kWebViewConnectionlessSafeBrowsing,
     &features::kWebViewDisplayCutout,
+    &features::kWebViewMixedContentAutoupgrades,
     &features::kWebViewTestFeature,
     &features::kWebViewMeasureScreenCoverage,
 };

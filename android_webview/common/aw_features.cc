@@ -29,6 +29,15 @@ const base::Feature kWebViewDisplayCutout{"WebViewDisplayCutout",
 const base::Feature kWebViewExtraHeadersSameDomainOnly{
     "WebViewExtraHeadersSameDomainOnly", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// When enabled, passive mixed content (Audio/Video/Image subresources loaded
+// over HTTP on HTTPS sites) will be autoupgraded to HTTPS, and the load will be
+// blocked if the resource fails to load over HTTPS. This only affects apps that
+// set the mixed content mode to MIXED_CONTENT_COMPATIBILITY_MODE, autoupgrades
+// are always disabled for MIXED_CONTENT_NEVER_ALLOW and
+// MIXED_CONTENT_ALWAYS_ALLOW modes.
+const base::Feature kWebViewMixedContentAutoupgrades{
+    "WebViewMixedContentAutoupgrades", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Only allow extra headers added via loadUrl() to be sent to the original
 // origin; strip them from the request if a cross-origin redirect occurs.
 // When this is enabled, kWebViewExtraHeadersSameDomainOnly has no effect.

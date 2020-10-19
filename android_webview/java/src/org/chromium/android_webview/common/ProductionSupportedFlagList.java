@@ -98,5 +98,8 @@ public final class ProductionSupportedFlagList {
                     "Forces WebView to do rendering work in little cores"),
             Flag.baseFeature(BlinkFeatures.WEBVIEW_ACCELERATE_SMALL_CANVASES,
                     "Accelerate all canvases in webview."),
+            Flag.baseFeature(AwFeatures.WEBVIEW_MIXED_CONTENT_AUTOUPGRADES,
+                    "Enables autoupgrades for audio/video/image mixed content when mixed content "
+                            + "mode is set to MIXED_CONTENT_COMPATIBILITY_MODE"),
     };
 }

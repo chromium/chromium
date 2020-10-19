@@ -42930,6 +42930,7 @@ from previous Chrome versions.
   <int value="-770319039" label="enable-touch-editing"/>
   <int value="-769865314" label="AutofillCacheQueryResponses:disabled"/>
   <int value="-766805224" label="MirroringService:enabled"/>
+  <int value="-764463072" label="WebViewMixedContentAutoupgrades:disabled"/>
   <int value="-763900417" label="CCTModuleUseIntentExtras:enabled"/>
   <int value="-763759697" label="enable-audio-support-for-desktop-share"/>
   <int value="-763730918" label="CCTTargetTranslateLanguage:disabled"/>
@@ -42976,6 +42977,7 @@ from previous Chrome versions.
   <int value="-726892130" label="AndroidMessagesIntegration:disabled"/>
   <int value="-723224470" label="enable-password-force-saving:enabled"/>
   <int value="-722474177" label="browser-side-navigation:disabled"/>
+  <int value="-721685663" label="WebViewMixedContentAutoupgrades:enabled"/>
   <int value="-721245076" label="DesktopPWAsStayInWindow:disabled"/>
   <int value="-719819631" label="TranslateUI:disabled"/>
   <int value="-719698123" label="LegacyTLSWarnings:enabled"/>

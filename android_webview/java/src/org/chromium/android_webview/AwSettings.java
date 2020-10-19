@@ -17,6 +17,7 @@ import android.webkit.WebSettings;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
 import org.chromium.android_webview.settings.ForceDarkBehavior;
 import org.chromium.android_webview.settings.ForceDarkMode;
@@ -1841,10 +1842,16 @@ public class AwSettings {
 
     @CalledByNative
     private boolean getAllowMixedContentAutoupgradesLocked() {
-        // TODO(crbug.com/1139424): Mixed content autoupgrades are temporarily disabled completely
-        // on WebView. This should remain as is for MIXED_CONTENT_ALWAYS_ALLOW and
-        // MIXED_CONTENT_NEVER_ALLOW, but should be controlled via a variations flag for
-        // MIXED_CONTENT_COMPATIBILITY_MODE.
+        if (AwFeatureList.isEnabled(AwFeatures.WEBVIEW_MIXED_CONTENT_AUTOUPGRADES)) {
+            // We only allow mixed content autoupgrades (upgrading HTTP subresources to HTTPS in
+            // HTTPS sites) when the mixed content mode is set to MIXED_CONTENT_COMPATIBILITY, which
+            // keeps it in line with the behavior in Chrome. With MIXED_CONTENT_ALWAYS_ALLOW, we
+            // disable autoupgrades since the developer is explicitly allowing mixed content,
+            // whereas with MIXED_CONTENT_NEVER_ALLOW, there is no need to autoupgrade since the
+            // content will be blocked.
+            assert Thread.holdsLock(mAwSettingsLock);
+            return mMixedContentMode == WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE;
+        }
         return false;
     }
 

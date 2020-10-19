@@ -27,8 +27,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwFeatureList;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwSettings.LayoutAlgorithm;
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactory;
 import org.chromium.android_webview.test.TestAwContentsClient.DoUpdateVisitedHistoryHelper;
 import org.chromium.android_webview.test.util.CommonResources;
@@ -3309,6 +3311,7 @@ public class AwSettingsTest {
             httpsServer = TestWebServer.startSsl();
             httpServer = TestWebServer.start();
             httpServer.setServerHost("example.com");
+            httpsServer.setServerHost("secure.com");
 
             final String jsUrl = "/insecure.js";
             final String imageUrl = "/insecure.png";
@@ -3338,11 +3341,29 @@ public class AwSettingsTest {
             Assert.assertEquals(1, httpServer.getRequestCount(imageUrl));
 
             awSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
-            mActivityTestRule.loadUrlSync(
-                    awContents, contentClient.getOnPageFinishedHelper(), fullSecureUrl);
-            Assert.assertEquals(3, httpsServer.getRequestCount(secureUrl));
-            Assert.assertEquals(1, httpServer.getRequestCount(jsUrl));
-            Assert.assertEquals(2, httpServer.getRequestCount(imageUrl));
+            if (AwFeatureList.isEnabled(AwFeatures.WEBVIEW_MIXED_CONTENT_AUTOUPGRADES)) {
+                // COMPATIBILITY_MODE enables autoupgrades for passive mixed content (including
+                // images), so we set the image url to the HTTP version of the HTTPS server, and
+                // check it was autoupgraded by expecting the HTTPS server to be hit.
+                String httpImageUrl = httpsServer.setResponseBase64(
+                        imageUrl, CommonResources.FAVICON_DATA_BASE64, null);
+                httpImageUrl = httpImageUrl.replaceFirst("https", "http");
+                final String autoupgradedImageHtml = "<img src=\"" + httpImageUrl + "\" />";
+                final String htmlForAutoupgrade =
+                        "<body>" + autoupgradedImageHtml + " " + jsHtml + "</body>";
+                fullSecureUrl = httpsServer.setResponse(secureUrl, htmlForAutoupgrade, null);
+                mActivityTestRule.loadUrlSync(
+                        awContents, contentClient.getOnPageFinishedHelper(), fullSecureUrl);
+                Assert.assertEquals(1, httpsServer.getRequestCount(secureUrl));
+                Assert.assertEquals(1, httpsServer.getRequestCount(imageUrl));
+                Assert.assertEquals(1, httpServer.getRequestCount(jsUrl));
+            } else {
+                mActivityTestRule.loadUrlSync(
+                        awContents, contentClient.getOnPageFinishedHelper(), fullSecureUrl);
+                Assert.assertEquals(3, httpsServer.getRequestCount(secureUrl));
+                Assert.assertEquals(1, httpServer.getRequestCount(jsUrl));
+                Assert.assertEquals(2, httpServer.getRequestCount(imageUrl));
+            }
         } finally {
             if (httpServer != null) {
                 httpServer.shutdown();
