@@ -171,7 +171,9 @@ bool ExtensionSpecialStoragePolicy::IsStorageDurable(const GURL& origin) {
 
 bool ExtensionSpecialStoragePolicy::NeedsProtection(
     const extensions::Extension* extension) {
-  return extension->is_hosted_app() && !extension->from_bookmark();
+  // Default-installed apps should never be granted protected storage.
+  return extension->is_hosted_app() && !extension->from_bookmark() &&
+         !extension->was_installed_by_default();
 }
 
 const extensions::ExtensionSet*
