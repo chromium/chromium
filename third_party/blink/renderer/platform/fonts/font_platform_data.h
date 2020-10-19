@@ -145,6 +145,9 @@ class PLATFORM_EXPORT FontPlatformData {
   // the fingerprinting algorithm.
   IdentifiableToken ComputeTypefaceDigest() const;
 
+  // Gets the postscript name from the typeface.
+  String GetPostScriptName() const;
+
  private:
 #if !defined(OS_WIN) && !defined(OS_MAC)
   WebFontRenderStyle QuerySystemRenderStyle(const std::string& family,

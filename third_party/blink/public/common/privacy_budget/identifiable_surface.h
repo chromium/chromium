@@ -171,7 +171,7 @@ class IdentifiableSurface {
     // FontSelectionRequest (i.e. weight, width and slope).
     kLocalFontLookupByFallbackCharacter = 13,
 
-    // Represents loading a font locally as a last resort. Input is the
+    // Represents looking up a font locally as a last resort. Input is the
     // FontSelectionRequest (i.e. weight, width and slope).
     kLocalFontLookupAsLastResort = 14,
 
@@ -183,6 +183,9 @@ class IdentifiableSurface {
     // The output is keyed on two enums, but for the identifiability study we
     // will key this type on a digest of both the enums' values.
     kWebGLShaderPrecisionFormat = 16,
+
+    // Represents loading a font locally. Input is the PostScript name.
+    kLocalFontLoadPostScriptName = 29,
 
     // We can use values up to and including |kMax|.
     kMax = (1 << kTypeBits) - 1
