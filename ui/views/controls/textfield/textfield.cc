@@ -1830,6 +1830,7 @@ bool Textfield::SetCompositionFromExistingText(
     const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) {
   // TODO(https://crbug.com/952355): Support custom text spans.
   DCHECK(!model_->HasCompositionText());
+  OnBeforeUserAction();
   model_->SetCompositionFromExistingText(range);
   SchedulePaint();
   OnAfterUserAction();

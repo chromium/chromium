@@ -2996,6 +2996,21 @@ TEST_F(TextfieldTest, CommitEmptyComposingTextTest) {
   EXPECT_EQ(composed_text_length, static_cast<uint32_t>(0));
 }
 
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
+// SetCompositionFromExistingText is only available on Windows and Chrome OS.
+TEST_F(TextfieldTest, SetCompositionFromExistingTextTest) {
+  InitTextfield();
+  textfield_->SetText(ASCIIToUTF16("abc"));
+
+  textfield_->SetCompositionFromExistingText(gfx::Range(1, 3), {});
+
+  gfx::Range actual_range;
+  EXPECT_TRUE(textfield_->HasCompositionText());
+  EXPECT_TRUE(textfield_->GetCompositionTextRange(&actual_range));
+  EXPECT_EQ(actual_range, gfx::Range(1, 3));
+}
+#endif
+
 TEST_F(TextfieldTest, GetCompositionCharacterBoundsTest) {
   InitTextfield();
   ui::CompositionText composition;
