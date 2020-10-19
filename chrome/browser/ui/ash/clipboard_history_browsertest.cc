@@ -152,6 +152,19 @@ class ClipboardHistoryWithMultiProfileBrowserTest
     PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
   }
 
+  const views::MenuItemView* GetMenuItemViewForIndex(int index) const {
+    return GetContextMenu()->GetMenuItemViewAtForTest(index);
+  }
+
+  const ash::ClipboardHistoryItemView* GetHistoryItemViewForIndex(
+      int index) const {
+    const views::MenuItemView* hosting_menu_item =
+        GetMenuItemViewForIndex(index);
+    EXPECT_EQ(1u, hosting_menu_item->children().size());
+    return static_cast<const ash::ClipboardHistoryItemView*>(
+        hosting_menu_item->children()[0]);
+  }
+
   // chromeos::LoginManagerTest:
   void SetUpOnMainThread() override {
     chromeos::LoginManagerTest::SetUpOnMainThread();
@@ -240,17 +253,15 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
   // The history menu's first item should be selected as default after the menu
   // shows. Meanwhile, its delete button should not show.
   const views::MenuItemView* first_menu_item_view =
-      GetContextMenu()->GetMenuItemViewAtForTest(/*index=*/0);
+      GetMenuItemViewForIndex(/*index=*/0);
   EXPECT_TRUE(first_menu_item_view->IsSelected());
-  ASSERT_EQ(1u, first_menu_item_view->children().size());
-  const ash::ClipboardHistoryItemView* first_history_item_view =
-      static_cast<const ash::ClipboardHistoryItemView*>(
-          first_menu_item_view->children()[0]);
-  EXPECT_FALSE(first_history_item_view->delete_button_for_test()->GetVisible());
+  EXPECT_FALSE(GetHistoryItemViewForIndex(/*index=*/0)
+                   ->delete_button_for_test()
+                   ->GetVisible());
 
   // Move the mouse to the second menu item.
   const views::MenuItemView* second_menu_item_view =
-      GetContextMenu()->GetMenuItemViewAtForTest(/*index=*/1);
+      GetMenuItemViewForIndex(/*index=*/1);
   EXPECT_FALSE(second_menu_item_view->IsSelected());
   GetEventGenerator()->MoveMouseTo(
       second_menu_item_view->GetBoundsInScreen().CenterPoint());
@@ -260,14 +271,12 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
   EXPECT_TRUE(second_menu_item_view->IsSelected());
 
   // Under mouse hovering, the second item's delete button should show.
-  ASSERT_EQ(1u, second_menu_item_view->children().size());
-  const ash::ClipboardHistoryItemView* second_history_item_view =
-      static_cast<const ash::ClipboardHistoryItemView*>(
-          second_menu_item_view->children()[0]);
-  EXPECT_TRUE(second_history_item_view->delete_button_for_test()->GetVisible());
+  EXPECT_TRUE(GetHistoryItemViewForIndex(/*index=*/1)
+                  ->delete_button_for_test()
+                  ->GetVisible());
 
   const views::MenuItemView* third_menu_item_view =
-      GetContextMenu()->GetMenuItemViewAtForTest(/*index=*/2);
+      GetMenuItemViewForIndex(/*index=*/2);
   EXPECT_FALSE(third_menu_item_view->IsSelected());
   PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
 
@@ -275,11 +284,9 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
   // item should be selected and its delete button should not show.
   EXPECT_FALSE(second_menu_item_view->IsSelected());
   EXPECT_TRUE(third_menu_item_view->IsSelected());
-  ASSERT_EQ(1u, third_menu_item_view->children().size());
-  const ash::ClipboardHistoryItemView* third_history_item_view =
-      static_cast<const ash::ClipboardHistoryItemView*>(
-          third_menu_item_view->children()[0]);
-  EXPECT_FALSE(third_history_item_view->delete_button_for_test()->GetVisible());
+  EXPECT_FALSE(GetHistoryItemViewForIndex(/*index=*/2)
+                   ->delete_button_for_test()
+                   ->GetVisible());
 }
 
 // Verifies that the history menu is anchored at the cursor's location when

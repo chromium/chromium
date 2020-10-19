@@ -49,15 +49,6 @@ ClipboardHistoryItemView::ContentsView::ContentsView(
 
 ClipboardHistoryItemView::ContentsView::~ContentsView() = default;
 
-void ClipboardHistoryItemView::ContentsView::OnSelectionChanged() {
-  // The delete button should be visible when it is under selection.
-  const bool target_visibility =
-      container_->selection_flags_ & SelectionFlag::kDeleteButtonSelected;
-
-  if (target_visibility != delete_button_->GetVisible())
-    delete_button_->SetVisible(target_visibility);
-}
-
 void ClipboardHistoryItemView::ContentsView::InstallDeleteButton() {
   delete_button_ = CreateDeleteButton();
 }
@@ -92,10 +83,7 @@ class ash::ClipboardHistoryItemView::MainButton : public views::Button {
   const char* GetClassName() const override { return "MainButton"; }
 
   void PaintButtonContents(gfx::Canvas* canvas) override {
-    // Highlight the main button's background when it is under selection.
-    const bool should_highlight =
-        container_->selection_flags_ & SelectionFlag::kMainButtonSelected;
-    if (!should_highlight)
+    if (!container_->ShouldHighlight())
       return;
 
     // Highlight the background when the menu item is selected or pressed.
@@ -170,11 +158,10 @@ void ClipboardHistoryItemView::Init() {
   // Ensures that MainButton is below any other child views.
   main_button_ = AddChildView(std::make_unique<MainButton>(this));
   main_button_->SetCallback(base::BindRepeating(
-      [](ClipboardHistoryItemView* item, views::MenuItemView* container,
-         const ui::Event& event) {
-        item->ExecuteCommand(container->GetCommand(), event);
+      [](ClipboardHistoryItemView* item, const ui::Event& event) {
+        item->ExecuteCommand(item->CalculateCommandId(), event);
       },
-      base::Unretained(this), container_));
+      base::Unretained(this)));
 
   contents_view_ = AddChildView(CreateContentsView());
 
@@ -183,13 +170,11 @@ void ClipboardHistoryItemView::Init() {
 }
 
 void ClipboardHistoryItemView::OnSelectionChanged() {
-  int target_flags = 0;
-  if (container_->IsSelected()) {
-    target_flags |= SelectionFlag::kMainButtonSelected;
-    if (main_button_->IsMouseHovered())
-      target_flags |= SelectionFlag::kDeleteButtonSelected;
-  }
-  SetSelectionFlags(target_flags);
+  pseudo_focus_ =
+      container_->IsSelected() ? PseudoFocus::kMainButton : PseudoFocus::kEmpty;
+
+  contents_view_->delete_button()->SetVisible(ShouldShowDeleteButton());
+  main_button_->SchedulePaint();
 }
 
 void ClipboardHistoryItemView::RecordButtonPressedHistogram(
@@ -223,13 +208,25 @@ void ClipboardHistoryItemView::ExecuteCommand(int command_id,
   container_->GetDelegate()->ExecuteCommand(command_id, event.flags());
 }
 
-void ClipboardHistoryItemView::SetSelectionFlags(int selection_flags) {
-  if (selection_flags_ == selection_flags)
-    return;
+int ClipboardHistoryItemView::CalculateCommandId() const {
+  switch (pseudo_focus_) {
+    case PseudoFocus::kMainButton:
+      return container_->GetCommand();
+    case PseudoFocus::kDeleteButton:
+      return ClipboardHistoryUtil::kDeleteCommandId;
+    case PseudoFocus::kEmpty:
+      NOTREACHED();
+      return -1;
+  }
+}
 
-  selection_flags_ = selection_flags;
-  contents_view_->OnSelectionChanged();
-  main_button_->SchedulePaint();
+bool ClipboardHistoryItemView::ShouldHighlight() const {
+  return pseudo_focus_ == PseudoFocus::kMainButton && container_->GetEnabled();
+}
+
+bool ClipboardHistoryItemView::ShouldShowDeleteButton() const {
+  return (pseudo_focus_ == PseudoFocus::kMainButton && IsMouseHovered()) ||
+         pseudo_focus_ == PseudoFocus::kDeleteButton;
 }
 
 }  // namespace ash

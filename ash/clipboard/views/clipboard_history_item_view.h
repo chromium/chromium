@@ -19,14 +19,6 @@ class ClipboardHistoryResourceManager;
 // The base class for menu items of the clipboard history menu.
 class ClipboardHistoryItemView : public views::View {
  public:
-  enum SelectionFlag {
-    // The main button is selected.
-    kMainButtonSelected = 1 << 0,
-
-    // The delete button is selected.
-    kDeleteButtonSelected = 1 << 1
-  };
-
   static std::unique_ptr<ClipboardHistoryItemView>
   CreateFromClipboardHistoryItem(
       const ClipboardHistoryItem& item,
@@ -43,8 +35,6 @@ class ClipboardHistoryItemView : public views::View {
 
   // Called when the selection state has changed.
   void OnSelectionChanged();
-
-  int selection_flags() const { return selection_flags_; }
 
   const views::View* delete_button_for_test() const {
     return contents_view_->delete_button();
@@ -77,9 +67,7 @@ class ClipboardHistoryItemView : public views::View {
     // Install DeleteButton on the contents view.
     void InstallDeleteButton();
 
-    // Called when the `container_`'s selection state has changed.
-    void OnSelectionChanged();
-
+    views::View* delete_button() { return delete_button_; }
     const views::View* delete_button() const { return delete_button_; }
 
    protected:
@@ -115,14 +103,25 @@ class ClipboardHistoryItemView : public views::View {
   }
 
  private:
+  // Indicates the child under pseudo focus, i.e. the view responding to the
+  // user actions on the menu item (like clicking the mouse or triggering an
+  // accelerator). Note that the child under pseudo focus does not have view
+  // focus. It is where "pseudo" comes from.
+  enum class PseudoFocus { kEmpty, kMainButton, kDeleteButton };
+
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
 
   // Executes |command_id| on the delegate.
   void ExecuteCommand(int command_id, const ui::Event& event);
 
-  // Updates the child views selection bitset.
-  void SetSelectionFlags(int selection_flag);
+  // Calculates the command id, which indicates the response to user actions.
+  int CalculateCommandId() const;
+
+  // Returns whether the highlight background should show.
+  bool ShouldHighlight() const;
+
+  bool ShouldShowDeleteButton() const;
 
   // Owned by ClipboardHistoryMenuModelAdapter.
   const ClipboardHistoryItem* const clipboard_history_item_;
@@ -133,8 +132,7 @@ class ClipboardHistoryItemView : public views::View {
 
   MainButton* main_button_ = nullptr;
 
-  // The bitset indicating the child view(s) under selection.
-  int selection_flags_ = 0;
+  PseudoFocus pseudo_focus_ = PseudoFocus::kEmpty;
 
   views::PropertyChangedSubscription subscription_;
 };
