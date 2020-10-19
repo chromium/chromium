@@ -27,8 +27,8 @@ constexpr SkColor kLabelColor = gfx::kGoogleBlue600;
 
 }  // namespace
 
-SharesheetExpandButton::SharesheetExpandButton(PressedCallback callback)
-    : Button(std::move(callback)) {
+SharesheetExpandButton::SharesheetExpandButton(views::ButtonListener* listener)
+    : Button(listener) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(6, 16, 6, 16),
       kBetweenChildSpacing, true));

@@ -105,6 +105,7 @@ void SharesheetBubbleView::ShowBubble(
     std::vector<TargetInfo> targets,
     apps::mojom::IntentPtr intent,
     sharesheet::CloseCallback close_callback) {
+  targets_ = std::move(targets);
   intent_ = std::move(intent);
   close_callback_ = std::move(close_callback);
 
@@ -131,7 +132,7 @@ void SharesheetBubbleView::ShowBubble(
   main_layout->AddPaddingRow(views::GridLayout::kFixedSize, kSpacing);
 
   auto scroll_view = std::make_unique<views::ScrollView>();
-  scroll_view->SetContents(MakeScrollableTargetView(std::move(targets)));
+  scroll_view->SetContents(MakeScrollableTargetView());
   scroll_view->ClipHeightTo(kTargetViewHeight, kTargetViewExpandedHeight);
 
   // TODO(crbug.com/1097623) Update grey border lines.
@@ -141,9 +142,8 @@ void SharesheetBubbleView::ShowBubble(
 
   main_layout->StartRow(views::GridLayout::kFixedSize, COLUMN_SET_ID_TITLE,
                         kShortSpacing);
-  expand_button_ = main_layout->AddView(
-      std::make_unique<SharesheetExpandButton>(base::BindRepeating(
-          &SharesheetBubbleView::ExpandButtonPressed, base::Unretained(this))));
+  expand_button_ =
+      main_layout->AddView(std::make_unique<SharesheetExpandButton>(this));
   main_layout->AddPaddingRow(views::GridLayout::kFixedSize, kShortSpacing);
 
   main_view_->SetFocusBehavior(View::FocusBehavior::ALWAYS);
@@ -153,18 +153,17 @@ void SharesheetBubbleView::ShowBubble(
   GetWidget()->GetRootView()->Layout();
   widget->Show();
 
-  if (expanded_view_->children().size() > 1) {
-    SetToDefaultBubbleSizing();
-  } else {
+  if (targets_.size() <= (kMaxRowsForDefaultView * kMaxTargetsPerRow)) {
     width_ = kDefaultBubbleWidth;
     height_ = kNoExtensionBubbleHeight;
     expand_button_->SetVisible(false);
+  } else {
+    SetToDefaultBubbleSizing();
   }
   UpdateAnchorPosition();
 }
 
-std::unique_ptr<views::View> SharesheetBubbleView::MakeScrollableTargetView(
-    std::vector<TargetInfo> targets) {
+std::unique_ptr<views::View> SharesheetBubbleView::MakeScrollableTargetView() {
   // Set up default and expanded views.
   auto default_view = std::make_unique<views::View>();
   auto* default_layout =
@@ -198,8 +197,7 @@ std::unique_ptr<views::View> SharesheetBubbleView::MakeScrollableTargetView(
   expanded_layout->AddPaddingRow(views::GridLayout::kFixedSize,
                                  kExpandViewPadding);
 
-  PopulateLayoutsWithTargets(std::move(targets), default_layout,
-                             expanded_layout);
+  PopulateLayoutsWithTargets(default_layout, expanded_layout);
   default_layout->AddPaddingRow(views::GridLayout::kFixedSize, kShortSpacing);
 
   auto scrollable_view = std::make_unique<views::View>();
@@ -217,15 +215,14 @@ std::unique_ptr<views::View> SharesheetBubbleView::MakeScrollableTargetView(
 }
 
 void SharesheetBubbleView::PopulateLayoutsWithTargets(
-    std::vector<TargetInfo> targets,
     views::GridLayout* default_layout,
     views::GridLayout* expanded_layout) {
   // Add first kMaxRowsForDefaultView*kMaxTargetsPerRow targets to
   // |default_view| and subsequent targets to |expanded_view|.
-  size_t row_count = 0;
   size_t target_counter = 0;
+  size_t row_count = 0;
   auto* layout_for_target = default_layout;
-  for (auto& target : targets) {
+  for (const auto& target : targets_) {
     if (target_counter % kMaxTargetsPerRow == 0) {
       // When we've reached kMaxRowsForDefaultView switch to populating
       // |expanded_layout|.
@@ -241,16 +238,13 @@ void SharesheetBubbleView::PopulateLayoutsWithTargets(
       layout_for_target->StartRow(views::GridLayout::kFixedSize,
                                   COLUMN_SET_ID_TARGETS);
     }
-    ++target_counter;
 
     base::string16 secondary_display_name =
         target.secondary_display_name.value_or(base::string16());
 
     auto target_view = std::make_unique<SharesheetTargetButton>(
-        base::BindRepeating(&SharesheetBubbleView::TargetButtonPressed,
-                            base::Unretained(this),
-                            base::Passed(std::move(target))),
-        target.display_name, secondary_display_name, &target.icon);
+        this, target.display_name, secondary_display_name, &target.icon);
+    target_view->set_tag(target_counter++);
 
     layout_for_target->AddView(std::move(target_view));
   }
@@ -271,6 +265,7 @@ void SharesheetBubbleView::CloseBubble() {
   views::Widget* widget = View::GetWidget();
   widget->CloseWithReason(views::Widget::ClosedReason::kAcceptButtonClicked);
   // Reset all bubble values.
+  targets_.clear();
   active_target_ = base::string16();
   intent_.reset();
   keyboard_highlighted_target_ = 0;
@@ -302,23 +297,61 @@ void SharesheetBubbleView::OnKeyEvent(ui::KeyEvent* event) {
       break;
   }
 
-  const size_t default_views = default_view_->children().size();
-  // The -1 here and +1 below account for the app list label.
-  const size_t targets =
-      default_views +
-      (show_expanded_view_ ? (expanded_view_->children().size() - 1) : 0);
-  const int new_target = int{keyboard_highlighted_target_} + delta;
-  keyboard_highlighted_target_ =
-      size_t{base::ClampToRange(new_target, 0, int{targets} - 1)};
+  keyboard_highlighted_target_ += delta;
 
-  if (keyboard_highlighted_target_ < default_views) {
+  int default_view_max = kMaxTargetsPerRow * kMaxRowsForDefaultView - 1;
+  int max_target_index = targets_.size() - 1;
+  if ((!show_expanded_view_) && (max_target_index > default_view_max)) {
+    max_target_index = default_view_max;
+  }
+
+  if (keyboard_highlighted_target_ > max_target_index) {
+    keyboard_highlighted_target_ = max_target_index;
+  } else if (keyboard_highlighted_target_ < 0) {
+    keyboard_highlighted_target_ = 0;
+  }
+
+  if (keyboard_highlighted_target_ <= default_view_max) {
     default_view_->children()[keyboard_highlighted_target_]->RequestFocus();
   } else {
-    expanded_view_->children()[keyboard_highlighted_target_ + 1 - default_views]
+    DCHECK_LT(keyboard_highlighted_target_ - default_view_max,
+              expanded_view_->children().size());
+    DCHECK(show_expanded_view_);
+    expanded_view_->children()[keyboard_highlighted_target_ - default_view_max]
         ->RequestFocus();
   }
 
   View::OnKeyEvent(event);
+}
+
+void SharesheetBubbleView::ButtonPressed(views::Button* sender,
+                                         const ui::Event& event) {
+  if (sender == expand_button_) {
+    if (show_expanded_view_) {
+      expand_button_->SetDefaultView();
+      expanded_view_->SetVisible(false);
+      ResizeBubble(kDefaultBubbleWidth, kDefaultBubbleHeight);
+    } else {
+      expand_button_->SetExpandedView();
+      expanded_view_->SetVisible(true);
+      ResizeBubble(kDefaultBubbleWidth, kExpandedBubbleHeight);
+    }
+    show_expanded_view_ = !show_expanded_view_;
+  } else {
+    auto type = targets_[sender->tag()].type;
+    if (type == sharesheet::TargetType::kAction) {
+      active_target_ = targets_[sender->tag()].launch_name;
+    } else {
+      intent_->activity_name = targets_[sender->tag()].activity_name;
+    }
+    delegate_->OnTargetSelected(targets_[sender->tag()].launch_name, type,
+                                std::move(intent_), share_action_view_);
+    intent_.reset();
+    user_cancelled_ = false;
+    if (close_callback_) {
+      std::move(close_callback_).Run(sharesheet::SharesheetResult::kSuccess);
+    }
+  }
 }
 
 std::unique_ptr<views::NonClientFrameView>
@@ -378,31 +411,6 @@ void SharesheetBubbleView::CreateBubble() {
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0, true));
   share_action_view_ = AddChildView(std::move(share_action_view));
   share_action_view_->SetVisible(false);
-}
-
-void SharesheetBubbleView::ExpandButtonPressed() {
-  show_expanded_view_ = !show_expanded_view_;
-  if (show_expanded_view_)
-    expand_button_->SetExpandedView();
-  else
-    expand_button_->SetDefaultView();
-  expanded_view_->SetVisible(show_expanded_view_);
-  ResizeBubble(kDefaultBubbleWidth, show_expanded_view_ ? kExpandedBubbleHeight
-                                                        : kDefaultBubbleHeight);
-}
-
-void SharesheetBubbleView::TargetButtonPressed(TargetInfo target) {
-  auto type = target.type;
-  if (type == sharesheet::TargetType::kAction)
-    active_target_ = target.launch_name;
-  else
-    intent_->activity_name = target.activity_name;
-  delegate_->OnTargetSelected(target.launch_name, type, std::move(intent_),
-                              share_action_view_);
-  intent_.reset();
-  user_cancelled_ = false;
-  if (close_callback_)
-    std::move(close_callback_).Run(sharesheet::SharesheetResult::kSuccess);
 }
 
 void SharesheetBubbleView::UpdateAnchorPosition() {

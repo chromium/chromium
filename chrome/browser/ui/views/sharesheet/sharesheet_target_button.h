@@ -11,7 +11,7 @@
 
 class SharesheetTargetButton : public views::Button {
  public:
-  SharesheetTargetButton(PressedCallback callback,
+  SharesheetTargetButton(views::ButtonListener* listener,
                          const base::string16& display_name,
                          const base::string16& secondary_display_name,
                          const gfx::ImageSkia* icon);

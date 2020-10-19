@@ -35,11 +35,11 @@ constexpr SkColor kShareTargetSecondaryTitleColor = gfx::kGoogleGrey600;
 
 // A button that represents a candidate share target.
 SharesheetTargetButton::SharesheetTargetButton(
-    PressedCallback callback,
+    views::ButtonListener* listener,
     const base::string16& display_name,
     const base::string16& secondary_display_name,
     const gfx::ImageSkia* icon)
-    : Button(std::move(callback)) {
+    : Button(listener) {
   // TODO(crbug.com/1097623) Margins shouldn't be within
   // SharesheetTargetButton as the margins are different in |expanded_view_|.
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(

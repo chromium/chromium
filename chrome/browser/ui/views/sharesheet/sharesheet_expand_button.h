@@ -12,7 +12,7 @@
 
 class SharesheetExpandButton : public views::Button {
  public:
-  explicit SharesheetExpandButton(PressedCallback callback);
+  explicit SharesheetExpandButton(views::ButtonListener* listener);
   SharesheetExpandButton(const SharesheetExpandButton&) = delete;
   SharesheetExpandButton& operator=(const SharesheetExpandButton&) = delete;
 
