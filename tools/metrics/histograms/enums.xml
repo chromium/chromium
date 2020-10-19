@@ -77017,6 +77017,12 @@ Called by update_scheduler_enums.py.-->
   <int value="2" label="Cross-domain redirect"/>
 </enum>
 
+<enum name="WebViewMixedContentMode">
+  <int value="0" label="Always allow"/>
+  <int value="1" label="Never allow"/>
+  <int value="2" label="Compatibility Mode"/>
+</enum>
+
 <enum name="WebViewOpenWebScreenPortion">
   <int value="0" label="ZeroPercent"/>
   <int value="1" label="TenPercent"/>

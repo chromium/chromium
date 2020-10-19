@@ -1757,6 +1757,9 @@ public class AwSettings {
     }
 
     public void setMixedContentMode(int mode) {
+        // Using explicit max count for the histogram since enum is defined in Android code. The
+        // values can be trusted to remain stable since they are defined in the Android API.
+        RecordHistogram.recordEnumeratedHistogram("Android.WebView.MixedContent.Mode", mode, 3);
         synchronized (mAwSettingsLock) {
             if (mMixedContentMode != mode) {
                 mMixedContentMode = mode;
