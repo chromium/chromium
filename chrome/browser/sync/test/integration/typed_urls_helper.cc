@@ -26,6 +26,8 @@
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/sync/model/metadata_batch.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
 
 using sync_datatype_helper::test;
 
@@ -185,6 +187,30 @@ class GetTypedUrlsMetadataTask : public history::HistoryDBTask {
   base::WaitableEvent* wait_event_;
 };
 
+class WriteTypedUrlsMetadataTask : public history::HistoryDBTask {
+ public:
+  WriteTypedUrlsMetadataTask(const std::string& storage_key,
+                             const sync_pb::EntityMetadata& metadata,
+                             base::WaitableEvent* event)
+      : storage_key_(storage_key), metadata_(metadata), wait_event_(event) {}
+  ~WriteTypedUrlsMetadataTask() override = default;
+
+  bool RunOnDBThread(history::HistoryBackend* backend,
+                     history::HistoryDatabase* db) override {
+    // Write the metadata to the DB.
+    db->UpdateSyncMetadata(syncer::TYPED_URLS, storage_key_, metadata_);
+    wait_event_->Signal();
+    return true;
+  }
+
+  void DoneRunOnMainThread() override {}
+
+ private:
+  const std::string storage_key_;
+  const sync_pb::EntityMetadata metadata_;
+  base::WaitableEvent* wait_event_;
+};
+
 // Creates a URLRow in the specified HistoryService with the passed transition
 // type.
 void AddToHistory(history::HistoryService* service,
@@ -271,6 +297,21 @@ void GetMetadataBatchFromHistoryService(history::HistoryService* service,
   wait_event.Wait();
 }
 
+void WriteMetadataToHistoryService(history::HistoryService* service,
+                                   const std::string& storage_key,
+                                   const sync_pb::EntityMetadata& metadata) {
+  base::CancelableTaskTracker tracker;
+  base::WaitableEvent wait_event(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+
+  service->ScheduleDBTask(FROM_HERE,
+                          std::make_unique<WriteTypedUrlsMetadataTask>(
+                              storage_key, metadata, &wait_event),
+                          &tracker);
+  wait_event.Wait();
+}
+
 history::HistoryService* GetHistoryServiceFromClient(int index) {
   return HistoryServiceFactory::GetForProfileWithoutCreating(
       test()->GetProfile(index));
@@ -309,6 +350,13 @@ history::VisitVector GetVisitsForURLFromClient(int index, const GURL& url) {
 void RemoveVisitsFromClient(int index, const history::VisitVector& visits) {
   history::HistoryService* service = GetHistoryServiceFromClient(index);
   RemoveVisitsFromHistoryService(service, visits);
+}
+
+void WriteMetadataToClient(int index,
+                           const std::string& storage_key,
+                           const sync_pb::EntityMetadata& metadata) {
+  history::HistoryService* service = GetHistoryServiceFromClient(index);
+  WriteMetadataToHistoryService(service, storage_key, metadata);
 }
 
 base::Time GetTimestamp() {
@@ -547,6 +595,15 @@ bool CheckSyncHasMetadataForURLID(int index, history::URLID url_id) {
       return true;
   }
   return false;
+}
+
+syncer::MetadataBatch GetAllSyncMetadata(int index) {
+  history::URLRow row;
+  history::HistoryService* service = GetHistoryServiceFromClient(index);
+
+  syncer::MetadataBatch batch;
+  GetMetadataBatchFromHistoryService(service, &batch);
+  return batch;
 }
 
 }  // namespace typed_urls_helper

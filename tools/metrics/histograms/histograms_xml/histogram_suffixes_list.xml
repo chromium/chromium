@@ -18459,6 +18459,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="GetData"
       label="This happens as a result of missing data in response from
              GetData() call."/>
+  <suffix name="ModelReadyToSync"
+      label="This happens as a result of a ModelReadyToSync() call with
+             metadata batch containing entities with duplicate
+             client-tag-hashes (which indicates that all but one from each
+             equivalence class are previous orphans). The type of the orphan
+             is reported in this histogram, one for each orphan."/>
   <suffix name="Put"
       label="This happens as a result of a Put() call with an entity whose
              client-tag-hash is already tracked by the processor (which

@@ -4,6 +4,7 @@
 
 #include "components/sync/model_impl/client_tag_based_model_type_processor.h"
 
+#include <set>
 #include <utility>
 #include <vector>
 
@@ -28,6 +29,19 @@ namespace syncer {
 namespace {
 
 const char kErrorSiteHistogramPrefix[] = "Sync.ModelTypeErrorSite.";
+
+size_t CountDuplicateClientTags(const EntityMetadataMap& metadata_map) {
+  size_t count = 0u;
+  std::set<std::string> client_tag_hashes;
+  for (const auto& kv : metadata_map) {
+    const std::string& client_tag_hash = kv.second->client_tag_hash();
+    if (client_tag_hashes.find(client_tag_hash) != client_tag_hashes.end()) {
+      count++;
+    }
+    client_tag_hashes.insert(client_tag_hash);
+  }
+  return count;
+}
 
 }  // namespace
 
@@ -58,7 +72,7 @@ void ClientTagBasedModelTypeProcessor::OnSyncStarting(
     StartCallback start_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "Sync is starting for " << ModelTypeToString(type_);
-  DCHECK(request.error_handler) << ModelTypeToString(type_);
+  DCHECK(request.IsValid()) << ModelTypeToString(type_);
   DCHECK(start_callback) << ModelTypeToString(type_);
   DCHECK(!start_callback_) << ModelTypeToString(type_);
   DCHECK(!IsConnected()) << ModelTypeToString(type_);
@@ -93,8 +107,10 @@ void ClientTagBasedModelTypeProcessor::ModelReadyToSync(
 
   if (batch->GetModelTypeState().initial_sync_done()) {
     EntityMetadataMap metadata_map(batch->TakeAllMetadata());
-    entity_tracker_ = std::make_unique<ProcessorEntityTracker>(
-        batch->GetModelTypeState(), std::move(metadata_map));
+    if (CheckForInvalidPersistedMetadata(metadata_map)) {
+      entity_tracker_ = std::make_unique<ProcessorEntityTracker>(
+          batch->GetModelTypeState(), std::move(metadata_map));
+    }
   } else {
     // In older versions of the binary, commit-only types did not persist
     // initial_sync_done(). So this branch can be exercised for commit-only
@@ -105,6 +121,7 @@ void ClientTagBasedModelTypeProcessor::ModelReadyToSync(
         << ModelTypeToString(type_);
   }
 
+  DCHECK(model_ready_to_sync_);
   ConnectIfReady();
 }
 
@@ -127,7 +144,7 @@ void ClientTagBasedModelTypeProcessor::ConnectIfReady() {
     return;
   }
 
-  CheckForInvalidPersistedMetadata();
+  CheckForInvalidPersistedModelTypeState();
 
   auto activation_response = std::make_unique<DataTypeActivationResponse>();
   if (!entity_tracker_) {
@@ -194,10 +211,7 @@ void ClientTagBasedModelTypeProcessor::OnSyncStopping(
     }
 
     case CLEAR_METADATA: {
-      ClearMetadataAndResetState();
-      // The model is still ready to sync (with the same |bridge_|) - replay
-      // the initialization.
-      ModelReadyToSync(std::make_unique<MetadataBatch>());
+      ClearAllTrackedMetadataAndResetState();
       DCHECK(model_ready_to_sync_);
       break;
     }
@@ -206,7 +220,7 @@ void ClientTagBasedModelTypeProcessor::OnSyncStopping(
   DCHECK(!IsConnected());
 }
 
-void ClientTagBasedModelTypeProcessor::ClearMetadataAndResetState() {
+void ClientTagBasedModelTypeProcessor::ClearAllTrackedMetadataAndResetState() {
   std::unique_ptr<MetadataChangeList> change_list;
 
   // All changes before the initial sync is done are ignored and in fact they
@@ -224,10 +238,33 @@ void ClientTagBasedModelTypeProcessor::ClearMetadataAndResetState() {
     change_list->ClearModelTypeState();
   }
 
+  ClearAllMetadataAndResetStateImpl(std::move(change_list));
+}
+
+void ClientTagBasedModelTypeProcessor::ClearAllProvidedMetadataAndResetState(
+    const EntityMetadataMap& metadata_map) {
+  std::unique_ptr<MetadataChangeList> change_list =
+      bridge_->CreateMetadataChangeList();
+  for (const auto& kv : metadata_map) {
+    const std::string& storage_key = kv.first;
+    change_list->ClearMetadata(storage_key);
+  }
+  change_list->ClearModelTypeState();
+
+  ClearAllMetadataAndResetStateImpl(std::move(change_list));
+}
+
+void ClientTagBasedModelTypeProcessor::ClearAllMetadataAndResetStateImpl(
+    std::unique_ptr<MetadataChangeList> change_list) {
   bridge_->ApplyStopSyncChanges(std::move(change_list));
 
   // Reset all the internal state of the processor.
   ResetState(CLEAR_METADATA);
+
+  if (activation_request_.IsValid()) {
+    // If OnSyncStarting() already was called, notify the bridge again.
+    bridge_->OnSyncStarting(activation_request_);
+  }
 }
 
 bool ClientTagBasedModelTypeProcessor::IsTrackingMetadata() {
@@ -285,7 +322,7 @@ void ClientTagBasedModelTypeProcessor::ReportErrorImpl(const ModelError& error,
 
   // Shouldn't connect anymore.
   start_callback_.Reset();
-  if (activation_request_.error_handler) {
+  if (activation_request_.IsValid()) {
     // Tell sync about the error.
     activation_request_.error_handler.Run(error);
   }
@@ -1022,7 +1059,6 @@ void ClientTagBasedModelTypeProcessor::ResetState(
     case KEEP_METADATA:
       break;
     case CLEAR_METADATA:
-      model_ready_to_sync_ = false;
       entity_tracker_.reset();
       break;
   }
@@ -1095,50 +1131,66 @@ void ClientTagBasedModelTypeProcessor::MergeDataWithMetadataForDebugging(
   std::move(callback).Run(type_, std::move(all_nodes));
 }
 
-void ClientTagBasedModelTypeProcessor::CheckForInvalidPersistedMetadata() {
+bool ClientTagBasedModelTypeProcessor::CheckForInvalidPersistedMetadata(
+    const EntityMetadataMap& metadata_map) {
+  size_t count_of_duplicates = CountDuplicateClientTags(metadata_map);
+  if (count_of_duplicates == 0u)
+    return true;
+
+  // Metadata entities with duplicate client tag hashes most likely arise
+  // from metadata orphans; report their count to metrics.
+  for (size_t i = 0; i < count_of_duplicates; i++) {
+    UMA_HISTOGRAM_ENUMERATION("Sync.ModelTypeOrphanMetadata.ModelReadyToSync",
+                              ModelTypeHistogramValue(type_));
+  }
+
+  ClearAllProvidedMetadataAndResetState(metadata_map);
+  // Not having `entity_tracker_` results in doing the initial sync again.
+  DCHECK(!entity_tracker_);
+  return false;
+}
+
+void ClientTagBasedModelTypeProcessor::
+    CheckForInvalidPersistedModelTypeState() {
   if (!entity_tracker_) {
     return;
   }
-
   const sync_pb::ModelTypeState& model_type_state =
       entity_tracker_->model_type_state();
-  const bool invalid_cache_guid =
-      model_type_state.cache_guid() != activation_request_.cache_guid;
-  const bool invalid_data_type_id =
-      model_type_state.progress_marker().data_type_id() !=
-      GetSpecificsFieldNumberFromModelType(type_);
-  const bool invalid_account_id =
-      model_type_state.authenticated_account_id() !=
-      activation_request_.authenticated_account_id.ToString();
-  // Do not check for the authenticated_account_id since the cache GUID equality
-  // implies account ID equality (verified in ProfileSyncService).
-  //
-  // Check for invalid persisted metadata.
-  // TODO(crbug.com/1079314): add UMA for each case of inconsistent data.
-  if (!invalid_cache_guid && !invalid_data_type_id) {
-    if (invalid_account_id) {
-      sync_pb::ModelTypeState update_model_type_state = model_type_state;
-      update_model_type_state.set_authenticated_account_id(
-          activation_request_.authenticated_account_id.ToString());
-      entity_tracker_->set_model_type_state(update_model_type_state);
-    }
-    return;
+
+  // Check for a mismatch in authenticated account id. The id can change after
+  // restart (and this does not mean the account has changed, this is checked
+  // later here by cache_guid mismatch). Easy to fix in place.
+  if (model_type_state.authenticated_account_id() !=
+      activation_request_.authenticated_account_id.ToString()) {
+    sync_pb::ModelTypeState update_model_type_state = model_type_state;
+    update_model_type_state.set_authenticated_account_id(
+        activation_request_.authenticated_account_id.ToString());
+    entity_tracker_->set_model_type_state(update_model_type_state);
   }
-  // There is a mismatch between the cache guid or the data type id stored
-  // in |model_type_state_| and the one received from sync. This indicates
+
+  // Check for deeper issues where we need to restart sync for this type.
+  const bool valid_cache_guid =
+      model_type_state.cache_guid() == activation_request_.cache_guid;
+  // Check for a mismatch between the cache guid or the data type id stored
+  // in |model_type_state_| and the one received from sync. A mismatch indicates
   // that the stored metadata are invalid (e.g. has been manipulated) and
   // don't belong to the current syncing client.
-  if (model_type_state.progress_marker().data_type_id() !=
-      GetSpecificsFieldNumberFromModelType(type_)) {
+  const bool valid_data_type_id =
+      model_type_state.progress_marker().data_type_id() ==
+      GetSpecificsFieldNumberFromModelType(type_);
+  if (valid_cache_guid && valid_data_type_id) {
+    return;
+  }
+
+  // TODO(crbug.com/1079314): add UMA for each case of inconsistent data.
+  if (!valid_data_type_id) {
     UMA_HISTOGRAM_ENUMERATION("Sync.PersistedModelTypeIdMismatch",
                               ModelTypeHistogramValue(type_));
   }
-  ClearMetadataAndResetState();
-  // The model is still ready to sync (with the same |bridge_|) - replay
-  // the initialization.
-  model_ready_to_sync_ = true;
-  // Notify the bridge sync is starting to simulate an enable event.
-  bridge_->OnSyncStarting(activation_request_);
+
+  ClearAllTrackedMetadataAndResetState();
+  // Not having `entity_tracker_` results in doing the initial sync again.
   DCHECK(!entity_tracker_);
 }
 

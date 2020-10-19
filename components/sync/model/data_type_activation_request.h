@@ -26,6 +26,8 @@ struct DataTypeActivationRequest {
       const DataTypeActivationRequest& request);
   DataTypeActivationRequest& operator=(DataTypeActivationRequest&& request);
 
+  bool IsValid() const;
+
   ModelErrorHandler error_handler;
   CoreAccountId authenticated_account_id;
   std::string cache_guid;

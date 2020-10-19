@@ -128,10 +128,16 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   friend class ModelTypeDebugInfo;
   friend class ClientTagBasedModelTypeProcessorTest;
 
-  // Clears all metadata and directs the bridge to clear the persisted metadata
-  // as well. In addition, it resets the state of the processor and clears all
-  // tracking maps such as |entities_| and |storage_key_to_tag_hash_|.
-  void ClearMetadataAndResetState();
+  // Directs the bridge to clear the persisted metadata as known to the entity
+  // tracker / `metadata_map`. In addition, it resets the state of the processor
+  // incl. the entity tracker.
+  void ClearAllTrackedMetadataAndResetState();
+  void ClearAllProvidedMetadataAndResetState(
+      const EntityMetadataMap& metadata_map);
+  // Implementation for the functions above, `change_list` is assumed to delete
+  // all known metadata.
+  void ClearAllMetadataAndResetStateImpl(
+      std::unique_ptr<MetadataChangeList> change_list);
 
   // Whether the processor is allowing changes to its model type. If this is
   // false, the bridge should not allow any changes to its data.
@@ -214,9 +220,10 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   void MergeDataWithMetadataForDebugging(AllNodesCallback callback,
                                          std::unique_ptr<DataBatch> batch);
 
-  // Checks for valid cache GUID and data type id. Resets state if metadata is
-  // invalid.
-  void CheckForInvalidPersistedMetadata();
+  // Checks for valid persisted state. Resets state (incl. the persisted data)
+  // if it is invalid.
+  void CheckForInvalidPersistedModelTypeState();
+  bool CheckForInvalidPersistedMetadata(const EntityMetadataMap& metadata_map);
 
   // Reports error and records a metric about |site| where the error occurred.
   void ReportErrorImpl(const ModelError& error, ErrorSite site);
