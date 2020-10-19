@@ -175,7 +175,7 @@ void SlotSpanMetadata<thread_safe>::Decommit(PartitionRoot<thread_safe>* root) {
   // Pulling this trick enables us to use a singly-linked list for all
   // cases, which is critical in keeping the slot span metadata structure down
   // to 32 bytes in size.
-  freelist_head = nullptr;
+  SetFreelistHead(nullptr);
   num_unprovisioned_slots = 0;
   PA_DCHECK(is_decommitted());
   PA_DCHECK(bucket);

@@ -423,7 +423,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFromBucket(
     internal::PartitionFreelistEntry* new_head =
         internal::EncodedPartitionFreelistEntry::Decode(
             slot_span->freelist_head->next);
-    slot_span->freelist_head = new_head;
+    slot_span->SetFreelistHead(new_head);
     slot_span->num_allocated_slots++;
 
     PA_DCHECK(slot_span->bucket == bucket);

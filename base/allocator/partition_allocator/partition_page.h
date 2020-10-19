@@ -119,6 +119,8 @@ struct __attribute__((packed)) SlotSpanMetadata {
   ALWAYS_INLINE void SetRawSize(size_t raw_size);
   ALWAYS_INLINE size_t GetRawSize() const;
 
+  ALWAYS_INLINE void SetFreelistHead(PartitionFreelistEntry* new_head);
+
   // Returns size of the region used within a slot. The used region comprises
   // of actual allocated data, extras and possibly empty space.
   ALWAYS_INLINE size_t GetUtilizedSlotSize() const {
@@ -361,6 +363,15 @@ ALWAYS_INLINE size_t SlotSpanMetadata<thread_safe>::GetRawSize() const {
 }
 
 template <bool thread_safe>
+ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::SetFreelistHead(
+    PartitionFreelistEntry* new_head) {
+  PA_DCHECK(!new_head ||
+            (reinterpret_cast<uintptr_t>(this) & kSuperPageBaseMask) ==
+                (reinterpret_cast<uintptr_t>(new_head) & kSuperPageBaseMask));
+  freelist_head = new_head;
+}
+
+template <bool thread_safe>
 ALWAYS_INLINE DeferredUnmap SlotSpanMetadata<thread_safe>::Free(void* ptr) {
 #if DCHECK_IS_ON()
   auto* root = PartitionRoot<thread_safe>::FromSlotSpan(this);
@@ -375,7 +386,7 @@ ALWAYS_INLINE DeferredUnmap SlotSpanMetadata<thread_safe>::Free(void* ptr) {
             ptr != EncodedPartitionFreelistEntry::Decode(freelist_head->next));
   auto* entry = static_cast<internal::PartitionFreelistEntry*>(ptr);
   entry->next = internal::PartitionFreelistEntry::Encode(freelist_head);
-  freelist_head = entry;
+  SetFreelistHead(entry);
   --num_allocated_slots;
   if (UNLIKELY(num_allocated_slots <= 0)) {
     return FreeSlowPath();

@@ -631,7 +631,7 @@ static size_t PartitionPurgeSlotSpan(
 #endif
       }
 
-      slot_span->freelist_head = head;
+      slot_span->SetFreelistHead(head);
       if (back)
         back->next = internal::PartitionFreelistEntry::Encode(nullptr);
 

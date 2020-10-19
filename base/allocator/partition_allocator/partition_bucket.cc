@@ -92,8 +92,8 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
   PA_DCHECK(!page->slot_span_metadata.num_unprovisioned_slots);
   PA_DCHECK(!page->slot_span_metadata.empty_cache_index);
   page->slot_span_metadata.bucket = &metadata->bucket;
-  page->slot_span_metadata.freelist_head =
-      reinterpret_cast<PartitionFreelistEntry*>(slot);
+  page->slot_span_metadata.SetFreelistHead(
+      reinterpret_cast<PartitionFreelistEntry*>(slot));
 
   auto* next_entry = reinterpret_cast<PartitionFreelistEntry*>(slot);
   next_entry->next = PartitionFreelistEntry::Encode(nullptr);
@@ -471,7 +471,7 @@ ALWAYS_INLINE char* PartitionBucket<thread_safe>::AllocAndFillFreelist(
   if (LIKELY(num_new_freelist_entries)) {
     char* freelist_pointer = first_freelist_pointer;
     auto* entry = reinterpret_cast<PartitionFreelistEntry*>(freelist_pointer);
-    slot_span->freelist_head = entry;
+    slot_span->SetFreelistHead(entry);
     while (--num_new_freelist_entries) {
       freelist_pointer += size;
       auto* next_entry =
@@ -481,7 +481,7 @@ ALWAYS_INLINE char* PartitionBucket<thread_safe>::AllocAndFillFreelist(
     }
     entry->next = PartitionFreelistEntry::Encode(nullptr);
   } else {
-    slot_span->freelist_head = nullptr;
+    slot_span->SetFreelistHead(nullptr);
   }
   return return_object;
 }
@@ -673,7 +673,7 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
     PartitionFreelistEntry* entry = new_slot_span->freelist_head;
     PartitionFreelistEntry* new_head =
         EncodedPartitionFreelistEntry::Decode(entry->next);
-    new_slot_span->freelist_head = new_head;
+    new_slot_span->SetFreelistHead(new_head);
     new_slot_span->num_allocated_slots++;
     return entry;
   }
