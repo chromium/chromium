@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.share.share_sheet;
 
 import android.app.Activity;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
@@ -58,12 +57,11 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     private Activity mActivity;
     private ActivityLifecycleDispatcher mLifecycleDispatcher;
     private ChromeProvidedSharingOptionsProvider mChromeProvidedSharingOptionsProvider;
+    private ShareParams mShareParams;
     private ShareSheetBottomSheetContent mBottomSheet;
     private WindowAndroid mWindowAndroid;
     private final BottomSheetObserver mBottomSheetObserver;
     private final LargeIconBridge mIconBridge;
-    private String mUrl;
-    private Bitmap mIconForPreview;
 
     /**
      * Constructs a new ShareSheetCoordinator.
@@ -105,6 +103,12 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     }
 
     protected void destroy() {
+        if (mShareParams != null) {
+            ShareParams.TargetChosenCallback callback = mShareParams.getCallback();
+            if (callback != null) {
+                callback.onCancel();
+            }
+        }
         if (mWindowAndroid != null) {
             mWindowAndroid.removeActivityStateObserver(this);
             mWindowAndroid = null;
@@ -118,6 +122,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     // TODO(crbug/1022172): Should be package-protected once modularization is complete.
     public void showShareSheet(
             ShareParams params, ChromeShareExtras chromeShareExtras, long shareStartTime) {
+        mShareParams = params;
         mActivity = params.getWindow().getActivity().get();
         if (mActivity == null) return;
 
