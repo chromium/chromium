@@ -920,7 +920,8 @@ int Node::OnUserMessageReadAckRequest(
     }
   }
 
-  delegate_->ForwardEvent(peer_node_name, std::move(event_to_send));
+  if (event_to_send)
+    delegate_->ForwardEvent(peer_node_name, std::move(event_to_send));
 
   return OK;
 }
