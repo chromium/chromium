@@ -70,14 +70,13 @@ TEST_F(HyphenationTest, Get) {
 }
 
 #if defined(USE_MINIKIN_HYPHENATION) || defined(OS_MAC)
-// TODO(crbug.com/851413): Reenable this test.
-#if defined(OS_ANDROID)
-#define MAYBE_HyphenLocations DISABLED_HyphenLocations
-#else
-#define MAYBE_HyphenLocations HyphenLocations
-#endif
-TEST_F(HyphenationTest, MAYBE_HyphenLocations) {
+TEST_F(HyphenationTest, HyphenLocations) {
   scoped_refptr<Hyphenation> hyphenation = GetHyphenation("en-us");
+#if defined(OS_ANDROID)
+  // Hyphenation is available only for Android M MR1 or later.
+  if (!hyphenation)
+    return;
+#endif
   ASSERT_TRUE(hyphenation) << "Cannot find the hyphenation engine";
 
   // Get all hyphenation points by |HyphenLocations|.
