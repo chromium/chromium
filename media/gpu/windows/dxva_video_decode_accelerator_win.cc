@@ -23,7 +23,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/debug/alias.h"
 #include "base/file_version_info.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
@@ -756,6 +755,7 @@ bool DXVAVideoDecodeAccelerator::Initialize(const Config& config,
   if (codec_ == kCodecVP9)
     config_change_detector_.reset(new VP9ConfigChangeDetector());
 
+  processing_config_changed_ = false;
   SetState(kNormal);
 
   UMA_HISTOGRAM_ENUMERATION("Media.DXVAVDA.PictureBufferMechanism",
@@ -1990,16 +1990,34 @@ void DXVAVideoDecodeAccelerator::StopOnError(
   }
 }
 
-void DXVAVideoDecodeAccelerator::Invalidate() {
+void DXVAVideoDecodeAccelerator::Invalidate(bool for_config_change) {
+  DCHECK(main_thread_task_runner_->BelongsToCurrentThread());
+
   if (GetState() == kUninitialized)
     return;
 
   // Best effort to make the GL context current.
-  make_context_current_cb_.Run();
+  if (!make_context_current_cb_.Run()) {
+    // TODO(crbug.com/1139489): This may not be the right fix.
+    for (auto& kv : output_picture_buffers_) {
+      if (auto* fence = kv.second->reuse_fence())
+        fence->Invalidate();
+    }
+    for (auto& kv : stale_output_picture_buffers_) {
+      if (auto* fence = kv.second->reuse_fence())
+        fence->Invalidate();
+    }
+
+    // Since this is called by StopOnError() we can't call it directly.
+    DLOG(ERROR) << "Failed to make context current.";
+    for_config_change = false;
+    if (client_) {
+      client_->NotifyError(PLATFORM_FAILURE);
+      client_ = nullptr;
+    }
+  }
 
   StopDecoderThread();
-  weak_this_factory_.InvalidateWeakPtrs();
-  weak_ptr_ = weak_this_factory_.GetWeakPtr();
   pending_output_samples_.clear();
   decoder_.Reset();
   config_change_detector_.reset();
@@ -2009,7 +2027,10 @@ void DXVAVideoDecodeAccelerator::Invalidate() {
   // output picture buffers may need to be recreated in case the video
   // resolution changes. We already handle that in the
   // HandleResolutionChanged() function.
-  if (GetState() != kConfigChange) {
+  if (!for_config_change) {
+    weak_this_factory_.InvalidateWeakPtrs();
+    weak_ptr_ = weak_this_factory_.GetWeakPtr();
+
     output_picture_buffers_.clear();
     stale_output_picture_buffers_.clear();
     // We want to continue processing pending input after detecting a config
@@ -2039,29 +2060,6 @@ void DXVAVideoDecodeAccelerator::Invalidate() {
 }
 
 void DXVAVideoDecodeAccelerator::StopDecoderThread() {
-  // Try to determine what, if any exception last happened before a hang. See
-  // http://crbug.com/613701
-  uint64_t last_process_output_time = g_last_process_output_time;
-  HRESULT last_device_removed_reason = g_last_device_removed_reason;
-  LARGE_INTEGER perf_frequency;
-  ::QueryPerformanceFrequency(&perf_frequency);
-  uint32_t output_array_size = output_array_size_;
-  size_t sample_count;
-  {
-    base::AutoLock lock(decoder_lock_);
-    sample_count = pending_output_samples_.size();
-  }
-  size_t stale_output_picture_buffers_size =
-      stale_output_picture_buffers_.size();
-  PictureBufferMechanism mechanism = GetPictureBufferMechanism();
-
-  base::debug::Alias(&last_process_output_time);
-  base::debug::Alias(&last_device_removed_reason);
-  base::debug::Alias(&perf_frequency.QuadPart);
-  base::debug::Alias(&output_array_size);
-  base::debug::Alias(&sample_count);
-  base::debug::Alias(&stale_output_picture_buffers_size);
-  base::debug::Alias(&mechanism);
   decoder_thread_.Stop();
 }
 
@@ -2207,7 +2205,6 @@ void DXVAVideoDecodeAccelerator::FlushInternal() {
         FROM_HERE, base::BindOnce(&DXVAVideoDecodeAccelerator::NotifyFlushDone,
                                   weak_ptr_));
   } else {
-    processing_config_changed_ = false;
     main_thread_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&DXVAVideoDecodeAccelerator::ConfigChanged,
                                   weak_ptr_, config_));
@@ -2224,7 +2221,8 @@ void DXVAVideoDecodeAccelerator::DecodeInternal(
   if (GetState() == kUninitialized)
     return;
 
-  if (OutputSamplesPresent() || !pending_input_buffers_.empty()) {
+  if (OutputSamplesPresent() || !pending_input_buffers_.empty() ||
+      processing_config_changed_) {
     pending_input_buffers_.push_back(sample);
     return;
   }
@@ -3058,9 +3056,7 @@ HRESULT DXVAVideoDecodeAccelerator::CheckConfigChanged(IMFSample* sample,
 
 void DXVAVideoDecodeAccelerator::ConfigChanged(const Config& config) {
   DCHECK(main_thread_task_runner_->BelongsToCurrentThread());
-
-  SetState(kConfigChange);
-  Invalidate();
+  Invalidate(/*for_config_change=*/true);
   Initialize(config_, client_);
   decoder_thread_task_runner_->PostTask(
       FROM_HERE,
