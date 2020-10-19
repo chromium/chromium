@@ -777,6 +777,19 @@ TEST_F(OmniboxViewViewsTest, OnBlur) {
   EXPECT_FALSE(omnibox_view()->IsSelectAll());
 }
 
+// Verifies that https://crbug.com/45260 doesn't regress.
+TEST_F(OmniboxViewViewsTest,
+       RendererInitiatedFocusSelectsAllWhenStartingBlurred) {
+  location_bar_model()->set_url(GURL("about:blank"));
+  omnibox_view()->model()->ResetDisplayTexts();
+  omnibox_view()->RevertAll();
+
+  // Simulate a renderer-initated focus event. Expect that everything is
+  // selected now.
+  omnibox_view()->SetFocus(/*is_user_initiated=*/false);
+  EXPECT_TRUE(omnibox_view()->IsSelectAll());
+}
+
 TEST_F(OmniboxViewViewsTest, Emphasis) {
   constexpr struct {
     const char* input;

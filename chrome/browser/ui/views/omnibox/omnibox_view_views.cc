@@ -672,7 +672,31 @@ void OmniboxViewViews::SetFocus(bool is_user_initiated) {
             ->GetRevealedLock(ImmersiveModeController::ANIMATE_REVEAL_YES));
   }
 
+  const bool omnibox_already_focused = HasFocus();
+
+  if (is_user_initiated)
+    model()->Unelide();
+
   RequestFocus();
+
+  if (omnibox_already_focused)
+    model()->ClearKeyword();
+
+  // If the user initiated the focus, then we always select-all, even if the
+  // omnibox is already focused. This can happen if the user pressed Ctrl+L
+  // while already typing in the omnibox.
+  //
+  // For renderer initiated focuses (like NTP or about:blank page load finish):
+  //  - If the omnibox was not already focused, select-all. This handles the
+  //    about:blank homepage case, where the location bar has initial focus.
+  //    It annoys users if the URL is not pre-selected. https://crbug.com/45260.
+  //  - If the omnibox is already focused, DO NOT select-all. This can happen
+  //    if the user starts typing before the NTP finishes loading. If the NTP
+  //    finishes loading and then does a renderer-initiated focus, performing
+  //    a select-all here would surprisingly overwrite the user's first few
+  //    typed characters. https://crbug.com/924935.
+  if (is_user_initiated || !omnibox_already_focused)
+    SelectAll(true);
 
   // |is_user_initiated| is true for focus events from keyboard accelerators.
   if (is_user_initiated)

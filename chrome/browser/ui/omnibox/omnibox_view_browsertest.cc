@@ -737,22 +737,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest,
   EXPECT_EQ(old_selected_line, popup_model->selected_line());
 }
 
-// Verifies that https://crbug.com/45260 doesn't regress.
-IN_PROC_BROWSER_TEST_F(
-    OmniboxViewTest,
-    DISABLED_RendererInitiatedFocusSelectsAllWhenStartingBlurred) {
-  ASSERT_NO_FATAL_FAILURE(NavigateExpectUrl(GURL("about:blank")));
-
-  OmniboxView* omnibox_view = nullptr;
-  ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
-  ASSERT_FALSE(omnibox_view->IsSelectAll());
-
-  // Simulate a renderer-initated focus event. Expect that everything is
-  // selected now.
-  browser()->SetFocusToLocationBar();
-  EXPECT_TRUE(omnibox_view->IsSelectAll());
-}
-
 // Verifies that https://crbug.com/924935 doesn't regress.
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest,
                        RendererInitiatedFocusPreservesUserText) {
