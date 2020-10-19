@@ -12,6 +12,9 @@
 #include "base/values.h"
 #include "chrome/browser/chromeos/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/chromeos/login/existing_user_controller.h"
+#include "chrome/browser/chromeos/login/saml/password_sync_token_checkers_collection.h"
+#include "chrome/browser/chromeos/login/saml/password_sync_token_fetcher.h"
+#include "chrome/browser/chromeos/login/saml/password_sync_token_login_checker.h"
 #include "chrome/browser/chromeos/login/ui/mock_login_display.h"
 #include "chrome/browser/chromeos/login/ui/mock_login_display_host.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
@@ -38,6 +41,9 @@ const char kFirstSAMLUserId[] = "12345";
 const char kFirstSAMLUserEmail[] = "bob@corp.example.com";
 const char kSecondSAMLUserId[] = "67891";
 const char kSecondSAMLUserEmail[] = "alice@corp.example.com";
+
+const char kSamlToken1[] = "saml-token-1";
+const char kSamlToken2[] = "saml-token-2";
 
 constexpr base::TimeDelta kSamlOnlineShortDelay =
     base::TimeDelta::FromSeconds(10);
@@ -77,6 +83,7 @@ class ExistingUserControllerForcedOnlineAuthTest : public ::testing::Test {
     mock_user_manager_ = new MockUserManager();
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::make_unique<FakeUserManagerWithLocalState>(mock_user_manager_));
+    settings_helper_.ReplaceDeviceSettingsProviderWithStub();
     existing_user_controller_ = std::make_unique<ExistingUserController>();
 
     ON_CALL(*mock_login_display_host_, GetLoginDisplay())
@@ -100,6 +107,24 @@ class ExistingUserControllerForcedOnlineAuthTest : public ::testing::Test {
   }
 
   MockUserManager* mock_user_manager() { return mock_user_manager_; }
+
+  int password_sync_token_checkers_size() {
+    if (!existing_user_controller()->sync_token_checkers_)
+      return 0;
+    return existing_user_controller()
+        ->sync_token_checkers_->sync_token_checkers_.size();
+  }
+
+  PasswordSyncTokenLoginChecker* get_password_sync_token_checker(
+      std::string token) {
+    return existing_user_controller()
+        ->sync_token_checkers_->sync_token_checkers_[token]
+        .get();
+  }
+
+  void set_hide_user_names_on_signin() {
+    settings_helper_.SetBoolean(kAccountsPrefShowUserNamesOnSignIn, false);
+  }
 
   const AccountId saml_login_account1_id_ =
       AccountId::FromUserEmailGaiaId(kFirstSAMLUserEmail, kFirstSAMLUserId);
@@ -195,6 +220,72 @@ TEST_F(ExistingUserControllerForcedOnlineAuthTest,
   task_environment_.FastForwardBy(kSamlOnlineShortDelay + kSamlOnlineOffset);
   EXPECT_FALSE(screen_refresh_timer()->IsRunning());
   EXPECT_TRUE(is_force_online_flag_set());
+}
+
+// Tests creation of password sync token checker for 2 SAML users. Only one of
+// them has local copy of password sync token.
+TEST_F(ExistingUserControllerForcedOnlineAuthTest,
+       SyncTokenCheckersCreationWithOneToken) {
+  user_manager::known_user::SetPasswordSyncToken(saml_login_account1_id_,
+                                                 kSamlToken1);
+  set_hide_user_names_on_signin();
+  mock_user_manager()->AddPublicAccountWithSAML(saml_login_account1_id_);
+  mock_user_manager()->AddPublicAccountWithSAML(saml_login_account2_id_);
+  existing_user_controller()->Init(mock_user_manager()->GetUsers());
+  EXPECT_EQ(password_sync_token_checkers_size(), 1);
+  get_password_sync_token_checker(kSamlToken1)->OnTokenVerified(true);
+  task_environment_.FastForwardBy(kSamlOnlineShortDelay);
+  EXPECT_TRUE(get_password_sync_token_checker(kSamlToken1)->IsCheckPending());
+}
+
+// Tests creation of password sync token checker for 2 SAML users with password
+// sync tokens.
+TEST_F(ExistingUserControllerForcedOnlineAuthTest,
+       SyncTokenCheckersCreationWithTwoTokens) {
+  user_manager::known_user::SetPasswordSyncToken(saml_login_account1_id_,
+                                                 kSamlToken1);
+  user_manager::known_user::SetPasswordSyncToken(saml_login_account2_id_,
+                                                 kSamlToken2);
+  set_hide_user_names_on_signin();
+  mock_user_manager()->AddPublicAccountWithSAML(saml_login_account1_id_);
+  mock_user_manager()->AddPublicAccountWithSAML(saml_login_account2_id_);
+  existing_user_controller()->Init(mock_user_manager()->GetUsers());
+  EXPECT_EQ(password_sync_token_checkers_size(), 2);
+  get_password_sync_token_checker(kSamlToken1)
+      ->OnApiCallFailed(PasswordSyncTokenFetcher::ErrorType::kServerError);
+  task_environment_.FastForwardBy(kSamlOnlineShortDelay);
+  EXPECT_TRUE(get_password_sync_token_checker(kSamlToken1)->IsCheckPending());
+}
+
+// Tests sync token checkers removal in case of failed token validation.
+TEST_F(ExistingUserControllerForcedOnlineAuthTest,
+       SyncTokenCheckersInvalidPasswordForTwoUsers) {
+  user_manager::known_user::SetPasswordSyncToken(saml_login_account1_id_,
+                                                 kSamlToken1);
+  user_manager::known_user::SetPasswordSyncToken(saml_login_account2_id_,
+                                                 kSamlToken2);
+  set_hide_user_names_on_signin();
+  mock_user_manager()->AddPublicAccountWithSAML(saml_login_account1_id_);
+  mock_user_manager()->AddPublicAccountWithSAML(saml_login_account2_id_);
+  existing_user_controller()->Init(mock_user_manager()->GetUsers());
+  EXPECT_EQ(password_sync_token_checkers_size(), 2);
+  get_password_sync_token_checker(kSamlToken1)->OnTokenVerified(false);
+  get_password_sync_token_checker(kSamlToken2)->OnTokenVerified(false);
+  EXPECT_EQ(password_sync_token_checkers_size(), 0);
+}
+
+// Sync token checkers are not owned by ExistingUserController if user pods are
+// visible.
+TEST_F(ExistingUserControllerForcedOnlineAuthTest,
+       NoSyncTokenCheckersWhenPodsVisible) {
+  user_manager::known_user::SetPasswordSyncToken(saml_login_account1_id_,
+                                                 kSamlToken1);
+  user_manager::known_user::SetPasswordSyncToken(saml_login_account2_id_,
+                                                 kSamlToken2);
+  mock_user_manager()->AddPublicAccountWithSAML(saml_login_account1_id_);
+  mock_user_manager()->AddPublicAccountWithSAML(saml_login_account2_id_);
+  existing_user_controller()->Init(mock_user_manager()->GetUsers());
+  EXPECT_EQ(password_sync_token_checkers_size(), 0);
 }
 
 }  // namespace chromeos

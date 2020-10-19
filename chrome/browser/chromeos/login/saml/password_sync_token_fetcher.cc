@@ -98,7 +98,6 @@ PasswordSyncTokenFetcher::PasswordSyncTokenFetcher(
       profile_(profile),
       consumer_(consumer),
       request_type_(RequestType::kNone) {
-  DCHECK(profile_);
   DCHECK(consumer_);
 }
 
@@ -124,6 +123,7 @@ void PasswordSyncTokenFetcher::StartTokenVerify(const std::string& sync_token) {
 }
 
 void PasswordSyncTokenFetcher::StartAccessTokenFetch() {
+  DCHECK(profile_);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
   DCHECK(identity_manager);

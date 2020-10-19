@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_LOGIN_SCREENS_USER_SELECTION_SCREEN_H_
 #define CHROME_BROWSER_CHROMEOS_LOGIN_SCREENS_USER_SELECTION_SCREEN_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -17,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
+#include "chrome/browser/chromeos/login/saml/password_sync_token_checkers_collection.h"
 #include "chrome/browser/chromeos/login/screens/base_screen.h"
 #include "chrome/browser/chromeos/login/signin/token_handle_util.h"
 #include "chrome/browser/chromeos/login/ui/login_display.h"
@@ -44,7 +44,8 @@ class UserSelectionScreen
     : public ui::UserActivityObserver,
       public proximity_auth::ScreenlockBridge::LockHandler,
       public BaseScreen,
-      public session_manager::SessionManagerObserver {
+      public session_manager::SessionManagerObserver,
+      public PasswordSyncTokenLoginChecker::Observer {
  public:
   explicit UserSelectionScreen(const std::string& display_type);
   ~UserSelectionScreen() override;
@@ -106,6 +107,9 @@ class UserSelectionScreen
 
   // session_manager::SessionManagerObserver
   void OnSessionStateChanged() override;
+
+  // PasswordSyncTokenLoginChecker::Observer
+  void OnInvalidSyncToken(const AccountId& account_id) override;
 
   // Fills `user_dict` with information about `user`.
   static void FillUserDictionary(
@@ -199,6 +203,10 @@ class UserSelectionScreen
 
   std::unique_ptr<CrosSettings::ObserverSubscription>
       allowed_input_methods_subscription_;
+
+  // Collection of verifiers that check validity of password sync token for SAML
+  // users corresponding to visible pods.
+  std::unique_ptr<PasswordSyncTokenCheckersCollection> sync_token_checkers_;
 
   base::WeakPtrFactory<UserSelectionScreen> weak_factory_{this};
 

@@ -709,6 +709,14 @@ void UserSelectionScreen::Init(const user_manager::UserList& users) {
   if (!ime_state_.get())
     ime_state_ = input_method::InputMethodManager::Get()->GetActiveIMEState();
 
+  if (users.size() > 0) {
+    sync_token_checkers_ =
+        std::make_unique<PasswordSyncTokenCheckersCollection>();
+    sync_token_checkers_->StartPasswordSyncCheckers(users, this);
+  } else {
+    sync_token_checkers_.reset();
+  }
+
   if (tpm_locked_checker_)
     return;
 
@@ -974,6 +982,13 @@ void UserSelectionScreen::OnSessionStateChanged() {
   AccountId focused_pod(pending_focused_account_id_.value());
   pending_focused_account_id_.reset();
   HandleFocusPod(focused_pod);
+}
+
+void UserSelectionScreen::OnInvalidSyncToken(const AccountId& account_id) {
+  RecordReauthReason(account_id,
+                     ReauthReason::SAML_PASSWORD_SYNC_TOKEN_VALIDATION_FAILED);
+  SetAuthType(account_id, proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,
+              base::string16());
 }
 
 void UserSelectionScreen::ShowImpl() {}

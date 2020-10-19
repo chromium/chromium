@@ -23,6 +23,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_types.h"
+#include "chrome/browser/chromeos/login/saml/password_sync_token_checkers_collection.h"
 #include "chrome/browser/chromeos/login/screens/encryption_migration_mode.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager.h"
 #include "chrome/browser/chromeos/login/ui/login_display.h"
@@ -397,6 +398,10 @@ class ExistingUserController : public LoginDisplay::Delegate,
   // Timer to update login screen when SAMLOfflineSigninTimeLimit policy forces
   // online user authentication.
   std::unique_ptr<base::OneShotTimer> screen_refresh_timer_;
+
+  // Collection of verifiers that check validity of password sync token for SAML
+  // users.
+  std::unique_ptr<PasswordSyncTokenCheckersCollection> sync_token_checkers_;
 
   std::unique_ptr<login::NetworkStateHelper> network_state_helper_;
 

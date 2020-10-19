@@ -551,6 +551,7 @@ void ExistingUserController::UpdateLoginDisplay(
   }
   bool show_users_on_signin;
   user_manager::UserList filtered_users;
+  user_manager::UserList saml_users_for_password_sync;
 
   cros_settings_->GetBoolean(kAccountsPrefShowUserNamesOnSignIn,
                              &show_users_on_signin);
@@ -573,13 +574,28 @@ void ExistingUserController::UpdateLoginDisplay(
     const bool meets_show_users_requirements =
         show_users_on_signin ||
         user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
-    if (meets_supervised_requirements && meets_allowlist_requirements &&
-        meets_show_users_requirements) {
-      filtered_users.push_back(user);
+    if (meets_supervised_requirements && meets_allowlist_requirements) {
+      if (meets_show_users_requirements) {
+        filtered_users.push_back(user);
+      }
+      if (user->using_saml()) {
+        saml_users_for_password_sync.push_back(user);
+      }
     }
   }
 
   ForceOnlineFlagChanged(filtered_users);
+  // ExistingUserController owns PasswordSyncTokenLoginCheckers only if user
+  // pods are hidden.
+  if (!show_users_on_signin && !saml_users_for_password_sync.empty()) {
+    sync_token_checkers_ =
+        std::make_unique<PasswordSyncTokenCheckersCollection>();
+    sync_token_checkers_->StartPasswordSyncCheckers(
+        saml_users_for_password_sync,
+        /*observer*/ nullptr);
+  } else {
+    sync_token_checkers_.reset();
+  }
   // If no user pods are visible, fallback to single new user pod which will
   // have guest session link.
   bool show_guest = user_manager->IsGuestSessionAllowed();
