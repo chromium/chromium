@@ -40,7 +40,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.MathUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.SysUtils;
@@ -293,7 +292,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     private int mUiMode;
     private int mDensityDpi;
 
-    private final DiscardableReferencePool mReferencePool = new DiscardableReferencePool();
     private final ManualFillingComponent mManualFillingComponent =
             ManualFillingComponentFactory.createComponent();
 
@@ -1894,7 +1892,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
         if (ChromeApplication.isSevereMemorySignal(level)) {
-            mReferencePool.drain();
             clearToolbarResourceCache();
         }
     }
@@ -2237,16 +2234,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      * in this call, including showing 2D UI that was hidden.
      */
     public void onExitVr() {}
-
-    /**
-     * @return the reference pool for this activity.
-     * @deprecated Use {@link GlobalDiscardableReferencePool#getReferencePool} instead.
-     */
-    // TODO(bauerb): Migrate clients to GlobalDiscardableReferencePool#getReferencePool.
-    @Deprecated
-    public DiscardableReferencePool getReferencePool() {
-        return mReferencePool;
-    }
 
     private void clearToolbarResourceCache() {
         ControlContainer controlContainer = (ControlContainer) findViewById(R.id.control_container);
