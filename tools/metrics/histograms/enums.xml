@@ -73122,6 +73122,10 @@ Full version information for the fingerprint enum values:
   <int value="57" label="kErrorCodeInternalLibCurlError"/>
   <int value="58" label="kErrorCodeUnresolvedHostError"/>
   <int value="59" label="kErrorCodeUnresolvedHostRecovered"/>
+  <int value="60" label="kErrorUnresolvedHostRecovered"/>
+  <int value="61" label="kErrorNotEnoughSpace"/>
+  <int value="62" label="kErrorDeviceCorrupted"/>
+  <int value="63" label="kErrorPackageExcludedFromUpdate"/>
 </enum>
 
 <enum name="UpdateEngineInstallDateProvisioningSource">
