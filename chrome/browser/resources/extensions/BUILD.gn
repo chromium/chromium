@@ -44,6 +44,7 @@ generate_grd("build_grd") {
 
   if (optimize_webui) {
     deps = [ ":build" ]
+    resource_path_rewrites = [ "extensions.rollup.js|extensions.js" ]
     manifest_files = [ "$target_gen_dir/$build_manifest" ]
   } else {
     deps = [
