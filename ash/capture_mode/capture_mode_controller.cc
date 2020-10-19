@@ -118,12 +118,10 @@ bool SaveFile(scoped_refptr<base::RefCountedMemory> data,
   return true;
 }
 
-void DeleteFileAsync(const base::FilePath& path) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&base::DeleteFile, path),
+void DeleteFileAsync(scoped_refptr<base::SequencedTaskRunner> task_runner,
+                     const base::FilePath& path) {
+  task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&base::DeleteFile, path),
       base::BindOnce(
           [](const base::FilePath& path, bool success) {
             // TODO(afakhry): Show toast?
@@ -204,7 +202,14 @@ void ShowStopRecordingButton(aura::Window* root) {
 
 CaptureModeController::CaptureModeController(
     std::unique_ptr<CaptureModeDelegate> delegate)
-    : delegate_(std::move(delegate)) {
+    : delegate_(std::move(delegate)),
+      task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          // A task priority of BEST_EFFORT is good enough for this runner,
+          // since it's used for blocking file IO such as saving the screenshots
+          // or the successive webm video chunks received from the recording
+          // service.
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
   DCHECK_EQ(g_instance, nullptr);
   g_instance = this;
 
@@ -285,6 +290,11 @@ void CaptureModeController::EndVideoRecording() {
   is_recording_in_progress_ = false;
   Shell::Get()->UpdateCursorCompositingEnabled();
   delegate_->StopObservingRestrictedContent();
+
+  DCHECK(video_file_handler_);
+  video_file_handler_.AsyncCall(&VideoFileHandler::FlushBufferedChunks)
+      .Then(base::BindOnce(&CaptureModeController::OnVideoFileSaved,
+                           weak_ptr_factory_.GetWeakPtr()));
 }
 
 bool CaptureModeController::IsCaptureAllowed() const {
@@ -392,10 +402,8 @@ void CaptureModeController::OnImageCaptured(
   }
 
   const base::FilePath path = BuildImagePath(timestamp);
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&SaveFile, png_bytes, path),
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&SaveFile, png_bytes, path),
       base::BindOnce(&CaptureModeController::OnImageFileSaved,
                      weak_ptr_factory_.GetWeakPtr(), png_bytes, path));
 }
@@ -416,6 +424,26 @@ void CaptureModeController::OnImageFileSaved(
 
   if (features::IsTemporaryHoldingSpaceEnabled())
     HoldingSpaceController::Get()->client()->AddScreenshot(path);
+}
+
+void CaptureModeController::OnVideoFileInitialized(bool success) {
+  if (!success)
+    EndVideoRecording();
+}
+
+void CaptureModeController::OnVideoFileSaved(bool success) {
+  DCHECK(base::CurrentUIThread::IsSet());
+  DCHECK(video_file_handler_);
+
+  // TODO(afakhry): The file will be empty now until the recording service is
+  // implemented.
+  if (!success)
+    ShowFailureNotification();
+  else
+    ShowPreviewNotification(current_video_file_path_, gfx::Image());
+
+  current_video_file_path_.clear();
+  video_file_handler_.Reset();
 }
 
 void CaptureModeController::ShowPreviewNotification(
@@ -459,7 +487,7 @@ void CaptureModeController::HandleNotificationClicked(
         delegate_->OpenScreenshotInImageEditor(screen_capture_path);
         break;
       case NotificationButtonIndex::BUTTON_DELETE:
-        DeleteFileAsync(screen_capture_path);
+        DeleteFileAsync(task_runner_, screen_capture_path);
         break;
     }
   }
@@ -519,6 +547,17 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
   // to be able to record it.
   is_recording_in_progress_ = true;
   Shell::Get()->UpdateCursorCompositingEnabled();
+
+  // TODO(afakhry): Choose a real buffer capacity when the recording service is
+  // in.
+  constexpr size_t kVideoBufferCapacityBytes = 20;
+  DCHECK(current_video_file_path_.empty());
+  current_video_file_path_ = BuildVideoPath(base::Time::Now());
+  video_file_handler_ = VideoFileHandler::Create(
+      task_runner_, current_video_file_path_, kVideoBufferCapacityBytes);
+  video_file_handler_.AsyncCall(&VideoFileHandler::Initialize)
+      .Then(base::BindOnce(&CaptureModeController::OnVideoFileInitialized,
+                           weak_ptr_factory_.GetWeakPtr()));
 
   // TODO(afakhry): Call into the recording service.
 

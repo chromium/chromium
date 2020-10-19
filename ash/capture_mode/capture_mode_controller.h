@@ -9,10 +9,14 @@
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "ash/capture_mode/video_file_handler.h"
 #include "ash/public/cpp/capture_mode_delegate.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "base/single_thread_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
@@ -116,6 +120,15 @@ class ASH_EXPORT CaptureModeController {
                         const base::FilePath& path,
                         bool success);
 
+  // Called on the UI thread, when |video_file_handler_| initializes the video
+  // file whose path is |current_video_file_path_|. If initialization fails,
+  // i.e. |success| is false, video recording should not continue.
+  void OnVideoFileInitialized(bool success);
+
+  // Called back when the |video_file_handler_| flushes the remaining cached
+  // video chunks in its buffer. Called on the UI thread.
+  void OnVideoFileSaved(bool success);
+
   // Shows a preview notification of the newly taken screenshot or screen
   // recording.
   void ShowPreviewNotification(const base::FilePath& screen_capture_path,
@@ -143,6 +156,17 @@ class ASH_EXPORT CaptureModeController {
 
   CaptureModeType type_ = CaptureModeType::kImage;
   CaptureModeSource source_ = CaptureModeSource::kRegion;
+
+  // A blocking task runner for file IO operations.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  // This is the file path of the video file currently being recorded. It is
+  // empty when no video recording is in progress.
+  base::FilePath current_video_file_path_;
+
+  // Handles the file IO operations of the video file. This enforces doing all
+  // video file related operations on the blocking |task_runner_|.
+  base::SequenceBound<VideoFileHandler> video_file_handler_;
 
   // We remember the user selected capture region when the source is |kRegion|
   // between sessions. Initially, this value is empty at which point we display
