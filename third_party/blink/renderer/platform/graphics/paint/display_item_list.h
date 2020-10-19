@@ -112,6 +112,7 @@ class PLATFORM_EXPORT DisplayItemList
   typedef unsigned JsonFlags;
 
   static std::unique_ptr<JSONArray> DisplayItemsAsJSON(
+      wtf_size_t first_item_index,
       const Range<const_iterator>& display_items,
       JsonFlags);
 #endif  // DCHECK_IS_ON()

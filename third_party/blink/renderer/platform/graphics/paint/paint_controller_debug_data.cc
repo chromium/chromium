@@ -118,9 +118,10 @@ void PaintController::PaintArtifactAsJSON::AppendChunksAsJSON(
     if (flags_ & DisplayItemList::kShowPaintRecords)
       json_object->SetString("chunkData", chunk.ToString());
 
-    json_object->SetArray("displayItems",
-                          DisplayItemList::DisplayItemsAsJSON(
-                              artifact_.DisplayItemsInChunk(i), flags_));
+    json_object->SetArray(
+        "displayItems",
+        DisplayItemList::DisplayItemsAsJSON(
+            chunk.begin_index, artifact_.DisplayItemsInChunk(i), flags_));
 
     json_array.PushObject(std::move(json_object));
   }

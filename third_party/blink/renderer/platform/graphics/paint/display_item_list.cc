@@ -12,6 +12,7 @@ namespace blink {
 #if DCHECK_IS_ON()
 
 std::unique_ptr<JSONArray> DisplayItemList::DisplayItemsAsJSON(
+    wtf_size_t first_item_index,
     const DisplayItemRange& display_items,
     JsonFlags flags) {
   auto json_array = std::make_unique<JSONArray>();
@@ -23,7 +24,7 @@ std::unique_ptr<JSONArray> DisplayItemList::DisplayItemsAsJSON(
     for (auto& item : display_items)
       json_array->PushString(item.GetId().ToString());
   } else {
-    int i = 0;
+    wtf_size_t i = first_item_index;
     for (auto& item : display_items) {
       auto json = std::make_unique<JSONObject>();
 
