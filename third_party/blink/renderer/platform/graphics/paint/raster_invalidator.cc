@@ -321,9 +321,8 @@ void RasterInvalidator::Generate(
   new_chunks_info.ReserveCapacity(new_chunks.size());
 
   if (layer_bounds_was_empty || layer_bounds_.IsEmpty()) {
-    // No raster invalidation is needed if either the old bounds or the new
-    // bounds is empty, but we still need to update new_chunks_info for the
-    // next cycle.
+    // Fast path if either the old bounds or the new bounds is empty. We still
+    // need to update new_chunks_info for the next cycle.
     ChunkToLayerMapper mapper(layer_state, layer_bounds.OffsetFromOrigin());
     for (auto it = new_chunks.begin(); it != new_chunks.end(); ++it) {
       if (ShouldSkipForRasterInvalidation(it))
@@ -332,13 +331,12 @@ void RasterInvalidator::Generate(
       new_chunks_info.emplace_back(*this, mapper, it);
     }
 
-    if (tracking_info_ && layer_bounds_was_empty && !layer_bounds.IsEmpty() &&
-        !new_chunks.IsEmpty()) {
-      // This is useful to track the implicit raster invalidations caused by
-      // change of layerization which has performance impact, especially for
-      // tests under web_tests/paint/invalidation.
-      TrackImplicitFullLayerInvalidation(
-          layer_client ? *layer_client : new_chunks.begin()->id.client);
+    if (!layer_bounds.IsEmpty() && !new_chunks.IsEmpty()) {
+      AddRasterInvalidation(
+          raster_invalidation_function,
+          IntRect(IntPoint(), IntSize(layer_bounds.size())),
+          layer_client ? *layer_client : new_chunks.begin()->id.client,
+          PaintInvalidationReason::kFullLayer, kClientIsNew);
     }
   } else {
     GenerateRasterInvalidations(raster_invalidation_function, new_chunks,
@@ -350,15 +348,6 @@ void RasterInvalidator::Generate(
 
   if (tracking_info_)
     UpdateClientDebugNames();
-}
-
-void RasterInvalidator::TrackImplicitFullLayerInvalidation(
-    const DisplayItemClient& layer_client) {
-  DCHECK(tracking_info_);
-  tracking_info_->tracking.AddInvalidation(
-      &layer_client, layer_client.DebugName(),
-      IntRect(IntPoint(), IntSize(layer_bounds_.size())),
-      PaintInvalidationReason::kFullLayer);
 }
 
 size_t RasterInvalidator::ApproximateUnsharedMemoryUsage() const {

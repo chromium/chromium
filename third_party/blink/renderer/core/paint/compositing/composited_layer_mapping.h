@@ -132,8 +132,6 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
     return non_scrolling_squashing_layer_offset_from_layout_object_;
   }
 
-  void SetAllLayersNeedDisplay();
-
   // Let all DrawsContent GraphicsLayers check raster invalidations after
   // a no-change paint.
   void SetNeedsCheckRasterInvalidation();
@@ -388,8 +386,6 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
       PaintLayer& squashed_layer,
       wtf_size_t next_squashed_layer_index);
   void RemoveSquashedLayers(Vector<GraphicsLayerPaintInfo>& squashed_layers);
-
-  void SetContentsNeedDisplay();
 
   PaintLayer& owning_layer_;
 

@@ -489,13 +489,11 @@ void LayoutView::PaintBoxDecorationBackground(const PaintInfo& paint_info,
   ViewPainter(*this).PaintBoxDecorationBackground(paint_info);
 }
 
-static void SetShouldDoFullPaintInvalidationForViewAndAllDescendantsInternal(
-    LayoutObject* object) {
-  object->SetShouldDoFullPaintInvalidation();
-  for (LayoutObject* child = object->SlowFirstChild(); child;
-       child = child->NextSibling()) {
-    SetShouldDoFullPaintInvalidationForViewAndAllDescendantsInternal(child);
-  }
+static void InvalidatePaintForViewAndDescendantsRecursively(PaintLayer& layer) {
+  layer.GetLayoutObject().SetSubtreeShouldDoFullPaintInvalidation();
+  for (PaintLayer* child = layer.FirstChild(); child;
+       child = child->NextSibling())
+    InvalidatePaintForViewAndDescendantsRecursively(*child);
 }
 
 void LayoutView::SetShouldDoFullPaintInvalidationForViewAndAllDescendants() {
@@ -503,18 +501,12 @@ void LayoutView::SetShouldDoFullPaintInvalidationForViewAndAllDescendants() {
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
     SetSubtreeShouldDoFullPaintInvalidation();
   else
-    SetShouldDoFullPaintInvalidationForViewAndAllDescendantsInternal(this);
+    InvalidatePaintForViewAndDescendantsRecursively(*Layer());
 }
 
 void LayoutView::InvalidatePaintForViewAndCompositedLayers() {
   NOT_DESTROYED();
-  SetSubtreeShouldDoFullPaintInvalidation();
-
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    DisableCompositingQueryAsserts disabler;
-    if (Compositor()->InCompositingMode())
-      Compositor()->FullyInvalidatePaint();
-  }
+  SetShouldDoFullPaintInvalidationForViewAndAllDescendants();
 }
 
 bool LayoutView::MapToVisualRectInAncestorSpace(

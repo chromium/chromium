@@ -79,7 +79,7 @@ GraphicsLayer::GraphicsLayer(GraphicsLayerClient& client)
       painting_phase_(kGraphicsLayerPaintAllWithOverflowClip),
       parent_(nullptr),
       raster_invalidation_function_(
-          base::BindRepeating(&GraphicsLayer::SetNeedsDisplayInRect,
+          base::BindRepeating(&GraphicsLayer::InvalidateRaster,
                               base::Unretained(this))) {
   // TODO(crbug.com/1033240): Debugging information for the referenced bug.
   // Remove when it is fixed.
@@ -261,9 +261,7 @@ void GraphicsLayer::SetOffsetFromLayoutObject(const IntSize& offset) {
     return;
 
   offset_from_layout_object_ = offset;
-
-  // If the compositing layer offset changes, we need to repaint.
-  SetNeedsDisplay();
+  Invalidate(PaintInvalidationReason::kFullLayer);  // As DisplayItemClient.
 }
 
 IntRect GraphicsLayer::InterestRect() {
@@ -342,7 +340,9 @@ void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
                                                              benchmark_mode);
   bool cached = !paint_controller.ShouldForcePaintForBenchmark() &&
                 !client_.NeedsRepaint(*this) &&
-                !paint_controller.CacheIsAllInvalid() &&
+                // TODO(wangxianzhu): This will be replaced by subsequence
+                // caching when unifying PaintController.
+                paint_controller.ClientCacheIsValid(*this) &&
                 previous_interest_rect_ == new_interest_rect;
   if (!cached) {
     GraphicsContext context(paint_controller);
@@ -352,7 +352,9 @@ void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
     previous_interest_rect_ = new_interest_rect;
     client_.PaintContents(this, context, painting_phase_, new_interest_rect);
     paint_controller.CommitNewDisplayItems();
-
+    // TODO(wangxianzhu): Remove this and friend class in DisplayItemClient
+    // when unifying PaintController.
+    Validate();
     DVLOG(2) << "Painted GraphicsLayer: " << DebugName()
              << " interest_rect=" << InterestRect().ToString();
   }
@@ -409,15 +411,9 @@ void GraphicsLayer::SetShouldCreateLayersAfterPaint(
     // Depending on |should_create_layers_after_paint_|, raster invalidation
     // will happen in via two different code paths. When it changes we need to
     // fully invalidate because the incremental raster invalidations of these
-    // code paths will not work. Nor calling this->SetNeedsDisplay() because it
-    // will also clear PaintController which contains what we have just painted.
-    CcLayer().SetNeedsDisplay();
+    // code paths will not work.
     if (raster_invalidator_)
       raster_invalidator_->ClearOldStates();
-    // TODO(wangxianzhu): This is to let LocalFrameView recollect the graphics
-    // layers to regenerate pre_composited_layers_. Will remove when unifying
-    // PaintController for CAP and pre-CAP.
-    NotifyChildListChange();
   }
 }
 
@@ -545,7 +541,8 @@ void GraphicsLayer::SetSize(const gfx::Size& size) {
   Invalidate(PaintInvalidationReason::kIncremental);  // as DisplayItemClient.
 
   CcLayer().SetBounds(size);
-  // Note that we don't resize m_contentsLayer. It's up the caller to do that.
+  SetNeedsCheckRasterInvalidation();
+  // Note that we don't resize contents_layer_. It's up the caller to do that.
 }
 
 void GraphicsLayer::SetDrawsContent(bool draws_content) {
@@ -618,35 +615,15 @@ void GraphicsLayer::SetHitTestable(bool should_hit_test) {
   CcLayer().SetHitTestable(should_hit_test);
 }
 
-void GraphicsLayer::SetContentsNeedsDisplay() {
+void GraphicsLayer::InvalidateContents() {
   if (contents_layer_) {
-    raster_invalidated_ = true;
     contents_layer_->SetNeedsDisplay();
     TrackRasterInvalidation(*this, contents_rect_,
                             PaintInvalidationReason::kFullLayer);
   }
 }
 
-void GraphicsLayer::SetNeedsDisplay() {
-  if (!PaintsContentOrHitTest())
-    return;
-
-  raster_invalidated_ = true;
-  CcLayer().SetNeedsDisplay();
-
-  // Invalidate the paint controller if it exists, but don't bother creating one
-  // if not.
-  if (paint_controller_)
-    paint_controller_->InvalidateAll();
-
-  if (raster_invalidator_)
-    raster_invalidator_->ClearOldStates();
-
-  TrackRasterInvalidation(*this, IntRect(IntPoint(), IntSize(Size())),
-                          PaintInvalidationReason::kFullLayer);
-}
-
-void GraphicsLayer::SetNeedsDisplayInRect(const IntRect& rect) {
+void GraphicsLayer::InvalidateRaster(const IntRect& rect) {
   DCHECK(PaintsContentOrHitTest());
   raster_invalidated_ = true;
   CcLayer().SetNeedsDisplayRect(rect);
@@ -665,7 +642,7 @@ void GraphicsLayer::SetPaintingPhase(GraphicsLayerPaintingPhase phase) {
   if (painting_phase_ == phase)
     return;
   painting_phase_ = phase;
-  SetNeedsDisplay();
+  Invalidate(PaintInvalidationReason::kFullLayer);  // As DisplayItemClient.
 }
 
 PaintController& GraphicsLayer::GetPaintController() const {

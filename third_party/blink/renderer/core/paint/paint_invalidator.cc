@@ -150,10 +150,11 @@ void PaintInvalidator::UpdateFromTreeBuilderContext(
   // For performance, we ignore subpixel movement of composited layers for paint
   // invalidation. This will result in imperfect pixel-snapped painting.
   // See crbug.com/833083 for details.
-  if (tree_builder_context.current
-          .directly_composited_container_paint_offset_subpixel_delta ==
-      tree_builder_context.current.paint_offset -
-          tree_builder_context.old_paint_offset) {
+  if (!RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() &&
+      tree_builder_context.current
+              .directly_composited_container_paint_offset_subpixel_delta ==
+          tree_builder_context.current.paint_offset -
+              tree_builder_context.old_paint_offset) {
     context.old_paint_offset = tree_builder_context.current.paint_offset;
   } else {
     context.old_paint_offset = tree_builder_context.old_paint_offset;

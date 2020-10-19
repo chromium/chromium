@@ -120,8 +120,8 @@ TEST_F(ScrollbarThemeOverlayTest, PaintInvalidation) {
   vertical_scrollbar->ClearThumbNeedsRepaint();
   mock_scrollable_area->ClearNeedsPaintInvalidationForScrollControls();
 
-  // Hiding the scrollbar should invalidate the layer (SetNeedsDisplay) but not
-  // trigger repaint of the thumb resouce, since the compositor will give the
+  // Hiding the scrollbar should invalidate the layer (InvalidateAll) but not
+  // trigger repaint of the thumb resource, since the compositor will give the
   // entire layer opacity 0.
   EXPECT_CALL(*mock_scrollable_area, ScrollbarsHiddenIfOverlay())
       .WillOnce(Return(true));

@@ -344,24 +344,11 @@ void PaintController::DidAppendChunk() {
 #endif
 }
 
-void PaintController::InvalidateAll() {
-  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-  InvalidateAllInternal();
-}
-
-void PaintController::InvalidateAllInternal() {
-  // TODO(wangxianzhu): Rename this to InvalidateAllForTesting() for CAP.
-  // Can only be called during layout/paintInvalidation, not during painting.
+void PaintController::InvalidateAllForTesting() {
   CheckNoNewPaint();
   current_paint_artifact_ = base::MakeRefCounted<PaintArtifact>();
   current_cached_subsequences_.clear();
   cache_is_all_invalid_ = true;
-}
-
-bool PaintController::CacheIsAllInvalid() const {
-  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-  DCHECK(!cache_is_all_invalid_ || current_paint_artifact_->IsEmpty());
-  return cache_is_all_invalid_;
 }
 
 void PaintController::UpdateCurrentPaintChunkProperties(
