@@ -491,7 +491,7 @@
 <translation id="2955913368246107853">検索バーを閉じる</translation>
 <translation id="2969319727213777354">安全な接続を確立するには、時計が正しく設定されている必要があります。これは、ウェブサイトが自身を証明するために使用する証明書には有効期限があるためです。デバイスの時計が正しくないため、Google Chrome でこれらの証明書を確認することができません。</translation>
 <translation id="2972581237482394796">やり直し(&amp;R)</translation>
-<translation id="2975775789586780239"><ph name="DISCOUNT" /> 割引</translation>
+<translation id="2975775789586780239"><ph name="DISCOUNT" /> オフ</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />が現在選択されています。<ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">有効にすると、Chromium がカード情報をこのデバイスに保存するためフォームにすばやく入力できるようになります。</translation>
 <translation id="2985398929374701810">有効な住所を入力してください</translation>

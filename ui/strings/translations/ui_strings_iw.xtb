@@ -129,14 +129,14 @@
 <translation id="4968171027979920686">{SECONDS,plural, =1{שנייה אחת}two{# שניות}many{# שניות}other{# שניות}}</translation>
 <translation id="4971687151119236543">טראק קודם במדיה</translation>
 <translation id="5046499563572181734">הקש כאן</translation>
-<translation id="5076340679995252485">&amp;הדבק</translation>
+<translation id="5076340679995252485">&amp;הדבקה</translation>
 <translation id="5198715732953550718">האפליקציה <ph name="MOVED_APP_NAME" /> משולבת ביחד עם האפליקציה <ph name="IN_PLACE_APP" /> ליצירת תיקייה חדשה.</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5266161281976477809">משולש הצגה</translation>
 <translation id="5278860589123563674">השליחה נכשלה</translation>
 <translation id="5283099933536931082">האפליקציה <ph name="APP_ITEM_TITLE" /> מבקשת את תשומת לבך.</translation>
 <translation id="528468243742722775">סיום</translation>
-<translation id="5329858601952122676">&amp;מחק</translation>
+<translation id="5329858601952122676">&amp;מחיקה</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> מעל <ph name="IN_PLACE_APP" />. יש לשחרר כדי ליצור תיקייה.</translation>
 <translation id="5463830097259460683">אמוג'י וסמלים</translation>
 <translation id="5476505524087279545">ביטול הסימון</translation>
@@ -210,7 +210,7 @@
 <translation id="7507604095951736240">אמוג'י</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7781829728241885113">אתמול</translation>
-<translation id="7814458197256864873">&amp;העתק</translation>
+<translation id="7814458197256864873">&amp;העתקה</translation>
 <translation id="7848989271541991537">עברה לדף <ph name="PAGE_NUMBER" />, שורה <ph name="ROW_NUMBER" />, עמודה <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="7879499977785298635">ללא חסימה</translation>
 <translation id="7907591526440419938">פתח קובץ</translation>
