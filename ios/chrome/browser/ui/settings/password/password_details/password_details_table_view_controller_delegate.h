@@ -15,6 +15,9 @@
             (PasswordDetailsTableViewController*)viewController
                didEditPasswordDetails:(PasswordDetails*)password;
 
+// Checks if the username is reused for the same domain.
+- (BOOL)isUsernameReused:(NSString*)newUsername;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_TABLE_VIEW_CONTROLLER_DELEGATE_H_

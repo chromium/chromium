@@ -23,11 +23,13 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -68,7 +70,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 
 }  // namespace
 
-@interface PasswordDetailsTableViewController ()
+@interface PasswordDetailsTableViewController () <TableViewTextEditItemDelegate>
 
 // Password which is shown on the screen.
 @property(nonatomic, strong) PasswordDetails* password;
@@ -81,6 +83,10 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 
 // The text item related to the password value.
 @property(nonatomic, strong) TableViewTextEditItem* passwordTextItem;
+
+// The view used to anchor error alert which is shown for the username. This is
+// image icon in the |usernameTextItem| cell.
+@property(nonatomic, weak) UIView* usernameErrorAnchorView;
 
 @end
 
@@ -193,12 +199,15 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   item.textFieldName =
       l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_USERNAME);
   item.textFieldValue = self.password.username;
-  if (base::FeatureList::IsEnabled(
+  // If password is missing (federated credential) don't allow to edit username.
+  if ([self.password.password length] &&
+      base::FeatureList::IsEnabled(
           password_manager::features::kEditPasswordsInSettings)) {
     item.textFieldEnabled = self.tableView.editing;
     item.hideIcon = !self.tableView.editing;
     item.autoCapitalizationType = UITextAutocapitalizationTypeNone;
     item.returnKeyType = UIReturnKeyDone;
+    item.delegate = self;
   } else {
     item.textFieldEnabled = NO;
     item.hideIcon = YES;
@@ -219,6 +228,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   item.autoCapitalizationType = UITextAutocapitalizationTypeNone;
   item.keyboardType = UIKeyboardTypeURL;
   item.returnKeyType = UIReturnKeyDone;
+  item.delegate = self;
 
   // During editing password is exposed so eye icon shouldn't be shown.
   if (!self.tableView.editing) {
@@ -357,6 +367,11 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
       TableViewTextEditCell* textFieldCell =
           base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
       textFieldCell.textField.delegate = self;
+      [textFieldCell.identifyingIconButton
+                 addTarget:self
+                    action:@selector(didTapUsernameErrorInfo:)
+          forControlEvents:UIControlEventTouchUpInside];
+      self.usernameErrorAnchorView = textFieldCell.iconView;
       break;
     }
     case ItemTypePassword: {
@@ -401,7 +416,35 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   [self reloadData];
 }
 
-#pragma mark - Private
+#pragma mark - TableViewTextEditItemDelegate
+
+- (void)tableViewItemDidBeginEditing:(TableViewTextEditItem*)tableViewItem {
+  [self reconfigureCellsForItems:@[
+    self.usernameTextItem, self.passwordTextItem
+  ]];
+}
+
+- (void)tableViewItemDidChange:(TableViewTextEditItem*)tableViewItem {
+  BOOL isInputValid = YES;
+
+  if (tableViewItem == self.usernameTextItem) {
+    isInputValid = [self checkIfValidUsername];
+  }
+
+  self.navigationItem.rightBarButtonItem.enabled = isInputValid;
+}
+
+- (void)tableViewItemDidEndEditing:(TableViewTextEditItem*)tableViewItem {
+  // Check if the item is equal to the current username or password item as when
+  // editing finished reloadData is called.
+  if (tableViewItem == self.usernameTextItem) {
+    [self reconfigureCellsForItems:@[ self.usernameTextItem ]];
+  } else if (tableViewItem == self.passwordTextItem) {
+    [self reconfigureCellsForItems:@[ self.passwordTextItem ]];
+  }
+}
+
+#pragma mark - SettingsRootTableViewController
 
 // Called when user tapped Delete button during editing. It means presented
 // password should be deleted.
@@ -418,6 +461,8 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 - (BOOL)shouldHideToolbar {
   return !self.editing;
 }
+
+#pragma mark - Private
 
 // Applies tint colour and resizes image.
 - (UIImage*)getCompromisedIcon {
@@ -562,6 +607,22 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   }
 }
 
+// Checks if the username is valid and updates item accordingly.
+- (BOOL)checkIfValidUsername {
+  DCHECK(self.password.username);
+  NSString* newUsernameValue = self.usernameTextItem.textFieldValue;
+  BOOL usernameChanged =
+      ![newUsernameValue isEqualToString:self.password.username];
+  BOOL showUsernameAlreadyUsed =
+      usernameChanged && [self.delegate isUsernameReused:newUsernameValue];
+
+  self.usernameTextItem.hasValidText = !showUsernameAlreadyUsed;
+  self.usernameTextItem.identifyingIconEnabled = showUsernameAlreadyUsed;
+
+  [self reconfigureCellsForItems:@[ self.usernameTextItem ]];
+  return !showUsernameAlreadyUsed;
+}
+
 #pragma mark - Actions
 
 // Called when the user tapped on the show/hide button near password.
@@ -576,6 +637,33 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   } else {
     [self attemptToShowPasswordFor:ReauthenticationReasonShow];
   }
+}
+
+// Called when the user tap error info icon in the username input.
+- (void)didTapUsernameErrorInfo:(UIButton*)buttonView {
+  NSString* text = l10n_util::GetNSString(IDS_IOS_USERNAME_ALREADY_USED);
+
+  NSAttributedString* attributedText = [[NSAttributedString alloc]
+      initWithString:text
+          attributes:@{
+            NSForegroundColorAttributeName :
+                [UIColor colorNamed:kTextSecondaryColor],
+            NSFontAttributeName :
+                [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]
+          }];
+
+  PopoverLabelViewController* errorInfoPopover =
+      [[PopoverLabelViewController alloc]
+          initWithPrimaryAttributedString:attributedText
+                secondaryAttributedString:nil];
+
+  errorInfoPopover.popoverPresentationController.sourceView =
+      self.usernameErrorAnchorView;
+  errorInfoPopover.popoverPresentationController.sourceRect =
+      self.usernameErrorAnchorView.bounds;
+  errorInfoPopover.popoverPresentationController.permittedArrowDirections =
+      UIPopoverArrowDirectionAny;
+  [self presentViewController:errorInfoPopover animated:YES completion:nil];
 }
 
 // Returns an array of UIMenuItems to display in a context menu on the site

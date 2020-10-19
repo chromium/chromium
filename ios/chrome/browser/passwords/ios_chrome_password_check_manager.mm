@@ -152,6 +152,11 @@ IOSChromePasswordCheckManager::GetCompromisedCredentials() const {
 }
 
 password_manager::SavedPasswordsPresenter::SavedPasswordsView
+IOSChromePasswordCheckManager::GetAllCredentials() const {
+  return saved_passwords_presenter_.GetSavedPasswords();
+}
+
+password_manager::SavedPasswordsPresenter::SavedPasswordsView
 IOSChromePasswordCheckManager::GetSavedPasswordsFor(
     const CredentialWithPassword& credential) const {
   return insecure_credentials_manager_.GetSavedPasswordsFor(credential);

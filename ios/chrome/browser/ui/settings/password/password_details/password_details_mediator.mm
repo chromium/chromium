@@ -28,6 +28,9 @@ using InsecureCredentialsView =
   std::unique_ptr<PasswordCheckObserverBridge> _passwordCheckObserver;
 }
 
+// List of the usernames for the same domain.
+@property(nonatomic, strong) NSSet<NSString*>* usernamesWithSameDomain;
+
 @end
 
 @implementation PasswordDetailsMediator
@@ -40,6 +43,16 @@ using InsecureCredentialsView =
     _password = passwordForm;
     _passwordCheckObserver.reset(
         new PasswordCheckObserverBridge(self, manager));
+    NSMutableSet<NSString*>* usernames = [[NSMutableSet alloc] init];
+    auto forms = manager->GetAllCredentials();
+    for (const auto& form : forms) {
+      if (form.signon_realm == passwordForm.signon_realm) {
+        [usernames addObject:base::SysUTF16ToNSString(form.username_value)];
+      }
+    }
+    [usernames
+        removeObject:base::SysUTF16ToNSString(passwordForm.username_value)];
+    _usernamesWithSameDomain = usernames;
   }
   return self;
 }
@@ -71,6 +84,12 @@ using InsecureCredentialsView =
     }
   }
   [self fetchPasswordWith:_manager->GetCompromisedCredentials()];
+}
+
+- (BOOL)isUsernameReused:(NSString*)newUsername {
+  // It is more efficient to check set of the usernames for the same origin
+  // instead of delegating this to the |_manager|.
+  return [self.usernamesWithSameDomain containsObject:newUsername];
 }
 
 #pragma mark - PasswordCheckObserver

@@ -53,6 +53,7 @@ using chrome_test_util::NavigationBarDoneButton;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::TurnSettingsSwitchOn;
+using chrome_test_util::TextFieldForCellWithLabelId;
 
 namespace {
 
@@ -135,23 +136,17 @@ GREYLayoutConstraint* Below() {
 
 // Matcher for the Copy site button in Password Details view.
 id<GREYMatcher> PasswordDetailWebsite() {
-  return grey_allOf(
-      grey_accessibilityID(GetTextFieldForID(IDS_IOS_SHOW_PASSWORD_VIEW_SITE)),
-      grey_kindOfClassName(@"UITextField"), nil);
+  return TextFieldForCellWithLabelId(IDS_IOS_SHOW_PASSWORD_VIEW_SITE);
 }
 
 // Matcher for the Copy username button in Password Details view.
 id<GREYMatcher> PasswordDetailUsername() {
-  return grey_allOf(grey_accessibilityID(
-                        GetTextFieldForID(IDS_IOS_SHOW_PASSWORD_VIEW_USERNAME)),
-                    grey_kindOfClassName(@"UITextField"), nil);
+  return TextFieldForCellWithLabelId(IDS_IOS_SHOW_PASSWORD_VIEW_USERNAME);
 }
 
 // Matcher for the Copy password button in Password Details view.
 id<GREYMatcher> PasswordDetailPassword() {
-  return grey_allOf(grey_accessibilityID(
-                        GetTextFieldForID(IDS_IOS_SHOW_PASSWORD_VIEW_PASSWORD)),
-                    grey_kindOfClassName(@"UITextField"), nil);
+  return TextFieldForCellWithLabelId(IDS_IOS_SHOW_PASSWORD_VIEW_PASSWORD);
 }
 
 // Matcher for the Show password button in Password Details view.
@@ -316,7 +311,8 @@ void CopyPasswordDetailWithID(int detail_id) {
   // TODO(crbug.com/1075494): Remove this once feature is launched.
   config.features_enabled.push_back(password_manager::features::kPasswordCheck);
 
-  if ([self isRunningTest:@selector(testEditUsername)]) {
+  if ([self isRunningTest:@selector(testEditUsername)] ||
+      [self isRunningTest:@selector(testEditUsernameFails)]) {
     config.features_enabled.push_back(
         password_manager::features::kEditPasswordsInSettings);
   }
@@ -1479,6 +1475,55 @@ void CopyPasswordDetailWithID(int detail_id) {
 
   [GetInteractionForPasswordEntry(@"example.com, new username")
       assertWithMatcher:grey_notNil()];
+
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+}
+
+// Checks that attempts to edit a username to a value which is already used for
+// the same domain fails.
+- (void)testEditUsernameFails {
+  GREYAssert(
+      [PasswordSettingsAppInterface saveExamplePassword:@"concrete password"
+                                               userName:@"concrete username1"
+                                                 origin:@"https://example.com"],
+      @"Stored form was not found in the PasswordStore results.");
+
+  GREYAssert(
+      [PasswordSettingsAppInterface saveExamplePassword:@"concrete password"
+                                               userName:@"concrete username2"
+                                                 origin:@"https://example.com"],
+      @"Stored form was not found in the PasswordStore results.");
+
+  OpenPasswordSettings();
+
+  [GetInteractionForPasswordEntry(@"example.com, concrete username1")
+      performAction:grey_tap()];
+
+  // Check the snackbar in case of successful reauthentication.
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
+  TapEdit();
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+      assertWithMatcher:grey_textFieldValue(@"concrete username1")];
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+      performAction:grey_clearText()];
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+      performAction:grey_typeText(@"concrete username2")];
+
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      assertWithMatcher:grey_allOf(grey_sufficientlyVisible(),
+                                   grey_not(grey_enabled()), nil)];
+
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];

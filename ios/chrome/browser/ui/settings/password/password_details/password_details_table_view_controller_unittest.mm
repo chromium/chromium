@@ -89,6 +89,10 @@ constexpr char kPassword[] = "test";
   self.password = password;
 }
 
+- (BOOL)isUsernameReused:(NSString*)newUsername {
+  return NO;
+}
+
 @end
 
 @interface FakeSnackbarImplementation : NSObject <SnackbarCommands>

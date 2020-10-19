@@ -1768,6 +1768,9 @@ Follow the steps below:
       <message name="IDS_IOS_CONFIRM_PASSWORD_EDIT" desc="Confirm button inside confirmation alert when the user is trying to edit password [iOS only]" meaning="Save edited password">
         Save Password
       </message>
+      <message name="IDS_IOS_USERNAME_ALREADY_USED" desc="Error description telling the user that entered username is already used for this site [iOS only]">
+        You already saved this username for this site
+      </message>
       <message name="IDS_IOS_CANCEL_PASSWORD_EDIT" desc="Cancel button inside confirmation alert when the user is trying to edit password [iOS only]" meaning="Cancels editing">
         Cancel
       </message>

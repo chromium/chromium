@@ -66,6 +66,9 @@ class IOSChromePasswordCheckManager
   GetCompromisedCredentials() const;
 
   password_manager::SavedPasswordsPresenter::SavedPasswordsView
+  GetAllCredentials() const;
+
+  password_manager::SavedPasswordsPresenter::SavedPasswordsView
   GetSavedPasswordsFor(
       const password_manager::CredentialWithPassword& credential) const;
 
