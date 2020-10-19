@@ -435,6 +435,8 @@ js_library("mock_progress_center") {
     ":progress_center",
     "//ui/webui/resources/js/cr:event_target",
   ]
+  visibility +=
+      [ "//ui/file_manager/file_manager/foreground/js:file_tasks_unittest" ]
 }
 
 js_library("progress_center") {

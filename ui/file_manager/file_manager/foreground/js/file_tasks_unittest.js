@@ -64,6 +64,34 @@ const mockTaskHistory = /** @type {!TaskHistory} */ ({
  */
 const mockFileTransferController = /** @type {!FileTransferController} */ ({});
 
+/**
+ * Mock directory change tracker.
+ * @type {!Object}
+ */
+const fakeTracker = {
+  hasChange: false,
+};
+
+/**
+ * Fake url for mounted ZIP file.
+ * @type {string}
+ */
+const fakeMountedZipUrl =
+    'filesystem:chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/' +
+    'external/fakePath/test.zip';
+
+/**
+ * Panel IDs for ZIP mount operations.
+ * @type {string}
+ */
+const zipMountPanelId = 'Mounting: ' + fakeMountedZipUrl;
+
+/**
+ * Panel IDs for ZIP mount errors.
+ * @type {string}
+ */
+const errorZipMountPanelId = 'Cannot mount: ' + fakeMountedZipUrl;
+
 // Set up test components.
 function setUp() {
   // Mock LoadTimeData strings.
@@ -156,6 +184,7 @@ function getMockFileManager() {
       alertDialog: {
         showHtml: function(title, text, onOk, onCancel, onShow) {},
       },
+      passwordDialog: /** @type {!FilesPasswordDialog} */ ({}),
       speakA11yMessage: (text) => {},
     }),
     metadataModel: /** @type {!MetadataModel} */ ({}),
@@ -164,9 +193,10 @@ function getMockFileManager() {
       getCurrentRootType: function() {
         return null;
       },
+      changeDirectoryEntry: function(displayRoot) {}
     }),
     crostini: crostini,
-    progressCenter: /** @type {!ProgressCenter} */ ({}),
+    progressCenter: /** @type {!ProgressCenter} */ (new MockProgressCenter()),
   };
 
   fileManager.crostini.initVolumeManager(fileManager.volumeManager);
@@ -756,6 +786,164 @@ async function testShareWith(done) {
   tasks.execute(mockTask);
   assertArrayEquals(['.jpg', '.jpg'], enumMap.get('Share.FileType'));
   assertArrayEquals([2], countMap.get('Share.FileCount'));
+
+  done();
+}
+
+/**
+ * Checks that the progress center is properly updated when mounting archives
+ * successfully.
+ * @suppress {visibility}
+ */
+async function testMountArchiveAndChangeDirectoryNotificationSuccess(done) {
+  const fileManager = getMockFileManager();
+
+  // Define FileTasks instance.
+  const tasks = await FileTasks.create(
+      fileManager.volumeManager, fileManager.metadataModel,
+      fileManager.directoryModel, fileManager.ui, mockFileTransferController,
+      [], [null], mockTaskHistory, fileManager.namingController,
+      fileManager.crostini, fileManager.progressCenter);
+
+  fileManager.volumeManager.mountArchive = function(url, password) {
+    // Check: progressing state.
+    assertEquals(
+        ProgressItemState.PROGRESSING,
+        fileManager.progressCenter.getItemById(zipMountPanelId).state);
+
+    const volumeInfo = {resolveDisplayRoot: () => null};
+    return volumeInfo;
+  };
+
+  // Mount archive.
+  await tasks.mountArchiveAndChangeDirectory_(fakeTracker, fakeMountedZipUrl);
+
+  // Check: mount completed, no error.
+  assertEquals(
+      ProgressItemState.COMPLETED,
+      fileManager.progressCenter.getItemById(zipMountPanelId).state);
+  assertEquals(
+      undefined, fileManager.progressCenter.getItemById(errorZipMountPanelId));
+
+  done();
+}
+
+/**
+ * Checks that the progress center is properly updated when mounting an archive
+ * resolves with an error.
+ * @suppress {visibility}
+ */
+async function testMountArchiveAndChangeDirectoryNotificationInvalidArchive(
+    done) {
+  const fileManager = getMockFileManager();
+
+  // Define FileTasks instance.
+  const tasks = await FileTasks.create(
+      fileManager.volumeManager, fileManager.metadataModel,
+      fileManager.directoryModel, fileManager.ui, mockFileTransferController,
+      [], [null], mockTaskHistory, fileManager.namingController,
+      fileManager.crostini, fileManager.progressCenter);
+
+  fileManager.volumeManager.mountArchive = function(url, password) {
+    return Promise.reject(VolumeManagerCommon.VolumeError.INTERNAL);
+  };
+
+  // Mount archive.
+  await tasks.mountArchiveAndChangeDirectory_(fakeTracker, fakeMountedZipUrl);
+
+  // Check: mount is completed with an error.
+  assertEquals(
+      ProgressItemState.COMPLETED,
+      fileManager.progressCenter.getItemById(zipMountPanelId).state);
+  assertEquals(
+      ProgressItemState.ERROR,
+      fileManager.progressCenter.getItemById(errorZipMountPanelId).state);
+
+  done();
+}
+
+/**
+ * Checks that the progress center is properly updated when the password prompt
+ * for an encrypted archive is canceled.
+ * @suppress {visibility}
+ */
+async function testMountArchiveAndChangeDirectoryNotificationCancelPassword(
+    done) {
+  const fileManager = getMockFileManager();
+
+  // Define FileTasks instance.
+  const tasks = await FileTasks.create(
+      fileManager.volumeManager, fileManager.metadataModel,
+      fileManager.directoryModel, fileManager.ui, mockFileTransferController,
+      [], [null], mockTaskHistory, fileManager.namingController,
+      fileManager.crostini, fileManager.progressCenter);
+
+  fileManager.volumeManager.mountArchive = function(url, password) {
+    return Promise.reject(VolumeManagerCommon.VolumeError.NEED_PASSWORD);
+  };
+
+  fileManager.ui.passwordDialog.askForPassword =
+      async function(filename, password = null) {
+    return Promise.reject(FilesPasswordDialog.USER_CANCELLED);
+  };
+
+  // Mount archive.
+  await tasks.mountArchiveAndChangeDirectory_(fakeTracker, fakeMountedZipUrl);
+
+  // Check: mount is completed, no error since the user canceled the password
+  // prompt.
+  assertEquals(
+      ProgressItemState.COMPLETED,
+      fileManager.progressCenter.getItemById(zipMountPanelId).state);
+  assertEquals(
+      undefined, fileManager.progressCenter.getItemById(errorZipMountPanelId));
+
+  done();
+}
+
+/**
+ * Checks that the progress center is properly updated when mounting an
+ * encrypted archive.
+ * @suppress {visibility}
+ */
+async function testMountArchiveAndChangeDirectoryNotificationEncryptedArchive(
+    done) {
+  const fileManager = getMockFileManager();
+
+  // Define FileTasks instance.
+  const tasks = await FileTasks.create(
+      fileManager.volumeManager, fileManager.metadataModel,
+      fileManager.directoryModel, fileManager.ui, mockFileTransferController,
+      [], [null], mockTaskHistory, fileManager.namingController,
+      fileManager.crostini, fileManager.progressCenter);
+
+  fileManager.volumeManager.mountArchive = function(url, password) {
+    return new Promise((resolve, reject) => {
+      if (password) {
+        assertEquals('testpassword', password);
+        const volumeInfo = {resolveDisplayRoot: () => null};
+        resolve(volumeInfo);
+      } else {
+        reject(VolumeManagerCommon.VolumeError.NEED_PASSWORD);
+      }
+    });
+  };
+
+  fileManager.ui.passwordDialog.askForPassword =
+      async function(filename, password = null) {
+    return Promise.resolve('testpassword');
+  };
+
+  // Mount archive.
+  await tasks.mountArchiveAndChangeDirectory_(fakeTracker, fakeMountedZipUrl);
+
+  // Check: mount is completed, no error since the user entered a valid
+  // password.
+  assertEquals(
+      ProgressItemState.COMPLETED,
+      fileManager.progressCenter.getItemById(zipMountPanelId).state);
+  assertEquals(
+      undefined, fileManager.progressCenter.getItemById(errorZipMountPanelId));
 
   done();
 }

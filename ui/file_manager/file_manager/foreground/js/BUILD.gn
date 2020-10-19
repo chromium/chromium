@@ -462,6 +462,7 @@ js_unittest("file_tasks_unittest") {
     "//ui/file_manager/base/js:mock_chrome",
     "//ui/file_manager/base/js:test_error_reporting",
     "//ui/file_manager/file_manager/background/js:mock_crostini",
+    "//ui/file_manager/file_manager/background/js:mock_progress_center",
     "//ui/file_manager/file_manager/common/js:mock_entry",
   ]
 }
