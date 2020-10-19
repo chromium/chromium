@@ -127,13 +127,13 @@ TEST_F(ShillDeviceClientTest, GetProperties) {
   writer.CloseContainer(&array_writer);
 
   // Set expectations.
-  base::DictionaryValue value;
+  base::Value value(base::Value::Type::DICTIONARY);
   value.SetKey(shill::kCellularAllowRoamingProperty, base::Value(kValue));
   PrepareForMethodCall(shill::kGetPropertiesFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());
   // Call method.
   client_->GetProperties(dbus::ObjectPath(kExampleDevicePath),
-                         base::BindOnce(&ExpectDictionaryValueResult, &value));
+                         base::BindOnce(&ExpectValueResult, &value));
   // Run the message loop.
   base::RunLoop().RunUntilIdle();
 }

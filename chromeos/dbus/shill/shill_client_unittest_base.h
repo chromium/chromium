@@ -29,11 +29,8 @@ using ::testing::MatcherInterface;
 using ::testing::MatchResultListener;
 
 namespace base {
-
 class Value;
-class DictionaryValue;
-
-}  // namespace base
+}
 
 namespace dbus {
 
@@ -125,24 +122,19 @@ class ShillClientUnittestBase : public testing::Test {
       const std::vector<std::string>& expected_strings,
       dbus::MessageReader* reader);
 
-  // Expects the reader to have a Value.
-  static void ExpectValueArgument(const base::Value* expected_value,
-                                  dbus::MessageReader* reader);
-
   // Expects the reader to have a string and a Value.
   static void ExpectStringAndValueArguments(const std::string& expected_string,
                                             const base::Value* expected_value,
                                             dbus::MessageReader* reader);
 
   // Expects the reader to have a string-to-variant dictionary.
-  static void ExpectDictionaryValueArgument(
-      const base::DictionaryValue* expected_dictionary,
+  static void ExpectValueDictionaryArgument(
+      const base::Value* expected_dictionary,
       bool string_valued,
       dbus::MessageReader* reader);
 
-  // Creates a DictionaryValue with example Service properties. The caller owns
-  // the result.
-  static base::DictionaryValue* CreateExampleServiceProperties();
+  // Creates a dictionary Value with example Service properties.
+  static base::Value CreateExampleServiceProperties();
 
   // Expects the call status to be SUCCESS.
   static void ExpectNoResultValue(bool result);
@@ -158,14 +150,12 @@ class ShillClientUnittestBase : public testing::Test {
       const std::string& result);
 
   // Checks the result and expects the call status to be SUCCESS.
-  static void ExpectDictionaryValueResult(
-      const base::DictionaryValue* expected_result,
-      base::Optional<base::Value> result);
+  static void ExpectValueResult(const base::Value* expected_result,
+                                base::Optional<base::Value> result);
 
   // Expects the |expected_result| to match the |result|.
-  static void ExpectDictionaryValueResultWithoutStatus(
-      const base::DictionaryValue* expected_result,
-      base::Value result);
+  static void ExpectValueResultWithoutStatus(const base::Value* expected_result,
+                                             base::Value result);
 
   // A message loop to emulate asynchronous behavior.
   base::test::SingleThreadTaskEnvironment task_environment_;

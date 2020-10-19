@@ -114,13 +114,13 @@ TEST_F(ShillManagerClientTest, GetProperties) {
   writer.CloseContainer(&array_writer);
 
   // Create the expected value.
-  base::DictionaryValue value;
+  base::Value value(base::Value::Type::DICTIONARY);
   value.SetKey(shill::kArpGatewayProperty, base::Value(true));
   // Set expectations.
   PrepareForMethodCall(shill::kGetPropertiesFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());
   // Call method.
-  client_->GetProperties(base::BindOnce(&ExpectDictionaryValueResult, &value));
+  client_->GetProperties(base::BindOnce(&ExpectValueResult, &value));
   // Run the message loop.
   base::RunLoop().RunUntilIdle();
 }
@@ -153,20 +153,20 @@ TEST_F(ShillManagerClientTest, GetNetworksForGeolocation) {
   writer.CloseContainer(&type_dict_writer);
 
   // Create the expected value.
-  auto property_dict_value = std::make_unique<base::DictionaryValue>();
-  property_dict_value->SetKey(shill::kGeoMacAddressProperty,
-                              base::Value("01:23:45:67:89:AB"));
-  auto type_entry_value = std::make_unique<base::ListValue>();
-  type_entry_value->Append(std::move(property_dict_value));
-  base::DictionaryValue type_dict_value;
-  type_dict_value.SetWithoutPathExpansion("wifi", std::move(type_entry_value));
+  base::Value property_dict_value(base::Value::Type::DICTIONARY);
+  property_dict_value.SetKey(shill::kGeoMacAddressProperty,
+                             base::Value("01:23:45:67:89:AB"));
+  base::Value type_entry_value(base::Value::Type::LIST);
+  type_entry_value.Append(std::move(property_dict_value));
+  base::Value type_dict_value(base::Value::Type::DICTIONARY);
+  type_dict_value.SetKey("wifi", std::move(type_entry_value));
 
   // Set expectations.
   PrepareForMethodCall(shill::kGetNetworksForGeolocation,
                        base::BindRepeating(&ExpectNoArgument), response.get());
   // Call method.
   client_->GetNetworksForGeolocation(
-      base::BindOnce(&ExpectDictionaryValueResult, &type_dict_value));
+      base::BindOnce(&ExpectValueResult, &type_dict_value));
 
   // Run the message loop.
   base::RunLoop().RunUntilIdle();
@@ -285,18 +285,18 @@ TEST_F(ShillManagerClientTest, ConfigureService) {
   dbus::MessageWriter writer(response.get());
   writer.AppendObjectPath(object_path);
   // Create the argument dictionary.
-  std::unique_ptr<base::DictionaryValue> arg(CreateExampleServiceProperties());
+  base::Value arg = CreateExampleServiceProperties();
   // Use a variant valued dictionary rather than a string valued one.
   const bool string_valued = false;
   // Set expectations.
-  PrepareForMethodCall(shill::kConfigureServiceFunction,
-                       base::BindRepeating(&ExpectDictionaryValueArgument,
-                                           arg.get(), string_valued),
-                       response.get());
+  PrepareForMethodCall(
+      shill::kConfigureServiceFunction,
+      base::BindRepeating(&ExpectValueDictionaryArgument, &arg, string_valued),
+      response.get());
   // Call method.
   base::MockCallback<ShillManagerClient::ErrorCallback> mock_error_callback;
   client_->ConfigureService(
-      *arg, base::BindOnce(&ExpectObjectPathResultWithoutStatus, object_path),
+      arg, base::BindOnce(&ExpectObjectPathResultWithoutStatus, object_path),
       mock_error_callback.Get());
   EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
 
@@ -311,18 +311,18 @@ TEST_F(ShillManagerClientTest, GetService) {
   dbus::MessageWriter writer(response.get());
   writer.AppendObjectPath(object_path);
   // Create the argument dictionary.
-  std::unique_ptr<base::DictionaryValue> arg(CreateExampleServiceProperties());
+  base::Value arg = CreateExampleServiceProperties();
   // Use a variant valued dictionary rather than a string valued one.
   const bool string_valued = false;
   // Set expectations.
-  PrepareForMethodCall(shill::kGetServiceFunction,
-                       base::BindRepeating(&ExpectDictionaryValueArgument,
-                                           arg.get(), string_valued),
-                       response.get());
+  PrepareForMethodCall(
+      shill::kGetServiceFunction,
+      base::BindRepeating(&ExpectValueDictionaryArgument, &arg, string_valued),
+      response.get());
   // Call method.
   base::MockCallback<ShillManagerClient::ErrorCallback> mock_error_callback;
   client_->GetService(
-      *arg, base::BindOnce(&ExpectObjectPathResultWithoutStatus, object_path),
+      arg, base::BindOnce(&ExpectObjectPathResultWithoutStatus, object_path),
       mock_error_callback.Get());
   EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
 

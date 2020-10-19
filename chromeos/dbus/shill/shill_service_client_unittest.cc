@@ -99,13 +99,13 @@ TEST_F(ShillServiceClientTest, GetProperties) {
   writer.CloseContainer(&array_writer);
 
   // Set expectations.
-  base::DictionaryValue value;
+  base::Value value(base::Value::Type::DICTIONARY);
   value.SetKey(shill::kSignalStrengthProperty, base::Value(kValue));
   PrepareForMethodCall(shill::kGetPropertiesFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());
   // Call method.
   client_->GetProperties(dbus::ObjectPath(kExampleServicePath),
-                         base::BindOnce(&ExpectDictionaryValueResult, &value));
+                         base::BindOnce(&ExpectValueResult, &value));
   // Run the message loop.
   base::RunLoop().RunUntilIdle();
 }
@@ -139,18 +139,18 @@ TEST_F(ShillServiceClientTest, SetProperties) {
   std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
 
   // Set expectations.
-  std::unique_ptr<base::DictionaryValue> arg(CreateExampleServiceProperties());
+  base::Value arg = CreateExampleServiceProperties();
   // Use a variant valued dictionary rather than a string valued one.
   const bool string_valued = false;
-  PrepareForMethodCall(shill::kSetPropertiesFunction,
-                       base::BindRepeating(&ExpectDictionaryValueArgument,
-                                           arg.get(), string_valued),
-                       response.get());
+  PrepareForMethodCall(
+      shill::kSetPropertiesFunction,
+      base::BindRepeating(&ExpectValueDictionaryArgument, &arg, string_valued),
+      response.get());
 
   // Call method.
   base::MockCallback<base::OnceClosure> mock_closure;
   base::MockCallback<ShillServiceClient::ErrorCallback> mock_error_callback;
-  client_->SetProperties(dbus::ObjectPath(kExampleServicePath), *arg,
+  client_->SetProperties(dbus::ObjectPath(kExampleServicePath), arg,
                          mock_closure.Get(), mock_error_callback.Get());
   EXPECT_CALL(mock_closure, Run()).Times(1);
   EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);

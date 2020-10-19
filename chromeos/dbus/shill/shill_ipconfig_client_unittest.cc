@@ -106,7 +106,7 @@ TEST_F(ShillIPConfigClientTest, GetProperties) {
   writer.CloseContainer(&array_writer);
 
   // Create the expected value.
-  base::DictionaryValue value;
+  base::Value value(base::Value::Type::DICTIONARY);
   value.SetKey(shill::kAddressProperty, base::Value(kAddress));
   value.SetKey(shill::kMtuProperty, base::Value(kMtu));
 
@@ -115,7 +115,7 @@ TEST_F(ShillIPConfigClientTest, GetProperties) {
                        base::BindRepeating(&ExpectNoArgument), response.get());
   // Call method.
   client_->GetProperties(dbus::ObjectPath(kExampleIPConfigPath),
-                         base::BindOnce(&ExpectDictionaryValueResult, &value));
+                         base::BindOnce(&ExpectValueResult, &value));
   // Run the message loop.
   base::RunLoop().RunUntilIdle();
 }

@@ -109,10 +109,10 @@ TEST_F(ShillProfileClientTest, GetProperties) {
   writer.CloseContainer(&array_writer);
 
   // Create the expected value.
-  auto entries = std::make_unique<base::ListValue>();
-  entries->AppendString(kExampleEntryPath);
-  base::DictionaryValue value;
-  value.SetWithoutPathExpansion(shill::kEntriesProperty, std::move(entries));
+  base::Value entries(base::Value::Type::LIST);
+  entries.Append(kExampleEntryPath);
+  base::Value value(base::Value::Type::DICTIONARY);
+  value.SetKey(shill::kEntriesProperty, std::move(entries));
   // Set expectations.
   PrepareForMethodCall(shill::kGetPropertiesFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());
@@ -120,7 +120,7 @@ TEST_F(ShillProfileClientTest, GetProperties) {
   base::MockCallback<ShillProfileClient::ErrorCallback> error_callback;
   client_->GetProperties(
       dbus::ObjectPath(kDefaultProfilePath),
-      base::BindOnce(&ExpectDictionaryValueResultWithoutStatus, &value),
+      base::BindOnce(&ExpectValueResultWithoutStatus, &value),
       error_callback.Get());
   EXPECT_CALL(error_callback, Run(_, _)).Times(0);
 
@@ -142,7 +142,7 @@ TEST_F(ShillProfileClientTest, GetEntry) {
   writer.CloseContainer(&array_writer);
 
   // Create the expected value.
-  base::DictionaryValue value;
+  base::Value value(base::Value::Type::DICTIONARY);
   value.SetKey(shill::kTypeProperty, base::Value(shill::kTypeWifi));
   // Set expectations.
   PrepareForMethodCall(
@@ -151,10 +151,9 @@ TEST_F(ShillProfileClientTest, GetEntry) {
       response.get());
   // Call method.
   base::MockCallback<ShillProfileClient::ErrorCallback> error_callback;
-  client_->GetEntry(
-      dbus::ObjectPath(kDefaultProfilePath), kExampleEntryPath,
-      base::BindOnce(&ExpectDictionaryValueResultWithoutStatus, &value),
-      error_callback.Get());
+  client_->GetEntry(dbus::ObjectPath(kDefaultProfilePath), kExampleEntryPath,
+                    base::BindOnce(&ExpectValueResultWithoutStatus, &value),
+                    error_callback.Get());
   EXPECT_CALL(error_callback, Run(_, _)).Times(0);
   // Run the message loop.
   base::RunLoop().RunUntilIdle();
@@ -165,7 +164,7 @@ TEST_F(ShillProfileClientTest, DeleteEntry) {
   std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
 
   // Create the expected value.
-  base::DictionaryValue value;
+  base::Value value(base::Value::Type::DICTIONARY);
   value.SetKey(shill::kArpGatewayProperty, base::Value(true));
   // Set expectations.
   PrepareForMethodCall(
