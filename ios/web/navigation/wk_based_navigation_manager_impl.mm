@@ -794,6 +794,13 @@ void WKBasedNavigationManagerImpl::RestoreItemsState(
             cache_index, true /* create_if_missing */);
     NavigationItem* restore_item = items_restored[index].get();
 
+    // |cached_item| appears to be nil sometimes, perhaps due to a mismatch in
+    // WKWebView's backForwardList.  Returning early here may break some restore
+    // state features, but should not put the user in a broken state.
+    if (!cached_item || !restore_item) {
+      continue;
+    }
+
     bool is_same_url = cached_item->GetURL() == restore_item->GetURL();
     if (wk_navigation_util::IsRestoreSessionUrl(cached_item->GetURL())) {
       GURL target_url;
