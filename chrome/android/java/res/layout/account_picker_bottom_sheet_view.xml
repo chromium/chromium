@@ -8,7 +8,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingBottom="16dp">
 
     <ImageView
         android:layout_width="wrap_content"
@@ -60,7 +61,6 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
         android:visibility="gone"
         tools:listitem="@layout/account_chooser_dialog_item" />
 
@@ -78,7 +78,8 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_gravity="center"
-        android:layout_marginBottom="54dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="24dp"
         android:visibility="gone" />
 
     <org.chromium.ui.widget.ButtonCompat
@@ -89,10 +90,18 @@
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="20dp"
         android:ellipsize="end"
         android:singleLine="true"
         android:text="@string/signin_promo_continue_as" />
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/account_picker_dismiss_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:text="@string/no_thanks"
+        style="@style/TextButton" />
 
     <include
         android:id="@+id/incognito_interstitial_bottom_sheet_view"
