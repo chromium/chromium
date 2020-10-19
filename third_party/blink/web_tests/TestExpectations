@@ -6467,3 +6467,7 @@ crbug.com/1139052 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/protocol/unbundl
 # DevTools roll
 crbug.com/1011811 http/tests/devtools/indexeddb/database-structure.js [ Skip ]
 crbug.com/1011811 http/tests/devtools/indexeddb/database-version-number.js [ Skip ]
+
+# DevTools roll
+crbug.com/1011811 http/tests/devtools/profiler/agents-disabled-check.js [ Skip ]
+crbug.com/1011811 http/tests/devtools/persistence/persistence-do-not-overwrite-css.js [ Skip ]
