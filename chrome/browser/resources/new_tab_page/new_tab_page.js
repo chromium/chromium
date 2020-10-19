@@ -23,6 +23,8 @@ export {dummyDescriptor} from './modules/dummy/module.js';
 export {kaleidoscopeDescriptor} from './modules/kaleidoscope/module.js';
 export {ModuleDescriptor} from './modules/module_descriptor.js';
 export {ModuleRegistry} from './modules/module_registry.js';
+export {recipeTasksDescriptor} from './modules/recipe_tasks/module.js';
+export {RecipeTasksHandlerProxy} from './modules/recipe_tasks/recipe_tasks_handler_proxy.js';
 export {shoppingTasksDescriptor} from './modules/shopping_tasks/module.js';
 export {ShoppingTasksHandlerProxy} from './modules/shopping_tasks/shopping_tasks_handler_proxy.js';
 export {PromoBrowserCommandProxy} from './promo_browser_command_proxy.js';

@@ -8,12 +8,12 @@
     width: 100%;
   }
 
-  #products {
+  #recipes {
     display: flex;
     flex-direction: row;
   }
 
-  .product {
+  .recipe {
     border-radius: 4px;
     display: flex;
     flex-direction: column;
@@ -22,11 +22,11 @@
     width: 120px;
   }
 
-  :host-context(.focus-outline-visible) .product:focus {
+  :host-context(.focus-outline-visible) .recipe:focus {
     box-shadow: var(--ntp-focus-shadow);
   }
 
-  .product + .product {
+  .recipe + .recipe {
     margin-inline-start: 16px;
   }
 
@@ -34,15 +34,15 @@
     background: var(--google-grey-50);
     border-radius: 4px;
     box-sizing: border-box;
-    height: 120px;
+    height: 100px;
     margin-bottom: 8px;
-    padding: 10px;
     width: 120px;
   }
 
   img {
+    border-radius: 4px;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
     width: 100%;
   }
 
@@ -56,15 +56,13 @@
   }
 
   .name {
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
     color: var(--cr-primary-text-color);
-    display: -webkit-box;
     font-size: 12px;
-    height: 40px;
     line-height: 20px;
-    margin-bottom: 5px;
+    margin-bottom: 4px;
     overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .info {
@@ -131,15 +129,14 @@
     text-decoration: none;
   }
 </style>
-<div id="products">
-  <template is="dom-repeat" id="productsRepeat"
-      items="[[shoppingTask.products]]" on-dom-change="onDomChange_">
-    <a class="product" href="[[item.targetUrl.url]]" on-click="onProductClick_"
-        on-auxclick="onProductClick_">
+<div id="recipes">
+  <template is="dom-repeat" id="recipesRepeat"
+      items="[[recipeTask.recipes]]" on-dom-change="onDomChange_">
+    <a class="recipe" href="[[item.targetUrl.url]]" on-click="onRecipeClick_"
+        on-auxclick="onRecipeClick_">
       <div class="image">
         <img is="ntp-img" auto-src="[[item.imageUrl.url]]"></img>
       </div>
-      <div class="price">[[item.price]]</div>
       <div class="name"  title="[[item.name]]">[[item.name]]</div>
       <div class="info">[[item.info]]</div>
     </a>
@@ -147,7 +144,7 @@
 </div>
 <div id="relatedSearches">
   <template is="dom-repeat" id="relatedSearchesRepeat"
-      items="[[shoppingTask.relatedSearches]]" on-dom-change="onDomChange_">
+      items="[[recipeTask.relatedSearches]]" on-dom-change="onDomChange_">
     <a class="pill" href="[[item.targetUrl.url]]" on-click="onPillClick_"
         on-auxclick="onPillClick_">
       <div class="loupe"></div>
