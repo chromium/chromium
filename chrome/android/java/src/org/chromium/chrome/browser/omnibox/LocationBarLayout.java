@@ -46,12 +46,14 @@ import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.gsa.GSAState;
+import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.native_page.NativePageFactory;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
+import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
@@ -98,8 +100,9 @@ import java.util.List;
  * search terms.
  */
 public class LocationBarLayout extends FrameLayout
-        implements OnClickListener, LocationBar, AutocompleteDelegate, FakeboxDelegate,
-                   VoiceRecognitionHandler.Delegate, AssistantVoiceSearchService.Observer {
+        implements OnClickListener, AutocompleteDelegate, FakeboxDelegate,
+                   VoiceRecognitionHandler.Delegate, AssistantVoiceSearchService.Observer,
+                   Destroyable, UrlBarDelegate {
     private static final int KEYBOARD_HIDE_DELAY_MS = 150;
     private static final int KEYBOARD_MODE_CHANGE_DELAY_MS = 300;
 
@@ -330,7 +333,6 @@ public class LocationBarLayout extends FrameLayout
         }
     }
 
-    @Override
     public void initializeControls(WindowDelegate windowDelegate, WindowAndroid windowAndroid,
             ActivityTabProvider activityTabProvider,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
@@ -352,7 +354,6 @@ public class LocationBarLayout extends FrameLayout
         return mAutocompleteCoordinator;
     }
 
-    @Override
     public void onDeferredStartup() {
         mAutocompleteCoordinator.prefetchZeroSuggestResults();
     }
@@ -360,7 +361,6 @@ public class LocationBarLayout extends FrameLayout
     /**
      * Handles native dependent initialization for this class.
      */
-    @Override
     public void onNativeLibraryReady() {
         TemplateUrlServiceFactory.get().runWhenLoaded(this::registerTemplateUrlObserver);
         mNativeInitialized = true;
@@ -390,7 +390,6 @@ public class LocationBarLayout extends FrameLayout
         setProfile(mProfileSupplier.get());
     }
 
-    @Override
     public void setProfileSupplier(ObservableSupplier<Profile> profileSupplier) {
         assert profileSupplier != null;
         assert mProfileSupplier == null;
@@ -404,12 +403,10 @@ public class LocationBarLayout extends FrameLayout
         setUrlBarFocus(false, null, LocationBar.OmniboxFocusReason.UNFOCUS);
     }
 
-    @Override
     public void selectAll() {
         mUrlCoordinator.selectAll();
     }
 
-    @Override
     public void revertChanges() {
         if (!mUrlHasFocus) {
             setUrlToPageUrl();
@@ -430,7 +427,6 @@ public class LocationBarLayout extends FrameLayout
         updateButtonVisibility();
     }
 
-    @Override
     public void setDefaultTextEditActionModeCallback(ToolbarActionModeCallback callback) {
         mUrlCoordinator.setActionModeCallback(callback);
     }
@@ -445,7 +441,6 @@ public class LocationBarLayout extends FrameLayout
         return mUrlFocusedFromQueryTiles;
     }
 
-    @Override
     public void showUrlBarCursorWithoutFocusAnimations() {
         if (mUrlHasFocus || mUrlFocusedFromFakebox) return;
 
@@ -459,7 +454,6 @@ public class LocationBarLayout extends FrameLayout
     /**
      * Sets the toolbar that owns this LocationBar.
      */
-    @Override
     public void setToolbarDataProvider(ToolbarDataProvider toolbarDataProvider) {
         mToolbarDataProvider = toolbarDataProvider;
 
@@ -478,7 +472,6 @@ public class LocationBarLayout extends FrameLayout
     /**
      * Updates the security icon displayed in the LocationBar.
      */
-    @Override
     public void updateStatusIcon() {
         mStatusCoordinator.updateStatusIcon();
         // Update the URL in case the scheme change triggers a URL emphasis change.
@@ -622,7 +615,6 @@ public class LocationBarLayout extends FrameLayout
      * Update the location bar visuals based on a loading state change.
      * @param updateUrl Whether to update the URL as a result of this call.
      */
-    @Override
     public void updateLoadingState(boolean updateUrl) {
         if (updateUrl) setUrlToPageUrl();
         mStatusCoordinator.updateStatusIcon();
@@ -642,8 +634,8 @@ public class LocationBarLayout extends FrameLayout
     }
 
     @Override
-    public void setUrlBarFocus(
-            boolean shouldBeFocused, @Nullable String pastedText, @OmniboxFocusReason int reason) {
+    public void setUrlBarFocus(boolean shouldBeFocused, @Nullable String pastedText,
+            @LocationBar.OmniboxFocusReason int reason) {
         if (shouldBeFocused) {
             if (!mUrlHasFocus) recordOmniboxFocusReason(reason);
             if (reason == LocationBar.OmniboxFocusReason.FAKE_BOX_TAP
@@ -713,7 +705,6 @@ public class LocationBarLayout extends FrameLayout
      * Call to force the UI to update the state of various buttons based on whether or not the
      * current tab is incognito.
      */
-    @Override
     public void updateVisualsForState() {
         // If the location bar is focused, the toolbar background color would be the default color
         // regardless of whether it is branded or not.
@@ -752,25 +743,20 @@ public class LocationBarLayout extends FrameLayout
         }
     }
 
-    @Override
     public void onTabLoadingNTP(NewTabPage ntp) {
         ntp.setFakeboxDelegate(this);
     }
 
-    @Override
     public View getContainerView() {
         return this;
     }
 
-    @Override
     public View getSecurityIconView() {
         return mStatusCoordinator.getSecurityIconView();
     }
 
-    @Override
     public void setTitleToPageTitle() {}
 
-    @Override
     public void setShowTitle(boolean showTitle) {}
 
     @Override
@@ -809,7 +795,6 @@ public class LocationBarLayout extends FrameLayout
      *
      * <p>If the current tab is null, the URL text will be cleared.
      */
-    @Override
     public void setUrlToPageUrl() {
         String currentUrl = mToolbarDataProvider.getCurrentUrl();
 
@@ -1335,9 +1320,9 @@ public class LocationBarLayout extends FrameLayout
         mAutocompleteCoordinator.onTextChanged(textWithoutAutocomplete, textWithAutocomplete);
     }
 
-    private void recordOmniboxFocusReason(@OmniboxFocusReason int reason) {
+    private void recordOmniboxFocusReason(@LocationBar.OmniboxFocusReason int reason) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Android.OmniboxFocusReason", reason, OmniboxFocusReason.NUM_ENTRIES);
+                "Android.OmniboxFocusReason", reason, LocationBar.OmniboxFocusReason.NUM_ENTRIES);
     }
 
     /**
