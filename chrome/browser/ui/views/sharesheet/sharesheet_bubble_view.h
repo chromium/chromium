@@ -10,7 +10,6 @@
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/controls/button/button.h"
 
 namespace views {
 class GridLayout;
@@ -26,8 +25,7 @@ class WebContents;
 
 class SharesheetExpandButton;
 
-class SharesheetBubbleView : public views::BubbleDialogDelegateView,
-                             public views::ButtonListener {
+class SharesheetBubbleView : public views::BubbleDialogDelegateView {
  public:
   using TargetInfo = sharesheet::TargetInfo;
 
@@ -51,9 +49,6 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   // ui::EventHandler overrides:
   void OnKeyEvent(ui::KeyEvent* event) override;
 
-  // views::ButtonListener overrides
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // views::WidgetDelegate override
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
@@ -63,16 +58,18 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   void OnWidgetDestroyed(views::Widget* widget) override;
 
   void CreateBubble();
-  std::unique_ptr<views::View> MakeScrollableTargetView();
-  void PopulateLayoutsWithTargets(views::GridLayout* default_layout,
+  std::unique_ptr<views::View> MakeScrollableTargetView(
+      std::vector<TargetInfo> targets);
+  void PopulateLayoutsWithTargets(std::vector<TargetInfo> targets,
+                                  views::GridLayout* default_layout,
                                   views::GridLayout* expanded_layout);
-  void OnDialogClosed();
+  void ExpandButtonPressed();
+  void TargetButtonPressed(TargetInfo target);
   void UpdateAnchorPosition();
   void SetToDefaultBubbleSizing();
 
   // Owns this class.
   sharesheet::SharesheetServiceDelegate* delegate_;
-  std::vector<TargetInfo> targets_;
   base::string16 active_target_;
   apps::mojom::IntentPtr intent_;
   sharesheet::CloseCallback close_callback_;
@@ -82,7 +79,7 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   bool user_cancelled_ = true;
   bool show_expanded_view_ = false;
 
-  int keyboard_highlighted_target_ = 0;
+  size_t keyboard_highlighted_target_ = 0;
 
   views::View* root_view_ = nullptr;
   views::View* main_view_ = nullptr;
