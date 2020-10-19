@@ -15,7 +15,7 @@
 
 namespace payments {
 
-base::string16 GetShippingAddressLabelFormAutofillProfile(
+base::string16 GetShippingAddressLabelFromAutofillProfile(
     const autofill::AutofillProfile& profile,
     const std::string& locale) {
   // Name, phone number, and country are not included in the shipping address

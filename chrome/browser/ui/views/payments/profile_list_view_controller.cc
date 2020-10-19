@@ -155,10 +155,10 @@ class ShippingProfileViewController : public ProfileListViewController,
         BackNavigationType::kPaymentSheet,
         /*on_edited=*/
         base::BindOnce(&PaymentRequestState::SetSelectedShippingProfile,
-                       state()->AsWeakPtr(), profile),
+                       state(), profile),
         /*on_added=*/
         base::BindOnce(&PaymentRequestState::AddAutofillShippingProfile,
-                       state()->AsWeakPtr(), /*selected=*/true),
+                       state(), /*selected=*/true),
         profile);
   }
 
@@ -278,11 +278,11 @@ class ContactProfileViewController : public ProfileListViewController {
     dialog()->ShowContactInfoEditor(
         BackNavigationType::kPaymentSheet,
         /*on_edited=*/
-        base::BindOnce(&PaymentRequestState::SetSelectedContactProfile,
-                       state()->AsWeakPtr(), profile),
+        base::BindOnce(&PaymentRequestState::SetSelectedContactProfile, state(),
+                       profile),
         /*on_added=*/
-        base::BindOnce(&PaymentRequestState::AddAutofillContactProfile,
-                       state()->AsWeakPtr(), /*selected=*/true),
+        base::BindOnce(&PaymentRequestState::AddAutofillContactProfile, state(),
+                       /*selected=*/true),
         profile);
   }
 

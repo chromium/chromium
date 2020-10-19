@@ -74,8 +74,7 @@ class ReadOnlyOriginView : public views::View {
                      const SkBitmap* icon_bitmap,
                      Profile* profile,
                      security_state::SecurityLevel security_level,
-                     SkColor background_color,
-                     views::ButtonListener* site_settings_listener) {
+                     SkColor background_color) {
     auto title_origin_container = std::make_unique<views::View>();
     SkColor foreground = color_utils::GetColorWithMaxContrast(background_color);
     views::GridLayout* title_origin_layout =
@@ -282,7 +281,7 @@ PaymentHandlerWebFlowViewController::CreateHeaderContentView(
       state()->selected_app()->icon_bitmap(), profile_,
       web_contents() ? SslValidityChecker::GetSecurityLevel(web_contents())
                      : security_state::NONE,
-      background->get_color(), this);
+      background->get_color());
 }
 
 std::unique_ptr<views::Background>

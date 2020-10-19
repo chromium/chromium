@@ -356,7 +356,7 @@ class PaymentSheetRowBuilder {
     button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
     button->SetEnabled(button_enabled);
     return CreatePaymentSheetRow(
-        listener_, section_name_, accessible_content_, std::move(content_view),
+        nullptr, section_name_, accessible_content_, std::move(content_view),
         nullptr, std::move(button), /*clickable=*/false,
         /*extra_trailing_inset=*/false, views::GridLayout::CENTER);
   }
@@ -491,7 +491,6 @@ void PaymentSheetViewController::ButtonPressed(views::Button* sender,
   if (!dialog()->IsInteractive() || !spec())
     return;
 
-  bool should_reset_retry_error_message = true;
   switch (sender->tag()) {
     case static_cast<int>(
         PaymentSheetViewControllerTags::SHOW_ORDER_SUMMARY_BUTTON):
@@ -552,12 +551,10 @@ void PaymentSheetViewController::ButtonPressed(views::Button* sender,
 
     default:
       PaymentRequestSheetController::ButtonPressed(sender, event);
-      should_reset_retry_error_message = false;
-      break;
+      return;
   }
 
-  if (should_reset_retry_error_message &&
-      !spec()->retry_error_message().empty()) {
+  if (!spec()->retry_error_message().empty()) {
     spec()->reset_retry_error_message();
     UpdateContentView();
   }
@@ -691,43 +688,39 @@ PaymentSheetViewController::CreateShippingRow() {
   PaymentSheetRowBuilder builder(
       weak_ptr_factory_.GetWeakPtr(),
       GetShippingAddressSectionString(spec()->shipping_type()));
-  builder.Tag(PaymentSheetViewControllerTags::SHOW_SHIPPING_BUTTON);
+  builder
+      .Id(state()->selected_shipping_profile()
+              ? DialogViewID::PAYMENT_SHEET_SHIPPING_ADDRESS_SECTION
+              : DialogViewID::PAYMENT_SHEET_SHIPPING_ADDRESS_SECTION_BUTTON)
+      .Tag(state()->shipping_profiles().empty()
+               ? PaymentSheetViewControllerTags::ADD_SHIPPING_BUTTON
+               : PaymentSheetViewControllerTags::SHOW_SHIPPING_BUTTON);
   if (state()->selected_shipping_profile()) {
-    builder.Id(DialogViewID::PAYMENT_SHEET_SHIPPING_ADDRESS_SECTION);
     base::string16 accessible_content;
     std::unique_ptr<views::View> content =
         CreateShippingSectionContent(&accessible_content);
     return builder.AccessibleContent(accessible_content)
         .CreateWithChevron(std::move(content), nullptr);
-  } else {
-    builder.Id(DialogViewID::PAYMENT_SHEET_SHIPPING_ADDRESS_SECTION_BUTTON);
-    if (state()->shipping_profiles().empty()) {
-      // If the button is "Add", clicking it should navigate to the editor
-      // instead of the list.
-      builder.Tag(PaymentSheetViewControllerTags::ADD_SHIPPING_BUTTON);
-      return builder.CreateWithButton(base::string16(),
-                                      l10n_util::GetStringUTF16(IDS_ADD),
-                                      /*button_enabled=*/true);
-    } else if (state()->shipping_profiles().size() == 1) {
-      base::string16 truncated_content =
-          GetShippingAddressLabelFormAutofillProfile(
-              *state()->shipping_profiles()[0],
-              state()->GetApplicationLocale());
-      return builder.CreateWithButton(truncated_content,
-                                      l10n_util::GetStringUTF16(IDS_CHOOSE),
-                                      /*button_enabled=*/true);
-    } else {
-      base::string16 format = l10n_util::GetPluralStringFUTF16(
-          IDS_PAYMENT_REQUEST_SHIPPING_ADDRESSES_PREVIEW,
-          state()->shipping_profiles().size() - 1);
-      base::string16 label = GetShippingAddressLabelFormAutofillProfile(
-          *state()->shipping_profiles()[0], state()->GetApplicationLocale());
-      return builder.CreateWithButton(label, format,
-                                      state()->shipping_profiles().size() - 1,
-                                      l10n_util::GetStringUTF16(IDS_CHOOSE),
-                                      /*button_enabled=*/true);
-    }
   }
+  if (state()->shipping_profiles().empty()) {
+    return builder.CreateWithButton(base::string16(),
+                                    l10n_util::GetStringUTF16(IDS_ADD),
+                                    /*button_enabled=*/true);
+  }
+  base::string16 label = GetShippingAddressLabelFromAutofillProfile(
+      *state()->shipping_profiles()[0], state()->GetApplicationLocale());
+  if (state()->shipping_profiles().size() == 1) {
+    return builder.CreateWithButton(label,
+                                    l10n_util::GetStringUTF16(IDS_CHOOSE),
+                                    /*button_enabled=*/true);
+  }
+  base::string16 format = l10n_util::GetPluralStringFUTF16(
+      IDS_PAYMENT_REQUEST_SHIPPING_ADDRESSES_PREVIEW,
+      state()->shipping_profiles().size() - 1);
+  return builder.CreateWithButton(label, format,
+                                  state()->shipping_profiles().size() - 1,
+                                  l10n_util::GetStringUTF16(IDS_CHOOSE),
+                                  /*button_enabled=*/true);
 }
 
 // Creates the Payment Method row, which contains a "Payment" label, the user's
@@ -747,10 +740,15 @@ PaymentSheetViewController::CreatePaymentMethodRow() {
       weak_ptr_factory_.GetWeakPtr(),
       l10n_util::GetStringUTF16(
           IDS_PAYMENT_REQUEST_PAYMENT_METHOD_SECTION_NAME));
-  builder.Tag(PaymentSheetViewControllerTags::SHOW_PAYMENT_METHOD_BUTTON);
-
+  builder
+      .Id(selected_app
+              ? DialogViewID::PAYMENT_SHEET_PAYMENT_METHOD_SECTION
+              : DialogViewID::PAYMENT_SHEET_PAYMENT_METHOD_SECTION_BUTTON)
+      .Tag(state()->available_apps().empty()
+               ? PaymentSheetViewControllerTags::ADD_PAYMENT_METHOD_BUTTON
+               : PaymentSheetViewControllerTags::SHOW_PAYMENT_METHOD_BUTTON);
   if (selected_app) {
-    std::unique_ptr<views::View> content_view = std::make_unique<views::View>();
+    auto content_view = std::make_unique<views::View>();
 
     views::GridLayout* layout =
         content_view->SetLayoutManager(std::make_unique<views::GridLayout>());
@@ -759,47 +757,38 @@ PaymentSheetViewController::CreatePaymentMethodRow() {
                        1.0, views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
 
     layout->StartRow(views::GridLayout::kFixedSize, 0);
-    std::unique_ptr<views::Label> selected_app_label =
-        std::make_unique<views::Label>(selected_app->GetLabel());
-    selected_app_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    layout->AddView(std::move(selected_app_label));
+    layout->AddView(std::make_unique<views::Label>(selected_app->GetLabel()))
+        ->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
     layout->StartRow(views::GridLayout::kFixedSize, 0);
-    std::unique_ptr<views::Label> selected_app_sublabel =
-        std::make_unique<views::Label>(selected_app->GetSublabel());
-    selected_app_sublabel->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    layout->AddView(std::move(selected_app_sublabel));
+    layout->AddView(std::make_unique<views::Label>(selected_app->GetSublabel()))
+        ->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
     std::unique_ptr<views::ImageView> icon_view = CreateAppIconView(
         selected_app->icon_resource_id(), selected_app->icon_bitmap(),
         selected_app->GetLabel());
 
     return builder.AccessibleContent(selected_app->GetLabel())
-        .Id(DialogViewID::PAYMENT_SHEET_PAYMENT_METHOD_SECTION)
         .CreateWithChevron(std::move(content_view), std::move(icon_view));
-  } else {
-    builder.Id(DialogViewID::PAYMENT_SHEET_PAYMENT_METHOD_SECTION_BUTTON);
-    if (state()->available_apps().empty()) {
-      // If the button is "Add", navigate to the editor directly.
-      builder.Tag(PaymentSheetViewControllerTags::ADD_PAYMENT_METHOD_BUTTON);
-      return builder.CreateWithButton(base::string16(),
-                                      l10n_util::GetStringUTF16(IDS_ADD),
-                                      /*button_enabled=*/true);
-    } else if (state()->available_apps().size() == 1) {
-      return builder.CreateWithButton(state()->available_apps()[0]->GetLabel(),
-                                      l10n_util::GetStringUTF16(IDS_CHOOSE),
-                                      /*button_enabled=*/true);
-    } else {
-      base::string16 format = l10n_util::GetPluralStringFUTF16(
-          IDS_PAYMENT_REQUEST_PAYMENT_METHODS_PREVIEW,
-          state()->available_apps().size() - 1);
-      return builder.CreateWithButton(state()->available_apps()[0]->GetLabel(),
-                                      format,
-                                      state()->available_apps().size() - 1,
-                                      l10n_util::GetStringUTF16(IDS_CHOOSE),
-                                      /*button_enabled=*/true);
-    }
   }
+  if (state()->available_apps().empty()) {
+    return builder.CreateWithButton(base::string16(),
+                                    l10n_util::GetStringUTF16(IDS_ADD),
+                                    /*button_enabled=*/true);
+  }
+  const base::string16 label = state()->available_apps()[0]->GetLabel();
+  if (state()->available_apps().size() == 1) {
+    return builder.CreateWithButton(label,
+                                    l10n_util::GetStringUTF16(IDS_CHOOSE),
+                                    /*button_enabled=*/true);
+  }
+  base::string16 format = l10n_util::GetPluralStringFUTF16(
+      IDS_PAYMENT_REQUEST_PAYMENT_METHODS_PREVIEW,
+      state()->available_apps().size() - 1);
+  return builder.CreateWithButton(label, format,
+                                  state()->available_apps().size() - 1,
+                                  l10n_util::GetStringUTF16(IDS_CHOOSE),
+                                  /*button_enabled=*/true);
 }
 
 std::unique_ptr<views::View>
@@ -810,13 +799,8 @@ PaymentSheetViewController::CreateContactInfoSectionContent(
   return profile && spec()
              ? payments::GetContactInfoLabel(
                    AddressStyleType::SUMMARY, state()->GetApplicationLocale(),
-                   *profile,
-                   /*request_payer_name=*/spec() &&
-                       spec()->request_payer_name(),
-                   /*request_payer_email=*/spec() &&
-                       spec()->request_payer_email(),
-                   /*request_payer_phone=*/spec() &&
-                       spec()->request_payer_phone(),
+                   *profile, spec()->request_payer_name(),
+                   spec()->request_payer_email(), spec()->request_payer_phone(),
                    *(state()->profile_comparator()), accessible_content)
              : std::make_unique<views::Label>(base::string16());
 }
@@ -833,55 +817,47 @@ PaymentSheetViewController::CreateContactInfoRow() {
   PaymentSheetRowBuilder builder(
       weak_ptr_factory_.GetWeakPtr(),
       l10n_util::GetStringUTF16(IDS_PAYMENT_REQUEST_CONTACT_INFO_SECTION_NAME));
-  builder.Tag(PaymentSheetViewControllerTags::SHOW_CONTACT_INFO_BUTTON);
-
-  static constexpr autofill::ServerFieldType kLabelFields[] = {
-      autofill::NAME_FULL, autofill::PHONE_HOME_WHOLE_NUMBER,
-      autofill::EMAIL_ADDRESS};
-
+  builder
+      .Id(state()->selected_contact_profile()
+              ? DialogViewID::PAYMENT_SHEET_CONTACT_INFO_SECTION
+              : DialogViewID::PAYMENT_SHEET_CONTACT_INFO_SECTION_BUTTON)
+      .Tag(state()->contact_profiles().empty()
+               ? PaymentSheetViewControllerTags::ADD_CONTACT_INFO_BUTTON
+               : PaymentSheetViewControllerTags::SHOW_CONTACT_INFO_BUTTON);
   if (state()->selected_contact_profile()) {
     base::string16 accessible_content;
     std::unique_ptr<views::View> content =
         CreateContactInfoSectionContent(&accessible_content);
-    return builder.Id(DialogViewID::PAYMENT_SHEET_CONTACT_INFO_SECTION)
-        .AccessibleContent(accessible_content)
+    return builder.AccessibleContent(accessible_content)
         .CreateWithChevron(std::move(content), nullptr);
-  } else {
-    builder.Id(DialogViewID::PAYMENT_SHEET_CONTACT_INFO_SECTION_BUTTON);
-    if (state()->contact_profiles().empty()) {
-      // If the button is "Add", navigate directly to the editor.
-      builder.Tag(PaymentSheetViewControllerTags::ADD_CONTACT_INFO_BUTTON);
-      return builder.CreateWithButton(base::string16(),
-                                      l10n_util::GetStringUTF16(IDS_ADD),
-                                      /*button_enabled=*/true);
-    } else if (state()->contact_profiles().size() == 1) {
-      base::string16 truncated_content =
-          state()->contact_profiles()[0]->ConstructInferredLabel(
-              kLabelFields, base::size(kLabelFields), base::size(kLabelFields),
-              state()->GetApplicationLocale());
-      return builder.CreateWithButton(truncated_content,
-                                      l10n_util::GetStringUTF16(IDS_CHOOSE),
-                                      /*button_enabled=*/true);
-    } else {
-      base::string16 preview =
-          state()->contact_profiles()[0]->ConstructInferredLabel(
-              kLabelFields, base::size(kLabelFields), base::size(kLabelFields),
-              state()->GetApplicationLocale());
-      base::string16 format = l10n_util::GetPluralStringFUTF16(
-          IDS_PAYMENT_REQUEST_CONTACTS_PREVIEW,
-          state()->contact_profiles().size() - 1);
-      return builder.CreateWithButton(
-          preview, format, state()->contact_profiles().size() - 1,
-          l10n_util::GetStringUTF16(IDS_CHOOSE), /*button_enabled=*/true);
-    }
   }
+  if (state()->contact_profiles().empty()) {
+    return builder.CreateWithButton(base::string16(),
+                                    l10n_util::GetStringUTF16(IDS_ADD),
+                                    /*button_enabled=*/true);
+  }
+  static constexpr autofill::ServerFieldType kLabelFields[] = {
+      autofill::NAME_FULL, autofill::PHONE_HOME_WHOLE_NUMBER,
+      autofill::EMAIL_ADDRESS};
+  const base::string16 preview =
+      state()->contact_profiles()[0]->ConstructInferredLabel(
+          kLabelFields, base::size(kLabelFields), base::size(kLabelFields),
+          state()->GetApplicationLocale());
+  if (state()->contact_profiles().size() == 1) {
+    return builder.CreateWithButton(preview,
+                                    l10n_util::GetStringUTF16(IDS_CHOOSE),
+                                    /*button_enabled=*/true);
+  }
+  base::string16 format =
+      l10n_util::GetPluralStringFUTF16(IDS_PAYMENT_REQUEST_CONTACTS_PREVIEW,
+                                       state()->contact_profiles().size() - 1);
+  return builder.CreateWithButton(
+      preview, format, state()->contact_profiles().size() - 1,
+      l10n_util::GetStringUTF16(IDS_CHOOSE), /*button_enabled=*/true);
 }
 
 std::unique_ptr<PaymentRequestRowView>
 PaymentSheetViewController::CreateShippingOptionRow() {
-  if (!spec())
-    return nullptr;
-
   // The Shipping Options row has many different ways of being displayed
   // depending on the state of the dialog and Payment Request.
   // 1. There is a selected shipping address. The website updated the shipping
@@ -892,8 +868,13 @@ PaymentSheetViewController::CreateShippingOptionRow() {
   //    1.3 There are options and none is selected: display a row with a
   //        choose button and the string "|preview of first option| and N more"
   // 2. There is no selected shipping address: do not display the row.
-  mojom::PaymentShippingOption* selected_option =
-      spec()->selected_shipping_option();
+  if (!spec() || spec()->GetShippingOptions().empty() ||
+      !state()->selected_shipping_profile()) {
+    // 1.1 No shipping options, do not display the row.  (or)
+    // 2. There is no selected address: do not show the shipping option section.
+    return nullptr;
+  }
+
   // The shipping option section displays the currently selected option if there
   // is one. It's not possible to select an option without selecting an address
   // first.
@@ -902,41 +883,30 @@ PaymentSheetViewController::CreateShippingOptionRow() {
       GetShippingOptionSectionString(spec()->shipping_type()));
   builder.Tag(PaymentSheetViewControllerTags::SHOW_SHIPPING_OPTION_BUTTON);
 
-  if (state()->selected_shipping_profile()) {
-    if (spec()->GetShippingOptions().empty()) {
-      // 1.1 No shipping options, do not display the row.
-      return nullptr;
-    }
-
-    if (selected_option) {
-      // 1.2 Show the selected shipping option.
-      base::string16 accessible_content;
-      std::unique_ptr<views::View> option_row_content =
-          CreateShippingOptionLabel(
-              selected_option,
-              spec()->GetFormattedCurrencyAmount(selected_option->amount),
-              /*emphasize_label=*/false, &accessible_content);
-      return builder.Id(DialogViewID::PAYMENT_SHEET_SHIPPING_OPTION_SECTION)
-          .AccessibleContent(accessible_content)
-          .CreateWithChevron(std::move(option_row_content), nullptr);
-    } else {
-      // 1.3 There are options, none are selected: show the enabled Choose
-      // button.
-      const auto& shipping_options = spec()->GetShippingOptions();
-      return builder
-          .Id(DialogViewID::PAYMENT_SHEET_SHIPPING_OPTION_SECTION_BUTTON)
-          .CreateWithButton(base::UTF8ToUTF16(shipping_options[0]->label),
-                            l10n_util::GetPluralStringFUTF16(
-                                IDS_PAYMENT_REQUEST_SHIPPING_OPTIONS_PREVIEW,
-                                shipping_options.size() - 1),
-                            shipping_options.size() - 1,
-                            l10n_util::GetStringUTF16(IDS_CHOOSE),
-                            /*button_enabled=*/true);
-    }
-  } else {
-    // 2. There is no selected address: do not show the shipping option section.
-    return nullptr;
+  mojom::PaymentShippingOption* selected_option =
+      spec()->selected_shipping_option();
+  if (selected_option) {
+    // 1.2 Show the selected shipping option.
+    base::string16 accessible_content;
+    std::unique_ptr<views::View> option_row_content = CreateShippingOptionLabel(
+        selected_option,
+        spec()->GetFormattedCurrencyAmount(selected_option->amount),
+        /*emphasize_label=*/false, &accessible_content);
+    return builder.Id(DialogViewID::PAYMENT_SHEET_SHIPPING_OPTION_SECTION)
+        .AccessibleContent(accessible_content)
+        .CreateWithChevron(std::move(option_row_content), nullptr);
   }
+  // 1.3 There are options, none are selected: show the enabled Choose
+  // button.
+  const auto& shipping_options = spec()->GetShippingOptions();
+  return builder.Id(DialogViewID::PAYMENT_SHEET_SHIPPING_OPTION_SECTION_BUTTON)
+      .CreateWithButton(base::UTF8ToUTF16(shipping_options[0]->label),
+                        l10n_util::GetPluralStringFUTF16(
+                            IDS_PAYMENT_REQUEST_SHIPPING_OPTIONS_PREVIEW,
+                            shipping_options.size() - 1),
+                        shipping_options.size() - 1,
+                        l10n_util::GetStringUTF16(IDS_CHOOSE),
+                        /*button_enabled=*/true);
 }
 
 std::unique_ptr<views::View> PaymentSheetViewController::CreateDataSourceRow() {

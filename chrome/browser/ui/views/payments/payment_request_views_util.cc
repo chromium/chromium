@@ -129,7 +129,7 @@ std::unique_ptr<views::View> GetShippingAddressLabel(
   base::string16 name = profile.GetInfo(autofill::NAME_FULL, locale);
 
   base::string16 address =
-      GetShippingAddressLabelFormAutofillProfile(profile, locale);
+      GetShippingAddressLabelFromAutofillProfile(profile, locale);
 
   base::string16 phone =
       autofill::i18n::GetFormattedPhoneNumberForDisplay(profile, locale);

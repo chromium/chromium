@@ -198,7 +198,7 @@ void PaymentRequestDialogView::RetryDialog() {
         BackNavigationType::kOneStep,
         /*on_edited=*/
         base::BindOnce(&PaymentRequestState::SetSelectedShippingProfile,
-                       request_->state()->AsWeakPtr(), profile),
+                       request_->state(), profile),
         /*on_added=*/
         base::OnceCallback<void(const autofill::AutofillProfile&)>(), profile);
   }
@@ -210,7 +210,7 @@ void PaymentRequestDialogView::RetryDialog() {
         BackNavigationType::kOneStep,
         /*on_edited=*/
         base::BindOnce(&PaymentRequestState::SetSelectedContactProfile,
-                       request_->state()->AsWeakPtr(), profile),
+                       request_->state(), profile),
         /*on_added=*/
         base::OnceCallback<void(const autofill::AutofillProfile&)>(), profile);
   }

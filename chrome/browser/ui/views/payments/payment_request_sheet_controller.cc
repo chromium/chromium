@@ -478,16 +478,6 @@ bool PaymentRequestSheetController::DisplayDynamicBorderForHiddenContents() {
   return true;
 }
 
-void PaymentRequestSheetController::PerformPrimaryButtonAction(
-    bool* is_enabled) {
-  // Set |is_enabled| to "true" to prevent other views from handling the event.
-  *is_enabled = true;
-
-  if (dialog()->IsInteractive() && primary_button_ &&
-      primary_button_->GetEnabled())
-    ButtonPressed(primary_button_, DummyEvent());
-}
-
 void PaymentRequestSheetController::AddPrimaryButton(views::View* container) {
   if (ShouldShowPrimaryButton()) {
     primary_button_ = container->AddChildView(
@@ -508,6 +498,16 @@ void PaymentRequestSheetController::AddSecondaryButton(views::View* container) {
     secondary_button_->SetID(GetSecondaryButtonId());
     secondary_button_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   }
+}
+
+void PaymentRequestSheetController::PerformPrimaryButtonAction(
+    bool* is_enabled) {
+  // Set |is_enabled| to "true" to prevent other views from handling the event.
+  *is_enabled = true;
+
+  if (dialog()->IsInteractive() && primary_button_ &&
+      primary_button_->GetEnabled())
+    ButtonPressed(primary_button_, DummyEvent());
 }
 
 }  // namespace payments

@@ -20,7 +20,7 @@ class AutofillProfile;
 namespace payments {
 
 // Helper function to create a shipping address label from an autofill profile.
-base::string16 GetShippingAddressLabelFormAutofillProfile(
+base::string16 GetShippingAddressLabelFromAutofillProfile(
     const autofill::AutofillProfile& profile,
     const std::string& locale);
 

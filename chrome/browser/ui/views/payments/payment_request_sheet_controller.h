@@ -162,16 +162,16 @@ class PaymentRequestSheetController : public views::ButtonListener {
   bool is_active() const { return is_active_; }
 
  private:
+  // Add the primary/secondary buttons to |container|.
+  void AddPrimaryButton(views::View* container);
+  void AddSecondaryButton(views::View* container);
+
   // Called when the Enter accelerator is pressed. Perform the action associated
   // with the primary button and sets |is_enabled| to true if it's enabled,
   // otherwise sets it to false. The |is_enabled| is an out-param to enable
   // binding the method with a base::WeakPtr, which prohibits non-void return
   // values.
   void PerformPrimaryButtonAction(bool* is_enabled);
-
-  // Add the primary/secondary buttons to |container|.
-  void AddPrimaryButton(views::View* container);
-  void AddSecondaryButton(views::View* container);
 
   base::WeakPtr<PaymentRequestSpec> const spec_;
   base::WeakPtr<PaymentRequestState> const state_;

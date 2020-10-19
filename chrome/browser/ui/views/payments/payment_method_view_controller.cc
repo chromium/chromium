@@ -82,8 +82,7 @@ class PaymentMethodListItem : public PaymentRequestItemList::Item {
             BackNavigationType::kPaymentSheet,
             static_cast<int>(PaymentMethodViewControllerTags::MAX_TAG),
             /*on_edited=*/
-            base::BindOnce(&PaymentRequestState::SetSelectedApp,
-                           state()->AsWeakPtr(), app_),
+            base::BindOnce(&PaymentRequestState::SetSelectedApp, state(), app_),
             /*on_added=*/
             base::OnceCallback<void(const autofill::CreditCard&)>(),
             static_cast<AutofillPaymentApp*>(app_)->credit_card());
@@ -223,11 +222,10 @@ void PaymentMethodViewController::ButtonPressed(views::Button* sender,
     dialog()->ShowCreditCardEditor(
         BackNavigationType::kPaymentSheet,
         static_cast<int>(PaymentMethodViewControllerTags::MAX_TAG),
-        /*on_edited=*/base::OnceClosure(),
-        /*on_added=*/
-        base::BindOnce(&PaymentRequestState::AddAutofillPaymentApp,
-                       state()->AsWeakPtr(), /*selected=*/true),
-        /*credit_card=*/nullptr);
+        base::OnceClosure(),
+        base::BindOnce(&PaymentRequestState::AddAutofillPaymentApp, state(),
+                       true),
+        nullptr);
   } else {
     PaymentRequestSheetController::ButtonPressed(sender, event);
   }
