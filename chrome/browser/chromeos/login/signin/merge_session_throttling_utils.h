@@ -26,17 +26,17 @@ bool ShouldAttachNavigationThrottle();
 // Checks if session is already merged. This is safe to call on all threads.
 bool AreAllSessionMergedAlready();
 
-// Adds/removes |profile| to/from the blocking profiles set. This should be
+// Adds/removes `profile` to/from the blocking profiles set. This should be
 // called on the UI thread.
 void BlockProfile(Profile* profile);
 void UnblockProfile(Profile* profile);
 
-// Whether requests from |web_contents| or |profile| should currently be
+// Whether requests from `web_contents` or `profile` should currently be
 // delayed. This should be called on the UI thread.
 bool ShouldDelayRequestForProfile(Profile* profile);
 bool ShouldDelayRequestForWebContents(content::WebContents* web_contents);
 
-// True if the load of |url| should be delayed. The function is safe to be
+// True if the load of `url` should be delayed. The function is safe to be
 // called on any thread.
 bool ShouldDelayUrl(const GURL& url);
 

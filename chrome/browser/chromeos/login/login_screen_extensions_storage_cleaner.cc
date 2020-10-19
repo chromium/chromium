@@ -48,7 +48,7 @@ void LoginScreenExtensionsStorageCleaner::
       prefs_->FindPreference(extensions::pref_names::kLoginScreenExtensions);
   if (pref && pref->IsManaged() &&
       pref->GetType() == base::Value::Type::DICTIONARY) {
-    // Each |item| contains a pair of extension ID and update URL.
+    // Each `item` contains a pair of extension ID and update URL.
     for (const auto& item : pref->GetValue()->DictItems())
       installed_extension_ids.push_back(item.first);
   }

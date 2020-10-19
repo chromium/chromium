@@ -29,7 +29,7 @@ class LoginManagerTest : public MixinBasedInProcessBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpOnMainThread() override;
 
-  // Could be used to registers the user with the given |account_id| on the
+  // Could be used to registers the user with the given `account_id` on the
   // device. This method should be called in PRE_* test. Use only if necessary,
   // prefer LoginManagerMixin instead.
   void RegisterUser(const AccountId& account_id);
@@ -41,20 +41,20 @@ class LoginManagerTest : public MixinBasedInProcessBrowserTest {
   // Set expected credentials for next login attempt.
   void SetExpectedCredentials(const UserContext& user_context);
 
-  // Tries to login with the credentials in |user_context|. The return value
+  // Tries to login with the credentials in `user_context`. The return value
   // indicates whether the login attempt succeeded.
   bool TryToLogin(const UserContext& user_context);
 
-  // Tries to add the user identified and authenticated by |user_context| to the
+  // Tries to add the user identified and authenticated by `user_context` to the
   // session. The return value indicates whether the attempt succeeded. This
   // method does the same as TryToLogin() but doesn't verify that the new user
   // has become the active user.
   bool AddUserToSession(const UserContext& user_context);
 
-  // Log in user with |user_id|. User should be registered using RegisterUser().
+  // Log in user with `user_id`. User should be registered using RegisterUser().
   void LoginUser(const AccountId& account_id);
 
-  // Add user with |user_id| to session.
+  // Add user with `user_id` to session.
   void AddUser(const AccountId& user_id);
 
   void set_should_launch_browser(bool launch) {

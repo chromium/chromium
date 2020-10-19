@@ -42,7 +42,7 @@ class DemoExtensionsExternalLoader : public extensions::ExternalLoader,
 
   explicit DemoExtensionsExternalLoader(const base::FilePath& cache_dir);
 
-  // Loads the app with |app_id| and installs it from the update url or cache.
+  // Loads the app with `app_id` and installs it from the update url or cache.
   void LoadApp(const std::string& app_id);
 
   // extensions::ExternalLoader:
@@ -61,14 +61,14 @@ class DemoExtensionsExternalLoader : public extensions::ExternalLoader,
   void StartLoadingFromOfflineDemoResources();
 
   // Called when the external extensions prefs are read from the disk.
-  // |prefs| - demo extensions prefs.
+  // `prefs` - demo extensions prefs.
   void DemoExternalExtensionsPrefsLoaded(base::Optional<base::Value> prefs);
 
   std::unique_ptr<ExternalCache> external_cache_;
 
   const base::FilePath cache_dir_;
 
-  // The list of app ids that should be cached by |external_cache_|.
+  // The list of app ids that should be cached by `external_cache_`.
   std::vector<std::string> app_ids_;
 
   base::WeakPtrFactory<DemoExtensionsExternalLoader> weak_ptr_factory_{this};

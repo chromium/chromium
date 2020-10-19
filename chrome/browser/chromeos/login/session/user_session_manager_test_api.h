@@ -18,7 +18,7 @@ class UserSessionManagerTestApi {
  public:
   explicit UserSessionManagerTestApi(UserSessionManager* session_manager);
 
-  // Injects |user_context| that will be used to create StubAuthenticator
+  // Injects `user_context` that will be used to create StubAuthenticator
   // instance when UserSessionManager::CreateAuthenticator() is called.
   // DEPRECATED: Use InjectStubAuthenticatorBuilder instead.
   void InjectStubUserContext(const UserContext& user_context);

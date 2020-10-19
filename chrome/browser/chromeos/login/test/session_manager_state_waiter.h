@@ -25,7 +25,7 @@ void WaitForPrimaryUserSessionStart();
 // Used to wait for session manager to get into a specific session state.
 class SessionStateWaiter : public session_manager::SessionManagerObserver {
  public:
-  // If |target_state| is null, SessionStateWaiter will simply wait until a
+  // If `target_state` is null, SessionStateWaiter will simply wait until a
   // session starts.
   explicit SessionStateWaiter(base::Optional<session_manager::SessionState>
                                   target_state = base::nullopt);

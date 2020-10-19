@@ -52,7 +52,7 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kEnterpriseEnableZeroTouchEnrollment, "hands-off");
 
-    // Initialize objects needed by |UpdateRequiredScreen|.
+    // Initialize objects needed by `UpdateRequiredScreen`.
     wizard_context_ = std::make_unique<WizardContext>();
     fake_view_ = std::make_unique<FakeUpdateRequiredScreenHandler>();
     fake_update_engine_client_ = new FakeUpdateEngineClient();
@@ -65,7 +65,7 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
         mock_network_portal_detector_);
     mock_error_screen_.reset(new MockErrorScreen(mock_error_view_.get()));
 
-    // Ensure proper behavior of |UpdateRequiredScreen|'s supporting objects.
+    // Ensure proper behavior of `UpdateRequiredScreen`'s supporting objects.
     EXPECT_CALL(*mock_network_portal_detector_, IsEnabled())
         .Times(AnyNumber())
         .WillRepeatedly(Return(false));
@@ -96,18 +96,18 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
   }
 
  protected:
-  // A pointer to the |UpdateRequiredScreen| used in this test.
+  // A pointer to the `UpdateRequiredScreen` used in this test.
   std::unique_ptr<UpdateRequiredScreen> update_required_screen_;
 
-  // Accessory objects needed by |UpdateRequiredScreen|.
+  // Accessory objects needed by `UpdateRequiredScreen`.
   TestLoginScreen test_login_screen_;
   std::unique_ptr<FakeUpdateRequiredScreenHandler> fake_view_;
   std::unique_ptr<MockErrorScreenView> mock_error_view_;
   std::unique_ptr<MockErrorScreen> mock_error_screen_;
   std::unique_ptr<WizardContext> wizard_context_;
-  // Will be deleted in |network_portal_detector::Shutdown()|.
+  // Will be deleted in `network_portal_detector::Shutdown()`.
   MockNetworkPortalDetector* mock_network_portal_detector_;
-  // Will be deleted in |DBusThreadManager::Shutdown()|.
+  // Will be deleted in `DBusThreadManager::Shutdown()`.
   FakeUpdateEngineClient* fake_update_engine_client_;
   // Initializes NetworkStateHandler
   std::unique_ptr<chromeos::NetworkStateTestHelper> network_state_test_helper_;
@@ -117,7 +117,7 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState local_state_;
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
-  // This is used for |GetEnterpriseDisplayDomain|.
+  // This is used for `GetEnterpriseDisplayDomain`.
   ScopedStubInstallAttributes test_install_attributes_;
 
   DISALLOW_COPY_AND_ASSIGN(UpdateRequiredScreenUnitTest);
@@ -129,7 +129,7 @@ constexpr char kUserActionAcceptUpdateOverCellular[] = "update-accept-cellular";
 }  // namespace
 
 TEST_F(UpdateRequiredScreenUnitTest, HandlesNoUpdate) {
-  // DUT reaches |UpdateRequiredScreen|.
+  // DUT reaches `UpdateRequiredScreen`.
   update_required_screen_->Show(wizard_context_.get());
   EXPECT_EQ(fake_view_->ui_state(),
             UpdateRequiredView::UPDATE_REQUIRED_MESSAGE);
@@ -146,7 +146,7 @@ TEST_F(UpdateRequiredScreenUnitTest, HandlesNoUpdate) {
 }
 
 TEST_F(UpdateRequiredScreenUnitTest, HandlesUpdateExists) {
-  // DUT reaches |UpdateRequiredScreen|.
+  // DUT reaches `UpdateRequiredScreen`.
   update_required_screen_->Show(wizard_context_.get());
   EXPECT_EQ(fake_view_->ui_state(),
             UpdateRequiredView::UPDATE_REQUIRED_MESSAGE);
@@ -174,7 +174,7 @@ TEST_F(UpdateRequiredScreenUnitTest, HandlesUpdateExists) {
 }
 
 TEST_F(UpdateRequiredScreenUnitTest, HandlesCellularPermissionNeeded) {
-  // DUT reaches |UpdateRequiredScreen|.
+  // DUT reaches `UpdateRequiredScreen`.
   update_required_screen_->Show(wizard_context_.get());
   EXPECT_EQ(fake_view_->ui_state(),
             UpdateRequiredView::UPDATE_REQUIRED_MESSAGE);

@@ -105,9 +105,9 @@ void ChromeUserSelectionScreen::CheckForPublicSessionDisplayNameChange(
     return;
   }
 
-  // When no display name is set by policy, the |User|, owned by |UserManager|,
-  // decides what display name to use. However, the order in which |UserManager|
-  // and |this| are informed of the display name change is undefined. Post a
+  // When no display name is set by policy, the `User`, owned by `UserManager`,
+  // decides what display name to use. However, the order in which `UserManager`
+  // and `this` are informed of the display name change is undefined. Post a
   // task that will update the UI after the UserManager is guaranteed to have
   // been informed of the change.
   base::ThreadTaskRunnerHandle::Get()->PostTask(

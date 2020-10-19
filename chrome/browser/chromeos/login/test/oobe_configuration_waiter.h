@@ -22,7 +22,7 @@ class OOBEConfigurationWaiter : public OobeConfiguration::Observer {
   // OobeConfiguration::Observer override:
   void OnOobeConfigurationChanged() override;
 
-  // Return |true| or register wait callback until configuration is loaded.
+  // Return `true` or register wait callback until configuration is loaded.
   bool IsConfigurationLoaded(base::OnceClosure callback);
 
  private:

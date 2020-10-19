@@ -49,11 +49,11 @@ struct ImageInfo {
   LoadedCallback loaded_cb;
 };
 
-// Crops |image| to the square format and downsizes the image to
-// |target_size| in pixels. On success, returns the bytes representation and
-// stores the cropped image in |bitmap|, and the format of the bytes
-// representation in |image_format|. On failure, returns nullptr, and
-// the contents of |bitmap| and |image_format| are undefined.
+// Crops `image` to the square format and downsizes the image to
+// `target_size` in pixels. On success, returns the bytes representation and
+// stores the cropped image in `bitmap`, and the format of the bytes
+// representation in `image_format`. On failure, returns nullptr, and
+// the contents of `bitmap` and `image_format` are undefined.
 scoped_refptr<base::RefCountedBytes> CropImage(
     const SkBitmap& image,
     int target_size,
@@ -128,8 +128,8 @@ class UserImageRequest : public ImageDecoder::ImageRequest {
                       user_manager::UserImage::ImageFormat* image_format,
                       scoped_refptr<base::RefCountedBytes> bytes);
 
-  // Called after the image is finalized. |image_bytes_regenerated| is true
-  // if |image_bytes| is regenerated from the cropped image.
+  // Called after the image is finalized. `image_bytes_regenerated` is true
+  // if `image_bytes` is regenerated from the cropped image.
   void OnImageFinalized(const SkBitmap& image,
                         user_manager::UserImage::ImageFormat image_format,
                         scoped_refptr<base::RefCountedBytes> image_bytes,
@@ -211,8 +211,8 @@ void UserImageRequest::OnDecodeImageFailed() {
   delete this;
 }
 
-// Starts decoding the image with ImageDecoder for the image |data| if
-// |data_is_ready| is true.
+// Starts decoding the image with ImageDecoder for the image `data` if
+// `data_is_ready` is true.
 void DecodeImage(
     ImageInfo image_info,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,

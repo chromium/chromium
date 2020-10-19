@@ -21,7 +21,7 @@ class OAuth2LoginManager;
 class OAuth2LoginManagerFactory : public BrowserContextKeyedServiceFactory {
  public:
   // Returns the instance of OAuth2LoginManager associated with this
-  // |profile| (creates one if none exists).
+  // `profile` (creates one if none exists).
   static OAuth2LoginManager* GetForProfile(Profile* profile);
 
   // Returns an instance of the OAuth2LoginManagerFactory singleton.

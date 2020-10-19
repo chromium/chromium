@@ -52,17 +52,17 @@ class DemoResources {
   base::FilePath GetExternalExtensionsPrefsPath() const;
 
   // Ensures that the load of demo session resources is requested.
-  // |load_callback| will be run once the resources finish loading.
+  // `load_callback` will be run once the resources finish loading.
   void EnsureLoaded(base::OnceClosure load_callback);
 
   // Fakes the demo mode resources CrOS component having been requested and
-  // mounted at the given path (or not mounted if |path| is empty).
+  // mounted at the given path (or not mounted if `path` is empty).
   void SetCrOSComponentLoadedForTesting(
       const base::FilePath& path,
       component_updater::CrOSComponentManager::Error);
 
   // Fakes the offline demo mode resources image having been requested and
-  // mounted at the given path (or not mounted if |path| is empty).
+  // mounted at the given path (or not mounted if `path` is empty).
   void SetPreinstalledOfflineResourcesLoadedForTesting(
       const base::FilePath& path);
 
@@ -79,7 +79,7 @@ class DemoResources {
  private:
   // Called after attempting to load the installed demo mode resources CrOS
   // component has finished.
-  // On success, |path| is expected to contain the path as which the component
+  // On success, `path` is expected to contain the path as which the component
   // is loaded.
   void InstalledComponentLoaded(
       component_updater::CrOSComponentManager::Error error,
@@ -89,7 +89,7 @@ class DemoResources {
   void LoadPreinstalledOfflineResources();
 
   // Callback for the component or image loader request to load demo resources.
-  // |mount_path| is the path at which the resources were loaded.
+  // `mount_path` is the path at which the resources were loaded.
   void OnDemoResourcesLoaded(base::Optional<base::FilePath> mounted_path);
 
   // Which config to load resources for: online or offline.

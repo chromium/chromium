@@ -83,7 +83,7 @@ class PasswordSyncTokenFetcher final {
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   Profile* const profile_;
-  // |consumer_| to call back when this request completes.
+  // `consumer_` to call back when this request completes.
   Consumer* const consumer_;
 
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;

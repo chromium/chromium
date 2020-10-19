@@ -17,8 +17,8 @@ namespace chromeos {
 
 namespace {
 
-// Decrypts the secret that should be used to login from |wrapped_secret| using
-// raw AES key |raw_key|.
+// Decrypts the secret that should be used to login from `wrapped_secret` using
+// raw AES key `raw_key`.
 // In a case of error, an empty string is returned.
 std::string UnwrapSecret(const std::string& wrapped_secret,
                          const std::string& raw_key) {

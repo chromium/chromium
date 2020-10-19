@@ -36,7 +36,7 @@ bool ChromeCryptohomeAuthenticator::IsSafeMode() {
 void ChromeCryptohomeAuthenticator::CheckSafeModeOwnership(
     const UserContext& context,
     IsOwnerCallback callback) {
-  // |IsOwnerForSafeModeAsync| expects logged in state to be
+  // `IsOwnerForSafeModeAsync` expects logged in state to be
   // LOGGED_IN_SAFE_MODE.
   if (LoginState::IsInitialized()) {
     LoginState::Get()->SetLoggedInState(LoginState::LOGGED_IN_SAFE_MODE,

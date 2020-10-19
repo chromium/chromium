@@ -87,7 +87,7 @@ void SAMLOfflineSigninLimiter::SignedIn(UserContext::AuthFlow auth_flow) {
     session_manager->AddObserver(this);
   }
 
-  // Arm the |offline_signin_limit_timer_| if a limit is in force.
+  // Arm the `offline_signin_limit_timer_` if a limit is in force.
   UpdateLimit();
 }
 
@@ -126,7 +126,7 @@ SAMLOfflineSigninLimiter::~SAMLOfflineSigninLimiter() {
 }
 
 void SAMLOfflineSigninLimiter::UpdateLimit() {
-  // Stop the |offline_signin_limit_timer_|.
+  // Stop the `offline_signin_limit_timer_`.
   offline_signin_limit_timer_->Stop();
 
   PrefService* prefs = pref_change_registrar_.prefs();
@@ -160,7 +160,7 @@ void SAMLOfflineSigninLimiter::UpdateLimit() {
     return;
   }
 
-  // Arm |offline_signin_limit_timer_| so that it sets the flag enforcing online
+  // Arm `offline_signin_limit_timer_` so that it sets the flag enforcing online
   // login when the limit expires.
   offline_signin_limit_timer_->Start(
       FROM_HERE, offline_signin_time_limit - time_since_last_gaia_signin, this,

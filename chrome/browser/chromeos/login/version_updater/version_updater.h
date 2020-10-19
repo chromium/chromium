@@ -24,7 +24,7 @@ class DefaultTickClock;
 namespace chromeos {
 
 // Tries to update system, interacting with UpdateEnglineClient and
-// NetworkPortalDetector. Uses callbacks - methods of |delegate_|, which may
+// NetworkPortalDetector. Uses callbacks - methods of `delegate_`, which may
 // interact with user, change UI etc.
 class VersionUpdater : public UpdateEngineClient::Observer,
                        public NetworkPortalDetector::Observer {
@@ -104,14 +104,14 @@ class VersionUpdater : public UpdateEngineClient::Observer,
     virtual void DelayErrorMessage() = 0;
   };
 
-  // Callback type for |GetEOLInfo|
+  // Callback type for `GetEOLInfo`
   using EolInfoCallback =
       base::OnceCallback<void(const UpdateEngineClient::EolInfo& eol_info)>;
 
   explicit VersionUpdater(VersionUpdater::Delegate* delegate);
   ~VersionUpdater() override;
 
-  // Resets |VersionUpdater| to initial state.
+  // Resets `VersionUpdater` to initial state.
   void Init();
 
   // Starts network check. If success, starts update check.
@@ -165,7 +165,7 @@ class VersionUpdater : public UpdateEngineClient::Observer,
   // Callback to UpdateEngineClient::SetUpdateOverCellularOneTimePermission
   // called in response to user confirming that the OS update can proceed
   // despite being over cellular charges.
-  // |success|: whether the update engine accepted the user permission.
+  // `success`: whether the update engine accepted the user permission.
   void OnSetUpdateOverCellularOneTimePermission(bool success);
 
   // Callback for UpdateEngineClient::RequestUpdateCheck() called from

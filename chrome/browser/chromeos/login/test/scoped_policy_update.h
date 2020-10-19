@@ -14,9 +14,9 @@ namespace chromeos {
 
 // Helper that is used by mixins to provide means for setting up user policy
 // values to tests that need that functionality. This does not build, nor apply
-// updated policy - that's expected to be done in |callback|.
+// updated policy - that's expected to be done in `callback`.
 //
-// |callback| - Called when this object goes out of scope.
+// `callback` - Called when this object goes out of scope.
 class ScopedUserPolicyUpdate {
  public:
   explicit ScopedUserPolicyUpdate(policy::UserPolicyBuilder* policy_builder,
@@ -43,9 +43,9 @@ class ScopedUserPolicyUpdate {
 
 // Helper that is used by mixins to provide means for setting up device policy
 // values to tests that need that functionality. This does not build, nor apply
-// updated policy - that's expected to be done in |callback|.
+// updated policy - that's expected to be done in `callback`.
 //
-// |callback| - Called when this object goes out of scope.
+// `callback` - Called when this object goes out of scope.
 class ScopedDevicePolicyUpdate {
  public:
   explicit ScopedDevicePolicyUpdate(policy::DevicePolicyBuilder* policy_builder,

@@ -148,7 +148,7 @@ void LoginDisplayHostCommon::StartKiosk(const KioskAppId& kiosk_app_id,
           << static_cast<int>(kiosk_app_id.type);
   SetStatusAreaVisible(false);
 
-  // Wait for the |CrosSettings| to become either trusted or permanently
+  // Wait for the `CrosSettings` to become either trusted or permanently
   // untrusted.
   const CrosSettingsProvider::TrustedStatus status =
       CrosSettings::Get()->PrepareTrustedValues(base::BindOnce(
@@ -158,7 +158,7 @@ void LoginDisplayHostCommon::StartKiosk(const KioskAppId& kiosk_app_id,
     return;
 
   if (status == CrosSettingsProvider::PERMANENTLY_UNTRUSTED) {
-    // If the |CrosSettings| are permanently untrusted, refuse to launch a
+    // If the `CrosSettings` are permanently untrusted, refuse to launch a
     // single-app kiosk mode session.
     LOG(ERROR) << "Login >> Refusing to launch single-app kiosk mode.";
     SetStatusAreaVisible(true);

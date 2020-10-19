@@ -84,8 +84,8 @@ class UserImageManagerImpl : public UserImageManager,
   // at any given time. There are two further guarantees:
   //
   // * Changes to User objects and local state are performed on the thread that
-  //   |this| runs on.
-  // * File writes and deletions are performed via |background_task_runner_|.
+  //   `this` runs on.
+  // * File writes and deletions are performed via `background_task_runner_`.
   //
   // With the above, it is guaranteed that any changes made by a canceled Job
   // cannot race against against changes made by the superseding Job.
@@ -111,7 +111,7 @@ class UserImageManagerImpl : public UserImageManager,
   // LOGIN_USER_IMAGE_CHANGED notification and updates local state.
   void SetInitialUserImage();
 
-  // Initializes the |downloaded_profile_image_| for the currently logged-in
+  // Initializes the `downloaded_profile_image_` for the currently logged-in
   // user to a profile image that had been downloaded and saved before if such
   // a saved image is available and no updated image has been downloaded yet.
   void TryToInitDownloadedProfileImage();
@@ -128,13 +128,13 @@ class UserImageManagerImpl : public UserImageManager,
   // downloaded.
   void DownloadProfileData();
 
-  // Removes ther user from the dictionary |prefs_dict_root| in
+  // Removes ther user from the dictionary `prefs_dict_root` in
   // local state and deletes the image file that the dictionary
   // referenced for that user.
   void DeleteUserImageAndLocalStateEntry(const char* prefs_dict_root);
 
   // Called when a Job updates the copy of the user image held in
-  // memory.  Allows |this| to update |downloaded_profile_image_| and
+  // memory.  Allows `this` to update `downloaded_profile_image_` and
   // notify user manager about user image change.
   void OnJobChangedUserImage();
 
@@ -145,19 +145,19 @@ class UserImageManagerImpl : public UserImageManager,
   // allowed to be synced and no sync observer exists yet.
   void TryToCreateImageSyncObserver();
 
-  // Returns immutable version of user with |user_id_|.
+  // Returns immutable version of user with `user_id_`.
   const user_manager::User* GetUser() const;
 
-  // Returns mutable version of user with |user_id_|.
+  // Returns mutable version of user with `user_id_`.
   user_manager::User* GetUserAndModify() const;
 
-  // Returns true if user with |user_id_| is logged in and has gaia account.
+  // Returns true if user with `user_id_` is logged in and has gaia account.
   bool IsUserLoggedInAndHasGaiaAccount() const;
 
   // The user manager.
   user_manager::UserManager* user_manager_;
 
-  // Whether the |profile_downloader_| is downloading the profile image for the
+  // Whether the `profile_downloader_` is downloading the profile image for the
   // currently logged-in user (and not just the full name). Only valid when a
   // download is currently in progress.
   bool downloading_profile_image_;
@@ -170,12 +170,12 @@ class UserImageManagerImpl : public UserImageManager,
   // downloaded or initialized from a previously downloaded and saved image.
   gfx::ImageSkia downloaded_profile_image_;
 
-  // Data URL corresponding to |downloaded_profile_image_|. Empty if no
-  // |downloaded_profile_image_| is currently available.
+  // Data URL corresponding to `downloaded_profile_image_`. Empty if no
+  // `downloaded_profile_image_` is currently available.
   std::string downloaded_profile_image_data_url_;
 
-  // URL from which |downloaded_profile_image_| was downloaded. Empty if no
-  // |downloaded_profile_image_| is currently available.
+  // URL from which `downloaded_profile_image_` was downloaded. Empty if no
+  // `downloaded_profile_image_` is currently available.
   GURL profile_image_url_;
 
   // Whether a download of the currently logged-in user's profile image has been

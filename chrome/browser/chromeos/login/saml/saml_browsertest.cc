@@ -267,7 +267,7 @@ class FakeSamlIdp {
     kLoginCheckDeviceAnswer
   };
 
-  // Returns the RequestType that corresponds to |url|, or RequestType::Unknown
+  // Returns the RequestType that corresponds to `url`, or RequestType::Unknown
   // if this is not a request for the FakeSamlIdp.
   RequestType ParseRequestTypeFromRequestPath(const GURL& request_url) const;
 
@@ -371,7 +371,7 @@ void FakeSamlIdp::SetRequireHttpBasicAuth(bool require_http_basic_auth) {
 std::unique_ptr<net::test_server::HttpResponse> FakeSamlIdp::HandleRequest(
     const net::test_server::HttpRequest& request) {
   // The scheme and host of the URL is actually not important but required to
-  // get a valid GURL in order to parse |request.relative_url|.
+  // get a valid GURL in order to parse `request.relative_url`.
   GURL request_url = GURL("http://localhost").Resolve(request.relative_url);
   const RequestType request_type = ParseRequestTypeFromRequestPath(request_url);
 
@@ -787,7 +787,7 @@ IN_PROC_BROWSER_TEST_F(SamlTest, IdpRequiresHttpAuth) {
   auth_needed_waiter.Wait();
   ASSERT_FALSE(login_prompt_observer.handlers().empty());
   LoginHandler* handler = *login_prompt_observer.handlers().begin();
-  // Note that the actual credentials don't matter because |fake_saml_idp()|
+  // Note that the actual credentials don't matter because `fake_saml_idp()`
   // doesn't check those (only that something has been provided).
   handler->SetAuth(base::UTF8ToUTF16("user"), base::UTF8ToUTF16("pwd"));
 
@@ -1025,9 +1025,9 @@ IN_PROC_BROWSER_TEST_F(SamlTest, UseAutenticatedUserEmailAddress) {
   StartSamlAndWaitForIdpPageLoad(
       saml_test_users::kSecondUserCorpExampleComEmail);
 
-  // Authenticate as the first user via SAML (the |Email| provided here is
+  // Authenticate as the first user via SAML (the `Email` provided here is
   // irrelevant - the authenticated user's e-mail address that FakeGAIA reports
-  // was set via |SetFakeMergeSessionParams|).
+  // was set via `SetFakeMergeSessionParams`).
   SigninFrameJS().TypeIntoPath("fake_user", {"Email"});
   SigninFrameJS().TypeIntoPath("fake_password", {"Password"});
 
@@ -1095,12 +1095,12 @@ IN_PROC_BROWSER_TEST_F(SamlTest, PasswordConfirmFlow) {
 // notice shown to the user is updated. This guards against regressions of
 // http://crbug.com/447818.
 IN_PROC_BROWSER_TEST_F(SamlTest, NoticeUpdatedOnRedirect) {
-  // Start another https server at |kAdditionalIdPHost|.
+  // Start another https server at `kAdditionalIdPHost`.
   HTTPSForwarder saml_https_forwarder_2;
   ASSERT_TRUE(saml_https_forwarder_2.Initialize(
       kAdditionalIdPHost, embedded_test_server()->base_url()));
 
-  // Make the login flow redirect to |kAdditionalIdPHost|.
+  // Make the login flow redirect to `kAdditionalIdPHost`.
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login_instant_meta_refresh.html");
   fake_saml_idp()->SetRefreshURL(
       saml_https_forwarder_2.GetURLForSSLHost("simple.html"));
@@ -1108,7 +1108,7 @@ IN_PROC_BROWSER_TEST_F(SamlTest, NoticeUpdatedOnRedirect) {
       saml_test_users::kFirstUserCorpExampleComEmail);
 
   // Wait until the notice shown to the user is updated to contain
-  // |kAdditionalIdPHost|.
+  // `kAdditionalIdPHost`.
   std::string js =
       "var sendIfHostFound = function() {"
       "  var found = $SamlNoticeMessagePath.textContent.indexOf('$Host') > -1;"

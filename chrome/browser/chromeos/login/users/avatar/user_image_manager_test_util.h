@@ -24,7 +24,7 @@ extern const char kUserAvatarImage2RelativePath[];
 // Points to a png file with transparent pixels.
 extern const char kUserAvatarImage3RelativePath[];
 
-// Returns |true| if the two given images are pixel-for-pixel identical.
+// Returns `true` if the two given images are pixel-for-pixel identical.
 bool AreImagesEqual(const gfx::ImageSkia& first, const gfx::ImageSkia& second);
 
 class ImageLoader : public ImageDecoder::ImageRequest {

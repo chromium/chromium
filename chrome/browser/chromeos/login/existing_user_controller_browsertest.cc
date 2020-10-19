@@ -115,7 +115,7 @@ const int kAutoLoginNoDelay = 0;
 const int kAutoLoginShortDelay = 1;
 const int kAutoLoginLongDelay = 10000;
 
-// Wait for cros settings to become permanently untrusted and run |callback|.
+// Wait for cros settings to become permanently untrusted and run `callback`.
 void WaitForPermanentlyUntrustedStatusAndRun(const base::Closure& callback) {
   while (true) {
     const CrosSettingsProvider::TrustedStatus status =
@@ -194,7 +194,7 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
   void TearDownOnMainThread() override {
     DevicePolicyCrosBrowserTest::InProcessBrowserTest::TearDownOnMainThread();
 
-    // |existing_user_controller_| has data members that are CrosSettings
+    // `existing_user_controller_` has data members that are CrosSettings
     // observers. They need to be destructed before CrosSettings.
     existing_user_controller_.reset();
 

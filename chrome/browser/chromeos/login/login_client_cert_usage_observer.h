@@ -27,9 +27,9 @@ class LoginClientCertUsageObserver final
   // Returns whether at least one certificate was used.
   bool ClientCertsWereUsed() const;
   // Returns whether exactly one unique certificate was used, and, if so,
-  // writes this certificate to |cert| and appends the signature algorithms
-  // supported by its provider into |signature_algorithms|.
-  // The certificate was signed by the extension |extension_id|.
+  // writes this certificate to `cert` and appends the signature algorithms
+  // supported by its provider into `signature_algorithms`.
+  // The certificate was signed by the extension `extension_id`.
   bool GetOnlyUsedClientCert(
       scoped_refptr<net::X509Certificate>* cert,
       std::vector<ChallengeResponseKey::SignatureAlgorithm>*
@@ -46,7 +46,7 @@ class LoginClientCertUsageObserver final
   int used_cert_count_ = 0;
   // One of the client certificates that was used on the login screen.
   scoped_refptr<net::X509Certificate> used_cert_;
-  // The extension that signed |used_cert_|.
+  // The extension that signed `used_cert_`.
   std::string used_extension_id_;
 
   DISALLOW_COPY_AND_ASSIGN(LoginClientCertUsageObserver);

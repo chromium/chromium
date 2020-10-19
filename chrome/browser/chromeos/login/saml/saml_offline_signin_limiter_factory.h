@@ -29,8 +29,8 @@ class SAMLOfflineSigninLimiterFactory
 
   static SAMLOfflineSigninLimiter* GetForProfile(Profile* profile);
 
-  // |clock| will be passed to all SAMLOfflineSigninLimiters. Ensure that their
-  // Shutdown() methods have been called before destroying |clock|.
+  // `clock` will be passed to all SAMLOfflineSigninLimiters. Ensure that their
+  // Shutdown() methods have been called before destroying `clock`.
   static void SetClockForTesting(base::Clock* clock);
 
  private:

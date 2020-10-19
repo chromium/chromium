@@ -52,11 +52,11 @@ class LoginAuthRecorder : public session_manager::SessionManagerObserver {
   LoginAuthRecorder();
   ~LoginAuthRecorder() override;
 
-  // Called when user attempts authentication using AuthMethod |type|.
+  // Called when user attempts authentication using AuthMethod `type`.
   void RecordAuthMethod(AuthMethod type);
 
   // Called after a fingerprint attempt to record the auth result.
-  // |num_attempts|:  Only valid when auth success to record number of attempts.
+  // `num_attempts`:  Only valid when auth success to record number of attempts.
   void RecordFingerprintAuthSuccess(bool success,
                                     const base::Optional<int>& num_attempts);
 

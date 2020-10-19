@@ -102,8 +102,8 @@ class OobeConfigurationTest : public OobeBaseTest {
     OobeBaseTest::SetUpCommandLine(command_line);
   }
 
-  // Stores a name of the configuration data file to |file|.
-  // Returns true iff |file| exists.
+  // Stores a name of the configuration data file to `file`.
+  // Returns true iff `file` exists.
   bool GetTestFileName(const std::string& suffix, base::FilePath* file) {
     const ::testing::TestInfo* const test_info =
         ::testing::UnitTest::GetInstance()->current_test_info();

@@ -38,12 +38,12 @@ class EasyUnlockScreenlockStateHandler
                                // Settings.
   };
 
-  // |account_id|: The account id of the user associated with the profile to
+  // `account_id`: The account id of the user associated with the profile to
   //     which this class is attached.
-  // |initial_hardlock_state|: The initial hardlock state.
-  // |screenlock_bridge|: The screenlock bridge used to update the screen lock
+  // `initial_hardlock_state`: The initial hardlock state.
+  // `screenlock_bridge`: The screenlock bridge used to update the screen lock
   //     state.
-  // |pref_manager|: Used primarily to track if the "Signin with Smart Lock is
+  // `pref_manager`: Used primarily to track if the "Signin with Smart Lock is
   //     disabled" message has been shown before.
   EasyUnlockScreenlockStateHandler(
       const AccountId& account_id,
@@ -60,7 +60,7 @@ class EasyUnlockScreenlockStateHandler
   // auth failure).
   bool InStateValidOnRemoteAuthFailure() const;
 
-  // Changes internal state to |new_state| and updates the user's screenlock
+  // Changes internal state to `new_state` and updates the user's screenlock
   // accordingly.
   void ChangeState(proximity_auth::ScreenlockState new_state);
 

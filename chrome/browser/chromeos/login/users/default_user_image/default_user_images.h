@@ -29,7 +29,7 @@ namespace default_user_image {
 std::string GetDefaultImageUrl(int index);
 
 // Checks if the given URL points to one of the default images. If it is,
-// returns true and its index through |image_id|. If not, returns false.
+// returns true and its index through `image_id`. If not, returns false.
 bool IsDefaultImageUrl(const std::string& url, int* image_id);
 
 // Returns bitmap of default user image with specified index.
@@ -68,19 +68,19 @@ int GetDefaultImageHistogramValue(int index);
 // Returns a random default image index.
 int GetRandomDefaultImageIndex();
 
-// Returns true if |index| is a valid default image index.
+// Returns true if `index` is a valid default image index.
 bool IsValidIndex(int index);
 
-// Returns true if |index| is a in the current set of default images.
+// Returns true if `index` is a in the current set of default images.
 bool IsInCurrentImageSet(int index);
 
 // Returns a list of dictionary values with url, author, website, and title
-// properties set for each default user image. If |all| is true then returns
+// properties set for each default user image. If `all` is true then returns
 // the complete list of default images, otherwise only returns the current list.
 std::unique_ptr<base::ListValue> GetAsDictionary(bool all);
 
 // Returns the index of the first default image to make available for selection
-// from GetAsDictionary when |all| is true. The last image to make available is
+// from GetAsDictionary when `all` is true. The last image to make available is
 // always the last image in the Dictionary.
 int GetFirstDefaultImage();
 

@@ -15,7 +15,7 @@ class CommandLine;
 
 namespace chromeos {
 
-// Determines the |command_line| to be used for the OTR process.
+// Determines the `command_line` to be used for the OTR process.
 void GetOffTheRecordCommandLine(const GURL& start_url,
                                 bool is_oobe_completed,
                                 const base::CommandLine& base_command_line,

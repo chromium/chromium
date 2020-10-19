@@ -404,7 +404,7 @@ class AssistantOptInFlowTest : public OobeBaseTest {
                             ".setDoneActionDelayForTesting(0)");
   }
 
-  // Waits for the button specified by IDs in |button_path| to become enabled,
+  // Waits for the button specified by IDs in `button_path` to become enabled,
   // and then taps it.
   void TapWhenEnabled(std::initializer_list<base::StringPiece> button_path) {
     test::OobeJS().CreateEnabledWaiter(true, button_path)->Wait();

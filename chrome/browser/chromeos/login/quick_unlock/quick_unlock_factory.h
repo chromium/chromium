@@ -25,16 +25,16 @@ class QuickUnlockStorage;
 // the associated QuickUnlockStorage.
 class QuickUnlockFactory : public BrowserContextKeyedServiceFactory {
  public:
-  // Returns the QuickUnlockStorage instance for |profile|.
+  // Returns the QuickUnlockStorage instance for `profile`.
   static QuickUnlockStorage* GetForProfile(Profile* profile);
 
-  // Helper method that finds the QuickUnlockStorage instance for |user|. This
-  // returns GetForProfile with the profile associated with |user|.
+  // Helper method that finds the QuickUnlockStorage instance for `user`. This
+  // returns GetForProfile with the profile associated with `user`.
   static QuickUnlockStorage* GetForUser(const user_manager::User* user);
 
   // Helper method that returns the QuickUnlockStorage instance for
-  // |account_id|. This returns GetForProfile with the profile associated with
-  // |account_id|.
+  // `account_id`. This returns GetForProfile with the profile associated with
+  // `account_id`.
   static QuickUnlockStorage* GetForAccountId(const AccountId& account_id);
 
   static QuickUnlockFactory* GetInstance();

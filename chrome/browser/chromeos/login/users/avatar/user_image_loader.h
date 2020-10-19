@@ -28,14 +28,14 @@ namespace user_image_loader {
 using LoadedCallback =
     base::OnceCallback<void(std::unique_ptr<user_manager::UserImage>)>;
 
-// Loads an image with |image_codec| in the background and calls |loaded_cb|
+// Loads an image with `image_codec` in the background and calls `loaded_cb`
 // with the resulting UserImage (which may be empty in case of error). If
-// |pixels_per_side| is positive, the image is cropped to a square and shrunk
-// so that it does not exceed |pixels_per_side|x|pixels_per_side|. The first
-// variant of this function reads the image from |file_path| on disk, the
-// second processes |data| read into memory already. Decoding is done in a
+// `pixels_per_side` is positive, the image is cropped to a square and shrunk
+// so that it does not exceed `pixels_per_side`x`pixels_per_side`. The first
+// variant of this function reads the image from `file_path` on disk, the
+// second processes `data` read into memory already. Decoding is done in a
 // separate sandboxed process via ImageDecoder, and file I/O and resizing are
-// done via |background_task_runner|.
+// done via `background_task_runner`.
 void StartWithFilePath(
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     const base::FilePath& file_path,

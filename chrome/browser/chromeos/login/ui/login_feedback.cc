@@ -52,7 +52,7 @@ class FeedbackExtensionLoader : public extensions::ExtensionRegistryObserver {
   ~FeedbackExtensionLoader() override;
 
   // Loads the feedback extension on the given profile and invokes
-  // |on_ready_callback| when it is ready.
+  // `on_ready_callback` when it is ready.
   void Load(base::OnceClosure on_ready_callback);
 
  private:

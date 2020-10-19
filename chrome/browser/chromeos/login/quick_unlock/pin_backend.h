@@ -33,7 +33,7 @@ class PinBackend {
   // Computes a new salt.
   static std::string ComputeSalt();
 
-  // Computes the secret for a given |pin| and |salt|.
+  // Computes the secret for a given `pin` and `salt`.
   static std::string ComputeSecret(const std::string& pin,
                                    const std::string& salt,
                                    Key::KeyType key_type);
@@ -111,7 +111,7 @@ class PinBackend {
   // Called when we know if the cryptohome supports PIN.
   void OnIsCryptohomeBackendSupported(bool is_supported);
 
-  // Called when a migration attempt has completed. If |success| is true the PIN
+  // Called when a migration attempt has completed. If `success` is true the PIN
   // should be cleared from prefs.
   void OnPinMigrationAttemptComplete(Profile* profile, bool success);
 
@@ -124,7 +124,7 @@ class PinBackend {
                                           bool success);
 
   // Called after checking the user's PIN when enabling auto submit.
-  // If the authentication was |success|ful, the |pin_length| will be
+  // If the authentication was `success`ful, the `pin_length` will be
   // exposed in local state.
   void OnPinAutosubmitCheckComplete(const AccountId& account_id,
                                     size_t pin_length,

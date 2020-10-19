@@ -164,7 +164,7 @@ TEST_F(SigninErrorNotifierTest, ErrorResetForSecondaryAccount) {
   SetAuthError(
       account_id,
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
-  // Uses the run loop from |BrowserTaskEnvironment|.
+  // Uses the run loop from `BrowserTaskEnvironment`.
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(
       display_service_->GetNotification(kSecondaryAccountErrorNotificationId));

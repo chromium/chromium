@@ -10,9 +10,9 @@
 namespace chromeos {
 
 // An object that loads a test version of the HelpApp extension for use in
-// tests. While this object is in scope |HelpAppLauncher| sends requests to the
+// tests. While this object is in scope `HelpAppLauncher` sends requests to the
 // loaded test HelpApp extension. When this object goes out of scope
-// |HelpAppLauncher| reverts to sending requests to the production extension.
+// `HelpAppLauncher` reverts to sending requests to the production extension.
 class ScopedHelpAppForTest {
  public:
   ScopedHelpAppForTest();

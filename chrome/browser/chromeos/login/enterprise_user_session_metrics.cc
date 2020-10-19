@@ -28,8 +28,8 @@ bool IsEnterpriseManaged() {
       ->IsEnterpriseManaged();
 }
 
-// Returns the duration in minutes, capped at |max_duration| and rounded down to
-// the nearest |bucket_size| minutes.
+// Returns the duration in minutes, capped at `max_duration` and rounded down to
+// the nearest `bucket_size` minutes.
 int GetMinutesToReport(base::TimeDelta duration,
                        int bucket_size,
                        base::TimeDelta max_duration) {

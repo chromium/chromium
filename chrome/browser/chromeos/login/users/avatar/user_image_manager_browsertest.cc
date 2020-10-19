@@ -209,7 +209,7 @@ class UserImageManagerTestBase : public LoginManagerTest,
       run_loop_->Quit();
   }
 
-  // Logs in |account_id|.
+  // Logs in `account_id`.
   void LogIn(const AccountId& account_id) {
     user_manager::UserManager::Get()->UserLoggedIn(
         account_id, account_id.GetUserEmail(), false /* browser_restart */,
@@ -238,8 +238,8 @@ class UserImageManagerTestBase : public LoginManagerTest,
     EXPECT_EQ(image_path.value(), actual_image_path);
   }
 
-  // Verifies that there is no image info for |account_id| in dictionary
-  // |images_pref|.
+  // Verifies that there is no image info for `account_id` in dictionary
+  // `images_pref`.
   void ExpectNoUserImageInfo(const base::DictionaryValue* images_pref,
                              const AccountId& account_id) {
     ASSERT_TRUE(images_pref);
@@ -249,7 +249,7 @@ class UserImageManagerTestBase : public LoginManagerTest,
     ASSERT_FALSE(image_properties);
   }
 
-  // Returns the image path for user |account_id| with specified |extension|.
+  // Returns the image path for user `account_id` with specified `extension`.
   base::FilePath GetUserImagePath(const AccountId& account_id,
                                   const std::string& extension) {
     return user_data_dir_.Append(account_id.GetUserEmail())

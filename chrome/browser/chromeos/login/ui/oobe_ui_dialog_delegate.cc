@@ -317,8 +317,8 @@ OobeUIDialogDelegate::OobeUIDialogDelegate(
   }
 
   DCHECK(!dialog_view_ && !widget_);
-  // Life cycle of |dialog_view_| is managed by the widget:
-  // Widget owns a root view which has |dialog_view_| as its child view.
+  // Life cycle of `dialog_view_` is managed by the widget:
+  // Widget owns a root view which has `dialog_view_` as its child view.
   // Before the widget is destroyed, it will clean up the view hierarchy
   // starting from root view.
   dialog_view_ =

@@ -27,7 +27,7 @@ class PinStorageCryptohome {
   // Check to see if the cryptohome implementation can store PINs.
   static void IsSupported(BoolCallback result);
 
-  // Transforms |key| for usage in PIN. Returns nullopt if the key could not be
+  // Transforms `key` for usage in PIN. Returns nullopt if the key could not be
   // transformed.
   static base::Optional<Key> TransformKey(const AccountId& account_id,
                                           const Key& key);
@@ -37,8 +37,8 @@ class PinStorageCryptohome {
 
   void IsPinSetInCryptohome(const AccountId& account_id,
                             BoolCallback result) const;
-  // Sets a new PIN. If |pin_salt| is empty, |pin| will be hashed and should be
-  // plain-text. If |pin_salt| contains a value, |pin| will not be hashed.
+  // Sets a new PIN. If `pin_salt` is empty, `pin` will be hashed and should be
+  // plain-text. If `pin_salt` contains a value, `pin` will not be hashed.
   void SetPin(const UserContext& user_context,
               const std::string& pin,
               const base::Optional<std::string>& pin_salt,

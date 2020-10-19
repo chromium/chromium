@@ -85,7 +85,7 @@ void UserBoardViewMojo::SetPublicSessionLocales(
       lock_screen_utils::FromListValueToLocaleItem(std::move(locales)),
       default_locale, multiple_recommended_locales);
 
-  // Send a request to get keyboard layouts for |default_locale|.
+  // Send a request to get keyboard layouts for `default_locale`.
   LoginScreenClient::Get()->RequestPublicSessionKeyboardLayouts(account_id,
                                                                 default_locale);
 }

@@ -97,7 +97,7 @@ bool TooltipContainsDeviceType(ScreenlockState state) {
           state == ScreenlockState::PHONE_LOCKED_AND_RSSI_TOO_LOW);
 }
 
-// Returns true iff the |state| corresponds to a locked remote device.
+// Returns true iff the `state` corresponds to a locked remote device.
 bool IsLockedState(ScreenlockState state) {
   return (state == ScreenlockState::PHONE_LOCKED ||
           state == ScreenlockState::PHONE_LOCKED_AND_RSSI_TOO_LOW);
@@ -145,7 +145,7 @@ void EasyUnlockScreenlockStateHandler::ChangeState(ScreenlockState new_state) {
   state_ = new_state;
 
   // If lock screen is not active or it forces offline password, just cache the
-  // current state. The screenlock state will get refreshed in |ScreenDidLock|.
+  // current state. The screenlock state will get refreshed in `ScreenDidLock`.
   if (!screenlock_bridge_->IsLocked())
     return;
 

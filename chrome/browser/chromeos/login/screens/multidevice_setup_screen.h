@@ -68,7 +68,7 @@ class MultiDeviceSetupScreen : public BaseScreen {
     kMaxValue = kDeclined
   };
 
-  // Inits |setup_client_| if it was not initialized before.
+  // Inits `setup_client_` if it was not initialized before.
   void TryInitSetupClient();
 
   static void RecordMultiDeviceSetupOOBEUserChoiceHistogram(

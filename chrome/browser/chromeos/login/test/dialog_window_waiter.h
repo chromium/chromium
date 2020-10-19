@@ -18,22 +18,22 @@ namespace chromeos {
 
 // Waits for a dialog window to open and become visible.
 //
-// Starts listening for window creation events on construction. |Wait| blocks
-// until the expected dialog window is visible. |Wait| returns immediately if
-// the expected dialog window is already visible when |Wait| is called.
+// Starts listening for window creation events on construction. `Wait` blocks
+// until the expected dialog window is visible. `Wait` returns immediately if
+// the expected dialog window is already visible when `Wait` is called.
 //
 // DialogWindowWaiter is single-use. It can only wait for one dialog to be
 // opened per lifetime.
 class DialogWindowWaiter : public aura::EnvObserver,
                            public aura::WindowObserver {
  public:
-  // Starts listening for a dialog window to open with title |dialog_title|.
+  // Starts listening for a dialog window to open with title `dialog_title`.
   explicit DialogWindowWaiter(const base::string16& dialog_title);
 
   ~DialogWindowWaiter() override;
 
-  // Blocks until a dialog with title |dialog_title| becomes visible. All calls
-  // to |Wait| return immediately after the dialog becomes visible during this
+  // Blocks until a dialog with title `dialog_title` becomes visible. All calls
+  // to `Wait` return immediately after the dialog becomes visible during this
   // object's lifetime.
   void Wait();
 

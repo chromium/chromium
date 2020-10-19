@@ -327,7 +327,7 @@ void EnrollmentScreen::OnCancel() {
     authpolicy_login_helper_->CancelRequestsAndRestart();
 
   // The callback passed to ClearAuth is called either immediately or gets
-  // wrapped in a callback bound to a weak pointer from |weak_factory_| - in
+  // wrapped in a callback bound to a weak pointer from `weak_factory_` - in
   // either case, passing exit_callback_ directly should be safe.
   ClearAuth(base::BindRepeating(
       exit_callback_, config_.is_forced() ? Result::BACK : Result::COMPLETED));
@@ -336,7 +336,7 @@ void EnrollmentScreen::OnCancel() {
 void EnrollmentScreen::OnConfirmationClosed() {
   VLOG(1) << "Confirmation closed.";
   // The callback passed to ClearAuth is called either immediately or gets
-  // wrapped in a callback bound to a weak pointer from |weak_factory_| - in
+  // wrapped in a callback bound to a weak pointer from `weak_factory_` - in
   // either case, passing exit_callback_ directly should be safe.
   ClearAuth(base::BindRepeating(exit_callback_, Result::COMPLETED));
 

@@ -164,7 +164,7 @@ class TermsOfServiceScreenTest : public OobeBaseTest {
     return BuildHttpResponse(text);
   }
 
-  // Returns a successful |BasicHttpResponse| with |content|.
+  // Returns a successful `BasicHttpResponse` with `content`.
   std::unique_ptr<BasicHttpResponse> BuildHttpResponse(
       const std::string& content) {
     std::unique_ptr<BasicHttpResponse> http_response =

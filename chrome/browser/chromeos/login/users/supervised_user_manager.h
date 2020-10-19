@@ -50,22 +50,22 @@ class SupervisedUserManager {
 
   virtual bool HasSupervisedUsers(const std::string& manager_id) const = 0;
 
-  // Returns sync_user_id for supervised user with |user_id| or empty string if
+  // Returns sync_user_id for supervised user with `user_id` or empty string if
   // such user is not found or it doesn't have user_id defined.
   virtual std::string GetUserSyncId(const std::string& user_id) const = 0;
 
-  // Returns the display name for manager of user |user_id| if it is known
-  // (was previously set by a |SaveUserDisplayName| call).
+  // Returns the display name for manager of user `user_id` if it is known
+  // (was previously set by a `SaveUserDisplayName` call).
   // Otherwise, returns a manager id.
   virtual base::string16 GetManagerDisplayName(
       const std::string& user_id) const = 0;
 
-  // Returns the user id for manager of user |user_id| if it is known (user is
+  // Returns the user id for manager of user `user_id` if it is known (user is
   // actually a managed user).
   // Otherwise, returns an empty string.
   virtual std::string GetManagerUserId(const std::string& user_id) const = 0;
 
-  // Returns the display email for manager of user |user_id| if it is known
+  // Returns the display email for manager of user `user_id` if it is known
   // (user is actually a managed user).
   // Otherwise, returns an empty string.
   virtual std::string GetManagerDisplayEmail(
@@ -74,12 +74,12 @@ class SupervisedUserManager {
   // Return object that handles specifics of supervised user authentication.
   virtual SupervisedUserAuthentication* GetAuthentication() = 0;
 
-  // Fill |result| with public password-specific data for |user_id| from Local
+  // Fill `result` with public password-specific data for `user_id` from Local
   // State.
   virtual void GetPasswordInformation(const std::string& user_id,
                                       base::DictionaryValue* result) = 0;
 
-  // Stores public password-specific data from |password_info| for |user_id| in
+  // Stores public password-specific data from `password_info` for `user_id` in
   // Local State.
   virtual void SetPasswordInformation(
       const std::string& user_id,

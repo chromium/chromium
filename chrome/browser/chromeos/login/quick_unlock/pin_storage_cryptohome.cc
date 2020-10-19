@@ -49,7 +49,7 @@ void OnCryptohomeCallComplete(PinStorageCryptohome::BoolCallback callback,
 }
 
 // Checks to see if there is a KeyDefinition instance with the pin label. If
-// |require_unlocked| is true, the key must not be locked.
+// `require_unlocked` is true, the key must not be locked.
 void CheckCryptohomePinKey(PinStorageCryptohome::BoolCallback callback,
                            bool require_unlocked,
                            base::Optional<cryptohome::BaseReply> reply) {
@@ -91,7 +91,7 @@ void CheckForCryptohomedService(int attempt,
 
 // Called when cryptohomed status is available. If cryptohomed is not available
 // this will rerun the status check (CheckForCryptohomedService) up to N times.
-// |attempt| is the current attempt number.
+// `attempt` is the current attempt number.
 void OnCryptohomedServiceAvailable(int attempt,
                                    PinStorageCryptohome::BoolCallback result,
                                    bool is_available) {
@@ -188,7 +188,7 @@ void PinStorageCryptohome::SetPin(const UserContext& user_context,
     key.Transform(Key::KEY_TYPE_SALTED_SHA256_TOP_HALF, system_salt_);
 
   // If the caller provided a salt then this is a migration from prefs-based
-  // PIN, in which case |pin| is already hashed.
+  // PIN, in which case `pin` is already hashed.
   std::string secret;
   std::string salt;
   if (pin_salt) {

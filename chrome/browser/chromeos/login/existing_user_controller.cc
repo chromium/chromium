@@ -276,8 +276,8 @@ bool ShouldForceDircrypto(const AccountId& account_id) {
 }
 
 // Decides which EcryptfsMigrationAction should be used based on policy fetch
-// result, policy payload and user type. |policy_payload| is only dereferenced
-// if |policy_fetch_result| is PolicyFetchResult::SUCCESS.
+// result, policy payload and user type. `policy_payload` is only dereferenced
+// if `policy_fetch_result` is PolicyFetchResult::SUCCESS.
 apu::EcryptfsMigrationAction GetEcryptfsMigrationAction(
     PolicyFetchResult policy_fetch_result,
     enterprise_management::CloudPolicySettings* policy_payload) {
@@ -366,7 +366,7 @@ AccountId GetArcDataSnapshotAutoLoginAccountId(
   return auto_login_account_id;
 }
 
-// Returns account ID if a corresponding to |auto_login_account_id| device local
+// Returns account ID if a corresponding to `auto_login_account_id` device local
 // account exists, otherwise returns invalid account ID.
 AccountId GetPublicSessionAutoLoginAccountId(
     const std::vector<policy::DeviceLocalAccount>& device_local_accounts,
@@ -395,7 +395,7 @@ class AutoLaunchNotificationDelegate
     if (local_state) {
       pref_change_registrar_.Init(local_state);
 
-      // base::Unretained is safe here because |this| outlives the registrar.
+      // base::Unretained is safe here because `this` outlives the registrar.
       pref_change_registrar_.Add(
           prefs::kManagedGuestSessionAutoLaunchNotificationReduced,
           base::BindRepeating(&AutoLaunchNotificationDelegate::
@@ -591,7 +591,7 @@ void ExistingUserController::UpdateLoginDisplay(
   GetLoginDisplayHost()->OnPreferencesChanged();
 }
 
-// Check SAML offline time limits for |users| and schedules next
+// Check SAML offline time limits for `users` and schedules next
 // check if needed and returns true if any of user's force online
 // sign-in flag is changed.
 bool ExistingUserController::ForceOnlineFlagChanged(
@@ -660,7 +660,7 @@ void ExistingUserController::Observe(
 
   // Possibly the user has authenticated against a proxy server and we might
   // need the credentials for enrollment and other system requests from the
-  // main |g_browser_process| request context (see bug
+  // main `g_browser_process` request context (see bug
   // http://crosbug.com/24861). So we transfer any credentials to the global
   // request context here.
   // The issue we have here is that the NOTIFICATION_AUTH_SUPPLIED is sent
@@ -775,7 +775,7 @@ void ExistingUserController::PerformLogin(
   }
 
   // If plain text password is available, computes its salt, hash, and length,
-  // and saves them in |user_context|. They will be saved to prefs when user
+  // and saves them in `user_context`. They will be saved to prefs when user
   // profile is ready.
   UserContext new_user_context = user_context;
   if (user_context.GetKey()->GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN) {
@@ -1075,7 +1075,7 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
 
   StopAutoLoginTimer();
 
-  // Truth table of |has_auth_cookies|:
+  // Truth table of `has_auth_cookies`:
   //                          Regular        SAML
   //  /ServiceLogin              T            T
   //  /ChromeOsEmbeddedSetup     F            T
@@ -1203,7 +1203,7 @@ void ExistingUserController::OnProfilePrepared(Profile* profile,
   user_manager::known_user::SetIsEnterpriseManaged(user_context.GetAccountId(),
                                                    is_enterprise_managed);
 
-  // Inform |auth_status_consumers_| about successful login.
+  // Inform `auth_status_consumers_` about successful login.
   // TODO(nkostylev): Pass UserContext back crbug.com/424550
   for (auto& auth_status_consumer : auth_status_consumers_)
     auth_status_consumer.OnAuthSuccess(user_context);
@@ -1522,7 +1522,7 @@ void ExistingUserController::LoginAsPublicSessionWithPolicyStoreReady(
   if (locale.empty()) {
     // When performing auto-login, no locale is chosen by the user. Check
     // whether a list of recommended locales was set by policy. If so, use its
-    // first entry. Otherwise, |locale| will remain blank, indicating that the
+    // first entry. Otherwise, `locale` will remain blank, indicating that the
     // public session should use the current UI locale.
     const policy::PolicyMap::Entry* entry =
         g_browser_process->platform_part()
@@ -1543,20 +1543,20 @@ void ExistingUserController::LoginAsPublicSessionWithPolicyStoreReady(
 
   if (!locale.empty() &&
       new_user_context.GetPublicSessionInputMethod().empty()) {
-    // When |locale| is set, a suitable keyboard layout should be chosen. In
+    // When `locale` is set, a suitable keyboard layout should be chosen. In
     // most cases, this will already be the case because the UI shows a list of
-    // keyboard layouts suitable for the |locale| and ensures that one of them
-    // us selected. However, it is still possible that |locale| is set but no
+    // keyboard layouts suitable for the `locale` and ensures that one of them
+    // us selected. However, it is still possible that `locale` is set but no
     // keyboard layout was chosen:
     // * The list of keyboard layouts is updated asynchronously. If the user
     //   enters the public session before the list of keyboard layouts for the
-    //   |locale| has been retrieved, the UI will indicate that no keyboard
+    //   `locale` has been retrieved, the UI will indicate that no keyboard
     //   layout was chosen.
-    // * During auto-login, the |locale| is set in this method and a suitable
+    // * During auto-login, the `locale` is set in this method and a suitable
     //   keyboard layout must be chosen next.
     //
     // The list of suitable keyboard layouts is constructed asynchronously. Once
-    // it has been retrieved, |SetPublicSessionKeyboardLayoutAndLogin| will
+    // it has been retrieved, `SetPublicSessionKeyboardLayoutAndLogin` will
     // select the first layout from the list and continue login.
     VLOG(2) << "Requesting keyboard layouts for public session";
     GetKeyboardLayoutsForLocale(
@@ -1818,7 +1818,7 @@ void ExistingUserController::ContinueLoginIfDeviceNotDisabled(
   // Stop the auto-login timer.
   StopAutoLoginTimer();
 
-  // Wait for the |cros_settings_| to become either trusted or permanently
+  // Wait for the `cros_settings_` to become either trusted or permanently
   // untrusted.
   const CrosSettingsProvider::TrustedStatus status =
       cros_settings_->PrepareTrustedValues(base::BindOnce(
@@ -1828,13 +1828,13 @@ void ExistingUserController::ContinueLoginIfDeviceNotDisabled(
     return;
 
   if (status == CrosSettingsProvider::PERMANENTLY_UNTRUSTED) {
-    // If the |cros_settings_| are permanently untrusted, show an error message
+    // If the `cros_settings_` are permanently untrusted, show an error message
     // and refuse to log in.
     GetLoginDisplay()->ShowError(IDS_LOGIN_ERROR_OWNER_KEY_LOST, 1,
                                  HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
 
     // Re-enable clicking on other windows and the status area. Do not start the
-    // auto-login timer though. Without trusted |cros_settings_|, no auto-login
+    // auto-login timer though. Without trusted `cros_settings_`, no auto-login
     // can succeed.
     GetLoginDisplay()->SetUIEnabled(true);
     return;

@@ -48,7 +48,7 @@ LocalStateMixin::~LocalStateMixin() = default;
 
 void LocalStateMixin::CreatedBrowserMainParts(
     content::BrowserMainParts* browser_main_parts) {
-  // |browser_main_parts| take ownership of TestUserRegistrationMainExtra.
+  // `browser_main_parts` take ownership of TestUserRegistrationMainExtra.
   static_cast<ChromeBrowserMainParts*>(browser_main_parts)
       ->AddParts(std::make_unique<TestMainExtraPart>(delegate_));
 }

@@ -45,7 +45,7 @@ class FakeRecommendAppsFetcherDelegate : public RecommendAppsFetcherDelegate {
   void OnParseResponseError() override;
 
  private:
-  // Records a result value - |loaded_apps_|, if any, should be set before
+  // Records a result value - `loaded_apps_`, if any, should be set before
   // calling this.
   void SetResult(Result result);
 

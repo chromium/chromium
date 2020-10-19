@@ -56,7 +56,7 @@ class ActiveDirectoryLoginMixin : public InProcessBrowserTestMixin {
   void TriggerPasswordChangeScreen();
   void ClosePasswordChangeScreen();
   // Checks if Active Directory password change screen is shown. Also checks if
-  // |invalid_element| is invalidated and all the other elements are valid.
+  // `invalid_element` is invalidated and all the other elements are valid.
   void TestPasswordChangeNoErrors();
   void TestPasswordChangeOldPasswordError();
   void TestPasswordChangeNewPasswordError();

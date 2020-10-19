@@ -165,7 +165,7 @@ class ChallengeResponseAuthKeysLoaderBrowserTest : public OobeBaseTest {
   std::unique_ptr<ChallengeResponseAuthKeysLoader>
       challenge_response_auth_keys_loader_;
 
-  // Whether |challenge_response_auth_keys_loader_| should be destroyed after
+  // Whether `challenge_response_auth_keys_loader_` should be destroyed after
   // the browser shutdown, not before it.
   bool should_delete_loader_after_shutdown_ = false;
 

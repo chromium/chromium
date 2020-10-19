@@ -53,9 +53,9 @@ namespace {
 constexpr int kInitialEnrollmentModulusPowerLimit = 6;
 
 // If the modulus requested by the server is higher or equal to
-// |1<<kInitialEnrollmentModulusPowerOutdatedServer|, assume that the server
+// `1<<kInitialEnrollmentModulusPowerOutdatedServer`, assume that the server
 // does not know initial enrollment yet.
-// This is currently set to |14|, the server was requesting |16| for FRE on
+// This is currently set to `14`, the server was requesting `16` for FRE on
 // 2018-05-25.
 // TODO(pmarko): Remove this mechanism when the server version supporting
 // Initial Enrollment has been in production for a while
@@ -65,14 +65,14 @@ const int kInitialEnrollmentModulusPowerOutdatedServer = 14;
 const int kMaxRequestStateKeysTries = 10;
 
 // Maximum time to wait for the auto-enrollment check to reach a decision.
-// Note that this encompasses all steps |AutoEnrollmentController| performs in
+// Note that this encompasses all steps `AutoEnrollmentController` performs in
 // order to determine if the device should be auto-enrolled.
-// If |kSafeguardTimeout| after |Start()| has been called,
-// |AutoEnrollmentController::state()| is still AUTO_ENROLLMENT_STATE_PENDING,
+// If `kSafeguardTimeout` after `Start()` has been called,
+// `AutoEnrollmentController::state()` is still AUTO_ENROLLMENT_STATE_PENDING,
 // the AutoEnrollmentController will switch to
 // AUTO_ENROLLMENT_STATE_NO_ENROLLMENT or AUTO_ENROLLMENT_STATE_CONNECTION_ERROR
-// (see |AutoEnrollmentController::Timeout|). Note that this timeout should not
-// be too short, because one of the steps |AutoEnrollmentController| performs -
+// (see `AutoEnrollmentController::Timeout`). Note that this timeout should not
+// be too short, because one of the steps `AutoEnrollmentController` performs -
 // downloading identifier hash buckets - can be non-negligible, especially on 2G
 // connections.
 constexpr base::TimeDelta kSafeguardTimeout = base::TimeDelta::FromSeconds(90);
@@ -103,7 +103,7 @@ enum class InitialEnrollmentRequirementHistogramValue {
   kMaxValue = kNotRequiredInEmbargoPeriodWithoutSystemClockSync
 };
 
-// Returns the int value of the |switch_name| argument, clamped to the [0, 62]
+// Returns the int value of the `switch_name` argument, clamped to the [0, 62]
 // interval. Returns 0 if the argument doesn't exist or isn't an int value.
 int GetSanitizedArg(const std::string& switch_name) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -182,7 +182,7 @@ bool IsGoogleBrandedChrome() {
   return is_chrome_branded;
 }
 
-// Schedules immediate initialization of the |DeviceManagementService| and
+// Schedules immediate initialization of the `DeviceManagementService` and
 // returns it.
 policy::DeviceManagementService* InitializeAndGetDeviceManagementService() {
   policy::BrowserPolicyConnectorChromeOS* connector =
@@ -208,9 +208,9 @@ class AutoEnrollmentController::SystemClockSyncWaiter
   }
 
   // Waits for the system clock to be synchronized. If it already is
-  // synchronized, |callback| will be called immediately. Otherwise, |callback|
+  // synchronized, `callback` will be called immediately. Otherwise, `callback`
   // will be called when the system clock has been synchronized, or after
-  // |kSystemClockSyncWaitTimeout|.
+  // `kSystemClockSyncWaitTimeout`.
   void WaitForSystemClockSync(SystemClockSyncCallback callback) {
     if (state_ == SystemClockSyncState::kSyncFailed ||
         state_ == SystemClockSyncState::kSynchronized) {
@@ -261,7 +261,7 @@ class AutoEnrollmentController::SystemClockSyncWaiter
     SetStateAndRunCallbacks(SystemClockSyncState::kSyncFailed);
   }
 
-  // Runs all callbacks in |system_clock_sync_callbacks_| and clears the vector.
+  // Runs all callbacks in `system_clock_sync_callbacks_` and clears the vector.
   void SetStateAndRunCallbacks(SystemClockSyncState state) {
     state_ = state;
     timeout_timer_.AbandonAndStop();
@@ -297,11 +297,11 @@ class AutoEnrollmentController::SystemClockSyncWaiter
 namespace {
 
 // Records the "Enterprise.InitialEnrollmentRequirement" histogram value.
-// Do not pass |*WithoutSystemClockSync| enum values as |value|.
-// If |value| is one of the values that are only generated at specific system
+// Do not pass `*WithoutSystemClockSync` enum values as `value`.
+// If `value` is one of the values that are only generated at specific system
 // clock values (that is, related to the factory ping embargo period),
-// |system_clock_sync_state| is used to determine if the reported value should
-// be |value| or the corresponding |*WithoutSystemClockSync| value.
+// `system_clock_sync_state` is used to determine if the reported value should
+// be `value` or the corresponding `*WithoutSystemClockSync` value.
 void RecordInitialEnrollmentRequirement(
     InitialEnrollmentRequirementHistogramValue value,
     AutoEnrollmentController::SystemClockSyncState system_clock_sync_state) {
@@ -476,7 +476,7 @@ void AutoEnrollmentController::Start() {
   request_state_keys_tries_ = 0;
 
   // The system clock sync state is not known yet, and this
-  // |AutoEnrollmentController| could wait for it if requested.
+  // `AutoEnrollmentController` could wait for it if requested.
   system_clock_sync_state_ = SystemClockSyncState::kCanWaitForSync;
   StartWithSystemClockSyncState();
 }
@@ -488,12 +488,12 @@ void AutoEnrollmentController::StartWithSystemClockSyncState() {
   if (auto_enrollment_check_type_ == AutoEnrollmentCheckType::kNone) {
     if (may_request_system_clock_sync && system_clock_sync_wait_requested_) {
       // Set state before waiting for the system clock sync, because
-      // |WaitForSystemClockSync| may invoke its callback synchronously if the
+      // `WaitForSystemClockSync` may invoke its callback synchronously if the
       // system clock sync status is already known.
       UpdateState(policy::AUTO_ENROLLMENT_STATE_PENDING);
 
-      // Use |client_start_weak_factory_| so the callback is not invoked if
-      // |Timeout| has been called in the meantime (after |kSafeguardTimeout|).
+      // Use `client_start_weak_factory_` so the callback is not invoked if
+      // `Timeout` has been called in the meantime (after `kSafeguardTimeout`).
       system_clock_sync_waiter_->WaitForSystemClockSync(
           base::BindOnce(&AutoEnrollmentController::OnSystemClockSyncResult,
                          client_start_weak_factory_.GetWeakPtr()));
@@ -712,7 +712,7 @@ void AutoEnrollmentController::OnOwnershipStatusCheckDone(
           break;
         case AutoEnrollmentCheckType::kNone:
           // The ownership check is only triggered if
-          // |auto_enrollment_check_type_| indicates that an auto-enrollment
+          // `auto_enrollment_check_type_` indicates that an auto-enrollment
           // check should be done.
           NOTREACHED();
           break;
@@ -791,7 +791,7 @@ void AutoEnrollmentController::StartClientForInitialEnrollment() {
       InitializeAndGetDeviceManagementService();
 
   // Initial Enrollment does not transfer any data in the initial exchange, and
-  // supports uploading up to |kInitialEnrollmentModulusPowerLimit| bits of the
+  // supports uploading up to `kInitialEnrollmentModulusPowerLimit` bits of the
   // identifier hash.
   const int power_initial = 0;
   const int power_limit = kInitialEnrollmentModulusPowerLimit;
@@ -804,7 +804,7 @@ void AutoEnrollmentController::StartClientForInitialEnrollment() {
       provider->GetMachineStatistic(system::kRlzBrandCodeKey, &rlz_brand_code);
   // The Initial State Determination should not be started if the serial number
   // or brand code are missing. This is ensured in
-  // |GetInitialStateDeterminationRequirement|.
+  // `GetInitialStateDeterminationRequirement`.
   CHECK(!serial_number.empty() && rlz_brand_code_found &&
         !rlz_brand_code.empty());
 
@@ -946,12 +946,12 @@ void AutoEnrollmentController::Timeout() {
 
   // Reset state.
   if (client_) {
-    // Cancelling the |client_| allows it to determine whether
+    // Cancelling the `client_` allows it to determine whether
     // its protocol finished before login was complete.
     client_.release()->CancelAndDeleteSoon();
   }
 
-  // Make sure to nuke pending |client_| start sequences.
+  // Make sure to nuke pending `client_` start sequences.
   client_start_weak_factory_.InvalidateWeakPtrs();
 }
 

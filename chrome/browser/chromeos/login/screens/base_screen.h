@@ -45,7 +45,7 @@ class BaseScreen {
   // Forwards user action if screen is shown.
   void HandleUserAction(const std::string& action_id);
 
-  // Returns |true| if |action| was handled by the screen.
+  // Returns `true` if `action` was handled by the screen.
   virtual bool HandleAccelerator(ash::LoginAcceleratorAction action);
 
   // Returns the identifier of the screen.
@@ -60,7 +60,7 @@ class BaseScreen {
   virtual void ShowImpl() = 0;
   virtual void HideImpl() = 0;
 
-  // Called when user action event with |event_id|
+  // Called when user action event with `event_id`
   // happened. Notification about this event comes from the JS
   // counterpart. Not called if the screen is hidden
   virtual void OnUserAction(const std::string& action_id);

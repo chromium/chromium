@@ -36,7 +36,7 @@ class AuthToken {
   // instance has not changed. Returns nullopt if Reset() was called.
   base::Optional<std::string> Identifier() const;
 
-  // Time since token was created or |base::nullopt| if Reset() was called.
+  // Time since token was created or `base::nullopt` if Reset() was called.
   base::Optional<base::TimeDelta> GetAge() const;
 
   // The UserContext returned here can be null if Reset() was called.

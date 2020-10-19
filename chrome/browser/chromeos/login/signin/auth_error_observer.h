@@ -23,8 +23,8 @@ class AuthErrorObserver : public KeyedService,
                           public syncer::SyncServiceObserver,
                           public SigninErrorController::Observer {
  public:
-  // Whether |profile| should be observed. Currently, this returns true only
-  // when |profile| is a user profile of a gaia user or a supervised user.
+  // Whether `profile` should be observed. Currently, this returns true only
+  // when `profile` is a user profile of a gaia user or a supervised user.
   static bool ShouldObserve(Profile* profile);
 
   explicit AuthErrorObserver(Profile* profile);
@@ -45,9 +45,9 @@ class AuthErrorObserver : public KeyedService,
   // SigninErrorController::Observer implementation.
   void OnErrorChanged() override;
 
-  // Handles an auth error for the Primary / Sync account. |auth_error| can be
-  // |GoogleServiceAuthError::AuthErrorNone()|, in which case, it resets and
-  // marks the account as valid. Note: |auth_error| must correspond to an error
+  // Handles an auth error for the Primary / Sync account. `auth_error` can be
+  // `GoogleServiceAuthError::AuthErrorNone()`, in which case, it resets and
+  // marks the account as valid. Note: `auth_error` must correspond to an error
   // in the Primary / Sync account and not a Secondary Account.
   void HandleAuthError(const GoogleServiceAuthError& auth_error);
 

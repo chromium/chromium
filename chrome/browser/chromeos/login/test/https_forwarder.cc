@@ -109,7 +109,7 @@ bool HTTPSForwarder::Initialize(const std::string& ssl_host,
   // Mark the root certificate used by minica.py as trusted. It will remain
   // trusted for as long as the HTTPSForwarder object exists. This root cert
   // will be used by the Python part of the HTTPSForwarder to generate a
-  // certificate for |ssl_host_|.
+  // certificate for `ssl_host_`.
   scoped_refptr<net::X509Certificate> root_cert = net::ImportCertFromFile(
       net::GetTestCertsDirectory(), "ocsp-test-root.pem");
   if (!root_cert)

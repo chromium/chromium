@@ -57,7 +57,7 @@ class HIDDetectionScreen : public BaseScreen,
   // This method is called when the view is being destroyed.
   void OnViewDestroyed(HIDDetectionView* view);
 
-  // Checks if this screen should be displayed. |on_check_done| should be
+  // Checks if this screen should be displayed. `on_check_done` should be
   // invoked with the result; true if the screen should be displayed, false
   // otherwise.
   void CheckIsScreenRequired(const base::Callback<void(bool)>& on_check_done);
@@ -198,8 +198,8 @@ class HIDDetectionScreen : public BaseScreen,
   void BTConnected(device::BluetoothDeviceType device_type);
 
   // Called by device::BluetoothDevice in response to a failure to
-  // connect to the device with bluetooth address |address| due to an error
-  // encoded in |error_code|.
+  // connect to the device with bluetooth address `address` due to an error
+  // encoded in `error_code`.
   void BTConnectError(const std::string& address,
                       device::BluetoothDeviceType device_type,
                       device::BluetoothDevice::ConnectErrorCode error_code);
@@ -237,7 +237,7 @@ class HIDDetectionScreen : public BaseScreen,
   DeviceMap devices_;
 
   // The current device discovery session. Only one active discovery session is
-  // kept at a time and the instance that |discovery_session_| points to gets
+  // kept at a time and the instance that `discovery_session_` points to gets
   // replaced by a new one when a new discovery session is initiated.
   std::unique_ptr<device::BluetoothDiscoverySession> discovery_session_;
 

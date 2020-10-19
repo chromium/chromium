@@ -65,8 +65,8 @@ class AutoEnrollmentCheckScreen
   void ShowImpl() override;
   void HideImpl() override;
 
-  // Runs |exit_callback_| - used to prevent |exit_callback_| from running after
-  // |this| has been destroyed (by wrapping it with a callback bound to a weak
+  // Runs `exit_callback_` - used to prevent `exit_callback_` from running after
+  // `this` has been destroyed (by wrapping it with a callback bound to a weak
   // ptr).
   void RunExitCallback() { exit_callback_.Run(); }
 
@@ -77,12 +77,12 @@ class AutoEnrollmentCheckScreen
   // Handles a state update, updating the UI and saving the state.
   void UpdateState();
 
-  // Configures the UI to reflect |new_captive_portal_status|. Returns true if
+  // Configures the UI to reflect `new_captive_portal_status`. Returns true if
   // and only if a UI change has been made.
   bool UpdateCaptivePortalStatus(
       NetworkPortalDetector::CaptivePortalStatus new_captive_portal_status);
 
-  // Configures the UI to reflect |new_auto_enrollment_state|. Returns true if
+  // Configures the UI to reflect `new_auto_enrollment_state`. Returns true if
   // and only if a UI change has been made.
   bool UpdateAutoEnrollmentState(
       policy::AutoEnrollmentState new_auto_enrollment_state);
@@ -94,7 +94,7 @@ class AutoEnrollmentCheckScreen
   // error screen gets hidden.
   void OnErrorScreenHidden();
 
-  // Asynchronously signals completion. The owner might destroy |this| in
+  // Asynchronously signals completion. The owner might destroy `this` in
   // response, so no code should be run after the completion of a message loop
   // task, in which this function was called.
   void SignalCompletion();

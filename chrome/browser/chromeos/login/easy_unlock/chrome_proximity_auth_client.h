@@ -13,7 +13,7 @@ class Profile;
 namespace chromeos {
 
 // A Chrome-specific implementation of the ProximityAuthClient interface.
-// There is one |ChromeProximityAuthClient| per |Profile|.
+// There is one `ChromeProximityAuthClient` per `Profile`.
 class ChromeProximityAuthClient : public proximity_auth::ProximityAuthClient {
  public:
   explicit ChromeProximityAuthClient(Profile* profile);

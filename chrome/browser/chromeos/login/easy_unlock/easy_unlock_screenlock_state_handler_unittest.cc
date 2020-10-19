@@ -76,7 +76,7 @@ class FakeProximityAuthPrefManager
   DISALLOW_COPY_AND_ASSIGN(FakeProximityAuthPrefManager);
 };
 
-// Checks if |input| string has any unreplaced placeholders.
+// Checks if `input` string has any unreplaced placeholders.
 bool StringHasPlaceholders(const base::string16& input) {
   std::vector<size_t> offsets;
   std::vector<base::string16> subst;
@@ -219,7 +219,7 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
   }
 
  private:
-  // Does some sanity checks on the last icon set by |ShowUserPodCustomIcon|.
+  // Does some sanity checks on the last icon set by `ShowUserPodCustomIcon`.
   // It will cause a test failure if the icon is not valid.
   void ValidateCustomIcon() {
     ASSERT_TRUE(last_custom_icon_.get());
@@ -234,16 +234,16 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
     }
   }
 
-  // The fake account id used in test. All methods called on |this| should be
+  // The fake account id used in test. All methods called on `this` should be
   // associated with this user.
   const AccountId account_id_;
 
-  // The last icon set using |SetUserPodCustomIcon|. Call to
-  // |HideUserPodcustomIcon| resets it.
+  // The last icon set using `SetUserPodCustomIcon`. Call to
+  // `HideUserPodcustomIcon` resets it.
   std::unique_ptr<base::DictionaryValue> last_custom_icon_;
   size_t show_icon_count_;
 
-  // Auth type and value set using |SetAuthType|.
+  // Auth type and value set using `SetAuthType`.
   proximity_auth::mojom::AuthType auth_type_;
   base::string16 auth_value_;
 
@@ -279,7 +279,7 @@ class EasyUnlockScreenlockStateHandlerTest : public testing::Test {
   // The state handler that is being tested.
   std::unique_ptr<EasyUnlockScreenlockStateHandler> state_handler_;
 
-  // The user associated with |state_handler_|.
+  // The user associated with `state_handler_`.
   const AccountId account_id_ = AccountId::FromUserEmail("test_user@gmail.com");
 
   std::unique_ptr<FakeProximityAuthPrefManager> fake_pref_manager_;

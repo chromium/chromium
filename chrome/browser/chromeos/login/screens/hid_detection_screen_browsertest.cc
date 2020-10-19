@@ -184,8 +184,8 @@ IN_PROC_BROWSER_TEST_F(HIDDetectionScreenTest, BluetoothDeviceConnected) {
   OobeScreenWaiter(HIDDetectionView::kScreenId).Wait();
   EXPECT_TRUE(adapter()->IsPowered());
 
-  // Add a pair of USB mouse/keyboard so that |pointing_device_type_|
-  // and |keyboard_type_| are
+  // Add a pair of USB mouse/keyboard so that `pointing_device_type_`
+  // and `keyboard_type_` are
   // device::mojom::InputDeviceType::TYPE_USB.
   AddDeviceToService(DeviceType::kMouse,
                      device::mojom::InputDeviceType::TYPE_USB);

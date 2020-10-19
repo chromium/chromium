@@ -53,8 +53,8 @@ enum class ConfigurationHandlerSide : unsigned int {
 // fields).
 bool ValidateConfiguration(const base::Value& configuration);
 
-// Copies only fields handled by particular |side| from |configuration| to
-// |filtered_result|.
+// Copies only fields handled by particular `side` from `configuration` to
+// `filtered_result`.
 void FilterConfiguration(const base::Value& configuration,
                          ConfigurationHandlerSide side,
                          base::Value& filtered_result);

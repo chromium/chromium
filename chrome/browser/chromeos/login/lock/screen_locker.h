@@ -90,20 +90,20 @@ class ScreenLocker
   // unlock the device.
   void OnPasswordAuthSuccess(const UserContext& user_context);
 
-  // Disables authentication for the user with |account_id|. Notifies lock
+  // Disables authentication for the user with `account_id`. Notifies lock
   // screen UI.
   void EnableAuthForUser(const AccountId& account_id);
 
-  // Enables authentication for the user with |account_id|. Notifies lock screen
-  // UI. |auth_disabled_data| is used to display information in the UI.
+  // Enables authentication for the user with `account_id`. Notifies lock screen
+  // UI. `auth_disabled_data` is used to display information in the UI.
   void DisableAuthForUser(const AccountId& account_id,
                           const ash::AuthDisabledData& auth_disabled_data);
 
-  // Authenticates the user with given |user_context|.
+  // Authenticates the user with given `user_context`.
   void Authenticate(const UserContext& user_context,
                     AuthenticateCallback callback);
 
-  // Authenticates the user with given |account_id| using the challenge-response
+  // Authenticates the user with given `account_id` using the challenge-response
   // authentication against a security token.
   void AuthenticateWithChallengeResponse(const AccountId& account_id,
                                          AuthenticateCallback callback);
@@ -117,8 +117,8 @@ class ScreenLocker
   // (Re)enable input field.
   void EnableInput();
 
-  // Disables all UI needed and shows error bubble with |message|.
-  // If |sign_out_only| is true then all other input except "Sign Out"
+  // Disables all UI needed and shows error bubble with `message`.
+  // If `sign_out_only` is true then all other input except "Sign Out"
   // button is blocked.
   void ShowErrorMessage(int error_msg_id,
                         HelpAppLauncher::HelpTopic help_topic_id,
@@ -131,7 +131,7 @@ class ScreenLocker
   const user_manager::UserList& users() const { return users_; }
 
   // Returns the users to show on the lock screen UI. Will be a subset of
-  // |users()|.
+  // `users()`.
   user_manager::UserList GetUsersToShow() const;
 
   // Allow a AuthStatusConsumer to listen for
@@ -156,7 +156,7 @@ class ScreenLocker
   void RefreshPinAndFingerprintTimeout();
 
   // Saves sync password hash and salt to user profile prefs based on
-  // |user_context|.
+  // `user_context`.
   void SaveSyncPasswordHash(const UserContext& user_context);
 
   // Ruturns true if authentication is enabled on the lock screen for the given
@@ -219,18 +219,18 @@ class ScreenLocker
   // Called when screen locker is safe to delete.
   static void ScheduleDeletion();
 
-  // Returns true if |account_id| is found among logged in users.
+  // Returns true if `account_id` is found among logged in users.
   bool IsUserLoggedIn(const AccountId& account_id) const;
 
   // Looks up user in unlock user list.
   const user_manager::User* FindUnlockUser(const AccountId& account_id);
 
-  // Callback to be invoked for ash start lock request. |locked| is true when
+  // Callback to be invoked for ash start lock request. `locked` is true when
   // ash is fully locked and post lock animation finishes. Otherwise, the start
   // lock request is failed.
   void OnStartLockCallback(bool locked);
 
-  // Callback to be invoked when the |challenge_response_auth_keys_loader_|
+  // Callback to be invoked when the `challenge_response_auth_keys_loader_`
   // completes building the currently available challenge-response keys. Used
   // only during the challenge-response unlock.
   void OnChallengeResponseKeysPrepared(
@@ -258,7 +258,7 @@ class ScreenLocker
   user_manager::UserList users_;
 
   // Set of users that have authentication disabled on lock screen. Has to be
-  // subset of |users_|.
+  // subset of `users_`.
   std::set<AccountId> users_with_disabled_auth_;
 
   // Used to authenticate the user to unlock.

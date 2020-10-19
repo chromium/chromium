@@ -44,10 +44,10 @@ class OAuth2TokenFetcher : public base::SupportsWeakPtr<OAuth2TokenFetcher>,
                                  const std::string& signin_scoped_device_id);
 
  private:
-  // Decides how to proceed on GAIA |error|. If the error looks temporary,
-  // retries |task| until max retry count is reached.
+  // Decides how to proceed on GAIA `error`. If the error looks temporary,
+  // retries `task` until max retry count is reached.
   // If retry count runs out, or error condition is unrecoverable, it runs
-  // |error_handler|.
+  // `error_handler`.
   void RetryOnError(const GoogleServiceAuthError& error,
                     const base::Closure& task,
                     const base::Closure& error_handler);

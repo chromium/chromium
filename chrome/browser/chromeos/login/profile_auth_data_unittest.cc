@@ -218,7 +218,7 @@ void ProfileAuthDataTest::PopulateBrowserContext(
             std::string());
 
   network::mojom::CookieManager* cookies = GetCookies(browser_context);
-  // Ensure |cookies| is fully initialized.
+  // Ensure `cookies` is fully initialized.
   base::RunLoop run_loop;
   cookies->GetAllCookies(base::BindLambdaForTesting(
       [&](const net::CookieList& cookies) { run_loop.Quit(); }));

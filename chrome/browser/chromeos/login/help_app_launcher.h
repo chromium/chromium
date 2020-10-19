@@ -47,7 +47,7 @@ class HelpAppLauncher : public base::RefCountedThreadSafe<HelpAppLauncher> {
     HELP_ADB_SIDELOADING = 9770692,
   };
 
-  // The dialog is shown as a child of |parent_window|. If |parent_window| is
+  // The dialog is shown as a child of `parent_window`. If `parent_window` is
   // null then the dialog is placed in the modal dialog container on the primary
   // display.
   explicit HelpAppLauncher(gfx::NativeWindow parent_window);

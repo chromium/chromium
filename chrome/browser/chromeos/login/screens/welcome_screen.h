@@ -73,8 +73,8 @@ class WelcomeScreen : public BaseScreen,
   static WelcomeScreen* Get(ScreenManager* manager);
   static std::string GetResultString(Result result);
 
-  // Called when |view| has been destroyed. If this instance is destroyed before
-  // the |view| it should call view->Unbind().
+  // Called when `view` has been destroyed. If this instance is destroyed before
+  // the `view` it should call view->Unbind().
   void OnViewDestroyed(WelcomeView* view);
 
   const std::string& language_list_locale() const {
@@ -84,9 +84,9 @@ class WelcomeScreen : public BaseScreen,
 
   void UpdateLanguageList();
 
-  // Set locale and input method. If |locale| is empty or doesn't change, set
-  // the |input_method| directly. If |input_method| is empty or ineligible, we
-  // don't change the current |input_method|.
+  // Set locale and input method. If `locale` is empty or doesn't change, set
+  // the `input_method` directly. If `input_method` is empty or ineligible, we
+  // don't change the current `input_method`.
   void SetApplicationLocaleAndInputMethod(const std::string& locale,
                                           const std::string& input_method);
   std::string GetApplicationLocale();

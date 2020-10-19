@@ -80,10 +80,10 @@ class OAuth2LoginManager : public KeyedService,
   void AddObserver(OAuth2LoginManager::Observer* observer);
   void RemoveObserver(OAuth2LoginManager::Observer* observer);
 
-  // Restores and verifies OAuth tokens following specified |restore_strategy|.
-  // For |restore_strategy| RESTORE_FROM_PASSED_OAUTH2_REFRESH_TOKEN, parameter
-  // |oauth2_refresh_token| needs to have a non-empty value.
-  // For |restore_strategy| DDEPRECATED_RESTORE_FROM_COOKIE_JAR.
+  // Restores and verifies OAuth tokens following specified `restore_strategy`.
+  // For `restore_strategy` RESTORE_FROM_PASSED_OAUTH2_REFRESH_TOKEN, parameter
+  // `oauth2_refresh_token` needs to have a non-empty value.
+  // For `restore_strategy` DDEPRECATED_RESTORE_FROM_COOKIE_JAR.
   void RestoreSession(
       SessionRestoreStrategy restore_strategy,
       const std::string& oauth2_refresh_token,
@@ -158,13 +158,13 @@ class OAuth2LoginManager : public KeyedService,
   // process.
   void CompleteAuthentication();
 
-  // Retrieves IdentityManager for |user_profile_|.
+  // Retrieves IdentityManager for `user_profile_`.
   signin::IdentityManager* GetIdentityManager();
 
-  // Retrieves the primary account ID for |user_profile_|.
+  // Retrieves the primary account ID for `user_profile_`.
   CoreAccountId GetUnconsentedPrimaryAccountId();
 
-  // Records |refresh_token_| to token service. The associated account id is
+  // Records `refresh_token_` to token service. The associated account id is
   // assumed to be the primary account id of the user profile. If the primary
   // account id is not present, GetAccountInfoOfRefreshToken will be called to
   // retrieve the associated account info.
@@ -174,24 +174,24 @@ class OAuth2LoginManager : public KeyedService,
   // if needed.
   void VerifySessionCookies();
 
-  // Issue GAIA cookie recovery (MergeSession) from |refresh_token_|.
+  // Issue GAIA cookie recovery (MergeSession) from `refresh_token_`.
   void RestoreSessionCookies();
 
   // Checks GAIA error and figures out whether the request should be
   // re-attempted.
   bool RetryOnError(const GoogleServiceAuthError& error);
 
-  // Changes |state_|, if needed fires observers (OnSessionRestoreStateChanged).
+  // Changes `state_`, if needed fires observers (OnSessionRestoreStateChanged).
   void SetSessionRestoreState(SessionRestoreState state);
 
   // Testing helper.
   void SetSessionRestoreStartForTesting(const base::Time& time);
 
-  // Records |outcome| of session restore process and sets new |state|.
+  // Records `outcome` of session restore process and sets new `state`.
   void RecordSessionRestoreOutcome(SessionRestoreOutcome outcome,
                                    SessionRestoreState state);
 
-  // Records |outcome| of merge verification check. |is_pre_merge| specifies
+  // Records `outcome` of merge verification check. `is_pre_merge` specifies
   // if this is pre or post merge session verification.
   static void RecordCookiesCheckOutcome(bool is_pre_merge,
                                         MergeVerificationOutcome outcome);

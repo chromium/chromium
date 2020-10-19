@@ -26,7 +26,7 @@ WelcomeScreen* GetWelcomeScreen() {
   return WelcomeScreen::Get(wizard_controller->screen_manager());
 }
 
-// Sets locale and input method. If |locale| or |input_method| is empty then
+// Sets locale and input method. If `locale` or `input_method` is empty then
 // they will not be changed.
 void SetApplicationLocaleAndInputMethod(const std::string& locale,
                                         const std::string& input_method) {

@@ -36,7 +36,7 @@ namespace {
 // The modulus length for RSA keys used by easy sign-in.
 const int kKeyModulusLength = 2048;
 
-// Relays |GetSystemSlotOnIOThread| callback to |response_task_runner|.
+// Relays `GetSystemSlotOnIOThread` callback to `response_task_runner`.
 void RunCallbackOnTaskRunner(
     const scoped_refptr<base::SingleThreadTaskRunner>& response_task_runner,
     const base::Callback<void(crypto::ScopedPK11Slot)>& callback,
@@ -46,7 +46,7 @@ void RunCallbackOnTaskRunner(
 }
 
 // Gets TPM system slot. Must be called on IO thread.
-// The callback wil be relayed to |response_task_runner|.
+// The callback wil be relayed to `response_task_runner`.
 void GetSystemSlotOnIOThread(
     const scoped_refptr<base::SingleThreadTaskRunner>& response_task_runner,
     const base::Callback<void(crypto::ScopedPK11Slot)>& callback) {
@@ -59,8 +59,8 @@ void GetSystemSlotOnIOThread(
     callback_on_origin_thread.Run(std::move(system_slot));
 }
 
-// Relays |EnsureUserTpmInitializedOnIOThread| callback to
-// |response_task_runner|, ignoring |slot|.
+// Relays `EnsureUserTpmInitializedOnIOThread` callback to
+// `response_task_runner`, ignoring `slot`.
 void RunCallbackWithoutSlotOnTaskRunner(
     const scoped_refptr<base::SingleThreadTaskRunner>& response_task_runner,
     const base::Closure& callback,
@@ -82,8 +82,8 @@ void EnsureUserTPMInitializedOnIOThread(
     callback_on_origin_thread.Run(std::move(private_slot));
 }
 
-// Checks if a private RSA key associated with |public_key| can be found in
-// |slot|. |slot| must be non-null.
+// Checks if a private RSA key associated with `public_key` can be found in
+// `slot`. `slot` must be non-null.
 // Must be called on a worker thread.
 crypto::ScopedSECKEYPrivateKey GetPrivateKeyOnWorkerThread(
     PK11SlotInfo* slot,
@@ -102,8 +102,8 @@ crypto::ScopedSECKEYPrivateKey GetPrivateKeyOnWorkerThread(
   return rsa_key;
 }
 
-// Signs |data| using a private key associated with |public_key| and stored in
-// |slot|. Once the data is signed, callback is run on |response_task_runner|.
+// Signs `data` using a private key associated with `public_key` and stored in
+// `slot`. Once the data is signed, callback is run on `response_task_runner`.
 // In case of an error, the callback will be passed an empty string.
 void SignDataOnWorkerThread(
     crypto::ScopedPK11Slot slot,
@@ -137,11 +137,11 @@ void SignDataOnWorkerThread(
                                  base::BindOnce(callback, signature));
 }
 
-// Creates a RSA key pair in |slot|. When done, it runs |callback| with the
-// created public key on |response_task_runner|.
-// If |public_key| is not empty, a key pair will be created only if the private
-// key associated with |public_key| does not exist in |slot|. Otherwise the
-// callback will be run with |public_key|.
+// Creates a RSA key pair in `slot`. When done, it runs `callback` with the
+// created public key on `response_task_runner`.
+// If `public_key` is not empty, a key pair will be created only if the private
+// key associated with `public_key` does not exist in `slot`. Otherwise the
+// callback will be run with `public_key`.
 void CreateTpmKeyPairOnWorkerThread(
     crypto::ScopedPK11Slot slot,
     const std::string& public_key,
@@ -329,9 +329,9 @@ void EasyUnlockTpmKeyManager::CreateKeyInSystemSlot(
   CHECK(system_slot);
   create_tpm_key_state_ = CREATE_TPM_KEY_GOT_SYSTEM_SLOT;
 
-  // If there are any delayed tasks posted using |StartGetSystemSlotTimeoutMs|,
+  // If there are any delayed tasks posted using `StartGetSystemSlotTimeoutMs`,
   // this will cancel them.
-  // Note that this would cancel other pending |CreateKeyInSystemSlot| tasks,
+  // Note that this would cancel other pending `CreateKeyInSystemSlot` tasks,
   // but there should be at most one such task at a time.
   get_tpm_slot_weak_ptr_factory_.InvalidateWeakPtrs();
 
@@ -363,12 +363,12 @@ void EasyUnlockTpmKeyManager::SignDataWithSystemSlot(
 }
 
 void EasyUnlockTpmKeyManager::OnTpmKeyCreated(const std::string& public_key) {
-  // |OnTpmKeyCreated| is called by a timeout task posted by
-  // |StartGetSystemSlotTimeoutMs|. Invalidating the factory will have
-  // an effect of canceling any pending |GetSystemSlotOnIOThread| callbacks,
+  // `OnTpmKeyCreated` is called by a timeout task posted by
+  // `StartGetSystemSlotTimeoutMs`. Invalidating the factory will have
+  // an effect of canceling any pending `GetSystemSlotOnIOThread` callbacks,
   // as well as other pending timeouts.
-  // Note that in the case |OnTpmKeyCreated| was called as a result of
-  // |CreateKeyInSystemSlot|, this should have no effect as no weak ptrs from
+  // Note that in the case `OnTpmKeyCreated` was called as a result of
+  // `CreateKeyInSystemSlot`, this should have no effect as no weak ptrs from
   // this factory should be in use in this case.
   get_tpm_slot_weak_ptr_factory_.InvalidateWeakPtrs();
 

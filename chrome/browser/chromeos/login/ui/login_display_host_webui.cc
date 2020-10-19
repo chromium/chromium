@@ -305,7 +305,7 @@ void OnLanguageSwitchedCallback(
 }
 
 // Triggers ShowLoginWizardFinish directly if no locale switch is required
-// (|switch_locale| is empty) or after a locale switch otherwise.
+// (`switch_locale` is empty) or after a locale switch otherwise.
 void TriggerShowLoginWizardFinish(
     std::string switch_locale,
     std::unique_ptr<ShowLoginWizardSwitchLanguageCallbackData> data) {
@@ -938,9 +938,9 @@ void LoginDisplayHostWebUI::ResetLoginWindowAndView() {
   ash::LoginScreen::Get()->GetModel()->NotifyOobeDialogState(
       ash::OobeDialogState::HIDDEN);
 
-  // Make sure to reset the |login_view_| pointer first; it is owned by
-  // |login_window_|. Closing |login_window_| could immediately invalidate the
-  // |login_view_| pointer.
+  // Make sure to reset the `login_view_` pointer first; it is owned by
+  // `login_window_`. Closing `login_window_` could immediately invalidate the
+  // `login_view_` pointer.
   if (login_view_) {
     login_view_->SetUIEnabled(true);
     login_view_ = nullptr;
@@ -1075,7 +1075,7 @@ void ShowLoginWizard(OobeScreenId first_screen) {
   input_method::InputMethodManager* manager =
       input_method::InputMethodManager::Get();
 
-  // Set up keyboards. For example, when |locale| is "en-US", enable US qwerty
+  // Set up keyboards. For example, when `locale` is "en-US", enable US qwerty
   // and US dvorak keyboard layouts.
   if (g_browser_process && g_browser_process->local_state()) {
     manager->GetActiveIMEState()->SetInputMethodLoginDefault();

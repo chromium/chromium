@@ -270,7 +270,7 @@ void AutoEnrollmentCheckScreen::SignalCompletion() {
   auto_enrollment_progress_subscription_.reset();
   connect_request_subscription_.reset();
 
-  // Running exit callback can cause |this| destruction, so let other methods
+  // Running exit callback can cause `this` destruction, so let other methods
   // finish their work before.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&AutoEnrollmentCheckScreen::RunExitCallback,

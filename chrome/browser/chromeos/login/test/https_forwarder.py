@@ -49,7 +49,7 @@ class RequestForwarder(BaseHTTPServer.BaseHTTPRequestHandler):
     """Forwards a GET or POST request to another server.
 
     Args:
-      body: The request body. This should be |None| for GET requests.
+      body: The request body. This should be `None` for GET requests.
     """
     request_url = urlparse.urlparse(self.path)
     url = urlparse.urlunparse((self.server.forward_scheme,
@@ -156,13 +156,13 @@ class ServerRunner(testserver_base.TestServerRunner):
     Returns:
       The started server.
     """
-    # The server binds to |host:port| but the certificate is issued to
-    # |ssl_host| instead.
+    # The server binds to `host:port` but the certificate is issued to
+    # `ssl_host` instead.
     port = self.options.port
     host = self.options.host
     ssl_host = self.options.ssl_host
 
-    # Allow |ssl_host| to be an IP address or a domain name, and ensure
+    # Allow `ssl_host` to be an IP address or a domain name, and ensure
     # it gets added as the appropriate subjectAltName of the generated
     # certificate.
     dns_sans = None

@@ -27,9 +27,9 @@ extern const gfx::Size kMaxDialogSize;
 extern const gfx::Size kMinDialogSize;
 extern const gfx::Insets kMinMargins;
 
-// Position OOBE dialog according to specs inside |host_bounds| excluding shelf.
-// |host_bounds| is in coordinates of oobe dialog widget. |result| is
-// in the same coordinates of |host_bounds|.
+// Position OOBE dialog according to specs inside `host_bounds` excluding shelf.
+// `host_bounds` is in coordinates of oobe dialog widget. `result` is
+// in the same coordinates of `host_bounds`.
 void CalculateOobeDialogBounds(const gfx::Rect& host_bounds,
                                int shelf_height,
                                gfx::Rect* result,

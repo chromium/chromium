@@ -36,10 +36,10 @@ class EasyUnlockGetKeysOperation {
   // Called once when the cryptohome service is available.
   void OnCryptohomeAvailable(bool available);
 
-  // Asynchronously requests data for |key_index_| from cryptohome.
+  // Asynchronously requests data for `key_index_` from cryptohome.
   void GetKeyData();
 
-  // Callback for GetKeyData(). Updates |devices_|, increments |key_index_|, and
+  // Callback for GetKeyData(). Updates `devices_`, increments `key_index_`, and
   // calls GetKeyData() again.
   void OnGetKeyData(base::Optional<cryptohome::BaseReply> reply);
 

@@ -39,8 +39,8 @@ class ChromeUserManager : public user_manager::UserManagerBase,
   // yet initialized.
   static ChromeUserManager* Get();
 
-  // Sets affiliation status for the user identified with |account_id|
-  // judging by |user_affiliation_ids| and device affiliation IDs.
+  // Sets affiliation status for the user identified with `account_id`
+  // judging by `user_affiliation_ids` and device affiliation IDs.
   virtual void SetUserAffiliation(
       const AccountId& account_id,
       const AffiliationIDSet& user_affiliation_ids) = 0;
@@ -50,7 +50,7 @@ class ChromeUserManager : public user_manager::UserManagerBase,
   virtual bool ShouldReportUser(const std::string& user_id) const = 0;
 
   // Checks whether 'DeviceLocalAccountManagedSessionEnabled' policy is enabled
-  // for |active_user|.
+  // for `active_user`.
   virtual bool IsManagedSessionEnabledForUser(
       const user_manager::User& active_user) const = 0;
 

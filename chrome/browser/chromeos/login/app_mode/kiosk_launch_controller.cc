@@ -172,7 +172,7 @@ void KioskLaunchController::OnProfileLoaded(Profile* profile) {
   // Reset virtual keyboard to use IME engines in app profile early.
   ChromeKeyboardControllerClient::Get()->RebuildKeyboardIfEnabled();
 
-  // Do not set update |app_launcher_| if has been set.
+  // Do not set update `app_launcher_` if has been set.
   if (!app_launcher_) {
     switch (kiosk_app_id_.type) {
       case KioskAppType::ARC_APP:
@@ -186,7 +186,7 @@ void KioskLaunchController::OnProfileLoaded(Profile* profile) {
             profile_, *kiosk_app_id_.app_id, this);
         break;
       case KioskAppType::WEB_APP:
-        // Make keyboard config sync with the |VirtualKeyboardFeatures| policy.
+        // Make keyboard config sync with the `VirtualKeyboardFeatures` policy.
         ChromeKeyboardControllerClient::Get()->SetKeyboardConfigFromPref(true);
         app_launcher_ = std::make_unique<WebKioskAppLauncher>(
             profile, this, *kiosk_app_id_.account_id);

@@ -168,10 +168,10 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   // Shows OOBE/sign in WebUI that was previously initialized in hidden state.
   void ShowWebUI();
 
-  // Initializes |login_window_| and |login_view_| fields if needed.
+  // Initializes `login_window_` and `login_view_` fields if needed.
   void InitLoginWindowAndView();
 
-  // Closes |login_window_| and resets |login_window_| and |login_view_| fields.
+  // Closes `login_window_` and resets `login_window_` and `login_view_` fields.
   void ResetLoginWindowAndView();
 
   // Toggles OOBE progress bar visibility, the bar is hidden by default.
@@ -185,7 +185,7 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   // Called when login-prompt-visible signal is caught.
   void OnLoginPromptVisible();
 
-  // Creates or recreates |existing_user_controller_|.
+  // Creates or recreates `existing_user_controller_`.
   void CreateExistingUserController();
 
   // Plays startup sound if needed and audio device is ready.

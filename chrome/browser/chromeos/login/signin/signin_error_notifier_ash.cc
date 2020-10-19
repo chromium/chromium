@@ -225,7 +225,7 @@ void SigninErrorNotifier::HandleDeviceAccountError() {
       message_center::NotifierType::SYSTEM_COMPONENT,
       kProfileSigninNotificationId);
 
-  // Set |profile_id| for multi-user notification blocker.
+  // Set `profile_id` for multi-user notification blocker.
   notifier_id.profile_id =
       multi_user_util::GetAccountIdFromProfile(profile_).GetUserEmail();
 
@@ -262,7 +262,7 @@ void SigninErrorNotifier::OnCheckDummyGaiaTokenForAllAccounts(
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT,
       kProfileSigninNotificationId);
-  // Set |profile_id| for multi-user notification blocker. Note the primary user
+  // Set `profile_id` for multi-user notification blocker. Note the primary user
   // account id is used to identify the profile for the blocker so it is used
   // instead of the secondary user account id.
   notifier_id.profile_id =

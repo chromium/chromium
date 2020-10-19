@@ -58,7 +58,7 @@ class MultiProfileUserController {
   static void RegisterPrefs(PrefRegistrySimple* registry);
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  // Returns the cached policy value for |user_email|.
+  // Returns the cached policy value for `user_email`.
   std::string GetCachedValue(const std::string& user_email) const;
 
   // Returns primary user policy (only ALLOW,
@@ -70,7 +70,7 @@ class MultiProfileUserController {
   static ash::MultiProfileUserBehavior UserBehaviorStringToEnum(
       const std::string& behavior);
 
-  // Returns true if user allowed to be in the current session. If |reason| not
+  // Returns true if user allowed to be in the current session. If `reason` not
   // null stores UserAllowedInSessionReason enum that describes actual reason.
   bool IsUserAllowedInSession(const std::string& user_email,
                               UserAllowedInSessionReason* reason) const;

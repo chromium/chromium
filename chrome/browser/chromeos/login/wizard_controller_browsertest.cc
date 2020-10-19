@@ -168,7 +168,7 @@ class PrefStoreStub : public TestingPrefStore {
   ~PrefStoreStub() override {}
 };
 
-// Used to set up a |FakeAutoEnrollmentClientFactory| for the duration of a
+// Used to set up a `FakeAutoEnrollmentClientFactory` for the duration of a
 // test.
 class ScopedFakeAutoEnrollmentClientFactory {
  public:
@@ -187,10 +187,10 @@ class ScopedFakeAutoEnrollmentClientFactory {
     controller_->SetAutoEnrollmentClientFactoryForTesting(nullptr);
   }
 
-  // Waits until the |AutoEnrollmentController| has requested the creation of an
-  // |AutoEnrollmentClient|. Returns the created |AutoEnrollmentClient|. If an
-  // |AutoEnrollmentClient| has already been created, returns immediately.
-  // Note: The returned instance is owned by |AutoEnrollmentController|.
+  // Waits until the `AutoEnrollmentController` has requested the creation of an
+  // `AutoEnrollmentClient`. Returns the created `AutoEnrollmentClient`. If an
+  // `AutoEnrollmentClient` has already been created, returns immediately.
+  // Note: The returned instance is owned by `AutoEnrollmentController`.
   policy::FakeAutoEnrollmentClient* WaitAutoEnrollmentClientCreated() {
     if (created_auto_enrollment_client_)
       return created_auto_enrollment_client_;
@@ -202,17 +202,17 @@ class ScopedFakeAutoEnrollmentClientFactory {
     return created_auto_enrollment_client_;
   }
 
-  // Resets the cached |AutoEnrollmentClient|, so another |AutoEnrollmentClient|
+  // Resets the cached `AutoEnrollmentClient`, so another `AutoEnrollmentClient`
   // may be created through this factory.
   void Reset() { created_auto_enrollment_client_ = nullptr; }
 
  private:
-  // Called when |fake_auto_enrollment_client_factory_| was asked to create an
-  // |AutoEnrollmentClient|.
+  // Called when `fake_auto_enrollment_client_factory_` was asked to create an
+  // `AutoEnrollmentClient`.
   void OnFakeAutoEnrollmentClientCreated(
       policy::FakeAutoEnrollmentClient* auto_enrollment_client) {
     // Only allow an AutoEnrollmentClient to be created when the test expects
-    // it. The test should call |Reset| to expect a new |AutoEnrollmentClient|
+    // it. The test should call `Reset` to expect a new `AutoEnrollmentClient`
     // to be created.
     EXPECT_FALSE(created_auto_enrollment_client_);
     created_auto_enrollment_client_ = auto_enrollment_client;
@@ -221,8 +221,8 @@ class ScopedFakeAutoEnrollmentClientFactory {
       std::move(run_on_auto_enrollment_client_created_).Run();
   }
 
-  // The |AutoEnrollmentController| which is using
-  // |fake_auto_enrollment_client_factory_|.
+  // The `AutoEnrollmentController` which is using
+  // `fake_auto_enrollment_client_factory_`.
   AutoEnrollmentController* controller_;
   policy::FakeAutoEnrollmentClient::FactoryImpl
       fake_auto_enrollment_client_factory_;
@@ -268,7 +268,7 @@ void SetUpCrasAndEnableChromeVox(int volume_percent, bool mute_on) {
   AccessibilityManager* a11y = AccessibilityManager::Get();
   CrasAudioHandler* cras = CrasAudioHandler::Get();
 
-  // Audio output is at |volume_percent| and |mute_on|. Spoken feedback
+  // Audio output is at `volume_percent` and `mute_on`. Spoken feedback
   // is disabled.
   cras->SetOutputVolumePercent(volume_percent);
   cras->SetOutputMute(mute_on);
@@ -288,10 +288,10 @@ void QuitLoopOnAutoEnrollmentProgress(
 }
 
 // Returns a string which can be put into the VPD variable
-// |kEnterpriseManagementEmbargoEndDateKey|. If |days_offset| is 0, the return
-// value represents the current day. If |days_offset| is positive, the return
-// value represents |days_offset| days in the future. If |days_offset| is
-// negative, the return value represents |days_offset| days in the past.
+// `kEnterpriseManagementEmbargoEndDateKey`. If `days_offset` is 0, the return
+// value represents the current day. If `days_offset` is positive, the return
+// value represents `days_offset` days in the future. If `days_offset` is
+// negative, the return value represents `days_offset` days in the past.
 std::string GenerateEmbargoEndDate(int days_offset) {
   base::Time::Exploded exploded;
   base::Time target_time =
@@ -1099,8 +1099,8 @@ class WizardControllerDeviceStateTest : public WizardControllerFlowTest {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
 
     // Initialize the FakeShillManagerClient. This does not happen
-    // automatically because of the |DBusThreadManager::GetSetterForTesting|
-    // call in |SetUpInProcessBrowserTestFixture|. See https://crbug.com/847422.
+    // automatically because of the `DBusThreadManager::GetSetterForTesting`
+    // call in `SetUpInProcessBrowserTestFixture`. See https://crbug.com/847422.
     // TODO(pmarko): Find a way for FakeShillManagerClient to be initialized
     // automatically (https://crbug.com/847422).
     DBusThreadManager::Get()
@@ -1246,8 +1246,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
 }
 
 // Allows testing different behavior if forced re-enrollment is performed but
-// not explicitly required (instantiated with |false|) vs. if forced
-// re-enrollment is explicitly required (instantiated with |true|).
+// not explicitly required (instantiated with `false`) vs. if forced
+// re-enrollment is explicitly required (instantiated with `true`).
 class WizardControllerDeviceStateExplicitRequirementTest
     : public WizardControllerDeviceStateTest,
       public testing::WithParamInterface<bool /* fre_explicitly_required */> {
@@ -1818,7 +1818,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   EXPECT_EQ(AutoEnrollmentController::AutoEnrollmentCheckType::kNone,
             auto_enrollment_controller()->auto_enrollment_check_type());
 
-  // The timeout is 45 seconds, see |auto_enrollment_controller.cc|.
+  // The timeout is 45 seconds, see `auto_enrollment_controller.cc`.
   // Fast-forward by a bit more than that.
   task_runner->FastForwardBy(base::TimeDelta::FromSeconds(45 + 1));
 

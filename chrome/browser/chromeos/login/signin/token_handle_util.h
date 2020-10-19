@@ -35,24 +35,24 @@ class TokenHandleUtil {
   using TokenValidationCallback =
       base::Callback<void(const AccountId&, TokenHandleStatus)>;
 
-  // Returns true if UserManager has token handle associated with |account_id|.
+  // Returns true if UserManager has token handle associated with `account_id`.
   static bool HasToken(const AccountId& account_id);
 
-  // Returns true if the token status for |account_id| was checked recently
+  // Returns true if the token status for `account_id` was checked recently
   // (within kCacheStatusTime).
   static bool IsRecentlyChecked(const AccountId& account_id);
 
-  // Indicates if token handle for |account_id| is missing or marked as invalid.
+  // Indicates if token handle for `account_id` is missing or marked as invalid.
   static bool ShouldObtainHandle(const AccountId& account_id);
 
-  // Performs token handle check for |account_id|. Will call |callback| with
+  // Performs token handle check for `account_id`. Will call `callback` with
   // corresponding result.
   void CheckToken(
       const AccountId& account_id,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const TokenValidationCallback& callback);
 
-  // Given the token |handle| store it for |account_id|.
+  // Given the token `handle` store it for `account_id`.
   static void StoreTokenHandle(const AccountId& account_id,
                                const std::string& handle);
 

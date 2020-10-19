@@ -302,7 +302,7 @@ class ArcTermsOfServiceScreenTest : public OobeBaseTest {
     return BuildHttpResponse(content);
   }
 
-  // Returns a successful |BasicHttpResponse| with |content|.
+  // Returns a successful `BasicHttpResponse` with `content`.
   std::unique_ptr<BasicHttpResponse> BuildHttpResponse(
       const std::string& content) {
     std::unique_ptr<BasicHttpResponse> http_response =
@@ -533,9 +533,9 @@ class ParameterizedArcTermsOfServiceScreenTest
   }
 
   // Common routine that enables/disables checkboxes based on test parameters.
-  // When |accept| is true, advances to next screen by clicking on the "Accept"
+  // When `accept` is true, advances to next screen by clicking on the "Accept"
   // button.
-  // |play_consent|, |backup_and_restore_consent| and |location_service_consent|
+  // `play_consent`, `backup_and_restore_consent` and `location_service_consent`
   // are the expected consents recordings.
   void AdvanceNextScreenWithExpectations(
       bool accept,

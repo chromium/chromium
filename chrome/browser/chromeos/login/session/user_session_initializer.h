@@ -55,7 +55,7 @@ class UserSessionInitializer : public session_manager::SessionManagerObserver {
   // Initialize RLZ.
   void InitRlz(Profile* profile);
 
-  // Get the NSS cert database for the user represented with |profile|
+  // Get the NSS cert database for the user represented with `profile`
   // and start certificate loader with it.
   void InitializeCerts(Profile* profile);
 
@@ -70,7 +70,7 @@ class UserSessionInitializer : public session_manager::SessionManagerObserver {
   void InitializePrimaryProfileServices(Profile* profile,
                                         const user_manager::User* user);
 
-  // Initializes RLZ. If |disabled| is true, RLZ pings are disabled.
+  // Initializes RLZ. If `disabled` is true, RLZ pings are disabled.
   void InitRlzImpl(Profile* profile, const RlzInitParams& params);
 
   base::OnceClosure init_rlz_impl_closure_for_testing_;

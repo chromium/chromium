@@ -55,10 +55,10 @@ constexpr char kLegacyDemoRetailModeDomainRegex[] =
     "[[:alpha:]]{2}-retailmode.com";
 
 // An extra legacy demo retail mode domain that does not match
-// |kLegacyDemoRetailModeDomainRegex|.
+// `kLegacyDemoRetailModeDomainRegex`.
 constexpr char kExtraLegacyDemoRetailModeDomain[] = "us2-retailmode.com";
 
-// Deletes directory at |path| from the device.
+// Deletes directory at `path` from the device.
 DemoModeResourcesRemover::RemovalResult RemoveDirectory(
     const base::FilePath& path) {
   if (!base::DirectoryExists(path) || base::IsDirectoryEmpty(path))
@@ -70,7 +70,7 @@ DemoModeResourcesRemover::RemovalResult RemoveDirectory(
   return DemoModeResourcesRemover::RemovalResult::kSuccess;
 }
 
-// Tests whether the session with user |user| is part of legacy demo mode -
+// Tests whether the session with user `user` is part of legacy demo mode -
 // a public session in a legacy demo retail mode domain.
 // Note that DemoSession::IsDeviceInDemoMode will return false for these
 // sessions.

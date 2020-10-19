@@ -47,7 +47,7 @@ TEST_F(DialogDelegateUnittest, Test) {
       extension->short_name(), extension->GetResourceURL(kResourcePath),
       false /*can_be_closed_by_user*/, close_callback_wait.QuitClosure());
 
-  // |delegate| will delete itself when calling |OnDialogClosed()| at the end of
+  // `delegate` will delete itself when calling `OnDialogClosed()` at the end of
   // the test.
   DialogDelegate* delegate = new DialogDelegate(&create_options);
 

@@ -33,7 +33,7 @@ void EnforceDevicePolicyInputMethods(std::string user_input_method);
 // Remove any policy limitations on allowed IMEs.
 void StopEnforcingPolicyInputMethods();
 
-// Update the keyboard settings for |account_id|.
+// Update the keyboard settings for `account_id`.
 void SetKeyboardSettings(const AccountId& account_id);
 
 // Covert a ListValue of locale info to a list of ash struct LocaleItem.

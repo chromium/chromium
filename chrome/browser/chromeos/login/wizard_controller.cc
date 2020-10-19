@@ -294,7 +294,7 @@ void RecordUMAHistogramForOOBEStepCompletionTime(chromeos::OobeScreenId screen,
   std::string histogram_name = "OOBE.StepCompletionTime." + screen_name;
 
   // Equivalent to using UMA_HISTOGRAM_MEDIUM_TIMES. UMA_HISTOGRAM_MEDIUM_TIMES
-  // can not be used here, because |histogram_name| is calculated dynamically
+  // can not be used here, because `histogram_name` is calculated dynamically
   // and changes from call to call.
   base::HistogramBase* histogram = base::Histogram::FactoryTimeGet(
       histogram_name, base::TimeDelta::FromMilliseconds(10),
@@ -1183,7 +1183,7 @@ void WizardController::OnEnrollmentScreenExit(EnrollmentScreen::Result result) {
 void WizardController::OnEnrollmentDone() {
   PerformOOBECompletedActions();
 
-  // Fetch the rollback flag from |oobe_configuration_|.
+  // Fetch the rollback flag from `oobe_configuration_`.
   bool enrollment_mode_rollback = false;
   auto* restore_after_rollback_value =
       wizard_context_->configuration.FindKeyOfType(
@@ -1499,8 +1499,8 @@ void WizardController::OnDeviceDisabledChecked(bool device_disabled) {
   if (start_enrollment_value)
     configuration_forced_enrollment = start_enrollment_value->GetBool();
 
-  // Fetch the rollback flag from |configuration|. It is not stored in the
-  // |prescribed_enrollment_config_|. To restore after rollback the enrollment
+  // Fetch the rollback flag from `configuration`. It is not stored in the
+  // `prescribed_enrollment_config_`. To restore after rollback the enrollment
   // screen needs to be started. (crbug.com/1093928)
   auto* restore_after_rollback_value =
       wizard_context_->configuration.FindKeyOfType(
@@ -1862,7 +1862,7 @@ void WizardController::AutoLaunchKioskApp(KioskAppType app_type) {
       break;
   }
 
-  // Wait for the |CrosSettings| to become either trusted or permanently
+  // Wait for the `CrosSettings` to become either trusted or permanently
   // untrusted.
   const CrosSettingsProvider::TrustedStatus status =
       CrosSettings::Get()->PrepareTrustedValues(
@@ -1872,7 +1872,7 @@ void WizardController::AutoLaunchKioskApp(KioskAppType app_type) {
     return;
 
   if (status == CrosSettingsProvider::PERMANENTLY_UNTRUSTED) {
-    // If the |cros_settings_| are permanently untrusted, show an error message
+    // If the `cros_settings_` are permanently untrusted, show an error message
     // and refuse to auto-launch the kiosk app.
     GetErrorScreen()->SetUIState(NetworkError::UI_STATE_LOCAL_STATE_ERROR);
     GetLoginDisplayHost()->SetStatusAreaVisible(false);

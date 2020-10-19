@@ -41,8 +41,8 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
   // Returns instance of NetworkScreen.
   static NetworkScreen* Get(ScreenManager* manager);
 
-  // Called when |view| has been destroyed. If this instance is destroyed before
-  // the |view| it should call view->Unbind().
+  // Called when `view` has been destroyed. If this instance is destroyed before
+  // the `view` it should call view->Unbind().
   void OnViewDestroyed(NetworkScreenView* view);
 
   void set_exit_callback_for_testing(const ScreenExitCallback& exit_callback) {
@@ -89,7 +89,7 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
   // Notifies wizard on successful connection.
   void NotifyOnConnection();
 
-  // Called by |connection_timer_| when connection to the network timed out.
+  // Called by `connection_timer_` when connection to the network timed out.
   void OnConnectionTimeout();
 
   // Updates UI based on current network status.

@@ -20,7 +20,7 @@ class OobeAuthPageWaiter {
   enum class AuthPageType { GAIA, ENROLLMENT };
 
   // Gaia Login and Enrollment screens use different authenticators.
-  // |auth_page_type| specifies which authenticator to wait for.
+  // `auth_page_type` specifies which authenticator to wait for.
   explicit OobeAuthPageWaiter(AuthPageType auth_page_type);
   ~OobeAuthPageWaiter();
 
@@ -28,7 +28,7 @@ class OobeAuthPageWaiter {
   void WaitUntilReady();
 
  private:
-  // Waits for |event| to be triggered by the page authenticator.
+  // Waits for `event` to be triggered by the page authenticator.
   void WaitForEvent(const std::string& event);
 
   const char* GetAuthenticator();

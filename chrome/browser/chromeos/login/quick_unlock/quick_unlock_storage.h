@@ -73,7 +73,7 @@ class QuickUnlockStorage : public KeyedService {
   // not been created. May return nullptr.
   AuthToken* GetAuthToken();
 
-  // Fetch the user context if |auth_token| is valid. May return null.
+  // Fetch the user context if `auth_token` is valid. May return null.
   const UserContext* GetUserContext(const std::string& auth_token);
 
   FingerprintStorage* fingerprint_storage() {

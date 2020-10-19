@@ -95,7 +95,7 @@ class ExistingUserController : public LoginDisplay::Delegate,
   // Cancels current password changed flow.
   void CancelPasswordChangedFlow();
 
-  // Decrypt cryptohome using user provided |old_password| and migrate to new
+  // Decrypt cryptohome using user provided `old_password` and migrate to new
   // password.
   void MigrateUserData(const std::string& old_password);
 
@@ -188,8 +188,8 @@ class ExistingUserController : public LoginDisplay::Delegate,
   // Returns corresponding native window.
   gfx::NativeWindow GetNativeWindow() const;
 
-  // Show error message. |error_id| error message ID in resources.
-  // If |details| string is not empty, it specify additional error text
+  // Show error message. `error_id` error message ID in resources.
+  // If `details` string is not empty, it specify additional error text
   // provided by authenticator, it is not localized.
   void ShowError(int error_id, const std::string& details);
 
@@ -225,16 +225,16 @@ class ExistingUserController : public LoginDisplay::Delegate,
   // Shows "password changed" dialog.
   void ShowPasswordChangedDialog(const UserContext& user_context);
 
-  // Creates |login_performer_| if necessary and calls login() on it.
+  // Creates `login_performer_` if necessary and calls login() on it.
   void PerformLogin(const UserContext& user_context,
                     LoginPerformer::AuthorizationMode auth_mode);
 
-  // Calls login() on previously-used |login_performer_|.
+  // Calls login() on previously-used `login_performer_`.
   void ContinuePerformLogin(LoginPerformer::AuthorizationMode auth_mode,
                             const UserContext& user_context);
 
   // Removes the constraint that user home mount requires ext4 encryption from
-  // |user_context|, then calls login() on previously-used |login_performer|.
+  // `user_context`, then calls login() on previously-used `login_performer`.
   void ContinuePerformLoginWithoutMigration(
       LoginPerformer::AuthorizationMode auth_mode,
       const UserContext& user_context);
@@ -242,7 +242,7 @@ class ExistingUserController : public LoginDisplay::Delegate,
   // Asks the user to enter their password again.
   void RestartLogin(const UserContext& user_context);
 
-  // Updates the |login_display_| attached to this controller.
+  // Updates the `login_display_` attached to this controller.
   void UpdateLoginDisplay(const user_manager::UserList& users);
 
   // Check if login screen will need to be refreshed when saml online login
@@ -279,16 +279,16 @@ class ExistingUserController : public LoginDisplay::Delegate,
   void PerformPreLoginActions(const UserContext& user_context);
 
   // Performs set of actions when login has been completed or has been
-  // cancelled. If |start_auto_login_timer| is true than
+  // cancelled. If `start_auto_login_timer` is true than
   // auto-login timer is started.
   void PerformLoginFinishedActions(bool start_auto_login_timer);
 
-  // Invokes |continuation| after verifying that cryptohome service is
+  // Invokes `continuation` after verifying that cryptohome service is
   // available.
   void ContinueLoginWhenCryptohomeAvailable(base::OnceClosure continuation,
                                             bool service_is_available);
 
-  // Invokes |continuation| after verifying that the device is not disabled.
+  // Invokes `continuation` after verifying that the device is not disabled.
   void ContinueLoginIfDeviceNotDisabled(const base::Closure& continuation);
 
   // Signs in as a new user. This is a continuation of CompleteLogin() that gets
@@ -300,7 +300,7 @@ class ExistingUserController : public LoginDisplay::Delegate,
   void DoLogin(const UserContext& user_context,
                const SigninSpecifics& specifics);
 
-  // Callback invoked when |oauth2_token_initializer_| has finished.
+  // Callback invoked when `oauth2_token_initializer_` has finished.
   void OnOAuth2TokensFetched(bool success, const UserContext& user_context);
 
   // Called on completition of a pre-signin policy fetch, which is performed to
@@ -315,7 +315,7 @@ class ExistingUserController : public LoginDisplay::Delegate,
   void WipePerformed(const UserContext& user_context,
                      base::Optional<cryptohome::BaseReply> reply);
 
-  // Triggers online login for the given |account_id|.
+  // Triggers online login for the given `account_id`.
   void ForceOnlineLoginForAccountId(const AccountId& account_id);
 
   // Clear the recorded displayed email, displayed name, given name so it won't
@@ -365,14 +365,14 @@ class ExistingUserController : public LoginDisplay::Delegate,
   // Used for notifications during the login process.
   content::NotificationRegistrar registrar_;
 
-  // The displayed email for the next login attempt set by |SetDisplayEmail|.
+  // The displayed email for the next login attempt set by `SetDisplayEmail`.
   std::string display_email_;
 
   // The displayed name for the next login attempt set by
-  // |SetDisplayAndGivenName|.
+  // `SetDisplayAndGivenName`.
   base::string16 display_name_;
 
-  // The given name for the next login attempt set by |SetDisplayAndGivenName|.
+  // The given name for the next login attempt set by `SetDisplayAndGivenName`.
   base::string16 given_name_;
 
   // Whether login attempt is running.
@@ -383,7 +383,7 @@ class ExistingUserController : public LoginDisplay::Delegate,
   bool password_changed_ = false;
 
   // Set in OnLoginSuccess. Before that use LoginPerformer::auth_mode().
-  // Initialized with |kExternal| as more restricted mode.
+  // Initialized with `kExternal` as more restricted mode.
   LoginPerformer::AuthorizationMode auth_mode_ =
       LoginPerformer::AuthorizationMode::kExternal;
 

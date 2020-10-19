@@ -10,8 +10,8 @@
 
 namespace chromeos {
 
-// Logs an UMA |event| in "Enrollment.*" histogram. Histogram is chosen
-// depending on |mode|.
+// Logs an UMA `event` in "Enrollment.*" histogram. Histogram is chosen
+// depending on `mode`.
 void EnrollmentUMA(policy::MetricEnrollment sample,
                    policy::EnrollmentConfig::Mode mode);
 

@@ -11,7 +11,7 @@
 namespace chromeos {
 namespace chrome_user_manager_util {
 
-// Returns true if all |users| are allowed depending on the provided device
+// Returns true if all `users` are allowed depending on the provided device
 // policies. Accepted user types: USER_TYPE_REGULAR, USER_TYPE_GUEST,
 // USER_TYPE_SUPERVISED, USER_TYPE_CHILD.
 // This function only checks against the device policies provided, so it does
@@ -20,7 +20,7 @@ bool AreAllUsersAllowed(const user_manager::UserList& users,
                         const enterprise_management::ChromeDeviceSettingsProto&
                             device_settings_proto);
 
-// Returns true if |user| is allowed, according to the given constraints.
+// Returns true if `user` is allowed, according to the given constraints.
 // Accepted user types: USER_TYPE_REGULAR, USER_TYPE_GUEST,
 // USER_TYPE_SUPERVISED, USER_TYPE_CHILD.
 bool IsUserAllowed(const user_manager::User& user,

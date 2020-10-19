@@ -29,9 +29,9 @@ class UserManagerInterface {
       const AccountId& account_id) = 0;
   virtual SupervisedUserManager* GetSupervisedUserManager() = 0;
 
-  // Method that allows to set |flow| for user identified by |account_id|.
+  // Method that allows to set `flow` for user identified by `account_id`.
   // Flow should be set before login attempt.
-  // Takes ownership of the |flow|, |flow| will be deleted in case of login
+  // Takes ownership of the `flow`, `flow` will be deleted in case of login
   // failure.
   virtual void SetUserFlow(const AccountId& account_id, UserFlow* flow) = 0;
 
@@ -40,12 +40,12 @@ class UserManagerInterface {
   // Returned value should not be cached.
   virtual UserFlow* GetCurrentUserFlow() const = 0;
 
-  // Return user flow for user identified by |account_id|. Returns instance of
+  // Return user flow for user identified by `account_id`. Returns instance of
   // DefaultUserFlow if no flow was defined for user.
   // Returned value should not be cached.
   virtual UserFlow* GetUserFlow(const AccountId& account_id) const = 0;
 
-  // Resets user flow for user identified by |account_id|.
+  // Resets user flow for user identified by `account_id`.
   virtual void ResetUserFlow(const AccountId& account_id) = 0;
 
   DISALLOW_COPY_AND_ASSIGN(UserManagerInterface);

@@ -775,7 +775,7 @@ class KioskTest : public OobeBaseTest {
   }
 
   // Waits for window width to change. Listens to a 'size_change' message sent
-  // from DOM automation to |message_queue|.
+  // from DOM automation to `message_queue`.
   // The message is expected to be in JSON format:
   // {'name': <msg_name>, 'data': <extra_msg_data>}.
   // This will wait until a message with a different width is seen. It will
@@ -1385,7 +1385,7 @@ IN_PROC_BROWSER_TEST_F(KioskTest, SettingsWindow) {
   const GURL page2_sub("https://page2.com/sub");
   const GURL page3("https://page3.com/");
 
-  // Replace the settings allowlist with |settings_pages|.
+  // Replace the settings allowlist with `settings_pages`.
   ScopedSettingsPages pages(&settings_pages);
   AppSession* app_session = KioskAppManager::Get()->app_session();
 
@@ -2614,7 +2614,7 @@ IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest, PrivateStore) {
   const char kPrivateStoreUpdate[] = "/private_store_update";
   net::EmbeddedTestServer private_server;
 
-  // |private_server| serves crx from test data dir.
+  // `private_server` serves crx from test data dir.
   base::FilePath test_data_dir;
   base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
   private_server.ServeFilesFromDirectory(test_data_dir);

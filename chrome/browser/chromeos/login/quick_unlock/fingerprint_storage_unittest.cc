@@ -43,7 +43,7 @@ class FingerprintStorageUnitTest : public testing::Test {
 // Provides test-only FingerprintStorage APIs.
 class FingerprintStorageTestApi {
  public:
-  // Does *not* take ownership over |fingerprint_storage|.
+  // Does *not* take ownership over `fingerprint_storage`.
   explicit FingerprintStorageTestApi(
       quick_unlock::FingerprintStorage* fingerprint_storage)
       : fingerprint_storage_(fingerprint_storage) {}

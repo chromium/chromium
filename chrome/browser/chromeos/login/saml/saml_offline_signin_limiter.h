@@ -32,7 +32,7 @@ class SAMLOfflineSigninLimiter
       public base::PowerObserver,
       public session_manager::SessionManagerObserver {
  public:
-  // Called when the user successfully authenticates. |auth_flow| indicates
+  // Called when the user successfully authenticates. `auth_flow` indicates
   // the type of authentication flow that the user went through.
   void SignedIn(UserContext::AuthFlow auth_flow);
 
@@ -52,13 +52,13 @@ class SAMLOfflineSigninLimiter
   friend class SAMLOfflineSigninLimiterFactory;
   friend class SAMLOfflineSigninLimiterTest;
 
-  // |profile| and |clock| must remain valid until Shutdown() is called. If
-  // |clock| is NULL, the shared base::DefaultClock instance will be used.
+  // `profile` and `clock` must remain valid until Shutdown() is called. If
+  // `clock` is NULL, the shared base::DefaultClock instance will be used.
   SAMLOfflineSigninLimiter(Profile* profile, base::Clock* clock);
   ~SAMLOfflineSigninLimiter() override;
 
   // Recalculates the amount of time remaining until online login should be
-  // forced and sets the |offline_signin_limit_timer_| accordingly. If the limit
+  // forced and sets the `offline_signin_limit_timer_` accordingly. If the limit
   // has expired already, sets the flag enforcing online login immediately.
   void UpdateLimit();
 

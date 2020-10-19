@@ -117,19 +117,19 @@ class WizardController {
 
   bool is_initialized() { return is_initialized_; }
 
-  // Shows the first screen defined by |first_screen| or by default if the
+  // Shows the first screen defined by `first_screen` or by default if the
   // parameter is empty.
   void Init(OobeScreenId first_screen);
 
-  // Advances to screen defined by |screen| and shows it. Might show HID
+  // Advances to screen defined by `screen` and shows it. Might show HID
   // detection screen in case HID connection is needed and screen_id ==
   // OobeScreen::SCREEN_UNKNOWN.
   void AdvanceToScreen(OobeScreenId screen_id);
 
-  // Advances to screen defined by |screen| and shows it.
+  // Advances to screen defined by `screen` and shows it.
   void AdvanceToScreenAfterHIDDetection(OobeScreenId first_screen);
 
-  // Returns |true| if accelerator |action| was handled by current screen
+  // Returns `true` if accelerator `action` was handled by current screen
   // or WizardController itself.
   bool HandleAccelerator(ash::LoginAcceleratorAction action);
 
@@ -143,7 +143,7 @@ class WizardController {
   //    chromeos::DemoSetupScreenView::kScreenId
   void StartDemoModeSetup();
 
-  // Simulates demo mode setup environment. If |demo_config| has a value, it
+  // Simulates demo mode setup environment. If `demo_config` has a value, it
   // is explicitly set on DemoSetupController and going through demo settings
   // screens can be skipped.
   void SimulateDemoModeSetupForTesting(
@@ -220,7 +220,7 @@ class WizardController {
   void RemoveObserver(ScreenObserver* obs);
 
  private:
-  // Create BaseScreen instances. These are owned by |screen_manager_|.
+  // Create BaseScreen instances. These are owned by `screen_manager_`.
   std::vector<std::unique_ptr<BaseScreen>> CreateScreens();
 
   // Show specific screen.
@@ -259,8 +259,8 @@ class WizardController {
   // Shows images login screen.
   void ShowLoginScreen();
 
-  // Check if advancing to |screen| is allowed using screen priorities. Return
-  // true if the priority of |screen| is higher or equal to current screen.
+  // Check if advancing to `screen` is allowed using screen priorities. Return
+  // true if the priority of `screen` is higher or equal to current screen.
   bool CanNavigateTo(OobeScreenId screen_id);
 
   // Shows default screen depending on device ownership.
@@ -268,7 +268,7 @@ class WizardController {
       DeviceSettingsService::OwnershipStatus status);
 
   // Shared actions to be performed on a screen exit.
-  // |exit_reason| is the screen specific exit reason reported by the screen.
+  // `exit_reason` is the screen specific exit reason reported by the screen.
   void OnScreenExit(OobeScreenId screen, const std::string& exit_reason);
 
   // Exit handlers:
@@ -350,7 +350,7 @@ class WizardController {
   // Switches from one screen to another.
   void SetCurrentScreen(BaseScreen* screen);
 
-  // Update the status area visibility for |screen|.
+  // Update the status area visibility for `screen`.
   void UpdateStatusAreaVisibilityForScreen(OobeScreenId screen_id);
 
   // Launched kiosk app configured for auto-launch.
@@ -388,7 +388,7 @@ class WizardController {
   bool SetOnTimeZoneResolvedForTesting(const base::Closure& callback);
 
   // Start the enrollment screen using the config from
-  // |prescribed_enrollment_config_|. If |force_interactive| is true,
+  // `prescribed_enrollment_config_`. If `force_interactive` is true,
   // the user will be presented with a manual enrollment screen requiring
   // Gaia credentials. If it is false, the screen may return after trying
   // attestation-based enrollment if appropriate.

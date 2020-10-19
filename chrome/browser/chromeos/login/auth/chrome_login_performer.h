@@ -45,8 +45,8 @@ class ChromeLoginPerformer : public LoginPerformer {
 
  protected:
   bool RunTrustedCheck(base::OnceClosure callback) override;
-  // Runs |callback| unconditionally, but DidRunTrustedCheck() will only be run
-  // itself sometimes, so ownership of |callback| should not be held in the
+  // Runs `callback` unconditionally, but DidRunTrustedCheck() will only be run
+  // itself sometimes, so ownership of `callback` should not be held in the
   // Callback pointing to DidRunTrustedCheck.
   void DidRunTrustedCheck(base::OnceClosure* callback);
 

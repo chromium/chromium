@@ -106,13 +106,13 @@ EasyUnlockServiceRegular::EasyUnlockServiceRegular(
 
 EasyUnlockServiceRegular::~EasyUnlockServiceRegular() = default;
 
-// TODO(jhawkins): This method with |has_unlock_keys| == true is the only signal
+// TODO(jhawkins): This method with `has_unlock_keys` == true is the only signal
 // that SmartLock setup has completed successfully. Make this signal more
 // explicit.
 void EasyUnlockServiceRegular::LoadRemoteDevices() {
   if (!device_sync_client_->is_ready()) {
     // OnEnrollmentFinished() or OnNewDevicesSynced() will call back on this
-    // method once |device_sync_client_| is ready.
+    // method once `device_sync_client_` is ready.
     PA_LOG(VERBOSE) << "DeviceSyncClient is not ready yet, delaying "
                        "UseLoadedRemoteDevices().";
     return;
@@ -134,7 +134,7 @@ void EasyUnlockServiceRegular::LoadRemoteDevices() {
   // IsEnabled().
   pref_manager_->SetIsEasyUnlockEnabled(has_unlock_keys);
   if (has_unlock_keys) {
-    // If |has_unlock_keys| is true, then the user must have successfully
+    // If `has_unlock_keys` is true, then the user must have successfully
     // completed setup. Track that the IsEasyUnlockEnabled pref is actively set
     // by the user, as opposed to passively being set to disabled (the default
     // state).
@@ -178,7 +178,7 @@ void EasyUnlockServiceRegular::UseLoadedRemoteDevices(
   SetProximityAuthDevices(GetAccountId(), remote_devices,
                           device_sync_client_->GetLocalDeviceMetadata());
 
-  // We need to store a copy of |local_and_remote_devices| in the TPM, so it can
+  // We need to store a copy of `local_and_remote_devices` in the TPM, so it can
   // be retrieved on the sign-in screen when a user session has not been started
   // yet. This expects a final size of 2 (the one remote device, and the local
   // device).
@@ -329,7 +329,7 @@ void EasyUnlockServiceRegular::InitializeInternal() {
       base::Bind(&EasyUnlockServiceRegular::CheckCryptohomeKeysAndMaybeHardlock,
                  weak_ptr_factory_.GetWeakPtr()));
 
-  // If |device_sync_client_| is not ready yet, wait for it to call back on
+  // If `device_sync_client_` is not ready yet, wait for it to call back on
   // OnReady().
   if (device_sync_client_->is_ready())
     OnReady();

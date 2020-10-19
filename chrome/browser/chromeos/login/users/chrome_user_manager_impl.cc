@@ -409,7 +409,7 @@ void ChromeUserManagerImpl::Shutdown() {
   local_accounts_subscription_.reset();
 
   if (session_length_limiter_ && IsEnterpriseManaged()) {
-    // Store session length before tearing down |session_length_limiter_| for
+    // Store session length before tearing down `session_length_limiter_` for
     // enrolled devices so that it can be reported on the next run.
     const base::TimeDelta session_length =
         session_length_limiter_->GetSessionDuration();
@@ -1003,7 +1003,7 @@ void ChromeUserManagerImpl::NotifyOnLogin() {
 void ChromeUserManagerImpl::RemoveNonCryptohomeData(
     const AccountId& account_id) {
   // Wallpaper removal depends on user preference, so it must happen before
-  // |known_user::RemovePrefs|. See https://crbug.com/778077.
+  // `known_user::RemovePrefs`. See https://crbug.com/778077.
   for (auto& handler : cloud_external_data_policy_handlers_)
     handler->RemoveForAccountId(account_id);
   // TODO(tbarzic): Forward data removal request to ash::HammerDeviceHandler,
@@ -1243,7 +1243,7 @@ void ChromeUserManagerImpl::OnProfileAdded(Profile* profile) {
       GetUserImageManager(user->GetAccountId())->UserProfileCreated();
 
     // Allow managed guest session user to lock if
-    // |kLoginExtensionApiLaunchExtensionId| is set.
+    // `kLoginExtensionApiLaunchExtensionId` is set.
     if (user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT &&
         !profile->GetPrefs()
              ->GetString(prefs::kLoginExtensionApiLaunchExtensionId)
@@ -1386,8 +1386,8 @@ bool ChromeUserManagerImpl::IsManagedSessionEnabledForUser(
 
   if (!broker) {
     // The broker could be unavailable at the early initialization stage when
-    // - |DeviceSettingsProvider| does not have a list of device local accounts
-    //   in |kAccountsPrefDeviceLocalAccounts|
+    // - `DeviceSettingsProvider` does not have a list of device local accounts
+    //   in `kAccountsPrefDeviceLocalAccounts`
     // - and there is an attempt to autologin with public account before the
     // device settings become available. The broker will become available later
     // and the real policy value will be returned with future calls.

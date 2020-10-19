@@ -99,7 +99,7 @@ class KioskLaunchControllerTest
   std::unique_ptr<base::AutoReset<bool>>
       disable_wait_timer_and_login_operations_for_testing_;
   std::unique_ptr<FakeAppLaunchSplashScreenHandler> view_;
-  MockWebKioskAppLauncher* app_launcher_;  // owned by |controller_|.
+  MockWebKioskAppLauncher* app_launcher_;  // owned by `controller_`.
   std::unique_ptr<KioskLaunchController> controller_;
   KioskAppId kiosk_app_id_;
 };

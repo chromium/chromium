@@ -79,7 +79,7 @@ class OobeTest : public OobeBaseTest {
 IN_PROC_BROWSER_TEST_F(OobeTest, NewUser) {
   WaitForGaiaPageLoad();
 
-  // Make the MountEx cryptohome call fail iff the |create| field is missing,
+  // Make the MountEx cryptohome call fail iff the `create` field is missing,
   // which simulates the real cryptohomed's behavior for the new user mount.
   FakeCryptohomeClient::Get()->set_mount_create_required(true);
   LoginDisplayHost::default_host()

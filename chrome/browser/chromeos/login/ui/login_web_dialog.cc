@@ -157,7 +157,7 @@ bool LoginWebDialog::HandleOpenURLFromTab(WebContents* source,
                                           const content::OpenURLParams& params,
                                           WebContents** out_new_contents) {
   // On a login screen, if a missing extension is trying to show in a web
-  // dialog, a NetErrorHelper is displayed instead (hence we have a |source|),
+  // dialog, a NetErrorHelper is displayed instead (hence we have a `source`),
   // but there is no browser window associated with it. A helper screen will
   // fire an auto-reload, which in turn leads to opening a new browser window,
   // so we must suppress it.

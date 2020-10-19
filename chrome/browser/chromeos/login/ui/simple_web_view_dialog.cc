@@ -208,8 +208,8 @@ void SimpleWebViewDialog::Init() {
   // Add the views as child views before the grid layout is installed. This
   // ensures ownership is more clear.
   ToolbarRowView* toolbar_row_ptr = AddChildView(std::move(toolbar_row));
-  // Transfer ownership of the |web_view_| from the |web_view_container_|
-  // created in StartLoad() to |this|.
+  // Transfer ownership of the `web_view_` from the `web_view_container_`
+  // created in StartLoad() to `this`.
   AddChildView(std::move(web_view_container_));
 
   // Layout.

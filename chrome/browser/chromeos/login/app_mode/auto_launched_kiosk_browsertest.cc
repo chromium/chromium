@@ -75,8 +75,8 @@ constexpr char kTestManagementApiKioskApp[] =
     "adinpkdaebaiabdlinlbjmenialdhibc";
 
 // Secondary kiosk app that runs tests for chrome.management API.
-// The app is loaded alongside |kTestManagementApiKioskApp|. The tests are run
-// in the response to a message sent from |kTestManagementApiKioskApp|.
+// The app is loaded alongside `kTestManagementApiKioskApp`. The tests are run
+// in the response to a message sent from `kTestManagementApiKioskApp`.
 // The app's CRX is located under:
 //   chrome/test/data/chromeos/app_mode/webstore/downloads/
 //       kajpgkhinciaiihghpdamekpjpldgpfi.crx

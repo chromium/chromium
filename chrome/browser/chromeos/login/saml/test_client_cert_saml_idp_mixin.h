@@ -27,7 +27,7 @@ class FakeGaiaMixin;
 
 class TestClientCertSamlIdpMixin final : public InProcessBrowserTestMixin {
  public:
-  // |client_cert_authorities| is the list of DER-encoded X.509
+  // `client_cert_authorities` is the list of DER-encoded X.509
   // DistinguishedName of certificate authorities that should be requested by
   // the SAML server during the client authentication.
   TestClientCertSamlIdpMixin(
@@ -47,10 +47,10 @@ class TestClientCertSamlIdpMixin final : public InProcessBrowserTestMixin {
   void SetUpOnMainThread() override;
 
  private:
-  // Handles requests to |saml_server_|.
+  // Handles requests to `saml_server_`.
   std::unique_ptr<net::test_server::HttpResponse> HandleSamlServerRequest(
       const net::test_server::HttpRequest& request);
-  // Handles requests to |saml_with_client_certs_server_|.
+  // Handles requests to `saml_with_client_certs_server_`.
   std::unique_ptr<net::test_server::HttpResponse>
   HandleSamlWithClientCertsServerRequest(
       const net::test_server::HttpRequest& request);

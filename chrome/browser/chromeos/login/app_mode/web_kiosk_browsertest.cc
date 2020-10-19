@@ -138,7 +138,7 @@ class WebKioskTest : public OobeBaseTest {
     const keyboard::KeyboardConfig config =
         ash::KeyboardController::Get()->GetKeyboardConfig();
 
-    // |auto_capitalize| is not controlled by the policy
+    // `auto_capitalize` is not controlled by the policy
     // 'VirtualKeyboardFeatures', and its default value remains true.
     EXPECT_TRUE(config.auto_capitalize);
 

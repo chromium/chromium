@@ -42,7 +42,7 @@ class FakeGaiaMixin : public InProcessBrowserTestMixin {
   // enterprise users. Thus if you derive from this class and don't need
   // policies, please use @gmail.com e-mail for login. But if you need policies
   // for your test, you must use e-mail addresses that a) have a potentially
-  // enterprise domain and b) have been registered with |fake_gaia_|.
+  // enterprise domain and b) have been registered with `fake_gaia_`.
   // For your convenience, the e-mail addresses for users that have been set up
   // in this way are provided below.
   static const char kEnterpriseUser1[];
@@ -60,7 +60,7 @@ class FakeGaiaMixin : public InProcessBrowserTestMixin {
   ~FakeGaiaMixin() override;
 
   // Sets up fake gaia for the login code:
-  // - Maps |user_email| to |gaia_id|. If |gaia_id| is empty, |user_email| will
+  // - Maps `user_email` to `gaia_id`. If `gaia_id` is empty, `user_email` will
   //   be mapped to kDefaultGaiaId in FakeGaia;
   // - Issues a special all-scope access token associated with the test refresh
   //   token;
@@ -68,10 +68,10 @@ class FakeGaiaMixin : public InProcessBrowserTestMixin {
                              const std::string& gaia_id,
                              const std::string& refresh_token);
   // Sets up fake gaia to serve access tokens for a child user.
-  // *   Maps |user_email| to |gaia_id|. If |gaia_id| is empty, |user_email|
+  // *   Maps `user_email` to `gaia_id`. If `gaia_id` is empty, `user_email`
   //     will be mapped to kDefaultGaiaId in FakeGaia.
   // *   Issues user info token scoped for device management service.
-  // *   If |issue_any_scope_token|, issues a special all-access token
+  // *   If `issue_any_scope_token`, issues a special all-access token
   //     associated with the test refresh token (as it's done in
   //     SetupFakeGaiaForLogin()).
   // *   Initializes fake merge session as needed.

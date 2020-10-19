@@ -70,7 +70,7 @@ class StubAuthenticatorBuilder;
 class UserSessionManagerDelegate {
  public:
   // Called after profile is loaded and prepared for the session.
-  // |browser_launched| will be true is browser has been launched, otherwise
+  // `browser_launched` will be true is browser has been launched, otherwise
   // it will return false and client is responsible on launching browser.
   virtual void OnProfilePrepared(Profile* profile, bool browser_launched) = 0;
 
@@ -156,7 +156,7 @@ class UserSessionManager
   // Registers session related preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  // Applies user policies to |user_flags| .
+  // Applies user policies to `user_flags` .
   // This could mean removing command-line switchis that have been added by the
   // flag handling logic or appending additional switches due to policy.
   static void ApplyUserPolicyToSwitches(PrefService* user_profile_prefs,
@@ -164,7 +164,7 @@ class UserSessionManager
 
   // Invoked after the tmpfs is successfully mounted.
   // Asks session_manager to restart Chrome in Guest session mode.
-  // |start_url| is an optional URL to be opened in Guest session browser.
+  // `start_url` is an optional URL to be opened in Guest session browser.
   void CompleteGuestSessionLogin(const GURL& start_url);
 
   // Creates and returns the authenticator to use.
@@ -174,15 +174,15 @@ class UserSessionManager
   scoped_refptr<Authenticator> CreateAuthenticator(
       AuthStatusConsumer* consumer);
 
-  // Start user session given |user_context|.
-  // OnProfilePrepared() will be called on |delegate| once Profile is ready.
+  // Start user session given `user_context`.
+  // OnProfilePrepared() will be called on `delegate` once Profile is ready.
   void StartSession(const UserContext& user_context,
                     StartSessionType start_session_type,
                     bool has_auth_cookies,
                     bool has_active_session,
                     UserSessionManagerDelegate* delegate);
 
-  // Invalidates |delegate|, which was passed to StartSession method call.
+  // Invalidates `delegate`, which was passed to StartSession method call.
   void DelegateDeleted(UserSessionManagerDelegate* delegate);
 
   // Perform additional actions once system wide notification
@@ -246,14 +246,14 @@ class UserSessionManager
       const user_manager::User* user,
       const locale_util::SwitchLanguageCallback& callback) const;
 
-  // Switch to the locale that |profile| wishes to use and invoke |callback|.
+  // Switch to the locale that `profile` wishes to use and invoke `callback`.
   void RespectLocalePreferenceWrapper(Profile* profile,
                                       const base::Closure& callback);
 
   // Restarts Chrome if needed. This happens when user session has custom
   // flags/switches enabled. Another case when owner has setup custom flags,
   // they are applied on login screen as well but not to user session.
-  // |early_restart| is true if this restart attempt happens before user profile
+  // `early_restart` is true if this restart attempt happens before user profile
   // is fully initialized.
   // Might not return if restart is possible right now.
   // Returns true if restart was scheduled.
@@ -302,25 +302,25 @@ class UserSessionManager
   void Shutdown();
 
   // Sets the command-line switches to be set by session manager for a user
-  // session associated with |account_id| when chrome restarts. Overwrites
-  // switches for |switches_type| with |switches|. The resulting command-line
+  // session associated with `account_id` when chrome restarts. Overwrites
+  // switches for `switches_type` with `switches`. The resulting command-line
   // switches will be the command-line switches for all types combined. Note:
-  // |account_id| is currently ignored, because session manager ignores the
+  // `account_id` is currently ignored, because session manager ignores the
   // passed account id. For each type, only the last-set switches will be
   // honored.
-  // TODO(pmarko): Introduce a CHECK making sure that |account_id| is the
+  // TODO(pmarko): Introduce a CHECK making sure that `account_id` is the
   // primary user (https://crbug.com/832857).
   void SetSwitchesForUser(const AccountId& account_id,
                           CommandLineSwitchesType switches_type,
                           const std::vector<std::string>& switches);
 
-  // Notify whether |service| wants session manager to save the user's login
-  // password. If |save_password| is true, the login password is sent over D-Bus
+  // Notify whether `service` wants session manager to save the user's login
+  // password. If `save_password` is true, the login password is sent over D-Bus
   // to the session manager to save in a keyring. Once this method has been
-  // called from all services defined in |PasswordConsumingService|, or if
-  // |save_password| is true, the method clears the user password from the
+  // called from all services defined in `PasswordConsumingService`, or if
+  // `save_password` is true, the method clears the user password from the
   // UserContext before exiting.
-  // Should be called for each |service| in |PasswordConsumingService| as soon
+  // Should be called for each `service` in `PasswordConsumingService` as soon
   // as the service knows whether it needs the login password. Must be called
   // before user_context_.ClearSecrets() (see .cc), where Chrome 'forgets' the
   // password.
@@ -381,8 +381,8 @@ class UserSessionManager
   // information in Local State like GAIA ID.
   void StoreUserContextDataBeforeProfileIsCreated();
 
-  // Initializes |chromeos::DemoSession| if starting user session for demo mode.
-  // Runs |callback| when demo session initialization finishes, i.e. when the
+  // Initializes `chromeos::DemoSession` if starting user session for demo mode.
+  // Runs `callback` when demo session initialization finishes, i.e. when the
   // offline demo session resources are loaded. In addition, disables browser
   // launch if demo session is started.
   void InitDemoSessionIfNeeded(base::OnceClosure callback);
@@ -452,8 +452,8 @@ class UserSessionManager
   // Restores GAIA auth cookies for the created user profile from OAuth2 token.
   void RestoreAuthSessionImpl(Profile* profile, bool restore_from_auth_cookies);
 
-  // If |user| is not a kiosk app, sets session type as seen by extensions
-  // feature system according to |user|'s type.
+  // If `user` is not a kiosk app, sets session type as seen by extensions
+  // feature system according to `user`'s type.
   // The value should eventually be set for kiosk users, too - that's done as
   // part of special, kiosk user session bring-up.
   // NOTE: This has to be called before profile is initialized - so it is set up
@@ -465,9 +465,9 @@ class UserSessionManager
       base::Optional<SessionManagerClient::ActiveSessionsMap> sessions);
 
   // Called by OnRestoreActiveSessions() when there're user sessions in
-  // |pending_user_sessions_| that has to be restored one by one.
+  // `pending_user_sessions_` that has to be restored one by one.
   // Also called after first user session from that list is restored and so on.
-  // Process continues till |pending_user_sessions_| map is not empty.
+  // Process continues till `pending_user_sessions_` map is not empty.
   void RestorePendingUserSessions();
 
   // Notifies observers that user pending sessions restore has finished.
@@ -483,9 +483,9 @@ class UserSessionManager
       ChildPolicyObserver::InitialPolicyRefreshResult result);
 
   // Internal implementation of DoBrowserLaunch. Initially should be called with
-  // |locale_pref_checked| set to false which will result in postponing browser
+  // `locale_pref_checked` set to false which will result in postponing browser
   // launch till user locale is applied if needed. After locale check has
-  // completed this method is called with |locale_pref_checked| set to true.
+  // completed this method is called with `locale_pref_checked` set to true.
   void DoBrowserLaunchInternal(Profile* profile,
                                LoginDisplayHost* login_host,
                                bool locale_pref_checked);
@@ -495,10 +495,10 @@ class UserSessionManager
       InputEventsBlocker* input_events_blocker,
       const locale_util::LanguageSwitchResult& result);
 
-  // Callback invoked when |token_handle_util_| has finished.
+  // Callback invoked when `token_handle_util_` has finished.
   void OnTokenHandleObtained(const AccountId& account_id, bool success);
 
-  // Returns |true| if token handles should be used on this device.
+  // Returns `true` if token handles should be used on this device.
   bool TokenHandlesEnabled();
 
   void CreateTokenUtilIfMissing();
@@ -619,7 +619,7 @@ class UserSessionManager
 
   std::vector<base::OnceClosure> easy_unlock_key_ops_finished_callbacks_;
 
-  // Mapped to |chrome::AttemptRestart|, except in tests.
+  // Mapped to `chrome::AttemptRestart`, except in tests.
   base::RepeatingClosure attempt_restart_closure_;
 
   std::unique_ptr<arc::AlwaysOnVpnManager> always_on_vpn_manager_;

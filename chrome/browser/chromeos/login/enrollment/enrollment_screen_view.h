@@ -89,7 +89,7 @@ class EnrollmentScreenView {
   // Show non-authentication error.
   virtual void ShowOtherError(EnterpriseEnrollmentHelper::OtherError error) = 0;
 
-  // Update the UI to report the |status| of the enrollment procedure.
+  // Update the UI to report the `status` of the enrollment procedure.
   virtual void ShowEnrollmentStatus(policy::EnrollmentStatus status) = 0;
 };
 

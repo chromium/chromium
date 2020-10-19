@@ -25,7 +25,7 @@ class LoginFeedback {
   explicit LoginFeedback(Profile* signin_profile);
   ~LoginFeedback();
 
-  // Request to show the feedback UI with |description|. |finished_callback|
+  // Request to show the feedback UI with `description`. `finished_callback`
   // will be invoked when the feedback UI is closed, either cancel or send the
   // feedback.
   void Request(const std::string& description,

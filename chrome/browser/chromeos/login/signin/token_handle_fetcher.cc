@@ -76,7 +76,7 @@ void TokenHandleFetcher::BackfillToken(Profile* profile,
   signin::ScopeSet scopes;
   scopes.insert(GaiaConstants::kOAuth1LoginScope);
 
-  // We can use base::Unretained(this) below because |access_token_fetcher_| is
+  // We can use base::Unretained(this) below because `access_token_fetcher_` is
   // owned by this object (thus destroyed when this object is destroyed) and
   // PrimaryAccountAccessTokenFetcher guarantees that it doesn't invoke its
   // callback after it is destroyed.

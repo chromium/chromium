@@ -23,14 +23,14 @@ class ForwardingServer;
 // An https test server that forwards all requests to another server. This
 // allows a server that supports http only to be accessed over https.
 //
-// The server will bind to |127.0.0.1| but will present a certificate issued to
-// |ssl_host|.
+// The server will bind to `127.0.0.1` but will present a certificate issued to
+// `ssl_host`.
 class HTTPSForwarder {
  public:
   HTTPSForwarder();
   ~HTTPSForwarder();
 
-  // Returns a URL that uses |ssl_host_| as the host.
+  // Returns a URL that uses `ssl_host_` as the host.
   GURL GetURLForSSLHost(const std::string& path) const;
 
   bool Initialize(const std::string& ssl_host,

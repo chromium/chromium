@@ -44,7 +44,7 @@ class PinStoragePrefsUnitTest : public testing::Test {
 // Provides test-only PinStoragePrefs APIs.
 class PinStoragePrefsTestApi {
  public:
-  // Does *not* take ownership over |pin_storage|.
+  // Does *not* take ownership over `pin_storage`.
   explicit PinStoragePrefsTestApi(quick_unlock::PinStoragePrefs* pin_storage)
       : pin_storage_(pin_storage) {}
 

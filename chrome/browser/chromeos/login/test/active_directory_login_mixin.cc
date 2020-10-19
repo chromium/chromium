@@ -178,7 +178,7 @@ void ActiveDirectoryLoginMixin::TestPasswordChangeConfirmNewPasswordError() {
 }
 
 // Checks if Active Directory password change screen is shown. Also checks if
-// |invalid_element| is invalidated and all the other elements are valid.
+// `invalid_element` is invalidated and all the other elements are valid.
 void ActiveDirectoryLoginMixin::TestPasswordChangeError(
     const std::string& invalid_element) {
   TestPasswordChangeVisible();

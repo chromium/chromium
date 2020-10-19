@@ -76,7 +76,7 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   virtual void OnFinalize() = 0;
   virtual void OnCancelPasswordChangedFlow() = 0;
 
-  // Deletes |auth_prewarmer_|.
+  // Deletes `auth_prewarmer_`.
   void OnAuthPrewarmDone();
 
   // Marks display host for deletion.

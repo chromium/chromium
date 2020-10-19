@@ -68,7 +68,7 @@ class EnrollmentScreenUnitTest : public testing::Test {
   std::unique_ptr<EnrollmentScreen> enrollment_screen_;
   std::unique_ptr<WizardContext> wizard_context_;
 
-  // The last result reported by |enrollment_screen_|.
+  // The last result reported by `enrollment_screen_`.
   base::Optional<EnrollmentScreen::Result> last_screen_result_;
 
   policy::EnrollmentConfig enrollment_config_;

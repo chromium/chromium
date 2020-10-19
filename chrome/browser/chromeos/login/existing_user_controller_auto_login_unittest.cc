@@ -151,8 +151,8 @@ class ExistingUserControllerAutoLoginTest : public ::testing::Test {
   user_manager::ScopedUserManager scoped_user_manager_;
   std::unique_ptr<ArcKioskAppManager> arc_kiosk_app_manager_;
 
-  // |existing_user_controller_| must be destroyed before
-  // |device_settings_test_helper_|.
+  // `existing_user_controller_` must be destroyed before
+  // `device_settings_test_helper_`.
   std::unique_ptr<ExistingUserController> existing_user_controller_;
 };
 

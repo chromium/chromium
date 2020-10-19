@@ -18,19 +18,19 @@ namespace chromeos {
 // used for authentication to the user's actual BrowserContext.
 class ProfileAuthData {
  public:
-  // Transfers authentication-related data from |from_partition| to
-  // |to_partition| and invokes |completion_callback| on the UI thread when the
+  // Transfers authentication-related data from `from_partition` to
+  // `to_partition` and invokes `completion_callback` on the UI thread when the
   // operation has completed. The following data is transferred:
   // * The proxy authentication state.
   // * All authentication cookies, if
-  //   |transfer_auth_cookies_on_first_login| is true and
-  //   |to_partition|'s cookie jar is empty. If the cookie jar is not empty, the
-  //   authentication states in |from_partition| and |to_partition| should be
+  //   `transfer_auth_cookies_on_first_login` is true and
+  //   `to_partition`'s cookie jar is empty. If the cookie jar is not empty, the
+  //   authentication states in `from_partition` and `to_partition` should be
   //   merged using /MergeSession instead.
   // * The authentication cookies set by a SAML IdP, if
-  //   |transfer_saml_auth_cookies_on_subsequent_login| is true and
-  //   |to_partition|'s cookie jar is not empty.
-  // |from_partition| and |to_partition| must live until |completion_callback|
+  //   `transfer_saml_auth_cookies_on_subsequent_login` is true and
+  //   `to_partition`'s cookie jar is not empty.
+  // `from_partition` and `to_partition` must live until `completion_callback`
   // is called.
   static void Transfer(content::StoragePartition* from_partition,
                        content::StoragePartition* to_partition,

@@ -134,8 +134,8 @@ void VersionUpdater::GetEolInfo(EolInfoCallback callback) {
   UpdateEngineClient* update_engine_client =
       DBusThreadManager::Get()->GetUpdateEngineClient();
   // Request the End of Life (Auto Update Expiration) status. Bind to a weak_ptr
-  // bound method rather than passing |callback| directly so that |callback|
-  // does not outlive |this|.
+  // bound method rather than passing `callback` directly so that `callback`
+  // does not outlive `this`.
   update_engine_client->GetEolInfo(
       base::BindOnce(&VersionUpdater::OnGetEolInfo,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

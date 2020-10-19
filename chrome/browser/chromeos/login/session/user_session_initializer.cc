@@ -144,7 +144,7 @@ void UserSessionInitializer::InitRlz(Profile* profile) {
 
 void UserSessionInitializer::InitializeCerts(Profile* profile) {
   // Now that the user profile has been initialized
-  // |GetNSSCertDatabaseForProfile| is safe to be used.
+  // `GetNSSCertDatabaseForProfile` is safe to be used.
   if (NetworkCertLoader::IsInitialized() &&
       base::SysInfo::IsRunningOnChromeOS()) {
     GetNSSCertDatabaseForProfile(profile,
@@ -177,8 +177,8 @@ void UserSessionInitializer::InitializePrimaryProfileServices(
   if (user->GetType() == user_manager::USER_TYPE_REGULAR) {
     // App install logs for extensions and ARC++ are uploaded via the user's
     // communication channel with the management server. This channel exists for
-    // regular users only. |AppInstallEventLogManagerWrapper| and
-    // |ExtensionInstallEventLogManagerWrapper| manages their own lifetime and
+    // regular users only. `AppInstallEventLogManagerWrapper` and
+    // `ExtensionInstallEventLogManagerWrapper` manages their own lifetime and
     // self-destruct on logout.
     policy::AppInstallEventLogManagerWrapper::CreateForProfile(profile);
     policy::ExtensionInstallEventLogManagerWrapper::CreateForProfile(profile);

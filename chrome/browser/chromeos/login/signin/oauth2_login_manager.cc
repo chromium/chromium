@@ -174,7 +174,7 @@ void OAuth2LoginManager::StoreOAuth2Token() {
   // We already have the refresh token at this
   // point, and will not get any additional callbacks from Account Manager or
   // Identity Manager about refresh tokens. Manually call
-  // |OnRefreshTokenUpdatedForAccount| to continue the flow.
+  // `OnRefreshTokenUpdatedForAccount` to continue the flow.
   // TODO(https://crbug.com/977137): Clean this up after cleaning
   // OAuth2LoginVerifier.
   OnRefreshTokenUpdatedForAccount(primary_account_info);

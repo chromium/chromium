@@ -59,9 +59,9 @@ class ResetScreen : public BaseScreen, public UpdateEngineClient::Observer {
   static void SetTpmFirmwareUpdateCheckerForTesting(
       TpmFirmwareUpdateAvailabilityChecker* checker);
 
-  // Checks if powerwash is allowed and passes the result to |callback|. In case
+  // Checks if powerwash is allowed and passes the result to `callback`. In case
   // TPM firmware update has to be installed, the mode of update will be passed
-  // as second parameter to |callback|.
+  // as second parameter to `callback`.
   static void CheckIfPowerwashAllowed(
       base::OnceCallback<void(bool, base::Optional<tpm_firmware_update::Mode>)>
           callback);

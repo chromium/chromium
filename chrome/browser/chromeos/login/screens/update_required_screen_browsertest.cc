@@ -169,7 +169,7 @@ class UpdateRequiredScreenTest : public OobeBaseTest {
   UpdateRequiredScreen* update_required_screen_;
   // Error screen - owned by OobeUI.
   ErrorScreen* error_screen_ = nullptr;
-  // Version updater - owned by |update_required_screen_|.
+  // Version updater - owned by `update_required_screen_`.
   VersionUpdater* version_updater_ = nullptr;
   // For testing captive portal
   NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};

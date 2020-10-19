@@ -91,7 +91,7 @@ policy::CloudPolicyStore* GetStoreForUser(const user_manager::User* user) {
   return policy_manager->core()->store();
 }
 
-// Compute the average ARGB color of |bitmap|.
+// Compute the average ARGB color of `bitmap`.
 SkColor ComputeAverageColor(const SkBitmap& bitmap) {
   if (bitmap.empty() || bitmap.width() < 1 || bitmap.height() < 1) {
     ADD_FAILURE() << "Empty or invalid bitmap.";
@@ -249,8 +249,8 @@ class WallpaperPolicyTest : public LoginManagerTest,
     return policy;
   }
 
-  // Inject |filename| as wallpaper policy for test user |user_number|.  Set
-  // empty |filename| to clear policy.
+  // Inject `filename` as wallpaper policy for test user `user_number`.  Set
+  // empty `filename` to clear policy.
   void InjectPolicy(int user_number, const std::string& filename) {
     ASSERT_TRUE(user_number == 0 || user_number == 1);
     const AccountId& account_id =
@@ -278,7 +278,7 @@ class WallpaperPolicyTest : public LoginManagerTest,
               store->validation_status());
   }
 
-  // Inject |filename| as the device wallpaper policy. Set empty |filename| to
+  // Inject `filename` as the device wallpaper policy. Set empty `filename` to
   // clear policy.
   void InjectDevicePolicy(const std::string& filename) {
     if (!filename.empty()) {

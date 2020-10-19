@@ -81,8 +81,8 @@ class DeviceIDTest : public OobeBaseTest,
 
   // Checks that user's device ID retrieved from UserManager and Profile are the
   // same.
-  // If |refresh_token| is not empty, checks that device ID associated with the
-  // |refresh_token| in GAIA is the same as ID saved on device.
+  // If `refresh_token` is not empty, checks that device ID associated with the
+  // `refresh_token` in GAIA is the same as ID saved on device.
   void CheckDeviceIDIsConsistent(const AccountId& account_id,
                                  const std::string& refresh_token) {
     const std::string device_id_in_profile = GetDeviceIdFromProfile(account_id);
@@ -303,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, LegacyUsers) {
           .empty());
   SignInOffline(FakeGaiaMixin::kFakeUserEmail,
                 FakeGaiaMixin::kFakeUserPassword);
-  // Last param |auth_code| is empty, because we don't pass a device ID to GAIA
+  // Last param `auth_code` is empty, because we don't pass a device ID to GAIA
   // in this case.
   CheckDeviceIDIsConsistent(
       AccountId::FromUserEmail(FakeGaiaMixin::kFakeUserEmail), std::string());

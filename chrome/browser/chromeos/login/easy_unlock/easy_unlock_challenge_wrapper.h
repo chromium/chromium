@@ -22,11 +22,11 @@ class EasyUnlockTpmKeyManager;
 class EasyUnlockChallengeWrapper {
  public:
   // Creates the instance:
-  // |challenge|: The raw challenge to wrap.
-  // |channel_binding_data|: Data unique to the current secure channel such that
+  // `challenge`: The raw challenge to wrap.
+  // `channel_binding_data`: Data unique to the current secure channel such that
   //                         we can bind with a TPM signature.
-  // |account_id|: The id of the user who owns both devices.
-  // |key_manager|: Responsible for signing some piece of data with the TPM.
+  // `account_id`: The id of the user who owns both devices.
+  // `key_manager`: Responsible for signing some piece of data with the TPM.
   //                Not owned and should outlive this instance.
   EasyUnlockChallengeWrapper(const std::string& challenge,
                              const std::string& channel_binding_data,
@@ -34,14 +34,14 @@ class EasyUnlockChallengeWrapper {
                              EasyUnlockTpmKeyManager* key_manager);
   virtual ~EasyUnlockChallengeWrapper();
 
-  // Wraps the challenge and invokes |callback| with the |wrapped_challenge|
+  // Wraps the challenge and invokes `callback` with the `wrapped_challenge`
   // that will be send directly to the remote device.
   typedef base::Callback<void(const std::string& wrapped_challenge)>
       WrappedChallengeCallback;
   void WrapChallenge(const WrappedChallengeCallback& callback);
 
  protected:
-  // Signs |data_to_sign| with the TPM. |callback| will be invoked upon
+  // Signs `data_to_sign` with the TPM. `callback` will be invoked upon
   // completion. Exposed for testing.
   virtual void SignUsingTpmKey(
       const std::string& data_to_sign,

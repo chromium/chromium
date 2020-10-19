@@ -39,7 +39,7 @@ void RegisterPrefs(PrefRegistrySimple* registry);
 void RecordSignInEvent(SignInEventType sign_in_event_type);
 
 // Records a sign-in event by UserContext for an enrolled device.
-// |is_auto_login| indicates whether the sign-in is a policy configured
+// `is_auto_login` indicates whether the sign-in is a policy configured
 // automatic login or a manual login in response to user action.
 void RecordSignInEvent(const UserContext& user_context, bool is_auto_login);
 

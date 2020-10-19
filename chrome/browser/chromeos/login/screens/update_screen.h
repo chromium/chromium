@@ -34,7 +34,7 @@ class WizardContext;
 //
 // The screen will request an update availability check from the update engine,
 // and track the update engine progress. When the UpdateScreen finishes, it will
-// run the |exit_callback| with the screen result.
+// run the `exit_callback` with the screen result.
 //
 // If the update engine reports no updates are found, or the available
 // update is not critical, UpdateScreen will report UPDATE_NOT_REQUIRED result.
@@ -146,7 +146,7 @@ class UpdateScreen : public BaseScreen,
   // The user requested an attempt to connect to the network should be made.
   void OnConnectRequested();
 
-  // Callback passed to |error_screen_| when it's shown. Called when the error
+  // Callback passed to `error_screen_` when it's shown. Called when the error
   // screen gets hidden.
   void OnErrorScreenHidden();
 

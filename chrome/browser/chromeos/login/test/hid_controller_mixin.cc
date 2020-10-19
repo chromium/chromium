@@ -62,7 +62,7 @@ void HIDControllerMixin::SetUpInProcessBrowserTestFixture() {
   SetUpBluetoothMock(mock_adapter_, true);
 
   // Note: The SecureChannel service, which is never destroyed until the
-  // browser process is killed, utilizes |mock_adapter_|.
+  // browser process is killed, utilizes `mock_adapter_`.
   testing::Mock::AllowLeak(mock_adapter_.get());
 }
 

@@ -77,7 +77,7 @@ class ErrorScreen : public BaseScreen,
   virtual void SetUIState(NetworkError::UIState ui_state);
 
   // Sets current error screen content according to current UI state,
-  // |error_state|, and |network|.
+  // `error_state`, and `network`.
   virtual void SetErrorState(NetworkError::ErrorState error_state,
                              const std::string& network);
 

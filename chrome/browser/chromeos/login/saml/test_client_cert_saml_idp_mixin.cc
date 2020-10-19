@@ -25,7 +25,7 @@ namespace {
 constexpr char kSamlRelayStateUrlParam[] = "RelayState";
 
 // URL path of the first SAML page. The FakeGaia will redirect the browser to
-// this page when the sign-in for |kUserEmail| is started. This page will
+// this page when the sign-in for `kUserEmail` is started. This page will
 // redirect to the second SAML page (see below).
 constexpr char kSamlPageUrlPath[] = "saml-page";
 // URL path of the second SAML page. This page is configured to authenticate the
@@ -47,7 +47,7 @@ TestClientCertSamlIdpMixin::TestClientCertSamlIdpMixin(
       base::BindRepeating(&TestClientCertSamlIdpMixin::HandleSamlServerRequest,
                           base::Unretained(this)));
 
-  // Set up |saml_with_client_certs_server_| to request a client certificate.
+  // Set up `saml_with_client_certs_server_` to request a client certificate.
   net::SSLServerConfig ssl_config;
   ssl_config.client_cert_type =
       net::SSLServerConfig::ClientCertType::REQUIRE_CLIENT_CERT;

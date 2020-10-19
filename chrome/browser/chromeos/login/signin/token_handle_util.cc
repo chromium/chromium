@@ -197,7 +197,7 @@ void TokenHandleUtil::TokenDelegate::OnOAuthError() {
   NotifyDone();
 }
 
-// Warning: NotifyDone() deletes |this|
+// Warning: NotifyDone() deletes `this`
 void TokenHandleUtil::TokenDelegate::NotifyDone() {
   if (owner_)
     owner_->OnValidationComplete(token_);

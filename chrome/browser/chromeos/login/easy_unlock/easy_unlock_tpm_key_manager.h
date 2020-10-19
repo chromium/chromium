@@ -32,11 +32,11 @@ class EasyUnlockTpmKeyManager : public KeyedService {
   // Clears local state for user. Should be called when a user is removed.
   static void ResetLocalStateForUser(const AccountId& account_id);
 
-  // |account_id|: Id for the user associated with the service. Empty for
+  // `account_id`: Id for the user associated with the service. Empty for
   //     sign-in service.
-  // |username_hash|: Username hash for the user associated with the service.
+  // `username_hash`: Username hash for the user associated with the service.
   //     Empty for sign-in service.
-  // |local_state|: The local state prefs.
+  // `local_state`: The local state prefs.
   EasyUnlockTpmKeyManager(const AccountId& account_id,
                           const std::string& username_hash,
                           PrefService* local_state);
@@ -44,33 +44,33 @@ class EasyUnlockTpmKeyManager : public KeyedService {
 
   // Checks if the RSA public key is set in the local state. If not, creates
   // one. If the key presence can be confirmed, immediately returns true and
-  // |callback| never gets called, otherwise returns false (callback is called
+  // `callback` never gets called, otherwise returns false (callback is called
   // when the key presence is confirmed).
   // Must not be called for signin profile.
-  // |check_private_key|: If public RSA key is set in the local state, whether
+  // `check_private_key`: If public RSA key is set in the local state, whether
   //     the method should confirm that the private key is present in the system
   //     slot. If the private key cannot be found, a new key pair will be
   //     created for the user.
   //     Note: Checking TPM for the private key is more expensive than only
-  //     checking local state, so setting this to |false| should be preferable.
+  //     checking local state, so setting this to `false` should be preferable.
   //     Generally, if public key is set in local state, the private key should
   //     be present in the system TPM slot. This is used to make sure that easy
   //     signin does not remain permanently broken if something goes wrong.
-  // |callback|: If the method cannot return immediately, called when the key
+  // `callback`: If the method cannot return immediately, called when the key
   //     pair presence is confirmed (or a key pair for the user is created).
   bool PrepareTpmKey(bool check_private_key, const base::Closure& callback);
 
-  // If called, posts a delayed task that cancels |PrepareTpmKey| and all other
-  // started timeouts in case getting system slot takes more than |timeout_ms|.
-  // In the case getting system slot times out, |PrepareTpmKey| callback will
+  // If called, posts a delayed task that cancels `PrepareTpmKey` and all other
+  // started timeouts in case getting system slot takes more than `timeout_ms`.
+  // In the case getting system slot times out, `PrepareTpmKey` callback will
   // be called with an empty public key.
-  // Must be called after |PrepareTpmKey| to have the intended effect.
+  // Must be called after `PrepareTpmKey` to have the intended effect.
   bool StartGetSystemSlotTimeoutMs(size_t timeout_ms);
 
   // Gets the public RSA key for user. The key is retrieved from local state.
   std::string GetPublicTpmKey(const AccountId& account_id);
 
-  // Signs |data| using private RSA key associated with |user_id| stored in TPM
+  // Signs `data` using private RSA key associated with `user_id` stored in TPM
   // system slot.
   void SignUsingTpmKey(
       const AccountId& account_id,
@@ -95,25 +95,25 @@ class EasyUnlockTpmKeyManager : public KeyedService {
 
   // Called when TPM system slot is initialized and ready to be used.
   // It creates RSA key pair for the user in the system slot.
-  // When the key pair is created, |OnTpmKeyCreated| will be called with the
+  // When the key pair is created, `OnTpmKeyCreated` will be called with the
   // created public key.
-  // The key will not be created if |public_key| is non-empty and the associated
-  // private key can be found in the slot. Instead |OnTpmKeyCreated| will be
-  // called with |public_key|.
+  // The key will not be created if `public_key` is non-empty and the associated
+  // private key can be found in the slot. Instead `OnTpmKeyCreated` will be
+  // called with `public_key`.
   void CreateKeyInSystemSlot(const std::string& public_key,
                              crypto::ScopedPK11Slot system_slot);
 
   // Called when user TPM token initialization is done. After this happens,
-  // |this| may proceed with creating a user-specific TPM key for easy sign-in.
+  // `this` may proceed with creating a user-specific TPM key for easy sign-in.
   // Note that this is done solely to ensure user TPM initialization, which is
   // done on IO thread, is not blocked by creating TPM keys in system slot.
   void OnUserTPMInitialized(const std::string& public_key);
 
   // Called when TPM system slot is initialized and ready to be used.
   // It schedules data signing operation on a worker thread. The data is signed
-  // by a private key stored in |system_slot| and identified by |public_key|
-  // (a private key that is part of the same RSA key pair as |public_key|).
-  // Once data is signed |callback| is called with the signed data.
+  // by a private key stored in `system_slot` and identified by `public_key`
+  // (a private key that is part of the same RSA key pair as `public_key`).
+  // Once data is signed `callback` is called with the signed data.
   void SignDataWithSystemSlot(
       const std::string& public_key,
       const std::string& data,
@@ -122,11 +122,11 @@ class EasyUnlockTpmKeyManager : public KeyedService {
 
   // Called when a RSA key pair is created for a user in TPM system slot.
   // It saves the pulic key in the local state and runs queued up
-  // |PrepareTpmKey| callbacks.
+  // `PrepareTpmKey` callbacks.
   void OnTpmKeyCreated(const std::string& public_key);
 
-  // Called when data signing requested in |SignUsingTpmKey| is done.
-  // It runs |callback| with the created |signature|. On error the callback will
+  // Called when data signing requested in `SignUsingTpmKey` is done.
+  // It runs `callback` with the created `signature`. On error the callback will
   // be run with an empty string.
   void OnDataSigned(const base::Callback<void(const std::string&)>& callback,
                     const std::string& signature);
@@ -137,11 +137,11 @@ class EasyUnlockTpmKeyManager : public KeyedService {
   PrefService* local_state_;
 
   // The current TPM key creation state. If key creation is in progress,
-  // callbacks for further |PrepareTpmKey| will be queued up and run when the
+  // callbacks for further `PrepareTpmKey` will be queued up and run when the
   // key is created. All queued callbacks will be run with the same key value.
   CreateTpmKeyState create_tpm_key_state_;
 
-  // Queued up |PrepareTpmKey| callbacks.
+  // Queued up `PrepareTpmKey` callbacks.
   std::vector<base::Closure> prepare_tpm_key_callbacks_;
 
   base::WeakPtrFactory<EasyUnlockTpmKeyManager> get_tpm_slot_weak_ptr_factory_{

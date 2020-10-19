@@ -105,7 +105,7 @@ const size_t kMaxUsers = 50;
 const int kPasswordClearTimeoutSec = 60;
 
 // Returns true if we have enterprise domain information.
-// |out_manager|:  Output value of the manager of the device's domain. Can be
+// `out_manager`:  Output value of the manager of the device's domain. Can be
 // either a domain (foo.com) or an email address (user@foo.com)
 bool GetDeviceManager(std::string* out_manager) {
   policy::BrowserPolicyConnectorChromeOS* policy_connector =
@@ -119,10 +119,10 @@ bool GetDeviceManager(std::string* out_manager) {
 
 // Get locales information of public account user.
 // Returns a list of available locales.
-// |public_session_recommended_locales|: This can be nullptr if we don't have
+// `public_session_recommended_locales`: This can be nullptr if we don't have
 // recommended locales.
-// |out_selected_locale|: Output value of the initially selected locale.
-// |out_multiple_locales|: Output value indicates whether we have multiple
+// `out_selected_locale`: Output value of the initially selected locale.
+// `out_multiple_locales`: Output value indicates whether we have multiple
 // recommended locales.
 std::unique_ptr<base::ListValue> GetPublicSessionLocales(
     const std::vector<std::string>* public_session_recommended_locales,
@@ -161,13 +161,13 @@ void AddPublicSessionDetailsToUserDictionaryEntry(
       GetPublicSessionLocales(public_session_recommended_locales,
                               &selected_locale, &has_multiple_locales);
 
-  // Set |kKeyInitialLocales| to the list of available locales.
+  // Set `kKeyInitialLocales` to the list of available locales.
   user_dict->Set(kKeyInitialLocales, std::move(available_locales));
 
-  // Set |kKeyInitialLocale| to the initially selected locale.
+  // Set `kKeyInitialLocale` to the initially selected locale.
   user_dict->SetString(kKeyInitialLocale, selected_locale);
 
-  // Set |kKeyInitialMultipleRecommendedLocales| to indicate whether the list
+  // Set `kKeyInitialMultipleRecommendedLocales` to indicate whether the list
   // of recommended locales contains at least two entries. This is used to
   // decide whether the public session pod expands to its basic form (for zero
   // or one recommended locales) or the advanced form (two or more recommended
@@ -475,7 +475,7 @@ class UserSelectionScreen::TpmLockedChecker {
           device::mojom::WakeLockReason::kOther, kWakeLockReason,
           wake_lock_.BindNewPipeAndPassReceiver());
     }
-    // The |wake_lock_| is released once TpmLockedChecker is destroyed.
+    // The `wake_lock_` is released once TpmLockedChecker is destroyed.
     // It happens after successful login.
     wake_lock_->RequestWakeLock();
   }
@@ -689,7 +689,7 @@ void UserSelectionScreen::SetHandler(LoginDisplayWebUIHandler* handler) {
   handler_ = handler;
 
   if (handler_) {
-    // Forcibly refresh all of the user images, as the |handler_| instance may
+    // Forcibly refresh all of the user images, as the `handler_` instance may
     // have been reused.
     for (user_manager::User* user : users_)
       handler_->OnUserImageChanged(*user);

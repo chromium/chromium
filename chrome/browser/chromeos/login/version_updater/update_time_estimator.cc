@@ -174,12 +174,12 @@ void UpdateTimeEstimator::UpdateForDownloadingTimeLeftEstimation(
   double work_left = progress_left * status.new_size();
   // time_left is in seconds.
   double time_left = work_left / download_average_speed_;
-  // If |download_average_speed_| is 0.
+  // If `download_average_speed_` is 0.
   if (isnan(time_left)) {
     has_download_time_estimation_ = false;
     return;
   }
-  // |time_left| may be large enough or even +infinity. So we must
+  // `time_left` may be large enough or even +infinity. So we must
   // |bound possible estimations.
   time_left = std::min(time_left, kMaxTimeLeft.InSecondsF());
 

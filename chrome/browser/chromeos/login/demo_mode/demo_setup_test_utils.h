@@ -34,11 +34,11 @@ enum class DemoModeSetupResult {
 void SetupMockDemoModeNoEnrollmentHelper();
 
 // Helper method that mocks EnterpriseEnrollmentHelper for online Demo Mode
-// setup. It simulates specified Demo Mode enrollment |result|.
+// setup. It simulates specified Demo Mode enrollment `result`.
 void SetupMockDemoModeOnlineEnrollmentHelper(DemoModeSetupResult result);
 
 // Helper method that mocks EnterpriseEnrollmentHelper for offline Demo Mode
-// setup. It simulates specified Demo Mode enrollment |result|.
+// setup. It simulates specified Demo Mode enrollment `result`.
 void SetupMockDemoModeOfflineEnrollmentHelper(DemoModeSetupResult result);
 
 // Creates fake offline policy directory to be used in tests.

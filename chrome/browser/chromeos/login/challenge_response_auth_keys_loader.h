@@ -49,9 +49,9 @@ class ChallengeResponseAuthKeysLoader final : public ProfileObserver {
   // cryptographic keys that can be used to authenticate the given user. If
   // there should be force-installed extensions that provide a certificate for
   // the given user, waits until these are installed and loaded (default: up to
-  // 5 seconds, configured by |maximum_extension_load_waiting_time_|).
+  // 5 seconds, configured by `maximum_extension_load_waiting_time_`).
   //
-  // The callback is run with an empty |challenge_response_keys| in the cases
+  // The callback is run with an empty `challenge_response_keys` in the cases
   // when the user's profile doesn't support challenge-response authentication
   // or when there is no suitable cryptographic key available.
   void LoadAvailableKeys(const AccountId& account_id,

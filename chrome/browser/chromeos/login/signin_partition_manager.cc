@@ -29,7 +29,7 @@ std::string GeneratePartitionName() {
   return base::GenerateGUID();
 }
 
-// Clears data from the passed storage partition. |partition_data_cleared|
+// Clears data from the passed storage partition. `partition_data_cleared`
 // will be called when all cached data has been cleared.
 void ClearStoragePartition(content::StoragePartition* storage_partition,
                            base::OnceClosure partition_data_cleared) {
@@ -43,8 +43,8 @@ network::mojom::NetworkContext* GetSystemNetworkContext() {
   return g_browser_process->system_network_context_manager()->GetContext();
 }
 
-// Copies the http auth cache proxy entries with key |cache_key| into
-// |signin_storage_partition|'s NetworkContext.
+// Copies the http auth cache proxy entries with key `cache_key` into
+// `signin_storage_partition`'s NetworkContext.
 void LoadHttpAuthCacheProxyEntries(
     content::StoragePartition* signin_storage_partition,
     base::OnceClosure completion_callback,
@@ -53,8 +53,8 @@ void LoadHttpAuthCacheProxyEntries(
       cache_key, std::move(completion_callback));
 }
 
-// Transfers http auth cache proxy entries from |main_network_context| into
-// |signin_storage_partition|'s NetworkContext.
+// Transfers http auth cache proxy entries from `main_network_context` into
+// `signin_storage_partition`'s NetworkContext.
 void TransferHttpAuthCacheProxyEntries(
     network::mojom::NetworkContext* main_network_context,
     content::StoragePartition* signin_storage_partition,

@@ -57,7 +57,7 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
 
   void SetUserCount(int user_count);
 
-  // Show password changed dialog. If |show_password_error| is true, user
+  // Show password changed dialog. If `show_password_error` is true, user
   // already tried to enter old password but it turned out to be incorrect.
   void ShowPasswordChangedDialog(bool show_password_error,
                                  const AccountId& account_id);
@@ -144,7 +144,7 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
  private:
   void LoadOobeDialog();
 
-  // Callback to be invoked when the |challenge_response_auth_keys_loader_|
+  // Callback to be invoked when the `challenge_response_auth_keys_loader_`
   // completes building the currently available challenge-response keys. Used
   // only during the challenge-response authentication.
   void OnChallengeResponseKeysPrepared(
@@ -157,10 +157,10 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   void ShowFullScreen();
   void HideDialog();
 
-  // Adds this as a |OobeUI::Observer| if it has not already been added as one.
+  // Adds this as a `OobeUI::Observer` if it has not already been added as one.
   void ObserveOobeUI();
 
-  // Removes this as a |OobeUI::Observer| if it has been added as an observer.
+  // Removes this as a `OobeUI::Observer` if it has been added as an observer.
   void StopObservingOobeUI();
 
   // Create ExistingUserController and link it to LoginDisplayHostMojo so we can
@@ -209,7 +209,7 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
 
   SecurityTokenPinDialogHostAshImpl security_token_pin_dialog_host_ash_impl_;
 
-  // Set if this has been added as a |OobeUI::Observer|.
+  // Set if this has been added as a `OobeUI::Observer`.
   bool added_as_oobe_observer_ = false;
 
   // Set if Gaia dialog is shown with prefilled email.

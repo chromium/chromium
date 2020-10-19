@@ -191,7 +191,7 @@ TEST_F(ScreenLockerUnitTest, VerifyAshIsNotifiedOfScreenLocked) {
   base::RunLoop().RunUntilIdle();
 }
 
-// Tests that |GetUsersToShow()| returns an empty list when the user is a
+// Tests that `GetUsersToShow()` returns an empty list when the user is a
 // Managed Guest Session.
 TEST_F(ScreenLockerUnitTest, GetUsersToShow) {
   CreateSessionForUser(/*is_public_account=*/true);

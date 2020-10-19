@@ -131,8 +131,8 @@ class EnrollmentScreen
   // Creates an enrollment helper if needed.
   void CreateEnrollmentHelper();
 
-  // Clears auth in |enrollment_helper_|. Deletes |enrollment_helper_| and runs
-  // |callback| on completion. See the comment for
+  // Clears auth in `enrollment_helper_`. Deletes `enrollment_helper_` and runs
+  // `callback` on completion. See the comment for
   // EnterpriseEnrollmentHelper::ClearAuth for details.
   void ClearAuth(const base::Closure& callback);
 
@@ -144,7 +144,7 @@ class EnrollmentScreen
   void ShowEnrollmentStatusOnSuccess();
 
   // Logs an UMA event in one of the "Enrollment.*" histograms, depending on
-  // |enrollment_mode_|.
+  // `enrollment_mode_`.
   void UMA(policy::MetricEnrollment sample);
 
   // Do attestation based enrollment.

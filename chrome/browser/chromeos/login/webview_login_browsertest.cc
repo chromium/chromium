@@ -122,7 +122,7 @@ void InjectCookieDoneCallback(base::OnceClosure done_closure,
   std::move(done_closure).Run();
 }
 
-// Injects a cookie into |storage_partition|, so we can test for cookie presence
+// Injects a cookie into `storage_partition`, so we can test for cookie presence
 // later to infer if the StoragePartition has been cleared.
 void InjectCookie(content::StoragePartition* storage_partition) {
   mojo::Remote<network::mojom::CookieManager> cookie_manager;
@@ -148,7 +148,7 @@ void GetAllCookiesCallback(std::string* cookies_out,
   std::move(done_closure).Run();
 }
 
-// Returns all cookies present in |storage_partition| as a HTTP header cookie
+// Returns all cookies present in `storage_partition` as a HTTP header cookie
 // line. Will be an empty string if there are no cookies.
 std::string GetAllCookies(content::StoragePartition* storage_partition) {
   mojo::Remote<network::mojom::CookieManager> cookie_manager;
@@ -169,8 +169,8 @@ void PolicyChangedCallback(base::RepeatingClosure callback,
   callback.Run();
 }
 
-// Spins the loop until a notification is received from |prefs| that the value
-// of |pref_name| has changed. If the notification is received before Wait()
+// Spins the loop until a notification is received from `prefs` that the value
+// of `pref_name` has changed. If the notification is received before Wait()
 // has been called, Wait() returns immediately and no loop is spun.
 class PrefChangeWatcher {
  public:
@@ -306,7 +306,7 @@ class WebviewLoginTest : public OobeBaseTest {
   }
 
   // Returns true if a webview which has a WebContents associated with
-  // |storage_partition| currently exists in the login UI's main WebContents.
+  // `storage_partition` currently exists in the login UI's main WebContents.
   bool IsLoginScreenHasWebviewWithStoragePartition(
       content::StoragePartition* storage_partition) {
     bool web_view_found = false;
@@ -723,7 +723,7 @@ class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
     watcher.Wait();
   }
 
-  // Adds the certificate from |authority_file_path| (PEM) as untrusted
+  // Adds the certificate from `authority_file_path` (PEM) as untrusted
   // authority in device OpenNetworkConfiguration policy.
   void SetIntermediateAuthorityInDeviceOncPolicy(
       const base::FilePath& authority_file_path) {
@@ -750,15 +750,15 @@ class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
     watcher.Wait();
   }
 
-  // Starts the Test HTTPS server with |ssl_options|.
+  // Starts the Test HTTPS server with `ssl_options`.
   void StartHttpsServer(const net::SpawnedTestServer::SSLOptions& ssl_options) {
     https_server_ = std::make_unique<net::SpawnedTestServer>(
         net::SpawnedTestServer::TYPE_HTTPS, ssl_options, base::FilePath());
     ASSERT_TRUE(https_server_->Start());
   }
 
-  // Requests |http_server_|'s client-cert test page in the webview specified by
-  // the given |webview_path|. Returns the content of the client-cert test page.
+  // Requests `http_server_`'s client-cert test page in the webview specified by
+  // the given `webview_path`. Returns the content of the client-cert test page.
   std::string RequestClientCertTestPageInFrame(
       std::initializer_list<base::StringPiece> webview_path) {
     const GURL url = https_server_->GetURL("client-cert");
@@ -1052,7 +1052,7 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
 
   ShowEulaScreen();
 
-  // Use |watch_new_webcontents| because the EULA webview has not navigated yet.
+  // Use `watch_new_webcontents` because the EULA webview has not navigated yet.
   const std::string https_reply_content =
       RequestClientCertTestPageInFrame({"cros-eula-frame"});
   EXPECT_EQ("got no client cert", https_reply_content);
@@ -1222,7 +1222,7 @@ class WebviewProxyAuthLoginTest : public WebviewLoginTest {
     // Prepare device policy which will be used for two purposes:
     // - given to FakeSessionManagerClient, so the device appears to have
     //   registered for policy.
-    // - the payload is given to |policy_test_server_|, so we can download fresh
+    // - the payload is given to `policy_test_server_`, so we can download fresh
     //   policy.
     device_policy_builder()->policy_data().set_public_key_version(1);
     device_policy_builder()->Build();
@@ -1319,7 +1319,7 @@ IN_PROC_BROWSER_TEST_F(WebviewProxyAuthLoginTest, DISABLED_ProxyAuthTransfer) {
 
   LoginHandler* login_handler = WaitForAuthRequested();
 
-  // Before entering auth data, make |policy_test_server_| serve a policy that
+  // Before entering auth data, make `policy_test_server_` serve a policy that
   // we can use to detect if policies have been fetched.
   em::ChromeDeviceSettingsProto& device_policy =
       device_policy_builder()->payload();

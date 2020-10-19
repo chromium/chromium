@@ -76,7 +76,7 @@ class UserSessionManagerTest : public testing::Test {
   }
 
   // Convenience shortcut to the login password stored in
-  // |user_session_manager_|'s user context.
+  // `user_session_manager_`'s user context.
   const std::string& GetUserSessionManagerLoginPassword() const {
     return user_session_manager_->user_context().GetPasswordKey()->GetSecret();
   }
@@ -119,8 +119,8 @@ class UserSessionManagerTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(UserSessionManagerTest);
 };
 
-// Calling VoteForSavingLoginPassword() with |save_password| set to false for
-// all |PasswordConsumerService|s should not send the password to SessionManager
+// Calling VoteForSavingLoginPassword() with `save_password` set to false for
+// all `PasswordConsumerService`s should not send the password to SessionManager
 // and clear it from the user context.
 TEST_F(UserSessionManagerTest, PasswordConsumerService_NoSave) {
   InitLoginPassword();
@@ -138,7 +138,7 @@ TEST_F(UserSessionManagerTest, PasswordConsumerService_NoSave) {
   EXPECT_TRUE(GetUserSessionManagerLoginPassword().empty());
 }
 
-// Calling VoteForSavingLoginPassword() with |save_password| set to true should
+// Calling VoteForSavingLoginPassword() with `save_password` set to true should
 // send the password to SessionManager and clear it from the user context once
 // all services have voted.
 TEST_F(UserSessionManagerTest, PasswordConsumerService_Save) {
@@ -157,7 +157,7 @@ TEST_F(UserSessionManagerTest, PasswordConsumerService_Save) {
   EXPECT_TRUE(GetUserSessionManagerLoginPassword().empty());
 }
 
-// Calling OnPasswordConsumingServicePolicyParsed() with |save_password| set to
+// Calling OnPasswordConsumingServicePolicyParsed() with `save_password` set to
 // false for one service, followed by true, should send the password to
 // SessionManager on the second service and clear it from the user context.
 TEST_F(UserSessionManagerTest, PasswordConsumerService_NoSave_Save) {

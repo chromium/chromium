@@ -179,13 +179,13 @@ void ExpectNotCalledCallback() {
   ADD_FAILURE() << "Not reached";
 }
 
-// Used to track how may |EasyUnlockTpmKeyManager::PrepareTpmKey| callbacks
-// have been called. It increases |*count| by 1.
+// Used to track how may `EasyUnlockTpmKeyManager::PrepareTpmKey` callbacks
+// have been called. It increases `*count` by 1.
 void IncreaseCount(int* count) {
   ++(*count);
 }
 
-// Sets |*result| to |value| and runs |callback|.
+// Sets `*result` to `value` and runs `callback`.
 // Used as a callback to EasyUnlockTpmKeyManager::SignUsingTpmKey in tests.
 void RecordStringAndRunClosure(std::string* result,
                                const base::Closure& callback,
@@ -291,7 +291,7 @@ class EasyUnlockTpmKeyManagerTest : public testing::Test {
   // Imports a private RSA key to the test system slot.
   // It returns whether the key has been imported. In order for the method to
   // succeed, the test system slot must have been set up
-  // (using |SetUpTestSystemSlot|).
+  // (using `SetUpTestSystemSlot`).
   bool ImportPrivateKey(const unsigned char* key, int key_size) {
     if (!test_system_slot_ || !test_system_slot_->slot()) {
       LOG(ERROR) << "System slot not initialized.";
@@ -351,7 +351,7 @@ class EasyUnlockTpmKeyManagerTest : public testing::Test {
   TestingProfileManager profile_manager_;
 
   // The testing profiles that own EasyUnlockTPMKeyManager services.
-  // Owned by |profile_manager_|.
+  // Owned by `profile_manager_`.
   TestingProfile* user_profile_;
   TestingProfile* signin_profile_;
 

@@ -25,7 +25,7 @@ class WebDialogView;
 // chrome.loginScreenUi API. It manages the window's widget, view and delegate,
 // which are all automatically deleted when the widget closes.
 // The window is not draggable, and has a close button which is not visible
-// if |create_options.can_be_closed_by_user| is false.
+// if `create_options.can_be_closed_by_user` is false.
 class Window {
  public:
   explicit Window(CreateOptions* create_options);

@@ -67,7 +67,7 @@ class EnrollmentHelperMixin : public InProcessBrowserTestMixin {
   // Configures not to show an attribute prompt.
   void DisableAttributePromptUpdate();
   // Attribute prompt should be displayed during enrollment, and
-  // |asset_id| / |location| should be sent back to server.
+  // `asset_id` / `location` should be sent back to server.
   void ExpectAttributePromptUpdate(const std::string& asset_id,
                                    const std::string& location);
 

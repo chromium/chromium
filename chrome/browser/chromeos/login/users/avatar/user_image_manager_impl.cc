@@ -61,7 +61,7 @@ const int kProfileRefreshIntervalSec = 24 * 3600;
 
 static bool g_ignore_profile_data_download_delay_ = false;
 
-// Converts |image_index| to UMA histogram value.
+// Converts `image_index` to UMA histogram value.
 int ImageIndexToHistogramIndex(int image_index) {
   switch (image_index) {
     case user_manager::User::USER_IMAGE_EXTERNAL:
@@ -74,8 +74,8 @@ int ImageIndexToHistogramIndex(int image_index) {
   }
 }
 
-// Saves |image_bytes| at |image_path|, and delete the old file at
-// |old_image_path| if needed.
+// Saves `image_bytes` at `image_path`, and delete the old file at
+// `old_image_path` if needed.
 bool SaveAndDeleteImage(scoped_refptr<base::RefCountedBytes> image_bytes,
                         const base::FilePath& image_path,
                         const base::FilePath& old_image_path) {
@@ -135,42 +135,42 @@ void UserImageManager::RegisterPrefs(PrefRegistrySimple* registry) {
 // Every image load or update is encapsulated by a Job. The Job is allowed to
 // perform tasks on background threads or in helper processes but:
 // * Changes to User objects and local state as well as any calls to the
-//   |parent_| must be performed on the thread that the Job is created on only.
-// * File writes and deletions must be performed via the |parent_|'s
-//   |background_task_runner_| only.
+//   `parent_` must be performed on the thread that the Job is created on only.
+// * File writes and deletions must be performed via the `parent_`'s
+//   `background_task_runner_` only.
 //
 // Only one of the Load*() and Set*() methods may be called per Job.
 class UserImageManagerImpl::Job {
  public:
-  // The |Job| will update the user object corresponding to |parent|.
+  // The `Job` will update the user object corresponding to `parent`.
   explicit Job(UserImageManagerImpl* parent);
   ~Job();
 
-  // Loads the image at |image_path| or one of the default images,
-  // depending on |image_index|, and updates the user object with the
+  // Loads the image at `image_path` or one of the default images,
+  // depending on `image_index`, and updates the user object with the
   // new image.
   void LoadImage(base::FilePath image_path,
                  const int image_index,
                  const GURL& image_url);
 
   // Sets the user image in local state to the default image indicated
-  // by |default_image_index|. Also updates the user object with the
+  // by `default_image_index`. Also updates the user object with the
   // new image.
   void SetToDefaultImage(int default_image_index);
 
-  // Saves the |user_image| to disk and sets the user image in local
+  // Saves the `user_image` to disk and sets the user image in local
   // state to that image. Also updates the user with the new image.
   void SetToImage(int image_index,
                   std::unique_ptr<user_manager::UserImage> user_image);
 
-  // Decodes the JPEG image |data|, crops and resizes the image, saves
+  // Decodes the JPEG image `data`, crops and resizes the image, saves
   // it to disk and sets the user image in local state to that image.
   // Also updates the user object with the new image.
   void SetToImageData(std::unique_ptr<std::string> data);
 
-  // Loads the image at |path|, transcodes it to JPEG format, saves
+  // Loads the image at `path`, transcodes it to JPEG format, saves
   // the image to disk and sets the user image in local state to that
-  // image.  If |resize| is true, the image is cropped and resized
+  // image.  If `resize` is true, the image is cropped and resized
   // before transcoding.  Also updates the user object with the new
   // image.
   void SetToPath(const base::FilePath& path,
@@ -183,16 +183,16 @@ class UserImageManagerImpl::Job {
   void OnLoadImageDone(bool save,
                        std::unique_ptr<user_manager::UserImage> user_image);
 
-  // Updates the user object with |user_image|.
+  // Updates the user object with `user_image`.
   void UpdateUser(std::unique_ptr<user_manager::UserImage> user_image);
 
-  // Updates the user object with |user_image|, and saves the image
+  // Updates the user object with `user_image`, and saves the image
   // bytes. Local state will be updated as needed.
   void UpdateUserAndSaveImage(
       std::unique_ptr<user_manager::UserImage> user_image);
 
-  // Saves |image_bytes| to disk in |image_format| if
-  // |image_is_safe_format|. Local state will be updated as needed.
+  // Saves `image_bytes` to disk in `image_format` if
+  // `image_is_safe_format`. Local state will be updated as needed.
   void SaveImageAndUpdateLocalState(
       bool image_is_safe_format,
       scoped_refptr<base::RefCountedBytes> image_bytes,
@@ -200,7 +200,7 @@ class UserImageManagerImpl::Job {
 
   // Called back after the user image has been saved to
   // disk. Updates the user image information in local state. The
-  // information is only updated if |success| is true (indicating that
+  // information is only updated if `success` is true (indicating that
   // the image was saved successfully) or the user image is the
   // profile image (indicating that even if the image could not be
   // saved because it is not available right now, it will be
@@ -209,10 +209,10 @@ class UserImageManagerImpl::Job {
 
   // Updates the user image in local state, setting it to one of the
   // default images or the saved user image, depending on
-  // |image_index_|.
+  // `image_index_`.
   void UpdateLocalState();
 
-  // Notifies the |parent_| that the Job is done.
+  // Notifies the `parent_` that the Job is done.
   void NotifyJobDone();
 
   const std::string& user_id() const { return parent_->user_id(); }
@@ -255,7 +255,7 @@ void UserImageManagerImpl::Job::LoadImage(base::FilePath image_path,
     NotifyJobDone();
   } else if (image_index_ == user_manager::User::USER_IMAGE_EXTERNAL ||
              image_index_ == user_manager::User::USER_IMAGE_PROFILE) {
-    // Load the user image from a file referenced by |image_path|. This happens
+    // Load the user image from a file referenced by `image_path`. This happens
     // asynchronously. ROBUST_PNG_CODEC can be used here because LoadImage() is
     // called only for users whose user image has previously been set by one of
     // the Set*() methods, which transcode to JPEG or PNG format.
@@ -494,7 +494,7 @@ void UserImageManagerImpl::LoadUserImage() {
   const base::DictionaryValue* image_properties = nullptr;
   prefs_images->GetDictionaryWithoutPathExpansion(user_id(), &image_properties);
 
-  // If the user image for |user_id| is managed by policy and the policy-set
+  // If the user image for `user_id` is managed by policy and the policy-set
   // image is being loaded and persisted right now, let that job continue. It
   // will update the user image when done.
   if (IsUserImageManaged() && job_.get())
@@ -732,7 +732,7 @@ bool UserImageManagerImpl::IsPreSignin() const {
 
 void UserImageManagerImpl::OnProfileDownloadSuccess(
     ProfileDownloader* downloader) {
-  // Ensure that the |profile_downloader_| is deleted when this method returns.
+  // Ensure that the `profile_downloader_` is deleted when this method returns.
   std::unique_ptr<ProfileDownloader> profile_downloader(
       profile_downloader_.release());
   DCHECK_EQ(downloader, profile_downloader.get());
@@ -771,7 +771,7 @@ void UserImageManagerImpl::OnProfileDownloadSuccess(
       is_random_image_set_) {
     is_random_image_set_ = false;
     VLOG(1) << "Updating profile image for logged-in user.";
-    // This will persist |downloaded_profile_image_| to disk.
+    // This will persist `downloaded_profile_image_` to disk.
     SaveUserImageFromProfileImage();
   }
 
@@ -810,7 +810,7 @@ void UserImageManagerImpl::TryToInitDownloadedProfileImage() {
   const user_manager::User* user = GetUser();
   if (user->image_index() == user_manager::User::USER_IMAGE_PROFILE &&
       downloaded_profile_image_.isNull() && !user->image_is_stub()) {
-    // Initialize the |downloaded_profile_image_| for the currently logged-in
+    // Initialize the `downloaded_profile_image_` for the currently logged-in
     // user if it has not been initialized already, the user image is the
     // profile image and the user image has been loaded successfully.
     VLOG(1) << "Profile image initialized from disk.";

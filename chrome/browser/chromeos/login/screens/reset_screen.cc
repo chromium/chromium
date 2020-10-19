@@ -88,7 +88,7 @@ void StartTPMFirmwareUpdate(
 }
 
 // Checks if powerwash is allowed based on update modes and passes the result
-// to |callback|.
+// to `callback`.
 void OnUpdateModesAvailable(
     base::OnceCallback<void(bool, base::Optional<tpm_firmware_update::Mode>)>
         callback,

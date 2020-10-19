@@ -467,7 +467,7 @@ class ScopedQuickUnlockPrivateGetAuthTokenFunctionObserver
       ScopedQuickUnlockPrivateGetAuthTokenFunctionObserver);
 };
 
-// Observes an |aura::Window| to see if the window was visible at some point in
+// Observes an `aura::Window` to see if the window was visible at some point in
 // time.
 class NativeWindowVisibilityObserver : public aura::WindowObserver {
  public:
@@ -496,9 +496,9 @@ class NativeWindowVisibilityObserver : public aura::WindowObserver {
   DISALLOW_COPY_AND_ASSIGN(NativeWindowVisibilityObserver);
 };
 
-// Sets the |NativeWindowVisibilityObserver| to observe the
-// |LoginDisplayHost|'s |NativeWindow|. This needs to be done in
-// |PostProfileInit()| as the |default_host| will not be initialized before
+// Sets the `NativeWindowVisibilityObserver` to observe the
+// `LoginDisplayHost`'s `NativeWindow`. This needs to be done in
+// `PostProfileInit()` as the `default_host` will not be initialized before
 // this.
 class NativeWindowVisibilityBrowserMainExtraParts
     : public ChromeBrowserMainExtraParts {

@@ -218,7 +218,7 @@ class TestCryptohomeClient : public ::chromeos::FakeCryptohomeClient {
         FROM_HERE, base::BindOnce(std::move(callback), reply));
   }
 
-  // Calls RemoveEx method.  |callback| is called after the method call
+  // Calls RemoveEx method.  `callback` is called after the method call
   // succeeds.
   void RemoveEx(const cryptohome::AccountIdentifier& account,
                 DBusMethodCallback<cryptohome::BaseReply> callback) override {

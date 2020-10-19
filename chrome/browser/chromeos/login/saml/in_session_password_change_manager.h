@@ -39,7 +39,7 @@ class RecheckPasswordExpiryTask {
   // Delegates to InSessionPasswordChangeManager::MaybeShowExpiryNotification.
   void Recheck();
 
-  // Calls Recheck after the given |delay|.
+  // Calls Recheck after the given `delay`.
   void RecheckAfter(base::TimeDelta delay);
 
   // Cancels any pending calls to Recheck that are scheduled..
@@ -114,7 +114,7 @@ class InSessionPasswordChangeManager
   // future, posts a task to check again in the distant future.
   void MaybeShowExpiryNotification();
 
-  // Shows a password expiry notification. If |time_until_expiry| is zero or
+  // Shows a password expiry notification. If `time_until_expiry` is zero or
   // negative then the password has already expired.
   void ShowStandardExpiryNotification(base::TimeDelta time_until_expiry);
 
@@ -139,7 +139,7 @@ class InSessionPasswordChangeManager
   // the user's SAML IdP change-password page:
   void StartInSessionPasswordChange();
 
-  // Handle a SAML password change. |old_password| and |new_password| can be
+  // Handle a SAML password change. `old_password` and `new_password` can be
   // empty if scraping failed, in which case the user will be prompted to enter
   // them again. If they are scraped, this calls ChangePassword immediately,
   void OnSamlPasswordChanged(const std::string& scraped_old_password,

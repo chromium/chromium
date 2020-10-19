@@ -119,7 +119,7 @@ const base::TimeDelta kHalfDay = base::TimeDelta::FromHours(12);
 // A time delta with length zero.
 const base::TimeDelta kZeroTime = base::TimeDelta();
 
-// When the password will expire in |kUrgentWarningDays| or less, the
+// When the password will expire in `kUrgentWarningDays` or less, the
 // UrgentPasswordExpiryNotification will be used - which is larger and actually
 // a dialog (not a true notification) - instead of the normal notification.
 const int kUrgentWarningDays = 3;
@@ -193,7 +193,7 @@ InSessionPasswordChangeManager::InSessionPasswordChangeManager(
       urgent_warning_days_(kUrgentWarningDays) {
   DCHECK(primary_user_);
 
-  // Add |this| as a SessionActivationObserver to see when the screen is locked.
+  // Add `this` as a SessionActivationObserver to see when the screen is locked.
   auto* session_controller = ash::SessionController::Get();
   if (session_controller) {
     session_controller->AddSessionActivationObserverForAccountId(
@@ -202,7 +202,7 @@ InSessionPasswordChangeManager::InSessionPasswordChangeManager(
 }
 
 InSessionPasswordChangeManager::~InSessionPasswordChangeManager() {
-  // Remove |this| as a SessionActivationObserver.
+  // Remove `this` as a SessionActivationObserver.
   auto* session_controller = ash::SessionController::Get();
   if (session_controller) {
     session_controller->RemoveSessionActivationObserverForAccountId(

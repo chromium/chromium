@@ -39,7 +39,7 @@ class FakeChromeUserManager : public ChromeUserManager {
   user_manager::User* AddActiveDirectoryUser(const AccountId& account_id);
 
   // Calculates the user name hash and calls UserLoggedIn to login a user.
-  // Sets the user as having its profile created if |set_profile_created_flag|
+  // Sets the user as having its profile created if `set_profile_created_flag`
   // is true, but does not create a profile.
   // NOTE: This does not match production, which first logs in the user, then
   // creates the profile and updates the user later.
@@ -51,15 +51,15 @@ class FakeChromeUserManager : public ChromeUserManager {
   user_manager::User* AddUserWithAffiliation(const AccountId& account_id,
                                              bool is_affiliated);
 
-  // Creates and adds user with specified |account_id| and |user_type|. Sets
-  // user affiliation. If |profile| is valid, maps it to the created user.
+  // Creates and adds user with specified `account_id` and `user_type`. Sets
+  // user affiliation. If `profile` is valid, maps it to the created user.
   user_manager::User* AddUserWithAffiliationAndTypeAndProfile(
       const AccountId& account_id,
       bool is_affiliated,
       user_manager::UserType user_type,
       TestingProfile* profile);
 
-  // Creates the instance returned by |GetLocalState()| (which returns nullptr
+  // Creates the instance returned by `GetLocalState()` (which returns nullptr
   // by default).
   void CreateLocalState();
 

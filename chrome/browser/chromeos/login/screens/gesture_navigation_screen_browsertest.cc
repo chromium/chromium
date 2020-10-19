@@ -74,10 +74,10 @@ class GestureNavigationScreenTest
         GestureNavigationScreenView::kScreenId);
   }
 
-  // Checks that |dialog_page| is shown, while also checking that all other oobe
+  // Checks that `dialog_page` is shown, while also checking that all other oobe
   // dialogs on the gesture navigation screen are hidden.
   void CheckPageIsShown(std::string dialog_page) {
-    // |oobe_dialogs| is a list of all pages within the gesture navigation
+    // `oobe_dialogs` is a list of all pages within the gesture navigation
     // screen.
     const std::vector<std::string> oobe_dialogs = {
         "gestureIntro", "gestureHome", "gestureOverview", "gestureBack"};

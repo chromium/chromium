@@ -72,12 +72,12 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
   void set_state(AuthState value) { state_ = value; }
   AuthState state() const { return state_; }
 
-  // Sets the secret that is expected to be sent to |AttemptEasySignin|
+  // Sets the secret that is expected to be sent to `AttemptEasySignin`
   void set_expected_secret(const std::string& value) {
     expected_secret_ = value;
   }
 
-  // Not using |SetAuthType| to make sure it's not called during tests.
+  // Not using `SetAuthType` to make sure it's not called during tests.
   void set_auth_type(proximity_auth::mojom::AuthType value) {
     auth_type_ = value;
   }

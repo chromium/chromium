@@ -21,7 +21,7 @@ class AuthErrorObserver;
 class AuthErrorObserverFactory : public BrowserContextKeyedServiceFactory {
  public:
   // Returns the instance of AuthErrorObserver associated with this
-  // |profile| (creates one if none exists).
+  // `profile` (creates one if none exists).
   static AuthErrorObserver* GetForProfile(Profile* profile);
 
   // Returns an instance of the AuthErrorObserverFactory singleton.

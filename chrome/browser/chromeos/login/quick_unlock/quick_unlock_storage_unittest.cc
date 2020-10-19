@@ -64,11 +64,11 @@ class QuickUnlockStorageUnitTest : public testing::Test {
 // Provides test-only QuickUnlockStorage APIs.
 class QuickUnlockStorageTestApi {
  public:
-  // Does *not* take ownership over |quick_unlock_storage|.
+  // Does *not* take ownership over `quick_unlock_storage`.
   explicit QuickUnlockStorageTestApi(QuickUnlockStorage* quick_unlock_storage)
       : quick_unlock_storage_(quick_unlock_storage) {}
 
-  // Reduces the amount of strong auth time available by |time_delta|.
+  // Reduces the amount of strong auth time available by `time_delta`.
   void ReduceRemainingStrongAuthTimeBy(const base::TimeDelta& time_delta) {
     quick_unlock_storage_->last_strong_auth_ -= time_delta;
   }

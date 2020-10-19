@@ -41,14 +41,14 @@ class EasyUnlockKeyManager {
   ~EasyUnlockKeyManager();
 
   // Clears existing Easy unlock keys and creates new ones for the given
-  // |remote_devices| and the given |user_context|. |user_context| must have
+  // `remote_devices` and the given `user_context`. `user_context` must have
   // secret to allow keys to be created.
   void RefreshKeys(const UserContext& user_context,
                    const base::ListValue& remote_devices,
                    const RefreshKeysCallback& callback);
 
   // Retrieves the remote device data from cryptohome keys for the given
-  // |user_context|.
+  // `user_context`.
   void GetDeviceDataList(const UserContext& user_context,
                          const GetDeviceDataListCallback& callback);
 
@@ -80,8 +80,8 @@ class EasyUnlockKeyManager {
 
  private:
   // Runs the next operation if there is one. We first run all the operations in
-  // the |write_operation_queue_| and then run all the operations in the
-  // |read_operation_queue_|.
+  // the `write_operation_queue_` and then run all the operations in the
+  // `read_operation_queue_`.
   void RunNextOperation();
 
   // Called when the TPM key is ready to be used for creating Easy Unlock key

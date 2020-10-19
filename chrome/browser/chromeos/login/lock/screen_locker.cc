@@ -82,7 +82,7 @@ namespace chromeos {
 
 namespace {
 
-// Returns true if fingerprint authentication is available for |user|.
+// Returns true if fingerprint authentication is available for `user`.
 bool IsFingerprintAvailableForUser(const user_manager::User* user) {
   quick_unlock::QuickUnlockStorage* quick_unlock_storage =
       quick_unlock::QuickUnlockFactory::GetForUser(user);
@@ -582,7 +582,7 @@ void ScreenLocker::ShutDownClass() {
   delete g_screen_lock_observer;
   g_screen_lock_observer = nullptr;
 
-  // Delete |screen_locker_| if it is being shown.
+  // Delete `screen_locker_` if it is being shown.
   ScheduleDeletion();
 }
 

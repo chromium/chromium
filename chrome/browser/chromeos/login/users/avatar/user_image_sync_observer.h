@@ -65,7 +65,7 @@ class UserImageSyncObserver
   // preferences.
   void OnInitialSync();
 
-  // Called when preference |pref_name| was changed.j
+  // Called when preference `pref_name` was changed.j
   void OnPreferenceChanged(const std::string& pref_name);
 
   // Saves local image preferences to sync.

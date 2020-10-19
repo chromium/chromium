@@ -57,7 +57,7 @@ class PasswordSyncTokenVerifier : public KeyedService,
   void OnApiCallFailed(PasswordSyncTokenFetcher::ErrorType error_type) override;
 
  private:
-  // Recheck after given |delay|.
+  // Recheck after given `delay`.
   void RecheckAfter(base::TimeDelta delay);
   // Init sync token.
   void CreateTokenAsync();

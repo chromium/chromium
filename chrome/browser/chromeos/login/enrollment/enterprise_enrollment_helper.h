@@ -60,10 +60,10 @@ class EnterpriseEnrollmentHelper {
     virtual void OnDeviceEnrolled() = 0;
 
     // Called when device attribute update permission granted,
-    // |granted| indicates whether permission granted or not.
+    // `granted` indicates whether permission granted or not.
     virtual void OnDeviceAttributeUpdatePermission(bool granted) = 0;
 
-    // Called when device attribute upload finishes. |success| indicates
+    // Called when device attribute upload finishes. `success` indicates
     // whether it is successful or not.
     virtual void OnDeviceAttributeUploadCompleted(bool success) = 0;
 
@@ -80,26 +80,26 @@ class EnterpriseEnrollmentHelper {
       const std::string& enrolling_user_domain);
 
   // Sets up a mock object that would be returned by next Create call.
-  // This call passes ownership of |mock|.
+  // This call passes ownership of `mock`.
   static void SetEnrollmentHelperMock(
       std::unique_ptr<EnterpriseEnrollmentHelper> mock);
 
   virtual ~EnterpriseEnrollmentHelper();
 
-  // Starts enterprise enrollment using |auth_code|. First tries to exchange the
+  // Starts enterprise enrollment using `auth_code`. First tries to exchange the
   // auth code to authentication token, then tries to enroll the device with the
   // received token.
   // EnrollUsingAuthCode can be called only once during this object's lifetime,
   // and only if none of the EnrollUsing* methods was called before.
   virtual void EnrollUsingAuthCode(const std::string& auth_code) = 0;
 
-  // Starts enterprise enrollment using |token|.
+  // Starts enterprise enrollment using `token`.
   // This flow is used when enrollment is controlled by the paired device.
   // EnrollUsingToken can be called only once during this object's lifetime, and
   // only if none of the EnrollUsing* was called before.
   virtual void EnrollUsingToken(const std::string& token) = 0;
 
-  // Starts enterprise enrollment using enrollment |token| for authentication.
+  // Starts enterprise enrollment using enrollment `token` for authentication.
   // This flow is used in OOBE configuration flow.
   // EnrollUsingWorkflowToken can be called only once during this object's
   // lifetime, and only if none of the EnrollUsing* was called before.
@@ -127,8 +127,8 @@ class EnterpriseEnrollmentHelper {
   // using stored during enrollment oauth token.
   virtual void GetDeviceAttributeUpdatePermission() = 0;
 
-  // Uploads device attributes on DM server. |asset_id| - Asset Identifier
-  // and |location| - Assigned Location, these attributes were typed by
+  // Uploads device attributes on DM server. `asset_id` - Asset Identifier
+  // and `location` - Assigned Location, these attributes were typed by
   // current user on the device attribute prompt screen after successful
   // enrollment.
   virtual void UpdateDeviceAttributes(const std::string& asset_id,
@@ -137,7 +137,7 @@ class EnterpriseEnrollmentHelper {
   // Clears authentication data from the profile (if EnrollUsingProfile was
   // used) and revokes fetched tokens.
   // Does not revoke the additional token if enrollment finished successfully.
-  // Calls |callback| on completion.
+  // Calls `callback` on completion.
   virtual void ClearAuth(base::OnceClosure callback) = 0;
 
  protected:
@@ -150,8 +150,8 @@ class EnterpriseEnrollmentHelper {
                      const policy::EnrollmentConfig& enrollment_config,
                      const std::string& enrolling_user_domain) = 0;
 
-  // This method is used in Create method. |status_consumer| must outlive
-  // |this|.
+  // This method is used in Create method. `status_consumer` must outlive
+  // `this`.
   void set_status_consumer(EnrollmentStatusConsumer* status_consumer);
 
   EnrollmentStatusConsumer* status_consumer() const { return status_consumer_; }

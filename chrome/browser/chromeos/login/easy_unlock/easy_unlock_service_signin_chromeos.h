@@ -43,12 +43,12 @@ class EasyUnlockServiceSignin
       secure_channel::SecureChannelClient* secure_channel_client);
   ~EasyUnlockServiceSignin() override;
 
-  // Wraps the challenge for the remote device identified by |account_id| and
+  // Wraps the challenge for the remote device identified by `account_id` and
   // the
-  // |device_public_key|. The |channel_binding_data| is signed by the TPM
+  // `device_public_key`. The `channel_binding_data` is signed by the TPM
   // included in the wrapped challenge.
-  // |callback| will be invoked when wrapping is complete. If the user data is
-  // not loaded yet, then |callback| will be invoked with an empty string.
+  // `callback` will be invoked when wrapping is complete. If the user data is
+  // not loaded yet, then `callback` will be invoked with an empty string.
   void WrapChallengeForUserAndDevice(
       const AccountId& account_id,
       const std::string& device_public_key,
@@ -78,7 +78,7 @@ class EasyUnlockServiceSignin
     EasyUnlockDeviceKeyDataList devices;
 
     // The list of remote device dictionaries understood by Easy unlock app.
-    // This will be returned by |GetRemoteDevices| method.
+    // This will be returned by `GetRemoteDevices` method.
     base::ListValue remote_devices_value;
 
    private:

@@ -103,7 +103,7 @@ class SessionFlagsManager {
   // List of switches passed as a restart job arguments.
   base::Optional<std::vector<Switch>> restart_job_;
 
-  // If |session_restore_enabled_| is set, the path to the file where session
+  // If `session_restore_enabled_` is set, the path to the file where session
   // state is saved.
   base::FilePath backing_file_;
 

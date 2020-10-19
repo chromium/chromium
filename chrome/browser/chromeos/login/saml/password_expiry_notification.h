@@ -16,10 +16,10 @@ namespace chromeos {
 class PasswordExpiryNotification {
  public:
   // Shows a password expiry notification. The password has expired if
-  // |time_until_expiry| is zero or negative.
+  // `time_until_expiry` is zero or negative.
   static void Show(Profile* profile, base::TimeDelta time_until_expiry);
 
-  // Returns localized title text appropriate for |time_until_expiry|, eg:
+  // Returns localized title text appropriate for `time_until_expiry`, eg:
   // "Password expires in 7 days".
   static base::string16 GetTitleText(base::TimeDelta time_until_expiry);
 

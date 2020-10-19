@@ -107,7 +107,7 @@ class UserSelectionScreen
   // session_manager::SessionManagerObserver
   void OnSessionStateChanged() override;
 
-  // Fills |user_dict| with information about |user|.
+  // Fills `user_dict` with information about `user`.
   static void FillUserDictionary(
       const user_manager::User* user,
       bool is_owner,
@@ -116,7 +116,7 @@ class UserSelectionScreen
       const std::vector<std::string>* public_session_recommended_locales,
       base::DictionaryValue* user_dict);
 
-  // Fills |user_dict| with |user| multi-profile related preferences.
+  // Fills `user_dict` with `user` multi-profile related preferences.
   static void FillMultiProfileUserPrefs(const user_manager::User* user,
                                         base::DictionaryValue* user_dict,
                                         bool is_signin_to_add);
@@ -124,7 +124,7 @@ class UserSelectionScreen
   // Determines if user auth status requires online sign in.
   static bool ShouldForceOnlineSignIn(const user_manager::User* user);
 
-  // Builds a |UserAvatar| instance which contains the current image for |user|.
+  // Builds a `UserAvatar` instance which contains the current image for `user`.
   static ash::UserAvatar BuildAshUserAvatarForUser(
       const user_manager::User& user);
 

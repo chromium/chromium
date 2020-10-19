@@ -85,7 +85,7 @@ enum class OobeButton { kBack, kNext, kText };
 // Dialogs that are a part of Demo Mode setup screens.
 enum class DemoSetupDialog { kNetwork, kEula, kArcTos, kProgress, kError };
 
-// Returns the tag of the given |button| type.
+// Returns the tag of the given `button` type.
 std::string ButtonToTag(OobeButton button) {
   switch (button) {
     case OobeButton::kBack:
@@ -99,7 +99,7 @@ std::string ButtonToTag(OobeButton button) {
   }
 }
 
-// Returns js id of the given |dialog|.
+// Returns js id of the given `dialog`.
 std::string DialogToStringId(DemoSetupDialog dialog) {
   switch (dialog) {
     case DemoSetupDialog::kNetwork:
@@ -117,8 +117,8 @@ std::string DialogToStringId(DemoSetupDialog dialog) {
   }
 }
 
-// Returns query to access the content of the given OOBE |screen| or empty
-// string if the |screen| is not a part of Demo Mode setup flow.
+// Returns query to access the content of the given OOBE `screen` or empty
+// string if the `screen` is not a part of Demo Mode setup flow.
 std::string ScreenToContentQuery(OobeScreenId screen) {
   if (screen == DemoPreferencesScreenView::kScreenId)
     return "$('demo-preferences')";
@@ -204,7 +204,7 @@ class DemoSetupTestBase : public OobeBaseTest {
     return test::OobeJS().GetBool(query);
   }
 
-  // Returns whether a custom item with |custom_item_name| is shown as a first
+  // Returns whether a custom item with `custom_item_name` is shown as a first
   // element on the network list.
   bool IsCustomNetworkListElementShown(const std::string& custom_item_name) {
     const std::string element_selector = base::StrCat(
@@ -218,8 +218,8 @@ class DemoSetupTestBase : public OobeBaseTest {
   }
 
   // Returns whether error message is shown on demo setup error screen and
-  // contains text consisting of strings identified by |error_message_id| and
-  // |recovery_message_id|.
+  // contains text consisting of strings identified by `error_message_id` and
+  // `recovery_message_id`.
   bool IsErrorMessageShown(int error_message_id, int recovery_message_id) {
     const std::string element_selector =
         base::StrCat({ScreenToContentQuery(DemoSetupScreenView::kScreenId),
@@ -248,7 +248,7 @@ class DemoSetupTestBase : public OobeBaseTest {
     MultiTapOobeContainer(kInvokeDemoModeGestureTapsCount);
   }
 
-  // Simulates multi-tap gesture that consists of |tapCount| clicks on the OOBE
+  // Simulates multi-tap gesture that consists of `tapCount` clicks on the OOBE
   // outer-container.
   void MultiTapOobeContainer(int tapsCount) {
     const std::string query = base::StrCat(
@@ -265,7 +265,7 @@ class DemoSetupTestBase : public OobeBaseTest {
     test::ExecuteOobeJS("document.querySelector('.cr-dialog-cancel').click();");
   }
 
-  // Simulates |button| click on a specified OOBE |screen|. Can be used for
+  // Simulates `button` click on a specified OOBE `screen`. Can be used for
   // screens that consists of one oobe-dialog element.
   void ClickOobeButton(OobeScreenId screen,
                        OobeButton button,
@@ -273,8 +273,8 @@ class DemoSetupTestBase : public OobeBaseTest {
     ClickOobeButtonWithSelector(screen, ButtonToTag(button), execution);
   }
 
-  // Simulates click on a button with |button_selector| on specified OOBE
-  // |screen|. Can be used for screens that consists of one oobe-dialog element.
+  // Simulates click on a button with `button_selector` on specified OOBE
+  // `screen`. Can be used for screens that consists of one oobe-dialog element.
   void ClickOobeButtonWithSelector(OobeScreenId screen,
                                    const std::string& button_selector,
                                    JSExecution execution) {
@@ -293,7 +293,7 @@ class DemoSetupTestBase : public OobeBaseTest {
     }
   }
 
-  // Simulates |button| click on a |dialog| of the specified OOBE |screen|.
+  // Simulates `button` click on a `dialog` of the specified OOBE `screen`.
   // Can be used for screens that consists of multiple oobe-dialog elements.
   void ClickScreenDialogButton(OobeScreenId screen,
                                DemoSetupDialog dialog,
@@ -303,8 +303,8 @@ class DemoSetupTestBase : public OobeBaseTest {
                                         execution);
   }
 
-  // Simulates click on a button with |button_selector| on a |dialog| of the
-  // specified OOBE |screen|. Can be used for screens that consist of multiple
+  // Simulates click on a button with `button_selector` on a `dialog` of the
+  // specified OOBE `screen`. Can be used for screens that consist of multiple
   // oobe-dialog elements.
   void ClickScreenDialogButtonWithSelector(OobeScreenId screen,
                                            DemoSetupDialog dialog,
@@ -325,7 +325,7 @@ class DemoSetupTestBase : public OobeBaseTest {
     }
   }
 
-  // Simulates click on the network list item. |element| should specify
+  // Simulates click on the network list item. `element` should specify
   // the aria-label of the desired network-list-item.
   void ClickNetworkListElement(const std::string& name) {
     const std::string element =

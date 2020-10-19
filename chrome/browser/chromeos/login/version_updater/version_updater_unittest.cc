@@ -98,14 +98,14 @@ class VersionUpdaterUnitTest : public testing::Test {
 
     NetworkHandler::Initialize();
 
-    // |mock_network_portal_detector_->IsEnabled()| will always return false.
+    // `mock_network_portal_detector_->IsEnabled()` will always return false.
     mock_network_portal_detector_ =
         std::make_unique<MockNetworkPortalDetector>();
     EXPECT_CALL(*mock_network_portal_detector_, IsEnabled())
         .Times(AnyNumber())
         .WillRepeatedly(Return(false));
 
-    // |fake_network_portal_detector_->IsEnabled()| will always return true.
+    // `fake_network_portal_detector_->IsEnabled()` will always return true.
     fake_network_portal_detector_ =
         std::make_unique<NetworkPortalDetectorTestImpl>();
 
@@ -117,15 +117,15 @@ class VersionUpdaterUnitTest : public testing::Test {
 
   void TearDown() override {
     TestingBrowserProcess::GetGlobal()->SetShuttingDown(true);
-    // We need to stop observing |NetworkPortalDetector| before call
-    // |DBusThreadManager::Shutdown()|, so destroy |version_updater_| now.
+    // We need to stop observing `NetworkPortalDetector` before call
+    // `DBusThreadManager::Shutdown()`, so destroy `version_updater_` now.
     version_updater_.reset();
     mock_delegate_.reset();
 
     network_portal_detector::InitializeForTesting(nullptr);
     NetworkHandler::Shutdown();
 
-    // It will delete |fake_update_engine_client_|.
+    // It will delete `fake_update_engine_client_`.
     DBusThreadManager::Shutdown();
   }
 

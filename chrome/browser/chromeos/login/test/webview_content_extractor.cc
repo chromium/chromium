@@ -48,7 +48,7 @@ class WebContentsLoadFinishedWaiter : public content::WebContentsObserver {
 };
 
 // Helper invoked by GuestViewManager::ForEachGuest to collect WebContents of
-// Webview named as |web_view_name|.
+// Webview named as `web_view_name`.
 bool AddNamedWebContentsToSet(std::set<content::WebContents*>* frame_set,
                               const std::string& web_view_name,
                               content::WebContents* web_contents) {

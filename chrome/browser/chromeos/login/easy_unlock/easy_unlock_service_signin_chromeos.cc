@@ -49,7 +49,7 @@ uint32_t kMaxCryptohomeBackoffIntervalMs = 10000u;
 uint32_t kInitialCryptohomeBackoffIntervalMs = 200u;
 
 // Calculates the backoff interval that should be used next.
-// |backoff| The last backoff interval used.
+// `backoff` The last backoff interval used.
 uint32_t GetNextBackoffInterval(uint32_t backoff) {
   if (backoff == 0u)
     return kInitialCryptohomeBackoffIntervalMs;
@@ -61,12 +61,12 @@ void LoadDataForUser(
     uint32_t backoff_ms,
     const EasyUnlockKeyManager::GetDeviceDataListCallback& callback);
 
-// Callback passed to |LoadDataForUser()|.
-// If |LoadDataForUser| function succeeded, it invokes |callback| with the
+// Callback passed to `LoadDataForUser()`.
+// If `LoadDataForUser` function succeeded, it invokes `callback` with the
 // results.
-// If |LoadDataForUser| failed and further retries are allowed, schedules new
-// |LoadDataForUser| call with some backoff. If no further retires are allowed,
-// it invokes |callback| with the |LoadDataForUser| results.
+// If `LoadDataForUser` failed and further retries are allowed, schedules new
+// `LoadDataForUser` call with some backoff. If no further retires are allowed,
+// it invokes `callback` with the `LoadDataForUser` results.
 void RetryDataLoadOnError(
     const AccountId& account_id,
     uint32_t backoff_ms,
@@ -500,7 +500,7 @@ void EasyUnlockServiceSignin::OnUserDataLoaded(
       PA_LOG(WARNING) << "No BeaconSeeds were loaded.";
     }
 
-    // Values such as the |instance_id| and |name| of the device are not
+    // Values such as the `instance_id` and `name` of the device are not
     // provided in the device dictionary that is persisted to the TPM during the
     // user session. However, in this particular scenario, we do not need these
     // values to safely construct and use the RemoteDevice objects.

@@ -91,7 +91,7 @@ class WebContentsLoadFinishedWaiter : public content::WebContentsObserver {
 };
 
 // Helper invoked by GuestViewManager::ForEachGuest to collect WebContents of
-// Webview named as |web_view_name,|.
+// Webview named as `web_view_name`.
 bool AddNamedWebContentsToSet(std::set<content::WebContents*>* frame_set,
                               const std::string& web_view_name,
                               content::WebContents* web_contents) {
@@ -153,7 +153,7 @@ class EulaTest : public OobeBaseTest {
         consented);
   }
 
-  // Calls |GoogleUpdateSettings::SetCollectStatsConsent| asynchronously on its
+  // Calls `GoogleUpdateSettings::SetCollectStatsConsent` asynchronously on its
   // task runner. Blocks until task is executed.
   void SetGoogleCollectStatsConsent(bool consented) {
     base::RunLoop runloop;
@@ -163,13 +163,13 @@ class EulaTest : public OobeBaseTest {
     runloop.Run();
   }
 
-  // Calls |GoogleUpdateSettings::GetCollectStatsConsent| asynchronously on its
+  // Calls `GoogleUpdateSettings::GetCollectStatsConsent` asynchronously on its
   // task runner. Blocks until task is executed and returns the result.
   bool GetGoogleCollectStatsConsent() {
     bool consented = false;
 
     // Callback runs after GetCollectStatsConsent is executed. Sets the local
-    // variable |consented| to the result of GetCollectStatsConsent.
+    // variable `consented` to the result of GetCollectStatsConsent.
     auto on_get_collect_stats_consent_callback =
         [](base::OnceClosure quit_closure, bool* consented_out,
            bool consented_result) {

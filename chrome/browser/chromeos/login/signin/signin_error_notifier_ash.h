@@ -50,11 +50,11 @@ class SigninErrorNotifier : public SigninErrorController::Observer,
 
   // Handles errors for Secondary Accounts.
   // Displays a notification that allows users to open crOS Account Manager UI.
-  // |account_id| is the account identifier (used by the Token Service chain)
+  // `account_id` is the account identifier (used by the Token Service chain)
   // for the Secondary Account which received an error.
   void HandleSecondaryAccountError(const CoreAccountId& account_id);
 
-  // |chromeos::AccountManager::CheckDummyGaiaTokenForAllAccounts| callback
+  // `chromeos::AccountManager::CheckDummyGaiaTokenForAllAccounts` callback
   // handler.
   void OnCheckDummyGaiaTokenForAllAccounts(
       const std::vector<std::pair<chromeos::AccountManager::Account, bool>>&
@@ -64,7 +64,7 @@ class SigninErrorNotifier : public SigninErrorController::Observer,
                           TokenHandleUtil::TokenHandleStatus status);
 
   // Handles clicks on the Secondary Account reauth notification. See
-  // |message_center::HandleNotificationClickDelegate|.
+  // `message_center::HandleNotificationClickDelegate`.
   void HandleSecondaryAccountReauthNotificationClick(
       base::Optional<int> button_index);
 

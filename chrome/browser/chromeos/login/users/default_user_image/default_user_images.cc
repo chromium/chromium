@@ -292,7 +292,7 @@ const int kDefaultImageDescriptionsMaxID =
     base::size(kDefaultImageDescriptions);
 
 // Returns true if the string specified consists of the prefix and one of
-// the default images indices. Returns the index of the image in |image_id|
+// the default images indices. Returns the index of the image in `image_id`
 // variable.
 bool IsDefaultImageString(const std::string& s,
                           const std::string& prefix,

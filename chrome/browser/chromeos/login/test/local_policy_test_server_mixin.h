@@ -52,7 +52,7 @@ class LocalPolicyTestServerMixin : public InProcessBrowserTestMixin {
       const enterprise_management::ChromeDeviceSettingsProto& policy);
 
   // Updates user policy blob served by the local policy test server.
-  // |policy_user| - the policy user's email.
+  // `policy_user` - the policy user's email.
   bool UpdateUserPolicy(
       const enterprise_management::CloudPolicySettings& policy,
       const std::string& policy_user);
@@ -60,7 +60,7 @@ class LocalPolicyTestServerMixin : public InProcessBrowserTestMixin {
   // Updates user policies served by the local policy test server, by
   // configuring ser of mandatory and recommended policies that should be
   // returned for the policy user.
-  // |policy_user| - the policy user's email.
+  // `policy_user` - the policy user's email.
   bool UpdateUserPolicy(const base::Value& mandatory_policy,
                         const base::Value& recommended_policy,
                         const std::string& policy_user);
@@ -75,7 +75,7 @@ class LocalPolicyTestServerMixin : public InProcessBrowserTestMixin {
   void SetFakeAttestationFlow();
 
   // Configures server to respond with particular error code during requests.
-  // |net_error_code| - error code from device_management_service.cc.
+  // `net_error_code` - error code from device_management_service.cc.
   void SetExpectedDeviceEnrollmentError(int net_error_code);
   void SetExpectedDeviceAttributeUpdateError(int net_error_code);
   void SetExpectedPolicyFetchError(int net_error_code);
@@ -99,7 +99,7 @@ class LocalPolicyTestServerMixin : public InProcessBrowserTestMixin {
 
   // Utility function that configures server parameters for zero-touch
   // enrollment. Should be used in conjunction with enabling zero-touch
-  // via command line and calling |ConfigureFakeStatisticsForZeroTouch|.
+  // via command line and calling `ConfigureFakeStatisticsForZeroTouch`.
   void SetupZeroTouchForcedEnrollment();
 
   // Configures fake statistics provider with values that can be used with

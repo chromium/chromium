@@ -191,14 +191,14 @@ class OobeLocalizationTest
  public:
   OobeLocalizationTest();
 
-  // Verifies that the comma-separated |values| corresponds with the first
-  // values in |select_id|, optionally checking for an options group label after
+  // Verifies that the comma-separated `values` corresponds with the first
+  // values in `select_id`, optionally checking for an options group label after
   // the first set of options.
   void VerifyInitialOptions(const char* select_id,
                             const char* values,
                             bool check_separator);
 
-  // Verifies that |value| exists in |select_id|.
+  // Verifies that `value` exists in `select_id`.
   void VerifyOptionExists(const char* select_id, const char* value);
 
   // Dumps OOBE select control (language or keyboard) to string.

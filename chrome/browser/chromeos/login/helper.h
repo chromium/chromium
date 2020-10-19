@@ -40,13 +40,13 @@ namespace chromeos {
 
 // Returns bounds of the screen to use for login wizard.
 // The rect is centered within the default monitor and sized accordingly if
-// |size| is not empty. Otherwise the whole monitor is occupied.
+// `size` is not empty. Otherwise the whole monitor is occupied.
 gfx::Rect CalculateScreenBounds(const gfx::Size& size);
 
 // Returns the size of user image required for proper display under current DPI.
 int GetCurrentUserImageSize();
 
-// Define the constants in |login| namespace to avoid potential
+// Define the constants in `login` namespace to avoid potential
 // conflict with other chromeos components.
 namespace login {
 

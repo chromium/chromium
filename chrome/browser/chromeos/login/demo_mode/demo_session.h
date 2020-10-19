@@ -121,15 +121,15 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // Returns the id of the screensaver app based on the board name.
   static std::string GetScreensaverAppId();
 
-  // Returns whether the app with |app_id| should be displayed in app launcher
+  // Returns whether the app with `app_id` should be displayed in app launcher
   // in demo mode. Returns true for all apps in non-demo mode.
   static bool ShouldDisplayInAppLauncher(const std::string& app_id);
 
   // Returns the list of countries that Demo Mode supports. Each country is
   // denoted by:
-  // |value|: The ISO country code.
-  // |title|: The display name of the country in the current locale.
-  // |selected|: Whether the country is currently selected.
+  // `value`: The ISO country code.
+  // `title`: The display name of the country in the current locale.
+  // `selected`: Whether the country is currently selected.
   static base::Value GetCountryList();
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
@@ -138,7 +138,7 @@ class DemoSession : public session_manager::SessionManagerObserver,
   static void RecordAppLaunchSourceIfInDemoMode(AppLaunchSource source);
 
   // Ensures that the load of offline demo session resources is requested.
-  // |load_callback| will be run once the offline resource load finishes.
+  // `load_callback` will be run once the offline resource load finishes.
   void EnsureOfflineResourcesLoaded(base::OnceClosure load_callback);
 
   // Returns true if the Chrome app or ARC++ package, which is normally pinned
@@ -146,7 +146,7 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // in Demo Mode and offline.
   bool ShouldIgnorePinPolicy(const std::string& app_id_or_package);
 
-  // Sets |extensions_external_loader_| and starts installing the screensaver.
+  // Sets `extensions_external_loader_` and starts installing the screensaver.
   void SetExtensionsExternalLoader(
       scoped_refptr<DemoExtensionsExternalLoader> extensions_external_loader);
 
@@ -181,7 +181,7 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // success.
   void LoadAndLaunchHighlightsApp();
 
-  // Installs the CRX file from an update URL. Observes |ExtensionRegistry| to
+  // Installs the CRX file from an update URL. Observes `ExtensionRegistry` to
   // launch the app upon installation.
   void InstallAppFromUpdateUrl(const std::string& id);
 
