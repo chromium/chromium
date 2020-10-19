@@ -24,15 +24,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 public class ImageDescriptionsDialog
         implements ModalDialogProperties.Controller, RadioGroup.OnCheckedChangeListener {
-    /**
-     * A delegate to respond to actions taken in the dialog.
-     */
-    public interface Delegate {
-        void enableImageDescriptions(boolean onlyOnWifi);
-        void getImageDescriptionsJustOnce(boolean dontAskAgain);
-    }
-
-    private ImageDescriptionsDialog.Delegate mControllerDelegate;
+    private ImageDescriptionsControllerDelegate mControllerDelegate;
 
     private ModalDialogManager mModalDialogManager;
     private PropertyModel mPropertyModel;
@@ -47,7 +39,7 @@ public class ImageDescriptionsDialog
     private boolean mDontAskAgainState;
 
     protected ImageDescriptionsDialog(Context context, ModalDialogManager modalDialogManager,
-            ImageDescriptionsDialog.Delegate delegate, boolean shouldShowDontAskAgainOption) {
+            ImageDescriptionsControllerDelegate delegate, boolean shouldShowDontAskAgainOption) {
         mModalDialogManager = modalDialogManager;
         mControllerDelegate = delegate;
 
@@ -123,7 +115,8 @@ public class ImageDescriptionsDialog
         if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
             // Determine desired level of descriptions and default to just once
             if (mOptionAlwaysRadioButton.isChecked()) {
-                mControllerDelegate.enableImageDescriptions(mOnlyOnWifiState);
+                mControllerDelegate.enableImageDescriptions();
+                mControllerDelegate.setOnlyOnWifiRequirement(mOnlyOnWifiState);
             } else if (mOptionJustOnceRadioButton.isChecked()) {
                 mControllerDelegate.getImageDescriptionsJustOnce(mDontAskAgainState);
             }

@@ -4,6 +4,7 @@
 
 package org.chromium.content_public.browser;
 
+import org.chromium.base.FeatureList;
 import org.chromium.content.browser.ContentFeatureListImpl;
 
 /**
@@ -19,6 +20,8 @@ public class ContentFeatureList {
      * @return Whether the feature is enabled or not.
      */
     public static boolean isEnabled(String featureName) {
+        Boolean testValue = FeatureList.getTestValueForFeature(featureName);
+        if (testValue != null) return testValue;
         return ContentFeatureListImpl.isEnabled(featureName);
     }
 

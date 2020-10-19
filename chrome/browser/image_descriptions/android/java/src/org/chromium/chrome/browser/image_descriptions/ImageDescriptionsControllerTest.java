@@ -48,7 +48,7 @@ public class ImageDescriptionsControllerTest extends DummyUiActivityTestCase {
     public JniMocker mJniMocker = new JniMocker();
 
     @Mock
-    private ImageDescriptionsDialog.Delegate mDelegate;
+    private ImageDescriptionsControllerDelegate mDelegate;
 
     @Mock
     private UserPrefs.Natives mUserPrefsJniMock;
@@ -129,13 +129,14 @@ public class ImageDescriptionsControllerTest extends DummyUiActivityTestCase {
         Assert.assertFalse("Image descriptions should be disabled by default",
                 mController.imageDescriptionsEnabled());
 
-        mController.enableImageDescriptions(false);
+        mController.enableImageDescriptions();
+        mController.setOnlyOnWifiRequirement(false);
         verify(mPrefService, times(1))
                 .setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, true);
         verify(mPrefService, times(1))
                 .setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ONLY_ON_WIFI, false);
 
-        mController.enableImageDescriptions(true);
+        mController.setOnlyOnWifiRequirement(true);
         verify(mPrefService, times(1))
                 .setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ONLY_ON_WIFI, true);
     }

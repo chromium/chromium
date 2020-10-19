@@ -30,6 +30,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
+import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsSettings;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.password_check.PasswordCheckComponentUiFactory;
 import org.chromium.chrome.browser.password_check.PasswordCheckEditFragmentView;
@@ -305,6 +307,17 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         } else if (fragment instanceof PasswordCheckEditFragmentView) {
             PasswordCheckEditFragmentView editFragment = (PasswordCheckEditFragmentView) fragment;
             editFragment.setCheckProvider(PasswordCheckFactory::getOrCreate);
+        }
+        if (fragment instanceof ImageDescriptionsSettings) {
+            ImageDescriptionsSettings imageFragment = (ImageDescriptionsSettings) fragment;
+            Bundle extras = imageFragment.getArguments();
+            if (extras != null) {
+                extras.putBoolean(ImageDescriptionsSettings.IMAGE_DESCRIPTIONS,
+                        ImageDescriptionsController.getInstance().imageDescriptionsEnabled());
+                extras.putBoolean(ImageDescriptionsSettings.IMAGE_DESCRIPTIONS_DATA_POLICY,
+                        ImageDescriptionsController.getInstance().onlyOnWifiEnabled());
+            }
+            imageFragment.setDelegate(ImageDescriptionsController.getInstance().getDelegate());
         }
     }
 

@@ -29,7 +29,7 @@ public class ImageDescriptionsController {
     // Static instance of this singleton, lazily initialized during first getInstance() call.
     private static ImageDescriptionsController sInstance;
 
-    private ImageDescriptionsDialog.Delegate mDelegate;
+    private ImageDescriptionsControllerDelegate mDelegate;
 
     /**
      * Method to return the private instance of this singleton, lazily initialized.
@@ -51,17 +51,28 @@ public class ImageDescriptionsController {
     }
 
     /**
-     * Creates a default ImageDescriptionsDialog.Delegate implementation, used in production.
-     * @return      Default ImageDescriptionsDialog.Delegate delegate.
+     * Creates a default ImageDescriptionsControllerDelegate implementation, used in production.
+     * @return      Default ImageDescriptionsControllerDelegate delegate.
      */
-    private ImageDescriptionsDialog.Delegate defaultDelegate() {
-        return new ImageDescriptionsDialog.Delegate() {
+    private ImageDescriptionsControllerDelegate defaultDelegate() {
+        return new ImageDescriptionsControllerDelegate() {
             @Override
-            public void enableImageDescriptions(boolean onlyOnWifi) {
+            public void enableImageDescriptions() {
                 getPrefService().setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, true);
+                // TODO(mschillaci): Use JNI to enable descriptions in native code with AXMode
+            }
+
+            @Override
+            public void disableImageDescriptions() {
+                getPrefService().setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, false);
+                // TODO(mschillaci): Potentially remove AXMode through JNI to turn off
+                // descriptions?
+            }
+
+            @Override
+            public void setOnlyOnWifiRequirement(boolean onlyOnWifi) {
                 getPrefService().setBoolean(
                         Pref.ACCESSIBILITY_IMAGE_LABELS_ONLY_ON_WIFI, onlyOnWifi);
-                // TODO (mschillaci@) - Use JNI to enable descriptions in native code with AXMode
             }
 
             @Override
@@ -73,19 +84,27 @@ public class ImageDescriptionsController {
                 getSharedPrefs().writeBoolean(
                         ChromePreferenceKeys.IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN, dontAskAgain);
 
-                // TODO (mschillaci@) - Use JNI to enable descriptions once with AXActionData. Will
-                //                      need a Tab so that we can get web_contents.
+                // TODO(mschillaci): Use JNI to enable descriptions once with AXActionData. Will
+                //                   need a Tab so that we can get web_contents.
             }
         };
     }
 
     /**
-     * Set the ImageDescriptionsDialog.Delegate delegate one time, used for testing purposes.
-     * @param delegate      The new ImageDescriptionsDialog.Delegate delegate to use.
+     * Set the ImageDescriptionsControllerDelegate delegate one time, used for testing purposes.
+     * @param delegate      The new ImageDescriptionsControllerDelegate delegate to use.
      */
     @VisibleForTesting
-    public void setDelegateForTesting(ImageDescriptionsDialog.Delegate delegate) {
+    public void setDelegateForTesting(ImageDescriptionsControllerDelegate delegate) {
         this.mDelegate = delegate;
+    }
+
+    /**
+     * Get the current ImageDescriptionsControllerDelegate in use for this instance.
+     * @return mDelegate    The current ImageDescriptionsControllerDelegate in use.
+     */
+    public ImageDescriptionsControllerDelegate getDelegate() {
+        return mDelegate;
     }
 
     /**
@@ -102,14 +121,9 @@ public class ImageDescriptionsController {
             getImageDescriptionsJustOnce(true);
         } else {
             ImageDescriptionsDialog prompt = new ImageDescriptionsDialog(
-                    context, modalDialogManager, mDelegate, shouldShowDontAskAgainOption());
+                    context, modalDialogManager, getDelegate(), shouldShowDontAskAgainOption());
             prompt.show();
         }
-    }
-
-    protected void disableImageDescriptions() {
-        getPrefService().setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, false);
-        // TODO (mschillaci@) - Potentially remove AXMode through JNI to turn off descriptions?
     }
 
     protected boolean dontAskAgainEnabled() {
@@ -123,7 +137,7 @@ public class ImageDescriptionsController {
     }
 
     public boolean shouldShowImageDescriptionsMenuItem() {
-        // TODO (mschillaci@) - Expand this to check touch exploration rather than accessibility
+        // TODO(mschillaci): Expand this to check touch exploration rather than accessibility
         return ContentFeatureList.isEnabled(ContentFeatureList.EXPERIMENTAL_ACCESSIBILITY_LABELS)
                 && ChromeAccessibilityUtil.get().isAccessibilityEnabled();
     }
@@ -138,8 +152,16 @@ public class ImageDescriptionsController {
 
     // Pass-through methods to our delegate.
 
-    protected void enableImageDescriptions(boolean onlyOnWifi) {
-        mDelegate.enableImageDescriptions(onlyOnWifi);
+    protected void enableImageDescriptions() {
+        mDelegate.enableImageDescriptions();
+    }
+
+    protected void disableImageDescriptions() {
+        mDelegate.disableImageDescriptions();
+    }
+
+    protected void setOnlyOnWifiRequirement(boolean onlyOnWifi) {
+        mDelegate.setOnlyOnWifiRequirement(onlyOnWifi);
     }
 
     protected void getImageDescriptionsJustOnce(boolean dontAskAgain) {
@@ -151,7 +173,7 @@ public class ImageDescriptionsController {
      * @return PrefService
      */
     private PrefService getPrefService() {
-        // TODO (mschillaci@) - Use the correct profile here for Incognito mode etc.
+        // TODO(mschillaci): Use the correct profile here for Incognito mode etc.
         return UserPrefs.get(Profile.getLastUsedRegularProfile());
     }
 

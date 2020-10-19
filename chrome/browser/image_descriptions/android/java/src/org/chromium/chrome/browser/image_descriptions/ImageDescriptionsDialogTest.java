@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.view.View;
 import android.widget.CheckBox;
@@ -27,13 +28,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -56,7 +57,7 @@ public class ImageDescriptionsDialogTest extends DummyUiActivityTestCase {
     public JniMocker mJniMocker = new JniMocker();
 
     @Mock
-    private ImageDescriptionsDialog.Delegate mDelegate;
+    private ImageDescriptionsControllerDelegate mDelegate;
 
     @Mock
     private UserPrefs.Natives mUserPrefsJniMock;
@@ -80,7 +81,7 @@ public class ImageDescriptionsDialogTest extends DummyUiActivityTestCase {
 
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
         Profile.setLastUsedProfileForTesting(mProfile);
-        Mockito.when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
+        when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
 
         mAppModalPresenter = new AppModalPresenter(getActivity());
         mModalDialogManager =
@@ -95,7 +96,8 @@ public class ImageDescriptionsDialogTest extends DummyUiActivityTestCase {
 
     private void showDialog() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mController.disableImageDescriptions();
+            when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID))
+                    .thenReturn(false);
             mManager.writeInt(ChromePreferenceKeys.IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT, 0);
             mManager.writeBoolean(ChromePreferenceKeys.IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN, false);
             mController.onImageDescriptionsMenuItemSelected(getActivity(), mModalDialogManager);
@@ -104,7 +106,8 @@ public class ImageDescriptionsDialogTest extends DummyUiActivityTestCase {
 
     private void showDialogWithDontAskAgainVisible() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mController.disableImageDescriptions();
+            when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID))
+                    .thenReturn(false);
             mManager.writeInt(ChromePreferenceKeys.IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT, 5);
             mController.onImageDescriptionsMenuItemSelected(getActivity(), mModalDialogManager);
         });
@@ -279,7 +282,9 @@ public class ImageDescriptionsDialogTest extends DummyUiActivityTestCase {
         // User clicks "No thanks", dialog should dismiss with no action taken.
         clickNegativeButton();
 
-        verify(mDelegate, never()).enableImageDescriptions(anyBoolean());
+        verify(mDelegate, never()).enableImageDescriptions();
+        verify(mDelegate, never()).disableImageDescriptions();
+        verify(mDelegate, never()).setOnlyOnWifiRequirement(anyBoolean());
         verify(mDelegate, never()).getImageDescriptionsJustOnce(anyBoolean());
     }
 
@@ -297,7 +302,9 @@ public class ImageDescriptionsDialogTest extends DummyUiActivityTestCase {
         // User clicks "Get descriptions"
         clickPositiveButton();
 
-        verify(mDelegate, never()).enableImageDescriptions(anyBoolean());
+        verify(mDelegate, never()).enableImageDescriptions();
+        verify(mDelegate, never()).disableImageDescriptions();
+        verify(mDelegate, never()).setOnlyOnWifiRequirement(anyBoolean());
         verify(mDelegate, times(1)).getImageDescriptionsJustOnce(false);
     }
 
@@ -319,7 +326,9 @@ public class ImageDescriptionsDialogTest extends DummyUiActivityTestCase {
         // User clicks "Get descriptions"
         clickPositiveButton();
 
-        verify(mDelegate, never()).enableImageDescriptions(anyBoolean());
+        verify(mDelegate, never()).enableImageDescriptions();
+        verify(mDelegate, never()).disableImageDescriptions();
+        verify(mDelegate, never()).setOnlyOnWifiRequirement(anyBoolean());
         verify(mDelegate, times(1)).getImageDescriptionsJustOnce(true);
     }
 
@@ -345,7 +354,9 @@ public class ImageDescriptionsDialogTest extends DummyUiActivityTestCase {
         // User clicks "Get descriptions"
         clickPositiveButton();
 
-        verify(mDelegate, times(1)).enableImageDescriptions(false);
+        verify(mDelegate, times(1)).enableImageDescriptions();
+        verify(mDelegate, times(1)).setOnlyOnWifiRequirement(false);
+        verify(mDelegate, never()).disableImageDescriptions();
         verify(mDelegate, never()).getImageDescriptionsJustOnce(anyBoolean());
     }
 
@@ -360,7 +371,9 @@ public class ImageDescriptionsDialogTest extends DummyUiActivityTestCase {
         // User clicks "Get descriptions"
         clickPositiveButton();
 
-        verify(mDelegate, times(1)).enableImageDescriptions(true);
+        verify(mDelegate, times(1)).enableImageDescriptions();
+        verify(mDelegate, times(1)).setOnlyOnWifiRequirement(true);
+        verify(mDelegate, never()).disableImageDescriptions();
         verify(mDelegate, never()).getImageDescriptionsJustOnce(anyBoolean());
     }
 }

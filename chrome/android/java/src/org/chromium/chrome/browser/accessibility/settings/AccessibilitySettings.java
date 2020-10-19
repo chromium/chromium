@@ -14,6 +14,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.accessibility.FontSizePrefs;
 import org.chromium.chrome.browser.accessibility.FontSizePrefs.FontSizePrefsObserver;
+import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -32,6 +33,7 @@ public class AccessibilitySettings
     static final String PREF_FORCE_ENABLE_ZOOM = "force_enable_zoom";
     static final String PREF_READER_FOR_ACCESSIBILITY = "reader_for_accessibility";
     static final String PREF_CAPTIONS = "captions";
+    static final String PREF_IMAGE_DESCRIPTIONS = "image_descriptions";
 
     private TextScalePreference mTextScalePref;
     private ChromeBaseCheckBoxPreference mForceEnableZoomPref;
@@ -100,6 +102,10 @@ public class AccessibilitySettings
 
             return true;
         });
+
+        Preference imageDescriptionsPreference = findPreference(PREF_IMAGE_DESCRIPTIONS);
+        imageDescriptionsPreference.setVisible(
+                ImageDescriptionsController.getInstance().shouldShowImageDescriptionsMenuItem());
     }
 
     @Override
