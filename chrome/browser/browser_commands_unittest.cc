@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -447,8 +448,17 @@ TEST_F(BrowserCommandsTest, ToggleCaretBrowsing) {
   pref_service->SetBoolean(prefs::kCaretBrowsingEnabled, false);
   pref_service->SetBoolean(prefs::kShowCaretBrowsingDialog, false);
 
+#if defined(OS_MAC)
+  // On Mac, caret browsing should be disabled unless focus is in web content.
+  // Make sure it's disabled initially and doesn't toggle if executed.
+  EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_CARET_BROWSING_TOGGLE));
+  chrome::ExecuteCommand(browser(), IDC_CARET_BROWSING_TOGGLE);
+  EXPECT_FALSE(pref_service->GetBoolean(prefs::kCaretBrowsingEnabled));
+#endif
+
   // Create multiple tabs to test if caret browsing mode gets broadcast to all
-  // tabs when toggled.
+  // tabs when toggled. (For the purposes of testing, this simulates
+  // putting focus in web contents as a side effect.)
   GURL about_blank(url::kAboutBlankURL);
   int tab_count = 3;
   for (int i = 0; i < tab_count; ++i) {
@@ -456,6 +466,7 @@ TEST_F(BrowserCommandsTest, ToggleCaretBrowsing) {
   }
 
   // Toggle on caret browsing.
+  EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_CARET_BROWSING_TOGGLE));
   chrome::ExecuteCommand(browser(), IDC_CARET_BROWSING_TOGGLE);
   EXPECT_TRUE(pref_service->GetBoolean(prefs::kCaretBrowsingEnabled));
 
