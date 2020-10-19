@@ -33,9 +33,6 @@ class DevToolsListenerBrowserTest : public content::DevToolsAgentHostObserver,
   void SetUpOnMainThread() override {
     process_id_ = base::GetUniqueIdForProcess().GetUnsafeValue();
     content::DevToolsAgentHost::AddObserver(this);
-
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    CHECK(tmp_dir_.CreateUniqueTempDir());
   }
 
   bool ShouldForceDevToolsAgentHostCreation() override { return true; }
@@ -65,6 +62,7 @@ class DevToolsListenerBrowserTest : public content::DevToolsAgentHostObserver,
   void CollectCodeCoverage() {
     base::ScopedAllowBlockingForTesting allow_blocking;
 
+    CHECK(tmp_dir_.CreateUniqueTempDir());
     base::FilePath coverage_store =
         tmp_dir_.GetPath().AppendASCII("devtools_listener_browser_test");
     CHECK(base::CreateDirectory(coverage_store));
