@@ -16,8 +16,6 @@
 #include "components/exo/surface_observer.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "ui/base/ime/input_method.h"
-#include "ui/base/ime/input_method_observer.h"
 #include "ui/events/gestures/gesture_recognizer_impl.h"
 
 namespace aura {
@@ -140,9 +138,6 @@ class WebContentController
   std::set<std::string> current_javascript_channel_set_;
   std::set<content::RenderFrameHost*> current_render_frame_set_;
   std::set<content::RenderWidgetHost*> current_render_widget_set_;
-
-  // Used to watch key focus events.
-  std::unique_ptr<ui::InputMethodObserver> input_method_observer_;
 
   base::WeakPtrFactory<WebContentController> weak_ptr_factory_{this};
 

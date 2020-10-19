@@ -25,135 +25,9 @@
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
-#include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/constants.h"
-#include "ui/base/ime/input_method.h"
-#include "ui/base/ime/input_method_observer.h"
-#include "ui/base/ime/text_input_client.h"
-#include "ui/base/ime/text_input_type.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
-
-namespace {
-
-chromecast::webview::TextInputType ConvertTextInputType(
-    const ui::TextInputType text_input_type) {
-  switch (text_input_type) {
-    case ui::TEXT_INPUT_TYPE_NONE:
-      return chromecast::webview::TEXT_INPUT_TYPE_NONE;
-      break;
-    case ui::TEXT_INPUT_TYPE_TEXT:
-      return chromecast::webview::TEXT_INPUT_TYPE_TEXT;
-      break;
-    case ui::TEXT_INPUT_TYPE_CONTENT_EDITABLE:
-      return chromecast::webview::TEXT_INPUT_TYPE_CONTENT_EDITABLE;
-      break;
-    case ui::TEXT_INPUT_TYPE_PASSWORD:
-      return chromecast::webview::TEXT_INPUT_TYPE_PASSWORD;
-      break;
-    case ui::TEXT_INPUT_TYPE_SEARCH:
-      return chromecast::webview::TEXT_INPUT_TYPE_SEARCH;
-      break;
-    case ui::TEXT_INPUT_TYPE_EMAIL:
-      return chromecast::webview::TEXT_INPUT_TYPE_EMAIL;
-      break;
-    case ui::TEXT_INPUT_TYPE_NUMBER:
-      return chromecast::webview::TEXT_INPUT_TYPE_NUMBER;
-      break;
-    case ui::TEXT_INPUT_TYPE_TELEPHONE:
-      return chromecast::webview::TEXT_INPUT_TYPE_TELEPHONE;
-      break;
-    case ui::TEXT_INPUT_TYPE_DATE:
-      return chromecast::webview::TEXT_INPUT_TYPE_DATE;
-      break;
-    case ui::TEXT_INPUT_TYPE_DATE_TIME:
-      return chromecast::webview::TEXT_INPUT_TYPE_DATE_TIME;
-      break;
-    case ui::TEXT_INPUT_TYPE_MONTH:
-      return chromecast::webview::TEXT_INPUT_TYPE_MONTH;
-      break;
-    case ui::TEXT_INPUT_TYPE_TIME:
-      return chromecast::webview::TEXT_INPUT_TYPE_TIME;
-      break;
-    case ui::TEXT_INPUT_TYPE_URL:
-      return chromecast::webview::TEXT_INPUT_TYPE_URL;
-      break;
-    case ui::TEXT_INPUT_TYPE_WEEK:
-      return chromecast::webview::TEXT_INPUT_TYPE_WEEK;
-      break;
-    case ui::TEXT_INPUT_TYPE_TEXT_AREA:
-      return chromecast::webview::TEXT_INPUT_TYPE_TEXT_AREA;
-      break;
-    case ui::TEXT_INPUT_TYPE_DATE_TIME_FIELD:
-      return chromecast::webview::TEXT_INPUT_TYPE_DATE_TIME_FIELD;
-      break;
-    case ui::TEXT_INPUT_TYPE_DATE_TIME_LOCAL:
-      return chromecast::webview::TEXT_INPUT_TYPE_DATE_TIME_LOCAL;
-      break;
-    case ui::TEXT_INPUT_TYPE_NULL:
-      return chromecast::webview::TEXT_INPUT_TYPE_NULL;
-      break;
-  }
-  LOG(ERROR) << "Unmapped TextInputType: " << text_input_type;
-  return chromecast::webview::TEXT_INPUT_TYPE_NULL;
-}
-
-// Used to watch for text field input focus changes and notify the client
-// accordingly.
-class WebviewInputMethodObserver : public ui::InputMethodObserver {
- public:
-  WebviewInputMethodObserver(chromecast::WebContentController::Client* client,
-                             ui::InputMethod* input_method);
-  ~WebviewInputMethodObserver() override;
-
-  WebviewInputMethodObserver(const WebviewInputMethodObserver&) = delete;
-  WebviewInputMethodObserver& operator=(const WebviewInputMethodObserver&) =
-      delete;
-
-  // ui::InputMethodObserver
-  void OnFocus() override {}
-  void OnBlur() override {}
-  void OnCaretBoundsChanged(const ui::TextInputClient* client) override {}
-  void OnTextInputStateChanged(const ui::TextInputClient* client) override;
-  void OnInputMethodDestroyed(const ui::InputMethod* input_method) override;
-  void OnShowVirtualKeyboardIfEnabled() override {}
-
- private:
-  chromecast::WebContentController::Client* client_;
-  ui::InputMethod* input_method_;
-};
-
-void WebviewInputMethodObserver::OnTextInputStateChanged(
-    const ui::TextInputClient* client) {
-  if (!client)
-    return;
-  std::unique_ptr<chromecast::webview::WebviewResponse> focus_event_response =
-      std::make_unique<chromecast::webview::WebviewResponse>();
-  auto* focus_event = focus_event_response->mutable_input_focus_event();
-  focus_event->set_flags(client->GetTextInputFlags());
-  focus_event->set_type(ConvertTextInputType(client->GetTextInputType()));
-  client_->EnqueueSend(std::move(focus_event_response));
-}
-
-WebviewInputMethodObserver::WebviewInputMethodObserver(
-    chromecast::WebContentController::Client* client,
-    ui::InputMethod* input_method)
-    : client_(client), input_method_(input_method) {
-  input_method_->AddObserver(this);
-}
-
-WebviewInputMethodObserver::~WebviewInputMethodObserver() {
-  if (input_method_) {
-    input_method_->RemoveObserver(this);
-  }
-}
-
-void WebviewInputMethodObserver::OnInputMethodDestroyed(
-    const ui::InputMethod* input_method) {
-  input_method_ = nullptr;
-}
-
-}  // namespace
 
 namespace chromecast {
 
@@ -294,10 +168,6 @@ void WebContentController::AttachTo(aura::Window* window, int window_id) {
   surface_->SetEmbeddedSurfaceId(base::BindRepeating(
       &WebContentController::GetSurfaceId, base::Unretained(this)));
   HandleResize(contents_window->bounds().size());
-
-  // Register for IME events
-  input_method_observer_ = std::make_unique<WebviewInputMethodObserver>(
-      client_, contents_window->GetHost()->GetInputMethod());
 }
 
 void WebContentController::ProcessInputEvent(const webview::InputEvent& ev) {
