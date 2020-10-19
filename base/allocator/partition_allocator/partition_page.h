@@ -256,8 +256,8 @@ ALWAYS_INLINE bool IsWithinSuperPagePayload(char* ptr, bool with_pcscan) {
 template <bool thread_safe>
 ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
 SlotSpanMetadata<thread_safe>::FromPointerNoAlignmentCheck(void* ptr) {
-  return reinterpret_cast<SlotSpanMetadata*>(
-      PartitionPage<thread_safe>::FromPointerNoAlignmentCheck(ptr));
+  return &PartitionPage<thread_safe>::FromPointerNoAlignmentCheck(ptr)
+              ->slot_span_metadata;
 }
 
 // See the comment for |FromPointer|.

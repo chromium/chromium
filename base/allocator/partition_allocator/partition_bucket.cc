@@ -116,7 +116,7 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
   map_extent->prev_extent = nullptr;
   root->direct_map_list = map_extent;
 
-  return reinterpret_cast<SlotSpanMetadata<thread_safe>*>(page);
+  return &page->slot_span_metadata;
 }
 
 }  // namespace
