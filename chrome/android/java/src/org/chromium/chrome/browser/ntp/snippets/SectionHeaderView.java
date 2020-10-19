@@ -4,10 +4,14 @@
 
 package org.chromium.chrome.browser.ntp.snippets;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.view.TouchDelegate;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -34,6 +38,7 @@ import org.chromium.ui.widget.ViewRectProvider;
  */
 public class SectionHeaderView extends LinearLayout implements View.OnClickListener {
     private static final int IPH_TIMEOUT_MS = 10000;
+    private static final int ANIMATION_DURATION_MS = 200;
 
     // Views in the header layout that are set during inflate.
     private TextView mTitleView;
@@ -45,7 +50,7 @@ public class SectionHeaderView extends LinearLayout implements View.OnClickListe
     private SectionHeader mHeader;
 
     private boolean mHasMenu;
-    private boolean mHairlineWhenDisabled = true;
+    private boolean mAnimatePaddingWhenDisabled;
 
     public SectionHeaderView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -53,8 +58,8 @@ public class SectionHeaderView extends LinearLayout implements View.OnClickListe
                 attrs, R.styleable.SectionHeaderView, 0, 0);
 
         try {
-            mHairlineWhenDisabled = attrArray.getBoolean(
-                    R.styleable.SectionHeaderView_showHairlineWhenDisabled, true);
+            mAnimatePaddingWhenDisabled = attrArray.getBoolean(
+                    R.styleable.SectionHeaderView_animatePaddingWhenDisabled, false);
         } finally {
             attrArray.recycle();
         }
@@ -74,6 +79,25 @@ public class SectionHeaderView extends LinearLayout implements View.OnClickListe
 
         if (mHasMenu) {
             mMenuView.setOnClickListener((View v) -> { displayMenu(); });
+            int touchPadding;
+            // If we are animating padding, add additional touch area around the menu.
+            if (mAnimatePaddingWhenDisabled) {
+                touchPadding = getResources().getDimensionPixelSize(
+                        R.dimen.feed_v2_header_menu_touch_padding);
+            } else {
+                touchPadding = 0;
+            }
+            post(() -> {
+                Rect rect = new Rect();
+                mMenuView.getHitRect(rect);
+
+                rect.top -= touchPadding;
+                rect.bottom += touchPadding;
+                rect.left -= touchPadding;
+                rect.right += touchPadding;
+
+                setTouchDelegate(new TouchDelegate(rect, mMenuView));
+            });
         }
     }
 
@@ -114,9 +138,39 @@ public class SectionHeaderView extends LinearLayout implements View.OnClickListe
                 mStatusView.setText(
                         mHeader.isExpanded() ? R.string.hide_content : R.string.show_content);
             }
-            setBackgroundResource(mHeader.isExpanded() || !mHairlineWhenDisabled
-                            ? 0
-                            : R.drawable.hairline_border_card_background);
+            if (mAnimatePaddingWhenDisabled) {
+                int finalHorizontalPadding = 0;
+                boolean isClosingHeader = !mHeader.isExpanded();
+                if (isClosingHeader) {
+                    // If closing header, add additional padding.
+                    finalHorizontalPadding = getResources().getDimensionPixelSize(
+                            R.dimen.feed_v2_header_menu_disabled_padding);
+                } else {
+                    // Otherwise, remove the background now.
+                    setBackgroundResource(0);
+                }
+                ValueAnimator animator =
+                        ValueAnimator.ofInt(getPaddingLeft(), finalHorizontalPadding);
+                animator.addUpdateListener((ValueAnimator animation) -> {
+                    int horizontalPadding = (Integer) animation.getAnimatedValue();
+                    setPadding(/*left*/ horizontalPadding, getPaddingTop(),
+                            /*right*/ horizontalPadding, getPaddingBottom());
+                });
+                animator.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        // If we closed the header, add the hairline after animation.
+                        if (isClosingHeader) {
+                            setBackgroundResource(R.drawable.hairline_border_card_background);
+                        }
+                    }
+                });
+                animator.setDuration(ANIMATION_DURATION_MS);
+                animator.start();
+            } else {
+                setBackgroundResource(
+                        mHeader.isExpanded() ? 0 : R.drawable.hairline_border_card_background);
+            }
         }
     }
 

@@ -14,7 +14,7 @@
     android:orientation="horizontal"
     android:gravity="center_vertical"
     android:layoutDirection="locale"
-    app:showHairlineWhenDisabled="false">
+    app:animatePaddingWhenDisabled="true">
 
     <!-- Note: Setting textDirection to "locale" makes sure that a non-translated English word in
          the title text view is aligned based on the device locale and not the text content.
@@ -27,18 +27,20 @@
         android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Secondary"
         android:textDirection="locale" />
 
+    <!-- Note ignore RtlHardcoded since this is an image, and the paddingLeft is for
+         spacing the image away from the header title above.
+    -->
     <org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
         android:id="@+id/header_menu"
-        android:layout_width="@dimen/snippets_article_header_menu_size"
+        android:layout_width="@dimen/feed_v2_header_menu_width"
         android:layout_height="@dimen/snippets_article_header_menu_size"
         android:scaleType="fitXY"
-        android:padding="15dp"
-        android:layout_marginTop="@dimen/feed_v2_header_menu_vertical_inset"
-        android:layout_marginBottom="@dimen/feed_v2_header_menu_vertical_inset"
-        android:layout_marginEnd="@dimen/feed_v2_header_menu_end_inset"
+        android:paddingVertical="15dp"
+        android:paddingStart="15dp"
         android:background="@null"
         android:src="@drawable/ic_settings_gear_24dp"
         android:contentDescription="@string/accessibility_ntp_feed_menu_button"
         app:menuMaxWidth="@dimen/feed_header_menu_max_width"
-        app:tint="@null" />
+        app:tint="@null"
+        tools:ignore="RtlHardcoded"/>
 </org.chromium.chrome.browser.ntp.snippets.SectionHeaderView>

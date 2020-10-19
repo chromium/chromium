@@ -22,6 +22,6 @@
     </declare-styleable>
 
     <declare-styleable name="SectionHeaderView">
-        <attr name="showHairlineWhenDisabled" format="boolean"/>
+        <attr name="animatePaddingWhenDisabled" format="boolean"/>
     </declare-styleable>
 </resources>
