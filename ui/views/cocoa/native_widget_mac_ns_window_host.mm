@@ -964,13 +964,16 @@ void NativeWidgetMacNSWindowHost::OnWindowFullscreenTransitionStart(
   if (target_fullscreen_state)
     window_bounds_before_fullscreen_ = window_bounds_in_screen_;
 
-  // Notify that fullscreen state changed.
-  native_widget_mac_->OnWindowFullscreenStateChange();
+  // Notify that fullscreen state is changing.
+  native_widget_mac_->OnWindowFullscreenTransitionStart();
 }
 
 void NativeWidgetMacNSWindowHost::OnWindowFullscreenTransitionComplete(
     bool actual_fullscreen_state) {
   in_fullscreen_transition_ = false;
+
+  // Notify that fullscreen state has changed.
+  native_widget_mac_->OnWindowFullscreenTransitionComplete();
 
   // Ensure constraints are re-applied when completing a transition.
   native_widget_mac_->OnSizeConstraintsChanged();

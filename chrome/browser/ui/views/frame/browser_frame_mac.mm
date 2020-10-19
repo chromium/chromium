@@ -147,7 +147,11 @@ void BrowserFrameMac::OnFocusWindowToolbar() {
   chrome::ExecuteCommand(browser_view_->browser(), IDC_FOCUS_TOOLBAR);
 }
 
-void BrowserFrameMac::OnWindowFullscreenStateChange() {
+void BrowserFrameMac::OnWindowFullscreenTransitionStart() {
+  browser_view_->FullscreenStateChanging();
+}
+
+void BrowserFrameMac::OnWindowFullscreenTransitionComplete() {
   browser_view_->FullscreenStateChanged();
 }
 

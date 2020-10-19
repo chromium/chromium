@@ -299,6 +299,10 @@ class BrowserView : public BrowserWindow,
   // when a new browser window is created.
   void RestoreFocus();
 
+  // Called during the widget's fullscreen state changes without going through
+  // FullscreenController. This method does any processing which was skipped.
+  void FullscreenStateChanging();
+
   // Called after the widget's fullscreen state is changed without going through
   // FullscreenController. This method does any processing which was skipped.
   void FullscreenStateChanged();
