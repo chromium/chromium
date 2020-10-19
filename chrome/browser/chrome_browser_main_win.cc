@@ -58,7 +58,7 @@
 #include "chrome/browser/web_applications/chrome_pwa_launcher/last_browser_file_util.h"
 #include "chrome/browser/web_applications/chrome_pwa_launcher/launcher_log_reporter.h"
 #include "chrome/browser/web_applications/chrome_pwa_launcher/launcher_update.h"
-#include "chrome/browser/web_applications/components/web_app_file_handler_registration_win.h"
+#include "chrome/browser/web_applications/components/web_app_handler_registration_utils_win.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
 #include "chrome/browser/win/browser_util.h"
 #include "chrome/browser/win/chrome_elf_init.h"
