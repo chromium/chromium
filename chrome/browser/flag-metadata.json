@@ -2429,6 +2429,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "enterprise-realtime-extension-request",
+    "owners": ["zmin", "pastarmovj"],
+    "expiry_milestone": 94
+  },
+  {
     "name": "enterprise-reporting-in-chromeos",
     "owners": [ "anqing" ],
     "expiry_milestone": 87

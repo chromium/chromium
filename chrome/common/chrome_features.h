@@ -236,6 +236,11 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kEventBasedStatusReporting;
 #endif
 
+#if !defined(OS_ANDROID)
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kEnterpriseRealtimeExtensionRequest;
+#endif
+
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kExternalExtensionDefaultButtonControl;
 

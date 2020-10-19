@@ -5426,6 +5426,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kEnterpriseReportingInChromeOS)},
 #endif  // !defined(OS_CHROMEOS)
 
+#if !defined(OS_ANDROID)
+    {"enterprise-realtime-extension-request",
+     flag_descriptions::kEnterpriseRealtimeExtensionRequestName,
+     flag_descriptions::kEnterpriseRealtimeExtensionRequestDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kEnterpriseRealtimeExtensionRequest)},
+#endif  // !defined(OS_ANDROID)
+
     {"enable-unsafe-webgpu", flag_descriptions::kUnsafeWebGPUName,
      flag_descriptions::kUnsafeWebGPUDescription, kOsMac | kOsWin,
      SINGLE_VALUE_TYPE(switches::kEnableUnsafeWebGPU)},

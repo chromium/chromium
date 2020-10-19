@@ -44150,6 +44150,7 @@ from previous Chrome versions.
   <int value="482429100"
       label="OmniboxClobberIsZeroSuggestEntrypoint:disabled"/>
   <int value="483155358" label="GlobalMediaControlsForChromeOS:disabled"/>
+  <int value="484596410" label="EnterpriseRealtimeExtensionRequest:disabled"/>
   <int value="485957747" label="finch-seed-ignore-pending-download"/>
   <int value="487810392" label="EnablePalmOnToolTypePalm:enabled"/>
   <int value="491334698" label="ConditionalTabStripAndroid:enabled"/>
@@ -45579,6 +45580,7 @@ from previous Chrome versions.
   <int value="1926524951" label="SystemWebApps:disabled"/>
   <int value="1927218315" label="ShelfNewUi:disabled"/>
   <int value="1927259098" label="TranslateLanguageByULP:enabled"/>
+  <int value="1927374573" label="EnterpriseRealtimeExtensionRequest:enabled"/>
   <int value="1928407249" label="NewPhotoPicker:enabled"/>
   <int value="1929603041" label="HideShelfControlsInTabletMode:disabled"/>
   <int value="1930901873" label="disable-sync-app-list"/>

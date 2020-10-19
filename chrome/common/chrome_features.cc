@@ -354,6 +354,12 @@ const base::Feature kEventBasedStatusReporting{
     "EventBasedStatusReporting", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
+#if !defined(OS_ANDROID)
+// Enables real-time reporting for extension request
+const base::Feature kEnterpriseRealtimeExtensionRequest{
+    "EnterpriseRealtimeExtensionRequest", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 // If enabled, this feature's |kExternalInstallDefaultButtonKey| field trial
 // parameter value controls which |ExternalInstallBubbleAlert| button is the
 // default.
