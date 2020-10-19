@@ -173,28 +173,28 @@ IN_PROC_BROWSER_TEST_F(PreferencesTest, MultiProfiles) {
 
   // Check that changing prefs of the active user doesn't affect prefs of the
   // inactive user.
-  std::unique_ptr<base::DictionaryValue> prefs_backup =
+  base::Value prefs_backup =
       prefs1->GetPreferenceValues(PrefService::INCLUDE_DEFAULTS);
   SetPrefs(prefs2, false);
   CheckSettingsCorrespondToPrefs(prefs2);
-  EXPECT_TRUE(prefs_backup->Equals(
-      prefs1->GetPreferenceValues(PrefService::INCLUDE_DEFAULTS).get()));
+  EXPECT_EQ(prefs_backup,
+            prefs1->GetPreferenceValues(PrefService::INCLUDE_DEFAULTS));
   SetPrefs(prefs2, true);
   CheckSettingsCorrespondToPrefs(prefs2);
-  EXPECT_TRUE(prefs_backup->Equals(
-      prefs1->GetPreferenceValues(PrefService::INCLUDE_DEFAULTS).get()));
+  EXPECT_EQ(prefs_backup,
+            prefs1->GetPreferenceValues(PrefService::INCLUDE_DEFAULTS));
 
   // Check that changing prefs of the inactive user doesn't affect prefs of the
   // active user.
   prefs_backup = prefs2->GetPreferenceValues(PrefService::INCLUDE_DEFAULTS);
   SetPrefs(prefs1, true);
   CheckSettingsCorrespondToPrefs(prefs2);
-  EXPECT_TRUE(prefs_backup->Equals(
-      prefs2->GetPreferenceValues(PrefService::INCLUDE_DEFAULTS).get()));
+  EXPECT_EQ(prefs_backup,
+            prefs2->GetPreferenceValues(PrefService::INCLUDE_DEFAULTS));
   SetPrefs(prefs1, false);
   CheckSettingsCorrespondToPrefs(prefs2);
-  EXPECT_TRUE(prefs_backup->Equals(
-      prefs2->GetPreferenceValues(PrefService::INCLUDE_DEFAULTS).get()));
+  EXPECT_EQ(prefs_backup,
+            prefs2->GetPreferenceValues(PrefService::INCLUDE_DEFAULTS));
 
   // Check that changing non-owner prefs doesn't change corresponding local
   // state prefs and vice versa.

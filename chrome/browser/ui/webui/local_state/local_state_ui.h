@@ -12,7 +12,7 @@
 #include "content/public/browser/web_ui_controller.h"
 
 namespace base {
-class DictionaryValue;
+class Value;
 }
 
 // Namespace for exposing the method for unit tests.
@@ -21,7 +21,7 @@ namespace internal {
 // Removes elements from |prefs| where the key does not match any of the
 // prefixes in |valid_prefixes|.
 void FilterPrefs(const std::vector<std::string>& valid_prefixes,
-                 base::DictionaryValue* prefs);
+                 base::Value& prefs);
 
 }  // namespace internal
 

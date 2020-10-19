@@ -45,12 +45,10 @@ class PrefsInternalsSource : public web::URLDataSourceIOS {
 
     DCHECK_CURRENTLY_ON(web::WebThread::UI);
     std::string json;
-    std::unique_ptr<base::DictionaryValue> prefs =
-        browser_state_->GetPrefs()->GetPreferenceValues(
-            PrefService::INCLUDE_DEFAULTS);
-    DCHECK(prefs);
+    base::Value prefs = browser_state_->GetPrefs()->GetPreferenceValues(
+        PrefService::INCLUDE_DEFAULTS);
     CHECK(base::JSONWriter::WriteWithOptions(
-        *prefs, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json));
+        prefs, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json));
     std::move(callback).Run(base::RefCountedString::TakeString(&json));
   }
 

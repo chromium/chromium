@@ -306,8 +306,7 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // If INCLUDE_DEFAULTS is requested, preferences set to their default values
   // will be included. Otherwise, these will be omitted from the returned
   // dictionary.
-  std::unique_ptr<base::DictionaryValue> GetPreferenceValues(
-      IncludeDefaults include_defaults) const;
+  base::Value GetPreferenceValues(IncludeDefaults include_defaults) const;
 
   bool ReadOnly() const;
 

@@ -10,28 +10,25 @@
 TEST(LocalStateUiTest, FilterPrefs) {
   std::vector<std::string> prefixes = {"foo", "bar", "baz"};
 
-  std::vector<std::string> invalid_pref_keys = {"fo", "ar", "afoo"};
-  std::vector<std::string> valid_pref_keys = {"foo", "foom", "bar.stuff"};
+  std::vector<std::string> invalid_pref_paths = {"fo", "ar", "afoo"};
+  std::vector<std::string> valid_pref_paths = {"foo", "foom", "bar.stuff"};
 
-  std::vector<std::string> all_pref_keys = invalid_pref_keys;
-  all_pref_keys.insert(all_pref_keys.end(), valid_pref_keys.begin(),
-                       valid_pref_keys.end());
+  std::vector<std::string> all_pref_paths = invalid_pref_paths;
+  all_pref_paths.insert(all_pref_paths.end(), valid_pref_paths.begin(),
+                        valid_pref_paths.end());
 
-  base::DictionaryValue prefs;
-  for (const std::string& key : all_pref_keys) {
-    prefs.SetString(key, key + "_value");
-  }
+  base::Value prefs(base::Value::Type::DICTIONARY);
+  for (const std::string& path : all_pref_paths)
+    prefs.SetStringPath(path, path + "_value");
 
-  internal::FilterPrefs(prefixes, &prefs);
+  internal::FilterPrefs(prefixes, prefs);
 
-  for (const std::string& invalid_key : invalid_pref_keys) {
-    std::string value;
-    EXPECT_FALSE(prefs.GetString(invalid_key, &value));
-  }
+  for (const std::string& invalid_path : invalid_pref_paths)
+    EXPECT_FALSE(prefs.FindStringPath(invalid_path));
 
-  for (const std::string& valid_key : valid_pref_keys) {
-    std::string value;
-    EXPECT_TRUE(prefs.GetString(valid_key, &value));
-    EXPECT_EQ(valid_key + "_value", value);
+  for (const std::string& valid_path : valid_pref_paths) {
+    const std::string* result = prefs.FindStringPath(valid_path);
+    ASSERT_TRUE(result);
+    EXPECT_EQ(valid_path + "_value", *result);
   }
 }

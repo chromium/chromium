@@ -214,18 +214,19 @@ void PrefService::IteratePreferenceValues(
     callback.Run(it.first, *GetPreferenceValue(it.first));
 }
 
-std::unique_ptr<base::DictionaryValue> PrefService::GetPreferenceValues(
+base::Value PrefService::GetPreferenceValues(
     IncludeDefaults include_defaults) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::unique_ptr<base::DictionaryValue> out(new base::DictionaryValue);
+
+  base::Value out(base::Value::Type::DICTIONARY);
   for (const auto& it : *pref_registry_) {
     if (include_defaults == INCLUDE_DEFAULTS) {
-      out->Set(it.first, GetPreferenceValue(it.first)->CreateDeepCopy());
+      out.SetPath(it.first, GetPreferenceValue(it.first)->Clone());
     } else {
       const Preference* pref = FindPreference(it.first);
       if (pref->IsDefaultValue())
         continue;
-      out->Set(it.first, pref->GetValue()->CreateDeepCopy());
+      out.SetPath(it.first, pref->GetValue()->Clone());
     }
   }
   return out;
