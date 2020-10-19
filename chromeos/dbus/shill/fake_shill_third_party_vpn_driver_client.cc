@@ -43,7 +43,7 @@ void FakeShillThirdPartyVpnDriverClient::RemoveShillThirdPartyVpnObserver(
 
 void FakeShillThirdPartyVpnDriverClient::SetParameters(
     const std::string& object_path_value,
-    const base::DictionaryValue& parameters,
+    const base::Value& parameters,
     StringCallback callback,
     ErrorCallback error_callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(

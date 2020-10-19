@@ -74,10 +74,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillProfileClient
   ProfileProperties* GetProfile(const dbus::ObjectPath& profile_path);
 
   // List of profiles known to the client in order they were added, and in the
-  // reverse order of priority.
-  // |AddProfile| will encure that shared profile is never added after a user
-  // profile.
-  std::vector<std::unique_ptr<ProfileProperties>> profiles_;
+  // reverse order of priority. |AddProfile| will ensure that shared profile is
+  // never added after a user profile.
+  std::vector<ProfileProperties> profiles_;
 
   FakeShillSimulatedResult simulate_delete_result_ =
       FakeShillSimulatedResult::kSuccess;

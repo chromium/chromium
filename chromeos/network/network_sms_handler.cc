@@ -57,11 +57,11 @@ class NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler
  private:
   void ListCallback(base::Optional<std::vector<dbus::ObjectPath>> paths);
   void SmsReceivedCallback(const dbus::ObjectPath& path, bool complete);
-  void GetCallback(const base::DictionaryValue& dictionary);
+  void GetCallback(const base::Value& dictionary);
   void DeleteMessages();
   void DeleteCallback(bool success);
   void GetMessages();
-  void MessageReceived(const base::DictionaryValue& dictionary);
+  void MessageReceived(const base::Value& dictionary);
 
   NetworkSmsHandler* host_;
   std::string service_name_;
@@ -172,10 +172,8 @@ void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::GetMessages() {
   delete_queue_.push_back(sms_path);
 }
 
-void NetworkSmsHandler::
-ModemManager1NetworkSmsDeviceHandler::SmsReceivedCallback(
-    const dbus::ObjectPath& sms_path,
-    bool complete) {
+void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
+    SmsReceivedCallback(const dbus::ObjectPath& sms_path, bool complete) {
   // Only handle complete messages.
   if (!complete)
     return;
@@ -185,29 +183,29 @@ ModemManager1NetworkSmsDeviceHandler::SmsReceivedCallback(
 }
 
 void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::GetCallback(
-    const base::DictionaryValue& dictionary) {
+    const base::Value& dictionary) {
   MessageReceived(dictionary);
   GetMessages();
 }
 
-void NetworkSmsHandler::
-ModemManager1NetworkSmsDeviceHandler::MessageReceived(
-    const base::DictionaryValue& dictionary) {
+void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::MessageReceived(
+    const base::Value& dictionary) {
   // The keys of the ModemManager1.SMS interface do not match the
   // exported keys, so a new dictionary is created with the expected
   // key namaes.
-  base::DictionaryValue new_dictionary;
-  std::string text, number, timestamp;
-  if (dictionary.GetStringWithoutPathExpansion(SMSClient::kSMSPropertyNumber,
-                                               &number))
-    new_dictionary.SetString(kNumberKey, number);
-  if (dictionary.GetStringWithoutPathExpansion(SMSClient::kSMSPropertyText,
-                                               &text))
-    new_dictionary.SetString(kTextKey, text);
-  // TODO(jglasgow): consider normalizing timestamp.
-  if (dictionary.GetStringWithoutPathExpansion(SMSClient::kSMSPropertyTimestamp,
-                                               &timestamp))
-    new_dictionary.SetString(kTimestampKey, timestamp);
+  base::Value new_dictionary(base::Value::Type::DICTIONARY);
+  const std::string* number =
+      dictionary.FindStringKey(SMSClient::kSMSPropertyNumber);
+  if (number)
+    new_dictionary.SetStringKey(kNumberKey, *number);
+  const std::string* text =
+      dictionary.FindStringKey(SMSClient::kSMSPropertyText);
+  if (text)
+    new_dictionary.SetStringKey(kTextKey, *text);
+  const std::string* timestamp =
+      dictionary.FindStringKey(SMSClient::kSMSPropertyTimestamp);
+  if (timestamp)
+    new_dictionary.SetStringKey(kTimestampKey, *timestamp);
   host_->MessageReceived(new_dictionary);
 }
 
@@ -234,7 +232,7 @@ void NetworkSmsHandler::RequestUpdate(bool request_existing) {
   // If we already received messages and |request_existing| is true, send
   // updates for existing messages.
   for (const auto& message : received_messages_) {
-    NotifyMessageReceived(*message);
+    NotifyMessageReceived(message);
   }
   // Request updates from each device.
   for (auto& handler : device_handlers_) {
@@ -259,20 +257,18 @@ void NetworkSmsHandler::OnPropertyChanged(const std::string& name,
 
 // Private methods
 
-void NetworkSmsHandler::AddReceivedMessage(
-    const base::DictionaryValue& message) {
+void NetworkSmsHandler::AddReceivedMessage(const base::Value& message) {
   if (received_messages_.size() >= kMaxReceivedMessages)
     received_messages_.erase(received_messages_.begin());
-  received_messages_.push_back(message.CreateDeepCopy());
+  received_messages_.push_back(message.Clone());
 }
 
-void NetworkSmsHandler::NotifyMessageReceived(
-    const base::DictionaryValue& message) {
+void NetworkSmsHandler::NotifyMessageReceived(const base::Value& message) {
   for (auto& observer : observers_)
     observer.MessageReceived(message);
 }
 
-void NetworkSmsHandler::MessageReceived(const base::DictionaryValue& message) {
+void NetworkSmsHandler::MessageReceived(const base::Value& message) {
   AddReceivedMessage(message);
   NotifyMessageReceived(message);
 }

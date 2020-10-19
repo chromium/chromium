@@ -13,7 +13,7 @@
 
 namespace base {
 class Bus;
-class DictionaryValue;
+class Value;
 }  // namespace base
 
 namespace dbus {
@@ -29,8 +29,7 @@ namespace chromeos {
 // DBusThreadManager instance.
 class COMPONENT_EXPORT(SHILL_CLIENT) SMSClient {
  public:
-  using GetAllCallback =
-      base::OnceCallback<void(const base::DictionaryValue& sms)>;
+  using GetAllCallback = base::OnceCallback<void(const base::Value& sms)>;
 
   static const char kSMSPropertyState[];
   static const char kSMSPropertyNumber[];

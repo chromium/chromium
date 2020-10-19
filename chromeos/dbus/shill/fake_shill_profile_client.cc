@@ -26,9 +26,11 @@
 namespace chromeos {
 
 struct FakeShillProfileClient::ProfileProperties {
-  std::string path;                  // Profile path
-  base::DictionaryValue entries;     // Dictionary of Service Dictionaries
-  base::DictionaryValue properties;  // Dictionary of Profile properties
+  std::string profile_path;
+  // Dictionary of Service Dictionaries
+  base::Value entries{base::Value::Type::DICTIONARY};
+  // Dictionary of Profile properties
+  base::Value properties{base::Value::Type::DICTIONARY};
 };
 
 FakeShillProfileClient::FakeShillProfileClient() = default;
@@ -141,10 +143,10 @@ void FakeShillProfileClient::AddProfile(const std::string& profile_path,
   CHECK(profile_path != GetSharedProfilePath() || profiles_.empty())
       << "Shared profile must be added before any user profile.";
 
-  auto profile = std::make_unique<ProfileProperties>();
-  profile->properties.SetKey(shill::kUserHashProperty, base::Value(userhash));
-  profile->path = profile_path;
-  profiles_.emplace_back(std::move(profile));
+  ProfileProperties profile;
+  profile.properties.SetKey(shill::kUserHashProperty, base::Value(userhash));
+  profile.profile_path = profile_path;
+  profiles_.push_back(std::move(profile));
 
   ShillManagerClient::Get()->GetTestInterface()->AddProfile(profile_path);
 }
@@ -167,7 +169,7 @@ bool FakeShillProfileClient::AddService(const std::string& profile_path,
                << " for: " << service_path;
     return false;
   }
-  if (profile->entries.HasKey(service_path))
+  if (profile->entries.FindKey(service_path))
     return false;
   return AddOrUpdateServiceImpl(profile_path, service_path, profile);
 }
@@ -180,7 +182,7 @@ bool FakeShillProfileClient::UpdateService(const std::string& profile_path,
                << " for: " << service_path;
     return false;
   }
-  if (!profile->entries.HasKey(service_path)) {
+  if (!profile->entries.FindKey(service_path)) {
     LOG(ERROR) << "UpdateService: Profile: " << profile_path
                << " does not contain Service: " << service_path;
     return false;
@@ -219,16 +221,16 @@ bool FakeShillProfileClient::AddOrUpdateServiceImpl(
 void FakeShillProfileClient::GetProfilePaths(
     std::vector<std::string>* profiles) {
   for (const auto& profile : profiles_)
-    profiles->push_back(profile->path);
+    profiles->push_back(profile.profile_path);
 }
 
 void FakeShillProfileClient::GetProfilePathsContainingService(
     const std::string& service_path,
     std::vector<std::string>* profiles) {
   for (const auto& profile : profiles_) {
-    if (profile->entries.FindKeyOfType(service_path,
-                                       base::Value::Type::DICTIONARY)) {
-      profiles->push_back(profile->path);
+    if (profile.entries.FindKeyOfType(service_path,
+                                      base::Value::Type::DICTIONARY)) {
+      profiles->push_back(profile.profile_path);
     }
   }
 }
@@ -239,10 +241,10 @@ base::Value FakeShillProfileClient::GetService(const std::string& service_path,
 
   // Returns the entry added latest.
   for (const auto& profile : base::Reversed(profiles_)) {
-    const base::Value* entry = profile->entries.FindDictKey(service_path);
+    const base::Value* entry = profile.entries.FindDictKey(service_path);
     if (!entry)
       continue;
-    *profile_path = profile->path;
+    *profile_path = profile.profile_path;
     return entry->Clone();
   }
   return base::Value();
@@ -250,8 +252,8 @@ base::Value FakeShillProfileClient::GetService(const std::string& service_path,
 
 bool FakeShillProfileClient::HasService(const std::string& service_path) {
   for (const auto& profile : profiles_) {
-    if (profile->entries.FindKeyOfType(service_path,
-                                       base::Value::Type::DICTIONARY)) {
+    if (profile.entries.FindKeyOfType(service_path,
+                                      base::Value::Type::DICTIONARY)) {
       return true;
     }
   }
@@ -271,8 +273,8 @@ void FakeShillProfileClient::SetSimulateDeleteResult(
 FakeShillProfileClient::ProfileProperties* FakeShillProfileClient::GetProfile(
     const dbus::ObjectPath& profile_path) {
   for (auto& profile : profiles_) {
-    if (profile->path == profile_path.value())
-      return profile.get();
+    if (profile.profile_path == profile_path.value())
+      return &profile;
   }
   return nullptr;
 }

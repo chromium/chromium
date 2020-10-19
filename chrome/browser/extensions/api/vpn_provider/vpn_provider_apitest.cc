@@ -77,11 +77,11 @@ class TestShillThirdPartyVpnDriverClient
     : public FakeShillThirdPartyVpnDriverClient {
  public:
   void SetParameters(const std::string& object_path_value,
-                     const base::DictionaryValue& parameters,
+                     const base::Value& parameters,
                      StringCallback callback,
                      ErrorCallback error_callback) override {
     set_parameters_counter_++;
-    parameters_ = parameters.DeepCopy();
+    parameters_ = parameters.Clone();
     FakeShillThirdPartyVpnDriverClient::SetParameters(
         object_path_value, parameters, std::move(callback),
         std::move(error_callback));
@@ -110,7 +110,7 @@ class TestShillThirdPartyVpnDriverClient
   }
 
   int set_parameters_counter_ = 0;
-  base::DictionaryValue* parameters_ = nullptr;
+  base::Value parameters_;
   int update_connection_state_counter_ = 0;
   uint32_t connection_state_;
   int send_packet_counter_ = 0;
@@ -288,10 +288,10 @@ IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, VpnSuccess) {
   EXPECT_EQ(api_vpn::VPN_CONNECTION_STATE_CONNECTED,
             test_client_->update_connection_state_counter_);
   for (size_t i = 0; i < base::size(kParameterValues); ++i) {
-    std::string value;
-    EXPECT_TRUE(
-        test_client_->parameters_->GetString(kParameterKeys[i], &value));
-    EXPECT_EQ(kParameterValues[i], value);
+    const std::string* value =
+        test_client_->parameters_.FindStringKey(kParameterKeys[i]);
+    ASSERT_TRUE(value);
+    EXPECT_EQ(kParameterValues[i], *value);
   }
   const char kPacket[] = "feebdaed";
   std::vector<char> packet(&kPacket[0], &kPacket[8]);

@@ -62,10 +62,10 @@ class SMSReceiveHandler {
       return;
 
     if (number_.is_valid() && text_.is_valid() && timestamp_.is_valid()) {
-      base::DictionaryValue sms;
-      sms.SetString(SMSClient::kSMSPropertyNumber, number_.value());
-      sms.SetString(SMSClient::kSMSPropertyText, text_.value());
-      sms.SetString(SMSClient::kSMSPropertyTimestamp, timestamp_.value());
+      base::Value sms(base::Value::Type::DICTIONARY);
+      sms.SetStringKey(SMSClient::kSMSPropertyNumber, number_.value());
+      sms.SetStringKey(SMSClient::kSMSPropertyText, text_.value());
+      sms.SetStringKey(SMSClient::kSMSPropertyTimestamp, timestamp_.value());
       // Move |callback_| to the task to ensure that |callback_| is only called
       // once. Since |callback_| may destruct this object, schedule it to the
       // task runner to run after this method returns.
@@ -120,7 +120,7 @@ class SMSClientImpl : public SMSClient {
  private:
   void OnSMSReceived(const dbus::ObjectPath& object_path,
                      GetAllCallback callback,
-                     const base::DictionaryValue& sms) {
+                     const base::Value& sms) {
     sms_receive_handlers_.erase(object_path);
     std::move(callback).Run(sms);
   }

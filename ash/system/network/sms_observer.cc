@@ -26,7 +26,7 @@ const char kNotifierSms[] = "ash.sms";
 
 // Send the |message| to notification center to display to users. Note that each
 // notification will be assigned with different |message_id| as notification id.
-void ShowNotification(const base::DictionaryValue* message,
+void ShowNotification(const base::Value* message,
                       const std::string& message_text,
                       const std::string& message_number,
                       int message_id) {
@@ -69,31 +69,31 @@ SmsObserver::~SmsObserver() {
   }
 }
 
-void SmsObserver::MessageReceived(const base::DictionaryValue& message) {
-  std::string message_text;
-  if (!message.GetStringWithoutPathExpansion(
-          chromeos::NetworkSmsHandler::kTextKey, &message_text)) {
+void SmsObserver::MessageReceived(const base::Value& message) {
+  const std::string* message_text =
+      message.FindStringKey(chromeos::NetworkSmsHandler::kTextKey);
+  if (!message_text) {
     NET_LOG(ERROR) << "SMS message contains no content.";
     return;
   }
   // TODO(armansito): A message might be due to a special "Message Waiting"
   // state that the message is in. Once SMS handling moves to shill, such
   // messages should be filtered there so that this check becomes unnecessary.
-  if (message_text.empty()) {
+  if (message_text->empty()) {
     NET_LOG(DEBUG) << "SMS has empty content text. Ignoring.";
     return;
   }
-  std::string message_number;
-  if (!message.GetStringWithoutPathExpansion(
-          chromeos::NetworkSmsHandler::kNumberKey, &message_number)) {
+  const std::string* message_number =
+      message.FindStringKey(chromeos::NetworkSmsHandler::kNumberKey);
+  if (!message_number) {
     NET_LOG(DEBUG) << "SMS contains no number. Ignoring.";
     return;
   }
 
-  NET_LOG(DEBUG) << "Received SMS from: " << message_number
-                 << " with text: " << message_text;
+  NET_LOG(DEBUG) << "Received SMS from: " << *message_number
+                 << " with text: " << *message_text;
   message_id_++;
-  ShowNotification(&message, message_text, message_number, message_id_);
+  ShowNotification(&message, *message_text, *message_number, message_id_);
 }
 
 }  // namespace ash
