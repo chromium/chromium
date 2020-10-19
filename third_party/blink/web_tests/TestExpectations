@@ -6465,3 +6465,6 @@ crbug.com/1011811 http/tests/devtools/indexeddb/database-version-number.js [ Ski
 # DevTools roll
 crbug.com/1011811 http/tests/devtools/profiler/agents-disabled-check.js [ Skip ]
 crbug.com/1011811 http/tests/devtools/persistence/persistence-do-not-overwrite-css.js [ Skip ]
+
+# Sheriff 2020-10-19
+crbug.com/1139950 [ Linux ] virtual/text-antialias/hyphens/hyphens-auto.html [ Failure ]
