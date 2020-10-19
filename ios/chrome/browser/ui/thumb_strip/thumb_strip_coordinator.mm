@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_coordinator.h"
 
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
+#import "ios/chrome/browser/ui/tab_grid/grid/grid_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -14,11 +15,6 @@ namespace {
 // Height of the view that is revealed. The thumb strip has a height equal to a
 // small grid cell + edge insets (top and bottm) from thumb strip layout.
 const CGFloat kThumbStripHeight = 168.0f + 22.0f + 22.0f;
-// The height of the BVC that remains visible after transitioning from thumb
-// strip to tab grid.
-// TODO(crbug.com/1123048): Change this hardcoded number into a value calculated
-// by the runtime toolbar height and any other inputs.
-const CGFloat kBVCHeightTabGrid = 108.0f;
 }  // namespace
 
 @interface ThumbStripCoordinator () <ViewRevealingVerticalPanHandlerDelegate>

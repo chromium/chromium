@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/ui/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_grid/grid/reordering_layout_util.h"
+#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -62,6 +63,13 @@
     self.itemSize = kGridCellSizeLarge;
     self.sectionInset = kGridLayoutInsetsRegularRegular;
     self.minimumLineSpacing = kGridLayoutLineSpacingRegularRegular;
+  }
+  if (IsThumbStripEnabled()) {
+    // When the thumb strip feature is enabled, increase the bottom inset to
+    // account for the bvc on the bottom of the screen.
+    UIEdgeInsets sectionInset = self.sectionInset;
+    sectionInset.bottom += kBVCHeightTabGrid;
+    self.sectionInset = sectionInset;
   }
 }
 

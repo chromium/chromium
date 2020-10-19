@@ -547,6 +547,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   CGFloat bottomInset = self.configuration == TabGridConfigurationBottomToolbar
                             ? self.bottomToolbar.intrinsicContentSize.height
                             : 0;
+  if (IsThumbStripEnabled()) {
+    bottomInset += self.topToolbar.intrinsicContentSize.height;
+  }
   CGFloat topInset =
       IsThumbStripEnabled() ? 0 : self.topToolbar.intrinsicContentSize.height;
   UIEdgeInsets inset = UIEdgeInsetsMake(topInset, 0, bottomInset, 0);

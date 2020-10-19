@@ -30,7 +30,7 @@
   self.itemSize = kGridCellSizeSmall;
   CGFloat height = CGRectGetHeight(self.collectionView.bounds);
   CGFloat spacing = kGridLayoutLineSpacingCompactCompactLimitedWidth;
-  CGFloat topInset = spacing - kGridCellSelectionRingGapWidth -
+  CGFloat topInset = spacing + kGridCellSelectionRingGapWidth +
                      kGridCellSelectionRingTintWidth;
   self.sectionInset = UIEdgeInsets{
       topInset, spacing, height - self.itemSize.height - 2 * topInset, spacing};
