@@ -391,6 +391,26 @@ void NotifyPriorityScrollAnchorStatusChanged(Node* first, Node* second) {
     second->NotifyPriorityScrollAnchorStatusChanged();
 }
 
+// Before fetching the default URL, make sure it won't be blocked by CSP. The
+// webpage didn't requested "/favicon.ico", it is automatic. Developers
+// shouldn't suffer from any errors provoked by Chrome.
+// See https://crbug.com/820846
+bool DefaultFaviconAllowedByCSP(const Document* document, const IconURL& icon) {
+  ExecutionContext* context = document->GetExecutionContext();
+  if (!context) {
+    // LocalFrame::UpdateFaviconURL() is sometimes called after a LocalFrame
+    // swap. When this happens, the document has lost its ExecutionContext and
+    // the favicon won't be loaded anyway. The output of this function doesn't
+    // matter anymore.
+    return false;
+  }
+
+  return context->GetContentSecurityPolicy()->AllowImageFromSource(
+      icon.icon_url_, icon.icon_url_, RedirectStatus::kNoRedirect,
+      ReportingDisposition::kSuppressReporting,
+      ContentSecurityPolicy::CheckHeaderType::kCheckAll);
+}
+
 }  // namespace
 
 class DocumentOutliveTimeReporter : public BlinkGCObserver {
@@ -7081,7 +7101,9 @@ Vector<IconURL> Document::IconURLs(int icon_types_mask) {
   } else if (url_.ProtocolIsInHTTPFamily() &&
              icon_types_mask & 1 << static_cast<int>(
                                    mojom::blink::FaviconIconType::kFavicon)) {
-    icon_urls.push_back(IconURL::DefaultFavicon(url_));
+    IconURL default_favicon = IconURL::DefaultFavicon(url_);
+    if (DefaultFaviconAllowedByCSP(this, default_favicon))
+      icon_urls.push_back(std::move(default_favicon));
   }
 
   if (first_touch_icon.icon_type_ != mojom::blink::FaviconIconType::kInvalid)

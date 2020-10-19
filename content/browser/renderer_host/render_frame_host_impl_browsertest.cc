@@ -5048,4 +5048,29 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_EQ("POST", root_frame_host()->last_http_method());
 }
 
+// Check Chrome won't attempt automatically loading the /favicon.ico if it would
+// be blocked by CSP.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       DefaultFaviconVersusCSP) {
+  auto navigate = [&](std::string csp) {
+    EXPECT_TRUE(NavigateToURL(
+        shell(), embedded_test_server()->GetURL(
+                     "/set-header?Content-Security-Policy: " + csp)));
+    // DidStopLoading() and UpdateFaviconURL() are sent together from the same
+    // task. However we have waited only for DidStopLoading(). Make a round trip
+    // with the renderer to ensure UpdateFaviconURL() to be received.
+    EXPECT_TRUE(ExecJs(root_frame_host(), ""));
+  };
+
+  // Blocked by CSP.
+  navigate("img-src 'none'");
+  EXPECT_EQ(0u, web_contents()->GetFaviconURLs().size());
+
+  // Allowed by CSP.
+  navigate("img-src *");
+  EXPECT_EQ(1u, web_contents()->GetFaviconURLs().size());
+  EXPECT_EQ("/favicon.ico",
+            web_contents()->GetFaviconURLs()[0]->icon_url.path());
+}
+
 }  // namespace content
