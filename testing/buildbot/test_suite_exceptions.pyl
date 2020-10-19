@@ -918,6 +918,16 @@
           'shards': 10,
         },
       },
+      'Lollipop Tablet Tester': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.lollipop_tablet_tester.content_browsertests.filter',
+        ],
+      },
+      'Marshmallow Tablet Tester': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.marshmallow_tablet_tester.content_browsertests.filter',
+        ],
+      },
       'Win10 Tests x64': {
         # crbug.com/868082
         'args': [
