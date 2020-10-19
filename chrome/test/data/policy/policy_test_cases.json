@@ -4401,6 +4401,52 @@
     ]
   },
 
+  "SecurityTokenSessionBehavior": {
+    "os": ["chromeos"],
+    "policy_pref_mapping_test": [
+      {
+        "policies": {
+          "SecurityTokenSessionBehavior": "LOGOUT"
+        },
+        "prefs": {
+          "security_token_session_behavior": { "value": "LOGOUT" }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "security_token_session_behavior": {
+            "value": "IGNORE",
+            "expect_default": true
+          }
+        }
+      }
+    ]
+  },
+
+  "SecurityTokenSessionNotificationSeconds": {
+    "os": ["chromeos"],
+    "policy_pref_mapping_test": [
+      {
+        "policies": {
+          "SecurityTokenSessionNotificationSeconds": 10
+        },
+        "prefs": {
+          "security_token_session_notification_seconds": { "value": 10 }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "security_token_session_notification_seconds": {
+            "value": 0,
+            "expect_default": true
+          }
+        }
+      }
+    ]
+  },
+
   "TermsOfServiceURL": {
     "os": ["chromeos"],
     "policy_pref_mapping_test": [

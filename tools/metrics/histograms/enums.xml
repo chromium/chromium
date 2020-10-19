@@ -22259,6 +22259,8 @@ Called by update_document_policy_enum.py.-->
   <int value="796" label="PhoneHubNotificationsAllowed"/>
   <int value="797" label="PhoneHubTaskContinuationAllowed"/>
   <int value="798" label="WifiSyncAndroidAllowed"/>
+  <int value="799" label="SecurityTokenSessionBehavior"/>
+  <int value="800" label="SecurityTokenSessionNotificationSeconds"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

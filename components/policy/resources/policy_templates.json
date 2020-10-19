@@ -7355,6 +7355,58 @@
         If this policy is set to False or unset, the user can continue working in an unauthenticated state.'''
     },
     {
+      'name': 'SecurityTokenSessionBehavior',
+      'owners': ['fabiansommer@chromium.org, emaxx@chromium.org'],
+      'type': 'string-enum',
+      'schema': {
+        'type': 'string',
+        'enum': [ 'IGNORE', 'LOGOUT', 'LOCK' ],
+      },
+      'items': [
+        {
+          'name': 'ignore',
+          'value': 'IGNORE',
+          'caption': '''No action happens.''',
+        },
+        {
+          'name': 'logout',
+          'value': 'LOGOUT',
+          'caption': '''Log the user out.''',
+        },
+        {
+          'name': 'lock',
+          'value': 'LOCK',
+          'caption': '''Lock the current session.''',
+        },
+      ],
+      'future_on': ['chrome_os'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'example_value': 'LOGOUT',
+      'id': 799,
+      'caption': '''Action on security token removal (e.g., smart card) for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.''',
+      'tags': [],
+      'desc': '''Specifies what happens when a user who is authenticating via a security token (e.g., with a smart card) removes that token while in a session. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE">IGNORE</ph>: Nothing happens. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK">LOCK</ph>: The screen is locked until the user authenticates again. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT">LOGOUT</ph>: The session is ended and the user is logged out. If this policy is not set, it defaults to <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE">IGNORE</ph>.'''
+    },
+    {
+      'name': 'SecurityTokenSessionNotificationSeconds',
+      'owners': ['fabiansommer@chromium.org, emaxx@chromium.org'],
+      'type': 'int',
+      'schema': { 'type': 'integer', 'minimum': 0, 'maximum': 9999 },
+      'future_on': ['chrome_os'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'example_value': 10,
+      'id': 800,
+      'caption': '''Duration of the notification on smart card removal for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.''',
+      'tags': [],
+      'desc': '''This policy only takes effect when the policy <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME">SecurityTokenSessionBehavior</ph> is set to <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK">LOCK</ph> or <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT">LOGOUT</ph>, and a user who authenticates via a smart card remvoes that smart card. Then, this policy specifies for how many seconds a notification which informs the user of the impending action is displayed. This notification is blocking the screen. The action will only happen after this notification expires. The user can prevent the action from happening by re-inserting the smart card before the notification expires. If this policy is set to zero, no notification will be displayed and the action happens immediately.'''
+    },
+    {
       'name': 'InstantEnabled',
       'owners': ['file://components/policy/resources/OWNERS'],
       'type': 'main',
@@ -24553,6 +24605,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 412, 476, 544, 546, 562, 569, 578, 583, 589],
   'deleted_atomic_policy_group_ids': [],
-  'highest_id_currently_used': 798,
+  'highest_id_currently_used': 800,
   'highest_atomic_group_id_currently_used': 40
 }

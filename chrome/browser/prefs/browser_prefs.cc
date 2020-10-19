@@ -289,6 +289,7 @@
 #include "chrome/browser/chromeos/login/saml/saml_profile_prefs.h"
 #include "chrome/browser/chromeos/login/screens/enable_adb_sideloading_screen.h"
 #include "chrome/browser/chromeos/login/screens/reset_screen.h"
+#include "chrome/browser/chromeos/login/security_token_session_controller.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager.h"
 #include "chrome/browser/chromeos/login/signin/signin_error_notifier_ash.h"
 #include "chrome/browser/chromeos/login/startup_utils.h"
@@ -927,6 +928,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   chromeos::first_run::RegisterProfilePrefs(registry);
   chromeos::file_system_provider::RegisterProfilePrefs(registry);
   chromeos::KerberosCredentialsManager::RegisterProfilePrefs(registry);
+  chromeos::login::SecurityTokenSessionController::RegisterPrefs(registry);
   chromeos::multidevice_setup::MultiDeviceSetupService::RegisterProfilePrefs(
       registry);
   chromeos::MultiProfileUserController::RegisterProfilePrefs(registry);

@@ -1081,6 +1081,11 @@ extern const char kShowCaretBrowsingDialog[];
 extern const char kLacrosAllowed[];
 #endif
 
+#if defined(OS_CHROMEOS)
+extern const char kSecurityTokenSessionBehavior[];
+extern const char kSecurityTokenSessionNotificationSeconds[];
+#endif
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

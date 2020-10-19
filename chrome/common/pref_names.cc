@@ -3092,4 +3092,17 @@ const char kShowCaretBrowsingDialog[] =
 const char kLacrosAllowed[] = "lacros_allowed";
 #endif
 
+#if defined(OS_CHROMEOS)
+// String enum pref determining what should happen when a user who authenticates
+// via a security token is removing this token. "IGNORE" - nothing happens
+// (default). "LOGOUT" - The user is logged out. "LOCK" - The session is locked.
+const char kSecurityTokenSessionBehavior[] = "security_token_session_behavior";
+// When the above pref is set to "LOGOUT" or "LOCK", this integer pref
+// determines the duration of a notification that appears when the smart card is
+// removed. The action will only happen after the notification timed out. If
+// this pref is set to 0, the action happens immediately.
+const char kSecurityTokenSessionNotificationSeconds[] =
+    "security_token_session_notification_seconds";
+#endif  // defined(OS_CHROMEOS)
+
 }  // namespace prefs
