@@ -260,28 +260,6 @@ void HandleAccessibilityRequestCallback(
   std::move(callback).Run(base::RefCountedString::TakeString(&json_string));
 }
 
-bool MatchesPropertyFilters(
-    const std::vector<AXPropertyFilter>& property_filters,
-    const std::string& text) {
-  bool allow = false;
-  for (const auto& filter : property_filters) {
-    if (base::MatchPattern(text, filter.match_str)) {
-      switch (filter.type) {
-        case AXPropertyFilter::ALLOW_EMPTY:
-          allow = true;
-          break;
-        case AXPropertyFilter::ALLOW:
-          allow = (!base::MatchPattern(text, "*=''"));
-          break;
-        case AXPropertyFilter::DENY:
-          allow = false;
-          break;
-      }
-    }
-  }
-  return allow;
-}
-
 std::string RecursiveDumpAXPlatformNodeAsString(
     ui::AXPlatformNode* node,
     int indent,
@@ -293,7 +271,8 @@ std::string RecursiveDumpAXPlatformNodeAsString(
   std::vector<std::string> attributes = base::SplitString(
       line, " ", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   for (std::string attribute : attributes) {
-    if (MatchesPropertyFilters(property_filters, attribute)) {
+    if (content::AccessibilityTreeFormatter::MatchesPropertyFilters(
+            property_filters, attribute, false)) {
       str += attribute + " ";
     }
   }
