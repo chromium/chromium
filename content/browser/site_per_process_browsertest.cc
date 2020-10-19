@@ -12685,6 +12685,54 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(compositing_rect.Contains(visible_rect));
 }
 
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
+                       NestedIframeTransformedIntoViewViewportIntersection) {
+  GURL http_url(embedded_test_server()->GetURL(
+      "a.com", "/frame_tree/page_with_frame_transformed_into_viewport.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), http_url));
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+  FrameTreeNode* child_b = root->child_at(0);
+
+  NavigateFrameToURL(
+      child_b,
+      embedded_test_server()->GetURL(
+          "bar.com", "/frame_tree/page_with_cross_origin_frame_at_half.html"));
+
+  EXPECT_EQ(
+      " Site A ------------ proxies for B C\n"
+      "   +--Site B ------- proxies for A C\n"
+      "        +--Site C -- proxies for A B\n"
+      "Where A = http://a.com/\n"
+      "      B = http://bar.com/\n"
+      "      C = http://baz.com/",
+      DepictFrameTree(root));
+
+  FrameTreeNode* child_c = child_b->child_at(0);
+  RenderFrameProxyHost* child_c_proxy =
+      child_c->render_manager()->GetProxyToParent();
+  auto filter =
+      std::make_unique<UpdateViewportIntersectionMessageFilter>(child_c_proxy);
+
+  // Scroll the div containing the 'Site B' iframe to trigger a viewport
+  // intersection update.
+  ASSERT_TRUE(EvalJsAfterLifecycleUpdate(
+                  child_b->current_frame_host(),
+                  "document.getElementsByTagName('div')[0].scrollTo(0, 5000);",
+                  "")
+                  .error.empty());
+  ASSERT_TRUE(filter->MessageReceived());
+
+  // Check that we currently intersect with the viewport.
+  gfx::Rect viewport_intersection =
+      filter->GetIntersectionState()->viewport_intersection;
+
+  EXPECT_GT(viewport_intersection.height(), 0);
+  EXPECT_GT(viewport_intersection.width(), 0);
+}
+
 // Verify that OOPIF select element popup menu coordinates account for scroll
 // offset in containers embedding frame.
 // TODO(crbug.com/859552): Reenable this.
