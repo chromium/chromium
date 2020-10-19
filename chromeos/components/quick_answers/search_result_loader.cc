@@ -83,7 +83,7 @@ void SearchResultLoader::BuildRequest(
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url;
-  std::move(callback).Run(std::move(resource_request));
+  std::move(callback).Run(std::move(resource_request), std::string());
 }
 
 void SearchResultLoader::ProcessResponse(

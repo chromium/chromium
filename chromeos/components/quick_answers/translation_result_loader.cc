@@ -93,14 +93,10 @@ void TranslationResultLoader::OnRequestAccessTokenComplete(
       kAuthorizationHeaderFormat + access_token);
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                       "application/json");
-  resource_request->headers.SetHeader(net::HttpRequestHeaders::kContentType,
-                                      "application/json");
 
-  auto body = BuildTranslationRequestBody(preprocessed_output.intent_info);
-  resource_request->request_body = new network::ResourceRequestBody();
-  resource_request->request_body->AppendBytes(body.c_str(), body.length());
-
-  std::move(callback).Run(std::move(resource_request));
+  std::move(callback).Run(
+      std::move(resource_request),
+      BuildTranslationRequestBody(preprocessed_output.intent_info));
 }
 
 }  // namespace quick_answers

@@ -34,8 +34,8 @@ class TestResultLoader : public ResultLoader {
   // ResultLoader:
   void BuildRequest(const PreprocessedOutput& preprocessed_output,
                     BuildRequestCallback callback) const override {
-    return std::move(callback).Run(
-        std::make_unique<network::ResourceRequest>());
+    return std::move(callback).Run(std::make_unique<network::ResourceRequest>(),
+                                   std::string());
   }
   void ProcessResponse(std::unique_ptr<std::string> response_body,
                        ResponseParserCallback complete_callback) override {}

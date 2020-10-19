@@ -70,9 +70,12 @@ void ResultLoader::Fetch(const PreprocessedOutput& preprocessed_output) {
 }
 
 void ResultLoader::OnBuildRequestComplete(
-    std::unique_ptr<network::ResourceRequest> resource_request) {
+    std::unique_ptr<network::ResourceRequest> resource_request,
+    const std::string& request_body) {
   loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                              kNetworkTrafficAnnotationTag);
+  if (!request_body.empty())
+    loader_->AttachStringForUpload(request_body, "application/json");
 
   fetch_start_time_ = base::TimeTicks::Now();
   loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(

@@ -53,7 +53,8 @@ class ResultLoader {
       base::OnceCallback<void(std::unique_ptr<QuickAnswer> quick_answer)>;
 
   using BuildRequestCallback = base::OnceCallback<void(
-      std::unique_ptr<network::ResourceRequest> resource_request)>;
+      std::unique_ptr<network::ResourceRequest> resource_request,
+      const std::string& request_body)>;
 
   ResultLoader(network::mojom::URLLoaderFactory* url_loader_factory,
                ResultLoaderDelegate* delegate);
@@ -91,7 +92,8 @@ class ResultLoader {
   ResultLoaderDelegate* const delegate_;
 
   void OnBuildRequestComplete(
-      std::unique_ptr<network::ResourceRequest> resource_request);
+      std::unique_ptr<network::ResourceRequest> resource_request,
+      const std::string& request_body);
   void OnSimpleURLLoaderComplete(std::unique_ptr<std::string> response_body);
   void OnResultParserComplete(std::unique_ptr<QuickAnswer> quick_answer);
 
