@@ -237,16 +237,10 @@ class TunnelTransport : public Transport {
             device::cablev2::DerivedValueType::kEIDKey)),
         network_context_(network_context),
         peer_identity_(device::fido_parsing_utils::Materialize(peer_identity)),
-        generate_pairing_data_(std::move(generate_pairing_data)) {
+        generate_pairing_data_(std::move(generate_pairing_data)),
+        secret_(fido_parsing_utils::Materialize(secret)) {
     DCHECK_EQ(state_, State::kNone);
-
     state_ = State::kConnecting;
-
-    std::array<uint8_t, device::cablev2::kPSKSize> psk;
-    psk = device::cablev2::Derive<EXTENT(psk)>(
-        secret, nonce_, device::cablev2::DerivedValueType::kPSK);
-    handshaker_ = std::make_unique<device::cablev2::HandshakeInitiator>(
-        psk, peer_identity, /*local_identity=*/nullptr);
 
     websocket_client_ = std::make_unique<device::cablev2::WebSocketAdapter>(
         base::BindOnce(&TunnelTransport::OnTunnelReady, base::Unretained(this)),
@@ -271,16 +265,12 @@ class TunnelTransport : public Transport {
             secret,
             client_nonce,
             device::cablev2::DerivedValueType::kEIDKey)),
-        network_context_(network_context) {
+        network_context_(network_context),
+        secret_(fido_parsing_utils::Materialize(secret)),
+        local_identity_(std::move(local_identity)) {
     DCHECK_EQ(state_, State::kNone);
 
     state_ = State::kConnectingPaired;
-
-    std::array<uint8_t, device::cablev2::kPSKSize> psk;
-    psk = device::cablev2::Derive<EXTENT(psk)>(
-        secret, nonce_, device::cablev2::DerivedValueType::kPSK);
-    handshaker_ = std::make_unique<device::cablev2::HandshakeInitiator>(
-        psk, /*peer_identity=*/base::nullopt, std::move(local_identity));
 
     websocket_client_ = std::make_unique<device::cablev2::WebSocketAdapter>(
         base::BindOnce(&TunnelTransport::OnTunnelReady, base::Unretained(this)),
@@ -363,8 +353,15 @@ class TunnelTransport : public Transport {
         kZeroRoutingID = {0, 0, 0};
     const device::CableEidArray plaintext_eid =
         StartAdvertising(routing_id.value_or(kZeroRoutingID));
+
+    std::array<uint8_t, device::cablev2::kPSKSize> psk;
+    psk = device::cablev2::Derive<EXTENT(psk)>(
+        secret_, plaintext_eid, device::cablev2::DerivedValueType::kPSK);
+    handshaker_ = std::make_unique<device::cablev2::HandshakeInitiator>(
+        psk, peer_identity_, std::move(local_identity_));
+
     std::vector<uint8_t> msg =
-        handshaker_->BuildInitialMessage(plaintext_eid, BuildGetInfoResponse());
+        handshaker_->BuildInitialMessage(BuildGetInfoResponse());
     websocket_client_->Write(msg);
   }
 
@@ -449,6 +446,8 @@ class TunnelTransport : public Transport {
   network::mojom::NetworkContext* const network_context_;
   const base::Optional<std::array<uint8_t, kP256X962Length>> peer_identity_;
   GeneratePairingDataCallback generate_pairing_data_;
+  const std::vector<uint8_t> secret_;
+  bssl::UniquePtr<EC_KEY> local_identity_;
   GURL target_;
   std::unique_ptr<Platform::BLEAdvert> ble_advert_;
   base::RepeatingCallback<void(base::Optional<std::vector<uint8_t>>)>

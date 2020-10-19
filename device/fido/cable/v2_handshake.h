@@ -248,9 +248,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) HandshakeInitiator {
   // BuildInitialMessage returns the handshake message to send to the peer to
   // start a handshake.
   std::vector<uint8_t> BuildInitialMessage(
-      // eid is the EID that was advertised for this handshake. This is checked
-      // as part of the handshake.
-      base::span<const uint8_t, kCableEphemeralIdSize> eid,
       // getinfo contains the CBOR-serialised getInfo response for this
       // authenticator. This is assumed not to contain highly-sensitive
       // information and is included to avoid an extra round-trip. (It is
@@ -297,9 +294,6 @@ base::Optional<ResponderResult> RespondToHandshake(
     // psk is derived from the connection nonce and either QR-code secrets or
     // pairing secrets.
     base::span<const uint8_t, 32> psk,
-    // eid is the EID that was advertised for this handshake. This is checked
-    // as part of the handshake.
-    base::span<const uint8_t, kCableEphemeralIdSize> eid,
     // identity_seed, if not nullopt, specifies that this is a QR handshake and
     // contains the seed for QR key for this client.
     base::Optional<base::span<const uint8_t, kQRSeedSize>> identity_seed,

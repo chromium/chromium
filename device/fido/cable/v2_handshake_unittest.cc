@@ -146,7 +146,6 @@ class CableV2HandshakeTest : public ::testing::Test {
  public:
   CableV2HandshakeTest() {
     std::fill(psk_.begin(), psk_.end(), 0);
-    std::fill(eid_.begin(), eid_.end(), 1);
     std::fill(identity_seed_.begin(), identity_seed_.end(), 2);
 
     bssl::UniquePtr<EC_GROUP> group(
@@ -162,7 +161,6 @@ class CableV2HandshakeTest : public ::testing::Test {
 
  protected:
   std::array<uint8_t, 32> psk_;
-  CableEidArray eid_;
   bssl::UniquePtr<EC_KEY> identity_key_;
   std::array<uint8_t, kP256X962Length> identity_public_;
   std::array<uint8_t, kQRSeedSize> identity_seed_;
@@ -204,11 +202,10 @@ TEST_F(CableV2HandshakeTest, QRHandshake) {
     HandshakeInitiator initiator(use_correct_key ? psk_ : wrong_psk,
                                  identity_public_,
                                  /*local_identity=*/nullptr);
-    std::vector<uint8_t> message =
-        initiator.BuildInitialMessage(eid_, kGetInfoBytes);
+    std::vector<uint8_t> message = initiator.BuildInitialMessage(kGetInfoBytes);
     std::vector<uint8_t> response;
     base::Optional<ResponderResult> responder_result(RespondToHandshake(
-        psk_, eid_, identity_seed_,
+        psk_, identity_seed_,
         /*peer_identity=*/base::nullopt, message, &response));
     ASSERT_EQ(responder_result.has_value(), use_correct_key);
     if (!use_correct_key) {
@@ -241,11 +238,10 @@ TEST_F(CableV2HandshakeTest, PairedHandshake) {
     HandshakeInitiator initiator(psk_,
                                  /*peer_identity=*/base::nullopt,
                                  bssl::UniquePtr<EC_KEY>(key));
-    std::vector<uint8_t> message =
-        initiator.BuildInitialMessage(eid_, kGetInfoBytes);
+    std::vector<uint8_t> message = initiator.BuildInitialMessage(kGetInfoBytes);
     std::vector<uint8_t> response;
     base::Optional<ResponderResult> responder_result(RespondToHandshake(
-        psk_, eid_,
+        psk_,
         /*identity_seed=*/base::nullopt, identity_public_, message, &response));
     ASSERT_EQ(responder_result.has_value(), use_correct_key);
 

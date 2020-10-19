@@ -22,8 +22,6 @@ constexpr std::array<uint8_t, 32> kTestPSK = {
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
 };
-constexpr std::array<uint8_t, 16> kTestEphemeralID = {
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
 constexpr std::array<uint8_t, 65> kTestPeerIdentity = {
     0x04, 0x67, 0x80, 0xc5, 0xfc, 0x70, 0x27, 0x5e, 0x2c, 0x70, 0x61,
     0xa0, 0xe7, 0x87, 0x7b, 0xb1, 0x74, 0xde, 0xad, 0xeb, 0x98, 0x87,
@@ -66,12 +64,12 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* raw_data, size_t size) {
   if (initiate) {
     cablev2::HandshakeInitiator handshaker(kTestPSK, peer_identity,
                                            std::move(local_key));
-    handshaker.BuildInitialMessage(kTestEphemeralID, kTestGetInfoBytes);
+    handshaker.BuildInitialMessage(kTestGetInfoBytes);
     handshaker.ProcessResponse(input);
   } else {
     std::vector<uint8_t> response;
-    cablev2::RespondToHandshake(kTestPSK, kTestEphemeralID, local_seed,
-                                peer_identity, input, &response);
+    cablev2::RespondToHandshake(kTestPSK, local_seed, peer_identity, input,
+                                &response);
   }
 
   return 0;

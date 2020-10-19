@@ -81,13 +81,12 @@ FidoTunnelDevice::FidoTunnelDevice(
 
   QRInfo& info = absl::get<QRInfo>(info_);
   info.pairing_callback = std::move(pairing_callback);
-  info.decrypted_eid = decrypted_eid;
   info.local_identity_seed =
       fido_parsing_utils::Materialize(local_identity_seed);
   info.tunnel_server_domain = components.tunnel_server_domain;
 
-  info.psk = Derive<EXTENT(info.psk)>(secret, components.nonce,
-                                      DerivedValueType::kPSK);
+  info.psk =
+      Derive<EXTENT(info.psk)>(secret, decrypted_eid, DerivedValueType::kPSK);
 
   std::array<uint8_t, 16> tunnel_id;
   tunnel_id = Derive<EXTENT(tunnel_id)>(secret, components.nonce,
@@ -176,8 +175,7 @@ bool FidoTunnelDevice::MatchAdvert(
     return false;
   }
 
-  info.decrypted_eid = *plaintext;
-  info.psk = Derive<EXTENT(*info.psk)>(info.secret, components.nonce,
+  info.psk = Derive<EXTENT(*info.psk)>(info.secret, *plaintext,
                                        DerivedValueType::kPSK);
 
   if (state_ == State::kWaitingForEID) {
@@ -332,14 +330,13 @@ void FidoTunnelDevice::ProcessHandshake(base::span<const uint8_t> data) {
 
   if (auto* info = absl::get_if<QRInfo>(&info_)) {
     base::Optional<ResponderResult> inner_result(cablev2::RespondToHandshake(
-        info->psk, info->decrypted_eid, info->local_identity_seed,
-        base::nullopt, data, &response));
+        info->psk, info->local_identity_seed, base::nullopt, data, &response));
     if (inner_result) {
       result.emplace(std::move(*inner_result));
     }
     state_ = State::kHandshakeProcessed;
   } else if (auto* info = absl::get_if<PairedInfo>(&info_)) {
-    if (!info->decrypted_eid) {
+    if (!info->psk) {
       DCHECK_EQ(state_, State::kConnected);
       state_ = State::kWaitingForEID;
       info->handshake_message = fido_parsing_utils::Materialize(data);
@@ -347,7 +344,7 @@ void FidoTunnelDevice::ProcessHandshake(base::span<const uint8_t> data) {
     }
 
     base::Optional<ResponderResult> inner_result(
-        cablev2::RespondToHandshake(*info->psk, *info->decrypted_eid,
+        cablev2::RespondToHandshake(*info->psk,
                                     /*local_identity=*/base::nullopt,
                                     info->peer_identity, data, &response));
     if (inner_result) {

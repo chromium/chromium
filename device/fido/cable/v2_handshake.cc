@@ -541,11 +541,8 @@ HandshakeInitiator::HandshakeInitiator(
 HandshakeInitiator::~HandshakeInitiator() = default;
 
 std::vector<uint8_t> HandshakeInitiator::BuildInitialMessage(
-    base::span<const uint8_t, kCableEphemeralIdSize> eid,
     base::span<const uint8_t> get_info_bytes) {
-  uint8_t prologue[1 + kCableEphemeralIdSize];
-  DCHECK_EQ(kCableEphemeralIdSize, eid.size());
-  memcpy(&prologue[1], eid.data(), kCableEphemeralIdSize);
+  uint8_t prologue[1];
 
   if (peer_identity_) {
     noise_.Init(Noise::HandshakeType::kNKpsk0);
@@ -670,7 +667,6 @@ ResponderResult::ResponderResult(ResponderResult&&) = default;
 
 base::Optional<ResponderResult> RespondToHandshake(
     base::span<const uint8_t, 32> psk,
-    base::span<const uint8_t, kCableEphemeralIdSize> eid,
     base::Optional<base::span<const uint8_t, kQRSeedSize>> identity_seed,
     base::Optional<base::span<const uint8_t, kP256X962Length>> peer_identity,
     base::span<const uint8_t> in,
@@ -693,8 +689,7 @@ base::Optional<ResponderResult> RespondToHandshake(
   }
 
   Noise noise;
-  uint8_t prologue[1 + EXTENT(eid)];
-  memcpy(&prologue[1], eid.data(), eid.size());
+  uint8_t prologue[1];
   if (identity) {
     noise.Init(device::Noise::HandshakeType::kNKpsk0);
     prologue[0] = 0;
