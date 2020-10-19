@@ -10,6 +10,7 @@
 #include "chrome/browser/autofill/autofill_uitest.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -72,7 +73,9 @@ void AutofillUiTest::SetUpOnMainThread() {
   LOG(ERROR) << "crbug/967588: AutofillUiTest::SetUpOnMainThread() entered";
   // Don't want Keychain coming up on Mac.
   test::DisableSystemServices(browser()->profile()->GetPrefs());
-
+  // Make autofill popup stay open by ignoring external changes when possible.
+  ChromeAutofillClient::FromWebContents(GetWebContents())
+      ->KeepPopupOpenForTesting();
   // Inject the test delegate into the AutofillManager of the main frame.
   RenderFrameHostChanged(/* old_host = */ nullptr,
                          /* new_host = */ GetWebContents()->GetMainFrame());
