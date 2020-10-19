@@ -3539,6 +3539,8 @@
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
+        # TODO(crbug.com/1149118): Query cloud policies before using
+        # UserDataDir so this policy won't need to be platform_only anymore.
         'platform_only': True,
       },
       'example_value': '${users}/${user_name}/Chrome',
