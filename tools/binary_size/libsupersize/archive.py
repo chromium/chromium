@@ -102,17 +102,25 @@ class SectionSizeKnobs(object):
         'assets/webapk_dex_version.txt':
         '../../chrome/android/webapk/libs/runtime_library_version.gni',
         'lib/armeabi-v7a/libarcore_sdk_c_minimal.so':
-        '../../third_party/arcore-android-sdk',
+        '../../third_party/arcore-android-sdk/BUILD.gn',
         'lib/armeabi-v7a/libarcore_sdk_c.so':
-        '../../third_party/arcore-android-sdk',
+        '../../third_party/arcore-android-sdk/BUILD.gn',
         'lib/armeabi-v7a/libcrashpad_handler_trampoline.so':
-        '../../third_party/crashpad/libcrashpad_handler_trampoline.so',
+        '../../third_party/crashpad/BUILD.gn',
         'lib/armeabi-v7a/libyoga.so':
-        '../../chrome/android/feed',
+        '../../chrome/android/feed/BUILD.gn',
         'lib/armeabi-v7a/libelements.so':
-        '../../chrome/android/feed',
+        '../../chrome/android/feed/BUILD.gn',
+        'lib/arm64-v8a/libarcore_sdk_c_minimal.so':
+        '../../third_party/arcore-android-sdk/BUILD.gn',
+        'lib/arm64-v8a/libarcore_sdk_c.so':
+        '../../third_party/arcore-android-sdk/BUILD.gn',
         'lib/arm64-v8a/libcrashpad_handler_trampoline.so':
-        '../../third_party/crashpad/libcrashpad_handler_trampoline.so',
+        '../../third_party/crashpad/BUILD.gn',
+        'lib/arm64-v8a/libyoga.so':
+        '../../chrome/android/feed/BUILD.gn',
+        'lib/arm64-v8a/libelements.so':
+        '../../chrome/android/feed/BUILD.gn',
     }
 
 
