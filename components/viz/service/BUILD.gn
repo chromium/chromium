@@ -382,6 +382,7 @@ viz_source_set("gpu_service_dependencies") {
   deps = [
     "//base",
     "//gpu/config",
+    "//third_party/libyuv",
   ]
 
   if (is_win) {

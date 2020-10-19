@@ -33,6 +33,7 @@ include_rules = [
   "+third_party/dawn/src/include",
   "+third_party/khronos/GLES2/gl2.h",
   "+third_party/khronos/GLES2/gl2ext.h",
+  "+third_party/libyuv",
   "+third_party/skia",
   "+ui/accelerated_widget_mac",
   "+ui/display",

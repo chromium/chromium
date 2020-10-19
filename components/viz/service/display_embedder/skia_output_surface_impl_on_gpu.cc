@@ -42,6 +42,7 @@
 #include "gpu/ipc/common/gpu_surface_lookup.h"
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
+#include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/core/SkDeferredDisplayList.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -134,21 +135,15 @@ class CopyOutputResultYUV : public CopyOutputResult {
                       int u_out_stride,
                       uint8_t* v_out,
                       int v_out_stride) const override {
-    const auto CopyPlane = [](const uint8_t* src, int src_stride, int width,
-                              int height, uint8_t* out, int out_stride) {
-      for (int i = 0; i < height; ++i, src += src_stride, out += out_stride) {
-        memcpy(out, src, width);
-      }
-    };
     auto* data0 = static_cast<const uint8_t*>(result_->data(0));
     auto* data1 = static_cast<const uint8_t*>(result_->data(1));
     auto* data2 = static_cast<const uint8_t*>(result_->data(2));
-    CopyPlane(data0, result_->rowBytes(0), width(0), height(0), y_out,
-              y_out_stride);
-    CopyPlane(data1, result_->rowBytes(1), width(1), height(1), u_out,
-              u_out_stride);
-    CopyPlane(data2, result_->rowBytes(2), width(2), height(2), v_out,
-              v_out_stride);
+    libyuv::CopyPlane(data0, result_->rowBytes(0), y_out, y_out_stride,
+                      width(0), height(0));
+    libyuv::CopyPlane(data1, result_->rowBytes(1), u_out, u_out_stride,
+                      width(1), height(1));
+    libyuv::CopyPlane(data2, result_->rowBytes(2), v_out, v_out_stride,
+                      width(2), height(2));
     return true;
   }
 
