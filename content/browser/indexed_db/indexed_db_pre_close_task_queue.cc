@@ -40,12 +40,12 @@ IndexedDBPreCloseTaskQueue::IndexedDBPreCloseTaskQueue(
       task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
 IndexedDBPreCloseTaskQueue::~IndexedDBPreCloseTaskQueue() = default;
 
-void IndexedDBPreCloseTaskQueue::StopForNewConnection() {
+void IndexedDBPreCloseTaskQueue::Stop(StopReason reason) {
   if (!started_ || done_)
     return;
   DCHECK(!tasks_.empty());
   while (!tasks_.empty()) {
-    tasks_.front()->Stop(StopReason::NEW_CONNECTION);
+    tasks_.front()->Stop(reason);
     tasks_.pop_front();
   }
   OnComplete();

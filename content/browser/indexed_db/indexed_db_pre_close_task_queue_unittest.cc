@@ -244,7 +244,7 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, StopForNewConnectionBeforeStart) {
   EXPECT_CALL(*task1, Stop(StopReason::NEW_CONNECTION));
   EXPECT_CALL(*task2, Stop(StopReason::NEW_CONNECTION));
 
-  queue.StopForNewConnection();
+  queue.Stop(StopReason::NEW_CONNECTION);
 
   task_environment_.RunUntilIdle();
 
@@ -284,7 +284,7 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, StopForNewConnectionAfterRound) {
 
   EXPECT_CALL(*task, Stop(StopReason::NEW_CONNECTION));
 
-  queue.StopForNewConnection();
+  queue.Stop(StopReason::NEW_CONNECTION);
 
   task_environment_.RunUntilIdle();
 
@@ -326,7 +326,7 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, StopForNewConnectionAfterTaskCompletes) {
 
   EXPECT_CALL(*task2, Stop(StopReason::NEW_CONNECTION));
 
-  queue.StopForNewConnection();
+  queue.Stop(StopReason::NEW_CONNECTION);
 
   task_environment_.RunUntilIdle();
 

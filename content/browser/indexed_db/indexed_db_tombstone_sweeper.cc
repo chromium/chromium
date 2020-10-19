@@ -163,6 +163,10 @@ void IndexedDBTombstoneSweeper::RecordUMAStats(
       case StopReason::METADATA_ERROR:
         NOTREACHED();
         break;
+      case StopReason::FORCE_CLOSE:
+        uma_count_label.append("ForceClose");
+        uma_size_label.append("ForceClose");
+        break;
     }
   } else if (status) {
     switch (status.value()) {

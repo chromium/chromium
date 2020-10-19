@@ -18143,6 +18143,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Complete" label="All indexes are scanned."/>
   <suffix name="ConnectionOpened"
       label="Scanning is interrupted by an new connection to the database."/>
+  <suffix name="ForceClose" label="Scanning is stopped by force closing."/>
   <suffix name="MaxIterations"
       label="Scanning is stopped because the maximum record iteration count
              was hit."/>

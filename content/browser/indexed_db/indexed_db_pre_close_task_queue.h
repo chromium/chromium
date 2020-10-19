@@ -48,6 +48,8 @@ class CONTENT_EXPORT IndexedDBPreCloseTaskQueue {
     TIMEOUT,
     // There was an error reading the database metadata.
     METADATA_ERROR,
+    // Force closed due to shutdown.
+    FORCE_CLOSE,
   };
 
   // Defines a task that will be run after closing an IndexedDB backing store
@@ -103,7 +105,7 @@ class CONTENT_EXPORT IndexedDBPreCloseTaskQueue {
 
   // Stops all tasks and destroys them. The |on_complete| callback will be
   // immediately called.
-  void StopForNewConnection();
+  void Stop(StopReason reason);
 
   // Starts running tasks. Can only be called once. MetadataFetcher is expected
   // to load the metadata from the database on disk.

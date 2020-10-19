@@ -184,6 +184,16 @@ void IndexedDBOriginState::ForceClose() {
     backing_store_->active_blob_registry()->ForceShutdown();
     has_blobs_outstanding_ = false;
   }
+
+  // Don't run the preclosing tasks after a ForceClose, whether or not we've
+  // started them.  Compaction in particular can run long and cannot be
+  // interrupted, so it can cause shutdown hangs.
+  close_timer_.AbandonAndStop();
+  if (pre_close_task_queue_) {
+    pre_close_task_queue_->Stop(
+        IndexedDBPreCloseTaskQueue::StopReason::FORCE_CLOSE);
+    pre_close_task_queue_.reset();
+  }
   skip_closing_sequence_ = true;
 }
 
@@ -242,7 +252,8 @@ IndexedDBOriginStateHandle IndexedDBOriginState::CreateHandle() {
     closing_stage_ = ClosingState::kNotClosing;
     close_timer_.AbandonAndStop();
     if (pre_close_task_queue_) {
-      pre_close_task_queue_->StopForNewConnection();
+      pre_close_task_queue_->Stop(
+          IndexedDBPreCloseTaskQueue::StopReason::NEW_CONNECTION);
       pre_close_task_queue_.reset();
     }
   }
