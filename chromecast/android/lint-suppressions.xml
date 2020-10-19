@@ -56,8 +56,6 @@
     <ignore regexp="chromecast/internal"/>
   </issue>
   <issue id="UnusedResources">
-    <!-- 1 resource used by android tv to generate resources.zip file -->
-    <ignore regexp="chromecast/internal/shell/browser/android/java/res/drawable-hdpi/ic_settings_cast.png"/>
     <!-- 1 resource used by android tv to generate MediaShell.apk file -->
     <ignore regexp="chromecast/internal/android/prebuilt/google-play-services-first-party"/>
   </issue>
