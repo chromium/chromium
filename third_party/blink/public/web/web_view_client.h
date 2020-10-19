@@ -105,11 +105,6 @@ class WebViewClient {
   // navigation.
   virtual bool AcceptsLoadDrops() { return true; }
 
-  // Take focus away from the WebView by focusing an adjacent UI element
-  // in the containing window.
-  virtual void FocusNext() {}
-  virtual void FocusPrevious() {}
-
   // Called to check if layout update should be processed.
   virtual bool CanUpdateLayout() { return false; }
 

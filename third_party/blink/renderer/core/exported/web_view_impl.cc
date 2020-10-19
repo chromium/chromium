@@ -3455,6 +3455,16 @@ void WebViewImpl::Focus() {
   }
 }
 
+void WebViewImpl::TakeFocus(bool reverse) {
+  if (GetPage()->MainFrame()->IsLocalFrame()) {
+    DCHECK(local_main_frame_host_remote_);
+    local_main_frame_host_remote_->TakeFocus(reverse);
+  } else {
+    DCHECK(remote_main_frame_host_remote_);
+    remote_main_frame_host_remote_->TakeFocus(reverse);
+  }
+}
+
 void WebViewImpl::UpdateTargetURL(const WebURL& url,
                                   const WebURL& fallback_url) {
   KURL latest_url = KURL(url.IsEmpty() ? fallback_url : url);

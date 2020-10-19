@@ -597,6 +597,10 @@ void RenderFrameProxyHost::FocusPage() {
   frame_tree_node_->current_frame_host()->FocusPage();
 }
 
+void RenderFrameProxyHost::TakeFocus(bool reverse) {
+  frame_tree_node_->current_frame_host()->TakeFocus(reverse);
+}
+
 void RenderFrameProxyHost::UpdateTargetURL(
     const GURL& url,
     blink::mojom::RemoteMainFrameHost::UpdateTargetURLCallback callback) {

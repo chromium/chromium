@@ -24,6 +24,7 @@ class FakeRemoteMainFrameHost : public mojom::blink::RemoteMainFrameHost {
 
   // blink::mojom::RemoteMainFrameHost overrides:
   void FocusPage() override;
+  void TakeFocus(bool reverse) override;
   void UpdateTargetURL(
       const KURL&,
       mojom::blink::RemoteMainFrameHost::UpdateTargetURLCallback) override;

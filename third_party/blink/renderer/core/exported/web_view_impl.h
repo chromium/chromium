@@ -482,6 +482,10 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // Asks the browser process to activate this web view.
   void Focus();
 
+  // Asks the browser process to take focus away from the WebView by focusing an
+  // adjacent UI element in the containing window.
+  void TakeFocus(bool reverse);
+
   // This method is used for testing.
   // Resizes the unscaled (page scale = 1.0) visual viewport. Normally the
   // unscaled visual viewport is the same size as the main frame. The passed

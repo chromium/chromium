@@ -19,6 +19,8 @@ void FakeRemoteMainFrameHost::Init(
 
 void FakeRemoteMainFrameHost::FocusPage() {}
 
+void FakeRemoteMainFrameHost::TakeFocus(bool reverse) {}
+
 void FakeRemoteMainFrameHost::UpdateTargetURL(
     const KURL&,
     mojom::blink::RemoteMainFrameHost::UpdateTargetURLCallback) {}

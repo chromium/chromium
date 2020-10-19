@@ -200,8 +200,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
                                      base::string16* sub_text,
                                      base::i18n::TextDirection sub_text_hint);
   bool AcceptsLoadDrops() override;
-  void FocusNext() override;
-  void FocusPrevious() override;
   bool CanUpdateLayout() override;
   void DidUpdateMainFrameLayout() override;
   blink::WebString AcceptLanguages() override;

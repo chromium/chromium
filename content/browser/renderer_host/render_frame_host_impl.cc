@@ -3476,6 +3476,10 @@ void RenderFrameHostImpl::FocusPage() {
   render_view_host_->OnFocus();
 }
 
+void RenderFrameHostImpl::TakeFocus(bool reverse) {
+  render_view_host_->OnTakeFocus(reverse);
+}
+
 void RenderFrameHostImpl::UpdateTargetURL(
     const GURL& url,
     blink::mojom::LocalMainFrameHost::UpdateTargetURLCallback callback) {

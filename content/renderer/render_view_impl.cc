@@ -825,14 +825,6 @@ bool RenderViewImpl::AcceptsLoadDrops() {
   return renderer_preferences_.can_accept_load_drops;
 }
 
-void RenderViewImpl::FocusNext() {
-  Send(new ViewHostMsg_TakeFocus(GetRoutingID(), false));
-}
-
-void RenderViewImpl::FocusPrevious() {
-  Send(new ViewHostMsg_TakeFocus(GetRoutingID(), true));
-}
-
 void RenderViewImpl::DidUpdateMainFrameLayout() {
   for (auto& observer : observers_)
     observer.DidUpdateMainFrameLayout();

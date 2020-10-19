@@ -1690,6 +1690,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void TextAutosizerPageInfoChanged(
       blink::mojom::TextAutosizerPageInfoPtr page_info) override;
   void FocusPage() override;
+  void TakeFocus(bool reverse) override;
   void UpdateTargetURL(const GURL& url,
                        blink::mojom::LocalMainFrameHost::UpdateTargetURLCallback
                            callback) override;

@@ -214,12 +214,7 @@ bool ChromeClientImpl::CanTakeFocus(mojom::blink::FocusType) {
 }
 
 void ChromeClientImpl::TakeFocus(mojom::blink::FocusType type) {
-  if (!web_view_->Client())
-    return;
-  if (type == mojom::blink::FocusType::kBackward)
-    web_view_->Client()->FocusPrevious();
-  else
-    web_view_->Client()->FocusNext();
+  web_view_->TakeFocus(type == mojom::blink::FocusType::kBackward);
 }
 
 void ChromeClientImpl::SetKeyboardFocusURL(Element* new_focus_element) {

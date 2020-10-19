@@ -988,6 +988,11 @@ interface LocalMainFrameHost {
   // Asks the browser process to activate the page associated to the main frame.
   FocusPage();
 
+  // Asks the browser to transfer focus cross-process on behalf of the renderer
+  // in the focus hierarchy. This may focus an element in the browser ui or a
+  // cross-process frame, as appropriate.
+  TakeFocus(bool reverse);
+
   // Notifies the browser that we want to show a destination url for a potential
   // action (e.g. when the user is hovering over a link). Implementation of this
   // method will reply back to the renderer once the target URL gets received,
@@ -1000,6 +1005,11 @@ interface LocalMainFrameHost {
 interface RemoteMainFrameHost {
   // Asks the browser process to activate the page associated to the main frame.
   FocusPage();
+
+  // Asks the browser to transfer focus cross-process on behalf of the renderer
+  // in the focus hierarchy. This may focus an element in the browser ui or a
+  // cross-process frame, as appropriate.
+  TakeFocus(bool reverse);
 
   // Notifies the browser that we want to show a destination url for a potential
   // action (e.g. when the user is hovering over a link). Implementation of this

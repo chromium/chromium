@@ -133,12 +133,6 @@ IPC_MESSAGE_ROUTED3(ViewHostMsg_RequestPpapiBrokerPermission,
                     base::FilePath /* plugin_path */)
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
-// When the renderer needs the browser to transfer focus cross-process on its
-// behalf in the focus hierarchy. This may focus an element in the browser ui or
-// a cross-process frame, as appropriate.
-IPC_MESSAGE_ROUTED1(ViewHostMsg_TakeFocus,
-                    bool /* reverse */)
-
 // Adding a new message? Stick to the sort order above: first platform
 // independent ViewMsg, then ifdefs for platform specific ViewMsg, then platform
 // independent ViewHostMsg, then ifdefs for platform specific ViewHostMsg.
