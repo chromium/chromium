@@ -2343,7 +2343,11 @@ void LockContentsView::PerformAction(LoginAcceleratorAction action) {
     ToggleSystemInfo();
     return;
   }
-  Shell::Get()->login_screen_controller()->HandleAccelerator(action);
+  // Do not allow accelerator action when system modal window is open except
+  // `kShowFeedback` which opens feedback tool on top of system modal.
+  if (!Shell::IsSystemModalWindowOpen() ||
+      action == LoginAcceleratorAction::kShowFeedback)
+    Shell::Get()->login_screen_controller()->HandleAccelerator(action);
 }
 
 bool LockContentsView::GetSystemInfoVisibility() const {
