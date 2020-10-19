@@ -5667,6 +5667,7 @@ crbug.com/993790 external/wpt/document-policy/required-policy/separate-document-
 
 # Skipping because of unimplemented behaviour
 crbug.com/965495 external/wpt/feature-policy/experimental-features/focus-without-user-activation-enabled-tentative.sub.html [ Skip ]
+crbug.com/965495 external/wpt/permissions-policy/experimental-features/focus-without-user-activation-enabled-tentative.sub.html [ Skip ]
 
 # Temporary suppression to allow devtools-frontend changes
 crbug.com/1029489 http/tests/devtools/elements/elements-linkify-attributes.js [ Pass Failure Timeout ]
@@ -6194,6 +6195,7 @@ crbug.com/924472 external/wpt/css/css-transforms/transform-box/svgbox-content-bo
 crbug.com/924472 external/wpt/css/css-transforms/transform-box/svgbox-stroke-box.html [ Failure ]
 
 crbug.com/1092135 [ Linux ] virtual/threaded/external/wpt/feature-policy/experimental-features/vertical-scroll-touch-block-manual.tentative.html [ Pass Timeout ]
+crbug.com/1092135 [ Linux ] virtual/threaded/external/wpt/permissions-policy/experimental-features/vertical-scroll-touch-block-manual.tentative.html [ Pass Timeout ]
 
 # Sheriff 2020-06-16
 crbug.com/1044825 http/tests/devtools/network/resource-priority.js [ Pass Timeout ]
@@ -6348,6 +6350,7 @@ crbug.com/1117613 media/video-error-networkState.html [ Failure Timeout ]
 
 # Sheriff 2020-0-21
 crbug.com/1120330 virtual/threaded/external/wpt/feature-policy/experimental-features/vertical-scroll-disabled-scrollbar-tentative.html [ Pass Failure ]
+crbug.com/1120330 virtual/threaded/external/wpt/permissions-policy/experimental-features/vertical-scroll-disabled-scrollbar-tentative.html [ Pass Failure ]
 
 # Sheriff 2020-08-26
 crbug.com/1122742 http/tests/devtools/sources/debugger/source-frame-inline-breakpoint-decorations.js [ Pass Timeout ]
@@ -6460,3 +6463,11 @@ crbug.com/1011811 http/tests/devtools/persistence/persistence-do-not-overwrite-c
 
 # Sheriff 2020-10-19
 crbug.com/1139950 [ Linux ] virtual/text-antialias/hyphens/hyphens-auto.html [ Failure ]
+
+# Rename document.featurePolicy to document.permissionsPolicy
+crbug.com/1123116 external/wpt/permissions-policy/payment-supported-by-permissions-policy.tentative.html [ Failure ]
+crbug.com/1123116 external/wpt/permissions-policy/permissions-policy-frame-policy-allowed-for-all.https.sub.html [ Failure ]
+crbug.com/1123116 external/wpt/permissions-policy/permissions-policy-frame-policy-allowed-for-self.https.sub.html [ Failure ]
+crbug.com/1123116 external/wpt/permissions-policy/permissions-policy-frame-policy-allowed-for-some-override.https.sub.html [ Failure ]
+crbug.com/1123116 external/wpt/permissions-policy/permissions-policy-frame-policy-allowed-for-some.https.sub.html [ Failure ]
+crbug.com/1123116 external/wpt/permissions-policy/permissions-policy-frame-policy-disallowed-for-all.https.sub.html [ Failure ]

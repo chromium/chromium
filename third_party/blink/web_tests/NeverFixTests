@@ -148,6 +148,8 @@ virtual/stable/media/stable/* [ Pass ]
 # This test requires a compositor, so only the virtual/threaded/ version is run.
 external/wpt/feature-policy/experimental-features/vertical-scroll-touch-block-manual.tentative.html [ Skip ]
 [ Linux ] virtual/threaded/external/wpt/feature-policy/experimental-features/vertical-scroll-touch-block-manual.tentative.html [ Pass ]
+external/wpt/permissions-policy/experimental-features/vertical-scroll-touch-block-manual.tentative.html [ Skip ]
+[ Linux ] virtual/threaded/external/wpt/permissions-policy/experimental-features/vertical-scroll-touch-block-manual.tentative.html [ Pass ]
 
 # This test requires a compositor to pass as root scrollbar scrolling is always
 # done on the compositor thread.

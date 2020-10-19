@@ -1,0 +1,35 @@
+This is a testharness.js-based test.
+PASS Test frame policy on same origin iframe with allow = "*" and allowfullscreen.
+PASS Test frame policy on cross origin iframe with allow = "*" and allowfullscreen.
+PASS Test frame policy on another cross origin iframe with allow = "*" and allowfullscreen.
+PASS Test frame policy on srcdoc iframe with allow = "*" and allowfullscreen.
+PASS Test frame policy on srcdoc + same origin iframe with allow = "*" and allowfullscreen.
+PASS Test frame policy on srcdoc + cross origin iframe with allow = "*" and allowfullscreen.
+PASS Test frame policy on srcdoc + another cross origin iframe with allow = "*" and allowfullscreen.
+FAIL Test frame policy on data: URL cross origin iframe with allow = "*" and allowfullscreen. assert_false: expected false got true
+PASS Test frame policy on same origin iframe with allow = "'self'" and allowfullscreen.
+PASS Test frame policy on cross origin iframe with allow = "'self'" and allowfullscreen.
+PASS Test frame policy on another cross origin iframe with allow = "'self'" and allowfullscreen.
+PASS Test frame policy on srcdoc iframe with allow = "'self'" and allowfullscreen.
+PASS Test frame policy on srcdoc + same origin iframe with allow = "'self'" and allowfullscreen.
+PASS Test frame policy on srcdoc + cross origin iframe with allow = "'self'" and allowfullscreen.
+PASS Test frame policy on srcdoc + another cross origin iframe with allow = "'self'" and allowfullscreen.
+PASS Test frame policy on data: URL cross origin iframe with allow = "'self'" and allowfullscreen.
+PASS Test frame policy on same origin iframe with allow = "'none'" and allowfullscreen.
+PASS Test frame policy on cross origin iframe with allow = "'none'" and allowfullscreen.
+PASS Test frame policy on another cross origin iframe with allow = "'none'" and allowfullscreen.
+PASS Test frame policy on srcdoc iframe with allow = "'none'" and allowfullscreen.
+PASS Test frame policy on srcdoc + same origin iframe with allow = "'none'" and allowfullscreen.
+PASS Test frame policy on srcdoc + cross origin iframe with allow = "'none'" and allowfullscreen.
+PASS Test frame policy on srcdoc + another cross origin iframe with allow = "'none'" and allowfullscreen.
+PASS Test frame policy on data: URL cross origin iframe with allow = "'none'" and allowfullscreen.
+PASS Test frame policy on same origin iframe with allow = "'self' https://www.web-platform.test:8444 https://www.example.com" and allowfullscreen.
+PASS Test frame policy on cross origin iframe with allow = "'self' https://www.web-platform.test:8444 https://www.example.com" and allowfullscreen.
+PASS Test frame policy on another cross origin iframe with allow = "'self' https://www.web-platform.test:8444 https://www.example.com" and allowfullscreen.
+PASS Test frame policy on srcdoc iframe with allow = "'self' https://www.web-platform.test:8444 https://www.example.com" and allowfullscreen.
+PASS Test frame policy on srcdoc + same origin iframe with allow = "'self' https://www.web-platform.test:8444 https://www.example.com" and allowfullscreen.
+PASS Test frame policy on srcdoc + cross origin iframe with allow = "'self' https://www.web-platform.test:8444 https://www.example.com" and allowfullscreen.
+PASS Test frame policy on srcdoc + another cross origin iframe with allow = "'self' https://www.web-platform.test:8444 https://www.example.com" and allowfullscreen.
+PASS Test frame policy on data: URL cross origin iframe with allow = "'self' https://www.web-platform.test:8444 https://www.example.com" and allowfullscreen.
+Harness: the test ran to completion.
+

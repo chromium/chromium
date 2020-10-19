@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL MIDI report only mode promise_test: Unhandled rejection with value: object "SecurityError: An attempt was made to break through the security policy of the user agent."
+Harness: the test ran to completion.
+

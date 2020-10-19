@@ -128,7 +128,8 @@
             pathAndBase.startsWith('/css/cssom-view/') ||
             pathAndBase.startsWith('/css/css-scroll-snap/') ||
             pathAndBase.startsWith('/dom/events/') ||
-            pathAndBase.startsWith('/feature-policy/experimental-features/')) {
+            pathAndBase.startsWith('/feature-policy/experimental-features/') ||
+            pathAndBase.startsWith('/permissions-policy/experimental-features/')) {
             // Per-test automation scripts.
             src = automationPath + pathAndBase + '-automation.js';
         } else {

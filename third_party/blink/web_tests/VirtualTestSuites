@@ -45,6 +45,7 @@
               "external/wpt/css/css-scroll-snap",
               "external/wpt/css/css-transforms/animation",
               "external/wpt/feature-policy/experimental-features",
+              "external/wpt/permissions-policy/experimental-features",
               "external/wpt/html/canvas/offscreen/manual/convert-to-blob",
               "external/wpt/scroll-animations",
               "external/wpt/requestidlecallback",

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL PaymentRequest report only mode promise_test: Unhandled rejection with value: object "UnknownError: Renderer process could not establish or lost IPC connection to the PaymentRequest service in the browser process."
+Harness: the test ran to completion.
+
