@@ -11,7 +11,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -215,26 +214,20 @@ public abstract class TabModelJniBridge implements TabModel {
     private static void flushTabSwitchLatencyMetric(boolean perceived) {
         if (sTabSwitchStartTime <= 0) return;
         final long ms = SystemClock.uptimeMillis() - sTabSwitchStartTime;
-        String baseHistogram;
         switch (sTabSelectionType) {
             case TabSelectionType.FROM_CLOSE:
-                baseHistogram = "Tabs.SwitchFromCloseLatency";
+                TabModelJniBridgeJni.get().logFromCloseMetric(ms, perceived);
                 break;
             case TabSelectionType.FROM_EXIT:
-                baseHistogram = "Tabs.SwitchFromExitLatency";
+                TabModelJniBridgeJni.get().logFromExitMetric(ms, perceived);
                 break;
             case TabSelectionType.FROM_NEW:
-                baseHistogram = "Tabs.SwitchFromNewLatency";
+                TabModelJniBridgeJni.get().logFromNewMetric(ms, perceived);
                 break;
             case TabSelectionType.FROM_USER:
-                baseHistogram = "Tabs.SwitchFromUserLatency";
+                TabModelJniBridgeJni.get().logFromUserMetric(ms, perceived);
                 break;
-            default:
-                assert false;
-                return;
         }
-        String histogramSuffix = perceived ? "_Perceived" : "_Actual";
-        RecordHistogram.recordTimesHistogram(baseHistogram + histogramSuffix, ms);
     }
 
     @NativeMethods
@@ -245,5 +238,11 @@ public abstract class TabModelJniBridge implements TabModel {
                 long nativeTabModelJniBridge, TabModelJniBridge caller);
         void destroy(long nativeTabModelJniBridge, TabModelJniBridge caller);
         void tabAddedToModel(long nativeTabModelJniBridge, TabModelJniBridge caller, Tab tab);
+
+        // Methods for tab switch latency metrics.
+        void logFromCloseMetric(long ms, boolean perceived);
+        void logFromExitMetric(long ms, boolean perceived);
+        void logFromNewMetric(long ms, boolean perceived);
+        void logFromUserMetric(long ms, boolean perceived);
     }
 }

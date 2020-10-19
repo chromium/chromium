@@ -203,6 +203,61 @@ void TabModelJniBridge::BroadcastSessionRestoreComplete(
   TabModel::BroadcastSessionRestoreComplete();
 }
 
+inline static base::TimeDelta GetTimeDelta(jlong ms) {
+  return base::TimeDelta::FromMilliseconds(static_cast<int64_t>(ms));
+}
+
+void JNI_TabModelJniBridge_LogFromCloseMetric(
+    JNIEnv* env,
+    jlong ms,
+    jboolean perceived) {
+  if (perceived) {
+    UMA_HISTOGRAM_TIMES("Tabs.SwitchFromCloseLatency_Perceived",
+                        GetTimeDelta(ms));
+  } else {
+    UMA_HISTOGRAM_TIMES("Tabs.SwitchFromCloseLatency_Actual",
+                        GetTimeDelta(ms));
+  }
+}
+
+void JNI_TabModelJniBridge_LogFromExitMetric(
+    JNIEnv* env,
+    jlong ms,
+    jboolean perceived) {
+  if (perceived) {
+    UMA_HISTOGRAM_TIMES("Tabs.SwitchFromExitLatency_Perceived",
+                        GetTimeDelta(ms));
+  } else {
+    UMA_HISTOGRAM_TIMES("Tabs.SwitchFromExitLatency_Actual",
+                        GetTimeDelta(ms));
+  }
+}
+
+void JNI_TabModelJniBridge_LogFromNewMetric(JNIEnv* env,
+                                            jlong ms,
+                                            jboolean perceived) {
+  if (perceived) {
+    UMA_HISTOGRAM_TIMES("Tabs.SwitchFromNewLatency_Perceived",
+                        GetTimeDelta(ms));
+  } else {
+    UMA_HISTOGRAM_TIMES("Tabs.SwitchFromNewLatency_Actual",
+                        GetTimeDelta(ms));
+  }
+}
+
+void JNI_TabModelJniBridge_LogFromUserMetric(
+    JNIEnv* env,
+    jlong ms,
+    jboolean perceived) {
+  if (perceived) {
+    UMA_HISTOGRAM_TIMES("Tabs.SwitchFromUserLatency_Perceived",
+                        GetTimeDelta(ms));
+  } else {
+    UMA_HISTOGRAM_TIMES("Tabs.SwitchFromUserLatency_Actual",
+                        GetTimeDelta(ms));
+  }
+}
+
 TabModelJniBridge::~TabModelJniBridge() {
   TabModelList::RemoveTabModel(this);
 }
