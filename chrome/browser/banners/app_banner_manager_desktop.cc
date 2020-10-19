@@ -103,7 +103,7 @@ void AppBannerManagerDesktop::InvalidateWeakPtrs() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
-bool AppBannerManagerDesktop::IsSupportedAppPlatform(
+bool AppBannerManagerDesktop::IsSupportedNonWebAppPlatform(
     const base::string16& platform) const {
   if (base::EqualsASCII(platform, kPlatformChromeWebStore))
     return true;
@@ -119,7 +119,7 @@ bool AppBannerManagerDesktop::IsSupportedAppPlatform(
   return false;
 }
 
-bool AppBannerManagerDesktop::IsRelatedAppInstalled(
+bool AppBannerManagerDesktop::IsRelatedNonWebAppInstalled(
     const blink::Manifest::RelatedApplication& related_app) const {
   if (!related_app.id || related_app.id->empty() || !related_app.platform ||
       related_app.platform->empty()) {

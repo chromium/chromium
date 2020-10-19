@@ -253,14 +253,14 @@ bool AppBannerManager::CheckIfShouldShowBanner() {
   return false;
 }
 
-bool AppBannerManager::ShouldDeferToRelatedApplication() const {
+bool AppBannerManager::ShouldDeferToRelatedNonWebApp() const {
   for (const auto& related_app : manifest_.related_applications) {
     if (manifest_.prefer_related_applications &&
-        IsSupportedAppPlatform(
+        IsSupportedNonWebAppPlatform(
             related_app.platform.value_or(base::string16()))) {
       return true;
     }
-    if (IsRelatedAppInstalled(related_app))
+    if (IsRelatedNonWebAppInstalled(related_app))
       return true;
   }
   return false;
@@ -397,7 +397,7 @@ void AppBannerManager::OnDidPerformInstallableWebAppCheck(
     return;
   }
 
-  if (ShouldDeferToRelatedApplication()) {
+  if (ShouldDeferToRelatedNonWebApp()) {
     SetInstallableWebAppCheckResult(
         InstallableWebAppCheckResult::kByUserRequest);
     Stop(PREFER_RELATED_APPLICATIONS);

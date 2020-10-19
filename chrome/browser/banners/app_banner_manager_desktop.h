@@ -57,8 +57,9 @@ class AppBannerManagerDesktop
   // AppBannerManager overrides.
   base::WeakPtr<AppBannerManager> GetWeakPtr() override;
   void InvalidateWeakPtrs() override;
-  bool IsSupportedAppPlatform(const base::string16& platform) const override;
-  bool IsRelatedAppInstalled(
+  bool IsSupportedNonWebAppPlatform(
+      const base::string16& platform) const override;
+  bool IsRelatedNonWebAppInstalled(
       const blink::Manifest::RelatedApplication& related_app) const override;
 
   // Called when the web app install initiated by a banner has completed.
