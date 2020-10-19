@@ -19,6 +19,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/web_audio_device.h"
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
+#include "third_party/blink/public/platform/web_vector.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -96,6 +97,9 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
 
   // Weak reference to the callback into WebKit code.
   blink::WebAudioDevice::RenderCallback* const client_callback_;
+
+  // Used to wrap AudioBus to be passed into |client_callback_|.
+  blink::WebVector<float*> web_audio_dest_data_;
 
   // To avoid the need for locking, ensure the control methods of the
   // blink::WebAudioDevice implementation are called on the same thread.

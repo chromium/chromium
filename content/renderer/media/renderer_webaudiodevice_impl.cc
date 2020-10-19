@@ -161,6 +161,9 @@ RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
 
   // Specify the latency info to be passed to the browser side.
   sink_params_.set_latency_tag(latency);
+
+  web_audio_dest_data_ =
+      blink::WebVector<float*>(static_cast<size_t>(sink_params_.channels()));
 }
 
 RendererWebAudioDeviceImpl::~RendererWebAudioDeviceImpl() {
@@ -234,9 +237,9 @@ int RendererWebAudioDeviceImpl::Render(base::TimeDelta delay,
                                        int prior_frames_skipped,
                                        media::AudioBus* dest) {
   // Wrap the output pointers using WebVector.
-  WebVector<float*> web_audio_dest_data(static_cast<size_t>(dest->channels()));
+  CHECK_EQ(dest->channels(), sink_params_.channels());
   for (int i = 0; i < dest->channels(); ++i)
-    web_audio_dest_data[i] = dest->channel(i);
+    web_audio_dest_data_[i] = dest->channel(i);
 
   if (!delay.is_zero()) {  // Zero values are send at the first call.
     // Substruct the bus duration to get hardware delay.
@@ -246,7 +249,7 @@ int RendererWebAudioDeviceImpl::Render(base::TimeDelta delay,
   DCHECK_GE(delay, base::TimeDelta());
 
   client_callback_->Render(
-      web_audio_dest_data, dest->frames(), delay.InSecondsF(),
+      web_audio_dest_data_, dest->frames(), delay.InSecondsF(),
       (delay_timestamp - base::TimeTicks()).InSecondsF(), prior_frames_skipped);
 
   return dest->frames();
