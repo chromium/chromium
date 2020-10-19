@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_static_position.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -327,9 +328,10 @@ void ComputeAbsoluteSize(const LayoutUnit border_padding_size,
 //    exceed the available-size of the containing-block (e.g.  with insets
 //    similar to: "left: -100px; right: -100px").
 
-bool AbsoluteNeedsChildInlineSize(const ComputedStyle& style) {
-  if (style.IsDisplayTableBox())
+bool AbsoluteNeedsChildInlineSize(const NGBlockNode& node) {
+  if (node.IsTable())
     return true;
+  const auto& style = node.Style();
   return style.LogicalWidth().IsIntrinsic() ||
          style.LogicalMinWidth().IsIntrinsic() ||
          style.LogicalMaxWidth().IsIntrinsic() ||
@@ -337,9 +339,10 @@ bool AbsoluteNeedsChildInlineSize(const ComputedStyle& style) {
           (style.LogicalLeft().IsAuto() || style.LogicalRight().IsAuto()));
 }
 
-bool AbsoluteNeedsChildBlockSize(const ComputedStyle& style) {
-  if (style.IsDisplayTableBox())
+bool AbsoluteNeedsChildBlockSize(const NGBlockNode& node) {
+  if (node.IsTable())
     return true;
+  const auto& style = node.Style();
   return style.LogicalHeight().IsIntrinsic() ||
          style.LogicalMinHeight().IsIntrinsic() ||
          style.LogicalMaxHeight().IsIntrinsic() ||
@@ -347,7 +350,8 @@ bool AbsoluteNeedsChildBlockSize(const ComputedStyle& style) {
           (style.LogicalTop().IsAuto() || style.LogicalBottom().IsAuto()));
 }
 
-bool IsInlineSizeComputableFromBlockSize(const ComputedStyle& style) {
+bool IsInlineSizeComputableFromBlockSize(const NGBlockNode& node) {
+  const auto& style = node.Style();
   DCHECK(style.HasOutOfFlowPosition());
   if (style.AspectRatio().IsAuto())
     return false;
@@ -362,8 +366,8 @@ bool IsInlineSizeComputableFromBlockSize(const ComputedStyle& style) {
     return true;
   // If we have block insets but no inline insets, we compute based on the
   // insets.
-  return !AbsoluteNeedsChildBlockSize(style) &&
-         AbsoluteNeedsChildInlineSize(style);
+  return !AbsoluteNeedsChildBlockSize(node) &&
+         AbsoluteNeedsChildInlineSize(node);
 }
 
 base::Optional<LayoutUnit> ComputeAbsoluteDialogYPosition(
@@ -417,8 +421,8 @@ base::Optional<LayoutUnit> ComputeAbsoluteDialogYPosition(
 }
 
 void ComputeOutOfFlowInlineDimensions(
+    const NGBlockNode& node,
     const NGConstraintSpace& space,
-    const ComputedStyle& style,
     const NGBoxStrut& border_padding,
     const NGLogicalStaticPosition& static_position,
     const base::Optional<MinMaxSizes>& minmax_content_sizes,
@@ -428,6 +432,7 @@ void ComputeOutOfFlowInlineDimensions(
     NGLogicalOutOfFlowDimensions* dimensions) {
   DCHECK(dimensions);
 
+  const auto& style = node.Style();
   Length min_inline_length = style.LogicalMinWidth();
   base::Optional<MinMaxSizes> min_size_minmax = minmax_content_sizes;
   // We don't need to check for IsInlineSizeComputableFromBlockSize; this is
@@ -454,7 +459,7 @@ void ComputeOutOfFlowInlineDimensions(
   }
 
   // Tables are never allowed to go below their min-content size.
-  const bool is_table = style.IsDisplayTableBox();
+  const bool is_table = node.IsTable();
   if (is_table)
     min_inline_size = std::max(min_inline_size, minmax_content_sizes->min_size);
 
@@ -465,7 +470,7 @@ void ComputeOutOfFlowInlineDimensions(
                                 minmax_content_sizes, style.LogicalWidth());
   } else if (replaced_size.has_value()) {
     inline_size = replaced_size->inline_size;
-  } else if (IsInlineSizeComputableFromBlockSize(style)) {
+  } else if (IsInlineSizeComputableFromBlockSize(node)) {
     DCHECK(minmax_content_sizes.has_value());
     inline_size = minmax_content_sizes->min_size;
   }
@@ -494,21 +499,21 @@ void ComputeOutOfFlowInlineDimensions(
 }
 
 void ComputeOutOfFlowBlockDimensions(
+    const NGBlockNode& node,
     const NGConstraintSpace& space,
-    const ComputedStyle& style,
     const NGBoxStrut& border_padding,
     const NGLogicalStaticPosition& static_position,
     const base::Optional<LayoutUnit>& child_block_size,
     const base::Optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
     NGLogicalOutOfFlowDimensions* dimensions) {
+  const auto& style = node.Style();
   // After partial size has been computed, child block size is either unknown,
   // or fully computed, there is no minmax. To express this, a 'fixed' minmax
   // is created where min and max are the same.
   base::Optional<MinMaxSizes> min_max_sizes;
-  if (child_block_size.has_value()) {
+  if (child_block_size.has_value())
     min_max_sizes = MinMaxSizes{*child_block_size, *child_block_size};
-  }
 
   LayoutUnit child_block_size_or_indefinite =
       child_block_size.value_or(kIndefiniteSize);
@@ -521,7 +526,7 @@ void ComputeOutOfFlowBlockDimensions(
       LengthResolvePhase::kLayout);
 
   // Tables are never allowed to go below their "auto" block-size.
-  const bool is_table = style.IsDisplayTableBox();
+  const bool is_table = node.IsTable();
   if (is_table)
     min_block_size = std::max(min_block_size, min_max_sizes->min_size);
 

@@ -14,8 +14,8 @@
 
 namespace blink {
 
-class ComputedStyle;
 class LayoutObject;
+class NGBlockNode;
 class NGConstraintSpace;
 struct NGLogicalStaticPosition;
 
@@ -49,15 +49,15 @@ CORE_EXPORT base::Optional<LayoutUnit> ComputeAbsoluteDialogYPosition(
 
 // Returns true if |ComputeOutOfFlowInlineDimensions| will need an estimated
 // inline-size.
-CORE_EXPORT bool AbsoluteNeedsChildInlineSize(const ComputedStyle&);
+CORE_EXPORT bool AbsoluteNeedsChildInlineSize(const NGBlockNode&);
 
 // Returns true if |ComputeOutOfFlowBlockDimensions| will need an estimated
 // block-size.
-CORE_EXPORT bool AbsoluteNeedsChildBlockSize(const ComputedStyle&);
+CORE_EXPORT bool AbsoluteNeedsChildBlockSize(const NGBlockNode&);
 
 // Returns true if the inline size can be computed from an aspect ratio and
 // the block size.
-bool IsInlineSizeComputableFromBlockSize(const ComputedStyle& style);
+bool IsInlineSizeComputableFromBlockSize(const NGBlockNode&);
 
 // Computes part of the absolute position which depends on the child's
 // inline-size.
@@ -66,8 +66,8 @@ bool IsInlineSizeComputableFromBlockSize(const ComputedStyle& style);
 // |replaced_size| should be set if and only if element is replaced element.
 // Returns the partially filled position.
 CORE_EXPORT void ComputeOutOfFlowInlineDimensions(
+    const NGBlockNode&,
     const NGConstraintSpace&,
-    const ComputedStyle&,
     const NGBoxStrut& border_padding,
     const NGLogicalStaticPosition&,
     const base::Optional<MinMaxSizes>& minmax_content_sizes,
@@ -79,8 +79,8 @@ CORE_EXPORT void ComputeOutOfFlowInlineDimensions(
 // Computes the rest of the absolute position which depends on child's
 // block-size.
 CORE_EXPORT void ComputeOutOfFlowBlockDimensions(
+    const NGBlockNode&,
     const NGConstraintSpace&,
-    const ComputedStyle&,
     const NGBoxStrut& border_padding,
     const NGLogicalStaticPosition&,
     const base::Optional<LayoutUnit>& child_block_size,
