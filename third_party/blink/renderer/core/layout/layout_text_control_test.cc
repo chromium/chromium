@@ -45,7 +45,7 @@ class LayoutTextControlTest : public RenderingTest {
 };
 
 TEST_F(LayoutTextControlTest,
-       ChangingPseudoSelectionStyleShouldInvalidateSelection) {
+       ChangingPseudoSelectionStyleShouldInvalidateSelectionSingle) {
   SetBodyInnerHTML(R"HTML(
     <style>
       input::selection { background-color: blue; }
@@ -62,7 +62,24 @@ TEST_F(LayoutTextControlTest,
 }
 
 TEST_F(LayoutTextControlTest,
-       AddingPseudoSelectionStyleShouldInvalidateSelection) {
+       ChangingPseudoSelectionStyleShouldInvalidateSelectionMulti) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      textarea::selection { background-color: blue; }
+      .pseudoSelection::selection { background-color: green; }
+    </style>
+    <textarea id="textarea">AAAAAAAAAAAA</textarea>
+  )HTML");
+
+  auto* text_control = GetTextControlElementById("textarea");
+  auto* selected_text = SetupLayoutTextWithCleanSelection(text_control);
+
+  text_control->setAttribute(html_names::kClassAttr, "pseudoSelection");
+  CheckSelectionInvalidationChanges(*selected_text);
+}
+
+TEST_F(LayoutTextControlTest,
+       AddingPseudoSelectionStyleShouldInvalidateSelectionSingle) {
   SetBodyInnerHTML(R"HTML(
     <style>
       .pseudoSelection::selection { background-color: green; }
@@ -78,7 +95,23 @@ TEST_F(LayoutTextControlTest,
 }
 
 TEST_F(LayoutTextControlTest,
-       RemovingPseudoSelectionStyleShouldInvalidateSelection) {
+       AddingPseudoSelectionStyleShouldInvalidateSelectionMulti) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .pseudoSelection::selection { background-color: green; }
+    </style>
+    <textarea id="textarea" >AAAAAAAAAAAA</textarea>
+  )HTML");
+
+  auto* text_control = GetTextControlElementById("textarea");
+  auto* selected_text = SetupLayoutTextWithCleanSelection(text_control);
+
+  text_control->setAttribute(html_names::kClassAttr, "pseudoSelection");
+  CheckSelectionInvalidationChanges(*selected_text);
+}
+
+TEST_F(LayoutTextControlTest,
+       RemovingPseudoSelectionStyleShouldInvalidateSelectionSingle) {
   SetBodyInnerHTML(R"HTML(
     <style>
       .pseudoSelection::selection { background-color: green; }
@@ -87,6 +120,22 @@ TEST_F(LayoutTextControlTest,
   )HTML");
 
   auto* text_control = GetTextControlElementById("input");
+  auto* selected_text = SetupLayoutTextWithCleanSelection(text_control);
+
+  text_control->removeAttribute(html_names::kClassAttr);
+  CheckSelectionInvalidationChanges(*selected_text);
+}
+
+TEST_F(LayoutTextControlTest,
+       RemovingPseudoSelectionStyleShouldInvalidateSelectionMulti) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .pseudoSelection::selection { background-color: green; }
+    </style>
+    <textarea id="textarea" class="pseudoSelection">AAAAAAAAAAAA</textarea>
+  )HTML");
+
+  auto* text_control = GetTextControlElementById("textarea");
   auto* selected_text = SetupLayoutTextWithCleanSelection(text_control);
 
   text_control->removeAttribute(html_names::kClassAttr);
