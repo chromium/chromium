@@ -77,11 +77,15 @@
       <iron-list items="[[shareTargets_]]" id="deviceList"
           selected-item="{{selectedShareTarget}}"
           on-selected-item-changed="onSelectedShareTargetChanged_"
-          aria-rowcount$="[[shareTargets_.length]]" preserve-focus
-          selection-enabled>
+          preserve-focus selection-enabled
+          role="radiogroup" aria-live="polite"
+          aria-label="$i18n{nearbyShareDiscoveryPageSubtitle}">
         <template>
           <nearby-device tabindex$="[[tabIndex]]" share-target="[[item]]"
               is-selected="[[isShareTargetSelected_(
+                               item, selectedShareTarget)]]"
+              role="radio"
+              aria-checked$="[[isShareTargetSelectedStr_(
                                item, selectedShareTarget)]]">
           </nearby-device>
         </template>

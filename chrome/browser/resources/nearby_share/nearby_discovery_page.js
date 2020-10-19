@@ -287,6 +287,15 @@ Polymer({
   },
 
   /**
+   * @param {!nearbyShare.mojom.ShareTarget} shareTarget
+   * @return {string}
+   * @private
+   */
+  isShareTargetSelectedStr_(shareTarget) {
+    return this.isShareTargetSelected_(shareTarget).toString();
+  },
+
+  /**
    * Updates the selected share target to |shareTarget| if its id matches |id|.
    * @param {!mojoBase.mojom.UnguessableToken} id
    * @param {?nearbyShare.mojom.ShareTarget} shareTarget
