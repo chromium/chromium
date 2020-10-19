@@ -78,8 +78,8 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_gravity="center"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginTop="64dp"
+        android:layout_marginBottom="128dp"
         android:visibility="gone" />
 
     <org.chromium.ui.widget.ButtonCompat

@@ -178,15 +178,13 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     void setUpSignInInProgressView() {
         mLogoImage.setImageResource(R.drawable.chrome_sync_logo);
         mAccountPickerTitle.setText(R.string.signin_account_picker_bottom_sheet_signin_title);
-        mAccountPickerSubtitle.setVisibility(View.INVISIBLE);
-        // Set the account picker subtitle text in case there's an error.
-        mAccountPickerSubtitle.setText(R.string.signin_account_picker_general_error_subtitle);
         mSpinnerView.setVisibility(View.VISIBLE);
-        mContinueAsButton.setVisibility(View.INVISIBLE);
-        mDismissButton.setVisibility(View.INVISIBLE);
 
+        mAccountPickerSubtitle.setVisibility(View.GONE);
         mHorizontalDivider.setVisibility(View.GONE);
         mSelectedAccountView.setVisibility(View.GONE);
+        mContinueAsButton.setVisibility(View.GONE);
+        mDismissButton.setVisibility(View.GONE);
     }
 
     void setUpIncognitoInterstitialView() {
