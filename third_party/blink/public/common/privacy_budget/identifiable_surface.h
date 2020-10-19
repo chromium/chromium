@@ -184,6 +184,13 @@ class IdentifiableSurface {
     // will key this type on a digest of both the enums' values.
     kWebGLShaderPrecisionFormat = 16,
 
+    // MediaCapabilities.decodingInfo() reveals information about whether
+    // media decoding will be supported, smooth and/or power efficient,
+    // according to its codec, size, and other parameters. It can further reveal
+    // details about encrypted decoding support according to the key system
+    // configuration provided.
+    kMediaCapabilities_DecodingInfo = 25,
+
     // Represents loading a font locally. Input is the PostScript name.
     kLocalFontLoadPostScriptName = 29,
 

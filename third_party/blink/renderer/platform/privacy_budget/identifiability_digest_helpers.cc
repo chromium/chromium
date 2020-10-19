@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 
+#include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -51,6 +52,16 @@ IdentifiableToken IdentifiabilitySensitiveCaseFoldingStringToken(
   const uint32_t original_hash = CaseFoldingHash::GetHash(in);
   return IdentifiableToken(((original_hash & 0xFFFF0000) >> 16) ^
                            (original_hash & 0xFFFF));
+}
+
+IdentifiableToken IdentifiabilityBenignStringVectorToken(
+    const Vector<String>& in) {
+  IdentifiableTokenBuilder builder;
+  builder.AddValue(in.size());
+  for (const String& elem : in) {
+    builder.AddToken(IdentifiabilityBenignStringToken(elem));
+  }
+  return builder.GetToken();
 }
 
 }  // namespace blink

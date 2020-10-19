@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 // Provide helpers for blink-internal types to use with IdentifiabilityToken()
 
@@ -31,6 +32,11 @@ IdentifiabilityBenignCaseFoldingStringToken(const String&);
 // construction is additionally case-insensitive (using Unicode CaseFolding).
 PLATFORM_EXPORT IdentifiableToken
 IdentifiabilitySensitiveCaseFoldingStringToken(const String&);
+
+// For vectors of benign strings only (i.e. those where the string is not
+// sensitive).
+PLATFORM_EXPORT IdentifiableToken
+IdentifiabilityBenignStringVectorToken(const Vector<String>&);
 
 }  // namespace blink
 

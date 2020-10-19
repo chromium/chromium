@@ -9,6 +9,7 @@
 #include "media/learning/mojo/public/cpp/mojo_learning_task_controller.h"
 #include "media/learning/mojo/public/mojom/learning_task_controller.mojom-blink.h"
 #include "media/mojo/mojom/video_decode_perf_history.mojom-blink.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_configuration.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -51,7 +52,8 @@ class MODULES_EXPORT MediaCapabilities final : public ScriptWrappable {
    public:
     PendingCallbackState(ScriptPromiseResolver* resolver,
                          MediaKeySystemAccess* access,
-                         const base::TimeTicks& request_time);
+                         const base::TimeTicks& request_time,
+                         base::Optional<IdentifiableToken> input_token);
     virtual void Trace(blink::Visitor* visitor) const;
 
     Member<ScriptPromiseResolver> resolver;
@@ -62,6 +64,7 @@ class MODULES_EXPORT MediaCapabilities final : public ScriptWrappable {
     base::Optional<bool> db_is_power_efficient;
     base::Optional<bool> is_gpu_factories_supported;
     base::TimeTicks request_time;
+    base::Optional<IdentifiableToken> input_token;
   };
 
   // Lazily binds remote LearningTaskControllers for ML smoothness predictions
