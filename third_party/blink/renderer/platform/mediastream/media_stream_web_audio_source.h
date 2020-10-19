@@ -54,6 +54,7 @@ class PLATFORM_EXPORT MediaStreamWebAudioSource : public AudioSourceProvider {
   void ProvideInput(AudioBus*, uint32_t frames_to_process) override;
 
   std::unique_ptr<WebAudioSourceProvider> web_audio_source_provider_;
+  WebVector<float*> web_audio_data_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaStreamWebAudioSource);
 };
