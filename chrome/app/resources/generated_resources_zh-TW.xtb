@@ -4560,7 +4560,6 @@
 <translation id="6345878117466430440">標示為已讀取</translation>
 <translation id="6349101878882523185">安裝 <ph name="APP_NAME" /></translation>
 <translation id="6349170655202535379">同步功能無法正常運作。請嘗試登出，再重新登入。</translation>
-<translation id="6351063337294363751">你可以使用這個選單清除瀏覽資料</translation>
 <translation id="6354918092619878358">SECG 橢圓曲線 secp256r1 (亦稱為 ANSI X9.62 prime256v1、NIST P-256)</translation>
 <translation id="635609604405270300">請讓裝置保持開啟</translation>
 <translation id="63566973648609420">只有知道通關密語的使用者可以讀取你的加密資料。系統不會將通關密語傳送給 Google，Google 也不會儲存通關密語。如果你忘記自己的通關密語，或是想變更這項設定，則必須<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" />。</translation>

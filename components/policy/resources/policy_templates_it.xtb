@@ -1461,6 +1461,11 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="316778957754360075">Questa impostazione non è più supportata a partire dalla versione 29 di <ph name="PRODUCT_NAME" />. Il metodo consigliato per la configurazione di raccolte di estensioni/app ospitate dall'organizzazione consiste nell'includere il sito che ospita i pacchetti CRX in ExtensionInstallSources e inserire link di download diretti per i pacchetti in una pagina web. È possibile creare una funzione Avvio applicazioni per la pagina web utilizzando la norma ExtensionInstallForcelist.</translation>
 <translation id="3168968618972302728">Criteri relativi all'autenticazione per Kerberos.</translation>
 <translation id="3171369832001535378">Modello del nome host della rete del dispositivo</translation>
+<translation id="3176903288465566098">Se questa impostazione viene attivata, gli utenti che hanno già attivato Phone Hub potranno inviare e ricevere notifiche del loro telefono su Chrome OS.
+
+      Se viene disattivata, gli utenti non potranno usare questa funzionalità. Gli utenti non potranno usare questa funzionalità anche se viene disattivato il criterio PhoneHubAllowed.
+
+      Se questo criterio non viene configurato, per impostazione predefinita la funzionalità è consentita sia per gli utenti gestiti a livello aziendale sia per quelli non gestiti.</translation>
 <translation id="3177802893484440532">Richiedi controlli OCSP/CRL online per i trust anchor</translation>
 <translation id="3184161739683646075">Controlla la modalità di DNS over HTTPS</translation>
 <translation id="3185009703220253572">a partire dalla versione <ph name="SINCE_VERSION" /></translation>
@@ -2937,6 +2942,7 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
 
       Se il criterio viene impostato su False, il port forwarding nei container Crostini viene disattivato.</translation>
 <translation id="538108065117008131">Consenti a <ph name="PRODUCT_FRAME_NAME" /> di gestire i seguenti tipi di contenuto.</translation>
+<translation id="5383436189211119400">Se il criterio "DeviceArcDataSnapshotHours" viene impostato, viene attivato il meccanismo di creazione di istantanee dei dati ARC. L'aggiornamento delle istantanee dei dati ARC può essere avviato automaticamente durante gli intervalli di tempo definiti. Quando inizia un intervallo, l'aggiornamento delle istantanee dei dati ARC è necessario e non ci sono utenti che hanno eseguito l'accesso, la procedura di aggiornamento delle istantanee dei dati ARC viene avviata senza informare l'utente. Se è attiva la sessione utente, nell'interfaccia utente viene mostrata la notifica, che deve essere accettata per poter riavviare un dispositivo e avviare la procedura di aggiornamento delle istantanee dei dati ARC. Nota: durante la procedura di aggiornamento delle istantanee dei dati ARC non è possibile usare il dispositivo.</translation>
 <translation id="538768040137709073">Consente di attivare la funzione Appunti condivisi che permette agli utenti di inviare testi tra computer desktop Chrome e un dispositivo Android quando la sincronizzazione è attivata e l'utente ha effettuato l'accesso.
 
           Se il criterio è impostato su true, la funzionalità di invio testi tra dispositivi è attivata per gli utenti Chrome.
@@ -4214,6 +4220,7 @@ Se questa norma è impostata su True o non è impostata, il modello di oscuramen
 <translation id="7068108874199666656">Consente di forzare l'applicazione della configurazione di rete per tutti gli utenti di un dispositivo <ph name="PRODUCT_OS_NAME" />. La configurazione di rete è una stringa in formato JSON come definita nel formato Open Network Configuration.</translation>
 <translation id="7070525176564511548">Richiedi l'inserimento della password ogni settimana (168 ore)</translation>
 <translation id="7072208053150563108">Frequenza di modifica della password del computer</translation>
+<translation id="7072567600438630966">Consenti l'attivazione di Phone Hub</translation>
 <translation id="7079519252486108041">Blocca popup su questi siti</translation>
 <translation id="7080072532759721791">Consenti agli utenti di caricare o scaricare file protetti da password</translation>
 <translation id="7086677522575756117">Consente di specificare la percentuale di regolazione del ritardo di oscuramento dello schermo quando viene osservata l'attività dell'utente mentre lo schermo è oscurato o subito dopo lo spegnimento dello schermo.
@@ -4392,6 +4399,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Se questa norma non viene impostata o viene lasciata vuota, l'utente potrà impostare qualsiasi Account Google come account principale del browser in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="723103540848640830">Imposta la lunghezza minima del PIN per la schermata di blocco</translation>
 <translation id="7234280155140786597">Nomi degli host di messaggi nativi vietati (o * per indicarli tutti)</translation>
+<translation id="7246767840750730334">Consenti l'attivazione delle notifiche Phone Hub</translation>
 <translation id="7249828445670652637">Attiva i certificati CA <ph name="PRODUCT_OS_NAME" /> per le app ARC</translation>
 <translation id="7252681704926980614">Invia nome utente e nome file al server delle stampanti native per ogni processo di stampa. L'impostazione predefinita non prevede l'invio.
 
@@ -4496,6 +4504,11 @@ Se l'impostazione viene disattivata, questa funzione non sarà disponibile.</tra
 
       Questo criterio è deprecato. Usa il criterio <ph name="PRINTERS_BULK_BLOCKLIST" />.
       </translation>
+<translation id="7358744897221281073">Se questa impostazione viene attivata, gli utenti che hanno già attivato Phone Hub potranno continuare su Chrome OS attività quali la visualizzazione delle pagine web del loro telefono.
+
+      Se viene disattivata, gli utenti non potranno usare questa funzionalità. Gli utenti non potranno usare questa funzionalità anche se viene disattivato il criterio PhoneHubAllowed.
+
+      Se questo criterio non viene configurato, per impostazione predefinita la funzionalità è consentita sia per gli utenti gestiti a livello aziendale sia per quelli non gestiti.</translation>
 <translation id="7360181094056034924">Consente di controllare il modo in cui <ph name="PRODUCT_NAME" /> si comporta con i dati caricati e scaricati che sono considerati da analizzare.  Un ritardo nella consegna significa che <ph name="PRODUCT_NAME" /> non permetterà all'utente di accedere a un file scaricato, selezionare un file per caricarlo, incollare dagli appunti o trascinare dati finché non verranno analizzati e il risultato dell'analisi non sarà reso noto.  Tale limitazione si applica esclusivamente ai file o ai dati che dovrebbero essere analizzati secondo quanto stabilito da <ph name="SEND_FILES_FOR_MALWARE_CHECK_POLICY_NAME" />, <ph name="CHECK_CONTENT_COMPLIANCE_POLICY_NAME" /> e dai criteri che controllano l'elenco di domini per i quali è attiva l'analisi.
 
       Se questo criterio non viene impostato o se viene impostato su "Nessuno", <ph name="PRODUCT_NAME" /> non ritarderà il caricamento di alcun file, né le operazioni di copia e incolla dagli appunti, il trascinamento di dati o l'accesso a qualsiasi file scaricato.  L'analisi verrà eseguita in background.
@@ -4692,6 +4705,7 @@ Se l'impostazione viene disattivata, questa funzione non sarà disponibile.</tra
       Se il criterio non è impostato, il cursore grande risulta disattivato nella schermata di accesso. Gli utenti possono attivarlo in qualsiasi momento e il suo stato nella schermata di accesso persiste per tutti gli utenti.
 
           Nota: se specificato, <ph name="DEVICE_LOGIN_SCREEN_LARGE_CURSOR_ENABLED" /> sostituisce questo criterio.</translation>
+<translation id="7632147323011514740">Intervalli in cui è possibile avviare la procedura di aggiornamento delle istantanee dei dati ARC per le sessioni Ospite gestite</translation>
 <translation id="7632724434767231364">Nome della libreria GSSAPI</translation>
 <translation id="7643883929273267746">Limita gli account visibili in <ph name="PRODUCT_NAME" /></translation>
 <translation id="7648907905084499629">Usa il comportamento <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> per i cookie su tutti i siti</translation>
@@ -4968,6 +4982,7 @@ Se attivi questa impostazione o non imposti un valore, la funzione Compilazione 
       Questo criterio viene sempre applicato per <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="8050080920415773384">Stampa nativa</translation>
 <translation id="8053580360728293758">Consente di eseguire l'override della modalità di stampa a colori predefinita. Se la modalità non è disponibile, questa norma viene ignorata.</translation>
+<translation id="8056237304861875584">Consenti l'attivazione della continuazione di attività Phone Hub</translation>
 <translation id="8059164285174960932">URL su cui i client di accesso remoto dovrebbero ottenere il token di autenticazione</translation>
 <translation id="8077245272412229388">Aggiunge account Kerberos compilati automaticamente. Se le credenziali di Kerberos corrispondono alle credenziali di accesso, un account può essere configurato in modo da riutilizzare le credenziali di accesso specificando "<ph name="LOGIN_EMAIL_PLACEHOLDER" />" e "<ph name="PASSWORD_PLACEHOLDER" />" rispettivamente per l'account principale e la password, in modo che le richieste di Kerberos possano essere recuperate automaticamente, a meno che non sia configurata l'autenticazione a due fattori. Gli utenti non possono modificare gli account aggiunti tramite questo criterio.
 
@@ -5711,6 +5726,11 @@ https://www.w3.org/TR/secure-contexts/
 <translation id="9084985621503260744">Specifica se l'attività video incide sulla gestione dell'alimentazione</translation>
 <translation id="9088433379343318874">Abilita il provider di contenuti dell'utente supervisionato</translation>
 <translation id="9088444059179765143">Configura il metodo di rilevamento automatico del fuso orario</translation>
+<translation id="9095999573959728902">Se questa impostazione viene attivata, gli utenti potranno attivare Phone Hub, che consente loro di interagire con il proprio telefono su un dispositivo Chrome OS.
+
+      Se viene disattivata, gli utenti non potranno attivare Phone Hub.
+
+      Se questo criterio non viene configurato, per impostazione predefinita la funzionalità non è consentita per gli utenti gestiti a livello aziendale ed è consentita per gli utenti non gestiti.</translation>
 <translation id="9096086085182305205">Whitelist server di autenticazione</translation>
 <translation id="9105265795073104888">Solo un sottoinsieme di opzioni di configurazione del proxy viene reso disponibile alle app Android, che decidono volontariamente se rispettarlo o meno. Non puoi forzarle a utilizzare un proxy.</translation>
 <translation id="9106865192244721694">Consenti WebUSB su questi siti</translation>
