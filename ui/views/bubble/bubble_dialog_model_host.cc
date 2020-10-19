@@ -370,7 +370,7 @@ View* BubbleDialogModelHost::AddOrUpdateCheckbox(
   auto checkbox = std::make_unique<Checkbox>();
   auto* checkbox_ptr = checkbox.get();
 
-  checkbox->set_callback(base::BindRepeating(
+  checkbox->SetCallback(base::BindRepeating(
       [](ui::DialogModelCheckbox* model,
          util::PassKey<DialogModelHost> pass_key, Checkbox* checkbox,
          const ui::Event& event) {
@@ -392,7 +392,7 @@ View* BubbleDialogModelHost::AddOrUpdateCombobox(
   combobox->SetAccessibleName(model->accessible_name(GetPassKey()).empty()
                                   ? model->label(GetPassKey())
                                   : model->accessible_name(GetPassKey()));
-  combobox->set_callback(base::BindRepeating(
+  combobox->SetCallback(base::BindRepeating(
       [](ui::DialogModelCombobox* model,
          util::PassKey<DialogModelHost> pass_key, Combobox* combobox) {
         // TODO(pbos): This should be a subscription through the Combobox

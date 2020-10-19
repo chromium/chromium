@@ -557,7 +557,7 @@ SadTabView::SadTabView(content::WebContents* web_contents, SadTabKind kind)
 
   auto help_link = std::make_unique<views::Link>(
       l10n_util::GetStringUTF16(GetHelpLinkTitle()));
-  help_link->set_callback(base::BindRepeating(
+  help_link->SetCallback(base::BindRepeating(
       &SadTab::PerformAction, base::Unretained(this), Action::HELP_LINK));
   layout->StartRowWithPadding(views::GridLayout::kFixedSize, column_set_id,
                               views::GridLayout::kFixedSize,

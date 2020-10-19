@@ -71,9 +71,9 @@ FirstRunDialog::FirstRunDialog(Profile* profile) {
   SetButtons(ui::DIALOG_BUTTON_OK);
   SetExtraView(
       std::make_unique<views::Link>(l10n_util::GetStringUTF16(IDS_LEARN_MORE)))
-      ->set_callback(base::BindRepeating(&platform_util::OpenExternal,
-                                         base::Unretained(profile),
-                                         GURL(chrome::kLearnMoreReportingURL)));
+      ->SetCallback(base::BindRepeating(&platform_util::OpenExternal,
+                                        base::Unretained(profile),
+                                        GURL(chrome::kLearnMoreReportingURL)));
 
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::TEXT, views::TEXT));

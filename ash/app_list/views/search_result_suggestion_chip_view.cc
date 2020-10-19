@@ -56,7 +56,7 @@ SearchResultSuggestionChipView::SearchResultSuggestionChipView(
     AppListViewDelegate* view_delegate)
     : view_delegate_(view_delegate) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  set_callback(
+  SetCallback(
       base::BindRepeating(&SearchResultSuggestionChipView::OnButtonPressed,
                           base::Unretained(this)));
 

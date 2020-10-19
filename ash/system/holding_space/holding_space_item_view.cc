@@ -229,8 +229,8 @@ views::ToggleImageButton* HoldingSpaceItemView::AddPin(views::View* parent) {
   pin_->SetImageVerticalAlignment(
       views::ToggleImageButton::VerticalAlignment::ALIGN_MIDDLE);
 
-  pin_->set_callback(base::BindRepeating(&HoldingSpaceItemView::OnPinPressed,
-                                         base::Unretained(this)));
+  pin_->SetCallback(base::BindRepeating(&HoldingSpaceItemView::OnPinPressed,
+                                        base::Unretained(this)));
 
   return pin_;
 }

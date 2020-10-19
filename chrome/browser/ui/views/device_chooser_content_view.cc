@@ -62,7 +62,7 @@ BluetoothStatusContainer::BluetoothStatusContainer(
   auto re_scan_button = std::make_unique<views::MdTextButton>(
       views::Button::PressedCallback(),
       l10n_util::GetStringUTF16(IDS_BLUETOOTH_DEVICE_CHOOSER_RE_SCAN));
-  re_scan_button->set_callback(base::BindRepeating(
+  re_scan_button->SetCallback(base::BindRepeating(
       [](views::MdTextButton* button, ChooserController* chooser_controller) {
         // Refreshing will cause the table view to yield focus, which will land
         // on the help button. Instead, briefly let the rescan button take

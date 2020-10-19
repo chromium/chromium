@@ -120,7 +120,7 @@ class ExamplesWindowContents : public WidgetDelegateView {
     auto combobox = std::make_unique<Combobox>(std::move(combobox_model));
 
     instance_ = this;
-    combobox->set_callback(base::BindRepeating(
+    combobox->SetCallback(base::BindRepeating(
         &ExamplesWindowContents::ComboboxChanged, base::Unretained(this)));
 
     SetBackground(CreateThemedSolidBackground(

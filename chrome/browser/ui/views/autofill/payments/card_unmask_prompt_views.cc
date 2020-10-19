@@ -201,7 +201,7 @@ void CardUnmaskPromptViews::ShowNewCardLink() {
 
   auto new_card_link = std::make_unique<views::Link>(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_CARD_UNMASK_NEW_CARD_LINK));
-  new_card_link->set_callback(base::BindRepeating(
+  new_card_link->SetCallback(base::BindRepeating(
       &CardUnmaskPromptViews::LinkClicked, base::Unretained(this)));
   new_card_link_ = input_row_->AddChildView(std::move(new_card_link));
 }
@@ -350,13 +350,13 @@ void CardUnmaskPromptViews::InitIfNecessary() {
 
   // Add the month and year comboboxes if the expiration date is needed.
   auto month_input = std::make_unique<views::Combobox>(&month_combobox_model_);
-  month_input->set_callback(base::BindRepeating(
+  month_input->SetCallback(base::BindRepeating(
       &CardUnmaskPromptViews::DateChanged, base::Unretained(this)));
   month_input->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_CARD_UNMASK_EXPIRATION_MONTH));
   month_input_ = input_row->AddChildView(std::move(month_input));
   auto year_input = std::make_unique<views::Combobox>(&year_combobox_model_);
-  year_input->set_callback(base::BindRepeating(
+  year_input->SetCallback(base::BindRepeating(
       &CardUnmaskPromptViews::DateChanged, base::Unretained(this)));
   year_input->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_CARD_UNMASK_EXPIRATION_YEAR));

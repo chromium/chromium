@@ -197,7 +197,7 @@ SuggestionWindowView::SuggestionWindowView(gfx::NativeView parent,
     delegate->AssistiveWindowButtonClicked(
         {.id = ButtonId::kSmartInputsSettingLink});
   };
-  setting_link_->set_callback(
+  setting_link_->SetCallback(
       base::BindRepeating(on_setting_link_clicked, delegate_));
   setting_link_->SetVisible(false);
 

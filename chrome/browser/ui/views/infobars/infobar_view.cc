@@ -275,7 +275,7 @@ views::Link* InfoBarView::CreateLink(const base::string16& text) {
   views::Link* link =
       new views::Link(text, views::style::CONTEXT_DIALOG_BODY_TEXT);
   SetLabelDetails(link);
-  link->set_callback(
+  link->SetCallback(
       base::BindRepeating(&InfoBarView::LinkClicked, base::Unretained(this)));
   link->SetProperty(kLabelType, LabelType::kLink);
   return link;

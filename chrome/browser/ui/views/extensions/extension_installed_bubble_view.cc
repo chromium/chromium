@@ -244,7 +244,7 @@ void ExtensionInstalledBubbleView::Init() {
   if (model_->show_key_binding()) {
     auto* manage_shortcut = AddChildView(std::make_unique<views::Link>(
         l10n_util::GetStringUTF16(IDS_EXTENSION_INSTALLED_MANAGE_SHORTCUTS)));
-    manage_shortcut->set_callback(base::BindRepeating(
+    manage_shortcut->SetCallback(base::BindRepeating(
         &ExtensionInstalledBubbleView::LinkClicked, base::Unretained(this)));
   }
 

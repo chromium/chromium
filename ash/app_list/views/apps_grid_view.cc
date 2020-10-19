@@ -1391,9 +1391,9 @@ std::unique_ptr<AppListItemView> AppsGridView::CreateViewForItem(
   std::unique_ptr<AppListItemView> view = std::make_unique<AppListItemView>(
       this, item, contents_view_->GetAppListMainView()->view_delegate(),
       is_in_folder);
-  view->set_callback(base::BindRepeating(
-      &AppsGridView::OnAppListItemViewPressed, base::Unretained(this),
-      base::Unretained(view.get())));
+  view->SetCallback(base::BindRepeating(&AppsGridView::OnAppListItemViewPressed,
+                                        base::Unretained(this),
+                                        base::Unretained(view.get())));
   return view;
 }
 

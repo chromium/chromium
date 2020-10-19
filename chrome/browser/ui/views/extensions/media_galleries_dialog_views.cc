@@ -225,7 +225,7 @@ bool MediaGalleriesDialogViews::AddOrUpdateGallery(
   auto* gallery_view =
       container->AddChildView(std::make_unique<MediaGalleryCheckboxView>(
           gallery.pref_info, trailing_vertical_space, this));
-  gallery_view->checkbox()->set_callback(base::BindRepeating(
+  gallery_view->checkbox()->SetCallback(base::BindRepeating(
       &MediaGalleriesDialogViews::ButtonPressed, base::Unretained(this),
       base::BindRepeating(
           [](MediaGalleriesDialogController* controller,

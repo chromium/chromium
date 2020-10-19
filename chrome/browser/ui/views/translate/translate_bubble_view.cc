@@ -696,7 +696,7 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewError() {
       std::make_unique<views::MdTextButtonWithDownArrow>(
           views::Button::PressedCallback(),
           l10n_util::GetStringUTF16(IDS_TRANSLATE_BUBBLE_OPTIONS_MENU_BUTTON));
-  translate_options_button->set_callback(base::BindRepeating(
+  translate_options_button->SetCallback(base::BindRepeating(
       &TranslateBubbleView::ShowOptionsMenu, base::Unretained(this),
       base::Unretained(translate_options_button.get())));
   translate_options_button->SetID(BUTTON_ID_OPTIONS_MENU);
@@ -804,7 +804,7 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvancedSource() {
     advanced_always_translate_checkbox->SetID(BUTTON_ID_ALWAYS_TRANSLATE);
   }
 
-  source_language_combobox->set_callback(base::BindRepeating(
+  source_language_combobox->SetCallback(base::BindRepeating(
       &TranslateBubbleView::SourceLanguageChanged, base::Unretained(this)));
   source_language_combobox_ = source_language_combobox.get();
 
@@ -838,7 +838,7 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvancedTarget() {
   auto target_language_combobox =
       std::make_unique<views::Combobox>(target_language_combobox_model_.get());
 
-  target_language_combobox->set_callback(base::BindRepeating(
+  target_language_combobox->SetCallback(base::BindRepeating(
       &TranslateBubbleView::TargetLanguageChanged, base::Unretained(this)));
   target_language_combobox_ = target_language_combobox.get();
 
@@ -1008,7 +1008,7 @@ std::unique_ptr<views::Button> TranslateBubbleView::CreateOptionsMenuButton() {
   auto tab_translate_options_button =
       views::CreateVectorImageButtonWithNativeTheme(
           views::Button::PressedCallback(), kBrowserToolsIcon);
-  tab_translate_options_button->set_callback(base::BindRepeating(
+  tab_translate_options_button->SetCallback(base::BindRepeating(
       &TranslateBubbleView::ShowOptionsMenu, base::Unretained(this),
       base::Unretained(tab_translate_options_button.get())));
   InstallCircleHighlightPathGenerator(tab_translate_options_button.get());

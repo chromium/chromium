@@ -200,7 +200,7 @@ std::unique_ptr<ElementAnimator> SuggestionContainerView::AddSuggestionChip(
     const AssistantSuggestion& suggestion) {
   auto suggestion_chip_view =
       std::make_unique<SuggestionChipView>(delegate(), suggestion);
-  suggestion_chip_view->set_callback(base::BindRepeating(
+  suggestion_chip_view->SetCallback(base::BindRepeating(
       &SuggestionContainerView::OnButtonPressed, base::Unretained(this),
       base::Unretained(suggestion_chip_view.get())));
 

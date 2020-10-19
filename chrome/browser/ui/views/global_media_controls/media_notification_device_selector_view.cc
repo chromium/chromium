@@ -102,7 +102,7 @@ MediaNotificationDeviceSelectorView::MediaNotificationDeviceSelectorView(
 
   expand_button_ = expand_button_strip_->AddChildView(
       std::make_unique<ExpandDeviceSelectorButton>(this));
-  expand_button_->set_callback(base::BindRepeating(
+  expand_button_->SetCallback(base::BindRepeating(
       &MediaNotificationDeviceSelectorView::ExpandButtonPressed,
       base::Unretained(this)));
 

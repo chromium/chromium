@@ -154,7 +154,7 @@ void EditableComboboxTest::InitEditableCombobox(
   combobox_ =
       new EditableCombobox(std::make_unique<ui::SimpleComboboxModel>(items),
                            filter_on_edit, show_on_empty, type);
-  combobox_->set_callback(base::BindRepeating(
+  combobox_->SetCallback(base::BindRepeating(
       &EditableComboboxTest::OnContentChanged, base::Unretained(this)));
   combobox_->SetID(2);
   dummy_focusable_view_ = new View();

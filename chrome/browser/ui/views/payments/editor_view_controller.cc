@@ -221,7 +221,7 @@ EditorViewController::CreateComboboxForField(const EditorField& field,
 
   // Using autofill field type as a view ID.
   combobox->SetID(GetInputFieldViewId(field.type));
-  combobox->set_callback(
+  combobox->SetCallback(
       base::BindRepeating(&EditorViewController::OnPerformAction,
                           base::Unretained(this), combobox.get()));
   comboboxes_.insert(std::make_pair(combobox.get(), field));

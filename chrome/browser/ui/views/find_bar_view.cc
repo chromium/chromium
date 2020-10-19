@@ -162,7 +162,7 @@ FindBarView::FindBarView(FindBarHost* host) {
           .SetTooltipText(
               l10n_util::GetStringUTF16(IDS_FIND_IN_PAGE_PREVIOUS_TOOLTIP))
           .Build();
-  find_previous_button->set_callback(base::BindRepeating(
+  find_previous_button->SetCallback(base::BindRepeating(
       &FindBarView::FindNext, base::Unretained(this), true));
   find_previous_button_ = AddChildView(std::move(find_previous_button));
   SetCommonButtonAttributes(find_previous_button_);
@@ -174,7 +174,7 @@ FindBarView::FindBarView(FindBarHost* host) {
               l10n_util::GetStringUTF16(IDS_FIND_IN_PAGE_NEXT_TOOLTIP))
           .SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_NEXT))
           .Build();
-  find_next_button->set_callback(base::BindRepeating(
+  find_next_button->SetCallback(base::BindRepeating(
       &FindBarView::FindNext, base::Unretained(this), false));
   find_next_button_ = AddChildView(std::move(find_next_button));
   SetCommonButtonAttributes(find_next_button_);
@@ -185,8 +185,8 @@ FindBarView::FindBarView(FindBarHost* host) {
                               IDS_FIND_IN_PAGE_CLOSE_TOOLTIP))
                           .SetAnimationDuration(base::TimeDelta())
                           .Build();
-  close_button->set_callback(base::BindRepeating(&FindBarView::EndFindSession,
-                                                 base::Unretained(this)));
+  close_button->SetCallback(base::BindRepeating(&FindBarView::EndFindSession,
+                                                base::Unretained(this)));
   close_button_ = AddChildView(std::move(close_button));
   SetCommonButtonAttributes(close_button_);
 

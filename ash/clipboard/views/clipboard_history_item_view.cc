@@ -169,7 +169,7 @@ void ClipboardHistoryItemView::Init() {
 
   // Ensures that MainButton is below any other child views.
   main_button_ = AddChildView(std::make_unique<MainButton>(this));
-  main_button_->set_callback(base::BindRepeating(
+  main_button_->SetCallback(base::BindRepeating(
       [](ClipboardHistoryItemView* item, views::MenuItemView* container,
          const ui::Event& event) {
         item->ExecuteCommand(container->GetCommand(), event);

@@ -79,7 +79,7 @@ TEST_F(HungPluginTabHelperTest, DontRemoveTwice) {
   ASSERT_EQ(1u, infobar_service->infobar_count());
   auto* infobar = static_cast<ConfirmInfoBar*>(infobar_service->infobar_at(0));
   views::MdTextButton* ok_button = infobar->ok_button_for_testing();
-  ok_button->set_callback(
+  ok_button->SetCallback(
       base::BindRepeating(&RemoveOnlyOnce, base::Unretained(infobar)));
   views::test::ButtonTestApi(ok_button).NotifyClick(DummyEvent());
   EXPECT_EQ(0u, infobar_service->infobar_count());

@@ -85,7 +85,7 @@ class VIEWS_EXPORT EditableCombobox
 
   const gfx::FontList& GetFontList() const;
 
-  void set_callback(base::RepeatingClosure callback) {
+  void SetCallback(base::RepeatingClosure callback) {
     content_changed_callback_ = std::move(callback);
   }
 

@@ -58,13 +58,13 @@ void ComboboxExample::CreateExampleView(View* container) {
                   .Build();
 
   combobox_->SetOwnedModel(std::make_unique<ComboboxModelExample>());
-  combobox_->set_callback(base::BindRepeating(&ComboboxExample::ValueChanged,
-                                              base::Unretained(this)));
+  combobox_->SetCallback(base::BindRepeating(&ComboboxExample::ValueChanged,
+                                             base::Unretained(this)));
   // The index is set outside of the builder because SetOwnedModel will override
   // set indices.
   combobox_->SetSelectedIndex(3);
   disabled_combobox->SetOwnedModel(std::make_unique<ComboboxModelExample>());
-  disabled_combobox->set_callback(base::BindRepeating(
+  disabled_combobox->SetCallback(base::BindRepeating(
       &ComboboxExample::ValueChanged, base::Unretained(this)));
   // The index is set outside of the builder because SetOwnedModel will override
   // set indices.

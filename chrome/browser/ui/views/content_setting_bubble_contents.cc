@@ -137,7 +137,7 @@ class MediaMenuBlock : public views::View {
       auto combobox =
           std::make_unique<views::Combobox>(std::move(combobox_model));
       combobox->SetEnabled(combobox_enabled);
-      combobox->set_callback(base::BindRepeating(callback, combobox.get()));
+      combobox->SetCallback(base::BindRepeating(callback, combobox.get()));
       combobox->SetSelectedIndex(combobox_selected_index);
       layout->AddView(std::move(combobox));
     }
@@ -248,7 +248,7 @@ void ContentSettingBubbleContents::ListItemContainer::AddItem(
     auto link = std::make_unique<views::Link>(item.title);
     link->SetElideBehavior(gfx::ELIDE_MIDDLE);
     link->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-    link->set_callback(base::BindRepeating(
+    link->SetCallback(base::BindRepeating(
         [](const std::vector<Row>* items, const views::Link* link,
            ContentSettingBubbleContents* parent, const ui::Event& event) {
           const auto it = base::ranges::find(*items, link, &Row::second);
@@ -526,7 +526,7 @@ void ContentSettingBubbleContents::Init() {
         std::make_unique<views::Link>(bubble_content.custom_link);
     custom_link->SetEnabled(bubble_content.custom_link_enabled);
     custom_link->SetMultiLine(true);
-    custom_link->set_callback(
+    custom_link->SetCallback(
         base::BindRepeating(&ContentSettingBubbleContents::CustomLinkClicked,
                             base::Unretained(this)));
     custom_link->SetHorizontalAlignment(gfx::ALIGN_LEFT);

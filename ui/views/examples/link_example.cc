@@ -31,7 +31,7 @@ void LinkExample::CreateExampleView(View* container) {
   auto link = views::Builder<Link>()
                   .SetText(GetStringUTF16(IDS_LINK_CLICK_PROMPT_LABEL))
                   .Build();
-  link->set_callback(base::BindRepeating(
+  link->SetCallback(base::BindRepeating(
       &LogStatus, GetStringUTF8(IDS_LINK_CLICK_CONFIRMED_LABEL)));
 
   container->SetLayoutManager(std::make_unique<FillLayout>());

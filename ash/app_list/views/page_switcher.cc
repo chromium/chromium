@@ -263,9 +263,9 @@ void PageSwitcher::TotalPagesChanged(int previous_page_count,
   for (int i = 0; i < model_->total_pages(); ++i) {
     PageSwitcherButton* button = buttons_->AddChildView(
         std::make_unique<PageSwitcherButton>(is_root_app_grid_page_switcher_));
-    button->set_callback(base::BindRepeating(&PageSwitcher::OnButtonPressed,
-                                             base::Unretained(this),
-                                             base::Unretained(button)));
+    button->SetCallback(base::BindRepeating(&PageSwitcher::OnButtonPressed,
+                                            base::Unretained(this),
+                                            base::Unretained(button)));
     button->SetAccessibleName(l10n_util::GetStringFUTF16(
         IDS_APP_LIST_PAGE_SWITCHER, base::FormatNumber(i + 1),
         base::FormatNumber(model_->total_pages())));

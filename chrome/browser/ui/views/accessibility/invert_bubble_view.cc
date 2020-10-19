@@ -100,16 +100,16 @@ void InvertBubbleView::Init() {
   auto* high_contrast = AddChildView(std::make_unique<views::Link>(
       l10n_util::GetStringUTF16(IDS_HIGH_CONTRAST_EXT),
       views::style::CONTEXT_DIALOG_BODY_TEXT));
-  high_contrast->set_callback(base::BindRepeating(&InvertBubbleView::OpenLink,
-                                                  base::Unretained(this),
-                                                  kHighContrastExtensionUrl));
+  high_contrast->SetCallback(base::BindRepeating(&InvertBubbleView::OpenLink,
+                                                 base::Unretained(this),
+                                                 kHighContrastExtensionUrl));
 
   auto* dark_theme = AddChildView(
       std::make_unique<views::Link>(l10n_util::GetStringUTF16(IDS_DARK_THEME),
                                     views::style::CONTEXT_DIALOG_BODY_TEXT));
-  dark_theme->set_callback(base::BindRepeating(&InvertBubbleView::OpenLink,
-                                               base::Unretained(this),
-                                               kDarkThemeSearchUrl));
+  dark_theme->SetCallback(base::BindRepeating(&InvertBubbleView::OpenLink,
+                                              base::Unretained(this),
+                                              kDarkThemeSearchUrl));
 
   // Switching to high-contrast mode has a nasty habit of causing Chrome
   // top-level windows to lose focus, so closing the bubble on deactivate

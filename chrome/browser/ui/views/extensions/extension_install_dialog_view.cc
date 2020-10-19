@@ -231,7 +231,7 @@ ExtensionInstallDialogView::ExtensionInstallDialogView(
   if (prompt_->has_webstore_data()) {
     auto store_link = std::make_unique<views::Link>(
         l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_STORE_LINK));
-    store_link->set_callback(base::BindRepeating(
+    store_link->SetCallback(base::BindRepeating(
         &ExtensionInstallDialogView::LinkClicked, base::Unretained(this)));
     SetExtraView(std::move(store_link));
   } else if (prompt_->ShouldDisplayWithholdingUI()) {

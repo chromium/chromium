@@ -141,7 +141,7 @@ class VIEWS_EXPORT Button : public InkDropHostView,
   int tag() const { return tag_; }
   void set_tag(int tag) { tag_ = tag; }
 
-  void set_callback(PressedCallback callback) {
+  void SetCallback(PressedCallback callback) {
     callback_ = std::move(callback);
   }
 

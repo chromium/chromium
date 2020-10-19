@@ -148,7 +148,7 @@ ScreenCaptureNotificationUIViews::ScreenCaptureNotificationUIViews(
 
   auto hide_link = std::make_unique<views::Link>(
       l10n_util::GetStringUTF16(IDS_MEDIA_SCREEN_CAPTURE_NOTIFICATION_HIDE));
-  hide_link->set_callback(base::BindRepeating(
+  hide_link->SetCallback(base::BindRepeating(
       [](ScreenCaptureNotificationUIViews* view) {
         view->GetWidget()->Minimize();
       },

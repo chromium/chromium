@@ -256,7 +256,7 @@ DownloadItemView::DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
   // views to localize functionality and simplify this class.
 
   open_button_ = AddChildView(std::make_unique<TransparentButton>(this));
-  open_button_->set_callback(base::BindRepeating(
+  open_button_->SetCallback(base::BindRepeating(
       &DownloadItemView::OpenButtonPressed, base::Unretained(this)));
 
   file_name_label_ = AddChildView(std::make_unique<views::StyledLabel>());

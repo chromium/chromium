@@ -377,7 +377,7 @@ PasswordSaveUpdateWithAccountStoreView::PasswordSaveUpdateWithAccountStoreView(
         controller_.GetPrimaryAccountEmail(),
         controller_.GetPrimaryAccountAvatar(ComboboxIconSize()),
         controller_.IsUsingAccountStore());
-    destination_dropdown->set_callback(base::BindRepeating(
+    destination_dropdown->SetCallback(base::BindRepeating(
         &PasswordSaveUpdateWithAccountStoreView::DestinationChanged,
         base::Unretained(this)));
     destination_dropdown_ = destination_dropdown.get();
@@ -414,12 +414,12 @@ PasswordSaveUpdateWithAccountStoreView::PasswordSaveUpdateWithAccountStoreView(
   } else {
     std::unique_ptr<views::EditableCombobox> username_dropdown =
         CreateUsernameEditableCombobox(password_form);
-    username_dropdown->set_callback(base::BindRepeating(
+    username_dropdown->SetCallback(base::BindRepeating(
         &PasswordSaveUpdateWithAccountStoreView::OnContentChanged,
         base::Unretained(this)));
     std::unique_ptr<views::EditableCombobox> password_dropdown =
         CreatePasswordEditableCombobox(password_form, are_passwords_revealed_);
-    password_dropdown->set_callback(base::BindRepeating(
+    password_dropdown->SetCallback(base::BindRepeating(
         &PasswordSaveUpdateWithAccountStoreView::OnContentChanged,
         base::Unretained(this)));
     std::unique_ptr<views::ToggleImageButton> password_view_button =

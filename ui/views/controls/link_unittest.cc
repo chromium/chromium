@@ -66,7 +66,7 @@ TEST_F(LinkTest, Metadata) {
 
 TEST_F(LinkTest, TestLinkClick) {
   bool link_clicked = false;
-  link()->set_callback(base::BindRepeating(
+  link()->SetCallback(base::BindRepeating(
       [](bool* link_clicked) { *link_clicked = true; }, &link_clicked));
   link()->SizeToPreferredSize();
   gfx::Point point = link()->bounds().CenterPoint();
@@ -79,7 +79,7 @@ TEST_F(LinkTest, TestLinkClick) {
 
 TEST_F(LinkTest, TestLinkTap) {
   bool link_clicked = false;
-  link()->set_callback(base::BindRepeating(
+  link()->SetCallback(base::BindRepeating(
       [](bool* link_clicked) { *link_clicked = true; }, &link_clicked));
   link()->SizeToPreferredSize();
   gfx::Point point = link()->bounds().CenterPoint();

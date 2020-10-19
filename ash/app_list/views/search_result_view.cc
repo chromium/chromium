@@ -62,8 +62,8 @@ SearchResultView::SearchResultView(SearchResultListView* list_view,
                                    AppListViewDelegate* view_delegate)
     : list_view_(list_view), view_delegate_(view_delegate) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  set_callback(base::BindRepeating(&SearchResultView::OnButtonPressed,
-                                   base::Unretained(this)));
+  SetCallback(base::BindRepeating(&SearchResultView::OnButtonPressed,
+                                  base::Unretained(this)));
 
   icon_ = AddChildView(std::make_unique<views::ImageView>());
   display_icon_ = AddChildView(std::make_unique<views::ImageView>());

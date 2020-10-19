@@ -580,7 +580,7 @@ void OpaqueBrowserFrameView::InitWindowCaptionButton(
     views::Button::PressedCallback callback,
     int accessibility_string_id,
     ViewID view_id) {
-  button->set_callback(std::move(callback));
+  button->SetCallback(std::move(callback));
   button->SetAccessibleName(l10n_util::GetStringUTF16(accessibility_string_id));
   button->SetID(view_id);
   AddChildView(button);

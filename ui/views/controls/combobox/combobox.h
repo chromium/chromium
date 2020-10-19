@@ -65,7 +65,7 @@ class VIEWS_EXPORT Combobox : public View,
   const gfx::FontList& GetFontList() const;
 
   // Sets the callback which will be called when a selection has been made.
-  void set_callback(base::RepeatingClosure callback) {
+  void SetCallback(base::RepeatingClosure callback) {
     callback_ = std::move(callback);
   }
 

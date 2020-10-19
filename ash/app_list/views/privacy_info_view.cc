@@ -265,8 +265,8 @@ void PrivacyInfoView::InitText() {
   views::StyledLabel::RangeStyleInfo link_style;
   link_style.disable_line_wrapping = true;
   auto custom_view = std::make_unique<views::Link>(link);
-  custom_view->set_callback(base::BindRepeating(&PrivacyInfoView::LinkClicked,
-                                                base::Unretained(this)));
+  custom_view->SetCallback(base::BindRepeating(&PrivacyInfoView::LinkClicked,
+                                               base::Unretained(this)));
   custom_view->SetEnabledColor(gfx::kGoogleBlue700);
   link_style.custom_view = custom_view.get();
   link_view_ = custom_view.get();
@@ -277,7 +277,7 @@ void PrivacyInfoView::InitText() {
 
 void PrivacyInfoView::InitCloseButton() {
   auto close_button = std::make_unique<views::ImageButton>();
-  close_button->set_callback(base::BindRepeating(
+  close_button->SetCallback(base::BindRepeating(
       &PrivacyInfoView::OnButtonPressed, base::Unretained(this)));
   close_button->SetImage(views::ImageButton::STATE_NORMAL,
                          gfx::CreateVectorIcon(views::kCloseIcon, kIconSizeDip,

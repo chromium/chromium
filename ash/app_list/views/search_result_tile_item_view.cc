@@ -74,8 +74,8 @@ SearchResultTileItemView::SearchResultTileItemView(
       is_app_reinstall_recommendation_enabled_(
           app_list_features::IsAppReinstallZeroStateEnabled()),
       show_in_apps_page_(show_in_apps_page) {
-  set_callback(base::BindRepeating(&SearchResultTileItemView::OnButtonPressed,
-                                   base::Unretained(this)));
+  SetCallback(base::BindRepeating(&SearchResultTileItemView::OnButtonPressed,
+                                  base::Unretained(this)));
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
   // When |result_| is null, the tile is invisible. Calling SetSearchResult with

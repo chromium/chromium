@@ -251,7 +251,7 @@ CreateChromeApplicationShortcutView::AddCheckbox(const base::string16& text,
                                                  const std::string& pref_path) {
   auto checkbox =
       std::make_unique<views::Checkbox>(text, views::Button::PressedCallback());
-  checkbox->set_callback(base::BindRepeating(
+  checkbox->SetCallback(base::BindRepeating(
       &CreateChromeApplicationShortcutView::CheckboxPressed,
       base::Unretained(this), pref_path, base::Unretained(checkbox.get())));
   checkbox->SetChecked(profile_->GetPrefs()->GetBoolean(pref_path));

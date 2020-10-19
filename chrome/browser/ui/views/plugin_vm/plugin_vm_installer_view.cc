@@ -146,7 +146,7 @@ PluginVmInstallerView::PluginVmInstallerView(Profile* profile)
   message_container_view->AddChildView(message_label_);
 
   learn_more_link_ = new views::Link(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
-  learn_more_link_->set_callback(base::BindRepeating(
+  learn_more_link_->SetCallback(base::BindRepeating(
       &PluginVmInstallerView::OnLinkClicked, base::Unretained(this)));
   learn_more_link_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   message_container_view->AddChildView(learn_more_link_);

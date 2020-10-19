@@ -31,7 +31,7 @@ ArcAppInfoLinksPanel::ArcAppInfoLinksPanel(Profile* profile,
   auto manage_link = std::make_unique<views::Link>(
       l10n_util::GetStringUTF16(IDS_ARC_APPLICATION_INFO_MANAGE_LINK));
   manage_link->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  manage_link->set_callback(base::BindRepeating(
+  manage_link->SetCallback(base::BindRepeating(
       &ArcAppInfoLinksPanel::LinkClicked, base::Unretained(this)));
   manage_link->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   manage_link_ = AddChildView(std::move(manage_link));

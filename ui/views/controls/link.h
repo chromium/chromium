@@ -43,14 +43,14 @@ class VIEWS_EXPORT Link : public Label {
   // Allow providing callbacks that expect either zero or one args, since many
   // callers don't care about the argument and can avoid adapter functions this
   // way.
-  void set_callback(base::RepeatingClosure callback) {
+  void SetCallback(base::RepeatingClosure callback) {
     // Adapt this closure to a ClickedCallback by discarding the extra arg.
     callback_ =
         base::BindRepeating([](base::RepeatingClosure closure,
                                const ui::Event& event) { closure.Run(); },
                             std::move(callback));
   }
-  void set_callback(ClickedCallback callback) {
+  void SetCallback(ClickedCallback callback) {
     callback_ = std::move(callback);
   }
 

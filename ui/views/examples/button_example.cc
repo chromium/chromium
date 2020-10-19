@@ -78,16 +78,16 @@ void ButtonExample::CreateExampleView(View* container) {
           .Build();
 
   auto start_throbber_cb = [](Button* button) { button->StartThrobbing(5); };
-  label_button_->set_callback(
+  label_button_->SetCallback(
       base::BindRepeating(&ButtonExample::LabelButtonPressed,
                           base::Unretained(this), label_button_));
-  md_button_->set_callback(base::BindRepeating(start_throbber_cb, md_button_));
-  md_disabled_button_->set_callback(
+  md_button_->SetCallback(base::BindRepeating(start_throbber_cb, md_button_));
+  md_disabled_button_->SetCallback(
       base::BindRepeating(&ButtonExample::LabelButtonPressed,
                           base::Unretained(this), md_disabled_button_));
-  md_default_button_->set_callback(
+  md_default_button_->SetCallback(
       base::BindRepeating(start_throbber_cb, md_default_button_));
-  image_button_->set_callback(base::BindRepeating(
+  image_button_->SetCallback(base::BindRepeating(
       &ButtonExample::ImageButtonPressed, base::Unretained(this)));
 
   image_button_->SetImage(ImageButton::STATE_NORMAL,

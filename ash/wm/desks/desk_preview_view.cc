@@ -273,7 +273,7 @@ void DeskPreviewView::OnRemovingDesk() {
   // Since the mini view has a remove animation, we don't want this desk preview
   // to be pressed while it's animating. The desk will have already be removed
   // after this.
-  set_callback(views::Button::PressedCallback());
+  SetCallback(views::Button::PressedCallback());
 }
 
 void DeskPreviewView::RecreateDeskContentsMirrorLayers() {

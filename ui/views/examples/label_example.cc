@@ -228,7 +228,7 @@ Combobox* LabelExample::AddCombobox(GridLayout* layout,
   auto combobox = std::make_unique<Combobox>(
       std::make_unique<ExampleComboboxModel>(strings, count));
   combobox->SetSelectedIndex(0);
-  combobox->set_callback(base::BindRepeating(function, base::Unretained(this)));
+  combobox->SetCallback(base::BindRepeating(function, base::Unretained(this)));
   return layout->AddView(std::move(combobox));
 }
 

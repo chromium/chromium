@@ -58,7 +58,7 @@ ExpandableContainerView::ExpandableContainerView(
   details_view_->SetVisible(false);
   auto details_link = std::make_unique<views::Link>(
       l10n_util::GetStringUTF16(IDS_EXTENSIONS_SHOW_DETAILS));
-  details_link->set_callback(base::BindRepeating(
+  details_link->SetCallback(base::BindRepeating(
       &ExpandableContainerView::ToggleDetailLevel, base::Unretained(this)));
   details_link->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   details_link_ = AddChildView(std::move(details_link));

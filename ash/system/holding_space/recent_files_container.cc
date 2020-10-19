@@ -71,8 +71,8 @@ class DownloadsHeader : public views::Button {
     chevron->SetImage(CreateVectorIcon(
         kChevronRightIcon, kHoldingSpaceDownloadsChevronIconSize, icon_color));
 
-    set_callback(base::BindRepeating(&DownloadsHeader::OnPressed,
-                                     base::Unretained(this)));
+    SetCallback(base::BindRepeating(&DownloadsHeader::OnPressed,
+                                    base::Unretained(this)));
   }
 
  private:

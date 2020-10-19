@@ -57,7 +57,7 @@ NetworkProfileBubbleView::NetworkProfileBubbleView(
   SetButtons(ui::DIALOG_BUTTON_OK);
   auto* learn_more = SetExtraView(
       std::make_unique<views::Link>(l10n_util::GetStringUTF16(IDS_LEARN_MORE)));
-  learn_more->set_callback(base::BindRepeating(
+  learn_more->SetCallback(base::BindRepeating(
       &NetworkProfileBubbleView::LinkClicked, base::Unretained(this)));
   chrome::RecordDialogCreation(
       chrome::DialogIdentifier::NETWORK_SHARE_PROFILE_WARNING);
