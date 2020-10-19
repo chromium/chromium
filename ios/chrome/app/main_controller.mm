@@ -69,6 +69,7 @@
 #import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/memory/memory_debugger_manager.h"
 #include "ios/chrome/browser/metrics/first_user_action_recorder.h"
+#import "ios/chrome/browser/metrics/window_configuration_recorder.h"
 #import "ios/chrome/browser/net/cookie_util.h"
 #import "ios/chrome/browser/omaha/omaha_service.h"
 #include "ios/chrome/browser/pref_names.h"
@@ -256,6 +257,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
   // Variable backing metricsMediator property.
   __weak MetricsMediator* _metricsMediator;
+
+  WindowConfigurationRecorder* _windowConfigurationRecorder;
 
   // Hander for the startup tasks, deferred or not.
   StartupTasks* _startupTasks;
@@ -526,6 +529,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
     CredentialProviderServiceFactory::GetForBrowserState(
         self.appState.mainBrowserState);
   }
+
+  _windowConfigurationRecorder = [[WindowConfigurationRecorder alloc] init];
 
   return needRestoration;
 }
