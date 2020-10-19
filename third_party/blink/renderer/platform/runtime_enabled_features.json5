@@ -570,11 +570,11 @@
     },
     {
       name: "CSSPseudoIs",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSPseudoWhere",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Perform partial layout invalidation on web font loading.
