@@ -207,6 +207,7 @@
 <translation id="3252266817569339921">Francés</translation>
 <translation id="3254434849914415189">Seleccionar la aplicación predeterminada para los archivos <ph name="FILE_TYPE" />:</translation>
 <translation id="3264582393905923483">Contexto</translation>
+<translation id="3272909651715601089">No se pudo abrir "<ph name="PATH" />"</translation>
 <translation id="3280431534455935878">Preparando la descarga</translation>
 <translation id="3280987981688031357">Disco de vinilo</translation>
 <translation id="3296763833017966289">Georgiano</translation>
@@ -309,6 +310,7 @@
 <translation id="4477219268485577442">Búlgaro fonético</translation>
 <translation id="4479812471636796472">Teclado Dvorak en inglés de EE.UU.</translation>
 <translation id="4522570452068850558">Detalles</translation>
+<translation id="4527800702232535228">Esta carpeta se comparte con Parallels Desktop</translation>
 <translation id="4552678318981539154">Comprar más almacenamiento</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984">Archivo <ph name="FILE_TYPE" /></translation>
@@ -326,6 +328,7 @@
 <translation id="4694604912444486114">Mono</translation>
 <translation id="4697043402264950621">La lista de archivos se organiza por <ph name="COLUMN_NAME" /> en orden ascendente.</translation>
 <translation id="4711094779914110278">Turco</translation>
+<translation id="4712283082407695269">Abriendo "<ph name="PATH" />"</translation>
 <translation id="4713544552769165154">Este archivo se diseñó para una computadora con software Macintosh. No es compatible con tu dispositivo que ejecuta el Sistema operativo Chrome. Busca en <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> para encontrar una aplicación equivalente. <ph name="BEGIN_LINK_HELP" />Más información<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">Se guardaron <ph name="FILE_COUNT" /> fotos en una copia de seguridad.</translation>
 <translation id="4725511304875193254">Corgi</translation>
@@ -525,6 +528,7 @@
 <translation id="6558280019477628686">Se produjo un error. Es posible que no se hayan borrado algunos elementos.</translation>
 <translation id="656398493051028875">Eliminando "<ph name="FILENAME" />"…</translation>
 <translation id="6581162200855843583">Vínculo de Google Drive</translation>
+<translation id="6594855146910089723">Esta carpeta se comparte con Linux y Parallels Desktop</translation>
 <translation id="6607272825297743757">Información del archivo</translation>
 <translation id="6609332149380188670">Se compartieron <ph name="NUMBER_OF_ITEMS" /> carpetas con Parallels Desktop</translation>
 <translation id="6629841649550503054">Todos los archivos están guardados en una copia de seguridad en <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />.</translation>

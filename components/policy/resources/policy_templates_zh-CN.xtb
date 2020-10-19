@@ -41,6 +41,11 @@
 
       此政策只会影响所在网域与设备注册网域匹配的用户。对于所有其他用户，仅当他们首次在设备上登录时，由 IdP 设置的 Cookie 才会被转移到其个人资料中。</translation>
 <translation id="1029052664284722254">用户退出后强制设备重新启动</translation>
+<translation id="1032533786864478457">如果此政策已启用，用户便可设置其设备，以便将他们的短信同步到 Chromebook。用户必须通过完成一个设置流程来明确选择启用这项功能。完成设置流程后，用户便可在 Chromebook 上收发短信。
+
+      如果此政策已停用，用户将无法设置短信同步功能。
+
+      如果您未设置此政策，默认情况下，受管用户将无法使用这项功能，但其他用户可以使用这项功能。</translation>
 <translation id="1040446814317236570">启用 PAC 网址剔除功能（适用于 https:// 类网址）</translation>
 <translation id="1046484220783400299">让已弃用的网络平台功能在限定的时间内发挥功效</translation>
 <translation id="1047128214168693844">不允许任何网站跟踪用户的地理位置</translation>
@@ -639,6 +644,9 @@
 <translation id="2057317273526988987">允许访问指定的一系列网址</translation>
 <translation id="2061810934846663491">为远程访问主机配置所需的域名</translation>
 <translation id="2067011586099792101">禁止访问非内容包内的网站</translation>
+<translation id="2069350366303315077">如果此政策已启用，<ph name="PRODUCT_NAME" /> 会强制启动访客会话并禁止登录个人资料。访客身份是一类 <ph name="PRODUCT_NAME" /> 个人资料；使用此类个人资料登录后，窗口均会处于无痕模式。
+
+      如果此政策已停用或未设置，或者浏览器访客模式已停用（通过 <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />），系统将允许使用新的和现有的个人资料。</translation>
 <translation id="2073552873076775140">允许登录 <ph name="PRODUCT_NAME" /></translation>
 <translation id="2075732129949889165">Crostini Ansible Playbook</translation>
 <translation id="2077129598763517140">使用硬件加速模式（如果可用）</translation>
@@ -974,6 +982,11 @@
 <translation id="2482676533225429905">本地消息传递</translation>
 <translation id="2483146640187052324">采用任何网络连接时，均预测网络操作</translation>
 <translation id="2498238926436517902">始终自动隐藏任务栏</translation>
+<translation id="250022556568924228">如果您设置了此政策，<ph name="PRODUCT_OS_NAME" />会下载《服务条款》，并会在用户开始进行设备本地帐号会话时将其呈现给用户。用户必须先接受《服务条款》才能登录会话。
+
+      如果您未设置此政策，系统将不会显示《服务条款》。
+
+      此政策的值应设为一个可供 <ph name="PRODUCT_OS_NAME" />用来下载《服务条款》的网址。《服务条款》必须是纯文本，以 MIME 类型 text/plain 提供，且不得使用任何标记。</translation>
 <translation id="2502467045153796624">版本降级行为</translation>
 <translation id="250670737672448119">启用“插入符号突出显示”无障碍功能。
 
@@ -1158,6 +1171,13 @@
 
       这项企业政策只是短期的适应性措施，将在 Chrome 88 中移除。</translation>
 <translation id="2759224876420453487">控制多用户配置会话中的用户行为</translation>
+<translation id="2759426227259007018">通过设置此政策，您可以指定用户能在 <ph name="PRODUCT_OS_NAME" />锁定屏幕中将哪些应用作为笔记应用开启。
+
+      如果首选的应用已在锁定屏幕中，屏幕上将会显示用于启动首选笔记应用的界面元素。启动后，该应用便可在锁定屏幕之上创建窗口，并在此情境中创建笔记。当主要用户会话解锁时，该应用便可将所创建的笔记导入此会话中。目前，锁定屏幕上仅支持 <ph name="PRODUCT_NAME" /> 笔记应用。
+
+      如果您设置了此政策，仅当此政策的列表值包含某个应用的扩展程序 ID 时，用户才能在锁定屏幕上开启该应用。所以，如果您将此政策设为空列表，系统就会关闭锁定屏幕上的笔记功能。即使此政策的值包含某个应用 ID，也未必意味着用户一定能在锁定屏幕上将该应用作为笔记应用开启。例如，在 <ph name="PRODUCT_NAME" /> 61 中，可用应用集还会受到平台的限制。
+
+      如果您未设置此政策，系统便不会对用户能在锁定屏幕上启用的应用集强加任何限制。</translation>
 <translation id="2761483219396643566">使用电池供电时的闲置警告延迟时间</translation>
 <translation id="2765601181281280493">通过设置此政策，您可以创建一个网址格式列表，从而指定哪些网站无法请求用户授权其访问串行端口。
 
@@ -1496,6 +1516,9 @@
 <translation id="3251500716404598358">配置政策以在浏览器之间切换。
 
       配置的网站将自动在其他浏览器（而非 <ph name="PRODUCT_NAME" />）中打开。</translation>
+<translation id="3255624750680556186">如果此政策已启用或未设置，系统会允许设备触发 Powerwash。
+
+      如果此政策已停用，系统将不允许设备触发 Powerwash。但例外情况是：如果为 <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> 设定的值允许 TPM 固件更新，且 TPM 固件尚未更新，系统将仍然允许设备触发 Powerwash。</translation>
 <translation id="3255762580838224124">如果您设置了此政策，那么每当重新启动时或在此政策的值更改后首次连接时，每个显示屏都会旋转到指定方向。用户可在登录后通过“设置”页面更改显示屏旋转角度，但下次重新启动时显示屏仍会遵从更改前的设置。此政策适用于主要显示屏和次要显示屏。
 
       如果此政策未设置，默认值便是 0 度，但用户可以随意更改此值。如果用户更改了默认值，显示屏在重启时将不会重新应用此值。</translation>
@@ -2607,6 +2630,9 @@
 <translation id="5023555740504506178">如果此政策已启用或未配置（默认），网页可以使用屏幕共享 API（例如 getDisplayMedia() 或 Desktop Capture Extension API）提示用户选择要截取的标签页、窗口或桌面。
 
       如果此政策已停用，对屏幕共享 API 的所有调用都会失败并会返回错误。</translation>
+<translation id="5025239932007658691">如果此政策已启用或未设置，<ph name="PRODUCT_NAME" /> 会不定时向 Google 服务器发送查询以检索准确的时间戳。
+
+      如果此政策已停用，系统会阻止 <ph name="PRODUCT_NAME" /> 发送此类查询。</translation>
 <translation id="5032164758660626397">阻止用户传输大型文件</translation>
 <translation id="5047604665028708335">允许访问非内容包内的网站</translation>
 <translation id="5056708224511062314">放大镜已停用</translation>
@@ -3377,6 +3403,9 @@
 <translation id="6034341625190551415">控制公用自助终端和自助服务终端帐号类型。</translation>
 <translation id="6034603289689965535">允许页面在取消加载的过程中显示弹出式窗口</translation>
 <translation id="6036523166753287175">支持通过远程访问主机穿越防火墙</translation>
+<translation id="603768430528561926">如果此政策已启用或未设置，企业设备用户便可通过 <ph name="PRODUCT_OS_NAME" />注册流程来兑换优惠。
+
+      如果此政策已停用，用户将无法兑换这类优惠。</translation>
 <translation id="6038407313189625985">如果此政策处于启用状态或未设置，则系统会启用“渲染程序代码完整性”。仅当必须在 Chrome 的渲染程序进程中运行的第三方软件遇到兼容性问题时，才应停用此政策。
 
       停用此政策会对 Chrome 的安全性和稳定性产生不利影响，因为在这种情况下，系统会允许未知的潜在恶意代码在 Chrome 的渲染程序进程中加载。如需了解详情，请参阅 https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies。</translation>
@@ -3594,6 +3623,7 @@
       如果此政策未设置或列表为空，则意味着所有协议在 <ph name="PRODUCT_NAME" /> 中都可用。</translation>
 <translation id="6338982178236723271">报告系统信息</translation>
 <translation id="6342187235303612558">禁止用户上传或下载目前不支持数据泄露防护或恶意软件扫描的文件。</translation>
+<translation id="6353890097388312479">如果此政策设为“All (0)”或未设置，用户便可修改所有 CA 证书的信任设置、移除用户导入的证书以及使用证书管理器导入证书。如果此政策设为“UserOnly (1)”，用户将仅能管理用户导入的证书，但无法更改内置证书的信任设置。如果此政策设为“None (2)”，用户可以查看（但无法管理）CA 证书。</translation>
 <translation id="6366574325767783825">如果此政策设为 True 或未设置，<ph name="PRODUCT_NAME" /> 将会接受通过 Signed HTTP Exchange (SXG) 提供的网络内容。
 
       如果此政策设为 False，系统会阻止加载 Signed HTTP Exchange (SXG) 内容。</translation>
@@ -3685,6 +3715,15 @@
           要在设备闲置时锁定屏幕，您最好采用以下方式：让系统在进入暂停状态时锁定屏幕，并指示 <ph name="PRODUCT_OS_NAME" />在闲置延迟时间过后进入暂停状态。只有在以下情况下才应使用此政策：屏幕锁定时间应显著早于系统进入暂停状态的时间，或者完全不需要在设备闲置时暂停系统。
 
           指定的政策值应以毫秒为单位，且必须小于闲置延迟时间。</translation>
+<translation id="6506239283767807745">此政策已被弃用，请改用 <ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST" />。
+
+      通过设置此政策，您可以指定用户能在 <ph name="PRODUCT_OS_NAME" />锁定屏幕中将哪些应用作为笔记应用开启。
+
+      如果首选的应用已在锁定屏幕中，屏幕上将会显示用于启动首选笔记应用的界面元素。启动后，该应用便可在锁定屏幕之上创建窗口，并在此情境中创建笔记。当主要用户会话解锁时，该应用便可将所创建的笔记导入此会话中。目前，锁定屏幕上仅支持 <ph name="PRODUCT_NAME" /> 笔记应用。
+
+      如果您设置了此政策，仅当此政策的列表值包含某个应用的扩展程序 ID 时，用户才能在锁定屏幕上开启该应用。所以，如果您将此政策设为空列表，系统就会关闭锁定屏幕上的笔记功能。即使此政策的值包含某个应用 ID，也未必意味着用户一定能在锁定屏幕上将该应用作为笔记应用开启。例如，在 <ph name="PRODUCT_NAME" /> 61 中，可用应用集还会受到平台的限制。
+
+      如果您未设置此政策，系统便不会对用户能在锁定屏幕上启用的应用集强加任何限制。</translation>
 <translation id="6506486086262398387">如果此政策已启用，适用于 <ph name="PRODUCT_OS_NAME" />的网络文件共享功能会酌情使用 NTLM 对 SMB 共享文件进行身份验证。如果此政策已停用，系统会关闭对 SMB 共享文件的 NTLM 身份验证机制。
 
       如果您未设置此政策，系统的默认行为就会是：为受管用户停用此政策，并为其他用户启用此政策。</translation>

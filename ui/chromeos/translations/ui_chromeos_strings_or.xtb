@@ -207,6 +207,7 @@
 <translation id="3252266817569339921">ଫ୍ରେଞ୍ଚ</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> ଫାଇଲ୍‍ଗୁଡ଼ିକ ପାଇଁ ଡିଫଲ୍ଟ ଆପ୍‍ ବାଛନ୍ତୁ:</translation>
 <translation id="3264582393905923483">ପ୍ରସଙ୍ଗ</translation>
+<translation id="3272909651715601089">"<ph name="PATH" />" ଖୋଲାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="3280431534455935878">ପ୍ରସ୍ତୁତ ହେଉଛି</translation>
 <translation id="3280987981688031357">Vinyl ରେକର୍ଡ</translation>
 <translation id="3296763833017966289">ଜର୍ଜିଆନ୍</translation>
@@ -309,6 +310,7 @@
 <translation id="4477219268485577442">ବୁଲ୍‍‍ଗେରିଆନ୍ ଫୋନେଟିକ୍</translation>
 <translation id="4479812471636796472">US ଡଭୋର୍କ୍ କୀବୋର୍ଡ୍</translation>
 <translation id="4522570452068850558">ବିବରଣୀ</translation>
+<translation id="4527800702232535228">Parallels Desktop ସହିତ ଏହି ଫୋଲ୍ଡର ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="4552678318981539154">ଅଧିକ ଷ୍ଟୋରେଜ୍ କିଣନ୍ତୁ</translation>
 <translation id="4559767610552730302">ବୋକେ</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ଫାଇଲ୍‍</translation>
@@ -326,6 +328,7 @@
 <translation id="4694604912444486114">ମାଙ୍କଡ଼</translation>
 <translation id="4697043402264950621"><ph name="COLUMN_NAME" /> ଦ୍ୱାରା ଫାଇଲ୍‌ର ତାଲିକା ସାନରୁ ବଡ଼ କ୍ରମରେ ସଜାଯାଇଛି।</translation>
 <translation id="4711094779914110278">ତୁର୍କିସ୍</translation>
+<translation id="4712283082407695269">"<ph name="PATH" />" ଖୋଲାଯାଉଛି</translation>
 <translation id="4713544552769165154">ମେସିନ୍‍ଟୋସ୍ ସଫ୍ଟୱେର୍ ବ୍ୟବହାର କରି ଗୋଟିଏ କମ୍ପ୍ୟୁଟର୍ ପାଇଁ ଏହି ଫାଇଲ୍‍କୁ ତିଆରି କରାଯାଇଛି। Chrome OS ଚାଲୁଥିବା ଆପଣଙ୍କର ଡିଭାଇସ୍‌ରେ ଏହା ସୁସଙ୍ଗତ ନୁହେଁ। ଆପ୍‍ର ଗୋଟିଏ ଉପଯୁକ୍ତ ବିକଳ୍ପ ପାଇଁ ଦୟାକରି <ph name="BEGIN_LINK" />Chrome ୱେବ୍ ଷ୍ଟୋର୍<ph name="END_LINK" /> ସର୍ଚ୍ଚ କରନ୍ତୁ। <ph name="BEGIN_LINK_HELP" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" />ଟି ଫଟୋର ବ୍ୟାକ୍-ଅପ୍ ନିଆଯାଇଛି</translation>
 <translation id="4725511304875193254">କୋର୍ଗି</translation>
@@ -519,6 +522,7 @@
 <translation id="6558280019477628686">ଏକ ତ୍ରୁଟି ଦେଖାଦେଲା। କିଛି ଆଇଟମ୍‍କୁ ଡିଲିଟ୍ ହୋଇନପାରେ।</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" ଡିଲିଟ୍‌ ହେଉଛି...</translation>
 <translation id="6581162200855843583">Google Drive ଲିଙ୍କ୍</translation>
+<translation id="6594855146910089723">Linux ଏବଂ Parallels Desktop ସହିତ ଏହି ଫୋଲ୍ଡର ସେୟାର୍ କରାଯାଇଛି</translation>
 <translation id="6607272825297743757">ଫାଇଲ୍ ସୂଚନା</translation>
 <translation id="6609332149380188670">Parallels Desktop ସହ <ph name="NUMBER_OF_ITEMS" />ଟି ଫୋଲ୍ଡର ସେୟାର୍ କରାଯାଇଛି</translation>
 <translation id="6629841649550503054"><ph name="BEGIN_LINK" />Google Drive!<ph name="END_LINK" />ରେ ବ୍ୟାକ୍‍ଅପ୍‌ ନିଆଯାଇଛି</translation>

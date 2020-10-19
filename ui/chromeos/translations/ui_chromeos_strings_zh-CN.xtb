@@ -207,6 +207,7 @@
 <translation id="3252266817569339921">法语</translation>
 <translation id="3254434849914415189">选择用于打开 <ph name="FILE_TYPE" /> 文件的默认应用：</translation>
 <translation id="3264582393905923483">上下文</translation>
+<translation id="3272909651715601089">无法打开“<ph name="PATH" />”</translation>
 <translation id="3280431534455935878">正在准备</translation>
 <translation id="3280987981688031357">黑胶唱片</translation>
 <translation id="3296763833017966289">格鲁吉亚语</translation>
@@ -309,6 +310,7 @@
 <translation id="4477219268485577442">保加利亚语（注音）</translation>
 <translation id="4479812471636796472">英语（美国）德沃夏克键盘</translation>
 <translation id="4522570452068850558">详细信息</translation>
+<translation id="4527800702232535228">已与 Parallels Desktop 共享此文件夹</translation>
 <translation id="4552678318981539154">购买更多存储空间</translation>
 <translation id="4559767610552730302">焦外成像</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> 文件</translation>
@@ -326,6 +328,7 @@
 <translation id="4694604912444486114">猴子</translation>
 <translation id="4697043402264950621">文件列表按<ph name="COLUMN_NAME" />升序排序。</translation>
 <translation id="4711094779914110278">土耳其语</translation>
+<translation id="4712283082407695269">正在打开“<ph name="PATH" />”</translation>
 <translation id="4713544552769165154">此文件适用于采用Macintosh软件的计算机，不适用于运行Chrome操作系统的设备。请在<ph name="BEGIN_LINK" />Chrome网上应用店<ph name="END_LINK" />中搜索合适的替代应用。<ph name="BEGIN_LINK_HELP" />了解详情<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">已备份 <ph name="FILE_COUNT" /> 张照片</translation>
 <translation id="4725511304875193254">柯基犬</translation>
@@ -520,6 +523,7 @@
 <translation id="6558280019477628686">出错了。系统可能尚未删除某些项。</translation>
 <translation id="656398493051028875">正在删除“<ph name="FILENAME" />”…</translation>
 <translation id="6581162200855843583">Google 云端硬盘链接</translation>
+<translation id="6594855146910089723">已与 Linux 和 Parallels Desktop 共享此文件夹</translation>
 <translation id="6607272825297743757">文件信息</translation>
 <translation id="6609332149380188670">已与 Parallels Desktop 共享 <ph name="NUMBER_OF_ITEMS" /> 个文件夹</translation>
 <translation id="6629841649550503054">所有文件都已备份到 <ph name="BEGIN_LINK" />Google 云端硬盘<ph name="END_LINK" />！</translation>

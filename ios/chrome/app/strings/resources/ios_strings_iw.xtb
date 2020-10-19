@@ -51,7 +51,7 @@
 <translation id="1436290164580597469">יש להזין את ביטוי הסיסמה כדי להפעיל את הסנכרון.</translation>
 <translation id="1449835205994625556">הסתר סיסמה</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> פריטים</translation>
-<translation id="1491277525950327607">הקש פעמיים כדי להחליף את מצב ההגדרה</translation>
+<translation id="1491277525950327607">יש ללחוץ פעמיים כדי להחליף את מצב ההגדרה</translation>
 <translation id="1509486075633541495">כניסה לאתר</translation>
 <translation id="1509960214886564027">ייתכן שהתכונות של חלק גדול מהאתרים לא יפעלו כראוי</translation>
 <translation id="152234381334907219">פריטים שאף פעם לא נשמרו</translation>
@@ -169,7 +169,7 @@
 <translation id="2830972654601096923">ניהול כתובות...</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">ההגדרה הראשונית של הסנכרון לא הושלמה</translation>
-<translation id="2843803966603263712">‏אפס את הגדרות Google Translate</translation>
+<translation id="2843803966603263712">‏איפוס ההגדרות של Google Translate</translation>
 <translation id="2858204748079866344">‏כדי לשמור על הפרטיות שלך, מערכת Chrome לא ממלאת באופן אוטומטי את הסיסמה שלך בשדה הזה.</translation>
 <translation id="285960592395650245">נסה שוב להוריד</translation>
 <translation id="2870560284913253234">אתר</translation>
@@ -296,7 +296,7 @@
 <translation id="4263576668337963058">הצגה של פעולות זמינות בדף</translation>
 <translation id="4267380167363222949">הכרטיסייה הבאה</translation>
 <translation id="4272631900155121838">‏כדי לסרוק את קוד ה-QR, הפעל את המצלמה דרך ההגדרות</translation>
-<translation id="4276041135170112053">לפתרון הבעיה עכשיו.</translation>
+<translation id="4276041135170112053">לפתרון הבעיה</translation>
 <translation id="4277990410970811858">גלישה בטוחה</translation>
 <translation id="4281844954008187215">תנאי שירות</translation>
 <translation id="430793432425771671">סנכרון הכל</translation>
@@ -333,7 +333,7 @@
 
 הנתונים שלך מוצפנים באמצעות ביטוי הסיסמה לסנכרון. יש להזין אותו כדי להתחיל בסנכרון.</translation>
 <translation id="4689564913179979534">ניהול אמצעי תשלום...</translation>
-<translation id="473775607612524610">עדכן</translation>
+<translation id="473775607612524610">עדכון</translation>
 <translation id="4747097190499141774">‏הצפנה באמצעות ביטוי סיסמה לא כוללת אמצעי תשלום וכתובות מ-Google Pay. רק מי שיודע את ביטוי הסיסמה שלך יכול לקרוא את הנתונים המוצפנים. ביטוי הסיסמה לא נשלח אל Google והיא אינה מאחסנת אותו. אם שוכחים את ביטוי הסיסמה או רוצים לשנות את ההגדרה הזו, צריך לאפס את הסנכרון. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">כרטיסייה חדשה לגלישה בסתר</translation>
 <translation id="4758977202923349869">יש למקם את כרטיס האשראי בתוך המסגרת הזו</translation>

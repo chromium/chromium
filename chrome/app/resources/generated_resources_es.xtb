@@ -2346,7 +2346,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3713047097299026954">Esta llave de seguridad no contiene datos de inicio de sesión</translation>
 <translation id="3714195043138862580">Este dispositivo de demostración se ha situado en un estado de baja.</translation>
 <translation id="3714633008798122362">calendario web</translation>
-<translation id="3715954932774762075">Los sitios web y aplicaciones que estén disponibles en varios idiomas usarán el primer idioma de esta lista (si es uno de los disponibles). Estas preferencias se sincronizan con los ajustes de tu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3715954932774762075">Los sitios web y aplicaciones que estén disponibles en varios idiomas usarán el primer idioma admitido de esta lista. Estas preferencias se sincronizan con los ajustes de tu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Página principal</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Google y tú</translation>
@@ -3778,7 +3778,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5449588825071916739">Añadir todas las pestañas a marcadores...</translation>
 <translation id="5449716055534515760">Cerrar &amp;ventana</translation>
 <translation id="5452974209916053028">Sesión de incógnito actual: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
-<translation id="5454005855577728171">El cuadro de subtítulos se ha movido un <ph name="POSITION_ON_SCREEN_FROM_LEFT" /> % hacia la derecha y un <ph name="POSITION_ON_SCREEN_FROM_TOP" /> % hacia abajo</translation>
+<translation id="5454005855577728171">Se ha movido el cuadro de subtítulos un <ph name="POSITION_ON_SCREEN_FROM_LEFT" /> % hacia la derecha y un <ph name="POSITION_ON_SCREEN_FROM_TOP" /> % hacia abajo</translation>
 <translation id="5454166040603940656">con <ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">No válido</translation>
 <translation id="5457459357461771897">Leer y eliminar fotos, música y otros archivos multimedia de tu ordenador</translation>
@@ -5785,7 +5785,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7819857487979277519">PSK (WPA o RSN)</translation>
 <translation id="7819992334107904369">Sincronización de Chrome</translation>
 <translation id="782057141565633384">C&amp;opiar dirección de vídeo</translation>
-<translation id="7822187537422052256">¿Quieres quitar esta dirección?</translation>
+<translation id="7822187537422052256">¿Seguro que quieres quitar esta dirección?</translation>
 <translation id="7824864914877854148">No se ha podido completar la copia de seguridad debido a un error</translation>
 <translation id="7825666486843191125">Todos los contactos que haya cerca de ti cuando tu pantalla esté desbloqueada</translation>
 <translation id="782590969421016895">Utilizar páginas actuales</translation>
@@ -6900,7 +6900,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="9088446193279799727">No se ha podido configurar Linux. Conéctate a Internet y vuelve a intentarlo.</translation>
 <translation id="9088917181875854783">Confirma que esta clave de acceso aparezca en "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9089416786594320554">Métodos de entrada</translation>
-<translation id="909108997331068008">Ya se ha iniciado sesión con el perfil de <ph name="EXISTING_USER" /> usando <ph name="NEW_USER" /></translation>
+<translation id="909108997331068008">El perfil de <ph name="EXISTING_USER" /> ya ha iniciado sesión con <ph name="NEW_USER" /></translation>
 <translation id="9093429538970210897">Se recomienda crear una copia de seguridad de los archivos por si no se pudiera completar la actualización. Al iniciar la actualización, se apagará Linux (beta). Antes de continuar, guarda los archivos que tengas abiertos.</translation>
 <translation id="9094033019050270033">Actualizar contraseña</translation>
 <translation id="9094038138851891550">El nombre de usuario no es válido</translation>

@@ -41,6 +41,11 @@
 
       Chính sách này chỉ ảnh hưởng đến những người có miền khớp với miền đăng ký của thiết bị. Đối với tất cả người dùng khác, cookie do IdP đặt chỉ được chuyển tới hồ sơ của người dùng trong lần đăng nhập đầu tiên của họ trên thiết bị.</translation>
 <translation id="1029052664284722254">Buộc thiết bị khởi động lại khi đăng xuất người dùng</translation>
+<translation id="1032533786864478457">Nếu bạn đặt chính sách này thành Bật, thì người dùng có thể thiết lập các thiết bị để đồng bộ hóa tin nhắn văn bản của họ với Chromebook. Người dùng phải chọn sử dụng tính năng này một cách rõ ràng thông qua việc hoàn tất quy trình thiết lập. Sau khi hoàn tất, họ có thể gửi và nhận tin nhắn văn bản trên Chromebook.
+
+      Nếu bạn đặt chính sách này thành Tắt, thì người dùng sẽ không thể thiết lập tính năng đồng bộ hóa tin nhắn văn bản.
+
+      Nếu bạn không đặt chính sách này thì theo mặc định, người dùng khác chứ không phải người dùng được quản lý sẽ được phép dùng tính năng nêu trên.</translation>
 <translation id="1040446814317236570">Bật tách URL PAC (cho https://)</translation>
 <translation id="1046484220783400299">Bật các tính năng nền tảng web không dùng nữa trong một khoảng thời gian giới hạn</translation>
 <translation id="1047128214168693844">Không cho phép bất kỳ trang web nào theo dõi vị trí thực của người dùng</translation>
@@ -670,6 +675,9 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
 <translation id="2057317273526988987">Cho phép truy cập vào một danh sách các URL</translation>
 <translation id="2061810934846663491">Định cấu hình tên miền bắt buộc cho máy chủ truy cập từ xa</translation>
 <translation id="2067011586099792101">Chặn truy cập vào các trang web nằm ngoài gói nội dung</translation>
+<translation id="2069350366303315077">Khi bạn đặt chính sách này thành Bật, thì <ph name="PRODUCT_NAME" /> sẽ thực thi các phiên khách và ngăn chặn phiên đăng nhập vào hồ sơ. Phiên đăng nhập khách là hồ sơ <ph name="PRODUCT_NAME" />, trong đó các cửa sổ đều ở Chế độ ẩn danh.
+
+      Nếu bạn không đặt hoặc đặt chính sách này thành Tắt hay tắt Chế độ khách trên trình duyệt, (thông qua <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />), thì người dùng có thể sử dụng các hồ sơ mới và hiện có.</translation>
 <translation id="2073552873076775140">Cho phép đăng nhập vào <ph name="PRODUCT_NAME" /></translation>
 <translation id="2075732129949889165">Playbook Crostini Ansible</translation>
 <translation id="2077129598763517140">Sử dụng chế độ tăng tốc phần cứng khi khả dụng</translation>
@@ -1004,6 +1012,11 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
 <translation id="2482676533225429905">Nhắn tin gốc</translation>
 <translation id="2483146640187052324">Dự đoán tác vụ mạng trên kết nối mạng bất kỳ</translation>
 <translation id="2498238926436517902">Luôn tự động ẩn giá</translation>
+<translation id="250022556568924228">Nếu bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> sẽ tải Điều khoản dịch vụ xuống và hiển thị với người dùng ở bất cứ thời điểm nào bắt đầu phiên truy cập tài khoản trên thiết bị. Người dùng chỉ có thể đăng nhập vào phiên đó sau khi chấp nhận Điều khoản dịch vụ.
+
+      Nếu bạn không đặt chính sách này, Điều khoản dịch vụ sẽ không xuất hiện.
+
+      Bạn nên đặt chính sách này thành một URL mà từ đó <ph name="PRODUCT_OS_NAME" /> có thể tải Điều khoản dịch vụ xuống. Điều khoản dịch vụ phải là văn bản thuần túy, được phân phối dưới dạng văn bản/văn bản thuần túy loại MIME. Không được phép đánh dấu.</translation>
 <translation id="2502467045153796624">Chế độ hạ cấp kênh</translation>
 <translation id="250670737672448119">Bật tính năng hỗ trợ tiếp cận về làm nổi bật dấu chèn.
 
@@ -1188,6 +1201,13 @@ Khi chính sách này được đặt thành false hoặc không được địn
 
       Chính sách doanh nghiệp này được áp dụng ngắn hạn và sẽ bị loại bỏ trong Chrome 88.</translation>
 <translation id="2759224876420453487">Kiểm soát hoạt động của người dùng trong một phiên đa cấu hình</translation>
+<translation id="2759426227259007018">Nếu bạn đặt chính sách này, hệ thống sẽ chỉ định những ứng dụng mà người dùng có thể bật làm ứng dụng ghi chú trên màn hình khóa của <ph name="PRODUCT_OS_NAME" />.
+
+      Nếu bạn bật ứng dụng ghi chú ưa thích trên màn hình khóa, thì thành phần trên giao diện người dùng để chạy ứng dụng đó sẽ xuất hiện trên màn hình. Sau khi chạy, ứng dụng có thể tạo một cửa sổ ở đầu màn hình khóa và tạo các ghi chú trong ngữ cảnh này. Ứng dụng này có thể nhập các ghi chú đã tạo vào phiên truy cập của người dùng chính, khi phiên được mở khóa. Bạn chỉ dùng được ứng dụng ghi chú của <ph name="PRODUCT_NAME" /> trên màn hình khóa.
+
+      Nếu bạn đặt chính sách này, người dùng có thể bật một ứng dụng trên màn hình khóa khi mã nhận dạng tiện ích của ứng dụng đó có trong giá trị danh sách của chính sách. Do vậy, khi bạn đặt chính sách này thành một danh sách trống, tính năng ghi chú trên màn hình khóa sẽ tắt. Xin lưu ý rằng không phải cứ có mã nhận dạng ứng dụng trong chính sách là người dùng có thể bật ứng dụng đó làm ứng dụng ghi chú trên màn hình khóa. Ví dụ: trên <ph name="PRODUCT_NAME" /> 61, chúng tôi cũng hạn chế một số ứng dụng có sẵn theo nền tảng.
+
+      Nếu bạn không đặt chính sách này, sẽ không có hạn chế nào do chính sách này áp dụng cho một số ứng dụng mà người dùng có thể bật trên màn hình khóa.</translation>
 <translation id="2761483219396643566">Thời gian chờ cảnh báo trạng thái không sử dụng khi chạy trên nguồn pin</translation>
 <translation id="2765601181281280493">Khi đặt chính sách này, bạn có thể tạo danh sách các mẫu URL chỉ định những trang web không được phép yêu cầu người dùng cấp quyền truy cập vào một cổng nối tiếp.
 
@@ -1525,6 +1545,9 @@ Khi chính sách này được đặt thành false hoặc không được địn
 <translation id="3251500716404598358">Định cấu hình chính sách để chuyển đổi giữa các trình duyệt.
 
       Các trang web được định cấu hình sẽ tự động mở trong trình duyệt khác không phải là <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3255624750680556186">Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì thiết bị sẽ kích hoạt chức năng Powerwash.
+
+      Nếu bạn đặt chính sách này thành Tắt, thì thiết bị sẽ không kích hoạt chức năng Powerwash. Trường hợp ngoại lệ là thiết bị vẫn có thể kích hoạt chức năng Powerwash nếu bạn đặt chính sách <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> thành một giá trị cho phép cập nhật chương trình cơ sở TPM, tuy nhiên chương trình đó lại chưa được cập nhật.</translation>
 <translation id="3255762580838224124">Nếu đặt chính sách này, thì mỗi màn hình sẽ xoay theo một hướng chỉ định mỗi khi khởi động lại và vào lần đầu tiên màn hình được kết nối sau khi giá trị chính sách thay đổi. Người dùng có thể thay đổi chế độ xoay màn hình thông qua trang cài đặt sau khi đăng nhập. Tuy nhiên, chế độ này sẽ chuyển về như cũ vào lần khởi động lại tiếp theo. Chính sách này áp dụng cho màn hình chính và phụ.
 
       Nếu bạn chưa đặt chính sách này, thì giá trị mặc định là 0 độ và người dùng có thể thay đổi giá trị này. Trong trường hợp này, giá trị mặc định không được áp dụng thêm lần nữa khi khởi động lại.</translation>
@@ -2649,6 +2672,9 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 
       Nếu bạn tắt chính sách này, thì mọi lệnh gọi đến API chia sẻ màn hình đều sẽ không thực hiện được
       do gặp lỗi.</translation>
+<translation id="5025239932007658691">Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì thỉnh thoảng, <ph name="PRODUCT_NAME" /> sẽ gửi các truy vấn đến máy chủ của Google để truy xuất dấu thời gian chính xác.
+
+      Nếu bạn đặt chính sách này thành Tắt, <ph name="PRODUCT_NAME" /> sẽ ngừng gửi các truy vấn đó.</translation>
 <translation id="5032164758660626397">Ngăn người dùng chuyển các tệp có kích thước lớn</translation>
 <translation id="5047604665028708335">Cho phép truy cập vào các trang web nằm ngoài gói nội dung</translation>
 <translation id="5056708224511062314">Đã tắt kính lúp màn hình</translation>
@@ -3432,6 +3458,9 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="6034341625190551415">Kiểm soát phiên công khai và loại tài khoản kiosk.</translation>
 <translation id="6034603289689965535">Cho phép trang hiển thị cửa sổ bật lên khi đang hủy tải trang</translation>
 <translation id="6036523166753287175">Bật tính năng chặn tường lửa từ máy chủ truy cập từ xa</translation>
+<translation id="603768430528561926">Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì người dùng thiết bị của doanh nghiệp sẽ có thể đổi ưu đãi bằng cách đăng ký<ph name="PRODUCT_OS_NAME" />.
+
+      Nếu bạn đặt chính sách này thành Tắt, thì người dùng không thể đổi các ưu đãi này.</translation>
 <translation id="6038407313189625985">Nếu bạn không đặt hoặc đặt chính sách này thành bật, thì tính năng Tính toàn vẹn của mã trình kết xuất sẽ bật. Bạn chỉ nên tắt chính sách này nếu gặp vấn đề về khả năng tương thích với phần mềm bên thứ ba. Phần mềm này phải chạy trong các quá trình xử lý trình kết xuất của Chrome.
 
       Khi tắt chính sách này, tính bảo mật và độ ổn định của Chrome sẽ bị ảnh hưởng bởi vì mã không xác định và có khả năng gây hại sẽ được phép tải trong các quá trình xử lý trình kết xuất của Chrome. Vui lòng tham khảo https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies để biết thêm thông tin.</translation>
@@ -3652,6 +3681,7 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Nếu bạn không đặt chính sách này hoặc danh sách trống, thì tất cả lược đồ đều truy cập được trong <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6338982178236723271">Báo cáo thông tin về hệ thống</translation>
 <translation id="6342187235303612558">Chặn người dùng tải lên hoặc tải xuống các tệp hiện không được hỗ trợ quét tìm phần mềm độc hại hoặc quét tìm dựa trên tính năng Ngăn chặn mất dữ liệu.</translation>
+<translation id="6353890097388312479">Nếu bạn không đặt hoặc đặt chính sách này thành Tất cả (0), thì người dùng có thể chỉnh sửa các tùy chọn cài đặt tin cậy cho tất cả chứng chỉ CA, xóa chứng chỉ do người dùng nhập và nhập chứng chỉ bằng Trình quản lý chứng chỉ. Nếu bạn đặt chính sách này thành UserOnly (1), người dùng có thể chỉ quản lý các chứng chỉ do người dùng nhập nhưng không thể thay đổi các tùy chọn cài đặt tin cậy của chứng chỉ tích hợp. Nếu bạn đặt chính sách này thành Không (2), người dùng có thể xem (nhưng không thể quản lý) chứng chỉ CA.</translation>
 <translation id="6366574325767783825">Nếu bạn không đặt hoặc đặt chính sách này thành True, thì <ph name="PRODUCT_NAME" /> sẽ chấp nhận nội dung web được phân phối dưới dạng Signed HTTP Exchanges.
 
       Nếu bạn đặt chính sách này thành False, thì Signed HTTP Exchanges sẽ không tải được.</translation>
@@ -3743,6 +3773,15 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
           Để khóa màn hình khi ở chế độ tạm vắng, bạn nên bật phương thức khóa màn hình khi tạm ngưng và đặt <ph name="PRODUCT_OS_NAME" /> tạm ngưng sau thời gian chờ khi ở chế độ tạm vắng. Bạn chỉ nên sử dụng chính sách này khi muốn khóa màn hình sớm hơn đáng kể so với thời gian tạm ngưng hoặc khi không muốn tạm ngưng ở chế độ tạm vắng.
 
           Bạn phải chỉ định giá trị của chính sách bằng mili giây. Các giá trị được giới hạn ở mức nhỏ hơn thời gian chờ khi ở chế độ tạm vắng.</translation>
+<translation id="6506239283767807745">Chính sách này không còn dùng nữa, vui lòng sử dụng <ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST" />.
+
+      Nếu bạn đặt chính sách này, hệ thống sẽ chỉ định những ứng dụng mà người dùng có thể bật làm ứng dụng ghi chú trên màn hình khóa của <ph name="PRODUCT_OS_NAME" />.
+
+      Nếu bạn bật ứng dụng ghi chú ưa thích trên màn hình khóa, thì thành phần trên giao diện người dùng để chạy ứng dụng đó sẽ xuất hiện trên màn hình. Sau khi chạy, ứng dụng có thể tạo một cửa sổ ở đầu màn hình khóa và tạo các ghi chú trong ngữ cảnh này. Ứng dụng này có thể nhập các ghi chú đã tạo vào phiên truy cập của người dùng chính, khi phiên được mở khóa. Bạn chỉ dùng được ứng dụng ghi chú của <ph name="PRODUCT_NAME" /> trên màn hình khóa.
+
+      Nếu bạn đặt chính sách này, người dùng có thể bật một ứng dụng trên màn hình khóa khi mã nhận dạng tiện ích của ứng dụng đó có trong giá trị danh sách của chính sách. Do vậy, khi bạn đặt chính sách này thành một danh sách trống, tính năng ghi chú trên màn hình khóa sẽ tắt. Xin lưu ý rằng không phải cứ có mã nhận dạng ứng dụng trong chính sách là người dùng có thể bật ứng dụng đó làm ứng dụng ghi chú trên màn hình khóa. Ví dụ: trên <ph name="PRODUCT_NAME" /> 61, chúng tôi cũng hạn chế một số ứng dụng có sẵn theo nền tảng.
+
+      Nếu bạn không đặt chính sách này, sẽ không có hạn chế nào do chính sách này áp dụng cho một số ứng dụng mà người dùng có thể bật trên màn hình khóa.</translation>
 <translation id="6506486086262398387">Nếu bạn đặt chính sách này thành Bật, tính năng Chia sẻ tệp trong mạng của <ph name="PRODUCT_OS_NAME" /> sẽ sử dụng NTLM để xác thực các lượt chia sẻ SMB nếu cần. Nếu bạn đặt chính sách này thành Tắt, tính năng xác thực bằng NTLM cho các lượt chia sẻ SMB sẽ bị tắt.
 
       Nếu bạn không đặt chính sách này, chế độ hoạt động mặc định sẽ là tắt đối với người dùng được quản lý và bật đối với người dùng khác.</translation>

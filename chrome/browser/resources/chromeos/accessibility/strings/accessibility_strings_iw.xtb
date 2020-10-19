@@ -84,7 +84,7 @@
 <translation id="1542513807034338907">גלילה אל הדף הקודם</translation>
 <translation id="1546370775711804143">סרגל גלילה</translation>
 <translation id="1555130319947370107">כחול</translation>
-<translation id="1559739829547075274">נווט לאחור</translation>
+<translation id="1559739829547075274">ניווט לאחור</translation>
 <translation id="1565432156062359693">אין עוד רשימות</translation>
 <translation id="1571643229714746283">ChromeVox ready</translation>
 <translation id="1594072653727561613">mnu</translation>
@@ -244,7 +244,7 @@
 <translation id="2873259058405069099">עבור לתחילת הטבלה</translation>
 <translation id="287383510823843610">כתום כהה</translation>
 <translation id="2879867157561757640">החלקה מטה עם שלוש אצבעות</translation>
-<translation id="288178314850623291">‏השתמש בפקודות מעבר כדי לדלג אל סוגים ספציפיים של רכיבים. כדי לעבור קדימה בין כותרות, הקש על מקש החיפוש ועל מקש H. כדי לעבור אחורה, הקש יחד על מקש החיפוש, Shift ו-H.</translation>
+<translation id="288178314850623291">‏אפשר להשתמש בפקודות מעבר כדי לדלג אל סוגים ספציפיים של רכיבים. כדי לעבור קדימה בין כותרות, מקישים על מקש החיפוש ועל מקש H. כדי לעבור אחורה, מקישים יחד על מקש החיפוש, Shift ו-H.</translation>
 <translation id="2885764457467528513">{COUNT,plural, =1{דקה}two{דקות}many{דקות}other{דקות}}</translation>
 <translation id="2894654529758326923">מידע</translation>
 <translation id="2899328121302785497">{COUNT,plural, =1{סוגר מסולסל שמאלי}two{# סימני סוגר מסולסל שמאלי}many{# סימני סוגר מסולסל שמאלי}other{# סימני סוגר מסולסל שמאלי}}</translation>
@@ -288,7 +288,7 @@
 <translation id="3131002934070407451">יש לקרוא מספרים בתור:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">זית</translation>
-<translation id="3138767756593758860">הצג רשימת ציוני דרך</translation>
+<translation id="3138767756593758860">הצגה של רשימת ציוני דרך</translation>
 <translation id="3143851963874289911">cll</translation>
 <translation id="3149472044574196936">השורה הבאה</translation>
 <translation id="3153024374267644603">הדיבור פועל</translation>
@@ -406,12 +406,12 @@
 <translation id="4053520724192563562">ירוק ליים</translation>
 <translation id="4054936709456751127">sts</translation>
 <translation id="4058278702844053247">מתבצעת טעינת דף</translation>
-<translation id="4065205963140826639">נסה להקיש על מקש החיפוש ועל החץ ימינה כדי למצוא את לחצן 'הבא'. לאחר מכן הקש על מקש החיפוש ומקש הרווח כדי ללחוץ עליו.</translation>
+<translation id="4065205963140826639">צריך להקיש על מקש החיפוש ועל החץ ימינה כדי למצוא את הלחצן 'הבא'. כדי ללחוץ עליו, יש להקיש על מקש החיפוש ומקש הרווח.</translation>
 <translation id="4081085052247739398">{COUNT,plural, =1{טילדה (~)}two{# סימני טילדה (~)}many{# סימני טילדה (~)}other{# סימני טילדה (~)}}</translation>
 <translation id="409334809956508737">האובייקט הקודם</translation>
 <translation id="4099274309791143834">כולל תפריט משנה</translation>
 <translation id="4101527861445851766">תיבת סימון שסומנה</translation>
-<translation id="4115378294792113321">מגנטה</translation>
+<translation id="4115378294792113321">מג'נטה</translation>
 <translation id="4116415223832267137">התראה</translation>
 <translation id="4148180433151187540">{COUNT,plural, =1{סוגר מסולסל ימני}two{# סימני סוגר מסולסל ימני}many{# סימני סוגר מסולסל ימני}other{# סימני סוגר מסולסל ימני}}</translation>
 <translation id="4159784952369912983">סגול</translation>
@@ -447,7 +447,7 @@
 <translation id="4322625298640984693">סיינה</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{נקודה}=3{שלוש נקודות}two{# נקודות}many{# נקודות}other{# נקודות}}</translation>
 <translation id="4372435075475052704">min:<ph name="X" /></translation>
-<translation id="4372705107434148843">הפסק דיבור</translation>
+<translation id="4372705107434148843">הפסקת הדיבור</translation>
 <translation id="4376316291247992553">הגת גרפיקה כברייל</translation>
 <translation id="437809255587011096">תיאור קולי של עיצוב טקסט</translation>
 <translation id="4378308539633073595">גלילה קדימה</translation>
@@ -517,7 +517,7 @@
 <translation id="492295894462528572">פתח דבר</translation>
 <translation id="495046168593986294">גלילה למעלה</translation>
 <translation id="495170559598752135">פעולות</translation>
-<translation id="4953585991029886728">ערוך טקסט</translation>
+<translation id="4953585991029886728">עריכת הטקסט</translation>
 <translation id="4973717656530883744">מינימום <ph name="X" /></translation>
 <translation id="4974612477719259470">אין לחצן קודם</translation>
 <translation id="4979404613699303341">לחצן 'הקודם'</translation>
@@ -530,7 +530,7 @@
 <translation id="5012724933919010465"><ph name="NAME" />, סימנת את לחצן הבחירה של האפשרות בתפריט</translation>
 <translation id="5020651427400641814">הפעלה של תיעוד דיבור</translation>
 <translation id="5041394372352067729">העבר תצוגת ברייל לחלק העליון של הדף</translation>
-<translation id="5042770794184672516">הגבר את עוצמת הדיבור</translation>
+<translation id="5042770794184672516">הגברת עוצמת הדיבור</translation>
 <translation id="5042992464904238023">תוכן</translation>
 <translation id="5050015258024679800">הכותרת הקודמת של רמה 4</translation>
 <translation id="5054047268577924192">פריט קודם ברשימה</translation>
@@ -616,7 +616,7 @@
 <translation id="5704453877234251104">ניתן להקיש על החץ למעלה או למטה כדי להפעיל השלמות אוטומטיות</translation>
 <translation id="5712244464475377681">popbtn</translation>
 <translation id="5725079927589231571">כחול פלדה בהיר</translation>
-<translation id="5732189279857692565">‏זו הכותרת השנייה. המשך במדריך; הקש על מקש החיפוש ועל H או על מקש החיפוש, על Shift ועל H</translation>
+<translation id="5732189279857692565">‏זו הכותרת השנייה. כדי להמשיך בשיעור יש להקיש על מקש החיפוש ועל H או על מקש החיפוש, על Shift ועל H</translation>
 <translation id="5748623122140342504">הכותרת הקודמת של רמה 5</translation>
 <translation id="5760594853119905566">נספח</translation>
 <translation id="5805940204952508776">הקשה עם שתי אצבעות</translation>
@@ -779,7 +779,7 @@
 <translation id="7137397390322864165">סלמון</translation>
 <translation id="7140168702531682811">כתב עילי</translation>
 <translation id="7143034430156387447">מעבר בין ברייל 6 נקודות ו-8 נקודות</translation>
-<translation id="7143207342074048698">מתחבר</translation>
+<translation id="7143207342074048698">מתבצע חיבור</translation>
 <translation id="7153618581592392745">לבנדר</translation>
 <translation id="7157306005867877619">תקציר</translation>
 <translation id="7161771961008409533">לחצן קופץ</translation>
@@ -897,7 +897,7 @@
 <translation id="8033827949643255796">מסומן</translation>
 <translation id="8035962149453661158">max:<ph name="X" /></translation>
 <translation id="8037651341025652929">סיכום</translation>
-<translation id="8042761080832772327">ערוך טקסט, רשומת חיפוש</translation>
+<translation id="8042761080832772327">עריכת טקסט, רשומת חיפוש</translation>
 <translation id="8049189770492311300">טיימר</translation>
 <translation id="8058636807889143711">אין עוד ביטויים מתמטיים</translation>
 <translation id="8066678206530322333">מודעת באנר</translation>

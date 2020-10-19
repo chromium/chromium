@@ -207,6 +207,7 @@
 <translation id="3252266817569339921">فرانسيسی</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> فائلوں کیلئے ڈیفالٹ ایپ منتخب کریں:</translation>
 <translation id="3264582393905923483">سیاق و سباق</translation>
+<translation id="3272909651715601089">"<ph name="PATH" />" کو نہیں کھول سکے</translation>
 <translation id="3280431534455935878">تیار ہو رہی ہے</translation>
 <translation id="3280987981688031357">وائنل ریکارڈ</translation>
 <translation id="3296763833017966289">جارجی</translation>
@@ -309,6 +310,7 @@
 <translation id="4477219268485577442">بلغاریائی فونیٹک</translation>
 <translation id="4479812471636796472">امریکی ڈوراک کی بورڈ</translation>
 <translation id="4522570452068850558">تفصیلات</translation>
+<translation id="4527800702232535228">‏یہ فولڈر Parallels Desktop کے ساتھ اشتراک کردہ ہے</translation>
 <translation id="4552678318981539154">مزید اسٹوریج خریدیں</translation>
 <translation id="4559767610552730302">بوکیہ</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> فائل</translation>
@@ -326,6 +328,7 @@
 <translation id="4694604912444486114">بندر</translation>
 <translation id="4697043402264950621">فائل کی فہرست کو صعودی ترتیب میں <ph name="COLUMN_NAME" /> کے لحاظ سے ترتیب دیا گیا۔</translation>
 <translation id="4711094779914110278">ترکی</translation>
+<translation id="4712283082407695269">"<ph name="PATH" />" کھل رہا ہے</translation>
 <translation id="4713544552769165154">‏یہ فائل Macintosh سافٹ ویئر استعمال کر رہے کمپیوٹر کیلئے بنائی گئی ہے۔ یہ آپ کے اس آلے کے ساتھ مطابقت پذیر نہیں ہے جو Chrome OS چلاتا ہے۔ براہ کرم ایک مناسب متبادل ایپ کیلئے <ph name="BEGIN_LINK" />Chrome ویب اسٹور تلاش کریں<ph name="END_LINK" />۔<ph name="BEGIN_LINK_HELP" />مزید جانیں<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> تصاویر کا بیک اپ لے لیا گیا</translation>
 <translation id="4725511304875193254">کورگی</translation>
@@ -524,6 +527,7 @@
 <translation id="6558280019477628686">ایک خرابی پیش آ گئی۔ ہو سکتا ہے کچھ آئٹمز حذف نہ ہوئے ہوں۔</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" کو حذف کیا جا رہا ہے…</translation>
 <translation id="6581162200855843583">‏Google Drive لنک</translation>
+<translation id="6594855146910089723">‏یہ فولڈر Linux اورParallels Desktop کے ساتھ اشتراک کردہ ہے</translation>
 <translation id="6607272825297743757">فائل کی معلومات</translation>
 <translation id="6609332149380188670">‏Parallels ڈیسک ٹاپ کے ساتھ اشتراک کردہ <ph name="NUMBER_OF_ITEMS" /> فولڈرز</translation>
 <translation id="6629841649550503054">‏سبھی کا <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> میں بیک اپ لے لیا گیا!</translation>

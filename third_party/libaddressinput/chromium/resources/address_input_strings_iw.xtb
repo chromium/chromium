@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
-<translation id="1340068511406764697">עליך לספק מיקוד, לדוגמה <ph name="EXAMPLE" />. אינך יודע מה המיקוד? תוכל לגלות <ph name="BEGIN_LINK" />כאן<ph name="END_LINK" />.</translation>
+<translation id="1340068511406764697">עליך לספק מיקוד, לדוגמה <ph name="EXAMPLE" />. <ph name="BEGIN_LINK" />לבירור המיקוד שלך<ph name="END_LINK" />.</translation>
 <translation id="2053553514270667976">מספר / מיקוד</translation>
 <translation id="2096368010154057602">מחלקה</translation>
 <translation id="2577522251608256362">שכונה</translation>

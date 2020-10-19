@@ -5,7 +5,7 @@
 <translation id="1044891598689252897">אתרים יפעלו כרגיל</translation>
 <translation id="1124090076051167250">‏הפעולה הזאת תמחק <ph name="DATASIZE" /> של נתונים וקובצי cookie שאתרים ואפליקציות שמרו במסך הבית.</translation>
 <translation id="1124772482545689468">משתמש</translation>
-<translation id="1178581264944972037">השהה</translation>
+<translation id="1178581264944972037">השהיה</translation>
 <translation id="1181037720776840403">הסרה</translation>
 <translation id="1195941046451948919">ההרשאות שניתנו לאתר הזה יאופסו להגדרת ברירת המחדל. להמשיך?</translation>
 <translation id="1201402288615127009">הבא</translation>
@@ -145,7 +145,7 @@
 <translation id="5335288049665977812">‏אפשר לאתרים להריץ JavaScript (מומלץ)</translation>
 <translation id="534295439873310000">‏מכשירי NFC</translation>
 <translation id="5354152178998424783">‏הפעולה הזו תגרום למחיקת <ph name="DATASIZE" /> של נתונים וקובצי cookie שנשמרו על ידי אתרים.</translation>
-<translation id="5384883051496921101">אתר זה עומד לשתף מידע עם אפליקציה מחוץ למצב גלישה בסתר.</translation>
+<translation id="5384883051496921101">אתר זה עומד לשתף מידע עם אפליקציה מחוץ למצב אנונימי.</translation>
 <translation id="5391532827096253100">החיבור שלך לאתר הזה לא מאובטח. פרטי האתר</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ועוד 1)}two{(ועוד #)}many{(ועוד #)}other{(ועוד #)}}</translation>
 <translation id="5403592356182871684">שמות</translation>
