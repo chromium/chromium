@@ -70,6 +70,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.DeferredStartupHandler;
@@ -373,6 +374,7 @@ public class StartSurfaceTest {
     @MediumTest
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
+    @FlakyTest(message = "https://crbug.com/1139515")
     public void testShow_SingleAsHomepage() {
         if (!mImmediateReturn) {
             onView(withId(org.chromium.chrome.tab_ui.R.id.home_button)).perform(click());
