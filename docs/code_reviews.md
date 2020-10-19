@@ -232,9 +232,7 @@ directories. If the updates to the callers is mechanical, you can:
      result of the `//base` change. This is often the same person from the
      previous step but could be somebody else.
 
-  3. TBR the owner of the lower-level code you're changing (in this example,
-     `//base`), after they've LGTM'ed the API change, to bypass owners review of
-     the API consumers incurring trivial side-effects.
+  3. TBR the owners of the calling code, after the API change is LGTM'ed.
 
 This process ensures that all code is reviewed prior to checkin and that the
 concept of the change is reviewed by a qualified person, without having to ping
@@ -267,4 +265,3 @@ comments inside functions.
 
   * Be sure to actually send out the email for the code review. If you get one,
     please actually read the changes.
-
