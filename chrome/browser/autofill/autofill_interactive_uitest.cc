@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
+// Disable all tests in this file on Mac for flake (crbug.com/1079249)
+#if !defined(OS_MAC)
 
 #include <string>
 #include <tuple>
@@ -341,6 +343,14 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
     response->set_content_type("text/html;charset=utf-8");
     response->set_content(test_url_content_);
     return std::move(response);
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  content::RenderViewHost* GetRenderViewHost() {
+    return GetWebContents()->GetRenderViewHost();
   }
 
   void CreateTestProfile() {
@@ -3496,3 +3506,5 @@ INSTANTIATE_TEST_SUITE_P(All,
                          AutofillRestrictUnownedFieldsTest,
                          testing::Bool());
 }  // namespace autofill
+
+#endif  // !defined(OS_MAC)
