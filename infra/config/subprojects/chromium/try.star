@@ -680,7 +680,7 @@ try_.chromium_chromiumos_builder(
     name = "linux-lacros-rel",
     cores = 16,
     ssd = True,
-    goma_jobs = goma.jobs.J150,
+    goma_jobs = goma.jobs.J300,
     main_list_view = "try",
     tryjob = try_.job(),
 )
