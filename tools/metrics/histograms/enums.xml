@@ -15999,6 +15999,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="36" label="Web Store"/>
   <int value="37" label="YouTube"/>
   <int value="38" label="YouTube Music"/>
+  <int value="40" label="Stadia"/>
 </enum>
 
 <enum name="DefaultBrowserAsyncAttemptResult">
