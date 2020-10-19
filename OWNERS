@@ -24,6 +24,7 @@ per-file PRESUBMIT*.py=dpranke@google.com
 per-file PRESUBMIT*.py=jochen@chromium.org
 per-file README.md=*
 per-file WATCHLISTS=*
+per-file *.pydeps=file://build/OWNERS
 per-file *.gn=file://build/OWNERS
 per-file *.gni=file://build/OWNERS
 per-file *fuzzer.*=file://testing/libfuzzer/OWNERS
