@@ -6103,6 +6103,18 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Download.Open">
+  <owner>dtrainor@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <description>
+    User opened a download. This action is logged every time the
+    Download.OpenMethod histogram is logged.
+
+    This histogram is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
+</action>
+
 <action name="DownloadNotification.Button_AlwaysOpenType">
   <owner>yoshiki@chromium.org</owner>
   <description>

@@ -5,6 +5,7 @@
 #include "chrome/browser/download/download_stats.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
 
 void RecordDownloadCount(ChromeDownloadCountTypes type) {
   UMA_HISTOGRAM_ENUMERATION(
@@ -29,6 +30,7 @@ void RecordOpenedDangerousConfirmDialog(
 }
 
 void RecordDownloadOpenMethod(ChromeDownloadOpenMethod open_method) {
+  base::RecordAction(base::UserMetricsAction("Download.Open"));
   UMA_HISTOGRAM_ENUMERATION("Download.OpenMethod",
                             open_method,
                             DOWNLOAD_OPEN_METHOD_LAST_ENTRY);
