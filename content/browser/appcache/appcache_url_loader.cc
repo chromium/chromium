@@ -197,10 +197,7 @@ AppCacheURLLoader::AppCacheURLLoader(
                                mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                                base::SequencedTaskRunnerHandle::Get()),
       loader_callback_(std::move(loader_callback)),
-      appcache_request_(appcache_request->GetWeakPtr()),
-      is_main_resource_load_(
-          blink::IsResourceTypeFrame(static_cast<blink::mojom::ResourceType>(
-              appcache_request->GetResourceType()))) {}
+      appcache_request_(appcache_request->GetWeakPtr()) {}
 
 void AppCacheURLLoader::CallLoaderCallback(base::OnceClosure continuation) {
   DCHECK(loader_callback_);

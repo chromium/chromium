@@ -402,22 +402,22 @@ void AppCacheHost::GetResourceList(GetResourceListCallback callback) {
 
 std::unique_ptr<AppCacheRequestHandler> AppCacheHost::CreateRequestHandler(
     std::unique_ptr<AppCacheRequest> request,
-    blink::mojom::ResourceType resource_type,
+    network::mojom::RequestDestination request_destination,
     bool should_reset_appcache) {
-  if (AppCacheRequestHandler::IsMainResourceType(resource_type)) {
+  if (AppCacheRequestHandler::IsMainRequestDestination(request_destination)) {
     // Store the first party origin so that it can be used later in SelectCache
     // for checking whether the creation of the appcache is allowed.
     site_for_cookies_ = request->GetSiteForCookies();
     site_for_cookies_initialized_ = true;
     top_frame_origin_ = request->GetTopFrameOrigin();
     return base::WrapUnique(new AppCacheRequestHandler(
-        this, resource_type, should_reset_appcache, std::move(request)));
+        this, request_destination, should_reset_appcache, std::move(request)));
   }
 
   if ((associated_cache() && associated_cache()->is_complete()) ||
       is_selection_pending()) {
     return base::WrapUnique(new AppCacheRequestHandler(
-        this, resource_type, should_reset_appcache, std::move(request)));
+        this, request_destination, should_reset_appcache, std::move(request)));
   }
   return nullptr;
 }

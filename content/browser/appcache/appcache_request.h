@@ -58,8 +58,10 @@ class CONTENT_EXPORT AppCacheRequest {
   // The HTTP headers of this request.
   const net::HttpRequestHeaders& GetHeaders() const { return request_.headers; }
 
-  // The resource type of this request.
-  int GetResourceType() const { return request_.resource_type; }
+  // The request destination of this request.
+  network::mojom::RequestDestination GetRequestDestination() const {
+    return request_.destination;
+  }
 
   // Returns true if the request was successful.
   bool IsSuccess() const;

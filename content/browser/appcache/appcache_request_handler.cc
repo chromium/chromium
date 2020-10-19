@@ -36,11 +36,11 @@ bool g_running_in_tests = false;
 
 AppCacheRequestHandler::AppCacheRequestHandler(
     AppCacheHost* host,
-    blink::mojom::ResourceType resource_type,
+    network::mojom::RequestDestination request_destination,
     bool should_reset_appcache,
     std::unique_ptr<AppCacheRequest> request)
     : host_(host),
-      resource_type_(resource_type),
+      request_destination_(request_destination),
       should_reset_appcache_(should_reset_appcache),
       is_waiting_for_cache_selection_(false),
       found_group_id_(0),
@@ -225,8 +225,7 @@ AppCacheRequestHandler::InitializeForMainResourceNetworkService(
     base::WeakPtr<AppCacheHost> appcache_host) {
   std::unique_ptr<AppCacheRequestHandler> handler =
       appcache_host->CreateRequestHandler(
-          std::make_unique<AppCacheRequest>(request),
-          static_cast<blink::mojom::ResourceType>(request.resource_type),
+          std::make_unique<AppCacheRequest>(request), request.destination,
           request.should_reset_appcache);
   if (handler)
     handler->appcache_host_ = std::move(appcache_host);
@@ -234,13 +233,13 @@ AppCacheRequestHandler::InitializeForMainResourceNetworkService(
 }
 
 // static
-bool AppCacheRequestHandler::IsMainResourceType(
-    blink::mojom::ResourceType type) {
+bool AppCacheRequestHandler::IsMainRequestDestination(
+    network::mojom::RequestDestination destination) {
   // This returns false for kWorker, which is typically considered a main
   // resource. In appcache, dedicated workers are treated as subresources of
   // their nearest ancestor frame's appcache host unlike shared workers.
-  return blink::IsResourceTypeFrame(type) ||
-         type == blink::mojom::ResourceType::kSharedWorker;
+  return blink::IsRequestDestinationFrame(destination) ||
+         destination == network::mojom::RequestDestination::kSharedWorker;
 }
 
 void AppCacheRequestHandler::OnDestructionImminent(AppCacheHost* host) {
@@ -277,7 +276,7 @@ void AppCacheRequestHandler::DeliverAppCachedResponse(
   cache_id_ = cache_id;
   manifest_url_ = manifest_url;
 
-  if (blink::IsResourceTypeFrame(resource_type_) &&
+  if (blink::IsRequestDestinationFrame(request_destination_) &&
       !namespace_entry_url.is_empty())
     host_->NotifyMainResourceIsNamespaceEntry(namespace_entry_url);
 
@@ -323,7 +322,8 @@ AppCacheRequestHandler::MaybeLoadMainResource(
   host_->enable_cache_selection(true);
 
   const AppCacheHost* spawning_host =
-      (resource_type_ == blink::mojom::ResourceType::kSharedWorker)
+      (request_destination_ ==
+       network::mojom::RequestDestination::kSharedWorker)
           ? host_
           : host_->GetSpawningHost();
   GURL preferred_manifest_url = spawning_host ?
@@ -364,10 +364,11 @@ void AppCacheRequestHandler::OnMainResponseFound(
                                host_->top_frame_origin());
 
   if (was_blocked_by_policy) {
-    if (blink::IsResourceTypeFrame(resource_type_)) {
+    if (blink::IsRequestDestinationFrame(request_destination_)) {
       host_->NotifyMainResourceBlocked(manifest_url);
     } else {
-      DCHECK_EQ(resource_type_, blink::mojom::ResourceType::kSharedWorker);
+      DCHECK_EQ(request_destination_,
+                network::mojom::RequestDestination::kSharedWorker);
       host_->OnContentBlocked(manifest_url);
     }
     DeliverNetworkResponse();
@@ -381,7 +382,7 @@ void AppCacheRequestHandler::OnMainResponseFound(
     return;
   }
 
-  if (IsMainResourceType(resource_type_) &&
+  if (IsMainRequestDestination(request_destination_) &&
       cache_id != blink::mojom::kAppCacheNoCacheId) {
     // AppCacheHost loads and holds a reference to the main resource cache
     // for two reasons, firstly to preload the cache into the working set
@@ -624,8 +625,8 @@ bool AppCacheRequestHandler::MaybeCreateLoaderForResponse(
   // In appcache, dedicated workers are treated as subresources of their nearest
   // ancestor frame's appcache host. On the other hand, dedicated workers need
   // their own subresource loader.
-  if (IsMainResourceType(resource_type_) ||
-      resource_type_ == blink::mojom::ResourceType::kWorker) {
+  if (IsMainRequestDestination(request_destination_) ||
+      request_destination_ == network::mojom::RequestDestination::kWorker) {
     should_create_subresource_loader_ = true;
   }
   return true;

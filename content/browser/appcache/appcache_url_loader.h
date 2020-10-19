@@ -222,7 +222,6 @@ class CONTENT_EXPORT AppCacheURLLoader : public AppCacheStorage::Delegate,
   const base::WeakPtr<AppCacheRequest> appcache_request_;
 
   bool is_deleting_soon_ = false;
-  const bool is_main_resource_load_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
