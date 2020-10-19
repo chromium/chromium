@@ -44,7 +44,7 @@ class SendTabToSelfBubbleController
   // Returns the title of send tab to self bubble.
   base::string16 GetWindowTitle() const;
   // Returns the valid devices info map.
-  const std::vector<TargetDeviceInfo>& GetValidDevices() const;
+  virtual std::vector<TargetDeviceInfo> GetValidDevices() const;
   // Returns current profile.
   Profile* GetProfile() const;
 
@@ -80,15 +80,10 @@ class SendTabToSelfBubbleController
   FRIEND_TEST_ALL_PREFIXES(SendTabToSelfBubbleViewImplTest, PopulateScrollView);
   FRIEND_TEST_ALL_PREFIXES(SendTabToSelfBubbleViewImplTest, DevicePressed);
 
-  // Get information of valid devices.
-  void FetchDeviceInfo();
-
   // The web_contents associated with this controller.
   content::WebContents* web_contents_;
   // Weak reference. Will be nullptr if no bubble is currently shown.
   SendTabToSelfBubbleView* send_tab_to_self_bubble_view_ = nullptr;
-  // Valid devices data.
-  std::vector<TargetDeviceInfo> valid_devices_;
   // True if a confirmation message should be shown in the omnibox.
   bool show_message_ = false;
 

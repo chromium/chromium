@@ -61,9 +61,14 @@ base::string16 SendTabToSelfBubbleController::GetWindowTitle() const {
   return l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF);
 }
 
-const std::vector<TargetDeviceInfo>&
-SendTabToSelfBubbleController::GetValidDevices() const {
-  return valid_devices_;
+std::vector<TargetDeviceInfo> SendTabToSelfBubbleController::GetValidDevices()
+    const {
+  SendTabToSelfSyncService* const service =
+      SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile());
+  SendTabToSelfModel* const model =
+      service ? service->GetSendTabToSelfModel() : nullptr;
+  return model ? model->GetTargetDeviceInfoSortedList()
+               : std::vector<TargetDeviceInfo>();
 }
 
 Profile* SendTabToSelfBubbleController::GetProfile() const {
@@ -111,21 +116,6 @@ SendTabToSelfBubbleController::SendTabToSelfBubbleController(
     content::WebContents* web_contents)
     : web_contents_(web_contents) {
   DCHECK(web_contents);
-  FetchDeviceInfo();
-}
-
-void SendTabToSelfBubbleController::FetchDeviceInfo() {
-  valid_devices_.clear();
-  SendTabToSelfSyncService* service =
-      SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile());
-  if (!service) {
-    return;
-  }
-  SendTabToSelfModel* model = service->GetSendTabToSelfModel();
-  if (!model) {
-    return;
-  }
-  valid_devices_ = model->GetTargetDeviceInfoSortedList();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SendTabToSelfBubbleController)

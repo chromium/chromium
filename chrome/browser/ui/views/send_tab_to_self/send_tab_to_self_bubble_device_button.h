@@ -13,15 +13,15 @@
 
 namespace send_tab_to_self {
 
+class SendTabToSelfBubbleViewImpl;
 struct TargetDeviceInfo;
 
 // A button representing a device in share bubble. It is highlighted when
 // hovered.
 class SendTabToSelfBubbleDeviceButton : public HoverButton {
  public:
-  SendTabToSelfBubbleDeviceButton(views::ButtonListener* button_listener,
-                                  const TargetDeviceInfo& device_info,
-                                  int button_tag);
+  SendTabToSelfBubbleDeviceButton(SendTabToSelfBubbleViewImpl* bubble,
+                                  const TargetDeviceInfo& device_info);
   ~SendTabToSelfBubbleDeviceButton() override;
 
   const std::string& device_name() const { return device_name_; }
