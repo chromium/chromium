@@ -45,8 +45,10 @@ class MockJsBackend : public JsBackend,
   ~MockJsBackend() override;
 
   WeakHandle<JsBackend> AsWeakHandle();
-
-  MOCK_METHOD1(SetJsEventHandler, void(const WeakHandle<JsEventHandler>&));
+  MOCK_METHOD(void,
+              SetJsEventHandler,
+              (const WeakHandle<JsEventHandler>&),
+              (override));
 };
 
 class MockJsController : public JsController,
@@ -54,9 +56,8 @@ class MockJsController : public JsController,
  public:
   MockJsController();
   ~MockJsController() override;
-
-  MOCK_METHOD1(AddJsEventHandler, void(JsEventHandler*));
-  MOCK_METHOD1(RemoveJsEventHandler, void(JsEventHandler*));
+  MOCK_METHOD(void, AddJsEventHandler, (JsEventHandler*), (override));
+  MOCK_METHOD(void, RemoveJsEventHandler, (JsEventHandler*), (override));
 };
 
 class MockJsEventHandler : public JsEventHandler,
@@ -66,9 +67,10 @@ class MockJsEventHandler : public JsEventHandler,
   ~MockJsEventHandler() override;
 
   WeakHandle<JsEventHandler> AsWeakHandle();
-
-  MOCK_METHOD2(HandleJsEvent,
-               void(const ::std::string&, const JsEventDetails&));
+  MOCK_METHOD(void,
+              HandleJsEvent,
+              (const ::std::string&, const JsEventDetails&),
+              (override));
 };
 
 }  // namespace syncer

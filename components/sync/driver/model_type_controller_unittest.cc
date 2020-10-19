@@ -47,12 +47,20 @@ MATCHER(ErrorIsSet, "") {
 
 class MockDelegate : public ModelTypeControllerDelegate {
  public:
-  MOCK_METHOD2(OnSyncStarting,
-               void(const DataTypeActivationRequest& request,
-                    StartCallback callback));
-  MOCK_METHOD1(OnSyncStopping, void(SyncStopMetadataFate metadata_fate));
-  MOCK_METHOD1(GetAllNodesForDebugging, void(AllNodesCallback callback));
-  MOCK_METHOD0(RecordMemoryUsageAndCountsHistograms, void());
+  MOCK_METHOD(void,
+              OnSyncStarting,
+              (const DataTypeActivationRequest& request,
+               StartCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              OnSyncStopping,
+              (SyncStopMetadataFate metadata_fate),
+              (override));
+  MOCK_METHOD(void,
+              GetAllNodesForDebugging,
+              (AllNodesCallback callback),
+              (override));
+  MOCK_METHOD(void, RecordMemoryUsageAndCountsHistograms, (), (override));
 };
 
 // A simple processor that trackes connected state.

@@ -98,35 +98,59 @@ class TestHttpPostProviderFactory : public HttpPostProviderFactory {
 
 class SyncManagerObserverMock : public SyncManager::Observer {
  public:
-  MOCK_METHOD1(OnSyncCycleCompleted, void(const SyncCycleSnapshot&));  // NOLINT
-  MOCK_METHOD3(OnInitializationComplete,
-               void(const WeakHandle<JsBackend>&,
-                    const WeakHandle<DataTypeDebugInfoListener>&,
-                    bool));                                         // NOLINT
-  MOCK_METHOD1(OnConnectionStatusChange, void(ConnectionStatus));   // NOLINT
-  MOCK_METHOD1(OnUpdatedToken, void(const std::string&));           // NOLINT
-  MOCK_METHOD1(OnActionableError, void(const SyncProtocolError&));  // NOLINT
-  MOCK_METHOD1(OnMigrationRequested, void(ModelTypeSet));           // NOLINT
-  MOCK_METHOD1(OnProtocolEvent, void(const ProtocolEvent&));        // NOLINT
+  MOCK_METHOD(void,
+              OnSyncCycleCompleted,
+              (const SyncCycleSnapshot&),
+              (override));
+  // NOLINT
+  MOCK_METHOD(void,
+              OnInitializationComplete,
+              (const WeakHandle<JsBackend>&,
+               const WeakHandle<DataTypeDebugInfoListener>&,
+               bool),
+              (override));
+  // NOLINT
+  MOCK_METHOD(void, OnConnectionStatusChange, (ConnectionStatus), (override));
+  // NOLINT
+  MOCK_METHOD(void, OnActionableError, (const SyncProtocolError&), (override));
+  // NOLINT
+  MOCK_METHOD(void, OnMigrationRequested, (ModelTypeSet), (override));
+  // NOLINT
+  MOCK_METHOD(void, OnProtocolEvent, (const ProtocolEvent&), (override));
+  // NOLINT
 };
 
 class SyncEncryptionHandlerObserverMock
     : public SyncEncryptionHandler::Observer {
  public:
-  MOCK_METHOD2(OnPassphraseRequired,
-               void(const KeyDerivationParams&,
-                    const sync_pb::EncryptedData&));  // NOLINT
-  MOCK_METHOD0(OnPassphraseAccepted, void());         // NOLINT
-  MOCK_METHOD0(OnTrustedVaultKeyRequired, void());    // NOLINT
-  MOCK_METHOD0(OnTrustedVaultKeyAccepted, void());    // NOLINT
-  MOCK_METHOD2(OnBootstrapTokenUpdated,
-               void(const std::string&, BootstrapTokenType type));  // NOLINT
-  MOCK_METHOD2(OnEncryptedTypesChanged, void(ModelTypeSet, bool));  // NOLINT
-  MOCK_METHOD2(OnCryptographerStateChanged,
-               void(Cryptographer*, bool));  // NOLINT
-  MOCK_METHOD2(OnPassphraseTypeChanged,
-               void(PassphraseType,
-                    base::Time));  // NOLINT
+  MOCK_METHOD(void,
+              OnPassphraseRequired,
+              (const KeyDerivationParams&, const sync_pb::EncryptedData&),
+              (override));
+  // NOLINT
+  MOCK_METHOD(void, OnPassphraseAccepted, (), (override));
+  // NOLINT
+  MOCK_METHOD(void, OnTrustedVaultKeyRequired, (), (override));
+  // NOLINT
+  MOCK_METHOD(void, OnTrustedVaultKeyAccepted, (), (override));
+  // NOLINT
+  MOCK_METHOD(void,
+              OnBootstrapTokenUpdated,
+              (const std::string&, BootstrapTokenType type),
+              (override));
+  // NOLINT
+  MOCK_METHOD(void, OnEncryptedTypesChanged, (ModelTypeSet, bool), (override));
+  // NOLINT
+  MOCK_METHOD(void,
+              OnCryptographerStateChanged,
+              (Cryptographer*, bool),
+              (override));
+  // NOLINT
+  MOCK_METHOD(void,
+              OnPassphraseTypeChanged,
+              (PassphraseType, base::Time),
+              (override));
+  // NOLINT
 };
 
 }  // namespace
@@ -241,14 +265,13 @@ class SyncManagerWithLocalBackendTest : public SyncManagerTest {
 
 class MockSyncScheduler : public FakeSyncScheduler {
  public:
-  MockSyncScheduler() : FakeSyncScheduler() {}
-  ~MockSyncScheduler() override {}
-
-  MOCK_METHOD2(Start, void(SyncScheduler::Mode, base::Time));
+  MockSyncScheduler() = default;
+  ~MockSyncScheduler() override = default;
+  MOCK_METHOD(void, Start, (SyncScheduler::Mode, base::Time), (override));
   void ScheduleConfiguration(ConfigurationParams params) override {
     ScheduleConfiguration_(params);
   }
-  MOCK_METHOD1(ScheduleConfiguration_, void(ConfigurationParams&));
+  MOCK_METHOD(void, ScheduleConfiguration_, (ConfigurationParams&), ());
 };
 
 class ComponentsFactory : public TestEngineComponentsFactory {

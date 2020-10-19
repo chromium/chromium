@@ -56,9 +56,10 @@ class MockCommitContributor : public CommitContributor {
  public:
   MockCommitContributor() = default;
   ~MockCommitContributor() override = default;
-
-  MOCK_METHOD1(GetContribution,
-               std::unique_ptr<CommitContribution>(size_t max_entries));
+  MOCK_METHOD(std::unique_ptr<CommitContribution>,
+              GetContribution,
+              (size_t max_entries),
+              (override));
 };
 
 class CommitProcessorTest : public testing::Test {

@@ -153,7 +153,7 @@ void InitWithSyncedBookmarks(const std::vector<BookmarkInfo>& bookmarks,
 
 class MockCommitQueue : public syncer::CommitQueue {
  public:
-  MOCK_METHOD0(NudgeForCommit, void());
+  MOCK_METHOD(void, NudgeForCommit, (), (override));
 };
 
 class ProxyCommitQueue : public syncer::CommitQueue {

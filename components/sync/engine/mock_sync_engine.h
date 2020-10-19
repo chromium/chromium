@@ -25,37 +25,47 @@ class MockSyncEngine : public SyncEngine {
   ~MockSyncEngine() override;
 
   // ModelTypeConfigurer:
-  MOCK_METHOD1(ConfigureDataTypes, void(ConfigureParams));
-  MOCK_METHOD2(ActivateDataType,
-               void(ModelType, std::unique_ptr<DataTypeActivationResponse>));
-  MOCK_METHOD1(DeactivateDataType, void(ModelType));
-  MOCK_METHOD1(ActivateProxyDataType, void(ModelType));
-  MOCK_METHOD1(DeactivateProxyDataType, void(ModelType));
+  MOCK_METHOD(void, ConfigureDataTypes, (ConfigureParams), (override));
+  MOCK_METHOD(void,
+              ActivateDataType,
+              (ModelType, std::unique_ptr<DataTypeActivationResponse>),
+              (override));
+  MOCK_METHOD(void, DeactivateDataType, (ModelType), (override));
+  MOCK_METHOD(void, ActivateProxyDataType, (ModelType), (override));
+  MOCK_METHOD(void, DeactivateProxyDataType, (ModelType), (override));
 
   // SyncEngine:
-  MOCK_METHOD1(Initialize, void(InitParams));
-  MOCK_CONST_METHOD0(IsInitialized, bool());
-  MOCK_METHOD1(TriggerRefresh, void(const ModelTypeSet&));
-  MOCK_METHOD1(UpdateCredentials, void(const SyncCredentials&));
-  MOCK_METHOD0(InvalidateCredentials, void());
-  MOCK_METHOD0(StartConfiguration, void());
-  MOCK_METHOD0(StartSyncingWithServer, void());
-  MOCK_METHOD1(SetEncryptionPassphrase, void(const std::string&));
-  MOCK_METHOD1(SetDecryptionPassphrase, void(const std::string&));
-  MOCK_METHOD2(AddTrustedVaultDecryptionKeys,
-               void(const std::vector<std::vector<uint8_t>>&,
-                    base::OnceClosure));
-  MOCK_METHOD0(StopSyncingForShutdown, void());
-  MOCK_METHOD1(Shutdown, void(ShutdownReason));
-  MOCK_CONST_METHOD0(GetDetailedStatus, const SyncStatus&());
-  MOCK_CONST_METHOD1(HasUnsyncedItemsForTest,
-                     void(base::OnceCallback<void(bool)>));
-  MOCK_METHOD0(RequestBufferedProtocolEventsAndEnableForwarding, void());
-  MOCK_METHOD0(DisableProtocolEventForwarding, void());
-  MOCK_METHOD1(ClearServerData, void(base::OnceClosure));
-  MOCK_METHOD3(OnCookieJarChanged, void(bool, bool, base::OnceClosure));
-  MOCK_METHOD1(SetInvalidationsForSessionsEnabled, void(bool));
-  MOCK_METHOD1(GetNigoriNodeForDebugging, void(AllNodesCallback));
+  MOCK_METHOD(void, Initialize, (InitParams), (override));
+  MOCK_METHOD(bool, IsInitialized, (), (const override));
+  MOCK_METHOD(void, TriggerRefresh, (const ModelTypeSet&), (override));
+  MOCK_METHOD(void, UpdateCredentials, (const SyncCredentials&), (override));
+  MOCK_METHOD(void, InvalidateCredentials, (), (override));
+  MOCK_METHOD(void, StartConfiguration, (), (override));
+  MOCK_METHOD(void, StartSyncingWithServer, (), (override));
+  MOCK_METHOD(void, SetEncryptionPassphrase, (const std::string&), (override));
+  MOCK_METHOD(void, SetDecryptionPassphrase, (const std::string&), (override));
+  MOCK_METHOD(void,
+              AddTrustedVaultDecryptionKeys,
+              (const std::vector<std::vector<uint8_t>>&, base::OnceClosure),
+              (override));
+  MOCK_METHOD(void, StopSyncingForShutdown, (), (override));
+  MOCK_METHOD(void, Shutdown, (ShutdownReason), (override));
+  MOCK_METHOD(const SyncStatus&, GetDetailedStatus, (), (const override));
+  MOCK_METHOD(void,
+              HasUnsyncedItemsForTest,
+              (base::OnceCallback<void(bool)>),
+              (const override));
+  MOCK_METHOD(void,
+              RequestBufferedProtocolEventsAndEnableForwarding,
+              (),
+              (override));
+  MOCK_METHOD(void, DisableProtocolEventForwarding, (), (override));
+  MOCK_METHOD(void,
+              OnCookieJarChanged,
+              (bool, bool, base::OnceClosure),
+              (override));
+  MOCK_METHOD(void, SetInvalidationsForSessionsEnabled, (bool), (override));
+  MOCK_METHOD(void, GetNigoriNodeForDebugging, (AllNodesCallback), (override));
 };
 
 }  // namespace syncer

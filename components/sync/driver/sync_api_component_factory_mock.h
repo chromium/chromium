@@ -23,22 +23,23 @@ class SyncApiComponentFactoryMock : public SyncApiComponentFactory {
  public:
   SyncApiComponentFactoryMock();
   ~SyncApiComponentFactoryMock() override;
-
-  MOCK_METHOD6(CreateDataTypeManager,
-               std::unique_ptr<DataTypeManager>(
-                   ModelTypeSet,
-                   const WeakHandle<DataTypeDebugInfoListener>&,
-                   const DataTypeController::TypeMap*,
-                   const DataTypeEncryptionHandler*,
-                   ModelTypeConfigurer*,
-                   DataTypeManagerObserver*));
-  MOCK_METHOD4(CreateSyncEngine,
-               std::unique_ptr<SyncEngine>(
-                   const std::string& name,
-                   invalidation::InvalidationService* invalidator,
-                   syncer::SyncInvalidationsService* sync_invalidations_service,
-                   const base::WeakPtr<SyncPrefs>& sync_prefs));
-  MOCK_METHOD0(DeleteLegacyDirectoryFilesAndNigoriStorage, void());
+  MOCK_METHOD(std::unique_ptr<DataTypeManager>,
+              CreateDataTypeManager,
+              (ModelTypeSet,
+               const WeakHandle<DataTypeDebugInfoListener>&,
+               const DataTypeController::TypeMap*,
+               const DataTypeEncryptionHandler*,
+               ModelTypeConfigurer*,
+               DataTypeManagerObserver*),
+              (override));
+  MOCK_METHOD(std::unique_ptr<SyncEngine>,
+              CreateSyncEngine,
+              (const std::string& name,
+               invalidation::InvalidationService* invalidator,
+               syncer::SyncInvalidationsService* sync_invalidations_service,
+               const base::WeakPtr<SyncPrefs>& sync_prefs),
+              (override));
+  MOCK_METHOD(void, DeleteLegacyDirectoryFilesAndNigoriStorage, (), (override));
 };
 
 }  // namespace syncer

@@ -57,12 +57,17 @@ namespace syncer {
 class MockSyncer : public Syncer {
  public:
   MockSyncer();
-  MOCK_METHOD3(NormalSyncShare, bool(ModelTypeSet, NudgeTracker*, SyncCycle*));
-  MOCK_METHOD3(ConfigureSyncShare,
-               bool(const ModelTypeSet&,
-                    sync_pb::SyncEnums::GetUpdatesOrigin,
-                    SyncCycle*));
-  MOCK_METHOD2(PollSyncShare, bool(ModelTypeSet, SyncCycle*));
+  MOCK_METHOD(bool,
+              NormalSyncShare,
+              (ModelTypeSet, NudgeTracker*, SyncCycle*),
+              (override));
+  MOCK_METHOD(bool,
+              ConfigureSyncShare,
+              (const ModelTypeSet&,
+               sync_pb::SyncEnums::GetUpdatesOrigin,
+               SyncCycle*),
+              (override));
+  MOCK_METHOD(bool, PollSyncShare, (ModelTypeSet, SyncCycle*), (override));
 };
 
 std::unique_ptr<DataTypeActivationResponse> MakeFakeActivationResponse(
@@ -119,8 +124,7 @@ class SyncSchedulerImplTest : public testing::Test {
         : BackoffDelayProvider(
               TimeDelta::FromSeconds(kInitialBackoffRetrySeconds),
               TimeDelta::FromSeconds(kInitialBackoffImmediateRetrySeconds)) {}
-
-    MOCK_METHOD1(GetDelay, TimeDelta(const TimeDelta&));
+    MOCK_METHOD(TimeDelta, GetDelay, (const TimeDelta&), (override));
   };
 
   void SetUp() override {

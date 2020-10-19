@@ -65,18 +65,21 @@ MATCHER_P(HasName, name, "") {
 
 class MockSyncableService : public SyncableService {
  public:
-  MOCK_METHOD1(WaitUntilReadyToSync, void(base::OnceClosure done));
-  MOCK_METHOD4(MergeDataAndStartSyncing,
-               base::Optional<syncer::ModelError>(
-                   ModelType type,
-                   const SyncDataList& initial_sync_data,
-                   std::unique_ptr<SyncChangeProcessor> sync_processor,
-                   std::unique_ptr<SyncErrorFactory> sync_error_factory));
-  MOCK_METHOD1(StopSyncing, void(ModelType type));
-  MOCK_METHOD2(ProcessSyncChanges,
-               base::Optional<ModelError>(const base::Location& from_here,
-                                          const SyncChangeList& change_list));
-  MOCK_CONST_METHOD1(GetAllSyncData, SyncDataList(ModelType type));
+  MOCK_METHOD(void, WaitUntilReadyToSync, (base::OnceClosure done), (override));
+  MOCK_METHOD(base::Optional<syncer::ModelError>,
+              MergeDataAndStartSyncing,
+              (ModelType type,
+               const SyncDataList& initial_sync_data,
+               std::unique_ptr<SyncChangeProcessor> sync_processor,
+               std::unique_ptr<SyncErrorFactory> sync_error_factory),
+              (override));
+  MOCK_METHOD(void, StopSyncing, (ModelType type), (override));
+  MOCK_METHOD(base::Optional<ModelError>,
+              ProcessSyncChanges,
+              (const base::Location& from_here,
+               const SyncChangeList& change_list),
+              (override));
+  MOCK_METHOD(SyncDataList, GetAllSyncData, (ModelType type), (const override));
 };
 
 class SyncableServiceBasedBridgeTest : public ::testing::Test {

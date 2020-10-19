@@ -16,7 +16,10 @@ namespace {
 
 class MockDataTypesHandler : public InterestedDataTypesHandler {
  public:
-  MOCK_METHOD1(OnInterestedDataTypesChanged, void(base::OnceClosure callback));
+  MOCK_METHOD(void,
+              OnInterestedDataTypesChanged,
+              (base::OnceClosure callback),
+              (override));
 };
 
 class InterestedDataTypesManagerTest : public testing::Test {

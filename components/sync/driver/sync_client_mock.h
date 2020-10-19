@@ -15,21 +15,34 @@ class SyncClientMock : public SyncClient {
  public:
   SyncClientMock();
   ~SyncClientMock() override;
-
-  MOCK_METHOD0(GetPrefService, PrefService*());
-  MOCK_METHOD0(GetIdentityManager, signin::IdentityManager*());
-  MOCK_METHOD0(GetLocalSyncBackendFolder, base::FilePath());
-  MOCK_METHOD1(CreateDataTypeControllers,
-               DataTypeController::TypeVector(SyncService* sync_service));
-  MOCK_METHOD0(GetPasswordStateChangedCallback, base::RepeatingClosure());
-
-  MOCK_METHOD0(GetInvalidationService, invalidation::InvalidationService*());
-  MOCK_METHOD0(GetSyncInvalidationsService,
-               syncer::SyncInvalidationsService*());
-  MOCK_METHOD0(GetTrustedVaultClient, TrustedVaultClient*());
-  MOCK_METHOD0(GetExtensionsActivity, scoped_refptr<ExtensionsActivity>());
-  MOCK_METHOD0(GetSyncApiComponentFactory, SyncApiComponentFactory*());
-  MOCK_METHOD0(GetPreferenceProvider, SyncTypePreferenceProvider*());
+  MOCK_METHOD(PrefService*, GetPrefService, (), (override));
+  MOCK_METHOD(signin::IdentityManager*, GetIdentityManager, (), (override));
+  MOCK_METHOD(base::FilePath, GetLocalSyncBackendFolder, (), (override));
+  MOCK_METHOD(DataTypeController::TypeVector,
+              CreateDataTypeControllers,
+              (SyncService * sync_service),
+              (override));
+  MOCK_METHOD(invalidation::InvalidationService*,
+              GetInvalidationService,
+              (),
+              (override));
+  MOCK_METHOD(syncer::SyncInvalidationsService*,
+              GetSyncInvalidationsService,
+              (),
+              (override));
+  MOCK_METHOD(TrustedVaultClient*, GetTrustedVaultClient, (), (override));
+  MOCK_METHOD(scoped_refptr<ExtensionsActivity>,
+              GetExtensionsActivity,
+              (),
+              (override));
+  MOCK_METHOD(SyncApiComponentFactory*,
+              GetSyncApiComponentFactory,
+              (),
+              (override));
+  MOCK_METHOD(SyncTypePreferenceProvider*,
+              GetPreferenceProvider,
+              (),
+              (override));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SyncClientMock);

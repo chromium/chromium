@@ -58,11 +58,19 @@ class MockCryptoSyncPrefs : public CryptoSyncPrefs {
  public:
   MockCryptoSyncPrefs() = default;
   ~MockCryptoSyncPrefs() override = default;
-
-  MOCK_CONST_METHOD0(GetEncryptionBootstrapToken, std::string());
-  MOCK_METHOD1(SetEncryptionBootstrapToken, void(const std::string&));
-  MOCK_CONST_METHOD0(GetKeystoreEncryptionBootstrapToken, std::string());
-  MOCK_METHOD1(SetKeystoreEncryptionBootstrapToken, void(const std::string&));
+  MOCK_METHOD(std::string, GetEncryptionBootstrapToken, (), (const override));
+  MOCK_METHOD(void,
+              SetEncryptionBootstrapToken,
+              (const std::string&),
+              (override));
+  MOCK_METHOD(std::string,
+              GetKeystoreEncryptionBootstrapToken,
+              (),
+              (const override));
+  MOCK_METHOD(void,
+              SetKeystoreEncryptionBootstrapToken,
+              (const std::string&),
+              (override));
 };
 
 // Object representing a server that contains the authoritative trusted vault

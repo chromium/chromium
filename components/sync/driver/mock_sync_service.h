@@ -33,62 +33,107 @@ class MockSyncService : public SyncService {
   // SyncService implementation.
   syncer::SyncUserSettings* GetUserSettings() override;
   const syncer::SyncUserSettings* GetUserSettings() const override;
-  MOCK_CONST_METHOD0(GetDisableReasons, DisableReasonSet());
-  MOCK_CONST_METHOD0(GetTransportState, TransportState());
-  MOCK_CONST_METHOD0(IsLocalSyncEnabled, bool());
-  MOCK_CONST_METHOD0(GetAuthenticatedAccountInfo, CoreAccountInfo());
-  MOCK_CONST_METHOD0(IsAuthenticatedAccountPrimary, bool());
-  MOCK_CONST_METHOD0(GetAuthError, GoogleServiceAuthError());
-  MOCK_CONST_METHOD0(GetAuthErrorTime, base::Time());
-  MOCK_CONST_METHOD0(RequiresClientUpgrade, bool());
-  MOCK_METHOD0(GetSetupInProgressHandle,
-               std::unique_ptr<SyncSetupInProgressHandle>());
-  MOCK_CONST_METHOD0(IsSetupInProgress, bool());
-
-  MOCK_CONST_METHOD0(GetPreferredDataTypes, ModelTypeSet());
-  MOCK_CONST_METHOD0(GetActiveDataTypes, ModelTypeSet());
-  MOCK_CONST_METHOD0(GetBackedOffDataTypes, ModelTypeSet());
-
-  MOCK_METHOD0(StopAndClear, void());
-  MOCK_METHOD1(OnDataTypeRequestsSyncStartup, void(ModelType type));
-  MOCK_METHOD1(TriggerRefresh, void(const ModelTypeSet& types));
-  MOCK_METHOD1(DataTypePreconditionChanged, void(syncer::ModelType type));
-  MOCK_METHOD1(SetInvalidationsForSessionsEnabled, void(bool enabled));
-  MOCK_METHOD3(AddTrustedVaultDecryptionKeysFromWeb,
-               void(const std::string& gaia_id,
-                    const std::vector<std::vector<uint8_t>>& keys,
-                    int last_key_version));
-  MOCK_METHOD3(AddTrustedVaultRecoveryMethodFromWeb,
-               void(const std::string& gaia_id,
-                    const std::vector<uint8_t>& public_key,
-                    base::OnceClosure callback));
-  MOCK_METHOD1(GetUserNoisedBirthYearAndGender,
-               UserDemographicsResult(base::Time now));
-
-  MOCK_METHOD1(AddObserver, void(SyncServiceObserver* observer));
-  MOCK_METHOD1(RemoveObserver, void(SyncServiceObserver* observer));
-  MOCK_CONST_METHOD1(HasObserver, bool(const SyncServiceObserver* observer));
-
-  MOCK_CONST_METHOD0(GetSyncTokenStatusForDebugging, SyncTokenStatus());
-  MOCK_CONST_METHOD1(QueryDetailedSyncStatusForDebugging,
-                     bool(SyncStatus* result));
-  MOCK_CONST_METHOD0(GetLastSyncedTimeForDebugging, base::Time());
-  MOCK_CONST_METHOD0(GetLastCycleSnapshotForDebugging, SyncCycleSnapshot());
-  MOCK_METHOD0(GetTypeStatusMapForDebugging, std::unique_ptr<base::Value>());
-  MOCK_CONST_METHOD0(GetSyncServiceUrlForDebugging, const GURL&());
-  MOCK_CONST_METHOD0(GetUnrecoverableErrorMessageForDebugging, std::string());
-  MOCK_CONST_METHOD0(GetUnrecoverableErrorLocationForDebugging,
-                     base::Location());
-  MOCK_METHOD1(AddProtocolEventObserver, void(ProtocolEventObserver* observer));
-  MOCK_METHOD1(RemoveProtocolEventObserver,
-               void(ProtocolEventObserver* observer));
-  MOCK_METHOD0(GetJsController, base::WeakPtr<JsController>());
-  MOCK_METHOD1(GetAllNodesForDebugging,
-               void(base::OnceCallback<void(std::unique_ptr<base::ListValue>)>
-                        callback));
+  MOCK_METHOD(DisableReasonSet, GetDisableReasons, (), (const override));
+  MOCK_METHOD(TransportState, GetTransportState, (), (const override));
+  MOCK_METHOD(bool, IsLocalSyncEnabled, (), (const override));
+  MOCK_METHOD(CoreAccountInfo,
+              GetAuthenticatedAccountInfo,
+              (),
+              (const override));
+  MOCK_METHOD(bool, IsAuthenticatedAccountPrimary, (), (const override));
+  MOCK_METHOD(GoogleServiceAuthError, GetAuthError, (), (const override));
+  MOCK_METHOD(base::Time, GetAuthErrorTime, (), (const override));
+  MOCK_METHOD(bool, RequiresClientUpgrade, (), (const override));
+  MOCK_METHOD(std::unique_ptr<SyncSetupInProgressHandle>,
+              GetSetupInProgressHandle,
+              (),
+              (override));
+  MOCK_METHOD(bool, IsSetupInProgress, (), (const override));
+  MOCK_METHOD(ModelTypeSet, GetPreferredDataTypes, (), (const override));
+  MOCK_METHOD(ModelTypeSet, GetActiveDataTypes, (), (const override));
+  MOCK_METHOD(ModelTypeSet, GetBackedOffDataTypes, (), (const override));
+  MOCK_METHOD(void, StopAndClear, (), (override));
+  MOCK_METHOD(void,
+              OnDataTypeRequestsSyncStartup,
+              (ModelType type),
+              (override));
+  MOCK_METHOD(void, TriggerRefresh, (const ModelTypeSet& types), (override));
+  MOCK_METHOD(void,
+              DataTypePreconditionChanged,
+              (syncer::ModelType type),
+              (override));
+  MOCK_METHOD(void,
+              SetInvalidationsForSessionsEnabled,
+              (bool enabled),
+              (override));
+  MOCK_METHOD(void,
+              AddTrustedVaultDecryptionKeysFromWeb,
+              (const std::string& gaia_id,
+               const std::vector<std::vector<uint8_t>>& keys,
+               int last_key_version),
+              (override));
+  MOCK_METHOD(void,
+              AddTrustedVaultRecoveryMethodFromWeb,
+              (const std::string& gaia_id,
+               const std::vector<uint8_t>& public_key,
+               base::OnceClosure callback),
+              (override));
+  MOCK_METHOD(UserDemographicsResult,
+              GetUserNoisedBirthYearAndGender,
+              (base::Time now),
+              (override));
+  MOCK_METHOD(void, AddObserver, (SyncServiceObserver * observer), (override));
+  MOCK_METHOD(void,
+              RemoveObserver,
+              (SyncServiceObserver * observer),
+              (override));
+  MOCK_METHOD(bool,
+              HasObserver,
+              (const SyncServiceObserver* observer),
+              (const override));
+  MOCK_METHOD(SyncTokenStatus,
+              GetSyncTokenStatusForDebugging,
+              (),
+              (const override));
+  MOCK_METHOD(bool,
+              QueryDetailedSyncStatusForDebugging,
+              (SyncStatus * result),
+              (const override));
+  MOCK_METHOD(base::Time, GetLastSyncedTimeForDebugging, (), (const override));
+  MOCK_METHOD(SyncCycleSnapshot,
+              GetLastCycleSnapshotForDebugging,
+              (),
+              (const override));
+  MOCK_METHOD(std::unique_ptr<base::Value>,
+              GetTypeStatusMapForDebugging,
+              (),
+              (override));
+  MOCK_METHOD(const GURL&, GetSyncServiceUrlForDebugging, (), (const override));
+  MOCK_METHOD(std::string,
+              GetUnrecoverableErrorMessageForDebugging,
+              (),
+              (const override));
+  MOCK_METHOD(base::Location,
+              GetUnrecoverableErrorLocationForDebugging,
+              (),
+              (const override));
+  MOCK_METHOD(void,
+              AddProtocolEventObserver,
+              (ProtocolEventObserver * observer),
+              (override));
+  MOCK_METHOD(void,
+              RemoveProtocolEventObserver,
+              (ProtocolEventObserver * observer),
+              (override));
+  MOCK_METHOD(base::WeakPtr<JsController>, GetJsController, (), (override));
+  MOCK_METHOD(
+      void,
+      GetAllNodesForDebugging,
+      (base::OnceCallback<void(std::unique_ptr<base::ListValue>)> callback),
+      (override));
 
   // KeyedService implementation.
-  MOCK_METHOD0(Shutdown, void());
+  MOCK_METHOD(void, Shutdown, (), (override));
 
  private:
   testing::NiceMock<syncer::SyncUserSettingsMock> user_settings_;

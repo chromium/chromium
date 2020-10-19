@@ -87,7 +87,7 @@ class MockMigrationObserver : public MigrationObserver {
  public:
   ~MockMigrationObserver() override {}
 
-  MOCK_METHOD0(OnMigrationStateChange, void());
+  MOCK_METHOD(void, OnMigrationStateChange, ());
 };
 
 // Test that in the normal case a migration does transition through each state

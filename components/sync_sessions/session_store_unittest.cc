@@ -57,10 +57,12 @@ const char kCacheGuid[] = "SomeCacheGuid";
 // b) conveniently exposes the last instantiated session store.
 class MockOpenCallback {
  public:
-  MOCK_METHOD3(Run,
-               void(const base::Optional<syncer::ModelError>& error,
-                    SessionStore* store,
-                    MetadataBatch* metadata_batch));
+  MOCK_METHOD(void,
+              Run,
+              (const base::Optional<syncer::ModelError>& error,
+               SessionStore* store,
+               MetadataBatch* metadata_batch),
+              ());
 
   SessionStore::OpenCallback Get() {
     return base::BindOnce(

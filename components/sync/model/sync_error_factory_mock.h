@@ -16,10 +16,10 @@ class SyncErrorFactoryMock : public SyncErrorFactory {
  public:
   SyncErrorFactoryMock();
   ~SyncErrorFactoryMock() override;
-
-  MOCK_METHOD2(CreateAndUploadError,
-               SyncError(const base::Location& location,
-                         const std::string& message));
+  MOCK_METHOD(SyncError,
+              CreateAndUploadError,
+              (const base::Location& location, const std::string& message),
+              (override));
 };
 
 }  // namespace syncer

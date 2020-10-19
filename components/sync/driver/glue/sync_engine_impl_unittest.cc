@@ -143,21 +143,33 @@ class MockInvalidationService : public invalidation::InvalidationService {
  public:
   MockInvalidationService() = default;
   ~MockInvalidationService() override = default;
-
-  MOCK_METHOD1(RegisterInvalidationHandler,
-               void(syncer::InvalidationHandler* handler));
-  MOCK_METHOD2(UpdateInterestedTopics,
-               bool(syncer::InvalidationHandler* handler,
-                    const syncer::TopicSet& topics));
-  MOCK_METHOD1(UnregisterInvalidationHandler,
-               void(syncer::InvalidationHandler* handler));
-  MOCK_METHOD0(GetInvalidatorStat, syncer::InvalidatorState());
-  MOCK_CONST_METHOD0(GetInvalidatorState, syncer::InvalidatorState());
-  MOCK_CONST_METHOD0(GetInvalidatorClientId, std::string());
-  MOCK_METHOD0(GetInvalidationLogger, invalidation::InvalidationLogger*());
-  MOCK_CONST_METHOD1(RequestDetailedStatus,
-                     void(base::RepeatingCallback<
-                          void(const base::DictionaryValue&)> post_caller));
+  MOCK_METHOD(void,
+              RegisterInvalidationHandler,
+              (syncer::InvalidationHandler * handler),
+              (override));
+  MOCK_METHOD(bool,
+              UpdateInterestedTopics,
+              (syncer::InvalidationHandler * handler,
+               const syncer::TopicSet& topics),
+              (override));
+  MOCK_METHOD(void,
+              UnregisterInvalidationHandler,
+              (syncer::InvalidationHandler * handler),
+              (override));
+  MOCK_METHOD(syncer::InvalidatorState,
+              GetInvalidatorState,
+              (),
+              (const override));
+  MOCK_METHOD(std::string, GetInvalidatorClientId, (), (const override));
+  MOCK_METHOD(invalidation::InvalidationLogger*,
+              GetInvalidationLogger,
+              (),
+              (override));
+  MOCK_METHOD(
+      void,
+      RequestDetailedStatus,
+      (base::RepeatingCallback<void(const base::DictionaryValue&)> post_caller),
+      (const override));
 };
 
 std::unique_ptr<HttpPostProviderFactory> CreateHttpBridgeFactory() {

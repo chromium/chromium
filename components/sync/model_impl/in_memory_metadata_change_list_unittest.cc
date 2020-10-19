@@ -18,13 +18,20 @@ MATCHER_P(EqualsProto, expected, "") {
 
 class MockMetadataChangeList : public MetadataChangeList {
  public:
-  MOCK_METHOD1(UpdateModelTypeState,
-               void(const sync_pb::ModelTypeState& model_type_state));
-  MOCK_METHOD0(ClearModelTypeState, void());
-  MOCK_METHOD2(UpdateMetadata,
-               void(const std::string& storage_key,
-                    const sync_pb::EntityMetadata& metadata));
-  MOCK_METHOD1(ClearMetadata, void(const std::string& storage_key));
+  MOCK_METHOD(void,
+              UpdateModelTypeState,
+              (const sync_pb::ModelTypeState& model_type_state),
+              (override));
+  MOCK_METHOD(void, ClearModelTypeState, (), (override));
+  MOCK_METHOD(void,
+              UpdateMetadata,
+              (const std::string& storage_key,
+               const sync_pb::EntityMetadata& metadata),
+              (override));
+  MOCK_METHOD(void,
+              ClearMetadata,
+              (const std::string& storage_key),
+              (override));
 };
 
 TEST(InMemoryMetadataChangeListTest, ShouldTransferNothingIfEmptyChangeList) {

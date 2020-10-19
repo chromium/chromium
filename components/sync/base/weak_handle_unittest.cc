@@ -26,14 +26,12 @@ class Base {
   }
 
   void Kill() { weak_ptr_factory_.InvalidateWeakPtrs(); }
-
-  MOCK_METHOD0(Test, void());
-  MOCK_METHOD1(Test1, void(const int&));
-  MOCK_METHOD2(Test2, void(const int&, Base*));
-  MOCK_METHOD3(Test3, void(const int&, Base*, float));
-  MOCK_METHOD4(Test4, void(const int&, Base*, float, const char*));
-
-  MOCK_METHOD1(TestWithSelf, void(const WeakHandle<Base>&));
+  MOCK_METHOD(void, Test, (), ());
+  MOCK_METHOD(void, Test1, (const int&), ());
+  MOCK_METHOD(void, Test2, (const int&, Base*), ());
+  MOCK_METHOD(void, Test3, (const int&, Base*, float), ());
+  MOCK_METHOD(void, Test4, (const int&, Base*, float, const char*), ());
+  MOCK_METHOD(void, TestWithSelf, (const WeakHandle<Base>&), ());
 
  private:
   base::WeakPtrFactory<Base> weak_ptr_factory_{this};

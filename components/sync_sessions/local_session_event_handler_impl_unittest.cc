@@ -58,23 +58,28 @@ const int kTabId3 = 1000006;
 
 class MockWriteBatch : public LocalSessionEventHandlerImpl::WriteBatch {
  public:
-  MockWriteBatch() {}
-  ~MockWriteBatch() override {}
-
-  MOCK_METHOD1(Delete, void(int tab_node_id));
-  MOCK_METHOD1(Put, void(std::unique_ptr<sync_pb::SessionSpecifics> specifics));
-  MOCK_METHOD0(Commit, void());
+  MockWriteBatch() = default;
+  ~MockWriteBatch() override = default;
+  MOCK_METHOD(void, Delete, (int tab_node_id), (override));
+  MOCK_METHOD(void,
+              Put,
+              (std::unique_ptr<sync_pb::SessionSpecifics> specifics),
+              (override));
+  MOCK_METHOD(void, Commit, (), (override));
 };
 
 class MockDelegate : public LocalSessionEventHandlerImpl::Delegate {
  public:
-  ~MockDelegate() override {}
-
-  MOCK_METHOD0(CreateLocalSessionWriteBatch,
-               std::unique_ptr<LocalSessionEventHandlerImpl::WriteBatch>());
-  MOCK_METHOD1(IsTabNodeUnsynced, bool(int tab_node_id));
-  MOCK_METHOD2(TrackLocalNavigationId,
-               void(base::Time timestamp, int unique_id));
+  ~MockDelegate() override = default;
+  MOCK_METHOD(std::unique_ptr<LocalSessionEventHandlerImpl::WriteBatch>,
+              CreateLocalSessionWriteBatch,
+              (),
+              (override));
+  MOCK_METHOD(bool, IsTabNodeUnsynced, (int tab_node_id), (override));
+  MOCK_METHOD(void,
+              TrackLocalNavigationId,
+              (base::Time timestamp, int unique_id),
+              (override));
 };
 
 class LocalSessionEventHandlerImplTest : public testing::Test {

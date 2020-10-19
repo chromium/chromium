@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/gcm_driver/gcm_driver.h"
+#include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/sync/invalidations/fcm_registration_token_observer.h"
 #include "components/sync/invalidations/invalidations_listener.h"
@@ -43,48 +44,64 @@ class MockInstanceID : public InstanceID {
  public:
   MockInstanceID() : InstanceID("app_id", /*gcm_driver=*/nullptr) {}
   ~MockInstanceID() override = default;
-
-  MOCK_METHOD1(GetID, void(GetIDCallback callback));
-  MOCK_METHOD1(GetCreationTime, void(GetCreationTimeCallback callback));
-  MOCK_METHOD6(GetToken,
-               void(const std::string& authorized_entity,
-                    const std::string& scope,
-                    base::TimeDelta time_to_live,
-                    const std::map<std::string, std::string>& options,
-                    std::set<Flags> flags,
-                    GetTokenCallback callback));
-  MOCK_METHOD4(ValidateToken,
-               void(const std::string& authorized_entity,
-                    const std::string& scope,
-                    const std::string& token,
-                    ValidateTokenCallback callback));
+  MOCK_METHOD(void, GetID, (GetIDCallback callback), (override));
+  MOCK_METHOD(void,
+              GetCreationTime,
+              (GetCreationTimeCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              GetToken,
+              (const std::string& authorized_entity,
+               const std::string& scope,
+               base::TimeDelta time_to_live,
+               (const std::map<std::string, std::string>& options),
+               std::set<Flags> flags,
+               GetTokenCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              ValidateToken,
+              (const std::string& authorized_entity,
+               const std::string& scope,
+               const std::string& token,
+               ValidateTokenCallback callback),
+              (override));
 
  protected:
-  MOCK_METHOD3(DeleteTokenImpl,
-               void(const std::string& authorized_entity,
-                    const std::string& scope,
-                    DeleteTokenCallback callback));
-  MOCK_METHOD1(DeleteIDImpl, void(DeleteIDCallback callback));
+  MOCK_METHOD(void,
+              DeleteTokenImpl,
+              (const std::string& authorized_entity,
+               const std::string& scope,
+               DeleteTokenCallback callback),
+              (override));
+  MOCK_METHOD(void, DeleteIDImpl, (DeleteIDCallback callback), (override));
 };
 
 class MockInstanceIDDriver : public instance_id::InstanceIDDriver {
  public:
   MockInstanceIDDriver() : InstanceIDDriver(/*gcm_driver=*/nullptr) {}
   ~MockInstanceIDDriver() override = default;
-
-  MOCK_METHOD1(GetInstanceID, InstanceID*(const std::string& app_id));
-  MOCK_METHOD1(RemoveInstanceID, void(const std::string& app_id));
-  MOCK_CONST_METHOD1(ExistsInstanceID, bool(const std::string& app_id));
+  MOCK_METHOD(InstanceID*,
+              GetInstanceID,
+              (const std::string& app_id),
+              (override));
+  MOCK_METHOD(void, RemoveInstanceID, (const std::string& app_id), (override));
+  MOCK_METHOD(bool,
+              ExistsInstanceID,
+              (const std::string& app_id),
+              (const override));
 };
 
 class MockListener : public InvalidationsListener {
  public:
-  MOCK_METHOD1(OnInvalidationReceived, void(const std::string& payload));
+  MOCK_METHOD(void,
+              OnInvalidationReceived,
+              (const std::string& payload),
+              (override));
 };
 
 class MockTokenObserver : public FCMRegistrationTokenObserver {
  public:
-  MOCK_METHOD0(OnFCMRegistrationTokenChanged, void());
+  MOCK_METHOD(void, OnFCMRegistrationTokenChanged, (), (override));
 };
 
 class FCMHandlerTest : public testing::Test {

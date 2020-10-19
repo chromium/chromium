@@ -14,23 +14,17 @@ class SyncSetupServiceMock : public SyncSetupService {
  public:
   SyncSetupServiceMock(syncer::SyncService* sync_service);
   ~SyncSetupServiceMock();
-
-  MOCK_CONST_METHOD0(IsSyncEnabled, bool());
-
-  MOCK_CONST_METHOD0(IsSyncingAllDataTypes, bool());
-
-  MOCK_METHOD0(GetSyncServiceState, SyncServiceState());
-
-  MOCK_CONST_METHOD1(IsDataTypePreferred, bool(syncer::ModelType));
-
-  MOCK_CONST_METHOD1(IsDataTypeActive, bool(syncer::ModelType));
-
-  MOCK_METHOD0(HasFinishedInitialSetup, bool());
-
-  MOCK_METHOD0(PrepareForFirstSyncSetup, void());
-
-  MOCK_METHOD1(SetFirstSetupComplete,
-               void(syncer::SyncFirstSetupCompleteSource));
+  MOCK_METHOD(bool, IsSyncEnabled, (), (const override));
+  MOCK_METHOD(bool, IsSyncingAllDataTypes, (), (const override));
+  MOCK_METHOD(SyncServiceState, GetSyncServiceState, (), (override));
+  MOCK_METHOD(bool, IsDataTypePreferred, (syncer::ModelType), (const override));
+  MOCK_METHOD(bool, IsDataTypeActive, (syncer::ModelType), (const override));
+  MOCK_METHOD(bool, HasFinishedInitialSetup, (), (override));
+  MOCK_METHOD(void, PrepareForFirstSyncSetup, (), (override));
+  MOCK_METHOD(void,
+              SetFirstSetupComplete,
+              (syncer::SyncFirstSetupCompleteSource),
+              (override));
 
   // Allow the real SyncSetupService::HasFinishedInitialSetup() to be used when
   // mocking HasFinishedInitialSetup().

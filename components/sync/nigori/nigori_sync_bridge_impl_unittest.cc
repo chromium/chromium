@@ -282,43 +282,57 @@ class MockNigoriLocalChangeProcessor : public NigoriLocalChangeProcessor {
  public:
   MockNigoriLocalChangeProcessor() = default;
   ~MockNigoriLocalChangeProcessor() override = default;
-
-  MOCK_METHOD2(ModelReadyToSync, void(NigoriSyncBridge*, NigoriMetadataBatch));
-  MOCK_METHOD1(Put, void(std::unique_ptr<EntityData>));
-  MOCK_METHOD0(IsEntityUnsynced, bool());
-  MOCK_METHOD0(GetMetadata, NigoriMetadataBatch());
-  MOCK_METHOD1(ReportError, void(const ModelError&));
-  MOCK_METHOD0(GetControllerDelegate,
-               base::WeakPtr<ModelTypeControllerDelegate>());
-  MOCK_METHOD0(IsTrackingMetadata, bool());
+  MOCK_METHOD(void,
+              ModelReadyToSync,
+              (NigoriSyncBridge*, NigoriMetadataBatch),
+              (override));
+  MOCK_METHOD(void, Put, (std::unique_ptr<EntityData>), (override));
+  MOCK_METHOD(bool, IsEntityUnsynced, (), (override));
+  MOCK_METHOD(NigoriMetadataBatch, GetMetadata, (), (override));
+  MOCK_METHOD(void, ReportError, (const ModelError&), (override));
+  MOCK_METHOD(base::WeakPtr<ModelTypeControllerDelegate>,
+              GetControllerDelegate,
+              (),
+              (override));
+  MOCK_METHOD(bool, IsTrackingMetadata, (), (override));
 };
 
 class MockObserver : public SyncEncryptionHandler::Observer {
  public:
   MockObserver() = default;
   ~MockObserver() override = default;
-
-  MOCK_METHOD2(OnPassphraseRequired,
-               void(const KeyDerivationParams&, const sync_pb::EncryptedData&));
-  MOCK_METHOD0(OnPassphraseAccepted, void());
-  MOCK_METHOD0(OnTrustedVaultKeyRequired, void());
-  MOCK_METHOD0(OnTrustedVaultKeyAccepted, void());
-  MOCK_METHOD2(OnBootstrapTokenUpdated,
-               void(const std::string&, BootstrapTokenType type));
-  MOCK_METHOD2(OnEncryptedTypesChanged, void(ModelTypeSet, bool));
-  MOCK_METHOD2(OnCryptographerStateChanged,
-               void(Cryptographer*, bool has_pending_keys));
-  MOCK_METHOD2(OnPassphraseTypeChanged, void(PassphraseType, base::Time));
+  MOCK_METHOD(void,
+              OnPassphraseRequired,
+              (const KeyDerivationParams&, const sync_pb::EncryptedData&),
+              (override));
+  MOCK_METHOD(void, OnPassphraseAccepted, (), (override));
+  MOCK_METHOD(void, OnTrustedVaultKeyRequired, (), (override));
+  MOCK_METHOD(void, OnTrustedVaultKeyAccepted, (), (override));
+  MOCK_METHOD(void,
+              OnBootstrapTokenUpdated,
+              (const std::string&, BootstrapTokenType type),
+              (override));
+  MOCK_METHOD(void, OnEncryptedTypesChanged, (ModelTypeSet, bool), (override));
+  MOCK_METHOD(void,
+              OnCryptographerStateChanged,
+              (Cryptographer*, bool has_pending_keys),
+              (override));
+  MOCK_METHOD(void,
+              OnPassphraseTypeChanged,
+              (PassphraseType, base::Time),
+              (override));
 };
 
 class MockNigoriStorage : public NigoriStorage {
  public:
   MockNigoriStorage() = default;
   ~MockNigoriStorage() override = default;
-
-  MOCK_METHOD1(StoreData, void(const sync_pb::NigoriLocalData&));
-  MOCK_METHOD0(RestoreData, base::Optional<sync_pb::NigoriLocalData>());
-  MOCK_METHOD0(ClearData, void());
+  MOCK_METHOD(void, StoreData, (const sync_pb::NigoriLocalData&), (override));
+  MOCK_METHOD(base::Optional<sync_pb::NigoriLocalData>,
+              RestoreData,
+              (),
+              (override));
+  MOCK_METHOD(void, ClearData, (), (override));
 };
 
 class NigoriSyncBridgeImplTest : public testing::Test {

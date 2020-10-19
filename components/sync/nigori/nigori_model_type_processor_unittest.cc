@@ -90,25 +90,24 @@ CommitResponseData CreateNigoriCommitResponseData(
 class MockNigoriSyncBridge : public NigoriSyncBridge {
  public:
   MockNigoriSyncBridge() = default;
-  ~MockNigoriSyncBridge() = default;
-
-  MOCK_METHOD1(MergeSyncData,
-               base::Optional<ModelError>(base::Optional<EntityData> data));
-  MOCK_METHOD1(ApplySyncChanges,
-               base::Optional<ModelError>(base::Optional<EntityData> data));
-  MOCK_METHOD0(GetData, std::unique_ptr<EntityData>());
-  MOCK_METHOD2(ResolveConflict,
-               ConflictResolution(const EntityData& local_data,
-                                  const EntityData& remote_data));
-  MOCK_METHOD0(ApplyDisableSyncChanges, void());
+  ~MockNigoriSyncBridge() override = default;
+  MOCK_METHOD(base::Optional<ModelError>,
+              MergeSyncData,
+              (base::Optional<EntityData> data),
+              (override));
+  MOCK_METHOD(base::Optional<ModelError>,
+              ApplySyncChanges,
+              (base::Optional<EntityData> data),
+              (override));
+  MOCK_METHOD(std::unique_ptr<EntityData>, GetData, (), (override));
+  MOCK_METHOD(void, ApplyDisableSyncChanges, (), (override));
 };
 
 class MockCommitQueue : public CommitQueue {
  public:
   MockCommitQueue() = default;
-  ~MockCommitQueue() = default;
-
-  MOCK_METHOD0(NudgeForCommit, void());
+  ~MockCommitQueue() override = default;
+  MOCK_METHOD(void, NudgeForCommit, (), (override));
 };
 
 class NigoriModelTypeProcessorTest : public testing::Test {

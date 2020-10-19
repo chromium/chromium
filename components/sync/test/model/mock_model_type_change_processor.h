@@ -18,36 +18,60 @@ class MockModelTypeChangeProcessor : public ModelTypeChangeProcessor {
  public:
   MockModelTypeChangeProcessor();
   ~MockModelTypeChangeProcessor() override;
-
-  MOCK_METHOD3(Put,
-               void(const std::string& storage_key,
-                    std::unique_ptr<EntityData> entity_data,
-                    MetadataChangeList* metadata_change_list));
-  MOCK_METHOD2(Delete,
-               void(const std::string& storage_key,
-                    MetadataChangeList* metadata_change_list));
-  MOCK_METHOD3(UpdateStorageKey,
-               void(const EntityData& entity_data,
-                    const std::string& storage_key,
-                    MetadataChangeList* metadata_change_list));
-  MOCK_METHOD1(UntrackEntityForStorageKey,
-               void(const std::string& storage_key));
-  MOCK_METHOD1(UntrackEntityForClientTagHash,
-               void(const ClientTagHash& client_tag_hash));
-  MOCK_METHOD1(IsEntityUnsynced, bool(const std::string& storage_key));
-  MOCK_CONST_METHOD1(GetEntityCreationTime,
-                     base::Time(const std::string& storage_key));
-  MOCK_CONST_METHOD1(GetEntityModificationTime,
-                     base::Time(const std::string& storage_key));
-  MOCK_METHOD1(OnModelStarting, void(ModelTypeSyncBridge* bridge));
-  MOCK_METHOD1(ModelReadyToSync, void(std::unique_ptr<MetadataBatch> batch));
-  MOCK_METHOD0(IsTrackingMetadata, bool());
-  MOCK_METHOD0(TrackedAccountId, std::string());
-  MOCK_METHOD0(TrackedCacheGuid, std::string());
-  MOCK_METHOD1(ReportError, void(const ModelError& error));
-  MOCK_CONST_METHOD0(GetError, base::Optional<ModelError>());
-  MOCK_METHOD0(GetControllerDelegate,
-               base::WeakPtr<ModelTypeControllerDelegate>());
+  MOCK_METHOD(void,
+              Put,
+              (const std::string& storage_key,
+               std::unique_ptr<EntityData> entity_data,
+               MetadataChangeList* metadata_change_list),
+              (override));
+  MOCK_METHOD(void,
+              Delete,
+              (const std::string& storage_key,
+               MetadataChangeList* metadata_change_list),
+              (override));
+  MOCK_METHOD(void,
+              UpdateStorageKey,
+              (const EntityData& entity_data,
+               const std::string& storage_key,
+               MetadataChangeList* metadata_change_list),
+              (override));
+  MOCK_METHOD(void,
+              UntrackEntityForStorageKey,
+              (const std::string& storage_key),
+              (override));
+  MOCK_METHOD(void,
+              UntrackEntityForClientTagHash,
+              (const ClientTagHash& client_tag_hash),
+              (override));
+  MOCK_METHOD(bool,
+              IsEntityUnsynced,
+              (const std::string& storage_key),
+              (override));
+  MOCK_METHOD(base::Time,
+              GetEntityCreationTime,
+              (const std::string& storage_key),
+              (const override));
+  MOCK_METHOD(base::Time,
+              GetEntityModificationTime,
+              (const std::string& storage_key),
+              (const override));
+  MOCK_METHOD(void,
+              OnModelStarting,
+              (ModelTypeSyncBridge * bridge),
+              (override));
+  MOCK_METHOD(void,
+              ModelReadyToSync,
+              (std::unique_ptr<MetadataBatch> batch),
+              (override));
+  MOCK_METHOD(bool, IsTrackingMetadata, (), (override));
+  MOCK_METHOD(std::string, TrackedAccountId, (), (override));
+  MOCK_METHOD(std::string, TrackedCacheGuid, (), (override));
+  MOCK_METHOD(void, ReportError, (const ModelError& error), (override));
+  MOCK_METHOD(base::Optional<ModelError>, GetError, (), (const override));
+  MOCK_METHOD(base::WeakPtr<ModelTypeControllerDelegate>,
+              GetControllerDelegate,
+              (),
+              (override));
 
   // Returns a processor that forwards all calls to
   // |this|. |*this| must outlive the returned processor.

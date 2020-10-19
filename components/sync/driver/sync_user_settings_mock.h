@@ -17,46 +17,62 @@ class SyncUserSettingsMock : public SyncUserSettings {
  public:
   SyncUserSettingsMock();
   ~SyncUserSettingsMock() override;
-
-  MOCK_CONST_METHOD0(IsSyncRequested, bool());
-  MOCK_METHOD1(SetSyncRequested, void(bool));
-
-  MOCK_CONST_METHOD0(IsSyncAllowedByPlatform, bool());
-  MOCK_METHOD1(SetSyncAllowedByPlatform, void(bool));
-
-  MOCK_CONST_METHOD0(IsFirstSetupComplete, bool());
-  MOCK_METHOD1(SetFirstSetupComplete, void(SyncFirstSetupCompleteSource));
-
-  MOCK_CONST_METHOD0(IsSyncEverythingEnabled, bool());
-  MOCK_CONST_METHOD0(GetSelectedTypes, UserSelectableTypeSet());
-  MOCK_METHOD2(SetSelectedTypes, void(bool, UserSelectableTypeSet));
-  MOCK_CONST_METHOD0(GetRegisteredSelectableTypes, UserSelectableTypeSet());
+  MOCK_METHOD(bool, IsSyncRequested, (), (const override));
+  MOCK_METHOD(void, SetSyncRequested, (bool), (override));
+  MOCK_METHOD(bool, IsSyncAllowedByPlatform, (), (const override));
+  MOCK_METHOD(void, SetSyncAllowedByPlatform, (bool), (override));
+  MOCK_METHOD(bool, IsFirstSetupComplete, (), (const override));
+  MOCK_METHOD(void,
+              SetFirstSetupComplete,
+              (SyncFirstSetupCompleteSource),
+              (override));
+  MOCK_METHOD(bool, IsSyncEverythingEnabled, (), (const override));
+  MOCK_METHOD(UserSelectableTypeSet, GetSelectedTypes, (), (const override));
+  MOCK_METHOD(void,
+              SetSelectedTypes,
+              (bool, UserSelectableTypeSet),
+              (override));
+  MOCK_METHOD(UserSelectableTypeSet,
+              GetRegisteredSelectableTypes,
+              (),
+              (const override));
 
 #if defined(OS_CHROMEOS)
-  MOCK_CONST_METHOD0(IsSyncAllOsTypesEnabled, bool());
-  MOCK_CONST_METHOD0(GetSelectedOsTypes, UserSelectableOsTypeSet());
-  MOCK_METHOD2(SetSelectedOsTypes, void(bool, UserSelectableOsTypeSet));
-  MOCK_CONST_METHOD0(GetRegisteredSelectableOsTypes, UserSelectableOsTypeSet());
-
-  MOCK_CONST_METHOD0(IsOsSyncFeatureEnabled, bool());
-  MOCK_METHOD1(SetOsSyncFeatureEnabled, void(bool));
+  MOCK_METHOD(bool, IsSyncAllOsTypesEnabled, (), (const override));
+  MOCK_METHOD(UserSelectableOsTypeSet,
+              GetSelectedOsTypes,
+              (),
+              (const override));
+  MOCK_METHOD(void,
+              SetSelectedOsTypes,
+              (bool, UserSelectableOsTypeSet),
+              (override));
+  MOCK_METHOD(UserSelectableOsTypeSet,
+              GetRegisteredSelectableOsTypes,
+              (),
+              (const override));
+  MOCK_METHOD(bool, IsOsSyncFeatureEnabled, (), (const override));
+  MOCK_METHOD(void, SetOsSyncFeatureEnabled, (bool), (override));
 #endif
-
-  MOCK_CONST_METHOD0(IsEncryptEverythingAllowed, bool());
-  MOCK_CONST_METHOD0(IsEncryptEverythingEnabled, bool());
-
-  MOCK_CONST_METHOD0(GetEncryptedDataTypes, ModelTypeSet());
-  MOCK_CONST_METHOD0(IsPassphraseRequired, bool());
-  MOCK_CONST_METHOD0(IsPassphraseRequiredForPreferredDataTypes, bool());
-  MOCK_CONST_METHOD0(IsTrustedVaultKeyRequired, bool());
-  MOCK_CONST_METHOD0(IsTrustedVaultKeyRequiredForPreferredDataTypes, bool());
-  MOCK_CONST_METHOD0(IsTrustedVaultRecoverabilityDegraded, bool());
-  MOCK_CONST_METHOD0(IsUsingSecondaryPassphrase, bool());
-  MOCK_CONST_METHOD0(GetExplicitPassphraseTime, base::Time());
-  MOCK_CONST_METHOD0(GetPassphraseType, PassphraseType());
-
-  MOCK_METHOD1(SetEncryptionPassphrase, void(const std::string&));
-  MOCK_METHOD1(SetDecryptionPassphrase, bool(const std::string&));
+  MOCK_METHOD(bool, IsEncryptEverythingAllowed, (), (const override));
+  MOCK_METHOD(bool, IsEncryptEverythingEnabled, (), (const override));
+  MOCK_METHOD(ModelTypeSet, GetEncryptedDataTypes, (), (const override));
+  MOCK_METHOD(bool, IsPassphraseRequired, (), (const override));
+  MOCK_METHOD(bool,
+              IsPassphraseRequiredForPreferredDataTypes,
+              (),
+              (const override));
+  MOCK_METHOD(bool, IsTrustedVaultKeyRequired, (), (const override));
+  MOCK_METHOD(bool,
+              IsTrustedVaultKeyRequiredForPreferredDataTypes,
+              (),
+              (const override));
+  MOCK_METHOD(bool, IsTrustedVaultRecoverabilityDegraded, (), (const override));
+  MOCK_METHOD(bool, IsUsingSecondaryPassphrase, (), (const override));
+  MOCK_METHOD(base::Time, GetExplicitPassphraseTime, (), (const override));
+  MOCK_METHOD(PassphraseType, GetPassphraseType, (), (const override));
+  MOCK_METHOD(void, SetEncryptionPassphrase, (const std::string&), (override));
+  MOCK_METHOD(bool, SetDecryptionPassphrase, (const std::string&), (override));
 };
 
 }  // namespace syncer

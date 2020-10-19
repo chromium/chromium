@@ -183,42 +183,74 @@ class FakeDatabase {
 
 class MockSyncMetadataStore : public PasswordStoreSync::MetadataStore {
  public:
-  MOCK_METHOD0(GetAllSyncMetadata, std::unique_ptr<syncer::MetadataBatch>());
-  MOCK_METHOD0(DeleteAllSyncMetadata, void());
-  MOCK_METHOD3(UpdateSyncMetadata,
-               bool(syncer::ModelType,
-                    const std::string&,
-                    const sync_pb::EntityMetadata&));
-  MOCK_METHOD2(ClearSyncMetadata, bool(syncer::ModelType, const std::string&));
-  MOCK_METHOD2(UpdateModelTypeState,
-               bool(syncer::ModelType, const sync_pb::ModelTypeState&));
-  MOCK_METHOD1(ClearModelTypeState, bool(syncer::ModelType));
-  MOCK_METHOD1(SetDeletionsHaveSyncedCallback,
-               void(base::RepeatingCallback<void(bool)>));
-  MOCK_METHOD0(HasUnsyncedDeletions, bool());
+  MOCK_METHOD(std::unique_ptr<syncer::MetadataBatch>,
+              GetAllSyncMetadata,
+              (),
+              (override));
+  MOCK_METHOD(void, DeleteAllSyncMetadata, (), (override));
+  MOCK_METHOD(bool,
+              UpdateSyncMetadata,
+              (syncer::ModelType,
+               const std::string&,
+               const sync_pb::EntityMetadata&),
+              (override));
+  MOCK_METHOD(bool,
+              ClearSyncMetadata,
+              (syncer::ModelType, const std::string&),
+              (override));
+  MOCK_METHOD(bool,
+              UpdateModelTypeState,
+              (syncer::ModelType, const sync_pb::ModelTypeState&),
+              (override));
+  MOCK_METHOD(bool, ClearModelTypeState, (syncer::ModelType), (override));
+  MOCK_METHOD(void,
+              SetDeletionsHaveSyncedCallback,
+              (base::RepeatingCallback<void(bool)>),
+              (override));
+  MOCK_METHOD(bool, HasUnsyncedDeletions, (), (override));
 };
 
 class MockPasswordStoreSync : public PasswordStoreSync {
  public:
-  MOCK_METHOD1(ReadAllLogins, FormRetrievalResult(PrimaryKeyToFormMap*));
-  MOCK_METHOD1(RemoveLoginByPrimaryKeySync, PasswordStoreChangeList(int));
-  MOCK_METHOD0(DeleteUndecryptableLogins, DatabaseCleanupResult());
-  MOCK_METHOD2(AddLoginSync,
-               PasswordStoreChangeList(const PasswordForm&, AddLoginError*));
-  MOCK_METHOD2(UpdateLoginSync,
-               PasswordStoreChangeList(const PasswordForm&, UpdateLoginError*));
-  MOCK_METHOD1(RemoveLoginSync, PasswordStoreChangeList(const PasswordForm&));
-  MOCK_METHOD1(NotifyLoginsChanged, void(const PasswordStoreChangeList&));
-  MOCK_METHOD1(NotifyDeletionsHaveSynced, void(bool));
-
-  MOCK_METHOD1(NotifyUnsyncedCredentialsWillBeDeleted,
-               void(std::vector<PasswordForm> unsynced_credentials));
-  MOCK_METHOD0(BeginTransaction, bool());
-  MOCK_METHOD0(CommitTransaction, bool());
-  MOCK_METHOD0(RollbackTransaction, void());
-  MOCK_METHOD0(GetMetadataStore, PasswordStoreSync::MetadataStore*());
-  MOCK_CONST_METHOD0(IsAccountStore, bool());
-  MOCK_METHOD0(DeleteAndRecreateDatabaseFile, bool());
+  MOCK_METHOD(FormRetrievalResult,
+              ReadAllLogins,
+              (PrimaryKeyToFormMap*),
+              (override));
+  MOCK_METHOD(PasswordStoreChangeList,
+              RemoveLoginByPrimaryKeySync,
+              (int),
+              (override));
+  MOCK_METHOD(DatabaseCleanupResult, DeleteUndecryptableLogins, (), (override));
+  MOCK_METHOD(PasswordStoreChangeList,
+              AddLoginSync,
+              (const PasswordForm&, AddLoginError*),
+              (override));
+  MOCK_METHOD(PasswordStoreChangeList,
+              UpdateLoginSync,
+              (const PasswordForm&, UpdateLoginError*),
+              (override));
+  MOCK_METHOD(PasswordStoreChangeList,
+              RemoveLoginSync,
+              (const PasswordForm&),
+              (override));
+  MOCK_METHOD(void,
+              NotifyLoginsChanged,
+              (const PasswordStoreChangeList&),
+              (override));
+  MOCK_METHOD(void, NotifyDeletionsHaveSynced, (bool), (override));
+  MOCK_METHOD(void,
+              NotifyUnsyncedCredentialsWillBeDeleted,
+              (std::vector<PasswordForm> unsynced_credentials),
+              (override));
+  MOCK_METHOD(bool, BeginTransaction, (), (override));
+  MOCK_METHOD(bool, CommitTransaction, (), (override));
+  MOCK_METHOD(void, RollbackTransaction, (), (override));
+  MOCK_METHOD(PasswordStoreSync::MetadataStore*,
+              GetMetadataStore,
+              (),
+              (override));
+  MOCK_METHOD(bool, IsAccountStore, (), (const override));
+  MOCK_METHOD(bool, DeleteAndRecreateDatabaseFile, (), (override));
 };
 
 }  // namespace

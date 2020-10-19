@@ -49,27 +49,29 @@ class MockDelegate : public StandaloneTrustedVaultBackend::Delegate {
  public:
   MockDelegate() = default;
   ~MockDelegate() override = default;
-
-  MOCK_METHOD0(NotifyRecoverabilityDegradedChanged, void());
+  MOCK_METHOD(void, NotifyRecoverabilityDegradedChanged, (), (override));
 };
 
 class MockTrustedVaultConnection : public TrustedVaultConnection {
  public:
   MockTrustedVaultConnection() = default;
   ~MockTrustedVaultConnection() override = default;
-
-  MOCK_METHOD5(RegisterAuthenticationFactor,
-               void(const CoreAccountInfo&,
-                    const std::vector<uint8_t>&,
-                    int,
-                    const SecureBoxPublicKey&,
-                    RegisterAuthenticationFactorCallback));
-  MOCK_METHOD5(DownloadKeys,
-               void(const CoreAccountInfo&,
-                    const std::vector<uint8_t>&,
-                    int,
-                    std::unique_ptr<SecureBoxKeyPair>,
-                    DownloadKeysCallback));
+  MOCK_METHOD(void,
+              RegisterAuthenticationFactor,
+              (const CoreAccountInfo&,
+               const std::vector<uint8_t>&,
+               int,
+               const SecureBoxPublicKey&,
+               RegisterAuthenticationFactorCallback),
+              (override));
+  MOCK_METHOD(void,
+              DownloadKeys,
+              (const CoreAccountInfo&,
+               const std::vector<uint8_t>&,
+               int,
+               std::unique_ptr<SecureBoxKeyPair>,
+               DownloadKeysCallback),
+              (override));
 };
 
 class StandaloneTrustedVaultBackendTest : public testing::Test {

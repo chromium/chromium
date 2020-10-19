@@ -72,10 +72,10 @@ TEST_F(SyncPrefsTest, PollInterval) {
 
 class MockSyncPrefObserver : public SyncPrefObserver {
  public:
-  MOCK_METHOD1(OnSyncManagedPrefChange, void(bool));
-  MOCK_METHOD1(OnFirstSetupCompletePrefChange, void(bool));
-  MOCK_METHOD1(OnSyncRequestedPrefChange, void(bool));
-  MOCK_METHOD0(OnPreferredDataTypesPrefChange, void());
+  MOCK_METHOD(void, OnSyncManagedPrefChange, (bool), (override));
+  MOCK_METHOD(void, OnFirstSetupCompletePrefChange, (bool), (override));
+  MOCK_METHOD(void, OnSyncRequestedPrefChange, (bool), (override));
+  MOCK_METHOD(void, OnPreferredDataTypesPrefChange, (), (override));
 };
 
 TEST_F(SyncPrefsTest, ObservedPrefs) {

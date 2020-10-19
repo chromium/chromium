@@ -32,14 +32,21 @@ ConfigureContext BuildConfigureContext(SyncMode sync_mode = SyncMode::kFull) {
 class MockModelAssociationManagerDelegate
     : public ModelAssociationManagerDelegate {
  public:
-  MockModelAssociationManagerDelegate() {}
-  ~MockModelAssociationManagerDelegate() override {}
-  MOCK_METHOD0(OnAllDataTypesReadyForConfigure, void());
-  MOCK_METHOD1(OnSingleDataTypeAssociationDone, void(ModelType type));
-  MOCK_METHOD2(OnSingleDataTypeWillStop,
-               void(ModelType, const SyncError& error));
-  MOCK_METHOD1(OnModelAssociationDone,
-               void(const DataTypeManager::ConfigureResult& result));
+  MockModelAssociationManagerDelegate() = default;
+  ~MockModelAssociationManagerDelegate() override = default;
+  MOCK_METHOD(void, OnAllDataTypesReadyForConfigure, (), (override));
+  MOCK_METHOD(void,
+              OnSingleDataTypeAssociationDone,
+              (ModelType type),
+              (override));
+  MOCK_METHOD(void,
+              OnSingleDataTypeWillStop,
+              (ModelType, const SyncError& error),
+              (override));
+  MOCK_METHOD(void,
+              OnModelAssociationDone,
+              (const DataTypeManager::ConfigureResult& result),
+              (override));
 };
 
 MATCHER_P2(MatchesResult, status, requested_types, "") {
