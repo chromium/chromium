@@ -54,10 +54,6 @@ body {
           2x);
 }
 
-[is='action-link'] {
-  margin-inline-start: 0.5em;
-}
-
 #card-slider-frame {
   /* Must match #footer height. */
   bottom: 50px;
@@ -162,10 +158,6 @@ html[dir='rtl'] #attribution {
 html[dir='rtl'] #login-container {
   left: 0;
   right: auto;
-}
-
-#login-container [is='action-link'] {
-  margin-inline-start: 0;
 }
 
 .login-status-icon {
