@@ -192,14 +192,28 @@ class IPAddress;
 class ResolveContext;
 class URLRequestContext;
 
-// Builds an address record for the given name and IP.
-DnsResourceRecord BuildTestAddressRecord(std::string name, const IPAddress& ip);
+DnsResourceRecord BuildTestDnsRecord(
+    std::string name,
+    uint16_t type,
+    std::string rdata,
+    base::TimeDelta ttl = base::TimeDelta::FromDays(1));
 
-// Builds a DNS response that includes address records.
-DnsResponse BuildTestDnsAddressResponse(std::string name, const IPAddress& ip);
+DnsResourceRecord BuildTestAddressRecord(
+    std::string name,
+    const IPAddress& ip,
+    base::TimeDelta ttl = base::TimeDelta::FromDays(1));
+
+DnsResponse BuildTestDnsResponse(std::string name,
+                                 uint16_t type,
+                                 const std::vector<DnsResourceRecord>& answers);
+
+DnsResponse BuildTestDnsAddressResponse(std::string name,
+                                        const IPAddress& ip,
+                                        std::string answer_name = "");
 DnsResponse BuildTestDnsAddressResponseWithCname(std::string name,
                                                  const IPAddress& ip,
-                                                 std::string cannonname);
+                                                 std::string cannonname,
+                                                 std::string answer_name = "");
 
 // If |answer_name| is empty, |name| will be used for all answer records, as is
 // the normal behavior.
@@ -222,10 +236,6 @@ DnsResponse BuildTestDnsServiceResponse(
     std::string name,
     std::vector<TestServiceRecord> service_records,
     std::string answer_name = "");
-
-DnsResponse BuildTestDnsIntegrityResponse(
-    std::string hostname,
-    const std::vector<uint8_t>& serialized_rdata);
 
 struct MockDnsClientRule {
   enum ResultType {

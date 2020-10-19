@@ -8899,12 +8899,18 @@ class HostResolverManagerDnsTestIntegrity : public HostResolverManagerDnsTest {
       std::vector<uint8_t> integrity_rdata = options.integrity_mangled
                                                  ? GetMangledIntegrityRdata()
                                                  : GetValidIntegrityRdata();
-      rules.emplace_back(
-          "host", dns_protocol::kExperimentalTypeIntegrity,
-          options.secure_integrity,
-          MockDnsClientRule::Result(BuildTestDnsIntegrityResponse(
-              "host", std::move(integrity_rdata))),
-          options.delay_integrity);
+      std::string integrity_rdata_str(integrity_rdata.begin(),
+                                      integrity_rdata.end());
+      std::vector<DnsResourceRecord> answers{
+          BuildTestDnsRecord("host", dns_protocol::kExperimentalTypeIntegrity,
+                             std::move(integrity_rdata_str))};
+      DnsResponse response = BuildTestDnsResponse(
+          "host", dns_protocol::kExperimentalTypeIntegrity, answers);
+
+      rules.emplace_back("host", dns_protocol::kExperimentalTypeIntegrity,
+                         options.secure_integrity,
+                         MockDnsClientRule::Result(std::move(response)),
+                         options.delay_integrity);
     }
 
     CreateResolver();

@@ -67,177 +67,88 @@ class MockAddressSorter : public AddressSorter {
   }
 };
 
-DnsResourceRecord BuildCannonnameRecord(std::string name,
-                                        std::string cannonname) {
-  DCHECK(!name.empty());
-  DCHECK(!cannonname.empty());
-
-  DnsResourceRecord record;
-  record.name = std::move(name);
-  record.type = dns_protocol::kTypeCNAME;
-  record.klass = dns_protocol::kClassIN;
-  record.ttl = base::TimeDelta::FromDays(1).InSeconds();
-  CHECK(DNSDomainFromDot(cannonname, &record.owned_rdata));
-  record.rdata = record.owned_rdata;
-
-  return record;
-}
-
-// Note: This is not a fully compliant SOA record, merely the bare amount needed
-// in DnsRecord::ParseToAddressList() processessing. This record will not pass
-// RecordParsed validation.
-DnsResourceRecord BuildSoaRecord(std::string name) {
-  DCHECK(!name.empty());
-
-  DnsResourceRecord record;
-  record.name = std::move(name);
-  record.type = dns_protocol::kTypeSOA;
-  record.klass = dns_protocol::kClassIN;
-  record.ttl = base::TimeDelta::FromDays(1).InSeconds();
-  record.SetOwnedRdata("fake_rdata");
-
-  return record;
-}
-
-DnsResourceRecord BuildTextRecord(std::string name,
-                                  std::vector<std::string> text_strings) {
-  DCHECK(!name.empty());
-  DCHECK(!text_strings.empty());
-
-  DnsResourceRecord record;
-  record.name = std::move(name);
-  record.type = dns_protocol::kTypeTXT;
-  record.klass = dns_protocol::kClassIN;
-  record.ttl = base::TimeDelta::FromDays(1).InSeconds();
-
-  std::string rdata;
-  for (std::string text_string : text_strings) {
-    DCHECK(!text_string.empty());
-
-    rdata += base::checked_cast<unsigned char>(text_string.size());
-    rdata += std::move(text_string);
-  }
-  record.SetOwnedRdata(std::move(rdata));
-
-  return record;
-}
-
-DnsResourceRecord BuildPointerRecord(std::string name,
-                                     std::string pointer_name) {
-  DCHECK(!name.empty());
-  DCHECK(!pointer_name.empty());
-
-  DnsResourceRecord record;
-  record.name = std::move(name);
-  record.type = dns_protocol::kTypePTR;
-  record.klass = dns_protocol::kClassIN;
-  record.ttl = base::TimeDelta::FromDays(1).InSeconds();
-  CHECK(DNSDomainFromDot(pointer_name, &record.owned_rdata));
-  record.rdata = record.owned_rdata;
-
-  return record;
-}
-
-DnsResourceRecord BuildServiceRecord(std::string name,
-                                     TestServiceRecord service) {
-  DCHECK(!name.empty());
-  DCHECK(!service.target.empty());
-
-  DnsResourceRecord record;
-  record.name = std::move(name);
-  record.type = dns_protocol::kTypeSRV;
-  record.klass = dns_protocol::kClassIN;
-  record.ttl = base::TimeDelta::FromHours(5).InSeconds();
-
-  std::string rdata;
-  char num_buffer[2];
-  base::WriteBigEndian(num_buffer, service.priority);
-  rdata.append(num_buffer, 2);
-  base::WriteBigEndian(num_buffer, service.weight);
-  rdata.append(num_buffer, 2);
-  base::WriteBigEndian(num_buffer, service.port);
-  rdata.append(num_buffer, 2);
-  std::string dns_name;
-  CHECK(DNSDomainFromDot(service.target, &dns_name));
-  rdata += dns_name;
-
-  record.SetOwnedRdata(std::move(rdata));
-
-  return record;
-}
-
-
-
-DnsResourceRecord BuildIntegrityRecord(
-    std::string name,
-    const std::vector<uint8_t>& serialized_rdata) {
-  CHECK(!name.empty());
-
-  DnsResourceRecord record;
-  record.name = std::move(name);
-  record.type = dns_protocol::kExperimentalTypeIntegrity;
-  record.klass = dns_protocol::kClassIN;
-  record.ttl = base::TimeDelta::FromDays(1).InSeconds();
-
-  std::string serialized_rdata_str(serialized_rdata.begin(),
-                                   serialized_rdata.end());
-  record.SetOwnedRdata(std::move(serialized_rdata_str));
-
-  CHECK_EQ(record.rdata.data(), record.owned_rdata.data());
-
-  return record;
-}
-
 }  // namespace
 
-DnsResourceRecord BuildTestAddressRecord(std::string name,
-                                         const IPAddress& ip) {
+DnsResourceRecord BuildTestDnsRecord(std::string name,
+                                     uint16_t type,
+                                     std::string rdata,
+                                     base::TimeDelta ttl) {
   DCHECK(!name.empty());
-  DCHECK(ip.IsValid());
 
   DnsResourceRecord record;
   record.name = std::move(name);
-  record.type = ip.IsIPv4() ? dns_protocol::kTypeA : dns_protocol::kTypeAAAA;
+  record.type = type;
   record.klass = dns_protocol::kClassIN;
-  record.ttl = base::TimeDelta::FromDays(1).InSeconds();
-  record.SetOwnedRdata(net::IPAddressToPackedString(ip));
+  record.ttl = ttl.InSeconds();
+  record.SetOwnedRdata(std::move(rdata));
 
   return record;
 }
 
-DnsResponse BuildTestDnsAddressResponse(std::string name, const IPAddress& ip) {
+DnsResourceRecord BuildTestAddressRecord(std::string name,
+                                         const IPAddress& ip,
+                                         base::TimeDelta ttl) {
+  DCHECK(!name.empty());
   DCHECK(ip.IsValid());
 
-  std::vector<DnsResourceRecord> answers = {BuildTestAddressRecord(name, ip)};
+  return BuildTestDnsRecord(
+      std::move(name),
+      ip.IsIPv4() ? dns_protocol::kTypeA : dns_protocol::kTypeAAAA,
+      net::IPAddressToPackedString(ip), ttl);
+}
+
+DnsResponse BuildTestDnsResponse(
+    std::string name,
+    uint16_t type,
+    const std::vector<DnsResourceRecord>& answers) {
+  DCHECK(!name.empty());
+
   std::string dns_name;
   CHECK(DNSDomainFromDot(name, &dns_name));
-  base::Optional<DnsQuery> query(
-      base::in_place, 0, dns_name,
-      ip.IsIPv4() ? dns_protocol::kTypeA : dns_protocol::kTypeAAAA);
-  return DnsResponse(0, false, std::move(answers),
-                     std::vector<DnsResourceRecord>() /* authority_records */,
-                     std::vector<DnsResourceRecord>() /* additional_records */,
+
+  base::Optional<DnsQuery> query(base::in_place, 0, std::move(dns_name), type);
+  return DnsResponse(0, true /* is_authoritative */, answers,
+                     {} /* authority_records */, {} /* additional_records */,
                      query);
+}
+
+DnsResponse BuildTestDnsAddressResponse(std::string name,
+                                        const IPAddress& ip,
+                                        std::string answer_name) {
+  DCHECK(ip.IsValid());
+
+  if (answer_name.empty())
+    answer_name = name;
+
+  std::vector<DnsResourceRecord> answers = {
+      BuildTestAddressRecord(std::move(answer_name), ip)};
+
+  return BuildTestDnsResponse(
+      std::move(name),
+      ip.IsIPv4() ? dns_protocol::kTypeA : dns_protocol::kTypeAAAA, answers);
 }
 
 DnsResponse BuildTestDnsAddressResponseWithCname(std::string name,
                                                  const IPAddress& ip,
-                                                 std::string cannonname) {
+                                                 std::string cannonname,
+                                                 std::string answer_name) {
   DCHECK(ip.IsValid());
   DCHECK(!cannonname.empty());
 
+  if (answer_name.empty())
+    answer_name = name;
+
+  std::string cname_rdata;
+  CHECK(DNSDomainFromDot(cannonname, &cname_rdata));
+
   std::vector<DnsResourceRecord> answers = {
-      BuildCannonnameRecord(name, cannonname),
-      BuildTestAddressRecord(cannonname, ip)};
-  std::string dns_name;
-  CHECK(DNSDomainFromDot(name, &dns_name));
-  base::Optional<DnsQuery> query(
-      base::in_place, 0, dns_name,
-      ip.IsIPv4() ? dns_protocol::kTypeA : dns_protocol::kTypeAAAA);
-  return DnsResponse(0, false, std::move(answers),
-                     std::vector<DnsResourceRecord>() /* authority_records */,
-                     std::vector<DnsResourceRecord>() /* additional_records */,
-                     query);
+      BuildTestDnsRecord(std::move(answer_name), dns_protocol::kTypeCNAME,
+                         std::move(cname_rdata)),
+      BuildTestAddressRecord(std::move(cannonname), ip)};
+
+  return BuildTestDnsResponse(
+      std::move(name),
+      ip.IsIPv4() ? dns_protocol::kTypeA : dns_protocol::kTypeAAAA, answers);
 }
 
 DnsResponse BuildTestDnsTextResponse(
@@ -249,18 +160,21 @@ DnsResponse BuildTestDnsTextResponse(
 
   std::vector<DnsResourceRecord> answers;
   for (std::vector<std::string>& text_record : text_records) {
-    answers.push_back(BuildTextRecord(answer_name, std::move(text_record)));
+    DCHECK(!text_record.empty());
+
+    std::string rdata;
+    for (std::string text_string : text_record) {
+      DCHECK(!text_string.empty());
+
+      rdata += base::checked_cast<unsigned char>(text_string.size());
+      rdata += std::move(text_string);
+    }
+
+    answers.push_back(BuildTestDnsRecord(answer_name, dns_protocol::kTypeTXT,
+                                         std::move(rdata)));
   }
 
-  std::string dns_name;
-  CHECK(DNSDomainFromDot(name, &dns_name));
-  base::Optional<DnsQuery> query(base::in_place, 0, dns_name,
-                                 dns_protocol::kTypeTXT);
-
-  return DnsResponse(0, false, std::move(answers),
-                     std::vector<DnsResourceRecord>() /* authority_records */,
-                     std::vector<DnsResourceRecord>() /* additional_records */,
-                     query);
+  return BuildTestDnsResponse(std::move(name), dns_protocol::kTypeTXT, answers);
 }
 
 DnsResponse BuildTestDnsPointerResponse(std::string name,
@@ -271,18 +185,14 @@ DnsResponse BuildTestDnsPointerResponse(std::string name,
 
   std::vector<DnsResourceRecord> answers;
   for (std::string& pointer_name : pointer_names) {
-    answers.push_back(BuildPointerRecord(answer_name, std::move(pointer_name)));
+    std::string rdata;
+    CHECK(DNSDomainFromDot(pointer_name, &rdata));
+
+    answers.push_back(BuildTestDnsRecord(answer_name, dns_protocol::kTypePTR,
+                                         std::move(rdata)));
   }
 
-  std::string dns_name;
-  CHECK(DNSDomainFromDot(name, &dns_name));
-  base::Optional<DnsQuery> query(base::in_place, 0, dns_name,
-                                 dns_protocol::kTypePTR);
-
-  return DnsResponse(0, false, std::move(answers),
-                     std::vector<DnsResourceRecord>() /* authority_records */,
-                     std::vector<DnsResourceRecord>() /* additional_records */,
-                     query);
+  return BuildTestDnsResponse(std::move(name), dns_protocol::kTypePTR, answers);
 }
 
 DnsResponse BuildTestDnsServiceResponse(
@@ -294,38 +204,24 @@ DnsResponse BuildTestDnsServiceResponse(
 
   std::vector<DnsResourceRecord> answers;
   for (TestServiceRecord& service_record : service_records) {
-    answers.push_back(
-        BuildServiceRecord(answer_name, std::move(service_record)));
+    std::string rdata;
+    char num_buffer[2];
+    base::WriteBigEndian(num_buffer, service_record.priority);
+    rdata.append(num_buffer, 2);
+    base::WriteBigEndian(num_buffer, service_record.weight);
+    rdata.append(num_buffer, 2);
+    base::WriteBigEndian(num_buffer, service_record.port);
+    rdata.append(num_buffer, 2);
+    std::string dns_name;
+    CHECK(DNSDomainFromDot(service_record.target, &dns_name));
+    rdata += dns_name;
+
+    answers.push_back(BuildTestDnsRecord(answer_name, dns_protocol::kTypeSRV,
+                                         std::move(rdata),
+                                         base::TimeDelta::FromHours(5)));
   }
 
-  std::string dns_name;
-  CHECK(DNSDomainFromDot(name, &dns_name));
-  base::Optional<DnsQuery> query(base::in_place, 0, dns_name,
-                                 dns_protocol::kTypeSRV);
-
-  return DnsResponse(0, false, std::move(answers),
-                     std::vector<DnsResourceRecord>() /* authority_records */,
-                     std::vector<DnsResourceRecord>() /* additional_records */,
-                     query);
-}
-
-DnsResponse BuildTestDnsIntegrityResponse(
-    std::string hostname,
-    const std::vector<uint8_t>& serialized_rdata) {
-  CHECK(!hostname.empty());
-
-  std::vector<DnsResourceRecord> answers{
-      BuildIntegrityRecord(hostname, serialized_rdata)};
-
-  std::string dns_name;
-  CHECK(DNSDomainFromDot(hostname, &dns_name));
-  base::Optional<DnsQuery> query(base::in_place, 0, dns_name,
-                                 dns_protocol::kExperimentalTypeIntegrity);
-
-  return DnsResponse(0, false, std::move(answers),
-                     std::vector<DnsResourceRecord>() /*  authority_records  */,
-                     std::vector<DnsResourceRecord>() /*  additional_records */,
-                     query);
+  return BuildTestDnsResponse(std::move(name), dns_protocol::kTypeSRV, answers);
 }
 
 MockDnsClientRule::Result::Result(ResultType type,
@@ -406,7 +302,8 @@ class MockDnsTransactionFactory::MockTransaction
             case MockDnsClientRule::NODOMAIN:
             case MockDnsClientRule::EMPTY:
               DCHECK(!result->response);  // Not expected to be provided.
-              authority_records = {BuildSoaRecord(hostname_)};
+              authority_records = {BuildTestDnsRecord(
+                  hostname_, dns_protocol::kTypeSOA, "fake rdata")};
               result_.response = DnsResponse(
                   22 /* id */, false /* is_authoritative */,
                   std::vector<DnsResourceRecord>() /* answers */,
