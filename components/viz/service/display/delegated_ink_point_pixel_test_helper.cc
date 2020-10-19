@@ -38,8 +38,9 @@ void DelegatedInkPointPixelTestHelper::CreateAndSendMetadata(
     SkColor color,
     const gfx::RectF& presentation_area) {
   DCHECK(renderer_);
-  metadata_ = DelegatedInkMetadata(point, diameter, color,
-                                   base::TimeTicks::Now(), presentation_area);
+  metadata_ =
+      DelegatedInkMetadata(point, diameter, color, base::TimeTicks::Now(),
+                           presentation_area, base::TimeTicks::Now());
   GetInkRenderer()->SetDelegatedInkMetadata(
       std::make_unique<DelegatedInkMetadata>(metadata_));
 }
@@ -48,7 +49,8 @@ void DelegatedInkPointPixelTestHelper::CreateAndSendMetadataFromLastPoint() {
   DCHECK(renderer_);
   metadata_ = DelegatedInkMetadata(
       ink_points_.back().point(), metadata_.diameter(), metadata_.color(),
-      ink_points_.back().timestamp(), metadata_.presentation_area());
+      ink_points_.back().timestamp(), metadata_.presentation_area(),
+      metadata_.frame_time());
   GetInkRenderer()->SetDelegatedInkMetadata(
       std::make_unique<DelegatedInkMetadata>(metadata_));
 }

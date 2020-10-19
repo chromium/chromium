@@ -27,6 +27,14 @@ void DelegatedInkPointRendererBase::InitMessagePipeline(
   receiver_.Bind(std::move(receiver));
 }
 
+void DelegatedInkPointRendererBase::SetDelegatedInkMetadata(
+    std::unique_ptr<DelegatedInkMetadata> metadata) {
+  // Frame time is set later than everything else due to what is available
+  // at time of creation, so confirm that it was actually set.
+  DCHECK_NE(metadata->frame_time(), base::TimeTicks());
+  metadata_ = std::move(metadata);
+}
+
 std::vector<DelegatedInkPoint> DelegatedInkPointRendererBase::FilterPoints() {
   if (points_.size() == 0)
     return {};

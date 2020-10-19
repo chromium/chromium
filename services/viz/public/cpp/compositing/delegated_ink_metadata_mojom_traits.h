@@ -5,6 +5,8 @@
 #ifndef SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_DELEGATED_INK_METADATA_MOJOM_TRAITS_H_
 #define SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_DELEGATED_INK_METADATA_MOJOM_TRAITS_H_
 
+#include <memory>
+
 #include "components/viz/common/delegated_ink_metadata.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/delegated_ink_metadata.mojom-shared.h"
@@ -24,7 +26,7 @@ struct StructTraits<viz::mojom::DelegatedInkMetadataDataView,
     input->reset();
   }
 
-  static gfx::PointF point(
+  static const gfx::PointF& point(
       const std::unique_ptr<viz::DelegatedInkMetadata>& input) {
     return input->point();
   }
@@ -44,9 +46,14 @@ struct StructTraits<viz::mojom::DelegatedInkMetadataDataView,
     return input->timestamp();
   }
 
-  static gfx::RectF presentation_area(
+  static const gfx::RectF& presentation_area(
       const std::unique_ptr<viz::DelegatedInkMetadata>& input) {
     return input->presentation_area();
+  }
+
+  static base::TimeTicks frame_time(
+      const std::unique_ptr<viz::DelegatedInkMetadata>& input) {
+    return input->frame_time();
   }
 
   static bool Read(viz::mojom::DelegatedInkMetadataDataView data,

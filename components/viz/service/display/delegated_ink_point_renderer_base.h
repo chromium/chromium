@@ -42,9 +42,7 @@ class VIZ_SERVICE_EXPORT DelegatedInkPointRendererBase
       mojo::PendingReceiver<mojom::DelegatedInkPointRenderer> receiver);
 
   void StoreDelegatedInkPoint(const DelegatedInkPoint& point) override;
-  void SetDelegatedInkMetadata(std::unique_ptr<DelegatedInkMetadata> metadata) {
-    metadata_ = std::move(metadata);
-  }
+  void SetDelegatedInkMetadata(std::unique_ptr<DelegatedInkMetadata> metadata);
 
   virtual void FinalizePathForDraw() = 0;
   virtual gfx::Rect GetDamageRect() = 0;

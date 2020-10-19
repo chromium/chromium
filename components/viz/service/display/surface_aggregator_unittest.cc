@@ -8210,6 +8210,7 @@ void ExpectDelegatedInkMetadataIsEqual(const DelegatedInkMetadata& lhs,
                   rhs.presentation_area().width());
   EXPECT_FLOAT_EQ(lhs.presentation_area().height(),
                   rhs.presentation_area().height());
+  EXPECT_EQ(lhs.frame_time(), rhs.frame_time());
 }
 
 // Basic test to confirm that ink metadata on a child surface will be
@@ -8221,9 +8222,9 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DelegatedInkMetadataTest) {
       Pass(child_quads, CompositorRenderPassId{1}, gfx::Size(100, 100))};
 
   CompositorFrame child_frame = MakeEmptyCompositorFrame();
-  DelegatedInkMetadata metadata(gfx::PointF(100, 100), 1.5, SK_ColorRED,
-                                base::TimeTicks::Now(),
-                                gfx::RectF(10, 10, 200, 200));
+  DelegatedInkMetadata metadata(
+      gfx::PointF(100, 100), 1.5, SK_ColorRED, base::TimeTicks::Now(),
+      gfx::RectF(10, 10, 200, 200), base::TimeTicks::Now());
   child_frame.metadata.delegated_ink_metadata =
       std::make_unique<DelegatedInkMetadata>(metadata);
   AddPasses(&child_frame.render_pass_list, child_passes,
@@ -8266,8 +8267,9 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DelegatedInkMetadataTest) {
   root_frame.render_pass_list[0]
       ->shared_quad_state_list.ElementAt(0)
       ->quad_to_target_transform.TransformRect(&area);
-  metadata = DelegatedInkMetadata(pt, metadata.diameter(), metadata.color(),
-                                  metadata.timestamp(), area);
+  metadata =
+      DelegatedInkMetadata(pt, metadata.diameter(), metadata.color(),
+                           metadata.timestamp(), area, metadata.frame_time());
 
   root_sink_->SubmitCompositorFrame(root_local_surface_id_,
                                     std::move(root_frame));
@@ -8298,9 +8300,9 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   std::vector<Pass> greatgrandchild_passes = {Pass(
       greatgrandchild_quads, CompositorRenderPassId{1}, gfx::Size(100, 100))};
 
-  DelegatedInkMetadata metadata(gfx::PointF(100, 100), 1.5, SK_ColorRED,
-                                base::TimeTicks::Now(),
-                                gfx::RectF(10, 10, 200, 200));
+  DelegatedInkMetadata metadata(
+      gfx::PointF(100, 100), 1.5, SK_ColorRED, base::TimeTicks::Now(),
+      gfx::RectF(10, 10, 200, 200), base::TimeTicks::Now());
   CompositorFrame greatgrandchild_frame = MakeEmptyCompositorFrame();
   greatgrandchild_frame.metadata.delegated_ink_metadata =
       std::make_unique<DelegatedInkMetadata>(metadata);
@@ -8419,8 +8421,9 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
                             root_local_surface_id_);
   auto aggregated_frame = AggregateFrame(root_surface_id);
 
-  metadata = DelegatedInkMetadata(pt, metadata.diameter(), metadata.color(),
-                                  metadata.timestamp(), area);
+  metadata =
+      DelegatedInkMetadata(pt, metadata.diameter(), metadata.color(),
+                           metadata.timestamp(), area, metadata.frame_time());
 
   std::unique_ptr<DelegatedInkMetadata> actual_metadata =
       std::move(aggregated_frame.delegated_ink_metadata);
@@ -8467,7 +8470,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
 
   DelegatedInkMetadata metadata = DelegatedInkMetadata(
       gfx::PointF(88, 34), 1.8, SK_ColorBLACK, base::TimeTicks::Now(),
-      gfx::RectF(50, 50, 300, 300));
+      gfx::RectF(50, 50, 300, 300), base::TimeTicks::Now());
   CompositorFrame child_2_frame = MakeEmptyCompositorFrame();
   child_2_frame.metadata.delegated_ink_metadata =
       std::make_unique<DelegatedInkMetadata>(metadata);
@@ -8550,8 +8553,9 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
                             root_local_surface_id_);
   auto aggregated_frame = AggregateFrame(root_surface_id);
 
-  metadata = DelegatedInkMetadata(pt, metadata.diameter(), metadata.color(),
-                                  metadata.timestamp(), area);
+  metadata =
+      DelegatedInkMetadata(pt, metadata.diameter(), metadata.color(),
+                           metadata.timestamp(), area, metadata.frame_time());
 
   std::unique_ptr<DelegatedInkMetadata> actual_metadata =
       std::move(aggregated_frame.delegated_ink_metadata);
@@ -8603,11 +8607,12 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   // issues with both metadatas sometimes having the same time in Release.
   DelegatedInkMetadata early_metadata = DelegatedInkMetadata(
       gfx::PointF(88, 34), 1.8, SK_ColorBLACK, base::TimeTicks::Now(),
-      gfx::RectF(50, 50, 300, 300));
+      gfx::RectF(50, 50, 300, 300), base::TimeTicks::Now());
   DelegatedInkMetadata later_metadata = DelegatedInkMetadata(
       gfx::PointF(92, 35), 0.08, SK_ColorYELLOW,
       base::TimeTicks::Now() + base::TimeDelta::FromMicroseconds(50),
-      gfx::RectF(35, 55, 128, 256));
+      gfx::RectF(35, 55, 128, 256),
+      base::TimeTicks::Now() + base::TimeDelta::FromMicroseconds(52));
 
   CompositorFrame child_2_frame = MakeEmptyCompositorFrame();
   child_2_frame.metadata.delegated_ink_metadata =
@@ -8696,7 +8701,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
 
   DelegatedInkMetadata expected_metadata = DelegatedInkMetadata(
       pt, later_metadata.diameter(), later_metadata.color(),
-      later_metadata.timestamp(), area);
+      later_metadata.timestamp(), area, later_metadata.frame_time());
 
   std::unique_ptr<DelegatedInkMetadata> actual_metadata =
       std::move(aggregated_frame.delegated_ink_metadata);
@@ -8719,9 +8724,9 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
       Pass(child_quads, CompositorRenderPassId{1}, gfx::Size(100, 100))};
 
   CompositorFrame child_frame = MakeEmptyCompositorFrame();
-  DelegatedInkMetadata metadata(gfx::PointF(34, 89), 1.597, SK_ColorBLUE,
-                                base::TimeTicks::Now(),
-                                gfx::RectF(2.3, 3.2, 177, 212));
+  DelegatedInkMetadata metadata(
+      gfx::PointF(34, 89), 1.597, SK_ColorBLUE, base::TimeTicks::Now(),
+      gfx::RectF(2.3, 3.2, 177, 212), base::TimeTicks::Now());
   child_frame.metadata.delegated_ink_metadata =
       std::make_unique<DelegatedInkMetadata>(metadata);
   AddPasses(&child_frame.render_pass_list, child_passes,

@@ -12,10 +12,11 @@ namespace viz {
 std::string DelegatedInkMetadata::ToString() const {
   std::string str = base::StringPrintf(
       "point: %s, diameter: %f, color: %u, timestamp: %" PRId64
-      ", presentation_area: %s",
+      ", presentation_area: %s, frame_time: %" PRId64,
       point_.ToString().c_str(), diameter_, color_,
       timestamp_.since_origin().InMicroseconds(),
-      presentation_area_.ToString().c_str());
+      presentation_area_.ToString().c_str(),
+      frame_time_.since_origin().InMicroseconds());
   return str;
 }
 

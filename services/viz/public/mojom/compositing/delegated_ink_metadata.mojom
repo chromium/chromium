@@ -15,4 +15,5 @@ struct DelegatedInkMetadata {
   skia.mojom.SkColor color;
   mojo_base.mojom.TimeTicks timestamp;
   gfx.mojom.RectF presentation_area;
+  mojo_base.mojom.TimeTicks frame_time;
 };

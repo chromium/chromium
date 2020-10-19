@@ -20,13 +20,14 @@ bool StructTraits<viz::mojom::DelegatedInkMetadataDataView,
   base::TimeTicks timestamp;
   gfx::RectF presentation_area;
   SkColor color;
+  base::TimeTicks frame_time;
   if (!data.ReadPoint(&point) || !data.ReadTimestamp(&timestamp) ||
       !data.ReadPresentationArea(&presentation_area) ||
-      !data.ReadColor(&color)) {
+      !data.ReadColor(&color) || !data.ReadFrameTime(&frame_time)) {
     return false;
   }
   *out = std::make_unique<viz::DelegatedInkMetadata>(
-      point, data.diameter(), color, timestamp, presentation_area);
+      point, data.diameter(), color, timestamp, presentation_area, frame_time);
   return true;
 }
 

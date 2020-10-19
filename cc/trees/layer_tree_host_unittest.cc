@@ -8904,6 +8904,7 @@ class LayerTreeHostTestDelegatedInkMetadataOnAndOff
 
   void DrawLayersOnThread(LayerTreeHostImpl* impl) override {
     if (expected_metadata_.has_value()) {
+      EXPECT_EQ(metadata_frame_time_, impl->CurrentBeginFrameArgs().frame_time);
       // Now try again with no metadata to confirm everything is cleared out.
       expected_metadata_.reset();
     }
@@ -8920,6 +8921,11 @@ class LayerTreeHostTestDelegatedInkMetadataOnAndOff
       EXPECT_EQ(expected_metadata_->presentation_area(),
                 actual_metadata->presentation_area());
       EXPECT_EQ(expected_metadata_->timestamp(), actual_metadata->timestamp());
+
+      // Record the frame time from the metadata so we can confirm that it
+      // matches the LayerTreeHostImpl's frame time in DrawLayersOnThread.
+      EXPECT_GT(actual_metadata->frame_time(), base::TimeTicks::Min());
+      metadata_frame_time_ = actual_metadata->frame_time();
     } else {
       EXPECT_FALSE(had_delegated_ink_metadata);
       EXPECT_FALSE(actual_metadata);
@@ -8942,6 +8948,7 @@ class LayerTreeHostTestDelegatedInkMetadataOnAndOff
   FakeContentLayerClient client_;
   scoped_refptr<Layer> layer_;
   bool set_needs_display_ = true;
+  base::TimeTicks metadata_frame_time_;
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestDelegatedInkMetadataOnAndOff);

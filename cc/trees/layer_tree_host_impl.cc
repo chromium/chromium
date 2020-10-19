@@ -2183,6 +2183,7 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
 
   if (std::unique_ptr<viz::DelegatedInkMetadata> delegated_ink_metadata =
           active_tree_->take_delegated_ink_metadata()) {
+    delegated_ink_metadata->set_frame_time(CurrentBeginFrameArgs().frame_time);
     TRACE_EVENT_INSTANT1(
         "cc", "Delegated Ink Metadata set on compositor frame metadata",
         TRACE_EVENT_SCOPE_THREAD, "ink metadata",
