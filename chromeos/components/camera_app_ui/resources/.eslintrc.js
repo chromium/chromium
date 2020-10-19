@@ -362,24 +362,19 @@ module.exports = {
   'root': true,
   'env': {
     'browser': true,
-    'es6': true,
+    'es2020': true,
     'webextensions': true,
   },
   'parserOptions': {
-    'ecmaVersion': 2018,
+    'ecmaVersion': 2020,
     'sourceType': 'module',
   },
   'extends': 'eslint:recommended',
   'globals': {
     'arc': 'readable',
-    // Adds BigInt64Array here since current version of eslint does not treat
-    // BigInt64Array as a defined type.
-    'BigInt64Array': 'readable',
     'chromeosCamera': 'readable',
     'blink': 'readable',
-    'cca': 'readable',  // TODO(inker): remove this after resolving b/141518780.
     'cros': 'readable',
-    'globalThis': 'readable',
     'webkitRequestFileSystem': 'readable',
   },
   // Generally, the rules should be compatible to both bundled and the newest
