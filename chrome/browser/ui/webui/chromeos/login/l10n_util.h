@@ -14,7 +14,6 @@
 #include "chrome/browser/chromeos/base/locale_util.h"
 
 namespace base {
-class DictionaryValue;
 class ListValue;
 }
 
@@ -66,13 +65,6 @@ std::string FindMostRelevantLocale(
     const base::ListValue& available_locales,
     const std::string& fallback_locale);
 
-// Return a list of supported accept languages. The listed languages can be used
-// in the Accept-Language header. The return value will look like:
-// [{'code': 'fi', 'displayName': 'Finnish', 'nativeDisplayName': 'suomi'}, ...]
-// The most relevant languages, read from initial_locale in VPD, will be first
-// in the list.
-std::unique_ptr<base::ListValue> GetAcceptLanguageList();
-
 // Return a list of keyboard layouts that can be used for |locale| on the login
 // screen. Each list entry is a dictionary that contains data such as an ID and
 // a display name. The list will consist of the device's hardware layouts,
@@ -99,10 +91,6 @@ typedef base::Callback<void(std::unique_ptr<base::ListValue>)>
 void GetKeyboardLayoutsForLocale(
     const GetKeyboardLayoutsForLocaleCallback& callback,
     const std::string& locale);
-
-// Returns the current keyboard layout, expressed as a dictionary that contains
-// data such as an ID and a display name.
-std::unique_ptr<base::DictionaryValue> GetCurrentKeyboardLayout();
 
 }  // namespace chromeos
 

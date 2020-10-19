@@ -496,18 +496,6 @@ std::string FindMostRelevantLocale(
   return fallback_locale;
 }
 
-std::unique_ptr<base::ListValue> GetAcceptLanguageList() {
-  // Collect the language codes from the supported accept-languages.
-  const std::string app_locale = g_browser_process->GetApplicationLocale();
-  std::vector<std::string> accept_language_codes;
-  l10n_util::GetAcceptLanguagesForLocale(app_locale, &accept_language_codes);
-  return GetLanguageList(
-      *input_method::InputMethodManager::Get()->GetSupportedInputMethods(),
-      accept_language_codes,
-      StartupCustomizationDocument::GetInstance()->configured_locales(),
-      false);
-}
-
 std::unique_ptr<base::ListValue> GetAndActivateLoginKeyboardLayouts(
     const std::string& locale,
     const std::string& selected,
@@ -591,15 +579,6 @@ void GetKeyboardLayoutsForLocale(
       base::BindOnce(get_application_locale, locale,
                      false /* set_icu_locale */),
       base::BindOnce(&GetKeyboardLayoutsForResolvedLocale, locale, callback));
-}
-
-std::unique_ptr<base::DictionaryValue> GetCurrentKeyboardLayout() {
-  const input_method::InputMethodDescriptor current_input_method =
-      input_method::InputMethodManager::Get()
-          ->GetActiveIMEState()
-          ->GetCurrentInputMethod();
-  return CreateInputMethodsEntry(current_input_method,
-                                 current_input_method.id());
 }
 
 }  // namespace chromeos
