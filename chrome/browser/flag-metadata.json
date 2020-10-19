@@ -2149,11 +2149,6 @@
     "expiry_milestone": 87
   },
   {
-    "name": "enable-system-webapps",
-    "owners": [ "calamity" ],
-    "expiry_milestone": 78
-  },
-  {
     "name": "enable-tab-engagement-reporting",
     "owners": [ "memex-team@google.com" ],
     "expiry_milestone": 90
