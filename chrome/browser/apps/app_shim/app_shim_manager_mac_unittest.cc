@@ -159,8 +159,6 @@ class TestingAppShimManager : public AppShimManager {
     return load_profile_callbacks_.erase(path);
   }
 
-  content::NotificationRegistrar& GetRegistrar() { return registrar(); }
-
  private:
   std::map<base::FilePath, base::OnceCallback<void(Profile*)>>
       load_profile_callbacks_;
@@ -621,6 +619,10 @@ TEST_F(AppShimManagerTest, AppLifetime) {
   scoped_feature_list_.InitWithFeatures({features::kAppShimNewCloseBehavior},
                                         {});
 
+  // This app is installed for profile A throughout this test.
+  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
+                                                   profile_path_a_);
+
   // When the app activates, a host is created. If there is no shim, one is
   // launched.
   manager_->SetHostForCreate(std::move(host_aa_unique_));
@@ -821,6 +823,11 @@ TEST_F(AppShimManagerTest, MaybeTerminate) {
   scoped_feature_list_.InitWithFeatures({features::kAppShimNewCloseBehavior},
                                         {});
 
+  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
+                                                   profile_path_a_);
+  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdB,
+                                                   profile_path_a_);
+
   // Launch shims, adding entries in the map.
   RegisterOnlyLaunch(bootstrap_aa_, std::move(host_aa_unique_));
   EXPECT_EQ(chrome::mojom::AppShimLaunchResult::kSuccess,
@@ -836,8 +843,42 @@ TEST_F(AppShimManagerTest, MaybeTerminate) {
   EXPECT_CALL(*manager_, MaybeTerminate()).Times(0);
   manager_->OnAppDeactivated(&profile_a_, kTestAppIdA);
 
-  // Quitting when it's the last shim should terminate.
+  // Quitting when it's the last shim should not terminate in the new behavior.
   EXPECT_CALL(*manager_, MaybeTerminate()).Times(0);
+  manager_->OnAppDeactivated(&profile_a_, kTestAppIdB);
+}
+
+TEST_F(AppShimManagerTest, MaybeTerminateOnUninstall) {
+  scoped_feature_list_.InitWithFeatures({features::kAppShimNewCloseBehavior},
+                                        {});
+
+  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
+                                                   profile_path_a_);
+  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdB,
+                                                   profile_path_a_);
+
+  // Launch shims, adding entries in the map.
+  RegisterOnlyLaunch(bootstrap_aa_, std::move(host_aa_unique_));
+  EXPECT_EQ(chrome::mojom::AppShimLaunchResult::kSuccess,
+            *bootstrap_aa_result_);
+  EXPECT_EQ(host_aa_.get(), manager_->FindHost(&profile_a_, kTestAppIdA));
+
+  RegisterOnlyLaunch(bootstrap_ab_, std::move(host_ab_unique_));
+  EXPECT_EQ(chrome::mojom::AppShimLaunchResult::kSuccess,
+            *bootstrap_ab_result_);
+  EXPECT_EQ(host_ab_.get(), manager_->FindHost(&profile_a_, kTestAppIdB));
+
+  // Quitting when there's another shim should not terminate.
+  AppShimRegistry::Get()->OnAppUninstalledForProfile(kTestAppIdA,
+                                                     profile_path_a_);
+  EXPECT_CALL(*manager_, MaybeTerminate()).Times(0);
+  manager_->OnAppDeactivated(&profile_a_, kTestAppIdA);
+
+  // Quitting when it's the last shim and the app is uninstalled should
+  // terminate.
+  AppShimRegistry::Get()->OnAppUninstalledForProfile(kTestAppIdB,
+                                                     profile_path_a_);
+  EXPECT_CALL(*manager_, MaybeTerminate()).Times(1);
   manager_->OnAppDeactivated(&profile_a_, kTestAppIdB);
 }
 

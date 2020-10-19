@@ -26,7 +26,10 @@ class BrowserProcessPlatformPartBase {
   virtual void PlatformSpecificCommandLineProcessing(
       const base::CommandLine& command_line);
 
-  // Called from BrowserProcessImpl::StartTearDown().
+  // Called at the very beginning of BrowserProcessImpl::StartTearDown().
+  virtual void BeginStartTearDown();
+
+  // Called in the middle of BrowserProcessImpl::StartTearDown().
   virtual void StartTearDown();
 
   // Called from AttemptExitInternal().
