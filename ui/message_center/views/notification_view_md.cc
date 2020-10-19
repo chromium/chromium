@@ -184,7 +184,7 @@ std::unique_ptr<views::View> CreateItemView(const NotificationItem& item) {
 std::unique_ptr<ui::Event> ConvertToBoundedLocatedEvent(const ui::Event& event,
                                                         views::View* target) {
   // In case the animation is triggered from keyboard operation.
-  if (!event.IsLocatedEvent())
+  if (!event.IsLocatedEvent() || !event.target())
     return nullptr;
 
   // Convert the point of |event| from the coordinate system of its target to
