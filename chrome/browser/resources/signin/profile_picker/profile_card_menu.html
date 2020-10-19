@@ -57,10 +57,10 @@
   }
 
   #removeConfirmationButton {
-    --active-shadow-action-rgb: var(--google-red-500-rgb);
-    --bg-action: var(--google-red-700);
+    --active-shadow-action-rgb: var(--google-red-300-rgb);
+    --bg-action: var(--google-red-300);
     --hover-bg-action: rgba(var(--google-red-700-rgb), .9);
-    --hover-shadow-action-rgb: var(--google-red-500-rgb);
+    --hover-shadow-action-rgb: var(--google-red-300-rgb);
     background-color: var(--bg-action);
     border-radius: 4px;
     color: var(--ink-color-action);
@@ -74,6 +74,16 @@
 
   #removeConfirmationButton:hover {
     background-color: var(--hover-bg-action);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .warning-message {
+      color: var(--google-grey-500);
+    }
+
+    .statistics {
+      border-color: var(--google-grey-refresh-700);
+    }
   }
 </style>
 
@@ -97,7 +107,7 @@
       $i18n{profileMenuRemoveText}
       <span class="key-text">[[profileState.localProfileName]]</span>
     </div>
-    <div>
+    <div class="warning-message">
       [[removeWarningText_]]
       <span hidden$="[[!profileState.isSyncing]]" class="key-text">
         [[profileState.userName]]

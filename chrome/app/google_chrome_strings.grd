@@ -1192,7 +1192,7 @@ Google Chrome is unable to recover your settings.
           Set up your new Chrome profile
         </message>
         <message name="IDS_PROFILE_PICKER_ASK_ON_STARTUP" desc="Text for the checkbox on the profile picker main view">
-          Ask when I open Chrome
+          Ask when Chrome opens
         </message>
       </if>
 
