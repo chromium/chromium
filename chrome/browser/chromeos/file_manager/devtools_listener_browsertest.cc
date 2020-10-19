@@ -82,7 +82,6 @@ class DevToolsListenerBrowserTest : public content::DevToolsAgentHostObserver,
   uint32_t process_id_ = 0;
   std::map<content::DevToolsAgentHost*, std::unique_ptr<DevToolsListener>>
       devtools_agent_;
-  base::FilePath coverage_store_;
 
   DISALLOW_COPY_AND_ASSIGN(DevToolsListenerBrowserTest);
 };
