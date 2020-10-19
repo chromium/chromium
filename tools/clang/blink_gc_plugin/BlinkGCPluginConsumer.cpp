@@ -88,8 +88,10 @@ BlinkGCPluginConsumer::BlinkGCPluginConsumer(
   options_.checked_namespaces.insert("blink");
 
   // Ignore GC implementation files.
-  options_.ignored_directories.push_back("/heap/");
-  options_.allowed_directories.push_back("/test/");
+  options_.ignored_directories.push_back(
+      "third_party/blink/renderer/platform/heap/");
+  options_.allowed_directories.push_back(
+      "third_party/blink/renderer/platform/heap/test/");
 }
 
 void BlinkGCPluginConsumer::HandleTranslationUnit(ASTContext& context) {
