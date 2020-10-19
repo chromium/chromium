@@ -6471,6 +6471,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="231" label="RFH_CSP_ATTRIBUTE"/>
   <int value="232" label="RFH_RECEIVED_ASSOCIATED_MESSAGE_WHILE_BFCACHED"/>
   <int value="233" label="RWH_CLOSE_PORTAL"/>
+  <int value="234" label="MSDH_INVALID_STREAM_TYPE"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
