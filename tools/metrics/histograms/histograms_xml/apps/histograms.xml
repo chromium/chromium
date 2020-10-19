@@ -1540,6 +1540,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.LogDisplayTypeClickedResultZeroState"
     enum="AppListSearchResultDisplayType" expires_after="2020-11-22">
+  <obsolete>
+    Removed October 2020, replaced by Apps.AppList.UserEvent.Overall.*
+  </obsolete>
   <owner>jiameng@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
