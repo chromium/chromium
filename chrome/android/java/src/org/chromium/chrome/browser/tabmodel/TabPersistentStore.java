@@ -807,7 +807,7 @@ public class TabPersistentStore extends TabPersister {
     }
 
     private void cleanupPersistentData(int id, boolean incognito) {
-        deleteFileAsync(TabStateFileManager.getTabStateFilename(id, incognito));
+        deleteFileAsync(TabStateFileManager.getTabStateFilename(id, incognito), false);
         // No need to forward that event to the tab content manager as this is already
         // done as part of the standard tab removal process.
     }
@@ -1267,7 +1267,7 @@ public class TabPersistentStore extends TabPersister {
                     }
                 });
                 for (String mergedFileName : new HashSet<String>(mMergedFileNames)) {
-                    deleteFileAsync(mergedFileName);
+                    deleteFileAsync(mergedFileName, true);
                 }
                 for (TabPersistentStoreObserver observer : mObservers) observer.onStateMerged();
             }
@@ -1294,7 +1294,7 @@ public class TabPersistentStore extends TabPersister {
             public void onResult(List<String> result) {
                 if (result == null) return;
                 for (int i = 0; i < result.size(); i++) {
-                    deleteFileAsync(result.get(i));
+                    deleteFileAsync(result.get(i), true);
                 }
             }
         });
@@ -1305,27 +1305,36 @@ public class TabPersistentStore extends TabPersister {
      * in the correct order.
      *
      * @param file Name of file under the state directory to be deleted.
+     * @param useSerialExecution true if serial executor will be used
      */
-    private void deleteFileAsync(final String file) {
-        new BackgroundOnlyAsyncTask<Void>() {
-            @Override
-            protected Void doInBackground() {
-                File stateFile = new File(getStateDirectory(), file);
-                if (stateFile.exists()) {
-                    if (!stateFile.delete()) Log.e(TAG, "Failed to delete file: " + stateFile);
-
-                    // The merge isn't completely finished until the other TabPersistentStores'
-                    // metadata files are deleted.
-                    boolean wasMergeFile = mMergedFileNames.remove(file);
-                    if (wasMergeFile && mMergedFileNames.isEmpty()) {
-                        mPersistencePolicy.setMergeInProgress(false);
-                    }
+    private void deleteFileAsync(final String file, boolean useSerialExecution) {
+        if (useSerialExecution) {
+            new BackgroundOnlyAsyncTask<Void>() {
+                @Override
+                protected Void doInBackground() {
+                    deleteStateFile(file);
+                    return null;
                 }
-                return null;
+            }.executeOnTaskRunner(mSequencedTaskRunner);
+        } else {
+            PostTask.runOrPostTask(
+                    TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> { deleteStateFile(file); });
+        }
+    }
+
+    private void deleteStateFile(String file) {
+        ThreadUtils.assertOnBackgroundThread();
+        File stateFile = new File(getStateDirectory(), file);
+        if (stateFile.exists()) {
+            if (!stateFile.delete()) Log.e(TAG, "Failed to delete file: " + stateFile);
+
+            // The merge isn't completely finished until the other TabPersistentStores'
+            // metadata files are deleted.
+            boolean wasMergeFile = mMergedFileNames.remove(file);
+            if (wasMergeFile && mMergedFileNames.isEmpty()) {
+                mPersistencePolicy.setMergeInProgress(false);
             }
-        }.executeOnTaskRunner(mSequencedTaskRunner);
-        // TODO(twellington): delete tab files using PostTask.postTask() rather than than the
-        // sequenced task runner.
+        }
     }
 
     private static boolean isCriticalPersistedTabDataEnabled() {
