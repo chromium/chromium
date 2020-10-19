@@ -493,7 +493,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Profile.SyncCustomize" enum="ProfileSyncCustomize"
-    expires_after="M85">
+    expires_after="M92">
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
