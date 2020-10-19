@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/model/fake_model_type_sync_bridge.h"
+#include "components/sync/test/model/fake_model_type_sync_bridge.h"
 
 #include <set>
 #include <utility>
@@ -17,8 +17,8 @@
 #include "components/sync/model_impl/in_memory_metadata_change_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using sync_pb::EntitySpecifics;
 using sync_pb::EntityMetadata;
+using sync_pb::EntitySpecifics;
 using sync_pb::ModelTypeState;
 
 namespace syncer {

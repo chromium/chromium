@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/model/test_model_type_store_service.h"
+#include "components/sync/test/model/test_model_type_store_service.h"
 
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/sync/model/model_type_store_test_util.h"

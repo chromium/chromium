@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/model/fake_model_type_controller_delegate.h"
+#include "components/sync/test/model/fake_model_type_controller_delegate.h"
 
 #include <utility>
 

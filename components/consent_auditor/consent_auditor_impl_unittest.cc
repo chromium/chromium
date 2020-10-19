@@ -14,7 +14,7 @@
 #include "base/time/default_clock.h"
 #include "components/consent_auditor/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/sync/model/fake_model_type_controller_delegate.h"
+#include "components/sync/test/model/fake_model_type_controller_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ArcPlayTermsOfServiceConsent =

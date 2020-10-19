@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_MODEL_STUB_MODEL_TYPE_SYNC_BRIDGE_H_
-#define COMPONENTS_SYNC_MODEL_STUB_MODEL_TYPE_SYNC_BRIDGE_H_
+#ifndef COMPONENTS_SYNC_TEST_MODEL_STUB_MODEL_TYPE_SYNC_BRIDGE_H_
+#define COMPONENTS_SYNC_TEST_MODEL_STUB_MODEL_TYPE_SYNC_BRIDGE_H_
 
 #include <memory>
 #include <string>
@@ -36,4 +36,4 @@ class StubModelTypeSyncBridge : public ModelTypeSyncBridge {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_MODEL_STUB_MODEL_TYPE_SYNC_BRIDGE_H_
+#endif  // COMPONENTS_SYNC_TEST_MODEL_STUB_MODEL_TYPE_SYNC_BRIDGE_H_
