@@ -258,6 +258,10 @@ class WebContents : public PageNavigator,
 
   // Returns the WebContents for the RenderFrameHost. It is unsafe to call this
   // function with an invalid (e.g. destructed) `rfh`.
+  // Warning: Be careful when `rfh->IsCurrent()` is false, since this implies
+  // that `rfh` may not be visible to the user (in bfcache or pending deletion),
+  // so it should not be triggering state changes that affect the whole
+  // WebContents.
   CONTENT_EXPORT static WebContents* FromRenderFrameHost(RenderFrameHost* rfh);
 
   // Returns the WebContents associated with the |frame_tree_node_id|. This may

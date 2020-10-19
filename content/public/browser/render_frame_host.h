@@ -389,6 +389,12 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   //  deletion").
   // In both cases, IsCurrent() becomes false for this frame and all its
   // children.
+  //
+  // This method should be called before trying to display some UI to the user
+  // on behalf of the given RenderFrameHost (or when crossing document / tab
+  // boundary in general, e.g. when using WebContents::FromRenderFrameHost) to
+  // check if the given RenderFrameHost is currently being displayed in a given
+  // tab.
   virtual bool IsCurrent() = 0;
 
   // Returns true iff the RenderFrameHost is inactive i.e., when the
