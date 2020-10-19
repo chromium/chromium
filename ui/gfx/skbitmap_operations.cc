@@ -675,7 +675,7 @@ SkBitmap SkBitmapOperations::CreateColorMask(const SkBitmap& bitmap,
   color_mask.allocN32Pixels(bitmap.width(), bitmap.height());
   color_mask.eraseARGB(0, 0, 0, 0);
 
-  SkCanvas canvas(color_mask, SkSurfaceProps{});
+  SkCanvas canvas(color_mask);
 
   SkPaint paint;
   paint.setColorFilter(SkColorFilters::Blend(c, SkBlendMode::kSrcIn));
@@ -699,7 +699,7 @@ SkBitmap SkBitmapOperations::CreateDropShadow(
                                    bitmap.height() + shadow_margin.height());
   image_with_shadow.eraseARGB(0, 0, 0, 0);
 
-  SkCanvas canvas(image_with_shadow, SkSurfaceProps{});
+  SkCanvas canvas(image_with_shadow);
   canvas.translate(SkIntToScalar(shadow_margin.left()),
                    SkIntToScalar(shadow_margin.top()));
 
@@ -749,7 +749,7 @@ SkBitmap SkBitmapOperations::Rotate(const SkBitmap& source,
      break;
   }
 
-  SkCanvas canvas(result, SkSurfaceProps{});
+  SkCanvas canvas(result);
   canvas.clear(SkColorSetARGB(0, 0, 0, 0));
 
   canvas.translate(SkFloatToScalar(result.width() * 0.5f),

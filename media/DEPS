@@ -12,7 +12,6 @@ include_rules = [
   "+mojo/public/cpp/system/platform_handle.h",
   "+services/device/public",
   "+services/viz/public/cpp/gpu/context_provider_command_buffer.h",
-  "+skia/ext",
   "+third_party/dav1d",
   "+third_party/ffmpeg",
   "+third_party/libaom",

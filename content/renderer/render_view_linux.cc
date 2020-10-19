@@ -4,9 +4,9 @@
 
 #include "content/renderer/render_view_impl.h"
 
-#include "skia/ext/legacy_display_globals.h"
 #include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 #include "third_party/blink/public/platform/web_font_render_style.h"
+#include "third_party/skia/include/core/SkFontLCDConfig.h"
 #include "ui/gfx/font_render_params.h"
 
 using blink::WebFontRenderStyle;
@@ -56,8 +56,11 @@ void RenderViewImpl::UpdateFontRenderingFromRendererPrefs() {
   WebFontRenderStyle::SetHinting(RendererPreferencesToSkiaHinting(prefs));
   WebFontRenderStyle::SetAutoHint(prefs.use_autohinter);
   WebFontRenderStyle::SetUseBitmaps(prefs.use_bitmaps);
-  skia::LegacyDisplayGlobals::SetCachedPixelGeometry(
-      gfx::FontRenderParams::SubpixelRenderingToSkiaPixelGeometry(
+  SkFontLCDConfig::SetSubpixelOrder(
+      gfx::FontRenderParams::SubpixelRenderingToSkiaLCDOrder(
+          prefs.subpixel_rendering));
+  SkFontLCDConfig::SetSubpixelOrientation(
+      gfx::FontRenderParams::SubpixelRenderingToSkiaLCDOrientation(
           prefs.subpixel_rendering));
   WebFontRenderStyle::SetAntiAlias(prefs.should_antialias_text);
   WebFontRenderStyle::SetSubpixelRendering(

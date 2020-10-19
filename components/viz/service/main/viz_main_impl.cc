@@ -23,7 +23,7 @@
 #include "media/gpu/buildflags.h"
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
-#include "skia/ext/legacy_display_globals.h"
+#include "third_party/skia/include/core/SkFontLCDConfig.h"
 
 namespace {
 
@@ -166,8 +166,11 @@ void VizMainImpl::CreateGpuService(
         discardable_shared_memory_manager_.get());
   }
 
-  skia::LegacyDisplayGlobals::SetCachedPixelGeometry(
-      gfx::FontRenderParams::SubpixelRenderingToSkiaPixelGeometry(
+  SkFontLCDConfig::SetSubpixelOrder(
+      gfx::FontRenderParams::SubpixelRenderingToSkiaLCDOrder(
+          subpixel_rendering));
+  SkFontLCDConfig::SetSubpixelOrientation(
+      gfx::FontRenderParams::SubpixelRenderingToSkiaLCDOrientation(
           subpixel_rendering));
 
   gpu_service_->Bind(std::move(pending_receiver));

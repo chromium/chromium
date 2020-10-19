@@ -35,6 +35,7 @@
 #include "gpu/skia_bindings/grcontext_for_gles2_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
+#include "third_party/skia/include/core/SkFontLCDConfig.h"
 #include "third_party/skia/include/core/SkGraphics.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
@@ -47,6 +48,18 @@
 
 namespace cc {
 namespace {
+class ScopedEnableLCDText {
+ public:
+  ScopedEnableLCDText() {
+    order_ = SkFontLCDConfig::GetSubpixelOrder();
+    SkFontLCDConfig::SetSubpixelOrder(SkFontLCDConfig::kRGB_LCDOrder);
+  }
+  ~ScopedEnableLCDText() { SkFontLCDConfig::SetSubpixelOrder(order_); }
+
+ private:
+  SkFontLCDConfig::LCDOrder order_;
+};
+
 scoped_refptr<DisplayItemList> MakeNoopDisplayItemList() {
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
@@ -322,7 +335,8 @@ class OopPixelTest : public testing::Test,
     uint32_t flags = 0;
     SkSurfaceProps surface_props(flags, kUnknown_SkPixelGeometry);
     if (options.use_lcd_text) {
-      surface_props = SkSurfaceProps(flags, kRGB_H_SkPixelGeometry);
+      surface_props =
+          SkSurfaceProps(flags, SkSurfaceProps::kLegacyFontHost_InitType);
     }
     SkImageInfo image_info = SkImageInfo::MakeN32Premul(
         options.resource_size.width(), options.resource_size.height(),
@@ -505,7 +519,7 @@ TEST_P(OopImagePixelTest, DrawImage) {
       SkImageInfo::MakeN32Premul(image_size.width(), image_size.height()),
       SkBitmap::kZeroPixels_AllocFlag);
 
-  SkCanvas canvas(bitmap, SkSurfaceProps{});
+  SkCanvas canvas(bitmap);
   canvas.drawColor(SK_ColorMAGENTA);
   SkPaint green;
   green.setColor(SK_ColorGREEN);
@@ -544,7 +558,7 @@ TEST_P(OopImagePixelTest, DrawImageScaled) {
       SkImageInfo::MakeN32Premul(image_size.width(), image_size.height()),
       SkBitmap::kZeroPixels_AllocFlag);
 
-  SkCanvas canvas(bitmap, SkSurfaceProps{});
+  SkCanvas canvas(bitmap);
   canvas.drawColor(SK_ColorMAGENTA);
   SkPaint green;
   green.setColor(SK_ColorGREEN);
@@ -581,7 +595,7 @@ TEST_P(OopImagePixelTest, DrawImageShaderScaled) {
       SkImageInfo::MakeN32Premul(image_size.width(), image_size.height()),
       SkBitmap::kZeroPixels_AllocFlag);
 
-  SkCanvas canvas(bitmap, SkSurfaceProps{});
+  SkCanvas canvas(bitmap);
   canvas.drawColor(SK_ColorMAGENTA);
   SkPaint green;
   green.setColor(SK_ColorGREEN);
@@ -621,7 +635,7 @@ TEST_P(OopImagePixelTest, DrawRecordShaderWithImageScaled) {
       SkImageInfo::MakeN32Premul(image_size.width(), image_size.height()),
       SkBitmap::kZeroPixels_AllocFlag);
 
-  SkCanvas canvas(bitmap, SkSurfaceProps{});
+  SkCanvas canvas(bitmap);
   canvas.drawColor(SK_ColorMAGENTA);
   SkPaint green;
   green.setColor(SK_ColorGREEN);
@@ -713,7 +727,7 @@ TEST_P(OopImagePixelTest, DrawImageWithTargetColorSpace) {
       SkImageInfo::MakeN32Premul(image_size.width(), image_size.height()),
       SkBitmap::kZeroPixels_AllocFlag);
 
-  SkCanvas canvas(bitmap, SkSurfaceProps{});
+  SkCanvas canvas(bitmap);
   canvas.drawColor(SK_ColorMAGENTA);
   SkPaint green;
   green.setColor(SK_ColorGREEN);
@@ -758,7 +772,7 @@ TEST_P(OopImagePixelTest, DrawImageWithSourceColorSpace) {
                                  color_space),
       SkBitmap::kZeroPixels_AllocFlag);
 
-  SkCanvas canvas(bitmap, SkSurfaceProps{});
+  SkCanvas canvas(bitmap);
   canvas.drawColor(SK_ColorMAGENTA);
   SkPaint green;
   green.setColor(SK_ColorGREEN);
@@ -803,7 +817,7 @@ TEST_P(OopImagePixelTest, DrawImageWithSourceAndTargetColorSpace) {
                                  color_space),
       SkBitmap::kZeroPixels_AllocFlag);
 
-  SkCanvas canvas(bitmap, SkSurfaceProps{});
+  SkCanvas canvas(bitmap);
   canvas.drawColor(SK_ColorMAGENTA);
   SkPaint green;
   green.setColor(SK_ColorGREEN);
@@ -844,7 +858,7 @@ TEST_P(OopImagePixelTest, DrawImageWithSetMatrix) {
       SkImageInfo::MakeN32Premul(image_size.width(), image_size.height()),
       SkBitmap::kZeroPixels_AllocFlag);
 
-  SkCanvas canvas(bitmap, SkSurfaceProps{});
+  SkCanvas canvas(bitmap);
   canvas.drawColor(SK_ColorMAGENTA);
   SkPaint green;
   green.setColor(SK_ColorGREEN);
@@ -906,7 +920,7 @@ TEST_F(OopPixelTest, DrawMailboxBackedImage) {
   SkBitmap expected_bitmap;
   expected_bitmap.allocPixels(backing_info);
 
-  SkCanvas canvas(expected_bitmap, SkSurfaceProps{});
+  SkCanvas canvas(expected_bitmap);
   canvas.drawColor(SK_ColorMAGENTA);
   SkPaint green;
   green.setColor(SK_ColorGREEN);
@@ -1000,7 +1014,7 @@ TEST_P(OopClearPixelTest, ClearingOpaqueCorner) {
                                  options.resource_size.height()),
       SkBitmap::kZeroPixels_AllocFlag);
 
-  SkCanvas canvas(bitmap, SkSurfaceProps{});
+  SkCanvas canvas(bitmap);
   canvas.drawColor(options.preclear_color);
   SkPaint green;
   green.setColor(options.background_color);
@@ -1051,7 +1065,7 @@ TEST_F(OopPixelTest, ClearingOpaqueCornerExactEdge) {
       SkBitmap::kZeroPixels_AllocFlag);
 
   // Expect a one pixel border on the bottom/right edge.
-  SkCanvas canvas(bitmap, SkSurfaceProps{});
+  SkCanvas canvas(bitmap);
   canvas.drawColor(options.preclear_color);
   SkPaint green;
   green.setColor(options.background_color);
@@ -1096,7 +1110,7 @@ TEST_F(OopPixelTest, ClearingOpaqueCornerPartialRaster) {
       SkBitmap::kZeroPixels_AllocFlag);
 
   // Expect no clearing here because the playback rect is internal.
-  SkCanvas canvas(bitmap, SkSurfaceProps{});
+  SkCanvas canvas(bitmap);
   canvas.drawColor(options.preclear_color);
 
   ExpectEquals(oop_result, bitmap, "oop");
@@ -1142,7 +1156,7 @@ TEST_P(OopClearPixelTest, ClearingOpaqueLeftEdge) {
                                  options.resource_size.height()),
       SkBitmap::kZeroPixels_AllocFlag);
 
-  SkCanvas canvas(bitmap, SkSurfaceProps{});
+  SkCanvas canvas(bitmap);
   canvas.drawColor(options.preclear_color);
   SkPaint green;
   green.setColor(options.background_color);
@@ -1199,7 +1213,7 @@ TEST_P(OopClearPixelTest, ClearingOpaqueRightEdge) {
                                  options.resource_size.height()),
       SkBitmap::kZeroPixels_AllocFlag);
 
-  SkCanvas canvas(bitmap, SkSurfaceProps{});
+  SkCanvas canvas(bitmap);
   canvas.drawColor(options.preclear_color);
   SkPaint green;
   green.setColor(options.background_color);
@@ -1255,7 +1269,7 @@ TEST_P(OopClearPixelTest, ClearingOpaqueTopEdge) {
                                  options.resource_size.height()),
       SkBitmap::kZeroPixels_AllocFlag);
 
-  SkCanvas canvas(bitmap, SkSurfaceProps{});
+  SkCanvas canvas(bitmap);
   canvas.drawColor(options.preclear_color);
   SkPaint green;
   green.setColor(options.background_color);
@@ -1313,7 +1327,7 @@ TEST_P(OopClearPixelTest, ClearingOpaqueBottomEdge) {
                                  options.resource_size.height()),
       SkBitmap::kZeroPixels_AllocFlag);
 
-  SkCanvas canvas(bitmap, SkSurfaceProps{});
+  SkCanvas canvas(bitmap);
   canvas.drawColor(options.preclear_color);
   SkPaint green;
   green.setColor(options.background_color);
@@ -1363,7 +1377,7 @@ TEST_F(OopPixelTest, ClearingOpaqueInternal) {
 
   // Expect no clears here, as this tile does not intersect the edge of the
   // tile.
-  SkCanvas canvas(bitmap, SkSurfaceProps{});
+  SkCanvas canvas(bitmap);
   canvas.drawColor(options.preclear_color);
 
   ExpectEquals(oop_result, bitmap, "oop");
@@ -1399,7 +1413,7 @@ TEST_F(OopPixelTest, ClearingTransparentCorner) {
                                  options.resource_size.height()),
       SkBitmap::kZeroPixels_AllocFlag);
 
-  SkCanvas canvas(bitmap, SkSurfaceProps{});
+  SkCanvas canvas(bitmap);
   canvas.drawColor(SK_ColorTRANSPARENT);
 
   ExpectEquals(oop_result, bitmap, "oop");
@@ -1439,7 +1453,7 @@ TEST_F(OopPixelTest, ClearingTransparentInternalTile) {
                                  options.resource_size.height()),
       SkBitmap::kZeroPixels_AllocFlag);
 
-  SkCanvas canvas(bitmap, SkSurfaceProps{});
+  SkCanvas canvas(bitmap);
   canvas.drawColor(SK_ColorTRANSPARENT);
 
   ExpectEquals(oop_result, bitmap, "oop");
@@ -1476,7 +1490,7 @@ TEST_F(OopPixelTest, ClearingTransparentCornerPartialRaster) {
 
   // Result should be a red background with a cleared hole where the
   // playback_rect is.
-  SkCanvas canvas(bitmap, SkSurfaceProps{});
+  SkCanvas canvas(bitmap);
   canvas.drawColor(options.preclear_color);
   canvas.translate(-arbitrary_offset.x(), -arbitrary_offset.y());
   canvas.clipRect(gfx::RectToSkRect(options.playback_rect));
@@ -1695,6 +1709,8 @@ class OopRecordShaderPixelTest : public OopPixelTest,
  public:
   bool UseLcdText() const { return GetParam(); }
   void RunTest() {
+    ScopedEnableLCDText enable_lcd;
+
     RasterOptions options;
     options.resource_size = gfx::Size(100, 100);
     options.content_size = options.resource_size;
@@ -1737,6 +1753,8 @@ class OopRecordFilterPixelTest : public OopPixelTest,
  public:
   bool UseLcdText() const { return GetParam(); }
   void RunTest(const SkMatrix& mat) {
+    ScopedEnableLCDText enable_lcd;
+
     RasterOptions options;
     options.resource_size = gfx::Size(100, 100);
     options.content_size = options.resource_size;
@@ -1988,7 +2006,7 @@ TEST_F(OopPixelTest, ReadbackImagePixels) {
   SkBitmap expected_bitmap;
   expected_bitmap.allocPixels(dest_info);
 
-  SkCanvas canvas(expected_bitmap, SkSurfaceProps{});
+  SkCanvas canvas(expected_bitmap);
   canvas.drawColor(SK_ColorMAGENTA);
   SkPaint green;
   green.setColor(SK_ColorGREEN);

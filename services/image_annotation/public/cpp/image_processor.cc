@@ -26,7 +26,7 @@ SkBitmap ScaleImage(const SkBitmap& source, const float scale) {
   dest.eraseColor(0);
 
   // Use a canvas to scale the source image onto the new bitmap.
-  SkCanvas canvas(dest, SkSurfaceProps{});
+  SkCanvas canvas(dest);
   canvas.scale(scale, scale);
   canvas.drawBitmap(source, 0, 0, nullptr /* paint */);
 

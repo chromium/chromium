@@ -6,7 +6,6 @@
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
-#include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/mock/GrMockTypes.h"
@@ -73,9 +72,7 @@ class TestSharedImageRepresentationSkia : public SharedImageRepresentationSkia {
     if (!static_cast<TestSharedImageBacking*>(backing())->can_access()) {
       return nullptr;
     }
-    SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
-    return SkSurface::MakeRasterN32Premul(size().width(), size().height(),
-                                          &props);
+    return SkSurface::MakeRasterN32Premul(size().width(), size().height());
   }
   void EndWriteAccess(sk_sp<SkSurface> surface) override {}
   sk_sp<SkPromiseImageTexture> BeginReadAccess(

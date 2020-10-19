@@ -59,7 +59,6 @@
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/wrapped_sk_image.h"
 #include "gpu/vulkan/buildflags.h"
-#include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkDeferredDisplayListRecorder.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
@@ -1596,8 +1595,7 @@ void RasterDecoderImpl::SetUpForRasterCHROMIUMForTest() {
   // backed surface for OOP raster commands.
   auto info = SkImageInfo::MakeN32(10, 10, kPremul_SkAlphaType,
                                    SkColorSpace::MakeSRGB());
-  SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
-  sk_surface_for_testing_ = SkSurface::MakeRaster(info, &props);
+  sk_surface_for_testing_ = SkSurface::MakeRaster(info);
   sk_surface_ = sk_surface_for_testing_.get();
   raster_canvas_ = sk_surface_->getCanvas();
 }
@@ -2885,7 +2883,9 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLuint sk_color,
   uint32_t flags = 0;
   SkSurfaceProps surface_props(flags, kUnknown_SkPixelGeometry);
   if (can_use_lcd_text) {
-    surface_props = skia::LegacyDisplayGlobals::GetSkSurfaceProps(flags);
+    // LegacyFontHost will get LCD text and skia figures out what type to use.
+    surface_props =
+        SkSurfaceProps(flags, SkSurfaceProps::kLegacyFontHost_InitType);
   }
 
   SkColorType sk_color_type = viz::ResourceFormatToClosestSkColorType(

@@ -18,7 +18,6 @@
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "gpu/vulkan/vulkan_surface.h"
-#include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
@@ -192,7 +191,7 @@ SkSurface* SkiaOutputDeviceVulkan::BeginPaint(
 
   if (UNLIKELY(!sk_surface)) {
     SkSurfaceProps surface_props =
-        skia::LegacyDisplayGlobals::GetSkSurfaceProps();
+        SkSurfaceProps(0, SkSurfaceProps::kLegacyFontHost_InitType);
     const auto surface_format = vulkan_surface_->surface_format().format;
     DCHECK(surface_format == VK_FORMAT_B8G8R8A8_UNORM ||
            surface_format == VK_FORMAT_R8G8B8A8_UNORM);

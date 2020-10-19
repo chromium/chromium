@@ -9,7 +9,6 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "components/viz/common/gpu/dawn_context_provider.h"
-#include "skia/ext/legacy_display_globals.h"
 #include "third_party/dawn/src/include/dawn_native/D3D12Backend.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/vsync_provider.h"
@@ -123,8 +122,9 @@ SkSurface* SkiaOutputDeviceDawn::BeginPaint(
   GrBackendRenderTarget backend_target(
       size_.width(), size_.height(), /*sampleCnt=*/0, /*stencilBits=*/0, info);
   DCHECK(backend_target.isValid());
-  SkSurfaceProps surface_props =
-      skia::LegacyDisplayGlobals::GetSkSurfaceProps();
+  // LegacyFontHost will get LCD text and skia figures out what type to use.
+  SkSurfaceProps surface_props(/*flags=*/0,
+                               SkSurfaceProps::kLegacyFontHost_InitType);
   sk_surface_ = SkSurface::MakeFromBackendRenderTarget(
       context_provider_->GetGrContext(), backend_target,
       capabilities_.output_surface_origin == gfx::SurfaceOrigin::kTopLeft

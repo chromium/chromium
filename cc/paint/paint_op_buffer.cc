@@ -2760,7 +2760,7 @@ void PaintOpBuffer::Playback(SkCanvas* canvas,
       !has_effects_preventing_lcd_text_for_save_layer_alpha_;
   if (save_layer_alpha_should_preserve_lcd_text) {
     // Check if the canvas supports LCD text.
-    SkSurfaceProps props;
+    SkSurfaceProps props(SkSurfaceProps::kLegacyFontHost_InitType);
     canvas->getProps(&props);
     if (props.pixelGeometry() == kUnknown_SkPixelGeometry)
       save_layer_alpha_should_preserve_lcd_text = false;

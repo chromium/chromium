@@ -8,7 +8,6 @@
 #include <xf86drmMode.h>
 
 #include "base/logging.h"
-#include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 
@@ -89,8 +88,7 @@ bool DrmDumbBuffer::MapDumbBuffer(const SkImageInfo& info) {
     return false;
   }
 
-  SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
-  surface_ = SkSurface::MakeRasterDirect(info, mmap_base_, stride_, &props);
+  surface_ = SkSurface::MakeRasterDirect(info, mmap_base_, stride_);
   if (!surface_) {
     LOG(ERROR) << "DrmDumbBuffer: Failed to create SkSurface: handle "
                << handle_;

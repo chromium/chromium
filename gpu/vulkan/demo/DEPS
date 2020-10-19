@@ -1,7 +1,6 @@
 include_rules = [
   "+components/tracing",
   "+components/viz",
-  "+skia/ext",
   "+third_party/skia",
   "+ui",
 ]

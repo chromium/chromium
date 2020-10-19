@@ -23,7 +23,6 @@
 #include "media/base/video_frame.h"
 #include "media/capture/mojom/image_capture_types.h"
 #include "media/capture/video/gpu_memory_buffer_utils.h"
-#include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkFont.h"
@@ -430,7 +429,7 @@ void PacmanFramePainter::DrawPacman(base::TimeDelta elapsed_time,
   paint.setStyle(SkPaint::kFill_Style);
   SkFont font;
   font.setEdging(SkFont::Edging::kAlias);
-  SkCanvas canvas(bitmap, skia::LegacyDisplayGlobals::GetSkSurfaceProps());
+  SkCanvas canvas(bitmap);
 
   const SkScalar unscaled_zoom = fake_device_state_->zoom / 100.f;
   const SkScalar translate_x =

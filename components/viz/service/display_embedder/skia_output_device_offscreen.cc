@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "gpu/command_buffer/service/skia_utils.h"
-#include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
 namespace viz {
@@ -137,8 +136,9 @@ SkSurface* SkiaOutputDeviceOffscreen::BeginPaint(
     std::vector<GrBackendSemaphore>* end_semaphores) {
   DCHECK(backend_texture_.isValid());
   if (!sk_surface_) {
-    SkSurfaceProps surface_props =
-        skia::LegacyDisplayGlobals::GetSkSurfaceProps();
+    // LegacyFontHost will get LCD text and skia figures out what type to use.
+    SkSurfaceProps surface_props(0 /* flags */,
+                                 SkSurfaceProps::kLegacyFontHost_InitType);
     sk_surface_ = SkSurface::MakeFromBackendTexture(
         context_state_->gr_context(), backend_texture_,
         capabilities_.output_surface_origin == gfx::SurfaceOrigin::kTopLeft

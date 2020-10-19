@@ -8,7 +8,6 @@
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_recorder.h"
 #include "cc/paint/scoped_raster_flags.h"
-#include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkAnnotation.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
 
@@ -25,8 +24,7 @@ SkiaPaintCanvas::SkiaPaintCanvas(SkCanvas* canvas,
 
 SkiaPaintCanvas::SkiaPaintCanvas(const SkBitmap& bitmap,
                                  ImageProvider* image_provider)
-    : canvas_(new SkCanvas(bitmap,
-                           skia::LegacyDisplayGlobals::GetSkSurfaceProps())),
+    : canvas_(new SkCanvas(bitmap)),
       bitmap_(bitmap),
       owned_(canvas_),
       image_provider_(image_provider) {}

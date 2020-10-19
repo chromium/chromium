@@ -9,23 +9,38 @@
 namespace gfx {
 
 // static
-SkPixelGeometry FontRenderParams::SubpixelRenderingToSkiaPixelGeometry(
+SkFontLCDConfig::LCDOrder FontRenderParams::SubpixelRenderingToSkiaLCDOrder(
     FontRenderParams::SubpixelRendering subpixel_rendering) {
   switch (subpixel_rendering) {
     case gfx::FontRenderParams::SUBPIXEL_RENDERING_NONE:
-      return kRGB_H_SkPixelGeometry;  // why not kUnknown_SkPixelGeometry ??
     case gfx::FontRenderParams::SUBPIXEL_RENDERING_RGB:
-      return kRGB_H_SkPixelGeometry;
     case gfx::FontRenderParams::SUBPIXEL_RENDERING_VRGB:
-      return kRGB_V_SkPixelGeometry;
+      return SkFontLCDConfig::kRGB_LCDOrder;
     case gfx::FontRenderParams::SUBPIXEL_RENDERING_BGR:
-      return kBGR_H_SkPixelGeometry;
     case gfx::FontRenderParams::SUBPIXEL_RENDERING_VBGR:
-      return kBGR_V_SkPixelGeometry;
+      return SkFontLCDConfig::kBGR_LCDOrder;
   }
 
   NOTREACHED();
-  return kRGB_H_SkPixelGeometry;
+  return SkFontLCDConfig::kRGB_LCDOrder;
+}
+
+// static
+SkFontLCDConfig::LCDOrientation
+FontRenderParams::SubpixelRenderingToSkiaLCDOrientation(
+    FontRenderParams::SubpixelRendering subpixel_rendering) {
+  switch (subpixel_rendering) {
+    case gfx::FontRenderParams::SUBPIXEL_RENDERING_NONE:
+    case gfx::FontRenderParams::SUBPIXEL_RENDERING_RGB:
+    case gfx::FontRenderParams::SUBPIXEL_RENDERING_BGR:
+      return SkFontLCDConfig::kHorizontal_LCDOrientation;
+    case gfx::FontRenderParams::SUBPIXEL_RENDERING_VRGB:
+    case gfx::FontRenderParams::SUBPIXEL_RENDERING_VBGR:
+      return SkFontLCDConfig::kVertical_LCDOrientation;
+  }
+
+  NOTREACHED();
+  return SkFontLCDConfig::kHorizontal_LCDOrientation;
 }
 
 FontRenderParamsQuery::FontRenderParamsQuery()

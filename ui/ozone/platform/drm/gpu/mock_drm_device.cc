@@ -10,7 +10,6 @@
 
 #include "base/check.h"
 #include "base/stl_util.h"
-#include "skia/ext/legacy_display_globals.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager_atomic.h"
@@ -386,11 +385,10 @@ bool MockDrmDevice::CreateDumbBuffer(const SkImageInfo& info,
   *handle = allocate_buffer_count_++;
   *stride = info.minRowBytes();
   void* pixels = new char[info.computeByteSize(*stride)];
-  SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
   buffers_.push_back(SkSurface::MakeRasterDirectReleaseProc(
       info, pixels, *stride,
       [](void* pixels, void* context) { delete[] static_cast<char*>(pixels); },
-      /*context=*/nullptr, &props));
+      /*context=*/nullptr));
   buffers_[*handle]->getCanvas()->clear(SK_ColorBLACK);
 
   return true;

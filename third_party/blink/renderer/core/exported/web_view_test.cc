@@ -537,7 +537,7 @@ TEST_F(WebViewTest, SetBaseBackgroundColorAndBlendWithExistingContent) {
   // Set canvas background to red with alpha.
   SkBitmap bitmap;
   bitmap.allocN32Pixels(kWidth, kHeight);
-  SkCanvas canvas(bitmap, SkSurfaceProps{});
+  SkCanvas canvas(bitmap);
   canvas.clear(kAlphaRed);
 
   PaintRecordBuilder builder;

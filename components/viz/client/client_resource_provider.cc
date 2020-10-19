@@ -365,7 +365,7 @@ ClientResourceProvider::ScopedSkSurface::ScopedSkSurface(
     GLenum texture_target,
     const gfx::Size& size,
     ResourceFormat format,
-    SkSurfaceProps surface_props,
+    bool can_use_lcd_text,
     int msaa_sample_count) {
   GrGLTextureInfo texture_info;
   texture_info.fID = texture_id;
@@ -373,6 +373,7 @@ ClientResourceProvider::ScopedSkSurface::ScopedSkSurface(
   texture_info.fFormat = TextureStorageFormat(format);
   GrBackendTexture backend_texture(size.width(), size.height(),
                                    GrMipMapped::kNo, texture_info);
+  SkSurfaceProps surface_props = ComputeSurfaceProps(can_use_lcd_text);
   // This type is used only for gpu raster, which implies gpu compositing.
   bool gpu_compositing = true;
   surface_ = SkSurface::MakeFromBackendTexture(
@@ -384,6 +385,19 @@ ClientResourceProvider::ScopedSkSurface::ScopedSkSurface(
 ClientResourceProvider::ScopedSkSurface::~ScopedSkSurface() {
   if (surface_)
     surface_->flushAndSubmit();
+}
+
+SkSurfaceProps ClientResourceProvider::ScopedSkSurface::ComputeSurfaceProps(
+    bool can_use_lcd_text) {
+  uint32_t flags = 0;
+  // Use unknown pixel geometry to disable LCD text.
+  SkSurfaceProps surface_props(flags, kUnknown_SkPixelGeometry);
+  if (can_use_lcd_text) {
+    // LegacyFontHost will get LCD text and skia figures out what type to use.
+    surface_props =
+        SkSurfaceProps(flags, SkSurfaceProps::kLegacyFontHost_InitType);
+  }
+  return surface_props;
 }
 
 void ClientResourceProvider::ValidateResource(ResourceId id) const {

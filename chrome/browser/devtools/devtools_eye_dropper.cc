@@ -20,7 +20,6 @@
 #include "media/base/video_frame.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "skia/ext/legacy_display_globals.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -185,7 +184,7 @@ void DevToolsEyeDropper::UpdateCursor() {
                         kCursorSize * device_scale_factor);
   result.eraseARGB(0, 0, 0, 0);
 
-  SkCanvas canvas(result, skia::LegacyDisplayGlobals::GetSkSurfaceProps());
+  SkCanvas canvas(result);
   canvas.scale(device_scale_factor, device_scale_factor);
   canvas.translate(0.5f, 0.5f);
 

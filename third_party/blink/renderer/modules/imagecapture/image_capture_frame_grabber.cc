@@ -8,7 +8,6 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
-#include "skia/ext/legacy_display_globals.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
@@ -94,8 +93,7 @@ void ImageCaptureFrameGrabber::SingleShotFrameHandler::OnVideoFrameOnIOThread(
   const SkImageInfo info = SkImageInfo::MakeN32(
       frame->visible_rect().width(), frame->visible_rect().height(), alpha);
 
-  SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
-  sk_sp<SkSurface> surface = SkSurface::MakeRaster(info, &props);
+  sk_sp<SkSurface> surface = SkSurface::MakeRaster(info);
   DCHECK(surface);
 
   auto wrapper_callback =

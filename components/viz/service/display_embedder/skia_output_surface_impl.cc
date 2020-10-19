@@ -33,7 +33,6 @@
 #include "gpu/ipc/single_task_sequence.h"
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
-#include "skia/ext/legacy_display_globals.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_gl_api_implementation.h"
@@ -846,8 +845,9 @@ SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterization(
     return SkSurfaceCharacterization();
 
   auto cache_max_resource_bytes = impl_on_gpu_->max_resource_cache_bytes();
-  SkSurfaceProps surface_props =
-      skia::LegacyDisplayGlobals::GetSkSurfaceProps();
+  // LegacyFontHost will get LCD text and skia figures out what type to use.
+  SkSurfaceProps surface_props(0 /*flags */,
+                               SkSurfaceProps::kLegacyFontHost_InitType);
   if (is_root_render_pass) {
     const auto format_index = static_cast<int>(format);
     const auto& color_type = capabilities_.sk_color_types[format_index];

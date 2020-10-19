@@ -8687,7 +8687,7 @@ static void NodeImageTestValidation(const IntSize& reference_bitmap_size,
   SkBitmap bitmap;
   bitmap.allocN32Pixels(reference_bitmap_size.Width(),
                         reference_bitmap_size.Height());
-  SkCanvas canvas(bitmap, SkSurfaceProps{});
+  SkCanvas canvas(bitmap);
   canvas.drawColor(SK_ColorGREEN);
 
   EXPECT_EQ(reference_bitmap_size.Width(), drag_image->Size().Width());

@@ -73,7 +73,7 @@ void TableExample::CreateExampleView(View* container) {
   icon1_.allocN32Pixels(16, 16);
   icon2_.allocN32Pixels(16, 16);
 
-  SkCanvas canvas1(icon1_, SkSurfaceProps{}), canvas2(icon2_, SkSurfaceProps{});
+  SkCanvas canvas1(icon1_), canvas2(icon2_);
   canvas1.drawColor(SK_ColorRED);
   canvas2.drawColor(SK_ColorBLUE);
 

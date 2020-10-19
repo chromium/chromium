@@ -43,7 +43,7 @@ SkBitmap SampleNearestNeighbor(const SkBitmap& contents, int desired_size) {
     bitmap.eraseARGB(0, 0, 0, 0);
 
   {
-    SkCanvas canvas(bitmap, SkSurfaceProps{});
+    SkCanvas canvas(bitmap);
     canvas.drawBitmapRect(contents, SkRect::MakeIWH(desired_size, desired_size),
                           nullptr);
   }

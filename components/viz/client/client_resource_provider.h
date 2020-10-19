@@ -118,11 +118,13 @@ class VIZ_CLIENT_EXPORT ClientResourceProvider {
                     GLenum texture_target,
                     const gfx::Size& size,
                     ResourceFormat format,
-                    SkSurfaceProps surface_props,
+                    bool can_use_lcd_text,
                     int msaa_sample_count);
     ~ScopedSkSurface();
 
     SkSurface* surface() const { return surface_.get(); }
+
+    static SkSurfaceProps ComputeSurfaceProps(bool can_use_lcd_text);
 
    private:
     sk_sp<SkSurface> surface_;
