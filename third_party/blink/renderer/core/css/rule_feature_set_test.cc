@@ -1566,6 +1566,7 @@ RefTestData ref_equal_test_data[] = {
     {":is(.a, *) .b", ".a .b, * .b"},
     {":is(.a + .b, .c) *", ".a + .b *, .c *"},
     {":is(.a + *, .c) *", ".a + * *, .c *"},
+    {".a + .b + .c:is(*)", ".a + .b + .c"},
     // TODO(andruud): At the time of writing these :not() tests, we only
     // support a single simple selector inside :not(). When a complex selector
     // list is supported, some refs should be rewritten to be less strange.
@@ -1582,6 +1583,20 @@ RefTestData ref_equal_test_data[] = {
     // as a single :not() level in terms of invalidation:
     {".a :not(:is(:not(.b), .c))", ".a :not(.b), .a :not(.c)"},
     {":not(:is(:not(.a), .b)) .c", ":not(.a) .c, :not(.b) .c"},
+    {".a :is(:hover)", ".a :hover"},
+    {":is(:hover) .a", ":hover .a"},
+    {"button:is(:hover, :focus)", "button:hover, button:focus"},
+    {".a :is(.b, :hover)", ".a .b, .a :hover"},
+    {".a + :is(:hover) + .c", ".a + :hover + .c"},
+    {".a + :is(.b, :hover) + .c", ".a + .b + .c, .a + :hover + .c"},
+    {":is(ol, li)::before", "ol::before, li::before"},
+    {":is(.a + .b, .c)::before", ".a + .b::before, .c::before"},
+    {":is(ol, li)::-internal-input-suggested",
+     "ol::-internal-input-suggested, li::-internal-input-suggested"},
+    {":is([foo], [bar])", "[foo], [bar]"},
+    {".a :is([foo], [bar])", ".a [foo], .a [bar]"},
+    {":is([foo], [bar]) .a", "[foo] .a, [bar] .a"},
+    {":is([a], [b]) :is([c], [d])", "[a] [c], [a] [d], [b] [c], [b] [d]"},
 
     // clang-format on
 };
