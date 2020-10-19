@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <grit base_dir="." latest_public_release="0" current_release="1">
   <outputs>
-    <output filename="grit/tracing_proto_resources.h" type="rc_header" />
+    <output filename="grit/tracing_proto_resources.h" type="rc_header">
+      <emit emit_type="prepend"></emit>
+    </output>
     <output filename="tracing_proto_resources.pak" type="data_package" />
   </outputs>
   <release seq="1">

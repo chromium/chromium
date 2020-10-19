@@ -71,12 +71,17 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventMetadataSource
       perfetto::protos::pbzero::ChromeMetadataPacket*,
       bool /* privacy_filtering_enabled */)>;
 
+  using PacketGeneratorFunction =
+      base::RepeatingCallback<void(perfetto::protos::pbzero::TracePacket*,
+                                   bool /* privacy_filtering_enabled */)>;
+
   // Any callbacks passed here will be called when tracing. Note that if tracing
   // is enabled while calling this method, the callback may be invoked
   // directly.
   void AddGeneratorFunction(JsonMetadataGeneratorFunction generator);
   // Same as above, but for filling in proto format.
   void AddGeneratorFunction(MetadataGeneratorFunction generator);
+  void AddGeneratorFunction(PacketGeneratorFunction generator);
   // For background tracing, the legacy crash uploader needs
   // metadata fields to be uploaded as POST args in addition to being
   // embedded in the trace. TODO(oysteine): Remove when only the
@@ -102,18 +107,26 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventMetadataSource
   void GenerateMetadata(
       std::unique_ptr<std::vector<JsonMetadataGeneratorFunction>>
           json_generators,
-      std::unique_ptr<std::vector<MetadataGeneratorFunction>> proto_generators);
+      std::unique_ptr<std::vector<MetadataGeneratorFunction>> proto_generators,
+      std::unique_ptr<std::vector<PacketGeneratorFunction>> packet_generators);
   void GenerateMetadataFromGenerator(
       const MetadataGeneratorFunction& generator);
   void GenerateJsonMetadataFromGenerator(
       const JsonMetadataGeneratorFunction& generator,
       perfetto::protos::pbzero::ChromeEventBundle* event_bundle);
+  void GenerateMetadataPacket(
+      const TraceEventMetadataSource::PacketGeneratorFunction& generator);
   std::unique_ptr<base::DictionaryValue> GenerateTraceConfigMetadataDict();
 
   // All members are protected by |lock_|.
+  // TODO(crbug.com/1138893): Change annotations to GUARDED_BY
   base::Lock lock_;
-  std::vector<JsonMetadataGeneratorFunction> json_generator_functions_;
-  std::vector<MetadataGeneratorFunction> generator_functions_;
+  std::vector<JsonMetadataGeneratorFunction> json_generator_functions_
+      GUARDED_BY_FIXME(lock_);
+  std::vector<MetadataGeneratorFunction> generator_functions_
+      GUARDED_BY_FIXME(lock_);
+  std::vector<PacketGeneratorFunction> packet_generator_functions_
+      GUARDED_BY_FIXME(lock_);
 
   const scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
 

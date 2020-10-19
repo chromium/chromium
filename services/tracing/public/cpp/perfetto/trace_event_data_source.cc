@@ -48,6 +48,7 @@
 #include "services/tracing/public/mojom/constants.mojom.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/shared_memory_arbiter.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_writer.h"
+#include "third_party/perfetto/include/perfetto/protozero/message.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_interned_data_index.h"
 #include "third_party/perfetto/protos/perfetto/trace/chrome/chrome_metadata.pbzero.h"
@@ -170,6 +171,13 @@ void TraceEventMetadataSource::AddGeneratorFunction(
   GenerateMetadataFromGenerator(generator);
 }
 
+void TraceEventMetadataSource::AddGeneratorFunction(
+    PacketGeneratorFunction generator) {
+  DCHECK(origin_task_runner_->RunsTasksInCurrentSequence());
+  packet_generator_functions_.push_back(generator);
+  GenerateMetadataPacket(generator);
+}
+
 std::unique_ptr<base::DictionaryValue>
 TraceEventMetadataSource::GenerateTraceConfigMetadataDict() {
   AutoLockWithDeferredTaskPosting lock(lock_);
@@ -209,6 +217,22 @@ void TraceEventMetadataSource::GenerateMetadataFromGenerator(
   trace_packet->set_timestamp_clock_id(kTraceClockId);
   auto* chrome_metadata = trace_packet->set_chrome_metadata();
   generator.Run(chrome_metadata, privacy_filtering_enabled_);
+}
+
+void TraceEventMetadataSource::GenerateMetadataPacket(
+    const TraceEventMetadataSource::PacketGeneratorFunction& generator) {
+  DCHECK(origin_task_runner_->RunsTasksInCurrentSequence());
+  perfetto::TraceWriter::TracePacketHandle trace_packet;
+  {
+    AutoLockWithDeferredTaskPosting lock(lock_);
+    if (!emit_metadata_at_start_ || !trace_writer_)
+      return;
+    trace_packet = trace_writer_->NewTracePacket();
+  }
+  trace_packet->set_timestamp(
+      TRACE_TIME_TICKS_NOW().since_origin().InNanoseconds());
+  trace_packet->set_timestamp_clock_id(kTraceClockId);
+  generator.Run(trace_packet.get(), privacy_filtering_enabled_);
 }
 
 void TraceEventMetadataSource::GenerateJsonMetadataFromGenerator(
@@ -288,16 +312,29 @@ void TraceEventMetadataSource::GenerateMetadata(
         json_generators,
     std::unique_ptr<
         std::vector<TraceEventMetadataSource::MetadataGeneratorFunction>>
-        proto_generators) {
+        proto_generators,
+    std::unique_ptr<
+        std::vector<TraceEventMetadataSource::PacketGeneratorFunction>>
+        packet_generators) {
   DCHECK(origin_task_runner_->RunsTasksInCurrentSequence());
-  TracePacketHandle trace_packet;
+
+  perfetto::TraceWriter* trace_writer;
   bool privacy_filtering_enabled;
   {
     AutoLockWithDeferredTaskPosting lock(lock_);
-    trace_packet = trace_writer_->NewTracePacket();
+    trace_writer = trace_writer_.get();
     privacy_filtering_enabled = privacy_filtering_enabled_;
   }
 
+  for (auto& generator : *packet_generators) {
+    TracePacketHandle generator_trace_packet = trace_writer->NewTracePacket();
+    generator_trace_packet->set_timestamp(
+        TRACE_TIME_TICKS_NOW().since_origin().InNanoseconds());
+    generator_trace_packet->set_timestamp_clock_id(kTraceClockId);
+    generator.Run(generator_trace_packet.get(), privacy_filtering_enabled);
+  }
+
+  TracePacketHandle trace_packet = trace_writer_->NewTracePacket();
   trace_packet->set_timestamp(
       TRACE_TIME_TICKS_NOW().since_origin().InNanoseconds());
   trace_packet->set_timestamp_clock_id(kTraceClockId);
@@ -324,6 +361,8 @@ void TraceEventMetadataSource::StartTracing(
       std::make_unique<std::vector<JsonMetadataGeneratorFunction>>();
   auto proto_generators =
       std::make_unique<std::vector<MetadataGeneratorFunction>>();
+  auto packet_generators =
+      std::make_unique<std::vector<PacketGeneratorFunction>>();
   {
     AutoLockWithDeferredTaskPosting lock(lock_);
     privacy_filtering_enabled_ =
@@ -338,6 +377,7 @@ void TraceEventMetadataSource::StartTracing(
         emit_metadata_at_start_ = true;
         *json_generators = json_generator_functions_;
         *proto_generators = generator_functions_;
+        *packet_generators = packet_generator_functions_;
         break;
       }
       case TraceRecordMode::RECORD_CONTINUOUSLY:
@@ -353,7 +393,8 @@ void TraceEventMetadataSource::StartTracing(
       FROM_HERE,
       base::BindOnce(&TraceEventMetadataSource::GenerateMetadata,
                      base::Unretained(this), std::move(json_generators),
-                     std::move(proto_generators)));
+                     std::move(proto_generators),
+                     std::move(packet_generators)));
 }
 
 void TraceEventMetadataSource::StopTracing(
@@ -371,9 +412,13 @@ void TraceEventMetadataSource::StopTracing(
       auto proto_generators =
           std::make_unique<std::vector<MetadataGeneratorFunction>>();
       *proto_generators = generator_functions_;
+      auto packet_generators =
+          std::make_unique<std::vector<PacketGeneratorFunction>>();
+      *packet_generators = packet_generator_functions_;
       maybe_generate_task = base::BindOnce(
           &TraceEventMetadataSource::GenerateMetadata, base::Unretained(this),
-          std::move(json_generators), std::move(proto_generators));
+          std::move(json_generators), std::move(proto_generators),
+          std::move(packet_generators));
     }
   }
   // Even when not generating metadata, make sure the metadata generate task
