@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="AutoScreenBrightness.AdapterDecisionAtUserChange.AlsDelta"
-    units="count" expires_after="2020-11-30">
+    units="count" expires_after="2021-06-30">
 <!-- Name completed by histogram_suffixes name="AlsBrightnessDirection" and name="AdapterDecision" -->
 
   <owner>jiameng@chromium.org</owner>
@@ -39,7 +39,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.AdapterDecisionAtUserChange.AlsStd"
-    units="count" expires_after="2020-11-30">
+    units="count" expires_after="2021-06-30">
 <!-- Name completed by histogram_suffixes name="AlsBrightnessDirection" and name="AdapterDecision" -->
 
   <owner>jiameng@chromium.org</owner>
@@ -56,7 +56,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="AutoScreenBrightness.AdapterDecisionAtUserChange.BrightnessChange.Cause"
-    enum="AutoScreenBrightnessBrightnessChangeCause" expires_after="2020-11-30">
+    enum="AutoScreenBrightnessBrightnessChangeCause" expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -70,7 +70,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="AutoScreenBrightness.AdapterDecisionAtUserChange.ModelIteration"
-    units="count" expires_after="2020-11-30">
+    units="count" expires_after="2021-06-30">
 <!-- Name completed by histogram_suffixes name="AdapterDecision" -->
 
   <owner>jiameng@chromium.org</owner>
@@ -87,7 +87,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="AutoScreenBrightness.AdapterDecisionAtUserChange.NoBrightnessChange.Cause"
     enum="AutoScreenBrightnessNoBrightnessChangeCause"
-    expires_after="2020-11-30">
+    expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -101,7 +101,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="AutoScreenBrightness.AdapterDecisionAtUserChange.Unknown.AlsStd"
-    units="count" expires_after="2020-11-30">
+    units="count" expires_after="2021-06-30">
 <!-- Name completed by histogram_suffixes name="AdapterDecision" -->
 
   <owner>jiameng@chromium.org</owner>
@@ -117,7 +117,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.AlsReaderStatus"
-    enum="AutoScreenBrightnessAlsReaderStatus" expires_after="2021-04-04">
+    enum="AutoScreenBrightnessAlsReaderStatus" expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -128,7 +128,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.BrightnessChange.Cause"
-    enum="AutoScreenBrightnessBrightnessChangeCause" expires_after="2021-04-04">
+    enum="AutoScreenBrightnessBrightnessChangeCause" expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -137,7 +137,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.BrightnessChange.ElapsedTime" units="ms"
-    expires_after="2021-04-04">
+    expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -148,7 +148,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.BrightnessChange.ModelIteration"
-    units="count" expires_after="2021-04-04">
+    units="count" expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -161,7 +161,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="AutoScreenBrightness.BrightnessMonitorStatus"
     enum="AutoScreenBrightnessBrightnessMonitorStatus"
-    expires_after="2020-11-30">
+    expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -173,7 +173,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.DailyUserAdjustment.Atlas" units="count"
-    expires_after="2021-04-04">
+    expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -191,7 +191,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.DailyUserAdjustment.Eve" units="count"
-    expires_after="2021-04-04">
+    expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -208,7 +208,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.DailyUserAdjustment.Kohaku" units="count"
-    expires_after="2021-04-04">
+    expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -226,7 +226,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.DailyUserAdjustment.NoAls" units="count"
-    expires_after="2020-11-30">
+    expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -243,7 +243,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.DailyUserAdjustment.Nocturne"
-    units="count" expires_after="2021-04-04">
+    units="count" expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -261,7 +261,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.DailyUserAdjustment.SupportedAls"
-    units="count" expires_after="2020-11-30">
+    units="count" expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -278,7 +278,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.DailyUserAdjustment.UnsupportedAls"
-    units="count" expires_after="2020-11-30">
+    units="count" expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -295,7 +295,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.DataError"
-    enum="AutoScreenBrightnessDataError" expires_after="2020-11-30">
+    enum="AutoScreenBrightnessDataError" expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -308,7 +308,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="AutoScreenBrightness.ElapsedTimeBetweenModelAndUserAdjustments"
-    units="ms" expires_after="2020-11-30">
+    units="ms" expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -320,7 +320,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.GlobalCurveResetOnInitialization"
-    enum="Boolean" expires_after="2020-11-30">
+    enum="Boolean" expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -329,7 +329,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.InvalidCurveReason"
-    enum="AutoScreenBrightnessInvalidCurveReason" expires_after="2020-11-30">
+    enum="AutoScreenBrightnessInvalidCurveReason" expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -341,7 +341,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.MissingAlsWhenBrightnessChanged"
-    enum="BooleanError" expires_after="2020-11-30">
+    enum="BooleanError" expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -352,7 +352,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.MissingPriorUserBrightnessRequest"
-    enum="BooleanError" expires_after="2020-11-30">
+    enum="BooleanError" expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -367,7 +367,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.ModelIterationCountAtInitialization"
-    units="count" expires_after="2020-11-30">
+    units="count" expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -379,7 +379,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.ModelLoadingStatus"
-    enum="AutoScreenBrightnessModelLoadingStatus" expires_after="2020-11-30">
+    enum="AutoScreenBrightnessModelLoadingStatus" expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -390,7 +390,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="AutoScreenBrightness.ModelTraining.BrightnessChange"
     enum="AutoScreenBrightnessBoundedBrightnessChange"
-    expires_after="2020-11-30">
+    expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -402,7 +402,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.ModelTraining.BrightnessOutlier"
-    enum="Boolean" expires_after="2020-11-30">
+    enum="Boolean" expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -414,7 +414,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.ModelTraining.Inaccuracy.NoUpdate"
-    units="%" expires_after="2020-11-30">
+    units="%" expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -428,7 +428,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.ModelTraining.Inaccuracy.Update"
-    units="%" expires_after="2020-11-30">
+    units="%" expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -442,7 +442,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.ModelTraining.ModelUserConsistent"
-    enum="Boolean" expires_after="2020-11-30">
+    enum="Boolean" expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -454,7 +454,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.NewCurveSaved.Duration" units="ms"
-    expires_after="2020-11-30">
+    expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -467,7 +467,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.NewCurveSaved.Success"
-    enum="BooleanSuccess" expires_after="2020-11-30">
+    enum="BooleanSuccess" expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -479,7 +479,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.Opposite.UserModelBrightnessAdjustments"
-    units="count" expires_after="2020-11-30">
+    units="count" expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -493,7 +493,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.ParameterError"
-    enum="AutoScreenBrightnessParameterError" expires_after="2020-11-30">
+    enum="AutoScreenBrightnessParameterError" expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -505,7 +505,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.PersonalCurveValid" enum="BooleanValid"
-    expires_after="2020-11-30">
+    expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -516,7 +516,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.Same.UserModelBrightnessAdjustments"
-    units="count" expires_after="2020-11-30">
+    units="count" expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -530,7 +530,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.TrainingCompleteDuration.NewCurve"
-    units="ms" expires_after="2021-04-04">
+    units="ms" expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -542,7 +542,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.TrainingCompleteDuration.NoNewCurve"
-    units="ms" expires_after="2020-11-30">
+    units="ms" expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -554,7 +554,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AutoScreenBrightness.UserAdjustmentEffect"
-    enum="AutoScreenBrightnessUserAdjustmentEffect" expires_after="2020-11-30">
+    enum="AutoScreenBrightnessUserAdjustmentEffect" expires_after="2021-06-30">
   <owner>jiameng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
