@@ -8,8 +8,7 @@ goog.provide('{{module.namespace}}.{{constant.name}}');
  * @const { {{constant.kind|lite_closure_type_with_nullability}} }
  * @export
  */
-{{module.namespace}}.{{constant.name}} =
-    {{constant.value|expression_to_text_lite}};
+{{module.namespace}}.{{constant.name}} = {{constant|constant_value}};
 {%- endfor %}
 
 {#--- Enums #}

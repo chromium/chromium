@@ -204,8 +204,12 @@ export class ChromeHelper {
     });
 
     const idleManager = blink.mojom.IdleManager.getRemote();
-    // Set a large threshold since we don't care about user idle.
-    const threshold = {microseconds: 86400000000};
+    // Set a large threshold since we don't care about user idle. Note that
+    // ESLint does not yet seem to know about BigInt, so it complains about an
+    // uppercase "function" being used as something other than a constructor,
+    // and about BigInt not existing.
+    // eslint-disable-next-line new-cap, no-undef
+    const threshold = {microseconds: BigInt(86400000000)};
     const {state} = await idleManager.addMonitor(
         threshold, monitorCallbackRouter.$.bindNewPipeAndPassRemote());
     callback(state.screen === blink.mojom.ScreenIdleState.kLocked);

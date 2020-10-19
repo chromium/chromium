@@ -85,7 +85,7 @@ suite('DiscoveryPageTest', function() {
    */
   function createShareTarget(name) {
     return {
-      id: {high: 0, low: nextId++},
+      id: {high: BigInt(0), low: BigInt(nextId++)},
       name,
       type: nearbyShare.mojom.ShareTargetType.kPhone,
     };
