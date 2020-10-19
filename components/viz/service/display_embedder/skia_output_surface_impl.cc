@@ -534,7 +534,6 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPassOverlay(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Make sure there is no unsubmitted PaintFrame or PaintRenderPass.
   DCHECK(!current_paint_);
-  DCHECK(resource_sync_tokens_.empty());
 
   SkSurfaceCharacterization characterization = CreateSkSurfaceCharacterization(
       size, BufferFormat(format), mipmap, std::move(color_space),
@@ -719,6 +718,11 @@ void SkiaOutputSurfaceImpl::ScheduleOverlays(
                                    [](const CALayerOverlay& overlay) {
                                      return !!overlay.ddl;
                                    }) != overlays.end();
+  // Append |resource_sync_tokens_| which are depended by drawing render passes
+  // to overlay backings.
+  std::move(resource_sync_tokens_.begin(), resource_sync_tokens_.end(),
+            std::back_inserter(sync_tokens));
+  resource_sync_tokens_.clear();
 #else
   bool make_current = false;
 #endif
