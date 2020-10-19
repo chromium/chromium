@@ -109,6 +109,9 @@ IPC_STRUCT_TRAITS_BEGIN(gfx::GpuFenceHandle)
 #if defined(OS_POSIX)
   IPC_STRUCT_TRAITS_MEMBER(owned_fd)
 #endif
+#if defined(OS_WIN)
+  IPC_STRUCT_TRAITS_MEMBER(owned_handle)
+#endif
 IPC_STRUCT_TRAITS_END()
 
 #undef IPC_MESSAGE_EXPORT

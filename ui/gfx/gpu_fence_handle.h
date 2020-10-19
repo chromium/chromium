@@ -13,6 +13,10 @@
 #include "base/files/scoped_file.h"
 #endif
 
+#if defined(OS_WIN)
+#include "base/win/scoped_handle.h"
+#endif
+
 namespace gfx {
 
 struct GFX_EXPORT GpuFenceHandle {
@@ -31,11 +35,13 @@ struct GFX_EXPORT GpuFenceHandle {
   // |handle| itself.
   GpuFenceHandle Clone() const;
 
+#if defined(OS_POSIX) || defined(OS_FUCHSIA)
   // owned_fd is defined here for both OS_FUCHSIA and OS_POSIX but all
   // of the handling for owned_fd is only for POSIX. Consider adjusting the
   // defines in the future.
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
   base::ScopedFD owned_fd;
+#elif defined(OS_WIN)
+  base::win::ScopedHandle owned_handle;
 #endif
 };
 
