@@ -131,6 +131,16 @@ scoped_refptr<const NGLayoutResult> NGFieldsetLayoutAlgorithm::Layout() {
 
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
 
+  const auto& style = Style();
+  if (style.LogicalHeight().IsPercentOrCalc() ||
+      style.LogicalMinHeight().IsPercentOrCalc() ||
+      style.LogicalMaxHeight().IsPercentOrCalc()) {
+    // The height of the fieldset content box depends on the percent-height of
+    // the fieldset. So we should assume the fieldset has a percent-height
+    // descendant.
+    container_builder_.SetHasDescendantThatDependsOnPercentageBlockSize();
+  }
+
   return container_builder_.ToBoxFragment();
 }
 
