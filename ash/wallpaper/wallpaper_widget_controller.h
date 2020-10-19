@@ -71,15 +71,20 @@ class ASH_EXPORT WallpaperWidgetController
       const base::TimeDelta& animation_duration = base::TimeDelta());
   const WallpaperProperty& GetWallpaperProperty() const;
 
-  WallpaperView* wallpaper_view() const { return wallpaper_view_; }
-
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
+
+  WallpaperView* wallpaper_view() { return wallpaper_view_; }
+
+  ui::LayerTreeOwner* old_layer_tree_owner_for_testing() {
+    return old_layer_tree_owner_.get();
+  }
 
  private:
   // Runs callbacks in |animation_end_callbacks_|.
   void RunAnimationEndCallbacks();
 
+  // Copies and fades out the existing wallpaper.
   void ApplyCrossFadeAnimation(base::TimeDelta duration);
 
   aura::Window* root_window_;
@@ -90,7 +95,8 @@ class ASH_EXPORT WallpaperWidgetController
   // The current wallpaper widget.
   std::unique_ptr<views::Widget> widget_;
 
-  // The animating layer which contains old content.
+  // The animating layer which contains old content. This is the layer that is
+  // animated when changing wallpapers.
   std::unique_ptr<ui::LayerTreeOwner> old_layer_tree_owner_;
 
   // Pointer to the wallpaper view owned by |widget_|.

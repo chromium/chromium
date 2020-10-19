@@ -44,6 +44,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animator_test_controller.h"
 #include "ui/display/display.h"
@@ -353,15 +354,18 @@ class WallpaperControllerTest : public AshTestBase {
   }
 
   // Runs AnimatingWallpaperWidgetController's animation to completion.
-  // TODO(bshe): Don't require tests to run animations; it's slow.
   void RunDesktopControllerAnimation() {
     WallpaperWidgetController* controller =
         Shell::Get()
             ->GetPrimaryRootWindowController()
             ->wallpaper_widget_controller();
     ASSERT_TRUE(controller);
-    ASSERT_NO_FATAL_FAILURE(
-        RunAnimationForLayer(controller->wallpaper_view()->layer()));
+
+    ui::LayerTreeOwner* owner = controller->old_layer_tree_owner_for_testing();
+    if (!owner)
+      return;
+
+    ASSERT_NO_FATAL_FAILURE(RunAnimationForLayer(owner->root()));
   }
 
   // Convenience function to ensure ShouldCalculateColors() returns true.
@@ -684,8 +688,7 @@ TEST_F(WallpaperControllerTest, ChangeWallpaperQuick) {
   controller->CreateEmptyWallpaperForTesting();
 
   // Run wallpaper show animation to completion.
-  ASSERT_NO_FATAL_FAILURE(
-      RunAnimationForLayer(widget_controller->wallpaper_view()->layer()));
+  RunDesktopControllerAnimation();
 
   EXPECT_FALSE(widget_controller->IsAnimating());
 }
