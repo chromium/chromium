@@ -15,7 +15,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantCarouselModel;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChip;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChip.Type;
 import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
@@ -339,9 +338,9 @@ public class AutofillAssistantUiController {
      */
     @CalledByNative
     private AssistantChip createActionButton(int icon, String text, int actionIndex,
-            boolean disabled, boolean sticky, String identifier) {
+            boolean disabled, boolean sticky, boolean visible) {
         return new AssistantChip(AssistantChip.Type.BUTTON_HAIRLINE, icon, text, disabled, sticky,
-                identifier, () -> safeNativeOnUserActionSelected(actionIndex));
+                visible, () -> safeNativeOnUserActionSelected(actionIndex));
     }
 
     /**
@@ -349,8 +348,8 @@ public class AutofillAssistantUiController {
      */
     @CalledByNative
     private AssistantChip createHighlightedActionButton(int icon, String text, int actionIndex,
-            boolean disabled, boolean sticky, String identifier) {
-        return new AssistantChip(Type.BUTTON_FILLED_BLUE, icon, text, disabled, sticky, identifier,
+            boolean disabled, boolean sticky, boolean visible) {
+        return new AssistantChip(Type.BUTTON_FILLED_BLUE, icon, text, disabled, sticky, visible,
                 () -> safeNativeOnUserActionSelected(actionIndex));
     }
 
@@ -361,9 +360,9 @@ public class AutofillAssistantUiController {
      */
     @CalledByNative
     private AssistantChip createCancelButton(int icon, String text, int actionIndex,
-            boolean disabled, boolean sticky, String identifier) {
+            boolean disabled, boolean sticky, boolean visible) {
         return new AssistantChip(AssistantChip.Type.BUTTON_HAIRLINE, icon, text, disabled, sticky,
-                identifier, () -> safeNativeOnCancelButtonClicked(actionIndex));
+                visible, () -> safeNativeOnCancelButtonClicked(actionIndex));
     }
 
     /**
@@ -371,9 +370,9 @@ public class AutofillAssistantUiController {
      */
     @CalledByNative
     private AssistantChip createCloseButton(
-            int icon, String text, boolean disabled, boolean sticky, String identifier) {
+            int icon, String text, boolean disabled, boolean sticky, boolean visible) {
         return new AssistantChip(AssistantChip.Type.BUTTON_HAIRLINE, icon, text, disabled, sticky,
-                identifier, this::safeNativeOnCloseButtonClicked);
+                visible, this::safeNativeOnCloseButtonClicked);
     }
 
     @CalledByNative
@@ -391,24 +390,6 @@ public class AutofillAssistantUiController {
     private void setDisableChipChangeAnimations(boolean disable) {
         // TODO(b/144075373): Move this to AssistantCarouselModel.
         getModel().getActionsModel().setDisableChangeAnimations(disable);
-    }
-
-    @CalledByNative
-    private void setAllChipsVisibleExcept(String identifier, boolean visible) {
-        AssistantCarouselModel model = getModel().getActionsModel();
-        List<AssistantChip> chips = model.get(AssistantCarouselModel.CHIPS);
-        // Copy the list and modify the copy. Modifying the actual list in-place will not fire the
-        // relevant change notifications. TODO(b/144075373): Refactor to avoid this deep copy,
-        // preferably by moving this to native.
-        List<AssistantChip> newChips = new ArrayList<>();
-        for (int i = 0; i < chips.size(); ++i) {
-            AssistantChip newChip = new AssistantChip(chips.get(i));
-            newChips.add(newChip);
-            if (!chips.get(i).getIdentifier().equals(identifier)) {
-                newChip.setVisible(visible);
-            }
-        }
-        model.setChips(newChips);
     }
 
     @CalledByNative

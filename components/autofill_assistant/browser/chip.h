@@ -34,6 +34,9 @@ struct Chip {
   // Whether this chip is sticky. A sticky chip will be a candidate to be
   // displayed in the header if the peek mode of the sheet is HANDLE_HEADER.
   bool sticky = false;
+
+  // Whether this chip should be displayed in the carousel.
+  bool visible = true;
 };
 
 // Guarantees that the Chip.type of all chips is set to a sensible value.

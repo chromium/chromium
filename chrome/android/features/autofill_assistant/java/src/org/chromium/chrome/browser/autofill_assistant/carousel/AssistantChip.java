@@ -67,32 +67,18 @@ public class AssistantChip {
      */
     private final boolean mSticky;
 
-    private final String mIdentifier;
-
     /** The callback that will be triggered when this chip is clicked. */
     private final Runnable mSelectedListener;
 
     public AssistantChip(@Type int type, @Icon int icon, String text, boolean disabled,
-            boolean sticky, String identifier, Runnable selectedListener) {
+            boolean sticky, boolean visible, Runnable selectedListener) {
         mType = type;
         mIcon = icon;
         mText = text;
         mDisabled = disabled;
-        mVisible = true;
         mSticky = sticky;
-        mIdentifier = identifier;
+        mVisible = visible;
         mSelectedListener = selectedListener;
-    }
-
-    public AssistantChip(AssistantChip other) {
-        mType = other.mType;
-        mIcon = other.mIcon;
-        mText = other.mText;
-        mDisabled = other.mDisabled;
-        mVisible = other.mVisible;
-        mSticky = other.mSticky;
-        mIdentifier = other.mIdentifier;
-        mSelectedListener = other.mSelectedListener;
     }
 
     public int getType() {
@@ -127,10 +113,6 @@ public class AssistantChip {
         return mSticky;
     }
 
-    public String getIdentifier() {
-        return mIdentifier;
-    }
-
     public Runnable getSelectedListener() {
         return mSelectedListener;
     }
@@ -144,7 +126,6 @@ public class AssistantChip {
         AssistantChip that = (AssistantChip) other;
         return this.getType() == that.getType() && this.getText().equals(that.getText())
                 && this.getIcon() == that.getIcon() && this.isSticky() == that.isSticky()
-                && this.getIdentifier().equals(that.getIdentifier())
                 && this.isDisabled() == that.isDisabled() && this.isVisible() == that.isVisible();
     }
 }

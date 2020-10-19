@@ -251,6 +251,7 @@ class Controller : public ScriptExecutorDelegate,
   bool ShouldShowOverlay() const override;
   void ShutdownIfNecessary() override;
   bool IsRunningLiteScript() const override;
+  void OnKeyboardVisibilityChanged(bool visible) override;
 
  private:
   friend ControllerTest;
@@ -353,6 +354,8 @@ class Controller : public ScriptExecutorDelegate,
   void PerformDelayedShutdownIfNecessary();
 
   bool StateNeedsUI(AutofillAssistantState state);
+
+  void SetVisibilityAndUpdateUserActions();
 
   ClientSettings settings_;
   Client* const client_;
@@ -521,6 +524,7 @@ class Controller : public ScriptExecutorDelegate,
   bool expand_sheet_for_prompt_action_ = true;
   std::vector<std::string> browse_domains_allowlist_;
   bool browse_mode_invisible_ = false;
+  bool is_keyboard_showing_ = false;
 
   // Only set during a ShowGenericUiAction.
   std::unique_ptr<GenericUserInterfaceProto> generic_user_interface_;

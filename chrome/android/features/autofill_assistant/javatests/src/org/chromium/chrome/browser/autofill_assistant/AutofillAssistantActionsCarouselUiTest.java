@@ -96,7 +96,7 @@ public class AutofillAssistantActionsCarouselUiTest {
                         -> model.set(AssistantCarouselModel.CHIPS,
                                 Collections.singletonList(new AssistantChip(
                                         AssistantChip.Type.BUTTON_HAIRLINE, AssistantChip.Icon.NONE,
-                                        "Test", false, true, "", null))));
+                                        "Test", false, true, true, null))));
 
         // Chip was created and is displayed on the screen.
         onView(is(coordinator.getView()))
@@ -117,10 +117,10 @@ public class AutofillAssistantActionsCarouselUiTest {
         List<AssistantChip> chips = new ArrayList<>();
         for (int i = 0; i < numChips; i++) {
             chips.add(new AssistantChip(AssistantChip.Type.BUTTON_HAIRLINE, AssistantChip.Icon.NONE,
-                    "T" + i, false, false, "", null));
+                    "T" + i, false, false, true, null));
         }
         chips.add(new AssistantChip(AssistantChip.Type.BUTTON_HAIRLINE, AssistantChip.Icon.NONE,
-                "X", false, true, "", null));
+                "X", false, true, true, null));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> model.set(AssistantCarouselModel.CHIPS, chips));
 
@@ -145,10 +145,10 @@ public class AutofillAssistantActionsCarouselUiTest {
         List<AssistantChip> chips = new ArrayList<>();
         for (int i = 0; i < numChips; i++) {
             chips.add(new AssistantChip(AssistantChip.Type.BUTTON_HAIRLINE, AssistantChip.Icon.NONE,
-                    "Test" + i, false, false, "", null));
+                    "Test" + i, false, false, true, null));
         }
         chips.add(new AssistantChip(AssistantChip.Type.BUTTON_HAIRLINE, AssistantChip.Icon.NONE,
-                "Cancel", false, true, "", null));
+                "Cancel", false, true, true, null));
         TestThreadUtils.runOnUiThreadBlocking(() -> model.set(AssistantCarouselModel.CHIPS, chips));
 
         // Cancel chip is initially displayed to the user.
@@ -174,9 +174,9 @@ public class AutofillAssistantActionsCarouselUiTest {
 
         List<AssistantChip> chips = new ArrayList<>();
         chips.add(new AssistantChip(AssistantChip.Type.BUTTON_HAIRLINE, AssistantChip.Icon.NONE,
-                "Test 2", false, false, "", null));
+                "Test 2", false, false, true, null));
         chips.add(new AssistantChip(AssistantChip.Type.BUTTON_HAIRLINE, AssistantChip.Icon.NONE,
-                "Cancel", false, true, "", null));
+                "Cancel", false, true, true, null));
         TestThreadUtils.runOnUiThreadBlocking(() -> model.set(AssistantCarouselModel.CHIPS, chips));
         onView(withText("Cancel")).check(matches(isDisplayed()));
         onView(withText("Test 2")).check(matches(isDisplayed()));
@@ -185,7 +185,7 @@ public class AutofillAssistantActionsCarouselUiTest {
         List<AssistantChip> newChips = new ArrayList<>();
         newChips.add(chips.get(0));
         newChips.add(new AssistantChip(AssistantChip.Type.BUTTON_HAIRLINE, AssistantChip.Icon.NONE,
-                "Test 1", false, false, "", null));
+                "Test 1", false, false, true, null));
         newChips.add(chips.get(1));
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> model.set(AssistantCarouselModel.CHIPS, newChips));

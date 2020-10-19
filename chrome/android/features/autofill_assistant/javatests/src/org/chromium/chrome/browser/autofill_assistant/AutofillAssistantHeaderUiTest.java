@@ -206,8 +206,9 @@ public class AutofillAssistantHeaderUiTest {
         AssistantHeaderCoordinator coordinator = createCoordinator(model);
 
         String chipText = "Hello World";
-        AssistantChip chip = new AssistantChip(AssistantChip.Type.BUTTON_FILLED_BLUE, Icon.DONE,
-                chipText, /* disabled= */ false, /* sticky= */ false, "", () -> {});
+        AssistantChip chip =
+                new AssistantChip(AssistantChip.Type.BUTTON_FILLED_BLUE, Icon.DONE, chipText,
+                        /* disabled= */ false, /* sticky= */ false, /* visible= */ true, () -> {});
 
         // Set the header chip without displaying it.
         List<AssistantChip> chips = new ArrayList<>();

@@ -380,6 +380,19 @@ void Controller::SetUserActions(
     SetDefaultChipType(user_actions.get());
   }
   user_actions_ = std::move(user_actions);
+  SetVisibilityAndUpdateUserActions();
+}
+
+void Controller::SetVisibilityAndUpdateUserActions() {
+  // All non-cancel chips should be hidden while the keyboard is showing.
+  if (user_actions_) {
+    for (UserAction& user_action : *user_actions_) {
+      if (user_action.chip().type != CANCEL_ACTION) {
+        user_action.chip().visible = !is_keyboard_showing_;
+      }
+    }
+  }
+
   for (ControllerObserver& observer : observers_) {
     observer.OnUserActionsChanged(GetUserActions());
   }
@@ -2004,6 +2017,11 @@ bool Controller::StateNeedsUI(AutofillAssistantState state) {
 
 bool Controller::IsRunningLiteScript() const {
   return service_ ? service_->IsLiteService() : false;
+}
+
+void Controller::OnKeyboardVisibilityChanged(bool visible) {
+  is_keyboard_showing_ = visible;
+  SetVisibilityAndUpdateUserActions();
 }
 
 ElementArea* Controller::touchable_element_area() {
