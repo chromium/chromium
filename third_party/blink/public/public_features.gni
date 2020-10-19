@@ -27,4 +27,4 @@ declare_args() {
 enable_unhandled_tap = is_android
 
 # Use Minikin hyphenation engine.
-use_minikin_hyphenation = is_android
+use_minikin_hyphenation = !is_mac

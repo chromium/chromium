@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS Initial value
-FAIL hyphens: auto assert_equals: expected "auto" but got "manual"
-PASS hyphens: manual
-PASS hyphens: none
-FAIL hyphens should inherit assert_equals: expected "auto" but got "manual"
-Harness: the test ran to completion.
-
