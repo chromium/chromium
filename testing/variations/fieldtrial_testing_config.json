@@ -7355,55 +7355,6 @@
             ]
         }
     ],
-    "VideoCaptureService": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled2",
-                    "enable_features": [
-                        "MojoVideoCapture"
-                    ]
-                }
-            ]
-        }
-    ],
-    "VideoCaptureServiceAndroid": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MojoVideoCapture"
-                    ]
-                }
-            ]
-        }
-    ],
-    "VideoCaptureServiceChromeOS": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MojoVideoCapture"
-                    ]
-                }
-            ]
-        }
-    ],
     "VideoToolboxVp9Decoding": [
         {
             "platforms": [
