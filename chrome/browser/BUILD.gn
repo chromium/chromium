@@ -4159,6 +4159,8 @@ static_library("browser") {
       "metrics/perf/windowed_incognito_observer.h",
       "nearby_sharing/attachment_info.cc",
       "nearby_sharing/attachment_info.h",
+      "nearby_sharing/bluetooth_advertising_interval_client.cc",
+      "nearby_sharing/bluetooth_advertising_interval_client.h",
       "nearby_sharing/constants.h",
       "nearby_sharing/fast_initiation_manager.cc",
       "nearby_sharing/fast_initiation_manager.h",
