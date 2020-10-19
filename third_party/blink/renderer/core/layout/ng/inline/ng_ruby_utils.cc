@@ -194,7 +194,9 @@ LayoutUnit CommitPendingEndOverhang(NGLineInfo* line_info) {
   if (items->size() < 2U)
     return LayoutUnit();
   const NGInlineItemResult& text_item = items->back();
-  DCHECK_EQ(text_item.item->Type(), NGInlineItem::kText);
+  if (text_item.item->Type() == NGInlineItem::kControl)
+    return LayoutUnit();
+  DCHECK(text_item.item->Type() == NGInlineItem::kText);
   wtf_size_t i = items->size() - 2;
   while ((*items)[i].item->Type() != NGInlineItem::kAtomicInline) {
     const auto type = (*items)[i].item->Type();

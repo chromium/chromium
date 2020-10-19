@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+#container {
+  width: 10em;
+  white-space: pre-wrap;
+}
+</style>
+<body>
+<div id=container></div>
+<script>
+test(() => {
+  const div = document.querySelector('#container');
+  div.innerHTML = '<ruby>xx<rt>foo bar foo bar foo bar foo bar foo bar</rt></ruby><span>&#9;</span>';
+  // Force layout.
+  div.clientHeight;
+  // Success if CommitPendingEndOverhang() didn't crash in |div.clientHeight|.
+}, 'Overhanging ruby followed by a TAB should not crash');
+</script>
+</body>

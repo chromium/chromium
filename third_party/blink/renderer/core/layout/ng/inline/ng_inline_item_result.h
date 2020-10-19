@@ -298,6 +298,8 @@ class CORE_EXPORT NGLineInfo {
   bool is_ruby_text_ = false;
 };
 
+std::ostream& operator<<(std::ostream& ostream, const NGLineInfo& line_info);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_INLINE_ITEM_RESULT_H_
