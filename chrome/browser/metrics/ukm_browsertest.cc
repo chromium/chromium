@@ -159,19 +159,6 @@ void UnblockOnProfileCreation(base::RunLoop* run_loop,
 }
 #endif  // !defined(OS_ANDROID)
 
-#if !defined(OS_ANDROID)
-Profile* CreateGuestProfile() {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  base::FilePath new_path = profile_manager->GetGuestProfilePath();
-  base::RunLoop run_loop;
-  profile_manager->CreateProfileAsync(
-      new_path, base::Bind(&UnblockOnProfileCreation, &run_loop),
-      base::string16(), std::string());
-  run_loop.Run();
-  return profile_manager->GetProfileByPath(new_path);
-}
-#endif  // !defined(OS_ANDROID)
-
 // A helper object for overriding metrics enabled state.
 class MetricsConsentOverride {
  public:
@@ -500,10 +487,8 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, RegularPlusGuestCheck) {
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
   uint64_t original_client_id = ukm_test_helper.GetClientId();
 
-  // Create browser for guest profile. Only "off the record" browsers may be
-  // opened in this mode.
-  Profile* guest_profile = CreateGuestProfile();
-  Browser* guest_browser = CreateIncognitoBrowser(guest_profile);
+  // Create browser for guest profile.
+  Browser* guest_browser = InProcessBrowserTest::CreateGuestBrowser();
   EXPECT_FALSE(ukm_test_helper.IsRecordingEnabled());
 
   CloseBrowserSynchronously(guest_browser);

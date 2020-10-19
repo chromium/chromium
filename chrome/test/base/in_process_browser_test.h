@@ -227,6 +227,11 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // is omitted, the currently active profile will be used.
   Browser* CreateIncognitoBrowser(Profile* profile = nullptr);
 
+#if !defined(OS_ANDROID)
+  // Similar to |CreateBrowser|, but creates a Guest browser.
+  Browser* CreateGuestBrowser();
+#endif
+
   // Creates a browser for a popup window with a single tab (about:blank), waits
   // for the tab to finish loading, and shows the browser.
   Browser* CreateBrowserForPopup(Profile* profile);

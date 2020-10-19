@@ -20,30 +20,6 @@
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
 
-// TODO(crbug.com/1061637): Clean this and the same code in ukm_browsertest.
-// Maybe move them to InProcessBrowserTest.
-namespace {
-
-void UnblockOnProfileCreation(base::RunLoop* run_loop,
-                              Profile* profile,
-                              Profile::CreateStatus status) {
-  if (status == Profile::CREATE_STATUS_INITIALIZED)
-    run_loop->Quit();
-}
-
-Profile* CreateGuestProfile() {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  base::FilePath new_path = profile_manager->GetGuestProfilePath();
-  base::RunLoop run_loop;
-  profile_manager->CreateProfileAsync(
-      new_path, base::BindRepeating(&UnblockOnProfileCreation, &run_loop),
-      base::string16(), std::string());
-  run_loop.Run();
-  return profile_manager->GetProfileByPath(new_path);
-}
-
-}  // namespace
-
 // The param is whether to use the highlight in the container.
 class ToolbarAccountIconContainerViewBrowserTest : public InProcessBrowserTest {
  public:
@@ -108,9 +84,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarAccountIconContainerViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ToolbarAccountIconContainerViewBrowserTest,
                        ShouldUpdateHighlightInGuestWindow) {
-  Profile* guest_profile = CreateGuestProfile();
-  Browser* guest_browser = CreateIncognitoBrowser(guest_profile);
-  ASSERT_TRUE(guest_browser->profile()->IsGuestSession());
+  Browser* guest_browser = InProcessBrowserTest::CreateGuestBrowser();
   ToolbarAccountIconContainerView* container_view =
       BrowserView::GetBrowserViewForBrowser(guest_browser)
           ->toolbar()

@@ -154,6 +154,17 @@ FakeDeviceSyncImplFactory* GetFakeDeviceSyncImplFactory() {
 }
 #endif  // defined(OS_CHROMEOS)
 
+#if !defined(OS_ANDROID)
+// An observer that returns back to test code after a new profile is
+// initialized.
+void UnblockOnProfileCreation(base::RunLoop* run_loop,
+                              Profile* profile,
+                              Profile::CreateStatus status) {
+  if (status == Profile::CREATE_STATUS_INITIALIZED)
+    run_loop->Quit();
+}
+#endif
+
 }  // namespace
 
 // static
@@ -485,6 +496,29 @@ Browser* InProcessBrowserTest::CreateBrowserForApp(const std::string& app_name,
   return browser;
 }
 #endif  // !defined(OS_MAC)
+
+#if !defined(OS_ANDROID)
+Browser* InProcessBrowserTest::CreateGuestBrowser() {
+  // Get Guest profile.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath guest_path = profile_manager->GetGuestProfilePath();
+
+  base::RunLoop run_loop;
+  profile_manager->CreateProfileAsync(
+      guest_path, base::Bind(&UnblockOnProfileCreation, &run_loop),
+      base::string16(), std::string());
+  run_loop.Run();
+
+  Profile* profile = profile_manager->GetProfileByPath(guest_path);
+  if (!profile->IsEphemeralGuestProfile())
+    profile = profile->GetPrimaryOTRProfile();
+
+  // Create browser and add tab.
+  Browser* browser = new Browser(Browser::CreateParams(profile, true));
+  AddBlankTabAndShow(browser);
+  return browser;
+}
+#endif
 
 void InProcessBrowserTest::AddBlankTabAndShow(Browser* browser) {
   content::WindowedNotificationObserver observer(
