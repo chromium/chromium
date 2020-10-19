@@ -23,6 +23,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cookies/site_for_cookies.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_client.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
@@ -266,7 +267,8 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
       int container_frame_id,
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-          coep_reporter);
+          coep_reporter,
+      ukm::SourceId document_ukm_source_id);
 
   // For service worker window clients. Called after the navigation commits to a
   // render frame host. At this point, the previous ServiceWorkerContainerHost
@@ -279,7 +281,8 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // After this is called, is_response_committed() and is_execution_ready()
   // return true.
   void CompleteWebWorkerPreparation(
-      const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy);
+      const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+      ukm::SourceId worker_ukm_source_id);
 
   // Sets |url_|, |site_for_cookies_| and |top_frame_origin_|. For service
   // worker clients, updates the client uuid if it's a cross-origin transition.
@@ -446,6 +449,8 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   void LeaveBackForwardCacheForTesting() { is_in_back_forward_cache_ = false; }
 
   base::WeakPtr<ServiceWorkerContainerHost> GetWeakPtr();
+
+  ukm::SourceId ukm_source_id() const { return ukm_source_id_; }
 
  private:
   friend class ServiceWorkerContainerHostTest;
@@ -648,6 +653,9 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
 
   // The type of client.
   const base::Optional<ServiceWorkerClientInfo> client_info_;
+
+  // The source id of the client's ExecutionContext, set on response commit.
+  ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
 
   // For window clients only ---------------------------------------------------
 

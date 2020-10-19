@@ -726,7 +726,8 @@ void ServiceWorkerContainerHost::OnBeginNavigationCommit(
     int container_frame_id,
     const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-        coep_reporter) {
+        coep_reporter,
+    ukm::SourceId document_ukm_source_id) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   DCHECK(IsContainerForWindowClient());
 
@@ -772,6 +773,9 @@ void ServiceWorkerContainerHost::OnBeginNavigationCommit(
             container_process_id, frame_id_, client_uuid(), GetWeakPtr()));
   }
 
+  DCHECK_EQ(ukm_source_id_, ukm::kInvalidSourceId);
+  ukm_source_id_ = document_ukm_source_id;
+
   TransitionToClientPhase(ClientPhase::kResponseCommitted);
 }
 
@@ -789,7 +793,8 @@ void ServiceWorkerContainerHost::OnEndNavigationCommit() {
 }
 
 void ServiceWorkerContainerHost::CompleteWebWorkerPreparation(
-    const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy) {
+    const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+    ukm::SourceId worker_ukm_source_id) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   DCHECK(IsContainerForWorkerClient());
 
@@ -803,6 +808,9 @@ void ServiceWorkerContainerHost::CompleteWebWorkerPreparation(
                                      cross_origin_embedder_policy_.value(),
                                      mojo::NullRemote());
   }
+
+  DCHECK_EQ(ukm_source_id_, ukm::kInvalidSourceId);
+  ukm_source_id_ = worker_ukm_source_id;
 
   TransitionToClientPhase(ClientPhase::kResponseCommitted);
   SetExecutionReady();
@@ -1184,6 +1192,9 @@ void ServiceWorkerContainerHost::SetExecutionReady() {
   DCHECK(!is_execution_ready());
   TransitionToClientPhase(ClientPhase::kExecutionReady);
   RunExecutionReadyCallbacks();
+
+  if (context_)
+    context_->NotifyClientIsExecutionReady(*this);
 }
 
 void ServiceWorkerContainerHost::RunExecutionReadyCallbacks() {

@@ -20,6 +20,7 @@
 #include "base/observer_list_threadsafe.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
+#include "content/browser/service_worker/service_worker_identifiability_metrics.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
@@ -609,6 +610,8 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   std::set<url::Origin> registered_origins_;
   bool registrations_initialized_ = false;
   base::OnceClosure on_registrations_initialized_;
+
+  std::unique_ptr<ServiceWorkerIdentifiabilityMetrics> identifiability_metrics_;
 
   // Temporary for moving context core to the UI thread.
   scoped_refptr<base::TaskRunner> core_thread_task_runner_;
