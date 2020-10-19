@@ -10,6 +10,7 @@
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "fuchsia/base/legacymetrics_client.h"
@@ -315,6 +316,47 @@ TEST_F(LegacyMetricsClientTest, ExternalFlushSignal) {
   std::move(*flush_receiver).Run();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(test_recorder_.IsRecordInFlight());
+}
+
+TEST_F(LegacyMetricsClientTest, ExplicitFlush) {
+  client_.Start(kReportInterval);
+
+  base::RecordComputedAction("bar");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(test_recorder_.IsRecordInFlight());
+
+  bool called = false;
+  client_.FlushAndDisconnect(
+      base::BindLambdaForTesting([&called] { called = true; }));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(test_recorder_.IsRecordInFlight());
+  EXPECT_FALSE(called);
+
+  auto events = test_recorder_.WaitForEvents();
+  EXPECT_EQ(1u, events.size());
+  EXPECT_EQ("bar", events[0].user_action_event().name());
+
+  test_recorder_.SendAck();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(called);
+}
+
+TEST_F(LegacyMetricsClientTest, ExplicitFlushMultipleBatches) {
+  const size_t kSizeForMultipleBatches = LegacyMetricsClient::kMaxBatchSize * 2;
+  client_.Start(kReportInterval);
+
+  for (size_t i = 0; i < kSizeForMultipleBatches; ++i)
+    base::RecordComputedAction("bar");
+
+  client_.FlushAndDisconnect(base::DoNothing::Once());
+  base::RunLoop().RunUntilIdle();
+  test_recorder_.SendAck();
+  base::RunLoop().RunUntilIdle();
+
+  auto events = test_recorder_.WaitForEvents();
+  EXPECT_EQ(kSizeForMultipleBatches, events.size());
+  for (size_t i = 0; i < kSizeForMultipleBatches; ++i)
+    EXPECT_EQ("bar", events[i].user_action_event().name());
 }
 
 }  // namespace

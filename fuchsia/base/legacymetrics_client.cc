@@ -123,6 +123,7 @@ void LegacyMetricsClient::DrainBuffer() {
 
     if (is_flushing_) {
       metrics_recorder_.Unbind();
+      std::move(on_flush_complete_).Run();
     } else {
       ScheduleNextReport();
     }
@@ -154,9 +155,14 @@ void LegacyMetricsClient::OnMetricsRecorderDisconnected(zx_status_t status) {
   timer_.AbandonAndStop();
 }
 
-void LegacyMetricsClient::OnCloseSoon() {
+void LegacyMetricsClient::FlushAndDisconnect(
+    base::OnceClosure on_flush_complete) {
   DVLOG(1) << __func__ << " called.";
+  DCHECK(on_flush_complete);
+  if (is_flushing_)
+    return;
 
+  on_flush_complete_ = std::move(on_flush_complete);
   timer_.AbandonAndStop();
 
   is_flushing_ = true;
@@ -168,6 +174,10 @@ void LegacyMetricsClient::OnCloseSoon() {
   } else {
     StartReport();
   }
+}
+
+void LegacyMetricsClient::OnCloseSoon() {
+  FlushAndDisconnect(base::DoNothing::Once());
 }
 
 }  // namespace cr_fuchsia

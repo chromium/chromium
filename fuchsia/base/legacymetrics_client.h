@@ -57,6 +57,11 @@ class LegacyMetricsClient {
   // |callback| should be invoked to signal flush completion.
   void SetNotifyFlushCallback(NotifyFlushCallback callback);
 
+  // Use when caller needs an explicit flush and then disconnect, such as before
+  // termination. Caller will be notified when all events in the buffer are
+  // sent.
+  void FlushAndDisconnect(base::OnceClosure on_flush_complete);
+
  private:
   void ScheduleNextReport();
   void StartReport();
@@ -78,6 +83,8 @@ class LegacyMetricsClient {
   fuchsia::legacymetrics::MetricsRecorderPtr metrics_recorder_;
   base::RetainingOneShotTimer timer_;
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::OnceClosure on_flush_complete_;
 
   // Prevents use-after-free if |report_additional_callback_| is invoked after
   // |this| is destroyed.
