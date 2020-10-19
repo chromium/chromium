@@ -1578,9 +1578,6 @@ public class ContextualSearchManagerTest {
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testLivePrefetchFailoverRequestMadeAfterOpen(@EnabledFeature int enabledFeature)
             throws Exception {
-        // Test fails with out-of-process network service. crbug.com/1071721
-        if (!ChromeFeatureList.isEnabled("NetworkServiceInProcess")) return;
-
         mFakeServer.reset();
         mFakeServer.setLowPriorityPathInvalid();
         simulateResolveSearch("search");
