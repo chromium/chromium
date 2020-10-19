@@ -239,6 +239,7 @@
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom.h"
 #include "third_party/blink/public/mojom/usb/web_usb_service.mojom.h"
 #include "third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom.h"
+#include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_id_registry.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -267,14 +268,14 @@ using base::TimeDelta;
 
 namespace content {
 
-#if DCHECK_IS_ON() || !defined(NDEBUG)
-// Wrapping this in DCHECK_IS_ON() will enable it to run on
-// clusterfuzz, which should help narrow down illegal ax trees more quickly.
+#if defined(AX_FAIL_FAST_BUILD)
+// Enable fast fails on clusterfuzz and other builds used to debug Chrome,
+// which should help narrow down illegal ax trees more quickly.
 // static
 int RenderFrameHostImpl::max_accessibility_resets_ = 0;
 #else
 int RenderFrameHostImpl::max_accessibility_resets_ = 4;
-#endif
+#endif  // AX_FAIL_FAST_BUILD
 
 struct RenderFrameHostOrProxy {
   RenderFrameHostImpl* const frame;
