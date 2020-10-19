@@ -6,16 +6,19 @@
 
 #include <memory>
 
-#include "ash/public/cpp/window_pin_type.h"
-#include "ash/public/cpp/window_properties.h"
 #include "ash/test/ash_test_base.h"
 #include "base/macros.h"
+#include "chromeos/ui/base/window_pin_type.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ash {
+
+using ::chromeos::kWindowPinTypeKey;
+using ::chromeos::WindowPinType;
 
 class FullscreenWindowFinderTest : public AshTestBase {
  public:

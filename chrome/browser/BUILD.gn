@@ -4351,6 +4351,7 @@ static_library("browser") {
       "//chromeos/services/secure_channel/public/mojom",
       "//chromeos/settings",
       "//chromeos/strings",
+      "//chromeos/ui/base",
       "//chromeos/ui/vector_icons",
       "//components/arc",
       "//components/arc:arc_base",

@@ -7,9 +7,9 @@
 
 #include <ostream>
 
-#include "ash/public/cpp/ash_public_export.h"
+#include "base/component_export.h"
 
-namespace ash {
+namespace chromeos {
 
 // The window's pin type enum.
 enum class WindowPinType {
@@ -23,9 +23,9 @@ enum class WindowPinType {
   kTrustedPinned,
 };
 
-ASH_PUBLIC_EXPORT std::ostream& operator<<(std::ostream& stream,
-                                           WindowPinType pin_type);
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+std::ostream& operator<<(std::ostream& stream, WindowPinType pin_type);
 
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // ASH_PUBLIC_CPP_WINDOW_PIN_TYPE_H_

@@ -12,7 +12,6 @@
 #include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_animation_types.h"
-#include "ash/public/cpp/window_pin_type.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
@@ -30,6 +29,7 @@
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/client/aura_constants.h"
@@ -52,7 +52,10 @@
 namespace ash {
 namespace {
 
+using ::chromeos::kHideShelfWhenFullscreenKey;
 using ::chromeos::kImmersiveIsActive;
+using ::chromeos::kWindowPinTypeKey;
+using ::chromeos::WindowPinType;
 using ::chromeos::WindowStateType;
 
 bool IsTabletModeEnabled() {
@@ -115,13 +118,13 @@ WMEventType WMEventTypeFromShowState(ui::WindowShowState requested_show_state) {
   return WM_EVENT_NORMAL;
 }
 
-WMEventType WMEventTypeFromWindowPinType(ash::WindowPinType type) {
+WMEventType WMEventTypeFromWindowPinType(chromeos::WindowPinType type) {
   switch (type) {
-    case ash::WindowPinType::kNone:
+    case chromeos::WindowPinType::kNone:
       return WM_EVENT_NORMAL;
-    case ash::WindowPinType::kPinned:
+    case chromeos::WindowPinType::kPinned:
       return WM_EVENT_PIN;
-    case ash::WindowPinType::kTrustedPinned:
+    case chromeos::WindowPinType::kTrustedPinned:
       return WM_EVENT_TRUSTED_PIN;
   }
   NOTREACHED() << "No WMEvent defined for the window pin type:" << type;

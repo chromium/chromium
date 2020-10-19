@@ -7,9 +7,9 @@
 #include <memory>
 #include <string>
 
-#include "ash/public/cpp/window_pin_type.h"
-#include "ash/public/cpp/window_properties.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "chromeos/ui/base/window_pin_type.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "ui/aura/env.h"
@@ -82,8 +82,8 @@ bool ArcKioskAppLauncher::CheckAndPinWindow(aura::Window* const window) {
     return false;
   // Stop observing as target window is already found.
   StopObserving();
-  window->SetProperty(ash::kWindowPinTypeKey,
-                      ash::WindowPinType::kTrustedPinned);
+  window->SetProperty(chromeos::kWindowPinTypeKey,
+                      chromeos::WindowPinType::kTrustedPinned);
   if (delegate_)
     delegate_->OnAppWindowLaunched();
   return true;

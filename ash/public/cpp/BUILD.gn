@@ -300,8 +300,6 @@ component("cpp") {
     "window_animation_types.h",
     "window_backdrop.cc",
     "window_backdrop.h",
-    "window_pin_type.cc",
-    "window_pin_type.h",
     "window_properties.cc",
     "window_properties.h",
   ]

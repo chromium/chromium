@@ -21,6 +21,7 @@
 #include "ui/gfx/animation/tween.h"
 
 namespace chromeos {
+enum class WindowPinType;
 enum class WindowStateType;
 }
 
@@ -32,7 +33,6 @@ namespace ash {
 class ClientControlledState;
 class LockWindowState;
 class TabletModeWindowState;
-enum class WindowPinType;
 class WindowState;
 class WindowStateDelegate;
 class WindowStateObserver;
@@ -395,7 +395,7 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   ui::WindowShowState GetShowState() const;
 
   // Return the window's current pin type.
-  WindowPinType GetPinType() const;
+  chromeos::WindowPinType GetPinType() const;
 
   // Sets the window's bounds in screen coordinates.
   void SetBoundsInScreen(const gfx::Rect& bounds_in_screen);

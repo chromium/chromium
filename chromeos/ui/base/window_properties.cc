@@ -4,11 +4,16 @@
 
 #include "chromeos/ui/base/window_properties.h"
 
+#include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/window.h"
 
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(CHROMEOS_UI_BASE),
+                                       chromeos::WindowPinType)
+
 namespace chromeos {
 
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHideShelfWhenFullscreenKey, true)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kImmersiveImpliedByFullscreen, true)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kImmersiveIsActive, false)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect,
@@ -16,6 +21,10 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect,
                                    nullptr)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsShowingInOverviewKey, false)
+
+DEFINE_UI_CLASS_PROPERTY_KEY(WindowPinType,
+                             kWindowPinTypeKey,
+                             WindowPinType::kNone)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(WindowStateType,
                              kWindowStateTypeKey,

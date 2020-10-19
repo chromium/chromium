@@ -1051,6 +1051,7 @@ static_library("extensions") {
       "//chromeos/settings",
       "//chromeos/system",
       "//chromeos/tpm",
+      "//chromeos/ui/base",
       "//components/arc",
       "//components/constrained_window",
       "//components/drive",

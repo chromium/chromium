@@ -33,9 +33,9 @@
 #include "ui/display/test/test_screen.h"
 
 #if defined(OS_CHROMEOS)
-#include "ash/public/cpp/window_pin_type.h"
-#include "ash/public/cpp/window_properties.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_content_manager.h"
+#include "chromeos/ui/base/window_pin_type.h"
+#include "chromeos/ui/base/window_properties.h"
 #endif
 
 namespace extensions {
@@ -991,7 +991,7 @@ TEST_F(TabsApiUnitTest, DontCreateTabsInLockedFullscreenMode) {
 
   // In locked fullscreen mode we should not be able to create any tabs.
   browser_window()->GetNativeWindow()->SetProperty(
-      ash::kWindowPinTypeKey, ash::WindowPinType::kTrustedPinned);
+      chromeos::kWindowPinTypeKey, chromeos::WindowPinType::kTrustedPinned);
 
   EXPECT_EQ(tabs_constants::kLockedFullscreenModeNewTabError,
             extension_function_test_utils::RunFunctionAndReturnError(

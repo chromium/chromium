@@ -307,6 +307,7 @@ source_set("unit_tests") {
       "//ash/keyboard/ui",
       "//ash/public/cpp",
       "//chromeos/constants",
+      "//chromeos/ui/base",
       "//chromeos/ui/frame",
       "//ui/base:test_support",
       "//ui/base/cursor/mojom:cursor_type",

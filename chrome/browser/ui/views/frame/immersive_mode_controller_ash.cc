@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_ash.h"
 
-#include "ash/public/cpp/window_properties.h"
 #include "base/macros.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -219,14 +218,14 @@ void ImmersiveModeControllerAsh::OnFullscreenStateChanged() {
                                ->fullscreen_controller()
                                ->IsWindowFullscreenForTabOrPending();
   browser_view_->GetNativeWindow()->SetProperty(
-      ash::kHideShelfWhenFullscreenKey, in_tab_fullscreen);
+      chromeos::kHideShelfWhenFullscreenKey, in_tab_fullscreen);
 }
 
 void ImmersiveModeControllerAsh::OnWindowPropertyChanged(aura::Window* window,
                                                          const void* key,
                                                          intptr_t old) {
   // Track locked fullscreen changes.
-  if (key == ash::kWindowPinTypeKey) {
+  if (key == chromeos::kWindowPinTypeKey) {
     browser_view_->FullscreenStateChanging();
     return;
   }

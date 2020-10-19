@@ -10,7 +10,6 @@
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
-#include "ash/public/cpp/window_pin_type.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
@@ -24,6 +23,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ui/base/window_pin_type.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/display.h"
 #include "components/exo/input_method_surface.h"
@@ -318,13 +318,13 @@ void remote_surface_pin(wl_client* client,
                         wl_resource* resource,
                         int32_t trusted) {
   GetUserDataAs<ClientControlledShellSurface>(resource)->SetPinned(
-      trusted ? ash::WindowPinType::kTrustedPinned
-              : ash::WindowPinType::kPinned);
+      trusted ? chromeos::WindowPinType::kTrustedPinned
+              : chromeos::WindowPinType::kPinned);
 }
 
 void remote_surface_unpin(wl_client* client, wl_resource* resource) {
   GetUserDataAs<ClientControlledShellSurface>(resource)->SetPinned(
-      ash::WindowPinType::kNone);
+      chromeos::WindowPinType::kNone);
 }
 
 void remote_surface_set_system_modal(wl_client* client, wl_resource* resource) {

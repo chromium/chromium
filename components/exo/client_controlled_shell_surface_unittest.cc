@@ -9,8 +9,6 @@
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/frame/wide_frame_view.h"
 #include "ash/public/cpp/test/shell_test_api.h"
-#include "ash/public/cpp/window_pin_type.h"
-#include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/wm/drag_window_resizer.h"
@@ -31,6 +29,8 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "cc/paint/display_item_list.h"
+#include "chromeos/ui/base/window_pin_type.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "components/exo/buffer.h"
@@ -74,10 +74,10 @@ bool HasBackdrop() {
 }
 
 bool IsWidgetPinned(views::Widget* widget) {
-  ash::WindowPinType type =
-      widget->GetNativeWindow()->GetProperty(ash::kWindowPinTypeKey);
-  return type == ash::WindowPinType::kPinned ||
-         type == ash::WindowPinType::kTrustedPinned;
+  chromeos::WindowPinType type =
+      widget->GetNativeWindow()->GetProperty(chromeos::kWindowPinTypeKey);
+  return type == chromeos::WindowPinType::kPinned ||
+         type == chromeos::WindowPinType::kTrustedPinned;
 }
 
 int GetShadowElevation(aura::Window* window) {
@@ -123,16 +123,16 @@ TEST_F(ClientControlledShellSurfaceTest, SetPinned) {
   auto shell_surface(
       exo_test_helper()->CreateClientControlledShellSurface(surface.get()));
 
-  shell_surface->SetPinned(ash::WindowPinType::kTrustedPinned);
+  shell_surface->SetPinned(chromeos::WindowPinType::kTrustedPinned);
   EXPECT_TRUE(IsWidgetPinned(shell_surface->GetWidget()));
 
-  shell_surface->SetPinned(ash::WindowPinType::kNone);
+  shell_surface->SetPinned(chromeos::WindowPinType::kNone);
   EXPECT_FALSE(IsWidgetPinned(shell_surface->GetWidget()));
 
-  shell_surface->SetPinned(ash::WindowPinType::kPinned);
+  shell_surface->SetPinned(chromeos::WindowPinType::kPinned);
   EXPECT_TRUE(IsWidgetPinned(shell_surface->GetWidget()));
 
-  shell_surface->SetPinned(ash::WindowPinType::kNone);
+  shell_surface->SetPinned(chromeos::WindowPinType::kNone);
   EXPECT_FALSE(IsWidgetPinned(shell_surface->GetWidget()));
 }
 

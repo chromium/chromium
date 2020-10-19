@@ -141,7 +141,7 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
 
   // Pin/unpin the surface. Pinned surface cannot be switched to
   // other windows unless its explicitly unpinned.
-  void SetPinned(ash::WindowPinType type);
+  void SetPinned(chromeos::WindowPinType type);
 
   // Sets the surface to be on top of all other windows.
   void SetAlwaysOnTop(bool always_on_top);
@@ -350,7 +350,7 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
 
   SurfaceFrameType pending_frame_type_ = SurfaceFrameType::NONE;
 
-  ash::WindowPinType current_pin_;
+  chromeos::WindowPinType current_pin_;
 
   bool can_maximize_ = true;
 

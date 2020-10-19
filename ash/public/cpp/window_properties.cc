@@ -6,7 +6,6 @@
 
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_backdrop.h"
-#include "ash/public/cpp/window_pin_type.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
@@ -14,7 +13,6 @@
 #include "ui/aura/window.h"
 #include "ui/wm/core/window_properties.h"
 
-DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, ash::WindowPinType)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT,
                                        chromeos::WindowStateType)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, ash::WindowBackdrop*)
@@ -33,7 +31,6 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kCanConsumeSystemKeysKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kExcludeInMruKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHideInOverviewKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHideInShelfKey, false)
-DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHideShelfWhenFullscreenKey, true)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsDeferredTabDraggingTargetWindowKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsDraggingTabsKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHideInDeskMiniViewKey, false)
@@ -71,9 +68,6 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kFrameRestoreLookKey, false)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(base::string16,
                                    kWindowOverviewTitleKey,
                                    nullptr)
-DEFINE_UI_CLASS_PROPERTY_KEY(WindowPinType,
-                             kWindowPinTypeKey,
-                             WindowPinType::kNone)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kWindowPositionManagedTypeKey, false)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kWindowPipTypeKey, false)

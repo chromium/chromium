@@ -308,8 +308,8 @@ void ChromeNativeAppWindowViewsAuraAsh::SetFullscreen(int fullscreen_types) {
   const bool should_hide_shelf =
       !profiles::IsPublicSession() &&
       fullscreen_types != AppWindow::FULLSCREEN_TYPE_OS;
-  widget()->GetNativeWindow()->SetProperty(ash::kHideShelfWhenFullscreenKey,
-                                           should_hide_shelf);
+  widget()->GetNativeWindow()->SetProperty(
+      chromeos::kHideShelfWhenFullscreenKey, should_hide_shelf);
   widget()->non_client_view()->Layout();
 }
 

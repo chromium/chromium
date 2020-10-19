@@ -20,10 +20,16 @@ class Rect;
 namespace chromeos {
 
 enum class WindowStateType;
+enum class WindowPinType;
 
 // Shell-specific window property keys for use by ash and lacros clients.
 
 // Alphabetical sort.
+
+// Whether the shelf should be hidden when this window is put into fullscreen.
+// Exposed because some windows want to explicitly opt-out of this.
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+extern const aura::WindowProperty<bool>* const kHideShelfWhenFullscreenKey;
 
 // Whether entering fullscreen means that a window should automatically enter
 // immersive mode. This is false for some client windows, such as Chrome Apps.
@@ -47,6 +53,14 @@ extern const aura::WindowProperty<bool>* const kIsShowingInOverviewKey;
 // A property key to indicate ash's extended window state.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 extern const aura::WindowProperty<WindowStateType>* const kWindowStateTypeKey;
+
+// A property key to store ash::WindowPinType for a window.
+// When setting this property to PINNED or TRUSTED_PINNED, the window manager
+// will try to fullscreen the window and pin it on the top of the screen. If the
+// window manager failed to do it, the property will be restored to NONE. When
+// setting this property to NONE, the window manager will restore the window.
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+extern const aura::WindowProperty<WindowPinType>* const kWindowPinTypeKey;
 
 // Alphabetical sort.
 

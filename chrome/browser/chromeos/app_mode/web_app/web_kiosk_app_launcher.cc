@@ -5,7 +5,6 @@
 #include <chrome/browser/chromeos/app_mode/web_app/web_kiosk_app_launcher.h>
 #include <memory>
 
-#include "ash/public/cpp/window_pin_type.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/bind.h"
 #include "base/logging.h"
@@ -18,6 +17,7 @@
 #include "chrome/browser/web_applications/components/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/components/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_app_install_task.h"
+#include "chromeos/ui/base/window_pin_type.h"
 #include "components/account_id/account_id.h"
 #include "ui/aura/window.h"
 #include "ui/base/page_transition_types.h"

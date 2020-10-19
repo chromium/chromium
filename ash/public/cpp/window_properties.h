@@ -31,8 +31,6 @@ class Rect;
 
 namespace ash {
 
-enum class WindowPinType;
-
 class WindowBackdrop;
 
 // Shell-specific window property keys for use by ash and its clients.
@@ -79,11 +77,6 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
 // A property key to indicate whether we should hide this window in the shelf.
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
     kHideInShelfKey;
-
-// Whether the shelf should be hidden when this window is put into fullscreen.
-// Exposed because some windows want to explicitly opt-out of this.
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
-    kHideShelfWhenFullscreenKey;
 
 // If true, the window is the target window for the tab-dragged window. The key
 // is used by overview to show a highlight indication to indicate which overview
@@ -205,14 +198,6 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
 // is set, the window's title is used.
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<base::string16*>* const
     kWindowOverviewTitleKey;
-
-// A property key to store ash::WindowPinType for a window.
-// When setting this property to PINNED or TRUSTED_PINNED, the window manager
-// will try to fullscreen the window and pin it on the top of the screen. If the
-// window manager failed to do it, the property will be restored to NONE. When
-// setting this property to NONE, the window manager will restore the window.
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<WindowPinType>* const
-    kWindowPinTypeKey;
 
 // A property key to indicate whether ash should perform auto management of
 // window positions; when you open a second browser, ash will move the two to

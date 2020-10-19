@@ -33,9 +33,9 @@
 #include "content/public/test/test_utils.h"
 
 #if defined(OS_CHROMEOS)
-#include "ash/public/cpp/window_pin_type.h"
-#include "ash/public/cpp/window_properties.h"
 #include "chromeos/constants/chromeos_switches.h"
+#include "chromeos/ui/base/window_pin_type.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window.h"
 #endif
 
@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest, LockedFullscreen) {
   EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_EXIT));
   // Set locked fullscreen mode.
   browser()->window()->GetNativeWindow()->SetProperty(
-      ash::kWindowPinTypeKey, ash::WindowPinType::kTrustedPinned);
+      chromeos::kWindowPinTypeKey, chromeos::WindowPinType::kTrustedPinned);
   // Update the corresponding command_controller state.
   browser()->command_controller()->LockedFullscreenStateChanged();
   // Update some more states just to make sure the wrong commands don't get
@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest, LockedFullscreen) {
 
   // Exit locked fullscreen mode.
   browser()->window()->GetNativeWindow()->SetProperty(
-      ash::kWindowPinTypeKey, ash::WindowPinType::kNone);
+      chromeos::kWindowPinTypeKey, chromeos::WindowPinType::kNone);
   // Update the corresponding command_controller state.
   browser()->command_controller()->LockedFullscreenStateChanged();
   // IDC_EXIT is enabled again.

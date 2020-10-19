@@ -5,8 +5,6 @@
 #include "chrome/browser/extensions/api/tabs/tabs_util.h"
 
 #include "ash/public/cpp/assistant/assistant_state.h"
-#include "ash/public/cpp/window_pin_type.h"
-#include "ash/public/cpp/window_properties.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
@@ -17,6 +15,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chromeos/ui/base/window_pin_type.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/aura/window.h"
@@ -32,9 +32,9 @@ void SetLockedFullscreenState(Browser* browser, bool locked) {
   aura::Window* window = browser->window()->GetNativeWindow();
   // TRUSTED_PINNED is used here because that one locks the window fullscreen
   // without allowing the user to exit (as opposed to regular PINNED).
-  window->SetProperty(
-      ash::kWindowPinTypeKey,
-      locked ? ash::WindowPinType::kTrustedPinned : ash::WindowPinType::kNone);
+  window->SetProperty(chromeos::kWindowPinTypeKey,
+                      locked ? chromeos::WindowPinType::kTrustedPinned
+                             : chromeos::WindowPinType::kNone);
 
   // Update the set of available browser commands.
   browser->command_controller()->LockedFullscreenStateChanged();

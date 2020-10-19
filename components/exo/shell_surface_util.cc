@@ -23,7 +23,6 @@
 #include "ui/wm/core/window_util.h"
 
 #if defined(OS_CHROMEOS)
-#include "ash/public/cpp/window_properties.h"
 #include "chromeos/ui/base/window_properties.h"
 #endif  // defined(OS_CHROMEOS)
 
@@ -123,7 +122,7 @@ void SetShellUseImmersiveForFullscreen(aura::Window* window, bool value) {
 
   // Ensure the shelf is fully hidden in plain fullscreen, but shown
   // (auto-hides based on mouse movement) when in immersive fullscreen.
-  window->SetProperty(ash::kHideShelfWhenFullscreenKey, !value);
+  window->SetProperty(chromeos::kHideShelfWhenFullscreenKey, !value);
 #endif  // defined(OS_CHROMEOS)
 }
 

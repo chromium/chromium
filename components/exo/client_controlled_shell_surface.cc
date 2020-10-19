@@ -15,7 +15,6 @@
 #include "ash/public/cpp/rounded_corner_decorator.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_backdrop.h"
-#include "ash/public/cpp/window_pin_type.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
@@ -36,6 +35,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "chromeos/ui/base/window_pin_type.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
@@ -324,7 +325,7 @@ ClientControlledShellSurface::ClientControlledShellSurface(
     int container,
     bool default_scale_cancellation)
     : ShellSurfaceBase(surface, gfx::Point(), true, can_minimize, container),
-      current_pin_(ash::WindowPinType::kNone),
+      current_pin_(chromeos::WindowPinType::kNone),
       use_default_scale_cancellation_(default_scale_cancellation) {}
 
 ClientControlledShellSurface::~ClientControlledShellSurface() {
@@ -335,8 +336,8 @@ ClientControlledShellSurface::~ClientControlledShellSurface() {
   if (client_controlled_state_)
     client_controlled_state_->ResetDelegate();
   wide_frame_.reset();
-  if (current_pin_ != ash::WindowPinType::kNone)
-    SetPinned(ash::WindowPinType::kNone);
+  if (current_pin_ != chromeos::WindowPinType::kNone)
+    SetPinned(chromeos::WindowPinType::kNone);
 }
 
 void ClientControlledShellSurface::SetBounds(int64_t display_id,
@@ -419,14 +420,14 @@ void ClientControlledShellSurface::SetPip() {
   pending_window_state_ = chromeos::WindowStateType::kPip;
 }
 
-void ClientControlledShellSurface::SetPinned(ash::WindowPinType type) {
+void ClientControlledShellSurface::SetPinned(chromeos::WindowPinType type) {
   TRACE_EVENT1("exo", "ClientControlledShellSurface::SetPinned", "type",
                static_cast<int>(type));
 
   if (!widget_)
     CreateShellSurfaceWidget(ui::SHOW_STATE_NORMAL);
 
-  widget_->GetNativeWindow()->SetProperty(ash::kWindowPinTypeKey, type);
+  widget_->GetNativeWindow()->SetProperty(chromeos::kWindowPinTypeKey, type);
   current_pin_ = type;
 }
 

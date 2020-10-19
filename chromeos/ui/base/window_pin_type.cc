@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/window_pin_type.h"
+#include "chromeos/ui/base/window_pin_type.h"
 
 #include "base/notreached.h"
 
-namespace ash {
+namespace chromeos {
 
 std::ostream& operator<<(std::ostream& out, WindowPinType pin_type) {
   switch (pin_type) {
@@ -22,4 +22,4 @@ std::ostream& operator<<(std::ostream& out, WindowPinType pin_type) {
   return out;
 }
 
-}  // namespace ash
+}  // namespace chromeos
