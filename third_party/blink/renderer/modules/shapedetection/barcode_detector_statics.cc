@@ -88,7 +88,8 @@ void BarcodeDetectorStatics::OnEnumerateSupportedFormats(
   results.ReserveInitialCapacity(results.size());
   for (const auto& format : formats)
     results.push_back(BarcodeDetector::BarcodeFormatToString(format));
-  if (IdentifiabilityStudySettings::Get()->IsActive()) {
+  if (IdentifiabilityStudySettings::Get()->IsWebFeatureAllowed(
+          WebFeature::kBarcodeDetector_GetSupportedFormats)) {
     IdentifiableTokenBuilder builder;
     for (const auto& format_string : results)
       builder.AddToken(IdentifiabilityBenignStringToken(format_string));

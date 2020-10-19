@@ -3508,7 +3508,8 @@ ScriptValue WebGLRenderingContextBase::getParameter(ScriptState* script_state,
     case GL_SCISSOR_TEST:
       return GetBooleanParameter(script_state, pname);
     case GL_SHADING_LANGUAGE_VERSION:
-      if (IdentifiabilityStudySettings::Get()->IsActive()) {
+      if (IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+              blink::IdentifiableSurface::Type::kWebGLParameter)) {
         RecordIdentifiableGLParameterDigest(
             pname, IdentifiabilityBenignStringToken(String(
                        ContextGL()->GetString(GL_SHADING_LANGUAGE_VERSION))));
@@ -3575,7 +3576,8 @@ ScriptValue WebGLRenderingContextBase::getParameter(ScriptState* script_state,
     case GL_VENDOR:
       return WebGLAny(script_state, String("WebKit"));
     case GL_VERSION:
-      if (IdentifiabilityStudySettings::Get()->IsActive()) {
+      if (IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+              blink::IdentifiableSurface::Type::kWebGLParameter)) {
         RecordIdentifiableGLParameterDigest(
             pname, IdentifiabilityBenignStringToken(
                        String(ContextGL()->GetString(GL_VERSION))));
@@ -3595,7 +3597,8 @@ ScriptValue WebGLRenderingContextBase::getParameter(ScriptState* script_state,
       return ScriptValue::CreateNull(script_state->GetIsolate());
     case WebGLDebugRendererInfo::kUnmaskedRendererWebgl:
       if (ExtensionEnabled(kWebGLDebugRendererInfoName)) {
-        if (IdentifiabilityStudySettings::Get()->IsActive()) {
+        if (IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+                blink::IdentifiableSurface::Type::kWebGLParameter)) {
           RecordIdentifiableGLParameterDigest(
               pname, IdentifiabilityBenignStringToken(
                          String(ContextGL()->GetString(GL_RENDERER))));
@@ -3609,7 +3612,8 @@ ScriptValue WebGLRenderingContextBase::getParameter(ScriptState* script_state,
       return ScriptValue::CreateNull(script_state->GetIsolate());
     case WebGLDebugRendererInfo::kUnmaskedVendorWebgl:
       if (ExtensionEnabled(kWebGLDebugRendererInfoName)) {
-        if (IdentifiabilityStudySettings::Get()->IsActive()) {
+        if (IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+                blink::IdentifiableSurface::Type::kWebGLParameter)) {
           RecordIdentifiableGLParameterDigest(
               pname, IdentifiabilityBenignStringToken(
                          String(ContextGL()->GetString(GL_VENDOR))));
@@ -4658,7 +4662,8 @@ void WebGLRenderingContextBase::readPixels(
     GLenum format,
     GLenum type,
     MaybeShared<DOMArrayBufferView> pixels) {
-  if (IdentifiabilityStudySettings::Get()->IsActive()) {
+  if (IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+          blink::IdentifiableSurface::Type::kCanvasReadback)) {
     const auto& ukm_params = GetUkmParameters();
     blink::IdentifiabilityMetricBuilder(ukm_params.source_id)
         .Set(blink::IdentifiableSurface::FromTypeAndToken(
@@ -7225,8 +7230,7 @@ ScriptValue WebGLRenderingContextBase::GetWebGLFloatArrayParameter(
     default:
       NOTIMPLEMENTED();
   }
-  if (IdentifiabilityStudySettings::Get()->IsActive() &&
-      ShouldMeasureGLParam(pname)) {
+  if (ShouldMeasureGLParam(pname)) {
     blink::IdentifiableTokenBuilder builder;
     for (unsigned i = 0; i < length; i++) {
       builder.AddValue(value[i]);
@@ -7254,8 +7258,7 @@ ScriptValue WebGLRenderingContextBase::GetWebGLIntArrayParameter(
     default:
       NOTIMPLEMENTED();
   }
-  if (IdentifiabilityStudySettings::Get()->IsActive() &&
-      ShouldMeasureGLParam(pname)) {
+  if (ShouldMeasureGLParam(pname)) {
     blink::IdentifiableTokenBuilder builder;
     for (unsigned i = 0; i < length; i++) {
       builder.AddValue(value[i]);

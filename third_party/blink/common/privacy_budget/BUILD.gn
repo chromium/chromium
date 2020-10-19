@@ -6,8 +6,8 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 
 component("privacy_budget") {
   visibility = [
-    "//third_party/blink/common:common",
     ":*",
+    "//third_party/blink/common:common",
     "//third_party/blink/public/common:common",
   ]
 
@@ -20,7 +20,6 @@ component("privacy_budget") {
     "identifiability_metrics.cc",
     "identifiability_sample_collector.cc",
     "identifiability_sample_collector_test_utils.h",
-    "identifiability_study_participation.cc",
     "identifiability_study_settings.cc",
     "identifiable_token_builder.cc",
   ]

@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_participation.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
@@ -51,8 +51,10 @@ class IdentifiabilityStudyHelper {
  public:
   template <typename... Ts>
   void MaybeUpdateBuilder(Ts... tokens) {
-    if (!IsUserInIdentifiabilityStudy())
+    if (!IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+            blink::IdentifiableSurface::Type::kCanvasReadback)) {
       return;
+    }
     if (operation_count_ >= max_operations_) {
       encountered_skipped_ops_ = true;
       return;

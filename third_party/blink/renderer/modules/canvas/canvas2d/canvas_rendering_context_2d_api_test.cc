@@ -386,14 +386,12 @@ TEST_F(CanvasRenderingContext2DAPITest,
 class ActiveSettingsProvider : public IdentifiabilityStudySettingsProvider {
  public:
   bool IsActive() const override { return true; }
-
-  // The following return values don't matter.
-  bool IsAnyTypeOrSurfaceBlocked() const override { return true; }
+  bool IsAnyTypeOrSurfaceBlocked() const override { return false; }
   bool IsSurfaceAllowed(IdentifiableSurface surface) const override {
-    return false;
+    return true;
   }
   bool IsTypeAllowed(IdentifiableSurface::Type type) const override {
-    return false;
+    return true;
   }
 };
 

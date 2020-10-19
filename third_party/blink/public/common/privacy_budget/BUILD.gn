@@ -16,7 +16,6 @@ source_set("privacy_budget") {
     "identifiability_metric_builder.h",
     "identifiability_metrics.h",
     "identifiability_sample_collector.h",
-    "identifiability_study_participation.h",
     "identifiability_study_settings.h",
     "identifiability_study_settings_provider.h",
     "identifiable_sample.h",
