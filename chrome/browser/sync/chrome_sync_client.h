@@ -89,8 +89,6 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
   Profile* const profile_;
 
   // The sync api component factory in use by this client.
-  // TODO(crbug.com/915154): Revert to SyncApiComponentFactory once common
-  // controller creation is moved elsewhere.
   std::unique_ptr<browser_sync::ProfileSyncComponentsFactoryImpl>
       component_factory_;
 
