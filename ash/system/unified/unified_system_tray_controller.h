@@ -242,11 +242,11 @@ class ASH_EXPORT UnifiedSystemTrayController
   // during drag.
   double drag_threshold_;
 
-  // Animation between expanded and collapsed states.
-  std::unique_ptr<gfx::SlideAnimation> animation_;
-
   std::unique_ptr<SystemTrayTransitionAnimationMetricsReporter>
       animation_metrics_reporter_;
+
+  // Animation between expanded and collapsed states.
+  std::unique_ptr<gfx::SlideAnimation> animation_;
 
   DISALLOW_COPY_AND_ASSIGN(UnifiedSystemTrayController);
 };

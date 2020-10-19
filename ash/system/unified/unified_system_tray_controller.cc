@@ -104,9 +104,9 @@ UnifiedSystemTrayController::UnifiedSystemTrayController(
     : views::AnimationDelegateViews(owner_view),
       model_(model),
       bubble_(bubble),
-      animation_(std::make_unique<gfx::SlideAnimation>(this)),
       animation_metrics_reporter_(
-          std::make_unique<SystemTrayTransitionAnimationMetricsReporter>()) {
+          std::make_unique<SystemTrayTransitionAnimationMetricsReporter>()),
+      animation_(std::make_unique<gfx::SlideAnimation>(this)) {
   animation_->Reset(model_->IsExpandedOnOpen() ? 1.0 : 0.0);
   animation_->SetSlideDuration(base::TimeDelta::FromMilliseconds(
       kSystemMenuCollapseExpandAnimationDurationMs));
