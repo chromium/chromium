@@ -1896,6 +1896,12 @@ message OSReport {
   optional string version = 3;
 }
 
+// An enum shows which information a partial CBCM report contains.
+enum PartialReportType {
+  UNSPECIFIED = 0;
+  EXTENSION_REQUEST = 1;
+}
+
 // Report the status of a Chrome installation on non-Chrome OS platform.
 message ChromeDesktopReportRequest {
   // The name of the machine within its local network. The string is a JSON
@@ -1926,6 +1932,10 @@ message ChromeDesktopReportRequest {
   // TODO(crbug.com/1105938): This will also replace the computer_name and
   // serial_number fields.
   optional BrowserDeviceIdentifier browser_device_identifier = 9;
+  // A list of flags indicates that the report only contains particular
+  // information. When list is empty or unset, the report should contains all
+  // information.
+  repeated PartialReportType partial_report_types = 10;
 }
 
 // Report user level status on Chrome OS platform. Chrome OS equivalent of
@@ -1935,6 +1945,10 @@ message ChromeOsUserReportRequest {
   optional BrowserReport browser_report = 1;
   // Android applications installed in primary profile.
   repeated AndroidAppInfo android_app_infos = 2;
+  // A list of flags indicates that the report only contains particular
+  // information. When list is empty or unset, the report should contains all
+  // information.
+  repeated PartialReportType partial_report_types = 3;
 }
 
 // A validation issue from validating a policy value that was contained in
