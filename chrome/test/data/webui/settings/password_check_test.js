@@ -771,7 +771,7 @@ suite('PasswordsCheckSection', function() {
 
   // Verify that weak passwords section is shown, if |passwordsWeaknessCheck|
   // flag is enabled.
-  test('showWeakPasswords', async function() {
+  test('showWeakPasswordsSyncing', async function() {
     loadTimeData.overrideValues({passwordsWeaknessCheck: true});
     const weakCredentials = [
       makeInsecureCredential('one.com', 'test1'),
@@ -780,10 +780,36 @@ suite('PasswordsCheckSection', function() {
     passwordManager.data.weakCredentials = weakCredentials;
 
     const section = createCheckPasswordSection();
+    webUIListenerCallback('sync-prefs-changed', getSyncAllPrefs());
+    simulateSyncStatus({signedIn: true});
     await passwordManager.whenCalled('getPasswordCheckStatus');
     flush();
 
     assertTrue(isElementVisible(section.$.weakCredentialsBody));
+    expectEquals(
+        section.i18n('weakPasswordsDescriptionGeneration'),
+        section.$.weakPasswordsDescription.innerText);
+    validateInsecurePasswordsList(section, weakCredentials, false);
+  });
+
+  test('showWeakPasswordsSignedOut', async function() {
+    loadTimeData.overrideValues({passwordsWeaknessCheck: true});
+    const weakCredentials = [
+      makeInsecureCredential('one.com', 'test1'),
+      makeInsecureCredential('two.com', 'test2'),
+    ];
+    passwordManager.data.weakCredentials = weakCredentials;
+
+    const section = createCheckPasswordSection();
+    webUIListenerCallback('sync-prefs-changed', getSyncAllPrefs());
+    simulateSyncStatus({signedIn: false});
+    await passwordManager.whenCalled('getPasswordCheckStatus');
+    flush();
+
+    assertTrue(isElementVisible(section.$.weakCredentialsBody));
+    expectEquals(
+        section.i18n('weakPasswordsDescription'),
+        section.$.weakPasswordsDescription.innerText);
     validateInsecurePasswordsList(section, weakCredentials, false);
   });
 
