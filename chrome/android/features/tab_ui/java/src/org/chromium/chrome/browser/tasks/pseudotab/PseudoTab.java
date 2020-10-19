@@ -314,7 +314,8 @@ public class PseudoTab {
     }
 
     private static void readAllPseudoTabsFromStateFile() {
-        assert CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START);
+        assert CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)
+                || CachedFeatureFlags.isEnabled(ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP);
         if (sReadStateFile) return;
         sReadStateFile = true;
 
