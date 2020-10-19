@@ -13146,8 +13146,8 @@
     "gtest_tests": [
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/gpu.skiarenderer_dawn_cc_unittests.filter;../../testing/buildbot/filters/gpu.linux.skiarenderer_dawn_cc_unittests.filter",
-          "--no-xvfb"
+          "--no-xvfb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/gpu.linux.skiarenderer_dawn_cc_unittests.filter"
         ],
         "merge": {
           "args": [],
@@ -31923,9 +31923,6 @@
   "Win10 FYI x64 SkiaRenderer Dawn Release (NVIDIA)": {
     "gtest_tests": [
       {
-        "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/gpu.skiarenderer_dawn_cc_unittests.filter"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

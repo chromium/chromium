@@ -1126,6 +1126,11 @@
             },
           ],
         },
+        # TODO(crbug.com/1137507): Enable resutldb after it can support
+        # single integration test suites.
+        'resultdb': {
+          'enable': False,
+        },
       },
     },
 
@@ -1144,7 +1149,12 @@
             },
           ],
         },
-      },
+        # TODO(crbug.com/1139149): Enable resultdb after it can support
+        # cronet_sizes.
+        'resultdb': {
+          'enable': False,
+        }
+        },
     },
 
     'desktop_chromium_isolated_scripts': {
@@ -2555,9 +2565,6 @@
           '--no-xvfb',
           '--test-launcher-filter-file=../../testing/buildbot/filters/gpu.linux.skiarenderer_dawn_cc_unittests.filter',
         ],
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/gpu.skiarenderer_dawn_cc_unittests.filter',
-        ],
       },
       'viz_unittests': {
         'linux_args': [
@@ -3468,7 +3475,6 @@
     },
 
     'linux_ozone_x11_only_gtests': {
-      'interactive_ui_tests': {},
       'ozone_x11_unittests': {},
       'x11_unittests': {},
     },

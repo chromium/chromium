@@ -21192,6 +21192,9 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "cronet_sizes",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -21217,6 +21220,9 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "cronet_sizes",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -21235,6 +21241,9 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "resource_sizes_cronet_sample_apk",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -21922,6 +21931,9 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "cronet_sizes",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -21955,6 +21967,9 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "cronet_sizes",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -21973,6 +21988,9 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "resource_sizes_cronet_sample_apk",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -22991,6 +23009,9 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "cronet_sizes",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -23024,6 +23045,9 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "cronet_sizes",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -23042,6 +23066,9 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "resource_sizes_cronet_sample_apk",
+        "resultdb": {
+          "enable": false
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
