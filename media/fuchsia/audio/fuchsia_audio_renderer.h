@@ -85,6 +85,10 @@ class FuchsiaAudioRenderer : public AudioRenderer, public TimeSource {
   // Resets AudioConsumer and reports error to the |client_|.
   void OnError(PipelineStatus Status);
 
+  // Connects |volume_control_|, if it hasn't been connected, and then sets
+  // |volume_|.
+  void UpdateVolume();
+
   // Initializes |stream_sink_|. Called during initialization and every time
   // configuration changes.
   void InitializeStreamSink(const AudioDecoderConfig& config);
@@ -128,6 +132,8 @@ class FuchsiaAudioRenderer : public AudioRenderer, public TimeSource {
   fuchsia::media::AudioConsumerPtr audio_consumer_;
   fuchsia::media::StreamSinkPtr stream_sink_;
   fuchsia::media::audio::VolumeControlPtr volume_control_;
+
+  float volume_ = 1.0;
 
   DemuxerStream* demuxer_stream_ = nullptr;
   bool is_demuxer_read_pending_ = false;

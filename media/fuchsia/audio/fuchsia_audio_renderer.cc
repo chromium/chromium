@@ -113,6 +113,8 @@ void FuchsiaAudioRenderer::Initialize(DemuxerStream* stream,
     OnError(AUDIO_RENDERER_ERROR);
   });
 
+  UpdateVolume();
+
   audio_consumer_.events().OnEndOfStream = [this]() { OnEndOfStream(); };
   RequestAudioConsumerStatus();
 
@@ -143,6 +145,18 @@ void FuchsiaAudioRenderer::Initialize(DemuxerStream* stream,
   demuxer_stream_ = stream;
 
   std::move(init_cb_).Run(PIPELINE_OK);
+}
+
+void FuchsiaAudioRenderer::UpdateVolume() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(audio_consumer_);
+  if (!volume_control_) {
+    audio_consumer_->BindVolumeControl(volume_control_.NewRequest());
+    volume_control_.set_error_handler([](zx_status_t status) {
+      ZX_LOG(ERROR, status) << "VolumeControl disconnected.";
+    });
+  }
+  volume_control_->SetVolume(volume_);
 }
 
 void FuchsiaAudioRenderer::InitializeStreamSink(
@@ -228,13 +242,9 @@ void FuchsiaAudioRenderer::StartPlaying() {
 
 void FuchsiaAudioRenderer::SetVolume(float volume) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!volume_control_) {
-    audio_consumer_->BindVolumeControl(volume_control_.NewRequest());
-    volume_control_.set_error_handler([](zx_status_t status) {
-      ZX_LOG(ERROR, status) << "VolumeControl disconnected.";
-    });
-  }
-  volume_control_->SetVolume(volume);
+  volume_ = volume;
+  if (audio_consumer_)
+    UpdateVolume();
 }
 
 void FuchsiaAudioRenderer::SetLatencyHint(
