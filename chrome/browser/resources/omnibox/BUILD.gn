@@ -2,11 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/closure_compiler/closure_args.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 
 js_type_check("closure_compile") {
   uses_js_modules = true
+  closure_flags = mojom_js_args
   deps = [
     ":omnibox",
     ":omnibox_element",
@@ -20,7 +22,7 @@ js_library("omnibox") {
   deps = [
     ":omnibox_input",
     ":omnibox_output",
-    "//chrome/browser/ui/webui/omnibox:mojo_bindings_js_library_for_compile",
+    "//chrome/browser/ui/webui/omnibox:mojo_bindings_webui_js",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:util.m",
@@ -39,14 +41,14 @@ js_library("omnibox_output") {
   deps = [
     ":omnibox_element",
     ":omnibox_input",
-    "//chrome/browser/ui/webui/omnibox:mojo_bindings_js_library_for_compile",
+    "//chrome/browser/ui/webui/omnibox:mojo_bindings_webui_js",
   ]
   externs_list = [ "$externs_path/pending.js" ]
 }
 
 js_library("omnibox_popup") {
   deps = [
-    "//chrome/browser/ui/webui/omnibox:mojo_bindings_js_library_for_compile",
+    "//chrome/browser/ui/webui/omnibox:mojo_bindings_webui_js",
     "//ui/webui/resources/cr_components/omnibox:cr_autocomplete_match_list",
   ]
 }
@@ -63,5 +65,5 @@ grit("resources") {
     "-E",
     "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
   ]
-  deps = [ "//chrome/browser/ui/webui/omnibox:mojo_bindings_js" ]
+  deps = [ "//chrome/browser/ui/webui/omnibox:mojo_bindings_webui_js" ]
 }

@@ -49,7 +49,7 @@ OmniboxUI::OmniboxUI(content::WebUI* web_ui)
       {"omnibox_input.js", IDR_OMNIBOX_INPUT_JS},
       {"omnibox_output.js", IDR_OMNIBOX_OUTPUT_JS},
       {"omnibox.js", IDR_OMNIBOX_JS},
-      {"chrome/browser/ui/webui/omnibox/omnibox.mojom-lite.js",
+      {"chrome/browser/ui/webui/omnibox/omnibox.mojom-webui.js",
        IDR_OMNIBOX_MOJO_JS},
   };
   webui::AddResourcePathsBulk(source, kResources);

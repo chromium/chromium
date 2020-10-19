@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import './chrome/browser/ui/webui/omnibox/omnibox.mojom-lite.js';
-
+import {OmniboxPageCallbackRouter, OmniboxPageHandler, OmniboxPageHandlerRemote} from '/chrome/browser/ui/webui/omnibox/omnibox.mojom-webui.js';
 import {AutocompleteMatchListElement} from 'chrome://resources/cr_components/omnibox/cr_autocomplete_match_list.js';
 
 /**
@@ -14,8 +12,8 @@ import {AutocompleteMatchListElement} from 'chrome://resources/cr_components/omn
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-  /** @private {!mojom.OmniboxPageCallbackRouter} */
-  const callbackRouter = new mojom.OmniboxPageCallbackRouter;
+  /** @private {!OmniboxPageCallbackRouter} */
+  const callbackRouter = new OmniboxPageCallbackRouter;
 
   // Basically a Hello World proof of concept that writes the Autocomplete
   // responses to the whole document.
@@ -31,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
 
-  /** @private {!mojom.OmniboxPageHandlerRemote} */
-  const handler = mojom.OmniboxPageHandler.getRemote();
+  /** @private {!OmniboxPageHandlerRemote} */
+  const handler = OmniboxPageHandler.getRemote();
   handler.setClientPage(callbackRouter.$.bindNewPipeAndPassRemote());
 });

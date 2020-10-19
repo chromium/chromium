@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import './chrome/browser/ui/webui/omnibox/omnibox.mojom-lite.js';
 import './strings.m.js';
 
+import {OmniboxPageCallbackRouter, OmniboxPageHandler, OmniboxPageHandlerRemote, OmniboxResponse} from '/chrome/browser/ui/webui/omnibox/omnibox.mojom-webui.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {$} from 'chrome://resources/js/util.m.js';
@@ -31,7 +30,7 @@ import {OmniboxOutput} from './omnibox_output.js';
 /**
  * @typedef {{
  *   inputText: string,
- *   callback: function(!mojom.OmniboxResponse):Promise,
+ *   callback: function(!OmniboxResponse):Promise,
  *   display: boolean,
  * }}
  */
@@ -49,7 +48,7 @@ let BatchSpecifier;
  * @typedef {{
  *   queryInputs: QueryInputs,
  *   displayInputs: DisplayInputs,
- *   responsesHistory: !Array<!Array<!mojom.OmniboxResponse>>,
+ *   responsesHistory: !Array<!Array<!OmniboxResponse>>,
  * }}
  */
 let OmniboxExport;
@@ -66,8 +65,8 @@ let exportDelegate;
 class BrowserProxy {
   /** @param {!OmniboxOutput} omniboxOutput */
   constructor(omniboxOutput) {
-    /** @private {!mojom.OmniboxPageCallbackRouter} */
-    this.callbackRouter_ = new mojom.OmniboxPageCallbackRouter;
+    /** @private {!OmniboxPageCallbackRouter} */
+    this.callbackRouter_ = new OmniboxPageCallbackRouter;
 
     this.callbackRouter_.handleNewAutocompleteResponse.addListener(
         this.handleNewAutocompleteResponse.bind(this));
@@ -76,8 +75,8 @@ class BrowserProxy {
     this.callbackRouter_.handleAnswerImageData.addListener(
         omniboxOutput.updateAnswerImage.bind(omniboxOutput));
 
-    /** @private {!mojom.OmniboxPageHandlerRemote} */
-    this.handler_ = mojom.OmniboxPageHandler.getRemote();
+    /** @private {!OmniboxPageHandlerRemote} */
+    this.handler_ = OmniboxPageHandler.getRemote();
     this.handler_.setClientPage(
         this.callbackRouter_.$.bindNewPipeAndPassRemote());
 
@@ -86,7 +85,7 @@ class BrowserProxy {
   }
 
   /**
-   * @param {!mojom.OmniboxResponse} response
+   * @param {!OmniboxResponse} response
    * @param {boolean} isPageController
    */
   handleNewAutocompleteResponse(response, isPageController) {

@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import './chrome/browser/ui/webui/omnibox/omnibox.mojom-lite.js';
+import {ACMatchClassification, AutocompleteMatch, OmniboxResponse} from '/chrome/browser/ui/webui/omnibox/omnibox.mojom-webui.js';
 
 import {OmniboxElement} from './omnibox_element.js';
-import {OmniboxInput, DisplayInputs} from './omnibox_input.js';
+import {DisplayInputs, OmniboxInput} from './omnibox_input.js';
 
 /**
  * @typedef  {{
@@ -33,7 +32,7 @@ export class OmniboxOutput extends OmniboxElement {
 
     /** @private {number} */
     this.selectedResponseIndex_ = 0;
-    /** @type {!Array<!Array<!mojom.OmniboxResponse>>} */
+    /** @type {!Array<!Array<!OmniboxResponse>>} */
     this.responsesHistory = [];
     /** @private {!Array<!OutputResultsGroup>} */
     this.resultsGroups_ = [];
@@ -55,7 +54,7 @@ export class OmniboxOutput extends OmniboxElement {
     this.updateFilterHighlights_();
   }
 
-  /** @param {!Array<!Array<!mojom.OmniboxResponse>>} responsesHistory */
+  /** @param {!Array<!Array<!OmniboxResponse>>} responsesHistory */
   setResponsesHistory(responsesHistory) {
     this.responsesHistory = responsesHistory;
     this.dispatchEvent(new CustomEvent(
@@ -79,7 +78,7 @@ export class OmniboxOutput extends OmniboxElement {
         'responses-count-changed', {detail: this.responsesHistory.length}));
   }
 
-  /** @param {!mojom.OmniboxResponse} response */
+  /** @param {!OmniboxResponse} response */
   addAutocompleteResponse(response) {
     const lastIndex = this.responsesHistory.length - 1;
     this.responsesHistory[lastIndex].push(response);
@@ -99,7 +98,7 @@ export class OmniboxOutput extends OmniboxElement {
 
   /**
    * Creates and adds a result group to the UI.
-   * @private @param {!mojom.OmniboxResponse} response
+   * @private @param {!OmniboxResponse} response
    */
   createResultsGroup_(response) {
     const resultsGroup = OutputResultsGroup.create(response);
@@ -187,7 +186,7 @@ export class OmniboxOutput extends OmniboxElement {
  */
 class OutputResultsGroup extends OmniboxElement {
   /**
-   * @param {!mojom.OmniboxResponse} resultsGroup
+   * @param {!OmniboxResponse} resultsGroup
    * @return {!OutputResultsGroup}
    */
   static create(resultsGroup) {
@@ -200,7 +199,7 @@ class OutputResultsGroup extends OmniboxElement {
     super('output-results-group-template');
   }
 
-  /** @param {!mojom.OmniboxResponse} resultsGroup */
+  /** @param {!OmniboxResponse} resultsGroup */
   setResultsGroup(resultsGroup) {
     /** @private {ResultsDetails} */
     this.details_ = {
@@ -357,7 +356,7 @@ class OutputResultsDetails extends OmniboxElement {
  */
 class OutputResultsTable extends HTMLTableSectionElement {
   /**
-   * @param {!Array<!mojom.AutocompleteMatch>} results
+   * @param {!Array<!AutocompleteMatch>} results
    * @return {!OutputResultsTable}
    */
   static create(results) {
@@ -373,7 +372,7 @@ class OutputResultsTable extends HTMLTableSectionElement {
     this.autocompleteMatches = [];
   }
 
-  /** @param {!Array<!mojom.AutocompleteMatch>} results */
+  /** @param {!Array<!AutocompleteMatch>} results */
   set results(results) {
     this.autocompleteMatches.forEach(match => match.remove());
     this.autocompleteMatches = results.map(OutputMatch.create);
@@ -404,7 +403,7 @@ class OutputMatch extends HTMLTableRowElement {
   }
 
   /**
-   * @param {!mojom.AutocompleteMatch} match
+   * @param {!AutocompleteMatch} match
    * @return {!OutputMatch}
    */
   static create(match) {
@@ -414,7 +413,7 @@ class OutputMatch extends HTMLTableRowElement {
     return outputMatch;
   }
 
-  /** @param {!mojom.AutocompleteMatch} match */
+  /** @param {!AutocompleteMatch} match */
   set match(match) {
     /** @type {!Object<string, !OutputProperty>} */
     this.properties = {};
@@ -703,11 +702,11 @@ class OutputAnswerProperty extends FlexWrappingOutputProperty {
         this.values_;
     OutputAnswerProperty.renderClassifiedText_(
         this.contents_, /** @type {string} */ (contents),
-        /** @type {!Array<!mojom.ACMatchClassification>} */
+        /** @type {!Array<!ACMatchClassification>} */
         (contentsClassification));
     OutputAnswerProperty.renderClassifiedText_(
         this.description_, /** @type {string} */ (description),
-        /** @type {!Array<!mojom.ACMatchClassification>} */
+        /** @type {!Array<!ACMatchClassification>} */
         (descriptionClassification));
     this.answer_.textContent = answer;
     this.imageUrl_.textContent = image;
@@ -723,7 +722,7 @@ class OutputAnswerProperty extends FlexWrappingOutputProperty {
    * @private
    * @param {!Element} container
    * @param {string} string
-   * @param {!Array<!mojom.ACMatchClassification>} classes
+   * @param {!Array<!ACMatchClassification>} classes
    */
   static renderClassifiedText_(container, string, classes) {
     clearChildren(container);
@@ -736,7 +735,7 @@ class OutputAnswerProperty extends FlexWrappingOutputProperty {
 
   /**
    * @param {string} string
-   * @param {!Array<!mojom.ACMatchClassification>} classes
+   * @param {!Array<!ACMatchClassification>} classes
    * @return {!Array<{string: string, style: number}>}
    */
   static classify(string, classes) {

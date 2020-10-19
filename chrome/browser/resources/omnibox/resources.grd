@@ -46,7 +46,7 @@
                file="omnibox.js"
                type="BINDATA" />
       <include name="IDR_OMNIBOX_MOJO_JS"
-               file="${root_gen_dir}\chrome\browser\ui\webui\omnibox\omnibox.mojom-lite.js"
+               file="${root_gen_dir}\mojom-webui\chrome\browser\ui\webui\omnibox\omnibox.mojom-webui.js"
                use_base_dir="false"
                type="BINDATA" />
     </includes>
