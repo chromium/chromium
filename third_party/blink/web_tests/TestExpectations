@@ -824,8 +824,8 @@ crbug.com/470421 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftest
 crbug.com/470421 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-flex-basis-content-002b.html [ Failure ]
 crbug.com/470421 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-flex-basis-content-003a.html [ Failure ]
 crbug.com/470421 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-flex-basis-content-004a.html [ Failure ]
-crbug.com/470421 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-021.tentative.html [ Failure ]
-crbug.com/470421 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-022.tentative.html [ Failure ]
+crbug.com/470421 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-021.html [ Failure ]
+crbug.com/470421 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-022.html [ Failure ]
 
 # Untriaged flex failures
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-align-content-wmvert-001.xhtml [ Failure ]
