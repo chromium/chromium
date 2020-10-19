@@ -1,6 +1,14 @@
 <!doctype html>
 <html>
   <head>
+    <style>
+      html, body {
+        width: 0%;
+        height: 0%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
     <script>
       const params = new URLSearchParams(window.location.search);
 
@@ -25,14 +33,25 @@
       }
 
       if (params.get('trigger_id') == "resize_for_testing") {
-        window.resizeTo(123, 456);
+        // Size wrapping div element to a known size, with one dimension smaller
+        // than the by-default renderer-enforced minimum.
+        window.onload = function() {
+          const wrapper = document.querySelector('#surveyWrapper');
+          wrapper.setAttribute('style', 'width:70px; height:300px');
+        }
       }
 
-      if (params.get('trigger_id') == "invalid_size_for_testing") {
-        window.resizeTo(1000, 1000);
+      if (params.get('trigger_id') == "resize_to_large_for_testing") {
+        // Size wrapping div element larger than the maximum allowed by the HaTS
+        // Next dialog.
+        window.onload = function() {
+          const wrapper = document.querySelector('#surveyWrapper');
+          wrapper.setAttribute('style', 'width:1000px; height:1000px');
+        };
       }
     </script>
   </head>
   <body>
+    <div id="surveyWrapper"></div>
   </body>
 </html>

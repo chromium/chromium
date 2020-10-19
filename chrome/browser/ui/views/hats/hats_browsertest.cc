@@ -199,7 +199,7 @@ class MockHatsNextWebDialog : public HatsNextWebDialog {
 
   MOCK_METHOD0(ShowWidget, void());
   MOCK_METHOD0(CloseWidget, void());
-  MOCK_METHOD1(UpdateWidgetSize, void(gfx::Size));
+  MOCK_METHOD0(UpdateWidgetSize, void());
 
   void WaitForClose() {
     base::RunLoop run_loop;
@@ -207,6 +207,14 @@ class MockHatsNextWebDialog : public HatsNextWebDialog {
       widget_->Close();
       run_loop.Quit();
     });
+    run_loop.Run();
+  }
+
+  void WaitForUpdateWidgetSize() {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*this, UpdateWidgetSize).WillOnce(testing::Invoke([&run_loop] {
+      run_loop.Quit();
+    }));
     run_loop.Run();
   }
 };
@@ -381,24 +389,39 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, DialogResize) {
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::TimeDelta::FromSeconds(100));
 
-  // Check that the dialog attempts to resize with the sizes defined in
-  // hats_next_mock.html.
-  base::RunLoop run_loop;
-  EXPECT_CALL(*dialog, UpdateWidgetSize(gfx::Size(123, 456)))
-      .WillOnce(testing::Invoke([&run_loop] { run_loop.Quit(); }));
-  run_loop.Run();
+  // Check that the dialog reports a preferred size the same as the size defined
+  // in hats_next_mock.html.
+  constexpr auto kTargetSize = gfx::Size(70, 300);
+
+  // Depending on renderer warm-up, an initial empty size may additionally be
+  // reported before hats_next_mock.html has had a chance to resize.
+  dialog->WaitForUpdateWidgetSize();
+  auto size = dialog->CalculatePreferredSize();
+  EXPECT_TRUE(size == kTargetSize || size == dialog->kMinSize);
+  if (size != kTargetSize) {
+    dialog->WaitForUpdateWidgetSize();
+    EXPECT_EQ(kTargetSize, dialog->CalculatePreferredSize());
+  }
 }
 
-IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, InvalidSize) {
+IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, MaximumSize) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  // Check that providing a size which is too large results in the dialog being
-  // closed.
   EXPECT_CALL(*hats_service(), HatsNextDialogClosed);
   auto* dialog = new MockHatsNextWebDialog(
-      browser(), "invalid_size_for_testing",
+      browser(), "resize_to_large_for_testing",
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::TimeDelta::FromSeconds(100));
 
-  dialog->WaitForClose();
+  // Check that the maximum size of the dialog is bounded appropriately by the
+  // dialogs maximum size. Depending on renderer warm-up, an initial empty size
+  // may additionally be reported before hats_next_mock.html has had a chance
+  // to resize.
+  dialog->WaitForUpdateWidgetSize();
+  auto size = dialog->CalculatePreferredSize();
+  EXPECT_TRUE(size == HatsNextWebDialog::kMaxSize || size == dialog->kMinSize);
+  if (size != HatsNextWebDialog::kMaxSize) {
+    dialog->WaitForUpdateWidgetSize();
+    EXPECT_EQ(HatsNextWebDialog::kMaxSize, dialog->CalculatePreferredSize());
+  }
 }

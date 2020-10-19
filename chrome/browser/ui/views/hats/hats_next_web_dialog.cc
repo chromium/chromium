@@ -30,17 +30,35 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
-// A delegate used to intercept the creation of new WebContents by the HaTS
-// Next dialog.
-class HatsNextWebDialog::WebContentsDelegate
-    : public content::WebContentsDelegate {
- public:
-  explicit WebContentsDelegate(Browser* browser, HatsNextWebDialog* dialog)
-      : browser_(browser), dialog_(dialog) {}
+constexpr gfx::Size HatsNextWebDialog::kMinSize;
+constexpr gfx::Size HatsNextWebDialog::kMaxSize;
 
+// WebView which contains the WebContents displaying the HaTS Next survey.
+class HatsNextWebDialog::HatsWebView : public views::WebView {
+ public:
+  HatsWebView(content::BrowserContext* browser_context,
+              Browser* browser,
+              HatsNextWebDialog* dialog)
+      : views::WebView(browser_context), dialog_(dialog), browser_(browser) {}
+
+  ~HatsWebView() override = default;
+
+  // views::WebView:
+  void PreferredSizeChanged() override {
+    WebView::PreferredSizeChanged();
+    dialog_->UpdateWidgetSize();
+  }
+
+  // content::WebContentsDelegate:
+  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+                         const content::ContextMenuParams& params) override {
+    // Ignores context menu.
+    return true;
+  }
   bool IsWebContentsCreationOverridden(
       content::SiteInstance* source_site_instance,
       content::mojom::WindowContainerType window_container_type,
@@ -49,7 +67,6 @@ class HatsNextWebDialog::WebContentsDelegate
       const GURL& target_url) override {
     return true;
   }
-
   content::WebContents* CreateCustomWebContents(
       content::RenderFrameHost* opener,
       content::SiteInstance* source_site_instance,
@@ -69,34 +86,7 @@ class HatsNextWebDialog::WebContentsDelegate
     return nullptr;
   }
 
-  void SetContentsBounds(content::WebContents* source,
-                         const gfx::Rect& bounds) override {
-    // Check that the provided bounds do not exceed the dummy window size
-    // provided to the HaTS library by the wrapper website. These are defined
-    // in the website source at google3/chrome/hats/website/www/index.html.
-    if (bounds.width() > 800 || bounds.height() > 600) {
-      LOG(ERROR) << "Desired dimensions provided by contents exceed maximum"
-                 << "allowable.";
-      dialog_->CloseWidget();
-      return;
-    }
-    dialog_->UpdateWidgetSize(bounds.size());
-  }
-
- private:
-  Browser* browser_;
-  HatsNextWebDialog* dialog_;
-};
-
-// A thin wrapper that forwards the reference part of the URL associated with
-// navigation events to the enclosing web dialog.
-class HatsNextWebDialog::WebContentsObserver
-    : public content::WebContentsObserver {
- public:
-  WebContentsObserver(content::WebContents* contents, HatsNextWebDialog* dialog)
-      : content::WebContentsObserver(contents), dialog_(dialog) {}
-
-  // content::WebContentsObserver overrides.
+  // content::WebContentsObserver:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override {
     if (navigation_handle->IsSameDocument() &&
@@ -107,6 +97,7 @@ class HatsNextWebDialog::WebContentsObserver
 
  private:
   HatsNextWebDialog* dialog_;
+  Browser* browser_;
 };
 
 HatsNextWebDialog::HatsNextWebDialog(Browser* browser,
@@ -114,63 +105,14 @@ HatsNextWebDialog::HatsNextWebDialog(Browser* browser,
     : HatsNextWebDialog(
           browser,
           trigger_id,
-          GURL("https://storage.googleapis.com/chrome_hats/index.html"),
+          GURL("https://storage.googleapis.com/chrome_hats_staging/index.html"),
           base::TimeDelta::FromSeconds(10)) {}
 
-ui::ModalType HatsNextWebDialog::GetDialogModalType() const {
-  return ui::MODAL_TYPE_NONE;
-}
-
-base::string16 HatsNextWebDialog::GetDialogTitle() const {
-  return base::string16();
-}
-
-GURL HatsNextWebDialog::GetDialogContentURL() const {
-  GURL param_url =
-      net::AppendQueryParameter(hats_survey_url_, "trigger_id", trigger_id_);
-  if (base::FeatureList::IsEnabled(
-          features::kHappinessTrackingSurveysForDesktopDemo)) {
-    param_url = net::AppendQueryParameter(param_url, "enable_testing", "true");
-  }
-  return param_url;
-}
-
-void HatsNextWebDialog::GetWebUIMessageHandlers(
-    std::vector<content::WebUIMessageHandler*>* handlers) const {}
-
-void HatsNextWebDialog::GetDialogSize(gfx::Size* size) const {}
-
-std::string HatsNextWebDialog::GetDialogArgs() const {
-  return std::string();
-}
-
-void HatsNextWebDialog::OnDialogClosed(const std::string& json_retval) {}
-
-void HatsNextWebDialog::OnCloseContents(content::WebContents* source,
-                                        bool* out_close_dialog) {
-  *out_close_dialog = true;
-}
-
-bool HatsNextWebDialog::ShouldShowCloseButton() const {
-  return false;
-}
-
-bool HatsNextWebDialog::ShouldShowDialogTitle() const {
-  return false;
-}
-
-bool HatsNextWebDialog::HandleContextMenu(
-    content::RenderFrameHost* render_frame_host,
-    const content::ContextMenuParams& params) {
-  return true;
-}
-ui::WebDialogDelegate::FrameKind HatsNextWebDialog::GetWebDialogFrameKind()
-    const {
-  return ui::WebDialogDelegate::FrameKind::kDialog;
-}
-
 gfx::Size HatsNextWebDialog::CalculatePreferredSize() const {
-  return size_;
+  gfx::Size preferred_size = views::View::CalculatePreferredSize();
+  preferred_size.SetToMax(kMinSize);
+  preferred_size.SetToMin(kMaxSize);
+  return preferred_size;
 }
 
 void HatsNextWebDialog::OnProfileWillBeDestroyed(Profile* profile) {
@@ -194,23 +136,18 @@ HatsNextWebDialog::HatsNextWebDialog(Browser* browser,
       timeout_(timeout) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   otr_profile_->AddObserver(this);
-  set_can_resize(false);
   set_close_on_deactivate(false);
 
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  web_view_ = AddChildView(std::make_unique<views::WebDialogView>(
-      otr_profile_, this, std::make_unique<ChromeWebContentsHandler>()));
+  web_view_ =
+      AddChildView(std::make_unique<HatsWebView>(otr_profile_, browser, this));
+  web_view_->LoadInitialURL(GetParameterizedHatsURL());
+  web_view_->EnableSizingFromWebContents(kMinSize, kMaxSize);
+
   set_margins(gfx::Insets());
   widget_ = views::BubbleDialogDelegateView::CreateBubble(this);
-
-  web_contents_observer_ =
-      std::make_unique<WebContentsObserver>(web_view_->web_contents(), this);
-
-  web_contents_delegate_ =
-      std::make_unique<WebContentsDelegate>(browser_, this);
-  web_view_->web_contents()->SetDelegate(web_contents_delegate_.get());
 
   loading_timer_.Start(FROM_HERE, timeout_,
                        base::BindOnce(&HatsNextWebDialog::LoadTimedOut,
@@ -230,6 +167,16 @@ HatsNextWebDialog::~HatsNextWebDialog() {
   // Explicitly clear the delegate to ensure it is not invalid between now and
   // when the web contents is destroyed in the base class.
   web_view_->web_contents()->SetDelegate(nullptr);
+}
+
+GURL HatsNextWebDialog::GetParameterizedHatsURL() const {
+  GURL param_url =
+      net::AppendQueryParameter(hats_survey_url_, "trigger_id", trigger_id_);
+  if (base::FeatureList::IsEnabled(
+          features::kHappinessTrackingSurveysForDesktopDemo)) {
+    param_url = net::AppendQueryParameter(param_url, "enable_testing", "true");
+  }
+  return param_url;
 }
 
 void HatsNextWebDialog::LoadTimedOut() {
@@ -280,8 +227,7 @@ void HatsNextWebDialog::CloseWidget() {
   widget_->Close();
 }
 
-void HatsNextWebDialog::UpdateWidgetSize(gfx::Size size) {
-  size_ = size;
+void HatsNextWebDialog::UpdateWidgetSize() {
   SizeToContents();
 }
 
