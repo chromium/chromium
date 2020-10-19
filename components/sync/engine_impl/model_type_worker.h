@@ -16,12 +16,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
-#include "components/sync/base/cancelation_observer.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/sync_encryption_handler.h"
+#include "components/sync/engine_impl/cancelation_signal.h"
 #include "components/sync/engine_impl/commit_contributor.h"
 #include "components/sync/engine_impl/nudge_handler.h"
 #include "components/sync/engine_impl/update_handler.h"
@@ -252,30 +252,30 @@ class ModelTypeWorker : public UpdateHandler,
 // model_type_processor_->GetLocalChanges(
 //     max_entries,
 //     base::Bind(&GetLocalChangesRequest::SetResponse, request));
-// request->WaitForResponse();
+// request->WaitForResponseOrCancelation();
 // CommitRequestDataList response;
 // if (!request->WasCancelled())
 //   response = request->ExtractResponse();
 class GetLocalChangesRequest
     : public base::RefCountedThreadSafe<GetLocalChangesRequest>,
-      public CancelationObserver {
+      public CancelationSignal::Observer {
  public:
   explicit GetLocalChangesRequest(CancelationSignal* cancelation_signal);
 
-  // CancelationObserver implementation.
-  void OnSignalReceived() override;
+  // CancelationSignal::Observer implementation.
+  void OnCancelationSignalReceived() override;
 
   // Blocks current thread until either SetResponse is called or
   // cancelation_signal_ is signaled.
-  void WaitForResponse();
+  void WaitForResponseOrCancelation();
 
-  // SetResponse takes ownership of |local_changes| and unblocks WaitForResponse
-  // call. It is called by model type through callback passed to
-  // GetLocalChanges.
+  // SetResponse takes ownership of |local_changes| and unblocks
+  // WaitForResponseOrCancelation call. It is called by model type through
+  // callback passed to GetLocalChanges.
   void SetResponse(CommitRequestDataList&& local_changes);
 
-  // Checks if WaitForResponse was canceled through CancelationSignal. When
-  // returns true calling ExtractResponse is unsafe.
+  // Checks if WaitForResponseOrCancelation was canceled through
+  // CancelationSignal. When returns true calling ExtractResponse is unsafe.
   bool WasCancelled();
 
   // Returns response set by SetResponse().

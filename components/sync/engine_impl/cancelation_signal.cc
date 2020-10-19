@@ -2,20 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/base/cancelation_signal.h"
+#include "components/sync/engine_impl/cancelation_signal.h"
 
 #include "base/check_op.h"
-#include "components/sync/base/cancelation_observer.h"
 
 namespace syncer {
 
-CancelationSignal::CancelationSignal() : signalled_(false), handler_(nullptr) {}
+CancelationSignal::CancelationSignal() = default;
 
 CancelationSignal::~CancelationSignal() {
   DCHECK(!handler_);
 }
 
-bool CancelationSignal::TryRegisterHandler(CancelationObserver* handler) {
+bool CancelationSignal::TryRegisterHandler(Observer* handler) {
   base::AutoLock lock(signal_lock_);
   DCHECK(!handler_);
 
@@ -26,7 +25,7 @@ bool CancelationSignal::TryRegisterHandler(CancelationObserver* handler) {
   return true;
 }
 
-void CancelationSignal::UnregisterHandler(CancelationObserver* handler) {
+void CancelationSignal::UnregisterHandler(Observer* handler) {
   base::AutoLock lock(signal_lock_);
   DCHECK_EQ(handler_, handler);
   handler_ = nullptr;
@@ -43,7 +42,7 @@ void CancelationSignal::Signal() {
 
   signalled_ = true;
   if (handler_) {
-    handler_->OnSignalReceived();
+    handler_->OnCancelationSignalReceived();
   }
 }
 

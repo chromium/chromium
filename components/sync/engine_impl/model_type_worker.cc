@@ -19,7 +19,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/memory_usage_estimator.h"
-#include "components/sync/base/cancelation_signal.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/hash_util.h"
@@ -28,6 +27,7 @@
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/model_type_processor.h"
 #include "components/sync/engine_impl/bookmark_update_preprocessing.h"
+#include "components/sync/engine_impl/cancelation_signal.h"
 #include "components/sync/engine_impl/commit_contribution.h"
 #include "components/sync/engine_impl/commit_contribution_impl.h"
 #include "components/sync/engine_impl/cycle/entity_change_metric_recording.h"
@@ -392,7 +392,7 @@ std::unique_ptr<CommitContribution> ModelTypeWorker::GetContribution(
   model_type_processor_->GetLocalChanges(
       max_entries,
       base::BindOnce(&GetLocalChangesRequest::SetResponse, request));
-  request->WaitForResponse();
+  request->WaitForResponseOrCancelation();
   CommitRequestDataList response;
   if (!request->WasCancelled())
     response = request->ExtractResponse();
@@ -632,11 +632,11 @@ GetLocalChangesRequest::GetLocalChangesRequest(
 
 GetLocalChangesRequest::~GetLocalChangesRequest() {}
 
-void GetLocalChangesRequest::OnSignalReceived() {
+void GetLocalChangesRequest::OnCancelationSignalReceived() {
   response_accepted_.Signal();
 }
 
-void GetLocalChangesRequest::WaitForResponse() {
+void GetLocalChangesRequest::WaitForResponseOrCancelation() {
   if (!cancelation_signal_->TryRegisterHandler(this)) {
     return;
   }

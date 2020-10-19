@@ -18,13 +18,13 @@
 #include "base/sequence_checker.h"
 #include "components/invalidation/impl/invalidation_switches.h"
 #include "components/invalidation/public/invalidation.h"
-#include "components/sync/base/cancelation_signal.h"
 #include "components/sync/base/system_encryptor.h"
 #include "components/sync/driver/glue/sync_engine_impl.h"
 #include "components/sync/engine/model_type_configurer.h"
 #include "components/sync/engine/shutdown_reason.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/sync_status_observer.h"
+#include "components/sync/engine_impl/cancelation_signal.h"
 #include "url/gurl.h"
 
 namespace syncer {

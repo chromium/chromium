@@ -11,9 +11,9 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
-#include "components/sync/base/cancelation_signal.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
 #include "components/sync/engine/net/http_post_provider_interface.h"
+#include "components/sync/engine_impl/cancelation_signal.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

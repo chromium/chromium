@@ -10,10 +10,9 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "components/sync/base/cancelation_observer.h"
-#include "components/sync/base/cancelation_signal.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
 #include "components/sync/engine/net/http_post_provider_interface.h"
+#include "components/sync/engine_impl/cancelation_signal.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 
@@ -22,7 +21,7 @@ namespace {
 
 // This provides HTTP Post functionality through the interface provided
 // by the application hosting the syncer backend.
-class Connection : public CancelationObserver {
+class Connection : public CancelationSignal::Observer {
  public:
   // All pointers must not be null and must outlive this object.
   Connection(HttpPostProviderFactory* factory,
@@ -35,8 +34,8 @@ class Connection : public CancelationObserver {
   bool ReadBufferResponse(std::string* buffer_out, HttpResponse* response);
   bool ReadDownloadResponse(HttpResponse* response, std::string* buffer_out);
 
-  // CancelationObserver overrides.
-  void OnSignalReceived() override;
+  // CancelationSignal::Observer overrides.
+  void OnCancelationSignalReceived() override;
 
  private:
   int ReadResponse(std::string* out_buffer, int length) const;
@@ -154,7 +153,7 @@ int Connection::ReadResponse(std::string* out_buffer, int length) const {
   return bytes_read;
 }
 
-void Connection::OnSignalReceived() {
+void Connection::OnCancelationSignalReceived() {
   DCHECK(post_provider_);
   post_provider_->Abort();
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/base/cancelation_signal.h"
+#include "components/sync/engine_impl/cancelation_signal.h"
 
 #include "base/bind.h"
 #include "base/single_thread_task_runner.h"
@@ -11,12 +11,11 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
-#include "components/sync/base/cancelation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
 
-class BlockingTask : public CancelationObserver {
+class BlockingTask : public CancelationSignal::Observer {
  public:
   explicit BlockingTask(CancelationSignal* cancel_signal);
   ~BlockingTask() override;
@@ -32,9 +31,9 @@ class BlockingTask : public CancelationObserver {
   void Run(base::WaitableEvent* task_start_signal,
            base::WaitableEvent* task_done_signal);
 
-  // Implementation of CancelationObserver.
+  // Implementation of CancelationSignal::Observer.
   // Wakes up the thread blocked in Run().
-  void OnSignalReceived() override;
+  void OnCancelationSignalReceived() override;
 
   // Checks if we ever did successfully start waiting for |event_|.  Be careful
   // with this.  The flag itself is thread-unsafe, and the event that flips it
@@ -81,7 +80,7 @@ void BlockingTask::Run(base::WaitableEvent* task_start_signal,
   task_done_signal->Signal();
 }
 
-void BlockingTask::OnSignalReceived() {
+void BlockingTask::OnCancelationSignalReceived() {
   event_.Signal();
 }
 
@@ -150,12 +149,13 @@ bool CancelationSignalTest::VerifyTaskNotStarted() {
   return !blocking_task_.WasStarted();
 }
 
-class FakeCancelationObserver : public CancelationObserver {
-  void OnSignalReceived() override {}
+class FakeObserver : public CancelationSignal::Observer {
+ public:
+  void OnCancelationSignalReceived() override {}
 };
 
 TEST(CancelationSignalTest_SingleThread, CheckFlags) {
-  FakeCancelationObserver observer;
+  FakeObserver observer;
   CancelationSignal signal;
 
   EXPECT_FALSE(signal.IsSignalled());

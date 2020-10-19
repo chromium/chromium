@@ -10,7 +10,7 @@
 
 #include "base/metrics/histogram.h"
 #include "build/build_config.h"
-#include "components/sync/base/cancelation_signal.h"
+#include "components/sync/engine_impl/cancelation_signal.h"
 #include "components/sync/engine_impl/net/url_translator.h"
 #include "components/sync/engine_impl/syncer.h"
 #include "components/sync/protocol/sync.pb.h"

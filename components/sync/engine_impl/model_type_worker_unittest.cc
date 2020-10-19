@@ -14,10 +14,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread.h"
-#include "components/sync/base/cancelation_signal.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/model_type_processor.h"
+#include "components/sync/engine_impl/cancelation_signal.h"
 #include "components/sync/engine_impl/commit_contribution.h"
 #include "components/sync/engine_impl/cycle/entity_change_metric_recording.h"
 #include "components/sync/engine_impl/cycle/status_controller.h"
@@ -1672,7 +1672,8 @@ class GetLocalChangesRequestTest : public testing::Test {
 
   scoped_refptr<GetLocalChangesRequest> MakeRequest();
 
-  void BlockingWaitForResponse(scoped_refptr<GetLocalChangesRequest> request);
+  void BlockingWaitForResponseOrCancelation(
+      scoped_refptr<GetLocalChangesRequest> request);
   void ScheduleBlockingWait(scoped_refptr<GetLocalChangesRequest> request);
 
  protected:
@@ -1704,10 +1705,10 @@ GetLocalChangesRequestTest::MakeRequest() {
   return base::MakeRefCounted<GetLocalChangesRequest>(&cancelation_signal_);
 }
 
-void GetLocalChangesRequestTest::BlockingWaitForResponse(
+void GetLocalChangesRequestTest::BlockingWaitForResponseOrCancelation(
     scoped_refptr<GetLocalChangesRequest> request) {
   start_event_.Signal();
-  request->WaitForResponse();
+  request->WaitForResponseOrCancelation();
   done_event_.Signal();
 }
 
@@ -1715,15 +1716,16 @@ void GetLocalChangesRequestTest::ScheduleBlockingWait(
     scoped_refptr<GetLocalChangesRequest> request) {
   blocking_thread_.task_runner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&GetLocalChangesRequestTest::BlockingWaitForResponse,
-                     base::Unretained(this), request));
+      base::BindOnce(
+          &GetLocalChangesRequestTest::BlockingWaitForResponseOrCancelation,
+          base::Unretained(this), request));
 }
 
 // Tests that request doesn't block when cancelation signal is already signaled.
 TEST_F(GetLocalChangesRequestTest, CancelationSignaledBeforeRequest) {
   cancelation_signal_.Signal();
   auto request = MakeRequest();
-  request->WaitForResponse();
+  request->WaitForResponseOrCancelation();
   EXPECT_TRUE(request->WasCancelled());
 }
 

@@ -91,6 +91,8 @@ static_library("rest_of_sync") {
     "engine_impl/backoff_delay_provider.h",
     "engine_impl/bookmark_update_preprocessing.cc",
     "engine_impl/bookmark_update_preprocessing.h",
+    "engine_impl/cancelation_signal.cc",
+    "engine_impl/cancelation_signal.h",
     "engine_impl/commit.cc",
     "engine_impl/commit.h",
     "engine_impl/commit_contribution.h",
@@ -397,7 +399,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "base/bind_to_task_runner_unittest.cc",
-    "base/cancelation_signal_unittest.cc",
     "base/client_tag_hash_unittest.cc",
     "base/enum_set_unittest.cc",
     "base/immutable_unittest.cc",
@@ -432,6 +433,7 @@ source_set("unit_tests") {
     "engine/sync_backend_registrar_unittest.cc",
     "engine_impl/backoff_delay_provider_unittest.cc",
     "engine_impl/bookmark_update_preprocessing_unittest.cc",
+    "engine_impl/cancelation_signal_unittest.cc",
     "engine_impl/commit_contribution_impl_unittest.cc",
     "engine_impl/commit_processor_unittest.cc",
     "engine_impl/cycle/nudge_tracker_unittest.cc",
