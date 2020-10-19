@@ -66,6 +66,14 @@ EchoDialogView::EchoDialogView(EchoDialogListener* listener,
       &EchoDialogListener::OnAccept, base::Unretained(listener_)));
   DialogDelegate::SetCancelCallback(base::BindOnce(
       &EchoDialogListener::OnCancel, base::Unretained(listener_)));
+
+  DialogDelegate::SetShowTitle(false);
+  DialogDelegate::SetShowCloseButton(false);
+
+  DialogDelegate::SetModalType(ui::MODAL_TYPE_WINDOW);
+  DialogDelegate::set_fixed_width(
+      views::LayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 }
 
 EchoDialogView::~EchoDialogView() = default;
@@ -106,26 +114,6 @@ void EchoDialogView::InitForDisabledEcho() {
   // grab the font list before std::move(label) or it'll be nullptr
   gfx::FontList font_list = label->font_list();
   SetBorderAndLabel(std::move(label), font_list);
-}
-
-ui::ModalType EchoDialogView::GetModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
-}
-
-bool EchoDialogView::ShouldShowWindowTitle() const {
-  return false;
-}
-
-bool EchoDialogView::ShouldShowCloseButton() const {
-  return false;
-}
-
-gfx::Size EchoDialogView::CalculatePreferredSize() const {
-  const int default_width = views::LayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
-  return gfx::Size(
-      default_width,
-      GetLayoutManager()->GetPreferredHeightForWidth(this, default_width));
 }
 
 void EchoDialogView::ButtonPressed(views::Button* sender,

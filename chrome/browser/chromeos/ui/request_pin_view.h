@@ -54,19 +54,15 @@ class RequestPinView final : public views::DialogDelegateView,
   RequestPinView& operator=(const RequestPinView&) = delete;
   ~RequestPinView() override;
 
-  // views::TextfieldController
+  // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
                        const base::string16& new_contents) override;
 
-  // views::DialogDelegate
+  // views::DialogDelegateView:
   bool Accept() override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   views::View* GetInitiallyFocusedView() override;
   base::string16 GetWindowTitle() const override;
-  bool ShouldShowCloseButton() const override;
-
-  // views::View
-  gfx::Size CalculatePreferredSize() const override;
 
   // |code_type| - specifies whether the user is asked to enter PIN or PUK.
   // |error_label| - the error template to be displayed in red in the dialog. If

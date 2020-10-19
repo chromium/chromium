@@ -49,6 +49,10 @@ RequestPinView::RequestPinView(
   SetDialogParameters(code_type, security_token_pin::ErrorLabel::kNone,
                       attempts_left, accept_input);
   chrome::RecordDialogCreation(chrome::DialogIdentifier::REQUEST_PIN);
+
+  SetShowCloseButton(false);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 }
 
 RequestPinView::~RequestPinView() {
@@ -109,16 +113,6 @@ views::View* RequestPinView::GetInitiallyFocusedView() {
 
 base::string16 RequestPinView::GetWindowTitle() const {
   return window_title_;
-}
-
-bool RequestPinView::ShouldShowCloseButton() const {
-  return false;
-}
-
-gfx::Size RequestPinView::CalculatePreferredSize() const {
-  int default_width = views::LayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
-  return gfx::Size(default_width, GetHeightForWidth(default_width));
 }
 
 void RequestPinView::SetDialogParameters(

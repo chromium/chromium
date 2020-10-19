@@ -116,6 +116,10 @@ PlatformVerificationDialog::PlatformVerificationDialog(
   DialogDelegate::SetCloseCallback(base::BindOnce(
       run_callback, base::Unretained(this), CONSENT_RESPONSE_NONE));
 
+  SetModalType(ui::MODAL_TYPE_CHILD);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+
   // Explanation string.
   auto label = std::make_unique<views::Label>(l10n_util::GetStringFUTF16(
       IDS_PLATFORM_VERIFICATION_DIALOG_HEADLINE, domain_));
@@ -123,18 +127,6 @@ PlatformVerificationDialog::PlatformVerificationDialog(
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   AddChildView(std::move(label));
   chrome::RecordDialogCreation(chrome::DialogIdentifier::PLATFORM_VERIFICATION);
-}
-
-ui::ModalType PlatformVerificationDialog::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
-}
-
-gfx::Size PlatformVerificationDialog::CalculatePreferredSize() const {
-  const int default_width = views::LayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
-  return gfx::Size(
-      default_width,
-      GetLayoutManager()->GetPreferredHeightForWidth(this, default_width));
 }
 
 void PlatformVerificationDialog::ButtonPressed(views::Button* sender,
