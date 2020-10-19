@@ -10,7 +10,6 @@
 
 #include "base/check_op.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
@@ -35,10 +34,6 @@
 #include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_launch/web_launch_files_helper.h"
-#include "chrome/common/chrome_features.h"
-#include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
-#include "content/public/common/content_switches.h"
-#include "third_party/blink/public/common/features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
 
@@ -228,39 +223,22 @@ Browser* LaunchSystemWebApp(Profile* profile,
 
   content::WebContents* web_contents = nullptr;
 
-  // TODO(crbug.com/1129340): Remove these lines and make CCA resizeable after
-  // CCA supports responsive UI.
-  bool can_resize = app_type != SystemAppType::CAMERA;
-  if (base::FeatureList::IsEnabled(features::kDesktopPWAsWithoutExtensions)) {
-    if (!browser) {
-      browser = CreateWebApplicationWindow(profile_for_launch, params->app_id,
-                                           params->disposition, can_resize);
-    }
+  if (!browser) {
+    // TODO(crbug.com/1129340): Remove these lines and make CCA resizeable after
+    // CCA supports responsive UI.
+    bool can_resize = app_type != SystemAppType::CAMERA;
+    browser = CreateWebApplicationWindow(profile_for_launch, params->app_id,
+                                         params->disposition, can_resize);
+  }
 
-    // Navigate application window to application's |url| if necessary.
-    // Help app always navigates because its url might not match the url inside
-    // the iframe, and the iframe's url is the one that matters.
-    web_contents = browser->tab_strip_model()->GetWebContentsAt(0);
-    if (!web_contents || web_contents->GetURL() != url ||
-        app_type == SystemAppType::HELP) {
-      web_contents = NavigateWebApplicationWindow(
-          browser, params->app_id, url, WindowOpenDisposition::CURRENT_TAB);
-    }
-  } else {
-    if (!browser) {
-      browser =
-          CreateApplicationWindow(profile_for_launch, *params, url, can_resize);
-    }
-
-    // Navigate application window to application's |url| if necessary.
-    // Help app always navigates because its url might not match the url inside
-    // the iframe, and the iframe's url is the one that matters.
-    web_contents = browser->tab_strip_model()->GetWebContentsAt(0);
-    if (!web_contents || web_contents->GetURL() != url ||
-        app_type == SystemAppType::HELP) {
-      web_contents = NavigateApplicationWindow(
-          browser, *params, url, WindowOpenDisposition::CURRENT_TAB);
-    }
+  // Navigate application window to application's |url| if necessary.
+  // Help app always navigates because its url might not match the url inside
+  // the iframe, and the iframe's url is the one that matters.
+  web_contents = browser->tab_strip_model()->GetWebContentsAt(0);
+  if (!web_contents || web_contents->GetURL() != url ||
+      app_type == SystemAppType::HELP) {
+    web_contents = NavigateWebApplicationWindow(
+        browser, params->app_id, url, WindowOpenDisposition::CURRENT_TAB);
   }
 
   // Send launch files.
