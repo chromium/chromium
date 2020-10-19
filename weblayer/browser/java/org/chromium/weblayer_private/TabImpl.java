@@ -931,6 +931,11 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
             }
         }
 
+        if (mDisplayCutoutController != null) {
+            mDisplayCutoutController.destroy();
+            mDisplayCutoutController = null;
+        }
+
         // This is called to ensure a listener is removed from the WebContents.
         setScrollOffsetsEnabled(false);
 
