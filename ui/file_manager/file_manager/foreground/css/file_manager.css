@@ -2647,7 +2647,7 @@ li[renaming=''] .badge {
   background-position: center center;
   background-repeat: no-repeat;
   color: #888;
-  content: '\00a0';
+  content: ' ';
   padding-inline-start: 13px;
   position: relative;
   top: 1px;
@@ -2660,7 +2660,7 @@ li[renaming=''] .badge {
   background-position: center center;
   background-repeat: no-repeat;
   color: #888;
-  content: '\00a0';
+  content: ' ';
   padding-inline-start: 13px;
   position: relative;
   top: -1px;

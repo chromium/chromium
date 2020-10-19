@@ -43,13 +43,13 @@ html[dir='rtl'] cr-menu > [shortcutText]::after {
 
 cr-menu > [sub-menu]::after {
   color: rgb(100, 100, 100);
-  content: '\25b6';
+  content: '▶';
   float: right;
   font-size: 0.7em;
 }
 
 html[dir='rtl'] cr-menu > [sub-menu]::after {
-  content: '\25c0';
+  content: '◀';
   float: left;
 }
 
