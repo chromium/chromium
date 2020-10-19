@@ -14,8 +14,7 @@
 
 namespace base {
 class Value;
-class DictionaryValue;
-}  // namespace base
+}
 
 namespace dbus {
 class Bus;
@@ -35,7 +34,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillIPConfigClient {
    public:
     // Adds an IPConfig entry.
     virtual void AddIPConfig(const std::string& ip_config_path,
-                             const base::DictionaryValue& properties) = 0;
+                             const base::Value& properties) = 0;
 
    protected:
     virtual ~TestInterface() {}

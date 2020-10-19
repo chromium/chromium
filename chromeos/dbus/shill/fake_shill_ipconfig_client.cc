@@ -48,8 +48,7 @@ void FakeShillIPConfigClient::SetProperty(const dbus::ObjectPath& ipconfig_path,
                                           const std::string& name,
                                           const base::Value& value,
                                           VoidDBusMethodCallback callback) {
-  base::Value* dict = ipconfigs_.FindKeyOfType(ipconfig_path.value(),
-                                               base::Value::Type::DICTIONARY);
+  base::Value* dict = ipconfigs_.FindDictKey(ipconfig_path.value());
   if (!dict) {
     dict = ipconfigs_.SetKey(ipconfig_path.value(),
                              base::Value(base::Value::Type::DICTIONARY));
@@ -82,9 +81,8 @@ FakeShillIPConfigClient::GetTestInterface() {
 
 // ShillIPConfigClient::TestInterface overrides
 
-void FakeShillIPConfigClient::AddIPConfig(
-    const std::string& ip_config_path,
-    const base::DictionaryValue& properties) {
+void FakeShillIPConfigClient::AddIPConfig(const std::string& ip_config_path,
+                                          const base::Value& properties) {
   ipconfigs_.SetKey(ip_config_path, properties.Clone());
 }
 

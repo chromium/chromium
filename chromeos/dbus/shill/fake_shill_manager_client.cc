@@ -774,7 +774,7 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
   const bool add_to_visible = true;
 
   // IPConfigs
-  base::DictionaryValue ipconfig_v4_dictionary;
+  base::Value ipconfig_v4_dictionary(base::Value::Type::DICTIONARY);
   ipconfig_v4_dictionary.SetKey(shill::kAddressProperty,
                                 base::Value("100.0.0.1"));
   ipconfig_v4_dictionary.SetKey(shill::kGatewayProperty,
@@ -785,7 +785,7 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
   ipconfig_v4_dictionary.SetKey(shill::kWebProxyAutoDiscoveryUrlProperty,
                                 base::Value("http://wpad.com/wpad.dat"));
   ip_configs->AddIPConfig("ipconfig_v4_path", ipconfig_v4_dictionary);
-  base::DictionaryValue ipconfig_v6_dictionary;
+  base::Value ipconfig_v6_dictionary(base::Value::Type::DICTIONARY);
   ipconfig_v6_dictionary.SetKey(shill::kAddressProperty,
                                 base::Value("0:0:0:0:100:0:0:1"));
   ipconfig_v6_dictionary.SetKey(shill::kMethodProperty,
@@ -977,7 +977,7 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
                                    shill::kRoamingStateProperty,
                                    base::Value(shill_roaming_state));
 
-      base::DictionaryValue apn;
+      base::Value apn(base::Value::Type::DICTIONARY);
       apn.SetKey(shill::kApnProperty, base::Value("testapn"));
       apn.SetKey(shill::kApnNameProperty, base::Value("Test APN"));
       apn.SetKey(shill::kApnLocalizedNameProperty,
@@ -985,15 +985,15 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
       apn.SetKey(shill::kApnUsernameProperty, base::Value("User1"));
       apn.SetKey(shill::kApnPasswordProperty, base::Value("password"));
       apn.SetKey(shill::kApnAuthenticationProperty, base::Value("chap"));
-      base::DictionaryValue apn2;
+      base::Value apn2(base::Value::Type::DICTIONARY);
       apn2.SetKey(shill::kApnProperty, base::Value("testapn2"));
       services->SetServiceProperty(kCellularServicePath,
                                    shill::kCellularApnProperty, apn);
       services->SetServiceProperty(kCellularServicePath,
                                    shill::kCellularLastGoodApnProperty, apn);
       base::ListValue apn_list;
-      apn_list.Append(apn.CreateDeepCopy());
-      apn_list.Append(apn2.CreateDeepCopy());
+      apn_list.Append(std::move(apn));
+      apn_list.Append(std::move(apn2));
       SetInitialDeviceProperty("/device/cellular1",
                                shill::kCellularApnListProperty, apn_list);
 
@@ -1008,10 +1008,10 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
     // Shill, "Provider.Type", etc keys are used, but when reading the values
     // "Provider" . "Type", etc keys are used. Here we are setting the values
     // that will be read (by the UI, tests, etc).
-    base::DictionaryValue provider_properties_openvpn;
-    provider_properties_openvpn.SetString(shill::kTypeProperty,
-                                          shill::kProviderOpenVpn);
-    provider_properties_openvpn.SetString(shill::kHostProperty, "vpn_host");
+    base::Value provider_properties_openvpn(base::Value::Type::DICTIONARY);
+    provider_properties_openvpn.SetStringKey(shill::kTypeProperty,
+                                             shill::kProviderOpenVpn);
+    provider_properties_openvpn.SetStringKey(shill::kHostProperty, "vpn_host");
 
     services->AddService("/service/vpn1", "vpn1_guid", "vpn1" /* name */,
                          shill::kTypeVPN, state, add_to_visible);
@@ -1019,10 +1019,10 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
                                  provider_properties_openvpn);
     profiles->AddService(shared_profile, "/service/vpn1");
 
-    base::DictionaryValue provider_properties_l2tp;
-    provider_properties_l2tp.SetString(shill::kTypeProperty,
-                                       shill::kProviderL2tpIpsec);
-    provider_properties_l2tp.SetString(shill::kHostProperty, "vpn_host2");
+    base::Value provider_properties_l2tp(base::Value::Type::DICTIONARY);
+    provider_properties_l2tp.SetStringKey(shill::kTypeProperty,
+                                          shill::kProviderL2tpIpsec);
+    provider_properties_l2tp.SetStringKey(shill::kHostProperty, "vpn_host2");
 
     services->AddService("/service/vpn2", "vpn2_guid", "vpn2" /* name */,
                          shill::kTypeVPN, shill::kStateIdle, add_to_visible);
@@ -1031,16 +1031,13 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
   }
 
   // Additional device states
-  for (DevicePropertyMap::iterator iter1 = shill_device_property_map_.begin();
-       iter1 != shill_device_property_map_.end(); ++iter1) {
-    std::string device_type = iter1->first;
+  for (const auto& iter1 : shill_device_property_map_) {
+    std::string device_type = iter1.first;
     std::string device_path = devices->GetDevicePathForType(device_type);
-    for (ShillPropertyMap::iterator iter2 = iter1->second.begin();
-         iter2 != iter1->second.end(); ++iter2) {
-      SetInitialDeviceProperty(device_path, iter2->first, *(iter2->second));
-      delete iter2->second;
-    }
+    for (const auto& iter2 : iter1.second)
+      SetInitialDeviceProperty(device_path, iter2.first, iter2.second);
   }
+  shill_device_property_map_.clear();
 
   SortManagerServices(true);
 }
@@ -1198,28 +1195,28 @@ bool FakeShillManagerClient::ParseOption(const std::string& arg0,
     return true;
   } else if (arg0 == "sim_lock") {
     bool locked = (arg1 == "1");
-    base::DictionaryValue* simlock_dict = new base::DictionaryValue;
-    simlock_dict->SetBoolean(shill::kSIMLockEnabledProperty, true);
+    base::Value simlock_dict(base::Value::Type::DICTIONARY);
+    simlock_dict.SetBoolKey(shill::kSIMLockEnabledProperty, true);
     std::string lock_type = locked ? shill::kSIMLockPin : "";
-    simlock_dict->SetString(shill::kSIMLockTypeProperty, lock_type);
+    simlock_dict.SetStringKey(shill::kSIMLockTypeProperty, lock_type);
     if (locked) {
-      simlock_dict->SetInteger(shill::kSIMLockRetriesLeftProperty,
-                               FakeShillDeviceClient::kSimPinRetryCount);
+      simlock_dict.SetIntKey(shill::kSIMLockRetriesLeftProperty,
+                             FakeShillDeviceClient::kSimPinRetryCount);
     }
     shill_device_property_map_[shill::kTypeCellular]
-                              [shill::kSIMPresentProperty] =
-                                  new base::Value(true);
+                              [shill::kSIMPresentProperty] = base::Value(true);
     shill_device_property_map_[shill::kTypeCellular]
-                              [shill::kSIMLockStatusProperty] = simlock_dict;
+                              [shill::kSIMLockStatusProperty] =
+                                  std::move(simlock_dict);
     shill_device_property_map_[shill::kTypeCellular]
                               [shill::kTechnologyFamilyProperty] =
-                                  new base::Value(shill::kNetworkTechnologyGsm);
+                                  base::Value(shill::kNetworkTechnologyGsm);
     return true;
   } else if (arg0 == "sim_present") {
     bool present = (arg1 == "1");
-    base::Value* sim_present = new base::Value(present);
     shill_device_property_map_[shill::kTypeCellular]
-                              [shill::kSIMPresentProperty] = sim_present;
+                              [shill::kSIMPresentProperty] =
+                                  base::Value(present);
     if (!present)
       shill_initial_state_map_[shill::kTypeCellular] = kNetworkDisabled;
     return true;

@@ -105,9 +105,9 @@ void FakeShillDeviceClient::SetPropertyInternal(
     base::OnceClosure callback,
     ErrorCallback error_callback,
     bool notify_changed) {
-  base::DictionaryValue* device_properties = nullptr;
-  if (!stub_devices_.GetDictionaryWithoutPathExpansion(device_path.value(),
-                                                       &device_properties)) {
+  base::Value* device_properties =
+      stub_devices_.FindDictKey(device_path.value());
+  if (!device_properties) {
     PostNotFoundError(std::move(error_callback));
     return;
   }
@@ -124,9 +124,9 @@ void FakeShillDeviceClient::SetPropertyInternal(
 void FakeShillDeviceClient::ClearProperty(const dbus::ObjectPath& device_path,
                                           const std::string& name,
                                           VoidDBusMethodCallback callback) {
-  base::DictionaryValue* device_properties = nullptr;
-  if (!stub_devices_.GetDictionaryWithoutPathExpansion(device_path.value(),
-                                                       &device_properties)) {
+  base::Value* device_properties =
+      stub_devices_.FindDictKey(device_path.value());
+  if (!device_properties) {
     PostVoidCallback(std::move(callback), false);
     return;
   }
@@ -140,7 +140,7 @@ void FakeShillDeviceClient::RequirePin(const dbus::ObjectPath& device_path,
                                        base::OnceClosure callback,
                                        ErrorCallback error_callback) {
   VLOG(1) << "RequirePin: " << device_path.value();
-  if (!stub_devices_.HasKey(device_path.value())) {
+  if (!stub_devices_.FindKey(device_path.value())) {
     PostNotFoundError(std::move(error_callback));
     return;
   }
@@ -162,7 +162,7 @@ void FakeShillDeviceClient::EnterPin(const dbus::ObjectPath& device_path,
                                      base::OnceClosure callback,
                                      ErrorCallback error_callback) {
   VLOG(1) << "EnterPin: " << device_path.value();
-  if (!stub_devices_.HasKey(device_path.value())) {
+  if (!stub_devices_.FindKey(device_path.value())) {
     PostNotFoundError(std::move(error_callback));
     return;
   }
@@ -183,7 +183,7 @@ void FakeShillDeviceClient::UnblockPin(const dbus::ObjectPath& device_path,
                                        base::OnceClosure callback,
                                        ErrorCallback error_callback) {
   VLOG(1) << "UnblockPin: " << device_path.value();
-  if (!stub_devices_.HasKey(device_path.value())) {
+  if (!stub_devices_.FindKey(device_path.value())) {
     PostNotFoundError(std::move(error_callback));
     return;
   }
@@ -211,7 +211,7 @@ void FakeShillDeviceClient::ChangePin(const dbus::ObjectPath& device_path,
                                       base::OnceClosure callback,
                                       ErrorCallback error_callback) {
   VLOG(1) << "ChangePin: " << device_path.value();
-  if (!stub_devices_.HasKey(device_path.value())) {
+  if (!stub_devices_.FindKey(device_path.value())) {
     PostNotFoundError(std::move(error_callback));
     return;
   }
@@ -236,8 +236,9 @@ void FakeShillDeviceClient::Register(const dbus::ObjectPath& device_path,
                                      const std::string& network_id,
                                      base::OnceClosure callback,
                                      ErrorCallback error_callback) {
-  base::Value* device_properties = stub_devices_.FindKey(device_path.value());
-  if (!device_properties || !device_properties->is_dict()) {
+  base::Value* device_properties =
+      stub_devices_.FindDictKey(device_path.value());
+  if (!device_properties) {
     PostNotFoundError(std::move(error_callback));
     return;
   }
@@ -258,7 +259,7 @@ void FakeShillDeviceClient::Register(const dbus::ObjectPath& device_path,
 void FakeShillDeviceClient::Reset(const dbus::ObjectPath& device_path,
                                   base::OnceClosure callback,
                                   ErrorCallback error_callback) {
-  if (!stub_devices_.HasKey(device_path.value())) {
+  if (!stub_devices_.FindKey(device_path.value())) {
     PostNotFoundError(std::move(error_callback));
     return;
   }
@@ -270,7 +271,7 @@ void FakeShillDeviceClient::AddWakeOnPacketConnection(
     const net::IPEndPoint& ip_endpoint,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
-  if (!stub_devices_.HasKey(device_path.value())) {
+  if (!stub_devices_.FindKey(device_path.value())) {
     PostNotFoundError(std::move(error_callback));
     return;
   }
@@ -285,7 +286,7 @@ void FakeShillDeviceClient::AddWakeOnPacketOfTypes(
     const std::vector<std::string>& types,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
-  if (!stub_devices_.HasKey(device_path.value())) {
+  if (!stub_devices_.FindKey(device_path.value())) {
     PostNotFoundError(std::move(error_callback));
     return;
   }
@@ -300,7 +301,7 @@ void FakeShillDeviceClient::RemoveWakeOnPacketConnection(
     base::OnceClosure callback,
     ErrorCallback error_callback) {
   const auto device_iter = wake_on_packet_connections_.find(device_path);
-  if (!stub_devices_.HasKey(device_path.value()) ||
+  if (!stub_devices_.FindKey(device_path.value()) ||
       device_iter == wake_on_packet_connections_.end()) {
     PostNotFoundError(std::move(error_callback));
     return;
@@ -322,7 +323,7 @@ void FakeShillDeviceClient::RemoveWakeOnPacketOfTypes(
     const std::vector<std::string>& types,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
-  if (!stub_devices_.HasKey(device_path.value())) {
+  if (!stub_devices_.FindKey(device_path.value())) {
     PostNotFoundError(std::move(error_callback));
     return;
   }
@@ -345,7 +346,7 @@ void FakeShillDeviceClient::RemoveAllWakeOnPacketConnections(
     base::OnceClosure callback,
     ErrorCallback error_callback) {
   const auto iter = wake_on_packet_connections_.find(device_path);
-  if (!stub_devices_.HasKey(device_path.value()) ||
+  if (!stub_devices_.FindKey(device_path.value()) ||
       iter == wake_on_packet_connections_.end()) {
     PostNotFoundError(std::move(error_callback));
     return;
@@ -361,7 +362,7 @@ void FakeShillDeviceClient::SetUsbEthernetMacAddressSource(
     const std::string& source,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
-  if (!stub_devices_.HasKey(device_path.value())) {
+  if (!stub_devices_.FindKey(device_path.value())) {
     PostNotFoundError(std::move(error_callback));
     return;
   }
@@ -413,7 +414,7 @@ void FakeShillDeviceClient::RemoveDevice(const std::string& device_path) {
 
 void FakeShillDeviceClient::ClearDevices() {
   ShillManagerClient::Get()->GetTestInterface()->ClearDevices();
-  stub_devices_.Clear();
+  stub_devices_ = base::Value(base::Value::Type::DICTIONARY);
 }
 
 void FakeShillDeviceClient::SetDeviceProperty(const std::string& device_path,
@@ -429,17 +430,14 @@ void FakeShillDeviceClient::SetDeviceProperty(const std::string& device_path,
 
 std::string FakeShillDeviceClient::GetDevicePathForType(
     const std::string& type) {
-  for (base::DictionaryValue::Iterator iter(stub_devices_); !iter.IsAtEnd();
-       iter.Advance()) {
-    const base::DictionaryValue* properties = nullptr;
-    if (!iter.value().GetAsDictionary(&properties))
+  for (auto iter : stub_devices_.DictItems()) {
+    if (!iter.second.is_dict())
       continue;
-    std::string prop_type;
-    if (!properties->GetStringWithoutPathExpansion(shill::kTypeProperty,
-                                                   &prop_type) ||
-        prop_type != type)
+    const std::string* prop_type =
+        iter.second.FindStringKey(shill::kTypeProperty);
+    if (!prop_type || *prop_type != type)
       continue;
-    return iter.key();
+    return iter.first;
   }
   return std::string();
 }
@@ -454,8 +452,8 @@ void FakeShillDeviceClient::SetSimLocked(const std::string& device_path,
 
 void FakeShillDeviceClient::AddCellularFoundNetwork(
     const std::string& device_path) {
-  base::Value* device_properties = stub_devices_.FindKey(device_path);
-  if (!device_properties || !device_properties->is_dict()) {
+  base::Value* device_properties = stub_devices_.FindDictKey(device_path);
+  if (!device_properties) {
     LOG(ERROR) << "Device path not found: " << device_path;
     return;
   }
@@ -474,7 +472,7 @@ void FakeShillDeviceClient::AddCellularFoundNetwork(
     scan_results = device_properties->SetKey(shill::kFoundNetworksProperty,
                                              base::ListValue());
   }
-  base::DictionaryValue new_result;
+  base::Value new_result(base::Value::Type::DICTIONARY);
   int idx = static_cast<int>(scan_results->GetList().size());
   new_result.SetKey(shill::kNetworkIdProperty,
                     base::Value(base::StringPrintf("network%d", idx)));
@@ -502,29 +500,29 @@ void FakeShillDeviceClient::SetUsbEthernetMacAddressSourceError(
 FakeShillDeviceClient::SimLockStatus FakeShillDeviceClient::GetSimLockStatus(
     const std::string& device_path) {
   SimLockStatus status;
-  base::DictionaryValue* device_properties = nullptr;
-  base::DictionaryValue* simlock_dict = nullptr;
-  if (stub_devices_.GetDictionaryWithoutPathExpansion(device_path,
-                                                      &device_properties) &&
-      device_properties->GetDictionaryWithoutPathExpansion(
-          shill::kSIMLockStatusProperty, &simlock_dict)) {
-    simlock_dict->GetStringWithoutPathExpansion(shill::kSIMLockTypeProperty,
-                                                &status.type);
-    simlock_dict->GetIntegerWithoutPathExpansion(
-        shill::kSIMLockRetriesLeftProperty, &status.retries_left);
-    simlock_dict->GetBooleanWithoutPathExpansion(shill::kSIMLockEnabledProperty,
-                                                 &status.lock_enabled);
-    if (status.type == shill::kSIMLockPin && status.retries_left == 0)
-      status.retries_left = kSimPinRetryCount;
-  }
+  base::Value* device_properties = stub_devices_.FindDictKey(device_path);
+  if (!device_properties)
+    return status;
+  base::Value* simlock_dict =
+      device_properties->FindDictKey(shill::kSIMLockStatusProperty);
+  if (!simlock_dict)
+    return status;
+  const std::string* type =
+      simlock_dict->FindStringKey(shill::kSIMLockTypeProperty);
+  if (type)
+    status.type = *type;
+  status.retries_left =
+      simlock_dict->FindIntKey(shill::kSIMLockRetriesLeftProperty).value_or(0);
+  status.lock_enabled =
+      simlock_dict->FindBoolKey(shill::kSIMLockEnabledProperty).value_or(false);
+  if (status.type == shill::kSIMLockPin && status.retries_left == 0)
+    status.retries_left = kSimPinRetryCount;
   return status;
 }
 
 void FakeShillDeviceClient::SetSimLockStatus(const std::string& device_path,
                                              const SimLockStatus& status) {
-  base::Value* device_properties =
-      stub_devices_.FindKeyOfType(device_path, base::Value::Type::DICTIONARY);
-
+  base::Value* device_properties = stub_devices_.FindDictKey(device_path);
   if (!device_properties) {
     NOTREACHED() << "Device not found: " << device_path;
     return;
@@ -623,14 +621,14 @@ void FakeShillDeviceClient::PostVoidCallback(VoidDBusMethodCallback callback,
 void FakeShillDeviceClient::NotifyObserversPropertyChanged(
     const dbus::ObjectPath& device_path,
     const std::string& property) {
-  base::DictionaryValue* dict = nullptr;
   std::string path = device_path.value();
-  if (!stub_devices_.GetDictionaryWithoutPathExpansion(path, &dict)) {
+  base::Value* device_properties = stub_devices_.FindDictKey(path);
+  if (!device_properties) {
     LOG(ERROR) << "Notify for unknown device: " << path;
     return;
   }
-  base::Value* value = nullptr;
-  if (!dict->GetWithoutPathExpansion(property, &value)) {
+  base::Value* value = device_properties->FindKey(property);
+  if (!value) {
     LOG(ERROR) << "Notify for unknown property: " << path << " : " << property;
     return;
   }
@@ -640,12 +638,12 @@ void FakeShillDeviceClient::NotifyObserversPropertyChanged(
 
 base::Value* FakeShillDeviceClient::GetDeviceProperties(
     const std::string& device_path) {
-  base::Value* properties =
-      stub_devices_.FindKeyOfType(device_path, base::Value::Type::DICTIONARY);
-  if (properties)
-    return properties;
-  return stub_devices_.SetKey(device_path,
-                              base::Value(base::Value::Type::DICTIONARY));
+  base::Value* properties = stub_devices_.FindDictKey(device_path);
+  if (!properties) {
+    properties = stub_devices_.SetKey(
+        device_path, base::Value(base::Value::Type::DICTIONARY));
+  }
+  return properties;
 }
 
 FakeShillDeviceClient::PropertyObserverList&

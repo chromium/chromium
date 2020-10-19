@@ -152,7 +152,8 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillDeviceClient
   PropertyObserverList& GetObserverList(const dbus::ObjectPath& device_path);
 
   // Dictionary of <device_name, Dictionary>.
-  base::DictionaryValue stub_devices_;
+  base::Value stub_devices_{base::Value::Type::DICTIONARY};
+
   // Observer list for each device.
   std::map<dbus::ObjectPath, std::unique_ptr<PropertyObserverList>>
       observer_list_;
