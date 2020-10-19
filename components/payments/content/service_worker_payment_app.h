@@ -115,7 +115,7 @@ class ServiceWorkerPaymentApp : public PaymentApp,
  private:
   friend class ServiceWorkerPaymentAppTest;
 
-  void OnPaymentAppInvoked(mojom::PaymentHandlerResponsePtr response);
+  void OnPaymentAppResponse(mojom::PaymentHandlerResponsePtr response);
   mojom::PaymentRequestEventDataPtr CreatePaymentRequestEventData();
 
   mojom::CanMakePaymentEventDataPtr CreateCanMakePaymentEventData();

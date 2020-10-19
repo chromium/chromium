@@ -233,7 +233,7 @@ void ServiceWorkerPaymentApp::InvokePaymentApp(Delegate* delegate) {
             &ServiceWorkerPaymentApp::OnPaymentAppIdentity,
             weak_ptr_factory_.GetWeakPtr(),
             url::Origin::Create(GURL(installable_web_app_info_->sw_scope))),
-        base::BindOnce(&ServiceWorkerPaymentApp::OnPaymentAppInvoked,
+        base::BindOnce(&ServiceWorkerPaymentApp::OnPaymentAppResponse,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
     url::Origin sw_origin =
@@ -242,7 +242,7 @@ void ServiceWorkerPaymentApp::InvokePaymentApp(Delegate* delegate) {
     payment_app_provider->InvokePaymentApp(
         stored_payment_app_info_->registration_id, sw_origin,
         CreatePaymentRequestEventData(),
-        base::BindOnce(&ServiceWorkerPaymentApp::OnPaymentAppInvoked,
+        base::BindOnce(&ServiceWorkerPaymentApp::OnPaymentAppResponse,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
@@ -344,7 +344,7 @@ ServiceWorkerPaymentApp::CreatePaymentRequestEventData() {
   return event_data;
 }
 
-void ServiceWorkerPaymentApp::OnPaymentAppInvoked(
+void ServiceWorkerPaymentApp::OnPaymentAppResponse(
     mojom::PaymentHandlerResponsePtr response) {
   if (!delegate_)
     return;
