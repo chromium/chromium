@@ -727,8 +727,7 @@ FileManagerPrivateSinglePartitionFormatFunction::Run() {
     return RespondNow(Error("Device not found"));
   }
 
-  if (!device_disk->on_removable_device() || device_disk->on_boot_device() ||
-      device_disk->is_read_only()) {
+  if (device_disk->is_read_only()) {
     return RespondNow(Error("Invalid device"));
   }
 
