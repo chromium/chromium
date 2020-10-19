@@ -17,11 +17,7 @@
   ],
   "content_security_policy": "default-src 'none'; script-src 'self' 'wasm-eval' blob: filesystem: chrome://resources chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj; style-src 'self' blob: filesystem:; frame-src 'self' blob: filesystem:; img-src 'self' blob: filesystem: data:; media-src 'self' blob: filesystem:; connect-src 'self' blob: filesystem:",
   "background": {
-    "scripts": [
-      "chrome://resources/js/assert.js",
-      "piex/piex.js.wasm",
-      "background_scripts.js"
-    ],
+    "page": "background.html",
     "persistent": false
   },
   "natively_connectable": ["com.google.holding_space_thumbnail_loader"],
