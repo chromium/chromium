@@ -208,7 +208,7 @@ public class PlayerFrameMediatorTest {
         mModel = new PropertyModel.Builder(PlayerFrameProperties.ALL_KEYS).build();
         mCompositorDelegate = new TestPlayerCompositorDelegate();
         mScroller = new OverScroller(ContextUtils.getApplicationContext());
-        mGestureListener = new PlayerGestureListener(null, () -> mHasUserInteraction = true);
+        mGestureListener = new PlayerGestureListener(null, () -> mHasUserInteraction = true, null);
         Size contentSize = new Size(CONTENT_WIDTH, CONTENT_HEIGHT);
         mMediator = new PlayerFrameMediator(mModel, mCompositorDelegate, mGestureListener,
                 mFrameGuid, contentSize, 0, 0);

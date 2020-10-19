@@ -4122,9 +4122,6 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_PAINT_PREVIEW_DEMO_PLAYBACK_START" desc="Toast message displayed when paint preview starts displaying. Used in paint preview demo mode." translateable="false">
         Displaying Paint Preview. Press back to exit the Paint Preview demo.
       </message>
-      <message name="IDS_PAINT_PREVIEW_DEMO_PLAYBACK_END" desc="Toast message displayed when the user exits paint preview demo. Used in paint preview demo mode." translateable="false">
-        Exited Paint Preview demo.
-      </message>
       <message name="IDS_PAINT_PREVIEW_DEMO_PLAYBACK_FAILURE" desc="Toast message displayed when there is a failure in playing back a paint preview for the demo. Used in paint preview demo mode." translateable="false">
         Paint Preview playback failed.
       </message>

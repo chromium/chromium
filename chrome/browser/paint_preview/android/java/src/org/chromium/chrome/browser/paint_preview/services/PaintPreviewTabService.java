@@ -193,7 +193,7 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
         }
     }
 
-    private void captureTab(Tab tab, Callback<Boolean> successCallback) {
+    public void captureTab(Tab tab, Callback<Boolean> successCallback) {
         if (mNativePaintPreviewTabService == 0) {
             successCallback.onResult(false);
             return;

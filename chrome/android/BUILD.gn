@@ -1101,6 +1101,7 @@ android_library("chrome_test_java") {
     "//components/omnibox/browser:browser_java",
     "//components/page_info/android:java",
     "//components/page_info/android:page_info_action_enum_java",
+    "//components/paint_preview/player/android:java",
     "//components/paint_preview/player/android:javatests",
     "//components/password_manager/core/browser:password_manager_java_enums",
     "//components/payments/content/android:java",

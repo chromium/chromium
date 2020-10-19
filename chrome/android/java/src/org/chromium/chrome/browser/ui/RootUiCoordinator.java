@@ -51,7 +51,7 @@ import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.metrics.UkmRecorder;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
-import org.chromium.chrome.browser.paint_preview.PaintPreviewTabHelper;
+import org.chromium.chrome.browser.paint_preview.DemoPaintPreview;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareButtonController;
@@ -416,9 +416,7 @@ public class RootUiCoordinator
             onShareMenuItemSelected(id == R.id.direct_share_menu_id,
                     mTabModelSelectorSupplier.get().isIncognitoSelected());
         } else if (id == R.id.paint_preview_show_id) {
-            Tab tab = mActivityTabProvider.get();
-            PaintPreviewTabHelper paintPreviewTabHelper = PaintPreviewTabHelper.get(tab);
-            paintPreviewTabHelper.showPaintPreviewDemo();
+            DemoPaintPreview.showForTab(mActivityTabProvider.get());
         } else if (id == R.id.get_image_descriptions_id) {
             ImageDescriptionsController.getInstance().onImageDescriptionsMenuItemSelected(
                     mActivity, mActivity.getModalDialogManager());

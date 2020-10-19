@@ -15,10 +15,13 @@ public class PlayerGestureListener {
     private LinkClickHandler mLinkClickHandler;
     private PlayerUserFrustrationDetector mUserFrustrationDetector;
 
-    public PlayerGestureListener(
-            LinkClickHandler linkClickHandler, Runnable userInteractionCallback) {
+    public PlayerGestureListener(LinkClickHandler linkClickHandler,
+            Runnable userInteractionCallback, Runnable userFrustrationCallback) {
         mLinkClickHandler = linkClickHandler;
         mUserInteractionCallback = userInteractionCallback;
+        if (userFrustrationCallback == null) return;
+
+        mUserFrustrationDetector = new PlayerUserFrustrationDetector(userFrustrationCallback);
     }
 
     /**
@@ -55,9 +58,5 @@ public class PlayerGestureListener {
     public void onScale(boolean didFinish) {
         if (mUserInteractionCallback != null) mUserInteractionCallback.run();
         if (didFinish) PlayerUserActionRecorder.recordZoom();
-    }
-
-    public void setUserFrustrationDetector(PlayerUserFrustrationDetector userFrustrationDetector) {
-        mUserFrustrationDetector = userFrustrationDetector;
     }
 }

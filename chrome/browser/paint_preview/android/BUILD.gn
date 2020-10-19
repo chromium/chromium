@@ -7,8 +7,6 @@ import("//build/config/android/rules.gni")
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/paint_preview/PaintPreviewCompositorUtils.java",
-    "java/src/org/chromium/chrome/browser/paint_preview/services/PaintPreviewDemoService.java",
-    "java/src/org/chromium/chrome/browser/paint_preview/services/PaintPreviewDemoServiceFactory.java",
     "java/src/org/chromium/chrome/browser/paint_preview/services/PaintPreviewTabService.java",
     "java/src/org/chromium/chrome/browser/paint_preview/services/PaintPreviewTabServiceFactory.java",
   ]
@@ -18,13 +16,11 @@ android_library("java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   sources = [
+    "java/src/org/chromium/chrome/browser/paint_preview/DemoPaintPreview.java",
     "java/src/org/chromium/chrome/browser/paint_preview/PaintPreviewCompositorUtils.java",
-    "java/src/org/chromium/chrome/browser/paint_preview/PaintPreviewDemoManager.java",
-    "java/src/org/chromium/chrome/browser/paint_preview/PaintPreviewTabHelper.java",
-    "java/src/org/chromium/chrome/browser/paint_preview/TabbedPaintPreviewMetricsHelper.java",
-    "java/src/org/chromium/chrome/browser/paint_preview/TabbedPaintPreviewPlayer.java",
-    "java/src/org/chromium/chrome/browser/paint_preview/services/PaintPreviewDemoService.java",
-    "java/src/org/chromium/chrome/browser/paint_preview/services/PaintPreviewDemoServiceFactory.java",
+    "java/src/org/chromium/chrome/browser/paint_preview/StartupPaintPreview.java",
+    "java/src/org/chromium/chrome/browser/paint_preview/StartupPaintPreviewMetrics.java",
+    "java/src/org/chromium/chrome/browser/paint_preview/TabbedPaintPreview.java",
     "java/src/org/chromium/chrome/browser/paint_preview/services/PaintPreviewTabService.java",
     "java/src/org/chromium/chrome/browser/paint_preview/services/PaintPreviewTabServiceFactory.java",
   ]

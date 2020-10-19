@@ -108,7 +108,6 @@ import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.ntp.cards.promo.HomepagePromoVariationManager;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.paint_preview.PaintPreviewHelper;
-import org.chromium.chrome.browser.paint_preview.PaintPreviewTabHelper;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -1784,13 +1783,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         if (getManualFillingComponent().handleBackPress()) return true;
 
-        final Tab currentTab = getActivityTab();
-
-        if (currentTab != null
-                && PaintPreviewTabHelper.get(currentTab).removePaintPreviewDemoIfShowing()) {
-            return true;
-        }
-
         if (exitFullscreenIfShowing()) {
             return true;
         }
@@ -1800,6 +1792,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         if (mTabModalHandler.handleBackPress()) return true;
 
+        final Tab currentTab = getActivityTab();
         if (currentTab == null) {
             moveTaskToBack(true);
             return true;

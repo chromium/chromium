@@ -12,7 +12,6 @@ import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.media.ui.MediaSessionTabHelper;
-import org.chromium.chrome.browser.paint_preview.PaintPreviewTabHelper;
 
 /**
  * Helper class that initializes various tab UserData objects.
@@ -34,7 +33,6 @@ public final class TabHelpers {
         MediaSessionTabHelper.createForTab(tab);
         TaskTabHelper.createForTab(tab, parentTab);
         TabBrowserControlsConstraintsHelper.createForTab(tab);
-        PaintPreviewTabHelper.createForTab(tab);
         if (ReaderModeManager.isEnabled()) ReaderModeManager.createForTab(tab);
 
         // TODO(jinsukkim): Do this by having something observe new tab creation.
