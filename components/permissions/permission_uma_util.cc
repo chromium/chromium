@@ -128,6 +128,7 @@ void RecordPermissionActionUkm(
     PermissionSourceUI source_ui,
     PermissionPromptDisposition ui_disposition,
     base::Optional<bool> has_three_consecutive_denies,
+    base::Optional<bool> has_previously_revoked_permission,
     base::Optional<ukm::SourceId> source_id) {
   // Only record the permission change if the origin is in the history.
   if (!source_id.has_value())
@@ -151,6 +152,15 @@ void RecordPermissionActionUkm(
       satisfied_adaptive_triggers |=
           static_cast<int64_t>(AdaptiveTriggers::THREE_CONSECUTIVE_DENIES);
     builder.SetSatisfiedAdaptiveTriggers(satisfied_adaptive_triggers);
+  }
+
+  if (has_previously_revoked_permission.has_value()) {
+    int64_t previously_revoked_permission = 0;
+    if (has_previously_revoked_permission.value()) {
+      previously_revoked_permission = static_cast<int64_t>(
+          PermissionAutoRevocationHistory::PREVIOUSLY_AUTO_REVOKED);
+    }
+    builder.SetPermissionAutoRevocationHistory(previously_revoked_permission);
   }
 
   builder.Record(ukm::UkmRecorder::Get());
@@ -179,6 +189,37 @@ std::string GetPromptDispositionString(
 
   NOTREACHED();
   return "";
+}
+
+// |full_version| represented in the format `YYYY.M.D.m`, where m is the
+// minute-of-day. Return int represented in the format `YYYYMMDD`.
+// CrowdDeny versions published before 2020 will be reported as 1.
+// Returns 0 if no version available.
+// Returns 1 if a version has invalid format.
+int ConvertCrowdDenyVersionToInt(const base::Optional<base::Version>& version) {
+  if (!version.has_value() || !version.value().IsValid())
+    return 0;
+
+  const std::vector<uint32_t>& full_version = version.value().components();
+  if (full_version.size() != 4)
+    return 1;
+
+  const int kCrowdDenyMinYearLimit = 2020;
+  const int year = base::checked_cast<int>(full_version.at(0));
+  if (year < kCrowdDenyMinYearLimit)
+    return 1;
+
+  const int month = base::checked_cast<int>(full_version.at(1));
+  const int day = base::checked_cast<int>(full_version.at(2));
+
+  int short_version = year;
+
+  short_version *= 100;
+  short_version += month;
+  short_version *= 100;
+  short_version += day;
+
+  return short_version;
 }
 
 }  // anonymous namespace
@@ -405,6 +446,18 @@ void PermissionUmaUtil::RecordInfobarDetailsExpanded(bool expanded) {
                             expanded);
 }
 
+void PermissionUmaUtil::RecordCrowdDenyIsLoadedAtAbuseCheckTime(bool loaded) {
+  base::UmaHistogramBoolean(
+      "Permissions.CrowdDeny.PreloadData.IsLoadedAtAbuseCheckTime", loaded);
+}
+
+void PermissionUmaUtil::RecordCrowdDenyVersionAtAbuseCheckTime(
+    const base::Optional<base::Version>& version) {
+  base::UmaHistogramSparse(
+      "Permissions.CrowdDeny.PreloadData.VersionAtAbuseCheckTime",
+      ConvertCrowdDenyVersionToInt(version));
+}
+
 void PermissionUmaUtil::RecordMissingPermissionInfobarShouldShow(
     bool should_show,
     const std::vector<ContentSettingsType>& content_settings_types) {
@@ -518,7 +571,9 @@ void PermissionUmaUtil::RecordPermissionAction(
               ? PermissionsClient::Get()
                     ->HadThreeConsecutiveNotificationPermissionDenies(
                         browser_context)
-              : base::nullopt));
+              : base::nullopt,
+          PermissionsClient::Get()->HasPreviouslyAutoRevokedPermission(
+              browser_context, requesting_origin, permission)));
 
   switch (permission) {
     case ContentSettingsType::GEOLOCATION:

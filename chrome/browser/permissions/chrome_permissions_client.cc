@@ -237,6 +237,20 @@ ChromePermissionsClient::HadThreeConsecutiveNotificationPermissionDenies(
       ->GetBoolean(prefs::kHadThreeConsecutiveNotificationPermissionDenies);
 }
 
+base::Optional<bool>
+ChromePermissionsClient::HasPreviouslyAutoRevokedPermission(
+    content::BrowserContext* browser_context,
+    const GURL& origin,
+    ContentSettingsType permission) {
+  if (permission != ContentSettingsType::NOTIFICATIONS) {
+    return base::nullopt;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return AbusiveOriginPermissionRevocationRequest::
+      HasPreviouslyRevokedPermission(profile, origin);
+}
+
 base::Optional<url::Origin> ChromePermissionsClient::GetAutoApprovalOrigin() {
 #if defined(OS_CHROMEOS)
   // In web kiosk mode, all permission requests are auto-approved for the origin

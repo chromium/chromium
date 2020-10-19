@@ -57449,6 +57449,15 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="REVOKED"/>
 </enum>
 
+<enum name="PermissionAutoRevocationHistory">
+  <summary>
+    Track whether the permission has been automatically revoked in the past at
+    least once.
+  </summary>
+  <int value="0" label="NONE"/>
+  <int value="1" label="PREVIOUSLY_AUTO_REVOKED"/>
+</enum>
+
 <enum name="PermissionEmbargoStatus">
   <int value="0" label="NOT_EMBARGOED"/>
   <int value="1" label="BLACKLISTED"/>

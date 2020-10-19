@@ -9,6 +9,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
+#include "base/version.h"
 #include "chrome/browser/permissions/crowd_deny.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -74,7 +75,7 @@ class CrowdDenyPreloadDataTest : public testing::Test {
   }
 
   void LoadTestDataAndWait(base::FilePath path) {
-    preload_data()->LoadFromDisk(path);
+    preload_data()->LoadFromDisk(path, base::Version());
     task_environment()->RunUntilIdle();
   }
 
@@ -404,8 +405,8 @@ TEST_F(CrowdDenyPreloadDataTest, LastOneSurvivesFromUpdatesInQuickSuccession) {
   // TODO(crbug.com/1028642): Think about making this test stronger. Even if the
   // ordering were random, given the generous retry policy in continuous build,
   // the test would still pass most of the time.
-  preload_data()->LoadFromDisk(data_path_v2);
-  preload_data()->LoadFromDisk(data_path_v3);
+  preload_data()->LoadFromDisk(data_path_v2, base::Version());
+  preload_data()->LoadFromDisk(data_path_v3, base::Version());
   task_environment()->RunUntilIdle();
 
   // Expect the new version to have become visible.

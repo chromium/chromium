@@ -108,4 +108,38 @@ TEST_F(PermissionUmaUtilTest, ScopedRevocationReporter) {
                                static_cast<int>(PermissionAction::REVOKED), 3);
 }
 
+TEST_F(PermissionUmaUtilTest, CrowdDenyVersionTest) {
+  base::HistogramTester histograms;
+
+  const base::Optional<base::Version> empty_version;
+  PermissionUmaUtil::RecordCrowdDenyVersionAtAbuseCheckTime(empty_version);
+  histograms.ExpectBucketCount(
+      "Permissions.CrowdDeny.PreloadData.VersionAtAbuseCheckTime", 0, 1);
+
+  const base::Optional<base::Version> valid_version =
+      base::Version({2020, 10, 11, 1234});
+  PermissionUmaUtil::RecordCrowdDenyVersionAtAbuseCheckTime(valid_version);
+  histograms.ExpectBucketCount(
+      "Permissions.CrowdDeny.PreloadData.VersionAtAbuseCheckTime", 20201011, 1);
+
+  const base::Optional<base::Version> valid_old_version =
+      base::Version({2019, 10, 10, 1234});
+  PermissionUmaUtil::RecordCrowdDenyVersionAtAbuseCheckTime(valid_old_version);
+  histograms.ExpectBucketCount(
+      "Permissions.CrowdDeny.PreloadData.VersionAtAbuseCheckTime", 1, 1);
+
+  const base::Optional<base::Version> valid_future_version =
+      base::Version({2021, 1, 1, 1234});
+  PermissionUmaUtil::RecordCrowdDenyVersionAtAbuseCheckTime(
+      valid_future_version);
+  histograms.ExpectBucketCount(
+      "Permissions.CrowdDeny.PreloadData.VersionAtAbuseCheckTime", 20210101, 1);
+
+  const base::Optional<base::Version> invalid_version =
+      base::Version({2020, 10, 11});
+  PermissionUmaUtil::RecordCrowdDenyVersionAtAbuseCheckTime(valid_version);
+  histograms.ExpectBucketCount(
+      "Permissions.CrowdDeny.PreloadData.VersionAtAbuseCheckTime", 1, 1);
+}
+
 }  // namespace permissions

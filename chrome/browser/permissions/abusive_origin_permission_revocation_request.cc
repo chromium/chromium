@@ -14,6 +14,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_result.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permissions_client.h"
 #include "components/safe_browsing/core/db/database_manager.h"
 
@@ -85,6 +86,10 @@ void RevokePermission(const GURL& origin, Profile* profile) {
   OriginStatus status = GetOriginStatus(profile, origin);
   status.has_been_previously_revoked = true;
   SetOriginStatus(profile, origin, status);
+
+  permissions::PermissionUmaUtil::PermissionRevoked(
+      ContentSettingsType::NOTIFICATIONS,
+      permissions::PermissionSourceUI::AUTO_REVOCATION, origin, profile);
 }
 }  // namespace
 
@@ -117,9 +122,14 @@ void AbusiveOriginPermissionRevocationRequest::CheckAndRevokeIfAbusive() {
     return;
   }
 
+  CrowdDenyPreloadData* crowd_deny = CrowdDenyPreloadData::GetInstance();
+  permissions::PermissionUmaUtil::RecordCrowdDenyIsLoadedAtAbuseCheckTime(
+      crowd_deny->is_loaded_from_disk());
+  permissions::PermissionUmaUtil::RecordCrowdDenyVersionAtAbuseCheckTime(
+      crowd_deny->version_on_disk());
+
   const CrowdDenyPreloadData::SiteReputation* site_reputation =
-      CrowdDenyPreloadData::GetInstance()->GetReputationDataForSite(
-          url::Origin::Create(origin_));
+      crowd_deny->GetReputationDataForSite(url::Origin::Create(origin_));
   if (site_reputation &&
       (site_reputation->notification_ux_quality() ==
            CrowdDenyPreloadData::SiteReputation::ABUSIVE_PROMPTS ||
