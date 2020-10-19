@@ -128,7 +128,6 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, ActionableErrorTest) {
   GetSyncService(0)->QueryDetailedSyncStatusForDebugging(&status);
   ASSERT_EQ(status.sync_protocol_error.error_type, syncer::TRANSIENT_ERROR);
   ASSERT_EQ(status.sync_protocol_error.action, syncer::UPGRADE_CLIENT);
-  ASSERT_EQ(status.sync_protocol_error.url, url);
   ASSERT_EQ(status.sync_protocol_error.error_description, description);
 }
 

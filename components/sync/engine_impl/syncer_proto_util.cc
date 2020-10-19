@@ -249,7 +249,6 @@ SyncProtocolError ConvertErrorPBToSyncProtocolError(
   sync_protocol_error.error_type =
       PBErrorTypeToSyncProtocolErrorType(error.error_type());
   sync_protocol_error.error_description = error.error_description();
-  sync_protocol_error.url = error.url();
   sync_protocol_error.action = PBActionToClientAction(error.action());
 
   if (error.error_data_type_ids_size() > 0) {

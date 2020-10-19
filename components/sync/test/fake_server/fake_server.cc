@@ -550,7 +550,6 @@ void FakeServer::TriggerActionableError(
       new sync_pb::ClientToServerResponse_Error();
   error->set_error_type(error_type);
   error->set_error_description(description);
-  error->set_url(url);
   error->set_action(action);
   triggered_actionable_error_.reset(error);
 }

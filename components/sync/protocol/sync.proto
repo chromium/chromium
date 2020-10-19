@@ -968,7 +968,8 @@ message ClientToServerResponse {
   message Error {
     optional SyncEnums.ErrorType error_type = 1 [default = UNKNOWN];
     optional string error_description = 2;
-    optional string url = 3;
+    reserved 3;
+    reserved "url";
     optional SyncEnums.Action action = 4 [default = UNKNOWN_ACTION];
 
     // Currently meaningful if |error_type| is throttled or partial_failure.

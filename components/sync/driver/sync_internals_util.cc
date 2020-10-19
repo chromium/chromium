@@ -632,20 +632,17 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
   base::Value actionable_error(base::Value::Type::LIST);
   Stat<std::string> error_type("Error Type", kUninitialized);
   Stat<std::string> action("Action", kUninitialized);
-  Stat<std::string> url("URL", kUninitialized);
   Stat<std::string> description("Error Description", kUninitialized);
 
   if (actionable_error_detected) {
     error_type.Set(
         GetSyncErrorTypeString(full_status.sync_protocol_error.error_type));
     action.Set(GetClientActionString(full_status.sync_protocol_error.action));
-    url.Set(full_status.sync_protocol_error.url);
     description.Set(full_status.sync_protocol_error.error_description);
   }
 
   actionable_error.Append(error_type.ToValue());
   actionable_error.Append(action.ToValue());
-  actionable_error.Append(url.ToValue());
   actionable_error.Append(description.ToValue());
   about_info->SetKey("actionable_error", std::move(actionable_error));
 

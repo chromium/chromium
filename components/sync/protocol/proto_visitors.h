@@ -297,7 +297,6 @@ VISIT_PROTO_FIELDS(const sync_pb::ClientToServerResponse& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::ClientToServerResponse::Error& proto) {
   VISIT_ENUM(error_type);
   VISIT(error_description);
-  VISIT(url);
   VISIT_ENUM(action);
 }
 

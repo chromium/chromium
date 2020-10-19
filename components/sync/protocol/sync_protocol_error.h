@@ -73,7 +73,6 @@ enum ClientAction {
 struct SyncProtocolError {
   SyncProtocolErrorType error_type;
   std::string error_description;
-  std::string url;
   ClientAction action;
   ModelTypeSet error_data_types;
   SyncProtocolError();
