@@ -162,6 +162,13 @@ void AppServiceAppWindowCrostiniTracker::OnWindowVisibilityChanged(
     MoveWindowFromOldDisplayToNewDisplay(window, old_display, new_display);
 }
 
+void AppServiceAppWindowCrostiniTracker::OnWindowDestroying(
+    aura::Window* window) {
+  base::EraseIf(activation_permissions_, [&window](const auto& element) {
+    return element.first == window;
+  });
+}
+
 void AppServiceAppWindowCrostiniTracker::OnAppLaunchRequested(
     const std::string& app_id,
     int64_t display_id) {
