@@ -8,6 +8,7 @@ include_rules = [
   "+components/safe_browsing/core/features.h",
   "+cc/paint",
   "+crypto",
+  "+skia/ext",
   "+third_party/skia/include",
   "+third_party/smhasher",
   "+ui/base/page_transition_types.h",

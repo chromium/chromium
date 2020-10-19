@@ -601,7 +601,7 @@ TEST(PaintPreviewCompositorTest, TestComposite) {
   SkBitmap bitmap;
   bitmap.allocPixels(
       SkImageInfo::MakeN32(rect.width(), rect.height(), kOpaque_SkAlphaType));
-  SkCanvas canvas(bitmap);
+  SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.scale(scale_factor, scale_factor);
   DrawDummyTestPicture(&canvas, SK_ColorDKGRAY, root_frame_scroll_extent);
   compositor.BitmapForSeparatedFrame(
@@ -673,7 +673,7 @@ TEST(PaintPreviewCompositorTest, TestCompositeWithMemoryBuffer) {
   SkBitmap bitmap;
   bitmap.allocPixels(
       SkImageInfo::MakeN32(rect.width(), rect.height(), kOpaque_SkAlphaType));
-  SkCanvas canvas(bitmap);
+  SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.scale(scale_factor, scale_factor);
   DrawDummyTestPicture(&canvas, SK_ColorDKGRAY, root_frame_scroll_extent);
   compositor.BitmapForSeparatedFrame(
@@ -723,7 +723,7 @@ TEST(PaintPreviewCompositorTest, TestCompositeMainFrameNoDependencies) {
   SkBitmap bitmap;
   bitmap.allocPixels(
       SkImageInfo::MakeN32(rect.width(), rect.height(), kOpaque_SkAlphaType));
-  SkCanvas canvas(bitmap);
+  SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.scale(scale_factor, scale_factor);
   DrawDummyTestPicture(&canvas, SK_ColorDKGRAY, root_frame_scroll_extent);
   compositor.BitmapForMainFrame(
@@ -778,7 +778,7 @@ TEST(PaintPreviewCompositorTest, TestCompositeMainFrameOneDependency) {
   SkBitmap bitmap;
   bitmap.allocPixels(
       SkImageInfo::MakeN32(rect.width(), rect.height(), kOpaque_SkAlphaType));
-  SkCanvas canvas(bitmap);
+  SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.scale(scale_factor, scale_factor);
   DrawDummyTestPicture(&canvas, SK_ColorDKGRAY, root_frame_scroll_extent);
   // Draw the subframe where we embedded it while populating the proto.
@@ -837,7 +837,7 @@ TEST(PaintPreviewCompositorTest, TestCompositeMainFrameOneDependencyScrolled) {
   SkBitmap bitmap;
   bitmap.allocPixels(
       SkImageInfo::MakeN32(rect.width(), rect.height(), kOpaque_SkAlphaType));
-  SkCanvas canvas(bitmap);
+  SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.scale(scale_factor, scale_factor);
   DrawDummyTestPicture(&canvas, SK_ColorDKGRAY, root_frame_scroll_extent);
   // Draw the subframe where we embedded it while populating the proto.
@@ -899,7 +899,7 @@ TEST(PaintPreviewCompositorTest,
   SkBitmap bitmap;
   bitmap.allocPixels(
       SkImageInfo::MakeN32(rect.width(), rect.height(), kOpaque_SkAlphaType));
-  SkCanvas canvas(bitmap);
+  SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.scale(scale_factor, scale_factor);
   // Offset the canvas to simulate the root frame being scrolled.
   canvas.translate(-root_frame_clip_rect.x(), -root_frame_clip_rect.y());

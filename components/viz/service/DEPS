@@ -10,6 +10,7 @@ include_rules = [
   "+gpu/ipc/common/surface_handle.h",
   "+services/viz/privileged/mojom",
   "+services/viz/public/mojom",
+  "+skia/ext",
   "+third_party/skia",
   "+ui/latency",
   "+ui/ozone/public",

@@ -300,7 +300,7 @@ TEST(RasterSourceTest, RasterFullContents) {
 
       SkBitmap bitmap;
       bitmap.allocN32Pixels(canvas_rect.width(), canvas_rect.height());
-      SkCanvas canvas(bitmap);
+      SkCanvas canvas(bitmap, SkSurfaceProps{});
       canvas.clear(SK_ColorTRANSPARENT);
 
       raster->PlaybackToCanvas(
@@ -361,7 +361,7 @@ TEST(RasterSourceTest, RasterFullContentsWithRasterTranslation) {
 
       SkBitmap bitmap;
       bitmap.allocN32Pixels(canvas_rect.width(), canvas_rect.height());
-      SkCanvas canvas(bitmap);
+      SkCanvas canvas(bitmap, SkSurfaceProps{});
       canvas.clear(SK_ColorTRANSPARENT);
 
       raster->PlaybackToCanvas(
@@ -408,7 +408,7 @@ TEST(RasterSourceTest, RasterPartialContents) {
 
   SkBitmap bitmap;
   bitmap.allocN32Pixels(content_bounds.width(), content_bounds.height());
-  SkCanvas canvas(bitmap);
+  SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.clear(SK_ColorTRANSPARENT);
 
   // Playback the full rect which should make everything white.
@@ -482,7 +482,7 @@ TEST(RasterSourceTest, RasterPartialContentsWithRasterTranslation) {
 
   SkBitmap bitmap;
   bitmap.allocN32Pixels(content_bounds.width(), content_bounds.height());
-  SkCanvas canvas(bitmap);
+  SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.clear(SK_ColorTRANSPARENT);
 
   // Playback the full rect which should make everything white.
@@ -576,7 +576,7 @@ TEST(RasterSourceTest, RasterPartialClear) {
 
   SkBitmap bitmap;
   bitmap.allocN32Pixels(content_bounds.width(), content_bounds.height());
-  SkCanvas canvas(bitmap);
+  SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.clear(SK_ColorTRANSPARENT);
 
   // Playback the full rect which should make everything light gray (alpha=10).
@@ -645,7 +645,7 @@ TEST(RasterSourceTest, RasterContentsTransparent) {
 
   SkBitmap bitmap;
   bitmap.allocN32Pixels(canvas_rect.width(), canvas_rect.height());
-  SkCanvas canvas(bitmap);
+  SkCanvas canvas(bitmap, SkSurfaceProps{});
 
   raster->PlaybackToCanvas(
       &canvas, content_bounds, canvas_rect, canvas_rect,

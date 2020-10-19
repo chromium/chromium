@@ -12,6 +12,7 @@
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "gpu/vulkan/vulkan_surface.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -114,7 +115,8 @@ void VulkanDemo::CreateSkSurface() {
 
   if (!sk_surface) {
     SkSurfaceProps surface_props =
-        SkSurfaceProps(0, SkSurfaceProps::kLegacyFontHost_InitType);
+        skia::LegacyDisplayGlobals::GetSkSurfaceProps();
+
     GrVkImageInfo vk_image_info;
     vk_image_info.fImage = scoped_write_->image();
     vk_image_info.fImageLayout = scoped_write_->image_layout();

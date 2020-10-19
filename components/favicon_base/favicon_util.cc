@@ -127,7 +127,7 @@ SkBitmap ResizeBitmapByDownsamplingIfPossible(
     if (!best_bitmap.isOpaque())
       bitmap.eraseARGB(0, 0, 0, 0);
 
-    SkCanvas canvas(bitmap);
+    SkCanvas canvas(bitmap, SkSurfaceProps{});
     canvas.drawBitmapRect(best_bitmap,
                           SkRect::MakeIWH(desired_size, desired_size), nullptr);
     return bitmap;

@@ -3541,7 +3541,7 @@ TEST_P(GPURendererPixelTest, TileDrawQuadForceAntiAliasingOff) {
 
   SkBitmap bitmap;
   bitmap.allocN32Pixels(32, 32);
-  SkCanvas canvas(bitmap);
+  SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.clear(SK_ColorTRANSPARENT);
 
   gfx::Size tile_size(32, 32);
@@ -4006,7 +4006,7 @@ TEST_P(RendererPixelTest, TileDrawQuadNearestNeighbor) {
   SkImageInfo info = SkImageInfo::Make(2, 2, ct, kPremul_SkAlphaType);
   SkBitmap bitmap;
   bitmap.allocPixels(info);
-  SkCanvas canvas(bitmap);
+  SkCanvas canvas(bitmap, SkSurfaceProps{});
   draw_point_color(&canvas, 0, 0, SK_ColorGREEN);
   draw_point_color(&canvas, 0, 1, SK_ColorBLUE);
   draw_point_color(&canvas, 1, 0, SK_ColorBLUE);
@@ -4061,7 +4061,7 @@ TEST_F(SoftwareRendererPixelTest, TextureDrawQuadNearestNeighbor) {
 
   SkBitmap bitmap;
   bitmap.allocN32Pixels(2, 2);
-  SkCanvas canvas(bitmap);
+  SkCanvas canvas(bitmap, SkSurfaceProps{});
   draw_point_color(&canvas, 0, 0, SK_ColorGREEN);
   draw_point_color(&canvas, 0, 1, SK_ColorBLUE);
   draw_point_color(&canvas, 1, 0, SK_ColorBLUE);
@@ -4113,7 +4113,7 @@ TEST_F(SoftwareRendererPixelTest, TextureDrawQuadLinear) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(2, 2);
   {
-    SkCanvas canvas(bitmap);
+    SkCanvas canvas(bitmap, SkSurfaceProps{});
     draw_point_color(&canvas, 0, 0, SK_ColorGREEN);
     draw_point_color(&canvas, 0, 1, SK_ColorBLUE);
     draw_point_color(&canvas, 1, 0, SK_ColorBLUE);
@@ -4459,7 +4459,7 @@ TEST_P(GPURendererPixelTest, TextureQuadBatching) {
   SkBitmap bitmap;
   bitmap.allocPixels(
       SkImageInfo::MakeN32Premul(mask_rect.width(), mask_rect.height()));
-  SkCanvas canvas(bitmap);
+  SkCanvas canvas(bitmap, SkSurfaceProps{});
   SkPaint paint;
   paint.setStyle(SkPaint::kStroke_Style);
   paint.setStrokeWidth(SkIntToScalar(4));
@@ -4541,7 +4541,7 @@ TEST_P(GPURendererPixelTest, TileQuadClamping) {
   // layer rect red.
   SkBitmap bitmap;
   bitmap.allocN32Pixels(tile_size.width(), tile_size.height());
-  SkCanvas canvas(bitmap);
+  SkCanvas canvas(bitmap, SkSurfaceProps{});
   SkPaint red;
   red.setColor(SK_ColorRED);
   canvas.drawRect(SkRect::MakeWH(tile_size.width(), tile_size.height()), red);

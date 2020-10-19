@@ -68,7 +68,9 @@ class InterceptingCanvasBase : public SkCanvas {
 
  protected:
   explicit InterceptingCanvasBase(SkBitmap bitmap)
-      : SkCanvas(bitmap), call_nesting_depth_(0), call_count_(0) {}
+      : SkCanvas(bitmap, SkSurfaceProps{}),
+        call_nesting_depth_(0),
+        call_count_(0) {}
   InterceptingCanvasBase(int width, int height)
       : SkCanvas(width, height), call_nesting_depth_(0), call_count_(0) {}
 

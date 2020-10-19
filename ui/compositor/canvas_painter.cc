@@ -31,7 +31,7 @@ CanvasPainter::~CanvasPainter() {
   if (!output_->tryAllocPixels(info))
     return;
 
-  SkCanvas canvas(*output_);
+  SkCanvas canvas(*output_, SkSurfaceProps{});
   canvas.clear(clear_color_);
 
   // When pixel canvas is enabled, the recordings and canvas are already scaled

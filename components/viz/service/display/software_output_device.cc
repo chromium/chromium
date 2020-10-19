@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/vsync_provider.h"
 
@@ -38,7 +39,8 @@ void SoftwareOutputDevice::Resize(const gfx::Size& viewport_pixel_size,
       SkImageInfo::MakeN32(viewport_pixel_size.width(),
                            viewport_pixel_size.height(), kOpaque_SkAlphaType);
   viewport_pixel_size_ = viewport_pixel_size;
-  surface_ = SkSurface::MakeRaster(info);
+  SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
+  surface_ = SkSurface::MakeRaster(info, &props);
 }
 
 SkCanvas* SoftwareOutputDevice::BeginPaint(const gfx::Rect& damage_rect) {

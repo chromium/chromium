@@ -38,7 +38,7 @@ gfx::ImageSkia CreateEnclosedFaviconImage(gfx::Size size,
   // Create a bitmap.
   SkBitmap result;
   result.allocN32Pixels(size.width(), size.height(), false);
-  SkCanvas canvas(result);
+  SkCanvas canvas(result, SkSurfaceProps{});
   canvas.clear(SK_ColorTRANSPARENT);
 
   // Draw the favicon image into the center of result image. If the favicon is

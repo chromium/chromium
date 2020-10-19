@@ -30,6 +30,7 @@
 #include "components/viz/service/display/renderer_utils.h"
 #include "components/viz/service/display/software_output_device.h"
 #include "skia/ext/image_operations.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "skia/ext/opacity_filter_canvas.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -146,7 +147,8 @@ void SoftwareRenderer::BindFramebufferToTexture(
   DCHECK(it != render_pass_bitmaps_.end());
   SkBitmap& bitmap = it->second;
 
-  current_framebuffer_canvas_ = std::make_unique<SkCanvas>(bitmap);
+  current_framebuffer_canvas_ = std::make_unique<SkCanvas>(
+      bitmap, skia::LegacyDisplayGlobals::GetSkSurfaceProps());
   current_canvas_ = current_framebuffer_canvas_.get();
 }
 
@@ -876,7 +878,7 @@ sk_sp<SkShader> SoftwareRenderer::GetBackdropFilterShader(
   if (!bitmap.tryAllocPixels(info))
     base::TerminateBecauseOutOfMemory(info.computeMinByteSize());
 
-  SkCanvas canvas(bitmap);
+  SkCanvas canvas(bitmap, skia::LegacyDisplayGlobals::GetSkSurfaceProps());
 
   // Clip the filtered image to the (rounded) bounding box of the element.
   if (backdrop_filter_bounds) {

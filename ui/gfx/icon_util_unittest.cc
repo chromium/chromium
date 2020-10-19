@@ -443,7 +443,7 @@ TEST_F(IconUtilTest, TestTransparentIcon) {
   bitmap.allocN32Pixels(size, size, false);
   EXPECT_EQ(bitmap.alphaType(), kPremul_SkAlphaType);
   {
-    SkCanvas canvas(bitmap);
+    SkCanvas canvas(bitmap, SkSurfaceProps{});
     canvas.drawColor(SK_ColorWHITE);
     SkPaint paint;
     paint.setColor(semi_transparent_red);

@@ -13,6 +13,7 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/checked_math.h"
 #include "base/posix/eintr_wrapper.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/gfx/vsync_provider.h"
@@ -79,9 +80,10 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
     buffer_manager_->CreateShmBasedBuffer(
         std::move(fd_pair.fd), checked_length.ValueOrDie(), size, buffer_id_);
 
+    SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
     sk_surface_ = SkSurface::MakeRasterDirect(
         SkImageInfo::MakeN32Premul(size.width(), size.height()),
-        shm_mapping_.memory(), CalculateStride(size.width()));
+        shm_mapping_.memory(), CalculateStride(size.width()), &props);
     if (!sk_surface_)
       return false;
 

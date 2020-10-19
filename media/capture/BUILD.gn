@@ -98,6 +98,7 @@ source_set("capture_device_specific") {
     "//media/capture/mojom:image_capture_types",
     "//media/mojo/mojom",
     "//media/parsers",
+    "//skia",
     "//third_party/libyuv",
     "//ui/gfx",
   ]

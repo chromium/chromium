@@ -68,8 +68,7 @@ char kTSanDefaultSuppressions[] =
     "deadlock:cc::VideoLayerImpl::WillDraw\n"
 
     // http://crbug.com/328826
-    "race:gLCDOrder\n"
-    "race:gLCDOrientation\n"
+    "race:skia::(anonymous namespace)::g_pixel_geometry\n"
 
     // http://crbug.com/328868
     "race:PR_Lock\n"

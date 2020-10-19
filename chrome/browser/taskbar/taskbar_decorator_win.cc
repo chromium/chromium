@@ -23,6 +23,7 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "skia/ext/image_operations.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -79,7 +80,7 @@ void SetOverlayIcon(HWND hwnd,
     // way profile icons are rendered in the profile switcher.
     SkBitmap offscreen_bitmap;
     offscreen_bitmap.allocN32Pixels(kOverlayIconSize, kOverlayIconSize);
-    SkCanvas offscreen_canvas(offscreen_bitmap);
+    SkCanvas offscreen_canvas(offscreen_bitmap, SkSurfaceProps{});
     offscreen_canvas.clear(SK_ColorTRANSPARENT);
 
     static const SkRRect overlay_icon_clip =
@@ -131,7 +132,8 @@ void DrawTaskbarDecorationString(gfx::NativeWindow window,
   auto badge = std::make_unique<SkBitmap>();
   badge->allocN32Pixels(kOverlayIconSize, kOverlayIconSize);
 
-  SkCanvas canvas(*badge.get());
+  SkCanvas canvas(*badge.get(),
+                  skia::LegacyDisplayGlobals::GetSkSurfaceProps());
 
   SkPaint paint;
   paint.setAntiAlias(true);

@@ -47,6 +47,7 @@
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_feature_info.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
 #include "third_party/skia/include/core/SkFont.h"
@@ -368,7 +369,9 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
             context_provider->GrContext(),
             pool_resource.color_space().ToSkColorSpace(), mailbox_texture_id,
             backing->texture_target, pool_resource.size(),
-            pool_resource.format(), false /* can_use_lcd_text */,
+            pool_resource.format(),
+            skia::LegacyDisplayGlobals::ComputeSurfaceProps(
+                false /* can_use_lcd_text */),
             0 /* msaa_sample_count */);
         SkSurface* surface = scoped_surface.surface();
         if (!surface) {
@@ -395,8 +398,9 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     if (!staging_surface_ ||
         gfx::SkISizeToSize(staging_surface_->getCanvas()->getBaseLayerSize()) !=
             pool_resource.size()) {
+      SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
       staging_surface_ = SkSurface::MakeRasterN32Premul(
-          pool_resource.size().width(), pool_resource.size().height());
+          pool_resource.size().width(), pool_resource.size().height(), &props);
     }
 
     SkiaPaintCanvas canvas(staging_surface_->getCanvas());
@@ -435,8 +439,9 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
         pool_resource.size().width(), pool_resource.size().height());
     auto* backing =
         static_cast<HudSoftwareBacking*>(pool_resource.software_backing());
+    SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
     sk_sp<SkSurface> surface = SkSurface::MakeRasterDirect(
-        info, backing->shared_mapping.memory(), info.minRowBytes());
+        info, backing->shared_mapping.memory(), info.minRowBytes(), &props);
 
     SkiaPaintCanvas canvas(surface->getCanvas());
     DrawHudContents(&canvas);

@@ -429,7 +429,7 @@ void TestPlugin::DrawSceneSoftware(void* memory) {
       SkImageInfo::MakeN32Premul(rect_.width, rect_.height);
   SkBitmap bitmap;
   bitmap.installPixels(info, memory, info.minRowBytes());
-  SkCanvas canvas(bitmap);
+  SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.clear(background_color);
 
   if (scene_.primitive != PrimitiveNone) {

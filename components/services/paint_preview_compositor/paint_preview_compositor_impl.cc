@@ -17,6 +17,7 @@
 #include "components/paint_preview/common/serial_utils.h"
 #include "components/paint_preview/common/serialized_recording.h"
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -92,7 +93,7 @@ base::Optional<SkBitmap> CreateBitmap(sk_sp<SkPicture> skp,
           clip_rect.width(), clip_rect.height(), kOpaque_SkAlphaType))) {
     return base::nullopt;
   }
-  SkCanvas canvas(bitmap);
+  SkCanvas canvas(bitmap, skia::LegacyDisplayGlobals::GetSkSurfaceProps());
   SkMatrix matrix;
   matrix.setScaleTranslate(scale_factor, scale_factor, -clip_rect.x(),
                            -clip_rect.y());

@@ -13,6 +13,7 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/clear_for_opaque_raster.h"
 #include "cc/paint/scoped_raster_flags.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "ui/gfx/skia_util.h"
 
 namespace cc {
@@ -30,19 +31,6 @@ class ScopedFlagsOverride {
  private:
   PaintOp::SerializeOptions* options_;
 };
-
-// Copied from viz::ClientResourceProvider.
-SkSurfaceProps ComputeSurfaceProps(bool can_use_lcd_text) {
-  uint32_t flags = 0;
-  // Use unknown pixel geometry to disable LCD text.
-  SkSurfaceProps surface_props(flags, kUnknown_SkPixelGeometry);
-  if (can_use_lcd_text) {
-    // LegacyFontHost will get LCD text and skia figures out what type to use.
-    surface_props =
-        SkSurfaceProps(flags, SkSurfaceProps::kLegacyFontHost_InitType);
-  }
-  return surface_props;
-}
 
 PlaybackParams MakeParams(const SkCanvas* canvas) {
   // We don't use an ImageProvider here since the ops are played onto a no-draw
@@ -81,7 +69,8 @@ PaintOpBufferSerializer::PaintOpBufferSerializer(
               ? std::make_unique<SkTextBlobCacheDiffCanvas>(
                     kMaxExtent,
                     kMaxExtent,
-                    ComputeSurfaceProps(can_use_lcd_text),
+                    skia::LegacyDisplayGlobals::ComputeSurfaceProps(
+                        can_use_lcd_text),
                     strike_server,
                     std::move(color_space),
                     context_supports_distance_field_text)

@@ -1579,6 +1579,7 @@ source_set("unit_tests") {
     "//components/paint_preview/common:common",
     "//mojo/public/cpp/system",
     "//services/network/trust_tokens:test_support",
+    "//skia",
     "//skia:skcms",
     "//testing/gmock",
     "//testing/gtest",

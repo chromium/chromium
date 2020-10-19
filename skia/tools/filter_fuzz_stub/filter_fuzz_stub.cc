@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
 
   SkBitmap bitmap;
   bitmap.allocN32Pixels(BitmapSize, BitmapSize);
-  SkCanvas canvas(bitmap);
+  SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.clear(0x00000000);
 
   for (int i = 1; i < argc; i++)

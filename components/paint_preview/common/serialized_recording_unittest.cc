@@ -75,7 +75,7 @@ SkBitmap CreateBitmapFromPicture(const SkPicture* pic) {
   SkBitmap bitmap;
   bitmap.allocPixels(
       SkImageInfo::MakeN32Premul(cull_rect.width(), cull_rect.height()));
-  SkCanvas canvas(bitmap);
+  SkCanvas canvas(bitmap, SkSurfaceProps{});
   SkMatrix matrix;
   matrix.setScaleTranslate(1, 1, -cull_rect.x(), -cull_rect.y());
   canvas.drawPicture(pic, &matrix, nullptr);

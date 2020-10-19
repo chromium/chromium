@@ -34,6 +34,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
@@ -79,8 +80,7 @@ class ScopedSkSurfaceForUnpremultiplyAndDither {
                                                      intermediate_size.height(),
                                                      std::move(color_space));
     SkSurfaceProps surface_props =
-        viz::ClientResourceProvider::ScopedSkSurface::ComputeSurfaceProps(
-            can_use_lcd_text);
+        skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
     surface_ = SkSurface::MakeRenderTarget(
         context_provider->GrContext(), SkBudgeted::kNo, n32Info,
         msaa_sample_count, kTopLeft_GrSurfaceOrigin, &surface_props);
@@ -218,7 +218,9 @@ static void RasterizeSource(
     if (!unpremultiply_and_dither) {
       scoped_surface.emplace(context_provider->GrContext(), sk_color_space,
                              texture_id, texture_target, resource_size,
-                             resource_format, playback_settings.use_lcd_text,
+                             resource_format,
+                             skia::LegacyDisplayGlobals::ComputeSurfaceProps(
+                                 playback_settings.use_lcd_text),
                              playback_settings.msaa_sample_count);
       surface = scoped_surface->surface();
     } else {

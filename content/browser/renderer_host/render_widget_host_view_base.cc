@@ -243,7 +243,7 @@ void RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
                const gfx::Vector2d offset, const SkBitmap& main_image,
                const SkBitmap& popup_image) {
               // Draw popup_image into main_image.
-              SkCanvas canvas(main_image);
+              SkCanvas canvas(main_image, SkSurfaceProps{});
               canvas.drawBitmap(popup_image, offset.x(), offset.y());
               std::move(final_callback).Run(main_image);
             },

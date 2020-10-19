@@ -9,15 +9,16 @@
 #include <string.h>
 
 #include "base/debug/gdi_debug_util_win.h"
-#include "base/memory/ptr_util.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/win/win_util.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "skia/ext/platform_canvas.h"
 #include "skia/ext/skia_utils_win.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkPath.h"
-#include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkRect.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace {
 
@@ -143,7 +144,8 @@ std::unique_ptr<SkCanvas> CreatePlatformCanvasWithSharedSection(
       SkBitmap bitmap;
       if (bitmap.installPixels(info, pixels, row_bytes, unmap_view_proc,
                                nullptr)) {
-        return std::make_unique<SkCanvas>(bitmap);
+        return std::make_unique<SkCanvas>(
+            bitmap, LegacyDisplayGlobals::GetSkSurfaceProps());
       }
     }
   }

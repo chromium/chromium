@@ -19,6 +19,7 @@
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
 #include "skia/ext/benchmarking_canvas.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_array_buffer.h"
 #include "third_party/blink/public/web/web_array_buffer_converter.h"
@@ -199,7 +200,7 @@ void SkiaBenchmarking::Rasterize(gin::Arguments* args) {
     return;
   bitmap.eraseARGB(0, 0, 0, 0);
 
-  SkCanvas canvas(bitmap);
+  SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.translate(SkIntToScalar(-clip_rect.x()),
                    SkIntToScalar(-clip_rect.y()));
   canvas.clipRect(gfx::RectToSkRect(snapped_clip));
@@ -243,7 +244,9 @@ void SkiaBenchmarking::GetOps(gin::Arguments* args) {
   if (!picture.get())
     return;
 
-  SkCanvas canvas(picture->layer_rect.width(), picture->layer_rect.height());
+  SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
+  SkCanvas canvas(picture->layer_rect.width(), picture->layer_rect.height(),
+                  &props);
   skia::BenchmarkingCanvas benchmarking_canvas(&canvas);
   picture->picture->playback(&benchmarking_canvas);
 
@@ -268,14 +271,14 @@ void SkiaBenchmarking::GetOpTimings(gin::Arguments* args) {
   // Measure the total time by drawing straight into a bitmap-backed canvas.
   SkBitmap bitmap;
   bitmap.allocN32Pixels(bounds.width(), bounds.height());
-  SkCanvas bitmap_canvas(bitmap);
+  SkCanvas bitmap_canvas(bitmap, SkSurfaceProps{});
   bitmap_canvas.clear(SK_ColorTRANSPARENT);
   base::TimeTicks t0 = base::TimeTicks::Now();
   picture->picture->playback(&bitmap_canvas);
   base::TimeDelta total_time = base::TimeTicks::Now() - t0;
 
   // Gather per-op timing info by drawing into a BenchmarkingCanvas.
-  SkCanvas canvas(bitmap);
+  SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.clear(SK_ColorTRANSPARENT);
   skia::BenchmarkingCanvas benchmarking_canvas(&canvas);
   picture->picture->playback(&benchmarking_canvas);

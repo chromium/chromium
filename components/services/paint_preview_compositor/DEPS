@@ -5,6 +5,7 @@ include_rules = [
   "+content/public/child",  # Windows direct write proxy access.
   "+content/public/utility",
   "+mojo/public/cpp",
+  "+skia/ext",
   "+third_party/skia/include",
   "+ui/gfx/geometry",
 ]
