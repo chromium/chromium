@@ -73,6 +73,36 @@ void MoveMouseToAndUpdateCursorDisplay(
 
 }  // namespace
 
+// Wrapper for CaptureModeSession that exposes internal state to test functions.
+class CaptureModeSessionTestApi {
+ public:
+  explicit CaptureModeSessionTestApi(CaptureModeSession* session)
+      : session_(session) {}
+  CaptureModeSessionTestApi(const CaptureModeSessionTestApi&) = delete;
+  CaptureModeSessionTestApi& operator=(const CaptureModeSessionTestApi&) =
+      delete;
+  ~CaptureModeSessionTestApi() = default;
+
+  CaptureModeBarView* capture_mode_bar_view() const {
+    return session_->capture_mode_bar_view_;
+  }
+
+  views::Widget* capture_label_widget() const {
+    return session_->capture_label_widget_.get();
+  }
+
+  views::Widget* dimensions_label_widget() const {
+    return session_->dimensions_label_widget_.get();
+  }
+
+  const MagnifierGlass& magnifier_glass() const {
+    return session_->magnifier_glass_;
+  }
+
+ private:
+  const CaptureModeSession* const session_;
+};
+
 class CaptureModeTest : public AshTestBase {
  public:
   CaptureModeTest() = default;
@@ -86,29 +116,28 @@ class CaptureModeTest : public AshTestBase {
     AshTestBase::SetUp();
   }
 
+  CaptureModeBarView* GetCaptureModeBarView() const {
+    auto* session = CaptureModeController::Get()->capture_mode_session();
+    DCHECK(session);
+    return CaptureModeSessionTestApi(session).capture_mode_bar_view();
+  }
+
   CaptureModeToggleButton* GetImageToggleButton() const {
     auto* controller = CaptureModeController::Get();
     DCHECK(controller->IsActive());
-    return controller->capture_mode_session()
-        ->capture_mode_bar_view()
-        ->capture_type_view()
-        ->image_toggle_button();
+    return GetCaptureModeBarView()->capture_type_view()->image_toggle_button();
   }
 
   CaptureModeToggleButton* GetVideoToggleButton() const {
     auto* controller = CaptureModeController::Get();
     DCHECK(controller->IsActive());
-    return controller->capture_mode_session()
-        ->capture_mode_bar_view()
-        ->capture_type_view()
-        ->video_toggle_button();
+    return GetCaptureModeBarView()->capture_type_view()->video_toggle_button();
   }
 
   CaptureModeToggleButton* GetFullscreenToggleButton() const {
     auto* controller = CaptureModeController::Get();
     DCHECK(controller->IsActive());
-    return controller->capture_mode_session()
-        ->capture_mode_bar_view()
+    return GetCaptureModeBarView()
         ->capture_source_view()
         ->fullscreen_toggle_button();
   }
@@ -116,8 +145,7 @@ class CaptureModeTest : public AshTestBase {
   CaptureModeToggleButton* GetRegionToggleButton() const {
     auto* controller = CaptureModeController::Get();
     DCHECK(controller->IsActive());
-    return controller->capture_mode_session()
-        ->capture_mode_bar_view()
+    return GetCaptureModeBarView()
         ->capture_source_view()
         ->region_toggle_button();
   }
@@ -125,8 +153,7 @@ class CaptureModeTest : public AshTestBase {
   CaptureModeToggleButton* GetWindowToggleButton() const {
     auto* controller = CaptureModeController::Get();
     DCHECK(controller->IsActive());
-    return controller->capture_mode_session()
-        ->capture_mode_bar_view()
+    return GetCaptureModeBarView()
         ->capture_source_view()
         ->window_toggle_button();
   }
@@ -134,16 +161,14 @@ class CaptureModeTest : public AshTestBase {
   CaptureModeCloseButton* GetCloseButton() const {
     auto* controller = CaptureModeController::Get();
     DCHECK(controller->IsActive());
-    return controller->capture_mode_session()
-        ->capture_mode_bar_view()
-        ->close_button();
+    return GetCaptureModeBarView()->close_button();
   }
 
   aura::Window* GetDimensionsLabelWindow() const {
     auto* controller = CaptureModeController::Get();
     DCHECK(controller->IsActive());
-    auto* widget = controller->capture_mode_session()
-                       ->dimensions_label_widget_for_testing();
+    auto* widget = CaptureModeSessionTestApi(controller->capture_mode_session())
+                       .dimensions_label_widget();
     return widget ? widget->GetNativeWindow() : nullptr;
   }
 
@@ -151,7 +176,8 @@ class CaptureModeTest : public AshTestBase {
     auto* controller = CaptureModeController::Get();
     DCHECK(controller->IsActive());
     auto& magnifier =
-        controller->capture_mode_session()->magnifier_glass_for_testing();
+        CaptureModeSessionTestApi(controller->capture_mode_session())
+            .magnifier_glass();
     if (magnifier.host_widget_for_testing()) {
       return magnifier.host_widget_for_testing()
           ->GetWindowBoundsInScreen()
@@ -491,9 +517,7 @@ TEST_F(CaptureModeTest, CaptureRegionCoversCaptureModeBar) {
   // Select a region such that the capture mode bar is covered.
   SelectRegion(gfx::Rect(5, 5, 795, 795));
   EXPECT_TRUE(controller->user_capture_region().Contains(
-      controller->capture_mode_session()
-          ->capture_mode_bar_view()
-          ->GetBoundsInScreen()));
+      GetCaptureModeBarView()->GetBoundsInScreen()));
 
   // Click on the fullscreen toggle button to verify that we enter fullscreen
   // capture mode. Then click on the region toggle button to verify that we
@@ -505,9 +529,7 @@ TEST_F(CaptureModeTest, CaptureRegionCoversCaptureModeBar) {
   ClickOnView(GetRegionToggleButton(), GetEventGenerator());
   ASSERT_EQ(CaptureModeSource::kRegion, controller->source());
   ASSERT_TRUE(controller->user_capture_region().Contains(
-      controller->capture_mode_session()
-          ->capture_mode_bar_view()
-          ->GetBoundsInScreen()));
+      GetCaptureModeBarView()->GetBoundsInScreen()));
 
   ClickOnView(GetCloseButton(), event_generator);
   EXPECT_FALSE(controller->IsActive());
@@ -652,7 +674,8 @@ TEST_F(CaptureModeTest, CaptureRegionCaptureButtonLocation) {
   SelectRegion(gfx::Rect(100, 100, 600, 600));
 
   views::Widget* capture_button_widget =
-      controller->capture_mode_session()->capture_label_widget_for_testing();
+      CaptureModeSessionTestApi(controller->capture_mode_session())
+          .capture_label_widget();
   ASSERT_TRUE(capture_button_widget);
   aura::Window* capture_button_window =
       capture_button_widget->GetNativeWindow();
@@ -729,16 +752,13 @@ TEST_F(CaptureModeTest, MultiDisplayCaptureBarInitialLocation) {
 
   auto* controller = StartImageRegionCapture();
   EXPECT_TRUE(gfx::Rect(801, 0, 800, 800)
-                  .Contains(controller->capture_mode_session()
-                                ->capture_mode_bar_view()
-                                ->GetBoundsInScreen()));
+                  .Contains(GetCaptureModeBarView()->GetBoundsInScreen()));
   controller->Stop();
 
   MoveMouseToAndUpdateCursorDisplay(gfx::Point(100, 500), event_generator);
   StartImageRegionCapture();
-  EXPECT_TRUE(gfx::Rect(800, 800).Contains(controller->capture_mode_session()
-                                               ->capture_mode_bar_view()
-                                               ->GetBoundsInScreen()));
+  EXPECT_TRUE(gfx::Rect(800, 800).Contains(
+      GetCaptureModeBarView()->GetBoundsInScreen()));
 }
 
 // Tests behavior of a capture mode session if the active display is removed.
@@ -749,9 +769,8 @@ TEST_F(CaptureModeTest, DisplayRemoval) {
   MoveMouseToAndUpdateCursorDisplay(gfx::Point(1000, 500), GetEventGenerator());
   auto* controller = StartImageRegionCapture();
   auto* session = controller->capture_mode_session();
-  EXPECT_TRUE(
-      gfx::Rect(801, 0, 800, 800)
-          .Contains(session->capture_mode_bar_view()->GetBoundsInScreen()));
+  EXPECT_TRUE(gfx::Rect(801, 0, 800, 800)
+                  .Contains(GetCaptureModeBarView()->GetBoundsInScreen()));
   ASSERT_EQ(Shell::GetAllRootWindows()[1], session->current_root());
 
   // Remove secondary display.
@@ -768,7 +787,7 @@ TEST_F(CaptureModeTest, DisplayRemoval) {
 
   // Tests that the capture mode bar is now on the primary display.
   EXPECT_TRUE(gfx::Rect(800, 800).Contains(
-      session->capture_mode_bar_view()->GetBoundsInScreen()));
+      GetCaptureModeBarView()->GetBoundsInScreen()));
   ASSERT_EQ(Shell::GetAllRootWindows()[0], session->current_root());
 }
 
@@ -823,16 +842,13 @@ TEST_F(CaptureModeTest, MultiDisplayRegionSourceRootWindow) {
   // the primary display until the mouse is released.
   event_generator->PressLeftButton();
   EXPECT_EQ(Shell::GetAllRootWindows()[1], session->current_root());
-  EXPECT_TRUE(gfx::Rect(800, 800).Contains(controller->capture_mode_session()
-                                               ->capture_mode_bar_view()
-                                               ->GetBoundsInScreen()));
+  EXPECT_TRUE(gfx::Rect(800, 800).Contains(
+      GetCaptureModeBarView()->GetBoundsInScreen()));
 
   event_generator->ReleaseLeftButton();
   EXPECT_EQ(Shell::GetAllRootWindows()[1], session->current_root());
   EXPECT_TRUE(gfx::Rect(801, 0, 800, 800)
-                  .Contains(controller->capture_mode_session()
-                                ->capture_mode_bar_view()
-                                ->GetBoundsInScreen()));
+                  .Contains(GetCaptureModeBarView()->GetBoundsInScreen()));
 }
 
 TEST_F(CaptureModeTest, RegionCursorStates) {

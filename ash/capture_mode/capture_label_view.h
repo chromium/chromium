@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/weak_ptr.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -28,8 +27,7 @@ class CaptureModeSession;
 // A view that displays (optional) icon and text message to the user depending
 // on current capture source and type. In video capture mode, it will later
 // transform into a 3 second countdown timer.
-class ASH_EXPORT CaptureLabelView : public views::View,
-                                    public views::ButtonListener {
+class ASH_EXPORT CaptureLabelView : public views::View {
  public:
   METADATA_HEADER(CaptureLabelView);
 
@@ -56,9 +54,6 @@ class ASH_EXPORT CaptureLabelView : public views::View,
   void Layout() override;
   gfx::Size CalculatePreferredSize() const override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
  private:
   // Start performing countdown to number |timout_count_down_| animation.
   void ScheduleCountDownAnimation();
@@ -70,6 +65,9 @@ class ASH_EXPORT CaptureLabelView : public views::View,
   void StartLabelLayerAnimationSequences();
   // Starts the layer animation sequences for the entire widget if applicable.
   void StartWidgetLayerAnimationSequences();
+
+  // Called when |label_button_| is pressed.
+  void OnButtonPressed();
 
   // The label button that displays an icon and a text message. Can be user
   // interactable. When clicking/tapping on the button, start perform image or

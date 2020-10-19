@@ -59,9 +59,6 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   static constexpr int kCaptureButtonDistanceFromRegionDp = 24;
 
   aura::Window* current_root() const { return current_root_; }
-  CaptureModeBarView* capture_mode_bar_view() const {
-    return capture_mode_bar_view_;
-  }
   bool is_selecting_region() const { return is_selecting_region_; }
 
   // Gets the current window selected for |kWindow| capture source. Returns
@@ -92,17 +89,8 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
 
-  views::Widget* capture_label_widget_for_testing() const {
-    return capture_label_widget_.get();
-  }
-  views::Widget* dimensions_label_widget_for_testing() const {
-    return dimensions_label_widget_.get();
-  }
-  const MagnifierGlass& magnifier_glass_for_testing() const {
-    return magnifier_glass_;
-  }
-
  private:
+  friend class CaptureModeSessionTestApi;
   class ScopedCursorSetter;
 
   // Gets the bounds of current window selected for |kWindow| capture source.
