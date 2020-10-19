@@ -54,41 +54,6 @@ class TabCaptureApiTest : public ExtensionApiTest {
         switches::kAllowlistedExtensionID, kExtensionId);
   }
 
-  content::WebContents* OpenNewTab(const char* url) {
-    const content::OpenURLParams params(
-        GURL(url), content::Referrer(),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
-        false);
-    content::WebContents* web_contents = browser()->OpenURL(params);
-    CHECK(web_contents) << "Failed to open new tab";
-
-    return web_contents;
-  }
-
-  void GrantActiveTabPermission(content::WebContents* web_contents) {
-    const Extension* extension =
-        ExtensionRegistry::Get(web_contents->GetBrowserContext())
-            ->enabled_extensions()
-            .GetByID(kExtensionId);
-    ASSERT_TRUE(extension) << "Failed to get extension from registry";
-    TabHelper::FromWebContents(web_contents)
-        ->active_tab_permission_granter()
-        ->GrantIfRequested(extension);
-  }
-
-  void ResultCatcherExpectSuccess() {
-    ResultCatcher catcher;
-    catcher.RestrictToBrowserContext(browser()->profile());
-    EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
-
-    content::WebContents* const current_tab =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    ASSERT_TRUE(current_tab);
-    TabHelper::FromWebContents(current_tab)
-        ->active_tab_permission_granter()
-        ->RevokeForTesting();
-  }
-
  protected:
   void SimulateMouseClickInCurrentTab() {
     content::SimulateMouseClick(
@@ -267,14 +232,20 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, GetUserMediaTest) {
 
   EXPECT_TRUE(listener.WaitUntilSatisfied());
 
-  content::WebContents* web_contents = OpenNewTab(url::kAboutBlankURL);
+  content::OpenURLParams params(GURL(url::kAboutBlankURL), content::Referrer(),
+                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                ui::PAGE_TRANSITION_LINK, false);
+  content::WebContents* web_contents = browser()->OpenURL(params);
+
   content::RenderFrameHost* const main_frame = web_contents->GetMainFrame();
   ASSERT_TRUE(main_frame);
   listener.Reply(base::StringPrintf("web-contents-media-stream://%i:%i",
                                     main_frame->GetProcess()->GetID(),
                                     main_frame->GetRoutingID()));
 
-  ResultCatcherExpectSuccess();
+  ResultCatcher catcher;
+  catcher.RestrictToBrowserContext(browser()->profile());
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
 // Make sure tabCapture.capture only works if the tab has been granted
@@ -291,17 +262,25 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, ActiveTabPermission) {
 
   // Open a new tab and make sure capture is denied.
   EXPECT_TRUE(before_open_tab.WaitUntilSatisfied());
-  content::WebContents* web_contents = OpenNewTab(url::kAboutBlankURL);
+  content::OpenURLParams params(GURL(url::kAboutBlankURL), content::Referrer(),
+                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                ui::PAGE_TRANSITION_LINK, false);
+  content::WebContents* web_contents = browser()->OpenURL(params);
+  ASSERT_TRUE(web_contents) << "Failed to open new tab";
   before_open_tab.Reply("");
 
   // Grant permission and make sure capture succeeds.
   EXPECT_TRUE(before_grant_permission.WaitUntilSatisfied());
-  GrantActiveTabPermission(web_contents);
+  const Extension* extension = ExtensionRegistry::Get(
+      web_contents->GetBrowserContext())->enabled_extensions().GetByID(
+          kExtensionId);
+  TabHelper::FromWebContents(web_contents)
+      ->active_tab_permission_granter()->GrantIfRequested(extension);
   before_grant_permission.Reply("");
 
   // Open a new tab and make sure capture is denied.
   EXPECT_TRUE(before_open_new_tab.WaitUntilSatisfied());
-  OpenNewTab(url::kAboutBlankURL);
+  browser()->OpenURL(params);
   before_open_new_tab.Reply("");
 
   // Add extension to allowlist and make sure capture succeeds.
@@ -309,7 +288,9 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, ActiveTabPermission) {
   AddExtensionToCommandLineAllowlist();
   before_allowlist_extension.Reply("");
 
-  ResultCatcherExpectSuccess();
+  ResultCatcher catcher;
+  catcher.RestrictToBrowserContext(browser()->profile());
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
 // Tests that fullscreen transitions during a tab capture session dispatch
@@ -335,27 +316,40 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, FullscreenEvents) {
   SimulateMouseClickInCurrentTab();
 
   // Wait until the page examines its results and calls chrome.test.succeed().
-  ResultCatcherExpectSuccess();
+  ResultCatcher catcher;
+  catcher.RestrictToBrowserContext(browser()->profile());
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
 // Make sure tabCapture API can be granted for Chrome:// pages.
-IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, GrantForChromePages) {
+// Disabled due to flakes on macOS; see https://crbug.com/1134562.
+#if defined(OS_MAC)
+#define MAYBE_GrantForChromePages DISABLED_GrantForChromePages
+#else
+#define MAYBE_GrantForChromePages GrantForChromePages
+#endif
+IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MAYBE_GrantForChromePages) {
   ExtensionTestMessageListener before_open_tab("ready1", true);
-  ExtensionTestMessageListener before_grant_permission("ready2", true);
   ASSERT_TRUE(RunExtensionSubtest("tab_capture",
                                   "active_tab_chrome_pages.html"))
       << message_;
-
   EXPECT_TRUE(before_open_tab.WaitUntilSatisfied());
-  content::WebContents* web_contents = OpenNewTab(kValidChromeURL);
+
+  // Open a tab on a chrome:// page and make sure we can capture.
+  content::OpenURLParams params(GURL(kValidChromeURL), content::Referrer(),
+                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                ui::PAGE_TRANSITION_LINK, false);
+  content::WebContents* web_contents = browser()->OpenURL(params);
+  const Extension* extension = ExtensionRegistry::Get(
+      web_contents->GetBrowserContext())->enabled_extensions().GetByID(
+          kExtensionId);
+  TabHelper::FromWebContents(web_contents)
+      ->active_tab_permission_granter()->GrantIfRequested(extension);
   before_open_tab.Reply("");
 
-  // Grant permission and make sure capture succeeds.
-  EXPECT_TRUE(before_grant_permission.WaitUntilSatisfied());
-  GrantActiveTabPermission(web_contents);
-  before_grant_permission.Reply("");
-
-  ResultCatcherExpectSuccess();
+  ResultCatcher catcher;
+  catcher.RestrictToBrowserContext(browser()->profile());
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
 // Tests that a tab in incognito mode can be captured.
