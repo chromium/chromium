@@ -71,7 +71,8 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   if (layout_view_.StyleRef().Visibility() != EVisibility::kVisible)
     return;
 
-  bool has_touch_action_rect = layout_view_.HasEffectiveAllowedTouchAction();
+  bool has_hit_test_data = layout_view_.HasEffectiveAllowedTouchAction() ||
+                           layout_view_.InsideBlockingWheelEventHandler();
   bool painting_scrolling_background =
       BoxDecorationData::IsPaintingScrollingBackground(paint_info,
                                                        layout_view_);
@@ -94,7 +95,7 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
     }
   }
 
-  if (!layout_view_.HasBoxDecorationBackground() && !has_touch_action_rect &&
+  if (!layout_view_.HasBoxDecorationBackground() && !has_hit_test_data &&
       !paints_scroll_hit_test)
     return;
 
@@ -195,7 +196,7 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
                           *background_client, painted_separate_backdrop,
                           painted_separate_effect);
   }
-  if (has_touch_action_rect) {
+  if (has_hit_test_data) {
     BoxPainter(layout_view_)
         .RecordHitTestData(paint_info,
                            PhysicalRect(pixel_snapped_background_rect),

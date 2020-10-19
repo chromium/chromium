@@ -286,7 +286,8 @@ void BoxPainter::RecordHitTestData(const PaintInfo& paint_info,
 
   paint_info.context.GetPaintController().RecordHitTestData(
       background_client, PixelSnappedIntRect(paint_rect),
-      layout_box_.EffectiveAllowedTouchAction());
+      layout_box_.EffectiveAllowedTouchAction(),
+      layout_box_.InsideBlockingWheelEventHandler());
 }
 
 void BoxPainter::RecordScrollHitTestData(

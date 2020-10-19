@@ -57,7 +57,8 @@ void BlockFlowPaintInvalidator::InvalidateDisplayItemClients(
   if (cursor) {
     // Line boxes record hit test data (see NGBoxFragmentPainter::PaintLineBox)
     // and should be invalidated if they change.
-    bool invalidate_all_lines = block_flow_.HasEffectiveAllowedTouchAction();
+    bool invalidate_all_lines = block_flow_.HasEffectiveAllowedTouchAction() ||
+                                block_flow_.InsideBlockingWheelEventHandler();
 
     for (cursor.MoveToFirstLine(); cursor; cursor.MoveToNextLine()) {
       // The first line NGLineBoxFragment paints the ::first-line background.

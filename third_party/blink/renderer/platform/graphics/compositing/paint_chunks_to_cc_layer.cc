@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_chunks_to_cc_layer.h"
 
 #include "base/numerics/safe_conversions.h"
+#include "cc/base/features.h"
 #include "cc/layers/layer.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_op_buffer.h"
@@ -849,6 +850,22 @@ static void UpdateTouchActionRegion(
   }
 }
 
+static void UpdateWheelEventRegion(const HitTestData& hit_test_data,
+                                   const PropertyTreeState& layer_state,
+                                   const PropertyTreeState& chunk_state,
+                                   const FloatPoint& layer_offset,
+                                   cc::Region& wheel_event_region) {
+  for (const auto& wheel_event_rect : hit_test_data.wheel_event_rects) {
+    auto rect = FloatClipRect(FloatRect(wheel_event_rect));
+    if (!GeometryMapper::LocalToAncestorVisualRect(chunk_state, layer_state,
+                                                   rect)) {
+      continue;
+    }
+    rect.MoveBy(-layer_offset);
+    wheel_event_region.Union(gfx::Rect(EnclosingIntRect(rect.Rect())));
+  }
+}
+
 static void UpdateNonFastScrollableRegion(
     cc::Layer& layer,
     const HitTestData& hit_test_data,
@@ -892,7 +909,7 @@ static void UpdateNonFastScrollableRegion(
   non_fast_scrollable_region.Union(EnclosingIntRect(rect.Rect()));
 }
 
-static void UpdateTouchActionAndNonFastScrollableRegions(
+static void UpdateTouchActionWheelEventHandlerAndNonFastScrollableRegions(
     cc::Layer& layer,
     const PropertyTreeState& layer_state,
     const PaintChunkSubset& chunks,
@@ -900,6 +917,7 @@ static void UpdateTouchActionAndNonFastScrollableRegions(
   gfx::Vector2dF cc_layer_offset = layer.offset_to_transform_parent();
   FloatPoint layer_offset(cc_layer_offset.x(), cc_layer_offset.y());
   cc::TouchActionRegion touch_action_region;
+  cc::Region wheel_event_region;
   cc::Region non_fast_scrollable_region;
   for (const auto& chunk : chunks) {
     if (!chunk.hit_test_data)
@@ -907,11 +925,17 @@ static void UpdateTouchActionAndNonFastScrollableRegions(
     auto chunk_state = chunk.properties.GetPropertyTreeState().Unalias();
     UpdateTouchActionRegion(*chunk.hit_test_data, layer_state, chunk_state,
                             layer_offset, touch_action_region);
+    if (base::FeatureList::IsEnabled(::features::kWheelEventRegions)) {
+      UpdateWheelEventRegion(*chunk.hit_test_data, layer_state, chunk_state,
+                             layer_offset, wheel_event_region);
+    }
     UpdateNonFastScrollableRegion(
         layer, *chunk.hit_test_data, layer_state, chunk_state, layer_offset,
         property_tree_manager, non_fast_scrollable_region);
   }
   layer.SetTouchActionRegion(std::move(touch_action_region));
+  if (base::FeatureList::IsEnabled(::features::kWheelEventRegions))
+    layer.SetWheelEventRegion(std::move(wheel_event_region));
   layer.SetNonFastScrollableRegion(std::move(non_fast_scrollable_region));
 }
 
@@ -921,8 +945,8 @@ void PaintChunksToCcLayer::UpdateLayerProperties(
     const PaintChunkSubset& chunks,
     PropertyTreeManager* property_tree_manager) {
   UpdateBackgroundColor(layer, chunks);
-  UpdateTouchActionAndNonFastScrollableRegions(layer, layer_state, chunks,
-                                               property_tree_manager);
+  UpdateTouchActionWheelEventHandlerAndNonFastScrollableRegions(
+      layer, layer_state, chunks, property_tree_manager);
 }
 
 }  // namespace blink

@@ -690,7 +690,13 @@ structures:
    areas of the page that disallow touch events due to blocking touch event
    handlers.
 
-3. [`HitTestData::scroll_translation`](../../platform/graphics/paint/hit_test_data.h)
+3. [`HitTestData::wheel_event_rects`](../../platform/graphics/paint/hit_test_data.h)
+
+   Used for [wheel event handler regions](https://docs.google.com/document/d/1ar4WhVnLA-fmw6atgP-23iq-ys_NfFoGb3LA5AgaylA/view)
+      which are areas of the page that disallow default wheel event processing
+      due to blocking wheel event handlers.
+
+4. [`HitTestData::scroll_translation`](../../platform/graphics/paint/hit_test_data.h)
    and
    [`HitTestData::scroll_hit_test_rect`](../../platform/graphics/paint/hit_test_data.h)
 

@@ -33,6 +33,7 @@
 #include <utility>
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "cc/base/features.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
@@ -4453,10 +4454,12 @@ void LayoutObject::ClearPaintFlags() {
   ClearPaintInvalidationFlags();
   bitfields_.SetNeedsPaintPropertyUpdate(false);
   bitfields_.SetEffectiveAllowedTouchActionChanged(false);
+  bitfields_.SetBlockingWheelEventHandlerChanged(false);
 
   if (!ChildPrePaintBlockedByDisplayLock()) {
     bitfields_.SetDescendantNeedsPaintPropertyUpdate(false);
     bitfields_.SetDescendantEffectiveAllowedTouchActionChanged(false);
+    bitfields_.SetDescendantBlockingWheelEventHandlerChanged(false);
     bitfields_.ResetSubtreePaintPropertyUpdateReasons();
   }
 }
@@ -4533,6 +4536,27 @@ void LayoutObject::MarkEffectiveAllowedTouchActionChanged() {
   LayoutObject* obj = ParentCrossingFrames();
   while (obj && !obj->DescendantEffectiveAllowedTouchActionChanged()) {
     obj->bitfields_.SetDescendantEffectiveAllowedTouchActionChanged(true);
+    if (obj->ChildPrePaintBlockedByDisplayLock())
+      break;
+
+    obj = obj->ParentCrossingFrames();
+  }
+}
+
+void LayoutObject::MarkBlockingWheelEventHandlerChanged() {
+  DCHECK(base::FeatureList::IsEnabled(::features::kWheelEventRegions));
+  bitfields_.SetBlockingWheelEventHandlerChanged(true);
+  // If we're locked, mark our descendants as needing this change. This is used
+  // as a signal to ensure we mark the element as needing wheel event handler
+  // recalculation when the element becomes unlocked.
+  if (ChildPrePaintBlockedByDisplayLock()) {
+    bitfields_.SetDescendantBlockingWheelEventHandlerChanged(true);
+    return;
+  }
+
+  LayoutObject* obj = ParentCrossingFrames();
+  while (obj && !obj->DescendantBlockingWheelEventHandlerChanged()) {
+    obj->bitfields_.SetDescendantBlockingWheelEventHandlerChanged(true);
     if (obj->ChildPrePaintBlockedByDisplayLock())
       break;
 

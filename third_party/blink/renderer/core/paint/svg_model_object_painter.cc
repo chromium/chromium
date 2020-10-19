@@ -37,7 +37,8 @@ void SVGModelObjectPainter::RecordHitTestData(const LayoutObject& svg_object,
   paint_info.context.GetPaintController().RecordHitTestData(
       svg_object,
       EnclosingIntRect(svg_object.VisualRectInLocalSVGCoordinates()),
-      svg_object.EffectiveAllowedTouchAction());
+      svg_object.EffectiveAllowedTouchAction(),
+      svg_object.InsideBlockingWheelEventHandler());
 }
 
 void SVGModelObjectPainter::PaintOutline(const PaintInfo& paint_info) {

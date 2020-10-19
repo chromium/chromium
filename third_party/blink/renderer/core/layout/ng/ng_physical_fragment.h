@@ -386,6 +386,9 @@ class CORE_EXPORT NGPhysicalFragment
   // (from style) and blocking touch event handlers.
   TouchAction EffectiveAllowedTouchAction() const;
 
+  // Returns if this fragment is inside a non-passive wheel event handler.
+  bool InsideBlockingWheelEventHandler() const;
+
   // Returns the bidi level of a text or atomic inline fragment.
   UBiDiLevel BidiLevel() const;
 

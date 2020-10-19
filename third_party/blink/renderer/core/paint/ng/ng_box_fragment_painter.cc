@@ -972,7 +972,8 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
   if (ShouldRecordHitTestData(paint_info)) {
     paint_info.context.GetPaintController().RecordHitTestData(
         *background_client, PixelSnappedIntRect(paint_rect),
-        PhysicalFragment().EffectiveAllowedTouchAction());
+        PhysicalFragment().EffectiveAllowedTouchAction(),
+        PhysicalFragment().InsideBlockingWheelEventHandler());
   }
 
   bool needs_scroll_hit_test = true;
@@ -1359,7 +1360,8 @@ inline void NGBoxFragmentPainter::PaintLineBox(
     border_box.offset += child_offset;
     paint_info.context.GetPaintController().RecordHitTestData(
         display_item_client, PixelSnappedIntRect(border_box),
-        PhysicalFragment().EffectiveAllowedTouchAction());
+        PhysicalFragment().EffectiveAllowedTouchAction(),
+        PhysicalFragment().InsideBlockingWheelEventHandler());
   }
 
   // Paint the background of the `::first-line` line box.

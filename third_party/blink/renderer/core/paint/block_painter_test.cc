@@ -4,8 +4,11 @@
 
 #include "third_party/blink/renderer/core/paint/block_painter.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "cc/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
@@ -48,6 +51,296 @@ TEST_P(BlockPainterTest, OverflowRectCompositedScrollingForCullRectTesting) {
   auto* scroller = To<LayoutBlock>(GetLayoutObjectByElementId("scroller"));
   EXPECT_EQ(PhysicalRect(0, 0, 50, 5000),
             BlockPainter(*scroller).OverflowRectForCullRectTesting(false));
+}
+namespace {
+class BlockPainterTestMockEventListener final : public NativeEventListener {
+ public:
+  void Invoke(ExecutionContext*, Event*) override {}
+};
+
+void SetWheelEventListener(const Document& document, const char* element_id) {
+  auto* element = document.getElementById(element_id);
+  auto* listener = MakeGarbageCollected<BlockPainterTestMockEventListener>();
+  auto* resolved_options =
+      MakeGarbageCollected<AddEventListenerOptionsResolved>();
+  resolved_options->setPassive(false);
+  element->addEventListener(event_type_names::kWheel, listener,
+                            resolved_options);
+  document.View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  document.View()->RunPostLifecycleSteps();
+}
+}  // namespace
+
+TEST_P(BlockPainterTest, BlockingWheelRectsWithoutPaint) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      ::-webkit-scrollbar { display: none; }
+      body { margin: 0; }
+      #parent { width: 100px; height: 100px; }
+      #childVisible { width: 200px; height: 25px; }
+      #childHidden { width: 200px; height: 30px; visibility: hidden; }
+      #childDisplayNone { width: 200px; height: 30px; display: none; }
+    </style>
+    <div id='parent'>
+      <div id='childVisible'></div>
+      <div id='childHidden'></div>
+    </div>
+  )HTML");
+
+  // Initially there should be no hit test data because there is no blocking
+  // wheel handler.
+  EXPECT_THAT(ContentDisplayItems(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM));
+  EXPECT_THAT(ContentPaintChunks(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON));
+
+  // Add a blocking wheel event handler to parent and ensure that hit test data
+  // are created for both the parent and the visible child.
+  SetWheelEventListener(GetDocument(), "parent");
+
+  EXPECT_THAT(ContentDisplayItems(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM));
+
+  HitTestData hit_test_data;
+  hit_test_data.wheel_event_rects = {{IntRect(0, 0, 100, 100)},
+                                     {IntRect(0, 0, 200, 25)}};
+  ContentPaintChunks(),
+      ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK(1, &hit_test_data));
+
+  // Remove the blocking wheel event handler from parent and ensure no hit test
+  // data are left.
+  auto* parent_element = GetElementById("parent");
+  parent_element->RemoveAllEventListeners();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_THAT(ContentDisplayItems(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM));
+  EXPECT_THAT(ContentPaintChunks(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON));
+}
+
+TEST_P(BlockPainterTest, BlockingWheelEventRectSubsequenceCaching) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #stacking-context {
+        position: absolute;
+        z-index: 1;
+      }
+      #wheelhandler {
+        width: 100px;
+        height: 100px;
+      }
+    </style>
+    <div id='stacking-context'>
+      <div id='wheelhandler'></div>
+    </div>
+  )HTML");
+
+  SetWheelEventListener(GetDocument(), "wheelhandler");
+
+  const auto* wheelhandler = GetLayoutObjectByElementId("wheelhandler");
+  EXPECT_THAT(ContentDisplayItems(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM));
+
+  const auto& hit_test_client =
+      *ToLayoutBox(GetLayoutObjectByElementId("stacking-context"))->Layer();
+  EXPECT_SUBSEQUENCE_FROM_CHUNK(hit_test_client,
+                                ContentPaintChunks().begin() + 1, 1);
+
+  PaintChunk::Id hit_test_chunk_id(hit_test_client, DisplayItem::kLayerChunk);
+  auto hit_test_chunk_properties = wheelhandler->EnclosingLayer()
+                                       ->GetLayoutObject()
+                                       .FirstFragment()
+                                       .ContentsProperties();
+  HitTestData hit_test_data;
+  hit_test_data.wheel_event_rects = {{IntRect(0, 0, 100, 100)}};
+
+  EXPECT_THAT(
+      ContentPaintChunks(),
+      ElementsAre(
+          VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+          IsPaintChunk(1, 1, hit_test_chunk_id, hit_test_chunk_properties,
+                       &hit_test_data, IntRect(0, 0, 100, 100))));
+
+  // Trigger a repaint with the whole stacking-context subsequence cached.
+  GetLayoutView().Layer()->SetNeedsRepaint();
+  CachedItemAndSubsequenceCounter counter;
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(1u, counter.NumNewCachedItems());
+  EXPECT_EQ(1u, counter.NumNewCachedSubsequences());
+
+  EXPECT_SUBSEQUENCE_FROM_CHUNK(hit_test_client,
+                                ContentPaintChunks().begin() + 1, 1);
+
+  EXPECT_THAT(
+      ContentPaintChunks(),
+      ElementsAre(
+          VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+          IsPaintChunk(1, 1, hit_test_chunk_id, hit_test_chunk_properties,
+                       &hit_test_data, IntRect(0, 0, 100, 100))));
+}
+
+TEST_P(BlockPainterTest, WheelEventRectPaintCaching) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #wheelhandler {
+        width: 100px;
+        height: 100px;
+      }
+      #sibling {
+        width: 100px;
+        height: 100px;
+        background: blue;
+      }
+    </style>
+    <div id='wheelhandler'></div>
+    <div id='sibling'></div>
+  )HTML");
+
+  SetWheelEventListener(GetDocument(), "wheelhandler");
+
+  auto* sibling_element = GetElementById("sibling");
+  const auto* sibling = sibling_element->GetLayoutObject();
+  EXPECT_THAT(ContentDisplayItems(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
+                          IsSameId(sibling, kBackgroundType)));
+
+  HitTestData hit_test_data;
+  hit_test_data.wheel_event_rects = {{IntRect(0, 0, 100, 100)}};
+
+  EXPECT_THAT(ContentPaintChunks(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK(2, &hit_test_data)));
+
+  sibling_element->setAttribute(html_names::kStyleAttr, "background: green;");
+  CachedItemAndSubsequenceCounter counter;
+  UpdateAllLifecyclePhasesForTest();
+  // Only the background display item of the sibling should be invalidated.
+  EXPECT_EQ(1u, counter.NumNewCachedItems());
+
+  EXPECT_THAT(ContentPaintChunks(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK(2, &hit_test_data)));
+}
+
+TEST_P(BlockPainterTest, BlockingWheelRectScrollingContents) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      ::-webkit-scrollbar { display: none; }
+      body { margin: 0; }
+      #scroller {
+        width: 100px;
+        height: 100px;
+        overflow: scroll;
+        will-change: transform;
+        background-color: blue;
+      }
+      #child {
+        width: 10px;
+        height: 400px;
+      }
+    </style>
+    <div id='scroller'>
+      <div id='child'></div>
+    </div>
+  )HTML");
+
+  auto* scroller_element = GetElementById("scroller");
+  auto* scroller = ToLayoutBoxModelObject(scroller_element->GetLayoutObject());
+  const auto& scroller_scrolling_client =
+      scroller->GetScrollableArea()->GetScrollingBackgroundDisplayItemClient();
+
+  SetWheelEventListener(GetDocument(), "scroller");
+
+  HitTestData hit_test_data;
+  hit_test_data.wheel_event_rects = {{IntRect(0, 0, 100, 400)},
+                                     {IntRect(0, 0, 10, 400)}};
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    EXPECT_THAT(
+        ContentDisplayItems(),
+        ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
+                    IsSameId(scroller, kBackgroundType),
+                    IsSameId(&scroller_scrolling_client, kBackgroundType)));
+    EXPECT_THAT(
+        ContentPaintChunks(),
+        ElementsAre(
+            VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+            IsPaintChunk(1, 2),  // scroller background.
+            IsPaintChunk(2, 2),  // scroller scroll hit test.
+            IsPaintChunk(
+                2, 3, PaintChunk::Id(*scroller, kScrollingBackgroundChunkType),
+                scroller->FirstFragment().ContentsProperties(),
+                &hit_test_data)));
+
+  } else {
+    EXPECT_THAT(ContentDisplayItems(),
+                ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM));
+    EXPECT_THAT(ContentPaintChunks(),
+                ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON));
+
+    auto& scroller_paint_controller = scroller->GetScrollableArea()
+                                          ->Layer()
+                                          ->GraphicsLayerBacking()
+                                          ->GetPaintController();
+    EXPECT_THAT(
+        scroller_paint_controller.GetDisplayItemList(),
+        ElementsAre(IsSameId(&scroller_scrolling_client, kBackgroundType)));
+    EXPECT_THAT(
+        scroller_paint_controller.PaintChunks(),
+        ElementsAre(IsPaintChunk(
+            0, 1, PaintChunk::Id(*scroller, kScrollingBackgroundChunkType),
+            scroller->FirstFragment().ContentsProperties(), &hit_test_data)));
+  }
+}
+
+TEST_P(BlockPainterTest, WheelEventRectPaintChunkChanges) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #wheelevent {
+        width: 100px;
+        height: 100px;
+      }
+    </style>
+    <div id='wheelevent'></div>
+  )HTML");
+
+  auto* wheelevent_element = GetElementById("wheelevent");
+  auto* wheelevent = wheelevent_element->GetLayoutObject();
+  EXPECT_THAT(ContentDisplayItems(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM));
+
+  EXPECT_THAT(ContentPaintChunks(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON));
+
+  SetWheelEventListener(GetDocument(), "wheelevent");
+
+  EXPECT_THAT(ContentDisplayItems(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM));
+
+  PaintChunk::Id hit_test_chunk_id(*wheelevent->EnclosingLayer(),
+                                   kNonScrollingBackgroundChunkType);
+  HitTestData hit_test_data;
+  hit_test_data.wheel_event_rects = {{IntRect(0, 0, 100, 100)}};
+
+  EXPECT_THAT(ContentPaintChunks(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK(1, &hit_test_data)));
+
+  wheelevent_element->RemoveAllEventListeners();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_THAT(ContentDisplayItems(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM));
+  EXPECT_THAT(ContentPaintChunks(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON));
 }
 
 TEST_P(BlockPainterTest, TouchActionRectsWithoutPaint) {

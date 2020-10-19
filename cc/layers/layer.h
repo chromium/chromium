@@ -451,6 +451,16 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
     return inputs_.touch_action_region;
   }
 
+  // Set or get the set of blocking wheel rects of this layer. The
+  // |wheel_event_region| is the set of rects for which there is a non-passive
+  // wheel event listener that paints into this layer. Mouse wheel messages
+  // that intersect these rects must execute their relevant JS handler before we
+  // can start scrolling.
+  void SetWheelEventRegion(Region wheel_event_region);
+  const Region& wheel_event_region() const {
+    return inputs_.wheel_event_region;
+  }
+
   // For layer tree mode only.
   // In layer list mode, use ScrollTree::SetScrollCallbacks() instead.
   // Sets a RepeatingCallback that is run during a main frame, before layers are
@@ -834,6 +844,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
 
     Region non_fast_scrollable_region;
     TouchActionRegion touch_action_region;
+    Region wheel_event_region;
 
     ElementId element_id;
   };

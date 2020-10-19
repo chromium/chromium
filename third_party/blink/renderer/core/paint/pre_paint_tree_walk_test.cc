@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/paint/pre_paint_tree_walk.h"
+#include "base/test/scoped_feature_list.h"
+#include "cc/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -405,6 +407,62 @@ TEST_P(PrePaintTreeWalkTest, EffectiveTouchActionStyleUpdate) {
   EXPECT_FALSE(ancestor.DescendantEffectiveAllowedTouchActionChanged());
   EXPECT_FALSE(touchaction.DescendantEffectiveAllowedTouchActionChanged());
   EXPECT_FALSE(descendant.DescendantEffectiveAllowedTouchActionChanged());
+}
+
+TEST_P(PrePaintTreeWalkTest, InsideBlockingWheelEventHandlerUpdate) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
+  SetBodyInnerHTML(R"HTML(
+    <div id='ancestor' style='width: 100px; height: 100px;'>
+      <div id='handler' style='width: 100px; height: 100px;'>
+        <div id='descendant' style='width: 100px; height: 100px;'>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  auto& ancestor = *GetLayoutObjectByElementId("ancestor");
+  auto& handler = *GetLayoutObjectByElementId("handler");
+  auto& descendant = *GetLayoutObjectByElementId("descendant");
+
+  EXPECT_FALSE(ancestor.BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(handler.BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(descendant.BlockingWheelEventHandlerChanged());
+
+  EXPECT_FALSE(ancestor.DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(handler.DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(descendant.DescendantBlockingWheelEventHandlerChanged());
+
+  EXPECT_FALSE(ancestor.InsideBlockingWheelEventHandler());
+  EXPECT_FALSE(handler.InsideBlockingWheelEventHandler());
+  EXPECT_FALSE(descendant.InsideBlockingWheelEventHandler());
+
+  PrePaintTreeWalkMockEventListener* callback =
+      MakeGarbageCollected<PrePaintTreeWalkMockEventListener>();
+  auto* handler_element = GetDocument().getElementById("handler");
+  handler_element->addEventListener(event_type_names::kWheel, callback);
+
+  EXPECT_FALSE(ancestor.BlockingWheelEventHandlerChanged());
+  EXPECT_TRUE(handler.BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(descendant.BlockingWheelEventHandlerChanged());
+
+  EXPECT_TRUE(ancestor.DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(handler.DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(descendant.DescendantBlockingWheelEventHandlerChanged());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(ancestor.BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(handler.BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(descendant.BlockingWheelEventHandlerChanged());
+
+  EXPECT_FALSE(ancestor.DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(handler.DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(descendant.DescendantBlockingWheelEventHandlerChanged());
+
+  EXPECT_FALSE(ancestor.InsideBlockingWheelEventHandler());
+  EXPECT_TRUE(handler.InsideBlockingWheelEventHandler());
+  EXPECT_TRUE(descendant.InsideBlockingWheelEventHandler());
 }
 
 }  // namespace blink

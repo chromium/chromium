@@ -36,6 +36,12 @@ CC_BASE_EXPORT extern const base::Feature kScrollUnification;
 CC_BASE_EXPORT extern const base::Feature
     kSchedulerSmoothnessForAnimatedScrolls;
 
+// When enabled, cc's layers support region-based wheel event hit-testing rather
+// than only supporting flagging all layers, or no layers, as having blocking
+// wheel event listeners.
+// https://docs.google.com/document/d/1ar4WhVnLA-fmw6atgP-23iq-ys_NfFoGb3LA5AgaylA/edit?usp=sharing
+CC_BASE_EXPORT extern const base::Feature kWheelEventRegions;
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

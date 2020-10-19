@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/test/scoped_feature_list.h"
+#include "cc/base/features.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -1589,6 +1591,275 @@ TEST_F(DisplayLockContextTest, DescendantAllowedTouchAction) {
   EXPECT_FALSE(descendant_object->InsideBlockingTouchEventHandler());
   EXPECT_FALSE(locked_object->InsideBlockingTouchEventHandler());
   EXPECT_TRUE(handler_object->InsideBlockingTouchEventHandler());
+}
+
+TEST_F(DisplayLockContextTest, AncestorWheelEventHandler) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+    #locked {
+      width: 100px;
+      height: 100px;
+      contain: style layout paint;
+    }
+    </style>
+    <div id="ancestor">
+      <div id="handler">
+        <div id="descendant">
+          <div id="locked">
+            <div id="lockedchild"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  auto* ancestor_element = GetDocument().getElementById("ancestor");
+  auto* handler_element = GetDocument().getElementById("handler");
+  auto* descendant_element = GetDocument().getElementById("descendant");
+  auto* locked_element = GetDocument().getElementById("locked");
+  auto* lockedchild_element = GetDocument().getElementById("lockedchild");
+
+  LockElement(*locked_element, false);
+  EXPECT_TRUE(locked_element->GetDisplayLockContext()->IsLocked());
+
+  auto* ancestor_object = ancestor_element->GetLayoutObject();
+  auto* handler_object = handler_element->GetLayoutObject();
+  auto* descendant_object = descendant_element->GetLayoutObject();
+  auto* locked_object = locked_element->GetLayoutObject();
+  auto* lockedchild_object = lockedchild_element->GetLayoutObject();
+
+  EXPECT_FALSE(ancestor_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(handler_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(descendant_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(locked_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(lockedchild_object->BlockingWheelEventHandlerChanged());
+
+  EXPECT_FALSE(ancestor_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(handler_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(descendant_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(locked_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(
+      lockedchild_object->DescendantBlockingWheelEventHandlerChanged());
+
+  EXPECT_FALSE(ancestor_object->InsideBlockingWheelEventHandler());
+  EXPECT_FALSE(handler_object->InsideBlockingWheelEventHandler());
+  EXPECT_FALSE(descendant_object->InsideBlockingWheelEventHandler());
+  EXPECT_FALSE(locked_object->InsideBlockingWheelEventHandler());
+  EXPECT_FALSE(lockedchild_object->InsideBlockingWheelEventHandler());
+
+  auto* callback = MakeGarbageCollected<DisplayLockEmptyEventListener>();
+  handler_element->addEventListener(event_type_names::kWheel, callback);
+
+  EXPECT_FALSE(ancestor_object->BlockingWheelEventHandlerChanged());
+  EXPECT_TRUE(handler_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(descendant_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(locked_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(lockedchild_object->BlockingWheelEventHandlerChanged());
+
+  EXPECT_TRUE(ancestor_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(handler_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(descendant_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(locked_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(
+      lockedchild_object->DescendantBlockingWheelEventHandlerChanged());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(ancestor_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(handler_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(descendant_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(locked_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(lockedchild_object->BlockingWheelEventHandlerChanged());
+
+  EXPECT_FALSE(ancestor_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(handler_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(descendant_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(locked_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(
+      lockedchild_object->DescendantBlockingWheelEventHandlerChanged());
+
+  EXPECT_FALSE(ancestor_object->InsideBlockingWheelEventHandler());
+  EXPECT_TRUE(handler_object->InsideBlockingWheelEventHandler());
+  EXPECT_TRUE(descendant_object->InsideBlockingWheelEventHandler());
+  EXPECT_TRUE(locked_object->InsideBlockingWheelEventHandler());
+  EXPECT_FALSE(lockedchild_object->InsideBlockingWheelEventHandler());
+
+  // Manually commit the lock so that we can verify which dirty bits get
+  // propagated.
+  CommitElement(*locked_element, false);
+  UnlockImmediate(locked_element->GetDisplayLockContext());
+
+  EXPECT_FALSE(ancestor_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(handler_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(descendant_object->BlockingWheelEventHandlerChanged());
+  EXPECT_TRUE(locked_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(lockedchild_object->BlockingWheelEventHandlerChanged());
+
+  EXPECT_TRUE(ancestor_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_TRUE(handler_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_TRUE(descendant_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(locked_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(
+      lockedchild_object->DescendantBlockingWheelEventHandlerChanged());
+
+  EXPECT_FALSE(ancestor_object->InsideBlockingWheelEventHandler());
+  EXPECT_TRUE(handler_object->InsideBlockingWheelEventHandler());
+  EXPECT_TRUE(descendant_object->InsideBlockingWheelEventHandler());
+  EXPECT_TRUE(locked_object->InsideBlockingWheelEventHandler());
+  EXPECT_FALSE(lockedchild_object->InsideBlockingWheelEventHandler());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(ancestor_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(handler_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(descendant_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(locked_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(lockedchild_object->BlockingWheelEventHandlerChanged());
+
+  EXPECT_FALSE(ancestor_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(handler_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(descendant_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(locked_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(
+      lockedchild_object->DescendantBlockingWheelEventHandlerChanged());
+
+  EXPECT_FALSE(ancestor_object->InsideBlockingWheelEventHandler());
+  EXPECT_TRUE(handler_object->InsideBlockingWheelEventHandler());
+  EXPECT_TRUE(descendant_object->InsideBlockingWheelEventHandler());
+  EXPECT_TRUE(locked_object->InsideBlockingWheelEventHandler());
+  EXPECT_TRUE(lockedchild_object->InsideBlockingWheelEventHandler());
+}
+
+TEST_F(DisplayLockContextTest, DescendantWheelEventHandler) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+    #locked {
+      width: 100px;
+      height: 100px;
+      contain: style layout paint;
+    }
+    </style>
+    <div id="ancestor">
+      <div id="descendant">
+        <div id="locked">
+          <div id="handler"></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  auto* ancestor_element = GetDocument().getElementById("ancestor");
+  auto* descendant_element = GetDocument().getElementById("descendant");
+  auto* locked_element = GetDocument().getElementById("locked");
+  auto* handler_element = GetDocument().getElementById("handler");
+
+  LockElement(*locked_element, false);
+  EXPECT_TRUE(locked_element->GetDisplayLockContext()->IsLocked());
+
+  auto* ancestor_object = ancestor_element->GetLayoutObject();
+  auto* descendant_object = descendant_element->GetLayoutObject();
+  auto* locked_object = locked_element->GetLayoutObject();
+  auto* handler_object = handler_element->GetLayoutObject();
+
+  EXPECT_FALSE(ancestor_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(descendant_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(locked_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(handler_object->BlockingWheelEventHandlerChanged());
+
+  EXPECT_FALSE(ancestor_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(descendant_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(locked_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(handler_object->DescendantBlockingWheelEventHandlerChanged());
+
+  EXPECT_FALSE(ancestor_object->InsideBlockingWheelEventHandler());
+  EXPECT_FALSE(descendant_object->InsideBlockingWheelEventHandler());
+  EXPECT_FALSE(locked_object->InsideBlockingWheelEventHandler());
+  EXPECT_FALSE(handler_object->InsideBlockingWheelEventHandler());
+
+  auto* callback = MakeGarbageCollected<DisplayLockEmptyEventListener>();
+  handler_element->addEventListener(event_type_names::kWheel, callback);
+
+  EXPECT_FALSE(ancestor_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(descendant_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(locked_object->BlockingWheelEventHandlerChanged());
+  EXPECT_TRUE(handler_object->BlockingWheelEventHandlerChanged());
+
+  EXPECT_FALSE(ancestor_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(descendant_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_TRUE(locked_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(handler_object->DescendantBlockingWheelEventHandlerChanged());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(ancestor_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(descendant_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(locked_object->BlockingWheelEventHandlerChanged());
+  EXPECT_TRUE(handler_object->BlockingWheelEventHandlerChanged());
+
+  EXPECT_FALSE(ancestor_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(descendant_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_TRUE(locked_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(handler_object->DescendantBlockingWheelEventHandlerChanged());
+
+  EXPECT_FALSE(ancestor_object->InsideBlockingWheelEventHandler());
+  EXPECT_FALSE(descendant_object->InsideBlockingWheelEventHandler());
+  EXPECT_FALSE(locked_object->InsideBlockingWheelEventHandler());
+  EXPECT_FALSE(handler_object->InsideBlockingWheelEventHandler());
+
+  // Do the same check again. For now, nothing is expected to change. However,
+  // when we separate self and child layout, then some flags would be different.
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(ancestor_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(descendant_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(locked_object->BlockingWheelEventHandlerChanged());
+  EXPECT_TRUE(handler_object->BlockingWheelEventHandlerChanged());
+
+  EXPECT_FALSE(ancestor_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(descendant_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_TRUE(locked_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(handler_object->DescendantBlockingWheelEventHandlerChanged());
+
+  EXPECT_FALSE(ancestor_object->InsideBlockingWheelEventHandler());
+  EXPECT_FALSE(descendant_object->InsideBlockingWheelEventHandler());
+  EXPECT_FALSE(locked_object->InsideBlockingWheelEventHandler());
+  EXPECT_FALSE(handler_object->InsideBlockingWheelEventHandler());
+
+  // Manually commit the lock so that we can verify which dirty bits get
+  // propagated.
+  CommitElement(*locked_element, false);
+  UnlockImmediate(locked_element->GetDisplayLockContext());
+
+  EXPECT_FALSE(ancestor_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(descendant_object->BlockingWheelEventHandlerChanged());
+  EXPECT_TRUE(locked_object->BlockingWheelEventHandlerChanged());
+  EXPECT_TRUE(handler_object->BlockingWheelEventHandlerChanged());
+
+  EXPECT_TRUE(ancestor_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_TRUE(descendant_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_TRUE(locked_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(handler_object->DescendantBlockingWheelEventHandlerChanged());
+
+  EXPECT_FALSE(ancestor_object->InsideBlockingWheelEventHandler());
+  EXPECT_FALSE(descendant_object->InsideBlockingWheelEventHandler());
+  EXPECT_FALSE(locked_object->InsideBlockingWheelEventHandler());
+  EXPECT_FALSE(handler_object->InsideBlockingWheelEventHandler());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(ancestor_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(descendant_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(locked_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(handler_object->BlockingWheelEventHandlerChanged());
+
+  EXPECT_FALSE(ancestor_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(descendant_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(locked_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(handler_object->DescendantBlockingWheelEventHandlerChanged());
+
+  EXPECT_FALSE(ancestor_object->InsideBlockingWheelEventHandler());
+  EXPECT_FALSE(descendant_object->InsideBlockingWheelEventHandler());
+  EXPECT_FALSE(locked_object->InsideBlockingWheelEventHandler());
+  EXPECT_TRUE(handler_object->InsideBlockingWheelEventHandler());
 }
 
 TEST_F(DisplayLockContextTest, DescendantNeedsPaintPropertyUpdateBlocked) {

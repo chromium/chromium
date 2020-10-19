@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/pre_paint_tree_walk.h"
 
 #include "base/auto_reset.h"
+#include "cc/base/features.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -292,22 +293,42 @@ void PrePaintTreeWalk::Walk(LocalFrameView& frame_view) {
 }
 
 namespace {
-bool HasBlockingTouchEventHandler(const LocalFrame& frame,
-                                  EventTarget& target) {
+
+enum class BlockingEventHandlerType {
+  kNone,
+  kTouchStartOrMoveBlockingEventHandler,
+  kWheelBlockingEventHandler,
+};
+
+bool HasBlockingEventHandlerHelper(const LocalFrame& frame,
+                                   EventTarget& target,
+                                   BlockingEventHandlerType event_type) {
   if (!target.HasEventListeners())
     return false;
   const auto& registry = frame.GetEventHandlerRegistry();
-  const auto* blocking = registry.EventHandlerTargets(
-      EventHandlerRegistry::kTouchStartOrMoveEventBlocking);
-  const auto* blocking_low_latency = registry.EventHandlerTargets(
-      EventHandlerRegistry::kTouchStartOrMoveEventBlockingLowLatency);
-  return blocking->Contains(&target) || blocking_low_latency->Contains(&target);
+  if (BlockingEventHandlerType::kTouchStartOrMoveBlockingEventHandler ==
+      event_type) {
+    const auto* blocking = registry.EventHandlerTargets(
+        EventHandlerRegistry::kTouchStartOrMoveEventBlocking);
+    const auto* blocking_low_latency = registry.EventHandlerTargets(
+        EventHandlerRegistry::kTouchStartOrMoveEventBlockingLowLatency);
+    return blocking->Contains(&target) ||
+           blocking_low_latency->Contains(&target);
+  } else if (BlockingEventHandlerType::kWheelBlockingEventHandler ==
+             event_type) {
+    const auto* blocking =
+        registry.EventHandlerTargets(EventHandlerRegistry::kWheelEventBlocking);
+    return blocking->Contains(&target);
+  }
+  NOTREACHED();
+  return false;
 }
 
-bool HasBlockingTouchEventHandler(const LayoutObject& object) {
+bool HasBlockingEventHandlerHelper(const LayoutObject& object,
+                                   BlockingEventHandlerType event_type) {
   if (IsA<LayoutView>(object)) {
     auto* frame = object.GetFrame();
-    if (HasBlockingTouchEventHandler(*frame, *frame->DomWindow()))
+    if (HasBlockingEventHandlerHelper(*frame, *frame->DomWindow(), event_type))
       return true;
   }
 
@@ -321,7 +342,17 @@ bool HasBlockingTouchEventHandler(const LayoutObject& object) {
   }
   if (!node)
     return false;
-  return HasBlockingTouchEventHandler(*object.GetFrame(), *node);
+  return HasBlockingEventHandlerHelper(*object.GetFrame(), *node, event_type);
+}
+
+bool HasBlockingTouchEventHandler(const LayoutObject& object) {
+  return HasBlockingEventHandlerHelper(
+      object, BlockingEventHandlerType::kTouchStartOrMoveBlockingEventHandler);
+}
+
+bool HasBlockingWheelEventHandler(const LayoutObject& object) {
+  return HasBlockingEventHandlerHelper(
+      object, BlockingEventHandlerType::kWheelBlockingEventHandler);
 }
 }  // namespace
 
@@ -341,6 +372,22 @@ void PrePaintTreeWalk::UpdateEffectiveAllowedTouchAction(
     context.inside_blocking_touch_event_handler = true;
 }
 
+void PrePaintTreeWalk::UpdateBlockingWheelEventHandler(
+    const LayoutObject& object,
+    PrePaintTreeWalk::PrePaintTreeWalkContext& context) {
+  if (object.BlockingWheelEventHandlerChanged())
+    context.blocking_wheel_event_handler_changed = true;
+
+  if (context.blocking_wheel_event_handler_changed) {
+    object.GetMutableForPainting().UpdateInsideBlockingWheelEventHandler(
+        context.inside_blocking_wheel_event_handler ||
+        HasBlockingWheelEventHandler(object));
+  }
+
+  if (object.InsideBlockingWheelEventHandler())
+    context.inside_blocking_wheel_event_handler = true;
+}
+
 void PrePaintTreeWalk::InvalidatePaintForHitTesting(
     const LayoutObject& object,
     PrePaintTreeWalk::PrePaintTreeWalkContext& context) {
@@ -348,7 +395,8 @@ void PrePaintTreeWalk::InvalidatePaintForHitTesting(
       PaintInvalidatorContext::kSubtreeNoInvalidation)
     return;
 
-  if (!context.effective_allowed_touch_action_changed)
+  if (!context.effective_allowed_touch_action_changed &&
+      !context.blocking_wheel_event_handler_changed)
     return;
 
   context.paint_invalidator_context.painting_layer->SetNeedsRepaint();
@@ -399,13 +447,17 @@ bool PrePaintTreeWalk::NeedsTreeBuilderContextUpdate(
 bool PrePaintTreeWalk::ObjectRequiresPrePaint(const LayoutObject& object) {
   return object.ShouldCheckForPaintInvalidation() ||
          object.EffectiveAllowedTouchActionChanged() ||
-         object.DescendantEffectiveAllowedTouchActionChanged();
+         object.DescendantEffectiveAllowedTouchActionChanged() ||
+         object.BlockingWheelEventHandlerChanged() ||
+         object.DescendantBlockingWheelEventHandlerChanged();
+  ;
 }
 
 bool PrePaintTreeWalk::ContextRequiresPrePaint(
     const PrePaintTreeWalkContext& context) {
   return context.paint_invalidator_context.NeedsSubtreeWalk() ||
-         context.effective_allowed_touch_action_changed || context.clip_changed;
+         context.effective_allowed_touch_action_changed ||
+         context.blocking_wheel_event_handler_changed || context.clip_changed;
 }
 
 bool PrePaintTreeWalk::ObjectRequiresTreeBuilderContext(
@@ -543,8 +595,11 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
   }
 
   // This must happen before paint invalidation because background painting
-  // depends on the effective allowed touch action.
+  // depends on the effective allowed touch action and blocking wheel event
+  // handlers.
   UpdateEffectiveAllowedTouchAction(object, context);
+  if (base::FeatureList::IsEnabled(::features::kWheelEventRegions))
+    UpdateBlockingWheelEventHandler(object, context);
 
   if (paint_invalidator_.InvalidatePaint(
           object, pre_paint_info,
@@ -871,14 +926,15 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
   // same bits on the context.
   if (child_walk_blocked && (ContextRequiresTreeBuilderContext(context()) ||
                              ContextRequiresPrePaint(context()))) {
-    // Note that effective allowed touch action changed is special in that
-    // it requires us to specifically recalculate this value on each subtree
-    // element. Other flags simply need a subtree walk. Some consideration
-    // needs to be given to |clip_changed| which ensures that we repaint every
-    // layer, but for the purposes of PrePaint, this flag is just forcing a
-    // subtree walk.
+    // Note that |effective_allowed_touch_action_changed| and
+    // |blocking_wheel_event_handler_changed| are special in that they requires
+    // us to specifically recalculate this value on each subtree element. Other
+    // flags simply need a subtree walk. Some consideration needs to be given to
+    // |clip_changed| which ensures that we repaint every layer, but for the
+    // purposes of PrePaint, this flag is just forcing a subtree walk.
     object.GetDisplayLockContext()->SetNeedsPrePaintSubtreeWalk(
-        context().effective_allowed_touch_action_changed);
+        context().effective_allowed_touch_action_changed,
+        context().blocking_wheel_event_handler_changed);
   }
 
   if (!child_walk_blocked) {

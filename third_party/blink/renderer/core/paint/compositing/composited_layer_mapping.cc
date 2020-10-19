@@ -958,8 +958,9 @@ void CompositedLayerMapping::UpdateDrawsContentAndPaintsHitTest() {
   // paints content, regardless of whether the descendant content is a hit test)
   // but an exhaustive check of descendants that paint hit tests would be too
   // expensive.
-  bool paints_hit_test =
-      has_painted_content || GetLayoutObject().HasEffectiveAllowedTouchAction();
+  bool paints_hit_test = has_painted_content ||
+                         GetLayoutObject().HasEffectiveAllowedTouchAction() ||
+                         GetLayoutObject().InsideBlockingWheelEventHandler();
   bool paints_scroll_hit_test =
       ((owning_layer_.GetScrollableArea() &&
         owning_layer_.GetScrollableArea()->ScrollsOverflow()) ||

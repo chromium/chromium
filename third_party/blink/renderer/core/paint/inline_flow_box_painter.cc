@@ -349,7 +349,8 @@ void InlineFlowBoxPainter::RecordHitTestData(
 
   paint_info.context.GetPaintController().RecordHitTestData(
       inline_flow_box_, PixelSnappedIntRect(AdjustedFrameRect(paint_offset)),
-      layout_object->EffectiveAllowedTouchAction());
+      layout_object->EffectiveAllowedTouchAction(),
+      layout_object->InsideBlockingWheelEventHandler());
 }
 
 void InlineFlowBoxPainter::PaintNormalBoxShadow(

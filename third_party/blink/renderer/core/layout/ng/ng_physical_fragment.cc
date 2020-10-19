@@ -556,6 +556,11 @@ TouchAction NGPhysicalFragment::EffectiveAllowedTouchAction() const {
   return layout_object_->EffectiveAllowedTouchAction();
 }
 
+bool NGPhysicalFragment::InsideBlockingWheelEventHandler() const {
+  DCHECK(layout_object_);
+  return layout_object_->InsideBlockingWheelEventHandler();
+}
+
 UBiDiLevel NGPhysicalFragment::BidiLevel() const {
   switch (Type()) {
     case kFragmentText:

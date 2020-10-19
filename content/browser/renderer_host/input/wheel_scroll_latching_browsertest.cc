@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "cc/base/features.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -146,6 +148,10 @@ class WheelScrollLatchingBrowserTest : public ContentBrowserTest {
 #define MAYBE_WheelEventTarget WheelEventTarget
 #endif
 IN_PROC_BROWSER_TEST_F(WheelScrollLatchingBrowserTest, MAYBE_WheelEventTarget) {
+  base::FeatureList::ScopedDisallowOverrides disallow_feature_overrides(
+      nullptr);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(::features::kWheelEventRegions);
   LoadURL(kWheelEventLatchingDataURL);
   EXPECT_EQ(0, ExecuteScriptAndExtractInt("documentWheelEventCounter"));
   EXPECT_EQ(0, ExecuteScriptAndExtractInt("scrollableDivWheelEventCounter"));

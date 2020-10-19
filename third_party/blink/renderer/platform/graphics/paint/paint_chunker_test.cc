@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunker.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "cc/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
@@ -544,20 +546,79 @@ TEST_F(PaintChunkerTest, AddHitTestDataToCurrentChunk) {
   // This is not used as id of the chunk because we already have |id2|.
   PaintChunk::Id hit_test_id(client_, DisplayItem::kHitTest);
   chunker.AddHitTestDataToCurrentChunk(hit_test_id, IntRect(10, 20, 30, 40),
-                                       TouchAction::kAuto);
+                                       TouchAction::kAuto, false);
   chunker.AddHitTestDataToCurrentChunk(hit_test_id, IntRect(20, 30, 40, 50),
-                                       TouchAction::kPan);
+                                       TouchAction::kPan, false);
 
   chunker.SetWillForceNewChunk(true);
   PaintChunk::Id id3(client_, DisplayItemType(4));
   chunker.AddHitTestDataToCurrentChunk(id3, IntRect(40, 50, 60, 70),
-                                       TouchAction::kAuto);
+                                       TouchAction::kAuto, false);
   chunker.IncrementDisplayItemIndex(TestChunkerDisplayItem(
       client_, DisplayItemType(5), IntRect(0, 0, 10, 10)));
 
   HitTestData hit_test_data;
   hit_test_data.touch_action_rects = {
       {IntRect(20, 30, 40, 50), TouchAction::kPan}};
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    EXPECT_THAT(
+        chunks,
+        ElementsAre(IsPaintChunk(0, 1, id1, DefaultPaintChunkProperties(),
+                                 nullptr, IntRect(0, 0, 10, 10)),
+                    IsPaintChunk(1, 1, id2, properties, &hit_test_data,
+                                 IntRect(10, 20, 50, 60)),
+                    IsPaintChunk(1, 2, id3, properties, nullptr,
+                                 IntRect(0, 0, 100, 120))));
+  } else {
+    EXPECT_THAT(
+        chunks,
+        ElementsAre(
+            IsPaintChunk(0, 1, id1, DefaultPaintChunkProperties(), nullptr,
+                         IntRect(0, 0, 10, 10)),
+            IsPaintChunk(1, 1, id2, properties, &hit_test_data,
+                         IntRect(20, 30, 40, 50)),
+            IsPaintChunk(1, 2, PaintChunk::Id(client_, DisplayItemType(5)),
+                         properties, nullptr, IntRect(0, 0, 10, 10))));
+  }
+}
+
+TEST_F(PaintChunkerTest, AddHitTestDataToCurrentChunkWheelRegionsEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
+  Vector<PaintChunk> chunks;
+  PaintChunker chunker(chunks);
+
+  PaintChunk::Id id1(client_, DisplayItemType(1));
+
+  chunker.UpdateCurrentPaintChunkProperties(&id1,
+                                            DefaultPaintChunkProperties());
+  chunker.IncrementDisplayItemIndex(TestChunkerDisplayItem(
+      client_, DisplayItemType(2), IntRect(0, 0, 10, 10)));
+
+  PaintChunk::Id id2(client_, DisplayItemType(3));
+  auto transform = Create2DTranslation(t0(), 10, 20);
+  PropertyTreeState properties(*transform, c0(), e0());
+  chunker.UpdateCurrentPaintChunkProperties(&id2, properties);
+  // This is not used as id of the chunk because we already have |id2|.
+  PaintChunk::Id hit_test_id(client_, DisplayItem::kHitTest);
+  chunker.AddHitTestDataToCurrentChunk(hit_test_id, IntRect(10, 20, 30, 40),
+                                       TouchAction::kAuto, false);
+  chunker.AddHitTestDataToCurrentChunk(hit_test_id, IntRect(20, 30, 40, 50),
+                                       TouchAction::kPan, false);
+  chunker.AddHitTestDataToCurrentChunk(hit_test_id, IntRect(25, 35, 5, 10),
+                                       TouchAction::kAuto, true);
+
+  chunker.SetWillForceNewChunk(true);
+  PaintChunk::Id id3(client_, DisplayItemType(4));
+  chunker.AddHitTestDataToCurrentChunk(id3, IntRect(40, 50, 60, 70),
+                                       TouchAction::kAuto, false);
+  chunker.IncrementDisplayItemIndex(TestChunkerDisplayItem(
+      client_, DisplayItemType(5), IntRect(0, 0, 10, 10)));
+
+  HitTestData hit_test_data;
+  hit_test_data.touch_action_rects = {
+      {IntRect(20, 30, 40, 50), TouchAction::kPan}};
+  hit_test_data.wheel_event_rects = {IntRect(25, 35, 5, 10)};
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     EXPECT_THAT(
         chunks,
@@ -634,28 +695,29 @@ TEST_F(PaintChunkerTest, ChunkBoundsAndKnownToBeOpaqueWithHitTest) {
   // Hit test rect only.
   chunker.AddHitTestDataToCurrentChunk(
       PaintChunk::Id(client1, DisplayItemType(0)), IntRect(10, 20, 30, 40),
-      TouchAction::kAuto);
+      TouchAction::kAuto, false);
   chunker.SetWillForceNewChunk(true);
+
   // Hit test rect is smaller than the opaque item.
   chunker.IncrementDisplayItemIndex(TestChunkerOpaqueDisplayItem(
       client1, DisplayItemType(1), IntRect(0, 0, 100, 100)));
   chunker.AddHitTestDataToCurrentChunk(
       PaintChunk::Id(client1, DisplayItemType(2)), IntRect(0, 0, 50, 100),
-      TouchAction::kAuto);
+      TouchAction::kAuto, false);
   chunker.SetWillForceNewChunk(true);
   // Hit test rect is the same as the opaque item.
   chunker.IncrementDisplayItemIndex(TestChunkerOpaqueDisplayItem(
       client1, DisplayItemType(3), IntRect(0, 0, 100, 100)));
   chunker.AddHitTestDataToCurrentChunk(
       PaintChunk::Id(client1, DisplayItemType(4)), IntRect(0, 0, 100, 100),
-      TouchAction::kAuto);
+      TouchAction::kAuto, false);
   chunker.SetWillForceNewChunk(true);
   // Hit test rect is bigger than the opaque item.
   chunker.IncrementDisplayItemIndex(TestChunkerOpaqueDisplayItem(
       client1, DisplayItemType(5), IntRect(0, 0, 100, 100)));
   chunker.AddHitTestDataToCurrentChunk(
       PaintChunk::Id(client1, DisplayItemType(6)), IntRect(0, 100, 200, 100),
-      TouchAction::kAuto);
+      TouchAction::kAuto, false);
 
   EXPECT_THAT(
       chunks,

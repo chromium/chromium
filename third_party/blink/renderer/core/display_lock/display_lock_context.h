@@ -178,9 +178,12 @@ class CORE_EXPORT DisplayLockContext final
   void NotifySubtreeGainedSelection();
 
   void SetNeedsPrePaintSubtreeWalk(
-      bool needs_effective_allowed_touch_action_update) {
+      bool needs_effective_allowed_touch_action_update,
+      bool needs_blocking_wheel_event_handler_update) {
     needs_effective_allowed_touch_action_update_ =
         needs_effective_allowed_touch_action_update;
+    needs_blocking_wheel_event_handler_update_ =
+        needs_blocking_wheel_event_handler_update;
     needs_prepaint_subtree_walk_ = true;
   }
 
@@ -334,6 +337,7 @@ class CORE_EXPORT DisplayLockContext final
   bool reattach_layout_tree_was_blocked_ = false;
 
   bool needs_effective_allowed_touch_action_update_ = false;
+  bool needs_blocking_wheel_event_handler_update_ = false;
   bool needs_prepaint_subtree_walk_ = false;
   bool needs_compositing_requirements_update_ = false;
   bool needs_compositing_dependent_flag_update_ = false;

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
 
+#include "cc/base/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_event_listener_options.h"
 #include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
 #include "third_party/blink/renderer/core/events/event_util.h"
@@ -302,6 +303,25 @@ void EventHandlerRegistry::NotifyHandlersChanged(
       // touch event rects.
       if (auto* layout_view = dom_window->GetFrame()->ContentLayoutObject())
         layout_view->MarkEffectiveAllowedTouchActionChanged();
+    }
+  } else if (handler_class == kWheelEventBlocking) {
+    if (base::FeatureList::IsEnabled(::features::kWheelEventRegions)) {
+      if (auto* node = target->ToNode()) {
+        if (auto* layout_object = node->GetLayoutObject()) {
+          layout_object->MarkBlockingWheelEventHandlerChanged();
+          auto* continuation = layout_object->VirtualContinuation();
+          while (continuation) {
+            continuation->MarkBlockingWheelEventHandlerChanged();
+            continuation = continuation->VirtualContinuation();
+          }
+        }
+      } else if (auto* dom_window = target->ToLocalDOMWindow()) {
+        // This event handler is on a window. Ensure the layout view is
+        // invalidated because the layout view tracks the window's blocking
+        // wheel event handler rects.
+        if (auto* layout_view = dom_window->GetFrame()->ContentLayoutObject())
+          layout_view->MarkBlockingWheelEventHandlerChanged();
+      }
     }
   }
 }

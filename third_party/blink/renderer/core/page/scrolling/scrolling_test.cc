@@ -22,7 +22,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "cc/base/features.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/layers/scrollbar_layer_base.h"
 #include "cc/trees/compositor_commit_data.h"
@@ -900,6 +902,349 @@ TEST_P(ScrollingTest, TouchActionChangeWithoutContent) {
   const auto* cc_layer = LayerByDOMElementId("blocking");
   cc::Region region = cc_layer->touch_action_region().GetRegionForTouchAction(
       TouchAction::kNone);
+  EXPECT_EQ(region.bounds(), gfx::Rect(0, 0, 100, 100));
+}
+
+TEST_P(ScrollingTest, WheelEventRegion) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
+  LoadHTML(R"HTML(
+    <style>
+      #scrollable {
+        width: 200px;
+        height: 200px;
+        will-change: transform;
+        overflow: scroll;
+      }
+      #content {
+        width: 1000px;
+        height: 1000px;
+      }
+    </style>
+    <div id="scrollable">
+      <div id="content"></div>
+    </div>
+    <script>
+      document.getElementById("scrollable").addEventListener('wheel', (e) => {
+        e.preventDefault();
+      });
+    </script>
+  )HTML");
+  ForceFullCompositingUpdate();
+
+  auto* cc_layer = MainFrameScrollingContentsLayer();
+  cc::Region region = cc_layer->wheel_event_region();
+  EXPECT_TRUE(region.IsEmpty());
+
+  cc_layer = LayerByDOMElementId("scrollable");
+  region = cc_layer->wheel_event_region();
+  EXPECT_EQ(region.GetRegionComplexity(), 1);
+  EXPECT_EQ(region.bounds(), gfx::Rect(0, 0, 200, 200));
+
+  cc_layer = ScrollingContentsLayerByDOMElementId("scrollable");
+  region = cc_layer->wheel_event_region();
+  EXPECT_EQ(region.GetRegionComplexity(), 1);
+  EXPECT_EQ(region.bounds(), gfx::Rect(0, 0, 1000, 1000));
+}
+
+TEST_P(ScrollingTest, WheelEventHandlerInvalidation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
+  LoadHTML(R"HTML(
+    <style>
+      #scrollable {
+        width: 200px;
+        height: 200px;
+        will-change: transform;
+        overflow: scroll;
+      }
+      #content {
+        width: 1000px;
+        height: 1000px;
+      }
+    </style>
+    <div id="scrollable">
+      <div id="content"></div>
+    </div>
+  )HTML");
+  ForceFullCompositingUpdate();
+
+  // Initially there are no wheel event regions.
+  const auto* cc_layer = LayerByDOMElementId("scrollable");
+  auto region = cc_layer->wheel_event_region();
+  EXPECT_TRUE(region.IsEmpty());
+
+  const auto* cc_layer_content =
+      ScrollingContentsLayerByDOMElementId("scrollable");
+  region = cc_layer->wheel_event_region();
+  EXPECT_TRUE(region.IsEmpty());
+
+  // Adding a blocking window event handler should create a wheel event region.
+  auto* listener = MakeGarbageCollected<ScrollingTestMockEventListener>();
+  auto* resolved_options =
+      MakeGarbageCollected<AddEventListenerOptionsResolved>();
+  resolved_options->setPassive(false);
+  GetFrame()
+      ->GetDocument()
+      ->getElementById("scrollable")
+      ->addEventListener(event_type_names::kWheel, listener, resolved_options);
+  ForceFullCompositingUpdate();
+  region = cc_layer->wheel_event_region();
+  EXPECT_FALSE(region.IsEmpty());
+  region = cc_layer_content->wheel_event_region();
+  EXPECT_FALSE(region.IsEmpty());
+
+  // Removing the window event handler also removes the wheel event region.
+  GetFrame()
+      ->GetDocument()
+      ->getElementById("scrollable")
+      ->RemoveAllEventListeners();
+  ForceFullCompositingUpdate();
+  region = cc_layer->wheel_event_region();
+  EXPECT_TRUE(region.IsEmpty());
+  region = cc_layer_content->wheel_event_region();
+  EXPECT_TRUE(region.IsEmpty());
+}
+
+TEST_P(ScrollingTest, WheelEventRegions) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
+  LoadHTML(R"HTML(
+    <style>
+      #scrollable {
+        width: 200px;
+        height: 200px;
+        will-change: transform;
+        overflow: scroll;
+      }
+      #content {
+        width: 1000px;
+        height: 1000px;
+      }
+      .region {
+        width: 100px;
+        height: 100px;
+      }
+    </style>
+    <div id="scrollable">
+      <div id="region1" class="region"></div>
+      <div id="content"></div>
+      <div id="region2" class="region"></div>
+    </div>
+    <script>
+      document.getElementById("region1").addEventListener('wheel', (e) => {
+        e.preventDefault();
+      });
+      document.getElementById("region2").addEventListener('wheel', (e) => {
+        e.preventDefault();
+      });
+    </script>
+  )HTML");
+  ForceFullCompositingUpdate();
+
+  auto* cc_layer = LayerByDOMElementId("scrollable");
+  cc::Region region = cc_layer->wheel_event_region();
+  EXPECT_TRUE(region.IsEmpty());
+
+  cc_layer = ScrollingContentsLayerByDOMElementId("scrollable");
+  region = cc_layer->wheel_event_region();
+
+  cc::Region expected_region;
+  expected_region.Union(gfx::Rect(0, 0, 100, 100));
+  expected_region.Union(gfx::Rect(0, 1100, 100, 100));
+
+  EXPECT_EQ(region, expected_region);
+}
+
+TEST_P(ScrollingTest, WheelEventRegionUpdatedOnSubscrollerScrollChange) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
+  GetWebView()->GetSettings()->SetPreferCompositingToLCDTextEnabled(false);
+  LoadHTML(R"HTML(
+    <style>
+      #noncomposited {
+        width: 200px;
+        height: 200px;
+        overflow: auto;
+        position: absolute;
+        top: 50px;
+        background: white;
+        box-shadow: 10px 10px black inset;
+      }
+      #content {
+        width: 100%;
+        height: 1000px;
+      }
+      .region {
+        width: 100px;
+        height: 100px;
+      }
+    </style>
+    <div id="noncomposited">
+      <div id="region" class="region"></div>
+      <div id="content"></div>
+    </div>
+    <script>
+      document.getElementById("region").addEventListener('wheel', (e) => {
+        e.preventDefault();
+      }, {passive: false});
+    </script>
+  )HTML");
+  ForceFullCompositingUpdate();
+
+  const auto* cc_layer = MainFrameScrollingContentsLayer();
+  cc::Region region = cc_layer->wheel_event_region();
+  EXPECT_EQ(region.bounds(), gfx::Rect(8, 50, 100, 100));
+
+  Element* scrollable_element =
+      GetFrame()->GetDocument()->getElementById("noncomposited");
+  DCHECK(scrollable_element);
+
+  // Change scroll position and verify that blocking wheel handler region is
+  // updated accordingly.
+  scrollable_element->setScrollTop(10.0);
+  ForceFullCompositingUpdate();
+  region = cc_layer->wheel_event_region();
+  EXPECT_EQ(region.bounds(), gfx::Rect(8, 50, 100, 90));
+}
+
+// Box shadow is not hit testable and should not be included in wheel region.
+TEST_P(ScrollingTest, WheelEventRegionExcludesBoxShadow) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
+  LoadHTML(R"HTML(
+    <style>
+      #shadow {
+        width: 100px;
+        height: 100px;
+        box-shadow: 10px 5px 5px red;
+      }
+    </style>
+    <div id="shadow"></div>
+    <script>
+      document.getElementById("shadow").addEventListener('wheel', (e) => {
+        e.preventDefault();
+      });
+    </script>
+  )HTML");
+  ForceFullCompositingUpdate();
+
+  const auto* cc_layer = MainFrameScrollingContentsLayer();
+
+  cc::Region region = cc_layer->wheel_event_region();
+  EXPECT_EQ(region.bounds(), gfx::Rect(8, 8, 100, 100));
+}
+
+TEST_P(ScrollingTest, IframeWindowWheelEventHandler) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
+  LoadHTML(R"HTML(
+    <iframe style="width: 275px; height: 250px; will-change: transform">
+    </iframe>
+  )HTML");
+  auto* child_frame =
+      To<WebLocalFrameImpl>(GetWebView()->MainFrameImpl()->FirstChild());
+  frame_test_helpers::LoadHTMLString(child_frame, R"HTML(
+      <p style="margin: 1000px"> Hello </p>
+      <script>
+        window.addEventListener('wheel', (e) => {
+          e.preventDefault();
+        }, {passive: false});
+      </script>
+    )HTML",
+                                     url_test_helpers::ToKURL("about:blank"));
+  ForceFullCompositingUpdate();
+
+  const auto* child_cc_layer =
+      FrameScrollingContentsLayer(*child_frame->GetFrame());
+  cc::Region region_child_frame = child_cc_layer->wheel_event_region();
+  cc::Region region_main_frame =
+      MainFrameScrollingContentsLayer()->wheel_event_region();
+  EXPECT_TRUE(region_main_frame.bounds().IsEmpty());
+  EXPECT_FALSE(region_child_frame.bounds().IsEmpty());
+  // We only check for the content size for verification as the offset is 0x0
+  // due to child frame having its own composited layer.
+
+  // Because blocking wheel rects are painted on the scrolling contents layer,
+  // the size of the rect should be equal to the entire scrolling contents area.
+  EXPECT_EQ(gfx::Rect(child_cc_layer->bounds()), region_child_frame.bounds());
+}
+
+TEST_P(ScrollingTest, WindowWheelEventHandler) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
+  LoadHTML(R"HTML(
+    <style>
+      html { width: 200px; height: 200px; }
+      body { width: 100px; height: 100px; }
+    </style>
+    <script>
+      window.addEventListener('wheel', function(event) {
+        event.preventDefault();
+      }, {passive: false} );
+    </script>
+  )HTML");
+  ForceFullCompositingUpdate();
+
+  auto* cc_layer = MainFrameScrollingContentsLayer();
+
+  // The wheel region should include the entire frame, even though the
+  // document is smaller than the frame.
+  cc::Region region = cc_layer->wheel_event_region();
+  EXPECT_EQ(region.bounds(), gfx::Rect(0, 0, 320, 240));
+}
+
+TEST_P(ScrollingTest, WindowWheelEventHandlerInvalidation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
+  LoadHTML("");
+  ForceFullCompositingUpdate();
+
+  auto* cc_layer = MainFrameScrollingContentsLayer();
+
+  // Initially there are no wheel event regions.
+  auto region = cc_layer->wheel_event_region();
+  EXPECT_TRUE(region.IsEmpty());
+
+  // Adding a blocking window event handler should create a wheel event region.
+  auto* listener = MakeGarbageCollected<ScrollingTestMockEventListener>();
+  auto* resolved_options =
+      MakeGarbageCollected<AddEventListenerOptionsResolved>();
+  resolved_options->setPassive(false);
+  GetFrame()->DomWindow()->addEventListener(event_type_names::kWheel, listener,
+                                            resolved_options);
+  ForceFullCompositingUpdate();
+  region = cc_layer->wheel_event_region();
+  EXPECT_FALSE(region.IsEmpty());
+
+  // Removing the window event handler also removes the wheel event region.
+  GetFrame()->DomWindow()->RemoveAllEventListeners();
+  ForceFullCompositingUpdate();
+  region = cc_layer->wheel_event_region();
+  EXPECT_TRUE(region.IsEmpty());
+}
+
+TEST_P(ScrollingTest, WheelEventHandlerChangeWithoutContent) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
+  LoadHTML(R"HTML(
+    <div id="blocking"
+        style="will-change: transform; width: 100px; height: 100px;"></div>
+  )HTML");
+  ForceFullCompositingUpdate();
+
+  // Adding a blocking window event handler should create a touch action region.
+  auto* listener = MakeGarbageCollected<ScrollingTestMockEventListener>();
+  auto* resolved_options =
+      MakeGarbageCollected<AddEventListenerOptionsResolved>();
+  resolved_options->setPassive(false);
+  auto* target_element = GetFrame()->GetDocument()->getElementById("blocking");
+  target_element->addEventListener(event_type_names::kWheel, listener,
+                                   resolved_options);
+  ForceFullCompositingUpdate();
+
+  const auto* cc_layer = LayerByDOMElementId("blocking");
+  cc::Region region = cc_layer->wheel_event_region();
   EXPECT_EQ(region.bounds(), gfx::Rect(0, 0, 100, 100));
 }
 

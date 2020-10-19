@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunker.h"
 
+#include "cc/base/features.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 
 namespace blink {
@@ -127,13 +128,15 @@ bool PaintChunker::IncrementDisplayItemIndex(const DisplayItem& item) {
 
 bool PaintChunker::AddHitTestDataToCurrentChunk(const PaintChunk::Id& id,
                                                 const IntRect& rect,
-                                                TouchAction touch_action) {
+                                                TouchAction touch_action,
+                                                bool blocking_wheel) {
   // In CompositeAfterPaint, we ensure a paint chunk for correct composited
   // hit testing. In pre-CompositeAfterPaint, this is unnecessary, except that
-  // there is special touch action, and that we have a non-root effect so that
-  // PaintChunksToCcLayer will emit paint operations for filters.
+  // there is special touch action or blocking wheel event handler, and that we
+  // have a non-root effect so that PaintChunksToCcLayer will emit paint
+  // operations for filters.
   if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-      touch_action == TouchAction::kAuto &&
+      touch_action == TouchAction::kAuto && !blocking_wheel &&
       &current_properties_.Effect() == &EffectPaintPropertyNode::Root())
     return false;
 
@@ -143,6 +146,10 @@ bool PaintChunker::AddHitTestDataToCurrentChunk(const PaintChunk::Id& id,
   if (touch_action != TouchAction::kAuto) {
     chunk.EnsureHitTestData().touch_action_rects.push_back(
         TouchActionRect{rect, touch_action});
+  }
+  if (blocking_wheel) {
+    DCHECK(base::FeatureList::IsEnabled(::features::kWheelEventRegions));
+    chunk.EnsureHitTestData().wheel_event_rects.push_back(rect);
   }
   return created_new_chunk;
 }

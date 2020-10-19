@@ -45,6 +45,7 @@ size_t PaintChunk::MemoryUsageInBytes() const {
     total_size += sizeof(*hit_test_data);
     total_size +=
         hit_test_data->touch_action_rects.capacity() * sizeof(TouchActionRect);
+    total_size += hit_test_data->wheel_event_rects.capacity() * sizeof(IntRect);
   }
   return total_size;
 }

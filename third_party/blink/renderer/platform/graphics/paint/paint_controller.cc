@@ -48,7 +48,8 @@ void PaintController::EnsureChunk() {
 
 void PaintController::RecordHitTestData(const DisplayItemClient& client,
                                         const IntRect& rect,
-                                        TouchAction touch_action) {
+                                        TouchAction touch_action,
+                                        bool blocking_wheel) {
   if (rect.IsEmpty())
     return;
   // In CompositeAfterPaint, we ensure a paint chunk for correct composited
@@ -56,13 +57,14 @@ void PaintController::RecordHitTestData(const DisplayItemClient& client,
   // there is special touch action, and that we have a non-root effect so that
   // PaintChunksToCcLayer will emit paint operations for filters.
   if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-      touch_action == TouchAction::kAuto &&
+      touch_action == TouchAction::kAuto && !blocking_wheel &&
       CurrentPaintChunkProperties().Effect().IsRoot())
     return;
 
   PaintChunk::Id id(client, DisplayItem::kHitTest, current_fragment_);
   CheckDuplicatePaintChunkId(id);
-  if (paint_chunker_.AddHitTestDataToCurrentChunk(id, rect, touch_action))
+  if (paint_chunker_.AddHitTestDataToCurrentChunk(id, rect, touch_action,
+                                                  blocking_wheel))
     DidAppendChunk();
 }
 

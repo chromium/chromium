@@ -673,6 +673,14 @@ bool DisplayLockContext::MarkAncestorsForPrePaintIfNeeded() {
       // update.
       layout_object->MarkEffectiveAllowedTouchActionChanged();
     }
+    if (needs_blocking_wheel_event_handler_update_ ||
+        layout_object->BlockingWheelEventHandlerChanged() ||
+        layout_object->DescendantBlockingWheelEventHandlerChanged()) {
+      // Note that although the object itself should have up to date value, in
+      // order to force recalc of the whole subtree, we mark it as needing an
+      // update.
+      layout_object->MarkBlockingWheelEventHandlerChanged();
+    }
     return true;
   }
   return compositing_dirtied;
@@ -762,6 +770,7 @@ bool DisplayLockContext::IsElementDirtyForPrePaint() const {
            PrePaintTreeWalk::ObjectRequiresTreeBuilderContext(*layout_object) ||
            needs_prepaint_subtree_walk_ ||
            needs_effective_allowed_touch_action_update_ ||
+           needs_blocking_wheel_event_handler_update_ ||
            needs_compositing_requirements_update_ ||
            (layout_box && layout_box->HasSelfPaintingLayer() &&
             layout_box->Layer()->ChildNeedsCompositingInputsUpdate());

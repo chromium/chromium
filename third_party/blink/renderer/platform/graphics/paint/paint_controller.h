@@ -103,7 +103,11 @@ class PLATFORM_EXPORT PaintController {
 
   void EnsureChunk();
 
-  void RecordHitTestData(const DisplayItemClient&, const IntRect&, TouchAction);
+  void RecordHitTestData(const DisplayItemClient&,
+                         const IntRect&,
+                         TouchAction,
+                         bool);
+
   void RecordScrollHitTestData(
       const DisplayItemClient&,
       DisplayItem::Type,

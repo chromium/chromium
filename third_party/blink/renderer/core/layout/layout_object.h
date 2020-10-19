@@ -30,6 +30,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "cc/base/features.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
@@ -3000,6 +3001,25 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     bitfields_.SetInsideBlockingTouchEventHandler(inside);
   }
 
+  // Whether this object's Node has a blocking wheel event handler on itself or
+  // an ancestor.
+  bool InsideBlockingWheelEventHandler() const {
+    return bitfields_.InsideBlockingWheelEventHandler();
+  }
+  // Mark this object as having a |InsideBlockingWheelEventHandler| changed, and
+  // mark all ancestors as having a descendant that changed. This will cause a
+  // PrePaint tree walk to update blocking wheel event handler state.
+  void MarkBlockingWheelEventHandlerChanged();
+  bool BlockingWheelEventHandlerChanged() const {
+    return bitfields_.BlockingWheelEventHandlerChanged();
+  }
+  bool DescendantBlockingWheelEventHandlerChanged() const {
+    return bitfields_.DescendantBlockingWheelEventHandlerChanged();
+  }
+  void UpdateInsideBlockingWheelEventHandler(bool inside) {
+    bitfields_.SetInsideBlockingWheelEventHandler(inside);
+  }
+
   // Painters can use const methods only, except for these explicitly declared
   // methods.
   class CORE_EXPORT MutableForPainting {
@@ -3061,6 +3081,10 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
 
     void UpdateInsideBlockingTouchEventHandler(bool inside) {
       layout_object_.UpdateInsideBlockingTouchEventHandler(inside);
+    }
+
+    void UpdateInsideBlockingWheelEventHandler(bool inside) {
+      layout_object_.UpdateInsideBlockingWheelEventHandler(inside);
     }
 
     void InvalidateIntersectionObserverCachedRects() {
@@ -3697,6 +3721,10 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
           inside_blocking_touch_event_handler_(false),
           effective_allowed_touch_action_changed_(true),
           descendant_effective_allowed_touch_action_changed_(false),
+          inside_blocking_wheel_event_handler_(false),
+          blocking_wheel_event_handler_changed_(
+              base::FeatureList::IsEnabled(::features::kWheelEventRegions)),
+          descendant_blocking_wheel_event_handler_changed_(false),
           is_effective_root_scroller_(false),
           is_global_root_scroller_(false),
           registered_as_first_line_image_observer_(false),
@@ -3961,6 +3989,23 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     // |effective_allowed_touch_action_changed_|.
     ADD_BOOLEAN_BITFIELD(descendant_effective_allowed_touch_action_changed_,
                          DescendantEffectiveAllowedTouchActionChanged);
+
+    // Whether this object's Node has a blocking wheel event handler on itself
+    // or an ancestor. This is updated during the PrePaint phase.
+    ADD_BOOLEAN_BITFIELD(inside_blocking_wheel_event_handler_,
+                         InsideBlockingWheelEventHandler);
+
+    // Set when |InsideBlockingWheelEventHandler| changes (i.e., blocking wheel
+    // event handlers change). This only needs to be set on the object that
+    // changes as the PrePaint walk will ensure descendants are updated.
+    ADD_BOOLEAN_BITFIELD(blocking_wheel_event_handler_changed_,
+                         BlockingWheelEventHandlerChanged);
+
+    // Set when a descendant's |InsideBlockingWheelEventHandler| changes. This
+    // is used to ensure the PrePaint tree walk processes objects with
+    // |blocking_wheel_event_handler_changed_|.
+    ADD_BOOLEAN_BITFIELD(descendant_blocking_wheel_event_handler_changed_,
+                         DescendantBlockingWheelEventHandlerChanged);
 
     // See page/scrolling/README.md for an explanation of root scroller and how
     // it works.

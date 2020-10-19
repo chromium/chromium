@@ -83,7 +83,7 @@ TEST_F(GraphicsLayerTest, PaintRecursively) {
                         GraphicsLayerPaintingPhase, const IntRect&) {
     if (layer == &root) {
       context.GetPaintController().RecordHitTestData(
-          *layer, IntRect(1, 2, 3, 4), TouchAction::kNone);
+          *layer, IntRect(1, 2, 3, 4), TouchAction::kNone, false);
     } else if (layer == &layer1) {
       ScopedPaintChunkProperties properties(
           context.GetPaintController(), layer1_state, *layer, kBackgroundType);

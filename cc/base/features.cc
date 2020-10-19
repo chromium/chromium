@@ -58,4 +58,6 @@ const base::Feature kScrollUnification{"ScrollUnification",
 const base::Feature kSchedulerSmoothnessForAnimatedScrolls{
     "SmoothnessModeForAnimatedScrolls", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kWheelEventRegions{"WheelEventRegions",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
 }  // namespace features

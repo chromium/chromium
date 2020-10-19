@@ -61,7 +61,8 @@ class PLATFORM_EXPORT PaintChunker final {
   // Otherwise it's ignored. Returns true if a new chunk is added.
   bool AddHitTestDataToCurrentChunk(const PaintChunk::Id&,
                                     const IntRect&,
-                                    TouchAction);
+                                    TouchAction,
+                                    bool blocking_wheel);
   void CreateScrollHitTestChunk(
       const PaintChunk::Id&,
       const TransformPaintPropertyNode* scroll_translation,

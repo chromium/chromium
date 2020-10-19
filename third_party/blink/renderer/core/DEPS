@@ -29,6 +29,7 @@ include_rules = [
     "+cc/animation/scroll_offset_animation_curve.h",
     "+cc/animation/scroll_state.h",
     "+cc/animation/scroll_timeline.h",
+    "+cc/base/features.h",
     "+cc/base/region.h",
     "+cc/input/browser_controls_state.h",
     "+cc/input/event_listener_properties.h",

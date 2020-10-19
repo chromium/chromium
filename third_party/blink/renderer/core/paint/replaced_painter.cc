@@ -103,8 +103,10 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
     if (layout_replaced_.StyleRef().Visibility() == EVisibility::kVisible) {
       if (layout_replaced_.HasBoxDecorationBackground())
         should_paint_background = true;
-      if (layout_replaced_.HasEffectiveAllowedTouchAction())
+      if (layout_replaced_.HasEffectiveAllowedTouchAction() ||
+          layout_replaced_.InsideBlockingWheelEventHandler()) {
         should_paint_background = true;
+      }
     }
     if (should_paint_background) {
       if (layout_replaced_.HasLayer() &&

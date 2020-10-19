@@ -17,6 +17,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "cc/base/features.h"
 #include "cc/base/simple_enclosed_region.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/picture_layer.h"
@@ -51,6 +52,7 @@ struct SameSizeAsLayer : public base::RefCounted<SameSizeAsLayer> {
     SkColor background_color;
     Region non_fast_scrollable_region;
     TouchActionRegion touch_action_region;
+    Region wheel_event_region;
     ElementId element_id;
   } inputs;
   void* layer_tree_inputs;
@@ -1073,6 +1075,15 @@ void Layer::SetTouchActionRegion(TouchActionRegion touch_action_region) {
   SetNeedsCommit();
 }
 
+void Layer::SetWheelEventRegion(Region wheel_event_region) {
+  DCHECK(IsPropertyChangeAllowed());
+  if (inputs_.wheel_event_region == wheel_event_region)
+    return;
+
+  inputs_.wheel_event_region = std::move(wheel_event_region);
+  SetNeedsCommit();
+}
+
 void Layer::SetCacheRenderSurface(bool cache) {
   DCHECK(IsPropertyChangeAllowed());
   if (cache_render_surface_ == cache)
@@ -1310,16 +1321,20 @@ void Layer::PushPropertiesTo(LayerImpl* layer) {
   layer->set_may_contain_video(may_contain_video_);
   layer->SetNonFastScrollableRegion(inputs_.non_fast_scrollable_region);
   layer->SetTouchActionRegion(inputs_.touch_action_region);
-  // TODO(sunxd): Pass the correct region for wheel event handlers, see
-  // https://crbug.com/841364.
-  EventListenerProperties mouse_wheel_props =
-      layer_tree_host()->event_listener_properties(
-          EventListenerClass::kMouseWheel);
-  if (mouse_wheel_props == EventListenerProperties::kBlocking ||
-      mouse_wheel_props == EventListenerProperties::kBlockingAndPassive) {
-    layer->SetWheelEventHandlerRegion(Region(gfx::Rect(bounds())));
+  if (!base::FeatureList::IsEnabled(::features::kWheelEventRegions)) {
+    // TODO(sunxd): Pass the correct region for wheel event handlers, see
+    // https://crbug.com/841364.
+    EventListenerProperties mouse_wheel_props =
+        layer_tree_host()->event_listener_properties(
+            EventListenerClass::kMouseWheel);
+    if (mouse_wheel_props == EventListenerProperties::kBlocking ||
+        mouse_wheel_props == EventListenerProperties::kBlockingAndPassive) {
+      layer->SetWheelEventHandlerRegion(Region(gfx::Rect(bounds())));
+    } else {
+      layer->SetWheelEventHandlerRegion(Region());
+    }
   } else {
-    layer->SetWheelEventHandlerRegion(Region());
+    layer->SetWheelEventHandlerRegion(inputs_.wheel_event_region);
   }
   layer->SetContentsOpaque(inputs_.contents_opaque);
   layer->SetContentsOpaqueForText(inputs_.contents_opaque_for_text);

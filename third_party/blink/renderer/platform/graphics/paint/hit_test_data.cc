@@ -8,8 +8,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
-
-static String TouchActionRectsAsString(const Vector<TouchActionRect>& rects) {
+template <typename T>
+static String RectsAsString(const Vector<T>& rects) {
   StringBuilder sb;
   sb.Append("[");
   bool first = true;
@@ -32,7 +32,13 @@ String HitTestData::ToString() const {
   bool printed_top_level_field = false;
   if (!touch_action_rects.IsEmpty()) {
     sb.Append("touch_action_rects: ");
-    sb.Append(TouchActionRectsAsString(touch_action_rects));
+    sb.Append(RectsAsString<TouchActionRect>(touch_action_rects));
+    printed_top_level_field = true;
+  }
+
+  if (!wheel_event_rects.IsEmpty()) {
+    sb.Append("wheel_event_rects: ");
+    sb.Append(RectsAsString<IntRect>(wheel_event_rects));
     printed_top_level_field = true;
   }
 
