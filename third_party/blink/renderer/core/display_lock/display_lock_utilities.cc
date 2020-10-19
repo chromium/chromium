@@ -611,4 +611,12 @@ bool DisplayLockUtilities::PrePaintBlockedInParentFrame(LayoutView* view) {
   return false;
 }
 
+bool DisplayLockUtilities::IsAutoWithoutLayout(const LayoutObject& object) {
+  auto* context = object.GetDisplayLockContext();
+  if (!context)
+    return false;
+  return !context->IsLocked() && context->IsAuto() &&
+         !context->HadLifecycleUpdateSinceLastUnlock();
+}
+
 }  // namespace blink

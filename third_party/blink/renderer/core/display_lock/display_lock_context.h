@@ -210,6 +210,11 @@ class CORE_EXPORT DisplayLockContext final
   // Debugging functions.
   String RenderAffectingStateToString() const;
 
+  bool IsAuto() const { return state_ == EContentVisibility::kAuto; }
+  bool HadLifecycleUpdateSinceLastUnlock() const {
+    return had_lifecycle_update_since_last_unlock_;
+  }
+
  private:
   // Give access to |NotifyForcedUpdateScopeStarted()| and
   // |NotifyForcedUpdateScopeEnded()|.
@@ -396,6 +401,8 @@ class CORE_EXPORT DisplayLockContext final
   bool render_affecting_state_[static_cast<int>(
       RenderAffectingState::kNumRenderAffectingStates)] = {false};
   int keep_unlocked_count_ = 0;
+
+  bool had_lifecycle_update_since_last_unlock_ = false;
 };
 
 }  // namespace blink

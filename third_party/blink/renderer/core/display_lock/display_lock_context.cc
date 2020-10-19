@@ -365,6 +365,7 @@ bool DisplayLockContext::ShouldLayoutChildren() const {
 void DisplayLockContext::DidLayoutChildren() {
   // Since we did layout on children already, we'll clear this.
   child_layout_was_blocked_ = false;
+  had_lifecycle_update_since_last_unlock_ = true;
 }
 
 bool DisplayLockContext::ShouldPrePaintChildren() const {
@@ -510,6 +511,7 @@ void DisplayLockContext::NotifyForcedUpdateScopeEnded() {
 void DisplayLockContext::Unlock() {
   DCHECK(IsLocked());
   is_locked_ = false;
+  had_lifecycle_update_since_last_unlock_ = false;
   UpdateDocumentBookkeeping(true, !activatable_mask_, false,
                             !activatable_mask_);
 

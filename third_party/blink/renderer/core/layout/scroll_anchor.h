@@ -177,6 +177,11 @@ class CORE_EXPORT ScrollAnchor final {
   // True iff an adjustment check has been queued with the FrameView but not yet
   // performed.
   bool queued_;
+
+  // This is set to true if the last anchor we have selected is a
+  // 'content-visibility: auto' element that did not yet have a layout after
+  // becoming visible.
+  bool anchor_is_cv_auto_without_layout_ = false;
 };
 
 }  // namespace blink

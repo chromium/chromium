@@ -174,6 +174,8 @@ class CORE_EXPORT DisplayLockUtilities {
 
   static bool PrePaintBlockedInParentFrame(LayoutView* layout_view);
 
+  static bool IsAutoWithoutLayout(const LayoutObject& object);
+
  private:
   static bool UpdateStyleAndLayoutForRangeIfNeeded(
       const EphemeralRangeInFlatTree& range,

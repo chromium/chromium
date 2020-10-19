@@ -3094,23 +3094,153 @@ TEST_F(DisplayLockContextRenderingTest,
   EXPECT_TRUE(element->GetDisplayLockContext()->IsLocked());
   EXPECT_EQ(GetDocument().scrollingElement()->scrollTop(), 29000.);
 
-  // It again gets unlocked and shrink.
+  // It again gets unlocked and shrink. This time scroll anchoring puts it right
+  // off the edge of the screen.
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(element->GetDisplayLockContext()->IsLocked());
-  EXPECT_EQ(GetDocument().scrollingElement()->scrollTop(), 29000.);
+  EXPECT_EQ(GetDocument().scrollingElement()->scrollTop(), 23008.);
 
-  // On the next relock we select the following element as an anchor and thus
-  // the scroll top changes to be higher.
+  // On the next update we select the following element as an anchor and the
+  // scroll offset doesn't change.
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(element->GetDisplayLockContext()->IsLocked());
-  EXPECT_GT(GetDocument().scrollingElement()->scrollTop(), 29000.);
+  EXPECT_FALSE(element->GetDisplayLockContext()->IsLocked());
+  EXPECT_EQ(GetDocument().scrollingElement()->scrollTop(), 23008.);
 
-  // Subsequent updates no longer unlock the element because even if its locked
-  // state it is far enough off-screen.
+  // Subsequent updates are in a stable state.
   for (int i = 0; i < 5; ++i) {
     UpdateAllLifecyclePhasesForTest();
-    EXPECT_TRUE(element->GetDisplayLockContext()->IsLocked());
-    EXPECT_GT(GetDocument().scrollingElement()->scrollTop(), 29000.);
+    EXPECT_FALSE(element->GetDisplayLockContext()->IsLocked());
+    EXPECT_EQ(GetDocument().scrollingElement()->scrollTop(), 23008.);
+  }
+}
+
+TEST_F(DisplayLockContextRenderingTest,
+       AutoReachesStableStateOnContentSmallerThanLockedSizeInLtr) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      body { writing-mode: vertical-lr }
+      .spacer { block-size: 20000px; }
+      .auto {
+        content-visibility: auto;
+        contain-intrinsic-size: 20000px 1px;
+      }
+      .auto > div {
+        block-size: 3000px;
+      }
+    </style>
+
+    <div class=spacer></div>
+    <div id=e1 class=auto><div>content</div></div>
+    <div id=e2 class=auto><div>content</div></div>
+    <div class=spacer></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  GetDocument().scrollingElement()->setScrollLeft(29000);
+
+  Element* element = GetDocument().getElementById("e1");
+
+  // Note that this test also unlock/relocks #e2 but we only care about #e1
+  // settling into a steady state.
+
+  // Initially we start with locked in the viewport.
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(element->GetDisplayLockContext()->IsLocked());
+  EXPECT_EQ(GetDocument().scrollingElement()->scrollLeft(), 29000.);
+
+  // It gets unlocked because it's in the viewport.
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(element->GetDisplayLockContext()->IsLocked());
+  EXPECT_EQ(GetDocument().scrollingElement()->scrollLeft(), 29000.);
+
+  // By unlocking it, it shrinks so next time it gets relocked.
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(element->GetDisplayLockContext()->IsLocked());
+  EXPECT_EQ(GetDocument().scrollingElement()->scrollLeft(), 29000.);
+
+  // It again gets unlocked and shrink. This time scroll anchoring puts it right
+  // off the edge of the screen.
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(element->GetDisplayLockContext()->IsLocked());
+  EXPECT_EQ(GetDocument().scrollingElement()->scrollLeft(), 23008.);
+
+  // On the next update we select the following element as an anchor and the
+  // scroll offset doesn't change.
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(element->GetDisplayLockContext()->IsLocked());
+  EXPECT_EQ(GetDocument().scrollingElement()->scrollLeft(), 23008.);
+
+  // Subsequent updates are in a stable state.
+  for (int i = 0; i < 5; ++i) {
+    UpdateAllLifecyclePhasesForTest();
+    EXPECT_FALSE(element->GetDisplayLockContext()->IsLocked());
+    EXPECT_EQ(GetDocument().scrollingElement()->scrollLeft(), 23008.);
+  }
+}
+
+TEST_F(DisplayLockContextRenderingTest,
+       AutoReachesStableStateOnContentSmallerThanLockedSizeInRtl) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      body { writing-mode: vertical-rl }
+      .spacer { block-size: 20000px; }
+      .auto {
+        content-visibility: auto;
+        contain-intrinsic-size: 20000px 1px;
+      }
+      .auto > div {
+        block-size: 3000px;
+      }
+    </style>
+
+    <div class=spacer></div>
+    <div id=e1 class=auto><div>content</div></div>
+    <div id=e2 class=auto><div>content</div></div>
+    <div class=spacer></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  GetDocument().scrollingElement()->setScrollLeft(-29000);
+
+  Element* element = GetDocument().getElementById("e1");
+
+  // Note that this test also unlock/relocks #e2 but we only care about #e1
+  // settling into a steady state.
+
+  // Initially we start with locked in the viewport.
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(element->GetDisplayLockContext()->IsLocked());
+  EXPECT_EQ(GetDocument().scrollingElement()->scrollLeft(), -29000.);
+
+  // It gets unlocked because it's in the viewport.
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(element->GetDisplayLockContext()->IsLocked());
+  EXPECT_EQ(GetDocument().scrollingElement()->scrollLeft(), -29000.);
+
+  // By unlocking it, it shrinks so next time it gets relocked.
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(element->GetDisplayLockContext()->IsLocked());
+  EXPECT_EQ(GetDocument().scrollingElement()->scrollLeft(), -29000.);
+
+  // It again gets unlocked and shrink. This time scroll anchoring puts it right
+  // off the edge of the screen.
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(element->GetDisplayLockContext()->IsLocked());
+  EXPECT_EQ(GetDocument().scrollingElement()->scrollLeft(), -23008.);
+
+  // On the next update we select the following element as an anchor and the
+  // scroll offset doesn't change.
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(element->GetDisplayLockContext()->IsLocked());
+  EXPECT_EQ(GetDocument().scrollingElement()->scrollLeft(), -23008.);
+
+  // Subsequent updates are in a stable state.
+  for (int i = 0; i < 5; ++i) {
+    UpdateAllLifecyclePhasesForTest();
+    EXPECT_FALSE(element->GetDisplayLockContext()->IsLocked());
+    EXPECT_EQ(GetDocument().scrollingElement()->scrollLeft(), -23008.);
   }
 }
 
