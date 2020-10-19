@@ -458,7 +458,7 @@ cursors.Cursor = class {
         throw Error('Unrecognized unit: ' + unit);
     }
     newNode = newNode || originalNode;
-    newIndex = goog.isDef(newIndex) ? newIndex : this.index_;
+    newIndex = (newIndex !== undefined) ? newIndex : this.index_;
     return new cursors.Cursor(newNode, newIndex);
   }
 

@@ -39,14 +39,15 @@ NavBraille = class {
      * Selection start index.
      * @type {number}
      */
-    this.startIndex = goog.isDef(kwargs.startIndex) ? kwargs.startIndex : -1;
+    this.startIndex =
+        (kwargs.startIndex !== undefined) ? kwargs.startIndex : -1;
 
     /**
      * Selection end index.
      * @type {number}
      */
     this.endIndex =
-        goog.isDef(kwargs.endIndex) ? kwargs.endIndex : this.startIndex;
+        (kwargs.endIndex !== undefined) ? kwargs.endIndex : this.startIndex;
   }
 
   /**

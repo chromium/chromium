@@ -32,8 +32,7 @@ LibLouis = class {
      * Path to translation tables.
      * @private {?string}
      */
-    this.tablesDir_ = goog.isDef(opt_tablesDir) ? opt_tablesDir : null;
-
+    this.tablesDir_ = (opt_tablesDir !== undefined) ? opt_tablesDir : null;
 
     /**
      * Whether liblouis is loaded.

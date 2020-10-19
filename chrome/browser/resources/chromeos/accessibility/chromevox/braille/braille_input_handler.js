@@ -406,7 +406,7 @@ BrailleInputHandler = class {
         // so that these keys work even if the Braille IME is not active.
         const keyName = /** @type {string} */ (event.standardKeyCode);
         const numericCode = BrailleKeyEvent.keyCodeToLegacyCode(keyName);
-        if (!goog.isDef(numericCode)) {
+        if (!numericCode) {
           throw Error('Unknown key code in event: ' + JSON.stringify(event));
         }
         EventGenerator.sendKeyPress(numericCode, {
