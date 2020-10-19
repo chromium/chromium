@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/files/file_util.h"
 #include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -40,8 +41,9 @@ constexpr uint32_t kInFormatsBlobPropId = 400;
 constexpr uint32_t kActivePropId = 1000;
 constexpr uint32_t kModePropId = 1001;
 constexpr uint32_t kCrtcIdPropId = 2000;
-constexpr uint32_t kTypePropId = 3010;
-constexpr uint32_t kInFormatsPropId = 3011;
+constexpr uint32_t kFenceFdPropId = 3010;
+constexpr uint32_t kTypePropId = 3011;
+constexpr uint32_t kInFormatsPropId = 3012;
 
 const gfx::Size kDefaultModeSize(kDefaultMode.hdisplay, kDefaultMode.vdisplay);
 const gfx::Size kOverlaySize(kDefaultMode.hdisplay / 2,
@@ -49,6 +51,35 @@ const gfx::Size kOverlaySize(kDefaultMode.hdisplay / 2,
 const gfx::SizeF kDefaultModeSizeF(1.0, 1.0);
 
 }  // namespace
+
+class FakeFenceFD {
+ public:
+  FakeFenceFD();
+
+  std::unique_ptr<gfx::GpuFence> GetGpuFence() const;
+  void Signal() const;
+
+ private:
+  base::ScopedFD read_fd;
+  base::ScopedFD write_fd;
+};
+
+FakeFenceFD::FakeFenceFD() {
+  int fds[2];
+  base::CreateLocalNonBlockingPipe(fds);
+  read_fd = base::ScopedFD(fds[0]);
+  write_fd = base::ScopedFD(fds[1]);
+}
+
+std::unique_ptr<gfx::GpuFence> FakeFenceFD::GetGpuFence() const {
+  gfx::GpuFenceHandle handle;
+  handle.owned_fd = base::ScopedFD(HANDLE_EINTR(dup(read_fd.get())));
+  return std::make_unique<gfx::GpuFence>(std::move(handle));
+}
+
+void FakeFenceFD::Signal() const {
+  base::WriteFileDescriptor(write_fd.get(), "a", 1);
+}
 
 class HardwareDisplayControllerTest : public testing::Test {
  public:
@@ -142,6 +173,7 @@ void HardwareDisplayControllerTest::InitializeDrmDevice(bool use_atomic) {
       {3007, "SRC_Y"},
       {3008, "SRC_W"},
       {3009, "SRC_H"},
+      {kFenceFdPropId, "IN_FENCE_FD"},
       // Add some optional properties we use for convenience.
       {kTypePropId, "type"},
       {kInFormatsPropId, "IN_FORMATS"},
@@ -259,6 +291,64 @@ TEST_F(HardwareDisplayControllerTest, CheckModesettingSetsProps) {
   GetDrmPropertyForName(drm_.get(), crtc_props.get(), "MODE_ID",
                         &crtc_prop_for_name);
   EXPECT_EQ(kModePropId, crtc_prop_for_name.id);
+
+  ui::DrmDevice::Property fence_fd_prop = {};
+  ui::ScopedDrmObjectPropertyPtr plane_props =
+      drm_->GetObjectProperties(kPlaneOffset, DRM_MODE_OBJECT_PLANE);
+  ui::GetDrmPropertyForName(drm_.get(), plane_props.get(), "IN_FENCE_FD",
+                            &fence_fd_prop);
+  EXPECT_EQ(kFenceFdPropId, fence_fd_prop.id);
+  EXPECT_EQ(base::kInvalidPlatformFile, static_cast<int>(fence_fd_prop.value));
+}
+
+TEST_F(HardwareDisplayControllerTest, FenceFdValueChange) {
+  ui::DrmOverlayPlane plane1(CreateBuffer(), nullptr);
+  EXPECT_TRUE(controller_->Modeset(plane1, kDefaultMode));
+
+  // Test invalid fence fd
+  {
+    ui::DrmDevice::Property fence_fd_prop = {};
+    ui::ScopedDrmObjectPropertyPtr plane_props =
+        drm_->GetObjectProperties(kPlaneOffset, DRM_MODE_OBJECT_PLANE);
+    ui::GetDrmPropertyForName(drm_.get(), plane_props.get(), "IN_FENCE_FD",
+                              &fence_fd_prop);
+    EXPECT_EQ(kFenceFdPropId, fence_fd_prop.id);
+    EXPECT_EQ(base::kInvalidPlatformFile,
+              static_cast<int>(fence_fd_prop.value));
+  }
+
+  const FakeFenceFD fake_fence_fd;
+  plane1.gpu_fence = fake_fence_fd.GetGpuFence();
+  std::vector<ui::DrmOverlayPlane> planes = {};
+  planes.push_back(plane1.Clone());
+  SchedulePageFlip(std::move(planes));
+
+  // Verify fence FD after a GPU Fence is added to the plane.
+  {
+    ui::DrmDevice::Property fence_fd_prop = {};
+    ui::ScopedDrmObjectPropertyPtr plane_props =
+        drm_->GetObjectProperties(kPlaneOffset, DRM_MODE_OBJECT_PLANE);
+    ui::GetDrmPropertyForName(drm_.get(), plane_props.get(), "IN_FENCE_FD",
+                              &fence_fd_prop);
+    EXPECT_EQ(kFenceFdPropId, fence_fd_prop.id);
+    EXPECT_LT(base::kInvalidPlatformFile,
+              static_cast<int>(fence_fd_prop.value));
+  }
+
+  plane1.gpu_fence = nullptr;
+  EXPECT_TRUE(controller_->Modeset(plane1, kDefaultMode));
+
+  // Test an invalid FD again after the fence is removed.
+  {
+    ui::DrmDevice::Property fence_fd_prop = {};
+    ui::ScopedDrmObjectPropertyPtr plane_props =
+        drm_->GetObjectProperties(kPlaneOffset, DRM_MODE_OBJECT_PLANE);
+    ui::GetDrmPropertyForName(drm_.get(), plane_props.get(), "IN_FENCE_FD",
+                              &fence_fd_prop);
+    EXPECT_EQ(kFenceFdPropId, fence_fd_prop.id);
+    EXPECT_EQ(base::kInvalidPlatformFile,
+              static_cast<int>(fence_fd_prop.value));
+  }
 }
 
 TEST_F(HardwareDisplayControllerTest, CheckDisableResetsProps) {
@@ -293,6 +383,14 @@ TEST_F(HardwareDisplayControllerTest, CheckDisableResetsProps) {
   GetDrmPropertyForName(drm_.get(), crtc_props.get(), "MODE_ID",
                         &crtc_prop_for_name);
   EXPECT_EQ(0U, crtc_prop_for_name.value);
+
+  ui::DrmDevice::Property fence_fd_prop = {};
+  ui::ScopedDrmObjectPropertyPtr plane_props =
+      drm_->GetObjectProperties(kPlaneOffset, DRM_MODE_OBJECT_PLANE);
+  ui::GetDrmPropertyForName(drm_.get(), plane_props.get(), "IN_FENCE_FD",
+                            &fence_fd_prop);
+  EXPECT_EQ(kFenceFdPropId, fence_fd_prop.id);
+  EXPECT_EQ(base::kInvalidPlatformFile, static_cast<int>(fence_fd_prop.value));
 }
 
 TEST_F(HardwareDisplayControllerTest, CheckStateAfterPageFlip) {

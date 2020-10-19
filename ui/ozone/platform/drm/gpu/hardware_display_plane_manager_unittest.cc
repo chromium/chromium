@@ -1309,13 +1309,12 @@ class HardwareDisplayPlaneAtomicMock : public ui::HardwareDisplayPlaneAtomic {
   HardwareDisplayPlaneAtomicMock() : ui::HardwareDisplayPlaneAtomic(1) {}
   ~HardwareDisplayPlaneAtomicMock() override = default;
 
-  bool SetPlaneData(drmModeAtomicReq* property_set,
-                    uint32_t crtc_id,
-                    uint32_t framebuffer,
-                    const gfx::Rect& crtc_rect,
-                    const gfx::Rect& src_rect,
-                    const gfx::OverlayTransform transform,
-                    int in_fence_fd) override {
+  bool AssignPlaneProps(uint32_t crtc_id,
+                        uint32_t framebuffer,
+                        const gfx::Rect& crtc_rect,
+                        const gfx::Rect& src_rect,
+                        const gfx::OverlayTransform transform,
+                        int in_fence_fd) override {
     framebuffer_ = framebuffer;
     return true;
   }
