@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS About:blank iframe's addressSpace is inherited from the root.
+FAIL About:srcdoc iframe's addressSpace is inherited from the root. assert_equals: expected "local" but got "public"
+FAIL Data: iframe's addressSpace is inherited from the root. assert_equals: expected "local" but got "public"
+FAIL Blob: iframe's addressSpace is inherited from the root. assert_equals: expected "local" but got "public"
+PASS Local iframe's addressSpace is local.
+PASS Treat-as-public-address iframe's addressSpace is public.
+FAIL Local-local grandchild iframe's addressSpace is local. assert_equals: grandchild expected "Loaded" but got ""
+Harness: the test ran to completion.
+
