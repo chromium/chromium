@@ -68,8 +68,9 @@ public class SafetyCheckUpdatesDelegateImpl implements SafetyCheckUpdatesDelegat
             int status = mOmaha.checkForUpdates();
             // Post the results back to the UI thread.
             PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
-                if (statusCallback.get() != null) {
-                    statusCallback.get().onResult(convertOmahaUpdateStatus(status));
+                Callback<Integer> strongRef = statusCallback.get();
+                if (strongRef != null) {
+                    strongRef.onResult(convertOmahaUpdateStatus(status));
                 }
             });
         });
