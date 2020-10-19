@@ -20,6 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
 #include "components/media_router/browser/issue_manager.h"
@@ -163,6 +164,8 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
                            PresentationConnectionStateChangedCallback);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterMojoImplTest,
                            PresentationConnectionStateChangedCallbackRemoved);
+  FRIEND_TEST_ALL_PREFIXES(MediaRouterMojoImpl,
+                           TestRecordPresentationRequestUrlBySink);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest,
                            SyncStateToMediaRouteProvider);
   FRIEND_TEST_ALL_PREFIXES(ExtensionMediaRouteProviderProxyTest,
@@ -391,6 +394,28 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
   // Gets the sink with the given ID from lists of sinks held by sink queries.
   // Returns a nullptr if none is found.
   const MediaSink* GetSinkById(const MediaSink::Id& sink_id) const;
+
+  // Used by RecordPresentationRequestUrlBySink to record the possible ways a
+  // Presentation URL can be used to start a presentation, both by the kind of
+  // URL and the type of the sink the URL will be presented on.  "Normal"
+  // (https:, file:, or chrome-extension:) URLs are typically implemented by
+  // loading them into an offscreen tab for streaming, while Cast and DIAL URLs
+  // are sent directly to a compatible device.
+  enum class PresentationUrlBySink {
+    kUnknown = 0,
+    kNormalUrlToChromecast = 1,
+    kNormalUrlToExtension = 2,
+    kNormalUrlToWiredDisplay = 3,
+    kCastUrlToChromecast = 4,
+    kDialUrlToDial = 5,
+    // Add new values immediately above this line.  Also update kMaxValue below
+    // and the enum of the same name in tools/metrics/histograms/enums.xml.
+    kMaxValue = kDialUrlToDial,
+  };
+
+  static void RecordPresentationRequestUrlBySink(
+      const MediaSource& source,
+      MediaRouteProviderId provider_id);
 
   base::flat_map<MediaSource::Id, std::unique_ptr<MediaSinksQuery>>
       sinks_queries_;

@@ -18,6 +18,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -44,6 +45,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 using blink::mojom::PresentationConnectionCloseReason;
 using blink::mojom::PresentationConnectionState;
@@ -1262,6 +1264,52 @@ TEST_F(MediaRouterMojoImplTest, ObserveRoutesFromMultipleProviders) {
   // Have the wired display MRP report an empty list of routes.
   EXPECT_CALL(observer, OnRoutesUpdated(IsEmpty(), IsEmpty()));
   UpdateRoutes(MediaRouteProviderId::WIRED_DISPLAY, {}, kSource, {});
+}
+
+TEST(MediaRouterMojoImpl, TestRecordPresentationRequestUrlBySink) {
+  using base::Bucket;
+  using PresentationUrlBySink = MediaRouterMojoImpl::PresentationUrlBySink;
+
+  MediaSource cast_source("cast:ABCD1234");
+  MediaSource dial_source(
+      GURL(base::StrCat({kCastDialPresentationUrlScheme, ":YouTube"})));
+  MediaSource presentation_url(GURL("https://www.example.com"));
+
+  base::HistogramTester tester;
+  MediaRouterMojoImpl::RecordPresentationRequestUrlBySink(
+      cast_source, MediaRouteProviderId::CAST);
+  MediaRouterMojoImpl::RecordPresentationRequestUrlBySink(
+      dial_source, MediaRouteProviderId::DIAL);
+  MediaRouterMojoImpl::RecordPresentationRequestUrlBySink(
+      presentation_url, MediaRouteProviderId::CAST);
+  MediaRouterMojoImpl::RecordPresentationRequestUrlBySink(
+      presentation_url, MediaRouteProviderId::WIRED_DISPLAY);
+  MediaRouterMojoImpl::RecordPresentationRequestUrlBySink(
+      presentation_url, MediaRouteProviderId::EXTENSION);
+  // DIAL devices don't support normal URLs, so this will get logged as
+  // kUnknown.
+  MediaRouterMojoImpl::RecordPresentationRequestUrlBySink(
+      presentation_url, MediaRouteProviderId::DIAL);
+  // Normally, Cast sources are sent to the CAST provider, but in case it gets
+  // routed to the EXTENSION provider instead.
+  MediaRouterMojoImpl::RecordPresentationRequestUrlBySink(
+      cast_source, MediaRouteProviderId::EXTENSION);
+
+  EXPECT_THAT(
+      tester.GetAllSamples("MediaRouter.PresentationRequest.UrlBySink"),
+      testing::UnorderedElementsAre(
+          Bucket(static_cast<int>(PresentationUrlBySink::kUnknown), 1),
+          Bucket(
+              static_cast<int>(PresentationUrlBySink::kNormalUrlToChromecast),
+              1),
+          Bucket(static_cast<int>(PresentationUrlBySink::kNormalUrlToExtension),
+                 1),
+          Bucket(
+              static_cast<int>(PresentationUrlBySink::kNormalUrlToWiredDisplay),
+              1),
+          Bucket(static_cast<int>(PresentationUrlBySink::kCastUrlToChromecast),
+                 2),
+          Bucket(static_cast<int>(PresentationUrlBySink::kDialUrlToDial), 1)));
 }
 
 }  // namespace media_router

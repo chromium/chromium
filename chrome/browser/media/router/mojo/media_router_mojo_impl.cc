@@ -117,63 +117,6 @@ DesktopMediaPickerController::Params MakeDesktopPickerParams(
   return params;
 }
 
-// Records the possible ways a Presentation URL can be used to start a
-// presentation, both by the kind of URL and the type of the sink the URL will
-// be presented on.  "Normal" (https:, file:, or chrome-extension:) URLs are
-// typically implemented by loading them into an offscreen tab for streaming,
-// while Cast and DIAL URLs are sent directly to a compatible device.
-enum class PresentationUrlBySink {
-  kUnknown = 0,
-  kNormalUrlToChromecast = 1,
-  kNormalUrlToExtension = 2,
-  kNormalUrlToWiredDisplay = 3,
-  kCastUrlToChromecast = 4,
-  kDialUrlToDial = 5,
-  // Add new values immediately above this line.  Also update kMaxValue below
-  // and the enum of the same name in tools/metrics/histograms/enums.xml.
-  kMaxValue = kDialUrlToDial,
-};
-
-// NOTE: To record this on Android, will need to move to
-// //components/media_router and refactor to avoid the extensions dependency.
-void RecordPresentationRequestUrlBySink(const MediaSource& source,
-                                        MediaRouteProviderId provider_id) {
-  PresentationUrlBySink value = PresentationUrlBySink::kUnknown;
-  // URLs that can be rendered in offscreen tabs (for cloud or Chromecast
-  // sinks), or on a wired display.
-  bool is_normal_url = source.url().SchemeIs(url::kHttpsScheme) ||
-                       source.url().SchemeIs(extensions::kExtensionScheme) ||
-                       source.url().SchemeIs(url::kFileScheme);
-  switch (provider_id) {
-    case MediaRouteProviderId::EXTENSION:
-      if (is_normal_url) {
-        value = PresentationUrlBySink::kNormalUrlToExtension;
-      }
-      break;
-    case MediaRouteProviderId::WIRED_DISPLAY:
-      if (is_normal_url) {
-        value = PresentationUrlBySink::kNormalUrlToWiredDisplay;
-      }
-      break;
-    case MediaRouteProviderId::CAST:
-      if (source.IsCastPresentationUrl()) {
-        value = PresentationUrlBySink::kCastUrlToChromecast;
-      } else if (is_normal_url) {
-        value = PresentationUrlBySink::kNormalUrlToChromecast;
-      }
-      break;
-    case MediaRouteProviderId::DIAL:
-      if (source.IsDialSource()) {
-        value = PresentationUrlBySink::kDialUrlToDial;
-      }
-      break;
-    case MediaRouteProviderId::UNKNOWN:
-      break;
-  }
-  base::UmaHistogramEnumeration("MediaRouter.PresentationRequest.UrlBySink",
-                                value);
-}
-
 }  // namespace
 
 using SinkAvailability = mojom::MediaRouter::SinkAvailability;
@@ -329,12 +272,13 @@ void MediaRouterMojoImpl::CreateRoute(const MediaSource::Id& source_id,
   }
 
   MediaRouterMetrics::RecordMediaSinkType(sink->icon_type());
-  const MediaRouteProviderId provider_id = FixProviderId(sink->provider_id());
   // Record which of the possible ways the sink may render the source's
   // presentation URL (if it has one).
   if (source.url().is_valid()) {
-    RecordPresentationRequestUrlBySink(source, provider_id);
+    RecordPresentationRequestUrlBySink(source, sink->provider_id());
   }
+
+  const MediaRouteProviderId provider_id = FixProviderId(sink->provider_id());
 
   const std::string presentation_id = MediaRouterBase::CreatePresentationId();
   auto mr_callback = base::BindOnce(
@@ -1102,6 +1046,51 @@ const MediaSink* MediaRouterMojoImpl::GetSinkById(
       return &(*sink_it);
   }
   return nullptr;
+}
+
+// NOTE: To record this on Android, will need to move to
+// //components/media_router and refactor to avoid the extensions dependency.
+void MediaRouterMojoImpl::RecordPresentationRequestUrlBySink(
+    const MediaSource& source,
+    MediaRouteProviderId provider_id) {
+  PresentationUrlBySink value = PresentationUrlBySink::kUnknown;
+  // URLs that can be rendered in offscreen tabs (for cloud or Chromecast
+  // sinks), or on a wired display.
+  bool is_normal_url = source.url().SchemeIs(url::kHttpsScheme) ||
+                       source.url().SchemeIs(extensions::kExtensionScheme) ||
+                       source.url().SchemeIs(url::kFileScheme);
+  switch (provider_id) {
+    case MediaRouteProviderId::EXTENSION:
+      if (source.IsCastPresentationUrl()) {
+        // This "should not happen," but the code that creates media routes is
+        // tricky and we want to catch all possible cases.
+        value = PresentationUrlBySink::kCastUrlToChromecast;
+      } else if (is_normal_url) {
+        value = PresentationUrlBySink::kNormalUrlToExtension;
+      }
+      break;
+    case MediaRouteProviderId::WIRED_DISPLAY:
+      if (is_normal_url) {
+        value = PresentationUrlBySink::kNormalUrlToWiredDisplay;
+      }
+      break;
+    case MediaRouteProviderId::CAST:
+      if (source.IsCastPresentationUrl()) {
+        value = PresentationUrlBySink::kCastUrlToChromecast;
+      } else if (is_normal_url) {
+        value = PresentationUrlBySink::kNormalUrlToChromecast;
+      }
+      break;
+    case MediaRouteProviderId::DIAL:
+      if (source.IsDialSource()) {
+        value = PresentationUrlBySink::kDialUrlToDial;
+      }
+      break;
+    case MediaRouteProviderId::UNKNOWN:
+      break;
+  }
+  base::UmaHistogramEnumeration("MediaRouter.PresentationRequest.UrlBySink",
+                                value);
 }
 
 void MediaRouterMojoImpl::CreateRouteWithSelectedDesktop(
