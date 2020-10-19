@@ -477,7 +477,7 @@ void EditableCombobox::OnItemSelected(int index) {
   // handling code directly.
   HandleNewContent(selected_item_text);
   NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged,
-                           /*xsend_native_event=*/true);
+                           /*send_native_event=*/true);
 }
 
 void EditableCombobox::HandleNewContent(const base::string16& new_content) {

@@ -19,9 +19,9 @@ class Widget;
 class VIEWS_EXPORT UniqueWidgetPtr {
  public:
   UniqueWidgetPtr();
-  // Deliberately implicit since it's supposed to resemble a std::unique_ptr.
-  // NOLINTNEXTLINE(runtime/explicit)
-  UniqueWidgetPtr(std::unique_ptr<Widget> widget);
+  // This class acts like a std::unique_ptr<Widget>, so this constructor is
+  // deliberately implicit.
+  UniqueWidgetPtr(std::unique_ptr<Widget> widget);  // NOLINT
   UniqueWidgetPtr(UniqueWidgetPtr&&);
   UniqueWidgetPtr& operator=(UniqueWidgetPtr&&);
   ~UniqueWidgetPtr();

@@ -28,9 +28,9 @@ using WidgetAutoClosePtr = std::unique_ptr<Widget, WidgetAutoCloser>;
 class UniqueWidgetPtr::UniqueWidgetPtrImpl : public WidgetObserver {
  public:
   UniqueWidgetPtrImpl() = default;
-  // Deliberately implicit
-  // NOLINTNEXTLINE(runtime/explicit)
-  UniqueWidgetPtrImpl(std::unique_ptr<Widget> widget)
+  // This class acts like unique_ptr<Widget>, so this constructor is
+  // deliberately implicit.
+  UniqueWidgetPtrImpl(std::unique_ptr<Widget> widget)  // NOLINT
       : widget_closer_(widget.release()) {
     widget_observer_.Add(widget_closer_.get());
   }

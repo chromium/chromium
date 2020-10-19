@@ -25,7 +25,7 @@ AnyWidgetObserver::~AnyWidgetObserver() {
 #define PROPAGATE_NOTIFICATION(method, callback)   \
   void AnyWidgetObserver::method(Widget* widget) { \
     if (callback)                                  \
-      callback.Run(widget);                        \
+      (callback).Run(widget);                      \
   }
 
 PROPAGATE_NOTIFICATION(OnAnyWidgetInitialized, initialized_callback_)

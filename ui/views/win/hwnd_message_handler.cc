@@ -3292,9 +3292,7 @@ bool HWNDMessageHandler::IsSynthesizedMouseMessage(unsigned int message,
     ::ClientToScreen(hwnd(), &mouse_location);
     POINT cursor_pos = {0};
     ::GetCursorPos(&cursor_pos);
-    if (memcmp(&cursor_pos, &mouse_location, sizeof(POINT)))
-      return false;
-    return true;
+    return memcmp(&cursor_pos, &mouse_location, sizeof(POINT)) == 0;
   }
   return false;
 }

@@ -782,7 +782,7 @@ TEST_F(LayoutManagerBaseAvailableSizeTest,
   // Create a default root layout with non-visible, zero-size child with no
   // available size.
   ProposedLayout root_layout;
-  root_layout.child_layouts.push_back(ChildLayout());
+  root_layout.child_layouts.emplace_back();
   root_layout.child_layouts[0].child_view = child;
   root_layout.child_layouts[0].available_size = SizeBounds(0, 0);
 

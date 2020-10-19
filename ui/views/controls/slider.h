@@ -161,9 +161,9 @@ class VIEWS_EXPORT Slider : public View, public gfx::AnimationDelegate {
   // Animating value of the current radius of the thumb's highlight.
   float thumb_highlight_radius_ = 0.f;
 
-  gfx::SlideAnimation highlight_animation_;
+  gfx::SlideAnimation highlight_animation_{this};
 
-  bool pending_accessibility_value_change_;
+  bool pending_accessibility_value_change_ = false;
 };
 
 }  // namespace views

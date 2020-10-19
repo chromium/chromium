@@ -4,6 +4,9 @@
 
 #include "ui/views/animation/bounds_animator.h"
 
+#include <algorithm>
+#include <utility>
+
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/icu_test_util.h"
@@ -421,7 +424,7 @@ TEST_F(BoundsAnimatorTest, VerifyBoundsAnimatorUnderRTL) {
   // Enable RTL.
   base::test::ScopedRestoreICUDefaultLocale scoped_locale("he");
 
-  RecreateAnimator(/*use_transform=*/true);
+  RecreateAnimator(/*use_transforms=*/true);
   parent()->SetBounds(0, 0, 40, 40);
 
   const gfx::Rect initial_bounds(0, 0, 10, 10);

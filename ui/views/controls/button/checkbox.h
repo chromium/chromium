@@ -82,10 +82,10 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
   void GetExtraParams(ui::NativeTheme::ExtraParams* params) const override;
 
   // True if the checkbox is checked.
-  bool checked_;
+  bool checked_ = false;
 
   // The unique id for the associated label's accessible object.
-  int32_t label_ax_id_;
+  int32_t label_ax_id_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(Checkbox);
 };
