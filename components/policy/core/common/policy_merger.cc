@@ -15,8 +15,7 @@ namespace policy {
 
 namespace {
 
-constexpr std::array<const char*, 7> kDictionaryPoliciesToMerge{
-    key::kContentPackManualBehaviorURLs,
+constexpr std::array<const char*, 6> kDictionaryPoliciesToMerge{
     key::kExtensionSettings,
     key::kDeviceLoginScreenPowerManagement,
     key::kKeyPermissions,

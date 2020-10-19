@@ -21672,9 +21672,6 @@ Called by update_document_policy_enum.py.-->
   <int value="201" label="AttestationExtensionWhitelist"/>
   <int value="202" label="DeviceLocalAccountAutoLoginBailoutEnabled"/>
   <int value="203" label="AllowScreenWakeLocks"/>
-  <int value="204" label="ContentPackDefaultFilteringBehavior"/>
-  <int value="205" label="ContentPackManualBehaviorHosts"/>
-  <int value="206" label="ContentPackManualBehaviorURLs"/>
   <int value="207" label="AttestationEnabledForDevice"/>
   <int value="208" label="AudioCaptureAllowedUrls"/>
   <int value="209" label="VideoCaptureAllowedUrls"/>

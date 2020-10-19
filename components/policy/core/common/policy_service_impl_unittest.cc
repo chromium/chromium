@@ -927,7 +927,7 @@ TEST_F(PolicyServiceTest, DictionaryPoliciesMerging) {
 
   std::unique_ptr<base::Value> policy =
       std::make_unique<base::Value>(base::Value::Type::LIST);
-  policy->Append(base::Value(policy::key::kContentPackManualBehaviorURLs));
+  policy->Append(base::Value(key::kExtensionSettings));
 
   auto policy_bundle1 = std::make_unique<PolicyBundle>();
   PolicyMap& policy_map1 = policy_bundle1->Get(chrome_namespace);
@@ -937,14 +937,14 @@ TEST_F(PolicyServiceTest, DictionaryPoliciesMerging) {
   PolicyMap::Entry entry_dict_1(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
                                 POLICY_SOURCE_PLATFORM, std::move(dict1),
                                 nullptr);
-  policy_map1.Set(key::kContentPackManualBehaviorURLs, entry_dict_1.DeepCopy());
+  policy_map1.Set(key::kExtensionSettings, entry_dict_1.DeepCopy());
 
   auto policy_bundle2 = std::make_unique<PolicyBundle>();
   PolicyMap& policy_map2 = policy_bundle2->Get(chrome_namespace);
   PolicyMap::Entry entry_dict_2(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
                                 POLICY_SOURCE_PRIORITY_CLOUD, std::move(dict2),
                                 nullptr);
-  policy_map2.Set(key::kContentPackManualBehaviorURLs, entry_dict_2.DeepCopy());
+  policy_map2.Set(key::kExtensionSettings, entry_dict_2.DeepCopy());
 
   PolicyMap expected_chrome;
   expected_chrome.Set(key::kPolicyDictionaryMultipleSourceMergeList,
@@ -958,7 +958,7 @@ TEST_F(PolicyServiceTest, DictionaryPoliciesMerging) {
   merged.AddConflictingPolicy(entry_dict_1.DeepCopy());
   merged.AddConflictingPolicy(entry_dict_2.DeepCopy());
   merged.AddWarning(IDS_POLICY_CONFLICT_DIFF_VALUE);
-  expected_chrome.Set(key::kContentPackManualBehaviorURLs, std::move(merged));
+  expected_chrome.Set(key::kExtensionSettings, std::move(merged));
 
   provider0_.UpdatePolicy(std::move(policy_bundle1));
   provider1_.UpdatePolicy(std::move(policy_bundle2));
