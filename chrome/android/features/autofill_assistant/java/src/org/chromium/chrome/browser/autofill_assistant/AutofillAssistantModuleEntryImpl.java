@@ -18,6 +18,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptOnboarding;
+import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptStarted;
 import org.chromium.chrome.browser.autofill_assistant.metrics.OnBoarding;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -50,6 +51,9 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
                     AutofillAssistantPreferencesUtil.isAutofillAssistantFirstTimeLiteScriptUser();
             String firstTimeUserScriptPath = parameters.get(PARAMETER_TRIGGER_FIRST_TIME_USER);
             String returningUserScriptPath = parameters.get(PARAMETER_TRIGGER_RETURNING_TIME_USER);
+            AutofillAssistantMetrics.recordLiteScriptStarted(webContents,
+                    isFirstTimeUser ? LiteScriptStarted.LITE_SCRIPT_FIRST_TIME_USER
+                                    : LiteScriptStarted.LITE_SCRIPT_RETURNING_USER);
             startAutofillAssistantLite(bottomSheetController, browserControls, compositorViewHolder,
                     webContents, firstTimeUserScriptPath, returningUserScriptPath, result -> {
                         if (result) {
