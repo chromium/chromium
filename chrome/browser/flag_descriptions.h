@@ -2223,9 +2223,6 @@ extern const char kEnableAppReinstallZeroStateDescription[];
 extern const char kEnableArcUnifiedAudioFocusName[];
 extern const char kEnableArcUnifiedAudioFocusDescription[];
 
-extern const char kEnableAmbientModeName[];
-extern const char kEnableAmbientModeDescription[];
-
 extern const char kEnableAssistantAppSupportName[];
 extern const char kEnableAssistantAppSupportDescription[];
 

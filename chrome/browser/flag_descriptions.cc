@@ -3843,10 +3843,6 @@ const char kEnableArcUnifiedAudioFocusDescription[] =
     "If audio focus is enabled in Chrome then this will delegate audio focus "
     "control in Android apps to Chrome.";
 
-const char kEnableAmbientModeName[] = "Enable Ambient Mode";
-const char kEnableAmbientModeDescription[] =
-    "Enable Ambient Mode to show an enhanced lock screen with more functions";
-
 const char kEnableAssistantAppSupportName[] = "Enable Assistant App Support";
 const char kEnableAssistantAppSupportDescription[] =
     "Enable the Assistant App Support feature";
