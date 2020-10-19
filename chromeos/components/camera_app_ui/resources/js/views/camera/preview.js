@@ -226,28 +226,33 @@ export class Preview {
       element.textContent = val;
     };
 
-    const buildInverseTable = (obj, prefix) => {
-      const tbl = {};
+    /**
+     * @param {!Object<string, number>} obj
+     * @param {string} prefix
+     * @return {!Map<number, string>}
+     */
+    const buildInverseMap = (obj, prefix) => {
+      const map = new Map();
       for (const [key, val] of Object.entries(obj)) {
         if (!key.startsWith(prefix)) {
           continue;
         }
-        if (tbl.hasOwnProperty(val)) {
+        if (map.has(val)) {
           console.error(`Duplicated value: ${val}`);
           continue;
         }
-        tbl[val] = key.slice(prefix.length);
+        map.set(val, key.slice(prefix.length));
       }
-      return tbl;
+      return map;
     };
 
-    const afStateName = buildInverseTable(
+    const afStateName = buildInverseMap(
         cros.mojom.AndroidControlAfState, 'ANDROID_CONTROL_AF_STATE_');
-    const aeStateName = buildInverseTable(
+    const aeStateName = buildInverseMap(
         cros.mojom.AndroidControlAeState, 'ANDROID_CONTROL_AE_STATE_');
-    const awbStateName = buildInverseTable(
+    const awbStateName = buildInverseMap(
         cros.mojom.AndroidControlAwbState, 'ANDROID_CONTROL_AWB_STATE_');
-    const aeAntibandingModeName = buildInverseTable(
+    const aeAntibandingModeName = buildInverseMap(
         cros.mojom.AndroidControlAeAntibandingMode,
         'ANDROID_CONTROL_AE_ANTIBANDING_MODE_');
 
@@ -262,7 +267,7 @@ export class Preview {
         showValue('#preview-focus-distance', `${focusDistance} cm`);
       },
       [tag.ANDROID_CONTROL_AF_STATE]: ([value]) => {
-        showValue('#preview-af-state', afStateName[value]);
+        showValue('#preview-af-state', afStateName.get(value));
       },
       [tag.ANDROID_SENSOR_SENSITIVITY]: ([value]) => {
         const sensitivity = value;
@@ -277,10 +282,11 @@ export class Preview {
         showValue('#preview-frame-duration', `${frameFrequency} Hz`);
       },
       [tag.ANDROID_CONTROL_AE_ANTIBANDING_MODE]: ([value]) => {
-        showValue('#preview-ae-antibanding-mode', aeAntibandingModeName[value]);
+        showValue(
+            '#preview-ae-antibanding-mode', aeAntibandingModeName.get(value));
       },
       [tag.ANDROID_CONTROL_AE_STATE]: ([value]) => {
-        showValue('#preview-ae-state', aeStateName[value]);
+        showValue('#preview-ae-state', aeStateName.get(value));
       },
       [tag.ANDROID_COLOR_CORRECTION_GAINS]: ([valueRed, , , valueBlue]) => {
         const wbGainRed = valueRed.toFixed(2);
@@ -289,7 +295,7 @@ export class Preview {
         showValue('#preview-wb-gain-blue', `${wbGainBlue}x`);
       },
       [tag.ANDROID_CONTROL_AWB_STATE]: ([value]) => {
-        showValue('#preview-awb-state', awbStateName[value]);
+        showValue('#preview-awb-state', awbStateName.get(value));
       },
       [tag.ANDROID_CONTROL_AF_MODE]: ([value]) => {
         displayCategory(
