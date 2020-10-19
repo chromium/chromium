@@ -223,6 +223,9 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testDismissCollapsedSheetWithDismissButton() {
+        MetricsUtils.HistogramDelta accountConsistencyHistogram =
+                new HistogramDelta("Signin.AccountConsistencyPromoAction",
+                        AccountConsistencyPromoAction.DISMISSED_BUTTON);
         buildAndShowCollapsedBottomSheet();
         onView(withText(PROFILE_DATA1.getAccountName())).check(matches(isDisplayed()));
         BottomSheetController controller = getBottomSheetController();
@@ -232,6 +235,7 @@ public class AccountPickerBottomSheetTest {
         Assert.assertFalse(controller.isSheetOpen());
         verify(mAccountPickerDelegateMock).onDismiss();
         Assert.assertEquals(0, mFakeProfileDataSource.getNumberOfObservers());
+        Assert.assertEquals(1, accountConsistencyHistogram.getDelta());
     }
 
     @Test
