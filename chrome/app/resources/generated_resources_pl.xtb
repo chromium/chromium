@@ -924,6 +924,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="204914487372604757">Utwórz skrót</translation>
 <translation id="2050339315714019657">Pionowo</translation>
 <translation id="2053312383184521053">Dane o stanie bezczynności</translation>
+<translation id="2054665754582400095">Twoja obecność</translation>
 <translation id="2055585478631012616">Wylogujemy Cię z tych stron, także na otwartych kartach</translation>
 <translation id="205560151218727633">Logo Asystenta Google</translation>
 <translation id="2058456167109518507">Wykryto urządzenie</translation>
@@ -1210,6 +1211,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2387052489799050037">Powrót do ekranu głównego</translation>
 <translation id="2387458720915042159">Typ połączenia z serwerem proxy</translation>
 <translation id="2390347491606624519">Nie udało się nawiązać połączenia z serwerem proxy. Zaloguj się ponownie.</translation>
+<translation id="2390782873446084770">Wi-Fi Sync</translation>
 <translation id="2391082728065870591">Prześlij zgłoszenie opinii</translation>
 <translation id="2391419135980381625">Czcionka standardowa</translation>
 <translation id="2392163307141705938">Upłynął ustawiony przez rodzica limit czasu korzystania z <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
@@ -1866,6 +1868,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3157931365184549694">Przywróć</translation>
 <translation id="3158033540161634471">Skonfiguruj swój odcisk palca</translation>
 <translation id="3159493096109238499">Beżowy</translation>
+<translation id="3159978855457658359">Edytuj nazwę urządzenia</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (obsługiwany sprzętowo)</translation>
 <translation id="3161522574479303604">Wszystkie języki</translation>
 <translation id="3162853326462195145">Konto szkolne</translation>
@@ -3226,6 +3229,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="4761104368405085019">Korzystanie z Twojego mikrofonu</translation>
 <translation id="4762718786438001384">Bardzo mało miejsca na dysku</translation>
 <translation id="4763408175235639573">Podczas wyświetlania strony zostały utworzone te pliki cookie</translation>
+<translation id="4764368918650455114">Dopilnuj, by obydwa urządzenia były odblokowane, znajdowały się blisko siebie i miały włączony Bluetooth. Jeśli chcesz coś udostępnić Chromebookowi, upewnij się, że ma włączone Udostępnianie w pobliżu (kliknij godzinę, by otworzyć pasek stanu, a potem wybierz Udostępnianie w pobliżu). <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="4765582662863429759">Zezwala Wiadomościom na Androida przesyłać SMS-y z telefonu na Chromebooka</translation>
 <translation id="476598255842811483">Nikt, chyba że na swoim urządzeniu otworzysz Udostępnianie w pobliżu</translation>
 <translation id="4768332406694066911">Masz certyfikaty od tych organizacji potwierdzające Twoją tożsamość</translation>
@@ -3388,6 +3392,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="496185450405387901">Tę aplikację zainstalował administrator.</translation>
 <translation id="4964455510556214366">Układ</translation>
+<translation id="496446150016900060">Zsynchronizuj sieci Wi-Fi z telefonem</translation>
 <translation id="4965808351167763748">Czy na pewno chcesz skonfigurować to urządzenie na potrzeby Hangouts Meet?</translation>
 <translation id="496888482094675990">Aplikacja Pliki daje szybki dostęp do plików zapisanych na Dysku Google, urządzeniu z Chrome OS lub w pamięci zewnętrznej.</translation>
 <translation id="4971412780836297815">Otwórz po zakończeniu</translation>
@@ -3694,6 +3699,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5341980496415249280">Czekaj, pakuję…</translation>
 <translation id="5342091991439452114">Kod PIN musi się składać co najmniej z <ph name="MINIMUM" /> cyfr</translation>
 <translation id="5344036115151554031">Przywracanie Linuksa</translation>
+<translation id="5345916423802287046">Uruchom aplikację po zalogowaniu</translation>
 <translation id="5350293332385664455">Wyłącz Asystenta Google</translation>
 <translation id="535123479159372765">Tekst skopiowany z innego urządzenia</translation>
 <translation id="5352033265844765294">Dodawanie sygnatury czasowej</translation>
@@ -4003,6 +4009,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5704875434923668958">Synchronizacja z</translation>
 <translation id="5705005699929844214">Zawsze pokazuj opcje ułatwień dostępu</translation>
 <translation id="5705882733397021510">Wróć</translation>
+<translation id="5707117624115653804">Dostosuj rozmiar i styl napisów w przypadku aplikacji i stron, które obsługują to ustawienie</translation>
 <translation id="5707185214361380026">Nie udało się wczytać rozszerzenia z:</translation>
 <translation id="5708171344853220004">Nazwa główna firmy Microsoft</translation>
 <translation id="5709557627224531708">Ustaw Chrome jako domyślną przeglądarkę</translation>
@@ -4166,6 +4173,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5904614460720589786">Z powodu błędu konfiguracji nie udało się skonfigurować <ph name="APP_NAME" />. Skontaktuj się z administratorem. Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Już prawie gotowe. Uruchom ponownie urządzenie, by zakończyć aktualizację.</translation>
 <translation id="5906732635754427568">Dane powiązane z tą aplikacją zostaną usunięte z urządzenia.</translation>
+<translation id="5908474332780919512">Uruchom aplikację po zalogowaniu</translation>
 <translation id="5908695239556627796">Szybkość przewijania kółkiem myszy</translation>
 <translation id="5908769186679515905">Zablokuj uruchamianie Flasha na stronach</translation>
 <translation id="5910363049092958439">Zapisz gra&amp;fikę jako...</translation>
@@ -4706,6 +4714,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6532527800157340614">Nie można Cię zalogować, ponieważ nie udało się pobrać Twojego tokenu dostępu. Sprawdź połączenie sieciowe i spróbuj jeszcze raz.</translation>
 <translation id="6532663472409656417">Zarejestrowane w firmie</translation>
 <translation id="6535331821390304775">Zawsze zezwalaj stronie <ph name="ORIGIN" /> na otwieranie linków tego typu w powiązanej aplikacji</translation>
+<translation id="6537613839935722475">Nazwa może zawierać litery, cyfry i łączniki (-)</translation>
 <translation id="6538635548667167211">Bieżące ustawienie transmisji danych: Dane</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Uwaga:<ph name="END_BOLD" /> włącz tę opcję, tylko jeśli dokładnie wiesz, co robisz, lub ktoś Cię o to poprosił – zbieranie danych może obniżyć wydajność.</translation>
 <translation id="6541638731489116978">Tej stronie zablokowano dostęp do czujników ruchu.</translation>
@@ -4794,6 +4803,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6650234781371031356">Hasło, którego używasz na stronie <ph name="WEBSITE" />, jest zapisane na tym urządzeniu i na koncie Google. Skąd chcesz je usunąć?</translation>
 <translation id="665061930738760572">Otwórz w &amp;nowym oknie</translation>
 <translation id="6651237644330755633">Ufaj temu certyfikatowi przy identyfikowaniu witryn internetowych</translation>
+<translation id="6651495917527016072">Zsynchronizuj sieci Wi-Fi z telefonem. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Integracja Chrome <ph name="MS_AD_NAME" /> jest obsługiwana tylko na platformach x86_64. Chromebooki zbudowane na platformach ARM lub x86 nie obsługują tej funkcji.</translation>
 <translation id="6654509035557065241">Ustaw sieć jako preferowaną</translation>
 <translation id="6655190889273724601">Tryb dewelopera</translation>
@@ -5397,6 +5407,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="7375235221357833624">{0,plural, =1{Aktualizacja urządzenia nastąpi w ciągu godziny}few{Aktualizacja urządzenia nastąpi w ciągu # godzin}many{Aktualizacja urządzenia nastąpi w ciągu # godzin}other{Aktualizacja urządzenia nastąpi w ciągu # godziny}}</translation>
 <translation id="7376553024552204454">Podświetlaj wskaźnik myszy, gdy się porusza</translation>
 <translation id="7377451353532943397">Nadal blokuj dostęp do czujników</translation>
+<translation id="7378611153938412599">Słabe hasła są łatwe do odgadnięcia. Pamiętaj, by używać tylko silnych haseł. <ph name="BEGIN_LINK" />Więcej wskazówek dotyczących bezpieczeństwa<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Otwórz Chrome Web Store</translation>
 <translation id="7378812711085314936">Korzystanie z transmisji danych</translation>
 <translation id="7380622428988553498">Nazwa urządzenia zawiera niedozwolone znaki</translation>
@@ -5921,6 +5932,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="7959074893852789871">Plik zawierał wiele certyfikatów, z których niektóre nie zostały zaimportowane:</translation>
 <translation id="7961015016161918242">Nigdy</translation>
 <translation id="7963001036288347286">Przyspieszenie touchpada</translation>
+<translation id="7963608432878156675">Ta nazwa jest widoczna dla innych urządzeń połączonych przez sieć lub Bluetooth</translation>
 <translation id="7963826112438303517">Asystent używa tych nagrań i wypowiadanych przez Ciebie poleceń do tworzenia i aktualizowania modelu Twojego głosu. Model ten jest przechowywany tylko na tych urządzeniach, na których jest włączona funkcja Voice Match. W ustawieniach Asystenta możesz zobaczyć aktywność głosową oraz nauczyć go ponownie modelu głosu.</translation>
 <translation id="7966241909927244760">K&amp;opiuj adres obrazu</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{1 element na liście zakładek}few{{COUNT} elementy na liście zakładek}many{{COUNT} elementów na liście zakładek}other{{COUNT} elementu na liście zakładek}}</translation>
@@ -6385,6 +6397,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="850875081535031620">Nie znaleziono szkodliwego oprogramowania</translation>
 <translation id="8509177919508253835">Zresetuj klucze bezpieczeństwa i utwórz kody PIN</translation>
 <translation id="8509646642152301857">Nie udało się pobrać słownika funkcji sprawdzania pisowni.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Nie znaleziono słabych haseł}=1{Znaleziono {COUNT} słabe hasło}few{Znaleziono {COUNT} słabe hasła}many{Znaleziono {COUNT} słabych haseł}other{Znaleziono {COUNT} słabego hasła}}</translation>
 <translation id="8512476990829870887">Zakończ proces</translation>
 <translation id="851263357009351303">Zawsze zezwalaj na pokazywanie grafik w witrynie <ph name="HOST" /></translation>
 <translation id="8513108775083588393">Autoobracanie</translation>

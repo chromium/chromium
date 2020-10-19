@@ -441,7 +441,7 @@
 <translation id="1504551620756424144">‏התיקיות המשותפות זמינות ב-Windows בספרייה <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">מנוע חיפוש</translation>
 <translation id="1507170440449692343">דף זה נחסם לגישה למצלמה שלך.</translation>
-<translation id="1507246803636407672">&amp;התעלם</translation>
+<translation id="1507246803636407672">&amp;התעלמות</translation>
 <translation id="1508491105858779599">הנח את האצבע על חיישן טביעות האצבע כדי לבטל את נעילת המכשיר.</translation>
 <translation id="1508575541972276599">‏הגרסה הנוכחית היא Debian 9 ‏(Stretch)</translation>
 <translation id="1509281256533087115">‏גישה לכל מכשיר של <ph name="DEVICE_NAME_AND_VENDOR" /> באמצעות USB</translation>
@@ -581,7 +581,7 @@
 <translation id="1650371550981945235">הצג אפשרויות קלט</translation>
 <translation id="1651008383952180276">עליך להזין אותו ביטוי סיסמה פעמיים</translation>
 <translation id="1652326691684645429">הפעלה של 'שיתוף בקרבת מקום'</translation>
-<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{‏הוסף את המדפסת אל Google Cloud Print כך שתוכל להדפיס מכל מקום.}two{‏הוסף # מדפסות אל Google Cloud Print כך שתוכל להדפיס מכל מקום.}many{‏הוסף # מדפסות אל Google Cloud Print כך שתוכל להדפיס מכל מקום.}other{‏הוסף # מדפסות אל Google Cloud Print כך שתוכל להדפיס מכל מקום.}}</translation>
+<translation id="1653526288038954982">{NUM_PRINTER,plural, =1{‏יש להוסיף את המדפסת אל Google Cloud Print כך שניתן יהיה להדפיס מכל מקום.}two{‏יש להוסיף # מדפסות אל Google Cloud Print כך שניתן יהיה להדפיס מכל מקום.}many{‏יש להוסיף # מדפסות אל Google Cloud Print כך שניתן יהיה להדפיס מכל מקום.}other{‏יש להוסיף # מדפסות אל Google Cloud Print כך שניתן יהיה להדפיס מכל מקום.}}</translation>
 <translation id="1653575510930452864">העתקת הקישור לטקסט</translation>
 <translation id="1656528038316521561">שקיפות רקע</translation>
 <translation id="1657406563541664238">‏עזור להפוך את <ph name="PRODUCT_NAME" /> לטוב יותר, על ידי שליחה אוטומטית של נתוני שימוש ודוחות קריסה אל Google</translation>
@@ -703,7 +703,7 @@
 <translation id="1790194216133135334">שליחת הקישור אל <ph name="DEVICE_NAME" /></translation>
 <translation id="1790976235243700817">הסרת הגישה</translation>
 <translation id="1792619191750875668">תצוגה מורחבת</translation>
-<translation id="1794791083288629568"> שליחת משוב כדי לעזור לנו לפתור את הבעיה.</translation>
+<translation id="1794791083288629568">שליחת משוב שיעזור לנו לפתור את הבעיה.</translation>
 <translation id="1795214765651529549">השתמש בעיצוב קלאסי</translation>
 <translation id="1799071797295057738">התוסף "<ph name="EXTENSION_NAME" />" הושבת באופן אוטומטי.</translation>
 <translation id="1802624026913571222">מעבר למצב שינה כשסוגרים את הכיסוי</translation>
@@ -1339,7 +1339,7 @@
 <translation id="2526619973349913024">יש עדכון חדש?</translation>
 <translation id="2527167509808613699">חיבור מכל סוג שהוא</translation>
 <translation id="2532589005999780174">מצב ניגודיות גבוהה</translation>
-<translation id="253434972992662860">&amp;השהה</translation>
+<translation id="253434972992662860">&amp;השהיה</translation>
 <translation id="2534460670861217804">‏שרת proxy של Secure HTTP</translation>
 <translation id="253557089021624350">‏ספירת Keepalive</translation>
 <translation id="2535799430745250929">אין רשתות סלולריות</translation>
@@ -1715,7 +1715,7 @@
 <translation id="2963151496262057773">הפלאגין הבא אינו מגיב: <ph name="PLUGIN_NAME" /> האם ברצונך לכבות אותו?</translation>
 <translation id="2964193600955408481">‏השבת Wi-Fi</translation>
 <translation id="2966937470348689686">‏ניהול העדפות ל-Android</translation>
-<translation id="2972581237482394796">&amp;בצע שנית</translation>
+<translation id="2972581237482394796">&amp;ביצוע חוזר</translation>
 <translation id="2973324205039581528">השתקת האתר</translation>
 <translation id="2977480621796371840">הסרה מהקבוצה</translation>
 <translation id="2979520980928493164">‏Chrome בריא ושמח יותר</translation>
@@ -1761,7 +1761,7 @@
 <translation id="3020990233660977256">מספר סידורי: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">בזמן שימוש בסוללה</translation>
 <translation id="3021066826692793094">פרפר</translation>
-<translation id="3021678814754966447">&amp;הצג את מקור המסגרת</translation>
+<translation id="3021678814754966447">&amp;הצגת מקור המסגרת</translation>
 <translation id="3022978424994383087">ההודעה שלך לא ברורה.</translation>
 <translation id="3023464535986383522">הקראה</translation>
 <translation id="3024374909719388945">השתמש בשעון של 24 שעות</translation>
@@ -3133,7 +3133,7 @@
 <translation id="4637083375689622795">פעולות נוספות, <ph name="EMAIL" /></translation>
 <translation id="4638930039313743000">‏הפעלה של ניפוי באגים באמצעות ADB</translation>
 <translation id="4641539339823703554">‏Chrome לא הצליח להגדיר את שעת המערכת. בדוק את השעה המצוינת בהמשך ותקן אותה במקרה הצורך.</translation>
-<translation id="4643612240819915418">&amp;פתח סרטון וידאו בכרטיסייה חדשה</translation>
+<translation id="4643612240819915418">&amp;פתיחת סרטון בכרטיסייה חדשה</translation>
 <translation id="4645551927492192497">{NUM_DAYS,plural, =1{‏לפי הדרישה של <ph name="DOMAIN" />, עליך להתחבר היום לרשת Wi-Fi כדי להוריד עדכון. ניתן גם לבצע את ההורדה דרך חיבור עם חיוב לפי שימוש בנתונים (עשויים לחול חיובים).}two{‏לפי דרישת <ph name="DOMAIN" />, עליך להתחבר ל-Wi-Fi ולהוריד עדכון לפני המועד האחרון. ניתן גם לבצע את ההורדה דרך חיבור עם חיוב לפי שימוש בנתונים (עשויים לחול חיובים).}many{‏לפי דרישת <ph name="DOMAIN" />, עליך להתחבר ל-Wi-Fi ולהוריד עדכון לפני המועד האחרון. ניתן גם לבצע את ההורדה דרך חיבור עם חיוב לפי שימוש בנתונים (עשויים לחול חיובים).}other{‏לפי דרישת <ph name="DOMAIN" />, עליך להתחבר ל-Wi-Fi ולהוריד עדכון לפני המועד האחרון. ניתן גם לבצע את ההורדה דרך חיבור עם חיוב לפי שימוש בנתונים (עשויים לחול חיובים).}}</translation>
 <translation id="4645676300727003670">&amp;שמור</translation>
 <translation id="4646675363240786305">יציאות</translation>
@@ -3243,7 +3243,7 @@
 <translation id="4788092183367008521">כדאי לבדוק את החיבור לרשת ולנסות שוב.</translation>
 <translation id="4791000909649665275">מספר התמונות: <ph name="NUMBER" /></translation>
 <translation id="4791037424585594169">(UDP)</translation>
-<translation id="4792711294155034829">&amp;דווח על בעיה...</translation>
+<translation id="4792711294155034829">&amp;דיווח על בעיה...</translation>
 <translation id="4794810983896241342">העדכונים מנוהלים על ידי <ph name="BEGIN_LINK" />מנהל המערכת<ph name="END_LINK" /></translation>
 <translation id="479536056609751218">‏דף אינטרנט, HTML בלבד</translation>
 <translation id="4798236378408895261">‏צירוף של <ph name="BEGIN_LINK" />יומני Bluetooth<ph name="END_LINK" /> (מידע פנימי של Google)</translation>
@@ -3597,7 +3597,7 @@
 <translation id="5233019165164992427">‏יציאת ניפוי באגים של NaCl</translation>
 <translation id="5233231016133573565">זיהוי תהליך</translation>
 <translation id="5233638681132016545">כרטיסייה חדשה</translation>
-<translation id="5233736638227740678">&amp;הדבק</translation>
+<translation id="5233736638227740678">&amp;הדבקה</translation>
 <translation id="5234764350956374838">סגור</translation>
 <translation id="5235050375939235066">להסיר את התקנת האפליקציה?</translation>
 <translation id="523505283826916779">הגדרות נגישות</translation>
@@ -3681,7 +3681,7 @@
 <translation id="5327248766486351172">שם</translation>
 <translation id="5327570636534774768">המכשיר הזה מסומן כמנוהל על ידי דומיין אחר. צריך לבטל את ניהול התצורה שלו מהדומיין הזה לפני ההגדרה של מצב ההדגמה.</translation>
 <translation id="532943162177641444">הקש על ההודעה בטלפון <ph name="PHONE_NAME" /> כדי להגדיר את הנקודה לשיתוף אינטרנט בנייד שבה המכשיר הזה יכול להשתמש.</translation>
-<translation id="5329858601952122676">&amp;מחק</translation>
+<translation id="5329858601952122676">&amp;מחיקה</translation>
 <translation id="5331069282670671859">אין לך אישורים בקטגוריה הזו</translation>
 <translation id="5331425616433531170">"<ph name="CHROME_EXTENSION_NAME" />" רוצה לבצע התאמה עם</translation>
 <translation id="5331975486040154427">‏מכשיר עם יציאת USB-C (יציאה שמאלית-אחורית)</translation>
@@ -4503,7 +4503,7 @@
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{מדפסת חדשה ברשת שלך}two{מדפסות חדשות ברשת שלך}many{מדפסות חדשות ברשת שלך}other{מדפסות חדשות ברשת שלך}}</translation>
 <translation id="6291163159361301370">‏כדי להפעיל את Linux, עליך לגבות את הנתונים ולאפס את ה-Chromebook הזה להגדרות היצרן על פי דרישת <ph name="ORGANIZATION_NAME" />.</translation>
 <translation id="6291949900244949761">‏צריך לבקש ממני אישור כשאתר רוצה לגשת למכשירי USB (מומלץ)</translation>
-<translation id="6291953229176937411">‏&amp;הצג ב-Finder</translation>
+<translation id="6291953229176937411">‏&amp;הצגה ב-Finder</translation>
 <translation id="6295158916970320988">כל האתרים</translation>
 <translation id="6295855836753816081">שומר...</translation>
 <translation id="6298962879096096191">‏התקן אפליקציות ל-Android באמצעות Google Play</translation>
@@ -4567,7 +4567,7 @@
 <translation id="6357619544108132570">ברוכים הבאים אל משפחת <ph name="SHORT_PRODUCT_NAME" />. לא מדובר במחשב רגיל.</translation>
 <translation id="6358884629796491903">דרקון</translation>
 <translation id="6361850914223837199">פרטי השגיאה:</translation>
-<translation id="6362853299801475928">&amp;דווח על בעיה...</translation>
+<translation id="6362853299801475928">&amp;דיווח על בעיה...</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">הוספת בני משפחה וחברים</translation>
 <translation id="6367985768157257101">האם לקבל באמצעות 'שיתוף בקרבת מקום'?</translation>
@@ -4652,7 +4652,7 @@
 <translation id="6461170143930046705">המכשיר מחפש רשתות...</translation>
 <translation id="6463795194797719782">&amp;עריכה</translation>
 <translation id="6465841119675156448">ללא אינטרנט</translation>
-<translation id="6466988389784393586">&amp;פתח את כל הסימניות</translation>
+<translation id="6466988389784393586">&amp;פתיחת כל הסימניות</translation>
 <translation id="6467304607960172345">אופטימיזציה של סרטונים במסך מלא</translation>
 <translation id="6468485451923838994">גופנים</translation>
 <translation id="6469557521904094793">הפעלת רשת סלולרית</translation>
@@ -4734,7 +4734,7 @@
 <translation id="656293578423618167">הנתיב או שם הקובץ ארוך מדי. שמור בשם קצר יותר או למיקום אחר.</translation>
 <translation id="6563469144985748109">המנהל שלך עדיין לא אישר זאת</translation>
 <translation id="6569934958368283244">אנשים אחרים</translation>
-<translation id="657402800789773160">&amp;טען דף זה מחדש</translation>
+<translation id="657402800789773160">&amp;טעינת דף זה מחדש</translation>
 <translation id="6577284282025554716">ההורדה בוטלה: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">תמונת מצב של תקינות הרשת</translation>
 <translation id="6578664922716508575">‏הצפנת סיסמאות מסונכרנות עם שם המשתמש והסיסמה שלך ב-Google</translation>
@@ -5434,7 +5434,7 @@
 <translation id="7416362041876611053">שגיאת רשת לא ידועה.</translation>
 <translation id="741906494724992817">אין צורך בהרשאות מיוחדות עבור האפליקציה הזו.</translation>
 <translation id="742130257665691897">סימניות הוסרו</translation>
-<translation id="7421925624202799674">&amp;הצג את מקור הדף</translation>
+<translation id="7421925624202799674">&amp;הצגת מקור הדף</translation>
 <translation id="7422192691352527311">העדפות...</translation>
 <translation id="7423098979219808738">תופיע בקשת אישור</translation>
 <translation id="7423513079490750513">הסרת <ph name="INPUT_METHOD_NAME" /></translation>
@@ -5684,7 +5684,7 @@
 <translation id="7707108266051544351">גישת האתר הזה אל חיישני התנועה נחסמה.</translation>
 <translation id="7707922173985738739">השתמש בחבילת גלישה</translation>
 <translation id="7709152031285164251">נכשל - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7710568461918838723">&amp;העבר...</translation>
+<translation id="7710568461918838723">&amp;העברה...</translation>
 <translation id="7712836429117959503">תוסף לא מוכר עם המזהה <ph name="EXTENSION_ID" /></translation>
 <translation id="7714307061282548371">‏קובצי Cookie מ-<ph name="DOMAIN" /> מותרים</translation>
 <translation id="7714464543167945231">אישור</translation>
@@ -5776,7 +5776,7 @@
 <translation id="7810202088502699111">חלונות קופצים נחסמו בדף זה.</translation>
 <translation id="781167124805380294">העברה של <ph name="FILE_NAME" /></translation>
 <translation id="7814277578404816512">מה חדש ב-<ph name="DEVICE_TYPE" /></translation>
-<translation id="7814458197256864873">&amp;העתק</translation>
+<translation id="7814458197256864873">&amp;העתקה</translation>
 <translation id="7815680994978050279">נחסמה הורדה מסוכנת</translation>
 <translation id="7817361223956157679">‏המקלדת שמופיעה במסך לא עובדת עדיין באפליקציות Linux</translation>
 <translation id="7818135753970109980">עיצוב חדש נוסף (<ph name="EXTENSION_NAME" />)</translation>
@@ -6566,7 +6566,7 @@
 <translation id="8723108084122415655">הרשת שאינה מוגדרת כברירת מחדל חורגת מסף זמן האחזור</translation>
 <translation id="8724405322205516354">כשיוצג לך הסמל הזה, משמעות הדבר היא שאפשר להשתמש בטביעת אצבע לצורכי זיהוי או לאישור רכישה.</translation>
 <translation id="8724409975248965964">טביעת האצבע נקלטה</translation>
-<translation id="8724859055372736596">&amp;הצג בתיקייה</translation>
+<translation id="8724859055372736596">&amp;הצגה בתיקייה</translation>
 <translation id="8725066075913043281">נסה שוב</translation>
 <translation id="8725178340343806893">מועדפים/סימניות</translation>
 <translation id="8726206820263995930">אירעה שגיאה בעת הבאת הגדרות מדיניות מהשרת: <ph name="CLIENT_ERROR" />.</translation>
@@ -6855,7 +6855,7 @@
 <translation id="9030855135435061269">אין יותר תמיכה בפלאגין <ph name="PLUGIN_NAME" /></translation>
 <translation id="9031549947500880805">‏גיבוי ב-Google Drive. ההגדרה הזו מאפשרת לאחזר נתונים בקלות או לעבור למכשיר אחר בכל שלב. הגיבוי כולל נתוני אפליקציות.</translation>
 <translation id="9033765790910064284">אני רוצה להמשיך בכל זאת</translation>
-<translation id="9033857511263905942">&amp;הדבק</translation>
+<translation id="9033857511263905942">&amp;הדבקה</translation>
 <translation id="9037818663270399707">החיבור שלך אינו פרטי בכל התנועה ברשת</translation>
 <translation id="9037965129289936994">הצג מקור</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{נשאר לך ניסיון אחד.}two{נשארו לך # ניסיונות.}many{נשארו לך # ניסיונות.}other{נשארו לך # ניסיונות.}}</translation>

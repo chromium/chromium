@@ -928,6 +928,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="204914487372604757">Criar atalho</translation>
 <translation id="2050339315714019657">Retrato</translation>
 <translation id="2053312383184521053">Dados em estado de inatividade</translation>
+<translation id="2054665754582400095">Sua presença</translation>
 <translation id="2055585478631012616">Sua conta será desconectada desses sites, inclusive nas guias abertas.</translation>
 <translation id="205560151218727633">Logotipo do Google Assistente</translation>
 <translation id="2058456167109518507">Dispositivo detectado</translation>
@@ -1214,6 +1215,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2387052489799050037">Ir para a tela inicial</translation>
 <translation id="2387458720915042159">Tipo de conexão proxy</translation>
 <translation id="2390347491606624519">Não foi possível se conectar ao proxy. Tente fazer login novamente</translation>
+<translation id="2390782873446084770">Sincronizar Wi-Fi</translation>
 <translation id="2391082728065870591">Enviar relatório de feedback</translation>
 <translation id="2391419135980381625">Fonte padrão</translation>
 <translation id="2392163307141705938">Você atingiu o limite de tempo que seu pai/mãe definiu para <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
@@ -1870,6 +1872,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3158033540161634471">Configurar impressão digital</translation>
 <translation id="3159493096109238499">Bege</translation>
+<translation id="3159978855457658359">Editar o nome do dispositivo</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (no hardware)</translation>
 <translation id="3161522574479303604">Todos os idiomas</translation>
 <translation id="3162853326462195145">Conta escolar</translation>
@@ -3231,6 +3234,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4761104368405085019">Usar microfone</translation>
 <translation id="4762718786438001384">Dispositivo com espaço em disco criticamente baixo</translation>
 <translation id="4763408175235639573">Os cookies a seguir foram definidos quando você visualizou esta página</translation>
+<translation id="4764368918650455114">Verifique se os dois dispositivos estão desbloqueados, próximos um do outro e com o Bluetooth ativado. Se você estiver compartilhando com um Chromebook, abra a área de status clicando no horário e selecione "Compartilhar por proximidade" para verificar se o recurso está ativado. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="4765582662863429759">Permite que o Android Mensagens transmita mensagens de texto do smartphone para o Chromebook</translation>
 <translation id="476598255842811483">Ninguém, a menos que você abra o recurso "Compartilhar por proximidade"</translation>
 <translation id="4768332406694066911">Você tem certificados das seguintes empresas que identificam você</translation>
@@ -3393,6 +3397,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" />: <ph name="PROFILE_NAME" /></translation>
 <translation id="496185450405387901">Este app foi instalado pelo seu administrador.</translation>
 <translation id="4964455510556214366">Organização</translation>
+<translation id="496446150016900060">Sincronizar redes Wi-Fi com seu smartphone</translation>
 <translation id="4965808351167763748">Você quer mesmo configurar este dispositivo para executar o Google Meet?</translation>
 <translation id="496888482094675990">O aplicativo Arquivos fornece acesso rápido a arquivos que foram salvos no Google Drive, em armazenamento externo ou no seu dispositivo Chrome OS.</translation>
 <translation id="4971412780836297815">Abrir quando estiver concluído</translation>
@@ -3699,6 +3704,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="5341980496415249280">Aguarde, empacotando...</translation>
 <translation id="5342091991439452114">O PIN deve ter no mínimo <ph name="MINIMUM" /> dígitos</translation>
 <translation id="5344036115151554031">Restaurando o Linux</translation>
+<translation id="5345916423802287046">Iniciar app ao fazer login</translation>
 <translation id="5350293332385664455">Desativar o Google Assistente</translation>
 <translation id="535123479159372765">Texto copiado de outro dispositivo</translation>
 <translation id="5352033265844765294">Carimbo de data/hora</translation>
@@ -4009,6 +4015,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5704875434923668958">Sincronizando com</translation>
 <translation id="5705005699929844214">Sempre mostrar opções de acessibilidade</translation>
 <translation id="5705882733397021510">Voltar</translation>
+<translation id="5707117624115653804">Personalizar o tamanho e o estilo das legendas em apps e sites compatíveis com esta configuração</translation>
 <translation id="5707185214361380026">Falha ao carregar a extensão a partir de:</translation>
 <translation id="5708171344853220004">Nome principal da Microsoft</translation>
 <translation id="5709557627224531708">Definir o Chrome como seu navegador padrão</translation>
@@ -4172,6 +4179,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5904614460720589786">Não foi possível definir o app <ph name="APP_NAME" /> devido a um problema de configuração. Entre em contato com o administrador. Código do erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Atualização quase concluída. Reinicie o dispositivo para concluí-la.</translation>
 <translation id="5906732635754427568">Os dados associados a este app serão removidos deste dispositivo.</translation>
+<translation id="5908474332780919512">Iniciar app ao fazer login</translation>
 <translation id="5908695239556627796">Velocidade de rolagem do mouse</translation>
 <translation id="5908769186679515905">Impedir que sites executem Flash</translation>
 <translation id="5910363049092958439">Sal&amp;var imagem como...</translation>
@@ -4713,6 +4721,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="6532527800157340614">O login falhou porque não foi possível recuperar seu token de acesso. Verifique sua conexão de rede e tente novamente.</translation>
 <translation id="6532663472409656417">Inscrito pela empresa</translation>
 <translation id="6535331821390304775">Sempre permitir que <ph name="ORIGIN" /> abra esse tipo de link no app associado</translation>
+<translation id="6537613839935722475">O nome pode conter letras, números e hifens (-)</translation>
 <translation id="6538635548667167211">A configuração atual de uso de dados é "Dados"</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Observação:<ph name="END_BOLD" /> Ative somente se você souber o que está fazendo ou tiver sido solicitado(a) a fazê-lo, porque a coleta de dados pode reduzir o desempenho.</translation>
 <translation id="6541638731489116978">Este site foi impedido de acessar seus sensores de movimento.</translation>
@@ -4801,6 +4810,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="6650234781371031356">Sua senha para <ph name="WEBSITE" /> foi armazenada neste dispositivo e na sua Conta do Google. Qual você quer excluir?</translation>
 <translation id="665061930738760572">Abrir em &amp;nova janela</translation>
 <translation id="6651237644330755633">Confiar neste certificado para a identificação de websites.</translation>
+<translation id="6651495917527016072">Sincronizar redes Wi-Fi com seu smartphone. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">A integração de <ph name="MS_AD_NAME" /> ao Chrome só é compatível com plataformas x86_64. Chromebooks criados com ARM ou plataformas x86 não são compatíveis com essa funcionalidade.</translation>
 <translation id="6654509035557065241">Preferir esta rede</translation>
 <translation id="6655190889273724601">Modo do desenvolvedor</translation>
@@ -5404,6 +5414,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7375235221357833624">{0,plural, =1{Atualize o dispositivo em uma hora}one{Atualize o dispositivo em # hora}other{Atualize o dispositivo em # horas}}</translation>
 <translation id="7376553024552204454">Destacar o cursor do mouse quando ele estiver se movendo</translation>
 <translation id="7377451353532943397">Continuar bloqueando o acesso ao sensor</translation>
+<translation id="7378611153938412599">Senhas fracas são fáceis de adivinhar. Crie senhas fortes. <ph name="BEGIN_LINK" />Veja mais dicas de segurança<ph name="END_LINK" />.</translation>
 <translation id="73786666777299047">Abrir a Chrome Web Store</translation>
 <translation id="7378812711085314936">Usar conexão de dados</translation>
 <translation id="7380622428988553498">O nome do dispositivo contém caracteres inválidos</translation>
@@ -5928,6 +5939,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7959074893852789871">O arquivo continha vários certificados e alguns deles não foram importados:</translation>
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7963001036288347286">Aceleração do touchpad</translation>
+<translation id="7963608432878156675">Este nome fica visível para outros dispositivos em conexões de rede e Bluetooth</translation>
 <translation id="7963826112438303517">O Assistente usa essas gravações e as solicitações por voz para criar e atualizar seu modelo de voz, que é armazenado apenas em dispositivos com o Voice Match ativado. Veja ou altere as atividades de voz nas configurações do Assistente.</translation>
 <translation id="7966241909927244760">C&amp;opiar endereço da imagem</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{1 item na lista de favoritos}one{{COUNT} item na lista de favoritos}other{{COUNT} itens na lista de favoritos}}</translation>
@@ -6392,6 +6404,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="850875081535031620">Nenhum software perigoso encontrado</translation>
 <translation id="8509177919508253835">Redefinir chaves de segurança e criar PINs</translation>
 <translation id="8509646642152301857">Falha no download do dicionário de correção ortográfica.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Nenhuma senha fraca encontrada}=1{{COUNT} senha fraca encontrada}one{{COUNT} senha fraca encontrada}other{{COUNT} senhas fracas encontradas}}</translation>
 <translation id="8512476990829870887">Encerrar processo</translation>
 <translation id="851263357009351303">Sempre permitir que <ph name="HOST" /> mostre imagens</translation>
 <translation id="8513108775083588393">Girar automat.</translation>

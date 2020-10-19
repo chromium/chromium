@@ -3,6 +3,7 @@
 <translationbundle lang="pl">
 <translation id="1018656279737460067">Anulowano</translation>
 <translation id="1195447618553298278">Nieznany błąd.</translation>
+<translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">Niepowodzenie – błąd filtra</translation>
 <translation id="1468664791493211953">Oferty</translation>
 <translation id="1478594628797167447">Skanery</translation>
@@ -46,6 +47,7 @@
 <translation id="4227825898293920515">Hasło wygasa za <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Brak zadań drukowania w toku</translation>
 <translation id="4297501883039923494">Zatrzymano – nieznany błąd</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Bilet Kerberos wkrótce straci ważność</translation>
 <translation id="445059817448385655">Stare hasło</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> z <ph name="TOTAL_PAGE_NUMBER" />. Naciśnij Enter, by anulować zadanie drukowania.</translation>
@@ -73,6 +75,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6058625436358447366">Aby zakończyć, wpisz stare i nowe hasło</translation>
 <translation id="6106186594183574873">Aby zakończyć, wpisz stare hasło</translation>
 <translation id="6146993107019042706">Aby zakończyć, wpisz nowe hasło</translation>
+<translation id="6147514244879357420">PNG</translation>
 <translation id="636850387210749493">Rejestracja w firmie</translation>
 <translation id="649050271426829538">Zatrzymano – zacięcie papieru</translation>
 <translation id="6517239166834772319">Odkrywaj</translation>

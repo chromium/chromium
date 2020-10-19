@@ -186,6 +186,7 @@ Neke funkcije će možda biti nedostupne. Navedite drugi direktorijum profila i
 <translation id="6863361426438995919">Google Pay (kopirano u Chromium)</translation>
 <translation id="6893813176749746474">Chromium je ažuriran, ali ga niste koristili najmanje 30 dana.</translation>
 <translation id="6964305034639999644">Otvori link u Chromium prozoru bez arhi&amp;viranja</translation>
+<translation id="6978145336957848883">Slabe lozinke lako mogu da se pogode. Dozvolite da Chromium <ph name="BEGIN_LINK" />pravi i pamti jake lozinke za vas<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium traži dozvolu da pristupi mikrofonu za ovaj sajt</translation>
 <translation id="701244094609242530">Chromium ne može da vam proverava dodatke. Probajte ponovo kasnije.</translation>
 <translation id="7028347026395185822">{NUM_HOURS,plural, =1{Chromium nije pronašao poznat štetan softver na računaru. Poslednji put provereno: pre 1 sat.}one{Chromium nije pronašao poznat štetan softver na računaru. Poslednji put provereno: pre {NUM_HOURS} sat.}few{Chromium nije pronašao poznat štetan softver na računaru. Poslednji put provereno: pre {NUM_HOURS} sata.}other{Chromium nije pronašao poznat štetan softver na računaru. Poslednji put provereno: pre {NUM_HOURS} sati.}}</translation>

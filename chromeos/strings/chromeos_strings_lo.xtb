@@ -3,6 +3,7 @@
 <translationbundle lang="lo">
 <translation id="1018656279737460067">ຍົກ​ເລີກ​ແລ້ວ</translation>
 <translation id="1195447618553298278">ຄວາມຜິດພາດທີ່ບໍ່ຮູ້ຈັກ.</translation>
+<translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">ບໍ່ສຳເລັດ, ຕົວກັ່ນຕອງຂັດຂ້ອງ</translation>
 <translation id="1468664791493211953">ຂໍ້ສະເໜີ</translation>
 <translation id="1478594628797167447">ເຄື່ອງສະແກນ</translation>
@@ -46,6 +47,7 @@
 <translation id="4227825898293920515">ລະຫັດຜ່ານໝົດອາຍຸໃນ <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ບໍ່ມີວຽກການພິມທີ່ພວມດຳເນີນຢູ່</translation>
 <translation id="4297501883039923494">ຢຸດພິມ, ບໍ່ຮູ້ຈັກຂໍ້ຜິດພາດ</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">ປີ້ Kerberos ຈະໝົດອາຍຸໃນໄວໆນີ້</translation>
 <translation id="445059817448385655">ລະຫັດຜ່ານເກົ່າ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> ຈາກທັງໝົດ <ph name="TOTAL_PAGE_NUMBER" />. ກົດ Enter ເພື່ອຍົກເລີກວຽກພິມ.</translation>
@@ -73,6 +75,7 @@
 <translation id="6058625436358447366">ເພື່ອສຳເລັດກະລຸນາປ້ອນລະຫັດຜ່ານເກົ່າ ແລະ ໃໝ່ຂອງທ່ານ</translation>
 <translation id="6106186594183574873">ເພື່ອສຳເລັດ, ກະລຸນາປ້ອນລະຫັດຜ່ານເກົ່າຂອງທ່ານ</translation>
 <translation id="6146993107019042706">ເພື່ອດຳເນີນການໃຫ້ສຳເລັດ, ກະລຸນາປ້ອນລະຫັດຜ່ານໃໝ່ຂອງທ່ານ</translation>
+<translation id="6147514244879357420">PNG</translation>
 <translation id="636850387210749493">ການລົງທະບຽນວິສາຫະກິດ</translation>
 <translation id="649050271426829538">ຢຸດພິມ - ເຈ້ຍຕິດ</translation>
 <translation id="6517239166834772319">ສຳຫຼວດ</translation>
@@ -82,6 +85,7 @@
 <translation id="6747215703636344499">ຢຸດພິມ, ຖາດເຈ້ຍອອກເຕັມແລ້ວ</translation>
 <translation id="7162487448488904999">ຄັງຮູບ</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7359657277149375382">ປະເພດໄຟລ໌</translation>
 <translation id="7561454561030345039">ການດຳເນີນການນີ້ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
 <translation id="7690294790491645610">ຢືນຢັນລະຫັດຜ່ານໃໝ່</translation>

@@ -283,6 +283,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="204357726431741734">Prijavite se da koristite lozinke sačuvane na Google računu</translation>
 <translation id="2053111141626950936">Stranice čiji jezik je <ph name="LANGUAGE" />, neće se prevoditi.</translation>
 <translation id="2053553514270667976">Poštanski broj</translation>
+<translation id="2054665754582400095">Vaša prisutnost</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{Jedan prijedlog}one{# prijedlog}few{# prijedloga}other{# prijedloga}}</translation>
 <translation id="2079545284768500474">Vrati</translation>
 <translation id="20817612488360358">Postavke sistema proksi servera su postavljene za korištenje, ali je određena i eksplicitna konfiguracija proksi servera.</translation>

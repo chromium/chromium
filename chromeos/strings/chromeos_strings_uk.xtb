@@ -3,6 +3,7 @@
 <translationbundle lang="uk">
 <translation id="1018656279737460067">Скасовано</translation>
 <translation id="1195447618553298278">Невідома помилка.</translation>
+<translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">Не надруковано – помилка фільтра</translation>
 <translation id="1468664791493211953">Пропозиції</translation>
 <translation id="1478594628797167447">Сканери</translation>
@@ -46,6 +47,7 @@
 <translation id="4227825898293920515">Термін дії пароля закінчиться через <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Немає активних завдань друку</translation>
 <translation id="4297501883039923494">Зупинено – невідома помилка</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Термін дії квитка Kerberos незабаром минає</translation>
 <translation id="445059817448385655">Старий пароль</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> з <ph name="TOTAL_PAGE_NUMBER" />. Натисніть Enter, щоб скасувати завдання друку.</translation>
@@ -73,6 +75,7 @@
 <translation id="6058625436358447366">Щоб завершити, введіть старий і новий паролі</translation>
 <translation id="6106186594183574873">Щоб завершити, введіть старий пароль</translation>
 <translation id="6146993107019042706">Щоб завершити, введіть новий пароль</translation>
+<translation id="6147514244879357420">PNG</translation>
 <translation id="636850387210749493">Реєстрація підприємства</translation>
 <translation id="649050271426829538">Зупинено – зам'яло папір</translation>
 <translation id="6517239166834772319">Можливості</translation>

@@ -182,6 +182,7 @@ Niektóre funkcje mogą być niedostępne. Podaj inny katalog z profilem lub uż
 <translation id="6863361426438995919">Google Pay (skopiowana do Chromium)</translation>
 <translation id="6893813176749746474">Przeglądarka Chromium została zaktualizowana, ale nie była przez Ciebie używana przez co najmniej 30 dni.</translation>
 <translation id="6964305034639999644">Otwórz link w oknie inco&amp;gnito Chromium</translation>
+<translation id="6978145336957848883">Słabe hasła są łatwe do odgadnięcia. Pozwól Chromium <ph name="BEGIN_LINK" />utworzyć i zapamiętać silne hasła<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium potrzebuje uprawnień dostępu do mikrofonu na tej stronie</translation>
 <translation id="701244094609242530">Chromium nie może sprawdzić Twoich rozszerzeń. Spróbuj później.</translation>
 <translation id="7028347026395185822">{NUM_HOURS,plural, =1{Chromium nie udało się znaleźć znanego szkodliwego oprogramowania na komputerze. Sprawdzano: godzinę temu.}few{Chromium nie udało się znaleźć znanego szkodliwego oprogramowania na komputerze. Sprawdzano: {NUM_HOURS} godziny temu.}many{Chromium nie udało się znaleźć znanego szkodliwego oprogramowania na komputerze. Sprawdzano: {NUM_HOURS} godzin temu.}other{Chromium nie udało się znaleźć znanego szkodliwego oprogramowania na komputerze. Sprawdzano: {NUM_HOURS} godziny temu.}}</translation>

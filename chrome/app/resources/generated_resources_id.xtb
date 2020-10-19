@@ -2576,7 +2576,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3949981384795585075">{NUM_APPS,plural, =1{Aplikasi ini mungkin berbahaya}other{Aplikasi ini mungkin berbahaya}}</translation>
 <translation id="3950820424414687140">Login</translation>
 <translation id="3953834000574892725">Akun saya</translation>
-<translation id="3954354850384043518">Sedang berlangsung</translation>
+<translation id="3954354850384043518">Dalam proses</translation>
 <translation id="3954469006674843813"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz)</translation>
 <translation id="3954953195017194676">Anda tidak memiliki log aktivitas WebRTC yang direkam baru-baru ini.</translation>
 <translation id="3955163004258753966">Error saat memulai upgrade</translation>

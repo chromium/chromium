@@ -186,6 +186,7 @@ Es posible que algunas funciones no estén disponibles. Especifica un directorio
 <translation id="6863361426438995919">Google Pay (copiada en Chromium)</translation>
 <translation id="6893813176749746474">Chromium se ha actualizado, pero llevas al menos 30 días sin utilizarlo.</translation>
 <translation id="6964305034639999644">Abrir enlace en una ventana de incó&amp;gnito de Chromium</translation>
+<translation id="6978145336957848883">Las contraseñas poco seguras son fáciles de adivinar. Permite que Chromium <ph name="BEGIN_LINK" />cree y recuerde contraseñas seguras por ti<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium necesita permiso para acceder al micrófono en este sitio web</translation>
 <translation id="701244094609242530">Chromium no puede comprobar tus extensiones. Vuelve a intentarlo más tarde.</translation>
 <translation id="7028347026395185822">{NUM_HOURS,plural, =1{Chromium no ha detectado ningún software dañino conocido en tu ordenador. Última comprobación: hace 1 hora.}other{Chromium no ha detectado ningún software dañino conocido en tu ordenador. Última comprobación: hace {NUM_HOURS} horas.}}</translation>

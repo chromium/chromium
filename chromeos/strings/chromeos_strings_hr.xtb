@@ -3,6 +3,7 @@
 <translationbundle lang="hr">
 <translation id="1018656279737460067">Otkazano</translation>
 <translation id="1195447618553298278">Nepoznata pogreška.</translation>
+<translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">Nije uspjelo – filtar ne radi</translation>
 <translation id="1468664791493211953">Ponude</translation>
 <translation id="1478594628797167447">Skener</translation>
@@ -46,6 +47,7 @@
 <translation id="4227825898293920515">Zaporka istječe za <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nema zadataka ispisa u tijeku</translation>
 <translation id="4297501883039923494">Zaustavljeno – nepoznata pogreška</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Kerberosov tiket uskoro istječe</translation>
 <translation id="445059817448385655">Stara zaporka</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> od <ph name="TOTAL_PAGE_NUMBER" />. Pritisnite tipku Enter da biste otkazali zadatak ispisa.</translation>
@@ -73,6 +75,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="6058625436358447366">Za dovršetak unesite staru i novu zaporku</translation>
 <translation id="6106186594183574873">Za dovršetak unesite staru zaporku</translation>
 <translation id="6146993107019042706">Za dovršetak unesite novu zaporku</translation>
+<translation id="6147514244879357420">PNG</translation>
 <translation id="636850387210749493">Prijava poduzeća</translation>
 <translation id="649050271426829538">Zaustavljeno – zaglavljeni papir</translation>
 <translation id="6517239166834772319">Istražite</translation>
