@@ -1011,6 +1011,15 @@
       type: "mojom::blink::PreferredColorScheme",
     },
 
+    // Preferred contrast from the OS/application passed to the renderer for
+    // evaluating the prefers-contrast media query.
+    {
+      name: "preferredContrast",
+      initial: "mojom::blink::PreferredContrast::kNoPreference",
+      invalidate: "MediaQuery",
+      type: "mojom::blink::PreferredContrast",
+    },
+
     // Preferred motion-reduction setting from the OS/application passed to the
     // renderer for evaluating the prefers-reduced-motion media query.
     {

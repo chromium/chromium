@@ -32,7 +32,6 @@
 #include "third_party/blink/public/common/css/forced_colors.h"
 #include "third_party/blink/public/common/css/navigation_controls.h"
 #include "third_party/blink/public/common/css/screen_spanning.h"
-#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
@@ -863,6 +862,37 @@ static bool PrefersColorSchemeMediaFeatureEval(
           value.id == CSSValueID::kDark) ||
          (preferred_scheme == mojom::blink::PreferredColorScheme::kLight &&
           value.id == CSSValueID::kLight);
+}
+
+static bool PrefersContrastMediaFeatureEval(const MediaQueryExpValue& value,
+                                            MediaFeaturePrefix,
+                                            const MediaValues& media_values) {
+  auto preferred_contrast = media_values.GetPreferredContrast();
+  ForcedColors forced_colors = media_values.GetForcedColors();
+
+  if (!value.IsValid()) {
+    return forced_colors != ForcedColors::kNone ||
+           preferred_contrast != mojom::blink::PreferredContrast::kNoPreference;
+  }
+
+  if (!value.is_id)
+    return false;
+
+  switch (value.id) {
+    case CSSValueID::kForced:
+      return forced_colors == ForcedColors::kActive;
+    case CSSValueID::kMore:
+      return preferred_contrast == mojom::blink::PreferredContrast::kMore;
+    case CSSValueID::kLess:
+      return preferred_contrast == mojom::blink::PreferredContrast::kLess;
+    case CSSValueID::kNoPreference:
+      return forced_colors != ForcedColors::kActive &&
+             preferred_contrast ==
+                 mojom::blink::PreferredContrast::kNoPreference;
+    default:
+      NOTREACHED();
+      return false;
+  }
 }
 
 static bool ForcedColorsMediaFeatureEval(const MediaQueryExpValue& value,

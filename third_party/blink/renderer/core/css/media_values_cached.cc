@@ -8,6 +8,7 @@
 #include "third_party/blink/public/common/css/navigation_controls.h"
 #include "third_party/blink/public/common/css/screen_spanning.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink.h"
+#include "third_party/blink/public/mojom/css/preferred_contrast.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -35,6 +36,7 @@ MediaValuesCached::MediaValuesCachedData::MediaValuesCachedData()
       display_mode(blink::mojom::DisplayMode::kBrowser),
       color_gamut(ColorSpaceGamut::kUnknown),
       preferred_color_scheme(mojom::blink::PreferredColorScheme::kLight),
+      preferred_contrast(mojom::blink::PreferredContrast::kNoPreference),
       prefers_reduced_motion(false),
       forced_colors(ForcedColors::kNone),
       navigation_controls(NavigationControls::kNone),
@@ -77,6 +79,7 @@ MediaValuesCached::MediaValuesCachedData::MediaValuesCachedData(
     media_type = MediaValues::CalculateMediaType(frame);
     color_gamut = MediaValues::CalculateColorGamut(frame);
     preferred_color_scheme = MediaValues::CalculatePreferredColorScheme(frame);
+    preferred_contrast = MediaValues::CalculatePreferredContrast(frame);
     prefers_reduced_motion = MediaValues::CalculatePrefersReducedMotion(frame);
     prefers_reduced_data = MediaValues::CalculatePrefersReducedData(frame);
     forced_colors = MediaValues::CalculateForcedColors();
@@ -195,6 +198,11 @@ ColorSpaceGamut MediaValuesCached::ColorGamut() const {
 mojom::blink::PreferredColorScheme MediaValuesCached::GetPreferredColorScheme()
     const {
   return data_.preferred_color_scheme;
+}
+
+mojom::blink::PreferredContrast MediaValuesCached::GetPreferredContrast()
+    const {
+  return data_.preferred_contrast;
 }
 
 bool MediaValuesCached::PrefersReducedMotion() const {

@@ -775,6 +775,11 @@ void WebSettingsImpl::SetPreferredColorScheme(
   settings_->SetPreferredColorScheme(color_scheme);
 }
 
+void WebSettingsImpl::SetPreferredContrast(
+    mojom::blink::PreferredContrast contrast) {
+  settings_->SetPreferredContrast(contrast);
+}
+
 void WebSettingsImpl::SetNavigationControls(
     NavigationControls navigation_controls) {
   settings_->SetNavigationControls(navigation_controls);

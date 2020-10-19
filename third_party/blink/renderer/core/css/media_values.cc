@@ -6,7 +6,6 @@
 
 #include "third_party/blink/public/common/css/screen_spanning.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
-#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
@@ -194,6 +193,13 @@ mojom::blink::PreferredColorScheme MediaValues::CalculatePreferredColorScheme(
       return CSSValueIDToPreferredColorScheme(value.id);
   }
   return frame->GetDocument()->GetStyleEngine().GetPreferredColorScheme();
+}
+
+mojom::blink::PreferredContrast MediaValues::CalculatePreferredContrast(
+    LocalFrame* frame) {
+  DCHECK(frame);
+  DCHECK(frame->GetSettings());
+  return frame->GetSettings()->GetPreferredContrast();
 }
 
 bool MediaValues::CalculatePrefersReducedMotion(LocalFrame* frame) {

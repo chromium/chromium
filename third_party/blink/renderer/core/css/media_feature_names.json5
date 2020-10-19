@@ -53,6 +53,7 @@
     "origin-trial-test",
     "pointer",
     "prefers-color-scheme",
+    "prefers-contrast",
     "prefers-reduced-motion",
     "prefers-reduced-data",
     "resolution",

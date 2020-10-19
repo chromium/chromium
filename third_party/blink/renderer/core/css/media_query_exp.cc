@@ -79,6 +79,13 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
   if (media_feature == media_feature_names::kPrefersColorSchemeMediaFeature)
     return ident == CSSValueID::kDark || ident == CSSValueID::kLight;
 
+  if (RuntimeEnabledFeatures::PrefersContrastEnabled()) {
+    if (media_feature == media_feature_names::kPrefersContrastMediaFeature) {
+      return ident == CSSValueID::kNoPreference || ident == CSSValueID::kMore ||
+             ident == CSSValueID::kLess || ident == CSSValueID::kForced;
+    }
+  }
+
   if (media_feature == media_feature_names::kPrefersReducedMotionMediaFeature)
     return ident == CSSValueID::kNoPreference || ident == CSSValueID::kReduce;
 
@@ -219,6 +226,8 @@ static inline bool FeatureWithoutValue(
          media_feature == media_feature_names::kImmersiveMediaFeature ||
          media_feature ==
              media_feature_names::kPrefersColorSchemeMediaFeature ||
+         (media_feature == media_feature_names::kPrefersContrastMediaFeature &&
+          RuntimeEnabledFeatures::PrefersContrastEnabled()) ||
          media_feature ==
              media_feature_names::kPrefersReducedMotionMediaFeature ||
          (media_feature ==

@@ -48,6 +48,7 @@ class CORE_EXPORT MediaValuesDynamic : public MediaValues {
   blink::mojom::DisplayMode DisplayMode() const override;
   ColorSpaceGamut ColorGamut() const override;
   mojom::blink::PreferredColorScheme GetPreferredColorScheme() const override;
+  mojom::blink::PreferredContrast GetPreferredContrast() const override;
   bool PrefersReducedMotion() const override;
   bool PrefersReducedData() const override;
   ForcedColors GetForcedColors() const override;

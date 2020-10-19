@@ -6,7 +6,6 @@
 
 #include "third_party/blink/public/common/css/forced_colors.h"
 #include "third_party/blink/public/common/css/navigation_controls.h"
-#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
@@ -143,6 +142,11 @@ ColorSpaceGamut MediaValuesDynamic::ColorGamut() const {
 mojom::blink::PreferredColorScheme MediaValuesDynamic::GetPreferredColorScheme()
     const {
   return CalculatePreferredColorScheme(frame_);
+}
+
+mojom::blink::PreferredContrast MediaValuesDynamic::GetPreferredContrast()
+    const {
+  return CalculatePreferredContrast(frame_);
 }
 
 bool MediaValuesDynamic::PrefersReducedMotion() const {

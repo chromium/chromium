@@ -1441,5 +1441,11 @@
     // always
     // both
     "force",
+
+    // (prefers-contrast:) media feature
+    // no-preference
+    "more",
+    "less",
+    "forced",
   ],
 }

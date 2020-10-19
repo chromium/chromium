@@ -187,6 +187,60 @@ MediaQueryEvaluatorTestCase g_forcedcolors_none_cases[] = {
     {nullptr, 0}  // Do not remove the terminator line.
 };
 
+MediaQueryEvaluatorTestCase g_preferscontrast_nopreference_cases[] = {
+    {"(prefers-contrast)", 0},
+    {"(prefers-contrast: more)", 0},
+    {"(prefers-contrast: less)", 0},
+    {"(prefers-contrast: forced)", 0},
+    {"(prefers-contrast: no-preference)", 1},
+    {nullptr, 0}  // Do not remove the terminator line.
+};
+
+MediaQueryEvaluatorTestCase g_preferscontrast_more_cases[] = {
+    {"(prefers-contrast)", 1},
+    {"(prefers-contrast: more)", 1},
+    {"(prefers-contrast: less)", 0},
+    {"(prefers-contrast: forced)", 0},
+    {"(prefers-contrast: no-preference)", 0},
+    {nullptr, 0}  // Do not remove the terminator line.
+};
+
+MediaQueryEvaluatorTestCase g_preferscontrast_less_cases[] = {
+    {"(prefers-contrast)", 1},
+    {"(prefers-contrast: more)", 0},
+    {"(prefers-contrast: less)", 1},
+    {"(prefers-contrast: forced)", 0},
+    {"(prefers-contrast: no-preference)", 0},
+    {nullptr, 0}  // Do not remove the terminator line.
+};
+
+MediaQueryEvaluatorTestCase g_preferscontrast_forced_cases[] = {
+    {"(prefers-contrast)", 1},
+    {"(prefers-contrast: more)", 0},
+    {"(prefers-contrast: less)", 0},
+    {"(prefers-contrast: forced)", 1},
+    {"(prefers-contrast: no-preference)", 0},
+    {nullptr, 0}  // Do not remove the terminator line.
+};
+
+MediaQueryEvaluatorTestCase g_preferscontrast_forced_more_cases[] = {
+    {"(prefers-contrast)", 1},
+    {"(prefers-contrast: more)", 1},
+    {"(prefers-contrast: less)", 0},
+    {"(prefers-contrast: forced)", 1},
+    {"(prefers-contrast: no-preference)", 0},
+    {nullptr, 0}  // Do not remove the terminator line.
+};
+
+MediaQueryEvaluatorTestCase g_preferscontrast_forced_less_cases[] = {
+    {"(prefers-contrast)", 1},
+    {"(prefers-contrast: more)", 0},
+    {"(prefers-contrast: less)", 1},
+    {"(prefers-contrast: forced)", 1},
+    {"(prefers-contrast: no-preference)", 0},
+    {nullptr, 0}  // Do not remove the terminator line.
+};
+
 MediaQueryEvaluatorTestCase g_navigationcontrols_back_button_cases[] = {
     {"(navigation-controls: back-button)", 1},
     {"(navigation-controls: none)", 0},
@@ -395,6 +449,61 @@ TEST(MediaQueryEvaluatorTest, CachedForcedColors) {
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
     MediaQueryEvaluator media_query_evaluator(*media_values);
     TestMQEvaluator(g_forcedcolors_active_cases, media_query_evaluator);
+  }
+}
+
+TEST(MediaQueryEvaluatorTest, CachedPrefersContrast) {
+  ScopedForcedColorsForTest forced_scoped_feature(true);
+  ScopedPrefersContrastForTest contrast_scoped_feature(true);
+
+  MediaValuesCached::MediaValuesCachedData data;
+  data.forced_colors = ForcedColors::kNone;
+  data.preferred_contrast = mojom::blink::PreferredContrast::kNoPreference;
+  MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+
+  // Prefers-contrast - no-preference.
+  MediaQueryEvaluator media_query_evaluator(*media_values);
+  TestMQEvaluator(g_preferscontrast_nopreference_cases, media_query_evaluator);
+
+  // Prefers-contrast - more.
+  {
+    data.preferred_contrast = mojom::blink::PreferredContrast::kMore;
+    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(*media_values);
+    TestMQEvaluator(g_preferscontrast_more_cases, media_query_evaluator);
+  }
+
+  // Prefers-contrast - less.
+  {
+    data.preferred_contrast = mojom::blink::PreferredContrast::kLess;
+    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(*media_values);
+    TestMQEvaluator(g_preferscontrast_less_cases, media_query_evaluator);
+  }
+
+  // Prefers-contrast - forced.
+  {
+    data.preferred_contrast = mojom::blink::PreferredContrast::kNoPreference;
+    data.forced_colors = ForcedColors::kActive;
+    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(*media_values);
+    TestMQEvaluator(g_preferscontrast_forced_cases, media_query_evaluator);
+  }
+
+  // Prefers-contrast - forced and more.
+  {
+    data.preferred_contrast = mojom::blink::PreferredContrast::kMore;
+    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(*media_values);
+    TestMQEvaluator(g_preferscontrast_forced_more_cases, media_query_evaluator);
+  }
+
+  // Prefers-contrast - forced and less.
+  {
+    data.preferred_contrast = mojom::blink::PreferredContrast::kLess;
+    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(*media_values);
+    TestMQEvaluator(g_preferscontrast_forced_less_cases, media_query_evaluator);
   }
 }
 
