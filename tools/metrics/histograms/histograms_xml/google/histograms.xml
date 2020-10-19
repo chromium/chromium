@@ -21,7 +21,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
-<histogram name="GoogleUpdate.ErrorHresult" enum="Hresult" expires_after="M86">
+<histogram name="GoogleUpdate.ErrorHresult" enum="Hresult"
+    expires_after="2021-12-31">
   <owner>grt@chromium.org</owner>
   <owner>ydago@chromium.org</owner>
   <summary>The HRESULT for a failed on-demand update check.</summary>
@@ -212,14 +213,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GoogleUpdate.UpdateErrorCode" enum="GoogleUpdateErrorCode"
-    expires_after="M86">
+    expires_after="2021-12-31">
   <owner>grt@chromium.org</owner>
   <owner>ydago@chromium.org</owner>
   <summary>The error code for a failed on-demand update check.</summary>
 </histogram>
 
 <histogram name="GoogleUpdate.UpgradeResult" enum="GoogleUpdateUpgradeStatus"
-    expires_after="M86">
+    expires_after="2021-12-31">
   <owner>grt@chromium.org</owner>
   <owner>ydago@chromium.org</owner>
   <summary>The result of an on-demand update check.</summary>
