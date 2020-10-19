@@ -245,20 +245,14 @@ function getOriginObject(type, host, origin) {
   return originObject;
 }
 
-/**
- * Event Handler for |cr.quota.onAvailableSpaceUpdated|.
- * |event.detail| contains |availableSpace|.
- * |availableSpace| represents total available disk space.
- * @param {!CustomEvent<number>} event AvailableSpaceUpdated event.
- */
-function handleAvailableSpace(event) {
-  availableSpace = event.detail;
+/** @param {number} space Total available disk space. */
+function handleAvailableSpace(space) {
+  availableSpace = space;
   $('diskspace-entry').textContent = numBytesToText_(availableSpace);
 }
 
 /**
- * Event Handler for |cr.quota.onGlobalInfoUpdated|.
- * |event.detail| contains a record which has:
+ * |data| contains a record which has:
  *   |type|:
  *     Storage type, that is either 'temporary' or 'persistent'.
  *   |usage|:
@@ -270,15 +264,14 @@ function handleAvailableSpace(event) {
  *
  *  |usage|, |unlimitedUsage| and |quota| can be missing,
  *  and some additional fields can be included.
- * @param {!CustomEvent<!{
+ * @param {!{
  *     type: string,
  *     usage: ?number,
  *     unlimitedUsage: ?number,
  *     quota: ?string
- * }>} event GlobalInfoUpdated event.
+ * }} data
  */
-function handleGlobalInfo(event) {
-  const data = event.detail;
+function handleGlobalInfo(data) {
   const storageObject = getStorageObject(data.type);
   copyAttributes_(data, storageObject.detail.payload);
   storageObject.reveal();
@@ -288,8 +281,7 @@ function handleGlobalInfo(event) {
 }
 
 /**
- * Event Handler for |cr.quota.onPerHostInfoUpdated|.
- * |event.detail| contains records which have:
+ * |dataArray| contains records which have:
  *   |host|:
  *     Hostname of the entry. (e.g. 'example.com')
  *   |type|:
@@ -301,16 +293,14 @@ function handleGlobalInfo(event) {
  *
  * |usage| and |quota| can be missing,
  * and some additional fields can be included.
- * @param {!CustomEvent<!Array<{
+ * @param {!Array<{
  *     host: string,
  *     type: string,
  *     usage: ?number,
  *     quota: ?number
- * }>>} event PerHostInfoUpdated event.
+ * }>} dataArray
  */
-function handlePerHostInfo(event) {
-  const dataArray = event.detail;
-
+function handlePerHostInfo(dataArray) {
   for (let i = 0; i < dataArray.length; ++i) {
     const data = dataArray[i];
     const hostObject = getHostObject(data.type, data.host);
@@ -323,8 +313,7 @@ function handlePerHostInfo(event) {
 }
 
 /**
- * Event Handler for |cr.quota.onPerOriginInfoUpdated|.
- * |event.detail| contains records which have:
+ * |dataArray| contains records which have:
  *   |origin|:
  *     Origin URL of the entry.
  *   |type|:
@@ -344,7 +333,7 @@ function handlePerHostInfo(event) {
  *
  * |inUse|, |usedCount|, |lastAccessTime| and |lastModifiedTime| can be missing,
  * and some additional fields can be included.
- * @param {!CustomEvent<!Array<!{
+ * @param {!Array<!{
  *     origin: string,
  *     type: string,
  *     host: string,
@@ -352,11 +341,9 @@ function handlePerHostInfo(event) {
  *     usedCount: ?number,
  *     lastAccessTime: ?number,
  *     lastModifiedTime: ?number
- * }>>} event PerOriginInfoUpdated event.
+ * }>} dataArray
  */
-function handlePerOriginInfo(event) {
-  const dataArray = event.detail;
-
+function handlePerOriginInfo(dataArray) {
   for (let i = 0; i < dataArray.length; ++i) {
     const data = dataArray[i];
     const originObject = getOriginObject(data.type, data.host, data.origin);
@@ -369,12 +356,10 @@ function handlePerOriginInfo(event) {
 }
 
 /**
- * Event Handler for |cr.quota.onStatisticsUpdated|.
- * |event.detail| contains misc statistics data as dictionary.
- * @param {!CustomEvent<!Object>} event StatisticsUpdated event.
+ * |data| contains misc statistics data as dictionary.
+ * @param {!Object} data
  */
-function handleStatistics(event) {
-  const data = event.detail;
+function handleStatistics(data) {
   for (const key in data) {
     let entry = statistics[key];
     if (!entry) {
@@ -391,13 +376,10 @@ function handleStatistics(event) {
 }
 
 /**
- * Event Handler for |cr.quota.onStoragePressureFlagUpdated|.
- * |event.detail| contains a boolean representing whether or not to show
- * the storage pressure UI.
- * @param {!CustomEvent<!Object>} event StoragePressureFlagUpdated event.
+ * @param {!{isStoragePressureEnabled: boolean}} data Contains a boolean
+ *     representing whether or not to show the storage pressure UI.
  */
-function handleStoragePressureFlagInfo(event) {
-  const data = event.detail;
+function handleStoragePressureFlagInfo(data) {
   $('storage-pressure-loading').hidden = true;
   if (data.isStoragePressureEnabled) {
     $('storage-pressure-outer').hidden = false;
@@ -499,15 +481,14 @@ function dump() {
 function onLoad() {
   cr.ui.decorate('tabbox', cr.ui.TabBox);
 
-  cr.quota.onAvailableSpaceUpdated.addEventListener(
-      'update', handleAvailableSpace);
-  cr.quota.onGlobalInfoUpdated.addEventListener('update', handleGlobalInfo);
-  cr.quota.onPerHostInfoUpdated.addEventListener('update', handlePerHostInfo);
-  cr.quota.onPerOriginInfoUpdated.addEventListener(
-      'update', handlePerOriginInfo);
-  cr.quota.onStatisticsUpdated.addEventListener('update', handleStatistics);
-  cr.quota.onStoragePressureFlagUpdated.addEventListener(
-      'update', handleStoragePressureFlagInfo);
+  cr.addWebUIListener('AvailableSpaceUpdated', handleAvailableSpace);
+  cr.addWebUIListener('GlobalInfoUpdated', handleGlobalInfo);
+  cr.addWebUIListener('PerHostInfoUpdated', handlePerHostInfo);
+  cr.addWebUIListener('PerOriginInfoUpdated', handlePerOriginInfo);
+  cr.addWebUIListener('StatisticsUpdated', handleStatistics);
+  cr.addWebUIListener(
+      'StoragePressureFlagUpdated', handleStoragePressureFlagInfo);
+
   cr.quota.requestInfo();
 
   $('refresh-button').addEventListener('click', cr.quota.requestInfo, false);
