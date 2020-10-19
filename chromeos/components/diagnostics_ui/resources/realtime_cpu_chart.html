@@ -24,12 +24,12 @@
   }
 
   /* TODO(joonbug): Update with real colors as vars */
-  .user-line {
-    stroke: blue;
+  .user-area {
+    fill: orange;
   }
 
-  .system-line {
-    stroke: orange;
+  .system-area {
+    fill: blue;
   }
 </style>
 
@@ -44,8 +44,8 @@
 
     <g id="gridLines" class="grid"></g>
     <g id="plotGroup" clip-path="url(#defClip)">
-      <path class="user-line"></path>
-      <path class="system-line"></path>
+      <path class="user-area"></path>
+      <path class="system-area"></path>
     </g>
   </g>
 </svg>

@@ -13,8 +13,8 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
 /**
  * @fileoverview
- * 'realtime-cpu-chart' is a moving line graph component used to display a
- * realtime cpu usage information.
+ * 'realtime-cpu-chart' is a moving stacked area graph component used to display
+ * a realtime cpu usage information.
  */
 Polymer({
   is: 'realtime-cpu-chart',
@@ -169,48 +169,52 @@ Polymer({
     // Feed data array to the plot group.
     plotGroup.datum(this.data_);
 
-    // Select each line and configure the transition for animation.
+    // Select each area and configure the transition for animation.
     // d3.transition API @ https://github.com/d3/d3-transition#d3-transition.
     // d3.easing API @ https://github.com/d3/d3-ease#api-reference.
-    plotGroup.select('.user-line')
+    plotGroup.select('.user-area')
         .transition()
         .duration(this.refreshInterval_)
         .ease(d3.easeLinear)  // Linear transition
-        .on('start', this.drawChartLine_.bind(this, 'user-line'));
-    plotGroup.select('.system-line')
+        .on('start', this.drawChartArea_.bind(this, 'user-area'));
+    plotGroup.select('.system-area')
         .transition()
         .duration(this.refreshInterval_)
         .ease(d3.easeLinear)  // Linear transition
-        .on('start', this.drawChartLine_.bind(this, 'system-line'));
+        .on('start', this.drawChartArea_.bind(this, 'system-area'));
   },
 
   /**
-   * @param {string} lineClass class string for <path> element.
-   * @return {d3.Line}
+   * @param {string} areaClass class string for <path> element.
+   * @return {d3.Area}
    * @private
    */
-  getLineDefinition_(lineClass) {
+  getAreaDefinition_(areaClass) {
     return d3
-        .line()
-        // Curved line
+        .area()
+        // Curved area outline
         .curve(d3.curveBasis)
         // Take the index of each data as x values.
         .x((data, i) => this.xAxisScaleFn_(i))
-        // Pick system or user numbers to use as y values.
-        .y(data => this.yAxisScaleFn_(
-               lineClass === 'user-line' ? data.user : data.system));
+        // Bottom coordinates of each area.
+        .y0(data => this.yAxisScaleFn_(
+                areaClass === 'system-area' ? 0 : data.system))
+        // Top coordinates of each area.
+        .y1(data => this.yAxisScaleFn_(
+                areaClass === 'system-area' ? data.system :
+                                              data.system + data.user));
   },
 
   /**
    * Takes a snapshot of current CPU readings and appends to the data array.
-   * This method is called by each line after each transition.
+   * This method is called by each area after each transition.
    * @private
    */
   appendDataSnapshot_() {
     const now = new Date().getTime();
 
     // We only want to append the data once per refreshInterval cycle even with
-    // multiple lines. Roughly limit the call so that at least half of the
+    // multiple areas. Roughly limit the call so that at least half of the
     // refreshInterval has elapsed since the last update.
     if (now - this.dataLastUpdated_ > this.refreshInterval_ / 2) {
       this.dataLastUpdated_ = now;
@@ -220,26 +224,26 @@ Polymer({
   },
 
   /**
-   * @param {string} lineClass class string for <path> element.
+   * @param {string} areaClass class string for <path> element.
    * @private
    */
-  drawChartLine_(lineClass) {
+  drawChartArea_(areaClass) {
     this.appendDataSnapshot_();
 
-    const lineElement = assert(this.$$(`path.${lineClass}`));
+    const areaElement = assert(this.$$(`path.${areaClass}`));
 
-    // Reset the animation (transform) and redraw the line with new data.
+    // Reset the animation (transform) and redraw the area with new data.
     // this.data_ is already associated with the plotGroup, so no need to
     // specify it directly here.
-    d3.select(lineElement)
-        .attr('d', this.getLineDefinition_(lineClass))
+    d3.select(areaElement)
+        .attr('d', this.getAreaDefinition_(areaClass))
         .attr('transform', null);
 
-    // Start animation of the line towards left by one tick outside the chart
+    // Start animation of the area towards left by one tick outside the chart
     // boundary, then repeat the process.
-    d3.active(lineElement)
+    d3.active(areaElement)
         .attr('transform', 'translate(' + this.xAxisScaleFn_(-1) + ', 0)')
         .transition()
-        .on('start', this.drawChartLine_.bind(this, lineClass));
+        .on('start', this.drawChartArea_.bind(this, areaClass));
   },
 });
