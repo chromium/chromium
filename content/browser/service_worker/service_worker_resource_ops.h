@@ -17,14 +17,14 @@ class BigIOBuffer;
 class DiskEntryCreator {
  public:
   DiskEntryCreator(int64_t resource_id,
-                   base::WeakPtr<AppCacheDiskCache> disk_cache);
+                   base::WeakPtr<ServiceWorkerDiskCache> disk_cache);
   ~DiskEntryCreator();
 
   DiskEntryCreator(const DiskEntryCreator&) = delete;
   DiskEntryCreator& operator=(const DiskEntryCreator&) = delete;
 
   // Can be nullptr when a disk cache error occurs.
-  AppCacheDiskCacheEntry* entry() {
+  ServiceWorkerDiskCacheEntry* entry() {
     DCHECK_EQ(creation_phase_, CreationPhase::kDone);
     return entry_;
   }
@@ -53,26 +53,26 @@ class DiskEntryCreator {
   };
 
   // Callbacks of EnsureEntryIsCreated(). These are static to manage the
-  // ownership of AppCacheDiskCacheEntry correctly.
+  // ownership of ServiceWorkerDiskCacheEntry correctly.
   // TODO(crbug.com/586174): Refactor service worker's disk cache to use
   // disk_cache::EntryResult to make these callbacks non-static.
   static void DidCreateEntryForFirstAttempt(
       base::WeakPtr<DiskEntryCreator> entry_creator,
-      AppCacheDiskCacheEntry** entry,
+      ServiceWorkerDiskCacheEntry** entry,
       int rv);
   static void DidDoomExistingEntry(
       base::WeakPtr<DiskEntryCreator> entry_creator,
       int rv);
   static void DidCreateEntryForSecondAttempt(
       base::WeakPtr<DiskEntryCreator> entry_creator,
-      AppCacheDiskCacheEntry** entry,
+      ServiceWorkerDiskCacheEntry** entry,
       int rv);
 
   void RunEnsureEntryIsCreatedCallback();
 
   const int64_t resource_id_;
-  base::WeakPtr<AppCacheDiskCache> disk_cache_;
-  AppCacheDiskCacheEntry* entry_ = nullptr;
+  base::WeakPtr<ServiceWorkerDiskCache> disk_cache_;
+  ServiceWorkerDiskCacheEntry* entry_ = nullptr;
 
   CreationPhase creation_phase_ = CreationPhase::kNoAttempt;
 
@@ -86,14 +86,14 @@ class DiskEntryCreator {
 class DiskEntryOpener {
  public:
   DiskEntryOpener(int64_t resource_id,
-                  base::WeakPtr<AppCacheDiskCache> disk_cache);
+                  base::WeakPtr<ServiceWorkerDiskCache> disk_cache);
   ~DiskEntryOpener();
 
   DiskEntryOpener(const DiskEntryOpener&) = delete;
   DiskEntryOpener& operator=(const DiskEntryOpener&) = delete;
 
   // Can be nullptr when a disk cache error occurs.
-  AppCacheDiskCacheEntry* entry() { return entry_; }
+  ServiceWorkerDiskCacheEntry* entry() { return entry_; }
 
   // Calls the callback when entry() is opened and can be used.
   //
@@ -106,12 +106,12 @@ class DiskEntryOpener {
   // TODO(crbug.com/586174): Refactor service worker's disk cache to use
   // disk_cache::EntryResult to make this callback non-static.
   static void DidOpenEntry(base::WeakPtr<DiskEntryOpener> entry_creator,
-                           AppCacheDiskCacheEntry** entry,
+                           ServiceWorkerDiskCacheEntry** entry,
                            int rv);
 
   const int64_t resource_id_;
-  base::WeakPtr<AppCacheDiskCache> disk_cache_;
-  AppCacheDiskCacheEntry* entry_ = nullptr;
+  base::WeakPtr<ServiceWorkerDiskCache> disk_cache_;
+  ServiceWorkerDiskCacheEntry* entry_ = nullptr;
 
   // Stored as a data member to handle //net-style maybe-async methods.
   base::OnceClosure ensure_entry_is_opened_callback_;
@@ -123,8 +123,9 @@ class DiskEntryOpener {
 class ServiceWorkerResourceReaderImpl
     : public storage::mojom::ServiceWorkerResourceReader {
  public:
-  ServiceWorkerResourceReaderImpl(int64_t resource_id,
-                                  base::WeakPtr<AppCacheDiskCache> disk_cache);
+  ServiceWorkerResourceReaderImpl(
+      int64_t resource_id,
+      base::WeakPtr<ServiceWorkerDiskCache> disk_cache);
 
   ServiceWorkerResourceReaderImpl(const ServiceWorkerResourceReaderImpl&) =
       delete;
@@ -189,8 +190,9 @@ class ServiceWorkerResourceReaderImpl
 class ServiceWorkerResourceWriterImpl
     : public storage::mojom::ServiceWorkerResourceWriter {
  public:
-  ServiceWorkerResourceWriterImpl(int64_t resource_id,
-                                  base::WeakPtr<AppCacheDiskCache> disk_cache);
+  ServiceWorkerResourceWriterImpl(
+      int64_t resource_id,
+      base::WeakPtr<ServiceWorkerDiskCache> disk_cache);
 
   ServiceWorkerResourceWriterImpl(const ServiceWorkerResourceWriterImpl&) =
       delete;
@@ -249,7 +251,7 @@ class ServiceWorkerResourceMetadataWriterImpl
  public:
   ServiceWorkerResourceMetadataWriterImpl(
       int64_t resource_id,
-      base::WeakPtr<AppCacheDiskCache> disk_cache);
+      base::WeakPtr<ServiceWorkerDiskCache> disk_cache);
 
   ServiceWorkerResourceMetadataWriterImpl(
       const ServiceWorkerResourceMetadataWriterImpl&) = delete;

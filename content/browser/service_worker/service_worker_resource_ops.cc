@@ -124,8 +124,9 @@ mojo_base::BigBuffer BigIOBuffer::TakeBuffer() {
   return std::move(buffer_);
 }
 
-DiskEntryCreator::DiskEntryCreator(int64_t resource_id,
-                                   base::WeakPtr<AppCacheDiskCache> disk_cache)
+DiskEntryCreator::DiskEntryCreator(
+    int64_t resource_id,
+    base::WeakPtr<ServiceWorkerDiskCache> disk_cache)
     : resource_id_(resource_id), disk_cache_(std::move(disk_cache)) {
   DCHECK_NE(resource_id_, blink::mojom::kInvalidServiceWorkerResourceId);
   DCHECK(disk_cache_);
@@ -154,7 +155,7 @@ void DiskEntryCreator::EnsureEntryIsCreated(base::OnceClosure callback) {
     return;
   }
 
-  AppCacheDiskCacheEntry** entry_ptr = new AppCacheDiskCacheEntry*;
+  ServiceWorkerDiskCacheEntry** entry_ptr = new ServiceWorkerDiskCacheEntry*;
   creation_phase_ = CreationPhase::kInitialAttempt;
   int rv = disk_cache_->CreateEntry(
       resource_id_, entry_ptr,
@@ -168,7 +169,7 @@ void DiskEntryCreator::EnsureEntryIsCreated(base::OnceClosure callback) {
 // static
 void DiskEntryCreator::DidCreateEntryForFirstAttempt(
     base::WeakPtr<DiskEntryCreator> entry_creator,
-    AppCacheDiskCacheEntry** entry,
+    ServiceWorkerDiskCacheEntry** entry,
     int rv) {
   if (!entry_creator) {
     delete entry;
@@ -223,7 +224,7 @@ void DiskEntryCreator::DidDoomExistingEntry(
   }
 
   entry_creator->creation_phase_ = CreationPhase::kSecondAttempt;
-  auto** entry_ptr = new AppCacheDiskCacheEntry*;
+  auto** entry_ptr = new ServiceWorkerDiskCacheEntry*;
   rv = entry_creator->disk_cache_->CreateEntry(
       entry_creator->resource_id_, entry_ptr,
       base::BindOnce(&DiskEntryCreator::DidCreateEntryForSecondAttempt,
@@ -236,7 +237,7 @@ void DiskEntryCreator::DidDoomExistingEntry(
 // static
 void DiskEntryCreator::DidCreateEntryForSecondAttempt(
     base::WeakPtr<DiskEntryCreator> entry_creator,
-    AppCacheDiskCacheEntry** entry,
+    ServiceWorkerDiskCacheEntry** entry,
     int rv) {
   if (!entry_creator) {
     delete entry;
@@ -272,8 +273,9 @@ void DiskEntryCreator::RunEnsureEntryIsCreatedCallback() {
   std::move(ensure_entry_is_created_callback_).Run();
 }
 
-DiskEntryOpener::DiskEntryOpener(int64_t resource_id,
-                                 base::WeakPtr<AppCacheDiskCache> disk_cache)
+DiskEntryOpener::DiskEntryOpener(
+    int64_t resource_id,
+    base::WeakPtr<ServiceWorkerDiskCache> disk_cache)
     : resource_id_(resource_id), disk_cache_(std::move(disk_cache)) {
   DCHECK_NE(resource_id_, blink::mojom::kInvalidServiceWorkerResourceId);
   DCHECK(disk_cache_);
@@ -290,13 +292,13 @@ void DiskEntryOpener::EnsureEntryIsOpen(base::OnceClosure callback) {
   ensure_entry_is_opened_callback_ = std::move(callback);
 
   int rv;
-  AppCacheDiskCacheEntry** entry_ptr = nullptr;
+  ServiceWorkerDiskCacheEntry** entry_ptr = nullptr;
   if (entry_) {
     rv = net::OK;
   } else if (!disk_cache_) {
     rv = net::ERR_FAILED;
   } else {
-    entry_ptr = new AppCacheDiskCacheEntry*;
+    entry_ptr = new ServiceWorkerDiskCacheEntry*;
     rv = disk_cache_->OpenEntry(
         resource_id_, entry_ptr,
         base::BindOnce(&DiskEntryOpener::DidOpenEntry,
@@ -310,7 +312,7 @@ void DiskEntryOpener::EnsureEntryIsOpen(base::OnceClosure callback) {
 
 // static
 void DiskEntryOpener::DidOpenEntry(base::WeakPtr<DiskEntryOpener> entry_opener,
-                                   AppCacheDiskCacheEntry** entry,
+                                   ServiceWorkerDiskCacheEntry** entry,
                                    int rv) {
   if (!entry_opener) {
     delete entry;
@@ -500,7 +502,7 @@ class ServiceWorkerResourceReaderImpl::DataReader {
 
 ServiceWorkerResourceReaderImpl::ServiceWorkerResourceReaderImpl(
     int64_t resource_id,
-    base::WeakPtr<AppCacheDiskCache> disk_cache)
+    base::WeakPtr<ServiceWorkerDiskCache> disk_cache)
     : entry_opener_(resource_id, std::move(disk_cache)) {}
 
 ServiceWorkerResourceReaderImpl::~ServiceWorkerResourceReaderImpl() = default;
@@ -691,7 +693,7 @@ void ServiceWorkerResourceReaderImpl::DidReadDataComplete() {
 
 ServiceWorkerResourceWriterImpl::ServiceWorkerResourceWriterImpl(
     int64_t resource_id,
-    base::WeakPtr<AppCacheDiskCache> disk_cache)
+    base::WeakPtr<ServiceWorkerDiskCache> disk_cache)
     : entry_creator_(resource_id, std::move(disk_cache)) {}
 
 ServiceWorkerResourceWriterImpl::~ServiceWorkerResourceWriterImpl() = default;
@@ -807,7 +809,7 @@ void ServiceWorkerResourceWriterImpl::DidWriteData(
 ServiceWorkerResourceMetadataWriterImpl::
     ServiceWorkerResourceMetadataWriterImpl(
         int64_t resource_id,
-        base::WeakPtr<AppCacheDiskCache> disk_cache)
+        base::WeakPtr<ServiceWorkerDiskCache> disk_cache)
     : entry_opener_(resource_id, std::move(disk_cache)) {}
 
 ServiceWorkerResourceMetadataWriterImpl::
