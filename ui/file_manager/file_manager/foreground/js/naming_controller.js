@@ -262,14 +262,13 @@ class NamingController {
     const entry = input.currentEntry;
     const newName = input.value;
 
-    if (!newName || newName == entry.name) {
-      this.cancelRename_();
-      return;
-    }
-
     const renamedItemElement = this.listContainer_.findListItemForNode(
         this.listContainer_.renameInput);
     const nameNode = renamedItemElement.querySelector('.filename-label');
+    if (!newName || newName == nameNode.textContent) {
+      this.cancelRename_();
+      return;
+    }
 
     input.validation_ = true;
     const validationDone = valid => {
