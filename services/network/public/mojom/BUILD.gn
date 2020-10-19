@@ -423,10 +423,11 @@ mojom("cookies_mojom") {
       types = [
         {
           mojom = "network.mojom.CanonicalCookie"
-          cpp = "::blink::CanonicalCookie"
+          cpp = "::net::CanonicalCookie"
         },
       ]
-      traits_headers = [ "//third_party/blink/renderer/platform/cookie/canonical_cookie_mojom_traits.h" ]
+      traits_headers =
+          [ "//services/network/public/cpp/cookie_manager_mojom_traits.h" ]
     },
   ]
   blink_cpp_typemaps += shared_cpp_typemaps

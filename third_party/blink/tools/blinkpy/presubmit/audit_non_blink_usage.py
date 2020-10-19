@@ -429,6 +429,12 @@ _CONFIG = [
             # HTTP structured headers
             'net::structured_headers::.+',
 
+            # CanonicalCookie and related headers
+            'net::CanonicalCookie',
+            'net::CookiePriority',
+            'net::CookieSameSite',
+            'net::CookieSourceScheme',
+
             # HTTP status codes
             'net::HTTP_.+',
 

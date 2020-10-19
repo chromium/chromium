@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cookie_list_item.h"
 #include "third_party/blink/renderer/core/dom/dom_time_stamp.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
-#include "third_party/blink/renderer/platform/cookie/canonical_cookie.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -49,15 +48,15 @@ CookieChangeEvent::CookieChangeEvent(const AtomicString& type,
 
 namespace {
 
-String ToCookieListItemSameSite(network::mojom::CookieSameSite same_site) {
+String ToCookieListItemSameSite(net::CookieSameSite same_site) {
   switch (same_site) {
-    case network::mojom::CookieSameSite::STRICT_MODE:
+    case net::CookieSameSite::STRICT_MODE:
       return "strict";
-    case network::mojom::CookieSameSite::LAX_MODE:
+    case net::CookieSameSite::LAX_MODE:
       return "lax";
-    case network::mojom::CookieSameSite::NO_RESTRICTION:
+    case net::CookieSameSite::NO_RESTRICTION:
       return "none";
-    case network::mojom::CookieSameSite::UNSPECIFIED:
+    case net::CookieSameSite::UNSPECIFIED:
       return String();
   }
 
@@ -83,13 +82,14 @@ String ToCookieListItemEffectiveSameSite(
 
 // static
 CookieListItem* CookieChangeEvent::ToCookieListItem(
-    const CanonicalCookie& canonical_cookie,
+    const net::CanonicalCookie& canonical_cookie,
     const network::mojom::blink::CookieEffectiveSameSite& effective_same_site,
     bool is_deleted) {
   CookieListItem* list_item = CookieListItem::Create();
 
-  list_item->setName(canonical_cookie.Name());
-  list_item->setPath(canonical_cookie.Path());
+  list_item->setName(String::FromUTF8(canonical_cookie.Name()));
+  list_item->setPath(String::FromUTF8(canonical_cookie.Path()));
+
   list_item->setSecure(canonical_cookie.IsSecure());
   // Use effective same site if available, otherwise use same site.
   auto&& same_site = ToCookieListItemEffectiveSameSite(effective_same_site);
@@ -99,7 +99,7 @@ CookieListItem* CookieChangeEvent::ToCookieListItem(
     list_item->setSameSite(same_site);
 
   // The domain of host-only cookies is the host name, without a dot (.) prefix.
-  String cookie_domain = canonical_cookie.Domain();
+  String cookie_domain = String::FromUTF8(canonical_cookie.Domain());
   if (cookie_domain.StartsWith(".")) {
     list_item->setDomain(cookie_domain.Substring(1));
   } else {
@@ -107,7 +107,7 @@ CookieListItem* CookieChangeEvent::ToCookieListItem(
   }
 
   if (!is_deleted) {
-    list_item->setValue(canonical_cookie.Value());
+    list_item->setValue(String::FromUTF8(canonical_cookie.Value()));
     if (canonical_cookie.ExpiryDate().is_null()) {
       // TODO(crbug.com/1070871): Use base::nullopt instead.
       list_item->setExpiresToNull();

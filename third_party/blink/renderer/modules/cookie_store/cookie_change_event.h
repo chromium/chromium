@@ -7,6 +7,7 @@
 
 #include <utility>
 
+#include "net/cookies/canonical_cookie.h"
 #include "services/network/public/mojom/cookie_manager.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cookie_list_item.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
@@ -62,7 +63,7 @@ class CookieChangeEvent final : public Event {
   void Trace(Visitor*) const override;
 
   static CookieListItem* ToCookieListItem(
-      const CanonicalCookie& canonical_cookie,
+      const net::CanonicalCookie& canonical_cookie,
       const network::mojom::blink::CookieEffectiveSameSite&,
       bool is_deleted);  // True for information from a cookie deletion event.
 
