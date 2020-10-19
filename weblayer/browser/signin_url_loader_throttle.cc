@@ -60,7 +60,7 @@ SigninURLLoaderThrottle::~SigninURLLoaderThrottle() = default;
 std::unique_ptr<SigninURLLoaderThrottle> SigninURLLoaderThrottle::Create(
     content::BrowserContext* browser_context,
     content::WebContents::Getter web_contents_getter) {
-  if (browser_context->IsOffTheRecord() || !GetDelegate(web_contents_getter))
+  if (!GetDelegate(web_contents_getter))
     return nullptr;
 
   // Use base::WrapUnique + new because of the constructor is private.

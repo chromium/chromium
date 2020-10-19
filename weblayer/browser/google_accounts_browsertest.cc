@@ -219,11 +219,13 @@ class IncognitoGoogleAccountsBrowserTest : public GoogleAccountsBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(IncognitoGoogleAccountsBrowserTest,
-                       HeaderNotAddedForIncognitoBrowser) {
+                       HeaderAddedForIncognitoBrowser) {
   const std::string path =
       base::StrCat({"/echoheader?", signin::kChromeConnectedHeader});
   NavigateAndWaitForCompletion(GetGaiaURL(path), shell());
-  EXPECT_EQ(GetBody(), "None");
+  EXPECT_EQ(GetBody(),
+            "source=WebLayer,mode=3,enable_account_consistency=true,"
+            "consistency_enabled_by_default=false");
 }
 
 }  // namespace weblayer
