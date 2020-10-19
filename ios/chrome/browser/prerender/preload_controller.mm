@@ -146,7 +146,7 @@ static const size_t kMaximumCancelledWebStateDelay = 2;
 
 // Used to enable the workaround for a WebKit crash, see crbug.com/1032928.
 const base::Feature kPreloadDelayWebStateReset{
-    "PreloadDelayWebStateReset", base::FEATURE_DISABLED_BY_DEFAULT};
+    "PreloadDelayWebStateReset", base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace
 
