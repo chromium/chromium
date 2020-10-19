@@ -4,6 +4,7 @@
 
 import("//build/config/android/rules.gni")
 import("//build/config/locales.gni")
+import("//tools/grit/grit_rule.gni")
 
 generate_jni("jni_headers") {
   sources = [

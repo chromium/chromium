@@ -6,6 +6,7 @@ import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/locales.gni")
 import("//chrome/common/features.gni")
+import("//tools/grit/grit_rule.gni")
 
 # The animated_poodle_java target is overridden downstream and used
 # instead of this one if the enable_chrome_android_internal flag is

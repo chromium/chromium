@@ -5,6 +5,7 @@
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/locales.gni")
+import("//tools/grit/grit_rule.gni")
 import("//weblayer/variables.gni")
 
 _bundle_utils_output =

@@ -7,6 +7,7 @@ import("//build/config/locales.gni")
 import("//chrome/android/features/tab_ui/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//components/module_installer/android/module_desc_java.gni")
+import("//tools/grit/grit_rule.gni")
 
 java_strings_grd("java_strings_grd") {
   defines = chrome_grit_defines

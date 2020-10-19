@@ -4,6 +4,7 @@
 
 import("//build/config/android/rules.gni")
 import("//build/config/locales.gni")
+import("//tools/grit/grit_rule.gni")
 
 android_library("browser_context_java") {
   sources = [ "java/src/org/chromium/components/embedder_support/browser_context/BrowserContextHandle.java" ]

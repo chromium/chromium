@@ -35,6 +35,7 @@ import("//third_party/blink/public/public_features.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/webrtc/webrtc.gni")
 import("//third_party/widevine/cdm/widevine.gni")
+import("//tools/grit/grit_rule.gni")
 import("//ui/base/ui_features.gni")
 
 # //build/config/android/rules.gni imports //tools/grit/grit_rule.gni, which
@@ -42,8 +43,6 @@ import("//ui/base/ui_features.gni")
 if (is_android) {
   import("//build/config/android/rules.gni")
   import("//chrome/android/features/dev_ui/dev_ui_module.gni")
-} else {
-  import("//tools/grit/grit_rule.gni")
 }
 
 if (is_win) {

@@ -4,6 +4,7 @@
 
 import("//build/config/android/rules.gni")
 import("//build/config/locales.gni")
+import("//tools/grit/grit_rule.gni")
 import("current_version/current_version.gni")
 import("generate_manifest_for_upload_outputs.gni")
 import("mustache_pass.gni")

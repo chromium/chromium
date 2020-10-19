@@ -5,10 +5,6 @@
 import("//remoting/remoting_locales.gni")
 import("//tools/grit/grit_rule.gni")
 
-if (is_android) {
-  import("//build/config/android/rules.gni")
-}
-
 group("resources") {
   public_deps = [
     ":copy_locales",

@@ -5,6 +5,7 @@
 import("//build/config/android/rules.gni")
 import("//build/config/locales.gni")
 import("//chrome/common/features.gni")
+import("//tools/grit/grit_rule.gni")
 
 android_library("internal_java") {
   deps = [
