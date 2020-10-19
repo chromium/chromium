@@ -41,10 +41,9 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
     public LayoutManagerChromePhone(LayoutManagerHost host, ViewGroup contentContainer,
             StartSurface startSurface,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier,
-            OneshotSupplierImpl<LayoutStateProvider> layoutStateProviderOneshotSupplier) {
+            OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier) {
         super(host, contentContainer, true, startSurface, tabContentManagerSupplier,
-                overviewModeBehaviorSupplier, layoutStateProviderOneshotSupplier);
+                overviewModeBehaviorSupplier);
     }
 
     @Override
@@ -131,7 +130,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
 
     @Override
     protected void tabCreating(int sourceId, String url, boolean isIncognito) {
-        if (!getActiveLayout().isStartingToHide() && overlaysHandleTabCreating()
+        if (!getActiveLayout().isHiding() && overlaysHandleTabCreating()
                 && getActiveLayout().handlesTabCreating()) {
             // If the current layout in the foreground, let it handle the tab creation animation.
             // This check allows us to switch from the StackLayout to the SimpleAnimationLayout
@@ -139,7 +138,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             getActiveLayout().onTabCreating(sourceId);
         } else if (animationsEnabled()) {
             if (!overviewVisible()) {
-                if (getActiveLayout() != null && getActiveLayout().isStartingToHide()) {
+                if (getActiveLayout() != null && getActiveLayout().isHiding()) {
                     setNextLayout(mSimpleAnimationLayout);
                     // The method Layout#doneHiding() will automatically show the next layout.
                     getActiveLayout().doneHiding();

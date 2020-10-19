@@ -297,7 +297,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerHost.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/LayoutProvider.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/LayoutRenderHost.java",
-  "java/src/org/chromium/chrome/browser/compositor/layouts/LayoutStateProvider.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/LayoutUpdateHost.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/OverviewModeBehavior.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/OverviewModeController.java",

@@ -114,10 +114,7 @@ public abstract class Layout implements TabContentManager.ThumbnailChangeListene
     protected LayoutTab[] mLayoutTabs;
 
     // True means that the layout is going to hide as soon as the animation finishes.
-    private boolean mIsStartingToHide;
-
-    // True means that the layout is going to show as soon as the animation finishes.
-    private boolean mIsStartingToShow;
+    private boolean mIsHiding;
 
     // The next id to show when the layout is hidden, or TabBase#INVALID_TAB_ID if no change.
     protected int mNextTabId = Tab.INVALID_TAB_ID;
@@ -419,22 +416,15 @@ public abstract class Layout implements TabContentManager.ThumbnailChangeListene
      */
     public void startHiding(int nextTabId, boolean hintAtTabSelection) {
         mUpdateHost.startHiding(nextTabId, hintAtTabSelection);
-        mIsStartingToHide = true;
+        mIsHiding = true;
         mNextTabId = nextTabId;
     }
 
     /**
      * @return True is the layout is in the process of hiding itself.
      */
-    public boolean isStartingToHide() {
-        return mIsStartingToHide;
-    }
-
-    /**
-     * @return True is the layout is in the process of showing itself.
-     */
-    public boolean isStartingToShow() {
-        return mIsStartingToShow;
+    public boolean isHiding() {
+        return mIsHiding;
     }
 
     /**
@@ -448,7 +438,6 @@ public abstract class Layout implements TabContentManager.ThumbnailChangeListene
      * To be called when the transition into the layout is done.
      */
     public void doneShowing() {
-        mIsStartingToShow = false;
         mUpdateHost.doneShowing();
     }
 
@@ -457,7 +446,7 @@ public abstract class Layout implements TabContentManager.ThumbnailChangeListene
      * This is currently called by the renderer when all the animation are done while hiding.
      */
     public void doneHiding() {
-        mIsStartingToHide = false;
+        mIsHiding = false;
         if (mNextTabId != Tab.INVALID_TAB_ID) {
             TabModel model = mTabModelSelector.getModelForTabId(mNextTabId);
             if (model != null) {
@@ -488,9 +477,7 @@ public abstract class Layout implements TabContentManager.ThumbnailChangeListene
      * @param animate Whether to play an entry animation.
      */
     public void show(long time, boolean animate) {
-        // TODO(crbug.com/1108496): Remove after LayoutManager explicitly hide the old layout.
-        mIsStartingToHide = false;
-        mIsStartingToShow = true;
+        mIsHiding = false;
         mNextTabId = Tab.INVALID_TAB_ID;
     }
 

@@ -64,7 +64,6 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromePhone;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromeTablet;
-import org.chromium.chrome.browser.compositor.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeController;
 import org.chromium.chrome.browser.compositor.layouts.phone.StackLayout;
@@ -287,9 +286,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     private NextTabPolicySupplier mNextTabPolicySupplier;
 
-    private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderOneshotSupplier =
-            new OneshotSupplierImpl<>();
-    // TODO(crbug.com/1108496): Removed after all usages has been migrated to LayoutStateProvider.
     private final OneshotSupplierImpl<OverviewModeBehavior> mOverviewModeBehaviorSupplier =
             new OneshotSupplierImpl<>();
     private OverviewModeController mOverviewModeController;
@@ -569,7 +565,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             }
             mLayoutManager = new LayoutManagerChromePhone(compositorViewHolder, mContentContainer,
                     mStartSurfaceSupplier.get(), getTabContentManagerSupplier(),
-                    mOverviewModeBehaviorSupplier, mLayoutStateProviderOneshotSupplier);
+                    mOverviewModeBehaviorSupplier);
             mOverviewModeController = mLayoutManager;
         }
     }
@@ -579,9 +575,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         try (TraceEvent e = TraceEvent.scoped(
                      "ChromeTabbedActivity.setupCompositorContentPreNativeForTablet")) {
-            mLayoutManager = new LayoutManagerChromeTablet(getCompositorViewHolder(),
-                    mContentContainer, getTabContentManagerSupplier(),
-                    mOverviewModeBehaviorSupplier, mLayoutStateProviderOneshotSupplier);
+            mLayoutManager =
+                    new LayoutManagerChromeTablet(getCompositorViewHolder(), mContentContainer,
+                            getTabContentManagerSupplier(), mOverviewModeBehaviorSupplier);
             mOverviewModeController = mLayoutManager;
         }
     }
@@ -619,7 +615,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 }
 
                 Layout activeLayout = mLayoutManager.getActiveLayout();
-                if (activeLayout instanceof StackLayout && !activeLayout.isStartingToHide()) {
+                if (activeLayout instanceof StackLayout && !activeLayout.isHiding()) {
                     RecordUserAction.record("MobileToolbarStackViewButtonInStackView");
                 } else if (!isInOverviewMode()) {
                     RecordUserAction.record("MobileToolbarStackViewButtonInBrowsingView");

@@ -37,10 +37,9 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      */
     public LayoutManagerChromeTablet(LayoutManagerHost host, ViewGroup contentContainer,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier,
-            OneshotSupplierImpl<LayoutStateProvider> layoutStateProviderOneshotSupplier) {
+            OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier) {
         super(host, contentContainer, false, null, tabContentManagerSupplier,
-                overviewModeBehaviorSupplier, layoutStateProviderOneshotSupplier);
+                overviewModeBehaviorSupplier);
 
         mTabStripLayoutHelperManager = new StripLayoutHelperManager(
                 host.getContext(), this, mHost.getLayoutRenderHost(), () -> mTitleCache);

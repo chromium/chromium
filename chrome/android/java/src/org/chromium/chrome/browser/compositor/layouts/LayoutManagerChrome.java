@@ -88,10 +88,8 @@ public class LayoutManagerChrome
     public LayoutManagerChrome(LayoutManagerHost host, ViewGroup contentContainer,
             boolean createOverviewLayout, @Nullable StartSurface startSurface,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier,
-            OneshotSupplierImpl<LayoutStateProvider> layoutStateProviderOneshotSupplier) {
-        super(host, contentContainer, tabContentManagerSupplier,
-                layoutStateProviderOneshotSupplier);
+            OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier) {
+        super(host, contentContainer, tabContentManagerSupplier);
         Context context = host.getContext();
         LayoutRenderHost renderHost = host.getLayoutRenderHost();
 
@@ -261,7 +259,6 @@ public class LayoutManagerChrome
 
         Layout layoutBeingShown = getActiveLayout();
 
-        // TODO(crbug.com/1108496): Remove after migrates to LayoutStateObserver.
         // Check if we should notify OverviewModeObservers.
         if (isOverviewLayout(layoutBeingShown)) {
             boolean showToolbar = animate && (!mEnableAnimations
@@ -274,7 +271,6 @@ public class LayoutManagerChrome
     public void startHiding(int nextTabId, boolean hintAtTabSelection) {
         super.startHiding(nextTabId, hintAtTabSelection);
 
-        // TODO(crbug.com/1108496): Remove after migrates to LayoutStateObserver.
         Layout layoutBeingHidden = getActiveLayout();
         if (isOverviewLayout(layoutBeingHidden)) {
             boolean showToolbar = true;
@@ -293,7 +289,6 @@ public class LayoutManagerChrome
     public void doneShowing() {
         super.doneShowing();
 
-        // TODO(crbug.com/1108496): Remove after migrates to LayoutStateObserver.
         if (isOverviewLayout(getActiveLayout())) {
             notifyObserversFinishedShowing();
         }
@@ -310,31 +305,9 @@ public class LayoutManagerChrome
 
         super.doneHiding();
 
-        // TODO(crbug.com/1108496): Remove after migrates to Observer.
         if (isOverviewLayout(layoutBeingHidden)) {
             notifyObserversFinishedHiding();
         }
-    }
-
-    @Override
-    protected boolean shouldDelayHideAnimation(Layout layoutBeingHidden) {
-        return mEnableAnimations && layoutBeingHidden == mOverviewLayout && mCreatingNtp;
-    }
-
-    @Override
-    protected boolean shouldShowToolbarAnimationOnShow(boolean isAnimate) {
-        return isAnimate
-                && (!mEnableAnimations || getTabModelSelector().getCurrentModel().getCount() <= 0);
-    }
-
-    @Override
-    protected boolean shouldShowToolbarAnimationOnHide(Layout layoutBeingHidden, int nextTabId) {
-        boolean showAnimation = true;
-        if (mEnableAnimations && layoutBeingHidden == mOverviewLayout) {
-            final LayoutTab tab = layoutBeingHidden.getLayoutTab(nextTabId);
-            showAnimation = tab == null || !tab.showToolbar();
-        }
-        return showAnimation;
     }
 
     @Override
@@ -421,7 +394,7 @@ public class LayoutManagerChrome
     @Override
     public void hideOverview(boolean animate) {
         Layout activeLayout = getActiveLayout();
-        if (activeLayout != null && !activeLayout.isStartingToHide()) {
+        if (activeLayout != null && !activeLayout.isHiding()) {
             if (animate) {
                 activeLayout.onTabSelecting(time(), Tab.INVALID_TAB_ID);
             } else {
@@ -450,7 +423,7 @@ public class LayoutManagerChrome
     @Override
     public boolean overviewVisible() {
         Layout activeLayout = getActiveLayout();
-        return isOverviewLayout(activeLayout) && !activeLayout.isStartingToHide();
+        return isOverviewLayout(activeLayout) && !activeLayout.isHiding();
     }
 
     @Override
