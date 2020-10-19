@@ -1282,7 +1282,8 @@ TEST_F(ArcSessionManagerKioskTest, AuthFailure) {
   // and not invoked then, including TearDown().
   bool terminated = false;
   arc_session_manager()->SetAttemptUserExitCallbackForTesting(
-      base::Bind([](bool* terminated) { *terminated = true; }, &terminated));
+      base::BindRepeating([](bool* terminated) { *terminated = true; },
+                          &terminated));
 
   arc_session_manager()->OnProvisioningFinished(
       ProvisioningResult::CHROME_SERVER_COMMUNICATION_ERROR, nullptr);

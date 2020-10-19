@@ -250,7 +250,8 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   void SetArcSessionRunnerForTesting(
       std::unique_ptr<ArcSessionRunner> arc_session_runner);
   ArcSessionRunner* GetArcSessionRunnerForTesting();
-  void SetAttemptUserExitCallbackForTesting(const base::Closure& callback);
+  void SetAttemptUserExitCallbackForTesting(
+      const base::RepeatingClosure& callback);
 
   // Returns whether the Play Store app is requested to be launched by this
   // class. Should be used only for tests.
@@ -418,7 +419,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   base::TimeTicks sign_in_start_time_;
   // The time when ARC was about to start.
   base::TimeTicks arc_start_time_;
-  base::Closure attempt_user_exit_callback_;
+  base::RepeatingClosure attempt_user_exit_callback_;
 
   ArcAppIdProviderImpl app_id_provider_;
 

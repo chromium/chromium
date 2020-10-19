@@ -447,7 +447,7 @@ ArcSessionManager::ArcSessionManager(
     : arc_session_runner_(std::move(arc_session_runner)),
       adb_sideloading_availability_delegate_(
           std::move(adb_sideloading_availability_delegate)),
-      attempt_user_exit_callback_(base::Bind(chrome::AttemptUserExit)),
+      attempt_user_exit_callback_(base::BindRepeating(chrome::AttemptUserExit)),
       property_files_source_dir_(base::FilePath(
           IsArcVmEnabled() ? kPropertyFilesPathVm : kPropertyFilesPath)),
       property_files_dest_dir_(
@@ -1208,8 +1208,8 @@ void ArcSessionManager::MaybeStartTermsOfServiceNegotiation() {
   arc_session_runner_->RequestStartMiniInstance();
 
   terms_of_service_negotiator_->StartNegotiation(
-      base::Bind(&ArcSessionManager::OnTermsOfServiceNegotiated,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&ArcSessionManager::OnTermsOfServiceNegotiated,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ArcSessionManager::OnTermsOfServiceNegotiated(bool accepted) {
@@ -1266,8 +1266,8 @@ void ArcSessionManager::StartAndroidManagementCheck() {
   android_management_checker_ = std::make_unique<ArcAndroidManagementChecker>(
       profile_, false /* retry_on_error */);
   android_management_checker_->StartCheck(
-      base::Bind(&ArcSessionManager::OnAndroidManagementChecked,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&ArcSessionManager::OnAndroidManagementChecked,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ArcSessionManager::OnAndroidManagementChecked(
@@ -1316,8 +1316,8 @@ void ArcSessionManager::StartBackgroundAndroidManagementCheck() {
   android_management_checker_ = std::make_unique<ArcAndroidManagementChecker>(
       profile_, true /* retry_on_error */);
   android_management_checker_->StartCheck(
-      base::Bind(&ArcSessionManager::OnBackgroundAndroidManagementChecked,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&ArcSessionManager::OnBackgroundAndroidManagementChecked,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ArcSessionManager::OnBackgroundAndroidManagementChecked(
@@ -1546,7 +1546,7 @@ ArcSessionRunner* ArcSessionManager::GetArcSessionRunnerForTesting() {
 }
 
 void ArcSessionManager::SetAttemptUserExitCallbackForTesting(
-    const base::Closure& callback) {
+    const base::RepeatingClosure& callback) {
   DCHECK(!callback.is_null());
   attempt_user_exit_callback_ = callback;
 }
