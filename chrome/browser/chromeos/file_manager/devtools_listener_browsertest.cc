@@ -59,7 +59,7 @@ class DevToolsListenerBrowserTest : public content::DevToolsAgentHostObserver,
     LOG(FATAL) << "Host crashed: " << DevToolsListener::HostString(host);
   }
 
-  void CollectCodeCoverage() {
+  void CollectCodeCoverage(const std::string test_name) {
     base::ScopedAllowBlockingForTesting allow_blocking;
 
     CHECK(tmp_dir_.CreateUniqueTempDir());
@@ -70,7 +70,7 @@ class DevToolsListenerBrowserTest : public content::DevToolsAgentHostObserver,
     for (auto& agent : devtools_agent_) {
       auto* host = agent.first;
       EXPECT_TRUE(agent.second->HasCoverage(host));
-      agent.second->GetCoverage(host, coverage_store, "fake_test_name");
+      agent.second->GetCoverage(host, coverage_store, test_name);
       agent.second->Detach(host);
     }
 
@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsListenerBrowserTest, CanCollectCodeCoverage) {
   content::DevToolsAgentHost::RemoveObserver(this);
   content::RunAllTasksUntilIdle();
 
-  CollectCodeCoverage();
+  CollectCodeCoverage("CanCollectCodeCoverage");
 
   content::DevToolsAgentHost::DetachAllClients();
   content::RunAllTasksUntilIdle();
