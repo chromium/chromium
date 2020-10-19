@@ -22,6 +22,7 @@
 <translation id="1058479211578257048">કાર્ડ સાચવી રહ્યાં છીએ…</translation>
 <translation id="10614374240317010">ક્યારેય ન સચવાયેલું</translation>
 <translation id="1062160989074299343">Prc10 (એન્વલપ)</translation>
+<translation id="1066573427009091463"><ph name="PERCENT" /> કૅશબૅક</translation>
 <translation id="106701514854093668">ડેસ્કટૉપ બુકમાર્ક્સ</translation>
 <translation id="1068672505746868501">પેજનો ક્યારેય પણ <ph name="SOURCE_LANGUAGE" />માં અનુવાદ કરશો નહીં</translation>
 <translation id="1070901266639972381">રાત</translation>
@@ -496,6 +497,7 @@
 <translation id="2955913368246107853">શોધ બાર બંધ કરો</translation>
 <translation id="2969319727213777354">એક સુરક્ષિત કનેક્શન સ્થાપિત કરવા માટે, તમારી ઘડિયાળ યોગ્ય રીતે સેટ હોવી જરૂરી છે. આનું કારણ એ કે વેબસાઇટ્સ તેઓને ઓળખવા માટે જે પ્રમાણપત્રોનો ઉપયોગ કરે છે તે ચોક્કસ સમય અવધિ માટે જ માન્ય હોય છે. તમારા ઉપકરણની ઘડિયાળ ખોટી હોવાને લીધે, Google Chrome આ પ્રમાણપત્રોને ચકાસી શકતું નથી.</translation>
 <translation id="2972581237482394796">&amp;ફરી કરો</translation>
+<translation id="2975775789586780239"><ph name="DISCOUNT" />ની છૂટ</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, વર્તમાનમાં પસંદ કરેલ. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">જો સક્ષમ કરેલું હોય, તો ઝડપથી ફોર્મ ભરવા માટે Chromium આ ઉપકરણ પર તમારા કાર્ડની એક કૉપિ સંગ્રહિત કરશે.</translation>
 <translation id="2985398929374701810">એક માન્ય સરનામું દાખલ કરો</translation>
@@ -1890,6 +1892,7 @@
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">ઉપલબ્ધ</translation>
 <translation id="868922510921656628">સેટ દીઠ પેજ</translation>
+<translation id="8697373104056314601">Chromeની સૌથી ઉચ્ચ લેવલની સુરક્ષા મેળવવા માટે, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />વધારેલી સુરક્ષા ચાલુ કરો<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="869891660844655955">સમાપ્તિ તારીખ</translation>
 <translation id="8699041776323235191">HID ડિવાઇસ</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> સાથેનું તમારું કનેક્શન એન્ક્રિપ્ટેડ નથી.</translation>

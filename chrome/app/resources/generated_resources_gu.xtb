@@ -2794,6 +2794,7 @@
 <translation id="425573743389990240">બેટરી ડિસ્ચાર્જ દર વોટ્સમાં (ઋણ મૂલ્યનો અર્થ છે બેટરી ચાર્જ થઈ રહી છે)</translation>
 <translation id="4256316378292851214">વીડિયોને આ રૂપે સા&amp;ચવો...</translation>
 <translation id="4258348331913189841">ફાઇલ સિસ્ટમ્સ</translation>
+<translation id="4259388776256904261">આમાં થોડો સમય લાગી શકે છે</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> જોખમકારક હોઈ શકે છે. સ્કૅન કરવા માટે Googleની વિગતવાર સુરક્ષાને મોકલીએ? ડાઉનલોડ બાર વિભાગમાં પહોંચવા માટે Shift+F6 દબાવો.</translation>
 <translation id="4263223596040212967">તમારા કીબોર્ડનું લેઆઉટ ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="4263757076580287579">પ્રિન્ટર નોંધણી રદ કરવામાં આવી છે.</translation>
@@ -2901,6 +2902,7 @@
 <translation id="4400632832271803360">ટોચની-પંક્તિ કીની વર્તણૂંક સ્વિચ કરવા માટે લૉન્ચર કીને દબાવી રાખો</translation>
 <translation id="4400963414856942668">ટૅબને બુકમાર્ક કરવા માટે તમે સ્ટાર પર ક્લિક કરી શકો છો</translation>
 <translation id="4403775189117163360">કોઈ અલગ ફોલ્ડર પસંદ કરો</translation>
+<translation id="440391631796167175">કોઈ નબળો પાસવર્ડ મળ્યો નથી</translation>
 <translation id="4404136731284211429">ફરી સ્કૅન કરો</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> તમારા માતાપિતા દ્વારા બ્લૉક કરવામાં આવી છે. આ ઍપનો ઉપયોગ કરવા માટે તમારા માતાપિતા પાસેથી પરવાનગી મેળવો.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -5056,6 +5058,7 @@ USB ડિવાઇસ</translation>
 <translation id="6995899638241819463">જો ડેટા ઉલ્લંઘનમાં પાસવર્ડ જાહેર થાય તો તમને ચેતવણી આપવામાં આવે છે</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - પ્રવૃત્તિ લૉગ</translation>
 <translation id="6997707937646349884">તમારા ઉપકરણો પર:</translation>
+<translation id="6998093258894828179">કાર્ડ છુપાવો</translation>
 <translation id="6998793565256476099">વીડિયો કૉન્ફરન્સ માટે ડિવાઇસની નોંધણી કરો</translation>
 <translation id="6999956497249459195">નવું ગ્રૂપ</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> કનેક્ટ કરેલું છે પણ ગોઠવણી જરૂરી છે</translation>
@@ -5725,6 +5728,7 @@ USB ડિવાઇસ</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> ઑટોમૅટિક રીતે બ્લૉક થઈ</translation>
 <translation id="7799299114731150374">વૉલપેપર સફળતાપૂર્વક સેટ કર્યું</translation>
 <translation id="7800518121066352902">ઘ&amp;ડિયાળની વિપરિત દિશામાં ફેરવો</translation>
+<translation id="7802539296536804623">આ પેજ પર કાર્ડ બતાવશો નહીં</translation>
 <translation id="780301667611848630">નહીં, આભાર</translation>
 <translation id="7804072833593604762">ટૅબ બંધ કરી છે</translation>
 <translation id="7805768142964895445">સ્થિતિ</translation>
@@ -6172,6 +6176,7 @@ USB ડિવાઇસ</translation>
 <translation id="8300011035382349091">આ ટૅબ માટે બુકમાર્કમાં ફેરફાર કરો</translation>
 <translation id="8300374739238450534">ઘેરો વાદળી</translation>
 <translation id="8300849813060516376">OTASP નિષ્ફળ</translation>
+<translation id="8304383784961451596">તમે આ ડિવાઇસનો ઉપયોગ કરવા માટે અધિકૃત નથી. કૃપા કરીને સાઇન-ઇનની પરવાનગી માટે વ્યવસ્થાપકનો સંપર્ક કરો અથવા Family Link દ્વારા નિરીક્ષિત Google એકાઉન્ટ વડે સાઇન ઇન કરો.</translation>
 <translation id="8308179586020895837"><ph name="HOST" /> તમારા કૅમેરાને ઍક્સેસ કરવા માંગે છે કે કેમ તે પૂછો</translation>
 <translation id="830868413617744215">બીટા</translation>
 <translation id="8309458809024885768">પ્રમાણપત્ર પહેલાંથી અસ્તિત્વમાં છે</translation>

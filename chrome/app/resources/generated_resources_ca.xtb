@@ -4480,7 +4480,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="628352644014831790">4 segons</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> no se sol baixar i podria ser perillós.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Impressora nova a la xarxa}other{Impressores noves a la xarxa}}</translation>
-<translation id="6289626062715012577">Les aplicacions i les pàgines web que admeten diversos idiomes utilitzaran el primer idioma admès d'aquesta llista. Les preferències d'idioma se sincronitzen al navegador Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="6289626062715012577">Les aplicacions i els llocs web que admeten diversos idiomes utilitzaran el primer idioma admès d'aquesta llista. Les preferències d'idioma se sincronitzen al navegador Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Per iniciar Linux, <ph name="ORGANIZATION_NAME" /> requereix que creïs una còpia de seguretat de les teves dades i que restableixis la configuració de fàbrica d'aquest Chromebook.</translation>
 <translation id="6291949900244949761">Pregunta'm quan un lloc web vulgui accedir a dispositius USB (opció recomanada)</translation>
 <translation id="6291953229176937411">&amp;Mostra a Finder</translation>

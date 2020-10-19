@@ -54,7 +54,7 @@
 ללא הרשאה מפורשת ממך, האפשרות הזו תישאר חסומה בהתאם להגדרות הפרטיות. הרשאה זו תאפשר פעולה תקינה של תוכן שתתקיים איתו אינטראקציה, אבל היא עשויה גם לאפשר ל-<ph name="EMBEDDED_URL" /> לעקוב אחרי הפעילות שלך.</translation>
 <translation id="1175364870820465910">הדפסה…</translation>
 <translation id="1175875016430184367">3 סיכות הידוק בצד ימין</translation>
-<translation id="1178581264944972037">השהה</translation>
+<translation id="1178581264944972037">השהיה</translation>
 <translation id="1181037720776840403">הסרה</translation>
 <translation id="1186201132766001848">בדיקת הסיסמאות</translation>
 <translation id="1195558154361252544">הצגת ההודעות חסומה באופן אוטומטי בכל האתרים, מלבד האתרים שבהם היא אושרה</translation>
@@ -182,7 +182,7 @@
 <translation id="16338877384480380">Architecture-B</translation>
 <translation id="1634828734222219955">סך הכל</translation>
 <translation id="1638780421120290329">לא ניתן לשמור את הכרטיס</translation>
-<translation id="1639239467298939599">טוען</translation>
+<translation id="1639239467298939599">בטעינה</translation>
 <translation id="1640180200866533862">מדיניות משתמשים</translation>
 <translation id="1640244768702815859">נסה <ph name="BEGIN_LINK" />להיכנס לדף הבית של האתר<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">עיכוב הפלט עד</translation>
@@ -408,7 +408,7 @@
 <translation id="2556876185419854533">&amp;ביטול עריכה</translation>
 <translation id="257674075312929031">קבוצה</translation>
 <translation id="2586657967955657006">לוח</translation>
-<translation id="2587730715158995865">מ-<ph name="ARTICLE_PUBLISHER" />. לקריאת כתבה זו ו-<ph name="OTHER_ARTICLE_COUNT" /> כתבות נוספות.</translation>
+<translation id="2587730715158995865">מאת <ph name="ARTICLE_PUBLISHER" />. לקריאת כתבה זו ועוד <ph name="OTHER_ARTICLE_COUNT" /> כתבות נוספות.</translation>
 <translation id="2587841377698384444">‏מזהה ממשק API של ספרייה:</translation>
 <translation id="2595719060046994702">המכשיר והחשבון לא מנוהלים על-ידי חברה או ארגון אחר.</translation>
 <translation id="2597378329261239068">מסמך זה מוגן באמצעות סיסמה. יש להזין סיסמה.</translation>
@@ -739,7 +739,7 @@
 <translation id="3963721102035795474">מצב קורא</translation>
 <translation id="3963837677003247395">להמשיך באופן ידני?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{ללא}=1{מאתר אחד }two{משני אתרים }many{מ-# אתרים }other{מ-# אתרים }}</translation>
-<translation id="397105322502079400">מחשב...</translation>
+<translation id="397105322502079400">מתבצע חישוב...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> חסום</translation>
 <translation id="3987405730340719549">‏לפי אמצעי האבטחה של Chrome, האתר הזה עשוי להיות מזויף או אתר שנועד להונאה.
 
@@ -930,7 +930,7 @@
 <translation id="4731967714531604179">Prc2 (Envelope)‎</translation>
 <translation id="4733082559415072992"><ph name="URL" />‏ רוצה להשתמש במיקום המכשיר שלך</translation>
 <translation id="4736825316280949806">‏אתחול ה-Chromium</translation>
-<translation id="473775607612524610">עדכן</translation>
+<translation id="473775607612524610">עדכון</translation>
 <translation id="4738601419177586157"><ph name="TEXT" /> – הצעת חיפוש</translation>
 <translation id="4742407542027196863">ניהול סיסמאות…</translation>
 <translation id="4744603770635761495">נתיב להפעלה</translation>
@@ -1427,7 +1427,7 @@ Del</translation>
 <translation id="6711464428925977395">‏משהו אינו תקין בשרת ה-proxy, או שהכתובת שגויה.</translation>
 <translation id="6716672519412350405">האתר <ph name="URL" /> רוצה ליצור מפה בתלת ממד של הסביבה שלך ולעקוב אחר מיקום המצלמה</translation>
 <translation id="6718612893943028815">להשתמש במצלמה?</translation>
-<translation id="6738516213925468394">הנתונים שלך הוצפנו באמצעות<ph name="BEGIN_LINK" />ביטוי סיסמה לסנכרון<ph name="END_LINK" /> בתאריך <ph name="TIME" />. צריך להזין אותו כדי להתחיל את הסנכרון.</translation>
+<translation id="6738516213925468394">הנתונים שלך הוצפנו באמצעות <ph name="BEGIN_LINK" />ביטוי סיסמה לסנכרון<ph name="END_LINK" /> בתאריך <ph name="TIME" />. צריך להזין אותו כדי להתחיל את הסנכרון.</translation>
 <translation id="674375294223700098">שגיאת אישור שרת לא ידוע.</translation>
 <translation id="6744009308914054259">בזמן ההמתנה לחיבור אפשר לעבור אל 'הורדות' כדי לקרוא מאמרים לא מקוונים.</translation>
 <translation id="6753269504797312559">ערך מדיניות</translation>
@@ -1534,7 +1534,7 @@ Del</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /> בנושא זה.</translation>
 <translation id="7217745192097460130">‏רוצה להשתמש ב-Touch ID כדי לאמת ולהשלים את הרכישה?</translation>
 <translation id="7219179957768738017">החיבור משתמש ב-<ph name="SSL_VERSION" />.</translation>
-<translation id="7220786058474068424">מעבד</translation>
+<translation id="7220786058474068424">המערכת מעבדת את התשלום</translation>
 <translation id="7221855153210829124">להציג הודעות</translation>
 <translation id="7229659723041939809">‏הזנת כרגע את הסיסמה שלך באתר מטעה. ההמלצה של Chrome היא לבדוק באופן מיידי את הסיסמאות השמורות של <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> ואתרים אחרים שבהם הסיסמה הזו נמצאת בשימוש.</translation>
 <translation id="7233592378249864828">הדפסה של גיליון אישור</translation>
@@ -1612,7 +1612,7 @@ Del</translation>
 <translation id="7503664977220660814">‏הזנת כרגע את הסיסמה שלך באתר מטעה. ההמלצה של Chromium היא לבדוק באופן מיידי את הסיסמאות השמורות של <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> ואתרים אחרים שבהם הסיסמה הזו נמצאת בשימוש.</translation>
 <translation id="7508255263130623398">מזהה המכשיר במדיניות שהוחזר ריק או שאינו תואם את מזהה המכשיר הנוכחי</translation>
 <translation id="7508870219247277067">ירוק אבוקדו</translation>
-<translation id="7511955381719512146">‏ייתכן שתידרש להיכנס ל-<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> עבור רשת ה-Wi-Fi שבה אתה משתמש.</translation>
+<translation id="7511955381719512146">‏ייתכן שהשימוש ברשת ה-Wi-Fi ידרוש ממך להיכנס ל-<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7514365320538308">הורדה</translation>
 <translation id="7518003948725431193">לא נמצא דף אינטרנט עבור כתובת האינטרנט: <ph name="URL" /></translation>
 <translation id="7520302887438682816">C8 (Envelope)‎</translation>
@@ -1663,11 +1663,11 @@ Del</translation>
 <translation id="7663736086183791259">אישור <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7667346355482952095">אסימון המדיניות שהוחזר הוא ריק או שאינו תואם לאסימון הנוכחי</translation>
 <translation id="7668654391829183341">מכשיר לא ידוע</translation>
-<translation id="7669271284792375604">תוקפים באתר הזה עשויים לגרום לך, בדרכי מרמה, להתקין תוכניות שיפגעו בחוויית הגלישה שלך (לדוגמה, על ידי שינוי דף הבית או הצגת מודעות נוספות באתרים שבהם אתה מבקר).</translation>
+<translation id="7669271284792375604">תוקפים באתר הזה עשויים לגרום לך, בדרכי מרמה, להתקין תוכנות שיפגעו בחוויית הגלישה שלך (לדוגמה, על ידי שינוי דף הבית או הצגת מודעות נוספות באתרים).</translation>
 <translation id="7673278391011283842">תיבת דואר 6</translation>
 <translation id="7676643023259824263">חיפוש טקסט בלוח, <ph name="TEXT" /></translation>
 <translation id="7682287625158474539">משלוח</translation>
-<translation id="7687186412095877299">ממלא בטופסי תשלום את אמצעי התשלום ששמרת</translation>
+<translation id="7687186412095877299">שימוש באמצעי התשלום ששמרת למילוי טופסי תשלום</translation>
 <translation id="7687305263118037187">זמן קצוב לתפוגה של ניסיון חוזר</translation>
 <translation id="7693583928066320343">סדר דפים התקבל</translation>
 <translation id="7697066736081121494">Prc8 (Envelope)‎</translation>
@@ -1818,7 +1818,7 @@ Del</translation>
 <translation id="8282947398454257691">ידיעת המזהה הייחודי של המכשיר</translation>
 <translation id="8286036467436129157">כניסה</translation>
 <translation id="8288807391153049143">הצגת אישור</translation>
-<translation id="8289355894181816810">פנה אל מנהל הרשת אם אינך יודע מה זה אומר.</translation>
+<translation id="8289355894181816810">כדי לברר מה זה אומר, מומלץ לפנות למנהל הרשת.</translation>
 <translation id="8293206222192510085">הוסף סימניה</translation>
 <translation id="8294431847097064396">מקור</translation>
 <translation id="8298115750975731693">‏ייתכן שתידרש להיכנס ל-<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> עבור רשת ה-Wi-Fi שבה אתה משתמש (<ph name="WIFI_NAME" />).</translation>

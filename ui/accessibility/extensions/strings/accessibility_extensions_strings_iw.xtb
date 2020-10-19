@@ -15,7 +15,7 @@
 <translation id="2223143012868735942">מסנן צבע הניתן להתאמה המופעל באתרים כדי לשפר את ההבחנה בין צבעים.</translation>
 <translation id="2394933097471027016">נסה עכשיו - דפדוף עם סמן מופעל תמיד בדף זה!</translation>
 <translation id="2471847333270902538">ערכת צבעים עבור <ph name="SITE" />:</translation>
-<translation id="2648340354586434750">‏לחץ לחיצה ארוכה על ‎&lt;span class='key'&gt;‎Option&lt;/span&gt;‎ כדי לעבור לפי מילים.</translation>
+<translation id="2648340354586434750">‏יש ללחוץ לחיצה ארוכה על ‎&lt;span class='key'&gt;‎Option&lt;/span&gt;‎ כדי לעבור לפי מילים.</translation>
 <translation id="2795227192542594043">תוסף זה מספק סמן הניתן להזזה בדף האינטרנט, כך שתוכל לבחור טקסט באמצעות המקלדת.</translation>
 <translation id="2808027189040546825">שלב 1: בחר את השורה המכילה את הכוכבים העמומים ביותר:</translation>
 <translation id="2965611304828530558">‏&lt;p&gt;כשאתה מגיע לקישור או לבקרה, מתבצע מיקוד אוטומטי בהם.   הקש על ‎&lt;span class='key'&gt;Enter&lt;/span&gt;‎ כדי ללחוץ על קישור או על לחצן. ‎&lt;/p&gt; &lt;p&gt;‎   כאשר בקרה ממוקדת (כגון תיבת טקסט או תיבת רשימה) לוכדת מקשי חצים, הקש על ‎&lt;span class='key'&gt;Esc&lt;/span&gt;‎ ולאחר מכן על מקש החץ שמאלה או ימינה, כדי להמשיך דפדוף עם סמן. ‎&lt;/p&gt; &lt;p&gt;‎   לחלופין, הקש על ‎&lt;span class='key'&gt;Tab&lt;/span&gt;‎ כדי לעבור לבקרה הבאה הניתנת למיקוד. ‎&lt;/p&gt;‎</translation>
@@ -63,6 +63,6 @@
 <translation id="8260673944985561857">אפשרויות דפדוף עם סמן</translation>
 <translation id="8321034316479930120">מדיניות בנושא אנימציה</translation>
 <translation id="8480209185614411573">ניגודיות גבוהה</translation>
-<translation id="8609925175482059018">‏הקש על ‎&lt;span class='key'&gt;F7&lt;/span&gt;‎ כדי להפעיל דפדוף עם סמן. כדי להשבית, הקש שוב על מקש זה.</translation>
+<translation id="8609925175482059018">‏יש להקיש על ‎&lt;span class='key'&gt;F7&lt;/span&gt;‎ כדי להפעיל דפדוף עם סמן טקסט. כדי להשבית אותו, יש להקיש שוב על מקש זה.</translation>
 <translation id="894241283505723656">תיאורים ארוכים בתפריט הקשר</translation>
 </translationbundle>

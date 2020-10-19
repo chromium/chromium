@@ -18,7 +18,7 @@
 <translation id="1306549533752902673">אפליקציות מומלצות</translation>
 <translation id="1368832886055348810">משמאל לימין</translation>
 <translation id="1383876407941801731">חפש</translation>
-<translation id="1398853756734560583">הגדל</translation>
+<translation id="1398853756734560583">הגדלת החלון</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, אפליקציה מותקנת</translation>
 <translation id="1450753235335490080">לא ניתן לשתף את ה<ph name="CONTENT_TYPE" /></translation>
 <translation id="1487931858675166540">הפריט <ph name="SECOND_ITEM_TITLE" /> החליף את <ph name="FIRST_ITEM_TITLE" /></translation>
@@ -167,7 +167,7 @@
 <translation id="6156262341071374681">הרחב לכל האפליקציות</translation>
 <translation id="6165508094623778733">למידע נוסף</translation>
 <translation id="6166852626429024716">חיפוש במכשיר, באפליקציות, בהגדרות, באינטרנט...</translation>
-<translation id="6264365405983206840">בחר &amp;הכל</translation>
+<translation id="6264365405983206840">בחירת &amp;הכול</translation>
 <translation id="6351032674660237738">הצעות לאפליקציות</translation>
 <translation id="6364916375976753737">גלול שמאלה</translation>
 <translation id="6394627529324717982">פסיק</translation>
@@ -232,7 +232,7 @@
 <translation id="8247998213073982446"><ph name="APP_NAME" />, אפליקציה</translation>
 <translation id="8259556432390118667">ערך צבע הקסדצימלי</translation>
 <translation id="8328145009876646418">קצה שמאלי</translation>
-<translation id="8331626408530291785">גלול למעלה</translation>
+<translation id="8331626408530291785">גלילה למעלה</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{שנה אחת}two{שנתיים}many{# שנים}other{# שנים}}</translation>
 <translation id="838869780401515933">סימון</translation>
 <translation id="8393700583063109961">שלח הודעה</translation>
