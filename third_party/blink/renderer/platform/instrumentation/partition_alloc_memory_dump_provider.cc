@@ -135,15 +135,15 @@ void PartitionStatsDumperImpl::PartitionsDumpBucketStats(
   allocator_dump->AddScalar("discardable_size", "bytes",
                             memory_stats->discardable_bytes);
   // TODO(bartekn): Rename the scalar names.
-  allocator_dump->AddScalar("total_pages_size", "bytes",
+  allocator_dump->AddScalar("total_slot_span_size", "bytes",
                             memory_stats->allocated_slot_span_size);
-  allocator_dump->AddScalar("active_pages", "objects",
+  allocator_dump->AddScalar("active_slot_spans", "objects",
                             memory_stats->num_active_slot_spans);
-  allocator_dump->AddScalar("full_pages", "objects",
+  allocator_dump->AddScalar("full_slot_spans", "objects",
                             memory_stats->num_full_slot_spans);
-  allocator_dump->AddScalar("empty_pages", "objects",
+  allocator_dump->AddScalar("empty_slot_spans", "objects",
                             memory_stats->num_empty_slot_spans);
-  allocator_dump->AddScalar("decommitted_pages", "objects",
+  allocator_dump->AddScalar("decommitted_slot_spans", "objects",
                             memory_stats->num_decommitted_slot_spans);
 }
 
