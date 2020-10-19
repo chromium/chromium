@@ -243,6 +243,8 @@ void SharesheetBubbleView::PopulateLayoutsWithTargets(
     }
     ++target_counter;
 
+    // Make a copy because value is needed after target is std::moved below.
+    base::string16 display_name = target.display_name;
     base::string16 secondary_display_name =
         target.secondary_display_name.value_or(base::string16());
 
@@ -250,7 +252,7 @@ void SharesheetBubbleView::PopulateLayoutsWithTargets(
         base::BindRepeating(&SharesheetBubbleView::TargetButtonPressed,
                             base::Unretained(this),
                             base::Passed(std::move(target))),
-        target.display_name, secondary_display_name, &target.icon);
+        display_name, secondary_display_name, &target.icon);
 
     layout_for_target->AddView(std::move(target_view));
   }
