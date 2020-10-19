@@ -212,7 +212,9 @@ class CONTENT_EXPORT RenderThreadImpl
   // Formerly in mojom::Renderer (moved to mojom::AgentSchedulingGroup):
   void CreateView(mojom::CreateViewParamsPtr params,
                   util::PassKey<AgentSchedulingGroup>);
-  void DestroyView(int32_t view_id, util::PassKey<AgentSchedulingGroup>);
+  void DestroyView(int32_t view_id,
+                   mojom::AgentSchedulingGroup::DestroyViewCallback,
+                   util::PassKey<AgentSchedulingGroup>);
   void CreateFrame(mojom::CreateFrameParamsPtr params,
                    util::PassKey<AgentSchedulingGroup>);
   void CreateFrameProxy(

@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/input/input_router_impl.h"
@@ -528,6 +529,21 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
 // a FrameHostMsg_ShowPopup to ask the browser to build and display the actual
 // popup using native controls.
 #if !defined(OS_MAC) && !defined(OS_ANDROID)
+
+namespace {
+
+// Helper to use inside a loop instead of using RunLoop::RunUntilIdle() to avoid
+// the loop being a busy loop that prevents renderer from doing its job. Use
+// only when there is no better way to synchronize.
+void GiveItSomeTime(base::TimeDelta delta) {
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), delta);
+  run_loop.Run();
+}
+
+}  // namespace
+
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
                        BrowserClosesSelectPopup) {
   // Navigate to a page with a <select> element.
@@ -594,25 +610,25 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
     ASSERT_TRUE(popup_widget_host);
     ASSERT_NE(popup_widget_host, root_frame_host->GetRenderWidgetHost());
 
-    // A class to wait for WidgetHostMsg_Close_ACK.
-    auto close_filter = base::MakeRefCounted<ObserveMessageFilter>(
-        WidgetMsgStart, WidgetHostMsg_Close_ACK::ID);
-    process->AddFilter(close_filter.get());
-
+    auto* popup_widget_host_impl =
+        static_cast<RenderWidgetHostImpl*>(popup_widget_host);
     if (browser_closes) {
       // Close the popup RenderWidget from the browser side.
-      auto* popup_widget_host_impl =
-          static_cast<RenderWidgetHostImpl*>(popup_widget_host);
       popup_widget_host_impl->ShutdownAndDestroyWidget(true);
     } else {
+      base::WeakPtr<RenderWidgetHostImpl> popup_weak_ptr =
+          popup_widget_host_impl->GetWeakPtr();
+
       // Close the popup RenderWidget from the renderer side by removing focus.
       EXPECT_TRUE(
           ExecuteScript(root_frame_host, "document.activeElement.blur()"));
-    }
-    // In either case, wait until closing the popup RenderWidget is complete to
-    // know it worked by waiting for the WidgetHostMsg_Close_ACK.
-    close_filter->Wait();
 
+      // Ensure that the RenderWidgetHostImpl gets destroyed, which implies the
+      // close step has also been sent to the renderer process.
+      while (popup_weak_ptr) {
+        GiveItSomeTime(TestTimeouts::tiny_timeout());
+      }
+    }
     // Ensure the renderer didn't explode :).
     {
       base::string16 title_when_done[] = {base::UTF8ToUTF16("done 0"),

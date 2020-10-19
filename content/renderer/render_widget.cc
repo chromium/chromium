@@ -470,9 +470,6 @@ void RenderWidget::Close(std::unique_ptr<RenderWidget> widget) {
   // use the WebWidgetClient while unloading the Frame so we clear this
   // after.
   layer_tree_host_ = nullptr;
-
-  // Note the ACK is a control message going to the RenderProcessHost.
-  agent_scheduling_group_.Send(new WidgetHostMsg_Close_ACK(routing_id()));
 }
 
 blink::WebFrameWidget* RenderWidget::GetFrameWidget() const {

@@ -1669,8 +1669,10 @@ void RenderThreadImpl::CreateView(mojom::CreateViewParamsPtr params,
                          GetWebMainThreadScheduler()->DefaultTaskRunner());
 }
 
-void RenderThreadImpl::DestroyView(int32_t view_id,
-                                   PassKey<AgentSchedulingGroup>) {
+void RenderThreadImpl::DestroyView(
+    int32_t view_id,
+    mojom::AgentSchedulingGroup::DestroyViewCallback callback,
+    PassKey<AgentSchedulingGroup>) {
   RenderViewImpl* view = RenderViewImpl::FromRoutingID(view_id);
   DCHECK(view);
 
@@ -1681,7 +1683,13 @@ void RenderThreadImpl::DestroyView(int32_t view_id,
   // RenderViewImpl instance. https://crbug.com/1000035.
   base::ThreadTaskRunnerHandle::Get()->PostNonNestableTask(
       FROM_HERE,
-      base::BindOnce(&RenderViewImpl::Destroy, base::Unretained(view)));
+      base::BindOnce(
+          [](RenderViewImpl* view,
+             mojom::AgentSchedulingGroup::DestroyViewCallback callback) {
+            view->Destroy();
+            std::move(callback).Run();
+          },
+          base::Unretained(view), std::move(callback)));
 }
 
 void RenderThreadImpl::CreateFrame(mojom::CreateFrameParamsPtr params,

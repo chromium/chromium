@@ -147,8 +147,9 @@ void AgentSchedulingGroup::CreateView(mojom::CreateViewParamsPtr params) {
   ToImpl(render_thread_).CreateView(std::move(params), PassKey());
 }
 
-void AgentSchedulingGroup::DestroyView(int32_t view_id) {
-  ToImpl(render_thread_).DestroyView(view_id, PassKey());
+void AgentSchedulingGroup::DestroyView(int32_t view_id,
+                                       DestroyViewCallback callback) {
+  ToImpl(render_thread_).DestroyView(view_id, std::move(callback), PassKey());
 }
 
 void AgentSchedulingGroup::CreateFrame(mojom::CreateFrameParamsPtr params) {

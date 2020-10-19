@@ -59,8 +59,4 @@ IPC_MESSAGE_ROUTED0(WidgetHostMsg_Close)
 // APIs, and the browser may ignore this message.
 IPC_MESSAGE_ROUTED1(WidgetHostMsg_RequestSetBounds, gfx::Rect /* bounds */)
 
-// Indicates that the render widget has been closed in response to a
-// Close message.
-IPC_MESSAGE_CONTROL1(WidgetHostMsg_Close_ACK, int /* old_route_id */)
-
 #endif  //  CONTENT_COMMON_WIDGET_MESSAGES_H_

@@ -312,14 +312,19 @@ class CONTENT_EXPORT RenderProcessHostImpl
     child_process_activity_time_ = base::TimeTicks::Now();
   }
 
-  // Used to extend the lifetime of the sessions until the render view
+  // Called when the renderer has fully destroyed the associated RenderView
+  // identified by |closed_view_route_id|. This is static because its also
+  // called with mock hosts as input in test cases.
+  static void DidDestroyRenderView(int process_id, int closed_view_route_id);
+
+  // Used to extend the lifetime of the sessions until the RenderView
   // in the renderer is fully closed. This is static because its also called
-  // with mock hosts as input in test cases. The RenderWidget routing associated
-  // with the view is used as the key since the WidgetMsg_Close and
-  // WidgetHostMsg_Close_ACK logic is centered around RenderWidgets.
-  static void ReleaseOnCloseACK(RenderProcessHost* host,
-                                const SessionStorageNamespaceMap& sessions,
-                                int widget_route_id);
+  // with mock hosts as input in test cases. The RenderView routing id is used
+  // as the key. A subsequent call to |DidDestroyRenderView| will be called
+  // once the renderer has completed its work.
+  static void WillDestroyRenderView(RenderProcessHost* host,
+                                    const SessionStorageNamespaceMap& sessions,
+                                    int view_route_id);
 
   // Register/unregister the host identified by the host id in the global host
   // list.
@@ -814,9 +819,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
           receiver,
       mojo::PendingRemote<memory_instrumentation::mojom::ClientProcess>
           client_process) override;
-
-  // Control message handlers.
-  void OnCloseACK(int closed_widget_route_id);
 
   // Generates a command line to be used to spawn a renderer and appends the
   // results to |*command_line|.

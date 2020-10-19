@@ -3662,17 +3662,6 @@ bool RenderProcessHostImpl::OnMessageReceived(const IPC::Message& msg) {
     return false;
 
   mark_child_process_activity_time();
-  if (msg.routing_id() == MSG_ROUTING_CONTROL) {
-    // Dispatch control messages.
-    IPC_BEGIN_MESSAGE_MAP(RenderProcessHostImpl, msg)
-      IPC_MESSAGE_HANDLER(WidgetHostMsg_Close_ACK, OnCloseACK)
-    // Adding single handlers for your service here is fine, but once your
-    // service needs more than one handler, please extract them into a new
-    // message filter and add that filter to CreateMessageFilters().
-    IPC_END_MESSAGE_MAP()
-
-    return true;
-  }
 
   // Dispatch incoming messages to the appropriate IPC::Listener.
   IPC::Listener* listener = listeners_.Lookup(msg.routing_id());
@@ -4732,20 +4721,33 @@ void RenderProcessHost::SetHungRendererAnalysisFunction(
   g_analyze_hung_renderer = analyze_hung_renderer;
 }
 
-void RenderProcessHostImpl::ReleaseOnCloseACK(
+void RenderProcessHostImpl::DidDestroyRenderView(int process_id,
+                                                 int closed_view_route_id) {
+  RenderProcessHost* host = RenderProcessHost::FromID(process_id);
+  if (!host)
+    return;
+  SessionStorageHolder* holder = static_cast<SessionStorageHolder*>(
+      host->GetUserData(kSessionStorageHolderKey));
+  if (!holder)
+    return;
+  holder->Release(closed_view_route_id);
+}
+
+void RenderProcessHostImpl::WillDestroyRenderView(
     RenderProcessHost* host,
     const SessionStorageNamespaceMap& sessions,
-    int widget_route_id) {
+    int view_route_id) {
   DCHECK(host);
   if (sessions.empty())
     return;
   SessionStorageHolder* holder = static_cast<SessionStorageHolder*>(
       host->GetUserData(kSessionStorageHolderKey));
   if (!holder) {
-    holder = new SessionStorageHolder();
-    host->SetUserData(kSessionStorageHolderKey, base::WrapUnique(holder));
+    auto empty_holder = std::make_unique<SessionStorageHolder>();
+    holder = empty_holder.get();
+    host->SetUserData(kSessionStorageHolderKey, std::move(empty_holder));
   }
-  holder->Hold(sessions, widget_route_id);
+  holder->Hold(sessions, view_route_id);
 }
 
 void RenderProcessHostImpl::SuddenTerminationChanged(bool enabled) {
@@ -5043,14 +5045,6 @@ void RenderProcessHostImpl::OnProcessLaunchFailed(int error_code) {
   info.exit_code = error_code;
   PopulateTerminationInfoRendererFields(&info);
   ProcessDied(true, &info);
-}
-
-void RenderProcessHostImpl::OnCloseACK(int closed_widget_route_id) {
-  SessionStorageHolder* holder =
-      static_cast<SessionStorageHolder*>(GetUserData(kSessionStorageHolderKey));
-  if (!holder)
-    return;
-  holder->Release(closed_widget_route_id);
 }
 
 // static
