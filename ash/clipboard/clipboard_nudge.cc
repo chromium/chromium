@@ -8,11 +8,14 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/root_window_controller.h"
+#include "ash/shelf/hotseat_widget.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/events/keyboard_layout_util.h"
+#include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
@@ -48,6 +51,9 @@ constexpr int kIconLabelSpacing = 16;
 
 // The padding which separates the nudge's border with its inner contents.
 constexpr int kNudgePadding = 16;
+
+constexpr base::TimeDelta kNudgeBoundsAnimationTime =
+    base::TimeDelta::FromMilliseconds(250);
 
 bool IsAssistantAvailable() {
   AssistantStateBase* state = AssistantState::Get();
@@ -143,7 +149,11 @@ class ClipboardNudge::ClipboardNudgeView : public views::View {
   views::ImageView* clipboard_icon_ = nullptr;
 };
 
-ClipboardNudge::ClipboardNudge() : widget_(std::make_unique<views::Widget>()) {
+ClipboardNudge::ClipboardNudge()
+    : widget_(std::make_unique<views::Widget>()),
+      root_window_(Shell::GetRootWindowForNewWindows()) {
+  shelf_observer_.Add(RootWindowController::ForWindow(root_window_)->shelf());
+
   views::Widget::InitParams params(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.z_order = ui::ZOrderLevel::kFloatingWindow;
@@ -151,8 +161,8 @@ ClipboardNudge::ClipboardNudge() : widget_(std::make_unique<views::Widget>()) {
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.name = "ClipboardContextualNudge";
   params.layer_type = ui::LAYER_NOT_DRAWN;
-  params.parent = Shell::GetPrimaryRootWindow()->GetChildById(
-      kShellWindowId_OverlayContainer);
+  params.parent =
+      root_window_->GetChildById(kShellWindowId_SettingBubbleContainer);
   widget_->Init(std::move(params));
 
   nudge_view_ =
@@ -163,14 +173,18 @@ ClipboardNudge::ClipboardNudge() : widget_(std::make_unique<views::Widget>()) {
 
 ClipboardNudge::~ClipboardNudge() = default;
 
+void ClipboardNudge::OnHotseatStateChanged(HotseatState old_state,
+                                           HotseatState new_state) {
+  CalculateAndSetWidgetBounds();
+}
+
 void ClipboardNudge::Close() {
   widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
 }
 
 void ClipboardNudge::CalculateAndSetWidgetBounds() {
-  aura::Window* root_window = Shell::GetRootWindowForNewWindows();
-  gfx::Rect display_bounds = root_window->bounds();
-  ::wm::ConvertRectToScreen(root_window, &display_bounds);
+  gfx::Rect display_bounds = root_window_->bounds();
+  ::wm::ConvertRectToScreen(root_window_, &display_bounds);
   gfx::Rect widget_bounds;
 
   // Calculate the nudge's size to ensure the label text accurately fits.
@@ -187,6 +201,26 @@ void ClipboardNudge::CalculateAndSetWidgetBounds() {
                 nudge_width, nudge_height);
   if (base::i18n::IsRTL())
     widget_bounds.set_x(display_bounds.right() - nudge_width - kNudgeMargin);
+
+  // Set the nudge's bounds above the hotseat when it is extended.
+  HotseatWidget* hotseat_widget =
+      RootWindowController::ForWindow(root_window_)->shelf()->hotseat_widget();
+  if (hotseat_widget->state() == HotseatState::kExtended) {
+    widget_bounds.set_y(hotseat_widget->GetTargetBounds().y() - nudge_height -
+                        kNudgeMargin);
+  }
+
+  // Only run the widget bounds animation if the widget's bounds have already
+  // been initialized.
+  std::unique_ptr<ui::ScopedLayerAnimationSettings> settings;
+  if (widget_->GetWindowBoundsInScreen().size() != gfx::Size()) {
+    settings = std::make_unique<ui::ScopedLayerAnimationSettings>(
+        widget_->GetLayer()->GetAnimator());
+    settings->SetPreemptionStrategy(
+        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+    settings->SetTransitionDuration(kNudgeBoundsAnimationTime);
+    settings->SetTweenType(gfx::Tween::EASE_OUT);
+  }
 
   widget_->SetBounds(widget_bounds);
 }
