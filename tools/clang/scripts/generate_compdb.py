@@ -33,15 +33,19 @@ def main(argv):
       nargs='*',
       help='Additional targets to pass to ninja')
   parser.add_argument(
+      '--target_os',
+      choices=['android', 'chromeos', 'ios', 'linux', 'nacl', 'mac', 'win'],
+      help='Target OS - see `gn help target_os`. Set to "win" when ' +
+      'cross-compiling Windows from Linux or another host')
+  parser.add_argument(
       '-o',
       help='File to write the compilation database to. Defaults to stdout')
 
   args = parser.parse_args()
 
-  compdb_text = json.dumps(
-      compile_db.ProcessCompileDatabaseIfNeeded(
-          compile_db.GenerateWithNinja(args.p, args.targets)),
-      indent=2)
+  compdb_text = json.dumps(compile_db.ProcessCompileDatabaseIfNeeded(
+      compile_db.GenerateWithNinja(args.p, args.targets), args.target_os),
+                           indent=2)
   if args.o is None:
     print(compdb_text)
   else:
