@@ -498,7 +498,13 @@ std::string AccessibilityTreeFormatterMac::ProcessTreeForOutput(
       continue;
     }
 
-    // Special processing for position and size.
+    // Special case: children.
+    // Children are used to generate the tree
+    // itself, thus no sense to expose them on each node.
+    if (item.first == kChildrenDictAttr) {
+      continue;
+    }
+    // Special case: position.
     if (item.first == kPositionDictAttr) {
       WriteAttribute(false,
                      FormatCoordinates(
@@ -507,6 +513,7 @@ std::string AccessibilityTreeFormatterMac::ProcessTreeForOutput(
                      &line);
       continue;
     }
+    // Special case: size.
     if (item.first == kSizeDictAttr) {
       WriteAttribute(
           false,

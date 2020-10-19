@@ -83,9 +83,6 @@ std::vector<ui::AXPropertyFilter> AXTreeServer::GetPropertyFilters(
   if (filters_path.empty()) {
     return {
       ui::AXPropertyFilter("*", ui::AXPropertyFilter::ALLOW),
-#if defined(OS_MAC)
-          ui::AXPropertyFilter("children", ui::AXPropertyFilter::DENY),
-#endif
     };
   }
 
