@@ -3611,13 +3611,11 @@
       'id': 111,
       'caption': '''Set media disk cache size in bytes''',
       'tags': [],
-      'desc': '''Configures the cache size that <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will use for storing cached media files on the disk.
+      'desc': '''Setting the policy configures the cache size that <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> uses for storing cached media files on the disk, regardless of whether or not users specify the --media-cache-size flag. The value specified in this policy isn't a hard boundary, but a suggestion to the caching system. Any value below a few megabytes is rounded up.
 
-      If you set this policy, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will use the provided cache size regardless whether the user has specified the '--media-cache-size' flag or not. The value specified in this policy is not a hard boundary but rather a suggestion to the caching system, any value below a few megabytes is too small and will be rounded up to a sane minimum.
+      Setting the value of the policy to 0 uses the default cache size, and users can't change it.
 
-      If the value of this policy is 0, the default cache size will be used but the user will not be able to change it.
-
-      If this policy is not set the default size will be used and the user will be able to override it with the --media-cache-size flag.''',
+      Leaving the policy unset uses the default cache size and users can change it with the --media-cache-size flag.''',
       'label': '''Set media disk cache size''',
     },
     {
@@ -5869,11 +5867,11 @@
       'id': 603,
       'caption': '''Automatically grant permission to these sites to connect to USB devices with the given vendor and product IDs on the login screen.''',
       'tags': ['website-sharing'],
-      'desc': '''Allows you to set a list of URL patterns that specify which sites are automatically granted permission to access a USB device with the given vendor and product IDs on the login screen. Each list item must have a "devices" and "urls" field for the policy to be valid. Each item in the "devices" field can have a "vendor_id" and "product_id" field. Omitting the "vendor_id" field will create a policy matching any device. Omitting the "product_id" field will create a policy matching any device with the given vendor ID. A policy which has a "product_id" field without a "vendor_id" vield is invalid.
+      'desc': '''Setting the policy lets you list the URL patterns that specify which sites are automatically granted permission to access a USB device with the given vendor and product IDs on the login screen. Each item in the list requires both "devices" and "urls" fields for the policy to be valid. Each item in the "devices" field can have a "vendor_id" and "product_id" field. Omitting the "vendor_id" field will create a policy matching any device. Omitting the "product_id" field will create a policy matching any device with the given vendor ID. A policy which has a "product_id" field without a "vendor_id" vield is invalid.
 
-        The USB permission model uses the URL of the requesting site ("requesting URL") and the URL of the top-level frame site ("embedding URL") to grant permission to the requesting URL to access the USB device. The requesting URL may be different than the embedding URL when the requesting site is loaded in an iframe. Therefore, the "urls" field can contain up to two URL strings delimited by a comma to specify the requesting and embedding URL respectively. If only one URL is specified, then access to the corresponding USB devices will be granted when the requesting site's URL matches this URL regardless of embedding status. The URLs in "urls" must be valid URLs, otherwise the policy will be ignored.
+      The USB permission model uses the requesting and embedding URLs to grant the requesting URL permission to access the USB device. The requesting URL can be different than the embedding URL when the requesting site is loaded in an iframe. So, the urls field can have up to 2 URL strings delimited by a comma to specify the requesting and embedding URL, respectively. If only one URL is specified, then access to the corresponding USB devices is granted when the requesting site's URL matches this URL, regardless of embedding status. The URLs must be valid, otherwise the policy is ignored.
 
-        If this policy is left not set, the global default value will be used for all sites (no automatic access).''',
+      Leaving the policy unset puts the global default value in use for all sites (no automatic access).''',
     },
     {
       'name': 'WebUsbAskForUrls',
@@ -7980,11 +7978,11 @@
       'id': 584,
       'caption': '''Enables the concept of policy atomic groups''',
       'tags': [],
-      'desc': '''If this policy is enabled, policies coming from the an atomic group that do not share the source with the highest priority from that group will be ignored.
+      'desc': '''Setting the policy to Enabled means policies coming from an atomic group that don't share the source with the highest priority from that group get ignored.
 
-      If this policy is disabled, no policy will be ignored because of its source. Policies will be ignored only if there is a conflict and the policy does not have the highest priority.
+      Setting the policy to Disabled means no policy is ignored because of its source. Policies are ignored only if there's a conflict, and the policy doesn't have the highest priority.
 
-      If this policy ist set from a cloud source, it cannot target a specific user''',
+      If this policy is set from a cloud source, it can't target a specific user.''',
     },
     {
       'name': 'PolicyListMultipleSourceMergeList',
@@ -20348,10 +20346,9 @@
       'id': 570,
       'caption': '''Allow user feedback''',
       'tags': [],
-      'desc': '''Allow user feedback.
-        If the policy is set to false, users can not send feedback to Google.
+      'desc': '''Setting the policy to Enabled or leaving it unset lets users send feedback to Google through Menu > Help > Report an Issue or key combination.
 
-        If the policy is unset or set to true, users can send feedback to Google via Menu->Help->Report an Issue or key combination.'''
+      Setting the policy to Disabled means users can't send feedback to Google.'''
     },
     {
       'name': 'SamlPasswordExpirationAdvanceWarningDays',
@@ -21010,12 +21007,9 @@
       'supported_on': ['chrome_os:78-'],
       'caption': '''Allows users to play media when the device is locked''',
       'tags': [],
-      'desc': '''This policy controls whether users are able to play media when the device is locked.
+      'desc': '''Setting the policy to Enabled or leaving it unset displays media controls on the lock screen if users lock the device when media is playing.
 
-      If this policy is set to False, then media controls on the lock screen are disabled.
-
-      If this policy is set to True or not set, then media controls will be displayed on the lock screen if the user locks the device when media is playing.
-      '''
+      Setting the policy to Disabled turns media controls on the lock screen off.'''
     },
     {
       'name': 'UnsafeEventsReportingEnabled',
@@ -21665,9 +21659,11 @@
       'id': 598,
       'caption': '''Enable Renderer Code Integrity''',
       'tags': ['system-security'],
-      'desc': '''If this policy is enabled or left unset, then Renderer Code Integrity is enabled. This should only be disabled if compatibility issues are encountered with third party software that must run inside Chrome's renderer processes.
+      'desc': '''Setting the policy to Enabled or leaving it unset turns Renderer Code Integrity on.
 
-      Disabling this policy has a detrimental effect on Chrome's security and stability as unknown and potentially hostile code will be allowed to load inside Chrome's renderer processes. See https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies for more info.''',
+      Setting the policy to Disabled has a detrimental effect on <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s security and stability as unknown and potentially hostile code can load inside <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s renderer processes. Only turn off the policy if there are compatibility issues with third-party software that must run inside <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s renderer processes.
+
+      Note: Read more about Process mitigation policies ( https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies ).''',
     },
     {
       # TODO(rogerta): Use a custom policy handler to show in chrome://policy that this policy depends on the state of SendFilesForMalwareCheck.
@@ -21743,7 +21739,7 @@
       'id': 601,
       'caption': '''List of names that will bypass the HSTS policy check''',
       'tags': ['system-security'],
-      'desc': '''Hostnames specified in this list will be exempt from the HSTS policy check that could potentially upgrade requests from http to https. Only single-label hostnames are allowed in this policy. Hostnames must be canonicalized: any IDNs must be converted to their A-label format, and all ASCII letters must be lowercase. This policy only applies to the specific hostnames specified; it does not apply to subdomains of the names specified.''',
+      'desc': '''Setting the policy specifies a list of hostnames that are exempt from the HSTS policy check that could upgrade requests from http to https. Only single-label hostnames are allowed in this policy. Hostnames must be canonicalized: Any IDNs must be converted to their A-label format, and all ASCII letters must be lowercase. This policy only applies to the specific hostnames specified, not to subdomains of those names.''',
     },
     {
       'name': 'AllowSyncXHRInPageDismissal',
