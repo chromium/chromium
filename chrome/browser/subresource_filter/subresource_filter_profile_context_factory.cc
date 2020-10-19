@@ -10,9 +10,9 @@
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/subresource_filter/subresource_filter_history_observer.h"
-#include "chrome/browser/subresource_filter/subresource_filter_profile_context.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 
 // static
 SubresourceFilterProfileContext*

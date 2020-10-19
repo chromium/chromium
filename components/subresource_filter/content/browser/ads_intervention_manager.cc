@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/subresource_filter/ads_intervention_manager.h"
+#include "components/subresource_filter/content/browser/ads_intervention_manager.h"
 
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/subresource_filter/subresource_filter_content_settings_manager.h"
+#include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "url/gurl.h"
 

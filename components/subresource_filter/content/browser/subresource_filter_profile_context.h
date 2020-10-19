@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SUBRESOURCE_FILTER_SUBRESOURCE_FILTER_PROFILE_CONTEXT_H_
-#define CHROME_BROWSER_SUBRESOURCE_FILTER_SUBRESOURCE_FILTER_PROFILE_CONTEXT_H_
+#ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_SUBRESOURCE_FILTER_PROFILE_CONTEXT_H_
+#define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_SUBRESOURCE_FILTER_PROFILE_CONTEXT_H_
 
 #include <memory>
 
@@ -14,7 +14,10 @@ class HostContentSettingsMap;
 class SubresourceFilterContentSettingsManager;
 class AdsInterventionManager;
 
-// This class holds profile scoped context for subresource filtering.
+// This class holds BrowserContext-scoped context for subresource filtering. The
+// embedder should use KeyedServiceFactory to associate instances of this class
+// with instances of (their subclass of) BrowserContext; see //chrome's
+// subresource_filter_profile_context_factory.* for an example.
 class SubresourceFilterProfileContext : public KeyedService {
  public:
   // An opaque class that the embedder can use to scope an embedder-level object
@@ -58,4 +61,4 @@ class SubresourceFilterProfileContext : public KeyedService {
   DISALLOW_COPY_AND_ASSIGN(SubresourceFilterProfileContext);
 };
 
-#endif  // CHROME_BROWSER_SUBRESOURCE_FILTER_SUBRESOURCE_FILTER_PROFILE_CONTEXT_H_
+#endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_SUBRESOURCE_FILTER_PROFILE_CONTEXT_H_

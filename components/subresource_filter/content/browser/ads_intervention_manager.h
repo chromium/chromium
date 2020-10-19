@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SUBRESOURCE_FILTER_ADS_INTERVENTION_MANAGER_H_
-#define CHROME_BROWSER_SUBRESOURCE_FILTER_ADS_INTERVENTION_MANAGER_H_
+#ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_ADS_INTERVENTION_MANAGER_H_
+#define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_ADS_INTERVENTION_MANAGER_H_
 
 #include <memory>
 
 #include "base/optional.h"
-#include "chrome/browser/subresource_filter/subresource_filter_content_settings_manager.h"
+#include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 
 class GURL;
@@ -77,4 +77,4 @@ class AdsInterventionManager {
   base::Clock* clock_;
 };
 
-#endif  // CHROME_BROWSER_SUBRESOURCE_FILTER_ADS_INTERVENTION_MANAGER_H_
+#endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_ADS_INTERVENTION_MANAGER_H_

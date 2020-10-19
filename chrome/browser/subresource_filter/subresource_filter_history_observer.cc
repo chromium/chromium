@@ -4,7 +4,7 @@
 
 #include "chrome/browser/subresource_filter/subresource_filter_history_observer.h"
 
-#include "chrome/browser/subresource_filter/subresource_filter_content_settings_manager.h"
+#include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "url/gurl.h"
 
 SubresourceFilterHistoryObserver::SubresourceFilterHistoryObserver(

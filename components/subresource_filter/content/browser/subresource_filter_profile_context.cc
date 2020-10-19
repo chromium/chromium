@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/subresource_filter/subresource_filter_profile_context.h"
+#include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 
-#include "chrome/browser/subresource_filter/ads_intervention_manager.h"
-#include "chrome/browser/subresource_filter/subresource_filter_content_settings_manager.h"
+#include "components/subresource_filter/content/browser/ads_intervention_manager.h"
+#include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 
 SubresourceFilterProfileContext::SubresourceFilterProfileContext(
     HostContentSettingsMap* settings_map)

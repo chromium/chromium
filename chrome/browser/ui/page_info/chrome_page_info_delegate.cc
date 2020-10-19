@@ -16,8 +16,6 @@
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
-#include "chrome/browser/subresource_filter/subresource_filter_content_settings_manager.h"
-#include "chrome/browser/subresource_filter/subresource_filter_profile_context.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
@@ -28,6 +26,8 @@
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_result.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
+#include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
+#include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 

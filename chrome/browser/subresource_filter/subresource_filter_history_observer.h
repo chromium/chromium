@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_SUBRESOURCE_FILTER_SUBRESOURCE_FILTER_HISTORY_OBSERVER_H_
 
 #include "base/scoped_observer.h"
-#include "chrome/browser/subresource_filter/subresource_filter_profile_context.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
+#include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 
 class SubresourceFilterContentSettingsManager;
 

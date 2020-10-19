@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/subresource_filter/ads_intervention_manager.h"
+#include "components/subresource_filter/content/browser/ads_intervention_manager.h"
 
 #include <memory>
 
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
-#include "chrome/browser/subresource_filter/subresource_filter_content_settings_manager.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"

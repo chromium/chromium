@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/subresource_filter/subresource_filter_content_settings_manager.h"
+#include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 
 #include <set>
 #include <string>
