@@ -20,6 +20,7 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/credential_cache.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/web_contents.h"
 
 using autofill::AccessoryAction;
@@ -243,7 +244,9 @@ bool ManualFillingControllerImpl::ShouldShowAccessory() const {
           autofill::features::kAutofillManualFallbackAndroid)) {
     return focused_field_type_ == FocusedFieldType::kFillablePasswordField ||
            (focused_field_type_ == FocusedFieldType::kFillableUsernameField &&
-            available_sources_.contains(FillingSource::PASSWORD_FALLBACKS));
+            (base::FeatureList::IsEnabled(
+                 password_manager::features::kFillingPasswordsFromAnyOrigin) ||
+             available_sources_.contains(FillingSource::PASSWORD_FALLBACKS)));
   }
   switch (focused_field_type_) {
     // Always show on password fields to provide management and generation.
@@ -253,7 +256,9 @@ bool ManualFillingControllerImpl::ShouldShowAccessory() const {
     // If there are suggestions, show on usual form fields.
     case FocusedFieldType::kFillableUsernameField:
     case FocusedFieldType::kFillableNonSearchField:
-      return !available_sources_.empty();
+      return !available_sources_.empty() ||
+             base::FeatureList::IsEnabled(
+                 password_manager::features::kFillingPasswordsFromAnyOrigin);
 
     // Even if there are suggestions, don't show on search fields and textareas.
     case FocusedFieldType::kFillableSearchField:

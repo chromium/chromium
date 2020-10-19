@@ -179,6 +179,19 @@ TEST_F(ManualFillingControllerTest, ShowsAccessoryWithSuggestions) {
   controller()->RefreshSuggestions(populate_sheet(AccessoryTabType::PASSWORDS));
 }
 
+TEST_F(ManualFillingControllerTest,
+       AlwaysShowsAccessoryForUsernameFieldsIfFillingAcrossOriginEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kFillingPasswordsFromAnyOrigin);
+
+  EXPECT_CALL(*view(), ShowWhenKeyboardIsVisible());
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableUsernameField);
+
+  EXPECT_CALL(*view(), Hide()).Times(0);
+  controller()->RefreshSuggestions(empty_passwords_sheet());
+}
+
 TEST_F(ManualFillingControllerTest, DoesntShowFallbacksOutsideUsernameInV1) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
