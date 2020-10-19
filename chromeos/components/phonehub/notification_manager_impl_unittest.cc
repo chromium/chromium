@@ -176,6 +176,15 @@ TEST_F(NotificationManagerImplTest, DismissNotifications) {
   EXPECT_EQ(1u, fake_message_sender().GetDismissNotificationRequestCallCount());
   EXPECT_EQ(expected_id2,
             fake_message_sender().GetRecentDismissNotificationRequest());
+
+  // Dismiss the same notification again, verify nothing happens.
+  manager().DismissNotification(expected_id2);
+  EXPECT_EQ(1u, GetNumNotifications());
+  EXPECT_EQ(NotificationState::kAdded, GetNotificationState(expected_id1));
+  EXPECT_EQ(NotificationState::kRemoved, GetNotificationState(expected_id2));
+  EXPECT_EQ(1u, fake_message_sender().GetDismissNotificationRequestCallCount());
+  EXPECT_EQ(expected_id2,
+            fake_message_sender().GetRecentDismissNotificationRequest());
 }
 
 TEST_F(NotificationManagerImplTest, UpdatedNotification) {

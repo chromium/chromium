@@ -22,6 +22,12 @@ NotificationManagerImpl::~NotificationManagerImpl() = default;
 void NotificationManagerImpl::DismissNotification(int64_t notification_id) {
   PA_LOG(INFO) << "Dismissing notification with ID " << notification_id << ".";
 
+  if (!GetNotification(notification_id)) {
+    PA_LOG(WARNING) << "Attempted to dismiss an invalid notification with id: "
+                    << notification_id << ".";
+    return;
+  }
+
   RemoveNotificationsInternal(base::flat_set<int64_t>{notification_id});
   message_sender_->SendDismissNotificationRequest(notification_id);
 }

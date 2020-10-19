@@ -70,7 +70,9 @@ void NotificationManager::RemoveNotificationsInternal(
 
   for (int64_t id : notification_ids) {
     auto it = id_to_notification_map_.find(id);
-    DCHECK(it != id_to_notification_map_.end());
+    if (it == id_to_notification_map_.end())
+      continue;
+
     id_to_notification_map_.erase(it);
   }
 

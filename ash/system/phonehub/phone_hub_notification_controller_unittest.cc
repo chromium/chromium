@@ -136,6 +136,11 @@ TEST_F(PhoneHubNotificationControllerTest, RemoveNotifications) {
   notification_manager_.RemoveNotificationsInternal(base::flat_set<int64_t>(
       {kPhoneHubNotificationId1, kPhoneHubNotificationId2}));
   EXPECT_FALSE(message_center_->NotificationCount());
+
+  // Attempt removing the same notifications again and expect nothing to happen.
+  notification_manager_.RemoveNotificationsInternal(base::flat_set<int64_t>(
+      {kPhoneHubNotificationId1, kPhoneHubNotificationId2}));
+  EXPECT_FALSE(message_center_->NotificationCount());
 }
 
 TEST_F(PhoneHubNotificationControllerTest, CloseByUser) {
