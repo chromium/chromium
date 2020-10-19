@@ -11182,6 +11182,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="popular_baked_in" label="Baked-in, popular suggestions."/>
   <suffix name="popular_fetched"
       label="Non-personalized, popular suggestions (fetched from the server)."/>
+  <suffix name="repeatable_query" label="Repeatable Query suggestion."/>
   <suffix name="search_page" label="Google Search page">
     <obsolete>
       Used for experiment but was never launched, as of 2019-07.

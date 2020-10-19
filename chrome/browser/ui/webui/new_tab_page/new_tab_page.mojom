@@ -25,6 +25,7 @@ struct MostVisitedTile {
   string title;
   mojo_base.mojom.TextDirection title_direction;
   url.mojom.Url url;
+  bool is_query_tile;
 
   // ======= METRICS =======
   // Identifier of most visited entry source (e.g. top sites).

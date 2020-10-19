@@ -179,6 +179,8 @@ bool MostVisitedSites::DoesSourceExist(TileSource source) const {
       return custom_links_ != nullptr;
     case TileSource::EXPLORE:
       return explore_sites_client_ != nullptr;
+    case TileSource::REPEATABLE_QUERIES_SERVICE:
+      return false;
   }
   NOTREACHED();
   return false;

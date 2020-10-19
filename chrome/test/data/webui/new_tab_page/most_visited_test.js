@@ -60,6 +60,7 @@ suite('NewTabPageMostVisitedTest', () => {
         url: {url: `https://${char}/`},
         source: i,
         titleSource: i,
+        isQueryTile: false,
         dataGenerationTime: {internalValue: 0},
       };
     });
@@ -732,6 +733,7 @@ suite('NewTabPageMostVisitedTest', () => {
         url: {url: 'https://url/'},
         source: 0,
         titleSource: 0,
+        isQueryTile: false,
         dataGenerationTime: {internalValue: 0},
       }],
       visible: true,
@@ -753,6 +755,7 @@ suite('NewTabPageMostVisitedTest', () => {
         url: {url: 'https://url/'},
         source: 0,
         titleSource: 0,
+        isQueryTile: false,
         dataGenerationTime: {internalValue: 0},
       }],
       visible: true,
@@ -824,6 +827,7 @@ suite('NewTabPageMostVisitedTest', () => {
       url: {url: 'https://a/'},
       source: 0,
       titleSource: 0,
+      isQueryTile: false,
       dataGenerationTime: {internalValue: 0},
     });
     assertDeepEquals(tiles[1], {
@@ -832,6 +836,7 @@ suite('NewTabPageMostVisitedTest', () => {
       url: {url: 'https://b/'},
       source: 1,
       titleSource: 1,
+      isQueryTile: false,
       dataGenerationTime: {internalValue: 0},
     });
   });
@@ -856,6 +861,7 @@ suite('NewTabPageMostVisitedTest', () => {
       url: {url: 'https://a/'},
       source: 0,
       titleSource: 0,
+      isQueryTile: false,
       dataGenerationTime: {internalValue: 0},
     });
   });

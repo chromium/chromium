@@ -195,14 +195,12 @@
     style="--column-count: [[columnCount_]]; --row-count: [[rowCount_]];">
   <dom-repeat id="tiles" items="[[tiles_]]" on-dom-change="onTilesRendered_">
     <template>
-      <!-- TOOD(crbug.com/1138578): replace the query-tile attr binding to
-      something that checks whether the tile is a repeatable query tile. -->
       <a class="tile" draggable$="[[booleanToString_(customLinksEnabled_)]]"
           href$="[[item.url.url]]" title$="[[item.title]]"
           on-dragstart="onDragStart_" on-touchstart="onTouchStart_"
           hidden$="[[isHidden_(index, columnCount_)]]"
           on-click="onTileClick_" on-keydown="onTileKeyDown_"
-          query-tile$="[[isHidden_(index, columnCount_)]]">
+          query-tile$="[[item.isQueryTile]]">
         <cr-icon-button id="actionMenuButton" class="icon-more-vert"
             title="$i18n{moreActions}" on-click="onTileActionButtonClick_"
             tabindex="0" hidden$="[[!customLinksEnabled_]]"></cr-icon-button>
@@ -210,12 +208,10 @@
             title="$i18n{linkRemove}" on-click="onTileRemoveButtonClick_"
             tabindex="0" hidden$="[[customLinksEnabled_]]"></cr-icon-button>
         <div class="tile-icon">
-          <!-- TOOD(crbug.com/1138578): replace the hidden attr binding to
-          something that checks whether the tile is a repeatable query tile. -->
           <img src$="[[getFaviconUrl_(item.url)]]" draggable="false"
-              hidden$="[[isHidden_(index, columnCount_)]]"></img>
+              hidden$="[[item.isQueryTile]]"></img>
           <div class="query-tile-icon" draggable="false"
-              hidden$="[[!isHidden_(index, columnCount_)]]"></div>
+              hidden$="[[!item.isQueryTile]]"></div>
         </div>
         <div class$="tile-title [[getTileTitleDirectionClass_(item)]]">
           <span>[[item.title]]</span>

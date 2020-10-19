@@ -1192,6 +1192,8 @@ void NewTabPageHandler::MostVisitedInfoChanged(
     value->source = static_cast<int32_t>(tile.source);
     value->title_source = static_cast<int32_t>(tile.title_source);
     value->data_generation_time = tile.data_generation_time;
+    value->is_query_tile =
+        tile.source == ntp_tiles::TileSource::REPEATABLE_QUERIES_SERVICE;
     list.push_back(std::move(value));
   }
   result->custom_links_enabled = !info.use_most_visited;
