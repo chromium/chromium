@@ -142,6 +142,30 @@ TEST_F(NotificationResponseBuilderMacTest, TestNotificationOneActionClick) {
   EXPECT_EQ(0, buttonIndex.intValue);
 }
 
+TEST_F(NotificationResponseBuilderMacTest,
+       TestNotificationOneActionNoSettingsClick) {
+  base::scoped_nsobject<NotificationBuilder> builder =
+      NewTestBuilder(NotificationHandler::Type::EXTENSION);
+  [builder setButtons:@"Button1" secondaryButton:@""];
+
+  NSUserNotification* notification = [builder buildUserNotification];
+
+  // This will be set by the notification center to indicate the only available
+  // button was clicked.
+  [notification setValue:@(NSUserNotificationActivationTypeActionButtonClicked)
+                  forKey:@"_activationType"];
+  NSDictionary* response =
+      [NotificationResponseBuilder buildActivatedDictionary:notification];
+
+  NSNumber* operation =
+      [response objectForKey:notification_constants::kNotificationOperation];
+  NSNumber* buttonIndex =
+      [response objectForKey:notification_constants::kNotificationButtonIndex];
+  EXPECT_EQ(static_cast<int>(NotificationOperation::NOTIFICATION_CLICK),
+            operation.intValue);
+  EXPECT_EQ(0, buttonIndex.intValue);
+}
+
 TEST_F(NotificationResponseBuilderMacTest, TestNotificationTwoActionClick) {
   base::scoped_nsobject<NotificationBuilder> builder =
       NewTestBuilder(NotificationHandler::Type::WEB_PERSISTENT);

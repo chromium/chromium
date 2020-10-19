@@ -152,6 +152,34 @@ TEST(NotificationBuilderMacTest, TestNotificationExtensionNoButtons) {
   EXPECT_EQ("Close", base::SysNSStringToUTF8([notification otherButtonTitle]));
 }
 
+TEST(NotificationBuilderMacTest, TestNotificationExtensionOneButton) {
+  base::scoped_nsobject<NotificationBuilder> builder(
+      [[NotificationBuilder alloc] initWithCloseLabel:@"Close"
+                                         optionsLabel:@"Options"
+                                        settingsLabel:@"Settings"]);
+  [builder setTitle:@"Title"];
+  [builder setSubTitle:@"https://www.miguel.com"];
+  [builder setContextMessage:@"SubTitle"];
+  [builder setButtons:@"Button1" secondaryButton:@""];
+  [builder setNotificationId:@"notificationId"];
+  [builder setProfileId:@"profileId"];
+  [builder setIncognito:false];
+  [builder setCreatorPid:@1];
+  [builder setNotificationType:[NSNumber
+                                   numberWithInteger:static_cast<int>(
+                                                         NotificationHandler::
+                                                             Type::EXTENSION)]];
+  [builder setShowSettingsButton:false];
+
+  NSUserNotification* notification = [builder buildUserNotification];
+
+  // No settings button but one action button without overflow menu.
+  EXPECT_TRUE([notification hasActionButton]);
+  EXPECT_EQ("Button1",
+            base::SysNSStringToUTF8([notification actionButtonTitle]));
+  EXPECT_EQ("Close", base::SysNSStringToUTF8([notification otherButtonTitle]));
+}
+
 TEST(NotificationBuilderMacTest, TestNotificationExtensionButtons) {
   base::scoped_nsobject<NotificationBuilder> builder(
       [[NotificationBuilder alloc] initWithCloseLabel:@"Close"

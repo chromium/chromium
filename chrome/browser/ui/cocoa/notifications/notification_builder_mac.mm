@@ -83,24 +83,39 @@
                                 objectForKey:notification_constants::
                                                  kNotificationCloseButtonTag]];
 
-    // Display the Settings button as the action button if there are either no
-    // developer-provided action buttons, or the alternate action menu is not
-    // available on this Mac version. This avoids needlessly showing the menu.
-    if (![_notificationData
-            objectForKey:notification_constants::kNotificationButtonOne] ||
-        ![toast respondsToSelector:@selector(_alwaysShowAlternateActionMenu)]) {
-      if (settingsButton) {
-        [toast setActionButtonTitle:
-                   [_notificationData
-                       objectForKey:notification_constants::
-                                        kNotificationSettingsButtonTag]];
-      } else {
-        [toast setHasActionButton:NO];
+    NSMutableArray* buttons = [NSMutableArray arrayWithCapacity:3];
+    if ([_notificationData
+            objectForKey:notification_constants::kNotificationButtonOne]) {
+      [buttons addObject:[_notificationData
+                             objectForKey:notification_constants::
+                                              kNotificationButtonOne]];
+    }
+    if ([_notificationData
+            objectForKey:notification_constants::kNotificationButtonTwo]) {
+      [buttons addObject:[_notificationData
+                             objectForKey:notification_constants::
+                                              kNotificationButtonTwo]];
+    }
+    if (settingsButton) {
+      // If we can't show an action menu but need a settings button, only show
+      // the settings button and don't show developer provided actions.
+      if (![toast
+              respondsToSelector:@selector(_alwaysShowAlternateActionMenu)]) {
+        [buttons removeAllObjects];
       }
+      [buttons addObject:[_notificationData
+                             objectForKey:notification_constants::
+                                              kNotificationSettingsButtonTag]];
+    }
 
+    if ([buttons count] == 0) {
+      // Don't show action button if no actions needed.
+      [toast setHasActionButton:NO];
+    } else if ([buttons count] == 1) {
+      // Only one action so we don't need a menu. Just set the button title.
+      [toast setActionButtonTitle:[buttons firstObject]];
     } else {
-      // Otherwise show the alternate menu, then show the developer actions and
-      // finally the settings one if needed.
+      // Show the alternate menu with developer actions and settings if needed.
       DCHECK(
           [toast respondsToSelector:@selector(_alwaysShowAlternateActionMenu)]);
       DCHECK(
@@ -110,24 +125,6 @@
                      objectForKey:notification_constants::
                                       kNotificationOptionsButtonTag]];
       [toast setValue:@YES forKey:@"_alwaysShowAlternateActionMenu"];
-
-      NSMutableArray* buttons = [NSMutableArray arrayWithCapacity:3];
-      [buttons addObject:[_notificationData
-                             objectForKey:notification_constants::
-                                              kNotificationButtonOne]];
-      if ([_notificationData
-              objectForKey:notification_constants::kNotificationButtonTwo]) {
-        [buttons addObject:[_notificationData
-                               objectForKey:notification_constants::
-                                                kNotificationButtonTwo]];
-      }
-      if (settingsButton) {
-        [buttons
-            addObject:[_notificationData
-                          objectForKey:notification_constants::
-                                           kNotificationSettingsButtonTag]];
-      }
-
       [toast setValue:buttons forKey:@"_alternateActionButtonTitles"];
     }
   }
