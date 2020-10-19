@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/layout/layout_text_control.h"
 
 #include "build/build_config.h"
-#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
@@ -14,14 +14,33 @@ namespace {
 
 class LayoutTextControlTest : public RenderingTest {
  protected:
-  HTMLInputElement* GetHTMLInputElementById(const char* id) {
-    return To<HTMLInputElement>(GetDocument().getElementById(id));
+  TextControlElement* GetTextControlElementById(const char* id) {
+    return To<TextControlElement>(GetDocument().getElementById(id));
   }
-  // Return the LayoutText from inside an HTMLInputElement's user agent shadow
-  // tree.
-  LayoutText* GetInnerLayoutText(HTMLInputElement* input) {
+  // Return the LayoutText from inside a text control's user agent shadow tree.
+  LayoutText* GetInnerLayoutText(TextControlElement* control) {
     return ToLayoutText(
-        input->InnerEditorElement()->GetLayoutObject()->SlowFirstChild());
+        control->InnerEditorElement()->GetLayoutObject()->SlowFirstChild());
+  }
+
+  // Focus on |control|, select 1-3 characters, get the first LayoutText, and
+  // check if selection invalidation state is clean.
+  LayoutText* SetupLayoutTextWithCleanSelection(TextControlElement* control) {
+    control->focus();
+    control->SetSelectionRange(1, 3);
+    UpdateAllLifecyclePhasesForTest();
+    auto* selected_text = GetInnerLayoutText(control);
+    EXPECT_FALSE(selected_text->ShouldInvalidateSelection());
+    return selected_text;
+  }
+
+  void CheckSelectionInvalidationChanges(const LayoutText& selected_text) {
+    GetDocument().View()->UpdateLifecycleToLayoutClean(
+        DocumentUpdateReason::kTest);
+    EXPECT_TRUE(selected_text.ShouldInvalidateSelection());
+
+    UpdateAllLifecyclePhasesForTest();
+    EXPECT_FALSE(selected_text.ShouldInvalidateSelection());
   }
 };
 
@@ -35,21 +54,11 @@ TEST_F(LayoutTextControlTest,
     <input id="input" type="text" value="AAAAAAAAAAAA">
   )HTML");
 
-  auto* inputElement = GetHTMLInputElementById("input");
-  inputElement->focus();
-  inputElement->SetSelectionRange(1, 3);
-  UpdateAllLifecyclePhasesForTest();
+  auto* text_control = GetTextControlElementById("input");
+  auto* selected_text = SetupLayoutTextWithCleanSelection(text_control);
 
-  auto* selectedText = GetInnerLayoutText(inputElement);
-  EXPECT_FALSE(selectedText->ShouldInvalidateSelection());
-
-  inputElement->setAttribute(html_names::kClassAttr, "pseudoSelection");
-  GetDocument().View()->UpdateLifecycleToLayoutClean(
-      DocumentUpdateReason::kTest);
-  EXPECT_TRUE(selectedText->ShouldInvalidateSelection());
-
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(selectedText->ShouldInvalidateSelection());
+  text_control->setAttribute(html_names::kClassAttr, "pseudoSelection");
+  CheckSelectionInvalidationChanges(*selected_text);
 }
 
 TEST_F(LayoutTextControlTest,
@@ -61,21 +70,11 @@ TEST_F(LayoutTextControlTest,
     <input id="input" type="text" value="AAAAAAAAAAAA">
   )HTML");
 
-  auto* inputElement = GetHTMLInputElementById("input");
-  inputElement->focus();
-  inputElement->SetSelectionRange(1, 3);
-  UpdateAllLifecyclePhasesForTest();
+  auto* text_control = GetTextControlElementById("input");
+  auto* selected_text = SetupLayoutTextWithCleanSelection(text_control);
 
-  auto* selectedText = GetInnerLayoutText(inputElement);
-  EXPECT_FALSE(selectedText->ShouldInvalidateSelection());
-
-  inputElement->setAttribute(html_names::kClassAttr, "pseudoSelection");
-  GetDocument().View()->UpdateLifecycleToLayoutClean(
-      DocumentUpdateReason::kTest);
-  EXPECT_TRUE(selectedText->ShouldInvalidateSelection());
-
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(selectedText->ShouldInvalidateSelection());
+  text_control->setAttribute(html_names::kClassAttr, "pseudoSelection");
+  CheckSelectionInvalidationChanges(*selected_text);
 }
 
 TEST_F(LayoutTextControlTest,
@@ -87,21 +86,11 @@ TEST_F(LayoutTextControlTest,
     <input id="input" type="text" class="pseudoSelection" value="AAAAAAAAAAAA">
   )HTML");
 
-  auto* inputElement = GetHTMLInputElementById("input");
-  inputElement->focus();
-  inputElement->SetSelectionRange(1, 3);
-  UpdateAllLifecyclePhasesForTest();
+  auto* text_control = GetTextControlElementById("input");
+  auto* selected_text = SetupLayoutTextWithCleanSelection(text_control);
 
-  auto* selectedText = GetInnerLayoutText(inputElement);
-  EXPECT_FALSE(selectedText->ShouldInvalidateSelection());
-
-  inputElement->removeAttribute(html_names::kClassAttr);
-  GetDocument().View()->UpdateLifecycleToLayoutClean(
-      DocumentUpdateReason::kTest);
-  EXPECT_TRUE(selectedText->ShouldInvalidateSelection());
-
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(selectedText->ShouldInvalidateSelection());
+  text_control->removeAttribute(html_names::kClassAttr);
+  CheckSelectionInvalidationChanges(*selected_text);
 }
 
 TEST_F(LayoutTextControlTest, HitTestSearchInput) {
@@ -110,7 +99,7 @@ TEST_F(LayoutTextControlTest, HitTestSearchInput) {
            style="border-width: 20px; font-size: 30px; padding: 0">
   )HTML");
 
-  auto* input = GetHTMLInputElementById("input");
+  auto* input = GetTextControlElementById("input");
   HitTestResult result;
   HitTestLocation location(PhysicalOffset(40, 30));
   EXPECT_TRUE(input->GetLayoutObject()->HitTestAllPhases(result, location,
