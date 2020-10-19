@@ -177,6 +177,69 @@ aura::Window* GetPreferredRootWindow() {
 
 }  // namespace
 
+class CaptureModeSession::ScopedCursorSetter {
+ public:
+  explicit ScopedCursorSetter(ui::mojom::CursorType cursor)
+      : cursor_manager_(Shell::Get()->cursor_manager()),
+        original_cursor_(cursor_manager_->GetCursor()),
+        original_cursor_visible_(cursor_manager_->IsCursorVisible()),
+        original_cursor_locked_(cursor_manager_->IsCursorLocked()) {
+    UpdateCursor(cursor);
+  }
+
+  ScopedCursorSetter(const ScopedCursorSetter&) = delete;
+  ScopedCursorSetter& operator=(const ScopedCursorSetter&) = delete;
+
+  ~ScopedCursorSetter() {
+    // Only unlock the cursor if it wasn't locked before.
+    if (original_cursor_locked_)
+      return;
+
+    cursor_manager_->UnlockCursor();
+    cursor_manager_->SetCursor(original_cursor_);
+    if (original_cursor_visible_) {
+      cursor_manager_->ShowCursor();
+    } else {
+      cursor_manager_->HideCursor();
+    }
+  }
+
+  // Note that this will always make the cursor visible if it is not |kNone|.
+  void UpdateCursor(ui::mojom::CursorType cursor) {
+    if (original_cursor_locked_)
+      return;
+
+    const bool currently_locked = cursor_manager_->IsCursorLocked();
+
+    if (cursor_manager_->GetCursor().type() == cursor &&
+        cursor_manager_->IsCursorVisible()) {
+      if (!currently_locked)
+        cursor_manager_->LockCursor();
+      return;
+    }
+
+    if (currently_locked)
+      cursor_manager_->UnlockCursor();
+    if (cursor == ui::mojom::CursorType::kNone) {
+      cursor_manager_->HideCursor();
+    } else {
+      cursor_manager_->SetCursor(cursor);
+      cursor_manager_->ShowCursor();
+    }
+    cursor_manager_->LockCursor();
+  }
+
+  bool IsCursorVisible() const { return cursor_manager_->IsCursorVisible(); }
+
+ private:
+  wm::CursorManager* const cursor_manager_;
+  const gfx::NativeCursor original_cursor_;
+  const bool original_cursor_visible_;
+
+  // If the original cursor is already locked, don't make any changes to it.
+  const bool original_cursor_locked_;
+};
+
 CaptureModeSession::CaptureModeSession(CaptureModeController* controller)
     : controller_(controller),
       current_root_(GetPreferredRootWindow()),
@@ -201,6 +264,10 @@ CaptureModeSession::CaptureModeSession(CaptureModeController* controller)
   UpdateCaptureLabelWidget();
   RefreshStackingOrder(parent);
 
+  if (controller_->source() == CaptureModeSource::kRegion) {
+    cursor_setter_ =
+        std::make_unique<ScopedCursorSetter>(ui::mojom::CursorType::kCell);
+  }
   if (controller_->source() == CaptureModeSource::kWindow) {
     capture_window_observer_ =
         std::make_unique<CaptureWindowObserver>(this, controller_->type());
@@ -233,6 +300,16 @@ void CaptureModeSession::OnCaptureSourceChanged(CaptureModeSource new_source) {
         std::make_unique<CaptureWindowObserver>(this, controller_->type());
   } else {
     capture_window_observer_.reset();
+  }
+
+  if (new_source == CaptureModeSource::kRegion) {
+    cursor_setter_ = std::make_unique<ScopedCursorSetter>(
+        capture_mode_bar_widget_.GetWindowBoundsInScreen().Contains(
+            previous_location_in_root_)
+            ? ui::mojom::CursorType::kPointer
+            : ui::mojom::CursorType::kCell);
+  } else {
+    cursor_setter_.reset();
   }
 
   capture_mode_bar_view_->OnCaptureSourceChanged(new_source);
@@ -484,10 +561,13 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   }
 
   DCHECK_EQ(CaptureModeSource::kRegion, capture_source);
+  DCHECK(cursor_setter_);
 
   // Let the capture button handle any events it can handle first.
-  if (ShouldCaptureLabelHandleEvent(event_target))
+  if (ShouldCaptureLabelHandleEvent(event_target)) {
+    cursor_setter_->UpdateCursor(ui::mojom::CursorType::kHand);
     return;
+  }
 
   // Allow events that are located on the capture mode bar to pass through so we
   // can click the buttons.
@@ -513,26 +593,23 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
         SetMouseWarpEnabled(*old_mouse_warp_status_);
       old_mouse_warp_status_.reset();
 
-      OnLocatedEventReleased(location);
+      OnLocatedEventReleased(location, is_event_on_capture_bar);
+      break;
+    case ui::ET_MOUSE_MOVED:
+      if (cursor_setter_->IsCursorVisible()) {
+        cursor_setter_->UpdateCursor(GetCursorType(
+            GetFineTunePosition(location, is_touch), is_event_on_capture_bar));
+      }
       break;
     default:
       break;
   }
 }
 
-void CaptureModeSession::OnLocatedEventPressed(
+FineTunePosition CaptureModeSession::GetFineTunePosition(
     const gfx::Point& location_in_root,
-    bool is_touch,
-    bool is_event_on_capture_bar) {
-  initial_location_in_root_ = location_in_root;
-  previous_location_in_root_ = location_in_root;
-
-  if (is_selecting_region_)
-    return;
-
-  // Calculate the position and anchor points of the current pressed event.
-  fine_tune_position_ = FineTunePosition::kNone;
-  // In the case of overlapping affordances, prioritize the bottom right
+    bool is_touch) const {
+  // In the case of overlapping affordances, prioritize the bottomm right
   // corner, then the rest of the corners, then the edges.
   static const std::vector<FineTunePosition> drag_positions = {
       FineTunePosition::kBottomRight,  FineTunePosition::kBottomLeft,
@@ -551,29 +628,75 @@ void CaptureModeSession::OnLocatedEventPressed(
     // both x and y, then |position| is the current pressed down affordance.
     if ((position_location - location_in_root).LengthSquared() <=
         hit_radius_squared) {
-      fine_tune_position_ = position;
-      MaybeShowMagnifierGlassAtPoint(position_location);
-      break;
+      return position;
     }
   }
 
-  if (fine_tune_position_ == FineTunePosition::kNone) {
+  if (controller_->user_capture_region().Contains(location_in_root))
+    return FineTunePosition::kCenter;
+
+  return FineTunePosition::kNone;
+}
+
+ui::mojom::CursorType CaptureModeSession::GetCursorType(
+    FineTunePosition position,
+    bool is_event_on_capture_bar) const {
+  if (is_event_on_capture_bar ||
+      controller_->source() != CaptureModeSource::kRegion) {
+    return ui::mojom::CursorType::kPointer;
+  }
+
+  switch (position) {
+    case FineTunePosition::kTopLeft:
+      return ui::mojom::CursorType::kNorthWestResize;
+    case FineTunePosition::kBottomRight:
+      return ui::mojom::CursorType::kSouthEastResize;
+    case FineTunePosition::kTopCenter:
+    case FineTunePosition::kBottomCenter:
+      return ui::mojom::CursorType::kNorthSouthResize;
+    case FineTunePosition::kTopRight:
+      return ui::mojom::CursorType::kNorthEastResize;
+    case FineTunePosition::kBottomLeft:
+      return ui::mojom::CursorType::kSouthWestResize;
+    case FineTunePosition::kLeftCenter:
+    case FineTunePosition::kRightCenter:
+      return ui::mojom::CursorType::kEastWestResize;
+    case FineTunePosition::kCenter:
+      return ui::mojom::CursorType::kMove;
+    default:
+      return ui::mojom::CursorType::kCell;
+  }
+}
+
+void CaptureModeSession::OnLocatedEventPressed(
+    const gfx::Point& location_in_root,
+    bool is_touch,
+    bool is_event_on_capture_bar) {
+  initial_location_in_root_ = location_in_root;
+  previous_location_in_root_ = location_in_root;
+
+  if (is_selecting_region_)
+    return;
+
+  fine_tune_position_ = GetFineTunePosition(location_in_root, is_touch);
+
+  if (fine_tune_position_ == FineTunePosition::kNone &&
+      !is_event_on_capture_bar) {
     // If the point is outside the capture region and not on the capture bar,
     // restart to the select phase.
-    if (controller_->user_capture_region().Contains(location_in_root)) {
-      fine_tune_position_ = FineTunePosition::kCenter;
-    } else {
-      gfx::Point location_in_screen = location_in_root;
-      wm::ConvertPointToScreen(current_root_, &location_in_screen);
-      if (!is_event_on_capture_bar) {
-        is_selecting_region_ = true;
-        UpdateCaptureRegion(gfx::Rect(), /*is_resizing=*/true);
-      }
-    }
+    is_selecting_region_ = true;
+    UpdateCaptureRegion(gfx::Rect(), /*is_resizing=*/true);
     return;
   }
 
-  anchor_points_ = GetAnchorPointsForPosition(fine_tune_position_);
+  if (fine_tune_position_ != FineTunePosition::kCenter &&
+      fine_tune_position_ != FineTunePosition::kNone) {
+    anchor_points_ = GetAnchorPointsForPosition(fine_tune_position_);
+    const gfx::Point position_location =
+        capture_mode_util::GetLocationForFineTunePosition(
+            controller_->user_capture_region(), fine_tune_position_);
+    MaybeShowMagnifierGlassAtPoint(position_location);
+  }
 }
 
 void CaptureModeSession::OnLocatedEventDragged(
@@ -614,9 +737,14 @@ void CaptureModeSession::OnLocatedEventDragged(
 }
 
 void CaptureModeSession::OnLocatedEventReleased(
-    const gfx::Point& location_in_root) {
+    const gfx::Point& location_in_root,
+    bool is_event_on_capture_bar) {
   fine_tune_position_ = FineTunePosition::kNone;
   anchor_points_.clear();
+
+  cursor_setter_->UpdateCursor(
+      GetCursorType(GetFineTunePosition(location_in_root, /*is_touch=*/false),
+                    is_event_on_capture_bar));
 
   // Do a repaint to show the affordance circles. See UpdateCaptureRegion to see
   // how damage is calculated.

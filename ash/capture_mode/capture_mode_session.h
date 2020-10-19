@@ -103,6 +103,8 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   }
 
  private:
+  class ScopedCursorSetter;
+
   // Gets the bounds of current window selected for |kWindow| capture source.
   gfx::Rect GetSelectedWindowBounds() const;
 
@@ -121,12 +123,22 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // we will use larger hit targets for the drag affordances.
   void OnLocatedEvent(ui::LocatedEvent* event, bool is_touch);
 
+  // Returns the fine tune position that corresponds to the given
+  // |location_in_root|.
+  FineTunePosition GetFineTunePosition(const gfx::Point& location_in_root,
+                                       bool is_touch) const;
+
+  // Returns the expected cursor type.
+  ui::mojom::CursorType GetCursorType(FineTunePosition position,
+                                      bool is_event_on_capture_bar) const;
+
   // Handles updating the select region UI.
   void OnLocatedEventPressed(const gfx::Point& location_in_root,
                              bool is_touch,
                              bool is_event_on_capture_bar);
   void OnLocatedEventDragged(const gfx::Point& location_in_root);
-  void OnLocatedEventReleased(const gfx::Point& location_in_root);
+  void OnLocatedEventReleased(const gfx::Point& location_in_root,
+                              bool is_event_on_capture_bar);
 
   // Updates the capture region and the capture region widgets depending on the
   // value of |is_resizing|.
@@ -235,6 +247,9 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // Contains the window dimmers which dim all the root windows except
   // |current_root_|.
   base::flat_set<std::unique_ptr<WindowDimmer>> root_window_dimmers_;
+
+  // The object to specify the cursor type.
+  std::unique_ptr<ScopedCursorSetter> cursor_setter_;
 };
 
 }  // namespace ash
