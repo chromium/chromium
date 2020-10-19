@@ -231,7 +231,7 @@ class ToolTip {
 /** @implements {d3.ForceNode} */
 class GraphNode {
   constructor(id) {
-    /** @type {bigint} */
+    /** @type {number} */
     this.id = id;
     /** @type {string} */
     this.color = 'black';
@@ -316,7 +316,7 @@ class GraphNode {
     return -200;
   }
 
-  /** @return {!Array<bigint>} an array of node ids. */
+  /** @return {!Array<number>} an array of node ids. */
   get linkTargets() {
     return [];
   }
@@ -326,7 +326,7 @@ class GraphNode {
    * things, but be owned by exactly one (per relationship type). As such, the
    * relationship is expressed on the *owned* object. These links are drawn with
    * an arrow at the beginning of the link, pointing to the owned object.
-   * @return {!Array<bigint>} an array of node ids.
+   * @return {!Array<number>} an array of node ids.
    */
   get dashedLinkTargets() {
     return [];
@@ -334,14 +334,11 @@ class GraphNode {
 
   /**
    * Selects a color string from an id.
-   * @param {bigint} id The id the returned color is selected from.
+   * @param {number} id The id the returned color is selected from.
    * @return {string}
    */
   selectColor(id) {
-    if (id < 0) {
-      id = -id;
-    }
-    return d3.schemeSet3[Number(id % BigInt(12))];
+    return d3.schemeSet3[Math.abs(id) % 12];
   }
 }
 
@@ -630,7 +627,7 @@ class Graph {
      */
     this.dashedLinkGroup_ = null;
 
-    /** @private {!Map<bigint, !GraphNode>} */
+    /** @private {!Map<number, !GraphNode>} */
     this.nodes_ = new Map();
 
     /**
@@ -849,7 +846,7 @@ class Graph {
    */
   nodeDescriptions_(nodeDescriptions) {
     for (const nodeId in nodeDescriptions) {
-      const node = this.nodes_.get(BigInt(nodeId));
+      const node = this.nodes_.get(Number.parseInt(nodeId, 10));
       if (node && node.tooltip) {
         node.tooltip.onDescription(nodeDescriptions[nodeId]);
       }
@@ -892,7 +889,7 @@ class Graph {
     }
 
     const type = /** @type {string} */ (event.data[0]);
-    const data = /** @type {Object|number|bigint} */ (event.data[1]);
+    const data = /** @type {Object|number} */ (event.data[1]);
     switch (type) {
       case 'frameCreated':
         this.frameCreated(
@@ -931,7 +928,7 @@ class Graph {
             /** @type {!discards.mojom.WorkerInfo} */ (data));
         break;
       case 'nodeDeleted':
-        this.nodeDeleted(/** @type {bigint} */ (data));
+        this.nodeDeleted(/** @type {number} */ (data));
         break;
       case 'nodeDescriptions':
         this.nodeDescriptions_(/** @type {!Object<string>} */ (data));

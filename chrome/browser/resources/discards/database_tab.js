@@ -400,12 +400,11 @@ Polymer({
     if (feature.useTimestamp) {
       const nowSecondsFromEpoch = Math.round(Date.now() / 1000);
       return 'Used ' +
-          durationToString(
-                 Number(BigInt(nowSecondsFromEpoch) - feature.useTimestamp));
+          durationToString(nowSecondsFromEpoch - feature.useTimestamp);
     }
 
     if (feature.observationDuration) {
-      return secondsToString(Number(feature.observationDuration));
+      return secondsToString(feature.observationDuration);
     }
 
     return 'N/A';

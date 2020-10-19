@@ -222,9 +222,10 @@ Polymer({
       case mojom.LifecycleUnitState.DISCARDED:
         return 'discarded (' + this.discardReasonToString_(reason) + ')' +
             ((reason === mojom.LifecycleUnitDiscardReason.URGENT) ? ' at ' +
-                     // Must convert since Date constructor takes milliseconds.
-                     (new Date(Number(stateChangeTime.microseconds) / 1000)
-                          .toLocaleString()) :
+                     // Must convert since Date constructor takes
+                     // milliseconds.
+                     (new Date(stateChangeTime.microseconds / 1000))
+                         .toLocaleString() :
                                                                     '');
     }
     assertNotReached('Unknown lifecycle state: ' + state);

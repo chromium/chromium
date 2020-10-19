@@ -4,7 +4,7 @@
  * @export
  */
 {{module.namespace}}.{{struct.name}}_{{constant.name}} =
-    {{constant|constant_value}};
+    {{constant.value|expression_to_text_lite}};
 {%  endfor %}
 
 {%- from "lite/enum_definition.tmpl" import enum_def with context %}
