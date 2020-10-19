@@ -6444,11 +6444,7 @@ crbug.com/1134237 virtual/origin-trials-runtimeflags-disabled/http/tests/origin_
 crbug.com/1136687 external/wpt/pointerevents/pointerlock/pointerevent_pointerlock_supercedes_capture.html [ Pass Failure ]
 crbug.com/1136726 [ Linux ] virtual/gpu-rasterization/images/imagemap-focus-ring-outline-color-not-inherited-from-map.html [ Failure ]
 
-# Sheriff 2020-10-13
-crbug.com/1137716 [ Mac10.12 ] fast/events/mouse-cursor-image-set.html [ Pass Failure ]
-
 # Sheriff 2020-10-14
-crbug.com/1138589 [ Mac10.15 ] fast/events/mouse-cursor-image-set-svg.html [ Failure ]
 crbug.com/1138591 [ Mac10.15 ] http/tests/dom/raf-throttling-out-of-view-cross-origin-page.html [ Failure ]
 
 # WebRTC: Payload demuxing times out in Plan B. This is expected.
