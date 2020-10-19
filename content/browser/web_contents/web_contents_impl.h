@@ -738,13 +738,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                            blink_widget_host,
                        mojo::PendingAssociatedRemote<blink::mojom::Widget>
                            blink_widget) override;
-  void CreateNewFullscreenWidget(
-      AgentSchedulingGroupHost& agent_scheduling_group,
-      int32_t route_id,
-      mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost>
-          blink_widget_host,
-      mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget)
-      override;
   bool ShowPopupMenu(
       RenderFrameHostImpl* render_frame_host,
       mojo::PendingRemote<blink::mojom::PopupMenuClient>* popup_client,
@@ -1569,15 +1562,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // committed to the navigation controller. Note that the navigation entry is
   // not provided since it may be invalid/changed after being committed. The
   // current navigation entry is in the NavigationController at this point.
-
-  // Helper for CreateNewWidget/CreateNewFullscreenWidget.
-  void CreateNewWidget(
-      AgentSchedulingGroupHost& agent_scheduling_group,
-      int32_t route_id,
-      bool is_fullscreen,
-      mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost>
-          blink_widget_host,
-      mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget);
 
   // Finds the new RenderWidgetHost and returns it. Note that this can only be
   // called once as this call also removes it from the internal map.

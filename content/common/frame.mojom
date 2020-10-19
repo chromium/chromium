@@ -426,12 +426,6 @@ interface FrameHost {
          pending_associated_remote<blink.mojom.Widget> blink_widget)
       => (int32 routing_id);
 
-  // Similar to CreateNewWidget except the widget is a full screen window.
-  [Sync] CreateNewFullscreenWidget(
-         pending_associated_receiver<blink.mojom.WidgetHost> blink_widget_host,
-         pending_associated_remote<blink.mojom.Widget> blink_widget)
-      => (int32 routing_id);
-
   // Creates and returns a KeepAliveHandle.
   IssueKeepAliveHandle(pending_receiver<KeepAliveHandle> keep_alive_handle);
 

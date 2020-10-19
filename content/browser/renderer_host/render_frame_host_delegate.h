@@ -579,14 +579,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
           blink_widget_host,
       mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget) {}
 
-  // Creates a full screen RenderWidget. Similar to above.
-  virtual void CreateNewFullscreenWidget(
-      AgentSchedulingGroupHost& agent_scheduling_group,
-      int32_t route_id,
-      mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost>
-          blink_widget_host,
-      mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget) {}
-
   // Return true if the popup is shown through WebContentsObserver.
   // BrowserPluginGuest for the guest WebContents will show the popup on Mac,
   // then, we should skip to show the popup at RenderViewHostDelegateView.

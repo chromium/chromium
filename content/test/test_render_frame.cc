@@ -148,14 +148,6 @@ class MockFrameHost : public mojom::FrameHost {
     std::move(callback).Run(MSG_ROUTING_NONE);
   }
 
-  void CreateNewFullscreenWidget(
-      mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost>
-          blink_widget_host,
-      mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget,
-      CreateNewFullscreenWidgetCallback callback) override {
-    std::move(callback).Run(MSG_ROUTING_NONE);
-  }
-
   void CreatePortal(mojo::PendingAssociatedReceiver<blink::mojom::Portal>,
                     mojo::PendingAssociatedRemote<blink::mojom::PortalClient>,
                     CreatePortalCallback callback) override {

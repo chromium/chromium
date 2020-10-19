@@ -3759,31 +3759,9 @@ void WebContentsImpl::CreateNewWidget(
     int32_t route_id,
     mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost> blink_widget_host,
     mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget) {
-  CreateNewWidget(agent_scheduling_group, route_id,
-                  /*is_fullscreen=*/false, std::move(blink_widget_host),
-                  std::move(blink_widget));
-}
-
-void WebContentsImpl::CreateNewFullscreenWidget(
-    AgentSchedulingGroupHost& agent_scheduling_group,
-    int32_t route_id,
-    mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost> blink_widget_host,
-    mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget) {
-  CreateNewWidget(agent_scheduling_group, route_id,
-                  /*is_fullscreen=*/true, std::move(blink_widget_host),
-                  std::move(blink_widget));
-}
-
-void WebContentsImpl::CreateNewWidget(
-    AgentSchedulingGroupHost& agent_scheduling_group,
-    int32_t route_id,
-    bool is_fullscreen,
-    mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost> blink_widget_host,
-    mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget) {
   OPTIONAL_TRACE_EVENT1(
       "content", "WebContentsImpl::CreateNewWidget", "params",
-      base::trace_event::TracedValue::Build(
-          {{"route_id", route_id}, {"is_fullscreen", is_fullscreen}}));
+      base::trace_event::TracedValue::Build({{"route_id", route_id}}));
   RenderProcessHost* process = agent_scheduling_group.GetProcess();
   // A message to create a new widget can only come from an active process for
   // this WebContentsImpl instance. If any other process sends the request,
@@ -3804,10 +3782,7 @@ void WebContentsImpl::CreateNewWidget(
           view_->CreateViewForChildWidget(widget_host));
   if (!widget_view)
     return;
-  // Fullscreen child widgets are frames, other child widgets are popups, and
-  // popups should not get activated.
-  if (!is_fullscreen)
-    widget_view->SetWidgetType(WidgetType::kPopup);
+  widget_view->SetWidgetType(WidgetType::kPopup);
   // Save the created widget associated with the route so we can show it later.
   pending_widget_views_[GlobalRoutingID(process->GetID(), route_id)] =
       widget_view;

@@ -392,12 +392,6 @@ void TestWebContents::CreateNewWidget(
     mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost> blink_widget_host,
     mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget) {}
 
-void TestWebContents::CreateNewFullscreenWidget(
-    AgentSchedulingGroupHost& agent_scheduling_group,
-    int32_t route_id,
-    mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost> blink_widget_host,
-    mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget) {}
-
 void TestWebContents::ShowCreatedWindow(RenderFrameHost* opener,
                                         int route_id,
                                         WindowOpenDisposition disposition,

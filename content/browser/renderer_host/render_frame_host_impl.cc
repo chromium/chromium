@@ -5281,17 +5281,6 @@ void RenderFrameHostImpl::CreateNewWidget(
                              std::move(blink_widget));
 }
 
-void RenderFrameHostImpl::CreateNewFullscreenWidget(
-    mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost> blink_widget_host,
-    mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget,
-    CreateNewFullscreenWidgetCallback callback) {
-  int32_t widget_route_id = GetProcess()->GetNextRoutingID();
-  std::move(callback).Run(widget_route_id);
-  delegate_->CreateNewFullscreenWidget(agent_scheduling_group_, widget_route_id,
-                                       std::move(blink_widget_host),
-                                       std::move(blink_widget));
-}
-
 void RenderFrameHostImpl::IssueKeepAliveHandle(
     mojo::PendingReceiver<mojom::KeepAliveHandle> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

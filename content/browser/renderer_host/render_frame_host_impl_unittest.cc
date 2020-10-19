@@ -92,13 +92,6 @@ TEST_F(RenderFrameHostImplTest, ExpectedMainWorldOrigin) {
   EXPECT_EQ(initial_rfh, main_rfh());
 }
 
-// Create a full screen popup RenderWidgetHost and View.
-TEST_F(RenderFrameHostImplTest, CreateFullscreenWidget) {
-  main_test_rfh()->CreateNewFullscreenWidget(
-      mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost>(),
-      mojo::PendingAssociatedRemote<blink::mojom::Widget>(), base::DoNothing());
-}
-
 TEST_F(RenderFrameHostImplTest, PolicyContainerLifecycle) {
   TestRenderFrameHost* main_rfh = contents()->GetMainFrame();
   ASSERT_NE(main_rfh->policy_container(), nullptr);
