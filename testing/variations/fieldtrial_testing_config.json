@@ -5903,31 +5903,6 @@
             ]
         }
     ],
-    "ReopenTabInProductHelp": [
-        {
-            "platforms": [
-                "linux",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20190117",
-                    "params": {
-                        "availability": ">=7",
-                        "event_conditions_met": "name:reopen_tab_conditions_met;comparator:>0;window:1;storage:365",
-                        "event_trigger": "name:reopen_tab_iph_triggered;comparator:==0;window:90;storage:365",
-                        "event_used": "name:tab_reopened;comparator:==0;window:90;storage:365",
-                        "session_rate": "==0",
-                        "x_new_tab_opened_timeout": "5",
-                        "x_tab_minimum_active_duration": "60"
-                    },
-                    "enable_features": [
-                        "IPH_ReopenTab"
-                    ]
-                }
-            ]
-        }
-    ],
     "ReportCertificateErrors": [
         {
             "platforms": [
