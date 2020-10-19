@@ -853,8 +853,11 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
         longest_jank_free_task_duration;
     TraceableCounter<int, TracingCategoryName::kInfo>
         renderer_pause_count;  // Renderer is paused if non-zero.
-    TraceableState<RAILMode, TracingCategoryName::kTopLevel>
+
+    TraceableObjectState<RAILMode,
+                         TracingCategoryName::kTopLevel>
         rail_mode_for_tracing;  // Don't use except for tracing.
+
     TraceableState<bool, TracingCategoryName::kTopLevel> renderer_hidden;
     base::Optional<base::ScopedSampleMetadata> renderer_hidden_metadata;
     TraceableState<bool, TracingCategoryName::kTopLevel> renderer_backgrounded;

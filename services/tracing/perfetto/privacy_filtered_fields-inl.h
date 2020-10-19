@@ -175,10 +175,15 @@ constexpr int kChromeMojoEventInfoIndices[] = {1, -1};
 constexpr MessageInfo kChromeMojoEventInfo = {kChromeMojoEventInfoIndices,
                                               nullptr};
 
+// Proto Message: ChromeRendererSchedulerState
+constexpr int kChromeRendererSchedulerStateIndices[] = {1, -1};
+constexpr MessageInfo kChromeRendererSchedulerState = {
+    kChromeRendererSchedulerStateIndices, nullptr};
+
 // Proto Message: TrackEvent
 constexpr int kTrackEventIndices[] = {1,  2,  3,  5,  6,  9,  10, 11, 12,
                                       16, 17, 24, 25, 26, 27, 28, 29, 30,
-                                      31, 32, 33, 34, 35, 38, -1};
+                                      31, 32, 33, 34, 35, 38, 40, -1};
 constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     nullptr,
     nullptr,
@@ -203,7 +208,8 @@ constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     &kSourceLocation,
     nullptr,
     &kChromeMessagePump,
-    &kChromeMojoEventInfo};
+    &kChromeMojoEventInfo,
+    &kChromeRendererSchedulerState};
 constexpr MessageInfo kTrackEvent = {kTrackEventIndices,
                                      kTrackEventComplexMessages};
 

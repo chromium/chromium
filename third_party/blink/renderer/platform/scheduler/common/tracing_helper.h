@@ -12,9 +12,13 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/perfetto/include/perfetto/tracing/event_context.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/track_event.pbzero.h"
 
 namespace blink {
 namespace scheduler {
@@ -214,6 +218,126 @@ class TraceableState : public TraceableVariable, private StateTracer<category> {
   T state_;
 
   DISALLOW_COPY(TraceableState);
+};
+
+template <const char* category, typename TypedValue>
+class ProtoStateTracer {
+  DISALLOW_NEW();
+
+ public:
+  explicit ProtoStateTracer(const char* name)
+      : name_(name), slice_is_open_(false) {
+    internal::ValidateTracingCategory(category);
+  }
+
+  ProtoStateTracer(const ProtoStateTracer&) = delete;
+  ProtoStateTracer& operator=(const ProtoStateTracer&) = delete;
+
+  ~ProtoStateTracer() {
+    if (slice_is_open_) {
+      TRACE_EVENT_END(category, track());
+    }
+  }
+
+  void TraceProto(TypedValue* value) {
+    const auto trace_track = track();
+    if (slice_is_open_) {
+      TRACE_EVENT_END(category, trace_track);
+      slice_is_open_ = false;
+    }
+    if (!is_enabled())
+      return;
+
+    TRACE_EVENT_BEGIN(category, name_, trace_track,
+                      [value](perfetto::EventContext ctx) {
+                        value->AsProtozeroInto(ctx.event());
+                      });
+
+    slice_is_open_ = true;
+  }
+
+ protected:
+  bool is_enabled() const {
+    bool result = false;
+    TRACE_EVENT_CATEGORY_GROUP_ENABLED(category, &result);  // Cached.
+    return result;
+  }
+
+ private:
+  perfetto::Track track() const {
+    return perfetto::Track(reinterpret_cast<uint64_t>(this));
+  }
+
+  const char* const name_;  // Not owned.
+
+  // We have to track whether slice is open to avoid confusion since assignment,
+  // "absent" state and OnTraceLogEnabled can happen anytime.
+  bool slice_is_open_;
+};
+
+template <typename T>
+using InitializeProtoFuncPtr =
+    void (*)(perfetto::protos::pbzero::TrackEvent* event, T e);
+
+template <typename T, const char* category>
+class TraceableObjectState
+    : public TraceableVariable,
+      public ProtoStateTracer<category, TraceableObjectState<T, category>> {
+ public:
+  TraceableObjectState(T initial_state,
+                       const char* name,
+                       TraceableVariableController* controller,
+                       InitializeProtoFuncPtr<T> proto_init_func)
+      : TraceableVariable(controller),
+        ProtoStateTracer<category, TraceableObjectState<T, category>>(name),
+        state_(initial_state),
+        proto_init_func_(proto_init_func) {
+    Trace();
+  }
+
+  TraceableObjectState(const TraceableObjectState&) = delete;
+
+  ~TraceableObjectState() override = default;
+
+  TraceableObjectState& operator=(const T& value) {
+    Assign(value);
+    return *this;
+  }
+  TraceableObjectState& operator=(const TraceableObjectState& another) {
+    Assign(another.state_);
+    return *this;
+  }
+
+  const T& get() const { return state_; }
+
+  void OnTraceLogEnabled() final { Trace(); }
+
+  void AsProtozeroInto(perfetto::protos::pbzero::TrackEvent* event) {
+    proto_init_func_(event, state_);
+  }
+
+ protected:
+  void Assign(T new_state) {
+    if (state_ != new_state) {
+      state_ = new_state;
+      Trace();
+    }
+  }
+
+ private:
+  void Trace() {
+    ProtoStateTracer<category, TraceableObjectState<T, category>>::TraceProto(
+        this);
+  }
+
+  bool is_enabled() const {
+    bool result = false;
+    TRACE_EVENT_CATEGORY_GROUP_ENABLED(category, &result);  // Cached.
+    return result;
+  }
+
+  T state_;
+  InitializeProtoFuncPtr<T> proto_init_func_;
 };
 
 template <typename T, const char* category>
