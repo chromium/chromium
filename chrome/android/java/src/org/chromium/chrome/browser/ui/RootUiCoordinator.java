@@ -229,7 +229,9 @@ public class RootUiCoordinator
                 if (layout instanceof StaticLayout || layout instanceof SimpleAnimationLayout) {
                     return;
                 }
-                mContextualSearchManagerSupplier.get().dismissContextualSearchBar();
+                if (mContextualSearchManagerSupplier.get() != null) {
+                    mContextualSearchManagerSupplier.get().dismissContextualSearchBar();
+                }
             }
 
             @Override
