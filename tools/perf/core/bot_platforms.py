@@ -342,7 +342,9 @@ _MAC_LOW_END_EXECUTABLE_CONFIGS = frozenset([
     _performance_browser_tests(210),
 ])
 _MAC_ARM_DTK_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('blink_perf.css')
+    'loading.desktop',
+]).Abridge([
+    'loading.desktop',
 ])
 
 _WIN_10_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([

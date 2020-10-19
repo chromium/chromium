@@ -1,8 +1,8 @@
 {
     "0": {
         "benchmarks": {
-            "blink_perf.css": {
-                "abridged": false
+            "loading.desktop": {
+                "abridged": true
             }
         }
     }
