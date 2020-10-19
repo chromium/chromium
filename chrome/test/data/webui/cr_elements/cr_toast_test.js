@@ -128,23 +128,4 @@ suite('cr-toast', function() {
     mockTimer.tick(1);
     assertFalse(toast.open);
   });
-
-  test('setting duration using show(duration)', function() {
-    const duration = 100;
-    toast.show(duration);
-    assertTrue(toast.open);
-
-    mockTimer.tick(duration);
-    assertFalse(toast.open);
-  });
-
-  test('setting text', function() {
-    const duration = 100;
-    const text = 'foo';
-    assertEquals('', toast.textContent);
-    toast.show(undefined, text);
-    assertEquals(text, toast.textContent);
-    toast.show(duration);
-    assertEquals(text, toast.textContent);
-  });
 });

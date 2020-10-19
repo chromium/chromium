@@ -20,10 +20,6 @@ Polymer({
     },
   },
 
-  hostAttributes: {
-    'role': 'alert',
-  },
-
   observers: ['resetAutoHide_(duration, open)'],
 
   /** @private {number|null} */
@@ -47,68 +43,30 @@ Polymer({
   },
 
   /**
-   * Announce a11y message
-   * @param {string} text
-   * @private
-   */
-  announceA11yMessage_(text) {
-    Polymer.IronA11yAnnouncer.requestAvailability();
-    this.fire('iron-announce', { text });
-  },
-
-  /**
    * Shows the toast and auto-hides after |this.duration| milliseconds has
    * passed. If the toast is currently being shown, any preexisting auto-hide
    * is cancelled and replaced with a new auto-hide.
-   *
-   * If |this.duration| is set to 0, the toast will remain open indefinitely.
-   * The caller is responsible for hiding the toast.
-   *
-   * When |duration| is passed in the non-negative number, |this.duration|
-   * is updated to that value.
-   *
-   * If text is set, replace the toast content with text,
-   * can also optionally announce a11y with text
-   *
-   * @param {number=} duration
-   * @param {string=} text
-   * @param {boolean=} shouldAnnounceA11y
    */
-  show(duration, text, shouldAnnounceA11y) {
-    if (text !== undefined) {
-      this.textContent = '';
-      const span = document.createElement('span');
-      span.textContent = text;
-      this.appendChild(span);
+  show() {
+    // Force autohide to reset if calling show on an already shown toast.
+    const shouldResetAutohide = this.open;
 
-      if (shouldAnnounceA11y) {
-        this.announceA11yMessage_(text);
-      }
-    }
+    // The role attribute is removed first so that screen readers to better
+    // ensure that screen readers will read out the content inside the toast.
+    // If the role is not removed and re-added back in, certain screen readers
+    // do not read out the contents, especially if the text remains exactly
+    // the same as a previous toast.
+    this.removeAttribute('role');
 
-    // |this.resetAutoHide_| is called whenever |this.duration| or |this.open|
-    // is changed. If neither is changed, we will still need to reset auto-hide.
-    let shouldResetAutoHide = true;
+    this.open = true;
+    this.setAttribute('role', 'alert');
 
-    if (typeof (duration) !== 'undefined' && duration >= 0 &&
-        this.duration !== duration) {
-      this.duration = duration;
-      shouldResetAutoHide = false;
-    }
-
-    if (!this.open) {
-      this.open = true;
-      shouldResetAutoHide = false;
-    }
-
-    if (shouldResetAutoHide) {
+    if (shouldResetAutohide) {
       this.resetAutoHide_();
     }
   },
 
-  /**
-   * Hides the toast.
-   */
+  /** Hides the toast. */
   hide() {
     this.open = false;
   },

@@ -109,7 +109,7 @@
     </template>
 
 <if expr="not chromeos">
-    <cr-toast id="toast" open="[[showRestartToast_]]">
+    <cr-toast id="toast">
       <div>$i18n{restartToApplyChanges}</div>
       <cr-button on-click="onRestartTap_">$i18n{restart}</cr-button>
     </cr-toast>

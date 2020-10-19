@@ -49,9 +49,6 @@ Polymer({
 
     /** @private */
     showRestart_: Boolean,
-
-    /** @private */
-    showRestartToast_: Boolean,
     // </if>
 
     /** @private */
@@ -192,7 +189,7 @@ Polymer({
       /** @type {!SettingsToggleButtonElement} */ (
           this.$$('#signinAllowedToggle'))
           .sendPrefChange();
-      this.showRestartToast_ = true;
+      this.$.toast.show();
     }
   },
 
@@ -205,7 +202,7 @@ Polymer({
       /** @type {!SettingsToggleButtonElement} */ (
           this.$$('#signinAllowedToggle'))
           .sendPrefChange();
-      this.showRestartToast_ = true;
+      this.$.toast.show();
     }
     this.showSignoutDialog_ = false;
   },

@@ -13,12 +13,12 @@ js_type_check("closure_compile") {
 }
 
 js_library("cr_toast") {
-  deps = [ "//third_party/polymer/v1_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer-extracted" ]
 }
 
 js_library("cr_toast_manager") {
   deps = [
     ":cr_toast",
+    "//third_party/polymer/v1_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer-extracted",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr",
   ]

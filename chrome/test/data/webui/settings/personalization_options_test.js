@@ -98,8 +98,7 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
       assertTrue(testElement.$.toast.open);
 
       // Reset toast.
-      testElement.showRestartToast_ = false;
-      assertFalse(testElement.$.toast.open);
+      testElement.$.toast.hide();
 
       // When the user is part way through sync setup, the toggle should be
       // disabled in an on state.
