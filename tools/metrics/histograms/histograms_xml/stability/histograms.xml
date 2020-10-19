@@ -301,8 +301,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Stability.Internals.SystemCrashCount" units="crashes"
-    expires_after="2020-10-11">
-  <owner>siggi@chromium.org</owner>
+    expires_after="2021-10-20">
+  <owner>davidbienvenu@chromium.org</owner>
+  <owner>jessemckenna@google.com</owner>
   <summary>
     Number of times a browser crash was detected, where the browser was last
     known to be alive in a Windows system session that terminated abnormally.
