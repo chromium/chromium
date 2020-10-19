@@ -31,6 +31,7 @@ import java.lang.annotation.RetentionPolicy;
         AccountConsistencyPromoAction.DISMISSED_OTHER,
         AccountConsistencyPromoAction.AUTH_ERROR_SHOWN,
         AccountConsistencyPromoAction.GENERIC_ERROR_SHOWN,
+        AccountConsistencyPromoAction.DISMISSED_BUTTON,
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface AccountConsistencyPromoAction {
@@ -109,5 +110,10 @@ public @interface AccountConsistencyPromoAction {
      */
     int GENERIC_ERROR_SHOWN = 13;
 
-    int MAX = 14;
+    /**
+     * User has dismissed the promo by tapping on the dismissal button in the bottom sheet.
+     */
+    int DISMISSED_BUTTON = 14;
+
+    int MAX = 15;
 }

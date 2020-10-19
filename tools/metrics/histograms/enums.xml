@@ -990,6 +990,10 @@ Unknown properties are collapsed to zero. -->
   <int value="13" label="GenericErrorShown">
     The generic error screen was shown to the user.
   </int>
+  <int value="14" label="DismissedButton">
+    User has dismissed the promo by tapping on the dismissal button in the
+    bottom sheet.
+  </int>
 </enum>
 
 <enum name="AccountManagerAccountAdditionSource">
