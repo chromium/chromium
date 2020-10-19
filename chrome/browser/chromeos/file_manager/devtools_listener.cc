@@ -247,6 +247,9 @@ void DevToolsListener::DispatchProtocolMessage(
   if (!navigated_)
     return;
 
+  if (VLOG_IS_ON(2))
+    VLOG(2) << SpanToStringPiece(message);
+
   std::unique_ptr<base::DictionaryValue> value = base::DictionaryValue::From(
       base::JSONReader::ReadDeprecated(SpanToStringPiece(message)));
   CHECK(value);
