@@ -61,6 +61,12 @@
     "args": ["--enable-threaded-compositing"]
   },
   {
+    "prefix": "composite-relative-keyframes",
+    "bases": ["external/wpt/css/css-transforms/animation"],
+    "args": ["--enable-threaded-compositing",
+             "--enable-blink-features=CompositeRelativeKeyframes"]
+  },
+  {
     "prefix": "off-main-thread-css-paint",
     "bases": ["external/wpt/css/css-paint-api",
               "http/tests/csspaint"],

@@ -42,8 +42,10 @@
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_value.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
+#include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/paint/filter_effect_builder.h"
@@ -59,6 +61,7 @@
 #include "third_party/blink/renderer/platform/animation/compositor_transform_animation_curve.h"
 #include "third_party/blink/renderer/platform/animation/compositor_transform_keyframe.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -235,12 +238,14 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
         case CSSPropertyID::kScale:
         case CSSPropertyID::kTranslate:
         case CSSPropertyID::kTransform:
-          if (keyframe->GetCompositorKeyframeValue() &&
-              To<CompositorKeyframeTransform>(
-                  keyframe->GetCompositorKeyframeValue())
-                  ->GetTransformOperations()
-                  .BoxSizeDependencies()) {
-            reasons |= kTransformRelatedPropertyDependsOnBoxSize;
+          if (!RuntimeEnabledFeatures::CompositeRelativeKeyframesEnabled()) {
+            if (keyframe->GetCompositorKeyframeValue() &&
+                To<CompositorKeyframeTransform>(
+                    keyframe->GetCompositorKeyframeValue())
+                    ->GetTransformOperations()
+                    .BoxSizeDependencies()) {
+              reasons |= kTransformRelatedPropertyDependsOnBoxSize;
+            }
           }
           break;
         case CSSPropertyID::kFilter:
@@ -624,19 +629,22 @@ void AddKeyframeToCurve(CompositorColorAnimationCurve& curve,
 void AddKeyframeToCurve(CompositorTransformAnimationCurve& curve,
                         Keyframe::PropertySpecificKeyframe* keyframe,
                         const CompositorKeyframeValue* value,
-                        const TimingFunction& keyframe_timing_function) {
+                        const TimingFunction& keyframe_timing_function,
+                        const FloatSize& box_size) {
   CompositorTransformOperations ops;
   ToCompositorTransformOperations(
-      To<CompositorKeyframeTransform>(value)->GetTransformOperations(), &ops);
+      To<CompositorKeyframeTransform>(value)->GetTransformOperations(), &ops,
+      box_size);
 
   CompositorTransformKeyframe transform_keyframe(
       keyframe->Offset(), std::move(ops), keyframe_timing_function);
   curve.AddKeyframe(transform_keyframe);
 }
 
-template <typename PlatformAnimationCurveType>
+template <typename PlatformAnimationCurveType, typename... Args>
 void AddKeyframesToCurve(PlatformAnimationCurveType& curve,
-                         const PropertySpecificKeyframeVector& keyframes) {
+                         const PropertySpecificKeyframeVector& keyframes,
+                         Args... parameters) {
   Keyframe::PropertySpecificKeyframe* last_keyframe = keyframes.back();
   for (const auto& keyframe : keyframes) {
     const TimingFunction* keyframe_timing_function = nullptr;
@@ -648,7 +656,8 @@ void AddKeyframesToCurve(PlatformAnimationCurveType& curve,
 
     const CompositorKeyframeValue* value =
         keyframe->GetCompositorKeyframeValue();
-    AddKeyframeToCurve(curve, keyframe, value, *keyframe_timing_function);
+    AddKeyframeToCurve(curve, keyframe, value, *keyframe_timing_function,
+                       parameters...);
   }
 }
 
@@ -714,10 +723,16 @@ void CompositorAnimations::GetAnimationOnCompositor(
       case CSSPropertyID::kScale:
       case CSSPropertyID::kTranslate:
       case CSSPropertyID::kTransform: {
+        FloatSize box_size;
+        if (RuntimeEnabledFeatures::CompositeRelativeKeyframesEnabled()) {
+          box_size = ComputedStyleUtils::ReferenceBoxForTransform(
+                         *target_element.GetLayoutObject())
+                         .Size();
+        }
         target_property = compositor_target_property::TRANSFORM;
         auto transform_curve =
             std::make_unique<CompositorTransformAnimationCurve>();
-        AddKeyframesToCurve(*transform_curve, values);
+        AddKeyframesToCurve(*transform_curve, values, box_size);
         transform_curve->SetTimingFunction(*timing.timing_function);
         transform_curve->SetScaledDuration(scale);
         curve = std::move(transform_curve);

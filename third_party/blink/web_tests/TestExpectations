@@ -6410,6 +6410,13 @@ crbug.com/1083605 media/controls-styling-strict.html [ Pass Failure ]
 crbug.com/1133901 virtual/threaded/external/wpt/css/css-transforms/animation/transform-interpolation-translate-em.html [ Failure ]
 crbug.com/1131252 virtual/threaded/external/wpt/css/css-transforms/animation/transform-interpolation-skew.html [ Failure ]
 
+# Composited Transform animations WIP:
+# Existing failures
+crbug.com/1131252 virtual/composite-relative-keyframes/external/wpt/css/css-transforms/animation/transform-interpolation-skew.html [ Failure ]
+crbug.com/1133901 virtual/composite-relative-keyframes/external/wpt/css/css-transforms/animation/transform-interpolation-translate-em.html [ Failure ]
+# Failures from incomplete implementation
+crbug.com/389359 virtual/composite-relative-keyframes/external/wpt/css/css-transforms/animation/transform-interpolation-translate.html [ Failure ]
+
 crbug.com/1136163 [ Linux ] external/wpt/pointerevents/pointerlock/pointerevent_movementxy_with_pointerlock.html [ Failure ]
 
 # Mixed content autoupgrades make these tests not applicable, since they check for mixed content images, the tests can be removed when cleaning up pre autoupgrades mixed content code.

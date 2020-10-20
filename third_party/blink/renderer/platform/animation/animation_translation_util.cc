@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/platform/animation/animation_translation_util.h"
 
 #include "third_party/blink/renderer/platform/animation/compositor_transform_operations.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/transforms/interpolated_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_3d_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_transform_operation.h"
@@ -40,7 +41,8 @@ namespace blink {
 
 void ToCompositorTransformOperations(
     const TransformOperations& transform_operations,
-    CompositorTransformOperations* out_transform_operations) {
+    CompositorTransformOperations* out_transform_operations,
+    const FloatSize& box_size) {
   // We need to do a deep copy the transformOperations may contain ref pointers
   // to TransformOperation objects.
   for (const auto& operation : transform_operations.Operations()) {
@@ -63,9 +65,10 @@ void ToCompositorTransformOperations(
       case TransformOperation::kTranslate: {
         auto* transform =
             static_cast<const TranslateTransformOperation*>(operation.get());
-        DCHECK(transform->X().IsFixed() && transform->Y().IsFixed());
+        if (!RuntimeEnabledFeatures::CompositeRelativeKeyframesEnabled())
+          DCHECK(transform->X().IsFixed() && transform->Y().IsFixed());
         out_transform_operations->AppendTranslate(
-            transform->X().Value(), transform->Y().Value(), transform->Z());
+            transform->X(box_size), transform->Y(box_size), transform->Z());
         break;
       }
       case TransformOperation::kRotateX:
@@ -112,7 +115,7 @@ void ToCompositorTransformOperations(
       case TransformOperation::kRotateAroundOrigin:
       case TransformOperation::kInterpolated: {
         TransformationMatrix m;
-        operation->Apply(m, FloatSize());
+        operation->Apply(m, box_size);
         out_transform_operations->AppendMatrix(
             TransformationMatrix::ToSkMatrix44(m));
         break;

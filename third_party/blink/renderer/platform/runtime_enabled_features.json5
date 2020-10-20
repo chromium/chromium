@@ -345,6 +345,9 @@
       status: {"Android": "stable"},
     },
     {
+      name: "CompositeRelativeKeyframes",
+    },
+    {
       name: "CompositeSVG",
       status: "experimental",
     },

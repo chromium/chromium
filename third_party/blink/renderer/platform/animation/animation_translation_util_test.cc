@@ -25,8 +25,10 @@
 #include "third_party/blink/renderer/platform/animation/animation_translation_util.h"
 
 #include <memory>
+#include "cc/test/geometry_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/animation/compositor_transform_operations.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_3d_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/rotate_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/scale_transform_operation.h"
@@ -45,7 +47,7 @@ TEST(AnimationTranslationUtilTest, transformsWork) {
       0.1, 0.2, 0.3, 200000.4, TransformOperation::kRotate3D));
   ops.Operations().push_back(ScaleTransformOperation::Create(
       50.2, 100, -4, TransformOperation::kScale3D));
-  ToCompositorTransformOperations(ops, &out_ops);
+  ToCompositorTransformOperations(ops, &out_ops, FloatSize());
 
   EXPECT_EQ(3UL, out_ops.AsCcTransformOperations().size());
   const float kErr = 0.0001;
@@ -68,6 +70,48 @@ TEST(AnimationTranslationUtilTest, transformsWork) {
   EXPECT_NEAR(op2.scale.x, 50.2f, kErr);
   EXPECT_NEAR(op2.scale.y, 100.0f, kErr);
   EXPECT_NEAR(op2.scale.z, -4.0f, kErr);
+}
+
+TEST(AnimationTranslationUtilTest, RelativeTranslate) {
+  ScopedCompositeRelativeKeyframesForTest relative_keyframes(true);
+
+  TransformOperations ops;
+  ops.Operations().push_back(TranslateTransformOperation::Create(
+      Length::Percent(50), Length::Percent(50),
+      TransformOperation::kTranslate));
+
+  CompositorTransformOperations out_ops;
+  ToCompositorTransformOperations(ops, &out_ops, FloatSize(200, 100));
+  ASSERT_EQ(out_ops.AsCcTransformOperations().size(), 1u);
+
+  auto& op0 = out_ops.AsCcTransformOperations().at(0);
+  EXPECT_EQ(cc::TransformOperation::TRANSFORM_OPERATION_TRANSLATE, op0.type);
+  EXPECT_EQ(op0.translate.x, 100.0f);
+  EXPECT_EQ(op0.translate.y, 50.0f);
+  EXPECT_EQ(op0.translate.z, 0.0f);
+}
+
+TEST(AnimationTranslationUtilTest, RelativeInterpolated) {
+  ScopedCompositeRelativeKeyframesForTest relative_keyframes(true);
+
+  TransformOperations ops_a, ops_b;
+  ops_a.Operations().push_back(TranslateTransformOperation::Create(
+      Length::Percent(50), Length::Fixed(0), TransformOperation::kTranslate));
+  ops_b.Operations().push_back(
+      RotateTransformOperation::Create(3600, TransformOperation::kRotate));
+
+  TransformOperations ops_c = ops_b.Blend(ops_a, 0.5);
+
+  CompositorTransformOperations out_ops;
+  ToCompositorTransformOperations(ops_c, &out_ops, FloatSize(100, 100));
+  ASSERT_EQ(out_ops.AsCcTransformOperations().size(), 1u);
+
+  auto& op0 = out_ops.AsCcTransformOperations().at(0);
+  cc::TransformOperations ops_expected;
+  ops_expected.AppendTranslate(25, 0, 0);
+  EXPECT_EQ(cc::TransformOperation::TRANSFORM_OPERATION_MATRIX, op0.type);
+  cc::ExpectTransformationMatrixNear(op0.matrix, ops_expected.at(0).matrix,
+                                     1e-6f);
 }
 
 }  // namespace blink
