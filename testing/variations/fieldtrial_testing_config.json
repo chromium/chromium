@@ -7751,6 +7751,25 @@
             ]
         }
     ],
+    "WebRTC-Bwe-ProbingBehavior": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "chromeos",
+                "linux",
+                "ios",
+                "android",
+                "android_weblayer",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "max_probe_delay:10ms,abort_delayed_probes:true"
+                }
+            ]
+        }
+    ],
     "WebRTC-CongestionWindow": [
         {
             "platforms": [
