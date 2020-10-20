@@ -169,7 +169,7 @@ Ketuk kata apa pun untuk menelusuri. Untuk menyaring penelusuran, sentuh lama un
 <translation id="2175927920773552910">Kode QR</translation>
 <translation id="218608176142494674">Berbagi</translation>
 <translation id="2195339740518523951">Dapatkan keamanan terkuat Chrome</translation>
-<translation id="2200113223741723867">Kelola berbagi data penggunaan</translation>
+<translation id="2200113223741723867">Kelola pembagian data penggunaan</translation>
 <translation id="2227444325776770048">Lanjutkan sebagai <ph name="USER_FULL_NAME" /></translation>
 <translation id="2234876718134438132">Sinkronisasi dan layanan Google</translation>
 <translation id="2239812875700136898">Kontrol artikel Anda dengan tombol Opsi untuk Discover</translation>
@@ -300,6 +300,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> dihapus</translation>
 <translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> halaman belum dibaca</translation>
 <translation id="321773570071367578">Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="END_LINK" /></translation>
+<translation id="3227557059438308877">Google Chrome sebagai Kunci Keamanan</translation>
 <translation id="3232754137068452469">Aplikasi Web</translation>
 <translation id="3236059992281584593">1 menit lagi</translation>
 <translation id="3244271242291266297">BB</translation>
@@ -1134,7 +1135,7 @@ Data dari sesi Samaran Anda hanya akan dihapus dari Chrome saat Anda <ph name="B
 <translation id="9148126808321036104">Login sekali lagi</translation>
 <translation id="9155898266292537608">Anda juga dapat menelusuri dengan mengetuk kata secara cepat</translation>
 <translation id="9169507124922466868">Histori navigasi terbuka setengah</translation>
-<translation id="9191031968346938109">Tambahkan ke …</translation>
+<translation id="9191031968346938109">Tambahkan ke…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Diperiksa 1 menit yang lalu}other{Diperiksa # menit yang lalu}}</translation>
 <translation id="9204836675896933765">1 file tersisa</translation>
 <translation id="9206873250291191720">A</translation>

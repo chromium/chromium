@@ -6911,7 +6911,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="9088446193279799727">Konfigurisanje Linux-a nije uspelo. Povežite se na internet i probajte ponovo.</translation>
 <translation id="9088917181875854783">Potvrdite da se ovaj pristupni kôd prikazuje na uređaju „<ph name="DEVICE_NAME" />“:</translation>
 <translation id="9089416786594320554">Metodi unosa</translation>
-<translation id="909108997331068008"><ph name="EXISTING_USER" /> je pomoću profila već prijavljen(a) na <ph name="NEW_USER" /></translation>
+<translation id="909108997331068008">Profil <ph name="EXISTING_USER" /> je već prijavljen na <ph name="NEW_USER" /></translation>
 <translation id="9093429538970210897">Preporučuje se da napravite rezervne kopije u slučaju da nadogradnja ne može da se dovrši. Kad nadogradnja počne, Linux (beta) će se isključiti. Sačuvajte otvorene datoteke pre nego što nastavite.</translation>
 <translation id="9094033019050270033">Ažuriraj lozinku</translation>
 <translation id="9094038138851891550">Korisničko ime je nevažeće</translation>

@@ -183,6 +183,7 @@ Este posibil ca unele funcții să nu fie disponibile. Specificați un director 
 <translation id="6863361426438995919">Google Pay (copiat în Chromium)</translation>
 <translation id="6893813176749746474">Chromium a fost actualizat, dar nu l-ați utilizat de cel puțin 30 de zile.</translation>
 <translation id="6964305034639999644">Deschide linkul într-o fereastră Chromium inco&amp;gnito</translation>
+<translation id="6978145336957848883">Parolele slabe sunt ușor de ghicit. Permite browserului Chromium <ph name="BEGIN_LINK" />să creeze și să memoreze parole puternice pentru tine<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium are nevoie de permisiune ca să acceseze microfonul pentru acest site</translation>
 <translation id="701244094609242530">Chromium nu îți poate verifica extensiile. Încearcă din nou mai târziu.</translation>
 <translation id="7028347026395185822">{NUM_HOURS,plural, =1{Chromium nu a găsit software dăunător cunoscut pe computer. Ultima verificare: acum o oră.}few{Chromium nu a găsit software dăunător cunoscut pe computer. Ultima verificare: acum {NUM_HOURS} ore.}other{Chromium nu a găsit software dăunător cunoscut pe computer. Ultima verificare: acum {NUM_HOURS} de ore.}}</translation>

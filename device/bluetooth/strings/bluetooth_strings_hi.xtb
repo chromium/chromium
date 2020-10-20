@@ -16,6 +16,7 @@
 <translation id="4986357476502426173"><ph name="DEVICE_NAME" />, वीडियो डिवाइस</translation>
 <translation id="5271696982761495740">टेबलेट (<ph name="ADDRESS" />)</translation>
 <translation id="5376363957846771741">अज्ञात या असमर्थित डिवाइस (<ph name="ADDRESS" />)</translation>
+<translation id="571460437990229974"><ph name="DEVICE_NAME_AND_TYPE" /> <ph name="CONNECTION_STATUS" /></translation>
 <translation id="5716052956047449618"><ph name="DEVICE_NAME" />, मॉडम</translation>
 <translation id="6459740836740815150"><ph name="DEVICE_NAME" />, कार ऑडियो डिवाइस</translation>
 <translation id="6542922424766292144"><ph name="DEVICE_NAME" />, कीबोर्ड</translation>

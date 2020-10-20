@@ -279,6 +279,7 @@
 <translation id="204357726431741734">Google 계정에 저장된 비밀번호를 사용하여 로그인</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" />로 된 페이지를 번역하지 않습니다.</translation>
 <translation id="2053553514270667976">우편번호</translation>
+<translation id="2054665754582400095">활동</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{제안 1개}other{제안 #개}}</translation>
 <translation id="2079545284768500474">실행취소</translation>
 <translation id="20817612488360358">시스템 프록시 설정이 사용하도록 설정되었지만 명시적 프록시 설정도 지정되어 있습니다.</translation>

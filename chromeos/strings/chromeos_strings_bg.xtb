@@ -3,6 +3,7 @@
 <translationbundle lang="bg">
 <translation id="1018656279737460067">Отказано</translation>
 <translation id="1195447618553298278">Неизвестна грешка.</translation>
+<translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">Неуспешно – проблем с филтъра</translation>
 <translation id="1468664791493211953">Оферти</translation>
 <translation id="1478594628797167447">Скенер</translation>
@@ -46,6 +47,7 @@
 <translation id="4227825898293920515">Паролата изтича след <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Няма активни задания за отпечатване</translation>
 <translation id="4297501883039923494">Спряло – неизвестна грешка</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Пропускът за Kerberos изтича скоро</translation>
 <translation id="445059817448385655">Стара парола</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> от <ph name="TOTAL_PAGE_NUMBER" />. Натиснете Enter, за да откажете заданието за отпечатване</translation>
@@ -73,6 +75,7 @@
 <translation id="6058625436358447366">За да завършите процеса, въведете старата и новата си парола</translation>
 <translation id="6106186594183574873">За да завършите процеса, въведете старата си парола</translation>
 <translation id="6146993107019042706">За да завършите процеса, въведете новата си парола</translation>
+<translation id="6147514244879357420">PNG</translation>
 <translation id="636850387210749493">Корпоративно записване</translation>
 <translation id="649050271426829538">Спряло – заседнала хартия</translation>
 <translation id="6517239166834772319">Explore</translation>

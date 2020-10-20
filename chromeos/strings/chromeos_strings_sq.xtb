@@ -3,6 +3,7 @@
 <translationbundle lang="sq">
 <translation id="1018656279737460067">Anuluar</translation>
 <translation id="1195447618553298278">Gabim i panjohur.</translation>
+<translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">Dështoi - Filtri dështoi</translation>
 <translation id="1468664791493211953">Ofertat</translation>
 <translation id="1478594628797167447">Skaner</translation>
@@ -46,6 +47,7 @@
 <translation id="4227825898293920515">Fjalëkalimi skadon për <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nuk ka printime në vazhdim</translation>
 <translation id="4297501883039923494">Ndaloi - Gabim i panjohur</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Bileta e Kerberos skadon së shpejti</translation>
 <translation id="445059817448385655">Fjalëkalimi i vjetër</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> nga <ph name="TOTAL_PAGE_NUMBER" />. Shtyp Enter për të anuluar printimin.</translation>
@@ -72,6 +74,7 @@
 <translation id="6058625436358447366">Për të përfunduar, fut fjalëkalimet e vjetra dhe të reja</translation>
 <translation id="6106186594183574873">Për të përfunduar, fut fjalëkalimin tënd të vjetër</translation>
 <translation id="6146993107019042706">Për të përfunduar, fut fjalëkalimin e ri</translation>
+<translation id="6147514244879357420">PNG</translation>
 <translation id="636850387210749493">Regjistrimi i ndërmarrjes</translation>
 <translation id="649050271426829538">Ndaloi - Bllokim letre</translation>
 <translation id="6517239166834772319">Eksploro</translation>
@@ -81,6 +84,7 @@
 <translation id="6747215703636344499">Ndaloi - Dalja është plot</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7359657277149375382">Lloji i skedarit</translation>
 <translation id="7561454561030345039">Ky veprim menaxhohet nga administratori yt</translation>
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7690294790491645610">Konfirmo fjalëkalimin e ri</translation>

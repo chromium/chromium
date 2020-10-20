@@ -953,7 +953,7 @@
 <translation id="2090165459409185032">要恢复您的帐号信息，请访问 google.com/accounts/recovery</translation>
 <translation id="2090876986345970080">系统安全设置</translation>
 <translation id="2091887806945687916">声音</translation>
-<translation id="209539936453343974">如果您要设置家长控制，孩子必须有一个由家长管理的 Google 帐号。通过 <ph name="DEVICE_TYPE_PLURAL" />，家长可以使用 Family Link 应用来设定设备使用时限、允许/禁止访问网站以及执行其他操作。家长还可于需要时添加学校帐号，以方便孩子在 Google 课堂等网站上完成学校作业。</translation>
+<translation id="209539936453343974">如果您要设置家长控制功能，孩子必须有一个由家长管理的 Google 帐号。通过 <ph name="DEVICE_TYPE_PLURAL" />，家长可以使用 Family Link 应用来设定设备使用时限、允许/禁止访问网站以及执行其他操作。家长还可于需要时添加学校帐号，以方便孩子在 Google 课堂等网站上完成学校作业。</translation>
 <translation id="2096715839409389970">清除第三方 Cookie</translation>
 <translation id="2097372108957554726">您需要登录 Chrome 才能注册新设备</translation>
 <translation id="2098805196501063469">检查其余的密码</translation>
@@ -2342,7 +2342,7 @@
 <translation id="3713047097299026954">此安全密钥不含任何登录数据</translation>
 <translation id="3714195043138862580">此演示设备目前处于“已取消配置”状态。</translation>
 <translation id="3714633008798122362">网络日历</translation>
-<translation id="3715954932774762075">支持多种语言的应用和网站将会使用此列表中第一种受支持的语言。这些偏好设置会与您的浏览器设置同步。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3715954932774762075">支持多种语言的应用和网站将会使用此列表中第一项受支持的语言。这些偏好设置会与您的浏览器设置同步。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">首页</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">您与 Google</translation>
@@ -2503,7 +2503,7 @@
 <translation id="3882165008614329320">来自摄像头或文件的现有视频</translation>
 <translation id="3886446263141354045">系统已将您想访问此网站的请求发送给<ph name="NAME" /></translation>
 <translation id="3888550877729210209">使用“<ph name="LOCK_SCREEN_APP_NAME" />”创建记事</translation>
-<translation id="3890064827463908288">您需要开启 Chrome 同步才能使用 Wi-Fi 同步</translation>
+<translation id="3890064827463908288">您需要开启 Chrome 同步才能使用 Wi-Fi 同步功能</translation>
 <translation id="3892414795099177503">添加 OpenVPN / L2TP…</translation>
 <translation id="3893536212201235195">读取和更改您的无障碍设置</translation>
 <translation id="3893630138897523026">ChromeVox（语音反馈）</translation>
@@ -3774,7 +3774,7 @@
 <translation id="5449588825071916739">为所有标签页添加书签</translation>
 <translation id="5449716055534515760">关闭窗口(&amp;D)</translation>
 <translation id="5452974209916053028">当前的无痕式会话：<ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />、<ph name="RECENT_PERMISSIONS_CHANGE_1" />、<ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
-<translation id="5454005855577728171">“实时字幕”气泡沿水平方向移动了 <ph name="POSITION_ON_SCREEN_FROM_LEFT" />%，沿垂直方向移动了 <ph name="POSITION_ON_SCREEN_FROM_TOP" />%</translation>
+<translation id="5454005855577728171">“实时字幕”气泡向右移动了 <ph name="POSITION_ON_SCREEN_FROM_LEFT" />%，向下移动了 <ph name="POSITION_ON_SCREEN_FROM_TOP" />%</translation>
 <translation id="5454166040603940656">提供方：<ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">无效</translation>
 <translation id="5457459357461771897">读取和删除您计算机上的照片、音乐和其他媒体</translation>
@@ -5019,7 +5019,7 @@
 <translation id="6922745772873733498">请输入 PIN 码以进行打印</translation>
 <translation id="6923132443355966645">滚动/点击</translation>
 <translation id="6923633482430812883">装载共享时出错。请检查您要连接的文件服务器是否支持 SMBv2 或更高版本。</translation>
-<translation id="6929126689972602640">学校帐号不支持家长控制。如果您想添加学校帐号，让孩子能够访问 Google 课堂及其他网站以在家中完成学校作业，请先使用孩子的个人帐号登录。您可于需要时再在设置中添加学校帐号。</translation>
+<translation id="6929126689972602640">学校帐号不支持家长控制功能。如果您想添加学校帐号，让孩子能够访问 Google 课堂及其他网站以在家中完成学校作业，请先使用孩子的个人帐号登录。您可于需要时再在设置中添加学校帐号。</translation>
 <translation id="6929760895658557216">Okay Google</translation>
 <translation id="6930036377490597025">外部安全密钥或内置传感器</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{有 1 个扩展程序已被拒}other{有 # 个扩展程序已被拒}}</translation>
@@ -5583,7 +5583,7 @@
 <translation id="7607002721634913082">已暂停</translation>
 <translation id="7608810328871051088">Android 偏好设置</translation>
 <translation id="7609148976235050828">请连接到互联网，然后重试。</translation>
-<translation id="7612655942094160088">启用已连接的手机功能。</translation>
+<translation id="7612655942094160088">启用与已连接的手机相关的功能。</translation>
 <translation id="7614260613810441905">在网站想要修改您设备上的文件或文件夹时先询问您（推荐）</translation>
 <translation id="761530003705945209">备份到 Google 云端硬盘。您随时可以轻松地恢复数据或更换设备。您的备份内容包含应用数据。您的备份内容将上传到 Google 并使用您的 Google 帐号密码进行加密。</translation>
 <translation id="7615365294369022248">添加帐号时出错</translation>
@@ -5764,7 +5764,7 @@
 <translation id="7798844538707273832">已自动禁用<ph name="PERMISSION" /></translation>
 <translation id="7799299114731150374">已成功设置壁纸</translation>
 <translation id="7800518121066352902">逆时针旋转(&amp;O)</translation>
-<translation id="7802539296536804623">不在本页上显示卡片</translation>
+<translation id="7802539296536804623">不在此页上显示卡片</translation>
 <translation id="780301667611848630">不用了，谢谢</translation>
 <translation id="7804072833593604762">已关闭标签页</translation>
 <translation id="7805768142964895445">状态</translation>
@@ -7068,6 +7068,6 @@
 <translation id="994289308992179865">循环(&amp;L)</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">正在建立安全连接...</translation>
-<translation id="99731366405731005">您需要开启 <ph name="LINK1_BEGIN" />Chrome 同步<ph name="LINK1_END" />才能使用 Wi-Fi 同步。<ph name="LINK2_BEGIN" />了解详情<ph name="LINK2_END" /></translation>
+<translation id="99731366405731005">您需要开启 <ph name="LINK1_BEGIN" />Chrome 同步<ph name="LINK1_END" />才能使用 Wi-Fi 同步功能。<ph name="LINK2_BEGIN" />了解详情<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">检查(&amp;N)</translation>
 </translationbundle>

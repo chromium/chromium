@@ -1459,6 +1459,11 @@ Bu politika ayarlanmazsa <ph name="PRODUCT_NAME" /> varsayılan 10.000 milisaniy
 <translation id="316778957754360075">Bu ayar, <ph name="PRODUCT_NAME" /> Sürüm 29 itibariyle kullanımdan kaldırılmıştır. Kuruluş tarafından barındırılan uzantı/uygulama koleksiyonları oluşturmanın önerilen yöntemi, CRX paketlerini barındıran siteyi ExtensionInstallSources içine eklemek ve web sayfasına paketler için doğrudan indirme bağlantıları koymaktır. ExtensionInstallForcelist politikası kullanılarak bu web sayfası için bir başlatıcı oluşturulabilir.</translation>
 <translation id="3168968618972302728">Kerberos kimlik doğrulamasıyla ilgili politikalar.</translation>
 <translation id="3171369832001535378">Cihaz ağı ana makine adı şablonu</translation>
+<translation id="3176903288465566098">Bu ayar etkinleştirilirse Telefon Merkezi'ne zaten kaydolmuş kullanıcılar, telefonlarının bildirimlerini Chrome OS'te gönderip alabilirler.
+
+      Bu ayar devre dışı bırakılırsa kullanıcıların bu özelliği kullanmalarına izin verilmez. PhoneHubAllowed politikası devre dışı bırakılırsa da kullanıcıların bu özelliği kullanmalarına izin verilmez.
+
+      Bu politika ayarlanmadan bırakılırsa hem kurumsal olarak yönetilen kullanıcılar hem de yönetilmeyen kullanıcılar için varsayılan ayara izin verilir.</translation>
 <translation id="3177802893484440532">Yerel güven bağlantıları için online OCSP/CRL denetimlerini gerekli kıl</translation>
 <translation id="3184161739683646075">DNS-over-HTTPS modunu denetler</translation>
 <translation id="3185009703220253572">Sürüm <ph name="SINCE_VERSION" /> ve sonrasında</translation>
@@ -2932,6 +2937,7 @@ politikayı geçersiz kılamaz.
 
       Bu politika False (Yanlış) değerine ayarlanırsa Crostini kapsayıcılara bağlantı noktası yönlendirme devre dışı bırakılır.</translation>
 <translation id="538108065117008131"><ph name="PRODUCT_FRAME_NAME" /> için aşağıdaki içerik türlerini işlemeye izin ver.</translation>
+<translation id="5383436189211119400">"DeviceArcDataSnapshotHours" politikası ayarlanırsa ARC verilerinin anlık görüntü mekanizması etkinleştirilir. ARC verilerinin anlık görüntüsünün güncellemesi, tanımlanan zaman aralıklarında otomatik olarak başlatılabilir. Bir aralık başladığında, ARC anlık görüntüsünün güncellemesi gerekip giriş yapmış kullanıcı yoksa ARC verilerinin anlık görüntüsünü güncelleme işlemi, kullanıcı bildirimi olmadan başlatılır. Kullanıcı oturumu etkinse kullanıcı arayüzü bildirimi gösterilir. Cihazı yeniden başlatıp ARC verilerinin anlık görüntüsünü güncelleme işlemini başlatmak için bildirimin kabul edilmesi gerekir. Not: Cihaz kullanımı, ARC verilerinin anlık görüntüsünü güncelleme işlemi sırasında engellenir.</translation>
 <translation id="538768040137709073">Senkronize etme etkin durumda ve kullanıcı Oturum açmışken, kullanıcıların Chrome Masaüstü cihazlar ve bir Android cihaz arasında kısa mesaj göndermesine olanak tanıyan Paylaşılan Pano özelliğini etkinleştirin.
 
           Bu politika true (doğru) değerine ayarlanırsa Chrome kullanıcısı için cihazlar arasında kısa mesaj gönderme özelliği etkinleştirilir.
@@ -4203,6 +4209,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="7068108874199666656">Bir <ph name="PRODUCT_OS_NAME" /> cihazın tüm kullanıcıları için uygulanacak ağ yapılandırmasını aktarmaya olanak tanır. Ağ yapılandırması, Açık Ağ Yapılandırması biçimiyle tanımlanmış JSON biçimli bir dizedir.</translation>
 <translation id="7070525176564511548">Her hafta (168 saatte bir) şifre girilmesi gerekiyor</translation>
 <translation id="7072208053150563108">Makine şifresi değişim hızı</translation>
+<translation id="7072567600438630966">Telefon Merkezi'nin etkinleştirilmesine izin ver.</translation>
 <translation id="7079519252486108041">Bu sitelerde pop-up'ları engelle</translation>
 <translation id="7080072532759721791">Kullanıcıların şifre korumalı dosyaları yüklemesine veya indirmesine izin ver</translation>
 <translation id="7086677522575756117">Ekran kararmış durumdayken veya kapandıktan hemen sonra bir kullanıcı etkinliği algılandığında, ekran kararma gecikmesinin ölçekleneceği yüzdeyi belirtir.
@@ -4381,6 +4388,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       Bu politika ayarlanmamış olarak veya boş bırakılırsa, kullanıcı <ph name="PRODUCT_NAME" /> dahilinde herhangi bir Google hesabını tarayıcı birincil hesabı olarak ayarlayabilir.</translation>
 <translation id="723103540848640830">Kilit ekranı PIN'inin minimum uzunluğunu ayarla</translation>
 <translation id="7234280155140786597">Yasak yerel mesajlaşma ana makinelerinin adları (veya hepsi için *)</translation>
+<translation id="7246767840750730334">Telefon Merkezi bildirimlerinin etkinleştirilmesine izin ver.</translation>
 <translation id="7249828445670652637">ARC uygulamalarına ilişkin <ph name="PRODUCT_OS_NAME" /> CA sertifikalarını etkinleştir</translation>
 <translation id="7252681704926980614">Her yazdırma işinde kullanıcı adını ve dosya adını yerel yazıcı sunucusuna gönderir. Varsayılan ayar göndermemektir.
 
@@ -4487,6 +4495,11 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 
       Bu politika kullanımdan kaldırıldı, lütfen bunun yerine <ph name="PRINTERS_BULK_BLOCKLIST" /> kullanın.
       </translation>
+<translation id="7358744897221281073">Bu ayar etkinleştirilirse Telefon Merkezi'ne zaten kaydolmuş kullanıcılar, telefonlarının web sayfalarını Chrome OS'te görüntülemek gibi görevlere devam edebilirler.
+
+      Bu ayar devre dışı bırakılırsa kullanıcıların bu özelliği kullanmalarına izin verilmez. PhoneHubAllowed politikası devre dışı bırakılırsa da kullanıcıların bu özelliği kullanmalarına izin verilmez.
+
+      Bu politika ayarlanmadan bırakılırsa hem kurumsal olarak yönetilen kullanıcılar hem de yönetilmeyen kullanıcılar için varsayılan ayara izin verilir.</translation>
 <translation id="7360181094056034924"><ph name="PRODUCT_NAME" /> ürününün, taranması gerekli sayılan yüklenmiş veya indirilmiş veriler ile ilgili nasıl davranacağını denetler.  Teslimin ertelenmesi, <ph name="PRODUCT_NAME" /> ürününün kullanıcının indirilmiş bir dosyaya erişmesine, yükleme için bir dosya seçmesine, panodan yapıştırmasına veya veri sürükleyip bırakmasına bu veriler taranana ve tarama sonucu öğrenilene kadar izin vermemesi anlamına gelir.  Bu sınırlama, yalnızca <ph name="SEND_FILES_FOR_MALWARE_CHECK_POLICY_NAME" />, <ph name="CHECK_CONTENT_COMPLIANCE_POLICY_NAME" /> ve denetimlerin etkinleştirilmiş olduğu alan adları listesini denetleyen politikalar tarafından belirlendiği şekilde tarama gerektiren dosyalar veya veriler için geçerlidir.
 
       Bu politika ayarlanmazsa veya “Hiçbiri” olarak ayarlanırsa <ph name="PRODUCT_NAME" /> yükleme, panodan yapıştırma, verileri sürükleyip bırakma için hiçbir dosyayı veya indirilmiş hiçbir dosyaya erişimi ertelemeyecektir.  Tarama arka planda ilerleyecektir.
@@ -4684,6 +4697,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       Ayarlanmazsa oturum açma ekranında büyük imleç kapalıdır. Kullanıcılar, özelliği istedikleri zaman açabilir ve özelliğin oturum açma ekranındaki durumu tüm kullanıcılar için aynı kalır.
 
           Not: <ph name="DEVICE_LOGIN_SCREEN_LARGE_CURSOR_ENABLED" /> belirtilmişse bu politikayı geçersiz kılar.</translation>
+<translation id="7632147323011514740">Yönetilen Misafir Oturumları için ARC verilerinin anlık görüntüsünü güncelleme işleminin başlatılabileceği aralıklar</translation>
 <translation id="7632724434767231364">GSSAPI kitaplığı adı</translation>
 <translation id="7643883929273267746"><ph name="PRODUCT_NAME" /> içinde görülebilen hesapları kısıtlama</translation>
 <translation id="7648907905084499629">Tüm sitelerde çerezler için <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> davranışını kullan</translation>
@@ -4964,6 +4978,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       <ph name="PRODUCT_OS_NAME" /> için bu politika her zaman geçerlidir.</translation>
 <translation id="8050080920415773384">Yerel Yazdırma</translation>
 <translation id="8053580360728293758">Varsayılan renkli yazdırma modunu geçersiz kılar. Mod mevcut değilse bu politika yoksayılır.</translation>
+<translation id="8056237304861875584">Telefon Merkezi görev devamının etkinleştirilmesine izin ver.</translation>
 <translation id="8059164285174960932">Uzaktan erişim istemcilerinin kimlik doğrulama jetonunu edinmesi gerektiği URL</translation>
 <translation id="8077245272412229388">Önceden doldurulmuş Kerberos hesaplarını ekler. Kerberos kimlik bilgileri oturum açma kimlik bilgileriyle eşleşirse bir hesap, sırasıyla ana hesap ve şifre için "<ph name="LOGIN_EMAIL_PLACEHOLDER" />" ve "<ph name="PASSWORD_PLACEHOLDER" />" bilgilerini belirterek oturum açma kimlik bilgilerini tekrar kullanmak üzere yapılandırılabilir. Böylece, iki faktörlü kimlik doğrulama yapılandırılmadıkça Kerberos bileti otomatik olarak getirilebilir. Kullanıcılar, bu politika aracılığıyla eklenen hesapları değiştiremezler.
 
@@ -5696,6 +5711,11 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
 <translation id="9084985621503260744">Video etkinliğinin güç yönetimini etkileyip etkilemeyeceğini belirtme</translation>
 <translation id="9088433379343318874">Denetlenen kullanıcı içerik sağlayıcısını etkinleştirme</translation>
 <translation id="9088444059179765143">Otomatik saat dilimi algılama yöntemini yapılandır</translation>
+<translation id="9095999573959728902">Bu ayar etkinleştirilirse kullanıcıların Telefon Merkezi'ne kaydolmalarına izin verilir. Böylece kullanıcılar Chrome OS cihazında telefonlarıyla etkileşimde bulunabilirler.
+
+      Bu ayar devre dışı bırakılırsa kullanıcıların Telefon Merkezi'ne kaydolmalarına izin verilmez.
+
+      Bu politika ayarlanmadan bırakılırsa varsayılan olarak kuruluş tarafından yönetilen kullanıcılara izin verilmezken, yönetilmeyen kullanıcılara izin verilir.</translation>
 <translation id="9096086085182305205">Kimlik doğrulama sunucusu beyaz listesi</translation>
 <translation id="9105265795073104888">Sadece proxy yapılandırma seçeneklerinin bir alt kümesi Android uygulamalarında kullanılabilir. Android uygulamaları proxy kullamayı kendi tercihleriyle seçebilir. Uygulamaları proxy kullanmaya zorlayamazsınız.</translation>
 <translation id="9106865192244721694">Bu sitelerde WebUSB'ye izin ver</translation>

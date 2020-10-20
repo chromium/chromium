@@ -185,6 +185,7 @@ Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu
 <translation id="6863361426438995919">Google Pay (zkopírováno do prohlížeče Chromium)</translation>
 <translation id="6893813176749746474">Prohlížeč Chromium byl aktualizován, ale minimálně po 30 dnů jste jej nepoužili.</translation>
 <translation id="6964305034639999644">Otevřít odkaz v &amp;anonymním okně prohlížeče Chromium</translation>
+<translation id="6978145336957848883">Slabá hesla lze snadno uhodnout. Chromium vám může <ph name="BEGIN_LINK" />vytvářet a ukládat silná hesla<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium pro tento web potřebuje oprávnění k přístupu k mikrofonu</translation>
 <translation id="701244094609242530">Chromium nemůže zkontrolovat vaše rozšíření. Zkuste to později.</translation>
 <translation id="7028347026395185822">{NUM_HOURS,plural, =1{Prohlížeč Chromium v počítači nenašel žádný známý škodlivý software. Naposledy zkontrolováno: před hodinou.}few{Prohlížeč Chromium v počítači nenašel žádný známý škodlivý software. Naposledy zkontrolováno: před {NUM_HOURS} hodinami.}many{Prohlížeč Chromium v počítači nenašel žádný známý škodlivý software. Naposledy zkontrolováno: před {NUM_HOURS} hodiny.}other{Prohlížeč Chromium v počítači nenašel žádný známý škodlivý software. Naposledy zkontrolováno: před {NUM_HOURS} hodinami.}}</translation>

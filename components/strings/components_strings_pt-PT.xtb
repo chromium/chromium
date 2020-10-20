@@ -283,6 +283,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="204357726431741734">Iniciar sessão para utilizar palavras-passe guardadas na sua Conta Google</translation>
 <translation id="2053111141626950936">As páginas em <ph name="LANGUAGE" /> não serão traduzidas.</translation>
 <translation id="2053553514270667976">Código postal</translation>
+<translation id="2054665754582400095">A sua presença</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 sugestão}other{# sugestões}}</translation>
 <translation id="2079545284768500474">Anular</translation>
 <translation id="20817612488360358">As definições de proxy do sistema estão definidas para serem utilizadas, mas também está especificada uma configuração de proxy explícita.</translation>

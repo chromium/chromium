@@ -3,6 +3,7 @@
 <translationbundle lang="hu">
 <translation id="1018656279737460067">Megszakítva</translation>
 <translation id="1195447618553298278">Ismeretlen hiba.</translation>
+<translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">Sikertelen – Szűrőhiba</translation>
 <translation id="1468664791493211953">Ajánlatok</translation>
 <translation id="1478594628797167447">Szkenner</translation>
@@ -46,6 +47,7 @@
 <translation id="4227825898293920515">A jelszó <ph name="TIME" /> múlva lejár</translation>
 <translation id="4238516577297848345">Nincsenek folyamatban lévő nyomtatási feladatok</translation>
 <translation id="4297501883039923494">Leállt – Ismeretlen hiba</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">A Kerberos-jegy hamarosan lejár</translation>
 <translation id="445059817448385655">Régi jelszó</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />. oldal az összesen <ph name="TOTAL_PAGE_NUMBER" /> oldalból A nyomtatási feladat törléséhez nyomja meg az Enter billentyűt.</translation>
@@ -73,6 +75,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6058625436358447366">A befejezéshez adja meg régi és új jelszavát</translation>
 <translation id="6106186594183574873">A befejezéshez adja meg régi jelszavát</translation>
 <translation id="6146993107019042706">A befejezéshez adja meg új jelszavát</translation>
+<translation id="6147514244879357420">PNG</translation>
 <translation id="636850387210749493">Vállalat rögzítése</translation>
 <translation id="649050271426829538">Leállt – Papírelakadás</translation>
 <translation id="6517239166834772319">Felfedezés</translation>

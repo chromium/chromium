@@ -3,6 +3,7 @@
 <translationbundle lang="fa">
 <translation id="1018656279737460067">لغو شده</translation>
 <translation id="1195447618553298278">خطای ناشناس.</translation>
+<translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">انجام نشد - فیلتر کار نکرد</translation>
 <translation id="1468664791493211953">پیشنهادها</translation>
 <translation id="1478594628797167447">اسکنر</translation>
@@ -46,6 +47,7 @@
 <translation id="4227825898293920515">گذرواژه <ph name="TIME" /> دیگر منقضی می‌شود</translation>
 <translation id="4238516577297848345">هیچ کار چاپی درحال انجام نیست</translation>
 <translation id="4297501883039923494">متوقف شد - خطای نامشخص</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">‏بلیت Kerberos به‌زودی منقضی می‌شود</translation>
 <translation id="445059817448385655">گذرواژه قدیمی</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="PRINTED_PAGE_NUMBER" /> از مجموع <ph name="TOTAL_PAGE_NUMBER" />. برای لغو کار چاپ، Enter را فشار دهید.</translation>
@@ -73,6 +75,7 @@
 <translation id="6058625436358447366">برای تکمیل کار، گذرواژه‌های قدیمی و جدیدتان را وارد کنید</translation>
 <translation id="6106186594183574873">برای تکمیل کار، گذرواژه قدیمی‌تان را وارد کنید</translation>
 <translation id="6146993107019042706">برای تکمیل کار،‌ گذرواژه جدیدتان را وارد کنید</translation>
+<translation id="6147514244879357420">PNG</translation>
 <translation id="636850387210749493">ثبت‌نام شرکت</translation>
 <translation id="649050271426829538">متوقف شد - کاغذ گیر کرده است</translation>
 <translation id="6517239166834772319">کاوش</translation>

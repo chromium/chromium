@@ -3,6 +3,7 @@
 <translationbundle lang="kk">
 <translation id="1018656279737460067">Бас тартылды</translation>
 <translation id="1195447618553298278">Белгісіз қате.</translation>
+<translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">Сәтсіз: сүзгі қатесі шықты</translation>
 <translation id="1468664791493211953">Ұсыныстар</translation>
 <translation id="1478594628797167447">Сканер</translation>
@@ -46,6 +47,7 @@
 <translation id="4227825898293920515">Құпия сөздің мерзімі <ph name="TIME" /> өткен соң аяқталады.</translation>
 <translation id="4238516577297848345">Ешқандай баспа жұмысы орындалып жатқан жоқ.</translation>
 <translation id="4297501883039923494">Тоқтатылды: белгісіз қате</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Kerberos билетінің жарамдылық мерзімі жақында аяқталады</translation>
 <translation id="445059817448385655">Ескі құпия сөз</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Басып шығарудан бас тарту үшін "Enter" пернесін басыңыз.</translation>
@@ -72,6 +74,7 @@
 <translation id="6058625436358447366">Аяқтау үшін ескі және жаңа құпия сөздерді енгізіңіз.</translation>
 <translation id="6106186594183574873">Аяқтау үшін ескі құпия сөзді енгізіңіз.</translation>
 <translation id="6146993107019042706">Аяқтау үшін жаңа құпия сөзді енгізіңіз.</translation>
+<translation id="6147514244879357420">PNG</translation>
 <translation id="636850387210749493">Кәсіпорынды тіркеу</translation>
 <translation id="649050271426829538">Тоқтатылды: қағаз кептелісі</translation>
 <translation id="6517239166834772319">Шолу</translation>
@@ -81,6 +84,7 @@
 <translation id="6747215703636344499">Тоқтатылды: шығыс науа толып кетті</translation>
 <translation id="7162487448488904999">Галерея</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7359657277149375382">Файл түрі</translation>
 <translation id="7561454561030345039">Бұл әрекетті әкімшіңіз басқарады.</translation>
 <translation id="7658239707568436148">Бас тарту</translation>
 <translation id="7690294790491645610">Жаңа құпия сөзді қайталаңыз</translation>

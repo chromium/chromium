@@ -183,6 +183,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="6863361426438995919">Google Pay (Chromium'a kopyalandı)</translation>
 <translation id="6893813176749746474">Xrom yeniləndi, lakin ən azı 30 gün üçün istifadə etməmişlər.</translation>
 <translation id="6964305034639999644">Linki gizli Chromium pəncərəsində açın</translation>
+<translation id="6978145336957848883">Zəif parolları tapmaq asandır. Chromium'un <ph name="BEGIN_LINK" />sizin üçün güclü parollar yaratmasına və yadda saxlamasına<ph name="END_LINK" /> imkan verin.</translation>
 <translation id="6990124437352146030">Chromium bu sayt üçün mikrofona giriş tələb edir</translation>
 <translation id="701244094609242530">Chromium artırmalarınızı yoxlaya bilmir. Sonra yenidən cəhd edin.</translation>
 <translation id="7028347026395185822">{NUM_HOURS,plural, =1{Chromium kompüterinizdə məlum zərərli proqram təminatı tapmadı. Son yoxlanma: 1 saat əvvəl.}other{Chromium kompüterinizdə məlum zərərli proqram təminatı tapmadı. Son yoxlanma: {NUM_HOURS} saat əvvəl.}}</translation>

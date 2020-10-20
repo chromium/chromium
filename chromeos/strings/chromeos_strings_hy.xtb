@@ -3,6 +3,7 @@
 <translationbundle lang="hy">
 <translation id="1018656279737460067">Չեղյալ են հայտարարվել</translation>
 <translation id="1195447618553298278">Անհայտ սխալ:</translation>
+<translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">Չհաջողվեց տպել – Զտիչը չաշխատեց</translation>
 <translation id="1468664791493211953">Առաջարկներ</translation>
 <translation id="1478594628797167447">Սկաներ</translation>
@@ -46,6 +47,7 @@
 <translation id="4227825898293920515">Գաղտնաբառի գործողության ժամկետը <ph name="TIME" />ից կսպառվի</translation>
 <translation id="4238516577297848345">Տպելու ընթացիկ առաջադրանքներ չկան</translation>
 <translation id="4297501883039923494">Դադարեցվել է – Անհայտ սխալ</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Kerberos տոմսի գործողության ժամկետը շուտով կսպառվի</translation>
 <translation id="445059817448385655">Հին գաղտնաբառը</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />։ Հպեք Enter՝ տպումը չեղարկելու համար։</translation>
@@ -73,6 +75,7 @@
 <translation id="6058625436358447366">Ավարտելու համար մուտքագրեք ձեր հին և նոր գաղտնաբառերը</translation>
 <translation id="6106186594183574873">Ավարտելու համար մուտքագրեք ձեր հին գաղտնաբառը</translation>
 <translation id="6146993107019042706">Ավարտելու համար մուտքագրեք ձեր նոր գաղտնաբառը</translation>
+<translation id="6147514244879357420">PNG</translation>
 <translation id="636850387210749493">Ձեռնարկության գրանցում</translation>
 <translation id="649050271426829538">Դադարեցվել է – Թղթի խցանում</translation>
 <translation id="6517239166834772319">Հնարավորություններ</translation>
@@ -82,6 +85,7 @@
 <translation id="6747215703636344499">Դադարեցվել է – Ելքային դարակը լցված է</translation>
 <translation id="7162487448488904999">Ցուցասրահ</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7359657277149375382">Ֆայլի տեսակ</translation>
 <translation id="7561454561030345039">Այս գործողությունը կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>
 <translation id="7690294790491645610">Հաստատեք նոր գաղտնաբառը</translation>

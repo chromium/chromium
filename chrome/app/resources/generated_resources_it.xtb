@@ -928,6 +928,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="204914487372604757">Crea scorciatoia</translation>
 <translation id="2050339315714019657">Verticale</translation>
 <translation id="2053312383184521053">Dati sullo stato di inattività</translation>
+<translation id="2054665754582400095">La tua presenza</translation>
 <translation id="2055585478631012616">Uscirai da questi siti (schede aperte incluse)</translation>
 <translation id="205560151218727633">Logo dell'Assistente Google</translation>
 <translation id="2058456167109518507">Dispositivo rilevato</translation>
@@ -1214,6 +1215,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2387052489799050037">Vai alla schermata Home</translation>
 <translation id="2387458720915042159">Tipo di connessione proxy</translation>
 <translation id="2390347491606624519">Impossibile connettersi al proxy, accedi di nuovo</translation>
+<translation id="2390782873446084770">Sync Wi-Fi</translation>
 <translation id="2391082728065870591">Invia rapporto di feedback</translation>
 <translation id="2391419135980381625">Carattere standard</translation>
 <translation id="2392163307141705938">Hai raggiunto il tempo massimo impostato dal genitore per <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
@@ -1869,6 +1871,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3157931365184549694">Ripristina</translation>
 <translation id="3158033540161634471">Imposta la tua impronta</translation>
 <translation id="3159493096109238499">Beige</translation>
+<translation id="3159978855457658359">Modifica nome del dispositivo</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (con supporto hardware)</translation>
 <translation id="3161522574479303604">Tutte le lingue</translation>
 <translation id="3162853326462195145">Account della scuola</translation>
@@ -3229,6 +3232,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4761104368405085019">Utilizzare il microfono</translation>
 <translation id="4762718786438001384">Lo spazio sul disco del dispositivo sta per esaurirsi</translation>
 <translation id="4763408175235639573">Durante la visualizzazione della pagina sono stati impostati i seguenti cookie</translation>
+<translation id="4764368918650455114">Assicurati che entrambi i dispositivi siano sbloccati e vicini, nonché che il Bluetooth sia attivo. Se vuoi attivare la condivisione con un Chromebook, assicurati che su tale dispositivo sia attiva la funzionalità Condivisione nelle vicinanze (apri l'area di stato selezionando l'ora, quindi seleziona Condivisione nelle vicinanze). <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="4765582662863429759">Consenti ad Android Messaggi di trasmettere gli SMS dal telefono al Chromebook</translation>
 <translation id="476598255842811483">Nessuno, a meno che non attivi la funzionalità Condivisione nelle vicinanze sul tuo dispositivo</translation>
 <translation id="4768332406694066911">Hai certificati da queste organizzazioni che ti identificano</translation>
@@ -3391,6 +3395,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="496185450405387901">Questa app è stata installata dall'amministratore.</translation>
 <translation id="4964455510556214366">Disposizione</translation>
+<translation id="496446150016900060">Sincronizzare le reti Wi-Fi con il tuo telefono</translation>
 <translation id="4965808351167763748">Vuoi configurare questo dispositivo in modo da poter eseguire Hangouts Meet?</translation>
 <translation id="496888482094675990">L'app File consente di accedere rapidamente ai file salvati in Google Drive, nella memoria esterna o sul tuo dispositivo Chrome OS.</translation>
 <translation id="4971412780836297815">Apri al termine</translation>
@@ -3697,6 +3702,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5341980496415249280">Attendi, compressione in corso…</translation>
 <translation id="5342091991439452114">Il PIN deve contenere almeno <ph name="MINIMUM" /> cifre</translation>
 <translation id="5344036115151554031">Ripristino di Linux</translation>
+<translation id="5345916423802287046">Avvia app all'accesso</translation>
 <translation id="5350293332385664455">Disattivare l'Assistente Google</translation>
 <translation id="535123479159372765">Testo copiato da un altro dispositivo</translation>
 <translation id="5352033265844765294">Timestamp</translation>
@@ -4006,6 +4012,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5704875434923668958">Sincronizzazione con</translation>
 <translation id="5705005699929844214">Mostrare sempre le opzioni di accessibilità</translation>
 <translation id="5705882733397021510">Indietro</translation>
+<translation id="5707117624115653804">Personalizza dimensioni e stile dei sottotitoli per app e siti che supportano questa impostazione</translation>
 <translation id="5707185214361380026">Impossibile caricare l'estensione da:</translation>
 <translation id="5708171344853220004">Nome entità Microsoft</translation>
 <translation id="5709557627224531708">Imposta Chrome come browser predefinito</translation>
@@ -4169,6 +4176,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5904614460720589786">Impossibile installare <ph name="APP_NAME" /> a causa di un problema di configurazione. Contatta l'amministratore. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Aggiornamento quasi completato. Riavvia il dispositivo per terminare l'aggiornamento.</translation>
 <translation id="5906732635754427568">I dati associati a questa app verranno rimossi dal dispositivo.</translation>
+<translation id="5908474332780919512">Avvia app all'accesso</translation>
 <translation id="5908695239556627796">Velocità di scorrimento del mouse</translation>
 <translation id="5908769186679515905">Impedisci ai siti di eseguire Flash</translation>
 <translation id="5910363049092958439">Sal&amp;va immagine con nome...</translation>
@@ -4708,6 +4716,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6532527800157340614">Impossibile accedere perché non è stato possibile recuperare il token di accesso. Controlla la connessione di rete e riprova.</translation>
 <translation id="6532663472409656417">Dispositivo aziendale registrato</translation>
 <translation id="6535331821390304775">Consenti sempre a <ph name="ORIGIN" /> di aprire link di questo tipo nell'app associata</translation>
+<translation id="6537613839935722475">Il nome può contenere lettere, numeri e trattini (-)</translation>
 <translation id="6538635548667167211">Impostazione di utilizzo dei dati corrente: Dati mobili</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Nota.<ph name="END_BOLD" /> Attiva questa opzione soltanto se sei sicuro di ciò che fai o se ti è stato chiesto di farlo perché la raccolta di dati potrebbe peggiorare il rendimento.</translation>
 <translation id="6541638731489116978">A questo sito è stato impedito l'accesso ai sensori di movimento.</translation>
@@ -4796,6 +4805,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6650234781371031356">La password per il sito <ph name="WEBSITE" /> è memorizzata su questo dispositivo e nel tuo Account Google. Quale vuoi eliminare?</translation>
 <translation id="665061930738760572">Apri in &amp;un'altra finestra</translation>
 <translation id="6651237644330755633">Considera attendibile questo certificato per l'identificazione dei siti web</translation>
+<translation id="6651495917527016072">Sincronizza le reti Wi-Fi con il tuo telefono. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">L'integrazione di Chrome <ph name="MS_AD_NAME" /> è supportata soltanto sulle piattaforme x86_64. I Chromebook basati su una piattaforma ARM o x86 non supportano questa funzionalità.</translation>
 <translation id="6654509035557065241">Preferenza rete</translation>
 <translation id="6655190889273724601">Modalità sviluppatore</translation>
@@ -5399,6 +5409,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7375235221357833624">{0,plural, =1{Aggiorna il dispositivo entro un'ora}other{Aggiorna il dispositivo entro # ore}}</translation>
 <translation id="7376553024552204454">Evidenzia il puntatore del mouse durante lo spostamento</translation>
 <translation id="7377451353532943397">Continua a impedire l'accesso ai sensori</translation>
+<translation id="7378611153938412599">Le password inefficaci sono facili da indovinare. Assicurati di creare password efficaci. <ph name="BEGIN_LINK" />Leggi altri suggerimenti per la sicurezza.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Apri Chrome Web Store</translation>
 <translation id="7378812711085314936">Ricevi connessione dati</translation>
 <translation id="7380622428988553498">Il nome del dispositivo contiene caratteri non validi</translation>
@@ -5923,6 +5934,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7959074893852789871">Il file conteneva più certificati, alcuni dei quali non sono stati importati:</translation>
 <translation id="7961015016161918242">Mai</translation>
 <translation id="7963001036288347286">Accelerazione del touchpad</translation>
+<translation id="7963608432878156675">Questo nome è visibile ad altri dispositivi per le connessioni di rete e Bluetooth</translation>
 <translation id="7963826112438303517">L'assistente usa queste registrazioni e le tue richieste vocali per creare e aggiornare il tuo modello vocale, che viene memorizzato soltanto sui dispositivi in cui hai attivato Voice Match. Visualizza o reimposta l'attività vocale nelle Impostazioni dell'assistente.</translation>
 <translation id="7966241909927244760">C&amp;opia l'indirizzo dell'immagine</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{1 elemento nell'elenco dei preferiti}other{{COUNT} elementi nell'elenco dei preferiti}}</translation>
@@ -6386,6 +6398,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="850875081535031620">Nessun software dannoso trovato</translation>
 <translation id="8509177919508253835">Reimposta i token di sicurezza e crea PIN</translation>
 <translation id="8509646642152301857">Download del dizionario per il controllo ortografico non riuscito.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Nessuna password inefficace trovata}=1{È stata trovata {COUNT} password inefficace}other{Sono state trovate {COUNT} password inefficaci}}</translation>
 <translation id="8512476990829870887">Termina processo</translation>
 <translation id="851263357009351303">Consenti sempre la visualizzazione di immagini in <ph name="HOST" /></translation>
 <translation id="8513108775083588393">Rotazione aut.</translation>

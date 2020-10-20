@@ -3,6 +3,7 @@
 <translationbundle lang="ro">
 <translation id="1018656279737460067">Anulat</translation>
 <translation id="1195447618553298278">Eroare necunoscută.</translation>
+<translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">Nereușită – Filtru defect</translation>
 <translation id="1468664791493211953">Oferte</translation>
 <translation id="1478594628797167447">Scaner</translation>
@@ -46,6 +47,7 @@
 <translation id="4227825898293920515">Parola expiră în <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nicio sarcină de printare în desfășurare</translation>
 <translation id="4297501883039923494">Oprită – Eroare necunoscută</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Tichetul Kerberos expiră în curând</translation>
 <translation id="445059817448385655">Parolă veche</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> din <ph name="TOTAL_PAGE_NUMBER" />. Apasă pe Enter pentru a anula sarcina de printare.</translation>
@@ -73,6 +75,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6058625436358447366">Pentru a finaliza, introdu parola veche și pe cea nouă</translation>
 <translation id="6106186594183574873">Pentru a finaliza, introdu vechea parolă</translation>
 <translation id="6146993107019042706">Pentru a finaliza, introdu noua parolă</translation>
+<translation id="6147514244879357420">PNG</translation>
 <translation id="636850387210749493">Înscriere pentru întreprindere</translation>
 <translation id="649050271426829538">Oprită – Blocaj de hârtie</translation>
 <translation id="6517239166834772319">Explorare</translation>

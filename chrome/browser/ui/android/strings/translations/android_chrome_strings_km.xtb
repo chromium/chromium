@@ -159,7 +159,7 @@
 <translation id="2131665479022868825">បានរក្សាទុក <ph name="DATA" /></translation>
 <translation id="213279576345780926">បានបិទ <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">បន្ថែមទៅអេក្រង់ដើម</translation>
-<translation id="214888715418183969">ជ្រើសរើសអ្វី​ដែលអ្នកពេញចិត្ត ដើម្បីចែករំលែក​ជាមួយ Chrome។ មេទ្រិកដែលអ្នកចែករំលែក​នឹងត្រូវបានប្រើ ដើម្បីជួយ​កែលម្អមុខងារ ប្រតិបត្តិការ និងស្ថិរភាពរបស់ Chrome។</translation>
+<translation id="214888715418183969">ជ្រើសរើសអ្វី​ដែលអ្នកយល់ថាអាចចែករំលែក​ជាមួយ Chrome បាន។ មេទ្រិកដែលអ្នកចែករំលែក​នឹងត្រូវបានប្រើ ដើម្បីជួយ​កែលម្អមុខងារ ប្រតិបត្តិការ និងស្ថិរភាពរបស់ Chrome។</translation>
 <translation id="2154484045852737596">កែសម្រួលកាត</translation>
 <translation id="2154710561487035718">ចម្លង URL</translation>
 <translation id="2156074688469523661">ទំព័រនៅសល់ (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -300,6 +300,7 @@
 <translation id="3211426585530211793">បានលុប <ph name="ITEM_TITLE" /> ហើយ</translation>
 <translation id="3211503082155944789">ទំព័រមិនទាន់អាន <ph name="READING_LIST_COUNT" /></translation>
 <translation id="321773570071367578">ប្រសិនបើអ្នកភ្លេចឃ្លាសម្ងាត់របស់អ្នក ឬចង់ប្តូរការកំណត់នេះ <ph name="BEGIN_LINK" />សូមកំណត់ការធ្វើសមកាលកម្មឡើងវិញ<ph name="END_LINK" /></translation>
+<translation id="3227557059438308877">បើក Google Chrome ជា​សោសុវត្ថិភាព</translation>
 <translation id="3232754137068452469">កម្មវិធីបណ្តាញ</translation>
 <translation id="3236059992281584593">នៅសល់ 1 នាទីទៀត</translation>
 <translation id="3244271242291266297">ខែ</translation>

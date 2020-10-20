@@ -3,6 +3,7 @@
 <translationbundle lang="fi">
 <translation id="1018656279737460067">Peruutettu</translation>
 <translation id="1195447618553298278">Tuntematon virhe.</translation>
+<translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">Epäonnistui – Suodatin epäkunnossa</translation>
 <translation id="1468664791493211953">Tarjoukset</translation>
 <translation id="1478594628797167447">Skanneri</translation>
@@ -46,6 +47,7 @@
 <translation id="4227825898293920515">Salasana vanhenee: <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ei tulostustöitä käynnissä</translation>
 <translation id="4297501883039923494">Pysähtynyt – Tuntematon virhe</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Kerberos-tukipyyntö vanhenee pian</translation>
 <translation id="445059817448385655">Vanha salasana</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> Peruuta tulostustyö painamalla Enter.</translation>
@@ -73,6 +75,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6058625436358447366">Lisää lopuksi vanha ja uusi salasana</translation>
 <translation id="6106186594183574873">Lisää lopuksi vanha salasana</translation>
 <translation id="6146993107019042706">Lisää lopuksi uusi salasana</translation>
+<translation id="6147514244879357420">PNG</translation>
 <translation id="636850387210749493">Yritysversion käyttöönotto</translation>
 <translation id="649050271426829538">Pysähtynyt – Paperitukos</translation>
 <translation id="6517239166834772319">Explore</translation>

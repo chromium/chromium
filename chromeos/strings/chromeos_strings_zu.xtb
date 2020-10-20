@@ -3,6 +3,7 @@
 <translationbundle lang="zu">
 <translation id="1018656279737460067">Kukhanseliwe</translation>
 <translation id="1195447618553298278">Iphutha elingaziwa.</translation>
+<translation id="1330426557709298164">I-JPG</translation>
 <translation id="1413240736185167732">Yehlulekile - Isihlungi sehlulekile</translation>
 <translation id="1468664791493211953">Ukunikezwa</translation>
 <translation id="1478594628797167447">Iskena</translation>
@@ -46,6 +47,7 @@
 <translation id="4227825898293920515">Iphasiwedi iphelelwa isikhathi ngo-<ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ayikho imisebenzi yokuphrinta eqhubekayo</translation>
 <translation id="4297501883039923494">Imile - Iphutha elingaziwa</translation>
+<translation id="4382484599443659549">I-PDF</translation>
 <translation id="4429881212383817840">Ithikithi le-Kerberos liphelelwa isikhathi maduze</translation>
 <translation id="445059817448385655">Iphasiwedi endala</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> kwangu-<ph name="TOTAL_PAGE_NUMBER" /> Cindezela u-enter ukuze ukhansele umsebenzi wokuphrinta.</translation>
@@ -73,6 +75,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="6058625436358447366">Ukuze uqede, faka amaphasiwedi akho endala nentsha</translation>
 <translation id="6106186594183574873">Ukuze uqede, faka iphasiwedi endala</translation>
 <translation id="6146993107019042706">Ukuze uqede, faka iphasiwedi yakho entsha</translation>
+<translation id="6147514244879357420">I-PNG</translation>
 <translation id="636850387210749493">Ukubhalisa kwebhizinisi</translation>
 <translation id="649050271426829538">Imile - Ukujema kwephepha</translation>
 <translation id="6517239166834772319">Hlola</translation>
@@ -82,6 +85,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="6747215703636344499">Imile - Okukhiphayo kugcwele</translation>
 <translation id="7162487448488904999">Igalari</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7359657277149375382">Uhlobo lwefayela</translation>
 <translation id="7561454561030345039">Lesi senzo siphethwe umlawuli wakho</translation>
 <translation id="7658239707568436148">Khansela</translation>
 <translation id="7690294790491645610">Qinisekisa iphasiwedi entsha</translation>

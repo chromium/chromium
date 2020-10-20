@@ -17,6 +17,7 @@
 <translation id="1012794136286421601">Таны Баримтууд, Хуудаснууд, Слайдууд болон Зурган файлуудыг sync хийж байна. Тэдэн рүү онлайн эсвэл оффлайн хэлбэрээр нэвтрэхийн тулд Google Drive аппликейшныг нээгээрэй.</translation>
 <translation id="1012876632442809908">USB-C төхөөрөмж (урд талын порт)</translation>
 <translation id="1013707859758800957">Хамгаалалтгүй нэмэлт өргөтгөлийг энэ хуудсан дээр ажиллуулахыг зөвшөөрсөн байна.</translation>
+<translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Фолдерын нэрийг засах</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{<ph name="DEVICE_TYPE" />-г шинэчлэх сүүлийн өдөр}other{<ph name="DEVICE_TYPE" />-г {NUM_DAYS} хоногийн дотор шинэчлэх}}</translation>
 <translation id="1016566241875885511">Нэмэлт мэдээлэл (заавал биш)</translation>

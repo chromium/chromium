@@ -17,7 +17,7 @@
 <translation id="1355000804395496115">Kasutage Chrome'is eri profiile seda seadet kasutavate inimeste jaoks või selleks, et eristada isiklikku ja töö tarbeks sirvimist</translation>
 <translation id="137466361146087520">Google Chrome'i beetaversioon</translation>
 <translation id="1399397803214730675">Selles arvutis on juba Google Chrome'i uuem versioon. Kui tarkvara ei tööta, desinstallige Google Chrome ja proovige uuesti.</translation>
-<translation id="140541193409212341">Ilmnes viga, kui Chrome otsis teie arvutist kahjuliku tarkvara</translation>
+<translation id="140541193409212341">Ilmnes viga, kui Chrome otsis teie arvutist kahjulikku tarkvara</translation>
 <translation id="1434626383986940139">Chrome Canary rakendused</translation>
 <translation id="1513277449617685876">Isikliku ja kasutaja <ph name="NEW_USER" /> sirvimise eristamiseks looge Chrome'is uus profiil</translation>
 <translation id="1553358976309200471">Värskenda Chrome'i</translation>
@@ -80,6 +80,7 @@
 <translation id="2926676257163822632">Nõrku paroole on lihtne ära arvata. Laske Chrome'il <ph name="BEGIN_LINK" />teie jaoks luua ja meelde jätta tugevaid paroole<ph name="END_LINK" />.</translation>
 <translation id="2929907241665500097">Chrome'i ei värskendatud, midagi läks valesti. <ph name="BEGIN_LINK" />Lahendage Chrome'i värskendamisprobleemid ja parandage ebaõnnestunud värskendused.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – võrku sisselogimine – Chrome</translation>
+<translation id="298099161970687941">Küsi Chrome'i avamisel</translation>
 <translation id="3037838751736561277">Google Chrome on taustarežiimis.</translation>
 <translation id="3059710691562604940">Google'i ohutu sirvimine on välja lülitatud. Chrome soovitab selle sisse lülitada.</translation>
 <translation id="3065168410429928842">Chrome'i vaheleht</translation>

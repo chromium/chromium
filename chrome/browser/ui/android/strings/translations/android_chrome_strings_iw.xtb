@@ -279,7 +279,7 @@
 <translation id="3016635187733453316">יש לוודא שהמכשיר הזה מחובר לאינטרנט</translation>
 <translation id="3029704984691124060">ביטויי הסיסמה אינם תואמים</translation>
 <translation id="3034163383943672781">ההורדה תתחיל בתאריך <ph name="DATE" />.</translation>
-<translation id="3036750288708366620"><ph name="BEGIN_LINK" />קבל עזרה<ph name="END_LINK" /></translation>
+<translation id="3036750288708366620"><ph name="BEGIN_LINK" />קבלת עזרה<ph name="END_LINK" /></translation>
 <translation id="305593374596241526">‏הגישה למיקום כבויה. יש להפעיל אותה ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="3058498974290601450">אפשר להפעיל את הסנכרון בכל זמן דרך ההגדרות</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{סימניה אחת (<ph name="BOOKMARKS_COUNT_ONE" />)}two{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}many{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}other{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}}</translation>
@@ -530,7 +530,7 @@
 <translation id="4910889077668685004">אפליקציות תשלום</translation>
 <translation id="4913161338056004800">איפוס הנתונים הסטטיסטיים</translation>
 <translation id="4913169188695071480">הפסק לרענן</translation>
-<translation id="4915549754973153784"><ph name="BEGIN_LINK" />קבל עזרה<ph name="END_LINK" /> בזמן חיפוש התקנים…</translation>
+<translation id="4915549754973153784"><ph name="BEGIN_LINK" />קבלת עזרה<ph name="END_LINK" /> בזמן חיפוש מכשירים…</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{דף אחד (#)}two{# דפים}many{# דפים}other{# דפים}}</translation>
 <translation id="4925120120285606924">צילום מסך <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">המערכת תייצא את הסיסמאות ותוריד אותן כקובץ טקסט. הן יהיו גלויות לכל המשתמשים והאפליקציות שיש להם גישה לתיקיית היעד.</translation>
@@ -740,7 +740,7 @@
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> נוספת}two{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> נוספות}many{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> נוספות}other{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> נוספות}}</translation>
 <translation id="6345878117466430440">סימון כפריט שנקרא</translation>
 <translation id="6364438453358674297">האם להסיר את ההצעה מההיסטוריה?</translation>
-<translation id="6366047038980456022"><ph name="APP_NAME" /> מציע את הכלים החכמים, את המהירות ואת ההגנה שאתם צריכים כדי לבצע פעולות, ליצור ולמצוא תוכן חדש באינטרנט</translation>
+<translation id="6366047038980456022"><ph name="APP_NAME" /> כולל את הכלים החכמים, את המהירות ואת ההגנה שאתם צריכים כדי לבצע פעולות, ליצור ולמצוא תוכן חדש באינטרנט</translation>
 <translation id="6378173571450987352">פרטים: מיון לפי נפח הנתונים שנצרכו</translation>
 <translation id="6379829913050047669">‏האפליקציה <ph name="APP_NAME" /> תיפתח ב-Chrome. המשך הפעולה מבטא הסכמה ל<ph name="BEGIN_LINK1" />תנאים ולהגבלות של Google<ph name="END_LINK1" /> ול<ph name="BEGIN_LINK2" />תנאים ולהגבלות הנוספים של Google Chrome ו-Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6381421346744604172">תצוגה כהה יותר של אתרים</translation>
@@ -925,7 +925,7 @@
 <translation id="7606077192958116810">מצב הטעינה המהירה מופעל. אפשר לנהל אותו דרך ההגדרות.</translation>
 <translation id="7612619742409846846">‏מחובר ל-Google בשם</translation>
 <translation id="7619072057915878432">הורדת <ph name="FILE_NAME" /> נכשלה עקב כשלים ברשת.</translation>
-<translation id="7624880197989616768"><ph name="BEGIN_LINK1" />קבל עזרה<ph name="END_LINK1" /> או <ph name="BEGIN_LINK2" />חפש שוב<ph name="END_LINK2" /></translation>
+<translation id="7624880197989616768"><ph name="BEGIN_LINK1" />קבלת עזרה<ph name="END_LINK1" /> או <ph name="BEGIN_LINK2" />חיפוש שוב<ph name="END_LINK2" /></translation>
 <translation id="7626032353295482388">‏ברוכים הבאים ל-Chrome</translation>
 <translation id="7630202231528827509">‏כתובת ה-URL של הספק</translation>
 <translation id="7638584964844754484">ביטוי סיסמה שגוי</translation>

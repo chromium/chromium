@@ -410,8 +410,8 @@
         <ph name="BATTERY" />
         <ph name="NETWORK" />،
         <ph name="MIC" />،
-        <ph name="CAMERA" />
-        <ph name="NOTIFICATION" />
+        <ph name="CAMERA" />،
+        <ph name="NOTIFICATION" />،
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="4946376291507881335">کیپچر کریں</translation>

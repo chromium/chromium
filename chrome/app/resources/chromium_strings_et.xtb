@@ -9,6 +9,7 @@
 <translation id="1131805035311359397">Kui soovite kontrollida, kas teie paroolid on andmetega seotud rikkumiste ja muude turvaprobleemide eest kaitstud, <ph name="BEGIN_LINK" />logige Chromiumi sisse<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Teave Chromiumi kohta</translation>
 <translation id="1315551408014407711">Uue Chromiumi profiili seadistamine</translation>
+<translation id="1357932062193643861">Küsi Chromiumi avamisel</translation>
 <translation id="1396446129537741364">Chromium püüab paroole kuvada.</translation>
 <translation id="1414495520565016063">Olete Chromiumi sisse logitud.</translation>
 <translation id="151962892725702025">Chromium OS ei saanud teie andmeid sünkroonida, sest teie domeenil pole sünkroonimine saadaval.</translation>
@@ -247,7 +248,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8621669128220841554">Installimine ebaõnnestus tundmatu vea tõttu. Laadige Chromium uuesti alla.</translation>
 <translation id="8697124171261953979">Lisaks juhib see seda, mis leht kuvatakse Chromiumi käivitamisel või omnikastikeses otsingu tegemisel.</translation>
 <translation id="8704119203788522458">See on teie Chromium</translation>
-<translation id="8733034664173984083">Ilmnes viga, kui Chromium otsis teie arvutist kahjuliku tarkvara</translation>
+<translation id="8733034664173984083">Ilmnes viga, kui Chromium otsis teie arvutist kahjulikku tarkvara</translation>
 <translation id="8796602469536043152">Chromium vajab selle saidi puhul luba, et teie kaamerale ja mikrofonile juurde pääseda</translation>
 <translation id="8803635938069941624">Chromium OS-i tingimused</translation>
 <translation id="8821041990367117597">Chromium ei saa andmeid sünkroonida, sest teie konto sisselogimisandmed on aegunud.</translation>

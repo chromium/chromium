@@ -1440,6 +1440,11 @@
 <translation id="316778957754360075">我們已於 <ph name="PRODUCT_NAME" /> 版本 29 移除這項設定。如要設定機構代管的擴充功能/應用程式系列，建議你將代管 CRX 封裝檔的網站加入 ExtensionInstallSources 中，並在網頁上提供該封裝檔的直接下載連結。你可以透過 ExtensionInstallForcelist 政策建立該網頁專用的啟動器。</translation>
 <translation id="3168968618972302728">與 Kerberos 驗證相關的政策。</translation>
 <translation id="3171369832001535378">裝置網路主機名稱範本</translation>
+<translation id="3176903288465566098">如果啟用這項設定，已開啟 Phone Hub 功能的使用者將可在 Chrome 作業系統上傳送/接收手機的通知。
+
+      如果停用這項設定，使用者就無法使用這項功能。如果停用 PhoneHubAllowed 政策，使用者也會無法使用這項功能。
+
+      如果不設定這項政策，在預設情況下，受企業管理的使用者和其他一般使用者皆可使用這項功能。</translation>
 <translation id="3177802893484440532">需要為本機信任錨點執行線上 OCSP/CRL 檢查</translation>
 <translation id="3184161739683646075">控管 DNS-over-HTTPS 的模式</translation>
 <translation id="3185009703220253572">自第 <ph name="SINCE_VERSION" /> 版起</translation>
@@ -2622,7 +2627,7 @@
       如果停用這項政策，網頁將無法呼叫任何螢幕畫面分享 API，且系統會傳回錯誤訊息。</translation>
 <translation id="5025239932007658691">如果將這項政策設為啟用或不設定，<ph name="PRODUCT_NAME" /> 會不定時向 Google 伺服器傳送查詢，以擷取準確的時間戳記。
 
-      如果將這項政策設為停用，系統會禁止<ph name="PRODUCT_NAME" /> 傳送這類查詢。</translation>
+      如果將這項政策設為停用，系統會禁止 <ph name="PRODUCT_NAME" /> 傳送這類查詢。</translation>
 <translation id="5032164758660626397">禁止使用者傳輸大型檔案</translation>
 <translation id="5047604665028708335">允許存取內容套件以外的網站</translation>
 <translation id="5056708224511062314">已停用螢幕放大鏡</translation>
@@ -2901,6 +2906,7 @@
 
       如果將這項政策設為 False，系統會停用將流量轉送至 Crostini 容器的通訊埠轉送功能。</translation>
 <translation id="538108065117008131">允許 <ph name="PRODUCT_FRAME_NAME" /> 處理下列內容類型。</translation>
+<translation id="5383436189211119400">如果設定「DeviceArcDataSnapshotHours」政策，則系統會開啟 ARC 資料數據匯報機制，而且 ARC 資料數據匯報更新將可在自訂的時間間隔自動開始。當間隔開始時，如果需要執行 ARC 數據匯報更新，且沒有任何使用者處於登入狀態，系統會直接開始執行 ARC 資料數據匯報更新程序，不會通知使用者。如果使用者工作階段處於執行中狀態，系統會顯示使用者介面通知，使用者必須接受通知內容以重新啟動裝置，並開始執行 ARC 資料數據匯報更新程序。注意：ARC 資料數據匯報更新期間將無法使用裝置。</translation>
 <translation id="538768040137709073">啟用剪貼簿共用功能，讓使用者處於登入狀態且啟用同步功能時，在 Chrome 桌面和 Android 裝置之間傳送文字。
 
           如果將這項政策設為 True，系統會啟用 Chrome 使用者跨裝置傳送文字的功能。
@@ -4170,6 +4176,7 @@
 <translation id="7068108874199666656">這項政策可將網路設定強制套用至 <ph name="PRODUCT_OS_NAME" />裝置的所有使用者。這個網路設定是根據「開放式網路設定」格式所定義的 JSON 格式字串。</translation>
 <translation id="7070525176564511548">每週 (168 小時) 需輸入一次密碼</translation>
 <translation id="7072208053150563108">裝置密碼變更頻率</translation>
+<translation id="7072567600438630966">允許啟用 Phone Hub 功能。</translation>
 <translation id="7079519252486108041">封鎖這些網站的彈出式視窗</translation>
 <translation id="7080072532759721791">允許使用者上傳或下載受密碼保護的檔案</translation>
 <translation id="7086677522575756117">指定當系統在螢幕調暗或畫面關閉後不久便偵測到使用者活動時，要將螢幕調暗延遲時間延長多少百分比。
@@ -4347,6 +4354,7 @@
       如未設定這項政策或將其留空，則使用者可以將任何 Google 帳戶設定為 <ph name="PRODUCT_NAME" /> 中的瀏覽器主要帳戶。</translation>
 <translation id="723103540848640830">設定螢幕鎖定 PIN 碼的長度下限</translation>
 <translation id="7234280155140786597">禁止的內建訊息傳遞主機名稱 (指定 * 表示涵蓋所有內建訊息傳遞主機)。</translation>
+<translation id="7246767840750730334">允許啟用 Phone Hub 通知。</translation>
 <translation id="7249828445670652637">允許 ARC 應用程式使用「<ph name="PRODUCT_OS_NAME" />」CA 憑證</translation>
 <translation id="7252681704926980614">在每個列印工作中，將使用者名稱和檔案名稱傳送給原生印表機伺服器。系統預設為不傳送。
 
@@ -4451,6 +4459,11 @@
 
       這項政策已遭淘汰，請改用 <ph name="PRINTERS_BULK_BLOCKLIST" />。
       </translation>
+<translation id="7358744897221281073">如果啟用這項設定，已開啟 Phone Hub 功能的使用者將可在 Chrome 作業系統上繼續完成工作，例如繼續瀏覽手機的網頁。
+
+      如果停用這項設定，使用者就無法使用這項功能。如果停用 PhoneHubAllowed 政策，使用者也會無法使用這項功能。
+
+      如果不設定這項政策，在預設情況下，受企業管理的使用者和其他一般使用者皆可使用這項功能。</translation>
 <translation id="7360181094056034924">針對系統判定必須掃描的上傳和下載內容，控管 <ph name="PRODUCT_NAME" /> 採取的動作。延遲提供檔案表示 <ph name="PRODUCT_NAME" /> 必須先完成掃描作業並取得結果，使用者才能存取已下載的檔案、選取要上傳的檔案、以及從剪貼簿貼上或拖曳資料。如果 <ph name="SEND_FILES_FOR_MALWARE_CHECK_POLICY_NAME" />、<ph name="CHECK_CONTENT_COMPLIANCE_POLICY_NAME" /> 或控管已啟用檢查功能的網域清單政策判斷檔案或資料需要掃描，系統才會套用這項限制。
 
       如果不設定這項政策或設為「None」，<ph name="PRODUCT_NAME" /> 不會延遲任何檔案的上傳作業，也不會延後從剪貼簿貼上或拖曳資料，或是讓使用者延後存取任何下載的檔案。掃描作業會在背景執行。
@@ -4640,6 +4653,7 @@
       如果未設定，系統會在登入畫面停用大型游標。使用者隨時可以啟用大型游標，而且所有使用者在登入畫面上的大型游標狀態會保持一致。
 
           注意：如果指定 <ph name="DEVICE_LOGIN_SCREEN_LARGE_CURSOR_ENABLED" />，這項政策會遭到覆寫。</translation>
+<translation id="7632147323011514740">受管理的訪客工作階段可開始執行 ARC 資料數據匯報更新程序的間隔</translation>
 <translation id="7632724434767231364">GSSAPI 資料庫名稱</translation>
 <translation id="7643883929273267746">限制在 <ph name="PRODUCT_NAME" /> 中顯示的帳戶</translation>
 <translation id="7648907905084499629">對所有網站上的 Cookie 使用 <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> 行為</translation>
@@ -4914,6 +4928,7 @@
       如果是 <ph name="PRODUCT_OS_NAME" />，這項政策會一律生效。</translation>
 <translation id="8050080920415773384">原生列印</translation>
 <translation id="8053580360728293758">覆寫預設列印色彩模式。如果設定的模式不適用，系統會忽略這項政策。</translation>
+<translation id="8056237304861875584">允許啟用 Phone Hub 工作接續</translation>
 <translation id="8059164285174960932">遠端存取用戶端取得驗證憑證的來源網址</translation>
 <translation id="8077245272412229388">新增預先填寫的 Kerberos 帳戶。如果 Kerberos 憑證與登入憑證相符，只要將主體與密碼分別指定為「<ph name="LOGIN_EMAIL_PLACEHOLDER" />」和「<ph name="PASSWORD_PLACEHOLDER" />」，即可將帳戶設定為重複使用登入憑證。設定完成後，除非你為帳戶設定雙重驗證，否則系統會自動擷取 Kerberos 票證。使用者無法修改透過這項政策新增的帳戶。
 
@@ -5653,6 +5668,11 @@
 <translation id="9084985621503260744">指定會影響電源管理的視訊活動</translation>
 <translation id="9088433379343318874">啟用受監管的使用者內容提供者</translation>
 <translation id="9088444059179765143">設定自動偵測時區方式</translation>
+<translation id="9095999573959728902">如果啟用這項設定，使用者將可開啟 Phone Hub 功能，進而在搭載 Chrome 作業系統的裝置上與手機互動。
+
+      如果停用這項設定，使用者將無法開啟 Phone Hub 功能。
+
+      如果不設定這項政策，在預設情況下，受企業管理的使用者將無法開啟 Phone Hub 功能，其他一般使用者則可開啟這項功能。</translation>
 <translation id="9096086085182305205">驗證伺服器許可清單</translation>
 <translation id="9105265795073104888">只有一部分 Proxy 設定可供 Android 應用程式使用，Android 應用程式可以選擇是否使用。你無法強制 Android 應用程式使用 Proxy。</translation>
 <translation id="9106865192244721694">在這些網站上允許 WebUSB</translation>

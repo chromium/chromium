@@ -957,7 +957,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2090165459409185032">Per recuperar la informació del compte, accediu a: google.com/accounts/recovery</translation>
 <translation id="2090876986345970080">Configuració de seguretat del sistema</translation>
 <translation id="2091887806945687916">So</translation>
-<translation id="209539936453343974">Per configurar els controls parentals, hi ha d'haver un nen amb un Compte de Google gestionat pel pare o per la mare. Els <ph name="DEVICE_TYPE_PLURAL" /> permeten als pares configurar límits de connexió, aprovar o bloquejar llocs web i fer més coses amb l'aplicació Family Link. Si el nen ha de fer treball escolar en llocs web com Google Classroom, es pot afegir un compte de centre educatiu més endavant.</translation>
+<translation id="209539936453343974">Per configurar els controls parentals, el nen ha de tenir un Compte de Google gestionat pel pare o per la mare. Els <ph name="DEVICE_TYPE_PLURAL" /> permeten als pares configurar límits de connexió, aprovar o bloquejar llocs web i fer més coses amb l'aplicació Family Link. Si el nen ha de fer treball escolar en llocs web com Google Classroom, es pot afegir un compte de centre educatiu més endavant.</translation>
 <translation id="2096715839409389970">Esborra les galetes de tercers</translation>
 <translation id="2097372108957554726">Inicieu la sessió a Chrome per registrar dispositius nous</translation>
 <translation id="2098805196501063469">Comprova les altres contrasenyes</translation>
@@ -5599,7 +5599,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7607002721634913082">En pausa</translation>
 <translation id="7608810328871051088">Preferències d'Android</translation>
 <translation id="7609148976235050828">Connecta't a Internet i torna-ho a provar.</translation>
-<translation id="7612655942094160088">Activa les funcions del telèfon connectat.</translation>
+<translation id="7612655942094160088">Activa la funció de telèfon connectat.</translation>
 <translation id="7614260613810441905">Pregunta'm quan un lloc web vulgui editar els fitxers o les carpetes del dispositiu (opció recomanada)</translation>
 <translation id="761530003705945209">Crea còpies de seguretat a Google Drive. Canvia de dispositiu o restaura'n les dades fàcilment en qualsevol moment. La còpia de seguretat inclou dades d'aplicacions. Les còpies de seguretat es pengen a Google i s'encripten amb la contrasenya del teu Compte de Google.</translation>
 <translation id="7615365294369022248">S'ha produït un error en afegir un compte</translation>

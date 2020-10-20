@@ -11,6 +11,7 @@
 <translation id="1131805035311359397">암호가 정보 유출 및 다른 보안 문제로부터 안전한지 확인하려면 <ph name="BEGIN_LINK" />Chromium에 로그인<ph name="END_LINK" />하세요.</translation>
 <translation id="1185134272377778587">Chromium 정보</translation>
 <translation id="1315551408014407711">새 Chromium 프로필 설정</translation>
+<translation id="1357932062193643861">Chromium이 열릴 때 확인</translation>
 <translation id="1396446129537741364">Chromium이 비밀번호를 표시하려고 합니다.</translation>
 <translation id="1414495520565016063">Chromium에 로그인했습니다.</translation>
 <translation id="151962892725702025">내 도메인에서 동기화를 사용할 수 없으므로 Chromium OS에서 데이터를 동기화하지 못했습니다.</translation>
@@ -185,6 +186,7 @@
 <translation id="6863361426438995919">Google Pay(Chromium에 복사됨)</translation>
 <translation id="6893813176749746474">Chromium이 업데이트되었지만, 최소 30일 동안 사용하지 않았습니다.</translation>
 <translation id="6964305034639999644">Chromium 시크릿 창에서 링크 열기(&amp;G)</translation>
+<translation id="6978145336957848883">취약한 비밀번호는 추측하기 쉽습니다. Chromium에서 <ph name="BEGIN_LINK" />안전한 비밀번호를 생성하고 기억하도록 설정<ph name="END_LINK" />하세요.</translation>
 <translation id="6990124437352146030">이 사이트에서 마이크에 액세스하려면 Chromium에 권한이 필요합니다</translation>
 <translation id="701244094609242530">Chromium에서 확장 프로그램을 확인할 수 없습니다. 나중에 다시 시도하세요.</translation>
 <translation id="7028347026395185822">{NUM_HOURS,plural, =1{Chromium이 컴퓨터에서 알려진 유해 소프트웨어를 발견하지 못했습니다. 1시간 전에 마지막으로 확인했습니다.}other{Chromium이 컴퓨터에서 알려진 유해 소프트웨어를 발견하지 못했습니다. {NUM_HOURS}시간 전에 마지막으로 확인했습니다.}}</translation>

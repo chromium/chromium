@@ -185,6 +185,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6863361426438995919">„Google Pay“ (nukopijuota į „Chromium“)</translation>
 <translation id="6893813176749746474">„Chromium“ atnaujinta, bet jos nenaudojote mažiausiai 30 dienų.</translation>
 <translation id="6964305034639999644">Atidaryti nuorodą „Chromium“ inko&amp;gnito lange</translation>
+<translation id="6978145336957848883">Nesudėtingus slaptažodžius lengva atspėti. Leiskite „Chromium“ <ph name="BEGIN_LINK" />jums sukurti ir įsiminti sudėtingus slaptažodžius<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">„Chromium“ reikia leidimo, kad galėtų naudoti mikrofoną šioje svetainėje</translation>
 <translation id="701244094609242530">„Chromium“ negali patikrinti jūsų plėtinių. Vėliau bandykite dar kartą.</translation>
 <translation id="7028347026395185822">{NUM_HOURS,plural, =1{„Chromium“ kompiuteryje nerado žinomos žalingos programinės įrangos. Paskutinį kartą tikrinta prieš 1 valandą.}one{„Chromium“ kompiuteryje nerado žinomos žalingos programinės įrangos. Paskutinį kartą tikrinta: prieš {NUM_HOURS} valandą.}few{„Chromium“ kompiuteryje nerado žinomos žalingos programinės įrangos. Paskutinį kartą tikrinta: prieš {NUM_HOURS} valandas.}many{„Chromium“ kompiuteryje nerado žinomos žalingos programinės įrangos. Paskutinį kartą tikrinta: prieš {NUM_HOURS} valandos.}other{„Chromium“ kompiuteryje nerado žinomos žalingos programinės įrangos. Paskutinį kartą tikrinta: prieš {NUM_HOURS} valandų.}}</translation>

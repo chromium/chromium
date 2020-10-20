@@ -3,6 +3,7 @@
 <translationbundle lang="lt">
 <translation id="1018656279737460067">Atšaukta</translation>
 <translation id="1195447618553298278">Nežinoma klaida.</translation>
+<translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">Nepavyko – filtras neveikia tinkamai</translation>
 <translation id="1468664791493211953">Pasiūlymai</translation>
 <translation id="1478594628797167447">Skaitytuvas</translation>
@@ -46,6 +47,7 @@
 <translation id="4227825898293920515">Slaptažodžio galiojimas baigsis už <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nėra vykstančių spausdinimo užduočių</translation>
 <translation id="4297501883039923494">Sustabdyta – nežinoma klaida</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">„Kerberos“ bilietas netrukus baigs galioti</translation>
 <translation id="445059817448385655">Senas slaptažodis</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, „<ph name="PRINTER_NAME" />“, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> iš <ph name="TOTAL_PAGE_NUMBER" /> psl. Paspauskite „Enter“, jei norite atšaukti spausdinimo užduotį.</translation>
@@ -73,6 +75,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6058625436358447366">Norėdami užbaigti įveskite seną ir naują slaptažodžius</translation>
 <translation id="6106186594183574873">Norėdami užbaigti įveskite seną slaptažodį</translation>
 <translation id="6146993107019042706">Norėdami užbaigti įveskite naują slaptažodį</translation>
+<translation id="6147514244879357420">PNG</translation>
 <translation id="636850387210749493">Įmonės registracija</translation>
 <translation id="649050271426829538">Sustabdyta – įstrigęs popierius</translation>
 <translation id="6517239166834772319">Explore</translation>

@@ -16,6 +16,7 @@
 <translation id="4986357476502426173"><ph name="DEVICE_NAME" />၊ ဗီဒီယိုစက်ပစ္စည်း</translation>
 <translation id="5271696982761495740">တက်ဘလက် ( <ph name="ADDRESS" /> )</translation>
 <translation id="5376363957846771741">အမည်မသိရ သို့မဟုတ် ပံ့ပိုးမပေးသည့် ကိရိယာ ( <ph name="ADDRESS" /> )</translation>
+<translation id="571460437990229974"><ph name="DEVICE_NAME_AND_TYPE" /> <ph name="CONNECTION_STATUS" /></translation>
 <translation id="5716052956047449618"><ph name="DEVICE_NAME" />၊ မိုဒမ်</translation>
 <translation id="6459740836740815150"><ph name="DEVICE_NAME" />၊ ကား အသံစက်ပစ္စည်း</translation>
 <translation id="6542922424766292144"><ph name="DEVICE_NAME" />၊ ကီးဘုတ်</translation>

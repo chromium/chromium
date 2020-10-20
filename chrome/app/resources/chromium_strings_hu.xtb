@@ -181,6 +181,7 @@
 <translation id="6863361426438995919">Google Pay (a Chromiumba másolva)</translation>
 <translation id="6893813176749746474">A Chromium frissítése megtörtént, de nem használta a böngészőt legalább 30 napja.</translation>
 <translation id="6964305034639999644">Link megnyitása Chromium-inko&amp;gnitóablakban</translation>
+<translation id="6978145336957848883">A gyenge jelszavakat könnyű kitalálni. Engedélyezze a Chromium számára, hogy <ph name="BEGIN_LINK" /> erős jelszavakat hozzon létre Önnek, és megjegyezze őket<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">A Chromiumnak engedélyre van szüksége ahhoz, hogy hozzáférjen a mikrofonhoz ennél a webhelynél</translation>
 <translation id="701244094609242530">A Chromium nem tudja ellenőrizni a bővítményeket. Próbálkozzon később.</translation>
 <translation id="7028347026395185822">{NUM_HOURS,plural, =1{A Chromium nem talált ismert kártékony szoftvert az Ön számítógépén. Legutóbbi keresés: 1 órája.}other{A Chromium nem talált ismert kártékony szoftvert az Ön számítógépén. Legutóbbi keresés: {NUM_HOURS} órája.}}</translation>

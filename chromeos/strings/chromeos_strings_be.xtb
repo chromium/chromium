@@ -3,6 +3,7 @@
 <translationbundle lang="be">
 <translation id="1018656279737460067">Скасавана</translation>
 <translation id="1195447618553298278">Невядомая памылка.</translation>
+<translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">Збой: фільтр не працуе</translation>
 <translation id="1468664791493211953">Прапановы</translation>
 <translation id="1478594628797167447">Сканер</translation>
@@ -46,6 +47,7 @@
 <translation id="4227825898293920515">Тэрмін дзеяння пароля заканчваецца праз <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Няма дзеючых заданняў друку</translation>
 <translation id="4297501883039923494">Спынена: невядомая памылка</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Дзеянне білета Kerberos хутка скончыцца</translation>
 <translation id="445059817448385655">Стары пароль</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> з <ph name="TOTAL_PAGE_NUMBER" />. Каб скасаваць заданне друку, націсніце Enter.</translation>
@@ -73,6 +75,7 @@
 <translation id="6058625436358447366">Каб закончыць, увядзіце стары і новы паролі</translation>
 <translation id="6106186594183574873">Каб закончыць, увядзіце стары пароль</translation>
 <translation id="6146993107019042706">Каб закончыць, увядзіце новы пароль</translation>
+<translation id="6147514244879357420">PNG</translation>
 <translation id="636850387210749493">Рэгістрацыя для арганізацый</translation>
 <translation id="649050271426829538">Спынена: захрасла папера</translation>
 <translation id="6517239166834772319">Агляд</translation>
@@ -82,6 +85,7 @@
 <translation id="6747215703636344499">Спынена: выхадны латок запоўнены</translation>
 <translation id="7162487448488904999">Галерэя</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7359657277149375382">Тып файла</translation>
 <translation id="7561454561030345039">Гэтым дзеяннем кіруе адміністратар</translation>
 <translation id="7658239707568436148">Скасаваць</translation>
 <translation id="7690294790491645610">Пацвердзіце новы пароль</translation>

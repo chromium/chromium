@@ -3,6 +3,7 @@
 <translationbundle lang="el">
 <translation id="1018656279737460067">Ακυρώθηκε</translation>
 <translation id="1195447618553298278">Άγνωστο σφάλμα.</translation>
+<translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">Σφάλμα - Πρόβλημα φίλτρου</translation>
 <translation id="1468664791493211953">Προσφορές</translation>
 <translation id="1478594628797167447">Σαρωτής</translation>
@@ -46,6 +47,7 @@
 <translation id="4227825898293920515">Ο κωδικός πρόσβασης λήγει σε <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Δεν υπάρχουν εργασίες εκτύπωσης σε εξέλιξη</translation>
 <translation id="4297501883039923494">Διακοπή - Άγνωστο σφάλμα</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Το εισιτήριο Kerberos θα λήξει σύντομα</translation>
 <translation id="445059817448385655">Παλιός κωδικός πρόσβασης</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> από <ph name="TOTAL_PAGE_NUMBER" />. Πατήστε enter, για να ακυρώσετε την εργασία εκτύπωσης.</translation>
@@ -73,6 +75,7 @@
 <translation id="6058625436358447366">Για να τελειώσετε, εισαγάγετε τον παλιό και τον νέο κωδικό πρόσβασης</translation>
 <translation id="6106186594183574873">Για να τελειώσετε, εισαγάγετε τον παλιό κωδικό πρόσβασης</translation>
 <translation id="6146993107019042706">Για να ολοκληρώσετε, εισαγάγετε τον νέο κωδικό πρόσβασης</translation>
+<translation id="6147514244879357420">PNG</translation>
 <translation id="636850387210749493">Εγγραφή επιχείρησης</translation>
 <translation id="649050271426829538">Διακοπή - Εμπλοκή χαρτιού</translation>
 <translation id="6517239166834772319">Εξερεύνηση</translation>

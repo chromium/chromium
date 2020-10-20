@@ -3,6 +3,7 @@
 <translationbundle lang="ms">
 <translation id="1018656279737460067">Dibatalkan</translation>
 <translation id="1195447618553298278">Ralat tidak diketahui.</translation>
+<translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">Gagal - Penapis gagal</translation>
 <translation id="1468664791493211953">Tawaran</translation>
 <translation id="1478594628797167447">Pengimbas</translation>
@@ -46,6 +47,7 @@
 <translation id="4227825898293920515">Kata laluan tamat tempoh dalam <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Tiada tugas cetak yang sedang dijalankan</translation>
 <translation id="4297501883039923494">Dihentikan - Ralat tidak diketahui</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Tiket Kerberos akan tamat tempoh tidak lama lagi</translation>
 <translation id="445059817448385655">Kata laluan lama</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> daripada <ph name="TOTAL_PAGE_NUMBER" />. Tekan enter untuk membatalkan tugas cetak.</translation>
@@ -73,6 +75,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="6058625436358447366">Untuk menyelesaikan proses ini, masukkan kata laluan lama dan baharu</translation>
 <translation id="6106186594183574873">Untuk menyelesaikan proses ini, masukkan kata laluan lama anda</translation>
 <translation id="6146993107019042706">Untuk menyelesaikan proses ini, masukkan kata laluan baharu anda</translation>
+<translation id="6147514244879357420">PNG</translation>
 <translation id="636850387210749493">Pendaftaran perusahaan</translation>
 <translation id="649050271426829538">Dihentikan - Kertas tersangkut</translation>
 <translation id="6517239166834772319">Teroka</translation>

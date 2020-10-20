@@ -3,6 +3,7 @@
 <translationbundle lang="is">
 <translation id="1018656279737460067">Hætt við</translation>
 <translation id="1195447618553298278">Óþekkt villa.</translation>
+<translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">Mistókst – bilun í síu</translation>
 <translation id="1468664791493211953">Tilboð</translation>
 <translation id="1478594628797167447">Skanni</translation>
@@ -46,6 +47,7 @@
 <translation id="4227825898293920515">Aðgangsorð rennur út eftir <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Engin prentun í gangi</translation>
 <translation id="4297501883039923494">Stöðvað – óþekkt villa</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Kerberos-miði rennur út fljótlega</translation>
 <translation id="445059817448385655">Eldra aðgangsorð</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> af <ph name="TOTAL_PAGE_NUMBER" />. Ýttu á færslulykilinn til að hætta við prentverkið.</translation>
@@ -73,6 +75,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="6058625436358447366">Sláðu inn gamla aðgangsorðið og það nýja til að ganga frá þessu</translation>
 <translation id="6106186594183574873">Sláðu inn gamla aðgangsorðið þitt til að ganga frá þessu</translation>
 <translation id="6146993107019042706">Sláðu inn nýja aðgangsorðið til að ljúka þessu</translation>
+<translation id="6147514244879357420">PNG</translation>
 <translation id="636850387210749493">Fyrirtækjaskráning</translation>
 <translation id="649050271426829538">Stöðvað – pappírsstífla</translation>
 <translation id="6517239166834772319">Kanna</translation>
@@ -82,6 +85,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="6747215703636344499">Stöðvað – úttakið er fullt</translation>
 <translation id="7162487448488904999">Gallerí</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7359657277149375382">Skráargerð</translation>
 <translation id="7561454561030345039">Kerfisstjórinn þinn stjórnar þessari stillingu</translation>
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7690294790491645610">Staðfestu nýtt aðgangsorð</translation>

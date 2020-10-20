@@ -182,6 +182,7 @@
 <translation id="6863361426438995919">‏Google Pay (در Chromium کپی شد)</translation>
 <translation id="6893813176749746474">‏Chromium به‌روز شده است اما حداقل ۳۰ روز از آن استفاده نکرده‌اید.</translation>
 <translation id="6964305034639999644">‏باز کردن پیوند در پنجره &amp;ناشناس Chromium</translation>
+<translation id="6978145336957848883">‏گذرواژه‌های ضعیف را می‌توان به‌راحتی حدس زد. به Chromium اجازه دهید <ph name="BEGIN_LINK" />گذرواژه‌هایی قوی برایتان ایجاد کند و آن‌ها را به‌خاطر بسپارد<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">‏Chromium برای این سایت به مجوز دسترسی به میکروفون نیاز دارد</translation>
 <translation id="701244094609242530">‏Chromium نمی‌تواند افزونه‌هایتان را بررسی کند. بعداً دوباره امتحان کنید.</translation>
 <translation id="7028347026395185822">{NUM_HOURS,plural, =1{‏Chromium نرم‌افزار مضر شناخته‌شده‌ای در رایانه‌تان پیدا نکرد. آخرین بررسی: ۱ ساعت قبل.}one{‏Chromium نرم‌افزار مضر شناخته‌شده‌ای در رایانه‌تان پیدا نکرد. آخرین بررسی: {NUM_HOURS} ساعت قبل.}other{‏Chromium نرم‌افزار مضر شناخته‌شده‌ای در رایانه‌تان پیدا نکرد. آخرین بررسی: {NUM_HOURS} ساعت قبل.}}</translation>

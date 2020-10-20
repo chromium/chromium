@@ -928,6 +928,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="204914487372604757">Skapa genväg</translation>
 <translation id="2050339315714019657">Stående</translation>
 <translation id="2053312383184521053">Data om läget inaktiv</translation>
+<translation id="2054665754582400095">Din närvaro</translation>
 <translation id="2055585478631012616">Du loggas ut från webbplatserna i fråga, även på öppna flikar</translation>
 <translation id="205560151218727633">Logotyp för Google Assistent</translation>
 <translation id="2058456167109518507">En enhet har upptäckts</translation>
@@ -1214,6 +1215,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2387052489799050037">Öppna startskärmen</translation>
 <translation id="2387458720915042159">Proxyanslutningstyp</translation>
 <translation id="2390347491606624519">Det gick inte att ansluta till proxyservern. Logga in igen.</translation>
+<translation id="2390782873446084770">Wi-Fi-synkronisering</translation>
 <translation id="2391082728065870591">Skicka feedbackrapport</translation>
 <translation id="2391419135980381625">Standardteckensnitt</translation>
 <translation id="2392163307141705938">Du har nått gränsen som din förälder har ställt in för <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
@@ -1870,6 +1872,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3157931365184549694">Återställ</translation>
 <translation id="3158033540161634471">Konfigurera fingeravtryck</translation>
 <translation id="3159493096109238499">Beige</translation>
+<translation id="3159978855457658359">Redigera enhetsnamn</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (med maskinvarustöd)</translation>
 <translation id="3161522574479303604">Alla språk</translation>
 <translation id="3162853326462195145">Skolkonto</translation>
@@ -3230,6 +3233,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4761104368405085019">Använd mikrofonen</translation>
 <translation id="4762718786438001384">Mycket ont om diskutrymme på enheten</translation>
 <translation id="4763408175235639573">Följande cookies sparades när du visade denna sida</translation>
+<translation id="4764368918650455114">Se till att båda enheterna är upplåsta, att de är nära varandra och att Bluetooth är aktiverat. Om du delar med en Chromebook kontrollerar du att Närdelning har aktiverats (öppna statusfältet genom att välja klockan och välj sedan Närdelning). <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="4765582662863429759">Tillåter Android Messages att dirigera sms från mobilen till Chromebook</translation>
 <translation id="476598255842811483">Ingen, såvida du inte öppnar Närdelning på enheten</translation>
 <translation id="4768332406694066911">Du har certifikat från dessa organisationer som identifierar dig</translation>
@@ -3392,6 +3396,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="496185450405387901">Den här appen har installerats av administratören.</translation>
 <translation id="4964455510556214366">Ordning</translation>
+<translation id="496446150016900060">Synkronisera Wi-Fi-nätverk med telefonen</translation>
 <translation id="4965808351167763748">Vill du konfigurera den här enheten för Hangouts Meet?</translation>
 <translation id="496888482094675990">Med appen Filer kommer du snabbt åt filer som du har sparat på Google Drive, externa lagringsenheter eller din Chrome OS-enhet.</translation>
 <translation id="4971412780836297815">Öppna när nedladdningen är klar</translation>
@@ -3698,6 +3703,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5341980496415249280">Komprimering pågår, vänta …</translation>
 <translation id="5342091991439452114">Pinkoden måste bestå av minst <ph name="MINIMUM" /> siffror</translation>
 <translation id="5344036115151554031">Återställer Linux</translation>
+<translation id="5345916423802287046">Starta appen när du loggar in</translation>
 <translation id="5350293332385664455">Inaktivera Google Assistent</translation>
 <translation id="535123479159372765">Text kopierad från en annan enhet</translation>
 <translation id="5352033265844765294">Tidsstämpling</translation>
@@ -4007,6 +4013,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5704875434923668958">Synkroniserar till</translation>
 <translation id="5705005699929844214">Visa alltid tillgänglighetsalternativen</translation>
 <translation id="5705882733397021510">Tillbaka</translation>
+<translation id="5707117624115653804">Anpassa storlek och format på textningen för appar och webbplatser som har stöd för inställningen</translation>
 <translation id="5707185214361380026">Det gick inte att läsa in tillägget från:</translation>
 <translation id="5708171344853220004">Huvudnamn för Microsoft</translation>
 <translation id="5709557627224531708">Ange Chrome som standardwebbläsare</translation>
@@ -4170,6 +4177,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5904614460720589786">Det gick inte att installera <ph name="APP_NAME" /> på grund av ett konfigurationsproblem. Kontakta administratören. Felkod: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Uppdateringen är nästan klar! Slutför den genom att starta om enheten.</translation>
 <translation id="5906732635754427568">Data kopplad till den här appen tas bort från enheten.</translation>
+<translation id="5908474332780919512">Starta appen när du loggar in</translation>
 <translation id="5908695239556627796">Scrollningshastighet för musen</translation>
 <translation id="5908769186679515905">Blockera webbplatser från att köra Flash</translation>
 <translation id="5910363049092958439">S&amp;para bild som...</translation>
@@ -4709,6 +4717,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6532527800157340614">Inloggningen misslyckades eftersom det inte gick att hämta din åtkomsttoken. Kontrollera nätverksanslutningen och försök igen.</translation>
 <translation id="6532663472409656417">Med företagsregistrering</translation>
 <translation id="6535331821390304775">Tillåt alltid att <ph name="ORIGIN" /> öppnar den här typen av länkar i den kopplade appen</translation>
+<translation id="6537613839935722475">Namnet kan innehålla bokstäver, siffror och bindestreck (-)</translation>
 <translation id="6538635548667167211">Den aktuella inställningen för dataanvändning är Data</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Obs!<ph name="END_BOLD" /> Aktivera endast om du vet vad du gör eller om du har blivit ombedd att göra det eftersom insamling av data kan försämra resultatet.</translation>
 <translation id="6541638731489116978">Den här webbplatsen har blockerats från att använda enhetens rörelsesensorer.</translation>
@@ -4797,6 +4806,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6650234781371031356">Ditt lösenord på <ph name="WEBSITE" /> har sparats på den här enheten och i Google-kontot. Vilket vill du radera?</translation>
 <translation id="665061930738760572">Öppna i &amp;nytt fönster</translation>
 <translation id="6651237644330755633">Lita på detta certifikat för identifiering av webbplatser</translation>
+<translation id="6651495917527016072">Synkronisera Wi-Fi-nätverk med telefonen. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Integrering med <ph name="MS_AD_NAME" /> i Chrome stöds bara på x86_64-plattformar. Chromebook-enheter som bygger på ARM- eller x86-plattformen saknar stöd för denna funktion.</translation>
 <translation id="6654509035557065241">Föredraget nätverk</translation>
 <translation id="6655190889273724601">Programmerarläge</translation>
@@ -5400,6 +5410,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7375235221357833624">{0,plural, =1{Uppdatera enheten inom en timme}other{Uppdatera enheten inom # timmar}}</translation>
 <translation id="7376553024552204454">Markera muspekaren när den är i rörelse</translation>
 <translation id="7377451353532943397">Fortsätt att blockera sensoråtkomst</translation>
+<translation id="7378611153938412599">Svaga lösenord är lätta att lista ut. Använd alltid starka lösenord. <ph name="BEGIN_LINK" />Här hittar du fler säkerhetstips.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Öppna Chrome Web Store</translation>
 <translation id="7378812711085314936">Dela dataanslutning</translation>
 <translation id="7380622428988553498">Enhetsnamnet innehåller ogiltiga tecken</translation>
@@ -5924,6 +5935,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7959074893852789871">Filen innehöll flera certifikat och några av dem importerades inte:</translation>
 <translation id="7961015016161918242">Aldrig</translation>
 <translation id="7963001036288347286">Acceleration för styrplattan</translation>
+<translation id="7963608432878156675">Det här namnet visas för andra enheter för Bluetooth- och nätverksanslutningar</translation>
 <translation id="7963826112438303517">Assistenten använder dessa inspelningar och allt du ber den om för att skapa och uppdatera din röstmodell, som bara lagras på enheter där du har aktiverat Voice Match. Visa eller lär om röstaktiviteter i inställningarna för Assistenten.</translation>
 <translation id="7966241909927244760">K&amp;opiera bildadress</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{1 objekt i listan med bokmärken}other{{COUNT} objekt i listan med bokmärken}}</translation>
@@ -6388,6 +6400,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="850875081535031620">Ingen skadlig programvara hittades</translation>
 <translation id="8509177919508253835">Återställ säkerhetsnycklar och skapa pinkoder</translation>
 <translation id="8509646642152301857">Det gick inte att ladda ned ordlistan för stavningskontrollen.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Inga svaga lösenord hittades}=1{{COUNT} svagt lösenord hittades}other{{COUNT} svaga lösenord hittades}}</translation>
 <translation id="8512476990829870887">Avsluta process</translation>
 <translation id="851263357009351303">Tillåt alltid att <ph name="HOST" /> visar bilder</translation>
 <translation id="8513108775083588393">Rotera automatiskt</translation>

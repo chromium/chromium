@@ -11,6 +11,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1131805035311359397">Për të kontrolluar nëse fjalëkalimet e tua janë të sigurta nga nxjerrjet e paautorizuara të të dhënave dhe probleme të tjera të sigurisë, <ph name="BEGIN_LINK" />identifikohu në Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Rreth Chromium</translation>
 <translation id="1315551408014407711">Konfiguro profilin tënd të ri të Chromium</translation>
+<translation id="1357932062193643861">Pyet kur të hapet Chromium</translation>
 <translation id="1396446129537741364">Chromium po përpiqet të shfaqë fjalëkalimet.</translation>
 <translation id="1414495520565016063">Je i identifikuar në Chromium!</translation>
 <translation id="151962892725702025">Chromium OS nuk mund të sinkronizonte të dhënat e tua sepse Sinkronizimi nuk mundësohet për domenin tënd.</translation>
@@ -185,6 +186,7 @@ Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër profili os
 <translation id="6863361426438995919">Google Pay (kopjuar në Chromium)</translation>
 <translation id="6893813176749746474">Chromium është përditësuar, por nuk e ke përdorur për të paktën 30 ditë.</translation>
 <translation id="6964305034639999644">Hape lidhjen në një dritare të fshe&amp;htë të Chromium</translation>
+<translation id="6978145336957848883">Fjalëkalimet e dobëta mund të gjenden me lehtësi. Lejoje Chromium <ph name="BEGIN_LINK" />të krijojë dhe mbajë mend fjalëkalime të forta për ty<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium ka nevojë për leje për t'u qasur te mikrofoni yt për këtë sajt</translation>
 <translation id="701244094609242530">Chromium nuk mund t'i kontrollojë shtesat e tua. Provo përsëri më vonë.</translation>
 <translation id="7028347026395185822">{NUM_HOURS,plural, =1{Chromium nuk gjeti softuerëve të dëmshëm të njohur në kompjuterin tënd. Kontrolli i fundit: 1 orë më parë.}other{Chromium nuk gjeti softuerëve të dëmshëm të njohur në kompjuterin tënd. Kontrolli i fundit: {NUM_HOURS} orë më parë.}}</translation>

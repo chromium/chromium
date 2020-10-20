@@ -314,6 +314,7 @@
 <translation id="4072264167173457037">মাঝারি সিগন্যাল</translation>
 <translation id="4112140312785995938">পিছিয়ে যান</translation>
 <translation id="4114315158543974537">'ফোন হাব' ফিচার চালু করুন</translation>
+<translation id="4121728057981832179">কোনও ভার্চুয়াল মেশিন আপনার মাইক্রোফোন ব্যবহার করছে</translation>
 <translation id="4129129681837227511">আপনার লক স্ক্রিনে বিজ্ঞপ্তি দেখার জন্য সেটিংস পরিবর্তন করতে আনলক করুন</translation>
 <translation id="4146833061457621061">মিউজিক চালান</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> <ph name="DOMAIN" /> ম্যানেজ করে</translation>
@@ -328,6 +329,7 @@
 <translation id="4217571870635786043">ডিক্টেশন</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4261870227682513959">বিজ্ঞপ্তি সেটিংস দেখান। বিজ্ঞপ্তি বন্ধ আছে</translation>
+<translation id="4267383818855338811">কোনও ভার্চুয়াল মেশিন আপনার ক্যামেরা ব্যবহার করছে</translation>
 <translation id="4269883910223712419">এই ডিভাইসের প্রশাসক এগুলি করতে পারেন:</translation>
 <translation id="4279490309300973883">অনুকরণ করা হচ্ছে</translation>
 <translation id="4285498937028063278">আনপিন</translation>
@@ -363,6 +365,7 @@
 <translation id="4513946894732546136">প্রতিক্রিয়া</translation>
 <translation id="4527045527269911712">ব্লুটুথ ডিভাইস "<ph name="DEVICE_NAME" />" যুক্ত করার অনুমতি চাইছে।</translation>
 <translation id="453661520163887813">সম্পূর্ণ হতে <ph name="TIME" /> বাকি</translation>
+<translation id="4544483149666270818">রেকর্ড করতে একটি উইন্ডো বেছে নিন</translation>
 <translation id="4560576029703263363">চালু করা আছে</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">পাসওয়ার্ড লুকান</translation>
@@ -402,6 +405,15 @@
 <translation id="4918086044614829423">স্বীকার</translation>
 <translation id="4924411785043111640">রিস্টার্ট করুন এবং রিসেট করুন</translation>
 <translation id="4925542575807923399">এই অ্যাকাউন্টের অ্যাডমিনিস্ট্রেটর অ্যাকাউন্টটিকে একাধিক সাইন-ইন সেশনের প্রথম সাইন-ইন করে থাকা অ্যাকাউন্ট হিসেবে রাখতে চায়৷</translation>
+<translation id="4942878304446937978">স্ট্যাটাস ট্রে, সময় <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
+<translation id="4946376291507881335">ছবি তুলুন</translation>
 <translation id="495046168593986294">উপরের দিকে স্ক্রল করুন</translation>
 <translation id="4961318399572185831">স্ক্রিন কাস্ট করুন</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ঘঃ <ph name="MINUTES" />মিঃ <ph name="SECONDS" />সেঃ</translation>
@@ -447,6 +459,7 @@
 <translation id="554893713779400387">ডিক্টেশন চালু বা বন্ধ করুন</translation>
 <translation id="556042886152191864">বোতাম</translation>
 <translation id="5571066253365925590">ব্লুটুথ সক্ষমিত</translation>
+<translation id="558849140439112033">ছবি তুলতে ড্র্যাগ করে কিছুটা জায়গা বেছে নিন</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">কথ্য প্রতিবার্তা বন্ধ করতে Ctrl + Alt + Z টিপুন।</translation>
 <translation id="5625955975703555628">LTE+</translation>
@@ -474,9 +487,11 @@
 <translation id="5860033963881614850">বন্ধ করুন</translation>
 <translation id="5876666360658629066">অভিভাবকীয় কোডটি লিখুন</translation>
 <translation id="5895138241574237353">পুনর্সূচনা</translation>
+<translation id="589817443623831496">পয়েন্ট স্ক্যানিং</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">ডেস্কটি অ্যাক্টিভ নেই</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5915278665499293471">ফুলস্ক্রিন ছবি তুলতে যেকোনও জায়গায় ক্লিক করুন</translation>
 <translation id="5916664084637901428">চালু</translation>
 <translation id="5920710855273935292">মাইক্রোফোন মিউট করা আছে।</translation>
 <translation id="594179686076170922">আপনার ফোনের সাথে কানেক্ট করা হচ্ছে...</translation>
@@ -535,6 +550,7 @@
 <translation id="6490471652906364588">USB-C ডিভাইস (ডান পোর্ট)</translation>
 <translation id="649452524636452238">স্মার্ট কার্ড পিন</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" /> এ স্ক্রিন কাস্ট করা হচ্ছে</translation>
+<translation id="6520517963145875092">ছবি তুলতে একটি উইন্ডো বেছে নিন</translation>
 <translation id="652139407789908527">এই আপডেট চলাকালীন, আপনার স্ক্রিনে, সাধারণত যে সময় লাগে, তার চেয়ে বেশি সময় (প্রায় এক মিনিট পর্যন্ত) কিছুই দেখতে পাবেন না। আপডেট চলাকালীন পাওয়ার বোতাম প্রেস করবেন না।</translation>
 <translation id="6528179044667508675">বিরক্ত করবে না</translation>
 <translation id="65320610082834431">ইমোজি</translation>
@@ -563,6 +579,7 @@
 <translation id="6751052314767925245">আপনার অ্যাডমিনিস্ট্রেটর প্রয়োগ করেছেন</translation>
 <translation id="6751826523481687655">পারফরম্যান্স ট্রেস করার বিকল্প চালু আছে</translation>
 <translation id="6752912906630585008">ডেস্ক <ph name="REMOVED_DESK" />-কে সরিয়ে দিয়ে <ph name="RECEIVE_DESK" />-এর সাথে মার্জ করা হয়েছে</translation>
+<translation id="6757237461819837179">কোনও মিডিয়া চলছে না</translation>
 <translation id="6777216307882431711">কানেক্ট করা USB-C ডিভাইসগুলি চার্জ করা হচ্ছে</translation>
 <translation id="6790428901817661496">চালু করুন</translation>
 <translation id="6803622936009808957">সমর্থিত রেসুলিউশানগুলি খুঁজে না পাওয়ায় প্রদর্শনগুলি মিরর মানে প্রতিবিম্বিত করতে পারেনি। এর পরিবর্তে প্রসারিত ডেস্কটপে প্রবেশ করেছে।</translation>
@@ -611,6 +628,7 @@
 <translation id="7348093485538360975">অন-স্ক্রীণ কীবোর্ড</translation>
 <translation id="735745346212279324">VPN ডিসকানেক্ট করা হয়েছে</translation>
 <translation id="7377169924702866686">Caps Lock চালু আছে৷</translation>
+<translation id="7378203170292176219">রেকর্ড করতে ড্র্যাগ করে কিছুটা জায়গা বেছে নিন</translation>
 <translation id="7378594059915113390">মিডিয়ার নিয়ন্ত্রণ</translation>
 <translation id="7398254312354928459">নেটওয়ার্ক সংযোগ পরিবর্তন করা হয়েছে</translation>
 <translation id="7405710164030118432">ডিভাইসটি আনলক করতে আপনার Family Link-এর অভিভাবকীয় অ্যাক্সেস কোডটি লিখুন</translation>
@@ -637,6 +655,7 @@
 <translation id="7618774594543487847">নিউট্রাল</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° ফারেনহাইট</translation>
 <translation id="7633755430369750696">'নিয়ারবাই শেয়ার' সেটিংস দেখুন।</translation>
+<translation id="7641938616688887143">রেকর্ড করুন</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" /> নেটওয়ার্কের সেটিংস খুলুন, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (মালিক)</translation>
 <translation id="7647488630410863958">আপনার বিজ্ঞপ্তিগুলি দেখতে ডিভাইস আনলক করুন</translation>
@@ -733,6 +752,7 @@
 <translation id="8563862697512465947">বিজ্ঞপ্তি সেটিংস</translation>
 <translation id="857201607579416096">স্ক্রিনের নিচে ডানদিকের কোণায় মেনু সরে গেছে।</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
+<translation id="861041328460089089">ফুলস্ক্রিনের ছবি তুলতে যেকোনও জায়গায় ট্যাপ করুন</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" />-এর সাথে কানেক্ট হয়েছে</translation>
 <translation id="8631727435199967028">অ্যাক্সেসিবিলিটি সেটিংস</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>

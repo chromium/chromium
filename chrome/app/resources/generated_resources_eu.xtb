@@ -928,6 +928,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="204914487372604757">Sortu lasterbidea</translation>
 <translation id="2050339315714019657">Bertikala</translation>
 <translation id="2053312383184521053">Jarduerarik gabeko egoeraren datuak</translation>
+<translation id="2054665754582400095">Zure presentzia</translation>
 <translation id="2055585478631012616">Webgune horietako saioa amaituko da, baita irekita dauden fitxetakoa ere</translation>
 <translation id="205560151218727633">Google-ren Laguntzailea eginbidearen logotipoa</translation>
 <translation id="2058456167109518507">Hautemandako gailua</translation>
@@ -1214,6 +1215,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2387052489799050037">Joan hasierako pantailara</translation>
 <translation id="2387458720915042159">Proxy konexio mota</translation>
 <translation id="2390347491606624519">Ezin da konektatu proxyra. Hasi saioa berriro.</translation>
+<translation id="2390782873446084770">Wifi-sinkronizazioa</translation>
 <translation id="2391082728065870591">Bidali zerbitzuari buruzko iritzien txostena</translation>
 <translation id="2391419135980381625">Letra estandarra</translation>
 <translation id="2392163307141705938">Iritsi zara gurasoak <ph name="IDS_SHORT_PRODUCT_NAME" /> erabiltzeko ezarritako denbora-mugara.</translation>
@@ -1870,6 +1872,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3157931365184549694">Leheneratu</translation>
 <translation id="3158033540161634471">Konfiguratu hatz-marka</translation>
 <translation id="3159493096109238499">Beixa</translation>
+<translation id="3159978855457658359">Editatu gailuaren izena</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (hardwarean gordeta)</translation>
 <translation id="3161522574479303604">Hizkuntza guztiak</translation>
 <translation id="3162853326462195145">Ikastetxeko kontua</translation>
@@ -2346,7 +2349,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3713047097299026954">Segurtasun-giltzan ez dago saioa hasteko daturik</translation>
 <translation id="3714195043138862580">Zerbitzuarekiko duen sarbidea kendu zaio demo gailuari.</translation>
 <translation id="3714633008798122362">web-egutegia</translation>
-<translation id="3715954932774762075">Hizkuntza batean baino gehiagotan dauden aplikazioek eta webguneek hizkuntza onartuen zerrendan agertzen den lehenengo hizkuntza erabiliko dute. Arakatzaileko ezarpenekin sinkronizatuta daude hobespen horiek. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3715954932774762075">Hizkuntza onartuen zerrendan agertzen den lehenengo hizkuntza erabiliko dute hizkuntza batean baino gehiagotan dauden aplikazioek eta webguneek. Arakatzaileko ezarpenekin sinkronizatuta daude hobespen horiek. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Orri nagusia</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Google eta zu</translation>
@@ -3230,6 +3233,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="4761104368405085019">Erabili mikrofonoa</translation>
 <translation id="4762718786438001384">Oso toki gutxi dago gailuaren diskoan</translation>
 <translation id="4763408175235639573">Cookie hauek ezarri dira orria ikusi duzunean:</translation>
+<translation id="4764368918650455114">Egiaztatu bi gailuak desblokeatuta eta elkarrengandik hurbil daudela, eta Bluetooth-a aktibatuta daukatela. Chromebook batekin edukia partekatzeko asmoa baduzu, egiaztatu Nearby Sharing aktibatuta daukala (hautatu ordua egoeraren eremua irekitzeko, eta, gero, hautatu Nearby Share). <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="4765582662863429759">Testu-mezuak telefonotik Chromebook gailura bidaltzea baimentzen dio Android Mezuak aplikazioari</translation>
 <translation id="476598255842811483">Inor ez, Nearby Share zure gailuan ireki ezean</translation>
 <translation id="4768332406694066911">Identifikatzen zaituzten erakunde hauen ziurtagiriak dituzu</translation>
@@ -3392,6 +3396,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="496185450405387901">Administratzaileak instalatu du aplikazio hau.</translation>
 <translation id="4964455510556214366">Antolakuntza</translation>
+<translation id="496446150016900060">Sinkronizatu wifi-sareak telefonoarekin</translation>
 <translation id="4965808351167763748">Ziur gailu hau Hangouts Meet zerbitzuarekin erabiltzeko konfiguratu nahi duzula?</translation>
 <translation id="496888482094675990">Fitxategiak aplikazioarekin, azkar atzituko dituzu Google Drive-n, kanpoko memorian edo Chrome OS gailuan gordeta dituzun fitxategiak.</translation>
 <translation id="4971412780836297815">Ireki amaitzean</translation>
@@ -3698,6 +3703,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5341980496415249280">Itxaron paketatzeko prozesua osatzen dugun arte…</translation>
 <translation id="5342091991439452114">PIN kodeak <ph name="MINIMUM" /> digitu izan behar ditu gutxienez</translation>
 <translation id="5344036115151554031">Linux leheneratzen</translation>
+<translation id="5345916423802287046">Abiarazi aplikazioa saioa hasten duzunean</translation>
 <translation id="5350293332385664455">Desaktibatu Google-ren Laguntzailea</translation>
 <translation id="535123479159372765">Beste gailu batetik kopiatu da testua</translation>
 <translation id="5352033265844765294">Denbora-zigiluak</translation>
@@ -4007,6 +4013,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5704875434923668958">Honekin sinkronizatzen:</translation>
 <translation id="5705005699929844214">Erakutsi beti erabilerraztasun-aukerak</translation>
 <translation id="5705882733397021510">Egin atzera</translation>
+<translation id="5707117624115653804">Pertsonalizatu azpitituluen tamaina eta estiloa eginbide hori onartzen duten aplikazio eta webguneetan</translation>
 <translation id="5707185214361380026">Ezin izan da kargatu hemengo luzapena:</translation>
 <translation id="5708171344853220004">Microsoft zuzendariaren izena</translation>
 <translation id="5709557627224531708">Ezarri Chrome arakatzaile lehenetsi gisa</translation>
@@ -4170,6 +4177,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5904614460720589786">Ezin izan da instalatu <ph name="APP_NAME" /> konfigurazio-arazo batengatik. Jarri administratzailearekin harremanetan. Errore-kodea: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Ia amaitu dugu! Eguneratzen amaitzeko, berrabiarazi gailua.</translation>
 <translation id="5906732635754427568">Aplikazio honekin erlazionatutako datu guztiak kenduko dira gailu honetatik.</translation>
+<translation id="5908474332780919512">Abiarazi aplikazioa saioa hasten duzunean</translation>
 <translation id="5908695239556627796">Saguarekin gora/behera egiteko abiadura</translation>
 <translation id="5908769186679515905">Ez utzi webguneei Flash abiarazten</translation>
 <translation id="5910363049092958439">Gor&amp;de irudia honela…</translation>
@@ -4709,6 +4717,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6532527800157340614">Ezin izan da hasi saioa, ezin izan delako eskuratu sarbide-tokena. Egiaztatu sarera konektatuta zaudela eta saiatu berriro.</translation>
 <translation id="6532663472409656417">Enpresan erregistratua</translation>
 <translation id="6535331821390304775">Eman baimena beti <ph name="ORIGIN" /> webguneari halako estekak haiekin erlazionatutako aplikazioan irekitzeko</translation>
+<translation id="6537613839935722475">Izenak hizkiak, zenbakiak eta marratxoak (-) eduki ditzake</translation>
 <translation id="6538635548667167211">Uneko datuen erabileraren ezarpena "Datu-konexioa" da</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Oharra:<ph name="END_BOLD" /> gaitu aukera zer egiten ari zaren baldin badakizu edo hori egiteko eskatu badizute, datuak biltzeak errendimendua murritz baitezake.</translation>
 <translation id="6541638731489116978">Webgune honi mugimendu-sentsoreak atzitzeko aukera blokeatu zaio.</translation>
@@ -4797,6 +4806,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6650234781371031356">Gailu honetan eta Google-ko kontuan dago gordeta <ph name="WEBSITE" /> webguneko pasahitza. Nongoa ezabatu nahi duzu?</translation>
 <translation id="665061930738760572">Ireki leiho &amp;berrian</translation>
 <translation id="6651237644330755633">Jo fidagarritzat webguneak identifikatzeko ziurtagiri hau</translation>
+<translation id="6651495917527016072">Sinkronizatu wifi-sareak telefonoarekin. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">x86_64 plataformetan soilik onartzen da Chrome <ph name="MS_AD_NAME" /> integrazioa. ARM eta x86 plataformak erabiltzen dituzten Chromebook gailuek ez dute onartzen funtzio hori.</translation>
 <translation id="6654509035557065241">Sare hobetsia</translation>
 <translation id="6655190889273724601">Garatzaile modua</translation>
@@ -5400,6 +5410,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="7375235221357833624">{0,plural, =1{Eguneratu gailua ordubeteko epean}other{Eguneratu gailua # orduko epean}}</translation>
 <translation id="7376553024552204454">Mugitzen ari denean, nabarmendu saguaren erakuslea</translation>
 <translation id="7377451353532943397">Jarraitu sentsoreetarako sarbidea blokeatzen</translation>
+<translation id="7378611153938412599">Seguruak ez diren pasahitzak erraz asmatzen dira. Ziurtatu pasahitz seguruak sortzen dituzula. <ph name="BEGIN_LINK" />Ikusi segurtasun-aholku gehiago.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Ireki Chrome Web Store</translation>
 <translation id="7378812711085314936">Lortu datu-konexioa</translation>
 <translation id="7380622428988553498">Balio ez duten karaktereak ditu gailuaren izenak</translation>
@@ -5924,6 +5935,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="7959074893852789871">Fitxategiak ziurtagiri bat baino gehiago ditu eta horietako batzuk inportatu dira:</translation>
 <translation id="7961015016161918242">Inoiz ez</translation>
 <translation id="7963001036288347286">Ukipen-panelaren erabilera bizkortua</translation>
+<translation id="7963608432878156675">Beste gailu batzuek Bluetooth bidezko edo sareko konexioak ezartzeko ikus dezakete izen hau</translation>
 <translation id="7963826112438303517">Laguntzailea eginbideak grabaketa hauek eta ahozko eskaerak erabiliko ditu ahots-eredua sortzeko eta eguneratzeko, eta eredu hori Voice Match gaitu duzun gailuetan gordeko da. Ikusi edo trebatu berriro ahozko jarduerak Laguntzailea eginbidearen ezarpenetan.</translation>
 <translation id="7966241909927244760">K&amp;opiatu irudiaren helbidea</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{1 elementu dago laster-marken zerrendan}other{{COUNT} elementu daude laster-marken zerrendan}}</translation>
@@ -6387,6 +6399,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="850875081535031620">Ez da aurkitu software kaltegarririk</translation>
 <translation id="8509177919508253835">Berrezarri segurtasun-giltzak eta sortu PIN kodeak</translation>
 <translation id="8509646642152301857">Ezin izan da deskargatu ortografia-zuzenketarako hiztegia.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Ez da aurkitu segurua ez den pasahitzik}=1{Segurua ez den {COUNT} pasahitz aurkitu da}other{Seguruak ez diren {COUNT} pasahitz aurkitu dira}}</translation>
 <translation id="8512476990829870887">Amaitu prozesua</translation>
 <translation id="851263357009351303">Eman beti irudiak erakusteko baimena <ph name="HOST" /> webguneari</translation>
 <translation id="8513108775083588393">Biratu auto.</translation>

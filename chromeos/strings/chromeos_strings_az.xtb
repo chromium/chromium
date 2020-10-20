@@ -3,6 +3,7 @@
 <translationbundle lang="az">
 <translation id="1018656279737460067">Ləğv edilib</translation>
 <translation id="1195447618553298278">Naməlum xəta.</translation>
+<translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">Alınmadı - Filtr xətası</translation>
 <translation id="1468664791493211953">Təkliflər</translation>
 <translation id="1478594628797167447">Skaner</translation>
@@ -46,6 +47,7 @@
 <translation id="4227825898293920515">Parolun vaxtı <ph name="TIME" /> ərzində başa çatır</translation>
 <translation id="4238516577297848345">Hazırda davam edən çap işləri yoxdur</translation>
 <translation id="4297501883039923494">Dayanıb - Naməlum xəta</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Kerberos biletinin vaxtı tezliklə başa çatacaq</translation>
 <translation id="445059817448385655">Köhnə parol</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Çap işini ləğv etmək üçün Enter düyməsinə basın.</translation>
@@ -72,6 +74,7 @@
 <translation id="6058625436358447366">Tamamlamaq üçün yeni və köhnə parolları yazın</translation>
 <translation id="6106186594183574873">Tamamlamaq üçün köhnə parolu yazın</translation>
 <translation id="6146993107019042706">Tamamlamaq üçün yeni parolu daxil edin</translation>
+<translation id="6147514244879357420">PNG</translation>
 <translation id="636850387210749493">Sahibkarlıq qeydiyyatı</translation>
 <translation id="649050271426829538">Dayanıb - Kağız ilişib</translation>
 <translation id="6517239166834772319">Araşdırın</translation>
@@ -81,6 +84,7 @@
 <translation id="6747215703636344499">Dayanıb - Çıxış doludur</translation>
 <translation id="7162487448488904999">Qalereya</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7359657277149375382">Fayl növü</translation>
 <translation id="7561454561030345039">Bu əməliyyat admininiz tərəfindən idarə olunur</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
 <translation id="7690294790491645610">Yeni parolu təsdiq edin</translation>

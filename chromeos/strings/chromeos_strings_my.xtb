@@ -3,6 +3,7 @@
 <translationbundle lang="my">
 <translation id="1018656279737460067">ဖျက်သိမ်းခဲ့သည်</translation>
 <translation id="1195447618553298278">မှားရသည့်အကြောင်း မသိပါ။</translation>
+<translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">မအောင်မြင်ပါ - ဆန်ခါ ရပ်သွားသည်</translation>
 <translation id="1468664791493211953">ကမ်းလှမ်းချက်များ</translation>
 <translation id="1478594628797167447">စကင်ဖတ်စနစ်</translation>
@@ -46,6 +47,7 @@
 <translation id="4227825898293920515">စကားဝှက်သည် <ph name="TIME" /> တွင် သက်တမ်းကုန်ပါမည်</translation>
 <translation id="4238516577297848345">ပရင့်ထုတ်ရန် ဖိုင်များ လုပ်ဆောင်မနေပါ</translation>
 <translation id="4297501883039923494">ရပ်သွားသည် - အမည်မသိ အမှား</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Kerberos လက်မှတ်သည် မကြာမီ သက်တမ်းကုန်ပါတော့မည်</translation>
 <translation id="445059817448385655">စကားဝှက်အဟောင်း</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />၊ <ph name="PRINTER_NAME" />၊ <ph name="CREATION_TIME" />၊ စာမျက်နှာ <ph name="TOTAL_PAGE_NUMBER" /> မျက်နှာအနက် <ph name="PRINTED_PAGE_NUMBER" /> မျက်နှာ။ ပရင့်ထုတ်ရန်ဖိုင် ပယ်ဖျက်ရန် enter နှိပ်ပါ။</translation>
@@ -72,6 +74,7 @@
 <translation id="6058625436358447366">အပြီးသတ်ရန်အတွက် သင့်စကားဝှက် အသစ်နှင့် အဟောင်းကို ထည့်ပါ</translation>
 <translation id="6106186594183574873">အပြီးသတ်ရန်အတွက် သင့်စကားဝှက်ဟောင်းကို ထည့်ပါ</translation>
 <translation id="6146993107019042706">အပြီးသတ်ရန် သင့်စကားဝှက်အသစ်ကို ထည့်ပါ</translation>
+<translation id="6147514244879357420">PNG</translation>
 <translation id="636850387210749493">လုပ်ငန်း အမည်စာရင်းသွင်းခြင်း</translation>
 <translation id="649050271426829538">ရပ်သွားသည် - စာရွက်ညပ်နေသည်</translation>
 <translation id="6517239166834772319">စူးစမ်းလေ့လာခြင်း</translation>
@@ -81,6 +84,7 @@
 <translation id="6747215703636344499">ရပ်ထားသည် - အထွက်ပြည့်နေသည်</translation>
 <translation id="7162487448488904999">ပြခန်း</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7359657277149375382">ဖိုင်အမျိုးအစား</translation>
 <translation id="7561454561030345039">ဤလုပ်ဆောင်ချက်ကို သင့်စီမံခန့်ခွဲသူက စီမံသည်</translation>
 <translation id="7658239707568436148">မလုပ်တော့</translation>
 <translation id="7690294790491645610">စကားဝှက်အသစ်ကို အတည်ပြုပါ</translation>

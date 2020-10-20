@@ -185,6 +185,7 @@ Nekatere funkcije morda ne bodo na voljo. Določite drug imenik profila ali upor
 <translation id="6863361426438995919">Google Pay (kopirano v Chromium)</translation>
 <translation id="6893813176749746474">Chromium je posodobljen, vendar ga niste uporabljali najmanj 30 dni.</translation>
 <translation id="6964305034639999644">Odpri povezavo v Chromiumovem oknu brez bele&amp;ženja zgodovine</translation>
+<translation id="6978145336957848883">Šibka gesla je preprosto ugotoviti. Chromiumu omogočite, da <ph name="BEGIN_LINK" />ustvari zapletena gesla za vas in jih shrani<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium potrebuje dovoljenje za dostop do mikrofona za to spletno mesto</translation>
 <translation id="701244094609242530">Chromium ne more preveriti razširitev. Poskusite pozneje.</translation>
 <translation id="7028347026395185822">{NUM_HOURS,plural, =1{Chromium v računalniku ni odkril škodljive programske opreme. Nazadnje preverjeno: Pred 1 uro.}one{Chromium v računalniku ni odkril škodljive programske opreme. Nazadnje preverjeno: Pred {NUM_HOURS} uro.}two{Chromium v računalniku ni odkril škodljive programske opreme. Nazadnje preverjeno: Pred {NUM_HOURS} urama.}few{Chromium v računalniku ni odkril škodljive programske opreme. Nazadnje preverjeno: Pred {NUM_HOURS} urami.}other{Chromium v računalniku ni odkril škodljive programske opreme. Nazadnje preverjeno: Pred {NUM_HOURS} urami.}}</translation>

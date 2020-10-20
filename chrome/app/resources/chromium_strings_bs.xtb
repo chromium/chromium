@@ -11,6 +11,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="1131805035311359397">Da provjerite jesu li vaše lozinke zaštićene od narušavanja podataka i drugih sigurnosnih problema, <ph name="BEGIN_LINK" />prijavite se u Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">O programu Chromium</translation>
 <translation id="1315551408014407711">Postavite novi Chromium profil</translation>
+<translation id="1357932062193643861">Pitaj kada se otvori Chromium</translation>
 <translation id="1396446129537741364">Chromium pokušava prikazati lozinke.</translation>
 <translation id="1414495520565016063">Prijavili ste se u Chromium!</translation>
 <translation id="151962892725702025">Chromium OS nije mogao sinhronizirati podatke zato što sinhronizacija nije dostupna u vašoj domeni.</translation>
@@ -185,7 +186,7 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="6863361426438995919">Google Pay (kopirano u Chromium)</translation>
 <translation id="6893813176749746474">Chromium je ažuriran, ali ga niste koristili najmanje 30 dana.</translation>
 <translation id="6964305034639999644">Otvori link u anonim&amp;nom prozoru Chromiuma</translation>
-<translation id="6978145336957848883">Slabe zaporke lako je pogoditi. Neka Chromium <ph name="BEGIN_LINK" />izradi i zapamti snažne zaporke za vas<ph name="END_LINK" />.</translation>
+<translation id="6978145336957848883">Slabe lozinke je lako pogoditi. Dozvolite Chromiumu da <ph name="BEGIN_LINK" />kreira i zapamti jake lozinke za vas<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium treba dopuštenje za pristup mikrofonu za ovu web-lokaciju</translation>
 <translation id="701244094609242530">Chromium ne može provjeravati vaše ekstenzije. Pokušajte ponovo kasnije.</translation>
 <translation id="7028347026395185822">{NUM_HOURS,plural, =1{Chromium nije pronašao nijedan poznati štetni softver na vašem računaru. Posljednja provjera: prije 1 sat.}one{Chromium nije pronašao nijedan poznati štetni softver na vašem računaru. Posljednja provjera: prije {NUM_HOURS} sat.}few{Chromium nije pronašao nijedan poznati štetni softver na vašem računaru. Posljednja provjera: prije {NUM_HOURS} sata.}other{Chromium nije pronašao nijedan poznati štetni softver na vašem računaru. Posljednja provjera: prije {NUM_HOURS} sati.}}</translation>

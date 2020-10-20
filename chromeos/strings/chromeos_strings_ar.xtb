@@ -3,6 +3,7 @@
 <translationbundle lang="ar">
 <translation id="1018656279737460067">تم الإلغاء</translation>
 <translation id="1195447618553298278">خطأ  غير محدّد.</translation>
+<translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">تعذَّرت الطباعة - خلل في عامل تصفية الطباعة</translation>
 <translation id="1468664791493211953">العروض</translation>
 <translation id="1478594628797167447">الماسح الضوئي</translation>
@@ -46,6 +47,7 @@
 <translation id="4227825898293920515">تنتهي صلاحية كلمة المرور في <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ما من مهام قيد الطباعة.</translation>
 <translation id="4297501883039923494">توقّفت الطابعة - خطأ غير معروف</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">‏ستنتهي صلاحية تذكرة Kerberos قريبًا</translation>
 <translation id="445059817448385655">كلمة المرور القديمة</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="PRINTED_PAGE_NUMBER" /> من أصل <ph name="TOTAL_PAGE_NUMBER" />. يمكنك الضغط على enter لإلغاء مهمة الطباعة.</translation>
@@ -73,6 +75,7 @@
 <translation id="6058625436358447366">يُرجى إدخال كلمتي المرور القديمة والجديدة لإنهاء الإجراء.</translation>
 <translation id="6106186594183574873">يُرجى إدخال كلمة المرور القديمة لإنهاء الإجراء.</translation>
 <translation id="6146993107019042706">يُرجى إدخال كلمة مرور جديدة لإنهاء الإجراء.</translation>
+<translation id="6147514244879357420">PNG</translation>
 <translation id="636850387210749493">التسجيل في المؤسسة</translation>
 <translation id="649050271426829538">توقّفت الطابعة - الورق مكدّس</translation>
 <translation id="6517239166834772319">استكشاف</translation>

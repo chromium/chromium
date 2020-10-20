@@ -107,7 +107,7 @@
 
       * "Forte" ou for deixada sem definição, apenas os tipos AES terão permissão;
 
-      * "Legado", apenas o tipo RC4 terá permissão. O RC4 não é seguro. Ele deve ser necessário apenas em casos muito específicos. Se possível, reconfigure o servidor para ser compatível com codificação AES.
+      * "Legado", apenas o tipo RC4 terá permissão. O RC4 não é seguro. Ele é necessário apenas em casos muito específicos. Se possível, reconfigure o servidor para ser compatível com codificação AES.
 
       Consulte também https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed#Kerberos_client_encryption_types (link em inglês).</translation>
 <translation id="1177567780207290133">Se a política for definida, será possível controlar o filtro de URL SafeSites que usa a API Google Safe Search para classificar URLs como sendo pornográficos ou não.
@@ -199,7 +199,7 @@
       Se esta política é definida como "false", o <ph name="PRODUCT_NAME" /> não permite que perfis de convidados sejam iniciados.</translation>
 <translation id="1363275621236827384">Permitir consultas no Servidor Quirks para perfis de hardware</translation>
 <translation id="1376119291123231789">Ativar o modo avançado de carregamento da bateria</translation>
-<translation id="1378850678793136128">Permite que você defina uma lista de padrões de URL que especifica quais sites recebem permissão automaticamente para acessar um dispositivo USB com os IDs de produto e de fornecedor especificados na tela de login. Cada item da lista precisa ter um campo "devices" e "urls" para que a política seja válida. Cada item no campo "devices" pode ter um campo "vendor_id" e "product_id". A omissão do campo "vendor_id" criará uma política correspondente a qualquer dispositivo. A omissão do campo "product_id" criará uma política correspondente a qualquer dispositivo com o ID de fornecedor especificado. Uma política com um campo "product_id" que não tiver um campo "vendor_id" será inválida.
+<translation id="1378850678793136128">Permite que você defina uma lista de padrões de URL que especifica quais sites recebem permissão automaticamente para acessar um dispositivo USB com os IDs de produto e de fornecedor especificados na tela de login. Cada item da lista precisa ter um campo "devices" e "urls" para que a política seja válida. Cada item no campo "devices" pode ter um campo "vendor_id" e "product_id". A omissão do campo "vendor_id" criará uma política válida para qualquer dispositivo. A omissão do campo "product_id" criará uma política válida para qualquer dispositivo com o ID de fornecedor especificado. Uma política com um campo "product_id" que não tiver um campo "vendor_id" será inválida.
 
         O modelo de permissão USB usa o URL do site solicitante ("URL solicitante") e o URL do site de frame de nível superior ("URL de incorporação") para conceder permissão ao URL solicitante para acessar o dispositivo USB. O URL solicitante pode ser diferente do URL de incorporação quando o site solicitante está carregado em um iframe. Portanto, o campo "urls" pode conter até duas strings de URL delimitadas por vírgula para especificar os URLs solicitante e de incorporação, respectivamente. Se apenas um URL for especificado, o acesso aos dispositivos USB correspondentes será concedido quando o URL do site solicitante coincidir com esse URL, independentemente do status de incorporação. Os URLs contidos em "urls" precisam ser válidos. Caso contrário, a política será ignorada.
 
@@ -794,7 +794,7 @@ Se você desativar esta configuração ou deixá-la sem definição, todas as p�
       Esta política não pode ser aplicada em dispositivos usados pelo público geral.
 
       Se a política for definida como verdadeira ou não for definida, o alerta de privacidade na Sessão de visitante com início automático será fixado até que o usuário o dispense.</translation>
-<translation id="228665601367357543">Permite que você crie uma lista de padrões de URL que especifica quais sites recebem permissão automaticamente para acessar um dispositivo USB com os IDs de produto e de fornecedor especificados. Cada item da lista precisa ter um campo "devices" e "urls" para que a política seja válida. Cada item no campo "devices" pode ter um campo "vendor_id" e "product_id". A omissão do campo "vendor_id" criará uma política correspondente a qualquer dispositivo. A omissão do campo "product_id" criará uma política correspondente a qualquer dispositivo com o ID de fornecedor especificado. Uma política com um campo "product_id" que não tiver um campo "vendor_id" será inválida.
+<translation id="228665601367357543">Permite que você crie uma lista de padrões de URL que especifica quais sites recebem permissão automaticamente para acessar um dispositivo USB com os IDs de produto e de fornecedor especificados. Cada item da lista precisa ter um campo "devices" e "urls" para que a política seja válida. Cada item no campo "devices" pode ter um campo "vendor_id" e "product_id". A omissão do campo "vendor_id" criará uma política válida para qualquer dispositivo. A omissão do campo "product_id" criará uma política válida para qualquer dispositivo com o ID de fornecedor especificado. Uma política com um campo "product_id" que não tiver um campo "vendor_id" será inválida.
 
       O modelo de permissão de USB usa o URL solicitante e o de incorporação (do site de frames de nível superior) para permitir que o URL solicitante acesse o dispositivo USB. O URL solicitante pode ser diferente do URL de incorporação quando o site solicitante é carregado em um iframe. Portanto, o campo "URLs" pode conter até duas strings delimitadas por vírgula para especificar esses URLs. Se você especificar apenas uma, o acesso aos dispositivos USB correspondentes será concedido quando o URL do site solicitante for igual a esse URL, independente do status de incorporação. Os URLs contidos em "urls" precisam ser válidos. Caso contrário, a política será ignorada.
 
@@ -2815,7 +2815,7 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 
       Se a política for definida como falsa ou não for definida, a área de trabalho unificada ficará desativada e os usuários não poderão ativá-la.</translation>
 <translation id="5255162913209987122">Pode ser recomendada</translation>
-<translation id="5264066441613395613">Se a política for definida, haverá configurações de proxy para Chrome e apps ARC, ignorando todas as opções relacionadas a proxy especificadas na linha de comando.
+<translation id="5264066441613395613">Se a política for definida, haverá configurações de proxy para o Chrome e apps ARC, ignorando todas as opções relacionadas a proxy especificadas na linha de comando.
 
        Se a política não for definida, os usuários poderão escolher as configurações de proxy.
 
@@ -2825,7 +2825,7 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
          * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />, um URL do servidor proxy.
          * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />, uma lista de hosts de proxy ignorados pelo <ph name="PRODUCT_NAME" />.
 
-       O campo <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> foi substituído pelo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, que permite especificar o servidor proxy usado pelo Chrome e evitar que os usuários mudem as configurações de proxy.
+       O campo <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> foi substituído pelo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, que permite especificar o servidor proxy usado pelo Chrome e evita que os usuários mudem as configurações de proxy.
 
         Para <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, se você escolher o valor:
           * <ph name="PROXY_MODE_ENUM_DIRECT" />, um proxy nunca será usado e todos os outros campos serão ignorados;
@@ -3223,7 +3223,7 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 <translation id="5697306356229823047">Reporta os usuários do dispositivo</translation>
 <translation id="570062449808736508">Quando essa política estiver definida para uma string não vazia, o WebView lerá as restrições de URL do provedor de conteúdo com o nome de autoridade fornecido.</translation>
 <translation id="5708969689202733975">Configurar os modos de desbloqueio rápido permitidos</translation>
-<translation id="5715617256528927547">A definição da política especifica, em horas, o ciclo de vida em cache do Objeto de Política de Grupo (GPO, na sigla em inglês), que é o período máximo que os GPOs poderão ser reutilizados antes do download deles ser feito novamente. Em vez de fazer o download novamente a cada busca da política, o sistema reutiliza os GPOs armazenados em cache enquanto as versões deles não são modificadas.
+<translation id="5715617256528927547">A definição da política especifica, em horas, o ciclo de vida em cache do Objeto de Política de Grupo (GPO, na sigla em inglês), que é o período máximo de reutilização dos GPOs antes do download deles ser feito novamente. Em vez de fazer o download novamente a cada busca da política, o sistema reutiliza os GPOs armazenados em cache enquanto as versões deles não são modificadas.
 
       Se a política for definida como "0", o armazenamento em cache de GPOs será desativado. Fazer isso aumenta a carga do servidor, já que o download dos GPOs será feito novamente a cada busca da política, mesmo que eles não tenham sido modificados.
 
@@ -3739,7 +3739,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       Se a política for definida, o usuário poderá ativar um app na tela de bloqueio caso o ID da extensão do app esteja contido no valor da lista da política. Como consequência, a definição desta política como uma lista vazia desativará por completo a anotação na tela de bloqueio. A política que contém um ID de app não indica necessariamente que o usuário poderá ativar esse app para anotação na tela de bloqueio. Por exemplo, no <ph name="PRODUCT_NAME" /> 61, o conjunto de apps disponíveis também é limitado pela plataforma.
 
       Se a política não for definida, não haverá restrições impostas por ela com relação ao conjunto de apps que o usuário poderá ativar na tela de bloqueio.</translation>
-<translation id="6506486086262398387">Se a política for definida como "Ativada", o recurso Compartilhamentos de arquivos de rede do <ph name="PRODUCT_OS_NAME" /> usará NTLM para fazer a autenticação para compartilhamentos de PME, se necessário. Se a política for definida como "Desativada", a autenticação NTLM para compartilhamentos de PME será desativada.
+<translation id="6506486086262398387">Se a política for definida como "Ativada", o recurso Compartilhamentos de arquivos de rede do <ph name="PRODUCT_OS_NAME" /> usará NTLM para fazer a autenticação para compartilhamentos SMB, se necessário. Se a política for definida como "Desativada", a autenticação NTLM para compartilhamentos SMB será desativada.
 
       Se a política não for definida, o comportamento ficará desativado por padrão para usuários gerenciados e ativado para outros usuários.</translation>
 <translation id="6515357889978918016">Imagem de <ph name="PLUGIN_VM_NAME" /></translation>
@@ -3780,7 +3780,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />: detectar automaticamente o servidor proxy.
 
        Se você escolher usar:
-         * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />: servidores proxy predefinidos. Será possível especificar mais opções com <ph name="PROXY_SERVER_POLICY_NAME" /> e <ph name="PROXY_BYPASS_LIST_POLICY_NAME" />. Apenas o servidor proxy HTTP com a maior prioridade está disponível para apps ARC;
+         * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />: servidores proxy predefinidos. Será possível especificar mais opções com <ph name="PROXY_SERVER_POLICY_NAME" /> e <ph name="PROXY_BYPASS_LIST_POLICY_NAME" />. Apenas o servidor proxy HTTP com a maior prioridade está disponível para apps ARC.
          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />: um script de proxy .pac. Use <ph name="PROXY_PAC_URL_POLICY_NAME" /> para definir o URL como um arquivo proxy .pac.
 
       Se a política não for definida, os usuários poderão escolher as configurações de proxy.
@@ -4624,11 +4624,11 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
       Se o dispositivo do usuário não for gerenciado, a disponibilidade da funcionalidade será dependente também da possibilidade de o usuário não ser proprietário do dispositivo.</translation>
 <translation id="7570111012674064005">A definição da política especifica como e se a política do usuário do Objeto de Política de Grupo (GPO, na sigla em inglês) do computador é processada.
 
-      * "Padrão" ou sem definição faz com que a política do usuário leia apenas os GPOs de usuário. Os GPOs do computador serão ignorados.
+      * "Padrão" ou sem definição faz com que a política do usuário leia apenas os GPOs do usuário. Os GPOs do computador serão ignorados.
 
-      * "Mesclar" faz com que a política do usuário nos GPOs de usuário seja mesclada à dos GPOs do computador. Os GPOs de computador têm precedência.
+      * "Mesclar" faz com que a política do usuário nos GPOs do usuário seja mesclada à dos GPOs do computador. Os GPOs do computador têm precedência.
 
-      * "Substituir" substituirá a política do usuário nos GPOs do usuário pelos GPOs do computador. Os GPOs do usuário serão ignorados.</translation>
+      * "Substituir" troca a política do usuário nos GPOs do usuário pela referente aos GPOs do computador. Os GPOs do usuário serão ignorados.</translation>
 <translation id="7570291542739287032">Somente no Cloud</translation>
 <translation id="757395965347379751">Quando esta configuração está ativada, o <ph name="PRODUCT_NAME" /> permite certificados SHA-1 assinados, desde que eles sejam validados e estejam vinculados a certificados de CA instalados localmente.
 

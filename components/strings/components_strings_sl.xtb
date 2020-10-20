@@ -283,6 +283,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="204357726431741734">Prijavite se, če želite uporabljati gesla, shranjena v računu Google</translation>
 <translation id="2053111141626950936">Strani v jeziku <ph name="LANGUAGE" /> ne bodo prevedene.</translation>
 <translation id="2053553514270667976">Poštna številka</translation>
+<translation id="2054665754582400095">Vaša prisotnost</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 predlog}one{# predlog}two{# predloga}few{# predlogi}other{# predlogov}}</translation>
 <translation id="2079545284768500474">Razveljavi</translation>
 <translation id="20817612488360358">Za uporabo so nastavljene sistemske nastavitve strežnika proxy, vendar je navedena tudi izrecna konfiguracija proxyja.</translation>

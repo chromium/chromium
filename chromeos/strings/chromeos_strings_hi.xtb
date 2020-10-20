@@ -3,6 +3,7 @@
 <translationbundle lang="hi">
 <translation id="1018656279737460067">रद्द</translation>
 <translation id="1195447618553298278">अज्ञात गड़बड़ी.</translation>
+<translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">प्रिंट नहीं हो पाया - फ़िल्टर में कोई गड़बड़ी हुई</translation>
 <translation id="1468664791493211953">ऑफ़र</translation>
 <translation id="1478594628797167447">स्कैनर</translation>
@@ -46,6 +47,7 @@
 <translation id="4227825898293920515"><ph name="TIME" /> में पासवर्ड की समयसीमा खत्म हो जाएगी</translation>
 <translation id="4238516577297848345">फ़िलहाल, कुछ प्रिंट नहीं हो रहा</translation>
 <translation id="4297501883039923494">बंद हो गया - अज्ञात गड़बड़ी</translation>
+<translation id="4382484599443659549">पीडीएफ़</translation>
 <translation id="4429881212383817840">Kerberos टिकट की समयसीमा जल्द ही खत्म होने वाली है</translation>
 <translation id="445059817448385655">पुराना पासवर्ड</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> में से <ph name="PRINTED_PAGE_NUMBER" />. प्रिंट का काम बंद करने के लिए enter का बटन दबाएं.</translation>
@@ -73,6 +75,7 @@
 <translation id="6058625436358447366">पूरा करने के लिए, पुराना और नया पासवर्ड डालें</translation>
 <translation id="6106186594183574873">पूरा करने के लिए, पुराना पासवर्ड डालें</translation>
 <translation id="6146993107019042706">खत्म करने के लिए, नया पासवर्ड डालें</translation>
+<translation id="6147514244879357420">PNG</translation>
 <translation id="636850387210749493">एंटरप्राइज़ नामांकन</translation>
 <translation id="649050271426829538">बंद हो गया - काग़ज़ फंसा है</translation>
 <translation id="6517239166834772319">एक्सप्लोर करें</translation>

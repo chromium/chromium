@@ -183,6 +183,7 @@
 <translation id="6863361426438995919">Google Pay（Chromium にコピー）</translation>
 <translation id="6893813176749746474">Chromium が更新されましたが、30 日以上使用されていません。</translation>
 <translation id="6964305034639999644">Chromium のシークレット ウインドウでリンクを開く(&amp;G)</translation>
+<translation id="6978145336957848883">脆弱なパスワードは簡単に推測されてしまいます。Chromium で<ph name="BEGIN_LINK" />安全性の高いパスワードを自動生成して保存する<ph name="END_LINK" />ことができます。</translation>
 <translation id="6990124437352146030">このサイトを利用するには、Chromium でマイクの使用を許可する必要があります</translation>
 <translation id="701244094609242530">Chromium で拡張機能を確認できません。しばらくしてからもう一度お試しください。</translation>
 <translation id="7028347026395185822">{NUM_HOURS,plural, =1{お使いのパソコンに既知の有害なソフトウェアは見つかりませんでした。前回の確認: 1 時間前。}other{お使いのパソコンに既知の有害なソフトウェアは見つかりませんでした。前回の確認: {NUM_HOURS} 時間前。}}</translation>

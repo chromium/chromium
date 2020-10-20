@@ -6911,7 +6911,7 @@
 <translation id="9088446193279799727">Конфигурисање Linux-а није успело. Повежите се на интернет и пробајте поново.</translation>
 <translation id="9088917181875854783">Потврдите да се овај приступни кôд приказује на уређају „<ph name="DEVICE_NAME" />“:</translation>
 <translation id="9089416786594320554">Методи уноса</translation>
-<translation id="909108997331068008"><ph name="EXISTING_USER" /> је помоћу профила већ пријављен(а) на <ph name="NEW_USER" /></translation>
+<translation id="909108997331068008">Профил <ph name="EXISTING_USER" /> је већ пријављен на <ph name="NEW_USER" /></translation>
 <translation id="9093429538970210897">Препоручује се да направите резервне копије у случају да надоградња не може да се доврши. Кад надоградња почне, Linux (бета) ће се искључити. Сачувајте отворене датотеке пре него што наставите.</translation>
 <translation id="9094033019050270033">Ажурирај лозинку</translation>
 <translation id="9094038138851891550">Корисничко име је неважеће</translation>

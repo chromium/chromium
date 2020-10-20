@@ -1105,6 +1105,7 @@ Als dit beleid niet is ingesteld, is het privacyscherm in eerste instantie uitge
       Als je het beleid niet instelt, worden er geen websites aan de lijst toegevoegd.
 
       Opmerking: Elementen kunnen ook aan deze lijst worden toegevoegd via het <ph name="USE_IE_SITELIST_POLICY_NAME" />- en <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />-beleid.</translation>
+<translation id="2640898752536996430">De gebruiker uitloggen.</translation>
 <translation id="264093234299818170">Alle printers worden weergegeven, behalve printers op de blokkeringslijst.</translation>
 <translation id="264252574246191885">Verborgen</translation>
 <translation id="2647069081229792812">Bewerken van bookmarks in- of uitschakelen</translation>
@@ -1436,6 +1437,7 @@ Dit beleid kan alleen worden ingesteld via de Google Beheerdersconsole.</transla
 <translation id="3072847235228302527">De Servicevoorwaarden instellen voor een apparaat-lokaal account</translation>
 <translation id="3086995894968271156">De Cast-receiver instellen in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3091832372132789233">Batterijen opladen van apparaten die ook zijn aangesloten op een externe voedingsbron.</translation>
+<translation id="309416443108680956">Hiermee wordt aangegeven wat er gebeurt als een gebruiker die verificatie via een beveiligingstoken uitvoert (bijv. met een smartcard), dat token verwijdert tijdens een sessie. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: Er gebeurt niets. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: Het scherm wordt vergrendeld tot de gebruiker de verificatie opnieuw uitvoert. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: De sessie wordt beëindigd en de gebruiker wordt uitgelogd. Als je dit beleid niet instelt, geldt de standaardwaarde <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />.</translation>
 <translation id="3096595567015595053">Lijst met ingeschakelde plug-ins</translation>
 <translation id="3101501961102569744">Kies hoe je proxyserverinstellingen wilt specificeren</translation>
 <translation id="3101709781009526431">Datum en tijd</translation>
@@ -1855,6 +1857,7 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen n
       Als je het beleid instelt, kunnen gebruikers het type homepage niet wijzigen in <ph name="PRODUCT_NAME" />. Als je dit beleid niet instelt, kan de gebruiker bepalen of de pagina 'Nieuw tabblad' als homepage wordt gebruikt.
 
       In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
+<translation id="3695706037816556327">Actie bij verwijdering van beveiligingstoken (bijv. smartcard) voor <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3701121231485832347">Beheert instellingen die specifiek zijn voor <ph name="PRODUCT_OS_NAME" />-apparaten die via <ph name="MS_AD_NAME" /> worden beheerd.</translation>
 <translation id="3702518095257671450">Externe bevestiging</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Het veld met één regel is beëindigd en wordt in de toekomst verwijderd. Gebruik het tekstvak met meerdere regels hieronder.)</translation>
@@ -1892,6 +1895,8 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen n
 
       Als je dit beleid niet instelt, kunnen gebruikers zelf de gewenste proxyinstellingen selecteren.</translation>
 <translation id="3758249152301468420">Ontwikkelaarstools uitschakelen</translation>
+<translation id="3760231600118073732">De huidige sessie vergrendelen.</translation>
+<translation id="3764097800332238572">Dit beleid is alleen van kracht als het beleid <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> is ingesteld op <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> of <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" /> en een gebruiker die verificatie via een smartcard uitvoert, die smartcard verwijdert. Dit beleid geeft dan aan hoelang (in seconden) een melding wordt weergegeven waarin de gebruiker wordt geïnformeerd over de komende actie. Deze melding blokkeert het scherm. De actie wordt pas uitgevoerd nadat de melding is verlopen. De gebruiker kan voorkomen dat de actie wordt uitgevoerd door de smartcard terug te plaatsen voordat de melding verloopt. Als dit beleid is ingesteld op nul, wordt er geen melding weergegeven en wordt de actie meteen uitgevoerd.</translation>
 <translation id="3765260570442823273">Duur van de waarschuwing bij uitloggen inactieve gebruiker</translation>
 <translation id="377044054160169374">Interventie voor misleidende functionaliteit afdwingen</translation>
 <translation id="3780152581321609624">Niet-standaardpoort in Kerberos-SPN opnemen</translation>
@@ -3908,6 +3913,7 @@ Als je ervoor kiest het volgende te gebruiken:
 <translation id="6672070613706645316">Gebruikers toestaan de achtergrond van de pagina 'Nieuw tabblad' aan te passen</translation>
 <translation id="6672630473862787247">Ambient-verificatie inschakelen in normale, incognito- en gastsessies.</translation>
 <translation id="6685903773201985073">Ambient-verificatie inschakelen in normale en gastsessies.</translation>
+<translation id="6689343802305995925">Er wordt geen actie uitgevoerd.</translation>
 <translation id="6689792153960219308">De hardwarestatus melden</translation>
 <translation id="6690425645391461516">Controles voor DNS-onderschepping uitzetten, infobalken voor 'bedoelde je http://intranetsite/' toestaan.</translation>
 <translation id="6698632841807204978">Monochroom afdrukken inschakelen</translation>
@@ -4174,6 +4180,7 @@ Als je ervoor kiest het volgende te gebruiken:
 
       Als je het beleid uitschakelt, sluit <ph name="PRODUCT_NAME" /> het tabblad nadat er is overgeschakeld naar een alternatieve browser, ook als dit het laatste tabblad was. Hierdoor wordt <ph name="PRODUCT_NAME" /> volledig gesloten.</translation>
 <translation id="7019805045859631636">Snel</translation>
+<translation id="7026351325994257733">Toestaan dat wifi-netwerkconfiguraties worden gesynchroniseerd tussen <ph name="PRODUCT_OS_NAME" />-apparaten en een verbonden Android-telefoon.</translation>
 <translation id="7027785306666625591">Energiebeheer in <ph name="PRODUCT_OS_NAME" /> configureren.
 
       Met dit beleid kun je configureren hoe <ph name="PRODUCT_OS_NAME" /> zich gedraagt wanneer de gebruiker enige tijd inactief is.</translation>
@@ -4548,6 +4555,13 @@ Als je ervoor kiest het volgende te gebruiken:
 
       - Als je dit beleid uitschakelt, moeten beheerders dit laten weten aan eindgebruikers van het apparaat.</translation>
 <translation id="747275827471712187">Het verouderde gedrag van <ph name="ATTRIBUTE_SAMESITE_NAME" /> voor cookies op deze sites terugzetten</translation>
+<translation id="7476621944304431784">Als je deze instelling inschakelt, mogen gebruikers wifi-netwerkconfiguraties synchroniseren tussen hun <ph name="PRODUCT_OS_NAME" />-apparaten en een verbonden Android-telefoon. Voordat wifi-netwerkconfiguraties kunnen worden gesynchroniseerd, moeten gebruikers deze functie expliciet toestaan door een instelprocedure te doorlopen.
+
+      Als je deze instelling uitschakelt, mogen gebruikers geen wifi-netwerkconfiguraties synchroniseren.
+
+      Voor deze functie moet het gegevenstype <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" /> zijn ingeschakeld in Chrome-synchronisatie. Als <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" /> is uitgeschakeld in het beleid <ph name="SYNC_TYPES_LIST_DISABLED_POLICY_NAME" /> of als Chrome-synchronisatie is uitgeschakeld in het beleid <ph name="SYNC_DISABLED_POLICY_NAME" />, wordt deze functie niet ingeschakeld.
+
+      Als je dit beleid niet instelt, geldt de standaardwaarde 'niet toegestaan' voor beheerde gebruikers.</translation>
 <translation id="7477231245051133709">De toegankelijkheidsfunctie voor monogeluid inschakelen</translation>
 <translation id="7477239290070847560">Op zeroconf gebaseerde (mDNS + DNS-SD) protocolbestemmingen</translation>
 <translation id="7485481791539008776">Regels voor selectie van standaardprinter</translation>
@@ -5787,6 +5801,7 @@ Dit beleid wordt verwijderd in M75.</translation>
 <translation id="9152473318295429890">Contextuele suggesties van gerelateerde webpagina's inschakelen</translation>
 <translation id="9153446010242995516">Herstel en blijf op de doelversie als de OS-versie nieuwer is dan de doelversie. Probeer indien mogelijk de instellingen op apparaatniveau (inclusief de inloggegevens voor het netwerk) over te dragen via het rollbackproces, maar voer de rollback uit met een volledige powerwash, zelfs wanneer de gegevens niet kunnen worden hersteld (omdat de doelversie geen ondersteuning biedt om gegevens te herstellen of omdat de wijziging niet werkt met eerdere versies).
           Wordt ondersteund door <ph name="PRODUCT_OS_NAME" /> versie 75 en hoger. Voor oudere clients betekent deze waarde dat rollback is uitgeschakeld.</translation>
+<translation id="9155218447258425310">Duur van melding bij verwijdering van smartcard voor <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="9155375380628728544">Als je het beleid instelt, kunnen gebruikers slechts één van de talen die in dit beleid worden vermeld, toevoegen aan de lijst met voorkeurstalen.
 
       Als je het beleid niet instelt of instelt op een lege lijst, kunnen gebruikers naar wens talen opgeven.

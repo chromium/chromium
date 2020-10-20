@@ -134,7 +134,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1453974140256777690">Yapıştırdığınız veya eklediğiniz metin analiz amacıyla Google Cloud ve üçüncü taraflara gönderilir. Dosyalarınızın hassas veriler içerip içermediği kontrol edilir.</translation>
 <translation id="1455413310270022028">Silgi</translation>
 <translation id="1462245070427461050">JIS B9</translation>
-<translation id="1462951478840426066">Yüksek kaliteli içerik oluşturabilmeniz için bilgisayarınızdaki yazı tiplerini kullanma</translation>
+<translation id="1462951478840426066">Farklı platformlarda tutarlı görünen bir içerik oluşturabilmeniz için bilgisayarınızdaki yazı tiplerini kullanma</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">Sola</translation>
 <translation id="1472675084647422956">Daha fazla göster</translation>
@@ -280,6 +280,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="204357726431741734">Google Hesabınızda kayıtlı şifreleri kullanmak için oturum açın</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> dilindeki sayfalar çevrilmeyecek.</translation>
 <translation id="2053553514270667976">Posta kodu</translation>
+<translation id="2054665754582400095">Bir yerde olduğunuza dair bilgi</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 öneri}other{# öneri}}</translation>
 <translation id="2079545284768500474">Geri al</translation>
 <translation id="20817612488360358">Sistem proxy ayarları kullanılmak üzere ayarlandı, ancak açık bir proxy yapılandırması da belirtildi.</translation>

@@ -17,6 +17,7 @@
 <translation id="1012794136286421601">आपके दस्तावेज़, शीट, स्लाइड, और ड्रॉइंग फ़ाइलें सिंक की जा रही हैं. उन्हें ऑनलाइन या ऑफ़लाइन एक्सेस करने के लिए Google डिस्क ऐप्लिकेशन खोलें.</translation>
 <translation id="1012876632442809908">USB-C डिवाइस (सामने वाला पोर्ट)</translation>
 <translation id="1013707859758800957">एक सैंडबॉक्‍स नहीं किए गए प्‍लग इन को इस पृष्‍ठ पर चलने दिया गया था.</translation>
+<translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">फ़ोल्डर के नाम में बदलाव करें</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{<ph name="DEVICE_TYPE" /> को अपडेट करने का आखिरी दिन}one{<ph name="DEVICE_TYPE" /> को {NUM_DAYS} दिन में अपडेट करें}other{<ph name="DEVICE_TYPE" /> को {NUM_DAYS} दिनों में अपडेट करें}}</translation>
 <translation id="1016566241875885511">अतिरिक्त जानकारी (वैकल्पिक)</translation>
@@ -928,6 +929,7 @@
 <translation id="204914487372604757">शॉर्टकट बनाएं</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
 <translation id="2053312383184521053">निष्क्रिय स्थिति डेटा</translation>
+<translation id="2054665754582400095">आपकी मौजूदगी</translation>
 <translation id="2055585478631012616">आपको इन साइटों और खुले हुए टैब से साइन आउट कर दिया जाएगा</translation>
 <translation id="205560151218727633">Google Assistant लोगो</translation>
 <translation id="2058456167109518507">डिवाइस की पहचान हुई</translation>
@@ -1214,6 +1216,7 @@
 <translation id="2387052489799050037">होम पेज पर जाएं</translation>
 <translation id="2387458720915042159">प्रॉक्सी कनेक्शन प्रकार</translation>
 <translation id="2390347491606624519">प्रॉक्सी से कनेक्ट नहीं किया जा सकता, कृपया फिर से साइन इन करें</translation>
+<translation id="2390782873446084770">वाई-फ़ाई सिंक</translation>
 <translation id="2391082728065870591">सुझाव, शिकायत या राय की रिपोर्ट भेजें</translation>
 <translation id="2391419135980381625">मानक फ़ॉन्ट</translation>
 <translation id="2392163307141705938">आप उस समयसीमा तक पहुंच गए हैं जो आपके माता-पिता ने <ph name="IDS_SHORT_PRODUCT_NAME" /> के लिए तय की थी.</translation>
@@ -1870,6 +1873,7 @@
 <translation id="3157931365184549694">वापस लाएं</translation>
 <translation id="3158033540161634471">अपना फ़िंगरप्रिंट सेट अप करें</translation>
 <translation id="3159493096109238499">मटमैला</translation>
+<translation id="3159978855457658359">डिवाइस के नाम में बदलाव करें</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (हार्डवेयर समर्थित)</translation>
 <translation id="3161522574479303604">सभी भाषाएं</translation>
 <translation id="3162853326462195145">स्कूल वाला खाता</translation>
@@ -3229,6 +3233,7 @@
 <translation id="4761104368405085019">अपना माइक्रोफ़ोन उपयोग करें</translation>
 <translation id="4762718786438001384">डिवाइस के डिस्क में बहुत कम स्पेस है</translation>
 <translation id="4763408175235639573">जब आपने इस पेज को देखा था, तब इन कुकी को सेट किया गया था</translation>
+<translation id="4764368918650455114">पक्का करें कि दोनों डिवाइस को अनलॉक किया गया हो और ये एक-दूसरे के पास रखे हों. साथ ही, ब्लूटूथ चालू हो. अगर आप किसी Chromebook के साथ फ़ाइलें शेयर कर रहे हैं, तो पक्का करें कि उसमें, आस-पास शेयर करने की सुविधा चालू हो (समय चुनकर, स्टेटस बताने वाली जगह खोलें और फिर आस-पास शेयर करने की सुविधा चुनें). <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="4765582662863429759">Android मैसेज को अपने Chromebook से अपने फ़ोन पर लेख भेजने की मंज़ूरी दें</translation>
 <translation id="476598255842811483">जब तक आप आस-पास शेयर करने की सुविधा चालू नहीं करते, तब तक कोई भी आपके डिवाइस के साथ फ़ाइलें शेयर नहीं कर सकता</translation>
 <translation id="4768332406694066911">आपके पास इन संगठनों के प्रमाणपत्र हैं जो आपकी पहचान करते हैं</translation>
@@ -3391,6 +3396,7 @@
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="496185450405387901">इस ऐप्लिकेशन को आपके एडमिन ने इंस्टॉल किया है.</translation>
 <translation id="4964455510556214366">व्यवस्था</translation>
+<translation id="496446150016900060">वाई-फ़ाई नेटवर्क को अपने फ़ोन के साथ सिंक करें</translation>
 <translation id="4965808351167763748">क्या आप वाकई Hangouts Meet चलाने के लिए इस डिवाइस को सेट अप करना चाहते हैं?</translation>
 <translation id="496888482094675990">Files ऐप्लिकेशन उन फ़ाइलों के लिए तुरंत एक्सेस देता है जिन्हें आपने Google डिस्क, बाहरी मेमोरी, या अपने Chrome OS डिवाइस पर सेव किया है।</translation>
 <translation id="4971412780836297815">पू्र्ण होने पर खोलें</translation>
@@ -3697,6 +3703,7 @@
 <translation id="5341980496415249280">कृपया इंतज़ार करें, पैक किया जा रहा है...</translation>
 <translation id="5342091991439452114">पिन कम से कम <ph name="MINIMUM" /> अंकों का होना चाहिए</translation>
 <translation id="5344036115151554031">Linux को पहले जैसा किया जा रहा है</translation>
+<translation id="5345916423802287046">साइन इन करने पर ऐप्लिकेशन खोलें</translation>
 <translation id="5350293332385664455">Google Assistant बंद करें</translation>
 <translation id="535123479159372765">दूसरे डिवाइस से टेक्स्ट कॉपी किया गया</translation>
 <translation id="5352033265844765294">समय स्टैंपिंग</translation>
@@ -4006,6 +4013,7 @@
 <translation id="5704875434923668958">इससे सिंक हो रहा है:</translation>
 <translation id="5705005699929844214">सुलभता के विकल्प हमेशा दिखाएं</translation>
 <translation id="5705882733397021510">वापस जाएं</translation>
+<translation id="5707117624115653804">इस सेटिंग के साथ काम करने वाले ऐप्लिकेशन और साइटों के लिए, कैप्शन के साइज़ और स्टाइल को पसंद के मुताबिक बनाएं</translation>
 <translation id="5707185214361380026">इससे एक्सटेंशन लोड करने में विफल:</translation>
 <translation id="5708171344853220004">Microsoft Principal Name</translation>
 <translation id="5709557627224531708">Chrome को अपने डिफ़ॉल्ट ब्राउज़र के तौर पर सेट करें</translation>
@@ -4169,6 +4177,7 @@
 <translation id="5904614460720589786">कॉन्फ़िगर करते समय हुई गड़बड़ी की वजह से <ph name="APP_NAME" /> को सेट अप नहीं किया जा सका. कृपया अपने एडमिन से संपर्क करें. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">करीब अप टू डेट हो गया है! अपडेट करना पूरा करने के लिए अपना डिवाइस फिर से प्रारंभ करें.</translation>
 <translation id="5906732635754427568">इस ऐप्लिकेशन से जुड़े डेटा को इस डिवाइस से हटा दिया जाएगा.</translation>
+<translation id="5908474332780919512">साइन इन करने पर ऐप्लिकेशन खोलें</translation>
 <translation id="5908695239556627796">माउस से स्क्रोल करने की रफ़्तार</translation>
 <translation id="5908769186679515905">साइट को Flash चलाने से रोकें</translation>
 <translation id="5910363049092958439">इमेज को इस रूप में सेव करें...</translation>
@@ -4708,6 +4717,7 @@
 <translation id="6532527800157340614">आपका ऐक्सेस टोकन नहीं मिल पाने की वजह से साइन-इन नहीं किया जा सका. कृपया अपना नेटवर्क कनेक्शन जांचें और फिर से कोशिश करें.</translation>
 <translation id="6532663472409656417">एंटरप्राइज़ दर्ज किया गया है</translation>
 <translation id="6535331821390304775">इस तरह के लिंक को उनसे जुड़े ऐप्लिकेशन में खोलने के लिए, हमेशा <ph name="ORIGIN" /> का इस्तेमाल करें</translation>
+<translation id="6537613839935722475">नाम में अक्षर, अंक, और हाइफ़न (-) शामिल हो सकते हैं</translation>
 <translation id="6538635548667167211">मौजूदा डेटा खर्च सेटिंग के लिए, मोबाइल का डेटा इस्तेमाल होगा</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />ध्यान दें:<ph name="END_BOLD" /> सिर्फ़ तभी चालू करें जब आपको पता हो कि आप क्या कर रहे हैं या अगर आप से ऐसा करने के लिए कहा गया हो, क्योंकि डेटा के संग्रह से परफ़ॉर्मेंस में कमी आ सकती है.</translation>
 <translation id="6541638731489116978">इस साइट को आपके हलचल पकड़ने वाले सेंसर ऐक्सेस करने से रोक दिया गया है.</translation>
@@ -4796,6 +4806,7 @@
 <translation id="6650234781371031356"><ph name="WEBSITE" /> के लिए आपका पासवर्ड इस डिवाइस और आपके Google खाते में सेव हो गया है. आप इनमें से किसे मिटाना चाहते हैं?</translation>
 <translation id="665061930738760572">&amp;नई विंडो में खोलें</translation>
 <translation id="6651237644330755633">वेबसाइटों की पहचान करने के लिए इस प्रमाणपत्र पर विश्वास करें</translation>
+<translation id="6651495917527016072">वाई-फ़ाई नेटवर्क को अपने फ़ोन के साथ सिंक करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" /> एकीकरण सिर्फ़ x86_64 प्लैटफ़ॉर्म पर काम करता है. किसी ARM या x86 प्लैटफ़ॉर्म पर बने Chromebook इस काम की क्षमता की सुविधा नहीं देते हैं.</translation>
 <translation id="6654509035557065241">नेटवर्क चुनें</translation>
 <translation id="6655190889273724601">डेवलपर मोड</translation>
@@ -5399,6 +5410,7 @@
 <translation id="7375235221357833624">{0,plural, =1{1 घंटे के अंदर डिवाइस अपडेट करें}one{# घंटे के अंदर डिवाइस अपडेट करें}other{# घंटे के अंदर डिवाइस अपडेट करें}}</translation>
 <translation id="7376553024552204454">माउस कर्सर के हिलने पर उसे हाइलाइट करें</translation>
 <translation id="7377451353532943397">सेंसर का ऐक्सेस ब्लॉक करते रहें</translation>
+<translation id="7378611153938412599">कमज़ोर पासवर्ड का अंदाज़ा लगाना आसान होता है. पक्का करें कि आप मज़बूत पासवर्ड बना रहे हैं. <ph name="BEGIN_LINK" />सुरक्षा से जुड़ी और सलाह देखें.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Chrome वेब स्टोर खोलें</translation>
 <translation id="7378812711085314936">डेटा कनेक्शन पाएं</translation>
 <translation id="7380622428988553498">डिवाइस के नाम में अमान्य वर्ण हैं</translation>
@@ -5922,6 +5934,7 @@
 <translation id="7959074893852789871">फ़ाइल में एकाधिक प्रमाणपत्र थे, जिनमें से कुछ को आयात नहीं किया गया था:</translation>
 <translation id="7961015016161918242">कभी नहीं</translation>
 <translation id="7963001036288347286">टचपैड की रफ़्तार</translation>
+<translation id="7963608432878156675">यह नाम अन्य डिवाइस को दिखता है, ताकि ब्लूटूथ और इंटरनेट से कनेक्ट किया जा सके</translation>
 <translation id="7963826112438303517">आपकी Assistant आपकी आवाज़ का नमूना बनाने और उसे अपडेट करने के लिए, इन रिकॉर्डिंग के साथ ही आपके बोले गए अनुरोधों का इस्तेमाल करती है. आवाज़ का नमूना सिर्फ़ उन डिवाइस पर सेव किया जाता है जहां आपने Voice Match को चालू किया हुआ है. Assistant की सेटिंग में जाकर आवाज़ की गतिविधि देखें या उसे फिर से आवाज़ पहचानना सिखाएं.</translation>
 <translation id="7966241909927244760">इमेज के पते को कॉपी करें</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{बुकमार्क सूची में 1 आइटम है}one{बुकमार्क सूची में {COUNT} आइटम है}other{बुकमार्क सूची में {COUNT} आइटम हैं}}</translation>
@@ -6386,6 +6399,7 @@
 <translation id="850875081535031620">नुकसान पहुंचाने वाला कोई सॉफ़्टवेयर नहीं मिला</translation>
 <translation id="8509177919508253835">सुरक्षा कुंजी रीसेट करें और पिन बनाएं</translation>
 <translation id="8509646642152301857">वर्तनी जाँच शब्दकोश डाउनलोड नहीं हो सका.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{कोई कमज़ोर पासवर्ड नहीं मिला}=1{{COUNT} कमज़ोर पासवर्ड मिला}one{{COUNT} कमज़ोर पासवर्ड मिला}other{{COUNT} कमज़ोर पासवर्ड मिले}}</translation>
 <translation id="8512476990829870887">प्रक्रिया खत्म करें</translation>
 <translation id="851263357009351303"><ph name="HOST" /> को हमेशा चित्र दिखाने की अनुमति दें</translation>
 <translation id="8513108775083588393">ऑटो-रोटेट</translation>

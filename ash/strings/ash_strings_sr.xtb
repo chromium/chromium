@@ -687,7 +687,7 @@
 <translation id="7904094684485781019">Администратор за овај налог је забранио вишеструко пријављивање.</translation>
 <translation id="7933084174919150729">Google помоћник је доступан само за примарни профил.</translation>
 <translation id="79341161159229895">Налогом управљају <ph name="FIRST_PARENT_EMAIL" /> и <ph name="SECOND_PARENT_EMAIL" /></translation>
-<translation id="793716872548410480">Притисните <ph name="SHORTCUT_KEY_NAME" /> + V да бисте видели привремену меморију. Последњих 5 ставки које сте копирали чувају се у привременој меморији.</translation>
+<translation id="793716872548410480">Притисните <ph name="SHORTCUT_KEY_NAME" /> + V да бисте видели привремену меморију. Последњих 5 ставки које сте копирали се чувају у привременој меморији.</translation>
 <translation id="7955885781510802139">Режим високог контраста</translation>
 <translation id="7977927628060636163">Траже се мобилне мреже…</translation>
 <translation id="7980780401175799550">Испробајте нове начине за кретање кроз Chrome ОС</translation>

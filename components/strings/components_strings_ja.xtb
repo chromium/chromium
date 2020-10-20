@@ -279,6 +279,7 @@
 <translation id="204357726431741734">Google アカウントに保存したパスワードを使用するには、ログインしてください</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" />のページは翻訳されません。</translation>
 <translation id="2053553514270667976">郵便番号</translation>
+<translation id="2054665754582400095">ユーザーのアクティブ状態</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 件の候補}other{# 件の候補}}</translation>
 <translation id="2079545284768500474">元に戻す</translation>
 <translation id="20817612488360358">システム プロキシ設定を使用するように設定されていますが、明示的なプロキシの設定も指定されています。</translation>

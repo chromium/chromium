@@ -181,6 +181,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6863361426438995919">Google Pay (Chromium'a kopyalandı)</translation>
 <translation id="6893813176749746474">Chromium güncellendi, ancak programı en azından 30 gündür kullanmıyorsunuz.</translation>
 <translation id="6964305034639999644">Bağlantıyı Chromium &amp;gizli penceresinde aç</translation>
+<translation id="6978145336957848883">Zayıf şifrelerin tahmin edilmesi kolaydır. Chromium'un <ph name="BEGIN_LINK" />sizin için güçlü şifreler oluşturup bu şifreleri hatırlamasına<ph name="END_LINK" /> izin verin.</translation>
 <translation id="6990124437352146030">Chromium'un bu sitede mikrofonunuza erişmesi için izin gerekiyor</translation>
 <translation id="701244094609242530">Chromium, uzantılarınızı kontrol edemiyor. Daha sonra tekrar deneyin.</translation>
 <translation id="7028347026395185822">{NUM_HOURS,plural, =1{Chromium, bilgisayarınızda bilinen zararlı yazılım bulamadı. Son kontrol: 1 saat önce.}other{Chromium, bilgisayarınızda bilinen zararlı yazılım bulamadı. Son kontrol: {NUM_HOURS} saat önce.}}</translation>
