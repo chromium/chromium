@@ -34,6 +34,7 @@
 #include "chrome/browser/chromeos/android_sms/android_sms_switches.h"
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/lite_video/lite_video_switches.h"
+#include "chrome/browser/navigation_predictor/navigation_predictor_features.h"
 #include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -3166,6 +3167,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableNavigationPredictorDescription,
      kOsCrOS | kOsLinux,
      FEATURE_VALUE_TYPE(blink::features::kNavigationPredictor)},
+    {"enable-navigation-predictor-renderer-warmup",
+     flag_descriptions::kEnableNavigationPredictorRendererWarmupName,
+     flag_descriptions::kEnableNavigationPredictorRendererWarmupDescription,
+     kOsAll, FEATURE_VALUE_TYPE(features::kNavigationPredictorRendererWarmup)},
 #endif  // OS_CHROMEOS || OS_LINUX
     {"enable-preconnect-to-search",
      flag_descriptions::kEnablePreconnectToSearchName,

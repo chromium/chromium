@@ -357,6 +357,9 @@ extern const char kEnableSaveDataDescription[];
 extern const char kEnableNavigationPredictorName[];
 extern const char kEnableNavigationPredictorDescription[];
 
+extern const char kEnableNavigationPredictorRendererWarmupName[];
+extern const char kEnableNavigationPredictorRendererWarmupDescription[];
+
 extern const char kEnablePreconnectToSearchName[];
 extern const char kEnablePreconnectToSearchDescription[];
 

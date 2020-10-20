@@ -42016,6 +42016,7 @@ from previous Chrome versions.
   <int value="-1645071473" label="ChromeColors:disabled"/>
   <int value="-1643933608" label="SyncAutofillWalletOfferData:enabled"/>
   <int value="-1641832607" label="DragToPinTabs:enabled"/>
+  <int value="-1639050182" label="NavigationPredictorRendererWarmup:enabled"/>
   <int value="-1638815914" label="enable-experimental-productivity-features"/>
   <int value="-1634878515" label="ChromeHomeModernLayout:enabled"/>
   <int value="-1634490190"
@@ -44809,6 +44810,7 @@ from previous Chrome versions.
   <int value="1142788238" label="FontCacheScaling:disabled"/>
   <int value="1142970266"
       label="SignedExchangePrefetchCacheForNavigations:disabled"/>
+  <int value="1147924185" label="enable-navigation-predictor-renderer-warmup"/>
   <int value="1148284632" label="NewTabPageUIMd:disabled"/>
   <int value="1149417604" label="StreamlinedUsbPrinterSetup:disabled"/>
   <int value="1149731024" label="MultiDisplayOverviewAndSplitView:enabled"/>
@@ -45513,6 +45515,7 @@ from previous Chrome versions.
   <int value="1851358497" label="enable-ash-sidebar"/>
   <int value="1851746253" label="ReducedReferrerGranularity:disabled"/>
   <int value="1852630189" label="NTPBookmarkSuggestions:disabled"/>
+  <int value="1854017276" label="NavigationPredictorRendererWarmup:disabled"/>
   <int value="1854048611" label="OmniboxSuggestionsRecyclerView:disabled"/>
   <int value="1854226565" label="AutofillNoLocalSaveOnUnmaskSuccess:enabled"/>
   <int value="1854646491" label="DetailedLanguageSettings:disabled"/>

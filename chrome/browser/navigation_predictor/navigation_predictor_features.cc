@@ -29,4 +29,7 @@ const base::Feature kNavigationPredictorPreconnectSocketCompletionTime{
     "NavigationPredictorPreconnectSocketCompletionTime",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kNavigationPredictorRendererWarmup{
+    "NavigationPredictorRendererWarmup", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features

@@ -13,6 +13,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
 #include "base/time/default_tick_clock.h"
+#include "chrome/browser/navigation_predictor/navigation_predictor_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/search_engines/template_url_service.h"
@@ -28,11 +29,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace {
-const base::Feature kNavigationPredictorRendererWarmup{
-    "NavigationPredictorRendererWarmup", base::FEATURE_DISABLED_BY_DEFAULT};
-}
-
 NavigationPredictorRendererWarmupClient::PredictionMetrics::
     PredictionMetrics() = default;
 NavigationPredictorRendererWarmupClient::PredictionMetrics::
@@ -45,38 +41,38 @@ NavigationPredictorRendererWarmupClient::
                                             const base::TickClock* clock)
     : profile_(profile),
       counterfactual_(base::GetFieldTrialParamByFeatureAsBool(
-          kNavigationPredictorRendererWarmup,
+          features::kNavigationPredictorRendererWarmup,
           "counterfactual",
           false)),
       mem_threshold_mb_(base::GetFieldTrialParamByFeatureAsInt(
-          kNavigationPredictorRendererWarmup,
+          features::kNavigationPredictorRendererWarmup,
           "mem_threshold_mb",
           1024)),
       warmup_on_dse_(base::GetFieldTrialParamByFeatureAsBool(
-          kNavigationPredictorRendererWarmup,
+          features::kNavigationPredictorRendererWarmup,
           "warmup_on_dse",
           true)),
       use_navigation_predictions_(base::GetFieldTrialParamByFeatureAsBool(
-          kNavigationPredictorRendererWarmup,
+          features::kNavigationPredictorRendererWarmup,
           "use_navigation_predictions",
           true)),
       examine_top_n_predictions_(base::GetFieldTrialParamByFeatureAsInt(
-          kNavigationPredictorRendererWarmup,
+          features::kNavigationPredictorRendererWarmup,
           "examine_top_n_predictions",
           10)),
       prediction_crosss_origin_threshold_(
           base::GetFieldTrialParamByFeatureAsDouble(
-              kNavigationPredictorRendererWarmup,
+              features::kNavigationPredictorRendererWarmup,
               "prediction_crosss_origin_threshold",
               0.5)),
       cooldown_duration_(base::TimeDelta::FromMilliseconds(
           base::GetFieldTrialParamByFeatureAsInt(
-              kNavigationPredictorRendererWarmup,
+              features::kNavigationPredictorRendererWarmup,
               "cooldown_duration_ms",
               60 * 1000))),
       renderer_warmup_delay_(base::TimeDelta::FromMilliseconds(
           base::GetFieldTrialParamByFeatureAsInt(
-              kNavigationPredictorRendererWarmup,
+              features::kNavigationPredictorRendererWarmup,
               "renderer_warmup_delay_ms",
               0))) {
   if (clock) {
@@ -113,7 +109,8 @@ void NavigationPredictorRendererWarmupClient::OnPredictionUpdated(
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(kNavigationPredictorRendererWarmup)) {
+  if (!base::FeatureList::IsEnabled(
+          features::kNavigationPredictorRendererWarmup)) {
     return;
   }
 
