@@ -34,12 +34,12 @@ TabSearchPageHandler::TabSearchPageHandler(
     mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver,
     mojo::PendingRemote<tab_search::mojom::Page> page,
     content::WebUI* web_ui,
-    Delegate* delegate)
+    ui::MojoBubbleWebUIController* webui_controller)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       browser_(chrome::FindLastActive()),
       web_ui_(web_ui),
-      delegate_(delegate),
+      webui_controller_(webui_controller),
       debounce_timer_(std::make_unique<base::RetainingOneShotTimer>(
           FROM_HERE,
           kTabsChangeDelay,
@@ -155,11 +155,9 @@ void TabSearchPageHandler::SwitchToTab(
 }
 
 void TabSearchPageHandler::ShowUI() {
-  delegate_->ShowUI();
-}
-
-void TabSearchPageHandler::CloseUI() {
-  delegate_->CloseUI();
+  auto embedder = webui_controller_->embedder();
+  if (embedder)
+    embedder->ShowUI();
 }
 
 tab_search::mojom::TabPtr TabSearchPageHandler::GetTabData(

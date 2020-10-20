@@ -7,12 +7,10 @@
 
 #include "base/scoped_observer.h"
 #include "base/timer/elapsed_timer.h"
-#include "chrome/browser/ui/webui/tab_search/tab_search_ui_embedder.h"
-#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/webview/web_bubble_dialog_view.h"
 
 namespace views {
 class Widget;
-class WebView;
 }  // namespace views
 
 namespace content {
@@ -29,45 +27,35 @@ enum class TabSearchOpenAction {
   kMaxValue = kTouchGesture,
 };
 
-class TabSearchBubbleView : public views::BubbleDialogDelegateView,
-                            public TabSearchUIEmbedder,
+class TabSearchBubbleView : public views::WebBubbleDialogView,
                             public views::WidgetObserver {
  public:
-  // TODO(tluk): Since the Bubble is shown asynchronously, we shouldn't call
-  // this if the Widget is hidden and yet to be revealed.
   static views::Widget* CreateTabSearchBubble(
       content::BrowserContext* browser_context,
       views::View* anchor_view);
 
   TabSearchBubbleView(content::BrowserContext* browser_context,
                       views::View* anchor_view);
+  TabSearchBubbleView(const TabSearchBubbleView&) = delete;
+  TabSearchBubbleView& operator=(const TabSearchBubbleView&) = delete;
   ~TabSearchBubbleView() override;
 
-  // views::BubbleDialogDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
+  // views::WebBubbleDialogView:
   void AddedToWidget() override;
 
-  // TabSearchUIEmbedder:
-  void ShowBubble() override;
-  void CloseBubble() override;
-
   // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override;
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
-  void OnWebViewSizeChanged();
-
-  views::WebView* web_view_for_testing() { return web_view_; }
+  const base::Optional<base::ElapsedTimer>& timer_for_testing() {
+    return timer_;
+  }
 
  private:
-  views::WebView* web_view_;
-
   // Time the Tab Search window has been open.
   base::Optional<base::ElapsedTimer> timer_;
 
   ScopedObserver<views::Widget, views::WidgetObserver> observed_bubble_widget_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(TabSearchBubbleView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TAB_SEARCH_TAB_SEARCH_BUBBLE_VIEW_H_

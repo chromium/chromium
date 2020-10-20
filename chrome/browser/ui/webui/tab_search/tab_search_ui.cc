@@ -33,8 +33,8 @@ constexpr char kGeneratedPath[] =
 #endif  // BUILDFLAG(ENABLE_TAB_SEARCH)
 
 TabSearchUI::TabSearchUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui,
-                              true /* Needed for webui browser tests */),
+    : ui::MojoBubbleWebUIController(web_ui,
+                                    true /* Needed for webui browser tests */),
       webui_load_timer_(web_ui->GetWebContents(),
                         "Tabs.TabSearch.WebUI.LoadDocumentTime",
                         "Tabs.TabSearch.WebUI.LoadCompletedTime") {
@@ -98,22 +98,6 @@ void TabSearchUI::BindInterface(
     mojo::PendingReceiver<tab_search::mojom::PageHandlerFactory> receiver) {
   page_factory_receiver_.reset();
   page_factory_receiver_.Bind(std::move(receiver));
-}
-
-void TabSearchUI::SetEmbedder(TabSearchUIEmbedder* embedder) {
-  // Setting the embedder must be done before the page handler is created.
-  DCHECK(!embedder || !page_handler_);
-  embedder_ = embedder;
-}
-
-void TabSearchUI::ShowUI() {
-  if (embedder_)
-    embedder_->ShowBubble();
-}
-
-void TabSearchUI::CloseUI() {
-  if (embedder_)
-    embedder_->CloseBubble();
 }
 
 void TabSearchUI::CreatePageHandler(

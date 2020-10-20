@@ -82,12 +82,12 @@ class TestTabSearchPageHandler : public TabSearchPageHandler {
  public:
   TestTabSearchPageHandler(mojo::PendingRemote<tab_search::mojom::Page> page,
                            content::WebUI* web_ui,
-                           TabSearchPageHandler::Delegate* delegate)
+                           ui::MojoBubbleWebUIController* webui_controller)
       : TabSearchPageHandler(
             mojo::PendingReceiver<tab_search::mojom::PageHandler>(),
             std::move(page),
             web_ui,
-            delegate) {
+            webui_controller) {
     mock_debounce_timer_ = new base::MockRetainingOneShotTimer();
     SetTimerForTesting(base::WrapUnique(mock_debounce_timer_));
   }
@@ -97,15 +97,6 @@ class TestTabSearchPageHandler : public TabSearchPageHandler {
 
  private:
   base::MockRetainingOneShotTimer* mock_debounce_timer_;
-};
-
-class MockTabSearchPageHandlerDelegate : public TabSearchPageHandler::Delegate {
- public:
-  MockTabSearchPageHandlerDelegate() = default;
-  virtual ~MockTabSearchPageHandlerDelegate() = default;
-
-  MOCK_METHOD(void, ShowUI, (), (override));
-  MOCK_METHOD(void, CloseUI, (), (override));
 };
 
 class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
@@ -120,9 +111,10 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
         CreateTestBrowser(browser()->profile()->GetPrimaryOTRProfile(), false);
     browser4_ = CreateTestBrowser(profile2(), false);
     BrowserList::SetLastActive(browser1());
-    handler_delegate_ = std::make_unique<MockTabSearchPageHandlerDelegate>();
+    webui_controller_ =
+        std::make_unique<ui::MojoBubbleWebUIController>(web_ui());
     handler_ = std::make_unique<TestTabSearchPageHandler>(
-        page_.BindAndGetRemote(), web_ui(), handler_delegate_.get());
+        page_.BindAndGetRemote(), web_ui(), webui_controller_.get());
   }
 
   void TearDown() override {
@@ -153,9 +145,6 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
   Browser* browser4() { return browser4_.get(); }
 
   TestTabSearchPageHandler* handler() { return handler_.get(); }
-  MockTabSearchPageHandlerDelegate* handler_delegate() {
-    return handler_delegate_.get();
-  }
   void FireTimer() { handler_->mock_debounce_timer()->Fire(); }
   bool IsTimerRunning() { return handler_->mock_debounce_timer()->IsRunning(); }
 
@@ -188,7 +177,7 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
   std::unique_ptr<Browser> browser3_;
   std::unique_ptr<Browser> browser4_;
   std::unique_ptr<TestTabSearchPageHandler> handler_;
-  std::unique_ptr<MockTabSearchPageHandlerDelegate> handler_delegate_;
+  std::unique_ptr<ui::MojoBubbleWebUIController> webui_controller_;
 };
 
 TEST_F(TabSearchPageHandlerTest, GetTabs) {
@@ -353,18 +342,6 @@ TEST_F(TabSearchPageHandlerTest, MAYBE_ShowFeedbackPage) {
   base::HistogramTester histogram_tester;
   handler()->ShowFeedbackPage();
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
-}
-
-// Make sure the delegate receives the ShowUI() call.
-TEST_F(TabSearchPageHandlerTest, ShowUITest) {
-  EXPECT_CALL(*handler_delegate(), ShowUI()).Times(1);
-  handler()->ShowUI();
-}
-
-// Make sure the delegate receives the closeUI() call.
-TEST_F(TabSearchPageHandlerTest, CloseUITest) {
-  EXPECT_CALL(*handler_delegate(), CloseUI()).Times(1);
-  handler()->CloseUI();
 }
 
 }  // namespace
