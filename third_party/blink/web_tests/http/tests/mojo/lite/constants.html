@@ -35,17 +35,14 @@
   expectedValue: 4294967295,
   type: 'uint32'
 }, {
-  // TODO(crbug.com/1009262): Re-enable once we generate the right value for
-  // 64-bit constants.
-  //
-  //  constant: mojo.tstest.kInt64Value,
-  //  expectedValue: -9223372036854775807n,
-  //  type: 'int64'
-  //}, {
-  //  constant: mojo.tstest.kUint64Value,
-  //  expectedValue: 9999999999999999999n,
-  //  type: 'uint64'
-  //}, {
+  constant: mojo.tstest.INT64_VALUE,
+  expectedValue: -9223372036854775807n,
+  type: 'int64'
+}, {
+  constant: mojo.tstest.UINT64_VALUE,
+  expectedValue: 9999999999999999999n,
+  type: 'uint64'
+}, {
   constant: mojo.tstest.DOUBLE_VALUE,
   expectedValue: 3.14159,
   type: 'double'

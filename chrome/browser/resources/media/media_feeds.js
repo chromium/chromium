@@ -377,7 +377,7 @@ class MediaFeedsTableDelegate {
  * @returns {number}
  */
 function timeDeltaToSeconds(timeDelta) {
-  return timeDelta.microseconds / 1000 / 1000;
+  return Number(timeDelta.microseconds) / 1000 / 1000;
 }
 
 /**

@@ -562,7 +562,7 @@ class DiagnosticsProxy {
         (message);
     this.assertNumberIsPositive(request.lengthSeconds);
     return await getOrCreateDiagnosticsService().runPrimeSearchRoutine(
-        request.lengthSeconds, request.maximumNumber);
+        request.lengthSeconds, BigInt(request.maximumNumber));
   };
 
   /**
@@ -813,9 +813,10 @@ class TelemetryProxy {
     // At this point, closure compiler knows that the input is {!Object}.
 
     // Rule #2: convert objects like { value: X } to X, where X is either a
-    // number or a boolean.
+    // number, a bigint, or a boolean.
     if (Object.entries(input).length === 1 &&
         (typeof input['value'] === 'number' ||
+         typeof input['value'] === typeof BigInt(0) ||
          typeof input['value'] === 'boolean')) {
       return input['value'];
     }

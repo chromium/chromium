@@ -8,7 +8,6 @@ group("mojom") {
     "error.py",
     "fileutil.py",
     "generate/__init__.py",
-    "generate/constant_resolver.py",
     "generate/generator.py",
     "generate/module.py",
     "generate/pack.py",

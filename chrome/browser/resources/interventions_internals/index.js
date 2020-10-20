@@ -465,7 +465,7 @@ InterventionsInternalPageImpl.prototype = {
    */
   logNewMessage(log) {
     insertMessageRowToMessageLogTable(
-        log.time, log.type, log.description, log.url.url, log.pageId);
+        Number(log.time), log.type, log.description, log.url.url, log.pageId);
   },
 
   /**
@@ -473,7 +473,7 @@ InterventionsInternalPageImpl.prototype = {
    *
    * @override
    * @param {!string} host The blocklisted host.
-   * @param {number} time The time when the host was blocklisted in milliseconds
+   * @param {bigint} time The time when the host was blocklisted in milliseconds
    * since Unix epoch.
    */
   onBlocklistedHost(host, time) {
@@ -487,7 +487,7 @@ InterventionsInternalPageImpl.prototype = {
 
     const timeTd = document.createElement('td');
     timeTd.setAttribute('class', 'host-blocklisted-time');
-    timeTd.textContent = getTimeFormat(time);
+    timeTd.textContent = getTimeFormat(Number(time));
     row.appendChild(timeTd);
 
     // TODO(thanhdle): Insert row at correct index. crbug.com/776105.
@@ -511,12 +511,12 @@ InterventionsInternalPageImpl.prototype = {
    * Update the blocklist cleared status on the page.
    *
    * @override
-   * @param {number} time The time of the event in milliseconds since Unix
+   * @param {bigint} time The time of the event in milliseconds since Unix
    * epoch.
    */
   onBlocklistCleared(time) {
     const blocklistClearedStatus = $('blocklist-last-cleared-time');
-    blocklistClearedStatus.textContent = getTimeFormat(time);
+    blocklistClearedStatus.textContent = getTimeFormat(Number(time));
 
     // Remove hosts from table.
     const blocklistedHostsTable = $('blocklisted-hosts-table');
@@ -529,7 +529,8 @@ InterventionsInternalPageImpl.prototype = {
 
     // Log event message.
     insertMessageRowToMessageLogTable(
-        time, 'Blocklist', 'Blocklist Cleared', '' /* URL */, 0 /* pageId */);
+        Number(time), 'Blocklist', 'Blocklist Cleared', '' /* URL */,
+        0 /* pageId */);
   },
 
   /**

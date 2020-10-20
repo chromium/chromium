@@ -17,7 +17,7 @@ test(() => {
   const s = deserializer.TestStruct_Deserialize(dataview);
   assert_equals(s.v1, 8899);
   assert_equals(s.v2, 9988);
-  assert_equals(s.v3, 7777);
+  assert_equals(s.v3, 7777n);
 }, 'deserializer');
 
 </script>
