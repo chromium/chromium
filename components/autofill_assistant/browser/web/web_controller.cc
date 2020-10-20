@@ -125,7 +125,7 @@ const char* const kGetElementAttributeScript =
       })";
 
 // Javascript code to select the current value.
-const char* const kSelectFieldValue = "function() { this.select(); }";
+const char* const kSelectFieldValueScript = "function() { this.select(); }";
 
 // Javascript code to set the 'value' attribute of a node and then fire a
 // "change" event to trigger any listeners.
@@ -165,7 +165,7 @@ const char* const kIsDocumentReadyForInteract =
     })";
 
 // Javascript code to click on an element.
-const char* const kClickElement =
+const char* const kClickElementScript =
     R"(function (selector) {
       selector.click();
     })";
@@ -455,7 +455,7 @@ void WebController::ClickOrTapElement(
         runtime::CallFunctionOnParams::Builder()
             .SetObjectId(element.object_id)
             .SetArguments(std::move(argument))
-            .SetFunctionDeclaration(kClickElement)
+            .SetFunctionDeclaration(kClickElementScript)
             .Build(),
         element.node_frame_id,
         base::BindOnce(
@@ -990,7 +990,7 @@ void WebController::HighlightElement(
                          std::move(callback))));
 }
 
-void WebController::FocusElement(
+void WebController::ScrollToElementPosition(
     const ElementFinder::Result& element,
     const TopPadding& top_padding,
     base::OnceCallback<void(const ClientStatus&)> callback) {
@@ -1093,7 +1093,7 @@ void WebController::SelectFieldValue(
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
           .SetObjectId(element.object_id)
-          .SetFunctionDeclaration(std::string(kSelectFieldValue))
+          .SetFunctionDeclaration(std::string(kSelectFieldValueScript))
           .Build(),
       element.node_frame_id,
       base::BindOnce(

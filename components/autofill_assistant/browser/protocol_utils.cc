@@ -13,7 +13,6 @@
 #include "components/autofill_assistant/browser/actions/configure_bottom_sheet_action.h"
 #include "components/autofill_assistant/browser/actions/configure_ui_state_action.h"
 #include "components/autofill_assistant/browser/actions/expect_navigation_action.h"
-#include "components/autofill_assistant/browser/actions/focus_element_action.h"
 #include "components/autofill_assistant/browser/actions/generate_password_for_form_field_action.h"
 #include "components/autofill_assistant/browser/actions/get_element_status_action.h"
 #include "components/autofill_assistant/browser/actions/highlight_element_action.h"
@@ -25,6 +24,7 @@
 #include "components/autofill_assistant/browser/actions/select_option_action.h"
 #include "components/autofill_assistant/browser/actions/set_attribute_action.h"
 #include "components/autofill_assistant/browser/actions/set_form_field_value_action.h"
+#include "components/autofill_assistant/browser/actions/show_cast_action.h"
 #include "components/autofill_assistant/browser/actions/show_details_action.h"
 #include "components/autofill_assistant/browser/actions/show_form_action.h"
 #include "components/autofill_assistant/browser/actions/show_generic_ui_action.h"
@@ -176,8 +176,8 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
       return std::make_unique<ClickAction>(delegate, action);
     case ActionProto::ActionInfoCase::kTell:
       return std::make_unique<TellAction>(delegate, action);
-    case ActionProto::ActionInfoCase::kFocusElement:
-      return std::make_unique<FocusElementAction>(delegate, action);
+    case ActionProto::ActionInfoCase::kShowCast:
+      return std::make_unique<ShowCastAction>(delegate, action);
     case ActionProto::ActionInfoCase::kUseAddress:
       return std::make_unique<UseAddressAction>(delegate, action);
     case ActionProto::ActionInfoCase::kUseCard:

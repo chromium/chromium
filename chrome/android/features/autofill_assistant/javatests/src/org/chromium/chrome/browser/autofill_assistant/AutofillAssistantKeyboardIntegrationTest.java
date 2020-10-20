@@ -40,13 +40,13 @@ import org.chromium.chrome.browser.autofill_assistant.proto.ClickType;
 import org.chromium.chrome.browser.autofill_assistant.proto.ElementAreaProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ElementAreaProto.Rectangle;
 import org.chromium.chrome.browser.autofill_assistant.proto.ElementConditionProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.FocusElementProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.KeyboardValueFillStrategy;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto.Choice;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SetFormFieldValueProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SetFormFieldValueProto.KeyPress;
+import org.chromium.chrome.browser.autofill_assistant.proto.ShowCastProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto.PresentationProto;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -127,15 +127,14 @@ public class AutofillAssistantKeyboardIntegrationTest {
                                                  .setType(ChipType.HIGHLIGHTED_ACTION)
                                                  .setText("Continue"))))
                          .build());
-        list.add(
-                (ActionProto) ActionProto.newBuilder()
-                        .setFocusElement(FocusElementProto.newBuilder()
-                                                 .setElement(element)
-                                                 .setTouchableElementArea(
-                                                         ElementAreaProto.newBuilder().addTouchable(
-                                                                 Rectangle.newBuilder().addElements(
-                                                                         element))))
-                        .build());
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setShowCast(ShowCastProto.newBuilder()
+                                              .setElementToPresent(element)
+                                              .setTouchableElementArea(
+                                                      ElementAreaProto.newBuilder().addTouchable(
+                                                              Rectangle.newBuilder().addElements(
+                                                                      element))))
+                         .build());
         list.add((ActionProto) ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Highlighted")
@@ -205,15 +204,14 @@ public class AutofillAssistantKeyboardIntegrationTest {
                                                             .setType(ChipType.HIGHLIGHTED_ACTION)
                                                             .setText("Continue"))))
                          .build());
-        list.add(
-                (ActionProto) ActionProto.newBuilder()
-                        .setFocusElement(FocusElementProto.newBuilder()
-                                                 .setElement(element)
-                                                 .setTouchableElementArea(
-                                                         ElementAreaProto.newBuilder().addTouchable(
-                                                                 Rectangle.newBuilder().addElements(
-                                                                         element))))
-                        .build());
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setShowCast(ShowCastProto.newBuilder()
+                                              .setElementToPresent(element)
+                                              .setTouchableElementArea(
+                                                      ElementAreaProto.newBuilder().addTouchable(
+                                                              Rectangle.newBuilder().addElements(
+                                                                      element))))
+                         .build());
         list.add((ActionProto) ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Highlighted")
@@ -273,15 +271,14 @@ public class AutofillAssistantKeyboardIntegrationTest {
                                                  .setType(ChipType.HIGHLIGHTED_ACTION)
                                                  .setText("Continue"))))
                          .build());
-        list.add(
-                (ActionProto) ActionProto.newBuilder()
-                        .setFocusElement(FocusElementProto.newBuilder()
-                                                 .setElement(element)
-                                                 .setTouchableElementArea(
-                                                         ElementAreaProto.newBuilder().addTouchable(
-                                                                 Rectangle.newBuilder().addElements(
-                                                                         element))))
-                        .build());
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setShowCast(ShowCastProto.newBuilder()
+                                              .setElementToPresent(element)
+                                              .setTouchableElementArea(
+                                                      ElementAreaProto.newBuilder().addTouchable(
+                                                              Rectangle.newBuilder().addElements(
+                                                                      element))))
+                         .build());
         list.add((ActionProto) ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Highlighted")
@@ -319,15 +316,14 @@ public class AutofillAssistantKeyboardIntegrationTest {
                         .build();
 
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add(
-                (ActionProto) ActionProto.newBuilder()
-                        .setFocusElement(FocusElementProto.newBuilder()
-                                                 .setElement(element)
-                                                 .setTouchableElementArea(
-                                                         ElementAreaProto.newBuilder().addTouchable(
-                                                                 Rectangle.newBuilder().addElements(
-                                                                         element))))
-                        .build());
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setShowCast(ShowCastProto.newBuilder()
+                                              .setElementToPresent(element)
+                                              .setTouchableElementArea(
+                                                      ElementAreaProto.newBuilder().addTouchable(
+                                                              Rectangle.newBuilder().addElements(
+                                                                      element))))
+                         .build());
         list.add((ActionProto) ActionProto.newBuilder()
                          .setPrompt(
                                  PromptProto.newBuilder()

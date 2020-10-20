@@ -49,8 +49,8 @@ import org.chromium.chrome.browser.autofill_assistant.proto.ClientSettingsProto.
 import org.chromium.chrome.browser.autofill_assistant.proto.CollectUserDataProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ElementAreaProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ElementAreaProto.Rectangle;
-import org.chromium.chrome.browser.autofill_assistant.proto.FocusElementProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.ShowCastProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto.PresentationProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.TextInputProto;
@@ -135,9 +135,9 @@ public class AutofillAssistantAccessibilityIntegrationTest {
                                                 "#touch_area_four"))))
                         .build();
         list.add((ActionProto) ActionProto.newBuilder()
-                         .setFocusElement(FocusElementProto.newBuilder()
-                                                  .setElement(element)
-                                                  .setTouchableElementArea(elementArea))
+                         .setShowCast(ShowCastProto.newBuilder()
+                                              .setElementToPresent(element)
+                                              .setTouchableElementArea(elementArea))
                          .build());
 
         // Create enough additional sections to fill up more than the height of the screen.
@@ -212,9 +212,9 @@ public class AutofillAssistantAccessibilityIntegrationTest {
                                                 "#touch_area_four"))))
                         .build();
         list.add((ActionProto) ActionProto.newBuilder()
-                         .setFocusElement(FocusElementProto.newBuilder()
-                                                  .setElement(element)
-                                                  .setTouchableElementArea(elementArea))
+                         .setShowCast(ShowCastProto.newBuilder()
+                                              .setElementToPresent(element)
+                                              .setTouchableElementArea(elementArea))
                          .build());
 
         // Create enough additional sections to fill up more than the height of the screen.

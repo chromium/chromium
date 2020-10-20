@@ -234,21 +234,23 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     }
   }
 
-  void FocusElement(const Selector& selector, const TopPadding& top_padding) {
+  void ScrollToElementPosition(const Selector& selector,
+                               const TopPadding& top_padding) {
     base::RunLoop run_loop;
     ClientStatus result;
 
     web_controller_->FindElement(
         selector, /* strict_mode= */ true,
-        base::BindOnce(&WebControllerBrowserTest::FindFocusElementCallback,
-                       base::Unretained(this), top_padding,
-                       run_loop.QuitClosure(), &result));
+        base::BindOnce(
+            &WebControllerBrowserTest::FindScrollToElementPositionCallback,
+            base::Unretained(this), top_padding, run_loop.QuitClosure(),
+            &result));
 
     run_loop.Run();
     EXPECT_EQ(ACTION_APPLIED, result.proto_status());
   }
 
-  void FindFocusElementCallback(
+  void FindScrollToElementPositionCallback(
       const TopPadding& top_padding,
       base::OnceClosure done_callback,
       ClientStatus* result_output,
@@ -261,7 +263,7 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     }
 
     ASSERT_TRUE(element_result != nullptr);
-    web_controller_->FocusElement(
+    web_controller_->ScrollToElementPosition(
         *element_result, top_padding,
         base::BindOnce(&WebControllerBrowserTest::ElementRetainingCallback,
                        base::Unretained(this), std::move(element_result),
@@ -806,7 +808,7 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     ScrollContainerTo(initial_window_scroll_y);
 
     TopPadding top_padding{0.25, TopPadding::Unit::RATIO};
-    FocusElement(selector, top_padding);
+    ScrollToElementPosition(selector, top_padding);
     base::ListValue eval_result = content::EvalJs(shell(), R"(
       let item = document.querySelector("#scroll_item_5");
       let itemRect = item.getBoundingClientRect();
@@ -1431,7 +1433,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, FindElementErrorStatus) {
   EXPECT_EQ(TOO_MANY_ELEMENTS, status.proto_status());
 }
 
-IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, FocusElement) {
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ScrollToElementPosition) {
   Selector selector({"#iframe", "#focus"});
 
   const std::string checkVisibleScript = R"(
@@ -1443,24 +1445,24 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, FocusElement) {
   )";
   EXPECT_EQ(false, content::EvalJs(shell(), checkVisibleScript));
   TopPadding top_padding;
-  FocusElement(selector, top_padding);
+  ScrollToElementPosition(selector, top_padding);
   EXPECT_EQ(true, content::EvalJs(shell(), checkVisibleScript));
 }
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
-                       FocusElementWithScrollIntoViewNeeded) {
+                       ScrollToElementPosition_WithScrollIntoViewNeeded) {
   TestScrollIntoView(/* initial_window_scroll_y= */ 0,
                      /* initial_container_scroll_y=*/0);
 }
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
-                       FocusElementWithScrollIntoViewNotNeeded) {
+                       ScrollToElementPosition_WithScrollIntoViewNotNeeded) {
   TestScrollIntoView(/* initial_window_scroll_y= */ 0,
                      /* initial_container_scroll_y=*/200);
 }
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
-                       FocusElement_WithPaddingInPixels) {
+                       ScrollToElementPosition_WithPaddingInPixels) {
   Selector selector({"#scroll-me"});
 
   const std::string checkScrollDifferentThanTargetScript = R"(
@@ -1475,7 +1477,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
 
   // Scroll 360px from the top.
   TopPadding top_padding{/* value= */ 360, TopPadding::Unit::PIXELS};
-  FocusElement(selector, top_padding);
+  ScrollToElementPosition(selector, top_padding);
 
   double eval_result = content::EvalJs(shell(), R"(
       let scrollTarget = document.querySelector("#scroll-me");
@@ -1488,7 +1490,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
-                       FocusElement_WithPaddingInRatio) {
+                       ScrollToElementPosition_WithPaddingInRatio) {
   Selector selector({"#scroll-me"});
 
   const std::string checkScrollDifferentThanTargetScript = R"(
@@ -1504,7 +1506,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
 
   // Scroll 70% from the top.
   TopPadding top_padding{/* value= */ 0.7, TopPadding::Unit::RATIO};
-  FocusElement(selector, top_padding);
+  ScrollToElementPosition(selector, top_padding);
 
   base::ListValue eval_result = content::EvalJs(shell(), R"(
       let scrollTarget = document.querySelector("#scroll-me");

@@ -134,9 +134,9 @@ class WebController {
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
-  // Focus on |element|. |top_padding| specifies the padding between the
-  // focused element and the top.
-  virtual void FocusElement(
+  // Scroll to an |element|'s position. |top_padding| specifies the padding
+  // between the focused element and the top.
+  virtual void ScrollToElementPosition(
       const ElementFinder::Result& element,
       const TopPadding& top_padding,
       base::OnceCallback<void(const ClientStatus&)> callback);

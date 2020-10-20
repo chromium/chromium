@@ -71,8 +71,8 @@ std::ostream& operator<<(std::ostream& out,
     case ActionProto::ActionInfoCase::kTell:
       out << "Tell";
       break;
-    case ActionProto::ActionInfoCase::kFocusElement:
-      out << "FocusElement";
+    case ActionProto::ActionInfoCase::kShowCast:
+      out << "ShowCast";
       break;
     case ActionProto::ActionInfoCase::kWaitForDom:
       out << "WaitForDom";

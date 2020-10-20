@@ -47,9 +47,9 @@ import org.chromium.chrome.browser.autofill_assistant.proto.ClientSettingsProto.
 import org.chromium.chrome.browser.autofill_assistant.proto.ClientSettingsProto.IntegrationTestSettings;
 import org.chromium.chrome.browser.autofill_assistant.proto.ElementAreaProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ElementAreaProto.Rectangle;
-import org.chromium.chrome.browser.autofill_assistant.proto.FocusElementProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.ShowCastProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.StopProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto.PresentationProto;
@@ -128,15 +128,14 @@ public class AutofillAssistantBackButtonIntegrationTest {
                         .build();
 
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add(
-                (ActionProto) ActionProto.newBuilder()
-                        .setFocusElement(FocusElementProto.newBuilder()
-                                                 .setElement(element)
-                                                 .setTouchableElementArea(
-                                                         ElementAreaProto.newBuilder().addTouchable(
-                                                                 Rectangle.newBuilder().addElements(
-                                                                         element))))
-                        .build());
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setShowCast(ShowCastProto.newBuilder()
+                                              .setElementToPresent(element)
+                                              .setTouchableElementArea(
+                                                      ElementAreaProto.newBuilder().addTouchable(
+                                                              Rectangle.newBuilder().addElements(
+                                                                      element))))
+                         .build());
         list.add((ActionProto) ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
                                  PromptProto.Choice.newBuilder()))
@@ -195,15 +194,14 @@ public class AutofillAssistantBackButtonIntegrationTest {
                         .build();
 
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add(
-                (ActionProto) ActionProto.newBuilder()
-                        .setFocusElement(FocusElementProto.newBuilder()
-                                                 .setElement(element)
-                                                 .setTouchableElementArea(
-                                                         ElementAreaProto.newBuilder().addTouchable(
-                                                                 Rectangle.newBuilder().addElements(
-                                                                         element))))
-                        .build());
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setShowCast(ShowCastProto.newBuilder()
+                                              .setElementToPresent(element)
+                                              .setTouchableElementArea(
+                                                      ElementAreaProto.newBuilder().addTouchable(
+                                                              Rectangle.newBuilder().addElements(
+                                                                      element))))
+                         .build());
         list.add((ActionProto) ActionProto.newBuilder()
                          .setTell(TellProto.newBuilder().setMessage("Tell"))
                          .build());
@@ -323,15 +321,14 @@ public class AutofillAssistantBackButtonIntegrationTest {
                         .build();
 
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add(
-                (ActionProto) ActionProto.newBuilder()
-                        .setFocusElement(FocusElementProto.newBuilder()
-                                                 .setElement(element)
-                                                 .setTouchableElementArea(
-                                                         ElementAreaProto.newBuilder().addTouchable(
-                                                                 Rectangle.newBuilder().addElements(
-                                                                         element))))
-                        .build());
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setShowCast(ShowCastProto.newBuilder()
+                                              .setElementToPresent(element)
+                                              .setTouchableElementArea(
+                                                      ElementAreaProto.newBuilder().addTouchable(
+                                                              Rectangle.newBuilder().addElements(
+                                                                      element))))
+                         .build());
         list.add((ActionProto) ActionProto.newBuilder()
                          .setTell(TellProto.newBuilder().setMessage("Tell"))
                          .build());

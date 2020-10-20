@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill_assistant/browser/actions/focus_element_action.h"
+#include "components/autofill_assistant/browser/actions/show_cast_action.h"
 
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -21,37 +21,37 @@ using ::testing::InSequence;
 using ::testing::Pointee;
 using ::testing::Property;
 
-class FocusElementActionTest : public testing::Test {
+class ShowCastActionTest : public testing::Test {
  public:
-  FocusElementActionTest() {}
+  ShowCastActionTest() {}
 
   void SetUp() override {}
 
  protected:
   void Run() {
     ActionProto action_proto;
-    *action_proto.mutable_focus_element() = proto_;
-    FocusElementAction action(&mock_action_delegate_, action_proto);
+    *action_proto.mutable_show_cast() = proto_;
+    ShowCastAction action(&mock_action_delegate_, action_proto);
     action.ProcessAction(callback_.Get());
   }
 
   MockActionDelegate mock_action_delegate_;
   base::MockCallback<Action::ProcessActionCallback> callback_;
-  FocusElementProto proto_;
+  ShowCastProto proto_;
 };
 
-TEST_F(FocusElementActionTest, EmptySelectorFails) {
+TEST_F(ShowCastActionTest, EmptySelectorFails) {
   EXPECT_CALL(
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, INVALID_SELECTOR))));
   Run();
 }
 
-TEST_F(FocusElementActionTest, ActionFailsForNonExistentElement) {
+TEST_F(ShowCastActionTest, ActionFailsForNonExistentElement) {
   InSequence sequence;
 
   Selector selector({"#focus"});
-  *proto_.mutable_element() = selector.proto;
+  *proto_.mutable_element_to_present() = selector.proto;
 
   Selector expected_selector = selector;
   expected_selector.MustBeVisible();
@@ -65,11 +65,11 @@ TEST_F(FocusElementActionTest, ActionFailsForNonExistentElement) {
   Run();
 }
 
-TEST_F(FocusElementActionTest, CheckExpectedCallChain) {
+TEST_F(ShowCastActionTest, CheckExpectedCallChain) {
   InSequence sequence;
 
   Selector selector({"#focus"});
-  *proto_.mutable_element() = selector.proto;
+  *proto_.mutable_element_to_present() = selector.proto;
 
   Selector expected_selector = selector;
   expected_selector.MustBeVisible();
@@ -81,9 +81,9 @@ TEST_F(FocusElementActionTest, CheckExpectedCallChain) {
   EXPECT_CALL(mock_action_delegate_, WaitForDocumentToBecomeInteractive(
                                          EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus()));
-  EXPECT_CALL(
-      mock_action_delegate_,
-      FocusElement(expected_selector, _, EqualsElement(expected_element), _))
+  EXPECT_CALL(mock_action_delegate_,
+              ScrollToElementPosition(expected_selector, _,
+                                      EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus()));
   EXPECT_CALL(mock_action_delegate_, SetTouchableElementArea(_));
 
@@ -93,17 +93,17 @@ TEST_F(FocusElementActionTest, CheckExpectedCallChain) {
   Run();
 }
 
-TEST_F(FocusElementActionTest, SetsTitleIfSpecified) {
+TEST_F(ShowCastActionTest, SetsTitleIfSpecified) {
   ON_CALL(mock_action_delegate_, OnShortWaitForElement(_, _))
       .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
   test_util::MockFindAnyElement(mock_action_delegate_);
   ON_CALL(mock_action_delegate_, WaitForDocumentToBecomeInteractive(_, _))
       .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
-  ON_CALL(mock_action_delegate_, FocusElement(_, _, _, _))
+  ON_CALL(mock_action_delegate_, ScrollToElementPosition(_, _, _, _))
       .WillByDefault(RunOnceCallback<3>(OkClientStatus()));
 
   Selector selector({"#focus"});
-  *proto_.mutable_element() = selector.proto;
+  *proto_.mutable_element_to_present() = selector.proto;
   proto_.set_title("Title");
 
   EXPECT_CALL(mock_action_delegate_, SetStatusMessage("Title"));

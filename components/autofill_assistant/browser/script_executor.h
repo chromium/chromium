@@ -174,7 +174,7 @@ class ScriptExecutor : public ActionDelegate,
   void HighlightElement(
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) override;
-  void FocusElement(
+  void ScrollToElementPosition(
       const Selector& selector,
       const TopPadding& top_padding,
       const ElementFinder::Result& element,

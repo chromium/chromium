@@ -188,7 +188,7 @@ bool ScriptExecutor::ShouldInterruptOnPause(const ActionProto& proto) {
       return true;
     case ActionProto::ActionInfoCase::kClick:
     case ActionProto::ActionInfoCase::kTell:
-    case ActionProto::ActionInfoCase::kFocusElement:
+    case ActionProto::ActionInfoCase::kShowCast:
     case ActionProto::ActionInfoCase::kUseAddress:
     case ActionProto::ActionInfoCase::kUseCard:
     case ActionProto::ActionInfoCase::kWaitForDom:
@@ -536,15 +536,15 @@ void ScriptExecutor::HighlightElement(
   delegate_->GetWebController()->HighlightElement(element, std::move(callback));
 }
 
-void ScriptExecutor::FocusElement(
+void ScriptExecutor::ScrollToElementPosition(
     const Selector& selector,
     const TopPadding& top_padding,
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   last_focused_element_selector_ = selector;
   last_focused_element_top_padding_ = top_padding;
-  delegate_->GetWebController()->FocusElement(element, top_padding,
-                                              std::move(callback));
+  delegate_->GetWebController()->ScrollToElementPosition(element, top_padding,
+                                                         std::move(callback));
 }
 
 void ScriptExecutor::SetTouchableElementArea(
@@ -1245,7 +1245,7 @@ void ScriptExecutor::WaitForDomOperation::RestorePreInterruptScroll() {
         base::BindOnce(&ActionDelegate::WaitForDocumentToBecomeInteractive,
                        main_script_->GetWeakPtr()));
     actions->emplace_back(base::BindOnce(
-        &ActionDelegate::FocusElement, main_script_->GetWeakPtr(),
+        &ActionDelegate::ScrollToElementPosition, main_script_->GetWeakPtr(),
         main_script_->last_focused_element_selector_,
         main_script_->last_focused_element_top_padding_));
     action_delegate_util::FindElementAndPerformAll(

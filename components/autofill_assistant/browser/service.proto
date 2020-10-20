@@ -507,7 +507,7 @@ message ActionProto {
     NavigateProto navigate = 9;
     PromptProto prompt = 10;
     TellProto tell = 11;
-    FocusElementProto focus_element = 12;
+    ShowCastProto show_cast = 12;
     WaitForDomProto wait_for_dom = 19;
     UseCreditCardProto use_card = 28;
     UseAddressProto use_address = 29;
@@ -1054,8 +1054,8 @@ message TellProto {
   optional bool needs_ui = 2 [default = true];
 }
 
-// Contain all arguments to focus on an element.
-message FocusElementProto {
+// Contain all arguments to show cast on an element.
+message ShowCastProto {
   message TopPadding {
     oneof top_padding {
       // Padding in CSS pixels. Eg. 20.
@@ -1064,8 +1064,9 @@ message FocusElementProto {
       float ratio = 2;
     }
   }
-  // Element to focus on.
-  optional SelectorProto element = 1;
+
+  // Element to scroll to.
+  optional SelectorProto element_to_present = 1;
 
   // Optional title to show in the status bar.
   optional string title = 2;
@@ -1539,7 +1540,7 @@ message ShowGenericUiProto {
   reserved 10;
 }
 
-// Allow choosing one or more possibility. If FocusElement was called just
+// Allow choosing one or more possibility. If ShowCast was called just
 // before, allow interaction with the touchable element area, otherwise don't
 // allow any interactions.
 message PromptProto {

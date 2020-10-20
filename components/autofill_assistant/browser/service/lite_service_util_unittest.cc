@@ -111,7 +111,7 @@ TEST(LiteServiceUtilTest, ContainsOnlySafeActions) {
   unsafe_actions.add_actions()->mutable_set_form_value();
   unsafe_actions.add_actions()->mutable_select_option();
   unsafe_actions.add_actions()->mutable_navigate();
-  unsafe_actions.add_actions()->mutable_focus_element();
+  unsafe_actions.add_actions()->mutable_show_cast();
   unsafe_actions.add_actions()->mutable_use_card();
   unsafe_actions.add_actions()->mutable_use_address();
   unsafe_actions.add_actions()->mutable_upload_dom();

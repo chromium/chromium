@@ -141,7 +141,7 @@ class MockActionDelegate : public ActionDelegate {
                     const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
 
-  MOCK_METHOD4(FocusElement,
+  MOCK_METHOD4(ScrollToElementPosition,
                void(const Selector& selector,
                     const TopPadding& top_padding,
                     const ElementFinder::Result& element,

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_FOCUS_ELEMENT_ACTION_H_
-#define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_FOCUS_ELEMENT_ACTION_H_
+#ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_SHOW_CAST_ACTION_H_
+#define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_SHOW_CAST_ACTION_H_
 
 #include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/top_padding.h"
@@ -13,12 +13,12 @@
 
 namespace autofill_assistant {
 
-// An action to focus a given element on Web. Scrolling to it first if required.
-class FocusElementAction : public Action {
+// An action to show cast a given element on Web. Scrolling to it first if
+// required.
+class ShowCastAction : public Action {
  public:
-  explicit FocusElementAction(ActionDelegate* delegate,
-                              const ActionProto& proto);
-  ~FocusElementAction() override;
+  explicit ShowCastAction(ActionDelegate* delegate, const ActionProto& proto);
+  ~ShowCastAction() override;
 
  private:
   // Overrides Action:
@@ -28,13 +28,13 @@ class FocusElementAction : public Action {
                         const Selector& selector,
                         const TopPadding& top_padding,
                         const ClientStatus& element_status);
-  void OnFocusElement(ProcessActionCallback callback,
-                      const ClientStatus& status);
+  void OnScrollToElementPosition(ProcessActionCallback callback,
+                                 const ClientStatus& status);
 
-  base::WeakPtrFactory<FocusElementAction> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ShowCastAction> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(FocusElementAction);
+  DISALLOW_COPY_AND_ASSIGN(ShowCastAction);
 };
 
 }  // namespace autofill_assistant
-#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_FOCUS_ELEMENT_ACTION_H_
+#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_SHOW_CAST_ACTION_H_
