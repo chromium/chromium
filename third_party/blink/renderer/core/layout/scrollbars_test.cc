@@ -38,7 +38,9 @@ namespace {
 
 class StubWebThemeEngine : public WebThemeEngine {
  public:
-  StubWebThemeEngine() { painted_color_scheme_.fill(ColorScheme::kLight); }
+  StubWebThemeEngine() {
+    painted_color_scheme_.fill(mojom::blink::ColorScheme::kLight);
+  }
 
   gfx::Size GetSize(Part part) override {
     switch (part) {
@@ -65,18 +67,19 @@ class StubWebThemeEngine : public WebThemeEngine {
              State,
              const gfx::Rect&,
              const ExtraParams*,
-             blink::ColorScheme color_scheme) override {
+             mojom::blink::ColorScheme color_scheme) override {
     // Make  sure we don't overflow the array.
     DCHECK(part <= kPartProgressBar);
     painted_color_scheme_[part] = color_scheme;
   }
 
-  ColorScheme GetPaintedPartColorScheme(Part part) const {
+  mojom::blink::ColorScheme GetPaintedPartColorScheme(Part part) const {
     return painted_color_scheme_[part];
   }
 
  private:
-  std::array<ColorScheme, kPartProgressBar + 1> painted_color_scheme_;
+  std::array<mojom::blink::ColorScheme, kPartProgressBar + 1>
+      painted_color_scheme_;
 };
 
 constexpr int StubWebThemeEngine::kMinimumHorizontalLength;
@@ -3022,14 +3025,15 @@ TEST_P(ScrollbarColorSchemeTest, MAYBE_ThemeEnginePaint) {
 
   auto* theme_engine =
       static_cast<StubWebThemeEngine*>(Platform::Current()->ThemeEngine());
-  EXPECT_EQ(ColorScheme::kDark,
+  EXPECT_EQ(mojom::blink::ColorScheme::kDark,
             theme_engine->GetPaintedPartColorScheme(
                 WebThemeEngine::kPartScrollbarHorizontalThumb));
-  EXPECT_EQ(ColorScheme::kDark,
+  EXPECT_EQ(mojom::blink::ColorScheme::kDark,
             theme_engine->GetPaintedPartColorScheme(
                 WebThemeEngine::kPartScrollbarVerticalThumb));
-  EXPECT_EQ(ColorScheme::kDark, theme_engine->GetPaintedPartColorScheme(
-                                    WebThemeEngine::kPartScrollbarCorner));
+  EXPECT_EQ(mojom::blink::ColorScheme::kDark,
+            theme_engine->GetPaintedPartColorScheme(
+                WebThemeEngine::kPartScrollbarCorner));
 }
 
 // Test scrollbar-gutter values with classic scrollbars and horizontal-tb text.

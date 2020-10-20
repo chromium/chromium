@@ -24,6 +24,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -670,13 +671,14 @@ bool HTMLFrameOwnerElement::IsAdRelated() const {
   return content_frame_->IsAdSubframe();
 }
 
-ColorScheme HTMLFrameOwnerElement::GetColorScheme() const {
+mojom::blink::ColorScheme HTMLFrameOwnerElement::GetColorScheme() const {
   if (const auto* style = GetComputedStyle())
     return style->UsedColorSchemeForInitialColors();
-  return ColorScheme::kLight;
+  return mojom::blink::ColorScheme::kLight;
 }
 
-void HTMLFrameOwnerElement::SetColorScheme(ColorScheme color_scheme) {
+void HTMLFrameOwnerElement::SetColorScheme(
+    mojom::blink::ColorScheme color_scheme) {
   Document* doc = contentDocument();
   if (doc && doc->GetFrame()) {
     doc->WillChangeFrameOwnerProperties(MarginWidth(), MarginHeight(),

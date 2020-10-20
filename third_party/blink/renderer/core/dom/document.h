@@ -999,7 +999,7 @@ class CORE_EXPORT Document : public ContainerNode,
                                       int margin_height,
                                       mojom::blink::ScrollbarMode,
                                       bool is_display_none,
-                                      ColorScheme color_scheme);
+                                      mojom::ColorScheme color_scheme);
 
   String title() const { return title_; }
   void setTitle(const String&);

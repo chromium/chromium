@@ -158,8 +158,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void WatchedSelectorsChanged();
   void InitialStyleChanged();
   void ColorSchemeChanged();
-  void SetOwnerColorScheme(ColorScheme);
-  ColorScheme GetOwnerColorScheme() const { return owner_color_scheme_; }
+  void SetOwnerColorScheme(mojom::blink::ColorScheme);
+  mojom::blink::ColorScheme GetOwnerColorScheme() const {
+    return owner_color_scheme_;
+  }
   void InitialViewportChanged();
   void ViewportRulesChanged();
   void HtmlImportAddedOrRemoved();
@@ -654,7 +656,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // embedding document. If the color-scheme of the owner element and the root
   // element in the embedded document differ, use a solid backdrop color instead
   // of the default transparency of an iframe.
-  ColorScheme owner_color_scheme_{ColorScheme::kLight};
+  mojom::blink::ColorScheme owner_color_scheme_;
 
   // The color of the canvas backdrop for the used color-scheme.
   Color color_scheme_background_;

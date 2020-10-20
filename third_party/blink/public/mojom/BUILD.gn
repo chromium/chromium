@@ -205,6 +205,7 @@ mojom("mojom_platform") {
   public_deps = [
     ":android_mojo_bindings",
     ":authenticator_test_mojo_bindings",
+    ":color_scheme_mojo_bindings",
     ":mojom_mhtml_load_result",
     ":script_type_mojo_bindings",
     ":web_feature_mojo_bindings",
@@ -396,17 +397,6 @@ mojom("mojom_platform") {
       ]
       traits_headers = [ "//third_party/blink/public/common/loader/url_loader_factory_bundle_mojom_traits.h" ]
       traits_public_deps = [ "//url/mojom:mojom_traits" ]
-    },
-    {
-      types = [
-        {
-          mojom = "blink.mojom.ColorScheme"
-          cpp = "::blink::ColorScheme"
-          copyable_pass_by_value = true
-        },
-      ]
-      traits_headers = [ "//third_party/blink/public/common/frame/frame_owner_properties_mojom_traits.h" ]
-      traits_public_deps = [ "//third_party/blink/public/common:headers" ]
     },
     {
       types = [
@@ -831,6 +821,7 @@ mojom("mojom_core") {
 
   public_deps = [
     ":android_mojo_bindings",
+    ":color_scheme_mojo_bindings",
     ":mojom_platform",
     ":script_type_mojo_bindings",
     ":web_feature_mojo_bindings",
@@ -1293,4 +1284,21 @@ mojom("memory_usage_monitor_linux_mojo_bindings") {
   export_class_attribute_blink = "PLATFORM_EXPORT"
   export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
   export_header_blink = "third_party/blink/renderer/platform/platform_export.h"
+}
+
+mojom("color_scheme_mojo_bindings") {
+  generate_java = true
+  visibility_blink = [
+    "//third_party/blink/public/mojom:mojom_core_blink",
+    "//third_party/blink/public/mojom:mojom_platform_blink",
+    "//third_party/blink/renderer/core:prerequisites",
+    "//third_party/blink/renderer/modules",
+    "//third_party/blink/renderer/platform",
+  ]
+
+  sources = [ "frame/color_scheme.mojom" ]
+
+  export_class_attribute = "BLINK_COMMON_EXPORT"
+  export_define = "BLINK_COMMON_IMPLEMENTATION=1"
+  export_header = "third_party/blink/public/common/common_export.h"
 }

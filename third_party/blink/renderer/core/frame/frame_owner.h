@@ -4,6 +4,7 @@
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_OWNER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_OWNER_H_
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-shared.h"
 
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
@@ -72,7 +73,7 @@ class CORE_EXPORT FrameOwner : public GarbageCollectedMixin {
   virtual bool AllowFullscreen() const = 0;
   virtual bool AllowPaymentRequest() const = 0;
   virtual bool IsDisplayNone() const = 0;
-  virtual ColorScheme GetColorScheme() const = 0;
+  virtual mojom::ColorScheme GetColorScheme() const = 0;
   virtual AtomicString RequiredCsp() const = 0;
 
   // Returns whether or not children of the owned frame should be lazily loaded.
@@ -151,7 +152,9 @@ class CORE_EXPORT DummyFrameOwner final
   bool AllowFullscreen() const override { return false; }
   bool AllowPaymentRequest() const override { return false; }
   bool IsDisplayNone() const override { return false; }
-  ColorScheme GetColorScheme() const override { return ColorScheme::kLight; }
+  mojom::ColorScheme GetColorScheme() const override {
+    return mojom::ColorScheme::kLight;
+  }
   AtomicString RequiredCsp() const override { return g_null_atom; }
   bool ShouldLazyLoadChildren() const override { return false; }
 

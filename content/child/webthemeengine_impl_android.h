@@ -21,7 +21,7 @@ class WebThemeEngineAndroid : public blink::WebThemeEngine {
              blink::WebThemeEngine::State state,
              const gfx::Rect& rect,
              const blink::WebThemeEngine::ExtraParams* extra_params,
-             blink::ColorScheme color_scheme) override;
+             blink::mojom::ColorScheme color_scheme) override;
   blink::ForcedColors GetForcedColors() const override;
   void SetForcedColors(const blink::ForcedColors forced_colors) override;
 };

@@ -5,11 +5,7 @@
 module blink.mojom;
 
 import "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom";
-
-enum ColorScheme {
-  kLight,
-  kDark,
-};
+import "third_party/blink/public/mojom/frame/color_scheme.mojom";
 
 struct FrameOwnerProperties {
   // Browsing context container's name

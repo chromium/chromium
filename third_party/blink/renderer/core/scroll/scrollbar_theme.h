@@ -97,7 +97,7 @@ class CORE_EXPORT ScrollbarTheme {
                                  const Scrollbar* vertical_scrollbar,
                                  const DisplayItemClient&,
                                  const IntRect& corner_rect,
-                                 ColorScheme color_scheme);
+                                 mojom::blink::ColorScheme color_scheme);
   virtual void PaintTickmarks(GraphicsContext&,
                               const Scrollbar&,
                               const IntRect&);

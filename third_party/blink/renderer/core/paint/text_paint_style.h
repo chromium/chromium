@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TEXT_PAINT_STYLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TEXT_PAINT_STYLE_H_
 
-#include "third_party/blink/public/common/css/color_scheme.h"
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/applied_text_decoration.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -24,7 +24,7 @@ struct CORE_EXPORT TextPaintStyle {
   Color stroke_color;
   Color emphasis_mark_color;
   float stroke_width;
-  ColorScheme color_scheme;
+  mojom::blink::ColorScheme color_scheme;
   const ShadowList* shadow;
   base::Optional<AppliedTextDecoration> selection_text_decoration;
 

@@ -836,7 +836,7 @@ scoped_refptr<base::SingleThreadTaskRunner> VisualViewport::GetTimerTaskRunner()
   return MainFrame()->GetTaskRunner(TaskType::kInternalDefault);
 }
 
-ColorScheme VisualViewport::UsedColorScheme() const {
+mojom::blink::ColorScheme VisualViewport::UsedColorScheme() const {
   if (LocalFrame* main_frame = MainFrame()) {
     if (Document* main_document = main_frame->GetDocument())
       return main_document->GetLayoutView()->StyleRef().UsedColorScheme();

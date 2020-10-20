@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/core/css/style_engine.h"
 
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
@@ -111,7 +112,8 @@ StyleEngine::StyleEngine(Document& document)
     : document_(&document),
       is_html_import_(document.IsHTMLImport()),
       document_style_sheet_collection_(
-          MakeGarbageCollected<DocumentStyleSheetCollection>(document)) {
+          MakeGarbageCollected<DocumentStyleSheetCollection>(document)),
+      owner_color_scheme_(mojom::blink::ColorScheme::kLight) {
   if (document.GetFrame()) {
     // We don't need to create CSSFontSelector for imported document or
     // HTMLTemplateElement's document, because those documents have no frame.
@@ -2245,18 +2247,20 @@ void StyleEngine::UpdateColorSchemeBackground(bool color_scheme_changed) {
     // view's base background color in order to match the root element color-
     // scheme. See spec:
     // https://drafts.csswg.org/css-color-adjust/#color-scheme-effect
-    ColorScheme root_color_scheme = ColorScheme::kLight;
+    mojom::blink::ColorScheme root_color_scheme =
+        mojom::blink::ColorScheme::kLight;
     if (auto* root_element = GetDocument().documentElement()) {
       if (const ComputedStyle* style = root_element->GetComputedStyle())
         root_color_scheme = style->UsedColorSchemeForInitialColors();
       else if (SupportsDarkColorScheme())
-        root_color_scheme = ColorScheme::kDark;
+        root_color_scheme = mojom::blink::ColorScheme::kDark;
     }
-    color_scheme_background_ = root_color_scheme == ColorScheme::kLight
-                                   ? Color::kWhite
-                                   : Color(0x12, 0x12, 0x12);
+    color_scheme_background_ =
+        root_color_scheme == mojom::blink::ColorScheme::kLight
+            ? Color::kWhite
+            : Color(0x12, 0x12, 0x12);
     if (GetDocument().IsInMainFrame()) {
-      if (root_color_scheme == ColorScheme::kDark) {
+      if (root_color_scheme == mojom::blink::ColorScheme::kDark) {
         use_color_adjust_background =
             LocalFrameView::UseColorAdjustBackground::kIfBaseNotTransparent;
       }
@@ -2273,7 +2277,7 @@ void StyleEngine::UpdateColorSchemeBackground(bool color_scheme_changed) {
                                     color_scheme_changed);
 }
 
-void StyleEngine::SetOwnerColorScheme(ColorScheme color_scheme) {
+void StyleEngine::SetOwnerColorScheme(mojom::blink::ColorScheme color_scheme) {
   DCHECK(!GetDocument().IsInMainFrame());
   if (owner_color_scheme_ == color_scheme)
     return;
@@ -2283,7 +2287,7 @@ void StyleEngine::SetOwnerColorScheme(ColorScheme color_scheme) {
 
 void StyleEngine::UpdateForcedBackgroundColor() {
   forced_background_color_ = LayoutTheme::GetTheme().SystemColor(
-      CSSValueID::kCanvas, ColorScheme::kLight);
+      CSSValueID::kCanvas, mojom::blink::ColorScheme::kLight);
 }
 
 Color StyleEngine::ColorAdjustBackgroundColor() const {

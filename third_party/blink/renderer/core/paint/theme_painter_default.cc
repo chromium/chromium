@@ -521,7 +521,8 @@ bool ThemePainterDefault::PaintSearchFieldCancelButton(
       cancel_button_size, cancel_button_size);
   IntRect painting_rect = ConvertToPaintingRect(
       input_layout_box, cancel_button_object, cancel_button_rect, r);
-  ColorScheme color_scheme = cancel_button_object.StyleRef().UsedColorScheme();
+  mojom::blink::ColorScheme color_scheme =
+      cancel_button_object.StyleRef().UsedColorScheme();
   DEFINE_STATIC_REF(Image, cancel_image,
                     (Image::LoadPlatformResource(IDR_SEARCH_CANCEL)));
   DEFINE_STATIC_REF(Image, cancel_pressed_image,
@@ -532,10 +533,13 @@ bool ThemePainterDefault::PaintSearchFieldCancelButton(
       Image, cancel_pressed_image_dark_mode,
       (Image::LoadPlatformResource(IDR_SEARCH_CANCEL_PRESSED_DARK_MODE)));
   Image* color_scheme_adjusted_cancel_image =
-      color_scheme == kLight ? cancel_image : cancel_image_dark_mode;
+      color_scheme == mojom::blink::ColorScheme::kLight
+          ? cancel_image
+          : cancel_image_dark_mode;
   Image* color_scheme_adjusted_cancel_pressed_image =
-      color_scheme == kLight ? cancel_pressed_image
-                             : cancel_pressed_image_dark_mode;
+      color_scheme == mojom::blink::ColorScheme::kLight
+          ? cancel_pressed_image
+          : cancel_pressed_image_dark_mode;
   paint_info.context.DrawImage(
       To<Element>(cancel_button_object.GetNode())->IsActive()
           ? color_scheme_adjusted_cancel_pressed_image

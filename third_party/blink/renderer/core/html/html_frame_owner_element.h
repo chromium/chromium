@@ -74,7 +74,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
     return embedded_content_view_;
   }
 
-  void SetColorScheme(ColorScheme);
+  void SetColorScheme(mojom::ColorScheme);
 
   class PluginDisposeSuspendScope {
     STACK_ALLOCATED();
@@ -118,7 +118,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   bool AllowFullscreen() const override { return false; }
   bool AllowPaymentRequest() const override { return false; }
   bool IsDisplayNone() const override { return !embedded_content_view_; }
-  ColorScheme GetColorScheme() const override;
+  mojom::ColorScheme GetColorScheme() const override;
   AtomicString RequiredCsp() const override { return g_null_atom; }
   bool ShouldLazyLoadChildren() const final;
 
