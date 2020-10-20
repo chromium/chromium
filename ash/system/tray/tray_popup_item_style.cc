@@ -71,7 +71,8 @@ SkColor TrayPopupItemStyle::GetTextColor() const {
     case ColorStyle::DISABLED:
       return SkColorSetA(kBaseTextColor, kDisabledAlpha);
     case ColorStyle::CONNECTED:
-      return gfx::kGoogleGreenDark600;
+      return AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorPositive);
   }
   NOTREACHED();
   return gfx::kPlaceholderColor;
