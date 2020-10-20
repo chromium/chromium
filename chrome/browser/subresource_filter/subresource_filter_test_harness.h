@@ -15,11 +15,14 @@
 
 class ChromeSubresourceFilterClient;
 class GURL;
-class SubresourceFilterContentSettingsManager;
 
 namespace content {
 class RenderFrameHost;
 }  // namespace content
+
+namespace subresource_filter {
+class SubresourceFilterContentSettingsManager;
+}
 
 // End to end unit test harness of (most of) the browser process portions of the
 // subresource filtering code.
@@ -56,7 +59,8 @@ class SubresourceFilterTestHarness : public ChromeRenderViewHostTestHarness {
 
   void RemoveURLFromBlocklist(const GURL& url);
 
-  SubresourceFilterContentSettingsManager* GetSettingsManager();
+  subresource_filter::SubresourceFilterContentSettingsManager*
+  GetSettingsManager();
 
   subresource_filter::testing::ScopedSubresourceFilterConfigurator&
   scoped_configuration() {

@@ -127,7 +127,8 @@ ChromeSubresourceFilterClient::OnPageActivationComputed(
 
   const GURL& url(navigation_handle->GetURL());
 
-  base::Optional<AdsInterventionManager::LastAdsIntervention>
+  base::Optional<
+      subresource_filter::AdsInterventionManager::LastAdsIntervention>
       last_intervention =
           profile_context_->ads_intervention_manager()->GetLastAdsIntervention(
               url);
@@ -149,8 +150,8 @@ ChromeSubresourceFilterClient::OnPageActivationComputed(
         url,
         effective_activation_level ==
             subresource_filter::mojom::ActivationLevel::kEnabled,
-        SubresourceFilterContentSettingsManager::ActivationSource::
-            kSafeBrowsing);
+        subresource_filter::SubresourceFilterContentSettingsManager::
+            ActivationSource::kSafeBrowsing);
   }
 
   if (profile_context_->settings_manager()->GetSitePermission(url) ==
@@ -174,7 +175,8 @@ void ChromeSubresourceFilterClient::OnAdsViolationTriggered(
   // TODO(https://crbug/1107998): Verify this behavior when violation signals
   // and histograms are added.
   const GURL& url = rfh->GetLastCommittedURL();
-  base::Optional<AdsInterventionManager::LastAdsIntervention>
+  base::Optional<
+      subresource_filter::AdsInterventionManager::LastAdsIntervention>
       last_intervention =
           profile_context_->ads_intervention_manager()->GetLastAdsIntervention(
               url);

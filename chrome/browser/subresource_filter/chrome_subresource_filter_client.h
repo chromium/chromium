@@ -14,7 +14,6 @@
 #include "content/public/browser/web_contents_observer.h"
 
 class GURL;
-class SubresourceFilterProfileContext;
 
 namespace content {
 class NavigationHandle;
@@ -23,6 +22,7 @@ class WebContents;
 
 namespace subresource_filter {
 class ContentSubresourceFilterThrottleManager;
+class SubresourceFilterProfileContext;
 }  // namespace subresource_filter
 
 // Chrome implementation of SubresourceFilterClient. Instances are associated
@@ -80,7 +80,8 @@ class ChromeSubresourceFilterClient
       throttle_manager_;
 
   // Owned by the profile.
-  SubresourceFilterProfileContext* profile_context_ = nullptr;
+  subresource_filter::SubresourceFilterProfileContext* profile_context_ =
+      nullptr;
 
   bool did_show_ui_for_navigation_ = false;
 

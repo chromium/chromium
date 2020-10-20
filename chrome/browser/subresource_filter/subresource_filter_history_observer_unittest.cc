@@ -17,8 +17,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace {
-
 // Tests that SubresourceFilterHistoryObserver is operating as expected in the
 // context of //chrome-level setup of SubresourceFilterProfileContext. More of
 // an integration test than a unittest in spirit, but requires unittest
@@ -41,7 +39,8 @@ class SubresourceFilterHistoryObserverTest : public testing::Test {
     settings_manager_->set_should_use_smart_ui_for_testing(true);
   }
 
-  SubresourceFilterContentSettingsManager* settings_manager() {
+  subresource_filter::SubresourceFilterContentSettingsManager*
+  settings_manager() {
     return settings_manager_;
   }
 
@@ -53,7 +52,8 @@ class SubresourceFilterHistoryObserverTest : public testing::Test {
   TestingProfile testing_profile_;
 
   // Owned by the testing_profile_.
-  SubresourceFilterContentSettingsManager* settings_manager_ = nullptr;
+  subresource_filter::SubresourceFilterContentSettingsManager*
+      settings_manager_ = nullptr;
 };
 
 // Tests that SubresourceFilterHistoryObserver observes deletions of URLs from
@@ -135,5 +135,3 @@ TEST_F(SubresourceFilterHistoryObserverTest,
   EXPECT_TRUE(settings_manager()->ShouldShowUIForSite(url1));
   EXPECT_TRUE(settings_manager()->ShouldShowUIForSite(url2));
 }
-
-}  // namespace

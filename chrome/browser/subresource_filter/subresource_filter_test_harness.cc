@@ -166,7 +166,7 @@ void SubresourceFilterTestHarness::RemoveURLFromBlocklist(const GURL& url) {
   fake_safe_browsing_database_->RemoveBlocklistedUrl(url);
 }
 
-SubresourceFilterContentSettingsManager*
+subresource_filter::SubresourceFilterContentSettingsManager*
 SubresourceFilterTestHarness::GetSettingsManager() {
   return SubresourceFilterProfileContextFactory::GetForProfile(
              static_cast<Profile*>(profile()))

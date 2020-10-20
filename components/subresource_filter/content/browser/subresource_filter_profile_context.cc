@@ -7,6 +7,8 @@
 #include "components/subresource_filter/content/browser/ads_intervention_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 
+namespace subresource_filter {
+
 SubresourceFilterProfileContext::SubresourceFilterProfileContext(
     HostContentSettingsMap* settings_map)
     : settings_manager_(
@@ -28,3 +30,5 @@ void SubresourceFilterProfileContext::Shutdown() {
   settings_manager_.reset();
   ads_intervention_manager_.reset();
 }
+
+}  // namespace subresource_filter

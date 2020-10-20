@@ -11,6 +11,9 @@
 #include "components/keyed_service/core/keyed_service.h"
 
 class HostContentSettingsMap;
+
+namespace subresource_filter {
+
 class SubresourceFilterContentSettingsManager;
 class AdsInterventionManager;
 
@@ -60,5 +63,7 @@ class SubresourceFilterProfileContext : public KeyedService {
 
   DISALLOW_COPY_AND_ASSIGN(SubresourceFilterProfileContext);
 };
+
+}  // namespace subresource_filter
 
 #endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_SUBRESOURCE_FILTER_PROFILE_CONTEXT_H_

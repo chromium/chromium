@@ -276,7 +276,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterSettingsBrowserTest,
 
   // Fast forward the clock, and a_url should trigger the UI again.
   raw_clock->Advance(
-      SubresourceFilterContentSettingsManager::kDelayBeforeShowingInfobarAgain);
+      subresource_filter::SubresourceFilterContentSettingsManager::
+          kDelayBeforeShowingInfobarAgain);
   ui_test_utils::NavigateToURL(browser(), a_url);
   EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
   EXPECT_TRUE(client->did_show_ui_for_navigation());

@@ -11,6 +11,8 @@
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "url/gurl.h"
 
+namespace subresource_filter {
+
 namespace {
 
 // Key into the website settings dict for last active ads violation.
@@ -18,8 +20,6 @@ const char kLastAdsViolationTimeKey[] = "LastAdsViolationTime";
 const char kLastAdsViolationKey[] = "LastAdsViolation";
 
 }  // namespace
-
-using subresource_filter::mojom::AdsViolation;
 
 AdsInterventionManager::AdsInterventionManager(
     SubresourceFilterContentSettingsManager* settings_manager)
@@ -30,7 +30,7 @@ AdsInterventionManager::~AdsInterventionManager() = default;
 
 void AdsInterventionManager::TriggerAdsInterventionForUrlOnSubsequentLoads(
     const GURL& url,
-    AdsViolation ads_violation) {
+    mojom::AdsViolation ads_violation) {
   std::unique_ptr<base::DictionaryValue> additional_metadata =
       std::make_unique<base::DictionaryValue>();
 
@@ -39,8 +39,7 @@ void AdsInterventionManager::TriggerAdsInterventionForUrlOnSubsequentLoads(
   additional_metadata->SetInteger(kLastAdsViolationKey,
                                   static_cast<int>(ads_violation));
 
-  bool activated = base::FeatureList::IsEnabled(
-      subresource_filter::kAdsInterventionsEnforced);
+  bool activated = base::FeatureList::IsEnabled(kAdsInterventionsEnforced);
   // This is a no-op if the metadata already exists for an active
   // ads intervention.
   settings_manager_->SetSiteMetadataBasedOnActivation(
@@ -64,8 +63,10 @@ AdsInterventionManager::GetLastAdsIntervention(const GURL& url) const {
         clock_->Now() - base::Time::FromDoubleT(last_violation_time);
 
     return LastAdsIntervention(
-        {diff, static_cast<AdsViolation>(ads_violation)});
+        {diff, static_cast<mojom::AdsViolation>(ads_violation)});
   }
 
   return base::nullopt;
 }
+
+}  // namespace subresource_filter

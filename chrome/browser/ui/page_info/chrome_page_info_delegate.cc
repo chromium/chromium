@@ -172,9 +172,10 @@ HostContentSettingsMap* ChromePageInfoDelegate::GetContentSettings() {
 
 bool ChromePageInfoDelegate::IsSubresourceFilterActivated(
     const GURL& site_url) {
-  SubresourceFilterContentSettingsManager* settings_manager =
-      SubresourceFilterProfileContextFactory::GetForProfile(GetProfile())
-          ->settings_manager();
+  subresource_filter::SubresourceFilterContentSettingsManager*
+      settings_manager =
+          SubresourceFilterProfileContextFactory::GetForProfile(GetProfile())
+              ->settings_manager();
 
   return settings_manager->GetSiteActivationFromMetadata(site_url);
 }

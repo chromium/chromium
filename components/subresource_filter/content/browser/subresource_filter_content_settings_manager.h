@@ -20,6 +20,8 @@ namespace base {
 class DictionaryValue;
 }  // namespace base
 
+namespace subresource_filter {
+
 // This class contains helpers to get/set content and website settings related
 // to subresource filtering.
 //
@@ -151,5 +153,7 @@ class SubresourceFilterContentSettingsManager {
 
   DISALLOW_COPY_AND_ASSIGN(SubresourceFilterContentSettingsManager);
 };
+
+}  // namespace subresource_filter
 
 #endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_SUBRESOURCE_FILTER_CONTENT_SETTINGS_MANAGER_H_

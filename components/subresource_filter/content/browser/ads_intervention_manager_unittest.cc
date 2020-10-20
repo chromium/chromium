@@ -16,7 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-using subresource_filter::mojom::AdsViolation;
+namespace subresource_filter {
 
 class AdsInterventionManagerTest : public testing::Test {
  public:
@@ -80,14 +80,14 @@ TEST_F(AdsInterventionManagerTest, SingleIntervention_TimeSinceMatchesClock) {
   GURL url("https://example.test/");
 
   ads_intervention_manager_->TriggerAdsInterventionForUrlOnSubsequentLoads(
-      url, AdsViolation::kMobileAdDensityByHeightAbove30);
+      url, mojom::AdsViolation::kMobileAdDensityByHeightAbove30);
   test_clock()->Advance(base::TimeDelta::FromHours(1));
 
   base::Optional<AdsInterventionManager::LastAdsIntervention> ads_intervention =
       ads_intervention_manager_->GetLastAdsIntervention(url);
   EXPECT_TRUE(ads_intervention.has_value());
   EXPECT_EQ(ads_intervention->ads_violation,
-            AdsViolation::kMobileAdDensityByHeightAbove30);
+            mojom::AdsViolation::kMobileAdDensityByHeightAbove30);
   EXPECT_EQ(ads_intervention->duration_since, base::TimeDelta::FromHours(1));
 
   // Advance the clock by two hours, duration since should now be 3 hours.
@@ -95,6 +95,8 @@ TEST_F(AdsInterventionManagerTest, SingleIntervention_TimeSinceMatchesClock) {
   ads_intervention = ads_intervention_manager_->GetLastAdsIntervention(url);
   EXPECT_TRUE(ads_intervention.has_value());
   EXPECT_EQ(ads_intervention->ads_violation,
-            AdsViolation::kMobileAdDensityByHeightAbove30);
+            mojom::AdsViolation::kMobileAdDensityByHeightAbove30);
   EXPECT_EQ(ads_intervention->duration_since, base::TimeDelta::FromHours(3));
 }
+
+}  // namespace subresource_filter

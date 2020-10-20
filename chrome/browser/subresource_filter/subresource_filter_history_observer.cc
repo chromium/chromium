@@ -8,7 +8,8 @@
 #include "url/gurl.h"
 
 SubresourceFilterHistoryObserver::SubresourceFilterHistoryObserver(
-    SubresourceFilterContentSettingsManager* settings_manager,
+    subresource_filter::SubresourceFilterContentSettingsManager*
+        settings_manager,
     history::HistoryService* history_service)
     : settings_manager_(settings_manager) {
   DCHECK(settings_manager_);

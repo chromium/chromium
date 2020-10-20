@@ -17,6 +17,8 @@ namespace base {
 class Clock;
 }
 
+namespace subresource_filter {
+
 // This class tracks ads interventions that have occurred on origins and is
 // bound to the user's profile. The ads intervention manager operates in two
 // modes set by the feature flag kAdsInterventionsEnforced:
@@ -42,7 +44,7 @@ class AdsInterventionManager {
   // Struct representing the last triggered ads intervention.
   struct LastAdsIntervention {
     base::TimeDelta duration_since;
-    subresource_filter::mojom::AdsViolation ads_violation;
+    mojom::AdsViolation ads_violation;
   };
 
   // The content_settings_manager should outlive the ads intervention manager.
@@ -60,7 +62,7 @@ class AdsInterventionManager {
   // |url| site metadata with the last active intervention.
   void TriggerAdsInterventionForUrlOnSubsequentLoads(
       const GURL& url,
-      subresource_filter::mojom::AdsViolation ads_violation);
+      mojom::AdsViolation ads_violation);
 
   // Returns the last active ads intervention written to metadata,
   // otherwise base::nullopt is returned.
@@ -76,5 +78,7 @@ class AdsInterventionManager {
 
   base::Clock* clock_;
 };
+
+}  // namespace subresource_filter
 
 #endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_ADS_INTERVENTION_MANAGER_H_

@@ -17,6 +17,8 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "url/gurl.h"
 
+namespace subresource_filter {
+
 namespace {
 
 // Key into the website setting dict for the smart UI.
@@ -231,3 +233,5 @@ void SubresourceFilterContentSettingsManager::ClearSiteMetadata(
 void SubresourceFilterContentSettingsManager::ClearMetadataForAllSites() {
   settings_map_->ClearSettingsForOneType(ContentSettingsType::ADS_DATA);
 }
+
+}  // namespace subresource_filter

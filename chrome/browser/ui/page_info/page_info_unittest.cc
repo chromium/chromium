@@ -1508,12 +1508,14 @@ TEST_F(PageInfoTest, SubresourceFilterSetting_MatchesActivation) {
   // Now, explicitly set site activation metadata to simulate activation on
   // that origin, which is encoded by the existence of the website setting. The
   // setting should then appear in page_info.
-  SubresourceFilterContentSettingsManager* settings_manager =
-      SubresourceFilterProfileContextFactory::GetForProfile(profile())
-          ->settings_manager();
+  subresource_filter::SubresourceFilterContentSettingsManager*
+      settings_manager =
+          SubresourceFilterProfileContextFactory::GetForProfile(profile())
+              ->settings_manager();
   settings_manager->SetSiteMetadataBasedOnActivation(
       url(), true,
-      SubresourceFilterContentSettingsManager::ActivationSource::kSafeBrowsing);
+      subresource_filter::SubresourceFilterContentSettingsManager::
+          ActivationSource::kSafeBrowsing);
 
   page_info();
   EXPECT_TRUE(showing_setting(last_permission_info_list()));

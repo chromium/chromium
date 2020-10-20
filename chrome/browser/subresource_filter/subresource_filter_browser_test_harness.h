@@ -32,12 +32,12 @@ class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
-class SubresourceFilterContentSettingsManager;
-class AdsInterventionManager;
 class TestSafeBrowsingDatabaseHelper;
 
 namespace subresource_filter {
 
+class AdsInterventionManager;
+class SubresourceFilterContentSettingsManager;
 class RulesetService;
 
 class SubresourceFilterBrowserTest : public InProcessBrowserTest {

@@ -240,9 +240,10 @@ SiteSettingSource CalculateSiteSettingSource(
   if (content_type == ContentSettingsType::ADS &&
       base::FeatureList::IsEnabled(
           subresource_filter::kSafeBrowsingSubresourceFilter)) {
-    SubresourceFilterContentSettingsManager* settings_manager =
-        SubresourceFilterProfileContextFactory::GetForProfile(profile)
-            ->settings_manager();
+    subresource_filter::SubresourceFilterContentSettingsManager*
+        settings_manager =
+            SubresourceFilterProfileContextFactory::GetForProfile(profile)
+                ->settings_manager();
 
     if (settings_manager->GetSiteActivationFromMetadata(origin)) {
       return SiteSettingSource::kAdsFilterBlocklist;  // Source #6.

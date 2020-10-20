@@ -21,6 +21,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+namespace subresource_filter {
+
 namespace {
 
 class SubresourceFilterContentSettingsManagerTest : public testing::Test {
@@ -354,3 +356,5 @@ TEST_F(SubresourceFilterContentSettingsManagerTest, ClearMetadataForAllSites) {
 }
 
 }  // namespace
+
+}  // namespace subresource_filter

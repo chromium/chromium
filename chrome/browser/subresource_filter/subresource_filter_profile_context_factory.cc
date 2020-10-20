@@ -15,9 +15,9 @@
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 
 // static
-SubresourceFilterProfileContext*
+subresource_filter::SubresourceFilterProfileContext*
 SubresourceFilterProfileContextFactory::GetForProfile(Profile* profile) {
-  return static_cast<SubresourceFilterProfileContext*>(
+  return static_cast<subresource_filter::SubresourceFilterProfileContext*>(
       GetInstance()->GetServiceForBrowserContext(profile, true /* create */));
 }
 
@@ -40,7 +40,7 @@ KeyedService* SubresourceFilterProfileContextFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
 
   auto* subresource_filter_profile_context =
-      new SubresourceFilterProfileContext(
+      new subresource_filter::SubresourceFilterProfileContext(
           HostContentSettingsMapFactory::GetForProfile(profile));
 
   // Create and attach a SubresourceFilterHistoryObserver instance if possible.
