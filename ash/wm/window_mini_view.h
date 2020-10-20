@@ -77,6 +77,7 @@ class ASH_EXPORT WindowMiniView : public views::View,
   // views::View:
   void Layout() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void OnThemeChanged() override;
 
   // aura::WindowObserver:
   void OnWindowPropertyChanged(aura::Window* window,

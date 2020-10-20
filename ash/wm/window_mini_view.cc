@@ -144,8 +144,6 @@ WindowMiniView::WindowMiniView(aura::Window* source_window)
       std::make_unique<views::Label>(GetWindowTitle(source_window_)));
   title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label_->SetAutoColorReadabilityEnabled(false);
-  title_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
   title_label_->SetSubpixelRenderingEnabled(false);
   title_label_->SetFontList(gfx::FontList().Derive(
       kLabelFontDelta, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
@@ -197,6 +195,12 @@ void WindowMiniView::Layout() {
 void WindowMiniView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kWindow;
   node_data->SetName(wm::GetTransientRoot(source_window_)->GetTitle());
+}
+
+void WindowMiniView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  title_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
 }
 
 void WindowMiniView::OnWindowPropertyChanged(aura::Window* window,

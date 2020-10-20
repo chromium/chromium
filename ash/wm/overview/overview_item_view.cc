@@ -104,21 +104,7 @@ class OverviewCloseButton : public views::ImageButton {
  public:
   explicit OverviewCloseButton(views::ButtonListener* listener)
       : views::ImageButton(listener) {
-    // Add a shadow to the close vector icon.
-    auto* color_provider = AshColorProvider::Get();
-    SkColor color = color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kButtonIconColor);
-    gfx::ImageSkia image_shadow =
-        gfx::ImageSkiaOperations::CreateImageWithDropShadow(
-            gfx::CreateVectorIcon(kOverviewWindowCloseIcon, color),
-            GetIconShadowValues());
-    SetImage(views::Button::STATE_NORMAL, image_shadow);
-
-    auto ripple_attributes = color_provider->GetRippleAttributes(color);
-    SetInkDropBaseColor(ripple_attributes.base_color);
-    SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
     SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
-
     SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
     SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
     SetMinimumImageSize(gfx::Size(kHeaderHeightDp, kHeaderHeightDp));
@@ -142,6 +128,24 @@ class OverviewCloseButton : public views::ImageButton {
     ink_drop->SetAutoHighlightMode(
         views::InkDropImpl::AutoHighlightMode::SHOW_ON_RIPPLE);
     return ink_drop;
+  }
+
+  // views::ImageButton:
+  void OnThemeChanged() override {
+    views::ImageButton::OnThemeChanged();
+    // Add a shadow to the close vector icon.
+    auto* color_provider = AshColorProvider::Get();
+    const SkColor color = color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kButtonIconColor);
+    gfx::ImageSkia image_with_shadow =
+        gfx::ImageSkiaOperations::CreateImageWithDropShadow(
+            gfx::CreateVectorIcon(kOverviewWindowCloseIcon, color),
+            GetIconShadowValues());
+    SetImage(views::Button::STATE_NORMAL, image_with_shadow);
+
+    const auto ripple_attributes = color_provider->GetRippleAttributes(color);
+    SetInkDropBaseColor(ripple_attributes.base_color);
+    SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
   }
 };
 
