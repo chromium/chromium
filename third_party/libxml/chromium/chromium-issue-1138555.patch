@@ -1,0 +1,31 @@
+diff --git a/encoding.c b/encoding.c
+index c34aca44663c..47be560ede47 100644
+--- a/encoding.c
++++ b/encoding.c
+@@ -1858,7 +1858,7 @@ xmlIconvWrapper(iconv_t cd, unsigned char *out, int *outlen,
+  * @outlen:  the length of @out
+  * @in:  a pointer to an array of input bytes
+  * @inlen:  the length of @in
+- * @flush: if true, indicates end of input
++ * @flush: if 1, indicates end of input
+  *
+  * Returns 0 if success, or
+  *     -1 by lack of space, or
+@@ -1898,7 +1898,7 @@ xmlUconvWrapper(uconv_t *cd, int toUnicode, unsigned char *out, int *outlen,
+     *inlen = ucv_in - (const char*) in;
+     *outlen = ucv_out - (char *) out;
+     if (U_SUCCESS(err)) {
+-        /* reset pivot buf if this is the last call for input (flush==TRUE) */
++        /* reset pivot buf if this is the last call for input (flush==1) */
+         if (flush)
+             cd->pivot_source = cd->pivot_target = cd->pivot_buf;
+         return 0;
+@@ -2004,7 +2004,7 @@ xmlEncOutputChunk(xmlCharEncodingHandler *handler, unsigned char *out,
+ #ifdef LIBXML_ICU_ENABLED
+     else if (handler->uconv_out != NULL) {
+         ret = xmlUconvWrapper(handler->uconv_out, 0, out, outlen, in, inlen,
+-                              TRUE);
++                              1);
+     }
+ #endif /* LIBXML_ICU_ENABLED */
+     else {

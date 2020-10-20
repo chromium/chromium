@@ -24,6 +24,8 @@ Modifications:
     non-recursive broke a few web platform tests.
 - add-fuzz-target.patch: Prevents autoreconf from failing on mac due to a
     missing makefile for fuzz.
+- chromium-issue-1138555.patch: Change TRUE to 1 for ICU68 which remove the
+  #define of TRUE.
 - Add helper classes in the chromium/ subdirectory.
 - Delete various unused files, see chromium/roll.py
 

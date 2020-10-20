@@ -74,6 +74,7 @@ PATCHES = [
     'chromium-issue-708434.patch',
     # TODO(jarhar): Merge this back upstream.
     'add-fuzz-target.patch',
+    'chromium-issue-1138555.patch',
 ]
 
 
