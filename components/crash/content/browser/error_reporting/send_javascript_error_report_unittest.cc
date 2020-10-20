@@ -72,6 +72,7 @@ TEST_F(SendJavaScriptErrorReportTest, Basic) {
   ASSERT_TRUE(actual_report);
   EXPECT_THAT(actual_report->query, HasSubstr("error_message=Hello%20World"));
   EXPECT_THAT(actual_report->query, HasSubstr("type=JavascriptError"));
+  EXPECT_THAT(actual_report->query, HasSubstr("browser_process_uptime_ms="));
   // TODO(iby) research why URL is repeated...
   EXPECT_THAT(actual_report->query,
               HasSubstr("src=https%3A%2F%2Fwww.chromium.org%2FHome"));
@@ -116,6 +117,7 @@ TEST_F(SendJavaScriptErrorReportTest, AllFields) {
   ASSERT_TRUE(actual_report);
   EXPECT_THAT(actual_report->query, HasSubstr("error_message=Hello%20World"));
   EXPECT_THAT(actual_report->query, HasSubstr("type=JavascriptError"));
+  EXPECT_THAT(actual_report->query, HasSubstr("browser_process_uptime_ms="));
   // TODO(iby) research why URL is repeated...
   EXPECT_THAT(actual_report->query,
               HasSubstr("src=https%3A%2F%2Fwww.chromium.org%2FHome"));

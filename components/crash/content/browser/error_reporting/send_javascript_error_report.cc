@@ -24,6 +24,7 @@
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"
 #include "components/crash/core/app/client_upload_info.h"
 #include "components/feedback/redaction_tool.h"
+#include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -236,6 +237,7 @@ void SendReport(const GURL& url,
 void OnConsentCheckCompleted(
     base::ScopedClosureRunner callback_runner,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
+    base::TimeDelta browser_process_uptime,
     base::Optional<JavaScriptErrorReport> error_report) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!error_report) {
@@ -282,6 +284,11 @@ void OnConsentCheckCompleted(
   if (error_report->column_number)
     params["column"] = base::NumberToString(*error_report->column_number);
 
+  // TODO(crbug/1121816): Chrome crashes have "Process uptime" and "Process
+  // type" fields, eventually consider using that for process uptime.
+  params["browser_process_uptime_ms"] =
+      base::NumberToString(browser_process_uptime.InMilliseconds());
+
   const GURL url(base::StrCat(
       {crash_endpoint_string, "?", BuildPostRequestQueryString(params)}));
   std::string body;
@@ -312,13 +319,19 @@ void SendJavaScriptErrorReport(JavaScriptErrorReport error_report,
       content::BrowserContext::GetDefaultStoragePartition(browser_context)
           ->GetURLLoaderFactoryForBrowserProcess();
 
+  // Get browser uptime before swapping threads to reduce lag time between the
+  // error report occurring and sending it off.
+  base::TimeTicks startup_time = startup_metric_utils::MainEntryPointTicks();
+  base::TimeDelta browser_process_uptime =
+      (base::TimeTicks::Now() - startup_time);
+
   // Consent check needs to be done on a blockable thread. We must return to
   // this thread (the UI thread) to use the loader_factory.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&CheckConsentAndRedact, std::move(error_report)),
       base::BindOnce(&OnConsentCheckCompleted, std::move(callback_runner),
-                     std::move(loader_factory)));
+                     std::move(loader_factory), browser_process_uptime));
 }
 
 #endif  // !defined(OS_WIN)

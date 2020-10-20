@@ -21,6 +21,7 @@ static_library("error_reporting") {
     "//base",
     "//components/crash/core/app",
     "//components/feedback",
+    "//components/startup_metric_utils/browser",
     "//content/public/browser",
     "//net",
     "//services/network:network_service",

@@ -1,5 +1,6 @@
 include_rules = [
   "+components/feedback",
+  "+components/startup_metric_utils",
   "+net",
   "+services/network",
 ]

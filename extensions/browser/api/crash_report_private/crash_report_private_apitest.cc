@@ -12,12 +12,15 @@
 #include "extensions/shell/test/shell_apitest.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 
 namespace extensions {
 
 using browsertest_util::ExecuteScriptInBackgroundPage;
 
 namespace {
+
+using ::testing::MatchesRegex;
 
 constexpr const char* kTestExtensionId = "jjeoclcdfjddkdjokiejckgcildcflpp";
 
@@ -99,13 +102,15 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, Basic) {
 
   const base::Optional<MockCrashEndpoint::Report>& report = last_report();
   ASSERT_TRUE(report);
-  EXPECT_EQ(report->query,
-            "browser=Chrome&browser_version=1.2.3.4&channel=Stable&"
-            "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2F&"
-            "os=ChromeOS&os_version=" +
-                GetOsVersion() +
-                "&prod=Chrome_ChromeOS&src=http%3A%2F%2Fwww.test."
-                "com%2F&type=JavascriptError&url=%2F&ver=1.2.3.4");
+  EXPECT_THAT(
+      report->query,
+      MatchesRegex("browser=Chrome&browser_process_uptime_ms=\\d+&browser_"
+                   "version=1.2.3.4&channel=Stable&"
+                   "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2F&"
+                   "os=ChromeOS&os_version=" +
+                   GetOsVersion() +
+                   "&prod=Chrome_ChromeOS&src=http%3A%2F%2Fwww.test."
+                   "com%2F&type=JavascriptError&url=%2F&ver=1.2.3.4"));
   EXPECT_EQ(report->content, "");
 }
 
@@ -129,14 +134,16 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, ExtraParamsAndStackTrace) {
   ASSERT_TRUE(report);
   // The product name is escaped twice. The first time, it becomes
   // "Chrome%20(Chrome%20OS)" and then the second escapes the '%' into '%25'.
-  EXPECT_EQ(report->query,
-            "browser=Chrome&browser_version=1.2.3.4&channel=Stable&column=456&"
-            "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2Ffoo"
-            "&line=123&os=ChromeOS&os_version=" +
-                GetOsVersion() +
-                "&prod=Chrome%2520(Chrome%2520OS)&"
-                "src=http%3A%2F%2Fwww.test.com%2Ffoo&"
-                "type=JavascriptError&url=%2Ffoo&ver=1.0.0.0");
+  EXPECT_THAT(
+      report->query,
+      MatchesRegex("browser=Chrome&browser_process_uptime_ms=\\d+&browser_"
+                   "version=1.2.3.4&channel=Stable&column=456&"
+                   "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2Ffoo"
+                   "&line=123&os=ChromeOS&os_version=" +
+                   GetOsVersion() +
+                   "&prod=Chrome%2520\\(Chrome%2520OS\\)&"
+                   "src=http%3A%2F%2Fwww.test.com%2Ffoo&"
+                   "type=JavascriptError&url=%2Ffoo&ver=1.0.0.0"));
   EXPECT_EQ(report->content, "   at <anonymous>:1:1");
 }
 
@@ -158,13 +165,16 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, StackTraceWithErrorMessage) {
 
   const base::Optional<MockCrashEndpoint::Report>& report = last_report();
   ASSERT_TRUE(report);
-  EXPECT_EQ(report->query,
-            "browser=Chrome&browser_version=1.2.3.4&channel=Stable&column=456&"
-            "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2Ffoo&"
-            "line=123&os=ChromeOS&os_version=" +
-                GetOsVersion() +
-                "&prod=TestApp&src=http%3A%2F%2Fwww.test.com%2Ffoo&type="
-                "JavascriptError&url=%2Ffoo&ver=1.0.0.0");
+  EXPECT_THAT(
+      report->query,
+      MatchesRegex(
+          "browser=Chrome&browser_process_uptime_ms=\\d+&browser_version=1.2."
+          "3.4&channel=Stable&column=456&"
+          "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2Ffoo&"
+          "line=123&os=ChromeOS&os_version=" +
+          GetOsVersion() +
+          "&prod=TestApp&src=http%3A%2F%2Fwww.test.com%2Ffoo&type="
+          "JavascriptError&url=%2Ffoo&ver=1.0.0.0"));
   EXPECT_EQ(report->content, "");
 }
 
@@ -187,14 +197,17 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, RedactMessage) {
 
   const base::Optional<MockCrashEndpoint::Report>& report = last_report();
   ASSERT_TRUE(report);
-  EXPECT_EQ(report->query,
-            "browser=Chrome&browser_version=1.2.3.4&channel=Stable&column=456&"
-            "error_message=%5BMAC%20OUI%3D06%3A00%3A00%20IFACE%3D1%5D&"
-            "full_url=http%3A%2F%2Fwww.test.com%2Ffoo&line=123&os=ChromeOS&"
-            "os_version=" +
-                GetOsVersion() +
-                "&prod=TestApp&src=http%3A%2F%2Fwww.test.com%2Ffoo&type="
-                "JavascriptError&url=%2Ffoo&ver=1.0.0.0");
+  EXPECT_THAT(
+      report->query,
+      MatchesRegex(
+          "browser=Chrome&browser_process_uptime_ms=\\d+&browser_version=1.2."
+          "3.4&channel=Stable&column=456&"
+          "error_message=%5BMAC%20OUI%3D06%3A00%3A00%20IFACE%3D1%5D&"
+          "full_url=http%3A%2F%2Fwww.test.com%2Ffoo&line=123&os=ChromeOS&"
+          "os_version=" +
+          GetOsVersion() +
+          "&prod=TestApp&src=http%3A%2F%2Fwww.test.com%2Ffoo&type="
+          "JavascriptError&url=%2Ffoo&ver=1.0.0.0"));
   EXPECT_EQ(report->content, "");
 }
 
