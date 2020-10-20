@@ -428,7 +428,8 @@ test("gl_tests") {
     ]
   } else if (is_linux || is_chromeos) {
     # Simply loading the Vulkan driver leaks crbug.com/1134681
-    if (enable_vulkan && !is_lsan) {
+    # CFI error in third_party/vulkan_memory_allocator crbug.com/1139916
+    if (enable_vulkan && !is_lsan && !is_cfi) {
       deps += [ "//gpu/vulkan/init:init" ]
       sources +=
           [ "command_buffer/service/external_vk_image_factory_unittest.cc" ]
