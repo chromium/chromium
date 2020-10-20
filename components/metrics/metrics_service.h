@@ -182,6 +182,10 @@ class MetricsService : public base::HistogramFlattener {
   // Test hook to safely stage the current log in the log store.
   bool StageCurrentLogForTest();
 
+  DelegatingProvider* GetDelegatingProviderForTesting() {
+    return &delegating_provider_;
+  }
+
  protected:
   // Sets the persistent system profile. Virtual for tests.
   virtual void SetPersistentSystemProfile(const std::string& serialized_proto,

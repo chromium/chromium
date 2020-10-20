@@ -6,7 +6,12 @@
 
 #include "base/optional.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/child_accounts/family_features.h"
 #include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
+#include "chrome/browser/chromeos/login/test/guest_session_mixin.h"
 #include "chrome/browser/chromeos/login/test/scoped_policy_update.h"
 #include "chrome/browser/chromeos/login/test/user_policy_mixin.h"
 #include "chrome/browser/profiles/profile.h"
@@ -15,10 +20,13 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/account_id/account_id.h"
+#include "components/metrics/metrics_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
+#include "third_party/metrics_proto/system_profile.pb.h"
 
 namespace {
 
@@ -56,6 +64,20 @@ base::Optional<AccountId> GetPrimaryAccountId(
   return base::nullopt;
 }
 
+void ProvideCurrentSessionData() {
+  // The purpose of the below call is to avoid a DCHECK failure in an unrelated
+  // metrics provider, in |FieldTrialsProvider::ProvideCurrentSessionData()|.
+  metrics::SystemProfileProto system_profile_proto;
+  g_browser_process->metrics_service()
+      ->GetDelegatingProviderForTesting()
+      ->ProvideSystemProfileMetricsWithLogCreationTime(base::TimeTicks::Now(),
+                                                       &system_profile_proto);
+  metrics::ChromeUserMetricsExtension uma_proto;
+  g_browser_process->metrics_service()
+      ->GetDelegatingProviderForTesting()
+      ->ProvideCurrentSessionData(&uma_proto);
+}
+
 }  // namespace
 
 class FamilyUserMetricsProviderTest
@@ -63,6 +85,11 @@ class FamilyUserMetricsProviderTest
       public testing::WithParamInterface<
           FamilyUserMetricsProvider::LogSegment> {
  public:
+  FamilyUserMetricsProviderTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        chromeos::kFamilyUserMetricsProvider);
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
 
@@ -85,18 +112,20 @@ class FamilyUserMetricsProviderTest
       // PolicyData.
       // TODO(crbug/1112885): Use LocalPolicyTestServer when this is fixed.
       /*use_local_policy_server=*/false};
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(FamilyUserMetricsProviderTest, DISABLED_UserCategory) {
+IN_PROC_BROWSER_TEST_P(FamilyUserMetricsProviderTest, UserCategory) {
   base::HistogramTester histogram_tester;
-  FamilyUserMetricsProvider provider;
   // Simulate calling ProvideCurrentSessionData() prior to logging in.
   // This call should return prematurely.
-  provider.ProvideCurrentSessionData(/*uma_proto_unused=*/nullptr);
+  ProvideCurrentSessionData();
 
   // No metrics were recorded.
   histogram_tester.ExpectTotalCount(
-      FamilyUserMetricsProvider::kFamilyUserLogSegmentHistogramName, 0);
+      FamilyUserMetricsProvider::GetHistogramNameForTesting(), 0);
 
   logged_in_user_mixin_.LogInUser();
 
@@ -115,11 +144,10 @@ IN_PROC_BROWSER_TEST_P(FamilyUserMetricsProviderTest, DISABLED_UserCategory) {
   }
 
   // Simulate calling ProvideCurrentSessionData() after logging in.
-  provider.ProvideCurrentSessionData(/*uma_proto_unused=*/nullptr);
+  ProvideCurrentSessionData();
 
   histogram_tester.ExpectUniqueSample(
-      FamilyUserMetricsProvider::kFamilyUserLogSegmentHistogramName,
-      log_segment, 1);
+      FamilyUserMetricsProvider::GetHistogramNameForTesting(), log_segment, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -129,3 +157,29 @@ INSTANTIATE_TEST_SUITE_P(
                     FamilyUserMetricsProvider::LogSegment::kSupervisedStudent,
                     FamilyUserMetricsProvider::LogSegment::kStudentAtHome,
                     FamilyUserMetricsProvider::LogSegment::kOther));
+
+class FamilyUserMetricsProviderGuestModeTest
+    : public MixinBasedInProcessBrowserTest {
+ public:
+  FamilyUserMetricsProviderGuestModeTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        chromeos::kFamilyUserMetricsProvider);
+  }
+
+ private:
+  chromeos::GuestSessionMixin guest_session_mixin_{&mixin_host_};
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Prevents a regression to crbug/1137352.
+IN_PROC_BROWSER_TEST_F(FamilyUserMetricsProviderGuestModeTest,
+                       NoCrashInGuestMode) {
+  base::HistogramTester histogram_tester;
+
+  ProvideCurrentSessionData();
+
+  histogram_tester.ExpectUniqueSample(
+      FamilyUserMetricsProvider::GetHistogramNameForTesting(),
+      FamilyUserMetricsProvider::LogSegment::kOther, 1);
+}

@@ -144,6 +144,8 @@
 #endif
 
 #if defined(OS_CHROMEOS)
+#include "base/feature_list.h"
+#include "chrome/browser/chromeos/child_accounts/family_features.h"
 #include "chrome/browser/chromeos/printing/printer_metrics_provider.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/metrics/ambient_mode_metrics_provider.h"
@@ -743,8 +745,10 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<AmbientModeMetricsProvider>());
 
-  metrics_service_->RegisterMetricsProvider(
-      std::make_unique<FamilyUserMetricsProvider>());
+  if (base::FeatureList::IsEnabled(chromeos::kFamilyUserMetricsProvider)) {
+    metrics_service_->RegisterMetricsProvider(
+        std::make_unique<FamilyUserMetricsProvider>());
+  }
 #endif  // defined(OS_CHROMEOS)
 
 #if !defined(OS_CHROMEOS)
