@@ -856,6 +856,32 @@
       }
     }
   },
+  'chrome_sizes': {
+    'modifications': {
+      'win-chrome': {
+        'swarming': {
+          # TODO(crbug.com/1124829): Remove this exception once pool
+          # chrome.tests is migrated to 1909.
+          'dimension_sets': [
+            {
+              'os': 'Windows-10-15063',
+            },
+          ],
+        },
+      },
+      'win64-chrome': {
+        'swarming': {
+          # TODO(crbug.com/1124829): Remove this exception once pool
+          # chrome.tests is migrated to 1909.
+          'dimension_sets': [
+            {
+              'os': 'Windows-10-15063',
+            },
+          ],
+        },
+      },
+    },
+  },
   'chromedriver_py_tests': {
     'remove_from': [
       # Timeout happens sometimes (crbug.com/951799).

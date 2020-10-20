@@ -6721,7 +6721,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Windows-10-18363",
+              "os": "Windows-10-15063",
               "pool": "chrome.tests"
             }
           ],
@@ -6747,7 +6747,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Windows-10-18363",
+              "os": "Windows-10-15063",
               "pool": "chrome.tests"
             }
           ],
