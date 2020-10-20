@@ -736,16 +736,9 @@ int BrowserView::GetTabStripHeight() const {
 }
 
 TabSearchButton* BrowserView::GetTabSearchButton() {
-  if (!base::FeatureList::IsEnabled(features::kTabSearch))
-    return nullptr;
-
-  // If kTabSearchFixedEntrypoint is enabled then the tab search button is
-  // defined in the tab strip region view.
-  // TODO(tluk): Consolidate these once Tab Scrolling successfully moves the
-  // tab controls container to the tab strip region view.
-  return base::FeatureList::IsEnabled(features::kTabSearchFixedEntrypoint)
+  return base::FeatureList::IsEnabled(features::kTabSearch)
              ? tab_strip_region_view_->tab_search_button()
-             : tabstrip_->tab_search_button();
+             : nullptr;
 }
 
 bool BrowserView::IsTabStripVisible() const {

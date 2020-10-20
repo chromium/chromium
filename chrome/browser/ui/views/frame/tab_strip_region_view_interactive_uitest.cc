@@ -28,11 +28,9 @@ class TabStripRegionViewBrowserTest
   void SetUp() override {
     // Run the test with both kTabSearchFixedEntrypoint enabled and disabled.
     if (GetParam()) {
-      scoped_feature_list_.InitWithFeatures(
-          {features::kTabSearch, features::kTabSearchFixedEntrypoint}, {});
+      scoped_feature_list_.InitWithFeatures({features::kTabSearch}, {});
     } else {
-      scoped_feature_list_.InitWithFeatures(
-          {}, {features::kTabSearch, features::kTabSearchFixedEntrypoint});
+      scoped_feature_list_.InitWithFeatures({}, {features::kTabSearch});
     }
     InProcessBrowserTest::SetUp();
   }
@@ -178,8 +176,7 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestBeginEndFocus) {
 
 IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest,
                        TestSearchButtonIsEndAligned) {
-  if (base::FeatureList::IsEnabled(features::kTabSearch) &&
-      base::FeatureList::IsEnabled(features::kTabSearchFixedEntrypoint)) {
+  if (base::FeatureList::IsEnabled(features::kTabSearch)) {
     EXPECT_EQ(tab_strip_region_view()->GetLocalBounds().right(),
               tab_search_button()->bounds().right());
   }

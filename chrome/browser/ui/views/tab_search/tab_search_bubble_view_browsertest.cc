@@ -65,10 +65,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchBubbleBrowserTest, ShowTriggersTimer) {
 class TabSearchBubbleBrowserUITest : public DialogBrowserTest {
  public:
   TabSearchBubbleBrowserUITest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kTabSearch,
-                              features::kTabSearchFixedEntrypoint},
-        /*disabled_features=*/{});
+    feature_list_.InitAndEnableFeature(features::kTabSearch);
   }
   TabSearchBubbleBrowserUITest(TabSearchBubbleBrowserUITest&) = delete;
   TabSearchBubbleBrowserUITest& operator=(TabSearchBubbleBrowserUITest&) =

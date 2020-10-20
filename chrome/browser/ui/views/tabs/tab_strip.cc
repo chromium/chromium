@@ -39,7 +39,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/tab_search/tab_search_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/stacked_tab_strip_layout.h"
@@ -50,7 +49,6 @@
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
-#include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout_helper.h"
@@ -86,14 +84,12 @@
 #include "ui/gfx/skia_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/layout/flex_layout.h"
 #include "ui/views/masked_targeter_delegate.h"
 #include "ui/views/mouse_watcher_view_host.h"
 #include "ui/views/rect_based_targeting_utils.h"
 #include "ui/views/view_model_utils.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/view_targeter.h"
-#include "ui/views/view_targeter_delegate.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
@@ -307,33 +303,6 @@ int GetStackableTabWidth() {
   return TabStyle::GetTabOverlap() +
          (ui::TouchUiController::Get()->touch_ui() ? 136 : 102);
 }
-
-// |TabControlsContainer| is as a container class for control views that live
-// in the tab strip.
-class TabControlsContainer : public views::View,
-                             public views::ViewTargeterDelegate {
- public:
-  TabControlsContainer() {
-    SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
-    SetLayoutManager(std::make_unique<views::FlexLayout>());
-  }
-
-  ~TabControlsContainer() override = default;
-
-  // views::ViewTargeterDelegate:
-  bool DoesIntersectRect(const View* target,
-                         const gfx::Rect& rect) const override {
-    DCHECK_EQ(this, target);
-    const auto& children = target->children();
-    const auto hits_child = [target, rect](const views::View* child) {
-      gfx::RectF child_rect(rect);
-      views::View::ConvertRectToTarget(target, child, &child_rect);
-      return child->GetVisible() &&
-             child->HitTestRect(gfx::ToEnclosingRect(child_rect));
-    };
-    return std::any_of(children.cbegin(), children.cend(), hits_child);
-  }
-};
 
 }  // namespace
 
@@ -557,7 +526,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
   }
 
   void DestroyDragController() override {
-    SetTabControlsVisible(true);
+    SetNewTabButtonVisible(true);
     drag_controller_.reset();
   }
 
@@ -748,7 +717,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
 
     // Hide the new tab button immediately if we didn't originate the drag.
     if (!drag_controller_)
-      SetTabControlsVisible(false);
+      SetNewTabButtonVisible(false);
 
     // Reset dragging state of existing tabs.
     for (int i = 0; i < GetTabCount(); ++i)
@@ -782,7 +751,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
     // Let the controller know that the user is not dragging this tabstrip's
     // tabs anymore.
     tab_strip_->controller_->OnStoppedDragging();
-    SetTabControlsVisible(true);
+    SetNewTabButtonVisible(true);
   }
 
   void StoppedDragging(const std::vector<TabSlotView*>& views,
@@ -792,7 +761,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
     // Let the controller know that the user stopped dragging tabs.
     tab_strip_->controller_->OnStoppedDragging();
 
-    SetTabControlsVisible(true);
+    SetNewTabButtonVisible(true);
     if (move_only && tab_strip_->touch_layout_) {
       if (completed)
         tab_strip_->touch_layout_->SizeToFit();
@@ -811,7 +780,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
     // Immediately hide the new tab button if the last tab is being dragged.
     const Tab* last_visible_tab = tab_strip_->GetLastVisibleTab();
     if (last_visible_tab && last_visible_tab->dragging())
-      SetTabControlsVisible(false);
+      SetNewTabButtonVisible(true);
 
     std::vector<gfx::Rect> bounds = CalculateBoundsForDraggedViews(views);
     DCHECK_EQ(views.size(), bounds.size());
@@ -854,8 +823,8 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
     return tab_strip_->ideal_bounds(group);
   }
 
-  void SetTabControlsVisible(bool visible) {
-    tab_strip_->tab_controls_container_->SetVisible(visible);
+  void SetNewTabButtonVisible(bool visible) {
+    tab_strip_->new_tab_button_->SetVisible(visible);
   }
 
   // Used by GetInsertionIndexForDraggedBounds() when the tabstrip is stacked.
@@ -1082,8 +1051,6 @@ TabStrip::~TabStrip() {
   RemoveMessageLoopObserver();
 
   new_tab_button_->RemoveObserver(this);
-  if (tab_search_button_)
-    tab_search_button_->RemoveObserver(this);
 
   hover_card_observer_.RemoveAll();
 
@@ -1125,8 +1092,6 @@ void TabStrip::FrameColorsChanged() {
   for (int i = 0; i < tab_count(); ++i)
     tab_at(i)->FrameColorsChanged();
   new_tab_button_->FrameColorsChanged();
-  if (tab_search_button_)
-    tab_search_button_->FrameColorsChanged();
   UpdateContrastRatioValues();
   SchedulePaint();
 }
@@ -1165,26 +1130,22 @@ bool TabStrip::IsRectInWindowCaption(const gfx::Rect& rect) {
            tab_drag_handle.Intersects(rect);
   }
 
-  // Similarly, a hit in the tab controls container is considered to be in the
-  // caption if it's in this thin strip.
-  gfx::Rect tab_controls_drag_handle =
-      tab_controls_container_->GetMirroredBounds();
-  tab_controls_drag_handle.set_height(drag_handle_extension);
-  if (extend_drag_handle && tab_controls_drag_handle.Intersects(rect))
+  // Similarly, a hit in the new tab button is considered to be in the caption
+  // if it's in this thin strip.
+  gfx::Rect new_tab_button_drag_handle = new_tab_button_->GetMirroredBounds();
+  new_tab_button_drag_handle.set_height(drag_handle_extension);
+  if (extend_drag_handle && new_tab_button_drag_handle.Intersects(rect))
     return true;
 
-  // Check to see if the rect intersects the non-button parts of the tab
-  // controls container. The enclosed buttons have a non-rectangular shape, so
-  // if it's not in the visual portions of the buttons we treat it as a click to
-  // the caption.
-  gfx::RectF rect_in_tab_controls_coords_f(rect);
-  View::ConvertRectToTarget(this, tab_controls_container_,
-                            &rect_in_tab_controls_coords_f);
-  gfx::Rect rect_in_tab_controls_coords =
-      gfx::ToEnclosingRect(rect_in_tab_controls_coords_f);
-  return tab_controls_container_->GetLocalBounds().Intersects(
-             rect_in_tab_controls_coords) &&
-         !tab_controls_container_->HitTestRect(rect_in_tab_controls_coords);
+  // Check to see if the rect intersects the non-button parts of the new tab
+  // button. The button has a non-rectangular shape, so if it's not in the
+  // visual portions of the button we treat it as a click to the caption.
+  gfx::RectF rect_in_new_tab_coords_f(rect);
+  View::ConvertRectToTarget(this, new_tab_button_, &rect_in_new_tab_coords_f);
+  gfx::Rect rect_in_new_tab_coords =
+      gfx::ToEnclosingRect(rect_in_new_tab_coords_f);
+  return new_tab_button_->GetLocalBounds().Intersects(rect_in_new_tab_coords) &&
+         !new_tab_button_->HitTestRect(rect_in_new_tab_coords);
 }
 
 bool TabStrip::IsPositionInWindowCaption(const gfx::Point& point) {
@@ -1332,7 +1293,7 @@ void TabStrip::MoveTab(int from_model_index,
   StartMoveTabAnimation();
   if (TabDragController::IsAttachedTo(GetDragContext()) &&
       (last_tab != GetLastVisibleTab() || last_tab->dragging())) {
-    tab_controls_container_->SetVisible(false);
+    new_tab_button_->SetVisible(false);
   }
   SwapLayoutIfNecessary();
 
@@ -1510,11 +1471,6 @@ void TabStrip::ShiftGroupLeft(const tab_groups::TabGroupId& group) {
 
 void TabStrip::ShiftGroupRight(const tab_groups::TabGroupId& group) {
   ShiftGroupRelative(group, 1);
-}
-
-void TabStrip::OnTabSearchBubbleClosed() {
-  UpdateIdealBounds();
-  AnimateToIdealBounds();
 }
 
 bool TabStrip::ShouldTabBeVisible(const Tab* tab) const {
@@ -1949,11 +1905,8 @@ bool TabStrip::IsTabFirst(const Tab* tab) const {
 }
 
 bool TabStrip::IsFocusInTabs() const {
-  // Focus is in tabs if the currently focused view is contained in the TabStrip
-  // and not in the |tab_controls_container_|.
   return GetFocusManager() && Contains(GetFocusManager()->GetFocusedView()) &&
-         !tab_controls_container_->Contains(
-             GetFocusManager()->GetFocusedView());
+         GetFocusManager()->GetFocusedView() != new_tab_button_;
 }
 
 void TabStrip::MaybeStartDrag(
@@ -2248,14 +2201,6 @@ void TabStrip::Layout() {
     SetTabSlotVisibility();
   }
 
-  if (tab_search_button_ &&
-      !tab_controls_container_->Contains(tab_search_button_)) {
-    auto preferred_size = tab_search_button_->GetPreferredSize();
-    tab_search_button_->SetBoundsRect(
-        gfx::Rect(width() - preferred_size.width(), 0, preferred_size.width(),
-                  preferred_size.height()));
-  }
-
   // Only do a layout if our size or the available width changed.
   const int available_width = GetAvailableWidthForTabStrip();
   if (last_layout_size_ == size() && last_available_width_ == available_width)
@@ -2363,8 +2308,7 @@ void TabStrip::PaintChildren(const views::PaintInfo& paint_info) {
   if (active_tab && !is_dragging)
     active_tab->Paint(paint_info);
 
-  // Paint the tab controls.
-  tab_controls_container_->Paint(paint_info);
+  new_tab_button_->Paint(paint_info);
 
   // If dragging a group, paint the group highlight and header above all
   // non-dragging tabs and groups.
@@ -2433,9 +2377,9 @@ views::View* TabStrip::GetTooltipHandlerForPoint(const gfx::Point& point) {
     if (tab)
       return tab;
   } else {
-    if (tab_controls_container_->GetVisible()) {
-      views::View* view = ConvertPointToViewAndGetTooltipHandler(
-          this, tab_controls_container_, point);
+    if (new_tab_button_->GetVisible()) {
+      views::View* view =
+          ConvertPointToViewAndGetTooltipHandler(this, new_tab_button_, point);
       if (view)
         return view;
     }
@@ -2495,43 +2439,20 @@ void TabStrip::Init() {
   // So we get enter/exit on children to switch stacked layout on and off.
   SetNotifyEnterExitOnChild(true);
 
-  tab_controls_container_ =
-      AddChildView(std::make_unique<TabControlsContainer>());
-
-  auto new_tab_button = std::make_unique<NewTabButton>(
+  new_tab_button_ = AddChildView(std::make_unique<NewTabButton>(
       this, base::BindRepeating(&TabStrip::NewTabButtonPressed,
-                                base::Unretained(this)));
-  new_tab_button->SetTooltipText(
+                                base::Unretained(this))));
+  new_tab_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_TOOLTIP_NEW_TAB));
-  new_tab_button->SetAccessibleName(
+  new_tab_button_->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_NEWTAB));
-  new_tab_button->SetImageVerticalAlignment(views::ImageButton::ALIGN_BOTTOM);
-  new_tab_button->SetEventTargeter(
-      std::make_unique<views::ViewTargeter>(new_tab_button.get()));
-  new_tab_button->AddObserver(this);
-
-  new_tab_button_ =
-      tab_controls_container_->AddChildView(std::move(new_tab_button));
-
-  if (base::FeatureList::IsEnabled(features::kTabSearch) &&
-      !base::FeatureList::IsEnabled(features::kTabSearchFixedEntrypoint) &&
-      !controller_->GetProfile()->IsIncognitoProfile()) {
-    auto tab_search_button = std::make_unique<TabSearchButton>(this);
-    tab_search_button->SetTooltipText(
-        l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_SEARCH));
-    tab_search_button->SetAccessibleName(
-        l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_SEARCH));
-    tab_search_button->SetEventTargeter(
-        std::make_unique<views::ViewTargeter>(tab_search_button.get()));
-    tab_search_button->AddObserver(this);
-
-    tab_search_button_ =
-        tab_controls_container_->AddChildView(std::move(tab_search_button));
-  }
+  new_tab_button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_BOTTOM);
+  new_tab_button_->SetEventTargeter(
+      std::make_unique<views::ViewTargeter>(new_tab_button_));
+  new_tab_button_->AddObserver(this);
 
   UpdateNewTabButtonBorder();
-  tab_controls_container_ideal_bounds_.set_size(
-      tab_controls_container_->GetPreferredSize());
+  new_tab_button_ideal_bounds_.set_size(new_tab_button_->GetPreferredSize());
 
   if (g_drop_indicator_width == 0) {
     // Direction doesn't matter, both images are the same size.
@@ -2700,12 +2621,11 @@ void TabStrip::StartRemoveTabAnimation(int model_index, bool was_active) {
   // sense to me.  Why is each condition justified?
   if ((touch_layout_ || !in_tab_close_ || model_index == GetModelCount()) &&
       TabDragController::IsAttachedTo(GetDragContext())) {
-    // Don't animate the tab controls container when dragging tabs. Otherwise it
-    // looks like the controls magically appear from beyond the end of the tab
+    // Don't animate the new tab button when dragging tabs. Otherwise it looks
+    // like the new tab button magically appears from beyond the end of the tab
     // strip.
-    bounds_animator_.StopAnimatingView(tab_controls_container_);
-    tab_controls_container_->SetBoundsRect(
-        tab_controls_container_ideal_bounds_);
+    bounds_animator_.StopAnimatingView(new_tab_button_);
+    new_tab_button_->SetBoundsRect(new_tab_button_ideal_bounds_);
   }
 }
 
@@ -2761,10 +2681,10 @@ void TabStrip::AnimateToIdealBounds() {
                                 base::Unretained(this))));
   }
 
-  if (bounds_animator_.GetTargetBounds(tab_controls_container_) !=
-      tab_controls_container_ideal_bounds_) {
-    bounds_animator_.AnimateViewTo(tab_controls_container_,
-                                   tab_controls_container_ideal_bounds_);
+  if (bounds_animator_.GetTargetBounds(new_tab_button_) !=
+      new_tab_button_ideal_bounds_) {
+    bounds_animator_.AnimateViewTo(new_tab_button_,
+                                   new_tab_button_ideal_bounds_);
   }
 }
 
@@ -2778,7 +2698,7 @@ void TabStrip::SnapToIdealBounds() {
     header_pair.second->UpdateBounds();
   }
 
-  tab_controls_container_->SetBoundsRect(tab_controls_container_ideal_bounds_);
+  new_tab_button_->SetBoundsRect(new_tab_button_ideal_bounds_);
 
   PreferredSizeChanged();
 }
@@ -2803,7 +2723,7 @@ int TabStrip::FrameGrabWidth() const {
   // The grab area is adjacent to the new tab button.  Treat the padding in the
   // new tab button as part of the grab area.
   constexpr int kApparentWidth = 50;
-  return kApparentWidth - tab_controls_container_->GetInsets().right();
+  return kApparentWidth - new_tab_button_->GetInsets().right();
 }
 
 bool TabStrip::TitlebarBackgroundIsTransparent() const {
@@ -2876,8 +2796,8 @@ int TabStrip::GetTabAreaWidth() const {
 }
 
 int TabStrip::GetRightSideReservedWidth() const {
-  return tab_controls_container_ideal_bounds_.width() +
-         TabToNewTabButtonSpacing() + FrameGrabWidth();
+  return new_tab_button_ideal_bounds_.width() + TabToNewTabButtonSpacing() +
+         FrameGrabWidth();
 }
 
 const Tab* TabStrip::GetLastVisibleTab() const {
@@ -3461,7 +3381,7 @@ void TabStrip::UpdateIdealBounds() {
 
   if (touch_layout_) {
     const int trailing_x = tabs_.ideal_bounds(tab_count() - 1).right();
-    tab_controls_container_ideal_bounds_.set_origin(
+    new_tab_button_ideal_bounds_.set_origin(
         gfx::Point(trailing_x + TabToNewTabButtonSpacing(), 0));
   } else {
     const int available_width_for_tabs = CalculateAvailableWidthForTabs();
@@ -3472,13 +3392,9 @@ void TabStrip::UpdateIdealBounds() {
         base::FeatureList::IsEnabled(features::kScrollableTabStrip)
             ? trailing_x
             : std::min(available_width_for_tabs, trailing_x);
-    // We want to lock the |tab_controls_container_| in place if the Tab Search
-    // bubble is open to prevent the UI sliding across the screen as the tab
-    // strip changes.
-    if (!tab_search_button_ || !tab_search_button_->IsBubbleVisible()) {
-      tab_controls_container_ideal_bounds_.set_origin(
-          gfx::Point(ntb_x_offset + TabToNewTabButtonSpacing(), 0));
-    }
+
+    new_tab_button_ideal_bounds_.set_origin(
+        gfx::Point(ntb_x_offset + TabToNewTabButtonSpacing(), 0));
   }
 }
 
@@ -3670,24 +3586,17 @@ void TabStrip::SetResetToShrinkOnExit(bool value) {
 }
 
 void TabStrip::UpdateNewTabButtonBorder() {
-  // The controls container is placed vertically exactly in the center of the
-  // tabstrip.
   const int extra_vertical_space = GetLayoutConstant(TAB_HEIGHT) -
                                    GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP) -
                                    NewTabButton::kButtonSize.height();
-
-  // Extend the border of the tab controls such that it extends to the top of
-  // the tabstrip bounds. This is essential to ensure they targetable on the
-  // edge of the screen when in fullscreen mode and ensures the buttons abide by
-  // the correct Fitt's Law behavior (https://crbug.com/1136557).
-  const gfx::Insets button_insets(extra_vertical_space / 2, 0, 0, 0);
-  new_tab_button_->SetBorder(views::CreateEmptyBorder(button_insets));
-  if (tab_search_button_)
-    tab_search_button_->SetBorder(views::CreateEmptyBorder(button_insets));
-
   constexpr int kHorizontalInset = 8;
-  tab_controls_container_->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(0, kHorizontalInset, 0, kHorizontalInset)));
+  // The new tab button is placed vertically exactly in the center of the
+  // tabstrip. Extend the border of the button such that it extends to the top
+  // of the tabstrip bounds. This is essential to ensure it is targetable on the
+  // edge of the screen when in fullscreen mode and ensures the  button abides
+  // by the correct Fitt's Law behavior (https://crbug.com/1136557).
+  new_tab_button_->SetBorder(views::CreateEmptyBorder(gfx::Insets(
+      extra_vertical_space / 2, kHorizontalInset, 0, kHorizontalInset)));
 }
 
 void TabStrip::OnTabSlotAnimationProgressed(TabSlotView* view) {
@@ -3822,9 +3731,9 @@ views::View* TabStrip::TargetForRect(views::View* root, const gfx::Rect& rect) {
     if (tab)
       return tab;
   } else {
-    if (tab_controls_container_->GetVisible()) {
-      views::View* view = ConvertPointToViewAndGetEventHandler(
-          this, tab_controls_container_, point);
+    if (new_tab_button_->GetVisible()) {
+      views::View* view =
+          ConvertPointToViewAndGetEventHandler(this, new_tab_button_, point);
       if (view)
         return view;
     }
@@ -3857,9 +3766,8 @@ void TabStrip::OnViewBlurred(views::View* observed_view) {
 
 void TabStrip::OnTouchUiChanged() {
   UpdateNewTabButtonBorder();
-  tab_controls_container_ideal_bounds_.set_size(
-      tab_controls_container_->GetPreferredSize());
-  tab_controls_container_->SetBoundsRect(tab_controls_container_ideal_bounds_);
+  new_tab_button_ideal_bounds_.set_size(new_tab_button_->GetPreferredSize());
+  new_tab_button_->SetBoundsRect(new_tab_button_ideal_bounds_);
   StopAnimating(true);
   PreferredSizeChanged();
 }

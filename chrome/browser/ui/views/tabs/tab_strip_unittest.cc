@@ -138,10 +138,6 @@ class TabStripTest : public ChromeViewsTestBase,
     return tab->icon_->ShowingAttentionIndicator();
   }
 
-  views::View* tab_controls_container() {
-    return tab_strip_->tab_controls_container_;
-  }
-
   // Checks whether |tab| contains |point_in_tabstrip_coords|, where the point
   // is in |tab_strip_| coordinates.
   bool IsPointInTab(Tab* tab, const gfx::Point& point_in_tabstrip_coords) {
@@ -863,8 +859,7 @@ TEST_P(TabStripTest, NewTabButtonStaysVisible) {
 
   CompleteAnimationAndLayout();
 
-  EXPECT_LE(tab_strip_->tab_controls_container_ideal_bounds().right(),
-            kTabStripWidth);
+  EXPECT_LE(tab_strip_->new_tab_button_ideal_bounds().right(), kTabStripWidth);
 }
 
 TEST_P(TabStripTest, NewTabButtonRightOfTabs) {
@@ -875,7 +870,7 @@ TEST_P(TabStripTest, NewTabButtonRightOfTabs) {
 
   AnimateToIdealBounds();
 
-  EXPECT_EQ(tab_strip_->tab_controls_container_ideal_bounds().x(),
+  EXPECT_EQ(tab_strip_->new_tab_button_ideal_bounds().x(),
             tab_strip_->ideal_bounds(0).right() + TabToNewTabButtonSpacing());
 }
 
@@ -1351,20 +1346,10 @@ TEST_P(TabStripTest, NewTabButtonFlushWithTopOfTabStrip) {
 
   AnimateToIdealBounds();
 
-  // |tab_controls_container_| should sit flush with the top of the tab strip.
-  EXPECT_EQ(0, tab_strip_->tab_controls_container_ideal_bounds().y());
-
   // The new tab button should sit flush with the top of the
-  // |tab_controls_container_|.
+  // |tab_strip_|.
+  EXPECT_EQ(tab_strip_, tab_strip_->new_tab_button()->parent());
   EXPECT_EQ(0, tab_strip_->new_tab_button()->bounds().y());
-
-  // The new tab button should be positioned flush with the top of the tab
-  // strip.
-  gfx::RectF ntb_in_child_coords_f(tab_strip_->new_tab_button()->bounds());
-  views::View::ConvertRectToTarget(tab_controls_container(), tab_strip_,
-                                   &ntb_in_child_coords_f);
-  gfx::Rect ntb_in_child_coords = gfx::ToEnclosingRect(ntb_in_child_coords_f);
-  EXPECT_EQ(0, ntb_in_child_coords.y());
 }
 
 INSTANTIATE_TEST_SUITE_P(All, TabStripTest, ::testing::Values(false, true));

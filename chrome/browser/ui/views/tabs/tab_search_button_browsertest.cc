@@ -25,22 +25,11 @@ ui::MouseEvent GetDummyEvent() {
 }
 }  // namespace
 
-class TabSearchButtonBrowserTest : public InProcessBrowserTest,
-                                   public ::testing::WithParamInterface<bool> {
+class TabSearchButtonBrowserTest : public InProcessBrowserTest {
  public:
   // InProcessBrowserTest:
   void SetUp() override {
-    // Run the test with both kTabSearchFixedEntrypoint enabled and disabled.
-    if (GetParam()) {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kTabSearch,
-                                features::kTabSearchFixedEntrypoint},
-          /*disabled_features=*/{});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kTabSearch},
-          /*disabled_features=*/{features::kTabSearchFixedEntrypoint});
-    }
+    scoped_feature_list_.InitAndEnableFeature(features::kTabSearch);
     InProcessBrowserTest::SetUp();
   }
 
@@ -56,7 +45,7 @@ class TabSearchButtonBrowserTest : public InProcessBrowserTest,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(TabSearchButtonBrowserTest, CreateAndClose) {
+IN_PROC_BROWSER_TEST_F(TabSearchButtonBrowserTest, CreateAndClose) {
   ASSERT_EQ(nullptr, tab_search_button()->bubble_for_testing());
   views::test::ButtonTestApi(tab_search_button()).NotifyClick(GetDummyEvent());
   ASSERT_NE(nullptr, tab_search_button()->bubble_for_testing());
@@ -68,7 +57,7 @@ IN_PROC_BROWSER_TEST_P(TabSearchButtonBrowserTest, CreateAndClose) {
   ASSERT_EQ(nullptr, tab_search_button()->bubble_for_testing());
 }
 
-IN_PROC_BROWSER_TEST_P(TabSearchButtonBrowserTest, TestBubbleVisible) {
+IN_PROC_BROWSER_TEST_F(TabSearchButtonBrowserTest, TestBubbleVisible) {
   EXPECT_FALSE(tab_search_button()->IsBubbleVisible());
 
   ASSERT_EQ(nullptr, tab_search_button()->bubble_for_testing());
@@ -92,7 +81,7 @@ IN_PROC_BROWSER_TEST_P(TabSearchButtonBrowserTest, TestBubbleVisible) {
   ASSERT_EQ(nullptr, tab_search_button()->bubble_for_testing());
 }
 
-IN_PROC_BROWSER_TEST_P(TabSearchButtonBrowserTest, BubbleNotVisibleIncognito) {
+IN_PROC_BROWSER_TEST_F(TabSearchButtonBrowserTest, BubbleNotVisibleIncognito) {
   Browser* incognito_browser = CreateIncognitoBrowser();
   BrowserView* incognito_browser_view =
       BrowserView::GetBrowserViewForBrowser(incognito_browser);
@@ -103,7 +92,7 @@ IN_PROC_BROWSER_TEST_P(TabSearchButtonBrowserTest, BubbleNotVisibleIncognito) {
 
 // On macOS, most accelerators are handled by CommandDispatcher.
 #if !defined(OS_MAC)
-IN_PROC_BROWSER_TEST_P(TabSearchButtonBrowserTest, TestBubbleKeyboardShortcut) {
+IN_PROC_BROWSER_TEST_F(TabSearchButtonBrowserTest, TestBubbleKeyboardShortcut) {
   ASSERT_EQ(nullptr, tab_search_button()->bubble_for_testing());
 
   auto accelerator = ui::Accelerator(
@@ -120,7 +109,3 @@ IN_PROC_BROWSER_TEST_P(TabSearchButtonBrowserTest, TestBubbleKeyboardShortcut) {
   ASSERT_EQ(nullptr, tab_search_button()->bubble_for_testing());
 }
 #endif
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         TabSearchButtonBrowserTest,
-                         ::testing::Values(true, false));
