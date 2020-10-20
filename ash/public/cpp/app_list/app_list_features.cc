@@ -41,7 +41,7 @@ const base::Feature kEnableAppGridGhost{"EnableAppGridGhost",
 const base::Feature kEnableAppListLaunchRecording{
     "EnableAppListLaunchRecording", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kLauncherSettingsSearch{"LauncherSettingsSearch",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kEnableFuzzyAppSearch{"EnableFuzzyAppSearch",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kEnableExactMatchForNonLatinLocale{
