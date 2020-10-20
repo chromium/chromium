@@ -538,7 +538,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.DecodedImage.JpegDensity.KiBWeighted"
-    units="0.01 bits per pixel" expires_after="2021-02-14">
+    units="0.01 bits per pixel" expires_after="2021-04-18">
   <owner>deymo@google.com</owner>
   <owner>compression-dev@google.com</owner>
   <summary>
@@ -1492,7 +1492,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Paint.UpdateTime" units="microseconds"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->

@@ -991,7 +991,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PowerML.DimImminent.Action" enum="PowerMLDimImminentAction"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>jiameng@chromium.org</owner>
   <summary>
     What happens when UserActivityManager receives a screen dim imminent
@@ -1000,7 +1000,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PowerML.ModelDim.Result" enum="PowerMLFinalResult"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>jiameng@chromium.org</owner>
   <summary>
     What happens after screen is dimmed following model instruction. Only
@@ -1009,7 +1009,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PowerML.ModelNoDim.Result" enum="PowerMLFinalResult"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>jiameng@chromium.org</owner>
   <summary>
     What happens after screen dim is deferred following model instruction. Only
@@ -1070,7 +1070,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PowerML.SmartDimModel.RequestCanceledDuration" units="ms"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>amoylan@chromium.org</owner>
   <owner>jiameng@chromium.org</owner>
   <owner>napper@chromium.org</owner>
@@ -1082,7 +1082,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PowerML.SmartDimModel.RequestCompleteDuration" units="ms"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>amoylan@chromium.org</owner>
   <owner>jiameng@chromium.org</owner>
   <owner>napper@chromium.org</owner>
@@ -1106,7 +1106,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PowerML.SmartDimParameter.Result"
-    enum="PowerMLSmartDimParameterResult" expires_after="2021-02-14">
+    enum="PowerMLSmartDimParameterResult" expires_after="2021-04-18">
   <owner>jiameng@chromium.org</owner>
   <summary>
     The result of parsing the dim threshold parameter value. Only applicable to

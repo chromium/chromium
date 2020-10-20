@@ -1467,13 +1467,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.CdmLoadResult" enum="CdmLoadResult"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>The result from an attempt to load a library CDM.</summary>
 </histogram>
 
-<histogram name="Media.EME.CdmLoadTime" units="ms" expires_after="2021-02-14">
+<histogram name="Media.EME.CdmLoadTime" units="ms" expires_after="2021-04-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>The time spent to load a library CDM.</summary>
@@ -1659,7 +1659,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.RequestMediaKeySystemAccess"
-    enum="RequestMediaKeySystemAccessStatus" expires_after="2021-02-14">
+    enum="RequestMediaKeySystemAccessStatus" expires_after="2021-04-18">
   <owner>sandersd@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1694,7 +1694,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.Widevine.VideoCapability.HasEmptyRobustness"
-    enum="BooleanEmpty" expires_after="2021-02-14">
+    enum="BooleanEmpty" expires_after="2021-04-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -2321,7 +2321,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.MeanTimeBetweenRebuffers" units="ms"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>dalecurtis@chromium.org</owner>
   <summary>
     The total watch time (see Media.WatchTime) of a given playback divided by
@@ -2784,7 +2784,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.PipelineStatus" enum="PipelineStatus"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>prabhur@chromium.org</owner>
   <owner>dalecurtis@chromium.org</owner>
   <summary>
