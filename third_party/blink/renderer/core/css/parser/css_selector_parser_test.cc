@@ -685,25 +685,31 @@ TEST(CSSSelectorParserTest, ShadowPartAndBeforeAfterPseudoElementValid) {
   }
 }
 
-TEST(CSSSelectorParserTest, UseCountShadowPseudo) {
+static bool IsCounted(const char* selector,
+                      CSSParserMode mode,
+                      WebFeature feature) {
   auto dummy_holder = std::make_unique<DummyPageHolder>(IntSize(500, 500));
   Document* doc = &dummy_holder->GetDocument();
   Page::InsertOrdinaryPageForTesting(&dummy_holder->GetPage());
   auto* context = MakeGarbageCollected<CSSParserContext>(
-      kHTMLStandardMode, SecureContextMode::kSecureContext,
-      CSSParserContext::kLiveProfile, doc);
+      mode, SecureContextMode::kSecureContext, CSSParserContext::kLiveProfile,
+      doc);
   auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
 
-  auto ExpectCount = [doc, context, sheet](const char* selector,
-                                           WebFeature feature) {
-    EXPECT_FALSE(doc->IsUseCounted(feature));
+  DCHECK(!doc->IsUseCounted(feature));
 
-    CSSTokenizer tokenizer(selector);
-    const auto tokens = tokenizer.TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
-    CSSSelectorParser::ParseSelector(range, context, sheet);
+  CSSTokenizer tokenizer(selector);
+  const auto tokens = tokenizer.TokenizeToEOF();
+  CSSParserTokenRange range(tokens);
+  CSSSelectorParser::ParseSelector(range, context, sheet);
 
-    EXPECT_TRUE(doc->IsUseCounted(feature));
+  return doc->IsUseCounted(feature);
+}
+
+TEST(CSSSelectorParserTest, UseCountShadowPseudo) {
+  auto ExpectCount = [](const char* selector, WebFeature feature) {
+    SCOPED_TRACE(selector);
+    EXPECT_TRUE(IsCounted(selector, kHTMLStandardMode, feature));
   };
 
   ExpectCount("::cue", WebFeature::kCSSSelectorCue);
@@ -819,6 +825,30 @@ TEST(CSSSelectorParserTest, UseCountShadowPseudo) {
               WebFeature::kCSSSelectorWebkitTextfieldDecorationContainer);
   ExpectCount("::-webkit-unrecognized",
               WebFeature::kCSSSelectorWebkitUnknownPseudo);
+}
+
+TEST(CSSSelectorParserTest, IsWhereUseCount) {
+  const auto is_feature = WebFeature::kCSSSelectorPseudoIs;
+  EXPECT_FALSE(IsCounted(".a", kHTMLStandardMode, is_feature));
+  EXPECT_FALSE(IsCounted(":not(.a)", kHTMLStandardMode, is_feature));
+  EXPECT_FALSE(IsCounted(":where(.a)", kHTMLStandardMode, is_feature));
+  EXPECT_TRUE(IsCounted(":is()", kHTMLStandardMode, is_feature));
+  EXPECT_TRUE(IsCounted(":is(.a)", kHTMLStandardMode, is_feature));
+  EXPECT_TRUE(IsCounted(":not(:is(.a))", kHTMLStandardMode, is_feature));
+  EXPECT_TRUE(IsCounted(".a:is(.b)", kHTMLStandardMode, is_feature));
+  EXPECT_TRUE(IsCounted(":is(.a).b", kHTMLStandardMode, is_feature));
+  EXPECT_FALSE(IsCounted(":is(.a)", kUASheetMode, is_feature));
+
+  const auto where_feature = WebFeature::kCSSSelectorPseudoWhere;
+  EXPECT_FALSE(IsCounted(".a", kHTMLStandardMode, where_feature));
+  EXPECT_FALSE(IsCounted(":not(.a)", kHTMLStandardMode, where_feature));
+  EXPECT_FALSE(IsCounted(":is(.a)", kHTMLStandardMode, where_feature));
+  EXPECT_TRUE(IsCounted(":where()", kHTMLStandardMode, where_feature));
+  EXPECT_TRUE(IsCounted(":where(.a)", kHTMLStandardMode, where_feature));
+  EXPECT_TRUE(IsCounted(":not(:where(.a))", kHTMLStandardMode, where_feature));
+  EXPECT_TRUE(IsCounted(".a:where(.b)", kHTMLStandardMode, where_feature));
+  EXPECT_TRUE(IsCounted(":where(.a).b", kHTMLStandardMode, where_feature));
+  EXPECT_FALSE(IsCounted(":where(.a)", kUASheetMode, where_feature));
 }
 
 TEST(CSSSelectorParserTest, ImplicitShadowCrossingCombinators) {

@@ -1209,6 +1209,8 @@ void CSSSelectorParser::RecordUsageAndDeprecations(
     const CSSSelectorList& selector_list) {
   if (!context_->IsUseCounterRecordingEnabled())
     return;
+  if (context_->Mode() == kUASheetMode)
+    return;
 
   for (const CSSSelector* selector = selector_list.FirstForCSSOM(); selector;
        selector = CSSSelectorList::Next(*selector)) {
@@ -1225,12 +1227,10 @@ void CSSSelectorParser::RecordUsageAndDeprecations(
           break;
         case CSSSelector::kPseudoFocusVisible:
           DCHECK(RuntimeEnabledFeatures::CSSFocusVisibleEnabled());
-          if (context_->Mode() != kUASheetMode)
-            feature = WebFeature::kCSSSelectorPseudoFocusVisible;
+          feature = WebFeature::kCSSSelectorPseudoFocusVisible;
           break;
         case CSSSelector::kPseudoFocus:
-          if (context_->Mode() != kUASheetMode)
-            feature = WebFeature::kCSSSelectorPseudoFocus;
+          feature = WebFeature::kCSSSelectorPseudoFocus;
           break;
         case CSSSelector::kPseudoAnyLink:
           feature = WebFeature::kCSSSelectorPseudoAnyLink;
@@ -1268,26 +1268,20 @@ void CSSSelectorParser::RecordUsageAndDeprecations(
           feature = WebFeature::kCSSSelectorPseudoFullScreen;
           break;
         case CSSSelector::kPseudoListBox:
-          if (context_->Mode() != kUASheetMode)
-            feature = WebFeature::kCSSSelectorInternalPseudoListBox;
+          feature = WebFeature::kCSSSelectorInternalPseudoListBox;
           break;
         case CSSSelector::kPseudoWebKitCustomElement:
-          if (context_->Mode() != kUASheetMode)
-            feature = FeatureForWebKitCustomPseudoElement(current->Value());
+          feature = FeatureForWebKitCustomPseudoElement(current->Value());
           break;
         case CSSSelector::kPseudoSpatialNavigationFocus:
-          if (context_->Mode() != kUASheetMode) {
-            feature =
-                WebFeature::kCSSSelectorInternalPseudoSpatialNavigationFocus;
-          }
+          feature =
+              WebFeature::kCSSSelectorInternalPseudoSpatialNavigationFocus;
           break;
         case CSSSelector::kPseudoReadOnly:
-          if (context_->Mode() != kUASheetMode)
-            feature = WebFeature::kCSSSelectorPseudoReadOnly;
+          feature = WebFeature::kCSSSelectorPseudoReadOnly;
           break;
         case CSSSelector::kPseudoReadWrite:
-          if (context_->Mode() != kUASheetMode)
-            feature = WebFeature::kCSSSelectorPseudoReadWrite;
+          feature = WebFeature::kCSSSelectorPseudoReadWrite;
           break;
         default:
           break;
