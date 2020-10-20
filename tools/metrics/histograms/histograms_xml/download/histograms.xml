@@ -514,6 +514,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Download.ParallelDownloadAddStreamSuccess"
     enum="BooleanSuccess" expires_after="2020-10-25">
+  <obsolete>
+    Depcreated 10/2020
+  </obsolete>
   <owner>xingliu@chromium.org</owner>
   <summary>
     Records if the byte stream reader of a subsequent request is successfully

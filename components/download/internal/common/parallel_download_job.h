@@ -110,9 +110,6 @@ class COMPONENTS_DOWNLOAD_EXPORT ParallelDownloadJob
   // If the download progress is canceled.
   bool is_canceled_;
 
-  // Whether the server accepts range requests.
-  RangeRequestSupportType range_support_;
-
   // URLLoaderFactoryProvider to retrieve the URLLoaderFactory and issue
   // parallel requests.
   URLLoaderFactoryProvider::URLLoaderFactoryProviderPtr

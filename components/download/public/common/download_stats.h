@@ -305,13 +305,6 @@ COMPONENTS_DOWNLOAD_EXPORT void RecordParallelizableDownloadCount(
 COMPONENTS_DOWNLOAD_EXPORT void RecordParallelDownloadRequestCount(
     int request_count);
 
-// Records if each byte stream is successfully added to download sink.
-// |support_range_request| indicates whether the server strongly supports range
-// requests.
-COMPONENTS_DOWNLOAD_EXPORT void RecordParallelDownloadAddStreamSuccess(
-    bool success,
-    bool support_range_request);
-
 // Records the bandwidth for parallelizable download and estimates the saved
 // time at the file end. Does not count in any hash computation or file
 // open/close time.

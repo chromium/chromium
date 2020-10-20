@@ -601,18 +601,6 @@ void RecordParallelDownloadRequestCount(int request_count) {
                               request_count, 1, 10, 11);
 }
 
-void RecordParallelDownloadAddStreamSuccess(bool success,
-                                            bool support_range_request) {
-  if (support_range_request) {
-    base::UmaHistogramBoolean("Download.ParallelDownloadAddStreamSuccess",
-                              success);
-  } else {
-    base::UmaHistogramBoolean(
-        "Download.ParallelDownloadAddStreamSuccess.NoAcceptRangesHeader",
-        success);
-  }
-}
-
 void RecordParallelRequestCreationFailure(DownloadInterruptReason reason) {
   base::UmaHistogramSparse("Download.ParallelDownload.CreationFailureReason",
                            reason);
