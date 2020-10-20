@@ -1273,11 +1273,6 @@ android_library("chrome_test_java") {
 }
 
 if (enable_vr || enable_arcore) {
-  # Desugaring doesn't seem to play nice with deps when there are multiple
-  # layers of android_library. If A is included in B's deps, and B is included
-  # in C's deps, desugar can fail to find classes from A. As a workaround,
-  # have each android_library have duplicate entries in their deps lists.
-  # See https://crbug.com/860018.
   chrome_test_xr_java_deps = [
     ":chrome_test_util_java",
     "//base:base_java",
