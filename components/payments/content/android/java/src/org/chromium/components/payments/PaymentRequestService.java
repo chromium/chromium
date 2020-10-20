@@ -147,9 +147,9 @@ public class PaymentRequestService {
         /**
          * Called after an instance of {@link PaymentRequestService} has been created.
          *
-         * @param componentPaymentRequest The newly created instance of PaymentRequestService.
+         * @param paymentRequestService The newly created instance of PaymentRequestService.
          */
-        void onPaymentRequestCreated(PaymentRequestService componentPaymentRequest);
+        void onPaymentRequestCreated(PaymentRequestService paymentRequestService);
 
         /**
          * Called when an abort request was denied.

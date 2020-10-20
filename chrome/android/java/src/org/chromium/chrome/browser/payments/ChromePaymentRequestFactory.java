@@ -211,7 +211,7 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
         return PaymentRequestService.createPaymentRequest(mRenderFrameHost,
                 /*isOffTheRecord=*/delegate.isOffTheRecord(),
                 /*skipUiForBasicCard=*/delegate.skipUiForBasicCard(), delegate,
-                (componentPaymentRequest)
-                        -> new ChromePaymentRequestService(componentPaymentRequest, delegate));
+                (paymentRequestService)
+                        -> new ChromePaymentRequestService(paymentRequestService, delegate));
     }
 }

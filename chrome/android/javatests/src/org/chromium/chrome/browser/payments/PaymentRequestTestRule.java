@@ -145,7 +145,7 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
     final CallbackHelper mPaymentResponseReady;
     final CallbackHelper mCompleteReplied;
     final CallbackHelper mRendererClosedMojoConnection;
-    PaymentRequestService mComponentPaymentRequest;
+    PaymentRequestService mPaymentRequestService;
     PaymentRequestUI mUI;
 
     private final boolean mDelayStartActivity;
@@ -1001,7 +1001,7 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
     /** Allows to skip UI into paymenthandler for"basic-card". */
     protected void enableSkipUIForBasicCard() {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mComponentPaymentRequest.setSkipUiForNonUrlPaymentMethodIdentifiersForTest());
+                () -> mPaymentRequestService.setSkipUiForNonUrlPaymentMethodIdentifiersForTest());
     }
 
     @Override
@@ -1059,9 +1059,9 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
     }
 
     @Override
-    public void onPaymentRequestCreated(PaymentRequestService paymentRequest) {
+    public void onPaymentRequestCreated(PaymentRequestService paymentRequestService) {
         ThreadUtils.assertOnUiThread();
-        mComponentPaymentRequest = paymentRequest;
+        mPaymentRequestService = paymentRequestService;
     }
 
     @Override
