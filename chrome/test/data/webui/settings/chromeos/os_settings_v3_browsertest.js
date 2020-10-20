@@ -38,41 +38,24 @@ var OSSettingsV3BrowserTest = class extends PolymerTest {
   }
 };
 
+// TODO(crbug/1109431): Remove this test once migration is complete.
 // eslint-disable-next-line no-var
-var OSSettingsInputPageV3Test = class extends OSSettingsV3BrowserTest {
+var OSSettingsOsLanguagesPageV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/input_page_test.m.js';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_languages_page_tests.m.js';
   }
 
   /** @override */
   get featureList() {
     return {
-      enabled: super.featureList.enabled.concat(
-          ['chromeos::features::kLanguageSettingsUpdate'])
+      enabled: super.featureList.enabled,
+      disabled: ['chromeos::features::kLanguageSettingsUpdate']
     };
   }
 };
 
-TEST_F('OSSettingsInputPageV3Test', 'All', () => mocha.run());
-
-// eslint-disable-next-line no-var
-var OSSettingsOsLanguagesPageV2V3Test = class extends OSSettingsV3BrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_languages_page_v2_tests.m.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: super.featureList.enabled.concat(
-          ['chromeos::features::kLanguageSettingsUpdate'])
-    };
-  }
-};
-
-TEST_F('OSSettingsOsLanguagesPageV2V3Test', 'All', () => mocha.run());
+TEST_F('OSSettingsOsLanguagesPageV3Test', 'All', () => mocha.run());
 
 // eslint-disable-next-line no-var
 var OSSettingsNearbyShareSubPageV3Test = class extends OSSettingsV3BrowserTest {
@@ -96,6 +79,7 @@ TEST_F('OSSettingsNearbyShareSubPageV3Test', 'All', () => mocha.run());
  ['CellularSetupDialog', 'cellular_setup_dialog_test.m.js'],
  ['DateTimePage', 'date_time_page_tests.m.js'],
  ['InputMethodOptionPage', 'input_method_options_page_test.m.js'],
+ ['InputPage', 'input_page_test.m.js'],
  ['InternetConfig', 'internet_config_test.m.js'],
  ['InternetDetailPage', 'internet_detail_page_tests.m.js'],
  ['InternetKnownNetworksPage', 'internet_known_networks_page_tests.m.js'],
@@ -109,7 +93,7 @@ TEST_F('OSSettingsNearbyShareSubPageV3Test', 'All', () => mocha.run());
  ['NetworkSummary', 'network_summary_test.m.js'],
  ['NetworkSummaryItem', 'network_summary_item_test.m.js'],
  ['OsEditDictionaryPage', 'os_edit_dictionary_page_test.m.js'],
- ['OsLanguagesPage', 'os_languages_page_tests.m.js'],
+ ['OsLanguagesPageV2', 'os_languages_page_v2_tests.m.js'],
  ['NearbyShareReceiveDialog', 'nearby_share_receive_dialog_tests.m.js'],
  ['ParentalControlsPage', 'parental_controls_page_test.m.js'],
  ['PeoplePage', 'os_people_page_test.m.js'],

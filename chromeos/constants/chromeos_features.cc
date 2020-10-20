@@ -387,7 +387,7 @@ const base::Feature kLacrosSupport{"LacrosSupport",
 
 // Enables or disables language settings update.
 const base::Feature kLanguageSettingsUpdate{"LanguageSettingsUpdate",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables or disables device management disclosure on login / lock screen.
 const base::Feature kLoginDeviceManagementDisclosure{

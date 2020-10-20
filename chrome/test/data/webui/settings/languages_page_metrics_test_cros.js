@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {LanguagesBrowserProxyImpl, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs} from 'chrome://settings/settings.js';
@@ -14,6 +15,7 @@ import {FakeSettingsPrivate} from './fake_settings_private.m.js';
 import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.m.js';
 import {TestLanguagesMetricsProxy} from './test_languages_metrics_proxy.js';
 
+// TODO(crbug/1109431): Remove this test once migration is complete.
 suite('LanguagesPageMetricsChromeOS', function() {
   /** @type {!LanguageHelper} */
   let languageHelper;
@@ -25,6 +27,9 @@ suite('LanguagesPageMetricsChromeOS', function() {
   let languagesMetricsProxy;
 
   suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isChromeOSLanguagesSettingsUpdate: false,
+    });
     CrSettingsPrefs.deferInitialization = true;
   });
 
