@@ -1443,6 +1443,9 @@ try_.chromium_win_builder(
     ssd = True,
     use_clang_coverage = True,
     main_list_view = "try",
+    # TODO(https://crbug/1127113): Recipe Engine doesn't handle cancellations
+    # of stale tryjobs gracefully, resulting in longer average build times.
+    # Windows is particularly susceptible to this.
     tryjob = try_.job(cancel_stale = False),
 )
 
