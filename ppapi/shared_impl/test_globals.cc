@@ -40,8 +40,6 @@ thunk::ResourceCreationAPI* TestGlobals::GetResourceCreationAPI(
 
 PP_Module TestGlobals::GetModuleForInstance(PP_Instance instance) { return 0; }
 
-void TestGlobals::PreCacheFontForFlash(const void* /* logfontw */) {}
-
 void TestGlobals::LogWithSource(PP_Instance instance,
                                 PP_LogLevel level,
                                 const std::string& source,

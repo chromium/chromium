@@ -290,10 +290,6 @@ std::string PluginProxyTestHarness::PluginDelegateMock::GetUILanguage() {
   return std::string("en-US");
 }
 
-void PluginProxyTestHarness::PluginDelegateMock::PreCacheFontForFlash(
-    const void* logfontw) {
-}
-
 void PluginProxyTestHarness::PluginDelegateMock::SetActiveURL(
     const std::string& url) {
 }

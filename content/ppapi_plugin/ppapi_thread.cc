@@ -192,12 +192,6 @@ std::string PpapiThread::GetUILanguage() {
   return command_line->GetSwitchValueASCII(switches::kLang);
 }
 
-void PpapiThread::PreCacheFontForFlash(const void* logfontw) {
-#if defined(OS_WIN)
-  ChildThreadImpl::PreCacheFont(*static_cast<const LOGFONTW*>(logfontw));
-#endif
-}
-
 void PpapiThread::SetActiveURL(const std::string& url) {
   GetContentClient()->SetActiveURL(GURL(url), std::string());
 }

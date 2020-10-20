@@ -70,7 +70,6 @@ class PPAPI_PROXY_EXPORT PluginGlobals : public PpapiGlobals {
   thunk::ResourceCreationAPI* GetResourceCreationAPI(
       PP_Instance instance) override;
   PP_Module GetModuleForInstance(PP_Instance instance) override;
-  void PreCacheFontForFlash(const void* logfontw) override;
   void LogWithSource(PP_Instance instance,
                      PP_LogLevel level,
                      const std::string& source,
