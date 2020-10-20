@@ -71,6 +71,9 @@ public class DefaultSearchEngineFirstRunFragment extends Fragment implements Fir
 
     @Override
     public void setInitialA11yFocus() {
+        // Ignore calls before view is created.
+        if (getView() == null) return;
+
         final View title = getView().findViewById(R.id.chooser_title);
         title.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
     }

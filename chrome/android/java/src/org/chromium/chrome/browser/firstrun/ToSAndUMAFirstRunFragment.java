@@ -138,6 +138,8 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
 
     @Override
     public void setInitialA11yFocus() {
+        // Ignore calls before view is created.
+        if (mTitle == null) return;
         mTitle.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
     }
 

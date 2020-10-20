@@ -88,6 +88,9 @@ public class SigninFirstRunFragment extends SigninFragmentBase implements FirstR
 
     @Override
     public void setInitialA11yFocus() {
+        // Ignore calls before view is created.
+        if (getView() == null) return;
+
         final View title = getView().findViewById(R.id.signin_title);
         title.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
     }
