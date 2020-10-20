@@ -4,8 +4,8 @@
 
 #include "ios/chrome/browser/ui/link_to_text/link_to_text_mediator.h"
 
+#import "ios/chrome/browser/link_to_text/link_to_text_payload.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_tab_helper.h"
-#import "ios/chrome/browser/link_to_text/shared_highlight.h"
 #import "ios/chrome/browser/ui/commands/activity_service_commands.h"
 #import "ios/chrome/browser/ui/commands/share_highlight_command.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -52,14 +52,21 @@
 
 - (void)handleLinkToTextSelection {
   DCHECK(base::FeatureList::IsEnabled(kSharedHighlightingIOS));
-  [self shareLinkToText:[self getLinkToTextTabHelper]->GetSharedHighlight()];
+  LinkToTextTabHelper* tabHelper = [self getLinkToTextTabHelper];
+
+  __weak __typeof(self) weakSelf = self;
+  tabHelper->GetLinkToText(^(LinkToTextPayload* payload) {
+    [weakSelf shareLinkToText:payload];
+  });
 }
 
-- (void)shareLinkToText:(SharedHighlight)sharedHighlight {
+- (void)shareLinkToText:(LinkToTextPayload*)payload {
   ShareHighlightCommand* command =
-      [[ShareHighlightCommand alloc] initWithURL:sharedHighlight.url
-                                           title:sharedHighlight.title
-                                    selectedText:sharedHighlight.selectedText];
+      [[ShareHighlightCommand alloc] initWithURL:payload.URL
+                                           title:payload.title
+                                    selectedText:payload.selectedText
+                                      sourceView:payload.sourceView
+                                      sourceRect:payload.sourceRect];
   [self.handler shareHighlight:command];
 }
 

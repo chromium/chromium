@@ -494,15 +494,12 @@
                            additionalText:command.selectedText
                                  scenario:ActivityScenario::SharedHighlight];
 
-  // TODO(crbug.com/1099268): Get the right share view origin.
   self.sharingCoordinator = [[SharingCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
                           params:params
-                      originView:self.viewController.activityServicePositioner
-                                     .sourceView
-                      originRect:self.viewController.activityServicePositioner
-                                     .sourceRect];
+                      originView:command.sourceView
+                      originRect:command.sourceRect];
   [self.sharingCoordinator start];
 }
 
