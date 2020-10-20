@@ -501,6 +501,9 @@ quic::ParsedQuicVersionVector GetQuicVersions(
           base::debug::AllocateCrashKeyString(
               "OQV_finch_seed", base::debug::CrashKeySize::Size32);
       std::string finch_seed = variations::GetSeedVersion();
+      if (finch_seed.empty()) {
+        finch_seed = "OQV_empty";
+      }
       base::debug::ScopedCrashKeyString finch_scoped_key(finch_seed_key,
                                                          finch_seed);
       base::debug::DumpWithoutCrashing();
