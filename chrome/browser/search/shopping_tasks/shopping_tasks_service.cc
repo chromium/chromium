@@ -11,6 +11,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/variations/net/variations_http_headers.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -92,6 +93,10 @@ void ShoppingTasksService::GetPrimaryShoppingTask(
       network::mojom::CredentialsMode::kInclude;
   resource_request->request_initiator =
       url::Origin::Create(GURL(chrome::kChromeUINewTabURL));
+  variations::AppendVariationsHeaderUnknownSignedIn(
+      resource_request->url,
+      /* Modules are only shown in non-incognito. */
+      variations::InIncognito::kNo, resource_request.get());
 
   loaders_.push_back(network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation));
