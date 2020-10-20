@@ -253,8 +253,7 @@ bool PPB_Graphics3D_Impl::InitRaw(
   attrib_helper.context_type = gpu::CONTEXT_TYPE_OPENGLES2;
 
   gpu::CommandBufferProxyImpl* share_buffer = nullptr;
-  if (!plugin_instance->is_flash_plugin())
-    UMA_HISTOGRAM_BOOLEAN("Pepper.Graphics3DHasShareGroup", !!share_context);
+  UMA_HISTOGRAM_BOOLEAN("Pepper.Graphics3DHasShareGroup", !!share_context);
   if (share_context) {
     PPB_Graphics3D_Impl* share_graphics =
         static_cast<PPB_Graphics3D_Impl*>(share_context);

@@ -485,9 +485,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
     return *audio_controller_;
   }
 
-  // Should be used only for logging.
-  bool is_flash_plugin() const { return is_flash_plugin_; }
-
   bool SupportsKeyboardFocus();
 
  private:
@@ -581,7 +578,7 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   // container if:
   // - we have a bound Graphics3D and the Graphics3D has a texture, OR
   //   we have a bound Graphics2D and are using software compositing
-  // - we are not in Flash full-screen mode (or transitioning to it)
+  // - we are not in full-screen mode (or transitioning to it)
   // Otherwise it destroys the layer.
   // It does either operation lazily.
   // force_creation: Force UpdateLayer() to recreate the layer and attaches
@@ -672,9 +669,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   const GURL plugin_url_;
 
   GURL document_url_;
-
-  // Used to track Flash-specific metrics.
-  const bool is_flash_plugin_;
 
   // Set to true the first time the plugin is clicked. Used to collect metrics.
   bool has_been_clicked_;

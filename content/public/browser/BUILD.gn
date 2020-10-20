@@ -248,7 +248,6 @@ source_set("browser_sources") {
     "payment_app_provider.h",
     "payment_app_provider_util.h",
     "peak_gpu_memory_tracker.h",
-    "pepper_flash_settings_helper.h",
     "pepper_vpn_provider_resource_host_proxy.h",
     "permission_controller.h",
     "permission_controller_delegate.cc",

@@ -145,8 +145,8 @@ std::string MakeXRequestedWithValue(const std::string& name,
   if (rv.empty())
     return std::string();
 
-  // Apply to a narrow list of plugins only.
-  if (rv != "ShockwaveFlash" && rv != "PPAPITests")
+  // Apply to test plugins only.
+  if (rv != "PPAPITests")
     return std::string();
 
   std::string filtered_version = FilterStringForXRequestedWithValue(version);

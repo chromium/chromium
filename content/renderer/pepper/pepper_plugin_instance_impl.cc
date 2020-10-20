@@ -202,7 +202,7 @@ STATIC_ASSERT_ENUM(ui::TEXT_INPUT_TYPE_URL, PP_TEXTINPUT_TYPE_URL);
 
 // The default text input type is to regard the plugin always accept text input.
 // This is for allowing users to use input methods even on completely-IME-
-// unaware plugins (e.g., PPAPI Flash or PDF plugin for M16).
+// unaware plugins (e.g., PDF plugin for M16).
 // Plugins need to explicitly opt out the text input mode if they know
 // that they don't accept texts.
 const ui::TextInputType kPluginDefaultTextInputType = ui::TEXT_INPUT_TYPE_TEXT;
@@ -320,9 +320,9 @@ std::unique_ptr<const char* []> StringVectorToArgArray(
 }
 
 // Returns true if this is a "system reserved" key which should not be sent to
-// a plugin. Some poorly behaving plugins (like Flash) incorrectly report that
-// they handle all keys sent to them. This can prevent keystrokes from working
-// for things like screen brightness and volume control.
+// a plugin. Some poorly behaving plugins incorrectly report that they handle
+// all keys sent to them. This can prevent keystrokes from working for things
+// like screen brightness and volume control.
 bool IsReservedSystemInputEvent(const blink::WebInputEvent& event) {
 #if defined(OS_CHROMEOS)
   if (event.GetType() != WebInputEvent::Type::kKeyDown &&
@@ -503,7 +503,6 @@ PepperPluginInstanceImpl::PepperPluginInstanceImpl(
       layer_is_hardware_(false),
       plugin_url_(plugin_url),
       document_url_(container ? GURL(container->GetDocument().Url()) : GURL()),
-      is_flash_plugin_(module->name() == kFlashPluginName),
       has_been_clicked_(false),
       full_frame_(false),
       viewport_to_dip_scale_(1.0f),
@@ -1084,12 +1083,6 @@ bool PepperPluginInstanceImpl::HandleInputEvent(
 
   if (!render_frame_)
     return false;
-
-  if (!has_been_clicked_ && is_flash_plugin_ &&
-      event.GetType() == blink::WebInputEvent::Type::kMouseDown &&
-      (event.GetModifiers() & blink::WebInputEvent::kLeftButtonDown)) {
-    has_been_clicked_ = true;
-  }
 
   if (throttler_ && throttler_->ConsumeInputEvent(event))
     return true;
@@ -2115,16 +2108,12 @@ void PepperPluginInstanceImpl::UpdateLayer(bool force_creation) {
       texture_layer_->SetFlipped(false);
     }
 
-    // Ignore transparency in fullscreen, since that's what Flash always
-    // wants to do, and that lets it not recreate a context if
-    // wmode=transparent was specified.
+    // Ignore transparency in fullscreen.
     texture_layer_->SetContentsOpaque(opaque);
   }
 
   if (texture_layer_) {
     container_->SetCcLayer(texture_layer_.get(), true);
-    if (is_flash_plugin_)
-      texture_layer_->SetMayContainVideo(true);
   }
 
   layer_is_hardware_ = want_3d_layer;
@@ -2542,7 +2531,7 @@ PP_Bool PepperPluginInstanceImpl::GetScreenSize(PP_Instance instance,
 ppapi::Resource* PepperPluginInstanceImpl::GetSingletonResource(
     PP_Instance instance,
     ppapi::SingletonResourceID id) {
-  // Flash APIs and some others aren't implemented in-process.
+  // Some APIs aren't implemented in-process.
   switch (id) {
     case ppapi::BROWSER_FONT_SINGLETON_ID:
     case ppapi::FLASH_FULLSCREEN_SINGLETON_ID:

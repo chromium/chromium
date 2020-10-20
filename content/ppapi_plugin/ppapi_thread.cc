@@ -65,21 +65,10 @@
 #if defined(OS_WIN)
 extern sandbox::TargetServices* g_target_services;
 
-// Used by EnumSystemLocales for warming up.
-static BOOL CALLBACK EnumLocalesProcEx(
-    LPWSTR lpLocaleString,
-    DWORD dwFlags,
-    LPARAM lParam) {
-  return TRUE;
-}
-
 // Warm up language subsystems before the sandbox is turned on.
 static void WarmupWindowsLocales(const ppapi::PpapiPermissions& permissions) {
   ::GetUserDefaultLangID();
   ::GetUserDefaultLCID();
-
-  if (permissions.HasPermission(ppapi::PERMISSION_FLASH))
-    ::EnumSystemLocalesEx(EnumLocalesProcEx, LOCALE_WINDOWS, 0, 0);
 }
 
 #endif
@@ -323,31 +312,11 @@ void PpapiThread::OnLoadPlugin(const base::FilePath& path,
   // can be loaded. TODO(cpu): consider changing to the loading style of
   // regular plugins.
   if (g_target_services) {
-    if (permissions.HasPermission(ppapi::PERMISSION_FLASH)) {
-      // Let Flash load DXVA before lockdown.
-      LoadLibraryA("dxva2.dll");
-
-      base::CPU cpu;
-      if (cpu.vendor_name() == "AuthenticAMD") {
-        // The AMD crypto acceleration is only AMD Bulldozer and above.
-#if defined(_WIN64)
-        LoadLibraryA("amdhcp64.dll");
-#else
-        LoadLibraryA("amdhcp32.dll");
-#endif
-      }
-    }
-
     // Cause advapi32 to load before the sandbox is turned on.
     unsigned int dummy_rand;
     rand_s(&dummy_rand);
 
     WarmupWindowsLocales(permissions);
-
-    if (!base::win::IsUser32AndGdi32Available() &&
-        permissions.HasPermission(ppapi::PERMISSION_FLASH)) {
-      PatchGdiFontEnumeration(path);
-    }
 
     g_target_services->LowerToken();
   }
