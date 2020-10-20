@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/sms/webotp_service_outcome.h"
 #include "third_party/blink/public/mojom/credentialmanager/credential_manager.mojom-blink.h"
@@ -61,6 +62,7 @@
 #include "third_party/blink/renderer/platform/weborigin/origin_access_entry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 #if defined(OS_ANDROID)
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_rp_entity.h"
@@ -750,15 +752,10 @@ void CreatePublicKeyCredentialForPaymentCredential(
   mojo_options->user = mojom::blink::PublicKeyCredentialUserEntity::New();
   mojo_options->user->name = options->instrument()->displayName();
 
-  // There isn't explicity a WebAuthn 'user ID', so just convert the
-  // instrument display name into a byte array and use that.
-  const uint8_t* display_name_bytes =
-      static_cast<const uint8_t*>(options->instrument()->displayName().Bytes());
-  mojo_options->user->id = Vector<uint8_t>();
-  mojo_options->user->id.AppendRange(
-      display_name_bytes,
-      display_name_bytes +
-          options->instrument()->displayName().CharactersSizeInBytes());
+  static constexpr wtf_size_t kRandomUserIdSize = 32;
+  mojo_options->user->id = Vector<uint8_t>(kRandomUserIdSize);
+  base::RandBytes(mojo_options->user->id.data(), kRandomUserIdSize);
+
   mojo_options->user->display_name = options->instrument()->displayName();
   mojo_options->user->icon = KURL(options->instrument()->icon());
 
