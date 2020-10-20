@@ -80,6 +80,19 @@ bool CalculateQuadSpaceDamageRect(
   return true;
 }
 
+gfx::Rect GetExpandedRectWithPixelMovingForegroundFilter(
+    const CompositorRenderPassDrawQuad* rpdq,
+    const CompositorRenderPass& child_render_pass) {
+  const SharedQuadState* shared_quad_state = rpdq->shared_quad_state;
+  float max_pixel_movement = child_render_pass.filters.MaximumPixelMovement();
+  gfx::Rect expanded_rect = rpdq->rect;
+  expanded_rect.Inset(-max_pixel_movement, -max_pixel_movement);
+
+  // expanded_rect in the target space
+  return cc::MathUtil::MapEnclosingClippedRect(
+      shared_quad_state->quad_to_target_transform, expanded_rect);
+}
+
 }  // namespace
 
 struct SurfaceAggregator::ClipData {
@@ -264,6 +277,32 @@ const DrawQuad* SurfaceAggregator::ProcessOverlayDamageList(
     size_t* overlay_damage_index) {
   if (!needs_surface_damage_rect_list_)
     return nullptr;
+
+  // Add the damage from a non-root render pass with pixel-moving filters to the
+  // damage list.
+  if (source_pass.filters.HasFilterThatMovesPixels() ||
+      source_pass.backdrop_filters.HasFilterThatMovesPixels()) {
+    gfx::Transform parent_quad_to_root_target_transform = gfx::Transform(
+        dest_pass->transform_to_root_target, parent_target_transform);
+
+    gfx::Rect surface_damage_rect = source_pass.output_rect;
+    if (source_pass.filters.HasFilterThatMovesPixels()) {
+      float max_pixel_movement = source_pass.filters.MaximumPixelMovement();
+      surface_damage_rect.Inset(-max_pixel_movement, -max_pixel_movement);
+    }
+
+    gfx::Rect damage_rect_in_root_target_space =
+        cc::MathUtil::MapEnclosingClippedRect(
+            parent_quad_to_root_target_transform, surface_damage_rect);
+
+    // The whole render pass rect with pixel-moving filters is considered
+    // damaged if it intersects with the other damages.
+    if (damage_rect_in_root_target_space.Intersects(root_damage_rect_)) {
+      AddSurfaceDamageToDamageList(damage_rect_in_root_target_space,
+                                   gfx::Transform(), clip_rect);
+    }
+    return nullptr;
+  }
 
   Surface* surface = manager_->GetSurfaceForId(surface_id);
   // Only process the damage rect once per surface.
@@ -1359,6 +1398,31 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
           if (intersects_damage_from_surface) {
             damage_rect.Union(surface_root_rp_damage);
           }
+        }
+      }
+      // For the pixel-moving backdrop filters, all effects are limited to the
+      // size of the RenderPassDrawQuad rect. Therefore when we find the damage
+      // under the quad intersects quad render pass output rect, we extend the
+      // damage rect to include the rpdq->rect.
+
+      // For the pixel-moving foreground filters, all effects can be expanded
+      // outside the RenderPassDrawQuad rect to the size of rect +
+      // filters.MaximumPixelMovement(). Therefore, we have to check if
+      // (rpdq->rect + MaximumPixelMovement()) intersects the damage under it.
+      // Then we extend the damage rect to include the (rpdq->rect +
+      // MaximumPixelMovement()).
+
+      // Expand the damage to cover entire |output_rect| if the |render_pass|
+      // has pixel-moving foreground filter.
+      if (child_render_pass.filters.HasFilterThatMovesPixels()) {
+        gfx::Rect expanded_rect_in_target_space =
+            GetExpandedRectWithPixelMovingForegroundFilter(render_pass_quad,
+                                                           child_render_pass);
+
+        if (expanded_rect_in_target_space.Intersects(damage_rect) ||
+            expanded_rect_in_target_space.Intersects(damage_from_parent) ||
+            expanded_rect_in_target_space.Intersects(surface_root_rp_damage)) {
+          damage_rect.Union(expanded_rect_in_target_space);
         }
       }
 

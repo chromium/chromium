@@ -5098,8 +5098,10 @@ TEST_F(SurfaceAggregatorPartialSwapTest, IgnoreOutside) {
     ASSERT_EQ(0u, aggregated_pass_list[0]->quad_list.size());
   }
 
-  // Root surface has smaller damage rect, but filter on render pass means all
-  // of it and its descendant passes should be aggregated.
+  // Render passes with pixel-moving foreground filters will increase the damage
+  // only if the damage of the contents will overlap the expanded render pass
+  // draw quad. Since the root surface damage does not overlap, the render pass
+  // and its descendant passes should not be aggregated.
   {
     CompositorRenderPassId root_pass_ids[] = {CompositorRenderPassId{1},
                                               CompositorRenderPassId{2},
@@ -5123,9 +5125,18 @@ TEST_F(SurfaceAggregatorPartialSwapTest, IgnoreOutside) {
     auto* filter_pass = root_pass_list[1].get();
     filter_pass->shared_quad_state_list.front()
         ->quad_to_target_transform.Translate(10, 10);
-    auto* root_pass = root_pass_list[2].get();
+    // Create 3 pixel-moving filters with the same max pixel movement.
     filter_pass->filters.Append(cc::FilterOperation::CreateBlurFilter(2));
-    root_pass->damage_rect = gfx::Rect(10, 10, 2, 2);
+    filter_pass->filters.Append(
+        cc::FilterOperation::CreateDropShadowFilter(gfx::Point(0, 0), 2, 0));
+    filter_pass->filters.Append(cc::FilterOperation::CreateZoomFilter(2, 4));
+    auto* root_pass = root_pass_list[2].get();
+    // Set the root damage rect which doesn't intersect with the expanded
+    // filter_pass quad (-4, -4, 13, 13) (filter quad (0, 0, 5, 5) +
+    // MaximumPixelMovement(2 * 2 = 4)), so we don't have to add more damage
+    // from the filter_pass and the first render pass draw quad will not be
+    // drawn.
+    root_pass->damage_rect = gfx::Rect(20, 20, 2, 2);
     SubmitPassListAsFrame(root_sink_.get(), root_local_surface_id_,
                           &root_pass_list, std::move(referenced_surfaces),
                           device_scale_factor);
@@ -5141,13 +5152,78 @@ TEST_F(SurfaceAggregatorPartialSwapTest, IgnoreOutside) {
     EXPECT_EQ(gfx::Rect(SurfaceSize()), aggregated_pass_list[0]->damage_rect);
     EXPECT_EQ(gfx::Rect(SurfaceSize()), aggregated_pass_list[1]->damage_rect);
     EXPECT_EQ(gfx::Rect(SurfaceSize()), aggregated_pass_list[2]->damage_rect);
-    EXPECT_EQ(gfx::Rect(10, 10, 2, 2), aggregated_pass_list[3]->damage_rect);
+    // The filter pass does not intersects with the other damages. The root
+    // damage should not increase.
+    EXPECT_EQ(gfx::Rect(20, 20, 2, 2), aggregated_pass_list[3]->damage_rect);
     EXPECT_EQ(1u, aggregated_pass_list[0]->quad_list.size());
     EXPECT_EQ(1u, aggregated_pass_list[1]->quad_list.size());
     EXPECT_EQ(1u, aggregated_pass_list[2]->quad_list.size());
-    // First render pass draw quad is outside damage rect, so shouldn't be
-    // drawn.
+    // First render pass draw quad with filterw is outside damage rect, so
+    // shouldn't be drawn.
     EXPECT_EQ(0u, aggregated_pass_list[3]->quad_list.size());
+  }
+
+  // Render passes with pixel-moving foreground filters will increase the damage
+  // if the damage of the contents will overlap the expanded render pass draw
+  // quad (quad rect + maximum pixel movement). Since the root surface damage
+  // overlaps, the render pass and its descendant passes should be aggregated.
+  {
+    CompositorRenderPassId root_pass_ids[] = {CompositorRenderPassId{1},
+                                              CompositorRenderPassId{2},
+                                              CompositorRenderPassId{3}};
+    std::vector<Quad> root_quads1 = {Quad::SurfaceQuad(
+        SurfaceRange(base::nullopt, child_surface_id), SK_ColorWHITE,
+        gfx::Rect(5, 5), /*stretch_content_to_fill_bounds=*/false)};
+    std::vector<Quad> root_quads2 = {
+        Quad::RenderPassQuad(root_pass_ids[0], gfx::Transform(), false)};
+    std::vector<Quad> root_quads3 = {
+        Quad::RenderPassQuad(root_pass_ids[1], gfx::Transform(), false)};
+    std::vector<Pass> root_passes = {
+        Pass(root_quads1, root_pass_ids[0], SurfaceSize()),
+        Pass(root_quads2, root_pass_ids[1], SurfaceSize()),
+        Pass(root_quads3, root_pass_ids[2], SurfaceSize())};
+
+    CompositorRenderPassList root_pass_list;
+    std::vector<SurfaceRange> referenced_surfaces;
+    AddPasses(&root_pass_list, root_passes, &referenced_surfaces);
+
+    auto* filter_pass = root_pass_list[1].get();
+    filter_pass->shared_quad_state_list.front()
+        ->quad_to_target_transform.Translate(10, 10);
+    // Create 3 pixel-moving filters with the same max pixel movement.
+    filter_pass->filters.Append(cc::FilterOperation::CreateBlurFilter(10));
+    filter_pass->filters.Append(
+        cc::FilterOperation::CreateDropShadowFilter(gfx::Point(0, 0), 10, 0));
+    filter_pass->filters.Append(cc::FilterOperation::CreateZoomFilter(2, 20));
+    auto* root_pass = root_pass_list[2].get();
+    // Make the root damage rect intersect with the expanded filter_pass
+    // quad (filter quad (0, 0, 5, 5) + MaximumPixelMovement(10 * 2) = (-20,
+    // -20, 45, 45)), but not with filter_pass quad itself (0, 0, 5, 5). The
+    // first render pass will be drawn.
+    root_pass->damage_rect = gfx::Rect(20, 20, 2, 2);
+    SubmitPassListAsFrame(root_sink_.get(), root_local_surface_id_,
+                          &root_pass_list, std::move(referenced_surfaces),
+                          device_scale_factor);
+  }
+
+  {
+    auto aggregated_frame = AggregateFrame(root_surface_id);
+
+    const auto& aggregated_pass_list = aggregated_frame.render_pass_list;
+
+    ASSERT_EQ(4u, aggregated_pass_list.size());
+
+    EXPECT_EQ(gfx::Rect(SurfaceSize()), aggregated_pass_list[0]->damage_rect);
+    EXPECT_EQ(gfx::Rect(SurfaceSize()), aggregated_pass_list[1]->damage_rect);
+    EXPECT_EQ(gfx::Rect(SurfaceSize()), aggregated_pass_list[2]->damage_rect);
+    // The filter pass intersects with the root surface damage, the root damage
+    // increases (= original root damage + expanded filter pass quad).
+    EXPECT_EQ(gfx::Rect(0, 0, 25, 25), aggregated_pass_list[3]->damage_rect);
+    EXPECT_EQ(1u, aggregated_pass_list[0]->quad_list.size());
+    EXPECT_EQ(1u, aggregated_pass_list[1]->quad_list.size());
+    EXPECT_EQ(1u, aggregated_pass_list[2]->quad_list.size());
+    // First render pass draw quad is damaged. It should be drawn.
+    EXPECT_EQ(1u, aggregated_pass_list[3]->quad_list.size());
   }
 
   // Root surface has smaller damage rect. Opacity filter on render pass
@@ -5202,9 +5278,10 @@ TEST_F(SurfaceAggregatorPartialSwapTest, IgnoreOutside) {
     EXPECT_EQ(1u, aggregated_pass_list[2]->quad_list.size());
   }
 
-  // Render passes with pixel-moving filters will increase the damage only if
-  // the damage of the contents will overlap the render pass. Since one of the
-  // render passes has a pixel-moving backdrop filter no quads are ignored.
+  // Render passes with pixel-moving backdrop filters will increase the damage
+  // only if the damage of the contents will overlap the render pass. Since one
+  // of the render passes has a pixel-moving backdrop filter no quads are
+  // ignored.
   {
     CompositorRenderPassId child_pass_ids[] = {CompositorRenderPassId{1},
                                                CompositorRenderPassId{2}};
