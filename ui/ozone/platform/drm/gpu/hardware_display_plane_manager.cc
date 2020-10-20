@@ -26,6 +26,13 @@ HardwareDisplayPlaneList::HardwareDisplayPlaneList() {
 
 HardwareDisplayPlaneList::~HardwareDisplayPlaneList() = default;
 
+CommitRequest::CommitRequest() = default;
+CommitRequest::CommitRequest(const CommitRequest& other) {
+  commit_state = other.commit_state;
+  plane_list = other.plane_list;
+}
+CommitRequest::~CommitRequest() = default;
+
 HardwareDisplayPlaneList::PageFlipInfo::PageFlipInfo(uint32_t crtc_id,
                                                      uint32_t framebuffer)
     : crtc_id(crtc_id), framebuffer(framebuffer) {}
@@ -427,6 +434,61 @@ void HardwareDisplayPlaneManager::DisableConnectedConnectorsToCrtcs(
         drm_->DisableCrtc(encoder->crtc_id);
     }
   }
+}
+
+const HardwareDisplayPlaneManager::CrtcState&
+HardwareDisplayPlaneManager::GetCrtcStateForCrtcId(uint32_t crtc_id) {
+  return CrtcStateForCrtcId(crtc_id);
+}
+
+HardwareDisplayPlaneManager::CrtcState&
+HardwareDisplayPlaneManager::CrtcStateForCrtcId(uint32_t crtc_id) {
+  int crtc_index = LookupCrtcIndex(crtc_id);
+  DCHECK_GE(crtc_index, 0);
+  return crtc_state_[crtc_index];
+}
+
+void HardwareDisplayPlaneManager::UpdateCrtcAndPlaneStatesAfterModeset(
+    const CommitRequest& commit_request) {
+  bool should_disable_overlay_planes = false;
+
+  for (const auto& crtc_request : commit_request.commit_state) {
+    bool is_enabled = !!crtc_request.primary_plane;
+
+    int connector_index = LookupConnectorIndex(crtc_request.connector_id);
+    DCHECK_GE(connector_index, 0);
+    ConnectorProperties& connector_props = connectors_props_[connector_index];
+    connector_props.crtc_id.value = is_enabled ? crtc_request.crtc_id : 0;
+
+    CrtcState& crtc_state = CrtcStateForCrtcId(crtc_request.crtc_id);
+    crtc_state.properties.active.value = static_cast<uint64_t>(is_enabled);
+
+    if (is_enabled) {
+      crtc_state.mode = crtc_request.mode;
+      crtc_state.modeset_framebuffer = crtc_request.primary_plane->buffer;
+    } else {
+      crtc_state.properties.mode_id.value = 0;
+      should_disable_overlay_planes = true;
+      // TODO(crbug/1135291): Use atomic APIs to reset cursor plane.
+      if (!drm_->SetCursor(crtc_request.crtc_id, 0, gfx::Size())) {
+        PLOG(ERROR) << "Failed to drmModeSetCursor: device:"
+                    << drm_->device_path().value()
+                    << " crtc:" << crtc_request.crtc_id;
+      }
+    }
+  }
+
+  if (should_disable_overlay_planes && commit_request.plane_list) {
+    // TODO(markyacoub): DisableOverlayPlanes can be part of the commit request.
+    bool status = DisableOverlayPlanes(commit_request.plane_list);
+    LOG_IF(ERROR, !status) << "Can't disable overlays when disabling HDC.";
+    commit_request.plane_list->plane_list.clear();
+  }
+}
+
+void HardwareDisplayPlaneManager::ResetModesetBufferOfCrtc(uint32_t crtc_id) {
+  CrtcState& crtc_state = CrtcStateForCrtcId(crtc_id);
+  crtc_state.modeset_framebuffer = nullptr;
 }
 
 }  // namespace ui

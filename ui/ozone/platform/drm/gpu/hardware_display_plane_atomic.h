@@ -37,10 +37,9 @@ class HardwareDisplayPlaneAtomic : public HardwareDisplayPlane {
 
   bool SetPlaneCtm(drmModeAtomicReq* property_set, uint32_t ctm_blob_id);
 
-  uint32_t crtc_id() { return crtc_id_; }
+  uint32_t AssignedCrtcId() const;
 
  private:
-  uint32_t crtc_id_ = 0;  // Updated after commit.
   // Intermediate variable between Assign()ment and Set()ting.
   HardwareDisplayPlane::Properties assigned_props_;
 

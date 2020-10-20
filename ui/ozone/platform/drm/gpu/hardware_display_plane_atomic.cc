@@ -153,7 +153,6 @@ bool HardwareDisplayPlaneAtomic::SetPlaneProps(drmModeAtomicReq* property_set) {
     return false;
   }
 
-  crtc_id_ = assigned_props_.crtc_id.value;
   // Update properties_ if the setting the props succeeded.
   properties_ = assigned_props_;
   return true;
@@ -166,6 +165,10 @@ bool HardwareDisplayPlaneAtomic::SetPlaneCtm(drmModeAtomicReq* property_set,
 
   properties_.plane_ctm.value = ctm_blob_id;
   return AddPropertyIfValid(property_set, id_, properties_.plane_ctm);
+}
+
+uint32_t HardwareDisplayPlaneAtomic::AssignedCrtcId() const {
+  return assigned_props_.crtc_id.value;
 }
 
 }  // namespace ui

@@ -19,12 +19,8 @@ class HardwareDisplayPlaneManagerAtomic : public HardwareDisplayPlaneManager {
   ~HardwareDisplayPlaneManagerAtomic() override;
 
   // HardwareDisplayPlaneManager:
-  bool Modeset(uint32_t crtc_id,
-               uint32_t framebuffer_id,
-               uint32_t connector_id,
-               const drmModeModeInfo& mode,
-               const HardwareDisplayPlaneList& plane_list) override;
-  bool DisableModeset(uint32_t crtc_id, uint32_t connector) override;
+  bool Commit(CommitRequest commit_request, uint32_t flags) override;
+
   bool Commit(HardwareDisplayPlaneList* plane_list,
               bool should_modeset,
               scoped_refptr<PageFlipRequest> page_flip_request,
@@ -50,10 +46,23 @@ class HardwareDisplayPlaneManagerAtomic : public HardwareDisplayPlaneManager {
  private:
   bool InitializePlanes() override;
   std::unique_ptr<HardwareDisplayPlane> CreatePlane(uint32_t plane_id) override;
+  void SetAtomicPropsForCommit(drmModeAtomicReq* atomic_request,
+                               HardwareDisplayPlaneList* plane_list,
+                               const std::vector<uint32_t>& crtcs,
+                               bool test_only);
+
+  bool SetCrtcProps(drmModeAtomicReq* atomic_request,
+                    uint32_t crtc_id,
+                    bool set_active,
+                    uint32_t mode_id);
+  bool SetConnectorProps(drmModeAtomicReq* atomic_request,
+                         uint32_t connector_id,
+                         uint32_t crtc_id);
+
   bool CommitColorMatrix(const CrtcProperties& crtc_props) override;
   bool CommitGammaCorrection(const CrtcProperties& crtc_props) override;
   bool AddOutFencePtrProperties(
-      drmModeAtomicReqPtr property_set,
+      drmModeAtomicReq* property_set,
       const std::vector<uint32_t>& crtcs,
       std::vector<base::ScopedFD>* out_fence_fds,
       std::vector<base::ScopedFD::Receiver>* out_fence_fd_receivers);

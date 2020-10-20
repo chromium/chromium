@@ -46,19 +46,28 @@ HardwareDisplayPlaneManagerLegacy::HardwareDisplayPlaneManagerLegacy(
 HardwareDisplayPlaneManagerLegacy::~HardwareDisplayPlaneManagerLegacy() =
     default;
 
-bool HardwareDisplayPlaneManagerLegacy::Modeset(
-    uint32_t crtc_id,
-    uint32_t framebuffer_id,
-    uint32_t connector_id,
-    const drmModeModeInfo& mode,
-    const HardwareDisplayPlaneList&) {
-  return drm_->SetCrtc(crtc_id, framebuffer_id,
-                       std::vector<uint32_t>(1, connector_id), mode);
-}
+bool HardwareDisplayPlaneManagerLegacy::Commit(CommitRequest commit_request,
+                                               uint32_t flags) {
+  bool status = true;
 
-bool HardwareDisplayPlaneManagerLegacy::DisableModeset(uint32_t crtc_id,
-                                                       uint32_t connector) {
-  return drm_->DisableCrtc(crtc_id);
+  for (const auto& crtc_request : commit_request.commit_state) {
+    bool should_enable = crtc_request.primary_plane;
+
+    if (should_enable) {
+      status &= drm_->SetCrtc(
+          crtc_request.crtc_id,
+          crtc_request.primary_plane->buffer->opaque_framebuffer_id(),
+          std::vector<uint32_t>(1, crtc_request.connector_id),
+          crtc_request.mode);
+    } else {
+      drm_->DisableCrtc(crtc_request.crtc_id);
+    }
+  }
+
+  if (status)
+    UpdateCrtcAndPlaneStatesAfterModeset(commit_request);
+
+  return status;
 }
 
 bool HardwareDisplayPlaneManagerLegacy::Commit(

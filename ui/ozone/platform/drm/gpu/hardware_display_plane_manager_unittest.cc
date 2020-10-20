@@ -276,13 +276,23 @@ TEST_P(HardwareDisplayPlaneManagerTest, ResettingConnectorCache) {
                              plane_properties_, property_names_,
                              /*use_atomic=*/true);
 
-  constexpr uint32_t kFrameBuffer = 2;
   ui::HardwareDisplayPlaneList state;
-  // Check all 3 connectors exist
-  for (size_t i = 0; i < connector_and_crtc_count; ++i) {
-    EXPECT_TRUE(fake_drm_->plane_manager()->Modeset(
-        crtc_properties_[i].id, kFrameBuffer, connector_properties[i].id,
-        kDefaultMode, state));
+
+  {
+    ui::DrmOverlayPlane primary_plane(fake_buffer_, nullptr);
+
+    ui::CommitRequest commit_request;
+    commit_request.plane_list = &state;
+    fake_drm_->plane_manager()->BeginFrame(&state);
+    // Check all 3 connectors exist
+    for (size_t i = 0; i < connector_and_crtc_count; ++i) {
+      ui::CrtcRequest crtc_request{crtc_properties_[i].id,
+                                   connector_properties[i].id, &primary_plane,
+                                   kDefaultMode};
+      commit_request.commit_state.push_back(std::move(crtc_request));
+    }
+    EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
+        std::move(commit_request), DRM_MODE_ATOMIC_ALLOW_MODESET));
   }
 
   // Replace last connector and update state.
@@ -291,15 +301,23 @@ TEST_P(HardwareDisplayPlaneManagerTest, ResettingConnectorCache) {
                          plane_properties_, property_names_);
   fake_drm_->plane_manager()->ResetConnectorsCache(fake_drm_->GetResources());
 
-  EXPECT_TRUE(fake_drm_->plane_manager()->Modeset(
-      crtc_properties_[0].id, kFrameBuffer, kConnectorIdBase, kDefaultMode,
-      state));
-  EXPECT_TRUE(fake_drm_->plane_manager()->Modeset(
-      crtc_properties_[1].id, kFrameBuffer, kConnectorIdBase + 1, kDefaultMode,
-      state));
-  EXPECT_TRUE(fake_drm_->plane_manager()->Modeset(
-      crtc_properties_[2].id, kFrameBuffer, kConnectorIdBase + 3, kDefaultMode,
-      state));
+  {
+    ui::DrmOverlayPlane primary_plane(fake_buffer_, nullptr);
+    ui::CommitRequest commit_request;
+    commit_request.plane_list = &state;
+    fake_drm_->plane_manager()->BeginFrame(&state);
+    commit_request.commit_state.push_back({crtc_properties_[0].id,
+                                           kConnectorIdBase, &primary_plane,
+                                           kDefaultMode});
+    commit_request.commit_state.push_back({crtc_properties_[1].id,
+                                           kConnectorIdBase + 1, &primary_plane,
+                                           kDefaultMode});
+    commit_request.commit_state.push_back({crtc_properties_[2].id,
+                                           kConnectorIdBase + 3, &primary_plane,
+                                           kDefaultMode});
+    EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
+        std::move(commit_request), DRM_MODE_ATOMIC_ALLOW_MODESET));
+  }
 }
 
 TEST_P(HardwareDisplayPlaneManagerLegacyTest, Modeset) {
@@ -309,12 +327,18 @@ TEST_P(HardwareDisplayPlaneManagerLegacyTest, Modeset) {
                              /*use_atomic=*/false);
   fake_drm_->set_set_crtc_expectation(false);
 
-  constexpr uint32_t kFrameBuffer = 2;
   ui::HardwareDisplayPlaneList state;
-  EXPECT_FALSE(fake_drm_->plane_manager()->Modeset(
-      crtc_properties_[0].id, kFrameBuffer, connector_properties_[0].id,
-      kDefaultMode, state));
-  EXPECT_EQ(kFrameBuffer, fake_drm_->current_framebuffer());
+  ui::DrmOverlayPlane primary_plane(fake_buffer_, nullptr);
+  ui::CommitRequest commit_request;
+  commit_request.plane_list = &state;
+  commit_request.commit_state.push_back({crtc_properties_[0].id,
+                                         connector_properties_[0].id,
+                                         &primary_plane, kDefaultMode});
+  EXPECT_FALSE(fake_drm_->plane_manager()->Commit(
+      std::move(commit_request), DRM_MODE_ATOMIC_ALLOW_MODESET));
+
+  EXPECT_EQ(primary_plane.buffer->framebuffer_id(),
+            fake_drm_->current_framebuffer());
   EXPECT_EQ(1, fake_drm_->get_set_crtc_call_count());
 }
 
@@ -324,8 +348,13 @@ TEST_P(HardwareDisplayPlaneManagerLegacyTest, DisableModeset) {
                              plane_properties_, property_names_,
                              /*use_atomic*/ false);
 
-  EXPECT_TRUE(
-      fake_drm_->plane_manager()->DisableModeset(crtc_properties_[0].id, 0));
+  ui::HardwareDisplayPlaneList state;
+  ui::CommitRequest commit_request;
+  commit_request.plane_list = &state;
+  commit_request.commit_state.push_back(
+      {crtc_properties_[0].id, connector_properties_[0].id, nullptr, {}});
+  EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
+      std::move(commit_request), DRM_MODE_ATOMIC_ALLOW_MODESET));
 }
 
 TEST_P(HardwareDisplayPlaneManagerLegacyTest, SinglePlaneAssignment) {
@@ -448,11 +477,15 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, Modeset) {
                              plane_properties_, property_names_,
                              /*use_atomic=*/true);
 
-  constexpr uint32_t kFrameBuffer = 2;
   ui::HardwareDisplayPlaneList state;
-  EXPECT_TRUE(fake_drm_->plane_manager()->Modeset(
-      crtc_properties_[0].id, kFrameBuffer, connector_properties_[0].id,
-      kDefaultMode, state));
+  ui::DrmOverlayPlane primary_plane(fake_buffer_, nullptr);
+  ui::CommitRequest commit_request;
+  commit_request.plane_list = &state;
+  commit_request.commit_state.push_back({crtc_properties_[0].id,
+                                         connector_properties_[0].id,
+                                         &primary_plane, kDefaultMode});
+  EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
+      std::move(commit_request), DRM_MODE_ATOMIC_ALLOW_MODESET));
 
   EXPECT_EQ(1, fake_drm_->get_commit_count());
 }
@@ -463,9 +496,15 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, DisableModeset) {
                              plane_properties_, property_names_,
                              /*use_atomic*/ true);
 
-  EXPECT_TRUE(fake_drm_->plane_manager()->DisableModeset(
-      crtc_properties_[0].id, connector_properties_[0].id));
-  EXPECT_EQ(1, fake_drm_->get_commit_count());
+  ui::HardwareDisplayPlaneList state;
+  ui::CommitRequest commit_request;
+  commit_request.plane_list = &state;
+  commit_request.commit_state.push_back(
+      {crtc_properties_[0].id, connector_properties_[0].id, nullptr, {}});
+  EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
+      std::move(commit_request), DRM_MODE_ATOMIC_ALLOW_MODESET));
+
+  EXPECT_EQ(2, fake_drm_->get_commit_count());
 }
 
 TEST_P(HardwareDisplayPlaneManagerAtomicTest, CheckPropsAfterModeset) {
@@ -474,11 +513,15 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, CheckPropsAfterModeset) {
                              plane_properties_, property_names_,
                              /*use_atomic=*/true);
 
-  constexpr uint32_t kFrameBuffer = 2;
   ui::HardwareDisplayPlaneList state;
-  EXPECT_TRUE(fake_drm_->plane_manager()->Modeset(
-      crtc_properties_[0].id, kFrameBuffer, connector_properties_[0].id,
-      kDefaultMode, state));
+  ui::DrmOverlayPlane primary_plane(fake_buffer_, nullptr);
+  ui::CommitRequest commit_request;
+  commit_request.plane_list = &state;
+  commit_request.commit_state.push_back({crtc_properties_[0].id,
+                                         connector_properties_[0].id,
+                                         &primary_plane, kDefaultMode});
+  EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
+      std::move(commit_request), DRM_MODE_ATOMIC_ALLOW_MODESET));
 
   // Test props values after modesetting.
   ui::DrmDevice::Property connector_prop_crtc_id;
@@ -508,15 +551,23 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, CheckPropsAfterDisable) {
                              plane_properties_, property_names_,
                              /*use_atomic=*/true);
 
-  constexpr uint32_t kFrameBuffer = 2;
   ui::HardwareDisplayPlaneList state;
-  EXPECT_TRUE(fake_drm_->plane_manager()->Modeset(
-      crtc_properties_[0].id, kFrameBuffer, connector_properties_[0].id,
-      kDefaultMode, state));
+  ui::DrmOverlayPlane primary_plane(fake_buffer_, nullptr);
+  ui::CommitRequest commit_request;
+  commit_request.plane_list = &state;
+  commit_request.commit_state.push_back({crtc_properties_[0].id,
+                                         connector_properties_[0].id,
+                                         &primary_plane, kDefaultMode});
+  EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
+      std::move(commit_request), DRM_MODE_ATOMIC_ALLOW_MODESET));
 
-  //  Test props values after disabling.
-  EXPECT_TRUE(fake_drm_->plane_manager()->DisableModeset(
-      crtc_properties_[0].id, connector_properties_[0].id));
+  // Test props values after disabling.
+  ui::CommitRequest commit_request_2;
+  commit_request_2.plane_list = &state;
+  commit_request_2.commit_state.push_back(
+      {crtc_properties_[0].id, connector_properties_[0].id, nullptr, {}});
+  EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
+      std::move(commit_request_2), DRM_MODE_ATOMIC_ALLOW_MODESET));
 
   ui::DrmDevice::Property crtc_prop_for_name;
   ui::ScopedDrmObjectPropertyPtr crtc_props =
