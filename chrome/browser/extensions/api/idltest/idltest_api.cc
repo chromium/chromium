@@ -9,6 +9,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/span.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 
 namespace {
@@ -39,7 +41,7 @@ ExtensionFunction::ResponseAction IdltestSendArrayBufferViewFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction IdltestGetArrayBufferFunction::Run() {
-  static constexpr char kHello[] = "hello world";
-  return RespondNow(
-      OneArgument(base::Value::CreateWithCopiedBuffer(kHello, strlen(kHello))));
+  static constexpr base::StringPiece kHello = "hello world";
+  return RespondNow(OneArgument(base::Value::ToUniquePtrValue(
+      base::Value(base::as_bytes(base::make_span(kHello))))));
 }

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
@@ -66,12 +67,9 @@ void BuildWebCryptoRSAAlgorithmDictionary(const PublicKeyInfo& key_info,
                     base::Value(static_cast<int>(key_info.key_size_bits)));
 
   // Equals 65537.
-  const unsigned char defaultPublicExponent[] = {0x01, 0x00, 0x01};
-  algorithm->SetWithoutPathExpansion(
-      "publicExponent",
-      base::Value::CreateWithCopiedBuffer(
-          reinterpret_cast<const char*>(defaultPublicExponent),
-          base::size(defaultPublicExponent)));
+  static constexpr uint8_t kDefaultPublicExponent[] = {0x01, 0x00, 0x01};
+  algorithm->SetKey("publicExponent",
+                    base::Value(base::make_span(kDefaultPublicExponent)));
 }
 
 void BuildWebCryptoEcdsaAlgorithmDictionary(const PublicKeyInfo& key_info,

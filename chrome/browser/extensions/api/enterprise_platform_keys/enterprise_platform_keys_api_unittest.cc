@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/attestation/mock_tpm_challenge_key.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
@@ -135,25 +137,26 @@ class EPKChallengeMachineKeyTest : public EPKChallengeKeyTestBase {
   }
 
   std::unique_ptr<base::ListValue> CreateArgs() {
-    return CreateArgsInternal(nullptr);
+    return CreateArgsInternal(base::Value());
   }
 
   std::unique_ptr<base::ListValue> CreateArgsNoRegister() {
-    return CreateArgsInternal(std::make_unique<bool>(false));
+    return CreateArgsInternal(base::Value(false));
   }
 
   std::unique_ptr<base::ListValue> CreateArgsRegister() {
-    return CreateArgsInternal(std::make_unique<bool>(true));
+    return CreateArgsInternal(base::Value(true));
   }
 
   std::unique_ptr<base::ListValue> CreateArgsInternal(
-      std::unique_ptr<bool> register_key) {
-    std::unique_ptr<base::ListValue> args(new base::ListValue);
-    args->Append(base::Value::CreateWithCopiedBuffer("challenge", 9));
-    if (register_key) {
-      args->AppendBoolean(*register_key);
-    }
-    return args;
+      base::Value register_key) {
+    static constexpr base::StringPiece kData = "challenge";
+    base::Value args(base::Value::Type::LIST);
+    args.Append(base::Value(base::as_bytes(base::make_span(kData))));
+    if (register_key.is_bool())
+      args.Append(std::move(register_key));
+    return base::ListValue::From(
+        base::Value::ToUniquePtrValue(std::move(args)));
   }
 
   scoped_refptr<EnterprisePlatformKeysChallengeMachineKeyFunction> func_;
@@ -221,10 +224,12 @@ class EPKChallengeUserKeyTest : public EPKChallengeKeyTestBase {
   }
 
   std::unique_ptr<base::ListValue> CreateArgsInternal(bool register_key) {
-    std::unique_ptr<base::ListValue> args(new base::ListValue);
-    args->Append(base::Value::CreateWithCopiedBuffer("challenge", 9));
-    args->AppendBoolean(register_key);
-    return args;
+    static constexpr base::StringPiece kData = "challenge";
+    base::Value args(base::Value::Type::LIST);
+    args.Append(base::Value(base::as_bytes(base::make_span(kData))));
+    args.Append(register_key);
+    return base::ListValue::From(
+        base::Value::ToUniquePtrValue(std::move(args)));
   }
 
   EPKPChallengeKey impl_;
