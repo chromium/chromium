@@ -15,6 +15,7 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"
+#include "base/supports_user_data.h"
 #include "chrome/browser/sync/glue/synced_tab_delegate_android.h"
 #include "chrome/browser/tab/web_contents_state.h"
 #include "components/infobars/core/infobar_manager.h"
@@ -37,7 +38,7 @@ class DevToolsAgentHost;
 class WebContents;
 }
 
-class TabAndroid {
+class TabAndroid : public base::SupportsUserData {
  public:
   // A Java counterpart will be generated for this enum.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser
@@ -61,7 +62,7 @@ class TabAndroid {
   static void AttachTabHelpers(content::WebContents* web_contents);
 
   TabAndroid(JNIEnv* env, const base::android::JavaRef<jobject>& obj);
-  ~TabAndroid();
+  ~TabAndroid() override;
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
