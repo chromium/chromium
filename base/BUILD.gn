@@ -3382,6 +3382,10 @@ test("base_unittests") {
     if (is_win) {
       sources += [ "allocator/winheap_stubs_win_unittest.cc" ]
     }
+
+    if (use_allocator == "partition") {
+      sources += [ "allocator/allocator_shim_default_dispatch_to_partition_alloc_unittest.cc" ]
+    }
   }
 
   if (enable_base_tracing) {
