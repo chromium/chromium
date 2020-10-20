@@ -160,7 +160,13 @@ def RunDsymUtil(dsym_path_prefix, full_args):
 
   # Remove old dSYMs before invoking dsymutil.
   _RemovePath(dsym_out)
-  subprocess.check_call(DSYMUTIL_INVOKE + ['-o', dsym_out, linker_out])
+  dsym_paths = _FindToolsPaths(full_args)
+  if os.environ.get('PATH'):
+    dsym_paths.append(os.environ['PATH'])
+  dsym_env = os.environ.copy()
+  dsym_env['PATH'] = ':'.join(dsym_paths)
+  subprocess.check_call(DSYMUTIL_INVOKE + ['-o', dsym_out, linker_out],
+                        env=dsym_env)
   return [dsym_out]
 
 
@@ -257,6 +263,15 @@ def _FindLinkerOutput(full_args):
   except ValueError:
     output_flag_index = full_args.index('-output')
   return full_args[output_flag_index + 1]
+
+
+def _FindToolsPaths(full_args):
+  """Finds all paths where the script should look for additional tools."""
+  paths = []
+  for idx, arg in enumerate(full_args):
+    if arg in ['-B', '--prefix']:
+      paths.append(full_args[idx + 1])
+  return paths
 
 
 def _RemovePath(path):
