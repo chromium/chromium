@@ -75904,6 +75904,7 @@ Full version information for the fingerprint enum values:
   <int value="3" label="Cancelled"/>
   <int value="4" label="Aborted"/>
   <int value="5" label="Timeout"/>
+  <int value="6" label="UserCancelled"/>
 </enum>
 
 <enum name="WebpDecodedFormat">

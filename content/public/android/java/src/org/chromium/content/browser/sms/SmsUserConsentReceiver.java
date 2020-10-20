@@ -124,6 +124,7 @@ public class SmsUserConsentReceiver extends BroadcastReceiver {
             SmsUserConsentReceiverJni.get().onReceive(mSmsProviderAndroid, message);
         } else if (resultCode == Activity.RESULT_CANCELED) {
             if (DEBUG) Log.d(TAG, "Activity result cancelled.");
+            SmsUserConsentReceiverJni.get().onCancel(mSmsProviderAndroid);
         }
     }
 
@@ -161,5 +162,6 @@ public class SmsUserConsentReceiver extends BroadcastReceiver {
     interface Natives {
         void onReceive(long nativeSmsProviderGmsUserConsent, String sms);
         void onTimeout(long nativeSmsProviderGmsUserConsent);
+        void onCancel(long nativeSmsProviderGmsUserConsent);
     }
 }

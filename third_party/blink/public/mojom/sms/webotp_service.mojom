@@ -10,11 +10,12 @@ import "mojo/public/mojom/base/time.mojom";
 //
 // Proposal: https://github.com/WICG/web-otp
 enum SmsStatus {
-  kSuccess,
-  kUnhandledRequest,
-  kCancelled,
-  kAborted,
-  kTimeout
+  kSuccess,  // WebOTP flow succeeded
+  kUnhandledRequest,  // request not handled upon destruction (navigation etc.)
+  kCancelled,  // request cancelled by the new request in the same WebOTPService
+  kAborted, // request aborted by API callers using AbortController
+  kTimeout, // request timeout due to user not responding to the prompt
+  kUserCancelled // request cancelled by user clicking "Deny" on the prompt
 };
 
 // This interface is created per storage partition but its execution is context

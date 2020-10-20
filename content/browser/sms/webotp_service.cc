@@ -151,6 +151,10 @@ void WebOTPService::OnFailure(FailureType failure_type) {
     CompleteRequest(SmsStatus::kTimeout);
     return;
   }
+  if (failure_type == FailureType::kPromptCancelled) {
+    CompleteRequest(SmsStatus::kUserCancelled);
+    return;
+  }
 
   // Records Sms parsing failures.
   SmsParser::SmsParsingStatus status = SmsParsingStatus::kParsed;

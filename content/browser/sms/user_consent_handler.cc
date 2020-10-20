@@ -66,6 +66,11 @@ void PromptBasedUserConsentHandler::OnConfirm() {
 
 void PromptBasedUserConsentHandler::OnCancel() {
   is_prompt_open_ = false;
+  // TODO(crbug.com/1138454): This should be SmsStatus::kUserCancelled. However,
+  // due to the limitation of the user consent API, we currently do not resolve
+  // the promise with kUserCancelled. Reuse the existing enum kCancelled to make
+  // sure that dismissing a prompt works with this backend. We should correct
+  // the enum once the limitation is fixed.
   std::move(on_complete_).Run(SmsStatus::kCancelled);
 }
 

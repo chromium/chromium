@@ -884,6 +884,39 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest,
   ExpectNoOutcomeUKM();
 }
 
+IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordUserCancelledAsOutcome) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kWebOtpBackend, switches::kWebOtpBackendUserConsent);
+  GURL url = GetTestUrl(nullptr, "simple_page.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  auto provider = std::make_unique<MockSmsProvider>();
+  MockSmsProvider* mock_provider_ptr = provider.get();
+  BrowserMainLoop::GetInstance()->SetSmsProviderForTesting(std::move(provider));
+
+  shell()->web_contents()->SetDelegate(&delegate_);
+
+  EXPECT_CALL(*mock_provider_ptr, Retrieve(_))
+      .WillOnce(Invoke([&mock_provider_ptr]() {
+        mock_provider_ptr->NotifyFailure(FailureType::kPromptCancelled);
+      }));
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+       navigator.credentials.get({otp: {transport: ["sms"]}});
+     )"));
+
+  base::RunLoop ukm_loop;
+
+  // Wait for UKM to be recorded to avoid race condition between outcome
+  // capture and evaluation.
+  ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
+  ukm_loop.Run();
+
+  ExpectOutcomeUKM(url, blink::WebOTPServiceOutcome::kUserCancelled);
+}
+
 // Disabled test: https://crbug.com/1134455
 IN_PROC_BROWSER_TEST_F(SmsBrowserTest, DISABLED_RecordPendingOriginCount) {
   base::HistogramTester histogram_tester;
