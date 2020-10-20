@@ -502,9 +502,21 @@ class _DiffArchiveManager(object):
     logging.info('Creating .sizediff')
     _RunCmd(supersize_cmd)
 
-    logging.info('Report created: %s', os.path.relpath(report_path))
-    logging.info('View it here: '
-                 'https://chrome-supersize.firebaseapp.com/viewer.html')
+    unique_name = '{}_{}.sizediff'.format(before.rev, after.rev)
+    msg = (
+        '\n=====================\n'
+        'Saved locally to {local}. To view, upload to '
+        'https://chrome-supersize.firebaseapp.com/viewer.html.\n'
+        'To share, run:\n'
+        '> gsutil.py cp -a public-read {local} '
+        'gs://chrome-supersize/oneoffs/{unique_name}\n\n'
+        'Then view it at https://chrome-supersize.firebaseapp.com/viewer.html'
+        '?load_url=https://storage.googleapis.com/chrome-supersize/oneoffs/'
+        '{unique_name}'
+        '\n=====================\n')
+    msg = msg.format(local=os.path.relpath(report_path),
+                     unique_name=unique_name)
+    logging.info(msg)
 
   def Summarize(self):
     path = os.path.join(self.archive_dir, 'last_diff_summary.txt')
