@@ -243,12 +243,32 @@
           '--additional-driver-flag=--disable-blink-features=LayoutNG',
         ],
       },
+      'WebKit Win10': {
+        'swarming': {
+          # TODO(crbug.com/1124829): Remove this exception when moving web tests
+          # to 1909.
+          'dimension_sets': [
+            {
+              'cpu': 'x86-64',
+              'os': 'Windows-10-15063',
+            },
+          ],
+        },
+      },
       'Win10 Tests x64': {
         'args': [
           '--target',
           'Release_x64',
         ],
         'swarming': {
+          # TODO(crbug.com/1124829): Remove this exception when moving web tests
+          # to 1909.
+          'dimension_sets': [
+            {
+              'cpu': 'x86-64',
+              'os': 'Windows-10-15063',
+            },
+          ],
           "shards": 28
         },
       },
@@ -389,6 +409,18 @@
           'shards': 20,
         },
       },
+      'win10-blink-rel-dummy': {
+        'swarming': {
+          # TODO(crbug.com/1124829): Remove this exception when moving web tests
+          # to 1909.
+          'dimension_sets': [
+            {
+              'cpu': 'x86-64',
+              'os': 'Windows-10-15063',
+            },
+          ],
+        },
+      },
     },
   },
   'boringssl_crypto_tests': {
@@ -509,6 +541,14 @@
           '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
         ],
         'swarming': {
+          # TODO(crbug.com/1124829): Remove this exception when moving browser_tests
+          # to 1909.
+          'dimension_sets': [
+            {
+              'cpu': 'x86-64',
+              'os': 'Windows-10-15063',
+            },
+          ],
           # This is for slow test execution that often becomes a critical path of
           # swarming jobs. crbug.com/868114
           'shards': 15,

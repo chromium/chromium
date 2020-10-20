@@ -802,7 +802,7 @@
   'win10': {
     'swarming': {
       'dimensions': {
-        'os': 'Windows-10-15063',
+        'os': 'Windows-10-18363',
       },
     },
   },
