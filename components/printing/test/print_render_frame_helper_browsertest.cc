@@ -28,6 +28,7 @@
 #include "ipc/ipc_listener.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
+#include "printing/page_range.h"
 #include "printing/print_job_constants.h"
 #include "printing/units.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -235,6 +236,93 @@ class TestPrintManagerHost
         printer_->GetDefaultPrintSettings();
     std::move(callback).Run(std::move(params));
   }
+  void UpdatePrintSettings(int32_t cookie,
+                           base::Value job_settings,
+                           UpdatePrintSettingsCallback callback) override {
+    auto params = printing::mojom::PrintPagesParams::New();
+    params->params = printing::mojom::PrintParams::New();
+    bool canceled = false;
+
+    // Check and make sure the required settings are all there.
+    // We don't actually care about the values.
+    base::Optional<int> margins_type =
+        job_settings.FindIntKey(printing::kSettingMarginsType);
+    if (!margins_type.has_value() ||
+        !job_settings.FindBoolKey(printing::kSettingLandscape) ||
+        !job_settings.FindBoolKey(printing::kSettingCollate) ||
+        !job_settings.FindIntKey(printing::kSettingColor) ||
+        !job_settings.FindIntKey(printing::kSettingPrinterType) ||
+        !job_settings.FindBoolKey(printing::kIsFirstRequest) ||
+        !job_settings.FindStringKey(printing::kSettingDeviceName) ||
+        !job_settings.FindIntKey(printing::kSettingDuplexMode) ||
+        !job_settings.FindIntKey(printing::kSettingCopies) ||
+        !job_settings.FindIntKey(printing::kPreviewUIID) ||
+        !job_settings.FindIntKey(printing::kPreviewRequestID)) {
+      std::move(callback).Run(std::move(params), canceled);
+      return;
+    }
+
+    // Just return the default settings.
+    const base::Value* page_range =
+        job_settings.FindListKey(printing::kSettingPageRange);
+    printing::PageRanges new_ranges;
+    if (page_range) {
+      for (const base::Value& dict : page_range->GetList()) {
+        if (!dict.is_dict())
+          continue;
+
+        base::Optional<int> range_from =
+            dict.FindIntKey(printing::kSettingPageRangeFrom);
+        base::Optional<int> range_to =
+            dict.FindIntKey(printing::kSettingPageRangeTo);
+        if (!range_from || !range_to)
+          continue;
+
+        // Page numbers are 1-based in the dictionary.
+        // Page numbers are 0-based for the printing context.
+        printing::PageRange range;
+        range.from = range_from.value() - 1;
+        range.to = range_to.value() - 1;
+        new_ranges.push_back(range);
+      }
+    }
+
+    // Get media size
+    const base::Value* media_size_value =
+        job_settings.FindDictKey(printing::kSettingMediaSize);
+    gfx::Size page_size;
+    if (media_size_value) {
+      base::Optional<int> width_microns =
+          media_size_value->FindIntKey(printing::kSettingMediaSizeWidthMicrons);
+      base::Optional<int> height_microns = media_size_value->FindIntKey(
+          printing::kSettingMediaSizeHeightMicrons);
+
+      if (width_microns && height_microns) {
+        float device_microns_per_unit =
+            static_cast<float>(printing::kMicronsPerInch) /
+            printing::kDefaultPdfDpi;
+        page_size = gfx::Size(width_microns.value() / device_microns_per_unit,
+                              height_microns.value() / device_microns_per_unit);
+      }
+    }
+
+    // Get scaling
+    base::Optional<int> setting_scale_factor =
+        job_settings.FindIntKey(printing::kSettingScaleFactor);
+    int scale_factor = setting_scale_factor.value_or(100);
+
+    std::vector<uint32_t> pages(printing::PageRange::GetPages(new_ranges));
+    printer_->UpdateSettings(cookie, params.get(), pages, margins_type.value(),
+                             page_size, scale_factor);
+    base::Optional<bool> selection_only =
+        job_settings.FindBoolKey(printing::kSettingShouldPrintSelectionOnly);
+    base::Optional<bool> should_print_backgrounds =
+        job_settings.FindBoolKey(printing::kSettingShouldPrintBackgrounds);
+    params->params->selection_only = selection_only.value();
+    params->params->should_print_backgrounds = should_print_backgrounds.value();
+    std::move(callback).Run(std::move(params), canceled);
+  }
+
   void DidShowPrintDialog() override {}
 
   void SetExpectedPagesCount(uint32_t number_pages) {

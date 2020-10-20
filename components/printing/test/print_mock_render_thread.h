@@ -20,10 +20,6 @@
 #include "printing/buildflags/buildflags.h"
 #include "printing/print_job_constants.h"
 
-namespace base {
-class DictionaryValue;
-}
-
 class MockPrinter;
 
 // Extends content::MockRenderThread to know about printing
@@ -81,11 +77,6 @@ class PrintMockRenderThread : public content::MockRenderThread {
                         const printing::mojom::PreviewIds& ids);
   void OnCheckForCancel(const printing::mojom::PreviewIds& ids, bool* cancel);
 #endif
-
-  // For print preview, PrintRenderFrameHelper will update settings.
-  void OnUpdatePrintSettings(int document_cookie,
-                             const base::DictionaryValue& job_settings,
-                             IPC::Message* reply_msg);
 
   // A mock printer device used for printing tests.
   std::unique_ptr<MockPrinter> printer_;

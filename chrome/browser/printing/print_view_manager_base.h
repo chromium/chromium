@@ -84,6 +84,9 @@ class PrintViewManagerBase : public content::NotificationObserver,
 #endif
   void GetDefaultPrintSettings(
       GetDefaultPrintSettingsCallback callback) override;
+  void UpdatePrintSettings(int32_t cookie,
+                           base::Value job_settings,
+                           UpdatePrintSettingsCallback callback) override;
   void ShowInvalidPrinterSettingsError() override;
   void PrintingFailed(int32_t cookie) override;
 
@@ -116,6 +119,8 @@ class PrintViewManagerBase : public content::NotificationObserver,
   scoped_refptr<PrintJob> print_job_;
 
  private:
+  friend class TestPrintViewManager;
+
   // content::NotificationObserver implementation.
   void Observe(int type,
                const content::NotificationSource& source,

@@ -52,6 +52,9 @@ class PrintManager : public content::WebContentsObserver,
       int32_t cookie,
       const ui::AXTreeUpdate& accessibility_tree) override;
 #endif
+  void UpdatePrintSettings(int32_t cookie,
+                           base::Value job_settings,
+                           UpdatePrintSettingsCallback callback) override;
   void DidShowPrintDialog() override;
   void ShowInvalidPrinterSettingsError() override;
   void PrintingFailed(int32_t cookie) override;

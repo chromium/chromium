@@ -292,6 +292,13 @@ interface PrintManagerHost {
   [Sync]
   GetDefaultPrintSettings() => (PrintParams default_settings);
 
+  // Update the current print settings with new |job_settings|.
+  [Sync]
+  UpdatePrintSettings(
+      int32 cookie,
+      mojo_base.mojom.DictionaryValue job_settings)
+      => (PrintPagesParams current_settings, bool canceled);
+
   // Tells the browser that the print dialog has been shown.
   DidShowPrintDialog();
 

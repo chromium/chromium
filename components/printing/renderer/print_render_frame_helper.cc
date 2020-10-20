@@ -2167,11 +2167,10 @@ bool PrintRenderFrameHelper::UpdatePrintSettings(
   // possible.
   int cookie =
       print_pages_params_ ? print_pages_params_->params->document_cookie : 0;
-  mojom::PrintPagesParams settings;
-  settings.params = mojom::PrintParams::New();
+  mojom::PrintPagesParamsPtr settings;
   bool canceled = false;
-  Send(new PrintHostMsg_UpdatePrintSettings(routing_id(), cookie, *job_settings,
-                                            &settings, &canceled));
+  GetPrintManagerHost()->UpdatePrintSettings(cookie, job_settings->Clone(),
+                                             &settings, &canceled);
   if (canceled) {
     notify_browser_of_print_failure_ = false;
     return false;
@@ -2179,7 +2178,7 @@ bool PrintRenderFrameHelper::UpdatePrintSettings(
 
   // TODO(dhoss): Replace deprecated base::DictionaryValue::Get<Type>() calls
   if (!job_settings->GetInteger(kPreviewUIID,
-                                &settings.params->preview_ui_id)) {
+                                &settings->params->preview_ui_id)) {
     NOTREACHED();
     print_preview_context_.set_error(PREVIEW_ERROR_BAD_SETTING);
     return false;
@@ -2187,22 +2186,22 @@ bool PrintRenderFrameHelper::UpdatePrintSettings(
 
   // Validate expected print preview settings.
   if (!job_settings->GetInteger(kPreviewRequestID,
-                                &settings.params->preview_request_id) ||
+                                &settings->params->preview_request_id) ||
       !job_settings->GetBoolean(kIsFirstRequest,
-                                &settings.params->is_first_request)) {
+                                &settings->params->is_first_request)) {
     NOTREACHED();
     print_preview_context_.set_error(PREVIEW_ERROR_BAD_SETTING);
     return false;
   }
 
-  settings.params->print_to_pdf = IsPrintToPdfRequested(*job_settings);
+  settings->params->print_to_pdf = IsPrintToPdfRequested(*job_settings);
   UpdateFrameMarginsCssInfo(*job_settings);
-  settings.params->print_scaling_option = GetPrintScalingOption(
-      frame, node, source_is_html, *job_settings, *settings.params);
+  settings->params->print_scaling_option = GetPrintScalingOption(
+      frame, node, source_is_html, *job_settings, *settings->params);
 
-  SetPrintPagesParams(settings);
+  SetPrintPagesParams(*settings);
 
-  if (PrintMsg_Print_Params_IsValid(*settings.params))
+  if (PrintMsg_Print_Params_IsValid(*settings->params))
     return true;
 
   print_preview_context_.set_error(PREVIEW_ERROR_INVALID_PRINTER_SETTINGS);

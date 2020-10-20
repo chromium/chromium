@@ -31,17 +31,6 @@ class PrinterQuery;
 // renderer process on the IPC thread.
 class PrintingMessageFilter : public content::BrowserMessageFilter {
  public:
-  class TestDelegate {
-   public:
-    // Returns the print params to be used in OnUpdatePrintSettingsReply().
-    virtual mojom::PrintParamsPtr GetPrintParams() = 0;
-
-   protected:
-    virtual ~TestDelegate() = default;
-  };
-
-  static void SetDelegateForTesting(TestDelegate* delegate);
-
   PrintingMessageFilter(int render_process_id, Profile* profile);
 
   // content::BrowserMessageFilter:
@@ -65,21 +54,9 @@ class PrintingMessageFilter : public content::BrowserMessageFilter {
   void OnScriptedPrintReply(std::unique_ptr<PrinterQuery> printer_query,
                             IPC::Message* reply_msg);
 
-  // Modify the current print settings based on |job_settings|. The task is
-  // handled by the print worker thread and the UI thread. The reply occurs on
-  // the IO thread.
-  void OnUpdatePrintSettings(int document_cookie,
-                             base::Value job_settings,
-                             IPC::Message* reply_msg);
-  void OnUpdatePrintSettingsReply(std::unique_ptr<PrinterQuery> printer_query,
-                                  IPC::Message* reply_msg);
-
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   // Check to see if print preview has been cancelled.
   void OnCheckForCancel(const mojom::PreviewIds& ids, bool* cancel);
-#if defined(OS_WIN)
-  void NotifySystemDialogCancelled(int routing_id);
-#endif
 #endif
 
   std::unique_ptr<KeyedServiceShutdownNotifier::Subscription>

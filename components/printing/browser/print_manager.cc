@@ -112,6 +112,14 @@ void PrintManager::SetAccessibilityTree(
     const ui::AXTreeUpdate& accessibility_tree) {}
 #endif
 
+void PrintManager::UpdatePrintSettings(int32_t cookie,
+                                       base::Value job_settings,
+                                       UpdatePrintSettingsCallback callback) {
+  auto params = mojom::PrintPagesParams::New();
+  params->params = mojom::PrintParams::New();
+  std::move(callback).Run(std::move(params), false);
+}
+
 void PrintManager::DidShowPrintDialog() {}
 
 void PrintManager::ShowInvalidPrinterSettingsError() {}

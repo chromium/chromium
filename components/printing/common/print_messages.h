@@ -277,15 +277,6 @@ IPC_SYNC_MESSAGE_ROUTED1_1(PrintHostMsg_DidPrintDocument,
                            /* page content */,
                            bool /* completed */)
 
-// The renderer wants to update the current print settings with new
-// |job_settings|.
-IPC_SYNC_MESSAGE_ROUTED2_2(
-    PrintHostMsg_UpdatePrintSettings,
-    int /* document_cookie */,
-    base::DictionaryValue /* job_settings */,
-    printing::mojom::PrintPagesParams /* current_settings */,
-    bool /* canceled */)
-
 // It's the renderer that controls the printing process when it is generated
 // by javascript. This step is about showing UI to the user to select the
 // final print settings. The output parameter is the same as

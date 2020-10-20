@@ -43,8 +43,6 @@ namespace printing {
 
 namespace {
 
-PrintingMessageFilter::TestDelegate* g_test_delegate = nullptr;
-
 class PrintingMessageFilterShutdownNotifierFactory
     : public BrowserContextKeyedServiceShutdownNotifierFactory {
  public:
@@ -65,31 +63,7 @@ class PrintingMessageFilterShutdownNotifierFactory
   DISALLOW_COPY_AND_ASSIGN(PrintingMessageFilterShutdownNotifierFactory);
 };
 
-#if defined(OS_WIN) && BUILDFLAG(ENABLE_PRINT_PREVIEW)
-content::WebContents* GetWebContentsForRenderFrame(int render_process_id,
-                                                   int render_frame_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  content::RenderFrameHost* frame =
-      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
-  return frame ? content::WebContents::FromRenderFrameHost(frame) : nullptr;
-}
-
-PrintViewManager* GetPrintViewManager(int render_process_id,
-                                      int render_frame_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  content::WebContents* web_contents =
-      GetWebContentsForRenderFrame(render_process_id, render_frame_id);
-  return web_contents ? PrintViewManager::FromWebContents(web_contents)
-                      : nullptr;
-}
-#endif  // defined(OS_WIN) && BUILDFLAG(ENABLE_PRINT_PREVIEW)
-
 }  // namespace
-
-// static
-void PrintingMessageFilter::SetDelegateForTesting(TestDelegate* delegate) {
-  g_test_delegate = delegate;
-}
 
 PrintingMessageFilter::PrintingMessageFilter(int render_process_id,
                                              Profile* profile)
@@ -124,8 +98,6 @@ bool PrintingMessageFilter::OnMessageReceived(const IPC::Message& message) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(PrintingMessageFilter, message)
     IPC_MESSAGE_HANDLER_DELAY_REPLY(PrintHostMsg_ScriptedPrint, OnScriptedPrint)
-    IPC_MESSAGE_HANDLER_DELAY_REPLY(PrintHostMsg_UpdatePrintSettings,
-                                    OnUpdatePrintSettings)
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
     IPC_MESSAGE_HANDLER(PrintHostMsg_CheckForCancel, OnCheckForCancel)
 #endif
@@ -174,82 +146,6 @@ void PrintingMessageFilter::OnScriptedPrintReply(
     queue_->QueuePrinterQuery(std::move(printer_query));
   } else {
     printer_query->StopWorker();
-  }
-}
-
-void PrintingMessageFilter::OnUpdatePrintSettings(int document_cookie,
-                                                  base::Value job_settings,
-                                                  IPC::Message* reply_msg) {
-  if (!is_printing_enabled_.GetValue()) {
-    // Reply with null query.
-    OnUpdatePrintSettingsReply(nullptr, reply_msg);
-    return;
-  }
-
-  if (!job_settings.is_dict() ||
-      !job_settings.FindIntKey(kSettingPrinterType)) {
-    // Reply with null query.
-    OnUpdatePrintSettingsReply(nullptr, reply_msg);
-    return;
-  }
-
-  std::unique_ptr<PrinterQuery> printer_query =
-      queue_->PopPrinterQuery(document_cookie);
-  if (!printer_query) {
-    printer_query = queue_->CreatePrinterQuery(
-        content::ChildProcessHost::kInvalidUniqueID, MSG_ROUTING_NONE);
-  }
-  auto* printer_query_ptr = printer_query.get();
-  printer_query_ptr->SetSettings(
-      std::move(job_settings),
-      base::BindOnce(&PrintingMessageFilter::OnUpdatePrintSettingsReply, this,
-                     std::move(printer_query), reply_msg));
-}
-
-#if defined(OS_WIN) && BUILDFLAG(ENABLE_PRINT_PREVIEW)
-void PrintingMessageFilter::NotifySystemDialogCancelled(int routing_id) {
-  PrintViewManager* manager =
-      GetPrintViewManager(render_process_id_, routing_id);
-  manager->SystemDialogCancelled();
-}
-#endif
-
-void PrintingMessageFilter::OnUpdatePrintSettingsReply(
-    std::unique_ptr<PrinterQuery> printer_query,
-    IPC::Message* reply_msg) {
-  mojom::PrintPagesParams params;
-  params.params = mojom::PrintParams::New();
-  if (printer_query && printer_query->last_status() == PrintingContext::OK) {
-    RenderParamsFromPrintSettings(printer_query->settings(),
-                                  params.params.get());
-    params.params->document_cookie = printer_query->cookie();
-    params.pages = PageRange::GetPages(printer_query->settings().ranges());
-  }
-  bool canceled = printer_query &&
-                  (printer_query->last_status() == PrintingContext::CANCEL);
-#if defined(OS_WIN) && BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  if (canceled) {
-    int routing_id = reply_msg->routing_id();
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&PrintingMessageFilter::NotifySystemDialogCancelled,
-                       this, routing_id));
-  }
-#endif
-
-  if (g_test_delegate)
-    params.params = g_test_delegate->GetPrintParams();
-
-  PrintHostMsg_UpdatePrintSettings::WriteReplyParams(reply_msg, params,
-                                                     canceled);
-  Send(reply_msg);
-  // If user hasn't cancelled.
-  if (printer_query) {
-    if (printer_query->cookie() && printer_query->settings().dpi()) {
-      queue_->QueuePrinterQuery(std::move(printer_query));
-    } else {
-      printer_query->StopWorker();
-    }
   }
 }
 
