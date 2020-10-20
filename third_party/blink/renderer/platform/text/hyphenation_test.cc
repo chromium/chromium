@@ -7,14 +7,17 @@
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
 
 using testing::ElementsAre;
 using testing::ElementsAreArray;
 
-#if defined(OS_ANDROID)
-#define USE_MINIKIN_HYPHENATION
+#if defined(USE_MINIKIN_HYPHENATION) && defined(OS_FUCHSIA)
+// Fuchsia doesn't include |blink_platform_unittests_data|.
+#undef USE_MINIKIN_HYPHENATION
 #endif
+
 #if defined(USE_MINIKIN_HYPHENATION)
 #include "base/files/file_path.h"
 #include "third_party/blink/renderer/platform/text/hyphenation/hyphenation_minikin.h"
@@ -35,7 +38,7 @@ class HyphenationTest : public testing::Test {
   void TearDown() override { LayoutLocale::ClearForTesting(); }
 
 #if defined(USE_MINIKIN_HYPHENATION) || defined(OS_MAC)
-  // Get a |Hyphenation| instnace for the specified locale for testing.
+  // Get a |Hyphenation| instance for the specified locale for testing.
   scoped_refptr<Hyphenation> GetHyphenation(const AtomicString& locale) {
 #if defined(USE_MINIKIN_HYPHENATION)
     // Because the mojo service to open hyphenation dictionaries is not
@@ -45,7 +48,7 @@ class HyphenationTest : public testing::Test {
 #if defined(OS_ANDROID)
     base::FilePath path("/system/usr/hyphen-data");
 #else
-#error "This configuration is not supported."
+    base::FilePath path = test::HyphenationDictionaryDir();
 #endif
     path = path.AppendASCII(filename);
     base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
@@ -77,7 +80,7 @@ TEST_F(HyphenationTest, HyphenLocations) {
   if (!hyphenation)
     return;
 #endif
-  ASSERT_TRUE(hyphenation) << "Cannot find the hyphenation engine";
+  ASSERT_TRUE(hyphenation) << "Cannot find the hyphenation for en-us";
 
   // Get all hyphenation points by |HyphenLocations|.
   const String word("hyphenation");

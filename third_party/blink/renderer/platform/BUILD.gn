@@ -2172,6 +2172,9 @@ source_set("blink_platform_unittests_sources") {
   data_deps = [ ":blink_platform_unittests_data" ]
 
   defines = [ "INSIDE_BLINK" ]
+  if (use_minikin_hyphenation) {
+    defines += [ "USE_MINIKIN_HYPHENATION" ]
+  }
 }
 
 executable("image_decode_bench") {
@@ -2247,6 +2250,8 @@ test("blink_platform_perftests") {
 }
 
 group("blink_platform_unittests_data") {
+  testonly = true
+
   data = [
     "testing/data/",
 
@@ -2260,6 +2265,8 @@ group("blink_platform_unittests_data") {
     # Required by some font tests.
     "//third_party/blink/web_tests/third_party/",
   ]
+
+  data_deps = [ "//third_party/hyphenation-patterns:test_data" ]
 }
 
 if (current_cpu == "x86" || current_cpu == "x64") {

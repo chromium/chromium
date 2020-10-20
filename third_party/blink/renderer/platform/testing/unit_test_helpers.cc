@@ -124,6 +124,12 @@ String AccessibilityTestDataPath(const String& relative_path) {
           .Append(WebStringToFilePath(relative_path)));
 }
 
+base::FilePath HyphenationDictionaryDir() {
+  base::FilePath exe_dir;
+  base::PathService::Get(base::DIR_EXE, &exe_dir);
+  return exe_dir.AppendASCII("gen/hyphen-data");
+}
+
 scoped_refptr<SharedBuffer> ReadFromFile(const String& path) {
   base::FilePath file_path = blink::WebStringToFilePath(path);
   std::string buffer;

@@ -47,3 +47,14 @@ zip("hyphenation-patterns") {
   output = "$root_build_dir/hyphens-data.zip"
   base_dir = "hyb"
 }
+
+copy("test_data") {
+  testonly = true
+  sources = [
+    # Dictionaries used in unit tests and web_tests.
+    "hyb/hyph-de-1996.hyb",
+    "hyb/hyph-en-gb.hyb",
+    "hyb/hyph-en-us.hyb",
+  ]
+  outputs = [ "$root_gen_dir/hyphen-data/{{source_file_part}}" ]
+}
