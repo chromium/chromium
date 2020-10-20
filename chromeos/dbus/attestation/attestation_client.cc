@@ -258,14 +258,14 @@ class AttestationClientImpl : public AttestationClient {
   }
 
   // Parses the response proto message from |response| and calls |callback| with
-  // the decoded message. Calls |callback| with an
-  // |STATUS_UNEXPECTED_DEVICE_ERROR| message on error, including timeout.
+  // the decoded message. Calls |callback| with an |STATUS_DBUS_ERROR| message
+  // on error, including timeout.
   template <typename ReplyType>
   void HandleResponse(base::OnceCallback<void(const ReplyType&)> callback,
                       dbus::Response* response) {
     ReplyType reply_proto;
     if (!ParseProto(response, &reply_proto))
-      reply_proto.set_status(attestation::STATUS_UNEXPECTED_DEVICE_ERROR);
+      reply_proto.set_status(attestation::STATUS_DBUS_ERROR);
     std::move(callback).Run(reply_proto);
   }
 
