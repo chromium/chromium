@@ -297,7 +297,6 @@ component("core") {
   allow_circular_includes_from = [
     ":core_generated",
     ":core_hot",
-    "//third_party/blink/renderer/core/probe",
     "//third_party/blink/renderer/core/xml:xpath_generated",
   ]
 
@@ -1109,9 +1108,6 @@ target(core_generated_target_type, "core_generated") {
     "//url",
     "//v8",
   ]
-
-  allow_circular_includes_from =
-      [ "//third_party/blink/renderer/core/probe:probe" ]
 
   configs += [
     ":core_include_dirs",
