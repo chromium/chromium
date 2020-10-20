@@ -206,4 +206,48 @@ TEST(CrossOriginOpenerPolicyTest, Parse) {
   }
 }
 
+TEST(CrossOriginOpenerPolicyTest, Default) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kCrossOriginOpenerPolicy);
+  network::CrossOriginEmbedderPolicy coep;
+
+  // If no COOP header is specified:
+  scoped_refptr<net::HttpResponseHeaders> headers(
+      new net::HttpResponseHeaders("HTTP/1.1 200 OK"));
+
+  // Then we have no policy enforced by default:
+  network::CrossOriginOpenerPolicy parsed_policy =
+      ParseCrossOriginOpenerPolicy(*headers, coep);
+  EXPECT_EQ(base::nullopt, parsed_policy.reporting_endpoint);
+  EXPECT_EQ(mojom::CrossOriginOpenerPolicyValue::kUnsafeNone,
+            parsed_policy.value);
+  EXPECT_EQ(base::nullopt, parsed_policy.report_only_reporting_endpoint);
+  EXPECT_EQ(mojom::CrossOriginOpenerPolicyValue::kUnsafeNone,
+            parsed_policy.report_only_value);
+}
+
+TEST(CrossOriginOpenerPolicyTest, DefaultWithCOOPByDefault) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kCrossOriginOpenerPolicy,
+       features::kCrossOriginOpenerPolicyByDefault},
+      {});
+  network::CrossOriginEmbedderPolicy coep;
+
+  // If no COOP header is specified:
+  scoped_refptr<net::HttpResponseHeaders> headers(
+      new net::HttpResponseHeaders("HTTP/1.1 200 OK"));
+
+  // Then we have `same-origin-allow-popups` as enforced by default, but no
+  // policy reported on by default:
+  network::CrossOriginOpenerPolicy parsed_policy =
+      ParseCrossOriginOpenerPolicy(*headers, coep);
+  EXPECT_EQ(base::nullopt, parsed_policy.reporting_endpoint);
+  EXPECT_EQ(mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups,
+            parsed_policy.value);
+  EXPECT_EQ(base::nullopt, parsed_policy.report_only_reporting_endpoint);
+  EXPECT_EQ(mojom::CrossOriginOpenerPolicyValue::kUnsafeNone,
+            parsed_policy.report_only_value);
+}
+
 }  // namespace network

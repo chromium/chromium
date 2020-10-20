@@ -64,6 +64,9 @@ CrossOriginOpenerPolicy ParseCrossOriginOpenerPolicy(
     if (coop.value == mojom::CrossOriginOpenerPolicyValue::kSameOrigin &&
         coep.value == mojom::CrossOriginEmbedderPolicyValue::kRequireCorp)
       coop.value = mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
+  } else if (base::FeatureList::IsEnabled(
+                 features::kCrossOriginOpenerPolicyByDefault)) {
+    coop.value = mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups;
   }
   if (headers.GetNormalizedHeader(kCrossOriginOpenerPolicyHeaderReportOnly,
                                   &header_value)) {

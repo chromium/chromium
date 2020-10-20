@@ -90,6 +90,11 @@ const base::Feature kCrossOriginOpenerPolicyReporting{
 const base::Feature kCrossOriginOpenerPolicyAccessReporting{
     "CrossOriginOpenerPolicyAccessReporting", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Shift's COOP's default from `unsafe-none` to `same-origin-allow-popups`.
+// https://github.com/mikewest/coop-by-default/
+const base::Feature kCrossOriginOpenerPolicyByDefault{
+    "CrossOriginOpenerPolicyByDefault", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables Cross-Origin Embedder Policy (COEP).
 // https://github.com/mikewest/corpp
 // Currently this feature is enabled for all platforms except WebView.
