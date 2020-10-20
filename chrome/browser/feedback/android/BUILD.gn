@@ -6,8 +6,11 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/feedback/AsyncFeedbackSource.java",
+    "java/src/org/chromium/chrome/browser/feedback/FeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/FragmentHelpAndFeedbackLauncher.java",
     "java/src/org/chromium/chrome/browser/feedback/HelpAndFeedbackLauncher.java",
+    "java/src/org/chromium/chrome/browser/feedback/ScreenshotSource.java",
   ]
   deps = [
     ":java_resources",

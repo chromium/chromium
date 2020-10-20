@@ -810,6 +810,7 @@ junit_binary("chrome_junit_tests") {
     "//chrome/browser/download/android:junit_tests",
     "//chrome/browser/endpoint_fetcher:java",
     "//chrome/browser/enterprise/util:java",
+    "//chrome/browser/feedback/android:java",
     "//chrome/browser/flags:flags_junit_tests",
     "//chrome/browser/flags:java",
     "//chrome/browser/fullscreen/android:java",
