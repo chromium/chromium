@@ -432,8 +432,12 @@ LockScreenMediaControlsView::~LockScreenMediaControlsView() {
     if (!hide_reason_ && !Shell::Get()->session_controller()->IsScreenLocked())
       hide_reason_ = HideReason::kUnlocked;
 
-    base::UmaHistogramEnumeration(kMediaControlsHideHistogramName,
-                                  *hide_reason_);
+    // Only record hide reason if there is one. The value could be missing
+    // when ash shuts down with the media controls.
+    if (hide_reason_) {
+      base::UmaHistogramEnumeration(kMediaControlsHideHistogramName,
+                                    *hide_reason_);
+    }
   }
 
   base::PowerMonitor::RemoveObserver(this);
