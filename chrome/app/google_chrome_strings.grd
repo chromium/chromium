@@ -208,10 +208,10 @@ chromium_strings.grd. -->
       </if>
       <if expr="chromeos">
         <message name="IDS_PRODUCT_OS_NAME" desc="The Chrome OS application name">
-          Google Chrome OS
+          LTS Google Chrome OS
         </message>
         <message name="IDS_SHORT_PRODUCT_OS_NAME" desc="The Chrome OS application short name">
-          Chrome OS
+          LTS Chrome OS
         </message>
       </if>
       <message name="IDS_SHORT_PRODUCT_LOGO_ALT_TEXT" desc="Alt text for the Chrome logo image.">

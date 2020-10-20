@@ -203,10 +203,10 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
       </if>
       <if expr="chromeos">
         <message name="IDS_PRODUCT_OS_NAME" desc="The Chrome OS application name">
-          Chromium OS
+          LTS Chromium OS
         </message>
         <message name="IDS_SHORT_PRODUCT_OS_NAME" desc="The Chrome OS application short name">
-          Chromium OS
+          LTS Chromium OS
         </message>
       </if>
       <message name="IDS_SHORT_PRODUCT_LOGO_ALT_TEXT" desc="Alt text for the Chromium logo image.">
