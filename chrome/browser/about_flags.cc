@@ -3527,16 +3527,17 @@ const FeatureEntry kFeatureEntries[] = {
     {"PasswordImport", flag_descriptions::kPasswordImportName,
      flag_descriptions::kPasswordImportDescription, kOsAll,
      FEATURE_VALUE_TYPE(password_manager::features::kPasswordImport)},
-#if !defined(OS_CHROMEOS)
-    // TODO(https://crbug.com/1011696): Investigate crash reports and re-enable
-    // for ChromeOS.
     {"enable-force-dark", flag_descriptions::kForceWebContentsDarkModeName,
-     flag_descriptions::kForceWebContentsDarkModeDescription,
-     kOsWin | kOsLinux | kOsMac | kOsAndroid,
+     flag_descriptions::kForceWebContentsDarkModeDescription, kOsAll,
+#if defined(OS_CHROMEOS)
+     // TODO(https://crbug.com/1011696): Investigate crash reports and
+     // re-enable variations for ChromeOS.
+     FEATURE_VALUE_TYPE(blink::features::kForceWebContentsDarkMode)},
+#else
      FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kForceWebContentsDarkMode,
                                     kForceDarkVariations,
                                     "ForceDarkVariations")},
-#endif  // !OS_CHROMEOS
+#endif  // OS_CHROMEOS
 #if defined(OS_ANDROID)
     {"enable-android-dark-search", flag_descriptions::kAndroidDarkSearchName,
      flag_descriptions::kAndroidDarkSearchDescription, kOsAndroid,
@@ -5374,6 +5375,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-hostname-setting", flag_descriptions::kEnableHostnameSettingName,
      flag_descriptions::kEnableHostnameSettingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kEnableHostnameSetting)},
+
+    {"webui-dark-mode", flag_descriptions::kWebuiDarkModeName,
+     flag_descriptions::kWebuiDarkModeDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kWebUIDarkMode)},
 #endif  // OS_CHROMEOS
 
     {"autofill-off-no-server-data",

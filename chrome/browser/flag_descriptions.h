@@ -2615,6 +2615,9 @@ extern const char kVirtualKeyboardDescription[];
 extern const char kVmCameraMicIndicatorsAndNotificationsName[];
 extern const char kVmCameraMicIndicatorsAndNotificationsDescription[];
 
+extern const char kWebuiDarkModeName[];
+extern const char kWebuiDarkModeDescription[];
+
 extern const char kWifiSyncAndroidName[];
 extern const char kWifiSyncAndroidDescription[];
 

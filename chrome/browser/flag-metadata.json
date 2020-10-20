@@ -1556,8 +1556,8 @@
   },
   {
     "name": "enable-force-dark",
-    "owners": [ "pdr" ],
-    "expiry_milestone": 90
+    "owners": [ "pdr", "khorimoto@chromium.org", "jessejames@chromium.org" ],
+    "expiry_milestone": 99
   },
   {
     "name": "enable-fs-nosymfollow",
@@ -4763,6 +4763,11 @@
     "name": "webpage-text-accessibility",
     "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 86
+  },
+  {
+    "name": "webui-dark-mode",
+    "owners": [ "khorimoto@chromium.org", "jessejames@chromium.org" ],
+    "expiry_milestone": 99
   },
   {
     "name": "webui-tab-strip",
