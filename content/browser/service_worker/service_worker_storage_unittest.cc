@@ -16,38 +16,15 @@
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "content/browser/service_worker/embedded_worker_test_helper.h"
-#include "content/browser/service_worker/service_worker_consts.h"
-#include "content/browser/service_worker/service_worker_container_host.h"
-#include "content/browser/service_worker/service_worker_context_core.h"
-#include "content/browser/service_worker/service_worker_registration.h"
-#include "content/browser/service_worker/service_worker_test_utils.h"
-#include "content/browser/service_worker/service_worker_version.h"
-#include "content/common/service_worker/service_worker_utils.h"
-#include "content/public/common/content_client.h"
-#include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_browser_context.h"
-#include "content/public/test/test_utils.h"
 #include "ipc/ipc_message.h"
-#include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
-#include "net/base/test_completion_callback.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
-
-using net::IOBuffer;
-using net::TestCompletionCallback;
-using net::WrappedIOBuffer;
-
-// TODO(crbug.com/1055677): Move out tests that rely on
-// ServiceWorkerRegistry and put them in a separate unittest file.
 
 namespace content {
 namespace service_worker_storage_unittest {
@@ -92,13 +69,6 @@ storage::mojom::ServiceWorkerRegistrationDataPtr CreateRegistrationData(
   data->resources_total_size_bytes = resources_total_size_bytes;
 
   return data;
-}
-
-void StatusCallback(base::OnceClosure quit_closure,
-                    base::Optional<blink::ServiceWorkerStatusCode>* result,
-                    blink::ServiceWorkerStatusCode status) {
-  *result = status;
-  std::move(quit_closure).Run();
 }
 
 void DatabaseStatusCallback(
@@ -193,15 +163,20 @@ int WriteResponseMetadata(ServiceWorkerStorage* storage,
 
 class ServiceWorkerStorageTest : public testing::Test {
  public:
-  ServiceWorkerStorageTest()
-      : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP) {}
+  ServiceWorkerStorageTest() = default;
+  ~ServiceWorkerStorageTest() override = default;
 
-  void SetUp() override { InitializeTestHelper(); }
+  void SetUp() override {
+    storage_ = ServiceWorkerStorage::Create(
+        user_data_directory_path_,
+        /*database_task_runner=*/base::ThreadTaskRunnerHandle::Get(),
+        /*quota_manager_proxy=*/nullptr);
+  }
 
   void TearDown() override {
-    helper_.reset();
+    storage_.reset();
     disk_cache::FlushCacheThreadForTesting();
-    content::RunAllTasksUntilIdle();
+    base::RunLoop().RunUntilIdle();
   }
 
   bool InitUserDataDirectory() {
@@ -211,51 +186,13 @@ class ServiceWorkerStorageTest : public testing::Test {
     return true;
   }
 
-  void InitializeTestHelper() {
-    helper_.reset(new EmbeddedWorkerTestHelper(user_data_directory_path_));
-    // TODO(falken): Figure out why RunUntilIdle is needed.
-    base::RunLoop().RunUntilIdle();
-  }
-
-  ServiceWorkerContextCore* context() { return helper_->context(); }
-  ServiceWorkerRegistry* registry() { return context()->registry(); }
-  ServiceWorkerStorage* storage() { return registry()->storage(); }
-  ServiceWorkerDatabase* database() { return storage()->database_.get(); }
+  ServiceWorkerStorage* storage() { return storage_.get(); }
 
  protected:
   void LazyInitialize() { storage()->LazyInitializeForTest(); }
 
-  blink::ServiceWorkerStatusCode StoreRegistration(
-      scoped_refptr<ServiceWorkerRegistration> registration,
-      scoped_refptr<ServiceWorkerVersion> version) {
-    base::Optional<blink::ServiceWorkerStatusCode> result;
-    base::RunLoop loop;
-    registry()->StoreRegistration(
-        registration.get(), version.get(),
-        base::BindOnce(&StatusCallback, loop.QuitClosure(), &result));
-    EXPECT_FALSE(result.has_value());  // always async
-    loop.Run();
-    return result.value();
-  }
-
-  blink::ServiceWorkerStatusCode DeleteRegistration(
-      scoped_refptr<ServiceWorkerRegistration> registration,
-      const GURL& origin) {
-    base::Optional<blink::ServiceWorkerStatusCode> result;
-    base::RunLoop loop;
-    registry()->DeleteRegistration(
-        registration, origin,
-        base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
-          result = status;
-          loop.Quit();
-        }));
-    EXPECT_FALSE(result.has_value());  // always async
-    loop.Run();
-    return result.value();
-  }
-
-  ServiceWorkerDatabase::Status DeleteRegistrationById(int64_t registration_id,
-                                                       const GURL& origin) {
+  ServiceWorkerDatabase::Status DeleteRegistration(int64_t registration_id,
+                                                   const GURL& origin) {
     ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
     storage()->DeleteRegistration(
@@ -287,14 +224,13 @@ class ServiceWorkerStorageTest : public testing::Test {
     return result;
   }
 
-  blink::ServiceWorkerStatusCode GetStorageUsageForOrigin(
-      const url::Origin& origin,
-      int64_t& out_usage) {
-    blink::ServiceWorkerStatusCode result;
+  ServiceWorkerDatabase::Status GetUsageForOrigin(const url::Origin& origin,
+                                                  int64_t& out_usage) {
+    ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
-    registry()->GetStorageUsageForOrigin(
+    storage()->GetUsageForOrigin(
         origin, base::BindLambdaForTesting(
-                    [&](blink::ServiceWorkerStatusCode status, int64_t usage) {
+                    [&](ServiceWorkerDatabase::Status status, int64_t usage) {
                       result = status;
                       out_usage = usage;
                       loop.Quit();
@@ -554,20 +490,6 @@ class ServiceWorkerStorageTest : public testing::Test {
     return result;
   }
 
-  std::vector<int64_t> GetPurgingResources() {
-    std::vector<int64_t> ids;
-    base::RunLoop loop;
-    storage()->GetPurgingResourceIdsForTest(base::BindLambdaForTesting(
-        [&](ServiceWorkerDatabase::Status status,
-            const std::vector<int64_t>& resource_ids) {
-          EXPECT_EQ(status, ServiceWorkerDatabase::Status::kOk);
-          ids = resource_ids;
-          loop.Quit();
-        }));
-    loop.Run();
-    return ids;
-  }
-
   ServiceWorkerDatabase::Status StoreRegistrationData(
       storage::mojom::ServiceWorkerRegistrationDataPtr registration_data,
       std::vector<ResourceRecord> resources) {
@@ -589,8 +511,8 @@ class ServiceWorkerStorageTest : public testing::Test {
   // user_data_directory_ must be declared first to preserve destructor order.
   base::ScopedTempDir user_data_directory_;
   base::FilePath user_data_directory_path_;
-  std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
-  BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<ServiceWorkerStorage> storage_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(ServiceWorkerStorageTest, DisabledStorage) {
@@ -632,7 +554,7 @@ TEST_F(ServiceWorkerStorageTest, DisabledStorage) {
   EXPECT_EQ(UpdateToActiveState(kRegistrationId, kOrigin),
             ServiceWorkerDatabase::Status::kErrorDisabled);
 
-  EXPECT_EQ(DeleteRegistrationById(kRegistrationId, kScope.GetOrigin()),
+  EXPECT_EQ(DeleteRegistration(kRegistrationId, kScope.GetOrigin()),
             ServiceWorkerDatabase::Status::kErrorDisabled);
 
   // Response reader and writer created by the disabled storage should fail to
@@ -778,7 +700,7 @@ TEST_F(ServiceWorkerStorageTest, StoreUserData) {
   ASSERT_EQ(1u, data_out.size());
   ASSERT_EQ("data", data_out[0]);
 
-  EXPECT_EQ(DeleteRegistrationById(kRegistrationId, kScope.GetOrigin()),
+  EXPECT_EQ(DeleteRegistration(kRegistrationId, kScope.GetOrigin()),
             ServiceWorkerDatabase::Status::kOk);
   EXPECT_EQ(GetUserData(kRegistrationId, {"key"}, data_out),
             ServiceWorkerDatabase::Status::kErrorNotFound);
@@ -880,6 +802,9 @@ TEST_F(ServiceWorkerStorageTest,
 // that test persistence by simulating browser shutdown and restart.
 class ServiceWorkerStorageDiskTest : public ServiceWorkerStorageTest {
  public:
+  ServiceWorkerStorageDiskTest() = default;
+  ~ServiceWorkerStorageDiskTest() override = default;
+
   void SetUp() override {
     ASSERT_TRUE(InitUserDataDirectory());
     ServiceWorkerStorageTest::SetUp();
@@ -1021,23 +946,23 @@ TEST_F(ServiceWorkerStorageTest, GetStorageUsageForOrigin) {
   // Storage usage should report total resource size from two registrations.
   const url::Origin origin = url::Origin::Create(kScope1.GetOrigin());
   int64_t usage;
-  EXPECT_EQ(GetStorageUsageForOrigin(origin, usage),
-            blink::ServiceWorkerStatusCode::kOk);
+  EXPECT_EQ(GetUsageForOrigin(origin, usage),
+            ServiceWorkerDatabase::Status::kOk);
   EXPECT_EQ(usage, resources_total_size_bytes1 + resources_total_size_bytes2);
 
   // Delete the first registration. Storage usage should report only the second
   // registration.
-  EXPECT_EQ(DeleteRegistrationById(kRegistrationId1, origin.GetURL()),
+  EXPECT_EQ(DeleteRegistration(kRegistrationId1, origin.GetURL()),
             ServiceWorkerDatabase::Status::kOk);
-  EXPECT_EQ(GetStorageUsageForOrigin(origin, usage),
-            blink::ServiceWorkerStatusCode::kOk);
+  EXPECT_EQ(GetUsageForOrigin(origin, usage),
+            ServiceWorkerDatabase::Status::kOk);
   EXPECT_EQ(usage, resources_total_size_bytes2);
 
   // Delete the second registration. No storage usage should be reported.
-  EXPECT_EQ(DeleteRegistrationById(kRegistrationId2, origin.GetURL()),
+  EXPECT_EQ(DeleteRegistration(kRegistrationId2, origin.GetURL()),
             ServiceWorkerDatabase::Status::kOk);
-  EXPECT_EQ(GetStorageUsageForOrigin(origin, usage),
-            blink::ServiceWorkerStatusCode::kOk);
+  EXPECT_EQ(GetUsageForOrigin(origin, usage),
+            ServiceWorkerDatabase::Status::kOk);
   EXPECT_EQ(usage, 0);
 }
 
