@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SigninPromoController;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.BookmarkTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -47,6 +48,10 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
 
     private final BookmarkTestRule mBookmarkTestRule = new BookmarkTestRule();
 
+    @Rule
+    public final ChromeTabbedActivityTestRule mActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     // As bookmarks need the fake AccountManagerFacade in SyncTestRule,
     // BookmarkTestRule should be initialized after and destroyed before the
     // SyncTestRule.
@@ -59,9 +64,10 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
         BookmarkPromoHeader.setPrefPersonalizedSigninPromoDeclinedForTests(false);
         SigninPromoController.setSigninPromoImpressionsCountBookmarksForTests(0);
 
+        mActivityTestRule.startMainActivityOnBlankPage();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             BookmarkModel bookmarkModel = new BookmarkModel(Profile.fromWebContents(
-                    mSyncTestRule.getActivity().getActivityTab().getWebContents()));
+                    mActivityTestRule.getActivity().getActivityTab().getWebContents()));
             bookmarkModel.loadFakePartnerBookmarkShimForTesting();
         });
         BookmarkTestUtil.waitForBookmarkModelLoaded();
@@ -76,20 +82,20 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
     @Test
     @MediumTest
     public void testPromoNotShownAfterBeingDismissed() {
-        mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
+        mBookmarkTestRule.showBookmarkManager(mActivityTestRule.getActivity());
         onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
         onView(withId(R.id.signin_promo_close_button)).perform(click());
         onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
 
         closeBookmarkManager();
-        mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
+        mBookmarkTestRule.showBookmarkManager(mActivityTestRule.getActivity());
         onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
     }
 
     private void closeBookmarkManager() {
-        if (mSyncTestRule.getActivity().isTablet()) {
+        if (mActivityTestRule.getActivity().isTablet()) {
             ChromeTabbedActivity chromeTabbedActivity =
-                    (ChromeTabbedActivity) mSyncTestRule.getActivity();
+                    (ChromeTabbedActivity) mActivityTestRule.getActivity();
             ChromeTabUtils.closeCurrentTab(
                     InstrumentationRegistry.getInstrumentation(), chromeTabbedActivity);
         } else {
@@ -102,7 +108,7 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
     public void testPromoNotExistWhenImpressionLimitReached() {
         SigninPromoController.setSigninPromoImpressionsCountBookmarksForTests(
                 SigninPromoController.getMaxImpressionsBookmarksForTests());
-        mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
+        mBookmarkTestRule.showBookmarkManager(mActivityTestRule.getActivity());
         onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
     }
 
@@ -110,7 +116,7 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
     @MediumTest
     public void testPromoImpressionCountIncrementAfterDisplayingSigninPromo() {
         assertEquals(0, SigninPromoController.getSigninPromoImpressionsCountBookmarks());
-        mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
+        mBookmarkTestRule.showBookmarkManager(mActivityTestRule.getActivity());
         onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
         assertEquals(1, SigninPromoController.getSigninPromoImpressionsCountBookmarks());
     }

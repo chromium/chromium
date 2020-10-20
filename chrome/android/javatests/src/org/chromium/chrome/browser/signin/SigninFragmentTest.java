@@ -28,6 +28,7 @@ import androidx.test.filters.MediumTest;
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +42,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ActivityUtils;
 import org.chromium.chrome.test.util.ApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -65,10 +67,19 @@ public class SigninFragmentTest {
     public final SyncTestRule mSyncTestRule = new SyncTestRule();
 
     @Rule
+    public final ChromeTabbedActivityTestRule mActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
+    @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus().build();
 
     private SigninActivity mSigninActivity;
+
+    @Before
+    public void setUp() {
+        mActivityTestRule.startMainActivityOnBlankPage();
+    }
 
     @After
     public void tearDown() throws Exception {
@@ -86,7 +97,7 @@ public class SigninFragmentTest {
         mSigninActivity = ActivityUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SigninActivity.class, () -> {
                     SigninActivityLauncherImpl.get().launchActivityForPromoAddAccountFlow(
-                            mSyncTestRule.getActivity(), SigninAccessPoint.BOOKMARK_MANAGER);
+                            mActivityTestRule.getActivity(), SigninAccessPoint.BOOKMARK_MANAGER);
                 });
         mRenderTestRule.render(mSigninActivity.findViewById(R.id.fragment_container),
                 "signin_fragment_new_account");
@@ -101,7 +112,7 @@ public class SigninFragmentTest {
         mSigninActivity = ActivityUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SigninActivity.class, () -> {
                     SigninActivityLauncherImpl.get().launchActivityForPromoChooseAccountFlow(
-                            mSyncTestRule.getActivity(), SigninAccessPoint.BOOKMARK_MANAGER,
+                            mActivityTestRule.getActivity(), SigninAccessPoint.BOOKMARK_MANAGER,
                             account.name);
                 });
         mRenderTestRule.render(mSigninActivity.findViewById(R.id.fragment_container),
@@ -118,7 +129,7 @@ public class SigninFragmentTest {
         mSigninActivity = ActivityUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SigninActivity.class, () -> {
                     SigninActivityLauncherImpl.get().launchActivityForPromoChooseAccountFlow(
-                            mSyncTestRule.getActivity(), SigninAccessPoint.BOOKMARK_MANAGER,
+                            mActivityTestRule.getActivity(), SigninAccessPoint.BOOKMARK_MANAGER,
                             secondAccountName);
                 });
         mRenderTestRule.render(mSigninActivity.findViewById(R.id.fragment_container),
@@ -133,7 +144,7 @@ public class SigninFragmentTest {
         mSigninActivity = ActivityUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SigninActivity.class, () -> {
                     SigninActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
-                            mSyncTestRule.getActivity(), SigninAccessPoint.BOOKMARK_MANAGER,
+                            mActivityTestRule.getActivity(), SigninAccessPoint.BOOKMARK_MANAGER,
                             account.name);
                 });
         mRenderTestRule.render(mSigninActivity.findViewById(R.id.fragment_container),
@@ -147,7 +158,8 @@ public class SigninFragmentTest {
         mSigninActivity = ActivityUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SigninActivity.class, () -> {
                     SigninActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
-                            mSyncTestRule.getActivity(), SigninAccessPoint.SETTINGS, account.name);
+                            mActivityTestRule.getActivity(), SigninAccessPoint.SETTINGS,
+                            account.name);
                 });
         onView(withText(account.name)).check(matches(isDisplayed()));
         onView(withId(R.id.signin_details_description)).perform(clickOnClickableSpan());
@@ -171,7 +183,7 @@ public class SigninFragmentTest {
         mSigninActivity = ActivityUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SigninActivity.class, () -> {
                     SigninActivityLauncherImpl.get().launchActivity(
-                            mSyncTestRule.getActivity(), SigninAccessPoint.SETTINGS);
+                            mActivityTestRule.getActivity(), SigninAccessPoint.SETTINGS);
                 });
         onView(withId(R.id.positive_button)).check(matches(withText(R.string.signin_add_account)));
         onView(withId(R.id.negative_button)).check(matches(withText(R.string.cancel)));
@@ -186,7 +198,7 @@ public class SigninFragmentTest {
         mSigninActivity = ActivityUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SigninActivity.class, () -> {
                     SigninActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
-                            mSyncTestRule.getActivity(), SigninAccessPoint.BOOKMARK_MANAGER,
+                            mActivityTestRule.getActivity(), SigninAccessPoint.BOOKMARK_MANAGER,
                             defaultAccount.name);
                 });
         onView(withText(defaultAccount.name)).check(matches(isDisplayed())).perform(click());

@@ -12,6 +12,7 @@ import android.widget.ListView;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,6 +24,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.sync.PassphraseType;
 
 /**
@@ -33,6 +35,10 @@ import org.chromium.components.sync.PassphraseType;
 public class PassphraseTypeDialogFragmentTest {
     @Rule
     public SyncTestRule mSyncTestRule = new SyncTestRule();
+
+    @Rule
+    public final ChromeTabbedActivityTestRule mActivityTestRule =
+            new ChromeTabbedActivityTestRule();
 
     private static final String TAG = "PassphraseTypeDialogFragmentTest";
 
@@ -53,6 +59,11 @@ public class PassphraseTypeDialogFragmentTest {
     }
 
     private PassphraseTypeDialogFragment mTypeFragment;
+
+    @Before
+    public void setUp() {
+        mActivityTestRule.startMainActivityOnBlankPage();
+    }
 
     @Test
     @SmallTest
@@ -119,7 +130,7 @@ public class PassphraseTypeDialogFragmentTest {
 
     public void createFragment(@PassphraseType int type, boolean isEncryptEverythingAllowed) {
         mTypeFragment = PassphraseTypeDialogFragment.create(type, 0, isEncryptEverythingAllowed);
-        mTypeFragment.show(mSyncTestRule.getActivity().getSupportFragmentManager(), TAG);
+        mTypeFragment.show(mActivityTestRule.getActivity().getSupportFragmentManager(), TAG);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 

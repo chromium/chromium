@@ -5,15 +5,13 @@
 package org.chromium.chrome.browser.sync;
 
 import android.accounts.Account;
-import android.app.Activity;
-import android.app.Instrumentation;
-import android.app.Instrumentation.ActivityMonitor;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
 
-import androidx.test.filters.SmallTest;
+import androidx.test.filters.LargeTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -26,14 +24,15 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
+import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
+import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunActivity.FirstRunActivityObserver;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivity;
-import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
+import org.chromium.chrome.browser.sync.settings.SyncAndServicesSettings;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ActivityUtils;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
@@ -48,51 +47,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class FirstRunTest {
     @Rule
-    public SyncTestRule mSyncTestRule = new SyncTestRule() {
-        @Override
-        public void startMainActivityForSyncTest() {
-            FirstRunActivity.setObserverForTest(mTestObserver);
-
-            // Starts up and waits for the FirstRunActivity to be ready.
-            // This isn't exactly what startMainActivity is supposed to be doing, but short of a
-            // refactoring of SyncTestBase to use something other than ChromeTabbedActivity,
-            // it's the only way to reuse the rest of the setup and initialization code inside of
-            // it.
-            final Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
-            final Context context = instrumentation.getTargetContext();
-
-            // Create an Intent that causes Chrome to run.
-            final Intent intent = new Intent(TEST_ACTION);
-            intent.setPackage(context.getPackageName());
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-            // Start the FRE.
-            final ActivityMonitor freMonitor =
-                    new ActivityMonitor(FirstRunActivity.class.getName(), null, false);
-            instrumentation.addMonitor(freMonitor);
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                FirstRunFlowSequencer.launch(context, intent, false /* requiresBroadcast */,
-                        false /* preferLightweightFre */);
-            });
-
-            // Wait for the FRE to be ready to use.
-            Activity activity =
-                    freMonitor.waitForActivityWithTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
-            instrumentation.removeMonitor(freMonitor);
-
-            mActivity = (FirstRunActivity) activity;
-
-            try {
-                mTestObserver.flowIsKnownCallback.waitForCallback(0);
-            } catch (TimeoutException e) {
-                Assert.fail();
-            }
-            CriteriaHelper.pollUiThread((() -> mActivity.isNativeSideIsInitializedForTest()),
-                    "native never initialized.");
-        }
-    };
-
-    private static final String TEST_ACTION = "com.artificial.package.TEST_ACTION";
+    public SyncTestRule mSyncTestRule = new SyncTestRule();
 
     private static final class TestObserver implements FirstRunActivityObserver {
         public final CallbackHelper flowIsKnownCallback = new CallbackHelper();
@@ -125,6 +80,29 @@ public class FirstRunTest {
     public void setUp() {
         Assert.assertFalse(
                 CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE));
+
+        FirstRunActivity.setObserverForTest(mTestObserver);
+
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.setPackage(context.getPackageName());
+        intent.setComponent(new ComponentName(context, ChromeLauncherActivity.class));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        Runnable activityTrigger = () -> TestThreadUtils.runOnUiThreadBlocking(() -> {
+            FirstRunFlowSequencer.launch(context, intent, false /* requiresBroadcast */,
+                    false /* preferLightweightFre */);
+        });
+        mActivity = ActivityUtils.waitForActivity(InstrumentationRegistry.getInstrumentation(),
+                FirstRunActivity.class, activityTrigger);
+
+        try {
+            mTestObserver.flowIsKnownCallback.waitForCallback(0);
+        } catch (TimeoutException e) {
+            Assert.fail();
+        }
+        CriteriaHelper.pollUiThread(
+                (() -> mActivity.isNativeSideIsInitializedForTest()), "native never initialized.");
     }
 
     @After
@@ -133,12 +111,10 @@ public class FirstRunTest {
     }
 
     // Test that signing in through FirstRun signs in and starts sync.
-    /*
-     * @SmallTest
-     * @Feature({"Sync"})
-     */
     @Test
-    @FlakyTest(message = "https://crbug.com/616456")
+    @LargeTest
+    @Feature({"Sync"})
+    @DisabledTest(message = "https://crbug.com/616456")
     public void testSignIn() {
         Account testAccount = mSyncTestRule.addTestAccount();
         Assert.assertNull(mSyncTestRule.getCurrentSignedInAccount());
@@ -151,12 +127,10 @@ public class FirstRunTest {
 
     // Test that signing in and opening settings through FirstRun signs in and doesn't fully start
     // sync until the settings page is closed.
-    /*
-     * @SmallTest
-     * @Feature({"Sync"})
-     */
     @Test
-    @FlakyTest(message = "https://crbug.com/616456")
+    @LargeTest
+    @Feature({"Sync"})
+    @DisabledTest(message = "https://crbug.com/616456")
     public void testSignInWithOpenSettings() {
         final Account testAccount = mSyncTestRule.addTestAccount();
         final SettingsActivity settingsActivity =
@@ -169,20 +143,27 @@ public class FirstRunTest {
         Assert.assertFalse(SyncTestUtil.isSyncActive());
 
         // Close the settings fragment.
-        AccountManagementFragment fragment =
-                (AccountManagementFragment) settingsActivity.getMainFragment();
+        SyncAndServicesSettings fragment =
+                (SyncAndServicesSettings) settingsActivity.getMainFragment();
         Assert.assertNotNull(fragment);
         settingsActivity.getSupportFragmentManager().beginTransaction().remove(fragment).commit();
 
-        // Sync should immediately become active.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // First setup should not be marked as complete just by closing the fragment.
+            Assert.assertFalse(mSyncTestRule.getProfileSyncService().isFirstSetupComplete());
+
+            // Marking the first setup as complete should make sync active.
+            mSyncTestRule.getProfileSyncService().setFirstSetupComplete(
+                    SyncFirstSetupCompleteSource.BASIC_FLOW);
+        });
         Assert.assertTrue(SyncTestUtil.isSyncActive());
     }
 
     // Test that not signing in through FirstRun does not sign in sync.
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"Sync"})
-    @DisabledTest // https://crbug.com/901488
+    @DisabledTest(message = "https://crbug.com/616456")
     public void testNoSignIn() {
         mSyncTestRule.addTestAccount();
         Assert.assertFalse(SyncTestUtil.isSyncRequested());

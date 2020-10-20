@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -52,6 +53,10 @@ public class PasswordGenerationIntegrationTest {
     @Rule
     public SyncTestRule mSyncTestRule = new SyncTestRule();
 
+    @Rule
+    public final ChromeTabbedActivityTestRule mActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     private static final String PASSWORD_NODE_ID = "password_field";
     private static final String PASSWORD_NODE_ID_MANUAL = "password_field_manual";
     private static final String SUBMIT_NODE_ID = "input_submit_button";
@@ -62,7 +67,7 @@ public class PasswordGenerationIntegrationTest {
     private static final String ELIGIBLE_FOR_GENERATION = "1";
     private static final String INFOBAR_MESSAGE = "Password saved";
 
-    private final ManualFillingTestHelper mHelper = new ManualFillingTestHelper(mSyncTestRule);
+    private final ManualFillingTestHelper mHelper = new ManualFillingTestHelper(mActivityTestRule);
 
     @Before
     public void setUp() throws InterruptedException {
@@ -191,7 +196,7 @@ public class PasswordGenerationIntegrationTest {
     private void waitForGenerationDialog() {
         waitForModalDialogPresenter();
         ModalDialogManager manager = TestThreadUtils.runOnUiThreadBlockingNoException(
-                mSyncTestRule.getActivity()::getModalDialogManager);
+                mActivityTestRule.getActivity()::getModalDialogManager);
         Window window = ((AppModalPresenter) manager.getCurrentPresenterForTest()).getWindow();
         mHelper.waitForViewOnRoot(
                 window.getDecorView().getRootView(), withId(password_generation_dialog));
@@ -199,7 +204,7 @@ public class PasswordGenerationIntegrationTest {
 
     private void waitForModalDialogPresenter() {
         CriteriaHelper.pollUiThread(()
-                                            -> mSyncTestRule.getActivity()
+                                            -> mActivityTestRule.getActivity()
                                                        .getModalDialogManager()
                                                        .getCurrentPresenterForTest()
                         != null);
@@ -207,8 +212,9 @@ public class PasswordGenerationIntegrationTest {
 
     private void assertNoInfobarsAreShown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertFalse(InfoBarContainer.from(mSyncTestRule.getActivity().getActivityTab())
-                                       .hasInfoBars());
+            Assert.assertFalse(
+                    InfoBarContainer.from(mActivityTestRule.getActivity().getActivityTab())
+                            .hasInfoBars());
         });
     }
 
