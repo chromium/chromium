@@ -116,6 +116,7 @@
 -SAMLPolicyTest.*
 -SamlTest.*
 -SecurityTokenSamlTest.*
+-SigninToUserProfileSwitchTest.*
 -SiteIsolationFlagHandlingTest.*
 -StartupBrowserWindowLaunchSuppressedTest.*
 -SyncConsentRecorderTest.*
