@@ -173,22 +173,18 @@ SharingDialogType SharingDialogView::GetDialogType() const {
   return data_.type;
 }
 
-void SharingDialogView::ButtonPressed(views::Button* sender,
-                                      const ui::Event& event) {
-  DCHECK(sender);
-  size_t index = sender->tag();
-  DCHECK_LT(index, data_.devices.size() + data_.apps.size());
+void SharingDialogView::DeviceButtonPressed(size_t index) {
+  DCHECK_LT(index, data_.devices.size());
+  LogSharingSelectedIndex(data_.prefix, kSharingUiDialog, index);
+  std::move(data_.device_callback).Run(*data_.devices[index]);
+  CloseBubble();
+}
 
-  const bool is_device = index < data_.devices.size();
-  if (!is_device)
-    index -= data_.devices.size();
-  LogSharingSelectedIndex(
-      data_.prefix, kSharingUiDialog, index,
-      is_device ? SharingIndexType::kDevice : SharingIndexType::kApp);
-  if (is_device)
-    std::move(data_.device_callback).Run(*data_.devices[index]);
-  else
-    std::move(data_.app_callback).Run(data_.apps[index]);
+void SharingDialogView::AppButtonPressed(size_t index) {
+  DCHECK_LT(index, data_.apps.size());
+  LogSharingSelectedIndex(data_.prefix, kSharingUiDialog, index,
+                          SharingIndexType::kApp);
+  std::move(data_.app_callback).Run(data_.apps[index]);
   CloseBubble();
 }
 
@@ -246,7 +242,6 @@ void SharingDialogView::Init() {
 
 void SharingDialogView::InitListView() {
   constexpr int kPrimaryIconSize = 20;
-  int tag = 0;
   const gfx::Insets device_border =
       gfx::Insets(kSharingDialogSpacing, kSharingDialogSpacing * 2,
                   kSharingDialogSpacing, 0);
@@ -259,6 +254,7 @@ void SharingDialogView::InitListView() {
 
   // Devices:
   LogSharingDevicesToShow(data_.prefix, kSharingUiDialog, data_.devices.size());
+  size_t index = 0;
   for (const auto& device : data_.devices) {
     auto icon = std::make_unique<views::ColorTrackingIconView>(
         device->device_type() == sync_pb::SyncEnums::TYPE_TABLET
@@ -268,15 +264,17 @@ void SharingDialogView::InitListView() {
 
     auto* dialog_button =
         button_list->AddChildView(std::make_unique<HoverButton>(
-            this, std::move(icon), base::UTF8ToUTF16(device->client_name()),
+            base::BindRepeating(&SharingDialogView::DeviceButtonPressed,
+                                base::Unretained(this), index++),
+            std::move(icon), base::UTF8ToUTF16(device->client_name()),
             GetLastUpdatedTimeInDays(device->last_updated_timestamp())));
     dialog_button->SetEnabled(true);
-    dialog_button->set_tag(tag++);
     dialog_button->SetBorder(views::CreateEmptyBorder(device_border));
   }
 
   // Apps:
   LogSharingAppsToShow(data_.prefix, kSharingUiDialog, data_.apps.size());
+  index = 0;
   for (const auto& app : data_.apps) {
     std::unique_ptr<views::ImageView> icon;
     if (app.vector_icon) {
@@ -287,11 +285,13 @@ void SharingDialogView::InitListView() {
       icon->SetImage(app.image.AsImageSkia());
     }
 
-    auto* dialog_button = button_list->AddChildView(
-        std::make_unique<HoverButton>(this, std::move(icon), app.name,
-                                      /* subtitle= */ base::string16()));
+    auto* dialog_button =
+        button_list->AddChildView(std::make_unique<HoverButton>(
+            base::BindRepeating(&SharingDialogView::AppButtonPressed,
+                                base::Unretained(this), index++),
+            std::move(icon), app.name,
+            /* subtitle= */ base::string16()));
     dialog_button->SetEnabled(true);
-    dialog_button->set_tag(tag++);
     dialog_button->SetBorder(views::CreateEmptyBorder(app_border));
   }
 

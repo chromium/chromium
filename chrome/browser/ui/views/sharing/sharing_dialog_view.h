@@ -11,7 +11,6 @@
 #include "chrome/browser/sharing/sharing_dialog.h"
 #include "chrome/browser/sharing/sharing_dialog_data.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
-#include "ui/views/controls/button/button.h"
 
 namespace views {
 class StyledLabel;
@@ -21,7 +20,6 @@ class View;
 enum class SharingDialogType;
 
 class SharingDialogView : public SharingDialog,
-                          public views::ButtonListener,
                           public LocationBarBubbleDelegateView {
  public:
   // Bubble will be anchored to |anchor_view|.
@@ -40,9 +38,6 @@ class SharingDialogView : public SharingDialog,
   void WindowClosing() override;
   void WebContentsDestroyed() override;
   void AddedToWidget() override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   static views::BubbleDialogDelegateView* GetAsBubble(SharingDialog* dialog);
   static views::BubbleDialogDelegateView* GetAsBubbleForClickToCall(
@@ -64,6 +59,9 @@ class SharingDialogView : public SharingDialog,
   void InitErrorView();
 
   std::unique_ptr<views::StyledLabel> CreateHelpText();
+
+  void DeviceButtonPressed(size_t index);
+  void AppButtonPressed(size_t index);
 
   SharingDialogData data_;
 
