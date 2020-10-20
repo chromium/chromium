@@ -1069,15 +1069,25 @@ void WebrtcTransport::OnIceSelectedCandidatePairChanged(
       std::max(CandidateTypeToTransportRouteType(local_candidate.type()),
                CandidateTypeToTransportRouteType(remote_candidate.type()));
 
+  VLOG(0) << "Selected candidate-pair changed, reason = " << event.reason;
+  VLOG(0) << "  Local IP = " << local_candidate.address().ToString()
+          << ", type = " << local_candidate.type()
+          << ", protocol = " << local_candidate.protocol();
+  VLOG(0) << "  Remote IP = " << remote_candidate.address().ToString()
+          << ", type = " << remote_candidate.type()
+          << ", protocol = " << remote_candidate.protocol();
+
+  // Try to convert local and peer addresses. These may sometimes be invalid,
+  // for example, a "relay" or "prflx" candidate from a relay connection
+  // might have the IP address stripped away by WebRTC - see
+  // http://crbug.com/1128667.
   if (!jingle_glue::SocketAddressToIPEndPoint(remote_candidate.address(),
                                               &route.remote_address)) {
-    LOG(ERROR) << "Failed to convert peer IP address.";
-    return;
+    VLOG(0) << "Peer IP address is invalid.";
   }
   if (!jingle_glue::SocketAddressToIPEndPoint(local_candidate.address(),
                                               &route.local_address)) {
-    LOG(ERROR) << "Failed to convert local IP address.";
-    return;
+    VLOG(0) << "Local IP address is invalid.";
   }
 
   event_handler_->OnWebrtcTransportRouteChanged(route);

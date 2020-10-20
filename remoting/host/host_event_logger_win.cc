@@ -96,8 +96,12 @@ void HostEventLoggerWin::OnClientRouteChange(
     const protocol::TransportRoute& route) {
   std::vector<std::string> strings(5);
   strings[0] = jid;
-  strings[1] = route.remote_address.ToString();
-  strings[2] = route.local_address.ToString();
+  strings[1] = route.remote_address.address().IsValid()
+                   ? route.remote_address.ToString()
+                   : "unknown";
+  strings[2] = route.local_address.address().IsValid()
+                   ? route.local_address.ToString()
+                   : "unknown";
   strings[3] = channel_name;
   strings[4] = protocol::TransportRoute::GetTypeString(route.type);
   Log(EVENTLOG_INFORMATION_TYPE, MSG_HOST_CLIENT_ROUTING_CHANGED, strings);
