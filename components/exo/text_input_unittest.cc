@@ -246,6 +246,13 @@ TEST_F(TextInputTest, CompositionText) {
   text_input()->ClearCompositionText();
 }
 
+TEST_F(TextInputTest, CompositionTextEmpty) {
+  SetCompositionText("");
+
+  EXPECT_CALL(*delegate(), SetCompositionText(_)).Times(0);
+  text_input()->ClearCompositionText();
+}
+
 TEST_F(TextInputTest, CommitCompositionText) {
   SetCompositionText("composition");
 

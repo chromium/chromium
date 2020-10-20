@@ -132,6 +132,8 @@ uint32_t TextInput::ConfirmCompositionText(bool keep_selection) {
 }
 
 void TextInput::ClearCompositionText() {
+  if (composition_.text.empty())
+    return;
   composition_ = ui::CompositionText();
   delegate_->SetCompositionText(composition_);
 }
