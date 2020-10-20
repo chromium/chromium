@@ -6975,15 +6975,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 // See https://crbug.com/628677.
 // Crashes/fails inconsistently on windows and ChromeOS:
 // https://crbug.com/783806.
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
-#define MAYBE_EnsureFrameNavigationEntriesClearedOnMismatch \
-  DISABLED_EnsureFrameNavigationEntriesClearedOnMismatch
-#else
-#define MAYBE_EnsureFrameNavigationEntriesClearedOnMismatch \
-  EnsureFrameNavigationEntriesClearedOnMismatch
-#endif
+// Flaky on every platforms:
+// https://crbug.com/765107#c15
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       MAYBE_EnsureFrameNavigationEntriesClearedOnMismatch) {
+                       DISABLED_EnsureFrameNavigationEntriesClearedOnMismatch) {
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
   NavigationControllerImpl& controller = web_contents->GetController();
