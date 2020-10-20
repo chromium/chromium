@@ -285,7 +285,9 @@ public final class ReturnToChromeExperimentsUtil {
      * @return the total tab count, and works before native initialization.
      */
     public static int getTotalTabCount(TabModelSelector tabModelSelector) {
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)
+        if ((CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)
+                    || CachedFeatureFlags.isEnabled(
+                            ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP))
                 && !tabModelSelector.isTabStateInitialized()) {
             List<PseudoTab> allTabs;
             try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
