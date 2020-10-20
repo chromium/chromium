@@ -278,8 +278,8 @@ void ThemeService::Init() {
   theme_observer_ = std::make_unique<ThemeObserver>(this);
 
   extensions::ExtensionSystem::Get(profile_)->ready().Post(
-      FROM_HERE, base::Bind(&ThemeService::OnExtensionServiceReady,
-                            weak_ptr_factory_.GetWeakPtr()));
+      FROM_HERE, base::BindOnce(&ThemeService::OnExtensionServiceReady,
+                                weak_ptr_factory_.GetWeakPtr()));
 #endif
   theme_syncable_service_.reset(new ThemeSyncableService(profile_, this));
 
