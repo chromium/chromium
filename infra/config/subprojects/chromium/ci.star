@@ -982,6 +982,22 @@ ci.android_fyi_builder(
 )
 
 ci.android_fyi_builder(
+    name = "android-weblayer-x86-fyi-rel",
+    console_view_entry = ci.console_view_entry(
+        category = "builder|weblayer",
+        short_name = "x86",
+    ),
+)
+
+ci.android_fyi_builder(
+    name = "android-weblayer-x86-fyi-rel-10-tests",
+    console_view_entry = ci.console_view_entry(
+        category = "tester|weblayer",
+        short_name = "10",
+    ),
+)
+
+ci.android_fyi_builder(
     name = "Android WebView P FYI (rel)",
     console_view_entry = ci.console_view_entry(
         category = "webview",

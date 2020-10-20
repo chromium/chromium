@@ -126,6 +126,25 @@
 #   },
 
 {
+  '10-x86-emulator': {
+    '$mixin_append': {
+      'args': [
+        '--avd-config=../../tools/android/avd/proto/generic_android29.textpb',
+      ],
+    },
+    'swarming': {
+      'named_caches': [
+        {
+          'name': 'avd_generic_android29',
+          'path': '.android',
+        },
+        {
+          'name': 'system_images_android_29_google_apis_x86',
+          'path': '.emulator_sdk',
+        },
+      ]
+    },
+  },
   'android_q': {
     'swarming': {
       'dimensions': {

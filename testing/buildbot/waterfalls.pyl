@@ -1099,6 +1099,18 @@
           'gtest_tests': 'android_weblayer_x86_gtests',
         }
       },
+      'android-weblayer-x86-fyi-rel-10-tests': {
+        'mixins': [
+          '10-x86-emulator',
+          'emulator-4-cores',
+          'linux-xenial',
+          'x86-64',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'android_weblayer_x86_gtests',
+        }
+      },
     },
   },
   {
