@@ -35,6 +35,9 @@ suite('PrivacyPageTests', function() {
       suggestedContentToggleEnabled: false,
     });
 
+    privacyPage = document.createElement('os-settings-privacy-page');
+    document.body.appendChild(privacyPage);
+
     Polymer.dom.flush();
 
     assertEquals(null, privacyPage.$$('#suggested-content'));
