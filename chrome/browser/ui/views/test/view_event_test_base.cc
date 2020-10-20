@@ -66,9 +66,11 @@ class TestBaseWidgetDelegate : public views::WidgetDelegate {
 
   // views::WidgetDelegate:
   void WindowClosing() override { harness_->window_ = nullptr; }
-  views::Widget* GetWidget() override { return contents_->GetWidget(); }
+  views::Widget* GetWidget() override {
+    return contents_ ? contents_->GetWidget() : nullptr;
+  }
   const views::Widget* GetWidget() const override {
-    return contents_->GetWidget();
+    return contents_ ? contents_->GetWidget() : nullptr;
   }
   views::View* GetContentsView() override {
     // This will first be called by Widget::Init(), which passes the returned

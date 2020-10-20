@@ -251,15 +251,21 @@ void WidgetDelegate::SetAccessibleTitle(base::string16 title) {
 }
 
 void WidgetDelegate::SetCanMaximize(bool can_maximize) {
-  params_.can_maximize = can_maximize;
+  std::exchange(params_.can_maximize, can_maximize);
+  if (GetWidget() && params_.can_maximize != can_maximize)
+    GetWidget()->OnSizeConstraintsChanged();
 }
 
 void WidgetDelegate::SetCanMinimize(bool can_minimize) {
-  params_.can_minimize = can_minimize;
+  std::exchange(params_.can_minimize, can_minimize);
+  if (GetWidget() && params_.can_minimize != can_minimize)
+    GetWidget()->OnSizeConstraintsChanged();
 }
 
 void WidgetDelegate::SetCanResize(bool can_resize) {
-  params_.can_resize = can_resize;
+  std::exchange(params_.can_resize, can_resize);
+  if (GetWidget() && params_.can_resize != can_resize)
+    GetWidget()->OnSizeConstraintsChanged();
 }
 
 void WidgetDelegate::SetOwnedByWidget(bool owned) {
