@@ -2075,7 +2075,7 @@
     ],
 
     'lacros_on_linux_release_trybot': [
-      'lacros_on_linux', 'release_trybot',
+      'lacros_on_linux', 'release_trybot', 'also_build_ash_chrome',
     ],
 
     'libfuzzer_asan_debug_bot': [
@@ -2858,6 +2858,10 @@
 
     'lacros_on_linux': {
       'gn_args': 'use_ozone=true ozone_platform_wayland=true ozone_platform="wayland" use_gtk=false chromeos_is_browser_only=true'
+    },
+
+    'also_build_ash_chrome': {
+      'gn_args': 'also_build_ash_chrome=true',
     },
 
     'libfuzzer': { 'gn_args': 'use_libfuzzer=true' },

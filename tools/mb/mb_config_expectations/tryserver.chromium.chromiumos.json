@@ -128,6 +128,7 @@
   },
   "linux-lacros-rel": {
     "gn_args": {
+      "also_build_ash_chrome": true,
       "chromeos_is_browser_only": true,
       "dcheck_always_on": true,
       "is_component_build": false,
