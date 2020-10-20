@@ -67,13 +67,12 @@ GpuMemoryBufferImplIOSurface::CreateFromHandle(
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     DestructionCallback callback) {
-  if (!handle.mach_port) {
-    LOG(ERROR) << "Invalid IOSurface mach port returned to client.";
+  if (!handle.io_surface) {
+    LOG(ERROR) << "Invalid IOSurface returned to client.";
     return nullptr;
   }
 
-  base::ScopedCFTypeRef<IOSurfaceRef> io_surface(
-      IOSurfaceLookupFromMachPort(handle.mach_port.get()));
+  gfx::ScopedIOSurface io_surface = handle.io_surface;
   if (!io_surface) {
     LOG(ERROR) << "Failed to open IOSurface via mach port returned to client.";
     static int dump_counter = kMaxCrashDumps;
@@ -101,13 +100,11 @@ base::OnceClosure GpuMemoryBufferImplIOSurface::AllocateForTesting(
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     gfx::GpuMemoryBufferHandle* handle) {
-  base::ScopedCFTypeRef<IOSurfaceRef> io_surface(
-      gfx::CreateIOSurface(size, format));
-  DCHECK(io_surface);
   gfx::GpuMemoryBufferId kBufferId(1);
   handle->type = gfx::IO_SURFACE_BUFFER;
   handle->id = kBufferId;
-  handle->mach_port.reset(IOSurfaceCreateMachPort(io_surface));
+  handle->io_surface.reset(gfx::CreateIOSurface(size, format));
+  DCHECK(handle->io_surface);
   return base::DoNothing();
 }
 
@@ -152,7 +149,7 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferImplIOSurface::CloneHandle() const {
   gfx::GpuMemoryBufferHandle handle;
   handle.type = gfx::IO_SURFACE_BUFFER;
   handle.id = id_;
-  handle.mach_port.reset(IOSurfaceCreateMachPort(io_surface_));
+  handle.io_surface = io_surface_;
   return handle;
 }
 

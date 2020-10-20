@@ -300,4 +300,8 @@ component("shared_mojom_traits") {
     ":native_handle_types",
     "//ui/gfx",
   ]
+  frameworks = [
+    "CoreFoundation.framework",
+    "IOSurface.framework",
+  ]
 }

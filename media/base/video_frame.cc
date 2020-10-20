@@ -697,8 +697,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapIOSurface(
     DLOG(ERROR) << "Non-IOSurface handle.";
     return nullptr;
   }
-  base::ScopedCFTypeRef<IOSurfaceRef> io_surface =
-      gfx::IOSurfaceMachPortToIOSurface(std::move(handle.mach_port));
+  gfx::ScopedIOSurface io_surface = handle.io_surface;
   if (!io_surface) {
     return nullptr;
   }

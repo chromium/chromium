@@ -37,7 +37,7 @@ GpuMemoryBufferHandle GpuMemoryBufferHandle::Clone() const {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
   handle.native_pixmap_handle = CloneHandleForIPC(native_pixmap_handle);
 #elif defined(OS_MAC)
-  handle.mach_port = mach_port;
+  handle.io_surface = io_surface;
 #elif defined(OS_WIN)
   NOTIMPLEMENTED();
 #elif defined(OS_ANDROID)

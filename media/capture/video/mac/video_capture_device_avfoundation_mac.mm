@@ -606,9 +606,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   gfx::GpuMemoryBufferHandle handle;
   handle.id.id = -1;
   handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
-  handle.mach_port.reset(IOSurfaceCreateMachPort(ioSurface));
-  if (!handle.mach_port)
-    return NO;
+  handle.io_surface.reset(ioSurface, base::scoped_policy::RETAIN);
   _lock.AssertAcquired();
   _frameReceiver->ReceiveExternalGpuMemoryBufferFrame(
       std::move(handle),

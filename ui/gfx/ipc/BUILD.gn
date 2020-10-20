@@ -22,4 +22,9 @@ component("ipc") {
     "//ui/gfx/ipc/geometry",
     "//ui/gfx/range",
   ]
+
+  frameworks = [
+    "CoreFoundation.framework",
+    "IOSurface.framework",
+  ]
 }

@@ -48,8 +48,7 @@ WrapVideoFrameInCVPixelBuffer(const VideoFrame& frame) {
     gfx::GpuMemoryBufferHandle handle =
         frame.GetGpuMemoryBuffer()->CloneHandle();
     if (handle.type == gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER) {
-      base::ScopedCFTypeRef<IOSurfaceRef> io_surface =
-          gfx::IOSurfaceMachPortToIOSurface(std::move(handle.mach_port));
+      gfx::ScopedIOSurface io_surface = handle.io_surface;
       if (io_surface) {
         const CVReturn cv_return = CVPixelBufferCreateWithIOSurface(
             nullptr, io_surface, nullptr, pixel_buffer.InitializeInto());

@@ -19,12 +19,10 @@
 namespace gpu {
 
 namespace {
+
 // A GpuMemoryBuffer with client_id = 0 behaves like anonymous shared memory.
 const int kAnonymousClientId = 0;
 
-// The maximum number of times to dump before throttling (to avoid sending
-// thousands of crash dumps).
-const int kMaxCrashDumps = 10;
 }  // namespace
 
 GpuMemoryBufferFactoryIOSurface::GpuMemoryBufferFactoryIOSurface() {
@@ -56,27 +54,7 @@ GpuMemoryBufferFactoryIOSurface::CreateGpuMemoryBuffer(
   gfx::GpuMemoryBufferHandle handle;
   handle.type = gfx::IO_SURFACE_BUFFER;
   handle.id = id;
-  handle.mach_port.reset(IOSurfaceCreateMachPort(io_surface));
-  CHECK(handle.mach_port);
-
-  // This IOSurface will be opened via mach port in the client process. It has
-  // been observed in https://crbug.com/574014 that these ports sometimes fail
-  // to be opened in the client process. It has further been observed in
-  // https://crbug.com/795649#c30 that these ports fail to be opened in creating
-  // process. To determine if these failures are independent, attempt to open
-  // the creating process first (and don't not return those that fail).
-  base::ScopedCFTypeRef<IOSurfaceRef> io_surface_from_mach_port(
-      IOSurfaceLookupFromMachPort(handle.mach_port.get()));
-  if (!io_surface_from_mach_port) {
-    LOG(ERROR) << "Failed to locally open IOSurface from mach port to be "
-                  "returned to client, not returning to client.";
-    static int dump_counter = kMaxCrashDumps;
-    if (dump_counter) {
-      dump_counter -= 1;
-      base::debug::DumpWithoutCrashing();
-    }
-    return gfx::GpuMemoryBufferHandle();
-  }
+  handle.io_surface = io_surface;
 
   {
     base::AutoLock lock(io_surfaces_lock_);
@@ -127,8 +105,8 @@ GpuMemoryBufferFactoryIOSurface::CreateImageForGpuMemoryBuffer(
     IOSurfaceMap::iterator it = io_surfaces_.find(key);
     if (it != io_surfaces_.end())
       io_surface = it->second;
-  } else if (handle.mach_port) {
-    io_surface.reset(IOSurfaceLookupFromMachPort(handle.mach_port.get()));
+  } else if (handle.io_surface) {
+    io_surface = handle.io_surface;
     if (!io_surface) {
       DLOG(ERROR) << "Failed to open IOSurface from handle.";
       return nullptr;
@@ -179,28 +157,6 @@ GpuMemoryBufferFactoryIOSurface::CreateAnonymousImage(
   if (!io_surface) {
     LOG(ERROR) << "Failed to allocate IOSurface.";
     return nullptr;
-  }
-
-  // This IOSurface does not require passing via a mach port, but attempt to
-  // locally open via a mach port to gather data to include in a Radar about
-  // this failure.
-  // https://crbug.com/795649
-  gfx::ScopedRefCountedIOSurfaceMachPort mach_port(
-      IOSurfaceCreateMachPort(io_surface));
-  if (mach_port) {
-    base::ScopedCFTypeRef<IOSurfaceRef> io_surface_from_mach_port(
-        IOSurfaceLookupFromMachPort(mach_port.get()));
-    if (!io_surface_from_mach_port) {
-      LOG(ERROR) << "Failed to locally open anonymous IOSurface mach port "
-                    "(ignoring failure).";
-      static int dump_counter = kMaxCrashDumps;
-      if (dump_counter) {
-        dump_counter -= 1;
-        base::debug::DumpWithoutCrashing();
-      }
-    }
-  } else {
-    LOG(ERROR) << "Failed to create IOSurface mach port.";
   }
 
   unsigned internalformat = gl::BufferFormatToGLInternalFormat(format);

@@ -72,7 +72,7 @@ struct GFX_EXPORT GpuMemoryBufferHandle {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
   NativePixmapHandle native_pixmap_handle;
 #elif defined(OS_MAC)
-  ScopedRefCountedIOSurfaceMachPort mach_port;
+  gfx::ScopedIOSurface io_surface;
 #elif defined(OS_WIN)
   base::win::ScopedHandle dxgi_handle;
 #elif defined(OS_ANDROID)

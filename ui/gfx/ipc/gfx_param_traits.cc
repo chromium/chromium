@@ -63,6 +63,39 @@ void ParamTraits<gfx::ScopedRefCountedIOSurfaceMachPort>::Log(
   l->append("IOSurface Mach send right: ");
   LogParam(p.get(), l);
 }
+
+void ParamTraits<gfx::ScopedIOSurface>::Write(base::Pickle* m,
+                                              const param_type p) {
+  gfx::ScopedRefCountedIOSurfaceMachPort io_surface_mach_port(
+      IOSurfaceCreateMachPort(p.get()));
+  MachPortMac mach_port_mac(io_surface_mach_port.get());
+  ParamTraits<MachPortMac>::Write(m, mach_port_mac);
+}
+
+bool ParamTraits<gfx::ScopedIOSurface>::Read(const base::Pickle* m,
+                                             base::PickleIterator* iter,
+                                             param_type* r) {
+  MachPortMac mach_port_mac;
+  if (!ParamTraits<MachPortMac>::Read(m, iter, &mach_port_mac))
+    return false;
+  gfx::ScopedRefCountedIOSurfaceMachPort io_surface_mach_port(
+      mach_port_mac.get_mach_port());
+  if (io_surface_mach_port)
+    r->reset(IOSurfaceLookupFromMachPort(io_surface_mach_port.get()));
+  else
+    r->reset();
+  return true;
+}
+
+void ParamTraits<gfx::ScopedIOSurface>::Log(const param_type& p,
+                                            std::string* l) {
+  l->append("IOSurface(");
+  if (p) {
+    uint32_t io_surface_id = IOSurfaceGetID(p.get());
+    LogParam(io_surface_id, l);
+  }
+  l->append(")");
+}
 #endif  // defined(OS_MAC)
 
 void ParamTraits<gfx::SelectionBound>::Write(base::Pickle* m,
