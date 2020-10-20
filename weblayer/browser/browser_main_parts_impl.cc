@@ -87,7 +87,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   PrerenderLinkManagerFactory::GetInstance();
   PrerenderManagerFactory::GetInstance();
 #if defined(OS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kMediaRouter)) {
+  if (MediaRouterFactory::IsFeatureEnabled()) {
     LocalPresentationManagerFactory::GetInstance();
     MediaRouterFactory::GetInstance();
   }

@@ -641,7 +641,7 @@ ContentBrowserClientImpl::GetControllerPresentationServiceDelegate(
   if (WebLayerFactoryImplAndroid::GetClientMajorVersion() < 88)
     return nullptr;
 
-  if (base::FeatureList::IsEnabled(features::kMediaRouter)) {
+  if (MediaRouterFactory::IsFeatureEnabled()) {
     MediaRouterFactory::DoPlatformInitIfNeeded();
     return media_router::PresentationServiceDelegateImpl::
         GetOrCreateForWebContents(web_contents);

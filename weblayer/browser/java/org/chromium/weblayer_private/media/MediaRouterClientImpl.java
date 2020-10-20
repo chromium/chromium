@@ -5,11 +5,16 @@
 package org.chromium.weblayer_private.media;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.support.v4.media.session.MediaSessionCompat;
 
 import androidx.fragment.app.FragmentManager;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.components.browser_ui.media.MediaNotificationController;
@@ -85,6 +90,18 @@ public class MediaRouterClientImpl extends MediaRouterClient {
         if (MediaRouterClient.getInstance() != null) return;
 
         MediaRouterClient.setInstance(new MediaRouterClientImpl());
+    }
+
+    @CalledByNative
+    public static boolean isMediaRouterEnabled() {
+        Context context = ContextUtils.getApplicationContext();
+        try {
+            ApplicationInfo ai = context.getPackageManager().getApplicationInfo(
+                    context.getPackageName(), PackageManager.GET_META_DATA);
+            return ai.metaData.getBoolean(RemoteMediaServiceConstants.FEATURE_ENABLED_KEY);
+        } catch (NameNotFoundException e) {
+            return false;
+        }
     }
 
     private static class MediaRouterNotificationControllerDelegate

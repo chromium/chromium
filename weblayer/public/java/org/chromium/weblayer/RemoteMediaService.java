@@ -17,7 +17,18 @@ import org.chromium.weblayer_private.interfaces.RemoteMediaServiceConstants;
  *
  * Like {@link MediaSessionService}, this class is associated with a notification for an ongoing
  * media session. The difference is that the media for this service is played back on a remote
- * device, i.e. casting.
+ * device, i.e. casting. This class can be considered an implementation detail of WebLayer.
+ *
+ * In order to set the Cast application (optional but recommended), the client should add the
+ * following to its manifest:
+ *
+ *    <meta-data
+ *        android:name="org.chromium.content.browser.REMOTE_PLAYBACK_APP_ID"
+ *        android:value="$APP_ID"/>
+ *
+ * Where $APP_ID is the value assigned to your app by the Google Cast SDK Developer Console. If
+ * the cast application ID is not set, the app will appear as "Default Media Receiver" in the
+ * notification, device selection dialog, etc.
  *
  * @since 88
  */

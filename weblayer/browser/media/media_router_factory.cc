@@ -21,6 +21,13 @@ MediaRouterFactory* MediaRouterFactory::GetInstance() {
 }
 
 // static
+bool MediaRouterFactory::IsFeatureEnabled() {
+  static bool enabled = Java_MediaRouterClientImpl_isMediaRouterEnabled(
+      base::android::AttachCurrentThread());
+  return enabled;
+}
+
+// static
 void MediaRouterFactory::DoPlatformInitIfNeeded() {
   static bool init_done = false;
   if (init_done)

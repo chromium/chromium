@@ -12,8 +12,6 @@ namespace features {
 
 // Weblayer features in alphabetical order.
 
-extern const base::Feature kMediaRouter;
-
 extern const base::Feature kWebLayerSafeBrowsing;
 
 }  // namespace features

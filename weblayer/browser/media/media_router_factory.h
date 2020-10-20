@@ -25,6 +25,9 @@ class MediaRouterFactory : public media_router::MediaRouterFactory {
 
   static MediaRouterFactory* GetInstance();
 
+  // Determines if media router related features should be enabled.
+  static bool IsFeatureEnabled();
+
   // Performs platform and WebLayer-specific initialization for media_router.
   static void DoPlatformInitIfNeeded();
 
