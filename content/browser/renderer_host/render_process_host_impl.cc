@@ -149,7 +149,6 @@
 #include "content/common/resource_messages.h"
 #include "content/common/service_worker/service_worker_utils.h"
 #include "content/common/view_messages.h"
-#include "content/common/widget_messages.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_or_resource_context.h"
 #include "content/public/browser/browser_task_traits.h"

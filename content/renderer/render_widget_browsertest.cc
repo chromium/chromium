@@ -5,7 +5,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
-#include "content/common/widget_messages.h"
 #include "content/public/renderer/render_frame_visitor.h"
 #include "content/public/test/fake_render_widget_host.h"
 #include "content/public/test/render_view_test.h"
