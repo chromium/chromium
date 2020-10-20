@@ -120,6 +120,7 @@ def try_builder(
         main_list_view = args.DEFAULT,
         subproject_list_view = args.DEFAULT,
         tryjob = None,
+        experiments = None,
         **kwargs):
     """Define a try builder.
 
@@ -148,9 +149,15 @@ def try_builder(
         no effect on adding an entry to the subproject list view.
       tryjob - A struct containing the details of the tryjob verifier for the
         builder, obtained by calling the `tryjob` function.
+      experiments - a dict of experiment name to the percentage chance (0-100)
+        that it will apply to builds generated from this builder.
     """
     if not branches.matches(branch_selector):
         return
+
+    # Enable "chromium.resultdb.result_sink" on all try builders for 10% by default.
+    experiments = experiments or {}
+    experiments.setdefault("chromium.resultdb.result_sink", 10)
 
     # Define the builder first so that any validation of luci.builder arguments
     # (e.g. bucket) occurs before we try to use it
@@ -160,6 +167,7 @@ def try_builder(
         resultdb_bigquery_exports = [resultdb.export_test_results(
             bq_table = "luci-resultdb.chromium.try_test_results",
         )],
+        experiments = experiments,
         **kwargs
     )
 
