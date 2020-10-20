@@ -237,6 +237,10 @@ class SGIVideoSyncThread : public base::Thread,
     DCHECK(task_runner()->BelongsToCurrentThread());
     if (context_)
       glXDestroyContext(GetConnection()->display(), context_);
+    // Release the connection from this thread's sequence so that a new
+    // SGIVideoSyncThread can reuse the connection.  The connection must be
+    // reused since it can only be created before sandbox initialization.
+    GetConnection()->DetachFromSequence();
   }
 
   GLXContext GetGLXContext() {
