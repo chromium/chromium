@@ -1568,8 +1568,8 @@ const FeatureEntry::FeatureVariation kPromoBrowserCommandsVariations[] = {
      nullptr}};
 #if !defined(OS_ANDROID)
 const FeatureEntry::FeatureVariation kNtpShoppingTasksModuleVariations[] = {
-    {"- Real Data", {}, 0, "t4445867" /* variation_id */},
-    {"- Fake Data", {}, 0, "t4445868" /* variation_id */},
+    {"- Real Data", {}, 0, "t3329137" /* variation_id */},
+    {"- Fake Data", {}, 0, "t3329139" /* variation_id */},
 };
 #endif  // !defined(OS_ANDROID)
 
