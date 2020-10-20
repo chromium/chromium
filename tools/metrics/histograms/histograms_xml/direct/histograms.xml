@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="DirectWrite.Fonts.Gfx.InitializeLoopCount" units="units"
-    expires_after="M88">
+    expires_after="2021-10-15">
   <owner>drott@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -34,14 +34,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.CreateFontFaceResult" enum="Hresult"
-    expires_after="M88">
+    expires_after="2021-10-15">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>Records the error returned from CreateFontFace.</summary>
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.EmptyFamilyResultsRatio"
-    units="percentage of empty family results" expires_after="M88">
+    units="percentage of empty family results" expires_after="2021-10-15">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -56,14 +56,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.Fallback.CacheSize" units="Count"
-    expires_after="M88">
+    expires_after="2021-10-15">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>Records how many font families are in the fallback cache.</summary>
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.FallbackResult"
-    enum="DirectWriteFontFallbackResult" expires_after="M88">
+    enum="DirectWriteFontFallbackResult" expires_after="2021-10-15">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -74,7 +74,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.FamilyCount" units="families"
-    expires_after="M88">
+    expires_after="2021-10-15">
   <owner>drott@chromium.org</owner>
   <summary>
     The number of font families as seen by the font proxy in the renderer.
@@ -82,7 +82,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.FamilyCountIndexingStart"
-    units="font files" expires_after="M88">
+    units="font files" expires_after="2021-10-15">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -96,7 +96,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.FontProxyError"
-    enum="DirectWriteFontProxyError" expires_after="M88">
+    enum="DirectWriteFontProxyError" expires_after="2021-10-15">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -105,14 +105,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.GetSystemFontCollectionResult"
-    enum="Hresult" expires_after="M88">
+    enum="Hresult" expires_after="2021-10-15">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>Records the error returned from GetSystemFontCollection.</summary>
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.IndexingSpeed"
-    units="font files per second" expires_after="M88">
+    units="font files per second" expires_after="2021-10-15">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -123,7 +123,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.LastResortFontCount" units="fonts"
-    expires_after="M88">
+    expires_after="2021-10-15">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -133,7 +133,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.LastResortFontFileCount" units="files"
-    expires_after="M88">
+    expires_after="2021-10-15">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -142,7 +142,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.LoaderType"
-    enum="DirectWriteFontLoaderType" expires_after="M88">
+    enum="DirectWriteFontLoaderType" expires_after="2021-10-15">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -153,7 +153,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.LoadFamilyResult"
-    enum="DirectWriteLoadFamilyResult" expires_after="M88">
+    enum="DirectWriteLoadFamilyResult" expires_after="2021-10-15">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -164,7 +164,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.LoadFamilyTime" units="ms"
-    expires_after="M88">
+    expires_after="2021-10-15">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -174,7 +174,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.LookupTableBuildTime" units="ms"
-    expires_after="M88">
+    expires_after="2021-10-15">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -186,7 +186,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.LookupTableDiskCacheHit"
-    units="BooleanSuccess" expires_after="M88">
+    units="BooleanSuccess" expires_after="2021-10-15">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -198,7 +198,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.LookupTablePersistSuccess"
-    units="BooleanSuccess" expires_after="M88">
+    units="BooleanSuccess" expires_after="2021-10-15">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -209,7 +209,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.LookupTableReadyTime" units="ms"
-    expires_after="M88">
+    expires_after="2021-10-15">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -227,7 +227,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.LookupTableSize" units="KB"
-    expires_after="M88">
+    expires_after="2021-10-15">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -238,7 +238,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.MessageFilterError"
-    enum="DirectWriteMessageFilterError" expires_after="M88">
+    enum="DirectWriteMessageFilterError" expires_after="2021-10-15">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -247,7 +247,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.MostFrequentScanningFailure"
-    enum="Hresult" expires_after="M88">
+    enum="Hresult" expires_after="2021-10-15">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -261,7 +261,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.NumFontFiles" units="font files"
-    expires_after="M88">
+    expires_after="2021-10-15">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -273,7 +273,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.TableBuildTimedOut"
-    units="BooleanTimedout" expires_after="M88">
+    units="BooleanTimedout" expires_after="2021-10-15">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
