@@ -21,7 +21,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.protocol.EntitySpecifics;
@@ -45,10 +44,6 @@ import java.util.List;
 public class TypedUrlsTest {
     @Rule
     public SyncTestRule mSyncTestRule = new SyncTestRule();
-
-    @Rule
-    public final ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule();
 
     private static final String TAG = "TypedUrlsTest";
 
@@ -75,7 +70,6 @@ public class TypedUrlsTest {
     @Before
     public void setUp() throws Exception {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        mActivityTestRule.startMainActivityOnBlankPage();
         // Make sure the initial state is clean.
         assertClientTypedUrlCount(0);
         assertServerTypedUrlCountWithName(0, URL);
@@ -128,7 +122,7 @@ public class TypedUrlsTest {
     private void loadUrlByTyping(final String url) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             LoadUrlParams params = new LoadUrlParams(url, PageTransition.TYPED);
-            mActivityTestRule.getActivity().getActivityTab().loadUrl(params);
+            mSyncTestRule.getActivity().getActivityTab().loadUrl(params);
         });
     }
 

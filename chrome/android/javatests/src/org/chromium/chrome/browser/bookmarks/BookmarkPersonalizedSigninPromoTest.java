@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.signin.SigninActivityLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.BookmarkTestRule;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
@@ -50,10 +49,6 @@ public class BookmarkPersonalizedSigninPromoTest {
     private final SyncTestRule mSyncTestRule = new SyncTestRule();
 
     private final BookmarkTestRule mBookmarkTestRule = new BookmarkTestRule();
-
-    @Rule
-    public final ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule();
 
     // As bookmarks need the fake AccountManagerFacade in SyncTestRule,
     // BookmarkTestRule should be initialized after and destroyed before the
@@ -69,7 +64,6 @@ public class BookmarkPersonalizedSigninPromoTest {
         BookmarkPromoHeader.forcePromoStateForTests(
                 BookmarkPromoHeader.PromoState.PROMO_SIGNIN_PERSONALIZED);
         SigninActivityLauncherImpl.setLauncherForTest(mMockSigninActivityLauncherImpl);
-        mActivityTestRule.startMainActivityOnBlankPage();
     }
 
     @After
@@ -120,7 +114,7 @@ public class BookmarkPersonalizedSigninPromoTest {
     }
 
     private void showBookmarkManagerAndCheckSigninPromoIsDisplayed() {
-        mBookmarkTestRule.showBookmarkManager(mActivityTestRule.getActivity());
+        mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
         onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
     }
 }

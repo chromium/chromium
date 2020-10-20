@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.sync.protocol.EntitySpecifics;
 import org.chromium.components.sync.protocol.SessionHeader;
@@ -51,10 +50,6 @@ import java.util.Map;
 public class OpenTabsTest {
     @Rule
     public SyncTestRule mSyncTestRule = new SyncTestRule();
-
-    @Rule
-    public final ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule();
 
     private static final String TAG = "OpenTabsTest";
 
@@ -101,8 +96,6 @@ public class OpenTabsTest {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mClientName = getClientName();
         mSessionTagCounter = 0;
-
-        mActivityTestRule.startMainActivityOnBlankPage();
     }
 
     // Test syncing an open tab from client to server.
@@ -110,7 +103,7 @@ public class OpenTabsTest {
     @LargeTest
     @Feature({"Sync"})
     public void testUploadOpenTab() {
-        mActivityTestRule.loadUrl(URL);
+        mSyncTestRule.loadUrl(URL);
         waitForLocalTabsForClient(mClientName, URL);
         waitForServerTabs(URL);
     }
@@ -120,9 +113,9 @@ public class OpenTabsTest {
     @LargeTest
     @Feature({"Sync"})
     public void testUploadMultipleOpenTabs() {
-        mActivityTestRule.loadUrl(URL);
-        mActivityTestRule.loadUrlInNewTab(URL2);
-        mActivityTestRule.loadUrlInNewTab(URL3);
+        mSyncTestRule.loadUrl(URL);
+        mSyncTestRule.loadUrlInNewTab(URL2);
+        mSyncTestRule.loadUrlInNewTab(URL3);
         waitForLocalTabsForClient(mClientName, URL, URL2, URL3);
         waitForServerTabs(URL, URL2, URL3);
     }
@@ -132,14 +125,14 @@ public class OpenTabsTest {
     @LargeTest
     @Feature({"Sync"})
     public void testUploadAndCloseOpenTab() {
-        mActivityTestRule.loadUrl(URL);
+        mSyncTestRule.loadUrl(URL);
         // Can't have zero tabs, so we have to open two to test closing one.
-        mActivityTestRule.loadUrlInNewTab(URL2);
+        mSyncTestRule.loadUrlInNewTab(URL2);
         waitForLocalTabsForClient(mClientName, URL, URL2);
         waitForServerTabs(URL, URL2);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TabModelSelector selector = mActivityTestRule.getActivity().getTabModelSelector();
+            TabModelSelector selector = mSyncTestRule.getActivity().getTabModelSelector();
             Assert.assertTrue(TabModelUtils.closeCurrentTab(selector.getCurrentModel()));
         });
 

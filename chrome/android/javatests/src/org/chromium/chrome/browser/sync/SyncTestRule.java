@@ -16,17 +16,19 @@ import androidx.annotation.Nullable;
 import androidx.preference.TwoStatePreference;
 
 import org.junit.Assert;
-import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.Promise;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
-import org.chromium.chrome.browser.init.ProcessInitializationHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.UnifiedConsentServiceBridge;
+import org.chromium.chrome.browser.uid.UniqueIdentificationGenerator;
 import org.chromium.chrome.browser.uid.UniqueIdentificationGeneratorFactory;
+import org.chromium.chrome.browser.uid.UuidBasedUniqueIdentificationGenerator;
+import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
@@ -50,7 +52,7 @@ import java.util.concurrent.Callable;
 /**
  * TestRule for common functionality between sync tests.
  */
-public class SyncTestRule implements TestRule {
+public class SyncTestRule extends ChromeActivityTestRule<ChromeActivity> {
     private static final String TAG = "SyncTestBase";
 
     private static final String CLIENT_ID = "Client_ID";
@@ -140,7 +142,9 @@ public class SyncTestRule implements TestRule {
         ProfileSyncService.resetForTests();
     }
 
-    public SyncTestRule() {}
+    public SyncTestRule() {
+        super(ChromeActivity.class);
+    }
 
     /**Getters for Test variables */
     public Context getTargetContext() {
@@ -157,6 +161,12 @@ public class SyncTestRule implements TestRule {
 
     MockSyncContentResolverDelegate getSyncContentResolver() {
         return mSyncContentResolver;
+    }
+
+    public void startMainActivityForSyncTest() throws Exception {
+        // Start the activity by opening about:blank. This URL is ideal because it is not synced as
+        // a typed URL. If another URL is used, it could interfere with test data.
+        startMainActivityOnBlankPage();
     }
 
     /**
@@ -305,7 +315,7 @@ public class SyncTestRule implements TestRule {
 
     @Override
     public Statement apply(final Statement statement, final Description desc) {
-        return mAccountManagerTestRule.apply(new Statement() {
+        final Statement base = super.apply(new Statement() {
             @Override
             public void evaluate() throws Throwable {
                 mSyncContentResolver = new MockSyncContentResolverDelegate();
@@ -318,9 +328,6 @@ public class SyncTestRule implements TestRule {
 
                 // Load native since the FakeServer needs it and possibly ProfileSyncService as well
                 // (depends on what fake is provided by |createProfileSyncService()|).
-                TestThreadUtils.runOnUiThreadBlocking(() -> {
-                    ProcessInitializationHandler.getInstance().initializePreNative();
-                });
                 NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
 
                 TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -336,13 +343,27 @@ public class SyncTestRule implements TestRule {
                 });
 
                 UniqueIdentificationGeneratorFactory.registerGenerator(
-                        SyncController.GENERATOR_ID, salt -> CLIENT_ID, true);
+                        UuidBasedUniqueIdentificationGenerator.GENERATOR_ID,
+                        new UniqueIdentificationGenerator() {
+                            @Override
+                            public String getUniqueId(String salt) {
+                                return CLIENT_ID;
+                            }
+                        },
+                        true);
+
+                startMainActivityForSyncTest();
 
                 // Ensure SyncController is created.
                 TestThreadUtils.runOnUiThreadBlocking(() -> SyncController.get());
 
                 statement.evaluate();
-
+            }
+        }, desc);
+        return mAccountManagerTestRule.apply(new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                base.evaluate();
                 ruleTearDown();
             }
         }, desc);
