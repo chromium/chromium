@@ -97,20 +97,6 @@ IPC_STRUCT_TRAITS_END()
 // started.
 IPC_MESSAGE_ROUTED0(ViewMsg_MoveOrResizeStarted)
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-// Reply to ViewHostMsg_OpenChannelToPpapiBroker
-// Tells the renderer that the channel to the broker has been created.
-IPC_MESSAGE_ROUTED2(ViewMsg_PpapiBrokerChannelCreated,
-                    base::ProcessId /* broker_pid */,
-                    IPC::ChannelHandle /* handle */)
-
-// Reply to ViewHostMsg_RequestPpapiBrokerPermission.
-// Tells the renderer whether permission to access to PPAPI broker was granted
-// or not.
-IPC_MESSAGE_ROUTED1(ViewMsg_PpapiBrokerPermissionResult,
-                    bool /* result */)
-#endif
-
 // -----------------------------------------------------------------------------
 // Messages sent from the renderer to the browser.
 
@@ -121,17 +107,6 @@ IPC_MESSAGE_ROUTED1(ViewMsg_PpapiBrokerPermissionResult,
 IPC_MESSAGE_ROUTED2(ViewHostMsg_ShowWidget,
                     int /* route_id */,
                     gfx::Rect /* initial_rect */)
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-// A renderer sends this to the browser process when it wants to access a PPAPI
-// broker. In contrast to FrameHostMsg_OpenChannelToPpapiBroker, this is called
-// for every connection.
-// The browser will respond with ViewMsg_PpapiBrokerPermissionResult.
-IPC_MESSAGE_ROUTED3(ViewHostMsg_RequestPpapiBrokerPermission,
-                    int /* routing_id */,
-                    GURL /* document_url */,
-                    base::FilePath /* plugin_path */)
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 // Adding a new message? Stick to the sort order above: first platform
 // independent ViewMsg, then ifdefs for platform specific ViewMsg, then platform

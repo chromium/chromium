@@ -534,15 +534,6 @@ IPC_MESSAGE_CONTROL3(FrameHostMsg_DidDeleteOutOfProcessPepperInstance,
                      int32_t /* pp_instance */,
                      bool /* is_external */)
 
-// A renderer sends this to the browser process when it wants to
-// create a ppapi broker.  The browser will create the broker process
-// if necessary, and will return a handle to the channel on success.
-// On error an empty string is returned.
-// The browser will respond with ViewMsg_PpapiBrokerChannelCreated.
-IPC_MESSAGE_CONTROL2(FrameHostMsg_OpenChannelToPpapiBroker,
-                     int /* routing_id */,
-                     base::FilePath /* path */)
-
 // A renderer sends this to the browser process when it throttles or unthrottles
 // a plugin instance for the Plugin Power Saver feature.
 IPC_MESSAGE_CONTROL3(FrameHostMsg_PluginInstanceThrottleStateChange,
