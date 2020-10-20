@@ -12,6 +12,38 @@
 
 namespace chromeos {
 
+namespace {
+
+class TestObserver : public ThrottleService::ServiceObserver {
+ public:
+  TestObserver() = default;
+  ~TestObserver() override = default;
+
+  // ThrottleService::Observer:
+  void OnThrottle(ThrottleObserver::PriorityLevel level) override {
+    last_level_ = level;
+    ++update_count_;
+  }
+
+  int GetUpdateCountAndReset() {
+    const int update_count = update_count_;
+    update_count_ = 0;
+    return update_count;
+  }
+
+  ThrottleObserver::PriorityLevel last_level() const { return last_level_; }
+
+ private:
+  int update_count_ = 0;
+  ThrottleObserver::PriorityLevel last_level_ =
+      ThrottleObserver::PriorityLevel::UNKNOWN;
+
+  TestObserver(TestObserver const&) = delete;
+  TestObserver& operator=(TestObserver const&) = delete;
+};
+
+}  // namespace
+
 class TestThrottleService : public ThrottleService {
  public:
   using ThrottleService::ThrottleService;
@@ -167,6 +199,49 @@ TEST_F(ThrottleServiceTest, RecordCpuRestrictionDisabledUMA) {
   EXPECT_EQ(3U, service()->uma_count());
   EXPECT_EQ(critical_observer()->name(),
             service()->last_recorded_observer_name());
+}
+
+// Tests that verifies enforcement mode.
+TEST_F(ThrottleServiceTest, TestEnforced) {
+  low_observer()->SetActive(true);
+  EXPECT_EQ(ThrottleObserver::PriorityLevel::LOW, service()->level());
+  service()->SetEnforced(ThrottleObserver::PriorityLevel::NORMAL);
+  EXPECT_EQ(ThrottleObserver::PriorityLevel::NORMAL, service()->level());
+  service()->SetEnforced(ThrottleObserver::PriorityLevel::UNKNOWN);
+  EXPECT_EQ(ThrottleObserver::PriorityLevel::LOW, service()->level());
+
+  low_observer()->SetActive(false);
+  critical_observer()->SetActive(true);
+  EXPECT_EQ(ThrottleObserver::PriorityLevel::CRITICAL,
+            service()->last_throttle_level());
+  service()->SetEnforced(ThrottleObserver::PriorityLevel::LOW);
+  EXPECT_EQ(ThrottleObserver::PriorityLevel::LOW, service()->level());
+  service()->SetEnforced(ThrottleObserver::PriorityLevel::UNKNOWN);
+  EXPECT_EQ(ThrottleObserver::PriorityLevel::CRITICAL, service()->level());
+}
+
+// Tests that verifies observer notifications.
+TEST_F(ThrottleServiceTest, TestObservers) {
+  TestObserver test_observer;
+  service()->AddServiceObserver(&test_observer);
+  EXPECT_EQ(0, test_observer.GetUpdateCountAndReset());
+  low_observer()->SetActive(true);
+  EXPECT_EQ(ThrottleObserver::PriorityLevel::LOW, test_observer.last_level());
+  EXPECT_EQ(ThrottleObserver::PriorityLevel::LOW, service()->level());
+  EXPECT_EQ(1, test_observer.GetUpdateCountAndReset());
+  low_observer()->SetActive(false);
+  critical_observer()->SetActive(true);
+  EXPECT_EQ(ThrottleObserver::PriorityLevel::CRITICAL,
+            test_observer.last_level());
+  EXPECT_EQ(ThrottleObserver::PriorityLevel::CRITICAL, service()->level());
+  EXPECT_EQ(1, test_observer.GetUpdateCountAndReset());
+  service()->RemoveServiceObserver(&test_observer);
+  critical_observer()->SetActive(false);
+  low_observer()->SetActive(true);
+  EXPECT_EQ(ThrottleObserver::PriorityLevel::CRITICAL,
+            test_observer.last_level());
+  EXPECT_EQ(ThrottleObserver::PriorityLevel::LOW, service()->level());
+  EXPECT_EQ(0, test_observer.GetUpdateCountAndReset());
 }
 
 }  // namespace chromeos

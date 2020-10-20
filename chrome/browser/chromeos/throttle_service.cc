@@ -16,6 +16,14 @@ ThrottleService::ThrottleService(content::BrowserContext* context)
 
 ThrottleService::~ThrottleService() = default;
 
+void ThrottleService::AddServiceObserver(ServiceObserver* observer) {
+  service_observers_.AddObserver(observer);
+}
+
+void ThrottleService::RemoveServiceObserver(ServiceObserver* observer) {
+  service_observers_.RemoveObserver(observer);
+}
+
 void ThrottleService::NotifyObserverStateChangedForTesting() {
   OnObserverStateChanged();
 }
@@ -48,19 +56,34 @@ void ThrottleService::StopObservers() {
     observer->StopObserving();
 }
 
+void ThrottleService::SetEnforced(ThrottleObserver::PriorityLevel level) {
+  if (enforced_level_ == level)
+    return;
+  enforced_level_ = level;
+  OnObserverStateChanged();
+}
+
 void ThrottleService::OnObserverStateChanged() {
   ThrottleObserver::PriorityLevel max_level =
       ThrottleObserver::PriorityLevel::LOW;
   ThrottleObserver* effective_observer = nullptr;
 
-  for (auto& observer : observers_) {
-    if (!observer->active())
-      continue;
-    DVLOG(1) << "Active Throttle Observer: " << observer->GetDebugDescription();
-    if (observer->level() >= max_level) {
-      max_level = observer->level();
-      effective_observer = observer.get();
+  if (enforced_level_ == ThrottleObserver::PriorityLevel::UNKNOWN) {
+    // Auto mode
+    for (auto& observer : observers_) {
+      if (!observer->active())
+        continue;
+      DVLOG(1) << "Active Throttle Observer: "
+               << observer->GetDebugDescription();
+      if (observer->level() >= max_level) {
+        max_level = observer->level();
+        effective_observer = observer.get();
+      }
     }
+  } else {
+    // Enforced mode
+    max_level = enforced_level_;
+    DVLOG(1) << "Throttle is enforced to " << enforced_level_;
   }
 
   if (effective_observer != last_effective_observer_) {
@@ -83,6 +106,9 @@ void ThrottleService::SetLevel(ThrottleObserver::PriorityLevel level) {
     return;
   level_ = level;
   ThrottleInstance(level);
+
+  for (auto& observer : service_observers_)
+    observer.OnThrottle(level);
 }
 
 }  // namespace chromeos

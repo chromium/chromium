@@ -11,6 +11,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "chrome/browser/chromeos/throttle_observer.h"
 
 namespace content {
@@ -26,13 +27,32 @@ namespace chromeos {
 // PriorityLevel, and calls ThrottleInstance with that level.
 class ThrottleService {
  public:
+  class ServiceObserver : public base::CheckedObserver {
+   public:
+    // Notifies that throttling has been changed.
+    virtual void OnThrottle(ThrottleObserver::PriorityLevel level) = 0;
+  };
+
   explicit ThrottleService(content::BrowserContext* context);
   virtual ~ThrottleService();
+
+  void AddServiceObserver(ServiceObserver* observer);
+  void RemoveServiceObserver(ServiceObserver* observer);
 
   // Functions for testing
   void NotifyObserverStateChangedForTesting();
   void SetObserversForTesting(
       std::vector<std::unique_ptr<ThrottleObserver>> observers);
+
+  // Sets enforced mode when level is fixed regardless of other observers.
+  // Setting this to ThrottleObserver::PriorityLevel::UNKNOWN effectifly
+  // switches to auto mode.
+  void SetEnforced(ThrottleObserver::PriorityLevel level);
+
+  ThrottleObserver::PriorityLevel level() const { return level_; }
+  ThrottleObserver::PriorityLevel enforced_level() const {
+    return enforced_level_;
+  }
   void set_level_for_testing(ThrottleObserver::PriorityLevel level);
 
  protected:
@@ -58,15 +78,17 @@ class ThrottleService {
     return observers_;
   }
   content::BrowserContext* context() const { return context_; }
-  ThrottleObserver::PriorityLevel level() const { return level_; }
 
  private:
   content::BrowserContext* const context_;
   std::vector<std::unique_ptr<ThrottleObserver>> observers_;
   ThrottleObserver::PriorityLevel level_{
       ThrottleObserver::PriorityLevel::UNKNOWN};
+  ThrottleObserver::PriorityLevel enforced_level_ = {
+      ThrottleObserver::PriorityLevel::UNKNOWN};
   ThrottleObserver* last_effective_observer_{nullptr};
   base::TimeTicks last_throttle_transition_;
+  base::ObserverList<ServiceObserver> service_observers_;
   base::WeakPtrFactory<ThrottleService> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ThrottleService);

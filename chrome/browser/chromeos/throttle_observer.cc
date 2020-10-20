@@ -56,4 +56,9 @@ std::string ThrottleObserver::GetDebugDescription() const {
           (active() ? "active" : "inactive") + ")");
 }
 
+std::ostream& operator<<(std::ostream& os,
+                         const ThrottleObserver::PriorityLevel& level) {
+  return os << LevelToString(level);
+}
+
 }  // namespace chromeos

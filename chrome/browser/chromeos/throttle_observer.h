@@ -63,6 +63,9 @@ class ThrottleObserver {
   DISALLOW_COPY_AND_ASSIGN(ThrottleObserver);
 };
 
+std::ostream& operator<<(std::ostream& os,
+                         const ThrottleObserver::PriorityLevel& level);
+
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_CHROMEOS_THROTTLE_OBSERVER_H_
