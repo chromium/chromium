@@ -13,6 +13,45 @@ namespace {
 
 namespace mojo_ipc = chromeos::scanning::mojom;
 
+// POD struct for page size dimensions in mm.
+struct PageSize {
+  int width;
+  int height;
+};
+
+// ISO A4: 210 x 297 mm.
+constexpr PageSize kIsoA4PageSize = {
+    210,
+    297,
+};
+
+// NA Letter: 216 x 279 mm.
+constexpr PageSize kNaLetterPageSize = {
+    216,
+    279,
+};
+
+// Returns true if |area| is large enough to support |page_size|.
+bool AreaSupportsPageSize(const lorgnette::ScannableArea& area,
+                          const PageSize& page_size) {
+  return area.width() >= page_size.width && area.height() >= page_size.height;
+}
+
+// Returns the page sizes the given |area| supports.
+std::vector<mojo_ipc::PageSize> GetSupportedPageSizes(
+    const lorgnette::ScannableArea& area) {
+  std::vector<mojo_ipc::PageSize> page_sizes;
+  page_sizes.reserve(3);
+  page_sizes.push_back(mojo_ipc::PageSize::kMax);
+  if (AreaSupportsPageSize(area, kIsoA4PageSize))
+    page_sizes.push_back(mojo_ipc::PageSize::kIsoA4);
+
+  if (AreaSupportsPageSize(area, kNaLetterPageSize))
+    page_sizes.push_back(mojo_ipc::PageSize::kNaLetter);
+
+  return page_sizes;
+}
+
 }  // namespace
 
 template <>
@@ -77,7 +116,8 @@ mojo_ipc::ScannerCapabilitiesPtr TypeConverter<mojo_ipc::ScannerCapabilitiesPtr,
   mojo_caps.sources.reserve(lorgnette_caps.sources().size());
   for (const auto& source : lorgnette_caps.sources()) {
     mojo_caps.sources.push_back(mojo_ipc::ScanSource::New(
-        mojo::ConvertTo<mojo_ipc::SourceType>(source.type()), source.name()));
+        mojo::ConvertTo<mojo_ipc::SourceType>(source.type()), source.name(),
+        GetSupportedPageSizes(source.area())));
   }
 
   mojo_caps.color_modes.reserve(lorgnette_caps.color_modes().size());

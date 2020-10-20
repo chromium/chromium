@@ -6,11 +6,14 @@
 
 #include "chromeos/components/scanning/mojom/scanning.mojom.h"
 #include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
 
 namespace {
+
+using ::testing::ElementsAreArray;
 
 namespace mojo_ipc = scanning::mojom;
 
@@ -31,6 +34,11 @@ struct ScanSettingsTestParams {
 // Document source name used for tests.
 constexpr char kDocumentSourceName[] = "Test Name";
 
+// Scannable area dimensions used for tests. These are large enough to ensure
+// every page size is supported by the scanner.
+constexpr int kScanAreaWidthMm = 500;
+constexpr int kScanAreaHeightMm = 750;
+
 // Resolutions used for tests.
 constexpr uint32_t kFirstResolution = 75;
 constexpr uint32_t kSecondResolution = 300;
@@ -41,6 +49,8 @@ lorgnette::DocumentSource CreateLorgnetteDocumentSource(
   lorgnette::DocumentSource source;
   source.set_type(source_type);
   source.set_name(kDocumentSourceName);
+  source.mutable_area()->set_width(kScanAreaWidthMm);
+  source.mutable_area()->set_height(kScanAreaHeightMm);
   return source;
 }
 
@@ -96,6 +106,10 @@ TEST_P(ScannerCapabilitiesTest, LorgnetteCapsToMojom) {
   ASSERT_EQ(mojo_caps->sources.size(), 1u);
   EXPECT_EQ(mojo_caps->sources[0]->type, params().mojom_source_type);
   EXPECT_EQ(mojo_caps->sources[0]->name, kDocumentSourceName);
+  EXPECT_THAT(
+      mojo_caps->sources[0]->page_sizes,
+      ElementsAreArray({mojo_ipc::PageSize::kMax, mojo_ipc::PageSize::kIsoA4,
+                        mojo_ipc::PageSize::kNaLetter}));
   ASSERT_EQ(mojo_caps->color_modes.size(), 1u);
   EXPECT_EQ(mojo_caps->color_modes[0], params().mojom_color_mode);
   ASSERT_EQ(mojo_caps->resolutions.size(), 2u);

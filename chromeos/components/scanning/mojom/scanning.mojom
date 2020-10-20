@@ -36,6 +36,16 @@ enum SourceType {
   kDefault,
 };
 
+// The page sizes that can be used to perform a scan.
+enum PageSize {
+  // ISO A4 (210 x 297 mm).
+  kIsoA4,
+  // NA Letter (216 x 279 mm).
+  kNaLetter,
+  // The page size resulting from scanning the scanner's entire scannable area.
+  kMax,
+};
+
 // The source from which a scan can be obtained.
 struct ScanSource {
   // The type of this source.
@@ -43,6 +53,8 @@ struct ScanSource {
   // The name of this source. Source names are unique to each SANE backend and
   // are required to perform scans.
   string name;
+  // The page sizes supported by this source.
+  array<PageSize> page_sizes;
 };
 
 // The capabilities a scanner supports.
