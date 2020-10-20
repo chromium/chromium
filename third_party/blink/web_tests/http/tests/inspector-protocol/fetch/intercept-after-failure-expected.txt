@@ -1,0 +1,18 @@
+Tests that we intercept errors reported instead of response when intercepting responses.
+[mock fetcher] Request to http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html, type: Document
+Testing continuing failed request...
+[mock fetcher] Request to http://127.0.0.1:8000/devtools/network/resources/resource-deny.php, type: XHR
+Intercepted GET http://127.0.0.1:8000/devtools/network/resources/resource-deny.php at response, error: AccessDenied
+Fetched responsed with: Error: {}
+Testing failing failed request...
+[mock fetcher] Request to http://127.0.0.1:8000/devtools/network/resources/resource-deny.php, type: XHR
+Intercepted GET http://127.0.0.1:8000/devtools/network/resources/resource-deny.php at response, error: AccessDenied
+Fetched responsed with: Error: {}
+Testing fulfilling failed request...
+[mock fetcher] Request to http://127.0.0.1:8000/devtools/network/resources/resource-deny.php, type: XHR
+Intercepted GET http://127.0.0.1:8000/devtools/network/resources/resource-deny.php at response, error: AccessDenied
+Fetched responsed with: overriden response body
+Testing we're not pausing on errors when only intercepting requests...
+[mock fetcher] Request to http://127.0.0.1:8000/devtools/network/resources/resource-deny.php, type: XHR
+Fetched responsed with: Error: {}
+

@@ -317,6 +317,7 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
 
   void StartRequest();
   void CancelRequest();
+  void CompleteRequest(const network::URLLoaderCompletionStatus& status);
   void Shutdown();
 
   std::unique_ptr<InterceptedRequestInfo> BuildRequestInfo(
@@ -854,9 +855,10 @@ void InterceptionJob::Detach() {
 
 Response InterceptionJob::InnerContinueRequest(
     std::unique_ptr<Modifications> modifications) {
-  if (!waiting_for_resolution_)
+  if (!waiting_for_resolution_) {
     return Response::ServerError(
         "Invalid state for continueInterceptedRequest");
+  }
   waiting_for_resolution_ = false;
 
   if (state_ == State::kAuthRequired) {
@@ -880,15 +882,15 @@ Response InterceptionJob::InnerContinueRequest(
       status.extended_error_code =
           static_cast<int>(blink::ResourceRequestBlockedReason::kInspector);
     }
-    client_->OnComplete(status);
-    Shutdown();
+    CompleteRequest(status);
     return Response::Success();
   }
 
-  if (modifications->response_headers || modifications->response_body)
+  if (modifications->response_headers || modifications->response_body) {
     return ProcessResponseOverride(std::move(modifications->response_headers),
                                    std::move(modifications->response_body),
                                    modifications->body_offset);
+  }
 
   if (state_ == State::kFollowRedirect) {
     if (modifications->modified_url.isJust()) {
@@ -934,6 +936,10 @@ Response InterceptionJob::InnerContinueRequest(
           "Unable to continue request as is after body is taken");
     }
     // TODO(caseq): report error if other modifications are present.
+    if (response_metadata_->status.error_code) {
+      CompleteRequest(response_metadata_->status);
+      return Response::Success();
+    }
     DCHECK_EQ(State::kResponseReceived, state_);
     DCHECK(!body_reader_);
     client_->OnReceiveResponse(std::move(response_metadata_->head));
@@ -1173,8 +1179,7 @@ void InterceptionJob::SendResponse(scoped_refptr<base::RefCountedMemory> body,
   }
   if (response_metadata_->transfer_size)
     client_->OnTransferSizeUpdated(response_metadata_->transfer_size);
-  client_->OnComplete(response_metadata_->status);
-  Shutdown();
+  CompleteRequest(response_metadata_->status);
 }
 
 void InterceptionJob::ResponseBodyComplete() {
@@ -1267,6 +1272,7 @@ void InterceptionJob::FetchCookies(
 
 void InterceptionJob::NotifyClient(
     std::unique_ptr<InterceptedRequestInfo> request_info) {
+  DCHECK(!waiting_for_resolution_);
   FetchCookies(base::BindOnce(&InterceptionJob::NotifyClientWithCookies,
                               base::Unretained(this), std::move(request_info)));
 }
@@ -1288,6 +1294,12 @@ void InterceptionJob::NotifyClientWithCookies(
 
   waiting_for_resolution_ = true;
   interceptor_->request_intercepted_callback_.Run(std::move(request_info));
+}
+
+void InterceptionJob::CompleteRequest(
+    const network::URLLoaderCompletionStatus& status) {
+  client_->OnComplete(status);
+  Shutdown();
 }
 
 void InterceptionJob::Shutdown() {
@@ -1456,18 +1468,32 @@ void InterceptionJob::OnStartLoadingResponseBody(
 
 void InterceptionJob::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
-  // Essentially ShouldBypassForResponse(), but skip DCHECKs
-  // since this may be called in any state during shutdown.
-  if (!response_metadata_) {
-    client_->OnComplete(status);
-    Shutdown();
-    return;
-  }
-  response_metadata_->status = status;
   // No need to listen to the channel any more, so just reset it, so if the pipe
   // is closed by the other end, |shutdown| isn't run.
   client_receiver_.reset();
   loader_.reset();
+
+  if (!response_metadata_) {
+    // If we haven't seen response and get an error completion,
+    // treat it as a response and intercept (provided response are
+    // being intercepted).
+    if (!(stage_ & InterceptionStage::RESPONSE) || !status.error_code) {
+      CompleteRequest(status);
+      return;
+    }
+    response_metadata_ = std::make_unique<ResponseMetadata>();
+    response_metadata_->status = status;
+    auto request_info = BuildRequestInfo(nullptr);
+    request_info->response_error_code = status.error_code;
+    NotifyClient(std::move(request_info));
+    return;
+  }
+  // Since we're not forwarding OnComplete right now, make sure
+  // we're in the proper state. The completion is due upon client response.
+  DCHECK(state_ == State::kResponseReceived || state_ == State::kResponseTaken);
+  DCHECK(waiting_for_resolution_);
+
+  response_metadata_->status = status;
 }
 
 void InterceptionJob::OnAuthRequest(
