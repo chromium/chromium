@@ -38,7 +38,9 @@ roll](https://autoroll.skia.org/r/catapult-autoroll), which should
 automatically TBR the sheriff. If the catapult roll fails, the sheriff should
 investigate and revert suspect changelists.
 
-The sheriff should *not* feel like responsible for investigating hard problems. The volume of incoming alerts makes this infeasible. Instead, they should delegate deep investigations to the right owners. As a rule of thumb, a trained sheriff should expect to spend 10-20 minutes per alert and should never be spending more than an hour per alert.
+Near the end of their shift, sheriffs should also inspect[this dashboard](https://dashboards.corp.google.com/_e3cbeb60_d250_4e67_8795_56cd9af8a303) for the time covered during their shift, and do a first-pass analysis of any anomalies (e.g. jobs taking 6 hours when they normally take 1.5).
+
+The sheriff should *not* feel responsible for investigating hard problems. The volume of incoming alerts makes this infeasible. Instead, they should delegate deep investigations to the right owners. As a rule of thumb, a trained sheriff should expect to spend 10-20 minutes per alert and should never be spending more than an hour per alert.
 
 ## Workflow
 
