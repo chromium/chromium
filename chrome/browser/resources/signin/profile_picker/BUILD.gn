@@ -6,10 +6,16 @@ import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_grit.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 import("../../optimize_webui.gni")
 
+preprocess_folder = "preprocessed"
+preprocess_manifest = "preprocessed_manifest.json"
+preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+preprocess_shared_manifest = "preprocessed_shared_manifest.json"
+
 if (optimize_webui) {
-  preprocess_folder = "preprocessed"
+  build_manifest = "build_manifest.json"
 
   optimize_webui("build") {
     host = "profile-picker"
@@ -18,6 +24,7 @@ if (optimize_webui) {
       "lazy_load.js",
     ]
     input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
+    out_manifest = "$target_gen_dir/$build_manifest"
     js_out_files = [
       "profile_picker.rollup.js",
       "lazy_load.rollup.js",
@@ -36,42 +43,80 @@ if (optimize_webui) {
       "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-lite.js",
     ]
   }
+}
 
-  preprocess_grit("preprocess") {
-    in_folder = "./"
-    out_folder = "$target_gen_dir/$preprocess_folder"
-    in_files = [
-      "profile_picker.js",
-      "navigation_behavior.js",
-      "policy_helper.js",
-      "icons.js",
-      "lazy_load.js",
-      "ensure_lazy_loaded.js",
-      "manage_profiles_browser_proxy.js",
+generate_grd("build_grd") {
+  grd_prefix = "profile_picker"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+  input_files = [
+    "profile_picker.html",
+    "images/left_banner_image.svg",
+    "images/right_banner_image.svg",
+    "images/dark_mode_left_banner_image.svg",
+    "images/dark_mode_right_banner_image.svg",
+    "profile_creation_flow/images/banner_dark_image.svg",
+    "profile_creation_flow/images/banner_light_image.svg",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  if (optimize_webui) {
+    deps = [ ":build" ]
+    manifest_files = [ "$target_gen_dir/$build_manifest" ]
+    resource_path_rewrites = [
+      "profile_picker.rollup.js|profile_picker.js",
+      "lazy_load.rollup.js|lazy_load.js",
+    ]
+  } else {
+    deps = [
+      ":preprocess",
+      ":preprocess_generated",
+      ":shared",
+    ]
+    manifest_files = [
+      "$target_gen_dir/$preprocess_manifest",
+      "$target_gen_dir/$preprocess_gen_manifest",
+      "$target_gen_dir/$preprocess_shared_manifest",
     ]
   }
+}
 
-  preprocess_grit("shared") {
-    in_folder = "../"
-    out_folder = "$target_gen_dir/$preprocess_folder"
-    in_files = [ "signin_icons.js" ]
-  }
+preprocess_grit("preprocess") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_manifest"
+  in_files = [
+    "profile_picker.js",
+    "navigation_behavior.js",
+    "policy_helper.js",
+    "icons.js",
+    "lazy_load.js",
+    "ensure_lazy_loaded.js",
+    "manage_profiles_browser_proxy.js",
+  ]
+}
 
-  preprocess_grit("preprocess_generated") {
-    deps = [ ":web_components" ]
-    in_folder = target_gen_dir
-    out_folder = "$target_gen_dir/$preprocess_folder"
-    in_files = [
-      "profile_picker_app.js",
-      "profile_picker_main_view.js",
-      "profile_card.js",
-      "profile_card_menu.js",
-      "profile_creation_flow/profile_type_choice.js",
-      "profile_creation_flow/local_profile_customization.js",
-      "profile_picker_shared_css.js",
-      "profile_creation_flow/shared_css.js",
-    ]
-  }
+preprocess_grit("shared") {
+  in_folder = "../"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_shared_manifest"
+  in_files = [ "signin_icons.js" ]
+}
+
+preprocess_grit("preprocess_generated") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
+  in_files = [
+    "profile_picker_app.js",
+    "profile_picker_main_view.js",
+    "profile_card.js",
+    "profile_card_menu.js",
+    "profile_creation_flow/profile_type_choice.js",
+    "profile_creation_flow/local_profile_customization.js",
+    "profile_picker_shared_css.js",
+    "profile_creation_flow/shared_css.js",
+  ]
 }
 
 group("closure_compile") {

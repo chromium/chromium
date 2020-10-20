@@ -175,12 +175,9 @@
     "META": {"sizes": {"includes": [500],}},
     "includes": [1830],
   },
-  "chrome/browser/resources/signin/profile_picker/profile_picker_resources_vulcanized.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/signin/profile_picker/profile_picker_resources.grd": {
+    "META": {"sizes": {"includes": [50],}},
     "includes": [1850],
-  },
- "chrome/browser/resources/signin/profile_picker/profile_picker_resources.grd": {
-    "includes": [1860],
-    "structures": [1870],
   },
   "chrome/browser/resources/tab_search/tab_search_resources.grd": {
     "includes": [1880],
