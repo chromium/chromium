@@ -239,7 +239,7 @@ class ArcInputMethodManagerService::TabletModeObserver
 
  private:
   void OnTabletModeToggled(bool enabled) {
-    owner_->UpdateArcIMEAllowed();
+    owner_->OnTabletModeToggled(enabled);
     owner_->NotifyInputMethodManagerObservers(enabled);
   }
 
@@ -389,6 +389,13 @@ void ArcInputMethodManagerService::OnImeDisabled(const std::string& ime_id) {
 
 void ArcInputMethodManagerService::OnImeInfoChanged(
     std::vector<mojom::ImeInfoPtr> ime_info_array) {
+  latest_ime_info_ = std::move(ime_info_array);
+
+  UpdateInputMethodEntryWithImeInfo();
+}
+
+void ArcInputMethodManagerService::UpdateInputMethodEntryWithImeInfo() {
+  using chromeos::extension_ime_util::GetArcInputMethodID;
   using chromeos::input_method::InputMethodDescriptor;
   using chromeos::input_method::InputMethodDescriptors;
   using chromeos::input_method::InputMethodManager;
@@ -410,7 +417,7 @@ void ArcInputMethodManagerService::OnImeInfoChanged(
   InputMethodDescriptors descriptors;
   std::vector<std::string> enabled_input_method_ids;
   ime_ids_allowed_in_clamshell_mode_.clear();
-  for (const auto& ime_info : ime_info_array) {
+  for (const auto& ime_info : latest_ime_info_) {
     const InputMethodDescriptor& descriptor =
         BuildInputMethodDescriptor(ime_info.get());
     descriptors.push_back(descriptor);
@@ -421,6 +428,11 @@ void ArcInputMethodManagerService::OnImeInfoChanged(
   }
   if (descriptors.empty()) {
     // If no ARC IME is installed, remove ARC IME entry from preferences.
+    RemoveArcIMEFromPrefs();
+    return;
+  }
+  if (!ShouldArcIMEAllowed() && ime_ids_allowed_in_clamshell_mode_.empty()) {
+    // ARC IME is disallowed, remove ARC IME entry from preferences.
     RemoveArcIMEFromPrefs();
     return;
   }
@@ -436,8 +448,11 @@ void ArcInputMethodManagerService::OnImeInfoChanged(
   // TODO(crbug.com/845079): We should keep the order of the IMEs as same as in
   // chrome://settings
   for (const auto& input_method_id : enabled_input_method_ids) {
-    if (!base::Contains(active_ime_list, input_method_id))
+    if (!base::Contains(active_ime_list, input_method_id) &&
+        (ShouldArcIMEAllowed() ||
+         ime_ids_allowed_in_clamshell_mode_.count(input_method_id))) {
       active_ime_list.push_back(input_method_id);
+    }
   }
   // Disable IMEs that are already disable in the container.
   base::EraseIf(active_ime_list, [&enabled_input_method_ids](const auto& id) {
@@ -447,11 +462,14 @@ void ArcInputMethodManagerService::OnImeInfoChanged(
   profile_->GetPrefs()->SetString(prefs::kLanguageEnabledImes,
                                   base::JoinString(active_ime_list, ","));
 
-  // Refresh allowed IME list.
-  UpdateArcIMEAllowed();
+  for (const auto& input_method_id : enabled_input_method_ids) {
+    if (ShouldArcIMEAllowed() ||
+        ime_ids_allowed_in_clamshell_mode_.count(input_method_id)) {
+      state->EnableInputMethod(input_method_id);
+    }
+  }
 
-  InputMethodManager::Get()->GetActiveIMEState()->ChangeInputMethod(
-      active_ime_id, false);
+  state->ChangeInputMethod(active_ime_id, false);
   is_updating_imm_entry_ = false;
 
   // Call ImeMenuListChanged() here to notify the latest state.
@@ -588,7 +606,7 @@ void ArcInputMethodManagerService::OnAccessibilityStatusChanged(
     return;
   }
 
-  UpdateArcIMEAllowed();
+  UpdateInputMethodEntryWithImeInfo();
 }
 
 void ArcInputMethodManagerService::OnArcInputMethodBoundsChanged(
@@ -708,87 +726,6 @@ void ArcInputMethodManagerService::RemoveArcIMEFromPref(const char* pref_name) {
                                   base::JoinString(ime_id_list, ","));
 }
 
-void ArcInputMethodManagerService::UpdateArcIMEAllowed() {
-  const bool allowed = ShouldArcIMEAllowed();
-
-  auto* manager = chromeos::input_method::InputMethodManager::Get();
-  std::set<std::string> allowed_method_ids_set;
-  {
-    std::vector<std::string> allowed_method_ids =
-        manager->GetActiveIMEState()->GetAllowedInputMethods();
-    allowed_method_ids_set = std::set<std::string>(allowed_method_ids.begin(),
-                                                   allowed_method_ids.end());
-  }
-  chromeos::input_method::InputMethodDescriptors installed_imes;
-  if (manager->GetComponentExtensionIMEManager()) {
-    installed_imes = manager->GetComponentExtensionIMEManager()
-                         ->GetAllIMEAsInputMethodDescriptor();
-  }
-  {
-    chromeos::input_method::InputMethodDescriptors installed_extensions;
-    manager->GetActiveIMEState()->GetInputMethodExtensions(
-        &installed_extensions);
-    installed_imes.insert(installed_imes.end(), installed_extensions.begin(),
-                          installed_extensions.end());
-  }
-
-  std::vector<std::string> ime_ids_to_enable;
-  if (allowed) {
-    if (!allowed_method_ids_set.empty()) {
-      // Some IMEs are not allowed now. Add ARC IMEs to
-      // |allowed_method_ids_set|.
-      for (const auto& desc : installed_imes) {
-        if (chromeos::extension_ime_util::IsArcIME(desc.id()))
-          allowed_method_ids_set.insert(desc.id());
-      }
-    }
-
-    // Re-enable ARC IMEs that were auto-disabled when toggling to laptop mode.
-    const std::string active_ime_ids =
-        profile_->GetPrefs()->GetString(prefs::kLanguageEnabledImes);
-    std::vector<base::StringPiece> active_ime_list = base::SplitStringPiece(
-        active_ime_ids, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-    for (const auto& id : active_ime_list) {
-      if (chromeos::extension_ime_util::IsArcIME(id.as_string()))
-        ime_ids_to_enable.push_back(id.as_string());
-    }
-  } else {
-    // Disallow Arc IMEs.
-    if (allowed_method_ids_set.empty()) {
-      // Currently there is no restriction. Add all IMEs except ARC IMEs to
-      // |allowed_method_ids_set|.
-      for (const auto& desc : installed_imes) {
-        if (!chromeos::extension_ime_util::IsArcIME(desc.id()) ||
-            ime_ids_allowed_in_clamshell_mode_.count(desc.id())) {
-          allowed_method_ids_set.insert(desc.id());
-        }
-      }
-    } else {
-      // Remove ARC IMEs from |allowed_method_ids_set|.
-      base::EraseIf(allowed_method_ids_set, [this](const std::string& id) {
-        return chromeos::extension_ime_util::IsArcIME(id) &&
-               !ime_ids_allowed_in_clamshell_mode_.count(id);
-      });
-
-      // Add back IMEs allowed in clamshell mode.
-      for (const auto& ime_id : ime_ids_allowed_in_clamshell_mode_)
-        allowed_method_ids_set.insert(ime_id);
-    }
-
-    DCHECK(!allowed_method_ids_set.empty());
-  }
-
-  manager->GetActiveIMEState()->SetAllowedInputMethods(
-      std::vector<std::string>(allowed_method_ids_set.begin(),
-                               allowed_method_ids_set.end()),
-      false /* enable_allowed_input_methods */);
-
-  // This has to be called after SetAllowedInputMethods() because enabling an
-  // IME that is disallowed always fails.
-  for (const auto& id : ime_ids_to_enable)
-    manager->GetActiveIMEState()->EnableInputMethod(id);
-}
-
 bool ArcInputMethodManagerService::ShouldArcIMEAllowed() const {
   const bool is_command_line_flag_enabled =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -798,6 +735,10 @@ bool ArcInputMethodManagerService::ShouldArcIMEAllowed() const {
           ash::prefs::kAccessibilityVirtualKeyboardEnabled) &&
       ash::TabletMode::Get()->InTabletMode();
   return is_command_line_flag_enabled || is_normal_vk_enabled;
+}
+
+void ArcInputMethodManagerService::OnTabletModeToggled(bool /* enabled */) {
+  UpdateInputMethodEntryWithImeInfo();
 }
 
 void ArcInputMethodManagerService::NotifyInputMethodManagerObservers(

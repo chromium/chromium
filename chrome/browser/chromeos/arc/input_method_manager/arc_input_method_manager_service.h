@@ -120,12 +120,15 @@ class ArcInputMethodManagerService
   void RemoveArcIMEFromPrefs();
   void RemoveArcIMEFromPref(const char* pref_name);
 
-  // Calls InputMethodManager.SetAllowedInputMethods according to the return
-  // value of ShouldArcImeAllowed().
-  void UpdateArcIMEAllowed();
   // Returns whether ARC IMEs should be allowed now or not.
   // It depends on tablet mode state and a11y keyboard option.
   bool ShouldArcIMEAllowed() const;
+
+  void OnTabletModeToggled(bool enabled);
+
+  // Update the descriptors in IMM and the prefs according to
+  // |latest_ime_info_|.
+  void UpdateInputMethodEntryWithImeInfo();
 
   // Notifies InputMethodManager's observers of possible ARC IME state changes.
   void NotifyInputMethodManagerObservers(bool is_tablet_mode);
@@ -140,6 +143,7 @@ class ArcInputMethodManagerService
   std::unique_ptr<ArcInputMethodManagerBridge> imm_bridge_;
   std::set<std::string> active_arc_ime_ids_;
   std::set<std::string> ime_ids_allowed_in_clamshell_mode_;
+  std::vector<mojom::ImeInfoPtr> latest_ime_info_;
   bool is_virtual_keyboard_shown_;
   // This flag is set to true while updating ARC IMEs entries in IMM to avoid
   // exposing incomplete state.

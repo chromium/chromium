@@ -29,6 +29,7 @@
 #include "components/arc/test/test_browser_context.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
@@ -170,20 +171,10 @@ class TestInputMethodManager : public im::MockInputMethodManager {
       }
     }
 
-    bool SetAllowedInputMethods(
-        const std::vector<std::string>& new_allowed_input_method_ids,
-        bool enable_allowed_input_methods) override {
-      allowed_input_methods_ = new_allowed_input_method_ids;
-      return true;
-    }
-
-    const std::vector<std::string>& GetAllowedInputMethods() override {
-      return allowed_input_methods_;
-    }
-
-    bool IsInputMethodAllowed(const std::string& ime_id) {
-      return allowed_input_methods_.empty() ||
-             base::Contains(allowed_input_methods_, ime_id);
+    void Reset() {
+      added_input_method_extensions_.clear();
+      removed_input_method_extensions_.clear();
+      enabled_input_methods_.clear();
     }
 
     std::vector<std::tuple<std::string,
@@ -200,7 +191,6 @@ class TestInputMethodManager : public im::MockInputMethodManager {
    private:
     std::vector<std::string> active_input_method_ids_;
     std::string active_ime_id_;
-    std::vector<std::string> allowed_input_methods_;
   };
 
   TestInputMethodManager() {
@@ -253,6 +243,12 @@ class ArcInputMethodManagerServiceTest : public testing::Test {
 
   void NotifyNewBounds(const gfx::Rect& bounds) {
     input_method_bounds_tracker_->NotifyArcInputMethodBoundsChanged(bounds);
+  }
+
+  std::vector<std::string> GetEnabledInputMethodIds() {
+    return base::SplitString(
+        profile()->GetPrefs()->GetString(prefs::kLanguageEnabledImes), ",",
+        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   }
 
   void SetUp() override {
@@ -564,129 +560,172 @@ TEST_F(ArcInputMethodManagerServiceTest, OnImeInfoChanged) {
   }
 }
 
-TEST_F(ArcInputMethodManagerServiceTest, AllowArcIMEsOnlyInTabletMode) {
+TEST_F(ArcInputMethodManagerServiceTest, EnableArcIMEsOnlyInTabletMode) {
   namespace ceiu = chromeos::extension_ime_util;
   using crx_file::id_util::GenerateId;
+
+  constexpr char kArcIMEProxyExtensionName[] =
+      "org.chromium.arc.inputmethod.proxy";
 
   const std::string extension_ime_id =
       ceiu::GetInputMethodID(GenerateId("test.extension.ime"), "us");
   const std::string component_extension_ime_id =
       ceiu::GetComponentInputMethodID(
           GenerateId("test.component.extension.ime"), "us");
+  const std::string proxy_ime_extension_id =
+      crx_file::id_util::GenerateId(kArcIMEProxyExtensionName);
+  const std::string android_ime_id = "test.arc.ime";
   const std::string arc_ime_id =
-      ceiu::GetArcInputMethodID(GenerateId("test.arc.ime"), "us");
+      ceiu::GetArcInputMethodID(proxy_ime_extension_id, android_ime_id);
 
   // Start from tablet mode.
   ToggleTabletMode(true);
 
-  // Activate 3 IMEs.
+  // Activate the extension IME and the component extension IME.
   imm()->state()->AddActiveInputMethodId(extension_ime_id);
   imm()->state()->AddActiveInputMethodId(component_extension_ime_id);
-  imm()->state()->AddActiveInputMethodId(arc_ime_id);
-
-  // Update the prefs because the testee checks them. Note that toggling the
-  // mode never changes the prefs.
+  // Update the prefs because the testee checks them.
   profile()->GetPrefs()->SetString(
       prefs::kLanguageEnabledImes,
-      base::StringPrintf("%s,%s,%s", extension_ime_id.c_str(),
-                         component_extension_ime_id.c_str(),
-                         arc_ime_id.c_str()));
+      base::StringPrintf("%s,%s", extension_ime_id.c_str(),
+                         component_extension_ime_id.c_str()));
+  service()->ImeMenuListChanged();
 
-  // All IMEs are allowed to use.
-  EXPECT_TRUE(imm()->state()->IsInputMethodAllowed(extension_ime_id));
-  EXPECT_TRUE(imm()->state()->IsInputMethodAllowed(component_extension_ime_id));
-  EXPECT_TRUE(imm()->state()->IsInputMethodAllowed(arc_ime_id));
+  imm()->state()->Reset();
+
+  // Enable the ARC IME.
+  {
+    mojom::ImeInfoPtr info = mojom::ImeInfo::New();
+    info->ime_id = android_ime_id;
+    info->enabled = true;
+    std::vector<mojom::ImeInfoPtr> info_array{};
+    info_array.emplace_back(info.Clone());
+    service()->OnImeInfoChanged(std::move(info_array));
+  }
+  // IMM should get the newly enabled IME id.
+  EXPECT_EQ(1u, imm()->state()->added_input_method_extensions_.size());
+  EXPECT_EQ(1u, imm()->state()->enabled_input_methods_.size());
+  EXPECT_EQ(arc_ime_id, imm()->state()->enabled_input_methods_.at(0));
+  imm()->state()->enabled_input_methods_.clear();
+  {
+    // Pref should get updated.
+    const auto enabled_ime_in_pref = GetEnabledInputMethodIds();
+    EXPECT_EQ(3u, enabled_ime_in_pref.size());
+    EXPECT_EQ(arc_ime_id, enabled_ime_in_pref.at(2));
+  }
+
+  imm()->state()->Reset();
 
   // Change to laptop mode.
   ToggleTabletMode(false);
 
   // ARC IME is not allowed in laptop mode.
-  EXPECT_TRUE(imm()->state()->IsInputMethodAllowed(extension_ime_id));
-  EXPECT_TRUE(imm()->state()->IsInputMethodAllowed(component_extension_ime_id));
-  EXPECT_FALSE(imm()->state()->IsInputMethodAllowed(arc_ime_id));
+  // The fake IME extension is uninstalled.
+  EXPECT_EQ(1u, imm()->state()->removed_input_method_extensions_.size());
+  EXPECT_TRUE(imm()->state()->enabled_input_methods_.empty());
+  {
+    const auto enabled_ime_in_pref = GetEnabledInputMethodIds();
+    EXPECT_EQ(2u, enabled_ime_in_pref.size());
+  }
+
+  imm()->state()->Reset();
 
   // Back to tablet mode.
-  EXPECT_TRUE(imm()->state()->enabled_input_methods_.empty());
   ToggleTabletMode(true);
 
   // All IMEs are allowed to use.
-  EXPECT_TRUE(imm()->state()->IsInputMethodAllowed(extension_ime_id));
-  EXPECT_TRUE(imm()->state()->IsInputMethodAllowed(component_extension_ime_id));
-  EXPECT_TRUE(imm()->state()->IsInputMethodAllowed(arc_ime_id));
+  EXPECT_EQ(1u, imm()->state()->added_input_method_extensions_.size());
+  EXPECT_EQ(1u, imm()->state()->enabled_input_methods_.size());
+  EXPECT_EQ(arc_ime_id, imm()->state()->enabled_input_methods_.at(0));
+  imm()->state()->enabled_input_methods_.clear();
+  {
+    const auto enabled_ime_in_pref = GetEnabledInputMethodIds();
+    EXPECT_EQ(3u, enabled_ime_in_pref.size());
+    EXPECT_EQ(arc_ime_id, enabled_ime_in_pref.at(2));
+  }
 
-  // Verify they appear in the CrOS IME menu.
-  ASSERT_EQ(1u, imm()->state()->enabled_input_methods_.size());
-  EXPECT_EQ(arc_ime_id, imm()->state()->enabled_input_methods_[0]);
-
-  // Do the same tests again, but with |extension_ime_id| disabled.
-  imm()->state()->SetAllowedInputMethods(
-      {component_extension_ime_id, arc_ime_id},
-      false /* enable_allowed_input_methods */);
-  ToggleTabletMode(false);
-
-  EXPECT_FALSE(imm()->state()->IsInputMethodAllowed(extension_ime_id));
-  EXPECT_TRUE(imm()->state()->IsInputMethodAllowed(component_extension_ime_id));
-  EXPECT_FALSE(imm()->state()->IsInputMethodAllowed(arc_ime_id));
-
-  ToggleTabletMode(true);
-
-  EXPECT_FALSE(imm()->state()->IsInputMethodAllowed(extension_ime_id));
-  EXPECT_TRUE(imm()->state()->IsInputMethodAllowed(component_extension_ime_id));
-  EXPECT_TRUE(imm()->state()->IsInputMethodAllowed(arc_ime_id));
+  imm()->state()->Reset();
 
   // Confirm that entering the same mode twice in a row is no-op.
   ToggleTabletMode(true);
-
-  EXPECT_FALSE(imm()->state()->IsInputMethodAllowed(extension_ime_id));
-  EXPECT_TRUE(imm()->state()->IsInputMethodAllowed(component_extension_ime_id));
-  EXPECT_TRUE(imm()->state()->IsInputMethodAllowed(arc_ime_id));
-
-  ToggleTabletMode(false);
-
-  EXPECT_FALSE(imm()->state()->IsInputMethodAllowed(extension_ime_id));
-  EXPECT_TRUE(imm()->state()->IsInputMethodAllowed(component_extension_ime_id));
-  EXPECT_FALSE(imm()->state()->IsInputMethodAllowed(arc_ime_id));
+  EXPECT_TRUE(imm()->state()->removed_input_method_extensions_.empty());
+  EXPECT_TRUE(imm()->state()->added_input_method_extensions_.empty());
+  EXPECT_TRUE(imm()->state()->enabled_input_methods_.empty());
 
   ToggleTabletMode(false);
+  EXPECT_EQ(1u, imm()->state()->removed_input_method_extensions_.size());
+  EXPECT_TRUE(imm()->state()->enabled_input_methods_.empty());
+  {
+    const auto enabled_ime_in_pref = GetEnabledInputMethodIds();
+    EXPECT_EQ(2u, enabled_ime_in_pref.size());
+  }
 
-  EXPECT_FALSE(imm()->state()->IsInputMethodAllowed(extension_ime_id));
-  EXPECT_TRUE(imm()->state()->IsInputMethodAllowed(component_extension_ime_id));
-  EXPECT_FALSE(imm()->state()->IsInputMethodAllowed(arc_ime_id));
+  ToggleTabletMode(false);
+  EXPECT_EQ(1u, imm()->state()->removed_input_method_extensions_.size());
+  EXPECT_TRUE(imm()->state()->enabled_input_methods_.empty());
+  {
+    const auto enabled_ime_in_pref = GetEnabledInputMethodIds();
+    EXPECT_EQ(2u, enabled_ime_in_pref.size());
+  }
 }
 
 TEST_F(ArcInputMethodManagerServiceTest,
-       DisallowArcIMEsWhenAccessibilityKeyboardEnabled) {
+       RemoveArcIMEsWhenAccessibilityKeyboardEnabled) {
   namespace ceiu = chromeos::extension_ime_util;
   using crx_file::id_util::GenerateId;
+
+  constexpr char kArcIMEProxyExtensionName[] =
+      "org.chromium.arc.inputmethod.proxy";
 
   const std::string extension_ime_id =
       ceiu::GetInputMethodID(GenerateId("test.extension.ime"), "us");
   const std::string component_extension_ime_id =
       ceiu::GetComponentInputMethodID(
           GenerateId("test.component.extension.ime"), "us");
+  const std::string proxy_ime_extension_id =
+      crx_file::id_util::GenerateId(kArcIMEProxyExtensionName);
+  const std::string android_ime_id = "test.arc.ime";
   const std::string arc_ime_id =
-      ceiu::GetArcInputMethodID(GenerateId("test.arc.ime"), "us");
+      ceiu::GetArcInputMethodID(proxy_ime_extension_id, android_ime_id);
 
   // Start from tablet mode.
   ToggleTabletMode(true);
 
-  // Activate 3 IMEs.
+  // Activate the extension IME and the component extension IME.
   imm()->state()->AddActiveInputMethodId(extension_ime_id);
   imm()->state()->AddActiveInputMethodId(component_extension_ime_id);
-  imm()->state()->AddActiveInputMethodId(arc_ime_id);
-
-  // Update the prefs because the testee checks them. Note that toggling the
-  // mode never changes the prefs.
+  // Update the prefs because the testee checks them.
   profile()->GetPrefs()->SetString(
       prefs::kLanguageEnabledImes,
-      base::StringPrintf("%s,%s,%s", extension_ime_id.c_str(),
-                         component_extension_ime_id.c_str(),
-                         arc_ime_id.c_str()));
+      base::StringPrintf("%s,%s", extension_ime_id.c_str(),
+                         component_extension_ime_id.c_str()));
+  service()->ImeMenuListChanged();
+
+  imm()->state()->Reset();
 
   // All IMEs are allowed to use.
-  EXPECT_TRUE(imm()->state()->IsInputMethodAllowed(extension_ime_id));
-  EXPECT_TRUE(imm()->state()->IsInputMethodAllowed(component_extension_ime_id));
-  EXPECT_TRUE(imm()->state()->IsInputMethodAllowed(arc_ime_id));
+  // Enable the ARC IME.
+  {
+    mojom::ImeInfoPtr info = mojom::ImeInfo::New();
+    info->ime_id = android_ime_id;
+    info->enabled = true;
+    std::vector<mojom::ImeInfoPtr> info_array{};
+    info_array.emplace_back(info.Clone());
+    service()->OnImeInfoChanged(std::move(info_array));
+  }
+  // IMM should get the newly enabled IME id.
+  EXPECT_EQ(1u, imm()->state()->added_input_method_extensions_.size());
+  EXPECT_EQ(1u, imm()->state()->enabled_input_methods_.size());
+  EXPECT_EQ(arc_ime_id, imm()->state()->enabled_input_methods_.at(0));
+  imm()->state()->enabled_input_methods_.clear();
+  {
+    // Pref should get updated.
+    const auto enabled_ime_in_pref = GetEnabledInputMethodIds();
+    EXPECT_EQ(3u, enabled_ime_in_pref.size());
+    EXPECT_EQ(arc_ime_id, enabled_ime_in_pref.at(2));
+  }
+
+  imm()->state()->Reset();
 
   // Enable a11y keyboard option.
   profile()->GetPrefs()->SetBoolean(
@@ -695,10 +734,17 @@ TEST_F(ArcInputMethodManagerServiceTest,
   service()->OnAccessibilityStatusChanged(
       {chromeos::ACCESSIBILITY_TOGGLE_VIRTUAL_KEYBOARD, true});
 
-  // ARC IME is not allowed.
-  EXPECT_TRUE(imm()->state()->IsInputMethodAllowed(extension_ime_id));
-  EXPECT_TRUE(imm()->state()->IsInputMethodAllowed(component_extension_ime_id));
-  EXPECT_FALSE(imm()->state()->IsInputMethodAllowed(arc_ime_id));
+  // ARC IME is not allowed when a11y keyboard is enabled.
+  EXPECT_EQ(1u, imm()->state()->removed_input_method_extensions_.size());
+  EXPECT_TRUE(imm()->state()->enabled_input_methods_.empty());
+  {
+    const auto enabled_ime_in_pref = GetEnabledInputMethodIds();
+    EXPECT_EQ(2u, enabled_ime_in_pref.size());
+  }
+
+  imm()->state()->removed_input_method_extensions_.clear();
+  imm()->state()->added_input_method_extensions_.clear();
+  imm()->state()->enabled_input_methods_.clear();
 
   // Disable a11y keyboard option.
   profile()->GetPrefs()->SetBoolean(
@@ -707,9 +753,17 @@ TEST_F(ArcInputMethodManagerServiceTest,
   service()->OnAccessibilityStatusChanged(
       {chromeos::ACCESSIBILITY_TOGGLE_VIRTUAL_KEYBOARD, false});
 
-  EXPECT_TRUE(imm()->state()->IsInputMethodAllowed(extension_ime_id));
-  EXPECT_TRUE(imm()->state()->IsInputMethodAllowed(component_extension_ime_id));
-  EXPECT_TRUE(imm()->state()->IsInputMethodAllowed(arc_ime_id));
+  // ARC IME can be enabled.
+  EXPECT_EQ(1u, imm()->state()->added_input_method_extensions_.size());
+  EXPECT_EQ(1u, imm()->state()->enabled_input_methods_.size());
+  EXPECT_EQ(arc_ime_id, imm()->state()->enabled_input_methods_.at(0));
+  imm()->state()->enabled_input_methods_.clear();
+  {
+    // Pref should get updated.
+    const auto enabled_ime_in_pref = GetEnabledInputMethodIds();
+    EXPECT_EQ(3u, enabled_ime_in_pref.size());
+    EXPECT_EQ(arc_ime_id, enabled_ime_in_pref.at(2));
+  }
 }
 
 TEST_F(ArcInputMethodManagerServiceTest,
@@ -717,13 +771,19 @@ TEST_F(ArcInputMethodManagerServiceTest,
   namespace ceiu = chromeos::extension_ime_util;
   using crx_file::id_util::GenerateId;
 
+  constexpr char kArcIMEProxyExtensionName[] =
+      "org.chromium.arc.inputmethod.proxy";
+
   const std::string extension_ime_id =
       ceiu::GetInputMethodID(GenerateId("test.extension.ime"), "us");
   const std::string component_extension_ime_id =
       ceiu::GetComponentInputMethodID(
           GenerateId("test.component.extension.ime"), "us");
+  const std::string proxy_ime_extension_id =
+      crx_file::id_util::GenerateId(kArcIMEProxyExtensionName);
+  const std::string android_ime_id = "test.arc.ime";
   const std::string arc_ime_id =
-      ceiu::GetArcInputMethodID(GenerateId("test.arc.ime"), "us");
+      ceiu::GetArcInputMethodID(proxy_ime_extension_id, android_ime_id);
 
   // Add '--enable-virtual-keyboard' flag.
   base::test::ScopedCommandLine scoped_command_line;
@@ -733,23 +793,56 @@ TEST_F(ArcInputMethodManagerServiceTest,
   // Start from tablet mode.
   ToggleTabletMode(true);
 
-  // Activate 3 IMEs.
+  // Activate the extension IME and the component extension IME.
   imm()->state()->AddActiveInputMethodId(extension_ime_id);
   imm()->state()->AddActiveInputMethodId(component_extension_ime_id);
-  imm()->state()->AddActiveInputMethodId(arc_ime_id);
+  // Update the prefs because the testee checks them.
+  profile()->GetPrefs()->SetString(
+      prefs::kLanguageEnabledImes,
+      base::StringPrintf("%s,%s", extension_ime_id.c_str(),
+                         component_extension_ime_id.c_str()));
+  service()->ImeMenuListChanged();
 
-  // All IMEs are allowed to use.
-  EXPECT_TRUE(imm()->state()->IsInputMethodAllowed(extension_ime_id));
-  EXPECT_TRUE(imm()->state()->IsInputMethodAllowed(component_extension_ime_id));
-  EXPECT_TRUE(imm()->state()->IsInputMethodAllowed(arc_ime_id));
+  imm()->state()->removed_input_method_extensions_.clear();
+  imm()->state()->added_input_method_extensions_.clear();
+  imm()->state()->enabled_input_methods_.clear();
+
+  // Enable the ARC IME.
+  {
+    mojom::ImeInfoPtr info = mojom::ImeInfo::New();
+    info->ime_id = android_ime_id;
+    info->enabled = true;
+    std::vector<mojom::ImeInfoPtr> info_array{};
+    info_array.emplace_back(info.Clone());
+    service()->OnImeInfoChanged(std::move(info_array));
+  }
+  // IMM should get the newly enabled IME id.
+  EXPECT_EQ(1u, imm()->state()->added_input_method_extensions_.size());
+  EXPECT_EQ(1u, imm()->state()->enabled_input_methods_.size());
+  EXPECT_EQ(arc_ime_id, imm()->state()->enabled_input_methods_.at(0));
+  {
+    // Pref should get updated.
+    const auto enabled_ime_in_pref = GetEnabledInputMethodIds();
+    EXPECT_EQ(3u, enabled_ime_in_pref.size());
+    EXPECT_EQ(arc_ime_id, enabled_ime_in_pref.at(2));
+  }
+
+  imm()->state()->removed_input_method_extensions_.clear();
+  imm()->state()->added_input_method_extensions_.clear();
+  imm()->state()->enabled_input_methods_.clear();
 
   // Change to laptop mode.
   ToggleTabletMode(false);
 
   // All IMEs are allowed to use even in laptop mode if the flag is set.
-  EXPECT_TRUE(imm()->state()->IsInputMethodAllowed(extension_ime_id));
-  EXPECT_TRUE(imm()->state()->IsInputMethodAllowed(component_extension_ime_id));
-  EXPECT_TRUE(imm()->state()->IsInputMethodAllowed(arc_ime_id));
+  EXPECT_EQ(1u, imm()->state()->added_input_method_extensions_.size());
+  EXPECT_EQ(1u, imm()->state()->enabled_input_methods_.size());
+  EXPECT_EQ(arc_ime_id, imm()->state()->enabled_input_methods_.at(0));
+  {
+    const auto enabled_ime_in_pref = GetEnabledInputMethodIds();
+    EXPECT_EQ(3u, enabled_ime_in_pref.size());
+    EXPECT_EQ(arc_ime_id, enabled_ime_in_pref.at(2));
+  }
 }
 
 TEST_F(ArcInputMethodManagerServiceTest, FocusAndBlur) {
