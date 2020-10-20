@@ -63,10 +63,6 @@ void HWNDSetRTLLayout(HWND hwnd) {
   }
 }
 
-bool IsLocaleSupportedByOS(const std::string& locale) {
-  return true;
-}
-
 bool NeedOverrideDefaultUIFont(std::wstring* override_font_family,
                                double* font_size_scaler) {
   // This is rather simple-minded to deal with the UI font size

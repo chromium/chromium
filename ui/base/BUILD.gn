@@ -307,10 +307,6 @@ component("base") {
     ]
   }
 
-  if (is_posix) {
-    sources += [ "l10n/l10n_util_posix.cc" ]
-  }
-
   if (is_ios) {
     sources += [
       "device_form_factor_ios.mm",
@@ -409,10 +405,7 @@ component("base") {
   }
 
   if (is_fuchsia) {
-    sources += [
-      "l10n/l10n_util_posix.cc",
-      "resource/resource_bundle_fuchsia.cc",
-    ]
+    sources += [ "resource/resource_bundle_fuchsia.cc" ]
   }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

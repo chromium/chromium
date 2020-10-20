@@ -58,11 +58,6 @@ COMPONENT_EXPORT(UI_BASE)
 bool IsLocaleNameTranslated(const char* locale,
                             const std::string& display_locale);
 
-// Given a locale code, return true if the OS is capable of supporting it.
-// For instance, Oriya is not well supported on Windows XP and we return
-// false for "or".
-bool IsLocaleSupportedByOS(const std::string& locale);
-
 // This method returns the display name of the locale code in |display_locale|.
 
 // For example, for |locale| = "fr" and |display_locale| = "en",
