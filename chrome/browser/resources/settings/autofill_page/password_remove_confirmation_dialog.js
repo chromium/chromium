@@ -52,12 +52,43 @@ Polymer({
   },
 
   /**
-   * @return {string}
    * @private
+   * @return {boolean}
    */
-  getRemovePasswordDescription_() {
+  hasSecureChangePasswordUrl_() {
+    const url = this.item.changePasswordUrl;
+    return !!url && (url.startsWith('https://') || url.startsWith('chrome://'));
+  },
+
+  /**
+   * Returns the remove password description with a linkified change password
+   * URL. Requires the change password URL to be present and secure.
+   * @private
+   * @return {string}
+   */
+  getRemovePasswordDescriptionHtml_() {
+    if (!this.hasSecureChangePasswordUrl_()) {
+      return '';
+    }
+
+    const url = assert(this.item.changePasswordUrl);
+    const origin = this.item.formattedOrigin;
+    return this.i18nAdvanced(
+        'removeCompromisedPasswordConfirmationDescription', {
+          substitutions:
+              [origin, `<a href='${url}' target='_blank'>${origin}</a>`],
+        });
+  },
+
+  /**
+   * Returns the remove password description as a plain text.
+   * Used when the change password URL is not present or insecure.
+   * @private
+   * @return {string}
+   */
+  getRemovePasswordDescriptionText_() {
+    const origin = this.item.formattedOrigin;
     return this.i18n(
-        'removeCompromisedPasswordConfirmationDescription',
-        this.item.formattedOrigin, this.item.formattedOrigin);
-  }
+        'removeCompromisedPasswordConfirmationDescription', origin, origin);
+  },
 });

@@ -535,6 +535,26 @@ suite('PasswordsCheckSection', function() {
     assertEquals('one.com', formattedOrigin);
   });
 
+  // Tests that a secure change password URL gets linkified in the remove
+  // password confirmation dialog.
+  test('secureChangePasswordUrlInRemovePasswordConfirmationDialog', () => {
+    const entry = makeCompromisedCredential('one.com', 'test4', 'LEAKED', 0);
+    entry.changePasswordUrl = 'https://one.com';
+    const removeDialog = createRemovePasswordDialog(entry);
+    assertTrue(isElementVisible(removeDialog.$.link));
+    assertFalse(isElementVisible(removeDialog.$.text));
+  });
+
+  // Tests that an insecure change password URL does not get linkified in the
+  // remove password confirmation dialog.
+  test('insecureChangePasswordUrlInRemovePasswordConfirmationDialog', () => {
+    const entry = makeCompromisedCredential('one.com', 'test4', 'LEAKED', 0);
+    entry.changePasswordUrl = 'http://one.com';
+    const removeDialog = createRemovePasswordDialog(entry);
+    assertFalse(isElementVisible(removeDialog.$.link));
+    assertTrue(isElementVisible(removeDialog.$.text));
+  });
+
   // A changing status is immediately reflected in title, icon and banner.
   test('updatesNumberOfCheckedPasswordsWhileRunning', async function() {
     passwordManager.data.checkStatus = makePasswordCheckStatus(
