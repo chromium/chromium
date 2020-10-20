@@ -24,6 +24,9 @@
     },
     "1": {
         "benchmarks": {
+            "speedometer2": {
+                "abridged": false
+            },
             "system_health.memory_mobile": {
                 "begin": 3,
                 "end": 28,
@@ -33,6 +36,9 @@
     },
     "2": {
         "benchmarks": {
+            "speedometer2": {
+                "abridged": false
+            },
             "system_health.memory_mobile": {
                 "begin": 28,
                 "end": 72,
@@ -42,6 +48,9 @@
     },
     "3": {
         "benchmarks": {
+            "speedometer2": {
+                "abridged": false
+            },
             "system_health.memory_mobile": {
                 "begin": 72,
                 "abridged": false
