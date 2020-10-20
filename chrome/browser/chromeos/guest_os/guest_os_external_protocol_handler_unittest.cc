@@ -71,4 +71,13 @@ TEST_F(GuestOsExternalProtocolHandlerTest, MostRecent) {
   EXPECT_EQ("id2", registration->DesktopFileId());
 }
 
+TEST_F(GuestOsExternalProtocolHandlerTest, OffTheRecordProfile) {
+  auto* otr_profile =
+      profile()->GetOffTheRecordProfile(Profile::OTRProfileID("otr-id"));
+
+  EXPECT_FALSE(guest_os::GetHandler(otr_profile, GURL("testscheme:12341234")));
+
+  profile()->DestroyOffTheRecordProfile(otr_profile);
+}
+
 }  // namespace guest_os

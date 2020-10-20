@@ -29,6 +29,11 @@ base::Optional<GuestOsRegistryService::Registration> GetHandler(
     const GURL& url) {
   auto* registry_service =
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
+  if (!registry_service) {
+    // GuestOsRegistryService does not exist for incognito or guest profiles, so
+    // don't try and use it.
+    return base::nullopt;
+  }
 
   base::Optional<GuestOsRegistryService::Registration> result;
   for (auto& pair : registry_service->GetEnabledApps()) {
