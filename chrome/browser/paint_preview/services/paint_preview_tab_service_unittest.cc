@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -83,12 +84,17 @@ class PaintPreviewTabServiceTest : public ChromeRenderViewHostTestHarness {
  protected:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    NavigateAndCommit(GURL("https://www.example.com/"),
+                      ui::PageTransition::PAGE_TRANSITION_FIRST);
+    task_environment()->RunUntilIdle();
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     service_ = std::make_unique<PaintPreviewTabService>(
         temp_dir_.GetPath(), kFeatureName, nullptr, false);
     task_environment()->RunUntilIdle();
     EXPECT_TRUE(service_->CacheInitialized());
   }
+
+  void TearDown() override { ChromeRenderViewHostTestHarness::TearDown(); }
 
   PaintPreviewTabService* GetService() { return service_.get(); }
 
@@ -128,8 +134,6 @@ class PaintPreviewTabServiceTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(PaintPreviewTabServiceTest, CaptureTab) {
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://www.example.com"));
   const int kTabId = 1U;
 
   MockPaintPreviewRecorder recorder;
@@ -163,8 +167,6 @@ TEST_F(PaintPreviewTabServiceTest, CaptureTab) {
 }
 
 TEST_F(PaintPreviewTabServiceTest, CaptureTabFailed) {
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://www.example.com"));
   const int kTabId = 1U;
 
   MockPaintPreviewRecorder recorder;
@@ -199,8 +201,6 @@ TEST_F(PaintPreviewTabServiceTest, CaptureTabFailed) {
 }
 
 TEST_F(PaintPreviewTabServiceTest, CaptureTabTwice) {
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://www.example.com"));
   const int kTabId = 1U;
 
   MockPaintPreviewRecorder recorder;
@@ -387,8 +387,6 @@ TEST_F(PaintPreviewTabServiceTest, EarlyAudit) {
 }
 
 TEST_F(PaintPreviewTabServiceTest, EarlyCapture) {
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://www.example.com"));
   const int kTabId = 1U;
 
   MockPaintPreviewRecorder recorder;
@@ -423,8 +421,6 @@ TEST_F(PaintPreviewTabServiceTest, EarlyCapture) {
 }
 
 TEST_F(PaintPreviewTabServiceTest, CaptureTabAndCleanup) {
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://www.example.com"));
   const int kTabId = 1U;
 
   MockPaintPreviewRecorder recorder;
