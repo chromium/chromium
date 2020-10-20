@@ -41,16 +41,6 @@ void FlexLayoutExample::ContentsChanged(Textfield* sender,
   RefreshLayoutPanel(false);
 }
 
-void FlexLayoutExample::ButtonPressedImpl(Button* sender) {
-  if (sender == collapse_margins_) {
-    layout_->SetCollapseMargins(collapse_margins_->GetChecked());
-  } else if (sender == ignore_default_main_axis_margins_) {
-    layout_->SetIgnoreDefaultMainAxisMargins(
-        ignore_default_main_axis_margins_->GetChecked());
-  }
-  RefreshLayoutPanel(false);
-}
-
 void FlexLayoutExample::CreateAdditionalControls() {
   constexpr const char* kOrientationValues[2] = {"Horizontal", "Vertical"};
   orientation_ = CreateAndAddCombobox(
@@ -81,10 +71,24 @@ void FlexLayoutExample::CreateAdditionalControls() {
                           &default_child_margins_);
 
   collapse_margins_ =
-      CreateAndAddCheckbox(base::ASCIIToUTF16("Collapse margins"));
+      CreateAndAddCheckbox(base::ASCIIToUTF16("Collapse margins"),
+                           base::BindRepeating(
+                               [](FlexLayoutExample* example) {
+                                 example->layout_->SetCollapseMargins(
+                                     example->collapse_margins_->GetChecked());
+                                 example->RefreshLayoutPanel(false);
+                               },
+                               base::Unretained(this)));
 
-  ignore_default_main_axis_margins_ =
-      CreateAndAddCheckbox(base::ASCIIToUTF16("Ignore main axis margins"));
+  ignore_default_main_axis_margins_ = CreateAndAddCheckbox(
+      base::ASCIIToUTF16("Ignore main axis margins"),
+      base::BindRepeating(
+          [](FlexLayoutExample* example) {
+            example->layout_->SetIgnoreDefaultMainAxisMargins(
+                example->ignore_default_main_axis_margins_->GetChecked());
+            example->RefreshLayoutPanel(false);
+          },
+          base::Unretained(this)));
 
   layout_ = layout_panel()->SetLayoutManager(std::make_unique<FlexLayout>());
 }

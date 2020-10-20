@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/examples/example_base.h"
 
@@ -20,8 +19,7 @@ namespace examples {
 
 // TextfieldExample mimics login screen.
 class VIEWS_EXAMPLES_EXPORT TextfieldExample : public ExampleBase,
-                                               public TextfieldController,
-                                               public ButtonListener {
+                                               public TextfieldController {
  public:
   TextfieldExample();
   ~TextfieldExample() override;
@@ -36,8 +34,10 @@ class VIEWS_EXAMPLES_EXPORT TextfieldExample : public ExampleBase,
   bool HandleMouseEvent(Textfield* sender,
                         const ui::MouseEvent& mouse_event) override;
 
-  // ButtonListener:
-  void ButtonPressed(Button* sender, const ui::Event& event) override;
+  void ClearAllButtonPressed();
+  void AppendButtonPressed();
+  void SetButtonPressed();
+  void SetStyleButtonPressed();
 
   // Textfields for name and password.
   Textfield* name_ = nullptr;

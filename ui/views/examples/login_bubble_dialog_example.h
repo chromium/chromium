@@ -8,7 +8,6 @@
 #include "base/strings/string16.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/examples/example_base.h"
@@ -45,16 +44,13 @@ class LoginBubbleDialogView : public BubbleDialogDelegateView,
 };
 
 // Instantiates the login dialog example.
-class LoginBubbleDialogExample : public ExampleBase, public ButtonListener {
+class LoginBubbleDialogExample : public ExampleBase {
  public:
   LoginBubbleDialogExample();
   ~LoginBubbleDialogExample() override;
 
   // ExampleBase:
   void CreateExampleView(View* container) override;
-
-  // ButtonListener:
-  void ButtonPressed(Button* sender, const ui::Event& event) override;
 
   // LoginBubbleDialogController:
   void OnSubmit(base::string16 username, base::string16 password);

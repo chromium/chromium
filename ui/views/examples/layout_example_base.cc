@@ -229,9 +229,10 @@ void LayoutExampleBase::CreateMarginsTextFields(
 }
 
 Checkbox* LayoutExampleBase::CreateAndAddCheckbox(
-    const base::string16& label_text) {
+    const base::string16& label_text,
+    base::RepeatingClosure checkbox_callback) {
   return control_panel_->AddChildView(
-      std::make_unique<Checkbox>(label_text, this));
+      std::make_unique<Checkbox>(label_text, std::move(checkbox_callback)));
 }
 
 void LayoutExampleBase::CreateExampleView(View* container) {
@@ -259,7 +260,9 @@ void LayoutExampleBase::CreateExampleView(View* container) {
                             kLayoutExampleVerticalSpacing))
       ->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kCenter);
   add_button_ = row->AddChildView(std::make_unique<MdTextButton>(
-      this, l10n_util::GetStringUTF16(IDS_LAYOUT_BASE_ADD_LABEL)));
+      base::BindRepeating(&LayoutExampleBase::AddButtonPressed,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(IDS_LAYOUT_BASE_ADD_LABEL)));
 
   preferred_width_view_ = row->AddChildView(CreateCommonTextfield(this));
   preferred_width_view_->SetText(
@@ -272,19 +275,6 @@ void LayoutExampleBase::CreateExampleView(View* container) {
   CreateAdditionalControls();
 }
 
-void LayoutExampleBase::ButtonPressed(Button* sender, const ui::Event& event) {
-  if (sender == add_button_) {
-    auto* const panel =
-        layout_panel_->AddChildView(std::make_unique<ChildPanel>(this));
-    panel->SetPreferredSize(GetNewChildPanelPreferredSize());
-    constexpr int kChildPanelGroup = 100;
-    panel->SetGroup(kChildPanelGroup);
-    RefreshLayoutPanel(false);
-  } else {
-    ButtonPressedImpl(sender);
-  }
-}
-
 gfx::Size LayoutExampleBase::GetNewChildPanelPreferredSize() {
   int width;
   if (!base::StringToInt(preferred_width_view_->GetText(), &width))
@@ -295,6 +285,15 @@ gfx::Size LayoutExampleBase::GetNewChildPanelPreferredSize() {
     height = kLayoutExampleDefaultChildSize.height();
 
   return gfx::Size(std::max(0, width), std::max(0, height));
+}
+
+void LayoutExampleBase::AddButtonPressed() {
+  auto* const panel =
+      layout_panel_->AddChildView(std::make_unique<ChildPanel>(this));
+  panel->SetPreferredSize(GetNewChildPanelPreferredSize());
+  constexpr int kChildPanelGroup = 100;
+  panel->SetGroup(kChildPanelGroup);
+  RefreshLayoutPanel(false);
 }
 
 }  // namespace examples

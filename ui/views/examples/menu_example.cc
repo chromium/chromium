@@ -60,14 +60,13 @@ class ExampleMenuModel : public ui::SimpleMenuModel,
   DISALLOW_COPY_AND_ASSIGN(ExampleMenuModel);
 };
 
-class ExampleMenuButton : public MenuButton, public ButtonListener {
+class ExampleMenuButton : public MenuButton {
  public:
   explicit ExampleMenuButton(const base::string16& test);
   ~ExampleMenuButton() override;
 
  private:
-  // ButtonListener:
-  void ButtonPressed(Button* source, const ui::Event& event) override;
+  void ButtonPressed();
 
   ui::SimpleMenuModel* GetMenuModel();
 
@@ -172,22 +171,23 @@ void ExampleMenuModel::ExecuteCommand(int command_id, int event_flags) {
 // ExampleMenuButton -----------------------------------------------------------
 
 ExampleMenuButton::ExampleMenuButton(const base::string16& test)
-    : MenuButton(this, test) {}
+    : MenuButton(base::BindRepeating(&ExampleMenuButton::ButtonPressed,
+                                     base::Unretained(this)),
+                 test) {}
 
 ExampleMenuButton::~ExampleMenuButton() = default;
 
-void ExampleMenuButton::ButtonPressed(Button* source, const ui::Event& event) {
+void ExampleMenuButton::ButtonPressed() {
   menu_runner_ =
       std::make_unique<MenuRunner>(GetMenuModel(), MenuRunner::HAS_MNEMONICS);
 
-  menu_runner_->RunMenuAt(source->GetWidget()->GetTopLevelWidget(),
-                          button_controller(),
-                          gfx::Rect(source->GetMenuPosition(), gfx::Size()),
+  menu_runner_->RunMenuAt(GetWidget()->GetTopLevelWidget(), button_controller(),
+                          gfx::Rect(GetMenuPosition(), gfx::Size()),
                           MenuAnchorPosition::kTopRight, ui::MENU_SOURCE_NONE);
 }
 
 ui::SimpleMenuModel* ExampleMenuButton::GetMenuModel() {
-  if (!menu_model_.get())
+  if (!menu_model_)
     menu_model_ = std::make_unique<ExampleMenuModel>();
   return menu_model_.get();
 }

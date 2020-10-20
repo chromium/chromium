@@ -95,15 +95,20 @@ void TreeViewExample::CreateExampleView(View* container) {
   tree_view->SetDrawingProvider(
       std::make_unique<ExampleTreeViewDrawingProvider>());
   auto add = std::make_unique<LabelButton>(
-      this, GetStringUTF16(IDS_TREE_VIEW_ADD_BUTTON_LABEL));
+      base::BindRepeating(&TreeViewExample::AddNewNode, base::Unretained(this)),
+      GetStringUTF16(IDS_TREE_VIEW_ADD_BUTTON_LABEL));
   add->SetFocusForPlatform();
   add->SetRequestFocusOnPress(true);
   auto remove = std::make_unique<LabelButton>(
-      this, GetStringUTF16(IDS_TREE_VIEW_REMOVE_BUTTON_LABEL));
+      base::BindRepeating(&TreeViewExample::RemoveSelectedNode,
+                          base::Unretained(this)),
+      GetStringUTF16(IDS_TREE_VIEW_REMOVE_BUTTON_LABEL));
   remove->SetFocusForPlatform();
   remove->SetRequestFocusOnPress(true);
   auto change_title = std::make_unique<LabelButton>(
-      this, GetStringUTF16(IDS_TREE_VIEW_CHANGE_TITLE_LABEL));
+      base::BindRepeating(&TreeViewExample::SetSelectedNodeTitle,
+                          base::Unretained(this)),
+      GetStringUTF16(IDS_TREE_VIEW_CHANGE_TITLE_LABEL));
   change_title->SetFocusForPlatform();
   change_title->SetRequestFocusOnPress(true);
 
@@ -142,26 +147,24 @@ void TreeViewExample::AddNewNode() {
   tree_view_->SetSelectedNode(new_node);
 }
 
+void TreeViewExample::RemoveSelectedNode() {
+  auto* selected_node = static_cast<NodeType*>(tree_view_->GetSelectedNode());
+  DCHECK(selected_node);
+  DCHECK_NE(model_.GetRoot(), selected_node);
+  model_.Remove(selected_node->parent(), selected_node);
+}
+
+void TreeViewExample::SetSelectedNodeTitle() {
+  auto* selected_node = static_cast<NodeType*>(tree_view_->GetSelectedNode());
+  DCHECK(selected_node);
+  model_.SetTitle(
+      selected_node,
+      selected_node->GetTitle() + GetStringUTF16(IDS_TREE_VIEW_NEW_NODE_LABEL));
+}
+
 bool TreeViewExample::IsCommandIdEnabled(int command_id) {
   return command_id != ID_REMOVE ||
          tree_view_->GetSelectedNode() != model_.GetRoot();
-}
-
-void TreeViewExample::ButtonPressed(Button* sender, const ui::Event& event) {
-  NodeType* selected_node =
-      static_cast<NodeType*>(tree_view_->GetSelectedNode());
-  if (sender == add_) {
-    AddNewNode();
-  } else if (sender == remove_) {
-    DCHECK(selected_node);
-    DCHECK_NE(model_.GetRoot(), selected_node);
-    model_.Remove(selected_node->parent(), selected_node);
-  } else if (sender == change_title_) {
-    DCHECK(selected_node);
-    model_.SetTitle(selected_node,
-                    selected_node->GetTitle() +
-                        GetStringUTF16(IDS_TREE_VIEW_NEW_NODE_LABEL));
-  }
 }
 
 void TreeViewExample::OnTreeViewSelectionChanged(TreeView* tree_view) {

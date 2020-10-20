@@ -104,27 +104,44 @@ void TextfieldExample::CreateExampleView(View* container) {
   show_password_ = MakeRow<View, LabelButton>(
       layout, nullptr,
       std::make_unique<LabelButton>(
-          this, GetStringUTF16(IDS_TEXTFIELD_SHOW_PASSWORD_LABEL)));
+          base::BindRepeating(
+              [](TextfieldExample* example) {
+                PrintStatus(
+                    "Password [%s]",
+                    base::UTF16ToUTF8(example->password_->GetText()).c_str());
+              },
+              base::Unretained(this)),
+          GetStringUTF16(IDS_TEXTFIELD_SHOW_PASSWORD_LABEL)));
   set_background_ = MakeRow<View, LabelButton>(
       layout, nullptr,
       std::make_unique<LabelButton>(
-          this, GetStringUTF16(IDS_TEXTFIELD_BACKGROUND_LABEL)));
+          base::BindRepeating(&Textfield::SetBackgroundColor,
+                              base::Unretained(password_), gfx::kGoogleRed300),
+          GetStringUTF16(IDS_TEXTFIELD_BACKGROUND_LABEL)));
   clear_all_ = MakeRow<View, LabelButton>(
       layout, nullptr,
-      std::make_unique<LabelButton>(this,
-                                    GetStringUTF16(IDS_TEXTFIELD_CLEAR_LABEL)));
+      std::make_unique<LabelButton>(
+          base::BindRepeating(&TextfieldExample::ClearAllButtonPressed,
+                              base::Unretained(this)),
+          GetStringUTF16(IDS_TEXTFIELD_CLEAR_LABEL)));
   append_ = MakeRow<View, LabelButton>(
       layout, nullptr,
       std::make_unique<LabelButton>(
-          this, GetStringUTF16(IDS_TEXTFIELD_APPEND_LABEL)));
+          base::BindRepeating(&TextfieldExample::AppendButtonPressed,
+                              base::Unretained(this)),
+          GetStringUTF16(IDS_TEXTFIELD_APPEND_LABEL)));
   set_ = MakeRow<View, LabelButton>(
       layout, nullptr,
-      std::make_unique<LabelButton>(this,
-                                    GetStringUTF16(IDS_TEXTFIELD_SET_LABEL)));
+      std::make_unique<LabelButton>(
+          base::BindRepeating(&TextfieldExample::SetButtonPressed,
+                              base::Unretained(this)),
+          GetStringUTF16(IDS_TEXTFIELD_SET_LABEL)));
   set_style_ = MakeRow<View, LabelButton>(
       layout, nullptr,
       std::make_unique<LabelButton>(
-          this, GetStringUTF16(IDS_TEXTFIELD_SET_STYLE_LABEL)));
+          base::BindRepeating(&TextfieldExample::SetStyleButtonPressed,
+                              base::Unretained(this)),
+          GetStringUTF16(IDS_TEXTFIELD_SET_STYLE_LABEL)));
 }
 
 bool TextfieldExample::HandleKeyEvent(Textfield* sender,
@@ -138,51 +155,53 @@ bool TextfieldExample::HandleMouseEvent(Textfield* sender,
   return false;
 }
 
-void TextfieldExample::ButtonPressed(Button* sender, const ui::Event& event) {
-  if (sender == show_password_) {
-    PrintStatus("Password [%s]",
-                base::UTF16ToUTF8(password_->GetText()).c_str());
-  } else if (sender == set_background_) {
-    password_->SetBackgroundColor(gfx::kGoogleRed300);
-  } else if (sender == clear_all_) {
-    base::string16 empty;
-    name_->SetText(empty);
-    password_->SetText(empty);
-    disabled_->SetText(empty);
-    read_only_->SetText(empty);
-    invalid_->SetText(empty);
-    rtl_->SetText(empty);
-  } else if (sender == append_) {
-    name_->AppendText(GetStringUTF16(IDS_TEXTFIELD_APPEND_UPDATE_TEXT));
-    password_->AppendText(GetStringUTF16(IDS_TEXTFIELD_APPEND_UPDATE_TEXT));
-    disabled_->SetText(GetStringUTF16(IDS_TEXTFIELD_APPEND_UPDATE_TEXT));
-    read_only_->AppendText(GetStringUTF16(IDS_TEXTFIELD_APPEND_UPDATE_TEXT));
-    invalid_->AppendText(GetStringUTF16(IDS_TEXTFIELD_APPEND_UPDATE_TEXT));
-    rtl_->AppendText(GetStringUTF16(IDS_TEXTFIELD_APPEND_UPDATE_TEXT));
-  } else if (sender == set_) {
-    name_->SetText(GetStringUTF16(IDS_TEXTFIELD_SET_UPDATE_TEXT));
-    password_->SetText(GetStringUTF16(IDS_TEXTFIELD_SET_UPDATE_TEXT));
-    disabled_->SetText(GetStringUTF16(IDS_TEXTFIELD_SET_UPDATE_TEXT));
-    read_only_->SetText(GetStringUTF16(IDS_TEXTFIELD_SET_UPDATE_TEXT));
-    invalid_->SetText(GetStringUTF16(IDS_TEXTFIELD_SET_UPDATE_TEXT));
-    rtl_->SetText(GetStringUTF16(IDS_TEXTFIELD_SET_UPDATE_TEXT));
-  } else if (sender == set_style_) {
-    if (!name_->GetText().empty()) {
-      name_->SetColor(SK_ColorGREEN);
+void TextfieldExample::ClearAllButtonPressed() {
+  name_->SetText(base::string16());
+  password_->SetText(base::string16());
+  disabled_->SetText(base::string16());
+  read_only_->SetText(base::string16());
+  invalid_->SetText(base::string16());
+  rtl_->SetText(base::string16());
+}
 
-      if (name_->GetText().length() >= 5) {
-        size_t fifth = name_->GetText().length() / 5;
-        const gfx::Range big_range(1 * fifth, 4 * fifth);
-        name_->ApplyStyle(gfx::TEXT_STYLE_UNDERLINE, true, big_range);
-        name_->ApplyColor(SK_ColorBLUE, big_range);
+void TextfieldExample::AppendButtonPressed() {
+  const base::string16 append_text =
+      GetStringUTF16(IDS_TEXTFIELD_APPEND_UPDATE_TEXT);
+  name_->AppendText(append_text);
+  password_->AppendText(append_text);
+  disabled_->SetText(append_text);
+  read_only_->AppendText(append_text);
+  invalid_->AppendText(append_text);
+  rtl_->AppendText(append_text);
+}
 
-        const gfx::Range small_range(2 * fifth, 3 * fifth);
-        name_->ApplyStyle(gfx::TEXT_STYLE_ITALIC, true, small_range);
-        name_->ApplyStyle(gfx::TEXT_STYLE_UNDERLINE, false, small_range);
-        name_->ApplyColor(SK_ColorRED, small_range);
-      }
-    }
-  }
+void TextfieldExample::SetButtonPressed() {
+  const base::string16 set_text = GetStringUTF16(IDS_TEXTFIELD_SET_UPDATE_TEXT);
+  name_->SetText(set_text);
+  password_->SetText(set_text);
+  disabled_->SetText(set_text);
+  read_only_->SetText(set_text);
+  invalid_->SetText(set_text);
+  rtl_->SetText(set_text);
+}
+
+void TextfieldExample::SetStyleButtonPressed() {
+  if (name_->GetText().empty())
+    return;
+  name_->SetColor(SK_ColorGREEN);
+
+  const size_t fifth = name_->GetText().length() / 5;
+  if (!fifth)
+    return;
+
+  const gfx::Range big_range(1 * fifth, 4 * fifth);
+  name_->ApplyStyle(gfx::TEXT_STYLE_UNDERLINE, true, big_range);
+  name_->ApplyColor(SK_ColorBLUE, big_range);
+
+  const gfx::Range small_range(2 * fifth, 3 * fifth);
+  name_->ApplyStyle(gfx::TEXT_STYLE_ITALIC, true, small_range);
+  name_->ApplyStyle(gfx::TEXT_STYLE_UNDERLINE, false, small_range);
+  name_->ApplyColor(SK_ColorRED, small_range);
 }
 
 }  // namespace examples

@@ -29,12 +29,12 @@ void ToggleButtonExample::CreateExampleView(View* container) {
   auto layout = std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical);
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kCenter);
   container->SetLayoutManager(std::move(layout));
-  button_ = container->AddChildView(std::make_unique<ToggleButton>(this));
-}
-
-void ToggleButtonExample::ButtonPressed(Button* sender,
-                                        const ui::Event& event) {
-  PrintStatus("Pressed! count: %d", ++count_);
+  button_ = container->AddChildView(
+      std::make_unique<ToggleButton>(base::BindRepeating(
+          [](ToggleButtonExample* example) {
+            PrintStatus("Pressed! count: %d", ++example->count_);
+          },
+          base::Unretained(this))));
 }
 
 }  // namespace examples

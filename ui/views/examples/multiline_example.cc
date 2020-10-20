@@ -145,13 +145,26 @@ void MultilineExample::CreateExampleView(View* container) {
   label->SetMultiLine(true);
   label->SetBorder(CreateSolidBorder(2, SK_ColorCYAN));
 
-  auto label_checkbox =
-      std::make_unique<Checkbox>(GetStringUTF16(IDS_MULTILINE_LABEL), this);
+  auto label_checkbox = std::make_unique<Checkbox>(
+      GetStringUTF16(IDS_MULTILINE_LABEL),
+      base::BindRepeating(
+          [](MultilineExample* example) {
+            example->label_->SetText(example->label_checkbox_->GetChecked()
+                                         ? example->textfield_->GetText()
+                                         : base::string16());
+          },
+          base::Unretained(this)));
   label_checkbox->SetChecked(true);
   label_checkbox->SetRequestFocusOnPress(false);
 
   auto elision_checkbox = std::make_unique<Checkbox>(
-      GetStringUTF16(IDS_MULTILINE_ELIDE_LABEL), this);
+      GetStringUTF16(IDS_MULTILINE_ELIDE_LABEL),
+      base::BindRepeating(
+          [](MultilineExample* example) {
+            example->render_text_view_->SetMaxLines(
+                example->elision_checkbox_->GetChecked() ? 3 : 0);
+          },
+          base::Unretained(this)));
   elision_checkbox->SetChecked(false);
   elision_checkbox->SetRequestFocusOnPress(false);
 
@@ -191,17 +204,6 @@ void MultilineExample::ContentsChanged(Textfield* sender,
   render_text_view_->SetText(new_contents);
   if (label_checkbox_->GetChecked())
     label_->SetText(new_contents);
-  example_view()->InvalidateLayout();
-  example_view()->SchedulePaint();
-}
-
-void MultilineExample::ButtonPressed(Button* sender, const ui::Event& event) {
-  if (sender == label_checkbox_) {
-    label_->SetText(label_checkbox_->GetChecked() ? textfield_->GetText()
-                                                  : base::string16());
-  } else if (sender == elision_checkbox_) {
-    render_text_view_->SetMaxLines(elision_checkbox_->GetChecked() ? 3 : 0);
-  }
   example_view()->InvalidateLayout();
   example_view()->SchedulePaint();
 }

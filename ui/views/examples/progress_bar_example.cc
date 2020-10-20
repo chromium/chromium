@@ -43,11 +43,15 @@ void ProgressBarExample::CreateExampleView(View* container) {
                         GridLayout::ColumnSize::kUsePreferred, 0, 0);
 
   layout->StartRow(0, 0);
-  minus_button_ = layout->AddView(
-      std::make_unique<views::MdTextButton>(this, base::ASCIIToUTF16("-")));
+  layout->AddView(std::make_unique<views::MdTextButton>(
+      base::BindRepeating(&ProgressBarExample::ButtonPressed,
+                          base::Unretained(this), -0.1),
+      base::ASCIIToUTF16("-")));
   progress_bar_ = layout->AddView(std::make_unique<ProgressBar>());
-  plus_button_ = layout->AddView(
-      std::make_unique<views::MdTextButton>(this, base::ASCIIToUTF16("+")));
+  layout->AddView(std::make_unique<views::MdTextButton>(
+      base::BindRepeating(&ProgressBarExample::ButtonPressed,
+                          base::Unretained(this), 0.1),
+      base::ASCIIToUTF16("+")));
 
   layout->StartRowWithPadding(0, 0, 0, 10);
   layout->AddView(
@@ -64,9 +68,7 @@ void ProgressBarExample::CreateExampleView(View* container) {
   layout->AddView(std::move(shorter_bar));
 }
 
-void ProgressBarExample::ButtonPressed(Button* sender, const ui::Event& event) {
-  constexpr double kStepSize = 0.1;
-  const double step = (sender == minus_button_) ? -kStepSize : kStepSize;
+void ProgressBarExample::ButtonPressed(double step) {
   current_percent_ = base::ClampToRange(current_percent_ + step, 0.0, 1.0);
   progress_bar_->SetValue(current_percent_);
 }

@@ -32,11 +32,22 @@ void TabbedPaneExample::CreateExampleView(View* container) {
   auto tabbed_pane = std::make_unique<TabbedPane>();
   tabbed_pane->set_listener(this);
   auto add = std::make_unique<LabelButton>(
-      this, GetStringUTF16(IDS_TABBED_PANE_ADD_LABEL));
+      base::BindRepeating(&TabbedPaneExample::AddButton, base::Unretained(this),
+                          GetStringUTF16(IDS_TABBED_PANE_ADDED_LABEL)),
+      GetStringUTF16(IDS_TABBED_PANE_ADD_LABEL));
+
   auto add_at = std::make_unique<LabelButton>(
-      this, GetStringUTF16(IDS_TABBED_PANE_ADD_1_LABEL));
+      base::BindRepeating(&TabbedPaneExample::AddAtButtonPressed,
+                          base::Unretained(this)),
+      GetStringUTF16(IDS_TABBED_PANE_ADD_1_LABEL));
   auto select_at = std::make_unique<LabelButton>(
-      this, GetStringUTF16(IDS_TABBED_PANE_SELECT_1_LABEL));
+      base::BindRepeating(
+          [](TabbedPane* pane) {
+            if (pane->GetTabCount() > 1)
+              pane->SelectTabAt(1);
+          },
+          base::Unretained(tabbed_pane_)),
+      GetStringUTF16(IDS_TABBED_PANE_SELECT_1_LABEL));
 
   container->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(LayoutOrientation::kVertical);
@@ -64,20 +75,6 @@ void TabbedPaneExample::CreateExampleView(View* container) {
     view->SetProperty(views::kFlexBehaviorKey, full_flex);
 }
 
-void TabbedPaneExample::ButtonPressed(Button* sender, const ui::Event& event) {
-  if (sender == add_) {
-    AddButton(GetStringUTF16(IDS_TABBED_PANE_ADDED_LABEL));
-  } else if (sender == add_at_) {
-    const base::string16 label = GetStringUTF16(IDS_TABBED_PANE_ADDED_1_LABEL);
-    tabbed_pane_->AddTabAtIndex(1, label,
-                                std::make_unique<LabelButton>(nullptr, label));
-  } else if (sender == select_at_) {
-    if (tabbed_pane_->GetTabCount() > 1)
-      tabbed_pane_->SelectTabAt(1);
-  }
-  PrintCurrentStatus();
-}
-
 void TabbedPaneExample::TabSelectedAt(int index) {
   // Just print the status when selection changes.
   PrintCurrentStatus();
@@ -90,6 +87,15 @@ void TabbedPaneExample::PrintCurrentStatus() {
 
 void TabbedPaneExample::AddButton(const base::string16& label) {
   tabbed_pane_->AddTab(label, std::make_unique<LabelButton>(nullptr, label));
+  PrintCurrentStatus();
+}
+
+void TabbedPaneExample::AddAtButtonPressed() {
+  const base::string16 label = GetStringUTF16(IDS_TABBED_PANE_ADDED_1_LABEL);
+  tabbed_pane_->AddTabAtIndex(
+      1, label,
+      std::make_unique<LabelButton>(Button::PressedCallback(), label));
+  PrintCurrentStatus();
 }
 
 }  // namespace examples

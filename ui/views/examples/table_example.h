@@ -10,7 +10,6 @@
 #include "base/macros.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/models/table_model.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/table/table_grouper.h"
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/controls/table/table_view_observer.h"
@@ -29,8 +28,7 @@ namespace examples {
 class VIEWS_EXAMPLES_EXPORT TableExample : public ExampleBase,
                                            public ui::TableModel,
                                            public TableGrouper,
-                                           public TableViewObserver,
-                                           public ButtonListener {
+                                           public TableViewObserver {
  public:
   TableExample();
   ~TableExample() override;
@@ -53,9 +51,6 @@ class VIEWS_EXAMPLES_EXPORT TableExample : public ExampleBase,
   void OnDoubleClick() override;
   void OnMiddleClick() override;
   void OnKeyDown(ui::KeyboardCode virtual_keycode) override;
-
-  // ButtonListener:
-  void ButtonPressed(Button* sender, const ui::Event& event) override;
 
  private:
   // The table to be tested.

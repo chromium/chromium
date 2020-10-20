@@ -9,18 +9,15 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/examples/example_base.h"
 
 namespace views {
 
-class LabelButton;
 class RadioButton;
 
 namespace examples {
 
-class VIEWS_EXAMPLES_EXPORT RadioButtonExample : public ExampleBase,
-                                                 public ButtonListener {
+class VIEWS_EXAMPLES_EXPORT RadioButtonExample : public ExampleBase {
  public:
   RadioButtonExample();
   ~RadioButtonExample() override;
@@ -29,15 +26,10 @@ class VIEWS_EXAMPLES_EXPORT RadioButtonExample : public ExampleBase,
   void CreateExampleView(View* container) override;
 
  private:
-  // ButtonListener:
-  void ButtonPressed(Button* sender, const ui::Event& event) override;
+  void StatusButtonPressed();
 
   // Group of 3 radio buttons.
   std::vector<RadioButton*> radio_buttons_;
-
-  // Control button to select radio buttons, and show the status of buttons.
-  LabelButton* select_;
-  LabelButton* status_;
 
   DISALLOW_COPY_AND_ASSIGN(RadioButtonExample);
 };

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/examples/example_base.h"
 
 namespace views {
@@ -19,8 +18,7 @@ class GridLayout;
 
 namespace examples {
 
-class VIEWS_EXAMPLES_EXPORT TextExample : public ExampleBase,
-                                          public ButtonListener {
+class VIEWS_EXAMPLES_EXPORT TextExample : public ExampleBase {
  public:
   TextExample();
   ~TextExample() override;
@@ -29,6 +27,8 @@ class VIEWS_EXAMPLES_EXPORT TextExample : public ExampleBase,
   void CreateExampleView(View* container) override;
 
  private:
+  class TextExampleView;
+
   // Creates and adds a check box to the layout.
   Checkbox* AddCheckbox(GridLayout* layout, const char* name);
 
@@ -46,10 +46,8 @@ class VIEWS_EXAMPLES_EXPORT TextExample : public ExampleBase,
   void PrefixComboboxChanged();
   void WeightComboboxChanged();
 
-  // ButtonListener:
-  void ButtonPressed(Button* button, const ui::Event& event) override;
+  void UpdateStyle();
 
-  class TextExampleView;
   // The content of the scroll view.
   TextExampleView* text_view_;
 

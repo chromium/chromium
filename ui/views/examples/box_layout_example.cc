@@ -53,11 +53,6 @@ void BoxLayoutExample::ContentsChanged(Textfield* textfield,
   RefreshLayoutPanel(false);
 }
 
-void BoxLayoutExample::ButtonPressedImpl(Button* sender) {
-  if (sender == collapse_margins_)
-    RefreshLayoutPanel(true);
-}
-
 void BoxLayoutExample::CreateAdditionalControls() {
   constexpr const char* kOrientationValues[2] = {"Horizontal", "Vertical"};
   orientation_ = CreateAndAddCombobox(
@@ -89,8 +84,10 @@ void BoxLayoutExample::CreateAdditionalControls() {
 
   CreateMarginsTextFields(base::ASCIIToUTF16("Insets"), &border_insets_);
 
-  collapse_margins_ =
-      CreateAndAddCheckbox(base::ASCIIToUTF16("Collapse margins"));
+  collapse_margins_ = CreateAndAddCheckbox(
+      base::ASCIIToUTF16("Collapse margins"),
+      base::BindRepeating(&LayoutExampleBase::RefreshLayoutPanel,
+                          base::Unretained(this), true));
 
   UpdateLayoutManager();
 }

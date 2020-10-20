@@ -138,7 +138,11 @@ void LoginBubbleDialogExample::CreateExampleView(View* container) {
 
   layout->StartRowWithPadding(0, 0, 0, related_control_padding);
   button_ = layout->AddView(std::make_unique<MdTextButton>(
-      this, GetStringUTF16(IDS_LOGIN_SHOW_BUTTON_LABEL)));
+      Button::PressedCallback(), GetStringUTF16(IDS_LOGIN_SHOW_BUTTON_LABEL)));
+  button_->SetCallback(base::BindRepeating(
+      &LoginBubbleDialogView::Show, button_, BubbleBorder::TOP_LEFT,
+      base::BindRepeating(&LoginBubbleDialogExample::OnSubmit,
+                          base::Unretained(this))));
 
   layout->StartRowWithPadding(0, 0, 0, related_control_padding);
   username_label_ = layout->AddView(std::make_unique<Label>(
@@ -151,14 +155,6 @@ void LoginBubbleDialogExample::CreateExampleView(View* container) {
       l10n_util::GetStringUTF16(IDS_LOGIN_PASSWORD_LABEL)));
   password_label_->SetVisible(false);
   password_input_ = layout->AddView(std::make_unique<Label>());
-}
-
-void LoginBubbleDialogExample::ButtonPressed(Button* sender,
-                                             const ui::Event& event) {
-  LoginBubbleDialogView::Show(
-      button_, BubbleBorder::TOP_LEFT,
-      base::BindOnce(&LoginBubbleDialogExample::OnSubmit,
-                     base::Unretained(this)));
 }
 
 void LoginBubbleDialogExample::OnSubmit(base::string16 username,

@@ -8,16 +8,17 @@
 #include <string>
 
 #include "base/macros.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/examples/example_base.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
+
+class LabelButton;
+
 namespace examples {
 
 // WidgetExample demonstrates how to create a popup widget.
-class VIEWS_EXAMPLES_EXPORT WidgetExample : public ExampleBase,
-                                            public ButtonListener {
+class VIEWS_EXAMPLES_EXPORT WidgetExample : public ExampleBase {
  public:
   WidgetExample();
   ~WidgetExample() override;
@@ -26,23 +27,13 @@ class VIEWS_EXAMPLES_EXPORT WidgetExample : public ExampleBase,
   void CreateExampleView(View* container) override;
 
  private:
-  // Button tags used to identify various commands.
-  enum Command {
-    POPUP,         // Show a popup widget.
-    DIALOG,        // Show a dialog widget.
-    MODAL_DIALOG,  // Show a modal dialog widget.
-    CHILD,         // Show a child widget.
-    CLOSE_WIDGET,  // Close the sender button's widget.
-  };
+  // Construct a button with the specified |label| in |container|.
+  LabelButton* BuildButton(View* container, const base::string16& label);
 
-  // Construct a button with the specified |label| and |tag| in |container|.
-  void BuildButton(View* container, const base::string16& label, int tag);
+  void CreateDialogWidget(View* sender, bool modal);
 
-  // Construct a Widget for |sender|, initialize with |params|, and call Show().
-  void ShowWidget(View* sender, Widget::InitParams params);
-
-  // ButtonListener:
-  void ButtonPressed(Button* sender, const ui::Event& event) override;
+  // Construct a Widget for |sender|, initialize with |type|, and call Show().
+  void ShowWidget(View* sender, Widget::InitParams::Type type);
 
   DISALLOW_COPY_AND_ASSIGN(WidgetExample);
 };

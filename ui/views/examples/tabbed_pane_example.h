@@ -8,18 +8,18 @@
 #include <string>
 
 #include "base/macros.h"
-#include "ui/views/controls/button/button.h"
+#include "base/strings/string16.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane_listener.h"
 #include "ui/views/examples/example_base.h"
 
 namespace views {
+class Button;
 class TabbedPane;
 
 namespace examples {
 
 // A TabbedPane example tests adding and selecting tabs.
 class VIEWS_EXAMPLES_EXPORT TabbedPaneExample : public ExampleBase,
-                                                public ButtonListener,
                                                 public TabbedPaneListener {
  public:
   TabbedPaneExample();
@@ -29,9 +29,6 @@ class VIEWS_EXAMPLES_EXPORT TabbedPaneExample : public ExampleBase,
   void CreateExampleView(View* container) override;
 
  private:
-  // ButtonListener:
-  void ButtonPressed(Button* sender, const ui::Event& event) override;
-
   // TabbedPaneListener:
   void TabSelectedAt(int index) override;
 
@@ -39,6 +36,8 @@ class VIEWS_EXAMPLES_EXPORT TabbedPaneExample : public ExampleBase,
   void PrintCurrentStatus();
 
   void AddButton(const base::string16& label);
+
+  void AddAtButtonPressed();
 
   // The tabbed pane to be tested.
   TabbedPane* tabbed_pane_;

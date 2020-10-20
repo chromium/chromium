@@ -30,7 +30,6 @@ class VIEWS_EXAMPLES_EXPORT FlexLayoutExample : public LayoutExampleBase {
   // LayoutExampleBase:
   void ContentsChanged(Textfield* sender,
                        const base::string16& new_contents) override;
-  void ButtonPressedImpl(Button* sender) override;
   void CreateAdditionalControls() override;
   void UpdateLayoutManager() override;
 

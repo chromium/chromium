@@ -77,25 +77,30 @@ void TableExample::CreateExampleView(View* container) {
   canvas1.drawColor(SK_ColorRED);
   canvas2.drawColor(SK_ColorBLUE);
 
-  auto make_checkbox =
-      [this](base::string16 text) -> std::unique_ptr<Checkbox> {
-    auto result = std::make_unique<Checkbox>(text, this);
-    result->SetChecked(true);
-    return result;
-  };
-
-  // Make buttons
   auto* button_panel = container->AddChildView(std::make_unique<View>());
   button_panel->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(LayoutOrientation::kHorizontal);
-  column1_visible_checkbox_ = button_panel->AddChildView(
-      make_checkbox(ASCIIToUTF16("Fruit column visible")));
-  column2_visible_checkbox_ = button_panel->AddChildView(
-      make_checkbox(ASCIIToUTF16("Color column visible")));
-  column3_visible_checkbox_ = button_panel->AddChildView(
-      make_checkbox(ASCIIToUTF16("Origin column visible")));
-  column4_visible_checkbox_ = button_panel->AddChildView(
-      make_checkbox(ASCIIToUTF16("Price column visible")));
+
+  const auto make_checkbox = [&](base::string16 label, int id) {
+    auto* const checkbox =
+        button_panel->AddChildView(std::make_unique<Checkbox>(
+            std::move(label), Button::PressedCallback()));
+    checkbox->SetCallback(base::BindRepeating(
+        [](TableView* table, int id, Checkbox* checkbox) {
+          table->SetColumnVisibility(id, checkbox->GetChecked());
+        },
+        base::Unretained(table_), id, checkbox));
+    checkbox->SetChecked(true);
+    return checkbox;
+  };
+  column1_visible_checkbox_ =
+      make_checkbox(ASCIIToUTF16("Fruit column visible"), 0);
+  column2_visible_checkbox_ =
+      make_checkbox(ASCIIToUTF16("Color column visible"), 1);
+  column3_visible_checkbox_ =
+      make_checkbox(ASCIIToUTF16("Origin column visible"), 2);
+  column4_visible_checkbox_ =
+      make_checkbox(ASCIIToUTF16("Price column visible"), 3);
 
   for (View* child : button_panel->children())
     child->SetProperty(views::kFlexBehaviorKey, full_flex);
@@ -168,25 +173,6 @@ void TableExample::OnDoubleClick() {
 void TableExample::OnMiddleClick() {}
 
 void TableExample::OnKeyDown(ui::KeyboardCode virtual_keycode) {}
-
-void TableExample::ButtonPressed(Button* sender, const ui::Event& event) {
-  int index = 0;
-  bool show = true;
-  if (sender == column1_visible_checkbox_) {
-    index = 0;
-    show = column1_visible_checkbox_->GetChecked();
-  } else if (sender == column2_visible_checkbox_) {
-    index = 1;
-    show = column2_visible_checkbox_->GetChecked();
-  } else if (sender == column3_visible_checkbox_) {
-    index = 2;
-    show = column3_visible_checkbox_->GetChecked();
-  } else if (sender == column4_visible_checkbox_) {
-    index = 3;
-    show = column4_visible_checkbox_->GetChecked();
-  }
-  table_->SetColumnVisibility(index, show);
-}
 
 }  // namespace examples
 }  // namespace views
