@@ -5841,12 +5841,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-suggested-files", flag_descriptions::kEnableSuggestedFilesName,
      flag_descriptions::kEnableSuggestedFilesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(app_list_features::kEnableSuggestedFiles)},
-
-    {"aggregated-ml-app-ranking",
-     flag_descriptions::kAggregatedMlAppRankingName,
-     flag_descriptions::kAggregatedMlAppRankingDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(app_list_features::kEnableAggregatedMlAppRanking)},
-
 #endif  // defined(OS_CHROMEOS)
 
     {"passwords-account-storage",

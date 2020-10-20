@@ -40,8 +40,6 @@ const base::Feature kEnableAppGridGhost{"EnableAppGridGhost",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kEnableAppListLaunchRecording{
     "EnableAppListLaunchRecording", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kEnableAggregatedMlAppRanking{
-    "EnableAggregatedMlAppRanking", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kLauncherSettingsSearch{"LauncherSettingsSearch",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kEnableFuzzyAppSearch{"EnableFuzzyAppSearch",
@@ -97,10 +95,6 @@ bool IsAssistantSearchEnabled() {
 
 bool IsAppGridGhostEnabled() {
   return base::FeatureList::IsEnabled(kEnableAppGridGhost);
-}
-
-bool IsAggregatedMlAppRankingEnabled() {
-  return base::FeatureList::IsEnabled(kEnableAggregatedMlAppRanking);
 }
 
 bool IsLauncherSettingsSearchEnabled() {
