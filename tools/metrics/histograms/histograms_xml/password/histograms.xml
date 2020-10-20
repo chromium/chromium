@@ -681,8 +681,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.BubbleSuppression.AccountsInStatisticsTable"
-    units="accounts" expires_after="M88">
-  <owner>battre@chromium.org</owner>
+    units="accounts" expires_after="M93">
+  <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
     The number of accounts stored in password_manager::StatisticsTable. These
@@ -738,7 +738,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.BulkCheck.PasswordCheckReferrer"
-    enum="PasswordCheckReferrer" expires_after="M88">
+    enum="PasswordCheckReferrer" expires_after="M93">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2000,9 +2000,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.SuccessfulLoginHappened"
-    enum="BooleanSuccessfulLoginHappenedOnHttps" expires_after="M88">
+    enum="BooleanSuccessfulLoginHappenedOnHttps" expires_after="M93">
+  <owner>jdoerrie@chromium.org</owner>
   <owner>nepper@chromium.org</owner>
-  <owner>battre@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
   <summary>
     For a successful login, whether the origin is HTTPS or HTTP. A succesful
