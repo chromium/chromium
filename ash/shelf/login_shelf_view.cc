@@ -93,7 +93,7 @@ SkColor GetButtonBackgroundColor() {
       session_manager::SessionState::OOBE) {
     return SkColorSetA(SK_ColorBLACK, 16);  // 6% opacity
   }
-  return DeprecatedGetLoginBackgroundBaseColor(kLoginBackgroundBaseColor);
+  return DeprecatedGetLoginBackgroundBaseColor(kLoginButtonBackgroundBaseColor);
 }
 
 LoginMetricsRecorder::ShelfButtonClickTarget GetUserClickTarget(int button_id) {

@@ -19,6 +19,8 @@ constexpr SkColor kPowerButtonMenuFullscreenShieldColor = SK_ColorBLACK;
 constexpr SkColor kLoginShelfButtonLabelColor = gfx::kGoogleGrey100;
 constexpr SkColor kLoginShelfButtonIconColor = SkColorSetRGB(0xEB, 0xEA, 0xED);
 constexpr SkColor kLoginBackgroundBaseColor = SK_ColorBLACK;
+constexpr SkColor kLoginButtonBackgroundBaseColor =
+    SkColorSetA(SK_ColorWHITE, 26);
 
 // Colors for shelf.
 constexpr SkColor kDefaultShelfInkDropColor = SK_ColorBLACK;
