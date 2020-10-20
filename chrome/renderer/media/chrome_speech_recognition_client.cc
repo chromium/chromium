@@ -32,36 +32,26 @@ std::vector<std::string> GetBlockedURLs() {
 ChromeSpeechRecognitionClient::ChromeSpeechRecognitionClient(
     content::RenderFrame* render_frame,
     media::SpeechRecognitionClient::OnReadyCallback callback)
-    : on_ready_callback_(std::move(callback)), blocked_urls_(GetBlockedURLs()) {
-  mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
-      speech_recognition_context_receiver =
-          speech_recognition_context_.BindNewPipeAndPassReceiver();
-  speech_recognition_context_->BindRecognizer(
-      speech_recognition_recognizer_.BindNewPipeAndPassReceiver(),
-      speech_recognition_client_receiver_.BindNewPipeAndPassRemote(),
-      base::BindOnce(&ChromeSpeechRecognitionClient::OnRecognizerBound,
-                     base::Unretained(this)));
-
-  render_frame->GetBrowserInterfaceBroker()->GetInterface(
-      std::move(speech_recognition_context_receiver));
-  render_frame->GetBrowserInterfaceBroker()->GetInterface(
-      caption_host_.BindNewPipeAndPassReceiver());
-
-  is_website_blocked_ = IsUrlBlocked(
-      render_frame->GetWebFrame()->GetSecurityOrigin().ToString().Utf8());
-  base::UmaHistogramBoolean("Accessibility.LiveCaption.WebsiteBlocked",
-                            is_website_blocked_);
+    : render_frame_(render_frame),
+      on_ready_callback_(std::move(callback)),
+      blocked_urls_(GetBlockedURLs()) {
+  initialize_callback_ = media::BindToCurrentLoop(base::BindRepeating(
+      &ChromeSpeechRecognitionClient::Initialize, weak_factory_.GetWeakPtr()));
 
   send_audio_callback_ = media::BindToCurrentLoop(base::BindRepeating(
       &ChromeSpeechRecognitionClient::SendAudioToSpeechRecognitionService,
       weak_factory_.GetWeakPtr()));
 
-  speech_recognition_context_.set_disconnect_handler(media::BindToCurrentLoop(
-      base::BindOnce(&ChromeSpeechRecognitionClient::OnRecognizerDisconnected,
-                     weak_factory_.GetWeakPtr())));
-  caption_host_.set_disconnect_handler(
-      base::BindOnce(&ChromeSpeechRecognitionClient::OnCaptionHostDisconnected,
-                     base::Unretained(this)));
+  mojo::PendingReceiver<media::mojom::SpeechRecognitionClientBrowserInterface>
+      speech_recognition_client_browser_interface_receiver =
+          speech_recognition_client_browser_interface_
+              .BindNewPipeAndPassReceiver();
+  speech_recognition_client_browser_interface_
+      ->BindSpeechRecognitionAvailabilityObserver(
+          speech_recognition_availability_observer_.BindNewPipeAndPassRemote());
+
+  render_frame_->GetBrowserInterfaceBroker()->GetInterface(
+      std::move(speech_recognition_client_browser_interface_receiver));
 }
 
 void ChromeSpeechRecognitionClient::OnRecognizerBound(
@@ -126,6 +116,15 @@ void ChromeSpeechRecognitionClient::OnSpeechRecognitionRecognitionEvent(
                      base::Unretained(this)));
 }
 
+void ChromeSpeechRecognitionClient::SpeechRecognitionAvailabilityChanged(
+    bool is_speech_recognition_available) {
+  if (is_speech_recognition_available) {
+    initialize_callback_.Run();
+  } else {
+    Reset();
+  }
+}
+
 void ChromeSpeechRecognitionClient::OnTranscriptionCallback(bool success) {
   is_browser_requesting_transcription_ = success;
 }
@@ -157,6 +156,48 @@ void ChromeSpeechRecognitionClient::ResetChannelMixer(
     channel_mixer_ = std::make_unique<media::ChannelMixer>(
         channel_layout, media::CHANNEL_LAYOUT_MONO);
   }
+}
+
+void ChromeSpeechRecognitionClient::Initialize() {
+  if (speech_recognition_context_.is_bound())
+    return;
+
+  mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
+      speech_recognition_context_receiver =
+          speech_recognition_context_.BindNewPipeAndPassReceiver();
+  speech_recognition_context_->BindRecognizer(
+      speech_recognition_recognizer_.BindNewPipeAndPassReceiver(),
+      speech_recognition_client_receiver_.BindNewPipeAndPassRemote(),
+      media::BindToCurrentLoop(
+          base::BindOnce(&ChromeSpeechRecognitionClient::OnRecognizerBound,
+                         weak_factory_.GetWeakPtr())));
+
+  render_frame_->GetBrowserInterfaceBroker()->GetInterface(
+      std::move(speech_recognition_context_receiver));
+  render_frame_->GetBrowserInterfaceBroker()->GetInterface(
+      caption_host_.BindNewPipeAndPassReceiver());
+
+  is_website_blocked_ = IsUrlBlocked(
+      render_frame_->GetWebFrame()->GetSecurityOrigin().ToString().Utf8());
+  base::UmaHistogramBoolean("Accessibility.LiveCaption.WebsiteBlocked",
+                            is_website_blocked_);
+
+  speech_recognition_context_.set_disconnect_handler(media::BindToCurrentLoop(
+      base::BindOnce(&ChromeSpeechRecognitionClient::OnRecognizerDisconnected,
+                     weak_factory_.GetWeakPtr())));
+
+  // Unretained is safe because |this| owns the mojo::Remote.
+  caption_host_.set_disconnect_handler(
+      base::BindOnce(&ChromeSpeechRecognitionClient::OnCaptionHostDisconnected,
+                     base::Unretained(this)));
+}
+
+void ChromeSpeechRecognitionClient::Reset() {
+  is_recognizer_bound_ = false;
+  speech_recognition_context_.reset();
+  speech_recognition_recognizer_.reset();
+  speech_recognition_client_receiver_.reset();
+  caption_host_.reset();
 }
 
 void ChromeSpeechRecognitionClient::SendAudioToSpeechRecognitionService(

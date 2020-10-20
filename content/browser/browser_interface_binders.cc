@@ -777,6 +777,10 @@ void PopulateBinderMapWithContext(
   }
   map->Add<media::mojom::SpeechRecognitionContext>(base::BindRepeating(
       &EmptyBinderForFrame<media::mojom::SpeechRecognitionContext>));
+  map->Add<media::mojom::SpeechRecognitionClientBrowserInterface>(
+      base::BindRepeating(
+          &EmptyBinderForFrame<
+              media::mojom::SpeechRecognitionClientBrowserInterface>));
 #endif
 #if BUILDFLAG(ENABLE_UNHANDLED_TAP)
   map->Add<blink::mojom::UnhandledTapNotifier>(base::BindRepeating(

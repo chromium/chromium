@@ -110,10 +110,13 @@
 #include "chrome/browser/promo_browser_command/promo_browser_command.mojom.h"
 #include "chrome/browser/search/ntp_features.h"
 #include "chrome/browser/search/shopping_tasks/shopping_tasks.mojom.h"
+#include "chrome/browser/speech/speech_recognition_client_browser_interface.h"
+#include "chrome/browser/speech/speech_recognition_client_browser_interface_factory.h"
 #include "chrome/browser/speech/speech_recognition_service.h"
 #include "chrome/browser/speech/speech_recognition_service_factory.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/ui/webui/new_tab_page/foo/foo.mojom.h"  // nogncheck crbug.com/1125897
 #endif
@@ -409,11 +412,22 @@ void BindSpeechRecognitionContextHandler(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> receiver) {
   Profile* profile = Profile::FromBrowserContext(
       frame_host->GetProcess()->GetBrowserContext());
-  PrefService* profile_prefs = profile->GetPrefs();
-  if (profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled) &&
-      base::FeatureList::IsEnabled(media::kLiveCaption)) {
+  if (base::FeatureList::IsEnabled(media::kLiveCaption)) {
     SpeechRecognitionServiceFactory::GetForProfile(profile)->Create(
         std::move(receiver));
+  }
+}
+
+void BindSpeechRecognitionClientBrowserInterfaceHandler(
+    content::RenderFrameHost* frame_host,
+    mojo::PendingReceiver<media::mojom::SpeechRecognitionClientBrowserInterface>
+        receiver) {
+  if (base::FeatureList::IsEnabled(media::kLiveCaption)) {
+    Profile* profile = Profile::FromBrowserContext(
+        frame_host->GetProcess()->GetBrowserContext());
+
+    SpeechRecognitionClientBrowserInterfaceFactory::GetForProfile(profile)
+        ->BindReceiver(std::move(receiver));
   }
 }
 
@@ -561,6 +575,8 @@ void PopulateChromeFrameBinders(
 #if !defined(OS_ANDROID)
   map->Add<media::mojom::SpeechRecognitionContext>(
       base::BindRepeating(&BindSpeechRecognitionContextHandler));
+  map->Add<media::mojom::SpeechRecognitionClientBrowserInterface>(
+      base::BindRepeating(&BindSpeechRecognitionClientBrowserInterfaceHandler));
   map->Add<chrome::mojom::CaptionHost>(
       base::BindRepeating(&BindCaptionContextHandler));
 #endif

@@ -78,3 +78,21 @@ struct SpeechRecognitionResult {
   // final result.
   bool is_final;
 };
+
+// The interface used to notify the speech recognition client of events
+// triggered by the browser. The remote lives in the browser process and the
+// receiver lives in the renderer process.
+interface SpeechRecognitionAvailabilityObserver {
+  // Notify the speech recognition client when speech recognition availability
+  // changes.
+  SpeechRecognitionAvailabilityChanged(bool is_speech_recognition_available);
+};
+
+// This interface between the speech recognition client and the browser.
+// The remote lives in the renderer process and the receiver lives in the
+// browser process.
+interface SpeechRecognitionClientBrowserInterface {
+  // Bind the speech recognition availability observer.
+  BindSpeechRecognitionAvailabilityObserver(
+    pending_remote<SpeechRecognitionAvailabilityObserver> observer);
+};

@@ -3812,6 +3812,10 @@ static_library("browser") {
                                                               # to extensions
                                                               # section ?
       "speech/extension_api/tts_extension_api_constants.h",
+      "speech/speech_recognition_client_browser_interface.cc",
+      "speech/speech_recognition_client_browser_interface.h",
+      "speech/speech_recognition_client_browser_interface_factory.cc",
+      "speech/speech_recognition_client_browser_interface_factory.h",
       "speech/speech_recognition_service.cc",
       "speech/speech_recognition_service.h",
       "speech/speech_recognition_service_factory.cc",
