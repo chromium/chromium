@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_tree_source.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -392,11 +393,11 @@ ClientTreeNode*
 AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::GetClientTreeNodeParent(
     ClientTreeNode* obj) {
   ClientTreeNode* parent = obj->parent;
-#if DCHECK_IS_ON() || !defined(NDEBUG)
+#if defined(AX_FAIL_FAST_BUILD)
   if (!parent)
     return nullptr;
   DCHECK(ClientTreeNodeById(parent->id)) << "Parent not in id map.";
-#endif  // DCHECK_IS_ON() || !defined(NDEBUG)
+#endif  // defined(AX_FAIL_FAST_BUILD)
   return parent;
 }
 
@@ -579,7 +580,7 @@ bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::
 
     ClientTreeNode* client_child = ClientTreeNodeById(new_child_id);
     if (client_child && GetClientTreeNodeParent(client_child) != client_node) {
-#if DCHECK_IS_ON() || !defined(NDEBUG)
+#if defined(AX_FAIL_FAST_BUILD)
       // TODO(accessibility) Remove all cases where this occurs and re-add
       // NOTREACHED(), or add a histogram.
       // This condition leads to performance problems. It will
@@ -587,7 +588,7 @@ bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::
       NOTREACHED()
 #else
       LOG(ERROR)
-#endif
+#endif  // defined(AX_FAIL_FAST_BUILD)
           << "Illegal reparenting detected: "
           << "\nPassed-in parent: "
           << tree_->GetDebugString(tree_->GetFromId(client_node->id))
@@ -673,7 +674,7 @@ bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::
       new_child->invalid = false;
       client_node->children.push_back(new_child);
       if (ClientTreeNodeById(child_id)) {
-#if DCHECK_IS_ON() || !defined(NDEBUG)
+#if defined(AX_FAIL_FAST_BUILD)
         // TODO(accessibility) Remove all cases where this occurs and re-add
         // NOTREACHED(), or add a histogram.
         // This condition leads to performance problems. It will
@@ -681,7 +682,7 @@ bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::
         NOTREACHED()
 #else
         LOG(ERROR)
-#endif
+#endif  // defined(AX_FAIL_FAST_BUILD)
             << "Child id " << child_id << " already exists in map."
             << "\nChild is "
             << tree_->GetDebugString(tree_->GetFromId(child_id))
