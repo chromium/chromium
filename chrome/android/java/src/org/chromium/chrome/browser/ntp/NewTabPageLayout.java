@@ -82,7 +82,6 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
     private SearchBoxCoordinator mSearchBoxCoordinator;
     private ViewGroup mSiteSectionView;
     private SiteSectionViewHolder mSiteSectionViewHolder;
-    private ImageView mVoiceSearchButton;
     private View mTileGridPlaceholder;
     private View mNoSearchLogoSpacer;
     private QueryTileSection mQueryTileSection;

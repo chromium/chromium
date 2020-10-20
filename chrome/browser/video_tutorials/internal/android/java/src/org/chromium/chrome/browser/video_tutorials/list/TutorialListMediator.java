@@ -64,15 +64,19 @@ public class TutorialListMediator {
                                 () -> mClickCallback.onResult(tutorial));
 
         builder.with(TutorialCardProperties.VISUALS_PROVIDER, (consumer, widthPx, heightPx) -> {
-            return () -> {
-                ImageFetcher.Params params = ImageFetcher.Params.create(tutorial.posterUrl,
-                        ImageFetcher.VIDEO_TUTORIALS_LIST_UMA_CLIENT_NAME, widthPx, heightPx);
-                mImageFetcher.fetchImage(params, bitmap -> {
-                    Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
-                    consumer.onResult(drawable);
-                });
-            };
+            fetchImage(consumer, widthPx, heightPx, tutorial);
+            return () -> {};
         });
         return builder.build();
+    }
+
+    private void fetchImage(
+            Callback<Drawable> consumer, int widthPx, int heightPx, Tutorial tutorial) {
+        ImageFetcher.Params params = ImageFetcher.Params.create(tutorial.posterUrl,
+                ImageFetcher.VIDEO_TUTORIALS_LIST_UMA_CLIENT_NAME, widthPx, heightPx);
+        mImageFetcher.fetchImage(params, bitmap -> {
+            Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
+            consumer.onResult(drawable);
+        });
     }
 }

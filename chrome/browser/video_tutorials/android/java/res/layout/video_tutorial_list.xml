@@ -5,8 +5,6 @@
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/video_tutorial_list"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -21,11 +19,10 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <!-- TODO(shaktisahu): Use correct string after the string CL lands. -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/close"
+            android:text="@string/video_tutorials_learn_chrome"
             android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
 
         <Space

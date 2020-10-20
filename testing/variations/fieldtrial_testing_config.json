@@ -7356,7 +7356,7 @@
                     "params": {
                         "availability": ">=0",
                         "event_1": "name:video_tutorial_iph_clicked_chrome_intro;comparator:==0;window:30;storage:30",
-                        "event_2": "name:video_tutorial_iph_dismissed_chrome_intro;comparator:<10;window:30;storage:30",
+                        "event_2": "name:video_tutorial_iph_dismissed_chrome_intro;comparator:==0;window:30;storage:30",
                         "event_trigger": "name:tutorial_chrome_intro_iph_trigger;comparator:any;window:30;storage:30",
                         "event_used": "name:chrome_intro;comparator:any;window:30;storage:30",
                         "session_rate": "any",
@@ -7382,7 +7382,7 @@
                         "availability": ">=0",
                         "event_1": "name:download_completed;comparator:any;window:30;storage:30",
                         "event_2": "name:video_tutorial_iph_clicked_download;comparator:==0;window:30;storage:30",
-                        "event_3": "name:video_tutorial_iph_dismissed_download;comparator:<10;window:30;storage:30",
+                        "event_3": "name:video_tutorial_iph_dismissed_download;comparator:==0;window:30;storage:30",
                         "event_trigger": "name:tutorial_download_iph_trigger;comparator:any;window:30;storage:30",
                         "event_used": "name:download;comparator:any;window:30;storage:30",
                         "session_rate": "any",
@@ -7408,7 +7408,7 @@
                         "availability": ">=0",
                         "event_1": "name:search_completed;comparator:any;window:30;storage:30",
                         "event_2": "name:video_tutorial_iph_clicked_search;comparator:==0;window:30;storage:30",
-                        "event_3": "name:video_tutorial_iph_dismissed_search;comparator:<10;window:30;storage:30",
+                        "event_3": "name:video_tutorial_iph_dismissed_search;comparator:==0;window:30;storage:30",
                         "event_trigger": "name:tutorial_search_iph_trigger;comparator:any;window:30;storage:30",
                         "event_used": "name:omnibox_search;comparator:any;window:30;storage:30",
                         "session_rate": "any",
@@ -7432,8 +7432,7 @@
                     "name": "VideoTutorialNTPSummary",
                     "params": {
                         "availability": ">=0",
-                        "event_1": "name:video_tutorial_iph_clicked_summary;comparator:==0;window:30;storage:30",
-                        "event_2": "name:video_tutorial_iph_dismissed_summary;comparator:<10;window:30;storage:30",
+                        "event_1": "name:video_tutorial_iph_dismissed_summary;comparator:==0;window:30;storage:30",
                         "event_trigger": "name:tutorial_summary_iph_trigger;comparator:any;window:30;storage:30",
                         "event_used": "name:summary;comparator:any;window:30;storage:30",
                         "session_rate": "any",
@@ -7459,7 +7458,7 @@
                         "availability": ">=0",
                         "event_1": "name:search_completed;comparator:any;window:30;storage:30",
                         "event_2": "name:video_tutorial_iph_clicked_voice_search;comparator:==0;window:30;storage:30",
-                        "event_3": "name:video_tutorial_iph_dismissed_voice_search;comparator:<10;window:30;storage:30",
+                        "event_3": "name:video_tutorial_iph_dismissed_voice_search;comparator:==0;window:30;storage:30",
                         "event_trigger": "name:tutorial_voice_search_iph_trigger;comparator:any;window:30;storage:30",
                         "event_used": "name:voice_search;comparator:any;window:30;storage:30",
                         "session_rate": "any",
@@ -7481,6 +7480,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "summary_card_poster_url": "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
+                    },
                     "enable_features": [
                         "VideoTutorials"
                     ]

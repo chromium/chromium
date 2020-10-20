@@ -58,21 +58,22 @@ public class VideoIPHCoordinatorImpl implements VideoIPHCoordinator {
                 VideoIPHProperties.DISMISS_LISTENER, () -> mOnDismissListener.onResult(tutorial));
 
         mModel.set(VideoIPHProperties.THUMBNAIL_PROVIDER, (consumer, widthPx, heightPx) -> {
-            return () -> {
-                ImageFetcher.Params params = ImageFetcher.Params.create(tutorial.posterUrl,
-                        ImageFetcher.VIDEO_TUTORIALS_IPH_UMA_CLIENT_NAME, widthPx, heightPx);
-                mImageFetcher.fetchImage(params, bitmap -> {
-                    Drawable drawable = bitmap == null
-                            ? null
-                            : new BitmapDrawable(mContext.getResources(), bitmap);
-                    consumer.onResult(drawable);
-                });
-            };
+            fetchImage(consumer, widthPx, heightPx, tutorial);
+            return () -> {};
         });
     }
 
     @Override
     public void hideVideoIPH() {
         mModel.set(VideoIPHProperties.VISIBILITY, false);
+    }
+
+    private void fetchImage(
+            Callback<Drawable> consumer, int widthPx, int heightPx, Tutorial tutorial) {
+        ImageFetcher.Params params = ImageFetcher.Params.create(tutorial.posterUrl,
+                ImageFetcher.VIDEO_TUTORIALS_IPH_UMA_CLIENT_NAME, widthPx, heightPx);
+        mImageFetcher.fetchImage(params, bitmap -> {
+            consumer.onResult(new BitmapDrawable(mContext.getResources(), bitmap));
+        });
     }
 }

@@ -43,6 +43,7 @@ public class NewTabPageVideoIPHManager {
      * before the video player activity launches.
      */
     private static final int CARD_HIDE_ANIMATION_DURATION_MS = 500;
+    private static final String VARIATION_SUMMARY_CARD_POSTER_URL = "summary_card_poster_url";
 
     private final Handler mHandler = new Handler();
     private Context mContext;
@@ -98,9 +99,9 @@ public class NewTabPageVideoIPHManager {
             launchTutorialListActivity();
         } else {
             launchVideoPlayer(tutorial);
+            mHandler.postDelayed(
+                    mVideoIPHCoordinator::hideVideoIPH, CARD_HIDE_ANIMATION_DURATION_MS);
         }
-
-        mHandler.postDelayed(mVideoIPHCoordinator::hideVideoIPH, CARD_HIDE_ANIMATION_DURATION_MS);
     }
 
     private void onDismissIPH(Tutorial tutorial) {
@@ -111,9 +112,11 @@ public class NewTabPageVideoIPHManager {
     }
 
     private void addSyntheticSummaryTutorial(List<Tutorial> tutorials) {
+        String summaryCardImageUrl = ChromeFeatureList.getFieldTrialParamByFeature(
+                ChromeFeatureList.VIDEO_TUTORIALS, VARIATION_SUMMARY_CARD_POSTER_URL);
         Tutorial summary = new Tutorial(FeatureType.SUMMARY,
-                mContext.getString(R.string.video_tutorials_card_all_videos), null, null, null,
-                null, 0);
+                mContext.getString(R.string.video_tutorials_card_all_videos), null,
+                summaryCardImageUrl, null, null, 0);
         tutorials.add(summary);
     }
 
