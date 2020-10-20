@@ -441,6 +441,43 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
+                       CreateSignedInProfileOpenLink) {
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+
+  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
+  WaitForNewWebView();
+
+  // Simulate a click on the signin button.
+  base::MockCallback<base::OnceClosure> switch_failure_callback;
+  EXPECT_CALL(switch_failure_callback, Run()).Times(0);
+  ProfilePicker::SwitchToSignIn(kProfileColor, switch_failure_callback.Get());
+
+  // The DICE navigation happens in a new web view (for the profile being
+  // created), wait for it.
+  WaitForNewWebView();
+  FirstVisuallyNonEmptyPaintObserver(
+      web_contents(), GaiaUrls::GetInstance()->signin_chrome_sync_dice())
+      .Wait();
+
+  // Simulate clicking on a link that opens in a new window.
+  const GURL kURL("https://foo.google.com");
+  EXPECT_TRUE(ExecuteScript(web_contents(),
+                            "var link = document.createElement('a');"
+                            "link.href = '" +
+                                kURL.spec() +
+                                "';"
+                                "link.target = '_blank';"
+                                "document.body.appendChild(link);"
+                                "link.click();"));
+  // A new pppup browser is displayed (with the specified URL).
+  Browser* new_browser = BrowserAddedWaiter(2u).Wait();
+  EXPECT_EQ(new_browser->type(), Browser::TYPE_POPUP);
+  FirstVisuallyNonEmptyPaintObserver(
+      new_browser->tab_strip_model()->GetActiveWebContents(), kURL)
+      .Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CreateSignedInProfileSigninAlreadyExists) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
 

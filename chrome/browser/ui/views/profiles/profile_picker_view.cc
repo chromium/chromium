@@ -22,6 +22,8 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_sync_delegate.h"
 #include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
@@ -348,6 +350,25 @@ bool ProfilePickerView::HandleContextMenu(
     const content::ContextMenuParams& params) {
   // Ignores context menu.
   return true;
+}
+
+void ProfilePickerView::AddNewContents(
+    content::WebContents* source,
+    std::unique_ptr<content::WebContents> new_contents,
+    const GURL& target_url,
+    WindowOpenDisposition disposition,
+    const gfx::Rect& initial_rect,
+    bool user_gesture,
+    bool* was_blocked) {
+  DCHECK(signed_in_profile_being_created_)
+      << "Opening new tabs should only happen within GAIA signin";
+  NavigateParams params(signed_in_profile_being_created_, target_url,
+                        ui::PAGE_TRANSITION_LINK);
+  // Open all links as new popups.
+  params.disposition = WindowOpenDisposition::NEW_POPUP;
+  params.contents_to_insert = std::move(new_contents);
+  params.window_bounds = initial_rect;
+  Navigate(&params);
 }
 
 void ProfilePickerView::OnRefreshTokenUpdatedForAccount(

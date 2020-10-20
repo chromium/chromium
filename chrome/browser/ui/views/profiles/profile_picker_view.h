@@ -76,6 +76,13 @@ class ProfilePickerView : public views::DialogDelegateView,
   // content::WebContentsDelegate:
   bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
                          const content::ContextMenuParams& params) override;
+  void AddNewContents(content::WebContents* source,
+                      std::unique_ptr<content::WebContents> new_contents,
+                      const GURL& target_url,
+                      WindowOpenDisposition disposition,
+                      const gfx::Rect& initial_rect,
+                      bool user_gesture,
+                      bool* was_blocked) override;
 
   // IdentityManager::Observer:
   void OnRefreshTokenUpdatedForAccount(
