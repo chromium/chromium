@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {decorate} from '../ui.m.js';
+// #import {define as crUiDefine} from '../ui.m.js';
+// #import {findAncestor} from '../../util.m.js';
+// #import {FocusOutlineManager} from './focus_outline_manager.m.js';
+// #import {isMac, getPropertyDescriptor, PropertyKind} from '../../cr.m.js';
+
 cr.define('cr.ui', function() {
   /**
    * Returns the TabBox for a Tab or a TabPanel.
@@ -89,7 +95,7 @@ cr.define('cr.ui', function() {
    * @constructor
    * @extends {HTMLElement}
    */
-  const TabBox = cr.ui.define('tabbox');
+  /* #export */ const TabBox = cr.ui.define('tabbox');
 
   TabBox.prototype = {
     __proto__: HTMLElement.prototype,
@@ -120,8 +126,11 @@ cr.define('cr.ui', function() {
    * The index of the selected tab or -1 if no tab is selected.
    * @type {number}
    */
-  cr.defineProperty(
-      TabBox, 'selectedIndex', cr.PropertyKind.JS, selectedIndexSetHook);
+  TabBox.prototype.selectedIndex;
+  Object.defineProperty(
+      TabBox.prototype, 'selectedIndex',
+      cr.getPropertyDescriptor(
+          'selectedIndex', cr.PropertyKind.JS, selectedIndexSetHook));
 
   /**
    * Creates a new tabs element.
@@ -129,7 +138,7 @@ cr.define('cr.ui', function() {
    * @constructor
    * @extends {HTMLElement}
    */
-  const Tabs = cr.ui.define('tabs');
+  /* #export */ const Tabs = cr.ui.define('tabs');
   Tabs.prototype = {
     __proto__: HTMLElement.prototype,
     decorate() {
@@ -186,7 +195,7 @@ cr.define('cr.ui', function() {
    * @constructor
    * @extends {HTMLElement}
    */
-  const Tab = cr.ui.define('tab');
+  /* #export */ const Tab = cr.ui.define('tab');
   Tab.prototype = {
     __proto__: HTMLElement.prototype,
     decorate() {
@@ -201,7 +210,10 @@ cr.define('cr.ui', function() {
    * Whether the tab is selected.
    * @type {boolean}
    */
-  cr.defineProperty(Tab, 'selected', cr.PropertyKind.BOOL_ATTR);
+  Tab.prototype.selected;
+  Object.defineProperty(
+      Tab.prototype, 'selected',
+      cr.getPropertyDescriptor('selected', cr.PropertyKind.BOOL_ATTR));
 
   /**
    * Creates a new tabpanels element.
@@ -209,7 +221,7 @@ cr.define('cr.ui', function() {
    * @constructor
    * @extends {HTMLElement}
    */
-  const TabPanels = cr.ui.define('tabpanels');
+  /* #export */ const TabPanels = cr.ui.define('tabpanels');
   TabPanels.prototype = {
     __proto__: HTMLElement.prototype,
     decorate: decorateChildren
@@ -221,15 +233,19 @@ cr.define('cr.ui', function() {
    * @constructor
    * @extends {HTMLElement}
    */
-  const TabPanel = cr.ui.define('tabpanel');
+  /* #export */ const TabPanel = cr.ui.define('tabpanel');
   TabPanel.prototype = {__proto__: HTMLElement.prototype, decorate() {}};
 
   /**
    * Whether the tab is selected.
    * @type {boolean}
    */
-  cr.defineProperty(TabPanel, 'selected', cr.PropertyKind.BOOL_ATTR);
+  TabPanel.prototype.selected;
+  Object.defineProperty(
+      TabPanel.prototype, 'selected',
+      cr.getPropertyDescriptor('selected', cr.PropertyKind.BOOL_ATTR));
 
+  // #cr_define_end
   return {
     TabBox: TabBox,
     Tabs: Tabs,

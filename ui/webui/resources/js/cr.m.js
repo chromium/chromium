@@ -366,7 +366,7 @@ function getSetter(name, kind, opt_setHook) {
  * event with the type {@code name + 'Change'} is fired.
  * @param {string} name The name of the property.
  * @param {PropertyKind=} opt_kind What kind of underlying storage to use.
- * @param {function(*, *):void=} opt_setHook A function to run after the
+ * @param {function(?, ?):void=} opt_setHook A function to run after the
  *     property is set, but before the propertyChange event is fired.
  */
 export function getPropertyDescriptor(name, opt_kind, opt_setHook) {

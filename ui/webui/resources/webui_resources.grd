@@ -84,9 +84,6 @@ without changes to the corresponding grd file. -->
                file="images/throbber_small.svg" type="BINDATA" />
       <!-- Web UI JS module resources (used only in ChromeOS). -->
       <if expr="chromeos">
-        <include name="IDR_WEBUI_JS_CR_UI_M_JS"
-                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui.m.js"
-                 use_base_dir="false" type="BINDATA" />
         <include name="IDR_WEBUI_JS_CR_UI_ARRAY_DATA_MODEL_M_JS"
                  file="${root_gen_dir}/ui/webui/resources/js/cr/ui/array_data_model.m.js"
                  use_base_dir="false" type="BINDATA" />
@@ -132,9 +129,6 @@ without changes to the corresponding grd file. -->
         <include name="IDR_WEBUI_JS_CR_UI_SPLITTER_M_JS"
                  file="${root_gen_dir}/ui/webui/resources/js/cr/ui/splitter.m.js"
                  use_base_dir="false" type="BINDATA" />
-        <include name="IDR_WEBUI_JS_CR_UI_TREE_M_JS"
-                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/tree.m.js"
-                 use_base_dir="false" type="BINDATA" />
       </if>
       <!-- Web UI shared JS module resources. -->
       <include name="IDR_WEBUI_JS_ASSERT_M_JS"
@@ -163,11 +157,20 @@ without changes to the corresponding grd file. -->
       <include name="IDR_WEBUI_JS_CR_UI_KEYBOARD_SHORTCUT_LIST_M_JS"
                file="${root_gen_dir}/ui/webui/resources/js/cr/ui/keyboard_shortcut_list.m.js"
                use_base_dir="false" type="BINDATA" />
+      <include name="IDR_WEBUI_JS_CR_UI_M_JS"
+               file="${root_gen_dir}/ui/webui/resources/js/cr/ui.m.js"
+               use_base_dir="false" type="BINDATA" />
       <include name="IDR_WEBUI_JS_CR_UI_STORE_M_JS"
                file="${root_gen_dir}/ui/webui/resources/js/cr/ui/store.m.js"
                use_base_dir="false" type="BINDATA" />
       <include name="IDR_WEBUI_JS_CR_UI_STORE_CLIENT_M_JS"
                file="${root_gen_dir}/ui/webui/resources/js/cr/ui/store_client.m.js"
+               use_base_dir="false" type="BINDATA" />
+      <include name="IDR_WEBUI_JS_CR_UI_TABS_M_JS"
+               file="${root_gen_dir}/ui/webui/resources/js/cr/ui/tabs.m.js"
+               use_base_dir="false" type="BINDATA" />
+      <include name="IDR_WEBUI_JS_CR_UI_TREE_M_JS"
+               file="${root_gen_dir}/ui/webui/resources/js/cr/ui/tree.m.js"
                use_base_dir="false" type="BINDATA" />
       <include name="IDR_WEBUI_JS_EVENT_TRACKER_M_JS"
                file="${root_gen_dir}/ui/webui/resources/js/event_tracker.m.js"

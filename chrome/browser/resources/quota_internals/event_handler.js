@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// require cr.js
-// require cr/event_target.js
-// require cr/ui.js
-// require cr/ui/tabs.js
-// require cr/ui/tree.js
-// require cr/util.js
+import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {TabBox} from 'chrome://resources/js/cr/ui/tabs.m.js';
+import {Tree, TreeItem} from 'chrome://resources/js/cr/ui/tree.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
 
-(function() {
-'use strict';
+import {requestInfo, triggerStoragePressure} from './message_dispatcher.js';
 
 /**
  * @param {Object} object Object to be checked.
@@ -160,7 +158,7 @@ let availableSpace = undefined;
 /**
  * Root of the quota data tree,
  * holding userdata as |treeViewObject.detail|.
- * @type {cr.ui.Tree}
+ * @type {Tree}
  */
 let treeViewObject;
 
@@ -174,12 +172,12 @@ const statistics = {};
 
 /**
  * Initialize and return |treeViewObject|.
- * @return {!cr.ui.Tree} Initialized |treeViewObject|.
+ * @return {!Tree} Initialized |treeViewObject|.
  */
 function getTreeViewObject() {
   if (!treeViewObject) {
-    treeViewObject = /** @type {!cr.ui.Tree} */ ($('tree-view'));
-    cr.ui.decorate(treeViewObject, cr.ui.Tree);
+    treeViewObject = /** @type {!Tree} */ ($('tree-view'));
+    decorate(treeViewObject, Tree);
     treeViewObject.detail = {payload: {}, children: {}};
     treeViewObject.addEventListener('change', updateDescription);
   }
@@ -189,14 +187,14 @@ function getTreeViewObject() {
 /**
  * Initialize and return a tree item, that represents specified storage type.
  * @param {!string} type Storage type.
- * @return {cr.ui.TreeItem} Initialized |storageObject|.
+ * @return {TreeItem} Initialized |storageObject|.
  */
 function getStorageObject(type) {
   const treeViewObject = getTreeViewObject();
   let storageObject = treeViewObject.detail.children[type];
   if (!storageObject) {
     storageObject =
-        new cr.ui.TreeItem({label: type, detail: {payload: {}, children: {}}});
+        new TreeItem({label: type, detail: {payload: {}, children: {}}});
     storageObject.mayHaveChildren_ = true;
     treeViewObject.detail.children[type] = storageObject;
     treeViewObject.add(storageObject);
@@ -209,14 +207,14 @@ function getStorageObject(type) {
  *  storage type and hostname.
  * @param {!string} type Storage type.
  * @param {!string} host Hostname.
- * @return {cr.ui.TreeItem} Initialized |hostObject|.
+ * @return {TreeItem} Initialized |hostObject|.
  */
 function getHostObject(type, host) {
   const storageObject = getStorageObject(type);
   let hostObject = storageObject.detail.children[host];
   if (!hostObject) {
     hostObject =
-        new cr.ui.TreeItem({label: host, detail: {payload: {}, children: {}}});
+        new TreeItem({label: host, detail: {payload: {}, children: {}}});
     hostObject.mayHaveChildren_ = true;
     storageObject.detail.children[host] = hostObject;
     storageObject.add(hostObject);
@@ -230,14 +228,14 @@ function getHostObject(type, host) {
  * @param {!string} type Storage type.
  * @param {!string} host Hostname.
  * @param {!string} origin Origin URL.
- * @return {cr.ui.TreeItem} Initialized |originObject|.
+ * @return {TreeItem} Initialized |originObject|.
  */
 function getOriginObject(type, host, origin) {
   const hostObject = getHostObject(type, host);
   let originObject = hostObject.detail.children[origin];
   if (!originObject) {
-    originObject = new cr.ui.TreeItem(
-        {label: origin, detail: {payload: {}, children: {}}});
+    originObject =
+        new TreeItem({label: origin, detail: {payload: {}, children: {}}});
     originObject.mayHaveChildren_ = false;
     hostObject.detail.children[origin] = originObject;
     hostObject.add(originObject);
@@ -428,7 +426,7 @@ function updateDescription() {
 
 /**
  * Dump |treeViewObject| or subtree to a object.
- * @param {(cr.ui.Tree|cr.ui.TreeItem)=} opt_treeitem
+ * @param {(Tree|TreeItem)=} opt_treeitem
  * @return {Object} Dump result object from |treeViewObject|.
  */
 function dumpTreeToObj(opt_treeitem) {
@@ -479,25 +477,23 @@ function dump() {
 }
 
 function onLoad() {
-  cr.ui.decorate('tabbox', cr.ui.TabBox);
+  decorate('tabbox', TabBox);
 
-  cr.addWebUIListener('AvailableSpaceUpdated', handleAvailableSpace);
-  cr.addWebUIListener('GlobalInfoUpdated', handleGlobalInfo);
-  cr.addWebUIListener('PerHostInfoUpdated', handlePerHostInfo);
-  cr.addWebUIListener('PerOriginInfoUpdated', handlePerOriginInfo);
-  cr.addWebUIListener('StatisticsUpdated', handleStatistics);
-  cr.addWebUIListener(
-      'StoragePressureFlagUpdated', handleStoragePressureFlagInfo);
+  addWebUIListener('AvailableSpaceUpdated', handleAvailableSpace);
+  addWebUIListener('GlobalInfoUpdated', handleGlobalInfo);
+  addWebUIListener('PerHostInfoUpdated', handlePerHostInfo);
+  addWebUIListener('PerOriginInfoUpdated', handlePerOriginInfo);
+  addWebUIListener('StatisticsUpdated', handleStatistics);
+  addWebUIListener('StoragePressureFlagUpdated', handleStoragePressureFlagInfo);
 
-  cr.quota.requestInfo();
+  requestInfo();
 
-  $('refresh-button').addEventListener('click', cr.quota.requestInfo, false);
+  $('refresh-button').addEventListener('click', requestInfo, false);
   $('dump-button').addEventListener('click', dump, false);
   $('trigger-notification').addEventListener('click', () => {
     const origin = $('storage-pressure-origin').value;
-    cr.quota.triggerStoragePressure(origin);
+    triggerStoragePressure(origin);
   }, false);
 }
 
 document.addEventListener('DOMContentLoaded', onLoad, false);
-})();

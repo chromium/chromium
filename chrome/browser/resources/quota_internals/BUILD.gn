@@ -7,6 +7,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 
 js_type_check("closure_compile") {
+  uses_js_modules = true
   deps = [
     ":event_handler",
     ":message_dispatcher",
@@ -15,15 +16,16 @@ js_type_check("closure_compile") {
 
 js_library("event_handler") {
   deps = [
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:util",
-    "//ui/webui/resources/js/cr/ui:tabs",
-    "//ui/webui/resources/js/cr/ui:tree",
+    ":message_dispatcher",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr/ui:tabs.m",
+    "//ui/webui/resources/js/cr/ui:tree.m",
   ]
 }
 
 js_library("message_dispatcher") {
-  deps = [ "//ui/webui/resources/js:cr" ]
 }
 
 grit("quota_internals_resources") {

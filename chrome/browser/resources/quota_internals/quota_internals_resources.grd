@@ -8,7 +8,7 @@
   </outputs>
   <release seq="1">
     <includes>
-      <include name="IDR_QUOTA_INTERNALS_MAIN_HTML" file="main.html" flattenhtml="true" allowexternalscript="true" type="BINDATA"/>
+      <include name="IDR_QUOTA_INTERNALS_MAIN_HTML" file="main.html" type="BINDATA"/>
       <include name="IDR_QUOTA_INTERNALS_EVENT_HANDLER_JS" file="event_handler.js" type="BINDATA"/>
       <include name="IDR_QUOTA_INTERNALS_MESSAGE_DISPATCHER_JS" file="message_dispatcher.js" type="BINDATA"/>
     </includes>
