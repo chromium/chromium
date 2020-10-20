@@ -161,9 +161,6 @@
     "META": {"sizes": {"includes": [500],}},
     "includes": [1720],
   },
-  "chrome/browser/resources/print_preview/print_preview_pdf_resources.grd": {
-    "includes": [1750],
-  },
   "chrome/browser/resources/read_later/read_later_resources.grd": {
     "includes": [1760],
   },

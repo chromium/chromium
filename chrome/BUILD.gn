@@ -1388,10 +1388,7 @@ group("extra_resources") {
   }
 
   if (enable_print_preview) {
-    public_deps += [
-      "//chrome/browser/resources:print_preview_pdf_resources",
-      "//chrome/browser/resources:print_preview_resources",
-    ]
+    public_deps += [ "//chrome/browser/resources:print_preview_resources" ]
   }
 
   if (enable_tab_search) {

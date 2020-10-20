@@ -622,25 +622,6 @@ if (enable_print_preview) {
     ]
     output_dir = "$root_gen_dir/chrome"
   }
-
-  grit("print_preview_pdf_resources") {
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-    ]
-
-    source = "print_preview/print_preview_pdf_resources.grd"
-    deps = [ "//chrome/browser/resources/pdf:web_components" ]
-
-    defines = chrome_grit_defines
-    outputs = [
-      "grit/print_preview_pdf_resources.h",
-      "grit/print_preview_pdf_resources_map.cc",
-      "grit/print_preview_pdf_resources_map.h",
-      "print_preview_pdf_resources.pak",
-    ]
-    output_dir = "$root_gen_dir/chrome"
-  }
 }
 
 if (enable_tab_search) {
