@@ -88,8 +88,14 @@ void HostEventLoggerPosix::OnClientRouteChange(
   Log(base::StringPrintf(
       "Channel IP for client: %s ip='%s' host_ip='%s' channel='%s' "
       "connection='%s'",
-      jid.c_str(), route.remote_address.ToString().c_str(),
-      route.local_address.ToString().c_str(), channel_name.c_str(),
+      jid.c_str(),
+      route.remote_address.address().IsValid()
+          ? route.remote_address.ToString().c_str()
+          : "unknown",
+      route.local_address.address().IsValid()
+          ? route.local_address.ToString().c_str()
+          : "unknown",
+      channel_name.c_str(),
       protocol::TransportRoute::GetTypeString(route.type).c_str()));
 }
 

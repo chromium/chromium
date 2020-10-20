@@ -58,10 +58,19 @@ void IpcHostEventLogger::OnClientRouteChange(
 
   SerializedTransportRoute serialized_route;
   serialized_route.type = route.type;
-  serialized_route.remote_ip =
-      route.remote_address.address().CopyBytesToVector();
+
+  // If the remote (or local) IP address is invalid, send it over IPC as an
+  // empty vector. The receiving process has a CHECK() that the address is
+  // either valid or empty.
+  if (route.remote_address.address().IsValid()) {
+    serialized_route.remote_ip =
+        route.remote_address.address().CopyBytesToVector();
+  }
   serialized_route.remote_port = route.remote_address.port();
-  serialized_route.local_ip = route.local_address.address().CopyBytesToVector();
+  if (route.local_address.address().IsValid()) {
+    serialized_route.local_ip =
+        route.local_address.address().CopyBytesToVector();
+  }
   serialized_route.local_port = route.local_address.port();
   daemon_channel_->Send(new ChromotingNetworkDaemonMsg_ClientRouteChange(
       jid, channel_name, serialized_route));
