@@ -153,18 +153,18 @@ class WindowCycleItemView : public WindowMiniView {
 
   void OnGestureEvent(ui::GestureEvent* event) override {
     switch (event->type()) {
-      case ui::ET_GESTURE_TAP:
-      case ui::ET_GESTURE_DOUBLE_TAP:
       case ui::ET_GESTURE_TAP_DOWN:
-      case ui::ET_GESTURE_TAP_UNCONFIRMED:
-      case ui::ET_GESTURE_LONG_PRESS:
+      case ui::ET_GESTURE_SHOW_PRESS:
       case ui::ET_GESTURE_LONG_TAP:
-      case ui::ET_GESTURE_TWO_FINGER_TAP: {
-        WindowCycleController* controller =
-            Shell::Get()->window_cycle_controller();
-        controller->SetFocusedWindow(source_window());
+      case ui::ET_GESTURE_TAP:
+        Shell::Get()->window_cycle_controller()->SetFocusedWindow(
+            source_window());
+        event->SetHandled();
         break;
-      }
+      case ui::ET_GESTURE_END:
+        Shell::Get()->window_cycle_controller()->CompleteCycling();
+        event->SetHandled();
+        break;
       default:
         break;
     }

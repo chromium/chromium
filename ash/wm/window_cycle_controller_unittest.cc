@@ -1142,7 +1142,8 @@ TEST_F(InteractiveWindowCycleControllerTest, KeysConfirmSelection) {
   EXPECT_TRUE(wm::IsActiveWindow(w1.get()));
 }
 
-// When a user taps on an item, it should set the focus ring to that item.
+// When a user taps on an item, it should set the focus ring to that item. After
+// they release their finger it should confirm the selection.
 TEST_F(InteractiveWindowCycleControllerTest, TapSelect) {
   std::unique_ptr<Window> w0 = CreateTestWindow();
   std::unique_ptr<Window> w1 = CreateTestWindow();
@@ -1150,23 +1151,29 @@ TEST_F(InteractiveWindowCycleControllerTest, TapSelect) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   WindowCycleController* controller = Shell::Get()->window_cycle_controller();
 
-  // Start cycle and tap third item.
+  // Start cycle and tap third item. On tap down, the focus ring should be set
+  // to the third item. On tap release, the selection should be confirmed.
   // Starting order of windows in cycle list is [2,1,0].
   controller->StartCycling();
-  generator->GestureTapAt(
+  generator->PressTouch(
       GetWindowCycleItemViews()[2]->GetBoundsInScreen().CenterPoint());
   EXPECT_TRUE(controller->IsCycling());
   EXPECT_EQ(GetTargetWindow(), w0.get());
+  generator->ReleaseTouch();
+  EXPECT_FALSE(controller->IsCycling());
+  EXPECT_TRUE(wm::IsActiveWindow(w0.get()));
 
-  // Start cycle and tap second item.
-  // Starting order of windows in cycle list is [2,1,0].
+  // Start cycle and tap second item. On tap down, the focus ring should be set
+  // to the second item. On tap release, the selection should be confirmed.
+  // Starting order of windows in cycle list is [0,2,1].
   controller->StartCycling();
-  generator->GestureTapAt(
+  generator->PressTouch(
       GetWindowCycleItemViews()[1]->GetBoundsInScreen().CenterPoint());
   EXPECT_TRUE(controller->IsCycling());
-  EXPECT_EQ(GetTargetWindow(), w1.get());
-  controller->CompleteCycling();
-  EXPECT_TRUE(wm::IsActiveWindow(w1.get()));
+  EXPECT_EQ(GetTargetWindow(), w2.get());
+  generator->ReleaseTouch();
+  EXPECT_FALSE(controller->IsCycling());
+  EXPECT_TRUE(wm::IsActiveWindow(w2.get()));
 }
 
 // When a user has the window cycle list open and clicks outside of it, it
