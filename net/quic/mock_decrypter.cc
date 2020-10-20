@@ -4,6 +4,8 @@
 
 #include "net/quic/mock_decrypter.h"
 
+#include <limits>
+
 #include "net/third_party/quiche/src/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_bug_tracker.h"
 
@@ -25,21 +27,28 @@ bool MockDecrypter::SetKey(absl::string_view key) {
   return key.empty();
 }
 
-bool MockDecrypter::SetHeaderProtectionKey(absl::string_view key) {
-  return key.empty();
-}
-
-std::string MockDecrypter::GenerateHeaderProtectionMask(
-    quic::QuicDataReader* sample_reader) {
-  return std::string(5, 0);
-}
-
 bool MockDecrypter::SetNoncePrefix(absl::string_view nonce_prefix) {
   return nonce_prefix.empty();
 }
 
 bool MockDecrypter::SetIV(absl::string_view iv) {
   return iv.empty();
+}
+
+bool MockDecrypter::SetHeaderProtectionKey(absl::string_view key) {
+  return key.empty();
+}
+
+size_t MockDecrypter::GetKeySize() const {
+  return 0;
+}
+
+size_t MockDecrypter::GetIVSize() const {
+  return 0;
+}
+
+size_t MockDecrypter::GetNoncePrefixSize() const {
+  return 0;
 }
 
 bool MockDecrypter::SetPreliminaryKey(absl::string_view key) {
@@ -71,16 +80,17 @@ bool MockDecrypter::DecryptPacket(uint64_t /*packet_number*/,
   return true;
 }
 
-size_t MockDecrypter::GetKeySize() const {
+std::string MockDecrypter::GenerateHeaderProtectionMask(
+    quic::QuicDataReader* sample_reader) {
+  return std::string(5, 0);
+}
+
+uint32_t MockDecrypter::cipher_id() const {
   return 0;
 }
 
-size_t MockDecrypter::GetNoncePrefixSize() const {
-  return 0;
-}
-
-size_t MockDecrypter::GetIVSize() const {
-  return 0;
+quic::QuicPacketCount MockDecrypter::GetIntegrityLimit() const {
+  return std::numeric_limits<quic::QuicPacketCount>::max();
 }
 
 absl::string_view MockDecrypter::GetKey() const {
@@ -89,10 +99,6 @@ absl::string_view MockDecrypter::GetKey() const {
 
 absl::string_view MockDecrypter::GetNoncePrefix() const {
   return absl::string_view();
-}
-
-uint32_t MockDecrypter::cipher_id() const {
-  return 0;
 }
 
 }  // namespace net

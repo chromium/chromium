@@ -140,10 +140,6 @@ QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_allow_client_enabled_bbr_v2,
           false)
 
-// If true, QuicFramer::WriteClientVersionNegotiationProbePacket uses
-// length-prefixed connection IDs.
-QUIC_FLAG(bool, FLAGS_quic_prober_uses_length_prefixed_connection_ids, false)
-
 // The maximum amount of CRYPTO frame data that can be buffered.
 QUIC_FLAG(int32_t, FLAGS_quic_max_buffered_crypto_bytes, 16 * 1024)
 
@@ -467,7 +463,7 @@ QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_key_update_supported, false)
 
 // If true, address is validated by successfully processing a HANDSHAKE or 1-RTT
 // packet.
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_fix_address_validation, false)
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_fix_address_validation, true)
 
 // If true, QuicStream will explicitly specify which RST_STREAM, STOP_SENDING
 // frame to send.

@@ -61067,6 +61067,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="166" label="HTTP_GOAWAY_INVALID_STREAM_ID"/>
   <int value="167" label="HTTP_GOAWAY_ID_LARGER_THAN_PREVIOUS"/>
   <int value="168" label="SILENT_IDLE_TIMEOUT"/>
+  <int value="169" label="QUIC_HTTP_RECEIVE_SPDY_SETTING"/>
+  <int value="170" label="QUIC_MISSING_WRITE_KEYS"/>
+  <int value="171" label="QUIC_HTTP_RECEIVE_SPDY_FRAME"/>
+  <int value="172" label="QUIC_KEY_UPDATE_ERROR"/>
+  <int value="173" label="QUIC_AEAD_LIMIT_REACHED"/>
 </enum>
 
 <enum name="QuicFailToSerializePacketLocation">

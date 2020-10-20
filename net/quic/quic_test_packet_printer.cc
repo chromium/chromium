@@ -164,7 +164,9 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
     *output_ << "OnStreamsBlockedFrame: " << frame;
     return true;
   }
-  void OnKeyUpdate() override { *output_ << "OnKeyUpdate\n"; }
+  void OnKeyUpdate(KeyUpdateReason reason) override {
+    *output_ << "OnKeyUpdate: " << reason << "\n";
+  }
   void OnDecryptedFirstPacketInKeyPhase() override {
     *output_ << "OnDecryptedFirstPacketInKeyPhase\n";
   }
