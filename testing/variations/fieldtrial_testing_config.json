@@ -4710,13 +4710,19 @@
                 {
                     "name": "DesktopExperiments",
                     "params": {
+                        "EntitySuggestionsReduceLatencyDecoderWakeup": "true",
                         "MaxZeroSuggestMatches": "10",
+                        "OmniboxDynamicMaxAutocompleteIncreasedLimit": "10",
+                        "OmniboxDynamicMaxAutocompleteUrlCutoff": "2",
                         "OmniboxLocalZeroSuggestAgeThreshold": "7",
                         "OmniboxMaxURLMatches": "7",
                         "UIMaxAutocompleteMatches": "8"
                     },
                     "enable_features": [
+                        "OmniboxBubbleUrlSuggestions",
                         "OmniboxDisplayTitleForCurrentUrl",
+                        "OmniboxDynamicMaxAutocomplete",
+                        "OmniboxEntitySuggestionsReduceLatency",
                         "OmniboxLocalZeroSuggestAgeThreshold",
                         "OmniboxLocalZeroSuggestFrecencyRanking",
                         "OmniboxMaxURLMatches",
