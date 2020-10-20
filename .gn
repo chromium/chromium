@@ -197,7 +197,6 @@ no_check_targets = [
   "//third_party/blink/renderer/core/animation:*",  # 506 errors
   "//third_party/blink/renderer/core/exported:*",  # 470 errors
   "//third_party/blink/renderer/core/probe:*",  # 9 errors
-  "//third_party/blink/renderer/core/typed_arrays:*",  # 24 errors
 
   "//third_party/breakpad:*",  # 34 errors
   "//third_party/ced/*",
