@@ -13,6 +13,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/file_manager/app_id.h"
@@ -34,6 +35,19 @@ TEST(TranslateServiceTest, CheckTranslatableURL) {
   std::string devtools = std::string(content::kChromeDevToolsScheme) + "://";
   GURL devtools_url = GURL(devtools);
   EXPECT_FALSE(TranslateService::IsTranslatableURL(devtools_url));
+
+  std::string chrome_native = std::string(chrome::kChromeNativeScheme) + "://";
+  GURL chrome_native_url = GURL(chrome_native);
+  EXPECT_FALSE(TranslateService::IsTranslatableURL(chrome_native_url));
+
+  // kContentScheme and kFileScheme are Android-specific.
+  std::string content = std::string(url::kContentScheme) + "://";
+  GURL content_url = GURL(content);
+  EXPECT_FALSE(TranslateService::IsTranslatableURL(content_url));
+
+  std::string file = std::string(url::kFileScheme) + "://";
+  GURL file_url = GURL(file);
+  EXPECT_FALSE(TranslateService::IsTranslatableURL(file_url));
 
 #if defined(OS_CHROMEOS)
   std::string filemanager = std::string(extensions::kExtensionScheme) +

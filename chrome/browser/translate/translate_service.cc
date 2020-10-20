@@ -16,6 +16,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/url_constants.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/prefs/pref_service.h"
 #include "components/translate/core/browser/translate_download_manager.h"
@@ -23,6 +24,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/url_constants.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/file_manager/app_id.h"
@@ -32,7 +34,7 @@
 namespace {
 // The singleton instance of TranslateService.
 TranslateService* g_translate_service = nullptr;
-}
+}  // namespace
 
 TranslateService::TranslateService()
     : resource_request_allowed_notifier_(
@@ -129,15 +131,21 @@ std::string TranslateService::GetTargetLanguage(
 
 // static
 bool TranslateService::IsTranslatableURL(const GURL& url) {
-  // A URLs is translatable unless it is one of the following:
+  // A URL is translatable unless it is one of the following:
   // - empty (can happen for popups created with window.open(""))
-  // - an internal URL (chrome:// and others)
+  // - an internal URL:
+  //   - chrome:// and chrome-native:// for all platforms
+  //   - file:// and content:// are Android-specific, and are thus impossible
+  //     on other platforms
   // - the devtools (which is considered UI)
   // - about:blank
   // - Chrome OS file manager extension
   // - an FTP page (as FTP pages tend to have long lists of filenames that may
   //   confuse the CLD)
   return !url.is_empty() && !url.SchemeIs(content::kChromeUIScheme) &&
+         !url.SchemeIs(chrome::kChromeNativeScheme) &&
+         !url.SchemeIs(url::kFileScheme) &&
+         !url.SchemeIs(url::kContentScheme) &&
          !url.SchemeIs(content::kChromeDevToolsScheme) && !url.IsAboutBlank() &&
 #if defined(OS_CHROMEOS)
          !(url.SchemeIs(extensions::kExtensionScheme) &&
