@@ -192,6 +192,24 @@ TEST_F(WorkerNodeImplTest, NestedDedicatedWorkers) {
   parent_worker->RemoveClientFrame(frame.get());
 }
 
+TEST_F(WorkerNodeImplTest, PriorityAndReason) {
+  auto process = CreateNode<ProcessNodeImpl>();
+  constexpr PriorityAndReason kTestPriorityAndReason(
+      base::TaskPriority::HIGHEST, "Test reason");
+
+  auto worker_impl = CreateNode<WorkerNodeImpl>(WorkerNode::WorkerType::kShared,
+                                                process.get());
+
+  // Initially the default priority.
+  EXPECT_EQ(worker_impl->priority_and_reason(),
+            PriorityAndReason(base::TaskPriority::LOWEST,
+                              WorkerNodeImpl::kDefaultPriorityReason));
+
+  worker_impl->SetPriorityAndReason(kTestPriorityAndReason);
+
+  EXPECT_EQ(worker_impl->priority_and_reason(), kTestPriorityAndReason);
+}
+
 class TestWorkerNodeObserver : public WorkerNodeObserver {
  public:
   TestWorkerNodeObserver() = default;
@@ -201,18 +219,15 @@ class TestWorkerNodeObserver : public WorkerNodeObserver {
     EXPECT_TRUE(client_frames_.insert({worker_node, {}}).second);
     EXPECT_TRUE(client_workers_.insert({worker_node, {}}).second);
   }
-
   void OnBeforeWorkerNodeRemoved(const WorkerNode* worker_node) override {
     EXPECT_TRUE(client_frames_.empty());
     EXPECT_TRUE(client_workers_.empty());
     EXPECT_EQ(client_frames_.erase(worker_node), 1u);
     EXPECT_EQ(client_workers_.erase(worker_node), 1u);
   }
-
   void OnFinalResponseURLDetermined(const WorkerNode* worker_node) override {
     on_final_response_url_determined_called_ = true;
   }
-
   void OnClientFrameAdded(const WorkerNode* worker_node,
                           const FrameNode* client_frame_node) override {
     auto& client_frames = client_frames_.find(worker_node)->second;
@@ -234,6 +249,11 @@ class TestWorkerNodeObserver : public WorkerNodeObserver {
     auto& client_workers = client_workers_.find(worker_node)->second;
     EXPECT_EQ(client_workers.erase(client_worker_node), 1u);
   }
+  void OnPriorityAndReasonChanged(
+      const WorkerNode* worker_node,
+      const PriorityAndReason& previous_value) override {
+    on_priority_and_reason_changed_called_ = true;
+  }
 
   bool on_final_response_url_determined_called() const {
     return on_final_response_url_determined_called_;
@@ -243,9 +263,14 @@ class TestWorkerNodeObserver : public WorkerNodeObserver {
   client_frames() const {
     return client_frames_;
   }
+
   const base::flat_map<const WorkerNode*, base::flat_set<const WorkerNode*>>&
   client_workers() const {
     return client_workers_;
+  }
+
+  bool on_priority_and_reason_changed_called() const {
+    return on_priority_and_reason_changed_called_;
   }
 
  private:
@@ -255,6 +280,8 @@ class TestWorkerNodeObserver : public WorkerNodeObserver {
       client_frames_;
   base::flat_map<const WorkerNode*, base::flat_set<const WorkerNode*>>
       client_workers_;
+
+  bool on_priority_and_reason_changed_called_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(TestWorkerNodeObserver);
 };
@@ -350,6 +377,24 @@ TEST_F(WorkerNodeImplTest, Observer_OnFinalResponseURLDetermined) {
   EXPECT_FALSE(worker_node_observer.on_final_response_url_determined_called());
   worker->OnFinalResponseURLDetermined(GURL("testurl.com"));
   EXPECT_TRUE(worker_node_observer.on_final_response_url_determined_called());
+
+  graph()->RemoveWorkerNodeObserver(&worker_node_observer);
+}
+
+TEST_F(WorkerNodeImplTest, Observer_OnPriorityAndReasonChanged) {
+  TestWorkerNodeObserver worker_node_observer;
+  graph()->AddWorkerNodeObserver(&worker_node_observer);
+
+  auto process = CreateNode<ProcessNodeImpl>();
+  auto worker = CreateNode<WorkerNodeImpl>(WorkerNode::WorkerType::kDedicated,
+                                           process.get());
+
+  EXPECT_FALSE(worker_node_observer.on_priority_and_reason_changed_called());
+  static const PriorityAndReason kPriorityAndReason(base::TaskPriority::HIGHEST,
+                                                    "this is a reason!");
+  worker->SetPriorityAndReason(kPriorityAndReason);
+  EXPECT_TRUE(worker_node_observer.on_priority_and_reason_changed_called());
+  EXPECT_EQ(worker->priority_and_reason(), kPriorityAndReason);
 
   graph()->RemoveWorkerNodeObserver(&worker_node_observer);
 }

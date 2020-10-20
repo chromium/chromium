@@ -8,8 +8,10 @@
 #include <sstream>
 #include <string>
 
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 
 namespace performance_manager {
 
@@ -25,6 +27,13 @@ std::string MojoEnumToString(T value) {
 // represents the time delta between |time_ticks| and TimeTicks::Now() in the
 // following format: "x hours, y minutes".
 base::Value TimeDeltaFromNowToValue(base::TimeTicks time_ticks);
+
+// Converts a string to a base::Value, where null strings go to a null value
+// instead of an empty string.
+base::Value MaybeNullStringToValue(base::StringPiece str);
+
+base::Value PriorityAndReasonToValue(
+    const execution_context_priority::PriorityAndReason& priority_and_reason);
 
 }  // namespace performance_manager
 

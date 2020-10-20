@@ -26,6 +26,8 @@ class ProcessNode;
 class RenderFrameHostProxy;
 class WorkerNode;
 
+using execution_context_priority::PriorityAndReason;
+
 // Frame nodes form a tree structure, each FrameNode at most has one parent that
 // is a FrameNode. Conceptually, a frame corresponds to a
 // content::RenderFrameHost in the browser, and a content::RenderFrameImpl /
@@ -58,7 +60,6 @@ class FrameNode : public Node {
   using LifecycleState = mojom::LifecycleState;
   using Observer = FrameNodeObserver;
   using PageNodeVisitor = base::RepeatingCallback<bool(const PageNode*)>;
-  using PriorityAndReason = execution_context_priority::PriorityAndReason;
 
   class ObserverDefaultImpl;
 
@@ -203,7 +204,6 @@ class FrameNode : public Node {
 class FrameNodeObserver {
  public:
   using InterventionPolicy = mojom::InterventionPolicy;
-  using PriorityAndReason = execution_context_priority::PriorityAndReason;
 
   FrameNodeObserver();
   virtual ~FrameNodeObserver();

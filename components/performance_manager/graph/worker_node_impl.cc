@@ -9,6 +9,12 @@
 
 namespace performance_manager {
 
+// static
+constexpr char WorkerNodeImpl::kDefaultPriorityReason[] =
+    "default worker priority";
+
+using PriorityAndReason = execution_context_priority::PriorityAndReason;
+
 WorkerNodeImpl::WorkerNodeImpl(const std::string& browser_context_id,
                                WorkerType worker_type,
                                ProcessNodeImpl* process_node,
@@ -91,6 +97,12 @@ void WorkerNodeImpl::RemoveClientWorker(WorkerNodeImpl* worker_node) {
   DCHECK_EQ(removed, 1u);
 }
 
+void WorkerNodeImpl::SetPriorityAndReason(
+    const PriorityAndReason& priority_and_reason) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  priority_and_reason_.SetAndMaybeNotify(this, priority_and_reason);
+}
+
 void WorkerNodeImpl::OnFinalResponseURLDetermined(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(url_.is_empty());
@@ -138,6 +150,10 @@ const base::flat_set<WorkerNodeImpl*>& WorkerNodeImpl::client_workers() const {
 const base::flat_set<WorkerNodeImpl*>& WorkerNodeImpl::child_workers() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return child_workers_;
+}
+
+const PriorityAndReason& WorkerNodeImpl::priority_and_reason() const {
+  return priority_and_reason_.value();
 }
 
 void WorkerNodeImpl::OnJoiningGraph() {
@@ -204,6 +220,10 @@ const base::flat_set<const WorkerNode*> WorkerNodeImpl::GetChildWorkers()
     child_workers.insert(static_cast<const WorkerNode*>(child));
   DCHECK_EQ(child_workers.size(), child_workers_.size());
   return child_workers;
+}
+
+const PriorityAndReason& WorkerNodeImpl::GetPriorityAndReason() const {
+  return priority_and_reason();
 }
 
 void WorkerNodeImpl::AddChildWorker(WorkerNodeImpl* worker_node) {

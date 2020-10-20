@@ -8,45 +8,17 @@
 #include <string>
 #include <utility>
 
-#include "base/task/task_traits.h"
 #include "base/values.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
+#include "components/performance_manager/public/graph/node_data_describer_util.h"
 
 namespace performance_manager {
 
 namespace {
 
 const char kDescriberName[] = "FrameNodeImpl";
-
-// TODO(1077305): Move the following to a public describer_utils helper.
-
-// Mojo enums have std::stream support. This converts them to a std::string.
-template <typename MojoEnum>
-std::string MojoEnumToString(MojoEnum mojo_enum_value) {
-  std::stringstream ss;
-  ss << mojo_enum_value;
-  return ss.str();
-}
-
-// Converts a string to a base::Value, where null strings go to a null value
-// instead of an empty string.
-base::Value MaybeNullStringToValue(base::StringPiece str) {
-  if (str.data() == nullptr)
-    return base::Value();
-  return base::Value(str);
-}
-
-base::Value PriorityAndReasonToValue(
-    const execution_context_priority::PriorityAndReason& priority_and_reason) {
-  base::Value priority(base::Value::Type::DICTIONARY);
-  priority.SetStringKey(
-      "priority", base::TaskPriorityToString(priority_and_reason.priority()));
-  priority.SetPath("reason",
-                   MaybeNullStringToValue(priority_and_reason.reason()));
-  return priority;
-}
 
 std::string ViewportIntersectionToString(
     const base::Optional<gfx::Rect>& viewport_intersection) {

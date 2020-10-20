@@ -6,11 +6,13 @@
 
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/node_attached_data_impl.h"
+#include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/execution_context/execution_context.h"
 
 namespace performance_manager {
 
-// Helper class providing access to FrameNodeImpl::accepted_vote_.
+// Helper class providing access to the inline storage of the accepted vote in
+// both the FrameNodeImpl class and the WorkerNodeImpl class.
 class ExecutionContextPriorityAccess {
  public:
   static execution_context_priority::AcceptedVote* GetAcceptedVote(
@@ -20,7 +22,8 @@ class ExecutionContextPriorityAccess {
         return &FrameNodeImpl::FromNode(execution_context->GetFrameNode())
                     ->accepted_vote_;
       case execution_context::ExecutionContextType::kWorkerNode:
-        return nullptr;
+        return &WorkerNodeImpl::FromNode(execution_context->GetWorkerNode())
+                    ->accepted_vote_;
     }
   }
 };
@@ -29,6 +32,7 @@ namespace execution_context_priority {
 
 namespace {
 
+// Sets the priority of an execution context.
 void SetPriorityAndReason(
     const execution_context::ExecutionContext* execution_context,
     const PriorityAndReason& priority_and_reason) {
@@ -38,6 +42,8 @@ void SetPriorityAndReason(
           ->SetPriorityAndReason(priority_and_reason);
       break;
     case execution_context::ExecutionContextType::kWorkerNode:
+      WorkerNodeImpl::FromNode(execution_context->GetWorkerNode())
+          ->SetPriorityAndReason(priority_and_reason);
       break;
   }
 }

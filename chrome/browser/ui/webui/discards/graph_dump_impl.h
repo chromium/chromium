@@ -94,7 +94,7 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
   // Ignored.
   void OnPriorityAndReasonChanged(
       const performance_manager::FrameNode* frame_node,
-      const PriorityAndReason& previous_value) override {}
+      const performance_manager::PriorityAndReason& previous_value) override {}
   // Ignored.
   void OnHadFormInteractionChanged(
       const performance_manager::FrameNode* frame_node) override {}
@@ -185,6 +185,10 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
   void OnBeforeClientWorkerRemoved(
       const performance_manager::WorkerNode* worker_node,
       const performance_manager::WorkerNode* client_worker_node) override;
+  // Ignored.
+  void OnPriorityAndReasonChanged(
+      const performance_manager::WorkerNode* worker_node,
+      const performance_manager::PriorityAndReason& previous_value) override {}
 
  private:
   // The favicon requests happen on the UI thread. This helper class
