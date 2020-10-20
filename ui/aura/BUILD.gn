@@ -322,6 +322,7 @@ test("aura_unittests") {
 
   sources = [
     "../compositor_extra/shadow_unittest.cc",
+    "client/screen_position_client_unittest.cc",
     "gestures/gesture_recognizer_unittest.cc",
     "test/aura_test_suite.h",
     "test/run_all_unittests.cc",

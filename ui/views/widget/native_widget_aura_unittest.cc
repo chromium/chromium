@@ -149,6 +149,25 @@ TEST_F(NativeWidgetAuraTest, CreateMinimized) {
   widget->CloseNow();
 }
 
+// Tests that GetRestoreBounds returns the window bounds even if the window is
+// transformed.
+TEST_F(NativeWidgetAuraTest, RestoreBounds) {
+  Widget::InitParams params(Widget::InitParams::TYPE_WINDOW);
+  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params.parent = nullptr;
+  params.context = root_window();
+  params.bounds.SetRect(0, 0, 400, 400);
+  auto widget = std::make_unique<Widget>();
+  widget->Init(std::move(params));
+  widget->Show();
+  EXPECT_EQ(gfx::Rect(400, 400), widget->GetRestoredBounds());
+
+  gfx::Transform transform;
+  transform.Translate(100.f, 100.f);
+  widget->GetNativeWindow()->SetTransform(transform);
+  EXPECT_EQ(gfx::Rect(400, 400), widget->GetRestoredBounds());
+}
+
 // A WindowObserver that counts kShowStateKey property changes.
 class TestWindowObserver : public aura::WindowObserver {
  public:

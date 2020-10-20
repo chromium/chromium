@@ -46,7 +46,7 @@ void DesktopScreenPositionClient::SetBounds(aura::Window* window,
     gfx::Point origin = bounds.origin();
     aura::Window::ConvertPointToTarget(window->parent(), root, &origin);
 
-    gfx::Point host_origin = GetOriginInScreen(root);
+    gfx::Point host_origin = GetRootWindowOriginInScreen(root);
     origin.Offset(-host_origin.x(), -host_origin.y());
     window->SetBounds(gfx::Rect(origin, bounds.size()));
     return;

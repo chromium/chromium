@@ -45,6 +45,18 @@ class AURA_EXPORT ScreenPositionClient {
   virtual void SetBounds(Window* window,
                          const gfx::Rect& bounds,
                          const display::Display& display) = 0;
+  // Converts |point| from |window|'s coordinate space into screen coordinate
+  // space. Ignores any transforms that may be applied on |window| or its window
+  // hieraichy.
+  void ConvertPointToScreenIgnoringTransforms(const Window* window,
+                                              gfx::Point* point);
+  void ConvertPointToRootWindowIgnoringTransforms(const Window* window,
+                                                  gfx::Point* point);
+
+ protected:
+  // Returns the origin of the host platform-window in system DIP coordinates.
+  virtual gfx::Point GetRootWindowOriginInScreen(
+      const aura::Window* root_window) = 0;
 };
 
 // Sets/Gets the activation client on the Window.

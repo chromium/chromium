@@ -31,8 +31,9 @@ class WM_CORE_EXPORT DefaultScreenPositionClient
                  const display::Display& display) override;
 
  protected:
-  // Returns the origin of the host platform-window in system DIP coordinates.
-  virtual gfx::Point GetOriginInScreen(const aura::Window* root_window);
+  // aura::client::ScreenPositionClient:
+  gfx::Point GetRootWindowOriginInScreen(
+      const aura::Window* root_window) override;
 
  private:
   aura::Window* root_window_;

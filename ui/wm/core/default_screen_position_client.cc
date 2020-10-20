@@ -27,7 +27,7 @@ void DefaultScreenPositionClient::ConvertPointToScreen(
     gfx::PointF* point) {
   const aura::Window* root_window = window->GetRootWindow();
   aura::Window::ConvertPointToTarget(window, root_window, point);
-  gfx::Point origin = GetOriginInScreen(root_window);
+  gfx::Point origin = GetRootWindowOriginInScreen(root_window);
   point->Offset(origin.x(), origin.y());
 }
 
@@ -35,7 +35,7 @@ void DefaultScreenPositionClient::ConvertPointFromScreen(
     const aura::Window* window,
     gfx::PointF* point) {
   const aura::Window* root_window = window->GetRootWindow();
-  gfx::Point origin = GetOriginInScreen(root_window);
+  gfx::Point origin = GetRootWindowOriginInScreen(root_window);
   point->Offset(-origin.x(), -origin.y());
   aura::Window::ConvertPointToTarget(root_window, window, point);
 }
@@ -52,7 +52,7 @@ void DefaultScreenPositionClient::SetBounds(aura::Window* window,
   window->SetBounds(bounds);
 }
 
-gfx::Point DefaultScreenPositionClient::GetOriginInScreen(
+gfx::Point DefaultScreenPositionClient::GetRootWindowOriginInScreen(
     const aura::Window* root_window) {
   aura::Window* window = const_cast<aura::Window*>(root_window);
   display::Screen* screen = display::Screen::GetScreen();

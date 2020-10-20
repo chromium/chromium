@@ -42,6 +42,11 @@ class ASH_EXPORT ScreenPositionController
                  const gfx::Rect& bounds,
                  const display::Display& display) override;
 
+ protected:
+  // aura::client::ScreenPositionClient:
+  gfx::Point GetRootWindowOriginInScreen(
+      const aura::Window* root_window) override;
+
  private:
   DISALLOW_COPY_AND_ASSIGN(ScreenPositionController);
 };

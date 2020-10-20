@@ -30,6 +30,28 @@ void ScreenPositionClient::ConvertPointFromScreen(const Window* window,
   *point = gfx::ToFlooredPoint(point_float);
 }
 
+void ScreenPositionClient::ConvertPointToRootWindowIgnoringTransforms(
+    const Window* window,
+    gfx::Point* point) {
+  DCHECK(window);
+  DCHECK(window->GetRootWindow());
+  Window* ancestor = const_cast<Window*>(window);
+  while (ancestor && !ancestor->IsRootWindow()) {
+    const gfx::Point origin = ancestor->bounds().origin();
+    point->Offset(origin.x(), origin.y());
+    ancestor = ancestor->parent();
+  }
+}
+
+void ScreenPositionClient::ConvertPointToScreenIgnoringTransforms(
+    const aura::Window* window,
+    gfx::Point* point) {
+  const aura::Window* root_window = window->GetRootWindow();
+  ConvertPointToRootWindowIgnoringTransforms(window, point);
+  gfx::Point origin = GetRootWindowOriginInScreen(root_window);
+  point->Offset(origin.x(), origin.y());
+}
+
 void SetScreenPositionClient(Window* root_window,
                              ScreenPositionClient* client) {
   DCHECK_EQ(root_window->GetRootWindow(), root_window);

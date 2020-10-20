@@ -82,7 +82,7 @@ class ScreenPositionClient : public wm::DefaultScreenPositionClient {
     aura::Window::ConvertPointToTarget(window->parent(), root_window, &origin);
 
     // Translate the origin by the root window's offset in screen coordinates.
-    gfx::Point host_origin = GetOriginInScreen(root_window);
+    gfx::Point host_origin = GetRootWindowOriginInScreen(root_window);
     origin.Offset(-host_origin.x(), -host_origin.y());
     window->SetBounds(gfx::Rect(origin, bounds.size()));
   }

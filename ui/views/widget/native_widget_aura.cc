@@ -472,6 +472,21 @@ gfx::Rect NativeWidgetAura::GetRestoredBounds() const {
     if (restore_bounds)
       return *restore_bounds;
   }
+
+  // Prefer getting the window bounds and converting them to screen bounds since
+  // Window::GetBoundsInScreen takes into the account the window transform.
+  auto* screen_position_client =
+      aura::client::GetScreenPositionClient(window_->GetRootWindow());
+  if (screen_position_client) {
+    // |window_|'s bounds are in parent's coordinate system so use that when
+    // converting.
+    gfx::Rect bounds = window_->bounds();
+    gfx::Point origin = bounds.origin();
+    screen_position_client->ConvertPointToScreenIgnoringTransforms(
+        window_->parent(), &origin);
+    return gfx::Rect(origin, bounds.size());
+  }
+
   return window_->GetBoundsInScreen();
 }
 
