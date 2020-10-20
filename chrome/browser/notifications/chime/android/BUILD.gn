@@ -13,6 +13,7 @@ android_library("java") {
     "//base:base_java",
     "//base:jni_java",
     "//chrome/android/modules/chime/public:java",
+    "//chrome/browser/flags:java",
   ]
 }
 
@@ -22,14 +23,5 @@ source_set("android") {
     "features.h",
   ]
 
-  deps = [
-    ":jni_headers",
-    "//base",
-  ]
-}
-
-generate_jni("jni_headers") {
-  visibility = [ ":*" ]
-
-  sources = [ "java/src/org/chromium/chrome/browser/notifications/chime/ChimeSession.java" ]
+  deps = [ "//base" ]
 }

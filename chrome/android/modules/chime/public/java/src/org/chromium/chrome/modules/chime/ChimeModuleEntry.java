@@ -12,7 +12,12 @@ import org.chromium.components.module_installer.builder.ModuleInterface;
 @ModuleInterface(module = "chime", impl = "org.chromium.chrome.modules.chime.ChimeModuleEntryImpl")
 public interface ChimeModuleEntry {
     /**
-     * Registers the Chime notification SDK to the server.
+     * Initializes the Chime component.
+     */
+    void initialize();
+
+    /**
+     * Registers the Chime notification and starts to get notification payloads from servers.
      */
     void register();
 }

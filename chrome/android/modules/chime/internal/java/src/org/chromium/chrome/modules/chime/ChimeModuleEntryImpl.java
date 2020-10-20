@@ -13,5 +13,8 @@ import org.chromium.base.annotations.UsedByReflection;
 @UsedByReflection("ChimeModule")
 public class ChimeModuleEntryImpl implements ChimeModuleEntry {
     @Override
+    public void initialize() {}
+
+    @Override
     public void register() {}
 }
