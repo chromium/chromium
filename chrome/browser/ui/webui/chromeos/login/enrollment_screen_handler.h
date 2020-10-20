@@ -194,6 +194,8 @@ class EnrollmentScreenHandler
 
   std::unique_ptr<CookieWaiter> oauth_code_waiter_;
 
+  bool use_fake_login_for_testing_ = false;
+
   base::WeakPtrFactory<EnrollmentScreenHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(EnrollmentScreenHandler);

@@ -735,6 +735,7 @@ void EnrollmentScreenHandler::HandleToggleFakeEnrollment() {
   VLOG(1) << "HandleToggleFakeEnrollment";
   policy::PolicyOAuth2TokenFetcher::UseFakeTokensForTesting();
   WizardController::SkipEnrollmentPromptsForTesting();
+  use_fake_login_for_testing_ = true;
 }
 
 void EnrollmentScreenHandler::HandleClose(const std::string& reason) {
@@ -825,8 +826,10 @@ void EnrollmentScreenHandler::OnGetCookiesForCompleteLogin(
     }
   }
 
-  if (auth_code.empty()) {
+  // Allow testing to continue without a oauth cookie.
+  if (auth_code.empty() && !use_fake_login_for_testing_) {
     // Will try again from oauth_code_waiter callback.
+    VLOG(1) << "OAuth cookie empty, still waiting";
     return;
   }
 
@@ -836,6 +839,7 @@ void EnrollmentScreenHandler::OnGetCookiesForCompleteLogin(
 }
 
 void EnrollmentScreenHandler::OnCookieWaitTimeout() {
+  LOG(ERROR) << "Timeout waiting for OAuth cookie";
   oauth_code_waiter_.reset();
   ShowError(IDS_LOGIN_FATAL_ERROR_NO_AUTH_TOKEN, true);
 }
