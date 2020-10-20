@@ -404,6 +404,16 @@ class TestRectangleBuffer {
     }
   }
 
+  // Test that the rect defined by |left|, |top|, |width| and |height| is filled
+  // with the same color.
+  void EnsureRectIsAllSameColor(int left,
+                                int top,
+                                int width,
+                                int height) const {
+    SkColor buffer_color = buffer_[left + top * stride_];
+    EnsureSolidRect(buffer_color, left, top, width, height);
+  }
+
  private:
   const char* string_;
   const SkColor* buffer_;
@@ -1046,6 +1056,40 @@ TEST_F(RenderTextTest, SelectRangeColored) {
   render_text->ClearSelection();
   Draw();
   ExpectTextLog({{6}});
+}
+
+// Tests that when a selection is made and the selection background is
+// translucent, the selection renders properly. See crbug.com/1134440.
+TEST_F(RenderTextTest, SelectWithTranslucentBackground) {
+  constexpr float kGlyphWidth = 5.5f;
+  constexpr Size kCanvasSize(300, 50);
+  constexpr SkColor kTranslucentBlue = SkColorSetARGB(0x7F, 0x00, 0x00, 0xFF);
+  const char* kTestString{"A B C D"};
+
+  SkBitmap bitmap;
+  bitmap.allocPixels(
+      SkImageInfo::MakeN32Premul(kCanvasSize.width(), kCanvasSize.height()));
+  cc::SkiaPaintCanvas paint_canvas(bitmap);
+  Canvas canvas(&paint_canvas, 1.0f);
+  paint_canvas.clear(SK_ColorWHITE);
+
+  SetGlyphWidth(kGlyphWidth);
+  RenderText* render_text = GetRenderText();
+  render_text->set_selection_background_focused_color(kTranslucentBlue);
+  render_text->set_focused(true);
+
+  render_text->SetText(UTF8ToUTF16(kTestString));
+  render_text->SelectRange(Range(0, 7));
+  const Rect text_rect = Rect(render_text->GetStringSize());
+  render_text->SetDisplayRect(text_rect);
+  render_text->Draw(&canvas);
+  const uint32_t* buffer = static_cast<const uint32_t*>(bitmap.getPixels());
+  ASSERT_NE(nullptr, buffer);
+  TestRectangleBuffer rect_buffer(kTestString, buffer, kCanvasSize.width(),
+                                  kCanvasSize.height());
+
+  // This whole slice should be the same color and opacity.
+  rect_buffer.EnsureRectIsAllSameColor(0, 0, text_rect.width() - 1, 1);
 }
 
 TEST_F(RenderTextTest, SelectRangeColoredGrapheme) {
@@ -7573,6 +7617,42 @@ TEST_F(RenderTextTest, ExpandToBeVerticallySymmetric) {
   EXPECT_EQ(Rect(20, 20, 400, 80),
             test::RenderTextTestApi::ExpandToBeVerticallySymmetric(
                 Rect(20, 20, 400, 40), test_display_rect));
+}
+
+TEST_F(RenderTextTest, MergeIntersectingRects) {
+  // Basic case.
+  std::vector<Rect> test_rects{Rect(0, 0, 10, 10), Rect(5, 0, 10, 10),
+                               Rect(10, 0, 5, 10), Rect(12, 0, 5, 10)};
+  test::RenderTextTestApi::MergeIntersectingRects(test_rects);
+  ASSERT_EQ(1u, test_rects.size());
+  EXPECT_EQ(Rect(0, 0, 17, 10), test_rects[0]);
+
+  // Case where some rects intersect and some don't.
+  test_rects = std::vector<Rect>{Rect(0, 0, 10, 10), Rect(5, 0, 10, 10),
+                                 Rect(16, 0, 10, 10), Rect(25, 0, 10, 10),
+                                 Rect(40, 0, 10, 10)};
+  test::RenderTextTestApi::MergeIntersectingRects(test_rects);
+  ASSERT_EQ(3u, test_rects.size());
+  EXPECT_EQ(Rect(0, 0, 15, 10), test_rects[0]);
+  EXPECT_EQ(Rect(16, 0, 19, 10), test_rects[1]);
+  EXPECT_EQ(Rect(40, 0, 10, 10), test_rects[2]);
+
+  // Case where no rects intersect.
+  test_rects = std::vector<Rect>{Rect(0, 0, 10, 10), Rect(11, 0, 10, 10),
+                                 Rect(22, 0, 10, 10), Rect(33, 0, 10, 10)};
+  test::RenderTextTestApi::MergeIntersectingRects(test_rects);
+  ASSERT_EQ(4u, test_rects.size());
+  EXPECT_EQ(Rect(0, 0, 10, 10), test_rects[0]);
+  EXPECT_EQ(Rect(11, 0, 10, 10), test_rects[1]);
+  EXPECT_EQ(Rect(22, 0, 10, 10), test_rects[2]);
+  EXPECT_EQ(Rect(33, 0, 10, 10), test_rects[3]);
+
+  // Rects are out-of-order.
+  test_rects = std::vector<Rect>{Rect(10, 0, 5, 10), Rect(0, 0, 10, 10),
+                                 Rect(12, 0, 5, 10), Rect(5, 0, 10, 10)};
+  test::RenderTextTestApi::MergeIntersectingRects(test_rects);
+  ASSERT_EQ(1u, test_rects.size());
+  EXPECT_EQ(Rect(0, 0, 17, 10), test_rects[0]);
 }
 
 // Ensures that text is centered vertically and consistently when either the

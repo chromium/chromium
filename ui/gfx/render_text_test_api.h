@@ -102,6 +102,10 @@ class RenderTextTestApi {
     return RenderText::ExpandToBeVerticallySymmetric(rect, display_rect);
   }
 
+  static void MergeIntersectingRects(std::vector<Rect>& rects) {
+    RenderText::MergeIntersectingRects(rects);
+  }
+
   void reset_cached_cursor_x() { render_text_->reset_cached_cursor_x(); }
 
   int GetLineContainingYCoord(float text_y) {

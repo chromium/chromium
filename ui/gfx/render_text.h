@@ -808,6 +808,10 @@ class GFX_EXPORT RenderText {
   static gfx::Rect ExpandToBeVerticallySymmetric(const gfx::Rect& rect,
                                                  const gfx::Rect& display_rect);
 
+  // Given |rects|, sort them along the x-axis and merge intersecting rects
+  // using union. Expects all selections in the text to be from the same line.
+  static void MergeIntersectingRects(std::vector<Rect>& rects);
+
   // Resets |cached_cursor_x_| to null. When non-null, CURSOR_UP, CURSOR_DOWN
   // movements use this value instead of the current cursor x position to
   // determine the next cursor x position.
