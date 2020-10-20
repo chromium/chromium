@@ -107,7 +107,8 @@ class PrintingApiTest : public ExtensionApiTest {
     chromeos::Printer printer = chromeos::Printer(printer_id);
     GetPrintersManager()->AddPrinter(printer,
                                      chromeos::PrinterClass::kEnterprise);
-    test_print_backend_->AddValidPrinter(printer_id, std::move(capabilities));
+    test_print_backend_->AddValidPrinter(printer_id, std::move(capabilities),
+                                         nullptr);
   }
 
  private:
