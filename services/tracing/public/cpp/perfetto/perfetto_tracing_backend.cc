@@ -389,7 +389,8 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
 
   void DisableTracing() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    tracing_session_host_->DisableTracing();
+    if (tracing_session_host_)
+      tracing_session_host_->DisableTracing();
   }
 
   void Flush(uint32_t timeout_ms, FlushCallback callback) override {
