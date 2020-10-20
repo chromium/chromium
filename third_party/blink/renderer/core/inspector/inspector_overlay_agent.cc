@@ -1090,9 +1090,6 @@ void InspectorOverlayAgent::LoadOverlayPageResource() {
 
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
 
-  data->Append("<style>", static_cast<size_t>(7));
-  data->Append(UncompressResourceAsBinary(IDR_INSPECT_COMMON_CSS));
-  data->Append("</style>", static_cast<size_t>(8));
   data->Append("<script>", static_cast<size_t>(8));
   data->Append(UncompressResourceAsBinary(IDR_INSPECT_TOOL_MAIN_JS));
   data->Append("</script>", static_cast<size_t>(9));
