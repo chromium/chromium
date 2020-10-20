@@ -255,10 +255,13 @@ class BuildConfigGenerator extends DefaultTask {
             sb.append("}\n\n")
         }
 
-        def matcher = BUILD_GN_GEN_PATTERN.matcher(buildFile.getText())
-        if (!matcher.find()) throw new IllegalStateException("BUILD.gn insertion point not found.")
-        buildFile.write(matcher.replaceFirst(
-                "${BUILD_GN_TOKEN_START}\n${sb.toString()}\n${BUILD_GN_TOKEN_END}"))
+        def out = "${BUILD_GN_TOKEN_START}\n${sb.toString()}\n${BUILD_GN_TOKEN_END}"
+        if (buildFile.exists()) {
+            def matcher = BUILD_GN_GEN_PATTERN.matcher(buildFile.getText())
+            if (!matcher.find()) throw new IllegalStateException("BUILD.gn insertion point not found.")
+            out = matcher.replaceFirst(out)
+        }
+        buildFile.write(out)
     }
 
     public static String translateTargetName(String targetName) {

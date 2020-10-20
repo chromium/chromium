@@ -129,7 +129,77 @@ def _process_build_gradle(dependency_version_map, androidx_repository_url):
             out.write(replacement)
 
 
+def _extract_files_from_yaml(yaml_path):
+    """Extracts '- file' file listings from yaml file."""
+
+    out = None
+    with open(yaml_path, 'r') as f:
+        for line in f.readlines():
+            line = line.rstrip('\n')
+            if line == 'data:':
+                out = []
+                continue
+            if out is not None:
+                if not line.startswith('- file:'):
+                    raise Exception(
+                        '{} has unsupported attributes. Only \'- file\' is supported'
+                        .format(yaml_path))
+                out.append(line.rsplit(' ', 1)[1])
+
+    if not out:
+        raise Exception('{} does not have \'data\' section.'.format(yaml_path))
+    return out
+
+
+def _write_cipd_yaml(libs_dir, cipd_yaml_path):
+    """Writes cipd.yaml file at the passed-in path."""
+
+    lib_dirs = os.listdir(libs_dir)
+    if not lib_dirs:
+        raise Exception('No generated libraries in {}'.format(libs_dir))
+
+    data_files = ['BUILD.gn', 'additional_readme_paths.json']
+    for lib_dir in lib_dirs:
+        abs_lib_dir = os.path.join(libs_dir, lib_dir)
+        if not os.path.isdir(abs_lib_dir):
+            continue
+        lib_files = os.listdir(abs_lib_dir)
+        if not 'cipd.yaml' in lib_files:
+            continue
+
+        if not 'README.chromium' in lib_files:
+            raise Exception('README.chromium not in {}'.format(abs_lib_dir))
+        if not 'LICENSE' in lib_files:
+            raise Exception('LICENSE not in {}'.format(abs_lib_dir))
+        data_files.append(os.path.join(abs_lib_dir, 'README.chromium'))
+        data_files.append(os.path.join(abs_lib_dir, 'LICENSE'))
+
+        _rel_extracted_files = _extract_files_from_yaml(
+            os.path.join(abs_lib_dir, 'cipd.yaml'))
+        data_files.extend(
+            os.path.join(abs_lib_dir, f) for f in _rel_extracted_files)
+
+    contents = [
+        '# Copyright 2020 The Chromium Authors. All rights reserved.',
+        '# Use of this source code is governed by a BSD-style license that can be',
+        '# found in the LICENSE file.',
+        'package: chromium/third_party/androidx', 'description: androidx',
+        'data:'
+    ]
+    contents.extend('- file: ' + f for f in data_files)
+
+    with open(cipd_yaml_path, 'w') as out:
+        out.write('\n'.join(contents))
+
+
 def main():
+    libs_dir = os.path.join(_ANDROIDX_PATH, 'libs')
+
+    # Let recipe delete contents of lib directory because it has API to retry
+    # directory deletion if the first deletion attempt does not work.
+    if os.path.exists(libs_dir) and os.listdir(libs_dir):
+        raise Exception('Recipe did not empty \'libs\' directory.')
+
     dependency_version_map, androidx_snapshot_repository_url = (
         _download_and_parse_build_info())
     _process_build_gradle(dependency_version_map,
@@ -139,7 +209,9 @@ def main():
         _FETCH_ALL_PATH, '--android-deps-dir',
         os.path.join('third_party', 'androidx'), '--ignore-vulnerabilities'
     ]
-    subprocess.run(fetch_all_cmd)
+    subprocess.run(fetch_all_cmd, check=True)
+
+    _write_cipd_yaml(libs_dir, os.path.join(_ANDROIDX_PATH, 'cipd.yaml'))
 
 
 if __name__ == '__main__':

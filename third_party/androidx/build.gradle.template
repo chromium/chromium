@@ -89,5 +89,5 @@ task setUpRepository(type: BuildConfigGenerator) {
     chromiumSourceRoot '../..'
     cipdBucket 'chromium'
     internalTargetVisibility = [ '//third_party/android_deps:*', ':*' ]
-    skipLicenses true
+    skipLicenses false
 }

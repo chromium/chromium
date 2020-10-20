@@ -73,7 +73,13 @@ _JETIFY_CONFIG = os.path.join(_CHROMIUM_SRC, 'third_party',
 _UPDATED_ANDROID_DEPS_FILES = [
     os.path.join('..', '..', 'DEPS'),
     _BUILD_GN,
-    _BUILD_GRADLE,
+    _ADDITIONAL_README_PATHS,
+]
+
+# Subset of |_UPDATED_ANDROID_DEPS_FILES| for which the file does not need to
+# exist.
+_UPDATED_ANDROID_DEPS_FILES_ALLOW_EMPTY = [
+    _BUILD_GN,
     _ADDITIONAL_README_PATHS,
 ]
 
@@ -179,6 +185,33 @@ def DeleteDirectory(dir_path):
     if os.path.exists(dir_path):
         logging.debug('rmdir [%s]', dir_path)
         shutil.rmtree(dir_path)
+
+
+def Copy(src_dir, src_paths, dst_dir, dst_paths, src_path_must_exist=False):
+    """Copies |src_paths| in |src_dir| to |dst_paths| in |dst_dir|.
+
+    Args:
+      src_dir: Directory containing |src_paths|.
+      src_paths: Files to copy.
+      dst_dir: Directory containing |dst_paths|.
+      dst_paths: Copy destinations.
+      src_paths_must_exist: If true, throw error if the file for one of|src_paths|
+        does not exist.
+    """
+    assert len(src_paths) == len(dst_paths)
+
+    missing_files = []
+    for src_path, dst_path in zip(src_paths, dst_paths):
+        abs_src_path = os.path.join(src_dir, src_path)
+        abs_dst_path = os.path.join(dst_dir, dst_path)
+        if os.path.exists(abs_src_path):
+            CopyFileOrDirectory(abs_src_path, abs_dst_path)
+        elif src_path_must_exist:
+            missing_files.append(src_paths[i])
+
+    if missing_files:
+        raise Exception('Missing files from {}: {}'.format(
+            src_dir, missing_files))
 
 
 def CopyFileOrDirectory(src_path, dst_path):
@@ -475,35 +508,34 @@ def main():
         os.path.join(args.android_deps_dir, "buildSrc"),
         _GLOBAL_GRADLE_SUPRESSIONS_PATH:
         os.path.join(args.android_deps_dir, "vulnerability_supressions.xml"),
+        os.path.join(args.android_deps_dir, "build.gradle"):
+        os.path.join(args.android_deps_dir, "build.gradle"),
     }
 
     if not args.ignore_licenses:
         copied_paths[_GLOBAL_LICENSE_SUBDIR] = _GLOBAL_LICENSE_SUBDIR
 
-    missing_files = []
-    for src_path in copied_paths.keys():
-        if not os.path.exists(os.path.join(_CHROMIUM_SRC, src_path)):
-            missing_files.append(src_path)
-    for android_deps_file in _UPDATED_ANDROID_DEPS_FILES:
-        if not os.path.exists(
-                os.path.join(abs_android_deps_dir, android_deps_file)):
-            missing_files.append(android_deps_file)
-    if missing_files:
-        raise Exception('Missing files from {}: {}'.format(
-            _CHROMIUM_SRC, missing_files))
-
     with BuildDir(args.build_dir) as build_dir:
         build_android_deps_dir = os.path.join(build_dir, args.android_deps_dir)
 
         logging.info('Using build directory: %s', build_dir)
-        for android_deps_file in _UPDATED_ANDROID_DEPS_FILES:
-            CopyFileOrDirectory(
-                os.path.join(abs_android_deps_dir, android_deps_file),
-                os.path.join(build_android_deps_dir, android_deps_file))
+        Copy(abs_android_deps_dir,
+             _UPDATED_ANDROID_DEPS_FILES_ALLOW_EMPTY,
+             build_android_deps_dir,
+             _UPDATED_ANDROID_DEPS_FILES_ALLOW_EMPTY,
+             src_path_must_exist=False)
+        updated_android_deps_files_must_exist = [
+            f for f in _UPDATED_ANDROID_DEPS_FILES
+            if f not in _UPDATED_ANDROID_DEPS_FILES_ALLOW_EMPTY
+        ]
+        Copy(abs_android_deps_dir,
+             updated_android_deps_files_must_exist,
+             build_android_deps_dir,
+             updated_android_deps_files_must_exist,
+             src_path_must_exist=True)
 
-        for path, dest in copied_paths.items():
-            CopyFileOrDirectory(os.path.join(_CHROMIUM_SRC, path),
-                                os.path.join(build_dir, dest))
+        Copy(_CHROMIUM_SRC, list(copied_paths.keys()), build_dir,
+             list(copied_paths.values()))
 
         if debug:
             gradle_cmd.append('--debug')
@@ -596,10 +628,8 @@ def main():
 
         # Copy updated DEPS and BUILD.gn to build directory.
         update_cmds = []
-        for updated_file in _UPDATED_ANDROID_DEPS_FILES:
-            CopyFileOrDirectory(
-                os.path.join(build_android_deps_dir, updated_file),
-                os.path.join(abs_android_deps_dir, updated_file))
+        Copy(build_android_deps_dir, _UPDATED_ANDROID_DEPS_FILES,
+             abs_android_deps_dir, _UPDATED_ANDROID_DEPS_FILES)
 
         # Delete obsolete or updated package directories.
         for pkg in existing_packages.values():
