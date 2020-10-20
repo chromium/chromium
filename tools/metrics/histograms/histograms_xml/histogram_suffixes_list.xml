@@ -718,14 +718,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Arc.boot_progress_system_run"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="AndroidCrashUploadTypes" separator="_">
-  <suffix name="Browser" label="Measures browser crash uploads."/>
-  <suffix name="GPU" label="Measures GPU crash uploads."/>
-  <suffix name="Other" label="Measures other crash uploads."/>
-  <suffix name="Renderer" label="Measures renderer crash uploads."/>
-  <affected-histogram name="Tab.AndroidCrashUpload"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="AndroidDownloadTypes" separator=".">
   <suffix name="Audio" label=""/>
   <suffix name="Document" label=""/>
@@ -7374,18 +7366,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Net.DNS.HTTPSSVC.RecordIntegrity.ResolveTimeRatio"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="HubAndSpokeNavigationUsageType" separator=".">
-  <suffix name="FromDefaultSearchEngine"
-      label="User navigates to a new page from default search engine result
-             page"/>
-  <suffix name="FromFormSubmit"
-      label="User navigates to a new page from a form submit page"/>
-  <suffix name="FromOther"
-      label="User navigates to a new page from a page other than a default
-             search engine result page or a form submit page"/>
-  <affected-histogram name="Tabs.Tasks.HubAndSpokeNavigationUsage"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="IdleSktToImpact" separator="_">
   <suffix name="idle_timeout_5"
       label="with 5-second unused idle socket timeout"/>
@@ -11823,15 +11803,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="GetOperation" label="Action: GetOperation request."/>
   <affected-histogram name="OfflinePages.Prefetching.ActionAttempts"/>
   <affected-histogram name="OfflinePages.Prefetching.ActionRetryAttempts"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="OffTheRecordType" separator=".">
-  <obsolete>
-    Removed March 2019
-  </obsolete>
-  <suffix name="NonOTR" label="Non off-the-record profile"/>
-  <suffix name="OTR" label="Off-the-record profile"/>
-  <affected-histogram name="Tab.TabUnderAction"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="Omnibox_BitmapFetchLatencyCacheSplit" separator=".">
@@ -18540,45 +18511,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Browser.PaintPreview.TabbedPlayer.UpTime"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="TabCountMetrics" separator=".">
-  <suffix name="ByTabCount.0Tabs"
-      label="Recorded with 0 tabs open in the browser."/>
-  <suffix name="ByTabCount.1Tab"
-      label="Recorded with 1 tab open in the browser."/>
-  <suffix name="ByTabCount.2Tabs"
-      label="Recorded with 2 tabs open in the browser."/>
-  <suffix name="ByTabCount.3To4Tabs"
-      label="Recorded with between 3 and 4 tabs open in the browser."/>
-  <suffix name="ByTabCount.5To7Tabs"
-      label="Recorded with between 5 and 7 tabs open in the browser."/>
-  <suffix name="ByTabCount.8To19Tabs"
-      label="Recorded with between 8 and 19 tabs open in the browser."/>
-  <suffix name="ByTabCount.20To39Tabs"
-      label="Recorded with between 20 and 39 tabs open in the browser."/>
-  <suffix name="ByTabCount.40OrMoreTabs"
-      label="Recorded with 40 or more tabs open in the browser."/>
-  <affected-histogram name="TabHoverCards.TabHoverCardsSeenBeforeTabSelection"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="TabCreatedReason" separator=".">
-  <suffix name="FromExternalApp"
-      label="This bucket is for any tabs that are created because of custom
-             tabs or intends from other apps. This includes tab creation via
-             intent from other app, creation via homescreen link, creation
-             via custom tab."/>
-  <suffix name="FromManuallyCreated"
-      label="This bucket is for any tabs that are created manually. This
-             includes new tab creation from toolbar menu, creation from long
-             press open, creation at tab switcher, creation from launcher
-             shortcut menu by long press the Chrome icon."/>
-  <suffix name="FromOthers" label="This is the default bucket."/>
-  <suffix name="FromTargetBlank"
-      label="This bucket is for any tabs that were created from a target
-             blank link. e.g. tehchmeme.com will create tabs this way."/>
-  <affected-histogram name="Tabs.Tasks.TabCreated.Count"/>
-  <affected-histogram name="Tabs.Tasks.TabCreated.Percent"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="TabletOrClamshellMode" separator=".">
   <suffix name="ClamshellMode" label="Clamshell Mode Enabled"/>
   <suffix name="TabletMode" label="Tablet Mode Enabled"/>
@@ -18617,88 +18549,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="Apps.StateTransition.Drag.PresentationTime.MaxLatency"/>
   <affected-histogram name="Ash.Overview.AnimationSmoothness.Close"/>
   <affected-histogram name="Ash.Overview.WindowDrag.PresentationTime"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="TabNewTabOnload" separator=".">
-  <suffix name="Google" label="New Tab page for Google.">
-    <obsolete>
-      Removed 07/2020, base histogram no longer recorded on dektop.
-    </obsolete>
-  </suffix>
-  <suffix name="Local" label="Local New Tab page.">
-    <obsolete>
-      Removed 07/2020, base histogram no longer recorded on dektop.
-    </obsolete>
-  </suffix>
-  <suffix name="LocalGoogle" label="Local New Tab page for Google.">
-    <obsolete>
-      Removed 06/2017, never worked correctly.
-    </obsolete>
-  </suffix>
-  <suffix name="LocalOther"
-      label="Local New Tab page for a non-Google provider.">
-    <obsolete>
-      Removed 06/2017, never worked correctly.
-    </obsolete>
-  </suffix>
-  <suffix name="Other" label="New Tab page for a non-Google provider.">
-    <obsolete>
-      Removed 07/2020, base histogram no longer recorded on dektop.
-    </obsolete>
-  </suffix>
-  <affected-histogram name="Tab.NewTabOnload"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="TabOffsetOfSwitchComponentList" separator=".">
-  <suffix name="GridTabSwitcher" label="Tab switcher in grid layout"/>
-  <suffix name="TabGridSheet"
-      label="The bottom sheet that show a list of Tabs in a grid">
-    <obsolete>
-      Unused as of 11/2019, sheet UI is no longer used.
-    </obsolete>
-  </suffix>
-  <suffix name="TabStrip" label="The TabStrip componets"/>
-  <affected-histogram name="Tabs.TabOffsetOfSwitch"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="Tabs_SwitchLatency" separator="_">
-  <suffix name="Actual"
-      label="The time it takes to show a real live frame from the renderer on
-             the screen after the user selects a tab. This doesn not include
-             fake snapshots or other tricks, but the actual time to get real
-             interactable content displayed."/>
-  <suffix name="Perceived"
-      label="The time it takes to show something on the screen after the user
-             selects a tab. This might be a fake snapshot or it might just be
-             the time it takes to show the real content if no snapshot was
-             available."/>
-  <affected-histogram name="Tabs.SwitchFromCloseLatency"/>
-  <affected-histogram name="Tabs.SwitchFromExitLatency"/>
-  <affected-histogram name="Tabs.SwitchFromNewLatency"/>
-  <affected-histogram name="Tabs.SwitchFromUserLatency"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="Tabs_TabUsageIntervalLength" separator="_">
-  <suffix name="30" label="30 seconds"/>
-  <suffix name="60" label="1 minute"/>
-  <suffix name="600" label="10 minutes"/>
-  <suffix name="3600" label="1 hour"/>
-  <suffix name="18000" label="5 hours"/>
-  <suffix name="43200" label="12 hours"/>
-  <affected-histogram name="Tabs.UnusedAndClosedInInterval.Count"/>
-  <affected-histogram name="Tabs.UnusedInInterval.Count"/>
-  <affected-histogram name="Tabs.UsedAndClosedInInterval.Count"/>
-  <affected-histogram name="Tabs.UsedInInterval.Count"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="TabSuggestionType" separator=".">
-  <suffix name="ClosingSuggestion"
-      label="This bukect is for the closing suggestion. It suggests users to
-             close the recommended tabs."/>
-  <suffix name="GroupingSuggestion"
-      label="This bukect is for the grouping suggestion. It suggests users to
-             group the recommended tabs."/>
-  <affected-histogram name="Tabs.Suggestions.NumSuggestionsChanged"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="TabSwitchingType" separator=".">
@@ -19381,20 +19231,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="50fps" label="50 fps"/>
   <suffix name="60fps" label="60 fps"/>
   <affected-histogram name="Media.Video.Roughness"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="Visibility" separator=".">
-  <suffix name="Hidden"
-      label="The tab is not visible because it is in a minimized window
-             (desktop) or background app (mobile), or because it isn't active
-             in its tab strip."/>
-  <suffix name="Occluded"
-      label="The tab is fully covered by other windows. ChromeOS and Mac OS X
-             only."/>
-  <suffix name="Visible"
-      label="The tab is visible. Except on ChromeOS and Mac OS X, a tab fully
-             covered by other windows is considered visible."/>
-  <affected-histogram name="Tab.Visibility"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="VR_Mode" separator=".">

@@ -21,6 +21,45 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="TabCreatedReason">
+  <variant name=".FromExternalApp"
+      summary="This bucket is for any tabs that are created because of custom
+               tabs or intends from other apps. This includes tab creation
+               via intent from other app, creation via homescreen link,
+               creation via custom tab."/>
+  <variant name=".FromManuallyCreated"
+      summary="This bucket is for any tabs that are created manually. This
+               includes new tab creation from toolbar menu, creation from
+               long press open, creation at tab switcher, creation from
+               launcher shortcut menu by long press the Chrome icon."/>
+  <variant name=".FromOthers" summary="This is the default bucket."/>
+  <variant name=".FromTargetBlank"
+      summary="This bucket is for any tabs that were created from a target
+               blank link. e.g. tehchmeme.com will create tabs this way."/>
+</variants>
+
+<variants name="Tabs_SwitchLatency">
+  <variant name="_Actual"
+      summary="The time it takes to show a real live frame from the renderer
+               on the screen after the user selects a tab. This doesn not
+               include fake snapshots or other tricks, but the actual time to
+               get real interactable content displayed."/>
+  <variant name="_Perceived"
+      summary="The time it takes to show something on the screen after the
+               user selects a tab. This might be a fake snapshot or it might
+               just be the time it takes to show the real content if no
+               snapshot was available."/>
+</variants>
+
+<variants name="Tabs_TabUsageIntervalLength">
+  <variant name="_30" summary="30 seconds"/>
+  <variant name="_60" summary="1 minute"/>
+  <variant name="_600" summary="10 minutes"/>
+  <variant name="_3600" summary="1 hour"/>
+  <variant name="_18000" summary="5 hours"/>
+  <variant name="_43200" summary="12 hours"/>
+</variants>
+
 <histogram name="Tab.AgeUponRestoreFromColdStart" units="minutes"
     expires_after="M88">
   <owner>dtrainor@chromium.org</owner>
@@ -35,10 +74,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Tab.AndroidCrashUpload" enum="BooleanSuccess"
-    expires_after="M85">
+<histogram name="Tab.AndroidCrashUpload{AndroidCrashUploadTypes}"
+    enum="BooleanSuccess" expires_after="M85">
   <owner>wnwen@chromium.org</owner>
-  <summary>[Android] Count of upload success/failures by crash type.</summary>
+  <summary>
+    [Android] Count of upload success/failures by crash type.
+    {AndroidCrashUploadTypes}
+  </summary>
+  <token key="AndroidCrashUploadTypes">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name="_Browser" summary="Measures browser crash uploads."/>
+    <variant name="_GPU" summary="Measures GPU crash uploads."/>
+    <variant name="_Other" summary="Measures other crash uploads."/>
+    <variant name="_Renderer" summary="Measures renderer crash uploads."/>
+  </token>
 </histogram>
 
 <histogram name="Tab.BackgroundLoadStatus" enum="TabBackgroundLoadStatus"
@@ -109,13 +162,44 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Tab.NewTabOnload" units="ms" expires_after="2021-03-07">
+<histogram name="Tab.NewTabOnload{TabNewTabOnload}" units="ms"
+    expires_after="2021-03-07">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <summary>
     The time for the new tab page to load. Only recorded on Android. Recorded
     only once per tab, i.e. excluding back/forward navigations.
+    {TabNewTabOnload}
   </summary>
+  <token key="TabNewTabOnload">
+    <variant name=""/>
+    <variant name=".Google" summary="New Tab page for Google.">
+      <obsolete>
+        Removed 07/2020, base histogram no longer recorded on dektop.
+      </obsolete>
+    </variant>
+    <variant name=".Local" summary="Local New Tab page.">
+      <obsolete>
+        Removed 07/2020, base histogram no longer recorded on dektop.
+      </obsolete>
+    </variant>
+    <variant name=".LocalGoogle" summary="Local New Tab page for Google.">
+      <obsolete>
+        Removed 06/2017, never worked correctly.
+      </obsolete>
+    </variant>
+    <variant name=".LocalOther"
+        summary="Local New Tab page for a non-Google provider.">
+      <obsolete>
+        Removed 06/2017, never worked correctly.
+      </obsolete>
+    </variant>
+    <variant name=".Other" summary="New Tab page for a non-Google provider.">
+      <obsolete>
+        Removed 07/2020, base histogram no longer recorded on dektop.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram name="Tab.PageLoadInHorizontalSizeClass"
@@ -440,12 +524,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Tab.TabUnderAction" enum="TabUnderAction" expires_after="M85">
+<histogram name="Tab.TabUnderAction{OffTheRecordType}" enum="TabUnderAction"
+    expires_after="M85">
   <owner>csharrison@chromium.org</owner>
   <summary>
     Various actions related to the tab under intervention, logged during main
-    frame navigation.
+    frame navigation. {OffTheRecordType}
   </summary>
+  <token key="OffTheRecordType">
+    <variant name=""/>
+    <variant name=".NonOTR" summary="Non off-the-record profile">
+      <obsolete>
+        Removed March 2019
+      </obsolete>
+    </variant>
+    <variant name=".OTR" summary="Off-the-record profile">
+      <obsolete>
+        Removed March 2019
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram name="Tab.TotalTabCount.BeforeLeavingApp" units="tabs"
@@ -459,12 +557,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Tab.Visibility" units="ms" expires_after="M85">
+<histogram name="Tab.Visibility{Visibility}" units="ms" expires_after="M85">
   <owner>fdoray@chromium.org</owner>
   <summary>
     Time spent by a tab in a given visibility state. Recorded when the
-    visibility changes and when the tab is closed.
+    visibility changes and when the tab is closed. {Visibility}
   </summary>
+  <token key="Visibility">
+    <variant name=""/>
+    <variant name=".Hidden"
+        summary="The tab is not visible because it is in a minimized window
+                 (desktop) or background app (mobile), or because it isn't
+                 active in its tab strip."/>
+    <variant name=".Occluded"
+        summary="The tab is fully covered by other windows. ChromeOS and Mac
+                 OS X only."/>
+    <variant name=".Visible"
+        summary="The tab is visible. Except on ChromeOS and Mac OS X, a tab
+                 fully covered by other windows is considered visible."/>
+  </token>
 </histogram>
 
 <histogram name="Tab.VisibleTime" units="ms" expires_after="M77">
@@ -560,14 +671,34 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="TabHoverCards.TabHoverCardsSeenBeforeTabSelection"
+<histogram
+    name="TabHoverCards.TabHoverCardsSeenBeforeTabSelection{TabCountMetrics}"
     units="units" expires_after="2020-10-01">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
     This histogram records the number of tab hover cards seen between the last
-    active tab change and a tab change by mouse click.
+    active tab change and a tab change by mouse click. {TabCountMetrics}
   </summary>
+  <token key="TabCountMetrics">
+    <variant name=""/>
+    <variant name=".ByTabCount.0Tabs"
+        summary="Recorded with 0 tabs open in the browser."/>
+    <variant name=".ByTabCount.1Tab"
+        summary="Recorded with 1 tab open in the browser."/>
+    <variant name=".ByTabCount.2Tabs"
+        summary="Recorded with 2 tabs open in the browser."/>
+    <variant name=".ByTabCount.3To4Tabs"
+        summary="Recorded with between 3 and 4 tabs open in the browser."/>
+    <variant name=".ByTabCount.5To7Tabs"
+        summary="Recorded with between 5 and 7 tabs open in the browser."/>
+    <variant name=".ByTabCount.8To19Tabs"
+        summary="Recorded with between 8 and 19 tabs open in the browser."/>
+    <variant name=".ByTabCount.20To39Tabs"
+        summary="Recorded with between 20 and 39 tabs open in the browser."/>
+    <variant name=".ByTabCount.40OrMoreTabs"
+        summary="Recorded with 40 or more tabs open in the browser."/>
+  </token>
 </histogram>
 
 <histogram name="TabHoverCards.TimeSinceLastVisible" units="ms"
@@ -1592,7 +1723,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </details>
 </histogram>
 
-<histogram base="true" name="Tabs.Suggestions.NumSuggestionsChanged"
+<histogram name="Tabs.Suggestions.NumSuggestionsChanged{TabSuggestionType}"
     units="count" expires_after="2020-11-01">
   <owner>yusufo@chromium.org</owner>
   <owner>davidjm@chromium.org</owner>
@@ -1609,44 +1740,73 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     performing 1) or 2).
 
     Note: Adding and removing the same Tab, or vice versa, would be counted as
-    0.
+    0. {TabSuggestionType}
   </summary>
+  <token key="TabSuggestionType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".ClosingSuggestion"
+        summary="This bukect is for the closing suggestion. It suggests users
+                 to close the recommended tabs."/>
+    <variant name=".GroupingSuggestion"
+        summary="This bukect is for the grouping suggestion. It suggests
+                 users to group the recommended tabs."/>
+  </token>
 </histogram>
 
-<histogram name="Tabs.SwitchFromCloseLatency" units="ms" expires_after="M88">
+<histogram name="Tabs.SwitchFromCloseLatency{Tabs_SwitchLatency}" units="ms"
+    expires_after="M88">
   <owner>dtrainor@chromium.org</owner>
   <owner>yusufo@chromium.org</owner>
   <summary>
     [Android] Time between the event that closes a tab and the start of
-    rendering.
+    rendering. {Tabs_SwitchLatency}
   </summary>
+  <token key="Tabs_SwitchLatency" variants="Tabs_SwitchLatency">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Tabs.SwitchFromExitLatency" units="ms" expires_after="M88">
+<histogram name="Tabs.SwitchFromExitLatency{Tabs_SwitchLatency}" units="ms"
+    expires_after="M88">
   <owner>dtrainor@chromium.org</owner>
   <owner>yusufo@chromium.org</owner>
   <summary>
     [Android] Time between the event that exits an app and the start of
-    rendering.
+    rendering. {Tabs_SwitchLatency}
   </summary>
+  <token key="Tabs_SwitchLatency" variants="Tabs_SwitchLatency">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Tabs.SwitchFromNewLatency" units="ms" expires_after="M88">
+<histogram name="Tabs.SwitchFromNewLatency{Tabs_SwitchLatency}" units="ms"
+    expires_after="M88">
   <owner>dtrainor@chromium.org</owner>
   <owner>yusufo@chromium.org</owner>
   <summary>
     [Android] Time between the event that creates a tab and the start of
-    rendering.
+    rendering. {Tabs_SwitchLatency}
   </summary>
+  <token key="Tabs_SwitchLatency" variants="Tabs_SwitchLatency">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Tabs.SwitchFromUserLatency" units="ms" expires_after="M88">
+<histogram name="Tabs.SwitchFromUserLatency{Tabs_SwitchLatency}" units="ms"
+    expires_after="M88">
   <owner>dtrainor@chromium.org</owner>
   <owner>yusufo@chromium.org</owner>
   <summary>
     [Android] Time between the event that selects a tab and the start of
-    rendering.
+    rendering. {Tabs_SwitchLatency}
   </summary>
+  <token key="Tabs_SwitchLatency" variants="Tabs_SwitchLatency">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Tabs.TabCount" units="tabs" expires_after="never">
@@ -1766,11 +1926,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </details>
 </histogram>
 
-<histogram base="true" name="Tabs.TabOffsetOfSwitch" units="units"
-    expires_after="M85">
+<histogram name="Tabs.TabOffsetOfSwitch{TabOffsetOfSwitchComponentList}"
+    units="units" expires_after="M85">
   <owner>yusufo@chromium.org</owner>
   <summary>
     How many tabs a user moved forward or backward in the Android tab switcher.
+    {TabOffsetOfSwitchComponentList}
   </summary>
   <details>
     Logged by the Android tab switcher when a user switches tabs (other than by
@@ -1781,6 +1942,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     different stack (i.e. they switch from normal to incognito or vice-versa),
     we don't log a value.
   </details>
+  <token key="TabOffsetOfSwitchComponentList">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".GridTabSwitcher" summary="Tab switcher in grid layout"/>
+    <variant name=".TabGridSheet"
+        summary="The bottom sheet that show a list of Tabs in a grid">
+      <obsolete>
+        Unused as of 11/2019, sheet UI is no longer used.
+      </obsolete>
+    </variant>
+    <variant name=".TabStrip" summary="The TabStrip componets"/>
+  </token>
 </histogram>
 
 <histogram name="Tabs.TabSearch.CloseAction" enum="TabSearchCloseActions"
@@ -1976,10 +2152,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Tabs.Tasks.HubAndSpokeNavigationUsage" units="spokes"
-    expires_after="2020-06-01">
-<!-- Name completed by histogram_suffixes name="HubAndSpokeNavigationUsageType" -->
-
+<histogram
+    name="Tabs.Tasks.HubAndSpokeNavigationUsage{HubAndSpokeNavigationUsageType}"
+    units="spokes" expires_after="2020-06-01">
   <owner>yusufo@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <summary>
@@ -1988,27 +2163,42 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     and a &quot;spoke&quot; is a page that's navigated to. The
     &quot;spokes&quot; count is incremented and recorded each time the user
     navigates back to a &quot;hub&quot; page via navigation back button and then
-    navigates to a new &quot;spoke&quot;.
+    navigates to a new &quot;spoke&quot;. {HubAndSpokeNavigationUsageType}
   </summary>
+  <token key="HubAndSpokeNavigationUsageType">
+    <variant name=""/>
+    <variant name=".FromDefaultSearchEngine"
+        summary="User navigates to a new page from default search engine
+                 result page"/>
+    <variant name=".FromFormSubmit"
+        summary="User navigates to a new page from a form submit page"/>
+    <variant name=".FromOther"
+        summary="User navigates to a new page from a page other than a
+                 default search engine result page or a form submit page"/>
+  </token>
 </histogram>
 
-<histogram base="true" name="Tabs.Tasks.TabCreated.Count" units="tabs"
+<histogram name="Tabs.Tasks.TabCreated.Count{TabCreatedReason}" units="tabs"
     expires_after="2020-06-30">
-<!-- Name completed by histogram_suffixes name="TabCreatedReason" -->
-
   <owner>yusufo@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <owner>zea@chromium.org</owner>
   <summary>
     This recorded value is the number of currently open tabs that were created
     from a given source. This is recorded when entering the tab switcher mode.
+    {TabCreatedReason}
   </summary>
+  <token key="TabCreatedReason" variants="TabCreatedReason">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="Tabs.Tasks.TabCreated.Percent" units="%"
+<histogram name="Tabs.Tasks.TabCreated.Percent{TabCreatedReason}" units="%"
     expires_after="2020-06-30">
-<!-- Name completed by histogram_suffixes name="TabCreatedReason" -->
-
   <owner>yusufo@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <owner>zea@chromium.org</owner>
@@ -2016,7 +2206,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The recorded value is the percentage of the number of currently open tabs
     that are created from a given source, relative to the total number of
     currently open tabs. This is recorded when entering the tab switcher mode.
+    {TabCreatedReason}
   </summary>
+  <token key="TabCreatedReason" variants="TabCreatedReason">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram name="Tabs.Tasks.TabGroupCount" units="groups" expires_after="M85">
@@ -2086,48 +2284,82 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Tabs.UnusedAndClosedInInterval.Count" units="tabs"
-    expires_after="M95">
+<histogram
+    name="Tabs.UnusedAndClosedInInterval.Count{Tabs_TabUsageIntervalLength}"
+    units="tabs" expires_after="M95">
   <owner>sebmarchand@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The number of tabs that haven't been interacted with, visible or audible
     over a given interval time, but which no longer exist at all at the end of
-    this interval.
+    this interval. {Tabs_TabUsageIntervalLength}
   </summary>
+  <token key="Tabs_TabUsageIntervalLength"
+      variants="Tabs_TabUsageIntervalLength">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="Tabs.UnusedInInterval.Count" units="tabs"
-    expires_after="M95">
+<histogram name="Tabs.UnusedInInterval.Count{Tabs_TabUsageIntervalLength}"
+    units="tabs" expires_after="M95">
   <owner>sebmarchand@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The number of tabs that haven't been interacted with, visible or audible or
     visible during a given interval of time and still exist at the end of this
-    interval.
+    interval. {Tabs_TabUsageIntervalLength}
   </summary>
+  <token key="Tabs_TabUsageIntervalLength"
+      variants="Tabs_TabUsageIntervalLength">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="Tabs.UsedAndClosedInInterval.Count" units="tabs"
-    expires_after="M95">
+<histogram
+    name="Tabs.UsedAndClosedInInterval.Count{Tabs_TabUsageIntervalLength}"
+    units="tabs" expires_after="M95">
   <owner>sebmarchand@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The number of tabs that have been interacted with, visible or audible over a
     given interval of time, but which no longer exist at all at the end of this
-    interval.
+    interval. {Tabs_TabUsageIntervalLength}
   </summary>
+  <token key="Tabs_TabUsageIntervalLength"
+      variants="Tabs_TabUsageIntervalLength">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="Tabs.UsedInInterval.Count" units="tabs"
-    expires_after="M95">
+<histogram name="Tabs.UsedInInterval.Count{Tabs_TabUsageIntervalLength}"
+    units="tabs" expires_after="M95">
   <owner>sebmarchand@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The number of tabs that have been interacted with, visible or audible during
     a given interval of time, includes tabs that don't exist at the end of this
-    interval.
+    interval. {Tabs_TabUsageIntervalLength}
   </summary>
+  <token key="Tabs_TabUsageIntervalLength"
+      variants="Tabs_TabUsageIntervalLength">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram name="Tabs.WindowCount" units="tabs" expires_after="never">
