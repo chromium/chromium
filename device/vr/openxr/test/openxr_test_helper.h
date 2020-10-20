@@ -17,7 +17,6 @@
 #include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/synchronization/lock.h"
-#include "device/vr/openxr/openxr_defs.h"
 #include "device/vr/test/test_hook.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "third_party/openxr/src/include/openxr/openxr_platform.h"
@@ -130,7 +129,7 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   // Properties of the mock OpenXR runtime that do not change are created
   static constexpr const char* const kExtensions[] = {
       XR_KHR_D3D11_ENABLE_EXTENSION_NAME,
-      device::kWin32AppcontainerCompatibleExtensionName};
+      XR_EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME};
   static constexpr uint32_t kDimension = 128;
   static constexpr uint32_t kSwapCount = 1;
   static constexpr uint32_t kMinSwapchainBuffering = 3;

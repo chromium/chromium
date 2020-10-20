@@ -143,8 +143,9 @@ XrResult OpenXrController::SuggestBindings(
     const bool extension_required =
         interaction_profile.required_extension != nullptr;
     if (extension_required) {
-      const bool extension_enabled = extension_helper.ExtensionSupported(
-          interaction_profile.required_extension);
+      const bool extension_enabled =
+          extension_helper.ExtensionEnumeration()->ExtensionSupported(
+              interaction_profile.required_extension);
       if (!extension_enabled) {
         continue;
       }

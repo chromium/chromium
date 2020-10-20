@@ -58,12 +58,13 @@ mojom::VRDisplayInfoPtr CreateFakeVRDisplayInfo() {
 OpenXrDevice::OpenXrDevice(OpenXrStatics* openxr_statics)
     : VRDeviceBase(device::mojom::XRDeviceId::OPENXR_DEVICE_ID),
       instance_(openxr_statics->GetXrInstance()),
+      extension_helper_(instance_, openxr_statics->GetExtensionEnumeration()),
       weak_ptr_factory_(this) {
   mojom::VRDisplayInfoPtr display_info = CreateFakeVRDisplayInfo();
   SetVRDisplayInfo(std::move(display_info));
   SetArBlendModeSupported(IsArBlendModeSupported(openxr_statics));
 #if defined(OS_WIN)
-  SetLuid(openxr_statics->GetLuid());
+  SetLuid(openxr_statics->GetLuid(extension_helper_));
 #endif
 }
 
@@ -86,7 +87,7 @@ void OpenXrDevice::EnsureRenderLoop() {
     auto on_info_changed = base::BindRepeating(&OpenXrDevice::SetVRDisplayInfo,
                                                weak_ptr_factory_.GetWeakPtr());
     render_loop_ = std::make_unique<OpenXrRenderLoop>(
-        std::move(on_info_changed), instance_);
+        std::move(on_info_changed), instance_, extension_helper_);
   }
 }
 

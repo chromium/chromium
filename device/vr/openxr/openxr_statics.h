@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "build/build_config.h"
+#include "device/vr/openxr/openxr_util.h"
 #include "device/vr/vr_export.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "third_party/openxr/src/include/openxr/openxr_platform.h"
@@ -22,17 +23,22 @@ class DEVICE_VR_EXPORT OpenXrStatics {
   OpenXrStatics();
   ~OpenXrStatics();
 
+  const OpenXrExtensionEnumeration* GetExtensionEnumeration() const {
+    return &extension_enumeration_;
+  }
+
   XrInstance GetXrInstance();
 
   bool IsHardwareAvailable();
   bool IsApiAvailable();
 
 #if defined(OS_WIN)
-  LUID GetLuid();
+  LUID GetLuid(const OpenXrExtensionHelper& extension_helper);
 #endif
 
  private:
   XrInstance instance_;
+  OpenXrExtensionEnumeration extension_enumeration_;
 };
 
 }  // namespace device

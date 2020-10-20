@@ -96,13 +96,14 @@ base::Optional<Gamepad> GetXrStandardGamepad(
 
 XrResult OpenXRInputHelper::CreateOpenXRInputHelper(
     XrInstance instance,
+    const OpenXrExtensionHelper& extension_helper,
     XrSession session,
     XrSpace local_space,
     std::unique_ptr<OpenXRInputHelper>* helper) {
   std::unique_ptr<OpenXRInputHelper> new_helper =
       std::make_unique<OpenXRInputHelper>(session, local_space);
 
-  RETURN_IF_XR_FAILED(new_helper->Initialize(instance));
+  RETURN_IF_XR_FAILED(new_helper->Initialize(instance, extension_helper));
   *helper = std::move(new_helper);
   return XR_SUCCESS;
 }
@@ -114,7 +115,9 @@ OpenXRInputHelper::OpenXRInputHelper(XrSession session, XrSpace local_space)
 
 OpenXRInputHelper::~OpenXRInputHelper() = default;
 
-XrResult OpenXRInputHelper::Initialize(XrInstance instance) {
+XrResult OpenXRInputHelper::Initialize(
+    XrInstance instance,
+    const OpenXrExtensionHelper& extension_helper) {
   RETURN_IF_XR_FAILED(path_helper_->Initialize(instance));
 
   // This map is used to store bindings for different kinds of interaction
@@ -122,7 +125,6 @@ XrResult OpenXRInputHelper::Initialize(XrInstance instance) {
   // on availability.
   std::map<XrPath, std::vector<XrActionSuggestedBinding>> bindings;
 
-  OpenXrExtensionHelper extension_helper;
   for (size_t i = 0; i < controller_states_.size(); i++) {
     RETURN_IF_XR_FAILED(controller_states_[i].controller.Initialize(
         static_cast<OpenXrHandednessType>(i), instance, session_,
