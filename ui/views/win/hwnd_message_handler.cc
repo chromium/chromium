@@ -27,6 +27,8 @@
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
+#include "services/tracing/public/cpp/perfetto/macros.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_window_handle_event_info.pbzero.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
@@ -988,7 +990,12 @@ HICON HWNDMessageHandler::GetSmallWindowIcon() const {
 LRESULT HWNDMessageHandler::OnWndProc(UINT message,
                                       WPARAM w_param,
                                       LPARAM l_param) {
-  TRACE_EVENT1("ui", "HWNDMessageHandler::OnWndProc", "message_id", message);
+  TRACE_EVENT("ui", "HWNDMessageHandler::OnWndProc",
+              [&](perfetto::EventContext ctx) {
+                perfetto::protos::pbzero::ChromeWindowHandleEventInfo* args =
+                    ctx.event()->set_chrome_window_handle_event_info();
+                args->set_message_id(message);
+              });
 
   HWND window = hwnd();
   LRESULT result = 0;
@@ -1696,8 +1703,12 @@ LRESULT HWNDMessageHandler::OnDpiChanged(UINT msg,
   if (LOWORD(w_param) != HIWORD(w_param))
     NOTIMPLEMENTED() << "Received non-square scaling factors";
 
-  TRACE_EVENT1("ui", "HWNDMessageHandler::OnDwmCompositionChanged", "dpi",
-               LOWORD(w_param));
+  TRACE_EVENT("ui", "HWNDMessageHandler::OnDpiChanged",
+              [&](perfetto::EventContext ctx) {
+                perfetto::protos::pbzero::ChromeWindowHandleEventInfo* args =
+                    ctx.event()->set_chrome_window_handle_event_info();
+                args->set_dpi(LOWORD(w_param));
+              });
 
   int dpi;
   float scaling_factor;

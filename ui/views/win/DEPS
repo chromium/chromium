@@ -13,6 +13,8 @@ include_rules = [
   "-ui/views",
 
   "+base",
+  "+services/tracing/public",
+  "+third_party/perfetto/protos/perfetto/trace/track_event",
   "+ui/base",
   "+ui/gfx",
   "+ui/latency",
