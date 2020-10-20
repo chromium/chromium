@@ -570,6 +570,9 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, CaptureScreenshotJpeg) {
   CaptureScreenshotAndCompareTo(expected_bitmap, ENCODING_JPEG, false);
 }
 
+// ChromeOS does not support software compositing.
+#if !defined(OS_CHROMEOS)
+
 class NoGPUCaptureScreenshotTest : public CaptureScreenshotTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     CaptureScreenshotTest::SetUpCommandLine(command_line);
@@ -585,7 +588,12 @@ IN_PROC_BROWSER_TEST_F(NoGPUCaptureScreenshotTest, DISABLED_LargeScreenshot) {
   // TODO(eseckler): Reenable with error limit if necessary.
   if (base::SysInfo::IsLowEndDevice())
     return;
-
+  // If disabling software compositing is disabled by the test caller,
+  // we're out of luck.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableSoftwareCompositingFallback)) {
+    return;
+  }
   shell()->LoadURL(
       GURL("data:text/html,"
            "<style>body,html { padding: 0; margin: 0; }</style>"
@@ -617,6 +625,8 @@ IN_PROC_BROWSER_TEST_F(NoGPUCaptureScreenshotTest, DISABLED_LargeScreenshot) {
   EXPECT_LT(static_cast<int>(SkColorGetR(bottom_left)), 128);
   EXPECT_GT(static_cast<int>(SkColorGetB(bottom_left)), 128);
 }
+
+#endif  // !defined(OS_CHROMEOS)
 
 // Setting frame size (through RWHV) is not supported on Android.
 // This test seems to be very flaky on windows: https://crbug.com/801173
