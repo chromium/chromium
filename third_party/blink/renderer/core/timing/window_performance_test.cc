@@ -177,8 +177,8 @@ TEST(PerformanceLifetimeTest, SurviveContextSwitch) {
   ASSERT_TRUE(document_loader);
   document_loader->GetTiming().SetNavigationStart(base::TimeTicks::Now());
 
-  EXPECT_EQ(&page_holder->GetFrame(), perf->GetFrame());
-  EXPECT_EQ(&page_holder->GetFrame(), timing->GetFrame());
+  EXPECT_EQ(page_holder->GetFrame().DomWindow(), perf->DomWindow());
+  EXPECT_EQ(page_holder->GetFrame().DomWindow(), timing->DomWindow());
   auto navigation_start = timing->navigationStart();
   EXPECT_NE(0U, navigation_start);
 
@@ -190,8 +190,8 @@ TEST(PerformanceLifetimeTest, SurviveContextSwitch) {
   EXPECT_EQ(perf, DOMWindowPerformance::performance(
                       *page_holder->GetFrame().DomWindow()));
   EXPECT_EQ(timing, perf->timing());
-  EXPECT_EQ(&page_holder->GetFrame(), perf->GetFrame());
-  EXPECT_EQ(&page_holder->GetFrame(), timing->GetFrame());
+  EXPECT_EQ(page_holder->GetFrame().DomWindow(), perf->DomWindow());
+  EXPECT_EQ(page_holder->GetFrame().DomWindow(), timing->DomWindow());
   EXPECT_LE(navigation_start, timing->navigationStart());
 }
 

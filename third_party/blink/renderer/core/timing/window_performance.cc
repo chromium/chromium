@@ -153,10 +153,10 @@ WindowPerformance::WindowPerformance(LocalDOMWindow* window)
     : Performance(ToTimeOrigin(window),
                   window->GetTaskRunner(TaskType::kPerformanceTimeline)),
       ExecutionContextClient(window),
-      PageVisibilityObserver(GetFrame()->GetPage()) {
-  DCHECK(GetFrame());
-  DCHECK(GetFrame()->GetPerformanceMonitor());
-  GetFrame()->GetPerformanceMonitor()->Subscribe(
+      PageVisibilityObserver(window->GetFrame()->GetPage()) {
+  DCHECK(window);
+  DCHECK(window->GetFrame()->GetPerformanceMonitor());
+  window->GetFrame()->GetPerformanceMonitor()->Subscribe(
       PerformanceMonitor::kLongTask, kLongTaskObserverThreshold, this);
   if (RuntimeEnabledFeatures::VisibilityStateEntryEnabled()) {
     DCHECK(GetPage());
@@ -167,21 +167,19 @@ WindowPerformance::WindowPerformance(LocalDOMWindow* window)
 WindowPerformance::~WindowPerformance() = default;
 
 ExecutionContext* WindowPerformance::GetExecutionContext() const {
-  if (!GetFrame())
-    return nullptr;
-  return GetFrame()->DomWindow();
+  return ExecutionContextClient::GetExecutionContext();
 }
 
 PerformanceTiming* WindowPerformance::timing() const {
   if (!timing_)
-    timing_ = MakeGarbageCollected<PerformanceTiming>(GetFrame());
+    timing_ = MakeGarbageCollected<PerformanceTiming>(DomWindow());
 
   return timing_.Get();
 }
 
 PerformanceNavigation* WindowPerformance::navigation() const {
   if (!navigation_)
-    navigation_ = MakeGarbageCollected<PerformanceNavigation>(GetFrame());
+    navigation_ = MakeGarbageCollected<PerformanceNavigation>(DomWindow());
 
   return navigation_.Get();
 }
@@ -200,11 +198,9 @@ MemoryInfo* WindowPerformance::memory() const {
 
 PerformanceNavigationTiming*
 WindowPerformance::CreateNavigationTimingInstance() {
-  if (!GetFrame())
+  if (!DomWindow())
     return nullptr;
-  DocumentLoader* document_loader = GetFrame()->Loader().GetDocumentLoader();
-  if (!document_loader)
-    return nullptr;
+  DocumentLoader* document_loader = DomWindow()->document()->Loader();
   ResourceTimingInfo* info = document_loader->GetNavigationTimingInfo();
   if (!info)
     return nullptr;
@@ -214,7 +210,7 @@ WindowPerformance::CreateNavigationTimingInstance() {
     document_loader->CountUse(WebFeature::kPerformanceServerTiming);
 
   return MakeGarbageCollected<PerformanceNavigationTiming>(
-      GetFrame(), info, time_origin_, std::move(server_timing));
+      DomWindow(), info, time_origin_, std::move(server_timing));
 }
 
 void WindowPerformance::BuildJSONValue(V8ObjectBuilder& builder) const {
@@ -309,11 +305,11 @@ void WindowPerformance::ReportLongTask(base::TimeTicks start_time,
                                        base::TimeTicks end_time,
                                        ExecutionContext* task_context,
                                        bool has_multiple_contexts) {
-  if (!GetFrame())
+  if (!DomWindow())
     return;
   std::pair<AtomicString, DOMWindow*> attribution =
       WindowPerformance::SanitizedAttribution(
-          task_context, has_multiple_contexts, GetFrame());
+          task_context, has_multiple_contexts, DomWindow()->GetFrame());
   DOMWindow* culprit_dom_window = attribution.second;
   if (!culprit_dom_window || !culprit_dom_window->GetFrame() ||
       !culprit_dom_window->GetFrame()->DeprecatedLocalOwner()) {
@@ -339,7 +335,7 @@ void WindowPerformance::RegisterEventTiming(const AtomicString& event_type,
   DCHECK(!processing_start.is_null());
   DCHECK(!processing_end.is_null());
   DCHECK_GE(processing_end, processing_start);
-  if (!GetFrame())
+  if (!DomWindow())
     return;
 
   if (!event_counts_)
@@ -366,8 +362,8 @@ void WindowPerformance::RegisterEventTiming(const AtomicString& event_type,
     should_queue_swap_promise = frame_index_ > last_registered_frame_index_;
   }
   if (should_queue_swap_promise) {
-    GetFrame()->GetChromeClient().NotifySwapTime(
-        *GetFrame(),
+    DomWindow()->GetFrame()->GetChromeClient().NotifySwapTime(
+        *DomWindow()->GetFrame(),
         CrossThreadBindOnce(&WindowPerformance::ReportEventTimings,
                             WrapCrossThreadWeakPersistent(this), frame_index_));
     last_registered_frame_index_ = frame_index_;

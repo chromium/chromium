@@ -38,7 +38,6 @@
 
 namespace blink {
 
-class LocalFrame;
 class ScriptState;
 class ScriptValue;
 
@@ -48,7 +47,7 @@ class CORE_EXPORT PerformanceNavigation final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit PerformanceNavigation(LocalFrame*);
+  explicit PerformanceNavigation(ExecutionContext*);
 
   enum PerformanceNavigationType {
     kTypeNavigate,

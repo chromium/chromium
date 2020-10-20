@@ -32,25 +32,20 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
-#include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 
 // Legacy support for NT1(https://www.w3.org/TR/navigation-timing/).
 namespace blink {
 
-PerformanceNavigation::PerformanceNavigation(LocalFrame* frame)
-    : ExecutionContextClient(frame) {}
+PerformanceNavigation::PerformanceNavigation(ExecutionContext* context)
+    : ExecutionContextClient(context) {}
 
 uint8_t PerformanceNavigation::type() const {
-  if (!GetFrame())
+  if (!DomWindow())
     return kTypeNavigate;
 
-  DocumentLoader* document_loader = GetFrame()->Loader().GetDocumentLoader();
-  if (!document_loader)
-    return kTypeNavigate;
-
-  switch (document_loader->GetNavigationType()) {
+  switch (DomWindow()->document()->Loader()->GetNavigationType()) {
     case kWebNavigationTypeReload:
       return kTypeReload;
     case kWebNavigationTypeBackForward:
@@ -61,14 +56,11 @@ uint8_t PerformanceNavigation::type() const {
 }
 
 uint16_t PerformanceNavigation::redirectCount() const {
-  if (!GetFrame())
+  if (!DomWindow())
     return 0;
 
-  DocumentLoader* loader = GetFrame()->Loader().GetDocumentLoader();
-  if (!loader)
-    return 0;
-
-  const DocumentLoadTiming& timing = loader->GetTiming();
+  const DocumentLoadTiming& timing =
+      DomWindow()->document()->Loader()->GetTiming();
   if (timing.HasCrossOriginRedirect())
     return 0;
 

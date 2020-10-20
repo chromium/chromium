@@ -46,7 +46,6 @@ class DocumentLoader;
 class DocumentParserTiming;
 class DocumentTiming;
 class InteractiveDetector;
-class LocalFrame;
 class PaintTiming;
 class PaintTimingDetector;
 class ResourceLoadTiming;
@@ -68,7 +67,7 @@ class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
   using BackForwardCacheRestoreTimings =
       WTF::Vector<BackForwardCacheRestoreTiming>;
 
-  explicit PerformanceTiming(LocalFrame*);
+  explicit PerformanceTiming(ExecutionContext*);
 
   uint64_t navigationStart() const;
   uint64_t inputStart() const;
