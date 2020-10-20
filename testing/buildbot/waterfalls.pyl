@@ -4435,7 +4435,7 @@
           'win7_nvidia_quadro_p400',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_angle_deqp_win_nvidia_gtests',
+          'gtest_tests': 'gpu_angle_deqp_win7_nvidia_gtests',
         },
         'use_multi_dimension_trigger_script': True,
         'alternate_swarming_dimensions': [
