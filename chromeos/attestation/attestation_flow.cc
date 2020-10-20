@@ -34,9 +34,6 @@ constexpr uint16_t kReadyTimeoutInSeconds = 60;
 // attestation.
 constexpr uint16_t kRetryDelayInMilliseconds = 300;
 
-constexpr ::attestation::ACAType kDefaultAcaType =
-    ::attestation::ACAType::DEFAULT_ACA;
-
 void DBusCertificateMethodCallback(
     AttestationFlow::CertificateCallback callback,
     base::Optional<CryptohomeClient::TpmAttestationDataResult> result) {
@@ -50,16 +47,6 @@ void DBusCertificateMethodCallback(
         result->success ? ATTESTATION_SUCCESS : ATTESTATION_UNSPECIFIED_FAILURE,
         result->data);
   }
-}
-
-bool IsPreparedWith(const ::attestation::GetEnrollmentPreparationsReply& reply,
-                    ::attestation::ACAType aca_type) {
-  for (const auto& preparation : reply.enrollment_preparations()) {
-    if (preparation.first == aca_type) {
-      return preparation.second;
-    }
-  }
-  return false;
 }
 
 }  // namespace
@@ -137,7 +124,6 @@ void AttestationFlow::WaitForAttestationPrepared(
     base::TimeTicks end_time,
     base::OnceCallback<void(bool)> callback) {
   ::attestation::GetEnrollmentPreparationsRequest request;
-  request.set_aca_type(kDefaultAcaType);
   attestation_client_->GetEnrollmentPreparations(
       request, base::BindOnce(&AttestationFlow::OnPreparedCheckComplete,
                               weak_factory_.GetWeakPtr(), end_time,
@@ -148,8 +134,7 @@ void AttestationFlow::OnPreparedCheckComplete(
     base::TimeTicks end_time,
     base::OnceCallback<void(bool)> callback,
     const ::attestation::GetEnrollmentPreparationsReply& reply) {
-  if (reply.status() == ::attestation::STATUS_SUCCESS &&
-      IsPreparedWith(reply, kDefaultAcaType)) {
+  if (AttestationClient::IsAttestationPrepared(reply)) {
     // Get the attestation service to create a Privacy CA enrollment request.
     async_caller_->AsyncTpmAttestationCreateEnrollRequest(
         server_proxy_->GetType(),

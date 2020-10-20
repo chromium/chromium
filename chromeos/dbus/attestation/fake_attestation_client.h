@@ -95,12 +95,16 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) FakeAttestationClient
   void ConfigureEnrollmentPreparations(bool is_prepared) override;
   void ConfigureEnrollmentPreparationsSequence(
       std::deque<bool> sequence) override;
+  void ConfigureEnrollmentPreparationsStatus(
+      ::attestation::AttestationStatus status) override;
   void AllowlistCertificateRequest(
       const ::attestation::GetCertificateRequest& request) override;
 
   AttestationClient::TestInterface* GetTestInterface() override;
 
  private:
+  ::attestation::AttestationStatus preparations_status_ =
+      ::attestation::STATUS_SUCCESS;
   bool is_prepared_ = true;
   std::deque<bool> preparation_sequences_;
 

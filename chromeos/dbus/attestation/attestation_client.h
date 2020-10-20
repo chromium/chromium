@@ -84,6 +84,12 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) AttestationClient {
     // the |sequence| one-by-one until all the elements are consumed.
     virtual void ConfigureEnrollmentPreparationsSequence(
         std::deque<bool> sequence) = 0;
+    // Injects a bad status to `GetEnrollmentPreparations()` calls. By design,
+    // this only accepts bad status so |STATUS_SUCCESS| is seen as an illegal
+    // input and abort the program. To recover the fake behavior to successful
+    // calls, call ConfigureEnrollmentPreparations(Sequence)?.
+    virtual void ConfigureEnrollmentPreparationsStatus(
+        ::attestation::AttestationStatus status) = 0;
 
     // Allowlists |request| so the certificate requests that comes in afterwards
     // will get a fake certificate. if any alias of |request| has been
@@ -109,6 +115,11 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) AttestationClient {
 
   // Returns the global instance which may be null if not initialized.
   static AttestationClient* Get();
+
+  // Checks if |reply| indicates the attestation service is prepared with any
+  // ACA.
+  static bool IsAttestationPrepared(
+      const ::attestation::GetEnrollmentPreparationsReply& reply);
 
   // Attestation daemon D-Bus method calls. See org.chromium.Attestation.xml and
   // the corresponding protobuf definitions in Chromium OS code for the

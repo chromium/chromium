@@ -9,6 +9,7 @@
 #include <google/protobuf/message_lite.h>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -309,6 +310,20 @@ void AttestationClient::Shutdown() {
 // static
 AttestationClient* AttestationClient::Get() {
   return g_instance;
+}
+
+// static
+bool AttestationClient::IsAttestationPrepared(
+    const ::attestation::GetEnrollmentPreparationsReply& reply) {
+  if (reply.status() != ::attestation::STATUS_SUCCESS) {
+    return false;
+  }
+  for (const auto& preparation : reply.enrollment_preparations()) {
+    if (preparation.second) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace chromeos

@@ -99,17 +99,31 @@ void FakeAttestationClient::RegisterKeyWithChapsToken(
 void FakeAttestationClient::GetEnrollmentPreparations(
     const ::attestation::GetEnrollmentPreparationsRequest& request,
     GetEnrollmentPreparationsCallback callback) {
-  bool is_prepared = is_prepared_;
-  // Override the state if there is a customized sequence.
-  if (!preparation_sequences_.empty()) {
-    is_prepared = preparation_sequences_.front();
-    preparation_sequences_.pop_front();
+  ::attestation::GetEnrollmentPreparationsReply reply;
+  reply.set_status(preparations_status_);
+
+  if (reply.status() == ::attestation::STATUS_SUCCESS) {
+    bool is_prepared = is_prepared_;
+    // Override the state if there is a customized sequence.
+    if (!preparation_sequences_.empty()) {
+      is_prepared = preparation_sequences_.front();
+      preparation_sequences_.pop_front();
+    }
+    if (is_prepared) {
+      std::vector<::attestation::ACAType> prepared_types;
+      // As we do in the attestation service, if the ACA type is not specified,
+      // returns the statuses with all the possible ACA types.
+      if (request.has_aca_type()) {
+        prepared_types = {request.aca_type()};
+      } else {
+        prepared_types = {::attestation::DEFAULT_ACA, ::attestation::TEST_ACA};
+      }
+      for (const auto& type : prepared_types) {
+        (*reply.mutable_enrollment_preparations())[type] = true;
+      }
+    }
   }
 
-  ::attestation::GetEnrollmentPreparationsReply reply;
-  if (is_prepared) {
-    (*reply.mutable_enrollment_preparations())[request.aca_type()] = true;
-  }
   PostProtoResponse(std::move(callback), reply);
 }
 
@@ -226,12 +240,20 @@ void FakeAttestationClient::GetCertifiedNvIndex(
 }
 
 void FakeAttestationClient::ConfigureEnrollmentPreparations(bool is_prepared) {
+  preparations_status_ = ::attestation::STATUS_SUCCESS;
   is_prepared_ = is_prepared;
 }
 
 void FakeAttestationClient::ConfigureEnrollmentPreparationsSequence(
     std::deque<bool> sequence) {
+  preparations_status_ = ::attestation::STATUS_SUCCESS;
   preparation_sequences_ = std::move(sequence);
+}
+
+void FakeAttestationClient::ConfigureEnrollmentPreparationsStatus(
+    ::attestation::AttestationStatus status) {
+  CHECK_NE(status, ::attestation::STATUS_SUCCESS);
+  preparations_status_ = status;
 }
 
 void FakeAttestationClient::AllowlistCertificateRequest(
