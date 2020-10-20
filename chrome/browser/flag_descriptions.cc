@@ -3311,10 +3311,6 @@ const char kNtpWebUIDescription[] =
 const char kNtpModulesName[] = "NTP Modules";
 const char kNtpModulesDescription[] = "Shows modules on the New Tab Page.";
 
-const char kNtpRecipeTasksModuleName[] = "NTP Recipe Tasks Module";
-const char kNtpRecipeTasksModuleDescription[] =
-    "Shows the recipe tasks module on the New Tab Page.";
-
 const char kNtpShoppingTasksModuleName[] = "NTP Shopping Tasks Module";
 const char kNtpShoppingTasksModuleDescription[] =
     "Shows the shopping tasks module on the New Tab Page.";

@@ -15,7 +15,6 @@
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/search/ntp_features.h"
-#include "chrome/browser/search/recipe_tasks/recipe_tasks_handler.h"
 #include "chrome/browser/search/shopping_tasks/shopping_tasks_handler.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/search/ntp_user_data_logger.h"
@@ -192,18 +191,20 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesDummyTitle", IDS_NTP_MODULES_DUMMY_TITLE},
       {"modulesDummy2Title", IDS_NTP_MODULES_DUMMY2_TITLE},
       {"modulesKaleidoscopeTitle", IDS_NTP_MODULES_KALEIDOSCOPE_TITLE},
-      {"modulesTasksInfoTitle", IDS_NTP_MODULES_TASKS_INFO_TITLE},
-      {"modulesTasksInfoClose", IDS_NTP_MODULES_TASKS_INFO_CLOSE},
+      {"modulesShoppingTasksInfoTitle",
+       IDS_NTP_MODULES_SHOPPING_TASKS_INFO_TITLE},
+      {"modulesShoppingTasksInfoClose",
+       IDS_NTP_MODULES_SHOPPING_TASKS_INFO_CLOSE},
   };
   AddLocalizedStringsBulk(source, kStrings);
 
-  source->AddString("modulesTasksInfo1",
+  source->AddString("modulesShoppingTasksInfo1",
                     l10n_util::GetStringFUTF16(
-                        IDS_NTP_MODULES_TASKS_INFO_1,
+                        IDS_NTP_MODULES_SHOPPING_TASKS_INFO_1,
                         base::UTF8ToUTF16("https://myactivity.google.com/")));
-  source->AddString("modulesTasksInfo2",
+  source->AddString("modulesShoppingTasksInfo2",
                     l10n_util::GetStringFUTF16(
-                        IDS_NTP_MODULES_TASKS_INFO_2,
+                        IDS_NTP_MODULES_SHOPPING_TASKS_INFO_2,
                         base::UTF8ToUTF16("https://policies.google.com/")));
 
   // Register images that are purposefully not inlined in the HTML and instead
@@ -237,9 +238,6 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean("kaleidoscopeModuleEnabled", false);
 #endif  // BUILDFLAG(ENABLE_KALEIDOSCOPE)
   source->AddBoolean(
-      "recipeTasksModuleEnabled",
-      base::FeatureList::IsEnabled(ntp_features::kNtpRecipeTasksModule));
-  source->AddBoolean(
       "shoppingTasksModuleEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpShoppingTasksModule));
 
@@ -249,9 +247,6 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
                           IDR_NEW_TAB_PAGE_OMNIBOX_MOJO_LITE_JS);
   source->AddResourcePath("promo_browser_command.mojom-lite.js",
                           IDR_NEW_TAB_PAGE_PROMO_BROWSER_COMMAND_MOJO_LITE_JS);
-  source->AddResourcePath(
-      "modules/recipe_tasks/recipe_tasks.mojom-lite.js",
-      IDR_NEW_TAB_PAGE_MODULES_RECIPE_TASKS_RECIPE_TASKS_MOJO_LITE_JS);
   source->AddResourcePath(
       "modules/shopping_tasks/shopping_tasks.mojom-lite.js",
       IDR_NEW_TAB_PAGE_MODULES_SHOPPING_TASKS_SHOPPING_TASKS_MOJO_LITE_JS);
@@ -373,13 +368,6 @@ void NewTabPageUI::BindInterface(
         pending_page_handler) {
   kaleidoscope_data_provider_ = std::make_unique<KaleidoscopeDataProviderImpl>(
       std::move(pending_page_handler), profile_, nullptr);
-}
-
-void NewTabPageUI::BindInterface(
-    mojo::PendingReceiver<recipe_tasks::mojom::RecipeTasksHandler>
-        pending_receiver) {
-  recipe_tasks_handler_ = std::make_unique<RecipeTasksHandler>(
-      std::move(pending_receiver), profile_);
 }
 
 void NewTabPageUI::BindInterface(

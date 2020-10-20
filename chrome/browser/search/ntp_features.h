@@ -26,7 +26,6 @@ extern const base::Feature kRealboxUseGoogleGIcon;
 extern const base::Feature kWebUI;
 extern const base::Feature kWebUIThemeModeDoodles;
 extern const base::Feature kModules;
-extern const base::Feature kNtpRecipeTasksModule;
 extern const base::Feature kNtpShoppingTasksModule;
 
 extern const base::Feature kSearchSuggestChips;

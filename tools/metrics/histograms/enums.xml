@@ -43651,7 +43651,6 @@ from previous Chrome versions.
   <int value="-36234530" label="PluginVmShowMicrophonePermissions:enabled"/>
   <int value="-35745997" label="TabSearch:enabled"/>
   <int value="-35388407" label="AshNewSystemMenu:disabled"/>
-  <int value="-32385086" label="NtpRecipeTasksModule:disabled"/>
   <int value="-31444029" label="MediaInspectorLogging:disabled"/>
   <int value="-30966385" label="enable-hardware-overlays"/>
   <int value="-29877377" label="TabHoverCardImages:disabled"/>
@@ -43718,7 +43717,6 @@ from previous Chrome versions.
   <int value="29212695" label="OfflineIndicator:enabled"/>
   <int value="31848187" label="ViewsTaskManager:disabled"/>
   <int value="32057053" label="EnterpriseReportingInBrowser:disabled"/>
-  <int value="32242305" label="NtpRecipeTasksModule:enabled"/>
   <int value="32348093" label="DiagnosticsApp:disabled"/>
   <int value="32488630" label="EphemeralTab:enabled"/>
   <int value="32557641" label="HTTPAuthCommittedInterstitials:disabled"/>

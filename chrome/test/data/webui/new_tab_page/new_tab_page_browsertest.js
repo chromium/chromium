@@ -245,19 +245,6 @@ TEST_F('NewTabPageMiddleSlotPromoTest', 'All', function() {
 });
 
 // eslint-disable-next-line no-var
-var NewTabPageModulesRecipeTasksModuleTest =
-    class extends NewTabPageBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/recipe_tasks/module_test.js';
-  }
-};
-
-TEST_F('NewTabPageModulesRecipeTasksModuleTest', 'All', function() {
-  mocha.run();
-});
-
-// eslint-disable-next-line no-var
 var NewTabPageModulesShoppingTasksModuleTest =
     class extends NewTabPageBrowserTest {
   /** @override */

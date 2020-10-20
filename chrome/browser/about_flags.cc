@@ -4358,10 +4358,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpModulesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kModules)},
 
-    {"ntp-recipe-tasks-module", flag_descriptions::kNtpRecipeTasksModuleName,
-     flag_descriptions::kNtpRecipeTasksModuleDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpRecipeTasksModule)},
-
     {"ntp-shopping-tasks-module",
      flag_descriptions::kNtpShoppingTasksModuleName,
      flag_descriptions::kNtpShoppingTasksModuleDescription, kOsDesktop,

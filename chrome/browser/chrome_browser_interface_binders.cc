@@ -109,7 +109,6 @@
 #include "chrome/browser/payments/payment_request_factory.h"
 #include "chrome/browser/promo_browser_command/promo_browser_command.mojom.h"
 #include "chrome/browser/search/ntp_features.h"
-#include "chrome/browser/search/recipe_tasks/recipe_tasks.mojom.h"
 #include "chrome/browser/search/shopping_tasks/shopping_tasks.mojom.h"
 #include "chrome/browser/speech/speech_recognition_service.h"
 #include "chrome/browser/speech/speech_recognition_service_factory.h"
@@ -626,11 +625,6 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<media_feeds::mojom::MediaFeedsStore,
                                          MediaFeedsUI>(map);
-
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpRecipeTasksModule)) {
-    RegisterWebUIControllerInterfaceBinder<
-        recipe_tasks::mojom::RecipeTasksHandler, NewTabPageUI>(map);
-  }
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpShoppingTasksModule)) {
     RegisterWebUIControllerInterfaceBinder<
