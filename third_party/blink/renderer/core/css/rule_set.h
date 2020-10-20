@@ -36,9 +36,12 @@
 
 namespace blink {
 
-enum AddRuleFlags {
+using AddRuleFlags = unsigned;
+
+enum AddRuleFlag {
   kRuleHasNoSpecialState = 0,
-  kRuleHasDocumentSecurityOrigin = 1,
+  kRuleHasDocumentSecurityOrigin = 1 << 0,
+  kRuleIsVisitedDependent = 1 << 1,
 };
 
 // Some CSS properties do not apply to certain pseudo-elements, and need to be
@@ -110,7 +113,7 @@ class CORE_EXPORT RuleData : public GarbageCollected<RuleData> {
     return contains_uncommon_attribute_selector_;
   }
   unsigned Specificity() const { return specificity_; }
-  bool HasLinkOrVisited() const { return has_link_or_visited_; }
+  unsigned LinkMatchType() const { return link_match_type_; }
   bool HasDocumentSecurityOrigin() const {
     return has_document_security_origin_;
   }
@@ -146,10 +149,10 @@ class CORE_EXPORT RuleData : public GarbageCollected<RuleData> {
   unsigned contains_uncommon_attribute_selector_ : 1;
   // 32 bits above
   unsigned specificity_ : 24;
-  unsigned has_link_or_visited_ : 1;
+  unsigned link_match_type_ : 2;
   unsigned has_document_security_origin_ : 1;
   unsigned valid_property_filter_ : 2;
-  // 28 bits above
+  // 29 bits above
   // Use plain array instead of a Vector to minimize memory overhead.
   unsigned descendant_selector_identifier_hashes_[kMaximumIdentifierCount];
 };
@@ -239,6 +242,10 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   const HeapVector<Member<const RuleData>>* PartPseudoRules() const {
     DCHECK(!pending_rules_);
     return &part_pseudo_rules_;
+  }
+  const HeapVector<Member<const RuleData>>* VisitedDependentRules() const {
+    DCHECK(!pending_rules_);
+    return &visited_dependent_rules_;
   }
   const HeapVector<Member<StyleRulePage>>& PageRules() const {
     DCHECK(!pending_rules_);
@@ -351,6 +358,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   HeapVector<Member<const RuleData>> universal_rules_;
   HeapVector<Member<const RuleData>> shadow_host_rules_;
   HeapVector<Member<const RuleData>> part_pseudo_rules_;
+  HeapVector<Member<const RuleData>> visited_dependent_rules_;
   RuleFeatureSet features_;
   HeapVector<Member<StyleRulePage>> page_rules_;
   HeapVector<Member<StyleRuleFontFace>> font_face_rules_;

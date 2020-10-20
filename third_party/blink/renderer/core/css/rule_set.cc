@@ -63,6 +63,16 @@ static inline ValidPropertyFilter DetermineValidPropertyFilter(
   return ValidPropertyFilter::kNoFilter;
 }
 
+static unsigned DetermineLinkMatchType(const AddRuleFlags add_rule_flags,
+                                       const CSSSelector& selector) {
+  if (selector.HasLinkOrVisited()) {
+    return (add_rule_flags & kRuleIsVisitedDependent)
+               ? CSSSelector::kMatchVisited
+               : CSSSelector::kMatchLink;
+  }
+  return CSSSelector::kMatchAll;
+}
+
 RuleData* RuleData::MaybeCreate(StyleRule* rule,
                                 unsigned selector_index,
                                 unsigned position,
@@ -86,7 +96,7 @@ RuleData::RuleData(StyleRule* rule,
       selector_index_(selector_index),
       position_(position),
       specificity_(Selector().Specificity()),
-      has_link_or_visited_(Selector().HasLinkOrVisited()),
+      link_match_type_(DetermineLinkMatchType(add_rule_flags, Selector())),
       has_document_security_origin_(add_rule_flags &
                                     kRuleHasDocumentSecurityOrigin),
       valid_property_filter_(
@@ -271,6 +281,19 @@ void RuleSet::AddRule(StyleRule* rule,
     // If we didn't find a specialized map to stick it in, file under universal
     // rules.
     universal_rules_.push_back(rule_data);
+  }
+
+  // If the rule has CSSSelector::kMatchLink, it means that there is a :visited
+  // or :link pseudo-class somewhere in the selector. In those cases, we
+  // effectively split the rule into two: one which covers the situation
+  // where we are in an unvisited link (kMatchLink), and another which covers
+  // the visited link case (kMatchVisited).
+  if (rule_data->LinkMatchType() == CSSSelector::kMatchLink) {
+    RuleData* visited_dependent = RuleData::MaybeCreate(
+        rule, rule_data->SelectorIndex(), rule_data->GetPosition(),
+        add_rule_flags | kRuleIsVisitedDependent);
+    DCHECK(visited_dependent);
+    visited_dependent_rules_.push_back(visited_dependent);
   }
 }
 
@@ -467,6 +490,7 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(scroll_timeline_rules_);
   visitor->Trace(deep_combinator_or_shadow_pseudo_rules_);
   visitor->Trace(part_pseudo_rules_);
+  visitor->Trace(visited_dependent_rules_);
   visitor->Trace(content_pseudo_element_rules_);
   visitor->Trace(slotted_pseudo_element_rules_);
   visitor->Trace(pending_rules_);

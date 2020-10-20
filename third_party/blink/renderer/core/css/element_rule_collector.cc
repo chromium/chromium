@@ -177,11 +177,10 @@ void ElementRuleCollector::CollectMatchingRulesForList(
 
     SelectorChecker::MatchResult result;
     context.selector = &rule_data->Selector();
-    // If the selector does not contain :link or :visited, we disable
-    // :visited matching as a performance optimization.
     context.is_inside_visited_link =
-        (inside_link_ == EInsideLink::kInsideVisitedLink) &&
-        rule_data->HasLinkOrVisited();
+        rule_data->LinkMatchType() == CSSSelector::kMatchVisited;
+    DCHECK(!context.is_inside_visited_link ||
+           (inside_link_ == EInsideLink::kInsideVisitedLink));
     if (!checker.Match(context, result)) {
       rejected++;
       continue;
@@ -253,6 +252,10 @@ void ElementRuleCollector::CollectMatchingRules(
   if (element.IsLink())
     CollectMatchingRulesForList(match_request.rule_set->LinkPseudoClassRules(),
                                 cascade_order, match_request);
+  if (inside_link_ == EInsideLink::kInsideVisitedLink) {
+    CollectMatchingRulesForList(match_request.rule_set->VisitedDependentRules(),
+                                cascade_order, match_request);
+  }
   if (SelectorChecker::MatchesFocusPseudoClass(element))
     CollectMatchingRulesForList(match_request.rule_set->FocusPseudoClassRules(),
                                 cascade_order, match_request);
@@ -349,7 +352,7 @@ void ElementRuleCollector::SortAndTransferMatchedRules() {
     const RuleData* rule_data = matched_rule.GetRuleData();
     result_.AddMatchedProperties(
         &rule_data->Rule()->Properties(),
-        AdjustLinkMatchType(inside_link_, matched_rule.GetLinkMatchType()),
+        AdjustLinkMatchType(inside_link_, rule_data->LinkMatchType()),
         rule_data->GetValidPropertyFilter(matching_ua_rules_));
   }
 }
@@ -378,7 +381,7 @@ void ElementRuleCollector::DidMatchRule(
       style_->SetHasPseudoElementStyle(dynamic_pseudo);
   } else {
     matched_rules_.push_back(MatchedRule(
-        rule_data, result.specificity, result.link_match_type, cascade_order,
+        rule_data, result.specificity, cascade_order,
         match_request.style_sheet_index, match_request.style_sheet));
   }
 }

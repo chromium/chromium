@@ -128,7 +128,6 @@ class CORE_EXPORT SelectorChecker {
    public:
     PseudoId dynamic_pseudo{kPseudoIdNone};
     unsigned specificity{0};
-    unsigned link_match_type{CSSSelector::kMatchAll};
   };
 
   bool Match(const SelectorCheckingContext& context, MatchResult& result) const;
@@ -183,8 +182,6 @@ class CORE_EXPORT SelectorChecker {
   MatchStatus MatchForPseudoShadow(const SelectorCheckingContext&,
                                    const ContainerNode*,
                                    MatchResult&) const;
-  MatchStatus MatchForVisitedLink(const SelectorCheckingContext&,
-                                  MatchResult&) const;
   bool CheckPseudoClass(const SelectorCheckingContext&, MatchResult&) const;
   bool CheckPseudoElement(const SelectorCheckingContext&, MatchResult&) const;
   bool CheckScrollbarPseudoClass(const SelectorCheckingContext&,

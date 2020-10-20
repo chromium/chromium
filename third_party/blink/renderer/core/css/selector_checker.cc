@@ -238,8 +238,6 @@ bool SelectorChecker::Match(const SelectorCheckingContext& context,
     if (context.selector->IsLastInTagHistory())
       return false;
   }
-  if (UNLIKELY(context.is_inside_visited_link))
-    return MatchForVisitedLink(context, result) == kSelectorMatches;
   return MatchSelector(context, result) == kSelectorMatches;
 }
 
@@ -337,26 +335,6 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForPseudoShadow(
   if (!context.previous_element)
     return kSelectorFailsCompletely;
   return MatchSelector(context, result);
-}
-
-SelectorChecker::MatchStatus SelectorChecker::MatchForVisitedLink(
-    const SelectorCheckingContext& context,
-    MatchResult& result) const {
-  DCHECK(context.is_inside_visited_link);
-
-  SelectorCheckingContext unvisited(context);
-  unvisited.is_inside_visited_link = false;
-
-  unsigned link_match_type = 0;
-
-  if (MatchSelector(unvisited, result) == kSelectorMatches)
-    link_match_type |= CSSSelector::kMatchLink;
-  if (MatchSelector(context, result) == kSelectorMatches)
-    link_match_type |= CSSSelector::kMatchVisited;
-
-  result.link_match_type = link_match_type;
-
-  return link_match_type ? kSelectorMatches : kSelectorFailsCompletely;
 }
 
 static inline Element* ParentOrV0ShadowHostElement(const Element& element) {

@@ -2,65 +2,75 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/css/selector_checker.h"
+#include "third_party/blink/renderer/core/css/element_rule_collector.h"
+
 #include "base/optional.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
-#include "third_party/blink/renderer/core/css/resolver/element_resolve_context.h"
+#include "third_party/blink/renderer/core/css/selector_filter.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
-#include "testing/gtest/include/gtest/gtest.h"
-
-#include <iostream>
-
 namespace blink {
 
-class SelectorCheckerTest : public PageTestBase {
+class ElementRuleCollectorTest : public PageTestBase {
  public:
-  bool IsInsideVisitedLink(Element* element) {
+  EInsideLink InsideLink(Element* element) {
     if (!element)
-      return false;
+      return EInsideLink::kNotInsideLink;
     if (element->IsLink()) {
       ElementResolveContext context(*element);
-      return context.ElementLinkState() == EInsideLink::kInsideVisitedLink;
+      return context.ElementLinkState();
     }
-    return IsInsideVisitedLink(
-        DynamicTo<Element>(FlatTreeTraversal::Parent(*element)));
+    return InsideLink(DynamicTo<Element>(FlatTreeTraversal::Parent(*element)));
   }
 
-  // Returns the link_match_type upon successful match, or base::nullopt
-  // on failure.
-  base::Optional<unsigned> Match(
-      const SelectorChecker::SelectorCheckingContext& context,
-      const String& selector) {
-    CSSSelectorList selector_list =
-        css_test_helpers::ParseSelectorList(selector);
-    DCHECK(selector_list.First()) << "Invalid selector: " << selector;
+  // Matches an element against a selector via ElementRuleCollector.
+  //
+  // Upon successful match, the combined CSSSelector::LinkMatchMask of
+  // of all matched rules is returned, or base::nullopt if no-match.
+  base::Optional<unsigned> Match(Element* element,
+                                 const String& selector,
+                                 const ContainerNode* scope = nullptr) {
+    ElementResolveContext context(*element);
+    SelectorFilter filter;
+    MatchResult result;
+    auto style = ComputedStyle::Create();
+    ElementRuleCollector collector(context, filter, result, style.get(),
+                                   InsideLink(element));
 
-    SelectorChecker::Init init;
-    SelectorChecker checker(init);
-    SelectorChecker::SelectorCheckingContext local_context(context);
-    local_context.selector = selector_list.First();
-    local_context.is_inside_visited_link = IsInsideVisitedLink(context.element);
-    SelectorChecker::MatchResult result;
-    if (checker.Match(local_context, result))
-      return result.link_match_type;
+    String rule = selector + " { color: green }";
+    auto* style_rule =
+        DynamicTo<StyleRule>(css_test_helpers::ParseRule(GetDocument(), rule));
+    if (!style_rule)
+      return base::nullopt;
+    RuleSet* rule_set = MakeGarbageCollected<RuleSet>();
+    rule_set->AddStyleRule(style_rule, kRuleHasNoSpecialState);
 
-    return base::nullopt;
-  }
+    MatchRequest request(rule_set, scope);
 
-  base::Optional<unsigned> Match(Element* element, const String& selector) {
-    SelectorChecker::SelectorCheckingContext context(element);
-    return Match(context, selector);
+    collector.CollectMatchingRules(request);
+    collector.SortAndTransferMatchedRules();
+
+    const MatchedPropertiesVector& vector = result.GetMatchedProperties();
+    if (!vector.size())
+      return base::nullopt;
+
+    // Either the normal rules matched, the visited dependent rules matched,
+    // or both. There should be nothing else.
+    DCHECK(vector.size() == 1 || vector.size() == 2);
+
+    unsigned link_match_type = 0;
+    for (const auto& matched_propeties : vector)
+      link_match_type |= matched_propeties.types_.link_match_type;
+    return link_match_type;
   }
 };
 
-TEST_F(SelectorCheckerTest, LinkMatchType) {
+TEST_F(ElementRuleCollectorTest, LinkMatchType) {
   SetBodyInnerHTML(R"HTML(
     <div id=foo></div>
     <a id=visited href="">
@@ -84,33 +94,30 @@ TEST_F(SelectorCheckerTest, LinkMatchType) {
   ASSERT_TRUE(unvisited_span);
   ASSERT_TRUE(visited_span);
 
-  ASSERT_TRUE(IsInsideVisitedLink(visited));
-  ASSERT_TRUE(IsInsideVisitedLink(visited_span));
-  ASSERT_FALSE(IsInsideVisitedLink(foo));
-  ASSERT_FALSE(IsInsideVisitedLink(link));
-  ASSERT_FALSE(IsInsideVisitedLink(unvisited_span));
-  ASSERT_FALSE(IsInsideVisitedLink(bar));
+  ASSERT_EQ(EInsideLink::kInsideVisitedLink, InsideLink(visited));
+  ASSERT_EQ(EInsideLink::kInsideVisitedLink, InsideLink(visited_span));
+  ASSERT_EQ(EInsideLink::kNotInsideLink, InsideLink(foo));
+  ASSERT_EQ(EInsideLink::kInsideUnvisitedLink, InsideLink(link));
+  ASSERT_EQ(EInsideLink::kInsideUnvisitedLink, InsideLink(unvisited_span));
+  ASSERT_EQ(EInsideLink::kNotInsideLink, InsideLink(bar));
 
   const auto kMatchLink = CSSSelector::kMatchLink;
   const auto kMatchVisited = CSSSelector::kMatchVisited;
   const auto kMatchAll = CSSSelector::kMatchAll;
-  ASSERT_TRUE(kMatchLink);
-  ASSERT_TRUE(kMatchVisited);
-  ASSERT_TRUE(kMatchAll);
 
   EXPECT_EQ(Match(foo, "#bar"), base::nullopt);
   EXPECT_EQ(Match(visited, "#foo"), base::nullopt);
   EXPECT_EQ(Match(link, "#foo"), base::nullopt);
 
-  EXPECT_EQ(Match(foo, "#foo"), kMatchAll);
+  EXPECT_EQ(Match(foo, "#foo"), kMatchLink);
   EXPECT_EQ(Match(link, ":visited"), base::nullopt);
-  // Note that |link| isn't a _visited_ link, hence it gets regular treatment by
-  // SelectorChecker::Match. And for regular treatments we always get kMatchAll
-  // if the selector matches.
-  EXPECT_EQ(Match(link, ":link"), kMatchAll);
-  EXPECT_EQ(Match(foo, ":not(:visited)"), kMatchAll);
-  EXPECT_EQ(Match(foo, ":not(:link)"), kMatchAll);
-  EXPECT_EQ(Match(foo, ":not(:link):not(:visited)"), kMatchAll);
+  EXPECT_EQ(Match(link, ":link"), kMatchLink);
+  // Note that for elements that are not inside links at all, we always
+  // expect kMatchLink, since kMatchLink represents the regular (non-visited)
+  // style.
+  EXPECT_EQ(Match(foo, ":not(:visited)"), kMatchLink);
+  EXPECT_EQ(Match(foo, ":not(:link)"), kMatchLink);
+  EXPECT_EQ(Match(foo, ":not(:link):not(:visited)"), kMatchLink);
 
   EXPECT_EQ(Match(visited, ":link"), kMatchLink);
   EXPECT_EQ(Match(visited, ":visited"), kMatchVisited);
@@ -161,15 +168,15 @@ TEST_F(SelectorCheckerTest, LinkMatchType) {
   // When using :link/:visited in a sibling selector, we expect special
   // behavior for privacy reasons.
   // https://developer.mozilla.org/en-US/docs/Web/CSS/Privacy_and_the_:visited_selector
-  EXPECT_EQ(Match(bar, ":link + #bar"), kMatchAll);
+  EXPECT_EQ(Match(bar, ":link + #bar"), kMatchLink);
   EXPECT_EQ(Match(bar, ":visited + #bar"), base::nullopt);
-  EXPECT_EQ(Match(bar, ":is(:link + #bar)"), kMatchAll);
+  EXPECT_EQ(Match(bar, ":is(:link + #bar)"), kMatchLink);
   EXPECT_EQ(Match(bar, ":is(:visited ~ #bar)"), base::nullopt);
   EXPECT_EQ(Match(bar, ":not(:is(:link + #bar))"), base::nullopt);
-  EXPECT_EQ(Match(bar, ":not(:is(:visited ~ #bar))"), kMatchAll);
+  EXPECT_EQ(Match(bar, ":not(:is(:visited ~ #bar))"), kMatchLink);
 }
 
-TEST_F(SelectorCheckerTest, LinkMatchTypeHostContext) {
+TEST_F(ElementRuleCollectorTest, LinkMatchTypeHostContext) {
   SetBodyInnerHTML(R"HTML(
     <a href=""><div id="visited_host"></div></a>
     <a href="unvisited"><div id="unvisited_host"></div></a>
@@ -211,29 +218,33 @@ TEST_F(SelectorCheckerTest, LinkMatchTypeHostContext) {
   const auto kMatchAll = CSSSelector::kMatchAll;
 
   {
-    SelectorChecker::SelectorCheckingContext context(visited_div);
-    context.scope = visited_style;
+    Element* element = visited_div;
+    const ContainerNode* scope = visited_style;
 
-    EXPECT_EQ(Match(context, ":host-context(a) div"), kMatchAll);
-    EXPECT_EQ(Match(context, ":host-context(:link) div"), kMatchLink);
-    EXPECT_EQ(Match(context, ":host-context(:visited) div"), kMatchVisited);
-    EXPECT_EQ(Match(context, ":host-context(:is(:visited, :link)) div"),
+    EXPECT_EQ(Match(element, ":host-context(a) div", scope), kMatchAll);
+    EXPECT_EQ(Match(element, ":host-context(:link) div", scope), kMatchLink);
+    EXPECT_EQ(Match(element, ":host-context(:visited) div", scope),
+              kMatchVisited);
+    EXPECT_EQ(Match(element, ":host-context(:is(:visited, :link)) div", scope),
               kMatchAll);
 
     // :host-context(:not(:visited/link)) matches the host itself.
-    EXPECT_EQ(Match(context, ":host-context(:not(:visited)) div"), kMatchAll);
-    EXPECT_EQ(Match(context, ":host-context(:not(:link)) div"), kMatchAll);
+    EXPECT_EQ(Match(element, ":host-context(:not(:visited)) div", scope),
+              kMatchAll);
+    EXPECT_EQ(Match(element, ":host-context(:not(:link)) div", scope),
+              kMatchAll);
   }
 
   {
-    SelectorChecker::SelectorCheckingContext context(unvisited_div);
-    context.scope = unvisited_style;
+    Element* element = unvisited_div;
+    const ContainerNode* scope = unvisited_style;
 
-    EXPECT_EQ(Match(context, ":host-context(a) div"), kMatchAll);
-    EXPECT_EQ(Match(context, ":host-context(:link) div"), kMatchAll);
-    EXPECT_EQ(Match(context, ":host-context(:visited) div"), base::nullopt);
-    EXPECT_EQ(Match(context, ":host-context(:is(:visited, :link)) div"),
-              kMatchAll);
+    EXPECT_EQ(Match(element, ":host-context(a) div", scope), kMatchAll);
+    EXPECT_EQ(Match(element, ":host-context(:link) div", scope), kMatchLink);
+    EXPECT_EQ(Match(element, ":host-context(:visited) div", scope),
+              base::nullopt);
+    EXPECT_EQ(Match(element, ":host-context(:is(:visited, :link)) div", scope),
+              kMatchLink);
   }
 }
 
