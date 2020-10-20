@@ -112,7 +112,9 @@
     "css_value_type_shadow": {
       "ci_095": 18.3,
       "avg": 65.502,
-      "cpu_wall_time_ratio": 0.585
+      "cpu_wall_time_ratio": 0.585,
+      "experimental": true,
+      "_comment": "crbug.com/1139155"
     },
     "animometer_webgl_attrib_arrays": {
       "ci_095": 0.44,
