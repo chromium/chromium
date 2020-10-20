@@ -329,7 +329,7 @@ public class LocationBarLayout extends FrameLayout
                 && newConfig.keyboard != Configuration.KEYBOARD_QWERTY) {
             // If we lose the hardware keyboard and the focus animations were not run, then the
             // user has not typed any text, so we will just clear the focus instead.
-            setUrlBarFocus(false, null, LocationBar.OmniboxFocusReason.UNFOCUS);
+            setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
         }
     }
 
@@ -400,7 +400,7 @@ public class LocationBarLayout extends FrameLayout
 
     @Override
     public void clearOmniboxFocus() {
-        setUrlBarFocus(false, null, LocationBar.OmniboxFocusReason.UNFOCUS);
+        setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
     }
 
     public void selectAll() {
@@ -448,7 +448,7 @@ public class LocationBarLayout extends FrameLayout
 
         // This interface should only be called to devices with a hardware keyboard attached as
         // described in the LocationBar.
-        setUrlBarFocus(true, null, LocationBar.OmniboxFocusReason.DEFAULT_WITH_HARDWARE_KEYBOARD);
+        setUrlBarFocus(true, null, OmniboxFocusReason.DEFAULT_WITH_HARDWARE_KEYBOARD);
     }
 
     /**
@@ -559,7 +559,7 @@ public class LocationBarLayout extends FrameLayout
 
         setUrlBarText(UrlBarData.forNonUrlText(query), UrlBar.ScrollType.NO_SCROLL,
                 SelectionState.SELECT_ALL);
-        setUrlBarFocus(true, null, LocationBar.OmniboxFocusReason.SEARCH_QUERY);
+        setUrlBarFocus(true, null, OmniboxFocusReason.SEARCH_QUERY);
         mAutocompleteCoordinator.startAutocompleteForQuery(query);
         post(new Runnable() {
             @Override
@@ -586,7 +586,7 @@ public class LocationBarLayout extends FrameLayout
 
     @Override
     public void backKeyPressed() {
-        setUrlBarFocus(false, null, LocationBar.OmniboxFocusReason.UNFOCUS);
+        setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
         // Revert the URL to match the current page.
         setUrlToPageUrl();
         focusCurrentTab();
@@ -607,8 +607,8 @@ public class LocationBarLayout extends FrameLayout
 
     @Override
     public void gestureDetected(boolean isLongPress) {
-        recordOmniboxFocusReason(isLongPress ? LocationBar.OmniboxFocusReason.OMNIBOX_LONG_PRESS
-                                             : LocationBar.OmniboxFocusReason.OMNIBOX_TAP);
+        recordOmniboxFocusReason(isLongPress ? OmniboxFocusReason.OMNIBOX_LONG_PRESS
+                                             : OmniboxFocusReason.OMNIBOX_TAP);
     }
 
     /**
@@ -634,18 +634,18 @@ public class LocationBarLayout extends FrameLayout
     }
 
     @Override
-    public void setUrlBarFocus(boolean shouldBeFocused, @Nullable String pastedText,
-            @LocationBar.OmniboxFocusReason int reason) {
+    public void setUrlBarFocus(
+            boolean shouldBeFocused, @Nullable String pastedText, @OmniboxFocusReason int reason) {
         if (shouldBeFocused) {
             if (!mUrlHasFocus) recordOmniboxFocusReason(reason);
-            if (reason == LocationBar.OmniboxFocusReason.FAKE_BOX_TAP
-                    || reason == LocationBar.OmniboxFocusReason.FAKE_BOX_LONG_PRESS
-                    || reason == LocationBar.OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_LONG_PRESS
-                    || reason == LocationBar.OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_TAP) {
+            if (reason == OmniboxFocusReason.FAKE_BOX_TAP
+                    || reason == OmniboxFocusReason.FAKE_BOX_LONG_PRESS
+                    || reason == OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_LONG_PRESS
+                    || reason == OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_TAP) {
                 mUrlFocusedFromFakebox = true;
             }
 
-            if (reason == LocationBar.OmniboxFocusReason.QUERY_TILES_NTP_TAP) {
+            if (reason == OmniboxFocusReason.QUERY_TILES_NTP_TAP) {
                 mUrlFocusedFromFakebox = true;
                 mUrlFocusedFromQueryTiles = true;
             }
@@ -805,7 +805,7 @@ public class LocationBarLayout extends FrameLayout
                 // If we did not run the focus animations, then the user has not typed any text.
                 // So, clear the focus and accept whatever URL the page is currently attempting to
                 // display. If the NTP is showing, the current page's URL should not be displayed.
-                setUrlBarFocus(false, null, LocationBar.OmniboxFocusReason.UNFOCUS);
+                setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
             } else {
                 return;
             }
@@ -1320,9 +1320,9 @@ public class LocationBarLayout extends FrameLayout
         mAutocompleteCoordinator.onTextChanged(textWithoutAutocomplete, textWithAutocomplete);
     }
 
-    private void recordOmniboxFocusReason(@LocationBar.OmniboxFocusReason int reason) {
+    private void recordOmniboxFocusReason(@OmniboxFocusReason int reason) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Android.OmniboxFocusReason", reason, LocationBar.OmniboxFocusReason.NUM_ENTRIES);
+                "Android.OmniboxFocusReason", reason, OmniboxFocusReason.NUM_ENTRIES);
     }
 
     /**

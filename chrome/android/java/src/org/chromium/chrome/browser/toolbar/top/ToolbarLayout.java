@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.compositor.overlays.toolbar.TopToolbarOverlay
 import org.chromium.chrome.browser.findinpage.FindToolbar;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.LocationBar;
+import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -787,7 +788,7 @@ public abstract class ToolbarLayout
      */
     boolean back() {
         if (getLocationBar() != null) {
-            getLocationBar().setUrlBarFocus(false, null, LocationBar.OmniboxFocusReason.UNFOCUS);
+            getLocationBar().setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
         }
         return mToolbarTabController != null && mToolbarTabController.back();
     }
@@ -798,7 +799,7 @@ public abstract class ToolbarLayout
      */
     boolean forward() {
         if (getLocationBar() != null) {
-            getLocationBar().setUrlBarFocus(false, null, LocationBar.OmniboxFocusReason.UNFOCUS);
+            getLocationBar().setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
         }
         return mToolbarTabController != null ? mToolbarTabController.forward() : false;
     }
@@ -811,7 +812,7 @@ public abstract class ToolbarLayout
      */
     void stopOrReloadCurrentTab() {
         if (getLocationBar() != null) {
-            getLocationBar().setUrlBarFocus(false, null, LocationBar.OmniboxFocusReason.UNFOCUS);
+            getLocationBar().setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
         }
         if (mToolbarTabController != null) mToolbarTabController.stopOrReloadCurrentTab();
     }
@@ -821,7 +822,7 @@ public abstract class ToolbarLayout
      */
     void openHomepage() {
         if (getLocationBar() != null) {
-            getLocationBar().setUrlBarFocus(false, null, LocationBar.OmniboxFocusReason.UNFOCUS);
+            getLocationBar().setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
         }
         if (mToolbarTabController != null) mToolbarTabController.openHomepage();
     }

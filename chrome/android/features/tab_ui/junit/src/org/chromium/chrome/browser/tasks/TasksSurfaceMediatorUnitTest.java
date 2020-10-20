@@ -43,7 +43,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.IncognitoCookieControlsManager;
-import org.chromium.chrome.browser.omnibox.LocationBar;
+import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -118,8 +118,8 @@ public class TasksSurfaceMediatorUnitTest {
 
         mFakeboxClickListenerCaptor.getValue().onClick(null);
         verify(mFakeboxDelegate, times(1))
-                .setUrlBarFocus(eq(true), eq(null),
-                        eq(LocationBar.OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_TAP));
+                .setUrlBarFocus(
+                        eq(true), eq(null), eq(OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_TAP));
     }
 
     @Test
@@ -132,7 +132,7 @@ public class TasksSurfaceMediatorUnitTest {
         mFakeboxTextWatcherCaptor.getValue().afterTextChanged(editable);
         verify(mFakeboxDelegate, times(1))
                 .setUrlBarFocus(eq(true), eq(inputText),
-                        eq(LocationBar.OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_LONG_PRESS));
+                        eq(OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_LONG_PRESS));
         assertThat(editable.length(), equalTo(0));
     }
 
@@ -145,8 +145,8 @@ public class TasksSurfaceMediatorUnitTest {
         Editable editable = Editable.Factory.getInstance().newEditable("");
         mFakeboxTextWatcherCaptor.getValue().afterTextChanged(editable);
         verify(mFakeboxDelegate, never())
-                .setUrlBarFocus(eq(true), eq(""),
-                        eq(LocationBar.OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_LONG_PRESS));
+                .setUrlBarFocus(
+                        eq(true), eq(""), eq(OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_LONG_PRESS));
     }
 
     @Test

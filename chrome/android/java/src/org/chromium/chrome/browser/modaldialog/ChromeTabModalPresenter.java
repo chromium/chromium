@@ -21,7 +21,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityMan
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
-import org.chromium.chrome.browser.omnibox.LocationBar;
+import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAttributeKeys;
 import org.chromium.chrome.browser.tab.TabAttributes;
@@ -195,8 +195,7 @@ public class ChromeTabModalPresenter
             // Force toolbar to show and disable overflow menu.
             onTabModalDialogStateChanged(true);
 
-            mChromeActivity.getToolbarManager().setUrlBarFocus(
-                    false, LocationBar.OmniboxFocusReason.UNFOCUS);
+            mChromeActivity.getToolbarManager().setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
 
             menuButton.setEnabled(false);
         } else {

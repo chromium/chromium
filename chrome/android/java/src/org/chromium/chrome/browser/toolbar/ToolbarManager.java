@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.LocationBar;
+import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.previews.Previews;
 import org.chromium.chrome.browser.previews.PreviewsAndroidBridge;
@@ -343,8 +344,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 mActivity.getWindowAndroid(), mActivityTabProvider,
                 mActivity::getModalDialogManager, mActivity.getShareDelegateSupplier(),
                 mIncognitoStateProvider);
-        Runnable clickDelegate =
-                () -> setUrlBarFocus(false, LocationBar.OmniboxFocusReason.UNFOCUS);
+        Runnable clickDelegate = () -> setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
         View scrimTarget = mActivity.getCompositorViewHolder();
         mLocationBarFocusHandler = new LocationBarFocusScrimHandler(scrimCoordinator,
                 tabObscuringHandler, activity, activity.getNightModeStateProvider(),
@@ -1132,7 +1132,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * @param focused Whether URL bar should be focused.
      * @param reason The given reason.
      */
-    public void setUrlBarFocus(boolean focused, @LocationBar.OmniboxFocusReason int reason) {
+    public void setUrlBarFocus(boolean focused, @OmniboxFocusReason int reason) {
         if (!mInitializedWithNative) return;
         boolean wasFocused = mLocationBar.isUrlBarFocused();
         mLocationBar.setUrlBarFocus(focused, null, reason);
@@ -1146,7 +1146,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * of dropping it.
      */
     public void setUrlBarFocusOnceNativeInitialized(
-            boolean focused, @LocationBar.OmniboxFocusReason int reason) {
+            boolean focused, @OmniboxFocusReason int reason) {
         if (mInitializedWithNative) {
             setUrlBarFocus(focused, reason);
             return;
@@ -1266,7 +1266,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
             // Ensure the URL bar loses focus if the tab it was interacting with is changed from
             // underneath it.
-            setUrlBarFocus(false, LocationBar.OmniboxFocusReason.UNFOCUS);
+            setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
 
             // Place the cursor in the Omnibox if applicable.  We always clear the focus above to
             // ensure the shield placed over the content is dismissed when switching tabs.  But if

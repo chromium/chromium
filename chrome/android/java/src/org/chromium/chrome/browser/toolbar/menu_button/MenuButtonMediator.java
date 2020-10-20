@@ -22,7 +22,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper.MenuButtonState;
-import org.chromium.chrome.browser.omnibox.LocationBar;
+import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.toolbar.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator.SetFocusFunction;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonProperties.ShowBadgeProperty;
@@ -110,7 +110,7 @@ class MenuButtonMediator implements AppMenuObserver {
         if (isVisible) {
             // Defocus here to avoid handling focus in multiple places, e.g., when the
             // forward button is pressed. (see crbug.com/414219)
-            mSetUrlBarFocusFunction.setFocus(false, LocationBar.OmniboxFocusReason.UNFOCUS);
+            mSetUrlBarFocusFunction.setFocus(false, OmniboxFocusReason.UNFOCUS);
 
             if (!mIsInOverviewModeSupplier.get() && isShowingAppMenuUpdateBadge()) {
                 // The app menu badge should be removed the first time the menu is opened.

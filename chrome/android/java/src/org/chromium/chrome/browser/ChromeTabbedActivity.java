@@ -105,7 +105,7 @@ import org.chromium.chrome.browser.navigation_predictor.NavigationPredictorBridg
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.ntp.cards.promo.HomepagePromoVariationManager;
-import org.chromium.chrome.browser.omnibox.LocationBar;
+import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.paint_preview.PaintPreviewHelper;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -1366,8 +1366,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             }
 
             getToolbarManager().setUrlBarFocusOnceNativeInitialized(focus,
-                    focus ? LocationBar.OmniboxFocusReason.LAUNCH_NEW_INCOGNITO_TAB
-                          : LocationBar.OmniboxFocusReason.UNFOCUS);
+                    focus ? OmniboxFocusReason.LAUNCH_NEW_INCOGNITO_TAB
+                          : OmniboxFocusReason.UNFOCUS);
 
             if (tabModel.getCount() > 0 && isInOverviewMode() && !isTablet()
                     && !shouldShowTabSwitcherOnStart()) {
@@ -1754,7 +1754,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     && (!isTablet() || getCurrentTabModel().getCount() != 0);
             if (isUrlBarVisible) {
                 getToolbarManager().setUrlBarFocus(
-                        true, LocationBar.OmniboxFocusReason.MENU_OR_KEYBOARD_ACTION);
+                        true, OmniboxFocusReason.MENU_OR_KEYBOARD_ACTION);
             }
         } else if (id == R.id.downloads_menu_id) {
             DownloadUtils.showDownloadManager(this, currentTab, DownloadOpenSource.MENU);
