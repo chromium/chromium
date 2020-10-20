@@ -97,9 +97,13 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) OutputProtectionImpl
                                      uint32_t link_mask,
                                      uint32_t protection_mask);
 
+  void HandleDisplayChange();
+
   // display::DisplayObserver:
+  void OnDisplayAdded(const display::Display& display) override;
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
+  void OnDisplayRemoved(const display::Display& display) override;
 
   std::unique_ptr<DisplaySystemDelegate> delegate_;
   display::ContentProtectionManager::ClientId client_id_;
