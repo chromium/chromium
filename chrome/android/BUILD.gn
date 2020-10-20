@@ -2078,6 +2078,9 @@ android_library("base_monochrome_module_java") {
     "//chrome/browser/version:java",
     "//components/version_info/android:version_constants_java",
   ]
+  if (webview_includes_weblayer) {
+    deps += [ "//weblayer/browser/java:base_module_java" ]
+  }
 }
 
 # Target for classes which should be in the base module, even when
