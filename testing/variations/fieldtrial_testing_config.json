@@ -826,7 +826,8 @@
                     "enable_features": [
                         "AutofillKeyboardAccessory",
                         "AutofillManualFallbackAndroid",
-                        "IPH_KeyboardAccessoryAddressFilling"
+                        "IPH_KeyboardAccessoryAddressFilling",
+                        "RecoverFromNeverSaveAndroid"
                     ]
                 }
             ]
