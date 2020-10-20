@@ -24,7 +24,6 @@ source_set("quiche") {
   if (!is_nacl) {
     sources += [
       "src/common/platform/api/quiche_arraysize.h",
-      "src/common/platform/api/quiche_endian.h",
       "src/common/platform/api/quiche_export.h",
       "src/common/platform/api/quiche_logging.h",
       "src/common/platform/api/quiche_ptr_util.h",
@@ -37,6 +36,7 @@ source_set("quiche") {
       "src/common/quiche_data_reader.h",
       "src/common/quiche_data_writer.cc",
       "src/common/quiche_data_writer.h",
+      "src/common/quiche_endian.h",
       "src/common/simple_linked_hash_map.h",
       "src/http2/decoder/decode_buffer.cc",
       "src/http2/decoder/decode_buffer.h",
@@ -612,7 +612,6 @@ source_set("quiche") {
       "src/spdy/core/zero_copy_output_buffer.h",
       "src/spdy/platform/api/spdy_bug_tracker.h",
       "src/spdy/platform/api/spdy_containers.h",
-      "src/spdy/platform/api/spdy_endianness_util.h",
       "src/spdy/platform/api/spdy_estimate_memory_usage.h",
       "src/spdy/platform/api/spdy_flags.h",
       "src/spdy/platform/api/spdy_logging.h",
@@ -1242,10 +1241,10 @@ source_set("quiche_tests") {
 
     # TODO(rch): Re-enable once the SLOW_TEST annotation is added.
     # "src/quic/core/congestion_control/bbr2_simulator_test.cc",
-    "src/common/platform/api/quiche_endian_test.cc",
     "src/common/platform/api/quiche_str_cat_test.cc",
     "src/common/platform/api/quiche_text_utils_test.cc",
     "src/common/platform/api/quiche_time_utils_test.cc",
+    "src/common/quiche_endian_test.cc",
     "src/quic/core/congestion_control/bbr_sender_test.cc",
     "src/quic/core/congestion_control/cubic_bytes_test.cc",
     "src/quic/core/congestion_control/general_loss_algorithm_test.cc",

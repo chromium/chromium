@@ -100,13 +100,6 @@ QUIC_FLAG(
 // ACK frame are sent and processed.
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_send_timestamps, false)
 
-// When in STARTUP and recovery, do not add bytes_acked to QUIC BBR's CWND in
-// CalculateCongestionWindow()
-QUIC_FLAG(
-    bool,
-    FLAGS_quic_reloadable_flag_quic_bbr_no_bytes_acked_in_startup_recovery,
-    false)
-
 // If true and using Leto for QUIC shared-key calculations, GFE will react to a
 // failure to contact Leto by sending a REJ containing a fallback ServerConfig,
 // allowing the client to continue the handshake.
@@ -499,4 +492,20 @@ QUIC_FLAG(bool,
 QUIC_FLAG(
     bool,
     FLAGS_quic_reloadable_flag_quic_bbr2_no_exit_startup_on_loss_with_bw_growth,
+    false)
+
+// If non-zero and key update is allowed, the maximum number of packets sent for
+// each key phase before initiating a key update.
+QUIC_FLAG(int64_t, FLAGS_quic_key_update_confidentiality_limit, 0)
+
+// Honor the AEAD confidentiality and integrity limits by initiating key update
+// (if enabled) and/or closing the connection, as necessary.
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_enable_aead_limits, false)
+
+// If true, try to process undecryptable packets at the end of
+// TlsServerHandshaker::DecryptCallback, if it is callback is run
+// asynchronously.
+QUIC_FLAG(
+    bool,
+    FLAGS_quic_reloadable_flag_quic_process_undecryptable_packets_after_async_decrypt_callback,
     false)

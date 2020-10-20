@@ -77,6 +77,10 @@ size_t MockEncrypter::GetCiphertextSize(size_t plaintext_size) const {
   return plaintext_size + kPaddingSize;
 }
 
+quic::QuicPacketCount MockEncrypter::GetConfidentialityLimit() const {
+  return std::numeric_limits<quic::QuicPacketCount>::max();
+}
+
 absl::string_view MockEncrypter::GetKey() const {
   return absl::string_view();
 }

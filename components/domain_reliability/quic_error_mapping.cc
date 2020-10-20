@@ -386,6 +386,9 @@ const struct QuicErrorMapping {
     {quic::QUIC_MISSING_WRITE_KEYS, "quic.missing_write_keys"},
     {quic::QUIC_HTTP_RECEIVE_SPDY_FRAME, "quic.http_receive_spdy_frame"},
 
+    {quic::QUIC_KEY_UPDATE_ERROR, "quic.quic_key_update_error"},
+    {quic::QUIC_AEAD_LIMIT_REACHED, "quic.quic_aead_limit_reached"},
+
     // QUIC_INVALID_APPLICATION_CLOSE_DATA was code 101. The code has been
     // deprecated, but to keep the assert below happy, there needs to be
     // an entry for it, but the symbol is gone.
