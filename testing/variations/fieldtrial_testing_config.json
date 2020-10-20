@@ -5899,6 +5899,9 @@
                     },
                     "enable_features": [
                         "RenderDocument"
+                    ],
+                    "disable_features": [
+                        "SkipEarlyCommitPendingForCrashedFrame"
                     ]
                 }
             ]
