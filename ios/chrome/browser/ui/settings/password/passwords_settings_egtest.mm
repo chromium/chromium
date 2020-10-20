@@ -1485,6 +1485,15 @@ void CopyPasswordDetailWithID(int detail_id) {
 // Checks that attempts to edit a username to a value which is already used for
 // the same domain fails.
 - (void)testEditUsernameFails {
+#if !TARGET_OS_SIMULATOR
+  // TODO(crbug.com/1140400): These seem to fail on device only downstream,
+  // iOS 12.4 only.
+  if (@available(iOS 13, *)) {
+  } else {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS12 device.");
+  }
+#endif
+
   GREYAssert(
       [PasswordSettingsAppInterface saveExamplePassword:@"concrete password"
                                                userName:@"concrete username1"
