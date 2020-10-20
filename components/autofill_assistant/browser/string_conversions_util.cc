@@ -39,13 +39,13 @@ bool UnicodeToUTF8(const std::vector<UChar32>& source, std::string* target) {
 // |target|.
 bool AppendUnicodeToUTF8(const UChar32 source, std::string* target) {
   char bytes[4];
-  UBool error = FALSE;
+  UBool error = false;
   size_t offset = 0;
   U8_APPEND(bytes, offset, base::size(bytes), source, error);
-  if (error == FALSE) {
+  if (error == false) {
     target->append(bytes, offset);
   }
-  return error == FALSE;
+  return !error;
 }
 
 }  // namespace autofill_assistant

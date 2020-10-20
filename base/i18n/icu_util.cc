@@ -327,7 +327,7 @@ void InitializeIcuTimeZone() {
   // https://ssl.icu-project.org/trac/ticket/13208 .
   string16 zone_id = android::GetDefaultTimeZoneId();
   icu::TimeZone::adoptDefault(icu::TimeZone::createTimeZone(
-      icu::UnicodeString(FALSE, zone_id.data(), zone_id.length())));
+      icu::UnicodeString(false, zone_id.data(), zone_id.length())));
 #elif defined(OS_FUCHSIA)
   // The platform-specific mechanisms used by ICU's detectHostTimeZone() to
   // determine the default time zone will not work on Fuchsia. Therefore,

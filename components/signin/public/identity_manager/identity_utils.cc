@@ -33,7 +33,7 @@ bool IsUsernameAllowedByPattern(base::StringPiece username,
 
   // See if the username matches the policy-provided pattern.
   UErrorCode status = U_ZERO_ERROR;
-  const icu::UnicodeString icu_pattern(FALSE, utf16_pattern.data(),
+  const icu::UnicodeString icu_pattern(false, utf16_pattern.data(),
                                        utf16_pattern.length());
   icu::RegexMatcher matcher(icu_pattern, UREGEX_CASE_INSENSITIVE, status);
   if (!U_SUCCESS(status)) {

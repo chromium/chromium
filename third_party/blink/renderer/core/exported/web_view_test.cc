@@ -4868,18 +4868,18 @@ TEST_F(ShowUnhandledTapTest, ShowUnhandledTapUIIfNeeded) {
 
 TEST_F(ShowUnhandledTapTest, ShowUnhandledTapUIIfNeededWithMutateDom) {
   // Test dom mutation.
-  TestEachMouseEvent("mutateDom", FALSE);
+  TestEachMouseEvent("mutateDom", false);
 
   // Test without any DOM mutation.
-  TestEachMouseEvent("none", TRUE);
+  TestEachMouseEvent("none", true);
 }
 
 TEST_F(ShowUnhandledTapTest, ShowUnhandledTapUIIfNeededWithMutateStyle) {
   // Test style mutation.
-  TestEachMouseEvent("mutateStyle", FALSE);
+  TestEachMouseEvent("mutateStyle", false);
 
   // Test checkbox:indeterminate style mutation.
-  TestEachMouseEvent("mutateIndeterminate", FALSE);
+  TestEachMouseEvent("mutateIndeterminate", false);
 
   // Test click div with :active style.
   Tap("style_active");
@@ -4888,10 +4888,10 @@ TEST_F(ShowUnhandledTapTest, ShowUnhandledTapUIIfNeededWithMutateStyle) {
 
 TEST_F(ShowUnhandledTapTest, ShowUnhandledTapUIIfNeededWithPreventDefault) {
   // Test swallowing.
-  TestEachMouseEvent("preventDefault", FALSE);
+  TestEachMouseEvent("preventDefault", false);
 
   // Test without any preventDefault.
-  TestEachMouseEvent("none", TRUE);
+  TestEachMouseEvent("none", true);
 }
 
 TEST_F(ShowUnhandledTapTest, ShowUnhandledTapUIIfNeededWithNonTriggeringNodes) {

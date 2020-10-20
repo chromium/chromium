@@ -240,7 +240,7 @@ bool TimeDurationFormatWithSeconds(const TimeDelta time,
   icu::FieldPosition ignore(icu::FieldPosition::DONT_CARE);
   measure_format.formatMeasures(measures, 3, formatted, ignore, status);
   *out = i18n::UnicodeStringToString16(formatted);
-  return U_SUCCESS(status) == TRUE;
+  return U_SUCCESS(status);
 }
 
 string16 DateIntervalFormat(const Time& begin_time,

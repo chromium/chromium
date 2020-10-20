@@ -18,8 +18,8 @@ UCollationResult CompareString16WithCollator(const icu::Collator& collator,
                                              StringPiece16 rhs) {
   UErrorCode error = U_ZERO_ERROR;
   UCollationResult result = collator.compare(
-      icu::UnicodeString(FALSE, lhs.data(), static_cast<int>(lhs.length())),
-      icu::UnicodeString(FALSE, rhs.data(), static_cast<int>(rhs.length())),
+      icu::UnicodeString(false, lhs.data(), static_cast<int>(lhs.length())),
+      icu::UnicodeString(false, rhs.data(), static_cast<int>(rhs.length())),
       error);
   DCHECK(U_SUCCESS(error));
   return result;

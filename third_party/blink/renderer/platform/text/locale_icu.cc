@@ -169,12 +169,12 @@ static String GetDateFormatPattern(const UDateFormat* date_format) {
     return g_empty_string;
 
   UErrorCode status = U_ZERO_ERROR;
-  int32_t length = udat_toPattern(date_format, TRUE, nullptr, 0, &status);
+  int32_t length = udat_toPattern(date_format, true, nullptr, 0, &status);
   if (status != U_BUFFER_OVERFLOW_ERROR || !length)
     return g_empty_string;
   StringBuffer<UChar> buffer(length);
   status = U_ZERO_ERROR;
-  udat_toPattern(date_format, TRUE, buffer.Characters(), length, &status);
+  udat_toPattern(date_format, true, buffer.Characters(), length, &status);
   if (U_FAILURE(status))
     return g_empty_string;
   return String::Adopt(buffer);

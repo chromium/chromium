@@ -557,7 +557,7 @@ base::ProcessId Zygote::ReadArgsAndFork(base::PickleIterator iter,
   if (!iter.ReadString16(&timezone_id))
     return -1;
   icu::TimeZone::adoptDefault(icu::TimeZone::createTimeZone(
-      icu::UnicodeString(FALSE, timezone_id.data(), timezone_id.length())));
+      icu::UnicodeString(false, timezone_id.data(), timezone_id.length())));
 
   if (!iter.ReadInt(&numfds))
     return -1;

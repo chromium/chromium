@@ -43,7 +43,7 @@ class AutofillRegexes {
 icu::RegexMatcher* AutofillRegexes::GetMatcher(const base::string16& pattern) {
   auto it = matchers_.find(pattern);
   if (it == matchers_.end()) {
-    const icu::UnicodeString icu_pattern(FALSE, pattern.data(),
+    const icu::UnicodeString icu_pattern(false, pattern.data(),
                                          pattern.length());
 
     UErrorCode status = U_ZERO_ERROR;
@@ -71,21 +71,21 @@ bool MatchesPattern(const base::string16& input,
   base::AutoLock lock(*g_lock);
 
   icu::RegexMatcher* matcher = g_autofill_regexes->GetMatcher(pattern);
-  icu::UnicodeString icu_input(FALSE, input.data(), input.length());
+  icu::UnicodeString icu_input(false, input.data(), input.length());
   matcher->reset(icu_input);
 
   UErrorCode status = U_ZERO_ERROR;
   UBool matched = matcher->find(0, status);
   DCHECK(U_SUCCESS(status));
 
-  if (matched == TRUE && match) {
+  if (matched && match) {
     icu::UnicodeString match_unicode =
         matcher->group(group_to_be_captured, status);
     DCHECK(U_SUCCESS(status));
     *match = base::i18n::UnicodeStringToString16(match_unicode);
   }
 
-  return matched == TRUE;
+  return matched;
 }
 
 }  // namespace autofill
