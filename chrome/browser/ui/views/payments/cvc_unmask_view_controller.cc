@@ -42,10 +42,6 @@
 
 namespace payments {
 
-enum class Tags {
-  CONFIRM_TAG = static_cast<int>(PaymentRequestCommonTags::PAY_BUTTON_TAG),
-};
-
 CvcUnmaskViewController::CvcUnmaskViewController(
     base::WeakPtr<PaymentRequestSpec> spec,
     base::WeakPtr<PaymentRequestState> state,
@@ -262,8 +258,10 @@ base::string16 CvcUnmaskViewController::GetPrimaryButtonLabel() {
   return l10n_util::GetStringUTF16(IDS_CONFIRM);
 }
 
-int CvcUnmaskViewController::GetPrimaryButtonTag() {
-  return static_cast<int>(Tags::CONFIRM_TAG);
+views::Button::PressedCallback
+CvcUnmaskViewController::GetPrimaryButtonCallback() {
+  return base::BindRepeating(&CvcUnmaskViewController::CvcConfirmed,
+                             base::Unretained(this));
 }
 
 int CvcUnmaskViewController::GetPrimaryButtonId() {
@@ -277,24 +275,6 @@ bool CvcUnmaskViewController::GetPrimaryButtonEnabled() {
 bool CvcUnmaskViewController::ShouldShowSecondaryButton() {
   // Do not show the "Cancel Payment" button.
   return false;
-}
-
-void CvcUnmaskViewController::ButtonPressed(views::Button* sender,
-                                            const ui::Event& event) {
-  if (!dialog()->IsInteractive())
-    return;
-
-  switch (sender->tag()) {
-    case static_cast<int>(Tags::CONFIRM_TAG):
-      CvcConfirmed();
-      break;
-    case static_cast<int>(PaymentRequestCommonTags::BACK_BUTTON_TAG):
-      unmask_delegate_->OnUnmaskPromptClosed();
-      dialog()->GoBack();
-      break;
-    default:
-      PaymentRequestSheetController::ButtonPressed(sender, event);
-  }
 }
 
 void CvcUnmaskViewController::CvcConfirmed() {
@@ -383,6 +363,13 @@ bool CvcUnmaskViewController::GetSheetId(DialogViewID* sheet_id) {
 
 views::View* CvcUnmaskViewController::GetFirstFocusedView() {
   return cvc_field_;
+}
+
+void CvcUnmaskViewController::BackButtonPressed() {
+  if (dialog()->IsInteractive()) {
+    unmask_delegate_->OnUnmaskPromptClosed();
+    dialog()->GoBack();
+  }
 }
 
 void CvcUnmaskViewController::ContentsChanged(

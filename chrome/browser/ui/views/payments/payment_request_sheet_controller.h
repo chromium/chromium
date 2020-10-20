@@ -25,7 +25,7 @@ class PaymentRequestState;
 
 // The base class for objects responsible for the creation and event handling in
 // views shown in the PaymentRequestDialog.
-class PaymentRequestSheetController : public views::ButtonListener {
+class PaymentRequestSheetController {
  public:
   // Objects of this class are owned by |dialog|, so it's a non-owned pointer
   // that should be valid throughout this object's lifetime.
@@ -34,7 +34,7 @@ class PaymentRequestSheetController : public views::ButtonListener {
   PaymentRequestSheetController(base::WeakPtr<PaymentRequestSpec> spec,
                                 base::WeakPtr<PaymentRequestState> state,
                                 base::WeakPtr<PaymentRequestDialogView> dialog);
-  ~PaymentRequestSheetController() override;
+  virtual ~PaymentRequestSheetController();
 
   // Creates a view to be displayed in the PaymentRequestDialog. The header view
   // is the view displayed on top of the dialog, containing title, (optional)
@@ -86,7 +86,7 @@ class PaymentRequestSheetController : public views::ButtonListener {
   // button.  By default the dialog shows a "pay" button.
   virtual bool ShouldShowPrimaryButton();
   virtual base::string16 GetPrimaryButtonLabel();
-  virtual int GetPrimaryButtonTag();
+  virtual views::Button::PressedCallback GetPrimaryButtonCallback();
   virtual int GetPrimaryButtonId();
   virtual bool GetPrimaryButtonEnabled();
 
@@ -94,7 +94,7 @@ class PaymentRequestSheetController : public views::ButtonListener {
   // button.  By default the dialog shows a "cancel payment" button.
   virtual bool ShouldShowSecondaryButton();
   virtual base::string16 GetSecondaryButtonLabel();
-  virtual int GetSecondaryButtonTag();
+  virtual views::Button::PressedCallback GetSecondaryButtonCallback();
   virtual int GetSecondaryButtonId();
 
   // Returns whether this sheet should display a back arrow in the header next
@@ -130,9 +130,6 @@ class PaymentRequestSheetController : public views::ButtonListener {
   virtual std::unique_ptr<views::Background> GetHeaderBackground(
       views::View* header_view);
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // Creates the row of button containing the Pay, cancel, and extra buttons.
   // |controller| is installed as the listener for button events.
   std::unique_ptr<views::View> CreateFooterView();
@@ -151,6 +148,8 @@ class PaymentRequestSheetController : public views::ButtonListener {
 
   // Returns true to display dynamic top and bottom border for hidden contents.
   virtual bool DisplayDynamicBorderForHiddenContents();
+
+  void CloseButtonPressed();
 
   views::MdTextButton* primary_button() { return primary_button_; }
 
@@ -172,6 +171,8 @@ class PaymentRequestSheetController : public views::ButtonListener {
   // binding the method with a base::WeakPtr, which prohibits non-void return
   // values.
   void PerformPrimaryButtonAction(bool* is_enabled);
+
+  virtual void BackButtonPressed();
 
   base::WeakPtr<PaymentRequestSpec> const spec_;
   base::WeakPtr<PaymentRequestState> const state_;

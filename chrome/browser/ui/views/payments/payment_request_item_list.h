@@ -10,7 +10,6 @@
 
 #include "base/macros.h"
 #include "chrome/browser/ui/views/payments/payment_request_row_view.h"
-#include "ui/views/controls/button/button.h"
 
 namespace views {
 class ImageView;
@@ -31,7 +30,7 @@ class PaymentRequestState;
 class PaymentRequestItemList {
  public:
   // Represents an item in the item list.
-  class Item : public views::ButtonListener, public PaymentRequestRowView {
+  class Item : public PaymentRequestRowView {
    public:
     // Creates an item that will be owned by `list` with the initial state set
     // to `selected`. `clickable` indicates whether or not the user can interact
@@ -103,12 +102,11 @@ class PaymentRequestItemList {
     virtual void EditButtonPressed() = 0;
 
    private:
-    // views::ButtonListener:
-    void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
     // Updates the accessible description of this item to reflect its current
     // status (selected/not).
     void UpdateAccessibleName();
+
+    void ButtonPressed();
 
     base::WeakPtr<PaymentRequestSpec> spec_;
     base::WeakPtr<PaymentRequestState> state_;

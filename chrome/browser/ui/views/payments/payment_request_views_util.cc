@@ -41,7 +41,6 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/image_view.h"
@@ -179,7 +178,7 @@ class PaymentRequestRowBorderPainter : public views::Painter {
 
 void PopulateSheetHeaderView(bool show_back_arrow,
                              std::unique_ptr<views::View> header_content_view,
-                             views::ButtonListener* listener,
+                             views::Button::PressedCallback back_arrow_callback,
                              views::View* container,
                              std::unique_ptr<views::Background> background) {
   SkColor background_color = background->get_color();
@@ -212,15 +211,14 @@ void PopulateSheetHeaderView(bool show_back_arrow,
   if (!show_back_arrow) {
     layout->SkipColumns(1);
   } else {
-    auto back_arrow = views::CreateVectorImageButton(listener);
+    auto back_arrow =
+        views::CreateVectorImageButton(std::move(back_arrow_callback));
     views::SetImageFromVectorIcon(
         back_arrow.get(), vector_icons::kBackArrowIcon,
         color_utils::GetColorWithMaxContrast(background_color));
     constexpr int kBackArrowSize = 16;
     back_arrow->SetSize(gfx::Size(kBackArrowSize, kBackArrowSize));
     back_arrow->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-    back_arrow->set_tag(
-        static_cast<int>(PaymentRequestCommonTags::BACK_BUTTON_TAG));
     back_arrow->SetID(static_cast<int>(DialogViewID::BACK_BUTTON));
     back_arrow->SetAccessibleName(l10n_util::GetStringUTF16(IDS_PAYMENTS_BACK));
     layout->AddView(std::move(back_arrow));

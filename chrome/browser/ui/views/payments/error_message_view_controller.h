@@ -33,7 +33,7 @@ class ErrorMessageViewController : public PaymentRequestSheetController {
  private:
   // PaymentRequestSheetController:
   base::string16 GetPrimaryButtonLabel() override;
-  int GetPrimaryButtonTag() override;
+  views::Button::PressedCallback GetPrimaryButtonCallback() override;
   int GetPrimaryButtonId() override;
   bool GetPrimaryButtonEnabled() override;
   bool ShouldShowHeaderBackArrow() override;

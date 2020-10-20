@@ -68,11 +68,10 @@ class CvcUnmaskViewController
   base::string16 GetSheetTitle() override;
   void FillContentView(views::View* content_view) override;
   base::string16 GetPrimaryButtonLabel() override;
-  int GetPrimaryButtonTag() override;
+  views::Button::PressedCallback GetPrimaryButtonCallback() override;
   int GetPrimaryButtonId() override;
   bool GetPrimaryButtonEnabled() override;
   bool ShouldShowSecondaryButton() override;
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
  private:
   // Called when the user confirms their CVC. This will pass the value to the
@@ -87,6 +86,9 @@ class CvcUnmaskViewController
 
   bool GetSheetId(DialogViewID* sheet_id) override;
   views::View* GetFirstFocusedView() override;
+
+  // PaymentRequestSheetController:
+  void BackButtonPressed() override;
 
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,

@@ -16,10 +16,10 @@ namespace payments {
 // static
 constexpr char PaymentRequestRowView::kClassName[];
 
-PaymentRequestRowView::PaymentRequestRowView(views::ButtonListener* listener,
+PaymentRequestRowView::PaymentRequestRowView(PressedCallback callback,
                                              bool clickable,
                                              const gfx::Insets& insets)
-    : views::Button(listener),
+    : views::Button(std::move(callback)),
       clickable_(clickable),
       insets_(insets),
       previous_row_(nullptr) {

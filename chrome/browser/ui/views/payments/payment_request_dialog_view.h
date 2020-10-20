@@ -138,11 +138,9 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
   // |on_added| is called when a new credit card was added (the reference is
   // short-lived; callee should make a copy of the CreditCard object).
   // |back_navigation_type| identifies the type of navigation to execute once
-  // the editor has completed successfully. |next_ui_tag| is the lowest value
-  // that the credit card editor can use to assign to custom controls.
+  // the editor has completed successfully.
   void ShowCreditCardEditor(
       BackNavigationType back_navigation_type,
-      int next_ui_tag,
       base::OnceClosure on_edited,
       base::OnceCallback<void(const autofill::CreditCard&)> on_added,
       autofill::CreditCard* credit_card = nullptr);

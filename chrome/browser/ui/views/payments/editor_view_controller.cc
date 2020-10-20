@@ -36,14 +36,6 @@
 namespace payments {
 namespace {
 
-enum class EditorViewControllerTags : int {
-  // The tag for the button that saves the model being edited. Starts
-  // at PAYMENT_REQUEST_COMMON_TAG_MAX not to conflict with tags
-  // common to all views.
-  SAVE_BUTTON = static_cast<int>(
-      PaymentRequestCommonTags::PAYMENT_REQUEST_COMMON_TAG_MAX),
-};
-
 std::unique_ptr<views::View> CreateErrorLabelView(
     const base::string16& error,
     autofill::ServerFieldType type) {
@@ -132,8 +124,10 @@ base::string16 EditorViewController::GetPrimaryButtonLabel() {
   return l10n_util::GetStringUTF16(IDS_DONE);
 }
 
-int EditorViewController::GetPrimaryButtonTag() {
-  return static_cast<int>(EditorViewControllerTags::SAVE_BUTTON);
+views::Button::PressedCallback
+EditorViewController::GetPrimaryButtonCallback() {
+  return base::BindRepeating(&EditorViewController::SaveButtonPressed,
+                             base::Unretained(this));
 }
 
 int EditorViewController::GetPrimaryButtonId() {
@@ -171,27 +165,6 @@ void EditorViewController::UpdateEditorView() {
   UpdateContentView();
   UpdateFocus(GetFirstFocusedView());
   dialog()->EditorViewUpdated();
-}
-
-void EditorViewController::ButtonPressed(views::Button* sender,
-                                         const ui::Event& event) {
-  switch (sender->tag()) {
-    case static_cast<int>(EditorViewControllerTags::SAVE_BUTTON):
-      if (ValidateModelAndSave()) {
-        switch (back_navigation_type_) {
-          case BackNavigationType::kOneStep:
-            dialog()->GoBack();
-            break;
-          case BackNavigationType::kPaymentSheet:
-            dialog()->GoBackToPaymentSheet();
-            break;
-        }
-      }
-      break;
-    default:
-      PaymentRequestSheetController::ButtonPressed(sender, event);
-      break;
-  }
 }
 
 views::View* EditorViewController::GetFirstFocusedView() {
@@ -520,6 +493,17 @@ void EditorViewController::AddOrUpdateErrorMessageForField(
           label_view_it->second->children().front()->children().front())
           ->SetText(error_message);
     }
+  }
+}
+
+void EditorViewController::SaveButtonPressed() {
+  if (!ValidateModelAndSave())
+    return;
+  if (back_navigation_type_ == BackNavigationType::kOneStep) {
+    dialog()->GoBack();
+  } else {
+    DCHECK_EQ(BackNavigationType::kPaymentSheet, back_navigation_type_);
+    dialog()->GoBackToPaymentSheet();
   }
 }
 

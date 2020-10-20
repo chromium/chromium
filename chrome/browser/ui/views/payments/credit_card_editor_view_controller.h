@@ -41,7 +41,6 @@ class CreditCardEditorViewController : public EditorViewController {
       base::WeakPtr<PaymentRequestState> state,
       base::WeakPtr<PaymentRequestDialogView> dialog,
       BackNavigationType back_navigation,
-      int next_ui_tag,
       base::OnceClosure on_edited,
       base::OnceCallback<void(const autofill::CreditCard&)> on_added,
       autofill::CreditCard* credit_card,
@@ -79,7 +78,6 @@ class CreditCardEditorViewController : public EditorViewController {
   // PaymentRequestSheetController:
   void FillContentView(views::View* content_view) override;
   base::string16 GetSheetTitle() override;
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
  private:
   class CreditCardValidationDelegate : public ValidationDelegate {
@@ -139,9 +137,6 @@ class CreditCardEditorViewController : public EditorViewController {
   // Keeps track of the card icons currently visible, keyed by basic card
   // network.
   std::map<std::string, views::View*> card_icons_;
-
-  // The value to use for the add billing address button tag.
-  int add_billing_address_button_tag_;
 
   // The list of supported basic card networks.
   std::set<std::string> supported_card_networks_;

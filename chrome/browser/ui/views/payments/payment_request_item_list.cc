@@ -51,7 +51,10 @@ PaymentRequestItemList::Item::Item(base::WeakPtr<PaymentRequestSpec> spec,
                                    bool selected,
                                    bool clickable,
                                    bool show_edit_button)
-    : PaymentRequestRowView(this, clickable, kRowInsets),
+    : PaymentRequestRowView(
+          base::BindRepeating(&Item::ButtonPressed, base::Unretained(this)),
+          clickable,
+          kRowInsets),
       spec_(spec),
       state_(state),
       list_(list),
@@ -105,7 +108,8 @@ void PaymentRequestItemList::Item::Init() {
     layout->AddView(std::move(extra_view));
 
   if (show_edit_button_) {
-    auto edit_button = views::CreateVectorImageButton(this);
+    auto edit_button = views::CreateVectorImageButton(
+        base::BindRepeating(&Item::EditButtonPressed, base::Unretained(this)));
     const SkColor icon_color =
         color_utils::DeriveDefaultIconColor(SK_ColorBLACK);
     edit_button->SetImage(views::Button::STATE_NORMAL,
@@ -154,21 +158,6 @@ std::unique_ptr<views::View> PaymentRequestItemList::Item::CreateExtraView() {
   return nullptr;
 }
 
-void PaymentRequestItemList::Item::ButtonPressed(views::Button* sender,
-                                                 const ui::Event& event) {
-  if (sender->GetID() == static_cast<int>(DialogViewID::EDIT_ITEM_BUTTON)) {
-    EditButtonPressed();
-  } else if (selected_) {
-    // |dialog()| may be null in tests
-    if (list_->dialog())
-      list_->dialog()->GoBack();
-  } else if (CanBeSelected()) {
-    list()->SelectItem(this);
-  } else {
-    PerformSelectionFallback();
-  }
-}
-
 void PaymentRequestItemList::Item::UpdateAccessibleName() {
   base::string16 accessible_content =
       selected_ ? l10n_util::GetStringFUTF16(
@@ -178,6 +167,18 @@ void PaymentRequestItemList::Item::UpdateAccessibleName() {
                       IDS_PAYMENTS_ROW_ACCESSIBLE_NAME_FORMAT,
                       GetNameForDataType(), accessible_item_description_);
   SetAccessibleName(accessible_content);
+}
+
+void PaymentRequestItemList::Item::ButtonPressed() {
+  if (selected_) {
+    // |dialog()| may be null in tests
+    if (list_->dialog())
+      list_->dialog()->GoBack();
+  } else if (CanBeSelected()) {
+    list()->SelectItem(this);
+  } else {
+    PerformSelectionFallback();
+  }
 }
 
 PaymentRequestItemList::PaymentRequestItemList(

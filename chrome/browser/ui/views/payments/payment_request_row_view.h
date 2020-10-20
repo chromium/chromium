@@ -21,7 +21,7 @@ class PaymentRequestRowView
 
   // Creates a row view. If |clickable| is true, the row will be shaded on hover
   // and handle click events. |insets| are used as padding around the content.
-  PaymentRequestRowView(views::ButtonListener* listener,
+  PaymentRequestRowView(PressedCallback callback,
                         bool clickable,
                         const gfx::Insets& insets);
   ~PaymentRequestRowView() override;

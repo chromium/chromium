@@ -29,8 +29,10 @@ base::string16 ErrorMessageViewController::GetPrimaryButtonLabel() {
   return l10n_util::GetStringUTF16(IDS_CLOSE);
 }
 
-int ErrorMessageViewController::GetPrimaryButtonTag() {
-  return static_cast<int>(PaymentRequestCommonTags::CLOSE_BUTTON_TAG);
+views::Button::PressedCallback
+ErrorMessageViewController::GetPrimaryButtonCallback() {
+  return base::BindRepeating(&ErrorMessageViewController::CloseButtonPressed,
+                             base::Unretained(this));
 }
 
 int ErrorMessageViewController::GetPrimaryButtonId() {

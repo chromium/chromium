@@ -386,7 +386,6 @@ void PaymentRequestDialogView::ShowCvcUnmaskPrompt(
 
 void PaymentRequestDialogView::ShowCreditCardEditor(
     BackNavigationType back_navigation_type,
-    int next_ui_tag,
     base::OnceClosure on_edited,
     base::OnceCallback<void(const autofill::CreditCard&)> on_added,
     autofill::CreditCard* credit_card) {
@@ -397,7 +396,7 @@ void PaymentRequestDialogView::ShowCreditCardEditor(
       CreateViewAndInstallController(
           std::make_unique<CreditCardEditorViewController>(
               request_->spec(), request_->state(),
-              weak_ptr_factory_.GetWeakPtr(), back_navigation_type, next_ui_tag,
+              weak_ptr_factory_.GetWeakPtr(), back_navigation_type,
               std::move(on_edited), std::move(on_added), credit_card,
               request_->IsOffTheRecord()),
           &controller_map_),

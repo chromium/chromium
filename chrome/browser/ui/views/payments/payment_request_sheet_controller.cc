@@ -28,8 +28,8 @@ namespace payments {
 
 namespace {
 
-// This event is used to pass to ButtonPressed when its event parameter doesn't
-// matter, only the sender.
+// This event is used to run the Button callback when its event parameter
+// doesn't matter, only the sender.
 class DummyEvent : public ui::Event {
  public:
   DummyEvent() : ui::Event(ui::ET_UNKNOWN, base::TimeTicks(), 0) {}
@@ -236,9 +236,11 @@ std::unique_ptr<views::View> PaymentRequestSheetController::CreateView() {
 
   layout->StartRow(views::GridLayout::kFixedSize, 0);
   header_view_ = layout->AddView(std::make_unique<views::View>());
-  PopulateSheetHeaderView(ShouldShowHeaderBackArrow(),
-                          CreateHeaderContentView(header_view_), this,
-                          header_view_, GetHeaderBackground(header_view_));
+  PopulateSheetHeaderView(
+      ShouldShowHeaderBackArrow(), CreateHeaderContentView(header_view_),
+      base::BindRepeating(&PaymentRequestSheetController::BackButtonPressed,
+                          base::Unretained(this)),
+      header_view_, GetHeaderBackground(header_view_));
 
   layout->StartRow(views::GridLayout::kFixedSize, 0);
   header_content_separator_container_ =
@@ -292,9 +294,11 @@ void PaymentRequestSheetController::UpdateContentView() {
 
 void PaymentRequestSheetController::UpdateHeaderView() {
   header_view_->RemoveAllChildViews(true);
-  PopulateSheetHeaderView(ShouldShowHeaderBackArrow(),
-                          CreateHeaderContentView(header_view_), this,
-                          header_view_, GetHeaderBackground(header_view_));
+  PopulateSheetHeaderView(
+      ShouldShowHeaderBackArrow(), CreateHeaderContentView(header_view_),
+      base::BindRepeating(&PaymentRequestSheetController::BackButtonPressed,
+                          base::Unretained(this)),
+      header_view_, GetHeaderBackground(header_view_));
   header_view_->Layout();
   header_view_->SchedulePaint();
 }
@@ -333,8 +337,14 @@ base::string16 PaymentRequestSheetController::GetPrimaryButtonLabel() {
       continue_button ? IDS_PAYMENTS_CONTINUE_BUTTON : IDS_PAYMENTS_PAY_BUTTON);
 }
 
-int PaymentRequestSheetController::GetPrimaryButtonTag() {
-  return static_cast<int>(PaymentRequestCommonTags::PAY_BUTTON_TAG);
+views::Button::PressedCallback
+PaymentRequestSheetController::GetPrimaryButtonCallback() {
+  return base::BindRepeating(
+      [](const base::WeakPtr<PaymentRequestDialogView>& dialog) {
+        if (dialog->IsInteractive())
+          dialog->Pay();
+      },
+      dialog());
 }
 
 int PaymentRequestSheetController::GetPrimaryButtonId() {
@@ -353,8 +363,10 @@ base::string16 PaymentRequestSheetController::GetSecondaryButtonLabel() {
   return l10n_util::GetStringUTF16(IDS_PAYMENTS_CANCEL_PAYMENT);
 }
 
-int PaymentRequestSheetController::GetSecondaryButtonTag() {
-  return static_cast<int>(PaymentRequestCommonTags::CLOSE_BUTTON_TAG);
+views::Button::PressedCallback
+PaymentRequestSheetController::GetSecondaryButtonCallback() {
+  return base::BindRepeating(&PaymentRequestSheetController::CloseButtonPressed,
+                             base::Unretained(this));
 }
 
 int PaymentRequestSheetController::GetSecondaryButtonId() {
@@ -385,27 +397,6 @@ std::unique_ptr<views::Background>
 PaymentRequestSheetController::GetHeaderBackground(views::View* header_view) {
   return views::CreateThemedSolidBackground(
       header_view, ui::NativeTheme::kColorId_DialogBackground);
-}
-
-void PaymentRequestSheetController::ButtonPressed(views::Button* sender,
-                                                  const ui::Event& event) {
-  if (!dialog()->IsInteractive())
-    return;
-
-  switch (static_cast<PaymentRequestCommonTags>(sender->tag())) {
-    case PaymentRequestCommonTags::CLOSE_BUTTON_TAG:
-      dialog()->CloseDialog();
-      break;
-    case PaymentRequestCommonTags::BACK_BUTTON_TAG:
-      dialog()->GoBack();
-      break;
-    case PaymentRequestCommonTags::PAY_BUTTON_TAG:
-      dialog()->Pay();
-      break;
-    case PaymentRequestCommonTags::PAYMENT_REQUEST_COMMON_TAG_MAX:
-      NOTREACHED();
-      break;
-  }
 }
 
 std::unique_ptr<views::View> PaymentRequestSheetController::CreateFooterView() {
@@ -478,11 +469,16 @@ bool PaymentRequestSheetController::DisplayDynamicBorderForHiddenContents() {
   return true;
 }
 
+void PaymentRequestSheetController::CloseButtonPressed() {
+  if (dialog()->IsInteractive())
+    dialog()->CloseDialog();
+}
+
 void PaymentRequestSheetController::AddPrimaryButton(views::View* container) {
   if (ShouldShowPrimaryButton()) {
-    primary_button_ = container->AddChildView(
-        std::make_unique<views::MdTextButton>(this, GetPrimaryButtonLabel()));
-    primary_button_->set_tag(GetPrimaryButtonTag());
+    primary_button_ =
+        container->AddChildView(std::make_unique<views::MdTextButton>(
+            GetPrimaryButtonCallback(), GetPrimaryButtonLabel()));
     primary_button_->SetID(GetPrimaryButtonId());
     primary_button_->SetEnabled(GetPrimaryButtonEnabled());
     primary_button_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
@@ -492,9 +488,9 @@ void PaymentRequestSheetController::AddPrimaryButton(views::View* container) {
 
 void PaymentRequestSheetController::AddSecondaryButton(views::View* container) {
   if (ShouldShowSecondaryButton()) {
-    secondary_button_ = container->AddChildView(
-        std::make_unique<views::MdTextButton>(this, GetSecondaryButtonLabel()));
-    secondary_button_->set_tag(GetSecondaryButtonTag());
+    secondary_button_ =
+        container->AddChildView(std::make_unique<views::MdTextButton>(
+            GetSecondaryButtonCallback(), GetSecondaryButtonLabel()));
     secondary_button_->SetID(GetSecondaryButtonId());
     secondary_button_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   }
@@ -506,8 +502,16 @@ void PaymentRequestSheetController::PerformPrimaryButtonAction(
   *is_enabled = true;
 
   if (dialog()->IsInteractive() && primary_button_ &&
-      primary_button_->GetEnabled())
-    ButtonPressed(primary_button_, DummyEvent());
+      primary_button_->GetEnabled()) {
+    views::Button::PressedCallback callback = GetPrimaryButtonCallback();
+    if (callback)
+      callback.Run(DummyEvent());
+  }
+}
+
+void PaymentRequestSheetController::BackButtonPressed() {
+  if (dialog()->IsInteractive())
+    dialog()->GoBack();
 }
 
 }  // namespace payments

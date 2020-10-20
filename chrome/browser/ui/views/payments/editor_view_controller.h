@@ -147,7 +147,7 @@ class EditorViewController : public PaymentRequestSheetController,
 
   // PaymentRequestSheetController:
   base::string16 GetPrimaryButtonLabel() override;
-  int GetPrimaryButtonTag() override;
+  views::Button::PressedCallback GetPrimaryButtonCallback() override;
   int GetPrimaryButtonId() override;
   bool GetPrimaryButtonEnabled() override;
   bool ShouldShowSecondaryButton() override;
@@ -163,7 +163,6 @@ class EditorViewController : public PaymentRequestSheetController,
   virtual void UpdateEditorView();
 
   // PaymentRequestSheetController:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
   views::View* GetFirstFocusedView() override;
 
   // Will create a combobox according to the |field| definition. Will also keep
@@ -201,6 +200,8 @@ class EditorViewController : public PaymentRequestSheetController,
 
   void AddOrUpdateErrorMessageForField(autofill::ServerFieldType type,
                                        const base::string16& error_message);
+
+  void SaveButtonPressed();
 
   // Used to remember the association between the input field UI element and the
   // original field definition. The ValidatingTextfield* and ValidatingCombobox*

@@ -160,7 +160,6 @@ CreditCardEditorViewController::CreditCardEditorViewController(
     base::WeakPtr<PaymentRequestState> state,
     base::WeakPtr<PaymentRequestDialogView> dialog,
     BackNavigationType back_navigation,
-    int next_ui_tag,
     base::OnceClosure on_edited,
     base::OnceCallback<void(const autofill::CreditCard&)> on_added,
     autofill::CreditCard* credit_card,
@@ -168,8 +167,7 @@ CreditCardEditorViewController::CreditCardEditorViewController(
     : EditorViewController(spec, state, dialog, back_navigation, is_incognito),
       on_edited_(std::move(on_edited)),
       on_added_(std::move(on_added)),
-      credit_card_to_edit_(credit_card),
-      add_billing_address_button_tag_(next_ui_tag) {
+      credit_card_to_edit_(credit_card) {
   if (spec)
     supported_card_networks_ = spec->supported_card_networks_set();
 }
@@ -361,9 +359,15 @@ CreditCardEditorViewController::CreateExtraViewForField(
 
   // The button to add new billing addresses.
   auto add_button = std::make_unique<views::MdTextButton>(
-      this, l10n_util::GetStringUTF16(IDS_ADD));
+      base::BindRepeating(
+          &PaymentRequestDialogView::ShowShippingAddressEditor, dialog(),
+          BackNavigationType::kOneStep, base::RepeatingClosure(),
+          base::BindRepeating(
+              &CreditCardEditorViewController::AddAndSelectNewBillingAddress,
+              weak_ptr_factory_.GetWeakPtr()),
+          nullptr),
+      l10n_util::GetStringUTF16(IDS_ADD));
   add_button->SetID(static_cast<int>(DialogViewID::ADD_BILLING_ADDRESS_BUTTON));
-  add_button->set_tag(add_billing_address_button_tag_);
   add_button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   button_view->AddChildView(std::move(add_button));
   return button_view;
@@ -603,23 +607,6 @@ base::string16 CreditCardEditorViewController::GetSheetTitle() {
       state()->GetPersonalDataManager()->GetProfiles()));
   return title.empty() ? l10n_util::GetStringUTF16(IDS_PAYMENTS_EDIT_CARD)
                        : title;
-}
-
-void CreditCardEditorViewController::ButtonPressed(views::Button* sender,
-                                                   const ui::Event& event) {
-  if (sender->tag() == add_billing_address_button_tag_) {
-    dialog()->ShowShippingAddressEditor(
-        BackNavigationType::kOneStep,
-        /*on_edited=*/
-        base::OnceClosure(),
-        /*on_added=*/
-        base::BindOnce(
-            &CreditCardEditorViewController::AddAndSelectNewBillingAddress,
-            weak_ptr_factory_.GetWeakPtr()),
-        /*profile=*/nullptr);
-  } else {
-    EditorViewController::ButtonPressed(sender, event);
-  }
 }
 
 void CreditCardEditorViewController::AddAndSelectNewBillingAddress(

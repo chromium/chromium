@@ -32,15 +32,6 @@ namespace payments {
 
 namespace {
 
-enum class ProfileListViewControllerTags : int {
-  // The tag for the button that triggers the "add address"
-  // flow. Starts at |PAYMENT_REQUEST_COMMON_TAG_MAX| not to conflict
-  // with tags common to all views.
-  ADD_SHIPPING_ADDRESS_BUTTON = static_cast<int>(
-      PaymentRequestCommonTags::PAYMENT_REQUEST_COMMON_TAG_MAX),
-  ADD_CONTACT_BUTTON,
-};
-
 class ProfileItem : public PaymentRequestItemList::Item {
  public:
   // Constructs an object owned by |parent_list|, representing one element in
@@ -200,11 +191,6 @@ class ShippingProfileViewController : public ProfileListViewController,
     return l10n_util::GetStringUTF16(IDS_PAYMENTS_ADD_ADDRESS);
   }
 
-  int GetSecondaryButtonTag() override {
-    return static_cast<int>(
-        ProfileListViewControllerTags::ADD_SHIPPING_ADDRESS_BUTTON);
-  }
-
   int GetSecondaryButtonId() override {
     return static_cast<int>(DialogViewID::PAYMENT_METHOD_ADD_SHIPPING_BUTTON);
   }
@@ -311,10 +297,6 @@ class ContactProfileViewController : public ProfileListViewController {
     return l10n_util::GetStringUTF16(IDS_PAYMENTS_ADD_CONTACT);
   }
 
-  int GetSecondaryButtonTag() override {
-    return static_cast<int>(ProfileListViewControllerTags::ADD_CONTACT_BUTTON);
-  }
-
   int GetSecondaryButtonId() override {
     return static_cast<int>(DialogViewID::PAYMENT_METHOD_ADD_CONTACT_BUTTON);
   }
@@ -378,6 +360,12 @@ bool ProfileListViewController::ShouldShowPrimaryButton() {
   return false;
 }
 
+views::Button::PressedCallback
+ProfileListViewController::GetSecondaryButtonCallback() {
+  return base::BindRepeating(&ProfileListViewController::ShowEditor,
+                             base::Unretained(this), nullptr);
+}
+
 void ProfileListViewController::FillContentView(views::View* content_view) {
   auto layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical);
@@ -391,14 +379,6 @@ void ProfileListViewController::FillContentView(views::View* content_view) {
   std::unique_ptr<views::View> list_view = list_.CreateListView();
   list_view->SetID(static_cast<int>(GetDialogViewId()));
   content_view->AddChildView(list_view.release());
-}
-
-void ProfileListViewController::ButtonPressed(views::Button* sender,
-                                              const ui::Event& event) {
-  if (sender->tag() == GetSecondaryButtonTag())
-    ShowEditor(nullptr);
-  else
-    PaymentRequestSheetController::ButtonPressed(sender, event);
 }
 
 }  // namespace payments
