@@ -434,9 +434,23 @@ class NavigationManager {
    */
   restoreFromHistory_() {
     const data = this.history_.retrieve();
+
+    // |data.focus| may not be a child of |data.group| anymore since
+    // |data.group| updates when retrieving the history record. So |data.focus|
+    // should not be used as the preferred focus node.
+    const groupChildren = data.group.children;
+    var focusTarget = null;
+    for (var index = 0; index < groupChildren.length; ++index) {
+      const child = groupChildren[index];
+      if (child.isEquivalentTo(data.focus)) {
+        focusTarget = child;
+        break;
+      }
+    }
+
     // retrieve() guarantees that the group is valid, but not the focus.
-    if (data.focus.isValidAndVisible()) {
-      this.setGroup_(data.group, data.focus);
+    if (focusTarget && focusTarget.isValidAndVisible()) {
+      this.setGroup_(data.group, focusTarget);
     } else {
       this.setGroup_(data.group);
     }
