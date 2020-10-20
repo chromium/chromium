@@ -48,27 +48,29 @@
 #include "third_party/blink/renderer/core/css/properties/longhands/variable.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
+#include "third_party/blink/renderer/core/css/scoped_css_value.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
 
 void StyleBuilder::ApplyProperty(const CSSPropertyName& name,
                                  StyleResolverState& state,
-                                 const CSSValue& value) {
+                                 const ScopedCSSValue& scoped_value) {
   CSSPropertyRef ref(name, state.GetDocument());
   DCHECK(ref.IsValid());
 
-  ApplyProperty(ref.GetProperty(), state, value);
+  ApplyProperty(ref.GetProperty(), state, scoped_value);
 }
 
 void StyleBuilder::ApplyProperty(const CSSProperty& property,
                                  StyleResolverState& state,
-                                 const CSSValue& value) {
+                                 const ScopedCSSValue& scoped_value) {
   DCHECK(!Variable::IsStaticInstance(property))
       << "Please use a CustomProperty instance to apply custom properties";
 
   CSSPropertyID id = property.PropertyID();
   bool is_inherited = property.IsInherited();
+  const CSSValue& value = scoped_value.GetCSSValue();
 
   // These values must be resolved by StyleCascade before application:
   DCHECK(!value.IsVariableReferenceValue());

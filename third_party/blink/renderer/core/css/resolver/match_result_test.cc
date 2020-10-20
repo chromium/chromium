@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
@@ -28,6 +29,12 @@ class MatchResultTest : public PageTestBase {
   CascadeOrigin OriginAt(const MatchResult& result, size_t index) const {
     DCHECK_LT(index, LengthOf(result));
     return result.GetMatchedProperties()[index].types_.origin;
+  }
+
+  const TreeScope& TreeScopeAt(const MatchResult& result, size_t index) {
+    DCHECK_EQ(CascadeOrigin::kAuthor, OriginAt(result, index));
+    return result.ScopeFromTreeOrder(
+        result.GetMatchedProperties()[index].types_.tree_order);
   }
 
  private:
@@ -283,6 +290,35 @@ TEST_F(MatchResultTest, Reset) {
   EXPECT_EQ(2u, result.GetMatchedProperties()[4].types_.tree_order);
 
   EXPECT_TRUE(result.IsCacheable());
+}
+
+TEST_F(MatchResultTest, ResetTreeScope) {
+  SetBodyInnerHTML("<div id=host1></div><div id=host2></div>");
+  Element* host1 = GetElementById("host1");
+  Element* host2 = GetElementById("host2");
+  ASSERT_TRUE(host1);
+  ASSERT_TRUE(host2);
+  TreeScope& scope1 = host1->AttachShadowRootInternal(ShadowRootType::kOpen);
+  TreeScope& scope2 = host2->AttachShadowRootInternal(ShadowRootType::kOpen);
+
+  MatchResult result;
+  result.FinishAddingUARules();
+  result.FinishAddingUserRules();
+  result.AddMatchedProperties(PropertySet(0));
+  result.FinishAddingAuthorRulesForTreeScope(scope1);
+
+  ASSERT_EQ(LengthOf(result), 1u);
+  EXPECT_EQ(&TreeScopeAt(result, 0), &scope1);
+
+  result.Reset();
+
+  result.FinishAddingUARules();
+  result.FinishAddingUserRules();
+  result.AddMatchedProperties(PropertySet(0));
+  result.FinishAddingAuthorRulesForTreeScope(scope2);
+
+  ASSERT_EQ(LengthOf(result), 1u);
+  EXPECT_EQ(&TreeScopeAt(result, 0), &scope2);
 }
 
 }  // namespace blink

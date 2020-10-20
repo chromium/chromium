@@ -39,7 +39,7 @@ StyleResolverState::StyleResolverState(
     Element& element,
     PseudoElement* pseudo_element,
     PseudoElementStyleRequest::RequestType pseudo_request_type,
-    AnimatingElementType animating_element_type,
+    ElementType element_type,
     const ComputedStyle* parent_style,
     const ComputedStyle* layout_parent_style)
     : element_context_(element),
@@ -52,7 +52,7 @@ StyleResolverState::StyleResolverState(
                                document.DevicePixelRatio(),
                                pseudo_element),
       pseudo_element_(pseudo_element),
-      animating_element_type_(animating_element_type) {
+      element_type_(element_type) {
   DCHECK(!!parent_style_ == !!layout_parent_style_);
 
   if (!parent_style_) {
@@ -76,7 +76,7 @@ StyleResolverState::StyleResolverState(Document& document,
                          element,
                          nullptr /* pseudo_element */,
                          PseudoElementStyleRequest::kForRenderer,
-                         AnimatingElementType::kElement,
+                         ElementType::kElement,
                          parent_style,
                          layout_parent_style) {}
 
@@ -91,7 +91,7 @@ StyleResolverState::StyleResolverState(
                          element,
                          element.GetPseudoElement(pseudo_id),
                          pseudo_request_type,
-                         AnimatingElementType::kPseudoElement,
+                         ElementType::kPseudoElement,
                          parent_style,
                          layout_parent_style) {}
 
@@ -202,9 +202,9 @@ CSSParserMode StyleResolverState::GetParserMode() const {
 }
 
 Element* StyleResolverState::GetAnimatingElement() const {
-  if (animating_element_type_ == AnimatingElementType::kElement)
+  if (element_type_ == ElementType::kElement)
     return &GetElement();
-  DCHECK_EQ(AnimatingElementType::kPseudoElement, animating_element_type_);
+  DCHECK_EQ(ElementType::kPseudoElement, element_type_);
   return pseudo_element_;
 }
 

@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/css/css_inherited_value.h"
 #include "third_party/blink/renderer/core/css/css_initial_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
+#include "third_party/blink/renderer/core/css/scoped_css_value.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -41,7 +42,8 @@ TEST_F(StyleBuilderTest, WritingModeChangeDirtiesFont) {
       state.SetStyle(style);
 
       ASSERT_FALSE(state.GetFontBuilder().FontDirty());
-      StyleBuilder::ApplyProperty(*property, state, *value);
+      StyleBuilder::ApplyProperty(*property, state,
+                                  ScopedCSSValue(*value, &GetDocument()));
       EXPECT_TRUE(state.GetFontBuilder().FontDirty());
     }
   }
@@ -72,7 +74,8 @@ TEST_F(StyleBuilderTest, TextOrientationChangeDirtiesFont) {
       state.SetStyle(style);
 
       ASSERT_FALSE(state.GetFontBuilder().FontDirty());
-      StyleBuilder::ApplyProperty(*property, state, *value);
+      StyleBuilder::ApplyProperty(*property, state,
+                                  ScopedCSSValue(*value, &GetDocument()));
       EXPECT_TRUE(state.GetFontBuilder().FontDirty());
     }
   }
@@ -86,13 +89,14 @@ TEST_F(StyleBuilderTest, HasExplicitInheritance) {
   state.SetStyle(style);
   EXPECT_FALSE(style->HasExplicitInheritance());
 
+  ScopedCSSValue inherited(*CSSInheritedValue::Create(), &GetDocument());
+
   // Flag should not be set for properties which are inherited.
-  StyleBuilder::ApplyProperty(GetCSSPropertyColor(), state,
-                              *CSSInheritedValue::Create());
+  StyleBuilder::ApplyProperty(GetCSSPropertyColor(), state, inherited);
   EXPECT_FALSE(style->HasExplicitInheritance());
 
   StyleBuilder::ApplyProperty(GetCSSPropertyBackgroundColor(), state,
-                              *CSSInheritedValue::Create());
+                              inherited);
   EXPECT_TRUE(style->HasExplicitInheritance());
 }
 

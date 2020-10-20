@@ -538,6 +538,7 @@ blink_core_sources_css = [
   "selector_query.h",
   "shadow_tree_style_sheet_collection.cc",
   "shadow_tree_style_sheet_collection.h",
+  "scoped_css_value.h",
   "style_attribute_mutation_scope.cc",
   "style_attribute_mutation_scope.h",
   "style_auto_color.h",

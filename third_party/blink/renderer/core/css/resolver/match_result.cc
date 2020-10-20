@@ -94,6 +94,7 @@ void MatchResult::Reset() {
   is_cacheable_ = true;
   current_origin_ = CascadeOrigin::kUserAgent;
   current_tree_order_ = 0;
+  tree_scopes_.clear();
 }
 
 }  // namespace blink

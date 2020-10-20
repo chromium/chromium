@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_stats.h"
 #include "third_party/blink/renderer/core/css/resolver/style_rule_usage_tracker.h"
+#include "third_party/blink/renderer/core/css/scoped_css_value.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
@@ -695,7 +696,7 @@ void StyleResolver::MatchAllRules(StyleResolverState& state,
 
   // Now check author rules, beginning first with presentational attributes
   // mapped from HTML.
-  if (element.IsStyledElement()) {
+  if (element.IsStyledElement() && !state.IsForPseudoElement()) {
     collector.AddElementStyleProperties(element.PresentationAttributeStyle());
 
     // Now we check additional mapped declarations.
@@ -721,7 +722,7 @@ void StyleResolver::MatchAllRules(StyleResolverState& state,
   ScopedStyleResolver* element_scope_resolver = ScopedResolverFor(element);
   MatchAuthorRules(element, element_scope_resolver, collector);
 
-  if (element.IsStyledElement()) {
+  if (element.IsStyledElement() && !state.IsForPseudoElement()) {
     // For Shadow DOM V1, inline style is already collected in
     // matchScopedRules().
     if (GetDocument().GetShadowCascadeOrder() ==
@@ -1082,6 +1083,8 @@ CompositorKeyframeValue* StyleResolver::CreateCompositorKeyframeValueSnapshot(
     cascade.MutableMatchResult().FinishAddingUARules();
     cascade.MutableMatchResult().FinishAddingUserRules();
     cascade.MutableMatchResult().AddMatchedProperties(set);
+    cascade.MutableMatchResult().FinishAddingAuthorRulesForTreeScope(
+        element.GetTreeScope());
     cascade.Apply();
   }
   return CompositorKeyframeValueFactory::Create(property, *state.Style());
@@ -1139,12 +1142,11 @@ scoped_refptr<ComputedStyle> StyleResolver::PseudoStyleForElement(
     GetDocument().GetStyleEngine().EnsureUAStyleForPseudoElement(
         pseudo_style_request.pseudo_id);
 
-    MatchUARules(*element, collector);
     // TODO(obrufau): support styling nested pseudo-elements
-    if (!element->IsPseudoElement()) {
-      MatchUserRules(collector);
-      MatchAuthorRules(*element, ScopedResolverFor(*element), collector);
-    }
+    if (!element->IsPseudoElement())
+      MatchAllRules(state, collector, /* include_smil_properties */ false);
+    else
+      MatchUARules(*element, collector);
 
     if (tracker_)
       AddMatchedRulesToTracker(collector);
@@ -1660,6 +1662,8 @@ const CSSValue* StyleResolver::ComputeValue(
   cascade.MutableMatchResult().FinishAddingUARules();
   cascade.MutableMatchResult().FinishAddingUserRules();
   cascade.MutableMatchResult().AddMatchedProperties(set);
+  cascade.MutableMatchResult().FinishAddingAuthorRulesForTreeScope(
+      element->GetTreeScope());
   cascade.Apply();
 
   CSSPropertyRef property_ref(property_name, element->GetDocument());
@@ -1785,9 +1789,14 @@ void StyleResolver::ComputeFont(Element& element,
   for (const CSSProperty* property : properties) {
     if (property->IDEquals(CSSPropertyID::kLineHeight))
       UpdateFont(state);
+    // TODO(futhark): If we start supporting fonts on ShadowRoot.fonts in
+    // addition to Document.fonts, we need to pass the correct TreeScope instead
+    // of GetDocument() in the ScopedCSSValue below.
     StyleBuilder::ApplyProperty(
         *property, state,
-        *property_set.GetPropertyCSSValue(property->PropertyID()));
+        ScopedCSSValue(
+            *property_set.GetPropertyCSSValue(property->PropertyID()),
+            &GetDocument()));
   }
 }
 

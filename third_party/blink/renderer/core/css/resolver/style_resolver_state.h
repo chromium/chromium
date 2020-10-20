@@ -50,6 +50,8 @@ class PseudoElement;
 class CORE_EXPORT StyleResolverState {
   STACK_ALLOCATED();
 
+  enum class ElementType { kElement, kPseudoElement };
+
  public:
   StyleResolverState(Document&,
                      Element&,
@@ -64,6 +66,10 @@ class CORE_EXPORT StyleResolverState {
   StyleResolverState(const StyleResolverState&) = delete;
   StyleResolverState& operator=(const StyleResolverState&) = delete;
   ~StyleResolverState();
+
+  bool IsForPseudoElement() const {
+    return element_type_ == ElementType::kPseudoElement;
+  }
 
   // In FontFaceSet and CanvasRenderingContext2D, we don't have an element to
   // grab the document from.  This is why we have to store the document
@@ -227,13 +233,11 @@ class CORE_EXPORT StyleResolverState {
   bool CanCacheBaseStyle() const { return can_cache_base_style_; }
 
  private:
-  enum class AnimatingElementType { kElement, kPseudoElement };
-
   StyleResolverState(Document&,
                      Element&,
                      PseudoElement*,
                      PseudoElementStyleRequest::RequestType,
-                     AnimatingElementType,
+                     ElementType,
                      const ComputedStyle* parent_style,
                      const ComputedStyle* layout_parent_style);
 
@@ -265,7 +269,7 @@ class CORE_EXPORT StyleResolverState {
 
   ElementStyleResources element_style_resources_;
   Element* pseudo_element_;
-  AnimatingElementType animating_element_type_;
+  ElementType element_type_;
 
   // Properties depended on by the ComputedStyle. This is known after the
   // cascade is applied.
