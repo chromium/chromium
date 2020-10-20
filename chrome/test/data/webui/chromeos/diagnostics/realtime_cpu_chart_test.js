@@ -37,7 +37,24 @@ suite('RealtimeCpuChartTest', () => {
     document.body.appendChild(realtimeCpuChartElement);
     realtimeCpuChartElement.user = user;
     realtimeCpuChartElement.system = system;
-    return flushTasks();
+
+    return refreshGraph();
+  }
+
+  /**
+   * Promise that resolves once at least one refresh interval has passed.
+   * @return {!Promise}
+   */
+  function refreshGraph() {
+    assertTrue(!!realtimeCpuChartElement);
+
+    return new Promise(resolve => {
+      setTimeout(() => {
+        flushTasks().then(() => {
+          resolve();
+        });
+      }, realtimeCpuChartElement.refreshInterval_);
+    });
   }
 
   test('InitializeRealtimeCpuChart', () => {
@@ -81,10 +98,10 @@ suite('RealtimeCpuChartTest', () => {
     });
   });
 
-  // Flaky: https://crbug.com/1139523
-  test.skip('InitializePlot', () => {
+  test('InitializePlot', () => {
     const user = 10;
     const system = 30;
+
     return initializeRealtimeCpuChart(user, system).then(() => {
       // yAxis is drawn.
       assertTrue(!!realtimeCpuChartElement.$$('#gridLines>path.domain'));
@@ -97,9 +114,9 @@ suite('RealtimeCpuChartTest', () => {
               .length);
 
       // Plot lines are drawn.
-      assertTrue(!!realtimeCpuChartElement.$$('#plotGroup>path.user-line')
+      assertTrue(!!realtimeCpuChartElement.$$('#plotGroup>path.user-area')
                        .getAttribute('d'));
-      assertTrue(!!realtimeCpuChartElement.$$('#plotGroup>path.system-line')
+      assertTrue(!!realtimeCpuChartElement.$$('#plotGroup>path.system-area')
                        .getAttribute('d'));
     });
   });
