@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
+#include "components/password_manager/core/browser/ui/password_check_referrer.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -373,6 +374,8 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
           base::UmaHistogramEnumeration(
               kSafetyCheckInteractions,
               SafetyCheckInteractions::kPasswordsManage);
+          password_manager::LogPasswordCheckReferrer(
+              password_manager::PasswordCheckReferrer::kSafetyCheck);
           [self.handler showPasswordIssuesPage];
           break;
       }
