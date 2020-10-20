@@ -19,7 +19,10 @@ package org.chromium.weblayer;
  */
 public abstract class ScrollOffsetCallback {
     /**
-     * Called when the scroll offset of the content of a Tab changes.
+     * Called when the vertical scroll location of the content of a Tab changes.
+     *
+     * @param scrollLocation The new vertical location. More specifically, the 'scrollTop' html
+     * property.
      */
-    public abstract void onVerticalScrollOffsetChanged(int scrollOffset);
+    public abstract void onVerticalScrollOffsetChanged(int scrollLocation);
 }
