@@ -528,6 +528,40 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 #define MAYBE_AccessibilityAriaCombobox AccessibilityAriaCombobox
 #endif
 
+// DISABLE A BUNCH OF TESTS FOR ANDROID
+// ------------------------------------
+// TODO(crbug.com/1137967): tests are flaky on android.
+#if defined(OS_ANDROID)
+#define MAYBE_AccessibilityAriaMenuItemRadio \
+  DISABLED_AccessibilityAriaMenuItemRadio
+#define MAYBE_AccessibilityAriaComboboxUneditable \
+  DISABLED_AccessibilityAriaComboboxUneditable
+#define MAYBE_AccessibilityAriaListBox DISABLED_AccessibilityAriaListBox
+#define MAYBE_AccessibilityAriaListBoxDisabled \
+  DISABLED_AccessibilityAriaListBoxDisabled
+#define MAYBE_AccessibilityAriaOption DISABLED_AccessibilityAriaOption
+#define MAYBE_AccessibilityAriaPosinset DISABLED_AccessibilityAriaPosinset
+#define MAYBE_AccessibilityAriaSelected DISABLED_AccessibilityAriaSelected
+#define MAYBE_AccessibilityAriaSetsize DISABLED_AccessibilityAriaSetsize
+#define MAYBE_AccessibilityAriaTree DISABLED_AccessibilityAriaTree
+#define MAYBE_AccessibilityButtonWithListboxPopup \
+  DISABLED_AccessibilityButtonWithListboxPopup
+#else
+#define MAYBE_AccessibilityAriaMenuItemRadio AccessibilityAriaMenuItemRadio
+#define MAYBE_AccessibilityAriaComboboxUneditable \
+  AccessibilityAriaComboboxUneditable
+#define MAYBE_AccessibilityAriaListBox AccessibilityAriaListBox
+#define MAYBE_AccessibilityAriaListBoxDisabled AccessibilityAriaListBoxDisabled
+#define MAYBE_AccessibilityAriaOption AccessibilityAriaOption
+#define MAYBE_AccessibilityAriaPosinset AccessibilityAriaPosinset
+#define MAYBE_AccessibilityAriaSelected AccessibilityAriaSelected
+#define MAYBE_AccessibilityAriaSetsize AccessibilityAriaSetsize
+#define MAYBE_AccessibilityAriaTree AccessibilityAriaTree
+#define MAYBE_AccessibilityButtonWithListboxPopup \
+  AccessibilityButtonWithListboxPopup
+#endif
+// ------------------------------------
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        MAYBE_AccessibilityAriaCombobox) {
   RunAriaTest(FILE_PATH_LITERAL("aria-combobox.html"));
