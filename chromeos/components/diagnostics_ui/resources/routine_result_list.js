@@ -4,8 +4,11 @@
 
 import './diagnostics_card.js';
 import './diagnostics_shared_css.js';
+import './routine_result_entry.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {RoutineName} from './diagnostics_types.js';
+import {ResultStatusItem} from './routine_list_executor.js'
 
 /**
  * @fileoverview
@@ -16,7 +19,42 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
-  properties: {},
+  properties: {
+    /** @private {!Array<!ResultStatusItem>} */
+    results_: {
+      type: Array,
+      value: () => [],
+    },
+  },
+
+  /**
+   * Resets the list and creates a new list with all routines in the unstarted
+   * state. Called by the parent RoutineResultSection when the user starts
+   * a test run.
+   * @param {!Array<!RoutineName>} routines
+   */
+  initializeTestRun(routines) {
+    this.clearRoutines();
+    routines.forEach((routine) => {
+      this.addRoutine_(routine);
+    });
+  },
+
+  /**
+   * Removes all the routines from the list.
+   */
+  clearRoutines() {
+    this.splice('results_', 0, this.results_.length);
+  },
+
+  /**
+   * Add a new unstarted routine to the end of the list.
+   * @param {!RoutineName} routine
+   * @private
+   */
+  addRoutine_(routine) {
+    this.push('results_', new ResultStatusItem(routine));
+  },
 
   /** @override */
   created() {},

@@ -31,3 +31,13 @@ export function getPercentBarChartElement(element) {
 export function getRealtimeCpuChartElement(element) {
   return element.shadowRoot.querySelector('realtime-cpu-chart');
 }
+
+/**
+ * Helper function for getting an array of routine-result-entry
+ * element from a routine-result-list.
+ * @param {!HTMLElement} element
+ * @return {!Array<!HTMLElement>}
+ */
+export function getResultEntries(element) {
+  return element.shadowRoot.querySelectorAll('routine-result-entry');
+}

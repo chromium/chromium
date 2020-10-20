@@ -2,4 +2,9 @@
 </style>
 
 <div id="resultListContainer">
+  <dom-repeat id="resultList" items="[[results_]]">
+    <template>
+      <routine-result-entry item="[[item]]"></routine-result-entry>
+    </template>
+  </dom-repeat>
 </div>
