@@ -52,6 +52,7 @@ class DropdownItemViewInfoListBuilder {
     private static final int DEFAULT_SIZE_OF_VISIBLE_GROUP = 5;
 
     private final List<SuggestionProcessor> mPriorityOrderedSuggestionProcessors;
+    private @NonNull AutocompleteController mAutocompleteController;
 
     private HeaderProcessor mHeaderProcessor;
     private ActivityTabProvider mActivityTabProvider;
@@ -63,9 +64,10 @@ class DropdownItemViewInfoListBuilder {
     private boolean mEnableAdaptiveSuggestionsCount;
     private boolean mBuiltListHasFullyConcealedElements;
 
-    DropdownItemViewInfoListBuilder() {
+    DropdownItemViewInfoListBuilder(AutocompleteController controller) {
         mPriorityOrderedSuggestionProcessors = new ArrayList<>();
         mDropdownHeight = DROPDOWN_HEIGHT_UNKNOWN;
+        mAutocompleteController = controller;
     }
 
     /**
@@ -384,6 +386,8 @@ class DropdownItemViewInfoListBuilder {
             Collections.sort(suggestionsPairedWithProcessors.subList(
                                      firstIndexForGrouping, firstIndexInConcealedGroup),
                     comparator);
+            mAutocompleteController.groupSuggestionsBySearchVsURL(
+                    firstIndexForGrouping, firstIndexInConcealedGroup);
         }
 
         // Sort the concealed part of suggestions list.
@@ -391,6 +395,8 @@ class DropdownItemViewInfoListBuilder {
             Collections.sort(suggestionsPairedWithProcessors.subList(
                                      firstIndexInConcealedGroup, firstIndexWithHeader),
                     comparator);
+            mAutocompleteController.groupSuggestionsBySearchVsURL(
+                    firstIndexInConcealedGroup, firstIndexWithHeader);
         }
     }
 
@@ -452,5 +458,14 @@ class DropdownItemViewInfoListBuilder {
         }
         assert false : "No default handler for suggestions";
         return null;
+    }
+
+    /**
+     * Change the AutocompleteController instance that will be used by this class.
+     *
+     * @param controller New AutocompleteController to use.
+     */
+    void setAutocompleteControllerForTest(@NonNull AutocompleteController controller) {
+        mAutocompleteController = controller;
     }
 }

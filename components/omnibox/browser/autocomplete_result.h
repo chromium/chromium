@@ -206,6 +206,12 @@ class AutocompleteResult {
       const std::vector<MatchDedupComparator>& old_result,
       const AutocompleteResult& new_result);
 
+  // Group suggestions in specified range by search vs url.
+  // The range used is [first_index, last_index), which contains all the
+  // elements between first_index and last_index, including the element pointed
+  // by first_index, but not the element pointed by last_index.
+  void GroupSuggestionsBySearchVsURL(int first_index, int last_index) const;
+
   // This value should be comfortably larger than any max-autocomplete-matches
   // under consideration.
   static constexpr size_t kMaxAutocompletePositionValue = 30;

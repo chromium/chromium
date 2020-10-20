@@ -56,6 +56,9 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock
+    AutocompleteController mAutocompleteController;
+
+    @Mock
     SuggestionProcessor mMockSuggestionProcessor;
 
     @Mock
@@ -77,7 +80,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
                 .thenAnswer((mock) -> new PropertyModel(SuggestionCommonProperties.ALL_KEYS));
         when(mMockHeaderProcessor.getViewTypeId()).thenReturn(OmniboxSuggestionUiType.HEADER);
 
-        mBuilder = new DropdownItemViewInfoListBuilder();
+        mBuilder = new DropdownItemViewInfoListBuilder(mAutocompleteController);
         mBuilder.registerSuggestionProcessor(mMockSuggestionProcessor);
         mBuilder.setHeaderProcessorForTest(mMockHeaderProcessor);
     }
@@ -250,6 +253,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         expectedList.addAll(actualList);
 
         mBuilder.groupSuggestionsBySearchVsURL(actualList, 4);
+        verifyNoMoreInteractions(mAutocompleteController);
         Assert.assertEquals(actualList, expectedList);
     }
 
@@ -291,6 +295,8 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         expectedList.addAll(actualList.subList(5, 9));
 
         mBuilder.groupSuggestionsBySearchVsURL(actualList, 8);
+        verify(mAutocompleteController, times(1)).groupSuggestionsBySearchVsURL(1, 5);
+        verifyNoMoreInteractions(mAutocompleteController);
         verifyListsMatch(expectedList, actualList);
     }
 
@@ -346,6 +352,9 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         expectedList.addAll(actualList.subList(7, 9)); // Grouped suggestions.
 
         mBuilder.groupSuggestionsBySearchVsURL(actualList, 3);
+        verify(mAutocompleteController, times(1)).groupSuggestionsBySearchVsURL(1, 3);
+        verify(mAutocompleteController, times(1)).groupSuggestionsBySearchVsURL(3, 7);
+        verifyNoMoreInteractions(mAutocompleteController);
         verifyListsMatch(expectedList, actualList);
     }
 
@@ -399,6 +408,9 @@ public class DropdownItemViewInfoListBuilderUnitTest {
                 actualList.get(8)); // URL suggestion scored 6
 
         mBuilder.groupSuggestionsBySearchVsURL(actualList, 4);
+        verify(mAutocompleteController, times(1)).groupSuggestionsBySearchVsURL(1, 4);
+        verify(mAutocompleteController, times(1)).groupSuggestionsBySearchVsURL(4, 9);
+        verifyNoMoreInteractions(mAutocompleteController);
         verifyListsMatch(expectedList, actualList);
     }
 
@@ -595,6 +607,8 @@ public class DropdownItemViewInfoListBuilderUnitTest {
                 pairs.get(8));
 
         mBuilder.groupSuggestionsBySearchVsURL(pairs, pairs.size());
+        verify(mAutocompleteController, times(1)).groupSuggestionsBySearchVsURL(5, 11);
+        verifyNoMoreInteractions(mAutocompleteController);
         verifyListsMatch(expected, pairs);
     }
 }
