@@ -40,10 +40,11 @@ SiteDataCacheFacade::SiteDataCacheFacade(
   }
 
   // Creates the real cache on the SiteDataCache's sequence.
-  SiteDataCacheFacadeFactory::GetInstance()->cache_factory()->Post(
-      FROM_HERE, &SiteDataCacheFactory::OnBrowserContextCreated,
-      browser_context->UniqueId(), browser_context->GetPath(),
-      parent_context_id);
+  SiteDataCacheFacadeFactory::GetInstance()
+      ->cache_factory()
+      ->AsyncCall(&SiteDataCacheFactory::OnBrowserContextCreated)
+      .WithArgs(browser_context->UniqueId(), browser_context->GetPath(),
+                parent_context_id);
 
   history::HistoryService* history =
       HistoryServiceFactory::GetForProfileWithoutCreating(
@@ -54,9 +55,10 @@ SiteDataCacheFacade::SiteDataCacheFacade(
 
 SiteDataCacheFacade::~SiteDataCacheFacade() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  SiteDataCacheFacadeFactory::GetInstance()->cache_factory()->Post(
-      FROM_HERE, &SiteDataCacheFactory::OnBrowserContextDestroyed,
-      browser_context_->UniqueId());
+  SiteDataCacheFacadeFactory::GetInstance()
+      ->cache_factory()
+      ->AsyncCall(&SiteDataCacheFactory::OnBrowserContextDestroyed)
+      .WithArgs(browser_context_->UniqueId());
   SiteDataCacheFacadeFactory::GetInstance()->OnFacadeDestroyed(PassKey());
 }
 
