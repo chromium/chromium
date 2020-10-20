@@ -42,7 +42,8 @@ public class DownloadBackgroundTask extends NativeBackgroundTask {
         mCurrentTaskType = taskParameters.getExtras().getInt(DownloadTaskScheduler.EXTRA_TASK_TYPE);
         // The feature value could change during native initialization, store it first.
         mStartsServiceManagerOnly =
-                (mCurrentTaskType == DownloadTaskType.DOWNLOAD_AUTO_RESUMPTION_TASK)
+                (mCurrentTaskType == DownloadTaskType.DOWNLOAD_AUTO_RESUMPTION_TASK
+                        || mCurrentTaskType == DownloadTaskType.DOWNLOAD_LATER_TASK)
                 ? CachedFeatureFlags.isEnabled(ChromeFeatureList.SERVICE_MANAGER_FOR_DOWNLOAD)
                 : PrefetchConfiguration.isServiceManagerForBackgroundPrefetchEnabled();
         // Reschedule if minimum battery level is not satisfied.
