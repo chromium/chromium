@@ -8,18 +8,33 @@ import core.path_util
 
 core.path_util.AddTelemetryToPath()
 
+# Initialize the duration of all stories to be shard to 10 seconds.
+# The reasons are:
+# 1) Even if the stories are skipped, they still have non negligible
+#    overhead.
+# 2) For a case of sharding a set of benchmarks with no existing data about
+#    timing, initializing the stories time within a single repeat to 1 leads
+#    to a roughly equal distribution of stories on the shards, whereas
+#    initializing them to zero will make the algorithm put all the stories
+#    into the first shard.
+# 3) For the case  of adding a new benchmark to a builder that hasn't run
+#    it before but has run other benchmarks, 10 seconds is a reasonable
+#    amount of time to guess that it would take the stories to run and
+#    creates reasonably balanced shard maps.
+DEFAULT_STORY_DURATION = 10
+
 
 def generate_sharding_map(benchmarks_to_shard, timing_data, num_shards, debug):
   """Generate sharding map.
 
     Args:
-      benchmarks_to_shard is a list of bot_platforms.BenchmarkConfig and
+      benchmarks_to_shard: a list of bot_platforms.BenchmarkConfig and
       ExecutableConfig objects.
-
-      The "stories" field contains a list of ordered story names. Notes that
-      this should match the actual order of how the benchmark stories are
-      executed for the sharding algorithm to be effective.
-
+      timing_data: The timing data in json with 'name' and 'duration'
+      num_shards: the total number of shards
+      debug: if true, print out full list of stories of each shard in shard map.
+    Return:
+      The shard map.
   """
   # Sort the list of benchmarks to be sharded by benchmark's name to make the
   # execution of this algorithm deterministic.
@@ -43,7 +58,6 @@ def generate_sharding_map(benchmarks_to_shard, timing_data, num_shards, debug):
   min_shard_index = None
   max_shard_time = 0
   max_shard_index = None
-  num_stories = len(story_timing_list)
   predicted_shard_timings = []
 
   # The algorithm below removes all the stories from |story_timing_list| one by
@@ -148,42 +162,25 @@ def _add_benchmarks_to_shard(sharding_map, shard_index, stories_in_shard,
 
 
 def _gather_timing_data(benchmarks_to_shard, timing_data, repeat):
-  story_timing_dict = {}
-  benchmarks_data_by_name = {}
-  for b in benchmarks_to_shard:
-    story_list = b.stories
-    benchmarks_data_by_name[b.name] = b
-    # Initialize the duration of all stories to be shard to 10 seconds.
-    # The reasons are:
-    # 1) Even if the stories are skipped, they still have non negligible
-    #    overhead.
-    # 2) For a case of sharding a set of benchmarks with no existing data about
-    #    timing, initializing the stories time within a single repeat to 1 leads
-    #    to a roughly equal distribution of stories on the shards, whereas
-    #    initializing them to zero will make the algorithm put all the stories
-    #    into the first shard.
-    # 3) For the case  of adding a new benchmark to a builder that hasn't run
-    #    it before but has run other benchmarks, 10 seconds is a reasonable
-    #    amount of time to guess that it would take the stories to run and
-    #    creates reasonably balanced shard maps.
-    for story in story_list:
-      story_timing_dict[b.name + '/' + story] = 10
+  """Generates a list of story and duration in order.
+  Return:
+    A list of tuples of (story_name, story_duration), sorted by the order of
+    benchmark name + story order within the benchmark.
+  """
+  timing_data_dict = {}
   for run in timing_data:
-    benchmark = run['name'].split('/', 1)[0]
-    if run['name'] in story_timing_dict:
-      if run['duration']:
-        if repeat:
-          story_timing_dict[run['name']] = (float(run['duration'])
-              * benchmarks_data_by_name[benchmark].repeat)
-        else:
-          story_timing_dict[run['name']] = float(run['duration'])
-  story_timing_list = []
-  for entry in benchmarks_to_shard:
-    benchmark_name = entry.name
-    for story_name in entry.stories:
-      test_name = '%s/%s' % (benchmark_name, story_name)
-      story_timing_list.append((test_name, story_timing_dict[test_name]))
-  return story_timing_list
+    if run['duration']:
+      timing_data_dict[run['name']] = float(run['duration'])
+  timing_data_list = []
+  for b in benchmarks_to_shard:
+    run_count = b.repeat if repeat else 1
+    for s in b.stories:
+      test_name = '%s/%s' % (b.name, s)
+      test_duration = DEFAULT_STORY_DURATION
+      if test_name in timing_data_dict:
+        test_duration = timing_data_dict[test_name] * run_count
+      timing_data_list.append((test_name, test_duration))
+  return timing_data_list
 
 
 def _generate_empty_sharding_map(num_shards):
