@@ -10,6 +10,8 @@
 #include <utility>
 
 #include "base/bind_helpers.h"
+#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -73,6 +75,9 @@ class WebAppRegistrarTest : public WebAppTest {
     return controller().database_factory();
   }
   WebAppRegistrar& registrar() { return controller().registrar(); }
+  WebAppRegistrarMutable& mutable_registrar() {
+    return controller().mutable_registrar();
+  }
   WebAppSyncBridge& sync_bridge() { return controller().sync_bridge(); }
 
   std::set<AppId> RegisterAppsForTesting(Registry registry) {
@@ -273,7 +278,7 @@ TEST_F(WebAppRegistrarTest, InitRegistrarAndDoForEachApp) {
 TEST_F(WebAppRegistrarTest, AllAppsMutable) {
   std::set<AppId> ids = InitRegistrarWithApps("https://example.com/path", 10);
 
-  for (WebApp& web_app : controller().mutable_registrar().AllAppsMutable()) {
+  for (WebApp& web_app : mutable_registrar().AllAppsMutable()) {
     web_app.SetDisplayMode(DisplayMode::kStandalone);
     const size_t num_removed = ids.erase(web_app.app_id());
     EXPECT_EQ(1U, num_removed);
@@ -298,6 +303,73 @@ TEST_F(WebAppRegistrarTest, DoForEachAndUnregisterAllApps) {
   EXPECT_FALSE(registrar().is_empty());
   UnregisterAll();
   EXPECT_TRUE(registrar().is_empty());
+}
+
+TEST_F(WebAppRegistrarTest, FilterApps) {
+  controller().Init();
+
+  Registry registry = CreateRegistryForTesting("https://example.com/path", 100);
+  auto ids = RegisterAppsForTesting(std::move(registry));
+
+  for (const WebApp& web_app : mutable_registrar().FilterAppsMutable(
+           [](const WebApp& web_app) { return false; })) {
+    NOTREACHED();
+    ALLOW_UNUSED_LOCAL(web_app);
+  }
+
+  for (const WebApp& web_app : mutable_registrar().FilterAppsMutable(
+           [](const WebApp& web_app) { return true; })) {
+    const size_t num_removed = ids.erase(web_app.app_id());
+    EXPECT_EQ(1U, num_removed);
+  }
+  EXPECT_TRUE(ids.empty());
+}
+
+TEST_F(WebAppRegistrarTest, GetApps) {
+  std::set<AppId> ids = InitRegistrarWithApps("https://example.com/path", 10);
+
+  int not_in_sync_install_count = 0;
+  for (const WebApp& web_app : registrar().GetApps()) {
+    ++not_in_sync_install_count;
+    EXPECT_TRUE(base::Contains(ids, web_app.app_id()));
+  }
+  EXPECT_EQ(10, not_in_sync_install_count);
+
+  auto web_app_in_sync1 = CreateWebApp("https://example.org/sync1");
+  web_app_in_sync1->SetIsInSyncInstall(true);
+  const AppId web_app_id_in_sync1 = web_app_in_sync1->app_id();
+  RegisterApp(std::move(web_app_in_sync1));
+
+  auto web_app_in_sync2 = CreateWebApp("https://example.org/sync2");
+  web_app_in_sync2->SetIsInSyncInstall(true);
+  const AppId web_app_id_in_sync2 = web_app_in_sync2->app_id();
+  RegisterApp(std::move(web_app_in_sync2));
+
+  int all_apps_count = 0;
+  for (const WebApp& web_app : registrar().AllApps()) {
+    ALLOW_UNUSED_LOCAL(web_app);
+    ++all_apps_count;
+  }
+  EXPECT_EQ(12, all_apps_count);
+
+  for (const WebApp& web_app : registrar().GetApps()) {
+    EXPECT_NE(web_app_id_in_sync1, web_app.app_id());
+    EXPECT_NE(web_app_id_in_sync2, web_app.app_id());
+
+    const size_t num_removed = ids.erase(web_app.app_id());
+    EXPECT_EQ(1U, num_removed);
+  }
+  EXPECT_TRUE(ids.empty());
+
+  UnregisterApp(web_app_id_in_sync1);
+  UnregisterApp(web_app_id_in_sync2);
+
+  not_in_sync_install_count = 0;
+  for (const WebApp& web_app : registrar().GetApps()) {
+    ALLOW_UNUSED_LOCAL(web_app);
+    ++not_in_sync_install_count;
+  }
+  EXPECT_EQ(10, not_in_sync_install_count);
 }
 
 TEST_F(WebAppRegistrarTest, WebAppSyncBridge) {

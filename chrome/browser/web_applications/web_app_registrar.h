@@ -77,6 +77,9 @@ class WebAppRegistrar : public AppRegistrar, public ProfileManagerObserver {
   void OnProfileMarkedForPermanentDeletion(
       Profile* profile_to_be_deleted) override;
 
+  // A filter must return false to skip the |web_app|.
+  using Filter = bool (*)(const WebApp& web_app);
+
   // Only range-based |for| loop supported. Don't use AppSet directly.
   // Doesn't support registration and unregistration of WebApp while iterating.
   class AppSet {
@@ -87,24 +90,43 @@ class WebAppRegistrar : public AppRegistrar, public ProfileManagerObserver {
      public:
       using InternalIter = Registry::const_iterator;
 
-      explicit Iter(InternalIter&& internal_iter)
-          : internal_iter_(std::move(internal_iter)) {}
+      Iter(InternalIter&& internal_iter,
+           InternalIter&& internal_end,
+           Filter filter)
+          : internal_iter_(std::move(internal_iter)),
+            internal_end_(std::move(internal_end)),
+            filter_(filter) {
+        FilterAndSkipApps();
+      }
       Iter(Iter&&) = default;
       Iter(const Iter&) = delete;
       Iter& operator=(const Iter&) = delete;
       ~Iter() = default;
 
-      void operator++() { ++internal_iter_; }
+      void operator++() {
+        ++internal_iter_;
+        FilterAndSkipApps();
+      }
       WebAppType& operator*() const { return *internal_iter_->second.get(); }
       bool operator!=(const Iter& iter) const {
         return internal_iter_ != iter.internal_iter_;
       }
 
      private:
+      void FilterAndSkipApps() {
+        if (!filter_)
+          return;
+
+        while (internal_iter_ != internal_end_ && !filter_(**this))
+          ++internal_iter_;
+      }
+
       InternalIter internal_iter_;
+      InternalIter internal_end_;
+      Filter filter_;
     };
 
-    explicit AppSet(const WebAppRegistrar* registrar);
+    AppSet(const WebAppRegistrar* registrar, Filter filter);
     AppSet(AppSet&&) = default;
     AppSet(const AppSet&) = delete;
     AppSet& operator=(const AppSet&) = delete;
@@ -120,16 +142,25 @@ class WebAppRegistrar : public AppRegistrar, public ProfileManagerObserver {
 
    private:
     const WebAppRegistrar* const registrar_;
+    const Filter filter_;
 #if DCHECK_IS_ON()
     const size_t mutations_count_;
 #endif
   };
 
+  // Returns all apps in the registry (a superset) including stubs.
+  // TODO(loyso): Rename this method to GetAppsIncludingStubs().
   const AppSet AllApps() const;
+  // Returns all apps excluding stubs for apps in sync install. Apps in sync
+  // install are being installed and should be hidden for most subsystems. This
+  // is a subset of AllApps().
+  const AppSet GetApps() const;
 
  protected:
   Registry& registry() { return registry_; }
   void SetRegistry(Registry&& registry);
+
+  const AppSet FilterApps(Filter filter) const;
 
   void CountMutation();
 
@@ -151,7 +182,12 @@ class WebAppRegistrarMutable : public WebAppRegistrar {
   void InitRegistry(Registry&& registry);
 
   WebApp* GetAppByIdMutable(const AppId& app_id);
+
+  AppSet FilterAppsMutable(Filter filter);
+
+  // TODO(loyso): Rename this method to GetAppsIncludingStubsMutable().
   AppSet AllAppsMutable();
+  AppSet GetAppsMutable();
 
   using WebAppRegistrar::CountMutation;
   using WebAppRegistrar::registry;
