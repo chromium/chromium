@@ -2021,6 +2021,22 @@ void WebMediaPlayerImpl::OnMetadata(const PipelineMetadata& metadata) {
       delegate_id_, delegate_has_audio_, HasVideo(),
       DurationToMediaContentType(GetPipelineMediaDuration()));
 
+  // It could happen that the demuxer successfully completed initialization
+  // (implying it had determined media metadata), but then removed all audio and
+  // video streams and the ability to demux any A/V before |metadata| was
+  // constructed and passed to us. One example is, with MSE-in-Workers, the
+  // worker owning the MediaSource could have been terminated, or the app could
+  // have explicitly removed all A/V SourceBuffers. That termination/removal
+  // could race the construction of |metadata|. Regardless of load-type, we
+  // shouldn't allow playback of a resource that has neither audio nor video.
+  // We treat lack of A/V as if there were an error in the demuxer before
+  // reaching HAVE_METADATA.
+  if (!HasVideo() && !HasAudio()) {
+    DVLOG(1) << __func__ << ": no audio and no video -> error";
+    OnError(PipelineStatus::DEMUXER_ERROR_COULD_NOT_OPEN);
+    return;  // Do not transition to HAVE_METADATA.
+  }
+
   // TODO(dalecurtis): Don't create these until kReadyStateHaveFutureData; when
   // we create them early we just increase the chances of needing to throw them
   // away unnecessarily.
