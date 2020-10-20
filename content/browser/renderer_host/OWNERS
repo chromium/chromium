@@ -1,6 +1,3 @@
-# COMPONENT: Internals>Core
-# COMPONENT: Internals>Sandbox>SiteIsolation
-# TEAM: site-isolation-dev@chromium.org
 
 # Compositing and input related code.
 kenrb@chromium.org

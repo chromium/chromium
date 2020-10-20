@@ -9,6 +9,3 @@ olka@chromium.org
 per-file *video*=chfremer@chromium.org
 per-file *video*=emircan@chromium.org
 per-file *video*=mcasas@chromium.org
-
-# TEAM: webrtc-dev@chromium.org
-# COMPONENT: Blink>GetUserMedia
