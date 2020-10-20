@@ -1484,13 +1484,7 @@ void CopyPasswordDetailWithID(int detail_id) {
 
 // Checks that attempts to edit a username to a value which is already used for
 // the same domain fails.
-// TODO(crbug.com/1140400): Fails on device for iPad 6th iOS 12.4.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testEditUsernameFails testEditUsernameFails
-#else
-#define MAYBE_testEditUsernameFails DISABLED_testEditUsernameFails
-#endif
-- (void)MAYBE_testEditUsernameFails {
+- (void)testEditUsernameFails {
   GREYAssert(
       [PasswordSettingsAppInterface saveExamplePassword:@"concrete password"
                                                userName:@"concrete username1"
