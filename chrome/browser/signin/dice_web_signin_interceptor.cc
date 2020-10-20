@@ -72,6 +72,10 @@ AccountInfo GetPrimaryAccountInfo(signin::IdentityManager* manager) {
   return account_info;
 }
 
+bool HasNoBrowser(content::WebContents* web_contents) {
+  return chrome::FindBrowserWithWebContents(web_contents) == nullptr;
+}
+
 }  // namespace
 
 DiceWebSigninInterceptor::DiceWebSigninInterceptor(
@@ -94,6 +98,13 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
     bool is_sync_signin) {
   if (!base::FeatureList::IsEnabled(kDiceWebSigninInterceptionFeature))
     return;
+
+  if (HasNoBrowser(web_contents)) {
+    // Do not intercept from the profile creation flow.
+    RecordSigninInterceptionHeuristicOutcome(
+        SigninInterceptionHeuristicOutcome::kAbortNoBrowser);
+    return;
+  }
 
   if (is_sync_signin) {
     // Do not intercept signins from the Sync startup flow.

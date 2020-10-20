@@ -41,6 +41,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#include "url/url_constants.h"
 
 #if defined(OS_WIN)
 #include "chrome/browser/shell_integration_win.h"
@@ -144,8 +145,8 @@ void ProfilePickerView::Display(ProfilePicker::EntryPoint entry_point) {
                                 startup_metric_utils::MainEntryPointTicks());
   }
 
-  if (initialized_ == kNotInitialized) {
-    initialized_ = kInProgress;
+  if (state_ == kNotStarted) {
+    state_ = kInitializing;
     g_browser_process->profile_manager()->CreateProfileAsync(
         ProfileManager::GetSystemProfilePath(),
         base::BindRepeating(&ProfilePickerView::OnSystemProfileCreated,
@@ -154,14 +155,14 @@ void ProfilePickerView::Display(ProfilePicker::EntryPoint entry_point) {
     return;
   }
 
-  if (initialized_ == kInProgress)
+  if (state_ == kInitializing)
     return;
 
   GetWidget()->Activate();
 }
 
 void ProfilePickerView::Clear() {
-  if (initialized_ == kDone) {
+  if (state_ == kReady || state_ == kFinalizing) {
     GetWidget()->Close();
     return;
   }
@@ -183,7 +184,7 @@ void ProfilePickerView::OnSystemProfileCreated(
 
 void ProfilePickerView::Init(ProfilePicker::EntryPoint entry_point,
                              Profile* system_profile) {
-  DCHECK_EQ(initialized_, kInProgress);
+  DCHECK_EQ(state_, kInitializing);
   auto web_view = std::make_unique<views::WebView>(system_profile);
   web_view->GetWebContents()->SetDelegate(this);
   // To record metrics using javascript, extensions are needed.
@@ -208,7 +209,7 @@ void ProfilePickerView::Init(ProfilePicker::EntryPoint entry_point,
   web_view_->LoadInitialURL(CreateURLForEntryPoint(entry_point));
   GetWidget()->Show();
   web_view_->RequestFocus();
-  initialized_ = InitState::kDone;
+  state_ = kReady;
 
   if (entry_point == ProfilePicker::EntryPoint::kOnStartup) {
     DCHECK(!creation_time_on_startup_.is_null());
@@ -285,7 +286,9 @@ void ProfilePickerView::OnProfileForSigninCreated(
   // Listen for sign-in getting completed.
   identity_manager_observer_.Add(
       IdentityManagerFactory::GetForProfile(profile));
-  profile_being_created_ = profile;
+  // TODO(crbug.com/1126913): When there is back button from the signed-in page,
+  // make sure the flow does not create multiple profiles simultaneously.
+  signed_in_profile_being_created_ = profile;
 
   // Rebuild the view.
   // TODO(crbug.com/1126913): Add the simple toolbar with the back button.
@@ -310,7 +313,7 @@ void ProfilePickerView::SwitchToSyncConfirmation() {
   SyncConfirmationUI* sync_confirmation_ui = static_cast<SyncConfirmationUI*>(
       web_view_->GetWebContents()->GetWebUI()->GetController());
   sync_confirmation_ui->InitializeMessageHandlerWithProfile(
-      profile_being_created_);
+      signed_in_profile_being_created_);
 }
 
 gfx::Size ProfilePickerView::CalculatePreferredSize() const {
@@ -353,19 +356,24 @@ void ProfilePickerView::OnRefreshTokenUpdatedForAccount(
 
   base::OnceClosure sync_consent_completed_closure =
       base::BindOnce(&ProfilePickerView::FinishSignedInCreationFlow,
-                     weak_ptr_factory_.GetWeakPtr(), profile_being_created_,
-                     BrowserOpenedCallback());
+                     weak_ptr_factory_.GetWeakPtr(), BrowserOpenedCallback());
+
+  // Stop with the sign-in navigation, it is not needed any more and this avoids
+  // any glitches of the redirect page getting displayed. This is needed because
+  // in some cases (such as managed signed-in), there are further delays before
+  // any follow-up UI is shown.
+  web_view_->LoadInitialURL(GURL(url::kAboutBlankURL));
 
   // DiceTurnSyncOnHelper deletes itself once done.
   new DiceTurnSyncOnHelper(
-      profile_being_created_,
+      signed_in_profile_being_created_,
       signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
       signin_metrics::Reason::REASON_SIGNIN_PRIMARY_ACCOUNT,
       account_info.account_id,
       DiceTurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
       std::make_unique<ProfilePickerViewSyncDelegate>(
-          profile_being_created_,
+          signed_in_profile_being_created_,
           base::BindOnce(&ProfilePickerView::FinishSignedInCreationFlow,
                          weak_ptr_factory_.GetWeakPtr())),
       std::move(sync_consent_completed_closure));
@@ -379,43 +387,42 @@ void ProfilePickerView::OnExtendedAccountInfoUpdated(
 
   // Stop listening to further changes.
   identity_manager_observer_.Remove(
-      IdentityManagerFactory::GetForProfile(profile_being_created_));
+      IdentityManagerFactory::GetForProfile(signed_in_profile_being_created_));
 
   if (on_account_info_available_)
     std::move(on_account_info_available_).Run();
 }
 
 void ProfilePickerView::FinishSignedInCreationFlow(
-    Profile* profile,
     BrowserOpenedCallback callback) {
   // This can get called first time from a special case handling (such as the
   // Settings link) and than second time when the consent flow finishes. We need
   // to make sure only the first call gets handled.
-  if (!profile_being_created_)
+  if (state_ == kFinalizing)
     return;
-  profile_being_created_ = nullptr;
+  state_ = kFinalizing;
 
   if (!account_info_.IsValid()) {
     // TODO(crbug.com/1126913): Add a timeout so that Chrome deals with cases
     // when the extended info is never available (firewall, etc).
-    on_account_info_available_ = base::BindOnce(
-        &ProfilePickerView::FinishSignedInCreationFlowImpl,
-        weak_ptr_factory_.GetWeakPtr(), profile, std::move(callback));
+    on_account_info_available_ =
+        base::BindOnce(&ProfilePickerView::FinishSignedInCreationFlowImpl,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback));
     return;
   }
 
-  FinishSignedInCreationFlowImpl(profile, std::move(callback));
+  FinishSignedInCreationFlowImpl(std::move(callback));
 }
 
 void ProfilePickerView::FinishSignedInCreationFlowImpl(
-    Profile* profile,
     BrowserOpenedCallback callback) {
   DCHECK(account_info_.IsValid());
 
   ProfileAttributesEntry* entry = nullptr;
   if (!g_browser_process->profile_manager()
            ->GetProfileAttributesStorage()
-           .GetProfileAttributesWithPath(profile->GetPath(), &entry)) {
+           .GetProfileAttributesWithPath(
+               signed_in_profile_being_created_->GetPath(), &entry)) {
     NOTREACHED();
     return;
   }
@@ -440,20 +447,24 @@ void ProfilePickerView::FinishSignedInCreationFlowImpl(
                                      // extensions because we only open browser
                                      // window if the Profile is not locked.
                                      // Hence there is no extension blocked.
-      profile, Profile::CREATE_STATUS_INITIALIZED);
+      signed_in_profile_being_created_, Profile::CREATE_STATUS_INITIALIZED);
 }
 
 void ProfilePickerView::OnBrowserOpened(
     BrowserOpenedCallback finish_flow_callback,
     Profile* profile,
     Profile::CreateStatus profile_create_status) {
-  // Hide the picker view.
+  DCHECK_EQ(profile, signed_in_profile_being_created_);
+
+  // Hide the flow window. This posts a task on the message loop to destroy the
+  // window incl. this view.
   Clear();
 
   if (!finish_flow_callback)
     return;
 
-  Browser* browser = chrome::FindLastActiveWithProfile(profile);
+  Browser* browser =
+      chrome::FindLastActiveWithProfile(signed_in_profile_being_created_);
   DCHECK(browser);
   std::move(finish_flow_callback).Run(browser);
 }

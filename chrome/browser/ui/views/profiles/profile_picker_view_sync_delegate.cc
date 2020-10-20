@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
@@ -30,8 +31,16 @@ ProfilePickerViewSyncDelegate::~ProfilePickerViewSyncDelegate() = default;
 void ProfilePickerViewSyncDelegate::ShowLoginError(
     const std::string& email,
     const std::string& error_message) {
-  // TODO(crbug.com/1126913): Handle the error cases.
-  NOTIMPLEMENTED();
+  // Open the browser and when it's done, show the login error.
+  // TODO(crbug.com/1126913): In some cases, the current behavior is not ideal
+  // because it is not designed with profile creation in mind. Concretely, for
+  // sync not being available because there already is a syncing profile with
+  // this account, we should likely auto-delete the profile and offer to either
+  // switch or to start sign-in once again.
+  std::move(open_browser_callback_)
+      .Run(base::BindOnce(
+          &DiceTurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser, email,
+          error_message));
 }
 
 void ProfilePickerViewSyncDelegate::ShowMergeSyncDataConfirmation(
@@ -45,8 +54,12 @@ void ProfilePickerViewSyncDelegate::ShowMergeSyncDataConfirmation(
 void ProfilePickerViewSyncDelegate::ShowEnterpriseAccountConfirmation(
     const std::string& email,
     DiceTurnSyncOnHelper::SigninChoiceCallback callback) {
-  // TODO(crbug.com/1126913): Handle the error cases.
-  NOTIMPLEMENTED();
+  enterprise_confirmation_shown_ = true;
+  // Open the browser and when it's done, show the confirmation dialog.
+  std::move(open_browser_callback_)
+      .Run(base::BindOnce(&DiceTurnSyncOnHelper::Delegate::
+                              ShowEnterpriseAccountConfirmationForBrowser,
+                          email, std::move(callback)));
 }
 
 void ProfilePickerViewSyncDelegate::ShowSyncConfirmation(
@@ -56,18 +69,39 @@ void ProfilePickerViewSyncDelegate::ShowSyncConfirmation(
   sync_confirmation_callback_ = std::move(callback);
   scoped_login_ui_service_observer_.Add(
       LoginUIServiceFactory::GetForProfile(profile_));
+
+  if (enterprise_confirmation_shown_) {
+    Browser* browser = chrome::FindLastActiveWithProfile(profile_);
+    // This is a very rare corner case (e.g. the user manages to close the only
+    // browser window in a very short span of time between enterprise
+    // confirmation and this callback), not worth handling fully. Instead, the
+    // flow is aborted.
+    if (!browser)
+      return;
+    browser->signin_view_controller()->ShowModalSyncConfirmationDialog();
+    return;
+  }
+
   ProfilePicker::SwitchToSyncConfirmation();
 }
 
 void ProfilePickerViewSyncDelegate::ShowSyncSettings() {
+  if (enterprise_confirmation_shown_) {
+    Browser* browser = chrome::FindLastActiveWithProfile(profile_);
+    if (!browser)
+      return;
+    OpenSettingsInBrowser(browser);
+    return;
+  }
+
   // Open the browser and when it's done, open settings in the browser.
-  std::move(open_browser_callback_)
-      .Run(profile_, base::BindOnce(&OpenSettingsInBrowser));
+  std::move(open_browser_callback_).Run(base::BindOnce(&OpenSettingsInBrowser));
 }
 
 void ProfilePickerViewSyncDelegate::SwitchToProfile(Profile* new_profile) {
-  // TODO(crbug.com/1126913): Handle this flow.
-  NOTIMPLEMENTED();
+  // A brand new profile cannot have preexisting syncable data and thus
+  // switching to another profile does never get offered.
+  NOTREACHED();
 }
 
 void ProfilePickerViewSyncDelegate::OnSyncConfirmationUIClosed(

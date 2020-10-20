@@ -18,8 +18,7 @@ class ProfilePickerViewSyncDelegate : public DiceTurnSyncOnHelper::Delegate,
                                       public LoginUIService::Observer {
  public:
   using OpenBrowserCallback =
-      base::OnceCallback<void(Profile*,
-                              ProfilePickerView::BrowserOpenedCallback)>;
+      base::OnceCallback<void(ProfilePickerView::BrowserOpenedCallback)>;
 
   ProfilePickerViewSyncDelegate(Profile* profile,
                                 OpenBrowserCallback open_browser_callback);
@@ -47,6 +46,7 @@ class ProfilePickerViewSyncDelegate : public DiceTurnSyncOnHelper::Delegate,
       LoginUIService::SyncConfirmationUIClosedResult result) override;
 
   Profile* profile_;
+  bool enterprise_confirmation_shown_ = false;
   OpenBrowserCallback open_browser_callback_;
   base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
       sync_confirmation_callback_;

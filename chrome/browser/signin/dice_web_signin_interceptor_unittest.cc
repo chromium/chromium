@@ -19,13 +19,12 @@
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_web_contents_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -80,7 +79,7 @@ void MakeValidAccountInfo(AccountInfo* info) {
 
 }  // namespace
 
-class DiceWebSigninInterceptorTest : public testing::Test {
+class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
  public:
   DiceWebSigninInterceptorTest() = default;
   ~DiceWebSigninInterceptorTest() override = default;
@@ -93,12 +92,12 @@ class DiceWebSigninInterceptorTest : public testing::Test {
     return mock_delegate_;
   }
 
-  Profile* profile() { return profile_; }
-
-  content::WebContents* web_contents() { return web_contents_; }
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
 
   ProfileAttributesStorage* profile_attributes_storage() {
-    return profile_manager_->profile_attributes_storage();
+    return profile_manager()->profile_attributes_storage();
   }
 
   signin::IdentityTestEnvironment* identity_test_env() {
@@ -106,7 +105,7 @@ class DiceWebSigninInterceptorTest : public testing::Test {
   }
 
   Profile* CreateTestingProfile(const std::string& name) {
-    return profile_manager_->CreateTestingProfile(name);
+    return profile_manager()->CreateTestingProfile(name);
   }
 
   // Helper function that calls MaybeInterceptWebSignin with parameters
@@ -121,23 +120,10 @@ class DiceWebSigninInterceptorTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     feature_list_.InitAndEnableFeature(kDiceWebSigninInterceptionFeature);
-    // Create a testing profile registered in the profile manager.
-    profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(profile_manager_->SetUp());
-    TestingProfile::TestingFactories factories =
-        IdentityTestEnvironmentProfileAdaptor::
-            GetIdentityTestEnvironmentFactories();
-    factories.push_back(
-        {ChromeSigninClientFactory::GetInstance(),
-         base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
-                             &test_url_loader_factory_)});
-    profile_ = profile_manager_->CreateTestingProfile(
-        chrome::kInitialProfile,
-        std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
-        base::UTF8ToUTF16(""), 0, std::string(), std::move(factories));
+    BrowserWithTestWindowTest::SetUp();
+
     identity_test_env_profile_adaptor_ =
-        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
     identity_test_env_profile_adaptor_->identity_test_env()
         ->SetTestURLLoaderFactory(&test_url_loader_factory_);
 
@@ -145,33 +131,35 @@ class DiceWebSigninInterceptorTest : public testing::Test {
         testing::StrictMock<MockDiceWebSigninInterceptorDelegate>>();
     mock_delegate_ = delegate.get();
     dice_web_signin_interceptor_ = std::make_unique<DiceWebSigninInterceptor>(
-        profile_, std::move(delegate));
+        profile(), std::move(delegate));
 
-    web_contents_ = test_web_contents_factory_.CreateWebContents(profile_);
+    // Create the first tab so that web_contents() exists.
+    AddTab(browser(), GURL("http://foo/1"));
   }
 
   void TearDown() override {
-    test_web_contents_factory_.DestroyWebContents(web_contents_);
     dice_web_signin_interceptor_->Shutdown();
     identity_test_env_profile_adaptor_.reset();
-    profile_manager_->DeleteTestingProfile(chrome::kInitialProfile);
+    BrowserWithTestWindowTest::TearDown();
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() override {
+    TestingProfile::TestingFactories factories =
+        IdentityTestEnvironmentProfileAdaptor::
+            GetIdentityTestEnvironmentFactories();
+    factories.push_back(
+        {ChromeSigninClientFactory::GetInstance(),
+         base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                             &test_url_loader_factory_)});
+    return factories;
   }
 
   base::test::ScopedFeatureList feature_list_;
-  content::BrowserTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  content::TestWebContentsFactory test_web_contents_factory_;
-  std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
   std::unique_ptr<DiceWebSigninInterceptor> dice_web_signin_interceptor_;
-
-  // Owned by profile_manager_
-  TestingProfile* profile_ = nullptr;
-  // Owned by dice_web_signin_interceptor_
   MockDiceWebSigninInterceptorDelegate* mock_delegate_ = nullptr;
-  // Owned by test_web_contents_factory_
-  content::WebContents* web_contents_ = nullptr;
 };
 
 TEST_F(DiceWebSigninInterceptorTest, ShouldShowProfileSwitchBubble) {

@@ -36,10 +36,11 @@ class ProfilePickerView : public views::DialogDelegateView,
   ProfilePickerView();
   ~ProfilePickerView() override;
 
-  enum InitState {
-    kNotInitialized = 0,
-    kInProgress = 1,
-    kDone = 2,
+  enum State {
+    kNotStarted = 0,
+    kInitializing = 1,
+    kReady = 2,
+    kFinalizing = 3
   };
 
   // Displays the profile picker.
@@ -81,12 +82,10 @@ class ProfilePickerView : public views::DialogDelegateView,
       const CoreAccountInfo& account_info) override;
   void OnExtendedAccountInfoUpdated(const AccountInfo& account_info) override;
 
-  // Finishes the creation flow by marking `profile` as fully created, opening a
-  // browser window for `profile` and calling `callback`.
-  void FinishSignedInCreationFlow(Profile* profile,
-                                  BrowserOpenedCallback callback);
-  void FinishSignedInCreationFlowImpl(Profile* profile,
-                                      BrowserOpenedCallback callback);
+  // Finishes the creation flow by marking `profile_being_created_` as fully
+  // created, opening a browser window for this profile and calling `callback`.
+  void FinishSignedInCreationFlow(BrowserOpenedCallback callback);
+  void FinishSignedInCreationFlowImpl(BrowserOpenedCallback callback);
 
   // Internal callback to finish the last steps of the signed-in creation flow.
   void OnBrowserOpened(BrowserOpenedCallback finish_flow_callback,
@@ -94,11 +93,14 @@ class ProfilePickerView : public views::DialogDelegateView,
                        Profile::CreateStatus profile_create_status);
 
   ScopedKeepAlive keep_alive_;
-  InitState initialized_ = InitState::kNotInitialized;
+  State state_ = State::kNotStarted;
 
   // The current WebView object, owned by the view hierarchy.
   views::WebView* web_view_ = nullptr;
-  Profile* profile_being_created_ = nullptr;
+
+  // Assigned a value at the beginning of a signed-in profile creation flow,
+  // until the end of the flow (i.e. for the rest of the lifetime of this view).
+  Profile* signed_in_profile_being_created_ = nullptr;
 
   AccountInfo account_info_;
   base::OnceClosure on_account_info_available_;

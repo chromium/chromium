@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 
+#include "base/bind_helpers.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
@@ -16,7 +18,10 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/sync/profile_signin_confirmation_helper.h"
+#include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
@@ -35,8 +40,13 @@
 
 namespace {
 
-AccountInfo FillAccountInfo(const CoreAccountInfo& core_info,
-                            const std::string& given_name) {
+const SkColor kProfileColor = SK_ColorRED;
+const char kWork[] = "Work";
+
+AccountInfo FillAccountInfo(
+    const CoreAccountInfo& core_info,
+    const std::string& given_name,
+    const std::string& hosted_domain = kNoHostedDomainFound) {
   AccountInfo account_info;
   account_info.email = core_info.email;
   account_info.gaia = core_info.gaia;
@@ -45,7 +55,7 @@ AccountInfo FillAccountInfo(const CoreAccountInfo& core_info,
       core_info.is_under_advanced_protection;
   account_info.full_name = "Test Full Name";
   account_info.given_name = given_name;
-  account_info.hosted_domain = kNoHostedDomainFound;
+  account_info.hosted_domain = hosted_domain;
   account_info.locale = "en";
   account_info.picture_url = "https://get-avatar.com/foo";
   account_info.is_child_account = false;
@@ -146,17 +156,30 @@ class FakeUserPolicySigninService : public policy::UserPolicySigninService {
   static std::unique_ptr<KeyedService> Build(content::BrowserContext* context) {
     Profile* profile = Profile::FromBrowserContext(context);
     return std::make_unique<FakeUserPolicySigninService>(
-        profile, IdentityManagerFactory::GetForProfile(profile));
+        profile, IdentityManagerFactory::GetForProfile(profile), std::string(),
+        std::string());
+  }
+
+  static std::unique_ptr<KeyedService> BuildForEnterprise(
+      content::BrowserContext* context) {
+    Profile* profile = Profile::FromBrowserContext(context);
+    // Non-empty dm token & client id means enterprise account.
+    return std::make_unique<FakeUserPolicySigninService>(
+        profile, IdentityManagerFactory::GetForProfile(profile), "foo", "bar");
   }
 
   FakeUserPolicySigninService(Profile* profile,
-                              signin::IdentityManager* identity_manager)
+                              signin::IdentityManager* identity_manager,
+                              const std::string& dm_token,
+                              const std::string& client_id)
       : UserPolicySigninService(profile,
                                 nullptr,
                                 nullptr,
                                 nullptr,
                                 identity_manager,
-                                nullptr) {}
+                                nullptr),
+        dm_token_(dm_token),
+        client_id_(client_id) {}
 
   // policy::UserPolicySigninService:
   void RegisterForPolicyWithAccountId(
@@ -181,6 +204,50 @@ class FakeUserPolicySigninService : public policy::UserPolicySigninService {
   std::string client_id_;
 };
 
+class TestTabDialogs : public TabDialogs {
+ public:
+  TestTabDialogs(content::WebContents* contents, base::RunLoop* run_loop)
+      : contents_(contents), run_loop_(run_loop) {}
+  ~TestTabDialogs() override = default;
+
+  // Creates a platform specific instance, and attaches it to |contents|.
+  // If an instance is already attached, it overwrites it.
+  static void OverwriteForWebContents(content::WebContents* contents,
+                                      base::RunLoop* run_loop) {
+    DCHECK(contents);
+    contents->SetUserData(UserDataKey(),
+                          std::make_unique<TestTabDialogs>(contents, run_loop));
+  }
+
+  gfx::NativeView GetDialogParentView() const override {
+    return contents_->GetNativeView();
+  }
+  void ShowCollectedCookies() override {}
+  void ShowHungRendererDialog(
+      content::RenderWidgetHost* render_widget_host,
+      base::RepeatingClosure hang_monitor_restarter) override {}
+  void HideHungRendererDialog(
+      content::RenderWidgetHost* render_widget_host) override {}
+  bool IsShowingHungRendererDialog() override { return false; }
+
+  void ShowProfileSigninConfirmation(
+      Browser* browser,
+      Profile* profile,
+      const std::string& username,
+      std::unique_ptr<ui::ProfileSigninConfirmationDelegate> delegate)
+      override {
+    delegate->OnContinueSignin();
+    run_loop_->Quit();
+  }
+
+  void ShowManagePasswordsBubble(bool user_action) override {}
+  void HideManagePasswordsBubble() override {}
+
+ private:
+  content::WebContents* contents_;
+  base::RunLoop* run_loop_;
+};
+
 class ProfilePickerCreationFlowBrowserTest : public InProcessBrowserTest {
  public:
   ProfilePickerCreationFlowBrowserTest() {
@@ -202,7 +269,8 @@ class ProfilePickerCreationFlowBrowserTest : public InProcessBrowserTest {
     command_line->AppendSwitch(switches::kDisableSync);
   }
 
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+  virtual void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) {
     policy::UserPolicySigninServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(&FakeUserPolicySigninService::Build));
   }
@@ -245,7 +313,6 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, ShowChoice) {
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CreateSignedInProfile) {
-  const SkColor kProfileColor = SK_ColorRED;
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
 
   ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
@@ -300,7 +367,299 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                   .GetProfileAttributesWithPath(
                       profile_being_created->GetPath(), &entry));
   EXPECT_FALSE(entry->IsEphemeral());
+  EXPECT_TRUE(entry->IsAuthenticated());
   EXPECT_EQ(entry->GetLocalProfileName(), base::UTF8ToUTF16("Joe"));
+  EXPECT_EQ(ThemeServiceFactory::GetForProfile(profile_being_created)
+                ->GetAutogeneratedThemeColor(),
+            kProfileColor);
+}
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
+                       CreateSignedInProfileSettings) {
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+
+  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
+  WaitForNewWebView();
+
+  // Simulate a click on the signin button.
+  base::MockCallback<base::OnceClosure> switch_failure_callback;
+  EXPECT_CALL(switch_failure_callback, Run()).Times(0);
+  ProfilePicker::SwitchToSignIn(kProfileColor, switch_failure_callback.Get());
+
+  // The DICE navigation happens in a new web view (for the profile being
+  // created), wait for it.
+  WaitForNewWebView();
+  FirstVisuallyNonEmptyPaintObserver(
+      web_contents(), GaiaUrls::GetInstance()->signin_chrome_sync_dice())
+      .Wait();
+
+  // Add an account - simulate a successful Gaia sign-in.
+  Profile* profile_being_created =
+      static_cast<Profile*>(web_view()->GetBrowserContext());
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_being_created);
+  CoreAccountInfo core_account_info =
+      signin::MakeAccountAvailable(identity_manager, "joe.consumer@gmail.com");
+  ASSERT_TRUE(identity_manager->HasAccountWithRefreshToken(
+      core_account_info.account_id));
+
+  AccountInfo account_info = FillAccountInfo(core_account_info, "Joe");
+  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+
+  // Wait for the sign-in to propagate to the flow, resulting in sync
+  // confirmation screen getting displayed.
+  FirstVisuallyNonEmptyPaintObserver(web_contents(),
+                                     GURL("chrome://sync-confirmation/"))
+      .Wait();
+
+  // Simulate closing the UI with "Yes, I'm in".
+  LoginUIServiceFactory::GetForProfile(profile_being_created)
+      ->SyncConfirmationUIClosed(LoginUIService::CONFIGURE_SYNC_FIRST);
+  Browser* new_browser = BrowserAddedWaiter(2u).Wait();
+  FirstVisuallyNonEmptyPaintObserver(
+      new_browser->tab_strip_model()->GetActiveWebContents(),
+      GURL("chrome://settings/syncSetup"))
+      .Wait();
+
+  // Check expectations when the profile creation flow is done.
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+
+  ProfileAttributesEntry* entry = nullptr;
+  ASSERT_TRUE(g_browser_process->profile_manager()
+                  ->GetProfileAttributesStorage()
+                  .GetProfileAttributesWithPath(
+                      profile_being_created->GetPath(), &entry));
+  EXPECT_FALSE(entry->IsEphemeral());
+  // Sync is technically enabled for the profile. Without SyncService, the
+  // difference between SYNC_WITH_DEFAULT_SETTINGS and CONFIGURE_SYNC_FIRST
+  // cannot be told.
+  EXPECT_TRUE(entry->IsAuthenticated());
+  EXPECT_EQ(entry->GetLocalProfileName(), base::UTF8ToUTF16("Joe"));
+  EXPECT_EQ(ThemeServiceFactory::GetForProfile(profile_being_created)
+                ->GetAutogeneratedThemeColor(),
+            kProfileColor);
+}
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
+                       CreateSignedInProfileSigninAlreadyExists) {
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+
+  // Create a pre-existing profile syncing with the same account as the profile
+  // being created.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath new_path = profile_manager->GenerateNextProfileDirectoryPath();
+  base::RunLoop run_loop;
+  profile_manager->CreateProfileAsync(
+      new_path,
+      base::BindLambdaForTesting(
+          [&run_loop](Profile* profile, Profile::CreateStatus status) {
+            if (status == Profile::CREATE_STATUS_INITIALIZED) {
+              run_loop.Quit();
+            }
+          }),
+      base::string16(), std::string());
+  run_loop.Run();
+  ProfileAttributesEntry* other_entry = nullptr;
+  ProfileAttributesStorage& storage =
+      profile_manager->GetProfileAttributesStorage();
+  ASSERT_TRUE(storage.GetProfileAttributesWithPath(new_path, &other_entry));
+  // Fake sync is enabled in this profile with Joe's account.
+  other_entry->SetAuthInfo(std::string(),
+                           base::UTF8ToUTF16("joe.consumer@gmail.com"),
+                           /*is_consented_primary_account=*/true);
+
+  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
+  WaitForNewWebView();
+
+  // Simulate a click on the signin button.
+  base::MockCallback<base::OnceClosure> switch_failure_callback;
+  EXPECT_CALL(switch_failure_callback, Run()).Times(0);
+  ProfilePicker::SwitchToSignIn(kProfileColor, switch_failure_callback.Get());
+
+  // The DICE navigation happens in a new web view (for the profile being
+  // created), wait for it.
+  WaitForNewWebView();
+  FirstVisuallyNonEmptyPaintObserver(
+      web_contents(), GaiaUrls::GetInstance()->signin_chrome_sync_dice())
+      .Wait();
+
+  // Add an account - simulate a successful Gaia sign-in.
+  Profile* profile_being_created =
+      static_cast<Profile*>(web_view()->GetBrowserContext());
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_being_created);
+  CoreAccountInfo core_account_info =
+      signin::MakeAccountAvailable(identity_manager, "joe.consumer@gmail.com");
+  ASSERT_TRUE(identity_manager->HasAccountWithRefreshToken(
+      core_account_info.account_id));
+
+  AccountInfo account_info = FillAccountInfo(core_account_info, "Joe");
+  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+
+  // Instead of sync confirmation, a browser is displayed (with a login error).
+  Browser* new_browser = BrowserAddedWaiter(2u).Wait();
+  FirstVisuallyNonEmptyPaintObserver(
+      new_browser->tab_strip_model()->GetActiveWebContents(),
+      GURL("chrome://newtab/"))
+      .Wait();
+
+  // Check expectations when the profile creation flow is done.
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+
+  ProfileAttributesEntry* entry = nullptr;
+  ASSERT_TRUE(storage.GetProfileAttributesWithPath(
+      profile_being_created->GetPath(), &entry));
+  EXPECT_FALSE(entry->IsEphemeral());
+  EXPECT_FALSE(entry->IsAuthenticated());
+  EXPECT_EQ(entry->GetLocalProfileName(), base::UTF8ToUTF16("Joe"));
+  EXPECT_EQ(ThemeServiceFactory::GetForProfile(profile_being_created)
+                ->GetAutogeneratedThemeColor(),
+            kProfileColor);
+}
+
+class ProfilePickerEnterpriseCreationFlowBrowserTest
+    : public ProfilePickerCreationFlowBrowserTest {
+ public:
+  ProfilePickerEnterpriseCreationFlowBrowserTest() = default;
+
+  void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) override {
+    policy::UserPolicySigninServiceFactory::GetInstance()->SetTestingFactory(
+        context,
+        base::BindRepeating(&FakeUserPolicySigninService::BuildForEnterprise));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
+                       CreateSignedInProfile) {
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+
+  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
+  WaitForNewWebView();
+
+  // Simulate a click on the signin button.
+  base::MockCallback<base::OnceClosure> switch_failure_callback;
+  EXPECT_CALL(switch_failure_callback, Run()).Times(0);
+  ProfilePicker::SwitchToSignIn(kProfileColor, switch_failure_callback.Get());
+
+  // The DICE navigation happens in a new web view (for the profile being
+  // created), wait for it.
+  WaitForNewWebView();
+  FirstVisuallyNonEmptyPaintObserver(
+      web_contents(), GaiaUrls::GetInstance()->signin_chrome_sync_dice())
+      .Wait();
+
+  // Add an account - simulate a successful Gaia sign-in.
+  Profile* profile_being_created =
+      static_cast<Profile*>(web_view()->GetBrowserContext());
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_being_created);
+  CoreAccountInfo core_account_info =
+      signin::MakeAccountAvailable(identity_manager, "joe@enterprise.com");
+  ASSERT_TRUE(identity_manager->HasAccountWithRefreshToken(
+      core_account_info.account_id));
+
+  AccountInfo account_info =
+      FillAccountInfo(core_account_info, "Joe", "enterprise.com");
+  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+
+  // Wait for the sign-in to propagate to the flow, resulting in new browser
+  // getting opened.
+  Browser* new_browser = BrowserAddedWaiter(2u).Wait();
+  // Inject a fake tab helper that confirms the enterprise dialog right away.
+  base::RunLoop loop_until_sync_confirmed;
+  TestTabDialogs::OverwriteForWebContents(
+      new_browser->tab_strip_model()->GetActiveWebContents(),
+      &loop_until_sync_confirmed);
+  // Wait until the final sync confirmation screen in shown and confirmed.
+  loop_until_sync_confirmed.Run();
+  // Now the sync consent screen is shown, simulate closing the UI with "Yes,
+  // I'm in".
+  LoginUIServiceFactory::GetForProfile(profile_being_created)
+      ->SyncConfirmationUIClosed(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
+
+  FirstVisuallyNonEmptyPaintObserver(
+      new_browser->tab_strip_model()->GetActiveWebContents(),
+      GURL("chrome://newtab/"))
+      .Wait();
+
+  // Check expectations when the profile creation flow is done.
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+
+  ProfileAttributesEntry* entry = nullptr;
+  ASSERT_TRUE(g_browser_process->profile_manager()
+                  ->GetProfileAttributesStorage()
+                  .GetProfileAttributesWithPath(
+                      profile_being_created->GetPath(), &entry));
+  EXPECT_FALSE(entry->IsEphemeral());
+  EXPECT_EQ(entry->GetLocalProfileName(), base::UTF8ToUTF16(kWork));
+  EXPECT_EQ(ThemeServiceFactory::GetForProfile(profile_being_created)
+                ->GetAutogeneratedThemeColor(),
+            kProfileColor);
+}
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
+                       CreateSignedInProfileSettings) {
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+
+  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
+  WaitForNewWebView();
+
+  // Simulate a click on the signin button.
+  base::MockCallback<base::OnceClosure> switch_failure_callback;
+  EXPECT_CALL(switch_failure_callback, Run()).Times(0);
+  ProfilePicker::SwitchToSignIn(kProfileColor, switch_failure_callback.Get());
+
+  // The DICE navigation happens in a new web view (for the profile being
+  // created), wait for it.
+  WaitForNewWebView();
+  FirstVisuallyNonEmptyPaintObserver(
+      web_contents(), GaiaUrls::GetInstance()->signin_chrome_sync_dice())
+      .Wait();
+
+  // Add an account - simulate a successful Gaia sign-in.
+  Profile* profile_being_created =
+      static_cast<Profile*>(web_view()->GetBrowserContext());
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_being_created);
+  CoreAccountInfo core_account_info =
+      signin::MakeAccountAvailable(identity_manager, "joe@enterprise.com");
+  ASSERT_TRUE(identity_manager->HasAccountWithRefreshToken(
+      core_account_info.account_id));
+
+  AccountInfo account_info =
+      FillAccountInfo(core_account_info, "Joe", "enterprise.com");
+  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+
+  // Wait for the sign-in to propagate to the flow, resulting in new browser
+  // getting opened.
+  Browser* new_browser = BrowserAddedWaiter(2u).Wait();
+  // Inject a fake tab helper that confirms the enterprise dialog right away.
+  base::RunLoop loop_until_sync_confirmed;
+  TestTabDialogs::OverwriteForWebContents(
+      new_browser->tab_strip_model()->GetActiveWebContents(),
+      &loop_until_sync_confirmed);
+  // Wait until the final sync confirmation screen in shown and confirmed.
+  loop_until_sync_confirmed.Run();
+  // Now the sync consent screen is shown, simulate closing the UI with
+  // "Configure sync".
+  LoginUIServiceFactory::GetForProfile(profile_being_created)
+      ->SyncConfirmationUIClosed(LoginUIService::CONFIGURE_SYNC_FIRST);
+  FirstVisuallyNonEmptyPaintObserver(
+      new_browser->tab_strip_model()->GetActiveWebContents(),
+      GURL("chrome://settings/syncSetup"))
+      .Wait();
+
+  // Check expectations when the profile creation flow is done.
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+
+  ProfileAttributesEntry* entry = nullptr;
+  ASSERT_TRUE(g_browser_process->profile_manager()
+                  ->GetProfileAttributesStorage()
+                  .GetProfileAttributesWithPath(
+                      profile_being_created->GetPath(), &entry));
+  EXPECT_FALSE(entry->IsEphemeral());
+  EXPECT_EQ(entry->GetLocalProfileName(), base::UTF8ToUTF16(kWork));
   EXPECT_EQ(ThemeServiceFactory::GetForProfile(profile_being_created)
                 ->GetAutogeneratedThemeColor(),
             kProfileColor);

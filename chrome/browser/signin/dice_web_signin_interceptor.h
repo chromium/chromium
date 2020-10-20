@@ -63,8 +63,10 @@ enum class SigninInterceptionHeuristicOutcome {
   kAbortProfileCreationDisallowed = 9,
   // The interceptor was shut down before the heuristic completed.
   kAbortShutdown = 10,
+  // The interceptor is not offered when WebContents has no browser associated.
+  kAbortNoBrowser = 11,
 
-  kMaxValue = kAbortShutdown,
+  kMaxValue = kAbortNoBrowser,
 };
 
 // Called after web signed in, after a successful token exchange through Dice.
@@ -73,7 +75,7 @@ enum class SigninInterceptionHeuristicOutcome {
 //
 // Implementation notes: here is how an entire interception flow work for the
 // enterprise or multi-user case:
-// * MaybeInterceptSignin() is called when the new signin happens.
+// * MaybeInterceptWebSignin() is called when the new signin happens.
 // * Wait until the account info is downloaded.
 // * Interception UI is shown by the delegate.
 // * If the user approved, a new profile is created and the token is moved from

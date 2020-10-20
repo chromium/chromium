@@ -66,6 +66,8 @@ class DiceTurnSyncOnHelper
     virtual ~Delegate() {}
 
     // Shows a login error to the user.
+    // TODO(crbug.com/1133189): Replace `error_message` with an enum as
+    // different types of UI are shown for different actions.
     virtual void ShowLoginError(const std::string& email,
                                 const std::string& error_message) = 0;
 
@@ -93,6 +95,23 @@ class DiceTurnSyncOnHelper
 
     // Informs the delegate that the flow is switching to a new profile.
     virtual void SwitchToProfile(Profile* new_profile) = 0;
+
+   protected:
+    // Shows the login error with `error_message` and `email` for `browser`.
+    // This helper is static because in some cases it needs to be called
+    // after this object gets destroyed.
+    static void ShowLoginErrorForBrowser(const std::string& email,
+                                         const std::string& error_message,
+                                         Browser* browser);
+
+    // Shows the enterprise account confirmation dialog with `email` for
+    // `browser` and returns the result via `callback`. This helper is static
+    // because in some cases it needs to be called after this object gets
+    // destroyed.
+    static void ShowEnterpriseAccountConfirmationForBrowser(
+        const std::string& email,
+        DiceTurnSyncOnHelper::SigninChoiceCallback callback,
+        Browser* browser);
   };
 
   // Create a helper that turns sync on for an account that is already present
