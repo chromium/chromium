@@ -16391,6 +16391,10 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="46" label="Keyboard shortcut modified"/>
   <int value="47" label="Link to custom property in var() clicked"/>
   <int value="48" label="Custom property value edited"/>
+  <int value="49" label="Service worker network request button clicked"/>
+  <int value="50" label="Service worker network request panel closed quickly"/>
+  <int value="51" label="Network panel timing tab SW respondWith clicked"/>
+  <int value="52" label="Copy value in network request panel"/>
 </enum>
 
 <enum name="DevToolsBackgroundService">
