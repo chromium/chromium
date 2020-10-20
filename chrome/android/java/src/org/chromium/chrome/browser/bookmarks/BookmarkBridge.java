@@ -182,9 +182,12 @@ public class BookmarkBridge {
         private final boolean mIsEditable;
         private final boolean mIsManaged;
         private boolean mForceEditableForTesting;
+        private long mDateAdded;
+        private boolean mRead;
 
         private BookmarkItem(BookmarkId id, String title, String url, boolean isFolder,
-                BookmarkId parentId, boolean isEditable, boolean isManaged) {
+                BookmarkId parentId, boolean isEditable, boolean isManaged, long dateAdded,
+                boolean read) {
             mId = id;
             mTitle = title;
             mUrl = url;
@@ -192,6 +195,8 @@ public class BookmarkBridge {
             mParentId = parentId;
             mIsEditable = isEditable;
             mIsManaged = isManaged;
+            mDateAdded = dateAdded;
+            mRead = read;
         }
 
         /** @return Title of the bookmark item. */
@@ -242,6 +247,21 @@ public class BookmarkBridge {
 
         public BookmarkId getId() {
             return mId;
+        }
+
+        /**
+         * @return The timestamp in milliseconds since epoch that the bookmark is added.
+         */
+        public long getDateAdded() {
+            return mDateAdded;
+        }
+
+        /**
+         * @return Whether the bookmark is read. Only valid for {@link BookmarkType#READING_LIST}.
+         *         Defaults to "false" for other types.
+         */
+        public boolean isRead() {
+            return mRead;
         }
 
         // TODO(https://crbug.com/1019217): Remove when BookmarkModel is stubbed in tests instead.
@@ -919,9 +939,9 @@ public class BookmarkBridge {
     @CalledByNative
     private static BookmarkItem createBookmarkItem(long id, int type, String title, String url,
             boolean isFolder, long parentId, int parentIdType, boolean isEditable,
-            boolean isManaged) {
+            boolean isManaged, long dateAdded, boolean read) {
         return new BookmarkItem(new BookmarkId(id, type), title, url, isFolder,
-                new BookmarkId(parentId, parentIdType), isEditable, isManaged);
+                new BookmarkId(parentId, parentIdType), isEditable, isManaged, dateAdded, read);
     }
 
     @CalledByNative

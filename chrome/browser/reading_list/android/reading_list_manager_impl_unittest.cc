@@ -160,8 +160,8 @@ TEST_F(ReadingListManagerImplTest, AddTwice) {
   EXPECT_EQ(kTitle1, base::UTF16ToUTF8(node->GetTitle()));
 }
 
-// Verifes SetReadStatus() API.
-TEST_F(ReadingListManagerImplTest, SetReadStatus) {
+// Verifes SetReadStatus()/GetReadStatus() API.
+TEST_F(ReadingListManagerImplTest, ReadStatus) {
   GURL url(kURL);
   manager()->SetReadStatus(url, true);
   EXPECT_EQ(0u, manager()->size());
@@ -178,6 +178,7 @@ TEST_F(ReadingListManagerImplTest, SetReadStatus) {
   node->GetMetaInfo(kReadStatusKey, &read_status);
   EXPECT_EQ(kReadStatusRead, read_status);
   EXPECT_EQ(0u, manager()->unread_size());
+  EXPECT_TRUE(manager()->GetReadStatus(node));
 
   // Mark as unread.
   manager()->SetReadStatus(url, false);
@@ -185,6 +186,15 @@ TEST_F(ReadingListManagerImplTest, SetReadStatus) {
   node->GetMetaInfo(kReadStatusKey, &read_status);
   EXPECT_EQ(kReadStatusUnread, read_status);
   EXPECT_EQ(1u, manager()->unread_size());
+  EXPECT_FALSE(manager()->GetReadStatus(node));
+
+  // Node not in the reading list should return false.
+  auto other_node =
+      std::make_unique<BookmarkNode>(0, base::GenerateGUID(), url);
+  EXPECT_FALSE(manager()->GetReadStatus(node));
+
+  // Root node should return false.
+  EXPECT_FALSE(manager()->GetReadStatus(manager()->GetRoot()));
 }
 
 }  // namespace

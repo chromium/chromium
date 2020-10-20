@@ -29,6 +29,7 @@ class EmptyReadingListManager : public ReadingListManager {
   size_t size() const override;
   size_t unread_size() const override;
   void SetReadStatus(const GURL& url, bool read) override;
+  bool GetReadStatus(const bookmarks::BookmarkNode* node) override;
   bool IsLoaded() const override;
 };
 

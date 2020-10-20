@@ -852,11 +852,17 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::CreateJavaBookmark(
   if (node->is_url())
     url = node->url().spec();
 
+  int type = GetBookmarkType(node);
+  bool read = false;
+  if (reading_list_manager_->IsReadingListBookmark(node)) {
+    read = reading_list_manager_->GetReadStatus(node);
+  }
+
   return Java_BookmarkBridge_createBookmarkItem(
-      env, node->id(), GetBookmarkType(node),
-      ConvertUTF16ToJavaString(env, GetTitle(node)),
+      env, node->id(), type, ConvertUTF16ToJavaString(env, GetTitle(node)),
       ConvertUTF8ToJavaString(env, url), node->is_folder(), parent_id,
-      GetBookmarkType(parent), IsEditable(node), IsManaged(node));
+      GetBookmarkType(parent), IsEditable(node), IsManaged(node),
+      node->date_added().ToJavaTime(), read);
 }
 
 void BookmarkBridge::ExtractBookmarkNodeInformation(

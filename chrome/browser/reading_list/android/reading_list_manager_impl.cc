@@ -8,6 +8,7 @@
 
 #include "base/guid.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -111,16 +112,9 @@ bool ReadingListManagerImpl::IsReadingListBookmark(
     const BookmarkNode* node) const {
   if (!node)
     return false;
-  if (root_.get() == node)
-    return true;
 
   // Not recursive since there is only one level of children.
-  for (const auto& child : root_->children()) {
-    if (node == child.get())
-      return true;
-  }
-
-  return false;
+  return (root_.get() == node) || (node->parent() == root_.get());
 }
 
 void ReadingListManagerImpl::Delete(const GURL& url) {
@@ -157,6 +151,23 @@ void ReadingListManagerImpl::SetReadStatus(const GURL& url, bool read) {
     node->SetMetaInfo(kReadStatusKey,
                       read ? kReadStatusRead : kReadStatusUnread);
   }
+}
+
+bool ReadingListManagerImpl::GetReadStatus(
+    const bookmarks::BookmarkNode* node) {
+  if (node == root_.get())
+    return false;
+
+  std::string value;
+  node->GetMetaInfo(kReadStatusKey, &value);
+
+  if (value == kReadStatusRead)
+    return true;
+  if (value == kReadStatusUnread)
+    return false;
+
+  NOTREACHED() << "May not be reading list node.";
+  return false;
 }
 
 bool ReadingListManagerImpl::IsLoaded() const {

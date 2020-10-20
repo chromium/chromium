@@ -49,6 +49,11 @@ size_t EmptyReadingListManager::unread_size() const {
 
 void EmptyReadingListManager::SetReadStatus(const GURL& url, bool read) {}
 
+bool EmptyReadingListManager::GetReadStatus(
+    const bookmarks::BookmarkNode* node) {
+  return false;
+}
+
 bool EmptyReadingListManager::IsLoaded() const {
   return true;
 }

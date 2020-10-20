@@ -80,6 +80,10 @@ class ReadingListManager : public KeyedService {
   // article doesn't exist.
   virtual void SetReadStatus(const GURL& url, bool read) = 0;
 
+  // Gets the read status for a reading list article. The |node| must exist in
+  // the reading list.
+  virtual bool GetReadStatus(const bookmarks::BookmarkNode* node) = 0;
+
   // Returns whether the reading list manager is loaded.
   virtual bool IsLoaded() const = 0;
 };
