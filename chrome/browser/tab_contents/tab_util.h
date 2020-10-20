@@ -22,9 +22,6 @@ namespace tab_util {
 content::WebContents* GetWebContentsByID(int render_process_id,
                                          int render_view_id);
 
-content::WebContents* GetWebContentsByFrameID(int render_process_id,
-                                              int render_frame_id);
-
 // Returns a new SiteInstance for WebUI and app URLs. Returns NULL otherwise.
 scoped_refptr<content::SiteInstance> GetSiteInstanceForNewTab(Profile* profile,
                                                               GURL url);
