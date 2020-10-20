@@ -64,21 +64,26 @@ NTSTATUS ResolveSymbolicLink(const std::wstring& directory_name,
     return status;
 
   UNICODE_STRING target_path = {};
-  unsigned long target_length = 0;
+  unsigned long target_bytes = 0;
   status =
-      NtQuerySymbolicLinkObject(symbolic_link, &target_path, &target_length);
+      NtQuerySymbolicLinkObject(symbolic_link, &target_path, &target_bytes);
   if (status != STATUS_BUFFER_TOO_SMALL) {
     CHECK(NT_SUCCESS(NtClose(symbolic_link)));
     return status;
   }
 
+  // NtQuerySymbolicLinkObject length and UNICODE_STRING lengths are bytes
+  // not characters.
+  size_t target_wchars = target_bytes / sizeof(wchar_t);
   target_path.Length = 0;
-  target_path.MaximumLength = static_cast<USHORT>(target_length);
-  target_path.Buffer = new wchar_t[target_path.MaximumLength + 1];
+  target_path.MaximumLength = static_cast<USHORT>(target_bytes);
+  target_path.Buffer = new wchar_t[target_wchars + 1];
   status =
-      NtQuerySymbolicLinkObject(symbolic_link, &target_path, &target_length);
-  if (NT_SUCCESS(status))
-    target->assign(target_path.Buffer, target_length);
+      NtQuerySymbolicLinkObject(symbolic_link, &target_path, &target_bytes);
+  if (NT_SUCCESS(status)) {
+    DCHECK_EQ(target_bytes, sizeof(wchar_t) * target_wchars);
+    target->assign(target_path.Buffer, target_wchars);
+  }
 
   CHECK(NT_SUCCESS(NtClose(symbolic_link)));
   delete[] target_path.Buffer;
