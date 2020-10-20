@@ -120,8 +120,11 @@ You can locally test that your code compiles on Linux or Mac.  This requires
 python, depot_tools). Note: on Ubuntu, you can probably just run `sudo apt-get
 install openjdk-7-jre`.
 
-After you set enable_js_type_check = true in your gn args, you should be able to
-run:
+First, add the following to your GN args:
+```
+enable_js_type_check = true
+```
+Then you should be able to run:
 
 ```shell
 ninja -C out/Default webui_closure_compile
