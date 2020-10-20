@@ -75,6 +75,13 @@
     },
   },
   'angle_perftests': {
+    'modifications': {
+     'Android FYI 64 Perf (Pixel 2)': { # crbug.com/1140626
+       'swarming': {
+         'shards': 4,
+       },
+     },
+    },
     'remove_from': [
       'Android FYI Release (Nexus 5)',  # crbug.com/915429
       'Android FYI Release (Nexus 6)',  # anglebug.com/2433
