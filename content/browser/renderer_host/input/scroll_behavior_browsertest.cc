@@ -204,8 +204,7 @@ class ScrollBehaviorBrowserTest : public ContentBrowserTest,
     // When the first smooth scroll starts and scroll to 5 pixels, we will
     // send the second scroll to interrupt the current smooth scroll.
     constexpr int kExpectedScrollTop = 5;
-    MainThreadFrameObserver frame_observer(
-        shell()->web_contents()->GetRenderViewHost()->GetWidget());
+    MainThreadFrameObserver frame_observer(GetWidgetHost());
     while (ExecuteScriptAndExtractDouble(script) < kExpectedScrollTop)
       frame_observer.Wait();
   }
@@ -214,8 +213,7 @@ class ScrollBehaviorBrowserTest : public ContentBrowserTest,
                          double starting_scroll_top) {
     // For the scroll interruption, we want to make sure that the first smooth
     // scroll animation stops right away, and the second scroll starts.
-    MainThreadFrameObserver frame_observer(
-        shell()->web_contents()->GetRenderViewHost()->GetWidget());
+    MainThreadFrameObserver frame_observer(GetWidgetHost());
     double current = ExecuteScriptAndExtractDouble(script);
 
     // If the animation doesn't reverse within this number of pixels we fail the
@@ -231,20 +229,13 @@ class ScrollBehaviorBrowserTest : public ContentBrowserTest,
   void ValueHoldsAt(const std::string& scroll_top_script, double scroll_top) {
     // This function checks that the scroll top value holds at the given value
     // for 10 frames.
-    MainThreadFrameObserver frame_observer(
-        shell()->web_contents()->GetRenderViewHost()->GetWidget());
+    MainThreadFrameObserver frame_observer(GetWidgetHost());
     int frame_count = 5;
     while (frame_count > 0) {
       ASSERT_EQ(ExecuteScriptAndExtractDouble(scroll_top_script), scroll_top);
       frame_observer.Wait();
       frame_count--;
     }
-  }
-
-  RenderViewHost* GetRenderViewHost() const {
-    RenderViewHost* const rvh = shell()->web_contents()->GetRenderViewHost();
-    CHECK(rvh);
-    return rvh;
   }
 
   std::unique_ptr<base::RunLoop> run_loop_;

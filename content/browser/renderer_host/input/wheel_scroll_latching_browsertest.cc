@@ -156,8 +156,7 @@ IN_PROC_BROWSER_TEST_F(WheelScrollLatchingBrowserTest, MAYBE_WheelEventTarget) {
   EXPECT_EQ(0, ExecuteScriptAndExtractInt("documentWheelEventCounter"));
   EXPECT_EQ(0, ExecuteScriptAndExtractInt("scrollableDivWheelEventCounter"));
 
-  MainThreadFrameObserver frame_observer(
-      shell()->web_contents()->GetRenderViewHost()->GetWidget());
+  MainThreadFrameObserver frame_observer(GetWidgetHost());
 
   auto input_msg_watcher = std::make_unique<InputMsgWatcher>(
       GetWidgetHost(), blink::WebInputEvent::Type::kMouseWheel);

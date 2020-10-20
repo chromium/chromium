@@ -624,8 +624,7 @@ IN_PROC_BROWSER_TEST_F(ForceLoadAtTopBrowserTest, ScrollRestorationDisabled) {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
   run_loop.Run();
-  RunUntilInputProcessed(RenderWidgetHostImpl::From(
-      main_contents->GetRenderViewHost()->GetWidget()));
+  RunUntilInputProcessed(GetWidgetHost());
   const cc::RenderFrameMetadata& last_metadata =
       RenderFrameSubmissionObserver(main_contents).LastRenderFrameMetadata();
   EXPECT_TRUE(last_metadata.is_scroll_offset_at_top);
@@ -645,8 +644,7 @@ IN_PROC_BROWSER_TEST_F(ForceLoadAtTopBrowserTest, FragmentAnchorDisabled) {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
   run_loop.Run();
-  RunUntilInputProcessed(RenderWidgetHostImpl::From(
-      main_contents->GetRenderViewHost()->GetWidget()));
+  RunUntilInputProcessed(GetWidgetHost());
   const cc::RenderFrameMetadata& last_metadata =
       RenderFrameSubmissionObserver(main_contents).LastRenderFrameMetadata();
   EXPECT_TRUE(last_metadata.is_scroll_offset_at_top);
@@ -689,8 +687,7 @@ IN_PROC_BROWSER_TEST_F(ForceLoadAtTopBrowserTest, TextFragmentAnchorDisabled) {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
   run_loop.Run();
-  RunUntilInputProcessed(RenderWidgetHostImpl::From(
-      main_contents->GetRenderViewHost()->GetWidget()));
+  RunUntilInputProcessed(GetWidgetHost());
   const cc::RenderFrameMetadata& last_metadata =
       RenderFrameSubmissionObserver(main_contents).LastRenderFrameMetadata();
   EXPECT_TRUE(last_metadata.is_scroll_offset_at_top);

@@ -358,8 +358,7 @@ IN_PROC_BROWSER_TEST_F(MouseLatencyBrowserTest,
                        gfx::Vector2dF(250, 250));
   // The following wait is the upper bound for gpu swap completed callback. It
   // is two frames to account for double buffering.
-  MainThreadFrameObserver observer(RenderWidgetHostImpl::From(
-      shell()->web_contents()->GetRenderViewHost()->GetWidget()));
+  MainThreadFrameObserver observer(GetWidgetHost());
   observer.Wait();
   observer.Wait();
 
