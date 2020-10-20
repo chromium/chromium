@@ -1,0 +1,37 @@
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file. -->
+
+<link rel="import" href="chrome://oobe/custom_elements.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+
+<dom-module id="parental-handoff">
+  <template>
+    <style include="oobe-dialog-host"></style>
+    <oobe-dialog id="parentalHandoffDialog" role="dialog" has-buttons
+        aria-label$="[[title_]]">
+      <hd-iron-icon icon1x="oobe-32:googleg" icon2x="oobe-64:googleg"
+          slot="oobe-icon">
+      </hd-iron-icon>
+      <h1 slot="title">
+        [[title_]]
+      </h1>
+      <div slot="subtitle">
+        [[subtitle_]]
+      </div>
+      <div slot="footer" class="flex layout vertical center center-justified">
+        <!-- TODO(yilkal): Replace the following image when the appropriate
+             image is ready to be used -->
+        <img srcset="images/1x/parental_control.svg 1x,
+            images/2x/parental_control.svg 2x" class="oobe-illustration"
+            alt$="[[title_]]">
+      </div>
+      <div slot="bottom-buttons" class="layout horizontal end-justified">
+        <oobe-next-button id="nextButton"
+            text-key="parentalHandoffDialogNextButton" class="focus-on-show"
+            inverse on-click="onNextButtonPressed_"></oobe-next-button>
+      </div>
+    </oobe-dialog>
+  </template>
+</dom-module>
