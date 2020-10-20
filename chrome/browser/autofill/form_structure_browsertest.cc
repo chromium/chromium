@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/data_driven_test.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/pattern_provider/pattern_configuration_parser.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/renderer_id.h"
 #include "content/public/common/content_switches.h"
@@ -176,6 +177,11 @@ void FormStructureBrowserTest::SetUpCommandLine(
 
 void FormStructureBrowserTest::SetUpOnMainThread() {
   InProcessBrowserTest::SetUpOnMainThread();
+
+  // Load the MatchingPattern definitions.
+  base::RunLoop run_loop;
+  field_type_parsing::PopulateFromResourceBundle(run_loop.QuitClosure());
+  run_loop.Run();
 
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       &FormStructureBrowserTest::HandleRequest, base::Unretained(this)));

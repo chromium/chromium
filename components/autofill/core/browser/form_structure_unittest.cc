@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/pattern_provider/test_pattern_provider.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -174,6 +175,9 @@ class FormStructureTestImpl : public test::FormStructureTest {
         // Disabled.
         {});
   }
+
+ protected:
+  TestPatternProvider test_pattern_provider_;
 
  private:
   void EnableAutofillMetadataFieldTrial() {

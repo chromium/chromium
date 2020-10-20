@@ -52,6 +52,7 @@
 #include "components/autofill/core/browser/autofill_manager_test_delegate.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/pattern_provider/pattern_configuration_parser.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -310,6 +311,11 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
     embedded_test_server()->StartAcceptingConnections();
     LOG(ERROR)
         << "crbug/967588: embedded_test_server started accepting connections";
+
+    // Load the MatchingPattern definitions.
+    base::RunLoop run_loop;
+    field_type_parsing::PopulateFromResourceBundle(run_loop.QuitClosure());
+    run_loop.Run();
 
     // By default, all SSL cert checks are valid. Can be overriden in tests if
     // needed.

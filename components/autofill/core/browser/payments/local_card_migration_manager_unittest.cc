@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
+#include "components/autofill/core/browser/pattern_provider/test_pattern_provider.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/test_local_card_migration_manager.h"
@@ -313,6 +314,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
   MockAutocompleteHistoryManager autocomplete_history_manager_;
   syncer::TestSyncService sync_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  TestPatternProvider test_pattern_provider_;
   // Ends up getting owned (and destroyed) by TestAutofillClient:
   TestStrikeDatabase* strike_database_;
   // Ends up getting owned (and destroyed) by TestFormDataImporter:
