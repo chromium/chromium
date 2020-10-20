@@ -7,7 +7,11 @@
     @media (prefers-color-scheme: dark) {
       html {
       --signin-work-badge-background-color: var(--google-grey-700);
-      --signin-work-badge-foreground-color: white; 
+      --signin-work-badge-foreground-color: white;
+
+      /* Matches other surfaces such as the NTP customization window, and does
+       * not conflict with the defaut customization colors. */
+      --signin-dark-customized-background-color: rgba(41, 42, 45, 1);
       }
     }
 </style>
