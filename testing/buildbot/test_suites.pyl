@@ -91,6 +91,10 @@
         'args': [
           '--platform=android',
         ],
+        # TODO (crbug.com/1135909): Re-enable resultdb.
+        'resultdb': {
+          'enable': False,
+        }
       },
     },
 
@@ -435,8 +439,17 @@
         'swarming': {
           'idempotent': False,  # https://crbug.com/923426#c27
         },
+        # TODO(crbug.com/1140593): Re-enable resultdb.
+        'resultdb': {
+          'enable': False,
+        },
       },
-      'cros_browser_sanity_test': {},
+      'cros_browser_sanity_test': {
+        # TODO(crbug.com/1140593): Re-enable resultdb.
+        'resultdb': {
+          'enable': False,
+        }
+      },
       'disk_usage_tast_test': {
         "args": [
           # Stripping gives more accurate disk usage data.
@@ -1052,7 +1065,12 @@
     },
 
     'client_v8_chromium_isolated_scripts': {
-      'content_shell_crash_test': {},
+      'content_shell_crash_test': {
+        # TODO (crbug.com/1135909): Re-enable resultdb.
+        'resultdb': {
+          'enable': False,
+        }
+      },
       'telemetry_gpu_unittests': {
         'swarming': {
           'idempotent': False,  # https://crbug.com/549140
@@ -1182,6 +1200,7 @@
         }
       },
       'content_shell_crash_test': {
+        # TODO (crbug.com/1135909): Re-enable resultdb.
         'resultdb': {
           'enable': False,
         }
