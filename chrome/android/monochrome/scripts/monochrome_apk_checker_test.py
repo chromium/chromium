@@ -229,7 +229,7 @@ However these files were present in {0} but not in Monochrome:
     Returns: A dict mapping from obfuscated paths to original paths or an
            empty dict if passed a None |pathmap_path|.
     """
-    if pathmap_path is None:
+    if pathmap_path is None or not os.path.exists(pathmap_path):
       return {}
 
     pathmap = {}
