@@ -58,6 +58,17 @@
   return self;
 }
 
+- (void)getVersionWithReply:(void (^_Nonnull)(NSString* version))reply {
+  auto errorHandler = ^(NSError* xpcError) {
+    LOG(ERROR) << "XPC Connection failed: "
+               << base::SysNSStringToUTF8([xpcError description]);
+    reply(nil);
+  };
+
+  [[_xpcConnection remoteObjectProxyWithErrorHandler:errorHandler]
+      getVersionWithReply:reply];
+}
+
 - (void)registerForUpdatesWithAppId:(NSString* _Nullable)appId
                           brandCode:(NSString* _Nullable)brandCode
                                 tag:(NSString* _Nullable)tag

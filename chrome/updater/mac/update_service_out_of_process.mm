@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -14,9 +15,9 @@
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/version.h"
 #import "chrome/updater/app/server/mac/service_protocol.h"
 #import "chrome/updater/app/server/mac/update_service_wrappers.h"
 #import "chrome/updater/mac/xpc_service_names.h"
@@ -72,6 +73,17 @@ using base::SysUTF8ToNSString;
 - (void)dealloc {
   [_updateCheckXPCConnection invalidate];
   [super dealloc];
+}
+
+- (void)getVersionWithReply:(void (^_Nonnull)(NSString* version))reply {
+  auto errorHandler = ^(NSError* xpcError) {
+    LOG(ERROR) << "XPC connection failed: "
+               << base::SysNSStringToUTF8([xpcError description]);
+    reply(nil);
+  };
+
+  [[_updateCheckXPCConnection remoteObjectProxyWithErrorHandler:errorHandler]
+      getVersionWithReply:reply];
 }
 
 - (void)registerForUpdatesWithAppId:(NSString* _Nullable)appId
@@ -144,6 +156,21 @@ UpdateServiceOutOfProcess::UpdateServiceOutOfProcess(ServiceScope scope) {
   callback_runner_ = base::SequencedTaskRunnerHandle::Get();
 }
 
+void UpdateServiceOutOfProcess::GetVersion(
+    base::OnceCallback<void(const base::Version&)> callback) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  __block base::OnceCallback<void(const base::Version&)> block_callback =
+      std::move(callback);
+  auto reply = ^(NSString* version) {
+    callback_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(block_callback),
+                       base::Version(base::SysNSStringToUTF8(version))));
+  };
+  [client_ getVersionWithReply:reply];
+}
+
 void UpdateServiceOutOfProcess::RegisterApp(
     const RegistrationRequest& request,
     base::OnceCallback<void(const RegistrationResponse&)> callback) {
@@ -186,14 +213,6 @@ void UpdateServiceOutOfProcess::UpdateAll(StateChangeCallback state_update,
           initWithRepeatingCallback:state_update
                      callbackRunner:callback_runner_]);
   [client_ checkForUpdatesWithUpdateState:stateObserver.get() reply:reply];
-}
-
-void UpdateServiceOutOfProcess::GetVersion(
-    base::OnceCallback<void(const base::Version&)> callback) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // TODO(crbug.com/1140270) - implement for macOS.
-  NOTREACHED();
 }
 
 void UpdateServiceOutOfProcess::Update(const std::string& app_id,

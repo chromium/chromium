@@ -25,6 +25,10 @@
 // Protocol for the XPC update checking service.
 @protocol CRUUpdateChecking <NSObject>
 
+// Checks for the updater's version and returns the result in the reply block.
+- (void)getVersionWithReply:
+    (void (^_Nonnull)(NSString* _Nullable version))reply;
+
 // Checks for updates and returns the result in the reply block.
 - (void)checkForUpdatesWithUpdateState:
             (CRUUpdateStateObserver* _Nonnull)updateState
