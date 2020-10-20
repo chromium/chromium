@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/animation/compositor_transform_operations.h"
 
+#include "cc/animation/transform_operation.h"
 #include "third_party/skia/include/core/SkMatrix44.h"
 #include "ui/gfx/transform.h"
 
@@ -43,6 +44,14 @@ void CompositorTransformOperations::AppendRotate(double x,
 void CompositorTransformOperations::AppendScale(double x, double y, double z) {
   transform_operations_.AppendScale(SkDoubleToScalar(x), SkDoubleToScalar(y),
                                     SkDoubleToScalar(z));
+}
+
+void CompositorTransformOperations::AppendSkewX(double x) {
+  transform_operations_.AppendSkewX(SkDoubleToScalar(x));
+}
+
+void CompositorTransformOperations::AppendSkewY(double y) {
+  transform_operations_.AppendSkewY(SkDoubleToScalar(y));
 }
 
 void CompositorTransformOperations::AppendSkew(double x, double y) {

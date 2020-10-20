@@ -98,6 +98,8 @@ class CC_ANIMATION_EXPORT TransformOperations {
   void AppendTranslate(SkScalar x, SkScalar y, SkScalar z);
   void AppendRotate(SkScalar x, SkScalar y, SkScalar z, SkScalar degrees);
   void AppendScale(SkScalar x, SkScalar y, SkScalar z);
+  void AppendSkewX(SkScalar x);
+  void AppendSkewY(SkScalar y);
   void AppendSkew(SkScalar x, SkScalar y);
   void AppendPerspective(SkScalar depth);
   void AppendMatrix(const gfx::Transform& matrix);

@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <utility>
 
 #include "cc/base/math_util.h"
 #include "ui/gfx/animation/tween.h"
@@ -108,6 +109,8 @@ bool TransformOperations::PreservesAxisAlignment() const {
           return false;
         continue;
       case TransformOperation::TRANSFORM_OPERATION_ROTATE:
+      case TransformOperation::TRANSFORM_OPERATION_SKEWX:
+      case TransformOperation::TRANSFORM_OPERATION_SKEWY:
       case TransformOperation::TRANSFORM_OPERATION_SKEW:
       case TransformOperation::TRANSFORM_OPERATION_PERSPECTIVE:
         return false;
@@ -128,6 +131,8 @@ bool TransformOperations::IsTranslation() const {
         continue;
       case TransformOperation::TRANSFORM_OPERATION_ROTATE:
       case TransformOperation::TRANSFORM_OPERATION_SCALE:
+      case TransformOperation::TRANSFORM_OPERATION_SKEWX:
+      case TransformOperation::TRANSFORM_OPERATION_SKEWY:
       case TransformOperation::TRANSFORM_OPERATION_SKEW:
       case TransformOperation::TRANSFORM_OPERATION_PERSPECTIVE:
         return false;
@@ -157,6 +162,8 @@ bool TransformOperations::ScaleComponent(SkScalar* scale) const {
             std::max(scale_components.x(), scale_components.y());
         break;
       }
+      case TransformOperation::TRANSFORM_OPERATION_SKEWX:
+      case TransformOperation::TRANSFORM_OPERATION_SKEWY:
       case TransformOperation::TRANSFORM_OPERATION_SKEW: {
         SkScalar x_component = TanDegrees(operation.skew.x);
         SkScalar y_component = TanDegrees(operation.skew.y);
@@ -247,6 +254,26 @@ void TransformOperations::AppendScale(SkScalar x, SkScalar y, SkScalar z) {
   to_add.scale.x = x;
   to_add.scale.y = y;
   to_add.scale.z = z;
+  to_add.Bake();
+  operations_.push_back(to_add);
+  decomposed_transforms_.clear();
+}
+
+void TransformOperations::AppendSkewX(SkScalar x) {
+  TransformOperation to_add;
+  to_add.type = TransformOperation::TRANSFORM_OPERATION_SKEWX;
+  to_add.skew.x = x;
+  to_add.skew.y = 0;
+  to_add.Bake();
+  operations_.push_back(to_add);
+  decomposed_transforms_.clear();
+}
+
+void TransformOperations::AppendSkewY(SkScalar y) {
+  TransformOperation to_add;
+  to_add.type = TransformOperation::TRANSFORM_OPERATION_SKEWY;
+  to_add.skew.x = 0;
+  to_add.skew.y = y;
   to_add.Bake();
   operations_.push_back(to_add);
   decomposed_transforms_.clear();

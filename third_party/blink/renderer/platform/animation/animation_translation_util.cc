@@ -81,8 +81,18 @@ void ToCompositorTransformOperations(
             transform->X(), transform->Y(), transform->Z(), transform->Angle());
         break;
       }
-      case TransformOperation::kSkewX:
-      case TransformOperation::kSkewY:
+      case TransformOperation::kSkewX: {
+        auto* transform =
+            static_cast<const SkewTransformOperation*>(operation.get());
+        out_transform_operations->AppendSkewX(transform->AngleX());
+        break;
+      }
+      case TransformOperation::kSkewY: {
+        auto* transform =
+            static_cast<const SkewTransformOperation*>(operation.get());
+        out_transform_operations->AppendSkewY(transform->AngleY());
+        break;
+      }
       case TransformOperation::kSkew: {
         auto* transform =
             static_cast<const SkewTransformOperation*>(operation.get());

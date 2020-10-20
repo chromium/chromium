@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
 #include <limits>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
@@ -100,6 +100,8 @@ void TransformOperation::Bake() {
     case TransformOperation::TRANSFORM_OPERATION_SCALE:
       matrix.Scale3d(scale.x, scale.y, scale.z);
       break;
+    case TransformOperation::TRANSFORM_OPERATION_SKEWX:
+    case TransformOperation::TRANSFORM_OPERATION_SKEWY:
     case TransformOperation::TRANSFORM_OPERATION_SKEW:
       matrix.Skew(skew.x, skew.y);
       break;
@@ -138,6 +140,8 @@ bool TransformOperation::ApproximatelyEqual(const TransformOperation& other,
       return base::IsApproximatelyEqual(scale.x, other.scale.x, tolerance) &&
              base::IsApproximatelyEqual(scale.y, other.scale.y, tolerance) &&
              base::IsApproximatelyEqual(scale.z, other.scale.z, tolerance);
+    case TransformOperation::TRANSFORM_OPERATION_SKEWX:
+    case TransformOperation::TRANSFORM_OPERATION_SKEWY:
     case TransformOperation::TRANSFORM_OPERATION_SKEW:
       return base::IsApproximatelyEqual(skew.x, other.skew.x, tolerance) &&
              base::IsApproximatelyEqual(skew.y, other.skew.y, tolerance);
@@ -227,6 +231,8 @@ bool TransformOperation::BlendTransformOperations(
       result->Bake();
       break;
     }
+    case TransformOperation::TRANSFORM_OPERATION_SKEWX:
+    case TransformOperation::TRANSFORM_OPERATION_SKEWY:
     case TransformOperation::TRANSFORM_OPERATION_SKEW: {
       SkScalar from_x = IsOperationIdentity(from) ? 0 : from->skew.x;
       SkScalar from_y = IsOperationIdentity(from) ? 0 : from->skew.y;
@@ -453,6 +459,8 @@ bool TransformOperation::BlendedBoundsForBox(const gfx::BoxF& box,
       *bounds = box;
       return true;
     case TransformOperation::TRANSFORM_OPERATION_TRANSLATE:
+    case TransformOperation::TRANSFORM_OPERATION_SKEWX:
+    case TransformOperation::TRANSFORM_OPERATION_SKEWY:
     case TransformOperation::TRANSFORM_OPERATION_SKEW:
     case TransformOperation::TRANSFORM_OPERATION_PERSPECTIVE:
     case TransformOperation::TRANSFORM_OPERATION_SCALE: {

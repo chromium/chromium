@@ -28,6 +28,8 @@ class PLATFORM_EXPORT CompositorTransformOperations {
   void AppendTranslate(double x, double y, double z);
   void AppendRotate(double x, double y, double z, double degrees);
   void AppendScale(double x, double y, double z);
+  void AppendSkewX(double x);
+  void AppendSkewY(double y);
   void AppendSkew(double x, double y);
   void AppendPerspective(double depth);
   void AppendMatrix(const SkMatrix44&);

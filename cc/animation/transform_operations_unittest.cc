@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <limits>
+#include <utility>
 #include <vector>
 
 #include "base/stl_util.h"
@@ -41,6 +42,8 @@ void ExpectTransformOperationEqual(const TransformOperation& lhs,
       EXPECT_FLOAT_EQ(lhs.scale.y, rhs.scale.y);
       EXPECT_FLOAT_EQ(lhs.scale.z, rhs.scale.z);
       break;
+    case TransformOperation::TRANSFORM_OPERATION_SKEWX:
+    case TransformOperation::TRANSFORM_OPERATION_SKEWY:
     case TransformOperation::TRANSFORM_OPERATION_SKEW:
       EXPECT_FLOAT_EQ(lhs.skew.x, rhs.skew.x);
       EXPECT_FLOAT_EQ(lhs.skew.y, rhs.skew.y);
@@ -1791,6 +1794,38 @@ TEST(TransformOperationsTest, TestDecompositionCache) {
   EXPECT_EQ(0UL, transforms.decomposed_transforms_.size());
   EXPECT_TRUE(transforms.ComputeDecomposedTransform(0));
   EXPECT_EQ(1UL, transforms.decomposed_transforms_.size());
+}
+
+TEST(TransformOperationTest, BlendSkewMismatch) {
+  TransformOperations from_ops, to_ops, expected_ops;
+  from_ops.AppendSkewX(0);
+  from_ops.AppendRotate(0, 0, 1, 0);
+  to_ops.AppendSkewY(0);
+  to_ops.AppendRotate(0, 0, 1, 360);
+
+  // Skew types do not match so use matrix interpolation
+  expected_ops.AppendMatrix(gfx::Transform());
+
+  TransformOperations blended_ops = to_ops.Blend(from_ops, 0.5);
+  ASSERT_EQ(blended_ops.size(), 1u);
+  ExpectTransformOperationEqual(blended_ops.at(0), expected_ops.at(0));
+}
+
+TEST(TransformOperationTest, BlendSkewMatch) {
+  TransformOperations from_ops, to_ops, expected_ops;
+  from_ops.AppendSkew(30, 0);
+  from_ops.AppendRotate(0, 0, 1, 0);
+  to_ops.AppendSkew(0, 30);
+  to_ops.AppendRotate(0, 0, 1, 360);
+
+  // Skew types match so interpolate as a function.
+  expected_ops.AppendSkew(15, 15);
+  expected_ops.AppendRotate(0, 0, 1, 180);
+
+  TransformOperations blended_ops = to_ops.Blend(from_ops, 0.5);
+  ASSERT_EQ(blended_ops.size(), 2u);
+  ExpectTransformOperationEqual(blended_ops.at(0), expected_ops.at(0));
+  ExpectTransformOperationEqual(blended_ops.at(1), expected_ops.at(1));
 }
 
 }  // namespace cc
