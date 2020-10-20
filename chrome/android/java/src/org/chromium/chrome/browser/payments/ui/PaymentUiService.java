@@ -215,7 +215,11 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
 
         private void updatePaymentRequestDialogShowState() {
             if (mPaymentRequestUI == null) return;
-            mPaymentRequestUI.setVisible(!mShowingBottomSheet && mShouldShowDialog);
+            boolean isSuccess =
+                    mPaymentRequestUI.setVisible(!mShowingBottomSheet && mShouldShowDialog);
+            if (!isSuccess) {
+                mObserver.onUiServiceError(ErrorStrings.FAIL_TO_SHOW_PAYMENT_REQUEST_UI);
+            }
         }
     }
 

@@ -1452,12 +1452,14 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
      * showPaymentRequestDialogWhenNoBottomSheet() and hidePaymentRequestDialog() instead of calling
      * this method directly.
      * @param visible True to show the dialog, false to hide the dialog.
+     * @return Whether setting visibility is successful.
      */
-    public void setVisible(boolean visible) {
+    public boolean setVisible(boolean visible) {
         if (visible) {
-            mDialog.show();
+            return mDialog.show();
         } else {
             mDialog.hide();
+            return true;
         }
     }
 

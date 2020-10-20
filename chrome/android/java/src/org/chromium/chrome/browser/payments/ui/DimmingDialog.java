@@ -20,6 +20,7 @@ import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import androidx.annotation.VisibleForTesting;
@@ -116,9 +117,18 @@ import java.util.Collection;
         bottomSheetView.addOnLayoutChangeListener(new FadeInAnimator());
     }
 
-    /** Show the dialog. */
-    /* package */ void show() {
-        mDialog.show();
+    /**
+     * Show the dialog.
+     * @return Whether the show is successful.
+     */
+    /* package */ boolean show() {
+        try {
+            mDialog.show();
+            return true;
+        } catch (WindowManager.BadTokenException badToken) {
+            // The exception could be thrown according to https://crbug.com/1139441.
+            return false;
+        }
     }
 
     /** Hide the dialog without dismissing it. */
