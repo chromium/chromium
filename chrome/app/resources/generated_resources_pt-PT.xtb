@@ -2906,7 +2906,6 @@ Pretende pará-lo?</translation>
 <translation id="4400632832271803360">Prima sem soltar a tecla do iniciador para alterar o comportamento das teclas da linha superior.</translation>
 <translation id="4400963414856942668">Pode clicar na estrela para adicionar um separador aos marcadores</translation>
 <translation id="4403775189117163360">Escolher uma pasta diferente</translation>
-<translation id="440391631796167175">Não foram encontradas palavras-passe fracas.</translation>
 <translation id="4404136731284211429">Procurar novamente</translation>
 <translation id="4404843640767531781">A app <ph name="APP_NAME" /> foi bloqueada pelo teu Pai ou Mãe. Solicita autorização ao teu Pai ou Mãe para utilizares esta app.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6343,6 +6342,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="850875081535031620">Não foi encontrado software prejudicial.</translation>
 <translation id="8509177919508253835">Reponha chaves de segurança e crie PINs</translation>
 <translation id="8509646642152301857">Falha na transferência do dicionário de verificação ortográfica.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Não foram encontradas palavras-passe fracas.}=1{{COUNT} palavra-passe fraca encontrada.}other{{COUNT} palavra-passes fracas encontradas.}}</translation>
 <translation id="8512476990829870887">Terminar Processo</translation>
 <translation id="851263357009351303">Permitir sempre que o site <ph name="HOST" /> mostre imagens</translation>
 <translation id="8513108775083588393">Rotação auto.</translation>

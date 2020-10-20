@@ -2906,7 +2906,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4400632832271803360">Hold the Launcher key to switch the behaviour of the top-row keys</translation>
 <translation id="4400963414856942668">You can click the star to bookmark a tab</translation>
 <translation id="4403775189117163360">Choose a different folder</translation>
-<translation id="440391631796167175">No weak passwords found</translation>
 <translation id="4404136731284211429">Scan again</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> is blocked by your parent. Ask your parent for permission to use this app.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6343,6 +6342,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="850875081535031620">No harmful software found</translation>
 <translation id="8509177919508253835">Reset security keys and create PINs</translation>
 <translation id="8509646642152301857">Spell check dictionary download failed.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{No weak passwords found}=1{Found {COUNT} weak password}other{Found {COUNT} weak passwords}}</translation>
 <translation id="8512476990829870887">End Process</translation>
 <translation id="851263357009351303">Always allow <ph name="HOST" /> to show images</translation>
 <translation id="8513108775083588393">Auto-rotate</translation>

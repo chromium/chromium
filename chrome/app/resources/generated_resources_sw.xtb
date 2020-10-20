@@ -2901,7 +2901,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4400632832271803360">Shikilia kitufe cha Kifungua Programu ili ubadilishe utendaji wa vitufe vya juu vya safu mlalo</translation>
 <translation id="4400963414856942668">Unaweza kubofya nyota ili ualamishe kichupo</translation>
 <translation id="4403775189117163360">Chagua folda tofauti</translation>
-<translation id="440391631796167175">Hakuna manenosiri dhaifu yaliyopatikana</translation>
 <translation id="4404136731284211429">Changanua tena</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> imezuiwa na mzazi wako. Mwombe mzazi wako ruhusa ya kutumia programu hii.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -2925,7 +2924,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4421932782753506458">Kibonge</translation>
 <translation id="4423376891418188461">Rejesha Mipangilio</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, msimamizi wako anakuhitaji ubadilishe nenosiri lako.</translation>
-<translation id="4430019312045809116">Kiwango</translation>
+<translation id="4430019312045809116">Kiwango cha sauti</translation>
 <translation id="4430369329743628066">Alamisho imeongezwa</translation>
 <translation id="4432621511648257259">Nenosiri si sahihi</translation>
 <translation id="4434045419905280838">Madirisha ibukizi/kuelekeza kwingine</translation>
@@ -6340,6 +6339,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="850875081535031620">Hakuna programu hasidi iliyopatikana</translation>
 <translation id="8509177919508253835">Badilisha funguo za usalama na uunde PIN</translation>
 <translation id="8509646642152301857">Upakuaji wa kamusi ya kukagua hijai umeshindwa.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Hakuna manenosiri dhaifu yaliyopatikana}=1{Imepata nenosiri {COUNT} dhaifu}other{Imepata manenosiri {COUNT} dhaifu}}</translation>
 <translation id="8512476990829870887">Komesha Shughuli</translation>
 <translation id="851263357009351303">Ruhusu <ph name="HOST" /> ionyeshe picha kila wakati</translation>
 <translation id="8513108775083588393">Zungusha kiotomatiki</translation>

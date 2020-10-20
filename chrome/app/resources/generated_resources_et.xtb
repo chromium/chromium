@@ -2906,7 +2906,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4400632832271803360">Ülemise rea klahvide toimingu vahetamiseks hoidke all käivitajaklahvi</translation>
 <translation id="4400963414856942668">Vahelehe järjehoidjatesse lisamiseks klõpsake tärnil</translation>
 <translation id="4403775189117163360">Valige teine kaust</translation>
-<translation id="440391631796167175">Ühtegi nõrka parooli ei leitud</translation>
 <translation id="4404136731284211429">Skanni uuesti</translation>
 <translation id="4404843640767531781">Rakenduse <ph name="APP_NAME" /> blokeeris sinu vanem. Küsi vanemalt luba selle rakenduse kasutamiseks.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6343,6 +6342,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="850875081535031620">Ohtlikku tarkvara ei leitud</translation>
 <translation id="8509177919508253835">Turvavõtmete lähtestamine ja PIN-koodide loomine</translation>
 <translation id="8509646642152301857">Õigekirjakontrolli sõnastiku allalaadimine ebaõnnestus.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Ei leitud ühtegi nõrka parooli}=1{Leiti {COUNT} nõrk parool}other{Leiti {COUNT} nõrka parooli}}</translation>
 <translation id="8512476990829870887">Lõpeta protsess</translation>
 <translation id="851263357009351303">Luba alati saidil <ph name="HOST" /> pilte kuvada</translation>
 <translation id="8513108775083588393">Aut. pööramine</translation>

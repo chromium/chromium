@@ -394,7 +394,7 @@
 <translation id="1436784010935106834">Đã xóa</translation>
 <translation id="1442392616396121389">Tiền tố định tuyến</translation>
 <translation id="144283815522798837">Đã chọn <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
-<translation id="1442851588227551435">Đặt phiếu Kerberos đang hoạt động</translation>
+<translation id="1442851588227551435">Đặt vé Kerberos đang hoạt động</translation>
 <translation id="1444628761356461360">Cài đặt này do chủ sở hữu thiết bị, <ph name="OWNER_EMAIL" /> quản lý.</translation>
 <translation id="144518587530125858">Không thể tải '<ph name="IMAGE_PATH" />' cho chủ đề.</translation>
 <translation id="1451375123200651445">Trang web, Tệp đơn</translation>
@@ -1379,7 +1379,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2580889980133367162">Luôn cho phép <ph name="HOST" /> tải xuống nhiều tệp</translation>
 <translation id="258095186877893873">Lâu</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Nền tảng <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
-<translation id="2584109212074498965">Không tìm thấy phiếu Kerberos. Hãy thử lại hoặc liên hệ với quản trị viên thiết bị của tổ chức bạn. (Mã lỗi <ph name="ERROR_CODE" />).</translation>
+<translation id="2584109212074498965">Không tìm thấy vé Kerberos. Hãy thử lại hoặc liên hệ với quản trị viên thiết bị của tổ chức bạn. (Mã lỗi <ph name="ERROR_CODE" />).</translation>
 <translation id="2585724835339714757">Thẻ này đang chia sẻ màn hình của bạn.</translation>
 <translation id="2586561813241011046">Không cài đặt được <ph name="APP_NAME" />. Hãy thử lại hoặc liên hệ với quản trị viên. Mã lỗi: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Khay nhớ tạm</translation>
@@ -2906,7 +2906,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4400632832271803360">Giữ phím Trình khởi chạy để chuyển đổi chức năng của các phím hàng trên cùng</translation>
 <translation id="4400963414856942668">Bạn có thể nhấp vào dấu sao để đánh dấu một thẻ</translation>
 <translation id="4403775189117163360">Chọn một thư mục khác</translation>
-<translation id="440391631796167175">Không phát hiện thấy mật khẩu yếu</translation>
 <translation id="4404136731284211429">Quét lại</translation>
 <translation id="4404843640767531781">Cha mẹ bạn đã chặn <ph name="APP_NAME" />. Hãy xin phép cha mẹ cấp quyền sử dụng ứng dụng này.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -3459,7 +3458,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5078638979202084724">Đánh dấu trang tất cả các thẻ</translation>
 <translation id="5078796286268621944">Mã PIN không chính xác</translation>
 <translation id="5079950360618752063">Sử dụng mật khẩu đề xuất</translation>
-<translation id="508059534790499809">Làm mới phiếu Kerberos</translation>
+<translation id="508059534790499809">Làm mới vé Kerberos</translation>
 <translation id="5084230410268011727">Cho phép các trang web sử dụng cảm biến chuyển động và ánh sáng</translation>
 <translation id="5084328598860513926">Quy trình cấp phép bị gián đoạn. Vui lòng thử lại hoặc liên hệ với quản trị viên hay chủ sở hữu thiết bị. Mã lỗi: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Đang kiểm tra bản cập nhật</translation>
@@ -4834,7 +4833,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6735304988756581115">Hiển thị cookie và các dữ liệu khác của trang web...</translation>
 <translation id="6736243959894955139">Địa chỉ</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
-<translation id="6737663862851963468">Xóa phiếu Kerberos</translation>
+<translation id="6737663862851963468">Xóa vé Kerberos</translation>
 <translation id="6739923123728562974">Hiển thị lối tắt trên màn hình</translation>
 <translation id="6740234557573873150">Đã tạm dừng <ph name="FILE_NAME" /></translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Quản trị viên của bạn<ph name="END_LINK" /> đã tắt tính năng Duyệt web an toàn</translation>
@@ -6183,7 +6182,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8300011035382349091">Chỉnh sửa dấu trang cho thẻ này</translation>
 <translation id="8300374739238450534">Xanh đậm</translation>
 <translation id="8300849813060516376">OTASP không thành công</translation>
-<translation id="8304383784961451596">Bạn không được phép sử dụng thiết bị này. Vui lòng liên hệ với quản trị viên để có quyền đăng nhập hoặc đăng nhập thông qua một Tài khoản Google được giám sát bằng Family Link.</translation>
+<translation id="8304383784961451596">Bạn không được phép sử dụng thiết bị này. Vui lòng liên hệ với quản trị viên để có quyền đăng nhập hoặc dùng một Tài khoản Google được giám sát bằng Family Link để đăng nhập.</translation>
 <translation id="8308179586020895837">Hỏi nếu <ph name="HOST" /> muốn truy cập máy ảnh của bạn</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">Chứng chỉ đã tồn tại</translation>
@@ -6343,6 +6342,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="850875081535031620">Không tìm thấy phần mềm độc hại nào</translation>
 <translation id="8509177919508253835">Đặt lại khóa bảo mật và tạo mã PIN</translation>
 <translation id="8509646642152301857">Tải xuống từ điển kiểm tra lỗi chính tả không thành công.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Không phát hiện thấy mật khẩu yếu}=1{Phát hiện thấy {COUNT} mật khẩu yếu}other{Phát hiện thấy {COUNT} mật khẩu yếu}}</translation>
 <translation id="8512476990829870887">Kết thúc quá trình</translation>
 <translation id="851263357009351303">Luôn cho phép <ph name="HOST" /> hiển thị hình ảnh</translation>
 <translation id="8513108775083588393">Tự động xoay</translation>
@@ -6389,7 +6389,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8565650234829130278">Đã cố gắng hạ cấp ứng dụng.</translation>
 <translation id="8569682776816196752">Không tìm thấy điểm đến nào</translation>
 <translation id="8571213806525832805">4 tuần qua</translation>
-<translation id="8571687764447439720">Thêm phiếu Kerberos</translation>
+<translation id="8571687764447439720">Thêm vé Kerberos</translation>
 <translation id="8574990355410201600">Luôn cho phép phát âm thanh trên <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Giữ phím <ph name="KEY_EQUIVALENT" /> để thoát</translation>
 <translation id="8576249514688522074">Chưa khởi chạy</translation>
@@ -6414,7 +6414,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8601206103050338563">Xác thực Ứng dụng khách TLS WWW</translation>
 <translation id="8602851771975208551">Một chương trình khác trên máy tính của bạn đã thêm một ứng dụng có thể thay đổi cách Chrome hoạt động.</translation>
 <translation id="8605428685123651449">Bộ nhớ SQLite</translation>
-<translation id="8608618451198398104">Thêm phiếu Kerberos</translation>
+<translation id="8608618451198398104">Thêm vé Kerberos</translation>
 <translation id="860909219589324847">Không bao giờ dùng dữ liệu di động để truyền tải</translation>
 <translation id="8609465669617005112">Di chuyển lên</translation>
 <translation id="8610103157987623234">Định dạng không chính xác. Hãy thử lại</translation>

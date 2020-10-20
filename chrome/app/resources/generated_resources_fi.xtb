@@ -2903,7 +2903,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4400632832271803360">Pidä Käynnistysohjelma-näppäintä pohjassa, niin voit vaihtaa ylärivin näppäinten toimintaa.</translation>
 <translation id="4400963414856942668">Voit lisätä välilehden kirjanmerkkeihin klikkaamalla tähteä</translation>
 <translation id="4403775189117163360">Valitse toinen kansio</translation>
-<translation id="440391631796167175">Heikkoja salasanoja ei löytynyt</translation>
 <translation id="4404136731284211429">Hae uudelleen</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> on vanhempasi estämä. Pyydä vanhemmaltasi lupaa käyttää tätä sovellusta.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6341,6 +6340,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="850875081535031620">Haittaohjelmia ei löytynyt.</translation>
 <translation id="8509177919508253835">Nollaa suojausavaimet ja luo PIN-koodit</translation>
 <translation id="8509646642152301857">Oikeinkirjoituksen tarkistuksen sanakirjan lataus epäonnistui.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Heikkoja salasanoja ei löytynyt}=1{{COUNT} heikko salasana löytyi}other{{COUNT} heikkoa salasanaa löytyi}}</translation>
 <translation id="8512476990829870887">Lopeta prosessi</translation>
 <translation id="851263357009351303">Salli aina sivuston <ph name="HOST" /> näyttää kuvia</translation>
 <translation id="8513108775083588393">Autom. kääntö</translation>

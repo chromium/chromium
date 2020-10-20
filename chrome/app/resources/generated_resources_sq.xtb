@@ -2903,7 +2903,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4400632832271803360">Mbaj të shtypur tastin e Launcher për të ndërruar sjelljen e tasteve të rreshtit të sipërm</translation>
 <translation id="4400963414856942668">Mund të klikosh tek ylli për ta shtuar një skedë te faqeshënuesit</translation>
 <translation id="4403775189117163360">Zgjidh një dosje tjetër</translation>
-<translation id="440391631796167175">Nuk u gjet asnjë fjalëkalim i dobët</translation>
 <translation id="4404136731284211429">Skano përsëri</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> është bllokuar nga prindi yt. Kërko leje nga prindi që ta përdorësh këtë aplikacion.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6338,6 +6337,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="850875081535031620">Nuk u gjet asnjë softuer i dëmshëm</translation>
 <translation id="8509177919508253835">Rivendos çelësat e sigurisë dhe krijo kodet PIN</translation>
 <translation id="8509646642152301857">Dështoi shkarkimi i fjalorit të kontrollit të drejtshkrimit.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Nuk u gjet asnjë fjalëkalim i dobët}=1{U gjet {COUNT} fjalëkalim i dobët}other{U gjetën {COUNT} fjalëkalime të dobëta}}</translation>
 <translation id="8512476990829870887">Përfundo procesin</translation>
 <translation id="851263357009351303">Lejo gjithmonë që <ph name="HOST" /> të shfaqë imazhet</translation>
 <translation id="8513108775083588393">Autorrotullim</translation>

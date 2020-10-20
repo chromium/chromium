@@ -2905,7 +2905,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4400632832271803360">Pridržaním klávesa spúšťača prepnete správanie klávesov v hornom riadku</translation>
 <translation id="4400963414856942668">Kartu uložíte ako záložku kliknutím na hviezdičku</translation>
 <translation id="4403775189117163360">Vybrať iný priečinok</translation>
-<translation id="440391631796167175">Neboli nájdené žiadne slabé heslá</translation>
 <translation id="4404136731284211429">Znova skontrolovať</translation>
 <translation id="4404843640767531781">Aplikáciu <ph name="APP_NAME" /> zablokoval tvoj rodič. Ak chceš používať túto aplikáciu, požiadaj rodiča o povolenie.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6341,6 +6340,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="850875081535031620">Nenašiel sa žiadny škodlivý softvér</translation>
 <translation id="8509177919508253835">Resetovanie bezpečnostných kľúčov a vytváranie kódov PIN</translation>
 <translation id="8509646642152301857">Sťahovanie slovníka na kontrolu pravopisu zlyhalo.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Nenašli sa žiadne slabé heslá}=1{Našlo sa {COUNT} slabé heslo}few{Našli sa {COUNT} slabé heslá}many{Found {COUNT} weak passwords}other{Našlo sa {COUNT} slabých hesiel}}</translation>
 <translation id="8512476990829870887">Ukončiť proces</translation>
 <translation id="851263357009351303">Vždy povoliť stránkam <ph name="HOST" /> zobrazovať obrázky</translation>
 <translation id="8513108775083588393">Aut. otáčanie</translation>

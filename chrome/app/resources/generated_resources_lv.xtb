@@ -2906,7 +2906,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4400632832271803360">Turiet palaišanas programmas taustiņu, lai pārslēgtu augšējās rindas taustiņu funkcijas.</translation>
 <translation id="4400963414856942668">Noklikšķiniet uz zvaigznītes ikonas, lai saglabātu cilni kā grāmatzīmi.</translation>
 <translation id="4403775189117163360">Izvēlēties citu mapi</translation>
-<translation id="440391631796167175">Netika atrasta neviena nedroša parole</translation>
 <translation id="4404136731284211429">Meklēt vēlreiz</translation>
 <translation id="4404843640767531781">Lietotni <ph name="APP_NAME" /> bloķēja kāds no jūsu vecākiem. Lai izmantotu šo lietotni, lūdziet vecākiem piešķirt atļauju.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6342,6 +6341,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="850875081535031620">Netika atrasta neviena kaitīga programmatūra.</translation>
 <translation id="8509177919508253835">Atiestatiet drošības atslēgas un izveidojiet PIN kodus</translation>
 <translation id="8509646642152301857">Pareizrakstības pārbaudes vārdnīcas lejupielāde neizdevās.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Netika atrasta neviena nedroša parole}=1{Tika atrasta {COUNT} nedroša parole}zero{Tika atrastas {COUNT} nedrošas paroles}one{Tika atrasta {COUNT} nedroša parole}other{Tika atrastas {COUNT} nedrošas paroles}}</translation>
 <translation id="8512476990829870887">Pārtraukt procesu</translation>
 <translation id="851263357009351303">Vienmēr atļaut vietnei <ph name="HOST" /> rādīt attēlus</translation>
 <translation id="8513108775083588393">Pagriezt aut.</translation>

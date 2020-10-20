@@ -2903,7 +2903,6 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="4400632832271803360">Bamba ukhiye wesiqalisi ukuze ushintshe phakathi kokuziphatha kokhiye berowu ephezulu</translation>
 <translation id="4400963414856942668">Ungachofoza inkanyezi ukuze ubhukhimakhe ithebhu</translation>
 <translation id="4403775189117163360">Khetha ifolda ehlukile</translation>
-<translation id="440391631796167175">Akutholakalanga amaphasiwedi angaqinile</translation>
 <translation id="4404136731284211429">Skena futhi</translation>
 <translation id="4404843640767531781">I-<ph name="APP_NAME" /> ivinjwe ngumzali wakho. Cela umzali wakho imvume yokusebenzisa lolu hlelo lokusebenza.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6342,6 +6341,7 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="850875081535031620">Alikho isofthiwe elinobungozi elitholakele</translation>
 <translation id="8509177919508253835">Setha kabusha okhiye bokuqinisekisa ubunikazi uphinde udale amaphinikhodi</translation>
 <translation id="8509646642152301857">Ukulandwa kokuhlolwa kokupelwa kwesichazamazwi kuhlulekile.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Akutholakalanga amaphasiwedi angaqinile}=1{Kutholakele iphasiwedi engu-{COUNT} engaqinile}one{Kutholakele amaphasiwedi angu-{COUNT} angaqinile}other{Kutholakele amaphasiwedi angu-{COUNT} angaqinile}}</translation>
 <translation id="8512476990829870887">Qeda inqubo</translation>
 <translation id="851263357009351303">Hlala uvumela i-<ph name="HOST" /> ukuthi ibonise izithombe</translation>
 <translation id="8513108775083588393">I-auto-rotate</translation>

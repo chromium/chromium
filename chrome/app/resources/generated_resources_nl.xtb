@@ -2906,7 +2906,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4400632832271803360">Houd de Launcher-toets ingedrukt om het gedrag van de toetsen in de bovenste rij om te schakelen</translation>
 <translation id="4400963414856942668">Je kunt op de ster klikken om een bookmark voor een tabblad in te stellen</translation>
 <translation id="4403775189117163360">Een andere map kiezen</translation>
-<translation id="440391631796167175">Geen zwakke wachtwoorden gevonden</translation>
 <translation id="4404136731284211429">Opnieuw scannen</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> is geblokkeerd door je ouder. Vraag je ouder toestemming om deze app te gebruiken.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6342,6 +6341,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="850875081535031620">Er is geen schadelijke software gevonden</translation>
 <translation id="8509177919508253835">Beveiligingssleutels resetten en pincodes maken</translation>
 <translation id="8509646642152301857">Downloaden van woordenboek voor spellingcontrole is mislukt.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Geen zwakke wachtwoorden gevonden}=1{{COUNT} zwak wachtwoord gevonden}other{{COUNT} zwakke wachtwoorden gevonden}}</translation>
 <translation id="8512476990829870887">Proces beëindigen</translation>
 <translation id="851263357009351303"><ph name="HOST" /> altijd toestaan afbeeldingen weer te geven</translation>
 <translation id="8513108775083588393">Autom. draaien</translation>

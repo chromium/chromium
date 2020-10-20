@@ -9,7 +9,7 @@
 <translation id="1181037720776840403">הסרה</translation>
 <translation id="1201402288615127009">הבא</translation>
 <translation id="1218444235442067213">‏<ph name="APP_NAME" />, אפליקציה מחנות Play</translation>
-<translation id="1243314992276662751">העלה</translation>
+<translation id="1243314992276662751">העלאה</translation>
 <translation id="1266864766717917324">לא ניתן היה לשתף את ה<ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1290982764014248209">העברת <ph name="DRAGGED_APP" /> אל התיקייה <ph name="FOLDER_NAME" />.</translation>
@@ -31,7 +31,7 @@
 <translation id="1761785978543082658"><ph name="QUANTITY" /> B</translation>
 <translation id="1801827354178857021">נקודה</translation>
 <translation id="1803208670097017349">{MONTHS,plural, =1{חודש אחד}two{חודשיים}many{# חודשים}other{# חודשים}}</translation>
-<translation id="1809410197924942083"><ph name="QUANTITY" /> MB/s</translation>
+<translation id="1809410197924942083"><ph name="QUANTITY" />MB/s</translation>
 <translation id="1830179671306812954">{HOURS,plural, =1{שעה אחת ו }two{שעתיים ו }many{# שעות ו }other{# שעות ו }}</translation>
 <translation id="1830308660060964064">ההצמדה של <ph name="ITEM_TITLE" /> בוטלה</translation>
 <translation id="1842960171412779397">בחירה</translation>
@@ -54,7 +54,7 @@
 <translation id="2267918077332197517">חסימת כל ההודעות מהאתר הזה</translation>
 <translation id="2289052229480071835">יש להקיש על יעדי המגע במסך.</translation>
 <translation id="2295140143284145483">סקר</translation>
-<translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2297836609126180313"><ph name="QUANTITY" />TB/s</translation>
 <translation id="2353636109065292463">בדיקת חיבור האינטרנט</translation>
 <translation id="2388990488038464401">להתקשר למספר הזה מהטלפון שלך?</translation>
 <translation id="24452542372838207">הרחבת ההודעה</translation>
@@ -86,7 +86,7 @@
 <translation id="3087734570205094154">תחתית</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3157931365184549694">שחזר</translation>
-<translation id="3183922693828471536">גלול ל'כאן'</translation>
+<translation id="3183922693828471536">גלילה ל'כאן'</translation>
 <translation id="3234408098842461169">חץ למטה</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{יום אחד}two{יומיים}many{# ימים}other{# ימים}}</translation>
 <translation id="3295886253693811851">התקשרות באמצעות</translation>
@@ -103,12 +103,12 @@
 <translation id="3660179305079774227">חץ למעלה</translation>
 <translation id="3670030362669914947">מספר</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> GB/s</translation>
-<translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
+<translation id="3757388668994797779"><ph name="QUANTITY" />GB</translation>
 <translation id="3842239759367498783">אפשר להמשיך לקרוא מהמכשיר הנייד <ph name="TITLE" /></translation>
 <translation id="385051799172605136">חזרה</translation>
 <translation id="3889424535448813030">חץ לימין</translation>
 <translation id="3897092660631435901">תפריט</translation>
-<translation id="3909791450649380159">גז&amp;ור</translation>
+<translation id="3909791450649380159">גז&amp;ירה</translation>
 <translation id="3990502903496589789">קצה ימני</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{הודעה אחת שלא נקראה}two{2 הודעות שלא נקראו}many{# הודעות שלא נקראו}other{# הודעות שלא נקראו}}</translation>
 <translation id="4202807286478387388">קפיצה</translation>
@@ -131,7 +131,7 @@
 <translation id="5046499563572181734">הקש כאן</translation>
 <translation id="5076340679995252485">&amp;הדבקה</translation>
 <translation id="5198715732953550718">האפליקציה <ph name="MOVED_APP_NAME" /> משולבת ביחד עם האפליקציה <ph name="IN_PLACE_APP" /> ליצירת תיקייה חדשה.</translation>
-<translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="520299402983819650"><ph name="QUANTITY" />PB</translation>
 <translation id="5266161281976477809">משולש הצגה</translation>
 <translation id="5278860589123563674">השליחה נכשלה</translation>
 <translation id="5283099933536931082">האפליקציה <ph name="APP_ITEM_TITLE" /> מבקשת את תשומת לבך.</translation>
@@ -171,7 +171,7 @@
 <translation id="6351032674660237738">הצעות לאפליקציות</translation>
 <translation id="6364916375976753737">גלול שמאלה</translation>
 <translation id="6394627529324717982">פסיק</translation>
-<translation id="6397363302884558537">הפסק לדבר</translation>
+<translation id="6397363302884558537">יש להפסיק לדבר</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{לפני שנ‘ אחת}two{לפני # שנ‘}many{לפני # שנ‘}other{לפני # שנ‘}}</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6430678249303439055">חסימת כל ההודעות מהאפליקציה הזו</translation>
@@ -240,7 +240,7 @@
 <translation id="8458811141851741261">{YEARS,plural, =1{שנה}two{# שנ}many{# שנ}other{# שנ}}</translation>
 <translation id="8602707065186045623">קובץ <ph name="SAVEAS_EXTENSION_TYPE" />  (<ph name="SAVEAS_EXTENSION_NAME" />.)</translation>
 <translation id="8649597172973390955">המדף תמיד מוצג</translation>
-<translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s‎</translation>
+<translation id="8677655579646609597"><ph name="QUANTITY" />KB/s‎</translation>
 <translation id="8685326675965865247">אפשר לחפש במכשיר, באפליקציות, בהגדרות ובאינטרנט. בעזרת מקשי החיצים ניתן לעבור בין האפליקציות.</translation>
 <translation id="8725488761726303204">ועוד <ph name="NUMBER" /></translation>
 <translation id="8730621377337864115">בוצע</translation>
@@ -251,7 +251,7 @@
 <translation id="8841375032071747811">לחצן 'הקודם'</translation>
 <translation id="8867568208303837180">שולח...</translation>
 <translation id="8876215549894133151">פורמט:</translation>
-<translation id="8901569739625249689">‏<ph name="QUANTITY" /> KB‏</translation>
+<translation id="8901569739625249689">‏<ph name="QUANTITY" />KB‏</translation>
 <translation id="8926951137623668982">המדף תמיד מוסתר</translation>
 <translation id="8996630695507351249">יש לוודא ש-<ph name="TARGET_DEVICE_NAME" /> מחובר לאינטרנט.</translation>
 <translation id="9002566407876343676">פתיחה</translation>

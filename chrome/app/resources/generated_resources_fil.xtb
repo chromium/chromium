@@ -2906,7 +2906,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="4400632832271803360">Pindutin nang matagal ang key ng Launcher upang mapalitan ang gawi ng mga key sa itaas na row</translation>
 <translation id="4400963414856942668">Puwede mong i-click ang star para mag-bookmark ng tab</translation>
 <translation id="4403775189117163360">Pumili ng ibang folder</translation>
-<translation id="440391631796167175">Walang nakitang mahinang password</translation>
 <translation id="4404136731284211429">I-scan ulit</translation>
 <translation id="4404843640767531781">Na-block ng iyong magulang ang <ph name="APP_NAME" />. Humiling sa iyong magulang ng pahintulot na gamitin ang app na ito.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, at *.png</translation>
@@ -6344,6 +6343,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="850875081535031620">Walang nahanap na mapaminsalang software</translation>
 <translation id="8509177919508253835">I-reset ang mga security key at gumawa ng mga PIN</translation>
 <translation id="8509646642152301857">Nabigo ang pag-download ng diksyunaryo ng pang-check ng pagbabaybay.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Walang nakitang mahinang password}=1{Nakakita ng {COUNT} mahinang password}one{Nakakita ng {COUNT} mahihinang password}other{Nakakita ng {COUNT} na mahihinang password}}</translation>
 <translation id="8512476990829870887">Tapusin ang Proseso</translation>
 <translation id="851263357009351303">Palaging hayaan ang <ph name="HOST" /> na magpakita ng mga larawan</translation>
 <translation id="8513108775083588393">I-auto rotate</translation>

@@ -2906,7 +2906,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4400632832271803360">Håll ned starttangenten om du vill ändra hur tangenterna på översta raden fungerar</translation>
 <translation id="4400963414856942668">Du kan lägga till ett bokmärke för fliken genom att klicka på stjärnan</translation>
 <translation id="4403775189117163360">Välj en annan mapp</translation>
-<translation id="440391631796167175">Inga svaga lösenord hittades</translation>
 <translation id="4404136731284211429">Sök igen</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> blockeras av en förälder. Be en förälder om behörighet att använda den här appen.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6343,6 +6342,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="850875081535031620">Ingen skadlig programvara hittades</translation>
 <translation id="8509177919508253835">Återställ säkerhetsnycklar och skapa pinkoder</translation>
 <translation id="8509646642152301857">Det gick inte att ladda ned ordlistan för stavningskontrollen.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Inga svaga lösenord hittades}=1{{COUNT} svagt lösenord hittades}other{{COUNT} svaga lösenord hittades}}</translation>
 <translation id="8512476990829870887">Avsluta process</translation>
 <translation id="851263357009351303">Tillåt alltid att <ph name="HOST" /> visar bilder</translation>
 <translation id="8513108775083588393">Rotera automatiskt</translation>

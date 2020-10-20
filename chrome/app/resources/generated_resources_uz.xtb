@@ -2904,7 +2904,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4400632832271803360">Yuqori qatordagi tugmalar rejimni almashtirish uchun qidiruv tugmasini bosib turing</translation>
 <translation id="4400963414856942668">Varaqni bukmarklash uchun yulduzchani bosing</translation>
 <translation id="4403775189117163360">Boshqa jildni tanlash</translation>
-<translation id="440391631796167175">Kuchsiz parol topilmadi</translation>
 <translation id="4404136731284211429">Yana qidirish</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> ota-onangiz tomonidan bloklangan. Bu ilovadan foydalanish uchun ota-onangizdan ruxsat oling.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6339,6 +6338,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="850875081535031620">Birorta ham zararli dastur topilmadi</translation>
 <translation id="8509177919508253835">Elektron kalitlarni asliga qaytarish va PIN kodlar yaratish</translation>
 <translation id="8509646642152301857">Imlo lug‘atini yuklab olish amalga oshmadi.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Kuchsiz parol topilmadi}=1{{COUNT} ta kuchsiz parol topildi}other{{COUNT} ta kuchsiz parol topildi}}</translation>
 <translation id="8512476990829870887">Jarayonni yakunlash</translation>
 <translation id="851263357009351303"><ph name="HOST" /> rasmlarni doim ko‘rsatsin</translation>
 <translation id="8513108775083588393">Avto-burilish</translation>

@@ -2902,7 +2902,6 @@
 <translation id="4400632832271803360">ટોચની-પંક્તિ કીની વર્તણૂંક સ્વિચ કરવા માટે લૉન્ચર કીને દબાવી રાખો</translation>
 <translation id="4400963414856942668">ટૅબને બુકમાર્ક કરવા માટે તમે સ્ટાર પર ક્લિક કરી શકો છો</translation>
 <translation id="4403775189117163360">કોઈ અલગ ફોલ્ડર પસંદ કરો</translation>
-<translation id="440391631796167175">કોઈ નબળો પાસવર્ડ મળ્યો નથી</translation>
 <translation id="4404136731284211429">ફરી સ્કૅન કરો</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> તમારા માતાપિતા દ્વારા બ્લૉક કરવામાં આવી છે. આ ઍપનો ઉપયોગ કરવા માટે તમારા માતાપિતા પાસેથી પરવાનગી મેળવો.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -5362,6 +5361,7 @@ USB ડિવાઇસ</translation>
 <translation id="7375235221357833624">{0,plural, =1{એક કલાકની અંદર ડિવાઇસ અપડેટ કરો}one{# કલાકની અંદર ડિવાઇસ અપડેટ કરો}other{# કલાકની અંદર ડિવાઇસ અપડેટ કરો}}</translation>
 <translation id="7376553024552204454">માઉસ કર્સર જ્યારે ગતિમાન હોય ત્યારે તેને હાઇલાઇટ કરો</translation>
 <translation id="7377451353532943397">સેન્સર ઍક્સેસ બ્લૉક કરવાનું ચાલુ રાખો</translation>
+<translation id="7378611153938412599">નબળા પાસવર્ડનું અનુમાન કરવું સરળ હોય છે. તમે સશક્ત પાસવર્ડ બનાવવાની ખાતરી કરો. <ph name="BEGIN_LINK" />સુરક્ષા સંબંધિત વધુ ટિપ જુઓ.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Chrome વેબ દુકાન ખોલો</translation>
 <translation id="7378812711085314936">ડેટા કનેક્શન મેળવો</translation>
 <translation id="7380622428988553498">ડિવાઇસના નામમાં અમાન્ય અક્ષરો છો</translation>
@@ -6334,6 +6334,7 @@ USB ડિવાઇસ</translation>
 <translation id="850875081535031620">કોઈ નુકસાનકારક સૉફ્ટવેર મળ્યું નથી</translation>
 <translation id="8509177919508253835">સુરક્ષા કોડ રીસેટ કરો અને પિન બનાવો</translation>
 <translation id="8509646642152301857">જોડણીની તપાસ ડાઉનલોડ કરવામાં નિષ્ફળ.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{કોઈ નબળો પાસવર્ડ મળ્યો નથી}=1{{COUNT} નબળો પાસવર્ડ મળ્યો}one{{COUNT} નબળો પાસવર્ડ મળ્યો}other{{COUNT} નબળા પાસવર્ડ મળ્યા}}</translation>
 <translation id="8512476990829870887">પ્રક્રિયાનો અંત કરો</translation>
 <translation id="851263357009351303"><ph name="HOST" /> ને હંમેશા છબી બતાવવાની મંજૂરી આપો</translation>
 <translation id="8513108775083588393">ઑટો રોટેટ</translation>

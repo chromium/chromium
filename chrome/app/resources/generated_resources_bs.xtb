@@ -2906,7 +2906,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="4400632832271803360">Držite tipku Pokretač da promijenite ponašanje tipki u gornjem redu</translation>
 <translation id="4400963414856942668">Možete kliknuti na zvjezdicu da označite karticu</translation>
 <translation id="4403775189117163360">Odaberi drugi folder</translation>
-<translation id="440391631796167175">Nije pronađena nijedna slaba lozinka</translation>
 <translation id="4404136731284211429">Ponovo skeniraj</translation>
 <translation id="4404843640767531781">Tvoj roditelj je blokirao aplikaciju <ph name="APP_NAME" />. Traži od roditelja odobrenje da koristiš ovu aplikaciju.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6183,7 +6182,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8300011035382349091">Uredite oznaku za ovu karticu</translation>
 <translation id="8300374739238450534">Ponoćno plava</translation>
 <translation id="8300849813060516376">Greška na OTASP-u</translation>
-<translation id="8304383784961451596">Nemate odobrenje za korištenje ovog uređaja. Kontaktirajte administratora zbog odobrenja za prijavu ili se prijavite s Google računom koga nadzire Family Link.</translation>
+<translation id="8304383784961451596">Nemate odobrenje za korištenje ovog uređaja. Kontaktirajte administratora zbog odobrenja za prijavu ili se prijavite s Google računom kojeg nadzire Family Link.</translation>
 <translation id="8308179586020895837">Pitaj ako <ph name="HOST" /> želi pristupiti kameri</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">Potvrda već postoji</translation>
@@ -6343,6 +6342,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="850875081535031620">Nije pronađen nijedan štetan softver</translation>
 <translation id="8509177919508253835">Poništite sigurnosne ključeve i kreirajte PIN-ove</translation>
 <translation id="8509646642152301857">Preuzimanje rječnika za provjeru pravopisa nije uspjelo.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Nije pronađena nijedna slaba lozinka}=1{Pronađena je {COUNT} slaba lozinka}one{Pronađena je {COUNT} slaba lozinka}few{Pronađene su {COUNT} slabe lozinke}other{Pronađeno je {COUNT} slabih lozinki}}</translation>
 <translation id="8512476990829870887">Završi proces</translation>
 <translation id="851263357009351303">Uvijek dozvoli da <ph name="HOST" /> prikazuje slike</translation>
 <translation id="8513108775083588393">Aut. rotiranje</translation>

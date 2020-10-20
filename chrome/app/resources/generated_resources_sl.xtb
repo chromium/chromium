@@ -2906,7 +2906,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="4400632832271803360">Če želite spremeniti delovanje tipk v zgornji vrstici, pridržite tipko za zaganjalnik</translation>
 <translation id="4400963414856942668">Če želite zavihek dodati med zaznamke, lahko kliknete zvezdico</translation>
 <translation id="4403775189117163360">Izberi drugo mapo</translation>
-<translation id="440391631796167175">Najdeno ni bilo nobeno šibko geslo.</translation>
 <translation id="4404136731284211429">Znova išči</translation>
 <translation id="4404843640767531781">Aplikacijo <ph name="APP_NAME" /> je blokiral starš. Če želiš uporabljati to aplikacijo, prosi starša za dovoljenje.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6345,6 +6344,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="850875081535031620">Najdena ni bila nobena škodljiva programska oprema</translation>
 <translation id="8509177919508253835">Ponastavitev varnostnih ključev in ustvarjanje kod PIN</translation>
 <translation id="8509646642152301857">Prenos slovarja za preverjanje črkovanja ni uspel.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Najdeno ni bilo nobeno šibko geslo.}=1{Najdeno je bilo {COUNT} šibko geslo.}one{Najdeno je bilo {COUNT} šibko geslo.}two{Najdeni sta bili {COUNT} šibki gesli.}few{Najdena so bila {COUNT} šibka gesla.}other{Najdenih je bilo {COUNT} šibkih gesel.}}</translation>
 <translation id="8512476990829870887">Končaj proces</translation>
 <translation id="851263357009351303">Vedno dovoli mestu <ph name="HOST" />, da pokaže slike</translation>
 <translation id="8513108775083588393">Samodej. zasuk</translation>

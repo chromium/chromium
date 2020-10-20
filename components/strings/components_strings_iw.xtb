@@ -616,7 +616,7 @@
 <translation id="3456231139987291353">Number-11 (Envelope)‎</translation>
 <translation id="3461266716147554923"><ph name="URL" /> רוצה גישה אל טקסט ותמונות שהועתקו אל לוח העריכה.</translation>
 <translation id="3461824795358126837">כלי הדגשה</translation>
-<translation id="3462200631372590220">הסתר פרטים מתקדמים</translation>
+<translation id="3462200631372590220">הסתרת פרטים מתקדמים</translation>
 <translation id="3467763166455606212">עליך לציין את שם בעל הכרטיס</translation>
 <translation id="3468054117417088249">‏<ph name="TAB_SWITCH_SUFFIX" />, פתוחה כרגע, יש להקיש על Tab ולאחר מכן על Enter כדי לעבור לכרטיסייה הפתוחה</translation>
 <translation id="3479552764303398839">לא עכשיו</translation>
@@ -655,7 +655,7 @@
 <translation id="3615877443314183785">עליך להזין תאריך תפוגה חוקי</translation>
 <translation id="36224234498066874">ניקוי נתוני גלישה…</translation>
 <translation id="362276910939193118">כל ההיסטוריה</translation>
-<translation id="3630155396527302611">אם היא כבר רשומה כתוכנית המורשית לגשת לרשת, נסה
+<translation id="3630155396527302611">אם היא כבר רשומה כתוכנית המורשית לגשת לרשת, יש לנסות
       להסיר אותה מהרשימה ולהוסיף אותה שוב.</translation>
 <translation id="3630699740441428070">החיבור לרשת של המכשיר הזה הוגדר על ידי מנהלי המערכת, ועשויה להיות להם אפשרות לראות את התנועה שלך ברשת, כולל האתרים שבהם ביקרת.</translation>
 <translation id="3631244953324577188">מידע ביומטרי</translation>
@@ -694,7 +694,7 @@
 <translation id="3761718714832595332">הסתרת הסטטוס</translation>
 <translation id="3765032636089507299">הדף 'גלישה בטוחה' נמצא כרגע בבנייה.</translation>
 <translation id="3765588406864124894">תיבת דואר 9</translation>
-<translation id="3778403066972421603">‏האם ברצונך לשמור את הכרטיס בחשבון Google שלך ובמכשיר הזה?</translation>
+<translation id="3778403066972421603">‏ברצונך לשמור את הכרטיס בחשבון Google שלך ובמכשיר הזה?</translation>
 <translation id="3780694243617746492">סל פלט</translation>
 <translation id="3781428340399460090">ורוד בוהק</translation>
 <translation id="3783418713923659662">מאסטרקארד</translation>
@@ -708,7 +708,7 @@
 <translation id="3807873520724684969">תוכן מזיק נחסם.</translation>
 <translation id="3808375843007691220">אזהרה: תכונות ניסיוניות לפניך!</translation>
 <translation id="3810973564298564668">נהל</translation>
-<translation id="382518646247711829">‏אם אתה משתמש בשרת Proxy...</translation>
+<translation id="382518646247711829">‏אם עשית שימוש בשרת Proxy...</translation>
 <translation id="3827112369919217609">מוחלט</translation>
 <translation id="3828924085048779000">אין אפשרות להשתמש במשפט-סיסמה ריק.</translation>
 <translation id="3831915413245941253">הותקנו תוספים מהדומיין <ph name="ENROLLMENT_DOMAIN" /> כדי להשתמש בפונקציות נוספות. לתוספים יש גישה לחלק מהנתונים שלך.</translation>
@@ -1001,7 +1001,7 @@ Del</translation>
 <translation id="5017554619425969104">טקסט שהעתקת</translation>
 <translation id="5018422839182700155">לא ניתן לפתוח את הדף</translation>
 <translation id="5019198164206649151">האחסון המשמש כגיבוי אינו תקין</translation>
-<translation id="5023310440958281426">בדוק את תקנון מנהל המערכת שלך</translation>
+<translation id="5023310440958281426">יש לבדוק את תקנון מנהל המערכת שלך</translation>
 <translation id="5029568752722684782">מחיקת העותק</translation>
 <translation id="5030338702439866405">הונפק על ידי</translation>
 <translation id="503069730517007720">‏יש צורך באישור שורש בשביל "<ph name="SOFTWARE_NAME" />", אבל לא מותקן אישור כזה. על מנהל ה-IT לבדוק את הוראות התצורה של "<ph name="SOFTWARE_NAME" />" כדי לפתור את הבעיה. <ph name="FURTHER_EXPLANATION" /></translation>
@@ -1200,7 +1200,7 @@ Del</translation>
 <translation id="5781136890105823427">הניסוי מופעל</translation>
 <translation id="578305955206182703">ענבר</translation>
 <translation id="57838592816432529">השתקה</translation>
-<translation id="5784606427469807560">הייתה בעיה באישור הכרטיס. בדוק את החיבור לאינטרנט ונסה שוב.</translation>
+<translation id="5784606427469807560">הייתה בעיה באישור הכרטיס. יש לבדוק את החיבור לאינטרנט ולנסות שוב.</translation>
 <translation id="5785756445106461925">כמו כן, דף זה כולל משאבים נוספים שאינם מאובטחים. גורמים אחרים עלולים לראות את המשאבים האלה במהלך העברתם, ותוקף עלול לשנות אותם באופן שישנה את מראה הדף.</translation>
 <translation id="5786044859038896871">האם ברצונך למלא את פרטי הכרטיס שלך?</translation>
 <translation id="5798290721819630480">לבטל את השינויים?</translation>
@@ -1224,7 +1224,7 @@ Del</translation>
 <translation id="5869405914158311789">לא ניתן לגשת לאתר הזה</translation>
 <translation id="5869522115854928033">סיסמאות שמורות</translation>
 <translation id="5887400589839399685">הכרטיס נשמר</translation>
-<translation id="5895138241574237353">הפעל מחדש</translation>
+<translation id="5895138241574237353">הפעלה מחדש</translation>
 <translation id="5895187275912066135">הונפק בתאריך</translation>
 <translation id="5901630391730855834">צהוב</translation>
 <translation id="5905445707201418379">נחסם בהתאם למדיניות המקור של <ph name="ORIGIN" />.</translation>
@@ -1269,7 +1269,7 @@ Del</translation>
 <translation id="6041777658117377052">טמפרטורה בתא</translation>
 <translation id="6044573915096792553">גודל 12</translation>
 <translation id="6045164183059402045">תבנית הצבה</translation>
-<translation id="6047233362582046994">אם אתה מבין את סיכוני האבטחה, תוכל <ph name="BEGIN_LINK" />להיכנס לאתר הזה<ph name="END_LINK" /> לפני הסרת היישומים המזיקים.</translation>
+<translation id="6047233362582046994">אם סיכוני האבטחה מובנים לך, יהיה באפשרותך <ph name="BEGIN_LINK" />להיכנס לאתר הזה<ph name="END_LINK" /> לפני הסרת האפליקציות המזיקות.</translation>
 <translation id="6047927260846328439">ייתכן שבתוכן הזה יש מידע מטעה שנועד לגרום לך להתקין תוכנות או לחשוף מידע אישי. <ph name="BEGIN_LINK" />הצג בכל זאת<ph name="END_LINK" /></translation>
 <translation id="6049488691372270142">מסירת דף</translation>
 <translation id="6051221802930200923">נכון לעכשיו אי אפשר לבקר באתר <ph name="SITE" />, מאחר שבאתר הזה נעשה שימוש בנעיצת אישורים. שגיאות רשת ומתקפות הן בדרך כלל זמניות, כך שהדף הזה יחזור כנראה לפעול מאוחר יותר.</translation>
@@ -1355,7 +1355,7 @@ Del</translation>
 <translation id="6404511346730675251">ערוך סימניה</translation>
 <translation id="6406765186087300643">C0 (Envelope)‎</translation>
 <translation id="6409754798200046165">‏הזנת כרגע את הסיסמה שלך באתר מטעה. ההמלצה של Chrome היא לשנות את הסיסמה עכשיו.</translation>
-<translation id="6410264514553301377">הזן את תאריך התפוגה ואת קוד האימות של <ph name="CREDIT_CARD" /></translation>
+<translation id="6410264514553301377">יש להזין את תאריך התפוגה ואת קוד האימות של <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">‏בעזרת Chromium אפשר להגן על חשבון Google ולשנות את הסיסמה.</translation>
 <translation id="6423385022588644828">‏כדי לאשר את הכרטיסים שלך מהר יותר, אפשר להשתמש ב-Touch ID מעכשיו והלאה</translation>
 <translation id="6425092077175753609">עיצוב חדשני תלת-ממדי</translation>
@@ -1386,7 +1386,7 @@ Del</translation>
 <translation id="6545864417968258051">‏סריקת Bluetooth</translation>
 <translation id="6547208576736763147">שני ניקובים בצד שמאל</translation>
 <translation id="6554795675067793129">החשבון שלך מנוהל על-ידי <ph name="ENROLLMENT_DOMAIN" />.</translation>
-<translation id="6556866813142980365">בצע מחדש</translation>
+<translation id="6556866813142980365">ביצוע מחדש</translation>
 <translation id="6569060085658103619">אתה מציג דף של תוסף</translation>
 <translation id="6573200754375280815">שני ניקובים בצד ימין</translation>
 <translation id="6578796323535178455">C2 (Envelope)‎</translation>
@@ -1435,7 +1435,7 @@ Del</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">סגול סיגלית</translation>
 <translation id="6786747875388722282">תוספים</translation>
-<translation id="6790428901817661496">הפעל</translation>
+<translation id="6790428901817661496">הפעלה</translation>
 <translation id="679355240208270552">המערכת התעלמה מערך מדיניות זה, משום שלפי המדיניות חיפוש ברירת המחדל מושבת.</translation>
 <translation id="6794951432696553238">‏כדי לאשר את הכרטיסים שלך מהר יותר, ניתן להשתמש ב-Windows Hello מעכשיו והלאה</translation>
 <translation id="681021252041861472">שדה חובה</translation>
@@ -1495,7 +1495,7 @@ Del</translation>
 <translation id="7064851114919012435">פרטים ליצירת קשר</translation>
 <translation id="70705239631109039">החיבור שלך לא מאובטח לחלוטין</translation>
 <translation id="7072826695771387770">מתרחש אירוע אבטחה</translation>
-<translation id="7075452647191940183">הבקשה גדולה מידי</translation>
+<translation id="7075452647191940183">הבקשה גדולה מדי</translation>
 <translation id="7079718277001814089">האתר הזה מכיל תוכנה זדונית</translation>
 <translation id="7081308185095828845">התכונה הזו לא זמינה במכשיר שלך</translation>
 <translation id="7083258188081898530">מגש 9</translation>
@@ -1546,7 +1546,7 @@ Del</translation>
 פרטים נוספים:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="725866823122871198">לא ניתן ליצור חיבור פרטי אל <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> מפני שהתאריך והשעה (<ph name="DATE_AND_TIME" />) במחשב שלך שגויים.</translation>
-<translation id="7260504762447901703">בטל גישה</translation>
+<translation id="7260504762447901703">ביטול גישה</translation>
 <translation id="7275334191706090484">סימניות מנוהלות</translation>
 <translation id="7292031607255951991">שם הנמען</translation>
 <translation id="7298195798382681320">מומלצים</translation>
@@ -1730,7 +1730,7 @@ Del</translation>
 <translation id="7937554595067888181">בתוקף עד <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">אישור השרת עדיין לא בתוקף.</translation>
 <translation id="7942349550061667556">אדום</translation>
-<translation id="7947285636476623132">בדוק את שנת התפוגה ונסה שוב</translation>
+<translation id="7947285636476623132">יש לבדוק את שנת התפוגה ולנסות שוב</translation>
 <translation id="7951415247503192394">(32 סיביות)</translation>
 <translation id="7953569069500808819">הידוק קצוות בחלק העליון</translation>
 <translation id="7954523986259449736">באתר הזה נעשה שימוש בחיבור שאינו מאובטח כראוי, לכן ייתכן שהמידע שלך יהיה גלוי למשתמשים אחרים.</translation>
@@ -1818,7 +1818,7 @@ Del</translation>
 <translation id="8286036467436129157">כניסה</translation>
 <translation id="8288807391153049143">הצגת אישור</translation>
 <translation id="8289355894181816810">כדי לברר מה זה אומר, מומלץ לפנות למנהל הרשת.</translation>
-<translation id="8293206222192510085">הוסף סימניה</translation>
+<translation id="8293206222192510085">הוספת סימנייה</translation>
 <translation id="8294431847097064396">מקור</translation>
 <translation id="8298115750975731693">‏ייתכן שתידרש להיכנס ל-<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> עבור רשת ה-Wi-Fi שבה אתה משתמש (<ph name="WIFI_NAME" />).</translation>
 <translation id="8303854710873047864">הקטע "<ph name="SECTION" />" מוצג</translation>

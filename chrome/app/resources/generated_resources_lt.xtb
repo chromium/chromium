@@ -2906,7 +2906,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4400632832271803360">Laikykite paspaustą paleidimo priemonės klavišą, kad perjungtumėte viršutinės eilutės klavišų veikimą</translation>
 <translation id="4400963414856942668">Galite spustelėti žvaigždutę, kad pažymėtumėte skirtuką</translation>
 <translation id="4403775189117163360">Pasirinkti kitą aplanką</translation>
-<translation id="440391631796167175">Nerasta nesudėtingų slaptažodžių</translation>
 <translation id="4404136731284211429">Nuskaityti dar kartą</translation>
 <translation id="4404843640767531781">Programą „<ph name="APP_NAME" />“ užblokavo vienas iš tėvų. Paprašykite vieno iš tėvų leidimo naudoti šią programą.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6344,6 +6343,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="850875081535031620">Neaptikta kenkėjiškos programinės įrangos</translation>
 <translation id="8509177919508253835">Iš naujo nustatomas saugos raktas ir sukuriami PIN kodai</translation>
 <translation id="8509646642152301857">Atsisiunčiant rašybos tikrinimo žodyną įvyko klaida.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Nerasta nesudėtingų slaptažodžių}=1{Rastas {COUNT} nesudėtingas slaptažodis}one{Rastas {COUNT} nesudėtingas slaptažodis}few{Rasti {COUNT} nesudėtingi slaptažodžiai}many{Rasta {COUNT} nesudėtingo slaptažodžio}other{Rasta {COUNT} nesudėtingų slaptažodžių}}</translation>
 <translation id="8512476990829870887">Baigti procesą</translation>
 <translation id="851263357009351303">Visada leisti <ph name="HOST" /> rodyti vaizdus</translation>
 <translation id="8513108775083588393">Auto. pasukti</translation>

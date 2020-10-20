@@ -2904,7 +2904,6 @@
 <translation id="4400632832271803360">맨 윗 줄 키의 동작을 전환하려면 런처 키를 길게 누르세요.</translation>
 <translation id="4400963414856942668">별표를 클릭하여 탭을 북마크에 추가할 수 있습니다.</translation>
 <translation id="4403775189117163360">다른 폴더 선택</translation>
-<translation id="440391631796167175">취약한 비밀번호 없음</translation>
 <translation id="4404136731284211429">다시 검색</translation>
 <translation id="4404843640767531781">부모님이 <ph name="APP_NAME" /> 앱을 차단했습니다. 이 앱을 사용하려면 부모님에게 권한을 요청하세요.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6341,6 +6340,7 @@
 <translation id="850875081535031620">유해한 소프트웨어가 발견되지 않음</translation>
 <translation id="8509177919508253835">보안 키를 재설정하고 PIN 생성</translation>
 <translation id="8509646642152301857">맞춤법 검사 사전을 다운로드하지 못했습니다.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{취약한 비밀번호가 발견되지 않음}=1{취약한 비밀번호 {COUNT}개 발견}other{취약한 비밀번호 {COUNT}개 발견}}</translation>
 <translation id="8512476990829870887">프로세스 종료</translation>
 <translation id="851263357009351303"><ph name="HOST" />에서 이미지 표시 항상 허용</translation>
 <translation id="8513108775083588393">자동 회전</translation>

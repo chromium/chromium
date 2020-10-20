@@ -2906,7 +2906,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4400632832271803360">Držite tipku Pokretač da biste izmjenjivali ponašanje tipki u najvišem retku</translation>
 <translation id="4400963414856942668">Karticu možete označiti klikom na zvjezdicu</translation>
 <translation id="4403775189117163360">Odaberite drugu mapu</translation>
-<translation id="440391631796167175">Nije pronađena nijedna slaba zaporka</translation>
 <translation id="4404136731284211429">Pretraži ponovo</translation>
 <translation id="4404843640767531781">Tvoj roditelj blokirao je aplikaciju <ph name="APP_NAME" />. Ako želiš koristiti tu aplikaciju, traži dopuštenje od roditelja.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6343,6 +6342,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="850875081535031620">Nije pronađen štetan softver</translation>
 <translation id="8509177919508253835">Vraćanje sigurnosnih ključeva na zadano i izrada PIN-ova</translation>
 <translation id="8509646642152301857">Preuzimanje rječnika za provjeru pravopisa nije uspjelo.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Nije pronađena nijedna slaba zaporka}=1{Pronađena je {COUNT} slaba zaporka}one{Pronađena je {COUNT} slaba zaporka}few{Pronađene su {COUNT} slabe zaporke}other{Pronađeno je {COUNT} slabih zaporki}}</translation>
 <translation id="8512476990829870887">Završi proces</translation>
 <translation id="851263357009351303">Uvijek dopusti da web-lokacija <ph name="HOST" /> prikazuje slike</translation>
 <translation id="8513108775083588393">Aut. zakret.</translation>

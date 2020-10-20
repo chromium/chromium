@@ -2907,7 +2907,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4400632832271803360">Maintenez la touche Lanceur d'applications enfoncée pour modifier la fonction des touches de la rangée supérieure</translation>
 <translation id="4400963414856942668">Vous pouvez cliquer sur l'étoile pour ajouter un onglet aux favoris</translation>
 <translation id="4403775189117163360">Choisir un autre dossier</translation>
-<translation id="440391631796167175">Aucun mot de passe faible trouvé</translation>
 <translation id="4404136731284211429">Analyser à nouveau</translation>
 <translation id="4404843640767531781">L'application <ph name="APP_NAME" /> est bloquée par ton parent. Pour l'utiliser, demande l'autorisation à ton parent.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6343,6 +6342,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="850875081535031620">Aucun logiciel nuisible trouvé</translation>
 <translation id="8509177919508253835">Réinitialiser les clés de sécurité et les NIP</translation>
 <translation id="8509646642152301857">Le téléchargement du dictionnaire de vérification orthographique a échoué.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Aucun mot de passe faible trouvé}=1{{COUNT} mot de passe faible trouvé}one{{COUNT} mot de passe faible trouvé}other{{COUNT} mots de passe faibles trouvés}}</translation>
 <translation id="8512476990829870887">Arrêter le processus</translation>
 <translation id="851263357009351303">Toujours autoriser <ph name="HOST" /> à afficher les images</translation>
 <translation id="8513108775083588393">Rotation auto</translation>

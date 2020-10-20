@@ -2906,7 +2906,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4400632832271803360">Hold tasten Appliste nede for at skifte funktion for den øverste række taster</translation>
 <translation id="4400963414856942668">Du kan klikke på stjernen for at tilføje fanen som bogmærke</translation>
 <translation id="4403775189117163360">Vælg en anden mappe</translation>
-<translation id="440391631796167175">Der blev ikke fundet nogen svage adgangskoder</translation>
 <translation id="4404136731284211429">Scan igen</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> er blokeret af din forælder. Bed din forælder om at give dig tilladelse til at bruge denne app.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6343,6 +6342,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="850875081535031620">Der blev ikke fundet skadelig software</translation>
 <translation id="8509177919508253835">Nulstil sikkerhedsnøgler, og opret pinkoder</translation>
 <translation id="8509646642152301857">Download af ordbog til stavekontrol mislykkedes.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Der blev ikke fundet nogen svage adgangskoder}=1{Der blev fundet {COUNT} svag adgangskode}one{Der blev fundet {COUNT} svag adgangskode}other{Der blev fundet {COUNT} svage adgangskoder}}</translation>
 <translation id="8512476990829870887">Afslut proces</translation>
 <translation id="851263357009351303">Tillad altid, at <ph name="HOST" /> viser billeder</translation>
 <translation id="8513108775083588393">Autoroter</translation>

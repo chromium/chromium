@@ -4,7 +4,7 @@
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> מהכרטיסיות לא היו בשימוש לאחרונה. לסגור אותן?</translation>
 <translation id="1181037720776840403">הסרה</translation>
 <translation id="125153950246128346">יש להקיש כדי לראות כרטיסייה אחרת</translation>
-<translation id="1657719826150349398">העברת הכרטיסיה למטה</translation>
+<translation id="1657719826150349398">העברת הכרטיסייה למטה</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />)}two{<ph name="TABS_COUNT_MANY" /> כרטיסיות}many{<ph name="TABS_COUNT_MANY" /> כרטיסיות}other{<ph name="TABS_COUNT_MANY" /> כרטיסיות}}</translation>
 <translation id="2277224997687551299">עריכת שם הקבוצה</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{הסרת כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />) שנבחרה מהקבוצה.}two{הסרת <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו מהקבוצה.}many{הסרת <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו מהקבוצה.}other{הסרת <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו מהקבוצה.}}</translation>
@@ -45,7 +45,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{קיבוץ כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />) שנבחרה}two{קיבוץ <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}many{קיבוץ <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}other{קיבוץ <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}}</translation>
 <translation id="7885132941432959125">העברת הכרטיסייה שמאלה</translation>
 <translation id="7966321538264951561">סגירת ההצעות.</translation>
-<translation id="814503310257431685">הצג הכל</translation>
+<translation id="814503310257431685">הצגת הכול</translation>
 <translation id="8205266828577616993">העברת הכרטיסיה למעלה</translation>
 <translation id="8304833501377495048">לא להציג שוב את שורת הכרטיסיות בעתיד?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{סגירה של כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />) שנבחרה}two{סגירה של <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}many{סגירה של <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}other{סגירה של <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}}</translation>

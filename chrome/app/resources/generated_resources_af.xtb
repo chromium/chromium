@@ -2906,7 +2906,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4400632832271803360">Hou die Lanseerder-sleutel in om te verander wat die boonste ry sleutels doen</translation>
 <translation id="4400963414856942668">Jy kan die ster klik om 'n oortjie te boekmerk</translation>
 <translation id="4403775189117163360">Kies 'n ander vouer</translation>
-<translation id="440391631796167175">Geen swak wagwoorde gekry nie</translation>
 <translation id="4404136731284211429">Soek weer</translation>
 <translation id="4404843640767531781">Jou ouer blokkeer <ph name="APP_NAME" />. Vra jou ouer vir toestemming om hierdie program te gebruik.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6343,6 +6342,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="850875081535031620">Geen skadelike sagteware gevind nie</translation>
 <translation id="8509177919508253835">Stel sekuriteitsleutels terug en skep PIN'e</translation>
 <translation id="8509646642152301857">Kon nie speltoetserwoordeboek aflaai nie.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Geen swak wagwoorde gekry nie}=1{Het {COUNT} swak wagwoord gekry}other{Het {COUNT} swak wagwoorde gekry}}</translation>
 <translation id="8512476990829870887">Beëindig proses</translation>
 <translation id="851263357009351303">Laat <ph name="HOST" /> altyd toe om prente te wys</translation>
 <translation id="8513108775083588393">Outodraai</translation>

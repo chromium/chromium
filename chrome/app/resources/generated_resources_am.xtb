@@ -2903,7 +2903,6 @@
 <translation id="4400632832271803360">የላይኛው ረድፍ ቁልፎች ባህሪን ለመቀየር የማስጀመሪያ ቁልፉን ይያዙ</translation>
 <translation id="4400963414856942668">አንድ ትር ዕልባት ለማድረግ ኮከቡን ጠቅ ማድረግ ይችላሉ</translation>
 <translation id="4403775189117163360">የተለየ አቃፊ ይምረጡ</translation>
-<translation id="440391631796167175">ምንም ደካማ የይለፍ ቃላት አልተገኙም</translation>
 <translation id="4404136731284211429">እንደገና ቃኝ</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> በእርስዎ ወላጅ ታግዷል። ወላጅዎ ይህን መተግበሪያ እንዲጠቀሙ ፈቃድ ይጠይቋቸው።</translation>
 <translation id="4405117686468554883">*.jpeg፣ *.jpg፣ *.png</translation>
@@ -6344,6 +6343,7 @@ nil</translation>
 <translation id="850875081535031620">ምንም ጎጂ ሶፍትዌር አልተገኘም</translation>
 <translation id="8509177919508253835">የደህንነት ቁልፎችን ዳግም ያስጀምሩ እና ፒኖችን ይፍጠሩ</translation>
 <translation id="8509646642152301857">የፊደል ማረሚያ መዝገበ-ቃላት ማውረድ አልተሳካም።</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{ምንም ደካማ የይለፍ ቃላት አልተገኙም}=1{{COUNT} ደካማ የይለፍ ቃላ ተገኝቷል}one{{COUNT} ደካማ የይለፍ ቃላት ተገኝተዋል}other{{COUNT} ደካማ የይለፍ ቃላት ተገኝተዋል}}</translation>
 <translation id="8512476990829870887">ሂደቱን ግታ</translation>
 <translation id="851263357009351303">ሁልጊዜ <ph name="HOST" /> ምስሎችን እዲያሳይ ፍቀድ</translation>
 <translation id="8513108775083588393">በራስ ሰር አሽከርክር</translation>

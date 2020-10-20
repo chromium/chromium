@@ -2906,7 +2906,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4400632832271803360">Maintenir la touche du lanceur d'applications enfoncée pour modifier la fonction des touches de la rangée supérieure</translation>
 <translation id="4400963414856942668">Vous pouvez cliquer sur l'étoile pour ajouter un onglet à vos favoris</translation>
 <translation id="4403775189117163360">Choisir un autre dossier</translation>
-<translation id="440391631796167175">Aucun mot de passe peu sécurisé trouvé</translation>
 <translation id="4404136731284211429">Analyser de nouveau</translation>
 <translation id="4404843640767531781">L'application <ph name="APP_NAME" /> est bloquée par l'un de tes parents. Tu as besoin de leur autorisation pour l'utiliser.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -5365,6 +5364,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7375235221357833624">{0,plural, =1{Mettre à jour l'appareil d'ici 1 heure}one{Mettre à jour l'appareil d'ici # heure}other{Mettre à jour l'appareil d'ici # heures}}</translation>
 <translation id="7376553024552204454">Mettre en surbrillance le curseur de la souris lorsqu'il se déplace</translation>
 <translation id="7377451353532943397">Continuer de bloquer l'accès aux capteurs</translation>
+<translation id="7378611153938412599">Les mots de passe peu sécurisés sont faciles à deviner. Assurez-vous de créer des mots de passe sécurisés. <ph name="BEGIN_LINK" />Découvrez d'autres conseils de sécurité.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Ouvrir le Chrome Web Store</translation>
 <translation id="7378812711085314936">Obtenir une connexion de données</translation>
 <translation id="7380622428988553498">Le nom de l'appareil comporte des caractères non valides</translation>
@@ -6343,6 +6343,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="850875081535031620">Aucun logiciel malveillant détecté</translation>
 <translation id="8509177919508253835">Réinitialiser les clés de sécurité et créer des codes</translation>
 <translation id="8509646642152301857">Échec du téléchargement du dictionnaire du correcteur orthographique.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Aucun mot de passe peu sécurisé trouvé}=1{{COUNT} mot de passe peu sécurisé trouvé}one{{COUNT} mot de passe peu sécurisé trouvé}other{{COUNT} mots de passe peu sécurisés trouvés}}</translation>
 <translation id="8512476990829870887">Arrêter le processus</translation>
 <translation id="851263357009351303">Toujours autoriser <ph name="HOST" /> à afficher les images</translation>
 <translation id="8513108775083588393">Rotation auto</translation>

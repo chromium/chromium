@@ -2902,7 +2902,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="4400632832271803360">Przytrzymaj klawisz programu uruchamiającego, by zmienić działanie klawiszy z górnego rzędu</translation>
 <translation id="4400963414856942668">Aby dodać kartę do zakładek, możesz kliknąć gwiazdkę</translation>
 <translation id="4403775189117163360">Wybierz inny folder</translation>
-<translation id="440391631796167175">Nie znaleziono słabych haseł</translation>
 <translation id="4404136731284211429">Skanuj ponownie</translation>
 <translation id="4404843640767531781">Twój rodzic zablokował aplikację <ph name="APP_NAME" />. Aby móc z niej korzystać, poproś go o pozwolenie.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6339,6 +6338,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="850875081535031620">Nie znaleziono szkodliwego oprogramowania</translation>
 <translation id="8509177919508253835">Zresetuj klucze bezpieczeństwa i utwórz kody PIN</translation>
 <translation id="8509646642152301857">Nie udało się pobrać słownika funkcji sprawdzania pisowni.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Nie znaleziono słabych haseł}=1{Znaleziono {COUNT} słabe hasło}few{Znaleziono {COUNT} słabe hasła}many{Znaleziono {COUNT} słabych haseł}other{Znaleziono {COUNT} słabego hasła}}</translation>
 <translation id="8512476990829870887">Zakończ proces</translation>
 <translation id="851263357009351303">Zawsze zezwalaj na pokazywanie grafik w witrynie <ph name="HOST" /></translation>
 <translation id="8513108775083588393">Autoobracanie</translation>

@@ -2904,7 +2904,6 @@
 <translation id="4400632832271803360">Чтобы сменить функции клавиш верхнего ряда, удерживайте клавишу Launcher</translation>
 <translation id="4400963414856942668">Чтобы добавить страницу в закладки, нажмите на значок звездочки.</translation>
 <translation id="4403775189117163360">Выбрать другую папку</translation>
-<translation id="440391631796167175">Простых паролей не найдено</translation>
 <translation id="4404136731284211429">Сканировать</translation>
 <translation id="4404843640767531781">Чтобы пользоваться приложением "<ph name="APP_NAME" />", требуется разрешение родителя.</translation>
 <translation id="4405117686468554883">*.JPEG, *.JPG, *.PNG</translation>
@@ -6340,6 +6339,7 @@
 <translation id="850875081535031620">Вредоносных программ не найдено.</translation>
 <translation id="8509177919508253835">Сбросьте настройки электронных ключей и задайте PIN-коды.</translation>
 <translation id="8509646642152301857">Не удалось скачать словарь проверки правописания</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Нет простых паролей}=1{Найден {COUNT} простой пароль}one{Найден {COUNT} простой пароль}few{Найдено {COUNT} простых пароля}many{Найдено {COUNT} простых паролей}other{Найдено {COUNT} простого пароля}}</translation>
 <translation id="8512476990829870887">Завершить процесс</translation>
 <translation id="851263357009351303">Всегда показывать изображения с сайта <ph name="HOST" /></translation>
 <translation id="8513108775083588393">Автоповорот</translation>

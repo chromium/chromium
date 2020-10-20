@@ -2904,7 +2904,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4400632832271803360">ඉහළ පේළියේ යතුරු හැසිරීම මාරු කිරීමට දියත්කරණ යතුර අල්ලාගෙන සිටින්න</translation>
 <translation id="4400963414856942668">ඔබට පටිත්තක් පිටුසන් කිරීමට තරුව ක්ලික් කළ හැක</translation>
 <translation id="4403775189117163360">වෙනත් ෆෝල්ඩරයක් තෝරන්න</translation>
-<translation id="440391631796167175">දුර්වල මුරපද හමු නොවිය</translation>
 <translation id="4404136731284211429">නැවත ස්කෑන් කරන්න</translation>
 <translation id="4404843640767531781">ඔබේ මාපිය <ph name="APP_NAME" /> අවහිර කර ඇත. මෙම යෙදුම භාවිත කිරීමට ඔබේ මාපියවරුන්ගෙන් අවසර ඉල්ලන්න.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6338,6 +6337,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="850875081535031620">හානිකර මෘදුකාංගයක් හමු නොවිණි</translation>
 <translation id="8509177919508253835">ආරක්‍ෂක යතුරු යළි සකසා රහස් අංක සාදන්න</translation>
 <translation id="8509646642152301857">අක්ෂර වින්‍යාස ශබ්දකෝෂය බාගත කිරීම අසාර්ථකයි.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{දුර්වල මුරපද හමු නොවිය}=1{දුර්වල මුරපද {COUNT}ක් හමු විය}one{දුර්වල මුරපද {COUNT}ක් හමු විය}other{දුර්වල මුරපද {COUNT}ක් හමු විය}}</translation>
 <translation id="8512476990829870887">ක්‍රියාවලිය අවසන් කරන්න</translation>
 <translation id="851263357009351303">සැමවිට <ph name="HOST" /> ට රූප පෙන්වීමට ඉඩ දෙන්න</translation>
 <translation id="8513108775083588393">ස්වයංක්‍රීය කරකැවීම</translation>

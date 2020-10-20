@@ -2905,7 +2905,6 @@
 <translation id="4400632832271803360">按住啟動器鍵，即可切換最上排按鍵的執行動作</translation>
 <translation id="4400963414856942668">按一下「星號」即可將分頁加入書籤</translation>
 <translation id="4403775189117163360">選擇其他資料夾</translation>
-<translation id="440391631796167175">找不到安全性弱的密碼</translation>
 <translation id="4404136731284211429">重新掃瞄</translation>
 <translation id="4404843640767531781">您的家長已封鎖「<ph name="APP_NAME" />」。請要求家長授權使用此應用程式。</translation>
 <translation id="4405117686468554883">*.jpeg、*.jpg、*.png</translation>
@@ -5363,7 +5362,7 @@
 <translation id="7375235221357833624">{0,plural, =1{請在 1 小時內更新裝置}other{請在 # 小時內更新裝置}}</translation>
 <translation id="7376553024552204454">移動滑鼠時突顯滑鼠游標</translation>
 <translation id="7377451353532943397">繼續封鎖感應器存取權</translation>
-<translation id="7378611153938412599">低強度密碼很容易讓有心人士猜中，請務必建立高強度密碼。<ph name="BEGIN_LINK" />查看更多安全性提示。<ph name="END_LINK" /></translation>
+<translation id="7378611153938412599">安全性弱的密碼很容易被猜到。請務必設定安全性強的密碼。<ph name="BEGIN_LINK" />查看更多安全提示。<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">開啟 Chrome 網上應用程式商店</translation>
 <translation id="7378812711085314936">獲取數據連線</translation>
 <translation id="7380622428988553498">裝置名稱包含無效字元</translation>
@@ -6341,6 +6340,7 @@
 <translation id="850875081535031620">未發現任何有害軟件</translation>
 <translation id="8509177919508253835">重設安全密鑰並建立 PIN</translation>
 <translation id="8509646642152301857">拼字檢查字典下載失敗。</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{找不到安全性弱的密碼}=1{找到 {COUNT} 個安全性弱的密碼}other{找到 {COUNT} 個安全性弱的密碼}}</translation>
 <translation id="8512476990829870887">結束處理程序</translation>
 <translation id="851263357009351303">永遠允許 <ph name="HOST" /> 顯示圖片</translation>
 <translation id="8513108775083588393">自動旋轉</translation>

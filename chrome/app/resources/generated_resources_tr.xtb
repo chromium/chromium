@@ -2906,7 +2906,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4400632832271803360">Üst satırdaki tuşların davranışını değiştirmek için Başlatıcı tuşunu basılı tutun</translation>
 <translation id="4400963414856942668">Sekmeye yer işareti koymak için yıldızı tıklayabilirsiniz</translation>
 <translation id="4403775189117163360">Farklı bir klasör seçin</translation>
-<translation id="440391631796167175">Zayıf şifre bulunmadı</translation>
 <translation id="4404136731284211429">Tekrar tara</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" />, ebeveyniniz tarafından engellendi. Bu uygulamayı kullanmak için ebeveyninizden izin isteyin.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6343,6 +6342,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="850875081535031620">Zararlı yazılım bulunmadı</translation>
 <translation id="8509177919508253835">Güvenlik anahtarlarını sıfırla ve PIN'leri oluştur</translation>
 <translation id="8509646642152301857">Yazım denetimi sözlüğü indirilemedi.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Zayıf şifre bulunmadı}=1{{COUNT} zayıf şifre bulundu}other{{COUNT} zayıf şifre bulundu}}</translation>
 <translation id="8512476990829870887">İşlemi Bitir</translation>
 <translation id="851263357009351303"><ph name="HOST" /> sitesindeki resimlerin gösterilmesine her zaman izin ver</translation>
 <translation id="8513108775083588393">Oto. döndür</translation>

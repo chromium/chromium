@@ -2906,7 +2906,6 @@
 <translation id="4400632832271803360">กดแป้น "Launcher" ค้างไว้เพื่อเปลี่ยนการทำงานของแป้นแถวบนสุด</translation>
 <translation id="4400963414856942668">คุณคลิกดาวเพื่อบุ๊กมาร์กแท็บได้</translation>
 <translation id="4403775189117163360">เลือกโฟลเดอร์อื่น</translation>
-<translation id="440391631796167175">ไม่พบรหัสผ่านที่ไม่รัดกุม</translation>
 <translation id="4404136731284211429">สแกนอีกครั้ง</translation>
 <translation id="4404843640767531781">ผู้ปกครองของคุณบล็อก <ph name="APP_NAME" /> ไว้ โปรดขอสิทธิ์จากผู้ปกครองเพื่อใช้แอปนี้</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6343,6 +6342,7 @@
 <translation id="850875081535031620">ไม่พบซอฟต์แวร์ที่เป็นอันตราย</translation>
 <translation id="8509177919508253835">รีเซ็ตคีย์ความปลอดภัยและสร้าง PIN</translation>
 <translation id="8509646642152301857">การดาวน์โหลดพจนานุกรมตรวจสอบการสะกดล้มเหลว</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{ไม่พบรหัสผ่านที่ไม่รัดกุม}=1{พบรหัสผ่านที่ไม่รัดกุม {COUNT} รายการ}other{พบรหัสผ่านที่ไม่รัดกุม {COUNT} รายการ}}</translation>
 <translation id="8512476990829870887">สิ้นสุดกระบวนการ</translation>
 <translation id="851263357009351303">อนุญาตให้ <ph name="HOST" /> แสดงภาพเสมอ</translation>
 <translation id="8513108775083588393">หมุนอัตโนมัติ</translation>

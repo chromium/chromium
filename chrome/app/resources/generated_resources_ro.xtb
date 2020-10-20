@@ -2906,7 +2906,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4400632832271803360">Ține apăsată tasta Lansator pentru a schimba comportamentul tastelor de pe rândul de sus</translation>
 <translation id="4400963414856942668">Poți da clic pe pictograma stea pentru a marca o filă</translation>
 <translation id="4403775189117163360">Alege alt dosar</translation>
-<translation id="440391631796167175">Nu s-au găsit parole slabe</translation>
 <translation id="4404136731284211429">Verifică din nou</translation>
 <translation id="4404843640767531781">Aplicația <ph name="APP_NAME" /> a fost blocată de părintele tău. Solicită părintelui permisiunea de a folosi această aplicație.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6343,6 +6342,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="850875081535031620">Nu s-a găsit software dăunător</translation>
 <translation id="8509177919508253835">Resetează cheile de securitate și creează coduri PIN</translation>
 <translation id="8509646642152301857">Descărcarea dicționarului de verificare ortografică nu a reușit.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Nu s-au găsit parole slabe}=1{S-a găsit {COUNT} parolă slabă}few{S-au găsit {COUNT} parole slabe}other{S-au găsit {COUNT} de parole slabe}}</translation>
 <translation id="8512476990829870887">Opriți procesul</translation>
 <translation id="851263357009351303">Permite întotdeauna afișarea de imagini de la <ph name="HOST" /></translation>
 <translation id="8513108775083588393">Rotire autom.</translation>

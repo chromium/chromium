@@ -2903,7 +2903,6 @@
 <translation id="4400632832271803360">برای تغییر عملکرد کلیدهای ردیف بالا، کلید «راه‌انداز» را نگه‌دارید</translation>
 <translation id="4400963414856942668">برای نشانک‌گذاری یک برگه، می‌توانید روی ستاره کلیک کنید</translation>
 <translation id="4403775189117163360">پوشه دیگری را انتخاب کنید</translation>
-<translation id="440391631796167175">هیچ گذرواژه ضعیفی پیدا نشد</translation>
 <translation id="4404136731284211429">اسکن دوباره</translation>
 <translation id="4404843640767531781">ولی‌تان <ph name="APP_NAME" /> را مسدود کرده است. از ولی‌تان بخواهید استفاده از این برنامه را مجاز کند.</translation>
 <translation id="4405117686468554883">‏‎*.jpeg،‏ ‎*.jpg،‏ ‎*.png</translation>
@@ -6340,6 +6339,7 @@
 <translation id="850875081535031620">نرم‌افزار مضری پیدا نشد</translation>
 <translation id="8509177919508253835">بازنشانی کلیدهای امنیتی و ایجاد پین</translation>
 <translation id="8509646642152301857">بارگیری واژه‌نامه بررسی املا انجام نشد.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{گذرواژه ضعیفی پیدا نشد}=1{{COUNT} گذرواژه ضعیف پیدا شد}one{{COUNT} گذرواژه ضعیف پیدا شد}other{{COUNT} گذرواژه ضعیف پیدا شد}}</translation>
 <translation id="8512476990829870887">پایان دادن به فرآیند</translation>
 <translation id="851263357009351303">همیشه <ph name="HOST" /> مجاز باشد تصاویر را نشان دهد</translation>
 <translation id="8513108775083588393">چرخش خودکار</translation>

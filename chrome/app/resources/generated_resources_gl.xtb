@@ -2905,7 +2905,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="4400632832271803360">Mantén premida a tecla do menú de aplicacións para cambiar o comportamento das teclas da fila superior</translation>
 <translation id="4400963414856942668">Podes facer clic na estrela para engadir unha pestana aos marcadores</translation>
 <translation id="4403775189117163360">Escoller un cartafol diferente</translation>
-<translation id="440391631796167175">Non se atopou ningún contrasinal pouco seguro</translation>
 <translation id="4404136731284211429">Buscar de novo</translation>
 <translation id="4404843640767531781">O teu pai ou nai bloqueou <ph name="APP_NAME" />. Pídelle permiso para utilizar esta aplicación.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg e *.png</translation>
@@ -5363,6 +5362,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7375235221357833624">{0,plural, =1{Actualiza o dispositivo en 1 hora}other{Actualiza o dispositivo en # horas}}</translation>
 <translation id="7376553024552204454">Destacar o cursor do rato cando se move</translation>
 <translation id="7377451353532943397">Continuar bloqueando o acceso aos sensores</translation>
+<translation id="7378611153938412599">Os contrasinais pouco seguros son fáciles de adiviñar. Asegúrate de crear contrasinais seguros. <ph name="BEGIN_LINK" />Ver máis consellos de seguranza<ph name="END_LINK" />.</translation>
 <translation id="73786666777299047">Abrir Chrome Web Store</translation>
 <translation id="7378812711085314936">Conseguir conexión de datos</translation>
 <translation id="7380622428988553498">O nome do dispositivo contén caracteres non válidos</translation>
@@ -6340,6 +6340,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="850875081535031620">Non se atopou software daniño</translation>
 <translation id="8509177919508253835">Restablece as chaves de seguranza e crea os PIN</translation>
 <translation id="8509646642152301857">Non se puido descargar o dicionario da verificación ortográfica.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Non se atopou ningún contrasinal pouco seguro}=1{Atopouse {COUNT} contrasinal pouco seguro}other{Atopáronse {COUNT} contrasinais pouco seguros}}</translation>
 <translation id="8512476990829870887">Finalizar proceso</translation>
 <translation id="851263357009351303">Permitir sempre a <ph name="HOST" /> mostrar imaxes</translation>
 <translation id="8513108775083588393">Xirar autom.</translation>

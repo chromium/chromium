@@ -2906,7 +2906,6 @@
 <translation id="4400632832271803360">キーボードの最上段にあるキーの動作を切り替えるには、ランチャー キーを押したままにします</translation>
 <translation id="4400963414856942668">スターアイコンをクリックしてタブをブックマークに追加できます</translation>
 <translation id="4403775189117163360">別のフォルダを選択</translation>
-<translation id="440391631796167175">脆弱なパスワードは検出されませんでした</translation>
 <translation id="4404136731284211429">再スキャン</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> は保護者によってブロックされています。このアプリを使用するには、保護者の許可が必要です。</translation>
 <translation id="4405117686468554883">*.jpeg、*.jpg、*.png</translation>
@@ -6343,6 +6342,7 @@
 <translation id="850875081535031620">有害なソフトウェアは見つかりませんでした</translation>
 <translation id="8509177919508253835">セキュリティ キーをリセットして PIN を作成します</translation>
 <translation id="8509646642152301857">スペルチェック辞書をダウンロードできませんでした。</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{脆弱なパスワードは検出されませんでした}=1{脆弱なパスワードが {COUNT} 件検出されました}other{脆弱なパスワードが {COUNT} 件検出されました}}</translation>
 <translation id="8512476990829870887">プロセスを終了</translation>
 <translation id="851263357009351303"><ph name="HOST" /> の画像を常に表示する</translation>
 <translation id="8513108775083588393">自動回転</translation>

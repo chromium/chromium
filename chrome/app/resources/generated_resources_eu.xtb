@@ -2906,7 +2906,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="4400632832271803360">Goiko errenkadako teklen portaera aldatzeko, eduki sakatuta Abiarazlea tekla</translation>
 <translation id="4400963414856942668">Fitxen laster-markak egiteko, egin klik izarrean</translation>
 <translation id="4403775189117163360">Aukeratu beste karpeta bat</translation>
-<translation id="440391631796167175">Pasahitz guztiak seguruak dira</translation>
 <translation id="4404136731284211429">Aztertu berriro</translation>
 <translation id="4404843640767531781">Guraso batek <ph name="APP_NAME" /> blokeatu du. Eska iezaiozu baimena aplikazioa erabiltzeko.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6342,6 +6341,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="850875081535031620">Ez da aurkitu software kaltegarririk</translation>
 <translation id="8509177919508253835">Berrezarri segurtasun-giltzak eta sortu PIN kodeak</translation>
 <translation id="8509646642152301857">Ezin izan da deskargatu ortografia-zuzenketarako hiztegia.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Ez da aurkitu segurua ez den pasahitzik}=1{Segurua ez den {COUNT} pasahitz aurkitu da}other{Seguruak ez diren {COUNT} pasahitz aurkitu dira}}</translation>
 <translation id="8512476990829870887">Amaitu prozesua</translation>
 <translation id="851263357009351303">Eman beti irudiak erakusteko baimena <ph name="HOST" /> webguneari</translation>
 <translation id="8513108775083588393">Biratu auto.</translation>

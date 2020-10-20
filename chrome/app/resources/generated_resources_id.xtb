@@ -2906,7 +2906,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4400632832271803360">Tahan tombol Peluncur untuk mengubah perilaku tombol baris atas</translation>
 <translation id="4400963414856942668">Anda dapat mengklik bintang untuk mem-bookmark tab</translation>
 <translation id="4403775189117163360">Pilih folder yang berbeda</translation>
-<translation id="440391631796167175">Tidak ditemukan sandi lemah</translation>
 <translation id="4404136731284211429">Pindai lagi</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> diblokir oleh orang tuamu. Minta izin orang tuamu untuk menggunakan aplikasi ini.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6343,6 +6342,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="850875081535031620">Software berbahaya tidak ditemukan</translation>
 <translation id="8509177919508253835">Reset kunci keamanan dan buat PIN</translation>
 <translation id="8509646642152301857">Download kamus periksa ejaan gagal.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Tidak ditemukan sandi yang lemah}=1{{COUNT} sandi lemah ditemukan}other{{COUNT} sandi lemah ditemukan}}</translation>
 <translation id="8512476990829870887">Akhiri Proses</translation>
 <translation id="851263357009351303">Selalu izinkan <ph name="HOST" /> menampilkan gambar</translation>
 <translation id="8513108775083588393">Putar otomatis</translation>

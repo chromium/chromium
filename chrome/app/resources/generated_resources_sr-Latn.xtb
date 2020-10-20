@@ -2903,7 +2903,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4400632832271803360">Zadržite taster za Pokretač da biste promenili ponašanje tastera u gornjem redu</translation>
 <translation id="4400963414856942668">Možete da obeležite stranicu klikom na karticu</translation>
 <translation id="4403775189117163360">Odaberite drugi direktorijum</translation>
-<translation id="440391631796167175">Nije pronađena nijedna slaba lozinka</translation>
 <translation id="4404136731284211429">Skeniraj ponovo</translation>
 <translation id="4404843640767531781">Roditelj blokira aplikaciju <ph name="APP_NAME" />. Zatraži od roditelja dozvolu za korišćenje ove aplikacije.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6341,6 +6340,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="850875081535031620">Nije pronađen nikakav štetan softver</translation>
 <translation id="8509177919508253835">Resetujte bezbednosne ključeve i napravite PIN-ove</translation>
 <translation id="8509646642152301857">Preuzimanje rečnika za proveru pravopisa nije uspelo.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Nije pronađena nijedna slaba lozinka}=1{Pronađena je {COUNT} slaba lozinka}one{Pronađena je {COUNT} slaba lozinka}few{Pronađene su {COUNT} slabe lozinke}other{Pronađeno je {COUNT} slabih lozinki}}</translation>
 <translation id="8512476990829870887">Završi proces</translation>
 <translation id="851263357009351303">Uvek dozvoli sajtu <ph name="HOST" /> da prikazuje slike</translation>
 <translation id="8513108775083588393">Autom. rotir.</translation>

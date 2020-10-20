@@ -2905,7 +2905,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4400632832271803360">Tieni premuto il tasto Avvio applicazioni per modificare la funzione dei tasti della fila superiore.</translation>
 <translation id="4400963414856942668">Puoi fare clic sulla stella per aggiungere una scheda ai preferiti</translation>
 <translation id="4403775189117163360">Scegli una cartella diversa</translation>
-<translation id="440391631796167175">Nessuna password inefficace trovata</translation>
 <translation id="4404136731284211429">Analizza di nuovo</translation>
 <translation id="4404843640767531781">L'app <ph name="APP_NAME" /> è stata bloccata da un genitore. Chiedi al tuo genitore l'autorizzazione per poterla usare.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6341,6 +6340,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="850875081535031620">Nessun software dannoso trovato</translation>
 <translation id="8509177919508253835">Reimposta i token di sicurezza e crea PIN</translation>
 <translation id="8509646642152301857">Download del dizionario per il controllo ortografico non riuscito.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Nessuna password inefficace trovata}=1{È stata trovata {COUNT} password inefficace}other{Sono state trovate {COUNT} password inefficaci}}</translation>
 <translation id="8512476990829870887">Termina processo</translation>
 <translation id="851263357009351303">Consenti sempre la visualizzazione di immagini in <ph name="HOST" /></translation>
 <translation id="8513108775083588393">Rotazione aut.</translation>

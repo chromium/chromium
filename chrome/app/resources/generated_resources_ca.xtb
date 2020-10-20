@@ -2224,7 +2224,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3599863153486145794">Esborra l'historial de tots els dispositius en què tinguis iniciada la sessió. A <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> trobaràs altres maneres d'explorar l'historial de navegació del Compte de Google.</translation>
 <translation id="3600051066689725006">Informació sobre la sol·licitud web</translation>
 <translation id="3600792891314830896">Silencia els llocs web que reprodueixen so</translation>
-<translation id="360180734785106144">Oferir funcions noves a mesura que estiguin disponibles</translation>
+<translation id="360180734785106144">Oferir funcions noves a mesura que estiguin disponibles.</translation>
 <translation id="3602198818276948261">La configuració del contenidor no admet canvis de mida del disc. Per ajustar la quantitat d'espai que es reserva per a Linux (versió beta), crea una còpia de seguretat i, a continuació, fes la restauració en un contenidor nou.</translation>
 <translation id="3602290021589620013">Previsualitza</translation>
 <translation id="3603622770190368340">Obtenció del certificat de xarxa</translation>
@@ -2904,7 +2904,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4400632832271803360">Mantén premuda la tecla del menú d'aplicacions per canviar el comportament de les tecles de la fila superior</translation>
 <translation id="4400963414856942668">Pots fer clic a l'estrella per afegir una pestanya a les adreces d'interès</translation>
 <translation id="4403775189117163360">Tria una altra carpeta</translation>
-<translation id="440391631796167175">No s'ha trobat cap contrasenya poc segura</translation>
 <translation id="4404136731284211429">Torna a analitzar</translation>
 <translation id="4404843640767531781">El teu pare o la teva mare ha bloquejat <ph name="APP_NAME" />. Demana-li permís per utilitzar aquesta aplicació.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg i *.png</translation>
@@ -5139,7 +5138,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7088434364990739311">La comprovació d'actualització no s'ha pogut iniciar (codi d'error <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">ZIP Archiver: obre i empaqueta fitxers ZIP a l'aplicació Fitxers.</translation>
 <translation id="7088674813905715446">L'administrador ha canviat l'estat d'aquest dispositiu perquè no es pugui utilitzar. Per permetre que us hi pugueu registrar, demaneu a l'administrador que en defineixi l'estat com a pendent.</translation>
-<translation id="7092474863625458670">Voice Match et permet accedir directament a l'Assistent utilitzant la veu.
+<translation id="7092474863625458670">Voice Match et permet accedir directament al teu Assistent utilitzant la veu.
 <ph name="BR" />
 <ph name="BEGIN_BOLD" />Tingues en compte el següent:<ph name="END_BOLD" /> Pot ser que una veu semblant a la teva o una gravació de la teva veu també puguin accedir al teu Assistent. Pots suprimir el permís de Voice Match més tard desactivant-lo a Configuració de l'Assistent.</translation>
 <translation id="7093434536568905704">GTK+</translation>
@@ -5424,7 +5423,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="744366959743242014">S'estan carregant les dades. Aquest procés pot tardar uns quants segons.</translation>
 <translation id="7443806024147773267">Accedeix a les contrasenyes sempre que tinguis la sessió iniciada al Compte de Google</translation>
 <translation id="7444983668544353857">Desactiva <ph name="NETWORKDEVICE" /></translation>
-<translation id="7448430327655618736">Instal·la aplicacions automàticament</translation>
+<translation id="7448430327655618736">Instal·lar aplicacions automàticament.</translation>
 <translation id="7449752890690775568">Vols suprimir la contrasenya?</translation>
 <translation id="7450761244949417357">S'està obrint a <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
 <translation id="7453008956351770337">En seleccionar aquesta impressora, doneu permís a l'extensió següent per accedir a la vostra impressora:</translation>
@@ -6095,7 +6094,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8200772114523450471">Reprèn</translation>
 <translation id="8201717382574620700">Selecciona els àlbums de: <ph name="TOPIC_SOURCE" /></translation>
 <translation id="8202160505685531999">Torneu a introduir la contrasenya per actualitzar el vostre perfil del dispositiu <ph name="DEVICE_TYPE" />.</translation>
-<translation id="8203732864715032075">Rep notificacions en aquest ordinador i estableix-lo com a predeterminat per a Missatges. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
+<translation id="8203732864715032075">Enviar-te notificacions en aquest ordinador i establir-lo com a predeterminat per a Missatges. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="8205561625497621211">Bloqueja Flash (opció recomanada)</translation>
 <translation id="820568752112382238">Els llocs web més visitats</translation>
 <translation id="8206745257863499010">Música</translation>
@@ -6343,6 +6342,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="850875081535031620">No s'ha trobat programari maliciós</translation>
 <translation id="8509177919508253835">Restableix les claus de seguretat i crea codis PIN</translation>
 <translation id="8509646642152301857">La baixada del diccionari del corrector ortogràfic ha fallat.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{No s'ha trobat cap contrasenya poc segura}=1{S'ha trobat {COUNT} contrasenya poc segura}other{S'han trobat {COUNT} contrasenyes poc segures}}</translation>
 <translation id="8512476990829870887">Finalitza el procés</translation>
 <translation id="851263357009351303">Permet sempre que <ph name="HOST" /> mostri imatges</translation>
 <translation id="8513108775083588393">Rotació autom.</translation>

@@ -8,7 +8,7 @@
 <translation id="1588438908519853928">רגיל</translation>
 <translation id="1591070050619849194">השבת כליל אנימציה בתמונות.</translation>
 <translation id="1703735871906654364">דפדוף עם סמן</translation>
-<translation id="1791496371305830581">אפשר את כל התמונות המכילות אנימציה.</translation>
+<translation id="1791496371305830581">הפעלת כל התמונות המכילות אנימציה.</translation>
 <translation id="1996252509865389616">האם להפעיל?</translation>
 <translation id="2079545284768500474">ביטול הפעולה</translation>
 <translation id="2179565792157161713">פתיחת תיאור ארוך בכרטיסייה חדשה</translation>
@@ -22,11 +22,11 @@
 <translation id="3252573918265662711">הגדרות</translation>
 <translation id="3410969471888629217">שכח התאמות אישיות של אתר</translation>
 <translation id="3435896845095436175">הפעלה</translation>
-<translation id="3622586652998721735">הגדר כברירת מחדל של ערכת צבעים</translation>
+<translation id="3622586652998721735">הגדרה כברירת מחדל של ערכת צבעים</translation>
 <translation id="3812541808639806898">‏מציג טקסט Alt של תמונה</translation>
 <translation id="381767806621926835">‏לחץ לחיצה ארוכה על כל פריט עם המאפיין "longdesc" או "aria-describedat" כדי לגשת לתיאור הארוך שלו.</translation>
 <translation id="4023902424053835668">דפדף בטקסט של דפי אינטרנט באמצעות מקשי החצים.</translation>
-<translation id="4388820049312272371">הדגש את מיקום הסמן באמצעות הבהוב מהיר.</translation>
+<translation id="4388820049312272371">הדגשת מיקום הסמן באמצעות הבהוב מהיר.</translation>
 <translation id="4394049700291259645">השבת</translation>
 <translation id="4769065380738716500">‏תמונות הוחלפו על-ידי טקסט ה-alt שלהן.</translation>
 <translation id="4896660567607030658">אין משוב, פשוט הצג את הסמן.</translation>
@@ -40,7 +40,7 @@
 <translation id="5331422999063554397">צבע הפוך</translation>
 <translation id="5555153510860501336">ניגודיות גבוהה מושבתת</translation>
 <translation id="5558600050691192317">פקודות מקלדת</translation>
-<translation id="5594989420907487559">הפעל אנימציות פעם אחת בלבד, או השבת אנימציות לחלוטין.</translation>
+<translation id="5594989420907487559">הפעלה של אנימציות פעם אחת בלבד, או השבתת אנימציות לחלוטין.</translation>
 <translation id="5631241868147802353">ברירת מחדל של ערכת צבעים:</translation>
 <translation id="5650358096585648000">משוב חזותי</translation>
 <translation id="5710185147685935461">שנה או הפוך את ערכת הצבעים כך שדפי אינטרנט יהיו קלים לקריאה.</translation>
@@ -58,7 +58,7 @@
 <translation id="7384431257964758081">ניגודיות גבוהה מופעלת</translation>
 <translation id="7586636300921797327">שלב 2: כוון את המחוון עד שכל הכוכבים יוצגו בשורה שנבחרה</translation>
 <translation id="7658239707568436148">ביטול</translation>
-<translation id="786423340267544509">‏הוסף גבול לאלמנטים עם מסגרות aria-describedat או longdesc.</translation>
+<translation id="786423340267544509">‏הוספת גבול לאלמנטים עם מסגרות aria-describedat או longdesc.</translation>
 <translation id="7942349550061667556">אדום</translation>
 <translation id="8260673944985561857">אפשרויות דפדוף עם סמן</translation>
 <translation id="8321034316479930120">מדיניות בנושא אנימציה</translation>

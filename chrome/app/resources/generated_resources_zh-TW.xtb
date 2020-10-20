@@ -2904,7 +2904,6 @@
 <translation id="4400632832271803360">按住啟動器鍵即可切換最上排按鍵的行為</translation>
 <translation id="4400963414856942668">按一下星號即可將分頁加入書籤</translation>
 <translation id="4403775189117163360">選擇其他資料夾</translation>
-<translation id="440391631796167175">未發現任何低強度密碼</translation>
 <translation id="4404136731284211429">重新掃描</translation>
 <translation id="4404843640767531781">貴家長已封鎖「<ph name="APP_NAME" />」。如要使用這個應用程式，請要求家長授予權限。</translation>
 <translation id="4405117686468554883">*.jpeg、*.jpg、*.png</translation>
@@ -6340,6 +6339,7 @@
 <translation id="850875081535031620">未發現有害軟體</translation>
 <translation id="8509177919508253835">重設安全金鑰並建立 PIN 碼</translation>
 <translation id="8509646642152301857">拼字檢查字典下載失敗。</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{未發現任何低強度密碼}=1{發現 {COUNT} 組低強度密碼}other{發現 {COUNT} 組低強度密碼}}</translation>
 <translation id="8512476990829870887">結束處理程序</translation>
 <translation id="851263357009351303">永遠允許 <ph name="HOST" /> 顯示圖片</translation>
 <translation id="8513108775083588393">自動旋轉</translation>

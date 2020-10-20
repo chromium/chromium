@@ -2905,7 +2905,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4400632832271803360">Mantén pulsado el menú de aplicaciones para cambiar el comportamiento de las teclas de la fila superior</translation>
 <translation id="4400963414856942668">Haz clic en la estrella para añadir una pestaña a marcadores</translation>
 <translation id="4403775189117163360">Elegir otra carpeta</translation>
-<translation id="440391631796167175">No se han encontrado contraseñas poco seguras</translation>
 <translation id="4404136731284211429">Volver a analizar</translation>
 <translation id="4404843640767531781">Tu padre o madre ha bloqueado <ph name="APP_NAME" />. Pídele permiso para usar esta aplicación.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6342,6 +6341,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="850875081535031620">No se ha encontrado software dañino</translation>
 <translation id="8509177919508253835">Restablece las llaves de seguridad y crea los PIN</translation>
 <translation id="8509646642152301857">Se ha producido un error al descargar el diccionario del corrector ortográfico.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{No se han encontrado contraseñas poco seguras}=1{{COUNT} contraseña poco segura encontrada}other{{COUNT} contraseñas poco seguras encontradas}}</translation>
 <translation id="8512476990829870887">Finalizar proceso</translation>
 <translation id="851263357009351303">Permitir siempre que <ph name="HOST" /> muestre imágenes</translation>
 <translation id="8513108775083588393">Girar autom.</translation>

@@ -2901,7 +2901,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4400632832271803360">Hold Appoversikt-tasten inne for å endre funksjonene for tastene på øverste rad</translation>
 <translation id="4400963414856942668">Du kan klikke på stjernen for å bokmerke en fane</translation>
 <translation id="4403775189117163360">Velg en annen mappe</translation>
-<translation id="440391631796167175">Fant ingen svake passord</translation>
 <translation id="4404136731284211429">Gjennomsøk på nytt</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> er blokkert av forelderen din. Spør forelderen din om tillatelse til å bruke denne appen.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6338,6 +6337,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="850875081535031620">Fant ingen skadelig programvare</translation>
 <translation id="8509177919508253835">Tilbakestill sikkerhetsnøkler, og opprett PIN-koder</translation>
 <translation id="8509646642152301857">Nedlastingen av ordboken for stavekontroll mislyktes.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Fant ingen svake passord}=1{Fant {COUNT} svakt passord}other{Fant {COUNT} svake passord}}</translation>
 <translation id="8512476990829870887">Avslutt prosessen</translation>
 <translation id="851263357009351303">Tillat alltid <ph name="HOST" /> å vise bilder</translation>
 <translation id="8513108775083588393">Autorotasjon</translation>

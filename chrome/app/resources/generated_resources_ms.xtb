@@ -2906,7 +2906,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4400632832271803360">Tekan dan tahan kekunci Launcher untuk menukar gelagat kekunci di baris atas</translation>
 <translation id="4400963414856942668">Anda boleh mengklik bintang untuk menandai tab</translation>
 <translation id="4403775189117163360">Pilih folder yang lain</translation>
-<translation id="440391631796167175">Tiada kata laluan lemah ditemukan</translation>
 <translation id="4404136731284211429">Imbas lagi</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> disekat oleh ibu/bapa anda. Minta kebenaran untuk menggunakan apl ini daripada ibu bapa anda.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6344,6 +6343,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="850875081535031620">Tiada perisian berbahaya ditemui</translation>
 <translation id="8509177919508253835">Tetapkan semula kunci keselamatan dan buat PIN</translation>
 <translation id="8509646642152301857">Muat turun kamus semakan ejaan gagal.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Tiada kata laluan lemah ditemukan}=1{{COUNT} kata laluan lemah ditemukan}other{{COUNT} kata laluan lemah ditemukan}}</translation>
 <translation id="8512476990829870887">Tamatkan Proses</translation>
 <translation id="851263357009351303">Sentiasa benarkan <ph name="HOST" /> untuk memaparkan imej</translation>
 <translation id="8513108775083588393">Autoputar</translation>

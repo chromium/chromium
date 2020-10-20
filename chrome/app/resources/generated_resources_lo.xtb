@@ -2904,7 +2904,6 @@
 <translation id="4400632832271803360">ກົດປຸ່ມຕົວເປີດໃຊ້ຄ້າງໄວ້ເພື່ອປ່ຽນພຶດຕິກຳຂອງປຸ່ມແຖວເທິງ</translation>
 <translation id="4400963414856942668">ທ່ານສາມາດຄລິກໃສ່ຮູບດາວເພື່ອບຸກມາກແຖບໃດໜຶ່ງໄວ້</translation>
 <translation id="4403775189117163360">ເລືອກໂຟນເດີອື່ນ</translation>
-<translation id="440391631796167175">ບໍ່ເຫັນລະຫັດຜ່ານງ່າຍ</translation>
 <translation id="4404136731284211429">ສະແກນອີກ</translation>
 <translation id="4404843640767531781">ພໍ່ແມ່ຂອງທ່ານບລັອກ <ph name="APP_NAME" /> ໄວ້ ຂໍອະນຸຍາດນຳພໍ່ແມ່ຂອງທ່ານເພື່ອໃຊ້ແອັບນີ້.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6339,6 +6338,7 @@
 <translation id="850875081535031620">ບໍ່ພົບຊອບແວອັນຕະລາຍໃດໆ</translation>
 <translation id="8509177919508253835">ຣີເຊັດກະແຈຄວາມປອດໄພ ແລະ ສ້າງ PIN</translation>
 <translation id="8509646642152301857">ດາວໂຫຼດພົດຈະນານຸກົມສະກົດຄໍາບໍ່ສໍາ​ເລັດ​.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{ບໍ່ເຫັນລະຫັດຜ່ານງ່າຍ}=1{ເຫັນລະຫັດຜ່ານງ່າຍ {COUNT} ລາຍການ}other{ເຫັນລະຫັດຜ່ານງ່າຍ {COUNT} ລາຍການ}}</translation>
 <translation id="8512476990829870887">ສິ້ນສຸດຂະບວນການ</translation>
 <translation id="851263357009351303">​ອະ​ນຸ​ຍາດ​ໃຫ້ <ph name="HOST" /> ສະ​ແດງຮູບທຸກຄັ້ງ</translation>
 <translation id="8513108775083588393">ໝຸນອັດຕະໂນມັດ</translation>

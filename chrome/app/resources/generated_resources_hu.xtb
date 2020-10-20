@@ -2905,7 +2905,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4400632832271803360">A legfelső billentyűsor viselkedésének módosításához tartsa lenyomva az Indítót</translation>
 <translation id="4400963414856942668">A lapot úgy is hozzáadhatja a könyvjelzőkhöz, hogy a csillagra kattint</translation>
 <translation id="4403775189117163360">Másik mappa választása</translation>
-<translation id="440391631796167175">Nem található gyenge jelszó</translation>
 <translation id="4404136731284211429">Vizsgálat újra</translation>
 <translation id="4404843640767531781">Szülőd letiltotta a(z) <ph name="APP_NAME" /> alkalmazást. Kérj engedélyt tőle az alkalmazás használatára.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6344,6 +6343,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="850875081535031620">Nem találtunk kártékony szoftvereket</translation>
 <translation id="8509177919508253835">Biztonsági hardverkulcsok visszaállítása és PIN-kódok létrehozása</translation>
 <translation id="8509646642152301857">A helyesírás-ellenőrző szótár letöltése sikertelen volt.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Nem található gyenge jelszó}=1{{COUNT} gyenge jelszó található}other{{COUNT} gyenge jelszó található}}</translation>
 <translation id="8512476990829870887">Folyamat leállítása</translation>
 <translation id="851263357009351303"><ph name="HOST" /> mindig mutathasson képeket</translation>
 <translation id="8513108775083588393">Autom.forgatás</translation>

@@ -2904,7 +2904,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4400632832271803360">Podržením tlačítka spouštěče přepnete chování tlačítek v horním řádku</translation>
 <translation id="4400963414856942668">Kliknutím na hvězdičku můžete kartu přidat do záložek</translation>
 <translation id="4403775189117163360">Vybrat jinou složku</translation>
-<translation id="440391631796167175">Nebyla nalezena žádná slabá hesla</translation>
 <translation id="4404136731284211429">Znovu zkontrolovat</translation>
 <translation id="4404843640767531781">Tvůj rodič aplikaci <ph name="APP_NAME" /> zablokoval. Pokud ji chceš používat, požádej rodiče o oprávnění.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -6340,6 +6339,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="850875081535031620">Nebyl nalezen žádný škodlivý software</translation>
 <translation id="8509177919508253835">Resetovat bezpečnostní klíče a vytvořit kódy PIN</translation>
 <translation id="8509646642152301857">Stažení slovníku pro kontrolu pravopisu se nezdařilo.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Nebyla nalezena žádná slabá hesla}=1{Bylo nalezeno {COUNT} slabé heslo}few{Byla nalezena {COUNT} slabá hesla}many{Bylo nalezeno {COUNT} slabého hesla}other{Bylo nalezeno {COUNT} slabých hesel}}</translation>
 <translation id="8512476990829870887">Ukončit proces</translation>
 <translation id="851263357009351303">Vždy povolovat zobrazování obrázků z webu <ph name="HOST" /></translation>
 <translation id="8513108775083588393">Autom. otáčení</translation>
