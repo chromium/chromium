@@ -49,7 +49,7 @@
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_ash.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
-#include "chrome/browser/ui/views/frame/immersive_mode_controller_ash.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_host.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
@@ -483,7 +483,7 @@ class ImmersiveModeBrowserViewTest
     BrowserView::SetDisableRevealerDelayForTesting(true);
 
     chromeos::ImmersiveFullscreenControllerTestApi(
-        static_cast<ImmersiveModeControllerAsh*>(
+        static_cast<ImmersiveModeControllerChromeos*>(
             BrowserView::GetBrowserViewForBrowser(browser())
                 ->immersive_mode_controller())
             ->controller())
@@ -682,7 +682,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
 
   chromeos::ImmersiveFullscreenControllerTestApi(
-      static_cast<ImmersiveModeControllerAsh*>(
+      static_cast<ImmersiveModeControllerChromeos*>(
           browser_view->immersive_mode_controller())
           ->controller())
       .SetupForTest();

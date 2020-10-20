@@ -90,7 +90,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
-#include "chrome/browser/ui/views/frame/immersive_mode_controller_ash.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/test_system_web_app_installation.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
@@ -3852,7 +3852,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
   ImmersiveModeController* immersive_controller2 =
       browser_view2->immersive_mode_controller();
   chromeos::ImmersiveFullscreenControllerTestApi(
-      static_cast<ImmersiveModeControllerAsh*>(immersive_controller2)
+      static_cast<ImmersiveModeControllerChromeos*>(immersive_controller2)
           ->controller())
       .SetupForTest();
   chrome::ToggleFullscreenMode(browser2);

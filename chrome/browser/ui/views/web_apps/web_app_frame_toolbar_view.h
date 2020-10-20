@@ -98,7 +98,7 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
 
  private:
   friend class WebAppNonClientFrameViewAshTest;
-  friend class ImmersiveModeControllerAshWebAppBrowserTest;
+  friend class ImmersiveModeControllerChromeosWebAppBrowserTest;
   friend class WebAppAshInteractiveUITest;
 
   // Duration to wait before starting the opening animation.

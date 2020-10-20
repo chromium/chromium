@@ -6,7 +6,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/immersive_mode_controller_ash.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_menu_button.h"
@@ -32,7 +32,8 @@ class WebAppAshInteractiveUITest : public web_app::WebAppControllerBrowserTest {
 
     controller_ = browser_view_->immersive_mode_controller();
     chromeos::ImmersiveFullscreenControllerTestApi(
-        static_cast<ImmersiveModeControllerAsh*>(controller_)->controller())
+        static_cast<ImmersiveModeControllerChromeos*>(controller_)
+            ->controller())
         .SetupForTest();
     WebAppFrameToolbarView::DisableAnimationForTesting();
   }
@@ -79,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(WebAppAshInteractiveUITest,
 
   std::unique_ptr<ImmersiveRevealedLock> revealed_lock(
       controller_->GetRevealedLock(
-          ImmersiveModeControllerAsh::ANIMATE_REVEAL_NO));
+          ImmersiveModeControllerChromeos::ANIMATE_REVEAL_NO));
 
   CheckWebAppMenuClickable();
 }

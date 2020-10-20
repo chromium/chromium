@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_IMMERSIVE_MODE_CONTROLLER_ASH_H_
-#define CHROME_BROWSER_UI_VIEWS_FRAME_IMMERSIVE_MODE_CONTROLLER_ASH_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_IMMERSIVE_MODE_CONTROLLER_CHROMEOS_H_
+#define CHROME_BROWSER_UI_VIEWS_FRAME_IMMERSIVE_MODE_CONTROLLER_CHROMEOS_H_
 
 #include <memory>
 
@@ -18,14 +18,14 @@
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/geometry/rect.h"
 
-class ImmersiveModeControllerAsh
+class ImmersiveModeControllerChromeos
     : public ImmersiveModeController,
       public chromeos::ImmersiveFullscreenControllerDelegate,
       public FullscreenObserver,
       public aura::WindowObserver {
  public:
-  ImmersiveModeControllerAsh();
-  ~ImmersiveModeControllerAsh() override;
+  ImmersiveModeControllerChromeos();
+  ~ImmersiveModeControllerChromeos() override;
 
   chromeos::ImmersiveFullscreenController* controller() { return &controller_; }
 
@@ -82,7 +82,7 @@ class ImmersiveModeControllerAsh
 
   ScopedObserver<aura::Window, aura::WindowObserver> observed_windows_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(ImmersiveModeControllerAsh);
+  DISALLOW_COPY_AND_ASSIGN(ImmersiveModeControllerChromeos);
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_IMMERSIVE_MODE_CONTROLLER_ASH_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_IMMERSIVE_MODE_CONTROLLER_CHROMEOS_H_

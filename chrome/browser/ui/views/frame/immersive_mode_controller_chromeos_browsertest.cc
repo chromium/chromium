@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_ash.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/immersive_mode_controller_ash.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -33,13 +33,13 @@
 #include "ui/views/animation/test/ink_drop_host_view_test_api.h"
 #include "ui/views/window/frame_caption_button.h"
 
-class ImmersiveModeControllerAshWebAppBrowserTest
+class ImmersiveModeControllerChromeosWebAppBrowserTest
     : public web_app::WebAppControllerBrowserTest {
  public:
-  ImmersiveModeControllerAshWebAppBrowserTest()
+  ImmersiveModeControllerChromeosWebAppBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
-  ~ImmersiveModeControllerAshWebAppBrowserTest() override = default;
+  ~ImmersiveModeControllerChromeosWebAppBrowserTest() override = default;
 
   // InProcessBrowserTest override:
   void SetUpOnMainThread() override {
@@ -72,7 +72,8 @@ class ImmersiveModeControllerAshWebAppBrowserTest
     // Disable animations in immersive fullscreen before we show the window,
     // which triggers an animation.
     chromeos::ImmersiveFullscreenControllerTestApi(
-        static_cast<ImmersiveModeControllerAsh*>(controller_)->controller())
+        static_cast<ImmersiveModeControllerChromeos*>(controller_)
+            ->controller())
         .SetupForTest();
 
     browser_->window()->Show();
@@ -112,7 +113,7 @@ class ImmersiveModeControllerAshWebAppBrowserTest
   void AttemptReveal() {
     if (!revealed_lock_.get()) {
       revealed_lock_.reset(controller_->GetRevealedLock(
-          ImmersiveModeControllerAsh::ANIMATE_REVEAL_NO));
+          ImmersiveModeControllerChromeos::ANIMATE_REVEAL_NO));
     }
   }
 
@@ -147,12 +148,13 @@ class ImmersiveModeControllerAshWebAppBrowserTest
   // used by the NetworkService.
   content::ContentMockCertVerifier cert_verifier_;
 
-  DISALLOW_COPY_AND_ASSIGN(ImmersiveModeControllerAshWebAppBrowserTest);
+  DISALLOW_COPY_AND_ASSIGN(ImmersiveModeControllerChromeosWebAppBrowserTest);
 };
 
 // Test the layout and visibility of the TopContainerView and web contents when
 // a web app is put into immersive fullscreen.
-IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerAshWebAppBrowserTest, Layout) {
+IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
+                       Layout) {
   LaunchAppBrowser();
   TabStrip* tabstrip = browser_view()->tabstrip();
   ToolbarView* toolbar = browser_view()->toolbar();
@@ -213,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerAshWebAppBrowserTest, Layout) {
 // autohidden in tablet mode).
 
 // Crashes on Linux Chromium OS ASan LSan Tests.  http://crbug.com/1091606
-IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerAshWebAppBrowserTest,
+IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
                        DISABLED_ImmersiveModeStatusTabletMode) {
   LaunchAppBrowser();
   ASSERT_FALSE(controller()->IsEnabled());
@@ -264,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerAshWebAppBrowserTest,
 
 // Verify that the frame layout is as expected when using immersive mode in
 // tablet mode.
-IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerAshWebAppBrowserTest,
+IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
                        FrameLayoutToggleTabletMode) {
   LaunchAppBrowser();
   ASSERT_FALSE(controller()->IsEnabled());
@@ -303,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerAshWebAppBrowserTest,
 
 // Verify that the frame layout for new windows is as expected when using
 // immersive mode in tablet mode.
-IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerAshWebAppBrowserTest,
+IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
                        FrameLayoutStartInTabletMode) {
   // Start in tablet mode
   ash::ShellTestApi().SetTabletModeEnabledForTest(true);
@@ -337,7 +339,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerAshWebAppBrowserTest,
 // but still drawn. In this case, we should have a null anchor view so that the
 // bubble gets placed in the default top left corner. Regression test for
 // https://crbug.com/1087143.
-IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerAshWebAppBrowserTest,
+IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
                        PermissionsBubbleAnchor) {
   LaunchAppBrowser();
   auto test_api =

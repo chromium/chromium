@@ -2,12 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/immersive_mode_controller_ash.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
 
-#include "ash/public/cpp/window_properties.h"
-#include "ash/root_window_controller.h"
-#include "ash/shell.h"
-#include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
@@ -33,11 +29,11 @@
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/controls/webview/webview.h"
 
-class ImmersiveModeControllerAshTest : public TestWithBrowserView {
+class ImmersiveModeControllerChromeosTest : public TestWithBrowserView {
  public:
-  ImmersiveModeControllerAshTest()
+  ImmersiveModeControllerChromeosTest()
       : TestWithBrowserView(Browser::TYPE_NORMAL) {}
-  ~ImmersiveModeControllerAshTest() override {}
+  ~ImmersiveModeControllerChromeosTest() override {}
 
   // TestWithBrowserView override:
   void SetUp() override {
@@ -47,7 +43,8 @@ class ImmersiveModeControllerAshTest : public TestWithBrowserView {
 
     controller_ = browser_view()->immersive_mode_controller();
     chromeos::ImmersiveFullscreenControllerTestApi(
-        static_cast<ImmersiveModeControllerAsh*>(controller_)->controller())
+        static_cast<ImmersiveModeControllerChromeos*>(controller_)
+            ->controller())
         .SetupForTest();
   }
 
@@ -84,14 +81,12 @@ class ImmersiveModeControllerAshTest : public TestWithBrowserView {
   void AttemptReveal() {
     if (!revealed_lock_.get()) {
       revealed_lock_.reset(controller_->GetRevealedLock(
-          ImmersiveModeControllerAsh::ANIMATE_REVEAL_NO));
+          ImmersiveModeControllerChromeos::ANIMATE_REVEAL_NO));
     }
   }
 
   // Attempt unrevealing the top-of-window views.
-  void AttemptUnreveal() {
-    revealed_lock_.reset();
-  }
+  void AttemptUnreveal() { revealed_lock_.reset(); }
 
   ImmersiveModeController* controller() { return controller_; }
 
@@ -101,12 +96,12 @@ class ImmersiveModeControllerAshTest : public TestWithBrowserView {
 
   std::unique_ptr<ImmersiveRevealedLock> revealed_lock_;
 
-  DISALLOW_COPY_AND_ASSIGN(ImmersiveModeControllerAshTest);
+  DISALLOW_COPY_AND_ASSIGN(ImmersiveModeControllerChromeosTest);
 };
 
 // Test the layout and visibility of the tabstrip, toolbar and TopContainerView
 // in immersive fullscreen.
-TEST_F(ImmersiveModeControllerAshTest, Layout) {
+TEST_F(ImmersiveModeControllerChromeosTest, Layout) {
   AddTab(browser(), GURL("about:blank"));
 
   TabStrip* tabstrip = browser_view()->tabstrip();
@@ -198,7 +193,7 @@ TEST_F(ImmersiveModeControllerAshTest, Layout) {
 
 // Test that the browser commands which are usually disabled in fullscreen are
 // are enabled in immersive fullscreen.
-TEST_F(ImmersiveModeControllerAshTest, EnabledCommands) {
+TEST_F(ImmersiveModeControllerChromeosTest, EnabledCommands) {
   ASSERT_FALSE(controller()->IsEnabled());
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_OPEN_CURRENT_URL));
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_ABOUT));
@@ -212,7 +207,7 @@ TEST_F(ImmersiveModeControllerAshTest, EnabledCommands) {
 }
 
 // Test that restoring a window properly exits immersive fullscreen.
-TEST_F(ImmersiveModeControllerAshTest, ExitUponRestore) {
+TEST_F(ImmersiveModeControllerChromeosTest, ExitUponRestore) {
   ASSERT_FALSE(controller()->IsEnabled());
   ToggleFullscreen();
   AttemptReveal();
@@ -227,7 +222,7 @@ TEST_F(ImmersiveModeControllerAshTest, ExitUponRestore) {
 // Ensure the circular tab-loading throbbers are not painted as layers in
 // immersive fullscreen, since the tab strip may animate in or out without
 // moving the layers.
-TEST_F(ImmersiveModeControllerAshTest, LayeredSpinners) {
+TEST_F(ImmersiveModeControllerChromeosTest, LayeredSpinners) {
   AddTab(browser(), GURL("about:blank"));
 
   TabStrip* tabstrip = browser_view()->tabstrip();
@@ -248,7 +243,7 @@ TEST_F(ImmersiveModeControllerAshTest, LayeredSpinners) {
 
 // Ensures the WebUI tab strip can be opened during immersive reveal.
 // Regression test for crbug.com/1096569 where it couldn't be opened.
-TEST_F(ImmersiveModeControllerAshTest, WebUITabStripCanOpen) {
+TEST_F(ImmersiveModeControllerChromeosTest, WebUITabStripCanOpen) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kWebUITabStrip);
 

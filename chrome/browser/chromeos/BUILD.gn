@@ -3780,7 +3780,10 @@ source_set("unit_tests") {
     # broken.
     "../../common/extensions/api/file_browser_handlers/file_browser_handler_manifest_unittest.cc",
     "../../common/extensions/api/file_system_provider/file_system_provider_handler_unittest.cc",
-    "../ui/views/frame/immersive_mode_controller_ash_unittest.cc",
+
+    # TODO(crbug.com/1113900): Consider making this test available on lacros
+    # builds as well.
+    "../ui/views/frame/immersive_mode_controller_chromeos_unittest.cc",
     "../ui/views/select_file_dialog_extension_unittest.cc",
     "../ui/webui/chromeos/login/l10n_util_test_util.cc",
     "../ui/webui/chromeos/login/l10n_util_test_util.h",
