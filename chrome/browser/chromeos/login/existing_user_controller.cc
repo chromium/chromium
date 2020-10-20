@@ -640,8 +640,10 @@ bool ExistingUserController::ForceOnlineFlagChanged(
     }
   }
   if (min_delta < base::TimeDelta::Max()) {
-    DCHECK(!screen_refresh_timer_->IsRunning());
-    // Schedule update task
+    // Schedule update task. If the timer was already running (which is possible
+    // when device settings get updated and we are re-running
+    // UpdateLoginDisplay) we will restart screen_refresh_timer_ with a new
+    // timeout value.
     screen_refresh_timer_->Start(
         FROM_HERE, min_delta,
         base::BindOnce(&ExistingUserController::
