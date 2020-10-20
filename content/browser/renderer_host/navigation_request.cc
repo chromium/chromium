@@ -2113,9 +2113,10 @@ void NavigationRequest::OnResponseStarted(
   ssl_info_ = response_head_->ssl_info;
   auth_challenge_info_ = response_head_->auth_challenge_info;
 
-  is_loaded_from_mhtml_archive_ = GetMimeType() == "multipart/related" ||
-                                  GetMimeType() == "message/rfc822" ||
-                                  IsForMhtmlSubframe();
+  bool is_mhtml_archive = response_head_->mime_type == "multipart/related" ||
+                          response_head_->mime_type == "message/rfc822";
+
+  is_loaded_from_mhtml_archive_ = is_mhtml_archive || IsForMhtmlSubframe();
 
   ComputeSandboxFlagsToCommit();
 
@@ -2191,6 +2192,18 @@ void NavigationRequest::OnResponseStarted(
                    url::Origin::Create(common_params_->url))) {
       commit_params_->was_activated = mojom::WasActivatedOption::kYes;
     }
+  }
+
+  // MHTML document can't be framed into non-MHTML document (and vice versa).
+  // The full page must load from the MHTML archive or none of it.
+  if (is_mhtml_archive && !IsInMainFrame()) {
+    OnRequestFailedInternal(
+        network::URLLoaderCompletionStatus(net::ERR_BLOCKED_BY_RESPONSE),
+        false /* skip_throttles */, base::nullopt /* error_page_contnet */,
+        false /* collapse_frame */);
+    // DO NOT ADD CODE after this. The previous call to
+    // OnRequestFailedInternal has destroyed the NavigationRequest.
+    return;
   }
 
   // TODO(clamy): When we are able to compute the origin of a response in the

@@ -772,24 +772,23 @@ void DocumentLoader::FinishedLoading(base::TimeTicks finish_time) {
 }
 
 void DocumentLoader::FinalizeMHTMLArchiveLoad() {
-  if (!frame_->IsMainFrame()) {
-    // Only the top-frame can load MHTML.
+  // The browser process is blocking any navigation toward MHTML archive inside
+  // iframes. See NavigationRequest::OnResponseStarted().
+  CHECK(frame_->IsMainFrame());
+
+  archive_ = MHTMLArchive::Create(url_, data_buffer_);
+  archive_load_result_ = archive_->LoadResult();
+  if (archive_load_result_ != mojom::blink::MHTMLLoadResult::kSuccess) {
+    // TODO(arthursonzogni): Remove this. Once approved by the browser process,
+    // loading the MHTML archive shouldn't fail. We can serve empty document
+    // instead.
+    archive_.Clear();
+
+    // Log if attempting to load an invalid archive resource.
     frame_->Console().AddMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kJavaScript,
         mojom::ConsoleMessageLevel::kError,
-        "Attempted to load a multipart archive into an subframe: " +
-            url_.GetString()));
-  } else {
-    archive_ = MHTMLArchive::Create(url_, data_buffer_);
-    archive_load_result_ = archive_->LoadResult();
-    if (archive_load_result_ != mojom::MHTMLLoadResult::kSuccess) {
-      archive_.Clear();
-      // Log if attempting to load an invalid archive resource.
-      frame_->Console().AddMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::ConsoleMessageSource::kJavaScript,
-          mojom::ConsoleMessageLevel::kError,
-          "Malformed multipart archive: " + url_.GetString()));
-    }
+        "Malformed multipart archive: " + url_.GetString()));
   }
   data_buffer_ = nullptr;
 }
@@ -1289,10 +1288,15 @@ void DocumentLoader::StartLoadingInternal() {
     body_loader_->StartLoadingBody(this, false /* use_isolated_code_cache */);
     if (body_loader_) {
       // Finalize the load of the MHTML archive. If the load fail (ie. did not
-      // finish synchronously), |body_loader_| will be null amd the load will
+      // finish synchronously), |body_loader_| will be null and the load will
       // not be finalized. When StartLoadingResponse is called later, an empty
       // document will be loaded instead of the MHTML archive.
       // TODO(clamy): Simplify this code path.
+      // TODO(arthursonzogni): Make the load impossible to fail. Once approved
+      // by the browser process, it shouldn't be possible to fail committing the
+      // document. We can fallback to empty response. Alternatively, we can make
+      // MHTML document to be served from a dedicated URLLoader and fail
+      // earlier.
       FinalizeMHTMLArchiveLoad();
     }
     return;
