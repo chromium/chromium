@@ -3,8 +3,8 @@
     "fuchsia.test": {
       "injected-services": {
         "fuchsia.intl.PropertyProvider": "fuchsia-pkg://fuchsia.com/intl_property_manager#meta/intl_property_manager.cmx",
-        "fuchsia.logger.Log": "fuchsia-pkg://fuchsia.com/archivist#meta/archivist.cmx",
-        "fuchsia.logger.LogSink": "fuchsia-pkg://fuchsia.com/archivist#meta/archivist.cmx"
+        "fuchsia.logger.Log": "fuchsia-pkg://fuchsia.com/archivist-for-embedding#meta/archivist-for-embedding.cmx",
+        "fuchsia.logger.LogSink": "fuchsia-pkg://fuchsia.com/archivist-for-embedding#meta/archivist-for-embedding.cmx"
       },
       "system-services": [
         "fuchsia.boot.ReadOnlyLog"
