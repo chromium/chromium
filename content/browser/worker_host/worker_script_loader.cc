@@ -31,8 +31,7 @@ WorkerScriptLoader::WorkerScriptLoader(
     base::WeakPtr<AppCacheHost> appcache_host,
     const BrowserContextGetter& browser_context_getter,
     scoped_refptr<network::SharedURLLoaderFactory> default_loader_factory,
-    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-    ukm::SourceId ukm_source_id)
+    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
     : routing_id_(routing_id),
       request_id_(request_id),
       options_(options),
@@ -41,8 +40,7 @@ WorkerScriptLoader::WorkerScriptLoader(
       service_worker_handle_(std::move(service_worker_handle)),
       browser_context_getter_(browser_context_getter),
       default_loader_factory_(std::move(default_loader_factory)),
-      traffic_annotation_(traffic_annotation),
-      ukm_source_id_(ukm_source_id) {
+      traffic_annotation_(traffic_annotation) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!service_worker_handle_) {
@@ -330,7 +328,7 @@ void WorkerScriptLoader::CommitCompleted(
     // TODO(https://crbug.com/999049): Parse the COEP header and pass it to
     // the service worker handle.
     service_worker_handle_->OnBeginWorkerCommit(
-        network::CrossOriginEmbedderPolicy(), ukm_source_id_);
+        network::CrossOriginEmbedderPolicy());
   }
 
   client_->OnComplete(status);

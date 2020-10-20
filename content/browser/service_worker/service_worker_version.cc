@@ -389,7 +389,7 @@ ServiceWorkerVersionInfo ServiceWorkerVersion::GetInfo() {
       running_status(), status(), fetch_handler_existence(), script_url(),
       origin(), registration_id(), version_id(),
       embedded_worker()->process_id(), embedded_worker()->thread_id(),
-      embedded_worker()->worker_devtools_agent_route_id(), ukm_source_id());
+      embedded_worker()->worker_devtools_agent_route_id());
   for (const auto& controllee : controllee_map_) {
     ServiceWorkerContainerHost* container_host = controllee.second;
     info.clients.emplace(container_host->client_uuid(),

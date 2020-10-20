@@ -479,11 +479,6 @@ void ServiceWorkerContextCore::OnContainerHostReceiverDisconnected() {
   ServiceWorkerContainerHost* container_host =
       container_host_receivers_->current_context();
 
-  observer_list_->Notify(FROM_HERE,
-                         &ServiceWorkerContextCoreObserver::OnClientDestroyed,
-                         container_host->ukm_source_id(), container_host->url(),
-                         container_host->GetClientType());
-
   size_t removed = container_host_by_uuid_.erase(container_host->client_uuid());
   DCHECK_EQ(removed, 1u);
 }
@@ -616,15 +611,6 @@ int ServiceWorkerContextCore::GetNextEmbeddedWorkerId() {
   return next_embedded_worker_id_++;
 }
 
-void ServiceWorkerContextCore::NotifyClientIsExecutionReady(
-    const ServiceWorkerContainerHost& container_host) {
-  DCHECK(container_host.is_execution_ready());
-  observer_list_->Notify(
-      FROM_HERE, &ServiceWorkerContextCoreObserver::OnClientIsExecutionReady,
-      container_host.ukm_source_id(), container_host.url(),
-      container_host.GetClientType());
-}
-
 void ServiceWorkerContextCore::RegistrationComplete(
     const GURL& scope,
     ServiceWorkerContextCore::RegistrationCallback callback,
@@ -744,9 +730,6 @@ void ServiceWorkerContextCore::RemoveLiveVersion(int64_t id) {
     observer_list_->Notify(FROM_HERE,
                            &ServiceWorkerContextCoreObserver::OnStopped, id);
   }
-
-  observer_list_->Notify(
-      FROM_HERE, &ServiceWorkerContextCoreObserver::OnLiveVersionDestroyed, id);
 
   live_versions_.erase(it);
 }

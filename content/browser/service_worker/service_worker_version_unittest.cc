@@ -35,7 +35,6 @@
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_service.mojom.h"
 #include "content/public/test/test_utils.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom.h"
@@ -1223,7 +1222,7 @@ TEST_F(ServiceWorkerVersionTest,
   container_host->OnBeginNavigationCommit(
       version_->embedded_worker()->process_id(),
       /* render_frame_id = */ 1, network::CrossOriginEmbedderPolicy(),
-      std::move(reporter), ukm::UkmRecorder::GetNewSourceID());
+      std::move(reporter));
 
   // RenderProcessHost should be notified of foreground worker.
   base::RunLoop().RunUntilIdle();

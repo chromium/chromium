@@ -48,7 +48,6 @@
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/special_storage_policy.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
@@ -226,12 +225,6 @@ ServiceWorkerContextWrapper::ServiceWorkerContextWrapper(
   // Add this object as an observer of the wrapped |context_core_|. This lets us
   // forward observer methods to observers outside of content.
   core_observer_list_->AddObserver(this);
-
-  if (blink::IdentifiabilityStudySettings::Get()->IsActive()) {
-    identifiability_metrics_ =
-        std::make_unique<ServiceWorkerIdentifiabilityMetrics>();
-    core_observer_list_->AddObserver(identifiability_metrics_.get());
-  }
 }
 
 void ServiceWorkerContextWrapper::Init(
@@ -1561,8 +1554,6 @@ ServiceWorkerContextWrapper::~ServiceWorkerContextWrapper() {
   // tests where this object is not guaranteed to outlive the
   // ServiceWorkerContextCore it wraps.
   core_observer_list_->RemoveObserver(this);
-  if (identifiability_metrics_)
-    core_observer_list_->RemoveObserver(identifiability_metrics_.get());
   DCHECK(!resource_context_);
 }
 

@@ -358,9 +358,6 @@ class CONTENT_EXPORT ServiceWorkerContextCore
 
   int GetNextEmbeddedWorkerId();
 
-  void NotifyClientIsExecutionReady(
-      const ServiceWorkerContainerHost& container_host);
-
  private:
   friend class ServiceWorkerContextCoreTest;
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerContextCoreTest, FailureInfo);

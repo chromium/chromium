@@ -15,7 +15,6 @@
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_controllee_request_handler.h"
 #include "content/common/content_export.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace network {
@@ -49,12 +48,10 @@ class CONTENT_EXPORT ServiceWorkerMainResourceHandleCore {
       int render_frame_id,
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-          coep_reporter,
-      ukm::SourceId document_ukm_source_id);
+          coep_reporter);
   void OnEndNavigationCommit();
   void OnBeginWorkerCommit(
-      const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
-      ukm::SourceId worker_ukm_source_id);
+      const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy);
 
   ServiceWorkerContextWrapper* context_wrapper() const {
     return context_wrapper_.get();

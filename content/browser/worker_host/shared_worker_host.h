@@ -141,8 +141,6 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
 
   const SharedWorkerInstance& instance() const { return instance_; }
 
-  ukm::SourceId ukm_source_id() const { return ukm_source_id_; }
-
   const base::UnguessableToken& GetDevToolsToken() const;
 
   // Signals the remote worker to terminate and returns the mojo::Remote

@@ -332,7 +332,7 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
       blink::mojom::ResourceType::kSharedWorker, service_worker_context_,
       service_worker_handle_raw, std::move(appcache_host),
       std::move(blob_url_loader_factory), url_loader_factory_override_,
-      storage_partition_, storage_domain, host->ukm_source_id(),
+      storage_partition_, storage_domain,
       base::BindOnce(&SharedWorkerServiceImpl::StartWorker,
                      weak_factory_.GetWeakPtr(), weak_host, message_port,
                      std::move(cloned_outside_fetch_client_settings_object)));

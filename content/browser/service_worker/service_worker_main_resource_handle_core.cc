@@ -32,13 +32,12 @@ void ServiceWorkerMainResourceHandleCore::OnBeginNavigationCommit(
     int render_frame_id,
     const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-        coep_reporter,
-    ukm::SourceId document_ukm_source_id) {
+        coep_reporter) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   if (container_host_) {
-    container_host_->OnBeginNavigationCommit(
-        render_process_id, render_frame_id, cross_origin_embedder_policy,
-        std::move(coep_reporter), document_ukm_source_id);
+    container_host_->OnBeginNavigationCommit(render_process_id, render_frame_id,
+                                             cross_origin_embedder_policy,
+                                             std::move(coep_reporter));
   }
 }
 void ServiceWorkerMainResourceHandleCore::OnEndNavigationCommit() {
@@ -48,12 +47,10 @@ void ServiceWorkerMainResourceHandleCore::OnEndNavigationCommit() {
 }
 
 void ServiceWorkerMainResourceHandleCore::OnBeginWorkerCommit(
-    const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
-    ukm::SourceId worker_ukm_source_id) {
+    const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   if (container_host_) {
-    container_host_->CompleteWebWorkerPreparation(cross_origin_embedder_policy,
-                                                  worker_ukm_source_id);
+    container_host_->CompleteWebWorkerPreparation(cross_origin_embedder_policy);
   }
 }
 

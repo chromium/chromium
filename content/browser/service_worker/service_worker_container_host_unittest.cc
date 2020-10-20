@@ -37,7 +37,6 @@
 #include "content/test/test_content_browser_client.h"
 #include "content/test/test_content_client.h"
 #include "mojo/public/cpp/system/functions.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
@@ -213,8 +212,7 @@ class ServiceWorkerContainerHostTest : public testing::Test {
     // process right before navigation commit.
     container_host->OnBeginNavigationCommit(
         helper_->mock_render_process_id(), 1 /* route_id */,
-        network::CrossOriginEmbedderPolicy(), std::move(reporter),
-        ukm::UkmRecorder::GetNewSourceID());
+        network::CrossOriginEmbedderPolicy(), std::move(reporter));
   }
 
   blink::mojom::ServiceWorkerErrorType Register(
@@ -1006,8 +1004,7 @@ void ServiceWorkerContainerHostTest::TestReservedClientsAreNotExposed(
                                url::Origin::Create(url));
     EXPECT_FALSE(CanFindClientContainerHost(container_host.get()));
     container_host->CompleteWebWorkerPreparation(
-        network::CrossOriginEmbedderPolicy(),
-        ukm::UkmRecorder::GetNewSourceID());
+        network::CrossOriginEmbedderPolicy());
     EXPECT_TRUE(CanFindClientContainerHost(container_host.get()));
   }
 
@@ -1096,7 +1093,7 @@ void ServiceWorkerContainerHostTest::TestClientPhaseTransition(
   container_host->UpdateUrls(url, net::SiteForCookies::FromUrl(url),
                              url::Origin::Create(url));
   container_host->CompleteWebWorkerPreparation(
-      network::CrossOriginEmbedderPolicy(), ukm::UkmRecorder::GetNewSourceID());
+      network::CrossOriginEmbedderPolicy());
 
   EXPECT_TRUE(container_host->is_response_committed());
   EXPECT_TRUE(container_host->is_execution_ready());

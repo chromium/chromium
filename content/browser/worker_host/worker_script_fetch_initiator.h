@@ -15,7 +15,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_worker_client_info.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -87,7 +86,6 @@ class CONTENT_EXPORT WorkerScriptFetchInitiator {
           url_loader_factory_override,
       StoragePartitionImpl* storage_partition,
       const std::string& storage_domain,
-      ukm::SourceId worker_source_id,
       CompletionCallback callback);
 
   // Used for specifying how URLLoaderFactoryBundle is used.
@@ -131,7 +129,6 @@ class CONTENT_EXPORT WorkerScriptFetchInitiator {
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       scoped_refptr<network::SharedURLLoaderFactory>
           url_loader_factory_override,
-      ukm::SourceId worker_source_id,
       CompletionCallback callback);
 
   static void DidCreateScriptLoader(

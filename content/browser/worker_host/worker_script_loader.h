@@ -80,8 +80,7 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
       base::WeakPtr<AppCacheHost> appcache_host,
       const BrowserContextGetter& browser_context_getter,
       scoped_refptr<network::SharedURLLoaderFactory> default_loader_factory,
-      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-      ukm::SourceId ukm_source_id);
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
   ~WorkerScriptLoader() override;
 
   // network::mojom::URLLoader:
@@ -156,7 +155,6 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
   BrowserContextGetter browser_context_getter_;
   scoped_refptr<network::SharedURLLoaderFactory> default_loader_factory_;
   net::MutableNetworkTrafficAnnotationTag traffic_annotation_;
-  const ukm::SourceId ukm_source_id_;
 
   base::Optional<net::RedirectInfo> redirect_info_;
   int redirect_limit_ = net::URLRequest::kMaxRedirects;
