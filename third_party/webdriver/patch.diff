@@ -1,5 +1,5 @@
 diff --git a/javascript/atoms/dom.js b/javascript/atoms/dom.js
-index 68dbdacc16..d3dbc883fd 100644
+index 68dbdacc16..d8519f518e 100644
 --- a/javascript/atoms/dom.js
 +++ b/javascript/atoms/dom.js
 @@ -587,14 +587,8 @@ bot.dom.isShown = function(elem, opt_ignoreOpacity) {
@@ -28,6 +28,15 @@ index 68dbdacc16..d3dbc883fd 100644
    }
  
    return bot.dom.isShown_(elem, !!opt_ignoreOpacity, displayed);
+@@ -1175,7 +1169,7 @@ bot.dom.appendVisibleTextLinesFromTextNode_ = function(textNode, lines,
+   }
+ 
+   if (textTransform == 'capitalize') {
+-    text = text.replace(/(^|\s|\b)(\S)/g, function() {
++    text = text.replace(/(^|[^\d\p{L}\p{S}])([\p{Ll}|\p{S}])/gu, function() {
+       return arguments[1] + arguments[2].toUpperCase();
+     });
+   } else if (textTransform == 'uppercase') {
 @@ -1270,13 +1264,6 @@ bot.dom.getOpacityNonIE_ = function(elem) {
  bot.dom.getParentNodeInComposedDom = function(node) {
    var /**@type {Node}*/ parent = node.parentNode;
