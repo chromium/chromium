@@ -574,6 +574,7 @@ class CORE_EXPORT ContentSecurityPolicy final
 
   void ReportContentSecurityPolicyIssue(
       const blink::SecurityPolicyViolationEventInit& violation_data,
+      network::mojom::ContentSecurityPolicyType header_type,
       ContentSecurityPolicyViolationType violation_type,
       LocalFrame* = nullptr,
       Element* = nullptr);

@@ -497,6 +497,7 @@ void InspectorAuditsAgent::InspectorIssueAdded(InspectorIssue* issue) {
     auto cspDetails =
         std::move(protocol::Audits::ContentSecurityPolicyIssueDetails::create()
                       .setViolatedDirective(d->violated_directive)
+                      .setIsReportOnly(d->is_report_only)
                       .setContentSecurityPolicyViolationType(BuildViolationType(
                           d->content_security_policy_violation_type)));
     if (d->blocked_url) {

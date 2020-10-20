@@ -79,6 +79,7 @@ enum ContentSecurityPolicyViolationType {
 struct ContentSecurityPolicyIssueDetails {
   url.mojom.Url? blocked_url;
   string violated_directive;
+  bool is_report_only;
   ContentSecurityPolicyViolationType content_security_policy_violation_type;
   AffectedFrame? frame_ancestor;
   network.mojom.SourceLocation? source_location;

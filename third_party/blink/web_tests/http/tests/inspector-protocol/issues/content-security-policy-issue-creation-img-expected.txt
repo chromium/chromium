@@ -7,6 +7,7 @@ Inspector issue: {
             contentSecurityPolicyIssueDetails : {
                 blockedURL : https://thirdparty.test/network/resources/to-be-blocked.jpg
                 contentSecurityPolicyViolationType : kURLViolation
+                isReportOnly : false
                 violatedDirective : img-src
             }
         }

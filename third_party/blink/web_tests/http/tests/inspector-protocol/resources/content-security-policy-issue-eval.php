@@ -1,6 +1,7 @@
+<?php
+header("Content-Security-Policy: script-src 'self' 'unsafe-inline';");
+?>
 <!DOCTYPE html>
-<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';">
-
 <html>
   <body>
     <h2>Webpage with not allowed eval()</h2>

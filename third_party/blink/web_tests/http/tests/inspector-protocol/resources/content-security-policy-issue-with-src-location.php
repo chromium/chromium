@@ -1,5 +1,7 @@
+<?php
+header("Content-Security-Policy: style-src https://thirdparty.test/network/resources/;");
+?>
 <!DOCTYPE html>
-<meta http-equiv="Content-Security-Policy" content="style-src https://thirdparty.test/network/resources/;">
 
 <link rel="stylesheet" type="text/css" href="style.css">
 

@@ -1131,7 +1131,7 @@ void ContentSecurityPolicy::ReportViolation(
   if (delegate_)
     delegate_->DispatchViolationEvent(*violation_data, element);
 
-  ReportContentSecurityPolicyIssue(*violation_data, violation_type,
+  ReportContentSecurityPolicyIssue(*violation_data, header_type, violation_type,
                                    context_frame, element);
 }
 
@@ -1408,10 +1408,13 @@ ContentSecurityPolicy::BuildCSPViolationType(
 
 void ContentSecurityPolicy::ReportContentSecurityPolicyIssue(
     const blink::SecurityPolicyViolationEventInit& violation_data,
+    ContentSecurityPolicyType header_type,
     ContentSecurityPolicyViolationType violation_type,
     LocalFrame* frame_ancestor,
     Element* element) {
   auto cspDetails = mojom::blink::ContentSecurityPolicyIssueDetails::New();
+  cspDetails->is_report_only =
+      header_type == ContentSecurityPolicyType::kReport;
   if (violation_type == ContentSecurityPolicyViolationType::kURLViolation ||
       violation_data.violatedDirective() == "frame-ancestors") {
     cspDetails->blocked_url = KURL(violation_data.blockedURI());

@@ -6,10 +6,11 @@ Inspector issue: {
         details : {
             contentSecurityPolicyIssueDetails : {
                 contentSecurityPolicyViolationType : kEvalViolation
+                isReportOnly : false
                 sourceCodeLocation : {
                     columnNumber : 13
-                    lineNumber : 7
-                    url : https://devtools.test:8443/inspector-protocol/resources/content-security-policy-issue-eval.html
+                    lineNumber : 5
+                    url : https://devtools.test:8443/inspector-protocol/resources/content-security-policy-issue-eval.php
                 }
                 violatedDirective : script-src
             }

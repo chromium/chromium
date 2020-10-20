@@ -7,10 +7,11 @@ Inspector issue: {
             contentSecurityPolicyIssueDetails : {
                 blockedURL : https://devtools.test:8443/inspector-protocol/resources/style.css
                 contentSecurityPolicyViolationType : kURLViolation
+                isReportOnly : false
                 sourceCodeLocation : {
                     columnNumber : 0
-                    lineNumber : 3
-                    url : https://devtools.test:8443/inspector-protocol/resources/content-security-policy-issue-with-src-location.html
+                    lineNumber : 2
+                    url : https://devtools.test:8443/inspector-protocol/resources/content-security-policy-issue-with-src-location.php
                 }
                 violatedDirective : style-src-elem
             }

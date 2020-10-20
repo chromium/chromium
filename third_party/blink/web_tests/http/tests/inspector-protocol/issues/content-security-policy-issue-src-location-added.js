@@ -4,7 +4,7 @@
 
     await dp.Network.enable();
     await dp.Audits.enable();
-    page.navigate('https://devtools.test:8443/inspector-protocol/resources/content-security-policy-issue-with-src-location.html');
+    page.navigate('https://devtools.test:8443/inspector-protocol/resources/content-security-policy-issue-with-src-location.php');
     const issue = await dp.Audits.onceIssueAdded();
 
     testRunner.log(issue.params, "Inspector issue: ");

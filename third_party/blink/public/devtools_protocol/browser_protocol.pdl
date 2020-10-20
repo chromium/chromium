@@ -642,6 +642,7 @@ experimental domain Audits
       optional string blockedURL
       # Specific directive that is violated, causing the CSP issue.
       string violatedDirective
+      boolean isReportOnly
       ContentSecurityPolicyViolationType contentSecurityPolicyViolationType
       optional AffectedFrame frameAncestor
       optional SourceCodeLocation sourceCodeLocation
