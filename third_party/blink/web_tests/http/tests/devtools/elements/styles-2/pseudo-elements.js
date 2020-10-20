@@ -8,6 +8,10 @@
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
+      #inspected::target-text {
+        color: green;
+      }
+
       #inspected {
         display: list-item;
       }

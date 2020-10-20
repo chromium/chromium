@@ -53,6 +53,11 @@ element.style { ()
     text-align: start !important;
     text-align-last: start !important;
 
+======== Pseudo ::target-text element ========
+[expanded] 
+#inspected::target-text { (<style>)
+    color: green;
+
 
 Running: dumpBeforeStyles
 [expanded] 

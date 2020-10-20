@@ -227,6 +227,8 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdScrollbarTrackPiece;
     case kPseudoResizer:
       return kPseudoIdResizer;
+    case kPseudoTargetText:
+      return kPseudoIdTargetText;
     case kPseudoUnknown:
     case kPseudoEmpty:
     case kPseudoFirstChild:
@@ -424,6 +426,7 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"single-button", CSSSelector::kPseudoSingleButton},
     {"start", CSSSelector::kPseudoStart},
     {"target", CSSSelector::kPseudoTarget},
+    {"target-text", CSSSelector::kPseudoTargetText},
     {"unresolved", CSSSelector::kPseudoUnresolved},
     {"valid", CSSSelector::kPseudoValid},
     {"vertical", CSSSelector::kPseudoVertical},
@@ -490,6 +493,11 @@ static CSSSelector::PseudoType NameToPseudoType(const AtomicString& name,
 
   if (match->type == CSSSelector::kPseudoState &&
       !RuntimeEnabledFeatures::CustomStatePseudoClassEnabled()) {
+    return CSSSelector::kPseudoUnknown;
+  }
+
+  if (match->type == CSSSelector::kPseudoTargetText &&
+      !RuntimeEnabledFeatures::CSSTargetTextPseudoElementEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
 
@@ -601,6 +609,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoWebKitCustomElement:
     case kPseudoContent:
     case kPseudoSlotted:
+    case kPseudoTargetText:
       if (match_ != kPseudoElement)
         pseudo_type_ = kPseudoUnknown;
       break;
@@ -1098,6 +1107,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoFirstLine:
     case kPseudoFirstLetter:
     case kPseudoSelection:
+    case kPseudoTargetText:
       return true;
     default:
       return false;
