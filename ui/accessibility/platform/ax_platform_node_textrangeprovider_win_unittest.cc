@@ -178,8 +178,12 @@ class AXPlatformNodeTextRangeProviderTest : public ui::AXPlatformNodeWinTest {
     return text_range->owner_.Get();
   }
 
-  void NormalizeTextRange(AXPlatformNodeTextRangeProviderWin* text_range) {
-    text_range->NormalizeTextRange();
+  void NormalizeTextRange(AXPlatformNodeTextRangeProviderWin* text_range,
+                          AXNodePosition::AXPositionInstance& start,
+                          AXNodePosition::AXPositionInstance& end) {
+    DCHECK_EQ(*GetStart(text_range), *start);
+    DCHECK_EQ(*GetEnd(text_range), *end);
+    text_range->NormalizeTextRange(start, end);
   }
 
   ComPtr<AXPlatformNodeTextRangeProviderWin> CloneTextRangeProviderWin(
@@ -767,6 +771,13 @@ class AXPlatformNodeTextRangeProviderTest : public ui::AXPlatformNodeWinTest {
                     page_3_text_data};
     update.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
     return update;
+  }
+
+  void ExpectPositionsEqual(const AXNodePosition::AXPositionInstance& a,
+                            const AXNodePosition::AXPositionInstance& b) {
+    EXPECT_EQ(*a, *b);
+    EXPECT_EQ(a->anchor_id(), b->anchor_id());
+    EXPECT_EQ(a->text_offset(), b->text_offset());
   }
 };
 
@@ -5292,9 +5303,20 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   update.nodes[1].SetName("aa");
   ASSERT_TRUE(GetTree()->Unserialize(update));
 
-  NormalizeTextRange(text_range_provider_win.Get());
-  EXPECT_EQ(*start_after_move, *GetStart(text_range_provider_win.Get()));
-  EXPECT_EQ(*end_after_move, *GetEnd(text_range_provider_win.Get()));
+  auto* text_range = text_range_provider_win.Get();
+
+  auto original_start = GetStart(text_range)->Clone();
+  auto original_end = GetEnd(text_range)->Clone();
+
+  auto normalized_start = GetStart(text_range)->Clone();
+  auto normalized_end = GetEnd(text_range)->Clone();
+  NormalizeTextRange(text_range, normalized_start, normalized_end);
+  // Verify that the original range was not changed by normalization.
+  ExpectPositionsEqual(original_start, GetStart(text_range));
+  ExpectPositionsEqual(original_end, GetEnd(text_range));
+
+  EXPECT_EQ(*start_after_move, *normalized_start);
+  EXPECT_EQ(*end_after_move, *normalized_end);
 }
 
 TEST_F(AXPlatformNodeTextRangeProviderTest,
@@ -5350,9 +5372,20 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   update.nodes[1].SetName("aa");
   ASSERT_TRUE(GetTree()->Unserialize(update));
 
-  NormalizeTextRange(text_range_provider_win.Get());
-  EXPECT_EQ(*start_after_move, *GetStart(text_range_provider_win.Get()));
-  EXPECT_EQ(*end_after_move, *GetEnd(text_range_provider_win.Get()));
+  auto* text_range = text_range_provider_win.Get();
+
+  auto original_start = GetStart(text_range)->Clone();
+  auto original_end = GetEnd(text_range)->Clone();
+
+  auto normalized_start = GetStart(text_range)->Clone();
+  auto normalized_end = GetEnd(text_range)->Clone();
+  NormalizeTextRange(text_range, normalized_start, normalized_end);
+  // Verify that the original range was not changed by normalization.
+  ExpectPositionsEqual(original_start, GetStart(text_range));
+  ExpectPositionsEqual(original_end, GetEnd(text_range));
+
+  EXPECT_EQ(*start_after_move, *normalized_start);
+  EXPECT_EQ(*end_after_move, *normalized_end);
 }
 
 TEST_F(AXPlatformNodeTextRangeProviderTest,
@@ -5397,18 +5430,21 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   EXPECT_TRUE(GetStart(ignored_range_win.Get())->IsIgnored());
   EXPECT_TRUE(GetEnd(ignored_range_win.Get())->IsIgnored());
 
-  ComPtr<AXPlatformNodeTextRangeProviderWin> normalized_range_win =
-      CloneTextRangeProviderWin(ignored_range_win.Get());
-  NormalizeTextRange(normalized_range_win.Get());
+  auto original_start = GetStart(ignored_range_win.Get())->Clone();
+  auto original_end = GetEnd(ignored_range_win.Get())->Clone();
 
-  EXPECT_FALSE(GetStart(normalized_range_win.Get())->IsIgnored());
-  EXPECT_FALSE(GetEnd(normalized_range_win.Get())->IsIgnored());
-  EXPECT_LE(*GetStart(ignored_range_win.Get()),
-            *GetStart(normalized_range_win.Get()));
-  EXPECT_LE(*GetEnd(ignored_range_win.Get()),
-            *GetEnd(normalized_range_win.Get()));
-  EXPECT_LE(*GetStart(normalized_range_win.Get()),
-            *GetEnd(normalized_range_win.Get()));
+  auto normalized_start = GetStart(ignored_range_win.Get())->Clone();
+  auto normalized_end = GetEnd(ignored_range_win.Get())->Clone();
+  NormalizeTextRange(ignored_range_win.Get(), normalized_start, normalized_end);
+  // Verify that the original range was not changed by normalization.
+  ExpectPositionsEqual(original_start, GetStart(ignored_range_win.Get()));
+  ExpectPositionsEqual(original_end, GetEnd(ignored_range_win.Get()));
+
+  EXPECT_FALSE(normalized_start->IsIgnored());
+  EXPECT_FALSE(normalized_end->IsIgnored());
+  EXPECT_LE(*GetStart(ignored_range_win.Get()), *normalized_start);
+  EXPECT_LE(*GetEnd(ignored_range_win.Get()), *normalized_end);
+  EXPECT_LE(*normalized_start, *normalized_end);
 
   // Remove the last node, forcing |NormalizeTextRange| to normalize
   // using the opposite AdjustmentBehavior.
@@ -5418,17 +5454,21 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   update.nodes[0].child_ids = {2, 3};
   ASSERT_TRUE(GetTree()->Unserialize(update));
 
-  normalized_range_win = CloneTextRangeProviderWin(ignored_range_win.Get());
-  NormalizeTextRange(normalized_range_win.Get());
+  original_start = GetStart(ignored_range_win.Get())->Clone();
+  original_end = GetEnd(ignored_range_win.Get())->Clone();
 
-  EXPECT_FALSE(GetStart(normalized_range_win.Get())->IsIgnored());
-  EXPECT_FALSE(GetEnd(normalized_range_win.Get())->IsIgnored());
-  EXPECT_GE(*GetStart(ignored_range_win.Get()),
-            *GetStart(normalized_range_win.Get()));
-  EXPECT_GE(*GetEnd(ignored_range_win.Get()),
-            *GetEnd(normalized_range_win.Get()));
-  EXPECT_LE(*GetStart(normalized_range_win.Get()),
-            *GetEnd(normalized_range_win.Get()));
+  normalized_start = GetStart(ignored_range_win.Get())->Clone();
+  normalized_end = GetEnd(ignored_range_win.Get())->Clone();
+  NormalizeTextRange(ignored_range_win.Get(), normalized_start, normalized_end);
+  // Verify that the original range was not changed by normalization.
+  ExpectPositionsEqual(original_start, GetStart(ignored_range_win.Get()));
+  ExpectPositionsEqual(original_end, GetEnd(ignored_range_win.Get()));
+
+  EXPECT_FALSE(normalized_start->IsIgnored());
+  EXPECT_FALSE(normalized_end->IsIgnored());
+  EXPECT_GE(*GetStart(ignored_range_win.Get()), *normalized_start);
+  EXPECT_GE(*GetEnd(ignored_range_win.Get()), *normalized_end);
+  EXPECT_LE(*normalized_start, *normalized_end);
 }
 
 TEST_F(AXPlatformNodeTextRangeProviderTest,
@@ -5477,7 +5517,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
       AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 1)));
 
-  // Text range before NormalizeTextRange()
+  // Original range before NormalizeTextRange()
   // |before<>||ignored1||ignored2||<a>fter|
   //         |-----------------------|
   // start: TextPosition, anchor_id=2, text_offset=6, annotated_text=before<>
@@ -5490,22 +5530,34 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
       /*end_anchor_id=*/5, /*end_offset=*/0,
       /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
 
-  // Text range after NormalizeTextRange()
+  auto original_start = GetStart(range_span_ignored_nodes.Get())->Clone();
+  auto original_end = GetEnd(range_span_ignored_nodes.Get())->Clone();
+
+  // Normalized range after NormalizeTextRange()
   // |before||ignored1||ignored2||<a>fter|
   //                              |-|
-  NormalizeTextRange(range_span_ignored_nodes.Get());
-  EXPECT_EQ(*GetStart(range_span_ignored_nodes.Get()),
-            *GetEnd(range_span_ignored_nodes.Get()));
+  AXNodePosition::AXPositionInstance normalized_start =
+      GetStart(range_span_ignored_nodes.Get())->Clone();
+  AXNodePosition::AXPositionInstance normalized_end =
+      GetEnd(range_span_ignored_nodes.Get())->Clone();
+  NormalizeTextRange(range_span_ignored_nodes.Get(), normalized_start,
+                     normalized_end);
+  // Verify that the original range was not changed by normalization.
+  ExpectPositionsEqual(original_start,
+                       GetStart(range_span_ignored_nodes.Get()));
+  ExpectPositionsEqual(original_end, GetEnd(range_span_ignored_nodes.Get()));
 
-  EXPECT_EQ(true, GetStart(range_span_ignored_nodes.Get())->IsTextPosition());
-  EXPECT_EQ(true, GetStart(range_span_ignored_nodes.Get())->AtStartOfAnchor());
-  EXPECT_EQ(5, GetStart(range_span_ignored_nodes.Get())->anchor_id());
-  EXPECT_EQ(0, GetStart(range_span_ignored_nodes.Get())->text_offset());
+  EXPECT_EQ(*normalized_start, *normalized_end);
 
-  EXPECT_EQ(true, GetEnd(range_span_ignored_nodes.Get())->IsTextPosition());
-  EXPECT_EQ(true, GetEnd(range_span_ignored_nodes.Get())->AtStartOfAnchor());
-  EXPECT_EQ(5, GetEnd(range_span_ignored_nodes.Get())->anchor_id());
-  EXPECT_EQ(0, GetEnd(range_span_ignored_nodes.Get())->text_offset());
+  EXPECT_TRUE(normalized_start->IsTextPosition());
+  EXPECT_TRUE(normalized_start->AtStartOfAnchor());
+  EXPECT_EQ(5, normalized_start->anchor_id());
+  EXPECT_EQ(0, normalized_start->text_offset());
+
+  EXPECT_TRUE(normalized_end->IsTextPosition());
+  EXPECT_TRUE(normalized_end->AtStartOfAnchor());
+  EXPECT_EQ(5, normalized_end->anchor_id());
+  EXPECT_EQ(0, normalized_end->text_offset());
 }
 
 TEST_F(AXPlatformNodeTextRangeProviderTest,
@@ -5586,13 +5638,24 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
       /*end_anchor_id=*/7, /*end_offset=*/0,
       /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
 
-  NormalizeTextRange(range.Get());
-  EXPECT_EQ(*GetStart(range.Get()), *GetEnd(range.Get()));
+  auto original_start = GetStart(range.Get())->Clone();
+  auto original_end = GetEnd(range.Get())->Clone();
 
-  EXPECT_EQ(true, GetStart(range.Get())->AtStartOfAnchor());
-  EXPECT_EQ(true, GetEnd(range.Get())->AtStartOfAnchor());
-  EXPECT_EQ(7, GetStart(range.Get())->anchor_id());
-  EXPECT_EQ(7, GetEnd(range.Get())->anchor_id());
+  AXNodePosition::AXPositionInstance normalized_start =
+      GetStart(range.Get())->Clone();
+  AXNodePosition::AXPositionInstance normalized_end =
+      GetEnd(range.Get())->Clone();
+  NormalizeTextRange(range.Get(), normalized_start, normalized_end);
+  // Verify that the original range was not changed by normalization.
+  ExpectPositionsEqual(original_start, GetStart(range.Get()));
+  ExpectPositionsEqual(original_end, GetEnd(range.Get()));
+
+  EXPECT_EQ(*normalized_start, *normalized_start);
+
+  EXPECT_TRUE(normalized_start->AtStartOfAnchor());
+  EXPECT_TRUE(normalized_end->AtStartOfAnchor());
+  EXPECT_EQ(7, normalized_start->anchor_id());
+  EXPECT_EQ(7, normalized_end->anchor_id());
 }
 
 TEST_F(AXPlatformNodeTextRangeProviderTest, TestValidateStartAndEnd) {

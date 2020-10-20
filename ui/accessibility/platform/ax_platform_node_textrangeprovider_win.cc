@@ -183,7 +183,11 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ExpandToEnclosingUnit(
 HRESULT AXPlatformNodeTextRangeProviderWin::ExpandToEnclosingUnitImpl(
     TextUnit unit) {
   UIA_VALIDATE_TEXTRANGEPROVIDER_CALL();
-  NormalizeTextRange();
+  AXPositionInstance normalized_start = start()->Clone();
+  AXPositionInstance normalized_end = end()->Clone();
+  NormalizeTextRange(normalized_start, normalized_end);
+  SetStart(std::move(normalized_start));
+  SetEnd(std::move(normalized_end));
 
   // Determine if start is on a boundary of the specified TextUnit, if it is
   // not, move backwards until it is. Move the end forwards from start until it
@@ -214,7 +218,11 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ExpandToEnclosingUnitImpl(
         DCHECK(!end()->IsNullPosition());
       }
 
-      NormalizeTextRange();
+      AXPositionInstance normalized_start = start()->Clone();
+      AXPositionInstance normalized_end = end()->Clone();
+      NormalizeTextRange(normalized_start, normalized_end);
+      SetStart(std::move(normalized_start));
+      SetEnd(std::move(normalized_end));
       break;
     }
     case TextUnit_Format:
@@ -324,14 +332,18 @@ HRESULT AXPlatformNodeTextRangeProviderWin::FindAttribute(
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_FINDATTRIBUTE);
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_FINDATTRIBUTE);
   UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_OUT(result);
-  NormalizeTextRange();
+  // Use a cloned range so that FindAttribute does not introduce side-effects
+  // while normalizing the original range.
+  AXPositionInstance normalized_start = start()->Clone();
+  AXPositionInstance normalized_end = end()->Clone();
+  NormalizeTextRange(normalized_start, normalized_end);
 
   *result = nullptr;
   AXPositionInstance matched_range_start = nullptr;
   AXPositionInstance matched_range_end = nullptr;
 
   std::vector<AXNodeRange> anchors;
-  AXNodeRange range(start()->Clone(), end()->Clone());
+  AXNodeRange range(normalized_start->Clone(), normalized_end->Clone());
   for (AXNodeRange leaf_text_range : range)
     anchors.emplace_back(std::move(leaf_text_range));
 
@@ -477,16 +489,20 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetAttributeValue(
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_GETATTRIBUTEVALUE);
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_GETATTRIBUTEVALUE);
   UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_OUT(value);
-  NormalizeTextRange();
+  // Use a cloned range so that GetAttributeValue does not introduce
+  // side-effects while normalizing the original range.
+  AXPositionInstance normalized_start = start()->Clone();
+  AXPositionInstance normalized_end = end()->Clone();
+  NormalizeTextRange(normalized_start, normalized_end);
 
   base::win::VariantVector attribute_value;
 
   // The range is inclusive, so advance our endpoint to the next position
-  const auto end_leaf_text_position = end()->AsLeafTextPosition();
+  const auto end_leaf_text_position = normalized_end->AsLeafTextPosition();
   auto end = end_leaf_text_position->CreateNextAnchorPosition();
 
   // Iterate over anchor positions
-  for (auto it = start()->AsLeafTextPosition();
+  for (auto it = normalized_start->AsLeafTextPosition();
        it->anchor_id() != end->anchor_id() || it->tree_id() != end->tree_id();
        it = it->CreateNextAnchorPosition()) {
     // If the iterator creates a null position, then it has likely overrun the
@@ -957,7 +973,6 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetChildren(SAFEARRAY** children) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_GETCHILDREN);
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_GETCHILDREN);
   UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_OUT(children);
-
   std::vector<gfx::NativeViewAccessible> descendants;
 
   const AXNode* common_anchor = start()->LowestCommonAnchor(*end());
@@ -1196,75 +1211,81 @@ AXPlatformNodeTextRangeProviderWin::MoveEndpointByUnitHelper(
   return current_endpoint;
 }
 
-void AXPlatformNodeTextRangeProviderWin::NormalizeTextRange() {
-  if (!start()->IsValid() || !end()->IsValid())
+// TODO(vicfei): Make static.
+void AXPlatformNodeTextRangeProviderWin::NormalizeTextRange(
+    AXPositionInstance& start,
+    AXPositionInstance& end) {
+  if (!start->IsValid() || !end->IsValid())
     return;
 
   // If either endpoint is anchored to an ignored node,
   // first snap them both to be unignored positions.
-  NormalizeAsUnignoredTextRange();
+  NormalizeAsUnignoredTextRange(start, end);
 
   // When carets are visible or selections are occurring, the precise state of
   // the TextPattern must be preserved so that the UIA client can handle
   // scenarios such as determining which characters were deleted. So
   // normalization must be bypassed.
-  if (HasCaretOrSelectionInPlainTextField(start()) ||
-      HasCaretOrSelectionInPlainTextField(end())) {
+  if (HasCaretOrSelectionInPlainTextField(start) ||
+      HasCaretOrSelectionInPlainTextField(end)) {
     return;
   }
 
   AXPositionInstance normalized_start =
-      start()->AsLeafTextPositionBeforeCharacter();
+      start->AsLeafTextPositionBeforeCharacter();
 
   // For a degenerate range, the |end_| will always be the same as the
   // normalized start, so there's no need to compute the normalized end.
   // However, a degenerate range might go undetected if there's an ignored node
   // (or many) between the two endpoints. For this reason, we need to
   // compare the |end_| with both the |start_| and the |normalized_start|.
-  bool is_degenerate = *start() == *end() || *normalized_start == *end();
+  bool is_degenerate = *start == *end || *normalized_start == *end;
   AXPositionInstance normalized_end =
       is_degenerate ? normalized_start->Clone()
-                    : end()->AsLeafTextPositionAfterCharacter();
+                    : end->AsLeafTextPositionAfterCharacter();
 
   if (!normalized_start->IsNullPosition() &&
       !normalized_end->IsNullPosition()) {
-    SetStart(std::move(normalized_start));
-    SetEnd(std::move(normalized_end));
+    start = std::move(normalized_start);
+    end = std::move(normalized_end);
   }
 
-  DCHECK_LE(*start(), *end());
+  DCHECK_LE(*start, *end);
 }
 
-void AXPlatformNodeTextRangeProviderWin::NormalizeAsUnignoredTextRange() {
-  if (!start()->IsValid() || !end()->IsValid())
+// static
+void AXPlatformNodeTextRangeProviderWin::NormalizeAsUnignoredTextRange(
+    AXPositionInstance& start,
+    AXPositionInstance& end) {
+  if (!start->IsValid() || !end->IsValid())
     return;
 
-  if (!start()->IsIgnored() && !end()->IsIgnored())
+  if (!start->IsIgnored() && !end->IsIgnored())
     return;
 
-  if (start()->IsIgnored()) {
-    AXPositionInstance normalized_start = start()->AsUnignoredPosition(
-        AXPositionAdjustmentBehavior::kMoveForward);
+  if (start->IsIgnored()) {
+    AXPositionInstance normalized_start =
+        start->AsUnignoredPosition(AXPositionAdjustmentBehavior::kMoveForward);
     if (normalized_start->IsNullPosition()) {
-      normalized_start = start()->AsUnignoredPosition(
+      normalized_start = start->AsUnignoredPosition(
           AXPositionAdjustmentBehavior::kMoveBackward);
     }
     if (!normalized_start->IsNullPosition())
-      SetStart(std::move(normalized_start));
+      start = std::move(normalized_start);
   }
 
-  if (end()->IsIgnored()) {
+  if (end->IsIgnored()) {
     AXPositionInstance normalized_end =
-        end()->AsUnignoredPosition(AXPositionAdjustmentBehavior::kMoveForward);
+        end->AsUnignoredPosition(AXPositionAdjustmentBehavior::kMoveForward);
     if (normalized_end->IsNullPosition()) {
-      normalized_end = end()->AsUnignoredPosition(
-          AXPositionAdjustmentBehavior::kMoveBackward);
+      normalized_end =
+          end->AsUnignoredPosition(AXPositionAdjustmentBehavior::kMoveBackward);
     }
     if (!normalized_end->IsNullPosition())
-      SetEnd(std::move(normalized_end));
+      end = std::move(normalized_end);
   }
 
-  DCHECK_LE(*start(), *end());
+  DCHECK_LE(*start, *end);
 }
 
 AXPlatformNodeDelegate* AXPlatformNodeTextRangeProviderWin::GetRootDelegate(

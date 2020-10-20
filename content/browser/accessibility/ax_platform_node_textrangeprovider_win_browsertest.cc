@@ -2719,4 +2719,44 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       GetAttributeValueNormalizesClonedRange) {
+  LoadInitialAccessibilityTreeFromHtml(
+      R"HTML(<!DOCTYPE html>
+      <html>
+        <body>
+          <p>Text before list</p>
+          <div role="listbox">
+            <div role="option"><i aria-hidden="true">i</i>One</div>
+          </div>
+        </body>
+      </html>)HTML");
+
+  BrowserAccessibility* text_before_list =
+      FindNode(ax::mojom::Role::kStaticText, "Text before list");
+  ASSERT_NE(nullptr, text_before_list);
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(*text_before_list, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L"\nOne",
+                  /*expected_count*/ 1);
+
+  // GetAttributeValue calls NormalizeTextRange but should not modify the
+  // internal endpoints. However, the value returned by GetAttributeValue should
+  // still be computed from a normalized range.
+  base::win::ScopedVariant value;
+  EXPECT_HRESULT_SUCCEEDED(text_range_provider->GetAttributeValue(
+      UIA_IsItalicAttributeId, value.Receive()));
+  EXPECT_EQ(value.type(), VT_BOOL);
+  EXPECT_EQ(V_BOOL(value.ptr()), 0);
+
+  // The text should be the same as before since the internal endpoints didn't
+  // move.
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"\nOne");
+}
+
 }  // namespace content
