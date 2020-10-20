@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/payments/payment_response.h"
 
+#include "base/logging.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_validation_errors.h"
@@ -112,6 +113,8 @@ ScriptValue PaymentResponse::details(ScriptState* script_state) const {
 ScriptPromise PaymentResponse::complete(ScriptState* script_state,
                                         const String& result,
                                         ExceptionState& exception_state) {
+  VLOG(2) << "Renderer: PaymentRequest (" << requestId().Utf8()
+          << "): complete(" << result << ")";
   PaymentStateResolver::PaymentComplete converted_result =
       PaymentStateResolver::PaymentComplete::kUnknown;
   if (result == "success")
@@ -126,6 +129,7 @@ ScriptPromise PaymentResponse::retry(
     ScriptState* script_state,
     const PaymentValidationErrors* error_fields,
     ExceptionState& exception_state) {
+  VLOG(2) << "Renderer: PaymentRequest (" << requestId().Utf8() << "): retry()";
   return payment_state_resolver_->Retry(script_state, error_fields,
                                         exception_state);
 }

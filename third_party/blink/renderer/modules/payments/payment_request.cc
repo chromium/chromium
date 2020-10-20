@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/stl_util.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -831,6 +832,8 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
     return ScriptPromise();
   }
 
+  VLOG(2) << "Renderer: PaymentRequest (" << id_.Utf8() << "): show()";
+
   UseCounter::Count(GetExecutionContext(), WebFeature::kPaymentRequestShow);
 
   is_waiting_for_show_promise_to_resolve_ = !details_promise.IsEmpty();
@@ -876,6 +879,8 @@ ScriptPromise PaymentRequest::abort(ScriptState* script_state,
     return ScriptPromise();
   }
 
+  VLOG(2) << "Renderer: PaymentRequest (" << id_.Utf8() << "): abort()";
+
   abort_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   payment_provider_->Abort();
   return abort_resolver_->Promise();
@@ -894,6 +899,9 @@ ScriptPromise PaymentRequest::canMakePayment(ScriptState* script_state,
                                       "Cannot query payment request");
     return ScriptPromise();
   }
+
+  VLOG(2) << "Renderer: PaymentRequest (" << id_.Utf8()
+          << "): canMakePayment()";
 
   payment_provider_->CanMakePayment();
 
@@ -916,6 +924,9 @@ ScriptPromise PaymentRequest::hasEnrolledInstrument(
                                       "Cannot query payment request");
     return ScriptPromise();
   }
+
+  VLOG(2) << "Renderer: PaymentRequest (" << id_.Utf8()
+          << "): hasEnrolledInstrument()";
 
   payment_provider_->HasEnrolledInstrument();
 
@@ -1221,6 +1232,8 @@ PaymentRequest::PaymentRequest(
       payments::mojom::blink::PaymentDetails::New();
   validated_details->id = id_ =
       details->hasId() ? details->id() : WTF::CreateCanonicalUUIDString();
+
+  VLOG(2) << "Renderer: New PaymentRequest (" << id_.Utf8() << ")";
 
   // This flag is set to true by ValidateAndConvertPaymentMethodData() if this
   // request is eligible for the Skip-to-GPay experimental flow and the GPay
