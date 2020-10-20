@@ -196,10 +196,11 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
   std::unique_ptr<drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>
       service_factory_for_test_;
 
-  std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   std::unique_ptr<arc::FakeFileSystemInstance> arc_file_system_instance_;
 
+  std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   std::unique_ptr<MockFileTasksObserver> file_tasks_observer_;
+  SelectFileDialogExtensionTestFactory* select_factory_;  // Not owned.
 
   base::HistogramTester histograms_;
   base::UserActionTester user_actions_;
@@ -208,9 +209,6 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
   std::map<content::DevToolsAgentHost*, std::unique_ptr<DevToolsListener>>
       devtools_agent_;
   uint32_t process_id_ = 0;
-
-  // Not owned.
-  SelectFileDialogExtensionTestFactory* select_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(FileManagerBrowserTestBase);
 };
