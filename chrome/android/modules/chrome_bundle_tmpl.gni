@@ -84,6 +84,9 @@ template("chrome_bundle") {
       if (defined(invoker.chrome_deps)) {
         java_deps += invoker.chrome_deps
       }
+      if (defined(invoker.chrome_jar_excluded_patterns)) {
+        jar_excluded_patterns = invoker.chrome_jar_excluded_patterns
+      }
 
       # Native code for all DFMs is moved to the base module's library, and paks
       # for DFMs will use the value of load_native_on_get_impl from the module

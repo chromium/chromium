@@ -43,10 +43,6 @@ if (android_channel != "default") {
   # name will cause the comparison to output many unnecessary differences.
   # See https://source.chromium.org/chromium/chromium/src/+/master:chrome/android/java/README.md
   _default_package += "." + android_channel
-} else if (enable_chrome_module) {
-  # TODO(crbug.com/1126301): There are issues with the APK package name matching
-  # the resource package when //chrome resources are in a DFM.
-  _default_package += ".module"
 }
 
 declare_args() {
@@ -2720,7 +2716,9 @@ instrumentation_test_runner("monochrome_public_bundle_smoke_test") {
   android_test_apk = ":chrome_bundle_smoke_test_apk"
   android_test_apk_name = "ChromeBundleSmokeTest"
   never_incremental = true
-  modules = [ "test_dummy" ]
+  if (!enable_chrome_module) {
+    modules = [ "test_dummy" ]
+  }
   extra_args = _bundle_smoke_test_extra_args
 }
 
@@ -2730,7 +2728,13 @@ instrumentation_test_runner(
   android_test_apk = ":chrome_bundle_smoke_test_apk"
   android_test_apk_name = "ChromeBundleSmokeTest"
   never_incremental = true
-  fake_modules = [ "test_dummy" ]
+
+  # TODO(crbug.com/1126301): This is identical to
+  # monochrome_public_bundle_smoke_test if enable_chrome_module is enabled, so
+  # should be removed if enable_chrome_module is ever enabled by default.
+  if (!enable_chrome_module) {
+    fake_modules = [ "test_dummy" ]
+  }
   extra_args =
       _bundle_smoke_test_extra_args + _bundle_fake_modules_smoke_test_extra_args
 }
@@ -2757,7 +2761,9 @@ instrumentation_test_runner("trichrome_chrome_bundle_smoke_test") {
   android_test_apk = ":chrome_bundle_smoke_test_apk"
   android_test_apk_name = "ChromeBundleSmokeTest"
   never_incremental = true
-  modules = [ "test_dummy" ]
+  if (!enable_chrome_module) {
+    modules = [ "test_dummy" ]
+  }
   additional_apks = [ "//chrome/android:trichrome_library_apk" ]
   extra_args = _bundle_smoke_test_extra_args
 }
@@ -2767,7 +2773,13 @@ instrumentation_test_runner("trichrome_chrome_bundle_fake_modules_smoke_test") {
   android_test_apk = ":chrome_bundle_smoke_test_apk"
   android_test_apk_name = "ChromeBundleSmokeTest"
   never_incremental = true
-  fake_modules = [ "test_dummy" ]
+
+  # TODO(crbug.com/1126301): This is identical to
+  # trichrome_chrome_bundle_smoke_test if enable_chrome_module is enabled, so
+  # should be removed if enable_chrome_module is ever enabled by default.
+  if (!enable_chrome_module) {
+    fake_modules = [ "test_dummy" ]
+  }
   additional_apks = [ "//chrome/android:trichrome_library_apk" ]
   extra_args =
       _bundle_smoke_test_extra_args + _bundle_fake_modules_smoke_test_extra_args
@@ -2921,6 +2933,15 @@ template("monochrome_or_trichrome_public_bundle_tmpl") {
       chrome_deps = [ "//chrome/android:app_hooks_java" ]
       if (!_is_trichrome) {
         chrome_deps += [ "//chrome/android:monochrome_java" ]
+      }
+
+      # These will be defined in the base module, and cause conflicts when the
+      # APK package name matches the resource package name from :chrome_java.
+      if (chrome_public_manifest_package == "org.chromium.chrome") {
+        chrome_jar_excluded_patterns = [
+          "org/chromium/chrome/R\$*.class",
+          "org/chromium/chrome/R.class",
+        ]
       }
     }
 

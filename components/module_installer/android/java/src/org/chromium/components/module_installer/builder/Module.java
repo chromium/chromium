@@ -7,6 +7,7 @@ package org.chromium.components.module_installer.builder;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BundleUtils;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.MainDex;
@@ -173,7 +174,10 @@ public class Module<T> {
      */
     private static Object instantiateReflectively(String className) {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            return Class.forName(className).newInstance();
+            return ContextUtils.getApplicationContext()
+                    .getClassLoader()
+                    .loadClass(className)
+                    .newInstance();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

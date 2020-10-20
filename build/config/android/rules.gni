@@ -2769,6 +2769,7 @@ if (enable_java_templates) {
                                "chromium_code",
                                "enable_jetify",
                                "jacoco_never_instrument",
+                               "jar_excluded_patterns",
                                "javac_args",
                                "native_lib_placeholders",
                                "processor_args_javac",
@@ -2781,10 +2782,14 @@ if (enable_java_templates) {
                              ])
       deps = _deps
       if (_uses_static_library_synchronized_proguard) {
+        if (!defined(jar_excluded_patterns)) {
+          jar_excluded_patterns = []
+        }
+
         # The static library will provide all R.java files, but we still need to
         # make the base module R.java files available at compile time since DFM
         # R.java classes extend base module classes.
-        jar_excluded_patterns = [
+        jar_excluded_patterns += [
           "*/R.class",
           "*/R\$*.class",
         ]
@@ -3615,6 +3620,7 @@ if (enable_java_templates) {
                                "input_jars_paths",
                                "is_base_module",
                                "jacoco_never_instrument",
+                               "jar_excluded_patterns",
                                "javac_args",
                                "jni_registration_header",
                                "jni_sources_exclusions",

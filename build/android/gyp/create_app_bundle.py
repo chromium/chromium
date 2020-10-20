@@ -438,9 +438,23 @@ def _MaybeCheckServicesPresentInBase(bundle_path, module_zips):
       classes.update('%s.%s' % (name, c)
                      for c in package_dict['classes'].keys())
 
+  ignored_service_names = {
+      # Defined in the chime DFM manifest, but unused.
+      # org.chromium.chrome.browser.chime.ScheduledTaskService is used instead.
+      ("com.google.android.libraries.notifications.entrypoints.scheduled."
+       "ScheduledTaskService"),
+
+      # Defined in the chime DFM manifest, only used pre-O (where isolated
+      # splits are not supported).
+      ("com.google.android.libraries.notifications.executor.impl.basic."
+       "ChimeExecutorApiService"),
+  }
+
   # Ensure all services are present in base module.
   for service_name in service_names:
     if service_name not in classes:
+      if service_name in ignored_service_names:
+        continue
       raise Exception("Service %s should be present in the base module's dex."
                       " See b/169196314 for more details." % service_name)
 
