@@ -29274,9 +29274,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3399" label="MediaRecorder_MimeType"/>
   <int value="3400" label="MediaRecorder_VideoBitsPerSecond"/>
   <int value="3401" label="MediaRecorder_AudioBitsPerSecond"/>
-  <int value="3402" label="BluetoothRemoteGATTCharacteristic_Uuid"/>
-  <int value="3403" label="BluetoothRemoteGATTDescriptor_Uuid"/>
-  <int value="3404" label="BluetoothRemoteGATTService_Uuid"/>
+  <int value="3402" label="OBSOLETE_BluetoothRemoteGATTCharacteristic_Uuid"/>
+  <int value="3403" label="OBSOLETE_BluetoothRemoteGATTDescriptor_Uuid"/>
+  <int value="3404" label="OBSOLETE_BluetoothRemoteGATTService_Uuid"/>
   <int value="3405" label="GPUAdapter_Name"/>
   <int value="3406" label="WindowScreenInternal"/>
   <int value="3407" label="WindowScreenPrimary"/>

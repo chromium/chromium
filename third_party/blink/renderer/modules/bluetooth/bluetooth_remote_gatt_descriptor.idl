@@ -12,7 +12,7 @@
     SecureContext
 ] interface BluetoothRemoteGATTDescriptor  {
     [SameObject] readonly attribute BluetoothRemoteGATTCharacteristic characteristic;
-    [HighEntropy=Direct, MeasureAs=BluetoothRemoteGATTDescriptor_Uuid] readonly attribute UUID uuid;
+    readonly attribute UUID uuid;
     readonly attribute DataView? value;
     [CallWith=ScriptState, RaisesException, MeasureAs=WebBluetoothRemoteDescriptorReadValue] Promise<DataView> readValue();
     [CallWith=ScriptState, RaisesException, MeasureAs=WebBluetoothRemoteDescriptorWriteValue] Promise<void> writeValue(BufferSource value);
