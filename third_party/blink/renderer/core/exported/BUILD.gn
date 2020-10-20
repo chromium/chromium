@@ -35,6 +35,7 @@ blink_core_sources("exported") {
     "web_frame_content_dumper.cc",
     "web_frame_serializer.cc",
     "web_heap.cc",
+    "web_history_entry.cc",
     "web_history_item.cc",
     "web_hit_test_result.cc",
     "web_image.cc",

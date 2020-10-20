@@ -324,6 +324,7 @@ source_set("blink_headers") {
     "web/web_frame_widget.h",
     "web/web_heap.h",
     "web/web_history_commit_type.h",
+    "web/web_history_entry.h",
     "web/web_history_item.h",
     "web/web_hit_test_result.h",
     "web/web_image.h",

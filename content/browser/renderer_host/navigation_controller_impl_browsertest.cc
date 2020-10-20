@@ -5754,8 +5754,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadOriginalRequest) {
 //
 // It also prevents regression for an same document navigation renderer kill
 // when going back after an in-page navigation in the main frame is followed by
-// an auto subframe navigation, due to a bug in HistoryEntry::CloneAndReplace.
-// See https://crbug.com/612713.
+// an auto subframe navigation, due to a bug in
+// WebHistoryEntry::CloneAndReplace. See https://crbug.com/612713.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        BackToAboutBlankIframe) {
   GURL original_url(embedded_test_server()->GetURL(

@@ -95,8 +95,6 @@
 #include "content/renderer/effective_connection_type_helper.h"
 #include "content/renderer/frame_owner_properties_converter.h"
 #include "content/renderer/gpu_benchmarking_extension.h"
-#include "content/renderer/history_entry.h"
-#include "content/renderer/history_serialization.h"
 #include "content/renderer/impression_conversions.h"
 #include "content/renderer/internal_document_state_data.h"
 #include "content/renderer/loader/navigation_body_loader.h"
@@ -198,6 +196,7 @@
 #include "third_party/blink/public/web/web_frame_owner_properties.h"
 #include "third_party/blink/public/web/web_frame_serializer.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
+#include "third_party/blink/public/web/web_history_entry.h"
 #include "third_party/blink/public/web/web_input_method_controller.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_navigation_control.h"
@@ -3512,7 +3511,7 @@ void RenderFrameImpl::CommitFailedNavigation(
   bool replace = is_reload_or_history ||
                  common_params->url == GetLoadingUrl() ||
                  common_params->should_replace_current_entry;
-  std::unique_ptr<HistoryEntry> history_entry;
+  std::unique_ptr<blink::WebHistoryEntry> history_entry;
   if (commit_params->page_state.IsValid())
     history_entry = PageStateToHistoryEntry(commit_params->page_state);
 
@@ -5433,7 +5432,7 @@ blink::mojom::CommitResult RenderFrameImpl::PrepareForHistoryNavigationCommit(
          navigation_type == mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT ||
          navigation_type == mojom::NavigationType::RESTORE ||
          navigation_type == mojom::NavigationType::RESTORE_WITH_POST);
-  std::unique_ptr<HistoryEntry> entry =
+  std::unique_ptr<blink::WebHistoryEntry> entry =
       PageStateToHistoryEntry(commit_params.page_state);
   if (!entry)
     return blink::mojom::CommitResult::Aborted;

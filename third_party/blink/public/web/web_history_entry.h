@@ -32,62 +32,68 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef CONTENT_RENDERER_HISTORY_ENTRY_H_
-#define CONTENT_RENDERER_HISTORY_ENTRY_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_HISTORY_ENTRY_H_
+#define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_HISTORY_ENTRY_H_
 
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "content/common/content_export.h"
-#include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_history_item.h"
 
-namespace content {
+namespace blink {
 
-class CONTENT_EXPORT HistoryEntry {
+class PageState;
+
+class BLINK_EXPORT WebHistoryEntry {
  public:
-  class CONTENT_EXPORT HistoryNode {
+  class BLINK_EXPORT HistoryNode {
    public:
-    HistoryNode(const base::WeakPtr<HistoryEntry>& entry,
-                const blink::WebHistoryItem& item);
+    HistoryNode(const base::WeakPtr<WebHistoryEntry>& entry,
+                const WebHistoryItem& item);
+    HistoryNode(const HistoryNode&) = delete;
+    HistoryNode& operator=(const HistoryNode&) = delete;
     ~HistoryNode();
 
-    HistoryNode* AddChild(const blink::WebHistoryItem& item);
+    HistoryNode* AddChild(const WebHistoryItem& item);
     HistoryNode* AddChild();
-    blink::WebHistoryItem& item() { return item_; }
-    void set_item(const blink::WebHistoryItem& item);
-    std::vector<HistoryNode*> children() const;
+    WebHistoryItem& item() { return item_; }
+    void set_item(const WebHistoryItem& item);
+    WebVector<HistoryNode*> children() const;
     void RemoveChildren();
 
    private:
-    // When a HistoryEntry is destroyed, it takes all its HistoryNodes with it.
-    // Use a WeakPtr to ensure that HistoryNodes don't try to illegally access
-    // a dying HistoryEntry, or do unnecessary work when the whole entry is
-    // being destroyed.
-    base::WeakPtr<HistoryEntry> entry_;
-    std::vector<std::unique_ptr<HistoryNode>> children_;
-    blink::WebHistoryItem item_;
-
-    DISALLOW_COPY_AND_ASSIGN(HistoryNode);
+    // When a WebHistoryEntry is destroyed, it takes all its HistoryNodes with
+    // it. Use a WeakPtr to ensure that HistoryNodes don't try to illegally
+    // access a dying WebHistoryEntry, or do unnecessary work when the whole
+    // entry is being destroyed.
+    base::WeakPtr<WebHistoryEntry> entry_;
+    WebVector<std::unique_ptr<HistoryNode>> children_;
+    WebHistoryItem item_;
   };
 
-  HistoryEntry(const blink::WebHistoryItem& root);
-  HistoryEntry();
-  ~HistoryEntry();
+  explicit WebHistoryEntry(const WebHistoryItem& root);
+  WebHistoryEntry();
+  WebHistoryEntry(const WebHistoryEntry&) = delete;
+  WebHistoryEntry& operator=(const WebHistoryEntry&) = delete;
+  ~WebHistoryEntry();
 
-  const blink::WebHistoryItem& root() const { return root_->item(); }
+  const WebHistoryItem& root() const { return root_->item(); }
   HistoryNode* root_history_node() const { return root_.get(); }
 
  private:
   std::unique_ptr<HistoryNode> root_;
 
-  base::WeakPtrFactory<HistoryEntry> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryEntry);
+  base::WeakPtrFactory<WebHistoryEntry> weak_ptr_factory_{this};
 };
 
-}  // namespace content
+BLINK_EXPORT PageState HistoryEntryToPageState(WebHistoryEntry* entry);
+BLINK_EXPORT PageState SingleHistoryItemToPageState(const WebHistoryItem& item);
+BLINK_EXPORT std::unique_ptr<WebHistoryEntry> PageStateToHistoryEntry(
+    const PageState& state);
 
-#endif  // CONTENT_RENDERER_HISTORY_ENTRY_H_
+}  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_HISTORY_ENTRY_H_
