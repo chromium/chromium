@@ -348,6 +348,8 @@ Still reading?
     <ignore regexp="The resource `R.string.iph_ntp_with_feed_accessibility_text` appears to be unused"/>
     <ignore regexp="The resource `R.string.iph_tab_switcher_text` appears to be unused"/>
     <ignore regexp="The resource `R.string.iph_tab_switcher_accessibility_text` appears to be unused"/>
+    <!-- 1: TODO(crbug.com/1137985) resource is used in downstream image editor. -->
+    <ignore regexp="The resource `R.string.clear` appears to be unused"/>
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
   <issue id="UsableSpace">
