@@ -74,6 +74,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   bool using_dc_layers_ = false;
   // Number of frames since the last time direct composition layers were used.
   int frames_since_using_dc_layers_ = 0;
+
   // TODO(weiliangc): Eventually fold DCLayerOverlayProcessor into this class.
   std::unique_ptr<DCLayerOverlayProcessor> dc_layer_overlay_processor_;
 

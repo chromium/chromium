@@ -720,6 +720,7 @@ bool Display::DrawAndSwap(base::TimeTicks expected_display_time) {
     // skip the draw and so that the GL swap won't stretch the output.
     last_render_pass.output_rect.set_size(current_surface_size);
     last_render_pass.damage_rect = last_render_pass.output_rect;
+    frame.surface_damage_rect_list_.push_back(last_render_pass.damage_rect);
   }
   surface_size = last_render_pass.output_rect.size();
   have_damage = !last_render_pass.damage_rect.size().IsEmpty();

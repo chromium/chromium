@@ -140,10 +140,20 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
                           gfx::Rect* this_frame_underlay_rect,
                           DCLayerOverlay* dc_layer);
 
+  void UpdateRootDamageRect(const gfx::RectF& display_rect,
+                            gfx::Rect* damage_rect);
+
+  void RemoveOverlayDamageRect(const QuadList::Iterator& it,
+                               const gfx::Rect& quad_rectangle,
+                               const gfx::Rect& occluding_damage_rect,
+                               gfx::Rect* damage_rect);
+
   void InsertDebugBorderDrawQuad(const DCLayerOverlayList* dc_layer_overlays,
                                  AggregatedRenderPass* render_pass,
                                  const gfx::RectF& display_rect,
                                  gfx::Rect* damage_rect);
+  bool IsPreviousFrameUnderlayRect(const gfx::Rect& quad_rectangle,
+                                   size_t index);
 
   bool has_overlay_support_;
   const bool use_overlay_damage_list_;
@@ -161,6 +171,18 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
   gfx::Rect current_frame_overlay_rect_union_;
   int previous_frame_processed_overlay_count_ = 0;
   int current_frame_processed_overlay_count_ = 0;
+
+  struct OverlayRect {
+    gfx::Rect rect;
+    bool is_overlay;  // If false, it's an underlay.
+    bool operator==(const OverlayRect& b) {
+      return rect == b.rect && is_overlay == b.is_overlay;
+    }
+    bool operator!=(const OverlayRect& b) { return !(*this == b); }
+  };
+  std::vector<OverlayRect> previous_frame_overlay_rects_;
+  std::vector<OverlayRect> current_frame_overlay_rects_;
+  SurfaceDamageRectList* surface_damage_rect_list_;
 
   scoped_refptr<base::SingleThreadTaskRunner> viz_task_runner_;
 
