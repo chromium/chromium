@@ -65,14 +65,19 @@ class SafeBrowsingService {
 
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
 
+  // May be called on the UI or IO thread. The instance returned should be
+  // *accessed* only on the IO thread.
+  safe_browsing::RemoteSafeBrowsingDatabaseManager* GetSafeBrowsingDBManager();
+
  private:
   SafeBrowsingUIManager* GetSafeBrowsingUIManager();
-  safe_browsing::RemoteSafeBrowsingDatabaseManager* GetSafeBrowsingDBManager();
 
   // Executed on IO thread
   scoped_refptr<safe_browsing::UrlCheckerDelegate>
   GetSafeBrowsingUrlCheckerDelegate();
 
+  // Safe to call multiple times; invocations after the first will be no-ops.
+  void StartSafeBrowsingDBManagerOnIOThread();
   void CreateSafeBrowsingUIManager();
   void CreateAndStartSafeBrowsingDBManager();
   scoped_refptr<network::SharedURLLoaderFactory>
@@ -89,7 +94,9 @@ class SafeBrowsingService {
   // is used by SimpleURLLoader for Safe Browsing requests.
   std::unique_ptr<safe_browsing::SafeBrowsingNetworkContext> network_context_;
 
-  // Accessed on IO thread only.
+  // May be created on UI thread and have references obtained to it on that
+  // thread for later passing to the IO thread, but should be *accessed* only
+  // on the IO thread.
   scoped_refptr<safe_browsing::RemoteSafeBrowsingDatabaseManager>
       safe_browsing_db_manager_;
 
@@ -104,6 +111,10 @@ class SafeBrowsingService {
       safe_browsing_api_handler_;
 
   std::string user_agent_;
+
+  // Whether |safe_browsing_db_manager_| has been started. Accessed only on the
+  // IO thread.
+  bool started_db_manager_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(SafeBrowsingService);
 };
