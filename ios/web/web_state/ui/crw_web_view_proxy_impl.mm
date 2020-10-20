@@ -175,10 +175,6 @@ UIView* GetFirstResponderSubview(UIView* view) {
   return [_contentView addSubview:view];
 }
 
-- (BOOL)hasSearchableTextContent {
-  return _contentView != nil && [_webController contentIsHTML];
-}
-
 - (UIView*)keyboardAccessory {
   if (!_contentView)
     return nil;

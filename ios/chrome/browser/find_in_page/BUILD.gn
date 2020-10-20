@@ -14,36 +14,22 @@ source_set("find_in_page") {
     "find_in_page_response_delegate.h",
     "find_tab_helper.h",
     "find_tab_helper.mm",
-    "js_findinpage_manager.h",
-    "js_findinpage_manager.mm",
   ]
   deps = [
-    ":injected_js",
     "//base",
     "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/browser/web",
     "//ios/web/public",
-    "//ios/web/public/deprecated",
     "//ios/web/public/find_in_page",
     "//services/metrics/public/cpp:ukm_builders",
   ]
   frameworks = [ "CoreGraphics.framework" ]
 }
 
-# TODO(crbug.com/487804): use js_compile_checked instead once the errors have
-# been fixed.
-js_compile_unchecked("injected_js") {
-  sources = [ "resources/find_in_page.js" ]
-}
-
 source_set("unit_tests") {
   testonly = true
   configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "find_in_page_controller_unittest.mm",
-    "find_in_page_js_unittest.mm",
-    "js_findinpage_manager_unittest.mm",
-  ]
+  sources = [ "find_in_page_controller_unittest.mm" ]
   deps = [
     ":find_in_page",
     "//base",
@@ -53,9 +39,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/web:test_support",
     "//ios/chrome/browser/web:web_internal",
-    "//ios/web/public/deprecated",
-    "//ios/web/public/test",
-    "//ios/web/public/test/fakes",
     "//testing/gtest",
   ]
 }

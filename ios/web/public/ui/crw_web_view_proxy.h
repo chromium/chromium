@@ -63,10 +63,6 @@
 // Wrapper around the addSubview method of the webview.
 - (void)addSubview:(UIView*)view;
 
-// Returns YES if it makes sense to search for text right now.
-// TODO(crbug.com/949651): Remove once JSFindInPageManager is removed.
-- (BOOL)hasSearchableTextContent;
-
 // Returns the currently visible keyboard accessory, or nil.
 - (UIView*)keyboardAccessory;
 
