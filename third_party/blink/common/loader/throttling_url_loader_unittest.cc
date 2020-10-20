@@ -1898,6 +1898,51 @@ TEST_F(ThrottlingURLLoaderTest, RestartWithURLResetAndFlags) {
   EXPECT_EQ(throttle_->observed_response_url(), request_url);
 }
 
+// Ensure that RestartWithModifiedHeadersNow executes and internal redirect and
+// actually modifies the headers.
+TEST_F(ThrottlingURLLoaderTest, RestartWithModifiedHeadersNow) {
+  base::RunLoop run_loop1;
+  base::RunLoop run_loop2;
+
+  // Check that the initial loader uses the default load flags (0).
+  factory_.set_on_create_loader_and_start(base::BindRepeating(
+      [](const base::RepeatingClosure& quit_closure,
+         const network::ResourceRequest& url_request) {
+        EXPECT_FALSE(url_request.headers.HasHeader("X-Foo"));
+        quit_closure.Run();
+      },
+      run_loop1.QuitClosure()));
+
+  // Restart the request when processing BeforeWillProcessResponse(), using
+  // different load flags (1), and an URL reset.
+  throttle_->set_before_will_process_response_callback(base::BindRepeating(
+      [](blink::URLLoaderThrottle::Delegate* delegate, bool* defer) {
+        net::HttpRequestHeaders modified_headers;
+        modified_headers.SetHeader("X-Foo", "bar");
+        delegate->RestartWithModifiedHeadersNow(modified_headers);
+      }));
+
+  CreateLoaderAndStart();
+
+  run_loop1.Run();
+
+  // The next time we intercept CreateLoaderAndStart() should be for the
+  // restarted request (load flags of 1).
+  factory_.set_on_create_loader_and_start(base::BindRepeating(
+      [](const base::RepeatingClosure& quit_closure,
+         const network::ResourceRequest& url_request) {
+        std::string value;
+        EXPECT_TRUE(url_request.headers.GetHeader("X-Foo", &value));
+        EXPECT_EQ("bar", value);
+        quit_closure.Run();
+      },
+      run_loop2.QuitClosure()));
+
+  factory_.NotifyClientOnReceiveResponse();
+
+  run_loop2.Run();
+}
+
 // Call RestartWithURLResetAndFlags() from a single throttle after having
 // deferred BeforeWillProcessResponse(), and verify it uses the original URL.
 TEST_F(ThrottlingURLLoaderTest, DeferThenRestartWithURLResetAndFlags) {

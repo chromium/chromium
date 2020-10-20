@@ -181,7 +181,11 @@ blink::ParsedHeadersPtr ConvertToBlink(ParsedHeadersPtr parsed_headers) {
           ? base::make_optional(
                 ConvertToBlink(parsed_headers->accept_ch.value()))
           : base::nullopt,
-      parsed_headers->accept_ch_lifetime);
+      parsed_headers->accept_ch_lifetime,
+      parsed_headers->critical_ch.has_value()
+          ? base::make_optional(
+                ConvertToBlink(parsed_headers->critical_ch.value()))
+          : base::nullopt);
 }
 
 }  // namespace mojom

@@ -41,4 +41,25 @@ struct ParsedHeaders {
 
   // Parsed Accept-CH-Lifetime value, if any. Zero if missing or on parse error.
   mojo_base.mojom.TimeDelta accept_ch_lifetime;
+
+  // The parsed Critical-CH response header.
+  //
+  // Should be parsed in the same way (i.e. same tokens and grammar) as the
+  // Accept-CH header.
+  //
+  // Indicates that if these headers are missing from the Client Hint
+  // preference storage but not otherwise blocked from being sent, the
+  // appropriate preferences should be stored and the request should be
+  // restarted (with the new client hint preferences taken into account).
+  //
+  // All hints present in the Critical-CH header SHOULD also be present in the
+  // Accept-CH header.
+  //
+  // An empty list means the headers value was empty (i.e. 'Critical-CH:'). A
+  // null value means the header was not present in the response. These are
+  // both functionally a no-op.
+  //
+  // For more information, see:
+  // https://tools.ietf.org/html/draft-davidben-http-client-hint-reliability#section-3
+  array<WebClientHintsType>? critical_ch;
 };

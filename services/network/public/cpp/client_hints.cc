@@ -73,8 +73,8 @@ const DecodeMap& GetDecodeMap() {
 
 }  // namespace
 
-base::Optional<std::vector<network::mojom::WebClientHintsType>> ParseAcceptCH(
-    const std::string& header) {
+base::Optional<std::vector<network::mojom::WebClientHintsType>>
+ParseClientHintsHeader(const std::string& header) {
   // Accept-CH is an sh-list of tokens; see:
   // https://httpwg.org/http-extensions/client-hints.html#rfc.section.3.1
   base::Optional<net::structured_headers::List> maybe_list =

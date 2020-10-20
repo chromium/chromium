@@ -104,6 +104,25 @@ std::unique_ptr<HttpResponse> HandleEchoHeader(const std::string& url,
   return http_response;
 }
 
+// TODO(https://crbug.com/1138913): Remove when request handlers are
+// implementable in Android's embedded test server implementation
+std::unique_ptr<HttpResponse> HandleEchoCriticalHeader(
+    const HttpRequest& request) {
+  auto http_response = std::make_unique<BasicHttpResponse>();
+
+  http_response->set_content_type("text/plain");
+  http_response->AddCustomHeader("Access-Control-Allow-Origin", "*");
+
+  http_response->AddCustomHeader("Accept-CH", "UA-Platform");
+  http_response->AddCustomHeader("Critical-CH", "UA-Platform");
+
+  http_response->set_content(
+      request.headers.find("Sec-CH-UA-Mobile")->second +
+      request.headers.find("Sec-CH-UA-Platform")->second);
+
+  return http_response;
+}
+
 // /echo?status=STATUS
 // Responds with the request body as the response body and
 // a status code of STATUS.
@@ -798,6 +817,8 @@ void RegisterDefaultHandlers(EmbeddedTestServer* server) {
       PREFIXED_HANDLER("/echotitle", &HandleEchoTitle));
   server->RegisterDefaultHandler(PREFIXED_HANDLER("/echoall", &HandleEchoAll));
   server->RegisterDefaultHandler(PREFIXED_HANDLER("/echo-raw", &HandleEchoRaw));
+  server->RegisterDefaultHandler(
+      PREFIXED_HANDLER("/echocriticalheader", &HandleEchoCriticalHeader));
   server->RegisterDefaultHandler(
       PREFIXED_HANDLER("/set-cookie", &HandleSetCookie));
   server->RegisterDefaultHandler(

@@ -26,7 +26,8 @@ COMPONENT_EXPORT(NETWORK_CPP) extern const size_t kClientHintsMappingsCount;
 // failed and the header should be ignored; otherwise returns a (possibly
 // empty) list of hints to accept.
 base::Optional<std::vector<network::mojom::WebClientHintsType>>
-    COMPONENT_EXPORT(NETWORK_CPP) ParseAcceptCH(const std::string& header);
+    COMPONENT_EXPORT(NETWORK_CPP)
+        ParseClientHintsHeader(const std::string& header);
 
 // Tries to parse Accept-CH-Lifetime. Returns base::TimeDelta() if unsuccessful.
 base::TimeDelta COMPONENT_EXPORT(NETWORK_CPP)

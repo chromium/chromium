@@ -307,6 +307,32 @@ public class NavigateTest {
     }
 
     /**
+     * Test 'Request Desktop Site' option properly affects UA client hints with Critical-CH
+     */
+    @Test
+    @MediumTest
+    @Feature({"Navigation"})
+    @CommandLineFlags.
+    Add({"enable-features=UserAgentClientHint, FeaturePolicyForClientHints, CriticalClientHint"})
+    // TODO(https://crbug.com/928669) Remove switch when UA-CH-* launched.
+    public void testRequestDesktopSiteCriticalClientHints() throws Exception {
+        // TODO(https://crbug.com/1138913): Move EchoCriticalHeader request handler here when
+        // implemented
+        String url = mTestServer.getURL("/echocriticalheader");
+        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> tab.getWebContents().getNavigationController().setUseDesktopUserAgent(
+                                true /* useDesktop */, true /* reloadOnChange */));
+
+        navigateAndObserve(url, url);
+        ChromeTabUtils.waitForTabPageLoaded(tab, url);
+        String content = JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                tab.getWebContents(), "document.body.textContent");
+        // Note: |content| is JSON, hence lots of escaping.
+        Assert.assertEquals("Proper headers", "\"?0\\\"Linux\\\"\"", content);
+    }
+    /**
      * Test Opening a link and verify that TabObserver#onPageLoadStarted gives the old and new URL.
      */
     @Test

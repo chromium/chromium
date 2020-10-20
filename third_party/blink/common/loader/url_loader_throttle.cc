@@ -42,6 +42,11 @@ void URLLoaderThrottle::Delegate::RestartWithURLResetAndFlagsNow(
   NOTIMPLEMENTED();
 }
 
+void URLLoaderThrottle::Delegate::RestartWithModifiedHeadersNow(
+    const net::HttpRequestHeaders& modified_headers) {
+  NOTIMPLEMENTED();
+}
+
 URLLoaderThrottle::Delegate::~Delegate() {}
 
 URLLoaderThrottle::~URLLoaderThrottle() {}

@@ -12,10 +12,17 @@
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/parsed_headers.mojom-forward.h"
 
+namespace content {
+
 class BrowserContext;
 class FrameTreeNode;
 
-namespace content {
+// Returns whether client hints can be added for the given URL and frame. This
+// is true only if the URL is eligible and JavaScript is enabled.
+CONTENT_EXPORT bool ShouldAddClientHints(
+    const GURL& url,
+    FrameTreeNode* frame_tree_node,
+    ClientHintsControllerDelegate* delegate);
 
 // Returns |rtt| after adding host-specific random noise, and rounding it as
 // per the NetInfo spec to improve privacy.
@@ -29,6 +36,16 @@ CONTENT_EXPORT unsigned long RoundRttForTesting(
 CONTENT_EXPORT double RoundKbpsToMbpsForTesting(
     const std::string& host,
     const base::Optional<int32_t>& downlink_kbps);
+
+// Returns true if there is a hint in |critical_hints| that would be sent (i.e.
+// not blocked by browser or origin level preferences like disabled JavaScript
+// or Feature/Permission Policy) but is not currently in the client hint
+// storage.
+CONTENT_EXPORT bool AreCriticalHintsMissing(
+    const GURL& url,
+    FrameTreeNode* frame_tree_node,
+    ClientHintsControllerDelegate* delegate,
+    const std::vector<network::mojom::WebClientHintsType>& critical_hints);
 
 // Updates the user agent client hint headers. This is called if the value of
 // |override_ua| changes after the NavigationRequest was created.
@@ -47,11 +64,11 @@ CONTENT_EXPORT void AddNavigationRequestClientHintsHeaders(
     bool is_ua_override_on,
     FrameTreeNode*);
 
-// Parses incoming client hints and persists them as appropriate. Returns hints
-// that were accepted as enabled even if they are not going to be persisted. The
-// distinction is relevant in legacy case where feature policy is off and there
-// is no valid Accept-CH-Lifetime, where the header still applies locally within
-// frame.
+// Parses incoming client hints and persists them as appropriate. Returns
+// hints that were accepted as enabled even if they are not going to be
+// persisted. The distinction is relevant in legacy case where feature policy
+// is off and there is no valid Accept-CH-Lifetime, where the header still
+// applies locally within frame.
 CONTENT_EXPORT base::Optional<std::vector<network::mojom::WebClientHintsType>>
 ParseAndPersistAcceptCHForNagivation(
     const GURL& url,

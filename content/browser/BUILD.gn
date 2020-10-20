@@ -605,6 +605,8 @@ source_set("browser") {
     "child_process_security_policy_impl.h",
     "client_hints/client_hints.cc",
     "client_hints/client_hints.h",
+    "client_hints/critical_client_hints_throttle.cc",
+    "client_hints/critical_client_hints_throttle.h",
     "cocoa/system_hotkey_map.h",
     "cocoa/system_hotkey_map.mm",
     "code_cache/generated_code_cache.cc",

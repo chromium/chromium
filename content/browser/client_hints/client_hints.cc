@@ -421,10 +421,8 @@ struct ClientHintsExtendedData {
   bool is_1p_origin = false;
 };
 
-bool ShouldAddClientHint(const ClientHintsExtendedData& data,
+bool IsClientHintAllowed(const ClientHintsExtendedData& data,
                          network::mojom::WebClientHintsType type) {
-  if (!blink::IsClientHintSentByDefault(type) && !data.hints.IsEnabled(type))
-    return false;
   if (!IsFeaturePolicyForClientHintsEnabled() || data.is_main_frame)
     return data.is_1p_origin;
   return data.feature_policy &&
@@ -433,22 +431,17 @@ bool ShouldAddClientHint(const ClientHintsExtendedData& data,
              data.resource_origin);
 }
 
+bool ShouldAddClientHint(const ClientHintsExtendedData& data,
+                         network::mojom::WebClientHintsType type) {
+  if (!blink::IsClientHintSentByDefault(type) && !data.hints.IsEnabled(type))
+    return false;
+  return IsClientHintAllowed(data, type);
+}
+
 bool IsJavascriptEnabled(FrameTreeNode* frame_tree_node) {
   return WebContents::FromRenderFrameHost(frame_tree_node->current_frame_host())
       ->GetOrCreateWebPreferences()
       .javascript_enabled;
-}
-
-bool ShouldAddClientHints(const GURL& url,
-                          bool javascript_enabled,
-                          ClientHintsControllerDelegate* delegate) {
-  // Client hints should only be enabled when JavaScript is enabled. Platforms
-  // which enable/disable JavaScript on a per-origin basis should implement
-  // IsJavaScriptAllowed to check a given origin. Other platforms (Android
-  // WebView) enable/disable JavaScript on a per-View basis, using the
-  // WebPreferences setting.
-  return IsValidURLForClientHints(url) && delegate->IsJavaScriptAllowed(url) &&
-         javascript_enabled;
 }
 
 // Captures when UpdateNavigationRequestClientUaHeadersImpl() is being called.
@@ -562,6 +555,18 @@ void UpdateNavigationRequestClientUaHeadersImpl(
 
 }  // namespace
 
+bool ShouldAddClientHints(const GURL& url,
+                          FrameTreeNode* frame_tree_node,
+                          ClientHintsControllerDelegate* delegate) {
+  // Client hints should only be enabled when JavaScript is enabled. Platforms
+  // which enable/disable JavaScript on a per-origin basis should implement
+  // IsJavaScriptAllowed to check a given origin. Other platforms (Android
+  // WebView) enable/disable JavaScript on a per-View basis, using the
+  // WebPreferences setting.
+  return IsValidURLForClientHints(url) && delegate->IsJavaScriptAllowed(url) &&
+         IsJavascriptEnabled(frame_tree_node);
+}
+
 unsigned long RoundRttForTesting(const std::string& host,
                                  const base::Optional<base::TimeDelta>& rtt) {
   return RoundRtt(host, rtt);
@@ -579,8 +584,7 @@ void UpdateNavigationRequestClientUaHeaders(
     FrameTreeNode* frame_tree_node,
     net::HttpRequestHeaders* headers) {
   if (!delegate->UserAgentClientHintEnabled() ||
-      !ShouldAddClientHints(url, IsJavascriptEnabled(frame_tree_node),
-                            delegate)) {
+      !ShouldAddClientHints(url, frame_tree_node, delegate)) {
     return;
   }
 
@@ -603,8 +607,7 @@ void AddNavigationRequestClientHintsHeaders(
             static_cast<size_t>(net::EFFECTIVE_CONNECTION_TYPE_LAST));
   DCHECK(context);
 
-  if (!ShouldAddClientHints(url, IsJavascriptEnabled(frame_tree_node),
-                            delegate)) {
+  if (!ShouldAddClientHints(url, frame_tree_node, delegate)) {
     return;
   }
 
@@ -711,6 +714,7 @@ ParseAndPersistAcceptCHForNagivation(
 
   delegate->PersistClientHints(url::Origin::Create(url), parsed.value(),
                                persist_duration);
+
   return parsed;
 }
 
@@ -719,8 +723,7 @@ LookupAcceptCHForCommit(const GURL& url,
                         ClientHintsControllerDelegate* delegate,
                         FrameTreeNode* frame_tree_node) {
   std::vector<::network::mojom::WebClientHintsType> result;
-  if (!ShouldAddClientHints(url, IsJavascriptEnabled(frame_tree_node),
-                            delegate)) {
+  if (!ShouldAddClientHints(url, frame_tree_node, delegate)) {
     return result;
   }
 
@@ -733,6 +736,24 @@ LookupAcceptCHForCommit(const GURL& url,
       result.push_back(hint);
   }
   return result;
+}
+
+bool AreCriticalHintsMissing(
+    const GURL& url,
+    FrameTreeNode* frame_tree_node,
+    ClientHintsControllerDelegate* delegate,
+    const std::vector<network::mojom::WebClientHintsType>& critical_hints) {
+  ClientHintsExtendedData data(url, frame_tree_node, delegate);
+
+  // Note: these only check for per-hint origin/feature policy settings, not
+  // origin-level or "browser-level" policies like disabiling JS or other
+  // features.
+  for (auto hint : critical_hints) {
+    if (IsClientHintAllowed(data, hint) && !ShouldAddClientHint(data, hint))
+      return true;
+  }
+
+  return false;
 }
 
 }  // namespace content

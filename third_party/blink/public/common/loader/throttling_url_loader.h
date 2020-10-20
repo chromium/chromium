@@ -145,6 +145,10 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   // Restart the request immediately if the response has not started yet.
   void RestartWithURLResetAndFlagsNow(int additional_load_flags);
 
+  // Restart the request immediately with modified headers.
+  void RestartWithModifiedHeadersNow(
+      const net::HttpRequestHeaders& modified_headers);
+
   // network::mojom::URLLoaderClient implementation:
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head) override;

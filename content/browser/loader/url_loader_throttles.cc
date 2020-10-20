@@ -4,11 +4,23 @@
 
 #include "content/public/browser/url_loader_throttles.h"
 
+#include "base/feature_list.h"
 #include "components/variations/net/omnibox_url_loader_throttle.h"
 #include "components/variations/net/variations_url_loader_throttle.h"
+#include "content/browser/client_hints/client_hints.h"
+#include "content/browser/client_hints/critical_client_hints_throttle.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/client_hints_controller_delegate.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
+#include "net/base/load_flags.h"
+#include "net/http/http_util.h"
+#include "services/network/public/cpp/client_hints.h"
+#include "services/network/public/mojom/parsed_headers.mojom-forward.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
 namespace content {
@@ -30,6 +42,18 @@ CreateContentBrowserURLLoaderThrottles(
   // browser side, and we might be fine with Owner::kUnknown.
   variations::VariationsURLLoaderThrottle::AppendThrottleIfNeeded(
       browser_context->GetVariationsClient(), &throttles);
+
+  ClientHintsControllerDelegate* client_hint_delegate =
+      browser_context->GetClientHintsControllerDelegate();
+  if (base::FeatureList::IsEnabled(features::kFeaturePolicyForClientHints) &&
+      base::FeatureList::IsEnabled(features::kCriticalClientHint) &&
+      request.is_main_frame && client_hint_delegate &&
+      ShouldAddClientHints(request.url,
+                           FrameTreeNode::GloballyFindByID(frame_tree_node_id),
+                           client_hint_delegate)) {
+    throttles.push_back(std::make_unique<CriticalClientHintsThrottle>(
+        browser_context, client_hint_delegate, frame_tree_node_id));
+  }
   return throttles;
 }
 

@@ -46,6 +46,7 @@ CONTENT_EXPORT extern const base::Feature kConversionMeasurement;
 CONTENT_EXPORT extern const base::Feature kCookieDeprecationMessages;
 CONTENT_EXPORT extern const base::Feature kCooperativeScheduling;
 CONTENT_EXPORT extern const base::Feature kCrashReporting;
+CONTENT_EXPORT extern const base::Feature kCriticalClientHint;
 CONTENT_EXPORT extern const base::Feature kDataSaverHoldback;
 CONTENT_EXPORT extern const base::Feature kDesktopCaptureChangeSource;
 CONTENT_EXPORT extern const base::Feature kDocumentPolicy;

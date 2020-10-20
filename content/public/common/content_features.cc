@@ -173,6 +173,11 @@ const base::Feature kCooperativeScheduling{"CooperativeScheduling",
 const base::Feature kCrashReporting{"CrashReporting",
                                     base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables support for the `Critical-CH` response header.
+// https://github.com/WICG/client-hints-infrastructure/blob/master/reliability.md#critical-ch
+const base::Feature kCriticalClientHint{"CriticalClientHint",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Puts save-data header in the holdback mode. This disables sending of
 // save-data header to origins, and to the renderer processes within Chrome.
 const base::Feature kDataSaverHoldback{"DataSaverHoldback",

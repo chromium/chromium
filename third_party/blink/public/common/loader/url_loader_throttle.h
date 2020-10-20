@@ -129,6 +129,11 @@ class BLINK_COMMON_EXPORT URLLoaderThrottle {
     // Restarting is only valid before BeforeWillProcessResponse() is called.
     virtual void RestartWithURLResetAndFlagsNow(int additional_load_flags);
 
+    // Restarts the URL loader immediately after adding the provided headers to
+    // the new request.
+    virtual void RestartWithModifiedHeadersNow(
+        const net::HttpRequestHeaders& modified_headers);
+
    protected:
     virtual ~Delegate();
   };
