@@ -113,6 +113,16 @@
   [self.observers sceneState:self transitionedToActivationLevel:newLevel];
 }
 
+- (void)setHasInitializedUI:(BOOL)hasInitializedUI {
+  if (_hasInitializedUI == hasInitializedUI) {
+    return;
+  }
+  _hasInitializedUI = hasInitializedUI;
+  if (hasInitializedUI) {
+    [self.observers sceneStateHasInitializedUI:self];
+  }
+}
+
 - (id<BrowserInterfaceProvider>)interfaceProvider {
   return self.controller.interfaceProvider;
 }

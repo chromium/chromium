@@ -100,6 +100,9 @@ typedef NS_ENUM(NSUInteger, SceneActivationLevel) {
 // |UISceneDelegate scene:continueUserActivity:| and needs to be opened.
 @property(nonatomic) NSUserActivity* pendingUserActivity;
 
+// A flag that keeps track of the UI initialization for the controlled scene.
+@property(nonatomic, assign) BOOL hasInitializedUI;
+
 // Adds an observer to this scene state. The observers will be notified about
 // scene state changes per SceneStateObserver protocol.
 - (void)addObserver:(id<SceneStateObserver>)observer;
