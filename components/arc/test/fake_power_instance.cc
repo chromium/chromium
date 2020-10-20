@@ -52,4 +52,9 @@ void FakePowerInstance::PowerSupplyInfoChanged() {
   num_power_supply_info_++;
 }
 
+void FakePowerInstance::GetWakefulnessMode(
+    GetWakefulnessModeCallback callback) {
+  std::move(callback).Run(mojom::WakefulnessMode::AWAKE);
+}
+
 }  // namespace arc

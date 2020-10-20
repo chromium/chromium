@@ -134,6 +134,14 @@ ArcPowerBridge::~ArcPowerBridge() {
   arc_bridge_service_->power()->SetHost(nullptr);
 }
 
+void ArcPowerBridge::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void ArcPowerBridge::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
 void ArcPowerBridge::SetUserIdHash(const std::string& user_id_hash) {
   user_id_hash_ = user_id_hash;
 }
@@ -357,6 +365,11 @@ void ArcPowerBridge::OnGetScreenBrightnessPercent(
     return;
   }
   UpdateAndroidScreenBrightness(percent.value());
+}
+
+void ArcPowerBridge::OnWakefulnessChanged(mojom::WakefulnessMode mode) {
+  for (auto& observer : observer_list_)
+    observer.OnWakefulnessChanged(mode);
 }
 
 void ArcPowerBridge::UpdateAndroidScreenBrightness(double percent) {

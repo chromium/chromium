@@ -36,6 +36,7 @@ class FakePowerInstance : public mojom::PowerInstance {
   void Resume() override;
   void UpdateScreenBrightnessSettings(double percent) override;
   void PowerSupplyInfoChanged() override;
+  void GetWakefulnessMode(GetWakefulnessModeCallback callback) override;
 
  private:
   mojo::Remote<mojom::PowerHost> host_remote_;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 6
+// Next MinVersion: 7
 
 module arc.mojom;
 
@@ -19,11 +19,41 @@ enum DisplayWakeLockType {
   DIM = 1
 };
 
-// Next method ID: 4
+// Enumerates the types of wakefullness modes.
+// Must match to PowerManager.WAKEFULNESS_* constants.
+[Extensible]
+enum WakefulnessMode {
+  // Device mode is unknown.
+  UNKNOWN = -1,
+
+  // The device is asleep.  It can only be awoken.
+  // The device typically passes through the dozing state first.
+  ASLEEP = 0,
+
+  // The device is fully awake.  It can be put to sleep.
+  // When the user activity timeout expires, the device may start dreaming
+  // or go to sleep.
+  AWAKE,
+
+  // The device is dreaming.  It can be awoken which ends the dream.
+  DREAMING,
+
+  // The device is dozing.  It is almost asleep but is allowing a special
+  // low-power "doze" dream to run which keeps the display on but lets the
+  //  application processor be suspended.  It can be awoken which ends the
+  // dream.The device fully goes to sleep if the dream cannot be started or
+  // ends on its own.
+  DOZING
+};
+
+// Next method ID: 5
 interface PowerHost {
   // Acquire and release wake locks on the host side.
   OnAcquireDisplayWakeLock@0(DisplayWakeLockType type);
   OnReleaseDisplayWakeLock@1(DisplayWakeLockType type);
+
+  // Notifies wakefulness mode is changed.
+  [MinVersion=6] OnWakefulnessChanged@5(WakefulnessMode mode);
 
   // Checks if there is a display on.
   [MinVersion=1] IsDisplayOn@2() => (bool is_on);
@@ -33,7 +63,7 @@ interface PowerHost {
   [MinVersion=3] OnScreenBrightnessUpdateRequest@3(double percent);
 };
 
-// Next method ID: 7
+// Next method ID: 8
 interface PowerInstance {
   // DEPRECATED: Please use Init@5 instead.
   InitDeprecated@0(pending_remote<PowerHost> host_remote);
@@ -59,4 +89,7 @@ interface PowerInstance {
   // TODO(b/136427446): Rearchitect ARC power info management with more
   // explicit data / event passing.
   [MinVersion=5] PowerSupplyInfoChanged@6();
+
+  // Requests current wakefulness mode.
+  [MinVersion=6] GetWakefulnessMode@7() => (WakefulnessMode mode);
 };
