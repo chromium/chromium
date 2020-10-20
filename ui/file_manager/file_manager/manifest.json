@@ -172,14 +172,7 @@
   ],
   "app": {
     "background": {
-      "scripts": [
-        "chrome://resources/js/cr.js",
-        "chrome://resources/js/cr/event_target.js",
-        "chrome://resources/js/cr/ui/array_data_model.js",
-        "chrome://resources/js/load_time_data.js",
-        "background/js/background_common_scripts.js",
-        "background/js/background_scripts.js"
-      ]
+      "page": "background.html"
     },
     // chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp is the image loader extension.
     "content_security_policy": "default-src 'none'; script-src 'self' blob: filesystem: chrome://resources chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp; style-src 'self' blob: filesystem: 'unsafe-inline' chrome://resources; frame-src 'self' blob: filesystem: about:; img-src 'self' blob: filesystem: chrome://resources chrome://theme data: https://docs.google.com https://*.googleusercontent.com chrome://extension-icon chrome://app-icon; media-src 'self' blob: filesystem: https://*.googleusercontent.com; connect-src https://drive.google.com https://www.google-analytics.com chrome://resources; object-src 'self' blob: filesystem:; font-src chrome://resources;"
