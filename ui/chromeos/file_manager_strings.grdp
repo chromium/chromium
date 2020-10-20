@@ -629,7 +629,7 @@
     Cancel selection
   </message>
   <message name="IDS_FILE_BROWSER_READ_ONLY_LABEL" desc="Label for an indicator which means that the current folder is read-only.">
-    Read only
+    Read-only
   </message>
   <message name="IDS_FILE_BROWSER_CHANGE_TO_LISTVIEW_BUTTON_LABEL" desc="Label for button that changes the view mode to 'list view' mode.">
     Switch to list view
@@ -1478,7 +1478,7 @@
     More...
   </message>
 <message name="IDS_FILE_BROWSER_READONLY_INDICATOR_TOOLTIP" desc="Tooltip for the readonly indicator in the Files app.">
-    Files in this folder are read only. Some activities are not supported.
+    The contents of this folder are read-only. Some activities are not supported.
   </message>
   <message name="IDS_FILE_BROWSER_SELECTION_MENU_BUTTON_TOOLTIP" desc="Tooltip for the button to open the context menu of currently selected items in the Files app.">
     More...
