@@ -123,7 +123,8 @@ SerializedScriptValue* History::StateInternal() const {
 void History::setScrollRestoration(const String& value,
                                    ExceptionState& exception_state) {
   DCHECK(value == "manual" || value == "auto");
-  if (!DomWindow()) {
+  HistoryItem* item = GetHistoryItem();
+  if (!item) {
     exception_state.ThrowSecurityError(
         "May not use a History object associated with a Document that is not "
         "fully active");
@@ -136,7 +137,7 @@ void History::setScrollRestoration(const String& value,
   if (scroll_restoration == ScrollRestorationInternal())
     return;
 
-  GetHistoryItem()->SetScrollRestorationType(scroll_restoration);
+  item->SetScrollRestorationType(scroll_restoration);
   DomWindow()->GetFrame()->Client()->DidUpdateCurrentHistoryItem();
 }
 
