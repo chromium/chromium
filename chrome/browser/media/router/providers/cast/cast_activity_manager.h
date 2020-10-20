@@ -273,7 +273,7 @@ class CastActivityManager : public CastActivityManagerBase,
   std::string ChooseAppId(const CastMediaSource& source,
                           const MediaSinkInternal& sink) const;
 
-  void TerminateAllMirroringActivities();
+  void TerminateAllLocalMirroringActivities();
 
   static CastActivityFactoryForTest* cast_activity_factory_for_test_;
 

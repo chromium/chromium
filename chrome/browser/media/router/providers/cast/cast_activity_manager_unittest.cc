@@ -325,10 +325,20 @@ class CastActivityManagerTest : public testing::Test,
     DCHECK(mirroring_activity_);
   }
 
-  void ExpectMirroringActivityStopped() {
+  void AddRemoteMirroringSession() {
+    auto session =
+        CastSession::From(sink2_, MakeReceiverStatus(kCastStreamingAppId));
+    manager_->OnSessionAddedOrUpdated(sink2_, *session);
+    SetSessionForTest(sink2_.id(), std::move(session));
     DCHECK(mirroring_activity_);
-    EXPECT_CALL(message_handler_, StopSession).Times(1);
-    EXPECT_CALL(*mirroring_activity_, SendStopSessionMessageToClients).Times(1);
+    DCHECK(!mirroring_activity_->route().is_local());
+  }
+
+  void ExpectMirroringActivityStoppedTimes(int times) {
+    DCHECK(mirroring_activity_);
+    EXPECT_CALL(message_handler_, StopSession).Times(times);
+    EXPECT_CALL(*mirroring_activity_, SendStopSessionMessageToClients)
+        .Times(times);
   }
 
   void TerminateSession(bool expect_success) {
@@ -444,7 +454,7 @@ TEST_F(CastActivityManagerTest, LaunchSiteInitiatedMirroringSession) {
 
 TEST_F(CastActivityManagerTest, MirroringSessionStopped) {
   LaunchMirroringSession();
-  ExpectMirroringActivityStopped();
+  ExpectMirroringActivityStoppedTimes(1);
   mirroring_activity_->DidStop();
 }
 
@@ -613,9 +623,15 @@ TEST_F(CastActivityManagerTest, TerminateSessionFails) {
   TerminateSession(false);
 }
 
-TEST_F(CastActivityManagerTest, DestructorClosesMirroringSession) {
+TEST_F(CastActivityManagerTest, DestructorClosesLocalMirroringSession) {
   LaunchMirroringSession();
-  ExpectMirroringActivityStopped();
+  ExpectMirroringActivityStoppedTimes(1);
+  manager_.reset();
+}
+
+TEST_F(CastActivityManagerTest, DestructorIgnoresNonlocalMirroringSession) {
+  AddRemoteMirroringSession();
+  ExpectMirroringActivityStoppedTimes(0);
   manager_.reset();
 }
 
