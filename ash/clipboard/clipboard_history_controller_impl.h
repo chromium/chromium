@@ -40,10 +40,11 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
       const ClipboardHistoryControllerImpl&) = delete;
   ~ClipboardHistoryControllerImpl() override;
 
-  void Init();
-
   // Returns if the contextual menu is currently showing.
   bool IsMenuShowing() const;
+
+  // Shows the clipboard history menu through the keyboard accelerator.
+  void ShowMenuByAccelerator();
 
   // Returns bounds for the contextual menu in screen coordinates.
   gfx::Rect GetMenuBoundsInScreenForTest() const;
@@ -74,9 +75,6 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
                 views::MenuAnchorPosition menu_anchor_position,
                 ui::MenuSourceType source_type) override;
   bool CanShowMenu() const override;
-
-  // Shows the clipboard history menu through the keyboard accelerator.
-  void ShowMenuByAccelerator();
 
   void ExecuteSelectedMenuItem(int event_flags);
   void MenuOptionSelected(int command_id, int event_flags);

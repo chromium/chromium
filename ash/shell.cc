@@ -1032,7 +1032,6 @@ void Shell::Init(
   if (chromeos::features::IsClipboardHistoryEnabled()) {
     clipboard_history_controller_ =
         std::make_unique<ClipboardHistoryControllerImpl>();
-    clipboard_history_controller_->Init();
   }
   shelf_config_ = std::make_unique<ShelfConfig>();
   shelf_controller_ = std::make_unique<ShelfController>();

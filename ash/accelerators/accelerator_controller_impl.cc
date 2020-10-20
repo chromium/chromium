@@ -17,6 +17,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/debug.h"
 #include "ash/display/display_configuration_controller.h"
 #include "ash/display/display_move_window_util.h"
@@ -834,8 +835,22 @@ void HandleSwitchIme(const ui::Accelerator& accelerator) {
   Shell::Get()->ime_controller()->SwitchImeWithAccelerator(accelerator);
 }
 
-bool CanHandleToggleAppList(const ui::Accelerator& accelerator,
-                            const ui::Accelerator& previous_accelerator) {
+bool CanHandleToggleAppList(
+    const ui::Accelerator& accelerator,
+    const ui::Accelerator& previous_accelerator,
+    const std::set<ui::KeyboardCode>& currently_pressed_keys) {
+  for (auto key : currently_pressed_keys) {
+    // The AppList accelerator is triggered on search(VKEY_LWIN) key release.
+    // Sometimes users will press and release the search key while holding other
+    // keys in an attempt to trigger a different accelerator. We should not
+    // toggle the AppList in that case. Check for VKEY_SHIFT because this is
+    // used to show fullscreen app list.
+    if (key != ui::VKEY_LWIN && key != ui::VKEY_SHIFT &&
+        key != ui::VKEY_BROWSER_SEARCH) {
+      return false;
+    }
+  }
+
   if (accelerator.key_code() == ui::VKEY_LWIN) {
     // If something else was pressed between the Search key (LWIN)
     // being pressed and released, then ignore the release of the
@@ -1145,7 +1160,7 @@ bool CanHandleToggleCapsLock(
       return false;
   }
 
-  // This shortcust is set to be trigger on release. Either the current
+  // This shortcut is set to be trigger on release. Either the current
   // accelerator is a Search release or Alt release.
   if (accelerator.key_code() == ui::VKEY_LWIN &&
       accelerator.key_state() == ui::Accelerator::KeyState::RELEASED) {
@@ -1181,6 +1196,15 @@ void HandleToggleCapsLock() {
   base::RecordAction(UserMetricsAction("Accel_Toggle_Caps_Lock"));
   ImeControllerImpl* ime_controller = Shell::Get()->ime_controller();
   ime_controller->SetCapsLockEnabled(!ime_controller->IsCapsLockEnabled());
+}
+
+bool CanHandleToggleClipboardHistory() {
+  return chromeos::features::IsClipboardHistoryEnabled();
+}
+
+void HandleToggleClipboardHistory() {
+  DCHECK(Shell::Get()->clipboard_history_controller());
+  Shell::Get()->clipboard_history_controller()->ShowMenuByAccelerator();
 }
 
 bool CanHandleToggleDictation() {
@@ -1941,11 +1965,15 @@ bool AcceleratorControllerImpl::CanPerformAction(
       return CanHandleCycleUser();
     case TOGGLE_APP_LIST:
     case TOGGLE_APP_LIST_FULLSCREEN:
-      return CanHandleToggleAppList(accelerator, previous_accelerator);
+      return CanHandleToggleAppList(
+          accelerator, previous_accelerator,
+          accelerator_history_->currently_pressed_keys());
     case TOGGLE_CAPS_LOCK:
       return CanHandleToggleCapsLock(
           accelerator, previous_accelerator,
           accelerator_history_->currently_pressed_keys());
+    case TOGGLE_CLIPBOARD_HISTORY:
+      return CanHandleToggleClipboardHistory();
     case TOGGLE_DICTATION:
       return CanHandleToggleDictation();
     case TOGGLE_DOCKED_MAGNIFIER:
@@ -2329,6 +2357,9 @@ void AcceleratorControllerImpl::PerformAction(
       break;
     case TOGGLE_CAPS_LOCK:
       HandleToggleCapsLock();
+      break;
+    case TOGGLE_CLIPBOARD_HISTORY:
+      HandleToggleClipboardHistory();
       break;
     case TOGGLE_DICTATION:
       HandleToggleDictation();

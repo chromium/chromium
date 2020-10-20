@@ -20,7 +20,7 @@ namespace {
 constexpr int kNonSearchAcceleratorsNum = 102;
 // The hash of non-Search-based accelerators. See HashAcceleratorData().
 constexpr char kNonSearchAcceleratorsHash[] =
-    "75a67571e0b9a4ab7515360d1c474729";
+    "3854f7bea40ae9c966710db8264744f5";
 
 struct Cmp {
   bool operator()(const AcceleratorData& lhs,
@@ -33,14 +33,12 @@ struct Cmp {
 
 std::string AcceleratorDataToString(const AcceleratorData& accelerator) {
   return base::StringPrintf(
-      "trigger_on_press=%s keycode=%d shift=%s control=%s alt=%s search=%s "
-      "action=%d",
+      "trigger_on_press=%s keycode=%d shift=%s control=%s alt=%s search=%s",
       accelerator.trigger_on_press ? "true" : "false", accelerator.keycode,
       (accelerator.modifiers & ui::EF_SHIFT_DOWN) ? "true" : "false",
       (accelerator.modifiers & ui::EF_CONTROL_DOWN) ? "true" : "false",
       (accelerator.modifiers & ui::EF_ALT_DOWN) ? "true" : "false",
-      (accelerator.modifiers & ui::EF_COMMAND_DOWN) ? "true" : "false",
-      accelerator.action);
+      (accelerator.modifiers & ui::EF_COMMAND_DOWN) ? "true" : "false");
 }
 
 std::string HashAcceleratorData(

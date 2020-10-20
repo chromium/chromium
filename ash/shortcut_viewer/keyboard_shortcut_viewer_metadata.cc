@@ -698,7 +698,14 @@ const std::vector<KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
        IDS_KSV_SHORTCUT_ONE_MODIFIER_ONE_KEY,
        // |accelerator_ids|
        {{ui::VKEY_OEM_6, ui::EF_ALT_DOWN}}},
-
+      {// |categories|
+       {ShortcutCategory::kPopular, ShortcutCategory::kTextEditing},
+       IDS_KSV_DESCRIPTION_CLIPBOARD_HISTORY,
+       IDS_KSV_SHORTCUT_ONE_MODIFIER_ONE_KEY,
+       // |accelerator_ids|
+       {},
+       // |shortcut_key_codes|
+       {ui::VKEY_COMMAND, ui::VKEY_UNKNOWN, ui::VKEY_V}},
       {// |categories|
        {ShortcutCategory::kPopular, ShortcutCategory::kTextEditing},
        IDS_KSV_DESCRIPTION_COPY,
