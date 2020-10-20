@@ -784,5 +784,10 @@ const base::Feature kLogUnexpectedIPCPostedToBackForwardCachedDocuments{
 // https://github.com/WICG/pwa-url-handler/blob/master/explainer.md
 const base::Feature kWebAppEnableUrlHandlers{"WebAppEnableUrlHandlers",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
+
+// When enabled NV12 frames on a GPU will be forwarded to libvpx encoders
+// without conversion to I420.
+const base::Feature kWebRtcLibvpxEncodeNV12{"WebRtcLibvpxEncodeNV12",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
 }  // namespace features
 }  // namespace blink

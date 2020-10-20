@@ -56,17 +56,19 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
 
   rtc::scoped_refptr<webrtc::I420BufferInterface> ToI420() override;
   const webrtc::I420BufferInterface* GetI420() const override;
+  rtc::scoped_refptr<webrtc::VideoFrameBuffer> GetMappedFrameBuffer(
+      rtc::ArrayView<webrtc::VideoFrameBuffer::Type> types) override;
 
  protected:
   ~WebRtcVideoFrameAdapter() override;
 
-  rtc::scoped_refptr<webrtc::I420BufferInterface> CreateFrameAdapter() const;
+  rtc::scoped_refptr<webrtc::VideoFrameBuffer> CreateFrameAdapter() const;
 
   mutable base::Lock adapter_lock_;
 
   // Used to cache result of CreateFrameAdapter. Which is called from const
   // GetI420().
-  mutable rtc::scoped_refptr<webrtc::I420BufferInterface> frame_adapter_
+  mutable rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter_
       GUARDED_BY(adapter_lock_);
 
   scoped_refptr<media::VideoFrame> frame_;
