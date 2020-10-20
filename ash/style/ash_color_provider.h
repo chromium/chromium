@@ -115,7 +115,11 @@ class ASH_EXPORT AshColorProvider : public SessionObserver {
 
     // Color for slider.
     kSliderColorActive,
-    kSliderColorInactive
+    kSliderColorInactive,
+
+    // Color for radio button.
+    kRadioColorActive,
+    kRadioColorInactive,
   };
 
   // Types of ash styled buttons.

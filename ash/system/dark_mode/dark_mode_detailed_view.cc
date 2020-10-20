@@ -32,7 +32,16 @@ class TrayRadioButton : public views::RadioButton {
   }
 
   // views::RadioButton:
+  SkColor GetIconImageColor(int icon_state) const override {
+    return AshColorProvider::Get()->GetContentLayerColor(
+        icon_state & IconState::CHECKED
+            ? AshColorProvider::ContentLayerType::kRadioColorActive
+            : AshColorProvider::ContentLayerType::kRadioColorInactive);
+  }
+
+  // views::RadioButton:
   void OnThemeChanged() override {
+    views::RadioButton::OnThemeChanged();
     TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::SMALL_TITLE);
     SetEnabledTextColors(style.GetTextColor());
     style.SetupLabel(label());

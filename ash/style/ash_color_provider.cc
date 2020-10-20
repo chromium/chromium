@@ -222,9 +222,11 @@ SkColor AshColorProvider::GetContentLayerColor(ContentLayerType type) const {
     case ContentLayerType::kButtonIconColor:
     case ContentLayerType::kAppStateIndicatorColor:
     case ContentLayerType::kSliderColorInactive:
+    case ContentLayerType::kRadioColorInactive:
       return is_dark_mode ? gfx::kGoogleGrey200 : gfx::kGoogleGrey700;
     case ContentLayerType::kButtonLabelColorBlue:
     case ContentLayerType::kSliderColorActive:
+    case ContentLayerType::kRadioColorActive:
       return is_dark_mode ? gfx::kGoogleBlue300 : gfx::kGoogleBlue600;
     case ContentLayerType::kButtonLabelColorPrimary:
     case ContentLayerType::kButtonIconColorPrimary:
