@@ -16,28 +16,24 @@
 
   function dumpDatabase() {
     TestRunner.addResult('Dumping database:');
-    var database = indexedDBModel._databases.get(databaseId);
+    const database = indexedDBModel._databases.get(databaseId);
     if (!database)
       return;
     TestRunner.addResult(database.databaseId.name);
     TestRunner.addResult('    version: ' + database.version);
     TestRunner.addResult('    objectStores:');
-    var objectStoreNames = [];
-    for (var objectStoreName in database.objectStores)
-      objectStoreNames.push(objectStoreName);
+    const objectStoreNames = [...database.objectStores.keys()];
     objectStoreNames.sort();
-    for (var i = 0; i < objectStoreNames.length; ++i) {
-      var objectStore = database.objectStores[objectStoreNames[i]];
+    for (const objectStoreName of objectStoreNames) {
+      const objectStore = database.objectStores.get(objectStoreName);
       TestRunner.addResult('    ' + objectStore.name);
       TestRunner.addResult('        keyPath: ' + JSON.stringify(objectStore.keyPath));
       TestRunner.addResult('        autoIncrement: ' + objectStore.autoIncrement);
       TestRunner.addResult('        indexes: ');
-      var indexNames = [];
-      for (var indexName in objectStore.indexes)
-        indexNames.push(indexName);
+      const indexNames = [...objectStore.indexes.keys()];
       indexNames.sort();
-      for (var j = 0; j < indexNames.length; ++j) {
-        var index = objectStore.indexes[indexNames[j]];
+      for (const indexName of indexNames) {
+        const index = objectStore.indexes.get(indexName);
         TestRunner.addResult('        ' + index.name);
         TestRunner.addResult('            keyPath: ' + JSON.stringify(index.keyPath));
         TestRunner.addResult('            unique: ' + index.unique);
