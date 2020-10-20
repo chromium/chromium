@@ -266,18 +266,6 @@ class RenderThreadImplBrowserTest : public testing::Test,
   DISALLOW_COPY_AND_ASSIGN(RenderThreadImplBrowserTest);
 };
 
-// Check that InputHandlerManager outlives compositor thread because it uses
-// raw pointers to post tasks.
-// Disabled under LeakSanitizer due to memory leaks. http://crbug.com/348994
-// Disabled on Windows due to flakiness: http://crbug.com/728034.
-#if defined(OS_WIN)
-#define MAYBE_InputHandlerManagerDestroyedAfterCompositorThread \
-  DISABLED_InputHandlerManagerDestroyedAfterCompositorThread
-#else
-#define MAYBE_InputHandlerManagerDestroyedAfterCompositorThread \
-  InputHandlerManagerDestroyedAfterCompositorThread
-#endif
-
 // Disabled under LeakSanitizer due to memory leaks.
 TEST_F(RenderThreadImplBrowserTest,
        WILL_LEAK(NonResourceDispatchIPCTasksDontGoThroughScheduler)) {
