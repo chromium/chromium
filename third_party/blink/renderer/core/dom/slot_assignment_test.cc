@@ -11,8 +11,9 @@
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
-#include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -162,6 +163,25 @@ TEST_F(SlotAssignmentTest, AssignedNodesAreSet) {
   HeapVector<Member<Node>> expected_nodes;
   expected_nodes.push_back(host_child);
   EXPECT_EQ(expected_nodes, slot->AssignedNodes());
+}
+
+TEST_F(SlotAssignmentTest, ScheduleVisualUpdate) {
+  SetBody(R"HTML(
+    <div id="host">
+      <shadowroot>
+        <slot></slot>
+      </shadowroot>
+      <div></div>
+    </div>
+  )HTML");
+
+  GetDocument().View()->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  GetDocument().View()->RunPostLifecycleSteps();
+
+  auto* div = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  GetDocument().getElementById("host")->appendChild(div);
+  EXPECT_EQ(DocumentLifecycle::kVisualUpdatePending,
+            GetDocument().Lifecycle().GetState());
 }
 
 }  // namespace blink

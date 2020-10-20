@@ -232,6 +232,7 @@ void SlotAssignment::SetNeedsAssignmentRecalc() {
   if (owner_->isConnected()) {
     owner_->GetDocument().GetSlotAssignmentEngine().AddShadowRootNeedingRecalc(
         *owner_);
+    owner_->GetDocument().ScheduleLayoutTreeUpdateIfNeeded();
   }
 }
 
