@@ -17,6 +17,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuClickHandler;
 import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.ui.widget.ChromeImageView;
 
@@ -66,6 +67,11 @@ class IncognitoMenuItemViewBinder implements CustomViewBinder {
             holder.image.setVisibility(View.VISIBLE);
         }
         convertView.setOnClickListener(v -> appMenuClickHandler.onItemClick(item));
+        if (highlightedItemId != null && item.getItemId() == highlightedItemId) {
+            ViewHighlighter.turnOnHighlight(convertView, false);
+        } else {
+            ViewHighlighter.turnOffHighlight(convertView);
+        }
 
         return convertView;
     }

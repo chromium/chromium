@@ -23,6 +23,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuClickHandler;
 import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -44,6 +45,7 @@ class AddToMenuItemViewBinder extends ArrayAdapter<MenuItem>
     private AppMenuClickHandler mAppMenuClickHandler;
     private PropertyModel mPropertyModel;
     private Context mContext;
+    private Integer mHighlightedItemId;
 
     /**
      * @param context The {@link Context} for the dialog.
@@ -79,7 +81,6 @@ class AddToMenuItemViewBinder extends ArrayAdapter<MenuItem>
     public View getView(MenuItem item, @Nullable View convertView, ViewGroup parent,
             LayoutInflater inflater, AppMenuClickHandler appMenuClickHandler,
             @Nullable Integer highlightedItemId) {
-        // TODO(crbug.com/1136677): Need to support IPH for the items in the add to dialog.
         assert item.getItemId() == R.id.add_to_menu_id;
         mAppMenuClickHandler = appMenuClickHandler;
 
@@ -104,10 +105,20 @@ class AddToMenuItemViewBinder extends ArrayAdapter<MenuItem>
         // TODO(1136985): Move the logic for "Add to" option out of AppMenuPropertiesDelegateImpl
         // once the experiment is done.
         assert item.hasSubMenu();
+        mHighlightedItemId = null;
         for (int i = 0; i < item.getSubMenu().size(); ++i) {
             if (item.getSubMenu().getItem(i).isVisible()) {
                 mAddToMenuItems.add(item.getSubMenu().getItem(i));
+                if (highlightedItemId != null
+                        && item.getSubMenu().getItem(i).getItemId() == highlightedItemId) {
+                    mHighlightedItemId = highlightedItemId;
+                    ViewHighlighter.turnOnHighlight(convertView, false);
+                }
             }
+        }
+
+        if (mHighlightedItemId == null) {
+            ViewHighlighter.turnOffHighlight(convertView);
         }
 
         return convertView;
@@ -151,6 +162,12 @@ class AddToMenuItemViewBinder extends ArrayAdapter<MenuItem>
                                      : R.color.default_icon_color_secondary_tint_list;
         option.setDrawableTintColor(
                 AppCompatResources.getColorStateList(convertView.getContext(), theme));
+
+        if (mHighlightedItemId != null && item.getItemId() == mHighlightedItemId) {
+            ViewHighlighter.turnOnHighlight(convertView, false);
+        } else {
+            ViewHighlighter.turnOffHighlight(convertView);
+        }
 
         return convertView;
     }

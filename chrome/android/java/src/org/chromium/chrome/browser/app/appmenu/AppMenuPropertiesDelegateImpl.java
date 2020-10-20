@@ -911,7 +911,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         return CachedFeatureFlags.isEnabled(ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_REGROUP);
     }
 
-    private boolean shouldShowThreeButtonActionBar() {
+    private static boolean shouldShowThreeButtonActionBar() {
         return CachedFeatureFlags.isEnabled(
                 ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR);
     }
@@ -941,7 +941,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     /**
      * @return The type of three button action bar should be shown.
      */
-    private @ThreeButtonActionBarType int getThreeButtonActionBarType() {
+    private static @ThreeButtonActionBarType int getThreeButtonActionBarType() {
         if (shouldShowThreeButtonActionBar()) {
             if (THREE_BUTTON_ACTION_BAR_VARIATION.getValue().equals("action_chip_view")) {
                 return ThreeButtonActionBarType.ACTION_CHIP_VIEW;
@@ -953,5 +953,20 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             }
         }
         return ThreeButtonActionBarType.DISABLED;
+    }
+
+    /**
+     * @return The "download" menu items id in the app menu.
+     */
+    public static int getOfflinePageId() {
+        @ThreeButtonActionBarType
+        int type = getThreeButtonActionBarType();
+        if (type == ThreeButtonActionBarType.ACTION_CHIP_VIEW
+                || type == ThreeButtonActionBarType.DESTINATION_CHIP_VIEW) {
+            return R.id.offline_page_chip_id;
+        } else if (type == ThreeButtonActionBarType.ADD_TO_OPTION) {
+            return R.id.add_to_downloads_menu_id;
+        }
+        return R.id.offline_page_id;
     }
 }
