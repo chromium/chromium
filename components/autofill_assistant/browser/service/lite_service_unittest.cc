@@ -5,6 +5,7 @@
 #include "components/autofill_assistant/browser/service/lite_service.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/service/mock_service.h"
+#include "components/autofill_assistant/browser/service/mock_service_request_sender.h"
 #include "components/autofill_assistant/browser/service/service.h"
 #include "components/autofill_assistant/browser/test_util.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
@@ -27,31 +28,31 @@ namespace autofill_assistant {
 namespace {
 const char kFakeScriptPath[] = "localhost/chrome/test";
 const char kFakeUrl[] = "https://www.example.com";
+const char kGetActionsServerUrl[] =
+    "https://www.fake.backend.com/action_server";
 }  // namespace
 
 using ::testing::_;
 using ::testing::AtMost;
 using ::testing::Eq;
+using ::testing::NiceMock;
 
 class LiteServiceTest : public testing::Test {
  protected:
   LiteServiceTest() {
-    auto service_impl = std::make_unique<MockService>();
-    mock_native_service_ = service_impl.get();
+    auto mock_request_sender =
+        std::make_unique<NiceMock<MockServiceRequestSender>>();
+    mock_request_sender_ = mock_request_sender.get();
 
     lite_service_ = std::make_unique<LiteService>(
-        std::move(service_impl), kFakeScriptPath, mock_finished_callback_.Get(),
+        std::move(mock_request_sender), GURL(kGetActionsServerUrl),
+        kFakeScriptPath, mock_finished_callback_.Get(),
         mock_script_running_callback_.Get());
-    EXPECT_CALL(*mock_native_service_, OnGetScriptsForUrl).Times(0);
-    EXPECT_CALL(*mock_native_service_, OnGetNextActions).Times(0);
 
-    EXPECT_CALL(*mock_native_service_,
-                OnGetActions(kFakeScriptPath, _, _, _, _, _))
+    EXPECT_CALL(*mock_request_sender_,
+                OnSendRequest(GURL(kGetActionsServerUrl), _, _))
         .Times(AtMost(1))
-        .WillOnce([&](const std::string& script_path, const GURL& url,
-                      const TriggerContext& trigger_context,
-                      const std::string& global_payload,
-                      const std::string& script_payload,
+        .WillOnce([&](const GURL& url, const std::string& request_body,
                       Service::ResponseCallback& callback) {
           std::string serialized_response;
           get_actions_response_.SerializeToString(&serialized_response);
@@ -78,13 +79,13 @@ class LiteServiceTest : public testing::Test {
     EXPECT_CALL(mock_finished_callback_, Run(state));
   }
 
+  NiceMock<MockServiceRequestSender>* mock_request_sender_;
   base::MockCallback<base::OnceCallback<void(Metrics::LiteScriptFinishedState)>>
       mock_finished_callback_;
   base::MockCallback<base::RepeatingCallback<void(bool)>>
       mock_script_running_callback_;
   base::MockCallback<base::OnceCallback<void(int, const std::string&)>>
       mock_response_callback_;
-  MockService* mock_native_service_ = nullptr;
   std::unique_ptr<LiteService> lite_service_;
   ActionsResponseProto get_actions_response_;
 };
@@ -98,9 +99,10 @@ TEST_F(LiteServiceTest, RunsNotificationOnDelete) {
       notification_callback,
       Run(Metrics::LiteScriptFinishedState::LITE_SCRIPT_SERVICE_DELETED));
   {
-    LiteService lite_service(std::make_unique<MockService>(), kFakeScriptPath,
-                             notification_callback.Get(),
-                             script_running_callback.Get());
+    LiteService lite_service(
+        std::make_unique<NiceMock<MockServiceRequestSender>>(),
+        GURL(kGetActionsServerUrl), kFakeScriptPath,
+        notification_callback.Get(), script_running_callback.Get());
   }
 }
 
@@ -125,20 +127,20 @@ TEST_F(LiteServiceTest, GetActionsOnlySendsScriptPath) {
   TriggerContextImpl non_empty_context;
   non_empty_context.SetCallerAccountHash("something");
 
-  EXPECT_CALL(*mock_native_service_,
-              OnGetActions(kFakeScriptPath, _, _, _, _, _))
+  EXPECT_CALL(*mock_request_sender_,
+              OnSendRequest(GURL(kGetActionsServerUrl), _, _))
       .Times(1)
-      .WillOnce([&](const std::string& script_path, const GURL& url,
-                    const TriggerContext& trigger_context,
-                    const std::string& global_payload,
-                    const std::string& script_payload,
+      .WillOnce([&](const GURL& url, const std::string& request_body,
                     Service::ResponseCallback& callback) {
-        EXPECT_THAT(script_path, Eq(kFakeScriptPath));
+        ScriptActionRequestProto rpc_proto;
+        ASSERT_TRUE(rpc_proto.ParseFromString(request_body));
+
+        EXPECT_THAT(rpc_proto.initial_request().query().script_path(0),
+                    Eq(kFakeScriptPath));
         // All other information has been cleared.
-        EXPECT_THAT(url, Eq(GURL()));
-        EXPECT_THAT(trigger_context.get_caller_account_hash(), Eq(""));
-        EXPECT_THAT(global_payload, Eq(""));
-        EXPECT_THAT(script_payload, Eq(""));
+        EXPECT_THAT(rpc_proto.global_payload(), Eq(""));
+        EXPECT_THAT(rpc_proto.script_payload(), Eq(""));
+        EXPECT_THAT(rpc_proto.client_context(), Eq(ClientContextProto()));
       });
 
   lite_service_->GetActions(kFakeScriptPath, GURL(kFakeUrl), non_empty_context,
@@ -157,13 +159,10 @@ TEST_F(LiteServiceTest, GetActionsOnlyFetchesFromScriptPath) {
 TEST_F(LiteServiceTest, StopsOnGetActionsFailed) {
   ExpectStopWithFinishedState(
       Metrics::LiteScriptFinishedState::LITE_SCRIPT_GET_ACTIONS_FAILED);
-  EXPECT_CALL(*mock_native_service_,
-              OnGetActions(kFakeScriptPath, _, _, _, _, _))
+  EXPECT_CALL(*mock_request_sender_,
+              OnSendRequest(GURL(kGetActionsServerUrl), _, _))
       .Times(1)
-      .WillOnce([&](const std::string& script_path, const GURL& url,
-                    const TriggerContext& trigger_context,
-                    const std::string& global_payload,
-                    const std::string& script_payload,
+      .WillOnce([&](const GURL& url, const std::string& request_body,
                     Service::ResponseCallback& callback) {
         std::move(callback).Run(net::HTTP_UNAUTHORIZED, std::string());
       });
@@ -177,13 +176,10 @@ TEST_F(LiteServiceTest, StopsOnGetActionsFailed) {
 TEST_F(LiteServiceTest, StopsOnGetActionsParsingError) {
   ExpectStopWithFinishedState(
       Metrics::LiteScriptFinishedState::LITE_SCRIPT_GET_ACTIONS_PARSE_ERROR);
-  EXPECT_CALL(*mock_native_service_,
-              OnGetActions(kFakeScriptPath, _, _, _, _, _))
+  EXPECT_CALL(*mock_request_sender_,
+              OnSendRequest(GURL(kGetActionsServerUrl), _, _))
       .Times(1)
-      .WillOnce([&](const std::string& script_path, const GURL& url,
-                    const TriggerContext& trigger_context,
-                    const std::string& global_payload,
-                    const std::string& script_payload,
+      .WillOnce([&](const GURL& url, const std::string& request_body,
                     Service::ResponseCallback& callback) {
         std::move(callback).Run(net::HTTP_OK, std::string("invalid proto"));
       });

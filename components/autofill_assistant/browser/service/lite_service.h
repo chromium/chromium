@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/service/service_impl.h"
+#include "components/autofill_assistant/browser/service/service_request_sender.h"
 #include "components/version_info/version_info.h"
 #include "url/gurl.h"
 
@@ -25,7 +26,8 @@ namespace autofill_assistant {
 class LiteService : public Service {
  public:
   explicit LiteService(
-      std::unique_ptr<Service> service_impl,
+      std::unique_ptr<ServiceRequestSender> request_sender,
+      const GURL& get_actions_server_url,
       const std::string& trigger_script_path,
       base::OnceCallback<void(Metrics::LiteScriptFinishedState)>
           notify_finished_callback,
@@ -78,8 +80,12 @@ class LiteService : public Service {
   void StopWithoutErrorMessage(ResponseCallback callback,
                                Metrics::LiteScriptFinishedState state);
 
-  // The actual service that communicates with the backend.
-  std::unique_ptr<Service> service_impl_;
+  // The request sender that communicates with the backend.
+  std::unique_ptr<ServiceRequestSender> request_sender_;
+
+  // The GURL of the GetActions/GetNextActions rpc handler.
+  GURL get_actions_server_url_;
+
   // The script path to fetch actions from.
   std::string trigger_script_path_;
 

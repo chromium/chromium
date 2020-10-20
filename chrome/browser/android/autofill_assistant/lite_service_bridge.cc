@@ -11,7 +11,6 @@
 #include "components/autofill_assistant/browser/service/api_key_fetcher.h"
 #include "components/autofill_assistant/browser/service/lite_service.h"
 #include "components/autofill_assistant/browser/service/server_url_fetcher.h"
-#include "components/autofill_assistant/browser/service/service_impl.h"
 #include "content/public/browser/web_contents.h"
 
 namespace autofill_assistant {
@@ -48,17 +47,15 @@ jlong JNI_AutofillAssistantLiteService_CreateLiteService(
   }
 
   ServerUrlFetcher url_fetcher{ServerUrlFetcher::GetDefaultServerUrl()};
-  auto request_sender = std::make_unique<ServiceRequestSender>(
-      web_contents->GetBrowserContext(), /* access_token_fetcher = */ nullptr,
-      std::make_unique<NativeURLLoaderFactory>(),
-      ApiKeyFetcher().GetAPIKey(chrome::GetChannel()),
-      /* auth_enabled = */ false, /* disable_auth_if_no_access_token = */ true);
-
   return reinterpret_cast<jlong>(new LiteService(
-      std::make_unique<ServiceImpl>(std::move(request_sender),
-                                    url_fetcher.GetSupportsScriptEndpoint(),
-                                    url_fetcher.GetNextActionsEndpoint(),
-                                    std::make_unique<EmptyClientContext>()),
+      std::make_unique<ServiceRequestSender>(
+          web_contents->GetBrowserContext(),
+          /* access_token_fetcher = */ nullptr,
+          std::make_unique<NativeURLLoaderFactory>(),
+          ApiKeyFetcher().GetAPIKey(chrome::GetChannel()),
+          /* auth_enabled = */ false,
+          /* disable_auth_if_no_access_token = */ true),
+      url_fetcher.GetNextActionsEndpoint(),
       base::android::ConvertJavaStringToUTF8(env, jtrigger_script_path),
       base::BindOnce(&OnFinished, base::android::ScopedJavaGlobalRef<jobject>(
                                       java_lite_service)),

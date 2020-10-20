@@ -12,17 +12,20 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/autofill_assistant/browser/protocol_utils.h"
 #include "net/http/http_status_code.h"
 
 namespace autofill_assistant {
 
 LiteService::LiteService(
-    std::unique_ptr<Service> service_impl,
+    std::unique_ptr<ServiceRequestSender> request_sender,
+    const GURL& get_actions_server_url,
     const std::string& trigger_script_path,
     base::OnceCallback<void(Metrics::LiteScriptFinishedState)>
         notify_finished_callback,
     base::RepeatingCallback<void(bool)> notify_script_running_callback)
-    : service_impl_(std::move(service_impl)),
+    : request_sender_(std::move(request_sender)),
+      get_actions_server_url_(get_actions_server_url),
       trigger_script_path_(trigger_script_path),
       notify_finished_callback_(std::move(notify_finished_callback)),
       notify_script_running_callback_(
@@ -70,10 +73,12 @@ void LiteService::GetActions(const std::string& script_path,
 
   // Note: trigger context and payloads should not be sent to the backend for
   // privacy reasons.
-  service_impl_->GetActions(
-      trigger_script_path_, GURL(), TriggerContextImpl(),
-      /* global_payload = */ std::string(),
-      /* script_payload = */ std::string(),
+  request_sender_->SendRequest(
+      get_actions_server_url_,
+      ProtocolUtils::CreateInitialScriptActionsRequest(
+          trigger_script_path_, GURL(), /* global_payload = */ std::string(),
+          /* script_payload = */ std::string(), EmptyClientContext().AsProto(),
+          /* script_parameters = */ {}),
       base::BindOnce(&LiteService::OnGetActions, weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback)));
 }
