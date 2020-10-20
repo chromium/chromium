@@ -104,6 +104,13 @@ class ChromePasswordManagerClient
       CredentialsCallback callback) override;
   void ShowTouchToFill(
       password_manager::PasswordManagerDriver* driver) override;
+
+#if defined(OS_ANDROID)
+  // Notifies `PasswordReuseDetectionManager` about passwords selected from
+  // AllPasswordsBottomSheet.
+  void OnPasswordSelected(const base::string16& text) override;
+#endif
+
   bool IsAutofillAssistantUIVisible() const override;
   // Returns a pointer to the BiometricAuthenticator which is created on demand.
   // This is currently only implemented for Android, on all other platforms this

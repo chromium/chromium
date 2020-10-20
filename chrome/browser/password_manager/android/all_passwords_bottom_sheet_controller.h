@@ -13,6 +13,7 @@
 #include "url/gurl.h"
 
 namespace password_manager {
+class PasswordManagerClient;
 class PasswordManagerDriver;
 }  // namespace password_manager
 
@@ -33,7 +34,8 @@ class AllPasswordsBottomSheetController
       base::WeakPtr<password_manager::PasswordManagerDriver> driver,
       password_manager::PasswordStore* store,
       base::OnceCallback<void()> dismissal_callback,
-      autofill::mojom::FocusedFieldType focused_field_type);
+      autofill::mojom::FocusedFieldType focused_field_type,
+      password_manager::PasswordManagerClient* client);
 
   AllPasswordsBottomSheetController(
       content::WebContents* web_contents,
@@ -89,6 +91,11 @@ class AllPasswordsBottomSheetController
 
   // The type of field on which the user is focused, e.g. PASSWORD.
   autofill::mojom::FocusedFieldType focused_field_type_;
+
+  // The PasswordManagerClient associated with the current |web_contents_|.
+  // Used to tell `PasswordReuseDetectionManager` that a password has been
+  // reused.
+  password_manager::PasswordManagerClient* client_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ALL_PASSWORDS_BOTTOM_SHEET_CONTROLLER_H_

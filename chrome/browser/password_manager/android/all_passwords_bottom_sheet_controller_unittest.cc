@@ -14,6 +14,7 @@
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "content/public/test/browser_task_environment.h"
@@ -62,6 +63,12 @@ class MockAllPasswordsBottomSheetView : public AllPasswordsBottomSheetView {
               (override));
 };
 
+class MockPasswordManagerClient
+    : public password_manager::StubPasswordManagerClient {
+ public:
+  MOCK_METHOD(void, OnPasswordSelected, (const base::string16&), (override));
+};
+
 UiCredential MakeUiCredential(const std::string& username,
                               const std::string& password) {
   return UiCredential(base::UTF8ToUTF16(username), base::UTF8ToUTF16(password),
@@ -93,7 +100,8 @@ class AllPasswordsBottomSheetControllerTest : public testing::Test {
             util::PassKey<AllPasswordsBottomSheetControllerTest>(),
             std::move(mock_view_unique_ptr), driver_.AsWeakPtr(), store_.get(),
             dissmissal_callback_.Get(),
-            FocusedFieldType::kFillablePasswordField);
+            FocusedFieldType::kFillablePasswordField,
+            mock_pwd_manager_client_.get());
   }
 
   MockPasswordManagerDriver& driver() { return driver_; }
@@ -110,6 +118,10 @@ class AllPasswordsBottomSheetControllerTest : public testing::Test {
 
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
 
+  MockPasswordManagerClient& client() {
+    return *mock_pwd_manager_client_.get();
+  }
+
  private:
   content::BrowserTaskEnvironment task_env_;
   MockPasswordManagerDriver driver_;
@@ -119,6 +131,8 @@ class AllPasswordsBottomSheetControllerTest : public testing::Test {
   MockAllPasswordsBottomSheetView* mock_view_;
   DismissCallback dissmissal_callback_;
   std::unique_ptr<AllPasswordsBottomSheetController> all_passwords_controller_;
+  std::unique_ptr<MockPasswordManagerClient> mock_pwd_manager_client_ =
+      std::make_unique<MockPasswordManagerClient>();
 };
 
 TEST_F(AllPasswordsBottomSheetControllerTest, Show) {
@@ -155,4 +169,12 @@ TEST_F(AllPasswordsBottomSheetControllerTest, OnCredentialSelected) {
 TEST_F(AllPasswordsBottomSheetControllerTest, OnDismiss) {
   EXPECT_CALL(dismissal_callback(), Run());
   all_passwords_controller()->OnDismiss();
+}
+
+TEST_F(AllPasswordsBottomSheetControllerTest,
+       OnCredentialSelectedTriggersPhishGuard) {
+  EXPECT_CALL(client(), OnPasswordSelected(base::UTF8ToUTF16(kPassword)));
+
+  all_passwords_controller()->OnCredentialSelected(
+      base::UTF8ToUTF16(kUsername1), base::UTF8ToUTF16(kPassword));
 }

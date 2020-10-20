@@ -4,15 +4,18 @@
 
 #include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_controller.h"
 
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/ui/android/passwords/all_passwords_bottom_sheet_view.h"
 #include "chrome/browser/ui/android/passwords/all_passwords_bottom_sheet_view_impl.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "content/public/browser/web_contents.h"
 
 using autofill::mojom::FocusedFieldType;
+using password_manager::PasswordManagerClient;
 
 // No-op constructor for tests.
 AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
@@ -21,12 +24,14 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
     base::WeakPtr<password_manager::PasswordManagerDriver> driver,
     password_manager::PasswordStore* store,
     base::OnceCallback<void()> dismissal_callback,
-    FocusedFieldType focused_field_type)
+    FocusedFieldType focused_field_type,
+    PasswordManagerClient* client)
     : view_(std::move(view)),
       store_(store),
       dismissal_callback_(std::move(dismissal_callback)),
       driver_(std::move(driver)),
-      focused_field_type_(focused_field_type) {}
+      focused_field_type_(focused_field_type),
+      client_(client) {}
 
 AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
     content::WebContents* web_contents,
@@ -47,6 +52,7 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
   password_manager::ContentPasswordManagerDriver* driver =
       factory->GetDriverForFrame(web_contents_->GetFocusedFrame());
   driver_ = driver->AsWeakPtr();
+  client_ = ChromePasswordManagerClient::FromWebContents(web_contents_);
 }
 
 AllPasswordsBottomSheetController::~AllPasswordsBottomSheetController() =
@@ -77,6 +83,13 @@ void AllPasswordsBottomSheetController::OnCredentialSelected(
   } else {
     driver_->FillIntoFocusedField(is_password_field, username);
   }
+
+  // `client_` is guaranteed to be valid here.
+  // Both the `client_` and `PasswordAccessoryController` are attached to
+  // WebContents. And AllPasswordBottomSheetController is owned by
+  // PasswordAccessoryController.
+  DCHECK(client_);
+  client_->OnPasswordSelected(password);
 
   // Consumes the dismissal callback to destroy the native controller and java
   // controller after the user selects a credential.

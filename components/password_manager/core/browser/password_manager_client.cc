@@ -31,6 +31,8 @@ bool PasswordManagerClient::RequiresReauthToFill() {
 
 void PasswordManagerClient::ShowTouchToFill(PasswordManagerDriver* driver) {}
 
+void PasswordManagerClient::OnPasswordSelected(const base::string16& text) {}
+
 BiometricAuthenticator* PasswordManagerClient::GetBiometricAuthenticator() {
   return nullptr;
 }

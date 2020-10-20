@@ -446,6 +446,13 @@ void ChromePasswordManagerClient::ShowTouchToFill(
 #endif
 }
 
+#if defined(OS_ANDROID)
+void ChromePasswordManagerClient::OnPasswordSelected(
+    const base::string16& text) {
+  password_reuse_detection_manager_.OnPaste(text);
+}
+#endif
+
 bool ChromePasswordManagerClient::IsAutofillAssistantUIVisible() const {
   auto* autofill_assistant_manager =
       autofill_assistant::RuntimeManager::GetForWebContents(web_contents());

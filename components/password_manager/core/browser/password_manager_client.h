@@ -173,6 +173,10 @@ class PasswordManagerClient {
   // Instructs the client to show the Touch To Fill UI.
   virtual void ShowTouchToFill(PasswordManagerDriver* driver);
 
+  // Informs `PasswordReuseDetectionManager` about reused passwords selected
+  // from the AllPasswordsBottomSheet.
+  virtual void OnPasswordSelected(const base::string16& text);
+
   // Returns a pointer to a BiometricAuthenticator. Might be null if
   // BiometricAuthentication is not available for a given platform.
   virtual BiometricAuthenticator* GetBiometricAuthenticator();
