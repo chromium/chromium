@@ -864,6 +864,8 @@ crbug.com/1067242 [ Mac10.13 ] external/wpt/css/css-text-decor/text-decoration-t
 crbug.com/1068947 [ Win10 ] external/wpt/css/css-text-decor/text-underline-position-from-font-variable.html [ Failure ]
 crbug.com/1068947 [ Win10 ] external/wpt/css/css-text-decor/text-decoration-thickness-fixed.html [ Failure ]
 crbug.com/1068947 [ Win10 ] external/wpt/css/css-text-decor/text-decoration-thickness-from-font-variable.html [ Failure ]
+# Windows 10 bot upgrade now causes this failure on Windows-10-18363
+crbug.com/1140324 [ Win10 ] external/wpt/css/css-text-decor/text-underline-offset-variable.html [ Failure ]
 
 # Tentative mansonry tests
 crbug.com/1076027 external/wpt/css/css-grid/masonry/* [ Skip ]
