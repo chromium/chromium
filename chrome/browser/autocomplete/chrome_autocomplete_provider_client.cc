@@ -72,9 +72,12 @@ namespace {
 
 #if defined(OS_ANDROID)
 class AutocompleteClientTabAndroidUserData
-    : public TabAndroidUserData<AutocompleteClientTabAndroidUserData> {
+    : public TabAndroidUserData<AutocompleteClientTabAndroidUserData>,
+      public TabAndroid::Observer {
  public:
-  ~AutocompleteClientTabAndroidUserData() override = default;
+  ~AutocompleteClientTabAndroidUserData() override {
+    tab_->RemoveObserver(this);
+  }
 
   const GURL& GetStrippedURL() { return stripped_url_; }
 
@@ -89,10 +92,19 @@ class AutocompleteClientTabAndroidUserData
     }
   }
 
+  // TabAndroid::Observer implementation
+  void OnInitWebContents(TabAndroid* tab) override {
+    tab->RemoveUserData(UserDataKey());
+  }
+
  private:
-  explicit AutocompleteClientTabAndroidUserData(TabAndroid* tab) {}
+  explicit AutocompleteClientTabAndroidUserData(TabAndroid* tab) : tab_(tab) {
+    DCHECK(tab);
+    tab->AddObserver(this);
+  }
   friend class TabAndroidUserData<AutocompleteClientTabAndroidUserData>;
 
+  TabAndroid* tab_;
   bool initialized_ = false;
   GURL stripped_url_;
 
@@ -505,8 +517,6 @@ TabAndroid* ChromeAutocompleteProviderClient::GetTabOpenWithURL(
       } else {
         // Browser did not load the tab yet after Chrome started. To avoid
         // reloading WebContents, we just compare URLs.
-        // TODO(crbug.com/1138729): Delete user data after WebContents is
-        // initialized.
         AutocompleteClientTabAndroidUserData::CreateForTabAndroid(tab);
         AutocompleteClientTabAndroidUserData* user_data =
             AutocompleteClientTabAndroidUserData::FromTabAndroid(tab);

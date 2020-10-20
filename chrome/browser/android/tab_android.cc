@@ -231,6 +231,14 @@ bool TabAndroid::IsHidden() {
   return Java_TabImpl_isHidden(env, weak_java_tab_.get(env));
 }
 
+void TabAndroid::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void TabAndroid::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void TabAndroid::Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj) {
   delete this;
 }
@@ -274,6 +282,9 @@ void TabAndroid::InitWebContents(
 
   // Shows a warning notification for dangerous flags in about:flags.
   chrome::ShowBadFlagsPrompt(web_contents());
+
+  for (Observer& observer : observers_)
+    observer.OnInitWebContents(this);
 }
 
 void TabAndroid::UpdateDelegates(
