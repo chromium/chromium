@@ -1873,8 +1873,8 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     const SiteInfo dest_site_info =
         current_instance_impl->DeriveSiteInfo(dest_url_info);
     bool use_process_per_site =
-        RenderProcessHostImpl::ShouldUseProcessPerSite(
-            current_instance_impl->GetBrowserContext(), dest_site_info) &&
+        dest_site_info.ShouldUseProcessPerSite(
+            current_instance_impl->GetBrowserContext()) &&
         RenderProcessHostImpl::GetSoleProcessHostForSite(
             current_instance_impl->GetIsolationContext(), dest_site_info);
 

@@ -242,6 +242,27 @@ bool SiteInfo::ShouldLockProcessToSite(
   return true;
 }
 
+bool SiteInfo::ShouldUseProcessPerSite(BrowserContext* browser_context) const {
+  // Returns true if we should use the process-per-site model.  This will be
+  // the case if the --process-per-site switch is specified, or in
+  // process-per-site-instance for particular sites (e.g., NTP). Note that
+  // --single-process is handled in ShouldTryToUseExistingProcessHost.
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  if (command_line.HasSwitch(switches::kProcessPerSite))
+    return true;
+
+  // Error pages should use process-per-site model, as it is useful to
+  // consolidate them to minimize resource usage and there is no security
+  // drawback to combining them all in the same process.
+  if (site_url_.SchemeIs(kChromeErrorScheme))
+    return true;
+
+  // Otherwise let the content client decide, defaulting to false.
+  return GetContentClient()->browser()->ShouldUseProcessPerSite(browser_context,
+                                                                site_url_);
+}
+
 SiteInstanceImpl::SiteInstanceImpl(BrowsingInstance* browsing_instance)
     : id_(next_site_instance_id_++),
       active_frame_count_(0),
@@ -450,10 +471,7 @@ bool SiteInstanceImpl::HasProcess() {
 
   // If we would use process-per-site for this site, also check if there is an
   // existing process that we would use if GetProcess() were called.
-  BrowserContext* browser_context = browsing_instance_->GetBrowserContext();
-  if (has_site_ &&
-      RenderProcessHostImpl::ShouldUseProcessPerSite(browser_context,
-                                                     site_info_) &&
+  if (ShouldUseProcessPerSite() &&
       RenderProcessHostImpl::GetSoleProcessHostForSite(GetIsolationContext(),
                                                        site_info_)) {
     return true;
@@ -472,13 +490,8 @@ RenderProcessHost* SiteInstanceImpl::GetProcess() {
 
   // Create a new process if ours went away or was reused.
   if (!process_) {
-    BrowserContext* browser_context = browsing_instance_->GetBrowserContext();
-
     // Check if the ProcessReusePolicy should be updated.
-    bool should_use_process_per_site =
-        has_site_ && RenderProcessHostImpl::ShouldUseProcessPerSite(
-                         browser_context, site_info_);
-    if (should_use_process_per_site) {
+    if (ShouldUseProcessPerSite()) {
       process_reuse_policy_ = ProcessReusePolicy::PROCESS_PER_SITE;
     } else if (process_reuse_policy_ == ProcessReusePolicy::PROCESS_PER_SITE) {
       process_reuse_policy_ = ProcessReusePolicy::DEFAULT;
@@ -507,6 +520,11 @@ AgentSchedulingGroupHost& SiteInstanceImpl::GetAgentSchedulingGroup() {
   return *agent_scheduling_group_;
 }
 
+bool SiteInstanceImpl::ShouldUseProcessPerSite() const {
+  BrowserContext* browser_context = browsing_instance_->GetBrowserContext();
+  return has_site_ && site_info_.ShouldUseProcessPerSite(browser_context);
+}
+
 void SiteInstanceImpl::ReuseCurrentProcessIfPossible(
     RenderProcessHost* current_process) {
   DCHECK(!IsGuest());
@@ -519,10 +537,8 @@ void SiteInstanceImpl::ReuseCurrentProcessIfPossible(
   // Note also that this does not apply for the reverse case: if the current
   // process is used for a process-per-site site, it is ok to reuse this for the
   // new page (regardless of the site).
-  if (HasSite() && RenderProcessHostImpl::ShouldUseProcessPerSite(
-                       browsing_instance_->GetBrowserContext(), site_info_)) {
+  if (ShouldUseProcessPerSite())
     return;
-  }
 
   // Do not reuse the process if it's not suitable for this SiteInstance. For
   // example, this won't allow reusing a process if it's locked to a site that's
@@ -632,13 +648,9 @@ void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
   browsing_instance_->RegisterSiteInstance(this);
 
   // Update the process reuse policy based on the site.
-  BrowserContext* browser_context = browsing_instance_->GetBrowserContext();
-  bool should_use_process_per_site =
-      RenderProcessHostImpl::ShouldUseProcessPerSite(browser_context,
-                                                     site_info_);
-  if (should_use_process_per_site) {
+  bool should_use_process_per_site = ShouldUseProcessPerSite();
+  if (should_use_process_per_site)
     process_reuse_policy_ = ProcessReusePolicy::PROCESS_PER_SITE;
-  }
 
   if (process_) {
     LockProcessIfNeeded();

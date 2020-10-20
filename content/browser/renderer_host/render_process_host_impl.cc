@@ -4322,30 +4322,6 @@ RenderProcessHost* RenderProcessHostImpl::GetUnusedProcessHostForServiceWorker(
 }
 
 // static
-bool RenderProcessHostImpl::ShouldUseProcessPerSite(
-    BrowserContext* browser_context,
-    const SiteInfo& site_info) {
-  // Returns true if we should use the process-per-site model.  This will be
-  // the case if the --process-per-site switch is specified, or in
-  // process-per-site-instance for particular sites (e.g., NTP). Note that
-  // --single-process is handled in ShouldTryToUseExistingProcessHost.
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-  if (command_line.HasSwitch(switches::kProcessPerSite))
-    return true;
-
-  // Error pages should use process-per-site model, as it is useful to
-  // consolidate them to minimize resource usage and there is no security
-  // drawback to combining them all in the same process.
-  if (site_info.site_url().SchemeIs(kChromeErrorScheme))
-    return true;
-
-  // Otherwise let the content client decide, defaulting to false.
-  return GetContentClient()->browser()->ShouldUseProcessPerSite(
-      browser_context, site_info.site_url());
-}
-
-// static
 RenderProcessHost* RenderProcessHostImpl::GetSoleProcessHostForSite(
     const IsolationContext& isolation_context,
     const SiteInfo& site_info) {

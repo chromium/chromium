@@ -176,12 +176,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
       BrowserContext* browser_context,
       SiteInstanceImpl* site_instance);
 
-  // Returns whether the process-per-site model is in use (globally or just for
-  // the current site), in which case we should ensure there is only one
-  // RenderProcessHost per site for the entire browser context.
-  static bool ShouldUseProcessPerSite(BrowserContext* browser_context,
-                                      const SiteInfo& site_info);
-
   ~RenderProcessHostImpl() override;
 
   // RenderProcessHost implementation (public portion).

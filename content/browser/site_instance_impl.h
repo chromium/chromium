@@ -159,6 +159,11 @@ class CONTENT_EXPORT SiteInfo {
   // RequiresDedicatedProcess().
   bool ShouldLockProcessToSite(const IsolationContext& isolation_context) const;
 
+  // Returns whether the process-per-site model is in use (globally or just for
+  // the current site), in which case we should ensure there is only one
+  // RenderProcessHost per site for the entire browser context.
+  bool ShouldUseProcessPerSite(BrowserContext* browser_context) const;
+
  private:
   static auto MakeTie(const SiteInfo& site_info);
 
@@ -350,6 +355,10 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   ProcessReusePolicy process_reuse_policy() const {
     return process_reuse_policy_;
   }
+
+  // Returns true if |has_site_| is true and |site_info_| indicates that the
+  // process-per-site model should be used.
+  bool ShouldUseProcessPerSite() const;
 
   // Checks if |current_process| can be reused for this SiteInstance, and
   // sets |process_| to |current_process| if so.
