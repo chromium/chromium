@@ -62,6 +62,10 @@ class OverscrollActionsTabHelperTest : public PlatformTest {
     base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(
         kMinimumPullDurationToTransitionToReadyInSeconds));
     [ui_scroll_view_.delegate scrollViewDidScroll:ui_scroll_view_];
+    // Scroll to content offset below action threshold to cancel bounce
+    // animation.
+    scroll_view_proxy_.contentOffset = CGPointMake(0, -56);
+    // Scroll past action threshold to trigger refresh action.
     scroll_view_proxy_.contentOffset = CGPointMake(0, -293);
     CGPoint target_offset = CGPointMake(0, -92);
     [ui_scroll_view_.delegate scrollViewWillEndDragging:ui_scroll_view_

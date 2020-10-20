@@ -3746,7 +3746,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)updateForFullscreenProgress:(CGFloat)progress {
   [self updateHeadersForFullscreenProgress:progress];
   [self updateFootersForFullscreenProgress:progress];
-  if (!fullscreen::features::ShouldScopeFullscreenControllerToBrowser()) {
+  if (!fullscreen::features::ShouldUseSmoothScrolling()) {
     [self updateBrowserViewportForFullscreenProgress:progress];
   }
 }
