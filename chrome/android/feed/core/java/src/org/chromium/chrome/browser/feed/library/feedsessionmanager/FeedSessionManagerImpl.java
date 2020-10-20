@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.feed.library.api.host.logging.Task;
 import org.chromium.chrome.browser.feed.library.api.host.scheduler.SchedulerApi;
 import org.chromium.chrome.browser.feed.library.api.host.scheduler.SchedulerApi.RequestBehavior;
 import org.chromium.chrome.browser.feed.library.api.host.scheduler.SchedulerApi.SessionState;
+import org.chromium.chrome.browser.feed.library.api.internal.actionmanager.ActionManager;
 import org.chromium.chrome.browser.feed.library.api.internal.common.Model;
 import org.chromium.chrome.browser.feed.library.api.internal.common.PayloadWithId;
 import org.chromium.chrome.browser.feed.library.api.internal.common.ThreadUtils;
@@ -60,6 +61,9 @@ import org.chromium.chrome.browser.feed.library.feedsessionmanager.internal.Sess
 import org.chromium.chrome.browser.feed.library.feedsessionmanager.internal.SessionCache;
 import org.chromium.chrome.browser.feed.library.feedsessionmanager.internal.SessionFactory;
 import org.chromium.chrome.browser.feed.library.feedsessionmanager.internal.SessionManagerMutation;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.feed.core.proto.libraries.api.internal.StreamDataProto.StreamDataOperation;
 import org.chromium.components.feed.core.proto.libraries.api.internal.StreamDataProto.StreamPayload;
 import org.chromium.components.feed.core.proto.libraries.api.internal.StreamDataProto.StreamSharedState;
@@ -71,6 +75,7 @@ import org.chromium.components.feed.core.proto.libraries.api.internal.StreamData
 import org.chromium.components.feed.core.proto.wire.ConsistencyTokenProto.ConsistencyToken;
 import org.chromium.components.feed.core.proto.wire.ContentIdProto.ContentId;
 import org.chromium.components.feed.core.proto.wire.PietSharedStateItemProto.PietSharedStateItem;
+import org.chromium.components.user_prefs.UserPrefs;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -136,6 +141,7 @@ public final class FeedSessionManagerImpl
     private final Configuration mConfiguration;
     private final MainThreadRunner mMainThreadRunner;
     private final BasicLoggingApi mBasicLoggingApi;
+    private final ActionManager mActionManager;
     private final long mSessionPopulationTimeoutMs;
     private final boolean mUploadingActionsEnabled;
 
@@ -157,7 +163,8 @@ public final class FeedSessionManagerImpl
             ActionUploadRequestManager actionUploadRequestManager, SchedulerApi schedulerApi,
             Configuration configuration, Clock clock,
             FeedObservable<FeedLifecycleListener> lifecycleListenerObservable,
-            MainThreadRunner mainThreadRunner, BasicLoggingApi basicLoggingApi) {
+            MainThreadRunner mainThreadRunner, BasicLoggingApi basicLoggingApi,
+            ActionManager actionManager) {
         this.mTaskQueue = taskQueue;
         this.mSessionFactory = sessionFactory;
         this.mSessionCache = sessionCache;
@@ -175,6 +182,7 @@ public final class FeedSessionManagerImpl
         this.mConfiguration = configuration;
         this.mMainThreadRunner = mainThreadRunner;
         this.mBasicLoggingApi = basicLoggingApi;
+        this.mActionManager = actionManager;
         mUploadingActionsEnabled =
                 configuration.getValueOrDefault(ConfigKey.UNDOABLE_ACTIONS_ENABLED, false);
         mSessionPopulationTimeoutMs =
@@ -793,10 +801,32 @@ public final class FeedSessionManagerImpl
                         mOutstandingMutations.size());
                 mOutstandingMutations.clear();
                 break;
+            case LifecycleEvent.ENTER_FOREGROUND:
+                mActionManager.setCanUploadClicksAndViewsWhenNoticeCardIsPresent(canUpload());
+                break;
+            case LifecycleEvent.ENTER_BACKGROUND:
+                mActionManager.setCanUploadClicksAndViewsWhenNoticeCardIsPresent(canUpload());
+                break;
+            case LifecycleEvent.SIGNED_IN:
+                mActionManager.setCanUploadClicksAndViewsWhenNoticeCardIsPresent(canUpload());
+                break;
+            case LifecycleEvent.SIGNED_OUT:
+                mActionManager.setCanUploadClicksAndViewsWhenNoticeCardIsPresent(canUpload());
+                break;
             default:
                 // Do nothing
         }
     }
+
+    private boolean canUpload() {
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.INTEREST_FEEDV1_CLICKS_AND_VIEWS_CONDITIONAL_UPLOAD)) {
+            return UserPrefs.get(Profile.getLastUsedRegularProfile())
+                    .getBoolean(Pref.HAS_REACHED_CLICK_AND_VIEW_ACTIONS_UPLOAD_CONDITIONS);
+        }
+        return true;
+    }
+
     // TODO: implement longer term fix for reading/saving the consistency token
     @Override
     public void triggerUploadActions(Set<StreamUploadableAction> actions) {

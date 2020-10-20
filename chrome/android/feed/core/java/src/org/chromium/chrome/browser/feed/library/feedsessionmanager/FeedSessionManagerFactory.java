@@ -8,6 +8,7 @@ import org.chromium.chrome.browser.feed.library.api.host.config.Configuration;
 import org.chromium.chrome.browser.feed.library.api.host.config.Configuration.ConfigKey;
 import org.chromium.chrome.browser.feed.library.api.host.logging.BasicLoggingApi;
 import org.chromium.chrome.browser.feed.library.api.host.scheduler.SchedulerApi;
+import org.chromium.chrome.browser.feed.library.api.internal.actionmanager.ActionManager;
 import org.chromium.chrome.browser.feed.library.api.internal.common.ThreadUtils;
 import org.chromium.chrome.browser.feed.library.api.internal.protocoladapter.ProtocolAdapter;
 import org.chromium.chrome.browser.feed.library.api.internal.requestmanager.ActionUploadRequestManager;
@@ -48,6 +49,7 @@ public final class FeedSessionManagerFactory {
     private final FeedObservable<FeedLifecycleListener> mLifecycleListenerObservable;
     private final MainThreadRunner mMainThreadRunner;
     private final BasicLoggingApi mBasicLoggingApi;
+    private final ActionManager mActionManager;
 
     public FeedSessionManagerFactory(TaskQueue taskQueue, Store store, TimingUtils timingUtils,
             ThreadUtils threadUtils, ProtocolAdapter protocolAdapter,
@@ -55,7 +57,8 @@ public final class FeedSessionManagerFactory {
             ActionUploadRequestManager actionUploadRequestManager, SchedulerApi schedulerApi,
             Configuration configuration, Clock clock,
             FeedObservable<FeedLifecycleListener> lifecycleListenerObservable,
-            MainThreadRunner mainThreadRunner, BasicLoggingApi basicLoggingApi) {
+            MainThreadRunner mainThreadRunner, BasicLoggingApi basicLoggingApi,
+            ActionManager actionManager) {
         this.mTaskQueue = taskQueue;
         this.mStore = store;
         this.mTimingUtils = timingUtils;
@@ -69,6 +72,7 @@ public final class FeedSessionManagerFactory {
         this.mLifecycleListenerObservable = lifecycleListenerObservable;
         this.mMainThreadRunner = mainThreadRunner;
         this.mBasicLoggingApi = basicLoggingApi;
+        this.mActionManager = actionManager;
     }
 
     /** Creates a new FeedSessionManager and initializes it */
@@ -88,6 +92,6 @@ public final class FeedSessionManagerFactory {
                 sessionManagerMutation, contentCache, mStore, mTimingUtils, mThreadUtils,
                 mProtocolAdapter, mFeedRequestManager, mActionUploadRequestManager, mSchedulerApi,
                 mConfiguration, mClock, mLifecycleListenerObservable, mMainThreadRunner,
-                mBasicLoggingApi);
+                mBasicLoggingApi, mActionManager);
     }
 }

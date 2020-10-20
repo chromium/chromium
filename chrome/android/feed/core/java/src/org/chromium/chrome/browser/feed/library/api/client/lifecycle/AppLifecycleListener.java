@@ -25,6 +25,12 @@ public interface AppLifecycleListener {
     /** Called to clear all data then initiate a refresh. */
     void onClearAllWithRefresh();
 
+    /** Called when user signs in. */
+    void onSignedIn();
+
+    /** Called when user signs out. */
+    void onSignedOut();
+
     /**
      * Called when the host wants the Feed to perform any heavyweight initialization it might need
      * to do. This is the only trigger for the initialization process; if it’s not called, the host

@@ -59,6 +59,18 @@ public class FeedAppLifecycleListenerTest {
     }
 
     @Test
+    public void onSignedIn() {
+        mAppLifecycleListener.onSignedIn();
+        verify(mLifecycleListener).onLifecycleEvent(LifecycleEvent.SIGNED_IN);
+    }
+
+    @Test
+    public void onSignedOut() {
+        mAppLifecycleListener.onSignedOut();
+        verify(mLifecycleListener).onLifecycleEvent(LifecycleEvent.SIGNED_OUT);
+    }
+
+    @Test
     public void onInitialize() {
         mAppLifecycleListener.initialize();
         verify(mLifecycleListener).onLifecycleEvent(LifecycleEvent.INITIALIZE);

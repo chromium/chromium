@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.feed.library.common.testing;
 
+import static org.mockito.Mockito.mock;
+
 import com.google.protobuf.GeneratedMessageLite.GeneratedExtension;
 
 import org.chromium.chrome.browser.feed.library.api.client.lifecycle.AppLifecycleListener;
@@ -14,6 +16,7 @@ import org.chromium.chrome.browser.feed.library.api.host.proto.ProtoExtensionPro
 import org.chromium.chrome.browser.feed.library.api.host.scheduler.SchedulerApi;
 import org.chromium.chrome.browser.feed.library.api.host.storage.ContentStorageDirect;
 import org.chromium.chrome.browser.feed.library.api.host.storage.JournalStorageDirect;
+import org.chromium.chrome.browser.feed.library.api.internal.actionmanager.ActionManager;
 import org.chromium.chrome.browser.feed.library.api.internal.modelprovider.ModelProviderFactory;
 import org.chromium.chrome.browser.feed.library.api.internal.protocoladapter.ProtocolAdapter;
 import org.chromium.chrome.browser.feed.library.api.internal.scope.ClearAllListener;
@@ -106,10 +109,11 @@ public class InfraIntegrationScope {
         FakeActionUploadRequestManager fakeActionUploadRequestManager =
                 new FakeActionUploadRequestManager(mStore, new FakeViewActionManager(mStore),
                         FakeThreadUtils.withThreadChecks());
+        ActionManager actionManager = mock(ActionManager.class);
         mFeedSessionManager = new FeedSessionManagerFactory(mTaskQueue, mStore, timingUtils,
                 fakeThreadUtils, mFeedProtocolAdapter, mFakeFeedRequestManager,
                 fakeActionUploadRequestManager, schedulerApi, configuration, fakeClock,
-                mAppLifecycleListener, fakeMainThreadRunner, fakeBasicLoggingApi)
+                mAppLifecycleListener, fakeMainThreadRunner, fakeBasicLoggingApi, actionManager)
                                       .create();
         new ClearAllListener(
                 mTaskQueue, mFeedSessionManager, mStore, fakeThreadUtils, mAppLifecycleListener);

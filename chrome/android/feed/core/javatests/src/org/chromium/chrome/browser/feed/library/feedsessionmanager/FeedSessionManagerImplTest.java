@@ -8,6 +8,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -19,7 +20,9 @@ import com.google.common.collect.ImmutableSet;
 import com.google.protobuf.ByteString;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.robolectric.ParameterizedRobolectricTestRunner;
@@ -28,6 +31,7 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Consumer;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feed.library.api.common.MutationContext;
 import org.chromium.chrome.browser.feed.library.api.host.config.Configuration;
 import org.chromium.chrome.browser.feed.library.api.host.config.Configuration.ConfigKey;
@@ -36,6 +40,7 @@ import org.chromium.chrome.browser.feed.library.api.host.logging.RequestReason;
 import org.chromium.chrome.browser.feed.library.api.host.scheduler.SchedulerApi;
 import org.chromium.chrome.browser.feed.library.api.host.scheduler.SchedulerApi.RequestBehavior;
 import org.chromium.chrome.browser.feed.library.api.host.scheduler.SchedulerApi.SessionState;
+import org.chromium.chrome.browser.feed.library.api.internal.actionmanager.ActionManager;
 import org.chromium.chrome.browser.feed.library.api.internal.common.Model;
 import org.chromium.chrome.browser.feed.library.api.internal.common.SemanticPropertiesWithId;
 import org.chromium.chrome.browser.feed.library.api.internal.common.testing.ContentIdGenerators;
@@ -68,6 +73,10 @@ import org.chromium.chrome.browser.feed.library.testing.protocoladapter.FakeProt
 import org.chromium.chrome.browser.feed.library.testing.requestmanager.FakeActionUploadRequestManager;
 import org.chromium.chrome.browser.feed.library.testing.requestmanager.FakeFeedRequestManager;
 import org.chromium.chrome.browser.feed.library.testing.store.FakeStore;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.feed.core.proto.libraries.api.internal.StreamDataProto.StreamDataOperation;
 import org.chromium.components.feed.core.proto.libraries.api.internal.StreamDataProto.StreamPayload;
 import org.chromium.components.feed.core.proto.libraries.api.internal.StreamDataProto.StreamSharedState;
@@ -84,6 +93,9 @@ import org.chromium.components.feed.core.proto.wire.ConsistencyTokenProto.Consis
 import org.chromium.components.feed.core.proto.wire.ContentIdProto.ContentId;
 import org.chromium.components.feed.core.proto.wire.PietSharedStateItemProto.PietSharedStateItem;
 import org.chromium.components.feed.core.proto.wire.ResponseProto.Response;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 import java.nio.charset.Charset;
@@ -119,8 +131,23 @@ public class FeedSessionManagerImplTest {
     private FakeTaskQueue mFakeTaskQueue;
     private FakeThreadUtils mFakeThreadUtils;
     private FeedAppLifecycleListener mAppLifecycleListener;
+
+    @Rule
+    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+
+    @Rule
+    public JniMocker mocker = new JniMocker();
+
     @Mock
     private SchedulerApi mSchedulerApi;
+    @Mock
+    private UserPrefs.Natives mUserPrefsJniMock;
+    @Mock
+    private Profile mProfile;
+    @Mock
+    private PrefService mPrefService;
+    @Mock
+    private ActionManager mActionManager;
 
     @Parameters
     public static List<Object[]> data() {
@@ -133,6 +160,11 @@ public class FeedSessionManagerImplTest {
     @Before
     public void setUp() {
         initMocks(this);
+
+        mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
+        Profile.setLastUsedProfileForTesting(mProfile);
+        when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
+
         mConfiguration = new Configuration.Builder()
                                  .put(ConfigKey.UNDOABLE_ACTIONS_ENABLED, mUploadingActionsEnabled)
                                  .put(ConfigKey.STORAGE_MISS_THRESHOLD, STORAGE_MISS_THRESHOLD)
@@ -742,6 +774,38 @@ public class FeedSessionManagerImplTest {
         verify(modelProviderObserver).onSessionStart(uiContext);
     }
 
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.INTEREST_FEEDV1_CLICKS_AND_VIEWS_CONDITIONAL_UPLOAD)
+    public void testLifecycleEventsWhenConditionalUploadFeatureEnabled() {
+        when(mPrefService.getBoolean(Pref.HAS_REACHED_CLICK_AND_VIEW_ACTIONS_UPLOAD_CONDITIONS))
+                .thenReturn(false);
+
+        FeedSessionManagerImpl sessionManager = createFeedSessionManager(mConfiguration);
+
+        sessionManager.onLifecycleEvent(LifecycleEvent.ENTER_FOREGROUND);
+        sessionManager.onLifecycleEvent(LifecycleEvent.ENTER_BACKGROUND);
+        sessionManager.onLifecycleEvent(LifecycleEvent.SIGNED_IN);
+        sessionManager.onLifecycleEvent(LifecycleEvent.SIGNED_OUT);
+
+        verify(mActionManager, times(4)).setCanUploadClicksAndViewsWhenNoticeCardIsPresent(false);
+    }
+
+    @Test
+    @Features.DisableFeatures(ChromeFeatureList.INTEREST_FEEDV1_CLICKS_AND_VIEWS_CONDITIONAL_UPLOAD)
+    public void testLifecycleEventsWhenConditionalUploadFeatureDisabled() {
+        when(mPrefService.getBoolean(Pref.HAS_REACHED_CLICK_AND_VIEW_ACTIONS_UPLOAD_CONDITIONS))
+                .thenReturn(false);
+
+        FeedSessionManagerImpl sessionManager = createFeedSessionManager(mConfiguration);
+
+        sessionManager.onLifecycleEvent(LifecycleEvent.ENTER_FOREGROUND);
+        sessionManager.onLifecycleEvent(LifecycleEvent.ENTER_BACKGROUND);
+        sessionManager.onLifecycleEvent(LifecycleEvent.SIGNED_IN);
+        sessionManager.onLifecycleEvent(LifecycleEvent.SIGNED_OUT);
+
+        verify(mActionManager, times(4)).setCanUploadClicksAndViewsWhenNoticeCardIsPresent(true);
+    }
+
     private int populateSession(FeedSessionManagerImpl sessionManager, int featureCnt, int idStart,
             boolean reset,
             /*@Nullable*/ String sharedStateId) {
@@ -806,7 +870,7 @@ public class FeedSessionManagerImplTest {
         return new FeedSessionManagerFactory(mFakeTaskQueue, mFakeStore, mTimingUtils,
                 mFakeThreadUtils, mFakeProtocolAdapter, mFakeRequestManager,
                 mFakeActionUploadRequestManager, mSchedulerApi, configuration, mFakeClock,
-                mAppLifecycleListener, mFakeMainThreadRunner, mFakeBasicLoggingApi)
+                mAppLifecycleListener, mFakeMainThreadRunner, mFakeBasicLoggingApi, mActionManager)
                 .create();
     }
 }

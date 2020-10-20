@@ -50,6 +50,18 @@ public final class FeedAppLifecycleListener
     }
 
     @Override
+    public void onSignedIn() {
+        mThreadUtils.checkMainThread();
+        dispatchLifecycleEvent(LifecycleEvent.SIGNED_IN);
+    }
+
+    @Override
+    public void onSignedOut() {
+        mThreadUtils.checkMainThread();
+        dispatchLifecycleEvent(LifecycleEvent.SIGNED_OUT);
+    }
+
+    @Override
     public void initialize() {
         mThreadUtils.checkMainThread();
         Logger.i(TAG, "initialize called");

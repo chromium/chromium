@@ -14,13 +14,15 @@ public interface FeedLifecycleListener {
     /** The types of lifecycle events. */
     @StringDef({LifecycleEvent.ENTER_FOREGROUND, LifecycleEvent.ENTER_BACKGROUND,
             LifecycleEvent.CLEAR_ALL, LifecycleEvent.CLEAR_ALL_WITH_REFRESH,
-            LifecycleEvent.INITIALIZE})
+            LifecycleEvent.INITIALIZE, LifecycleEvent.SIGNED_IN, LifecycleEvent.SIGNED_OUT})
     @interface LifecycleEvent {
         String ENTER_FOREGROUND = "foreground";
         String ENTER_BACKGROUND = "background";
         String CLEAR_ALL = "clearAll";
         String CLEAR_ALL_WITH_REFRESH = "clearAllWithRefresh";
         String INITIALIZE = "initialize";
+        String SIGNED_IN = "signedIn";
+        String SIGNED_OUT = "signedOut";
     }
 
     void onLifecycleEvent(@LifecycleEvent String event);
