@@ -321,6 +321,8 @@ static_library("test_support") {
 
   if (is_win) {
     sources += [
+      "../browser/webshare/win/fake_buffer.cc",
+      "../browser/webshare/win/fake_buffer.h",
       "../browser/webshare/win/fake_data_transfer_manager.cc",
       "../browser/webshare/win/fake_data_transfer_manager.h",
       "../browser/webshare/win/fake_data_transfer_manager_interop.cc",
@@ -5810,6 +5812,7 @@ test("unit_tests") {
     sources += [
       "../browser/notifications/win/notification_template_builder_unittest.cc",
       "../browser/ui/views/uninstall_view_unittest.cc",
+      "../browser/webshare/win/fake_buffer_unittest.cc",
       "../browser/webshare/win/fake_data_transfer_manager_interop_unittest.cc",
       "../browser/webshare/win/fake_data_transfer_manager_unittest.cc",
       "../browser/webshare/win/show_share_ui_for_window_operation_unittest.cc",
