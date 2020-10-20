@@ -70,7 +70,7 @@ mojom::LacrosInitParamsPtr GetLacrosInitParams(
   auto params = mojom::LacrosInitParams::New();
   params->ash_chrome_service_version =
       crosapi::mojom::AshChromeService::Version_;
-  params->ash_metrics_enabled_has_value = true;
+  params->deprecated_ash_metrics_enabled_has_value = true;
   params->ash_metrics_enabled = g_browser_process->local_state()->GetBoolean(
       metrics::prefs::kMetricsReportingEnabled);
 

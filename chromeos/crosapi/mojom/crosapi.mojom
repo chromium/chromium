@@ -125,9 +125,9 @@ struct LacrosInitParams {
   [MinVersion=1]
   uint32 ash_chrome_service_version@0;
 
-  // Whether |ash_metrics_enabled| has a value. See struct comment.
+  // Deprecated in M88. |ash_metrics_enabled| always has a value.
   [MinVersion=2]
-  bool ash_metrics_enabled_has_value@1;
+  bool deprecated_ash_metrics_enabled_has_value@1;
 
   // Whether metrics are enabled in ash-chrome. On lacros first run we inherit
   // metrics consent from ash, because on Chrome OS metrics consent is chosen
