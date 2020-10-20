@@ -255,8 +255,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                 if (sObserver != null) sObserver.onFlowIsKnown(mFreProperties);
                 recordFreProgressHistogram(mFreProgressStates.get(0));
                 long inflationCompletion = SystemClock.elapsedRealtime();
-                RecordHistogram.recordTimesHistogram(
-                        "MobileFre.FromLaunch.FirstFragmentInflated", inflationCompletion);
+                RecordHistogram.recordTimesHistogram("MobileFre.FromLaunch.FirstFragmentInflatedV2",
+                        inflationCompletion - mIntentCreationElapsedRealtimeMs);
                 mFirstRunAppRestrictionInfo.getCompletionElapsedRealtimeMs(
                         restrictionsCompletion -> {
                             if (restrictionsCompletion > inflationCompletion) {

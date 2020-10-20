@@ -9293,7 +9293,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="The activity is ready to be drawn, although likely empty."/>
   <suffix name="FirstFragmentInflated"
       label="The first fragment is ready to be drawn, the first meaningful
-             paint."/>
+             paint. This version is buggy as it records the timestamp this
+             event happens since the system was booted, which is not extended
+             to measure. (http://crbug.com/1138660)">
+    <obsolete>
+      Deprecated and replaced with FirstFragmentInflatedV2 as of 10/2020.
+    </obsolete>
+  </suffix>
+  <suffix name="FirstFragmentInflatedV2"
+      label="The first fragment is ready to be drawn, the first meaningful
+             paint. Version V2 fixed an issue that previous data was not
+             recording the time duration from FRE launched."/>
   <suffix name="FreCompleted" label="Entire FRE is completed."/>
   <suffix name="TosAccepted" label="ToS is accepted."/>
   <suffix name="TriggerLayoutInflation"
