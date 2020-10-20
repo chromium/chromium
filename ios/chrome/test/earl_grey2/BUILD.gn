@@ -153,6 +153,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/ui/history:eg2_tests",
     "//ios/chrome/browser/ui/infobars:eg2_tests",
     "//ios/chrome/browser/ui/keyboard:eg2_tests",
+    "//ios/chrome/browser/ui/link_to_text:eg2_tests",
     "//ios/chrome/browser/ui/ntp:eg2_tests",
     "//ios/chrome/browser/ui/omnibox:eg2_tests",
     "//ios/chrome/browser/ui/omnibox/popup:eg2_tests",
