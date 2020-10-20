@@ -4283,6 +4283,8 @@ crbug.com/826419 external/wpt/html/semantics/embedded-content/media-elements/tra
 
 crbug.com/825798 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-webvtt-non-snap-to-lines.html [ Failure ]
 
+crbug.com/1093188 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-webvtt-two-cue-layout-after-first-end.html [ Pass Failure ]
+
 crbug.com/927477 external/wpt/import-maps/acquire-import-maps-flag/worker-request/* [ Skip ]
 
 # This test requires a special browser flag and seems not suitable for a wpt test, see bug.
