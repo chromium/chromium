@@ -33,8 +33,7 @@ class Widget;
 //  rendering the non-standard window caption, border, and controls.
 //
 ////////////////////////////////////////////////////////////////////////////////
-class VIEWS_EXPORT CustomFrameView : public NonClientFrameView,
-                                     public ButtonListener {
+class VIEWS_EXPORT CustomFrameView : public NonClientFrameView {
  public:
   explicit CustomFrameView(Widget* frame);
   ~CustomFrameView() override;
@@ -56,9 +55,6 @@ class VIEWS_EXPORT CustomFrameView : public NonClientFrameView,
   gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
-
-  // Overridden from ButtonListener:
-  void ButtonPressed(Button* sender, const ui::Event& event) override;
 
   // Returns the font list to use in the window's title bar.
   // TODO(https://crbug.com/968860): Move this into the typography provider.
@@ -124,7 +120,8 @@ class VIEWS_EXPORT CustomFrameView : public NonClientFrameView,
 
   // Creates, adds and returns a new window caption button (e.g, minimize,
   // maximize, restore).
-  ImageButton* InitWindowCaptionButton(int accessibility_string_id,
+  ImageButton* InitWindowCaptionButton(Button::PressedCallback callback,
+                                       int accessibility_string_id,
                                        int normal_image_id,
                                        int hot_image_id,
                                        int pushed_image_id);

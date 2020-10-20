@@ -70,9 +70,6 @@ class DialogClientView::ButtonRowContainer : public View {
   DISALLOW_COPY_AND_ASSIGN(ButtonRowContainer);
 };
 
-///////////////////////////////////////////////////////////////////////////////
-// DialogClientView, public:
-
 DialogClientView::DialogClientView(Widget* owner, View* contents_view)
     : ClientView(owner, contents_view),
       button_row_insets_(
@@ -95,9 +92,6 @@ void DialogClientView::SetButtonRowInsets(const gfx::Insets& insets) {
   if (GetWidget())
     UpdateDialogButtons();
 }
-
-////////////////////////////////////////////////////////////////////////////////
-// DialogClientView, View overrides:
 
 gfx::Size DialogClientView::CalculatePreferredSize() const {
   const gfx::Insets& content_margins = GetDialogDelegate()->margins();
@@ -208,31 +202,9 @@ void DialogClientView::OnThemeChanged() {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// DialogClientView, ButtonListener implementation:
-
-void DialogClientView::ButtonPressed(Button* sender, const ui::Event& event) {
-  // Check for a valid delegate to avoid handling events after destruction.
-  if (!GetDialogDelegate())
-    return;
-
-  if (input_protector_.IsPossiblyUnintendedInteraction(event))
-    return;
-
-  if (sender == ok_button_)
-    GetDialogDelegate()->AcceptDialog();
-  else if (sender == cancel_button_)
-    GetDialogDelegate()->CancelDialog();
-  else
-    NOTREACHED();
-}
-
 void DialogClientView::ResetViewShownTimeStampForTesting() {
   input_protector_.ResetForTesting();
 }
-
-////////////////////////////////////////////////////////////////////////////////
-// DialogClientView, private:
 
 DialogDelegate* DialogClientView::GetDialogDelegate() const {
   return GetWidget()->widget_delegate()->AsDialogDelegate();
@@ -276,7 +248,10 @@ void DialogClientView::UpdateDialogButton(LabelButton** member,
     return;
   }
 
-  auto button = std::make_unique<MdTextButton>(this, title);
+  auto button = std::make_unique<MdTextButton>(
+      base::BindRepeating(&DialogClientView::ButtonPressed,
+                          base::Unretained(this), type),
+      title);
   button->SetProminent(is_default);
   button->SetIsDefault(is_default);
   button->SetEnabled(delegate->IsDialogButtonEnabled(type));
@@ -288,6 +263,15 @@ void DialogClientView::UpdateDialogButton(LabelButton** member,
   button->SetGroup(kButtonGroup);
 
   *member = button_row_container_->AddChildView(std::move(button));
+}
+
+void DialogClientView::ButtonPressed(ui::DialogButton type,
+                                     const ui::Event& event) {
+  DialogDelegate* const delegate = GetDialogDelegate();
+  if (delegate && !input_protector_.IsPossiblyUnintendedInteraction(event)) {
+    (type == ui::DIALOG_BUTTON_OK) ? delegate->AcceptDialog()
+                                   : delegate->CancelDialog();
+  }
 }
 
 int DialogClientView::GetExtraViewSpacing() const {

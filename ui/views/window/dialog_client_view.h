@@ -9,7 +9,6 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/input_event_activation_protector.h"
 #include "ui/views/window/client_view.h"
 #include "ui/views/window/dialog_observer.h"
@@ -34,9 +33,7 @@ class Widget;
 // You must not directly depend on or use DialogClientView; it is internal to
 // //ui/views. Access it through the public interfaces on DialogDelegate. It is
 // only VIEWS_EXPORT to make it available to views_unittests.
-class VIEWS_EXPORT DialogClientView : public ClientView,
-                                      public ButtonListener,
-                                      public DialogObserver {
+class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
  public:
   METADATA_HEADER(DialogClientView);
 
@@ -61,9 +58,6 @@ class VIEWS_EXPORT DialogClientView : public ClientView,
   void ViewHierarchyChanged(
       const ViewHierarchyChangedDetails& details) override;
   void OnThemeChanged() override;
-
-  // ButtonListener implementation:
-  void ButtonPressed(Button* sender, const ui::Event& event) override;
 
   void set_minimum_size(const gfx::Size& size) { minimum_size_ = size; }
 
@@ -96,6 +90,8 @@ class VIEWS_EXPORT DialogClientView : public ClientView,
   // whether DialogDelegate::GetDialogButtons() includes |type|, and whether
   // |member| points to a button that already exists.
   void UpdateDialogButton(LabelButton** member, ui::DialogButton type);
+
+  void ButtonPressed(ui::DialogButton type, const ui::Event& event);
 
   // Returns the spacing between the extra view and the ok/cancel buttons. 0 if
   // no extra view. Otherwise uses the default padding.

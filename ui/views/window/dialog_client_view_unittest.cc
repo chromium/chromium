@@ -4,8 +4,10 @@
 
 #include "ui/views/window/dialog_client_view.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/macros.h"
@@ -21,6 +23,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/metrics.h"
 #include "ui/views/style/platform_style.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/test_layout_provider.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/widget_test.h"
@@ -45,7 +48,7 @@ class DialogClientViewTest : public test::WidgetTest,
 
     // Note: not using DialogDelegate::CreateDialogWidget(..), since that can
     // alter the frame type according to the platform.
-    widget_ = new views::Widget;
+    widget_ = new Widget;
     Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
     params.delegate = this;
     widget_->Init(std::move(params));
@@ -132,9 +135,8 @@ class DialogClientViewTest : public test::WidgetTest,
     DialogModelChanged();
   }
 
-  views::Button* GetButtonByAccessibleName(views::View* root,
-                                           const base::string16& name) {
-    views::Button* button = Button::AsButton(root);
+  Button* GetButtonByAccessibleName(View* root, const base::string16& name) {
+    Button* button = Button::AsButton(root);
     if (button && button->GetAccessibleName() == name)
       return button;
     for (auto* child : root->children()) {
@@ -145,7 +147,7 @@ class DialogClientViewTest : public test::WidgetTest,
     return nullptr;
   }
 
-  views::Button* GetButtonByAccessibleName(const std::string& label) {
+  Button* GetButtonByAccessibleName(const std::string& label) {
     return GetButtonByAccessibleName(widget_->GetRootView(),
                                      base::UTF8ToUTF16(label));
   }
@@ -512,16 +514,16 @@ TEST_F(DialogClientViewTest, IgnorePossiblyUnintendedClicks_ClickAfterShown) {
   // Should ignore clicks right after the dialog is shown.
   ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                              ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
-  client_view()->ButtonPressed(client_view()->ok_button(), mouse_event);
-  client_view()->ButtonPressed(client_view()->cancel_button(), mouse_event);
+  test::ButtonTestApi(client_view()->ok_button()).NotifyClick(mouse_event);
+  test::ButtonTestApi cancel_button(client_view()->cancel_button());
+  cancel_button.NotifyClick(mouse_event);
   EXPECT_FALSE(widget()->IsClosed());
 
-  client_view()->ButtonPressed(
-      client_view()->cancel_button(),
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                     ui::EventTimeForNow() + base::TimeDelta::FromMilliseconds(
-                                                 GetDoubleClickInterval()),
-                     ui::EF_NONE, ui::EF_NONE));
+  cancel_button.NotifyClick(ui::MouseEvent(
+      ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+      ui::EventTimeForNow() +
+          base::TimeDelta::FromMilliseconds(GetDoubleClickInterval()),
+      ui::EF_NONE, ui::EF_NONE));
   EXPECT_TRUE(widget()->IsClosed());
 }
 
@@ -538,8 +540,9 @@ TEST_F(DialogClientViewTest, IgnorePossiblyUnintendedClicks_RepeatedClicks) {
   // Should ignore clicks right after the dialog is shown.
   ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                              kNow, ui::EF_NONE, ui::EF_NONE);
-  client_view()->ButtonPressed(client_view()->ok_button(), mouse_event);
-  client_view()->ButtonPressed(client_view()->cancel_button(), mouse_event);
+  test::ButtonTestApi(client_view()->ok_button()).NotifyClick(mouse_event);
+  test::ButtonTestApi cancel_button(client_view()->cancel_button());
+  cancel_button.NotifyClick(mouse_event);
   EXPECT_FALSE(widget()->IsClosed());
 
   // Should ignore repeated clicks with short intervals, even though enough time
@@ -549,20 +552,18 @@ TEST_F(DialogClientViewTest, IgnorePossiblyUnintendedClicks_RepeatedClicks) {
   ASSERT_TRUE(kNumClicks * kRepeatedClickInterval > kShortClickInterval);
   base::TimeTicks event_time = kNow;
   for (size_t i = 0; i < kNumClicks; i++) {
-    client_view()->ButtonPressed(
-        client_view()->cancel_button(),
-        ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                       event_time, ui::EF_NONE, ui::EF_NONE));
+    cancel_button.NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                             gfx::Point(), event_time,
+                                             ui::EF_NONE, ui::EF_NONE));
     EXPECT_FALSE(widget()->IsClosed());
     event_time += kRepeatedClickInterval;
   }
 
   // Sufficient time passed, events are now allowed.
   event_time += kShortClickInterval;
-  client_view()->ButtonPressed(
-      client_view()->cancel_button(),
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                     event_time, ui::EF_NONE, ui::EF_NONE));
+  cancel_button.NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                           gfx::Point(), event_time,
+                                           ui::EF_NONE, ui::EF_NONE));
   EXPECT_TRUE(widget()->IsClosed());
 }
 
