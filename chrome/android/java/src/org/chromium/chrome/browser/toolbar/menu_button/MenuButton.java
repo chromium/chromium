@@ -51,6 +51,7 @@ public class MenuButton extends FrameLayout implements TintObserver {
 
     private boolean mHighlightingMenu;
     private PulseDrawable mHighlightDrawable;
+    private Drawable mOriginalBackground;
 
     private AnimatorSet mMenuBadgeAnimatorSet;
     private boolean mIsMenuBadgeAnimationRunning;
@@ -68,6 +69,7 @@ public class MenuButton extends FrameLayout implements TintObserver {
         super.onFinishInflate();
         mMenuImageButton = findViewById(R.id.menu_button);
         mUpdateBadgeView = findViewById(R.id.menu_badge);
+        mOriginalBackground = getBackground();
     }
 
     public void setAppMenuButtonHelper(AppMenuButtonHelper appMenuButtonHelper) {
@@ -255,7 +257,7 @@ public class MenuButton extends FrameLayout implements TintObserver {
             setBackground(mHighlightDrawable);
             mHighlightDrawable.start();
         } else {
-            setBackground(null);
+            setBackground(mOriginalBackground);
         }
     }
 
@@ -383,5 +385,11 @@ public class MenuButton extends FrameLayout implements TintObserver {
         });
 
         return set;
+    }
+
+    @VisibleForTesting
+    void setOriginalBackgroundForTesting(Drawable background) {
+        mOriginalBackground = background;
+        setBackground(mOriginalBackground);
     }
 }

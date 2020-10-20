@@ -16,11 +16,14 @@ import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -133,5 +136,20 @@ public class MenuButtonTest {
         assertTrue(drawableBounds.top >= 0);
         assertTrue(drawableBounds.right > 0);
         assertTrue(drawableBounds.bottom > 0);
+    }
+
+    @Test
+    public void testBackgroundAfterHighlight() {
+        Drawable background = new ColorDrawable();
+        mMenuButton.setOriginalBackgroundForTesting(background);
+
+        Assert.assertNotNull("Background shouldn't be null.", mMenuButton.getBackground());
+
+        mMenuButton.setMenuButtonHighlight(true);
+        Assert.assertNotEquals(
+                "Background should have been updated.", background, mMenuButton.getBackground());
+
+        mMenuButton.setMenuButtonHighlight(false);
+        Assert.assertEquals("Background should be reset.", background, mMenuButton.getBackground());
     }
 }
