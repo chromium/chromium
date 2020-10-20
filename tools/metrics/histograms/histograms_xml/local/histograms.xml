@@ -315,14 +315,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="LocalStorageContext.OpenResultAfter"
+<histogram
+    name="LocalStorageContext.OpenResultAfter{LocalStorageContextOpenReasons}"
     enum="LocalStorageOpenError" expires_after="M87">
-<!-- Name completed by histogram_suffixes name="LocalStorageContextOpenReasons" -->
-
   <owner>mek@chromium.org</owner>
   <summary>
     The result of opening the LevelDB database that backs LocalStorage.
+    {LocalStorageContextOpenReasons}
   </summary>
+  <token key="LocalStorageContextOpenReasons">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name="CommitErrors" summary="After too many commit errors."/>
+    <variant name="InvalidVersion"
+        summary="After an invalid version was read."/>
+    <variant name="OpenFailed" summary="After opening the DB failed."/>
+    <variant name="ReadVersionError"
+        summary="After reading the schema version failed."/>
+  </token>
 </histogram>
 
 <histogram name="LocalStorageContext.ReadVersionError" enum="LevelDBStatus"

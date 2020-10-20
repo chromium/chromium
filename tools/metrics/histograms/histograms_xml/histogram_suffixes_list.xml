@@ -7501,17 +7501,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="InputMethod.Commit.Type"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="IMEVKLatency" separator=".">
-  <suffix name="BackgroundSettingsFetched"
-      label="Latency for settings fetched from background"/>
-  <suffix name="HtmlLoaded" label="Latency for the page is loaded"/>
-  <suffix name="KeyboardCreated" label="Latency for the keyboard is created"/>
-  <suffix name="KeyboardShown" label="Latency for keyboard is shown"/>
-  <suffix name="KeysetLoaded" label="Latency for keyset config is loaded"/>
-  <suffix name="LayoutLoaded" label="Latency for layout definition is loaded"/>
-  <affected-histogram name="InputMethod.VirtualKeyboard.InitLatency"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ImmediatePageLoadTiming" separator=".">
   <obsolete>
     Removed by PageLoad.PaintTiming.NavigationToFirstContentfulPaint.
@@ -8493,15 +8482,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="A tab changed its title while it was in background."/>
   <affected-histogram
       name="ResourceCoordinator.LocalDB.ObservationTimeBeforeFirstUse"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="LocalStorageContextOpenReasons" separator="">
-  <suffix name="CommitErrors" label="After too many commit errors."/>
-  <suffix name="InvalidVersion" label="After an invalid version was read."/>
-  <suffix name="OpenFailed" label="After opening the DB failed."/>
-  <suffix name="ReadVersionError"
-      label="After reading the schema version failed."/>
-  <affected-histogram name="LocalStorageContext.OpenResultAfter"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="LocationAttachedStatus" separator=".">
