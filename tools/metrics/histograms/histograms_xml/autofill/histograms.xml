@@ -170,7 +170,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.BetterAuth.CardUnmaskDuration.Fido" units="ms"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>jsaul@google.com</owner>
   <owner>manasverma@google.com</owner>
   <owner>autofill-auth-team@google.com</owner>
@@ -224,7 +224,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.BetterAuth.FlowEvents"
-    enum="AutofillCreditCardAuthenticationEvents" expires_after="2021-02-14">
+    enum="AutofillCreditCardAuthenticationEvents" expires_after="2021-04-18">
   <owner>jsaul@google.com</owner>
   <owner>manasverma@google.com</owner>
   <owner>autofill-auth-team@google.com</owner>
@@ -238,7 +238,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Autofill.BetterAuth.OptInCalled"
-    enum="AutofillCreditCardWebauthnOptInParameters" expires_after="2021-02-14">
+    enum="AutofillCreditCardWebauthnOptInParameters" expires_after="2021-04-18">
   <owner>jsaul@google.com</owner>
   <owner>manasverma@google.com</owner>
   <owner>autofill-auth-team@google.com</owner>
@@ -366,7 +366,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Autofill.BetterAuth.WebauthnResult"
-    enum="AutofillCreditCardWebauthnResultMetric" expires_after="2021-02-14">
+    enum="AutofillCreditCardWebauthnResultMetric" expires_after="2021-04-18">
   <owner>jsaul@google.com</owner>
   <owner>manasverma@google.com</owner>
   <owner>autofill-auth-team@google.com</owner>

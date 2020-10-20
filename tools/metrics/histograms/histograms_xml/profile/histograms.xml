@@ -266,7 +266,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Profile.NumberOfAccountsPerProfile" units="units"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -611,7 +611,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ProfileChooser.HasProfilesShown" enum="BooleanShown"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>vasilii@chromium.org</owner>
   <owner>ewald@chromium.org</owner>
   <summary>

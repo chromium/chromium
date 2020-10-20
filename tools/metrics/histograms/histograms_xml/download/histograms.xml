@@ -55,7 +55,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.ContentType.Audio" enum="DownloadAudioType"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>xingliu@chromium.org</owner>
   <summary>Types of audio files that are downloaded.</summary>
 </histogram>

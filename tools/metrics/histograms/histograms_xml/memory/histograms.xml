@@ -995,7 +995,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Renderer" units="MB"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
 <!-- Name completed by histogram_suffixes name="RendererMemoryAllocator" -->
 
   <owner>keishi@chromium.org</owner>
@@ -1038,7 +1038,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.Experimental.Renderer.Uptime" units="ms"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>keishi@chromium.org</owner>
   <summary>
     The uptime of a render process in time ticks (excludes extensions). Emitted
@@ -1146,7 +1146,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Memory.Experimental.UserLevelMemoryPressureSignal.RendererPrivateMemoryFootprintBefore"
-    units="MB" expires_after="2021-02-14">
+    units="MB" expires_after="2021-04-18">
   <owner>keishi@chromium.org</owner>
   <owner>tasak@chromium.org</owner>
   <summary>
@@ -1283,7 +1283,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Memory.GPU.PeakMemoryAllocationSource" units="KB"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
 <!-- Name completed by a combination of the following two histogram_suffixes: -->
 
 <!-- histogram_suffixes name="GPU.PeakMemoryAllocationSourceBase" -->
@@ -1301,7 +1301,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Memory.GPU.PeakMemoryUsage" units="KB"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
 <!-- Name completed by histogram_suffixes name="GPU.PeakMemoryUsage" -->
 
   <owner>jonross@chromium.org</owner>
@@ -1407,7 +1407,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Memory.NativeLibrary.MappedAndResidentMemoryFootprintCollectionStatus"
-    enum="MappedAndResidentPagesDumpState" expires_after="2021-02-14">
+    enum="MappedAndResidentPagesDumpState" expires_after="2021-04-18">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -1941,7 +1941,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.PressureLevel" enum="MemoryPressureLevel"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>chrisha@chromium.org</owner>
   <summary>
     The memory pressure level, which is recorded periodically. This shows the
@@ -1960,7 +1960,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Memory.PressureWindowDuration" units="ms"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
 <!-- Name completed by histogram_suffixes name="Memory.Pressure.TransitionType" -->
 
   <owner>sebmarchand@chromium.org</owner>
@@ -2053,7 +2053,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.RendererProcessCount" units="processes"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>creis@chromium.org</owner>
   <owner>nasko@chromium.org</owner>
   <summary>

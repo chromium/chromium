@@ -87,7 +87,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="OptimizationGuide.HintCacheLevelDBStore.Status"
     enum="OptimizationGuideHintCacheLevelDBStoreStatus"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>dougarnett@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>

@@ -227,7 +227,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.Memory.MainFrame.Max" units="KiB"
-    expires_after="2021-01-31">
+    expires_after="2021-04-18">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
@@ -243,7 +243,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.Memory.MissedMeasurementCount"
-    units="count" expires_after="2021-01-31">
+    units="count" expires_after="2021-04-18">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
@@ -256,7 +256,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.Memory.UpdateCount" units="count"
-    expires_after="2021-01-31">
+    expires_after="2021-04-18">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
@@ -616,7 +616,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PageLoad.Clients.ThirdParty.Frames.NavigationToFirstContentfulPaint3"
-    units="ms" expires_after="2021-02-14">
+    units="ms" expires_after="2021-04-18">
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <summary>
@@ -950,7 +950,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Experimental.InputTiming.InputToNavigationStart"
-    units="ms" expires_after="2021-02-14">
+    units="ms" expires_after="2021-04-18">
   <owner>sullivan@chromium.org</owner>
   <owner>tdresser@chromium.org</owner>
   <summary>
@@ -1500,7 +1500,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Internal.ClientRedirect.NavigationWithoutPaint"
-    enum="Boolean" expires_after="2021-02-14">
+    enum="Boolean" expires_after="2021-04-18">
   <owner>bmcquade@chromium.org</owner>
   <summary>
     Counts how often a client-side redirect was initiated from a page that did
@@ -1898,7 +1898,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToExperimentalLargestContentfulPaint"
-    units="ms" expires_after="2021-02-14">
+    units="ms" expires_after="2021-04-18">
   <owner>npm@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>

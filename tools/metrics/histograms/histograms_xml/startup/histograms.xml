@@ -162,7 +162,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Startup.Android.StartupTabPreloader.TabLoaded" units="Boolean"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>skyostil@chromium.org</owner>
   <summary>
     Android: Whether or not creation of a profile lead to the
@@ -197,7 +197,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Startup.Android.TimeToGTSFirstMeaningfulPaint" units="ms"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>yusufo@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -223,7 +223,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Startup.Android.TimeToGTSFirstMeaningfulPaint.Warm" units="ms"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>yusufo@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -256,7 +256,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Startup.BrowserMainRunnerImplInitializeLongTime" units="ms"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>robliao@chromium.org</owner>
   <summary>
     The amount of time that elapsed during BrowserMainRunnerImpl::Initialize.
@@ -393,7 +393,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Startup.ColdStartFromProcessCreationTime" units="ms"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>djean@chromium.org</owner>
   <owner>eugenebut@chromium.org</owner>
   <summary>
@@ -405,7 +405,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Startup.ColdStartWithExternalURLTime" units="ms"
-    expires_after="2021-01-24">
+    expires_after="2021-04-18">
   <owner>jif@chromium.org</owner>
   <summary>
     The duration of all initializations in a cold start triggered by an external

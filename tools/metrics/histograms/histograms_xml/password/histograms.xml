@@ -187,7 +187,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="PasswordManager.AccountsPerSiteHiRes"
-    units="units" expires_after="2021-01-24">
+    units="units" expires_after="2021-04-18">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2077,7 +2077,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="PasswordManager.TotalAccountsHiRes.ByType"
-    units="units" expires_after="2021-02-14">
+    units="units" expires_after="2021-04-18">
   <owner>battre@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>

@@ -52,7 +52,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Animation.CompositedAnimationFailureReason"
-    enum="CompositorAnimationsFailureReason" expires_after="2021-02-14">
+    enum="CompositorAnimationsFailureReason" expires_after="2021-04-18">
   <owner>smcgruer@chromium.org</owner>
   <owner>animations-dev@chromium.org</owner>
   <summary>
@@ -558,7 +558,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.DecodedImage.WebPFileFormat" enum="WebPFileFormat"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>mcasas@chromium.org</owner>
   <owner>andrescj@chromium.org</owner>
   <summary>
@@ -1347,7 +1347,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.MainFrame.UpdateTime" units="microseconds"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -1972,7 +1972,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.UseCounter.FeaturePolicy.HeaderAllowlistType"
-    enum="FeaturePolicyAllowlistType" expires_after="2021-01-03">
+    enum="FeaturePolicyAllowlistType" expires_after="2021-04-18">
   <owner>iclelland@chromium.org</owner>
   <owner>feature-control@chromium.org</owner>
   <summary>

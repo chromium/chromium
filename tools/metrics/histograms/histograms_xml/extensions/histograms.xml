@@ -1319,7 +1319,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledCreationStage"
-    enum="ExtensionInstallCreationStage" expires_after="2021-01-24">
+    enum="ExtensionInstallCreationStage" expires_after="2021-04-18">
   <owner>swapnilgupta@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1471,7 +1471,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Extensions.ForceInstalledFailureWithCrxHeaderInvalidIsCWS"
     enum="IsForceInstalledExtensionFailedWithCrxHeaderInvalidFromCWSBoolean"
-    expires_after="2021-01-24">
+    expires_after="2021-04-18">
   <owner>swapnilgupta@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1513,7 +1513,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledHttpErrorCode2"
-    enum="HttpResponseCode" expires_after="2021-01-24">
+    enum="HttpResponseCode" expires_after="2021-04-18">
   <owner>burunduk@chromium.org</owner>
   <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>

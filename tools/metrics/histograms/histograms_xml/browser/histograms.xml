@@ -63,7 +63,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Browser.PaintPreview.Capture.CompressedOnDiskSize" units="KB"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>ckitagawa@chromium.org</owner>
   <owner>mahmoudi@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
@@ -158,7 +158,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Browser.PaintPreview.Player.LinkClicked"
-    units="BooleanSuccess" expires_after="2021-02-14">
+    units="BooleanSuccess" expires_after="2021-04-18">
   <owner>ckitagawa@chromium.org</owner>
   <owner>mahmoudi@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
@@ -166,7 +166,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Browser.PaintPreview.Player.TimeToFirstBitmap" units="ms"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>ckitagawa@chromium.org</owner>
   <owner>mahmoudi@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
@@ -189,7 +189,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Browser.PaintPreview.TabbedPlayer.ExitCause"
-    enum="TabbedPaintPreviewExitCause" expires_after="2021-02-14">
+    enum="TabbedPaintPreviewExitCause" expires_after="2021-04-18">
   <owner>ckitagawa@chromium.org</owner>
   <owner>mahmoudi@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
@@ -245,7 +245,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Browser.PaintPreview.TabbedPlayer.UpTime"
-    units="ms" expires_after="2021-02-14">
+    units="ms" expires_after="2021-04-18">
   <owner>ckitagawa@chromium.org</owner>
   <owner>mahmoudi@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
@@ -494,7 +494,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.ChildKills.OOM" enum="RendererType"
-    expires_after="2021-01-03">
+    expires_after="2021-04-18">
   <owner>oshima@chromium.org</owner>
   <summary>
     Out of BrowserRenderProcessHost.ChildKills, numer of kills due to SIGKILL,

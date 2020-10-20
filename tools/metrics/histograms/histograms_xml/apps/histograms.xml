@@ -358,7 +358,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.OsSettingsProvider.Error"
-    enum="OsSettingsProviderError" expires_after="2021-02-14">
+    enum="OsSettingsProviderError" expires_after="2021-04-18">
   <owner>jiameng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
@@ -553,7 +553,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.ZeroStateResults.ReceivedScore.DriveQuickAccess"
-    units="score" expires_after="2021-02-07">
+    units="score" expires_after="2021-04-18">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>jiameng@chromium.org</owner>
@@ -767,7 +767,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListFolderOpened" enum="AppListFolderOpened"
-    expires_after="2021-01-31">
+    expires_after="2021-04-18">
   <owner>mmourgos@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>

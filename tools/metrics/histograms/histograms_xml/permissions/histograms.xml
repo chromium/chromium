@@ -178,7 +178,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Permissions.CrowdDeny.PreloadData.WarningOnly" enum="Boolean"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>andypaicu@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>

@@ -719,7 +719,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MobileFre.Progress" enum="MobileFreProgress"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>bsazonov@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
@@ -842,7 +842,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MobileOmnibox.LongPressPasteAge" units="ms"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>gangwu@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
@@ -865,7 +865,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MobileOmnibox.PressedClipboardSuggestionAge" units="ms"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <summary>

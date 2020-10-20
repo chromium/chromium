@@ -112,7 +112,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PluginVm.AppsInstalledAtLogin" units="apps"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>timloh@google.com</owner>
   <owner>joelhockey@google.com</owner>
   <summary>
@@ -129,7 +129,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PluginVm.EngagementTime.Background" units="ms"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>timloh@google.com</owner>
   <owner>joelhockey@google.com</owner>
   <summary>
@@ -140,7 +140,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PluginVm.EngagementTime.Foreground" units="ms"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>timloh@google.com</owner>
   <owner>joelhockey@google.com</owner>
   <summary>
@@ -150,7 +150,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PluginVm.EngagementTime.PluginVmTotal" units="ms"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>timloh@google.com</owner>
   <owner>joelhockey@google.com</owner>
   <summary>
@@ -161,7 +161,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PluginVm.EngagementTime.Total" units="ms"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>timloh@google.com</owner>
   <owner>joelhockey@google.com</owner>
   <summary>

@@ -316,7 +316,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.EndToEnd.TouchpadPinch2" units="microseconds"
-    expires_after="2021-02-14">
+    expires_after="2021-04-18">
   <owner>nzolghadr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>

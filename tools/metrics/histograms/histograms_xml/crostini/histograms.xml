@@ -279,7 +279,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Crostini.SettingsEvent" enum="CrostiniSettingsEvent"
-    expires_after="2021-01-31">
+    expires_after="2021-04-18">
   <owner>clumptini@google.com</owner>
   <owner>tbuckley@chromium.org</owner>
   <owner>victorhsieh@chromium.org</owner>
@@ -349,7 +349,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Crostini.TimeToInstallCancel" units="ms"
-    expires_after="2021-01-31">
+    expires_after="2021-04-18">
   <owner>clumptini@google.com</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
