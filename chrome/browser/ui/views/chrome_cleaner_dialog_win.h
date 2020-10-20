@@ -46,16 +46,10 @@ class ChromeCleanerDialog
 
   void Show(Browser* browser);
 
-  // views::WidgetDelegate overrides.
-  ui::ModalType GetModalType() const override;
-  base::string16 GetWindowTitle() const override;
+  // views::DialogDelegateView:
   views::View* GetInitiallyFocusedView() override;
-  bool ShouldShowCloseButton() const override;
 
-  // views::View overrides.
-  gfx::Size CalculatePreferredSize() const override;
-
-  // safe_browsing::ChromeCleanerController::Observer overrides.
+  // safe_browsing::ChromeCleanerController::Observer:
   void OnIdle(
       safe_browsing::ChromeCleanerController::IdleReason idle_reason) override;
   void OnScanning() override;
@@ -77,7 +71,7 @@ class ChromeCleanerDialog
   // The pointer will be set to nullptr once the controller has been notified of
   // user interaction since the controller can delete itself after that point.
   safe_browsing::ChromeCleanerDialogController* dialog_controller_ = nullptr;
-  safe_browsing::ChromeCleanerController* cleaner_controller_ = nullptr;
+  safe_browsing::ChromeCleanerController* const cleaner_controller_;
   views::LabelButton* details_button_ = nullptr;
   views::Checkbox* logs_permission_checkbox_ = nullptr;
 
