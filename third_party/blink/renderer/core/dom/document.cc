@@ -44,6 +44,7 @@
 #include "base/time/time.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/input/scroll_snap_data.h"
+#include "components/performance_manager/public/mojom/coordination_unit.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/mojom/base/text_direction.mojom-blink.h"

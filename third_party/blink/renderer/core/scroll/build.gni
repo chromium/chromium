@@ -24,6 +24,7 @@ blink_core_sources_scroll = [
   "scrollbar.h",
   "scrollbar_layer_delegate.cc",
   "scrollbar_layer_delegate.h",
+  "scrollbar_test_suite.h",
   "scrollbar_theme.cc",
   "scrollbar_theme.h",
   "scrollbar_theme_overlay.cc",

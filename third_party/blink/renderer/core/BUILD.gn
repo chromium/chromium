@@ -270,7 +270,6 @@ component("core") {
     "//skia",
     "//skia:skcms",
     "//third_party/blink/public:buildflags",
-    "//third_party/blink/public:image_resources_grit",
     "//third_party/blink/public:resources",
     "//third_party/blink/public/common",
     "//third_party/blink/public/strings",
@@ -294,11 +293,8 @@ component("core") {
     deps += [ "//printing" ]
   }
 
-  allow_circular_includes_from = [
-    ":core_generated",
-    ":core_hot",
-    "//third_party/blink/renderer/core/xml:xpath_generated",
-  ]
+  allow_circular_includes_from =
+      [ "//third_party/blink/renderer/core/xml:xpath_generated" ]
 
   public_configs = [ ":core_include_dirs" ]
 
@@ -325,11 +321,6 @@ blink_core_sources("core_hot") {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
   }
-
-  deps = [
-    "//services/metrics/public/cpp:ukm_builders",
-    "//third_party/blink/renderer/core/probe:probe",
-  ]
 }
 
 source_set("testing") {
@@ -345,7 +336,6 @@ source_set("testing") {
     ":core",
     ":generated_testing_idls",
     "//third_party/blink/renderer/bindings/core/v8:testing",
-    "//third_party/blink/renderer/platform:test_support",
     "//ui/base/cursor:cursor_base",
     "//ui/base/cursor/mojom:cursor_type_blink",
   ]
@@ -1077,11 +1067,7 @@ target(core_generated_target_type, "core_generated") {
   foreach(current, targets_generating_sources) {
     sources += get_target_outputs(current)
   }
-  deps = [
-    "//services/metrics/public/cpp:ukm_builders",
-    "//third_party/blink/renderer/core/exported:exported",
-    "//third_party/blink/renderer/core/probe:probe",
-  ]
+  deps = []
   public_deps = [ ":all_generators" ]
 
   configs -= core_config_remove
@@ -1522,7 +1508,6 @@ source_set("unit_tests") {
     "script/module_script_test.cc",
     "script/script_runner_test.cc",
     "scroll/scrollable_area_test.cc",
-    "scroll/scrollbar_test_suite.h",
     "scroll/scrollbar_theme_overlay_test.cc",
     "streams/miscellaneous_operations_test.cc",
     "streams/queue_with_sizes_test.cc",
@@ -1593,23 +1578,17 @@ source_set("unit_tests") {
     ":core",
     ":unit_test_support",
     "//components/paint_preview/common:common",
-    "//components/ukm:test_support",
     "//mojo/public/cpp/system",
-    "//mojo/public/cpp/test_support:test_utils",
-    "//services/metrics/public/cpp:ukm_builders",
     "//services/network/trust_tokens:test_support",
     "//skia",
     "//skia:skcms",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/blink/public:buildflags",
-    "//third_party/blink/public:test_headers",
     "//third_party/blink/renderer/controller:blink_bindings_test_sources",
     "//third_party/blink/renderer/core",
     "//third_party/blink/renderer/core:testing",
     "//third_party/blink/renderer/core:unit_test_support",
     "//third_party/blink/renderer/platform:test_support",
-    "//third_party/blink/renderer/platform:unit_tests",
     "//ui/accessibility:ax_base",
     "//ui/base/cursor:cursor_base",
     "//ui/base/cursor/mojom:cursor_type_blink",
@@ -1675,7 +1654,6 @@ source_set("perf_tests") {
     "//mojo/public/cpp/system",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/blink/renderer/platform:test_support",
   ]
 }
 
@@ -1720,11 +1698,8 @@ source_set("unit_test_support") {
 
   deps = [
     ":core",
-    "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/blink/renderer/core:testing",
-    "//third_party/blink/renderer/platform:test_support",
   ]
 }
 
@@ -1769,7 +1744,6 @@ fuzzer_test("content_security_policy_fuzzer") {
   sources = [ "frame/csp/content_security_policy_fuzzer.cc" ]
   deps = [
     ":core",
-    "//third_party/blink/renderer/core:testing",
     "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
   ]
   dict = "//testing/libfuzzer/fuzzers/dicts/content_security_policy.dict"
@@ -1807,7 +1781,6 @@ fuzzer_test("blink_html_tokenizer_fuzzer") {
 fuzzer_test("feature_policy_fuzzer") {
   sources = [ "feature_policy/feature_policy_fuzzer.cc" ]
   deps = [
-    "//third_party/blink/renderer/core",
     "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
     "//third_party/icu",
   ]
@@ -1819,7 +1792,6 @@ fuzzer_test("feature_policy_fuzzer") {
 fuzzer_test("feature_policy_attr_fuzzer") {
   sources = [ "feature_policy/feature_policy_attr_fuzzer.cc" ]
   deps = [
-    "//third_party/blink/renderer/core",
     "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
     "//third_party/icu",
   ]
@@ -1831,7 +1803,6 @@ fuzzer_test("feature_policy_attr_fuzzer") {
 fuzzer_test("document_policy_fuzzer") {
   sources = [ "feature_policy/document_policy_fuzzer.cc" ]
   deps = [
-    "//third_party/blink/renderer/core",
     "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
     "//third_party/icu",
   ]
@@ -1843,7 +1814,6 @@ fuzzer_test("document_policy_fuzzer") {
 fuzzer_test("permissions_policy_fuzzer") {
   sources = [ "feature_policy/permissions_policy_fuzzer.cc" ]
   deps = [
-    "//third_party/blink/renderer/core",
     "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
     "//third_party/icu",
   ]
