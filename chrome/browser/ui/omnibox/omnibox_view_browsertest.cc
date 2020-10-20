@@ -737,25 +737,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest,
   EXPECT_EQ(old_selected_line, popup_model->selected_line());
 }
 
-// Verifies that https://crbug.com/924935 doesn't regress.
-IN_PROC_BROWSER_TEST_F(OmniboxViewTest,
-                       RendererInitiatedFocusPreservesUserText) {
-  OmniboxView* omnibox_view = nullptr;
-  ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
-
-  // Type a single character.
-  ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_A, 0));
-  EXPECT_EQ(base::ASCIIToUTF16("a"), omnibox_view->GetText());
-
-  // Simulate a renderer-initated focus event.
-  browser()->SetFocusToLocationBar();
-
-  // Type an additional character and verify that we didn't clobber the
-  // character we already typed.
-  ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_B, 0));
-  EXPECT_EQ(base::ASCIIToUTF16("ab"), omnibox_view->GetText());
-}
-
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BasicTextOperations) {
   ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
   chrome::FocusLocationBar(browser());

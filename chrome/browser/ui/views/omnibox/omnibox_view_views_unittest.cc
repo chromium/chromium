@@ -790,6 +790,24 @@ TEST_F(OmniboxViewViewsTest,
   EXPECT_TRUE(omnibox_view()->IsSelectAll());
 }
 
+// Verifies that https://crbug.com/924935 doesn't regress.
+TEST_F(OmniboxViewViewsTest,
+       RendererInitiatedFocusPreservesCursorWhenStartingFocused) {
+  // Simulate the user focusing the omnibox and typing something. This is just
+  // the test setup, not the actual focus event we are testing.
+  omnibox_view()->SetFocus(/*is_user_initiated*/ true);
+  omnibox_view()->SetTextAndSelectedRanges(base::ASCIIToUTF16("user text"),
+                                           {gfx::Range(9, 9)});
+  ASSERT_FALSE(omnibox_view()->IsSelectAll());
+  ASSERT_TRUE(omnibox_view()->SelectionAtEnd());
+
+  // Simulate a renderer-initated focus event. Expect the cursor position to be
+  // preserved, and that the omnibox did not select-all the text.
+  omnibox_view()->SetFocus(/*is_user_initiated=*/false);
+  EXPECT_FALSE(omnibox_view()->IsSelectAll());
+  EXPECT_TRUE(omnibox_view()->SelectionAtEnd());
+}
+
 TEST_F(OmniboxViewViewsTest, Emphasis) {
   constexpr struct {
     const char* input;

@@ -280,6 +280,9 @@ class OmniboxViewViews : public OmniboxView,
   virtual void ApplyColor(SkColor color, const gfx::Range& range);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(
+      OmniboxViewViewsTest,
+      RendererInitiatedFocusPreservesCursorWhenStartingFocused);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsRevealOnHoverTest, HoverAndExit);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsRevealOnHoverTest, HoverAndExitIDN);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsRevealOnHoverTest, PrivateRegistry);
