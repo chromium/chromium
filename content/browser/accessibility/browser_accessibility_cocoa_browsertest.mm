@@ -44,6 +44,35 @@ class BrowserAccessibilityCocoaBrowserTest : public ContentBrowserTest {
     return web_contents->GetRootBrowserAccessibilityManager();
   }
 
+  // Trigger a context menu for the provided element without showing it. Returns
+  // the coordinates where the  context menu was invoked (calculated based on
+  // the provided element). These coordinates are relative to the RenderView
+  // origin.
+  gfx::Point TriggerContextMenuAndGetMenuLocation(
+      NSAccessibilityElement* element,
+      ContextMenuFilter* filter) {
+    // accessibilityPerformAction is deprecated, but it's still used internally
+    // by AppKit.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    [element accessibilityPerformAction:NSAccessibilityShowMenuAction];
+    filter->Wait();
+
+    UntrustworthyContextMenuParams context_menu_params = filter->get_params();
+    return gfx::Point(context_menu_params.x, context_menu_params.y);
+#pragma clang diagnostic pop
+  }
+
+  void FocusAccessibilityElementAndWaitForFocusChange(
+      NSAccessibilityElement* element) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    [element accessibilitySetValue:@(1)
+                      forAttribute:NSAccessibilityFocusedAttribute];
+#pragma clang diagnostic pop
+    WaitForAccessibilityFocusChange();
+  }
+
  private:
   BrowserAccessibility* FindNodeInSubtree(BrowserAccessibility& node,
                                           ax::mojom::Role role) {
@@ -550,6 +579,166 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
 
   EXPECT_NSEQ(@"AXRow", [row_nodes[1] role]);
   EXPECT_NSEQ(@"row2", [row_nodes[1] descriptionForAccessibility]);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
+                       TestTreeContextMenuEvent) {
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kLoadComplete);
+
+  GURL url(R"HTML(data:text/html,
+             <div alt="tree" role="tree">
+               <div tabindex="1" role="treeitem">1</div>
+               <div tabindex="2" role="treeitem">2</div>
+             </div>)HTML");
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  waiter.WaitForNotification();
+
+  BrowserAccessibility* tree = FindNode(ax::mojom::Role::kTree);
+  base::scoped_nsobject<BrowserAccessibilityCocoa> cocoa_tree(
+      [ToBrowserAccessibilityCocoa(tree) retain]);
+
+  NSArray* tree_children = [cocoa_tree children];
+  EXPECT_NSEQ(@"AXRow", [tree_children[0] role]);
+  EXPECT_NSEQ(@"AXRow", [tree_children[1] role]);
+
+  content::RenderProcessHost* render_process_host =
+      shell()->web_contents()->GetMainFrame()->GetProcess();
+  auto menu_filter = base::MakeRefCounted<ContextMenuFilter>(
+      ContextMenuFilter::ShowBehavior::kPreventShow);
+  render_process_host->AddFilter(menu_filter.get());
+
+  gfx::Point tree_point =
+      TriggerContextMenuAndGetMenuLocation(cocoa_tree, menu_filter.get());
+
+  menu_filter->Reset();
+  gfx::Point item_1_point =
+      TriggerContextMenuAndGetMenuLocation(tree_children[1], menu_filter.get());
+  ASSERT_NE(tree_point, item_1_point);
+
+  // Now focus the second child and trigger a context menu on the tree.
+  EXPECT_TRUE(
+      content::ExecuteScript(shell()->web_contents(),
+                             "document.body.children[0].children[1].focus();"));
+  WaitForAccessibilityFocusChange();
+
+  // Triggering a context menu on the tree should now trigger the menu
+  // on the focused child.
+  menu_filter->Reset();
+  gfx::Point new_point =
+      TriggerContextMenuAndGetMenuLocation(cocoa_tree, menu_filter.get());
+  ASSERT_EQ(new_point, item_1_point);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
+                       TestEventRetargetingFocus) {
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kLoadComplete);
+
+  GURL url(R"HTML(data:text/html,
+             <div role="tree">
+               <div tabindex="1" role="treeitem">1</div>
+               <div tabindex="2" role="treeitem">2</div>
+             </div>
+             <div role="treegrid">
+               <div tabindex="1" role="treeitem">1</div>
+               <div tabindex="2" role="treeitem">2</div>
+             </div>
+             <div role="tablist">
+               <div tabindex="1" role="tab">1</div>
+               <div tabindex="2" role="tab">2</div>
+             </div>
+             <div role="table">
+               <div tabindex="1" role="row">1</div>
+               <div tabindex="2" role="row">2</div>
+             </div>
+             <div role="banner">
+               <div tabindex="1" role="link">1</div>
+               <div tabindex="2" role="link">2</div>
+             </div>)HTML");
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  waiter.WaitForNotification();
+
+  std::pair<ax::mojom::Role, bool> tests[] = {
+      std::make_pair(ax::mojom::Role::kTree, true),
+      std::make_pair(ax::mojom::Role::kTreeGrid, true),
+      std::make_pair(ax::mojom::Role::kTabList, true),
+      std::make_pair(ax::mojom::Role::kTable, false),
+      std::make_pair(ax::mojom::Role::kBanner, false),
+  };
+
+  for (auto& test : tests) {
+    base::scoped_nsobject<BrowserAccessibilityCocoa> parent(
+        [ToBrowserAccessibilityCocoa(FindNode(test.first)) retain]);
+    BrowserAccessibilityCocoa* child = [parent children][1];
+
+    EXPECT_NE(nullptr, parent.get());
+    EXPECT_EQ([child owner], [child actionTarget]);
+    EXPECT_EQ([parent owner], [parent actionTarget]);
+
+    FocusAccessibilityElementAndWaitForFocusChange(child);
+    ASSERT_EQ(test.second, [parent actionTarget] == [child owner]);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
+                       TestEventRetargetingActiveDescendant) {
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kLoadComplete);
+
+  GURL url(R"HTML(data:text/html,
+             <div role="tree" aria-activedescendant="tree-child">
+               <div tabindex="1" role="treeitem">1</div>
+               <div id="tree-child" tabindex="2" role="treeitem">2</div>
+             </div>
+             <div role="treegrid" aria-activedescendant="treegrid-child">
+               <div tabindex="1" role="treeitem">1</div>
+               <div id="treegrid-child" tabindex="2" role="treeitem">2</div>
+             </div>
+             <div role="tablist" aria-activedescendant="tablist-child">
+               <div tabindex="1" role="tab">1</div>
+               <div id="tablist-child" tabindex="2" role="tab">2</div>
+             </div>
+             <div role="table" aria-activedescendant="table-child">
+               <div tabindex="1" role="row">1</div>
+               <div id="table-child" tabindex="2" role="row">2</div>
+             </div>
+             <div role="banner" aria-activedescendant="banner-child">
+               <div tabindex="1" role="link">1</div>
+               <div id="banner-child" tabindex="2" role="link">2</div>
+             </div>)HTML");
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  waiter.WaitForNotification();
+
+  std::pair<ax::mojom::Role, bool> tests[] = {
+      std::make_pair(ax::mojom::Role::kTree, true),
+      std::make_pair(ax::mojom::Role::kTreeGrid, true),
+      std::make_pair(ax::mojom::Role::kTabList, true),
+      std::make_pair(ax::mojom::Role::kTable, false),
+      std::make_pair(ax::mojom::Role::kBanner, false),
+  };
+
+  for (auto& test : tests) {
+    base::scoped_nsobject<BrowserAccessibilityCocoa> parent(
+        [ToBrowserAccessibilityCocoa(FindNode(test.first)) retain]);
+    BrowserAccessibilityCocoa* first_child = [parent children][0];
+    BrowserAccessibilityCocoa* second_child = [parent children][1];
+
+    EXPECT_NE(nullptr, parent.get());
+    EXPECT_EQ([second_child owner], [second_child actionTarget]);
+    EXPECT_EQ(test.second, [second_child owner] == [parent actionTarget]);
+
+    // aria-activedescendant should take priority of focus for determining
+    // if an object is the action target.
+    FocusAccessibilityElementAndWaitForFocusChange(first_child);
+    EXPECT_EQ(test.second, [second_child owner] == [parent actionTarget]);
+  }
 }
 
 }  // namespace content

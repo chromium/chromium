@@ -3213,10 +3213,11 @@ void VerifyStaleContentOnFrameEviction(
 
 #endif  // defined(USE_AURA)
 
-ContextMenuFilter::ContextMenuFilter()
+ContextMenuFilter::ContextMenuFilter(ShowBehavior behavior)
     : BrowserMessageFilter(FrameMsgStart),
       run_loop_(std::make_unique<base::RunLoop>()),
-      quit_closure_(run_loop_->QuitClosure()) {}
+      quit_closure_(run_loop_->QuitClosure()),
+      show_behavior_(behavior) {}
 
 bool ContextMenuFilter::OnMessageReceived(const IPC::Message& message) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -3227,6 +3228,9 @@ bool ContextMenuFilter::OnMessageReceived(const IPC::Message& message) {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&ContextMenuFilter::OnContextMenu, this, menu_params));
+    // Returning true here blocks the default action for this message, which
+    // means that the menu will not be shown.
+    return show_behavior_ == ShowBehavior::kPreventShow;
   }
   return false;
 }
@@ -3235,6 +3239,12 @@ void ContextMenuFilter::Wait() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   run_loop_->Run();
   run_loop_ = nullptr;
+}
+
+void ContextMenuFilter::Reset() {
+  ASSERT_EQ(run_loop_, nullptr);
+  run_loop_ = std::make_unique<base::RunLoop>();
+  quit_closure_ = run_loop_->QuitClosure();
 }
 
 ContextMenuFilter::~ContextMenuFilter() = default;

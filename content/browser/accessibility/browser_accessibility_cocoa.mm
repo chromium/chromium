@@ -1726,14 +1726,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   // supported with VoiceOver.
   //
 
-  int activeDescendantId;
-  if (!_owner->GetIntAttribute(ax::mojom::IntAttribute::kActivedescendantId,
-                               &activeDescendantId))
-    return nil;
-
-  BrowserAccessibilityManager* manager = _owner->manager();
-  BrowserAccessibility* activeDescendant =
-      manager->GetFromID(activeDescendantId);
+  BrowserAccessibility* activeDescendant = [self activeDescendant];
   if (!activeDescendant)
     return nil;
 
@@ -3708,16 +3701,18 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     return;
 
   // TODO(dmazzoni): Support more actions.
-  BrowserAccessibilityManager* manager = _owner->manager();
+  BrowserAccessibility* actionTarget = [self actionTarget];
+  BrowserAccessibilityManager* manager = actionTarget->manager();
   if ([action isEqualToString:NSAccessibilityPressAction]) {
-    manager->DoDefaultAction(*_owner);
-    if (_owner->GetData().GetRestriction() != ax::mojom::Restriction::kNone ||
+    manager->DoDefaultAction(*actionTarget);
+    if (actionTarget->GetData().GetRestriction() !=
+            ax::mojom::Restriction::kNone ||
         ![self isCheckable])
       return;
     // Hack: preemptively set the checked state to what it should become,
     // otherwise VoiceOver will very likely report the old, incorrect state to
     // the user as it requests the value too quickly.
-    ui::AXNode* node = _owner->node();
+    ui::AXNode* node = actionTarget->node();
     if (!node)
       return;
     AXNodeData data(node->TakeData());  // Temporarily take data.
@@ -3735,13 +3730,13 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     }
     node->SetData(data);  // Set the data back in the node.
   } else if ([action isEqualToString:NSAccessibilityShowMenuAction]) {
-    manager->ShowContextMenu(*_owner);
+    manager->ShowContextMenu(*actionTarget);
   } else if ([action isEqualToString:NSAccessibilityScrollToVisibleAction]) {
-    manager->ScrollToMakeVisible(*_owner, gfx::Rect());
+    manager->ScrollToMakeVisible(*actionTarget, gfx::Rect());
   } else if ([action isEqualToString:NSAccessibilityIncrementAction]) {
-    manager->Increment(*_owner);
+    manager->Increment(*actionTarget);
   } else if ([action isEqualToString:NSAccessibilityDecrementAction]) {
-    manager->Decrement(*_owner);
+    manager->Decrement(*actionTarget);
   }
 }
 
@@ -3850,4 +3845,32 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   return YES;
 }
 
+// Choose the appropriate accessibility object to receive an action depending
+// on the characteristics of this accessibility node.
+- (BrowserAccessibility*)actionTarget {
+  // When an action is triggered on a container with selectable children and
+  // one of those children is an active descendant or focused, retarget the
+  // action to that child. See https://crbug.com/1114892.
+  if (!ui::IsContainerWithSelectableChildren(_owner->node()->data().role))
+    return _owner;
+
+  if (BrowserAccessibility* activeDescendant = [self activeDescendant])
+    return activeDescendant;
+
+  BrowserAccessibility* focused = _owner->manager()->GetFocus();
+  if (focused && focused->IsDescendantOf(_owner))
+    return focused;
+
+  return _owner;
+}
+
+// Return the active descendant for this accessibility object or null if there
+// is no active descendant defined or in the case of an error.
+- (BrowserAccessibility*)activeDescendant {
+  int activeDescendantId;
+  if (!_owner->GetIntAttribute(ax::mojom::IntAttribute::kActivedescendantId,
+                               &activeDescendantId))
+    return nullptr;
+  return _owner->manager()->GetFromID(activeDescendantId);
+}
 @end

@@ -1679,10 +1679,15 @@ void VerifyStaleContentOnFrameEviction(
 // sent by the renderer.
 class ContextMenuFilter : public content::BrowserMessageFilter {
  public:
-  ContextMenuFilter();
+  // Whether or not the ContextMenu should be prevented from performing
+  // its default action, preventing the context menu from showing.
+  enum ShowBehavior { kShow, kPreventShow };
+
+  explicit ContextMenuFilter(ShowBehavior behavior = ShowBehavior::kShow);
 
   bool OnMessageReceived(const IPC::Message& message) override;
   void Wait();
+  void Reset();
 
   content::UntrustworthyContextMenuParams get_params() { return last_params_; }
 
@@ -1694,6 +1699,7 @@ class ContextMenuFilter : public content::BrowserMessageFilter {
   std::unique_ptr<base::RunLoop> run_loop_;
   base::OnceClosure quit_closure_;
   content::UntrustworthyContextMenuParams last_params_;
+  const ShowBehavior show_behavior_;
 
   DISALLOW_COPY_AND_ASSIGN(ContextMenuFilter);
 };
