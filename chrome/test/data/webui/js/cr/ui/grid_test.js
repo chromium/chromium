@@ -2,7 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-function testGetColumnCount() {
+// clang-format off
+// #import {Grid} from 'chrome://resources/js/cr/ui/grid.m.js';
+// #import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
+// clang-format on
+
+/* #export */ function testGetColumnCount() {
   var g = cr.ui.Grid.prototype;
   g.measured_ = {
     height: 8,
@@ -78,3 +83,5 @@ function testGetColumnCount() {
   // Can not fit two columns due to bigger horizontal padding.
   assertEquals(1, columns);
 }
+
+window.testGetColumnCount = testGetColumnCount;

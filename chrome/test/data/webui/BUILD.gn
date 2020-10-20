@@ -441,6 +441,7 @@ group("modulize") {
     "./cr_components:modulize",
     "./cr_components/chromeos:modulize",
     "./cr_elements:modulize",
+    "./js/cr/ui:modulize",
     "./resources:modulize",
     "./settings:modulize",
   ]

@@ -46,6 +46,8 @@ template("js_modulizer") {
           [ "$target_gen_dir/" + get_path_info(_input, "name") + ".m.js" ]
     }
 
+    data = outputs
+
     args = [
              "--in_folder",
              rebase_path(".", root_build_dir),

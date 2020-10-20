@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -123,6 +124,10 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListTest) {
 #if defined(OS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, GridTest) {
   LoadTestUrl("js/cr/ui/grid_test.html");
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, GridModuleTest) {
+  LoadTestUrl("?module=js/cr/ui/grid_test.m.js");
 }
 #endif
 
