@@ -599,33 +599,21 @@ void RenderFrameHostManager::DiscardUnusedFrame(
   // that it is replaced by a RenderFrameProxyHost to allow other frames to
   // communicate to this frame.
   SiteInstanceImpl* site_instance = render_frame_host->GetSiteInstance();
-  RenderViewHostImpl* rvh = render_frame_host->render_view_host();
   RenderFrameProxyHost* proxy = nullptr;
   if (site_instance->HasSite() && site_instance->active_frame_count() > 1) {
-    // If a proxy already exists for the |site_instance|, just reuse it instead
-    // of creating a new one. There is no need to call Unload() on the
-    // |render_frame_host|, as this method is only called to discard a pending
-    // or speculative RenderFrameHost, i.e. one that has never hosted an actual
-    // document.
+    // A proxy already exists for the |site_instance| so just reuse it. There is
+    // no need to call Unload() on the |render_frame_host|, as this method is
+    // only called to discard a pending or speculative RenderFrameHost, i.e. one
+    // that has never hosted an actual document.
     proxy = GetRenderFrameProxyHost(site_instance);
-    if (!proxy)
-      proxy = CreateRenderFrameProxyHost(site_instance, rvh);
+    CHECK(proxy);
   }
-
-  // Doing this is important in the case where the replacement proxy is created
-  // above, as the RenderViewHost will continue to exist and should be
-  // considered inactive.  When there's no replacement proxy, this doesn't
-  // really matter, as the RenderViewHost will be destroyed shortly, since
-  // |render_frame_host| is its last active frame and will be deleted below.
-  // See https://crbug.com/627400.
-  if (frame_tree_node_->IsMainFrame())
-    rvh->SetMainFrameRoutingId(MSG_ROUTING_NONE);
 
   render_frame_host.reset();
 
-  // If a new RenderFrameProxyHost was created above, or if the old proxy isn't
-  // live, create the RenderFrameProxy in the renderer, so that other frames
-  // can still communicate with this frame.  See https://crbug.com/653746.
+  // If the old proxy isn't live, create the RenderFrameProxy in the renderer,
+  // so that other frames can still communicate with this frame.  See
+  // https://crbug.com/653746.
   if (proxy && !proxy->is_render_frame_proxy_live())
     proxy->InitRenderFrameProxy();
 }
