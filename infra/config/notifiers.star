@@ -43,6 +43,14 @@ luci.notifier(
     notify_emails = ["chromium-component-mapping@google.com"],
 )
 
+luci.notifier(
+    name = "weblayer-sheriff",
+    on_new_status = ["FAILURE"],
+    notify_emails = [
+        "weblayer-sheriff@grotations.appspotmail.com",
+    ],
+)
+
 TREE_CLOSING_STEPS = [
     "bot_update",
     "compile",

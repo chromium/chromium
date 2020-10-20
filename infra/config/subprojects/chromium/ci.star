@@ -979,6 +979,7 @@ ci.android_fyi_builder(
         category = "weblayer",
         short_name = "p-x86-rel",
     ),
+    notifies = ["weblayer-sheriff"],
 )
 
 ci.android_fyi_builder(
