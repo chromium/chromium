@@ -4,24 +4,33 @@
 
 package org.chromium.android_webview.test.devui;
 
+import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withSpinnerText;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anything;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.collection.IsMapContaining.hasEntry;
 
 import static org.chromium.android_webview.test.devui.DeveloperUiTestUtils.withCount;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.view.MotionEvent;
 import android.view.View;
@@ -30,31 +39,40 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
+import androidx.test.espresso.DataInteraction;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.common.AwSwitches;
+import org.chromium.android_webview.common.DeveloperModeUtils;
+import org.chromium.android_webview.common.Flag;
 import org.chromium.android_webview.devui.FlagsFragment;
 import org.chromium.android_webview.devui.MainActivity;
 import org.chromium.android_webview.devui.R;
+import org.chromium.android_webview.services.DeveloperUiService;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
+import java.util.Map;
+
 /**
  * UI tests for {@link FlagsFragment}.
+ * <p>
+ * These tests should not be batched to make sure that the DeveloperUiService is killed
+ * after each test, leaving a clean state.
  */
 @RunWith(AwJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
 public class FlagsFragmentTest {
     @Rule
     public ActivityTestRule mRule =
@@ -65,6 +83,12 @@ public class FlagsFragmentTest {
         Intent intent = new Intent();
         intent.putExtra(MainActivity.FRAGMENT_ID_INTENT_EXTRA, MainActivity.FRAGMENT_ID_FLAGS);
         mRule.launchActivity(intent);
+    }
+
+    @After
+    public void tearDown() {
+        // Make sure to clear shared preferences between tests to avoid any saved state.
+        DeveloperUiService.clearSharedPrefsForTesting(InstrumentationRegistry.getTargetContext());
     }
 
     private CallbackHelper getFlagUiSearchBarListener() {
@@ -317,5 +341,122 @@ public class FlagsFragmentTest {
         // "x" icon is still visible
         onView(withId(R.id.flag_search_bar))
                 .check(matches(compoundDrawableVisible(CompoundDrawable.END)));
+    }
+
+    /**
+     * Toggle a flag's spinner with the given state value, and check that text changes to the
+     * correct value.
+     *
+     * @param flagInteraction the {@link DataInteraction} object representing a flag View item via
+     *         {@code onData()}.
+     * @param state {@code true} for "enabled", {@code false} for "disabled", {@code null} for
+     *         Default.
+     * @return the same {@code flagInteraction} passed param for the ease of chaining.
+     */
+    private DataInteraction toggleFlag(DataInteraction flagInteraction, Boolean state) {
+        String stateText = state == null ? "Default" : state ? "Enabled" : "Disabled";
+        flagInteraction.onChildView(withId(R.id.flag_toggle)).perform(click());
+        onData(allOf(is(instanceOf(String.class)), is(stateText))).perform(click());
+        flagInteraction.onChildView(withId(R.id.flag_toggle))
+                .check(matches(withSpinnerText(containsString(stateText))));
+
+        return flagInteraction;
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testTogglingFlagShowsBlueDot() throws Throwable {
+        DataInteraction flagInteraction =
+                onData(anything()).inAdapterView(withId(R.id.flags_list)).atPosition(1);
+
+        // blue dot should be hidden by default
+        flagInteraction.onChildView(withId(R.id.flag_name))
+                .check(matches(not(compoundDrawableVisible(CompoundDrawable.START))));
+
+        // Test enabling flags shows a bluedot next to flag name
+        toggleFlag(flagInteraction, true);
+        flagInteraction.onChildView(withId(R.id.flag_name))
+                .check(matches(compoundDrawableVisible(CompoundDrawable.START)));
+
+        // Test setting to default hide the blue dot
+        toggleFlag(flagInteraction, null);
+        flagInteraction.onChildView(withId(R.id.flag_name))
+                .check(matches(not(compoundDrawableVisible(CompoundDrawable.START))));
+
+        // Test disabling flags shows a bluedot next to flag name
+        toggleFlag(flagInteraction, false);
+        flagInteraction.onChildView(withId(R.id.flag_name))
+                .check(matches(compoundDrawableVisible(CompoundDrawable.START)));
+
+        // Test setting to default again hide the blue dot
+        toggleFlag(flagInteraction, null);
+        flagInteraction.onChildView(withId(R.id.flag_name))
+                .check(matches(not(compoundDrawableVisible(CompoundDrawable.START))));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testToggledFlagsFloatToTop() throws Throwable {
+        ListView flagsList = mRule.getActivity().findViewById(R.id.flags_list);
+        int totalNumFlags = flagsList.getCount();
+        String lastFlagName = ((Flag) flagsList.getAdapter().getItem(totalNumFlags - 1)).getName();
+
+        // Toggle the last flag in the list.
+        toggleFlag(onData(anything())
+                           .inAdapterView(withId(R.id.flags_list))
+                           .atPosition(totalNumFlags - 1),
+                true);
+        // Navigate from the flags UI then back to it to trigger list sorting.
+        onView(withId(R.id.navigation_home)).perform(click());
+        onView(withId(R.id.navigation_flags_ui)).perform(click());
+
+        // Check that the toggled flag is now at the top of the list. This assumes that the flags
+        // list has > 2 items.
+        onData(anything())
+                .inAdapterView(withId(R.id.flags_list))
+                .atPosition(1)
+                .onChildView(withId(R.id.flag_name))
+                .check(matches(withText(lastFlagName)));
+
+        // Reset to default.
+        toggleFlag(onData(anything()).inAdapterView(withId(R.id.flags_list)).atPosition(1), null);
+        // Navigate from the flags UI then back to it to trigger list sorting.
+        onView(withId(R.id.navigation_home)).perform(click());
+        onView(withId(R.id.navigation_flags_ui)).perform(click());
+        // Check that flags goes back to the end of the list when untoggled.
+        onData(anything())
+                .inAdapterView(withId(R.id.flags_list))
+                .atPosition(totalNumFlags - 1)
+                .onChildView(withId(R.id.flag_name))
+                .check(matches(withText(lastFlagName)));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testResetFlags() throws Throwable {
+        ListView flagsList = mRule.getActivity().findViewById(R.id.flags_list);
+        String firstFlagName = ((Flag) flagsList.getAdapter().getItem(1)).getName();
+
+        toggleFlag(onData(anything()).inAdapterView(withId(R.id.flags_list)).atPosition(1), true);
+        Map<String, Boolean> flagOverrides =
+                DeveloperModeUtils.getFlagOverrides(DeveloperUiTest.TEST_WEBVIEW_PACKAGE_NAME);
+        assertThat(
+                "flagOverrides map should contain exactly one entry", flagOverrides.size(), is(1));
+        assertThat(flagOverrides, hasEntry(firstFlagName, true));
+
+        onView(withId(R.id.reset_flags_button)).perform(click());
+
+        DataInteraction flagInteraction =
+                onData(anything()).inAdapterView(withId(R.id.flags_list)).atPosition(1);
+        flagInteraction.onChildView(withId(R.id.flag_name))
+                .check(matches(not(compoundDrawableVisible(CompoundDrawable.START))));
+        flagInteraction.onChildView(withId(R.id.flag_toggle))
+                .check(matches(withSpinnerText(containsString("Default"))));
+        Assert.assertTrue(
+                DeveloperModeUtils.getFlagOverrides(DeveloperUiTest.TEST_WEBVIEW_PACKAGE_NAME)
+                        .isEmpty());
     }
 }
