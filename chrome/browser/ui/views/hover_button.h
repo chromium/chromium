@@ -37,13 +37,9 @@ class HoverButton : public views::LabelButton {
 
   // Creates a single line hover button with no icon.
   HoverButton(PressedCallback callback, const base::string16& text);
-  HoverButton(views::ButtonListener* listener, const base::string16& text);
 
   // Creates a single line hover button with an icon.
   HoverButton(PressedCallback callback,
-              const gfx::ImageSkia& icon,
-              const base::string16& text);
-  HoverButton(views::ButtonListener* listener,
               const gfx::ImageSkia& icon,
               const base::string16& text);
 
@@ -55,13 +51,6 @@ class HoverButton : public views::LabelButton {
   // accommodate the view's preferred size by reducing the top and bottom
   // insets appropriately up to a value of 0.
   HoverButton(PressedCallback callback,
-              std::unique_ptr<views::View> icon_view,
-              const base::string16& title,
-              const base::string16& subtitle = base::string16(),
-              std::unique_ptr<views::View> secondary_view = nullptr,
-              bool resize_row_for_secondary_view = true,
-              bool secondary_view_can_process_events = false);
-  HoverButton(views::ButtonListener* listener,
               std::unique_ptr<views::View> icon_view,
               const base::string16& title,
               const base::string16& subtitle = base::string16(),

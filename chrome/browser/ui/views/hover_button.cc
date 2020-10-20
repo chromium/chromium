@@ -95,21 +95,12 @@ HoverButton::HoverButton(PressedCallback callback, const base::string16& text)
       views::ButtonController::NotifyAction::kOnRelease);
 }
 
-HoverButton::HoverButton(views::ButtonListener* listener,
-                         const base::string16& text)
-    : HoverButton(PressedCallback(listener, this), text) {}
-
 HoverButton::HoverButton(PressedCallback callback,
                          const gfx::ImageSkia& icon,
                          const base::string16& text)
     : HoverButton(std::move(callback), text) {
   SetImage(STATE_NORMAL, icon);
 }
-
-HoverButton::HoverButton(views::ButtonListener* listener,
-                         const gfx::ImageSkia& icon,
-                         const base::string16& text)
-    : HoverButton(PressedCallback(listener, this), icon, text) {}
 
 HoverButton::HoverButton(PressedCallback callback,
                          std::unique_ptr<views::View> icon_view,
@@ -201,21 +192,6 @@ HoverButton::HoverButton(PressedCallback callback,
   // will be met via margins set on the containing views.
   SetBorder(CreateBorderWithVerticalSpacing(0));
 }
-
-HoverButton::HoverButton(views::ButtonListener* listener,
-                         std::unique_ptr<views::View> icon_view,
-                         const base::string16& title,
-                         const base::string16& subtitle,
-                         std::unique_ptr<views::View> secondary_view,
-                         bool resize_row_for_secondary_view,
-                         bool secondary_view_can_process_events)
-    : HoverButton(PressedCallback(listener, this),
-                  std::move(icon_view),
-                  title,
-                  subtitle,
-                  std::move(secondary_view),
-                  resize_row_for_secondary_view,
-                  secondary_view_can_process_events) {}
 
 HoverButton::~HoverButton() = default;
 

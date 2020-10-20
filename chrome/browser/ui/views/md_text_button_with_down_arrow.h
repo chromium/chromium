@@ -11,15 +11,11 @@
 
 namespace views {
 
-class ButtonListener;
-
 // The material design themed text button with a drop arrow displayed on the
 // right side.
 class MdTextButtonWithDownArrow : public MdTextButton {
  public:
   MdTextButtonWithDownArrow(PressedCallback callback,
-                            const base::string16& text);
-  MdTextButtonWithDownArrow(ButtonListener* listener,
                             const base::string16& text);
   ~MdTextButtonWithDownArrow() override;
 

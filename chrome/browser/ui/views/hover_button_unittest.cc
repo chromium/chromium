@@ -102,8 +102,8 @@ TEST_F(HoverButtonTest, TooltipAndAccessibleName) {
     SCOPED_TRACE(testing::Message() << "Index: " << i << ", expected_tooltip="
                                     << (pair.tooltip ? "true" : "false"));
     auto button = std::make_unique<HoverButton>(
-        nullptr, CreateIcon(), base::ASCIIToUTF16(pair.title),
-        base::ASCIIToUTF16(pair.subtitle));
+        views::Button::PressedCallback(), CreateIcon(),
+        base::ASCIIToUTF16(pair.title), base::ASCIIToUTF16(pair.subtitle));
     button->SetSize(gfx::Size(kButtonWidth, 40));
 
     ui::AXNodeData data;
@@ -132,7 +132,7 @@ TEST_F(HoverButtonTest, CreateButtonWithSubtitleAndIcons) {
   std::unique_ptr<views::View> secondary_icon = CreateIcon();
   views::View* secondary_icon_raw = secondary_icon.get();
 
-  HoverButton button(nullptr, std::move(primary_icon),
+  HoverButton button(views::Button::PressedCallback(), std::move(primary_icon),
                      base::ASCIIToUTF16("Title"),
                      base::ASCIIToUTF16("Subtitle"), std::move(secondary_icon));
   EXPECT_TRUE(button.Contains(primary_icon_raw));

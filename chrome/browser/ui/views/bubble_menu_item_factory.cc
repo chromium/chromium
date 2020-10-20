@@ -49,36 +49,10 @@ std::unique_ptr<views::LabelButton> CreateBubbleMenuItem(
   return button;
 }
 
-std::unique_ptr<views::LabelButton> CreateBubbleMenuItem(
-    int button_id,
-    const base::string16& name,
-    views::ButtonListener* listener) {
-  auto button = std::make_unique<views::LabelButton>(
-      listener, name, views::style::CONTEXT_BUTTON);
-
-  ConfigureBubbleMenuItem(button.get(), button_id);
-
-  button->SetButtonController(std::make_unique<HoverButtonController>(
-      button.get(), views::Button::PressedCallback(listener, button.get()),
-      std::make_unique<views::Button::DefaultButtonControllerDelegate>(
-          button.get())));
-  button->SetBorder(views::CreateEmptyBorder(kDefaultBorderInsets));
-
-  return button;
-}
-
 std::unique_ptr<views::ImageButton> CreateBubbleMenuItem(
     int button_id,
     views::Button::PressedCallback callback) {
   auto button = views::CreateVectorImageButton(std::move(callback));
-  ConfigureBubbleMenuItem(button.get(), button_id);
-  return button;
-}
-
-std::unique_ptr<views::ImageButton> CreateBubbleMenuItem(
-    int button_id,
-    views::ButtonListener* listener) {
-  auto button = views::CreateVectorImageButton(listener);
   ConfigureBubbleMenuItem(button.get(), button_id);
   return button;
 }

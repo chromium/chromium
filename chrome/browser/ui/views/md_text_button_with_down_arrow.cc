@@ -29,10 +29,6 @@ MdTextButtonWithDownArrow::MdTextButtonWithDownArrow(PressedCallback callback,
                                   DISTANCE_DROPDOWN_BUTTON_RIGHT_MARGIN)));
 }
 
-MdTextButtonWithDownArrow::MdTextButtonWithDownArrow(ButtonListener* listener,
-                                                     const base::string16& text)
-    : MdTextButton(PressedCallback(listener, this), text) {}
-
 MdTextButtonWithDownArrow::~MdTextButtonWithDownArrow() = default;
 
 void MdTextButtonWithDownArrow::OnThemeChanged() {

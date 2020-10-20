@@ -44,7 +44,7 @@ class ExtensionsMenuButton : public views::LabelButton,
   }
 
  private:
-  // views::ButtonListener:
+  // views::LabelButton:
   const char* GetClassName() const override;
 
   // ToolbarActionViewDelegateViews:

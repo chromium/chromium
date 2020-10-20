@@ -24,17 +24,10 @@ std::unique_ptr<views::LabelButton> CreateBubbleMenuItem(
     int button_id,
     const base::string16& name,
     views::Button::PressedCallback callback);
-std::unique_ptr<views::LabelButton> CreateBubbleMenuItem(
-    int button_id,
-    const base::string16& name,
-    views::ButtonListener* listener);
 
 // Convience method for creating a menu item used inside a bubble with an image.
 std::unique_ptr<views::ImageButton> CreateBubbleMenuItem(
     int id,
     views::Button::PressedCallback callback);
-std::unique_ptr<views::ImageButton> CreateBubbleMenuItem(
-    int id,
-    views::ButtonListener* listener);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BUBBLE_MENU_ITEM_FACTORY_H_
