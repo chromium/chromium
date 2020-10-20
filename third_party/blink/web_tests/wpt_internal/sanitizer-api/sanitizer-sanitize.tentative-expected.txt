@@ -25,12 +25,15 @@ PASS SanitizerAPI with config: dropElements list with invalid values}, sanitize 
 PASS SanitizerAPI with config: blockElements list with invalid values}, sanitize function for blockElements list with invalid values}
 PASS SanitizerAPI with config: allowElements list ["p"]., sanitize function for allowElements list ["p"].
 PASS SanitizerAPI with config: allowElements list has no influence to dropElements., sanitize function for allowElements list has no influence to dropElements.
-PASS SanitizerAPI with config: dropAttributes list ["style"] with style attribute, sanitize function for dropAttributes list ["style"] with style attribute
+PASS SanitizerAPI with config: dropAttributes list {"style": ["p"]} with style attribute, sanitize function for dropAttributes list {"style": ["p"]} with style attribute
+PASS SanitizerAPI with config: dropAttributes list {"*": ["a"]} with style attribute, sanitize function for dropAttributes list {"*": ["a"]} with style attribute
 PASS SanitizerAPI with config: empty dropAttributes list with id attribute, sanitize function for empty dropAttributes list with id attribute
-PASS SanitizerAPI with config: dropAttributes list ["id"] with id attribute, sanitize function for dropAttributes list ["id"] with id attribute
-PASS SanitizerAPI with config: dropAttributes list ["ID"] with id attribute, sanitize function for dropAttributes list ["ID"] with id attribute
-FAIL SanitizerAPI with config: dropAttributes list ["data-attribute-with-dashes"] with dom dataset js access., sanitize function for dropAttributes list ["data-attribute-with-dashes"] with dom dataset js access. assert_equals: expected "<p id=\"p\">Click.</p><script></script>" but got "<p id=\"p\">Click.</p>"
-PASS SanitizerAPI with config: allowAttributes list ["id"] with id attribute and onclick scripts, sanitize function for allowAttributes list ["id"] with id attribute and onclick scripts
+PASS SanitizerAPI with config: dropAttributes list {"id": ["*"]} with id attribute, sanitize function for dropAttributes list {"id": ["*"]} with id attribute
+PASS SanitizerAPI with config: dropAttributes list {"ID": ["*"]} with id attribute, sanitize function for dropAttributes list {"ID": ["*"]} with id attribute
+FAIL SanitizerAPI with config: dropAttributes list {"data-attribute-with-dashes": ["*"]} with dom dataset js access., sanitize function for dropAttributes list {"data-attribute-with-dashes": ["*"]} with dom dataset js access. assert_equals: expected "<p id=\"p\">Click.</p><script></script>" but got "<p id=\"p\">Click.</p>"
+PASS SanitizerAPI with config: allowAttributes list {"id": ["div"]} with id attribute, sanitize function for allowAttributes list {"id": ["div"]} with id attribute
+PASS SanitizerAPI with config: allowAttributes list {"id": ["*"]} with id attribute and onclick scripts, sanitize function for allowAttributes list {"id": ["*"]} with id attribute and onclick scripts
+PASS SanitizerAPI with config: allowAttributes list {"*": ["a"]} with style attribute, sanitize function for allowAttributes list {"*": ["a"]} with style attribute
 PASS SanitizerAPI with config: allowAttributes list has no influence to dropAttributes, sanitize function for allowAttributes list has no influence to dropAttributes
 Harness: the test ran to completion.
 

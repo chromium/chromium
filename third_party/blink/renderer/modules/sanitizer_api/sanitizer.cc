@@ -29,47 +29,54 @@ Sanitizer::Sanitizer(const SanitizerConfig* config) {
   // Format dropElements to uppercase.
   drop_elements_ = default_drop_elements_;
   if (config->hasDropElements()) {
-    for (const String& s : config->dropElements()) {
-      drop_elements_.insert(s.UpperASCII());
-    }
+    ElementFormatter(drop_elements_, config->dropElements());
   }
 
   // Format blockElements to uppercase.
   block_elements_ = default_block_elements_;
   if (config->hasBlockElements()) {
-    for (const String& s : config->blockElements()) {
-      const String& upper_s = s.UpperASCII();
-      if (!drop_elements_.Contains(upper_s)) {
-        block_elements_.insert(upper_s);
-      }
-    }
+    ElementFormatter(block_elements_, config->blockElements());
   }
 
+  // Format allowElements to uppercase.
   if (config->hasAllowElements()) {
-    // Format allowElements to uppercase.
     has_allow_elements_ = true;
-    for (const String& s : config->allowElements()) {
-      const String& upper = s.UpperASCII();
-      if (!drop_elements_.Contains(upper) &&
-          !default_block_elements_.Contains(upper))
-        allow_elements_.insert(upper);
-    }
+    ElementFormatter(allow_elements_, config->allowElements());
   }
 
   // Format dropAttributes to lowercase.
   drop_attributes_ = default_drop_attributes_;
   if (config->hasDropAttributes()) {
-    for (const String& s : config->dropAttributes()) {
-      drop_attributes_.insert(s.LowerASCII());
-    }
+    AttrFormatter(drop_attributes_, config->dropAttributes());
   }
+
+  // Format allowAttributes to lowercase.
   if (config->hasAllowAttributes()) {
     has_allow_attributes_ = true;
-    for (const String& s : config->allowAttributes()) {
-      const String& lower_s = s.LowerASCII();
-      if (!default_drop_attributes_.Contains(lower_s) &&
-          !default_block_elements_.Contains(lower_s))
-        allow_attributes_.insert(lower_s);
+    AttrFormatter(allow_attributes_, config->allowAttributes());
+  }
+}
+
+void Sanitizer::ElementFormatter(HashSet<String>& element_set,
+                                 const Vector<String>& elements) {
+  for (const String& s : elements) {
+    element_set.insert(s.UpperASCII());
+  }
+}
+
+void Sanitizer::AttrFormatter(
+    HashMap<String, Vector<String>>& attr_map,
+    const Vector<std::pair<String, Vector<String>>>& attrs) {
+  for (const std::pair<String, Vector<String>>& pair : attrs) {
+    const String& lower_attr = pair.first.LowerASCII();
+    if (pair.second.Contains("*")) {
+      attr_map.insert(lower_attr, Vector<String>({"*"}));
+    } else {
+      Vector<String> elements;
+      for (const String& s : pair.second) {
+        elements.push_back(s.UpperASCII());
+      }
+      attr_map.insert(lower_attr, elements);
     }
   }
 }
@@ -140,12 +147,24 @@ DocumentFragment* Sanitizer::sanitize(ScriptState* script_state,
       // element, and proceed to the next node (preorder, depth-first
       // traversal).
       Element* element = To<Element>(node);
-      for (const auto& name : element->getAttributeNames()) {
-        bool drop =
-            drop_attributes_.Contains(name) ||
-            (has_allow_attributes_ && !allow_attributes_.Contains(name));
-        if (drop)
+      if (has_allow_attributes_ &&
+          allow_attributes_.at("*").Contains(node_name)) {
+      } else if (drop_attributes_.at("*").Contains(node_name)) {
+        for (const auto& name : element->getAttributeNames()) {
           element->removeAttribute(name);
+        }
+      } else {
+        for (const auto& name : element->getAttributeNames()) {
+          bool drop = (drop_attributes_.Contains(name) &&
+                       (drop_attributes_.at(name).Contains("*") ||
+                        drop_attributes_.at(name).Contains(node_name))) ||
+                      (has_allow_attributes_ &&
+                       !(allow_attributes_.Contains(name) &&
+                         (allow_attributes_.at(name).Contains("*") ||
+                          allow_attributes_.at(name).Contains(node_name))));
+          if (drop)
+            element->removeAttribute(name);
+        }
       }
       node = NodeTraversal::Next(*node, fragment);
     }

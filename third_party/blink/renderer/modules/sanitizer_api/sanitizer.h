@@ -30,11 +30,15 @@ class MODULES_EXPORT Sanitizer final : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
+  void ElementFormatter(HashSet<String>&, const Vector<String>&);
+  void AttrFormatter(HashMap<String, Vector<String>>&,
+                     const Vector<std::pair<String, Vector<String>>>&);
+
   HashSet<String> allow_elements_ = {};
   HashSet<String> block_elements_ = {};
   HashSet<String> drop_elements_ = {};
-  HashSet<String> allow_attributes_;
-  HashSet<String> drop_attributes_ = {};
+  HashMap<String, Vector<String>> allow_attributes_ = {};
+  HashMap<String, Vector<String>> drop_attributes_ = {};
 
   bool has_allow_elements_ = false;
   bool has_allow_attributes_ = false;
@@ -52,7 +56,9 @@ class MODULES_EXPORT Sanitizer final : public ScriptWrappable {
                                                   "SVG",       "TEMPLATE",
                                                   "THEAD",     "TITLE",
                                                   "VIDEO",     "XMP"};
-  const HashSet<String> default_drop_attributes_ = {"onclick", "onsubmit"};
+  const HashMap<String, Vector<String>> default_drop_attributes_ = {
+      {"onclick", Vector<String>({"*"})},
+      {"onsubmit", Vector<String>({"*"})}};
 };
 
 }  // namespace blink
