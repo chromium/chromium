@@ -5,16 +5,16 @@
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_files.h"
 
 #include "ash/public/cpp/shelf_model.h"
+#include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/chromeos/crostini/crostini_test_helper.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service.h"
+#include "chrome/browser/chromeos/plugin_vm/fake_plugin_vm_features.h"
 #include "chrome/browser/chromeos/plugin_vm/mock_plugin_vm_manager.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager_factory.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_pref_names.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_test_helper.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/chromeos/scoped_set_running_on_chromeos_for_testing.h"
 #include "chrome/browser/ui/ash/launcher/app_window_launcher_item_controller.h"
@@ -23,8 +23,9 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_cicerone_client.h"
 #include "chromeos/dbus/vm_applications/apps.pb.h"
-#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "storage/browser/file_system/external_mount_points.h"
+#include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/test/mock_base_window.h"
 
@@ -40,6 +41,30 @@ const char kLsbRelease[] =
 
 class PluginVmFilesTest : public testing::Test {
  protected:
+  void SetUp() override {
+    fake_plugin_vm_features_.set_enabled(true);
+
+    vm_tools::apps::ApplicationList app_list;
+    app_list.set_vm_type(vm_tools::apps::ApplicationList::PLUGIN_VM);
+    app_list.set_vm_name("PvmDefault");
+    app_list.set_container_name("penguin");
+    *app_list.add_apps() = crostini::CrostiniTestHelper::BasicApp("name");
+    app_id_ = crostini::CrostiniTestHelper::GenerateAppId("name", "PvmDefault",
+                                                          "penguin");
+    guest_os::GuestOsRegistryService(&profile_).UpdateApplicationList(app_list);
+
+    mount_points_ = storage::ExternalMountPoints::GetSystemInstance();
+    mount_name_ = file_manager::util::GetDownloadsMountPointName(&profile_);
+    mount_points_->RegisterFileSystem(
+        mount_name_, storage::kFileSystemTypeNativeLocal,
+        storage::FileSystemMountOption(), GetMyFilesFolderPath());
+  }
+
+  void TearDown() override {
+    base::DeletePathRecursively(GetPvmDefaultPath());
+    mount_points_->RevokeAllFileSystems();
+  }
+
   base::FilePath GetMyFilesFolderPath() {
     return file_manager::util::GetMyFilesFolderForProfile(&profile_);
   }
@@ -48,13 +73,22 @@ class PluginVmFilesTest : public testing::Test {
     return GetMyFilesFolderPath().Append("PvmDefault");
   }
 
+  storage::FileSystemURL GetMyFilesFileSystmeURL(const std::string& path) {
+    return mount_points_->CreateExternalFileSystemURL(
+        url::Origin(), mount_name_, base::FilePath(path));
+  }
+
   struct ScopedDBusThreadManager {
     ScopedDBusThreadManager() { chromeos::DBusThreadManager::Initialize(); }
     ~ScopedDBusThreadManager() { chromeos::DBusThreadManager::Shutdown(); }
   } dbus_thread_manager_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
+  FakePluginVmFeatures fake_plugin_vm_features_;
   chromeos::ScopedSetRunningOnChromeOSForTesting fake_release_{kLsbRelease, {}};
+  std::string app_id_;
+  storage::ExternalMountPoints* mount_points_;
+  std::string mount_name_;
 };
 
 TEST_F(PluginVmFilesTest, DirNotExists) {
@@ -90,13 +124,6 @@ TEST_F(PluginVmFilesTest, LaunchPluginVmApp) {
   using LaunchContainerApplicationCallback = chromeos::DBusMethodCallback<
       vm_tools::cicerone::LaunchContainerApplicationResponse>;
 
-  const std::string app_id =
-      testing::UnitTest::GetInstance()->current_test_info()->name() +
-      std::string{":app_id_1"};
-  const std::string vm_name = kPluginVmName;
-  const std::string container_name = "penguin";
-
-  PluginVmTestHelper test_helper(&profile_);
   auto& plugin_vm_manager = *static_cast<MockPluginVmManager*>(
       PluginVmManagerFactory::GetInstance()->SetTestingFactoryAndUse(
           &profile_,
@@ -108,10 +135,6 @@ TEST_F(PluginVmFilesTest, LaunchPluginVmApp) {
   ChromeLauncherController chrome_launcher_controller(&profile_, &shelf_model);
   chrome_launcher_controller.Init();
 
-  // Ensure that Plugin VM is allowed.
-  test_helper.AllowPluginVm();
-  profile_.GetPrefs()->SetBoolean(prefs::kPluginVmImageExists, true);
-
   AppLaunchedCallback app_launched_callback;
   PluginVmManager::LaunchPluginVmCallback launch_plugin_vm_callback;
   EXPECT_CALL(plugin_vm_manager, LaunchPluginVm(testing::_))
@@ -119,25 +142,10 @@ TEST_F(PluginVmFilesTest, LaunchPluginVmApp) {
           [&](PluginVmManager::LaunchPluginVmCallback callback) {
             launch_plugin_vm_callback = std::move(callback);
           }));
-  LaunchPluginVmApp(&profile_,
-                    crostini::CrostiniTestHelper::GenerateAppId(app_id, vm_name,
-                                                                container_name),
-                    {}, app_launched_callback.Get());
+  LaunchPluginVmApp(&profile_, app_id_,
+                    {GetMyFilesFileSystmeURL("PvmDefault/file")},
+                    app_launched_callback.Get());
   ASSERT_FALSE(launch_plugin_vm_callback.is_null());
-
-  // Add app to app_list.
-  {
-    vm_tools::apps::ApplicationList app_list;
-    app_list.set_vm_type(vm_tools::apps::ApplicationList::PLUGIN_VM);
-    app_list.set_vm_name(vm_name);
-    app_list.set_container_name(container_name);
-
-    vm_tools::apps::App& app = *app_list.add_apps();
-    app.set_desktop_file_id(app_id);
-    app.mutable_name()->add_values();
-
-    guest_os::GuestOsRegistryService(&profile_).UpdateApplicationList(app_list);
-  }
 
   LaunchContainerApplicationCallback cicerone_response_callback;
   static_cast<chromeos::FakeCiceroneClient*>(
@@ -164,6 +172,42 @@ TEST_F(PluginVmFilesTest, LaunchPluginVmApp) {
   EXPECT_CALL(mock_window, Activate());
   EXPECT_CALL(app_launched_callback, Run(LaunchPluginVmAppResult::SUCCESS, ""));
   std::move(cicerone_response_callback).Run(std::move(response));
+}
+
+TEST_F(PluginVmFilesTest, LaunchAppFail) {
+  LaunchPluginVmAppResult actual_result;
+  auto capture_result =
+      [](LaunchPluginVmAppResult* actual_result, LaunchPluginVmAppResult result,
+         const std::string& failure_reason) { *actual_result = result; };
+
+  // Not enabled.
+  fake_plugin_vm_features_.set_enabled(false);
+  LaunchPluginVmApp(&profile_, app_id_,
+                    {GetMyFilesFileSystmeURL("PvmDefault/file")},
+                    base::BindOnce(capture_result, &actual_result));
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(LaunchPluginVmAppResult::FAILED, actual_result);
+  fake_plugin_vm_features_.set_enabled(true);
+
+  // Path in MyFiles, but not MyFiles/PvmDefault.
+  LaunchPluginVmApp(&profile_, app_id_,
+                    {GetMyFilesFileSystmeURL("not/in/PvmDefault")},
+                    base::BindOnce(capture_result, &actual_result));
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(LaunchPluginVmAppResult::FAILED_DIRECTORY_NOT_SHARED,
+            actual_result);
+
+  // Path in different volume.
+  mount_points_->RegisterFileSystem(
+      "other-volume", storage::kFileSystemTypeNativeLocal,
+      storage::FileSystemMountOption(), GetMyFilesFolderPath());
+  storage::FileSystemURL url = mount_points_->CreateExternalFileSystemURL(
+      url::Origin(), "other-volume", base::FilePath("other/volume"));
+  LaunchPluginVmApp(&profile_, app_id_, {url},
+                    base::BindOnce(capture_result, &actual_result));
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(LaunchPluginVmAppResult::FAILED_FILE_ON_EXTERNAL_DRIVE,
+            actual_result);
 }
 
 }  // namespace plugin_vm

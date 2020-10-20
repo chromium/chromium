@@ -173,10 +173,11 @@ void LaunchPluginVmApp(Profile* profile,
     }
     const storage::FileSystemURL& url = absl::get<storage::FileSystemURL>(arg);
     base::FilePath file_path;
-    // Validate paths are already shared, and convert file paths.
-    if (!share_path->IsPathShared(kPluginVmName, url.path()) ||
-        !file_manager::util::ConvertFileSystemURLToPathInsideVM(
-            profile, url, vm_mount, &file_path)) {
+    // Validate paths in MyFiles/PvmDefault, or are already shared, and convert.
+    bool shared = GetDefaultSharedDir(profile).IsParent(url.path()) ||
+                  share_path->IsPathShared(kPluginVmName, url.path());
+    if (!shared || !file_manager::util::ConvertFileSystemURLToPathInsideVM(
+                       profile, url, vm_mount, &file_path)) {
       return std::move(callback).Run(
           file_manager::util::GetMyFilesFolderForProfile(profile).IsParent(
               url.path())
