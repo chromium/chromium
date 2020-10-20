@@ -1,0 +1,43 @@
+Tests that two quota messages are handled correctly.
+
+Initial storage
+Applying overrides
+Quota for origin A
+{
+  "usage": 0,
+  "quota": 10000,
+  "overrideActive": true
+}
+Quota for origin B
+{
+  "usage": 0,
+  "quota": 9100,
+  "overrideActive": true
+}
+Disabling quota for origin A
+Quota for origin A
+{
+  "usage": 0,
+  "quota": 1073741824,
+  "overrideActive": false
+}
+Quota for origin B
+{
+  "usage": 0,
+  "quota": 9100,
+  "overrideActive": true
+}
+Disconnect session
+Quota for origin A
+{
+  "usage": 0,
+  "quota": 1073741824,
+  "overrideActive": false
+}
+Quota for origin B
+{
+  "usage": 0,
+  "quota": 1073741824,
+  "overrideActive": false
+}
+

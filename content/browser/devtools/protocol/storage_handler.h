@@ -15,6 +15,10 @@
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/storage.h"
 
+namespace storage {
+class QuotaOverrideHandle;
+}
+
 namespace content {
 class StoragePartition;
 
@@ -40,6 +44,13 @@ class StorageHandler : public DevToolsDomainHandler,
   void GetUsageAndQuota(
       const String& origin,
       std::unique_ptr<GetUsageAndQuotaCallback> callback) override;
+
+  // Storage Quota Override
+  void GetQuotaOverrideHandle();
+  void OverrideQuotaForOrigin(
+      const String& origin,
+      Maybe<double> quota_size,
+      std::unique_ptr<OverrideQuotaForOriginCallback> callback) override;
 
   // Cookies management
   void GetCookies(
@@ -85,6 +96,9 @@ class StorageHandler : public DevToolsDomainHandler,
   StoragePartition* storage_partition_;
   std::unique_ptr<CacheStorageObserver> cache_storage_observer_;
   std::unique_ptr<IndexedDBObserver> indexed_db_observer_;
+
+  // Exposes the API for managing storage quota overrides.
+  std::unique_ptr<storage::QuotaOverrideHandle> quota_override_handle_;
 
   base::WeakPtrFactory<StorageHandler> weak_ptr_factory_{this};
 

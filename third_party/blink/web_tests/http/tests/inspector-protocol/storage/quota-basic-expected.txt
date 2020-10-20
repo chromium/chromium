@@ -1,0 +1,27 @@
+Tests a basic quota setting workflow.
+
+Initial storage
+{
+  "usage": 0,
+  "quota": 1073741824,
+  "overrideActive": false
+}
+Applying override
+{
+  "usage": 0,
+  "quota": 10000,
+  "overrideActive": true
+}
+Connecting a second session
+{
+  "usage": 0,
+  "quota": 10000,
+  "overrideActive": true
+}
+Disconnecting original session (which held the override)
+{
+  "usage": 0,
+  "quota": 1073741824,
+  "overrideActive": false
+}
+

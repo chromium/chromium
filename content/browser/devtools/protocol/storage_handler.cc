@@ -10,12 +10,14 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/optional.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/cache_storage/cache_storage_context_impl.h"
 #include "content/browser/devtools/protocol/browser_handler.h"
 #include "content/browser/devtools/protocol/network.h"
 #include "content/browser/devtools/protocol/network_handler.h"
+#include "content/browser/devtools/protocol/storage.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -24,6 +26,8 @@
 #include "content/public/browser/storage_partition.h"
 #include "storage/browser/quota/quota_client.h"
 #include "storage/browser/quota/quota_manager.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
+#include "storage/browser/quota/quota_override_handle.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -61,6 +65,7 @@ void ReportUsageAndQuotaDataOnUIThread(
     blink::mojom::QuotaStatusCode code,
     int64_t usage,
     int64_t quota,
+    bool is_override_enabled,
     blink::mojom::UsageBreakdownPtr usage_breakdown) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (code != blink::mojom::QuotaStatusCode::kOk) {
@@ -80,7 +85,8 @@ void ReportUsageAndQuotaDataOnUIThread(
     usageList->emplace_back(std::move(entry));
   }
 
-  callback->sendSuccess(usage, quota, std::move(usageList));
+  callback->sendSuccess(usage, quota, is_override_enabled,
+                        std::move(usageList));
 }
 
 void GotUsageAndQuotaDataCallback(
@@ -88,12 +94,14 @@ void GotUsageAndQuotaDataCallback(
     blink::mojom::QuotaStatusCode code,
     int64_t usage,
     int64_t quota,
+    bool is_override_enabled,
     blink::mojom::UsageBreakdownPtr usage_breakdown) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(ReportUsageAndQuotaDataOnUIThread, std::move(callback),
-                     code, usage, quota, std::move(usage_breakdown)));
+                     code, usage, quota, is_override_enabled,
+                     std::move(usage_breakdown)));
 }
 
 void GetUsageAndQuotaOnIOThread(
@@ -101,7 +109,7 @@ void GetUsageAndQuotaOnIOThread(
     const url::Origin& origin,
     std::unique_ptr<StorageHandler::GetUsageAndQuotaCallback> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  manager->GetUsageAndQuotaWithBreakdown(
+  manager->GetUsageAndQuotaForDevtools(
       origin, blink::mojom::StorageType::kTemporary,
       base::BindOnce(&GotUsageAndQuotaDataCallback, std::move(callback)));
 }
@@ -267,6 +275,7 @@ void StorageHandler::SetRenderer(int process_host_id,
 Response StorageHandler::Disable() {
   cache_storage_observer_.reset();
   indexed_db_observer_.reset();
+  quota_override_handle_.reset();
   return Response::Success();
 }
 
@@ -394,6 +403,37 @@ void StorageHandler::GetUsageAndQuota(
       FROM_HERE,
       base::BindOnce(&GetUsageAndQuotaOnIOThread, base::RetainedRef(manager),
                      url::Origin::Create(origin_url), std::move(callback)));
+}
+
+void StorageHandler::OverrideQuotaForOrigin(
+    const String& origin_string,
+    Maybe<double> quota_size,
+    std::unique_ptr<OverrideQuotaForOriginCallback> callback) {
+  if (!storage_partition_) {
+    callback->sendFailure(Response::InternalError());
+    return;
+  }
+
+  GURL url(origin_string);
+  url::Origin origin = url::Origin::Create(url);
+  if (!url.is_valid() || origin.opaque()) {
+    callback->sendFailure(
+        Response::InvalidParams(origin_string + " is not a valid URL"));
+    return;
+  }
+
+  if (!quota_override_handle_) {
+    scoped_refptr<storage::QuotaManagerProxy> manager_proxy =
+        storage_partition_->GetQuotaManager()->proxy();
+    quota_override_handle_ = manager_proxy->GetQuotaOverrideHandle();
+  }
+
+  quota_override_handle_->OverrideQuotaForOrigin(
+      origin,
+      quota_size.isJust() ? base::make_optional(quota_size.fromJust())
+                          : base::nullopt,
+      base::BindOnce(&OverrideQuotaForOriginCallback::sendSuccess,
+                     std::move(callback)));
 }
 
 Response StorageHandler::TrackCacheStorageForOrigin(const std::string& origin) {

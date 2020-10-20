@@ -199,6 +199,8 @@ component("browser") {
     "quota/quota_manager.h",
     "quota/quota_manager_proxy.cc",
     "quota/quota_manager_proxy.h",
+    "quota/quota_override_handle.cc",
+    "quota/quota_override_handle.h",
     "quota/quota_settings.cc",
     "quota/quota_settings.h",
     "quota/quota_task.cc",

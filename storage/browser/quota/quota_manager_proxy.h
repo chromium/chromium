@@ -22,6 +22,7 @@
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_database.h"
 #include "storage/browser/quota/quota_manager.h"
+#include "storage/browser/quota/quota_override_handle.h"
 #include "storage/browser/quota/quota_task.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
@@ -63,6 +64,17 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
                                 blink::mojom::StorageType type,
                                 UsageAndQuotaCallback callback);
 
+  // DevTools Quota Override methods:
+  std::unique_ptr<QuotaOverrideHandle> GetQuotaOverrideHandle();
+  // Called by QuotaOverrideHandle upon construction to asynchronously
+  // fetch an id.
+  void GetOverrideHandleId(base::OnceCallback<void(int)>);
+  void OverrideQuotaForOrigin(int handle_id,
+                              url::Origin origin,
+                              base::Optional<int64_t> quota_size,
+                              base::OnceClosure callback);
+  void WithdrawOverridesForHandle(int handle_id);
+
   // This method may only be called on the IO thread.
   // It may return nullptr if the manager has already been deleted.
   QuotaManager* quota_manager() const;
@@ -75,6 +87,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
                     scoped_refptr<base::SingleThreadTaskRunner> io_thread);
   virtual ~QuotaManagerProxy();
 
+ private:
   QuotaManager* manager_;  // only accessed on the io thread
   scoped_refptr<base::SingleThreadTaskRunner> io_thread_;
 

@@ -23,6 +23,7 @@
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/system/sys_info.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -446,6 +447,10 @@ class QuotaManagerTest : public testing::Test {
 
   MockSpecialStoragePolicy* mock_special_storage_policy() const {
     return mock_special_storage_policy_.get();
+  }
+
+  std::unique_ptr<QuotaOverrideHandle> GetQuotaOverrideHandle() {
+    return quota_manager_->proxy()->GetQuotaOverrideHandle();
   }
 
   QuotaStatusCode status() const { return quota_status_; }
@@ -2697,6 +2702,100 @@ TEST_F(QuotaManagerTest, MaybeRunStoragePressureCallback) {
   MaybeRunStoragePressureCallback(url::Origin(), 100 * kGBytes, kGBytes);
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(callback_ran);
+}
+
+TEST_F(QuotaManagerTest, OverrideQuotaForOrigin) {
+  url::Origin origin = ToOrigin("https://foo.com");
+  std::unique_ptr<QuotaOverrideHandle> handle = GetQuotaOverrideHandle();
+
+  base::RunLoop run_loop;
+  handle->OverrideQuotaForOrigin(
+      origin, 5000, base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
+  run_loop.Run();
+
+  GetUsageAndQuotaForWebApps(origin, kTemp);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(QuotaStatusCode::kOk, status());
+  EXPECT_EQ(0, usage());
+  EXPECT_EQ(5000, quota());
+}
+
+TEST_F(QuotaManagerTest, OverrideQuotaForOrigin_Disable) {
+  url::Origin origin = ToOrigin("https://foo.com");
+  std::unique_ptr<QuotaOverrideHandle> handle1 = GetQuotaOverrideHandle();
+  std::unique_ptr<QuotaOverrideHandle> handle2 = GetQuotaOverrideHandle();
+
+  base::RunLoop run_loop1;
+  handle1->OverrideQuotaForOrigin(
+      origin, 5000, base::BindLambdaForTesting([&]() { run_loop1.Quit(); }));
+  run_loop1.Run();
+
+  GetUsageAndQuotaForWebApps(origin, kTemp);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(QuotaStatusCode::kOk, status());
+  EXPECT_EQ(5000, quota());
+
+  base::RunLoop run_loop2;
+  handle2->OverrideQuotaForOrigin(
+      origin, 9000, base::BindLambdaForTesting([&]() { run_loop2.Quit(); }));
+  run_loop2.Run();
+
+  GetUsageAndQuotaForWebApps(origin, kTemp);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(QuotaStatusCode::kOk, status());
+  EXPECT_EQ(9000, quota());
+
+  base::RunLoop run_loop3;
+  handle2->OverrideQuotaForOrigin(
+      origin, base::nullopt,
+      base::BindLambdaForTesting([&]() { run_loop3.Quit(); }));
+  run_loop3.Run();
+
+  GetUsageAndQuotaForWebApps(origin, kTemp);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(QuotaStatusCode::kOk, status());
+  EXPECT_EQ(kDefaultPerHostQuota, quota());
+}
+
+TEST_F(QuotaManagerTest, WithdrawQuotaOverride) {
+  url::Origin origin = ToOrigin("https://foo.com");
+  std::unique_ptr<QuotaOverrideHandle> handle1 = GetQuotaOverrideHandle();
+  std::unique_ptr<QuotaOverrideHandle> handle2 = GetQuotaOverrideHandle();
+
+  base::RunLoop run_loop1;
+  handle1->OverrideQuotaForOrigin(
+      origin, 5000, base::BindLambdaForTesting([&]() { run_loop1.Quit(); }));
+  run_loop1.Run();
+
+  GetUsageAndQuotaForWebApps(origin, kTemp);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(QuotaStatusCode::kOk, status());
+  EXPECT_EQ(5000, quota());
+
+  base::RunLoop run_loop2;
+  handle1->OverrideQuotaForOrigin(
+      origin, 8000, base::BindLambdaForTesting([&]() { run_loop2.Quit(); }));
+  run_loop2.Run();
+
+  GetUsageAndQuotaForWebApps(origin, kTemp);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(QuotaStatusCode::kOk, status());
+  EXPECT_EQ(8000, quota());
+
+  // Quota should remain overridden if only one of the two handles withdraws
+  // it's overrides
+  handle2.reset();
+  GetUsageAndQuotaForWebApps(origin, kTemp);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(QuotaStatusCode::kOk, status());
+  EXPECT_EQ(8000, quota());
+
+  handle1.reset();
+  task_environment_.RunUntilIdle();
+  GetUsageAndQuotaForWebApps(origin, kTemp);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(QuotaStatusCode::kOk, status());
+  EXPECT_EQ(kDefaultPerHostQuota, quota());
 }
 
 }  // namespace storage

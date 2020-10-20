@@ -37,6 +37,7 @@
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-forward.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
+#include "url/origin.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -51,6 +52,7 @@ class QuotaInternalsProxy;
 namespace storage {
 
 class QuotaManagerProxy;
+class QuotaOverrideHandle;
 class QuotaTemporaryStorageEvictor;
 class UsageTracker;
 
@@ -121,6 +123,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManager
                               int64_t quota,
                               blink::mojom::UsageBreakdownPtr usage_breakdown)>;
 
+  using UsageAndQuotaForDevtoolsCallback =
+      base::OnceCallback<void(blink::mojom::QuotaStatusCode,
+                              int64_t usage,
+                              int64_t quota,
+                              bool is_override_enabled,
+                              blink::mojom::UsageBreakdownPtr usage_breakdown)>;
+
   static constexpr int64_t kGBytes = 1024 * 1024 * 1024;
   static constexpr int64_t kNoLimit = INT64_MAX;
   static constexpr int64_t kMBytes = 1024 * 1024;
@@ -141,17 +150,24 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManager
   // Called by clients or webapps. Returns usage per host.
   void GetUsageInfo(GetUsageInfoCallback callback);
 
-  // Called by Web Apps.
+  // Called by Web Apps (deprecated quota API).
   // This method is declared as virtual to allow test code to override it.
   virtual void GetUsageAndQuotaForWebApps(const url::Origin& origin,
                                           blink::mojom::StorageType type,
                                           UsageAndQuotaCallback callback);
-  // Called by DevTools.
+
+  // Called by Web Apps (navigator.storage.estimate())
   // This method is declared as virtual to allow test code to override it.
   virtual void GetUsageAndQuotaWithBreakdown(
       const url::Origin& origin,
       blink::mojom::StorageType type,
       UsageAndQuotaWithBreakdownCallback callback);
+
+  // Called by DevTools.
+  virtual void GetUsageAndQuotaForDevtools(
+      const url::Origin& origin,
+      blink::mojom::StorageType type,
+      UsageAndQuotaForDevtoolsCallback callback);
 
   // Called by storage backends.
   //
@@ -253,6 +269,16 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManager
   void SetStoragePressureCallback(
       base::RepeatingCallback<void(url::Origin)> storage_pressure_callback);
 
+  // DevTools Quota Override methods:
+  int GetOverrideHandleId();
+  void OverrideQuotaForOrigin(int handle_id,
+                              const url::Origin& origin,
+                              base::Optional<int64_t> quota_size);
+  // Called when a DevTools client releases all overrides, however, overrides
+  // will not be disabled for any origins for which there are other DevTools
+  // clients/QuotaOverrideHandle with an active override.
+  void WithdrawOverridesForHandle(int handle_id);
+
   // Cap size for per-host persistent quota determined by the histogram.
   // This is a bit lax value because the histogram says nothing about per-host
   // persistent storage usage and we determined by global persistent storage
@@ -301,6 +327,19 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManager
   class DumpQuotaTableHelper;
   class DumpOriginInfoTableHelper;
   class StorageCleanupHelper;
+
+  struct QuotaOverride {
+    QuotaOverride();
+    ~QuotaOverride();
+
+    QuotaOverride(const QuotaOverride& quota_override) = delete;
+    QuotaOverride& operator=(const QuotaOverride&) = delete;
+
+    int64_t quota_size;
+
+    // Keeps track of the DevTools clients that have an active override.
+    std::set<int> active_override_session_ids;
+  };
 
   using QuotaTableEntry = QuotaDatabase::QuotaTableEntry;
   using OriginInfoTableEntry = QuotaDatabase::OriginInfoTableEntry;
@@ -444,6 +483,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManager
   // TODO(crbug.com/1102433): Define and explain StoragePressure in the README.
   void DetermineStoragePressure(int64_t free_space, int64_t total_space);
 
+  base::Optional<int64_t> GetQuotaOverrideForOrigin(const url::Origin&);
+
   void PostTaskAndReplyWithResultForDBThread(
       const base::Location& from_here,
       base::OnceCallback<bool(QuotaDatabase*)> task,
@@ -481,6 +522,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManager
 
   GetOriginCallback lru_origin_callback_;
   std::set<url::Origin> access_notified_origins_;
+
+  std::map<url::Origin, QuotaOverride> devtools_overrides_;
+  int next_override_handle_id_ = 0;
 
   // Owns the QuotaClient instances registered via RegisterClient().
   //
