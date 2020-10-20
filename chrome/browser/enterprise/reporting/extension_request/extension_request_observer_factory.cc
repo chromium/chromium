@@ -24,9 +24,13 @@ ExtensionRequestObserverFactory::ExtensionRequestObserverFactory(
 }
 
 ExtensionRequestObserverFactory::~ExtensionRequestObserverFactory() {
-  if (profile_) {
-    profile_->RemoveObserver(this);
-  } else if (g_browser_process->profile_manager()) {
+  // Remove any pending observers.
+  for (const auto& entry : observers_) {
+    Profile* profile = entry.first;
+    profile->RemoveObserver(this);
+  }
+
+  if (!profile_ && g_browser_process->profile_manager()) {
     g_browser_process->profile_manager()->RemoveObserver(this);
   }
 }
@@ -40,29 +44,22 @@ void ExtensionRequestObserverFactory::OnProfileAdded(Profile* profile) {
   if (profile_ && (profile_ != profile || !observers_.empty()))
     return;
 
-  if (profile_)
-    profile->AddObserver(this);
-
+  // Listen for OnProfileWillBeDestroyed() on this profile.
+  profile->AddObserver(this);
   observers_.emplace(profile,
                      std::make_unique<ExtensionRequestObserver>(profile));
 }
 
 void ExtensionRequestObserverFactory::OnProfileMarkedForPermanentDeletion(
     Profile* profile) {
-  if (profile_ && profile_ == profile)
-    profile->RemoveObserver(this);
-
+  profile->RemoveObserver(this);
   observers_.erase(profile);
 }
 
 void ExtensionRequestObserverFactory::OnProfileWillBeDestroyed(
     Profile* profile) {
-  DCHECK(profile_);
-
-  if (profile_ == profile) {
-    profile->RemoveObserver(this);
-    observers_.erase(profile);
-  }
+  profile->RemoveObserver(this);
+  observers_.erase(profile);
 }
 
 ExtensionRequestObserver*
