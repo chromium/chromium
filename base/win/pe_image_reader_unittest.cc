@@ -186,8 +186,8 @@ class CertificateReceiver {
   }
 
  protected:
-  CertificateReceiver() {}
-  virtual ~CertificateReceiver() {}
+  CertificateReceiver() = default;
+  virtual ~CertificateReceiver() = default;
   virtual bool OnCertificate(uint16_t revision,
                              uint16_t certificate_type,
                              const uint8_t* certificate_data,
@@ -196,7 +196,7 @@ class CertificateReceiver {
 
 class MockCertificateReceiver : public CertificateReceiver {
  public:
-  MockCertificateReceiver() {}
+  MockCertificateReceiver() = default;
   MOCK_METHOD4(OnCertificate, bool(uint16_t, uint16_t, const uint8_t*, size_t));
 
  private:

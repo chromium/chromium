@@ -230,7 +230,7 @@ BASE_EXPORT bool IsCurrentSessionRemote();
 // The original state is restored upon destruction.
 class BASE_EXPORT ScopedDomainStateForTesting {
  public:
-  ScopedDomainStateForTesting(bool state);
+  explicit ScopedDomainStateForTesting(bool state);
   ~ScopedDomainStateForTesting();
 
  private:
@@ -242,7 +242,7 @@ class BASE_EXPORT ScopedDomainStateForTesting {
 // object.  The original state is restored upon destruction.
 class BASE_EXPORT ScopedDeviceRegisteredWithManagementForTesting {
  public:
-  ScopedDeviceRegisteredWithManagementForTesting(bool state);
+  explicit ScopedDeviceRegisteredWithManagementForTesting(bool state);
   ~ScopedDeviceRegisteredWithManagementForTesting();
 
  private:

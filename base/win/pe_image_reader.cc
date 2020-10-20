@@ -35,7 +35,7 @@ struct OptionalHeaderTraits<IMAGE_OPTIONAL_HEADER64> {
 template <class OPTIONAL_HEADER_TYPE>
 class PeImageReader::OptionalHeaderImpl : public PeImageReader::OptionalHeader {
  public:
-  typedef OptionalHeaderTraits<OPTIONAL_HEADER_TYPE> TraitsType;
+  using TraitsType = OptionalHeaderTraits<OPTIONAL_HEADER_TYPE>;
 
   explicit OptionalHeaderImpl(const uint8_t* optional_header_start)
       : optional_header_(reinterpret_cast<const OPTIONAL_HEADER_TYPE*>(
@@ -62,8 +62,7 @@ class PeImageReader::OptionalHeaderImpl : public PeImageReader::OptionalHeader {
   DISALLOW_COPY_AND_ASSIGN(OptionalHeaderImpl);
 };
 
-PeImageReader::PeImageReader()
-    : image_data_(), image_size_(), validation_state_() {}
+PeImageReader::PeImageReader() {}
 
 PeImageReader::~PeImageReader() {
   Clear();
@@ -249,11 +248,13 @@ bool PeImageReader::ValidateOptionalHeader() {
 
   std::unique_ptr<OptionalHeader> optional_header;
   if (*optional_header_magic == IMAGE_NT_OPTIONAL_HDR32_MAGIC) {
-    optional_header.reset(new OptionalHeaderImpl<IMAGE_OPTIONAL_HEADER32>(
-        image_data_ + optional_header_offset));
+    optional_header =
+        std::make_unique<OptionalHeaderImpl<IMAGE_OPTIONAL_HEADER32>>(
+            image_data_ + optional_header_offset);
   } else if (*optional_header_magic == IMAGE_NT_OPTIONAL_HDR64_MAGIC) {
-    optional_header.reset(new OptionalHeaderImpl<IMAGE_OPTIONAL_HEADER64>(
-        image_data_ + optional_header_offset));
+    optional_header =
+        std::make_unique<OptionalHeaderImpl<IMAGE_OPTIONAL_HEADER64>>(
+            image_data_ + optional_header_offset);
   } else {
     return false;
   }

@@ -110,7 +110,7 @@ class AsyncOperation
         base::BindOnce(&AsyncOperation::OnResult, weak_factory_.GetWeakPtr());
   }
 
-  ~AsyncOperation() { DCHECK_CALLED_ON_VALID_THREAD(thread_checker_); }
+  ~AsyncOperation() override { DCHECK_CALLED_ON_VALID_THREAD(thread_checker_); }
 
   // ABI::Windows::Foundation::IAsyncOperation:
   IFACEMETHODIMP put_Completed(Handler* handler) override {

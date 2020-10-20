@@ -40,11 +40,7 @@ class BASE_EXPORT ScopedSafearray {
     using pointer = value_type*;
     using const_pointer = const value_type*;
 
-    LockScope()
-        : safearray_(nullptr),
-          vartype_(VT_EMPTY),
-          array_(nullptr),
-          array_size_(0U) {}
+    LockScope() = default;
 
     LockScope(LockScope<ElementVartype>&& other)
         : safearray_(std::exchange(other.safearray_, nullptr)),
@@ -107,10 +103,10 @@ class BASE_EXPORT ScopedSafearray {
       array_size_ = 0U;
     }
 
-    SAFEARRAY* safearray_;
-    VARTYPE vartype_;
-    pointer array_;
-    size_t array_size_;
+    SAFEARRAY* safearray_ = nullptr;
+    VARTYPE vartype_ = VT_EMPTY;
+    pointer array_ = nullptr;
+    size_t array_size_ = 0U;
 
     friend class ScopedSafearray;
     DISALLOW_COPY_AND_ASSIGN(LockScope);

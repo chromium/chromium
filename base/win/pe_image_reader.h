@@ -36,11 +36,11 @@ class BASE_EXPORT PeImageReader {
   // |certificate_data_size| bytes). |context| is the value provided by the
   // caller to EnumCertificates(). Implementations must return true to continue
   // the enumeration, or false to abort.
-  typedef bool (*EnumCertificatesCallback)(uint16_t revision,
-                                           uint16_t certificate_type,
-                                           const uint8_t* certificate_data,
-                                           size_t certificate_data_size,
-                                           void* context);
+  using EnumCertificatesCallback = bool (*)(uint16_t revision,
+                                            uint16_t certificate_type,
+                                            const uint8_t* certificate_data,
+                                            size_t certificate_data_size,
+                                            void* context);
 
   PeImageReader();
   ~PeImageReader();
@@ -91,7 +91,7 @@ class BASE_EXPORT PeImageReader {
   // An interface to an image's optional header.
   class OptionalHeader {
    public:
-    virtual ~OptionalHeader() {}
+    virtual ~OptionalHeader() = default;
 
     virtual WordSize GetWordSize() = 0;
 
@@ -161,9 +161,9 @@ class BASE_EXPORT PeImageReader {
     return true;
   }
 
-  const uint8_t* image_data_;
-  size_t image_size_;
-  uint32_t validation_state_;
+  const uint8_t* image_data_ = nullptr;
+  size_t image_size_ = 0;
+  uint32_t validation_state_ = 0;
   std::unique_ptr<OptionalHeader> optional_header_;
   DISALLOW_COPY_AND_ASSIGN(PeImageReader);
 };
