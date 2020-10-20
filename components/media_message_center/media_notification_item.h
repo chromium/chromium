@@ -66,7 +66,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationItem {
   virtual void Dismiss() = 0;
 
   // Returns the type of source.
-  virtual SourceType SourceType() = 0;
+  virtual media_message_center::SourceType SourceType() = 0;
 };
 
 }  // namespace media_message_center
