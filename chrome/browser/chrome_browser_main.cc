@@ -657,6 +657,10 @@ DLLEXPORT void __cdecl RelaunchChromeBrowserWithNewCommandLineIfNeeded() {
 // content::BrowserMainParts implementation ------------------------------------
 
 int ChromeBrowserMainParts::PreEarlyInitialization() {
+#if defined(OS_CHROMEOS)
+  LOG(WARNING) << "M85-LTS. This is LTS version of Chrome OS loading";
+#endif
+
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::PreEarlyInitialization");
   for (size_t i = 0; i < chrome_extra_parts_.size(); ++i)
     chrome_extra_parts_[i]->PreEarlyInitialization();
