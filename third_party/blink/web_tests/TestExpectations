@@ -1196,6 +1196,11 @@ crbug.com/1121942 virtual/layout_ng_printing/printing/fixed-positioned-child-sho
 crbug.com/1121942 virtual/layout_ng_printing/printing/frameset.html [ Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/webgl-oversized-printing.html [ Skip ]
 
+### Textarea NG
+crbug.com/1140307 accessibility/inline-text-textarea.html [ Failure ]
+crbug.com/1137666 editing/caret/caret-direction-auto.html [ Failure ]
+crbug.com/1138820 fast/forms/text/input-appearance-scroll-size-mocked.html [ Failure ]
+
 # ====== LayoutNG-only failures until here ======
 
 # ====== MathMLCore-only tests from here ======

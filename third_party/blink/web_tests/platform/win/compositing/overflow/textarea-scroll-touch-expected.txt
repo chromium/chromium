@@ -8,7 +8,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutTextControl TEXTAREA",
+      "name": "LayoutNGTextControlMultiLine TEXTAREA",
       "bounds": [206, 126],
       "transform": 1
     },
@@ -33,7 +33,7 @@
       "transform": 2
     },
     {
-      "name": "LayoutTextControl TEXTAREA",
+      "name": "LayoutNGTextControlMultiLine TEXTAREA",
       "bounds": [206, 126],
       "transform": 3
     },

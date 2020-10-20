@@ -10,7 +10,7 @@
       ]
     },
     {
-      "name": "LayoutTextControl TEXTAREA id='editor'",
+      "name": "LayoutNGTextControlMultiLine TEXTAREA id='editor'",
       "position": [-2, -2],
       "bounds": [185, 40],
       "backgroundColor": "#FFFFFF",

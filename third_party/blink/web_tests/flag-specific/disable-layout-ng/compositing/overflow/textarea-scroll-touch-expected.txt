@@ -3,59 +3,59 @@
   "layers": [
     {
       "name": "Scrolling Contents Layer",
-      "bounds": [1200, 900],
+      "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGTextControlMultiLine TEXTAREA",
-      "bounds": [309, 189],
+      "name": "LayoutTextControl TEXTAREA",
+      "bounds": [206, 126],
+      "transform": 1
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [190, 1],
+      "bounds": [15, 109],
+      "transform": 1
+    },
+    {
+      "name": "Scroll Corner Layer",
+      "position": [190, 110],
+      "bounds": [15, 15],
       "transform": 1
     },
     {
       "name": "Scrolling Contents Layer",
-      "position": [2, 2],
-      "bounds": [284, 492],
+      "position": [1, 1],
+      "bounds": [189, 328],
       "contentsOpaque": true,
       "backgroundColor": "#CCCCCC",
       "transform": 2
     },
     {
+      "name": "LayoutTextControl TEXTAREA",
+      "bounds": [206, 126],
+      "transform": 3
+    },
+    {
       "name": "ContentsLayer for Vertical Scrollbar Layer",
-      "position": [286, 1],
-      "bounds": [22, 164],
-      "transform": 1
+      "position": [190, 1],
+      "bounds": [15, 109],
+      "transform": 3
     },
     {
       "name": "Scroll Corner Layer",
-      "position": [285, 165],
-      "bounds": [22, 22],
-      "transform": 1
-    },
-    {
-      "name": "LayoutNGTextControlMultiLine TEXTAREA",
-      "bounds": [309, 189],
+      "position": [190, 110],
+      "bounds": [15, 15],
       "transform": 3
     },
     {
       "name": "Scrolling Contents Layer",
-      "position": [2, 2],
-      "bounds": [284, 492],
+      "position": [1, 1],
+      "bounds": [189, 328],
       "contentsOpaque": true,
       "backgroundColor": "#CCCCCC",
       "transform": 4
-    },
-    {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
-      "position": [286, 1],
-      "bounds": [22, 164],
-      "transform": 3
-    },
-    {
-      "name": "Scroll Corner Layer",
-      "position": [285, 165],
-      "bounds": [22, 22],
-      "transform": 3
     }
   ],
   "transforms": [
@@ -65,7 +65,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [27, 27, 0, 1]
+        [18, 18, 0, 1]
       ]
     },
     {
@@ -75,7 +75,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [0, -75, 0, 1]
+        [0, -50, 0, 1]
       ]
     },
     {
@@ -84,7 +84,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [372, 27, 0, 1]
+        [248, 18, 0, 1]
       ]
     },
     {
@@ -94,7 +94,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [0, -75, 0, 1]
+        [0, -50, 0, 1]
       ]
     }
   ]

@@ -8,19 +8,19 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutTextControl TEXTAREA",
+      "name": "LayoutNGTextControlMultiLine TEXTAREA",
       "position": [1, 1],
       "bounds": [189, 124],
       "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "Scroll corner of LayoutTextControl TEXTAREA",
+      "name": "Scroll corner of LayoutNGTextControlMultiLine TEXTAREA",
       "position": [193, 18],
       "bounds": [261, 126]
     },
     {
-      "name": "LayoutTextControl TEXTAREA",
+      "name": "LayoutNGTextControlMultiLine TEXTAREA",
       "position": [1, 1],
       "bounds": [189, 328],
       "backgroundColor": "#CCCCCC",
@@ -33,20 +33,20 @@
       "transform": 1
     },
     {
-      "name": "LayoutTextControl TEXTAREA",
+      "name": "LayoutNGTextControlMultiLine TEXTAREA",
       "position": [1, 1],
       "bounds": [189, 124],
       "drawsContent": false,
       "transform": 3
     },
     {
-      "name": "Scroll corner of LayoutTextControl TEXTAREA",
+      "name": "Scroll corner of LayoutNGTextControlMultiLine TEXTAREA",
       "position": [175, 95],
       "bounds": [30, 30],
       "transform": 3
     },
     {
-      "name": "LayoutTextControl TEXTAREA",
+      "name": "LayoutNGTextControlMultiLine TEXTAREA",
       "position": [1, 1],
       "bounds": [189, 328],
       "backgroundColor": "#CCCCCC",
