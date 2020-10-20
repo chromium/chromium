@@ -989,23 +989,12 @@ void AppLauncherHandler::HandleInstallAppLocally(const base::ListValue* args) {
   if (!web_app_provider_->registrar().IsInstalled(app_id))
     return;
 
+  InstallOsHooks(app_id);
+
   web_app_provider_->registry_controller().SetAppIsLocallyInstalled(app_id,
                                                                     true);
   web_app_provider_->registry_controller().SetAppInstallTime(app_id,
                                                              base::Time::Now());
-  web_app::InstallOsHooksOptions options;
-  options.add_to_desktop = true;
-  options.add_to_quick_launch_bar = false;
-  options.os_hooks[web_app::OsHookType::kShortcuts] = true;
-  options.os_hooks[web_app::OsHookType::kShortcutsMenu] = true;
-  options.os_hooks[web_app::OsHookType::kFileHandlers] = true;
-  options.os_hooks[web_app::OsHookType::kRunOnOsLogin] = false;
-
-  web_app_provider_->os_integration_manager().InstallOsHooks(
-      app_id,
-      base::BindOnce(&AppLauncherHandler::OnOsHooksInstalled,
-                     weak_ptr_factory_.GetWeakPtr(), app_id),
-      /*web_application_info=*/nullptr, std::move(options));
 
   // Use the appAdded to update the app icon's color to no longer be
   // greyscale.
@@ -1218,6 +1207,10 @@ void AppLauncherHandler::OnFaviconForAppInstallFromLink(
                 "Apps.Launcher.InstallAppFromLinkResult", install_result);
             if (!app_launcher_handler)
               return;
+            if (install_result ==
+                web_app::InstallResultCode::kSuccessNewInstall) {
+              app_launcher_handler->InstallOsHooks(app_id);
+            }
             if (install_result !=
                 web_app::InstallResultCode::kSuccessNewInstall) {
               app_launcher_handler->attempting_web_app_install_page_ordinal_ =
@@ -1356,4 +1349,20 @@ bool AppLauncherHandler::ShouldShow(const Extension* extension) const {
 
   Profile* profile = Profile::FromWebUI(web_ui());
   return extensions::ui_util::ShouldDisplayInNewTabPage(extension, profile);
+}
+
+void AppLauncherHandler::InstallOsHooks(const web_app::AppId& app_id) {
+  web_app::InstallOsHooksOptions options;
+  options.add_to_desktop = true;
+  options.add_to_quick_launch_bar = false;
+  options.os_hooks[web_app::OsHookType::kShortcuts] = true;
+  options.os_hooks[web_app::OsHookType::kShortcutsMenu] = true;
+  options.os_hooks[web_app::OsHookType::kFileHandlers] = true;
+  options.os_hooks[web_app::OsHookType::kRunOnOsLogin] = false;
+
+  web_app_provider_->os_integration_manager().InstallOsHooks(
+      app_id,
+      base::BindOnce(&AppLauncherHandler::OnOsHooksInstalled,
+                     weak_ptr_factory_.GetWeakPtr(), app_id),
+      /*web_application_info=*/nullptr, std::move(options));
 }
