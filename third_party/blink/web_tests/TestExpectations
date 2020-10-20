@@ -896,7 +896,6 @@ crbug.com/591099 fast/writing-mode/auto-sizing-orthogonal-flows.html [ Failure ]
 crbug.com/591099 fast/writing-mode/percentage-height-orthogonal-writing-modes.html [ Failure ]
 crbug.com/835484 paint/invalidation/outline/inline-focus.html [ Failure ]
 crbug.com/591099 paint/invalidation/scroll/fixed-under-composited-fixed-scrolled.html [ Failure ]
-crbug.com/591099 external/wpt/paint-timing/sibling-painting-first-image.html [ Failure ]
 
 # LayoutNG ref-tests that need to be updated (cannot be rebaselined).
 crbug.com/591099 [ Linux ] fast/multicol/newmulticol/hide-box-vertical-lr.html [ Failure ]
@@ -2612,6 +2611,12 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-206.xht [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/paint-timing/with-first-paint/first-contentful-image.html [ Timeout ]
+crbug.com/626703 external/wpt/paint-timing/with-first-paint/mask-image.html [ Timeout ]
+crbug.com/626703 external/wpt/paint-timing/with-first-paint/first-contentful-paint.html [ Timeout ]
+crbug.com/626703 external/wpt/paint-timing/with-first-paint/child-painting-first-image.html [ Timeout ]
+crbug.com/626703 external/wpt/paint-timing/with-first-paint/sibling-painting-first-image.html [ Timeout ]
+crbug.com/626703 external/wpt/paint-timing/with-first-paint/border-image.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-null-2.https.html [ Failure ]
 crbug.com/626703 external/wpt/infrastructure/testdriver/actions/iframe.html [ Timeout ]
 crbug.com/626703 external/wpt/infrastructure/testdriver/actions/crossOrigin.sub.html [ Timeout ]

@@ -380098,34 +380098,6 @@
     ]
    },
    "paint-timing": {
-    "basetest.html": [
-     "759dfaa97a5fd24ec9df82fabed858ff826384b2",
-     [
-      null,
-      {}
-     ]
-    ],
-    "border-image.html": [
-     "4614fecd2101c8457722e8b65a7ba39f1cf2eff6",
-     [
-      null,
-      {}
-     ]
-    ],
-    "buffered-flag.window.js": [
-     "0b7c8bea2e42ea54acc4e24f0ca548b51dea567d",
-     [
-      "paint-timing/buffered-flag.window.html",
-      {}
-     ]
-    ],
-    "child-painting-first-image.html": [
-     "3badae1849feaf5b2a0288ebe556af3ea1216586",
-     [
-      null,
-      {}
-     ]
-    ],
     "fcp-only": {
      "fcp-background-size.html": [
       "25fe986bdede921980b96c10f9d3d26a83558cbc",
@@ -380317,73 +380289,8 @@
       ]
      ]
     },
-    "first-contentful-bg-image.html": [
-     "00224b33ec9ecd2d15ee41c5ff609ad44592dff7",
-     [
-      null,
-      {}
-     ]
-    ],
     "first-contentful-canvas-none.html": [
      "33a4352126c0d59668e5fdd30d96a4c54ad34468",
-     [
-      null,
-      {}
-     ]
-    ],
-    "first-contentful-canvas-webgl2.html": [
-     "f7c5f50ecba0bd5a5d45fb41a02d0457e49e6713",
-     [
-      null,
-      {}
-     ]
-    ],
-    "first-contentful-canvas.html": [
-     "e6a4365b760c7126be458c505a49ef1ea7234d53",
-     [
-      null,
-      {}
-     ]
-    ],
-    "first-contentful-image.html": [
-     "18abfe731d6bbfe27fb738331ae3137ebaf47a23",
-     [
-      null,
-      {}
-     ]
-    ],
-    "first-contentful-paint.html": [
-     "a93f1b73263efb7a57e1e8be3145d5aee85b9646",
-     [
-      null,
-      {}
-     ]
-    ],
-    "first-contentful-svg.html": [
-     "c68e72c01065310f2d23bba3154dd49cd9c9482c",
-     [
-      null,
-      {}
-     ]
-    ],
-    "first-image-child.html": [
-     "d707d437b61457679ff890a6dfb71c2133416298",
-     [
-      null,
-      {
-       "timeout": "long"
-      }
-     ]
-    ],
-    "first-paint-bg-color.html": [
-     "a4f799045f1c6430a37a0e091cf613193a82c163",
-     [
-      null,
-      {}
-     ]
-    ],
-    "first-paint-only.html": [
-     "473b1aa121d37815360bd0d49729c16971189dd6",
      [
       null,
       {}
@@ -380414,29 +380321,8 @@
       {}
      ]
     ],
-    "mask-image.html": [
-     "d022f43039f00ddc629aaa503d03931caab4a315",
-     [
-      null,
-      {}
-     ]
-    ],
-    "paint-visited.html": [
-     "c02ea2405258f34df3c88b17e4b6d383913ed8f9",
-     [
-      null,
-      {}
-     ]
-    ],
     "replaced-content-image.html": [
      "b3199aa0f6d54cc102ed5262c71021e232816ccc",
-     [
-      null,
-      {}
-     ]
-    ],
-    "sibling-painting-first-image.html": [
-     "096c49ac19ec6f04255430b87e8e3ab216a8416c",
      [
       null,
       {}
@@ -380448,7 +380334,123 @@
       "paint-timing/supported-paint-type.window.html",
       {}
      ]
-    ]
+    ],
+    "with-first-paint": {
+     "basetest.html": [
+      "759dfaa97a5fd24ec9df82fabed858ff826384b2",
+      [
+       null,
+       {}
+      ]
+     ],
+     "border-image.html": [
+      "7818b0e8e7e0d816ff34d06bcf0763acf44daa2a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "buffered-flag.window.js": [
+      "0b7c8bea2e42ea54acc4e24f0ca548b51dea567d",
+      [
+       "paint-timing/with-first-paint/buffered-flag.window.html",
+       {}
+      ]
+     ],
+     "child-painting-first-image.html": [
+      "3badae1849feaf5b2a0288ebe556af3ea1216586",
+      [
+       null,
+       {}
+      ]
+     ],
+     "first-contentful-bg-image.html": [
+      "40eaa635bbccc1e346e68c2da2db3a268ab71cc5",
+      [
+       null,
+       {}
+      ]
+     ],
+     "first-contentful-canvas-webgl2.html": [
+      "f7c5f50ecba0bd5a5d45fb41a02d0457e49e6713",
+      [
+       null,
+       {}
+      ]
+     ],
+     "first-contentful-canvas.html": [
+      "e6a4365b760c7126be458c505a49ef1ea7234d53",
+      [
+       null,
+       {}
+      ]
+     ],
+     "first-contentful-image.html": [
+      "18abfe731d6bbfe27fb738331ae3137ebaf47a23",
+      [
+       null,
+       {}
+      ]
+     ],
+     "first-contentful-paint.html": [
+      "a93f1b73263efb7a57e1e8be3145d5aee85b9646",
+      [
+       null,
+       {}
+      ]
+     ],
+     "first-contentful-svg.html": [
+      "74799a2ecdbb153dd55c80c0df0b5482fbbccd56",
+      [
+       null,
+       {}
+      ]
+     ],
+     "first-image-child.html": [
+      "5c24527cf56f015d9f646e5b0c39ea416d07a5a6",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "first-paint-bg-color.html": [
+      "a4f799045f1c6430a37a0e091cf613193a82c163",
+      [
+       null,
+       {}
+      ]
+     ],
+     "first-paint-only.html": [
+      "473b1aa121d37815360bd0d49729c16971189dd6",
+      [
+       null,
+       {}
+      ]
+     ],
+     "mask-image.html": [
+      "05f4b9ea4d2cf9d05ff58c6a807d35e6efe351a6",
+      [
+       null,
+       {}
+      ]
+     ],
+     "paint-visited.html": [
+      "c02ea2405258f34df3c88b17e4b6d383913ed8f9",
+      [
+       null,
+       {}
+      ]
+     ],
+     "sibling-painting-first-image.html": [
+      "4ad625808a309ee44c219dd623f2deddd24e4f82",
+      [
+       null,
+       {}
+      ]
+     ]
+    }
    },
    "payment-handler": {
     "can-make-payment-event-constructor.https.html": [
