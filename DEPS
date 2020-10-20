@@ -50,6 +50,7 @@ gclient_gn_args = [
 
 
 vars = {
+  "buildspec_platforms": "chromeos",
   # Variable that can be used to support multiple build scenarios, like having
   # Chromium specific targets in a client project's GN file or sync dependencies
   # conditionally etc.
@@ -195,11 +196,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': 'refs/heads/chrome/m86',
+  'skia_revision': 'b939c288f3d6479d88d1444fafbe7441d11348aa',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': 'refs/heads/8.6-lkgr',
+  'v8_revision': '7565e93eb72cea4268028fc20186d415c22b1cff',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling swarming_client
   # and whatever else without interference from each other.
@@ -207,7 +208,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': 'refs/heads/chromium/4240',
+  'angle_revision': '8fe0309421694ef5cde7d4a0891ac364842b74d3',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -215,7 +216,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling PDFium
   # and whatever else without interference from each other.
-  'pdfium_revision': 'refs/heads/chromium/4240',
+  'pdfium_revision': '9591642a0896c0bd7377ce1eadf782eccc0e0b9b',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling BoringSSL
   # and whatever else without interference from each other.
@@ -266,7 +267,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': 'refs/heads/chromium/4240',
+  'devtools_frontend_revision': 'd10dfdcb2069dba669023b4cccf8633209a61d65',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1470,7 +1471,7 @@ deps = {
   },
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + 'refs/branch-heads/4240',
+    Var('webrtc_git') + '/src.git' + '@' + '5f7ee18f25f020098fd999e3dfee02fe38c445f1',
 
   'src/third_party/libgifcodec':
      Var('skia_git') + '/libgifcodec' + '@'+  Var('libgifcodec_revision'),
@@ -1542,7 +1543,7 @@ deps = {
     Var('chromium_git') + '/v8/v8.git' + '@' +  Var('v8_revision'),
 
   'src-internal': {
-    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@refs/heads/chromium/4240',
+    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@daa40296b835ff18d42e59fa2b94c80b69bf67f0',
     'condition': 'checkout_src_internal',
   },
 
