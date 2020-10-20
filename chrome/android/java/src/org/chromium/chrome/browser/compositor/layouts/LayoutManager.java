@@ -20,6 +20,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
@@ -80,7 +81,7 @@ import java.util.Map;
  * includes lifecycle managment like showing/hiding this {@link Layout}.
  */
 public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
-                                      TabModelSelector.CloseAllTabsDelegate {
+                                      TabModelSelector.CloseAllTabsDelegate, LayoutStateProvider {
     /** Sampling at 60 fps. */
     private static final long FRAME_DELTA_TIME_MS = 16;
 
@@ -118,6 +119,9 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
     private TabModelObserver mTabModelFilterObserver;
 
     // External Observers
+    private final ObserverList<LayoutStateObserver> mLayoutObservers = new ObserverList<>();
+    // TODO(crbug.com/1108496): Remove after all SceneChangeObserver migrates to
+    // LayoutStateObserver.
     private final ObserverList<SceneChangeObserver> mSceneChangeObservers = new ObserverList<>();
 
     // Current Layout State
@@ -164,6 +168,9 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
 
     /** A map of {@link SceneOverlay} to its position relative to the others. */
     private Map<Class, Integer> mOverlayOrderMap = new HashMap<>();
+
+    /** The supplier used to supply the LayoutStateProvider. */
+    private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderOneshotSupplier;
 
     /**
      * Protected class to handle {@link TabModelObserver} related tasks. Extending classes will
@@ -241,14 +248,18 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
      * @param host A {@link LayoutManagerHost} instance.
      * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
+     * @param layoutStateProviderOneshotSupplier Supplier used to supply the {@link
+     *         LayoutStateProvider}.
      */
     public LayoutManager(LayoutManagerHost host, ViewGroup contentContainer,
-            ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
+            ObservableSupplier<TabContentManager> tabContentManagerSupplier,
+            OneshotSupplierImpl<LayoutStateProvider> layoutStateProviderOneshotSupplier) {
         mHost = host;
         mPxToDp = 1.f / mHost.getContext().getResources().getDisplayMetrics().density;
         mAndroidViewShownSupplier = new ObservableSupplierImpl<>();
         mAndroidViewShownSupplier.set(true);
         mTabContentManagerSupplier = tabContentManagerSupplier;
+        mLayoutStateProviderOneshotSupplier = layoutStateProviderOneshotSupplier;
 
         mContext = host.getContext();
         LayoutRenderHost renderHost = host.getLayoutRenderHost();
@@ -262,7 +273,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
                 StripLayoutHelperManager.class,
                 StatusIndicatorCoordinator.getSceneOverlayClass(),
                 ContextualSearchPanel.class};
-        // clang-format off
+        // clang-format on
 
         for (int i = 0; i < overlayOrder.length; i++) mOverlayOrderMap.put(overlayOrder[i], i);
 
@@ -274,6 +285,8 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
         mOverlayPanelManager = new OverlayPanelManager();
 
         mFrameRequestSupplier = new CompositorModelChangeProcessor.FrameRequestSupplier(this);
+
+        mLayoutStateProviderOneshotSupplier.set(this);
     }
 
     /**
@@ -418,9 +431,16 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
         //  system.
         final Layout layout = getActiveLayout();
 
-        if (layout != null && layout.onUpdate(timeMs, dtMs) && layout.isHiding()
-                && areAnimatorsComplete) {
-            layout.doneHiding();
+        // TODO(crbug.com/1070281): Layout itself should decide when it's done hiding and done
+        //  showing.
+        if (layout != null && layout.onUpdate(timeMs, dtMs) && areAnimatorsComplete) {
+            if (layout.isStartingToHide()) {
+                layout.doneHiding();
+            } else if (layout.isStartingToShow()) {
+                // TODO(crbug.com/1108496): Call layout.doneShowing() here after all Layout have
+                //  been consolidated into the new Layout System to avoid Layout tests become flaky,
+                //  especially the StartSurfaceLayoutTest.
+            }
         }
 
         // TODO(1100332): Once overlays are MVC, this should no longer be needed.
@@ -883,10 +903,18 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
     public void startHiding(int nextTabId, boolean hintAtTabSelection) {
         requestUpdate();
         if (hintAtTabSelection) {
+            notifyObserversOnTabSelectionHinted(nextTabId);
+
+            // TODO(crbug.com/1108496): Remove after migrates to LayoutStateObserver.
             for (SceneChangeObserver observer : mSceneChangeObservers) {
                 observer.onTabSelectionHinted(nextTabId);
             }
         }
+
+        Layout layoutBeingHidden = getActiveLayout();
+        notifyObserversLayoutStartedHiding(layoutBeingHidden.getLayoutType(),
+                shouldShowToolbarAnimationOnHide(layoutBeingHidden, nextTabId),
+                shouldDelayHideAnimation(layoutBeingHidden));
     }
 
     @Override
@@ -894,11 +922,19 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
         // TODO: If next layout is default layout clear caches (should this be a sub layout thing?)
 
         assert mNextActiveLayout != null : "Need to have a next active layout.";
-        if (mNextActiveLayout != null) startShowing(mNextActiveLayout, true);
+        if (mNextActiveLayout != null) {
+            // Notify LayoutObservers the active layout is finished hiding.
+            notifyObserversLayoutFinishedHiding(getActiveLayout().getLayoutType());
+
+            startShowing(mNextActiveLayout, true);
+        }
     }
 
     @Override
-    public void doneShowing() {}
+    public void doneShowing() {
+        // Notify LayoutObservers the active layout is finished showing.
+        notifyObserversLayoutFinishedShowing(getActiveLayout().getLayoutType());
+    }
 
     /**
      * Should be called by control logic to show a new {@link Layout}.
@@ -920,6 +956,8 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
             if (oldLayout != null) {
                 oldLayout.forceAnimationToFinish();
                 oldLayout.detachViews();
+
+                // TODO(crbug.com/1108496): hide oldLayout if it's not hidden.
             }
             layout.contextChanged(mHost.getContext());
             layout.attachViews(mContentContainer);
@@ -949,10 +987,14 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
                 getActiveLayout().canHostBeFocusable());
         mHost.requestRender();
 
+        // TODO(crbug.com/1108496): Remove after migrates to LayoutStateObserver#onStartedShowing.
         // Notify observers about the new scene.
         for (SceneChangeObserver observer : mSceneChangeObservers) {
             observer.onSceneChange(getActiveLayout());
         }
+
+        notifyObserversLayoutStartedShowing(
+                layout.getLayoutType(), shouldShowToolbarAnimationOnShow(animate));
     }
 
     /**
@@ -1067,5 +1109,75 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
      */
     protected void switchToTab(Tab tab, int lastTabId) {
         tabSelected(tab.getId(), lastTabId, tab.isIncognito());
+    }
+
+    // LayoutStateProvider implementation.
+    @Override
+    public boolean isLayoutVisible(int layoutType) {
+        return getActiveLayout().getLayoutType() == layoutType;
+    }
+
+    @Override
+    public void addObserver(LayoutStateObserver listener) {
+        mLayoutObservers.addObserver(listener);
+    }
+
+    @Override
+    public void removeObserver(LayoutStateObserver listener) {
+        mLayoutObservers.removeObserver(listener);
+    }
+
+    protected final void notifyObserversLayoutStartedShowing(
+            @Layout.LayoutType int layoutType, boolean showToolbar) {
+        mLayoutStateProviderOneshotSupplier.onAvailable((unused) -> {
+            for (LayoutStateObserver observer : mLayoutObservers) {
+                observer.onStartedShowing(layoutType, showToolbar);
+            }
+        });
+    }
+
+    protected final void notifyObserversLayoutFinishedShowing(@Layout.LayoutType int layoutType) {
+        mLayoutStateProviderOneshotSupplier.onAvailable((unused) -> {
+            for (LayoutStateObserver observer : mLayoutObservers) {
+                observer.onFinishedShowing(layoutType);
+            }
+        });
+    }
+
+    protected final void notifyObserversLayoutStartedHiding(
+            @Layout.LayoutType int layoutType, boolean showToolbar, boolean delayAnimation) {
+        mLayoutStateProviderOneshotSupplier.onAvailable((unused) -> {
+            for (LayoutStateObserver observer : mLayoutObservers) {
+                observer.onStartedHiding(layoutType, showToolbar, delayAnimation);
+            }
+        });
+    }
+
+    protected final void notifyObserversLayoutFinishedHiding(@Layout.LayoutType int layoutType) {
+        mLayoutStateProviderOneshotSupplier.onAvailable((unused) -> {
+            for (LayoutStateObserver observer : mLayoutObservers) {
+                observer.onFinishedHiding(layoutType);
+            }
+        });
+    }
+
+    protected final void notifyObserversOnTabSelectionHinted(int tabId) {
+        mLayoutStateProviderOneshotSupplier.onAvailable((unused) -> {
+            for (LayoutStateObserver observer : mLayoutObservers) {
+                observer.onTabSelectionHinted(tabId);
+            }
+        });
+    }
+
+    protected boolean shouldShowToolbarAnimationOnShow(boolean isAnimate) {
+        return false;
+    }
+
+    protected boolean shouldShowToolbarAnimationOnHide(Layout layoutBeingHidden, int nextTabId) {
+        return false;
+    }
+
+    protected boolean shouldDelayHideAnimation(Layout layoutBeingHidden) {
+        return false;
     }
 }
