@@ -33,7 +33,6 @@ Local Modifications:
    checked in to the Chromium repository at r49280.
  - Created goobsdiff.gyp for GYP build system integration.
  - Renamed bsdiff.c to goobsdiff.c and bspatch.c to goobspatch.c.
- - Added sha1_adapter.cc, sha1_adapter.h, and empty.cc to facilitate hashing.
  - Added #include <sys/types.h> to goobspatch.c so that it compiles. (Oops!)
  - Changed the magic number in the header from BSDIFF40 to BSDIFF4G.
  - Expanded the header to include SHA1 hashes of the original and new files,

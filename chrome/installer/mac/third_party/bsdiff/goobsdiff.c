@@ -41,6 +41,7 @@ __FBSDID("$FreeBSD: src/usr.bin/bsdiff/bsdiff/bsdiff.c,v 1.1 2005/08/06 01:59:05
 #include <zlib.h>
 
 #if defined(__APPLE__)
+#include <CommonCrypto/CommonDigest.h>
 #include <libkern/OSByteOrder.h>
 #define htole64(x) OSSwapHostToLittleInt64(x)
 #elif defined(__linux__)
@@ -50,8 +51,6 @@ __FBSDID("$FreeBSD: src/usr.bin/bsdiff/bsdiff/bsdiff.c,v 1.1 2005/08/06 01:59:05
 #else
 #error Provide htole64 for this platform
 #endif
-
-#include "chrome/installer/mac/third_party/bsdiff/sha1_adapter.h"
 
 #define MIN(x,y) (((x)<(y)) ? (x) : (y))
 
@@ -409,8 +408,8 @@ int main(int argc,char *argv[])
 	memcpy(header, "BSDIFF4G", 8);
 	offtout(oldsize, header + 32);
 	offtout(newsize, header + 40);
-	SHA1(old, oldsize, header + 48);
-	SHA1(new, newsize, header + 68);
+	CC_SHA1(old, oldsize, header + 48);
+	CC_SHA1(new, newsize, header + 68);
 
 	/* Compute the differences */
 	scan=0;len=0;
