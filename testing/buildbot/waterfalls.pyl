@@ -2839,12 +2839,10 @@
         'use_swarming': False,
       },
       'win10-blink-rel-dummy': {
+        'mixins': [
+            'win10',
+        ],
         'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'Windows-10-15063',
-            },
-          ],
           'hard_timeout': 900,
         },
         'test_suites': {
