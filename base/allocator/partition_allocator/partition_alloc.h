@@ -506,33 +506,30 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   PA_DCHECK(slot_span);
   PA_DCHECK(IsValidSlotSpan(slot_span));
 
+  // |ptr| points after the tag and the cookie.
+  //
+  // Layout inside the slot:
+  //  <--------extras------->                  <-extras->
+  //  <----------------utilized_slot_size--------------->
+  //                        <----usable_size--->
+  //  |[tag/refcnt]|[cookie]|...data...|[empty]|[cookie]|[unused]|
+  //                        ^
+  //                       ptr
+  //
+  // Note: tag, ref-count and cookie can be 0-sized.
+  //
+  // For more context, see the other "Layout inside the slot" comment below.
   const size_t utilized_slot_size = slot_span->GetUtilizedSlotSize();
   if (allow_extras) {
-    // |ptr| points after the tag and the cookie.
-    //
-    // Layout inside the slot:
-    //  <--------extras------->                  <-extras->
-    //  <----------------utilized_slot_size--------------->
-    //  |[tag/refcnt]|[cookie]|...data...|[empty]|[cookie]|[unused]|
-    //  ^                     ^
-    //  |                     |
-    //  allocation_start_ptr  ptr
-    //
-    // Note: tag, ref-count and cookie can be 0-sized.
-    //
-    // For more context, see the other "Layout inside the slot" comment below.
-    void* allocation_start_ptr =
-        internal::PartitionPointerAdjustSubtract(true /* allow_extras */, ptr);
 
 #if DCHECK_IS_ON()
-    void* start_cookie_ptr =
-        internal::PartitionCookiePointerAdjustSubtract(ptr);
-    void* end_cookie_ptr = internal::PartitionCookiePointerAdjustSubtract(
-        reinterpret_cast<char*>(allocation_start_ptr) + utilized_slot_size);
-
+    // Verify 2 cookies surrounding the allocated region.
     // If these asserts fire, you probably corrupted memory.
-    internal::PartitionCookieCheckValue(start_cookie_ptr);
-    internal::PartitionCookieCheckValue(end_cookie_ptr);
+    char* char_ptr = static_cast<char*>(ptr);
+    size_t usable_size = internal::PartitionSizeAdjustSubtract(
+        true /* allow_extras */, utilized_slot_size);
+    internal::PartitionCookieCheckValue(char_ptr - internal::kCookieSize);
+    internal::PartitionCookieCheckValue(char_ptr + usable_size);
 #endif
 
     if (!slot_span->bucket->is_direct_mapped()) {
@@ -569,8 +566,10 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
 #endif
     }
 
-    ptr = allocation_start_ptr;
-  }
+    // Shift ptr to the beginning of the slot.
+    ptr =
+        internal::PartitionPointerAdjustSubtract(true /* allow_extras */, ptr);
+  }  // if (allow_extras)
 
 #if DCHECK_IS_ON()
   memset(ptr, kFreedByte, utilized_slot_size);
@@ -873,18 +872,18 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
 
   // Layout inside the slot:
   //  |[tag/refcnt]|[cookie]|...data...|[empty]|[cookie]|[unused]|
-  //                        <----a----->
-  //                        <--------b--------->
-  //  <----------c---------->                  <---c---->
-  //  <---------------d--------------->   +    <---d---->
-  //  <------------------------e------------------------>
-  //  <----------------------------f----------------------------->
-  //   a: requested_size
-  //   b: usable_size
-  //   c: extras
-  //   d: raw_size
-  //   e: utilized_slot_size
-  //   f: slot_size
+  //                        <---(a)---->
+  //                        <-------(b)-------->
+  //  <---------(c)--------->                  <--(c)--->
+  //  <---------------(d)-------------->   +   <--(d)--->
+  //  <-----------------------(e)----------------------->
+  //  <---------------------------(f)---------------------------->
+  //   (a) requested_size
+  //   (b) usable_size
+  //   (c) extras
+  //   (d) raw_size
+  //   (e) utilized_slot_size
+  //   (f) slot_size
   //
   // - The tag/ref-count may or may not exist in the slot, depending on
   //   CheckedPtr implementation.
