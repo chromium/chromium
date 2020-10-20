@@ -6,6 +6,7 @@ autofill_private.idl
 bookmark_manager_private.json
 chromeos_info_private.json
 command_line_private.json
+crash_report_private.idl
 developer_private.idl
 file_manager_private.idl
 file_system_provider.idl

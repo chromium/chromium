@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_API_CRASH_REPORT_PRIVATE_CRASH_REPORT_PRIVATE_API_H_
-#define EXTENSIONS_BROWSER_API_CRASH_REPORT_PRIVATE_CRASH_REPORT_PRIVATE_API_H_
+#ifndef CHROME_BROWSER_EXTENSIONS_API_CRASH_REPORT_PRIVATE_CRASH_REPORT_PRIVATE_API_H_
+#define CHROME_BROWSER_EXTENSIONS_API_CRASH_REPORT_PRIVATE_CRASH_REPORT_PRIVATE_API_H_
 
 #include <string>
 
+#include "chrome/common/extensions/api/crash_report_private.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
-#include "extensions/common/api/crash_report_private.h"
 
 namespace base {
 class Clock;
@@ -39,4 +39,4 @@ void SetClockForTesting(base::Clock* clock);
 }  // namespace api
 }  // namespace extensions
 
-#endif  // EXTENSIONS_BROWSER_API_CRASH_REPORT_PRIVATE_CRASH_REPORT_PRIVATE_API_H_
+#endif  // CHROME_BROWSER_EXTENSIONS_API_CRASH_REPORT_PRIVATE_CRASH_REPORT_PRIVATE_API_H_

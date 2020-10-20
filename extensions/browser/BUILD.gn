@@ -517,7 +517,6 @@ source_set("browser_tests") {
     sources += [
       "api/audio/audio_apitest_chromeos.cc",
       "api/cec_private/cec_private_apitest.cc",
-      "api/crash_report_private/crash_report_private_apitest.cc",
       "api/media_perception_private/media_perception_private_apitest.cc",
       "api/system_power_source/system_power_source_apitest.cc",
       "api/virtual_keyboard/virtual_keyboard_apitest.cc",

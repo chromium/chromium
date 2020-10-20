@@ -4,19 +4,17 @@
 
 #include "base/system/sys_info.h"
 #include "base/test/simple_test_clock.h"
+#include "chrome/browser/extensions/api/crash_report_private/crash_report_private_api.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "components/crash/content/browser/error_reporting/mock_crash_endpoint.h"
 #include "content/public/test/browser_task_environment.h"
-#include "extensions/browser/api/crash_report_private/crash_report_private_api.h"
-#include "extensions/browser/browsertest_util.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/common/switches.h"
-#include "extensions/shell/test/shell_apitest.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 
 namespace extensions {
-
-using browsertest_util::ExecuteScriptInBackgroundPage;
 
 namespace {
 
@@ -36,13 +34,13 @@ std::string GetOsVersion() {
 
 }  // namespace
 
-class CrashReportPrivateApiTest : public ShellApiTest {
+class CrashReportPrivateApiTest : public ExtensionApiTest {
  public:
   CrashReportPrivateApiTest() = default;
   ~CrashReportPrivateApiTest() override = default;
 
   void SetUpOnMainThread() override {
-    ShellApiTest::SetUpOnMainThread();
+    ExtensionApiTest::SetUpOnMainThread();
 
     constexpr char kKey[] =
         "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC+uU63MD6T82Ldq5wjrDFn5mGmPnnnj"
@@ -75,7 +73,7 @@ class CrashReportPrivateApiTest : public ShellApiTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(
         extensions::switches::kAllowlistedExtensionID, kTestExtensionId);
-    ShellApiTest::SetUpCommandLine(command_line);
+    ExtensionApiTest::SetUpCommandLine(command_line);
   }
 
  protected:
@@ -97,8 +95,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, Basic) {
       },
       () => window.domAutomationController.send(""));
   )";
-  ExecuteScriptInBackgroundPage(browser_context(), extension_->id(),
-                                kTestScript);
+  ExecuteScriptInBackgroundPage(extension_->id(), kTestScript);
 
   const base::Optional<MockCrashEndpoint::Report>& report = last_report();
   ASSERT_TRUE(report);
@@ -127,8 +124,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, ExtraParamsAndStackTrace) {
       },
       () => window.domAutomationController.send(""));
   )-";
-  ExecuteScriptInBackgroundPage(browser_context(), extension_->id(),
-                                kTestScript);
+  ExecuteScriptInBackgroundPage(extension_->id(), kTestScript);
 
   const base::Optional<MockCrashEndpoint::Report>& report = last_report();
   ASSERT_TRUE(report);
@@ -160,8 +156,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, StackTraceWithErrorMessage) {
       },
       () => window.domAutomationController.send(""));
   )";
-  ExecuteScriptInBackgroundPage(browser_context(), extension_->id(),
-                                kTestScript);
+  ExecuteScriptInBackgroundPage(extension_->id(), kTestScript);
 
   const base::Optional<MockCrashEndpoint::Report>& report = last_report();
   ASSERT_TRUE(report);
@@ -192,8 +187,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, RedactMessage) {
       },
       () => window.domAutomationController.send(""));
   )";
-  ExecuteScriptInBackgroundPage(browser_context(), extension_->id(),
-                                kTestScript);
+  ExecuteScriptInBackgroundPage(extension_->id(), kTestScript);
 
   const base::Optional<MockCrashEndpoint::Report>& report = last_report();
   ASSERT_TRUE(report);
@@ -228,20 +222,17 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, Throttling) {
   api::SetClockForTesting(&test_clock);
 
   // Use an exact time for the first API call.
-  EXPECT_EQ("", ExecuteScriptInBackgroundPage(browser_context(),
-                                              extension_->id(), kTestScript));
+  EXPECT_EQ("", ExecuteScriptInBackgroundPage(extension_->id(), kTestScript));
 
   // API is limited to one call per hr. So pretend the second call is just
   // before 1 hr.
   test_clock.Advance(base::TimeDelta::FromMinutes(59));
   EXPECT_EQ("Too many calls to this API",
-            ExecuteScriptInBackgroundPage(browser_context(), extension_->id(),
-                                          kTestScript));
+            ExecuteScriptInBackgroundPage(extension_->id(), kTestScript));
 
   // Call again after 1 hr.
   test_clock.Advance(base::TimeDelta::FromMinutes(2));
-  EXPECT_EQ("", ExecuteScriptInBackgroundPage(browser_context(),
-                                              extension_->id(), kTestScript));
+  EXPECT_EQ("", ExecuteScriptInBackgroundPage(extension_->id(), kTestScript));
 }
 
 // Ensures that reportError checks user consent for data collection on the
@@ -259,8 +250,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, NoConsent) {
   )";
 
   crash_endpoint_->set_consented(false);
-  EXPECT_EQ("", ExecuteScriptInBackgroundPage(browser_context(),
-                                              extension_->id(), kTestScript));
+  EXPECT_EQ("", ExecuteScriptInBackgroundPage(extension_->id(), kTestScript));
   // The server should not receive any reports.
   const base::Optional<MockCrashEndpoint::Report>& report = last_report();
   EXPECT_FALSE(report);

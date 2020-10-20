@@ -130,7 +130,6 @@ source_set("api") {
     public_deps += [
       "//extensions/browser/api/cec_private",
       "//extensions/browser/api/clipboard",
-      "//extensions/browser/api/crash_report_private",
       "//extensions/browser/api/diagnostics",
       "//extensions/browser/api/system_power_source",
       "//extensions/browser/api/virtual_keyboard",

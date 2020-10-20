@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/api/crash_report_private/crash_report_private_api.h"
+#include "chrome/browser/extensions/api/crash_report_private/crash_report_private_api.h"
 
 #include "base/time/default_clock.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"

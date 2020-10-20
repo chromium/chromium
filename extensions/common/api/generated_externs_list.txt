@@ -5,7 +5,6 @@ automation.idl
 bluetooth.idl
 bluetooth_private.idl
 clipboard.idl
-crash_report_private.idl
 management.json
 metrics_private.json
 mime_handler_private.idl

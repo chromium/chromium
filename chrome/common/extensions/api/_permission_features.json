@@ -180,6 +180,17 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]
   },
+  "crashReportPrivate": {
+    "channel": "dev",
+    "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
+    "whitelist": [
+      "0EA6B717932AD64C469C1CCB6911457733295907",  // Secure Shell App (stable)
+      "58B0C2968C335964D5433E89CA4D86628A0E3D4B",  // Secure Shell App (dev)
+      "3BC1ED0B3E6EFDC7BD4D3D1D75D44B52DEE0A226",  // Secure Shell Ext (stable)
+      "38C361D4A0726CE45D3572D65071B6BDB3092371",  // Secure Shell Ext (dev)
+      "06BE211D5F014BAB34BC22D9DDA09C63A81D828E"   // http://crbug.com/946241
+    ]
+  },
   "cryptotokenPrivate": {
     "channel": "stable",
     "extension_types": ["extension"],

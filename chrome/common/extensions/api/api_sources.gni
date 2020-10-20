@@ -29,6 +29,7 @@ schema_sources_ = [
   "debugger.json",
   "desktop_capture.json",
   "developer_private.idl",
+  "crash_report_private.idl",
   "downloads.idl",
   "downloads_internal.idl",
   "enterprise_hardware_platform.idl",
