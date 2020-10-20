@@ -4311,8 +4311,6 @@ crbug.com/892212 http/tests/wasm/wasm_remote_postMessage_test.https.html [ Pass 
 # ====== Random order flaky tests from here ======
 # These tests are flaky when run in random order, which is the default on Linux & Mac since since 2016-12-16.
 
-crbug.com/652536 fast/events/mouse-cursor.html [ Pass Failure ]
-
 crbug.com/702837 virtual/text-antialias/aat-morx.html [ Skip ]
 
 crbug.com/688670 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cue-rendering-after-controls-removed.html [ Pass Failure ]
@@ -6054,14 +6052,6 @@ crbug.com/1091665 [ Debug ] external/wpt/html/cross-origin-embedder-policy/repor
 # [virtual/...]external/wpt/web-animation test flakes
 crbug.com/1064065 virtual/threaded/external/wpt/css/css-animations/event-dispatch.tentative.html [ Pass Failure ]
 
-# Sheriff 2020-03-26
-crbug.com/1064839 fast/hidpi/image-srcset-svg-canvas-2x.html [ Pass Failure ]
-# Sheriff 2020-03-27
-crbug.com/1064839 fast/hidpi/image-srcset-svg-canvas.html [ Pass Failure ]
-crbug.com/1065335 [ Win ] fast/hidpi/image-srcset-relative-svg-canvas.html [ Pass Failure ]
-
-# Sheriff 2020-03-31
-crbug.com/1065335 [ Win ] fast/hidpi/image-srcset-relative-svg-canvas-2x.html [ Pass Failure ]
 # Sheriff 2020-04-01
 crbug.com/1066122 virtual/threaded-no-composited-antialiasing/animations/events/animation-iteration-event.html [ Pass Failure ]
 crbug.com/1066732 fast/events/platform-wheelevent-paging-x-in-scrolling-div.html [ Pass Failure ]
@@ -6111,7 +6101,6 @@ crbug.com/984467 fast/canvas/canvas-composite-stroke-alpha.html [ Pass Timeout ]
 
 # Sheriff 2020-05-06
 crbug.com/1078863 [ Mac ] fast/speech/scripted/speechrecognition-restart-onend.html [ Pass Timeout ]
-crbug.com/1071915 fast/hidpi/image-srcset-png-canvas.html [ Pass Failure ]
 
 # Sheriff 2020-05-18
 crbug.com/1084256 [ Linux ] http/tests/misc/insert-iframe-into-xml-document-before-xsl-transform.html [ Pass Failure ]
