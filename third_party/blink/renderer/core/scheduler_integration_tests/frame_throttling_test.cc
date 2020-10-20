@@ -496,7 +496,26 @@ TEST_P(FrameThrottlingTest, UnthrottlingFrameSchedulesAnimation) {
   // Then bring it back on-screen. This should schedule an animation update.
   frame_element->setAttribute(kStyleAttr, "");
   CompositeFrame();
+
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    // Compositing inputs need to be re-computed on the next frame after
+    // unthrottling, because while throttled all throttled content is not
+    // considered eligible for compositing (PLC::CanBeComposited often returns
+    // false).
+    EXPECT_TRUE(frame_element->contentDocument()
+                    ->View()
+                    ->GetLayoutView()
+                    ->Layer()
+                    ->NeedsCompositingInputsUpdate());
+  }
+
   EXPECT_TRUE(Compositor().NeedsBeginFrame());
+  CompositeFrame();
+  EXPECT_FALSE(frame_element->contentDocument()
+                   ->View()
+                   ->GetLayoutView()
+                   ->Layer()
+                   ->NeedsCompositingInputsUpdate());
 }
 
 TEST_P(FrameThrottlingTest, MutatingThrottledFrameDoesNotCauseAnimation) {
