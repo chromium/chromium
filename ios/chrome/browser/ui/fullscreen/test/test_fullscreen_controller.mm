@@ -123,6 +123,6 @@ void TestFullscreenController::OnFullscreenWillAnimate(
   }
 }
 
-void TestFullscreenController::ResizeViewport() {
+void TestFullscreenController::ResizeHorizontalViewport() {
   // NOOP in tests.
 }

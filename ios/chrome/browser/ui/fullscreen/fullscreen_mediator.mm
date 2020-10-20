@@ -208,3 +208,9 @@ void FullscreenMediator::StopAnimating(bool update_model) {
   [animator_ stopAnimation:YES];
   animator_ = nil;
 }
+
+void FullscreenMediator::ResizeHorizontalInsets() {
+  for (auto& observer : observers_) {
+    observer.ResizeHorizontalInsets(controller_);
+  }
+}
