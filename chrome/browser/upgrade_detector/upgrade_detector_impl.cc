@@ -125,10 +125,8 @@ void UpgradeDetectorImpl::StartUpgradeNotificationTimer() {
   if (upgrade_detected_time().is_null())
     set_upgrade_detected_time(clock()->Now());
 
-  // Start the repeating timer for notifying the user after a certain period.
-  upgrade_notification_timer_.Start(
-      FROM_HERE, is_testing_ ? kNotifyCycleTimeForTesting : kNotifyCycleTime,
-      this, &UpgradeDetectorImpl::NotifyOnUpgrade);
+  // Broadcast the appropriate notification.
+  NotifyOnUpgrade();
 }
 
 void UpgradeDetectorImpl::InitializeThresholds() {
@@ -389,8 +387,8 @@ void UpgradeDetectorImpl::OnRelaunchNotificationPeriodPrefChanged() {
 }
 
 void UpgradeDetectorImpl::NotifyOnUpgrade() {
-  const base::TimeDelta time_passed = clock()->Now() - upgrade_detected_time();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const base::TimeDelta time_passed = clock()->Now() - upgrade_detected_time();
   NotifyOnUpgradeWithTimePassed(time_passed);
 }
 

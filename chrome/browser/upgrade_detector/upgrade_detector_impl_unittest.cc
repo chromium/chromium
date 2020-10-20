@@ -203,12 +203,9 @@ TEST_F(UpgradeDetectorImplTest, VariationsCriticalChanges) {
   EXPECT_FALSE(detector.notify_upgrade());
   EXPECT_EQ(0, notifications_listener.notification_count());
 
+  // Users are notified about critical updates immediately.
   detector.OnExperimentChangesDetected(
       variations::VariationsService::Observer::CRITICAL);
-  EXPECT_FALSE(detector.notify_upgrade());
-  EXPECT_EQ(0, notifications_listener.notification_count());
-
-  detector.NotifyOnUpgradeWithTimePassed(base::TimeDelta::FromDays(30));
   EXPECT_TRUE(detector.notify_upgrade());
   EXPECT_EQ(1, notifications_listener.notification_count());
   EXPECT_EQ(1, detector.trigger_critical_update_call_count());
