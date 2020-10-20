@@ -66,15 +66,8 @@ TraceStartupConfig* TraceStartupConfig::GetInstance() {
 // static
 base::trace_event::TraceConfig
 TraceStartupConfig::GetDefaultBrowserStartupConfig() {
-  base::trace_event::TraceConfig trace_config(
+  return base::trace_event::TraceConfig(
       kDefaultStartupCategories, base::trace_event::RECORD_UNTIL_FULL);
-  // Filter only browser process events.
-  base::trace_event::TraceConfig::ProcessFilterConfig process_config(
-      {base::GetCurrentProcId()});
-  // First 10k events at start are sufficient to debug startup traces.
-  trace_config.SetTraceBufferSizeInEvents(10000);
-  trace_config.SetProcessFilterConfig(process_config);
-  return trace_config;
 }
 
 TraceStartupConfig::TraceStartupConfig() {
