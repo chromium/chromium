@@ -182,6 +182,7 @@ Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër profili os
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium kontrollon për softuerë të padëshiruar një herë në javë. Kontrolli i fundit: 1 ditë më parë.}other{Chromium kontrollon për softuerë të padëshiruar një herë në javë. Kontrolli i fundit: {NUM_DAYS} ditë më parë.}}</translation>
 <translation id="6893813176749746474">Chromium është përditësuar, por nuk e ke përdorur për të paktën 30 ditë.</translation>
 <translation id="6964305034639999644">Hape lidhjen në një dritare të fshe&amp;htë të Chromium</translation>
+<translation id="6978145336957848883">Fjalëkalimet e dobëta mund të gjenden me lehtësi. Lejoje Chromium <ph name="BEGIN_LINK" />të krijojë dhe mbajë mend fjalëkalime të forta për ty<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium ka nevojë për leje për t'u qasur te mikrofoni yt për këtë sajt</translation>
 <translation id="701244094609242530">Chromium nuk mund t'i kontrollojë shtesat e tua. Provo përsëri më vonë.</translation>
 <translation id="705851970750939768">Përditëso Chromium</translation>

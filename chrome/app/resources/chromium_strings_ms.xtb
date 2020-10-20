@@ -180,6 +180,7 @@ Beberapa ciri mungkin tidak tersedia. Sila nyatakan direktori profil yang berbez
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium menyemak perisian yang tidak diingini seminggu sekali. Terakhir disemak: 1 hari yang lalu.}other{Chromium menyemak perisian yang tidak diingini seminggu sekali. Terakhir disemak: {NUM_DAYS} hari yang lalu.}}</translation>
 <translation id="6893813176749746474">Chromium telah dikemas kini, tetapi anda belum menggunakannya untuk sekurang-kurangnya 30 hari.</translation>
 <translation id="6964305034639999644">Buka pautan dalam tetingkap inko&amp;gnito Chromium</translation>
+<translation id="6978145336957848883">Kata laluan lemah mudah diteka. Biar Chromium <ph name="BEGIN_LINK" />membuat dan mengingat kata laluan kukuh untuk anda<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium memerlukan kebenaran untuk mengakses mikrofon anda bagi tapak ini</translation>
 <translation id="701244094609242530">Chromium tidak dapat menyemak sambungan anda. Cuba lagi nanti.</translation>
 <translation id="705851970750939768">Kemas kini Chromium</translation>

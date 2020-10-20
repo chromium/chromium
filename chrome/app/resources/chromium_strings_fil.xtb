@@ -182,6 +182,7 @@ Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktory
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Nagsusuri ang Chromium para sa hindi gustong software nang isang beses sa isang linggo. Huling nagsuri: 1 araw ang nakalipas.}one{Nagsusuri ang Chromium para sa hindi gustong software nang isang beses sa isang linggo. Huling nagsuri: {NUM_DAYS} araw ang nakalipas.}other{Nagsusuri ang Chromium para sa hindi gustong software nang isang beses sa isang linggo. Huling nagsuri: {NUM_DAYS} na araw ang nakalipas.}}</translation>
 <translation id="6893813176749746474">Na-update na ang Chromium, ngunit hindi mo pa ito nagagamit sa loob ng hindi bababa sa 30 araw.</translation>
 <translation id="6964305034639999644">Buksan ang link sa inco&amp;gnito window ng Chromium</translation>
+<translation id="6978145336957848883">Madaling hulaan ang mahihinang password. Hayaan ang Chromium na <ph name="BEGIN_LINK" />gumawa ng malalakas na password at tandaan ang mga ito para sa iyo<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Kailangan ng Chromium ng pahintulot na i-access ang iyong mikropono para sa site na ito</translation>
 <translation id="701244094609242530">Hindi masuri ng Chromium ang iyong mga extension. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="705851970750939768">I-update ang Chromium</translation>

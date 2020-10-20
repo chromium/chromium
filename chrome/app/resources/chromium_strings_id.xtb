@@ -180,6 +180,7 @@ Sebagian fitur mungkin tidak tersedia. Tentukan direktori profil yang berbeda at
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium memeriksa software yang tidak diinginkan seminggu sekali. Terakhir diperiksa: 1 hari yang lalu.}other{Chromium memeriksa software yang tidak diinginkan seminggu sekali. Terakhir diperiksa: {NUM_DAYS} hari yang lalu.}}</translation>
 <translation id="6893813176749746474">Chromium telah diperbarui, tetapi Anda belum menggunakannya selama setidaknya 30 hari.</translation>
 <translation id="6964305034639999644">Buka link di jendela sa&amp;maran Chromium</translation>
+<translation id="6978145336957848883">Sandi yang lemah mudah ditebak. Izinkan Chromium <ph name="BEGIN_LINK" />membuat dan mengingat sandi yang kuat untuk Anda<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium memerlukan izin akses ke mikrofon untuk situs ini</translation>
 <translation id="701244094609242530">Chromium tidak dapat memeriksa ekstensi Anda. Coba lagi nanti.</translation>
 <translation id="705851970750939768">Perbarui Chromium</translation>

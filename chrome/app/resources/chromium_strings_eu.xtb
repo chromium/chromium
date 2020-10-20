@@ -182,6 +182,7 @@ Baliteke eginbide batzuk erabilgarri ez egotea. Adierazi beste profil-direktorio
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium-ek nahi ez den softwarerik baden begiratzen du astean behin. Duela 1 egun egiaztatu zuen azkenengoz.}other{Chromium-ek nahi ez den softwarerik baden begiratzen du astean behin. Duela {NUM_DAYS} egun egiaztatu zuen azkenengoz.}}</translation>
 <translation id="6893813176749746474">Chromium eguneratu da baina ez duzu erabili 30 egunetan gutxienez.</translation>
 <translation id="6964305034639999644">Ireki esteka Chromium-eko &amp;ezkutuko moduko leiho batean</translation>
+<translation id="6978145336957848883">Seguruak ez diren pasahitzak erraz asmatzen dira. Utzi Chromium-i <ph name="BEGIN_LINK" />pasahitz seguruak sortzen eta gogoratzen<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium-ek webgune honen izenean mikrofonoa atzitzeko baimena behar du</translation>
 <translation id="701244094609242530">Chromium-ek ezin ditu egiaztatu luzapenak. Saiatu geroago.</translation>
 <translation id="705851970750939768">Eguneratu Chromium</translation>

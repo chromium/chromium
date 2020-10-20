@@ -182,6 +182,7 @@ Sumir eiginleikar kunna að verða óaðgengilegir. Tilgreindu aðra prófílam�
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium leitar að óæskilegum hugbúnaði einu sinni í viku. Síðast athugað: fyrir 1 degi.}one{Chromium leitar að óæskilegum hugbúnaði einu sinni í viku. Síðast athugað: fyrir {NUM_DAYS} degi.}other{Chromium leitar að óæskilegum hugbúnaði einu sinni í viku. Síðast athugað: fyrir {NUM_DAYS} dögum.}}</translation>
 <translation id="6893813176749746474">Chromium var uppfært en þú hefur ekki notað það í a.m.k. 30 daga.</translation>
 <translation id="6964305034639999644">Opna tengil í &amp;huliðsglugga í Chromium</translation>
+<translation id="6978145336957848883">Léleg aðgangsorð eru þau sem auðvelt er að giska á. Leyfðu Chromium <ph name="BEGIN_LINK" />að búa til traust aðgangsorð fyrir þig og muna þau<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium þarf leyfi til að nota hljóðnemann á þessu vefsvæði</translation>
 <translation id="701244094609242530">Chromium getur ekki athugað viðbæturnar þínar. Reyndu aftur síðar.</translation>
 <translation id="705851970750939768">Uppfæra Chromium</translation>

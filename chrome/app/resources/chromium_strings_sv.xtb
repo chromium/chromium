@@ -182,6 +182,7 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog elle
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium söker efter oönskad programvara en gång i veckan. Senaste genomsökning: 1 dag sedan.}other{Chromium söker efter oönskad programvara en gång i veckan. Senaste genomsökning: {NUM_DAYS} dagar sedan.}}</translation>
 <translation id="6893813176749746474">Chromium har uppdaterats men du har inte använt det på över 30 dagar.</translation>
 <translation id="6964305034639999644">Öppna länken i ett inko&amp;gnitofönster i Chromium.</translation>
+<translation id="6978145336957848883">Svaga lösenord är lätta att lista ut. Låt Chromium <ph name="BEGIN_LINK" />skapa och spara starka lösenord åt dig<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Du behöver ge Chromium behörighet att använda mikrofonen på webbplatsen</translation>
 <translation id="701244094609242530">Chromium kan inte kontrollera dina tillägg. Försök igen senare.</translation>
 <translation id="705851970750939768">Uppdatera Chromium</translation>

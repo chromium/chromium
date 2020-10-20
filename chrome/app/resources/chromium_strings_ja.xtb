@@ -180,6 +180,7 @@
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium で週 1 回、望ましくないソフトウェアがないか確認します。前回の確認: 1 日前。}other{Chromium で週 1 回、望ましくないソフトウェアがないか確認します。前回の確認: {NUM_DAYS} 日前。}}</translation>
 <translation id="6893813176749746474">Chromium が更新されましたが、30 日以上使用されていません。</translation>
 <translation id="6964305034639999644">Chromium のシークレット ウインドウでリンクを開く(&amp;G)</translation>
+<translation id="6978145336957848883">脆弱なパスワードは簡単に推測されてしまいます。Chromium で<ph name="BEGIN_LINK" />安全性の高いパスワードを自動生成して保存する<ph name="END_LINK" />ことができます。</translation>
 <translation id="6990124437352146030">このサイトを利用するには、Chromium でマイクの使用を許可する必要があります</translation>
 <translation id="701244094609242530">Chromium で拡張機能を確認できません。しばらくしてからもう一度お試しください。</translation>
 <translation id="705851970750939768">Chromium を更新</translation>

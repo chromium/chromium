@@ -180,6 +180,7 @@ Một số tính năng có thể không khả dụng. Hãy chỉ định thư m�
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium kiểm tra để phát hiện phần mềm không mong muốn một lần một tuần. Lần kiểm tra gần đây nhất: 1 ngày trước.}other{Chromium kiểm tra để phát hiện phần mềm không mong muốn một lần một tuần. Lần kiểm tra gần đây nhất: {NUM_DAYS} ngày trước.}}</translation>
 <translation id="6893813176749746474">Chromium đã được cập nhật nhưng bạn đã không sử dụng trình duyệt này trong ít nhất 30 ngày.</translation>
 <translation id="6964305034639999644">Mở liên kết trong cửa sổ ẩn danh của Chromium</translation>
+<translation id="6978145336957848883">Mật khẩu yếu thường dễ đoán. Chromium có thể <ph name="BEGIN_LINK" />tạo mật khẩu mạnh và ghi nhớ mật khẩu này cho bạn<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium cần có quyền truy cập vào micrô của bạn cho trang web này</translation>
 <translation id="701244094609242530">Chromium không thể kiểm tra các tiện ích của bạn. Hãy thử lại sau.</translation>
 <translation id="705851970750939768">Cập nhật Chromium</translation>

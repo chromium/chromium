@@ -180,6 +180,7 @@
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium 每週檢查一次垃圾軟體。上次檢查時間：1 天前。}other{Chromium 每週檢查一次垃圾軟體。上次檢查時間：{NUM_DAYS} 天前。}}</translation>
 <translation id="6893813176749746474">Chromium 已更新，但你至少超過 30 天沒有使用 Chromium 了。</translation>
 <translation id="6964305034639999644">在 Chromium 無痕式視窗中開啟連結(&amp;G)</translation>
+<translation id="6978145336957848883">低強度密碼很容易讓有心人士猜中，請讓 Chromium <ph name="BEGIN_LINK" />為你建立一組高強度密碼，並儲存在 Chromium 中<ph name="END_LINK" />。</translation>
 <translation id="6990124437352146030">Chromium 需要相關權限，才能讓這個網站使用你的麥克風</translation>
 <translation id="701244094609242530">Chromium 無法檢查你的擴充功能，請稍後再試。</translation>
 <translation id="705851970750939768">更新 Chromium</translation>

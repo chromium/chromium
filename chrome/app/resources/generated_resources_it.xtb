@@ -5363,6 +5363,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7375235221357833624">{0,plural, =1{Aggiorna il dispositivo entro un'ora}other{Aggiorna il dispositivo entro # ore}}</translation>
 <translation id="7376553024552204454">Evidenzia il puntatore del mouse durante lo spostamento</translation>
 <translation id="7377451353532943397">Continua a impedire l'accesso ai sensori</translation>
+<translation id="7378611153938412599">Le password inefficaci sono facili da indovinare. Assicurati di creare password efficaci. <ph name="BEGIN_LINK" />Leggi altri suggerimenti per la sicurezza.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Apri Chrome Web Store</translation>
 <translation id="7378812711085314936">Ricevi connessione dati</translation>
 <translation id="7380622428988553498">Il nome del dispositivo contiene caratteri non validi</translation>
