@@ -1275,16 +1275,24 @@ int Element::clientTop() {
   return 0;
 }
 
+bool Element::IsViewportScrollElement() {
+  auto& document = GetDocument();
+  bool quirks_mode = document.InQuirksMode();
+  return (!quirks_mode && document.documentElement() == this) ||
+         (quirks_mode && IsHTMLElement() && document.body() == this);
+}
+
 void Element::RecordScrollbarSizeForStudy(int measurement,
                                           bool is_width,
                                           bool is_offset) {
   if (!IdentifiabilityStudySettings::Get()->IsTypeAllowed(
-          IdentifiableSurface::Type::kScrollbarSize))
+          IdentifiableSurface::Type::kScrollbarSize) ||
+      (!is_offset && !IsViewportScrollElement()))
     return;
 
   // Check for presence of a scrollbar.
   PaintLayerScrollableArea* area;
-  if (this == GetDocument().ScrollingElementNoLayout()) {
+  if (IsViewportScrollElement()) {
     auto* view = GetDocument().View();
     if (!view)
       return;
@@ -1314,7 +1322,7 @@ void Element::RecordScrollbarSizeForStudy(int measurement,
   //    corresponding document.scrollingElement.offset[Width|Height].
   // 2. Any HTML element that insets the layout to fit a scrollbar, so it is
   //    measurable by a JavaScript program on a site.
-  if (this == GetDocument().scrollingElement()) {
+  if (IsViewportScrollElement()) {
     LocalDOMWindow* dom_window = GetDocument().domWindow();
     scrollbar_size =
         (is_width ? dom_window->innerWidth() : dom_window->innerHeight()) -
@@ -1323,13 +1331,11 @@ void Element::RecordScrollbarSizeForStudy(int measurement,
         is_width
             ? IdentifiableSurface::ScrollbarSurface::kScrollingElementWidth
             : IdentifiableSurface::ScrollbarSurface::kScrollingElementHeight;
-  } else if (is_offset) {
+  } else {
     scrollbar_size = measurement - (is_width ? clientWidth() : clientHeight());
     surface = is_width
                   ? IdentifiableSurface::ScrollbarSurface::kElemScrollbarWidth
                   : IdentifiableSurface::ScrollbarSurface::kElemScrollbarHeight;
-  } else {
-    return;
   }
 
   blink::IdentifiabilityMetricBuilder(GetDocument().UkmSourceID())
@@ -1344,9 +1350,7 @@ int Element::clientWidth() {
   // width of the containing frame.
   // When in quirks mode, clientWidth for the body element should return the
   // width of the containing frame.
-  bool in_quirks_mode = GetDocument().InQuirksMode();
-  if ((!in_quirks_mode && GetDocument().documentElement() == this) ||
-      (in_quirks_mode && IsHTMLElement() && GetDocument().body() == this)) {
+  if (IsViewportScrollElement()) {
     auto* layout_view = GetDocument().GetLayoutView();
     if (layout_view) {
       // TODO(crbug.com/740879): Use per-page overlay scrollbar settings.
@@ -1400,10 +1404,7 @@ int Element::clientHeight() {
   // the height of the containing frame.
   // When in quirks mode, clientHeight for the body element should return the
   // height of the containing frame.
-  bool in_quirks_mode = GetDocument().InQuirksMode();
-
-  if ((!in_quirks_mode && GetDocument().documentElement() == this) ||
-      (in_quirks_mode && IsHTMLElement() && GetDocument().body() == this)) {
+  if (IsViewportScrollElement()) {
     auto* layout_view = GetDocument().GetLayoutView();
     if (layout_view) {
       // TODO(crbug.com/740879): Use per-page overlay scrollbar settings.

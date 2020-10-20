@@ -934,6 +934,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   const ElementData* GetElementData() const { return element_data_.Get(); }
   UniqueElementData& EnsureUniqueElementData();
 
+  bool IsViewportScrollElement();
   void RecordScrollbarSizeForStudy(int measurement,
                                    bool is_width,
                                    bool is_offset);
