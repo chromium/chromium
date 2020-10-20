@@ -16,12 +16,14 @@
 #include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/version.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/installer.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/registration_data.h"
+#include "chrome/updater/updater_version.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/update_client.h"
@@ -150,6 +152,14 @@ UpdateServiceInProcess::UpdateServiceInProcess(
           base::MakeRefCounted<PersistedData>(config_->GetPrefService())),
       main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       update_client_(update_client::UpdateClientFactory(config)) {}
+
+void UpdateServiceInProcess::GetVersion(
+    base::OnceCallback<void(const base::Version&)> callback) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  main_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                base::Version(UPDATER_VERSION_STRING)));
+}
 
 void UpdateServiceInProcess::RegisterApp(
     const RegistrationRequest& request,

@@ -15,6 +15,7 @@
 
 namespace base {
 class SequencedTaskRunner;
+class Version;
 }
 
 namespace update_client {
@@ -34,6 +35,8 @@ class UpdateServiceInProcess : public UpdateService {
       scoped_refptr<update_client::Configurator> config);
 
   // Overrides for updater::UpdateService.
+  void GetVersion(
+      base::OnceCallback<void(const base::Version&)> callback) const override;
   void RegisterApp(
       const RegistrationRequest& request,
       base::OnceCallback<void(const RegistrationResponse&)> callback) override;

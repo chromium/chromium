@@ -86,6 +86,7 @@ class UpdaterImpl
   UpdaterImpl& operator=(const UpdaterImpl&) = delete;
 
   // Overrides for IUpdater.
+  IFACEMETHODIMP GetVersion(BSTR* version) override;
   IFACEMETHODIMP CheckForUpdate(const base::char16* app_id) override;
   IFACEMETHODIMP Register(const base::char16* app_id,
                           const base::char16* brand_code,

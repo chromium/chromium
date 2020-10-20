@@ -1476,6 +1476,9 @@ EXTERN_C const IID IID_IUpdater;
     IUpdater : public IUnknown
     {
     public:
+        virtual HRESULT STDMETHODCALLTYPE GetVersion( 
+            /* [retval][out] */ BSTR *version) = 0;
+        
         virtual HRESULT STDMETHODCALLTYPE CheckForUpdate( 
             /* [string][in] */ const WCHAR *app_id) = 0;
         
@@ -1513,6 +1516,10 @@ EXTERN_C const IID IID_IUpdater;
         
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IUpdater * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetVersion )( 
+            IUpdater * This,
+            /* [retval][out] */ BSTR *version);
         
         HRESULT ( STDMETHODCALLTYPE *CheckForUpdate )( 
             IUpdater * This,
@@ -1557,6 +1564,9 @@ EXTERN_C const IID IID_IUpdater;
 #define IUpdater_Release(This)	\
     ( (This)->lpVtbl -> Release(This) ) 
 
+
+#define IUpdater_GetVersion(This,version)	\
+    ( (This)->lpVtbl -> GetVersion(This,version) ) 
 
 #define IUpdater_CheckForUpdate(This,app_id)	\
     ( (This)->lpVtbl -> CheckForUpdate(This,app_id) ) 

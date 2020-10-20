@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #import "chrome/updater/app/server/mac/service_protocol.h"
@@ -185,6 +186,14 @@ void UpdateServiceOutOfProcess::UpdateAll(StateChangeCallback state_update,
           initWithRepeatingCallback:state_update
                      callbackRunner:callback_runner_]);
   [client_ checkForUpdatesWithUpdateState:stateObserver.get() reply:reply];
+}
+
+void UpdateServiceOutOfProcess::GetVersion(
+    base::OnceCallback<void(const base::Version&)> callback) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // TODO(crbug.com/1140270) - implement for macOS.
+  NOTREACHED();
 }
 
 void UpdateServiceOutOfProcess::Update(const std::string& app_id,

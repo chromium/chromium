@@ -21,6 +21,7 @@
 
 namespace base {
 class SequencedTaskRunner;
+class Version;
 }  // namespace base
 
 namespace update_client {
@@ -35,6 +36,8 @@ class UpdateServiceOutOfProcess : public UpdateService {
   explicit UpdateServiceOutOfProcess(ServiceScope scope);
 
   // Overrides for UpdateService.
+  void GetVersion(
+      base::OnceCallback<void(const base::Version&)> callback) const override;
   void RegisterApp(
       const RegistrationRequest& request,
       base::OnceCallback<void(const RegistrationResponse&)> callback) override;

@@ -262,6 +262,7 @@ interface IUpdaterObserver : IUnknown {
   pointer_default(unique)
 ]
 interface IUpdater : IUnknown {
+  HRESULT GetVersion([out, retval] BSTR* version);
   HRESULT CheckForUpdate([in, string] const WCHAR* app_id);
   HRESULT Register([in, string] const WCHAR* app_id,
                    [in, string] const WCHAR* brand_code,

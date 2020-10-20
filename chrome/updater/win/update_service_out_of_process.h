@@ -17,6 +17,7 @@
 namespace base {
 class SequencedTaskRunner;
 class SingleThreadTaskRunner;
+class Version;
 }  // namespace base
 
 namespace update_client {
@@ -37,6 +38,8 @@ class UpdateServiceOutOfProcess : public UpdateService {
   explicit UpdateServiceOutOfProcess(ServiceScope service_scope);
 
   // Overrides for updater::UpdateService.
+  void GetVersion(
+      base::OnceCallback<void(const base::Version&)> callback) const override;
   void RegisterApp(
       const RegistrationRequest& request,
       base::OnceCallback<void(const RegistrationResponse&)> callback) override;
@@ -50,7 +53,9 @@ class UpdateServiceOutOfProcess : public UpdateService {
  private:
   ~UpdateServiceOutOfProcess() override;
 
-  // These two functions runs on the |com_task_runner_|.
+  // These functions runs on the |com_task_runner_|.
+  void GetVersionOnSTA(
+      base::OnceCallback<void(const base::Version&)> callback) const;
   void UpdateAllOnSTA(StateChangeCallback state_update, Callback callback);
   void UpdateOnSTA(const std::string& app_id,
                    StateChangeCallback state_update,

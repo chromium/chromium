@@ -11,8 +11,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/version.h"
 #include "base/win/scoped_bstr.h"
 #include "chrome/updater/app/server/win/server.h"
+#include "chrome/updater/updater_version.h"
 
 namespace updater {
 
@@ -85,6 +87,20 @@ STDMETHODIMP CompleteStatusImpl::get_statusCode(LONG* code) {
 STDMETHODIMP CompleteStatusImpl::get_statusMessage(BSTR* message) {
   DCHECK(message);
   *message = base::win::ScopedBstr(message_).Release();
+  return S_OK;
+}
+
+HRESULT UpdaterImpl::GetVersion(BSTR* version) {
+  DCHECK(version);
+
+  // Return the hardcoded version instead of calling the corresponding
+  // non-blocking function of `UpdateServiceInProcess`. This results in some
+  // code duplication but it avoids the complexities of making this function
+  // non-blocking.
+  *version =
+      base::win::ScopedBstr(
+          base::UTF8ToWide(base::Version(UPDATER_VERSION_STRING).GetString()))
+          .Release();
   return S_OK;
 }
 

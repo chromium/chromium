@@ -115,8 +115,8 @@ void AppInstall::InstallCandidateDone(int result) {
 void AppInstall::WakeCandidate() {
   // Invoke ControlService::InitializeUpdateService to wake this version of the
   // updater, qualify, and possibly promote this version as a result. The
-  // instance of |CreateControlService| has sequence affinity. Bind it in the
-  // closure to ensure it is released in this sequence.
+  // |ControlService| instance has sequence affinity. Bind it in the closure to
+  // ensure it is released in this sequence.
   scoped_refptr<ControlService> control_service = CreateControlService();
   control_service->InitializeUpdateService(base::BindOnce(
       [](scoped_refptr<ControlService> /*control_service*/,

@@ -22,6 +22,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_checker.h"
+#include "base/version.h"
 #include "base/win/scoped_bstr.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/util.h"
@@ -279,6 +280,25 @@ UpdateServiceOutOfProcess::UpdateServiceOutOfProcess(ServiceScope service_scope)
 
 UpdateServiceOutOfProcess::~UpdateServiceOutOfProcess() = default;
 
+void UpdateServiceOutOfProcess::GetVersion(
+    base::OnceCallback<void(const base::Version&)> callback) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  com_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &UpdateServiceOutOfProcess::GetVersionOnSTA, this,
+          base::BindOnce(
+              [](scoped_refptr<base::SequencedTaskRunner> taskrunner,
+                 base::OnceCallback<void(const base::Version&)> callback,
+                 const base::Version& version) {
+                DCHECK(version.IsValid());
+                taskrunner->PostTask(
+                    FROM_HERE, base::BindOnce(std::move(callback), version));
+              },
+              base::SequencedTaskRunnerHandle::Get(), std::move(callback))));
+}
+
 void UpdateServiceOutOfProcess::RegisterApp(
     const RegistrationRequest& request,
     base::OnceCallback<void(const RegistrationResponse&)> callback) {
@@ -335,6 +355,29 @@ void UpdateServiceOutOfProcess::Update(const std::string& app_id,
 
 void UpdateServiceOutOfProcess::Uninitialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void UpdateServiceOutOfProcess::GetVersionOnSTA(
+    base::OnceCallback<void(const base::Version&)> callback) const {
+  DCHECK(com_task_runner_->BelongsToCurrentThread());
+
+  Microsoft::WRL::ComPtr<IUpdater> updater;
+  HRESULT hr = CreateUpdater(updater);
+  if (FAILED(hr)) {
+    DVLOG(2) << "Failed to create the updater interface: " << std::hex << hr;
+    std::move(callback).Run(base::Version());
+    return;
+  }
+
+  base::win::ScopedBstr version;
+  hr = updater->GetVersion(version.Receive());
+  if (FAILED(hr)) {
+    DVLOG(2) << "IUpdater::GetVersion failed: " << std::hex << hr;
+    std::move(callback).Run(base::Version());
+    return;
+  }
+
+  std::move(callback).Run(base::Version(base::WideToUTF8(version.Get())));
 }
 
 void UpdateServiceOutOfProcess::UpdateAllOnSTA(StateChangeCallback state_update,

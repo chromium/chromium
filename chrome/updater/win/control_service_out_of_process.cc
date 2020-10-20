@@ -15,7 +15,6 @@
 #include "base/task/task_traits.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_checker.h"
-#include "base/win/scoped_bstr.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/win/constants.h"
 
@@ -100,7 +99,6 @@ LONG UpdaterControlObserver::QueryStatus(ICompleteStatus* complete_status) {
   DCHECK(complete_status);
 
   LONG code = 0;
-  base::win::ScopedBstr message;
   CHECK(SUCCEEDED(complete_status->get_statusCode(&code)));
 
   return code;
