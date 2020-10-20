@@ -32,7 +32,7 @@ class SocketManager;
 class ProxyManager : public mojom::CupsProxier {
  public:
   // Request rate limit per second.
-  static constexpr int kRateLimit = 10;
+  static constexpr int kRateLimit = 20;
 
   // Factory function.
   static std::unique_ptr<ProxyManager> Create(
