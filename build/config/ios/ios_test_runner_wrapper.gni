@@ -94,8 +94,8 @@ template("ios_test_runner_wrapper") {
       data_deps += invoker.data_deps
     }
 
-    # test runner relies on iossim if use_ios_simulator (defined in ios_sdk.gni)
-    if (use_ios_simulator) {
+    # test runner relies on iossim for simulator builds.
+    if (target_environment == "simulator") {
       _rebased_root_build_dir = rebase_path("${root_build_dir}", root_build_dir)
       data_deps += [ "//testing/iossim" ]
 

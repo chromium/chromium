@@ -43,7 +43,7 @@ config("compiler") {
   }
 
   # Environment.
-  if (use_ios_simulator) {
+  if (target_environment == "simulator") {
     triplet_environment = "-simulator"
   } else {
     triplet_environment = ""
@@ -98,7 +98,7 @@ config("runtime_library") {
     _sysroot_path,
   ]
 
-  if (use_xcode_clang && enable_ios_bitcode && !use_ios_simulator) {
+  if (use_xcode_clang && enable_ios_bitcode && target_environment == "device") {
     if (is_debug) {
       common_flags += [ "-fembed-bitcode-marker" ]
     } else {

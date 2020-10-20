@@ -12,8 +12,8 @@ declare_args() {
 
 # Using a locally-built iOS WebKit is only supported for simulator builds, and
 # only if not building WebKit for macOS.
-_build_ios_webkit =
-    checkout_ios_webkit && use_ios_simulator && !build_mac_webkit
+_build_ios_webkit = checkout_ios_webkit && target_environment == "simulator" &&
+                    !build_mac_webkit
 _build_mac_webkit = checkout_ios_webkit && build_mac_webkit
 
 group("webkit") {

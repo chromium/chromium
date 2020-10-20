@@ -10,7 +10,7 @@ assert(use_system_xcode, "Hermetic xcode doesn't work for ios.")
 
 declare_args() {
   # SDK path to use. When empty this will use the default SDK based on the
-  # value of use_ios_simulator.
+  # value of target_environment.
   ios_sdk_path = ""
   ios_sdk_name = ""
   ios_sdk_version = ""
@@ -87,11 +87,9 @@ assert(!(use_goma && is_chrome_branded && is_official_build &&
 assert(custom_toolchain == "" || additional_target_cpus == [],
        "cannot define both custom_toolchain and additional_target_cpus")
 
-use_ios_simulator = target_environment == "simulator"
-
 # If codesigning is enabled, use must configure either a codesigning identity
 # or a filter to automatically select the codesigning identity.
-if (!use_ios_simulator && ios_enable_code_signing) {
+if (target_environment == "device" && ios_enable_code_signing) {
   assert(ios_code_signing_identity == "" ||
              ios_code_signing_identity_description == "",
          "You should either specify the precise identity to use with " +
@@ -122,12 +120,14 @@ if (additional_target_cpus != []) {
 
 if (ios_sdk_path == "") {
   # Compute default target.
-  if (use_ios_simulator) {
+  if (target_environment == "simulator") {
     ios_sdk_name = "iphonesimulator"
     ios_sdk_platform = "iPhoneSimulator"
-  } else {
+  } else if (target_environment == "device") {
     ios_sdk_name = "iphoneos"
     ios_sdk_platform = "iPhoneOS"
+  } else {
+    assert("unsupported target_environment: $target_environment")
   }
 
   ios_sdk_info_args = [ "--get_sdk_info" ]
@@ -155,7 +155,7 @@ if (ios_sdk_path == "") {
   xcode_version_int = _ios_sdk_result.xcode_version_int
   xcode_build = _ios_sdk_result.xcode_build
   machine_os_build = _ios_sdk_result.machine_os_build
-  if (use_ios_simulator) {
+  if (target_environment == "simulator") {
     # This is weird, but Xcode sets DTPlatformBuild to an empty field for
     # simulator builds.
     ios_platform_build = ""
@@ -164,7 +164,7 @@ if (ios_sdk_path == "") {
   }
 }
 
-if (!use_ios_simulator && ios_enable_code_signing) {
+if (target_environment == "device" && ios_enable_code_signing) {
   # Automatically select a codesigning identity if no identity is configured.
   # This only applies to device build as simulator builds are not signed.
   if (ios_code_signing_identity == "") {

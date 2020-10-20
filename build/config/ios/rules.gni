@@ -364,7 +364,7 @@ template("create_signed_bundle") {
       code_signing_outputs +=
           [ "$bundle_contents_dir/_CodeSignature/CodeResources" ]
     }
-    if (ios_code_signing_identity != "" && !use_ios_simulator &&
+    if (ios_code_signing_identity != "" && target_environment == "device" &&
         _enable_embedded_mobileprovision) {
       code_signing_outputs +=
           [ "$bundle_contents_dir/embedded.mobileprovision" ]
@@ -638,7 +638,8 @@ template("ios_app_bundle") {
     visibility = [ ":$_arch_executable_target" ]
   }
 
-  if (current_toolchain == default_toolchain || use_ios_simulator) {
+  if (current_toolchain == default_toolchain ||
+      target_environment == "simulator") {
     _generate_entitlements_target = _target_name + "_gen_entitlements"
     _generate_entitlements_output =
         get_label_info(":$_generate_entitlements_target($default_toolchain)",
@@ -721,7 +722,7 @@ template("ios_app_bundle") {
       ]
     }
 
-    if (use_ios_simulator) {
+    if (target_environment == "simulator") {
       deps += [ ":$_generate_entitlements_target($default_toolchain)" ]
 
       if (!defined(inputs)) {
@@ -903,7 +904,7 @@ template("ios_app_bundle") {
         }
         bundle_deps += _variant.bundle_deps
 
-        if (use_ios_simulator) {
+        if (target_environment == "simulator") {
           if (!defined(data_deps)) {
             data_deps = []
           }
@@ -1272,8 +1273,8 @@ template("ios_framework_bundle") {
         "$_default_toolchain_target_gen_dir/$_output_name.headers.hmap"
     config(_headers_map_config) {
       visibility = [
-        ":${_target_name}_signed_bundle",
         ":${_arch_shared_library_source}",
+        ":${_target_name}_signed_bundle",
       ]
       include_dirs = [ _header_map_filename ]
     }
