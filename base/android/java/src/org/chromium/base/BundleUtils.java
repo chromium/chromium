@@ -98,10 +98,24 @@ public final class BundleUtils {
 
     /* Returns absolute path to a native library in a feature module. */
     @CalledByNative
-    private static String getNativeLibraryPath(String libraryName) {
+    public static String getNativeLibraryPath(String libraryName) {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            return ((BaseDexClassLoader) ContextUtils.getApplicationContext().getClassLoader())
-                    .findLibrary(libraryName);
+            ClassLoader classLoader = ContextUtils.getApplicationContext().getClassLoader();
+            String path = getNativeLibraryPathFromClassLoader(classLoader, libraryName);
+            // TODO(b/171269960): Isolated split class loaders have an empty library path, so check
+            // the parent class loader as well.
+            if (path == null) {
+                path = getNativeLibraryPathFromClassLoader(classLoader.getParent(), libraryName);
+            }
+            return path;
         }
+    }
+
+    private static String getNativeLibraryPathFromClassLoader(
+            ClassLoader classLoader, String libraryName) {
+        if (classLoader == null) {
+            return null;
+        }
+        return ((BaseDexClassLoader) classLoader).findLibrary(libraryName);
     }
 }

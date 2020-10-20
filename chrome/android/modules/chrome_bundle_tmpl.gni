@@ -48,10 +48,25 @@ template("chrome_bundle") {
           _module_desc.supports_isolated_split) {
         _module_descs += [ _module_desc ]
       } else {
+        _shared_libraries = []
+        if (defined(_module_desc.native_deps) &&
+            _module_desc.native_deps != []) {
+          _arch = ""
+          _toolchain = ""
+          if (android_64bit_target_cpu) {
+            if (invoker.is_64_bit_browser) {
+              _arch = "_64"
+            } else {
+              _toolchain = "($android_secondary_abi_toolchain)"
+            }
+          }
+          _shared_libraries += [ "//chrome/android:libmonochrome${_arch}_${_module_desc.name}${_toolchain}" ]
+        }
         _module_desc_target_name =
             "${target_name}__${_module_desc.name}__module_desc_java"
         module_desc_java(_module_desc_target_name) {
           module_name = _module_desc.name
+          shared_libraries = _shared_libraries
           if (defined(_module_desc.pak_deps)) {
             paks = _module_desc.paks
           }
