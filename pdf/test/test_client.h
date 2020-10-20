@@ -38,6 +38,8 @@ class TestClient : public PDFEngine::Client {
   bool IsPrintPreview() override;
   uint32_t GetBackgroundColor() override;
   float GetToolbarHeightInScreenCoords() override;
+  void SetSelectedText(const std::string& selected_text) override;
+  void SetLinkUnderCursor(const std::string& link_under_cursor) override;
 
  private:
   // Not owned. Expected to dangle briefly, as the engine usually is destroyed

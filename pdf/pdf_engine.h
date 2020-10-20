@@ -272,6 +272,12 @@ class PDFEngine {
 
     // Notifies the client about focus changes for the document.
     virtual void DocumentFocusChanged(bool document_has_focus) {}
+
+    // Sets selected text.
+    virtual void SetSelectedText(const std::string& selected_text) = 0;
+
+    // Sets the link under cursor.
+    virtual void SetLinkUnderCursor(const std::string& link_under_cursor) = 0;
   };
 
   struct AccessibilityLinkInfo {

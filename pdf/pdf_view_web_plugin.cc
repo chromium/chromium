@@ -285,6 +285,15 @@ float PdfViewWebPlugin::GetToolbarHeightInScreenCoords() {
 
 void PdfViewWebPlugin::DocumentFocusChanged(bool document_has_focus) {}
 
+void PdfViewWebPlugin::SetSelectedText(const std::string& selected_text) {
+  NOTIMPLEMENTED();
+}
+
+void PdfViewWebPlugin::SetLinkUnderCursor(
+    const std::string& link_under_cursor) {
+  NOTIMPLEMENTED();
+}
+
 bool PdfViewWebPlugin::IsValid() const {
   return container_ && container_->GetDocument().GetFrame();
 }

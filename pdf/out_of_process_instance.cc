@@ -2189,6 +2189,15 @@ void OutOfProcessInstance::DocumentFocusChanged(bool document_has_focus) {
   PostMessage(message);
 }
 
+void OutOfProcessInstance::SetSelectedText(const std::string& selected_text) {
+  pp::PDF::SetSelectedText(this, selected_text.c_str());
+}
+
+void OutOfProcessInstance::SetLinkUnderCursor(
+    const std::string& link_under_cursor) {
+  pp::PDF::SetLinkUnderCursor(this, link_under_cursor.c_str());
+}
+
 void OutOfProcessInstance::ProcessPreviewPageInfo(const std::string& url,
                                                   int dest_page_index) {
   DCHECK(IsPrintPreview());

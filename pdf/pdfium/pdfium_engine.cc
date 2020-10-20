@@ -350,21 +350,6 @@ wchar_t SimplifyForSearch(wchar_t c) {
   }
 }
 
-PDFiumEngine::SetSelectedTextFunction g_set_selected_text_func_for_testing =
-    nullptr;
-
-void SetSelectedText(pp::Instance* instance, const std::string& selected_text) {
-  pp::PDF::SetSelectedText(instance, selected_text.c_str());
-}
-
-PDFiumEngine::SetLinkUnderCursorFunction
-    g_set_link_under_cursor_func_for_testing = nullptr;
-
-void SetLinkUnderCursor(pp::Instance* instance,
-                        const std::string& link_under_cursor) {
-  pp::PDF::SetLinkUnderCursor(instance, link_under_cursor.c_str());
-}
-
 PP_PrivateFocusObjectType GetAnnotationFocusType(
     FPDF_ANNOTATION_SUBTYPE annot_type) {
   switch (annot_type) {
@@ -494,18 +479,6 @@ void PDFiumEngine::SetDocumentLoaderForTesting(
   DCHECK(!doc_loader_);
   doc_loader_ = std::move(loader);
   doc_loader_set_for_testing_ = true;
-}
-
-// static
-void PDFiumEngine::OverrideSetSelectedTextFunctionForTesting(
-    SetSelectedTextFunction function) {
-  g_set_selected_text_func_for_testing = function;
-}
-
-// static
-void PDFiumEngine::OverrideSetLinkUnderCursorFunctionForTesting(
-    SetLinkUnderCursorFunction function) {
-  g_set_link_under_cursor_func_for_testing = function;
 }
 
 bool PDFiumEngine::New(const char* url, const char* headers) {
@@ -1095,7 +1068,7 @@ void PDFiumEngine::SetFormSelectedText(FPDF_FORMHANDLE form_handle,
   selected_form_text_ = base::UTF16ToUTF8(selected_form_text16);
   if (selected_form_text != selected_form_text_) {
     DCHECK(in_form_text_area_);
-    pp::PDF::SetSelectedText(GetPluginInstance(), selected_form_text_.c_str());
+    client_->SetSelectedText(selected_form_text_);
   }
 }
 
@@ -3598,7 +3571,7 @@ void PDFiumEngine::GetRegion(const gfx::Point& location,
 
 void PDFiumEngine::OnSelectionTextChanged() {
   DCHECK(!in_form_text_area_);
-  pp::PDF::SetSelectedText(GetPluginInstance(), GetSelectedText().c_str());
+  client_->SetSelectedText(GetSelectedText());
 }
 
 void PDFiumEngine::OnSelectionPositionChanged() {
@@ -3687,11 +3660,7 @@ void PDFiumEngine::SetInFormTextArea(bool in_form_text_area) {
   // observer is notified of the change in selection. When |in_form_text_area_|
   // is true, this is the Renderer. After it flips, the MimeHandler is notified.
   if (in_form_text_area_) {
-    SetSelectedTextFunction set_selected_text_func =
-        g_set_selected_text_func_for_testing
-            ? g_set_selected_text_func_for_testing
-            : &SetSelectedText;
-    set_selected_text_func(GetPluginInstance(), "");
+    client_->SetSelectedText("");
   }
 
   client_->FormTextFieldFocusChange(in_form_text_area);
@@ -4119,12 +4088,7 @@ void PDFiumEngine::UpdateLinkUnderCursor(const std::string& target_url) {
     return;
 
   link_under_cursor_ = target_url;
-
-  SetLinkUnderCursorFunction set_link_under_cursor_func =
-      g_set_link_under_cursor_func_for_testing
-          ? g_set_link_under_cursor_func_for_testing
-          : &SetLinkUnderCursor;
-  set_link_under_cursor_func(GetPluginInstance(), link_under_cursor_);
+  client_->SetLinkUnderCursor(link_under_cursor_);
 }
 
 void PDFiumEngine::SetLinkUnderCursorForAnnotation(FPDF_ANNOTATION annot,

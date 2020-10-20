@@ -73,16 +73,6 @@ class PDFiumEngine : public PDFEngine,
   // HandleDocumentLoad().
   void SetDocumentLoaderForTesting(std::unique_ptr<DocumentLoader> loader);
 
-  using SetSelectedTextFunction = void (*)(pp::Instance* instance,
-                                           const std::string& selected_text);
-  static void OverrideSetSelectedTextFunctionForTesting(
-      SetSelectedTextFunction function);
-
-  using SetLinkUnderCursorFunction =
-      void (*)(pp::Instance* instance, const std::string& link_under_cursor);
-  static void OverrideSetLinkUnderCursorFunctionForTesting(
-      SetLinkUnderCursorFunction function);
-
   // PDFEngine:
   bool New(const char* url, const char* headers) override;
   void PageOffsetUpdated(const gfx::Vector2d& page_offset) override;

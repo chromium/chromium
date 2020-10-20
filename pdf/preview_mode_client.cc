@@ -164,4 +164,13 @@ uint32_t PreviewModeClient::GetBackgroundColor() {
   return 0;
 }
 
+void PreviewModeClient::SetSelectedText(const std::string& selected_text) {
+  NOTREACHED();
+}
+
+void PreviewModeClient::SetLinkUnderCursor(
+    const std::string& link_under_cursor) {
+  NOTREACHED();
+}
+
 }  // namespace chrome_pdf
