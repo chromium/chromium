@@ -52,10 +52,6 @@ PowerButtonMenuView::PowerButtonMenuView(
     : power_button_position_(power_button_position) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetPaintToLayer();
-  ScopedLightModeAsDefault scoped_light_mode_as_default;
-  SetBackground(
-      views::CreateSolidBackground(AshColorProvider::Get()->GetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kTransparent80)));
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(kMenuViewRoundRectRadiusDp);
   layer()->SetBackgroundBlur(
@@ -248,6 +244,14 @@ gfx::Size PowerButtonMenuView::CalculatePreferredSize() const {
     width += one_item_x_offset;
   menu_size.set_width(width);
   return menu_size;
+}
+
+void PowerButtonMenuView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  ScopedLightModeAsDefault scoped_light_mode_as_default;
+  SetBackground(
+      views::CreateSolidBackground(AshColorProvider::Get()->GetBaseLayerColor(
+          AshColorProvider::BaseLayerType::kTransparent80)));
 }
 
 void PowerButtonMenuView::ButtonPressed(views::Button* sender,

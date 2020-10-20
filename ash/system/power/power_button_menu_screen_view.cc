@@ -65,12 +65,11 @@ class PowerButtonMenuScreenView::PowerButtonMenuBackgroundView
   PowerButtonMenuBackgroundView(base::RepeatingClosure show_animation_done)
       : show_animation_done_(show_animation_done) {
     SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-    layer()->SetColor(DeprecatedGetShieldLayerColor(
-        AshColorProvider::ShieldLayerType::kShield40,
-        kPowerButtonMenuFullscreenShieldColor));
     layer()->SetOpacity(0.f);
   }
-
+  PowerButtonMenuBackgroundView(const PowerButtonMenuBackgroundView&) = delete;
+  PowerButtonMenuBackgroundView& operator=(
+      const PowerButtonMenuBackgroundView&) = delete;
   ~PowerButtonMenuBackgroundView() override = default;
 
   void OnImplicitAnimationsCompleted() override {
@@ -106,10 +105,16 @@ class PowerButtonMenuScreenView::PowerButtonMenuBackgroundView
   }
 
  private:
+  // views::View:
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    layer()->SetColor(DeprecatedGetShieldLayerColor(
+        AshColorProvider::ShieldLayerType::kShield40,
+        kPowerButtonMenuFullscreenShieldColor));
+  }
+
   // A callback for when the animation that shows the power menu has finished.
   base::RepeatingClosure show_animation_done_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerButtonMenuBackgroundView);
 };
 
 PowerButtonMenuScreenView::PowerButtonMenuScreenView(

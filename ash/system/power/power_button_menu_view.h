@@ -40,6 +40,8 @@ class ASH_EXPORT PowerButtonMenuView : public views::View,
 
   explicit PowerButtonMenuView(
       PowerButtonController::PowerButtonPosition power_button_position);
+  PowerButtonMenuView(const PowerButtonMenuView&) = delete;
+  PowerButtonMenuView& operator=(const PowerButtonMenuView&) = delete;
   ~PowerButtonMenuView() override;
 
   PowerButtonMenuItemView* sign_out_item_for_test() const {
@@ -75,6 +77,7 @@ class ASH_EXPORT PowerButtonMenuView : public views::View,
   // views::View:
   void Layout() override;
   gfx::Size CalculatePreferredSize() const override;
+  void OnThemeChanged() override;
 
   // views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
@@ -90,8 +93,6 @@ class ASH_EXPORT PowerButtonMenuView : public views::View,
 
   // The physical display side of power button in landscape primary.
   PowerButtonController::PowerButtonPosition power_button_position_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerButtonMenuView);
 };
 
 }  // namespace ash

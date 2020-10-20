@@ -36,6 +36,8 @@ class ASH_EXPORT PowerButtonMenuItemView : public views::ImageButton {
   PowerButtonMenuItemView(views::ButtonListener* listener,
                           const gfx::VectorIcon& icon,
                           const base::string16& title_text);
+  PowerButtonMenuItemView(const PowerButtonMenuItemView&) = delete;
+  PowerButtonMenuItemView& operator=(const PowerButtonMenuItemView&) = delete;
   ~PowerButtonMenuItemView() override;
 
   // views::View:
@@ -47,6 +49,7 @@ class ASH_EXPORT PowerButtonMenuItemView : public views::ImageButton {
   gfx::Size CalculatePreferredSize() const override;
   void OnFocus() override;
   void OnBlur() override;
+  void OnThemeChanged() override;
 
   // views::ImageButton:
   void PaintButtonContents(gfx::Canvas* canvas) override;
@@ -55,7 +58,7 @@ class ASH_EXPORT PowerButtonMenuItemView : public views::ImageButton {
   views::ImageView* icon_view_ = nullptr;
   views::Label* title_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(PowerButtonMenuItemView);
+  const gfx::VectorIcon& icon_;
 };
 
 }  // namespace ash

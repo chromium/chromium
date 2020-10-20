@@ -41,28 +41,18 @@ PowerButtonMenuItemView::PowerButtonMenuItemView(
     views::ButtonListener* listener,
     const gfx::VectorIcon& icon,
     const base::string16& title_text)
-    : views::ImageButton(listener),
-      icon_view_(new views::ImageView),
-      title_(new views::Label) {
+    : views::ImageButton(listener), icon_(icon) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetFocusPainter(nullptr);
 
-  ScopedLightModeAsDefault scoped_light_mode_as_default;
-  const AshColorProvider* color_provider = AshColorProvider::Get();
-  icon_view_->SetImage(gfx::CreateVectorIcon(
-      icon, color_provider->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kIconColorPrimary)));
-  AddChildView(icon_view_);
-
+  icon_view_ = AddChildView(std::make_unique<views::ImageView>());
+  title_ = AddChildView(std::make_unique<views::Label>());
   title_->SetBackgroundColor(SK_ColorTRANSPARENT);
-  title_->SetEnabledColor(color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
   title_->SetText(title_text);
   title_->SetVerticalAlignment(gfx::ALIGN_TOP);
   title_->SetLineHeight(kLineHeight);
   title_->SetMultiLine(true);
   title_->SetMaxLines(2);
-  AddChildView(title_);
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenuItem);
   GetViewAccessibility().OverrideName(title_->GetText());
 
@@ -104,6 +94,17 @@ void PowerButtonMenuItemView::OnFocus() {
 
 void PowerButtonMenuItemView::OnBlur() {
   SchedulePaint();
+}
+
+void PowerButtonMenuItemView::OnThemeChanged() {
+  views::ImageButton::OnThemeChanged();
+  ScopedLightModeAsDefault scoped_light_mode_as_default;
+  const auto* color_provider = AshColorProvider::Get();
+  icon_view_->SetImage(gfx::CreateVectorIcon(
+      icon_, color_provider->GetContentLayerColor(
+                 AshColorProvider::ContentLayerType::kIconColorPrimary)));
+  title_->SetEnabledColor(color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
 }
 
 void PowerButtonMenuItemView::PaintButtonContents(gfx::Canvas* canvas) {

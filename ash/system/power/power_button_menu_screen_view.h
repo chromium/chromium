@@ -29,6 +29,9 @@ class ASH_EXPORT PowerButtonMenuScreenView : public views::View,
       PowerButtonController::PowerButtonPosition power_button_position,
       double power_button_offset,
       base::RepeatingClosure show_animation_done);
+  PowerButtonMenuScreenView(const PowerButtonMenuScreenView&) = delete;
+  PowerButtonMenuScreenView& operator=(const PowerButtonMenuScreenView&) =
+      delete;
   ~PowerButtonMenuScreenView() override;
 
   PowerButtonMenuView* power_button_menu_view() const {
@@ -91,8 +94,6 @@ class ASH_EXPORT PowerButtonMenuScreenView : public views::View,
 
   // The origin of the menu bounds in different screen orientations.
   std::unordered_map<OrientationLockType, gfx::Point> menu_bounds_origins_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerButtonMenuScreenView);
 };
 
 }  // namespace ash
