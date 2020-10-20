@@ -35,8 +35,6 @@
 
 namespace blink {
 
-class LocalFrame;
-
 class BarProp final : public ScriptWrappable, public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -50,7 +48,7 @@ class BarProp final : public ScriptWrappable, public ExecutionContextClient {
     kToolbar
   };
 
-  BarProp(LocalFrame*, Type);
+  BarProp(ExecutionContext*, Type);
 
   bool visible() const;
 

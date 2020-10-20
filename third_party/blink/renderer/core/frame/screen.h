@@ -41,7 +41,7 @@
 
 namespace blink {
 
-class LocalFrame;
+class LocalDOMWindow;
 
 class CORE_EXPORT Screen final : public ScriptWrappable,
                                  public ExecutionContextClient,
@@ -49,7 +49,7 @@ class CORE_EXPORT Screen final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit Screen(LocalFrame*);
+  explicit Screen(LocalDOMWindow*);
 
   int height() const;
   int width() const;

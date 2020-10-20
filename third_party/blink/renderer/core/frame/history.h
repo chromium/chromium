@@ -38,7 +38,7 @@
 
 namespace blink {
 
-class LocalFrame;
+class LocalDOMWindow;
 class KURL;
 class ExceptionState;
 class HistoryItem;
@@ -51,7 +51,7 @@ class CORE_EXPORT History final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit History(LocalFrame*);
+  explicit History(LocalDOMWindow*);
 
   unsigned length(ExceptionState&) const;
   ScriptValue state(ScriptState*, ExceptionState&);

@@ -38,9 +38,8 @@
 
 namespace blink {
 
-Navigator::Navigator(LocalFrame* frame)
-    : NavigatorLanguage(frame ? frame->DomWindow() : nullptr),
-      ExecutionContextClient(frame) {}
+Navigator::Navigator(ExecutionContext* context)
+    : NavigatorLanguage(context), ExecutionContextClient(context) {}
 
 String Navigator::productSub() const {
   return "20030107";
@@ -62,29 +61,29 @@ String Navigator::platform() const {
   // TODO(955620): Consider changing devtools overrides to only allow overriding
   // the platform with a frozen platform to distinguish between
   // mobile and desktop when FreezeUserAgent is enabled.
-  if (GetFrame() &&
-      !GetFrame()->GetSettings()->GetNavigatorPlatformOverride().IsEmpty()) {
-    return GetFrame()->GetSettings()->GetNavigatorPlatformOverride();
-  }
-
-  return NavigatorID::platform();
+  if (!DomWindow())
+    return NavigatorID::platform();
+  const String& platform_override =
+      DomWindow()->GetFrame()->GetSettings()->GetNavigatorPlatformOverride();
+  return platform_override.IsEmpty() ? NavigatorID::platform()
+                                     : platform_override;
 }
 
 String Navigator::userAgent() const {
   // If the frame is already detached it no longer has a meaningful useragent.
-  if (!GetFrame() || !GetFrame()->GetPage())
+  if (!DomWindow())
     return String();
 
-  return GetFrame()->Loader().UserAgent();
+  return DomWindow()->GetFrame()->Loader().UserAgent();
 }
 
 UserAgentMetadata Navigator::GetUserAgentMetadata() const {
   // If the frame is already detached it no longer has a meaningful useragent.
-  if (!GetFrame() || !GetFrame()->GetPage())
+  if (!DomWindow())
     return blink::UserAgentMetadata();
 
   base::Optional<UserAgentMetadata> maybe_ua_metadata =
-      GetFrame()->Loader().UserAgentMetadata();
+      DomWindow()->GetFrame()->Loader().UserAgentMetadata();
   if (maybe_ua_metadata.has_value())
     return maybe_ua_metadata.value();
   else
@@ -92,21 +91,21 @@ UserAgentMetadata Navigator::GetUserAgentMetadata() const {
 }
 
 bool Navigator::cookieEnabled() const {
-  if (!GetFrame() || !GetFrame()->GetDocument())
+  if (!DomWindow())
     return false;
 
-  Settings* settings = GetFrame()->GetSettings();
+  Settings* settings = DomWindow()->GetFrame()->GetSettings();
   if (!settings || !settings->GetCookieEnabled())
     return false;
 
-  return GetFrame()->GetDocument()->CookiesEnabled();
+  return DomWindow()->document()->CookiesEnabled();
 }
 
 String Navigator::GetAcceptLanguages() {
   String accept_languages;
-  if (GetFrame() && GetFrame()->GetPage()) {
+  if (DomWindow()) {
     accept_languages =
-        GetFrame()->GetPage()->GetChromeClient().AcceptLanguages();
+        DomWindow()->GetFrame()->GetPage()->GetChromeClient().AcceptLanguages();
   } else {
     accept_languages = DefaultLanguage();
   }
@@ -122,10 +121,7 @@ void Navigator::Trace(Visitor* visitor) const {
 }
 
 ExecutionContext* Navigator::GetUAExecutionContext() const {
-  if (GetFrame() && GetFrame()->GetDocument()) {
-    return GetFrame()->GetDocument()->GetExecutionContext();
-  }
-  return nullptr;
+  return GetExecutionContext();
 }
 
 }  // namespace blink

@@ -36,8 +36,6 @@
 
 namespace blink {
 
-class LocalFrame;
-
 class CORE_EXPORT Navigator final : public ScriptWrappable,
                                     public NavigatorConcurrentHardware,
                                     public NavigatorDeviceMemory,
@@ -50,7 +48,7 @@ class CORE_EXPORT Navigator final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit Navigator(LocalFrame*);
+  explicit Navigator(ExecutionContext*);
 
   // NavigatorCookies
   bool cookieEnabled() const;

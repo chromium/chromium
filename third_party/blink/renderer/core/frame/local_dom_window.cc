@@ -859,57 +859,54 @@ int LocalDOMWindow::orientation() const {
   return orientation;
 }
 
-Screen* LocalDOMWindow::screen() const {
+Screen* LocalDOMWindow::screen() {
   if (!screen_)
-    screen_ = MakeGarbageCollected<Screen>(GetFrame());
+    screen_ = MakeGarbageCollected<Screen>(this);
   return screen_.Get();
 }
 
-History* LocalDOMWindow::history() const {
+History* LocalDOMWindow::history() {
   if (!history_)
-    history_ = MakeGarbageCollected<History>(GetFrame());
+    history_ = MakeGarbageCollected<History>(this);
   return history_.Get();
 }
 
-BarProp* LocalDOMWindow::locationbar() const {
+BarProp* LocalDOMWindow::locationbar() {
   if (!locationbar_) {
-    locationbar_ =
-        MakeGarbageCollected<BarProp>(GetFrame(), BarProp::kLocationbar);
+    locationbar_ = MakeGarbageCollected<BarProp>(this, BarProp::kLocationbar);
   }
   return locationbar_.Get();
 }
 
-BarProp* LocalDOMWindow::menubar() const {
+BarProp* LocalDOMWindow::menubar() {
   if (!menubar_)
-    menubar_ = MakeGarbageCollected<BarProp>(GetFrame(), BarProp::kMenubar);
+    menubar_ = MakeGarbageCollected<BarProp>(this, BarProp::kMenubar);
   return menubar_.Get();
 }
 
-BarProp* LocalDOMWindow::personalbar() const {
+BarProp* LocalDOMWindow::personalbar() {
   if (!personalbar_) {
-    personalbar_ =
-        MakeGarbageCollected<BarProp>(GetFrame(), BarProp::kPersonalbar);
+    personalbar_ = MakeGarbageCollected<BarProp>(this, BarProp::kPersonalbar);
   }
   return personalbar_.Get();
 }
 
-BarProp* LocalDOMWindow::scrollbars() const {
+BarProp* LocalDOMWindow::scrollbars() {
   if (!scrollbars_) {
-    scrollbars_ =
-        MakeGarbageCollected<BarProp>(GetFrame(), BarProp::kScrollbars);
+    scrollbars_ = MakeGarbageCollected<BarProp>(this, BarProp::kScrollbars);
   }
   return scrollbars_.Get();
 }
 
-BarProp* LocalDOMWindow::statusbar() const {
+BarProp* LocalDOMWindow::statusbar() {
   if (!statusbar_)
-    statusbar_ = MakeGarbageCollected<BarProp>(GetFrame(), BarProp::kStatusbar);
+    statusbar_ = MakeGarbageCollected<BarProp>(this, BarProp::kStatusbar);
   return statusbar_.Get();
 }
 
-BarProp* LocalDOMWindow::toolbar() const {
+BarProp* LocalDOMWindow::toolbar() {
   if (!toolbar_)
-    toolbar_ = MakeGarbageCollected<BarProp>(GetFrame(), BarProp::kToolbar);
+    toolbar_ = MakeGarbageCollected<BarProp>(this, BarProp::kToolbar);
   return toolbar_.Get();
 }
 
@@ -932,9 +929,9 @@ ApplicationCache* LocalDOMWindow::applicationCache() {
   return application_cache_.Get();
 }
 
-Navigator* LocalDOMWindow::navigator() const {
+Navigator* LocalDOMWindow::navigator() {
   if (!navigator_)
-    navigator_ = MakeGarbageCollected<Navigator>(GetFrame());
+    navigator_ = MakeGarbageCollected<Navigator>(this);
   return navigator_.Get();
 }
 

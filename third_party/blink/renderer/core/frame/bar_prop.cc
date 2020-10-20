@@ -29,13 +29,14 @@
 #include "third_party/blink/renderer/core/frame/bar_prop.h"
 
 #include "third_party/blink/public/web/web_window_features.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/page.h"
 
 namespace blink {
 
-BarProp::BarProp(LocalFrame* frame, Type type)
-    : ExecutionContextClient(frame), type_(type) {}
+BarProp::BarProp(ExecutionContext* context, Type type)
+    : ExecutionContextClient(context), type_(type) {}
 
 void BarProp::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
@@ -43,12 +44,11 @@ void BarProp::Trace(Visitor* visitor) const {
 }
 
 bool BarProp::visible() const {
-  if (!GetFrame())
+  if (!DomWindow())
     return false;
-  DCHECK(GetFrame()->GetPage());
 
   const WebWindowFeatures& features =
-      GetFrame()->GetPage()->GetWindowFeatures();
+      DomWindow()->GetFrame()->GetPage()->GetWindowFeatures();
   switch (type_) {
     case kLocationbar:
     case kPersonalbar:

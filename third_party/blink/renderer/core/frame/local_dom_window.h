@@ -195,16 +195,16 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   LocalDOMWindow* ToLocalDOMWindow() override;
 
   // Same-origin DOM Level 0
-  Screen* screen() const;
-  History* history() const;
-  BarProp* locationbar() const;
-  BarProp* menubar() const;
-  BarProp* personalbar() const;
-  BarProp* scrollbars() const;
-  BarProp* statusbar() const;
-  BarProp* toolbar() const;
-  Navigator* navigator() const;
-  Navigator* clientInformation() const { return navigator(); }
+  Screen* screen();
+  History* history();
+  BarProp* locationbar();
+  BarProp* menubar();
+  BarProp* personalbar();
+  BarProp* scrollbars();
+  BarProp* statusbar();
+  BarProp* toolbar();
+  Navigator* navigator();
+  Navigator* clientInformation() { return navigator(); }
 
   bool offscreenBuffering() const;
 
