@@ -471,7 +471,7 @@
 <translation id="1530838837447122178">Fungua mipangilio ya kipanya na padi ya kugusa</translation>
 <translation id="1531004739673299060">Dirisha la Programu</translation>
 <translation id="1531275250079031713">Onyesha kidirisha cha 'Weka Wi-Fi mpya'</translation>
-<translation id="1535228823998016251">Kwa sauti</translation>
+<translation id="1535228823998016251">Ya juu</translation>
 <translation id="1536754031901697553">Inatenganisha...</translation>
 <translation id="1537254971476575106">Kikuzaji cha skrini nzima</translation>
 <translation id="15373452373711364">Kishale kikubwa cha kipanya</translation>
@@ -2664,7 +2664,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4058793769387728514">Kagua Andiko Sasa</translation>
 <translation id="406070391919917862">Programu za Mandharinyuma</translation>
 <translation id="4061374428807229313">Ili ushiriki, bofya kulia kwenye folda katika programu ya Faili, kisha uchague "Shiriki na Parallels Desktop".</translation>
-<translation id="406213378265872299">Vitendo ulivyoweka mapendeleo</translation>
+<translation id="406213378265872299">Vitendo ulivyobadilisha kukufaa</translation>
 <translation id="4065876735068446555">Mtandao unaotumia (<ph name="NETWORK_ID" />) unaweza kukuhitaji utembelee ukurasa wake wa kuingia katika akaunti.</translation>
 <translation id="4066207411788646768">Tafadhali angalia muunganisho wako ili uone printa zinazopatikana katika mtandao wako</translation>
 <translation id="4068776064906523561">Alama za vidole zilizohifadhiwa</translation>
@@ -2940,7 +2940,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4421932782753506458">Kibonge</translation>
 <translation id="4423376891418188461">Rejesha Mipangilio</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, msimamizi wako anakuhitaji ubadilishe nenosiri lako.</translation>
-<translation id="4430019312045809116">Kiwango</translation>
+<translation id="4430019312045809116">Kiwango cha sauti</translation>
 <translation id="4430369329743628066">Alamisho imeongezwa</translation>
 <translation id="4432621511648257259">Nenosiri si sahihi</translation>
 <translation id="4434045419905280838">Madirisha ibukizi/kuelekeza kwingine</translation>
@@ -5029,7 +5029,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6922745772873733498">Weka PIN ili uchapishe</translation>
 <translation id="6923132443355966645">Sogeza / Bofya</translation>
 <translation id="6923633482430812883">Hitilafu imetokea wakati wa kupachika faili ya kushiriki. Tafadhali hakikisha kuwa seva ya faili ambako unaunganisha inatumia toleo la SMBv2 au jipya zaidi.</translation>
-<translation id="6929126689972602640">Vidhibiti vya wazazi haviwezi kutumika kwenye akaunti za shuleni. Ili uongeze akaunti ya shuleni itakayotumika kufikia Google Darasani na tovuti zingine kwa ajili ya kufanya kazi ya shule nyumbani, ingia kwa kutumia akaunti ya kibinafsi ya mtoto kwanza. Unaweza kuongeza akaunti ya shuleni baadaye wakati wa kuweka mipangilio.</translation>
+<translation id="6929126689972602640">Vidhibiti vya wazazi haviwezi kutumika kwenye akaunti za shuleni. Ili uongeze akaunti ya shuleni itakayotumika kufikia Google Darasani na tovuti zingine kwa ajili ya kufanya kazi ya shule nyumbani, ingia kwa kutumia akaunti ya kibinafsi ya mtoto kwanza. Unaweza kuongeza akaunti ya shuleni baadaye katika mipangilio.</translation>
 <translation id="6929760895658557216">Okay Google</translation>
 <translation id="6930036377490597025">Ufunguo wa usalama wa nje au kitambuzi kilichojumuishwa kwenye kompyuta</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Kiendelezi kimekataliwa}other{Viendelezi # vimekataliwa}}</translation>
@@ -6208,7 +6208,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="826905130698769948">Cheti cha kiteja si sahihi</translation>
 <translation id="8270242299912238708">Hati za PDF</translation>
 <translation id="827097179112817503">Onyesha kitufe cha mwanzo</translation>
-<translation id="8271379370373330993">Wazazi, hatua chache zinazofuata ni zako. Ukishaweka mipangilio ya akaunti, unaweza kumrudishia mtoto <ph name="DEVICE_TYPE" />.</translation>
+<translation id="8271379370373330993">Mzazi, hatua chache zinazofuata ni zako. Ukishaweka mipangilio ya akaunti, unaweza kumrudishia mtoto <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8272443605911821513">Dhibiti viendelezi vyako kwa kubofya Viendelezi katika menyu ya "Zana zaidi".</translation>
 <translation id="8274332263553132018">Tuma faili</translation>
 <translation id="8274924778568117936">Usizime wala kufunga kifaa chako cha <ph name="DEVICE_TYPE" /> hadi sasisho likamilike. Kifaa chako cha <ph name="DEVICE_TYPE" /> kitazimika na kuwaka baada ya sasisho kukamilika.</translation>

@@ -29,7 +29,7 @@
 <translation id="122699739164161391">סגירת כל הכרטיסיות</translation>
 <translation id="1229222343402087523">‏חיפוש ${searchPhrase} ב-Chrome</translation>
 <translation id="1231733316453485619">להפעיל סנכרון?</translation>
-<translation id="1254117744268754948">בחר תיקייה</translation>
+<translation id="1254117744268754948">בחירת תיקייה</translation>
 <translation id="1265739287306757398">איך עושים זאת?</translation>
 <translation id="1272079795634619415">הפסק</translation>
 <translation id="1283524564873030414">מ-24 השעות האחרונות</translation>
@@ -41,7 +41,7 @@
 <translation id="1358214951266274152">מעבר לקישור שהעתקת</translation>
 <translation id="1360432990279830238">לצאת ולהשבית את הסנכרון?</translation>
 <translation id="1375321115329958930">סיסמאות שמורות</translation>
-<translation id="1377255359165588604">הסינכרון הפסיק לפעול.</translation>
+<translation id="1377255359165588604">הסנכרון הפסיק לפעול.</translation>
 <translation id="1377321085342047638">מספר כרטיס</translation>
 <translation id="1383876407941801731">חפש</translation>
 <translation id="1389974829397082527">אין כאן סימניות</translation>
@@ -52,10 +52,11 @@
 <translation id="1449835205994625556">הסתר סיסמה</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> פריטים</translation>
 <translation id="1491277525950327607">יש ללחוץ פעמיים כדי להחליף את מצב ההגדרה</translation>
+<translation id="1492417797159476138">שם המשתמש הזה כבר נשמר לאתר זה</translation>
 <translation id="1509486075633541495">כניסה לאתר</translation>
 <translation id="1509960214886564027">ייתכן שהתכונות של חלק גדול מהאתרים לא יפעלו כראוי</translation>
 <translation id="152234381334907219">פריטים שאף פעם לא נשמרו</translation>
-<translation id="1523341279170789507">‏אפשר את כל קובצי ה-Cookie</translation>
+<translation id="1523341279170789507">‏הפעלת כל קובצי ה-Cookie</translation>
 <translation id="1535268707340844072">‏ההגדרה הנוכחית עלולה לגרום לתקלות באתרים מסוימים. הסבר על ניהול קובצי ה-cookie עבור כל האתרים זמין במאמר <ph name="BEGIN_LINK" />הגדרות קובצי cookie<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">כתובת, שורה 1</translation>
 <translation id="1545749641540134597">‏סריקת קוד QR</translation>
@@ -246,7 +247,7 @@
 <translation id="3588820906588687999">פתיחת התמונה בכרטיסייה חדשה</translation>
 <translation id="359441731697487922">‏אם Chrome יוגדר כאפליקציית הדפדפן בברירת מחדל, קישורים ייפתחו בו באופן אוטומטי.
       
-עליך למלא אחר השלבים הבאים:</translation>
+עליך לפעול לפי השלבים הבאים:</translation>
 <translation id="3603009562372709545">‏העתקת URL של קישור</translation>
 <translation id="3607167657931203000">נתוני מילוי אוטומטי</translation>
 <translation id="3609785682760573515">מסנכרן ...</translation>
@@ -316,7 +317,7 @@
 <translation id="4502566650163919158">לבדיקה עכשיו</translation>
 <translation id="4505980578794259603">בדיקה אחרונה: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">סגירת קידום הכניסה</translation>
-<translation id="4526249700380860531">‏הצג ונהל סיסמאות שמורות ב-<ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
+<translation id="4526249700380860531">‏הצגה וינוהל של סיסמאות שמורות ב-<ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="4536418791685807335">נסה להיכנס שוב.</translation>
 <translation id="457386861538956877">עוד...</translation>
 <translation id="4592368184551360546">מקלדת</translation>
@@ -327,7 +328,7 @@
 <translation id="4634124774493850572">שימוש בסיסמה</translation>
 <translation id="4636930964841734540">מידע</translation>
 <translation id="4659126640776004816">‏התכונה הזו מופעלת בעת הכניסה לחשבון Google.</translation>
-<translation id="4659667755519643272">‏היכנס אל Tab Switcher</translation>
+<translation id="4659667755519643272">‏כניסה אל Tab Switcher</translation>
 <translation id="46614316059270592">שמירת הסיסמה</translation>
 <translation id="4666531726415300315">החשבון המחובר: <ph name="EMAIL" />.
 
@@ -445,7 +446,7 @@
 <translation id="5964480694698977962">יצירת כרטיסייה חדשה של גלישה בסתר.</translation>
 <translation id="5965679971710331625">אתה מחובר</translation>
 <translation id="5979837087407522202">חיפוש בסיסמאות</translation>
-<translation id="5982717868370722439">הוסף נתונים קיימים אל <ph name="USER_EMAIL" />.</translation>
+<translation id="5982717868370722439">הוספת נתונים קיימים אל <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">ביקרת לאחרונה</translation>
 <translation id="5988851877894965432">‏פתיחת כתובות URL ב-Chrome</translation>
 <translation id="6012140227487808125">מצפין…</translation>
@@ -455,7 +456,7 @@
 <translation id="6042308850641462728">עוד</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">כאן אפשר לנהל את הסטוריז והפעילות שלך</translation>
-<translation id="6066301408025741299">הקש כדי לבטל.</translation>
+<translation id="6066301408025741299">יש להקיש כדי לבטל.</translation>
 <translation id="6108923351542677676">ההגדרה מתבצעת…</translation>
 <translation id="6119050551270742952">דף האינטרנט הנוכחי מוצג במצב אנונימי</translation>
 <translation id="6122191549521593678">מקוון</translation>
@@ -465,7 +466,7 @@
 <translation id="6144589619057374135">‏פתיחת ${urls} במצב אנונימי</translation>
 <translation id="616831107264507309">קרא אחר כך</translation>
 <translation id="6177442314419606057">‏חיפוש ב-Chrome</translation>
-<translation id="6184086493125982861">הצג כרטיסיות</translation>
+<translation id="6184086493125982861">הצגת כרטיסיות</translation>
 <translation id="6187302354554850004">סונכרן לאחרונה: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">פריטים שלא נקראו</translation>
 <translation id="6196207969502475924">חיפוש קולי</translation>
@@ -487,7 +488,7 @@
 <translation id="6363526231572697780">אין שם משתמש</translation>
 <translation id="6374469231428023295">נסה שוב</translation>
 <translation id="6377118281273296434">אבטחת האתר</translation>
-<translation id="6380866119319257197">אם תשכח את ביטוי הסיסמה או תרצה לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />אפס את הסינכרון<ph name="END_LINK" /></translation>
+<translation id="6380866119319257197">אם שוכחים את ביטוי הסיסמה או שרוצים לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />יש לאפס את הסנכרון<ph name="END_LINK" /></translation>
 <translation id="6389470377220713856">שם על הכרטיס</translation>
 <translation id="6406506848690869874">סנכרון</translation>
 <translation id="6410883413783534063">ניתן לפתוח כרטיסיות כדי להיכנס אל דפים שונים בו-זמנית</translation>
@@ -533,7 +534,7 @@
 <translation id="6785453220513215166">שולח דוח קריסה...</translation>
 <translation id="679325081238418596">קבל את הסימניות, ההיסטוריה, הסיסמאות והגדרות נוספות בכל המכשירים</translation>
 <translation id="6797885426782475225">חיפוש קולי</translation>
-<translation id="6807889908376551050">הצג הכל...</translation>
+<translation id="6807889908376551050">הצגת הכול...</translation>
 <translation id="681368974849482173">הפריט נוצר</translation>
 <translation id="6831043979455480757">תרגום</translation>
 <translation id="6841409746189899007">קישור לטקסט</translation>
@@ -544,7 +545,7 @@
 <translation id="6873263987691478642">‏מצב Split View</translation>
 <translation id="6888009575607455378">השינויים יימחקו. להמשיך?</translation>
 <translation id="6896758677409633944">העתק</translation>
-<translation id="6903907808598579934">הפעל סנכרון</translation>
+<translation id="6903907808598579934">הפעלת הסנכרון</translation>
 <translation id="6914583639806229067">חיפוש תמונה שהעתקת</translation>
 <translation id="6914783257214138813">כל מי שיוכל לגשת אל הקובץ המיוצא יוכל לראות את הסיסמאות שלך.</translation>
 <translation id="6930799952781667037">יש להקיש כדי לעבור לשפה הזו.</translation>
@@ -627,7 +628,7 @@
 <translation id="7856733331829174190">ההורדה נכשלה</translation>
 <translation id="7859704718976024901">היסטוריית הגלישה</translation>
 <translation id="7887198238286927132">‏כדי לשמור על הפרטיות שלך, מערכת Chrome לא ממלאת את השדה הזה באופן אוטומטי.</translation>
-<translation id="7918293828610777738">אפשר לגשת לרשימת הקריאה במצב לא מקוון. כדי להוסיף דף לרשימת הקריאה צריך להקיש על <ph name="SHARE_OPENING_ICON" /> ועל <ph name="READ_LATER_TEXT" />.</translation>
+<translation id="7918293828610777738">רשימת הקריאה זמינה אופליין. כדי להוסיף דף לרשימת הקריאה צריך להקיש על <ph name="SHARE_OPENING_ICON" /> ועל <ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">ייצוא סיסמאות...</translation>
 <translation id="7947953824732555851">קבל והיכנס</translation>
@@ -657,7 +658,7 @@
 <translation id="8114753159095730575">יש קובץ זמין להורדה. האפשרויות זמינות בחלק התחתון של המסך.</translation>
 <translation id="8131740175452115882">אישור</translation>
 <translation id="8197543752516192074">תרגום הדף</translation>
-<translation id="8205564605687841303">בטל</translation>
+<translation id="8205564605687841303">ביטול</translation>
 <translation id="8206354486702514201">הגדרה זו נאכפת על ידי מנהל המערכת שלך.</translation>
 <translation id="8225985093977202398">תמונות וקבצים במטמון</translation>
 <translation id="8261506727792406068">מחיקה</translation>
@@ -733,7 +734,7 @@
 <translation id="9137526406337347448">‏שירותי Google</translation>
 <translation id="9148126808321036104">היכנס שוב</translation>
 <translation id="9152539721251340337">‏יצירת קוד QR</translation>
-<translation id="9157836665414082580">הסתר תיבות דו-שיח</translation>
+<translation id="9157836665414082580">הסתרת תיבות דו-שיח</translation>
 <translation id="9188680907066685419">צא מהחשבון המנוהל</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">דוח הקריסה נשלח.</translation>

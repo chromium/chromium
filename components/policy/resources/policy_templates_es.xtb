@@ -203,11 +203,6 @@
       Si se asigna el valor false a esta política, <ph name="PRODUCT_NAME" /> no permitirá que se inicien los perfiles de invitado.</translation>
 <translation id="1363275621236827384">Habilitar consultas a Quirks Server para los perfiles de hardware</translation>
 <translation id="1376119291123231789">Habilita el modo avanzado de carga de la batería</translation>
-<translation id="1378850678793136128">Te permite establecer una lista con patrones de URL donde se especifique qué sitios web obtienen permiso para acceder a un dispositivo USB automáticamente con los ID de proveedor y producto determinados en la pantalla de inicio de sesión. Cada elemento de la lista debe contener un campo "devices" y un campo "urls" para que la política sea válida. Cada elemento del campo "devices" puede incluir un campo "vendor_id" y un campo "product_id". Si se omite el campo "vendor_id", se creará una política para cualquier dispositivo. Si se omite el campo "product_id", se creará una política para cualquier dispositivo con el ID de proveedor proporcionado. Las políticas que tengan un campo "product_id" pero que no tengan un campo "vendor_id" no son válidas.
-
-        El modelo de permisos USB usa la URL del sitio web solicitante (URL solicitante) y la URL del sitio web marco de nivel superior (URL de inserción) para conceder permiso de acceso al dispositivo USB a la URL solicitante. La URL solicitante puede ser distinta a la de inserción si el sitio web solicitante se encuentra en un iframe. Por lo tanto, el campo "urls" puede contener un máximo de dos cadenas de URL delimitadas por una coma para especificar la URL solicitante y la de inserción, respectivamente. Si solo se especifica una URL, se otorgará acceso a los dispositivos USB correspondientes cuando la URL del sitio web solicitante coincida con esta URL, independientemente del estado de inserción. Las URL del campo "urls" deben ser URL válidas. De lo contrario, la política se ignorará.
-
-        Si no se asigna ningún valor a esta política, se usará en todos los sitios web el valor general predeterminado (sin acceso automático).</translation>
 <translation id="1384459581748403878">Referencia: <ph name="REFERENCE_URL" /></translation>
 <translation id="138847842893090358">Envía el estado de las actualizaciones del sistema operativo</translation>
 <translation id="1390901586107713894">Permite especificar las extensiones que los usuarios no pueden instalar. Si se bloquea una extensión ya instalada, se inhabilitará y el usuario no podrá habilitarla. Si una extensión que se había inhabilitado porque estaba en la lista de bloqueados se quita de esa lista, volverá a habilitarse automáticamente.
@@ -449,12 +444,6 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 
       Si no se asigna ningún valor a esta política, la instalación de <ph name="PLUGIN_VM_NAME" /> fallará si el dispositivo tiene menos de 20 GB (valor predeterminado) de espacio disponible en disco.
       Si se le asigna un valor, la instalación de <ph name="PLUGIN_VM_NAME" /> fallará si el dispositivo tiene menos espacio disponible en disco del requerido por la política.</translation>
-<translation id="1695708467571967752">Esta política controla si el usuario puede reproducir contenido multimedia cuando el dispositivo está bloqueado.
-
-      Si se le asigna el valor False, se inhabilitarán los controles multimedia en la pantalla de bloqueo.
-
-      Si se le asigna el valor True o no se le asigna ninguno, se mostrarán los controles multimedia en la pantalla de bloqueo cuando el usuario bloquee el dispositivo mientras se está reproduciendo algún contenido multimedia.
-      </translation>
 <translation id="1700811900332333712">Permite el uso de Powerwash en el dispositivo</translation>
 <translation id="1708496595873025510">Establecer restricción en obtención de base de variaciones</translation>
 <translation id="171511968762040550">Si se asigna el valor "Verdadero" a esta política o no se le asigna ninguno, se permitirá a los usuarios añadir, quitar o modificar marcadores.
@@ -673,7 +662,6 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
           Si se inhabilita esta opción, no se permitirá la transferencia de archivos. Si se habilita esta opción o no se configura, se permitirá la transferencia de archivos.</translation>
 <translation id="2057317273526988987">Permitir el acceso a una lista de URL</translation>
 <translation id="2061810934846663491">Configurar los nombres de dominio obligatorios para hosts de acceso remoto</translation>
-<translation id="2067011586099792101">Bloquear acceso a sitios no incluidos en paquetes de contenido</translation>
 <translation id="2069350366303315077">Si se habilita la política, <ph name="PRODUCT_NAME" /> usará sesiones de invitado e impedirá inicios de sesión de perfiles. Las sesiones de invitado son perfiles de <ph name="PRODUCT_NAME" /> en los que las ventanas están en modo de incógnito.
 
       Si se inhabilita la política, no se establece o se inhabilita el modo invitados del navegador (mediante <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />), se permitirá el uso de perfiles nuevos y de perfiles ya existentes.</translation>
@@ -1128,6 +1116,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Si no se asigna ningún valor a esta política, no se añadirá ningún sitio web a la lista.
 
       Nota: También se pueden añadir elementos a la lista a través de las políticas <ph name="USE_IE_SITELIST_POLICY_NAME" /> y <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
+<translation id="2640898752536996430">Cierra la sesión del usuario.</translation>
 <translation id="264093234299818170">Se muestran todas las impresoras, excepto las de la lista de bloqueados.</translation>
 <translation id="264252574246191885">Oculta</translation>
 <translation id="2647069081229792812">Habilitar o inhabilitar la edición de marcadores</translation>
@@ -1459,6 +1448,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="3072847235228302527">Establecer los Términos del Servicio para una cuenta de dispositivo local</translation>
 <translation id="3086995894968271156">Configura Cast Receiver en <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3091832372132789233">Carga la batería de los dispositivos que están conectados principalmente a una fuente de alimentación externa.</translation>
+<translation id="309416443108680956">Especifica qué ocurre cuando un usuario que se autentica mediante un token de seguridad (por ejemplo, con una tarjeta inteligente) quita ese token durante una sesión. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: no ocurre nada. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: se bloquea la pantalla hasta que el usuario se vuelva a autenticar. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: la sesión finaliza y se cierra la sesión del usuario. Si no se define esta política, se utiliza <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" /> de forma predeterminada.</translation>
 <translation id="3096595567015595053">Lista de complementos habilitados</translation>
 <translation id="3101501961102569744">Seleccionar la forma de especificar la configuración del servidor proxy</translation>
 <translation id="3101709781009526431">Fecha y hora</translation>
@@ -1884,6 +1874,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Si se le asigna un valor a esta política, los usuarios no podrán cambiar su tipo de página principal en <ph name="PRODUCT_NAME" />. Si no se le asigna ningún valor, los usuarios podrán elegir si quieren establecer la página Nueva pestaña como su página principal.
 
       En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" />, que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
+<translation id="3695706037816556327">Qué acción se realiza al quitar el token de seguridad (por ejemplo, la tarjeta inteligente) de <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3701121231485832347">Controla la configuración específica de los dispositivos con <ph name="PRODUCT_OS_NAME" /> gestionados con <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Confirmación remota</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (el campo de una línea está obsoleto y desaparecerá en el futuro; a partir de ahora, debes utilizar el campo de varias líneas que aparece más abajo).</translation>
@@ -1921,6 +1912,8 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 
      Si no se establece esta política, los usuarios podrán elegir su propia configuración del proxy.</translation>
 <translation id="3758249152301468420">Inhabilitar las Herramientas para desarrolladores</translation>
+<translation id="3760231600118073732">Bloquea la sesión.</translation>
+<translation id="3764097800332238572">Esta política solo tiene validez si se le asigna el valor <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> o <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" /> a la política <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> y un usuario que se autentica mediante una tarjeta inteligente quita dicha tarjeta. Esta política especifica durante cuántos segundos se muestra una notificación que informa al usuario de la acción que tendrá lugar a continuación. La notificación bloquea la pantalla. La acción solo se realizará una vez que caduque la notificación. El usuario puede impedir que se produzca la acción volviendo a insertar la tarjeta inteligente antes de que caduque la notificación. Si se le asigna el valor cero a esta política, no se mostrará ninguna notificación y la acción ocurrirá inmediatamente.</translation>
 <translation id="3765260570442823273">Duración del mensaje que advierte al usuario de que se cerrará la sesión porque se encuentra inactivo</translation>
 <translation id="377044054160169374">Aplicar intervención de experiencia abusiva</translation>
 <translation id="3780152581321609624">Incluir un puerto no estándar en SPN de Kerberos</translation>
@@ -2127,7 +2120,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="4056910949759281379">Inhabilitar protocolo SPDY</translation>
 <translation id="4061590579642538878">Proporcionar información de informes sobre fallos</translation>
 <translation id="4075675819066819571">Colocar la estantería en la parte izquierda de la pantalla</translation>
-<translation id="4075864623710596000">Los nombres de host que se especifican en esta lista quedarán exentos de la comprobación de la política de HSTS, que podría actualizar las solicitudes de http a https. Esta política solo admite nombres de host de una sola etiqueta. Los nombres de host deben seguir el proceso de canonicalización: cada IDN debe codificarse en su formato de etiqueta A y todas las letras ASCII deben ser minúsculas. Esta política solo se aplica a los nombres de host que se especifican en esta lista. No se aplica a sus subdominios.</translation>
 <translation id="408029843066770167">Permitir consultas a un servicio de hora de Google</translation>
 <translation id="408076456549153854">Habilitar inicio de sesión en el navegador</translation>
 <translation id="4082498585300984671">Habilitar la función Clic de llamada</translation>
@@ -2237,9 +2229,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 
       Si se le asigna el valor "Inhabilitada", se desactivará <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4203879074082863035">Solo se muestran a los usuarios las impresoras incluidas en la lista blanca.</translation>
-<translation id="420512303455129789">Diccionario que asigna URLs a un indicador booleano que especifica si se debe permitir (true) o bloquear (false) el acceso del host.
-
-          Esta política solo está destinada a uso interno de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4209297478239988291">Habilita la función de accesibilidad de clic automático.
 
           Esta función permite hacer clic sin pulsar el ratón ni el panel táctil, así como colocar el cursor sobre el elemento en el que quieras hacer clic.
@@ -2379,13 +2368,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="4494132853995232608">Wilco DTC</translation>
 <translation id="449423975179525290">Configura las políticas relacionadas con <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="4498493270899294764">Indicar los patrones de URL en los que no se comprobará si el contenido descargado contiene software malicioso</translation>
-<translation id="450537894712826981">Permite configurar el tamaño de caché que utilizará <ph name="PRODUCT_NAME" /> para guardar archivos multimedia almacenados en caché en el disco.
-
-      Si se define esta política, <ph name="PRODUCT_NAME" /> utilizará el tamaño de caché proporcionado independientemente de que el usuario haya especificado o no un tamaño de caché de archivos multimedia con el indicador "--media-cache-size". El valor especificado en esta política no es un límite estricto sino más bien una sugerencia para el sistema de almacenamiento en caché (un valor inferior a unos pocos megabytes sería demasiado pequeño y se redondearía a un valor mínimo viable)..
-
-      Si se establece 0 como valor de esta política, se utilizará el tamaño de caché predeterminado, pero el usuario no podrá modificarlo.
-
-      Si no se define esta política, se utilizará el tamaño predeterminado y el usuario podrá modificarlo mediante el indicador "--media-cache-size".</translation>
 <translation id="4508084713148633492">Permite habilitar o inhabilitar la notificación de poco espacio en disco. Se aplica a todos los usuarios del dispositivo.
       Si solo hay una cuenta de usuario en un dispositivo administrado, la notificación se muestra siempre, independientemente del valor asignado a esta política.
       Si hay varias cuentas de usuario en un dispositivo administrado, la notificación solo se muestra si se asigna el valor True a esta política.
@@ -2680,7 +2662,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 
       Si se inhabilita la política, <ph name="PRODUCT_NAME" /> no podrá enviar esas consultas.</translation>
 <translation id="5032164758660626397">Impedir al usuario transferir archivos grandes</translation>
-<translation id="5047604665028708335">Permitir acceso a sitios no incluidos en paquetes de contenido</translation>
 <translation id="5056708224511062314">Lupa inhabilitada</translation>
 <translation id="5058573563327660283">Seleccionar la estrategia utilizada para liberar espacio en disco durante la limpieza automática (obsoleta)</translation>
 <translation id="5061114193960158745">Si se define esta política, controlará la lista de sitios web que nunca provocarán que se cambie de navegador. Cada elemento se tratará como una regla. Las reglas para las que se encuentre una coincidencia no abrirán un navegador alternativo. A diferencia de la política <ph name="URL_LIST_POLICY_NAME" />, estas reglas se aplicarán en ambas direcciones. Si el complemento de <ph name="IE_PRODUCT_NAME" /> está activado, también controlará si <ph name="IE_PRODUCT_NAME" /> debe abrir esas URL en <ph name="PRODUCT_NAME" />.
@@ -3160,10 +3141,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Recuerda que no se recomienda esta opción, ya que puede permitir que se omita la extensión nameConstraints que restringe los nombres de host para los que puede estar autorizado un certificado concreto.
 
       Si esta política no se configura o se le asigna el valor valse, los certificados de servidor que no tengan ninguna extensión subjectAlternativeName que incluya un nombre de DNS o una dirección IP no serán de confianza.</translation>
-<translation id="5578571772998293651">Permitir comentarios de los usuarios.
-        Si se asigna el valor "False" a esta política, los usuarios no podrán enviar comentarios a Google.
-
-        Si no se le asigna ningún valor o se le asigna el valor "True", los usuarios podrán enviar comentarios a Google desde Menú &gt; Ayuda &gt; Informar de un problema o con una combinación de teclas.</translation>
 <translation id="5579179012798142131">Si se asigna a ArcEnabled el valor "true", se activa ARC para el usuario, a menos que esté activado el modo efímero o el inicio de sesión múltiple durante la sesión del usuario. Si se le asigna el valor "false" o no se le asigna ningún valor, los usuarios de empresa no podrán usar ARC.</translation>
 <translation id="5582429816116769246">Permite controlar si los usuarios pueden acceder a impresoras que no sean de empresa
 
@@ -3425,7 +3402,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="5951418260805607969">Mostrar notificación de poco espacio en disco</translation>
 <translation id="5961137303188584693">Dirección NIC MAC integrada en el dispositivo</translation>
 <translation id="5966615072639944554">Extensiones con permiso para utilizar la API de confirmación remota</translation>
-<translation id="5983708779415553259">Comportamiento predeterminado de sitios no incluidos en un paquete de contenido</translation>
 <translation id="5997543603646547632">Utilizar reloj de formato de 24 horas de forma predeterminada</translation>
 <translation id="5997846976342452720">Especificar si se debe inhabilitar el buscador de complementos (obsoleta)</translation>
 <translation id="5998198091336830580">Esta política forma parte del siguiente grupo atómico (solo se aplicarán las políticas de la fuente que tenga mayor prioridad del grupo):</translation>
@@ -3464,9 +3440,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="603768430528561926">Si se habilita la política o no se establece, los usuarios de dispositivos empresariales podrán canjear ofertas mediante el registro de <ph name="PRODUCT_OS_NAME" />.
 
       Si se inhabilita la política, los usuarios no podrán canjear estas ofertas.</translation>
-<translation id="6038407313189625985">Si se habilita esta política o no se le asigna ningún valor, se activará la integridad del código del renderizador. Solo debería inhabilitarse si hay problemas de compatibilidad con algún software de terceros que deba ejecutarse en los procesos del renderizador de Chrome.
-
-      Inhabilitar esta política reduce la estabilidad y la seguridad de Chrome, ya que se permitirá cargar código desconocido y potencialmente hostil en los procesos del renderizador de Chrome. Puedes consultar más información en la página https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies</translation>
 <translation id="6048199181629830227">Habilitar la gestión de energía Peak Shift</translation>
 <translation id="6054485492411959335">Especifica las impresoras que puede utilizar un usuario.
 
@@ -3948,6 +3921,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="6672070613706645316">Permite a los usuarios personalizar la imagen de fondo de la página Nueva pestaña</translation>
 <translation id="6672630473862787247">Habilita la autenticación pasiva en sesiones normales, de incógnito y de invitado.</translation>
 <translation id="6685903773201985073">Habilita la autenticación pasiva en sesiones normales y de invitado.</translation>
+<translation id="6689343802305995925">No se realiza ninguna acción.</translation>
 <translation id="6689792153960219308">Informar sobre el estado del hardware</translation>
 <translation id="6690425645391461516">Inhabilitar las comprobaciones de interceptación de DNS y permitir las barras de información aclaratorias "http://intranetsite/".</translation>
 <translation id="6698632841807204978">Habilitar la impresión en monocromo</translation>
@@ -4215,6 +4189,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 
       Si se le asigna el valor "Inhabilitada", <ph name="PRODUCT_NAME" /> cerrará la pestaña después de cambiar a un navegador alternativo, aunque esta sea la última. Esto hará que <ph name="PRODUCT_NAME" /> se cierre por completo.</translation>
 <translation id="7019805045859631636">Rápido</translation>
+<translation id="7026351325994257733">Permitir que las configuraciones de la red Wi‑Fi se sincronicen en los dispositivos <ph name="PRODUCT_OS_NAME" /> y en un teléfono Android conectado.</translation>
 <translation id="7027785306666625591">Configura la administración de energía en <ph name="PRODUCT_OS_NAME" />.
 
 Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_OS_NAME" /> cuando el usuario permanece inactivo durante un periodo de tiempo determinado.</translation>
@@ -4589,6 +4564,13 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       - Si se inhabilita esta política, los administradores deberán comunicárselo a los usuarios finales del dispositivo.</translation>
 <translation id="747275827471712187">Volver a la configuración antigua de comportamiento de cookies de <ph name="ATTRIBUTE_SAMESITE_NAME" /> en estos sitios web</translation>
+<translation id="7476621944304431784">Si se habilita esta opción, los usuarios podrán sincronizar las configuraciones de la red Wi‑Fi en sus dispositivos <ph name="PRODUCT_OS_NAME" /> y en un teléfono Android conectado. Para poder sincronizar las configuraciones de la red Wi‑Fi, los usuarios deben aceptar explícitamente esta función completando un proceso de configuración.
+
+      Si se inhabilita esta opción, los usuarios no podrán sincronizar las configuraciones de la red Wi‑Fi.
+
+      Esta función depende de que se habilite el tipo de datos de <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" /> en la Sincronización de Chrome. Si se inhabilita <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" /> en la política <ph name="SYNC_TYPES_LIST_DISABLED_POLICY_NAME" /> o se inhabilita la Sincronización de Chrome en la política <ph name="SYNC_DISABLED_POLICY_NAME" />, no se habilitará esta función.
+
+      Si no se asigna ningún valor a esta política, se inhabilitará de forma predeterminada para los usuarios administrados.</translation>
 <translation id="7477231245051133709">Habilita la función de accesibilidad de audio en mono</translation>
 <translation id="7477239290070847560">Destinos de protocolo zeroconf (mDNS y DNS‑SD)</translation>
 <translation id="7485481791539008776">Reglas para la selección de la impresora predeterminada</translation>
@@ -4780,9 +4762,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       Nota: En este momento, los reinicios automáticos solo se habilitan cuando se muestra la pantalla de inicio de sesión o está en curso una sesión de una aplicación de kiosco. Esta restricción se modificará en el futuro, y la política se aplicará en todo momento, independientemente de si un determinado tipo de sesión está o no en curso.</translation>
 <translation id="7701341006446125684">Establecer el tamaño de caché de aplicaciones y extensiones (en bytes)</translation>
-<translation id="7709537117200051035">Diccionario que asigna URLs a un indicador booleano que especifica si se debe permitir (true) o bloquear (false) el acceso del host.
-
-          Esta política solo está destinada a uso interno de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7710950688502974809">Lista con los ajustes de los servicios de Chrome Enterprise Connectors que se van a aplicar al conector <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" /> de Enterprise, que se activa cuando se introducen datos en Chrome desde el portapapeles o arrastrando y soltando contenido web.
 
       Los campos <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> se usan para determinar si el conector debe enviar datos para su análisis cuando se introduzcan en una página específica y qué etiquetas se van a incluir en la solicitud de análisis de esos datos. Se incluirá en la solicitud de análisis una etiqueta correspondiente a un patrón "enable" si la URL de la página coincide con un patrón asociado a esta etiqueta, siempre y cuando no se encuentre una misma etiqueta que coincida con la URL de la página con el patrón "disable". El análisis se realiza si se debe incluir al menos 1 etiqueta en la solicitud.
@@ -4930,7 +4909,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       Si habilitas o inhabilitas esta opción, los usuarios no podrán cambiar ni anular esta configuración en <ph name="PRODUCT_NAME" />.
 
       Si no se asigna ningún valor a esta política, se habilitará pero el usuario no podrá cambiarla.</translation>
-<translation id="7953256619080733119">Hosts de excepción manual de usuario administrado</translation>
 <translation id="7956210013490975468">Configura el servicio de proxy del sistema en <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7958537754689366707">Es obligatorio introducir la contraseña cada doce horas</translation>
 <translation id="7961779417826583251">Inhabilitar los requisitos de la transparencia en los certificados en una lista de autoridades de certificación antiguas</translation>
@@ -5155,11 +5133,6 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
           Si se asigna un valor a esta política, los usuarios no podrán cambiarlo ni anularlo.
 
           Si no se le asigna ningún valor, el dictado se inhabilitará al inicio, pero el usuario podrá habilitarlo en cualquier momento.</translation>
-<translation id="829337533107201925">Si se habilita esta política, las políticas procedentes de un grupo atómico que no compartan la fuente con mayor prioridad de ese grupo serán ignoradas.
-
-      Si se inhabilita esta política, no se ignorará ninguna política a causa de su fuente. Solo se ignorarán las políticas si se produce un conflicto y la política no tiene la mayor prioridad.
-
-      Si esta política se configura desde la nube, no se puede aplicar a un usuario concreto.</translation>
 <translation id="8294750666104911727">Normalmente, las páginas con X-UA-Compatible establecido en chrome=1 se mostrarán en <ph name="PRODUCT_FRAME_NAME" />, independientemente de la política ChromeFrameRendererSettings.
 
           Si habilitas esta opción, las páginas no se escanearán para buscar metaetiquetas.
@@ -5361,7 +5334,6 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 <translation id="8544375438507658205">Procesador de HTML predeterminado de <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Permite que los SMS del teléfono se sincronicen con Chromebook.</translation>
 <translation id="8548832052135586762">Establece el modo de impresión: solo en color, solo monocromo o sin restricción. Si no se asigna ningún valor a esta política, no se aplica ninguna restricción.</translation>
-<translation id="8549772397068118889">Advertir cuando se visitan sitios no incluidos en paquetes de contenido</translation>
 <translation id="8566842294717252664">Oculta tienda web en página Nueva pestaña y en menú de aplicaciones</translation>
 <translation id="8569734380847633643">
           Si se le asigna el valor "False" a esta política, <ph name="PRODUCT_OS_NAME" /> inhabilitará el Wi-Fi y los usuarios no podrán habilitarlo.
@@ -5481,7 +5453,6 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
       Si estableces esta política, los usuarios no podrán cambiarla ni anularla.
 
       Esta política no afecta a la capacidad de los usuarios de configurar impresoras en determinados dispositivos. La política está pensada para ser complementaria a la configuración de impresoras de los usuarios.</translation>
-<translation id="8764477907716150749">Esta polí­tica solo está destinada a uso interno de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8767743923206070405">Si se habilita esta política, se mostrará el botón de página principal en la barra de herramientas de <ph name="PRODUCT_NAME" />. Si se inhabilita esta política, no se mostrará el botón de página principal.
 
       Si se le asigna un valor a esta política, los usuarios no podrán cambiarlo en <ph name="PRODUCT_NAME" />. Si no se le asigna ningún valor, los usuarios podrán decidir si quieren que se muestre el botón de página principal.</translation>
@@ -5833,6 +5804,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 <translation id="9152473318295429890">Habilitar las sugerencias contextuales de páginas web relacionadas</translation>
 <translation id="9153446010242995516">Vuelve a instalar la versión anterior de destino si la versión del SO es más reciente y se puede conservar la configuración de nivel de dispositivo durante el proceso, incluidas las credenciales de red. Sin embargo, instala la versión anterior con un Powerwash completo, aunque no se puedan restaurar los datos, ya sea porque la versión de destino no admite restaurar datos o por cambios incompatibles con la versión anterior.
           Compatible con <ph name="PRODUCT_OS_NAME" /> 75 y versiones superiores, lo que significa que los clientes más antiguos no pueden instalar versiones anteriores.</translation>
+<translation id="9155218447258425310">Duración de la notificación que se muestra al quitar la tarjeta inteligente de <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="9155375380628728544">Si se le asigna un valor a esta política, los usuarios podrán añadir solo uno de los idiomas incluidos en esta política a la lista de idiomas preferidos.
 
       Si no se le asigna ningún valor o se le asigna una lista vacía, los usuarios podrán especificar los idiomas que deseen.

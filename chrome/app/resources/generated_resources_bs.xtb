@@ -958,7 +958,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2090165459409185032">Za oporavak podataka o računu otvorite: google.com/accounts/recovery</translation>
 <translation id="2090876986345970080">Postavke sigurnosnog sistema</translation>
 <translation id="2091887806945687916">Zvuk</translation>
-<translation id="209539936453343974">Da postavite roditeljski nadzor, dijete mora imati Google račun kojim upravlja roditelj. Uređaji <ph name="DEVICE_TYPE_PLURAL" /> dozvoljavaju roditeljima da postave ograničenja ekrana, da odobre ili blokiraju web lokacije i još mnogo toga pomoću aplikacije Family Link. Ako dijete treba da uradi školski rad na web lokaciji kao što je Google Učionica, školski račun se može dodati kasnije.</translation>
+<translation id="209539936453343974">Da postavite roditeljski nadzor, dijete mora imati Google račun kojim upravlja roditelj. Uređaji <ph name="DEVICE_TYPE_PLURAL" /> dozvoljavaju roditeljima da postave ograničenja ekrana, da odobre ili blokiraju web lokacije i još mnogo toga pomoću aplikacije Family Link. Ako dijete treba uraditi školski rad na web lokaciji kao što je Google Učionica, školski račun se može dodati kasnije.</translation>
 <translation id="2096715839409389970">Izbriši kolačiće trećih strana</translation>
 <translation id="2097372108957554726">Morate se prijaviti na Chrome da registrirate nove uređaje</translation>
 <translation id="2098805196501063469">Provjerite preostale lozinke</translation>
@@ -2451,7 +2451,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="3822559385185038546">Ovaj proksi server je nametnuo vaš administrator</translation>
 <translation id="3823310065043511710">Preporučuje se najmanje <ph name="INSTALL_SIZE" /> slobodnog prostora za Linux.</translation>
 <translation id="3824621460022590830">Token za prijavu uređaja je nevažeći. Kontaktirajte vlasnika ili administratora uređaja. Kȏd greške: <ph name="ERROR_CODE" />.</translation>
-<translation id="3826071569074535339">Dozvoljeno je korišćenje senzora kretanja</translation>
+<translation id="3826071569074535339">Dozvoljeno je korištenje senzora kretanja</translation>
 <translation id="3826440694796503677">Vaš administrator je onemogućio dodavanje više Google računa</translation>
 <translation id="3827306204503227641">Nastavi dozvoljavati dodatke koji nisu u izoliranom okruženju</translation>
 <translation id="3827774300009121996">&amp;Cijeli ekran</translation>
@@ -3830,7 +3830,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="5495466433285976480">Na ovaj način će se ukloniti svi lokalni korisnici, fajlovi, podaci i druge postavke nakon sljedećeg ponovnog pokretanja uređaja. Svi korisnici će se morati ponovo prijaviti.</translation>
 <translation id="5495597166260341369">Ostavi uključen zaslon</translation>
 <translation id="5496587651328244253">Organizacija</translation>
-<translation id="5496730470963166430">Nije dozvoljeno slanje skočnih prozora ili korištenje presmjeravanja</translation>
+<translation id="5496730470963166430">Nije dozvoljeno slanje skočnih prozora ili korištenje preusmjeravanja</translation>
 <translation id="5497251278400702716">Ovaj fajl</translation>
 <translation id="5498967291577176373">Brže pišite uz umetnute preporuke za ime, adresu ili broj telefona</translation>
 <translation id="5499313591153584299">Ovaj fajl može naštetiti vašem računaru.</translation>
@@ -6237,7 +6237,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8300011035382349091">Uredite oznaku za ovu karticu</translation>
 <translation id="8300374739238450534">Ponoćno plava</translation>
 <translation id="8300849813060516376">Greška na OTASP-u</translation>
-<translation id="8304383784961451596">Nemate odobrenje za korištenje ovog uređaja. Kontaktirajte administratora zbog odobrenja za prijavu ili se prijavite s Google računom koga nadzire Family Link.</translation>
+<translation id="8304383784961451596">Nemate odobrenje za korištenje ovog uređaja. Kontaktirajte administratora zbog odobrenja za prijavu ili se prijavite s Google računom kojeg nadzire Family Link.</translation>
 <translation id="8308179586020895837">Pitaj ako <ph name="HOST" /> želi pristupiti kameri</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">Potvrda već postoji</translation>

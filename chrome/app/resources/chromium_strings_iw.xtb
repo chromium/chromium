@@ -46,7 +46,7 @@
 <translation id="2770231113462710648">שנה את דפדפן ברירת המחדל ל:</translation>
 <translation id="2774556997178638058">‏<ph name="BEGIN_LINK" />מנהל המערכת<ph name="END_LINK" /> השבית את הבדיקה של Chromium לאיתור תוכנות מזיקות</translation>
 <translation id="2799223571221894425">הפעל מחדש</translation>
-<translation id="2847479871509788944">‏הסר מ-Chromium...</translation>
+<translation id="2847479871509788944">‏הסרה מ-Chromium...</translation>
 <translation id="2885378588091291677">מנהל המשימות</translation>
 <translation id="2910007522516064972">‏מידע על &amp;Chromium‏</translation>
 <translation id="2977470724722393594">‏Chromium‏ מעודכן</translation>
@@ -122,7 +122,7 @@
 <translation id="538767207339317086">‏התרת כניסה אל Chromium</translation>
 <translation id="5398878173008909840">‏גרסה חדשה של Chromium זמינה כעת.</translation>
 <translation id="5416696090975899932">‏Chromium לא יכול להראות את התצוגה המקדימה של ההדפסה כשמציג ה-PDF המובנה חסר.</translation>
-<translation id="5427571867875391349">‏הגדר את Chromium כדפדפן ברירת המחדל שלך</translation>
+<translation id="5427571867875391349">‏הגדרת Chromium כדפדפן ברירת המחדל שלך</translation>
 <translation id="5438241569118040789">‏<ph name="PAGE_TITLE" /> - Chromium בגירסת ביטא</translation>
 <translation id="5479196819031988440">‏מערכת ההפעלה של Chromium אינה יכול לפתוח את הדף הזה.</translation>
 <translation id="5480860683791598150">‏Chromium זקוק לגישה למיקום שלך כדי לשתף אותו עם האתר הזה</translation>
@@ -135,7 +135,7 @@
 <translation id="5698481217667032250">‏הצג את Chromium בשפה זו</translation>
 <translation id="5820394555380036790">‏מערכת ההפעלה של Chromium</translation>
 <translation id="5862307444128926510">‏ברוכים הבאים ל-Chromium‏</translation>
-<translation id="5895138241574237353">הפעל מחדש</translation>
+<translation id="5895138241574237353">הפעלה מחדש</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – כניסה לרשת</translation>
 <translation id="5987687638152509985">‏יש לעדכן את Chromium כדי להתחיל את הסנכרון</translation>
 <translation id="6013050204643758987">‏הפיתוח של מערכת ההפעלה Chromium אפשרי בזכות <ph name="BEGIN_LINK_CROS_OSS" />תוכנות קוד פתוח<ph name="END_LINK_CROS_OSS" /> נוספות, כמו <ph name="BEGIN_LINK_LINUX_OSS" />Linux (בטא)<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -149,22 +149,22 @@
 <translation id="6129621093834146363">‏<ph name="FILE_NAME" /> מסוכן, ולכן Chromium חסם אותו.</translation>
 <translation id="6134968993075716475">‏הגלישה הבטוחה כבויה. ההמלצה של Chromium היא להפעיל אותה.</translation>
 <translation id="6183079672144801177">‏יש לוודא שנכנסת ל-Chromium ב-<ph name="TARGET_DEVICE_NAME" /> שלך ולשלוח שוב.</translation>
-<translation id="6212496753309875659">‏במחשב זה קיימת כבר גרסה מתקדמת יותר של Chromium. אם התוכנה אינה פועלת, הסר את ההתקנה של Chromium ונסה שוב.</translation>
+<translation id="6212496753309875659">‏במחשב זה קיימת כבר גרסה מתקדמת יותר של Chromium. אם התוכנה אינה פועלת, יש להסיר את ההתקנה של Chromium ולנסות שוב.</translation>
 <translation id="6219195342503754812">{0,plural, =0{‏Chromium יופעל מחדש עכשיו}=1{‏Chromium יופעל מחדש בעוד שנייה אחת}two{‏Chromium יופעל מחדש בעוד # שניות}many{‏Chromium יופעל מחדש בעוד # שניות}other{‏Chromium יופעל מחדש בעוד # שניות}}</translation>
 <translation id="623836266260425961">‏מערכת Chromium OS לא הצליחה לסנכרן את הנתונים שלך.</translation>
-<translation id="6248213926982192922">‏הפוך את Chromium לדפדפן ברירת המחדל</translation>
+<translation id="6248213926982192922">‏יש להפוך את Chromium לדפדפן ברירת המחדל</translation>
 <translation id="6266342355635466082">‏Chromium לא יכול לחפש עדכונים. יש לבדוק את החיבור לאינטרנט.</translation>
 <translation id="6268381023930128611">‏האם לצאת מ-Chromium?</translation>
 <translation id="6295779123002464101">‏<ph name="FILE_NAME" /> עלול להיות מסוכן, ולכן Chromium חסם אותו.</translation>
 <translation id="6309712487085796862">‏Chromium משתמש במצלמה שלך.</translation>
 <translation id="6333502561965082103">‏מתבצעת כרגע פעולה אחרת ב-Chromium. נסה שוב מאוחר יותר.</translation>
 <translation id="6334986366598267305">‏קל יותר כעת להשתמש ב-Chromium באמצעות חשבון Google שלך ובמחשבים משותפים.</translation>
-<translation id="6373523479360886564">‏האם אתה בטוח שברצונך להסיר את התקנת Chromium?</translation>
+<translation id="6373523479360886564">‏ברצונך באמת להסיר את התקנת Chromium?</translation>
 <translation id="6403826409255603130">‏Chromium הוא דפדפן אינטרנט המפעיל דפי אינטרנט ואפליקציות במהירות הבזק. זהו דפדפן מהיר, יציב וקל לשימוש שמאפשר לך לגלוש באינטרנט בצורה מאובטחת יותר הודות להגנה מפני תוכנות זדוניות ופישינג המובנית ב-Chromium.</translation>
 <translation id="6434250628340475518">‏מערכת Chromium OS</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{‏Chromium יבצע אתחול בעוד שנייה אחת}two{‏Chromium יבצע אתחול בעוד # שניות}many{‏Chromium יבצע אתחול בעוד # שניות}other{‏Chromium יבצע אתחול בעוד # שניות}}</translation>
 <translation id="6475912303565314141">‏הגדרה זו גם קובעת איזה דף מוצג כשאתה מפעיל את Chromium.</translation>
-<translation id="6510925080656968729">‏הסר את התקנת Chromium</translation>
+<translation id="6510925080656968729">‏הסרה של התקנת Chromium</translation>
 <translation id="6570579332384693436">‏Chromium שולח את הטקסט שמוקלד בשדות טקסט ל-Google כדי לתקן שגיאות כתיב</translation>
 <translation id="6598877126913850652">‏מעבר אל הגדרות ההודעות של Chromium</translation>
 <translation id="6676384891291319759">גישה אל האינטרנט</translation>
@@ -202,7 +202,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="734373864078049451">‏היסטוריית האתרים, הסימניות ונתונים נוספים מ-Chromium נמצאים כאן.</translation>
 <translation id="7349591376906416160">‏לפי הגדרת מנהל המערכת, Chromium יפתח את<ph name="ALTERNATIVE_BROWSER_NAME" /> כדי לגשת אל <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7448255348454382571">‏הפעלה מחדש של Chromium OS</translation>
-<translation id="7449453770951226939">‏<ph name="PAGE_TITLE" /> - Chromium בגירסת פיתוח</translation>
+<translation id="7449453770951226939">‏<ph name="PAGE_TITLE" /> - Chromium בגרסת פיתוח</translation>
 <translation id="7451052299415159299">‏Chromium זקוק להרשאת גישה למצלמה בשביל האתר הזה</translation>
 <translation id="7483335560992089831">‏לא ניתן להתקין את אותה גרסת Chromium שפועלת כרגע. יש לסגור את Chromium ולנסות שוב.</translation>
 <translation id="753534427205733210">{0,plural, =1{‏Chromium יופעל מחדש בעוד דקה}two{‏Chromium יופעל מחדש בעוד # דקות}many{‏Chromium יופעל מחדש בעוד # דקות}other{‏Chromium יופעל מחדש בעוד # דקות}}</translation>
@@ -236,20 +236,20 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="8330519371938183845">‏כניסה לחשבון תסנכרן ותתאים אישית את Chromium בכל המכשירים שברשותך</translation>
 <translation id="8340674089072921962">‏בכתובת <ph name="USER_EMAIL_ADDRESS" /> השתמשו בעבר ב-Chromium</translation>
 <translation id="8417404458978023919">{0,plural, =1{‏צריך להפעיל מחדש את Chromium בתוך יום אחד}two{‏צריך להפעיל מחדש את Chromium בתוך # ימים}many{‏צריך להפעיל מחדש את Chromium בתוך # ימים}other{‏צריך להפעיל מחדש את Chromium בתוך # ימים}}</translation>
-<translation id="8453117565092476964">‏הארכיון של המתקין פגום או שאינו חוקי. הורד שוב את Chromium.</translation>
+<translation id="8453117565092476964">‏הארכיון של המתקין פגום או שאינו חוקי. יש להוריד שוב את Chromium.</translation>
 <translation id="8493179195440786826">‏Chromium אינו מעודכן</translation>
 <translation id="8558383651099478961">‏אחד מההורים השבית ב-Chromium את ההגדרה "הרשאות לאתרים, אפליקציות ותוספים". לא ניתן להוסיף את ה<ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8568283329061645092">‏Chromium יכול לבדוק את הסיסמאות כשנכנסים באמצעות חשבון Google</translation>
 <translation id="8586442755830160949">‏Copyright <ph name="YEAR" /> The Chromium Authors. כל הזכויות שמורות.</translation>
 <translation id="8619360774459241877">‏הפעלת Chromium מתבצעת...</translation>
-<translation id="8621669128220841554">‏ההתקנה נכשלה בשל שגיאה לא מזוהה. הורד שוב את Chromium.</translation>
+<translation id="8621669128220841554">‏ההתקנה נכשלה בשל שגיאה לא מזוהה. יש להוריד שוב את Chromium.</translation>
 <translation id="8697124171261953979">‏הגדרה זו גם קובעת איזה דף מוצג כשאתה מפעיל את Chromium או מבצע חיפוש מסרגל הכתובות.</translation>
 <translation id="8704119203788522458">‏זהו ה-Chromium שלך</translation>
 <translation id="8733034664173984083">‏אירעה שגיאה בזמן ש-Chromium בדק את המחשב לאיתור תוכנה מזיקה</translation>
 <translation id="8796602469536043152">‏Chromium זקוק להרשאת גישה אל המצלמה והמיקרופון בשביל האתר הזה</translation>
 <translation id="8803635938069941624">‏תנאים עבור מערכת ההפעלה של Chromium</translation>
 <translation id="8821041990367117597">‏Chromium לא הצליח לסנכרן את הנתונים שלך מפני שפרטי הכניסה של חשבונך אינם מעודכנים.</translation>
-<translation id="8862326446509486874">אין לך זכויות שמתאימות להתקנה ברמת המערכת. נסה להפעיל שוב את המתקין כמנהל מערכת.</translation>
+<translation id="8862326446509486874">אין לך זכויות שמתאימות להתקנה ברמת המערכת. יש לנסות להפעיל שוב את המתקין כמנהל מערכת.</translation>
 <translation id="8880203542552872219">‏אם שינית את הסיסמה הזו, יש לערוך את הסיסמה השמורה ב-Chromium כך שהיא תתאים לסיסמה החדשה שלך.</translation>
 <translation id="8897323336392112261">‏הגדרה זו גם קובעת איזה דף מוצג שאתה מפעיל את Chromium או לוחץ על הלחצן 'דף הבית'.</translation>
 <translation id="8907580949721785412">‏Chromium מנסה להציג סיסמאות. הקלד את הסיסמה שלך ל-Windows כדי לאפשר זאת.</translation>

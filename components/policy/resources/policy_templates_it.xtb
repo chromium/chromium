@@ -202,11 +202,6 @@
       Se questa norma viene impostata su false, in <ph name="PRODUCT_NAME" /> non sarà possibile avviare profili ospite.</translation>
 <translation id="1363275621236827384">Attiva le query in Quirks Server per i profili hardware</translation>
 <translation id="1376119291123231789">Attiva modalità di ricarica avanzata della batteria</translation>
-<translation id="1378850678793136128">Consente di impostare un elenco di pattern URL che specificano i siti a cui viene concessa automaticamente l'autorizzazione di accesso a un dispositivo USB con gli ID fornitore e prodotto indicati. Perché il criterio sia valido, ogni elemento elencato deve avere un campo "devices" e un campo "urls". Ogni elemento nel campo "devices" può avere un campo "vendor_id" e un campo "product_id". Se il campo "vendor_id" non viene specificato, il criterio può corrispondere a qualsiasi dispositivo. Se il campo "product_id" non viene specificato, il criterio può corrispondere a qualsiasi dispositivo con l'ID fornitore specificato. Un criterio con un campo "product_id" senza un campo "vendor_id" non è valido.
-
-        Il modello di autorizzazione USB utilizza l'URL del sito richiedente ("URL richiedente") e l'URL del sito frame di livello principale ("URL di incorporamento") per concedere all'URL richiedente l'autorizzazione di accesso al dispositivo USB. L'URL richiedente può essere diverso dall'URL di incorporamento quando il sito richiedente viene caricato in un iframe. Di conseguenza il campo "urls" può contenere fino a due stringhe URL delimitate da una virgola per specificare rispettivamente l'URL richiedente e quello di incorporamento. Se viene specificato un solo URL, l'accesso ai dispositivi USB corrispondenti viene concesso quando l'URL del sito richiedente corrisponde all'URL, a prescindere dallo stato di incorporamento. Gli URL nel campo "urls" devono essere validi, altrimenti il criterio viene ignorato.
-
-        Se il criterio non viene configurato, viene utilizzato il valore predefinito globale per tutti i siti (nessun accesso automatico).</translation>
 <translation id="1384459581748403878">Riferimento: <ph name="REFERENCE_URL" /></translation>
 <translation id="138847842893090358">Indica lo stato di aggiornamento del sistema operativo</translation>
 <translation id="1390901586107713894">Consente di specificare le estensioni che gli utenti NON possono installare. Le estensioni già installate vengono disattivate, se bloccate, e l'utente non può attivarle. Un'estensione disattivata da una lista bloccata viene automaticamente riattivata nel caso venga rimossa dalla lista.
@@ -435,12 +430,6 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 
       Se il criterio non viene configurato, l'installazione di <ph name="PLUGIN_VM_NAME" /> non va a buon fine se lo spazio libero disponibile sul dispositivo è inferiore a 20 GB (valore predefinito).
       Se il criterio è impostato, l'installazione di <ph name="PLUGIN_VM_NAME" /> non va a buon fine se lo spazio libero disponibile sul dispositivo è inferiore a quello richiesto dal criterio.</translation>
-<translation id="1695708467571967752">Questo criterio consente di stabilire se gli utenti possono o meno riprodurre contenuti multimediali con il dispositivo bloccato.
-
-      Se questo criterio viene impostato su False, i controlli multimediali nella schermata di blocco vengono disattivati.
-
-      Se questo criterio viene impostato su True o non viene impostato, i controlli multimediali vengono visualizzati nella schermata di blocco se l'utente blocca il dispositivo durante la riproduzione di contenuti multimediali.
-      </translation>
 <translation id="1700811900332333712">Consenti al dispositivo di richiedere il powerwash</translation>
 <translation id="1708496595873025510">Imposta la limitazione sul recupero del numero di inizializzazione delle varianti</translation>
 <translation id="171511968762040550">Se il criterio è impostato su True o se non viene configurato, gli utenti possono aggiungere, rimuovere o modificare i preferiti.
@@ -654,7 +643,6 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
           Se questa impostazione è disattivata, il trasferimento di file non sarà concesso. Se questa impostazione è attivata o non configurata, il trasferimento di file sarà concesso.</translation>
 <translation id="2057317273526988987">Consenti l'accesso a un elenco di URL</translation>
 <translation id="2061810934846663491">Configura i nomi di dominio richiesti per gli host di accesso remoto</translation>
-<translation id="2067011586099792101">Blocca l'accesso ai siti non presenti nei pacchetti di contenuti</translation>
 <translation id="2069350366303315077">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_NAME" /> applica le sessioni Ospite e impedisce gli accessi ai profili. Gli accessi Ospite sono profili di <ph name="PRODUCT_NAME" /> in cui le finestre sono nella modalità di navigazione in incognito.
 
       Se il criterio viene impostato su Disattivato, se non viene configurato o se la modalità Ospite del browser viene disattivata (tramite il criterio <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />), è possibile utilizzare profili nuovi ed esistenti.</translation>
@@ -1110,6 +1098,7 @@ Se questa norma non viene impostata, l'utente potrà scegliere se utilizzare o m
       Se il criterio non viene impostato, non viene aggiunto alcun sito web all'elenco.
 
       Nota: puoi aggiungere elementi all'elenco anche tramite i criteri <ph name="USE_IE_SITELIST_POLICY_NAME" /> e <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
+<translation id="2640898752536996430">L'utente viene disconnesso</translation>
 <translation id="264093234299818170">Vengono mostrate tutte le stampanti, tranne quelle indicate nella lista bloccata.</translation>
 <translation id="264252574246191885">Non in elenco</translation>
 <translation id="2647069081229792812">Attiva o disattiva la funzione di modifica dei preferiti</translation>
@@ -1441,6 +1430,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="3072847235228302527">Imposta i Termini di servizio di un account locale del dispositivo</translation>
 <translation id="3086995894968271156">Consente di configurare Cast Receiver in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3091832372132789233">Carica la batteria dei dispositivi che sono principalmente collegati a una fonte di alimentazione esterna.</translation>
+<translation id="309416443108680956">Consente di specificare cosa succede quando un utente che sta effettuando l'autenticazione tramite un token di sicurezza (ad esempio con una smart card) rimuove il token durante una sessione. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: non accade nulla. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: lo schermo viene bloccato finché l'utente non ripete l'autenticazione. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: la sessione viene terminata e l'utente viene disconnesso. Se questo criterio non viene configurato, per impostazione predefinita viene usata l'opzione <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />.</translation>
 <translation id="3096595567015595053">Elenco dei plug-in attivati</translation>
 <translation id="3101501961102569744">Scegli come specificare le impostazioni del server proxy</translation>
 <translation id="3101709781009526431">Data e ora</translation>
@@ -1864,6 +1854,7 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
       Se il criterio viene impostato, gli utenti non possono cambiare il tipo di pagina iniziale in <ph name="PRODUCT_NAME" />. Se non viene impostato, l'utente può decidere se impostare o meno la pagina Nuova scheda come pagina iniziale.
 
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto nelle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
+<translation id="3695706037816556327">Azione alla rimozione del token di sicurezza (ad esempio smart card) per <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3701121231485832347">Consente di gestire le impostazioni specifiche dei dispositivi <ph name="PRODUCT_OS_NAME" /> gestiti da <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Attestazione da remoto</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Il campo a una sola riga è obsoleto e sarà rimosso a breve. Inizia a usare la casella di testo multiriga qui sotto).</translation>
@@ -1901,6 +1892,8 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
 
       Se queste norme non vengono impostate, gli utenti possono scegliere autonomamente le impostazioni del proxy.</translation>
 <translation id="3758249152301468420">Disabilita Strumenti per sviluppatori</translation>
+<translation id="3760231600118073732">La sessione corrente viene bloccata</translation>
+<translation id="3764097800332238572">Questo criterio viene applicato soltanto se il criterio <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> è impostato su <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> o <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" /> e un utente che effettua l'autenticazione tramite smart card rimuove quest'ultima. Questo criterio consente di specificare per quanti secondi visualizzare una notifica che informa l'utente dell'azione imminente. Questa notifica blocca lo schermo. L'azione viene compiuta soltanto allo scadere della notifica. L'utente può impedire l'azione inserendo di nuovo la smart card prima della scadenza della notifica. Se questo criterio viene impostato su zero, non verrà visualizzata alcuna notifica e l'azione verrà compiuta immediatamente.</translation>
 <translation id="3765260570442823273">Durata del messaggio di avviso di uscita per inattività</translation>
 <translation id="377044054160169374">Applicazione dell'intervento in caso di esperienza intrusiva</translation>
 <translation id="3780152581321609624">Includi porta non standard in Kerberos SPN</translation>
@@ -2107,7 +2100,6 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
 <translation id="4056910949759281379">Disabilita protocollo SPDY</translation>
 <translation id="4061590579642538878">Segnala informazioni relative ai rapporti sugli arresti anomali.</translation>
 <translation id="4075675819066819571">Posiziona la shelf sul lato sinistro dello schermo</translation>
-<translation id="4075864623710596000">I nomi host specificati in questo elenco saranno esenti dalla verifica dei criteri HSTS che potrebbero eseguire l'upgrade delle richieste da http a https. Solo i nomi host con etichetta singola sono consentiti in questo criterio. I nomi host devono essere canonicalizzati: ogni IDN deve essere convertito nel relativo formato A-label e tutte le lettere ASCII devono essere minuscole. Questo criterio si applica soltanto ai nomi host specificati e non ai relativi sottodomini.</translation>
 <translation id="408029843066770167">Consenti query a un servizio orario di Google</translation>
 <translation id="408076456549153854">Attiva accesso al browser</translation>
 <translation id="4082498585300984671">Attiva la funzionalità Click-to-call</translation>
@@ -2217,9 +2209,6 @@ Il valore della norma dovrebbe essere specificato in secondi. Il valore minimo d
 
       Se il criterio viene impostato su Disattivato, <ph name="PRODUCT_NAME" /> verrà disattivato.</translation>
 <translation id="4203879074082863035">Agli utenti vengono mostrate soltanto le stampanti indicate nella whitelist</translation>
-<translation id="420512303455129789">Un dizionario che mappa gli URL su un flag booleano che specifica se l'accesso all'host deve essere consentito (true) o bloccato (false).
-
-          Questa norma è per uso interno di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4209297478239988291">Consente di attivare la funzione di accessibilità di clic automatico.
 
           Questa funzione consente di fare clic senza premere fisicamente il mouse o il touchpad, basta passare il mouse sull'oggetto su cui si vuole fare clic.
@@ -2359,13 +2348,6 @@ Il valore della norma dovrebbe essere specificato in secondi. Il valore minimo d
 <translation id="4494132853995232608">DTC wilco</translation>
 <translation id="449423975179525290">Imposta le norme relative a <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="4498493270899294764">Pattern URL per cui non è necessario eseguire il controllo della presenza di malware nei contenuti scaricati</translation>
-<translation id="450537894712826981">Consente di configurare le dimensioni della cache che verranno utilizzate da <ph name="PRODUCT_NAME" /> per archiviare sul disco i file multimediali memorizzati nella cache.
-
-Se questa norma viene impostata, <ph name="PRODUCT_NAME" /> utilizzerà le dimensioni della cache indicate a prescindere dalla specifica o meno da parte dell'utente del flag "--media-cache-size". Il valore specificato in questa norma non è un limite rigido ma un suggerimento per il sistema di memorizzazione nella cache. I valori inferiori ad alcuni megabyte sono troppo piccoli e verranno arrotondati a un valore minimo ragionevole.
-
-Se il valore di questa norma è 0, verranno utilizzate le dimensioni della cache predefinite, che l'utente non potrà modificare.
-
-Se questa norma non viene impostata, verranno utilizzate le dimensioni predefinite, che l'utente potrà sostituire con il flag --media-cache-size.</translation>
 <translation id="4508084713148633492">Consente di attivare o di disattivare una notifica quando lo spazio sul disco è in esaurimento. La scelta si applica a tutti gli utenti sul dispositivo.
       Se su un dispositivo gestito è presente esattamente un account utente, la notifica viene mostrata sempre, indipendentemente dal valore di questo criterio.
       Se su un dispositivo gestito sono presenti più account, la notifica viene mostrata solo se questo criterio è impostato su Vero.
@@ -2659,7 +2641,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 
       Se viene impostato su Disattivato, <ph name="PRODUCT_NAME" /> smette di inviare queste query.</translation>
 <translation id="5032164758660626397">Impedisci all'utente di trasferire file di grandi dimensioni</translation>
-<translation id="5047604665028708335">Consenti l'accesso ai siti non presenti nei pacchetti di contenuti</translation>
 <translation id="5056708224511062314">Ingrandimento dello schermo disattivato</translation>
 <translation id="5058573563327660283">Seleziona la strategia da utilizzare per liberare spazio su disco durante la pulizia automatica (obsoleta)</translation>
 <translation id="5061114193960158745">Questo criterio consente di stabilire l'elenco di siti web che non causeranno mai un cambio di browser. Ogni elemento è considerato come una regola. Le regole con una corrispondenza non aprono un browser alternativo. A differenza del criterio <ph name="URL_LIST_POLICY_NAME" />, le regole vengono applicate in entrambe le direzioni. Quando il componente aggiuntivo <ph name="IE_PRODUCT_NAME" /> è attivo, il criterio consente di stabilire anche se <ph name="IE_PRODUCT_NAME" /> deve aprire questi URL in <ph name="PRODUCT_NAME" />.
@@ -3137,10 +3118,6 @@ Se questa impostazione viene disattivata o non viene impostata, sia gli utenti l
       Tieni presente che è sconsigliato farlo, perché potrebbe essere consentita l'elusione dell'estensione nameConstraints, che limita i nomi host per cui può essere autorizzato un determinato certificato.
 
       Se questa norma non viene impostata, o viene impostata su false, i certificati server privi di estensione subjectAlternativeName e contenenti un nome DNS o un indirizzo IP non verranno considerati attendibili.</translation>
-<translation id="5578571772998293651">Consenti il feedback degli utenti.
-        Se il criterio viene impostato su false, gli utenti non possono inviare feedback a Google.
-
-        Se il criterio non viene impostato o viene impostato su true, gli utenti possono inviare feedback a Google dal percorso Menu -&gt; Guida -&gt; Segnala un problema o tramite una combinazione di tasti.</translation>
 <translation id="5579179012798142131">Se ArcEnabled è impostato su True, ARC viene attivato per l'utente, a meno che la modalità temporanea o l'accesso simultaneo siano attivi durante la sessione utente. Se il criterio è impostato su False o non è configurato, gli utenti aziendali non possono utilizzare ARC.</translation>
 <translation id="5582429816116769246">Consente di controllare se gli utenti possono accedere alle stampanti non aziendali.
 
@@ -3403,7 +3380,6 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 <translation id="5951418260805607969">Mostra una notifica quando lo spazio sul disco è in esaurimento</translation>
 <translation id="5961137303188584693">Indirizzo MAC NIC integrato del dispositivo</translation>
 <translation id="5966615072639944554">Estensioni autorizzate a utilizzare l'API di attestazione da remoto</translation>
-<translation id="5983708779415553259">Comportamento predefinito per i siti non presenti in pacchetti di contenuti</translation>
 <translation id="5997543603646547632">Utilizza orologio di 24 ore per impostazione predefinita</translation>
 <translation id="5997846976342452720">Specifica se disattivare o meno la ricerca dei plug-in (ritirata)</translation>
 <translation id="5998198091336830580">Questo criterio fa parte del seguente gruppo atomico (vengono applicati soltanto i criteri dell'origine con la priorità massima presenti nel gruppo):</translation>
@@ -3442,9 +3418,6 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 <translation id="603768430528561926">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti dei dispositivi aziendali possono riscattare le offerte tramite la registrazione a <ph name="PRODUCT_OS_NAME" />.
 
       Se viene impostato su Disattivato, gli utenti non possono riscattare tali offerte.</translation>
-<translation id="6038407313189625985">Se questo criterio viene attivato o non viene impostato, l'integrità del codice del renderer viene attivata. Questo criterio dovrebbe essere disattivato solo se si riscontrano problemi di compatibilità con software di terze parti che devono essere eseguiti all'interno dei processi del renderer di Chrome.
-
-      La disattivazione di questo criterio ha un effetto negativo sulla sicurezza e sulla stabilità di Chrome, in quanto verrà consentito il caricamento di codice sconosciuto e potenzialmente dannoso all'interno dei processi del renderer di Chrome. Per ulteriori informazioni, consulta la pagina https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies.</translation>
 <translation id="6048199181629830227">Attiva la gestione della variazione dei picchi energetici</translation>
 <translation id="6054485492411959335">Consente di specificare le stampanti utilizzabili dagli utenti.
 
@@ -3924,6 +3897,7 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
 <translation id="6672070613706645316">Consenti agli utenti di personalizzare lo sfondo della pagina Nuova scheda</translation>
 <translation id="6672630473862787247">Attiva l'autenticazione ambientale nelle sessioni standard, Ospite e in modalità in incognito.</translation>
 <translation id="6685903773201985073">Attiva l'autenticazione ambientale nelle sessioni standard e Ospite.</translation>
+<translation id="6689343802305995925">Non viene compiuta alcuna azione</translation>
 <translation id="6689792153960219308">Segnala lo stato dell'hardware</translation>
 <translation id="6690425645391461516">Disattiva controlli dell'intercettazione DNS; consenti barre di informazioni "http://intranetsite/" alternative</translation>
 <translation id="6698632841807204978">Attiva la stampa monocromatica</translation>
@@ -4192,6 +4166,7 @@ Se questa norma è impostata su True o non è impostata, il modello di oscuramen
 
       Se il criterio viene impostato su Disattivato, <ph name="PRODUCT_NAME" /> chiude la scheda dopo il passaggio a un browser alternativo, anche se era l'ultima scheda. Questo causa l'uscita da <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7019805045859631636">Veloce</translation>
+<translation id="7026351325994257733">Consenti la sincronizzazione delle configurazioni di reti Wi-Fi tra i dispositivi <ph name="PRODUCT_OS_NAME" /> e un telefono Android collegato</translation>
 <translation id="7027785306666625591">Configura la gestione dell'alimentazione in <ph name="PRODUCT_OS_NAME" />.
 
       Queste norme consentono di configurare il comportamento di <ph name="PRODUCT_OS_NAME" /> quando l'utente rimane inattivo per un determinato periodo di tempo.</translation>
@@ -4564,6 +4539,13 @@ Se l'impostazione viene disattivata, questa funzione non sarà disponibile.</tra
 
       - Se questo criterio viene impostato su Disattivato, gli amministratori devono comunicarlo agli utenti finali del dispositivo.</translation>
 <translation id="747275827471712187">Ripristina il comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedente per i cookie su questi siti</translation>
+<translation id="7476621944304431784">Se questa impostazione viene attivata, gli utenti potranno sincronizzare le configurazioni di reti Wi-Fi tra i loro dispositivi <ph name="PRODUCT_OS_NAME" /> e un telefono Android collegato. Per poter sincronizzare le configurazioni di reti Wi-Fi, gli utenti devono attivare esplicitamente questa funzionalità svolgendo una procedura di configurazione.
+
+      Se questa impostazione viene disattivata, gli utenti non potranno sincronizzare le configurazioni di reti Wi-Fi.
+
+      Questa funzionalità dipende dall'attivazione del tipo di dati <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" /> in Sincronizzazione Chrome. Questa funzionalità non verrà attivata se il tipo di dati <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" /> viene disattivato nel criterio <ph name="SYNC_TYPES_LIST_DISABLED_POLICY_NAME" /> o se viene disattivata la funzionalità Sincronizzazione Chrome nel criterio <ph name="SYNC_DISABLED_POLICY_NAME" />.
+
+      Se questo criterio non viene configurato, per impostazione predefinita la funzionalità non è consentita per gli utenti gestiti.</translation>
 <translation id="7477231245051133709">Attiva la funzione di accessibilità di audio in formato mono</translation>
 <translation id="7477239290070847560">Destinazioni protocolli (mDNS e DNS-SD) basate su configurazione automatica</translation>
 <translation id="7485481791539008776">Regole di selezione della stampante predefinita</translation>
@@ -4755,9 +4737,6 @@ Se la norma viene impostata gli utenti non potranno modificarla o ignorarla.
 
 Nota. Attualmente i riavvii automatici vengono attivati soltanto durante la visualizzazione della schermata di accesso o durante una sessione di un'app kiosk. Questo comportamento cambierà in futuro e la norma sarà sempre valida, a prescindere dal fatto che sia in corso o meno una sessione di tipo specifico.</translation>
 <translation id="7701341006446125684">Imposta le dimensioni della cache di app ed estensioni (in byte)</translation>
-<translation id="7709537117200051035">Un dizionario che mappa i nomi host su un flag booleano che specifica se l'accesso all'host deve essere consentito (true) oppure bloccato (false).
-
-          Questa norma è per uso interno di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7710950688502974809">Elenco di impostazioni per i servizi di Chrome Enterprise Connectors da applicare al connettore di Enterprise <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" />, che si attiva quando vengono inseriti dati in Chrome dagli appunti o tramite trascinamento di contenuti web.
 
       I campi <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> vengono utilizzati per stabilire se il connettore deve inviare dati per l'analisi quando viene inserito in una pagina specifica e quali tag includere nella richiesta di analisi di tali dati. Un tag che corrisponde a un pattern "enable" verrà incluso nella richiesta di analisi se l'URL della pagina corrisponde a un pattern associato a tale tag purché nessun pattern "disable" con lo stesso tag corrisponda all'URL della pagina. L'analisi viene eseguita se almeno un tag deve essere incluso nella richiesta.
@@ -4905,7 +4884,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Se attivi questa impostazione o la disattivi, gli utenti non potranno modificare o sostituire questa impostazione in <ph name="PRODUCT_NAME" />.
 
       Se la norma non è impostata, sarà attivata ma l'utente potrà modificarla.</translation>
-<translation id="7953256619080733119">Host delle eccezioni manuali per gli utenti gestiti</translation>
 <translation id="7956210013490975468">Configura il servizio proxy di sistema per <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="7958537754689366707">Richiedi inserimento della password ogni dodici ore</translation>
 <translation id="7961779417826583251">Disattiva l'applicazione di Certificate Transparency per un elenco di autorità di certificazione precedenti</translation>
@@ -5128,11 +5106,6 @@ Su Windows è consigliabile configurare le norme tramite Criteri di gruppo, anch
           Se imposti questo criterio, gli utenti non potranno modificarlo o ignorarlo.
 
           Se questo criterio non viene impostato, inizialmente la dettatura è disattivata, ma l'utente può attivarla in qualsiasi momento.</translation>
-<translation id="829337533107201925">Se questo criterio viene attivato, i criteri relativi a un gruppo atomico che non condividono l'origine con la priorità massima di quel gruppo verranno ignorati.
-
-      Se questo criterio viene disattivato, nessun criterio sarà ignorato in base all'origine. I criteri saranno ignorati esclusivamente se si verifica un conflitto e se non hanno la massima priorità.
-
-      Se questo criterio viene impostato da un'origine cloud, non può essere applicato a un utente specifico</translation>
 <translation id="8294750666104911727">In genere le pagine con X-UA-Compatible impostato su chrome=1 saranno visualizzate in <ph name="PRODUCT_FRAME_NAME" /> nonostante la norma "£ChromeFrameRendererSettings".
 
 Se attivi questa impostazione, le pagine non saranno sottoposte a scansione per i metatag.
@@ -5330,7 +5303,6 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8544375438507658205">Renderer HTML predefinito per <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Consente la sincronizzazione di messaggi SMS dal telefono al Chromebook</translation>
 <translation id="8548832052135586762">Consente di impostare solo la stampa a colori, solo la stampa monocromatica oppure nessuna limitazione per la modalità a colori. Se la norma non viene impostata non vengono applicate limitazioni.</translation>
-<translation id="8549772397068118889">Avvisa quando vengono visitati siti non presenti nei pacchetti di contenuti</translation>
 <translation id="8566842294717252664">Nascondi il Web Store nella pagina Nuova scheda e in Avvio applicazioni</translation>
 <translation id="8569734380847633643">
           Se la norma è impostata su false, <ph name="PRODUCT_OS_NAME" /> disattiverà la connessione Wi-Fi e gli utenti non potranno riattivarla.
@@ -5450,7 +5422,6 @@ Se l'impostazione viene impostata su true, o se non viene impostata, l'attestazi
       Se imposti questo criterio, gli utenti non potranno modificarlo o ignorarlo.
 
       Questo criterio non influisce sulla possibilità per gli utenti di configurare le stampanti su singoli dispositivi. È supplementare alla configurazione delle stampanti da parte dei singoli utenti.</translation>
-<translation id="8764477907716150749">Questa norma è per uso interno di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8767743923206070405">Se il criterio viene impostato su Attivato, nella barra degli strumenti di <ph name="PRODUCT_NAME" /> viene mostrato il pulsante Pagina iniziale. Se viene impostato su Disattivato, il pulsante Pagina iniziale non viene mostrato.
 
       Se il criterio viene impostato, gli utenti non possono modificarlo in <ph name="PRODUCT_NAME" />. Se non viene impostato, gli utenti possono decidere se mostrare o meno il pulsante Pagina iniziale.</translation>
@@ -5779,6 +5750,7 @@ https://www.w3.org/TR/secure-contexts/
 <translation id="9152473318295429890">Attiva i suggerimenti contestuali delle pagine web correlate</translation>
 <translation id="9153446010242995516">Esegui il rollback e rimani nella versione target se la versione del sistema operativo è più recente di quella target. Prova a trasferire la configurazione a livello di dispositivo (incluse le credenziali di rete) tramite la procedura di rollback, se possibile, ma esegui il rollback con Powerwash completo anche se il ripristino dei dati non è possibile (perché la versione target non supporta il ripristino dei dati o a causa di una modifica non compatibile con le versioni precedenti).
           Supportato su <ph name="PRODUCT_OS_NAME" /> 75 e versioni successive. Per i client precedenti, questo valore indica che il rollback è disattivato.</translation>
+<translation id="9155218447258425310">Durata della notifica alla rimozione della smart card per <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9155375380628728544">Se il criterio viene impostato, gli utenti possono aggiungere all'elenco di lingue preferite soltanto una delle lingue elencate in questo criterio.
 
       Se il criterio non viene impostato o viene impostato un elenco vuoto, gli utenti possono specificare le lingue che preferiscono.

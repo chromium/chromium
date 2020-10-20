@@ -300,6 +300,7 @@
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> жойылды.</translation>
 <translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> оқылмаған бет</translation>
 <translation id="321773570071367578">Егер құпия фразаны ұмытып қалсаңыз немесе оны өзгерткіңіз келсе, <ph name="BEGIN_LINK" />синхрондауды қалпына келтіріңіз<ph name="END_LINK" /></translation>
+<translation id="3227557059438308877">Google Chrome браузерін қауіпсіздік кілті ретінде пайдалану</translation>
 <translation id="3232754137068452469">Веб-қолданба</translation>
 <translation id="3236059992281584593">1 мин қалды</translation>
 <translation id="3244271242291266297">АА</translation>
@@ -937,6 +938,7 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="7682724950699840886">Келесі әрекетті орындап көріңіз: құрылғыңыздағы бос орынның жеткілікті екеніне көз жеткізіп, экспорттауды қайталаңыз.</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> қолданбасында электрондық пошта жасау</translation>
 <translation id="7704317875155739195">Іздеулер мен URL мекенжайларын автотолтыру</translation>
+<translation id="7707922173985738739">Мобильдік деректерді пайдалану</translation>
 <translation id="7725024127233776428">Бетбелгі қойылған беттер осы жерде көрсетіледі</translation>
 <translation id="7735637452482172701">Экран құлпымен ашу</translation>
 <translation id="7746457520633464754">Қауіпті қолданбалар мен сайттарды анықтау үшін Chrome браузері сіз кірген кейбір беттердің URL сілтемелерін, жүйе туралы шектеулі ақпаратты және беттің кейбір мазмұнын Google-ға жібереді.</translation>

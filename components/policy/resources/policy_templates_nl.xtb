@@ -203,11 +203,6 @@
       Als dit beleid is ingesteld op 'False', staat <ph name="PRODUCT_NAME" /> niet toe dat er gastprofielen worden gestart.</translation>
 <translation id="1363275621236827384">Query's naar de Quirks Server inschakelen voor hardwareprofielen</translation>
 <translation id="1376119291123231789">Geavanceerde batterijoplaadmodus inschakelen</translation>
-<translation id="1378850678793136128">Hiermee kun je een lijst met URL-patronen opgeven met de sites die op het inlogscherm automatisch toegangsrechten krijgen voor een USB-apparaat met de opgegeven leveranciers- en product-ID's. Het beleid is alleen geldig als elk lijstitem een veld voor apparaten en een veld voor URL's bevat. Elk item in het veld voor apparaten kan een veld voor vendor_id en een veld voor product_id hebben. Als je het veld vendor_id weglaat, wordt een beleid gemaakt dat geschikt is voor elk apparaat. Als je het veld product_id weglaat, wordt een beleid gemaakt dat geschikt is voor elk apparaat met de opgegeven leveranciers-ID. Een beleid dat het veld product_id heeft zonder het veld vendor_id is ongeldig.
-
-        Het USB-rechtenmodel gebruikt de URL van de site die de aanvraag indient ('aanvragende URL') en de URL van de framesite op hoofdniveau ('insluitings-URL') om de aanvragende URL toegang te geven tot het USB-apparaat. Als de aanvragende site in een iframe wordt geladen, is het mogelijk dat de aanvragende URL en de insluitings-URL niet hetzelfde zijn. Daarom kan het veld voor URL's maximaal 2 door een komma gescheiden URL-tekenreeksen bevatten om respectievelijk de aanvragende URL en insluitings-URL op te geven. Als er slechts één URL wordt opgegeven, wordt toegang tot de bijbehorende USB-apparaten gegeven als de URL van de aanvragende site overeenkomt met deze URL, ongeacht de insluitingsstatus. De URL's in het veld voor URL's moeten geldig zijn. Als dit niet het geval is, wordt het beleid genegeerd.
-
-        Als dit beleid niet is ingesteld, wordt de algemene standaardwaarde gebruikt voor alle sites (geen automatische toegang).</translation>
 <translation id="1384459581748403878">Referentie: <ph name="REFERENCE_URL" /></translation>
 <translation id="138847842893090358">OS-updatestatus rapporten</translation>
 <translation id="1390901586107713894">Hiermee kun je aangeven welke extensies gebruikers NIET kunnen installeren. Extensies die al zijn geïnstalleerd, worden uitgeschakeld als ze op de blokkeringslijst staan. De gebruiker kan ze niet weer inschakelen. Als een extensie die is uitgeschakeld op basis van de blokkeringslijst, van die lijst wordt verwijderd, wordt de extensie automatisch weer ingeschakeld.
@@ -440,12 +435,6 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
 
       Als dit beleid niet is ingesteld, mislukt de installatie van <ph name="PLUGIN_VM_NAME" /> als de beschikbare vrije opslagruimte op het apparaat minder is dan 20 GB (standaardwaarde).
       Als dit beleid is ingesteld, mislukt de installatie van <ph name="PLUGIN_VM_NAME" /> als de beschikbare vrije opslagruimte op het apparaat minder is dan de waarde die wordt vereist door het beleid.</translation>
-<translation id="1695708467571967752">Dit beleid bepaalt of gebruikers media kunnen afspelen wanneer het apparaat vergrendeld is.
-
-      Als dit beleid is ingesteld op False, zijn bedieningsopties voor media op het vergrendelscherm uitgeschakeld.
-
-      Als dit beleid is ingesteld op True of niet is ingesteld, worden bedieningsopties voor media op het vergrendelscherm weergegeven als de gebruiker het apparaat vergrendelt terwijl er media wordt afgespeeld.
-      </translation>
 <translation id="1700811900332333712">Geef het apparaat toestemming om Powerwash te activeren</translation>
 <translation id="1708496595873025510">De beperking voor het ophalen van de seed voor varianten instellen</translation>
 <translation id="171511968762040550">Als je het beleid instelt op 'True' of niet instelt, kunnen gebruikers bookmarks toevoegen, verwijderen of wijzigen.
@@ -650,7 +639,6 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
           Als deze instelling is uitgeschakeld, is bestandsoverdracht niet toegestaan. Als deze instelling is ingeschakeld of niet is ingesteld, is bestandsoverdracht toegestaan.</translation>
 <translation id="2057317273526988987">Toegang verlenen aan een lijst met URL's</translation>
 <translation id="2061810934846663491">De vereiste domeinnamen configureren voor hosts voor externe toegang</translation>
-<translation id="2067011586099792101">Toegang blokkeren naar sites die zich niet in inhoudspakketten bevinden</translation>
 <translation id="2069350366303315077">Als je dit beleid inschakelt, dwingt <ph name="PRODUCT_NAME" /> gastsessies af en wordt voorkomen dat gebruikers inloggen bij profielen. Gastlogins zijn <ph name="PRODUCT_NAME" />-profielen waarbij alle vensters in de incognitomodus zijn.
 
       Als je het beleid uitschakelt, niet instelt of de gastmodus voor de browser uitschakelt (via <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />), is het gebruik van nieuwe en bestaande profielen toegestaan.</translation>
@@ -2103,7 +2091,6 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen n
 <translation id="4056910949759281379">SPDY-protocol uitschakelen</translation>
 <translation id="4061590579642538878">Informatie over crashrapporten rapporteren.</translation>
 <translation id="4075675819066819571">De plank aan de linkerkant van het scherm plaatsen</translation>
-<translation id="4075864623710596000">De op deze lijst vermelde hostnamen zijn vrijgesteld van controle van het HSTS-beleid die verzoeken kan upgraden van HTTP naar HTTPS. In dit beleid zijn alleen hostnamen met één label toegestaan. Hostnamen moeten een canonieke URL hebben. Eventuele IDN's moeten worden geconverteerd naar de A-labelindeling en alle ASCII-letters moeten kleine letters zijn. Dit beleid is alleen van toepassing op de vermelde specifieke hostnamen en niet op de subdomeinen van de vermelde namen.</translation>
 <translation id="408029843066770167">Query's naar een Google-tijdservice toestaan</translation>
 <translation id="408076456549153854">Inloggen bij browser inschakelen</translation>
 <translation id="4082498585300984671">De functie 'Klik om te bellen' inschakelen</translation>
@@ -2213,9 +2200,6 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen n
 
       Als je het beleid uitschakelt, wordt <ph name="PRODUCT_NAME" /> uitgeschakeld.</translation>
 <translation id="4203879074082863035">Alleen printers op de witte lijst worden weergegeven aan gebruikers</translation>
-<translation id="420512303455129789">Een woordenboek dat URL's toewijst aan een booleaanse markering die aangeeft of toegang tot de host moet worden toegestaan ('True') of geblokkeerd ('False').
-
-          Dit beleid is bedoeld voor intern gebruik door <ph name="PRODUCT_NAME" /> zelf.</translation>
 <translation id="4209297478239988291">De toegankelijkheidsfunctie voor automatisch klikken inschakelen.
 
           Met deze functie kun je klikken zonder fysiek op de muisknop of touchpad te drukken door de muisaanwijzer op het object te plaatsen waarop je wilt klikken.
@@ -2355,13 +2339,6 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen n
 <translation id="4494132853995232608">Wilco DTC</translation>
 <translation id="449423975179525290">Aan <ph name="PLUGIN_VM_NAME" /> gerelateerd beleid configureren.</translation>
 <translation id="4498493270899294764">URL-patronen waarvoor gedownloade content niet moet worden gecontroleerd op malware</translation>
-<translation id="450537894712826981">Configureert de cachegrootte die <ph name="PRODUCT_NAME" /> gebruikt voor het opslaan van gecachte bestanden op de schijf.
-
-      Als je dit beleid instelt, gebruikt <ph name="PRODUCT_NAME" /> de opgegeven cachegrootte, ongeacht of de gebruiker de markering --media-cache-size heeft opgegeven. De waarde die in dit beleid wordt opgegeven, is geen vaste waarde maar een suggestie voor het cachesysteem. Een waarde die lager is dan een paar megabytes, is te klein en wordt afgerond naar een redelijk minimum.
-
-      Als de waarde van dit beleid 0 is, wordt de standaardcachegrootte gebruikt, maar kan de gebruiker deze niet wijzigen.
-
-      Als dit beleid niet is ingesteld, wordt de standaardgrootte gebruikt en kan de gebruiker deze overschrijven met de markering --media-cache-size.</translation>
 <translation id="4508084713148633492">Hiermee kun je meldingen bij weinig schijfruimte in- of uitschakelen. Dit is van toepassing op alle gebruikers op het apparaat.
       Als er precies één gebruikersaccount is op een beheerd apparaat, wordt de melding altijd weergegeven, ongeacht de waarde van dit beleid.
       Als er meerdere gebruikersaccount zijn op een beheerd apparaat, wordt de melding alleen weergeven als het beleid is ingesteld op 'True'.
@@ -2653,7 +2630,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 
       Als je het beleid uitschakelt, stopt <ph name="PRODUCT_NAME" /> met het sturen van deze query's.</translation>
 <translation id="5032164758660626397">Overdracht van grote bestanden door de gebruiker voorkomen</translation>
-<translation id="5047604665028708335">Toegang toestaan tot sites die zich niet in de inhoudspakketten bevinden</translation>
 <translation id="5056708224511062314">Vergrootglas uitgeschakeld</translation>
 <translation id="5058573563327660283">De strategie selecteren die wordt gebruikt om schijfruimte vrij te maken tijdens het automatisch opschonen (verouderd)</translation>
 <translation id="5061114193960158745">Met dit beleid wordt de lijst met websites bepaald die nooit een schakeling tussen browsers veroorzaken. Elk item wordt als regel behandeld. Bij overeenkomende regels wordt er geen alternatieve browser geopend. Anders dan bij het beleid <ph name="URL_LIST_POLICY_NAME" /> zijn de regels in beide richtingen van toepassing. Als de add-in van <ph name="IE_PRODUCT_NAME" /> ingeschakeld is, bepaalt deze ook of <ph name="IE_PRODUCT_NAME" /> deze URL's moet openen in <ph name="PRODUCT_NAME" />.
@@ -3130,10 +3106,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
       Houd er rekening mee dat dit niet wordt aanbevolen, aangezien zodoende de extensie nameConstraints, waarmee kan worden beperkt voor welke hostnamen een bepaald certificaat kan worden geautoriseerd, kan worden omzeild.
 
       Als dit beleid niet is ingesteld of is ingesteld op 'false', worden de servercertificaten die geen subjectAlternativeName-extensie met een DNS-naam of IP-adres bevatten, niet vertrouwd.</translation>
-<translation id="5578571772998293651">Sta gebruikersfeedback toe.
-        Als het beleid is ingesteld op 'false', kunnen gebruikers geen feedback sturen naar Google.
-
-        Als het beleid niet is ingesteld of is ingesteld op 'true', kunnen gebruikers feedback naar Google sturen via Menu -&gt; Hulp -&gt; Een probleem melden, of hier een toetsencombinatie voor gebruiken.</translation>
 <translation id="5579179012798142131">Tenzij de kortstondige modus of toegang tot meerdere accounts is ingeschakeld tijdens de sessie van de gebruiker, wordt ARC ingeschakeld als ArcEnabled wordt ingesteld op True. Als het beleid wordt ingesteld op False of niet wordt ingesteld, kunnen zakelijke gebruikers ARC niet gebruiken.</translation>
 <translation id="5582429816116769246">Hiermee kun je bepalen of gebruikers toegang hebben tot printers die niet van het bedrijf zijn.
 
@@ -3290,7 +3262,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="5832274826894536455">Beëindigde beleidsregels</translation>
 <translation id="5835253272509953988">Als je het beleid inschakelt, kunnen gebruikers met <ph name="PRODUCT_NAME" /> checken of ingevoerde gebruikersnamen en wachtwoorden deel uitmaken van een gegevenslek.
 
-      Als je het beleid instelt, kunnen gebruikers het niet wijzigen in <ph name="PRODUCT_NAME" />. Als je het niet instelt, is checken op gegevenslekken toegestaan, maar kan de gebruiker deze functie uitschakelen). 
+      Als je het beleid instelt, kunnen gebruikers het niet wijzigen in <ph name="PRODUCT_NAME" />. Als je het niet instelt, is checken op gegevenslekken toegestaan, maar kan de gebruiker deze functie uitschakelen. 
 
 Dit gedrag wordt niet geactiveerd als Safe Browsing is uitgeschakeld (door het beleid of door de gebruiker). Gebruik het beleid <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> of <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" /> om Safe Browsing gedwongen in te schakelen.</translation>
 <translation id="5836064773277134605">Het UDP-poortbereik beperken dat voor de host voor externe toegang wordt gebruikt</translation>
@@ -3395,7 +3367,6 @@ Dit gedrag wordt niet geactiveerd als Safe Browsing is uitgeschakeld (door het b
 <translation id="5951418260805607969">Melding weergeven bij weinig schrijfruimte</translation>
 <translation id="5961137303188584693">MAC-adres van ingebouwde NIC van apparaat</translation>
 <translation id="5966615072639944554">Extensies die toestemming hebben de API voor externe bevestiging te gebruiken</translation>
-<translation id="5983708779415553259">Standaardgedrag voor sites die zich niet in een inhoudspakket bevinden</translation>
 <translation id="5997543603646547632">Klok met 24-uursnotatie standaard gebruiken</translation>
 <translation id="5997846976342452720">Aangeven of de plug-inzoeker moet worden uitgeschakeld (beëindigd)</translation>
 <translation id="5998198091336830580">Dit beleid maakt deel uit van de volgende atomische groep (alleen beleidsregels van de bron met de hoogste prioriteit in de groep worden toegepast):</translation>
@@ -3434,9 +3405,6 @@ Dit gedrag wordt niet geactiveerd als Safe Browsing is uitgeschakeld (door het b
 <translation id="603768430528561926">Als je het beleid inschakelt of niet instelt, kunnen gebruikers van zakelijke apparaten aanbiedingen inwisselen via <ph name="PRODUCT_OS_NAME" />-registratie.
 
       Als je het beleid uitschakelt, kunnen gebruikers deze aanbiedingen niet inwisselen.</translation>
-<translation id="6038407313189625985">Als dit beleid is ingeschakeld of niet is ingesteld, is code-integriteit van weergaveprogramma ingeschakeld. Dit moet alleen worden uitgeschakeld als er compatibiliteitsproblemen zijn met software van derden die in de processen van het weergaveprogramma van Chrome moeten worden uitgevoerd.
-
-      De uitschakeling van dit beleid heeft een nadelige invloed op de beveiliging en stabiliteit van Chrome omdat onbekende, potentieel schadelijke code kan worden geladen in de processen van het weergaveprogramma van Chrome. Ga naar https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies voor meer informatie.</translation>
 <translation id="6048199181629830227">Stroombeheer voor piekuren inschakelen</translation>
 <translation id="6054485492411959335">Hiermee worden de printers gespecificeerd die een gebruiker kan gebruiken.
 
@@ -4753,9 +4721,6 @@ Als je ervoor kiest het volgende te gebruiken:
 
       Opmerking: momenteel is automatisch opnieuw opstarten alleen ingeschakeld als het inlogscherm wordt weergegeven of een kiosk-appsessie wordt verwerkt. Dit zal in de toekomst veranderen en het beleid zal altijd worden toegepast, ongeacht of er een sessie van een bepaald type in verwerking is.</translation>
 <translation id="7701341006446125684">Formaat van cache voor apps en extensies instellen (in bytes)</translation>
-<translation id="7709537117200051035">Een woordenboek dat hostnamen toewijst aan een booleaanse markering die aangeeft of toegang tot de host moet worden toegestaan ('True') of geblokkeerd ('False').
-
-          Dit beleid is bedoeld voor intern gebruik door <ph name="PRODUCT_NAME" /> zelf.</translation>
 <translation id="7710950688502974809">Lijst met instellingen voor Chrome Enterprise Connectors-services die moeten worden toegepast op de Enterprise Connector <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" />. De lijst wordt geactiveerd als gegevens in Chrome worden ingevoerd vanaf het klembord of door slepen en neerzetten van webcontent.
 
       De velden <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> worden gebruikt om te bepalen of de connector gegevens voor analyse moet sturen als ze worden ingevoerd op een specifieke pagina en welke tags moeten worden opgenomen in het analyseverzoek voor die gegevens. Een tag die overeenkomt met een 'enable'-patroon, wordt opgenomen in het analyseverzoek als de pagina-URL overeenkomt met een patroon dat is gekoppeld aan die tag, op voorwaarde dat er geen 'disable'-patroon met dezelfde tag overeenkomt met de pagina-URL. De analyse vindt plaats als er ten minste één tag moet worden opgenomen in het verzoek.
@@ -4903,7 +4868,6 @@ Als je ervoor kiest het volgende te gebruiken:
       Als je deze instelling in- of uitschakelt, kunnen gebruikers deze instelling niet wijzigen of overschrijven in <ph name="PRODUCT_NAME" />.
 
       Als dit beleid niet wordt ingesteld, wordt het ingeschakeld, maar kan de gebruiker het wijzigen.</translation>
-<translation id="7953256619080733119">Hosts van handmatige uitzonderingen voor beheerde gebruikers</translation>
 <translation id="7956210013490975468">Configureert de systeemproxyservice voor <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7958537754689366707">Het wachtwoord moet elke twaalf uur worden opgegeven</translation>
 <translation id="7961779417826583251">Handhaving van Certificaattransparantie voor een lijst met certificeringsinstanties uitschakelen</translation>
@@ -5128,11 +5092,6 @@ De aanbevolen manier om beleidsregels te configureren op Windows, is via GPO, ma
           Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
 
           Als dit beleid niet is ingesteld, is de functie voor dicteren in eerste instantie uitgeschakeld, maar kan de gebruiker deze op elk gewenst moment inschakelen.</translation>
-<translation id="829337533107201925">Als dit beleid is ingeschakeld, worden beleidsregels van een atomische groep genegeerd die niet dezelfde bron met de hoogste prioriteit van de betreffende groep hebben.
-
-      Als dit beleid is uitgeschakeld, worden er geen beleidsregels genegeerd vanwege de bijbehorende bron. Beleidsregels worden alleen genegeerd als er een conflict is en het beleid niet de hoogste prioriteit heeft.
-
-      Als dit beleid is ingesteld vanuit een cloudbron, kan het geen specifieke gebruiker targeten.</translation>
 <translation id="8294750666104911727">Normaal worden pagina's waarvoor X-UA-Compatible is ingesteld op chrome=1, weergegeven in <ph name="PRODUCT_FRAME_NAME" /> ongeacht het beleid 'ChromeFrameRendererSettings'.
 
           Als je deze instelling inschakelt, worden pagina's niet gescand op metatags.
@@ -5330,7 +5289,6 @@ Dit beleid wordt verwijderd in M75.</translation>
 <translation id="8544375438507658205">Standaard HTML-renderer voor <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Toestaan dat sms-berichten worden gesynchroniseerd tussen telefoon en Chromebook.</translation>
 <translation id="8548832052135586762">Hiermee bepaal je of je alleen in kleur, alleen in monochroom of zonder kleurbeperking wilt afdrukken. Als er geen beleid is ingesteld, gelden er geen beperkingen.</translation>
-<translation id="8549772397068118889">Waarschuwen als sites worden bezocht die zich niet in de inhoudspakketten bevinden</translation>
 <translation id="8566842294717252664">De Web Store verbergen op de pagina 'Nieuw tabblad' en in de App Launcher</translation>
 <translation id="8569734380847633643">
           Als het beleid is ingesteld op 'false', schakelt <ph name="PRODUCT_OS_NAME" /> wifi uit en kunnen gebruikers wifi niet opnieuw inschakelen.
@@ -5450,7 +5408,6 @@ Dit beleid wordt verwijderd in M75.</translation>
       Als je dit beleid instelt, kunnen gebruikers dit niet wijzigen of negeren.
 
       Dit beleid is niet van invloed op de mogelijkheid van gebruikers om printers op afzonderlijke apparaten in te stellen. Het is bedoeld als aanvulling op de printerinstellingen van afzonderlijke gebruikers.</translation>
-<translation id="8764477907716150749">Dit beleid is bedoeld voor intern gebruik door <ph name="PRODUCT_NAME" /> zelf.</translation>
 <translation id="8767743923206070405">Als je het beleid inschakelt, wordt de knop 'Homepage' weergegeven op de werkbalk van <ph name="PRODUCT_NAME" />. Als je het beleid uitschakelt, wordt de knop 'Homepage' niet weergegeven.
 
       Als je het beleid instelt, kunnen gebruikers dit niet wijzigen in <ph name="PRODUCT_NAME" />. Als je het beleid niet instelt, kunnen gebruikers bepalen of ze de knop 'Homepage' wel of niet willen weergeven.</translation>

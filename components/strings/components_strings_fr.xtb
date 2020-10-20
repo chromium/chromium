@@ -283,6 +283,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="204357726431741734">Connectez-vous pour utiliser les mots de passe enregistrés dans votre compte Google</translation>
 <translation id="2053111141626950936">Les pages en <ph name="LANGUAGE" /> ne seront pas traduites.</translation>
 <translation id="2053553514270667976">Code postal</translation>
+<translation id="2054665754582400095">Votre présence</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suggestion}one{# suggestion}other{# suggestions}}</translation>
 <translation id="2079545284768500474">Annuler</translation>
 <translation id="20817612488360358">Les paramètres de proxy du système sont configurés pour être utilisés, mais une configuration de proxy explicite est également spécifiée.</translation>
@@ -1894,7 +1895,6 @@ Informations supplémentaires :
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">Disponible</translation>
 <translation id="868922510921656628">Pages par ensemble</translation>
-<translation id="8697373104056314601">Pour bénéficier du niveau de sécurité le plus élevé de Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />activez la protection renforcée<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="869891660844655955">Date d'expiration</translation>
 <translation id="8699041776323235191">Appareil HID</translation>
 <translation id="8703575177326907206">Votre connexion à <ph name="DOMAIN" /> n'est pas chiffrée.</translation>

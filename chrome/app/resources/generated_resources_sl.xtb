@@ -3108,7 +3108,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="4608500690299898628">&amp;Iskanje ...</translation>
 <translation id="4608520674724523647">Slika uspešne včlanitve</translation>
 <translation id="4608703838363792434">V datoteki <ph name="FILE_NAME" /> je občutljiva vsebina</translation>
-<translation id="4609987916561367134">Dovoljena je uporaba Javascripta</translation>
+<translation id="4609987916561367134">Dovoljena je uporaba JavaScripta</translation>
 <translation id="4610162781778310380">Pri vtičniku <ph name="PLUGIN_NAME" /> je prišlo do napake</translation>
 <translation id="4610637590575890427">Ali ste nameravali obiskati <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Podatkovna povezava je na voljo</translation>
@@ -5729,7 +5729,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="7750228210027921155">Slika v sliki</translation>
 <translation id="7751260505918304024">Prikaži vse</translation>
 <translation id="7753735457098489144">Namestitev ni uspela zaradi pomanjkanja prostora za shranjevanje. Če želite sprostiti prostor, izbrišite datoteke iz shrambe v napravi.</translation>
-<translation id="7754347746598978109">Ni dovoljena uporaba Javascripta</translation>
+<translation id="7754347746598978109">Ni dovoljena uporaba JavaScripta</translation>
 <translation id="7754704193130578113">Pred prenosom vprašaj, kam želim shraniti vsako datoteko</translation>
 <translation id="7755287808199759310">Starš ga lahko odblokira</translation>
 <translation id="7757592200364144203">Spremeni ime naprave</translation>
@@ -6252,7 +6252,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8322814362483282060">Tej strani je onemogočen dostop do mikrofona.</translation>
 <translation id="8323167517179506834">Vnesite URL</translation>
 <translation id="8324784016256120271">Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na različnih spletnih mestih, na primer za osebno prilagajanje oglasov</translation>
-<translation id="8325413836429495820">Ni dovoljena uporaba odložišča</translation>
+<translation id="8325413836429495820">Ni dovoljen ogled odložišča</translation>
 <translation id="8326478304147373412">PKCS #7, veriga potrdil</translation>
 <translation id="8327039559959785305">Napaka pri vpenjanju datotek za Linux. Poskusite znova.</translation>
 <translation id="8327676037044516220">Nastavitve dovoljenj in vsebine</translation>

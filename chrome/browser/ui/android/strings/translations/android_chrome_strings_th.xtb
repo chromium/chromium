@@ -300,6 +300,7 @@
 <translation id="3211426585530211793">ลบ <ph name="ITEM_TITLE" /> แล้ว</translation>
 <translation id="3211503082155944789">ยังไม่อ่าน <ph name="READING_LIST_COUNT" /> หน้า</translation>
 <translation id="321773570071367578">หากคุณลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />รีเซ็ตการซิงค์<ph name="END_LINK" /></translation>
+<translation id="3227557059438308877">ใช้ Google Chrome เป็นคีย์ความปลอดภัย</translation>
 <translation id="3232754137068452469">เว็บแอป</translation>
 <translation id="3236059992281584593">เหลือ 1 นาที</translation>
 <translation id="3244271242291266297">ดด</translation>
@@ -937,6 +938,7 @@
 <translation id="7682724950699840886">ลองทำตามเคล็ดลับต่อไปนี้ ตรวจสอบว่าอุปกรณ์มีพื้นที่ว่างเพียงพอ จากนั้นพยายามส่งออกอีกครั้ง</translation>
 <translation id="7698359219371678927">สร้างอีเมลใน <ph name="APP_NAME" /></translation>
 <translation id="7704317875155739195">เติมข้อความค้นหาและ URL อัตโนมัติ</translation>
+<translation id="7707922173985738739">ใช้เน็ตมือถือ</translation>
 <translation id="7725024127233776428">หน้าที่คุณบุ๊กมาร์กไว้จะปรากฏที่นี่</translation>
 <translation id="7735637452482172701">ปลดล็อกด้วยการล็อกหน้าจอ</translation>
 <translation id="7746457520633464754">ในการตรวจหาแอปและเว็บไซต์ที่เป็นอันตราย Chrome จะส่ง URL ของหน้าบางหน้าที่คุณเข้าชม ข้อมูลระบบที่จำกัด และเนื้อหาบางส่วนของหน้าไปให้ Google</translation>

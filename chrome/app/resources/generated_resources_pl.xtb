@@ -17,6 +17,7 @@
 <translation id="1012794136286421601">Twoje pliki z Dokumentów, Arkuszy, Prezentacji i Rysunków są teraz synchronizowane. Otwórz aplikację Dysk Google, aby używać ich online lub offline.</translation>
 <translation id="1012876632442809908">Urządzenie USB-C (przedni port)</translation>
 <translation id="1013707859758800957">Wtyczka spoza piaskownicy otrzymała zezwolenie na uruchomienie na tej stronie.</translation>
+<translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Edytuj nazwę folderu</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Ostatni dzień na zaktualizowanie urządzenia <ph name="DEVICE_TYPE" />}few{Zaktualizuj urządzenie <ph name="DEVICE_TYPE" /> w ciągu {NUM_DAYS} dni}many{Zaktualizuj urządzenie <ph name="DEVICE_TYPE" /> w ciągu {NUM_DAYS} dni}other{Zaktualizuj urządzenie <ph name="DEVICE_TYPE" /> w ciągu {NUM_DAYS} dnia}}</translation>
 <translation id="1016566241875885511">Dodatkowe informacje (opcjonalnie)</translation>

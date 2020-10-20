@@ -17,6 +17,7 @@
 <translation id="1012794136286421601">Jūsu Dokumentu, Izklājlapu, Prezentāciju un Zīmējumu faili tiek sinhronizēti. Atveriet lietotni “Google disks”, lai piekļūtu šiem failiem tiešsaistē vai bezsaistē.</translation>
 <translation id="1012876632442809908">USB-C ierīce (priekšējā pieslēgvieta)</translation>
 <translation id="1013707859758800957">Šajā lapā tika atļauta tāda spraudņa darbība, kas nav ievietots smilškastē.</translation>
+<translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Mapes nosaukuma rediģēšana</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Pēdējā diena, kad var atjaunināt <ph name="DEVICE_TYPE" /> ierīci}zero{<ph name="DEVICE_TYPE" /> ierīce ir jāatjaunina {NUM_DAYS} dienu laikā}one{<ph name="DEVICE_TYPE" /> ierīce ir jāatjaunina {NUM_DAYS} dienas laikā}other{<ph name="DEVICE_TYPE" /> ierīce ir jāatjaunina {NUM_DAYS} dienu laikā}}</translation>
 <translation id="1016566241875885511">Papildu informācija (neobligāti)</translation>

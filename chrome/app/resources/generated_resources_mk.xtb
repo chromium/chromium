@@ -17,6 +17,7 @@
 <translation id="1012794136286421601">Вашите документи, листови, слајдови и цртежи се синхронизираат. Отворете ја апликацијата Google Диск за да им пристапите на интернет или локално.</translation>
 <translation id="1012876632442809908">USB-Ц уред (предна порта)</translation>
 <translation id="1013707859758800957">Дозволено е да се активира неизолиран приклучок на оваа страница.</translation>
+<translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Измена на името на папката</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Последен ден за ажурирање на <ph name="DEVICE_TYPE" />}one{Ажурирајте го <ph name="DEVICE_TYPE" /> во рок од {NUM_DAYS} ден}other{Ажурирајте го <ph name="DEVICE_TYPE" /> во рок од {NUM_DAYS} дена}}</translation>
 <translation id="1016566241875885511">Дополнителни информации (изборно)</translation>

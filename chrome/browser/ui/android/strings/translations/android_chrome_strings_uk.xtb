@@ -300,6 +300,7 @@
 <translation id="3211426585530211793">Елемент "<ph name="ITEM_TITLE" />" видалено</translation>
 <translation id="3211503082155944789">Непрочитаних сторінок: <ph name="READING_LIST_COUNT" /></translation>
 <translation id="321773570071367578">Якщо ви забули парольну фразу або хочете змінити це налаштування, <ph name="BEGIN_LINK" />скиньте синхронізацію<ph name="END_LINK" /></translation>
+<translation id="3227557059438308877">Google Chrome як ключ безпеки</translation>
 <translation id="3232754137068452469">Веб-додаток</translation>
 <translation id="3236059992281584593">Залишилась 1 хв</translation>
 <translation id="3244271242291266297">ММ</translation>
@@ -843,7 +844,7 @@
 <translation id="7015203776128479407">Початкове налаштування синхронізації не завершено. Синхронізацію вимкнено.</translation>
 <translation id="7022756207310403729">Відкрити у веб-переглядачі</translation>
 <translation id="702463548815491781">Рекомендується, коли ввімкнено TalkBack або кнопковий доступ</translation>
-<translation id="7027549951530753705">Відновлено елемент "<ph name="ITEM_TITLE" />"</translation>
+<translation id="7027549951530753705">Відновлено об'єкт "<ph name="ITEM_TITLE" />"</translation>
 <translation id="7029809446516969842">Паролі</translation>
 <translation id="703523980599857277">Змінити головну сторінку</translation>
 <translation id="7054588988317389591">Отримувати описи зображень?</translation>
@@ -937,6 +938,7 @@
 <translation id="7682724950699840886">Порада. Переконайтеся, що на пристрої достатньо вільного місця та спробуйте експортувати дані знову.</translation>
 <translation id="7698359219371678927">Створити електронну адресу в додатку <ph name="APP_NAME" /></translation>
 <translation id="7704317875155739195">Автоматично завершувати пошукові запити та URL-адреси</translation>
+<translation id="7707922173985738739">Використовувати мобільне передавання даних</translation>
 <translation id="7725024127233776428">Сторінки, для яких ви робите закладки, з'являються тут</translation>
 <translation id="7735637452482172701">Розблокувати через функцію блокування екрана</translation>
 <translation id="7746457520633464754">Щоб виявляти небезпечні додатки й сайти, Chrome надсилає URL-адреси певних відвіданих сторінок, обмежену системну інформацію та вміст деяких сторінок у Google</translation>

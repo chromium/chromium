@@ -201,11 +201,6 @@
       如果將這項政策設為 False，<ph name="PRODUCT_NAME" /> 將會禁止啟動訪客設定檔。</translation>
 <translation id="1363275621236827384">允許在 Quirks Server 中查詢硬體設定檔</translation>
 <translation id="1376119291123231789">啟用進階充電模式</translation>
-<translation id="1378850678793136128">這項政策可讓你設定網址模式清單，指定哪些網站會自動取得權限，能夠存取具備登入畫面中所指定廠商和產品 ID 的 USB 裝置。每個清單項目都必須包含「devices」和「urls」欄位，這項政策才會生效。「devices」欄位中的每個項目皆可包含「vendor_id」和「product_id」欄位。如果略過「vendor_id」欄位，系統建立的政策將涵蓋所有裝置。如果略過「product_id」欄位，系統建立的政策將涵蓋所有具備指定廠商 ID 的裝置。要是政策包含「product_id」欄位，但缺少「vendor_id」欄位，將無法生效。
-
-        USB 權限模型會使用要求網站的網址 (簡稱「要求網址」) 以及頂層頁框網站的網址 (簡稱「嵌入網址」)，將 USB 裝置的存取權授予要求網址。如果要求網站是透過 iframe 載入，要求網址可能會與嵌入網址有所不同。因此，「urls」欄位最多可包含兩個網址字串 (以半形逗號分隔)，以分別指定要求網址和嵌入網址。如果只指定一個網址，當要求網站的網址與這個網址相符時，不論其是否為嵌入網址，系統都會授予相應 USB 裝置的存取權。「urls」中的網址必須是有效網址，否則系統將忽略這項政策。
-
-        如果不設定這項政策，所有網站都將使用全域預設值 (不會自動取得存取權)。</translation>
 <translation id="1384459581748403878">參考頁面：<ph name="REFERENCE_URL" /></translation>
 <translation id="138847842893090358">回報作業系統的更新狀態</translation>
 <translation id="1390901586107713894">這項政策可讓你指定禁止使用者安裝的擴充功能。如果封鎖了已安裝的擴充功能，系統會停用該擴充功能，且使用者無法以任何方式啟用。將因為列入封鎖清單而遭到停用的擴充功能從清單中移除後，系統將自動重新啟用該擴充功能。
@@ -430,12 +425,6 @@
 
       如果不設定這項政策，當裝置上的可用磁碟空間小於 20 GB (預設值) 時，系統將無法安裝 <ph name="PLUGIN_VM_NAME" />。
       如果設定這項政策，當裝置上的可用磁碟空間小於政策所要求的值時，系統將無法安裝 <ph name="PLUGIN_VM_NAME" />。</translation>
-<translation id="1695708467571967752">這項政策可控管使用者是否能夠在裝置鎖定的情況下播放媒體。
-
-      如果將這項政策設為 False，系統會停用鎖定畫面上的媒體控制項。
-
-      如果將這項政策設為 True 或不予設定，當使用者在播放媒體時鎖定裝置，鎖定畫面上會顯示媒體控制項。
-      </translation>
 <translation id="1700811900332333712">允許裝置要求執行 Powerwash</translation>
 <translation id="1708496595873025510">設定變異版本種子的擷取限制</translation>
 <translation id="171511968762040550">如果將這項政策設為 True 或不設定，使用者可以新增、移除或修改書籤。
@@ -639,7 +628,6 @@
           如果停用這項政策，使用者將無法傳輸檔案。如果啟用或不設定這項政策，使用者將可以傳輸檔案。</translation>
 <translation id="2057317273526988987">允許存取網址清單</translation>
 <translation id="2061810934846663491">為遠端存取主機設定必要的網域名稱</translation>
-<translation id="2067011586099792101">禁止存取內容套件以外的網站</translation>
 <translation id="2069350366303315077">如果將這項政策設為啟用，<ph name="PRODUCT_NAME" /> 會強制執行訪客工作階段，並禁止使用者登入設定檔。訪客可以登入 <ph name="PRODUCT_NAME" /> 設定檔，登入後，視窗會以無痕模式開啟。
 
       如果將這項政策設為停用或不設定，或是透過 <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" /> 停用瀏覽器訪客模式，系統會允許使用新的設定檔和現有設定檔。</translation>
@@ -2074,7 +2062,6 @@
 <translation id="4056910949759281379">停用 SPDY 通訊協定</translation>
 <translation id="4061590579642538878">回報當機報告相關資訊。</translation>
 <translation id="4075675819066819571">將檔案櫃放在畫面的左側</translation>
-<translation id="4075864623710596000">這份清單中指定的主機名稱會從 HTTP 嚴格傳輸安全性政策檢查作業中排除，該檢查可能會將要求從 HTTP 升級為 HTTPS。這項政策只允許單一標籤主機名稱。主機名稱必須標準化：任何 IDN 都必須轉換為單一標籤格式，且所有 ASCII 字母都必須使用小寫。這項政策只適用於指定的主機名稱，不適用於指定主機名稱的子網域。</translation>
 <translation id="408029843066770167">允許向 Google 時間服務傳送查詢</translation>
 <translation id="408076456549153854">允許登入瀏覽器</translation>
 <translation id="4082498585300984671">啟用「點選通話」功能</translation>
@@ -2185,9 +2172,6 @@
 
       如果將這項政策設為停用，系統會關閉 <ph name="PRODUCT_NAME" />。</translation>
 <translation id="4203879074082863035">僅對使用者顯示許可清單中的印表機</translation>
-<translation id="420512303455129789">將網址對應至布林值標記的字典，以指定 Chrome 是否能存取主機。允許值為 True，封鎖值為 False。
-
-          這項政策僅供 <ph name="PRODUCT_NAME" /> 內部使用。</translation>
 <translation id="4209297478239988291">啟用自動點擊無障礙功能。
 
           這項功能可讓你不需實際按下滑鼠或觸控板即可點擊物件，只要將游標懸停在你要點擊的物件上即可。
@@ -2329,13 +2313,6 @@
 <translation id="4494132853995232608">Wilco DTC</translation>
 <translation id="449423975179525290">設定 <ph name="PLUGIN_VM_NAME" /> 的相關政策。</translation>
 <translation id="4498493270899294764">不須檢查下載內容是否包含惡意軟體的網址模式</translation>
-<translation id="450537894712826981">設定快取大小，供 <ph name="PRODUCT_NAME" /> 在磁碟中儲存快取媒體檔案時套用。
-
-      如果設定這項政策，則不論使用者是否指定「--media-cache-size」參數，<ph name="PRODUCT_NAME" /> 都會使用政策提供的快取大小。在這項政策中指定的值是對快取系統的建議值，而非不可變動的界限。如果是不到幾 MB 的值，由於太小的緣故，系統會進位到合適的最小值。
-
-      如果這項政策的值為 0，系統會使用預設快取大小，但使用者無法變更。
-
-      如果未設定這項政策，系統會使用預設大小，使用者則可使用 -media-cache-size 參數予以覆寫。</translation>
 <translation id="4508084713148633492">允許在磁碟空間不足時啟用或停用通知。這項設定將會套用至這部裝置的所有使用者。
       如果受管理的裝置上只有一個使用者帳戶，則無論這項政策的值為何，系統都會顯示通知。
       如果受管理的裝置上有多個使用者帳戶，只有當這項政策的值為 True 時，系統才會顯示通知。
@@ -2629,7 +2606,6 @@
 
       如果將這項政策設為停用，系統會禁止 <ph name="PRODUCT_NAME" /> 傳送這類查詢。</translation>
 <translation id="5032164758660626397">禁止使用者傳輸大型檔案</translation>
-<translation id="5047604665028708335">允許存取內容套件以外的網站</translation>
 <translation id="5056708224511062314">已停用螢幕放大鏡</translation>
 <translation id="5058573563327660283">選取自動清理時用來釋出磁碟空間的策略 (已不適用)</translation>
 <translation id="5061114193960158745">你可以透過這項政策，控管一律不觸發瀏覽器切換的網站清單。系統會將每個項目視為規則。相符的規則不會開啟替代瀏覽器。這項政策與 <ph name="URL_LIST_POLICY_NAME" /> 政策的不同之處在於，規則為雙向適用。如果 <ph name="IE_PRODUCT_NAME" /> 增益集已啟用，這項政策也會控管 <ph name="IE_PRODUCT_NAME" /> 是否應在 <ph name="PRODUCT_NAME" /> 中開啟這些網址。
@@ -3100,10 +3076,6 @@
       請注意，這項設定可能會允許略過 nameConstraints 延伸 (用於限制指定的憑證可授權的主機名稱)，因此不建議啟用。
 
       如果未設定這項政策，或是將這項政策設為 false，含有 DNS 名稱或 IP 位址但缺少 subjectAlternativeName 延伸的伺服器憑證將不會受到信任。</translation>
-<translation id="5578571772998293651">允許使用者意見回饋功能。
-        如果將這項政策設為 False，使用者無法將意見回饋傳送給 Google。
-
-        如果將這項政策設為 True 或不設定，使用者可以將意見回饋傳送給 Google，方法是依序按一下「選單」圖示 -&gt; [說明] -&gt; [回報問題]，或是按下按鍵組合。</translation>
 <translation id="5579179012798142131">除非暫時模式或多帳戶登入功能在使用者工作階段期間處於啟用狀態，否則將 ArcEnabled 設為 True 時，系統會為該使用者啟用 ARC。如果將這項政策設為 False 或不設定，企業版使用者將無法使用 ARC。</translation>
 <translation id="5582429816116769246">可讓你控管使用者是否可存取非企業所管理的印表機
 
@@ -3361,7 +3333,6 @@
 <translation id="5951418260805607969">當磁碟空間不足時顯示通知</translation>
 <translation id="5961137303188584693">裝置內建的 NIC MAC 位址</translation>
 <translation id="5966615072639944554">允許擴充功能使用 Remote Attestation API</translation>
-<translation id="5983708779415553259">非任何內容套件中網站的預設行為</translation>
 <translation id="5997543603646547632">預設使用 24 小時制時鐘</translation>
 <translation id="5997846976342452720">指定是否要停用外掛程式尋找工具 (已淘汰)</translation>
 <translation id="5998198091336830580">這項政策屬於下列不可部分完成的群組 (系統僅會套用群組中最高優先來源所設定的政策)：</translation>
@@ -3400,9 +3371,6 @@
 <translation id="603768430528561926">如果將這項政策設為啟用或不設定，企業裝置使用者可透過 <ph name="PRODUCT_OS_NAME" />註冊兌換優惠。
 
       如果將這項政策設為停用，使用者將無法兌換這類優惠。</translation>
-<translation id="6038407313189625985">如果將這項政策設為啟用或不予設定，系統會啟用轉譯器程式碼完整性功能。只有必須在 Chrome 的轉譯器程序中執行的第三方軟體發生相容性問題時，我們才建議你停用這項政策。
-
-      停用這項政策會對 Chrome 的安全性和穩定性造成負面影響，因為這樣一來，Chrome 會允許轉譯器程序載入未知且可能具有惡意的程式碼。如要瞭解詳情，請參閱 https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies。</translation>
 <translation id="6048199181629830227">開啟用電尖峰轉移電源管理功能</translation>
 <translation id="6054485492411959335">指定可供使用的印表機。
 
@@ -4702,9 +4670,6 @@
 
       注意：目前只有在顯示登入畫面或 Kiosk 應用程式工作階段運作時，才能啟用自動重新啟動。這種情況會在日後變更，而且無論任何特定類型的工作階段是否正在運作，政策都會一律適用。</translation>
 <translation id="7701341006446125684">設定應用程式和擴充功能快取大小 (以位元組為單位)</translation>
-<translation id="7709537117200051035">將主機名稱對應至布林值旗標的字典，以指定 Chrome 是否能存取主機。允許值為 True，封鎖值為 False。
-
-          這項政策僅供 <ph name="PRODUCT_NAME" /> 內部使用。</translation>
 <translation id="7710950688502974809">指定要套用至 <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" /> Enterprise Connector 的 Chrome Enterprise Connectors 服務設定清單，在 Chrome 中透過剪貼簿或拖曳網頁內容的方式輸入資料時會觸發這份清單。
 
       在特定網頁中輸入資料時，系統會使用 <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 欄位來判斷連接器是否要傳送資料進行分析，以及要在該資料的分析要求中加入哪些標記。系統會比對標記對應的模式，如果頁面網址符合與該標記相關聯的「啟用」模式，系統就會將該標記加入分析要求中 (但若有頁面網址與此標記中的「停用」模式符合的情況則除外)。如果在要求中加入至少 1 個標記，系統就會進行分析。
@@ -4852,7 +4817,6 @@
       無論是否啟用這項政策，使用者都無法在 <ph name="PRODUCT_NAME" /> 中變更或覆寫這項政策。
 
       如果不設定這項政策，系統會啟用網路預測功能，但使用者可以自行變更。</translation>
-<translation id="7953256619080733119">管理化環境下使用者手動建立的例外主機</translation>
 <translation id="7956210013490975468">設定 <ph name="PRODUCT_OS_NAME" />的系統 Proxy 服務。</translation>
 <translation id="7958537754689366707">每 12 小時需輸入密碼</translation>
 <translation id="7961779417826583251">不針對列出的舊版憑證授權單位強制執行憑證透明化政策</translation>
@@ -5071,11 +5035,6 @@
           設定這項政策後，使用者即無法變更或覆寫。
 
           如果未設定這項政策，系統預設會停用語音輸入功能，但使用者隨時可以啟用這項功能。</translation>
-<translation id="829337533107201925">如果啟用這項政策，那麼只要是來自不可部分完成的群組，而且來源與該群組中最高優先權項目不同的政策，即會遭到忽略。
-
-      如果將這項政策設為停用，政策不會因來源而遭到忽略，只會在發生政策衝突或沒有最高優先權的情況下遭到忽略。
-
-      如果透過雲端來源設定這項政策，就不能將特定使用者設為政策目標</translation>
 <translation id="8294750666104911727">無論「ChromeFrameRendererSettings」政策為何，一般而言，X-UA-Compatible 設為 chrome=1 的網頁將會在 <ph name="PRODUCT_FRAME_NAME" /> 中開啟。
 
           如果你啟用這項設定，系統將不會掃描網頁的中繼標記。
@@ -5272,7 +5231,6 @@
 <translation id="8544375438507658205">預設 <ph name="PRODUCT_FRAME_NAME" /> 的 HTML 轉譯器</translation>
 <translation id="8544465954173828789">允許將簡訊從手機同步至 Chromebook。</translation>
 <translation id="8548832052135586762">設定僅限彩色列印、僅限單色列印，或是不限制色彩模式。如未設定這項政策，系統會視為未設限制。</translation>
-<translation id="8549772397068118889">瀏覽內容套件以外的網站時顯示警告</translation>
 <translation id="8566842294717252664">在新分頁和應用程式啟動畫面中隱藏線上應用程式商店</translation>
 <translation id="8569734380847633643">
           如果將這項政策設為 False，<ph name="PRODUCT_OS_NAME" /> 將停用 Wi-Fi，且使用者無法重新啟用。
@@ -5392,7 +5350,6 @@
       設好這項政策後，使用者即無法變更或覆寫設定。
 
       這項政策對使用者是否能在個別裝置上設定印表機沒有影響，而是補足個別使用者的印表機設定。</translation>
-<translation id="8764477907716150749">這項政策僅供 <ph name="PRODUCT_NAME" /> 內部使用。</translation>
 <translation id="8767743923206070405">如果將這項政策設為啟用，<ph name="PRODUCT_NAME" /> 的工具列上會顯示「首頁」按鈕。如果將這項政策設為停用，則不會顯示「首頁」按鈕。
 
       如果設定這項政策，使用者將無法在 <ph name="PRODUCT_NAME" /> 中進行變更。如果未設定，使用者可選擇是否要顯示「首頁」按鈕。</translation>

@@ -17,6 +17,7 @@
 <translation id="1012794136286421601">Датотеке из Докумената, Табела, Презентација и Цртежа се синхронизују. Отворите апликацију Google диск да бисте им приступили онлајн или офлајн.</translation>
 <translation id="1012876632442809908">Уређај са USB прикључком типа C (предњи порт)</translation>
 <translation id="1013707859758800957">Дозвољено је покретање додатне компоненте која је изван заштићеног окружења на овој страници.</translation>
+<translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Измените назив директоријума</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Последњи дан за ажурирање уређаја <ph name="DEVICE_TYPE" />}one{Ажурирајте <ph name="DEVICE_TYPE" /> у року од {NUM_DAYS} дана}few{Ажурирајте <ph name="DEVICE_TYPE" /> у року од {NUM_DAYS} дана}other{Ажурирајте <ph name="DEVICE_TYPE" /> у року од {NUM_DAYS} дана}}</translation>
 <translation id="1016566241875885511">Додатне информације (опционално)</translation>

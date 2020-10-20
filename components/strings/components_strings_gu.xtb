@@ -283,6 +283,7 @@
 <translation id="204357726431741734">તમારા Google એકાઉન્ટમાં સ્ટોર કરેલા પાસવર્ડનો ઉપયોગ કરવા માટે સાઇન ઇન કરો</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" />માં લખાયેલાં પેજનો અનુવાદ થશે નહીં.</translation>
 <translation id="2053553514270667976">પિન કોડ</translation>
+<translation id="2054665754582400095">તમારી હાજરી</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 સૂચન}one{# સૂચન}other{# સૂચન}}</translation>
 <translation id="2079545284768500474">છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="20817612488360358">સિસ્ટમ પ્રૉક્સી સેટિંગ ઉપયોગમાં લેવા માટે સેટ છે પણ એક સ્પષ્ટ પ્રૉક્સી ગોઠવણીનો પણ ઉલ્લેખ કરાયેલો છે.</translation>
@@ -1896,7 +1897,6 @@
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">ઉપલબ્ધ</translation>
 <translation id="868922510921656628">સેટ દીઠ પેજ</translation>
-<translation id="8697373104056314601">Chromeની સૌથી ઉચ્ચ લેવલની સુરક્ષા મેળવવા માટે, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />વધારેલી સુરક્ષા ચાલુ કરો<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="869891660844655955">સમાપ્તિ તારીખ</translation>
 <translation id="8699041776323235191">HID ડિવાઇસ</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> સાથેનું તમારું કનેક્શન એન્ક્રિપ્ટેડ નથી.</translation>

@@ -282,6 +282,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="204357726431741734">Iniciar sesión para utilizar contrasinais gardados na túa Conta de Google</translation>
 <translation id="2053111141626950936">Non se traducirán as páxinas en <ph name="LANGUAGE" />.</translation>
 <translation id="2053553514270667976">Código postal</translation>
+<translation id="2054665754582400095">A túa presenza</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suxestión}other{# suxestións}}</translation>
 <translation id="2079545284768500474">Desfacer</translation>
 <translation id="20817612488360358">Estableceuse a configuración do proxy do sistema que debe utilizarse, pero tamén se especificou unha configuración de proxy explícita.</translation>
@@ -1893,7 +1894,6 @@ Detalles adicionais:
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">Dispoñible</translation>
 <translation id="868922510921656628">Páxinas por xogo</translation>
-<translation id="8697373104056314601">Para gozar do máximo nivel de seguranza de Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />activa a protección mellorada<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="869891660844655955">Data de vencemento</translation>
 <translation id="8699041776323235191">Dispositivo HID</translation>
 <translation id="8703575177326907206">A túa conexión con <ph name="DOMAIN" /> non está cifrada.</translation>

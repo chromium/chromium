@@ -300,6 +300,7 @@
 <translation id="3211426585530211793">Избришана е ставката <ph name="ITEM_TITLE" /></translation>
 <translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> непрочитани страници</translation>
 <translation id="321773570071367578">Ако сте ја заборавиле лозинката или сакате да ја измените поставкава, <ph name="BEGIN_LINK" />ресетирајте ја синхронизацијата<ph name="END_LINK" /></translation>
+<translation id="3227557059438308877">Google Chrome како безбедносен клуч</translation>
 <translation id="3232754137068452469">Веб-апликација</translation>
 <translation id="3236059992281584593">Остана 1 минута</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -937,6 +938,7 @@
 <translation id="7682724950699840886">Испробајте ги следниве совети: проверете дали има доволно простор на уредот, обидете се да ги извезете повторно.</translation>
 <translation id="7698359219371678927">Создајте е-пошта во <ph name="APP_NAME" /></translation>
 <translation id="7704317875155739195">Автоматски довршувај ги пребарувањата и URL-адресите</translation>
+<translation id="7707922173985738739">Ќе користи мобилен интернет</translation>
 <translation id="7725024127233776428">Страниците што ќе ги обележите се појавуваат тука</translation>
 <translation id="7735637452482172701">Отклучете со заклучувањето екран</translation>
 <translation id="7746457520633464754">За да открие опасни апликации и сајтови, Chrome испраќа URL-адреси од некои страници што ги посетувате, ограничени информации за системот и некои содржини од страниците до Google</translation>

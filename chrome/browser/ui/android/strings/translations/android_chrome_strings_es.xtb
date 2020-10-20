@@ -300,6 +300,7 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="3211426585530211793">Se ha eliminado <ph name="ITEM_TITLE" /></translation>
 <translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> páginas no leídas</translation>
 <translation id="321773570071367578">Si has olvidado tu frase de contraseña o quieres cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización<ph name="END_LINK" /></translation>
+<translation id="3227557059438308877">Google Chrome como llave de seguridad</translation>
 <translation id="3232754137068452469">Aplicación web</translation>
 <translation id="3236059992281584593">Queda 1 minuto</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -937,6 +938,7 @@ Los datos de las sesiones de incógnito se borran de Chrome solo cuando <ph name
 <translation id="7682724950699840886">Prueba los siguientes consejos: deja suficiente espacio en el dispositivo y vuelve a exportar las contraseñas.</translation>
 <translation id="7698359219371678927">Crear correo electrónico en <ph name="APP_NAME" /></translation>
 <translation id="7704317875155739195">Autocompletar búsquedas y URLs</translation>
+<translation id="7707922173985738739">Se utilizarán datos móviles</translation>
 <translation id="7725024127233776428">Las páginas que añadas a marcadores aparecerán aquí</translation>
 <translation id="7735637452482172701">Desbloquear con bloqueo de pantalla</translation>
 <translation id="7746457520633464754">Para detectar aplicaciones y sitios web peligrosos, Chrome envía a Google las URL de algunas de las páginas que visitas, información limitada del sistema y parte del contenido de las páginas.</translation>

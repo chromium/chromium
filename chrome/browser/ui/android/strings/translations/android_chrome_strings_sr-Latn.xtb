@@ -300,6 +300,7 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="3211426585530211793">Stavka <ph name="ITEM_TITLE" /> je izbrisana</translation>
 <translation id="3211503082155944789">Nepročitanih stranica: <ph name="READING_LIST_COUNT" /></translation>
 <translation id="321773570071367578">Ako ste zaboravili pristupnu frazu ili želite da promenite ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhronizaciju<ph name="END_LINK" /></translation>
+<translation id="3227557059438308877">Google Chrome kao bezbednosni ključ</translation>
 <translation id="3232754137068452469">Veb-aplikacija</translation>
 <translation id="3236059992281584593">Još 1 min</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -937,6 +938,7 @@ Podaci iz sesije bez arhiviranja se brišu iz Chrome-a samo kada <ph name="BEGIN
 <translation id="7682724950699840886">Isprobajte sledeće savete: proverite da li na uređaju ima dovoljno prostora, pa probajte da ponovo izvezete lozinke.</translation>
 <translation id="7698359219371678927">Napišite imejl u aplikaciji <ph name="APP_NAME" /></translation>
 <translation id="7704317875155739195">Automatski dovršavaj pretrage i URL-ove</translation>
+<translation id="7707922173985738739">Koristi mobilne podatke</translation>
 <translation id="7725024127233776428">Stranice koje obeležite se prikazuju ovde</translation>
 <translation id="7735637452482172701">Otključaj pomoću Zaključavanja ekrana</translation>
 <translation id="7746457520633464754">Da bi otkrivao opasne aplikacije i sajtove, Chrome šalje Google-u URL-ove nekih stranica koje posećujete, ograničene informacije o sistemu i određeni sadržaj stranica</translation>

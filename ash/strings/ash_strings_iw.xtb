@@ -123,10 +123,10 @@
 <translation id="2126242104232412123">שולחן עבודה חדש</translation>
 <translation id="2127372758936585790">מטען בעל מתח נמוך</translation>
 <translation id="2135456203358955318">מגדיל במצב מעוגן</translation>
-<translation id="2144487987174258011">‏הפעל מחדש כדי לעדכן את Adobe Flash Player</translation>
+<translation id="2144487987174258011">‏יש להפעיל מחדש כדי לעדכן את Adobe Flash Player</translation>
 <translation id="2180011262286780504">מנהל המערכת השבית את האפשרות לצלם את המסך.</translation>
 <translation id="2208323208084708176">מצב שולחן עבודה מאוחד</translation>
-<translation id="2220572644011485463">‏PIN או סיסמה</translation>
+<translation id="2220572644011485463">קוד אימות או סיסמה</translation>
 <translation id="2222338659135520253">נדרשת כניסה</translation>
 <translation id="225680501294068881">סורק לאיתור מכשירים...</translation>
 <translation id="2268130516524549846">‏Bluetooth מושבת</translation>
@@ -369,7 +369,7 @@
 <translation id="4544483149666270818">יש לבחור חלון להקלטה</translation>
 <translation id="4560576029703263363">מופעל</translation>
 <translation id="4561267230861221837">3G</translation>
-<translation id="4565377596337484307">הסתר סיסמה</translation>
+<translation id="4565377596337484307">הסתרת סיסמה</translation>
 <translation id="4570957409596482333">לחצן הקראה</translation>
 <translation id="4577274620589681794">הזמן חלף · <ph name="LABEL" /></translation>
 <translation id="4585337515783392668">הפסקת העברה במכשיר לא מוכר</translation>
@@ -487,7 +487,7 @@
 <translation id="5837036133683224804">הפסקת <ph name="ROUTE_TITLE" /> במכשיר <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">כבוי</translation>
 <translation id="5876666360658629066">יש להזין קוד גישה להורים</translation>
-<translation id="5895138241574237353">הפעל מחדש</translation>
+<translation id="5895138241574237353">הפעלה מחדש</translation>
 <translation id="589817443623831496">סריקת נקודות</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">שולחן עבודה וירטואלי לא פעיל.</translation>
@@ -581,7 +581,7 @@
 <translation id="6752912906630585008">שולחן העבודה <ph name="REMOVED_DESK" /> הוסר ושולב עם שולחן העבודה <ph name="RECEIVE_DESK" /></translation>
 <translation id="6757237461819837179">מדיה לא מופעלת</translation>
 <translation id="6777216307882431711">‏מספק חשמל למכשירים המחוברים ב-USB-C</translation>
-<translation id="6790428901817661496">הפעל</translation>
+<translation id="6790428901817661496">הפעלה</translation>
 <translation id="6803622936009808957">לא ניתן היה לשקף מסכים מכיוון שלא נמצאה רזולוציה נתמכת. במקום זאת התצוגה עברה למצב שולחן עבודה מורחב.</translation>
 <translation id="6818242057446442178">מילה אחת אחורה</translation>
 <translation id="6820676911989879663">הגיע הזמן להפסקה</translation>
@@ -636,14 +636,14 @@
 <translation id="742594950370306541">המצלמה נמצאת בשימוש.</translation>
 <translation id="742608627846767349">בוקר טוב,</translation>
 <translation id="743058460480092004">המצלמה והמיקרופון נמצאים בשימוש.</translation>
-<translation id="7461924472993315131">הצמד</translation>
+<translation id="7461924472993315131">הצמדה</translation>
 <translation id="7466449121337984263">יש לגעת בחיישן</translation>
 <translation id="7477793887173910789">שליטה במוזיקה, בסרטונים ועוד</translation>
 <translation id="7497767806359279797">בחירת שפה ומקלדת</translation>
 <translation id="7526573455193969409">ייתכן שהרשת מנוטרת</translation>
 <translation id="7536035074519304529">‏כתובת IP: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">לילה טוב!</translation>
-<translation id="7551643184018910560">הצמד למדף</translation>
+<translation id="7551643184018910560">הצמדה למדף</translation>
 <translation id="7561982940498449837">סגירת התפריט</translation>
 <translation id="7564874036684306347">העברת חלונות לשולחן עבודה אחר עלולה לגרום להתנהגות בלתי צפויה.
 
@@ -748,7 +748,7 @@
 <translation id="8454013096329229812">‏Wi-Fi מופעל.</translation>
 <translation id="847056008324733326">הגדרות קנה המידה של התצוגה</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> את <ph name="FEATURE_NAME" />.</translation>
-<translation id="8477270416194247200">‏הקש על Alt+Search או על Shift כדי לבטל.</translation>
+<translation id="8477270416194247200">‏יש להקיש על Alt+Search או על Shift כדי לבטל.</translation>
 <translation id="8492573885090281069">התצוגה של <ph name="DISPLAY_NAME" /> לא תומכת ברזולוציה <ph name="SPECIFIED_RESOLUTION" />. הרזולוציה שונתה ל-<ph name="FALLBACK_RESOLUTION" />. לשמירת השינויים, יש ללחוץ על 'אישור'. ההגדרות הקודמות ישוחזרו בעוד <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8513108775083588393">סיבוב אוטומטי</translation>
 <translation id="8517041960877371778">ייתכן שה-<ph name="DEVICE_TYPE" /> לא ייטען כשהוא פועל.</translation>
@@ -834,7 +834,7 @@
 <translation id="9215934040295798075">הגדר טפט</translation>
 <translation id="921989828232331238">הורה נעל את המכשיר שלך להיום</translation>
 <translation id="9220525904950070496">הסרת חשבון</translation>
-<translation id="923686485342484400">‏הקש פעמיים על Control Shift Q כדי לצאת.</translation>
+<translation id="923686485342484400">‏יש להקיש פעמיים על Control Shift Q כדי לצאת.</translation>
 <translation id="938963181863597773">אירועים קרובים ביומן שלי</translation>
 <translation id="945522503751344254"> שליחת משוב</translation>
 <translation id="98515147261107953">לרוחב</translation>

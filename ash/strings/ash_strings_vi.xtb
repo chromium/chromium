@@ -366,7 +366,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4513946894732546136">Phản hồi</translation>
 <translation id="4527045527269911712">Thiết bị Bluetooth "<ph name="DEVICE_NAME" />"muốn được phép ghép nối.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> cho đến khi đầy</translation>
-<translation id="4544483149666270818">Chọn một cửa sổ để quay</translation>
+<translation id="4544483149666270818">Chọn một cửa sổ để ghi hình</translation>
 <translation id="4560576029703263363">Đang bật</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Ẩn mật khẩu</translation>
@@ -579,7 +579,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6751052314767925245">Do quản trị viên thực thi</translation>
 <translation id="6751826523481687655">Tính năng theo dõi hiệu suất đang bật</translation>
 <translation id="6752912906630585008">Đã xóa và hợp nhất Không gian làm việc <ph name="REMOVED_DESK" /> với Không gian làm việc <ph name="RECEIVE_DESK" /></translation>
-<translation id="6757237461819837179">Hiện không phát nội dung nghe nhìn nào</translation>
+<translation id="6757237461819837179">Không có nội dung nghe nhìn nào đang phát</translation>
 <translation id="6777216307882431711">Đang cấp nguồn cho các thiết bị USB-C đã kết nối</translation>
 <translation id="6790428901817661496">Phát</translation>
 <translation id="6803622936009808957">Không thể phản chiếu màn hình do không tìm thấy độ phân giải được hỗ trợ. Thay vào đó, đã chuyển sang chế độ màn hình mở rộng.</translation>
@@ -655,7 +655,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="7618774594543487847">Trung tính</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />°F</translation>
 <translation id="7633755430369750696">Hiện tùy chọn cài đặt Chia sẻ lân cận.</translation>
-<translation id="7641938616688887143">Quay</translation>
+<translation id="7641938616688887143">Ghi hình</translation>
 <translation id="7642647758716480637">Mở phần cài đặt <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (chủ sở hữu)</translation>
 <translation id="7647488630410863958">Mở khóa thiết bị để xem thông báo của bạn</translation>

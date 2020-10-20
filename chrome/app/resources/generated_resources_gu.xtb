@@ -924,6 +924,7 @@
 <translation id="204914487372604757">શૉર્ટકટ બનાવો </translation>
 <translation id="2050339315714019657">પોર્ટ્રેટ</translation>
 <translation id="2053312383184521053">નિષ્ક્રિય સ્થિતિ ડેટા</translation>
+<translation id="2054665754582400095">તમારી હાજરી</translation>
 <translation id="2055585478631012616">ખુલ્લા ટૅબ સહિત, આ સાઇટમાંથી તમને સાઇન આઉટ કરવામાં આવશે</translation>
 <translation id="205560151218727633">Google સહાયકનો લોગો</translation>
 <translation id="2058456167109518507">ઉપકરણ મળ્યું</translation>
@@ -1210,6 +1211,7 @@
 <translation id="2387052489799050037">હોમ પર જાઓ</translation>
 <translation id="2387458720915042159">પ્રૉક્સી કનેક્શનનો પ્રકાર</translation>
 <translation id="2390347491606624519">પ્રૉક્સીથી કનેક્ટ કરી શકાતું નથી, કૃપા કરીને ફરીથી સાઇન ઇન કરો</translation>
+<translation id="2390782873446084770">વાઇ-ફાઇ સિંક</translation>
 <translation id="2391082728065870591">પ્રતિસાદ રિપોર્ટ મોકલો</translation>
 <translation id="2391419135980381625">માનક ફૉન્ટ</translation>
 <translation id="2392163307141705938">તમે તમારા માતાપિતાએ <ph name="IDS_SHORT_PRODUCT_NAME" /> માટે સેટ કરેલી સમયસીમા સુધી પહોંચી ગયા છો.</translation>
@@ -1866,6 +1868,7 @@
 <translation id="3157931365184549694">પુનઃસ્થાપિત કરો</translation>
 <translation id="3158033540161634471">તમારી ફિંગરપ્રિન્ટ સેટઅપ કરો</translation>
 <translation id="3159493096109238499">બૈઝ</translation>
+<translation id="3159978855457658359">ડિવાઇસના નામમાં ફેરફાર કરો</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (હાર્ડવેર સમર્થિત)</translation>
 <translation id="3161522574479303604">બધી ભાષાઓ</translation>
 <translation id="3162853326462195145">સ્કૂલ એકાઉન્ટ</translation>
@@ -3226,6 +3229,7 @@
 <translation id="4761104368405085019">તમારા માઇક્રોફોનનો ઉપયોગ કરો</translation>
 <translation id="4762718786438001384">ઉપકરણ ડિસ્ક સ્થાન અત્યંત ઓછું છે</translation>
 <translation id="4763408175235639573">જ્યારે તમે આ પેજ જોયું, ત્યારે નીચેની કુકી સેટ થઈ હતી</translation>
+<translation id="4764368918650455114">ખાતરી કરો કે બન્ને ડિવાઇસ અનલૉક કરેલા અને નજીક જ હોય તેમજ તેમાં બ્લૂટૂથની સુવિધા ચાલુ કરેલી હોય. જો તમે કોઈ Chromebook સાથે શેર કરી રહ્યાં હો, તો ખાતરી કરો કે તેમાં 'નજીકની શેરિંગ' સુવિધા ચાલુ કરી હોય (સમય પસંદ કરીને સ્ટેટસ એરિયા ખોલો, પછી 'નજીકના શેર' પસંદ કરો). <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="4765582662863429759">Android Messagesને તમારા ફોન પરથી તમારી Chromebook પર ટેક્સ્ટને પ્રસારિત કરવાની મંજૂરી આપે છે</translation>
 <translation id="476598255842811483">તમારા ડિવાઇસ પર જ્યાં સુધી તમે 'નજીકના શેર' ન ખોલો ત્યાં સુધી કોઈ નહીં</translation>
 <translation id="4768332406694066911">તમારી પાસે આ સંસ્થાઓના પ્રમાણપત્ર છે કે જે તમને ઓળખે છે</translation>
@@ -3388,6 +3392,7 @@
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="496185450405387901">આ ઍપ તમારા વ્યવસ્થાપક દ્વારા બનાવવામાં આવી હતી.</translation>
 <translation id="4964455510556214366">ગોઠવણી</translation>
+<translation id="496446150016900060">તમારા ફોન સાથે વાઇ-ફાઇ નેટવર્ક સિંક કરો</translation>
 <translation id="4965808351167763748">શું તમે ખરેખર આ ઉપકરણને Hangouts Meet ચલાવવા માટે સેટ કરવા માગો છો?</translation>
 <translation id="496888482094675990">ફાઇલ એપ્લિકેશન તમે Google ડ્રાઇવ, બાહ્ય સ્ટોરેજ અથવા તમારા Chrome OS ડિવાઇસ પર સાચવી છે તે ફાઇલની ઝડપી ઍક્સેસ પ્રદાન કરે છે.</translation>
 <translation id="4971412780836297815">પૂર્ણ થાય ત્યારે ખોલો</translation>
@@ -3694,6 +3699,7 @@
 <translation id="5341980496415249280">કૃપા કરીને રાહ જુઓ, પૅકિંગ કરીએ છીએ ...</translation>
 <translation id="5342091991439452114">PIN, ઓછામાં ઓછો <ph name="MINIMUM" /> અંકનો હોવો આવશ્યક છે</translation>
 <translation id="5344036115151554031">Linux રિસ્ટોર કરી રહ્યાં છીએ</translation>
+<translation id="5345916423802287046">તમે સાઇન ઇન કરો ત્યારે ઍપ શરૂ કરો</translation>
 <translation id="5350293332385664455">Google Assistant બંધ કરો</translation>
 <translation id="535123479159372765">અન્ય ડિવાઇસમાંથી કૉપિ કરવામાં આવેલી ટેક્સ્ટ</translation>
 <translation id="5352033265844765294">ટાઇમ સ્ટેમ્પિંગ</translation>
@@ -4004,6 +4010,7 @@
 <translation id="5704875434923668958">આની સાથે સિંક કરી રહ્યાં છીએ</translation>
 <translation id="5705005699929844214">હમેંશાં ઍક્સેસિબિલિટીના વિકલ્પો બતાવો</translation>
 <translation id="5705882733397021510">પાછળ જાઓ</translation>
+<translation id="5707117624115653804">આ સેટિંગને સપોર્ટ કરતી ઍપ અને સાઇટ માટે કૅપ્શનનું કદ અને શૈલી કસ્ટમાઇઝ કરો</translation>
 <translation id="5707185214361380026">અહીંથી એક્સ્ટેન્શનને લોડ કરવામાં નિષ્ફળ:</translation>
 <translation id="5708171344853220004">Microsoft Principal Name</translation>
 <translation id="5709557627224531708">Chromeને તમારા ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
@@ -4167,6 +4174,7 @@
 <translation id="5904614460720589786">ગોઠવણીમાં સમસ્યાને લીધે <ph name="APP_NAME" />ને સેટઅપ કરી શક્યાં નહીં. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો. ભૂલનો કોડ: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">અપ ટૂ ડેટ થવામાં છે! અપડેટ કરવાનું સમાપ્ત કરવા માટે તમારા ઉપકરણને પુનઃપ્રારંભ કરો.</translation>
 <translation id="5906732635754427568">આ ઍપ્લિકેશન સાથે સંકળાયેલ ડેટાને આ ઉપકરણમાંથી દૂર કરવામાં આવશે.</translation>
+<translation id="5908474332780919512">તમે સાઇન ઇન કરો ત્યારે ઍપ શરૂ કરો</translation>
 <translation id="5908695239556627796">માઉસ સ્ક્રોલની ઝડપ</translation>
 <translation id="5908769186679515905">સાઇટ્સને ફ્લેશ ચલાવવાથી અવરોધિત કરો</translation>
 <translation id="5910363049092958439">છબીને આ રૂપે સા&amp;ચવો...</translation>
@@ -4707,6 +4715,7 @@ USB ડિવાઇસ</translation>
 <translation id="6532527800157340614">સાઇન ઇન નિષ્ફળ થયું કારણ કે તમારું એક્સેસ ટોકન પાછું મેળવી શકાયું ન હતું. કૃપા કરીને તમારું નેટવર્ક કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="6532663472409656417">એન્ટરપ્રાઇઝ દ્વારા નોંધણી કરાયેલું</translation>
 <translation id="6535331821390304775">આ પ્રકારની લિંકને હંમેશાં સંકળાયેલી ઍપમાં ખોલવા <ph name="ORIGIN" />ને મંજૂરી આપો</translation>
+<translation id="6537613839935722475">નામ માટે અક્ષરો, સંખ્યાઓ અને હાયફન (-)નો ઉપયોગ કરી શકાય છે</translation>
 <translation id="6538635548667167211">ડેટા વપરાશના હાલના સેટિંગ મોબાઇલ ડેટા માટે સેટ છે</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" /> નોંધ: <ph name="END_BOLD" /> જો તમે શું કરી રહ્યાં છો તે તમે જાણતા હો અથવા જો તમને તેવું કરવા માટે કહેવામાં આવ્યું હોય તો જ ચાલુ કરો, કારણ કે ડેટાનો સંગ્રહ પ્રદર્શન પર અસર કરી શકે છે.</translation>
 <translation id="6541638731489116978">આ સાઇટને તમારા મોશન સેન્સરને ઍક્સેસ કરવાથી બ્લૉક કરવામાં આવી છે.</translation>
@@ -4795,6 +4804,7 @@ USB ડિવાઇસ</translation>
 <translation id="6650234781371031356"><ph name="WEBSITE" />નો તમારો પાસવર્ડ આ ડિવાઇસ પર અને તમારા Google એકાઉન્ટમાં સ્ટોર કરવામાં આવ્યો છે. તમે કયો પાસવર્ડ ડિલીટ કરવા માગો છો?</translation>
 <translation id="665061930738760572">&amp;નવી વિંડોમાં ખોલો</translation>
 <translation id="6651237644330755633">વેબસાઇટ્સ ઓળખવા માટે આ પ્રમાણપત્ર પર વિશ્વાસ કરો</translation>
+<translation id="6651495917527016072">તમારા ફોન સાથે વાઇ-ફાઇ નેટવર્ક સિંક કરો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" /> એકીકરણ ફક્ત x86_64 પ્લૅટફોર્મ પર ઉપલબ્ધ છે. ARM અથવા x86 પ્લૅટફોર્મ પર બનાવેલું Chromebooks આ કામગીરીને સહાય કરતું નથી.</translation>
 <translation id="6654509035557065241">પસંદ કરેલું નેટવર્ક</translation>
 <translation id="6655190889273724601">વિકાસકર્તા મોડ</translation>
@@ -5398,6 +5408,7 @@ USB ડિવાઇસ</translation>
 <translation id="7375235221357833624">{0,plural, =1{એક કલાકની અંદર ડિવાઇસ અપડેટ કરો}one{# કલાકની અંદર ડિવાઇસ અપડેટ કરો}other{# કલાકની અંદર ડિવાઇસ અપડેટ કરો}}</translation>
 <translation id="7376553024552204454">માઉસ કર્સર જ્યારે ગતિમાન હોય ત્યારે તેને હાઇલાઇટ કરો</translation>
 <translation id="7377451353532943397">સેન્સર ઍક્સેસ બ્લૉક કરવાનું ચાલુ રાખો</translation>
+<translation id="7378611153938412599">નબળા પાસવર્ડનું અનુમાન કરવું સરળ હોય છે. તમે સશક્ત પાસવર્ડ બનાવવાની ખાતરી કરો. <ph name="BEGIN_LINK" />સુરક્ષા સંબંધિત વધુ ટિપ જુઓ.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Chrome વેબ દુકાન ખોલો</translation>
 <translation id="7378812711085314936">ડેટા કનેક્શન મેળવો</translation>
 <translation id="7380622428988553498">ડિવાઇસના નામમાં અમાન્ય અક્ષરો છો</translation>
@@ -5921,6 +5932,7 @@ USB ડિવાઇસ</translation>
 <translation id="7959074893852789871">ફાઇલમાં બહુવિધ પ્રમાણપત્રો રહેલા છે, તેમાંનાં કેટલાક આયાત કરેલા નથી:</translation>
 <translation id="7961015016161918242">ક્યારેય નહીં</translation>
 <translation id="7963001036288347286">ટચપૅડની ઝડપ</translation>
+<translation id="7963608432878156675">બ્લૂટૂથ અને નેટવર્ક કનેક્શન માટે આ નામ અન્ય ડિવાઇસ પર દેખાઈ શકે છે</translation>
 <translation id="7963826112438303517">તમારા આસિસ્ટંટ, તમારું વૉઇસ મૉડલ બનાવવા તથા અપડેટ કરવા માટે આ રેકોર્ડિંગનો તથા તમારી બોલાયેલી વિનંતીઓનો ઉપયોગ કરે છે, જેનો સંગ્રહ તમે જેમાં Voice Match ચાલુ કર્યું છે તે જ ડિવાઇસમાં કરવામાં આવે છે. આસિસ્ટંટના સેટિંગમાં વૉઇસ પ્રવૃત્તિ જુઓ અથવા ફરી તાલીમ આપો.</translation>
 <translation id="7966241909927244760">છબી સરનામું કૉ&amp;પિ કરો</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{બુકમાર્કની સૂચિમાં 1 આઇટમ છે}one{બુકમાર્કની સૂચિમાં {COUNT} આઇટમ છે}other{બુકમાર્કની સૂચિમાં {COUNT} આઇટમ છે}}</translation>
@@ -6380,6 +6392,7 @@ USB ડિવાઇસ</translation>
 <translation id="850875081535031620">કોઈ નુકસાનકારક સૉફ્ટવેર મળ્યું નથી</translation>
 <translation id="8509177919508253835">સુરક્ષા કોડ રીસેટ કરો અને પિન બનાવો</translation>
 <translation id="8509646642152301857">જોડણીની તપાસ ડાઉનલોડ કરવામાં નિષ્ફળ.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{કોઈ નબળો પાસવર્ડ મળ્યો નથી}=1{{COUNT} નબળો પાસવર્ડ મળ્યો}one{{COUNT} નબળો પાસવર્ડ મળ્યો}other{{COUNT} નબળા પાસવર્ડ મળ્યા}}</translation>
 <translation id="8512476990829870887">પ્રક્રિયાનો અંત કરો</translation>
 <translation id="851263357009351303"><ph name="HOST" /> ને હંમેશા છબી બતાવવાની મંજૂરી આપો</translation>
 <translation id="8513108775083588393">ઑટો રોટેટ</translation>

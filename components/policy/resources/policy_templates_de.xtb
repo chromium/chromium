@@ -203,11 +203,6 @@
       Ist für die Richtlinie "false" festgelegt, erlaubt <ph name="PRODUCT_NAME" /> das Erstellen von Gastprofilen nicht.</translation>
 <translation id="1363275621236827384">Abfragen an Quirks-Server für Hardwareprofile aktivieren</translation>
 <translation id="1376119291123231789">Intelligenten Akkulademodus aktivieren</translation>
-<translation id="1378850678793136128">Sie können eine Liste mit URL-Mustern erstellen, die die Websites angeben, denen automatisch die Berechtigung für den Zugriff auf ein USB-Gerät mit den angegebenen Anbieter- und Produkt-IDs gewährt wird. Damit die Richtlinie gültig ist, müssen für jeden Eintrag auf der Liste die Felder „devices“ und „urls“ angegeben sein. Jeder Eintrag im Feld „devices“ kann ein Feld „vendor_id“ und „product_id“ haben. Bei Weglassen des Felds „vendor_id“ wird eine Richtlinie erstellt, die für jedes Gerät gilt. Bei Weglassen des Felds „product_id“ wird eine Richtlinie erstellt, die für jedes Gerät mit der angegebenen Anbieter-ID gilt. Eine Richtlinie, die ein Feld „product_id“ ohne das Feld „vendor_id“ hat, ist ungültig.
-
-        Im USB-Berechtigungsmodell wird die URL der anfragenden Website („anfragende URL“) und die URL der Frame-Website der obersten Ebene („einbettende URL“) verwendet. Dabei wird der anfragenden URL die Berechtigung erteilt, auf das USB-Gerät zuzugreifen. Wird die anfragende Website in einen iFrame geladen, kann die anfragende von der einbettenden URL abweichen. Deshalb darf das Feld „urls“ bis zu zwei durch ein Komma voneinander getrennte URL-Strings enthalten: die anfragende URL und die einbettende URL. Falls nur eine einzige URL angegeben ist, wird der Zugriff auf die entsprechenden USB-Geräte gewährt, wenn unabhängig vom Einbettungsstatus die URL der anfragenden Website mit dieser URL übereinstimmt. Die URLs im Feld „urls“ müssen gültig sein, da ansonsten die Richtlinie ignoriert wird.
-
-        Ist diese Richtlinie nicht konfiguriert, kommt für alle Websites der globale Standardwert zum Einsatz (kein automatischer Zugriff).</translation>
 <translation id="1384459581748403878">Referenz: <ph name="REFERENCE_URL" /></translation>
 <translation id="138847842893090358">Update-Status des Betriebssystems melden</translation>
 <translation id="1390901586107713894">Mit dieser Richtlinie können Sie festlegen, welche Erweiterungen Nutzer NICHT installieren dürfen. Bereits installierte Erweiterungen, die gesperrt sind, werden deaktiviert und Nutzer haben keine Möglichkeit, sie zu aktivieren. Sollte eine aufgrund der Sperrliste deaktivierte Erweiterung aus der Liste entfernt werden, wird sie automatisch wieder aktiviert.
@@ -440,12 +435,6 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 
       Wenn die Richtlinie nicht konfiguriert ist, schlägt die Installation von <ph name="PLUGIN_VM_NAME" /> fehl, wenn weniger als 20 GB (Standardwert) freier Speicherplatz auf dem Gerät verfügbar sind.
       Wenn die Richtlinie konfiguriert ist, schlägt die Installation von <ph name="PLUGIN_VM_NAME" /> fehl, wenn der freie Speicherplatz auf dem Gerät nicht dem in der Richtlinie angegebenen Mindestwert entspricht.</translation>
-<translation id="1695708467571967752">Mit dieser Richtlinie wird festgelegt, ob Nutzer Medien wiedergeben können, wenn das Gerät gesperrt ist.
-
-      Wird sie auf "false" gesetzt, werden die Mediensteuerelemente auf dem Sperrbildschirm deaktiviert.
-
-      Wird sie auf "true" gesetzt oder nicht konfiguriert, werden die Mediensteuerelemente auf dem Sperrbildschirm angezeigt, wenn Nutzer das Gerät während der Medienwiedergabe sperren.
-      </translation>
 <translation id="1700811900332333712">Powerwash-Anfrage durch Gerät zulassen</translation>
 <translation id="1708496595873025510">Beschränkung für Abruf des Varianten-Seeds festlegen</translation>
 <translation id="171511968762040550">Wenn diese Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, können Nutzer Lesezeichen hinzufügen, entfernen oder ändern.
@@ -649,7 +638,6 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
           Wenn diese Einstellung deaktiviert ist, können keine Dateien übertragen werden. Ist die Einstellung aktiviert oder nicht konfiguriert, ist eine Dateiübertragung möglich.</translation>
 <translation id="2057317273526988987">Zugriff auf eine Liste mit URLs erlauben</translation>
 <translation id="2061810934846663491">Erforderliche Domainnamen für Remotezugriff-Hosts konfigurieren</translation>
-<translation id="2067011586099792101">Zugriff auf Websites außerhalb von Inhaltspaketen blockieren</translation>
 <translation id="2069350366303315077">Wenn die Richtlinie aktiviert ist, erzwingt <ph name="PRODUCT_NAME" /> Gastsitzungen und verhindert die Anmeldung über Nutzerprofile. Gastsitzungen basieren auf <ph name="PRODUCT_NAME" />-Profilen, bei denen die Programmfenster im Inkognitomodus ausgeführt werden.
 
       Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist bzw. der Gastmodus des Browsers durch <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" /> deaktiviert ist, können sowohl neue als auch vorhandene Profile verwendet werden.</translation>
@@ -2096,7 +2084,6 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 <translation id="4056910949759281379">SPDY-Protokoll deaktivieren</translation>
 <translation id="4061590579642538878">Informationen über Absturzberichte melden.</translation>
 <translation id="4075675819066819571">Ablage auf der linken Seite des Bildschirms anzeigen</translation>
-<translation id="4075864623710596000">In dieser Liste aufgeführte Hostnamen sind vom HSTS-Richtliniencheck ausgenommen, der Anfragen von http auf https upgraden kann. Für diese Richtlinie sind nur Single-Label-Hostnamen zulässig. Hostnamen müssen kanonisiert werden: Alle IDNs müssen in ihr A-Label-Format konvertiert und alle ASCII-Buchstaben kleingeschrieben werden. Diese Richtlinie gilt nur für die angegebenen Hostnamen, aber nicht für Subdomains der angegebenen Namen.</translation>
 <translation id="408029843066770167">Abfragen an einen Google-Dienst für die Zeiteinstellung zulassen</translation>
 <translation id="408076456549153854">Browseranmeldung aktivieren</translation>
 <translation id="4082498585300984671">Funktion "Zum Anrufen klicken" aktivieren</translation>
@@ -2206,9 +2193,6 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 
       Ist die Richtlinie deaktiviert, wird <ph name="PRODUCT_NAME" /> deaktiviert.</translation>
 <translation id="4203879074082863035">Nur Drucker in der Zulassungsliste werden Nutzern angezeigt</translation>
-<translation id="420512303455129789">Eine Art Wörterbuch, das URLs einem booleschen Parameter zuordnet und dadurch angibt, ob der Zugriff auf den Host erlaubt ("true") oder blockiert ("false") werden soll
-
-          Diese Richtlinie dient ausschließlich zur internen Verwendung in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4209297478239988291">Mit dieser Richtlinie wird die Bedienungshilfe "Automatisch klicken" aktiviert.
 
           Mit dieser Funktion können Sie klicken, ohne die Maustaste zu drücken oder auf das Touchpad zu tippen. Dazu bewegen Sie den Mauszeiger einfach auf das Objekt, das angeklickt werden soll.
@@ -2348,13 +2332,6 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 <translation id="4494132853995232608">Wilco DTC</translation>
 <translation id="449423975179525290">Richtlinien für <ph name="PLUGIN_VM_NAME" /> konfigurieren.</translation>
 <translation id="4498493270899294764">URL-Muster, für die heruntergeladene Inhalte nicht auf Malware geprüft werden sollen</translation>
-<translation id="450537894712826981">Konfiguriert die Cache-Größe, die <ph name="PRODUCT_NAME" /> zum Speichern von Mediendateien im Cache auf dem Datenträger verwendet.
-
-      Wenn Sie diese Richtlinie festlegen, verwendet <ph name="PRODUCT_NAME" /> die angegebene Cache-Größe unabhängig davon, ob der Nutzer den Parameter "--media-cache-size" angegeben hat oder nicht. Der in dieser Richtlinie angegebene Wert ist keine festgelegte Grenze, sondern mehr ein Richtwert für das Caching-System. Werte, die unter wenigen Megabytes liegen, sind zu klein und werden auf einen sinnvollen Minimalwert aufgerundet.
-
-      Wenn der Wert dieser Richtlinie 0 beträgt, wird die Standard-Cache-Größe verwendet. Der Nutzer kann diese jedoch nicht ändern.
-
-      Wird diese Richtlinie nicht festgelegt, wird die Standardgröße verwendet und der Nutzer kann diese mit dem Parameter "--media-cache-size" überschreiben.</translation>
 <translation id="4508084713148633492">Ermöglicht die Aktivierung oder Deaktivierung einer Benachrichtigung, wenn nur noch wenig Speicherplatz verfügbar ist. Dies gilt für alle Nutzer auf diesem Gerät.
       Wenn es auf einem verwalteten Gerät genau ein Nutzerkonto gibt, wird diese Benachrichtigung immer angezeigt, unabhängig davon, auf welchen Wert diese Richtlinie gesetzt ist.
       Gibt es auf einem verwalteten Gerät mehrere Nutzerkonten, wird die Benachrichtigung nur dann angezeigt, wenn diese Richtlinie auf "True" gesetzt ist.
@@ -2649,7 +2626,6 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
 
       Wird die Richtlinie deaktiviert, sendet <ph name="PRODUCT_NAME" /> solche Abfragen nicht mehr.</translation>
 <translation id="5032164758660626397">Verhindern, dass Nutzer große Dateien übertragen</translation>
-<translation id="5047604665028708335">Zugriff auf Websites außerhalb von Inhaltspaketen erlauben</translation>
 <translation id="5056708224511062314">Lupe deaktiviert</translation>
 <translation id="5058573563327660283">Strategie auswählen, die bei der automatischen Bereinigung zur Freigabe von Festplattenspeicher verwendet wird (eingestellt)</translation>
 <translation id="5061114193960158745">Mithilfe dieser Richtlinie wird die Liste der Websites verwaltet, die unter keinen Umständen einen Browserwechsel auslösen. Jedes Element wird als Regel angesehen. Wenn es eine Übereinstimmung mit der Regel gibt, wird kein alternativer Browser geöffnet. Im Gegensatz zur Richtlinie "<ph name="URL_LIST_POLICY_NAME" />" gelten die Regeln in beide Richtungen. Wenn das <ph name="IE_PRODUCT_NAME" />-Add-in aktiviert ist, wird damit auch gesteuert, ob <ph name="IE_PRODUCT_NAME" /> diese URLs in <ph name="PRODUCT_NAME" /> öffnen soll.
@@ -3122,10 +3098,6 @@ Wenn die in der Richtlinie <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" /> ange
       Beachten Sie, dass diese Einstellung nicht empfohlen wird, da hierdurch die "nameConstraints"-Erweiterung umgangen werden kann. Diese Erweiterung beschränkt die Hostnamen, für die ein bestimmtes Zertifikat autorisiert werden kann.
 
       Wenn diese Richtlinie nicht konfiguriert oder auf "false" eingestellt ist, werden Serverzertifikate ohne "subjectAlternativeName"-Erweiterung, die entweder einen DNS-Namen oder eine IP-Adresse enthalten, als nicht vertrauenswürdig eingestuft.</translation>
-<translation id="5578571772998293651">Hiermit wird Nutzerfeedback zugelassen.
-        Wenn die Richtlinie auf "false" gesetzt ist, können Nutzer kein Feedback an Google senden.
-
-        Ist sie nicht konfiguriert oder auf "true" gesetzt, dann können Nutzer über das Menü &gt; "Hilfe" &gt; "Problem melden" oder die entsprechende Tastenkombination Feedback an Google senden.</translation>
 <translation id="5579179012798142131">Wird "ArcEnabled" auf "True" gesetzt und sind sowohl der flüchtige Modus als auch Mehrfachanmeldung während einer Nutzersitzung deaktiviert, so ist ARC für den Nutzer aktiviert. Wenn die Richtlinie auf "False" gesetzt ist oder keine Einstellung gewählt wird, können Unternehmensnutzer ARC nicht verwenden.</translation>
 <translation id="5582429816116769246">Mit dieser Richtlinie können Sie festlegen, ob Nutzer auf Drucker außerhalb des Unternehmens zugreifen dürfen.
 
@@ -3388,7 +3360,6 @@ Wenn diese Einstellung deaktiviert oder nicht konfiguriert ist, wird kein Proxy 
 <translation id="5951418260805607969">Benachrichtigung anzeigen, wenn nur wenig Speicherplatz verfügbar ist</translation>
 <translation id="5961137303188584693">MAC-Adresse der im Gerät verbauten NIC</translation>
 <translation id="5966615072639944554">Erweiterungen, die die Remote Attestation API zur Bestätigung der Nutzeridentität verwenden dürfen</translation>
-<translation id="5983708779415553259">Standardverhalten für Websites, die nicht zu einem Inhaltspaket gehören</translation>
 <translation id="5997543603646547632">Standardmäßig 24-Stunden-Uhr verwenden</translation>
 <translation id="5997846976342452720">Angeben, ob Plug-in-Suchfunktion deaktiviert werden soll (eingestellt)</translation>
 <translation id="5998198091336830580">Diese Richtlinie ist Teil der folgenden Atomic-Gruppe (nur Richtlinien aus der Quelle mit der höchsten Priorität in der Gruppe werden angewendet):</translation>
@@ -3427,9 +3398,6 @@ Wenn diese Einstellung deaktiviert oder nicht konfiguriert ist, wird kein Proxy 
 <translation id="603768430528561926">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer von Geräten in Unternehmen Angebote einlösen, indem sie <ph name="PRODUCT_OS_NAME" /> registrieren.
 
       Ist die Richtlinie deaktiviert, können solche Nutzer diese Angebote nicht einlösen.</translation>
-<translation id="6038407313189625985">Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, ist Renderer-Codeintegrität aktiviert. Sie sollte nur deaktiviert werden, wenn Kompatibilitätsprobleme mit Drittanbieter-Software auftreten, die innerhalb der Rendererprozesse von Chrome ausgeführt werden muss.
-
-      Eine Deaktivierung hat negative Auswirkungen auf die Sicherheit und Stabilität von Chrome, da dann unbekannter und potenziell schädlicher Code in den Rendererprozessen von Chrome geladen werden kann. Weitere Informationen finden Sie unter: https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies.</translation>
 <translation id="6048199181629830227">Energieverwaltung zum Umschalten bei Leistungsspitzen aktivieren</translation>
 <translation id="6054485492411959335">Gibt die Drucker an, die ein Nutzer verwenden kann.
 
@@ -4729,9 +4697,6 @@ Die Richtlinienwerte sollten in % angegeben werden und zwischen 0 und 100 liegen
 
       Hinweis: Automatische Neustarts sind derzeit nur aktiviert, wenn die Anmeldeseite angezeigt wird oder eine Kiosk-App-Sitzung läuft. Dies wird zukünftig geändert, sodass die Richtlinie immer gilt, unabhängig davon, ob und welche Sitzung aktiv ist.</translation>
 <translation id="7701341006446125684">Cache-Größe für Apps und Erweiterungen in Byte festlegen</translation>
-<translation id="7709537117200051035">Eine Art Wörterbuch, das Hostnamen einem booleschen Parameter zuordnet und dadurch angibt, ob der Zugriff auf den Host erlaubt ("true") oder blockiert ("false") werden soll.
-
-          Diese Richtlinie dient ausschließlich zur internen Verwendung in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7710950688502974809">Liste der Einstellungen für Chrome Enterprise Connectors-Services für den Enterprise Connector "<ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" />". Dieser wird ausgelöst, wenn Daten aus der Zwischenablage oder durch Drag-and-drop von Webinhalten in Chrome eingegeben werden.
 
       Mit den Feldern "<ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />" und "<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" />" wird ermittelt, ob der Connector Daten zur Analyse senden soll, wenn sie auf einer bestimmten Seite eingegeben werden, und welche Tags für die Analyseanfrage verwendet werden sollen. Ein Tag, das einem "enable"-Muster entspricht, wird der Anfrage hinzugefügt, wenn die Seiten-URL mit einem für das jeweilige Tag passenden Muster übereinstimmt – jedoch nur, wenn kein "disable"-Muster mit demselben Tag mit der Seiten-URL übereinstimmt. Die Analyse wird durchgeführt, wenn die Anfrage mindestens ein Tag enthält.
@@ -4879,7 +4844,6 @@ Die Richtlinienwerte sollten in % angegeben werden und zwischen 0 und 100 liegen
       Wenn Sie diese Einstellung aktivieren oder deaktivieren, können Nutzer sie in <ph name="PRODUCT_NAME" /> nicht ändern oder überschreiben.
 
       Bleibt diese Richtlinie unkonfiguriert, wird die Einstellung aktiviert, kann jedoch vom Nutzer geändert werden.</translation>
-<translation id="7953256619080733119">Manuell festgelegte Ausnahme-Hosts für verwalteten Nutzer</translation>
 <translation id="7956210013490975468">Konfiguriert den System-Proxy-Dienst für <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7958537754689366707">Passworteingabe alle zwölf Stunden erforderlich</translation>
 <translation id="7961779417826583251">Erzwingung der Zertifikatstransparenz für eine Liste alter Zertifizierungsstellen deaktivieren</translation>
@@ -5098,11 +5062,6 @@ Unter Windows ist es empfehlenswert, Richtlinien über Gruppenrichtlinienobjekte
           Wenn Sie diese Richtlinie konfigurieren, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
           Ist die Richtlinie nicht konfiguriert, ist die Spracheingabe anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
-<translation id="829337533107201925">Ist diese Richtlinie aktiviert, werden Richtlinien aus atomischen Gruppen, die eine andere Quelle als die Quelle mit der höchsten Priorität der entsprechenden Gruppe haben, ignoriert.
-
-      Wenn die Richtlinie deaktiviert ist, werden Richtlinien nicht aufgrund ihrer Quelle ignoriert. Sie werden dann nur ignoriert, wenn ein Konflikt besteht und sie nicht die höchste Priorität haben.
-
-      Wird diese Richtlinie von einer cloudbasierten Quelle konfiguriert, kann sie nicht auf bestimmte einzelne Nutzer ausgerichtet werden.</translation>
 <translation id="8294750666104911727">Normalerweise werden Seiten, bei denen das Metatag "X-UA-Compatible" auf "chrome=1" gesetzt ist, unabhängig von der Richtlinie "ChromeFrameRendererSettings" in <ph name="PRODUCT_FRAME_NAME" /> gerendert.
 
           Bei aktivierter Einstellung werden die Seiten nicht nach Metatags durchsucht.
@@ -5300,7 +5259,6 @@ Die Richtlinie wird in M75 entfernt.</translation>
 <translation id="8544375438507658205">Standardanwendung für HTML-Darstellung in <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Zulassen, dass SMS zwischen Smartphone mit Chromebook synchronisiert werden.</translation>
 <translation id="8548832052135586762">Damit wird festgelegt, ob nur in Farbe, nur in Schwarz-Weiß oder ohne Farbmodusbeschränkung gedruckt wird. Ist die Richtlinie nicht konfiguriert, wird keine Einschränkung angewendet.</translation>
-<translation id="8549772397068118889">Vor dem Besuch von Websites außerhalb von Inhaltspaketen warnen</translation>
 <translation id="8566842294717252664">Web Store auf der "Neuer Tab"-Seite und im App Launcher ausblenden</translation>
 <translation id="8569734380847633643">
           Wenn diese Richtlinie auf "false" gesetzt ist, wird WLAN unter <ph name="PRODUCT_OS_NAME" /> deaktiviert und Nutzer können die Funktion nicht wieder aktivieren.
@@ -5420,7 +5378,6 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
       Wenn Sie diese Richtlinie konfigurieren, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
       Diese Richtlinie hat keinen Einfluss darauf, ob Nutzer auf einzelnen Geräten Drucker konfigurieren können. Sie ist als Ergänzung zu den Druckerkonfigurationen der einzelnen Nutzer gedacht.</translation>
-<translation id="8764477907716150749">Diese Richtlinie ist zur internen Nutzung in <ph name="PRODUCT_NAME" /> vorgesehen.</translation>
 <translation id="8767743923206070405">Wenn die Richtlinie aktiviert ist, wird die Startbildschirmtaste in der Symbolleiste von <ph name="PRODUCT_NAME" /> angezeigt. Ist die Richtlinie deaktiviert, erscheint die Startbildschirmtaste nicht.
 
       Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern in <ph name="PRODUCT_NAME" /> nicht geändert werden. Wenn die Richtlinie nicht konfiguriert ist, können Nutzer selbst entscheiden, ob die Startbildschirmtaste angezeigt werden soll.</translation>

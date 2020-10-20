@@ -300,6 +300,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> s'ha suprimit</translation>
 <translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> pàgines no llegides</translation>
 <translation id="321773570071367578">Si oblideu la frase de contrasenya o voleu canviar aquesta configuració, <ph name="BEGIN_LINK" />restabliu la sincronització<ph name="END_LINK" /></translation>
+<translation id="3227557059438308877">Google Chrome com a clau de seguretat</translation>
 <translation id="3232754137068452469">Aplicació web</translation>
 <translation id="3236059992281584593">Queda 1 minut</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -937,6 +938,7 @@ Les dades de la teva sessió d'incògnit només s'esborraran de Chrome quan <ph 
 <translation id="7682724950699840886">Segueix aquests consells: comprova que hi hagi prou espai al dispositiu i prova d'exportar les contrasenyes de nou.</translation>
 <translation id="7698359219371678927">Crea una adreça electrònica a <ph name="APP_NAME" /></translation>
 <translation id="7704317875155739195">Completa automàticament les cerques i els URL</translation>
+<translation id="7707922173985738739">Utilitza dades mòbils</translation>
 <translation id="7725024127233776428">Les pàgines que afegeixis a les adreces d'interès es mostraran aquí</translation>
 <translation id="7735637452482172701">Desbloqueja amb el bloqueig de pantalla</translation>
 <translation id="7746457520633464754">Per detectar aplicacions i llocs web perillosos, Chrome envia a Google els URL d'algunes de les pàgines que visites, informació limitada del sistema i part del contingut de les pàgines</translation>

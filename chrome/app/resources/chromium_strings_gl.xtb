@@ -11,6 +11,7 @@
 <translation id="1131805035311359397">Para comprobar se os teus contrasinais están protexidos fronte a violacións da seguranza dos datos e outros problemas de seguranza, debes <ph name="BEGIN_LINK" />iniciar sesión en Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Acerca de Chromium</translation>
 <translation id="1315551408014407711">Configura o teu novo perfil de Chromium</translation>
+<translation id="1357932062193643861">Preguntar ao abrir Chromium</translation>
 <translation id="1396446129537741364">Chromium está tentando mostrar contrasinais.</translation>
 <translation id="1414495520565016063">Iniciaches sesión en Chromium.</translation>
 <translation id="151962892725702025">Chromium non puido sincronizar os teus datos porque a sincronización non está dispoñible para o teu dominio.</translation>
@@ -185,6 +186,7 @@
 <translation id="6863361426438995919">Google Pay (copiouse en Chromium)</translation>
 <translation id="6893813176749746474">Actualizouse Chromium, pero non o utilizas desde hai polo menos 30 días.</translation>
 <translation id="6964305034639999644">Abrir ligazón nunha ventá do modo de incó&amp;gnito de Chromium</translation>
+<translation id="6978145336957848883">Os contrasinais pouco seguros son fáciles de adiviñar. Permite que Chromium <ph name="BEGIN_LINK" />cree e lembre contrasinais seguros por ti<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium necesita permiso para acceder ao micrófono neste sitio</translation>
 <translation id="701244094609242530">Chromium non puido comprobar as túas extensións. Téntao de novo máis tarde.</translation>
 <translation id="7028347026395185822">{NUM_HOURS,plural, =1{Chromium non atopou ningún software daniño coñecido no teu ordenador. Última comprobación: hai 1 hora.}other{Chromium non atopou ningún software daniño coñecido no teu ordenador. Última comprobación: hai {NUM_HOURS} horas.}}</translation>

@@ -300,6 +300,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> eytt</translation>
 <translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> ólesnar síður</translation>
 <translation id="321773570071367578">Ef þú hefur gleymt aðgangsorðinu eða þig langar að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla samstillingu<ph name="END_LINK" /></translation>
+<translation id="3227557059438308877">Google Chrome sem öryggislykill</translation>
 <translation id="3232754137068452469">Vefforrit</translation>
 <translation id="3236059992281584593">Ein mín. eftir</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -937,6 +938,7 @@ Gögnum úr huliðslotum verður aðeins eytt úr Chrome þegar þú <ph name="B
 <translation id="7682724950699840886">Prófaðu eftirfarandi: Gakktu úr skugga um að nóg pláss sé á tækinu og reyndu að flytja út aftur.</translation>
 <translation id="7698359219371678927">Skrifa tölvupóst í <ph name="APP_NAME" /></translation>
 <translation id="7704317875155739195">Fylla sjálfvirkt út leitir og vefslóðir</translation>
+<translation id="7707922173985738739">Nota farsímagögn</translation>
 <translation id="7725024127233776428">Síður sem þú setur í bókamerki birtast hér</translation>
 <translation id="7735637452482172701">Taka úr lás með skjálás</translation>
 <translation id="7746457520633464754">Til að greina hættuleg forrit og vefsvæði sendir Chrome vefslóðir einhverra síðna sem þú skoðar, kerfisupplýsingar og efni síðu til Google.</translation>

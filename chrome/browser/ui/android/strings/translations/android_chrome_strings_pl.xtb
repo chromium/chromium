@@ -300,6 +300,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="3211426585530211793">Usunięto: <ph name="ITEM_TITLE" /></translation>
 <translation id="3211503082155944789">Nieprzeczytane strony: <ph name="READING_LIST_COUNT" /></translation>
 <translation id="321773570071367578">Jeśli nie pamiętasz hasła lub chcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph name="END_LINK" /></translation>
+<translation id="3227557059438308877">Google Chrome jako klucz bezpieczeństwa</translation>
 <translation id="3232754137068452469">Aplikacja internetowa</translation>
 <translation id="3236059992281584593">Pozostała minuta</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -937,6 +938,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="7682724950699840886">Skorzystaj z tych wskazówek: upewnij się, że masz wystarczająco dużo miejsca na urządzeniu, i ponownie spróbuj wyeksportować hasła.</translation>
 <translation id="7698359219371678927">Utwórz e-maila w aplikacji <ph name="APP_NAME" /></translation>
 <translation id="7704317875155739195">Autouzupełniaj wyszukiwania i adresy URL</translation>
+<translation id="7707922173985738739">Użycie mobilnej transmisji danych</translation>
 <translation id="7725024127233776428">Tutaj pojawią się strony, które dodasz do zakładek</translation>
 <translation id="7735637452482172701">Odblokuj za pomocą blokady ekranu</translation>
 <translation id="7746457520633464754">Aby wykrywać niebezpieczne aplikacje i witryny, Chrome wysyła do Google adresy URL i część zawartości niektórych odwiedzanych przez Ciebie stron, a także niektóre informacje o systemie</translation>

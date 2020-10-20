@@ -202,11 +202,6 @@
       Jika kebijakan ini disetel ke False, <ph name="PRODUCT_NAME" /> tidak akan mengizinkan profil tamu dimulai.</translation>
 <translation id="1363275621236827384">Mengaktifkan kueri ke Quirks Server untuk profil hardware</translation>
 <translation id="1376119291123231789">Mengaktifkan mode pengisian daya baterai lanjutan</translation>
-<translation id="1378850678793136128">Memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang otomatis diizinkan untuk mengakses perangkat USB dengan ID vendor dan produk tertentu pada layar login. Setiap item daftar harus memiliki kolom "devices" dan "urls" agar kebijakan menjadi valid. Setiap item di kolom "perangkat" dapat memiliki kolom "vendor_id" dan "product_id". Jika kolom "vendor_id" tidak ada, kebijakan akan cocok dengan perangkat apa pun. Jika kolom "product_id" tidak ada, kebijakan akan cocok dengan perangkat apa pun yang memiliki ID vendor tertentu. Kebijakan yang memiliki kolom "product_id" tanpa kolom "vendor_id" menjadi tidak valid.
-
-        Model izin USB menggunakan URL situs peminta ("URL peminta") dan URL situs bingkai level teratas ("URL sematan") untuk memberikan izin ke URL peminta untuk mengakses perangkat USB. URL peminta mungkin berbeda dengan URL sematan saat situs peminta dimuat dalam iframe. Oleh karena itu, kolom "url" dapat berisi hingga dua string URL yang dipisahkan dengan koma, untuk menentukan masing-masing URL peminta dan URL sematan. Jika hanya ada satu URL yang ditentukan, akses ke perangkat USB yang sesuai akan diberikan saat URL situs peminta cocok dengan URL ini, terlepas dari status sematannya. URL dalam "url" harus berupa URL yang valid. Jika tidak, kebijakan akan diabaikan.
-
-        Jika kebijakan ini tidak disetel, nilai default global akan digunakan untuk semua situs (tidak ada akses otomatis).</translation>
 <translation id="1384459581748403878">Referensi: <ph name="REFERENCE_URL" /></translation>
 <translation id="138847842893090358">Melaporkan status update OS</translation>
 <translation id="1390901586107713894">Memungkinkan Anda menentukan ekstensi mana yang TIDAK dapat diinstal pengguna. Ekstensi yang sudah diinstal akan dinonaktifkan jika diblokir, tanpa memberikan opsi kepada pengguna untuk mengaktifkannya. Setelah ekstensi yang dinonaktifkan dihapus dari daftar yang tidak diizinkan, ekstensi akan kembali diaktifkan secara otomatis.
@@ -449,12 +444,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 
       Jika kebijakan ini tidak disetel, penginstalan <ph name="PLUGIN_VM_NAME" /> akan gagal jika ruang disk kosong yang tersedia di perangkat kurang dari 20 GB (nilai default).
       Jika kebijakan ini disetel, penginstalan <ph name="PLUGIN_VM_NAME" /> akan gagal jika ruang disk kosong yang tersedia di perangkat kurang dari yang ditentukan oleh kebijakan.</translation>
-<translation id="1695708467571967752">Kebijakan ini mengendalikan apakah pengguna dapat memutar media saat perangkat terkunci.
-
-      Jika kebijakan ini ditetapkan ke False, kontrol media pada layar kunci akan dinonaktifkan.
-
-      Jika kebijakan ini ditetapkan ke True atau tidak ditetapkan, kontrol media akan ditampilkan pada layar kunci ketika pengguna mengunci perangkat saat media diputar.
-      </translation>
 <translation id="1700811900332333712">Izinkan perangkat untuk meminta powerwash</translation>
 <translation id="1708496595873025510">Setel batasan pada pengambilan bibit Varietas</translation>
 <translation id="171511968762040550">Jika kebijakan ditetapkan ke Benar (True) atau tidak ditetapkan, pengguna akan dapat menambahkan, menghapus, atau mengubah bookmark.
@@ -673,7 +662,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
           Jika setelan ini dinonaktifkan, transfer file tidak akan diizinkan. Jika setelan ini diaktifkan atau tidak disetel, transfer file akan diizinkan.</translation>
 <translation id="2057317273526988987">Izinkan akses ke daftar URL</translation>
 <translation id="2061810934846663491">Mengonfigurasi nama domain wajib untuk host akses jarak jauh</translation>
-<translation id="2067011586099792101">Memblokir akses ke situs di luar paket konten</translation>
 <translation id="2069350366303315077">Jika kebijakan disetel ke Aktif, <ph name="PRODUCT_NAME" /> akan menerapkan sesi tamu dan mencegah login profil. Login tamu adalah profil <ph name="PRODUCT_NAME" /> saat semua jendela berada dalam mode Samaran.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, atau Mode tamu browser dinonaktifkan (melalui <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />), penggunaan profil baru atau yang sudah ada akan diizinkan.</translation>
@@ -811,9 +799,9 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Kebijakan ini tidak boleh digunakan untuk perangkat yang digunakan secara umum.
 
       Jika kebijakan disetel ke Benar (True) atau tidak disetel, notifikasi peringatan privasi di sesi tamu terkelola yang diluncurkan otomatis akan terus ditampilkan hingga pengguna menutupnya.</translation>
-<translation id="228665601367357543">Memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang otomatis diizinkan untuk mengakses perangkat USB dengan ID vendor dan produk tertentu. Setiap item daftar harus memiliki kolom "devices" dan "urls" agar kebijakan menjadi valid. Setiap item di kolom "perangkat" dapat memiliki kolom "vendor_id" dan "product_id". Jika kolom "vendor_id" tidak ada, kebijakan akan cocok dengan perangkat apa pun. Jika kolom "product_id" tidak ada, kebijakan akan cocok dengan perangkat apa pun yang memiliki ID vendor tertentu. Kebijakan yang memiliki kolom "product_id" tanpa kolom "vendor_id" menjadi tidak valid.
+<translation id="228665601367357543">Memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang otomatis diizinkan untuk mengakses perangkat USB dengan ID vendor dan produk tertentu. Setiap item daftar harus memiliki kolom "devices" dan "urls" agar kebijakan menjadi valid. Setiap item di kolom "devices" dapat memiliki kolom "vendor_id" dan "product_id". Jika kolom "vendor_id" tidak ada, kebijakan akan cocok dengan perangkat apa pun. Jika kolom "product_id" tidak ada, kebijakan akan cocok dengan perangkat apa pun yang memiliki ID vendor tertentu. Kebijakan yang memiliki kolom "product_id" tanpa kolom "vendor_id" menjadi tidak valid.
 
-      Model izin USB menggunakan URL peminta dan URL sematan (dari situs bingkai level teratas) untuk mengizinkan URL peminta mengakses perangkat USB. URL peminta mungkin berbeda dengan URL sematan saat situs peminta dimuat dalam iframe. Jadi, kolom "url" dapat berisi hingga dua string yang dipisahkan dengan koma untuk menentukan URL ini. Jika Anda hanya menentukan satu, akses ke perangkat USB terkait akan diizinkan saat URL situs peminta cocok dengan URL ini, terlepas dari status sematan. URL dalam "url" harus berupa URL yang valid. Jika tidak, kebijakan akan diabaikan.
+      Model izin USB menggunakan URL peminta dan URL sematan (dari situs bingkai level teratas) untuk mengizinkan URL peminta mengakses perangkat USB. URL peminta mungkin berbeda dengan URL sematan saat situs peminta dimuat dalam iframe. Jadi, kolom "urls" dapat berisi hingga dua string yang dipisahkan dengan koma untuk menentukan URL ini. Jika Anda hanya menentukan satu, akses ke perangkat USB terkait akan diizinkan saat URL situs peminta cocok dengan URL ini, terlepas dari status sematan. URL dalam "urls" harus berupa URL yang valid. Jika tidak, kebijakan akan diabaikan.
 
       Tidak menyetel kebijakan berarti <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> akan berlaku, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
 
@@ -2133,7 +2121,6 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 <translation id="4056910949759281379">Nonaktifkan protokol SPDY</translation>
 <translation id="4061590579642538878">Laporkan informasi tentang laporan kerusakan.</translation>
 <translation id="4075675819066819571">Posisikan rak di sisi kiri layar</translation>
-<translation id="4075864623710596000">Hostname yang ditentukan dalam daftar ini akan dikecualikan dari pemeriksaan kebijakan HSTS yang berpotensi mengupgrade permintaan dari http ke https. Hanya hostname berlabel tunggal yang diizinkan dalam kebijakan ini. Hostname harus dikanonikalisasi: semua IDN harus dikonversi ke format berlabel A, dan semua huruf ASCII harus berupa huruf kecil. Kebijakan ini hanya berlaku untuk hostname tertentu yang sudah ditentukan; tidak berlaku untuk subdomain dari nama yang ditentukan.</translation>
 <translation id="408029843066770167">Izinkan kueri ke layanan waktu Google</translation>
 <translation id="408076456549153854">Aktifkan login browser</translation>
 <translation id="4082498585300984671">Mengaktifkan Fitur Click to Call</translation>
@@ -2243,9 +2230,6 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 
       Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> akan dinonaktifkan.</translation>
 <translation id="4203879074082863035">Hanya printer yang diizinkan yang ditampilkan kepada pengguna</translation>
-<translation id="420512303455129789">Kamus yang memetakan URL ke tanda boolean yang menentukan apakah akses ke hosting harus diizinkan (true) atau diblokir (false).
-
-          Kebijakan ini untuk penggunaan internal oleh <ph name="PRODUCT_NAME" /> itu sendiri.</translation>
 <translation id="4209297478239988291">Mengaktifkan fitur aksesibilitas klik otomatis.
 
           Fitur ini berfungsi untuk mengklik tanpa perlu menekan mouse atau touchpad secara langsung, cukup arahkan kursor ke objek yang ingin Anda klik.
@@ -2385,13 +2369,6 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 <translation id="4494132853995232608">DTC wilco</translation>
 <translation id="449423975179525290">Konfigurasikan kebijakan terkait <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="4498493270899294764">Pola URL untuk tidak memeriksa malware pada konten yang didownload</translation>
-<translation id="450537894712826981">Mengonfigurasi ukuran cache yang akan digunakan <ph name="PRODUCT_NAME" /> untuk menyimpan file media di disk.
-
-      Jika Anda menyetel kebijakan ini, <ph name="PRODUCT_NAME" /> akan menggunakan ukuran cache yang disediakan terlepas dari apakah pengguna menentukan tanda '--media-cache-size' atau tidak. Nilai yang ditentukan dalam kebijakan ini bukan merupakan batas mutlak namun merupakan saran terhadap sistem penyimpanan dalam cache, nilai apa pun di bawah beberapa megabyte dianggap terlalu kecil dan akan dibulatkan ke nilai minimum yang lebih wajar.
-
-      Jika nilai kebijakan ini 0, ukuran cache default akan digunakan namun pengguna tidak akan dapat mengubahnya.
-
-      Jika kebijakan ini tidak disetel, ukuran default akan digunakan dan pengguna dapat menimpanya dengan tanda --media-cache-size.</translation>
 <translation id="4508084713148633492">Mengizinkan pengaktifan atau penonaktifan notifikasi saat ruang penyimpanan hampir penuh. Ini berlaku untuk semua pengguna pada perangkat.
       Jika hanya ada satu akun pengguna di sebuah perangkat yang dikelola, notifikasi akan selalu ditampilkan, apa pun nilai yang ditetapkan untuk kebijakan ini.
       Jika ada beberapa akun pengguna di sebuah perangkat yang dikelola, notifikasi hanya akan ditampilkan saat kebijakan ini disetel ke Benar (True).
@@ -2446,7 +2423,7 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 <translation id="4578912515887794133">Jika setelan ini diaktifkan, maka host akses jarak jauh akan membandingkan nama pengguna lokal (yang dikaitkan dengan host) dengan nama akun Google yang terdaftar sebagai pemilik host (misalnya, "johan" jika host adalah milik akun Google "johan@example.com").  Host akses jarak jauh tidak akan dimulai jika nama pemilik host berbeda dengan nama pengguna lokal yang dikaitkan dengan host tersebut.  Kebijakan RemoteAccessHostMatchUsername harus digunakan bersama RemoteAccessHostDomain untuk menegaskan bahwa akun Google pemilik host dikaitkan dengan domain tertentu (misalnya "example.com").
 
           Jika setelan ini dinonaktifkan atau tidak ditetapkan, host akses jarak jauh dapat dikaitkan dengan pengguna lokal mana pun.</translation>
-<translation id="4587365491100112056">Menyetel kebijakan akan menentukan masa berlaku cache data autentikasi dalam hitungan jam. Cache memiliki data tentang realm yang dipercaya oleh realm perangkat (realm terafiliasi). Oleh karena itu, cache data autentikasi akan membantu mempercepat login. Data khusus pengguna dan data untuk realm yang tidak terafiliasi tidak akan di-cache.
+<translation id="4587365491100112056">Menyetel kebijakan akan menentukan masa berlaku cache data autentikasi dalam hitungan jam. Cache memiliki data tentang realm yang dipercaya oleh realm perangkat (realm terafiliasi). Oleh karena itu, penyimpanan data autentikasi ke cache akan membantu mempercepat login. Data khusus pengguna dan data untuk realm yang tidak terafiliasi tidak akan di-cache.
 
       Menyetel kebijakan ke 0 akan menonaktifkan penyimpanan data autentikasi ke cache. Data khusus realm diambil setiap login sehingga menonaktifkan penyimpanan data autentikasi ke cache dapat memperlambat login pengguna secara signifikan.
 
@@ -2685,7 +2662,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> akan berhenti mengirimkan kueri tersebut.</translation>
 <translation id="5032164758660626397">Mencegah pengguna mentransfer file berukuran besar</translation>
-<translation id="5047604665028708335">Memungkinkan akses ke situs di luar paket konten</translation>
 <translation id="5056708224511062314">Lup dinonaktifkan</translation>
 <translation id="5058573563327660283">Pilih strategi yang digunakan untuk mengosongkan ruang disk selama pembersihan otomatis (tidak digunakan lagi)</translation>
 <translation id="5061114193960158745">Menyetel kebijakan akan mengontrol daftar situs yang tidak pernah menyebabkan pengalihan browser. Setiap item diperlakukan sebagai aturan. Aturan yang cocok tidak akan membuka browser alternatif. Tidak seperti kebijakan <ph name="URL_LIST_POLICY_NAME" />, aturan berlaku untuk kedua arah. Jika diaktifkan, add-in <ph name="IE_PRODUCT_NAME" /> juga akan mengontrol apakah <ph name="IE_PRODUCT_NAME" /> harus membuka URL ini di <ph name="PRODUCT_NAME" />.
@@ -3161,10 +3137,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
       Perlu diperhatikan bahwa tindakan ini tidak disarankan, karena dapat melewati ekstensi nameConstraints yang membatasi hostname untuk mengotorisasi sertifikat yang diberikan.
 
       Jika kebijakan ini tidak disetel, atau disetel ke false, sertifikat server yang tidak menyertakan ekstensi subjectAlternativeName yang berisi nama DNS atau alamat IP tidak akan dipercaya.</translation>
-<translation id="5578571772998293651">Izinkan masukan pengguna.
-        Jika kebijakan disetel ke false, pengguna tidak dapat mengirim masukan ke Google.
-
-        Jika kebijakan tidak disetel atau disetel ke true, pengguna dapat mengirim masukan ke Google melalui Menu-&gt;Bantuan-&gt;Laporkan Masalah atau kombinasi kunci.</translation>
 <translation id="5579179012798142131">Menetapkan ArcEnabled ke Benar (True) akan mengaktifkan ARC untuk pengguna, kecuali mode Singkat atau login multipel aktif saat sesi pengguna. Jika kebijakan ditetapkan ke Salah (False) atau tidak ditetapkan, pengguna versi bisnis tidak dapat menggunakan ARC.</translation>
 <translation id="5582429816116769246">Memungkinkan Anda mengontrol apakah pengguna dapat mengakses printer non-perusahaan
 
@@ -3428,7 +3400,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 <translation id="5951418260805607969">Menampilkan notifikasi saat ruang penyimpanan hampir penuh</translation>
 <translation id="5961137303188584693">Alamat MAC NIC bawaan perangkat</translation>
 <translation id="5966615072639944554">Ekstensi yang diizinkan untuk menggunakan API pengesahan jarak jauh</translation>
-<translation id="5983708779415553259">Perilaku default untuk situs tidak ada dalam paket konten mana pun</translation>
 <translation id="5997543603646547632">Menggunakan 24 jam sebagai default</translation>
 <translation id="5997846976342452720">Menentukan apakah pencari plugin harus dinonaktifkan (tidak digunakan lagi)</translation>
 <translation id="5998198091336830580">Kebijakan ini merupakan bagian dari grup atom berikut (hanya kebijakan dari sumber tertinggi yang ada di grup yang akan diterapkan) :</translation>
@@ -3467,9 +3438,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 <translation id="603768430528561926">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna perangkat perusahaan akan dapat menukarkan penawaran melalui Pendaftaran <ph name="PRODUCT_OS_NAME" />.
 
       Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat menukarkan penawaran ini.</translation>
-<translation id="6038407313189625985">Jika kebijakan ini diaktifkan atau tidak ditetapkan, Integritas Kode Perender akan diaktifkan. Kebijakan ini harus dinonaktifkan jika masalah kompatibilitas dialami oleh software pihak ketiga yang harus berjalan di dalam proses perender Chrome.
-
-      Menonaktifkan kebijakan ini akan merugikan bagi keamanan dan stabilitas Chrome karena kode yang tidak dikenal dan berpotensi berbahaya akan diizinkan untuk dimuat di dalam proses perender Chrome. Lihat https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies untuk info lebih lanjut.</translation>
 <translation id="6048199181629830227">Mengaktifkan fitur manajemen pengaktifan daya baterai</translation>
 <translation id="6054485492411959335">Menentukan printer yang dapat digunakan pengguna.
 
@@ -4786,9 +4754,6 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 
       Catatan: Saat ini, mulai ulang otomatis hanya diaktifkan saat layar masuk ditampilkan atau sesi aplikasi kios sedang berjalan. Hal ini akan berubah di masa mendatang dan kebijakan akan terus diterapkan, terlepas dari apakah sesi dari jenis tertentu apa pun sedang dijalankan atau tidak.</translation>
 <translation id="7701341006446125684">Menyetel ukuran cache Ekstensi dan Aplikasi (dalam byte)</translation>
-<translation id="7709537117200051035">Kamus yang memetakan nama hosting ke tanda boolean yang menentukan apakah akses ke hosting harus diizinkan (true) atau diblokir (false).
-
-          Kebijakan ini untuk penggunaan internal <ph name="PRODUCT_NAME" /> itu sendiri.</translation>
 <translation id="7710950688502974809">Daftar setelan layanan Konektor Chrome Enterprise yang akan diterapkan ke Konektor Enterprise <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" />, yang terpicu saat data dimasukkan ke Chrome dari papan klip atau dengan menarik lalu melepas konten web.
 
       Kolom <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />, dan <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> digunakan untuk menentukan apakah konektor perlu mengirimkan data untuk dianalisis saat dimasukkan ke halaman tertentu, dan jenis tag yang perlu disertakan dalam permintaan analisis untuk data tersebut. Tag yang sesuai dengan pola 'aktifkan' akan disertakan dalam permintaan analisis jika URL halaman cocok dengan pola yang terkait dengan tag tersebut, selama tidak ada pola 'nonaktifkan' yang memiliki tag sama yang cocok dengan URL halaman itu. Analisis dilakukan jika terdapat minimal 1 tag yang disertakan dalam permintaan.
@@ -4936,7 +4901,6 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
       Jika setelan ini diaktifkan atau dinonaktifkan, pengguna tidak dapat mengubah atau menggantinya di <ph name="PRODUCT_NAME" />.
 
       Jika tidak ditetapkan, kebijakan ini akan diaktifkan tetapi pengguna dapat mengubahnya.</translation>
-<translation id="7953256619080733119">Hosting pengecualian manual pengguna yang dikelola</translation>
 <translation id="7956210013490975468">Mengonfigurasi layanan System-proxy untuk <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7958537754689366707">Sandi harus dimasukkan setiap dua belas jam</translation>
 <translation id="7961779417826583251">Nonaktifkan penerapan Transparansi Sertifikat untuk daftar Otoritas Sertifikat Lama</translation>
@@ -5152,11 +5116,6 @@ Cara yang disarankan untuk mengonfigurasi kebijakan di Windows adalah melalui GP
           Jika Anda menetapkan kebijakan ini, pengguna tidak dapat mengubah atau menggantinya.
 
           Jika kebijakan ini tidak ditetapkan, dikte mula-mula akan dinonaktifkan, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
-<translation id="829337533107201925">Jika kebijakan ini diaktifkan, kebijakan yang muncul dari grup atom yang tidak membagikan sumbernya dengan prioritas tertinggi grup akan diabaikan.
-
-      Jika kebijakan ini dinonaktifkan, tidak ada kebijakan yang akan diabaikan karena sumbernya. Kebijakan hanya akan diabaikan jika terdapat konflik dan tidak memiliki prioritas tertinggi.
-
-      Jika kebijakan ini ditetapkan dari sumber cloud, kebijakan tidak boleh menargetkan pengguna khusus</translation>
 <translation id="8294750666104911727">Umumnya halaman dengan X-UA-Compatible yang disetel ke chrome=1 akan dirender di <ph name="PRODUCT_FRAME_NAME" /> terlepas dari kebijakan 'ChromeFrameRendererSettings'.
 
           Jika Anda mengaktifkan setelan ini, meta tag halaman tidak akan dipindai.
@@ -5354,7 +5313,6 @@ Kebijakan akan dihapus pada M75.</translation>
 <translation id="8544375438507658205">Pengurai HTML default untuk <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Izinkan SMS disinkronkan dari ponsel ke Chromebook.</translation>
 <translation id="8548832052135586762">Menyetel pencetakan ke hanya warna, hanya monokrom, atau tanpa batasan mode warna. Kebijakan yang tidak disetel diperlakukan sebagai tidak ada batasan.</translation>
-<translation id="8549772397068118889">Memperingatkan saat mengunjungi situs di luar paket konten</translation>
 <translation id="8566842294717252664">Menyembunyikan toko web dari Halaman Tab Baru dan peluncur aplikasi</translation>
 <translation id="8569734380847633643">
           Jika kebijakan ini ditetapkan ke False, <ph name="PRODUCT_OS_NAME" /> akan menonaktifkan Wi-Fi dan pengguna tidak dapat mengaktifkannya kembali.
@@ -5474,7 +5432,6 @@ Kebijakan akan dihapus pada M75.</translation>
       Jika kebijakan ini ditetapkan, pengguna tidak dapat mengubah atau menggantinya.
 
       Kebijakan ini tidak memengaruhi kemampuan pengguna untuk mengonfigurasi printer di tiap perangkat. Kebijakan ini ditujukan sebagai tambahan untuk konfigurasi printer yang ditentukan oleh tiap pengguna.</translation>
-<translation id="8764477907716150749">Kebijakan ini untuk penggunaan internal oleh <ph name="PRODUCT_NAME" /> sendiri.</translation>
 <translation id="8767743923206070405">Jika kebijakan disetel ke Aktif, tombol Beranda akan ditampilkan di toolbar <ph name="PRODUCT_NAME" />. Jika kebijakan disetel ke Nonaktif, tombol Beranda tidak akan muncul.
 
       Jika Anda menyetel kebijakan, pengguna tidak dapat mengubahnya di <ph name="PRODUCT_NAME" />. Jika tidak disetel, pengguna dapat memilih untuk menampilkan tombol Beranda atau tidak.</translation>

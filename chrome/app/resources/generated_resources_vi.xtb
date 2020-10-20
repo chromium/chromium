@@ -277,7 +277,7 @@
 <translation id="1313705515580255288">Dấu trang, lịch sử và các cài đặt khác sẽ được đồng bộ hóa với tài khoản Google của bạn.</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Mạng chủ, không chuyển vùng</translation>
-<translation id="1315056510003830387">Không được phép sử dụng đèn Flash</translation>
+<translation id="1315056510003830387">Không được phép sử dụng Flash</translation>
 <translation id="1316136264406804862">Đang tìm kiếm...</translation>
 <translation id="1316495628809031177">Quá trình đồng bộ hóa hiện tạm dừng</translation>
 <translation id="1317637799698924700">Đế sạc sẽ hoạt động ở chế độ tương thích với USB Type-C.</translation>
@@ -393,7 +393,7 @@
 <translation id="1436784010935106834">Đã xóa</translation>
 <translation id="1437986450143295708">Mô tả chi tiết về vấn đề</translation>
 <translation id="144283815522798837">Đã chọn <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
-<translation id="1442851588227551435">Đặt phiếu Kerberos đang hoạt động</translation>
+<translation id="1442851588227551435">Đặt vé Kerberos đang hoạt động</translation>
 <translation id="1444628761356461360">Cài đặt này do chủ sở hữu thiết bị, <ph name="OWNER_EMAIL" /> quản lý.</translation>
 <translation id="144518587530125858">Không thể tải '<ph name="IMAGE_PATH" />' cho chủ đề.</translation>
 <translation id="1451375123200651445">Trang web, Tệp đơn</translation>
@@ -957,7 +957,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2090165459409185032">Để khôi phục thông tin tài khoản của bạn, hãy truy cập: google.com/accounts/recovery</translation>
 <translation id="2090876986345970080">Cài đặt bảo mật hệ thống</translation>
 <translation id="2091887806945687916">Âm thanh</translation>
-<translation id="209539936453343974">Để thiết lập quyền kiểm soát của cha mẹ, trẻ phải có Tài khoản Google do cha/mẹ quản lý. Với <ph name="DEVICE_TYPE_PLURAL" />, cha mẹ có thể dùng ứng dụng Family Link để đặt giới hạn thời gian sử dụng thiết bị, phê duyệt hoặc chặn các trang web và làm nhiều việc khác. Nếu trẻ cần làm bài tập trên các trang web như Google Lớp học, bạn có thể thêm tài khoản trường học vào lúc khác.</translation>
+<translation id="209539936453343974">Để thiết lập các quyền kiểm soát của cha mẹ, trẻ phải có Tài khoản Google do cha/mẹ quản lý. Với <ph name="DEVICE_TYPE_PLURAL" />, cha mẹ có thể dùng ứng dụng Family Link để đặt giới hạn thời gian sử dụng thiết bị, phê duyệt hoặc chặn các trang web và làm nhiều việc khác. Nếu trẻ cần làm bài tập trên các trang web như Google Lớp học, bạn có thể thêm tài khoản trường học sau này.</translation>
 <translation id="2096715839409389970">Xóa cookie của bên thứ ba</translation>
 <translation id="2097372108957554726">Bạn cần đăng nhập Chrome để đăng ký thiết bị mới</translation>
 <translation id="2098805196501063469">Kiểm tra các mật khẩu còn lại</translation>
@@ -1385,7 +1385,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2580889980133367162">Luôn cho phép <ph name="HOST" /> tải xuống nhiều tệp</translation>
 <translation id="258095186877893873">Lâu</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Nền tảng <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
-<translation id="2584109212074498965">Không tìm thấy phiếu Kerberos. Hãy thử lại hoặc liên hệ với quản trị viên thiết bị của tổ chức bạn. (Mã lỗi <ph name="ERROR_CODE" />).</translation>
+<translation id="2584109212074498965">Không tìm thấy vé Kerberos. Hãy thử lại hoặc liên hệ với quản trị viên thiết bị của tổ chức bạn. (Mã lỗi <ph name="ERROR_CODE" />).</translation>
 <translation id="2585724835339714757">Thẻ này đang chia sẻ màn hình của bạn.</translation>
 <translation id="2586561813241011046">Không cài đặt được <ph name="APP_NAME" />. Hãy thử lại hoặc liên hệ với quản trị viên. Mã lỗi: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Khay nhớ tạm</translation>
@@ -1646,7 +1646,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2880660355386638022">Vị trí cửa sổ</translation>
 <translation id="2881076733170862447">Khi bạn nhấp vào tiện ích</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> sẽ khởi động lại và đặt lại trong giây lát</translation>
-<translation id="288387288628762616">Được phép sử dụng đèn Flash</translation>
+<translation id="288387288628762616">Được phép sử dụng Flash</translation>
 <translation id="2885378588091291677">Trình quản lý tác vụ</translation>
 <translation id="2885729872133513017">Đã xảy ra lỗi khi giải mã phản hồi của máy chủ.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
@@ -1689,7 +1689,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2932883381142163287">Báo cáo lạm dụng</translation>
 <translation id="2933632078076743449">Lần cập nhật gần đây nhất</translation>
 <translation id="2934999512438267372">Đã cho phép toàn quyền kiểm soát các thiết bị MIDI</translation>
-<translation id="2935654492420446828">Thêm một tài khoản trường học vào lúc khác</translation>
+<translation id="2935654492420446828">Thêm một tài khoản trường học sau này</translation>
 <translation id="2936851848721175671">Sao lưu và khôi phục</translation>
 <translation id="2938225289965773019">Mở liên kết <ph name="PROTOCOL" /></translation>
 <translation id="2938845886082362843">Xem và xóa dữ liệu đăng nhập lưu trữ trên khóa bảo mật của bạn</translation>
@@ -1930,7 +1930,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Lỗi mạng</translation>
 <translation id="3248902735035392926">Vấn đề an toàn rất quan trọng. Hãy dành giây lát để <ph name="BEGIN_LINK" />kiểm tra các tiện ích của bạn ngay bây giờ<ph name="END_LINK" /></translation>
 <translation id="3251759466064201842">&lt;Không Thuộc Chứng chỉ&gt;</translation>
-<translation id="325238099842880997">Đặt ra các quy tắc cơ bản về việc sử dụng thiết bị kỹ thuật số để định hướng hoạt động vui chơi, khám phá và làm bài tập ở nhà của trẻ</translation>
+<translation id="325238099842880997">Đặt các quy tắc cơ bản về việc sử dụng thiết bị kỹ thuật số để giúp trẻ vui chơi, khám phá và làm bài tập ở nhà</translation>
 <translation id="3253225298092156258">Chưa có</translation>
 <translation id="3253448572569133955">Tài khoản không xác định</translation>
 <translation id="3254084468305910013">{COUNT,plural, =0{Không phát hiện thấy vấn đề bảo mật}=1{Phát hiện thấy {COUNT} vấn đề bảo mật}other{Phát hiện thấy {COUNT} vấn đề bảo mật}}</translation>
@@ -2667,7 +2667,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4058793769387728514">Kiểm tra Tài liệu Ngay bây giờ</translation>
 <translation id="406070391919917862">Ứng dụng nền</translation>
 <translation id="4061374428807229313">Để chia sẻ, hãy nhấp chuột phải vào một thư mục trong ứng dụng Files rồi chọn "Chia sẻ với ứng dụng Parallels Desktop".</translation>
-<translation id="406213378265872299">Chế độ hoạt động tùy chỉnh</translation>
+<translation id="406213378265872299">Chế độ tùy chỉnh</translation>
 <translation id="4065876735068446555">Mạng bạn đang sử dụng (<ph name="NETWORK_ID" />) có thể yêu cầu bạn truy cập vào trang đăng nhập của mạng đó.</translation>
 <translation id="4066207411788646768">Vui lòng kiểm tra kết nối của bạn để xem các máy in hiện có trong mạng</translation>
 <translation id="4068776064906523561">Vân tay đã lưu</translation>
@@ -3484,7 +3484,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5078638979202084724">Đánh dấu trang tất cả các thẻ</translation>
 <translation id="5078796286268621944">Mã PIN không chính xác</translation>
 <translation id="5079950360618752063">Sử dụng mật khẩu đề xuất</translation>
-<translation id="508059534790499809">Làm mới phiếu Kerberos</translation>
+<translation id="508059534790499809">Làm mới vé Kerberos</translation>
 <translation id="5084230410268011727">Cho phép các trang web sử dụng cảm biến chuyển động và ánh sáng</translation>
 <translation id="5084328598860513926">Quy trình cấp phép bị gián đoạn. Vui lòng thử lại hoặc liên hệ với quản trị viên hay chủ sở hữu thiết bị. Mã lỗi: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Đang kiểm tra bản cập nhật</translation>
@@ -3837,7 +3837,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5500709606820808700">Tính năng kiểm tra an toàn đã chạy hôm nay</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Không nhận được <ph name="ATTACHMENTS" /> từ thiết bị <ph name="DEVICE_NAME" />}other{Không nhận được <ph name="ATTACHMENTS" /> từ thiết bị <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Đã nhập từ Firefox</translation>
-<translation id="5502915260472117187">Trẻ</translation>
+<translation id="5502915260472117187">Một trẻ</translation>
 <translation id="5503982651688210506">Tiếp tục cho phép <ph name="HOST" /> dùng và di chuyển máy ảnh, cũng như sử dụng micrô</translation>
 <translation id="5505264765875738116">Các trang web không thể xin phép gửi thông báo</translation>
 <translation id="5505307013568720083">Hết mực</translation>
@@ -4871,7 +4871,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6735304988756581115">Hiển thị cookie và các dữ liệu khác của trang web...</translation>
 <translation id="6736243959894955139">Địa chỉ</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
-<translation id="6737663862851963468">Xóa phiếu Kerberos</translation>
+<translation id="6737663862851963468">Xóa vé Kerberos</translation>
 <translation id="6739923123728562974">Hiển thị lối tắt trên màn hình</translation>
 <translation id="6740234557573873150">Đã tạm dừng <ph name="FILE_NAME" /></translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Quản trị viên của bạn<ph name="END_LINK" /> đã tắt tính năng Duyệt web an toàn</translation>
@@ -5034,7 +5034,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6922745772873733498">Nhập một mã pin để in</translation>
 <translation id="6923132443355966645">Cuộn / Nhấp</translation>
 <translation id="6923633482430812883">Lỗi kết nối mục chia sẻ. Vui lòng kiểm tra để đảm bảo rằng máy chủ tệp mà bạn đang kết nối hỗ trợ SMBv2 trở lên.</translation>
-<translation id="6929126689972602640">Tài khoản trường học không hỗ trợ quyền kiểm soát của cha mẹ. Nếu bạn muốn thêm một tài khoản trường học nhằm truy cập vào Google Lớp học và các trang web khác để làm bài tập ở nhà, trước tiên, hãy đăng nhập bằng tài khoản cá nhân của trẻ. Bạn có thể thêm tài khoản trường học vào lúc khác trong phần cài đặt.</translation>
+<translation id="6929126689972602640">Tài khoản trường học không hỗ trợ các quyền kiểm soát của cha mẹ. Nếu bạn muốn thêm một tài khoản trường học để truy cập vào Google Lớp học và các trang web khác để làm bài tập ở nhà, trước tiên, hãy đăng nhập bằng tài khoản cá nhân của trẻ. Bạn có thể thêm tài khoản trường học sau này trong phần cài đặt.</translation>
 <translation id="6929760895658557216">Ok Google</translation>
 <translation id="6930036377490597025">Khóa bảo mật bên ngoài hoặc cảm biến tích hợp</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{1 tiện ích đã bị từ chối}other{# tiện ích đã bị từ chối}}</translation>
@@ -5599,7 +5599,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7607002721634913082">Đã tạm dừng</translation>
 <translation id="7608810328871051088">Các tùy chọn Android</translation>
 <translation id="7609148976235050828">Vui lòng kết nối với Internet và thử lại.</translation>
-<translation id="7612655942094160088">Bật các tính năng trên điện thoại đã kết nối.</translation>
+<translation id="7612655942094160088">Các tính năng trên điện thoại đã kết nối bật.</translation>
 <translation id="7614260613810441905">Hỏi khi một trang web muốn chỉnh sửa các tệp hoặc thư mục trên thiết bị (khuyên dùng)</translation>
 <translation id="761530003705945209">Sao lưu vào Google Drive. Dễ dàng khôi phục dữ liệu hoặc chuyển đổi thiết bị bất cứ lúc nào. Nội dung sao lưu của bạn bao gồm các dữ liệu ứng dụng. Các bản sao lưu được tải lên Google và mã hóa bằng mật khẩu Tài khoản Google của bạn.</translation>
 <translation id="7615365294369022248">Đã xảy ra lỗi khi thêm một tài khoản</translation>
@@ -6236,7 +6236,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8300011035382349091">Chỉnh sửa dấu trang cho thẻ này</translation>
 <translation id="8300374739238450534">Xanh đậm</translation>
 <translation id="8300849813060516376">OTASP không thành công</translation>
-<translation id="8304383784961451596">Bạn không được phép sử dụng thiết bị này. Vui lòng liên hệ với quản trị viên để có quyền đăng nhập hoặc đăng nhập thông qua một Tài khoản Google được giám sát bằng Family Link.</translation>
+<translation id="8304383784961451596">Bạn không được phép sử dụng thiết bị này. Vui lòng liên hệ với quản trị viên để có quyền đăng nhập hoặc dùng một Tài khoản Google được giám sát bằng Family Link để đăng nhập.</translation>
 <translation id="8308179586020895837">Hỏi nếu <ph name="HOST" /> muốn truy cập máy ảnh của bạn</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">Chứng chỉ đã tồn tại</translation>
@@ -6447,7 +6447,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8565650234829130278">Đã cố gắng hạ cấp ứng dụng.</translation>
 <translation id="8569682776816196752">Không tìm thấy điểm đến nào</translation>
 <translation id="8571213806525832805">4 tuần qua</translation>
-<translation id="8571687764447439720">Thêm phiếu Kerberos</translation>
+<translation id="8571687764447439720">Thêm vé Kerberos</translation>
 <translation id="8574990355410201600">Luôn cho phép phát âm thanh trên <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Giữ phím <ph name="KEY_EQUIVALENT" /> để thoát</translation>
 <translation id="8576249514688522074">Chưa khởi chạy</translation>
@@ -6472,7 +6472,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8601206103050338563">Xác thực Ứng dụng khách TLS WWW</translation>
 <translation id="8602851771975208551">Một chương trình khác trên máy tính của bạn đã thêm một ứng dụng có thể thay đổi cách Chrome hoạt động.</translation>
 <translation id="8605428685123651449">Bộ nhớ SQLite</translation>
-<translation id="8608618451198398104">Thêm phiếu Kerberos</translation>
+<translation id="8608618451198398104">Thêm vé Kerberos</translation>
 <translation id="860909219589324847">Không bao giờ dùng dữ liệu di động để truyền tải</translation>
 <translation id="8609465669617005112">Di chuyển lên</translation>
 <translation id="8610103157987623234">Định dạng không chính xác. Hãy thử lại</translation>

@@ -16,7 +16,7 @@
 <translation id="1105960400813249514">擷取螢幕畫面</translation>
 <translation id="1111673857033749125">儲存在其他裝置上的書籤會在這裡顯示。</translation>
 <translation id="1113597929977215864">顯示簡化檢視模式</translation>
-<translation id="1123070903960493543">您與 Chrome 互動的方式、已選取的設定、Chrome 發生當機情況的詳情</translation>
+<translation id="1123070903960493543">您與 Chrome 互動的方式、已選取的設定、Chrome 當機的詳情</translation>
 <translation id="1126809382673880764">無法防範危險網站、下載檔案和擴充程式。您仍可在其他 Google 服務 (例如 Gmail 和搜尋) 中使用「安全瀏覽」功能 (如有)。</translation>
 <translation id="1129510026454351943">詳情：<ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1141800923049248244">{FILE_COUNT,plural, =1{1 項下載操作尚待處理。}other{# 項下載操作尚待處理。}}</translation>
@@ -159,7 +159,7 @@
 <translation id="2131665479022868825">已節省 <ph name="DATA" /></translation>
 <translation id="213279576345780926">已關閉「<ph name="TAB_TITLE" />」</translation>
 <translation id="2139186145475833000">新增至主螢幕</translation>
-<translation id="214888715418183969">選擇您想與 Chrome 分享的資料。您分享的數據將用於協助改善 Chrome 的功能、效能和穩定性。</translation>
+<translation id="214888715418183969">選擇您想與 Chrome 分享的資料。您分享的數據將有助我們改善 Chrome 的功能、效能和穩定性。</translation>
 <translation id="2154484045852737596">編輯付款信用卡</translation>
 <translation id="2154710561487035718">複製網址</translation>
 <translation id="2156074688469523661">其餘網站 (共 <ph name="NUMBER_OF_SITES" /> 個)</translation>
@@ -169,7 +169,7 @@
 <translation id="2175927920773552910">二維條碼</translation>
 <translation id="218608176142494674">共用</translation>
 <translation id="2195339740518523951">取得 Chrome 最強大的安全防護</translation>
-<translation id="2200113223741723867">管理使用情況資料分享項目</translation>
+<translation id="2200113223741723867">管理使用情況資料分享設定</translation>
 <translation id="2227444325776770048">以<ph name="USER_FULL_NAME" />的身分繼續</translation>
 <translation id="2234876718134438132">同步處理和 Google 服務</translation>
 <translation id="2239812875700136898">按一下 [探索的選項] 按鈕來控制您的報導</translation>
@@ -300,6 +300,7 @@
 <translation id="3211426585530211793">已刪除 <ph name="ITEM_TITLE" /></translation>
 <translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> 個未讀頁面</translation>
 <translation id="321773570071367578">如果您忘記密碼短語，或希望變更這項設定，請<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" /></translation>
+<translation id="3227557059438308877">以 Google Chrome 作為安全密鑰</translation>
 <translation id="3232754137068452469">網絡應用程式</translation>
 <translation id="3236059992281584593">尚餘 1 分鐘</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -843,7 +844,7 @@
 <translation id="7015203776128479407">尚未完成初始同步處理設定。已關閉同步功能。</translation>
 <translation id="7022756207310403729">在瀏覽器中開啟</translation>
 <translation id="702463548815491781">建議在 TalkBack 或「按鈕控制」開啟時使用</translation>
-<translation id="7027549951530753705">已還原 <ph name="ITEM_TITLE" /></translation>
+<translation id="7027549951530753705">還原咗 <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="703523980599857277">變更首頁</translation>
 <translation id="7054588988317389591">要取得圖片說明嗎？</translation>
@@ -937,6 +938,7 @@
 <translation id="7682724950699840886">請嘗試按照以下提示操作：確保您的裝置上有足夠的儲存空間，然後嘗試重新匯出。</translation>
 <translation id="7698359219371678927">在 <ph name="APP_NAME" /> 中建立電郵</translation>
 <translation id="7704317875155739195">自動完成搜尋和網址</translation>
+<translation id="7707922173985738739">使用流動數據</translation>
 <translation id="7725024127233776428">加入書籤的網頁會在這裡顯示</translation>
 <translation id="7735637452482172701">透過「螢幕鎖定」功能解鎖</translation>
 <translation id="7746457520633464754">為了偵測危險的應用程式和網站，Chrome 會將您瀏覽的部分網頁網址、有限的系統資料以及部分網頁內容傳送給 Google</translation>
@@ -1025,7 +1027,7 @@
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> 和其他網站</translation>
 <translation id="8327155640814342956">為獲得最佳瀏覽體驗，請開啟 Chrome 進行更新</translation>
 <translation id="8349013245300336738">依使用數據量排序</translation>
-<translation id="835847953965672673">已還原 <ph name="NUMBER_OF_DOWNLOADS" /> 個下載內容</translation>
+<translation id="835847953965672673">還原咗 <ph name="NUMBER_OF_DOWNLOADS" /> 個下載嘅內容</translation>
 <translation id="8364299278605033898">查看熱門網站</translation>
 <translation id="8368027906805972958">不明或不支援的裝置 (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" />已準備就緒。</translation>

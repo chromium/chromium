@@ -17,6 +17,7 @@
 <translation id="1012794136286421601">Dokumentų, Skaičiuoklių, Skaidrių ir Piešinių failai sinchronizuojami. Atidarykite „Google“ disko programą, kad juos pasiektumėte prisijungę arba neprisijungę.</translation>
 <translation id="1012876632442809908">USB-C įrenginys (prievadas priekyje)</translation>
 <translation id="1013707859758800957">Šiame puslapyje leidžiama paleisti ne „smėlio dėžės“ papildinį.</translation>
+<translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Aplanko pavadinimo redagavimas</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Paskutinė diena atnaujinti „<ph name="DEVICE_TYPE" />“ įrenginį}one{Atnaujinkite „<ph name="DEVICE_TYPE" />“ įrenginį per {NUM_DAYS} dieną}few{Atnaujinkite „<ph name="DEVICE_TYPE" />“ įrenginį per {NUM_DAYS} dienas}many{Atnaujinkite „<ph name="DEVICE_TYPE" />“ įrenginį per {NUM_DAYS} dienos}other{Atnaujinkite „<ph name="DEVICE_TYPE" />“ įrenginį per {NUM_DAYS} dienų}}</translation>
 <translation id="1016566241875885511">Papildoma informacija (nebūtina)</translation>

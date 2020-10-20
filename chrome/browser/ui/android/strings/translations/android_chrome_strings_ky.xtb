@@ -300,6 +300,7 @@
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> өчүрүлдү</translation>
 <translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> окула элек барак</translation>
 <translation id="321773570071367578">Эгер купуя сөз айкашыңызды унутуп калган болсоңуз же бул жөндөөнү өзгөрткүңүз келсе, <ph name="BEGIN_LINK" />шайкештирүүнү баштапкы абалга келтириңиз<ph name="END_LINK" /></translation>
+<translation id="3227557059438308877">Google Chrome'ду Коопсуздук ачкычы катары колдонуу</translation>
 <translation id="3232754137068452469">Веб колдонмо</translation>
 <translation id="3236059992281584593">1 мүн. калды</translation>
 <translation id="3244271242291266297">АА</translation>
@@ -937,6 +938,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7682724950699840886">Төмөнкү кеңештерди аткарып көрүңүз: түзмөгүңүздө бош орун бар экенин текшерип, кайра экспорттоп көрүңүз.</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> колдонмосунан электрондук почта түзүңүз</translation>
 <translation id="7704317875155739195">Издөө сурамдарын жана URL'дерди автоматтык түрдө толтуруу</translation>
+<translation id="7707922173985738739">Мобилдик Интернетти колдонуу</translation>
 <translation id="7725024127233776428">Сиз кыстарма катары сактаган барактар ушул жерде көрүнөт</translation>
 <translation id="7735637452482172701">Screen Lock менен кулпусун ачуу</translation>
 <translation id="7746457520633464754">Кооптуу колдонмолор менен сайттарды аныктоо үчүн, Chrome сиз баш баккан айрым сайттардын URL'дерин, тутум тууралуу чектелген маалыматты жана барактагы айрым мазмунду Google'га жөнөтүп турат</translation>

@@ -300,6 +300,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="3211426585530211793">Oʻchirib tashlandi: <ph name="ITEM_TITLE" /></translation>
 <translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> ta sahifa oʻqilmagan</translation>
 <translation id="321773570071367578">Agar kodli iborani unutsangiz yoki o‘zgartirmoqchi bo‘lsangiz, <ph name="BEGIN_LINK" />sinxronlash sozlamalarini qayta tiklang<ph name="END_LINK" /></translation>
+<translation id="3227557059438308877">Google Chromeni elektron kalit sifatida ishlatish</translation>
 <translation id="3232754137068452469">Veb-ilova</translation>
 <translation id="3236059992281584593">1 daqiqa qoldi</translation>
 <translation id="3244271242291266297">OO</translation>
@@ -937,6 +938,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="7682724950699840886">Quyidagi tavsiyalar yordam berishi mumkin: qurilmangizda yetarli bo‘sh joy borligini tekshiring va qaytadan urining.</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> orqali e-pochta yaratish</translation>
 <translation id="7704317875155739195">Qidiruv va URL manzillarning avtomatik kiritilishi</translation>
+<translation id="7707922173985738739">Mobil internetdan foydalanish</translation>
 <translation id="7725024127233776428">Xatchoʻplarga saqlanadigan sahifalar shu yerda chiqadi</translation>
 <translation id="7735637452482172701">Ekran qulfini yechish</translation>
 <translation id="7746457520633464754">Xavfli ilova saytlarni aniqlashda Chrome siz tashrif buyuradigan saytlarning URL manzillari, tizim axboroti va ayrim sahifalardagi kontentlarni Google serverlariga yuboradi</translation>

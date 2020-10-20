@@ -3,6 +3,7 @@
 <translationbundle lang="pa">
 <translation id="1018656279737460067">ਰੱਦ ਕੀਤਾ</translation>
 <translation id="1195447618553298278">ਅਗਿਆਤ ਗੜਬੜ।</translation>
+<translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">ਅਸਫਲ ਰਹੀ - ਫਿਲਟਰ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="1468664791493211953">ਪੇਸ਼ਕਸ਼ਾਂ</translation>
 <translation id="1478594628797167447">ਸਕੈਨਰ</translation>
@@ -45,6 +46,7 @@
 <translation id="4227825898293920515">ਪਾਸਵਰਡ ਦੀ ਮਿਆਦ <ph name="TIME" /> ਵਿੱਚ ਮੁੱਕ ਜਾਵੇਗੀ</translation>
 <translation id="4238516577297848345">ਕੋਈ ਪ੍ਰਿੰਟ ਜੌਬ ਪ੍ਰਕਿਰਿਆ-ਅਧੀਨ ਨਹੀਂ ਹੈ</translation>
 <translation id="4297501883039923494">ਬੰਦ ਹੋ ਗਿਆ - ਅਗਿਆਤ ਗੜਬੜ</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Kerberos ਟਿਕਟ ਦੀ ਮਿਆਦ ਜਲਦ ਹੀ ਮੁੱਕ ਜਾਵੇਗੀ</translation>
 <translation id="445059817448385655">ਪੁਰਾਣਾ ਪਾਸਵਰਡ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> ਵਿੱਚੋਂ <ph name="PRINTED_PAGE_NUMBER" />। ਪ੍ਰਿੰਟ ਜੌਬ ਨੂੰ ਰੱਦ ਕਰਨ ਲਈ Enter ਦਬਾਓ।</translation>
@@ -71,6 +73,7 @@
 <translation id="6058625436358447366">ਪੂਰਾ ਕਰਨ ਲਈ, ਆਪਣਾ ਪੁਰਾਣਾ ਅਤੇ ਨਵਾਂ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="6106186594183574873">ਪੂਰਾ ਕਰਨ ਲਈ, ਆਪਣਾ ਪੁਰਾਣਾ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="6146993107019042706">ਪੂਰਾ ਕਰਨ ਲਈ, ਆਪਣਾ ਨਵਾਂ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ</translation>
+<translation id="6147514244879357420">PNG</translation>
 <translation id="636850387210749493">ਐਂਟਰਪ੍ਰਾਈਜ਼ ਐਨਰੌਲਮੈਂਟ</translation>
 <translation id="649050271426829538">ਬੰਦ ਹੋ ਗਿਆ - ਕਾਗਜ਼ ਫਸ ਗਿਆ ਹੈ</translation>
 <translation id="6517239166834772319">ਪੜਚੋਲ ਕਰੋ</translation>
@@ -80,6 +83,7 @@
 <translation id="6747215703636344499">ਬੰਦ ਹੋ ਗਿਆ - ਆਊਟਪੁੱਟ ਭਰ ਗਿਆ ਹੈ</translation>
 <translation id="7162487448488904999">ਗੈਲਰੀ</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7359657277149375382">ਫ਼ਾਈਲ ਦੀ ਕਿਸਮ</translation>
 <translation id="7561454561030345039">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਇਸ ਕਾਰਵਾਈ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦਾ ਹੈ</translation>
 <translation id="7658239707568436148">ਰੱਦ ਕਰੋ</translation>
 <translation id="7690294790491645610">ਨਵੇਂ ਪਾਸਵਰਡ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>

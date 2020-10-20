@@ -203,11 +203,6 @@
       Si esta política se establece en false, <ph name="PRODUCT_NAME" /> no permitirá que se inicien perfiles de invitado.</translation>
 <translation id="1363275621236827384">Habilitar las consultas a Quirks Server para perfiles de hardware</translation>
 <translation id="1376119291123231789">Habilitar el modo avanzado de carga de la batería</translation>
-<translation id="1378850678793136128">Permite establecer una lista de patrones de URL que indiquen los sitios a los cuales se les otorga permiso automáticamente para acceder a un dispositivo USB con los ID del producto y del proveedor especificados en la pantalla de acceso. Para que la política sea válida, cada elemento de la lista debe tener los campos "devices" y "urls". Cada elemento del campo "devices" puede tener los campos "vendor_id" y "product_id". Si omites el campo "vendor_id", se creará una política que funcione con cualquier dispositivo. Si omites el campo "product_id", se creará una política que funcione con cualquier dispositivo que tenga el ID de proveedor especificado. Las políticas que tengan el campo "product_id", pero que no tengan el campo "vendor_id" no serán válidas.
-
-        El modelo del permiso para USB utiliza la URL del sitio que lo solicita ("URL que solicita permiso") y la URL del sitio del marco principal ("URL de incorporación") para otorgar permiso a la URL que lo solicita a fin de acceder al dispositivo USB. Es posible que esa URL no sea la misma que la de incorporación cuando se carga el sitio que solicita permiso en un iframe. Por lo tanto, el campo "urls" puede incluir hasta dos strings de URL delimitados por una coma para especificar la URL que solicita permiso y la URL de incorporación, respectivamente. Si solo se especifica una URL, se otorgará el acceso a los dispositivos USB correspondientes cuando la URL del sitio que lo solicita coincida con esta URL más allá del estado de incorporación. Las URL en el campo "urls" deben ser válidas; de lo contrario, se ignorará la política.
-
-        Si no se establece esta política, se usará el valor predeterminado general para todos los sitios (sin acceso automático).</translation>
 <translation id="1384459581748403878">Referencia: <ph name="REFERENCE_URL" /></translation>
 <translation id="138847842893090358">Informa el estado de la actualización del SO</translation>
 <translation id="1390901586107713894">Permite especificar las extensiones que los usuarios NO pueden instalar. Si se incluyen en la lista de elementos bloqueados extensiones que ya están instaladas, no funcionarán y el usuario no podrá habilitarlas. Si las quitas de esa lista, se volverán a habilitar automáticamente.
@@ -450,12 +445,6 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 
       Si no estableces esta política, fallará la instalación de <ph name="PLUGIN_VM_NAME" /> cuando el espacio libre en disco disponible en el dispositivo sea inferior a 20 GB (valor predeterminado).
       Si la estableces, fallará la instalación de <ph name="PLUGIN_VM_NAME" /> cuando el espacio libre en disco disponible en el dispositivo sea inferior al espacio que requiere la política.</translation>
-<translation id="1695708467571967752">Esta política controla si los usuarios pueden reproducir contenido multimedia cuando está bloqueado el dispositivo.
-
-      Si se establece como falsa, se inhabilitan los controles multimedia de la pantalla bloqueada.
-
-      Si se establece como verdadera o no se establece, se mostrarán los controles multimedia en la pantalla bloqueada cuando el usuario bloquee el dispositivo mientras se esté reproduciendo contenido multimedia.
-      </translation>
 <translation id="1700811900332333712">Permite que el dispositivo solicite Powerwash</translation>
 <translation id="1708496595873025510">Establece la restricción en la obtención del valor de inicialización de las variaciones.</translation>
 <translation id="171511968762040550">Si la estableces esta política como verdadera o no la estableces, los usuarios podrán agregar, quitar o modificar favoritos.
@@ -669,7 +658,6 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
           Si se inhabilita esta configuración, no se permitirá la transferencia de archivos. Si se habilita o no se establece esta configuración, se permitirá la transferencia de archivos.</translation>
 <translation id="2057317273526988987">Permitir el acceso a una lista de URL</translation>
 <translation id="2061810934846663491">Configurar los nombres de dominio obligatorios para hosts de acceso remoto</translation>
-<translation id="2067011586099792101">Bloquea el acceso a sitios fuera de los paquetes de contenido.</translation>
 <translation id="2069350366303315077">Si habilitas la política, <ph name="PRODUCT_NAME" /> aplicará las sesiones de invitado y no permitirá acceder a los perfiles. Los accesos de invitado son perfiles de <ph name="PRODUCT_NAME" /> en donde todas las ventanas están en el modo Incógnito.
 
       Si inhabilitas la política, no la estableces o inhabilitas el modo de invitado del navegador (mediante <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />) se podrán usar perfiles nuevos y existentes.</translation>
@@ -2114,7 +2102,6 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 <translation id="4056910949759281379">Inhabilitar el protocolo SPDY</translation>
 <translation id="4061590579642538878">Proporciona datos sobre los informes de fallas</translation>
 <translation id="4075675819066819571">Ubicar la biblioteca en el lado izquierdo de la pantalla</translation>
-<translation id="4075864623710596000">Los nombres de host que se especifican en esta lista no se incluirán en la revisión de la política de HSTS que podría mejorar las solicitudes de http a https. En esta política, solo se permiten nombres de host con una sola etiqueta. Los nombres de host deben estar canonicalizados: debe convertirse cualquier IDN a su formato de etiqueta A y todas las letras en formato ASCII deben estar en minúscula. Esta política solo se aplica a los nombres de host específicos de la lista; no se aplica a los subdominios de estos nombres.</translation>
 <translation id="408029843066770167">Permitir consultas a un servicio de hora de Google</translation>
 <translation id="408076456549153854">Habilitar el acceso en el navegador</translation>
 <translation id="4082498585300984671">Habilita la función Llamar con un clic</translation>
@@ -2224,9 +2211,6 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 
       Si inhabilitas la política, se desactivará <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4203879074082863035">Los usuarios solo ven las impresoras en la lista blanca</translation>
-<translation id="420512303455129789">Es un diccionario que asigna URL a un indicador booleano que especifica si se debe permitir (true) o bloquear (false) el acceso al host.
-
-          Esta política es para uso interno de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4209297478239988291">Habilita la función de accesibilidad de clic automático.
 
           Esta función permite hacer clic sin presionar de manera física el mouse o el panel táctil. Pasa el cursor sobre el elemento en el que quieras hacer clic.
@@ -2366,13 +2350,6 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 <translation id="4494132853995232608">DTC wilco</translation>
 <translation id="449423975179525290">Configura las políticas relacionadas con <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="4498493270899294764">Patrones de URL en los que no es necesario comprobar si hay software malicioso en las descargas</translation>
-<translation id="450537894712826981">Configura el tamaño de caché que utilizará <ph name="PRODUCT_NAME" /> para almacenar archivos multimedia en caché en el disco.
-
-      Si esta política se establece, <ph name="PRODUCT_NAME" /> utilizará el tamaño de caché disponible aunque el usuario haya especificado la marca "--media-cache-size". El valor indicado en esta política no es un límite rígido, sino un valor recomendado para el sistema de almacenamiento en caché; cualquier valor que sea menor por algunos megabytes se redondeará hasta alcanzar un mínimo aceptable.
-
-      Si esta política se establece en 0, se utilizará el tamaño de caché predeterminado y el usuario no podrá modificarlo.
-
-      Si esta política no se establece, se utilizará el tamaño de caché predeterminado y el usuario podrá anular el valor con la marca "--media-cache-size".</translation>
 <translation id="4508084713148633492">Permite habilitar o inhabilitar una notificación cuando hay poco espacio disponible en el disco. Se aplica a todos los usuarios del dispositivo.
       Si hay solo una cuenta de usuario en un dispositivo administrado, se mostrará siempre la notificación independientemente del valor de esta política.
       Si hay varias cuentas de usuario en un dispositivo administrado, solo se mostrará la notificación cuando la política se establece como verdadera.
@@ -2667,7 +2644,6 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 
       Si la inhabilitas, <ph name="PRODUCT_NAME" /> dejará de enviar estas consultas.</translation>
 <translation id="5032164758660626397">Evita que el usuario transfiera archivos grandes</translation>
-<translation id="5047604665028708335">Permite el acceso a sitios fuera de los paquetes de contenido.</translation>
 <translation id="5056708224511062314">La lupa está inhabilitada.</translation>
 <translation id="5058573563327660283">Seleccionar la estrategia utilizada para liberar espacio en el disco durante el proceso de limpieza automática (dejó de estar disponible)</translation>
 <translation id="5061114193960158745">Si estableces esta política, se controlará la lista de sitios web que nunca obligarán a cambiar de navegador. Cada elemento será tratado como una regla. Las reglas que coincidan no se abrirán en un navegador alternativo. A diferencia de la política <ph name="URL_LIST_POLICY_NAME" />, las reglas se aplican en ambas direcciones. Si el complemento de <ph name="IE_PRODUCT_NAME" /> está activado, también controlará si <ph name="IE_PRODUCT_NAME" /> puede abrir estas URL en <ph name="PRODUCT_NAME" />.
@@ -3136,10 +3112,6 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
       Ten en cuenta que no se recomienda esta acción, ya que puede permitir la omisión de la extensión nameConstraints, que restringe los nombres de host para los que se puede autorizar un certificado determinado.
 
       Si esta política no se establece, o se establece como falsa, los certificados de servidores que no tengan la extensión subjectAlternativeName con un nombre de DNS o una dirección IP no serán confiables.</translation>
-<translation id="5578571772998293651">Permite que los usuarios hagan comentarios.
-        Si se establece la política como falsa, los usuarios no podrán enviar comentarios a Google.
-
-        Si no se establece o se establece como verdadera, los usuarios podrán enviar comentarios a Google con una combinación de teclas o mediante Menú &gt; Ayuda &gt; Informar un problema.</translation>
 <translation id="5579179012798142131">Si configuras el valor "True" para la política ArcEnabled, se activará ARC para el usuario, a menos que el modo efímero o el acceso múltiple estén activados durante la sesión del usuario. Si estableces el valor "False" para la política o no la estableces, los usuarios empresariales no podrán usar ARC.</translation>
 <translation id="5582429816116769246">Te permite controlar si los usuarios pueden acceder a impresoras no empresariales.
 
@@ -3402,7 +3374,6 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="5951418260805607969">Muestra una notificación cuando hay poco espacio en el disco</translation>
 <translation id="5961137303188584693">Dirección MAC para el NIC integrado del dispositivo</translation>
 <translation id="5966615072639944554">Extensiones que tienen permitido utilizar la API de atestación remota</translation>
-<translation id="5983708779415553259">Comportamiento predeterminado de los sitios que no forman parte de ningún paquete de contenido</translation>
 <translation id="5997543603646547632">Utilizar reloj con formato de 24 horas de forma predeterminada</translation>
 <translation id="5997846976342452720">Indicar si el buscador de complementos se debe inhabilitar (obsoleto)</translation>
 <translation id="5998198091336830580">Esta política es parte del siguiente grupo atómico (solo se aplican las políticas que provengan de la fuente de mayor prioridad del grupo):</translation>
@@ -3441,9 +3412,6 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="603768430528561926">Si habilitas la política o no la estableces, los usuarios de dispositivos empresariales podrán canjear ofertas a través del registro en <ph name="PRODUCT_OS_NAME" />.
 
       Si la inhabilitas, los usuarios no podrán canjear esas ofertas.</translation>
-<translation id="6038407313189625985">Si se habilita esta política y no se establece, se habilitará la integridad del código del renderizador. Esta opción se debe inhabilitar solo si se identifican problemas de compatibilidad con software de terceros que deba ejecutarse en los procesos del renderizador de Chrome.
-
-      Inhabilitar esta política reduce la estabilidad y la seguridad de Chrome, ya que se permitirá cargar código desconocido y potencialmente hostil en los procesos del renderizador de Chrome. Para obtener más información, consulta el siguiente vínculo: https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies.</translation>
 <translation id="6048199181629830227">Habilita la administración de carga fuera del horario pico</translation>
 <translation id="6054485492411959335">Especifica las impresoras que puede utilizar el usuario.
 
@@ -4743,9 +4711,6 @@ Si estableces la política <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME"
 
       Nota: Actualmente, los reinicios automáticos solo se habilitan cuando se muestra la pantalla de acceso o cuando hay una sesión de la aplicación de kiosco en curso. Esta restricción se modificará en el futuro, y la política se aplicará en todo momento, sin importar si hay alguna sesión en curso.</translation>
 <translation id="7701341006446125684">Establecer tamaño de caché de apps y extensiones (en bytes)</translation>
-<translation id="7709537117200051035">Es un diccionario que asigna los nombres de host a un indicador booleano que especifica si se debe permitir (true) o bloquear (false) el acceso al host.
-
-          Esta política es para uso interno de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7710950688502974809">Lista de opciones de configuración para los servicios de Chrome Enterprise Connectors que se aplicarán a Enterprise Connector <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" />, el cual se activa cuando se ingresan datos a Chrome desde el portapapeles o se arrastra y se suelta contenido web.
 
       Los campos <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> se usan para determinar si el conector debe enviar datos para que se analicen cuando se descargan de una página específica y qué etiquetas deben incluirse en la solicitud de análisis de los datos. La solicitud de análisis incluirá la etiqueta correspondiente al patrón "enable" si la URL de la página coincide con un patrón asociado a esa etiqueta, siempre y cuando no exista coincidencia entre un patrón "disable" con esa misma etiqueta y la URL de la página. Si la solicitud incluye al menos 1 etiqueta, se realizará el análisis.
@@ -4893,7 +4858,6 @@ Si estableces la política <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME"
       Si habilitas o inhabilitas esta configuración, los usuarios no podrán cambiar ni anular esta configuración en <ph name="PRODUCT_NAME" />.
 
       Si no se configura esta política, se habilitará, pero el usuario podrá cambiarla.</translation>
-<translation id="7953256619080733119">Hosts de excepción manual de usuario administrado</translation>
 <translation id="7956210013490975468">Configura el servicio de proxy del sistema para <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7958537754689366707">Se requiere el ingreso de la contraseña cada doce horas.</translation>
 <translation id="7961779417826583251">Inhabilitar la aplicación del Certificado de transparencia para una lista de autoridades certificadas heredadas</translation>
@@ -5125,11 +5089,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
           Si estableces esta política, los usuarios no podrán cambiarla ni anularla.
 
           Si no la estableces, la función de dictado estará inicialmente inhabilitada, pero el usuario podrá habilitarla en cualquier momento.</translation>
-<translation id="829337533107201925">Si se habilita esta política, se ignorarán las políticas procedentes de un grupo atómico que no comparta el origen con la prioridad más alta de ese grupo.
-
-      Si se habilita esta política, no se ignorará ninguna política debido a su origen. Solo se ignorarán las políticas en caso de conflicto y si la política no tiene la prioridad más alta.
-
-      Si se establece la política desde una nube, no se podrá aplicar a un usuario específico.</translation>
 <translation id="8294750666104911727">Normalmente, las páginas con X-UA-Compatible establecido en chrome=1 se mostrarán en <ph name="PRODUCT_FRAME_NAME" />, independientemente de la política "ChromeFrameRendererSettings".
 
           Si habilitas esta opción, las páginas no se explorarán para buscar metaetiquetas.
@@ -5339,7 +5298,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8544375438507658205">Procesador HTML predeterminado para <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Permite que los mensajes SMS se sincronicen desde el teléfono con la Chromebook</translation>
 <translation id="8548832052135586762">Establece la impresión como solo a color, solo monocromática o sin restricción del modo de color. Si no se configura la política, no se aplicará ninguna restricción.</translation>
-<translation id="8549772397068118889">Advierte cuando se visitan sitios fuera de los paquetes de contenido.</translation>
 <translation id="8566842294717252664">Ocultar ícono de Web Store en la página Nueva pestaña y el Selector de aplicaciones</translation>
 <translation id="8569734380847633643">
           Si la política se establece como falsa, <ph name="PRODUCT_OS_NAME" /> inhabilitará Wi-Fi, y los usuarios no podrán volver a habilitarla.
@@ -5459,7 +5417,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si estableces esta política, los usuarios no podrán cambiarla ni anularla.
 
       Esta política no afecta la capacidad del usuario para configurar impresoras en dispositivos individuales, y su objetivo es complementar la configuración de impresoras a cargo de los usuarios.</translation>
-<translation id="8764477907716150749">Esta política es para uso interno de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8767743923206070405">Si habilitas la política, se mostrará el botón de la página principal en la barra de herramientas de <ph name="PRODUCT_NAME" />. Si la inhabilitas, no se mostrará el botón.
 
       Si estableces esta política, los usuarios no podrán cambiarla en <ph name="PRODUCT_NAME" />. Si no la estableces, los usuarios decidirán si se muestra el botón.</translation>

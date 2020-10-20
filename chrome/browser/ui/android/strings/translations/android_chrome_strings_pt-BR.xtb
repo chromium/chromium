@@ -300,6 +300,7 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="3211426585530211793">Item excluído: <ph name="ITEM_TITLE" /></translation>
 <translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> páginas não lidas</translation>
 <translation id="321773570071367578">Se você esqueceu sua senha longa ou deseja alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincronização<ph name="END_LINK" /></translation>
+<translation id="3227557059438308877">Google Chrome como chave de segurança</translation>
 <translation id="3232754137068452469">App da Web</translation>
 <translation id="3236059992281584593">Um minuto restante</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -938,6 +939,7 @@ Os dados da sessão anônima só serão excluídos do Chrome quando você <ph na
 <translation id="7682724950699840886">Experimente as seguintes dicas: verifique se há espaço suficiente no dispositivo e tente exportar novamente.</translation>
 <translation id="7698359219371678927">Criar e-mail no <ph name="APP_NAME" /></translation>
 <translation id="7704317875155739195">Preencher automaticamente pesquisas e URLs</translation>
+<translation id="7707922173985738739">Usar dados móveis</translation>
 <translation id="7725024127233776428">As páginas favoritadas são exibidas aqui</translation>
 <translation id="7735637452482172701">Desbloquear com o bloqueio de tela</translation>
 <translation id="7746457520633464754">Para detectar apps e sites perigosos, o Chrome envia para o Google URLs de algumas páginas visitadas, informações limitadas do sistema e um pouco do conteúdo da página</translation>

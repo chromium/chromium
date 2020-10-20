@@ -17,6 +17,7 @@
 <translation id="1012794136286421601">Vaše Dokumenty, Tabulky, Prezentace a Nákresy se synchronizují. Můžete otevřít aplikaci Disk Google a přistupovat k nim online nebo offline.</translation>
 <translation id="1012876632442809908">Zařízení USB Type-C (přední port)</translation>
 <translation id="1013707859758800957">Na této stránce bylo povoleno spuštění pluginu mimo izolovaný prostor.</translation>
+<translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Upravit název složky</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Poslední den k aktualizaci zařízení <ph name="DEVICE_TYPE" />}few{Do {NUM_DAYS} dní zařízení <ph name="DEVICE_TYPE" /> aktualizujte}many{Do {NUM_DAYS} dne zařízení <ph name="DEVICE_TYPE" /> aktualizujte}other{Do {NUM_DAYS} dní zařízení <ph name="DEVICE_TYPE" /> aktualizujte}}</translation>
 <translation id="1016566241875885511">Další informace (volitelné)</translation>

@@ -52,6 +52,7 @@
 <translation id="1449835205994625556">Թաքցնել գաղտնաբառը</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> տարր</translation>
 <translation id="1491277525950327607">Կրկնակի հպեք՝ կարգավորումը միացնելու/անջատելու համար</translation>
+<translation id="1492417797159476138">Օգտանունն արդեն պահված է այս կայքի համար</translation>
 <translation id="1509486075633541495">Մտեք հաշիվ</translation>
 <translation id="1509960214886564027">Շատ կայքերում գործառույթները կարող են չաշխատել։</translation>
 <translation id="152234381334907219">Կայքեր, որոնց համար գաղտնաբառերը երբեք չեն պահվում</translation>
@@ -729,7 +730,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="9087108903408689779">Chrome-ի առաջարկած գաղտնաբառը՝</translation>
 <translation id="9094033019050270033">Թարմացնել գաղտնաբառը</translation>
 <translation id="9100610230175265781">Անհրաժեշտ է անցաբառ</translation>
-<translation id="9107664647686727385">Կոտրված գաղտնաբառերի որոնում</translation>
+<translation id="9107664647686727385">Ստուգեք կոտրված գաղտնաբառերի առկայությունը</translation>
 <translation id="9137526406337347448">Google-ի ծառայություններ</translation>
 <translation id="9148126808321036104">Նորից մուտք գործել</translation>
 <translation id="9152539721251340337">Ստեղծել QR կոդ</translation>

@@ -300,6 +300,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3211426585530211793">Eliminouse <ph name="ITEM_TITLE" /></translation>
 <translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> páxinas sen ler</translation>
 <translation id="321773570071367578">Se esqueciches o teu contrasinal ou queres cambiar esta configuración, <ph name="BEGIN_LINK" />restablece a sincronización<ph name="END_LINK" /></translation>
+<translation id="3227557059438308877">Google Chrome como chave de seguranza</translation>
 <translation id="3232754137068452469">Aplicación web</translation>
 <translation id="3236059992281584593">Queda 1 minuto</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -937,6 +938,7 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="7682724950699840886">Sigue estes consellos: asegúrate de que hai espazo suficiente no dispositivo e proba a exportar os contrasinais de novo.</translation>
 <translation id="7698359219371678927">Crea un correo electrónico en <ph name="APP_NAME" /></translation>
 <translation id="7704317875155739195">Completar buscas e URL automaticamente</translation>
+<translation id="7707922173985738739">Utilizaranse datos móbiles</translation>
 <translation id="7725024127233776428">As páxinas que engadas aos marcadores aparecerán aquí</translation>
 <translation id="7735637452482172701">Desbloquear con bloqueo de pantalla</translation>
 <translation id="7746457520633464754">Para detectar aplicacións e sitios perigosos, Chrome envíalle a Google os URL dalgunhas das páxinas que visitas, parte da información do sistema e parte do contido das páxinas</translation>

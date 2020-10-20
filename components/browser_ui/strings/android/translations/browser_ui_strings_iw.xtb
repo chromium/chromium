@@ -91,7 +91,7 @@
 <translation id="3386292677130313581">יש לשאול לפני שמאפשרים לאתרים לדעת מה המיקום שלך (מומלץ)</translation>
 <translation id="3538390592868664640">חסימה של יצירת מפה בתלת ממד של הסביבה שלך או של מעקב אחר מיקום המצלמה על ידי אתרים.</translation>
 <translation id="3586500876634962664">שימוש במצלמה ובמיקרופון</translation>
-<translation id="3587482841069643663">הכל</translation>
+<translation id="3587482841069643663">הכול</translation>
 <translation id="358794129225322306">מתן הרשאה לאתר להוריד קבצים מרובים באופן אוטומטי.</translation>
 <translation id="3594780231884063836">השתקת הסרטון</translation>
 <translation id="3596414637720633074">‏חסימת קובצי cookie של צד שלישי במצב אנונימי</translation>
@@ -141,7 +141,7 @@
 <translation id="528192093759286357">כדי לצאת ממסך מלא, גרור מלמעלה וגע בלחצן 'הקודם'.</translation>
 <translation id="5300589172476337783">הצגה</translation>
 <translation id="5301954838959518834">בסדר, הבנתי</translation>
-<translation id="5313967007315987356">הוסף אתר</translation>
+<translation id="5313967007315987356">הוספת אתר</translation>
 <translation id="5317780077021120954">שמור</translation>
 <translation id="5335288049665977812">‏אפשר לאתרים להריץ JavaScript (מומלץ)</translation>
 <translation id="534295439873310000">‏מכשירי NFC</translation>
@@ -204,7 +204,7 @@
 <translation id="6697925417670533197">הורדות פעילות</translation>
 <translation id="6746124502594467657">העברה למטה</translation>
 <translation id="6766622839693428701">החלקה מטה סוגרת.</translation>
-<translation id="6790428901817661496">הפעל</translation>
+<translation id="6790428901817661496">הפעלה</translation>
 <translation id="6818926723028410516">בחירת פריטים</translation>
 <translation id="6864395892908308021">‏NFC לא נתמך במכשיר הזה</translation>
 <translation id="6910211073230771657">נמחק</translation>
@@ -221,7 +221,7 @@
 <translation id="7128222689758636196">יופעלו במנוע החיפוש הנוכחי</translation>
 <translation id="7141896414559753902">חסימה של חלונות קופצים והפניות אוטומטיות באתרים (מומלץ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
-<translation id="723171743924126238">בחר תמונות</translation>
+<translation id="723171743924126238">בחירת תמונות</translation>
 <translation id="7243308994586599757">אפשרויות הזמינות באזור החלק התחתון של המסך</translation>
 <translation id="7250468141469952378">נבחרו <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">פועלות: <ph name="PERMISSION_1" /> וגם <ph name="PERMISSION_2" /></translation>

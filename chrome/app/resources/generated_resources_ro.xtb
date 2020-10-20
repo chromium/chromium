@@ -17,6 +17,7 @@
 <translation id="1012794136286421601">Se sincronizează fișierele din Documente Google, Foi de calcul, Prezentări și Desene. Deschideți aplicația Google Drive pentru a le accesa online sau offline.</translation>
 <translation id="1012876632442809908">Dispozitiv USB-C (portul din față)</translation>
 <translation id="1013707859758800957">Pe această pagină a fost permisă rularea unui plugin scos din mediul de testare.</translation>
+<translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Editează numele dosarului</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Ultima zi în care poți actualiza acest <ph name="DEVICE_TYPE" />}few{Actualizează acest <ph name="DEVICE_TYPE" /> în cel mult {NUM_DAYS} zile}other{Actualizează acest <ph name="DEVICE_TYPE" /> în cel mult {NUM_DAYS} de zile}}</translation>
 <translation id="1016566241875885511">Informații suplimentare (opțional)</translation>

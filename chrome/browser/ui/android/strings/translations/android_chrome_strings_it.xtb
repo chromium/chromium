@@ -300,6 +300,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> è stato eliminato</translation>
 <translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> pagine da leggere</translation>
 <translation id="321773570071367578">Se non ricordi la passphrase o vuoi modificare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincronizzazione<ph name="END_LINK" /></translation>
+<translation id="3227557059438308877">Google Chrome come token di sicurezza</translation>
 <translation id="3232754137068452469">App web</translation>
 <translation id="3236059992281584593">1 min rimanente</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -937,6 +938,7 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="7682724950699840886">Prova i seguenti suggerimenti: assicurati di avere spazio sufficiente sul dispositivo e prova a esportare di nuovo.</translation>
 <translation id="7698359219371678927">Crea email in <ph name="APP_NAME" /></translation>
 <translation id="7704317875155739195">Completamento automatico di ricerche e URL</translation>
+<translation id="7707922173985738739">Verranno utilizzati i dati mobili</translation>
 <translation id="7725024127233776428">Le pagine aggiunte ai preferiti saranno mostrate qui</translation>
 <translation id="7735637452482172701">Sblocca con blocco schermo</translation>
 <translation id="7746457520633464754">Per rilevare app e siti pericolosi, Chrome invia a Google gli URL di alcune pagine che visiti, informazioni limitate sul sistema e i contenuti di alcune pagine</translation>

@@ -300,6 +300,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> blev slettet</translation>
 <translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> ulæste sider</translation>
 <translation id="321773570071367578">Hvis du har glemt din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille synkroniseringen<ph name="END_LINK" /></translation>
+<translation id="3227557059438308877">Google Chrome som sikkerhedsnøgle</translation>
 <translation id="3232754137068452469">Webapp</translation>
 <translation id="3236059992281584593">1 minut tilbage</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -937,6 +938,7 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="7682724950699840886">Prøv følgende tips: Sørg for, at der er nok ledig plads på din enhed, og prøv at eksportere igen.</translation>
 <translation id="7698359219371678927">Opret mail i <ph name="APP_NAME" /></translation>
 <translation id="7704317875155739195">Autofuldfør søgninger og webadresser</translation>
+<translation id="7707922173985738739">Brug mobildata</translation>
 <translation id="7725024127233776428">De sider, du føjer et bogmærke til, vises her</translation>
 <translation id="7735637452482172701">Lås op med skærmlås</translation>
 <translation id="7746457520633464754">Chrome sender webadresser på nogle sider, du besøger, begrænsede systemoplysninger og noget sideindhold til Google med henblik på at registrere farlige apps og websites.</translation>

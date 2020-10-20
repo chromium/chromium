@@ -300,6 +300,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="3211426585530211793">Slettet <ph name="ITEM_TITLE" /></translation>
 <translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> uleste sider</translation>
 <translation id="321773570071367578">Hvis du har glemt passordfrasen din eller vil endre denne innstillingen, må du <ph name="BEGIN_LINK" />tilbakestille synkroniseringen<ph name="END_LINK" /></translation>
+<translation id="3227557059438308877">Google Chrome som sikkerhetsnøkkel</translation>
 <translation id="3232754137068452469">Nettprogram</translation>
 <translation id="3236059992281584593">1 minutt igjen</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -937,6 +938,7 @@ Dataene fra inkognitoøkten fjernes ikke fra Chrome før du <ph name="BEGIN_BOLD
 <translation id="7682724950699840886">Prøv dette: Sørg for at det er nok plass på enheten, og prøv å eksportere på nytt.</translation>
 <translation id="7698359219371678927">Opprett en e-post i <ph name="APP_NAME" /></translation>
 <translation id="7704317875155739195">Autofullfør søk og nettadresser</translation>
+<translation id="7707922173985738739">Bruk mobildata</translation>
 <translation id="7725024127233776428">Sider du setter som bokmerker, vises her</translation>
 <translation id="7735637452482172701">Lås opp med skjermlås</translation>
 <translation id="7746457520633464754">For å oppdage farlige apper og nettsteder sender Chrome nettadressene til noen av sidene du besøker, begrenset systeminformasjon og noe sideinnhold til Google.</translation>

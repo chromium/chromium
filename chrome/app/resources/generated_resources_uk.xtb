@@ -17,6 +17,7 @@
 <translation id="1012794136286421601">Ваші файли Документів, Таблиць, Презентацій і Малюнків синхронізуються. Відкрийте програму Диск Google, щоб отримати до них доступ онлайн чи офлайн.</translation>
 <translation id="1012876632442809908">Пристрій із портом USB типу C (на передній панелі)</translation>
 <translation id="1013707859758800957">На цій сторінці дозволено запуск плагіна з неізольованим програмним середовищем.</translation>
+<translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Редагувати назву папки</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Останній день, щоб оновити пристрій <ph name="DEVICE_TYPE" />}one{Оновіть пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_DAYS} дня}few{Оновіть пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_DAYS} днів}many{Оновіть пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_DAYS} днів}other{Оновіть пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_DAYS} дня}}</translation>
 <translation id="1016566241875885511">Додаткова інформація (необов’язково)</translation>
@@ -6913,7 +6914,7 @@
 <translation id="9088446193279799727">Не вдалося налаштувати Linux. Підключіться до Інтернету й повторіть спробу.</translation>
 <translation id="9088917181875854783">Підтвердьте, що цей ключ відображається на пристрої "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9089416786594320554">Методи введення</translation>
-<translation id="909108997331068008">У профілі користувача <ph name="EXISTING_USER" /> уже здійснено вхід в обліковий запис <ph name="NEW_USER" /></translation>
+<translation id="909108997331068008">Користувач <ph name="EXISTING_USER" /> уже ввійшов в обліковий запис <ph name="NEW_USER" /></translation>
 <translation id="9093429538970210897">Радимо створити резервну копію файлів на випадок, якщо не вдасться завершити оновлення. Коли ви почнете оновлення, Linux (бета-версія) буде вимкнено. Перш ніж продовжувати, збережіть відкриті файли.</translation>
 <translation id="9094033019050270033">Оновити пароль</translation>
 <translation id="9094038138851891550">Ім'я користувача не дійсне</translation>

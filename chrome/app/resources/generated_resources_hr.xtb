@@ -17,6 +17,7 @@
 <translation id="1012794136286421601">Vaše se datoteke na Dokumentima, Tablicama, Prezentacijama i Crtežima sinkroniziraju. Otvorite aplikaciju Google disk da biste im pristupali na mreži ili izvanmrežno.</translation>
 <translation id="1012876632442809908">USB-C uređaj (prednji priključak)</translation>
 <translation id="1013707859758800957">Na toj je stranici dopušteno pokretanje dodatka izvan testnog okruženja.</translation>
+<translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Uređivanje naziva mape</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Zadnji dan za ažuriranje uređaja <ph name="DEVICE_TYPE" />}one{Ažurirajte uređaj <ph name="DEVICE_TYPE" /> u roku od {NUM_DAYS} dana}few{Ažurirajte uređaj <ph name="DEVICE_TYPE" /> u roku od {NUM_DAYS} dana}other{Ažurirajte uređaj <ph name="DEVICE_TYPE" /> u roku od {NUM_DAYS} dana}}</translation>
 <translation id="1016566241875885511">Dodatne informacije (nije obavezno)</translation>

@@ -300,6 +300,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> raderades</translation>
 <translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> olästa sidor</translation>
 <translation id="321773570071367578">Om du har glömt lösenfrasen eller vill ändra inställningen <ph name="BEGIN_LINK" />återställer du synkroniseringen<ph name="END_LINK" /></translation>
+<translation id="3227557059438308877">Google Chrome som säkerhetsnyckel</translation>
 <translation id="3232754137068452469">Webbapp</translation>
 <translation id="3236059992281584593">1 minut kvar</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -937,6 +938,7 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="7682724950699840886">Testa följande: kontrollera att det finns tillräckligt mycket utrymme på enheten, gör om exporten.</translation>
 <translation id="7698359219371678927">Skapa ett e-postmeddelande i <ph name="APP_NAME" /></translation>
 <translation id="7704317875155739195">Autoslutför sökningar och webbadresser</translation>
+<translation id="7707922173985738739">Mobildata används</translation>
 <translation id="7725024127233776428">Sidor som infogats som bokmärke visas här</translation>
 <translation id="7735637452482172701">Lås upp med skärmlås</translation>
 <translation id="7746457520633464754">För att kunna upptäcka farliga appar och webbplatser skickar Chrome webbadresser till vissa sidor som du besöker, vissa systemuppgifter och visst sidinnehåll till Google</translation>

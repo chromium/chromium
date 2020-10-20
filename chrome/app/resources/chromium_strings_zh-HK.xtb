@@ -11,6 +11,7 @@
 <translation id="1131805035311359397">如要檢查密碼是否安全，且未受資料外洩或其他安全性問題影響，請<ph name="BEGIN_LINK" />登入 Chromium<ph name="END_LINK" />。</translation>
 <translation id="1185134272377778587">關於 Chromium</translation>
 <translation id="1315551408014407711">設定新的 Chromium 設定檔</translation>
+<translation id="1357932062193643861">Chromium 開啟時詢問我</translation>
 <translation id="1396446129537741364">Chromium 即將顯示密碼。</translation>
 <translation id="1414495520565016063">您已登入 Chromium！</translation>
 <translation id="151962892725702025">您的網域無法使用「同步功能」，因此 Chromium 作業系統無法同步處理您的數據。</translation>
@@ -185,7 +186,7 @@
 <translation id="6863361426438995919">Google Pay (已複製至 Chromium)</translation>
 <translation id="6893813176749746474">Chromium 已更新，但您已至少超過 30 天沒有使用 Chromium。</translation>
 <translation id="6964305034639999644">在 Chromium 無痕式視窗中開啟連結(&amp;G)</translation>
-<translation id="6978145336957848883">低強度密碼很容易讓有心人士猜中，請讓 Chromium <ph name="BEGIN_LINK" />為你建立一組高強度密碼，並儲存在 Chromium 中<ph name="END_LINK" />。</translation>
+<translation id="6978145336957848883">安全性弱的密碼很容易被猜到。讓 Chromium <ph name="BEGIN_LINK" />為您建立並記住安全性強的密碼<ph name="END_LINK" />。</translation>
 <translation id="6990124437352146030">Chromium 需要取得權限，才能讓這個網站存取您的麥克風</translation>
 <translation id="701244094609242530">Chromium 無法檢查擴充程式，請稍後再試。</translation>
 <translation id="7028347026395185822">{NUM_HOURS,plural, =1{Chromium 在您的電腦上找不到已知的有害軟件。上次檢查時間：1 小時前。}other{Chromium 在您的電腦上找不到已知的有害軟件。上次檢查時間：{NUM_HOURS} 小時前。}}</translation>

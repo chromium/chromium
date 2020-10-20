@@ -201,11 +201,6 @@
       如果此政策设为 false，<ph name="PRODUCT_NAME" /> 将禁止使用访客个人资料登录。</translation>
 <translation id="1363275621236827384">允许在 Quirks Server 中查询硬件配置文件</translation>
 <translation id="1376119291123231789">启用高级电池充电模式</translation>
-<translation id="1378850678793136128">让您能够设置一系列网址格式，从而指定自动授权哪些网站在登录屏幕上访问具有给定供应商 ID 和产品 ID 的 USB 设备。每个列表项都必须包含“devices”和“urls”字段，此政策才有效。“devices”字段中的每项内容都可以包含“vendor_id”和“product_id”字段。如果您省略“vendor_id”字段，系统将会创建一项与所有设备都匹配的政策。如果您省略“product_id”字段，系统将会创建一项与所有具有给定供应商 ID 的设备都匹配的政策。包含“product_id”字段但不含“vendor_id”字段的政策无效。
-
-        USB 权限模型会使用发出相应请求的网站的网址（“请求网址”）和顶级框架网站的网址（“嵌入网址”）来授权请求网址访问相应 USB 设备。如果发出请求的网站是在 iframe 中加载的，请求网址可能会与嵌入网址不同。因此，“urls”字段最多可包含 2 个以英文逗号分隔的网址字符串，以分别指定请求网址和嵌入网址。如果仅指定了 1 个网址，那么无论嵌入状态为何，系统都会在请求网站的网址与这个网址相符时授权该网站访问相应 USB 设备。“urls”字段中的网址必须是有效网址，否则系统会忽略此政策。
-
-        如果此政策未设置，系统将会对所有网站使用全局默认值（不自动授予访问权限）。</translation>
 <translation id="1384459581748403878">参考页面：<ph name="REFERENCE_URL" /></translation>
 <translation id="138847842893090358">报告操作系统更新状态</translation>
 <translation id="1390901586107713894">让您能够指定禁止用户安装的扩展程序。系统会停用被屏蔽的已安装扩展程序，而且用户无法以任何方式启用这些扩展程序。如果某个因被列入屏蔽名单而遭停用的扩展程序被从屏蔽名单中移除了，系统会自动重新启用该扩展程序。
@@ -433,12 +428,6 @@
 
       如果此政策未设置，当设备上的可用磁盘空间少于 20 GB（默认值）时，<ph name="PLUGIN_VM_NAME" /> 安装会失败。
       如果您设置了此政策，当设备上的可用磁盘空间少于此政策规定的数值时，<ph name="PLUGIN_VM_NAME" /> 安装会失败。</translation>
-<translation id="1695708467571967752">此政策用于控制用户是否能够在设备锁定时播放媒体。
-
-      如果将此政策设为 False，系统会停用锁定屏幕上的媒体控件。
-
-      如果将此政策设置为 True 或未设置此政策，那么当用户在媒体播放时锁定设备时，锁定屏幕上会显示媒体控件。
-      </translation>
 <translation id="1700811900332333712">允许设备请求 Powerwash</translation>
 <translation id="1708496595873025510">对变体种子的提取设置限制条件</translation>
 <translation id="171511968762040550">如果此政策设为 True 或未设置，用户可以添加、移除或修改书签。
@@ -643,10 +632,9 @@
           如果停用了此设置，系统将禁止进行文件传输。如果启用了或未设定此设置，系统将允许进行文件传输。</translation>
 <translation id="2057317273526988987">允许访问指定的一系列网址</translation>
 <translation id="2061810934846663491">为远程访问主机配置所需的域名</translation>
-<translation id="2067011586099792101">禁止访问非内容包内的网站</translation>
-<translation id="2069350366303315077">如果此政策已启用，<ph name="PRODUCT_NAME" /> 会强制启动访客会话并禁止登录个人资料。访客身份是一类 <ph name="PRODUCT_NAME" /> 个人资料；使用此类个人资料登录后，窗口均会处于无痕模式。
+<translation id="2069350366303315077">如果此政策已启用，<ph name="PRODUCT_NAME" /> 会强制启动访客会话并禁止登录个人资料。访客身份是一类特殊的 <ph name="PRODUCT_NAME" /> 个人资料；使用此类个人资料打开的窗口均会处于无痕模式。
 
-      如果此政策已停用或未设置，或者浏览器访客模式已停用（通过 <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />），系统将允许使用新的和现有的个人资料。</translation>
+      如果此政策已停用或未设置，或者浏览器访客模式已停用（通过 <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" /> 进行设置），系统将允许使用新的和现有的个人资料。</translation>
 <translation id="2073552873076775140">允许登录 <ph name="PRODUCT_NAME" /></translation>
 <translation id="2075732129949889165">Crostini Ansible Playbook</translation>
 <translation id="2077129598763517140">使用硬件加速模式（如果可用）</translation>
@@ -986,7 +974,7 @@
 
       如果您未设置此政策，系统将不会显示《服务条款》。
 
-      此政策的值应设为一个可供 <ph name="PRODUCT_OS_NAME" />用来下载《服务条款》的网址。《服务条款》必须是纯文本，以 MIME 类型 text/plain 提供，且不得使用任何标记。</translation>
+      此政策的值应设为一个可供 <ph name="PRODUCT_OS_NAME" />用来下载《服务条款》的网址。《服务条款》必须是纯文本，提供形式为 MIME 类型 text/plain，且不得使用任何标记。</translation>
 <translation id="2502467045153796624">版本降级行为</translation>
 <translation id="250670737672448119">启用“插入符号突出显示”无障碍功能。
 
@@ -1173,11 +1161,11 @@
 <translation id="2759224876420453487">控制多用户配置会话中的用户行为</translation>
 <translation id="2759426227259007018">通过设置此政策，您可以指定用户能在 <ph name="PRODUCT_OS_NAME" />锁定屏幕中将哪些应用作为笔记应用开启。
 
-      如果首选的应用已在锁定屏幕中，屏幕上将会显示用于启动首选笔记应用的界面元素。启动后，该应用便可在锁定屏幕之上创建窗口，并在此情境中创建笔记。当主要用户会话解锁时，该应用便可将所创建的笔记导入此会话中。目前，锁定屏幕上仅支持 <ph name="PRODUCT_NAME" /> 笔记应用。
+      如果首选的应用已添加到锁定屏幕中，屏幕上将会显示用于启动首选笔记应用的界面元素。启动后，该应用便可在锁定屏幕之上创建窗口，并在此情境中创建笔记。当主要用户会话解锁时，该应用便可将所创建的笔记导入此会话中。目前，锁定屏幕上仅支持 <ph name="PRODUCT_NAME" /> 笔记应用。
 
-      如果您设置了此政策，仅当此政策的列表值包含某个应用的扩展程序 ID 时，用户才能在锁定屏幕上开启该应用。所以，如果您将此政策设为空列表，系统就会关闭锁定屏幕上的笔记功能。即使此政策的值包含某个应用 ID，也未必意味着用户一定能在锁定屏幕上将该应用作为笔记应用开启。例如，在 <ph name="PRODUCT_NAME" /> 61 中，可用应用集还会受到平台的限制。
+      如果您设置了此政策，仅当此政策的列表值包含某个应用的扩展程序 ID 时，用户才能在锁定屏幕上开启该应用。所以，如果您将此政策设为空列表，系统就会关闭锁定屏幕上的笔记功能。即使此政策的值包含某个应用 ID，用户也未必能在锁定屏幕上将该应用作为笔记应用开启。例如，在 <ph name="PRODUCT_NAME" /> 61 中，可用应用集还会受到平台的限制。
 
-      如果您未设置此政策，系统便不会对用户能在锁定屏幕上启用的应用集强加任何限制。</translation>
+      如果您未设置此政策，此政策便不会对用户能在锁定屏幕上启用的应用集施加任何限制。</translation>
 <translation id="2761483219396643566">使用电池供电时的闲置警告延迟时间</translation>
 <translation id="2765601181281280493">通过设置此政策，您可以创建一个网址格式列表，从而指定哪些网站无法请求用户授权其访问串行端口。
 
@@ -1518,7 +1506,7 @@
       配置的网站将自动在其他浏览器（而非 <ph name="PRODUCT_NAME" />）中打开。</translation>
 <translation id="3255624750680556186">如果此政策已启用或未设置，系统会允许设备触发 Powerwash。
 
-      如果此政策已停用，系统将不允许设备触发 Powerwash。但例外情况是：如果为 <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> 设定的值允许 TPM 固件更新，且 TPM 固件尚未更新，系统将仍然允许设备触发 Powerwash。</translation>
+      如果此政策已停用，系统将不允许设备触发 Powerwash。但例外情况是：如果为 <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> 设定的值允许 TPM 固件更新，但 TPM 固件尚未更新，系统将仍然允许设备触发 Powerwash。</translation>
 <translation id="3255762580838224124">如果您设置了此政策，那么每当重新启动时或在此政策的值更改后首次连接时，每个显示屏都会旋转到指定方向。用户可在登录后通过“设置”页面更改显示屏旋转角度，但下次重新启动时显示屏仍会遵从更改前的设置。此政策适用于主要显示屏和次要显示屏。
 
       如果此政策未设置，默认值便是 0 度，但用户可以随意更改此值。如果用户更改了默认值，显示屏在重启时将不会重新应用此值。</translation>
@@ -2084,7 +2072,6 @@
 <translation id="4056910949759281379">停用 SPDY 协议</translation>
 <translation id="4061590579642538878">报告有关崩溃报告的信息。</translation>
 <translation id="4075675819066819571">将文件架放置到屏幕左侧</translation>
-<translation id="4075864623710596000">此列表中指定的主机名将免受 HSTS 政策检查，该检查可能会将请求从 HTTP 升级到 HTTPS。此政策只允许使用单标签主机名。必须使用规范化主机名：任何 IDN 都必须转换为对应的 A 标签格式，并且所有 ASCII 字母都必须小写。此政策只适用于指定的特定主机名，不适用于指定名称的子网域。</translation>
 <translation id="408029843066770167">允许向 Google 时间服务发出查询</translation>
 <translation id="408076456549153854">允许登录浏览器</translation>
 <translation id="4082498585300984671">启用“点击通话”功能</translation>
@@ -2194,9 +2181,6 @@
 
       如果此政策已停用，系统会关闭 <ph name="PRODUCT_NAME" />。</translation>
 <translation id="4203879074082863035">系统仅会向用户显示白名单中的打印机</translation>
-<translation id="420512303455129789">将网址与布尔选项对应的字典，用于指定是允许 (true) 还是禁止 (false) 访问相应主机。
-
-          此政策仅供 <ph name="PRODUCT_NAME" /> 在内部使用。</translation>
 <translation id="4209297478239988291">启用“自动点击”无障碍功能。
 
           此功能让用户无需实际点按鼠标或触控板，只需将指针悬停在想点击的对象上即可进行点击。
@@ -2336,13 +2320,6 @@
 <translation id="4494132853995232608">Wilco DTC</translation>
 <translation id="449423975179525290">配置与 <ph name="PLUGIN_VM_NAME" /> 相关的政策。</translation>
 <translation id="4498493270899294764">不检查下载内容是否包含恶意软件的网址格式</translation>
-<translation id="450537894712826981">配置<ph name="PRODUCT_NAME" />将用于在磁盘上存储缓存媒体文件的缓存大小。
-
-      如果您设置了此政策，那么无论用户是否已指定“--media-cache-size”标记，<ph name="PRODUCT_NAME" />都会使用此政策中设定的缓存大小。此政策中所指定的值并非硬性限值，而是针对缓存系统提出的建议值。任何低于几兆字节的值都会因为太小而被向上舍入到一个合理的最小值。
-
-      如果此政策的值为0，系统将使用默认缓存大小，并且用户无法更改该默认值。
-
-      如果未设置此政策，系统将使用默认缓存大小，并且用户可以使用“--media-cache-size”标记覆盖默认值。</translation>
 <translation id="4508084713148633492">借助此政策，您可以允许/禁止在磁盘空间不足时显示通知。此设置适用于设备上的所有用户。
       如果受管理的设备上只有 1 个用户帐号，无论此政策的值为何，系统始终都会显示通知。
       如果受管理的设备上有多个用户帐号，仅当此政策设为 True 时，系统才会显示通知。
@@ -2634,7 +2611,6 @@
 
       如果此政策已停用，系统会阻止 <ph name="PRODUCT_NAME" /> 发送此类查询。</translation>
 <translation id="5032164758660626397">阻止用户传输大型文件</translation>
-<translation id="5047604665028708335">允许访问非内容包内的网站</translation>
 <translation id="5056708224511062314">放大镜已停用</translation>
 <translation id="5058573563327660283">选择在自动清理期间释放磁盘空间时采用的策略（已弃用）</translation>
 <translation id="5061114193960158745">通过设置此政策，您可以控制哪些网站始终不会导致切换浏览器。网站列表中的每项内容都会被视为一条规则。有匹配项的规则将不会打开备用浏览器。与 <ph name="URL_LIST_POLICY_NAME" /> 政策不同的是，此政策中的规则双向适用。如果 <ph name="IE_PRODUCT_NAME" /> 插件已开启，此政策还可控制 <ph name="IE_PRODUCT_NAME" /> 是否应在 <ph name="PRODUCT_NAME" /> 中打开这些网址。
@@ -3103,10 +3079,6 @@
       请注意，我们不建议启用此设置，因为这可能会允许绕过 nameConstraints 扩展项（用于限制可针对哪些主机名授权指定的证书）。
 
       如果此政策未设置或设为 false，系统将不会信任包含 DNS 名称或 IP 地址但缺少 subjectAlternativeName 扩展项的服务器证书。</translation>
-<translation id="5578571772998293651">允许用户提供反馈。
-        如果此政策设为 false，用户无法向 Google 发送反馈。
-
-        如果未设置此政策或将其设为 true，用户可以通过依次点按“菜单”-&gt;“帮助”-&gt;“报告问题”或按下组合键来向 Google 发送反馈。</translation>
 <translation id="5579179012798142131">除非暂存模式或多帐号登录在用户会话期间保持开启状态，否则将 ArcEnabled 设为 True 会为用户开启 ARC。将此政策设为 False 或不设置意味着企业用户无法使用 ARC。</translation>
 <translation id="5582429816116769246">让您能够控制用户能否访问非企业打印机。
 
@@ -3367,7 +3339,6 @@
 <translation id="5951418260805607969">在磁盘空间不足时显示通知</translation>
 <translation id="5961137303188584693">设备的内置 NIC MAC 地址</translation>
 <translation id="5966615072639944554">允许扩展程序使用 Remote Attestation API</translation>
-<translation id="5983708779415553259">非任何内容包内的网站的默认行为</translation>
 <translation id="5997543603646547632">默认情况下，使用24小时制</translation>
 <translation id="5997846976342452720">指定是否应停用插件查找器（已弃用）</translation>
 <translation id="5998198091336830580">此政策是下面这个原子政策组的一部分（系统仅会应用该组中来源优先级最高的政策）：</translation>
@@ -3406,9 +3377,6 @@
 <translation id="603768430528561926">如果此政策已启用或未设置，企业设备用户便可通过 <ph name="PRODUCT_OS_NAME" />注册流程来兑换优惠。
 
       如果此政策已停用，用户将无法兑换这类优惠。</translation>
-<translation id="6038407313189625985">如果此政策处于启用状态或未设置，则系统会启用“渲染程序代码完整性”。仅当必须在 Chrome 的渲染程序进程中运行的第三方软件遇到兼容性问题时，才应停用此政策。
-
-      停用此政策会对 Chrome 的安全性和稳定性产生不利影响，因为在这种情况下，系统会允许未知的潜在恶意代码在 Chrome 的渲染程序进程中加载。如需了解详情，请参阅 https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies。</translation>
 <translation id="6048199181629830227">启用用电高峰转移电源管理</translation>
 <translation id="6054485492411959335">此政策旨在指定用户可以使用的打印机。
 
@@ -3623,7 +3591,7 @@
       如果此政策未设置或列表为空，则意味着所有协议在 <ph name="PRODUCT_NAME" /> 中都可用。</translation>
 <translation id="6338982178236723271">报告系统信息</translation>
 <translation id="6342187235303612558">禁止用户上传或下载目前不支持数据泄露防护或恶意软件扫描的文件。</translation>
-<translation id="6353890097388312479">如果此政策设为“All (0)”或未设置，用户便可修改所有 CA 证书的信任设置、移除用户导入的证书以及使用证书管理器导入证书。如果此政策设为“UserOnly (1)”，用户将仅能管理用户导入的证书，但无法更改内置证书的信任设置。如果此政策设为“None (2)”，用户可以查看（但无法管理）CA 证书。</translation>
+<translation id="6353890097388312479">如果此政策设为“All (0)”或未设置，用户便可修改所有 CA 证书的信任设置、移除用户导入的证书并使用证书管理器导入证书。如果此政策设为“UserOnly (1)”，用户将仅能管理用户导入的证书，但无法更改内置证书的信任设置。如果此政策设为“None (2)”，用户可以查看（但无法管理）CA 证书。</translation>
 <translation id="6366574325767783825">如果此政策设为 True 或未设置，<ph name="PRODUCT_NAME" /> 将会接受通过 Signed HTTP Exchange (SXG) 提供的网络内容。
 
       如果此政策设为 False，系统会阻止加载 Signed HTTP Exchange (SXG) 内容。</translation>
@@ -3719,11 +3687,11 @@
 
       通过设置此政策，您可以指定用户能在 <ph name="PRODUCT_OS_NAME" />锁定屏幕中将哪些应用作为笔记应用开启。
 
-      如果首选的应用已在锁定屏幕中，屏幕上将会显示用于启动首选笔记应用的界面元素。启动后，该应用便可在锁定屏幕之上创建窗口，并在此情境中创建笔记。当主要用户会话解锁时，该应用便可将所创建的笔记导入此会话中。目前，锁定屏幕上仅支持 <ph name="PRODUCT_NAME" /> 笔记应用。
+      如果首选的应用已添加到锁定屏幕中，屏幕上将会显示用于启动首选笔记应用的界面元素。启动后，该应用便可在锁定屏幕之上创建窗口，并在此情境中创建笔记。当主要用户会话解锁时，该应用便可将所创建的笔记导入此会话中。目前，锁定屏幕上仅支持 <ph name="PRODUCT_NAME" /> 笔记应用。
 
-      如果您设置了此政策，仅当此政策的列表值包含某个应用的扩展程序 ID 时，用户才能在锁定屏幕上开启该应用。所以，如果您将此政策设为空列表，系统就会关闭锁定屏幕上的笔记功能。即使此政策的值包含某个应用 ID，也未必意味着用户一定能在锁定屏幕上将该应用作为笔记应用开启。例如，在 <ph name="PRODUCT_NAME" /> 61 中，可用应用集还会受到平台的限制。
+      如果您设置了此政策，仅当此政策的列表值包含某个应用的扩展程序 ID 时，用户才能在锁定屏幕上开启该应用。所以，如果您将此政策设为空列表，系统就会关闭锁定屏幕上的笔记功能。即使此政策的值包含某个应用 ID，用户也未必能在锁定屏幕上将该应用作为笔记应用开启。例如，在 <ph name="PRODUCT_NAME" /> 61 中，可用应用集还会受到平台的限制。
 
-      如果您未设置此政策，系统便不会对用户能在锁定屏幕上启用的应用集强加任何限制。</translation>
+      如果您未设置此政策，此政策便不会对用户能在锁定屏幕上启用的应用集施加任何限制。</translation>
 <translation id="6506486086262398387">如果此政策已启用，适用于 <ph name="PRODUCT_OS_NAME" />的网络文件共享功能会酌情使用 NTLM 对 SMB 共享文件进行身份验证。如果此政策已停用，系统会关闭对 SMB 共享文件的 NTLM 身份验证机制。
 
       如果您未设置此政策，系统的默认行为就会是：为受管用户停用此政策，并为其他用户启用此政策。</translation>
@@ -4704,9 +4672,6 @@
 
       请注意：目前，系统仅在显示登录屏幕或正在访问自助服务终端应用时才会启用自动重启。这在日后会有所改变，但此政策将始终适用，无论是否正在进行任何特殊类型的会话。</translation>
 <translation id="7701341006446125684">设置应用和扩展程序缓存大小（以字节为单位）</translation>
-<translation id="7709537117200051035">将主机名与布尔选项对应的字典，用于指定是允许 (true) 还是禁止 (false) 访问相应主机。
-
-          此政策仅供 <ph name="PRODUCT_NAME" /> 在内部使用。</translation>
 <translation id="7710950688502974809">让您能够指定一系列要应用于 <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" /> 企业版接口的 Chrome 企业版接口服务设置，以供系统在下述情况发生时调用：有人通过复制剪贴板内容或拖放网页内容在 Chrome 中输入数据。
 
       <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 字段用于确定当用户在特定网页中输入数据后，该接口是否应发送此数据进行分析，以及要将哪些标记添加到针对此数据的分析请求中。如果相应的网页网址与“enable”格式所对应的某个标记相匹配，那么只要所有包含这个标记的“disable”格式与此网页网址都不匹配，该接口便会将这个标记添加到分析请求中。如果该接口向分析请求中添加了至少 1 个标记，分析服务便会分析输入的数据。
@@ -4854,7 +4819,6 @@
       如果您启用或停用了此设置，用户将无法在 <ph name="PRODUCT_NAME" /> 中更改或替换此设置。
 
       如果未设置此政策，系统将会启用此政策，但用户可以自行更改。</translation>
-<translation id="7953256619080733119">托管用户手动管理的例外主机</translation>
 <translation id="7956210013490975468">为 <ph name="PRODUCT_OS_NAME" />配置系统代理服务。</translation>
 <translation id="7958537754689366707">必须每 12 小时输入一次密码</translation>
 <translation id="7961779417826583251">对于指定的一系列旧版证书授权机构，不强制执行证书透明化要求</translation>
@@ -5073,11 +5037,6 @@
           如果您设置了此政策，用户将无法更改或覆盖它。
 
           如果未设置此政策，则“语音输入”最初会处于停用状态，但用户可以随时启用该功能。</translation>
-<translation id="829337533107201925">如果启用了此政策，那么对于同一政策原子组，系统将忽略组内与具有最高优先级的政策不属于同一来源的政策。
-
-      如果停用了此政策，则系统不会因来源而忽略任何政策。仅当相应政策与其他政策冲突且不具有最高优先级时，系统才会忽略它们。
-
-      如果此政策是根据云端来源而设置的，则无法针对特定用户</translation>
 <translation id="8294750666104911727">XX-UA-Compatible 设置为chrome=1的网页通常在“<ph name="PRODUCT_FRAME_NAME" />”中进行渲染，而不考虑“ChromeFrameRendererSettings”政策。
 
           如果启用了该设置，将不扫描网页的元标记。
@@ -5275,7 +5234,6 @@
 <translation id="8544375438507658205">默认 HTML 呈现器为“<ph name="PRODUCT_FRAME_NAME" />”</translation>
 <translation id="8544465954173828789">允许将短信从手机同步到 Chromebook。</translation>
 <translation id="8548832052135586762">将打印模式设置为仅限彩色打印、仅限单色打印或无颜色模式限制。如果未设置此政策，则会被视为无限制。</translation>
-<translation id="8549772397068118889">访问非内容包内的网站时发出警告</translation>
 <translation id="8566842294717252664">在“打开新的标签页”页面和应用启动器中不显示网上应用店</translation>
 <translation id="8569734380847633643">
           如果此政策设为 false，<ph name="PRODUCT_OS_NAME" />将停用 Wi-Fi，并且用户无法重新启用 Wi-Fi。
@@ -5395,7 +5353,6 @@
       如果您设置了此政策，用户便无法更改或覆盖它。
 
       此政策对用户能否在各部设备上配置打印机没有影响。它旨在对各用户的打印机配置进行补充。</translation>
-<translation id="8764477907716150749">此政策仅供 <ph name="PRODUCT_NAME" /> 在内部使用。</translation>
 <translation id="8767743923206070405">如果此政策已启用，系统会在 <ph name="PRODUCT_NAME" /> 的工具栏中显示“主页”按钮。如果此政策已停用，系统不会显示“主页”按钮。
 
       如果您设置了此政策，用户将无法在 <ph name="PRODUCT_NAME" /> 中更改它。如果您未设置此政策，用户便可自行选择是否显示“主页”按钮。</translation>

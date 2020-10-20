@@ -159,7 +159,7 @@
 <translation id="2131665479022868825"><ph name="DATA" /> बचाया गया</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> बंद है</translation>
 <translation id="2139186145475833000">होम स्क्रीन में जोड़ें</translation>
-<translation id="214888715418183969">चुनें कि Chrome के साथ आपकी क्या जानकारी शेयर की जाए. आपकी शेयर की गई मेट्रिक का इस्तेमाल, Chrome की सुविधाओं और परफ़ॉर्मेंस को बेहतर बनाने और गड़बड़ियों को ठीक करने के लिए किया जाएगा.</translation>
+<translation id="214888715418183969">चुनें कि Chrome के साथ आपकी क्या जानकारी शेयर की जाए. आप जो मेट्रिक शेयर करते हैं उसका इस्तेमाल, Chrome की सुविधाओं और परफ़ॉर्मेंस को बेहतर बनाने में किया जाएगा. साथ ही, इसका इस्तेमाल क्रैश होने जैसी दिक्कतों को ठीक करने में भी होगा.</translation>
 <translation id="2154484045852737596">कार्ड में बदलाव करें</translation>
 <translation id="2154710561487035718">URL की कॉपी बनाएं</translation>
 <translation id="2156074688469523661">बाकी साइटें (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -732,7 +732,7 @@
 <translation id="6303969859164067831">साइन आउट करें और सिंक बंद करें</translation>
 <translation id="6312687380483398334">वेब ऐप्लिकेशन (म्यूट)</translation>
 <translation id="6316139424528454185">Android वर्शन काम नहीं कर रहा है</translation>
-<translation id="6321526113093607004">बुकमार्क में जोड़ें</translation>
+<translation id="6321526113093607004">Bookmarks में जोड़ें</translation>
 <translation id="6324034347079777476">Android सिस्टम समन्वयन अक्षम है</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> के द्वारा शेयर करें</translation>
 <translation id="6337234675334993532">सुरक्षित करने का तरीका</translation>
@@ -938,6 +938,7 @@
 <translation id="7682724950699840886">ये सलाह आज़माएं: पक्का करें कि आपके डिवाइस पर ज़रूरी जगह उपलब्ध है, फिर दोबारा निर्यात करके देखें.</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> में ईमेल बनाएं</translation>
 <translation id="7704317875155739195">खोजों और यूआरएल को अपने आप पूरा करें</translation>
+<translation id="7707922173985738739">मोबाइल डेटा का उपयोग करें</translation>
 <translation id="7725024127233776428">आप जो पेज बुकमार्क करते हैं वे यहां दिखाई देंगे</translation>
 <translation id="7735637452482172701">स्क्रीन लॉक की मदद से अनलॉक करें</translation>
 <translation id="7746457520633464754">खतरनाक ऐप्लिकेशन और साइटों का पता लगाने के लिए, Chrome ऐसे कुछ पेज का यूआरएल Google को भेजता है जिन पर आप जाते हैं. साथ ही, वह सिस्टम की सीमित जानकारी और पेज की कुछ सामग्री भी Google को भेजता है</translation>
@@ -1026,7 +1027,7 @@
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> और कई साइटें</translation>
 <translation id="8327155640814342956">बेहतरीन ब्राउज़िंग अनुभव के लिए, Chrome अपडेट करें</translation>
 <translation id="8349013245300336738">इस्तेमाल किए गए डेटा की मात्रा के हिसाब से क्रम में लगाएं</translation>
-<translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोड को पहले जैसा किया गया</translation>
+<translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोड वापस लाया गया</translation>
 <translation id="8364299278605033898">लोकप्रिय वेबसाइटें देखें</translation>
 <translation id="8368027906805972958">अज्ञात या काम न करने वाला डिवाइस (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> इस्तेमाल के लिए तैयार है.</translation>
