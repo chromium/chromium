@@ -284,7 +284,7 @@ class CORE_EXPORT InspectorOverlayAgent final
   Member<Hinge> hinge_;
   // The agent needs to keep AXContext because it enables caching of
   // a11y attributes shown in the inspector overlay.
-  HeapHashMap<Member<Document>, std::unique_ptr<AXContext>>
+  HeapHashMap<WeakMember<Document>, std::unique_ptr<AXContext>>
       document_to_ax_context_;
   bool swallow_next_mouse_up_;
   DOMNodeId backend_node_id_to_inspect_;
