@@ -483,8 +483,6 @@ class PrerenderTest : public testing::Test {
 
 TEST_F(PrerenderTest, RespectsThirdPartyCookiesPref) {
   GURL url("http://www.google.com/");
-  ASSERT_TRUE(IsNoStatePrefetchEnabled());
-
   profile()->GetPrefs()->SetInteger(
       prefs::kCookieControlsMode,
       static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
@@ -651,7 +649,6 @@ TEST_F(PrerenderTest, PredictorPrefetchHoldbackOffPredictorReferrer) {
 // Flaky on Android and Mac, crbug.com/1087876.
 TEST_F(PrerenderTest, DISABLED_PrerenderDisabledOnLowEndDevice) {
   GURL url("http://www.google.com/");
-  ASSERT_TRUE(IsNoStatePrefetchEnabled());
   prerender_manager()->SetIsLowEndDevice(true);
   EXPECT_FALSE(AddSimplePrerender(url));
   histogram_tester().ExpectUniqueSample("Prerender.FinalStatus",
@@ -983,7 +980,6 @@ TEST_F(PrerenderTest, MaxConcurrencyTest) {
 
 // Flaky on Android: https://crbug.com/1105908
 TEST_F(PrerenderTest, DISABLED_AliasURLTest) {
-  ASSERT_TRUE(IsNoStatePrefetchEnabled());
   SetConcurrency(7);
 
   GURL url("http://www.google.com/");

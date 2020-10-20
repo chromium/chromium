@@ -27,7 +27,6 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/browser/omnibox_popup_model.h"
-#include "components/prerender/browser/prerender_field_trial.h"
 #include "components/prerender/browser/prerender_handle.h"
 #include "components/prerender/browser/prerender_manager.h"
 #include "content/public/browser/browser_thread.h"
@@ -204,13 +203,9 @@ AutocompleteActionPredictor::Action
     }
   }
 
-  // Downgrade prerender to preconnect if this is a search match or if
-  // nostate-prefetch is disabled.
-  if (action == ACTION_PRERENDER &&
-      (AutocompleteMatch::IsSearchType(match.type) ||
-       !prerender::IsNoStatePrefetchEnabled())) {
+  // Downgrade prerender to preconnect if this is a search match.
+  if (action == ACTION_PRERENDER && AutocompleteMatch::IsSearchType(match.type))
     action = ACTION_PRECONNECT;
-  }
 
   return action;
 }

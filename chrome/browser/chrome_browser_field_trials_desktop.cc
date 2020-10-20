@@ -14,7 +14,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/metrics/persistent_system_profile.h"
-#include "components/prerender/browser/prerender_field_trial.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/common/content_switches.h"
 
@@ -44,7 +43,6 @@ void SetupStunProbeTrial() {
 }  // namespace
 
 void SetupDesktopFieldTrials() {
-  prerender::ConfigureNoStatePrefetch();
   SetupStunProbeTrial();
 }
 

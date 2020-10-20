@@ -221,8 +221,6 @@ PrerenderManager::AddPrerenderFromNavigationPredictor(
     const GURL& url,
     SessionStorageNamespace* session_storage_namespace,
     const gfx::Size& size) {
-  DCHECK(IsNoStatePrefetchEnabled());
-
   return AddPrerenderWithPreconnectFallback(
       ORIGIN_NAVIGATION_PREDICTOR, url, content::Referrer(), base::nullopt,
       gfx::Rect(size), session_storage_namespace);
@@ -232,8 +230,6 @@ std::unique_ptr<PrerenderHandle> PrerenderManager::AddIsolatedPrerender(
     const GURL& url,
     SessionStorageNamespace* session_storage_namespace,
     const gfx::Size& size) {
-  DCHECK(IsNoStatePrefetchEnabled());
-
   // The preconnect fallback won't happen.
   return AddPrerenderWithPreconnectFallback(
       ORIGIN_ISOLATED_PRERENDER, url, content::Referrer(), base::nullopt,
@@ -579,17 +575,15 @@ PrerenderManager::AddPrerenderWithPreconnectFallback(
     return base::WrapUnique(new PrerenderHandle(preexisting_prerender_data));
   }
 
-  if (IsNoStatePrefetchEnabled()) {
-    base::TimeDelta prefetch_age;
-    GetPrefetchInformation(url, &prefetch_age, nullptr /* final_status*/,
-                           nullptr /* origin */);
-    if (!prefetch_age.is_zero() &&
-        prefetch_age <
-            base::TimeDelta::FromMinutes(net::HttpCache::kPrefetchReuseMins)) {
-      SkipPrerenderContentsAndMaybePreconnect(url, origin,
-                                              FINAL_STATUS_DUPLICATE);
-      return nullptr;
-    }
+  base::TimeDelta prefetch_age;
+  GetPrefetchInformation(url, &prefetch_age, nullptr /* final_status*/,
+                         nullptr /* origin */);
+  if (!prefetch_age.is_zero() &&
+      prefetch_age <
+          base::TimeDelta::FromMinutes(net::HttpCache::kPrefetchReuseMins)) {
+    SkipPrerenderContentsAndMaybePreconnect(url, origin,
+                                            FINAL_STATUS_DUPLICATE);
+    return nullptr;
   }
 
   // Do not prerender if there are too many render processes, and we would
@@ -658,10 +652,8 @@ PrerenderManager::AddPrerenderWithPreconnectFallback(
       CreatePrerenderContents(url, referrer, initiator_origin, origin);
   DCHECK(prerender_contents);
   PrerenderContents* prerender_contents_ptr = prerender_contents.get();
-  if (IsNoStatePrefetchEnabled()) {
-    prerender_contents_ptr->SetPrerenderMode(
-        prerender::mojom::PrerenderMode::kPrefetchOnly);
-  }
+  prerender_contents_ptr->SetPrerenderMode(
+      prerender::mojom::PrerenderMode::kPrefetchOnly);
   active_prerenders_.push_back(
       std::make_unique<PrerenderData>(this, std::move(prerender_contents),
                                       GetExpiryTimeForNewPrerender(origin)));
@@ -992,8 +984,6 @@ void PrerenderManager::SkipPrerenderContentsAndMaybePreconnect(
 
 void PrerenderManager::RecordNetworkBytesConsumed(Origin origin,
                                                   int64_t prerender_bytes) {
-  if (!IsNoStatePrefetchEnabled())
-    return;
   int64_t recent_browser_context_bytes =
       browser_context_network_bytes_ -
       last_recorded_browser_context_network_bytes_;

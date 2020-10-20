@@ -1539,8 +1539,6 @@ void OmniboxEditModel::OnCurrentMatchChanged() {
 
   const AutocompleteMatch& match = omnibox_controller_->current_match();
 
-  client_->OnCurrentMatchChanged(match);
-
   // We store |keyword| and |is_keyword_hint| in temporary variables since
   // OnPopupDataChanged use their previous state to detect changes.
   base::string16 keyword;

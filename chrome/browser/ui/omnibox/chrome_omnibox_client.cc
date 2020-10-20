@@ -51,7 +51,6 @@
 #include "components/omnibox/browser/omnibox_controller_emitter.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/prerender/browser/prerender_field_trial.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/translate/core/browser/translate_manager.h"
@@ -309,12 +308,6 @@ gfx::Image ChromeOmniboxClient::GetFaviconForKeywordSearchProvider(
 
   return favicon_cache_.GetFaviconForIconUrl(template_url->favicon_url(),
                                              std::move(on_favicon_fetched));
-}
-
-void ChromeOmniboxClient::OnCurrentMatchChanged(
-    const AutocompleteMatch& match) {
-  if (!prerender::IsNoStatePrefetchEnabled())
-    DoPreconnect(match);
 }
 
 void ChromeOmniboxClient::OnTextChanged(const AutocompleteMatch& current_match,

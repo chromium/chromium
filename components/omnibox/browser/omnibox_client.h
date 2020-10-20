@@ -137,9 +137,6 @@ class OmniboxClient {
       const TemplateURL* template_url,
       FaviconFetchedCallback on_favicon_fetched);
 
-  // Called when the current autocomplete match has changed.
-  virtual void OnCurrentMatchChanged(const AutocompleteMatch& match) {}
-
   // Called when the text may have changed in the edit.
   virtual void OnTextChanged(const AutocompleteMatch& current_match,
                              bool user_input_in_progress,
