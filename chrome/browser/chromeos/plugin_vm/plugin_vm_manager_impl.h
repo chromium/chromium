@@ -22,6 +22,20 @@ class Profile;
 
 namespace plugin_vm {
 
+// Native Parallels error codes.
+constexpr int PRL_ERR_SUCCESS = 0;
+constexpr int PRL_ERR_DISP_SHUTDOWN_IN_PROCESS = 0x80000404;
+constexpr int PRL_ERR_LICENSE_NOT_VALID = 0x80011000;
+constexpr int PRL_ERR_LICENSE_EXPIRED = 0x80011001;
+constexpr int PRL_ERR_LICENSE_WRONG_VERSION = 0x80011002;
+constexpr int PRL_ERR_LICENSE_WRONG_PLATFORM = 0x80011004;
+constexpr int PRL_ERR_LICENSE_BETA_KEY_RELEASE_PRODUCT = 0x80011011;
+constexpr int PRL_ERR_LICENSE_RELEASE_KEY_BETA_PRODUCT = 0x80011013;
+constexpr int PRL_ERR_LICENSE_SUBSCR_EXPIRED = 0x80011074;
+constexpr int PRL_ERR_JLIC_WRONG_HWID = 0x80057005;
+constexpr int PRL_ERR_JLIC_LICENSE_DISABLED = 0x80057010;
+constexpr int PRL_ERR_JLIC_WEB_PORTAL_ACCESS_REQUIRED = 0x80057012;
+
 // The PluginVmManagerImpl is responsible for connecting to the D-Bus services
 // to manage the Plugin Vm.
 

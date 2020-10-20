@@ -325,7 +325,8 @@ TEST_F(PluginVmManagerImplTest, LaunchPluginVmInvalidLicense) {
 
   vm_tools::plugin_dispatcher::StartVmResponse start_vm_response;
   start_vm_response.set_error(
-      vm_tools::plugin_dispatcher::VmErrorCode::VM_ERR_LIC_NOT_VALID);
+      vm_tools::plugin_dispatcher::VmErrorCode::VM_ERR_NATIVE_RESULT_CODE);
+  start_vm_response.set_result_code(PRL_ERR_LICENSE_NOT_VALID);
   VmPluginDispatcherClient().set_start_vm_response(start_vm_response);
 
   MockLaunchPluginVmCallback callback;
