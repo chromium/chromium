@@ -9330,6 +9330,45 @@
      ]
     ]
    },
+   "permissions-policy": {
+    "experimental-features": {
+     "vertical-scroll-disabled-frame-no-scroll-manual.tentative.html": [
+      "67cae05ee8ad8cc23ea1605eb125ca89bcbeeda4",
+      [
+       null,
+       {}
+      ]
+     ],
+     "vertical-scroll-main-frame-manual.tentative.html": [
+      "cda6c49abb6df5007ff83b122a5a5788fa51c60c",
+      [
+       null,
+       {}
+      ]
+     ],
+     "vertical-scroll-touch-action-manual.tentative.html": [
+      "8c2eec93b737d791c51f3d0d3ba41f158a5c1e08",
+      [
+       null,
+       {}
+      ]
+     ],
+     "vertical-scroll-touch-block-manual.tentative.html": [
+      "341e5439349c9592b0374db20a9cbd28080d130c",
+      [
+       null,
+       {}
+      ]
+     ],
+     "vertical-scroll-wheel-block-manual.tentative.html": [
+      "2627fd4154312b98bbe754a5ac0c544c762dd84e",
+      [
+       null,
+       {}
+      ]
+     ]
+    }
+   },
    "pointerevents": {
     "html": {
      "pointerevent_drag_interaction-manual.html": [
@@ -88504,6 +88543,19 @@
        {}
       ]
      ],
+     "position-absolute-replaced-with-display-table.html": [
+      "9a966b931524a806bc08767905ea43be00f30094",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "position-absolute-root-element-flex.html": [
       "ed1e4903d807276246f2e212c6c2dd10d349739a",
       [
@@ -95884,7 +95936,7 @@
     },
     "css-sizing": {
      "aspect-ratio": {
-      "abspos-001.tentative.html": [
+      "abspos-001.html": [
        "e18a0a7c81dbef1b2526793bac31ab6640b33dd7",
        [
         null,
@@ -95897,7 +95949,7 @@
         {}
        ]
       ],
-      "abspos-002.tentative.html": [
+      "abspos-002.html": [
        "2e14ff3fb9b36f4399ede17d42c90b1bf8dc0329",
        [
         null,
@@ -95910,7 +95962,7 @@
         {}
        ]
       ],
-      "abspos-003.tentative.html": [
+      "abspos-003.html": [
        "f8602af9fd5a186694067fa814f14e8b36d4c057",
        [
         null,
@@ -95923,7 +95975,7 @@
         {}
        ]
       ],
-      "abspos-004.tentative.html": [
+      "abspos-004.html": [
        "b7685f1db3836e6785aad5a70dbcff217655ac48",
        [
         null,
@@ -95936,7 +95988,7 @@
         {}
        ]
       ],
-      "abspos-005.tentative.html": [
+      "abspos-005.html": [
        "a0eaf8c2859fc3c11d1f8bae2e45e1bac46bc788",
        [
         null,
@@ -95949,7 +96001,7 @@
         {}
        ]
       ],
-      "abspos-006.tentative.html": [
+      "abspos-006.html": [
        "8c9f16f571485d1cfe286fbff91f45cd73c343f7",
        [
         null,
@@ -95962,7 +96014,7 @@
         {}
        ]
       ],
-      "abspos-007.tentative.html": [
+      "abspos-007.html": [
        "4b170a51872c78e07a04e12679a9356255ba416a",
        [
         null,
@@ -95975,7 +96027,7 @@
         {}
        ]
       ],
-      "abspos-008.tentative.html": [
+      "abspos-008.html": [
        "429b14ac35feb710354b9133ba435dc7fd192808",
        [
         null,
@@ -95988,7 +96040,7 @@
         {}
        ]
       ],
-      "abspos-009.tentative.html": [
+      "abspos-009.html": [
        "0e71de200d5736cf047498e81f9f57bc5ce88d4b",
        [
         null,
@@ -96001,7 +96053,7 @@
         {}
        ]
       ],
-      "abspos-010.tentative.html": [
+      "abspos-010.html": [
        "1d7ddec7f5e0add7c81c9e087ca0820432bb93d3",
        [
         null,
@@ -96014,7 +96066,7 @@
         {}
        ]
       ],
-      "abspos-011.tentative.html": [
+      "abspos-011.html": [
        "01fac9dae156ca1f5b1e8b629deb97ecf9a10ca4",
        [
         null,
@@ -96027,7 +96079,7 @@
         {}
        ]
       ],
-      "abspos-012.tentative.html": [
+      "abspos-012.html": [
        "537f8778f912909687c0e2b19938166e285c2592",
        [
         null,
@@ -96040,7 +96092,7 @@
         {}
        ]
       ],
-      "abspos-013.tentative.html": [
+      "abspos-013.html": [
        "16c3417b48fce9b8d6e648416b666b8af5d0b73d",
        [
         null,
@@ -96053,7 +96105,7 @@
         {}
        ]
       ],
-      "abspos-014.tentative.html": [
+      "abspos-014.html": [
        "b0accc68dc85564b851f746965a1bad48318ab40",
        [
         null,
@@ -96066,7 +96118,7 @@
         {}
        ]
       ],
-      "auto-margins-001.tentative.html": [
+      "auto-margins-001.html": [
        "9e89ab6ca7f5220ea030aa537bcb3b64f156043d",
        [
         null,
@@ -96079,7 +96131,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-001.tentative.html": [
+      "block-aspect-ratio-001.html": [
        "456e0b348a270077afeed1d82b3b27b33f88f775",
        [
         null,
@@ -96092,7 +96144,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-002.tentative.html": [
+      "block-aspect-ratio-002.html": [
        "2dc374c9f2d568f15f0de3493ea8097b385b9a5f",
        [
         null,
@@ -96105,7 +96157,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-003.tentative.html": [
+      "block-aspect-ratio-003.html": [
        "987629d2e836028d8111dcdd8b1b0bd3a788e0e2",
        [
         null,
@@ -96118,7 +96170,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-004.tentative.html": [
+      "block-aspect-ratio-004.html": [
        "99e92d409399639e6f71f99d6ab8425f9274a589",
        [
         null,
@@ -96131,7 +96183,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-005.tentative.html": [
+      "block-aspect-ratio-005.html": [
        "dcee7cd10c5db3c61af7d109695f087fa0424d53",
        [
         null,
@@ -96144,7 +96196,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-006.tentative.html": [
+      "block-aspect-ratio-006.html": [
        "0cde4d4dd95c20cf0a6a1b6d3f171ea1d5362124",
        [
         null,
@@ -96157,7 +96209,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-007.tentative.html": [
+      "block-aspect-ratio-007.html": [
        "bc79a8f6ef3baf7c3baeeb6623862a9818dc1fcf",
        [
         null,
@@ -96170,7 +96222,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-008.tentative.html": [
+      "block-aspect-ratio-008.html": [
        "1e508149d90d811905407c9c1a03ac1dea456434",
        [
         null,
@@ -96183,7 +96235,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-009.tentative.html": [
+      "block-aspect-ratio-009.html": [
        "980a06b8ab49b2690f8be42b36b703829d20e4c8",
        [
         null,
@@ -96196,7 +96248,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-010.tentative.html": [
+      "block-aspect-ratio-010.html": [
        "5cb7c841aea9ca429e8d2883aae73fe967c0762f",
        [
         null,
@@ -96209,7 +96261,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-011.tentative.html": [
+      "block-aspect-ratio-011.html": [
        "17790c93a66555fff3e96d33cbce869e288f8cde",
        [
         null,
@@ -96222,7 +96274,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-012.tentative.html": [
+      "block-aspect-ratio-012.html": [
        "2cace2e1704798fabe7119ac294e0b1e5b02d181",
        [
         null,
@@ -96235,7 +96287,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-013.tentative.html": [
+      "block-aspect-ratio-013.html": [
        "d8e9ad805bb1ef2977968d9e1414fffe1cdcfe5a",
        [
         null,
@@ -96248,7 +96300,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-014.tentative.html": [
+      "block-aspect-ratio-014.html": [
        "e93dbe2cc224e328f631d13090f8e4a1e07204b9",
        [
         null,
@@ -96261,7 +96313,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-015.tentative.html": [
+      "block-aspect-ratio-015.html": [
        "3f9e833f1ece948d88ed2eeef5081a852687f3c6",
        [
         null,
@@ -96274,7 +96326,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-016.tentative.html": [
+      "block-aspect-ratio-016.html": [
        "7bd21e9196ed12605c0bb6f64110e3602a6245ad",
        [
         null,
@@ -96287,7 +96339,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-017.tentative.html": [
+      "block-aspect-ratio-017.html": [
        "4ea0d69a24f41a70790b4739e2ee8233927b6fe7",
        [
         null,
@@ -96300,7 +96352,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-018.tentative.html": [
+      "block-aspect-ratio-018.html": [
        "6c92b32c7b0fd45bace2d5bbf57c1f21c286682e",
        [
         null,
@@ -96313,7 +96365,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-019.tentative.html": [
+      "block-aspect-ratio-019.html": [
        "56cb453514d2e84fb8739b05d192b02ac3318cbd",
        [
         null,
@@ -96326,7 +96378,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-020.tentative.html": [
+      "block-aspect-ratio-020.html": [
        "b07e91faf9860ea4b07d233103233b42e9ffd9c8",
        [
         null,
@@ -96339,7 +96391,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-021.tentative.html": [
+      "block-aspect-ratio-021.html": [
        "0e9c1b6b0a2697d9f1ee6309e4255859ecc7d1ad",
        [
         null,
@@ -96352,7 +96404,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-022.tentative.html": [
+      "block-aspect-ratio-022.html": [
        "1ee8021a3bbb428d9f7234590072986bd3ec4318",
        [
         null,
@@ -96365,7 +96417,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-023.tentative.html": [
+      "block-aspect-ratio-023.html": [
        "e38cfe0cb26e47eea9c6c8c32a692d045c692a13",
        [
         null,
@@ -96378,7 +96430,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-024.tentative.html": [
+      "block-aspect-ratio-024.html": [
        "d6f6716b99d527d421e892d80a79f9a31e84ec45",
        [
         null,
@@ -96391,7 +96443,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-025.tentative.html": [
+      "block-aspect-ratio-025.html": [
        "6ce673672372a84bbba40bc455d4fa744848852e",
        [
         null,
@@ -96404,7 +96456,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-026.tentative.html": [
+      "block-aspect-ratio-026.html": [
        "0e0ce5efe3aa8b83f64e8deee46bafb2c7144c58",
        [
         null,
@@ -96417,7 +96469,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-027.tentative.html": [
+      "block-aspect-ratio-027.html": [
        "532f558b39deff2788e58865cc2ae3777a6d4716",
        [
         null,
@@ -96430,7 +96482,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-028.tentative.html": [
+      "block-aspect-ratio-028.html": [
        "ec49bd4d7af834c3fea345b34b0eb05ff58f9e4d",
        [
         null,
@@ -96443,7 +96495,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-with-margin-collapsing-001.tentative.html": [
+      "block-aspect-ratio-with-margin-collapsing-001.html": [
        "78a0418fe285da58030cdd863460add0533e6af5",
        [
         null,
@@ -96456,7 +96508,7 @@
         {}
        ]
       ],
-      "block-aspect-ratio-with-margin-collapsing-002.tentative.html": [
+      "block-aspect-ratio-with-margin-collapsing-002.html": [
        "111a6049e5aa3c1ca87e22d3505809a9e5a91696",
        [
         null,
@@ -96469,7 +96521,7 @@
         {}
        ]
       ],
-      "flex-aspect-ratio-001.tentative.html": [
+      "flex-aspect-ratio-001.html": [
        "3b477e299ad763a1c0108e16f05981c76c25bb77",
        [
         null,
@@ -96482,7 +96534,7 @@
         {}
        ]
       ],
-      "flex-aspect-ratio-002.tentative.html": [
+      "flex-aspect-ratio-002.html": [
        "d7714f07e774baadc5231b43c5cf71d08dcea487",
        [
         null,
@@ -96495,7 +96547,7 @@
         {}
        ]
       ],
-      "flex-aspect-ratio-003.tentative.html": [
+      "flex-aspect-ratio-003.html": [
        "85775fa8c067c942ce97aa668ac4179949c06dd6",
        [
         null,
@@ -96508,7 +96560,7 @@
         {}
        ]
       ],
-      "flex-aspect-ratio-004.tentative.html": [
+      "flex-aspect-ratio-004.html": [
        "05b569ac607185b186221bbdb8edfb40fa153662",
        [
         null,
@@ -96521,7 +96573,7 @@
         {}
        ]
       ],
-      "flex-aspect-ratio-005.tentative.html": [
+      "flex-aspect-ratio-005.html": [
        "2b13df2184fcbdd869bd5e954d87c70c449a2365",
        [
         null,
@@ -96534,7 +96586,7 @@
         {}
        ]
       ],
-      "flex-aspect-ratio-006.tentative.html": [
+      "flex-aspect-ratio-006.html": [
        "f4667cfc1fd689c7e11bfb38dc64ff3212064a29",
        [
         null,
@@ -96547,7 +96599,7 @@
         {}
        ]
       ],
-      "flex-aspect-ratio-007.tentative.html": [
+      "flex-aspect-ratio-007.html": [
        "80bae831a3422e164dd770106c0ad69a58e9b5fb",
        [
         null,
@@ -96560,8 +96612,8 @@
         {}
        ]
       ],
-      "flex-aspect-ratio-008.tentative.html": [
-       "f5a3b36c65b913a39b7b70ee77f1451f3e1c90ef",
+      "flex-aspect-ratio-008.html": [
+       "c7144c3cf67c56459d670be2f12631898151b43b",
        [
         null,
         [
@@ -96573,7 +96625,7 @@
         {}
        ]
       ],
-      "flex-aspect-ratio-009.tentative.html": [
+      "flex-aspect-ratio-009.html": [
        "cb76e0d7bd1d02bb52d414531c867486ca15b935",
        [
         null,
@@ -96586,7 +96638,7 @@
         {}
        ]
       ],
-      "flex-aspect-ratio-010.tentative.html": [
+      "flex-aspect-ratio-010.html": [
        "dc9f1765739a775be7cd5e97cc0bb3f1952dc90c",
        [
         null,
@@ -96599,7 +96651,7 @@
         {}
        ]
       ],
-      "flex-aspect-ratio-011.tentative.html": [
+      "flex-aspect-ratio-011.html": [
        "2c111477e51758aad7e218385e8ee5aa2752ef0b",
        [
         null,
@@ -96612,7 +96664,7 @@
         {}
        ]
       ],
-      "flex-aspect-ratio-012.tentative.html": [
+      "flex-aspect-ratio-012.html": [
        "187da3b4262ed5958dd55ee7a4ae8cb2f7f773d8",
        [
         null,
@@ -96625,7 +96677,7 @@
         {}
        ]
       ],
-      "flex-aspect-ratio-013.tentative.html": [
+      "flex-aspect-ratio-013.html": [
        "6c467e20e6fe0b7bfcac2cf2a15670016df88fee",
        [
         null,
@@ -96638,7 +96690,7 @@
         {}
        ]
       ],
-      "flex-aspect-ratio-014.tentative.html": [
+      "flex-aspect-ratio-014.html": [
        "532776cfa3df57df6820437339f5c57bc62465e8",
        [
         null,
@@ -96651,7 +96703,7 @@
         {}
        ]
       ],
-      "flex-aspect-ratio-015.tentative.html": [
+      "flex-aspect-ratio-015.html": [
        "3fc555be731a341fcc2b039c20a2984e11d3ca62",
        [
         null,
@@ -96664,7 +96716,7 @@
         {}
        ]
       ],
-      "flex-aspect-ratio-016.tentative.html": [
+      "flex-aspect-ratio-016.html": [
        "55fec97db5269e6fe1f8b14d56ef18db1152fb1e",
        [
         null,
@@ -96677,7 +96729,7 @@
         {}
        ]
       ],
-      "flex-aspect-ratio-017.tentative.html": [
+      "flex-aspect-ratio-017.html": [
        "5b340ffabaa2d789d29c84b253a0d48873798a1c",
        [
         null,
@@ -96690,7 +96742,7 @@
         {}
        ]
       ],
-      "flex-aspect-ratio-018.tentative.html": [
+      "flex-aspect-ratio-018.html": [
        "f7c667c555ec263bd9cb3cf6674b8d1adfd80450",
        [
         null,
@@ -96703,7 +96755,7 @@
         {}
        ]
       ],
-      "flex-aspect-ratio-019.tentative.html": [
+      "flex-aspect-ratio-019.html": [
        "07635fd0a954fbd386bd20f7ae97f86c946cccbb",
        [
         null,
@@ -96716,7 +96768,7 @@
         {}
        ]
       ],
-      "flex-aspect-ratio-020.tentative.html": [
+      "flex-aspect-ratio-020.html": [
        "4ad3f3cb964eaf901137fb9fcbcb0cca7db81e5a",
        [
         null,
@@ -96729,7 +96781,7 @@
         {}
        ]
       ],
-      "flex-aspect-ratio-021.tentative.html": [
+      "flex-aspect-ratio-021.html": [
        "5241b8621040537bce67cbe444aa4cce7194cb38",
        [
         null,
@@ -96742,7 +96794,7 @@
         {}
        ]
       ],
-      "flex-aspect-ratio-022.tentative.html": [
+      "flex-aspect-ratio-022.html": [
        "a70be1b569cb87b65a98d873f8bffbb2947578d1",
        [
         null,
@@ -96755,7 +96807,7 @@
         {}
        ]
       ],
-      "flex-aspect-ratio-023.tentative.html": [
+      "flex-aspect-ratio-023.html": [
        "9ad01dc8d571af3746b38eb4b7293c0499f41389",
        [
         null,
@@ -96768,7 +96820,7 @@
         {}
        ]
       ],
-      "flex-aspect-ratio-024.tentative.html": [
+      "flex-aspect-ratio-024.html": [
        "ebac88ce33e45de1b288e5298d46ab0203430ae2",
        [
         null,
@@ -96781,7 +96833,7 @@
         {}
        ]
       ],
-      "intrinsic-size-001.tentative.html": [
+      "intrinsic-size-001.html": [
        "5b2c6049bd935c928f29c50bf4ad7afae41c4576",
        [
         null,
@@ -96794,7 +96846,7 @@
         {}
        ]
       ],
-      "intrinsic-size-002.tentative.html": [
+      "intrinsic-size-002.html": [
        "62e9a149cb829908fe036470d89e9a80384edf4d",
        [
         null,
@@ -96807,7 +96859,7 @@
         {}
        ]
       ],
-      "intrinsic-size-003.tentative.html": [
+      "intrinsic-size-003.html": [
        "da5dfd00835c5f180c76fa943a67b314b9b179be",
        [
         null,
@@ -96820,7 +96872,7 @@
         {}
        ]
       ],
-      "intrinsic-size-004.tentative.html": [
+      "intrinsic-size-004.html": [
        "06fe0e58706059e48dc0c6f966aa9e2d4c59dd96",
        [
         null,
@@ -96833,7 +96885,7 @@
         {}
        ]
       ],
-      "intrinsic-size-005.tentative.html": [
+      "intrinsic-size-005.html": [
        "697e773be1d3bccb748bea0828b390fb1ae18631",
        [
         null,
@@ -96846,7 +96898,7 @@
         {}
        ]
       ],
-      "intrinsic-size-006.tentative.html": [
+      "intrinsic-size-006.html": [
        "fa736e92267cd4d6c947a0e275f00c9952074c8e",
        [
         null,
@@ -96859,7 +96911,7 @@
         {}
        ]
       ],
-      "intrinsic-size-007.tentative.html": [
+      "intrinsic-size-007.html": [
        "6310bf4269a4f0d49b35028b8cf086629776115b",
        [
         null,
@@ -96872,7 +96924,7 @@
         {}
        ]
       ],
-      "intrinsic-size-008.tentative.html": [
+      "intrinsic-size-008.html": [
        "7ef0d6262bbcf0705a6bfff6b84139e79169db90",
        [
         null,
@@ -96885,7 +96937,7 @@
         {}
        ]
       ],
-      "percentage-resolution-001.tentative.html": [
+      "percentage-resolution-001.html": [
        "d606bfc65e340f95fbbc355b764a7de5e7aeb6a1",
        [
         null,
@@ -96898,7 +96950,7 @@
         {}
        ]
       ],
-      "percentage-resolution-002.tentative.html": [
+      "percentage-resolution-002.html": [
        "766e51d74f78591eda946949a05a26aca362895f",
        [
         null,
@@ -96911,7 +96963,7 @@
         {}
        ]
       ],
-      "percentage-resolution-003.tentative.html": [
+      "percentage-resolution-003.html": [
        "914bfb79183d33146c116f647c34a06c68b28e4b",
        [
         null,
@@ -96924,7 +96976,7 @@
         {}
        ]
       ],
-      "percentage-resolution-004.tentative.html": [
+      "percentage-resolution-004.html": [
        "5d222a9be2131028f50ecd476f6e484c51bbfe22",
        [
         null,
@@ -96937,7 +96989,7 @@
         {}
        ]
       ],
-      "replaced-element-001.tentative.html": [
+      "replaced-element-001.html": [
        "bfc1b4b391e5eeea888681fbccdfd8d5ecbbe026",
        [
         null,
@@ -96950,7 +97002,7 @@
         {}
        ]
       ],
-      "replaced-element-002.tentative.html": [
+      "replaced-element-002.html": [
        "56da485a1c3ca9fd68c45cfe06685403e1dcb28c",
        [
         null,
@@ -96963,7 +97015,7 @@
         {}
        ]
       ],
-      "replaced-element-003.tentative.html": [
+      "replaced-element-003.html": [
        "f1c8dd07e146074cd055cd2bc107b2e0abb5fcc9",
        [
         null,
@@ -96976,7 +97028,7 @@
         {}
        ]
       ],
-      "replaced-element-004.tentative.html": [
+      "replaced-element-004.html": [
        "34d3e64ef33bf5f50c7ac7a75e956f38230a1aa7",
        [
         null,
@@ -96989,7 +97041,7 @@
         {}
        ]
       ],
-      "replaced-element-005.tentative.html": [
+      "replaced-element-005.html": [
        "02fbeb07ac22465d598ab03bdf97fc20761652df",
        [
         null,
@@ -97002,7 +97054,7 @@
         {}
        ]
       ],
-      "replaced-element-006.tentative.html": [
+      "replaced-element-006.html": [
        "cb3f4c8ccdaa4803ea2100aa2a46de47c6c6b349",
        [
         null,
@@ -97015,7 +97067,7 @@
         {}
        ]
       ],
-      "replaced-element-007.tentative.html": [
+      "replaced-element-007.html": [
        "468cf09cb18f1a367e3587c42542884423126cd5",
        [
         null,
@@ -97028,7 +97080,7 @@
         {}
        ]
       ],
-      "replaced-element-008.tentative.html": [
+      "replaced-element-008.html": [
        "a01e3f1236710f58a8fe015dbf8f6cc98a731d07",
        [
         null,
@@ -97041,7 +97093,7 @@
         {}
        ]
       ],
-      "replaced-element-009.tentative.html": [
+      "replaced-element-009.html": [
        "7371af1c131481b2fbae4bf08f322a72e6eec568",
        [
         null,
@@ -97054,7 +97106,7 @@
         {}
        ]
       ],
-      "replaced-element-010.tentative.html": [
+      "replaced-element-010.html": [
        "26b831a9598a2693d84b6bafe5c60e84ed3d92f8",
        [
         null,
@@ -97067,7 +97119,7 @@
         {}
        ]
       ],
-      "replaced-element-011.tentative.html": [
+      "replaced-element-011.html": [
        "d22bd0da2582bdef88bd945ef1fe9d05e05aad1e",
        [
         null,
@@ -97080,7 +97132,7 @@
         {}
        ]
       ],
-      "replaced-element-012.tentative.html": [
+      "replaced-element-012.html": [
        "e8bd0b60ca7dbaeec0ae27c362346f02d7735618",
        [
         null,
@@ -97093,7 +97145,7 @@
         {}
        ]
       ],
-      "replaced-element-013.tentative.html": [
+      "replaced-element-013.html": [
        "bcbf653d68af4c1f908a59ca6e66e5752a09c833",
        [
         null,
@@ -97106,7 +97158,7 @@
         {}
        ]
       ],
-      "replaced-element-014.tentative.html": [
+      "replaced-element-014.html": [
        "4c1ad16ce8624295251b73d1a14f53b9c9905610",
        [
         null,
@@ -97119,7 +97171,7 @@
         {}
        ]
       ],
-      "replaced-element-015.tentative.html": [
+      "replaced-element-015.html": [
        "ee579ea7e9f87c93198213424032ca2f475f572d",
        [
         null,
@@ -97132,7 +97184,7 @@
         {}
        ]
       ],
-      "replaced-element-016.tentative.html": [
+      "replaced-element-016.html": [
        "0ed8330424af0f33bd72494ffe975c8d49a044ca",
        [
         null,
@@ -97145,7 +97197,7 @@
         {}
        ]
       ],
-      "replaced-element-017.tentative.html": [
+      "replaced-element-017.html": [
        "4947a702d0a8d4ffd8891bbc1f370ccac915a1dd",
        [
         null,
@@ -97158,7 +97210,7 @@
         {}
        ]
       ],
-      "replaced-element-018.tentative.html": [
+      "replaced-element-018.html": [
        "f26c1f60a88c9d38b78316f7edc2f5188702e456",
        [
         null,
@@ -97171,7 +97223,7 @@
         {}
        ]
       ],
-      "replaced-element-019.tentative.html": [
+      "replaced-element-019.html": [
        "80ff2ccd49cd1f38f56b8129cfc645bf02fdf57b",
        [
         null,
@@ -97184,7 +97236,7 @@
         {}
        ]
       ],
-      "replaced-element-020.tentative.html": [
+      "replaced-element-020.html": [
        "b2d58ea3d246ec31a27e93343716172e9b928f3a",
        [
         null,
@@ -97197,7 +97249,7 @@
         {}
        ]
       ],
-      "replaced-element-021.tentative.html": [
+      "replaced-element-021.html": [
        "14a2b8eb6d491cec289708e993b9443d3db94cf6",
        [
         null,
@@ -97210,7 +97262,7 @@
         {}
        ]
       ],
-      "replaced-element-022.tentative.html": [
+      "replaced-element-022.html": [
        "ea00810fb99eb7322680abeb90d022bf35274347",
        [
         null,
@@ -97223,7 +97275,7 @@
         {}
        ]
       ],
-      "replaced-element-023.tentative.html": [
+      "replaced-element-023.html": [
        "72b563a7a6b30f70ed4a5e07b2ec4f82a10d3695",
        [
         null,
@@ -97236,7 +97288,7 @@
         {}
        ]
       ],
-      "replaced-element-024.tentative.html": [
+      "replaced-element-024.html": [
        "168be8769b45bc71e8012305cd338dafdb9edff0",
        [
         null,
@@ -97249,7 +97301,7 @@
         {}
        ]
       ],
-      "replaced-element-025.tentative.html": [
+      "replaced-element-025.html": [
        "733ca2f796785dfdd2dd09d5f83bb62b63650e42",
        [
         null,
@@ -97262,7 +97314,7 @@
         {}
        ]
       ],
-      "replaced-element-026.tentative.html": [
+      "replaced-element-026.html": [
        "5a20c67290e82afb998eac8cc5f9afa933f86978",
        [
         null,
@@ -97275,7 +97327,7 @@
         {}
        ]
       ],
-      "replaced-element-027.tentative.html": [
+      "replaced-element-027.html": [
        "42d8fe0be978dca021749c8d220b0083982232b2",
        [
         null,
@@ -161032,6 +161084,23 @@
      }
     }
    },
+   "permissions-policy": {
+    "experimental-features": {
+     "vertical-scroll-disabled-scrollbar-tentative.html": [
+      "65222540761a180f8acfea9135243e1414aac881",
+      [
+       null,
+       [
+        [
+         "/permissions-policy/experimental-features/resources/vertical-scroll-scrollbar-ref.html?no-vertical-scrollbar",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ]
+    }
+   },
    "portals": {
     "portals-rendering.html": [
      "229dacf4e69962e0cde95658a328ad666c0b487e",
@@ -171112,7 +171181,7 @@
      ],
      "resources": {
       "all-tests.html.py-str": [
-       "abbb4552671ce0d77a9337902ef2a59d1de3b9fb",
+       "474e0cb2cd5681c2bd5beb6afc501dfca13ae734",
        []
       ],
       "cookie-http-state-template.js": [
@@ -171124,7 +171193,7 @@
        []
       ],
       "debugging-single-test.html.py-str": [
-       "43ada7d330c0a459af8f308cf1b18097ced62294",
+       "a7b25b3d1bf581728b289b1b07260d954741b17f",
        []
       ],
       "iframe-content-pushing.js": [
@@ -173120,7 +173189,37 @@
     "README.md": [
      "f641b61971e8b09de644476d2e04a1e45890b633",
      []
-    ]
+    ],
+    "address-space.window-expected.txt": [
+     "ec4009fa9fc7f5e418ffe5881e4f67c8b8a0ccb7",
+     []
+    ],
+    "resources": {
+     "support.js": [
+      "685d656e9e2fdd0873ec6a984b3b939b360c22ef",
+      []
+     ],
+     "title.html": [
+      "a3a324a15fdc0de7588c2935e50f246662e18820",
+      []
+     ],
+     "treat-as-public-address.html": [
+      "a3a324a15fdc0de7588c2935e50f246662e18820",
+      []
+     ],
+     "treat-as-public-address.html.headers": [
+      "76371c6209e46f24e611a6689d26b6f1bbfaff9c",
+      []
+     ],
+     "treat-as-public-address.https.html": [
+      "a3a324a15fdc0de7588c2935e50f246662e18820",
+      []
+     ],
+     "treat-as-public-address.https.html.headers": [
+      "76371c6209e46f24e611a6689d26b6f1bbfaff9c",
+      []
+     ]
+    }
    },
    "credential-management": {
     "META.yml": [
@@ -210493,7 +210592,7 @@
       []
      ],
      "testdriver-extension-tutorial.md": [
-      "a2d42e008c1bca17cdf701288e6b0b37211f2752",
+      "0d73f9d41f8205802407aa32cdd5e11aae2c44f9",
       []
      ],
      "testdriver.md": [
@@ -231613,7 +231712,7 @@
     ]
    },
    "lint.ignore": [
-    "b44faa491f9ad0b4873b9d56cff479310e9c392c",
+    "4edf456bdd69975cfb668fa59c9aa2efa19fa7f8",
     []
    ],
    "loading": {
@@ -234971,6 +235070,396 @@
      "b3a521320e8acb70c2f2199d608d4bd3379934e0",
      []
     ]
+   },
+   "permissions-policy": {
+    "META.yml": [
+     "7b2e2cbffe5421c72225dc8625c4309b6b3eff3e",
+     []
+    ],
+    "OWNERS": [
+     "6385d1242762f7c58592c6e359c7f91304a9492f",
+     []
+    ],
+    "README.md": [
+     "ae17c099e5585428111e6cc1e0860ae3bd1f981f",
+     []
+    ],
+    "experimental-features": {
+     "resources": {
+      "common.js": [
+       "de25ce710891e93833c1b936f190bd76eb473a4d",
+       []
+      ],
+      "focus-without-user-activation-iframe-tentative.html": [
+       "3d5aab95addddace39fb67d16eaf2e1ef2824475",
+       []
+      ],
+      "lazyload-contents.html": [
+       "a6e98c24e6add4976571141ad2409e1cce96d173",
+       []
+      ],
+      "lazyload.png": [
+       "fd3da53a29c3e7f55f950611d34694867b0ff0a4",
+       []
+      ],
+      "permissions-policy-trust-token-redemption.html": [
+       "329f0faa0d32c365f110ef14cf8f04523bb03835",
+       []
+      ],
+      "vertical-scroll-scrollable-content.html": [
+       "9f78ea4bc2975abf6d37a24952df48e6dc75400f",
+       []
+      ],
+      "vertical-scroll-scrollbar-ref.html": [
+       "fd432b33f69330f566b19688f6f90c8c1b2c8ff4",
+       []
+      ],
+      "vertical-scroll-scrollintoview.html": [
+       "7bed27c2600b0a8f117fee3f13bb2e75c9d9c387",
+       []
+      ],
+      "vertical-scroll-touch-action.html": [
+       "51b715f30a60493619f5a1c9e29d679fb9f8c4ef",
+       []
+      ],
+      "vertical-scroll-touch-block.html": [
+       "4c204055afde6d3e36ee0d696ab27cbdb6ab265d",
+       []
+      ],
+      "vertical-scroll-wheel-block.html": [
+       "21fc2b9b3914a8dfc23515ff5b663d4a1c6f2d30",
+       []
+      ],
+      "vertical-scroll.js": [
+       "88835cc6024f2a17c405a1760064e9145fb63d62",
+       []
+      ]
+     },
+     "vertical-scroll-main-frame-manual.tentative.html.headers": [
+      "8d9c01e14835acbc0af74b5b9157a4a8b95243f8",
+      []
+     ]
+    },
+    "idlharness.window-expected.txt": [
+     "db0b97224f3dbc37f4ae6a1a810b266c9c3d92f4",
+     []
+    ],
+    "payment-allowed-by-permissions-policy.https.sub.html.headers": [
+     "73449d512d10b7659b5b41141dbffacfd3f3ca63",
+     []
+    ],
+    "payment-disabled-by-permissions-policy.https.sub.html.headers": [
+     "49f799d13875320c11d9f66022f460fb6acb8cc4",
+     []
+    ],
+    "permissions-policy-frame-policy-allowed-for-all.https.sub.html.sub.headers": [
+     "2cbb8a82c62040e24f809c816d6d35204de396df",
+     []
+    ],
+    "permissions-policy-frame-policy-allowed-for-self.https.sub-expected.txt": [
+     "9910d7c413e4f76612f17b166d18a655bbfa48a8",
+     []
+    ],
+    "permissions-policy-frame-policy-allowed-for-self.https.sub.html.sub.headers": [
+     "ff7ae4135338e3e525f6f5e0bfe38865c16b30e1",
+     []
+    ],
+    "permissions-policy-frame-policy-allowed-for-some-override.https.sub-expected.txt": [
+     "0239d716791f832fa4aecae71a2988759a666db8",
+     []
+    ],
+    "permissions-policy-frame-policy-allowed-for-some-override.https.sub.html.sub.headers": [
+     "d3aa9ff66a51312de8cb413d0976fd2eccead58a",
+     []
+    ],
+    "permissions-policy-frame-policy-allowed-for-some.https.sub-expected.txt": [
+     "0f6a3b628f23c6ace32ef1f279f6696f3ab535a8",
+     []
+    ],
+    "permissions-policy-frame-policy-allowed-for-some.https.sub.html.sub.headers": [
+     "af08d49c2ed6ab950039c391f1b8a7af4f505830",
+     []
+    ],
+    "permissions-policy-frame-policy-disallowed-for-all.https.sub.html.sub.headers": [
+     "a65abd6e45e8d0300c4a0b96931bc1318ead6075",
+     []
+    ],
+    "permissions-policy-frame-policy-timing-iframe-camera.https.sub.html": [
+     "8ea5d77cfecae3ff97791fd29b7f5cc0cd77323b",
+     []
+    ],
+    "permissions-policy-header-policy-allowed-for-all.https.sub.html.sub.headers": [
+     "2cbb8a82c62040e24f809c816d6d35204de396df",
+     []
+    ],
+    "permissions-policy-header-policy-allowed-for-self.https.sub.html.sub.headers": [
+     "ff7ae4135338e3e525f6f5e0bfe38865c16b30e1",
+     []
+    ],
+    "permissions-policy-header-policy-allowed-for-some.https.sub.html.sub.headers": [
+     "af08d49c2ed6ab950039c391f1b8a7af4f505830",
+     []
+    ],
+    "permissions-policy-header-policy-declined.https.sub.html.sub.headers": [
+     "175e5465d20a42f1aed100a55fab670eaef7ab33",
+     []
+    ],
+    "permissions-policy-header-policy-disallowed-for-all.https.sub.html.sub.headers": [
+     "bbc80c116a5ed8a14c2731392419dd46c6de59ca",
+     []
+    ],
+    "permissions-policy-nested-header-policy-allowed-for-all.https.sub.html.sub.headers": [
+     "2cbb8a82c62040e24f809c816d6d35204de396df",
+     []
+    ],
+    "permissions-policy-nested-header-policy-allowed-for-self.https.sub.html.sub.headers": [
+     "ff7ae4135338e3e525f6f5e0bfe38865c16b30e1",
+     []
+    ],
+    "permissions-policy-nested-header-policy-disallowed-for-all.https.sub.html.sub.headers": [
+     "a65abd6e45e8d0300c4a0b96931bc1318ead6075",
+     []
+    ],
+    "picture-in-picture-allowed-by-permissions-policy.https.sub.html.headers": [
+     "a23f9332ce1c3edbc86643ec36d3249242870630",
+     []
+    ],
+    "picture-in-picture-disabled-by-permissions-policy.https.sub.html.headers": [
+     "12fc99b50b2e4c875c0b31d0d81d3a3f33e0eea3",
+     []
+    ],
+    "reporting": {
+     "camera-report-only.https.html.headers": [
+      "71a1cca5bee84e6b12e1457df4583a3097e9ae32",
+      []
+     ],
+     "camera-reporting.https.html.headers": [
+      "6fcbae14191fd3b66bc58b524270780f77d51621",
+      []
+     ],
+     "encrypted-media-report-only.https.html.headers": [
+      "0d5480e2a6f5b68ca631cada5eccf0aa1b20fbb2",
+      []
+     ],
+     "encrypted-media-reporting.https.html.headers": [
+      "9505c02dae0e4a34b9d3e33a6ee54bc272ecce4a",
+      []
+     ],
+     "fullscreen-report-only.html.headers": [
+      "384d778c9ac5e44926b92a7d590972554203ea8d",
+      []
+     ],
+     "fullscreen-reporting.html.headers": [
+      "a65abd6e45e8d0300c4a0b96931bc1318ead6075",
+      []
+     ],
+     "generic-sensor-report-only.https.html.headers": [
+      "2a515862033bcea4b1daeba8f7f1d85f3fe332a6",
+      []
+     ],
+     "generic-sensor-reporting.https.html.headers": [
+      "b0ebb72e9ca7960f612b6ee38da519ee00a4c0e7",
+      []
+     ],
+     "geolocation-report-only.https-expected.txt": [
+      "c7c46f13a8af49acc190e0d0225c264115cb3cf8",
+      []
+     ],
+     "geolocation-report-only.https.html.headers": [
+      "c7e5f25bc5f9faef8e9d0c1e9a88228c6bc6bc08",
+      []
+     ],
+     "geolocation-reporting.https.html.headers": [
+      "26bfbc2496488e113641a8d015b7b03494ac4c83",
+      []
+     ],
+     "image.bmp": [
+      "f2b88690fcf182cb0757da947bc6a1295468779f",
+      []
+     ],
+     "microphone-report-only.https.html.headers": [
+      "adcf95e9e2caed40b28c857f3dac6ba441b9b684",
+      []
+     ],
+     "microphone-reporting.https.html.headers": [
+      "ae65ea5c7353d55e600e4dfe1ccd02f12b00f95b",
+      []
+     ],
+     "midi-report-only.https-expected.txt": [
+      "bba8e2aa4e6bcfcd26d918c967e6b0f4d14078ae",
+      []
+     ],
+     "midi-report-only.https.html.headers": [
+      "10570f604455845a40ff1895008f79d6cd57d058",
+      []
+     ],
+     "midi-reporting.https.html.headers": [
+      "1fa88c3a59ea44778778226e8aad15e87ee3c3ad",
+      []
+     ],
+     "payment-report-only.https-expected.txt": [
+      "dc5e0c91070e2fe2572cda60f5e8add30ad2d5d6",
+      []
+     ],
+     "payment-report-only.https.html.headers": [
+      "25be8168ab73ce5c428b82b7386ef1ce9c21abdb",
+      []
+     ],
+     "payment-reporting.https.html.headers": [
+      "49f799d13875320c11d9f66022f460fb6acb8cc4",
+      []
+     ],
+     "picture-in-picture-report-only.html.headers": [
+      "0f73e39c5847edc3f77b9d5073f4a95eeadd0b5c",
+      []
+     ],
+     "picture-in-picture-reporting.html.headers": [
+      "12fc99b50b2e4c875c0b31d0d81d3a3f33e0eea3",
+      []
+     ],
+     "serial-report-only.https.html.headers": [
+      "cee26394d3e87669135e31485b975e43b4bfcfb7",
+      []
+     ],
+     "serial-reporting.https.html.headers": [
+      "690b6967513cd25ec11d048c448f63af463fdb03",
+      []
+     ],
+     "sync-xhr-report-only.html.headers": [
+      "ce914048e181d5398749637a58f6d3f57ebfbce4",
+      []
+     ],
+     "sync-xhr-reporting.html.headers": [
+      "7f375e0b752005b349ca86ab6edeb895b34bb5a0",
+      []
+     ],
+     "usb-report-only.https.html.headers": [
+      "f4b92eadd953186b8c2fad9558d6c30b4ac036ad",
+      []
+     ],
+     "usb-reporting.https.html.headers": [
+      "ff22d62f104a3cf8cf4a659498f682dc1e83d34d",
+      []
+     ],
+     "xr-report-only.https.html.headers": [
+      "141deb4dfc7f7aa36788565a6d34a89fdfbd6903",
+      []
+     ],
+     "xr-reporting.https.html.headers": [
+      "56b8c11a5bd4013b4e9133328155dbe0e8726ec9",
+      []
+     ]
+    },
+    "resources": {
+     "autoplay.js": [
+      "56780cf6dc05879731bff0bbb1486c51b0b4141b",
+      []
+     ],
+     "nested-sandbox.html": [
+      "4ba512140dae5d9df8d1b1bd19178a34ff5b40c0",
+      []
+     ],
+     "permissions-policy-allowedfeatures.html": [
+      "f4b020273fd394fb8691b6eeb406c7b3773cbcb3",
+      []
+     ],
+     "permissions-policy-autoplay.html": [
+      "665d19bea2e95889f737be7ba3f34ed4c2fbc731",
+      []
+     ],
+     "permissions-policy-battery.html": [
+      "dff4b3290d66c4c804267ecfe2fb9717a6449cff",
+      []
+     ],
+     "permissions-policy-clipboard-read.html": [
+      "10fc45fd933ef0f77e5d53d4fac9ec70d372ce48",
+      []
+     ],
+     "permissions-policy-clipboard-write.html": [
+      "7eb96e3db011762599b03c102505110bda37285d",
+      []
+     ],
+     "permissions-policy-generic-sensor.html": [
+      "59652e2e7ae0056a6cc4be7f004b6d0151fb9d44",
+      []
+     ],
+     "permissions-policy-idle-detection-worker.html": [
+      "5bcc3980390bbb4cc223998d0af5118d943a69f8",
+      []
+     ],
+     "permissions-policy-idle-detection-worker.js": [
+      "2e4e3cdc727613bbecf51465a0f3802781cf847b",
+      []
+     ],
+     "permissions-policy-idle-detection.html": [
+      "65a578181b9ac433961416759195402343c57c6a",
+      []
+     ],
+     "permissions-policy-nested-subframe-policy.https.sub.html": [
+      "4c012bbae619a3b52b6b5a206866a687fc154510",
+      []
+     ],
+     "permissions-policy-payment.html": [
+      "401a86eb235d9277c2ee83a15ef725965077973f",
+      []
+     ],
+     "permissions-policy-picture-in-picture.html": [
+      "b24e56b74bd5214ed7cee579874aa7bc813e28e1",
+      []
+     ],
+     "permissions-policy-report-json.js": [
+      "ad84ff9ce4d68ebd0d2a7b2e19d0239cd233fe8a",
+      []
+     ],
+     "permissions-policy-screen-wakelock.html": [
+      "6feed51d498651c6565517df3afb49076bcb7c57",
+      []
+     ],
+     "permissions-policy-serial-worker.html": [
+      "56bcfaede954faaa93f6395775a8ecab2b7e33d4",
+      []
+     ],
+     "permissions-policy-serial-worker.js": [
+      "2e8e6f5433a5e8fe9180b5660a9f301c936637dc",
+      []
+     ],
+     "permissions-policy-serial.html": [
+      "caf716d37ac53c492f2eeb5815af533fc840eec7",
+      []
+     ],
+     "permissions-policy-usb-worker.html": [
+      "e50ac55a27669a88bffc1434042c3cc5fa9fc259",
+      []
+     ],
+     "permissions-policy-usb-worker.js": [
+      "c294f14f3c628d81845a81cbef08bbf5c01f9d29",
+      []
+     ],
+     "permissions-policy-usb.html": [
+      "99d47c6f3929bd61f7dfdefb1c5488c396abc172",
+      []
+     ],
+     "permissions-policy.js": [
+      "1c5bf97b50c36fbb443d282e252d0346d2db2491",
+      []
+     ],
+     "picture-in-picture.js": [
+      "1bf3c1c12a8a9209ee9956955fd3a75d148897f1",
+      []
+     ],
+     "redirect-on-load.html": [
+      "54d3cf55b1db9728b372cb5fbbd9b2541ce88aaf",
+      []
+     ],
+     "sandbox-self.html": [
+      "8240de99c6560d80069e78557e2f803028ad1189",
+      []
+     ],
+     "sandbox-self.html.headers": [
+      "ff7ae4135338e3e525f6f5e0bfe38865c16b30e1",
+      []
+     ]
+    }
    },
    "picture-in-picture": {
     "META.yml": [
@@ -249071,11 +249560,11 @@
         []
        ],
        "android_weblayer.py": [
-        "f75587d839fffcf03901779a0b65126190b9d481",
+        "6110450b7282c6cfa4afaca1ec2b2ef580f7a714",
         []
        ],
        "android_webview.py": [
-        "8790567707e957a7b65d7dc15baad5e3190b8bbd",
+        "d0773873508fe7f327afe751d32eaddbecea9a3f",
         []
        ],
        "base.py": [
@@ -249087,7 +249576,7 @@
         []
        ],
        "chrome_android.py": [
-        "cd8c40fab1feb0629a814b2bba68edecaa3ee8d1",
+        "485b96f31e7deafdddf82fd375aea7d7497e9fa7",
         []
        ],
        "chrome_ios.py": [
@@ -280069,7 +280558,7 @@
     },
     "http-state": {
      "attribute-tests.html": [
-      "d008f3cfa0dd3d785c3609bc94cd1b61d6fd67ca",
+      "5d9330042e18b09a9cf6739eb74ec1c1f1fa5c02",
       [
        null,
        {
@@ -280078,28 +280567,28 @@
       ]
      ],
      "charset-tests.html": [
-      "45470004dafb0e5741bc908879942a4ba13a1a80",
+      "5917da19ec4264eed7277858842cd533fcb4135e",
       [
        null,
        {}
       ]
      ],
      "chromium-tests.html": [
-      "30296db431d20812c23e5c1700548450161c4412",
+      "018be01e8fb6eb994d514b67cd80a3a46a755158",
       [
        null,
        {}
       ]
      ],
      "comma-tests.html": [
-      "c36f1b3f1bb08b315add382339e9b7ac4e6fa90f",
+      "bfd50387c28af21faaeb307c183004bbe763c62d",
       [
        null,
        {}
       ]
      ],
      "domain-tests.html": [
-      "49bb27a1a7f82553ba3016fe087223ca1e82feea",
+      "e4f763a935d52b0f9c9655d4073757d2f77451e8",
       [
        null,
        {
@@ -280108,7 +280597,7 @@
       ]
      ],
      "general-tests.html": [
-      "fcc99d0f75afb318060889eff6e00298948e2c7b",
+      "94abd4d4e703a0f3af0c604edf3559a694407ceb",
       [
        null,
        {
@@ -280117,14 +280606,14 @@
       ]
      ],
      "mozilla-tests.html": [
-      "9408f332a946b7b25d49dad169bc2c533c494455",
+      "4393e441801b8d5823480248d59d78b54c59b8c0",
       [
        null,
        {}
       ]
      ],
      "name-tests.html": [
-      "2f6e97aff89311af31045be9d3db11d788cf9200",
+      "e962539b0fbdcde83859496cc2b815194c7596a0",
       [
        null,
        {
@@ -280133,14 +280622,14 @@
       ]
      ],
      "ordering-tests.html": [
-      "888f350178ac3cedd6555ebc2e0ab8061f1413d3",
+      "4dce985ac71a0d48538dc7376dff7102a0fcd78f",
       [
        null,
        {}
       ]
      ],
      "path-tests.html": [
-      "0a4794a4c0e5b108e46e90d2f05049fcd206a6eb",
+      "b76360e249c4b9977d4479f8bfd640acb9d638d5",
       [
        null,
        {
@@ -280149,7 +280638,7 @@
       ]
      ],
      "value-tests.html": [
-      "8e4c4a32517bcd3ef844a4eb8a6704a955e622cf",
+      "0d8daae165cbd2c33a4051048047ea459ad97b3c",
       [
        null,
        {}
@@ -280759,6 +281248,36 @@
      [
       null,
       {}
+     ]
+    ]
+   },
+   "cors-rfc1918": {
+    "address-space.https.window.js": [
+     "3156e3a33d378df95a5506b65ed6f31368d232ec",
+     [
+      "cors-rfc1918/address-space.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "address-space.window.js": [
+     "287ab956ab8f9bbbe733ba407d8f5711c853d3f4",
+     [
+      "cors-rfc1918/address-space.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ]
    },
@@ -295187,21 +295706,21 @@
         ]
        ]
       },
-      "quirks-mode-001.tentative.html": [
+      "quirks-mode-001.html": [
        "8f857a37adebdf73f7c21553ce155895dd244306",
        [
         null,
         {}
        ]
       ],
-      "quirks-mode-002.tentative.html": [
+      "quirks-mode-002.html": [
        "c4639ab36f8a4ae0c00ed847179afbce766bba34",
        [
         null,
         {}
        ]
       ],
-      "quirks-mode-003.tentative.html": [
+      "quirks-mode-003.html": [
        "18fe2f1b481c2294e8440027d159cfeaf117b67c",
        [
         null,
@@ -306888,6 +307407,13 @@
      ],
      "is-specificity.html": [
       "541b0406d347e5ade0474024ba208ba222dc2d29",
+      [
+       null,
+       {}
+      ]
+     ],
+     "is-where-basic.html": [
+      "8623c8b7d6a909b80535d1f4996a1d9ff58e7fb9",
       [
        null,
        {}
@@ -381073,6 +381599,483 @@
      ]
     ]
    },
+   "permissions-policy": {
+    "experimental-features": {
+     "focus-without-user-activation-disabled-tentative.html": [
+      "3980fd1219cba990454ffa86e0a5bd493b9eb5e6",
+      [
+       null,
+       {}
+      ]
+     ],
+     "focus-without-user-activation-enabled-tentative.sub.html": [
+      "5722947f86b9b4733b31bda569480babd2d2b472",
+      [
+       null,
+       {}
+      ]
+     ],
+     "trust-token-redemption-default-permissions-policy.tentative.https.sub.html": [
+      "8adc0c398edbeb1311ef5391b10f6f4865ee9cdb",
+      [
+       null,
+       {}
+      ]
+     ],
+     "trust-token-redemption-supported-by-permissions-policy.tentative.html": [
+      "e349eadc5d1f79b4423052bee9b1903ae6c5e437",
+      [
+       null,
+       {}
+      ]
+     ],
+     "vertical-scroll-scrollintoview.tentative.html": [
+      "4f78dd914ad4ab9e76fad9ed190942f1888d63b3",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
+    "idlharness.window.js": [
+     "2546061c52c5b39266b44b8725206b5dd50b81a5",
+     [
+      "permissions-policy/idlharness.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/WebIDLParser.js"
+        ],
+        [
+         "script",
+         "/resources/idlharness.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
+    "payment-allowed-by-permissions-policy-attribute-redirect-on-load.https.sub.html": [
+     "e43f4c80ced1f551046ae3ea8b950dfc88d3c0d5",
+     [
+      null,
+      {}
+     ]
+    ],
+    "payment-allowed-by-permissions-policy-attribute.https.sub.html": [
+     "779e9d666c0a9f966c0e7ca4ee388c58a130eb21",
+     [
+      null,
+      {}
+     ]
+    ],
+    "payment-allowed-by-permissions-policy.https.sub.html": [
+     "cb619bc225a52f901373890f371d3c89942ea5dc",
+     [
+      null,
+      {}
+     ]
+    ],
+    "payment-default-permissions-policy.https.sub.html": [
+     "71ab15ae89c2766bfb6ffea40713de415690174a",
+     [
+      null,
+      {}
+     ]
+    ],
+    "payment-disabled-by-permissions-policy.https.sub.html": [
+     "90f3a0ee031c78e9916b5c9d86d4589430031b09",
+     [
+      null,
+      {}
+     ]
+    ],
+    "payment-supported-by-permissions-policy.tentative.html": [
+     "3b9928fe19f7d014ccda1edc58d3d83ce2d1c992",
+     [
+      null,
+      {}
+     ]
+    ],
+    "permissions-policy-frame-policy-allowed-for-all.https.sub.html": [
+     "fc851df7bbfb20b1fb21f6f9c9dec54dba7eba3f",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
+    "permissions-policy-frame-policy-allowed-for-self.https.sub.html": [
+     "1aa219bffe8883f19a57314f2c54b0fc4f0df04d",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
+    "permissions-policy-frame-policy-allowed-for-some-override.https.sub.html": [
+     "250564440ff12a027cf5eaacb6e7633bcf758cf5",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
+    "permissions-policy-frame-policy-allowed-for-some.https.sub.html": [
+     "a27018e98f16589151e368fe922edcbc3475ea6d",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
+    "permissions-policy-frame-policy-disallowed-for-all.https.sub.html": [
+     "e7869b1ea1a25309f47fadc01c9732fb3e77d8a9",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
+    "permissions-policy-frame-policy-timing.https.sub.html": [
+     "5b2a4888631b62ccbea2843383debca911ef2dab",
+     [
+      null,
+      {}
+     ]
+    ],
+    "permissions-policy-header-policy-allowed-for-all.https.sub.html": [
+     "d91132599fc018c989a961ca906ce68988af9e40",
+     [
+      null,
+      {}
+     ]
+    ],
+    "permissions-policy-header-policy-allowed-for-self.https.sub.html": [
+     "dba317e64e441fe5da5f6f6a79576cbf89ef27bb",
+     [
+      null,
+      {}
+     ]
+    ],
+    "permissions-policy-header-policy-allowed-for-some.https.sub.html": [
+     "1e999a5e5e58328648f394b91a517cb861866a23",
+     [
+      null,
+      {}
+     ]
+    ],
+    "permissions-policy-header-policy-declined.https.sub.html": [
+     "8455d68c0713d5c86b02610224194b42dc8ce9d0",
+     [
+      null,
+      {}
+     ]
+    ],
+    "permissions-policy-header-policy-disallowed-for-all.https.sub.html": [
+     "6c6f6ef73f382e9915b091ae315ca9b053c4e39f",
+     [
+      null,
+      {}
+     ]
+    ],
+    "permissions-policy-nested-header-policy-allowed-for-all.https.sub.html": [
+     "74ff64c51d26983403203a537a558d4da18e790e",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
+    "permissions-policy-nested-header-policy-allowed-for-self.https.sub.html": [
+     "f1e5f9d2e24a2dbe8f260d1638040e0651b1a04c",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
+    "permissions-policy-nested-header-policy-disallowed-for-all.https.sub.html": [
+     "b6ae51b35085a12e2e809addf8e526318ddedfaa",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
+    "picture-in-picture-allowed-by-permissions-policy-attribute-redirect-on-load.https.sub.html": [
+     "d965fdc5fb15babaa348ab14a7e2c166ffe9b900",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "picture-in-picture-allowed-by-permissions-policy-attribute.https.sub.html": [
+     "c8371ab29cb0aff1272ac7a12c3a621f113b5dcc",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "picture-in-picture-allowed-by-permissions-policy.https.sub.html": [
+     "dc85111ed4e12c33efdae724ea8ae90675a86f52",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "picture-in-picture-default-permissions-policy.https.sub.html": [
+     "17ab1fd2b580ae3c453b89dc0a942f32e63c2daa",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "picture-in-picture-disabled-by-permissions-policy.https.sub.html": [
+     "7140f686cbe677d3a8100536179fb5cc44e366c0",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "picture-in-picture-supported-by-permissions-policy.html": [
+     "387a878f3b70ccddd9c8fff9793e725bd90e3b1c",
+     [
+      null,
+      {}
+     ]
+    ],
+    "policy-extends-to-sandbox.html": [
+     "50bf8a334c627e795f22d731ffcab2faab6aea0f",
+     [
+      null,
+      {}
+     ]
+    ],
+    "reporting": {
+     "camera-report-only.https.html": [
+      "c22e1a51740d4b27bcc4ae0efa4bdb0c4b8fcf39",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "camera-reporting.https.html": [
+      "12b48dccb73c2bd5954996c0e005511a436320a1",
+      [
+       null,
+       {}
+      ]
+     ],
+     "encrypted-media-report-only.https.html": [
+      "9ab4b0fe8569db905d44e7482bda5ad9804f3d28",
+      [
+       null,
+       {}
+      ]
+     ],
+     "encrypted-media-reporting.https.html": [
+      "1f891a57801d2ebeac87b24d4ffae1a21aba6b20",
+      [
+       null,
+       {}
+      ]
+     ],
+     "fullscreen-report-only.html": [
+      "48fe9e3a69a81c9aac283b75d5498f406e968768",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "fullscreen-reporting.html": [
+      "3ac1ef40ccef608af92f489b0218228933af664e",
+      [
+       null,
+       {}
+      ]
+     ],
+     "generic-sensor-report-only.https.html": [
+      "6c8c2efbf6c322466498c4cb80300333b88fda25",
+      [
+       null,
+       {}
+      ]
+     ],
+     "generic-sensor-reporting.https.html": [
+      "9a5d404d34525fe5786d9b09d8fbc4eca287df2d",
+      [
+       null,
+       {}
+      ]
+     ],
+     "geolocation-report-only.https.html": [
+      "6c62b622cda70c5e23ecc0d80811eaabfe539ca1",
+      [
+       null,
+       {}
+      ]
+     ],
+     "geolocation-reporting.https.html": [
+      "fe8761f803bdfd795698fd28e89ed9f442c1a7fc",
+      [
+       null,
+       {}
+      ]
+     ],
+     "microphone-report-only.https.html": [
+      "539994cd70a2b5a8d598577a0d493c13346755b8",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "microphone-reporting.https.html": [
+      "2aeba8194e46a9f129d457cb2d7ce3e8137a8b64",
+      [
+       null,
+       {}
+      ]
+     ],
+     "midi-report-only.https.html": [
+      "bf0234d3f6511f4ecfeb43857494e4dee0666b79",
+      [
+       null,
+       {}
+      ]
+     ],
+     "midi-reporting.https.html": [
+      "9e8a6ebf8e8f8dccdf8b809dd3e08ba1ed84f3ef",
+      [
+       null,
+       {}
+      ]
+     ],
+     "payment-report-only.https.html": [
+      "d2b8e5ee9cc017d3012a2cdd79143230495b4544",
+      [
+       null,
+       {}
+      ]
+     ],
+     "payment-reporting.https.html": [
+      "50972baacb94c0d02e0471c5a5275e16db13d800",
+      [
+       null,
+       {}
+      ]
+     ],
+     "picture-in-picture-report-only.html": [
+      "9e113a92429bc49bbf70bed6a0ffa7a28f105fce",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "picture-in-picture-reporting.html": [
+      "d1c641d81d7cb2df4ea8125f7e66bccfd7dca6c2",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "serial-report-only.https.html": [
+      "11913a2ef77159c3f0c4769cd3cfaf09d942f1ba",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "serial-reporting.https.html": [
+      "827bc89367c56141938d962edcfe69452309b8f3",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "sync-xhr-report-only.html": [
+      "76d26ed502743549fe426703eef4da38a4076f64",
+      [
+       null,
+       {}
+      ]
+     ],
+     "sync-xhr-reporting.html": [
+      "5427bfd6859680e8b8781f7b9adfc24f7f1370d9",
+      [
+       null,
+       {}
+      ]
+     ],
+     "usb-report-only.https.html": [
+      "7933e9eb5f6c15c513d4110a689eae8c3c15a0ab",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "usb-reporting.https.html": [
+      "a63f3010e4e64ca8aa94f0752c368906bf2c04ea",
+      [
+       null,
+       {}
+      ]
+     ],
+     "xr-report-only.https.html": [
+      "ead03d6a9f6757a6be2fd8e18f9017ba433b550a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "xr-reporting.https.html": [
+      "3d629235d732124e914872555fd4be3ac9421ecd",
+      [
+       null,
+       {}
+      ]
+     ]
+    }
+   },
    "permissions-request": {
     "idlharness.any.js": [
      "b393b1b78af2401f1fad4a2c8e2831f604d000c8",
@@ -394818,7 +395821,7 @@
      ]
     ],
     "element-based-offset-clamp.html": [
-     "b140507493848688f38021573643ce7d6321e514",
+     "d6da677a0553a9b1321b8e6217e6f8c56c2db344",
      [
       null,
       {}
@@ -394832,7 +395835,7 @@
      ]
     ],
     "element-based-offset.html": [
-     "b70bd5fccbd1747889af3d1d844fb8a36e236435",
+     "d485e9ef9c47b49b88d11fef68d71a9d674e02f4",
      [
       null,
       {}
