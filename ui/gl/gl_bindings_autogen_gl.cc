@@ -287,6 +287,8 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
       gfx::HasExtension(extensions, "GL_ANGLE_framebuffer_blit");
   ext.b_GL_ANGLE_framebuffer_multisample =
       gfx::HasExtension(extensions, "GL_ANGLE_framebuffer_multisample");
+  ext.b_GL_ANGLE_get_tex_level_parameter =
+      gfx::HasExtension(extensions, "GL_ANGLE_get_tex_level_parameter");
   ext.b_GL_ANGLE_instanced_arrays =
       gfx::HasExtension(extensions, "GL_ANGLE_instanced_arrays");
   ext.b_GL_ANGLE_memory_object_flags =
@@ -1785,6 +1787,10 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
     fn.glGetTexLevelParameterfvFn =
         reinterpret_cast<glGetTexLevelParameterfvProc>(
             GetGLProcAddress("glGetTexLevelParameterfv"));
+  } else if (ext.b_GL_ANGLE_get_tex_level_parameter) {
+    fn.glGetTexLevelParameterfvFn =
+        reinterpret_cast<glGetTexLevelParameterfvProc>(
+            GetGLProcAddress("glGetTexLevelParameterfvANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
@@ -1797,6 +1803,10 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
     fn.glGetTexLevelParameterivFn =
         reinterpret_cast<glGetTexLevelParameterivProc>(
             GetGLProcAddress("glGetTexLevelParameteriv"));
+  } else if (ext.b_GL_ANGLE_get_tex_level_parameter) {
+    fn.glGetTexLevelParameterivFn =
+        reinterpret_cast<glGetTexLevelParameterivProc>(
+            GetGLProcAddress("glGetTexLevelParameterivANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {

@@ -1159,6 +1159,10 @@ static void GL_BINDING_CALL Mock_glGetTexLevelParameterfv(GLenum target,
                                                           GLint level,
                                                           GLenum pname,
                                                           GLfloat* params);
+static void GL_BINDING_CALL Mock_glGetTexLevelParameterfvANGLE(GLenum target,
+                                                               GLint level,
+                                                               GLenum pname,
+                                                               GLfloat* params);
 static void GL_BINDING_CALL
 Mock_glGetTexLevelParameterfvRobustANGLE(GLenum target,
                                          GLint level,
@@ -1170,6 +1174,10 @@ static void GL_BINDING_CALL Mock_glGetTexLevelParameteriv(GLenum target,
                                                           GLint level,
                                                           GLenum pname,
                                                           GLint* params);
+static void GL_BINDING_CALL Mock_glGetTexLevelParameterivANGLE(GLenum target,
+                                                               GLint level,
+                                                               GLenum pname,
+                                                               GLint* params);
 static void GL_BINDING_CALL
 Mock_glGetTexLevelParameterivRobustANGLE(GLenum target,
                                          GLint level,

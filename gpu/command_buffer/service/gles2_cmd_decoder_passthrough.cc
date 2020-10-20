@@ -978,6 +978,7 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
       static constexpr const char* kOptionalFunctionalityExtensions[] = {
           "GL_ANGLE_depth_texture",
           "GL_ANGLE_framebuffer_multisample",
+          "GL_ANGLE_get_tex_level_parameter",
           "GL_ANGLE_instanced_arrays",
           "GL_ANGLE_memory_object_flags",
           "GL_ANGLE_pack_reverse_row_order",

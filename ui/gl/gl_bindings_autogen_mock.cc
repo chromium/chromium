@@ -2705,6 +2705,15 @@ MockGLInterface::Mock_glGetTexLevelParameterfv(GLenum target,
 }
 
 void GL_BINDING_CALL
+MockGLInterface::Mock_glGetTexLevelParameterfvANGLE(GLenum target,
+                                                    GLint level,
+                                                    GLenum pname,
+                                                    GLfloat* params) {
+  MakeGlMockFunctionUnique("glGetTexLevelParameterfvANGLE");
+  interface_->GetTexLevelParameterfv(target, level, pname, params);
+}
+
+void GL_BINDING_CALL
 MockGLInterface::Mock_glGetTexLevelParameterfvRobustANGLE(GLenum target,
                                                           GLint level,
                                                           GLenum pname,
@@ -2722,6 +2731,15 @@ MockGLInterface::Mock_glGetTexLevelParameteriv(GLenum target,
                                                GLenum pname,
                                                GLint* params) {
   MakeGlMockFunctionUnique("glGetTexLevelParameteriv");
+  interface_->GetTexLevelParameteriv(target, level, pname, params);
+}
+
+void GL_BINDING_CALL
+MockGLInterface::Mock_glGetTexLevelParameterivANGLE(GLenum target,
+                                                    GLint level,
+                                                    GLenum pname,
+                                                    GLint* params) {
+  MakeGlMockFunctionUnique("glGetTexLevelParameterivANGLE");
   interface_->GetTexLevelParameteriv(target, level, pname, params);
 }
 
@@ -6132,12 +6150,18 @@ MockGLInterface::GetGLProcAddress(const char* name) {
   if (strcmp(name, "glGetTexLevelParameterfv") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_glGetTexLevelParameterfv);
+  if (strcmp(name, "glGetTexLevelParameterfvANGLE") == 0)
+    return reinterpret_cast<GLFunctionPointerType>(
+        Mock_glGetTexLevelParameterfvANGLE);
   if (strcmp(name, "glGetTexLevelParameterfvRobustANGLE") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_glGetTexLevelParameterfvRobustANGLE);
   if (strcmp(name, "glGetTexLevelParameteriv") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_glGetTexLevelParameteriv);
+  if (strcmp(name, "glGetTexLevelParameterivANGLE") == 0)
+    return reinterpret_cast<GLFunctionPointerType>(
+        Mock_glGetTexLevelParameterivANGLE);
   if (strcmp(name, "glGetTexLevelParameterivRobustANGLE") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_glGetTexLevelParameterivRobustANGLE);

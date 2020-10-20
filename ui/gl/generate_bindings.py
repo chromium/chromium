@@ -1209,7 +1209,9 @@ GL_FUNCTIONS = [
     'GLsync sync, GLenum pname, GLsizei bufSize, GLsizei* length,'
     'GLint* values', },
 { 'return_type': 'void',
-  'names': ['glGetTexLevelParameterfv'],
+  'versions': [{ 'name': 'glGetTexLevelParameterfv' },
+               {'name': 'glGetTexLevelParameterfvANGLE',
+                'extensions': ['GL_ANGLE_get_tex_level_parameter']}],
   'arguments': 'GLenum target, GLint level, GLenum pname, GLfloat* params', },
 { 'return_type': 'void',
   'versions': [{'name': 'glGetTexLevelParameterfvRobustANGLE',
@@ -1218,7 +1220,9 @@ GL_FUNCTIONS = [
       'GLenum target, GLint level, GLenum pname, GLsizei bufSize, '
       'GLsizei* length, GLfloat* params', },
 { 'return_type': 'void',
-  'names': ['glGetTexLevelParameteriv'],
+  'versions': [{ 'name': 'glGetTexLevelParameteriv' },
+               {'name': 'glGetTexLevelParameterivANGLE',
+                'extensions': ['GL_ANGLE_get_tex_level_parameter']}],
   'arguments': 'GLenum target, GLint level, GLenum pname, GLint* params', },
 { 'return_type': 'void',
   'versions': [{'name': 'glGetTexLevelParameterivRobustANGLE',

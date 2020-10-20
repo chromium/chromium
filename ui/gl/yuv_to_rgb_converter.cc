@@ -189,6 +189,10 @@ YUVToRGBConverter::YUVToRGBConverter(const GLVersionInfo& gl_version_info,
   if (has_vertex_array_objects) {
     glGenVertexArraysOES(1, &vertex_array_object_);
   }
+
+  has_get_tex_level_parameter_ =
+      !gl_version_info.is_es || gl_version_info.IsAtLeastGLES(3, 1) ||
+      g_current_gl_driver->ext.b_GL_ANGLE_get_tex_level_parameter;
 }
 
 YUVToRGBConverter::~YUVToRGBConverter() {
@@ -234,8 +238,32 @@ void YUVToRGBConverter::CopyYUV420ToRGB(unsigned target,
   // Allocate the rgb texture.
   glActiveTexture(old_active_texture);
   glBindTexture(target, rgb_texture);
-  glTexImage2D(target, 0, GL_RGB, size.width(), size.height(), 0, GL_RGB,
-               rgb_texture_type, nullptr);
+
+  bool needs_texture_init = true;
+  if (has_get_tex_level_parameter_) {
+    GLint current_internal_format = 0;
+    glGetTexLevelParameteriv(target, 0, GL_TEXTURE_INTERNAL_FORMAT,
+                             &current_internal_format);
+
+    GLint current_type = 0;
+    glGetTexLevelParameteriv(target, 0, GL_TEXTURE_RED_TYPE, &current_type);
+
+    GLint current_width = 0;
+    glGetTexLevelParameteriv(target, 0, GL_TEXTURE_WIDTH, &current_width);
+
+    GLint current_height = 0;
+    glGetTexLevelParameteriv(target, 0, GL_TEXTURE_HEIGHT, &current_height);
+
+    if (current_internal_format == GL_RGB &&
+        static_cast<unsigned>(current_type) == rgb_texture_type &&
+        current_width == size.width() && current_height == size.height()) {
+      needs_texture_init = false;
+    }
+  }
+  if (needs_texture_init) {
+    glTexImage2D(target, 0, GL_RGB, size.width(), size.height(), 0, GL_RGB,
+                 rgb_texture_type, nullptr);
+  }
 
   // Set up and issue the draw call.
   glActiveTexture(GL_TEXTURE0);

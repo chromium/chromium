@@ -1955,6 +1955,7 @@ struct ExtensionsGL {
   bool b_GL_ANGLE_base_vertex_base_instance;
   bool b_GL_ANGLE_framebuffer_blit;
   bool b_GL_ANGLE_framebuffer_multisample;
+  bool b_GL_ANGLE_get_tex_level_parameter;
   bool b_GL_ANGLE_instanced_arrays;
   bool b_GL_ANGLE_memory_object_flags;
   bool b_GL_ANGLE_memory_object_fuchsia;
