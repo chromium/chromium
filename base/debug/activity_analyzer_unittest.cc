@@ -163,7 +163,13 @@ class SimpleActivityThread : public SimpleThread {
 
 }  // namespace
 
-TEST_F(ActivityAnalyzerTest, GlobalAnalyzerConstruction) {
+// TODO(1061320): Flaky under tsan.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_GlobalAnalyzerConstruction DISABLED_GlobalAnalyzerConstruction
+#else
+#define MAYBE_GlobalAnalyzerConstruction GlobalAnalyzerConstruction
+#endif
+TEST_F(ActivityAnalyzerTest, MAYBE_GlobalAnalyzerConstruction) {
   GlobalActivityTracker::CreateWithLocalMemory(kMemorySize, 0, "", 3, 0);
   GlobalActivityTracker::Get()->process_data().SetString("foo", "bar");
 
