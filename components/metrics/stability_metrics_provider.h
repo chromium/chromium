@@ -31,10 +31,7 @@ class StabilityMetricsProvider : public MetricsProvider {
   void MarkSessionEndCompleted(bool end_completed);
 
   void LogCrash(base::Time last_live_timestamp);
-  void LogStabilityLogDeferred();
-  void LogStabilityDataDiscarded();
   void LogLaunch();
-  void LogStabilityVersionMismatch();
 
  private:
 #if defined(OS_WIN)

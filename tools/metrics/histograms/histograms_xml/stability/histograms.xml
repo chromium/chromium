@@ -259,6 +259,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Stability.Internals.DataDiscardCount" units="counts"
     expires_after="M77">
+  <obsolete>
+    Removed on 10/2020.
+  </obsolete>
   <owner>siggi@chromium.org</owner>
   <summary>
     Number of times stability data was discarded. This is accumulated since the
@@ -292,6 +295,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Stability.Internals.InitialStabilityLogDeferredCount"
     units="counts" expires_after="M77">
+  <obsolete>
+    Removed on 10/2020.
+  </obsolete>
   <owner>siggi@chromium.org</owner>
   <summary>
     Number of times the initial stability log upload was deferred to the next
@@ -312,6 +318,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Stability.Internals.VersionMismatchCount" units="counts"
     expires_after="M77">
+  <obsolete>
+    Removed on 10/2020.
+  </obsolete>
   <owner>siggi@chromium.org</owner>
   <summary>
     Number of times the version number stored in prefs did not match the

@@ -118,16 +118,6 @@ const char kStabilityCrashCount[] =
 const char kStabilityCrashCountDueToGmsCoreUpdate[] =
     "user_experience_metrics.stability.crash_count_due_to_gms_core_update";
 
-// Number of times the initial stability log upload was deferred to the next
-// startup.
-const char kStabilityDeferredCount[] =
-    "user_experience_metrics.stability.deferred_count";
-
-// Number of times stability data was discarded. This is accumulated since the
-// last report, even across versions.
-const char kStabilityDiscardCount[] =
-    "user_experience_metrics.stability.discard_count";
-
 // Number of times the browser has been run under a debugger.
 const char kStabilityDebuggerPresent[] =
     "user_experience_metrics.stability.debugger_present";
@@ -232,11 +222,6 @@ const char kStabilityStatsVersion[] =
 // Windows only.
 const char kStabilitySystemCrashCount[] =
     "user_experience_metrics.stability.system_crash_count";
-
-// Number of times the version number stored in prefs did not match the
-// serialized system profile version number.
-const char kStabilityVersionMismatchCount[] =
-    "user_experience_metrics.stability.version_mismatch_count";
 
 // The keys below are strictly increasing counters over the lifetime of
 // a chrome installation. They are (optionally) sent up to the uninstall

@@ -42,8 +42,6 @@ extern const char kStabilityCrashCount[];
 extern const char kStabilityCrashCountDueToGmsCoreUpdate[];
 extern const char kStabilityDebuggerNotPresent[];
 extern const char kStabilityDebuggerPresent[];
-extern const char kStabilityDeferredCount[];
-extern const char kStabilityDiscardCount[];
 extern const char kStabilityExitedCleanly[];
 extern const char kStabilityExtensionRendererCrashCount[];
 extern const char kStabilityExtensionRendererFailedLaunchCount[];
@@ -65,7 +63,6 @@ extern const char kStabilitySessionEndCompleted[];
 extern const char kStabilityStatsBuildTime[];
 extern const char kStabilityStatsVersion[];
 extern const char kStabilitySystemCrashCount[];
-extern const char kStabilityVersionMismatchCount[];
 
 // Preferences for generating metrics at uninstall time.
 extern const char kUninstallLaunchCount[];

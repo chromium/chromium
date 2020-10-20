@@ -14130,6 +14130,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="Suggestions.LocalBlacklistSize" units="URLcount"
     expires_after="M77">
+  <obsolete>
+    Removed some time before 10/2020.
+  </obsolete>
   <owner>siggi@chromium.org</owner>
   <summary>
     Number of URLs present in the Suggestions local blacklist when the
