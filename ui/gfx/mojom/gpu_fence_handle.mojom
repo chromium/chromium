@@ -5,11 +5,10 @@
 module gfx.mojom;
 
 // See ui/gfx/ipc/gpu_fence_handle.h
-// A null handle means there is no GPU fence for synchronization.
 struct GpuFenceHandle {
   [EnableIf=is_posix]
-  handle<platform>? native_fd;
+  handle<platform> native_fd;
 
   [EnableIf=is_win]
-  handle<platform>? native_handle;
+  handle<platform> native_handle;
 };
