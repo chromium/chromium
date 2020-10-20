@@ -544,7 +544,7 @@ class CONTENT_EXPORT NavigationRequest
   // Whether the new document loaded will be loaded from an MHTML archive.
   // Contrary to IsForMhtmlSubframe(), this isn't scoped to subframe, but can't
   // be called prior to receiving the final response.
-  bool IsLoadedFromMhtmlArchive() const;
+  bool IsLoadedFromMhtmlArchive();
 
   // Whether the new document created by this navigation will be loaded from a
   // MHTML document. In this case, the navigation will commit in the main frame
@@ -1101,9 +1101,10 @@ class CONTENT_EXPORT NavigationRequest
   // NavigationRequest is in.
   NavigationControllerImpl* GetNavigationController();
 
-  // Compute the sandbox policy of the document to be loaded. Called once when
-  // reaching the 'ReadyToCommit' stage.
-  network::mojom::WebSandboxFlags ComputeSandboxFlagsToCommit();
+  // Compute the sandbox policy of the document to be loaded. This is called
+  // once the final response is known. It is based on the current FramePolicy
+  // and the response's CSP.
+  void ComputeSandboxFlagsToCommit();
 
   // DCHECK that tranistioning from the current state to |state| valid. This
   // does nothing in non-debug builds.
@@ -1491,8 +1492,7 @@ class CONTENT_EXPORT NavigationRequest
   // made by this navigation.
   mojo::ReceiverSet<network::mojom::CookieAccessObserver> cookie_observers_;
 
-  // The sandbox flags of the document to be loaded. This is computed at
-  // 'ReadyToCommit' time.
+  // The sandbox flags of the document to be loaded.
   base::Optional<network::mojom::WebSandboxFlags> sandbox_flags_to_commit_;
 
   OptInOriginIsolationEndResult origin_isolation_end_result_ =
