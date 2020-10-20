@@ -551,75 +551,80 @@ if (current_toolchain == host_toolchain) {
   }
 }
 
-############################################################################## #
+################################################################################
 # Fuzzers
-# TODO(https://bugs.chromium.org/p/webp/issues/detail?id=409):
-#     Eliminated need for cflags_cc.
 
 fuzzer_test("libwebp_simple_api_fuzzer") {
-  sources = [ "fuzzing/fuzz_simple_api.cc" ]
-  dict = "fuzzing/fuzz.dict"
+  sources = [ "tests/fuzzer/simple_api_fuzzer.c" ]
+  dict = "tests/fuzzer/fuzz.dict"
   seed_corpus = "fuzzing/fuzz_seed_corpus"
   deps = [
     ":libwebp",
     ":libwebp_webp",
   ]
-  cflags_cc = [ "-Wno-unused-function" ]
   defines = [ "WEBP_MAX_IMAGE_SIZE=838860800" ]
   additional_configs = [ ":libwebp_config_internal" ]
 }
 
 fuzzer_test("libwebp_advanced_api_fuzzer") {
-  sources = [ "fuzzing/fuzz_advanced_api.cc" ]
-  dict = "fuzzing/fuzz.dict"
+  sources = [ "tests/fuzzer/advanced_api_fuzzer.c" ]
+  dict = "tests/fuzzer/fuzz.dict"
   seed_corpus = "fuzzing/fuzz_seed_corpus"
   deps = [
     ":libwebp",
     ":libwebp_webp",
   ]
-  cflags_cc = [ "-Wno-unused-function" ]
   defines = [ "WEBP_MAX_IMAGE_SIZE=838860800" ]
   additional_configs = [ ":libwebp_config_internal" ]
 }
 
 fuzzer_test("libwebp_animation_api_fuzzer") {
   sources = [
-    "fuzzing/fuzz_animation_api.cc",
     "src/demux/anim_decode.c",
+    "tests/fuzzer/animation_api_fuzzer.c",
   ]
-  dict = "fuzzing/fuzz.dict"
+  dict = "tests/fuzzer/fuzz.dict"
   seed_corpus = "fuzzing/fuzz_seed_corpus"
   deps = [
     ":libwebp",
     ":libwebp_webp",
   ]
-  cflags_cc = [ "-Wno-unused-function" ]
   defines = [ "WEBP_MAX_IMAGE_SIZE=838860800" ]
   additional_configs = [ ":libwebp_config_internal" ]
 }
 
-fuzzer_test("libwebp_demux_api_fuzzer") {
-  sources = [ "fuzzing/fuzz_demux_api.cc" ]
-  dict = "fuzzing/fuzz.dict"
+fuzzer_test("libwebp_mux_demux_api_fuzzer") {
+  sources = [ "tests/fuzzer/mux_demux_api_fuzzer.c" ]
+  dict = "tests/fuzzer/fuzz.dict"
   seed_corpus = "fuzzing/fuzz_seed_corpus"
   deps = [
     ":libwebp",
     ":libwebp_webp",
   ]
-  cflags_cc = [ "-Wno-unused-function" ]
+  defines = [ "WEBP_MAX_IMAGE_SIZE=838860800" ]
+  additional_configs = [ ":libwebp_config_internal" ]
+}
+
+fuzzer_test("libwebp_animencoder_fuzzer") {
+  sources = [ "tests/fuzzer/animencoder_fuzzer.cc" ]
+  dict = "tests/fuzzer/fuzz.dict"
+  seed_corpus = "fuzzing/fuzz_seed_corpus"
+  deps = [
+    ":libwebp",
+    ":libwebp_webp",
+  ]
   defines = [ "WEBP_MAX_IMAGE_SIZE=838860800" ]
   additional_configs = [ ":libwebp_config_internal" ]
 }
 
 fuzzer_test("libwebp_enc_dec_api_fuzzer") {
-  sources = [ "fuzzing/fuzz_webp_enc_dec.cc" ]
-  dict = "fuzzing/fuzz.dict"
+  sources = [ "tests/fuzzer/enc_dec_fuzzer.cc" ]
+  dict = "tests/fuzzer/fuzz.dict"
   seed_corpus = "fuzzing/fuzz_seed_corpus"
   deps = [
     ":libwebp",
     ":libwebp_webp",
   ]
-  cflags_cc = [ "-Wno-unused-function" ]
   defines = [ "WEBP_MAX_IMAGE_SIZE=838860800" ]
   additional_configs = [ ":libwebp_config_internal" ]
 }

@@ -22,5 +22,5 @@ Local changes:
  * Merged COPYING/PATENTS to LICENSE
  * Disabled the SSE2 version of VerticalUnfilter due to a crash on android
    (crbug.com/654974)
- * Pulled in fuzzers from OSS-Fuzz
-   https://github.com/google/oss-fuzz/tree/master/projects/libwebp
+ * Updated include paths in tests/fuzzer/*.cc to pass
+   buildtools/checkdeps/checkdeps.py
