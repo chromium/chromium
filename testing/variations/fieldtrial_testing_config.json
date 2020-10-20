@@ -1879,6 +1879,24 @@
             ]
         }
     ],
+    "CopyLinkToTextDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CopyLinkToText"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSMinFilelistKB": [
         {
             "platforms": [
