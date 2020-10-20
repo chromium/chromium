@@ -93,7 +93,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
         : public std::iterator<std::input_iterator_tag, GridItemData> {
      public:
       Iterator(Vector<wtf_size_t>::const_iterator current_index,
-               Vector<GridItemData>* items);
+               Vector<GridItemData>* grid_items);
 
       bool operator!=(const Iterator& other) const;
       GridItemData* operator->();
@@ -102,17 +102,17 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
      private:
       Vector<wtf_size_t>::const_iterator current_index_;
-      Vector<GridItemData>* items_;
+      Vector<GridItemData>* grid_items_;
     };
 
     ReorderedGridItems(const Vector<wtf_size_t>& reordered_item_indices,
-                       Vector<GridItemData>& items);
+                       Vector<GridItemData>& grid_items);
     Iterator begin();
     Iterator end();
 
    private:
     const Vector<wtf_size_t>& reordered_item_indices_;
-    Vector<GridItemData>& items_;
+    Vector<GridItemData>& grid_items_;
   };
 
   ReorderedGridItems GetReorderedGridItems();
@@ -174,6 +174,12 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   // Lays out and computes inline and block offsets for grid items.
   void PlaceGridItems();
+
+  // Lays out |grid_item| based on the offsets and sizes provided.
+  void PlaceGridItem(const GridItemData& grid_item,
+                     LogicalOffset offset,
+                     LogicalSize size);
+
   // Gets the row or column gap of the grid.
   LayoutUnit GridGap(GridTrackSizingDirection track_direction);
 
@@ -183,7 +189,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   LogicalSize border_box_size_;
   LogicalSize child_percentage_size_;
 
-  Vector<GridItemData> items_;
+  Vector<GridItemData> grid_items_;
+  Vector<GridItemData> out_of_flow_items_;
   Vector<wtf_size_t> reordered_item_indices_;
 
   NGGridBlockTrackCollection block_column_track_collection_;

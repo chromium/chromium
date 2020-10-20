@@ -44,13 +44,13 @@ class NGGridLayoutAlgorithmTest
   // Helper methods to access private data on NGGridLayoutAlgorithm. This class
   // is a friend of NGGridLayoutAlgorithm but the individual tests are not.
   wtf_size_t GridItemCount(const NGGridLayoutAlgorithm& algorithm) {
-    return algorithm.items_.size();
+    return algorithm.grid_items_.size();
   }
 
   Vector<LayoutUnit> GridItemInlineSizes(
       const NGGridLayoutAlgorithm& algorithm) {
     Vector<LayoutUnit> results;
-    for (const auto& item : algorithm.items_) {
+    for (const auto& item : algorithm.grid_items_) {
       results.push_back(item.inline_size);
     }
     return results;
@@ -59,7 +59,7 @@ class NGGridLayoutAlgorithmTest
   Vector<LayoutUnit> GridItemInlineMarginSum(
       const NGGridLayoutAlgorithm& algorithm) {
     Vector<LayoutUnit> results;
-    for (const auto& item : algorithm.items_) {
+    for (const auto& item : algorithm.grid_items_) {
       results.push_back(item.margins.InlineSum());
     }
     return results;
@@ -68,7 +68,7 @@ class NGGridLayoutAlgorithmTest
   Vector<MinMaxSizes> GridItemMinMaxSizes(
       const NGGridLayoutAlgorithm& algorithm) {
     Vector<MinMaxSizes> results;
-    for (const auto& item : algorithm.items_) {
+    for (const auto& item : algorithm.grid_items_) {
       results.push_back(item.min_max_sizes);
     }
     return results;
@@ -76,7 +76,7 @@ class NGGridLayoutAlgorithmTest
 
   Vector<GridArea> GridItemGridAreas(const NGGridLayoutAlgorithm& algorithm) {
     Vector<GridArea> results;
-    for (const auto& item : algorithm.items_) {
+    for (const auto& item : algorithm.grid_items_) {
       results.push_back(item.resolved_position);
     }
     return results;
@@ -91,8 +91,8 @@ class NGGridLayoutAlgorithmTest
   Vector<wtf_size_t> GridItemsSpanningIntrinsicTrack(
       const NGGridLayoutAlgorithm& algorithm) {
     Vector<wtf_size_t> results;
-    for (wtf_size_t i = 0; i < algorithm.items_.size(); ++i) {
-      if (algorithm.items_[i].is_spanning_intrinsic_track)
+    for (wtf_size_t i = 0; i < algorithm.grid_items_.size(); ++i) {
+      if (algorithm.grid_items_[i].is_spanning_intrinsic_track)
         results.push_back(i);
     }
     return results;
@@ -101,8 +101,8 @@ class NGGridLayoutAlgorithmTest
   Vector<wtf_size_t> GridItemsSpanningFlexTrack(
       const NGGridLayoutAlgorithm& algorithm) {
     Vector<wtf_size_t> results;
-    for (wtf_size_t i = 0; i < algorithm.items_.size(); ++i) {
-      if (algorithm.items_[i].is_spanning_flex_track)
+    for (wtf_size_t i = 0; i < algorithm.grid_items_.size(); ++i) {
+      if (algorithm.grid_items_[i].is_spanning_flex_track)
         results.push_back(i);
     }
     return results;
@@ -986,34 +986,36 @@ TEST_F(NGGridLayoutAlgorithmTest,
   algorithm.Layout();
 
   DetermineGridItemsSpanningIntrinsicOrFlexTracks(algorithm, kForColumns);
-  Vector<wtf_size_t> expected_items_spanning_intrinsic_track = {0, 1, 3};
-  Vector<wtf_size_t> expected_items_spanning_flex_track = {1};
+  Vector<wtf_size_t> expected_grid_items_spanning_intrinsic_track = {0, 1, 3};
+  Vector<wtf_size_t> expected_grid_items_spanning_flex_track = {1};
 
   Vector<wtf_size_t> actual_items = GridItemsSpanningIntrinsicTrack(algorithm);
-  EXPECT_EQ(expected_items_spanning_intrinsic_track.size(),
+  EXPECT_EQ(expected_grid_items_spanning_intrinsic_track.size(),
             actual_items.size());
   for (wtf_size_t i = 0; i < actual_items.size(); ++i)
-    EXPECT_EQ(expected_items_spanning_intrinsic_track[i], actual_items[i]);
+    EXPECT_EQ(expected_grid_items_spanning_intrinsic_track[i], actual_items[i]);
 
   actual_items = GridItemsSpanningFlexTrack(algorithm);
-  EXPECT_EQ(expected_items_spanning_flex_track.size(), actual_items.size());
+  EXPECT_EQ(expected_grid_items_spanning_flex_track.size(),
+            actual_items.size());
   for (wtf_size_t i = 0; i < actual_items.size(); ++i)
-    EXPECT_EQ(expected_items_spanning_flex_track[i], actual_items[i]);
+    EXPECT_EQ(expected_grid_items_spanning_flex_track[i], actual_items[i]);
 
   DetermineGridItemsSpanningIntrinsicOrFlexTracks(algorithm, kForRows);
-  expected_items_spanning_intrinsic_track = {1, 2, 3};
-  expected_items_spanning_flex_track = {2};
+  expected_grid_items_spanning_intrinsic_track = {1, 2, 3};
+  expected_grid_items_spanning_flex_track = {2};
 
   actual_items = GridItemsSpanningIntrinsicTrack(algorithm);
-  EXPECT_EQ(expected_items_spanning_intrinsic_track.size(),
+  EXPECT_EQ(expected_grid_items_spanning_intrinsic_track.size(),
             actual_items.size());
   for (wtf_size_t i = 0; i < actual_items.size(); ++i)
-    EXPECT_EQ(expected_items_spanning_intrinsic_track[i], actual_items[i]);
+    EXPECT_EQ(expected_grid_items_spanning_intrinsic_track[i], actual_items[i]);
 
   actual_items = GridItemsSpanningFlexTrack(algorithm);
-  EXPECT_EQ(expected_items_spanning_flex_track.size(), actual_items.size());
+  EXPECT_EQ(expected_grid_items_spanning_flex_track.size(),
+            actual_items.size());
   for (wtf_size_t i = 0; i < actual_items.size(); ++i)
-    EXPECT_EQ(expected_items_spanning_flex_track[i], actual_items[i]);
+    EXPECT_EQ(expected_grid_items_spanning_flex_track[i], actual_items[i]);
 }
 
 TEST_F(NGGridLayoutAlgorithmTest, FixedSizePositioning) {
@@ -1123,6 +1125,83 @@ TEST_F(NGGridLayoutAlgorithmTest, FixedSizePositioningAutoRows) {
       offset:0,100 size:100x100
         offset:0,0 size:10x10
       offset:100,100 size:100x100
+        offset:0,0 size:10x10
+)DUMP";
+  EXPECT_EQ(expectation, dump);
+}
+
+TEST_F(NGGridLayoutAlgorithmTest, SpecifiedPositionsOutOfOrder) {
+  if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
+    return;
+
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body {
+        font: 10px/1 Ahem;
+      }
+
+      #grid {
+        display: grid;
+        width: 400px;
+        height: 400px;
+        grid-template-columns: 100px 100px;
+        grid-template-rows: 100px 100px;
+      }
+
+      .grid_item1 {
+        display: block;
+        width: 100px;
+        height: 100px;
+        grid-row: 2;
+        grid-column: 2;
+      }
+
+      .grid_item2 {
+        display: block;
+        width: 90px;
+        height: 90px;
+        grid-row: 1;
+        grid-column: 1;
+      }
+
+      .grid_item3 {
+        display: block;
+        width: 80px;
+        height: 80px;
+        grid-row: 1;
+        grid-column: 2;
+      }
+
+      .grid_item4 {
+        display: block;
+        width: 70px;
+        height: 70px;
+        grid-row: 2;
+        grid-column: 1;
+      }
+    </style>
+    <div id="wrapper">
+      <div id="grid">
+        <div class="grid_item1">1</div>
+        <div class="grid_item2">2</div>
+        <div class="grid_item3">3</div>
+        <div class="grid_item4">4</div>
+      </div>
+    </div>
+  )HTML");
+  String dump = DumpFragmentTree(GetElementById("wrapper"));
+
+  String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
+  offset:unplaced size:1000x400
+    offset:0,0 size:400x400
+      offset:100,100 size:100x100
+        offset:0,0 size:10x10
+      offset:0,0 size:90x90
+        offset:0,0 size:10x10
+      offset:100,0 size:80x80
+        offset:0,0 size:10x10
+      offset:0,100 size:70x70
         offset:0,0 size:10x10
 )DUMP";
   EXPECT_EQ(expectation, dump);
@@ -1290,6 +1369,144 @@ TEST_F(NGGridLayoutAlgorithmTest, AutoSizedGridWithGap) {
       offset:0,175 size:100x100
         offset:0,0 size:10x10
       offset:150,175 size:200x100
+        offset:0,0 size:10x10
+)DUMP";
+  EXPECT_EQ(expectation, dump);
+}
+
+TEST_F(NGGridLayoutAlgorithmTest, ItemsSizeWithGap) {
+  if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
+    return;
+
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body {
+        font: 10px/1 Ahem;
+      }
+
+      #grid {
+        display: grid;
+        width: 340px;
+        height: 100px;
+        grid-template-columns: 100px 100px 100px;
+        grid-template-rows: 100px;
+        column-gap: 20px;
+      }
+
+      .grid_item {
+        width: 100%;
+        height: 100%;
+      }
+
+      #cell1 {
+        grid-row: 1 / 2;
+        grid-column: 1 / 2;
+      }
+
+      #cell2 {
+        grid-row: 1 / 2;
+        grid-column: 2 / 3;
+      }
+
+      #cell3 {
+        grid-row: 1 / 2;
+        grid-column: 3 / 4;
+      }
+
+    </style>
+    <div id="wrapper">
+     <div id="grid">
+        <div class="grid_item" id="cell1" style="background: orange;">1</div>
+        <div class="grid_item" id="cell2" style="background: green;">3</div>
+        <div class="grid_item" id="cell3" style="background: blueviolet;">5</div>
+      </div>
+    </div>
+  )HTML");
+  String dump = DumpFragmentTree(GetElementById("wrapper"));
+
+  String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
+  offset:unplaced size:1000x100
+    offset:0,0 size:340x100
+      offset:0,0 size:100x100
+        offset:0,0 size:10x10
+      offset:120,0 size:100x100
+        offset:0,0 size:10x10
+      offset:240,0 size:100x100
+        offset:0,0 size:10x10
+)DUMP";
+  EXPECT_EQ(expectation, dump);
+}
+
+TEST_F(NGGridLayoutAlgorithmTest, OutOfFlowGridItems) {
+  if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
+    return;
+
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body {
+        font: 10px/1 Ahem;
+      }
+
+      #grid {
+        display: grid;
+        width: 100px;
+        height: 300px;
+        grid-auto-columns: 100px;
+        grid-auto-rows: 100px;
+        position: relative;
+      }
+
+      .grid_item {
+        width: 100px;
+        height: 100px;
+        background-color: gray;
+      }
+
+      #cell2 {
+        position: absolute;
+        left: 25%;
+        top: 10%;
+        width: 100px;
+        height: 100px;
+        background-color: blue;
+      }
+
+      #cell4 {
+        position: absolute;
+        top: 150px;
+        left: 25px;
+        width: 100%;
+        height: 35%;
+        background-color: yellow;
+      }
+
+    </style>
+    <div id="wrapper">
+      <div id="grid">
+        <div class="grid_item" style="background: orange;">1</div>
+        <div id="cell2">2</div>
+        <div class="grid_item" style="background: green;">3</div>
+        <div id="cell4">4</div>
+        <div class="grid_item" style="background: blueviolet;">5</div>
+      </div>
+    </div>
+  )HTML");
+  String dump = DumpFragmentTree(GetElementById("wrapper"));
+
+  String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
+  offset:unplaced size:1000x300
+    offset:0,0 size:100x300
+      offset:0,0 size:100x100
+        offset:0,0 size:10x10
+      offset:0,100 size:100x100
+        offset:0,0 size:10x10
+      offset:0,200 size:100x100
+        offset:0,0 size:10x10
+      offset:25,30 size:100x100
+        offset:0,0 size:10x10
+      offset:25,150 size:100x105
         offset:0,0 size:10x10
 )DUMP";
   EXPECT_EQ(expectation, dump);
