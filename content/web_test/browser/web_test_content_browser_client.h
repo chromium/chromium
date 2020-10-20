@@ -107,6 +107,8 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
                         RendererSpawnFlags flags) override;
 #endif
   std::string GetAcceptLangs(BrowserContext* context) override;
+  void GetHyphenationDictionary(
+      base::OnceCallback<void(const base::FilePath&)>) override;
 
  private:
   // ShellContentBrowserClient overrides.

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/path_service.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/strings/pattern.h"
@@ -515,6 +516,19 @@ bool WebTestContentBrowserClient::PreSpawnRenderer(
 std::string WebTestContentBrowserClient::GetAcceptLangs(
     BrowserContext* context) {
   return content::GetShellLanguage();
+}
+
+void WebTestContentBrowserClient::GetHyphenationDictionary(
+    base::OnceCallback<void(const base::FilePath&)> callback) {
+  // Use the dictionaries in the runtime deps instead of the repository. The
+  // build infrastructure takes only the list of files that GN determines to be
+  // the runtime deps, not the whole repository.
+  base::FilePath dir;
+  if (base::PathService::Get(base::DIR_EXE, &dir)) {
+    dir = dir.AppendASCII("gen/hyphen-data");
+    std::move(callback).Run(dir);
+  }
+  // No need to callback if there were no dictionaries.
 }
 
 }  // namespace content
