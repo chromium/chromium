@@ -240,8 +240,13 @@ public final class LocationBarCoordinator implements LocationBar {
         return mLocationBarLayout.isCurrentPage(nativePage);
     }
 
+    @Nullable
     @Override
     public VoiceRecognitionHandler getVoiceRecognitionHandler() {
+        // TODO(crbug.com/1140333): StartSurfaceMediator can call this method after destroy().
+        if (mLocationBarLayout == null) {
+            return null;
+        }
         return mLocationBarLayout.getVoiceRecognitionHandler();
     }
 

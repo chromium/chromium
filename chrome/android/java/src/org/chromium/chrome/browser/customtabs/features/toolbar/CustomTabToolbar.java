@@ -872,6 +872,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             return false;
         }
 
+        @Nullable
         @Override
         public VoiceRecognitionHandler getVoiceRecognitionHandler() {
             return null;

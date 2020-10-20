@@ -47,10 +47,8 @@ public interface FakeboxDelegate {
      */
     boolean isCurrentPage(NativePage nativePage);
 
-    /**
-     * Get the {@link VoiceRecognitionHandler}.
-     * @return the {@link VoiceRecognitionHandler}
-     */
+    /** Gets the {@link VoiceRecognitionHandler}. */
+    @Nullable
     VoiceRecognitionHandler getVoiceRecognitionHandler();
 
     /**

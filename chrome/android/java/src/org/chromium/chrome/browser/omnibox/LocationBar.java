@@ -25,7 +25,7 @@ public interface LocationBar extends UrlBarDelegate, FakeboxDelegate, Destroyabl
     void onNativeLibraryReady();
 
     /** Triggered when the current tab has changed to a {@link NewTabPage}. */
-    default void onTabLoadingNTP(NewTabPage ntp){};
+    default void onTabLoadingNTP(NewTabPage ntp) {}
 
     /**
      * Call to force the UI to update the state of various buttons based on whether or not the
