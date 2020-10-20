@@ -34,10 +34,6 @@
                use_base_dir="false"
                flattenhtml="true"
                type="BINDATA" />
-      <include name="IDR_OS_SETTINGS_MANIFEST"
-               file="os_settings_manifest.json"
-               type="BINDATA"
-               compress="gzip" />
 
       <!-- Constants -->
       <include name="IDR_OS_SETTINGS_ROUTES_MOJOM_LITE_JS"

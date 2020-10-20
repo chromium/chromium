@@ -342,9 +342,6 @@
       <structure name="IDR_OS_SETTINGS_TTS_SUBPAGE_BROWSER_PROXY_HTML"
                  file="chromeos/os_a11y_page/tts_subpage_browser_proxy.html"
                  compress="false" type="chrome_html" />
-      <structure name="IDR_OS_SETTINGS_MANIFEST"
-                 file="os_settings_manifest.json"
-                 compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_ABOUT_PAGE_BROWSER_PROXY_HTML"
                  file="about_page/about_page_browser_proxy.html"
                  compress="false" type="chrome_html" />

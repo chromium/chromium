@@ -27,7 +27,6 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/os_settings_resources.h"
-#include "chromeos/components/web_applications/manifest_request_filter.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user_manager.h"
@@ -173,9 +172,6 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   // Add the System Web App resources for Settings.
   html_source->AddResourcePath("icon-192.png", IDR_SETTINGS_LOGO_192);
-  html_source->AddResourcePath("pwa.html", IDR_PWA_HTML);
-  web_app::SetManifestRequestFilter(html_source, IDR_OS_SETTINGS_MANIFEST,
-                                    IDS_SETTINGS_SETTINGS);
 
   html_source->AddResourcePath("constants/routes.mojom-lite.js",
                                IDR_OS_SETTINGS_ROUTES_MOJOM_LITE_JS);

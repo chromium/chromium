@@ -50,6 +50,7 @@
 #include "chrome/browser/chromeos/web_applications/diagnostics_system_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/help_app_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/media_web_app_info.h"
+#include "chrome/browser/chromeos/web_applications/os_settings_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/print_management_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/scanning_system_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/terminal_source.h"
@@ -97,7 +98,6 @@ url::Origin GetOrigin(const char* url) {
 
   return origin;
 }
-
 #endif  // OS_CHROMEOS
 
 base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps() {
@@ -137,9 +137,10 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps() {
             base::BindRepeating(&CreateWebAppInfoForDiagnosticsSystemWebApp)));
   }
 
-  infos.emplace(
-      SystemAppType::SETTINGS,
-      SystemAppInfo("OSSettings", GURL("chrome://os-settings/pwa.html")));
+  infos.emplace(SystemAppType::SETTINGS,
+                SystemAppInfo("OSSettings", GURL(chrome::kChromeUISettingsURL),
+                              base::BindRepeating(
+                                  &CreateWebAppInfoForOSSettingsSystemWebApp)));
   infos.at(SystemAppType::SETTINGS).uninstall_and_replace = {
       chromeos::default_web_apps::kSettingsAppId, ash::kInternalAppIdSettings};
   // Large enough to see the heading text "Settings" in the top-left.
