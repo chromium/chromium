@@ -76,11 +76,6 @@ class BASE_EXPORT UkmSourceId {
     return value_ != other.value_;
   }
 
-  // Allow coercive comparisons to simplify test migration.
-  // TODO(crbug/873866): Remove these once callers are migrated.
-  constexpr bool operator==(int64_t other) const { return value_ == other; }
-  constexpr bool operator!=(int64_t other) const { return value_ == other; }
-
   // Extract the Type of the SourceId.
   Type GetType() const;
 

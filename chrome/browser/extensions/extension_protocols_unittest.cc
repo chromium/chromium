@@ -319,7 +319,7 @@ class ExtensionProtocolsTestBase : public testing::Test {
           entries,
       ExtensionResourceAccessResult expected) {
     ASSERT_EQ(1u, entries.size());
-    EXPECT_EQ(test_ukm_id_, entries[0].source);
+    EXPECT_EQ(test_ukm_id_.ToInt64(), entries[0].source);
     ASSERT_EQ(1u, entries[0].metrics.size());
     EXPECT_EQ(blink::IdentifiableSurface::FromTypeAndToken(
                   blink::IdentifiableSurface::Type::kExtensionFileAccess,
