@@ -52,6 +52,9 @@ crbug.com/1083478 [ Win ] wpt_internal/webgpu/webgpu/web-platform/reftests/canva
 crbug.com/dawn/542 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,setViewport:* [ Failure ]
 crbug.com/dawn/542 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,setScissorRect:* [ Failure ]
 
+# This test should be updated to expect an OperationError instead of a RangeError
+crbug.com/dawn/445 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map_oom:mappedAtCreation:* [ Failure ]
+
 #
 # Platform-independent failures
 #

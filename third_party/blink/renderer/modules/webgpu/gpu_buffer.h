@@ -26,7 +26,6 @@ class GPUBuffer : public DawnObject<WGPUBuffer> {
                            const GPUBufferDescriptor* webgpu_desc);
   explicit GPUBuffer(GPUDevice* device,
                      uint64_t size,
-                     bool mapped_at_creation,
                      WGPUBuffer buffer);
   ~GPUBuffer() override;
 
@@ -49,7 +48,6 @@ class GPUBuffer : public DawnObject<WGPUBuffer> {
                                  ExceptionState& exception_state);
   void unmap(ScriptState* script_state);
   void destroy(ScriptState* script_state);
-  // TODO(crbug.com/877147): implement GPUBuffer.
 
  private:
   ScriptPromise MapAsyncImpl(ScriptState* script_state,
@@ -62,8 +60,6 @@ class GPUBuffer : public DawnObject<WGPUBuffer> {
                                      ExceptionState& exception_state);
 
   void OnMapAsyncCallback(ScriptPromiseResolver* resolver,
-                          uint64_t map_start,
-                          uint64_t map_end,
                           WGPUBufferMapAsyncStatus status);
 
   DOMArrayBuffer* CreateArrayBufferForMappedData(void* data,
@@ -76,8 +72,6 @@ class GPUBuffer : public DawnObject<WGPUBuffer> {
   // mapWriteAsync.
   HeapVector<Member<DOMArrayBuffer>> mapped_array_buffers_;
 
-  uint64_t map_start_ = 0;
-  uint64_t map_end_ = 0;
   // List of ranges currently returned by getMappedRange, to avoid overlaps.
   Vector<std::pair<size_t, size_t>> mapped_ranges_;
 
