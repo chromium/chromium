@@ -110,8 +110,8 @@ class CoreOobeHandler : public BaseWebUIHandler,
     return show_oobe_ui_;
   }
 
-  // If |reboot_on_shutdown| is true, the reboot button becomes visible
-  // and the shutdown button is hidden. Vice versa if |reboot_on_shutdown| is
+  // If `reboot_on_shutdown` is true, the reboot button becomes visible
+  // and the shutdown button is hidden. Vice versa if `reboot_on_shutdown` is
   // false.
   void UpdateShutdownAndRebootVisibility(bool reboot_on_shutdown);
 
@@ -164,11 +164,11 @@ class CoreOobeHandler : public BaseWebUIHandler,
       const base::Value& callback_id,
       std::vector<ash::mojom::DisplayUnitInfoPtr> info_list);
   // Handles demo mode setup for tests. Accepts 'online' and 'offline' as
-  // |demo_config|.
+  // `demo_config`.
   void HandleStartDemoModeSetupForTesting(const std::string& demo_config);
   void HandleUpdateOobeUIState(int state);
 
-  // Shows the reset screen if |is_reset_allowed| and updates the
+  // Shows the reset screen if `is_reset_allowed` and updates the
   // tpm_firmware_update in settings.
   void HandleToggleResetScreenCallback(
       bool is_reset_allowed,

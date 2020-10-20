@@ -26,7 +26,7 @@ class SignInFatalErrorView {
   virtual void Show(SignInFatalErrorScreen::Error error,
                     const base::Value* params) = 0;
 
-  // Binds |screen| to the view.
+  // Binds `screen` to the view.
   virtual void Bind(SignInFatalErrorScreen* screen) = 0;
 
   // Unbinds the screen from the view.

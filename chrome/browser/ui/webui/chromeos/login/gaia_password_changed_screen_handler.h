@@ -24,7 +24,7 @@ class GaiaPasswordChangedView {
   // Shows the contents of the screen.
   virtual void Show(const std::string& email, bool has_error) = 0;
 
-  // Binds |screen| to the view.
+  // Binds `screen` to the view.
   virtual void Bind(GaiaPasswordChangedScreen* screen) = 0;
 
   // Unbinds the screen from the view.

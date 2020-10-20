@@ -42,8 +42,8 @@ void ScreenlockIconSource::StartDataRequest(
     return;
   }
 
-  // TODO(crbug/1009127): Make sure |url| matches
-  // |chrome::kChromeUIScreenlockIconURL| now that |url| is available.
+  // TODO(crbug/1009127): Make sure `url` matches
+  // `chrome::kChromeUIScreenlockIconURL` now that `url` is available.
   std::string username =
       net::UnescapeBinaryURLComponent(url.path_piece().substr(1));
 

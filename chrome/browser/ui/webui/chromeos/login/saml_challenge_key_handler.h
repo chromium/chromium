@@ -30,8 +30,8 @@ class SamlChallengeKeyHandler final {
   SamlChallengeKeyHandler& operator=(const SamlChallengeKeyHandler&) = delete;
   ~SamlChallengeKeyHandler();
 
-  // Checks that provided |url| is allowlisted and tries to calculate response
-  // for the |challenge|.
+  // Checks that provided `url` is allowlisted and tries to calculate response
+  // for the `challenge`.
   void Run(Profile* profile,
            CallbackType callback,
            const GURL& url,
@@ -40,13 +40,13 @@ class SamlChallengeKeyHandler final {
   void SetTpmResponseTimeoutForTesting(base::TimeDelta timeout);
 
  private:
-  // Checks if it is allowed for provided |url| to perform device attestation.
+  // Checks if it is allowed for provided `url` to perform device attestation.
   void BuildResponseForAllowlistedUrl(const GURL& url);
   // Starts flow that acutally builds a response.
   void BuildChallengeResponse();
-  // Returns current timeout for |tpm_key_challenger_| to response.
+  // Returns current timeout for `tpm_key_challenger_` to response.
   base::TimeDelta GetTpmResponseTimeout() const;
-  // Single return point from all checks, |tpm_key_challenger_| and timeout
+  // Single return point from all checks, `tpm_key_challenger_` and timeout
   // task.
   void ReturnResult(const attestation::TpmChallengeKeyResult& result);
 
@@ -55,7 +55,7 @@ class SamlChallengeKeyHandler final {
   // Callback to return a result of ChallengeKey.
   CallbackType callback_;
 
-  // Timeout for |tpm_key_challenger_| to response.
+  // Timeout for `tpm_key_challenger_` to response.
   const base::TimeDelta default_tpm_response_timeout_ =
       base::TimeDelta::FromSeconds(15);
   base::Optional<base::TimeDelta> tpm_response_timeout_for_testing_;

@@ -42,7 +42,7 @@ void GetConsentIDs(const std::unordered_set<int>& known_ids,
   }
 
   // The strings returned by the WebUI are not free-form, they must belong into
-  // a pre-determined set of strings (stored in |string_to_grd_id_map_|). As
+  // a pre-determined set of strings (stored in `string_to_grd_id_map_`). As
   // this has privacy and legal implications, CHECK the integrity of the strings
   // received from the renderer process before recording the consent.
   for (const std::string& text : consent_description) {

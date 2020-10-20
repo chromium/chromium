@@ -31,7 +31,7 @@ class DiscoverBrowserTest : public InProcessBrowserTest {
   DiscoverBrowserTest() = default;
   ~DiscoverBrowserTest() override = default;
 
-  // Loads Discover App for |profile| and blocks until JS reports "initialized".
+  // Loads Discover App for `profile` and blocks until JS reports "initialized".
   void LoadAndInitializeDiscoverApp(Profile* profile);
 
   // Returns WebContents of a loaded Discover App.
@@ -43,7 +43,7 @@ class DiscoverBrowserTest : public InProcessBrowserTest {
   // Returns JS checker attached to the Discover App WebContents.
   test::JSChecker DiscoverJS() const;
 
-  // Clicks on |card_selector| Discover Card.
+  // Clicks on `card_selector` Discover Card.
   void ClickOnCard(const std::string& card_selector) const;
 
  private:

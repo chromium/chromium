@@ -755,7 +755,7 @@ void SigninScreenHandler::Initialize() {
     }
   }
 
-  // |delegate_| is null when we are preloading the lock screen.
+  // `delegate_` is null when we are preloading the lock screen.
   if (delegate_ && show_on_init_) {
     show_on_init_ = false;
     ShowImpl();
@@ -907,7 +907,7 @@ void SigninScreenHandler::Observe(int type,
         ReenableNetworkStateUpdatesAfterProxyAuth();
       } else {
         // Gaia is not hidden behind an error yet. Discard last cached network
-        // state notification and wait for |kProxyAuthTimeout| before
+        // state notification and wait for `kProxyAuthTimeout` before
         // considering network update notifications again (hoping the network
         // will become ONLINE by then).
         update_state_closure_.Cancel();
@@ -1198,7 +1198,7 @@ void SigninScreenHandler::HandleFocusPod(const AccountId& account_id,
 
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
-  // |user| may be nullptr in kiosk mode or unit tests.
+  // `user` may be nullptr in kiosk mode or unit tests.
   if (user && user->is_logged_in() && !user->is_active()) {
     SessionControllerClientImpl::DoSwitchActiveUser(account_id);
     return;

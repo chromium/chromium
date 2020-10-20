@@ -42,7 +42,7 @@ class TermsOfServiceScreenView {
   virtual void OnLoadError() = 0;
 
   // Called when the download of the Terms of Service is successful. Shows the
-  // downloaded |terms_of_service| to the user.
+  // downloaded `terms_of_service` to the user.
   virtual void OnLoadSuccess(const std::string& terms_of_service) = 0;
 
   // Whether TOS are successfully loaded.
@@ -103,7 +103,7 @@ class TermsOfServiceScreenHandler : public BaseScreenHandler,
   // The domain name whose Terms of Service are being shown.
   std::string domain_;
 
-  // Set to |true| when the download of the Terms of Service fails.
+  // Set to `true` when the download of the Terms of Service fails.
   bool load_error_ = false;
 
   // Set to the Terms of Service when the download is successful.

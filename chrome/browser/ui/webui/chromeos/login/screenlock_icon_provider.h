@@ -21,13 +21,13 @@ class ScreenlockIconProvider
   ScreenlockIconProvider();
   ~ScreenlockIconProvider();
 
-  // Adds an icon image for |username| to be stored.
+  // Adds an icon image for `username` to be stored.
   void AddIcon(const std::string& username, const gfx::Image& icon);
 
-  // Removes icon image for |username|.
+  // Removes icon image for `username`.
   void RemoveIcon(const std::string& username);
 
-  // Returns the icon image set for |username|. If no icon is found, then
+  // Returns the icon image set for `username`. If no icon is found, then
   // this function returns an empty image.
   gfx::Image GetIcon(const std::string& username);
 

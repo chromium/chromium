@@ -21,7 +21,7 @@ class PackagedLicenseView {
   PackagedLicenseView& operator=(const PackagedLicenseView&) = delete;
   virtual ~PackagedLicenseView() = default;
 
-  // Binds |screen| to the view.
+  // Binds `screen` to the view.
   virtual void Bind(PackagedLicenseScreen* screen) = 0;
 
   // Unbinds model from the view.

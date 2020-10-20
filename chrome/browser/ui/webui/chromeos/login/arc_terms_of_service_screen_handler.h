@@ -125,7 +125,7 @@ class ArcTermsOfServiceScreenHandler
                     bool review_arc_settings,
                     const std::string& tos_content);
   // Loads Play Store ToS content in case default network exists. If
-  // |ignore_network_state| is set then network state is not checked.
+  // `ignore_network_state` is set then network state is not checked.
   void MaybeLoadPlayStoreToS(bool ignore_network_state);
 
   void StartNetworkAndTimeZoneObserving();

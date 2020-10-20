@@ -30,14 +30,14 @@ class DiscoverWindowManager {
   void RemoveObserver(const DiscoverWindowManagerObserver* observer);
 
   // Shows a chrome://oobe/discover/ page in an an existing system
-  // Browser window for |profile| or creates a new one.
+  // Browser window for `profile` or creates a new one.
   void ShowChromeDiscoverPageForProfile(Profile* profile);
 
-  // If a Browser Discover app window for |profile| has already been created,
+  // If a Browser Discover app window for `profile` has already been created,
   // returns it, otherwise returns NULL.
   Browser* FindBrowserForProfile(Profile* profile);
 
-  // Returns true if |browser| is a Discover app window.
+  // Returns true if `browser` is a Discover app window.
   bool IsDiscoverBrowser(Browser* browser) const;
 
  private:

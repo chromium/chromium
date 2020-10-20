@@ -183,7 +183,7 @@ void TermsOfServiceScreenHandler::UpdateTermsOfServiceInUI() {
   if (!page_is_ready())
     return;
 
-  // If either |load_error_| or |terms_of_service_| is set, the download of the
+  // If either `load_error_` or `terms_of_service_` is set, the download of the
   // Terms of Service has completed and the UI should be updated. Otherwise, the
   // download is still in progress and the UI will be updated when the
   // OnLoadError() or the OnLoadSuccess() callback is called.

@@ -371,7 +371,7 @@ void GaiaScreenHandler::MaybePreloadAuthExtension() {
   if (network_portal_detector::IsInitialized())
     network_portal_detector::GetInstance()->AddAndFireObserver(this);
 
-  // If cookies clearing was initiated or |dns_clear_task_running_| then auth
+  // If cookies clearing was initiated or `dns_clear_task_running_` then auth
   // extension showing has already been initiated and preloading is pointless.
   if (!gaia_silent_load_ && !cookies_cleared_ && !dns_clear_task_running_ &&
       network_state_informer_->state() == NetworkStateInformer::ONLINE) {
@@ -441,9 +441,9 @@ void GaiaScreenHandler::LoadGaiaWithPartition(
   // Note: The CanonicalCookie created here is not Secure. This is fine because
   // it's being set into a different StoragePartition than the user's actual
   // profile. The SetCanonicalCookie call will succeed regardless of the scheme
-  // of |gaia_url| since there are no scheme restrictions since the cookie is
+  // of `gaia_url` since there are no scheme restrictions since the cookie is
   // not Secure, and there is no preexisting Secure cookie in the profile that
-  // would preclude updating it insecurely. |gaia_url| is usually secure, and
+  // would preclude updating it insecurely. `gaia_url` is usually secure, and
   // only insecure in local testing.
 
   std::string gaps_cookie_value(kGAPSCookie);
@@ -574,7 +574,7 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
       break;
   }
 
-  // We only send |chromeos_board| Gaia URL parameter if user has opted into
+  // We only send `chromeos_board` Gaia URL parameter if user has opted into
   // sending device statistics.
   if (*collect_stats_consent)
     params.SetString("lsbReleaseBoard", base::SysInfo::GetLsbReleaseBoard());
@@ -1045,7 +1045,7 @@ void GaiaScreenHandler::HandleShowAddUser(const base::ListValue* args) {
                           TRACE_ID_GLOBAL(1)));
 
   std::string email;
-  // |args| can be null if it's OOBE.
+  // `args` can be null if it's OOBE.
   if (args)
     args->GetString(0, &email);
   populated_account_id_ = AccountId::FromUserEmail(email);
@@ -1069,7 +1069,7 @@ void GaiaScreenHandler::HandleIsFirstSigninStep(bool is_first) {
 
 void GaiaScreenHandler::HandleSamlStateChanged(bool is_saml) {
   if (is_saml == is_security_token_pin_enabled_) {
-    // We're already in the needed |is_security_token_pin_enabled_| state.
+    // We're already in the needed `is_security_token_pin_enabled_` state.
     return;
   }
   // Enable ourselves as a security token PIN dialog host during the SAML
@@ -1105,7 +1105,7 @@ void GaiaScreenHandler::HandleSecurityTokenPinEntered(
     // The callback must be non-null, since the UI implementation should not
     // send multiple non-empty results.
     std::move(security_token_pin_entered_callback_).Run(user_input);
-    // Keep |security_token_pin_dialog_closed_callback_|, in order to be able to
+    // Keep `security_token_pin_dialog_closed_callback_`, in order to be able to
     // notify about the dialog closing afterwards.
   }
 }
@@ -1435,7 +1435,7 @@ void GaiaScreenHandler::ShowGaiaScreenIfReady() {
     // Make additional untrusted authority certificates available for client
     // certificate discovery in case a SAML flow is used which requires a client
     // certificate to be present.
-    // When the WebUI is destroyed, |untrusted_authority_certs_cache_| will go
+    // When the WebUI is destroyed, `untrusted_authority_certs_cache_` will go
     // out of scope and the certificates will not be held in memory anymore.
     untrusted_authority_certs_cache_ =
         std::make_unique<network::NSSTempCertsCacheChromeOS>(

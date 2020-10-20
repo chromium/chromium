@@ -24,7 +24,7 @@ class WrongHWIDScreenView {
   virtual void Show() = 0;
   virtual void Hide() = 0;
 
-  // Binds |screen| to the view.
+  // Binds `screen` to the view.
   virtual void Bind(WrongHWIDScreen* screen) = 0;
 
   // Unbinds the screen from the view.

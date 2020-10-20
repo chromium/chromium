@@ -27,13 +27,13 @@ class ErrorScreenView {
   // Hides the contents of the screen.
   virtual void Hide() = 0;
 
-  // Binds |screen| to the view.
+  // Binds `screen` to the view.
   virtual void Bind(ErrorScreen* screen) = 0;
 
   // Unbinds the screen from the view.
   virtual void Unbind() = 0;
 
-  // Switches to |screen|.
+  // Switches to `screen`.
   virtual void ShowOobeScreen(OobeScreenId screen) = 0;
 
   // Sets current error state of the screen.

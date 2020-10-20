@@ -82,7 +82,7 @@ class SyncConsentScreenHandler : public BaseScreenHandler,
                 const std::string& consent_confirmation,
                 UserChoice choice);
 
-  // Adds resource |resource_id| both to |builder| and to |known_string_ids_|.
+  // Adds resource `resource_id` both to `builder` and to `known_string_ids_`.
   void RememberLocalizedValue(const std::string& name,
                               const int resource_id,
                               ::login::LocalizedValuesBuilder* builder);

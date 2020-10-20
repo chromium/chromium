@@ -34,7 +34,7 @@ class WelcomeView {
   // Hides the contents of the screen.
   virtual void Hide() = 0;
 
-  // Binds |screen| to the view.
+  // Binds `screen` to the view.
   virtual void Bind(WelcomeScreen* screen) = 0;
 
   // Unbinds model from the view.

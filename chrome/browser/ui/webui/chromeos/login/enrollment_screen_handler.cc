@@ -67,7 +67,7 @@ constexpr char kActiveDirectoryJoinHistogram[] =
 
 constexpr char kOAUTHCodeCookie[] = "oauth_code";
 
-// Converts |mode| to a mode identifier for the UI.
+// Converts `mode` to a mode identifier for the UI.
 std::string EnrollmentModeToUIMode(policy::EnrollmentConfig::Mode mode) {
   switch (mode) {
     case policy::EnrollmentConfig::MODE_NONE:

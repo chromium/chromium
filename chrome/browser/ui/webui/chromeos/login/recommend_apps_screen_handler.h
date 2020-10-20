@@ -32,7 +32,7 @@ class RecommendAppsScreenView {
   virtual void Hide() = 0;
 
   // Called when the download of the recommend app list is successful. Shows the
-  // downloaded |app_list| to the user.
+  // downloaded `app_list` to the user.
   virtual void OnLoadSuccess(const base::Value& app_list) = 0;
 
   // Called when parsing the recommend app list response fails. Should skip this

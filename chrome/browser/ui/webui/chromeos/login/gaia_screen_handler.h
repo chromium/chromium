@@ -63,7 +63,7 @@ class GaiaView {
 
   // Loads Gaia into the webview. Depending on internal state, the Gaia will
   // either be loaded immediately or after an asynchronous clean-up process that
-  // cleans DNS cache and cookies. If available, |account_id| is used for
+  // cleans DNS cache and cookies. If available, `account_id` is used for
   // prefilling information.
   virtual void LoadGaiaAsync(const AccountId& account_id) = 0;
 
@@ -72,14 +72,14 @@ class GaiaView {
   // Shows Gaia screen.
   virtual void Show() = 0;
   virtual void Hide() = 0;
-  // Binds |screen| to the view.
+  // Binds `screen` to the view.
   virtual void Bind(GaiaScreen* screen) = 0;
   // Unbinds the screen from the view.
   virtual void Unbind() = 0;
   // Sets Gaia path for sign-in, child sign-in or child sign-up.
   virtual void SetGaiaPath(GaiaPath gaia_path) = 0;
 
-  // Show sign-in screen for the given credentials. |services| is a list of
+  // Show sign-in screen for the given credentials. `services` is a list of
   // services returned by userInfo call as JSON array. Should be an empty array
   // for a regular user: "[]".
   virtual void ShowSigninScreenForTest(const std::string& username,
@@ -182,7 +182,7 @@ class GaiaScreenHandler : public BaseScreenHandler,
       const std::string* platform_version,
       const bool* collect_stats_consent);
 
-  // Sends request to reload Gaia. If |force_reload| is true, request
+  // Sends request to reload Gaia. If `force_reload` is true, request
   // will be sent in any case, otherwise it will be sent only when Gaia is
   // not loading right now.
   void ReloadGaia(bool force_reload);
@@ -279,8 +279,8 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // Shows signin screen after dns cache and cookie cleanup operations finish.
   void ShowGaiaScreenIfReady();
 
-  // Tells webui to load authentication extension. |force| is used to force the
-  // extension reloading, if it has already been loaded. |offline| is true when
+  // Tells webui to load authentication extension. `force` is used to force the
+  // extension reloading, if it has already been loaded. `offline` is true when
   // offline version of the extension should be used.
   void LoadAuthExtension(bool force, bool offline);
 
@@ -312,7 +312,7 @@ class GaiaScreenHandler : public BaseScreenHandler,
   void SetOfflineLoginIsActive(bool is_active);
 
   // Builds the UserContext with the information from the given Gaia user
-  // sign-in. On failure, returns false and sets |error_message|.
+  // sign-in. On failure, returns false and sets `error_message`.
   bool BuildUserContextForGaiaSignIn(
       user_manager::UserType user_type,
       const AccountId& account_id,
@@ -334,7 +334,7 @@ class GaiaScreenHandler : public BaseScreenHandler,
   }
 
   // Assigns new SamlChallengeKeyHandler object or an object for testing to
-  // |saml_challenge_key_handler_|.
+  // `saml_challenge_key_handler_`.
   void CreateSamlChallengeKeyHandler();
 
   // Current state of Gaia frame.
@@ -443,7 +443,7 @@ class GaiaScreenHandler : public BaseScreenHandler,
 
   std::string signin_partition_name_;
 
-  // Handler for |samlChallengeMachineKey| request.
+  // Handler for `samlChallengeMachineKey` request.
   std::unique_ptr<SamlChallengeKeyHandler> saml_challenge_key_handler_;
   std::unique_ptr<SamlChallengeKeyHandler> saml_challenge_key_handler_for_test_;
 

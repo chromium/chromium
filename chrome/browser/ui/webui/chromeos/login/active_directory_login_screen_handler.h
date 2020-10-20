@@ -25,7 +25,7 @@ class ActiveDirectoryLoginView {
   // Shows the contents of the screen.
   virtual void Show() = 0;
 
-  // Binds |screen| to the view.
+  // Binds `screen` to the view.
   virtual void Bind(ActiveDirectoryLoginScreen* screen) = 0;
 
   // Unbinds the screen from the view.

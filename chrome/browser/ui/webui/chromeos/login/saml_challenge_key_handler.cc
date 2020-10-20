@@ -33,7 +33,7 @@ void RecordChallengeKeyResult(
                                 result_code);
 }
 
-// Checks if |url| matches one of the |patterns|.
+// Checks if `url` matches one of the `patterns`.
 bool IsDeviceWebBasedAttestationEnabledForUrl(const GURL& url,
                                               const base::ListValue* patterns) {
   if (!patterns) {

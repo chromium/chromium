@@ -40,7 +40,7 @@ class UpdateView {
   // Hides the contents of the screen.
   virtual void Hide() = 0;
 
-  // Binds |screen| to the view.
+  // Binds `screen` to the view.
   virtual void Bind(UpdateScreen* screen) = 0;
 
   // Unbinds the screen from the view.

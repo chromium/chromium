@@ -22,7 +22,7 @@ class JSCallsContainerTestApi {
   explicit JSCallsContainerTestApi(JSCallsContainer* js_calls_container);
   ~JSCallsContainerTestApi();
 
-  // |function| has arguments serialized to make matching easier. For example, a
+  // `function` has arguments serialized to make matching easier. For example, a
   // valid invocation looks like
   //
   //   EXPECT_CALL(test_api,
