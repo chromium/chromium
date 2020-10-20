@@ -338,15 +338,12 @@ public class ToolbarPhone extends ToolbarLayout
     public void onFinishInflate() {
         try (TraceEvent te = TraceEvent.scoped("ToolbarPhone.onFinishInflate")) {
             super.onFinishInflate();
-            mLocationBar = new LocationBarCoordinator(findViewById(R.id.location_bar));
             mToolbarButtonsContainer = (ViewGroup) findViewById(R.id.toolbar_buttons);
             mHomeButton = findViewById(R.id.home_button);
             mUrlBar = (TextView) findViewById(R.id.url_bar);
             mUrlActionContainer = findViewById(R.id.url_action_container);
             mToolbarBackground =
                     new ColorDrawable(getToolbarColorForVisualState(VisualState.NORMAL));
-
-            initLocationBarBackground();
 
             setLayoutTransition(null);
 
@@ -360,6 +357,12 @@ public class ToolbarPhone extends ToolbarLayout
             mUrlFocusTranslationX =
                     getResources().getDimensionPixelSize(R.dimen.toolbar_url_focus_translation_x);
         }
+    }
+
+    @Override
+    public void setLocationBarCoordinator(LocationBarCoordinator locationBarCoordinator) {
+        mLocationBar = locationBarCoordinator;
+        initLocationBarBackground();
     }
 
     @Override

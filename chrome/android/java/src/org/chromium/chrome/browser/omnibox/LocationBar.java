@@ -4,28 +4,14 @@
 
 package org.chromium.chrome.browser.omnibox;
 
-import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
-import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
-import org.chromium.chrome.browser.toolbar.top.Toolbar;
-import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
-import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
  * Container that holds the {@link UrlBar} and SSL state related with the current {@link Tab}.
@@ -73,30 +59,6 @@ public interface LocationBar extends UrlBarDelegate, FakeboxDelegate, Destroyabl
      */
     void updateLoadingState(boolean updateUrl);
 
-    /** Sets the {@link ToolbarDataProvider} to be used for accessing {@link Toolbar} state. */
-    void setToolbarDataProvider(ToolbarDataProvider model);
-
-    /** Gets the {@link ToolbarDataProvider} to be used for accessing {@link Toolbar} state. */
-    ToolbarDataProvider getToolbarDataProvider();
-
-    /**
-     * Initialize controls that will act as hooks to various functions.
-     *
-     * @param windowDelegate {@link WindowDelegate} that will provide {@link Window} related info.
-     * @param windowAndroid {@link WindowAndroid} that is used by the owning {@link Activity}.
-     * @param activityTabProvider An {@link ActivityTabProvider} to access the activity's current
-     *         tab.
-     * @param modalDialogManagerSupplier A supplier for {@link ModalDialogManager} object.
-     * @param shareDelegateSupplier A supplier for {@link ShareDelegate} object.
-     * @param incognitoStateProvider An {@link IncognitoStateProvider} to access the current
-     *         incognito state.
-     */
-    void initializeControls(WindowDelegate windowDelegate, WindowAndroid windowAndroid,
-            ActivityTabProvider activityTabProvider,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            Supplier<ShareDelegate> shareDelegateSupplier,
-            IncognitoStateProvider incognitoStateProvider);
-
     /**
      * Triggers the cursor to be visible in the UrlBar without triggering any of the focus animation
      * logic.
@@ -131,14 +93,4 @@ public interface LocationBar extends UrlBarDelegate, FakeboxDelegate, Destroyabl
     /** Updates the state of the mic button if there is one. */
     void updateMicButtonState();
 
-    /** Sets the callback to be used by default for text editing action bar. */
-    void setDefaultTextEditActionModeCallback(ToolbarActionModeCallback callback);
-
-    /**
-     * Sets the (observable) supplier of the active profile. This supplier will notify observers of
-     * changes to the active profile, e.g. when selecting an incognito tab model.
-     *
-     * @param profileSupplier The supplier of the active profile.
-     */
-    void setProfileSupplier(ObservableSupplier<Profile> profileSupplier);
 }

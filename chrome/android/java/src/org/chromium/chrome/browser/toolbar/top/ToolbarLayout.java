@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.findinpage.FindToolbar;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
+import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -144,6 +145,10 @@ public abstract class ToolbarLayout
     void setAppMenuButtonHelper(AppMenuButtonHelper appMenuButtonHelper) {
         mAppMenuButtonHelper = appMenuButtonHelper;
     }
+
+    // TODO(pnoland, https://crbug.com/865801): Move this from ToolbarLayout to forthcoming
+    // BrowsingModeToolbarCoordinator.
+    public void setLocationBarCoordinator(LocationBarCoordinator locationBarCoordinator) {}
 
     /**
      * Cleans up any code as necessary.

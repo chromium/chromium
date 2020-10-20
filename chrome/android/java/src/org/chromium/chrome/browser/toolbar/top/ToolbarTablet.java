@@ -110,7 +110,6 @@ public class ToolbarTablet extends ToolbarLayout
     @Override
     public void onFinishInflate() {
         super.onFinishInflate();
-        mLocationBar = new LocationBarCoordinator(findViewById(R.id.location_bar));
         mHomeButton = findViewById(R.id.home_button);
         mBackButton = findViewById(R.id.back_button);
         mForwardButton = findViewById(R.id.forward_button);
@@ -145,6 +144,11 @@ public class ToolbarTablet extends ToolbarLayout
         mShouldAnimateButtonVisibilityChange = false;
         mToolbarButtonsVisible = true;
         mToolbarButtons = new ImageButton[] {mBackButton, mForwardButton, mReloadButton};
+    }
+
+    @Override
+    public void setLocationBarCoordinator(LocationBarCoordinator locationBarCoordinator) {
+        mLocationBar = locationBarCoordinator;
     }
 
     @Override

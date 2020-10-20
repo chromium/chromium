@@ -43,6 +43,8 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior.OverviewModeObserver;
 import org.chromium.chrome.browser.compositor.layouts.SceneChangeObserver;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.CustomTabLocationBar;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.findinpage.FindToolbarManager;
 import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
@@ -55,6 +57,7 @@ import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
+import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.previews.Previews;
 import org.chromium.chrome.browser.previews.PreviewsAndroidBridge;
@@ -334,17 +337,29 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 new ActionModeController(mActivity, mActionBarDelegate, toolbarActionModeCallback);
 
         mActionModeController.setTabStripHeight(mToolbar.getTabStripHeight());
-        mLocationBar = mToolbar.getLocationBar();
-        mLocationBar.setProfileSupplier(profileSupplier);
-        mLocationBar.setToolbarDataProvider(mLocationBarModel);
+
+        if (toolbarLayout instanceof CustomTabToolbar) {
+            CustomTabLocationBar customTabLocationBar =
+                    (CustomTabLocationBar) mToolbar.getLocationBar();
+            // TODO(https://crbug.com/1140188): Use a factory to wire these dependencies.
+            customTabLocationBar.setToolbarDataProvider(mLocationBarModel);
+            customTabLocationBar.setDefaultTextEditActionModeCallback(
+                    mActionModeController.getActionModeCallback());
+            mLocationBar = customTabLocationBar;
+        } else {
+            LocationBarCoordinator locationBarCoordinator = new LocationBarCoordinator(
+                    mActivity.findViewById(R.id.location_bar), profileSupplier, mLocationBarModel,
+                    mActionModeController.getActionModeCallback(),
+                    new WindowDelegate(mActivity.getWindow()), mActivity.getWindowAndroid(),
+                    mActivityTabProvider, mActivity::getModalDialogManager,
+                    mActivity.getShareDelegateSupplier(), mIncognitoStateProvider);
+            toolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
+            mLocationBar = locationBarCoordinator;
+        }
+
         mLocationBar.addUrlFocusChangeListener(this);
-        mLocationBar.setDefaultTextEditActionModeCallback(
-                mActionModeController.getActionModeCallback());
-        mLocationBar.initializeControls(new WindowDelegate(mActivity.getWindow()),
-                mActivity.getWindowAndroid(), mActivityTabProvider,
-                mActivity::getModalDialogManager, mActivity.getShareDelegateSupplier(),
-                mIncognitoStateProvider);
-        Runnable clickDelegate = () -> setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
+        Runnable clickDelegate =
+                () -> setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
         View scrimTarget = mActivity.getCompositorViewHolder();
         mLocationBarFocusHandler = new LocationBarFocusScrimHandler(scrimCoordinator,
                 tabObscuringHandler, activity, activity.getNightModeStateProvider(),

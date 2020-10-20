@@ -55,10 +55,29 @@ public final class LocationBarCoordinator implements LocationBar {
      *
      * @param locationBarLayout Inflated {@link LocationBarPhone} or {@link LocationBarTablet}.
      *         {@code LocationBarCoordinator} takes ownership and will destroy this object.
+     * @param profileObservableSupplier The supplier of the active profile.
+     * @param toolbarDataProvider {@link ToolbarDataProvider} to be used for accessing Toolbar
+     *         state.
+     * @param actionModeCallback The default callback for text editing action bar to use.
+     * @param windowDelegate {@link WindowDelegate} that will provide {@link Window} related info.
+     * @param windowAndroid {@link WindowAndroid} that is used by the owning {@link Activity}.
+     * @param activityTabProvider An {@link ActivityTabProvider} to access the activity's current
+     *         tab.
+     * @param modalDialogManagerSupplier A supplier for {@link ModalDialogManager} object.
+     * @param shareDelegateSupplier A supplier for {@link ShareDelegate} object.
+     * @param incognitoStateProvider An {@link IncognitoStateProvider} to access the current
+     *         incognito state.
      * @throws IllegalArgumentException if the view is neither {@link LocationBarPhone} nor {@link
      *         LocationBarTablet}.
      */
-    public LocationBarCoordinator(View locationBarLayout) {
+    public LocationBarCoordinator(View locationBarLayout,
+            ObservableSupplier<Profile> profileObservableSupplier,
+            ToolbarDataProvider toolbarDataProvider, ToolbarActionModeCallback actionModeCallback,
+            WindowDelegate windowDelegate, WindowAndroid windowAndroid,
+            ActivityTabProvider activityTabProvider,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<ShareDelegate> shareDelegateSupplier,
+            IncognitoStateProvider incognitoStateProvider) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
 
         if (locationBarLayout instanceof LocationBarPhone) {
@@ -71,6 +90,12 @@ public final class LocationBarCoordinator implements LocationBar {
                            + locationBarLayout.getClass();
             throw new IllegalArgumentException(locationBarLayout.getClass().toString());
         }
+
+        mLocationBarLayout.setToolbarDataProvider(toolbarDataProvider);
+        mLocationBarLayout.setProfileSupplier(profileObservableSupplier);
+        mLocationBarLayout.setDefaultTextEditActionModeCallback(actionModeCallback);
+        mLocationBarLayout.initializeControls(windowDelegate, windowAndroid, activityTabProvider,
+                modalDialogManagerSupplier, shareDelegateSupplier, incognitoStateProvider);
     }
 
     @Override
@@ -125,24 +150,8 @@ public final class LocationBarCoordinator implements LocationBar {
         mLocationBarLayout.updateLoadingState(updateUrl);
     }
 
-    @Override
-    public void setToolbarDataProvider(ToolbarDataProvider dataProvider) {
-        mLocationBarLayout.setToolbarDataProvider(dataProvider);
-    }
-
-    @Override
     public ToolbarDataProvider getToolbarDataProvider() {
         return mLocationBarLayout.getToolbarDataProvider();
-    }
-
-    @Override
-    public void initializeControls(WindowDelegate windowDelegate, WindowAndroid windowAndroid,
-            ActivityTabProvider activityTabProvider,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            Supplier<ShareDelegate> shareDelegateSupplier,
-            IncognitoStateProvider incognitoStateProvider) {
-        mLocationBarLayout.initializeControls(windowDelegate, windowAndroid, activityTabProvider,
-                modalDialogManagerSupplier, shareDelegateSupplier, incognitoStateProvider);
     }
 
     @Override
@@ -178,16 +187,6 @@ public final class LocationBarCoordinator implements LocationBar {
     @Override
     public void updateMicButtonState() {
         mLocationBarLayout.updateMicButtonState();
-    }
-
-    @Override
-    public void setDefaultTextEditActionModeCallback(ToolbarActionModeCallback callback) {
-        mLocationBarLayout.setDefaultTextEditActionModeCallback(callback);
-    }
-
-    @Override
-    public void setProfileSupplier(ObservableSupplier<Profile> profileSupplier) {
-        mLocationBarLayout.setProfileSupplier(profileSupplier);
     }
 
     @Nullable
