@@ -11,20 +11,11 @@ namespace content {
 class BrowserContext;
 }
 
-// A preliminary URLHandler that performs cleanup on the URL before it is
-// rewritten.  Changes that happen here will not lead to a virtual URL.
-bool FixupBrowserAboutURL(GURL* url, content::BrowserContext* browser_context);
-
-// Returns true if the given URL will be handled by the browser about handler.
-// Nowadays, these go through the webui, so the return is always false.
-// Either way, |url| will be processed by url_formatter::FixupURL, which
-// replaces the about: scheme with chrome:// for all about:foo URLs except
-// "about:blank".
-// Some |url| host values will be replaced with their respective redirects.
-//
-// This is used by BrowserURLHandler.
-bool WillHandleBrowserAboutURL(GURL* url,
-                               content::BrowserContext* browser_context);
+// Rewrites chrome://about -> chrome://chrome-urls and chrome://sync ->
+// chrome://sync-internals.  Used with content::BrowserURLHandler.
+bool HandleChromeAboutAndChromeSyncRewrite(
+    GURL* url,
+    content::BrowserContext* browser_context);
 
 // We have a few magic commands that don't cause navigations, but rather pop up
 // dialogs. This function handles those cases, and returns true if so. In this

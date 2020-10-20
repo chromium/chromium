@@ -864,7 +864,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, HistoryNavigationInNewTab) {
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchTab("title1.html")));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
 
-  ui_test_utils::NavigateToURL(browser(), GURL("about:version"));
+  ui_test_utils::NavigateToURL(browser(), GURL("chrome://version/"));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchTab("About Version")));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
 

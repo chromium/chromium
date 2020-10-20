@@ -4365,8 +4365,8 @@ TEST_F(NavigationControllerTest, NoURLRewriteForSubframes) {
   const GURL kSrcDoc("about:srcdoc");
 
   // First, set up a handler that will rewrite srcdoc urls.
-  BrowserURLHandlerImpl::GetInstance()->SetFixupHandlerForTesting(
-      &SrcDocRewriter);
+  BrowserURLHandlerImpl::GetInstance()->AddHandlerPair(
+      &SrcDocRewriter, BrowserURLHandler::null_handler());
 
   // Simulate navigating to a page that has a subframe.
   NavigationSimulator::NavigateAndCommitFromDocument(kUrl1, main_test_rfh());
@@ -4386,7 +4386,8 @@ TEST_F(NavigationControllerTest, NoURLRewriteForSubframes) {
       "GET", nullptr, "", nullptr, base::nullopt);
 
   // Clean up the handler.
-  BrowserURLHandlerImpl::GetInstance()->SetFixupHandlerForTesting(nullptr);
+  BrowserURLHandlerImpl::GetInstance()->RemoveHandlerForTesting(
+      &SrcDocRewriter);
 }
 
 // Test that if an empty WebContents is navigated via frame proxy with

@@ -11,9 +11,9 @@
 // Yeah OK, some of these are a little cliche...
 var urlSounds = {
   "http://www.google.ca/": "canadian-hello.mp3",
-  "about:histograms": "time-passing.mp3",
-  "about:memory": "transform!.mp3",
-  "about:crash": "sadtrombone.mp3",
+  "chrome://histograms/": "time-passing.mp3",
+  "chrome://memory/": "transform!.mp3",
+  "chrome://crash/": "sadtrombone.mp3",
   "chrome://extensions/": "beepboop.mp3",
   "http://www.google.com.au/": "didgeridoo.mp3",
   "http://www.google.com.my/": "my_subway.mp3",

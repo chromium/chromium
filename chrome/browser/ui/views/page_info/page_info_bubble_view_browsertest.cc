@@ -178,8 +178,7 @@ class PageInfoBubbleViewBrowserTest : public DialogBrowserTest {
     } else if (name == kInternalViewSource) {
       constexpr char kTestHtml[] = "/viewsource/test.html";
       ASSERT_TRUE(embedded_test_server()->Start());
-      url = GURL(content::kViewSourceScheme +
-                 std::string(url::kStandardSchemeSeparator) +
+      url = GURL(content::kViewSourceScheme + std::string(":") +
                  embedded_test_server()->GetURL(kTestHtml).spec());
     } else if (name == kFile) {
       url = file_url;

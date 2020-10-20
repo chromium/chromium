@@ -34,13 +34,13 @@ struct AboutURLTestCase {
 
 class BrowserAboutHandlerTest : public testing::Test {
  protected:
-  void TestWillHandleBrowserAboutURL(
+  void TestHandleChromeAboutAndChromeSyncRewrite(
       const std::vector<AboutURLTestCase>& test_cases) {
     TestingProfile profile;
 
     for (const auto& test_case : test_cases) {
       GURL url(test_case.test_url);
-      WillHandleBrowserAboutURL(&url, &profile);
+      HandleChromeAboutAndChromeSyncRewrite(&url, &profile);
       EXPECT_EQ(test_case.expected_url, url);
     }
   }
@@ -49,7 +49,7 @@ class BrowserAboutHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 };
 
-TEST_F(BrowserAboutHandlerTest, WillHandleBrowserAboutURL) {
+TEST_F(BrowserAboutHandlerTest, HandleChromeAboutAndChromeSyncRewrite) {
   std::string chrome_prefix(content::kChromeUIScheme);
   chrome_prefix.append(url::kStandardSchemeSeparator);
   std::vector<AboutURLTestCase> test_cases(
@@ -69,26 +69,27 @@ TEST_F(BrowserAboutHandlerTest, WillHandleBrowserAboutURL) {
            GURL(chrome_prefix + "host/path?query#ref"),
            GURL(chrome_prefix + "host/path?query#ref"),
        }});
-  TestWillHandleBrowserAboutURL(test_cases);
+  TestHandleChromeAboutAndChromeSyncRewrite(test_cases);
 }
 
-TEST_F(BrowserAboutHandlerTest, WillHandleBrowserAboutURLForMDSettings) {
+TEST_F(BrowserAboutHandlerTest,
+       HandleChromeAboutAndChromeSyncRewriteForMDSettings) {
   std::string chrome_prefix(content::kChromeUIScheme);
   chrome_prefix.append(url::kStandardSchemeSeparator);
   std::vector<AboutURLTestCase> test_cases(
       {{GURL(chrome_prefix + chrome::kChromeUISettingsHost),
         GURL(chrome_prefix + chrome::kChromeUISettingsHost)}});
-  TestWillHandleBrowserAboutURL(test_cases);
+  TestHandleChromeAboutAndChromeSyncRewrite(test_cases);
 }
 
-TEST_F(BrowserAboutHandlerTest, WillHandleBrowserAboutURLForHistory) {
+TEST_F(BrowserAboutHandlerTest,
+       HandleChromeAboutAndChromeSyncRewriteForHistory) {
   GURL::Replacements replace_foo_query;
   replace_foo_query.SetQueryStr("foo");
   GURL history_foo_url(
       GURL(chrome::kChromeUIHistoryURL).ReplaceComponents(replace_foo_query));
-  TestWillHandleBrowserAboutURL(std::vector<AboutURLTestCase>({
-      {GURL("about:history"), GURL(chrome::kChromeUIHistoryURL)},
-      {GURL(chrome::kChromeUIHistoryURL), GURL(chrome::kChromeUIHistoryURL)},
+  TestHandleChromeAboutAndChromeSyncRewrite(std::vector<AboutURLTestCase>({
+      {GURL("chrome:history"), GURL(chrome::kChromeUIHistoryURL)},
       {GURL(chrome::kChromeUIHistoryURL), GURL(chrome::kChromeUIHistoryURL)},
       {history_foo_url, history_foo_url},
   }));
@@ -100,18 +101,19 @@ TEST_F(BrowserAboutHandlerTest, WillHandleBrowserAboutURLForHistory) {
 TEST_F(BrowserAboutHandlerTest, NoVirtualURLForFixup) {
   GURL url("view-source:http://.foo");
 
-  // Fixup will remove the dot and add a slash.
-  GURL fixed_url("view-source:http://foo/");
-
+  // No "fixing" of the URL is expected at the content::NavigationEntry layer.
+  // We should only "fix" strings from the user (e.g. URLs from the Omnibox).
+  //
   // Rewriters will remove the view-source prefix and expect it to stay in the
   // virtual URL.
-  GURL rewritten_url("http://foo/");
+  GURL expected_virtual_url = url;
+  GURL expected_url("http://.foo/");
 
   TestingProfile profile;
   std::unique_ptr<NavigationEntry> entry(
       NavigationController::CreateNavigationEntry(
           url, Referrer(), base::nullopt, ui::PAGE_TRANSITION_RELOAD, false,
           std::string(), &profile, nullptr /* blob_url_loader_factory */));
-  EXPECT_EQ(fixed_url, entry->GetVirtualURL());
-  EXPECT_EQ(rewritten_url, entry->GetURL());
+  EXPECT_EQ(expected_virtual_url, entry->GetVirtualURL());
+  EXPECT_EQ(expected_url, entry->GetURL());
 }

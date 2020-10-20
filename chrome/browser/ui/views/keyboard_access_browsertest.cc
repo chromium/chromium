@@ -180,7 +180,7 @@ void KeyboardAccessTest::TestMenuKeyboardAccess(bool alternate_key_sequence,
                                                 bool focus_omnibox) {
   // Navigate to a page in the first tab, which makes sure that focus is
   // set to the browser window.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:"));
+  ui_test_utils::NavigateToURL(browser(), GURL("chrome://version/"));
 
   // The initial tab index should be 0.
   ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
@@ -265,7 +265,7 @@ LRESULT CALLBACK SystemMenuTestCBTHook(int n_code,
 void KeyboardAccessTest::TestSystemMenuWithKeyboard() {
   // Navigate to a page in the first tab, which makes sure that focus is
   // set to the browser window.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:"));
+  ui_test_utils::NavigateToURL(browser(), GURL("chrome://version/"));
 
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 
@@ -314,10 +314,11 @@ LRESULT CALLBACK SystemMenuReopenClosedTabTestCBTHook(int n_code,
 void KeyboardAccessTest::TestSystemMenuReopenClosedTabWithKeyboard() {
   // Navigate to a page in the first tab, which makes sure that focus is
   // set to the browser window.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:"));
+  ui_test_utils::NavigateToURL(browser(), GURL("chrome://version/"));
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("chrome://version/"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   ASSERT_EQ(1, browser()->tab_strip_model()->active_index());
@@ -356,7 +357,7 @@ void KeyboardAccessTest::TestSystemMenuReopenClosedTabWithKeyboard() {
 #endif
 
 void KeyboardAccessTest::TestMenuKeyboardAccessAndDismiss() {
-  ui_test_utils::NavigateToURL(browser(), GURL("about:"));
+  ui_test_utils::NavigateToURL(browser(), GURL("chrome://version/"));
 
   ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
 

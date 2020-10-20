@@ -287,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, ProvideBluetoothLogs) {
 IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_GetTargetTabUrl) {
   const std::pair<std::string, std::string> test_cases[] = {
       {"https://www.google.com/", "https://www.google.com/"},
-      {"about://version/", chrome::kChromeUIVersionURL},
+      {"chrome://version/", chrome::kChromeUIVersionURL},
       {chrome::kChromeUIBookmarksURL, chrome::kChromeUIBookmarksURL},
   };
 

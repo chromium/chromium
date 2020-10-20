@@ -357,17 +357,11 @@ void RewriteUrlForNavigation(const GURL& original_url,
                              GURL* url_to_load,
                              GURL* virtual_url,
                              bool* reverse_on_redirect) {
-  // Fix up the given URL before letting it be rewritten, so that any minor
-  // cleanup (e.g., removing leading dots) will not lead to a virtual URL.
-  *virtual_url = original_url;
-  BrowserURLHandlerImpl::GetInstance()->FixupURLBeforeRewrite(virtual_url,
-                                                              browser_context);
-
   // Allow the browser URL handler to rewrite the URL. This will, for example,
   // remove "view-source:" from the beginning of the URL to get the URL that
   // will actually be loaded. This real URL won't be shown to the user, just
   // used internally.
-  *url_to_load = *virtual_url;
+  *url_to_load = *virtual_url = original_url;
   BrowserURLHandlerImpl::GetInstance()->RewriteURLIfNecessary(
       url_to_load, browser_context, reverse_on_redirect);
 }

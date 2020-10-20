@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
                        PRE_TestTabRestoreCommandEnabled) {
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(1, browser()->tab_strip_model()->active_index());

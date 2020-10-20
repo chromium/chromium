@@ -18,7 +18,7 @@ var kWindowRect = {
 
 chrome.test.getConfig((config) => {
   const kError = 'Taking screenshots has been disabled';
-  const kUrl = `localhost:${config.testServer.port}/simple.html`;
+  const kUrl = `http://localhost:${config.testServer.port}/simple.html`;
   chrome.test.runTests([
     function captureVisibleDisabled() {
       createWindow([kUrl], kWindowRect, pass(function(winId, tabIds) {

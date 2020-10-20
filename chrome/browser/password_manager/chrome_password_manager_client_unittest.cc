@@ -542,7 +542,7 @@ TEST_F(ChromePasswordManagerClientTest, WebUINoLogging) {
             log_router->RegisterReceiver(&log_receiver));
 
   // But then navigate to a WebUI, there the logging should not be active.
-  NavigateAndCommit(GURL("about:password-manager-internals"));
+  NavigateAndCommit(GURL("chrome://password-manager-internals/"));
   EXPECT_FALSE(GetClient()->GetLogManager()->IsLoggingActive());
 
   log_router->UnregisterReceiver(&log_receiver);

@@ -347,36 +347,15 @@ IN_PROC_BROWSER_TEST_F(CtrlClickShouldEndUpInSameProcessTest, SubframeTarget) {
   TestCtrlClick("test-anchor-with-subframe-target");
 }
 
-class ChromeNavigationPortMappedBrowserTest : public InProcessBrowserTest {
- public:
-  ChromeNavigationPortMappedBrowserTest() {}
-  ~ChromeNavigationPortMappedBrowserTest() override {}
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ASSERT_TRUE(embedded_test_server()->Start());
-
-    // Use the command line parameter for the host resolver, so URLs without
-    // explicit port numbers can be mapped under the hood to the port number
-    // the |embedded_test_server| uses. It is required to test with potentially
-    // malformed URLs.
-    std::string port =
-        base::NumberToString(embedded_test_server()->host_port_pair().port());
-    command_line->AppendSwitchASCII(
-        "host-resolver-rules",
-        "MAP * 127.0.0.1:" + port + ", EXCLUDE 127.0.0.1*");
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeNavigationPortMappedBrowserTest);
-};
-
 // Test to verify that spoofing a URL via a redirect from a slightly malformed
 // URL doesn't work.  See also https://crbug.com/657720.
-IN_PROC_BROWSER_TEST_F(ChromeNavigationPortMappedBrowserTest,
+IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
                        ContextMenuNavigationToInvalidUrl) {
   GURL initial_url = embedded_test_server()->GetURL("/title1.html");
   GURL new_tab_url(
       "www.foo.com::/server-redirect?http%3A%2F%2Fbar.com%2Ftitle2.html");
+  EXPECT_TRUE(new_tab_url.is_valid());
+  EXPECT_EQ("www.foo.com", new_tab_url.scheme());
 
   // Navigate to an initial page, to ensure we have a committed document
   // from which to perform a context menu initiated navigation.
@@ -397,21 +376,41 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationPortMappedBrowserTest,
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, 0);
 
-  // Wait for the new tab to be created and for loading to stop.
+  // Wait for the new tab to be created.
   tab_add.Wait();
   int index_of_new_tab = browser()->tab_strip_model()->count() - 1;
   content::WebContents* new_web_contents =
       browser()->tab_strip_model()->GetWebContentsAt(index_of_new_tab);
-  EXPECT_TRUE(WaitForLoadStop(new_web_contents));
 
-  // Verify that the final URL after the redirects gets committed.
-  EXPECT_EQ(GURL("http://bar.com/title2.html"),
-            new_web_contents->GetLastCommittedURL());
+  // Verify that the load fails (because of the wrong "scheme" - www.foo.com is
+  // not a real scheme).
+  EXPECT_FALSE(WaitForLoadStop(new_web_contents));
+
+  // Verify that the invalid URL was not committed.
+  content::NavigationController& navigation_controller =
+      new_web_contents->GetController();
+  EXPECT_EQ(nullptr, navigation_controller.GetLastCommittedEntry());
+  EXPECT_EQ(0, navigation_controller.GetEntryCount());
+
+  // Verify that the pending entry is still present, even though the navigation
+  // has failed and didn't commit.  We preserve the pending entry if it is a
+  // valid URL in an unmodified blank tab.
+  content::NavigationEntry* pending_entry =
+      navigation_controller.GetPendingEntry();
+  ASSERT_NE(nullptr, pending_entry);
+  EXPECT_EQ(new_tab_url, pending_entry->GetURL());
+
+  // Verify that the pending entry is not shown anymore, after
+  // WebContentsImpl::DidAccessInitialDocument detects that the initial, empty
+  // document was accessed.
+  EXPECT_EQ(pending_entry, navigation_controller.GetVisibleEntry());
+  EXPECT_TRUE(content::ExecuteScript(new_web_contents, "window.x=3"));
+  EXPECT_NE(pending_entry, navigation_controller.GetVisibleEntry());
 }
 
-// Ensure that a failed navigation in a new tab will not leave an invalid
-// visible URL, which may be formatted in an unsafe way in the omnibox.
-// See https://crbug.com/850824.
+// Ensure that URL transformations do not let a webpage populate the Omnibox
+// with a javascript: URL.  See https://crbug.com/850824 and
+// https://crbug.com/1116280.
 IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
                        ClearInvalidPendingURLOnFail) {
   GURL initial_url = embedded_test_server()->GetURL(
@@ -424,12 +423,15 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
 
   const char* kTestUrls[] = {
       // https://crbug.com/850824
-      "a.a:@javascript:foo()",
+      "o.o:@javascript:foo()",
 
       // https://crbug.com/1116280
       "o.o:@javascript::://foo.com%0Aalert(document.domain)"};
   for (const char* kTestUrl : kTestUrls) {
     SCOPED_TRACE(testing::Message() << "kTestUrl = " << kTestUrl);
+    GURL test_url(kTestUrl);
+    EXPECT_TRUE(test_url.is_valid());
+    EXPECT_EQ("o.o", test_url.scheme());
 
     // Set the test URL.
     const char kUrlSettingTemplate[] = R"(
@@ -449,11 +451,8 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
     // The load in the new window should fail.
     EXPECT_FALSE(WaitForLoadStop(new_contents));
 
-    // Ensure that there is no pending entry or visible URL.
-    EXPECT_EQ(nullptr, new_contents->GetController().GetPendingEntry());
-    EXPECT_EQ(GURL(), new_contents->GetVisibleURL());
-
     // Ensure that the omnibox doesn't start with javascript: scheme.
+    EXPECT_EQ(test_url, new_contents->GetVisibleURL());
     OmniboxView* omnibox_view =
         browser()->window()->GetLocationBar()->GetOmniboxView();
     std::string omnibox_text = base::UTF16ToASCII(omnibox_view->GetText());

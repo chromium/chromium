@@ -11,6 +11,7 @@
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
+#include "content/public/common/url_constants.h"
 
 class SchemePageLoadMetricsObserverTest
     : public page_load_metrics::PageLoadMetricsObserverTestHarness {
@@ -171,8 +172,8 @@ TEST_F(SchemePageLoadMetricsObserverTest, HTTPSNavigation) {
 }
 
 // Make sure no metrics are recorded for an unobserved scheme.
-TEST_F(SchemePageLoadMetricsObserverTest, AboutNavigation) {
-  SimulateNavigation(url::kAboutScheme);
+TEST_F(SchemePageLoadMetricsObserverTest, WebUINavigation) {
+  SimulateNavigation(content::kChromeUIScheme);
   CheckHistograms(0, "");
 }
 

@@ -3521,11 +3521,8 @@ void ChromeContentBrowserClient::BrowserURLHandlerCreated(
   for (size_t i = 0; i < extra_parts_.size(); ++i)
     extra_parts_[i]->BrowserURLHandlerCreated(handler);
 
-  // about: handler. Must come before chrome: handler, since it will
-  // rewrite about: urls to chrome: URLs and then expect chrome: to
-  // actually handle them.  Also relies on a preliminary fixup phase.
-  handler->SetFixupHandler(&FixupBrowserAboutURL);
-  handler->AddHandlerPair(&WillHandleBrowserAboutURL,
+  // Handler to rewrite chrome://about and chrome://sync URLs.
+  handler->AddHandlerPair(&HandleChromeAboutAndChromeSyncRewrite,
                           BrowserURLHandler::null_handler());
 
 #if defined(OS_ANDROID)

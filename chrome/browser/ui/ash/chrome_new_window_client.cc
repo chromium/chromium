@@ -196,8 +196,8 @@ constexpr std::pair<arc::mojom::ChromePage, const char*>
 
 constexpr std::pair<arc::mojom::ChromePage, const char*> kAboutPagesMapping[] =
     {{ChromePage::ABOUTBLANK, url::kAboutBlankURL},
-     {ChromePage::ABOUTDOWNLOADS, "about:downloads"},
-     {ChromePage::ABOUTHISTORY, "about:history"}};
+     {ChromePage::ABOUTDOWNLOADS, "chrome://downloads/"},
+     {ChromePage::ABOUTHISTORY, "chrome://history/"}};
 
 constexpr arc::mojom::ChromePage kDeprecatedPages[] = {
     ChromePage::DEPRECATED_DOWNLOADEDCONTENT,
