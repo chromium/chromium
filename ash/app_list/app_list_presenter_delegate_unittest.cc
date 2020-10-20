@@ -21,7 +21,6 @@
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/expand_arrow_view.h"
-#include "ash/app_list/views/privacy_container_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_actions_view.h"
 #include "ash/app_list/views/search_result_base_view.h"
@@ -467,16 +466,6 @@ TEST_F(AppListPresenterDelegateTest, ClickSearchBoxInTabletMode) {
 
 TEST_F(AppListPresenterDelegateTest, RemoveSuggestionShowsConfirmDialog) {
   ShowZeroStateSearchInHalfState();
-
-  // Mark the privacy notices as dismissed so that they do not interfere with
-  // the layout.
-  Shell::Get()->app_list_controller()->MarkAssistantPrivacyInfoDismissed();
-  Shell::Get()->app_list_controller()->MarkSuggestedContentInfoDismissed();
-  GetAppListView()
-      ->app_list_main_view()
-      ->contents_view()
-      ->privacy_container_view()
-      ->Update();
 
   // Add a zero state suggestion results - the result that will be tested is in
   // the second place.
