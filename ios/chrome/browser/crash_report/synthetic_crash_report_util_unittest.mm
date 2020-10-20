@@ -51,8 +51,13 @@ TEST_F(SyntheticCrashReportUtilTest, CreateSyntheticCrashReportForUte) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   std::string product_display = std::string(255, 'a') + std::string(1, 'b');
+  const char kBreadcrumb1[] = "52:43 Tab1 Zoom";
+  const char kLastEvent[] = "Tab1 Scroll 1";
+  std::string kBreadcrumb2 = std::string("52:46 ") + kLastEvent;
+
   CreateSyntheticCrashReportForUte(temp_dir.GetPath(), product_display,
-                                   "Product", "Version", "URL");
+                                   "Product", "Version", "URL",
+                                   {kBreadcrumb1, kBreadcrumb2});
   // CreateSyntheticCrashReportForUte creates config and empty minidump file.
   // locate both files and ensure there are no other files in the directory.
   base::FileEnumerator traversal(temp_dir.GetPath(), /*recursive=*/false,
@@ -102,7 +107,7 @@ TEST_F(SyntheticCrashReportUtilTest, CreateSyntheticCrashReportForUte) {
 
   // Verify config file content. Config file has the following format:
   // <Key1>\n<Value1Length>\n<Value1>\n...<KeyN>\n<ValueNLength>\n<ValueN>
-  ASSERT_EQ(48U, config_lines.size())
+  ASSERT_EQ(55U, config_lines.size())
       << "<content>" << config_content << "</content>";
 
   EXPECT_EQ("MinidumpDir", config_lines[0]);
@@ -171,14 +176,25 @@ TEST_F(SyntheticCrashReportUtilTest, CreateSyntheticCrashReportForUte) {
             config_lines[40]);
   EXPECT_EQ(base::SysInfo::HardwareModelName(), config_lines[41]);
 
-  EXPECT_EQ("BreakpadServerParameterPrefix_url", config_lines[42]);
-  EXPECT_EQ(base::NumberToString(kURL.length), config_lines[43]);
-  EXPECT_EQ(base::SysNSStringToUTF8(kURL), config_lines[44]);
+  EXPECT_EQ("BreakpadServerParameterPrefix_breadcrumbs", config_lines[42]);
+  EXPECT_EQ(
+      base::NumberToString(strlen(kBreadcrumb1) + kBreadcrumb2.size() + 1),
+      config_lines[43]);
+  EXPECT_EQ(kBreadcrumb1, config_lines[44]);
+  EXPECT_EQ(kBreadcrumb2, config_lines[45]);
 
-  EXPECT_EQ("BreakpadProcessUpTime", config_lines[45]);
+  EXPECT_EQ("BreakpadServerParameterPrefix_signature", config_lines[46]);
+  EXPECT_EQ(base::NumberToString(strlen(kLastEvent)), config_lines[47]);
+  EXPECT_EQ(kLastEvent, config_lines[48]);
+
+  EXPECT_EQ("BreakpadServerParameterPrefix_url", config_lines[49]);
+  EXPECT_EQ(base::NumberToString(kURL.length), config_lines[50]);
+  EXPECT_EQ(base::SysNSStringToUTF8(kURL), config_lines[51]);
+
+  EXPECT_EQ("BreakpadProcessUpTime", config_lines[52]);
   EXPECT_EQ(base::NumberToString(base::NumberToString(kUptimeMs).size()),
-            config_lines[46]);
-  EXPECT_EQ(base::NumberToString(kUptimeMs), config_lines[47]);
+            config_lines[53]);
+  EXPECT_EQ(base::NumberToString(kUptimeMs), config_lines[54]);
 
   // Read minidump file. It must be empty as there is no stack trace, but
   // Breakpad will not upload config without minidump file.

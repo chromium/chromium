@@ -51,7 +51,8 @@ void CreateSyntheticCrashReportForUte(
     const std::string& breakpad_product_display,
     const std::string& breakpad_product,
     const std::string& breakpad_version,
-    const std::string& breakpad_url) {
+    const std::string& breakpad_url,
+    const std::vector<std::string>& breadcrumbs) {
   std::vector<std::string> config;
 
   AppendConfig(config, "MinidumpDir", path.value());
@@ -93,6 +94,10 @@ void CreateSyntheticCrashReportForUte(
 
   AppendConfig(config, "BreakpadServerParameterPrefix_platform",
                base::SysInfo::HardwareModelName());
+  AppendConfig(config, "BreakpadServerParameterPrefix_breadcrumbs",
+               base::JoinString(breadcrumbs, "\n"));
+  AppendConfig(config, "BreakpadServerParameterPrefix_signature",
+               breadcrumbs.back().substr(strlen("00:00 ")));
 
   for (NSString* key in previous_session.reportParameters.allKeys) {
     AppendConfig(

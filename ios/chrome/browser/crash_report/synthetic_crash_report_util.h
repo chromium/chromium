@@ -19,6 +19,7 @@ void CreateSyntheticCrashReportForUte(
     const std::string& breakpad_product_display,
     const std::string& breakpad_product,
     const std::string& breakpad_version,
-    const std::string& breakpad_url);
+    const std::string& breakpad_url,
+    const std::vector<std::string>& breadcrumbs);
 
 #endif  // IOS_CHROME_BROWSER_CRASH_REPORT_SYNTHETIC_CRASH_REPORT_UTIL_H_
