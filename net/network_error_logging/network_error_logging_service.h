@@ -18,6 +18,7 @@
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
+#include "net/base/network_isolation_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -48,6 +49,10 @@ class NET_EXPORT NetworkErrorLoggingService {
     NelPolicy();
     NelPolicy(const NelPolicy& other);
     ~NelPolicy();
+
+    // TODO(mmenke): Actually populate this field. Currently only used by the
+    // persistence layer.
+    NetworkIsolationKey network_isolation_key = NetworkIsolationKey::Todo();
 
     url::Origin origin;
     IPAddress received_ip_address = IPAddress();
