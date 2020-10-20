@@ -833,10 +833,14 @@ void SVGResourceInvalidator::InvalidateEffects() {
     return;
   if (resources_->Filter())
     SVGResources::GetClient(object_)->InvalidateFilterData();
-  if (resources_->Clipper())
+  if (resources_->Clipper()) {
+    object_.SetShouldDoFullPaintInvalidation();
     object_.InvalidateClipPathCache();
-  if (resources_->Masker())
+  }
+  if (resources_->Masker()) {
+    object_.SetShouldDoFullPaintInvalidation();
     object_.SetNeedsPaintPropertyUpdate();
+  }
 }
 
 void SVGResourceInvalidator::InvalidatePaints() {

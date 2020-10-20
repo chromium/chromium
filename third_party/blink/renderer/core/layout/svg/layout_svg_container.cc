@@ -69,17 +69,20 @@ void LayoutSVGContainer::UpdateLayout() {
                                    did_screen_scale_factor_change_,
                                    layout_size_changed);
 
+  bool bbox_changed = false;
+  if (needs_boundaries_update_) {
+    bbox_changed = UpdateCachedBoundaries();
+    needs_boundaries_update_ = false;
+  }
+
   // Invalidate all resources of this client if our reference box changed.
-  if (EverHadLayout() && (SelfNeedsLayout() || needs_boundaries_update_))
+  if (EverHadLayout() && (SelfNeedsLayout() || bbox_changed))
     SVGResourceInvalidator(*this).InvalidateEffects();
 
-  if (needs_boundaries_update_ ||
-      transform_change != SVGTransformChange::kNone) {
-    UpdateCachedBoundaries();
-    CalculateLocalTransform(needs_boundaries_update_);
-    needs_boundaries_update_ = false;
+  if (transform_change != SVGTransformChange::kNone || bbox_changed) {
+    CalculateLocalTransform(bbox_changed);
 
-    // If our bounds changed, notify the parents.
+    // If our bounds or transform changed, notify the parents.
     LayoutSVGModelObject::SetNeedsBoundariesUpdate();
   }
 
@@ -174,20 +177,13 @@ void LayoutSVGContainer::Paint(const PaintInfo& paint_info) const {
   SVGContainerPainter(*this).Paint(paint_info);
 }
 
-void LayoutSVGContainer::UpdateCachedBoundaries() {
+bool LayoutSVGContainer::UpdateCachedBoundaries() {
   NOT_DESTROYED();
   auto old_object_bounding_box = object_bounding_box_;
-
   SVGLayoutSupport::ComputeContainerBoundingBoxes(this, object_bounding_box_,
                                                   object_bounding_box_valid_,
                                                   stroke_bounding_box_);
-
-  // Change of object_bounding_box_ may change reference box of resource
-  // effects.
-  if (old_object_bounding_box != object_bounding_box_ &&
-      !IsSVGHiddenContainer() &&
-      SVGResourcesCache::CachedResourcesForLayoutObject(*this))
-    SetShouldDoFullPaintInvalidation();
+  return old_object_bounding_box != object_bounding_box_;
 }
 
 bool LayoutSVGContainer::NodeAtPoint(HitTestResult& result,
