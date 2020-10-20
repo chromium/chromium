@@ -52,7 +52,9 @@ void SmsProviderGmsUserConsent::OnReceive(JNIEnv* env, jstring message) {
   NotifyReceive(sms);
 }
 
-void SmsProviderGmsUserConsent::OnTimeout(JNIEnv* env) {}
+void SmsProviderGmsUserConsent::OnTimeout(JNIEnv* env) {
+  NotifyFailure(SmsFetcher::FailureType::kPromptTimeout);
+}
 
 base::android::ScopedJavaGlobalRef<jobject>
 SmsProviderGmsUserConsent::GetWebOTPServiceForTesting() const {

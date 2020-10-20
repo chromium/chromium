@@ -16,7 +16,8 @@ enum class WebOTPServiceOutcome {
   kConnectionError = 2,
   kCancelled = 3,
   kAborted = 4,
-  kMaxValue = kAborted
+  kTimeout = 5,
+  kMaxValue = kTimeout
 };
 
 }  // namespace blink

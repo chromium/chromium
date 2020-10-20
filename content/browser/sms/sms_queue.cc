@@ -53,29 +53,25 @@ bool SmsQueue::HasSubscriber(const url::Origin& origin,
          subscribers_[origin].HasObserver(subscriber);
 }
 
-void SmsQueue::NotifyParsingFailure(SmsParsingStatus status) {
-  FailureType failure_type;
-  switch (status) {
-    case SmsParsingStatus::kOTPFormatRegexNotMatch:
-      failure_type = FailureType::kSmsNotParsed_OTPFormatRegexNotMatch;
-      break;
-    case SmsParsingStatus::kHostAndPortNotParsed:
-      failure_type = FailureType::kSmsNotParsed_HostAndPortNotParsed;
-      break;
-    case SmsParsingStatus::kGURLNotValid:
-      failure_type = FailureType::kSmsNotParsed_kGURLNotValid;
-      break;
-    default:
-      NOTREACHED();
-      break;
-  }
-  for (auto& origin_to_subscriber_list : subscribers_) {
-    base::ObserverList<Subscriber>& subscribers =
-        origin_to_subscriber_list.second;
-    for (auto& subscriber : subscribers) {
-      subscriber.OnFailure(failure_type);
-    }
-  }
+// Currently we cannot extract the origin information upon failure because it's
+// not visible to the service. If we have a single origin in the queue we simply
+// assume failure belongs to that origin. This assumption should hold for vast
+// majority of cases given that a single pending origin is the most likely
+// scenario (measured in UMA histogram  |Blink.Sms.PendingOriginCount|). However
+// if there is more than one origin waiting we do not pass up the error to avoid
+// over-counting failures. Similar to the success case, we only notify the first
+// subscriber with that origin.
+bool SmsQueue::NotifyFailure(FailureType failure_type) {
+  // TODO(crbug.com/1138454): We should improve the infrastructure to be able to
+  // handle failed requests when there are multiple pending origins
+  // simultaneously.
+  if (subscribers_.size() != 1)
+    return false;
+
+  const url::Origin& implied_origin = subscribers_.begin()->first;
+  Subscriber* subscriber = Pop(implied_origin);
+  subscriber->OnFailure(failure_type);
+  return true;
 }
 
 }  // namespace content

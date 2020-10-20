@@ -40,6 +40,7 @@ namespace {
 class SmsBrowserTest : public ContentBrowserTest {
  public:
   using Entry = ukm::builders::SMSReceiver;
+  using FailureType = SmsFetcher::FailureType;
 
   SmsBrowserTest() = default;
   ~SmsBrowserTest() override = default;
@@ -808,6 +809,81 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, UpdateRenderFrameHostWithWebOTPUsage) {
   EXPECT_TRUE(render_frame_host->DocumentUsedWebOTP());
 }
 
+IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordTimeoutAsOutcome) {
+  GURL url = GetTestUrl(nullptr, "simple_page.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  auto provider = std::make_unique<MockSmsProvider>();
+  MockSmsProvider* mock_provider_ptr = provider.get();
+  BrowserMainLoop::GetInstance()->SetSmsProviderForTesting(std::move(provider));
+
+  shell()->web_contents()->SetDelegate(&delegate_);
+
+  EXPECT_CALL(*mock_provider_ptr, Retrieve(_))
+      .WillOnce(Invoke([&mock_provider_ptr]() {
+        mock_provider_ptr->NotifyFailure(FailureType::kPromptTimeout);
+      }));
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+       navigator.credentials.get({otp: {transport: ["sms"]}});
+     )"));
+
+  base::RunLoop ukm_loop;
+
+  // Wait for UKM to be recorded to avoid race condition between outcome
+  // capture and evaluation.
+  ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
+  ukm_loop.Run();
+
+  ExpectOutcomeUKM(url, blink::WebOTPServiceOutcome::kTimeout);
+}
+
+IN_PROC_BROWSER_TEST_F(SmsBrowserTest,
+                       NotRecordFailureForMultiplePendingOrigins) {
+  auto provider = std::make_unique<MockSmsProvider>();
+  MockSmsProvider* mock_provider_ptr = provider.get();
+  BrowserMainLoop::GetInstance()->SetSmsProviderForTesting(std::move(provider));
+
+  Shell* tab1 = CreateBrowser();
+  Shell* tab2 = CreateBrowser();
+
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+  ASSERT_TRUE(https_server.Start());
+
+  GURL url1 = https_server.GetURL("a.com", "/simple_page.html");
+  GURL url2 = https_server.GetURL("b.com", "/simple_page.html");
+  EXPECT_TRUE(NavigateToURL(tab1, url1));
+  EXPECT_TRUE(NavigateToURL(tab2, url2));
+
+  std::string script = R"(
+     navigator.credentials.get({otp: {transport: ["sms"]}})
+  )";
+
+  tab1->web_contents()->SetDelegate(&delegate_);
+  tab2->web_contents()->SetDelegate(&delegate_);
+
+  base::RunLoop loop;
+  EXPECT_CALL(*mock_provider_ptr, Retrieve(_))
+      .WillOnce(Invoke([]() {
+        // Leave the first request unhandled to make sure there's a pending
+        // origin.
+      }))
+      .WillOnce(Invoke([&]() {
+        mock_provider_ptr->NotifyFailure(FailureType::kPromptTimeout);
+        loop.Quit();
+      }));
+
+  EXPECT_TRUE(ExecJs(tab1, script));
+  EXPECT_TRUE(ExecJs(tab2, script));
+
+  loop.Run();
+
+  ExpectNoOutcomeUKM();
+}
+
 // Disabled test: https://crbug.com/1134455
 IN_PROC_BROWSER_TEST_F(SmsBrowserTest, DISABLED_RecordPendingOriginCount) {
   base::HistogramTester histogram_tester;
@@ -884,7 +960,6 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordSmsNotParsedMetrics) {
     )"));
   loop.Run();
 
-  ASSERT_TRUE(GetSmsFetcher()->HasSubscribers());
   ASSERT_TRUE(mock_provider_ptr->HasObservers());
 
   content::FetchHistogramsFromChildProcesses();

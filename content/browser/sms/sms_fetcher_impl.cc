@@ -109,9 +109,9 @@ bool SmsFetcherImpl::OnReceive(const url::Origin& origin,
   return Notify(origin, one_time_code);
 }
 
-void SmsFetcherImpl::NotifyParsingFailure(SmsParser::SmsParsingStatus status) {
+bool SmsFetcherImpl::OnFailure(SmsFetcher::FailureType failure_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  subscribers_.NotifyParsingFailure(status);
+  return subscribers_.NotifyFailure(failure_type);
 }
 
 bool SmsFetcherImpl::HasSubscribers() {

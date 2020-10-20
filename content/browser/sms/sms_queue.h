@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/observer_list.h"
-#include "content/browser/sms/sms_parser.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/sms_fetcher.h"
 #include "url/origin.h"
@@ -22,7 +21,6 @@ class CONTENT_EXPORT SmsQueue {
   ~SmsQueue();
 
   using FailureType = SmsFetcher::FailureType;
-  using SmsParsingStatus = SmsParser::SmsParsingStatus;
   using Subscriber = SmsFetcher::Subscriber;
 
   void Push(const url::Origin& origin, Subscriber* subscriber);
@@ -30,7 +28,9 @@ class CONTENT_EXPORT SmsQueue {
   void Remove(const url::Origin& origin, Subscriber* subscriber);
   bool HasSubscribers();
   bool HasSubscriber(const url::Origin& origin, const Subscriber* subscriber);
-  void NotifyParsingFailure(SmsParsingStatus status);
+  // Pops and notifies the first subscriber of an origin iff there's one origin
+  // in the |subscribers_| map. Returns true if the failure is handled.
+  bool NotifyFailure(FailureType failure_type);
 
  private:
   std::map<url::Origin, base::ObserverList<Subscriber>> subscribers_;

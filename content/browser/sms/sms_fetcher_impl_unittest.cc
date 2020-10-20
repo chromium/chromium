@@ -207,4 +207,22 @@ TEST_F(SmsFetcherImplTest, TwoOriginsTwoSubscribers) {
   provider()->NotifyReceive(kOrigin1, "123");
 }
 
+TEST_F(SmsFetcherImplTest, OneOriginTwoSubscribersOnlyOneIsNotifiedFailed) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://a.com"));
+
+  StrictMock<MockSubscriber> subscriber1;
+  StrictMock<MockSubscriber> subscriber2;
+
+  SmsFetcherImpl fetcher1(nullptr, provider());
+  SmsFetcherImpl fetcher2(nullptr, provider());
+
+  fetcher1.Subscribe(kOrigin, &subscriber1, main_rfh());
+  fetcher2.Subscribe(kOrigin, &subscriber2, main_rfh());
+
+  EXPECT_CALL(subscriber1, OnFailure(SmsFetcher::FailureType::kPromptTimeout));
+  EXPECT_CALL(subscriber2, OnFailure(SmsFetcher::FailureType::kPromptTimeout))
+      .Times(0);
+  provider()->NotifyFailure(SmsFetcher::FailureType::kPromptTimeout);
+}
+
 }  // namespace content

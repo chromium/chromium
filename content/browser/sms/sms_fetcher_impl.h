@@ -45,6 +45,7 @@ class CONTENT_EXPORT SmsFetcherImpl : public content::SmsFetcher,
   // content::SmsProvider::Observer:
   bool OnReceive(const url::Origin& origin,
                  const std::string& one_time_code) override;
+  bool OnFailure(SmsFetcher::FailureType failure_type) override;
 
   bool HasSubscribers() override;
 
@@ -52,8 +53,6 @@ class CONTENT_EXPORT SmsFetcherImpl : public content::SmsFetcher,
   void OnRemote(base::Optional<std::string> sms);
 
   bool Notify(const url::Origin& origin, const std::string& one_time_code);
-
-  void NotifyParsingFailure(SmsParser::SmsParsingStatus) override;
 
   // |context_| is safe because all instances of SmsFetcherImpl are owned by
   // the BrowserContext itself.

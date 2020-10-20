@@ -64,11 +64,32 @@ void SmsProvider::NotifyReceiveForTesting(const std::string& sms) {
   NotifyReceive(sms);
 }
 
-void SmsProvider::RecordParsingStatus(SmsParser::SmsParsingStatus status) {
-  if (status == SmsParser::SmsParsingStatus::kParsed)
+void SmsProvider::NotifyFailure(FailureType failure_type) {
+  for (Observer& obs : observers_) {
+    bool handled = obs.OnFailure(failure_type);
+    if (handled)
+      break;
+  }
+}
+
+void SmsProvider::RecordParsingStatus(SmsParsingStatus status) {
+  if (status == SmsParsingStatus::kParsed)
     return;
-  for (Observer& obs : observers_)
-    obs.NotifyParsingFailure(status);
+
+  switch (status) {
+    case SmsParsingStatus::kOTPFormatRegexNotMatch:
+      NotifyFailure(FailureType::kSmsNotParsed_OTPFormatRegexNotMatch);
+      break;
+    case SmsParsingStatus::kHostAndPortNotParsed:
+      NotifyFailure(FailureType::kSmsNotParsed_HostAndPortNotParsed);
+      break;
+    case SmsParsingStatus::kGURLNotValid:
+      NotifyFailure(FailureType::kSmsNotParsed_kGURLNotValid);
+      break;
+    case SmsParsingStatus::kParsed:
+      NOTREACHED();
+      break;
+  }
 }
 
 bool SmsProvider::HasObservers() {

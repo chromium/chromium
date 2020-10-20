@@ -146,6 +146,13 @@ void WebOTPService::OnReceive(const std::string& one_time_code) {
 }
 
 void WebOTPService::OnFailure(FailureType failure_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (failure_type == FailureType::kPromptTimeout) {
+    CompleteRequest(SmsStatus::kTimeout);
+    return;
+  }
+
+  // Records Sms parsing failures.
   SmsParser::SmsParsingStatus status = SmsParsingStatus::kParsed;
   switch (failure_type) {
     case FailureType::kSmsNotParsed_OTPFormatRegexNotMatch:
@@ -160,7 +167,7 @@ void WebOTPService::OnFailure(FailureType failure_type) {
     case FailureType::kPromptTimeout:
     case FailureType::kPromptCancelled:
       // TODO(yigu): Land implementation in crrev.com/2427560.
-      NOTIMPLEMENTED();
+      NOTREACHED();
       break;
   }
   DCHECK(status != SmsParsingStatus::kParsed);

@@ -13,7 +13,8 @@ enum SmsStatus {
   kSuccess,
   kUnhandledRequest,
   kCancelled,
-  kAborted
+  kAborted,
+  kTimeout
 };
 
 // This interface is created per storage partition but its execution is context

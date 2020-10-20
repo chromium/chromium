@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "content/browser/sms/sms_parser.h"
 #include "content/browser/sms/sms_queue.h"
 #include "content/browser/sms/user_consent_handler.h"
 #include "content/common/content_export.h"
