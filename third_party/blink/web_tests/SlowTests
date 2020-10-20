@@ -212,7 +212,8 @@ crbug.com/826957 fast/peerconnection/RTCPeerConnection-manyCandidates.html [ Slo
 crbug.com/853977 [ Linux ] http/tests/fetch/chromium/call-extra-crash-tee.html [ Slow ]
 crbug.com/853977 [ Linux ] http/tests/fetch/chromium/release-handle-crash.html [ Slow ]
 
-crbug.com/864887 [ Mac ] fast/scroll-snap/snaps-after-scrollbar-scrolling.html [ Slow ]
+crbug.com/864887 [ Mac ] fast/scroll-snap/snaps-after-scrollbar-scrolling-vertical.html [ Slow ]
+crbug.com/864887 [ Mac ] fast/scroll-snap/snaps-after-scrollbar-scrolling-horizontal.html [ Slow ]
 
 crbug.com/865262 [ Mac ] media/controls/text-track-menu-pointer-selection.html [ Slow ]
 

@@ -9,7 +9,6 @@
   <div id="space"></div>
   <div class="snap left top"></div>
   <div class="snap right top"></div>
-  <div class="snap left bottom"></div>
 </div>
 
 <script>
@@ -25,15 +24,6 @@ function scrollTop() {
 
 promise_test (async () => {
   scroller.scrollTo(0, 0);
-  await mouseDragAndDrop(398, 20, 398, 120);
-  await waitForAnimationEndTimeBased(scrollTop);
-  await waitFor( () => {
-    return scroller.scrollTop == 400;
-  });
-}, "Snaps after dragging the vertical scrollbar.");
-
-promise_test (async () => {
-  scroller.scrollTo(0, 0);
   await mouseDragAndDrop(20, 398, 120, 398);
   await waitForAnimationEndTimeBased(scrollLeft);
   await waitFor( () => {
@@ -43,30 +33,12 @@ promise_test (async () => {
 
 promise_test (async () => {
   scroller.scrollTo(0, 0);
-  await mousePressOn(398, 350, 1000);
-  await waitForAnimationEndTimeBased(scrollTop);
-  await waitFor( () => {
-    return scroller.scrollTop == 400;
-  });
-}, "Snaps after clicking the vertical scrollbar.");
-
-promise_test (async () => {
-  scroller.scrollTo(0, 0);
   await mousePressOn(350, 398, 1000);
   await waitForAnimationEndTimeBased(scrollLeft);
   await waitFor( () => {
     return scroller.scrollLeft == 400;
   });
 }, "Snaps after clicking the horizontal scrollbar.");
-
-promise_test (async () => {
-  scroller.scrollTo(0, 0);
-  await touchTapOn(398, 350, 1000);
-  await waitForAnimationEndTimeBased(scrollTop);
-  await waitFor( () => {
-    return scroller.scrollTop == 400;
-  });
-}, "Snaps after tapping the vertical scrollbar.");
 
 promise_test (async () => {
   scroller.scrollTo(0, 0);

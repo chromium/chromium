@@ -5678,8 +5678,10 @@ crbug.com/1041830 http/tests/devtools/tracing/timeline-js/timeline-js-line-level
 # Enable scroll-snap tests on impl thread
 # These are currently failing on Mac which needs more investigation, snap-scrolls-visual-viewport seems flaky
 crbug.com/878878 [ Mac ] virtual/threaded/fast/scroll-snap/snaps-after-keyboard-scrolling.html [ Pass Timeout Failure ]
-crbug.com/878878 [ Mac ] virtual/threaded/fast/scroll-snap/snaps-after-scrollbar-scrolling.html [ Pass Timeout Failure ]
-crbug.com/878878 [ Win ] virtual/threaded/fast/scroll-snap/snaps-after-scrollbar-scrolling.html [ Pass Timeout Failure ]
+crbug.com/878878 [ Mac ] virtual/threaded/fast/scroll-snap/snaps-after-scrollbar-scrolling-vertical.html [ Pass Timeout Failure ]
+crbug.com/878878 [ Mac ] virtual/threaded/fast/scroll-snap/snaps-after-scrollbar-scrolling-horizontal.html [ Pass Timeout Failure ]
+crbug.com/878878 [ Win ] virtual/threaded/fast/scroll-snap/snaps-after-scrollbar-scrolling-vertical.html [ Pass Timeout Failure ]
+crbug.com/878878 [ Win ] virtual/threaded/fast/scroll-snap/snaps-after-scrollbar-scrolling-horizontal.html [ Pass Timeout Failure ]
 
 crbug.com/878878 virtual/threaded/fast/scroll-snap/animate-fling-to-snap-points.html [ Failure Pass Timeout ]
 crbug.com/878878 virtual/threaded/fast/scroll-snap/snap-scrolls-visual-viewport.html [ Failure Pass ]
@@ -5714,7 +5716,8 @@ crbug.com/1038091 virtual/gpu-rasterization/images/jpeg-yuv-image-decoding.html 
 crbug.com/1038139 [ Win ] virtual/gpu-rasterization/images/2-comp.html [ Pass Failure ]
 
 # Sheriff 2019-12-30
-crbug.com/1038354 fast/scroll-snap/snaps-after-scrollbar-scrolling.html [ Pass Failure ]
+crbug.com/1038354 [ Mac ] fast/scroll-snap/snaps-after-scrollbar-scrolling-vertical.html [ Pass Failure ]
+crbug.com/1038354 [ Mac ] fast/scroll-snap/snaps-after-scrollbar-scrolling-horizontal.html [ Pass Failure ]
 
 # Sheriff 2020-01-02
 crbug.com/1038656 [ Mac ] http/tests/devtools/coverage/coverage-view-unused.js [ Pass Failure ]
