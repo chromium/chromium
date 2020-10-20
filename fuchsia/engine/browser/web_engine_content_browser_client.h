@@ -47,6 +47,7 @@ class WebEngineContentBrowserClient : public content::ContentBrowserClient {
       int render_process_id,
       int render_frame_id,
       NonNetworkURLLoaderFactoryMap* factories) final;
+  bool ShouldEnableStrictSiteIsolation() final;
   void AppendExtraCommandLineSwitches(base::CommandLine* command_line,
                                       int child_process_id) final;
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
