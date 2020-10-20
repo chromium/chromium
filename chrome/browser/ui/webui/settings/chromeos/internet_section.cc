@@ -330,9 +330,10 @@ const std::vector<SearchConcept>& GetCellularConnectedSearchConcepts() {
   return *tags;
 }
 
-// TODO(1093185): Merge GetCellularSetupSearchConcepts() with
+// TODO(1093185): Merge GetCellularSetupAndDetailMenuSearchConcepts() with
 // GetCellularConnectedSearchConcepts() when flag is enabled.
-const std::vector<SearchConcept>& GetCellularSetupSearchConcepts() {
+const std::vector<SearchConcept>&
+GetCellularSetupAndDetailMenuSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_ADD_CELLULAR,
        mojom::kMobileDataNetworksSubpagePath,
@@ -342,6 +343,22 @@ const std::vector<SearchConcept>& GetCellularSetupSearchConcepts() {
        {.setting = mojom::Setting::kCellularAddNetwork},
        {IDS_OS_SETTINGS_TAG_ADD_CELLULAR_ALT1,
         IDS_OS_SETTINGS_TAG_ADD_CELLULAR_ALT2, SearchConcept::kAltTagEnd}},
+      {IDS_OS_SETTINGS_TAG_CELLULAR_REMOVE_PROFILE,
+       mojom::kCellularDetailsSubpagePath,
+       mojom::SearchResultIcon::kCellular,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kCellularRemoveESimNetwork},
+       {IDS_OS_SETTINGS_TAG_CELLULAR_REMOVE_PROFILE_ALT1,
+        SearchConcept::kAltTagEnd}},
+      {IDS_OS_SETTINGS_TAG_CELLULAR_RENAME_PROFILE,
+       mojom::kCellularDetailsSubpagePath,
+       mojom::SearchResultIcon::kCellular,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kCellularRenameESimNetwork},
+       {IDS_OS_SETTINGS_TAG_CELLULAR_RENAME_PROFILE_ALT1,
+        SearchConcept::kAltTagEnd}},
   });
   return *tags;
 }
@@ -464,6 +481,8 @@ const std::vector<mojom::Setting>& GetCellularDetailsSettings() {
       mojom::Setting::kCellularAutoConnectToNetwork,
       mojom::Setting::kCellularMetered,
       mojom::Setting::kCellularAddNetwork,
+      mojom::Setting::kCellularRemoveESimNetwork,
+      mojom::Setting::kCellularRenameESimNetwork,
   });
   return *settings;
 }
@@ -608,6 +627,10 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"networkPrefer", IDS_SETTINGS_INTERNET_NETWORK_PREFER},
       {"networkPrimaryUserControlled",
        IDS_SETTINGS_INTERNET_NETWORK_PRIMARY_USER_CONTROLLED},
+      {"networkDetailMenuRemoveESim",
+       IDS_SETTINGS_INTERNET_NETWORK_MENU_REMOVE},
+      {"networkDetailMenuRenameESim",
+       IDS_SETTINGS_INTERNET_NETWORK_MENU_RENAME},
       {"networkScanningLabel", IDS_NETWORK_SCANNING_MESSAGE},
       {"networkSectionAdvanced",
        IDS_SETTINGS_INTERNET_NETWORK_SECTION_ADVANCED},
@@ -954,7 +977,7 @@ void InternetSection::OnNetworkList(
   updater.RemoveSearchTags(GetWifiMeteredSearchConcepts());
   updater.RemoveSearchTags(GetCellularSearchConcepts());
   updater.RemoveSearchTags(GetCellularConnectedSearchConcepts());
-  updater.RemoveSearchTags(GetCellularSetupSearchConcepts());
+  updater.RemoveSearchTags(GetCellularSetupAndDetailMenuSearchConcepts());
   updater.RemoveSearchTags(GetCellularMeteredSearchConcepts());
   updater.RemoveSearchTags(GetInstantTetheringConnectedSearchConcepts());
   updater.RemoveSearchTags(GetVpnConnectedSearchConcepts());
@@ -998,7 +1021,7 @@ void InternetSection::OnNetworkList(
 
         if (base::FeatureList::IsEnabled(
                 chromeos::features::kUpdatedCellularActivationUi)) {
-          updater.AddSearchTags(GetCellularSetupSearchConcepts());
+          updater.AddSearchTags(GetCellularSetupAndDetailMenuSearchConcepts());
         }
         break;
 

@@ -21,6 +21,7 @@
 <link rel="import" href="../os_route.html">
 <link rel="import" href="cellular_setup_dialog.html">
 <link rel="import" href="internet_config.html">
+<link rel="import" href="internet_detail_menu.html">
 <link rel="import" href="internet_detail_page.html">
 <link rel="import" href="internet_known_networks_page.html">
 <link rel="import" href="internet_page_browser_proxy.html">
@@ -112,6 +113,8 @@
 
       <template is="dom-if" route-path="/networkDetail" no-search restamp>
         <settings-subpage page-title="$i18n{internetDetailPageTitle}">
+          <settings-internet-detail-menu slot="subpage-title-extra">
+          </settings-internet-detail-menu>
           <settings-internet-detail-page prefs="{{prefs}}"
               default-network="[[defaultNetwork]]"
               global-policy="[[globalPolicy_]]"

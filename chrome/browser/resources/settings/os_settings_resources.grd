@@ -1262,6 +1262,12 @@
       <structure name="IDR_OS_SETTINGS_INTERNET_CONFIG_JS"
                  file="chromeos/internet_page/internet_config.js"
                  compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_INTERNET_DETAIL_MENU_HTML"
+                 file="chromeos/internet_page/internet_detail_menu.html"
+                 compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_INTERNET_DETAIL_MENU_JS"
+                 file="chromeos/internet_page/internet_detail_menu.js"
+                 compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_INTERNET_DETAIL_PAGE_HTML"
                  file="chromeos/internet_page/internet_detail_page.html"
                  compress="false" type="chrome_html" />

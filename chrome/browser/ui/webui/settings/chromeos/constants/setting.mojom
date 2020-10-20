@@ -35,6 +35,8 @@ enum Setting {
   kWifiMetered = 24,
   kCellularMetered = 25,
   kCellularAddNetwork = 26,
+  kCellularRemoveESimNetwork = 27,
+  kCellularRenameESimNetwork = 28,
 
   // Bluetooth section.
   kBluetoothOnOff = 100,
