@@ -436,7 +436,13 @@ class AudioManagerTest : public ::testing::Test {
 #endif  // defined(USE_CRAS) && defined(OS_CHROMEOS)
 
   bool InputDevicesAvailable() {
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+    // TODO(crbug.com/1128458): macOS on ARM64 says it has devices, but won't
+    // let any of them be opened or listed.
+    return false;
+#else
     return device_info_accessor_->HasAudioInputDevices();
+#endif
   }
   bool OutputDevicesAvailable() {
     return device_info_accessor_->HasAudioOutputDevices();
