@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -113,6 +114,7 @@ public class FirstRunTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
+    @DisabledTest(message = "https://crbug.com/616456")
     public void testSignIn() {
         Account testAccount = mSyncTestRule.addTestAccount();
         Assert.assertNull(mSyncTestRule.getCurrentSignedInAccount());
@@ -128,6 +130,7 @@ public class FirstRunTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
+    @DisabledTest(message = "https://crbug.com/616456")
     public void testSignInWithOpenSettings() {
         final Account testAccount = mSyncTestRule.addTestAccount();
         final SettingsActivity settingsActivity =
@@ -160,6 +163,7 @@ public class FirstRunTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
+    @DisabledTest(message = "https://crbug.com/616456")
     public void testNoSignIn() {
         mSyncTestRule.addTestAccount();
         Assert.assertFalse(SyncTestUtil.isSyncRequested());
