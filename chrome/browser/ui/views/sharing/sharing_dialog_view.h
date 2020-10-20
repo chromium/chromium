@@ -18,7 +18,6 @@ class StyledLabel;
 class View;
 }  // namespace views
 
-class HoverButton;
 enum class SharingDialogType;
 
 class SharingDialogView : public SharingDialog,
@@ -46,22 +45,15 @@ class SharingDialogView : public SharingDialog,
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   static views::BubbleDialogDelegateView* GetAsBubble(SharingDialog* dialog);
-
   static views::BubbleDialogDelegateView* GetAsBubbleForClickToCall(
       SharingDialog* dialog);
 
+  SharingDialogType GetDialogType() const;
+
+  const View* button_list_for_testing() const { return button_list_; }
+
  private:
   friend class SharingDialogViewTest;
-  FRIEND_TEST_ALL_PREFIXES(SharingDialogViewTest, PopulateDialogView);
-  FRIEND_TEST_ALL_PREFIXES(SharingDialogViewTest, DevicePressed);
-  FRIEND_TEST_ALL_PREFIXES(SharingDialogViewTest, AppPressed);
-  FRIEND_TEST_ALL_PREFIXES(SharingDialogViewTest, HelpTextClickedEmpty);
-  FRIEND_TEST_ALL_PREFIXES(SharingDialogViewTest, HelpTextClickedOnlyApps);
-  FRIEND_TEST_ALL_PREFIXES(SharingDialogViewTest, ThemeChangedEmptyList);
-
-  FRIEND_TEST_ALL_PREFIXES(ClickToCallBrowserTest, LeftClick_ChooseDevice);
-
-  SharingDialogType GetDialogType() const;
 
   // LocationBarBubbleDelegateView:
   void Init() override;
@@ -76,7 +68,7 @@ class SharingDialogView : public SharingDialog,
   SharingDialogData data_;
 
   // References to device and app buttons views.
-  std::vector<HoverButton*> dialog_buttons_;
+  View* button_list_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(SharingDialogView);
 };

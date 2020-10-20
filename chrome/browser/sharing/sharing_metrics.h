@@ -79,21 +79,20 @@ void LogSharingAppsToShow(SharingFeatureName feature,
                           const char* histogram_suffix,
                           int count);
 
-// Logs the |index| of the device selected by the user for sharing feature. The
-// |histogram_suffix| indicates in which UI this event happened and must match
-// one from Sharing{feature}Ui defined in histograms.xml - use the
-// constants defined in this file for that.
-void LogSharingSelectedDeviceIndex(SharingFeatureName feature,
-                                   const char* histogram_suffix,
-                                   int index);
-
-// Logs the |index| of the app selected by the user for sharing feature. The
-// |histogram_suffix| indicates in which UI this event happened and must match
-// one from Sharing{feature}Ui defined in histograms.xml - use the
-// constants defined in this file for that.
-void LogSharingSelectedAppIndex(SharingFeatureName feature,
-                                const char* histogram_suffix,
-                                int index);
+// Logs the |index| of the user selection for sharing feature. |index_type| is
+// the type of selection made, either "Device" or "App". The |histogram_suffix|
+// indicates in which UI this event happened and must match one from
+// Sharing{feature}Ui defined in histograms.xml - use the constants defined in
+// this file for that.
+enum class SharingIndexType {
+  kDevice,
+  kApp,
+};
+void LogSharingSelectedIndex(
+    SharingFeatureName feature,
+    const char* histogram_suffix,
+    int index,
+    SharingIndexType index_type = SharingIndexType::kDevice);
 
 // Logs to UMA the time from sending a FCM message from the Sharing service
 // until an ack message is received for it.

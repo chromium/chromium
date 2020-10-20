@@ -211,40 +211,22 @@ void LogSharingAppsToShow(SharingFeatureName feature,
       /*value_max=*/20);
 }
 
-void LogSharingSelectedDeviceIndex(SharingFeatureName feature,
-                                   const char* histogram_suffix,
-                                   int index) {
+void LogSharingSelectedIndex(SharingFeatureName feature,
+                             const char* histogram_suffix,
+                             int index,
+                             SharingIndexType index_type) {
   auto* feature_str = GetEnumStringValue(feature);
   // Explicitly log both the base and the suffixed histogram because the base
   // aggregation is not automatically generated.
-  base::UmaHistogramExactLinear(
-      base::StrCat({"Sharing.", feature_str, "SelectedDeviceIndex"}), index,
-      /*value_max=*/20);
+  std::string name = base::StrCat(
+      {"Sharing.", feature_str, "Selected",
+       (index_type == SharingIndexType::kDevice) ? "Device" : "App", "Index"});
+  base::UmaHistogramExactLinear(name, index, /*value_max=*/20);
   if (!histogram_suffix)
     return;
-  base::UmaHistogramExactLinear(
-      base::StrCat(
-          {"Sharing.", feature_str, "SelectedDeviceIndex.", histogram_suffix}),
-      index,
-      /*value_max=*/20);
-}
-
-void LogSharingSelectedAppIndex(SharingFeatureName feature,
-                                const char* histogram_suffix,
-                                int index) {
-  auto* feature_str = GetEnumStringValue(feature);
-  // Explicitly log both the base and the suffixed histogram because the base
-  // aggregation is not automatically generated.
-  base::UmaHistogramExactLinear(
-      base::StrCat({"Sharing.", feature_str, "SelectedAppIndex"}), index,
-      /*value_max=*/20);
-  if (!histogram_suffix)
-    return;
-  base::UmaHistogramExactLinear(
-      base::StrCat(
-          {"Sharing.", feature_str, "SelectedAppIndex.", histogram_suffix}),
-      index,
-      /*value_max=*/20);
+  base::UmaHistogramExactLinear(base::StrCat({name, ".", histogram_suffix}),
+                                index,
+                                /*value_max=*/20);
 }
 
 void LogSharingMessageAckTime(chrome_browser_sharing::MessageType message_type,

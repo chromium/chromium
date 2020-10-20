@@ -40,6 +40,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/test/button_test_api.h"
 #include "url/gurl.h"
 
 namespace {
@@ -402,15 +403,13 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, LeftClick_ChooseDevice) {
       static_cast<SharingDialogView*>(controller->dialog());
   EXPECT_EQ(SharingDialogType::kDialogWithDevicesMaybeApps,
             dialog->GetDialogType());
-  EXPECT_EQ(1u, dialog->data_.devices.size());
-  EXPECT_EQ(dialog->data_.devices.size() + dialog->data_.apps.size(),
-            dialog->dialog_buttons_.size());
-
-  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                             ui::EventTimeForNow(), 0, 0);
 
   // Choose first device.
-  dialog->ButtonPressed(dialog->dialog_buttons_[0], event);
+  const auto& buttons = dialog->button_list_for_testing()->children();
+  ASSERT_GT(buttons.size(), 0u);
+  views::test::ButtonTestApi(static_cast<views::Button*>(buttons[0]))
+      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(), 0, 0));
 
   CheckLastReceiver(*devices[0]);
   // Defined in tel.html

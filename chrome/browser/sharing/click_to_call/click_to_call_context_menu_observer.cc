@@ -146,8 +146,8 @@ void ClickToCallContextMenuObserver::SendClickToCallMessage(
   if (size_t{chosen_device_index} >= devices_.size())
     return;
 
-  LogSharingSelectedDeviceIndex(controller_->GetFeatureMetricsPrefix(),
-                                kSharingUiContextMenu, chosen_device_index);
+  LogSharingSelectedIndex(controller_->GetFeatureMetricsPrefix(),
+                          kSharingUiContextMenu, chosen_device_index);
 
   controller_->OnDeviceSelected(phone_number_, *devices_[chosen_device_index],
                                 *entry_point_);

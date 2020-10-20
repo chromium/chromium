@@ -141,8 +141,8 @@ void SharedClipboardContextMenuObserver::SendSharedClipboardMessage(
     int chosen_device_index) {
   if (size_t{chosen_device_index} >= devices_.size())
     return;
-  LogSharingSelectedDeviceIndex(controller_->GetFeatureMetricsPrefix(),
-                                nullptr /* No suffix */, chosen_device_index);
+  LogSharingSelectedIndex(controller_->GetFeatureMetricsPrefix(),
+                          nullptr /* No suffix */, chosen_device_index);
 
   controller_->OnDeviceSelected(text_, *devices_[chosen_device_index]);
   LogSharedClipboardSelectedTextSize(text_.size());
