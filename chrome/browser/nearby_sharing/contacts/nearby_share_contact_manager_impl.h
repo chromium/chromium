@@ -36,7 +36,7 @@ class PrefService;
 // uploaded contact data, and after every contacts download, a subsequent upload
 // request is made if we detect that the contact list or allowlist has changed
 // since the last successful upload.
-
+//
 // In addition to supporting on-demand contact downloads, this implementation
 // periodically checks in with the Nearby Share server to see if the user's
 // contact list has changed since the last upload.
@@ -47,7 +47,8 @@ class NearbyShareContactManagerImpl : public NearbyShareContactManager {
     static std::unique_ptr<NearbyShareContactManager> Create(
         PrefService* pref_service,
         NearbyShareClientFactory* http_client_factory,
-        NearbyShareLocalDeviceDataManager* local_device_data_manager);
+        NearbyShareLocalDeviceDataManager* local_device_data_manager,
+        const std::string& profile_user_name);
     static void SetFactoryForTesting(Factory* test_factory);
 
    protected:
@@ -55,7 +56,8 @@ class NearbyShareContactManagerImpl : public NearbyShareContactManager {
     virtual std::unique_ptr<NearbyShareContactManager> CreateInstance(
         PrefService* pref_service,
         NearbyShareClientFactory* http_client_factory,
-        NearbyShareLocalDeviceDataManager* local_device_data_manager) = 0;
+        NearbyShareLocalDeviceDataManager* local_device_data_manager,
+        const std::string& profile_user_name) = 0;
 
    private:
     static Factory* test_factory_;
@@ -67,7 +69,8 @@ class NearbyShareContactManagerImpl : public NearbyShareContactManager {
   NearbyShareContactManagerImpl(
       PrefService* pref_service,
       NearbyShareClientFactory* http_client_factory,
-      NearbyShareLocalDeviceDataManager* local_device_data_manager);
+      NearbyShareLocalDeviceDataManager* local_device_data_manager,
+      const std::string& profile_user_name);
 
   // NearbyShareContactsManager:
   void DownloadContacts() override;
@@ -98,6 +101,7 @@ class NearbyShareContactManagerImpl : public NearbyShareContactManager {
   PrefService* pref_service_ = nullptr;
   NearbyShareClientFactory* http_client_factory_ = nullptr;
   NearbyShareLocalDeviceDataManager* local_device_data_manager_ = nullptr;
+  std::string profile_user_name_;
   std::unique_ptr<NearbyShareScheduler> contact_download_and_upload_scheduler_;
   std::unique_ptr<NearbyShareContactDownloader> contact_downloader_;
   mojo::RemoteSet<nearby_share::mojom::DownloadContactsObserver> observers_set_;

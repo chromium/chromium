@@ -240,7 +240,8 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
       contact_manager_(NearbyShareContactManagerImpl::Factory::Create(
           prefs,
           http_client_factory_.get(),
-          local_device_data_manager_.get())),
+          local_device_data_manager_.get(),
+          profile->GetProfileUserName())),
       certificate_manager_(NearbyShareCertificateManagerImpl::Factory::Create(
           local_device_data_manager_.get(),
           contact_manager_.get(),
