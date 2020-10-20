@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.notifications.chime;
 
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.modules.chime.ChimeModule;
 
 /**
@@ -15,23 +14,12 @@ public class ChimeSession {
     private static boolean sRegistered;
 
     /**
-     * Initializes the Chime component. If the DFM is not installed or the feature flag is not
-     * enabled, do nothing.
+     * Registers to Chime and start to receive notifications.
      */
-    public static void init() {
-        // Don't init if we don't install DFM yet or the feature is not enabled. The DFM install
-        // happens during the first time registration.
-        if (!ChimeModule.isInstalled() || !isEnabled()) return;
-
-        ChimeModule.getImpl().initialize();
-    }
-
-    /**
-     * Registers to Chime and start to receive notifications. Internally it will install the DFM
-     * first.
-     */
-    public static void register() {
-        if (!isEnabled() || sRegistered) return;
+    public static void start() {
+        // TODO(xingliu): Find a better way to access feature in Java code.
+        // https://crbug.com/1017860.
+        if (!ChimeSessionJni.get().isEnabled() || sRegistered) return;
 
         // Install the DFM and then reigster.
         if (ChimeModule.isInstalled()) {
@@ -50,7 +38,11 @@ public class ChimeSession {
         ChimeModule.getImpl().register();
     }
 
-    private static boolean isEnabled() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.USE_CHIME_ANDROID_SDK);
+    @NativeMethods
+    interface Natives {
+        /**
+         * @return Whether Chime is enabled.
+         */
+        boolean isEnabled();
     }
 }

@@ -13,7 +13,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/stl_util.h"
 #include "chrome/browser/flags/jni_headers/ChromeFeatureList_jni.h"
-#include "chrome/browser/notifications/chime/android/features.h"
 #include "chrome/browser/performance_hints/performance_hints_features.h"
 #include "chrome/browser/share/features.h"
 #include "chrome/browser/sharing/shared_clipboard/feature_flags.h"
@@ -229,7 +228,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &language::kExplicitLanguageAsk,
     &language::kTranslateIntent,
     &messages::kMessagesForAndroidInfrastructure,
-    &notifications::features::kUseChimeAndroidSdk,
     &offline_pages::kOfflineIndicatorFeature,
     &offline_pages::kOfflineIndicatorAlwaysHttpProbeFeature,
     &offline_pages::kOfflinePagesCTFeature,    // See crbug.com/620421.
