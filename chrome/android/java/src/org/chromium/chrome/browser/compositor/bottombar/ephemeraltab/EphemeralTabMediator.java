@@ -9,6 +9,7 @@ import android.os.Handler;
 
 import androidx.annotation.DrawableRes;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -22,6 +23,7 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.common.ResourceRequestBody;
+import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
 /**
@@ -125,9 +127,17 @@ public class EphemeralTabMediator {
 
             @Override
             public void didFinishNavigation(NavigationHandle navigation) {
-                if (navigation.hasCommitted() && navigation.isInMainFrame()) {
-                    mIsOnErrorPage = navigation.isErrorPage();
-                    mSheetContent.updateURL(mWebContents.get().getVisibleUrl());
+                if (navigation.isInMainFrame()) {
+                    if (navigation.hasCommitted()) {
+                        mIsOnErrorPage = navigation.isErrorPage();
+                        mSheetContent.updateURL(mWebContents.get().getVisibleUrl());
+                    } else {
+                        // Not viewable contents such as download. Show a toast and close the tab.
+                        Toast.makeText(ContextUtils.getApplicationContext(),
+                                     R.string.ephemeral_tab_sheet_not_viewable, Toast.LENGTH_SHORT)
+                                .show();
+                        mBottomSheetController.hideContent(mSheetContent, /* animate= */ true);
+                    }
                 }
             }
         };

@@ -3403,6 +3403,9 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_EPHEMERAL_TAB_SHEET_DESCRIPTION" desc="The content description of the preview tab bottom sheet.">
         Preview tab
       </message>
+      <message name="IDS_EPHEMERAL_TAB_SHEET_NOT_VIEWABLE" desc="Notifies the user that the link they are trying to preview cannot be viewed.">
+        Preview tab content is not viewable.
+      </message>
       <message name="IDS_EPHEMERAL_TAB_SHEET_OPENED_HALF" desc="Accessibility string read when the preview tab bottom sheet is opened at half height. The sheet will occupy up to half the screen.">
         Preview tab is half-opened
       </message>
