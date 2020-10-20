@@ -1,0 +1,15 @@
+<html>
+<head><title>Title Of Coverage Awesomeness</title></head>
+<body>This page has a runTests() function.</body>
+<script>
+document.title = 'title.READY';
+function runTests() {
+  if (window.domAutomationController)
+    window.domAutomationController.send('window.domAutomationController.DONE');
+  if (chrome && chrome.test)
+    chrome.test.send('chrome.test.send.DONE');
+  console.log('console.log.DONE');
+  document.title = 'title.DONE';
+}
+</script>
+</html>
