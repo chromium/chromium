@@ -30,6 +30,8 @@ class GpuVideoAcceleratorFactories;
 
 namespace blink {
 
+extern const PLATFORM_EXPORT base::Feature kTimeoutHangingVideoCaptureStarts;
+
 // VideoCaptureImpl represents a capture device in renderer process. It provides
 // an interface for clients to command the capture (Start, Stop, etc), and
 // communicates back to these clients e.g. the capture state or incoming
@@ -93,6 +95,9 @@ class PLATFORM_EXPORT VideoCaptureImpl
                      media::mojom::blink::VideoFrameInfoPtr info) override;
   void OnBufferDestroyed(int32_t buffer_id) override;
 
+  static constexpr base::TimeDelta kCaptureStartTimeout =
+      base::TimeDelta::FromSeconds(10);
+
  private:
   friend class VideoCaptureImplTest;
   friend class MockVideoCaptureImpl;
@@ -143,6 +148,8 @@ class PLATFORM_EXPORT VideoCaptureImpl
       const media::VideoFrameFeedback* feedback,
       BufferFinishedCallback callback_to_io_thread);
 
+  void OnStartTimedout();
+
   // |device_id_| and |session_id_| are different concepts, but we reuse the
   // same numerical value, passed on construction.
   const base::UnguessableToken device_id_;
@@ -183,6 +190,8 @@ class PLATFORM_EXPORT VideoCaptureImpl
   std::unique_ptr<gpu::GpuMemoryBufferSupport> gpu_memory_buffer_support_;
 
   THREAD_CHECKER(io_thread_checker_);
+
+  base::OneShotTimer startup_timeout_;
 
   // WeakPtrFactory pointing back to |this| object, for use with
   // media::VideoFrames constructed in OnBufferReceived() from buffers cached

@@ -11,6 +11,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "media/capture/mojom/video_capture.mojom-blink.h"
 #include "media/capture/mojom/video_capture_types.mojom-blink.h"
@@ -227,13 +228,15 @@ class VideoCaptureImplTest : public ::testing::Test {
   }
 
   const base::UnguessableToken session_id_ = base::UnguessableToken::Create();
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   ScopedTestingPlatformSupport<TestingPlatformSupportForGpuMemoryBuffer>
       platform_;
   std::unique_ptr<VideoCaptureImpl> video_capture_impl_;
   MockMojoVideoCaptureHost mock_video_capture_host_;
   media::VideoCaptureParams params_small_;
   media::VideoCaptureParams params_large_;
+  base::test::ScopedFeatureList feature_list_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(VideoCaptureImplTest);
@@ -675,6 +678,41 @@ TEST_F(VideoCaptureImplTest,
   video_capture_impl_->OnStateChanged(media::mojom::VideoCaptureState::STARTED);
   Mock::VerifyAndClearExpectations(this);
   Mock::VerifyAndClearExpectations(&mock_video_capture_host_);
+
+  EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STOPPED));
+  EXPECT_CALL(mock_video_capture_host_, Stop(_));
+  StopCapture(0);
+}
+
+TEST_F(VideoCaptureImplTest, StartTimeout) {
+  EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_ERROR));
+  EXPECT_CALL(mock_video_capture_host_, DoStart(_, session_id_, params_small_));
+
+  ON_CALL(mock_video_capture_host_, DoStart(_, _, _))
+      .WillByDefault(InvokeWithoutArgs([]() {
+        // Do nothing.
+      }));
+
+  StartCapture(0, params_small_);
+  task_environment_.FastForwardBy(VideoCaptureImpl::kCaptureStartTimeout);
+}
+
+TEST_F(VideoCaptureImplTest, StartTimeout_FeatureDisabled) {
+  feature_list_.InitAndDisableFeature(kTimeoutHangingVideoCaptureStarts);
+
+  EXPECT_CALL(mock_video_capture_host_, DoStart(_, session_id_, params_small_));
+  ON_CALL(mock_video_capture_host_, DoStart(_, _, _))
+      .WillByDefault(InvokeWithoutArgs([]() {
+        // Do nothing.
+      }));
+
+  StartCapture(0, params_small_);
+  // Wait past the deadline, nothing should happen.
+  task_environment_.FastForwardBy(2 * VideoCaptureImpl::kCaptureStartTimeout);
+
+  // Finally callback that the capture has started, should respond.
+  EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STARTED));
+  video_capture_impl_->OnStateChanged(media::mojom::VideoCaptureState::STARTED);
 
   EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STOPPED));
   EXPECT_CALL(mock_video_capture_host_, Stop(_));

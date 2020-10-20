@@ -40,6 +40,9 @@ namespace blink {
 
 constexpr int kMaxFirstFrameLogs = 5;
 
+const base::Feature kTimeoutHangingVideoCaptureStarts{
+    "TimeoutHangingVideoCaptureStarts", base::FEATURE_ENABLED_BY_DEFAULT};
+
 using VideoFrameBufferHandleType = media::mojom::blink::VideoBufferHandle::Tag;
 
 // A collection of all types of handles that we use to reference a camera buffer
@@ -444,6 +447,9 @@ void VideoCaptureImpl::OnStateChanged(media::mojom::VideoCaptureState state) {
   DVLOG(1) << __func__ << " state: " << state;
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
 
+  // Stop the startup deadline timer as something has happened.
+  startup_timeout_.Stop();
+
   switch (state) {
     case media::mojom::VideoCaptureState::STARTED:
       OnLog("VideoCaptureImpl changing state to VIDEO_CAPTURE_STATE_STARTED");
@@ -723,6 +729,8 @@ void VideoCaptureImpl::OnBufferDestroyed(int32_t buffer_id) {
   }
 }
 
+constexpr base::TimeDelta VideoCaptureImpl::kCaptureStartTimeout;
+
 void VideoCaptureImpl::OnAllClientsFinishedConsumingFrame(
     int buffer_id,
     scoped_refptr<BufferContext> buffer_context,
@@ -793,8 +801,20 @@ void VideoCaptureImpl::StartCaptureInternal() {
   state_ = VIDEO_CAPTURE_STATE_STARTING;
   OnLog("VideoCaptureImpl changing state to VIDEO_CAPTURE_STATE_STARTING");
 
+  if (base::FeatureList::IsEnabled(kTimeoutHangingVideoCaptureStarts)) {
+    startup_timeout_.Start(FROM_HERE, kCaptureStartTimeout,
+                           base::BindOnce(&VideoCaptureImpl::OnStartTimedout,
+                                          base::Unretained(this)));
+  }
+
   GetVideoCaptureHost()->Start(device_id_, session_id_, params_,
                                observer_receiver_.BindNewPipeAndPassRemote());
+}
+
+void VideoCaptureImpl::OnStartTimedout() {
+  DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+  OnLog("VideoCaptureImpl timed out during starting");
+  OnStateChanged(media::mojom::VideoCaptureState::FAILED);
 }
 
 void VideoCaptureImpl::OnDeviceSupportedFormats(
