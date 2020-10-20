@@ -322,7 +322,6 @@ class CORE_EXPORT WebFrameWidgetBase
   void CancelCompositionForPepper() override;
   void ApplyVisualProperties(
       const VisualProperties& visual_properties) override;
-  bool IsFullscreenGranted() override;
   bool PinchGestureActiveInMainFrame() override;
   float PageScaleInMainFrame() override;
   const ScreenInfo& GetScreenInfo() override;
@@ -615,6 +614,9 @@ class CORE_EXPORT WebFrameWidgetBase
   // Helper function to process events while pointer locked.
   void PointerLockMouseEvent(const WebCoalescedInputEvent&);
   bool IsPointerLocked();
+
+  // The fullscreen granted status from the most recent VisualProperties update.
+  bool IsFullscreenGranted();
 
   virtual PageWidgetEventHandler* GetPageWidgetEventHandler() = 0;
 

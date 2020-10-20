@@ -184,9 +184,6 @@ class WebFrameWidget : public WebWidget {
   // If the widget is currently selecting a range.
   virtual bool HandlingSelectRange() = 0;
 
-  // If fullscreen has been granted.
-  virtual bool IsFullscreenGranted() = 0;
-
   // Returns true if a pinch gesture is currently active in main frame.
   virtual bool PinchGestureActiveInMainFrame() = 0;
 

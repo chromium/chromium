@@ -1247,9 +1247,6 @@ void PepperPluginInstanceImpl::ViewChanged(
   if (desired_fullscreen_state_ || view_data_.is_fullscreen) {
     bool is_fullscreen_element = container_->IsFullscreenElement();
     if (!view_data_.is_fullscreen && desired_fullscreen_state_ &&
-        render_frame()
-            ->GetLocalRootRenderWidget()
-            ->IsFullscreenGrantedForFrame() &&
         is_fullscreen_element) {
       // Entered fullscreen. Only possible via SetFullscreen().
       view_data_.is_fullscreen = true;

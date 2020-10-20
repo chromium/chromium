@@ -478,10 +478,4 @@ void RenderWidget::DidNavigate(ukm::SourceId source_id, const GURL& url) {
   }
 }
 
-bool RenderWidget::IsFullscreenGrantedForFrame() {
-  if (!for_frame())
-    return false;
-  return GetFrameWidget()->IsFullscreenGranted();
-}
-
 }  // namespace content

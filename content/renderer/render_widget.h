@@ -221,9 +221,6 @@ class CONTENT_EXPORT RenderWidget
       base::OnceCallback<void(const gfx::PresentationFeedback&)>;
   virtual void RequestPresentation(PresentationTimeCallback callback);
 
-  // Determines if fullscreen is granted for the frame.
-  bool IsFullscreenGrantedForFrame();
-
  protected:
   // Destroy the RenderWidget. The |widget| is the owning pointer of |this|.
   virtual void Close(std::unique_ptr<RenderWidget> widget);
