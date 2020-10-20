@@ -3072,6 +3072,10 @@ test("base_unittests") {
       "win/wmi_unittest.cc",
       "win/wrapped_window_proc_unittest.cc",
     ]
+
+    if (enable_cet_shadow_stack) {
+      sources += [ "win/cet_shadow_stack_unittest.cc" ]
+    }
   }
 
   if (is_linux || is_chromeos) {

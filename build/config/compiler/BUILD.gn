@@ -2280,6 +2280,13 @@ config("win_pdbaltpath") {
   # build reproducibility. Debuggers look for pdb files next to executables,
   # so there's no downside to always using this.
   ldflags = [ "/pdbaltpath:%_PDB%" ]
+
+  if (enable_cet_shadow_stack && use_lld) {
+    # TODO(crbug.com/1136664): Investigate why Windows does not recognize
+    # CET in some binaries linked by LLD with /DEBUG.
+    # This is the best place for work around as it follows all /DEBUG uses.
+    ldflags += [ "/DEBUG:NONE" ]
+  }
 }
 
 # Full symbols.
@@ -2543,4 +2550,11 @@ buildflag_header("compiler_buildflags") {
   header = "compiler_buildflags.h"
 
   flags = [ "CLANG_PGO=$chrome_pgo_phase" ]
+}
+
+config("cet_shadow_stack") {
+  if (enable_cet_shadow_stack && is_win) {
+    assert(target_cpu == "x64")
+    ldflags = [ "/CETCOMPAT" ]
+  }
 }

@@ -97,6 +97,14 @@ declare_args() {
   # Where to redirect clang crash diagnoses
   clang_diagnostic_dir =
       rebase_path("//tools/clang/crashreports", root_build_dir)
+
+  # Experimental option to mark binaries as compatible with Shadow
+  # Stack of Control-flow Enforcement Technology (CET). If Windows version
+  # and hardware supports the feature and it's enabled by OS then additional
+  # additional validation of return address will be performed as mitigation
+  # against Return-oriented programming (ROP).
+  # https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#cet-shadow-stack
+  enable_cet_shadow_stack = false
 }
 
 assert(!is_cfi || use_thin_lto, "CFI requires ThinLTO")
