@@ -60,22 +60,19 @@ copy("copies") {
   deps = [
     ":copy_signing",
     "//chrome:entitlements",
-    "//chrome/installer/mac/third_party/bsdiff:goobsdiff($host_toolchain)",
+    "//chrome/installer/mac/third_party/bsdiff:goobsdiff",
     "//chrome/installer/mac/third_party/bsdiff:goobspatch",
     "//chrome/installer/mac/third_party/xz:lzma_decompress",
-    "//chrome/installer/mac/third_party/xz:xz($host_toolchain)",
+    "//chrome/installer/mac/third_party/xz:xz",
     "//chrome/installer/mac/third_party/xz:xzdec",
   ]
 
   sources = [
     "$root_gen_dir/chrome/app-entitlements.plist",
-    get_label_info(
-            "//chrome/installer/mac/third_party/bsdiff:goobsdiff($host_toolchain)",
-            "root_out_dir") + "/goobsdiff",
+    "$root_out_dir/goobsdiff",
     "$root_out_dir/goobspatch",
     "$root_out_dir/liblzma_decompress.dylib",
-    get_label_info("//chrome/installer/mac/third_party/xz:xz($host_toolchain)",
-                   "root_out_dir") + "/xz",
+    "$root_out_dir/xz",
     "$root_out_dir/xzdec",
     "//chrome/app/helper-gpu-entitlements.plist",
     "//chrome/app/helper-plugin-entitlements.plist",
@@ -140,4 +137,26 @@ group("mac_signing_tests") {
            "//testing/test_env.py",
            "//third_party/catapult/third_party/typ/",
          ]
+}
+
+config("fat_binary_config") {
+  visibility = [ "./*" ]
+
+  # Always build arm64 targets as universal (fat) binaries, since these need to
+  # run on both the install machine and the machine where the diff installers
+  # are created, and the latter is probably not arm64.
+  if (current_cpu == "arm64") {
+    fat_binary_flags = [
+      # Help the compiler find lipo for creating fat binaries.
+      "-B",
+      mac_bin_path,
+
+      "-arch",
+      "x86_64",
+      "-arch",
+      "arm64",
+    ]
+    cflags = fat_binary_flags
+    ldflags = fat_binary_flags
+  }
 }
