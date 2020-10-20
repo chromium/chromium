@@ -2214,6 +2214,23 @@ void StyleEngine::UpdateColorSchemeMetrics() {
     UseCounter::Count(GetDocument(),
                       WebFeature::kPreferredColorSchemeDarkSetting);
   }
+
+  // Record kColorSchemeDarkSupportedOnRoot if the meta color-scheme contains
+  // dark (though dark may not be used). This metric is also recorded in
+  // longhands_custom.cc (see: ColorScheme::ApplyValue) if the root style
+  // color-scheme contains dark.
+  if (meta_color_scheme_) {
+    const auto* scheme_list = DynamicTo<CSSValueList>(*meta_color_scheme_);
+    if (scheme_list) {
+      for (auto& item : *scheme_list) {
+        const auto* ident = DynamicTo<CSSIdentifierValue>(*item);
+        if (ident && ident->GetValueID() == CSSValueID::kDark) {
+          UseCounter::Count(GetDocument(),
+                            WebFeature::kColorSchemeDarkSupportedOnRoot);
+        }
+      }
+    }
+  }
 }
 
 void StyleEngine::ColorSchemeChanged() {

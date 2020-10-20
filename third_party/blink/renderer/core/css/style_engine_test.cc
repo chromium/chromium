@@ -1890,6 +1890,62 @@ TEST_F(StyleEngineTest, ForcedDarkModeMetric) {
   EXPECT_TRUE(IsUseCounted(WebFeature::kForcedDarkMode));
 }
 
+TEST_F(StyleEngineTest, ColorSchemeDarkSupportedOnRootMetricFromMetaDark) {
+  EXPECT_FALSE(IsUseCounted(WebFeature::kColorSchemeDarkSupportedOnRoot));
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <meta name="color-scheme" content="dark">
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kColorSchemeDarkSupportedOnRoot));
+}
+
+TEST_F(StyleEngineTest, ColorSchemeDarkSupportedOnRootMetricFromMetaLightDark) {
+  EXPECT_FALSE(IsUseCounted(WebFeature::kColorSchemeDarkSupportedOnRoot));
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <meta name="color-scheme" content="light dark">
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kColorSchemeDarkSupportedOnRoot));
+}
+
+TEST_F(StyleEngineTest, ColorSchemeDarkSupportedOnRootMetricFromCSSDark) {
+  EXPECT_FALSE(IsUseCounted(WebFeature::kColorSchemeDarkSupportedOnRoot));
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style> :root { color-scheme: dark; } </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kColorSchemeDarkSupportedOnRoot));
+}
+
+TEST_F(StyleEngineTest, ColorSchemeDarkSupportedOnRootMetricFromCSSLightDark) {
+  EXPECT_FALSE(IsUseCounted(WebFeature::kColorSchemeDarkSupportedOnRoot));
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style> :root { color-scheme: light dark; } </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kColorSchemeDarkSupportedOnRoot));
+}
+
+TEST_F(StyleEngineTest, ColorSchemeDarkSupportedOnRootMetricFromChildCSSDark) {
+  EXPECT_FALSE(IsUseCounted(WebFeature::kColorSchemeDarkSupportedOnRoot));
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style> div { color-scheme: dark; } </style>
+    <div></div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kColorSchemeDarkSupportedOnRoot));
+}
+
+TEST_F(StyleEngineTest, ColorSchemeDarkSupportedOnRootMetricFromLight) {
+  EXPECT_FALSE(IsUseCounted(WebFeature::kColorSchemeDarkSupportedOnRoot));
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <meta name="color-scheme" content="light">
+    <style> :root { color-scheme: light; } </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kColorSchemeDarkSupportedOnRoot));
+}
+
 TEST_F(StyleEngineTest, MediaQueriesReducedMotionOverride) {
   EXPECT_FALSE(GetDocument().GetSettings()->GetPrefersReducedMotion());
 

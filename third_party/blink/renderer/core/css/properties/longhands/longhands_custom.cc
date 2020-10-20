@@ -1644,6 +1644,15 @@ void ColorScheme::ApplyValue(StyleResolverState& state,
     }
     state.Style()->SetColorScheme(color_schemes);
     state.Style()->SetDarkColorScheme(has_dark && (!has_light || prefers_dark));
+
+    if (has_dark) {
+      // Record kColorSchemeDarkSupportedOnRoot if dark is present (though dark
+      // may not be used). This metric is also recorded in
+      // StyleEngine::UpdateColorSchemeMetrics if a meta tag supports dark.
+      auto& doc = state.GetDocument();
+      if (doc.documentElement() == state.ElementContext().GetElement())
+        UseCounter::Count(doc, WebFeature::kColorSchemeDarkSupportedOnRoot);
+    }
   } else {
     NOTREACHED();
   }
