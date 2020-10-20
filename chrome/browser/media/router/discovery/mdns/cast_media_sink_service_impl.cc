@@ -611,8 +611,8 @@ void CastMediaSinkServiceImpl::OnChannelOpenFailed(
 
   if (logger_.is_bound()) {
     logger_->LogError(mojom::LogCategory::kDiscovery, kLoggerComponent,
-                      "Cannot Open Channel for sink: " + sink.sink().id(), "",
-                      "", "");
+                      "Failed to open a channel for sink", sink.sink().id(), "",
+                      "");
   }
   RemoveSink(sink);
 }
