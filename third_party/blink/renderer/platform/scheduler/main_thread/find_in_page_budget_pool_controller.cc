@@ -59,7 +59,7 @@ void FindInPageBudgetPoolController::OnTaskCompleted(
   if (queue->GetPrioritisationType() ==
       MainThreadTaskQueue::QueueTraits::PrioritisationType::kFindInPage) {
     find_in_page_budget_pool_->RecordTaskRunTime(
-        queue, task_timing->start_time(), task_timing->end_time());
+        nullptr, task_timing->start_time(), task_timing->end_time());
   }
 
   bool is_exhausted = !find_in_page_budget_pool_->CanRunTasksAt(
