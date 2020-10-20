@@ -7,12 +7,14 @@
 #include "base/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/commander/commander_backend.h"
 #include "chrome/browser/ui/commander/commander_view_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
 #include "chrome/browser/ui/webui/commander/commander_ui.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
@@ -183,6 +185,10 @@ void CommanderFrontendViews::CreateWebView(Profile* profile) {
 
   web_view_ = std::make_unique<CommanderWebView>(profile);
   web_view_->set_allow_accelerators(true);
+  // Make the commander WebContents show up in the task manager.
+  content::WebContents* web_contents = web_view_->GetWebContents();
+  task_manager::WebContentsTags::CreateForToolContents(web_contents,
+                                                       IDS_COMMANDER_LABEL);
   if (show_requested_)
     Show(browser_);
 }

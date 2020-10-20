@@ -11017,6 +11017,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
              desc="Label of the textfield to choose a new name for a window.">
       Window name
     </message>
+    <message name="IDS_COMMANDER_LABEL"
+             desc="Label to identify the Commander feature in Task Manager">
+      Commander
+    </message>
   </messages>
 </release>
 </grit>
