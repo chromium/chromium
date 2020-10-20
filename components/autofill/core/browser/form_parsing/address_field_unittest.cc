@@ -160,6 +160,104 @@ TEST_F(AddressFieldTest, ParseStreetAddressFromTextArea) {
             field_candidates_map_[ASCIIToUTF16("addr")].BestHeuristicType());
 }
 
+// Tests that fields are classified as |ADDRESS_HOME_STREET_NAME| and
+// |ADDRESS_HOME_HOUSE_NUMBER| when they are labeled accordingly and
+// both are present.
+TEST_F(AddressFieldTest, ParseStreetNameAndHouseNumber) {
+  // TODO(crbug.com/1125978): Remove once launched.
+  base::test::ScopedFeatureList enabled;
+  enabled.InitAndEnableFeature(
+      features::kAutofillEnableSupportForMoreStructureInAddresses);
+
+  FormFieldData field;
+  field.form_control_type = "text";
+
+  field.label = ASCIIToUTF16("Street");
+  field.name = ASCIIToUTF16("street");
+  list_.push_back(
+      std::make_unique<AutofillField>(field, ASCIIToUTF16("street")));
+
+  field.label = ASCIIToUTF16("House number");
+  field.name = ASCIIToUTF16("house-number");
+  list_.push_back(
+      std::make_unique<AutofillField>(field, ASCIIToUTF16("house")));
+
+  AutofillScanner scanner(list_);
+  field_ = Parse(&scanner);
+  ASSERT_NE(nullptr, field_.get());
+  field_->AddClassificationsForTesting(&field_candidates_map_);
+
+  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("street")) !=
+              field_candidates_map_.end());
+  EXPECT_EQ(ADDRESS_HOME_STREET_NAME,
+            field_candidates_map_[ASCIIToUTF16("street")].BestHeuristicType());
+
+  ASSERT_TRUE(field_candidates_map_.find(ASCIIToUTF16("house")) !=
+              field_candidates_map_.end());
+  EXPECT_EQ(ADDRESS_HOME_HOUSE_NUMBER,
+            field_candidates_map_[ASCIIToUTF16("house")].BestHeuristicType());
+}
+
+// Tests that the field is not classified as |ADDRESS_HOME_STREET_NAME| when
+// it is labeled accordingly but adjacent field classified as
+// |ADDRESS_HOME_HOUSE_NUMBER| is absent.
+TEST_F(AddressFieldTest, NotParseStreetNameWithoutHouseNumber) {
+  // TODO(crbug.com/1125978): Remove once launched.
+  base::test::ScopedFeatureList enabled;
+  enabled.InitAndEnableFeature(
+      features::kAutofillEnableSupportForMoreStructureInAddresses);
+
+  FormFieldData field;
+  field.form_control_type = "text";
+
+  field.label = ASCIIToUTF16("Street");
+  field.name = ASCIIToUTF16("street");
+  list_.push_back(
+      std::make_unique<AutofillField>(field, ASCIIToUTF16("street")));
+
+  AutofillScanner scanner(list_);
+  field_ = Parse(&scanner);
+
+  if (!field_.get())
+    return;
+  field_->AddClassificationsForTesting(&field_candidates_map_);
+  if (field_candidates_map_.empty())
+    return;
+
+  EXPECT_NE(ADDRESS_HOME_STREET_NAME,
+            field_candidates_map_[ASCIIToUTF16("street")].BestHeuristicType());
+}
+
+// Tests that the field is not classified as |ADDRESS_HOME_HOUSE_NUMBER| when
+// it is labeled accordingly but adjacent field classified as
+// |ADDRESS_HOME_STREET_NAME| is absent.
+TEST_F(AddressFieldTest, NotParseHouseNumberWithoutStreetName) {
+  // TODO(crbug.com/1125978): Remove once launched.
+  base::test::ScopedFeatureList enabled;
+  enabled.InitAndEnableFeature(
+      features::kAutofillEnableSupportForMoreStructureInAddresses);
+
+  FormFieldData field;
+  field.form_control_type = "text";
+
+  field.label = ASCIIToUTF16("House number");
+  field.name = ASCIIToUTF16("house-number");
+  list_.push_back(
+      std::make_unique<AutofillField>(field, ASCIIToUTF16("house")));
+
+  AutofillScanner scanner(list_);
+  field_ = Parse(&scanner);
+
+  if (!field_.get())
+    return;
+  field_->AddClassificationsForTesting(&field_candidates_map_);
+  if (field_candidates_map_.empty())
+    return;
+
+  EXPECT_NE(ADDRESS_HOME_HOUSE_NUMBER,
+            field_candidates_map_[ASCIIToUTF16("house")].BestHeuristicType());
+}
+
 TEST_F(AddressFieldTest, ParseCity) {
   FormFieldData field;
   field.form_control_type = "text";
