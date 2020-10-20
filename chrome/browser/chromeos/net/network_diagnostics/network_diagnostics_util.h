@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "url/gurl.h"
+
 class Profile;
 
 namespace chromeos {
@@ -63,6 +65,15 @@ std::vector<std::string> GetRandomHostsWithSchemeAndGenerate204Path(
     int num_hosts,
     int prefix_length,
     std::string scheme);
+
+// Similar to GetRandomAndFixedHostsWithSchemeAndPort, but with |port_number|
+// and 204 path appended to the hosts. E.g. A host will look like:
+// "https://www.google.com:443/generate_204/".
+std::vector<GURL> GetRandomHostsWithSchemeAndPortAndGenerate204Path(
+    int num_hosts,
+    int prefix_length,
+    std::string scheme,
+    int port_number);
 
 // Returns the profile associated with this account.
 Profile* GetUserProfile();

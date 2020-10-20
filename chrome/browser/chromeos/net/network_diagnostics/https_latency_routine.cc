@@ -26,9 +26,9 @@ namespace {
 constexpr int kTotalHostsToQuery = 3;
 // The length of a random eight letter prefix.
 constexpr int kHostPrefixLength = 8;
-constexpr int kHttpPort = 80;
+constexpr int kHttpsPort = 443;
 constexpr char kHttpsScheme[] = "https://";
-constexpr base::TimeDelta ksRequestTimeoutMs =
+constexpr base::TimeDelta kRequestTimeoutMs =
     base::TimeDelta::FromMilliseconds(5 * 1000);
 // Requests taking longer than 1000 ms are problematic.
 constexpr base::TimeDelta kProblemLatencyMs =
@@ -50,12 +50,24 @@ base::TimeDelta MedianLatency(std::vector<base::TimeDelta>& latencies) {
   return sum / 2.0;
 }
 
+network::mojom::NetworkContext* GetNetworkContext() {
+  Profile* profile = util::GetUserProfile();
+
+  return content::BrowserContext::GetDefaultStoragePartition(profile)
+      ->GetNetworkContext();
+}
+
+std::unique_ptr<HttpRequestManager> GetHttpRequestManager() {
+  return std::make_unique<HttpRequestManager>(util::GetUserProfile());
+}
+
 }  // namespace
 
 class HttpsLatencyRoutine::HostResolver
     : public network::ResolveHostClientBase {
  public:
-  explicit HostResolver(HttpsLatencyRoutine* https_latency_routine);
+  HostResolver(network::mojom::NetworkContext* network_context,
+               HttpsLatencyRoutine* https_latency);
   HostResolver(const HostResolver&) = delete;
   HostResolver& operator=(const HostResolver&) = delete;
   ~HostResolver() override;
@@ -67,38 +79,28 @@ class HttpsLatencyRoutine::HostResolver
       const base::Optional<net::AddressList>& resolved_addresses) override;
 
   // Performs the DNS resolution.
-  void Run(const std::string& hostname);
+  void Run(const GURL& url);
 
   network::mojom::NetworkContext* network_context() const {
     return network_context_;
   }
-  Profile* profile() const { return profile_; }
-  void set_network_context_for_testing(
-      network::mojom::NetworkContext* network_context) {
-    network_context_ = network_context;
-  }
-  void set_profile_for_testing(Profile* profile) { profile_ = profile; }
 
  private:
   void CreateHostResolver();
   void OnMojoConnectionError();
 
-  Profile* profile_ = nullptr;                                 // Unowned
   network::mojom::NetworkContext* network_context_ = nullptr;  // Unowned
-  HttpsLatencyRoutine* https_latency_routine_ = nullptr;       // Unowned
+  HttpsLatencyRoutine* https_latency_;                         // Unowned
   mojo::Receiver<network::mojom::ResolveHostClient> receiver_{this};
   mojo::Remote<network::mojom::HostResolver> host_resolver_;
 };
 
 HttpsLatencyRoutine::HostResolver::HostResolver(
-    HttpsLatencyRoutine* https_latency_routine)
-    : profile_(util::GetUserProfile()),
-      network_context_(
-          content::BrowserContext::GetDefaultStoragePartition(profile_)
-              ->GetNetworkContext()),
-      https_latency_routine_(https_latency_routine) {
-  DCHECK(https_latency_routine_);
+    network::mojom::NetworkContext* network_context,
+    HttpsLatencyRoutine* https_latency)
+    : network_context_(network_context), https_latency_(https_latency) {
   DCHECK(network_context_);
+  DCHECK(https_latency_);
 }
 
 HttpsLatencyRoutine::HostResolver::~HostResolver() = default;
@@ -108,15 +110,14 @@ void HttpsLatencyRoutine::HostResolver::OnComplete(
     const net::ResolveErrorInfo& resolve_error_info,
     const base::Optional<net::AddressList>& resolved_addresses) {
   receiver_.reset();
+  host_resolver_.reset();
 
-  https_latency_routine_->OnHostResolutionComplete(result, resolve_error_info,
-                                                   resolved_addresses);
+  https_latency_->OnHostResolutionComplete(result, resolve_error_info,
+                                           resolved_addresses);
 }
 
-void HttpsLatencyRoutine::HostResolver::Run(const std::string& hostname) {
-  if (!host_resolver_) {
-    CreateHostResolver();
-  }
+void HttpsLatencyRoutine::HostResolver::Run(const GURL& url) {
+  CreateHostResolver();
   DCHECK(host_resolver_);
   DCHECK(!receiver_.is_bound());
 
@@ -127,14 +128,13 @@ void HttpsLatencyRoutine::HostResolver::Run(const std::string& hostname) {
   parameters->cache_usage =
       network::mojom::ResolveHostParameters::CacheUsage::DISALLOWED;
 
-  host_resolver_->ResolveHost(net::HostPortPair(hostname, kHttpPort),
+  host_resolver_->ResolveHost(net::HostPortPair::FromURL(url),
                               net::NetworkIsolationKey::CreateTransient(),
                               std::move(parameters),
                               receiver_.BindNewPipeAndPassRemote());
 }
 
 void HttpsLatencyRoutine::HostResolver::CreateHostResolver() {
-  host_resolver_.reset();
   network_context()->CreateHostResolver(
       net::DnsConfigOverrides(), host_resolver_.BindNewPipeAndPassReceiver());
   // Disconnect handler will be invoked if the network service crashes.
@@ -143,22 +143,24 @@ void HttpsLatencyRoutine::HostResolver::CreateHostResolver() {
 }
 
 void HttpsLatencyRoutine::HostResolver::OnMojoConnectionError() {
-  CreateHostResolver();
   OnComplete(net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
              base::nullopt);
 }
 
 HttpsLatencyRoutine::HttpsLatencyRoutine()
-    : tick_clock_(base::DefaultTickClock::GetInstance()),
+    : network_context_getter_(base::BindRepeating(&GetNetworkContext)),
+      http_request_manager_getter_(base::BindRepeating(&GetHttpRequestManager)),
+      tick_clock_(base::DefaultTickClock::GetInstance()),
       hostnames_to_query_dns_(
-          util::GetRandomHostsWithSchemeAndGenerate204Path(kTotalHostsToQuery,
-                                                           kHostPrefixLength,
-                                                           kHttpsScheme)),
-      hostnames_to_query_https_(hostnames_to_query_dns_),
-      host_resolver_(std::make_unique<HostResolver>(this)),
-      http_request_manager_(
-          std::make_unique<HttpRequestManager>(host_resolver_->profile())) {
-  DCHECK(http_request_manager_);
+          util::GetRandomHostsWithSchemeAndPortAndGenerate204Path(
+              kTotalHostsToQuery,
+              kHostPrefixLength,
+              kHttpsScheme,
+              kHttpsPort)),
+      hostnames_to_query_https_(hostnames_to_query_dns_) {
+  DCHECK(network_context_getter_);
+  DCHECK(http_request_manager_getter_);
+  DCHECK(tick_clock_);
 }
 
 HttpsLatencyRoutine::~HttpsLatencyRoutine() = default;
@@ -197,9 +199,15 @@ void HttpsLatencyRoutine::AnalyzeResultsAndExecuteCallback() {
 }
 
 void HttpsLatencyRoutine::AttemptNextResolution() {
-  std::string hostname = hostnames_to_query_dns_.back();
+  network::mojom::NetworkContext* network_context =
+      network_context_getter_.Run();
+  DCHECK(network_context);
+
+  host_resolver_ = std::make_unique<HostResolver>(network_context, this);
+
+  GURL url = hostnames_to_query_dns_.back();
   hostnames_to_query_dns_.pop_back();
-  host_resolver_->Run(hostname);
+  host_resolver_->Run(url);
 }
 
 void HttpsLatencyRoutine::OnHostResolutionComplete(
@@ -220,21 +228,13 @@ void HttpsLatencyRoutine::OnHostResolutionComplete(
   MakeHttpsRequest();
 }
 
-void HttpsLatencyRoutine::SetNetworkContextForTesting(
-    network::mojom::NetworkContext* network_context) {
-  host_resolver_->set_network_context_for_testing(network_context);
-}
-
-void HttpsLatencyRoutine::SetProfileForTesting(Profile* profile) {
-  host_resolver_->set_profile_for_testing(profile);
-}
-
 void HttpsLatencyRoutine::MakeHttpsRequest() {
-  std::string hostname = hostnames_to_query_https_.back();
+  GURL url = hostnames_to_query_https_.back();
   hostnames_to_query_https_.pop_back();
   request_start_time_ = tick_clock_->NowTicks();
+  http_request_manager_ = http_request_manager_getter_.Run();
   http_request_manager_->MakeRequest(
-      GURL(hostname), ksRequestTimeoutMs,
+      url, kRequestTimeoutMs,
       base::BindOnce(&HttpsLatencyRoutine::OnHttpsRequestComplete, weak_ptr()));
 }
 

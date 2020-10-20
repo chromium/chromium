@@ -58,9 +58,9 @@ class FakeHostResolver : public network::mojom::HostResolver {
   };
 
   FakeHostResolver(mojo::PendingReceiver<network::mojom::HostResolver> receiver,
-                   std::deque<DnsResult*> fake_dns_results)
+                   DnsResult* fake_dns_result)
       : receiver_(this, std::move(receiver)),
-        fake_dns_results_(std::move(fake_dns_results)) {}
+        fake_dns_result_(fake_dns_result) {}
   ~FakeHostResolver() override {}
 
   // network::mojom::HostResolver
@@ -71,11 +71,9 @@ class FakeHostResolver : public network::mojom::HostResolver {
                        pending_response_client) override {
     mojo::Remote<network::mojom::ResolveHostClient> response_client(
         std::move(pending_response_client));
-    DnsResult* result = fake_dns_results_.front();
-    DCHECK(result);
-    fake_dns_results_.pop_front();
-    response_client->OnComplete(result->result, result->resolve_error_info,
-                                result->resolved_addresses);
+    response_client->OnComplete(fake_dns_result_->result,
+                                fake_dns_result_->resolve_error_info,
+                                fake_dns_result_->resolved_addresses);
   }
   void MdnsListen(
       const net::HostPortPair& host,
@@ -87,9 +85,7 @@ class FakeHostResolver : public network::mojom::HostResolver {
 
  private:
   mojo::Receiver<network::mojom::HostResolver> receiver_;
-  // Use the list of fake dns results to fake different responses for multiple
-  // calls to the host_resolver's ResolveHost().
-  std::deque<DnsResult*> fake_dns_results_;
+  DnsResult* fake_dns_result_;
 };
 
 class FakeNetworkContext : public network::TestNetworkContext {
@@ -106,9 +102,11 @@ class FakeNetworkContext : public network::TestNetworkContext {
   void CreateHostResolver(
       const base::Optional<net::DnsConfigOverrides>& config_overrides,
       mojo::PendingReceiver<network::mojom::HostResolver> receiver) override {
-    ASSERT_FALSE(resolver_);
-    resolver_ = std::make_unique<FakeHostResolver>(
-        std::move(receiver), std::move(fake_dns_results_));
+    FakeHostResolver::DnsResult* result = fake_dns_results_.front();
+    DCHECK(result);
+
+    fake_dns_results_.pop_front();
+    resolver_ = std::make_unique<FakeHostResolver>(std::move(receiver), result);
   }
 
  private:
@@ -200,24 +198,29 @@ class HttpsLatencyRoutineTest : public ::testing::Test {
                     const base::TickClock* fake_tick_clock) {
     ASSERT_TRUE(profile_manager_.SetUp());
 
-    // DNS-related fakes.
+    // Set up the network context.
     fake_network_context_ =
         std::make_unique<FakeNetworkContext>(std::move(fake_dns_results));
     test_profile_ = profile_manager_.CreateTestingProfile(kFakeTestProfile);
 
-    // HTTPS-related fakes.
-    std::unique_ptr<FakeHttpRequestManager> fake_http_request_manager =
-        std::make_unique<FakeHttpRequestManager>();
-    fake_http_request_manager->set_connected(connected);
-    https_latency_routine_ = std::make_unique<HttpsLatencyRoutine>();
-
     // Set up routine with fakes.
-    https_latency_routine_->SetNetworkContextForTesting(
-        fake_network_context_.get());
-    https_latency_routine_->SetProfileForTesting(test_profile_);
+    https_latency_routine_ = std::make_unique<HttpsLatencyRoutine>();
+    https_latency_routine_->set_network_context_getter(base::BindRepeating(
+        &HttpsLatencyRoutineTest::GetNetworkContext, base::Unretained(this)));
+    https_latency_routine_->set_http_request_manager_getter(
+        base::BindRepeating(&HttpsLatencyRoutineTest::GetHttpRequestManager,
+                            base::Unretained(this), connected));
     https_latency_routine_->set_tick_clock_for_testing(fake_tick_clock);
-    https_latency_routine_->set_http_request_manager_for_testing(
-        std::move(fake_http_request_manager));
+  }
+
+  network::mojom::NetworkContext* GetNetworkContext() {
+    return fake_network_context_.get();
+  }
+
+  std::unique_ptr<HttpRequestManager> GetHttpRequestManager(bool connected) {
+    auto http_request_manager = std::make_unique<FakeHttpRequestManager>();
+    http_request_manager->set_connected(connected);
+    return std::move(http_request_manager);
   }
 
   base::WeakPtr<HttpsLatencyRoutineTest> weak_ptr() {

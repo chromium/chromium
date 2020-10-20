@@ -18,10 +18,9 @@
 #include "net/dns/public/resolve_error_info.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
+#include "url/gurl.h"
 
 class HttpRequestManager;
-
-class Profile;
 
 namespace base {
 class TickClock;
@@ -41,6 +40,10 @@ namespace network_diagnostics {
 class HttpsLatencyRoutine : public NetworkDiagnosticsRoutine {
  public:
   class HostResolver;
+  using NetworkContextGetter =
+      base::RepeatingCallback<network::mojom::NetworkContext*()>;
+  using HttpRequestManagerGetter =
+      base::RepeatingCallback<std::unique_ptr<HttpRequestManager>()>;
   using HttpsLatencyRoutineCallback =
       mojom::NetworkDiagnosticsRoutines::HttpsLatencyCallback;
 
@@ -63,14 +66,15 @@ class HttpsLatencyRoutine : public NetworkDiagnosticsRoutine {
       const net::ResolveErrorInfo& resolve_error_info,
       const base::Optional<net::AddressList>& resolved_addresses);
 
-  void SetNetworkContextForTesting(
-      network::mojom::NetworkContext* network_context);
-  void SetProfileForTesting(Profile* profile);
+  // Sets the NetworkContextGetter for testing.
+  void set_network_context_getter(NetworkContextGetter network_context_getter) {
+    network_context_getter_ = std::move(network_context_getter);
+  }
 
-  // HttpRequestManager setter for tests.
-  void set_http_request_manager_for_testing(
-      std::unique_ptr<HttpRequestManager> http_request_manager) {
-    http_request_manager_ = std::move(http_request_manager);
+  // Sets the HttpRequestManager for testing.
+  void set_http_request_manager_getter(
+      HttpRequestManagerGetter http_request_manager_getter) {
+    http_request_manager_getter_ = std::move(http_request_manager_getter);
   }
 
   // Mimics actual time conditions.
@@ -81,22 +85,27 @@ class HttpsLatencyRoutine : public NetworkDiagnosticsRoutine {
  private:
   // Attempts the next DNS resolution.
   void AttemptNextResolution();
-  // Makes a https request to the host.
+
+  // Makes an HTTPS request to the host.
   void MakeHttpsRequest();
-  // Processes the results of an https request.
+
+  // Processes the results of an HTTPS request.
   void OnHttpsRequestComplete(bool connected);
+
   // Returns the weak pointer to |this|.
   base::WeakPtr<HttpsLatencyRoutine> weak_ptr() {
     return weak_factory_.GetWeakPtr();
   }
 
+  NetworkContextGetter network_context_getter_;
+  HttpRequestManagerGetter http_request_manager_getter_;
   bool successfully_resolved_hosts_ = true;
   bool failed_connection_ = false;
   const base::TickClock* tick_clock_ = nullptr;  // Unowned
   base::TimeTicks request_start_time_;
   base::TimeTicks request_end_time_;
-  std::vector<std::string> hostnames_to_query_dns_;
-  std::vector<std::string> hostnames_to_query_https_;
+  std::vector<GURL> hostnames_to_query_dns_;
+  std::vector<GURL> hostnames_to_query_https_;
   std::vector<base::TimeDelta> latencies_;
   std::unique_ptr<HostResolver> host_resolver_;
   std::unique_ptr<HttpRequestManager> http_request_manager_;

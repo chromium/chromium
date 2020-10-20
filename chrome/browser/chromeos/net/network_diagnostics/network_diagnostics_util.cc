@@ -126,8 +126,27 @@ std::vector<std::string> GetRandomHostsWithSchemeAndGenerate204Path(
   return hosts;
 }
 
+std::vector<GURL> GetRandomHostsWithSchemeAndPortAndGenerate204Path(
+    int num_hosts,
+    int prefix_length,
+    std::string scheme,
+    int port_number) {
+  const auto& hosts = GetRandomHosts(num_hosts, prefix_length);
+  std::vector<GURL> urls;
+  for (auto& host : hosts) {
+    auto url = GURL(scheme + host + ":" + base::NumberToString(port_number) +
+                    kGenerate204Path);
+    DCHECK(url.is_valid());
+    urls.push_back(url);
+  }
+  return urls;
+}
+
 Profile* GetUserProfile() {
-  return ProfileManager::GetPrimaryUserProfile();
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  DCHECK(profile);
+
+  return profile;
 }
 
 }  // namespace util
