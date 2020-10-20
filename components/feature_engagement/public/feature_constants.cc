@@ -122,7 +122,7 @@ const base::Feature kIPHChromeReengagementNotification2Feature{
 const base::Feature kIPHChromeReengagementNotification3Feature{
     "IPH_ChromeReengagementNotification3", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHPwaInstallAvailableFeature{
-    "IPH_PwaInstallAvailable", base::FEATURE_ENABLED_BY_DEFAULT};
+    "IPH_PwaInstallAvailable", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_IOS)
