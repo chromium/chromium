@@ -13,6 +13,8 @@
 #error "This file requires ARC support."
 #endif
 
+@protocol TabStripContaining;
+
 @implementation TabStripCoordinator
 
 #pragma mark - ChromeCoordinator
