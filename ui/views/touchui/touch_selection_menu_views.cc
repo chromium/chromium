@@ -5,6 +5,7 @@
 #include "ui/views/touchui/touch_selection_menu_views.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -123,27 +124,33 @@ TouchSelectionMenuViews::~TouchSelectionMenuViews() = default;
 
 void TouchSelectionMenuViews::CreateButtons() {
   for (const auto& command : kMenuCommands) {
-    if (!client_->IsCommandIdEnabled(command.command_id))
-      continue;
-
-    Button* button =
-        CreateButton(l10n_util::GetStringUTF16(command.message_id));
-    button->set_tag(command.command_id);
-    AddChildView(button);
+    if (client_->IsCommandIdEnabled(command.command_id)) {
+      CreateButton(
+          l10n_util::GetStringUTF16(command.message_id),
+          base::BindRepeating(&TouchSelectionMenuViews::ButtonPressed,
+                              base::Unretained(this), command.command_id));
+    }
   }
 
   // Finally, add ellipsis button.
-  LabelButton* ellipsis_button = CreateButton(base::ASCIIToUTF16("..."));
-  ellipsis_button->SetID(ButtonViewId::kEllipsisButton);
-  AddChildView(ellipsis_button);
+  CreateButton(base::ASCIIToUTF16("..."),
+               base::BindRepeating(
+                   [](TouchSelectionMenuViews* menu) {
+                     menu->CloseMenu();
+                     menu->client_->RunContextMenu();
+                   },
+                   base::Unretained(this)))
+      ->SetID(ButtonViewId::kEllipsisButton);
   InvalidateLayout();
 }
 
 LabelButton* TouchSelectionMenuViews::CreateButton(
-    const base::string16& title) {
+    const base::string16& title,
+    Button::PressedCallback callback) {
   base::string16 label =
       gfx::RemoveAcceleratorChar(title, '&', nullptr, nullptr);
-  LabelButton* button = new LabelButton(this, label, style::CONTEXT_TOUCH_MENU);
+  auto* button = AddChildView(std::make_unique<LabelButton>(
+      std::move(callback), label, style::CONTEXT_TOUCH_MENU));
   constexpr gfx::Size kMenuButtonMinSize = gfx::Size(63, 38);
   button->SetMinSize(kMenuButtonMinSize);
   button->SetFocusForPlatform();
@@ -179,13 +186,10 @@ void TouchSelectionMenuViews::WindowClosing() {
     DisconnectOwner();
 }
 
-void TouchSelectionMenuViews::ButtonPressed(Button* sender,
+void TouchSelectionMenuViews::ButtonPressed(int command,
                                             const ui::Event& event) {
   CloseMenu();
-  if (sender->GetID() != ButtonViewId::kEllipsisButton)
-    client_->ExecuteCommand(sender->tag(), event.flags());
-  else
-    client_->RunContextMenu();
+  client_->ExecuteCommand(command, event.flags());
 }
 
 BEGIN_METADATA(TouchSelectionMenuViews, BubbleDialogDelegateView)

@@ -51,10 +51,10 @@ void TouchSelectionMenuChromeOS::SetActionsForTesting(
 
 void TouchSelectionMenuChromeOS::CreateButtons() {
   if (action_) {
-    views::LabelButton* button =
-        CreateButton(base::UTF8ToUTF16(action_->title));
-    button->set_tag(kSmartTextSelectionActionTag);
-
+    views::LabelButton* button = CreateButton(
+        base::UTF8ToUTF16(action_->title),
+        base::BindRepeating(&TouchSelectionMenuChromeOS::ActionButtonPressed,
+                            base::Unretained(this)));
     if (action_->bitmap_icon) {
       gfx::ImageSkia original(
           gfx::ImageSkia::CreateFrom1xBitmap(action_->bitmap_icon.value()));
@@ -63,20 +63,21 @@ void TouchSelectionMenuChromeOS::CreateButtons() {
           gfx::Size(kSmallIconSizeInDip, kSmallIconSizeInDip));
       button->SetImage(views::Button::ButtonState::STATE_NORMAL, icon);
     }
-
-    AddChildView(button);
   }
 
   views::TouchSelectionMenuViews::CreateButtons();
 }
 
-void TouchSelectionMenuChromeOS::ButtonPressed(views::Button* sender,
-                                               const ui::Event& event) {
-  if (sender->tag() != kSmartTextSelectionActionTag) {
-    views::TouchSelectionMenuViews::ButtonPressed(sender, event);
-    return;
-  }
+void TouchSelectionMenuChromeOS::OnBeforeBubbleWidgetInit(
+    views::Widget::InitParams* params,
+    views::Widget* widget) const {
+  ash_util::SetupWidgetInitParamsForContainer(
+      params, ash::kShellWindowId_SettingBubbleContainer);
+}
 
+TouchSelectionMenuChromeOS::~TouchSelectionMenuChromeOS() = default;
+
+void TouchSelectionMenuChromeOS::ActionButtonPressed() {
   auto* arc_service_manager = arc::ArcServiceManager::Get();
   if (!arc_service_manager)
     return;
@@ -88,12 +89,3 @@ void TouchSelectionMenuChromeOS::ButtonPressed(views::Button* sender,
   instance->HandleIntent(std::move(action_->action_intent),
                          std::move(action_->activity));
 }
-
-void TouchSelectionMenuChromeOS::OnBeforeBubbleWidgetInit(
-    views::Widget::InitParams* params,
-    views::Widget* widget) const {
-  ash_util::SetupWidgetInitParamsForContainer(
-      params, ash::kShellWindowId_SettingBubbleContainer);
-}
-
-TouchSelectionMenuChromeOS::~TouchSelectionMenuChromeOS() = default;

@@ -7,7 +7,6 @@
 
 #include "base/macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/touchui/touch_selection_menu_runner_views.h"
 
 namespace ui {
@@ -19,8 +18,7 @@ class LabelButton;
 
 // A bubble that contains actions available for the selected text. An object of
 // this type, as a BubbleDialogDelegateView, manages its own lifetime.
-class VIEWS_EXPORT TouchSelectionMenuViews : public BubbleDialogDelegateView,
-                                             public ButtonListener {
+class VIEWS_EXPORT TouchSelectionMenuViews : public BubbleDialogDelegateView {
  public:
   METADATA_HEADER(TouchSelectionMenuViews);
 
@@ -47,13 +45,13 @@ class VIEWS_EXPORT TouchSelectionMenuViews : public BubbleDialogDelegateView,
   virtual void CreateButtons();
 
   // Helper method to create a single button.
-  LabelButton* CreateButton(const base::string16& title);
-
-  // ButtonListener:
-  void ButtonPressed(Button* sender, const ui::Event& event) override;
+  LabelButton* CreateButton(const base::string16& title,
+                            Button::PressedCallback callback);
 
  private:
   friend class TouchSelectionMenuRunnerViews::TestApi;
+
+  void ButtonPressed(int command, const ui::Event& event);
 
   // Helper to disconnect this menu object from its owning menu runner.
   void DisconnectOwner();
