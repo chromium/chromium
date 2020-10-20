@@ -1612,351 +1612,346 @@
     'gpu_angle_deqp_egl_d3d11_gtests': {
       'angle_deqp_egl_d3d11_tests': {
         'args': [
-          '--test-launcher-batch-limit=400',
-          '--deqp-egl-display-type=angle-d3d11',
+          'standalone_angle_deqp_egl_tests',
+          '--use-angle=d3d11',
+          '--bot-mode',
         ],
-        'should_retry_with_patch': False,
-        'swarming': {
-          'shards': 4,
-        },
-        'test': 'angle_deqp_egl_tests',
+        'test': 'standalone_angle_deqp_egl_tests',
+        'use_isolated_scripts_api': True,
       },
     },
 
     'gpu_angle_deqp_egl_gl_gtests': {
       'angle_deqp_egl_gl_tests': {
         'args': [
-          '--test-launcher-batch-limit=400',
-          '--deqp-egl-display-type=angle-gl',
+          'standalone_angle_deqp_egl_tests',
+          '--use-angle=gl',
+          '--bot-mode',
+          # Flaky when run with multiple processes.
+          '--max-processes=1',
         ],
-        'linux_args': ['--no-xvfb'],
-        'should_retry_with_patch': False,
-        'swarming': {
-          'shards': 4,
-        },
-        'test': 'angle_deqp_egl_tests',
+        'test': 'standalone_angle_deqp_egl_tests',
+        'use_isolated_scripts_api': True,
       },
     },
 
     'gpu_angle_deqp_egl_gles_gtests': {
       'angle_deqp_egl_gles_tests': {
+        'args': [
+          'standalone_angle_deqp_egl_tests',
+          '--use-angle=gles',
+        ],
         'android_args': [
-          '--enable-xml-result-parsing',
+          '-v',
           '--shard-timeout=500',
         ],
-        'args': [
-          '--deqp-egl-display-type=angle-gles',
-        ],
-        'desktop_args': [
-          '--test-launcher-batch-limit=400',
-        ],
-        'linux_args': ['--no-xvfb'],
-        'should_retry_with_patch': False,
-        'swarming': {
+        'android_swarming': {
           'shards': 4,
         },
-        'test': 'angle_deqp_egl_tests',
+        'test': 'standalone_angle_deqp_egl_tests',
+        'use_isolated_scripts_api': True,
       },
     },
 
     'gpu_angle_deqp_egl_metal_gtests': {
       'angle_deqp_egl_metal_tests': {
         'args': [
-          '--test-launcher-batch-limit=0',
-          '--deqp-egl-display-type=angle-metal',
+          'standalone_angle_deqp_egl_tests',
+          '--use-angle=metal',
+          '--bot-mode',
         ],
-        'should_retry_with_patch': False,
-        'swarming': {
-          'shards': 1,
-        },
-        'test': 'angle_deqp_egl_tests',
+        'test': 'standalone_angle_deqp_egl_tests',
+        'use_isolated_scripts_api': True,
       },
     },
 
     'gpu_angle_deqp_egl_vulkan_gtests': {
       'angle_deqp_egl_vulkan_tests': {
-        'android_args': [
-          '--enable-xml-result-parsing',
-          '--shard-timeout=500'
-        ],
         'args': [
-          '--deqp-egl-display-type=angle-vulkan',
+          'standalone_angle_deqp_egl_tests',
+          '--use-angle=vulkan',
         ],
-        'desktop_args': [
-          '--test-launcher-batch-limit=400',
+        'android_args': [
+          '-v',
+          '--shard-timeout=500',
         ],
-        'linux_args': ['--no-xvfb'],
-        'should_retry_with_patch': False,
-        'swarming': {
+        'android_swarming': {
           'shards': 4,
         },
-        'test': 'angle_deqp_egl_tests',
+        'desktop_args': [
+          '--bot-mode',
+        ],
+        'swarming': {
+          'shards': 2,
+        },
+        'test': 'standalone_angle_deqp_egl_tests',
+        'use_isolated_scripts_api': True,
       },
     },
 
     'gpu_angle_deqp_gles2_d3d11_gtests': {
       'angle_deqp_gles2_d3d11_tests': {
         'args': [
-          '--test-launcher-batch-limit=400',
-          '--deqp-egl-display-type=angle-d3d11',
+          'standalone_angle_deqp_gles2_tests',
+          '--use-angle=d3d11',
+          '--bot-mode',
         ],
-        'should_retry_with_patch': False,
-        'swarming': {
-          'shards': 4,
-        },
-        'test': 'angle_deqp_gles2_tests',
+        'test': 'standalone_angle_deqp_gles2_tests',
+        'use_isolated_scripts_api': True,
       },
     },
 
     'gpu_angle_deqp_gles2_gl_gtests': {
       'angle_deqp_gles2_gl_tests': {
         'args': [
-          '--test-launcher-batch-limit=400',
-          '--deqp-egl-display-type=angle-gl',
+          'standalone_angle_deqp_gles2_tests',
+          '--use-angle=gl',
+          '--bot-mode',
         ],
-        'linux_args': ['--no-xvfb'],
-        'should_retry_with_patch': False,
-        'swarming': {
+        'test': 'standalone_angle_deqp_gles2_tests',
+        'use_isolated_scripts_api': True,
+      },
+    },
+
+    'gpu_angle_deqp_gles2_gles_gtests': {
+      'angle_deqp_gles2_gles_tests': {
+        'args': [
+          'standalone_angle_deqp_gles2_tests',
+          '--use-angle=gles',
+        ],
+        'android_args': [
+          '-v',
+          '--shard-timeout=500',
+        ],
+        'android_swarming': {
           'shards': 4,
         },
-        'test': 'angle_deqp_gles2_tests',
+        'desktop_args': [
+          '--bot-mode',
+        ],
+        'test': 'standalone_angle_deqp_gles2_tests',
+        'use_isolated_scripts_api': True,
       },
     },
 
     'gpu_angle_deqp_gles2_metal_gtests': {
       'angle_deqp_gles2_metal_tests': {
         'args': [
-          '--test-launcher-batch-limit=0',
-          '--deqp-egl-display-type=angle-metal',
+          'standalone_angle_deqp_gles2_tests',
+          '--use-angle=metal',
         ],
-        'should_retry_with_patch': False,
-        'swarming': {
-          'shards': 1,
-        },
-        'test': 'angle_deqp_gles2_tests',
+        'desktop_args': [
+          '--bot-mode',
+        ],
+        'test': 'standalone_angle_deqp_gles2_tests',
+        'use_isolated_scripts_api': True,
       },
     },
 
     'gpu_angle_deqp_gles2_vulkan_gtests': {
       'angle_deqp_gles2_vulkan_tests': {
-        'android_args': [
-          '--enable-xml-result-parsing',
-          '--shard-timeout=500'
-        ],
         'args': [
-          '--deqp-egl-display-type=angle-vulkan',
+          'standalone_angle_deqp_gles2_tests',
+          '--use-angle=vulkan',
         ],
-        'desktop_args': [
-          '--test-launcher-batch-limit=400',
+        'android_args': [
+          '-v',
+          '--shard-timeout=500',
         ],
-        'linux_args': ['--no-xvfb'],
-        'should_retry_with_patch': False,
-        'swarming': {
+        'android_swarming': {
           'shards': 4,
         },
-        'test': 'angle_deqp_gles2_tests',
+        'desktop_args': [
+          '--bot-mode',
+        ],
+        'test': 'standalone_angle_deqp_gles2_tests',
+        'use_isolated_scripts_api': True,
       },
     },
 
     'gpu_angle_deqp_gles31_d3d11_gtests': {
       'angle_deqp_gles31_d3d11_tests': {
         'args': [
-          '--test-launcher-batch-limit=400',
-          '--deqp-egl-display-type=angle-d3d11'
+          'standalone_angle_deqp_gles31_tests',
+          '--use-angle=d3d11',
+          '--bot-mode',
         ],
-        'should_retry_with_patch': False,
         'swarming': {
-          'shards': 10,
+          'shards': 2,
         },
-        'test': 'angle_deqp_gles31_tests',
+        'test': 'standalone_angle_deqp_gles31_tests',
+        'use_isolated_scripts_api': True,
       },
     },
 
     'gpu_angle_deqp_gles31_gl_gtests': {
       'angle_deqp_gles31_gl_tests': {
         'args': [
-          '--test-launcher-batch-limit=400',
-          '--deqp-egl-display-type=angle-gl'
+          'standalone_angle_deqp_gles31_tests',
+          '--use-angle=gl',
+          '--bot-mode',
         ],
-        'linux_args': ['--no-xvfb'],
-        'should_retry_with_patch': False,
         'swarming': {
-          'shards': 10,
+          'shards': 2,
         },
-        'test': 'angle_deqp_gles31_tests',
+        'test': 'standalone_angle_deqp_gles31_tests',
+        'use_isolated_scripts_api': True,
       },
     },
 
     'gpu_angle_deqp_gles31_vulkan_gtests': {
       'angle_deqp_gles31_vulkan_tests': {
-        'android_args': [
-          '--enable-xml-result-parsing',
-          '--shard-timeout=500'
-        ],
         'args': [
-          '--deqp-egl-display-type=angle-vulkan',
+          'standalone_angle_deqp_gles31_tests',
+          '--use-angle=vulkan',
         ],
-        'desktop_args': [
-          '--test-launcher-batch-limit=400',
+        'android_args': [
+          '-v',
+          '--shard-timeout=500',
         ],
-        'linux_args': ['--no-xvfb'],
-        'should_retry_with_patch': False,
-        'swarming': {
+        'android_swarming': {
           'shards': 10,
         },
-        'test': 'angle_deqp_gles31_tests',
+        'desktop_args': [
+          '--bot-mode',
+        ],
+        'swarming': {
+          'shards': 2,
+        },
+        'test': 'standalone_angle_deqp_gles31_tests',
+        'use_isolated_scripts_api': True,
       },
     },
 
     'gpu_angle_deqp_gles3_d3d11_gtests': {
-      # TODO(jmadill): Run this on ANGLE roll tryservers.
-      # Temporarily disabled on AMD Win 7 to prevent a recipe engine crash.
-      # TODO(jmadill): Re-enable there when http://crbug.com/713196 is fixed.
       'angle_deqp_gles3_d3d11_tests': {
         'args': [
-          '--test-launcher-batch-limit=400',
-          '--deqp-egl-display-type=angle-d3d11',
+          'standalone_angle_deqp_gles3_tests',
+          '--use-angle=d3d11',
+          '--bot-mode',
         ],
-        'should_retry_with_patch': False,
         'swarming': {
-          'shards': 12,
+          'shards': 2,
         },
-        'test': 'angle_deqp_gles3_tests',
+        'test': 'standalone_angle_deqp_gles3_tests',
+        'use_isolated_scripts_api': True,
       },
     },
 
     'gpu_angle_deqp_gles3_gl_gtests': {
       'angle_deqp_gles3_gl_tests': {
         'args': [
-          '--test-launcher-batch-limit=400',
-          '--deqp-egl-display-type=angle-gl',
+          'standalone_angle_deqp_gles3_tests',
+          '--use-angle=gl',
+          '--bot-mode',
         ],
-        'linux_args': ['--no-xvfb'],
-        'should_retry_with_patch': False,
         'swarming': {
+          'shards': 4,
+        },
+        'test': 'standalone_angle_deqp_gles3_tests',
+        'use_isolated_scripts_api': True,
+      },
+    },
+
+    'gpu_angle_deqp_gles3_gles_gtests': {
+      'angle_deqp_gles3_gles_tests': {
+        'args': [
+          'standalone_angle_deqp_gles3_tests',
+          '--use-angle=gles',
+        ],
+        'android_args': [
+          '-v',
+          '--shard-timeout=500',
+        ],
+        'android_swarming': {
           'shards': 12,
         },
-        'test': 'angle_deqp_gles3_tests',
+        'test': 'standalone_angle_deqp_gles3_tests',
+        'use_isolated_scripts_api': True,
       },
     },
 
     'gpu_angle_deqp_gles3_vulkan_gtests': {
       'angle_deqp_gles3_vulkan_tests': {
-        'android_args': [
-          '--enable-xml-result-parsing',
-          '--shard-timeout=500'
-        ],
         'args': [
-          '--deqp-egl-display-type=angle-vulkan',
+          'standalone_angle_deqp_gles3_tests',
+          '--use-angle=vulkan',
         ],
-        'desktop_args': [
-          '--test-launcher-batch-limit=400',
+        'android_args': [
+          '-v',
+          '--shard-timeout=500',
         ],
-        'linux_args': ['--no-xvfb'],
-        'should_retry_with_patch': False,
-        'swarming': {
+        'android_swarming': {
           'shards': 12,
         },
-        'test': 'angle_deqp_gles3_tests',
-      },
-    },
-
-    'gpu_angle_deqp_gles_gtests': {
-      'angle_deqp_gles2_gles_tests': {
-        'android_args': [
-          '--enable-xml-result-parsing',
-          '--shard-timeout=500'
-        ],
-        'args': [
-          '--deqp-egl-display-type=angle-gles'
-        ],
         'desktop_args': [
-          '--test-launcher-batch-limit=400',
+          '--bot-mode',
         ],
-        'linux_args': ['--no-xvfb'],
-        'should_retry_with_patch': False,
         'swarming': {
           'shards': 4,
         },
-        'test': 'angle_deqp_gles2_tests',
-      },
-      'angle_deqp_gles3_gles_tests': {
-        'android_args': [
-          '--enable-xml-result-parsing',
-          '--shard-timeout=500'
-        ],
-        'args': [
-          '--deqp-egl-display-type=angle-gles'
-        ],
-        'desktop_args': [
-          '--test-launcher-batch-limit=400',
-        ],
-        'linux_args': ['--no-xvfb'],
-        'should_retry_with_patch': False,
-        'swarming': {
-          'shards': 12,
-        },
-        'test': 'angle_deqp_gles3_tests',
+        'test': 'standalone_angle_deqp_gles3_tests',
+        'use_isolated_scripts_api': True,
       },
     },
 
     'gpu_angle_deqp_khr_gles2_vulkan_gtests': {
       'angle_deqp_khr_gles2_vulkan_tests': {
-        'android_args': [
-          '--enable-xml-result-parsing',
-          '--shard-timeout=500'
-        ],
         'args': [
-          '--deqp-egl-display-type=angle-vulkan',
+          'standalone_angle_deqp_khr_gles2_tests',
+          '--use-angle=vulkan',
+        ],
+        'android_args': [
+          '-v',
+          '--shard-timeout=500',
         ],
         'desktop_args': [
-          '--test-launcher-batch-limit=0',
+          '--bot-mode',
         ],
-        'linux_args': ['--no-xvfb'],
-        'should_retry_with_patch': False,
-        'test': 'angle_deqp_khr_gles2_tests',
+        'test': 'standalone_angle_deqp_khr_gles2_tests',
+        'use_isolated_scripts_api': True,
       },
     },
 
     'gpu_angle_deqp_khr_gles31_vulkan_gtests': {
       'angle_deqp_khr_gles31_vulkan_tests': {
-        'android_args': [
-          '--enable-xml-result-parsing',
-          '--shard-timeout=500'
-        ],
         'args': [
-          '--deqp-egl-display-type=angle-vulkan',
+          'standalone_angle_deqp_khr_gles31_tests',
+          '--use-angle=vulkan',
         ],
-        'desktop_args': [
-          '--test-launcher-batch-limit=0',
+        'android_args': [
+          '-v',
+          '--shard-timeout=500',
         ],
-        'linux_args': ['--no-xvfb'],
-        'should_retry_with_patch': False,
-        'swarming': {
+        'android_swarming': {
           'shards': 2,
         },
-        'test': 'angle_deqp_khr_gles31_tests',
+        'desktop_args': [
+          '--bot-mode',
+        ],
+        'test': 'standalone_angle_deqp_khr_gles31_tests',
+        'use_isolated_scripts_api': True,
       },
     },
 
     'gpu_angle_deqp_khr_gles3_vulkan_gtests': {
       'angle_deqp_khr_gles3_vulkan_tests': {
-        'android_args': [
-          '--enable-xml-result-parsing',
-          '--shard-timeout=500'
-        ],
         'args': [
-          '--deqp-egl-display-type=angle-vulkan',
+          'standalone_angle_deqp_khr_gles3_tests',
+          '--use-angle=vulkan',
         ],
-        'desktop_args': [
-          '--test-launcher-batch-limit=0',
+        'android_args': [
+          '-v',
+          '--shard-timeout=500',
         ],
-        'linux_args': ['--no-xvfb'],
-        'should_retry_with_patch': False,
-        'swarming': {
+        'android_swarming': {
           'shards': 2,
         },
-        'test': 'angle_deqp_khr_gles3_tests',
+        'desktop_args': [
+          '--bot-mode',
+        ],
+        'test': 'standalone_angle_deqp_khr_gles3_tests',
+        'use_isolated_scripts_api': True,
       },
     },
 
@@ -4958,7 +4953,8 @@
 
     'gpu_angle_deqp_android_gtests': [
       'gpu_angle_deqp_egl_gles_gtests',
-      'gpu_angle_deqp_gles_gtests',
+      'gpu_angle_deqp_gles2_gles_gtests',
+      'gpu_angle_deqp_gles3_gles_gtests',
     ],
 
     'gpu_angle_deqp_android_vulkan_gtests': [
