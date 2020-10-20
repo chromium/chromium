@@ -23,16 +23,12 @@ namespace {
 
 const test::UIPath kFingerprintScreen = {"fingerprint-setup"};
 const test::UIPath kStartPage = {"fingerprint-setup", "setupFingerprint"};
-const test::UIPath kFingerprintPositionPage = {"fingerprint-setup",
-                                               "placeFinger"};
 const test::UIPath kProgressPage = {"fingerprint-setup",
                                     "startFingerprintEnroll"};
 const test::UIPath kFingerprintArc = {"fingerprint-setup", "arc"};
 const test::UIPath kScanningAnimation = {"fingerprint-setup", "arc",
                                          "scanningAnimation"};
 const test::UIPath kDoneButton = {"fingerprint-setup", "done"};
-const test::UIPath kDoItLaterButton = {"fingerprint-setup", "setupLater"};
-const test::UIPath kNextButtonOnStart = {"fingerprint-setup", "next"};
 const test::UIPath kSkipButtonOnStart = {"fingerprint-setup", "skipStart"};
 const test::UIPath kSkipButtonOnProgress = {"fingerprint-setup",
                                             "skipProgress"};
@@ -127,9 +123,6 @@ class FingerprintSetupTest : public OobeBaseTest {
         "OOBE.StepCompletionTimeByExitReason.Fingerprint-setup.Skipped",
         result == Result::SKIPPED);
     histogram_tester_.ExpectTotalCount(
-        "OOBE.StepCompletionTimeByExitReason.Fingerprint-setup.DoItLater",
-        result == Result::DO_IT_LATER);
-    histogram_tester_.ExpectTotalCount(
         "OOBE.StepCompletionTime.Fingerprint-setup",
         result != Result::NOT_APPLICABLE);
   }
@@ -220,6 +213,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintSetupTest, FingerprintSetupScreenElements) {
 IN_PROC_BROWSER_TEST_F(FingerprintSetupTest, FingerprintSetupCancel) {
   ShowFingerprintScreen();
 
+  test::OobeJS().CreateVisibilityWaiter(true, kStartPage)->Wait();
   test::OobeJS().TapOnPath(kSkipButtonOnStart);
 
   WaitForScreenExit();
@@ -227,36 +221,6 @@ IN_PROC_BROWSER_TEST_F(FingerprintSetupTest, FingerprintSetupCancel) {
   EXPECT_THAT(GetAllRecordedUserActions(),
               ElementsAre(base::Bucket(
                   static_cast<int>(UserAction::kSetupSkipped), 1)));
-}
-
-IN_PROC_BROWSER_TEST_F(FingerprintSetupTest, FingerprintSetupNext) {
-  ShowFingerprintScreen();
-
-  test::OobeJS().TapOnPath(kNextButtonOnStart);
-
-  test::OobeJS().CreateVisibilityWaiter(true, kFingerprintPositionPage)->Wait();
-
-  test::OobeJS().ExpectHiddenPath(kStartPage);
-
-  EXPECT_THAT(GetAllRecordedUserActions(),
-              ElementsAre(base::Bucket(
-                  static_cast<int>(UserAction::kShowSensorLocation), 1)));
-}
-
-IN_PROC_BROWSER_TEST_F(FingerprintSetupTest, FingerprintSetupLater) {
-  ShowFingerprintScreen();
-
-  test::OobeJS().TapOnPath(kNextButtonOnStart);
-  test::OobeJS().CreateVisibilityWaiter(true, kFingerprintPositionPage)->Wait();
-  test::OobeJS().TapOnPath(kDoItLaterButton);
-
-  WaitForScreenExit();
-  ExpectResult(FingerprintSetupScreen::Result::DO_IT_LATER);
-  EXPECT_THAT(
-      GetAllRecordedUserActions(),
-      ElementsAre(
-          base::Bucket(static_cast<int>(UserAction::kDoItLater), 1),
-          base::Bucket(static_cast<int>(UserAction::kShowSensorLocation), 1)));
 }
 
 }  // namespace chromeos

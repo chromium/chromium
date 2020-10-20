@@ -5202,14 +5202,8 @@
   <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_ENROLLMENT_SUCCESS_DESCRIPTION" desc="The label that shows when fingerprint enrollment is successful.">
     When you see this icon, use your fingerprint for identification or to approve purchases.
   </message>
-  <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_BUTTON_SKIP" desc="In fingerprint setup screen, button label to skip the fingerrint setup.">
+  <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_BUTTON_SKIP" desc="In fingerprint setup screen, button label to skip the fingerprint setup.">
     Skip
-  </message>
-  <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_BUTTON_LATER" desc="In fingerprint setup screen, button label to skip the fingerrint setup.">
-    Do it later
-  </message>
-  <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_BUTTON_NEXT" desc="In fingerprint setup screen, button label to proceed to the next step.">
-    Next
   </message>
   <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_BUTTON_DONE" desc="Fingerprint setup is done, button label to exit the setup.">
     Done

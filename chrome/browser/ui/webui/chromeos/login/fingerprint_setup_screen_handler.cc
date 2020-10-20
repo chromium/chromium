@@ -28,10 +28,6 @@ void FingerprintSetupScreenHandler::DeclareLocalizedValues(
                IDS_OOBE_FINGERPINT_SETUP_SCREEN_TITLE);
   builder->Add("skipFingerprintSetup",
                IDS_OOBE_FINGERPINT_SETUP_SCREEN_BUTTON_SKIP);
-  builder->Add("fingerprintSetupLater",
-               IDS_OOBE_FINGERPINT_SETUP_SCREEN_BUTTON_LATER);
-  builder->Add("fingerprintSetupNext",
-               IDS_OOBE_FINGERPINT_SETUP_SCREEN_BUTTON_NEXT);
   builder->Add("fingerprintSetupDone",
                IDS_OOBE_FINGERPINT_SETUP_SCREEN_BUTTON_DONE);
   builder->Add("fingerprintSetupAddAnother",

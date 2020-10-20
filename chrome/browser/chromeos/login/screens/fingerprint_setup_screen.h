@@ -25,7 +25,7 @@ class FingerprintSetupScreenView;
 class FingerprintSetupScreen : public BaseScreen,
                                public device::mojom::FingerprintObserver {
  public:
-  enum class Result { DONE, SKIPPED, DO_IT_LATER, NOT_APPLICABLE };
+  enum class Result { DONE, SKIPPED, NOT_APPLICABLE };
 
   // This enum is tied directly to a UMA enum defined in
   // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
@@ -34,10 +34,10 @@ class FingerprintSetupScreen : public BaseScreen,
   enum class UserAction {
     kSetupDone = 0,
     kSetupSkipped = 1,
-    kDoItLater = 2,
+    // kDoItLater_obsolete = 2,
     kAddAnotherFinger = 3,
-    kShowSensorLocation = 4,
-    kMaxValue = kShowSensorLocation
+    kShowSensorLocation_obsolete = 4, // need to be kept for `kMaxValue`
+    kMaxValue = kShowSensorLocation_obsolete
   };
 
   static std::string GetResultString(Result result);

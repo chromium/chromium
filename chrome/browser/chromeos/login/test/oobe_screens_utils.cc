@@ -91,11 +91,11 @@ void WaitForFingerprintScreen() {
 }
 
 void ExitFingerprintPinSetupScreen() {
-  test::OobeJS().ExpectVisiblePath({"fingerprint-setup", "placeFinger"});
+  test::OobeJS().ExpectVisiblePath({"fingerprint-setup", "setupFingerprint"});
   // This might be the last step in flow. Synchronous execute gets stuck as
   // WebContents may be destroyed in the process. So it may never return.
   // So we use ExecuteAsync() here.
-  test::OobeJS().ExecuteAsync("$('fingerprint-setup').$.setupLater.click()");
+  test::OobeJS().ExecuteAsync("$('fingerprint-setup').$.skipStart.click()");
   LOG(INFO) << "OobeInteractiveUITest: Waiting for fingerprint setup screen "
                "to close.";
   WaitForExit(FingerprintSetupScreenView::kScreenId);

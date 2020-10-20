@@ -32,7 +32,6 @@ var FingerprintResultType = {
  */
 const UIState = {
   START: 'start',
-  FINGER: 'finger',
   PROGRESS: 'progress',
 };
 
@@ -124,6 +123,10 @@ Polymer({
     return UIState.START;
   },
 
+  onBeforeShow() {
+    this.setAnimationState_(true);
+  },
+
   onBeforeHide() {
     this.setAnimationState_(false);
   },
@@ -167,14 +170,6 @@ Polymer({
   },
 
   /**
-   * This is 'on-tap' event handler for 'Do it later' button.
-   * @private
-   */
-  onSetupLater_(e) {
-    this.userActed('do-it-later');
-  },
-
-  /**
    * Enable/disable lottie animation.
    * @param {boolean} playing True if animation should be playing.
    */
@@ -182,19 +177,9 @@ Polymer({
   setAnimationState_(playing) {
     if (this.shouldUseLottieAnimation_) {
       const lottieElement = /** @type{CrLottieElement} */ (
-          this.$.placeFinger.querySelector('#scannerLocationLottie'));
+          this.$.setupFingerprint.querySelector('#scannerLocationLottie'));
       lottieElement.setPlay(playing);
     }
-  },
-
-  /**
-   * This is 'on-tap' event handler for 'showSensorLocationButton' button.
-   * @private
-   */
-  onNext_(e) {
-    this.userActed('show-sensor-location');
-    this.setUIStep(UIState.FINGER);
-    this.setAnimationState_(true);
   },
 
   /**

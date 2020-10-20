@@ -15,28 +15,6 @@
     <link rel="stylesheet" href="fingerprint_setup.css">
     <oobe-dialog id="setupFingerprint" role="dialog" for-step="start"
         has-buttons footer-shrinkable
-        title-key="setupFingerprintScreenTitle"
-        subtitle-key="setupFingerprintScreenDescription"
-        aria-label$="[[i18nDynamic(locale, 'setupFingerprintScreenTitle')]]">
-      <hd-iron-icon slot="oobe-icon"
-          icon1x="oobe-32:fingerprint" icon2x="oobe-64:fingerprint">
-      </hd-iron-icon>
-      <div slot="footer" class="flex layout vertical center center-justified">
-        <img class="oobe-illustration"
-            srcset="images/1x/finger_unlock.svg 1x,
-                    images/2x/finger_unlock.svg 2x">
-      </div>
-      <div slot="bottom-buttons" class="layout horizontal end-justified">
-        <oobe-text-button id="skipStart"
-            text-key="skipFingerprintSetup" on-click="onSkip_">
-        </oobe-text-button>
-        <oobe-next-button id="next"
-            on-click="onNext_" class="focus-on-show"
-            text-key="fingerprintSetupNext" inverse></oobe-next-button>
-      </div>
-    </oobe-dialog>
-    <oobe-dialog id="placeFinger" role="dialog" for-step="finger"
-        has-buttons footer-shrinkable
         title-key="placeFingerScreenTitle"
         subtitle-key="setupFingerprintScreenDescription"
         aria-label$="[[i18nDynamic(locale, 'placeFingerScreenTitle')]]">
@@ -56,9 +34,9 @@
         </div>
       </div>
       <div slot="bottom-buttons" class="layout horizontal end-justified">
-        <oobe-text-button id="setupLater"
-            text-key="fingerprintSetupLater"
-            on-click="onSetupLater_" class="focus-on-show">
+        <oobe-text-button id="skipStart"
+            text-key="skipFingerprintSetup"
+            on-click="onSkip_" class="focus-on-show">
         </oobe-text-button>
       </div>
     </oobe-dialog>
