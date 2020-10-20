@@ -136,6 +136,12 @@ ArcMetricsService::~ArcMetricsService() {
   arc_bridge_service_->RemoveObserver(&arc_bridge_service_observer_);
 }
 
+void ArcMetricsService::Shutdown() {
+  for (auto& obs : app_kill_observers_)
+    obs.OnArcMetricsServiceDestroyed();
+  app_kill_observers_.Clear();
+}
+
 void ArcMetricsService::SetHistogramNamer(HistogramNamer histogram_namer) {
   histogram_namer_ = histogram_namer;
 }
@@ -273,6 +279,28 @@ void ArcMetricsService::ReportCompanionLibApiUsage(
   UMA_HISTOGRAM_ENUMERATION("Arc.CompanionLibraryApisCounter", api_id);
 }
 
+void ArcMetricsService::ReportAppKill(mojom::AppKillPtr app_kill) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  switch (app_kill->type) {
+    case mojom::AppKillType::LMKD_KILL:
+      NotifyLowMemoryKill();
+      break;
+    case mojom::AppKillType::OOM_KILL:
+      NotifyOOMKillCount(app_kill->count);
+      break;
+  }
+}
+
+void ArcMetricsService::NotifyLowMemoryKill() {
+  for (auto& obs : app_kill_observers_)
+    obs.OnArcLowMemoryKill();
+}
+
+void ArcMetricsService::NotifyOOMKillCount(unsigned long count) {
+  for (auto& obs : app_kill_observers_)
+    obs.OnArcOOMKillCount(count);
+}
+
 void ArcMetricsService::OnWindowActivated(
     wm::ActivationChangeObserver::ActivationReason reason,
     aura::Window* gained_active,
@@ -315,6 +343,15 @@ void ArcMetricsService::OnTaskDestroyed(int32_t task_id) {
   guest_os_engagement_metrics_.SetBackgroundActive(!task_ids_.empty());
 }
 
+void ArcMetricsService::AddAppKillObserver(AppKillObserver* obs) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  app_kill_observers_.AddObserver(obs);
+}
+
+void ArcMetricsService::RemoveAppKillObserver(AppKillObserver* obs) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  app_kill_observers_.RemoveObserver(obs);
+}
 ArcMetricsService::ProcessObserver::ProcessObserver(
     ArcMetricsService* arc_metrics_service)
     : arc_metrics_service_(arc_metrics_service) {}

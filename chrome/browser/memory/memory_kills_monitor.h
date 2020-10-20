@@ -39,6 +39,9 @@ class MemoryKillsMonitor : public chromeos::LoginState::Observer {
   // after StartMonitoring() has been called.
   static void LogLowMemoryKill(const std::string& type, int estimated_freed_kb);
 
+  // A convenient function to log ARCVM OOM kills.
+  static void LogArcOOMKill(unsigned long current_oom_kills);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(MemoryKillsMonitorTest, TestHistograms);
 
@@ -60,6 +63,9 @@ class MemoryKillsMonitor : public chromeos::LoginState::Observer {
   // Split CheckOOMKill and CheckOOMKillImpl for testing.
   void CheckOOMKillImpl(unsigned long current_oom_kills);
 
+  // Logs ARCVM OOM kill.
+  void LogArcOOMKillImpl(unsigned long current_oom_kills);
+
   // A flag set when StartMonitoring() is called to indicate that monitoring has
   // been started.
   base::AtomicFlag monitoring_started_;
@@ -75,6 +81,9 @@ class MemoryKillsMonitor : public chromeos::LoginState::Observer {
 
   // The last oom kills count from |GetCurrentOOMKills|.
   unsigned long last_oom_kills_count_ = 0;
+
+  // The last ARCVM OOM kills count.
+  unsigned long last_arc_oom_kills_count_ = 0;
 
   base::RepeatingTimer checking_timer_;
 

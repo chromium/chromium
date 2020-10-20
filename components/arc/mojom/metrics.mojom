@@ -1,7 +1,7 @@
 // Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 6
+// Next MinVersion: 7
 
 module arc.mojom;
 
@@ -103,7 +103,23 @@ enum CompanionLibApiId {
   IS_CLIPPING_TO_TASK_DISABLED = 23,
 };
 
-// Next method ID: 3
+// Describes the type of app kill being reported.
+[Extensible]
+enum AppKillType {
+  LMKD_KILL = 0,
+  OOM_KILL = 1,
+};
+
+// Describes an app kill from ARC instance.
+struct AppKill {
+  // Type of kill being reported.
+  AppKillType type;
+  // Number of kills. For LMKD kills, this is always 1. For OOM kills, this is
+  // the total oom_kill count from /proc/vm_stat.
+  uint32 count;
+};
+
+// Next method ID: 4
 interface MetricsHost {
   // Reports boot progress events from ARC instance.
   ReportBootProgress@0(array<BootProgressEvent> events,
@@ -114,6 +130,9 @@ interface MetricsHost {
 
   // Reports api usage by ChromeOS Companion Library.
   [MinVersion=4] ReportCompanionLibApiUsage@2(CompanionLibApiId api_id);
+
+  // Reports LMKD and OOM kills from ARC.
+  [MinVersion=6] ReportAppKill@3(AppKill app_kill);
 };
 
 // Next method ID: 3

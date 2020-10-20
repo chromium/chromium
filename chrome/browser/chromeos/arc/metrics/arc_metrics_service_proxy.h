@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
+#include "components/arc/metrics/arc_metrics_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
@@ -17,14 +18,14 @@ class BrowserContext;
 namespace arc {
 
 class ArcBridgeService;
-class ArcMetricsService;
 
 // Proxy to ArcMetricsService for functionalities that depend on code under
 // chrome/browser. Should be merged into ArcMetricsService once dependency
 // issues are cleared. TODO(crbug.com/903048): Remove the proxy.
 class ArcMetricsServiceProxy : public KeyedService,
                                public ArcAppListPrefs::Observer,
-                               public ArcSessionManagerObserver {
+                               public ArcSessionManagerObserver,
+                               public ArcMetricsService::AppKillObserver {
  public:
   static ArcMetricsServiceProxy* GetForBrowserContext(
       content::BrowserContext* context);
@@ -45,6 +46,10 @@ class ArcMetricsServiceProxy : public KeyedService,
 
   // ArcSessionManagerObserver overrides.
   void OnArcSessionStopped(ArcStopReason stop_reason) override;
+
+  // ArcMetricsService::AppKillObserver overrides.
+  void OnArcLowMemoryKill() override;
+  void OnArcOOMKillCount(unsigned long current_oom_kills) override;
 
  private:
   ArcAppListPrefs* const arc_app_list_prefs_;
