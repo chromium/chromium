@@ -48,12 +48,8 @@ declare_args() {
   # file name) is saved.
   enable_location_source = true
 
-  # Whether or not the FROM_HERE macro uses base::Location::Current(). This
-  # allows the implementation to be reverted if needed while validating its
-  # replacement base::Location::Current(). On by default in non-official builds
-  # for testing purposes.
-  # TODO(https://crbug.com/974061): remove this eventually.
-  from_here_uses_location_builtins = !is_official_build
+  # Whether or not the FROM_HERE macro uses base::Location::Current().
+  from_here_uses_location_builtins = true
 
   # Unsafe developer build. Has developer-friendly features that may weaken or
   # disable security measures like sandboxing or ASLR.
