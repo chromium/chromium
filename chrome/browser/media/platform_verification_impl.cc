@@ -14,9 +14,12 @@
 #if BUILDFLAG(ENABLE_CDM_STORAGE_ID)
 #include "chrome/browser/media/cdm_storage_id.h"
 #include "chrome/browser/media/media_storage_id_salt.h"
+#include "content/public/browser/render_process_host.h"
+#endif
+
+#if BUILDFLAG(ENABLE_CDM_STORAGE_ID) || defined(OS_CHROMEOS)
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
 #endif
 
 #if defined(OS_CHROMEOS)
@@ -163,6 +166,15 @@ void PlatformVerificationImpl::OnStorageIdResponse(
 #if defined(OS_CHROMEOS)
 void PlatformVerificationImpl::IsVerifiedAccessEnabled(
     IsVerifiedAccessEnabledCallback callback) {
+  // If we are in guest/incognito mode, then verified access is effectively
+  // disabled.
+  Profile* profile =
+      Profile::FromBrowserContext(render_frame_host_->GetBrowserContext());
+  if (profile->IsOffTheRecord() || profile->IsGuestSession()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
   bool enabled_for_device = false;
   if (!chromeos::CrosSettings::Get()->GetBoolean(
           chromeos::kAttestationForContentProtectionEnabled,
