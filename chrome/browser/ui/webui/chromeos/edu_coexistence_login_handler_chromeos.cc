@@ -36,6 +36,7 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
+#include "net/base/url_util.h"
 #include "ui/base/webui/web_ui_util.h"
 
 namespace chromeos {
@@ -213,6 +214,24 @@ void EduCoexistenceLoginHandler::SendInitializeEduArgs() {
   params.SetStringKey("platformVersion",
                       base::SysInfo::OperatingSystemVersion());
   params.SetStringKey("releaseChannel", chrome::GetChannelName());
+
+  // If the secondary edu account is being reauthenticated, the email address
+  // will be provided via the url of the webcontent. Example
+  // chrome://chrome-signin/edu-coexistence?email=testuser1%40gmail.com
+  content::WebContents* web_contents = web_ui()->GetWebContents();
+  if (web_contents) {
+    const GURL& current_url = web_contents->GetURL();
+    std::string default_email;
+    if (net::GetValueForKeyInQuery(current_url, "email", &default_email)) {
+      params.SetStringKey("email", default_email);
+
+      std::string read_only_email;
+      if (net::GetValueForKeyInQuery(current_url, "readOnlyEmail",
+                                     &read_only_email)) {
+        params.SetStringKey("readOnlyEmail", read_only_email);
+      }
+    }
+  }
 
   ResolveJavascriptCallback(base::Value(initialize_edu_args_callback_.value()),
                             std::move(params));

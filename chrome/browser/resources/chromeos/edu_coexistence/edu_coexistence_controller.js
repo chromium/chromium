@@ -23,6 +23,8 @@ const METHOD_LIST = ['consentValid', 'consentLogged', 'requestClose', 'error'];
  *   eduCoexistenceId: (string),
  *   platformVersion: (string),
  *   releaseChannel: (string),
+ *   email: (string|undefined),
+ *   readOnlyEmail: (string|undefined),
  * }}
  */
 export let EduCoexistenceParams;
@@ -42,6 +44,12 @@ function constructEduCoexistenceUrl(params) {
   url.searchParams.set('edu_coexistence_id', params.eduCoexistenceId);
   url.searchParams.set('platform_version', params.platformVersion);
   url.searchParams.set('release_channel', params.releaseChannel);
+  if (params.email) {
+    url.searchParams.set('email', params.email);
+    if (params.readOnlyEmail) {
+      url.searchParams.set('read_only_email', params.readOnlyEmail);
+    }
+  }
   return url;
 }
 
