@@ -17,7 +17,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display_observer.h"
@@ -69,9 +68,6 @@ class ToastOverlayLabel : public views::Label {
     SetAutoColorReadabilityEnabled(false);
     SetMultiLine(true);
     SetMaxLines(2);
-    ScopedLightModeAsDefault scoped_light_mode_as_default;
-    SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
     SetSubpixelRenderingEnabled(false);
 
     int vertical_spacing =
@@ -80,10 +76,18 @@ class ToastOverlayLabel : public views::Label {
         gfx::Insets(vertical_spacing, kToastHorizontalSpacing)));
   }
 
+  ToastOverlayLabel(const ToastOverlayLabel&) = delete;
+  ToastOverlayLabel& operator=(const ToastOverlayLabel&) = delete;
   ~ToastOverlayLabel() override = default;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(ToastOverlayLabel);
+  // views::Label:
+  void OnThemeChanged() override {
+    views::Label::OnThemeChanged();
+    ScopedLightModeAsDefault scoped_light_mode_as_default;
+    SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
+  }
 };
 
 }  // namespace
@@ -119,11 +123,6 @@ class ToastOverlayButton : public views::LabelButton {
       : views::LabelButton(listener, text, CONTEXT_TOAST_OVERLAY) {
     SetInkDropMode(InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
-    ScopedLightModeAsDefault scoped_light_mode_as_default;
-    const auto* color_provider = AshColorProvider::Get();
-    SetInkDropBaseColor(color_provider->GetRippleAttributes().base_color);
-    SetEnabledTextColors(color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kButtonLabelColorBlue));
 
     // Treat the space below the baseline as a margin.
     int vertical_spacing =
@@ -135,6 +134,8 @@ class ToastOverlayButton : public views::LabelButton {
                                                   kToastCornerRounding);
   }
 
+  ToastOverlayButton(const ToastOverlayButton&) = delete;
+  ToastOverlayButton& operator=(const ToastOverlayButton&) = delete;
   ~ToastOverlayButton() override = default;
 
  protected:
@@ -148,7 +149,15 @@ class ToastOverlayButton : public views::LabelButton {
  private:
   friend class ToastOverlay;  // for ToastOverlay::ClickDismissButtonForTesting.
 
-  DISALLOW_COPY_AND_ASSIGN(ToastOverlayButton);
+  // views::LabelButton:
+  void OnThemeChanged() override {
+    views::LabelButton::OnThemeChanged();
+    ScopedLightModeAsDefault scoped_light_mode_as_default;
+    const auto* color_provider = AshColorProvider::Get();
+    SetInkDropBaseColor(color_provider->GetRippleAttributes().base_color);
+    SetEnabledTextColors(color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kButtonLabelColorBlue));
+  }
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -162,10 +171,6 @@ class ToastOverlayView : public views::View, public views::ButtonListener {
                    const bool is_managed)
       : overlay_(overlay) {
     SetPaintToLayer();
-    ScopedLightModeAsDefault scoped_light_mode_as_default;
-    SetBackground(
-        views::CreateSolidBackground(AshColorProvider::Get()->GetBaseLayerColor(
-            AshColorProvider::BaseLayerType::kTransparent80)));
     layer()->SetFillsBoundsOpaquely(false);
     layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kToastCornerRounding));
     layer()->SetBackgroundBlur(
@@ -176,30 +181,25 @@ class ToastOverlayView : public views::View, public views::ButtonListener {
 
     int icon_width = 0;
     if (is_managed) {
-      auto* icon = new views::ImageView;
-      icon->SetImage(gfx::CreateVectorIcon(
-          kUnifiedMenuManagedIcon,
-          AshColorProvider::Get()->GetContentLayerColor(
-              AshColorProvider::ContentLayerType::kIconColorPrimary)));
-      icon->SetBorder(views::CreateEmptyBorder(
+      managed_icon_ = AddChildView(std::make_unique<views::ImageView>());
+      managed_icon_->SetBorder(views::CreateEmptyBorder(
           gfx::Insets(kToastHorizontalSpacing, kToastHorizontalSpacing,
                       kToastHorizontalSpacing, /*right=*/0)));
-      AddChildView(icon);
-      icon_width = icon->GetPreferredSize().width() + kToastHorizontalSpacing;
+      icon_width =
+          managed_icon_->GetPreferredSize().width() + kToastHorizontalSpacing;
     }
 
-    auto* label = new ToastOverlayLabel(text);
-    AddChildView(label);
+    auto* label = AddChildView(std::make_unique<ToastOverlayLabel>(text));
     label->SetMaximumWidth(GetMaximumSize().width() - icon_width);
     layout->SetFlexForView(label, 1);
 
     if (!dismiss_text.has_value())
       return;
 
-    button_ = new ToastOverlayButton(
+    button_ = AddChildView(std::make_unique<ToastOverlayButton>(
         this, dismiss_text.value().empty()
                   ? l10n_util::GetStringUTF16(IDS_ASH_TOAST_DISMISS_BUTTON)
-                  : dismiss_text.value());
+                  : dismiss_text.value()));
 
     const int button_width =
         std::min(button_->GetPreferredSize().width(), kToastButtonMaximumWidth);
@@ -207,9 +207,10 @@ class ToastOverlayView : public views::View, public views::ButtonListener {
     label->SetMaximumWidth(GetMaximumSize().width() - button_width -
                            icon_width - kToastHorizontalSpacing * 2 -
                            kToastHorizontalSpacing * 2);
-    AddChildView(button_);
   }
 
+  ToastOverlayView(const ToastOverlayView&) = delete;
+  ToastOverlayView& operator=(const ToastOverlayView&) = delete;
   ~ToastOverlayView() override = default;
 
   ToastOverlayButton* button() { return button_; }
@@ -225,6 +226,21 @@ class ToastOverlayView : public views::View, public views::ButtonListener {
                                              ToastOverlay::kOffset * 2);
   }
 
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    ScopedLightModeAsDefault scoped_light_mode_as_default;
+    auto* color_provider = AshColorProvider::Get();
+    SetBackground(
+        views::CreateSolidBackground(color_provider->GetBaseLayerColor(
+            AshColorProvider::BaseLayerType::kTransparent80)));
+    if (managed_icon_) {
+      managed_icon_->SetImage(gfx::CreateVectorIcon(
+          kUnifiedMenuManagedIcon,
+          color_provider->GetContentLayerColor(
+              AshColorProvider::ContentLayerType::kIconColorPrimary)));
+    }
+  }
+
   // views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override {
     DCHECK_EQ(button_, sender);
@@ -233,8 +249,7 @@ class ToastOverlayView : public views::View, public views::ButtonListener {
 
   ToastOverlay* overlay_ = nullptr;       // weak
   ToastOverlayButton* button_ = nullptr;  // weak
-
-  DISALLOW_COPY_AND_ASSIGN(ToastOverlayView);
+  views::ImageView* managed_icon_ = nullptr;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
