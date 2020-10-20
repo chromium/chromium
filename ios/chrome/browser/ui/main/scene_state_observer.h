@@ -35,6 +35,9 @@ enum SceneActivationLevel : NSUInteger;
 // Notifies that a new activity request has been received.
 - (void)sceneState:(SceneState*)sceneState
     receivedUserActivity:(NSUserActivity*)userActivity;
+// Notifies that the scene switched between incognito/normal mode.
+- (void)sceneState:(SceneState*)sceneState
+    isDisplayingIncognitoContent:(BOOL)incognitoContentVisible;
 
 @end
 

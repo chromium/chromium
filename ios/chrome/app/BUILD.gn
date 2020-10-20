@@ -219,7 +219,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/memory",
-    "//ios/chrome/browser/metrics:metrics",
+    "//ios/chrome/browser/metrics",
     "//ios/chrome/browser/metrics:metrics_internal",
     "//ios/chrome/browser/net",
     "//ios/chrome/browser/ntp:features",

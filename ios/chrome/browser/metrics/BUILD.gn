@@ -21,6 +21,8 @@ source_set("chrome_browser_state_client") {
 source_set("metrics") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "incognito_usage_app_state_agent.h",
+    "incognito_usage_app_state_agent.mm",
     "incognito_web_state_observer.h",
     "incognito_web_state_observer.mm",
     "ios_chrome_default_browser_metrics_provider.h",
@@ -70,6 +72,7 @@ source_set("metrics") {
     "//components/variations",
     "//components/variations/service",
     "//components/version_info",
+    "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/crash_report",
@@ -82,6 +85,7 @@ source_set("metrics") {
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/translate",
+    "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/overscroll_actions",
     "//ios/chrome/browser/ui/util:multiwindow_util",
     "//ios/chrome/browser/ui/whats_new:utils",
@@ -102,6 +106,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "chrome_browser_state_client_unittest.mm",
+    "incognito_usage_app_state_agent_unittest.mm",
     "ios_chrome_default_browser_metrics_provider_unittest.mm",
     "ios_chrome_metrics_service_accessor_unittest.cc",
     "ios_chrome_metrics_service_client_unittest.mm",
@@ -124,8 +129,10 @@ source_set("unit_tests") {
     "//components/ukm",
     "//components/ukm:test_support",
     "//components/version_info",
+    "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/whats_new:utils",
     "//ios/chrome/browser/web:test_support",
     "//ios/chrome/test:test_support",
@@ -135,6 +142,7 @@ source_set("unit_tests") {
     "//ios/web/public/test/fakes",
     "//net:test_support",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }
 

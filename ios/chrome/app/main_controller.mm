@@ -69,6 +69,7 @@
 #import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/memory/memory_debugger_manager.h"
 #include "ios/chrome/browser/metrics/first_user_action_recorder.h"
+#import "ios/chrome/browser/metrics/incognito_usage_app_state_agent.h"
 #import "ios/chrome/browser/metrics/window_configuration_recorder.h"
 #import "ios/chrome/browser/net/cookie_util.h"
 #import "ios/chrome/browser/omaha/omaha_service.h"
@@ -617,6 +618,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
   // Create app state agents.
   [appState addAgent:[[ContentSuggestionsSchedulerAppAgent alloc] init]];
+  [appState addAgent:[[IncognitoUsageAppStateAgent alloc] init]];
 }
 
 - (id<BrowserInterfaceProvider>)interfaceProvider {

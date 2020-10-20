@@ -156,6 +156,15 @@
   }
 }
 
+- (void)setIncognitoContentVisible:(BOOL)incognitoContentVisible {
+  if (incognitoContentVisible == _incognitoContentVisible) {
+    return;
+  }
+  _incognitoContentVisible = incognitoContentVisible;
+  [self.observers sceneState:self
+      isDisplayingIncognitoContent:incognitoContentVisible];
+}
+
 - (void)setPendingUserActivity:(NSUserActivity*)pendingUserActivity {
   _pendingUserActivity = pendingUserActivity;
   [self.observers sceneState:self receivedUserActivity:pendingUserActivity];
