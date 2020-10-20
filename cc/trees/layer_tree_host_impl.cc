@@ -979,8 +979,8 @@ LayerTreeHostImpl::CreateLatencyInfoSwapPromiseMonitor(
 
 std::unique_ptr<EventsMetricsManager::ScopedMonitor>
 LayerTreeHostImpl::GetScopedEventMetricsMonitor(
-    std::unique_ptr<EventMetrics> event_metrics) {
-  return events_metrics_manager_.GetScopedMonitor(std::move(event_metrics));
+    const EventMetrics* event_metrics) {
+  return events_metrics_manager_.GetScopedMonitor(event_metrics);
 }
 
 void LayerTreeHostImpl::NotifyInputEvent() {

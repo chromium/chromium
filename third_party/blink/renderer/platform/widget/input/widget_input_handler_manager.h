@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_WIDGET_INPUT_HANDLER_MANAGER_H_
 
 #include <atomic>
+#include <memory>
+
 #include "base/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -16,6 +18,10 @@
 #include "third_party/blink/public/platform/input/input_handler_proxy_client.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/widget/input/main_thread_event_queue.h"
+
+namespace cc {
+class EventMetrics;
+}
 
 namespace gfx {
 struct PresentationFeedback;
@@ -75,6 +81,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
 
   // MainThreadEventQueueClient overrides.
   bool HandleInputEvent(const WebCoalescedInputEvent& event,
+                        std::unique_ptr<cc::EventMetrics> metrics,
                         HandledEventCallback handled_callback) override;
   void SetNeedsMainFrame() override;
 
@@ -82,13 +89,15 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   void WillShutdown() override;
   void DispatchNonBlockingEventToMainThread(
       std::unique_ptr<WebCoalescedInputEvent> event,
-      const WebInputEventAttribution& attribution) override;
+      const WebInputEventAttribution& attribution,
+      std::unique_ptr<cc::EventMetrics> metrics) override;
 
   void DidAnimateForInput() override;
   void DidStartScrollingViewport() override;
   void GenerateScrollBeginAndSendToMainThread(
       const WebGestureEvent& update_event,
-      const WebInputEventAttribution& attribution) override;
+      const WebInputEventAttribution& attribution,
+      const cc::EventMetrics* update_metrics) override;
   void SetAllowedTouchAction(
       cc::TouchAction touch_action,
       uint32_t unique_touch_event_id,
@@ -177,28 +186,31 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   // thread if needed.
   void DispatchDirectlyToWidget(
       std::unique_ptr<WebCoalescedInputEvent> event,
+      std::unique_ptr<cc::EventMetrics> metrics,
       mojom::blink::WidgetInputHandler::DispatchEventCallback callback);
 
   // Used to return a result from FindScrollTargetOnMainThread. Will be called
   // on the input handling thread.
   void FindScrollTargetReply(
       std::unique_ptr<WebCoalescedInputEvent> event,
+      std::unique_ptr<cc::EventMetrics> metrics,
       mojom::blink::WidgetInputHandler::DispatchEventCallback browser_callback,
       uint64_t hit_test_result);
 
   // This method is the callback used by the compositor input handler to
   // communicate back whether the event was successfully handled on the
   // compositor thread or whether it needs to forwarded to the main thread.
-  // This method is responsible for passing the event on to the main thread or
-  // replying to the browser that the event was handled. This is always called
-  // on the input handling thread (i.e. if a compositor thread exists, it'll be
-  // called from it).
+  // This method is responsible for passing the `event` and its accompanying
+  // `metrics` on to the main thread or replying to the browser that the event
+  // was handled. This is always called on the input handling thread (i.e. if a
+  // compositor thread exists, it'll be called from it).
   void DidHandleInputEventSentToCompositor(
       mojom::blink::WidgetInputHandler::DispatchEventCallback callback,
       InputHandlerProxy::EventDisposition event_disposition,
       std::unique_ptr<WebCoalescedInputEvent> event,
       std::unique_ptr<InputHandlerProxy::DidOverscrollParams> overscroll_params,
-      const WebInputEventAttribution& attribution);
+      const WebInputEventAttribution& attribution,
+      std::unique_ptr<cc::EventMetrics> metrics);
 
   // Similar to the above; this is used by the main thread input handler to
   // communicate back the result of handling the event. Note: this may be
@@ -294,6 +306,12 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   // occur on the renderer thread (resetting this) coincident with the UMA
   // being sent on the compositor thread.
   std::atomic<bool> have_emitted_uma_{false};
+
+  // Specifies weather the renderer has received a scroll-update event after the
+  // last scroll-begin or not, It is used to determine whether a scroll-update
+  // is the first one in a scroll sequence or not. This variable is only used on
+  // the input handling thread (i.e. on the compositor thread if it exists).
+  bool has_seen_first_gesture_scroll_update_after_begin_ = false;
 
 #if defined(OS_ANDROID)
   std::unique_ptr<SynchronousCompositorProxyRegistry>

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/widget/input/compositor_thread_event_queue.h"
 
 #include "base/trace_event/trace_event.h"
+#include "cc/metrics/event_metrics.h"
 
 namespace blink {
 
@@ -73,10 +74,7 @@ void CompositorThreadEventQueue::Queue(
   // We have only scrolls or pinches at this point (all other events are
   // filtered out by the if statements above). We want to coalesce this event
   // into the previous event(s) and represent it as a scroll and then a pinch.
-  DCHECK(ToWebGestureEvent(new_event->event()).GetType() ==
-             WebInputEvent::Type::kGestureScrollUpdate ||
-         ToWebGestureEvent(new_event->event()).GetType() ==
-             WebInputEvent::Type::kGesturePinchUpdate);
+  DCHECK(IsContinuousGestureEvent(new_event->event().GetType()));
 
   // If there is only one event in the queue we will still emit two events
   // (scroll and pinch) but the |new_event| will still be coalesced into the
@@ -94,10 +92,7 @@ void CompositorThreadEventQueue::Queue(
   std::unique_ptr<EventWithCallback> last_event = std::move(queue_.back());
   queue_.pop_back();
 
-  DCHECK(last_event->event().GetType() ==
-             WebInputEvent::Type::kGestureScrollUpdate ||
-         last_event->event().GetType() ==
-             WebInputEvent::Type::kGesturePinchUpdate);
+  DCHECK(IsContinuousGestureEvent(last_event->event().GetType()));
   DCHECK_LE(last_event->latency_info().trace_id(),
             new_event->latency_info().trace_id());
 
@@ -146,7 +141,7 @@ void CompositorThreadEventQueue::Queue(
   ui::LatencyInfo pinch_latency;
   EventWithCallback::OriginalEventList pinch_original_events;
   DCHECK(oldest_pinch_trace_id == -1 || oldest_scroll_trace_id == -1);
-  if (oldest_scroll_trace_id != -1 && oldest_pinch_trace_id == -1) {
+  if (oldest_scroll_trace_id != -1) {
     scroll_latency = oldest_latency;
     scroll_latency.set_trace_id(oldest_scroll_trace_id);
     scroll_original_events = std::move(combined_original_events);
@@ -191,11 +186,9 @@ void CompositorThreadEventQueue::Queue(
 }
 
 std::unique_ptr<EventWithCallback> CompositorThreadEventQueue::Pop() {
-  std::unique_ptr<EventWithCallback> result;
-  if (!queue_.empty()) {
-    result = std::move(queue_.front());
-    queue_.pop_front();
-  }
+  DCHECK(!queue_.empty());
+  std::unique_ptr<EventWithCallback> result = std::move(queue_.front());
+  queue_.pop_front();
 
   if (result->first_original_event()) {
     TRACE_EVENT_NESTABLE_ASYNC_END2(

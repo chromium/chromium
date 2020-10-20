@@ -20,6 +20,10 @@ namespace base {
 class TickClock;
 }
 
+namespace cc {
+class EventMetrics;
+}
+
 namespace ui {
 class LatencyInfo;
 }
@@ -65,8 +69,6 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
                     InputHandlerProxyClient* client,
                     bool force_input_to_main_thread);
   ~InputHandlerProxy() override;
-
-  using WebScopedInputEvent = std::unique_ptr<blink::WebInputEvent>;
 
   ElasticOverscrollController* elastic_overscroll_controller() {
     return elastic_overscroll_controller_.get();
@@ -139,9 +141,11 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
       EventDisposition,
       std::unique_ptr<blink::WebCoalescedInputEvent> event,
       std::unique_ptr<DidOverscrollParams>,
-      const blink::WebInputEventAttribution&)>;
+      const blink::WebInputEventAttribution&,
+      std::unique_ptr<cc::EventMetrics> metrics)>;
   void HandleInputEventWithLatencyInfo(
       std::unique_ptr<blink::WebCoalescedInputEvent> event,
+      std::unique_ptr<cc::EventMetrics> metrics,
       EventDispositionCallback callback);
 
   // In scroll unification, a scroll begin event may initially return unhandled
@@ -151,15 +155,21 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
   // method.
   void ContinueScrollBeginAfterMainThreadHitTest(
       std::unique_ptr<blink::WebCoalescedInputEvent> event,
+      std::unique_ptr<cc::EventMetrics> metrics,
       EventDispositionCallback callback,
       cc::ElementIdType hit_tests_result);
 
+  // Handles creating synthetic gesture events. It is currently used for
+  // creating gesture event equivalents for mouse events on a composited
+  // scrollbar. `original_metrics` contains metrics for the original mouse event
+  // and is used to generated metrics for the new gesture event.
   void InjectScrollbarGestureScroll(
       const blink::WebInputEvent::Type type,
       const gfx::PointF& position_in_widget,
       const cc::InputHandlerPointerResult& pointer_result,
       const ui::LatencyInfo& latency_info,
-      const base::TimeTicks now);
+      const base::TimeTicks now,
+      const cc::EventMetrics* original_metrics);
 
   // Attempts to perform attribution of the given WebInputEvent to a target
   // frame. Intended for simple impl-side hit testing.
@@ -229,7 +239,8 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
       const blink::WebGestureEvent& event);
   EventDisposition HandleGestureScrollUpdate(
       const blink::WebGestureEvent& event,
-      const blink::WebInputEventAttribution& original_attribution);
+      const blink::WebInputEventAttribution& original_attribution,
+      const cc::EventMetrics* original_metrics);
   EventDisposition HandleGestureScrollEnd(const blink::WebGestureEvent& event);
   EventDisposition HandleTouchStart(EventWithCallback* event_with_callback);
   EventDisposition HandleTouchMove(EventWithCallback* event_with_callback);

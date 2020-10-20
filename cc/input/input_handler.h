@@ -334,7 +334,7 @@ class CC_EXPORT InputHandler {
   // saved for reporting event latency metrics. It is allowed to pass nullptr as
   // |event_metrics| in which case the return value would also be nullptr.
   virtual std::unique_ptr<EventsMetricsManager::ScopedMonitor>
-  GetScopedEventMetricsMonitor(std::unique_ptr<EventMetrics> event_metrics) = 0;
+  GetScopedEventMetricsMonitor(const EventMetrics* event_metrics) = 0;
 
   virtual ScrollElasticityHelper* CreateScrollElasticityHelper() = 0;
 

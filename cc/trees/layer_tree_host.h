@@ -185,7 +185,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   SwapPromiseManager* GetSwapPromiseManager();
 
   std::unique_ptr<EventsMetricsManager::ScopedMonitor>
-  GetScopedEventMetricsMonitor(std::unique_ptr<EventMetrics> event_metrics);
+  GetScopedEventMetricsMonitor(const EventMetrics* event_metrics);
   void ClearEventsMetrics();
 
   size_t saved_events_metrics_count_for_testing() const {

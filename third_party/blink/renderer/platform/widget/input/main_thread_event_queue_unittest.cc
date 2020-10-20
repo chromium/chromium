@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/test_simple_task_runner.h"
 #include "build/build_config.h"
+#include "cc/metrics/event_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
@@ -194,12 +195,12 @@ class MainThreadEventQueueTest : public testing::Test,
     queue_->HandleEvent(std::make_unique<blink::WebCoalescedInputEvent>(
                             event.Clone(), ui::LatencyInfo()),
                         MainThreadEventQueue::DispatchType::kBlocking,
-                        ack_result, blink::WebInputEventAttribution(),
+                        ack_result, blink::WebInputEventAttribution(), nullptr,
                         handler_callback_->GetCallback());
   }
 
   void RunClosure(unsigned closure_id) {
-    std::unique_ptr<HandledTask> closure(new HandledClosure(closure_id));
+    auto closure = std::make_unique<HandledClosure>(closure_id);
     handled_tasks_.push_back(std::move(closure));
   }
 
@@ -240,10 +241,11 @@ class MainThreadEventQueueTest : public testing::Test,
 
   // MainThreadEventQueueClient overrides.
   bool HandleInputEvent(const blink::WebCoalescedInputEvent& event,
+                        std::unique_ptr<cc::EventMetrics> metrics,
                         HandledEventCallback callback) override {
     if (!handle_input_event_)
       return false;
-    std::unique_ptr<HandledTask> handled_event(new HandledEvent(event));
+    auto handled_event = std::make_unique<HandledEvent>(event);
     handled_tasks_.push_back(std::move(handled_event));
     std::move(callback).Run(blink::mojom::InputEventResultState::kNotConsumed,
                             event.latency_info(), nullptr, base::nullopt);
@@ -1139,6 +1141,7 @@ class MainThreadEventQueueInitializationTest
   MainThreadEventQueueInitializationTest() = default;
 
   bool HandleInputEvent(const blink::WebCoalescedInputEvent& event,
+                        std::unique_ptr<cc::EventMetrics> metrics,
                         HandledEventCallback callback) override {
     std::move(callback).Run(blink::mojom::InputEventResultState::kNotConsumed,
                             event.latency_info(), nullptr, base::nullopt);

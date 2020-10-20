@@ -14,13 +14,17 @@
 namespace cc {
 namespace {
 
+// A `ScopedMonitor` implementation that takes a callback and runs it upon
+// destruction.
 class ScopedMonitorImpl : public EventsMetricsManager::ScopedMonitor {
  public:
   explicit ScopedMonitorImpl(base::OnceClosure done_callback)
-      : closure_runner_(std::move(done_callback)) {}
+      : done_callback_runner_(std::move(done_callback)) {}
 
  private:
-  base::ScopedClosureRunner closure_runner_;
+  // Holds a callback closure that is run automatically when the scoped monitor
+  // is destroyed.
+  base::ScopedClosureRunner done_callback_runner_;
 };
 
 }  // namespace
@@ -31,20 +35,26 @@ EventsMetricsManager::EventsMetricsManager() = default;
 EventsMetricsManager::~EventsMetricsManager() = default;
 
 std::unique_ptr<EventsMetricsManager::ScopedMonitor>
-EventsMetricsManager::GetScopedMonitor(
-    std::unique_ptr<EventMetrics> event_metrics) {
+EventsMetricsManager::GetScopedMonitor(const EventMetrics* event_metrics) {
   DCHECK(!active_event_);
   if (!event_metrics)
     return nullptr;
-  active_event_ = std::move(event_metrics);
+  active_event_ = event_metrics;
   return std::make_unique<ScopedMonitorImpl>(base::BindOnce(
       &EventsMetricsManager::OnScopedMonitorEnded, weak_factory_.GetWeakPtr()));
 }
 
 void EventsMetricsManager::SaveActiveEventMetrics() {
   if (active_event_) {
+    // TODO(crbug.com/1054009): It is fine to make a copy of active EventMetrics
+    // object here as we are not going to change it later. However, the plan is
+    // to add timestamp of when the processing is done to this object. Since end
+    // of the processing happens after this code, we can't simply make a copy
+    // here. In that case, here we can just mark the event for saving and do the
+    // actual copy when the scoped monitor is destroyed which happens after the
+    // event processing is done.
     saved_events_.push_back(*active_event_);
-    active_event_.reset();
+    active_event_ = nullptr;
   }
 }
 
@@ -55,7 +65,7 @@ std::vector<EventMetrics> EventsMetricsManager::TakeSavedEventsMetrics() {
 }
 
 void EventsMetricsManager::OnScopedMonitorEnded() {
-  active_event_.reset();
+  active_event_ = nullptr;
 }
 
 }  // namespace cc

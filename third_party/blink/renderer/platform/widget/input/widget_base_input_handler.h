@@ -21,6 +21,7 @@
 
 namespace cc {
 struct ElementId;
+class EventMetrics;
 struct OverscrollBehavior;
 }  // namespace cc
 
@@ -54,8 +55,11 @@ class PLATFORM_EXPORT WidgetBaseInputHandler {
       std::unique_ptr<InputHandlerProxy::DidOverscrollParams>,
       base::Optional<WebTouchAction>)>;
 
-  // Handle input events from the input event provider.
+  // Handle input events from the input event provider. `metrics` contains
+  // information used in reporting latency metrics in case the event causes
+  // any updates. `callback` will be called when the event is handled.
   void HandleInputEvent(const blink::WebCoalescedInputEvent& coalesced_event,
+                        std::unique_ptr<cc::EventMetrics> metrics,
                         HandledEventCallback callback);
 
   // Handle overscroll from Blink. Returns whether the should be sent to the
@@ -99,10 +103,16 @@ class PLATFORM_EXPORT WidgetBaseInputHandler {
   WebInputEventResult HandleTouchEvent(
       const WebCoalescedInputEvent& coalesced_event);
 
+  // Creates and handles scroll gestures based on parameters from
+  // `injected_scroll_params`. `input_event`, `original_latency_info`, and
+  // `original_metrics` are the original event causing gesture scrolls along
+  // with its latency and metrics info used in generating new gestures along
+  // with their latency and metrics info.
   void HandleInjectedScrollGestures(
       std::vector<InjectScrollGestureParams> injected_scroll_params,
       const WebInputEvent& input_event,
-      const ui::LatencyInfo& original_latency_info);
+      const ui::LatencyInfo& original_latency_info,
+      const cc::EventMetrics* original_metrics);
 
   WidgetBase* widget_;
 

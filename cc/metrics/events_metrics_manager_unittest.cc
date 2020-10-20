@@ -79,7 +79,7 @@ TEST_F(EventsMetricsManagerTest, EventsMetricsSaved) {
 
   for (auto& event : events) {
     {
-      auto monitor = manager_.GetScopedMonitor(std::move(event.first));
+      auto monitor = manager_.GetScopedMonitor(event.first.get());
       if (event.second == Behavior::kSaveInsideScope)
         manager_.SaveActiveEventMetrics();
       // Ending the scope destroys the |monitor|.

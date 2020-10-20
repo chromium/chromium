@@ -43,7 +43,7 @@ class CC_EXPORT EventsMetricsManager {
   // scoped monitor indicates the end of event handling. |event_metrics| is
   // allowed to be nullptr in which case the return value would also be nullptr.
   std::unique_ptr<ScopedMonitor> GetScopedMonitor(
-      std::unique_ptr<EventMetrics> event_metrics);
+      const EventMetrics* event_metrics);
 
   // Called by clients when a frame needs to be produced. If any scoped monitor
   // is active at this time, its corresponding event metrics would be saved.
@@ -61,7 +61,7 @@ class CC_EXPORT EventsMetricsManager {
   void OnScopedMonitorEnded();
 
   // Current active EventMetrics, if any.
-  std::unique_ptr<EventMetrics> active_event_;
+  const EventMetrics* active_event_ = nullptr;
 
   // List of saved event metrics.
   std::vector<EventMetrics> saved_events_;

@@ -6,6 +6,7 @@
 
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "cc/metrics/event_metrics.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
 
 namespace blink {
@@ -13,11 +14,13 @@ namespace blink {
 EventWithCallback::EventWithCallback(
     std::unique_ptr<WebCoalescedInputEvent> event,
     base::TimeTicks timestamp_now,
-    InputHandlerProxy::EventDispositionCallback callback)
+    InputHandlerProxy::EventDispositionCallback callback,
+    std::unique_ptr<cc::EventMetrics> metrics)
     : event_(std::make_unique<WebCoalescedInputEvent>(*event)),
       creation_timestamp_(timestamp_now),
       last_coalesced_timestamp_(timestamp_now) {
-  original_events_.emplace_back(std::move(event), std::move(callback));
+  original_events_.emplace_back(std::move(event), std::move(metrics),
+                                std::move(callback));
 }
 
 EventWithCallback::EventWithCallback(
@@ -26,10 +29,9 @@ EventWithCallback::EventWithCallback(
     base::TimeTicks last_coalesced_timestamp,
     OriginalEventList original_events)
     : event_(std::move(event)),
+      original_events_(std::move(original_events)),
       creation_timestamp_(creation_timestamp),
-      last_coalesced_timestamp_(last_coalesced_timestamp) {
-  original_events_.splice(original_events_.end(), original_events);
-}
+      last_coalesced_timestamp_(last_coalesced_timestamp) {}
 
 EventWithCallback::~EventWithCallback() {}
 
@@ -73,14 +75,15 @@ void EventWithCallback::RunCallbacks(
     return;
 
   // Ack the oldest event with original latency.
-  original_events_.front().event_->latency_info() = latency;
-  std::move(original_events_.front().callback_)
-      .Run(disposition, std::move(original_events_.front().event_),
+  auto& oldest_event = original_events_.front();
+  oldest_event.event_->latency_info() = latency;
+  std::move(oldest_event.callback_)
+      .Run(disposition, std::move(oldest_event.event_),
            did_overscroll_params
                ? std::make_unique<InputHandlerProxy::DidOverscrollParams>(
                      *did_overscroll_params)
                : nullptr,
-           attribution);
+           attribution, std::move(oldest_event.metrics_));
   original_events_.pop_front();
 
   // If the event was handled on compositor thread, ack other events with
@@ -104,15 +107,19 @@ void EventWithCallback::RunCallbacks(
                  ? std::make_unique<InputHandlerProxy::DidOverscrollParams>(
                        *did_overscroll_params)
                  : nullptr,
-             attribution);
+             attribution, std::move(coalesced_event.metrics_));
   }
 }
 
 EventWithCallback::OriginalEventWithCallback::OriginalEventWithCallback(
     std::unique_ptr<WebCoalescedInputEvent> event,
+    std::unique_ptr<cc::EventMetrics> metrics,
     InputHandlerProxy::EventDispositionCallback callback)
-    : event_(std::move(event)), callback_(std::move(callback)) {}
+    : event_(std::move(event)),
+      metrics_(std::move(metrics)),
+      callback_(std::move(callback)) {}
 
-EventWithCallback::OriginalEventWithCallback::~OriginalEventWithCallback() {}
+EventWithCallback::OriginalEventWithCallback::~OriginalEventWithCallback() =
+    default;
 
 }  // namespace blink

@@ -12,6 +12,10 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/latency/latency_info.h"
 
+namespace cc {
+class EventMetrics;
+}
+
 namespace blink {
 
 namespace test {
@@ -23,16 +27,20 @@ class PLATFORM_EXPORT EventWithCallback {
   struct PLATFORM_EXPORT OriginalEventWithCallback {
     OriginalEventWithCallback(
         std::unique_ptr<WebCoalescedInputEvent> event,
+        std::unique_ptr<cc::EventMetrics> metrics,
         InputHandlerProxy::EventDispositionCallback callback);
     ~OriginalEventWithCallback();
+
     std::unique_ptr<WebCoalescedInputEvent> event_;
+    std::unique_ptr<cc::EventMetrics> metrics_;
     InputHandlerProxy::EventDispositionCallback callback_;
   };
   using OriginalEventList = std::list<OriginalEventWithCallback>;
 
   EventWithCallback(std::unique_ptr<WebCoalescedInputEvent> event,
                     base::TimeTicks timestamp_now,
-                    InputHandlerProxy::EventDispositionCallback callback);
+                    InputHandlerProxy::EventDispositionCallback callback,
+                    std::unique_ptr<cc::EventMetrics> metrics);
   EventWithCallback(std::unique_ptr<WebCoalescedInputEvent> event,
                     base::TimeTicks creation_timestamp,
                     base::TimeTicks last_coalesced_timestamp,
@@ -68,6 +76,11 @@ class PLATFORM_EXPORT EventWithCallback {
                : original_events_.front().event_->EventPointer();
   }
   void SetScrollbarManipulationHandledOnCompositorThread();
+
+  const cc::EventMetrics* metrics() const {
+    return original_events_.empty() ? nullptr
+                                    : original_events_.front().metrics_.get();
+  }
 
  private:
   friend class test::InputHandlerProxyEventQueueTest;

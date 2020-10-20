@@ -425,7 +425,8 @@ void WebPagePopupImpl::SetHandlingInputEvent(bool handling) {
 void WebPagePopupImpl::ProcessInputEventSynchronouslyForTesting(
     const WebCoalescedInputEvent& event,
     HandledEventCallback callback) {
-  widget_base_->input_handler().HandleInputEvent(event, std::move(callback));
+  widget_base_->input_handler().HandleInputEvent(event, nullptr,
+                                                 std::move(callback));
 }
 
 void WebPagePopupImpl::UpdateTextInputState() {

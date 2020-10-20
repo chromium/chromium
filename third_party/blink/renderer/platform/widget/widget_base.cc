@@ -1248,7 +1248,7 @@ void WidgetBase::QueueSyntheticEvent(
   WebInputEventAttribution attribution;
   widget_input_handler_manager_->input_event_queue()->HandleEvent(
       std::move(event), MainThreadEventQueue::DispatchType::kNonBlocking,
-      mojom::blink::InputEventResultState::kNotConsumed, attribution,
+      mojom::blink::InputEventResultState::kNotConsumed, attribution, nullptr,
       HandledEventCallback());
 }
 

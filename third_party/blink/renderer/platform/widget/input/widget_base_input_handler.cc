@@ -297,6 +297,7 @@ WebInputEventResult WidgetBaseInputHandler::HandleTouchEvent(
 
 void WidgetBaseInputHandler::HandleInputEvent(
     const WebCoalescedInputEvent& coalesced_event,
+    std::unique_ptr<cc::EventMetrics> metrics,
     HandledEventCallback callback) {
   const WebInputEvent& input_event = coalesced_event.Event();
 
@@ -338,24 +339,8 @@ void WidgetBaseInputHandler::HandleInputEvent(
       ui::LatencyComponentType::INPUT_EVENT_LATENCY_RENDERER_MAIN_COMPONENT);
   cc::LatencyInfoSwapPromiseMonitor swap_promise_monitor(
       &swap_latency_info, widget_->LayerTreeHost()->GetSwapPromiseManager());
-  base::Optional<cc::EventMetrics::ScrollUpdateType> scroll_update_type;
-  if (input_event.GetType() == WebInputEvent::Type::kGestureScrollUpdate) {
-    // TODO(crbug.com/1079116): For now, we use data from `LatencyInfo` to
-    // determine whether a scroll-update is the first one in a sequence or not.
-    // This should be determined independent of `LatencyInfo`.
-    if (coalesced_event.latency_info().FindLatency(
-            ui::INPUT_EVENT_LATENCY_FIRST_SCROLL_UPDATE_ORIGINAL_COMPONENT,
-            nullptr)) {
-      scroll_update_type = cc::EventMetrics::ScrollUpdateType::kStarted;
-    } else {
-      scroll_update_type = cc::EventMetrics::ScrollUpdateType::kContinued;
-    }
-  }
   auto scoped_event_metrics_monitor =
-      widget_->LayerTreeHost()->GetScopedEventMetricsMonitor(
-          cc::EventMetrics::Create(input_event.GetTypeAsUiEventType(),
-                                   scroll_update_type, input_event.TimeStamp(),
-                                   input_event.GetScrollInputType()));
+      widget_->LayerTreeHost()->GetScopedEventMetricsMonitor(metrics.get());
 
   bool prevent_default = false;
   bool show_virtual_keyboard_for_mouse = false;
@@ -464,7 +449,7 @@ void WidgetBaseInputHandler::HandleInputEvent(
   if (handling_state.injected_scroll_params().size()) {
     HandleInjectedScrollGestures(
         std::move(handling_state.injected_scroll_params()), input_event,
-        coalesced_event.latency_info());
+        coalesced_event.latency_info(), metrics.get());
   }
 
   // Send gesture scroll events and their dispositions to the compositor thread,
@@ -593,7 +578,8 @@ void WidgetBaseInputHandler::InjectGestureScrollEvent(
 void WidgetBaseInputHandler::HandleInjectedScrollGestures(
     std::vector<InjectScrollGestureParams> injected_scroll_params,
     const WebInputEvent& input_event,
-    const ui::LatencyInfo& original_latency_info) {
+    const ui::LatencyInfo& original_latency_info,
+    const cc::EventMetrics* original_metrics) {
   DCHECK(injected_scroll_params.size());
 
   base::TimeTicks original_timestamp;
@@ -621,6 +607,7 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
     scrollbar_latency_info.AddLatencyNumber(
         ui::LatencyComponentType::INPUT_EVENT_LATENCY_RENDERER_MAIN_COMPONENT);
 
+    base::Optional<cc::EventMetrics::ScrollUpdateType> scroll_update_type;
     if (params.type == WebInputEvent::Type::kGestureScrollUpdate) {
       if (input_event.GetType() != WebInputEvent::Type::kGestureScrollUpdate) {
         scrollbar_latency_info.AddLatencyNumberWithTimestamp(
@@ -641,6 +628,9 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
                 ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT,
                 nullptr));
       }
+      scroll_update_type = last_injected_gesture_was_begin_
+                               ? cc::EventMetrics::ScrollUpdateType::kStarted
+                               : cc::EventMetrics::ScrollUpdateType::kContinued;
     }
 
     std::unique_ptr<WebGestureEvent> gesture_event =
@@ -659,26 +649,23 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
       cc::LatencyInfoSwapPromiseMonitor swap_promise_monitor(
           &scrollbar_latency_info,
           widget_->LayerTreeHost()->GetSwapPromiseManager());
-      base::Optional<cc::EventMetrics::ScrollUpdateType> scroll_update_type;
-      if (gesture_event->GetType() ==
-          WebInputEvent::Type::kGestureScrollUpdate) {
-        // TODO(crbug.com/1079116): For now, we use data from `LatencyInfo` to
-        // determine whether a scroll-update is the first one in a sequence or
-        // not. This should be determined independent of `LatencyInfo`.
-        if (scrollbar_latency_info.FindLatency(
-                ui::INPUT_EVENT_LATENCY_FIRST_SCROLL_UPDATE_ORIGINAL_COMPONENT,
-                nullptr)) {
-          scroll_update_type = cc::EventMetrics::ScrollUpdateType::kStarted;
-        } else {
-          scroll_update_type = cc::EventMetrics::ScrollUpdateType::kContinued;
-        }
-      }
+      // For latency metrics, we need the original timestamp of the
+      // `input_event` as its current timestamp might have changed due to
+      // coalescing in the pipeline. `original_metrics` which is the metrics
+      // object for the `input_event` contains this original timestamp. We could
+      // have used `original_timestamp` for this purpose, but we don't do that
+      // as `original_timestamp` is extracted from `ui::LatencyInfo` of
+      // `input_event` which we hope to be able to get rid of. Moreover, we plan
+      // to add more breakdown timestamps to `EventMetrcis` which are not
+      // available in `ui::LatencyInfo`.
+      base::TimeTicks time_stamp = original_metrics
+                                       ? original_metrics->time_stamp()
+                                       : gesture_event->TimeStamp();
+      std::unique_ptr<cc::EventMetrics> metrics = cc::EventMetrics::Create(
+          gesture_event->GetTypeAsUiEventType(), scroll_update_type, time_stamp,
+          gesture_event->GetScrollInputType());
       auto scoped_event_metrics_monitor =
-          widget_->LayerTreeHost()->GetScopedEventMetricsMonitor(
-              cc::EventMetrics::Create(gesture_event->GetTypeAsUiEventType(),
-                                       scroll_update_type,
-                                       gesture_event->TimeStamp(),
-                                       gesture_event->GetScrollInputType()));
+          widget_->LayerTreeHost()->GetScopedEventMetricsMonitor(metrics.get());
       widget_->client()->HandleInputEvent(
           WebCoalescedInputEvent(*gesture_event, scrollbar_latency_info));
     }
