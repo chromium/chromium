@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
@@ -470,9 +471,9 @@ ParseInfo RulesetSource::IndexAndPersistRules(
       }
     }
   }
-  indexer.Finish();
-
-  if (!PersistIndexedRuleset(indexed_path_, indexer.GetData(),
+  flatbuffers::DetachedBuffer buffer = indexer.FinishAndReleaseBuffer();
+  if (!PersistIndexedRuleset(indexed_path_,
+                             base::make_span(buffer.data(), buffer.size()),
                              &ruleset_checksum)) {
     return ParseInfo(ParseResult::ERROR_PERSISTING_RULESET,
                      nullptr /* rule_id */);

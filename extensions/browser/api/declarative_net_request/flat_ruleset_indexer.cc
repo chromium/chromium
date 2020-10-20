@@ -255,7 +255,7 @@ void FlatRulesetIndexer::AddUrlRule(const IndexedRule& indexed_rule) {
       transform_offset, request_headers_offset, response_headers_offset));
 }
 
-void FlatRulesetIndexer::Finish() {
+flatbuffers::DetachedBuffer FlatRulesetIndexer::FinishAndReleaseBuffer() {
   DCHECK(!finished_);
   finished_ = true;
 
@@ -280,11 +280,8 @@ void FlatRulesetIndexer::Finish() {
                                           regex_rules_offset,
                                           extension_metadata_offset);
   flat::FinishExtensionIndexedRulesetBuffer(builder_, root_offset);
-}
 
-base::span<const uint8_t> FlatRulesetIndexer::GetData() {
-  DCHECK(finished_);
-  return base::make_span(builder_.GetBufferPointer(), builder_.GetSize());
+  return builder_.Release();
 }
 
 std::vector<FlatRulesetIndexer::UrlPatternIndexBuilder*>

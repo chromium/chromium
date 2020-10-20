@@ -10,7 +10,6 @@
 #include <set>
 #include <vector>
 
-#include "base/containers/span.h"
 #include "base/macros.h"
 #include "components/url_pattern_index/url_pattern_index.h"
 #include "extensions/browser/api/declarative_net_request/flat/extension_ruleset_generated.h"
@@ -35,12 +34,9 @@ class FlatRulesetIndexer {
   // Returns the number of rules added till now.
   size_t indexed_rules_count() const { return indexed_rules_count_; }
 
-  // Finishes the ruleset construction.
-  void Finish();
-
-  // Returns the data buffer, which is still owned by FlatRulesetIndexer.
-  // Finish() must be called prior to calling this.
-  base::span<const uint8_t> GetData();
+  // Finishes the ruleset construction and releases the underlying indexed data
+  // buffer.
+  flatbuffers::DetachedBuffer FinishAndReleaseBuffer();
 
  private:
   using UrlPatternIndexBuilder = url_pattern_index::UrlPatternIndexBuilder;
