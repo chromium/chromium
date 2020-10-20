@@ -27,8 +27,7 @@ TEST(MediaConditionParserTest, Basic) {
       {"(min-width:500px)", "(min-width: 500px)"},
       {"(min-width: -100px)", "not all"},
       {"(min-width: 100px) and print", "not all"},
-      {"(min-width: 100px) and (max-width: 900px)",
-       "(max-width: 900px) and (min-width: 100px)"},
+      {"(min-width: 100px) and (max-width: 900px)", nullptr},
       {"(min-width: [100px) and (max-width: 900px)", "not all"},
       {"not (min-width: 900px)", "not all and (min-width: 900px)"},
       {"not (blabla)", "not all"},
@@ -44,7 +43,9 @@ TEST(MediaConditionParserTest, Basic) {
                                               nullptr);
     ASSERT_EQ(media_condition_query_set->QueryVector().size(), (unsigned)1);
     String query_text = media_condition_query_set->QueryVector()[0]->CssText();
-    ASSERT_EQ(test_cases[i].output, query_text);
+    const char* expected_text =
+        test_cases[i].output ? test_cases[i].output : test_cases[i].input;
+    ASSERT_EQ(expected_text, query_text);
   }
 }
 

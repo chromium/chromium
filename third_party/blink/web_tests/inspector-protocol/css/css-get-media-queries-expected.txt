@@ -33,22 +33,6 @@ mediaRule #1
             unit: em
             computed length: 1152
 mediaRule #2
-    text: (max-width: 10px) and (min-width: 20px)
-    source: mediaRule
-    range: {"endColumn":46,"endLine":13,"startColumn":7,"startLine":13}
-    computedText: (min-width: 20px) and (max-width: 10px)
-    mediaQuery #0 active: false
-        mediaExpression #0
-            feature: max-width
-            value: 10
-            unit: px
-            computed length: 10
-        mediaExpression #1
-            feature: min-width
-            value: 20
-            unit: px
-            computed length: 20
-mediaRule #3
     text: (max-width: 200px) and (min-width: 100px)
     source: mediaRule
     range: {"endColumn":52,"endLine":6,"startColumn":11,"startLine":6}
@@ -64,7 +48,7 @@ mediaRule #3
             value: 100
             unit: px
             computed length: 100
-mediaRule #4
+mediaRule #3
     text: (min-monochrome: 8)
     source: mediaRule
     range: {"endColumn":38,"endLine":22,"startColumn":11,"startLine":22}
@@ -74,6 +58,17 @@ mediaRule #4
             feature: min-monochrome
             value: 8
             unit: 
+mediaRule #4
+    text: (min-width: 100px)
+    source: mediaRule
+    range: {"endColumn":25,"endLine":4,"startColumn":7,"startLine":4}
+    computedText: (min-width: 100px)
+    mediaQuery #0
+        mediaExpression #0
+            feature: min-width
+            value: 100
+            unit: px
+            computed length: 100
 mediaRule #5
     text: (min-width: 100px)
     source: mediaRule
@@ -97,17 +92,6 @@ mediaRule #6
             unit: px
             computed length: 100
 mediaRule #7
-    text: (min-width: 100px)
-    source: mediaRule
-    range: {"endColumn":25,"endLine":4,"startColumn":7,"startLine":4}
-    computedText: (min-width: 100px)
-    mediaQuery #0
-        mediaExpression #0
-            feature: min-width
-            value: 100
-            unit: px
-            computed length: 100
-mediaRule #8
     text: (min-width: 1px), (max-width: 1000em)
     source: mediaRule
     range: {"endColumn":1,"endLine":9,"startColumn":7,"startLine":1}
@@ -124,6 +108,22 @@ mediaRule #8
             value: 1000
             unit: em
             computed length: 16000
+mediaRule #8
+    text: (min-width: 20px) and (max-width: 10px)
+    source: mediaRule
+    range: {"endColumn":46,"endLine":13,"startColumn":7,"startLine":13}
+    computedText: (min-width: 20px) and (max-width: 10px)
+    mediaQuery #0 active: false
+        mediaExpression #0
+            feature: min-width
+            value: 20
+            unit: px
+            computed length: 20
+        mediaExpression #1
+            feature: max-width
+            value: 10
+            unit: px
+            computed length: 10
 mediaRule #9
     text: (orientation: landscape), handheld and (max-resolution: 3dppx)
     source: importRule
@@ -186,22 +186,6 @@ mediaRule #15
     computedText: screen and (device-aspect-ratio: 16/9), screen and (device-aspect-ratio: 16/10)
     mediaList is empty
 mediaRule #16
-    text: screen and (max-height: 4000px) and (min-width: 10px)
-    source: importRule
-    range: {"endColumn":42,"endLine":1,"startColumn":37,"startLine":0}
-    computedText: screen and\n(min-width: 10px) and (max-height: 4000px)
-    mediaQuery #0
-        mediaExpression #0
-            feature: max-height
-            value: 4000
-            unit: px
-            computed length: 4000
-        mediaExpression #1
-            feature: min-width
-            value: 10
-            unit: px
-            computed length: 10
-mediaRule #17
     text: screen and (min-resolution: 2dppx)
     source: mediaRule
     range: {"endColumn":41,"endLine":7,"startColumn":7,"startLine":7}
@@ -211,4 +195,20 @@ mediaRule #17
             feature: min-resolution
             value: 2
             unit: dppx
+mediaRule #17
+    text: screen and (min-width: 10px) and (max-height: 4000px)
+    source: importRule
+    range: {"endColumn":42,"endLine":1,"startColumn":37,"startLine":0}
+    computedText: screen and\n(min-width: 10px) and (max-height: 4000px)
+    mediaQuery #0
+        mediaExpression #0
+            feature: min-width
+            value: 10
+            unit: px
+            computed length: 10
+        mediaExpression #1
+            feature: max-height
+            value: 4000
+            unit: px
+            computed length: 4000
 

@@ -69,10 +69,6 @@ String MediaQuery::Serialize() const {
   return result.ToString();
 }
 
-static bool ExpressionCompare(const MediaQueryExp& a, const MediaQueryExp& b) {
-  return CodeUnitCompare(a.Serialize(), b.Serialize()) < 0;
-}
-
 std::unique_ptr<MediaQuery> MediaQuery::CreateNotAll() {
   return std::make_unique<MediaQuery>(MediaQuery::kNot, media_type_names::kAll,
                                       ExpressionHeapVector());
@@ -83,20 +79,7 @@ MediaQuery::MediaQuery(RestrictorType restrictor,
                        ExpressionHeapVector expressions)
     : restrictor_(restrictor),
       media_type_(AttemptStaticStringCreation(media_type.LowerASCII())),
-      expressions_(std::move(expressions)) {
-  std::sort(expressions_.begin(), expressions_.end(), ExpressionCompare);
-
-  // Remove all duplicated expressions.
-  MediaQueryExp key = MediaQueryExp::Invalid();
-  for (int i = expressions_.size() - 1; i >= 0; --i) {
-    MediaQueryExp exp = expressions_.at(i);
-    CHECK(exp.IsValid());
-    if (exp == key)
-      expressions_.EraseAt(i);
-    else
-      key = exp;
-  }
-}
+      expressions_(std::move(expressions)) {}
 
 MediaQuery::MediaQuery(const MediaQuery& o)
     : restrictor_(o.restrictor_),
