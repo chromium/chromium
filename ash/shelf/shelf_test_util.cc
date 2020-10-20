@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "ash/shelf/shelf_test_util.h"
+
+#include "ash/public/cpp/overview_test_api.h"
+#include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shelf/shelf_controller.h"
 #include "ash/shell.h"
 
@@ -19,6 +22,12 @@ ShelfItem ShelfTestUtil::AddAppShortcut(const std::string id,
   item.id = ShelfID(id);
   controller->model()->Add(item);
   return item;
+}
+
+void WaitForOverviewAnimation(bool enter) {
+  ShellTestApi().WaitForOverviewAnimationState(
+      enter ? OverviewAnimationState::kEnterAnimationComplete
+            : OverviewAnimationState::kExitAnimationComplete);
 }
 
 }  // namespace ash

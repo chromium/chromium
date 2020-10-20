@@ -2102,8 +2102,6 @@ test("ash_unittests") {
     "shelf/shelf_window_watcher_unittest.cc",
     "shelf/test/hotseat_state_watcher.cc",
     "shelf/test/hotseat_state_watcher.h",
-    "shelf/test/overview_animation_waiter.cc",
-    "shelf/test/overview_animation_waiter.h",
     "shelf/test/shelf_layout_manager_test_base.cc",
     "shelf/test/shelf_layout_manager_test_base.h",
     "shelf/test/widget_animation_smoothness_inspector.cc",

@@ -52,7 +52,6 @@
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shelf/test/hotseat_state_watcher.h"
-#include "ash/shelf/test/overview_animation_waiter.h"
 #include "ash/shelf/test/shelf_layout_manager_test_base.h"
 #include "ash/shelf/test/widget_animation_waiter.h"
 #include "ash/shell.h"
@@ -3647,18 +3646,12 @@ TEST_P(ShelfLayoutManagerTest, NoShelfUpdateDuringOverviewAnimation) {
 
   OverviewController* overview_controller = Shell::Get()->overview_controller();
   TestDisplayObserver observer;
-  {
-    OverviewAnimationWaiter waiter;
-    overview_controller->StartOverview();
-    waiter.Wait();
-  }
+  overview_controller->StartOverview();
+  WaitForOverviewAnimation(/*enter=*/true);
   ASSERT_TRUE(TabletModeControllerTestApi().IsTabletModeStarted());
   EXPECT_EQ(0, observer.metrics_change_count());
-  {
-    OverviewAnimationWaiter waiter;
-    overview_controller->EndOverview();
-    waiter.Wait();
-  }
+  overview_controller->EndOverview();
+  WaitForOverviewAnimation(/*enter=*/false);
   ASSERT_TRUE(TabletModeControllerTestApi().IsTabletModeStarted());
   EXPECT_EQ(0, observer.metrics_change_count());
 }
@@ -3683,23 +3676,20 @@ TEST_P(ShelfLayoutManagerTest, ShelfBoundsUpdateAfterOverviewAnimation) {
 
   // Change alignment during overview enter animation.
   OverviewController* overview_controller = Shell::Get()->overview_controller();
-  {
-    OverviewAnimationWaiter overview_waiter;
-    overview_controller->StartOverview();
-    // When setting the shelf alignment, bounds aren't expected to animate.
-    shelf->SetAlignment(ShelfAlignment::kLeft);
-    overview_waiter.Wait();
-  }
+  overview_controller->StartOverview();
+  // When setting the shelf alignment, bounds aren't expected to animate.
+  shelf->SetAlignment(ShelfAlignment::kLeft);
+  // Setting alignment exits overview which we should wait for.
+  WaitForOverviewAnimation(/*enter=*/false);
   EXPECT_EQ(left_shelf_bounds, GetShelfWidget()->GetWindowBoundsInScreen());
 
   // Change alignment during overview exit animation.
-  {
-    OverviewAnimationWaiter overview_waiter;
-    overview_controller->EndOverview();
-    // When setting the shelf alignment, bounds aren't expected to animate.
-    shelf->SetAlignment(ShelfAlignment::kBottom);
-    overview_waiter.Wait();
-  }
+  overview_controller->StartOverview();
+  WaitForOverviewAnimation(/*enter=*/true);
+  overview_controller->EndOverview();
+  // When setting the shelf alignment, bounds aren't expected to animate.
+  shelf->SetAlignment(ShelfAlignment::kBottom);
+  WaitForOverviewAnimation(/*enter=*/false);
   EXPECT_EQ(bottom_shelf_bounds, GetShelfWidget()->GetWindowBoundsInScreen());
 }
 

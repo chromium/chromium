@@ -29,7 +29,6 @@
 #include "ash/shelf/shelf_view.h"
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shelf/test/hotseat_state_watcher.h"
-#include "ash/shelf/test/overview_animation_waiter.h"
 #include "ash/shelf/test/shelf_layout_manager_test_base.h"
 #include "ash/shelf/test/widget_animation_smoothness_inspector.h"
 #include "ash/shelf/test/widget_animation_waiter.h"
@@ -886,17 +885,15 @@ TEST_P(HotseatWidgetTest, DisableBlurDuringOverviewMode) {
 
   // Go into overview and check that at the end of the animation, background
   // blur is disabled.
-  OverviewAnimationWaiter enter_overview_waiter;
   StartOverview();
-  enter_overview_waiter.Wait();
+  WaitForOverviewAnimation(/*enter=*/true);
   EXPECT_EQ(
       0, GetShelfWidget()->hotseat_widget()->GetHotseatBackgroundBlurForTest());
 
   // Exit overview and check that at the end of the animation, background
   // blur is enabled again.
-  OverviewAnimationWaiter exit_overview_waiter;
   EndOverview();
-  exit_overview_waiter.Wait();
+  WaitForOverviewAnimation(/*enter=*/false);
   EXPECT_EQ(
       ShelfConfig::Get()->shelf_blur_radius(),
       GetShelfWidget()->hotseat_widget()->GetHotseatBackgroundBlurForTest());
@@ -1017,9 +1014,8 @@ TEST_P(HotseatWidgetTest, HomeToOverviewChangesStateOnce) {
   // First, try with no windows open.
   {
     HotseatStateWatcher watcher(GetShelfLayoutManager());
-    OverviewAnimationWaiter waiter;
     StartOverview();
-    waiter.Wait();
+    WaitForOverviewAnimation(/*enter=*/true);
     if (should_maintain_shelf_state_for_overview()) {
       watcher.CheckEqual({/* shelf state should not change*/});
     } else {
@@ -1037,9 +1033,8 @@ TEST_P(HotseatWidgetTest, HomeToOverviewChangesStateOnce) {
   // Activate overview and expect the hotseat only changes state to extended.
   {
     HotseatStateWatcher watcher(GetShelfLayoutManager());
-    OverviewAnimationWaiter waiter;
     StartOverview();
-    waiter.Wait();
+    WaitForOverviewAnimation(/*enter=*/true);
 
     if (should_maintain_shelf_state_for_overview()) {
       watcher.CheckEqual({/* shelf state should not change*/});
@@ -1072,7 +1067,6 @@ TEST_P(HotseatWidgetTest, VerifyShelfAnimationWhenEnteringOverview) {
   ASSERT_FALSE(hotseat_layer_animator->is_animating());
   ASSERT_FALSE(status_area_layer_animator->is_animating());
 
-  OverviewAnimationWaiter waiter;
   StartOverview();
   if (should_maintain_shelf_state_for_overview()) {
     EXPECT_FALSE(hotseat_layer_animator->is_animating());
@@ -1082,7 +1076,7 @@ TEST_P(HotseatWidgetTest, VerifyShelfAnimationWhenEnteringOverview) {
   } else {
     EXPECT_TRUE(hotseat_layer_animator->is_animating());
     EXPECT_TRUE(status_area_layer_animator->is_animating());
-    waiter.Wait();
+    WaitForOverviewAnimation(/*enter=*/true);
     ASSERT_EQ(HotseatState::kExtended, hotseat_widget->state());
   }
 }
@@ -1310,17 +1304,14 @@ TEST_P(HotseatWidgetTest, InAppToOverviewChangesStateOnceAutohiddenShelf) {
   {
     HotseatStateWatcher watcher(GetShelfLayoutManager());
     // Enter overview by using the controller.
-    OverviewAnimationWaiter waiter;
     Shell::Get()->overview_controller()->StartOverview();
-    waiter.Wait();
+    WaitForOverviewAnimation(/*enter=*/true);
 
     watcher.CheckEqual({HotseatState::kExtended});
   }
-  {
-    OverviewAnimationWaiter waiter;
-    Shell::Get()->overview_controller()->EndOverview();
-    waiter.Wait();
-  }
+
+  Shell::Get()->overview_controller()->EndOverview();
+  WaitForOverviewAnimation(/*enter=*/false);
 
   // Test in-app -> overview again with the autohide shown shelf.
   EXPECT_TRUE(ShelfConfig::Get()->is_in_app());
@@ -1330,9 +1321,8 @@ TEST_P(HotseatWidgetTest, InAppToOverviewChangesStateOnceAutohiddenShelf) {
   {
     HotseatStateWatcher watcher(GetShelfLayoutManager());
     // Enter overview by using the controller.
-    OverviewAnimationWaiter waiter;
     Shell::Get()->overview_controller()->StartOverview();
-    waiter.Wait();
+    WaitForOverviewAnimation(/*enter=*/true);
 
     watcher.CheckEqual({});
     EXPECT_EQ(HotseatState::kExtended,
@@ -1347,20 +1337,12 @@ TEST_P(HotseatWidgetTest,
   TabletModeControllerTestApi().EnterTabletMode();
   DisplayWorkAreaChangeCounter counter;
 
-  {
-    OverviewAnimationWaiter waiter;
-    Shell::Get()->overview_controller()->StartOverview();
-    waiter.Wait();
-  }
-
+  Shell::Get()->overview_controller()->StartOverview();
+  WaitForOverviewAnimation(/*enter=*/true);
   EXPECT_EQ(0, counter.count());
 
-  {
-    OverviewAnimationWaiter waiter;
-    Shell::Get()->overview_controller()->EndOverview();
-    waiter.Wait();
-  }
-
+  Shell::Get()->overview_controller()->StartOverview();
+  WaitForOverviewAnimation(/*enter=*/true);
   EXPECT_EQ(0, counter.count());
 }
 
@@ -1376,20 +1358,12 @@ TEST_P(HotseatWidgetTest,
   ASSERT_EQ(1, counter.count());
   ShowShelfAndGoHome();
 
-  {
-    OverviewAnimationWaiter waiter;
-    StartOverview();
-    waiter.Wait();
-  }
-
+  StartOverview();
+  WaitForOverviewAnimation(/*enter=*/true);
   EXPECT_EQ(1, counter.count());
 
-  {
-    OverviewAnimationWaiter waiter;
-    EndOverview();
-    waiter.Wait();
-  }
-
+  EndOverview();
+  WaitForOverviewAnimation(/*enter=*/false);
   EXPECT_EQ(1, counter.count());
 }
 
@@ -1427,12 +1401,8 @@ TEST_P(HotseatWidgetTest, WorkAreaDoesNotUpdateOpenWindowToFromOverview) {
 
   // Go to overview, there should not be a work area update.
   DisplayWorkAreaChangeCounter counter;
-  {
-    OverviewAnimationWaiter waiter;
-    StartOverview();
-    waiter.Wait();
-  }
-
+  StartOverview();
+  WaitForOverviewAnimation(/*enter=*/true);
   EXPECT_EQ(0, counter.count());
 
   // Go back to the app, there should not be a work area update.

@@ -22,6 +22,10 @@ class ShelfTestUtil {
   DISALLOW_COPY_AND_ASSIGN(ShelfTestUtil);
 };
 
+// Waits for an overview enter animation if |enter|; waits for an overview exit
+// animation otherwise.
+void WaitForOverviewAnimation(bool enter);
+
 }  // namespace ash
 
 #endif  // ASH_SHELF_SHELF_TEST_UTIL_H_

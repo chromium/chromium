@@ -13,7 +13,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_metrics.h"
-#include "ash/shelf/test/overview_animation_waiter.h"
+#include "ash/shelf/shelf_test_util.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -167,8 +167,7 @@ TEST_F(SwipeHomeToOverviewControllerTest, VerifyHomeLauncherMetrics) {
     GetEventGenerator()->MoveTouchBy(0, -1);
 
     // Wait until overview animation finishes.
-    OverviewAnimationWaiter enter_overview_waiter;
-    enter_overview_waiter.Wait();
+    WaitForOverviewAnimation(/*enter=*/true);
 
     GetEventGenerator()->ReleaseTouch();
     WaitForHomeLauncherAnimationToFinish();
@@ -185,8 +184,7 @@ TEST_F(SwipeHomeToOverviewControllerTest, VerifyHomeLauncherMetrics) {
       GetContext()->GetBoundsInScreen().top_center());
 
   // Wait until overview animation finishes.
-  OverviewAnimationWaiter exit_overview_waiter;
-  exit_overview_waiter.Wait();
+  WaitForOverviewAnimation(/*enter=*/false);
   WaitForHomeLauncherAnimationToFinish();
 
   // Verify that the animation to show the home launcher is recorded.

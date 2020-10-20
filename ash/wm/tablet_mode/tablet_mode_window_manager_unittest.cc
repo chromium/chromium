@@ -10,6 +10,7 @@
 #include "ash/home_screen/home_screen_controller.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_switches.h"
+#include "ash/public/cpp/overview_test_api.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_prefs.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -20,7 +21,6 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_metrics.h"
-#include "ash/shelf/test/overview_animation_waiter.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -1921,13 +1921,13 @@ TEST_P(TabletModeWindowManagerWithClamshellSplitViewTest,
   // Clamshell -> Tablet mode transition. If overview is active, it will remain
   // in overview.
   OverviewController* overview_controller = Shell::Get()->overview_controller();
-  OverviewAnimationWaiter start_overview_waiter;
   EXPECT_TRUE(overview_controller->StartOverview());
   EXPECT_TRUE(overview_controller->InOverviewSession());
   TabletModeWindowManager* manager = CreateTabletModeWindowManager();
   EXPECT_TRUE(manager);
   EXPECT_TRUE(overview_controller->InOverviewSession());
-  start_overview_waiter.Wait();
+  ShellTestApi().WaitForOverviewAnimationState(
+      OverviewAnimationState::kEnterAnimationComplete);
 
   aura::Window* home_screen_window =
       Shell::Get()->app_list_controller()->GetHomeScreenWindow();
@@ -1939,9 +1939,9 @@ TEST_P(TabletModeWindowManagerWithClamshellSplitViewTest,
       InAppShelfGestures::kHotseatHiddenDueToInteractionOutsideOfShelf, 0);
 
   // Tap at window to leave the overview mode.
-  OverviewAnimationWaiter end_overview_waiter;
   GetEventGenerator()->GestureTapAt(window->GetBoundsInScreen().CenterPoint());
-  end_overview_waiter.Wait();
+  ShellTestApi().WaitForOverviewAnimationState(
+      OverviewAnimationState::kExitAnimationComplete);
   tester.ExpectBucketCount(
       kHotseatGestureHistogramName,
       InAppShelfGestures::kHotseatHiddenDueToInteractionOutsideOfShelf, 1);
