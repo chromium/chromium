@@ -440,10 +440,8 @@ void DataTypeManagerImpl::ProcessReconfigure() {
     return;
   }
 
-  // Wait for current download and association to finish.
-  if (!download_types_queue_.empty() ||
-      model_association_manager_.state() ==
-          ModelAssociationManager::ASSOCIATING) {
+  // Wait for current download to finish.
+  if (!download_types_queue_.empty()) {
     return;
   }
 
@@ -504,9 +502,7 @@ void DataTypeManagerImpl::DownloadCompleted(
     association_types_queue_.back().first_sync_types = first_sync_types;
     association_types_queue_.back().download_ready_time = base::Time::Now();
     StartNextAssociation(UNREADY_AT_CONFIG);
-  } else if (download_types_queue_.empty() &&
-             model_association_manager_.state() !=
-                 ModelAssociationManager::ASSOCIATING) {
+  } else if (download_types_queue_.empty()) {
     // There's nothing more to download or associate (implying either there were
     // no types to associate or they associated as part of |ready_types|).
     // If the model association manager is also finished, then we're done
@@ -666,14 +662,6 @@ ModelTypeSet DataTypeManagerImpl::PrepareConfigureParams(
 void DataTypeManagerImpl::StartNextAssociation(AssociationGroup group) {
   DCHECK(!association_types_queue_.empty());
 
-  // If the model association manager is already associating, let it finish.
-  // The model association done event will result in associating any remaining
-  // association groups.
-  if (model_association_manager_.state() !=
-      ModelAssociationManager::INITIALIZED) {
-    return;
-  }
-
   ModelTypeSet types_to_associate;
   if (group == READY_AT_CONFIG) {
     association_types_queue_.front().ready_association_request_time =
@@ -694,7 +682,7 @@ void DataTypeManagerImpl::StartNextAssociation(AssociationGroup group) {
   }
 
   DVLOG(1) << "Associating " << ModelTypeSetToString(types_to_associate);
-  model_association_manager_.StartAssociationAsync(types_to_associate);
+  model_association_manager_.Associate(types_to_associate);
 }
 
 void DataTypeManagerImpl::OnSingleDataTypeWillStop(ModelType type,

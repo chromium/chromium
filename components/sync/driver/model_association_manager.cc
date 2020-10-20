@@ -64,11 +64,6 @@ ModelAssociationManager::~ModelAssociationManager() = default;
 void ModelAssociationManager::Initialize(ModelTypeSet desired_types,
                                          ModelTypeSet preferred_types,
                                          const ConfigureContext& context) {
-  // state_ can be INITIALIZED if types are reconfigured when
-  // data is being downloaded, so StartAssociationAsync() is never called for
-  // the first configuration.
-  DCHECK_NE(ASSOCIATING, state_);
-
   // |desired_types| must be a subset of |preferred_types|.
   DCHECK(preferred_types.HasAll(desired_types));
 
@@ -163,7 +158,6 @@ void ModelAssociationManager::StopDatatypeImpl(
     DataTypeController::StopCallback callback) {
   loaded_types_.Remove(dtc->type());
   associated_types_.Remove(dtc->type());
-  associating_types_.Remove(dtc->type());
 
   DCHECK(error.IsSet() || (dtc->state() != DataTypeController::NOT_RUNNING));
 
@@ -197,39 +191,37 @@ void ModelAssociationManager::LoadDesiredTypes() {
   NotifyDelegateIfReadyForConfigure();
 }
 
-void ModelAssociationManager::StartAssociationAsync(
+void ModelAssociationManager::Associate(
     const ModelTypeSet& types_to_associate) {
   DCHECK_EQ(INITIALIZED, state_);
   DCHECK(notified_about_ready_for_configure_);
 
   DVLOG(1) << "Starting association for "
            << ModelTypeSetToString(types_to_associate);
-  state_ = ASSOCIATING;
 
   requested_types_ = types_to_associate;
 
-  associating_types_ = types_to_associate;
-  associating_types_.RetainAll(desired_types_);
-  associating_types_.RemoveAll(associated_types_);
+  ModelTypeSet associating_types = types_to_associate;
+  associating_types.RetainAll(desired_types_);
+  associating_types.RemoveAll(associated_types_);
 
-  DCHECK(loaded_types_.HasAll(associating_types_));
+  DCHECK(loaded_types_.HasAll(associating_types));
 
   // Assume success.
   configure_status_ = DataTypeManager::OK;
 
-  // Done if no types to associate.
-  if (associating_types_.Empty()) {
-    ModelAssociationDone(INITIALIZED);
-    return;
-  }
-
-  // Associate types that are already loaded in specified order.
+  // Associate types in specified order.
   for (ModelType type : kStartOrder) {
-    if (associating_types_.Has(type) && loaded_types_.Has(type))
-      MarkDataTypeAssociationDone(type);
+    if (associating_types.Has(type)) {
+      associated_types_.Put(type);
+      associating_types.Remove(type);
+
+      if (ProtocolTypes().Has(type))
+        delegate_->OnSingleDataTypeAssociationDone(type);
+    }
   }
-  DCHECK(associating_types_.Empty());
-  DCHECK_NE(ASSOCIATING, state_);
+  DCHECK(associating_types.Empty());
+  ModelAssociationDone(INITIALIZED);
 }
 
 void ModelAssociationManager::Stop(ShutdownReason shutdown_reason) {
@@ -252,23 +244,14 @@ void ModelAssociationManager::Stop(ShutdownReason shutdown_reason) {
   loaded_types_.Clear();
   associated_types_.Clear();
 
-  if (state_ == ASSOCIATING) {
-    if (configure_status_ == DataTypeManager::OK)
-      configure_status_ = DataTypeManager::ABORTED;
-    ModelAssociationDone(IDLE);
-  } else {
-    DCHECK(associating_types_.Empty());
-    DCHECK(requested_types_.Empty());
-    state_ = IDLE;
-  }
+  DCHECK(requested_types_.Empty());
+  state_ = IDLE;
 }
 
 void ModelAssociationManager::ModelLoadCallback(ModelType type,
                                                 const SyncError& error) {
   DVLOG(1) << "ModelAssociationManager: ModelLoadCallback for "
            << ModelTypeToString(type);
-
-  DCHECK(associating_types_.Empty());
 
   if (error.IsSet()) {
     DVLOG(1) << "ModelAssociationManager: Type encountered an error.";
@@ -289,50 +272,14 @@ void ModelAssociationManager::ModelLoadCallback(ModelType type,
   NotifyDelegateIfReadyForConfigure();
 }
 
-void ModelAssociationManager::MarkDataTypeAssociationDone(ModelType type) {
-  DCHECK_EQ(state_, ASSOCIATING);
-  DCHECK(desired_types_.Has(type));
-  DCHECK(associating_types_.Has(type));
-  DCHECK(loaded_types_.Has(type));
-  DCHECK(!associated_types_.Has(type));
-
-  associated_types_.Put(type);
-  associating_types_.Remove(type);
-
-  if (ProtocolTypes().Has(type))
-    delegate_->OnSingleDataTypeAssociationDone(type);
-
-  if (associating_types_.Empty())
-    ModelAssociationDone(INITIALIZED);
-}
-
 void ModelAssociationManager::ModelAssociationDone(State new_state) {
-  DCHECK_EQ(ASSOCIATING, state_);
-  DCHECK_NE(ASSOCIATING, new_state);
-
   DVLOG(1) << "Model association complete for "
            << ModelTypeSetToString(requested_types_);
-
-  // Treat any unfinished types as having errors.
-  desired_types_.RemoveAll(associating_types_);
-  for (const auto& type_and_dtc : *controllers_) {
-    DataTypeController* dtc = type_and_dtc.second.get();
-    if (associating_types_.Has(dtc->type()) &&
-        dtc->state() != DataTypeController::NOT_RUNNING &&
-        dtc->state() != DataTypeController::STOPPING) {
-      base::UmaHistogramEnumeration("Sync.ConfigureFailed",
-                                    ModelTypeHistogramValue(dtc->type()));
-      StopDatatypeImpl(SyncError(FROM_HERE, SyncError::DATATYPE_ERROR,
-                                 "Association timed out.", dtc->type()),
-                       STOP_SYNC, dtc, base::DoNothing());
-    }
-  }
 
   DataTypeManager::ConfigureResult result(configure_status_, requested_types_);
 
   // Need to reset state before invoking delegate in order to avoid re-entrancy
   // issues (delegate may trigger a reconfiguration).
-  associating_types_.Clear();
   requested_types_.Clear();
   state_ = new_state;
 

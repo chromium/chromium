@@ -54,17 +54,6 @@ class ModelAssociationManagerDelegate {
 // should disappear or be refactored.
 class ModelAssociationManager {
  public:
-  enum State {
-    // No configuration is in progress.
-    IDLE,
-    // The model association manager has been initialized with a set of desired
-    // types, but is not actively associating any.
-    INITIALIZED,
-    // One or more types from |desired_types_| are in the process of
-    // associating.
-    ASSOCIATING,
-  };
-
   ModelAssociationManager(const DataTypeController::TypeMap* controllers,
                           ModelAssociationManagerDelegate* delegate);
   virtual ~ModelAssociationManager();
@@ -73,8 +62,8 @@ class ModelAssociationManager {
   // loading of all |desired_types|. A subsequent Initialize() call is only
   // allowed after the ModelAssociationManager has invoked
   // OnModelAssociationDone() on the delegate. After this call, there should be
-  // several calls to StartAssociationAsync() to associate subsets of
-  // |desired_types|, which itself must be a subset of |preferred_types|.
+  // several calls to Associate() to associate subsets of |desired_types|, which
+  // itself must be a subset of |preferred_types|.
   // |preferred_types| contains all types selected by the user.
   void Initialize(ModelTypeSet desired_types,
                   ModelTypeSet preferred_types,
@@ -86,8 +75,8 @@ class ModelAssociationManager {
   // Must only be called after all data type models have been loaded, i.e. after
   // OnAllDataTypesReadyForConfigure() has been called on the delegate.
   // |types_to_associate| should be subset of |desired_types| in Initialize().
-  // When this is completed, |OnModelAssociationDone| will be invoked.
-  void StartAssociationAsync(const ModelTypeSet& types_to_associate);
+  // Synchronously invokes |OnModelAssociationDone| on the delegate.
+  void Associate(const ModelTypeSet& types_to_associate);
 
   // Stops an individual datatype |type| for |shutdown_reason|. |error| must be
   // an actual error (i.e. not UNSET).
@@ -95,17 +84,21 @@ class ModelAssociationManager {
                     ShutdownReason shutdown_reason,
                     SyncError error);
 
-  State state() const { return state_; }
-
  private:
+  enum State {
+    // No configuration is in progress.
+    IDLE,
+    // The model association manager has been initialized with a set of desired
+    // types.
+    INITIALIZED,
+  };
+
   // Start loading non-running types that are in |desired_types_|.
   void LoadDesiredTypes();
 
   // Callback that will be invoked when the model for |type| finishes loading.
   // This callback is passed to |LoadModels| function.
   void ModelLoadCallback(ModelType type, const SyncError& error);
-
-  void MarkDataTypeAssociationDone(ModelType type);
 
   // Called when all requested types are associated or association times out.
   // Will clean up any unfinished types, and update |state_| to be |new_state|
@@ -139,10 +132,6 @@ class ModelAssociationManager {
   // Data types that are requested to associate. Non-empty iff |state_| is
   // ASSOCIATING.
   ModelTypeSet requested_types_;
-
-  // Data types currently being associated, including types still waiting for
-  // model load. Non-empty iff |state_| is ASSOCIATING.
-  ModelTypeSet associating_types_;
 
   // Data types that are loaded, i.e. ready to associate.
   ModelTypeSet loaded_types_;

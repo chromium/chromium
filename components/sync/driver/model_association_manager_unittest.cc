@@ -107,7 +107,7 @@ TEST_F(SyncModelAssociationManagerTest, SimpleModelStart) {
             DataTypeController::MODEL_LOADED);
   EXPECT_EQ(GetController(APPS)->state(), DataTypeController::MODEL_LOADED);
 
-  model_association_manager.StartAssociationAsync(types);
+  model_association_manager.Associate(types);
 }
 
 // Start a type, let it finish and then call stop.
@@ -123,7 +123,7 @@ TEST_F(SyncModelAssociationManagerTest, StopAfterFinish) {
   model_association_manager.Initialize(/*desired_types=*/types,
                                        /*preferred_types=*/types,
                                        BuildConfigureContext());
-  model_association_manager.StartAssociationAsync(types);
+  model_association_manager.Associate(types);
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
@@ -151,7 +151,7 @@ TEST_F(SyncModelAssociationManagerTest, ModelLoadFailBeforeAssociationStart) {
                                        BuildConfigureContext());
 
   EXPECT_EQ(DataTypeController::FAILED, GetController(BOOKMARKS)->state());
-  model_association_manager.StartAssociationAsync(types);
+  model_association_manager.Associate(types);
   EXPECT_EQ(DataTypeController::FAILED, GetController(BOOKMARKS)->state());
 }
 
@@ -167,7 +167,7 @@ TEST_F(SyncModelAssociationManagerTest, StopAfterConfiguration) {
   model_association_manager.Initialize(/*desired_types=*/types,
                                        /*preferred_types=*/types,
                                        BuildConfigureContext());
-  model_association_manager.StartAssociationAsync(types);
+  model_association_manager.Associate(types);
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
@@ -389,7 +389,7 @@ TEST_F(SyncModelAssociationManagerTest, KeepsMetadataForPreferredDataType) {
 
   model_association_manager.Initialize(desired_types, preferred_types,
                                        BuildConfigureContext());
-  model_association_manager.StartAssociationAsync(desired_types);
+  model_association_manager.Associate(desired_types);
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
@@ -429,7 +429,7 @@ TEST_F(SyncModelAssociationManagerTest, ClearsMetadataForNotPreferredDataType) {
 
   model_association_manager.Initialize(desired_types, preferred_types,
                                        BuildConfigureContext());
-  model_association_manager.StartAssociationAsync(desired_types);
+  model_association_manager.Associate(desired_types);
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
@@ -476,7 +476,7 @@ TEST_F(SyncModelAssociationManagerTest,
 
   model_association_manager.Initialize(desired_types, preferred_types,
                                        configure_context);
-  model_association_manager.StartAssociationAsync(desired_types);
+  model_association_manager.Associate(desired_types);
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
@@ -498,7 +498,7 @@ TEST_F(SyncModelAssociationManagerTest,
 
   model_association_manager.Initialize(desired_types, preferred_types,
                                        configure_context);
-  model_association_manager.StartAssociationAsync(desired_types);
+  model_association_manager.Associate(desired_types);
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
@@ -532,7 +532,7 @@ TEST_F(SyncModelAssociationManagerTest,
 
   model_association_manager.Initialize(desired_types, preferred_types,
                                        configure_context);
-  model_association_manager.StartAssociationAsync(desired_types);
+  model_association_manager.Associate(desired_types);
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
@@ -554,7 +554,7 @@ TEST_F(SyncModelAssociationManagerTest,
 
   model_association_manager.Initialize(desired_types, preferred_types,
                                        configure_context);
-  model_association_manager.StartAssociationAsync(desired_types);
+  model_association_manager.Associate(desired_types);
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
