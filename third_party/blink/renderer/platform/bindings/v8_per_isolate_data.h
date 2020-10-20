@@ -45,7 +45,7 @@
 
 namespace base {
 class SingleThreadTaskRunner;
-}
+}  // namespace base
 
 namespace blink {
 
@@ -57,7 +57,7 @@ struct WrapperTypeInfo;
 
 // Used to hold data that is associated with a single v8::Isolate object, and
 // has a 1:1 relationship with v8::Isolate.
-class PLATFORM_EXPORT V8PerIsolateData {
+class PLATFORM_EXPORT V8PerIsolateData final {
   USING_FAST_MALLOC(V8PerIsolateData);
 
  public:
@@ -144,12 +144,18 @@ class PLATFORM_EXPORT V8PerIsolateData {
 
   V8PrivateProperty* PrivateProperty() { return private_property_.get(); }
 
-  // Accessors to the cache of interface templates.
-  v8::Local<v8::FunctionTemplate> FindInterfaceTemplate(const DOMWrapperWorld&,
-                                                        const void* key);
-  void SetInterfaceTemplate(const DOMWrapperWorld&,
-                            const void* key,
-                            v8::Local<v8::FunctionTemplate>);
+  // Accessors to the cache of v8::Templates.
+  v8::Local<v8::Template> FindV8Template(const DOMWrapperWorld& world,
+                                         const void* key);
+  void AddV8Template(const DOMWrapperWorld& world,
+                     const void* key,
+                     v8::Local<v8::Template> value);
+
+  bool HasInstance(const WrapperTypeInfo* wrapper_type_info,
+                   v8::Local<v8::Value> untrusted_value);
+  bool HasInstanceOfUntrustedType(
+      const WrapperTypeInfo* untrusted_wrapper_type_info,
+      v8::Local<v8::Value> untrusted_value);
 
   // When v8::SnapshotCreator::CreateBlob() is called, we must not have
   // persistent handles in Blink. This method clears them.
@@ -161,20 +167,6 @@ class PLATFORM_EXPORT V8PerIsolateData {
   V8ContextSnapshotMode GetV8ContextSnapshotMode() const {
     return v8_context_snapshot_mode_;
   }
-  void BailoutAndDisableV8ContextSnapshot() {
-    DCHECK_EQ(V8ContextSnapshotMode::kUseSnapshot, v8_context_snapshot_mode_);
-    v8_context_snapshot_mode_ = V8ContextSnapshotMode::kDontUseSnapshot;
-  }
-
-  // Accessor to the cache of cross-origin accessible operation's templates.
-  // Created templates get automatically cached.
-  v8::Local<v8::FunctionTemplate> FindOrCreateOperationTemplate(
-      const DOMWrapperWorld&,
-      const void* key,
-      v8::FunctionCallback,
-      v8::Local<v8::Value> data,
-      v8::Local<v8::Signature>,
-      int length);
 
   // Obtains a pointer to an array of names, given a lookup key. If it does not
   // yet exist, it is created from the given array of strings. Once created,
@@ -183,10 +175,6 @@ class PLATFORM_EXPORT V8PerIsolateData {
   const base::span<const v8::Eternal<v8::Name>> FindOrCreateEternalNameCache(
       const void* lookup_key,
       const base::span<const char* const>& names);
-
-  bool HasInstance(const WrapperTypeInfo* untrusted, v8::Local<v8::Value>);
-  v8::Local<v8::Object> FindInstanceInPrototypeChain(const WrapperTypeInfo*,
-                                                     v8::Local<v8::Value>);
 
   v8::Local<v8::Context> EnsureScriptRegexpContext();
   void ClearScriptRegexpContext();
@@ -222,43 +210,38 @@ class PLATFORM_EXPORT V8PerIsolateData {
  private:
   V8PerIsolateData(scoped_refptr<base::SingleThreadTaskRunner>,
                    V8ContextSnapshotMode);
-  V8PerIsolateData();
+  explicit V8PerIsolateData(V8ContextSnapshotMode);
   ~V8PerIsolateData();
 
   // A really simple hash function, which makes lookups faster. The set of
   // possible keys for this is relatively small and fixed at compile time, so
   // collisions are less of a worry than they would otherwise be.
-  struct SimplePtrHash : WTF::PtrHash<const void> {
+  struct SimplePtrHash final : public WTF::PtrHash<const void> {
     static unsigned GetHash(const void* key) {
       uintptr_t k = reinterpret_cast<uintptr_t>(key);
       return static_cast<unsigned>(k ^ (k >> 8));
     }
   };
-  using V8FunctionTemplateMap =
-      HashMap<const void*, v8::Eternal<v8::FunctionTemplate>, SimplePtrHash>;
-  V8FunctionTemplateMap& SelectInterfaceTemplateMap(const DOMWrapperWorld&);
-  V8FunctionTemplateMap& SelectOperationTemplateMap(const DOMWrapperWorld&);
-  bool HasInstance(const WrapperTypeInfo* untrusted,
-                   v8::Local<v8::Value>,
-                   V8FunctionTemplateMap&);
-  v8::Local<v8::Object> FindInstanceInPrototypeChain(const WrapperTypeInfo*,
-                                                     v8::Local<v8::Value>,
-                                                     V8FunctionTemplateMap&);
+  using V8TemplateMap =
+      HashMap<const void*, v8::Eternal<v8::Template>, SimplePtrHash>;
+  V8TemplateMap& SelectV8TemplateMap(const DOMWrapperWorld&);
+  bool HasInstance(const WrapperTypeInfo* wrapper_type_info,
+                   v8::Local<v8::Value> untrusted_value,
+                   const V8TemplateMap& map);
+  bool HasInstanceOfUntrustedType(
+      const WrapperTypeInfo* untrusted_wrapper_type_info,
+      v8::Local<v8::Value> untrusted_value,
+      const V8TemplateMap& map);
 
   V8ContextSnapshotMode v8_context_snapshot_mode_;
+
   // This isolate_holder_ must be initialized before initializing some other
   // members below.
   gin::IsolateHolder isolate_holder_;
 
-  // interface_template_map_for_{,non_}main_world holds function templates for
-  // the inerface objects.
-  V8FunctionTemplateMap interface_template_map_for_main_world_;
-  V8FunctionTemplateMap interface_template_map_for_non_main_world_;
-
-  // m_operationTemplateMapFor{,Non}MainWorld holds function templates for
-  // the cross-origin accessible DOM operations.
-  V8FunctionTemplateMap operation_template_map_for_main_world_;
-  V8FunctionTemplateMap operation_template_map_for_non_main_world_;
+  // v8::Template cache of interface objects, namespace objects, etc.
+  V8TemplateMap v8_template_map_for_main_world_;
+  V8TemplateMap v8_template_map_for_non_main_worlds_;
 
   // Contains lists of eternal names, such as dictionary keys.
   HashMap<const void*, Vector<v8::Eternal<v8::Name>>> eternal_name_cache_;

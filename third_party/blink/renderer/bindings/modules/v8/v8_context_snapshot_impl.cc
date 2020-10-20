@@ -413,8 +413,8 @@ void V8ContextSnapshotImpl::InstallInterfaceTemplates(v8::Isolate* isolate) {
               ->GetDataFromSnapshotOnce<v8::FunctionTemplate>(
                   world_index * base::size(type_info_table) + i)
               .ToLocalChecked();
-      per_isolate_data->SetInterfaceTemplate(
-          *world, type_info.wrapper_type_info, interface_template);
+      per_isolate_data->AddV8Template(*world, type_info.wrapper_type_info,
+                                      interface_template);
       type_info.install_props_per_isolate(
           isolate, *world, interface_template->InstanceTemplate(),
           interface_template->PrototypeTemplate(), interface_template);

@@ -269,11 +269,9 @@ v8::MaybeLocal<v8::Value> CreateNamedConstructorFunction(
     return v8::Undefined(isolate);
   }
 
-  // Named constructors are not interface objcets (despite that they're
-  // pretending so), but we reuse the cache of interface objects, which just
-  // works because both are V8 function template.
   v8::Local<v8::FunctionTemplate> function_template =
-      per_isolate_data->FindInterfaceTemplate(world, callback_key);
+      per_isolate_data->FindV8Template(world, callback_key)
+          .As<v8::FunctionTemplate>();
   if (function_template.IsEmpty()) {
     function_template = v8::FunctionTemplate::New(
         isolate, callback, v8::Local<v8::Value>(), v8::Local<v8::Signature>(),
@@ -285,8 +283,7 @@ v8::MaybeLocal<v8::Value> CreateNamedConstructorFunction(
     function_template->SetClassName(V8AtomicString(isolate, func_name));
     function_template->InstanceTemplate()->SetInternalFieldCount(
         kV8DefaultWrapperInternalFieldCount);
-    per_isolate_data->SetInterfaceTemplate(world, callback_key,
-                                           function_template);
+    per_isolate_data->AddV8Template(world, callback_key, function_template);
   }
 
   v8::Local<v8::Context> context = script_state->GetContext();

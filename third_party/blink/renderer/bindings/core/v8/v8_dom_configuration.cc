@@ -906,7 +906,7 @@ v8::Local<v8::FunctionTemplate> V8DOMConfiguration::DomClassTemplate(
     InstallTemplateFunction configure_dom_class_template) {
   V8PerIsolateData* data = V8PerIsolateData::From(isolate);
   v8::Local<v8::FunctionTemplate> interface_template =
-      data->FindInterfaceTemplate(world, wrapper_type_info);
+      data->FindV8Template(world, wrapper_type_info).As<v8::FunctionTemplate>();
   if (!interface_template.IsEmpty())
     return interface_template;
 
@@ -914,7 +914,7 @@ v8::Local<v8::FunctionTemplate> V8DOMConfiguration::DomClassTemplate(
   interface_template = v8::FunctionTemplate::New(
       isolate, V8ObjectConstructor::IsValidConstructorMode);
   configure_dom_class_template(isolate, world, interface_template);
-  data->SetInterfaceTemplate(world, wrapper_type_info, interface_template);
+  data->AddV8Template(world, wrapper_type_info, interface_template);
   return interface_template;
 }
 

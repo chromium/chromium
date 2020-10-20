@@ -86,7 +86,8 @@ bool V8DOMWrapper::IsWrapper(v8::Isolate* isolate, v8::Local<v8::Value> value) {
   V8PerIsolateData* per_isolate_data = V8PerIsolateData::From(isolate);
   if (!(untrusted_wrapper_type_info && per_isolate_data))
     return false;
-  return per_isolate_data->HasInstance(untrusted_wrapper_type_info, object);
+  return per_isolate_data->HasInstanceOfUntrustedType(
+      untrusted_wrapper_type_info, object);
 }
 
 bool V8DOMWrapper::HasInternalFieldsSet(v8::Local<v8::Value> value) {

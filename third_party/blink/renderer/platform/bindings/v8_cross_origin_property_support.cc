@@ -22,23 +22,21 @@ v8::MaybeLocal<v8::Function> GetCrossOriginFunction(
   V8PerIsolateData* per_isolate_data = V8PerIsolateData::From(isolate);
   const void* callback_key = reinterpret_cast<const void*>(callback);
 
-  // ES functions accessible across origins are not interface objects, but we
-  // reuse the cache of interface objects, which just works because both are
-  // V8 function template.
   v8::Local<v8::FunctionTemplate> function_template =
-      per_isolate_data->FindInterfaceTemplate(script_state->World(),
-                                              callback_key);
+      per_isolate_data->FindV8Template(script_state->World(), callback_key)
+          .As<v8::FunctionTemplate>();
   if (function_template.IsEmpty()) {
     v8::Local<v8::FunctionTemplate> interface_template =
-        per_isolate_data->FindInterfaceTemplate(script_state->World(),
-                                                wrapper_type_info);
+        per_isolate_data
+            ->FindV8Template(script_state->World(), wrapper_type_info)
+            .As<v8::FunctionTemplate>();
     v8::Local<v8::Signature> signature =
         v8::Signature::New(isolate, interface_template);
     function_template = v8::FunctionTemplate::New(
         isolate, callback, v8::Local<v8::Value>(), signature, func_length,
         v8::ConstructorBehavior::kThrow, v8::SideEffectType::kHasSideEffect);
-    per_isolate_data->SetInterfaceTemplate(script_state->World(), callback_key,
-                                           function_template);
+    per_isolate_data->AddV8Template(script_state->World(), callback_key,
+                                    function_template);
   }
   return function_template->GetFunction(current_context);
 }
