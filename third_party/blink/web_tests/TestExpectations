@@ -1637,9 +1637,6 @@ crbug.com/1022182 virtual/module-top-level-await/external/wpt/html/webappapis/dy
 crbug.com/1022182 virtual/module-top-level-await/external/wpt/html/webappapis/dynamic-markup-insertion/document-write/module-tla-promise.html [ Pass ]
 
 crbug.com/676270 external/wpt/css/css-text/hyphens/hyphens-auto-001.html [ Failure ]
-crbug.com/1022415 external/wpt/css/css-text/hyphens/hyphens-auto-010.html [ Failure ]
-crbug.com/1022415 [ Linux ] external/wpt/css/css-text/hyphens/hyphens-auto-inline-010.html [ Failure ]
-crbug.com/1022415 [ Win ] external/wpt/css/css-text/hyphens/hyphens-auto-inline-010.html [ Failure ]
 crbug.com/963369 external/wpt/css/css-text/hyphens/hyphens-out-of-flow-001.html [ Failure ]
 crbug.com/963369 external/wpt/css/css-text/hyphens/hyphens-out-of-flow-002.html [ Failure ]
 crbug.com/639223 external/wpt/css/css-text/hyphens/hyphens-shaping-002.html [ Failure ]
