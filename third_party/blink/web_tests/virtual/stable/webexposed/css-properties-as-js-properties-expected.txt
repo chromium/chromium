@@ -17,6 +17,7 @@ animationPlayState
 animationTimingFunction
 appearance
 ascentOverride
+aspectRatio
 backdropFilter
 backfaceVisibility
 background

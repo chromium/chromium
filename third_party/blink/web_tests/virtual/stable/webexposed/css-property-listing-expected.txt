@@ -70,6 +70,7 @@ All changes to this list should go through Blink's feature review process: http:
     animation-play-state
     animation-timing-function
     appearance
+    aspect-ratio
     backdrop-filter
     backface-visibility
     background-attachment
