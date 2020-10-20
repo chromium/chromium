@@ -76,7 +76,7 @@ base::string16 GetComTypeLibRegistryPath(REFIID iid) {
 }
 
 std::vector<base::FilePath> ParseFilesFromDeps(const base::FilePath& deps) {
-  constexpr size_t kDepsFileSizeMax = 0x2000;  // 8KB.
+  constexpr size_t kDepsFileSizeMax = 0x4000;  // 16KB.
   std::string contents;
   if (!base::ReadFileToStringWithMaxSize(deps, &contents, kDepsFileSizeMax))
     return {};
