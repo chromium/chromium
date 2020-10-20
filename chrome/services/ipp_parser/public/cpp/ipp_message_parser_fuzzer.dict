@@ -87,6 +87,7 @@
 "printer-name"
 "printer-organization"
 "printer-organizational-unit"
+"printer-resolution"
 "printer-resolution-default"
 "printer-resolution-supported"
 "pwg-raster-document-resolution-supported"

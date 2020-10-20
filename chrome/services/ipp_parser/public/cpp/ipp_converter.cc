@@ -110,6 +110,9 @@ base::Optional<ValueType> ValueTagToType(const int value_tag) {
     case IPP_TAG_STRING:
       return ValueType::OCTET;
 
+    case IPP_TAG_RESOLUTION:
+      return ValueType::RESOLUTION;
+
     default:
       break;
   }
@@ -179,6 +182,28 @@ base::Optional<std::vector<std::vector<uint8_t>>> IppGetOctets(
   }
   return ret;
 }
+
+base::Optional<std::vector<ipp_parser::mojom::ResolutionPtr>> IppGetResolutions(
+    ipp_attribute_t* attr) {
+  const size_t count = ippGetCount(attr);
+
+  std::vector<ipp_parser::mojom::ResolutionPtr> ret;
+  ret.reserve(count);
+  for (size_t i = 0; i < count; ++i) {
+    int xres = 0;
+    int yres = 0;
+    ipp_res_t units{};
+    xres = ippGetResolution(attr, i, &yres, &units);
+    if (xres <= 0 || yres <= 0 || units != IPP_RES_PER_INCH) {
+      LOG(ERROR) << "bad resolution: " << xres << ", " << yres << ", "
+                 << int(units);
+      return base::nullopt;
+    }
+    ret.push_back(ipp_parser::mojom::Resolution(xres, yres).Clone());
+  }
+  return ret;
+}
+
 }  // namespace
 
 base::Optional<std::vector<std::string>> ParseRequestLine(
@@ -423,6 +448,14 @@ ipp_parser::mojom::IppMessagePtr ConvertIppToMojo(ipp_t* ipp) {
           return nullptr;
         }
         attrptr->value->set_octets(*vals);
+        break;
+      }
+      case ValueType::RESOLUTION: {
+        auto vals = IppGetResolutions(attr);
+        if (!vals.has_value()) {
+          return nullptr;
+        }
+        attrptr->value->set_resolutions(std::move(*vals));
         break;
       }
       default:
