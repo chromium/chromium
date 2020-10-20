@@ -59,7 +59,20 @@ class DevToolsListenerBrowserTest : public content::DevToolsAgentHostObserver,
     LOG(FATAL) << "Host crashed: " << DevToolsListener::HostString(host);
   }
 
-  void CollectCodeCoverage(const std::string test_name) {
+ protected:
+  content::WebContents* NavigateToTestFile(const std::string& name) {
+    base::FilePath test_data_dir;
+    base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
+    embedded_test_server()->ServeFilesFromDirectory(test_data_dir);
+
+    CHECK(embedded_test_server()->Start());
+    GURL test_file_name_url = embedded_test_server()->GetURL('/' + name);
+    CHECK(ui_test_utils::NavigateToURL(browser(), test_file_name_url));
+
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  void CollectCodeCoverage(const std::string& test_name) {
     base::ScopedAllowBlockingForTesting allow_blocking;
 
     CHECK(tmp_dir_.CreateUniqueTempDir());
@@ -90,18 +103,10 @@ class DevToolsListenerBrowserTest : public content::DevToolsAgentHostObserver,
 };
 
 IN_PROC_BROWSER_TEST_F(DevToolsListenerBrowserTest, CanCollectCodeCoverage) {
-  base::FilePath test_data_dir;
-  base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
-  embedded_test_server()->ServeFilesFromDirectory(test_data_dir);
+  content::WebContents* web_contents = NavigateToTestFile("title2.html");
 
-  ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
-      browser(), embedded_test_server()->GetURL("/title2.html"), 1);
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(
-      content::ExecJs(web_contents, "(function() { console.log('test'); })()"));
+  constexpr char kEvalScript[] = "(function() { console.log('test') })()";
+  ASSERT_TRUE(content::ExecJs(web_contents, kEvalScript));
 
   content::DevToolsAgentHost::RemoveObserver(this);
   content::RunAllTasksUntilIdle();
