@@ -446,7 +446,7 @@ void SysmemBufferCollection::InitializeImageCreateInfo(
                          VK_IMAGE_USAGE_TRANSFER_DST_BIT;
   if (usage_ == gfx::BufferUsage::SCANOUT ||
       usage_ == gfx::BufferUsage::SCANOUT_CPU_READ_WRITE) {
-    vk_image_info->usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+    vk_image_info->usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
   }
 
   vk_image_info->sharingMode = VK_SHARING_MODE_EXCLUSIVE;
