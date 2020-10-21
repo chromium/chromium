@@ -133,10 +133,6 @@ class CORE_EXPORT NGLineBreaker {
     kContinue,
   };
 
-  inline void HandleText(const NGInlineItem& item, NGLineInfo* line_info) {
-    DCHECK(item.TextShapeResult());
-    HandleText(item, *item.TextShapeResult(), line_info);
-  }
   void HandleText(const NGInlineItem& item, const ShapeResult&, NGLineInfo*);
   enum BreakResult { kSuccess, kOverflow };
   BreakResult BreakText(NGInlineItemResult*,

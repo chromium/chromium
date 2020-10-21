@@ -521,7 +521,7 @@ void NGLineBreaker::BreakLine(
     const NGInlineItem& item = items[item_index_];
     if (item.Type() == NGInlineItem::kText) {
       if (item.Length())
-        HandleText(item, line_info);
+        HandleText(item, *item.TextShapeResult(), line_info);
       else
         HandleEmptyText(item, line_info);
 #if DCHECK_IS_ON()
@@ -633,6 +633,7 @@ void NGLineBreaker::HandleText(const NGInlineItem& item,
   DCHECK(item.Type() == NGInlineItem::kText ||
          (item.Type() == NGInlineItem::kControl &&
           Text()[item.StartOffset()] == kTabulationCharacter));
+  DCHECK(&shape_result);
   DCHECK_EQ(auto_wrap_, item.Style()->AutoWrap());
 
   // If we're trailing, only trailing spaces can be included in this line.
