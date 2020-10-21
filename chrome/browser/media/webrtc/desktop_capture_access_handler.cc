@@ -206,7 +206,6 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
 #else
     gfx::NativeWindow parent_window = NULL;
 #endif
-    web_contents = NULL;
 
     // Some extensions do not require user approval, because they provide their
     // own user approval UI.

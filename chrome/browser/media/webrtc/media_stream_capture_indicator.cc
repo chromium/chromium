@@ -332,6 +332,7 @@ MediaStreamCaptureIndicator::RegisterMediaStream(
     content::WebContents* web_contents,
     const blink::MediaStreamDevices& devices,
     std::unique_ptr<MediaStreamUI> ui) {
+  DCHECK(web_contents);
   auto& usage = usage_map_[web_contents];
   if (!usage)
     usage = std::make_unique<WebContentsDeviceUsage>(this, web_contents);
