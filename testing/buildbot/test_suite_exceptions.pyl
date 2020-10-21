@@ -548,14 +548,6 @@
           '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
         ],
         'swarming': {
-          # TODO(crbug.com/1124829): Remove this exception when moving browser_tests
-          # to 1909.
-          'dimension_sets': [
-            {
-              'cpu': 'x86-64',
-              'os': 'Windows-10-15063',
-            },
-          ],
           # This is for slow test execution that often becomes a critical path of
           # swarming jobs. crbug.com/868114
           'shards': 15,
