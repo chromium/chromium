@@ -29,7 +29,9 @@
 #include "chrome/browser/ui/app_list/search/search_result_ranker/histogram_util.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/ranking_item_util.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/search_result_ranker.h"
+#include "chromeos/constants/chromeos_pref_names.h"
 #include "components/metrics/structured/structured_events.h"
+#include "components/prefs/pref_service.h"
 
 namespace app_list {
 
@@ -245,6 +247,9 @@ void SearchController::Train(AppLaunchData&& app_launch_data) {
           RemoveAppShortcutLabel(NormalizeId(app_launch_data.id));
     }
   }
+
+  profile_->GetPrefs()->SetBoolean(chromeos::prefs::kLauncherResultEverLaunched,
+                                   true);
 
   // CrOS action recorder.
   CrOSActionRecorder::GetCrosActionRecorder()->RecordAction(

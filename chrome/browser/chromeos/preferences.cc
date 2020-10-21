@@ -484,6 +484,9 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       chromeos::prefs::kSuggestedContentEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      chromeos::prefs::kLauncherResultEverLaunched, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {

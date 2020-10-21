@@ -50,6 +50,8 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kLoginDisplayPasswordButtonEnabled[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kSuggestedContentEnabled[];
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const char kLauncherResultEverLaunched[];
 
 }  // namespace prefs
 }  // namespace chromeos

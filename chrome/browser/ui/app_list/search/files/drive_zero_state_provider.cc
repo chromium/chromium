@@ -19,8 +19,11 @@
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
 #include "chrome/browser/chromeos/drive/drive_integration_service.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "chromeos/constants/chromeos_pref_names.h"
 #include "components/drive/file_errors.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -79,8 +82,16 @@ DriveZeroStateProvider::DriveZeroStateProvider(
   // Warm the results cache if or when drivefs is mounted by fetching from the
   // Drive QuickAccess API. This is necessary only if the suggested files
   // experiment is enabled, so that results are ready for display in the
-  // suggested chips on the first launcher open after login.
-  if (suggested_files_enabled_ && drive_service_) {
+  // suggested chips on the first launcher open after login. To prevent
+  // unnecessary queries to ItemSuggest, only warm the cache if the launcher has
+  // been used before.
+  const bool launcher_used = profile->GetPrefs()->GetBoolean(
+      chromeos::prefs::kLauncherResultEverLaunched);
+  const bool gate_on_use = base::GetFieldTrialParamByFeatureAsBool(
+      app_list_features::kEnableSuggestedFiles, "gate_warm_on_launcher_use",
+      true);
+  const bool should_warm = !gate_on_use || launcher_used;
+  if (suggested_files_enabled_ && drive_service_ && should_warm) {
     if (drive_service_->IsMounted()) {
       // Drivefs is mounted, so we can fetch results immediately.
       OnFileSystemMounted();
