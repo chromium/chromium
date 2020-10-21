@@ -140,8 +140,9 @@ class SearchEnginePreconnectorNoDelaysBrowserTest
   DISALLOW_COPY_AND_ASSIGN(SearchEnginePreconnectorNoDelaysBrowserTest);
 };
 
+// Test routinely flakes on the Mac10.11 Tests bot (https://crbug.com/1141028).
 IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorNoDelaysBrowserTest,
-                       PreconnectSearch) {
+                       DISABLED_PreconnectSearch) {
   // Put the fake search URL to be preconnected in foreground.
   NavigationPredictorKeyedServiceFactory::GetForProfile(
       Profile::FromBrowserContext(browser()->profile()))
