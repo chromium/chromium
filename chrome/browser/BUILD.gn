@@ -83,6 +83,12 @@ buildflag_header("buildflags") {
   if (is_win) {
     flags += [ "ENABLE_SEGMENT_HEAP=$enable_segment_heap" ]
   }
+
+  if (use_allocator == "partition") {
+    flags += [ "USE_PARTITION_ALLOC_EVERYWHERE=1" ]
+  } else {
+    flags += [ "USE_PARTITION_ALLOC_EVERYWHERE=0" ]
+  }
 }
 
 # This proto library is used for non - android NTPs below.
