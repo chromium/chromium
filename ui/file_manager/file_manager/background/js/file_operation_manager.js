@@ -400,7 +400,8 @@ class FileOperationManagerImpl {
           entrySize: {},
           totalBytes: 0,
           processedBytes: 0,
-          cancelRequested: false
+          cancelRequested: false,
+          trashedItems: [],
         }));
 
     // Obtains entry size and sum them up.
@@ -481,7 +482,10 @@ class FileOperationManagerImpl {
           .removeFileOrDirectory(
               assert(this.volumeManager_), task.entries[0],
               /*permanentlyDelete=*/ false)
-          .then(() => {
+          .then(trashItem => {
+            if (trashItem) {
+              task.trashedItems.push(trashItem);
+            }
             this.eventRouter_.sendEntryChangedEvent(
                 util.EntryChangedKind.DELETED, task.entries[0]);
             task.processedBytes += task.entrySize[task.entries[0].toURL()];
@@ -510,6 +514,15 @@ class FileOperationManagerImpl {
       inCallback();
       callback();
     });
+  }
+
+  /**
+   * Restores files from trash.
+   *
+   * @param {Array<!fileOperationUtil.TrashItem>} trashItems The trash items.
+   */
+  restoreDeleted(trashItems) {
+    // TODO(crbug.com/953310): to be implemented in crrev.com/c/2469340.
   }
 
   /**
