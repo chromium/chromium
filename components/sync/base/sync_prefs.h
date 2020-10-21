@@ -23,11 +23,8 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/protocol/sync.pb.h"
 
+class PrefRegistrySimple;
 class PrefService;
-
-namespace user_prefs {
-class PrefRegistrySyncable;
-}
 
 namespace syncer {
 
@@ -67,7 +64,7 @@ class SyncPrefs : public CryptoSyncPrefs,
   explicit SyncPrefs(PrefService* pref_service);
   ~SyncPrefs() override;
 
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   void AddSyncPrefObserver(SyncPrefObserver* sync_pref_observer);
   void RemoveSyncPrefObserver(SyncPrefObserver* sync_pref_observer);
@@ -197,7 +194,7 @@ class SyncPrefs : public CryptoSyncPrefs,
   bool IsLocalSyncEnabled() const;
 
  private:
-  static void RegisterTypeSelectedPref(user_prefs::PrefRegistrySyncable* prefs,
+  static void RegisterTypeSelectedPref(PrefRegistrySimple* prefs,
                                        UserSelectableType type);
 
   void OnSyncManagedPrefChanged();

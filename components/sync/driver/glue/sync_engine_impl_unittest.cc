@@ -31,6 +31,7 @@
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/invalidation_helper.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_prefs.h"
@@ -44,8 +45,6 @@
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/protocol/sync_invalidations_payload.pb.h"
 #include "components/sync/test/callback_counter.h"
-#include "components/sync_preferences/pref_service_syncable.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -309,7 +308,7 @@ class SyncEngineImplTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
-  sync_preferences::TestingPrefServiceSyncable pref_service_;
+  TestingPrefServiceSimple pref_service_;
   TestSyncEngineHost host_;
   std::unique_ptr<SyncPrefs> sync_prefs_;
   std::unique_ptr<SyncEngineImpl> backend_;

@@ -8,13 +8,14 @@
 
 #include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service_crypto.h"
 #include "components/sync/engine/configure_reason.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(OS_CHROMEOS)
@@ -75,7 +76,7 @@ class SyncUserSettingsTest : public testing::Test {
 
   // The order of fields matters because it determines destruction order and
   // fields are dependent.
-  sync_preferences::TestingPrefServiceSyncable pref_service_;
+  TestingPrefServiceSimple pref_service_;
   std::unique_ptr<SyncPrefs> sync_prefs_;
   std::unique_ptr<SyncServiceCrypto> sync_service_crypto_;
 };

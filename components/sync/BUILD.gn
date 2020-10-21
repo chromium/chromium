@@ -511,8 +511,6 @@ source_set("unit_tests") {
     "//components/sync/driver:test_support",
     "//components/sync/invalidations:test_support",
     "//components/sync/js:test_support",
-    "//components/sync_preferences",
-    "//components/sync_preferences:test_support",
     "//components/version_info",
     "//components/version_info:generate_version_info",
     "//components/version_info:version_string",

@@ -21,7 +21,7 @@ namespace syncer {
 using testing::Return;
 
 ProfileSyncServiceBundle::ProfileSyncServiceBundle()
-    : identity_test_env_(&test_url_loader_factory_, &pref_service_) {
+    : identity_test_env_(&test_url_loader_factory_) {
   SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
   identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
   identity_provider_ = std::make_unique<invalidation::ProfileIdentityProvider>(

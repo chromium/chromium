@@ -159,6 +159,7 @@ static_library("test_support") {
   deps = [
     "//components/invalidation/impl:test_support",
     "//components/pref_registry",
+    "//components/prefs:test_support",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync",
@@ -166,7 +167,6 @@ static_library("test_support") {
     "//components/sync:test_support_model",
     "//components/sync/driver",
     "//components/sync/invalidations:test_support",
-    "//components/sync_preferences:test_support",
     "//components/version_info",
     "//components/version_info:generate_version_info",
     "//google_apis",

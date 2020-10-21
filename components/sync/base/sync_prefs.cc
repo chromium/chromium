@@ -16,7 +16,7 @@
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
-#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -108,7 +108,7 @@ std::vector<std::string> GetObsoleteUserTypePrefs() {
           kSyncUserConsents};
 }
 
-void RegisterObsoleteUserTypePrefs(user_prefs::PrefRegistrySyncable* registry) {
+void RegisterObsoleteUserTypePrefs(PrefRegistrySimple* registry) {
   for (const std::string& obsolete_pref : GetObsoleteUserTypePrefs()) {
     registry->RegisterBooleanPref(obsolete_pref, false);
   }
@@ -148,8 +148,7 @@ SyncPrefs::~SyncPrefs() {
 }
 
 // static
-void SyncPrefs::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
+void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // Actual user-controlled preferences.
   registry->RegisterBooleanPref(prefs::kSyncFirstSetupComplete, false);
   registry->RegisterBooleanPref(prefs::kSyncRequested, false);
@@ -497,9 +496,8 @@ void SyncPrefs::SetManagedForTest(bool is_managed) {
 }
 
 // static
-void SyncPrefs::RegisterTypeSelectedPref(
-    user_prefs::PrefRegistrySyncable* registry,
-    UserSelectableType type) {
+void SyncPrefs::RegisterTypeSelectedPref(PrefRegistrySimple* registry,
+                                         UserSelectableType type) {
   const char* pref_name = GetPrefNameForType(type);
   DCHECK(pref_name);
   registry->RegisterBooleanPref(pref_name, false);

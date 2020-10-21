@@ -11,11 +11,11 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_notifier_impl.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_value_store.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -39,7 +39,7 @@ class SyncPrefsTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  sync_preferences::TestingPrefServiceSyncable pref_service_;
+  TestingPrefServiceSimple pref_service_;
   std::unique_ptr<SyncPrefs> sync_prefs_;
 };
 
@@ -311,7 +311,7 @@ class SyncPrefsMigrationTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  sync_preferences::TestingPrefServiceSyncable pref_service_;
+  TestingPrefServiceSimple pref_service_;
 };
 
 TEST_F(SyncPrefsMigrationTest, SyncSuppressed_NotSet) {

@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -35,7 +36,6 @@
 #include "components/sync/driver/sync_token_status.h"
 #include "components/sync/engine/fake_sync_engine.h"
 #include "components/sync/invalidations/switches.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/version_info/version_info_values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -303,7 +303,7 @@ class ProfileSyncServiceTest : public ::testing::Test {
 
   SyncClientMock* sync_client() { return sync_client_; }
 
-  sync_preferences::TestingPrefServiceSyncable* prefs() {
+  TestingPrefServiceSimple* prefs() {
     return profile_sync_service_bundle_.pref_service();
   }
 
