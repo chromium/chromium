@@ -236,8 +236,7 @@ std::unique_ptr<AgentSchedulingGroup> CreateAgentSchedulingGroup(
 
   return std::make_unique<MockAgentSchedulingGroup>(
       render_thread, std::move(agent_scheduling_group_host),
-      std::move(agent_scheduling_group_receiver),
-      base::OnceCallback<void(const AgentSchedulingGroup*)>());
+      std::move(agent_scheduling_group_receiver));
 }
 
 }  // namespace
@@ -285,8 +284,7 @@ RenderViewTest::RendererBlinkPlatformImplTestOverride::
 }
 
 RenderViewTest::RendererBlinkPlatformImplTestOverride::
-    ~RendererBlinkPlatformImplTestOverride() {
-}
+    ~RendererBlinkPlatformImplTestOverride() = default;
 
 RendererBlinkPlatformImpl*
 RenderViewTest::RendererBlinkPlatformImplTestOverride::Get() const {
@@ -696,7 +694,6 @@ void RenderViewTest::SimulatePointClick(const gfx::Point& point) {
       base::DoNothing());
 }
 
-
 bool RenderViewTest::SimulateElementRightClick(const std::string& element_id) {
   gfx::Rect bounds = GetElementBounds(element_id);
   if (bounds.IsEmpty())
@@ -761,8 +758,7 @@ void RenderViewTest::Reload(const GURL& url) {
       blink::DocumentUpdateReason::kTest);
 }
 
-void RenderViewTest::Resize(gfx::Size new_size,
-                            bool is_fullscreen_granted) {
+void RenderViewTest::Resize(gfx::Size new_size, bool is_fullscreen_granted) {
   blink::VisualProperties visual_properties;
   visual_properties.screen_info = blink::ScreenInfo();
   visual_properties.new_size = new_size;

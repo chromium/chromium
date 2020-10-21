@@ -28,9 +28,7 @@ class MockAgentSchedulingGroup : public AgentSchedulingGroup {
       RenderThread& render_thread,
       mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost>
           host_remote,
-      mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver,
-      base::OnceCallback<void(const AgentSchedulingGroup*)>
-          mojo_disconnect_handler);
+      mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver);
 
   mojom::RouteProvider* GetRemoteRouteProvider() override;
 };

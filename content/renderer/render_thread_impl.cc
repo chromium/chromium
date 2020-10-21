@@ -575,10 +575,6 @@ RenderThreadImpl::RenderThreadImpl(
 void RenderThreadImpl::Init() {
   TRACE_EVENT0("startup", "RenderThreadImpl::Init");
 
-  remove_agent_scheduling_group_callback_ =
-      base::BindRepeating(&RenderThreadImpl::RemoveAgentSchedulingGroup,
-                          weak_factory_.GetWeakPtr());
-
   GetContentClient()->renderer()->PostIOThreadCreated(GetIOTaskRunner().get());
 
   base::trace_event::TraceLog::GetInstance()->SetThreadSortIndex(
@@ -1709,22 +1705,13 @@ void RenderThreadImpl::CreateFrame(mojom::CreateFrameParamsPtr params,
       params->has_committed_real_load);
 }
 
-void RenderThreadImpl::RemoveAgentSchedulingGroup(
-    const AgentSchedulingGroup* agent_scheduling_group) {
-  DCHECK(agent_scheduling_group);
-  DCHECK(base::Contains(agent_scheduling_groups_, agent_scheduling_group));
-  auto it = agent_scheduling_groups_.find(agent_scheduling_group);
-  agent_scheduling_groups_.erase(it);
-}
-
 void RenderThreadImpl::CreateAgentSchedulingGroup(
     mojo::PendingRemote<mojom::AgentSchedulingGroupHost>
         agent_scheduling_group_host,
     mojo::PendingReceiver<mojom::AgentSchedulingGroup> agent_scheduling_group) {
   agent_scheduling_groups_.emplace(std::make_unique<AgentSchedulingGroup>(
       *this, std::move(agent_scheduling_group_host),
-      std::move(agent_scheduling_group),
-      remove_agent_scheduling_group_callback_));
+      std::move(agent_scheduling_group)));
 }
 
 void RenderThreadImpl::CreateAssociatedAgentSchedulingGroup(
@@ -1734,8 +1721,7 @@ void RenderThreadImpl::CreateAssociatedAgentSchedulingGroup(
         agent_scheduling_group) {
   agent_scheduling_groups_.emplace(std::make_unique<AgentSchedulingGroup>(
       *this, std::move(agent_scheduling_group_host),
-      std::move(agent_scheduling_group),
-      remove_agent_scheduling_group_callback_));
+      std::move(agent_scheduling_group)));
 }
 
 void RenderThreadImpl::CreateFrameProxy(
