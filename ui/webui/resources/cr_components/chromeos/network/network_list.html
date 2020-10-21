@@ -6,6 +6,7 @@
 <link rel="import" href="../../../cr_elements/shared_style_css.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
+<link rel="import" href="../../../html/list_property_update_behavior.html">
 
 <dom-module id="network-list">
   <template>
@@ -36,13 +37,18 @@
     </style>
     <div id="container" class="layout vertical flex" scrollable
         no-bottom-scroll-border$="[[noBottomScrollBorder]]">
-      <iron-list id="networkList" selection-enabled items="[[listItems_]]"
-          scroll-target="container" selected-item="{{selectedItem}}">
+      <iron-list id="networkList" items="[[listItems_]]"
+          scroll-target="container" preserve-focus>
         <template>
           <network-list-item item="[[item]]"
               show-technology-badge="[[showTechnologyBadge]]"
-              show-buttons="[[showButtons]]" tabindex$="[[tabIndex]]"
+              show-buttons="[[showButtons]]"
+              tabindex$="[[tabIndex]]"
+              focus-row-index="[[index]]"
+              iron-list-tab-index="[[tabIndex]]"
               activation-unavailable="[[activationUnavailable]]"
+              last-focused="{{lastFocused_}}"
+              list-blurred="{{listBlurred_}}"
               device-state="[[deviceState]]">
           </network-list-item>
         </template>

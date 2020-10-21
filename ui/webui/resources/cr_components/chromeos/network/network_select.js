@@ -128,7 +128,7 @@ Polymer({
     for (const network of networkList.children) {
       if (network.is === 'network-list-item' &&
           network.$$('#divText').children[0].innerText === name) {
-        return network;
+        return network.shadowRoot.getElementById('divOuter');
       }
     }
     return null;

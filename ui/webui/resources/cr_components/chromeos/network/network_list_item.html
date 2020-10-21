@@ -7,6 +7,7 @@
 <link rel="import" href="../../../cr_elements/shared_style_css.html">
 <link rel="import" href="../../../cr_elements/shared_vars_css.html">
 <link rel="import" href="../../../html/i18n_behavior.html">
+<link rel="import" href="../../../html/cr/ui/focus_row_behavior.html">
 <link rel="import" href="cr_policy_network_behavior_mojo.html">
 <link rel="import" href="network_icon.html">
 <link rel="import" href="network_list_types.html">
@@ -21,6 +22,7 @@
       }
 
       #divOuter {
+        height: 100%;
         padding-inline-end: var(--cr-icon-ripple-padding);
       }
 
@@ -54,40 +56,60 @@
       cr-policy-indicator {
         padding: 0 var(--cr-controlled-by-spacing);
       }
+
+      #wrapper {
+        height: 100%;
+      }
     </style>
-    <div id="divOuter"
-        class="layout horizontal center flex" actionable>
-      <template is="dom-if" if="[[networkState]]">
-        <network-icon is-list-item
-            show-technology-badge="[[showTechnologyBadge]]"
-            network-state="[[networkState]]">
-        </network-icon>
-      </template>
-      <template is="dom-if" if="[[item.polymerIcon]]">
-        <iron-icon icon="[[item.polymerIcon]]"></iron-icon>
-      </template>
-      <div id="divText" class="layout horizontal flex">
-        <div aria-hidden="true">[[getItemName_(item)]]</div>
-        <div id="networkStateText"
-            class="cr-secondary-text"
-            hidden$="[[!isStateTextVisible_(networkState)]]"
-            active$="[[isStateTextActive_(networkState,
-                         activationUnavailable)]]">
-          [[getNetworkStateText_(networkState, activationUnavailable)]]
+    <div id="wrapper" focus-row-container
+         class="layout horizontal center flex">
+      <div id="divOuter"
+           class="layout horizontal center flex"
+           actionable
+           focus-row-control
+           selectable
+           aria-label$="[[rowLabel]]"
+           role="button"
+           focus-type="rowWrapper"
+           on-keydown="onKeydown_"
+           on-click="onSelected_">
+        <template is="dom-if" if="[[networkState]]">
+          <network-icon is-list-item
+              show-technology-badge="[[showTechnologyBadge]]"
+              network-state="[[networkState]]">
+          </network-icon>
+        </template>
+        <template is="dom-if" if="[[item.polymerIcon]]">
+          <iron-icon icon="[[item.polymerIcon]]"></iron-icon>
+        </template>
+        <div id="divText" class="layout horizontal flex">
+          <div aria-hidden="true">[[getItemName_(item)]]</div>
+          <div id="networkStateText"
+              class="cr-secondary-text"
+              hidden$="[[!isStateTextVisible_(networkState)]]"
+              active$="[[isStateTextActive_(networkState,
+                           activationUnavailable)]]">
+            [[getNetworkStateText_(networkState, activationUnavailable)]]
+          </div>
         </div>
+        <template is="dom-if" if="[[isPolicySource(networkState.source)]]">
+          <cr-policy-indicator indicator-type="[[getIndicatorTypeForSource(
+              networkState.source)]]">
+          </cr-policy-indicator>
+        </template>
+        <template is="dom-if" if="[[isSubpageButtonVisible_(networkState, showButtons)]]" restamp>
+          <div>
+            <cr-icon-button class="subpage-arrow"
+                id="subpage-button"
+                on-click="onSubpageArrowClick_"
+                tabindex$="[[tabindex]]"
+                aria-label$="[[buttonLabel]]"
+                focus-row-control
+                focus-type="subpageButton">
+            </cr-icon-button>
+          </div>
+        </template>
       </div>
-      <template is="dom-if" if="[[isPolicySource(networkState.source)]]">
-        <cr-policy-indicator indicator-type="[[getIndicatorTypeForSource(
-            networkState.source)]]">
-        </cr-policy-indicator>
-      </template>
-      <template is="dom-if"
-          if="[[isSubpageButtonVisible_(networkState, showButtons)]]" restamp>
-        <cr-icon-button class="subpage-arrow" id="subpage-button"
-            on-click="onSubpageArrowClick_" tabindex$="[[tabindex]]"
-            aria-label$="[[buttonLabel]]">
-        </cr-icon-button>
-      </template>
     </div>
   </template>
   <script src="network_list_item.js"></script>
