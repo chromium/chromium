@@ -138,6 +138,10 @@ class TestDelegate : public CertificateProviderService::Delegate {
 
 class MockObserver : public CertificateProviderService::Observer {
  public:
+  MOCK_METHOD2(
+      OnCertificatesUpdated,
+      void(const std::string& extension_id,
+           const certificate_provider::CertificateInfoList& certificate_infos));
   MOCK_METHOD2(OnSignCompleted,
                void(const scoped_refptr<net::X509Certificate>& certificate,
                     const std::string& extension_id));
@@ -209,6 +213,7 @@ class CertificateProviderServiceTest : public testing::Test {
       const certificate_provider::CertificateInfo& cert_info) {
     certificate_provider::CertificateInfoList infos;
     infos.push_back(cert_info);
+    EXPECT_CALL(observer_, OnCertificatesUpdated(extension_id, infos));
     service_->SetCertificatesProvidedByExtension(extension_id, infos);
     service_->SetExtensionCertificateReplyReceived(extension_id,
                                                    cert_request_id);
@@ -316,6 +321,9 @@ TEST_F(CertificateProviderServiceTest, LookUpCertificate) {
   test_delegate_->provider_extensions_.insert(kExtension2);
   {
     const int cert_request_id = RequestCertificatesFromExtensions(nullptr);
+    EXPECT_CALL(observer_,
+                OnCertificatesUpdated(
+                    kExtension1, certificate_provider::CertificateInfoList()));
     service_->SetCertificatesProvidedByExtension(
         kExtension1, certificate_provider::CertificateInfoList());
     service_->SetExtensionCertificateReplyReceived(kExtension1,

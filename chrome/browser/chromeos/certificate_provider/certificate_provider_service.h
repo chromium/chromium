@@ -99,6 +99,11 @@ class CertificateProviderService : public KeyedService {
 
   class Observer : public base::CheckedObserver {
    public:
+    // Called when an extension updates the certificates it provides.
+    virtual void OnCertificatesUpdated(
+        const std::string& extension_id,
+        const CertificateInfoList& certificate_infos) {}
+
     // Called when a sign request gets successfully completed.
     virtual void OnSignCompleted(
         const scoped_refptr<net::X509Certificate>& certificate,

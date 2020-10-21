@@ -23,6 +23,8 @@ struct CertificateInfo {
   CertificateInfo(const CertificateInfo& other);
   ~CertificateInfo();
 
+  bool operator==(const CertificateInfo& other) const;
+
   scoped_refptr<net::X509Certificate> certificate;
   // Contains the list of supported signature algorithms, using TLS 1.3's
   // SignatureScheme values. See net::SSLPrivateKey documentation for details.

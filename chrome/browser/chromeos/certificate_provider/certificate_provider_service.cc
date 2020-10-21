@@ -221,6 +221,8 @@ void CertificateProviderService::SetCertificatesProvidedByExtension(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   certificate_map_.UpdateCertificatesForExtension(extension_id,
                                                   certificate_infos);
+  for (auto& observer : observers_)
+    observer.OnCertificatesUpdated(extension_id, certificate_infos);
 }
 
 bool CertificateProviderService::SetExtensionCertificateReplyReceived(
