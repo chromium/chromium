@@ -1370,7 +1370,8 @@ void TabStrip::AddTabToGroup(base::Optional<tab_groups::TabGroupId> group,
         group.value(), ToggleTabGroupCollapsedStateOrigin::kImplicitAction);
   }
 
-  ExitTabClosingMode();
+  if (group.has_value())
+    ExitTabClosingMode();
 }
 
 void TabStrip::OnGroupCreated(const tab_groups::TabGroupId& group) {
