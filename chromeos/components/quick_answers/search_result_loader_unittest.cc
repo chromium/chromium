@@ -62,9 +62,9 @@ class SearchResultLoaderTest : public testing::Test {
   void TearDown() override { loader_.reset(); }
 
  protected:
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<SearchResultLoader> loader_;
   std::unique_ptr<MockResultLoaderDelegate> mock_delegate_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   network::TestURLLoaderFactory test_url_loader_factory_;
 };
@@ -77,7 +77,7 @@ TEST_F(SearchResultLoaderTest, Success) {
                                        kValidResponse);
   EXPECT_CALL(
       *mock_delegate_,
-      OnQuickAnswerReceived(QuickAnswerEqual(&(*expected_quick_answer))));
+      OnQuickAnswerReceived(QuickAnswerEqual(expected_quick_answer.get())));
   EXPECT_CALL(*mock_delegate_, OnNetworkError()).Times(0);
   loader_->Fetch(PreprocessRequest(IntentInfo("23cm", IntentType::kUnknown)));
   base::RunLoop().RunUntilIdle();
