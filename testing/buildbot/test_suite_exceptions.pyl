@@ -74,14 +74,6 @@
       },
     },
   },
-  'angle_perftests': {
-    'remove_from': [
-      'Android FYI Release (Nexus 5)',  # crbug.com/915429
-      'Android FYI Release (Nexus 6)',  # anglebug.com/2433
-      'Android FYI Release (Nexus 6P)', # anglebug.com/4909
-      'Linux FYI GPU TSAN Release',  # crbug.com/950542
-    ],
-  },
   'blink_platform_unittests': {
     'modifications': {
       # TODO(crbug.com/1108121): Remove this filter
@@ -2524,6 +2516,14 @@
       'Linux FYI Release (AMD R7 240)',
       # Temporarily disabled due to bad NVIDIA driver upgrade crbug.com/950542
       'Linux FYI Debug (NVIDIA)',
+    ],
+  },
+  'standalone_angle_perftests': {
+    'remove_from': [
+      'Android FYI Release (Nexus 5)',  # crbug.com/915429
+      'Android FYI Release (Nexus 6)',  # anglebug.com/2433
+      'Android FYI Release (Nexus 6P)', # anglebug.com/4909
+      'Linux FYI GPU TSAN Release',  # crbug.com/950542
     ],
   },
   'standalone_angle_unittests': {

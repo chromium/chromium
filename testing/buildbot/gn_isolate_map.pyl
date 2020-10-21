@@ -1576,6 +1576,11 @@
     "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
     "type": "script",
   },
+  "standalone_angle_perftests": {
+    "label": "//third_party/angle/src/tests:standalone_angle_perftests",
+    "script": "//testing/scripts/run_performance_tests.py",
+    "type": "script",
+  },
   "standalone_angle_unittests": {
     "label": "//third_party/angle/src/tests:standalone_angle_unittests",
     "script": "//third_party/angle/scripts/run_gtest_angle_test.py",

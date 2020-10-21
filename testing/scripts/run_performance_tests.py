@@ -105,6 +105,8 @@ GTEST_CONVERSION_WHITELIST = [
   'net_perftests',
   'browser_tests',
   'services_perftests',
+  # TODO(jmadill): Remove once migrated. http://anglebug.com/5124
+  'standalone_angle_perftests',
   'sync_performance_tests',
   'tracing_perftests',
   'views_perftests',
