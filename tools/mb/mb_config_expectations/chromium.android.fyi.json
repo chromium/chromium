@@ -17,6 +17,7 @@
     "gn_args": {
       "disable_android_lint": true,
       "ffmpeg_branding": "Chrome",
+      "invert_fieldtrials": true,
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
