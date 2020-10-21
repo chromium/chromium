@@ -60,7 +60,7 @@ SimpleDownloadManagerCoordinatorFactory::BuildServiceInstanceFor(
   return std::make_unique<download::SimpleDownloadManagerCoordinator>(
       base::BindRepeating(&DownloadUrlWithDownloadManager,
                           base::Unretained(key)),
-      key->IsOffTheRecord());
+      !key->IsOffTheRecord());
 }
 
 SimpleFactoryKey* SimpleDownloadManagerCoordinatorFactory::GetKeyToUse(
