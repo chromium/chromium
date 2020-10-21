@@ -86,7 +86,7 @@ public final class ProductionSupportedFlagList {
                             + "stricter same-origin feature is enabled."),
             Flag.baseFeature(AwFeatures.WEBVIEW_MEASURE_SCREEN_COVERAGE,
                     "Measure the number of pixels occupied by one or more WebViews as a proportion "
-                            + "of the total screen size. Depending on the number of WebVieaws and "
+                            + "of the total screen size. Depending on the number of WebViews and "
                             + "the size of the screen this might be expensive so hidden behind a "
                             + "feature flag until the true runtime cost can be measured."),
             Flag.baseFeature(BlinkFeatures.WEB_COMPONENTS_V0,

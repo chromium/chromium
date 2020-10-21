@@ -291,19 +291,17 @@ void VisibilityMetricsLogger::RecordOpenWebDisplayMetrics() {
 }
 
 void VisibilityMetricsLogger::RecordScreenPortionMetrics() {
-  int tracked_portion = static_cast<int>(current_open_web_screen_portion_);
+  for (int i = 0; i < static_cast<int>(WebViewOpenWebScreenPortion::kMaxValue);
+       i++) {
+    int32_t elapsed_seconds =
+        open_web_screen_portion_tracked_duration_[i].InSeconds();
+    if (elapsed_seconds == 0)
+      continue;
 
-  // TODO (idries@): record every bucket, not just
-  // current_open_web_screen_portion_
-  int32_t elapsed_seconds =
-      open_web_screen_portion_tracked_duration_[tracked_portion].InSeconds();
-  if (elapsed_seconds == 0)
-    return;
-
-  open_web_screen_portion_tracked_duration_[tracked_portion] -=
-      base::TimeDelta::FromSeconds(elapsed_seconds);
-  GetOpenWebVisibileScreenPortionHistogram()->AddCount(tracked_portion,
-                                                       elapsed_seconds);
+    open_web_screen_portion_tracked_duration_[i] -=
+        base::TimeDelta::FromSeconds(elapsed_seconds);
+    GetOpenWebVisibileScreenPortionHistogram()->AddCount(i, elapsed_seconds);
+  }
 }
 
 }  // namespace android_webview
