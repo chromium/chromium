@@ -3491,16 +3491,18 @@ void WebViewImpl::UpdateTargetURL(const WebURL& url,
 }
 
 void WebViewImpl::SendUpdatedTargetURLToBrowser(const KURL& target_url) {
+  // Note: WTF::Unretained() usage below is safe, since `this` owns both
+  // `mojo::Remote` objects.
   if (GetPage()->MainFrame()->IsLocalFrame()) {
     DCHECK(local_main_frame_host_remote_);
     local_main_frame_host_remote_->UpdateTargetURL(
         target_url, WTF::Bind(&WebViewImpl::TargetURLUpdatedInBrowser,
-                              weak_ptr_factory_.GetWeakPtr()));
+                              WTF::Unretained(this)));
   } else {
     DCHECK(remote_main_frame_host_remote_);
     remote_main_frame_host_remote_->UpdateTargetURL(
         target_url, WTF::Bind(&WebViewImpl::TargetURLUpdatedInBrowser,
-                              weak_ptr_factory_.GetWeakPtr()));
+                              WTF::Unretained(this)));
   }
 }
 
