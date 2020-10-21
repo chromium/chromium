@@ -316,8 +316,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   double scrollTop();
   void setScrollLeft(double);
   void setScrollTop(double);
-  int scrollWidth();
-  int scrollHeight();
+  virtual int scrollWidth();
+  virtual int scrollHeight();
 
   void scrollBy(double x, double y);
   void scrollBy(const ScrollToOptions*);

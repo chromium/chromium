@@ -85,22 +85,4 @@ LayoutObject* LayoutTextControlMultiLine::LayoutSpecialExcludedChild(
   return placeholder_layout_object;
 }
 
-LayoutUnit LayoutTextControlMultiLine::ScrollWidth() const {
-  NOT_DESTROYED();
-  // If in preview state, fake the scroll width to prevent that any information
-  // about the suggested content can be derived from the size.
-  if (!GetTextControlElement()->SuggestedValue().IsEmpty())
-    return ClientWidth();
-  return LayoutTextControl::ScrollWidth();
-}
-
-LayoutUnit LayoutTextControlMultiLine::ScrollHeight() const {
-  NOT_DESTROYED();
-  // If in preview state, fake the scroll height to prevent that any information
-  // about the suggested content can be derived from the size.
-  if (!GetTextControlElement()->SuggestedValue().IsEmpty())
-    return ClientHeight();
-  return LayoutTextControl::ScrollHeight();
-}
-
 }  // namespace blink

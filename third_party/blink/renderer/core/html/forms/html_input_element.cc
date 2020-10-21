@@ -1784,6 +1784,22 @@ bool HTMLInputElement::MatchesDefaultPseudoClass() const {
   return input_type_->MatchesDefaultPseudoClass();
 }
 
+int HTMLInputElement::scrollWidth() {
+  // If in preview state, fake the scroll width to prevent that any information
+  // about the suggested content can be derived from the size.
+  if (IsTextField() && !SuggestedValue().IsEmpty())
+    return clientWidth();
+  return TextControlElement::scrollWidth();
+}
+
+int HTMLInputElement::scrollHeight() {
+  // If in preview state, fake the scroll height to prevent that any information
+  // about the suggested content can be derived from the size.
+  if (IsTextField() && !SuggestedValue().IsEmpty())
+    return clientHeight();
+  return TextControlElement::scrollHeight();
+}
+
 bool HTMLInputElement::ShouldAppearChecked() const {
   return checked() && input_type_->IsCheckable();
 }

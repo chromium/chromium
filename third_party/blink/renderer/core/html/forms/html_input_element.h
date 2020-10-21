@@ -374,8 +374,9 @@ class CORE_EXPORT HTMLInputElement
   bool IsInteractiveContent() const final;
   bool IsLabelable() const final;
   bool MatchesDefaultPseudoClass() const override;
-
   bool IsTextControl() const final { return IsTextField(); }
+  int scrollWidth() override;
+  int scrollHeight() override;
 
   bool CanTriggerImplicitSubmission() const final { return IsTextField(); }
 

@@ -179,11 +179,7 @@ bool LayoutTextControlSingleLine::NodeAtPoint(
 
 LayoutUnit LayoutTextControlSingleLine::ScrollWidth() const {
   NOT_DESTROYED();
-  // If in preview state, fake the scroll width to prevent that any information
-  // about the suggested content can be derived from the size.
-  if (!GetTextControlElement()->SuggestedValue().IsEmpty())
-    return ClientWidth();
-
+  // TODO(crbug.com/1040826): Move this logic to HTMLInputElement::scrollWidth.
   if (LayoutBox* inner = InnerEditorElement()
                              ? InnerEditorElement()->GetLayoutBox()
                              : nullptr) {
@@ -197,11 +193,7 @@ LayoutUnit LayoutTextControlSingleLine::ScrollWidth() const {
 
 LayoutUnit LayoutTextControlSingleLine::ScrollHeight() const {
   NOT_DESTROYED();
-  // If in preview state, fake the scroll height to prevent that any information
-  // about the suggested content can be derived from the size.
-  if (!GetTextControlElement()->SuggestedValue().IsEmpty())
-    return ClientHeight();
-
+  // TODO(crbug.com/1040826): Move this logic to HTMLInputElement::scrollHeight.
   if (LayoutBox* inner = InnerEditorElement()
                              ? InnerEditorElement()->GetLayoutBox()
                              : nullptr) {

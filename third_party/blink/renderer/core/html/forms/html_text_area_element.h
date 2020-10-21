@@ -109,7 +109,8 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
   void RestoreFormControlState(const FormControlState&) override;
 
   bool IsTextControl() const override { return true; }
-
+  int scrollWidth() override;
+  int scrollHeight() override;
   void ChildrenChanged(const ChildrenChange&) override;
   void ParseAttribute(const AttributeModificationParams&) override;
   bool IsPresentationAttribute(const QualifiedName&) const override;
