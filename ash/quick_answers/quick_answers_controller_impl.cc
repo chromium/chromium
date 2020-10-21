@@ -14,7 +14,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-// TODO(yanxiao):Add a unit test for QuickAnswersControllerImpl.
 namespace {
 using chromeos::quick_answers::Context;
 using chromeos::quick_answers::IntentType;
@@ -211,8 +210,6 @@ void QuickAnswersControllerImpl::OnQuickAnswerClick() {
 
 void QuickAnswersControllerImpl::UpdateQuickAnswersAnchorBounds(
     const gfx::Rect& anchor_bounds) {
-  if (visibility_ != QuickAnswersVisibility::kVisible)
-    return;
   anchor_bounds_ = anchor_bounds;
   quick_answers_ui_controller_->UpdateQuickAnswersBounds(anchor_bounds);
 }

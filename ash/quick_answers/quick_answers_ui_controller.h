@@ -91,6 +91,13 @@ class ASH_EXPORT QuickAnswersUiController {
   // Invoked when user clicks the Dogfood button on Quick-Answers related views.
   void OnDogfoodButtonPressed();
 
+  const QuickAnswersView* quick_answers_view_for_testing() const {
+    return quick_answers_view_;
+  }
+  const quick_answers::UserConsentView* notification_view_for_testing() const {
+    return user_consent_view_;
+  }
+
  private:
   QuickAnswersControllerImpl* controller_ = nullptr;
 
