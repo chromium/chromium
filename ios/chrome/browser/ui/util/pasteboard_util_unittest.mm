@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/util/pasteboard_util.h"
 
+#import <MobileCoreServices/MobileCoreServices.h>
+
 #import "base/strings/sys_string_conversions.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -32,23 +34,44 @@ class PasteboardUtilTest : public PlatformTest {
 // general pasteboard.
 TEST_F(PasteboardUtilTest, StoreInPasteboardWorks) {
   NSString* test_text = base::SysUTF8ToNSString(kTestText);
+  NSData* text_as_data = [test_text dataUsingEncoding:NSUTF8StringEncoding];
   GURL test_url(kTestURL);
-  NSURL* test_ns_url = [NSURL URLWithString:base::SysUTF8ToNSString(kTestURL)];
+  NSString* url_as_string = base::SysUTF8ToNSString(kTestURL);
+  NSData* url_as_data = [url_as_string dataUsingEncoding:NSUTF8StringEncoding];
+  NSURL* test_ns_url = [NSURL URLWithString:url_as_string];
 
   StoreInPasteboard(test_text, test_url);
 
-  // Additional text is stored as the first pasteboard item.
-  ASSERT_TRUE([UIPasteboard generalPasteboard].hasStrings);
-  EXPECT_TRUE(
-      [test_text isEqualToString:UIPasteboard.generalPasteboard.string]);
+  ASSERT_TRUE(UIPasteboard.generalPasteboard.hasStrings);
+  ASSERT_TRUE(UIPasteboard.generalPasteboard.hasURLs);
 
-  // URL is stored as the second pasteboard item, but can be accessed as the
-  // first (and only) URL item.
-  ASSERT_TRUE([UIPasteboard generalPasteboard].hasURLs);
-  EXPECT_TRUE([test_ns_url isEqual:UIPasteboard.generalPasteboard.URLs[0]]);
+  NSString* plainTextType = (NSString*)kUTTypeUTF8PlainText;
+
+  // URL is stored as the first pasteboard item as both URL and plain text; the
+  // latter being required on iOS 12 to be pasted in text boxes in other apps.
+  NSIndexSet* firstIndex = [NSIndexSet indexSetWithIndex:0];
+  EXPECT_TRUE(
+      [test_ns_url isEqual:[UIPasteboard.generalPasteboard
+                               valuesForPasteboardType:(NSString*)kUTTypeURL
+                                             inItemSet:firstIndex][0]]);
+  EXPECT_TRUE(
+      [url_as_data isEqualToData:[UIPasteboard.generalPasteboard
+                                     dataForPasteboardType:plainTextType
+                                                 inItemSet:firstIndex][0]]);
+
+  // The additional text is stored as the second item.
+  NSIndexSet* secondIndex = [NSIndexSet indexSetWithIndex:1];
+  EXPECT_TRUE(
+      [text_as_data isEqualToData:[UIPasteboard.generalPasteboard
+                                      dataForPasteboardType:plainTextType
+                                                  inItemSet:secondIndex][0]]);
+  EXPECT_TRUE([test_text
+      isEqualToString:[UIPasteboard.generalPasteboard
+                          valuesForPasteboardType:(NSString*)kUTTypeText
+                                        inItemSet:secondIndex][0]]);
 }
 
-// Tests that the minimum line height attribute is reflected in GetLineHeight().
+// Tests that clearing the pasteboard does remove pasteboard items.
 TEST_F(PasteboardUtilTest, ClearPasteboardWorks) {
   // Get something stored in the pasteboard.
   NSString* test_text = base::SysUTF8ToNSString(kTestText);
@@ -57,8 +80,8 @@ TEST_F(PasteboardUtilTest, ClearPasteboardWorks) {
 
   // Clear and assert.
   ClearPasteboard();
-  EXPECT_FALSE([UIPasteboard generalPasteboard].hasURLs);
-  EXPECT_FALSE([UIPasteboard generalPasteboard].hasStrings);
+  EXPECT_FALSE(UIPasteboard.generalPasteboard.hasURLs);
+  EXPECT_FALSE(UIPasteboard.generalPasteboard.hasStrings);
 }
 
 }  // namespace

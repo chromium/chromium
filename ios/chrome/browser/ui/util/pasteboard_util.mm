@@ -37,18 +37,22 @@ void StoreInPasteboard(NSString* text, const GURL& URL) {
     return;
   }
 
-  NSData* plainText = [text dataUsingEncoding:NSUTF8StringEncoding];
-  NSDictionary* copiedText = @{
-    (NSString*)kUTTypeText : text,
-    (NSString*)kUTTypeUTF8PlainText : plainText,
-  };
+  NSData* plainText = [base::SysUTF8ToNSString(URL.spec())
+      dataUsingEncoding:NSUTF8StringEncoding];
   NSDictionary* copiedURL = @{
     (NSString*)kUTTypeURL : net::NSURLWithGURL(URL),
+    (NSString*)kUTTypeUTF8PlainText : plainText,
   };
 
-  [[UIPasteboard generalPasteboard] setItems:@[ copiedText, copiedURL ]];
+  NSDictionary* copiedText = @{
+    (NSString*)kUTTypeText : text,
+    (NSString*)
+    kUTTypeUTF8PlainText : [text dataUsingEncoding:NSUTF8StringEncoding],
+  };
+
+  UIPasteboard.generalPasteboard.items = @[ copiedURL, copiedText ];
 }
 
 void ClearPasteboard() {
-  [UIPasteboard generalPasteboard].items = @[];
+  UIPasteboard.generalPasteboard.items = @[];
 }

@@ -55,9 +55,9 @@ class CopyActivityTest : public PlatformTest {
                               thumbnailGenerator:nil];
   }
 
-  NSURL* GetExpectedURL() {
-    return [NSURL URLWithString:base::SysUTF8ToNSString(kTestShareURL)];
-  }
+  NSString* GetURLString() { return base::SysUTF8ToNSString(kTestShareURL); }
+
+  NSURL* GetExpectedURL() { return [NSURL URLWithString:GetURLString()]; }
 };
 
 // Tests that the activity can be performed.
@@ -95,13 +95,16 @@ TEST_F(CopyActivityTest, ExecuteActivityURLAndAdditionalText) {
 
   [activity_partial_mock verify];
 
-  // Additional text is stored as the first pasteboard item.
-  EXPECT_TRUE([kTestAdditionaText
-      isEqualToString:UIPasteboard.generalPasteboard.string]);
+  ASSERT_TRUE(UIPasteboard.generalPasteboard.hasURLs);
+  ASSERT_TRUE(UIPasteboard.generalPasteboard.hasStrings);
 
-  // URL is stored as the second pasteboard item, but can be accessed as the
-  // first (and only) URL item.
-  ASSERT_TRUE([UIPasteboard generalPasteboard].hasURLs);
-  NSURL* expected_url = GetExpectedURL();
-  EXPECT_TRUE([expected_url isEqual:UIPasteboard.generalPasteboard.URLs[0]]);
+  // The first pasteboard item has both a URL and string representation of the
+  // test URL.
+  EXPECT_TRUE(
+      [GetURLString() isEqualToString:UIPasteboard.generalPasteboard.string]);
+  EXPECT_TRUE([GetExpectedURL() isEqual:UIPasteboard.generalPasteboard.URL]);
+
+  // The second pasteboard item has the additional text stored as string.
+  EXPECT_TRUE(
+      [kTestAdditionaText isEqual:UIPasteboard.generalPasteboard.strings[1]]);
 }
