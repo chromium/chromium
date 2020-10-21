@@ -81,22 +81,12 @@ OverviewEnterExitType MaybeOverrideEnterExitTypeForHomeScreen(
     }
   }
 
-  // If kDragFromShelfToHomeOrOverview is enabled, overview is expected to fade
-  // in or out to home screen (when all windows are minimized).
-  if (ash::features::IsDragFromShelfToHomeOrOverviewEnabled()) {
-    return enter ? OverviewEnterExitType::kFadeInEnter
-                 : OverviewEnterExitType::kFadeOutExit;
-  }
-
-  // When kDragFromShelfToHomeOrOverview is enabled, the original type is
-  // overridden even if the list of windows is empty so home screen knows to
-  // animate in during overview exit animation (home screen controller uses
-  // different show/hide animations depending on the overview exit/enter types).
-  if (windows.empty())
-    return original_type;
-
-  return enter ? OverviewEnterExitType::kSlideInEnter
-               : OverviewEnterExitType::kSlideOutExit;
+  // The original type is overridden even if the list of windows is empty so
+  // home screen knows to animate in during overview exit animation (home screen
+  // controller uses different show/hide animations depending on the overview
+  // exit/enter types).
+  return enter ? OverviewEnterExitType::kFadeInEnter
+               : OverviewEnterExitType::kFadeOutExit;
 }
 
 }  // namespace
@@ -326,14 +316,11 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
       OnStartingAnimationComplete(/*canceled=*/true);
     start_animations_.clear();
 
-    if (type == OverviewEnterExitType::kSlideOutExit ||
-        type == OverviewEnterExitType::kFadeOutExit ||
-        type == OverviewEnterExitType::kSwipeFromShelf) {
-      // Minimize the windows without animations. When the home launcher button
-      // is pressed, minimized widgets will get created in their place, and
-      // those widgets will be slid out of overview. Otherwise,
-      // HomeLauncherGestureHandler will handle sliding the windows out and when
-      // this function is called, we do not need to create minimized widgets.
+    if (type == OverviewEnterExitType::kFadeOutExit) {
+      // FadeOutExit is used for transition to the home launcher. Minimize the
+      // windows without animations to prevent them from getting maximized
+      // during overview exit. Minimized widgets will get created in their
+      // place, and those widgets will fade out of overview.
       std::vector<aura::Window*> windows_to_minimize(windows.size());
       auto it =
           std::copy_if(windows.begin(), windows.end(),
@@ -493,7 +480,6 @@ bool OverviewController::CanEndOverview(OverviewEnterExitType type) {
       split_view_controller->state() !=
           SplitViewController::State::kBothSnapped &&
       InOverviewSession() && overview_session_->IsEmpty() &&
-      type != OverviewEnterExitType::kSwipeFromShelf &&
       type != OverviewEnterExitType::kImmediateExit) {
     return false;
   }

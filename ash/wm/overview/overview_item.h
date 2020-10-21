@@ -140,10 +140,6 @@ class ASH_EXPORT OverviewItem : public views::ButtonListener,
   // Increases the bounds of the dragged item.
   void ScaleUpSelectedItem(OverviewAnimationType animation_type);
 
-  // Shift the window item up and then animates it to its original spot. Used
-  // to transition from the home launcher.
-  void SlideWindowIn();
-
   // Translate and fade the window (or minimized widget) and |item_widget_|. It
   // should remain in the same spot relative to the grids origin, which is given
   // by |new_grid_y|. Returns the settings object of the layer the caller should

@@ -1357,14 +1357,6 @@ void SplitViewController::OnOverviewModeEnding(
     OverviewSession* overview_session) {
   DCHECK(InSplitViewMode());
 
-  // Early exit if overview is ended while swiping up on the shelf to avoid
-  // snapping a window or showing a toast.
-  if (overview_session->enter_exit_overview_type() ==
-      OverviewEnterExitType::kSwipeFromShelf) {
-    EndSplitView();
-    return;
-  }
-
   // If overview is ended because of a window getting snapped, suppress the
   // overview exiting animation.
   if (state_ == State::kBothSnapped)

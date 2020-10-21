@@ -131,8 +131,7 @@ OverviewAnimationType GetExitOverviewAnimationTypeForMinimizedWindow(
   // OverviewEnterExitType can only be set to kWindowMinimized in talbet mode.
   // Fade out the minimized window without animation if switch from tablet mode
   // to clamshell mode.
-  if (type == OverviewEnterExitType::kSlideOutExit ||
-      type == OverviewEnterExitType::kFadeOutExit) {
+  if (type == OverviewEnterExitType::kFadeOutExit) {
     return Shell::Get()->tablet_mode_controller()->InTabletMode()
                ? OVERVIEW_ANIMATION_EXIT_TO_HOME_LAUNCHER
                : OVERVIEW_ANIMATION_NONE;
@@ -247,10 +246,7 @@ void OverviewItem::RestoreWindow(bool reset_transform) {
     OverviewAnimationType animation_type =
         GetExitOverviewAnimationTypeForMinimizedWindow(
             enter_exit_type, should_animate_when_exiting_);
-    FadeOutWidgetAndMaybeSlideOnExit(
-        std::move(item_widget_), animation_type,
-        animation_type == OVERVIEW_ANIMATION_EXIT_TO_HOME_LAUNCHER &&
-            enter_exit_type == OverviewEnterExitType::kSlideOutExit);
+    FadeOutWidgetFromOverview(std::move(item_widget_), animation_type);
   }
 }
 
@@ -370,22 +366,15 @@ void OverviewItem::SetBounds(const gfx::RectF& target_bounds,
           PerformItemSpawnedAnimation(item_widget_->GetNativeWindow(),
                                       gfx::Transform{});
         } else {
-          // Items that are slide in already have their slide in animations
-          // handled in |SlideWindowIn|.
-          const bool slide_in = overview_session_->enter_exit_overview_type() ==
-                                OverviewEnterExitType::kSlideInEnter;
-          if (!slide_in) {
-            // If entering from home launcher, use the home specific (fade)
-            // animation.
-            OverviewAnimationType fade_animation =
-                animation_type == OVERVIEW_ANIMATION_ENTER_FROM_HOME_LAUNCHER
-                    ? animation_type
-                    : OVERVIEW_ANIMATION_ENTER_OVERVIEW_MODE_FADE_IN;
+          // If entering from home launcher, use the home specific (fade)
+          // animation.
+          OverviewAnimationType fade_animation =
+              animation_type == OVERVIEW_ANIMATION_ENTER_FROM_HOME_LAUNCHER
+                  ? animation_type
+                  : OVERVIEW_ANIMATION_ENTER_OVERVIEW_MODE_FADE_IN;
 
-            FadeInWidgetAndMaybeSlideOnEnter(item_widget_.get(), fade_animation,
-                                             /*slide=*/false,
-                                             /*observe=*/true);
-          }
+          FadeInWidgetToOverview(item_widget_.get(), fade_animation,
+                                 /*observe=*/true);
 
           // Update the item header visibility immediately if entering from home
           // launcher.
@@ -616,20 +605,6 @@ void OverviewItem::ScaleUpSelectedItem(OverviewAnimationType animation_type) {
   SetBounds(scaled_bounds, animation_type);
 }
 
-void OverviewItem::SlideWindowIn() {
-  // This only gets called if we see the home launcher on enter (all windows are
-  // minimized).
-  DCHECK(transform_window_.IsMinimized());
-
-  // The mask and shadow will be shown when animation ends. Update the mask
-  // after starting the animation since starting the animation lets the
-  // controller know we are in starting animation.
-  FadeInWidgetAndMaybeSlideOnEnter(item_widget_.get(),
-                                   OVERVIEW_ANIMATION_ENTER_FROM_HOME_LAUNCHER,
-                                   /*slide=*/true, /*observe=*/true);
-  UpdateRoundedCornersAndShadow();
-}
-
 std::unique_ptr<ui::ScopedLayerAnimationSettings>
 OverviewItem::UpdateYPositionAndOpacity(
     float new_grid_y,
@@ -805,9 +780,9 @@ void OverviewItem::OnStartingAnimationComplete() {
     overview_item_view_->SetHeaderVisibility(
         OverviewItemView::HeaderVisibility::kVisible);
   } else {
-    FadeInWidgetAndMaybeSlideOnEnter(
-        item_widget_.get(), OVERVIEW_ANIMATION_ENTER_OVERVIEW_MODE_FADE_IN,
-        /*slide=*/false, /*observe=*/false);
+    FadeInWidgetToOverview(item_widget_.get(),
+                           OVERVIEW_ANIMATION_ENTER_OVERVIEW_MODE_FADE_IN,
+                           /*observe=*/false);
   }
   const bool show_backdrop =
       GetWindowDimensionsType() != OverviewGridWindowFillMode::kNormal;
@@ -1090,13 +1065,6 @@ void OverviewItem::OnPostWindowStateTypeChange(WindowState* window_state,
   // visibility may show the temporarily hidden (minimized) panels.
   if (!prepared_for_overview_)
     return;
-
-  // When swiping away overview mode via shelf, windows will get minimized, but
-  // we do not want show a mirrored view in this case.
-  if (overview_session_->enter_exit_overview_type() ==
-      OverviewEnterExitType::kSwipeFromShelf) {
-    return;
-  }
 
   WindowStateType new_type = window_state->GetStateType();
   if (chromeos::IsMinimizedWindowStateType(old_type) ==

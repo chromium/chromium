@@ -262,11 +262,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Clears |nudge_data_|.
   void EndNudge();
 
-  // Called after PositionWindows when entering overview from the home launcher
-  // screen. Translates all windows vertically and animates to their final
-  // locations.
-  void SlideWindowsIn();
-
   // Update the y position and opacity of the entire grid. Does this by
   // transforming the windows in |window_list_|. If |callback| is non null, the
   // transformation and opacity change should be animated. The animation

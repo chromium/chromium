@@ -110,8 +110,7 @@ bool OverviewButtonTray::PerformAction(const ui::Event& event) {
     const OverviewEnterExitType enter_exit_type =
         overview_controller->overview_session()->enter_exit_overview_type();
     if (mru_window_list.size() > 1u &&
-        enter_exit_type != OverviewEnterExitType::kFadeInEnter &&
-        enter_exit_type != OverviewEnterExitType::kSlideInEnter) {
+        enter_exit_type != OverviewEnterExitType::kFadeInEnter) {
       aura::Window* new_active_window = mru_window_list[1];
 
       // In tablet split view mode, quick switch will only affect the windows on

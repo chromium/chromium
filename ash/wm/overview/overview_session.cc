@@ -283,16 +283,8 @@ void OverviewSession::Init(const WindowList& windows,
     // grid.
     if (enter_exit_overview_type_ == OverviewEnterExitType::kImmediateEnter) {
       overview_grid->PositionWindows(/*animate=*/false);
-    } else if (enter_exit_overview_type_ ==
-               OverviewEnterExitType::kSlideInEnter) {
-      overview_grid->PositionWindows(/*animate=*/false);
-      overview_grid->SlideWindowsIn();
     } else {
       // Exit only types should not appear here:
-      DCHECK_NE(enter_exit_overview_type_,
-                OverviewEnterExitType::kSwipeFromShelf);
-      DCHECK_NE(enter_exit_overview_type_,
-                OverviewEnterExitType::kSlideOutExit);
       DCHECK_NE(enter_exit_overview_type_, OverviewEnterExitType::kFadeOutExit);
 
       overview_grid->PositionWindows(/*animate=*/true, /*ignored_items=*/{},
@@ -406,9 +398,8 @@ void OverviewSession::Shutdown() {
 
     // Fade out the no windows widget. This animation continues past the
     // lifetime of |this|.
-    FadeOutWidgetAndMaybeSlideOnExit(std::move(no_windows_widget_),
-                                     OVERVIEW_ANIMATION_RESTORE_WINDOW,
-                                     /*slide=*/false);
+    FadeOutWidgetFromOverview(std::move(no_windows_widget_),
+                              OVERVIEW_ANIMATION_RESTORE_WINDOW);
   }
 }
 

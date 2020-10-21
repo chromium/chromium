@@ -35,23 +35,19 @@ bool CanCoverAvailableWorkspace(aura::Window* window);
 // true otherwise.
 bool ShouldAnimateWallpaper(aura::Window* root_window);
 
-// Fades |widget| to opacity one with the enter overview settings. Additionally
-// place |widget| closer to the top of screen and slide it down if |slide| is
-// true. Have OverviewController observe this animation as a enter animation if
+// Fades |widget| to opacity one with the enter overview settings.
+// Have OverviewController observe this animation as a enter animation if
 // |observe| is true.
-void FadeInWidgetAndMaybeSlideOnEnter(views::Widget* widget,
-                                      OverviewAnimationType animation_type,
-                                      bool slide,
-                                      bool observe);
+void FadeInWidgetToOverview(views::Widget* widget,
+                            OverviewAnimationType animation_type,
+                            bool observe);
 
 // Fades |widget| to opacity zero with animation settings depending on
 // |animation_type|. Used by several classes which need to be destroyed on
 // exiting overview, but have some widgets which need to continue animating.
 // |widget| is destroyed after finishing animation.
-// If |slide| is true, the |widget| will slide closer to the top of the screen.
-void FadeOutWidgetAndMaybeSlideOnExit(std::unique_ptr<views::Widget> widget,
-                                      OverviewAnimationType animation_type,
-                                      bool slide);
+void FadeOutWidgetFromOverview(std::unique_ptr<views::Widget> widget,
+                               OverviewAnimationType animation_type);
 
 // Takes ownership of |widget|, closes and destroys it without any animations.
 void ImmediatelyCloseWidgetOnExit(std::unique_ptr<views::Widget> widget);

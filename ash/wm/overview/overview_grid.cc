@@ -1305,11 +1305,6 @@ void OverviewGrid::EndNudge() {
   nudge_data_.clear();
 }
 
-void OverviewGrid::SlideWindowsIn() {
-  for (const auto& window_item : window_list_)
-    window_item->SlideWindowIn();
-}
-
 std::unique_ptr<ui::ScopedLayerAnimationSettings>
 OverviewGrid::UpdateYPositionAndOpacity(
     float new_y,

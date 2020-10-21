@@ -321,53 +321,6 @@ TEST_F(HomeLauncherGestureHandlerTest, OverviewModeEnteredWhileAnimating) {
   Shell::Get()->overview_controller()->StartOverview();
 }
 
-// Tests that HomeLauncherGestureHandler works as expected when one window is
-// snapped, and overview mode is active on the other side.
-TEST_F(HomeLauncherGestureHandlerTest, SplitviewOneSnappedWindow) {
-  UpdateDisplay("400x456");
-
-  auto window1 = CreateWindowForTesting();
-  auto window2 = CreateWindowForTesting();
-
-  // Snap one window and leave overview mode open with the other window.
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
-  overview_controller->StartOverview();
-  split_view_controller()->SnapWindow(window1.get(), SplitViewController::LEFT);
-  ASSERT_TRUE(overview_controller->InOverviewSession());
-  ASSERT_TRUE(split_view_controller()->InSplitViewMode());
-
-  const int window2_initial_translation =
-      window2->transform().To2dTranslation().y();
-  DoPress(Mode::kSlideUpToShow);
-  EXPECT_EQ(window1.get(), GetGestureHandler()->GetActiveWindow());
-
-  // Tests that while scrolling the window transforms change.
-  GetGestureHandler()->OnScrollEvent(gfx::PointF(0.f, 300.f), 0.f, 1.f);
-  EXPECT_NE(window1->transform(), gfx::Transform());
-  EXPECT_NE(window2_initial_translation,
-            window2->transform().To2dTranslation().y());
-
-  // Tests that after releasing at below the halfway point, we remain in
-  // both splitview and overview mode.
-  GetGestureHandler()->OnReleaseEvent(gfx::PointF(0.f, 300.f),
-                                      /*velocity_y=*/base::nullopt);
-  EXPECT_EQ(window1->transform(), gfx::Transform());
-  EXPECT_EQ(window2_initial_translation,
-            window2->transform().To2dTranslation().y());
-  EXPECT_TRUE(overview_controller->InOverviewSession());
-  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
-
-  // Tests that after releasing on the top half, overivew and splitview have
-  // both been exited, and both windows are minimized to show the home launcher.
-  DoPress(Mode::kSlideUpToShow);
-  GetGestureHandler()->OnReleaseEvent(gfx::PointF(0.f, 100.f),
-                                      /*velocity_y=*/base::nullopt);
-  EXPECT_FALSE(overview_controller->InOverviewSession());
-  EXPECT_FALSE(split_view_controller()->InSplitViewMode());
-  EXPECT_TRUE(WindowState::Get(window1.get())->IsMinimized());
-  EXPECT_TRUE(WindowState::Get(window2.get())->IsMinimized());
-}
-
 // Tests that swipe to close works as expected when there are two snapped
 // windows.
 TEST_F(HomeLauncherGestureHandlerTest, SplitviewTwoSnappedWindows) {

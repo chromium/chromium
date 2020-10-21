@@ -142,7 +142,6 @@ class TestOverviewObserver : public OverviewObserver {
   AnimationState ending_animation_state() const {
     return ending_animation_state_;
   }
-  bool last_animation_was_slide() const { return last_animation_was_slide_; }
   bool last_animation_was_fade() const { return last_animation_was_fade_; }
 
  private:
@@ -150,10 +149,6 @@ class TestOverviewObserver : public OverviewObserver {
     DCHECK(selector);
     const OverviewEnterExitType enter_exit_type =
         selector->enter_exit_overview_type();
-
-    last_animation_was_slide_ =
-        enter_exit_type == OverviewEnterExitType::kSlideInEnter ||
-        enter_exit_type == OverviewEnterExitType::kSlideOutExit;
 
     last_animation_was_fade_ =
         enter_exit_type == OverviewEnterExitType::kFadeInEnter ||
@@ -173,7 +168,6 @@ class TestOverviewObserver : public OverviewObserver {
 
   AnimationState starting_animation_state_ = UNKNOWN;
   AnimationState ending_animation_state_ = UNKNOWN;
-  bool last_animation_was_slide_ = false;
   bool last_animation_was_fade_ = false;
   // If false, skips the checks in OnOverviewMode Starting/Ending
   // AnimationComplete.
@@ -529,31 +523,25 @@ TEST_F(OverviewControllerTest, OverviewEnterExitAnimationTablet) {
 
   Shell::Get()->overview_controller()->StartOverview();
   EXPECT_FALSE(observer.last_animation_was_fade());
-  EXPECT_FALSE(observer.last_animation_was_slide());
 
-  // Exit to home launcher using either fade out or slide out animation. This
-  // should minimize all windows.
-  const bool is_homerview_enabled =
-      ash::features::IsDragFromShelfToHomeOrOverviewEnabled();
+  // Exit to home launcher using fade out animation. This should minimize all
+  // windows.
   Shell::Get()->overview_controller()->EndOverview(
-      is_homerview_enabled ? OverviewEnterExitType::kFadeOutExit
-                           : OverviewEnterExitType::kSlideOutExit);
+      OverviewEnterExitType::kFadeOutExit);
 
-  EXPECT_EQ(is_homerview_enabled, observer.last_animation_was_fade());
-  EXPECT_EQ(!is_homerview_enabled, observer.last_animation_was_slide());
+  EXPECT_TRUE(observer.last_animation_was_fade());
 
   ASSERT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_TRUE(WindowState::Get(window.get())->IsMinimized());
 
-  // All windows are minimized, so we should use the slide in or the fade in
-  // animation to enter overview.
+  // All windows are minimized, so we should use the fade in animation to enter
+  // overview.
   Shell::Get()->overview_controller()->StartOverview();
-  EXPECT_EQ(is_homerview_enabled, observer.last_animation_was_fade());
-  EXPECT_EQ(!is_homerview_enabled, observer.last_animation_was_slide());
+  EXPECT_TRUE(observer.last_animation_was_fade());
 }
 
-// Tests that the slide and fade animations are not used to enter or exit
-// overview in clamshell.
+// Tests that fade animations are not used to enter or exit overview in
+// clamshell.
 TEST_F(OverviewControllerTest, OverviewEnterExitAnimationClamshell) {
   TestOverviewObserver observer(/*should_monitor_animation_state = */ false);
 
@@ -562,19 +550,16 @@ TEST_F(OverviewControllerTest, OverviewEnterExitAnimationClamshell) {
       CreateTestWindowInShellWithBounds(bounds));
 
   Shell::Get()->overview_controller()->StartOverview();
-  EXPECT_FALSE(observer.last_animation_was_slide());
   EXPECT_FALSE(observer.last_animation_was_fade());
 
   Shell::Get()->overview_controller()->EndOverview();
-  EXPECT_FALSE(observer.last_animation_was_slide());
   EXPECT_FALSE(observer.last_animation_was_fade());
 
-  // Even with all window minimized, overview should not use slide, nor fade
-  // animation to enter.
+  // Even with all window minimized, overview should not use fade animation to
+  // enter.
   ASSERT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
   WindowState::Get(window.get())->Minimize();
   Shell::Get()->overview_controller()->StartOverview();
-  EXPECT_FALSE(observer.last_animation_was_slide());
   EXPECT_FALSE(observer.last_animation_was_fade());
 }
 
@@ -587,16 +572,12 @@ TEST_F(OverviewControllerTest, WallpaperAnimationTiming) {
   ui::ScopedAnimationDurationScaleMode non_zero(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  const bool is_homerview_enabled =
-      ash::features::IsDragFromShelfToHomeOrOverviewEnabled();
   Shell::Get()->overview_controller()->StartOverview(
-      is_homerview_enabled ? OverviewEnterExitType::kFadeInEnter
-                           : OverviewEnterExitType::kSlideInEnter);
+      OverviewEnterExitType::kFadeInEnter);
   auto* wallpaper_widget_controller =
       Shell::GetPrimaryRootWindowController()->wallpaper_widget_controller();
-  EXPECT_EQ(is_homerview_enabled,
-            wallpaper_widget_controller->GetWallpaperProperty().blur_sigma > 0);
-  EXPECT_EQ(is_homerview_enabled, wallpaper_widget_controller->IsAnimating());
+  EXPECT_GT(wallpaper_widget_controller->GetWallpaperProperty().blur_sigma, 0);
+  EXPECT_TRUE(wallpaper_widget_controller->IsAnimating());
 }
 
 // Tests that overview session exits cleanly if exit is requested before
@@ -617,17 +598,13 @@ TEST_F(OverviewControllerTest, OverviewExitWhileStillEntering) {
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   Shell::Get()->overview_controller()->StartOverview();
 
-  // Exit to home launcher using either fade out or slide out animation. This
-  // should minimize all windows.
-  const bool is_homerview_enabled =
-      ash::features::IsDragFromShelfToHomeOrOverviewEnabled();
+  // Exit to home launcher using fade out animation. This should minimize all
+  // windows.
   TestOverviewObserver observer(/*should_monitor_animation_state = */ true);
   Shell::Get()->overview_controller()->EndOverview(
-      is_homerview_enabled ? OverviewEnterExitType::kFadeOutExit
-                           : OverviewEnterExitType::kSlideOutExit);
+      OverviewEnterExitType::kFadeOutExit);
 
-  EXPECT_EQ(is_homerview_enabled, observer.last_animation_was_fade());
-  EXPECT_EQ(!is_homerview_enabled, observer.last_animation_was_slide());
+  EXPECT_TRUE(observer.last_animation_was_fade());
 
   // Verify that the overview exits cleanly.
   observer.WaitForEndingAnimationComplete();

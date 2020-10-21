@@ -5823,23 +5823,6 @@ TEST_P(SplitViewOverviewSessionTest, SwapWindowAndOverviewGrid) {
           SplitViewController::LEFT, /*window_for_minimum_size=*/nullptr));
 }
 
-// Verify the behavior when trying to exit overview with one snapped window
-// is as expected.
-TEST_P(SplitViewOverviewSessionTest, ExitOverviewWithOneSnapped) {
-  std::unique_ptr<aura::Window> window(CreateWindow(gfx::Rect(400, 400)));
-
-  // Tests that we cannot exit overview when there is one snapped window and no
-  // windows in overview normally.
-  ToggleOverview();
-  split_view_controller()->SnapWindow(window.get(), SplitViewController::LEFT);
-  ToggleOverview();
-  ASSERT_TRUE(InOverviewSession());
-
-  // Tests that we can exit overview if we swipe up from the shelf.
-  ToggleOverview(OverviewEnterExitType::kSwipeFromShelf);
-  EXPECT_FALSE(InOverviewSession());
-}
-
 // Test that in tablet mode, pressing tab key in overview should not crash.
 TEST_P(SplitViewOverviewSessionTest, NoCrashWhenPressTabKey) {
   std::unique_ptr<aura::Window> window(CreateWindow(gfx::Rect(400, 400)));

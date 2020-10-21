@@ -451,7 +451,7 @@ void HomeLauncherGestureHandler::OnImplicitAnimationsCompleted() {
       // end splitview if it is active as SplitViewController observes
       // overview mode ends.
       Shell::Get()->overview_controller()->EndOverview(
-          OverviewEnterExitType::kSwipeFromShelf);
+          OverviewEnterExitType::kFadeOutExit);
     } else {
       home_launcher_opacity = 0.f;
     }

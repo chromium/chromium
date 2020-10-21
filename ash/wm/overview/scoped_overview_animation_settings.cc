@@ -39,8 +39,6 @@ constexpr base::TimeDelta kFromHomeLauncherDelay =
     base::TimeDelta::FromMilliseconds(250);
 constexpr base::TimeDelta kHomeLauncherTransition =
     base::TimeDelta::FromMilliseconds(350);
-constexpr base::TimeDelta kHomeLauncherSlideTransition =
-    base::TimeDelta::FromMilliseconds(250);
 
 // Time duration of the show animation of the drop target.
 constexpr base::TimeDelta kDropTargetFade =
@@ -72,9 +70,7 @@ base::TimeDelta GetAnimationDuration(OverviewAnimationType animation_type) {
       return kCloseFadeOut;
     case OVERVIEW_ANIMATION_ENTER_FROM_HOME_LAUNCHER:
     case OVERVIEW_ANIMATION_EXIT_TO_HOME_LAUNCHER:
-      return features::IsDragFromShelfToHomeOrOverviewEnabled()
-                 ? kHomeLauncherTransition
-                 : kHomeLauncherSlideTransition;
+      return kHomeLauncherTransition;
     case OVERVIEW_ANIMATION_DROP_TARGET_FADE:
       return kDropTargetFade;
     case OVERVIEW_ANIMATION_NO_RECENTS_FADE:
@@ -148,17 +144,8 @@ ScopedOverviewAnimationSettings::ScopedOverviewAnimationSettings(
       animation_settings_->SetPreemptionStrategy(
           ui::LayerAnimator::ENQUEUE_NEW_ANIMATION);
       // Add animation delay when entering from home launcher.
-      // Delay transform only when using slide animation (which is used
-      // if kDragFromShelfToHomeOrOverview is not enabled), as otherwise
-      // the overview item will only fade in.
-      if (features::IsDragFromShelfToHomeOrOverviewEnabled()) {
-        animator->SchedulePauseForProperties(
-            kFromHomeLauncherDelay, ui::LayerAnimationElement::OPACITY);
-      } else {
-        animator->SchedulePauseForProperties(
-            kFromHomeLauncherDelay, ui::LayerAnimationElement::OPACITY |
-                                        ui::LayerAnimationElement::TRANSFORM);
-      }
+      animator->SchedulePauseForProperties(kFromHomeLauncherDelay,
+                                           ui::LayerAnimationElement::OPACITY);
       break;
     case OVERVIEW_ANIMATION_EXIT_TO_HOME_LAUNCHER:
       animation_settings_->SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
