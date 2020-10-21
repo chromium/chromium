@@ -4,8 +4,10 @@
 
 #import "ios/chrome/browser/ui/tab_grid/tab_grid_bottom_toolbar.h"
 
+#import "ios/chrome/browser/ui/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/tab_grid/tab_grid_new_tab_button.h"
+#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -147,11 +149,15 @@
   _largeNewTabButton.translatesAutoresizingMaskIntoConstraints = NO;
   _largeNewTabButton.page = self.page;
 
+  CGFloat floatingButtonVerticalInset = kTabGridFloatingButtonVerticalInset;
+  if (IsThumbStripEnabled())
+    floatingButtonVerticalInset += kBVCHeightTabGrid;
+
   _floatingConstraints = @[
     [_largeNewTabButton.topAnchor constraintEqualToAnchor:self.topAnchor],
     [_largeNewTabButton.bottomAnchor
         constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor
-                       constant:-kTabGridFloatingButtonVerticalInset],
+                       constant:-floatingButtonVerticalInset],
     [_largeNewTabButton.trailingAnchor
         constraintEqualToAnchor:self.trailingAnchor
                        constant:-kTabGridFloatingButtonHorizontalInset],
