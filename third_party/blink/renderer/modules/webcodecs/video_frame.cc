@@ -345,8 +345,9 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
 
   if ((local_frame->IsMappable() || local_frame->HasTextures()) &&
       (local_frame->format() == media::PIXEL_FORMAT_I420 ||
-       (local_frame->format() == media::PIXEL_FORMAT_NV12 &&
-        local_frame->HasTextures()))) {
+       (local_frame->HasTextures() &&
+        (local_frame->format() == media::PIXEL_FORMAT_NV12 ||
+         local_frame->format() == media::PIXEL_FORMAT_ABGR)))) {
     scoped_refptr<StaticBitmapImage> image;
     gfx::ColorSpace gfx_color_space = local_frame->ColorSpace();
     gfx_color_space = gfx_color_space.GetWithMatrixAndRange(
@@ -397,8 +398,17 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
       dest_holder.sync_token = shared_image_interface->GenUnverifiedSyncToken();
       dest_holder.texture_target = GL_TEXTURE_2D;
 
-      media::VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
-          local_frame.get(), raster_context_provider.get(), dest_holder);
+      if (local_frame->NumTextures() == 1) {
+        ri->WaitSyncTokenCHROMIUM(dest_holder.sync_token.GetConstData());
+        ri->CopySubTexture(
+            local_frame->mailbox_holder(0).mailbox, dest_holder.mailbox,
+            GL_TEXTURE_2D, 0, 0, 0, 0, local_frame->coded_size().width(),
+            local_frame->coded_size().height(), GL_FALSE, GL_FALSE);
+      } else {
+        media::VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
+            local_frame.get(), raster_context_provider.get(), dest_holder);
+      }
+
       gpu::SyncToken sync_token;
       ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
 
