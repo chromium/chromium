@@ -4,6 +4,13 @@
 
 #include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 
+#include <string>
+
+#include "base/command_line.h"
+
+constexpr char kSearchPrefetchServiceCommandLineFlag[] =
+    "enable-search-prefetch-service";
+
 const base::Feature kSearchPrefetchService{"SearchPrefetchService",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -11,9 +18,13 @@ const base::Feature kSearchPrefetchServicePrefetching{
     "SearchPrefetchServicePrefetching", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool SearchPrefetchServiceIsEnabled() {
-  return base::FeatureList::IsEnabled(kSearchPrefetchService);
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+             kSearchPrefetchServiceCommandLineFlag) ||
+         base::FeatureList::IsEnabled(kSearchPrefetchService);
 }
 
 bool SearchPrefetchServicePrefetchingIsEnabled() {
-  return base::FeatureList::IsEnabled(kSearchPrefetchServicePrefetching);
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+             kSearchPrefetchServiceCommandLineFlag) ||
+         base::FeatureList::IsEnabled(kSearchPrefetchServicePrefetching);
 }
