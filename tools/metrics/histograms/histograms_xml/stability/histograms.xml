@@ -240,6 +240,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Stability.ExitFunnel" units="ms" expires_after="M85">
+  <obsolete>
+    Removed 10/2020 although this has been dead for many years.
+  </obsolete>
   <owner>siggi@chromium.org</owner>
   <summary>
     Temporary instrumentation to record the Windows browser's exit path. See
