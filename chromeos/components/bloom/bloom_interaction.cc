@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/bloom/bloom_controller_impl.h"
 #include "chromeos/components/bloom/bloom_interaction.h"
+#include "chromeos/components/bloom/public/cpp/bloom_result.h"
 #include "chromeos/components/bloom/public/cpp/bloom_screenshot_delegate.h"
 #include "chromeos/components/bloom/public/cpp/future_value.h"
 #include "chromeos/components/bloom/server/bloom_server_proxy.h"
@@ -46,14 +47,14 @@ void BloomInteraction::StartAssistantInteraction(std::string&& access_token,
       Bind(&BloomInteraction::OnServerResponse));
 }
 
-void BloomInteraction::OnServerResponse(base::Optional<std::string> html) {
-  if (!html) {
+void BloomInteraction::OnServerResponse(base::Optional<BloomResult> result) {
+  if (!result) {
     controller_->StopInteraction(BloomInteractionResolution ::kServerError);
     return;
   }
 
   DVLOG(2) << "Got server response";
-  controller_->ShowResult(html.value());
+  controller_->ShowResult(std::move(result.value()));
 }
 
 void BloomInteraction::FetchAccessTokenAsync() {

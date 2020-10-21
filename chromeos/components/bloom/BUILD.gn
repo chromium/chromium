@@ -8,6 +8,8 @@ source_set("bloom") {
     "bloom_controller_impl.h",
     "bloom_interaction.cc",
     "bloom_interaction.h",
+    "bloom_result_builder.cc",
+    "bloom_result_builder.h",
     "server/bloom_server_proxy.h",
     "server/bloom_server_proxy_impl.cc",
     "server/bloom_server_proxy_impl.h",
@@ -23,6 +25,7 @@ source_set("bloom") {
     "//chromeos/components/bloom/public/cpp:future",
     "//chromeos/services/assistant/public/shared",
     "//components/signin/public/identity_manager",
+    "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
     "//ui/gfx",
   ]
@@ -33,6 +36,7 @@ source_set("unit_tests") {
 
   sources = [
     "bloom_controller_impl_unittest.cc",
+    "bloom_result_builder_unittest.cc",
     "server/bloom_server_proxy_impl_unittest.cc",
   ]
 
@@ -44,6 +48,7 @@ source_set("unit_tests") {
     "//chromeos/services/assistant/public/shared",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
+    "//services/data_decoder/public/cpp:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//testing/gmock",

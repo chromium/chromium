@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "chromeos/components/bloom/bloom_interaction.h"
+#include "chromeos/components/bloom/public/cpp/bloom_result.h"
 #include "chromeos/components/bloom/public/cpp/bloom_screenshot_delegate.h"
 #include "chromeos/components/bloom/public/cpp/bloom_ui_delegate.h"
 #include "chromeos/components/bloom/server/bloom_server_proxy.h"
@@ -59,7 +60,7 @@ void BloomControllerImpl::ShowUI() {
   ui_delegate_->OnShowUI();
 }
 
-void BloomControllerImpl::ShowResult(const std::string& result) {
+void BloomControllerImpl::ShowResult(const BloomResult& result) {
   ui_delegate_->OnShowResult(result);
 }
 

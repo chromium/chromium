@@ -25,6 +25,7 @@ namespace chromeos {
 namespace bloom {
 
 class BloomControllerImpl;
+struct BloomResult;
 
 template <typename _Type>
 class FutureValue;
@@ -52,7 +53,7 @@ class BloomInteraction {
   void StartAssistantInteraction(std::string&& access_token,
                                  gfx::Image&& screenshot);
 
-  void OnServerResponse(base::Optional<std::string> html);
+  void OnServerResponse(base::Optional<BloomResult> html);
 
   void FetchAccessTokenAsync();
   void FetchScreenshotAsync();

@@ -5,6 +5,7 @@
 #include "chromeos/components/bloom/bloom_controller_impl.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/bloom/public/cpp/bloom_interaction_resolution.h"
+#include "chromeos/components/bloom/public/cpp/bloom_result.h"
 #include "chromeos/components/bloom/public/cpp/bloom_screenshot_delegate.h"
 #include "chromeos/components/bloom/public/cpp/bloom_ui_delegate.h"
 #include "chromeos/components/bloom/server/bloom_server_proxy.h"
@@ -24,11 +25,19 @@ namespace {
 
 using ::testing::_;
 using ::testing::AnyNumber;
+using ::testing::Invoke;
 using ::testing::NiceMock;
+using ::testing::WithArgs;
 
 const char kEmail[] = "test@gmail.com";
 
 #define EXPECT_NO_CALLS(args...) EXPECT_CALL(args).Times(0)
+
+BloomResult ResultWithQuery(const std::string& query) {
+  BloomResult result;
+  result.query = query;
+  return result;
+}
 
 class ScreenshotDelegateMock : public BloomScreenshotDelegate {
  public:
@@ -63,7 +72,7 @@ class BloomUiDelegateMock : public BloomUiDelegate {
  public:
   MOCK_METHOD(void, OnInteractionStarted, ());
   MOCK_METHOD(void, OnShowUI, ());
-  MOCK_METHOD(void, OnShowResult, (const std::string& html));
+  MOCK_METHOD(void, OnShowResult, (const BloomResult& result));
   MOCK_METHOD(void,
               OnInteractionFinished,
               (BloomInteractionResolution resolution));
@@ -80,7 +89,7 @@ class BloomInteractionTracker : public BloomUiDelegate {
 
   void OnShowUI() override { EXPECT_TRUE(has_interaction_); }
 
-  void OnShowResult(const std::string& html) override {
+  void OnShowResult(const BloomResult& html) override {
     EXPECT_TRUE(has_interaction_);
   }
 
@@ -118,11 +127,11 @@ class BloomServerProxyMock : public BloomServerProxy {
                const gfx::Image& screenshot,
                Callback callback));
 
-  void SendResponse(base::Optional<std::string> html = std::string("<html/>")) {
+  void SendResponse(base::Optional<BloomResult> result = BloomResult()) {
     EXPECT_TRUE(callback_) << "AnalyzeProblem() was never called.";
 
     if (callback_)
-      std::move(callback_).Run(html);
+      std::move(callback_).Run(std::move(result));
   }
 
   void SendResponseFailure() { SendResponse(base::nullopt); }
@@ -343,9 +352,12 @@ TEST_F(BloomUiDelegateTest, ShouldForwardServerResponse) {
   auto* delegate = AddUiDelegateMock();
   StartInteractionAndSendAccessTokenAndScreenshot();
 
-  EXPECT_CALL(*delegate, OnShowResult("<html>response</html>"));
+  EXPECT_CALL(*delegate, OnShowResult)
+      .WillOnce(WithArgs<0>(Invoke([](const BloomResult& result) {
+        EXPECT_EQ("The expected result", result.query);
+      })));
 
-  bloom_server().SendResponse("<html>response</html>");
+  bloom_server().SendResponse(ResultWithQuery("The expected result"));
 }
 
 }  // namespace bloom

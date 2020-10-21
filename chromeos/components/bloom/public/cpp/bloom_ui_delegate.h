@@ -10,6 +10,8 @@
 namespace chromeos {
 namespace bloom {
 
+struct BloomResult;
+
 class BloomUiDelegate {
  public:
   virtual ~BloomUiDelegate() = default;
@@ -20,7 +22,7 @@ class BloomUiDelegate {
   virtual void OnShowUI() = 0;
 
   // Called when the result is ready.
-  virtual void OnShowResult(const std::string& html) = 0;
+  virtual void OnShowResult(const BloomResult& result) = 0;
 
   virtual void OnInteractionFinished(BloomInteractionResolution resolution) = 0;
 };

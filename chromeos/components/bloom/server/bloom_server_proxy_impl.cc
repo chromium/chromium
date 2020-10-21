@@ -9,19 +9,23 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "chromeos/components/bloom/bloom_result_builder.h"
+#include "chromeos/components/bloom/public/cpp/bloom_result.h"
 #include "chromeos/components/bloom/server/bloom_url_loader.h"
 #include "chromeos/services/assistant/public/shared/constants.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "ui/gfx/image/image.h"
 
 namespace chromeos {
 namespace bloom {
 
 namespace {
+
+using ValueOrError = data_decoder::DataDecoder::ValueOrError;
 
 constexpr char kJsonMimeType[] = "application/json";
 
@@ -59,6 +63,8 @@ std::string JSONToString(const base::Value& json) {
 
 class BloomServerProxyImpl::Worker {
  public:
+  using ServerCallback = BloomURLLoader::Callback;
+
   Worker(BloomServerProxyImpl* parent,
          const std::string& access_token,
          Callback callback)
@@ -78,6 +84,8 @@ class BloomServerProxyImpl::Worker {
   }
 
  private:
+  typedef void (Worker::*JsonCallback)(ValueOrError);
+
   BloomURLLoader* url_loader() { return parent_->url_loader_.get(); }
 
   void SendCreateImageRequest(const gfx::Image& screenshot) {
@@ -111,15 +119,19 @@ class BloomServerProxyImpl::Worker {
       return;
     }
 
-    base::Optional<base::Value> json_reply =
-        base::JSONReader::Read(reply.value());
-    if (!json_reply) {
-      LOG(WARNING) << "Bloom servers responded with invalid JSON";
+    ParseJson(reply.value(), &Worker::OnCreateImageResponseParsed);
+  }
+
+  void OnCreateImageResponseParsed(ValueOrError json_reply) {
+    if (!json_reply.value) {
+      LOG(WARNING) << "Bloom servers responded with invalid JSON: "
+                   << json_reply.error.value();
       FinishWithError();
       return;
     }
 
-    const std::string* image_id = json_reply.value().FindStringKey("imageId");
+    const std::string* image_id =
+        json_reply.value.value().FindStringKey("imageId");
     if (!image_id) {
       LOG(WARNING) << "'imageId' tag is missing from Bloom server response";
       FinishWithError();
@@ -137,16 +149,19 @@ class BloomServerProxyImpl::Worker {
       return;
     }
 
-    base::Optional<base::Value> json_reply =
-        base::JSONReader::Read(reply.value());
-    if (!json_reply) {
-      LOG(WARNING) << "Bloom servers responded with invalid JSON";
+    ParseJson(reply.value(), &Worker::OnOcrImageResponseParsed);
+  }
+
+  void OnOcrImageResponseParsed(ValueOrError json_reply) {
+    if (!json_reply.value) {
+      LOG(WARNING) << "Bloom servers responded with invalid JSON: "
+                   << json_reply.error.value();
       FinishWithError();
       return;
     }
 
     const std::string* metadata_blob =
-        json_reply.value().FindStringKey("metadataBlob");
+        json_reply.value.value().FindStringKey("metadataBlob");
     if (!metadata_blob) {
       LOG(WARNING)
           << "'metadataBlob' tag is missing from Bloom server response.";
@@ -154,28 +169,52 @@ class BloomServerProxyImpl::Worker {
       return;
     }
 
-    LOG(WARNING) << "Bloom servers responded with valid response";
+    DVLOG(3) << "Bloom servers responded with valid response";
     SendSearchProblemRequest(*metadata_blob);
   }
 
   void OnSearchProblemResponse(base::Optional<std::string> reply) {
-    FinishWithReply(std::move(reply));
+    if (!reply) {
+      DVLOG(3) << "Bloom servers responded with error";
+      FinishWithError();
+      return;
+    }
+
+    ParseJson(reply.value(), &Worker::OnSearchProblemResponseParsed);
+  }
+
+  void OnSearchProblemResponseParsed(ValueOrError json) {
+    if (!json.value) {
+      LOG(WARNING) << "Bloom servers responded with invalid JSON: "
+                   << json.error.value();
+      FinishWithError();
+      return;
+    }
+
+    DVLOG(3) << "Bloom servers responded with success";
+    BloomResult result = BloomResultBuilder().Build(json.value.value());
+    FinishWithReply(std::move(result));
   }
 
   void SendPostJSONRequest(const GURL& url,
                            const base::Value& json,
-                           Callback callback) {
+                           ServerCallback callback) {
     url_loader()->SendPostRequest(url, access_token_, JSONToString(json),
                                   kJsonMimeType, std::move(callback));
   }
 
-  void SendGetRequest(const GURL& url, Callback callback) {
+  void SendGetRequest(const GURL& url, ServerCallback callback) {
     url_loader()->SendGetRequest(url, access_token_, std::move(callback));
+  }
+
+  void ParseJson(const std::string& json, JsonCallback callback) {
+    data_decoder::DataDecoder::ParseJsonIsolated(
+        json, base::BindOnce(callback, weak_ptr_factory_.GetWeakPtr()));
   }
 
   void FinishWithError() { FinishWithReply(base::nullopt); }
 
-  void FinishWithReply(base::Optional<std::string> reply) {
+  void FinishWithReply(base::Optional<BloomResult> reply) {
     std::move(callback_).Run(std::move(reply));
   }
 

@@ -1,6 +1,7 @@
 include_rules = [
   "+ash/public",
   "+components/signin/public/identity_manager",
+  "+services/data_decoder/public/cpp",
   "+services/network/public",
   "+ui/gfx",
 ]

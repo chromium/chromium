@@ -10,13 +10,18 @@ component("cpp") {
     "bloom_controller.h",
     "bloom_interaction_resolution.cc",
     "bloom_interaction_resolution.h",
+    "bloom_result.cc",
+    "bloom_result.h",
     "bloom_screenshot_delegate.h",
     "bloom_ui_controller.cc",
     "bloom_ui_controller.h",
     "bloom_ui_delegate.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//url",
+  ]
 
   defines = [ "IS_BLOOM_IMPL" ]
 

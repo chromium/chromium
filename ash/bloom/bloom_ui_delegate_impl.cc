@@ -26,12 +26,13 @@ void BloomUiDelegateImpl::OnShowUI() {
   assistant_interaction_controller()->StartBloomInteraction();
 }
 
-void BloomUiDelegateImpl::OnShowResult(const std::string& html) {
+void BloomUiDelegateImpl::OnShowResult(
+    const chromeos::bloom::BloomResult& result) {
   if (!assistant_interaction_controller())
     return;
 
-  assistant_interaction_controller()->ShowBloomResult("<html><body> " + html +
-                                                      "</body></html>");
+  // TODO(jeroendh): convert the result to HTML
+  assistant_interaction_controller()->ShowBloomResult("");
 }
 
 void BloomUiDelegateImpl::OnInteractionFinished(

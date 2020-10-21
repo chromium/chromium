@@ -7,8 +7,12 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/optional.h"
+#include "base/run_loop.h"
+#include "base/test/task_environment.h"
+#include "chromeos/components/bloom/public/cpp/bloom_result.h"
 #include "chromeos/components/bloom/server/bloom_url_loader.h"
 #include "chromeos/services/assistant/public/shared/constants.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,12 +31,6 @@ using assistant::kBloomCreateImagePath;
 using assistant::kBloomOcrImagePath;
 using assistant::kBloomSearchProblemPath;
 
-// We can't simply pass |base::nullopt| into an EXPECT_CALL call,
-// instead it must be fully typed to |base::Optional<std::string>|.
-// So this convenience wrapper hides those details.
-#define EXPECT_CALL_WITH_NULLOPT(mock) \
-  EXPECT_CALL(mock, Call(base::Optional<std::string>(base::nullopt)))
-
 std::string Quote(const std::string& data) {
   return "\"" + data + "\"";
 }
@@ -50,12 +48,35 @@ std::string ImageToJSON(const std::string& name, const gfx::Image& value) {
 // Mock for |BloomServerProxy::Callback|.
 class CallbackMock {
  public:
-  MOCK_METHOD(void, Call, (base::Optional<std::string>));
+  MOCK_METHOD(void, Call, (base::Optional<BloomResult>));
 
   auto BindOnce() {
     return base::BindOnce(&CallbackMock::Call, base::Unretained(this));
   }
 };
+
+MATCHER_P(BloomResultWithQuery, query, "") {
+  if (!arg.has_value()) {
+    *result_listener << "Received nullopt.";
+    return false;
+  }
+  if (arg.value().query != query) {
+    *result_listener << "Received BloomResult with wrong query.\n"
+                     << "  Expected:  '" << query << "'\n"
+                     << "  Actual:    '" << arg.value().query << "'\n";
+    return false;
+  }
+  return true;
+}
+
+MATCHER(NullBloomResult, "") {
+  if (arg.has_value()) {
+    *result_listener << "Expected nullopt but got BloomResult with query '"
+                     << arg.value().query << "'";
+    return false;
+  }
+  return true;
+}
 
 class BloomURLLoaderMock : public BloomURLLoader {
  public:
@@ -120,7 +141,7 @@ class BloomServerProxyImplTest : public ::testing::Test {
   auto any_screenshot() { return gfx::test::CreateImage(5, 5); }
 
   auto any_callback() {
-    return base::BindOnce([](base::Optional<std::string>) {});
+    return base::BindOnce([](base::Optional<BloomResult>) {});
   }
 
   // Add mock expectations for all server calls.
@@ -132,20 +153,29 @@ class BloomServerProxyImplTest : public ::testing::Test {
   void RespondToUploadImageCall(base::Optional<std::string> json_response =
                                     ToJSON("imageId", "default-image-id")) {
     url_loader_mock().SendPostServerReply(json_response);
+    // Give the JSON Decoder a chance to run.
+    base::RunLoop().RunUntilIdle();
   }
 
   void RespondToOcrImageCall(base::Optional<std::string> json_response =
                                  ToJSON("metadataBlob",
                                         "default-metadata-blob")) {
     url_loader_mock().SendGetServerReply(json_response);
+    // Give the JSON Decoder a chance to run.
+    base::RunLoop().RunUntilIdle();
   }
 
   void RespondToProblemSearchCall(
       base::Optional<std::string> server_response = "default-server-response") {
     url_loader_mock().SendGetServerReply(server_response);
+    // Give the JSON Decoder a chance to run.
+    base::RunLoop().RunUntilIdle();
   }
 
  private:
+  base::test::TaskEnvironment scoped_task_env_;
+  data_decoder::test::InProcessDataDecoder scoped_json_decoder_;
+
   BloomServerProxyImpl server_proxy_{std::make_unique<BloomURLLoaderMock>()};
 };
 
@@ -204,20 +234,22 @@ TEST_F(BloomServerProxyImplTest,
 }
 
 TEST_F(BloomServerProxyImplTest, ShouldSendServerResponseToTheCallback) {
-  const base::Optional<std::string> server_response = "the-server-response";
-
   CallbackMock callback;
 
   ExpectServerCalls();
 
-  EXPECT_CALL(callback, Call(server_response));
+  EXPECT_CALL(callback, Call(BloomResultWithQuery("The Server Response")));
 
   server_proxy().AnalyzeProblem("access_token", any_screenshot(),
                                 callback.BindOnce());
 
   RespondToUploadImageCall();
   RespondToOcrImageCall();
-  RespondToProblemSearchCall(server_response);
+  RespondToProblemSearchCall(R"(
+    {
+      "query": { "text": "The Server Response" }
+    }
+  )");
 }
 
 TEST_F(BloomServerProxyImplTest,
@@ -225,7 +257,7 @@ TEST_F(BloomServerProxyImplTest,
   CallbackMock callback;
   ExpectServerCalls();
 
-  EXPECT_CALL_WITH_NULLOPT(callback);
+  EXPECT_CALL(callback, Call(NullBloomResult()));
 
   server_proxy().AnalyzeProblem("access_token", any_screenshot(),
                                 callback.BindOnce());
@@ -238,7 +270,7 @@ TEST_F(BloomServerProxyImplTest,
   CallbackMock callback;
   ExpectServerCalls();
 
-  EXPECT_CALL_WITH_NULLOPT(callback);
+  EXPECT_CALL(callback, Call(NullBloomResult()));
 
   server_proxy().AnalyzeProblem("access_token", any_screenshot(),
                                 callback.BindOnce());
@@ -251,7 +283,7 @@ TEST_F(BloomServerProxyImplTest,
   CallbackMock callback;
   ExpectServerCalls();
 
-  EXPECT_CALL_WITH_NULLOPT(callback);
+  EXPECT_CALL(callback, Call(NullBloomResult()));
 
   server_proxy().AnalyzeProblem("access_token", any_screenshot(),
                                 callback.BindOnce());
@@ -263,7 +295,7 @@ TEST_F(BloomServerProxyImplTest, ShouldSendNulloptToCallbackIfOcrImageFails) {
   CallbackMock callback;
   ExpectServerCalls();
 
-  EXPECT_CALL_WITH_NULLOPT(callback);
+  EXPECT_CALL(callback, Call(NullBloomResult()));
 
   server_proxy().AnalyzeProblem("access_token", any_screenshot(),
                                 callback.BindOnce());
@@ -277,7 +309,7 @@ TEST_F(BloomServerProxyImplTest,
   CallbackMock callback;
   ExpectServerCalls();
 
-  EXPECT_CALL_WITH_NULLOPT(callback);
+  EXPECT_CALL(callback, Call(NullBloomResult()));
 
   server_proxy().AnalyzeProblem("access_token", any_screenshot(),
                                 callback.BindOnce());
@@ -291,7 +323,7 @@ TEST_F(BloomServerProxyImplTest,
   CallbackMock callback;
   ExpectServerCalls();
 
-  EXPECT_CALL_WITH_NULLOPT(callback);
+  EXPECT_CALL(callback, Call(NullBloomResult()));
 
   server_proxy().AnalyzeProblem("access_token", any_screenshot(),
                                 callback.BindOnce());
@@ -301,11 +333,26 @@ TEST_F(BloomServerProxyImplTest,
 }
 
 TEST_F(BloomServerProxyImplTest,
+       ShouldSendNulloptToCallbackIfProblemSearchReturnsInvalidJSON) {
+  CallbackMock callback;
+  ExpectServerCalls();
+
+  EXPECT_CALL(callback, Call(NullBloomResult()));
+
+  server_proxy().AnalyzeProblem("access_token", any_screenshot(),
+                                callback.BindOnce());
+
+  RespondToUploadImageCall();
+  RespondToOcrImageCall();
+  RespondToProblemSearchCall("This is NOT valid JSON");
+}
+
+TEST_F(BloomServerProxyImplTest,
        ShouldSendNulloptToCallbackIfProblemSearchFails) {
   CallbackMock callback;
   ExpectServerCalls();
 
-  EXPECT_CALL_WITH_NULLOPT(callback);
+  EXPECT_CALL(callback, Call(NullBloomResult()));
 
   server_proxy().AnalyzeProblem("access_token", any_screenshot(),
                                 callback.BindOnce());
@@ -313,21 +360,6 @@ TEST_F(BloomServerProxyImplTest,
   RespondToUploadImageCall();
   RespondToOcrImageCall();
   RespondToProblemSearchCall(/*json_response=*/base::nullopt);
-}
-
-TEST_F(BloomServerProxyImplTest,
-       ShouldSendNulloptToCallbackIfInteractionIsCancelled) {
-  CallbackMock callback;
-  ExpectServerCalls();
-
-  EXPECT_CALL_WITH_NULLOPT(callback);
-
-  server_proxy().AnalyzeProblem("access_token", any_screenshot(),
-                                callback.BindOnce());
-
-  // To cancel the interaction, we start a second interaction.
-  server_proxy().AnalyzeProblem("access_token", any_screenshot(),
-                                any_callback());
 }
 
 }  // namespace bloom

@@ -40,10 +40,10 @@ class BloomUiDelegateWrapper : public BloomUiDelegate {
     return delegate()->OnShowUI();
   }
 
-  void OnShowResult(const std::string& html) override {
+  void OnShowResult(const BloomResult& result) override {
     if (!delegate())
       return;
-    return delegate()->OnShowResult(html);
+    return delegate()->OnShowResult(result);
   }
 
   void OnInteractionFinished(BloomInteractionResolution resolution) override {

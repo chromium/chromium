@@ -15,11 +15,13 @@ class Image;
 namespace chromeos {
 namespace bloom {
 
+struct BloomResult;
+
 // Local object that handles all communication with the Bloom servers.
 class BloomServerProxy {
  public:
   using Callback =
-      base::OnceCallback<void(base::Optional<std::string> response)>;
+      base::OnceCallback<void(base::Optional<BloomResult> response)>;
 
   BloomServerProxy() = default;
   BloomServerProxy(BloomServerProxy&) = delete;

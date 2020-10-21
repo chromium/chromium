@@ -20,6 +20,7 @@ class BloomInteraction;
 class BloomScreenshotDelegate;
 class BloomServerProxy;
 class BloomUiDelegate;
+struct BloomResult;
 
 class BloomControllerImpl : public BloomController {
  public:
@@ -35,7 +36,7 @@ class BloomControllerImpl : public BloomController {
   void StopInteraction(BloomInteractionResolution resolution) override;
 
   void ShowUI();
-  void ShowResult(const std::string& result);
+  void ShowResult(const BloomResult& result);
 
   void SetScreenshotDelegate(
       std::unique_ptr<BloomScreenshotDelegate> delegate);

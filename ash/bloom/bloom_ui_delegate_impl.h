@@ -21,7 +21,7 @@ class BloomUiDelegateImpl : public chromeos::bloom::BloomUiDelegate {
   // BloomUiDelegate implementation:
   void OnInteractionStarted() override;
   void OnShowUI() override;
-  void OnShowResult(const std::string& html) override;
+  void OnShowResult(const chromeos::bloom::BloomResult& result) override;
   void OnInteractionFinished(
       chromeos::bloom::BloomInteractionResolution resolution) override;
 
