@@ -316,24 +316,8 @@ class SecurePaymentConfirmationCreationTest
   }
 };
 
-#if defined(OS_WIN)
-// TODO(kenrb): This experiment is currently only available on Mac, but this
-// test should work on all non-Android platforms. There is a Windows failure
-// that still needs to be investigated.
-#define MAYBE_CreatePaymentCredential DISABLED_CreatePaymentCredential
-#define MAYBE_LookupPaymentCredential DISABLED_LookupPaymentCredential
-#define MAYBE_ConfirmPaymentInCrossOriginIframe \
-  DISABLED_ConfirmPaymentInCrossOriginIframe
-#define MAYBE_ChallengeIsReturned DISABLED_ChallengeIsReturned
-#else
-#define MAYBE_CreatePaymentCredential CreatePaymentCredential
-#define MAYBE_LookupPaymentCredential LookupPaymentCredential
-#define MAYBE_ConfirmPaymentInCrossOriginIframe \
-  ConfirmPaymentInCrossOriginIframe
-#define MAYBE_ChallengeIsReturned ChallengeIsReturned
-#endif
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
-                       MAYBE_CreatePaymentCredential) {
+                       CreatePaymentCredential) {
   base::HistogramTester histogram_tester;
   ReplaceFidoDiscoveryFactory();
   NavigateTo("a.com", "/secure_payment_confirmation.html");
@@ -349,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
-                       MAYBE_LookupPaymentCredential) {
+                       LookupPaymentCredential) {
   ReplaceFidoDiscoveryFactory();
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   std::string credentialIdentifier =
@@ -379,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
-                       MAYBE_ConfirmPaymentInCrossOriginIframe) {
+                       ConfirmPaymentInCrossOriginIframe) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   ReplaceFidoDiscoveryFactory();
   std::string credentialIdentifier =
@@ -404,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
-                       MAYBE_ChallengeIsReturned) {
+                       ChallengeIsReturned) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   ReplaceFidoDiscoveryFactory();
   std::string credentialIdentifier =
