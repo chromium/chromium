@@ -20,9 +20,13 @@ class FontManager final : public ScriptWrappable {
 
  public:
   FontManager() = default;
+
+  // Disallow copy and assign.
+  FontManager(const FontManager&) = delete;
+  FontManager operator=(const FontManager&) = delete;
+
   ScriptValue query(ScriptState*, ExceptionState&);
 
-  DISALLOW_COPY_AND_ASSIGN(FontManager);
   void Trace(blink::Visitor*) const override;
 };
 
