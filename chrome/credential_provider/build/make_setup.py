@@ -102,7 +102,6 @@ def main():
                       help='Path to the credential provider directory')
   parser.add_argument('root_build_path', help='$root_build_dir GN variable')
   parser.add_argument('target_gen_path', help='$target_gen_dir GN variable')
-  parser.add_argument('is_debug', help='$target_gen_dir GN variable')
 
   args = parser.parse_args()
 
@@ -160,17 +159,12 @@ def main():
     subprocess.check_call(u_cmd + ['gcp_setup.exe'], stdout=nul_file)
     subprocess.check_call(u_cmd + ['gcp_eventlog_provider.dll'],
         stdout=nul_file)
-
-  # GCPW extension is added into gcp_installer.exe only in debug builds to
-  # avoid increasing binary size until the feature is shipped.
-  if args.is_debug == 'debug':
-    with open(os.devnull) as nul_file:
-      subprocess.check_call(u_cmd + ['gcpw_extension.exe'], stdout=nul_file)
-      # Move the executable into a subfolder as there needs to be only one
-      # executable in the parent folder.
-      subprocess.check_call(rn_cmd +
-          ['gcpw_extension.exe', 'extension\gcpw_extension.exe'],
-          stdout=nul_file)
+    subprocess.check_call(u_cmd + ['gcpw_extension.exe'], stdout=nul_file)
+    # Move the executable into a subfolder as there needs to be only one
+    # executable in the parent folder.
+    subprocess.check_call(rn_cmd +
+        ['gcpw_extension.exe', 'extension\gcpw_extension.exe'],
+        stdout=nul_file)
 
   # Combine the SFX module with the archive to make a self extracting
   # executable.

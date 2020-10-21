@@ -15,12 +15,6 @@ action("gcp_installer") {
     rebase_path(target_gen_dir, root_build_dir),
   ]
 
-  if (is_debug) {
-    args += [ "debug" ]
-  } else {
-    args += [ "release" ]
-  }
-
   deps = [
     "//chrome/credential_provider/eventlog:gcp_eventlog_provider",
     "//chrome/credential_provider/extension:gcpw_extension",
