@@ -232,7 +232,6 @@ class LaunchCommand(object):
           if failure:
             LOGGER.info('Failure for passed tests %s: %s' % (status, failure))
         break
-      self._log_parser.copy_screenshots(outdir_attempt)
 
       # If tests are not completed(interrupted or did not start)
       # re-run them with the same number of shards,

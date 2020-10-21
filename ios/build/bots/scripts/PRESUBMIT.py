@@ -22,7 +22,7 @@ def _RunTestRunnerUnitTests(input_api, output_api):
       'test_apps_test.py',
       # 'test_runner_test.py',
       'wpr_runner_test.py',
-      # 'xcode_log_parser_test.py',
+      'xcode_log_parser_test.py',
       # 'xcodebuild_runner_test.py',
   ]
 
