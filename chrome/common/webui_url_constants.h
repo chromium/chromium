@@ -219,6 +219,8 @@ extern const char kChromeUIArcGraphicsTracingHost[];
 extern const char kChromeUIArcGraphicsTracingURL[];
 extern const char kChromeUIArcOverviewTracingHost[];
 extern const char kChromeUIArcOverviewTracingURL[];
+extern const char kChromeUIArcPowerControlHost[];
+extern const char kChromeUIArcPowerControlURL[];
 extern const char kChromeUIAssistantOptInHost[];
 extern const char kChromeUIAssistantOptInURL[];
 extern const char kChromeUIAppDisabledHost[];

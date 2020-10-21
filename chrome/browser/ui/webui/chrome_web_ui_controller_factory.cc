@@ -153,6 +153,7 @@
 
 #if defined(OS_CHROMEOS)
 #include "base/system/sys_info.h"
+#include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/device_sync/device_sync_client_factory.h"
 #include "chrome/browser/chromeos/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/chromeos/login/easy_unlock/easy_unlock_service_factory.h"
@@ -167,6 +168,7 @@
 #include "chrome/browser/chromeos/web_applications/chrome_media_app_ui_delegate.h"
 #include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_ui.h"
 #include "chrome/browser/ui/webui/chromeos/arc_graphics_tracing/arc_graphics_tracing_ui.h"
+#include "chrome/browser/ui/webui/chromeos/arc_power_control/arc_power_control_ui.h"
 #include "chrome/browser/ui/webui/chromeos/assistant_optin/assistant_optin_ui.h"
 #include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/cellular_setup/cellular_setup_dialog.h"
@@ -730,12 +732,19 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     if (url.host_piece() == chrome::kChromeUINearbyInternalsHost)
       return &NewWebUI<NearbyInternalsUI>;
   }
-  if (url.host_piece() == chrome::kChromeUIArcGraphicsTracingHost)
-    return &NewWebUI<chromeos::ArcGraphicsTracingUI<
-        chromeos::ArcGraphicsTracingMode::kFull>>;
-  if (url.host_piece() == chrome::kChromeUIArcOverviewTracingHost)
-    return &NewWebUI<chromeos::ArcGraphicsTracingUI<
-        chromeos::ArcGraphicsTracingMode::kOverview>>;
+  if (arc::IsArcAllowedForProfile(profile)) {
+    if (url.host_piece() == chrome::kChromeUIArcGraphicsTracingHost) {
+      return &NewWebUI<chromeos::ArcGraphicsTracingUI<
+          chromeos::ArcGraphicsTracingMode::kFull>>;
+    }
+    if (url.host_piece() == chrome::kChromeUIArcOverviewTracingHost) {
+      return &NewWebUI<chromeos::ArcGraphicsTracingUI<
+          chromeos::ArcGraphicsTracingMode::kOverview>>;
+    }
+    if (url.host_piece() == chrome::kChromeUIArcPowerControlHost) {
+      return &NewWebUI<chromeos::ArcPowerControlUI>;
+    }
+  }
 
 #if !defined(OFFICIAL_BUILD)
 #if !defined(USE_REAL_DBUS_CLIENTS)

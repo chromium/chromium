@@ -500,6 +500,9 @@
         <include name="IDR_ARC_OVERVIEW_TRACING_UI_JS" file="resources\chromeos\arc_graphics_tracing\arc_overview_tracing_ui.js" type="BINDATA" />
         <include name="IDR_ARC_TRACING_UI_JS" file="resources\chromeos\arc_graphics_tracing\arc_tracing_ui.js" type="BINDATA" />
         <include name="IDR_ARC_TRACING_CSS" file="resources\chromeos\arc_graphics_tracing\arc_tracing.css" type="BINDATA" />
+        <include name="IDR_ARC_POWER_CONTROL_HTML" file="resources\chromeos\arc_power_control\arc_power_control.html" type="BINDATA"/>
+        <include name="IDR_ARC_POWER_CONTROL_JS" file="resources\chromeos\arc_power_control\arc_power_control.js" type="BINDATA" />
+        <include name="IDR_ARC_POWER_CONTROL_CSS" file="resources\chromeos\arc_power_control\arc_power_control.css" type="BINDATA" />
       </if>
       <if expr="chromeos">
         <include name="IDR_MACHINE_LEARNING_INTERNALS_GRAPH_EXECUTOR_MOJO_JS" file="${root_gen_dir}\chromeos\services\machine_learning\public\mojom\graph_executor.mojom-lite.js" use_base_dir="false" type="BINDATA" />

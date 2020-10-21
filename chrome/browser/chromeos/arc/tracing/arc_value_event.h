@@ -29,6 +29,8 @@ struct ArcValueEvent {
     kGpuPower,
     kMemoryPower,
     kPackagePowerConstraint,
+    kWakenessfullMode,
+    kThrottlingMode,
   };
 
   ArcValueEvent(int64_t timestamp, Type type, int value);

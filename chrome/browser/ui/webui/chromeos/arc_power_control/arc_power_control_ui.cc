@@ -1,0 +1,61 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/webui/chromeos/arc_power_control/arc_power_control_ui.h"
+
+#include <string>
+
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/chromeos/arc_power_control/arc_power_control_handler.h"
+#include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/browser_resources.h"
+#include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_ui_data_source.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/base/webui/web_ui_util.h"
+
+namespace {
+
+constexpr char kArcPowerControlJsPath[] = "arc_power_control.js";
+constexpr char kArcPowerControlCssPath[] = "arc_power_control.css";
+constexpr char kArcOverviewTracingUiJsPath[] = "arc_overview_tracing_ui.js";
+constexpr char kArcTracingUiJsPath[] = "arc_tracing_ui.js";
+constexpr char kArcTracingCssPath[] = "arc_tracing.css";
+
+content::WebUIDataSource* CreatePowerControlDataSource() {
+  content::WebUIDataSource* const source =
+      content::WebUIDataSource::Create(chrome::kChromeUIArcPowerControlHost);
+  source->UseStringsJs();
+  source->SetDefaultResource(IDR_ARC_POWER_CONTROL_HTML);
+  source->AddResourcePath(kArcPowerControlJsPath, IDR_ARC_POWER_CONTROL_JS);
+  source->AddResourcePath(kArcPowerControlCssPath, IDR_ARC_POWER_CONTROL_CSS);
+  source->AddResourcePath(kArcOverviewTracingUiJsPath,
+                          IDR_ARC_OVERVIEW_TRACING_UI_JS);
+  source->AddResourcePath(kArcTracingCssPath, IDR_ARC_TRACING_CSS);
+  source->AddResourcePath(kArcTracingUiJsPath, IDR_ARC_TRACING_UI_JS);
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome://resources 'self';");
+
+  base::DictionaryValue localized_strings;
+  const std::string& app_locale = g_browser_process->GetApplicationLocale();
+  webui::SetLoadTimeDataDefaults(app_locale, &localized_strings);
+  source->AddLocalizedStrings(localized_strings);
+
+  return source;
+}
+
+}  // anonymous namespace
+
+namespace chromeos {
+
+ArcPowerControlUI::ArcPowerControlUI(content::WebUI* web_ui)
+    : WebUIController(web_ui) {
+  web_ui->AddMessageHandler(std::make_unique<ArcPowerControlHandler>());
+  content::WebUIDataSource::Add(Profile::FromWebUI(web_ui),
+                                CreatePowerControlDataSource());
+}
+
+}  // namespace chromeos

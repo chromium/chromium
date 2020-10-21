@@ -18,7 +18,7 @@ var unusedColor = '#ff0000';
 // Supported zooms, mcs per pixel
 var zooms = [
   2.5, 5.0, 10.0, 25.0, 50.0, 100.0, 250.0, 500.0, 1000.0, 2500.0, 5000.0,
-  10000.0
+  10000.0, 25000.0
 ];
 
 // Active zoom level, as index in |zooms|. By default 100 mcs per pixel.
@@ -366,20 +366,22 @@ function initializeUi(initZoomLevel, callback) {
     }
   };
 
-  $('arc-tracing-load').onclick = function(event) {
-    var fileElement = document.createElement('input');
-    fileElement.type = 'file';
+  if ($('arc-tracing-load')) {
+    $('arc-tracing-load').onclick = function(event) {
+      var fileElement = document.createElement('input');
+      fileElement.type = 'file';
 
-    fileElement.onchange = function(event) {
-      var reader = new FileReader();
-      reader.onload = function(response) {
-        chrome.send('loadFromText', [response.target.result]);
+      fileElement.onchange = function(event) {
+        var reader = new FileReader();
+        reader.onload = function(response) {
+          chrome.send('loadFromText', [response.target.result]);
+        };
+        reader.readAsText(event.target.files[0]);
       };
-      reader.readAsText(event.target.files[0]);
-    };
 
-    fileElement.click();
-  };
+      fileElement.click();
+    };
+  }
 }
 
 /**
@@ -788,6 +790,45 @@ class EventBands {
     }
   }
 
+  /**
+   * This adds sources of events to the last chart as a bars.
+   *
+   * @param {Events[]} sources is array of groupped source of events to add.
+   *     These events are logically linked to each other and represented as a
+   *     bar where each bar has color corresponded the value of the event.
+   * @param {Object=} attributes dictionary to resolve the color of the bar.
+   * @param {number} y vertical offset of bars.
+   * @param {number} height height of bars.
+   */
+  addBarSource(source, attributes, y, height) {
+    var chart = this.charts[this.charts.length - 1];
+
+    var eventIndex = source.getFirstAfter(this.minTimestamp);
+    if (eventIndex < 0 || source.events[eventIndex][1] > this.maxTimestamp) {
+      return;
+    }
+
+    while (eventIndex >= 0 &&
+           source.events[eventIndex][1] <= this.maxTimestamp) {
+      var eventIndexNext = source.getNextEvent(eventIndex, 1 /* direction */);
+      var event = source.events[eventIndex];
+      var x = this.timestampToOffset(event[1]);
+      var color = attributes[event[2]].color;
+      var nextTimestamp = 0;
+      if (eventIndexNext >= 0 &&
+          source.events[eventIndexNext][1] <= this.maxTimestamp) {
+        nextTimestamp = source.events[eventIndexNext][1];
+      } else {
+        nextTimestamp = this.maxTimestamp;
+      }
+      var width = this.timestampToOffset(nextTimestamp);
+      eventIndex = eventIndexNext;
+      SVG.addRect(this.svg, x, y, width, height, color, 1.0 /* opacity */);
+    }
+    chart.sourcesWithBounds.push(
+        {attributes: attributes, source: source, perValue: true});
+  }
+
   addChartGridLine(y) {
     SVG.addLine(this.svg, 0, y, this.width, y, '#ccc', 0.5);
   }
@@ -1172,32 +1213,47 @@ class EventBands {
     var valueOffset = 32;
 
     var contentAdded = false;
-
     for (var i = 0; i < chart.sourcesWithBounds.length; ++i) {
       var sourceWithBounds = chart.sourcesWithBounds[i];
-      // Interpolate results.
-      var indexAfter = sourceWithBounds.source.getFirstAfter(eventTimestamp);
-      if (indexAfter < 0) {
-        continue;
-      }
-      var indexBefore =
-          sourceWithBounds.source.getNextEvent(indexAfter, -1 /* direction */);
-      if (indexBefore < 0) {
-        continue;
-      }
-      var eventBefore = sourceWithBounds.source.events[indexBefore];
-      var eventAfter = sourceWithBounds.source.events[indexAfter];
-      var factor =
-          (eventTimestamp - eventBefore[1]) / (eventAfter[1] - eventBefore[1]);
 
-      if (!sourceWithBounds.smooth) {
-        // Clamp to before value.
-        if (factor < 1.0) {
-          factor = 0.0;
+      var color;
+      var text;
+      if (sourceWithBounds.perValue) {
+        // Tooltip per value
+        var index = sourceWithBounds.source.getLastBefore(eventTimestamp);
+        if (index < 0) {
+          continue;
         }
-      }
-      var value = factor * eventAfter[2] + (1.0 - factor) * eventBefore[2];
+        var event = sourceWithBounds.source.events[index];
+        color = sourceWithBounds.attributes[event[2]].color;
+        text = sourceWithBounds.attributes[event[2]].name;
+      } else {
+        // Interpolate results.
+        var indexAfter = sourceWithBounds.source.getFirstAfter(eventTimestamp);
+        if (indexAfter < 0) {
+          continue;
+        }
+        var indexBefore = sourceWithBounds.source.getNextEvent(
+            indexAfter, -1 /* direction */);
+        if (indexBefore < 0) {
+          continue;
+        }
+        var eventBefore = sourceWithBounds.source.events[indexBefore];
+        var eventAfter = sourceWithBounds.source.events[indexAfter];
+        var factor = (eventTimestamp - eventBefore[1]) /
+            (eventAfter[1] - eventBefore[1]);
 
+        if (!sourceWithBounds.smooth) {
+          // Clamp to before value.
+          if (factor < 1.0) {
+            factor = 0.0;
+          }
+        }
+        var value = factor * eventAfter[2] + (1.0 - factor) * eventBefore[2];
+        text = (value * sourceWithBounds.attributes.scale).toFixed(1) + ' ' +
+            sourceWithBounds.attributes.name;
+        color = sourceWithBounds.attributes.color;
+      }
       if (!contentAdded) {
         yOffset = this.addTimeInfoToTooltip_(svg, yOffset, eventTimestamp);
         contentAdded = true;
@@ -1206,9 +1262,7 @@ class EventBands {
       yOffset += this.lineHeight;
       SVG.addCircle(
           svg, this.iconOffset, yOffset - this.iconRadius, this.iconRadius, 1,
-          sourceWithBounds.attributes.color, 'black');
-      var text = (value * sourceWithBounds.attributes.scale).toFixed(1) + ' ' +
-          sourceWithBounds.attributes.name;
+          color, 'black');
       SVG.addText(svg, valueOffset, yOffset, this.fontSize, text);
     }
 
@@ -1507,6 +1561,7 @@ class CpuDetailedInfoView extends DetailedInfoView {
 class CpuEventBands extends EventBands {
   setModel(model) {
     this.model = model;
+    this.showDetailedInfo = true;
     var bandHeight = 6;
     var padding = 2;
     for (var cpuId = 0; cpuId < this.model.system.cpu.length; cpuId++) {
@@ -1516,7 +1571,7 @@ class CpuEventBands extends EventBands {
   }
 
   canShowDetailedInfo() {
-    return true;
+    return this.showDetailedInfo;
   }
 
   showDetailedInfo(event) {
