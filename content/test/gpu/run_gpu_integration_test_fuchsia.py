@@ -43,7 +43,9 @@ def main():
     temp_log_file = True
     additional_target_args['system_log_file'] = args.system_log_file
 
-  package_names = ['web_engine', 'web_engine_shell']
+  # TODO(crbug.com/1092729): Remove 'web_engine' when Catapult is migrated
+  # to use "web_engine_with_webui".
+  package_names = ['web_engine', 'web_engine_with_webui', 'web_engine_shell']
   web_engine_dir = os.path.join(args.out_dir, 'gen', 'fuchsia', 'engine')
   gpu_script = [
       os.path.join(path_util.GetChromiumSrcDir(), 'content', 'test', 'gpu',

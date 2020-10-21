@@ -14,17 +14,6 @@ config("web_engine_implementation") {
   defines = [ "WEB_ENGINE_IMPLEMENTATION" ]
 }
 
-declare_args() {
-  # If set, includes assets served under chrome://resources in web_engine.pak.
-  # They are required by some test-oriented diagnostic views like
-  # chrome://gpu.
-  # Including the resources will increase the application size, so this value
-  # should be left unset for release builds.
-  # TODO(crbug.com/1082420): change default to 'false' once all bots that run
-  # GPU integration tests set this flag to 'true'.
-  include_webui_resources = !is_official_build
-}
-
 mojom("mojom") {
   sources = [
     "cast_streaming_session.mojom",
@@ -55,10 +44,6 @@ repack("web_engine_pak") {
     "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
     "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
   ]
-
-  if (include_webui_resources) {
-    sources += [ "$root_gen_dir/ui/resources/webui_resources.pak" ]
-  }
 
   deps = [
     "//components/resources:components_resources",
@@ -240,19 +225,46 @@ executable("web_engine_exe") {
   visibility = [ ":*" ]
 }
 
-cr_fuchsia_package("web_engine") {
-  binary = ":web_engine_exe"
-  manifest = "context_provider.cmx"
-  component_name_override = "context_provider"
-
-  excluded_files = [
-    "lib/libswiftshader_libEGL.so",
-    "lib/libswiftshader_libGLESv2.so",
-  ]
+source_set("webui_resources") {
+  data = [ "$root_gen_dir/ui/resources/webui_resources.pak" ]
+  deps = [ "//ui/resources" ]
 }
 
-fuchsia_package_runner("web_engine_runner") {
+template("web_engine_package") {
+  cr_fuchsia_package(target_name) {
+    binary = ":web_engine_exe"
+    manifest = "context_provider.cmx"
+    component_name_override = "context_provider"
+
+    if (invoker.include_webui_resources_pak) {
+      deps = [ ":webui_resources" ]
+    }
+
+    excluded_files = [
+      "lib/libswiftshader_libEGL.so",
+      "lib/libswiftshader_libGLESv2.so",
+    ]
+  }
+}
+
+web_engine_package("web_engine") {
+  # TODO(crbug.com/2424514): Set to "false" once telemetry tests are migrated to
+  # use `web_engine_with_webui`.
+  include_webui_resources_pak = !is_official_build
+}
+
+fuchsia_package_runner("web_engine_installer") {
   package = ":web_engine"
+  install_only = true
+}
+
+# Build a WebEngine package that contains WebUI static resources.
+web_engine_package("web_engine_with_webui") {
+  include_webui_resources_pak = true
+}
+
+fuchsia_package_runner("web_engine_with_webui_installer") {
+  package = ":web_engine_with_webui"
   install_only = true
 }
 
@@ -385,10 +397,16 @@ fuchsia_package_runner("web_engine_shell") {
   testonly = true
   package = ":web_engine_shell_pkg"
   package_name_override = "web_engine_shell"
-  package_deps = [ [
-        ":web_engine",
-        "web_engine",
-      ] ]
+  package_deps = [
+    [
+      ":web_engine",
+      "web_engine",
+    ],
+    [
+      ":web_engine_with_webui",
+      "web_engine_with_webui",
+    ],
+  ]
 }
 
 executable("web_engine_shell_exec") {

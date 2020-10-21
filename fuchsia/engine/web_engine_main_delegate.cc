@@ -9,6 +9,7 @@
 #include "base/base_paths.h"
 #include "base/base_paths_fuchsia.h"
 #include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "content/public/common/content_switches.h"
 #include "fuchsia/base/init_logging.h"
@@ -24,12 +25,23 @@ namespace {
 
 WebEngineMainDelegate* g_current_web_engine_main_delegate = nullptr;
 
-void InitializeResourceBundle() {
-  base::FilePath pak_file;
-  bool result = base::PathService::Get(base::DIR_ASSETS, &pak_file);
+void InitializeResources() {
+  constexpr char kWebEnginePakPath[] = "web_engine.pak";
+  constexpr char kWebUiResourcesPakPath[] = "ui/resources/webui_resources.pak";
+
+  base::FilePath asset_root;
+  bool result = base::PathService::Get(base::DIR_ASSETS, &asset_root);
   DCHECK(result);
-  pak_file = pak_file.Append("web_engine.pak");
-  ui::ResourceBundle::InitSharedInstanceWithPakPath(pak_file);
+  ui::ResourceBundle::InitSharedInstanceWithPakPath(
+      asset_root.Append(kWebEnginePakPath));
+
+  // Conditionally load WebUI resource PAK if visible from namespace.
+  base::FilePath webui_resources_path =
+      asset_root.Append(kWebUiResourcesPakPath);
+  if (base::PathExists(webui_resources_path)) {
+    ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
+        webui_resources_path, ui::SCALE_FACTOR_NONE);
+  }
 }
 
 }  // namespace
@@ -64,7 +76,7 @@ bool WebEngineMainDelegate::BasicStartupComplete(int* exit_code) {
 }
 
 void WebEngineMainDelegate::PreSandboxStartup() {
-  InitializeResourceBundle();
+  InitializeResources();
 }
 
 int WebEngineMainDelegate::RunProcess(

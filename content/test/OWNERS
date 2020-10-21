@@ -24,6 +24,9 @@ per-file mock_badge_service.*=file://chrome/browser/badging/OWNERS
 # Trust Tokens-related files.
 per-file *trust_token*=file://services/network/trust_tokens/OWNERS
 
+# Fuchsia related files.
+per-file *fuchsia*=file://build/fuchsia/OWNERS
+
 # Anyone can add rules to include new test files.
 per-file BUILD.gn=*
 

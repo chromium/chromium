@@ -634,9 +634,13 @@ if (is_fuchsia) {
     data_deps = [
       ":telemetry_gpu_integration_test_scripts_only",
       ":telemetry_gpu_integration_test_support",
-      "//fuchsia/engine:web_engine_runner",
       "//fuchsia/engine:web_engine_shell",
+      "//fuchsia/engine:web_engine_with_webui",
     ]
+
+    # TODO(crbug.com/1092729): Remove once Catapult is migrated to use
+    # `web_engine_with_webui`.
+    data_deps += [ "//fuchsia/engine:web_engine" ]
   }
 }
 
