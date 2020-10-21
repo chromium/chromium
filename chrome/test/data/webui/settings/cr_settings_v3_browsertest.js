@@ -500,6 +500,7 @@ TEST_F('CrSettingsAdvancedPageV3Test', 'MAYBE_Load', function() {
  ['SearchPage', 'search_page_test.js'],
  ['Search', 'search_settings_test.js'],
  ['SecurityKeysSubpage', 'security_keys_subpage_test.js'],
+ ['SecurityPage', 'security_page_test.js'],
  ['SecureDns', 'secure_dns_test.js'],
  // Copied from P2 test: Disabled for flakiness, see https://crbug.com/1061249
  ['SiteData', 'site_data_test.js', 'DISABLED_All'],
@@ -529,8 +530,6 @@ GEN('#endif  // defined(OS_CHROMEOS)');
 
 GEN('#if !defined(OS_MAC)');
 [['EditDictionaryPage', 'edit_dictionary_page_test.js'],
- // TODO(https://crbug.com/1081908): Flaky on Mac. Fix and re-enable.
- ['SecurityPage', 'security_page_test.js'],
 ].forEach(test => registerTest(...test));
 GEN('#endif  //!defined(OS_MAC)');
 
