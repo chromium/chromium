@@ -9,8 +9,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/permissions/crowd_deny_safe_browsing_request.h"
+#include "url/gurl.h"
 
-class GURL;
 class Profile;
 enum class ContentSettingsType;
 
@@ -62,7 +62,7 @@ class AbusiveOriginPermissionRevocationRequest {
 
   base::Optional<CrowdDenySafeBrowsingRequest> safe_browsing_request_;
   Profile* profile_;
-  const GURL& origin_;
+  const GURL origin_;
   OutcomeCallback callback_;
   base::WeakPtrFactory<AbusiveOriginPermissionRevocationRequest> weak_factory_{
       this};
