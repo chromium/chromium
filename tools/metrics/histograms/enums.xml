@@ -31547,9 +31547,13 @@ Called by update_feature_policy_enum.py.-->
   <summary>Actions which happen on the screen.</summary>
   <int value="0" label="Setup done button clicked"/>
   <int value="1" label="Skipped button clicked"/>
-  <int value="2" label="Do it later button clicked"/>
+  <int value="2" label="Do it later button clicked">
+    Obsolete, the button is removed.
+  </int>
   <int value="3" label="Add another finger button clicked"/>
-  <int value="4" label="Show sensor location button clicked"/>
+  <int value="4" label="Show sensor location button clicked">
+    Obsolete, the button in removed.
+  </int>
 </enum>
 
 <enum name="FingerprintUpdaterReason">
