@@ -21,6 +21,11 @@ const char kHasDismissedUiAfterCompletingOnboarding[] =
 const char kIsAwaitingVerifiedHost[] =
     "cros.phonehub.is_awaiting_verified_host";
 
+// Whether the Notification access setup banner in the PhoneHub UI has
+// been dismissed.
+const char kHasDismissedSetupRequiredUi[] =
+    "cros.phonehub.has_dismissed_setup_required_ui";
+
 }  // namespace prefs
 }  // namespace phonehub
 }  // namespace chromeos

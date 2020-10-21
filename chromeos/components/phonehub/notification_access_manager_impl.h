@@ -43,6 +43,9 @@ class NotificationAccessManagerImpl : public NotificationAccessManager,
   void SetHasAccessBeenGrantedInternal(bool has_access_been_granted) override;
   void OnSetupRequested() override;
 
+  bool HasNotificationSetupUiBeenDismissed() const override;
+  void DismissSetupRequiredUi() override;
+
   // FeatureStatusProvider::Observer:
   void OnFeatureStatusChanged() override;
 

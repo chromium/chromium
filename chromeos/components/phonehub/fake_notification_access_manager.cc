@@ -26,6 +26,19 @@ bool FakeNotificationAccessManager::HasAccessBeenGranted() const {
   return has_access_been_granted_;
 }
 
+bool FakeNotificationAccessManager::HasNotificationSetupUiBeenDismissed()
+    const {
+  return has_notification_setup_ui_been_dismissed_;
+}
+
+void FakeNotificationAccessManager::DismissSetupRequiredUi() {
+  has_notification_setup_ui_been_dismissed_ = true;
+}
+
+void FakeNotificationAccessManager::ResetHasNotificationSetupUiBeenDismissed() {
+  has_notification_setup_ui_been_dismissed_ = false;
+}
+
 void FakeNotificationAccessManager::SetNotificationSetupOperationStatus(
     NotificationAccessSetupOperation::Status new_status) {
   if (new_status ==

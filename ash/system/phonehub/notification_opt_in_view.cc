@@ -17,6 +17,7 @@
 #include "ash/system/unified/rounded_label_button.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/components/phonehub/notification_access_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
@@ -55,8 +56,11 @@ constexpr char kMultideviceSettingsUrl[] =
 
 }  // namespace
 
-NotificationOptInView::NotificationOptInView(TrayBubbleView* bubble_view)
-    : bubble_view_(bubble_view) {
+NotificationOptInView::NotificationOptInView(
+    TrayBubbleView* bubble_view,
+    chromeos::phonehub::NotificationAccessManager* notification_access_manager)
+    : bubble_view_(bubble_view),
+      notification_access_manager_(notification_access_manager) {
   SetID(PhoneHubViewID::kNotificationOptInView);
   InitLayout();
   LogInterstitialScreenEvent(InterstitialScreen::kNotificationOptIn,
@@ -74,6 +78,7 @@ void NotificationOptInView::ButtonPressed(views::Button* sender,
                                  InterstitialScreenEvent::kDismiss);
       SetVisible(false);
       bubble_view_->UpdateBubble();
+      notification_access_manager_->DismissSetupRequiredUi();
       break;
     case kSetUpButtonTag:
       // Opens the notification set up dialog in settings to start the opt in

@@ -18,6 +18,7 @@ namespace phonehub {
 void NotificationAccessManagerImpl::RegisterPrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kNotificationAccessGranted, false);
+  registry->RegisterBooleanPref(prefs::kHasDismissedSetupRequiredUi, false);
 }
 
 NotificationAccessManagerImpl::NotificationAccessManagerImpl(
@@ -38,6 +39,15 @@ NotificationAccessManagerImpl::NotificationAccessManagerImpl(
 
 NotificationAccessManagerImpl::~NotificationAccessManagerImpl() {
   feature_status_provider_->RemoveObserver(this);
+}
+
+bool NotificationAccessManagerImpl::HasNotificationSetupUiBeenDismissed()
+    const {
+  return pref_service_->GetBoolean(prefs::kHasDismissedSetupRequiredUi);
+}
+
+void NotificationAccessManagerImpl::DismissSetupRequiredUi() {
+  pref_service_->SetBoolean(prefs::kHasDismissedSetupRequiredUi, true);
 }
 
 bool NotificationAccessManagerImpl::HasAccessBeenGranted() const {

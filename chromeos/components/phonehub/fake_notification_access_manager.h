@@ -23,9 +23,14 @@ class FakeNotificationAccessManager : public NotificationAccessManager {
 
   // NotificationAccessManager:
   bool HasAccessBeenGranted() const override;
+  bool HasNotificationSetupUiBeenDismissed() const override;
+  void DismissSetupRequiredUi() override;
+
+  void ResetHasNotificationSetupUiBeenDismissed();
 
  private:
   bool has_access_been_granted_;
+  bool has_notification_setup_ui_been_dismissed_ = false;
 };
 
 }  // namespace phonehub

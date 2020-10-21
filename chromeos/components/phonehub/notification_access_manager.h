@@ -41,6 +41,11 @@ class NotificationAccessManager {
 
   virtual bool HasAccessBeenGranted() const = 0;
 
+  virtual bool HasNotificationSetupUiBeenDismissed() const = 0;
+
+  // Disables the ability to show the banner within the PhoneHub UI.
+  virtual void DismissSetupRequiredUi() = 0;
+
   // Starts an attempt to enable the notification access. |delegate| will be
   // updated with the status of the flow as long as the operation object
   // returned by this function remains instantiated.

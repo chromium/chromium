@@ -16,6 +16,12 @@ namespace views {
 class Label;
 }  // namespace views
 
+namespace chromeos {
+namespace phonehub {
+class NotificationAccessManager;
+}  // namespace phonehub
+}  // namespace chromeos
+
 namespace ash {
 
 class TrayBubbleView;
@@ -27,7 +33,9 @@ class ASH_EXPORT NotificationOptInView : public views::View,
  public:
   METADATA_HEADER(NotificationOptInView);
 
-  explicit NotificationOptInView(TrayBubbleView* bubble_view);
+  NotificationOptInView(TrayBubbleView* bubble_view,
+                        chromeos::phonehub::NotificationAccessManager*
+                            notification_access_manager);
   NotificationOptInView(const NotificationOptInView&) = delete;
   NotificationOptInView& operator=(const NotificationOptInView&) = delete;
   ~NotificationOptInView() override;
@@ -47,6 +55,7 @@ class ASH_EXPORT NotificationOptInView : public views::View,
   InterstitialViewButton* dismiss_button_ = nullptr;
 
   TrayBubbleView* bubble_view_ = nullptr;
+  chromeos::phonehub::NotificationAccessManager* notification_access_manager_;
 };
 
 }  // namespace ash

@@ -45,11 +45,14 @@ PhoneConnectedView::PhoneConnectedView(
 
   AddSeparator();
 
-  // TODO(meilinw): handle the case when the user has dismissed this opt in
-  // view once, we shouldn't show it again.
-  if (!phone_hub_manager->GetNotificationAccessManager()
-           ->HasAccessBeenGranted()) {
-    AddChildView(std::make_unique<NotificationOptInView>(bubble_view));
+  chromeos::phonehub::NotificationAccessManager* access_manager =
+      phone_hub_manager->GetNotificationAccessManager();
+  bool should_show_notification_setup_ui =
+      !access_manager->HasAccessBeenGranted() &&
+      !access_manager->HasNotificationSetupUiBeenDismissed();
+  if (should_show_notification_setup_ui) {
+    AddChildView(std::make_unique<NotificationOptInView>(
+        bubble_view, phone_hub_manager->GetNotificationAccessManager()));
   }
 
   setup_layered_view(

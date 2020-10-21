@@ -93,6 +93,12 @@ class NotificationAccessManagerImplTest : public testing::Test {
     EXPECT_EQ(expected_value, manager_->HasAccessBeenGranted());
   }
 
+  bool HasNotificationSetupUiBeenDismissed() {
+    return manager_->HasNotificationSetupUiBeenDismissed();
+  }
+
+  void DismissSetupRequiredUi() { manager_->DismissSetupRequiredUi(); }
+
   std::unique_ptr<NotificationAccessSetupOperation> StartSetupOperation() {
     return manager_->AttemptNotificationSetup(&fake_delegate_);
   }
@@ -133,6 +139,30 @@ class NotificationAccessManagerImplTest : public testing::Test {
   std::unique_ptr<FakeConnectionScheduler> fake_connection_scheduler_;
   std::unique_ptr<NotificationAccessManager> manager_;
 };
+
+TEST_F(NotificationAccessManagerImplTest, ShouldShowSetupRequiredUi) {
+  // Notification setup is not dismissed initially even when access has been
+  // granted.
+  Initialize(/*initial_has_access_been_granted=*/true);
+  EXPECT_FALSE(HasNotificationSetupUiBeenDismissed());
+
+  // Notification setup is not dismissed initially when access has not been
+  // granted.
+  Initialize(/*initial_has_access_been_granted=*/false);
+  EXPECT_FALSE(HasNotificationSetupUiBeenDismissed());
+
+  // Simlulate dismissal of UI.
+  DismissSetupRequiredUi();
+  EXPECT_TRUE(HasNotificationSetupUiBeenDismissed());
+
+  // Dismissal value is persisted on initialization with access not granted.
+  Initialize(/*initial_has_access_been_granted=*/false);
+  EXPECT_TRUE(HasNotificationSetupUiBeenDismissed());
+
+  // Dismissal value is persisted on initialization with access granted.
+  Initialize(/*initial_has_access_been_granted=*/true);
+  EXPECT_TRUE(HasNotificationSetupUiBeenDismissed());
+}
 
 TEST_F(NotificationAccessManagerImplTest, InitiallyGranted) {
   Initialize(/*initial_has_access_been_granted=*/true);
