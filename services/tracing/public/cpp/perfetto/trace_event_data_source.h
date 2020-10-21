@@ -122,19 +122,20 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventMetadataSource
   // TODO(crbug.com/1138893): Change annotations to GUARDED_BY
   base::Lock lock_;
   std::vector<JsonMetadataGeneratorFunction> json_generator_functions_
-      GUARDED_BY_FIXME(lock_);
-  std::vector<MetadataGeneratorFunction> generator_functions_
-      GUARDED_BY_FIXME(lock_);
+      GUARDED_BY(lock_);
+  std::vector<MetadataGeneratorFunction> generator_functions_ GUARDED_BY(lock_);
   std::vector<PacketGeneratorFunction> packet_generator_functions_
+      GUARDED_BY(lock_);
+
+  const scoped_refptr<base::SequencedTaskRunner> origin_task_runner_
       GUARDED_BY_FIXME(lock_);
 
-  const scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
-
-  std::unique_ptr<perfetto::TraceWriter> trace_writer_;
-  bool privacy_filtering_enabled_ = false;
-  std::string chrome_config_;
-  std::unique_ptr<base::trace_event::TraceConfig> parsed_chrome_config_;
-  bool emit_metadata_at_start_ = false;
+  std::unique_ptr<perfetto::TraceWriter> trace_writer_ GUARDED_BY_FIXME(lock_);
+  bool privacy_filtering_enabled_ GUARDED_BY_FIXME(lock_) = false;
+  std::string chrome_config_ GUARDED_BY(lock_);
+  std::unique_ptr<base::trace_event::TraceConfig> parsed_chrome_config_
+      GUARDED_BY(lock_);
+  bool emit_metadata_at_start_ GUARDED_BY(lock_) = false;
 
   DISALLOW_COPY_AND_ASSIGN(TraceEventMetadataSource);
 };

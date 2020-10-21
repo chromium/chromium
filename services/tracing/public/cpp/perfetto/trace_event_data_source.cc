@@ -119,10 +119,13 @@ static_assert(
 
 // Helper class used to ensure no tasks are posted while
 // TraceEventDataSource::lock_ is held.
-class AutoLockWithDeferredTaskPosting {
+class SCOPED_LOCKABLE AutoLockWithDeferredTaskPosting {
  public:
   explicit AutoLockWithDeferredTaskPosting(base::Lock& lock)
+      EXCLUSIVE_LOCK_FUNCTION(lock)
       : autolock_(lock) {}
+
+  ~AutoLockWithDeferredTaskPosting() UNLOCK_FUNCTION() = default;
 
  private:
   // The ordering is important: |defer_task_posting_| must be destroyed
@@ -159,7 +162,10 @@ TraceEventMetadataSource::~TraceEventMetadataSource() = default;
 void TraceEventMetadataSource::AddGeneratorFunction(
     JsonMetadataGeneratorFunction generator) {
   DCHECK(origin_task_runner_->RunsTasksInCurrentSequence());
-  json_generator_functions_.push_back(generator);
+  {
+    base::AutoLock lock(lock_);
+    json_generator_functions_.push_back(generator);
+  }
   // An EventBundle is created when nullptr is passed.
   GenerateJsonMetadataFromGenerator(generator, nullptr);
 }
@@ -167,14 +173,20 @@ void TraceEventMetadataSource::AddGeneratorFunction(
 void TraceEventMetadataSource::AddGeneratorFunction(
     MetadataGeneratorFunction generator) {
   DCHECK(origin_task_runner_->RunsTasksInCurrentSequence());
-  generator_functions_.push_back(generator);
+  {
+    base::AutoLock lock(lock_);
+    generator_functions_.push_back(generator);
+  }
   GenerateMetadataFromGenerator(generator);
 }
 
 void TraceEventMetadataSource::AddGeneratorFunction(
     PacketGeneratorFunction generator) {
   DCHECK(origin_task_runner_->RunsTasksInCurrentSequence());
-  packet_generator_functions_.push_back(generator);
+  {
+    base::AutoLock lock(lock_);
+    packet_generator_functions_.push_back(generator);
+  }
   GenerateMetadataPacket(generator);
 }
 
@@ -282,7 +294,12 @@ TraceEventMetadataSource::GenerateLegacyMetadataDict() {
   DCHECK(!privacy_filtering_enabled_);
 
   auto merged_metadata = std::make_unique<base::DictionaryValue>();
-  for (auto& generator : json_generator_functions_) {
+  std::vector<JsonMetadataGeneratorFunction> json_generators;
+  {
+    base::AutoLock lock(lock_);
+    json_generators = json_generator_functions_;
+  }
+  for (auto& generator : json_generators) {
     std::unique_ptr<base::DictionaryValue> metadata_dict = generator.Run();
     if (!metadata_dict) {
       continue;
