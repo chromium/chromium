@@ -977,8 +977,6 @@ crbug.com/591099 [ Mac ] paint/invalidation/flexbox/remove-inline-block-descenda
 crbug.com/982211 fast/events/before-unload-return-value-from-listener.html [ Pass Crash Timeout ]
 
 ### With LayoutNGFragmentItem enabled
-crbug.com/982194 [ Win ] external/wpt/css/CSS2/linebox/empty-inline-002.xht [ Failure ]
-crbug.com/982194 [ Win ] external/wpt/css/css-text/white-space/line-edge-white-space-collapse-001.html [ Failure ]
 crbug.com/982194 [ Win7 ] external/wpt/css/css-text/white-space/seg-break-transformation-018.html [ Failure ]
 crbug.com/982194 [ Win10 ] fast/inline/emptyInlinesWithinLists.html [ Pass Failure ]
 crbug.com/982194 [ Win10 ] fast/writing-mode/background-vertical-rl.html [ Pass Failure ]
@@ -1652,7 +1650,7 @@ crbug.com/626703 external/wpt/css/css-text/text-transform/text-transform-capital
 crbug.com/626703 external/wpt/css/css-text/text-transform/text-transform-tailoring-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/text-transform/text-transform-upperlower-006.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/word-break/word-break-break-all-006.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-text/word-break/word-break-break-all-007.html [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/css/css-text/word-break/word-break-break-all-007.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/word-break/word-break-break-all-008.html [ Failure ]
 crbug.com/626703 [ Win ] external/wpt/css/css-text/word-break/word-break-normal-km-000.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/word-break/word-break-normal-my-000.html [ Failure ]
