@@ -40,7 +40,6 @@ class PrefixSelector;
 // Combobox has two distinct parts, the drop down arrow and the text.
 class VIEWS_EXPORT Combobox : public View,
                               public PrefixDelegate,
-                              public ButtonListener,
                               public ui::ComboboxModelObserver {
  public:
   METADATA_HEADER(Combobox);
@@ -119,9 +118,6 @@ class VIEWS_EXPORT Combobox : public View,
   void SetSelectedRow(int row) override;
   base::string16 GetTextForRow(int row) override;
 
-  // Overridden from ButtonListener:
-  void ButtonPressed(Button* sender, const ui::Event& event) override;
-
  protected:
   // Overridden from ComboboxModelObserver:
   void OnComboboxModelChanged(ui::ComboboxModel* model) override;
@@ -143,6 +139,9 @@ class VIEWS_EXPORT Combobox : public View,
 
   // Draws the selected value of the drop down list
   void PaintIconAndText(gfx::Canvas* canvas);
+
+  // Opens the dropdown menu in response to |event|.
+  void ArrowButtonPressed(const ui::Event& event);
 
   // Show the drop down list
   void ShowDropDownMenu(ui::MenuSourceType source_type);

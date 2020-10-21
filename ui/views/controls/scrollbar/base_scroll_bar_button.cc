@@ -4,6 +4,8 @@
 
 #include "ui/views/controls/scrollbar/base_scroll_bar_button.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "ui/display/screen.h"
@@ -12,9 +14,9 @@
 
 namespace views {
 
-BaseScrollBarButton::BaseScrollBarButton(ButtonListener* listener,
+BaseScrollBarButton::BaseScrollBarButton(PressedCallback callback,
                                          const base::TickClock* tick_clock)
-    : Button(listener),
+    : Button(std::move(callback)),
       repeater_(base::BindRepeating(&BaseScrollBarButton::RepeaterNotifyClick,
                                     base::Unretained(this)),
                 tick_clock) {

@@ -14,7 +14,6 @@
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/style/typography.h"
@@ -33,6 +32,7 @@ class Event;
 }  // namespace ui
 
 namespace views {
+class Button;
 class EditableComboboxMenuModel;
 class EditableComboboxPreTargetHandler;
 class MenuRunner;
@@ -43,7 +43,6 @@ class VIEWS_EXPORT EditableCombobox
     : public View,
       public TextfieldController,
       public ViewObserver,
-      public ButtonListener,
       public views::AnimatingLayoutManager::Observer {
  public:
   METADATA_HEADER(EditableCombobox);
@@ -123,6 +122,9 @@ class VIEWS_EXPORT EditableCombobox
   // Notifies listener of new content and updates the menu items to show.
   void HandleNewContent(const base::string16& new_content);
 
+  // Toggles the dropdown menu in response to |event|.
+  void ArrowButtonPressed(const ui::Event& event);
+
   // Shows the drop-down menu.
   void ShowDropDownMenu(ui::MenuSourceType source_type = ui::MENU_SOURCE_NONE);
 
@@ -141,9 +143,6 @@ class VIEWS_EXPORT EditableCombobox
 
   // Overridden from ViewObserver:
   void OnViewBlurred(View* observed_view) override;
-
-  // Overridden from ButtonListener:
-  void ButtonPressed(Button* sender, const ui::Event& event) override;
 
   // Overridden from views::AnimatingLayoutManager::Observer:
   void OnLayoutIsAnimatingChanged(views::AnimatingLayoutManager* source,

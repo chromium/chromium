@@ -64,7 +64,7 @@ namespace {
 
 class Arrow : public Button {
  public:
-  explicit Arrow(ButtonListener* listener) : Button(listener) {
+  explicit Arrow(PressedCallback callback) : Button(std::move(callback)) {
     // Similar to Combobox's TransparentButton.
     SetFocusBehavior(FocusBehavior::NEVER);
     button_controller()->set_notify_action(
@@ -333,7 +333,8 @@ EditableCombobox::EditableCombobox(
     textfield_->SetExtraInsets(gfx::Insets(
         /*top=*/0, /*left=*/0, /*bottom=*/0,
         /*right=*/kComboboxArrowContainerWidth - kComboboxArrowPaddingWidth));
-    arrow_ = AddChildView(std::make_unique<Arrow>(this));
+    arrow_ = AddChildView(std::make_unique<Arrow>(base::BindRepeating(
+        &EditableCombobox::ArrowButtonPressed, base::Unretained(this))));
   }
   SetLayoutManager(std::make_unique<views::FillLayout>());
 }
@@ -446,14 +447,6 @@ void EditableCombobox::OnViewBlurred(View* observed_view) {
   CloseMenu();
 }
 
-void EditableCombobox::ButtonPressed(Button* sender, const ui::Event& event) {
-  textfield_->RequestFocus();
-  if (menu_runner_ && menu_runner_->IsRunning())
-    CloseMenu();
-  else
-    ShowDropDownMenu(ui::GetMenuSourceTypeForEvent(event));
-}
-
 void EditableCombobox::OnLayoutIsAnimatingChanged(
     views::AnimatingLayoutManager* source,
     bool is_animating) {
@@ -494,6 +487,14 @@ void EditableCombobox::HandleNewContent(const base::string16& new_content) {
     menu_model_->EnableUpdateItemsShown();
   }
   menu_model_->UpdateItemsShown();
+}
+
+void EditableCombobox::ArrowButtonPressed(const ui::Event& event) {
+  textfield_->RequestFocus();
+  if (menu_runner_ && menu_runner_->IsRunning())
+    CloseMenu();
+  else
+    ShowDropDownMenu(ui::GetMenuSourceTypeForEvent(event));
 }
 
 void EditableCombobox::ShowDropDownMenu(ui::MenuSourceType source_type) {

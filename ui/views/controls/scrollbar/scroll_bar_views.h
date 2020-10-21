@@ -8,7 +8,6 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
 #include "ui/views/view.h"
@@ -20,7 +19,7 @@ class Canvas;
 namespace views {
 
 // Views implementation for the scrollbar.
-class VIEWS_EXPORT ScrollBarViews : public ScrollBar, public ButtonListener {
+class VIEWS_EXPORT ScrollBarViews : public ScrollBar {
  public:
   METADATA_HEADER(ScrollBarViews);
 
@@ -36,9 +35,6 @@ class VIEWS_EXPORT ScrollBarViews : public ScrollBar, public ButtonListener {
 
   // ScrollBar overrides:
   int GetThickness() const override;
-
-  // BaseButton::ButtonListener overrides:
-  void ButtonPressed(Button* sender, const ui::Event& event) override;
 
   // Returns the area for the track. This is the area of the scrollbar minus
   // the size of the arrow buttons.

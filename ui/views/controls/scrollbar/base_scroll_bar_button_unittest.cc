@@ -24,31 +24,28 @@ using testing::_;
 using testing::AtLeast;
 using testing::AtMost;
 
-class MockButtonListener : public ButtonListener {
+class MockButtonCallback {
  public:
-  MockButtonListener() = default;
-  MockButtonListener(const MockButtonListener&) = delete;
-  MockButtonListener& operator=(const MockButtonListener&) = delete;
-  ~MockButtonListener() override = default;
+  MockButtonCallback() = default;
+  MockButtonCallback(const MockButtonCallback&) = delete;
+  MockButtonCallback& operator=(const MockButtonCallback&) = delete;
+  ~MockButtonCallback() = default;
 
-  // ButtonListener:
-  MOCK_METHOD(void,
-              ButtonPressed,
-              (Button * sender, const ui::Event& event),
-              (override));
+  MOCK_METHOD(void, ButtonPressed, ());
 };
 
 class BaseScrollBarButtonTest : public testing::Test {
  public:
   BaseScrollBarButtonTest()
       : button_(std::make_unique<BaseScrollBarButton>(
-            &listener_,
+            base::BindRepeating(&MockButtonCallback::ButtonPressed,
+                                base::Unretained(&callback_)),
             task_environment_.GetMockTickClock())) {}
 
   ~BaseScrollBarButtonTest() override = default;
 
  protected:
-  testing::StrictMock<MockButtonListener>& listener() { return listener_; }
+  testing::StrictMock<MockButtonCallback>& callback() { return callback_; }
   Button* button() { return button_.get(); }
 
   void AdvanceTime(base::TimeDelta time_delta) {
@@ -61,7 +58,7 @@ class BaseScrollBarButtonTest : public testing::Test {
   display::test::TestScreen test_screen_;
   display::test::ScopedScreenOverride screen_override{&test_screen_};
 
-  testing::StrictMock<MockButtonListener> listener_;
+  testing::StrictMock<MockButtonCallback> callback_;
   const std::unique_ptr<Button> button_;
 };
 
@@ -76,18 +73,18 @@ TEST_F(BaseScrollBarButtonTest, FocusBehavior) {
 }
 
 TEST_F(BaseScrollBarButtonTest, CallbackFiresOnMouseDown) {
-  EXPECT_CALL(listener(), ButtonPressed(_, _));
+  EXPECT_CALL(callback(), ButtonPressed());
 
-  // By default the button should notify its listener on mouse release.
+  // By default the button should notify its callback on mouse release.
   button()->OnMousePressed(ui::MouseEvent(
       ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
 }
 
-TEST_F(BaseScrollBarButtonTest, CallbackFilesMultipleTimesMouseHeldDown) {
-  EXPECT_CALL(listener(), ButtonPressed(_, _)).Times(AtLeast(2));
+TEST_F(BaseScrollBarButtonTest, CallbackFiresMultipleTimesMouseHeldDown) {
+  EXPECT_CALL(callback(), ButtonPressed()).Times(AtLeast(2));
 
-  // By default the button should notify its listener on mouse release.
+  // By default the button should notify its callback on mouse release.
   button()->OnMousePressed(ui::MouseEvent(
       ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
@@ -96,16 +93,16 @@ TEST_F(BaseScrollBarButtonTest, CallbackFilesMultipleTimesMouseHeldDown) {
 }
 
 TEST_F(BaseScrollBarButtonTest, CallbackStopsFiringAfterMouseReleased) {
-  EXPECT_CALL(listener(), ButtonPressed(_, _)).Times(AtLeast(2));
+  EXPECT_CALL(callback(), ButtonPressed()).Times(AtLeast(2));
 
-  // By default the button should notify its listener on mouse release.
+  // By default the button should notify its callback on mouse release.
   button()->OnMousePressed(ui::MouseEvent(
       ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
 
   AdvanceTime(RepeatController::GetInitialWaitForTesting() * 10);
 
-  testing::Mock::VerifyAndClearExpectations(&listener());
+  testing::Mock::VerifyAndClearExpectations(&callback());
 
   button()->OnMouseReleased(ui::MouseEvent(
       ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
@@ -113,26 +110,26 @@ TEST_F(BaseScrollBarButtonTest, CallbackStopsFiringAfterMouseReleased) {
 
   AdvanceTime(RepeatController::GetInitialWaitForTesting() * 10);
 
-  EXPECT_CALL(listener(), ButtonPressed(_, _)).Times(AtMost(0));
+  EXPECT_CALL(callback(), ButtonPressed()).Times(AtMost(0));
 }
 
 TEST_F(BaseScrollBarButtonTest, CallbackStopsFiringAfterMouseCaptureReleased) {
-  EXPECT_CALL(listener(), ButtonPressed(_, _)).Times(AtLeast(2));
+  EXPECT_CALL(callback(), ButtonPressed()).Times(AtLeast(2));
 
-  // By default the button should notify its listener on mouse release.
+  // By default the button should notify its callback on mouse release.
   button()->OnMousePressed(ui::MouseEvent(
       ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
 
   AdvanceTime(RepeatController::GetInitialWaitForTesting() * 10);
 
-  testing::Mock::VerifyAndClearExpectations(&listener());
+  testing::Mock::VerifyAndClearExpectations(&callback());
 
   button()->OnMouseCaptureLost();
 
   AdvanceTime(RepeatController::GetInitialWaitForTesting() * 10);
 
-  EXPECT_CALL(listener(), ButtonPressed(_, _)).Times(AtMost(0));
+  EXPECT_CALL(callback(), ButtonPressed()).Times(AtMost(0));
 }
 
 }  // namespace views

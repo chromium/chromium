@@ -30,7 +30,7 @@ class VIEWS_EXPORT BaseScrollBarButton : public Button {
  public:
   METADATA_HEADER(BaseScrollBarButton);
 
-  explicit BaseScrollBarButton(ButtonListener* listener,
+  explicit BaseScrollBarButton(PressedCallback callback,
                                const base::TickClock* tick_clock = nullptr);
   ~BaseScrollBarButton() override;
 
