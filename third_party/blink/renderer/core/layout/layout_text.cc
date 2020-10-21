@@ -1851,10 +1851,11 @@ void LayoutText::SetTextWithOffset(scoped_refptr<StringImpl> text,
     FloatRect glyph_bounds;
     float text_width =
         style_to_use->GetFont().Width(text_run, nullptr, &glyph_bounds);
-    // If the text is not wrapping we don't care if it fits or not in the
-    // container as it's not going to be split in multiple lines.
-    if (!style_to_use->AutoWrap() ||
-        (text_width <= ContainingBlock()->ContentLogicalWidth())) {
+    // TODO(rego): Ideally we could avoid measuring text width in some specific
+    // situations (e.g. if "white-space" property is "pre" and "overflow-wrap"
+    // is "normal"). However we tried that on the past and it caused a
+    // regression (crbug.com/985723).
+    if (text_width <= ContainingBlock()->ContentLogicalWidth()) {
       FirstTextBox()->ManuallySetStartLenAndLogicalWidth(
           offset, text->length(), LayoutUnit(text_width));
       SetFirstTextBoxLogicalLeft(text_width);
