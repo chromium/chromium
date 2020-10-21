@@ -91,11 +91,25 @@ void FontMatchingMetrics::ReportWebFontFamily(
 void FontMatchingMetrics::ReportSuccessfulLocalFontMatch(
     const AtomicString& font_name) {
   local_fonts_succeeded_.insert(font_name);
+  ReportLocalFontExistenceByUniqueNameOnly(font_name, /*font_exists=*/true);
 }
 
 void FontMatchingMetrics::ReportFailedLocalFontMatch(
     const AtomicString& font_name) {
   local_fonts_failed_.insert(font_name);
+  ReportLocalFontExistenceByUniqueNameOnly(font_name, /*font_exists=*/false);
+}
+
+void FontMatchingMetrics::ReportLocalFontExistenceByUniqueNameOnly(
+    const AtomicString& font_name,
+    bool font_exists) {
+  if (!IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+          IdentifiableSurface::Type::kLocalFontExistenceByUniqueNameOnly)) {
+    return;
+  }
+  IdentifiableTokenKey input_key(
+      IdentifiabilityBenignCaseFoldingStringToken(font_name));
+  local_font_existence_by_unique_name_only_.insert(input_key, font_exists);
 }
 
 void FontMatchingMetrics::InsertFontHashIntoMap(IdentifiableTokenKey input_key,
@@ -263,6 +277,8 @@ void FontMatchingMetrics::PublishIdentifiabilityMetrics() {
            IdentifiableSurface::Type::kGenericFontLookup},
           {&font_load_postscript_name_,
            IdentifiableSurface::Type::kLocalFontLoadPostScriptName},
+          {&local_font_existence_by_unique_name_only_,
+           IdentifiableSurface::Type::kLocalFontExistenceByUniqueNameOnly},
       };
 
   for (const auto& surface_entry : hash_maps_with_corresponding_surface_types) {

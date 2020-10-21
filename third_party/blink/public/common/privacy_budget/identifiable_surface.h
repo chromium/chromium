@@ -217,6 +217,14 @@ class IdentifiableSurface {
     // configuration provided.
     kMediaCapabilities_DecodingInfo = 25,
 
+    // Represents determining that a local font exists or does not, based on a
+    // name lookup that is only allowed to match a unique name. This occurs in
+    // @font-face CSS rules with a src:local attribute, as well as calls to
+    // FontFace.load() for a FontFace object with a src:local attribute. The
+    // latter can reveal whether a font exists before the full font data are
+    // obtained. Input is the lookup name. Output is a bool.
+    kLocalFontExistenceByUniqueNameOnly = 26,
+
     // Represents a call to Navigator.getUserMedia. Input is the set of
     // constraints.
     kNavigator_GetUserMedia = 27,
