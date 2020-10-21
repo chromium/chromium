@@ -159,8 +159,7 @@ FileChooserLinux::FileChooserLinux(
 }
 
 void FileChooserLinux::Show() {
-  gtk_file_chooser_on_ui_thread_.Post(FROM_HERE,
-                                      &GtkFileChooserOnUiThread::Show);
+  gtk_file_chooser_on_ui_thread_.AsyncCall(&GtkFileChooserOnUiThread::Show);
 }
 
 void FileChooserLinux::RunCallback(FileChooser::Result result) {
