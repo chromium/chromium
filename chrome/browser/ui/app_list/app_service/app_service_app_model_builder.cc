@@ -50,15 +50,12 @@ class AppServiceAppModelBuilder::CrostiniFolderObserver
   void OnAppListItemAdded(ChromeAppListItem* item) override {
     if (item->id() != crostini::kCrostiniFolderId)
       return;
-    // Persistence is not recorded by the sync, so we always set it.
-    item->SetIsPersistent(true);
 
-    // Either the name and position will be in the sync, or we set them
-    // manually.
-    if (parent_->GetSyncItem(crostini::kCrostiniFolderId,
-                             sync_pb::AppListSpecifics::TYPE_FOLDER)) {
-      return;
-    }
+    // We reset the state of the folder whether it's in the sync service or not
+    // to ensure the "Linux apps" string is translated into the current
+    // language, even if that's a different language then the folder was created
+    // with.
+    item->SetIsPersistent(true);
     item->SetName(
         l10n_util::GetStringUTF8(IDS_APP_LIST_CROSTINI_DEFAULT_FOLDER_NAME));
     item->SetDefaultPositionIfApplicable(parent_->model_updater());
