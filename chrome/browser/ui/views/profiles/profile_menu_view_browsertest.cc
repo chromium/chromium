@@ -45,6 +45,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/prefs/pref_service.h"
@@ -796,30 +797,6 @@ PROFILE_MENU_CLICK_TEST(
 
 // List of actionable items in the correct order as they appear in the menu.
 // If a new button is added to the menu, it should also be added to this list.
-constexpr ProfileMenuViewBase::ActionableItem kActionableItems_GuestProfile[] =
-    {ProfileMenuViewBase::ActionableItem::kExitProfileButton,
-     ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
-     ProfileMenuViewBase::ActionableItem::kOtherProfileButton,
-     ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
-     // The first button is added again to finish the cycle and test that
-     // there are no other buttons at the end.
-     ProfileMenuViewBase::ActionableItem::kExitProfileButton};
-
-PROFILE_MENU_CLICK_TEST(kActionableItems_GuestProfile,
-                        ProfileMenuClickTest_GuestProfile) {
-  profiles::SwitchToGuestProfile(ProfileManager::CreateCallback());
-  ui_test_utils::WaitForBrowserToOpen();
-  Profile* guest = g_browser_process->profile_manager()->GetProfileByPath(
-      ProfileManager::GetGuestProfilePath());
-  ASSERT_TRUE(guest);
-  // Open a second guest browser window, so the ExitProfileButton is shown.
-  SetTargetBrowser(CreateIncognitoBrowser(guest));
-
-  RunTest();
-}
-
-// List of actionable items in the correct order as they appear in the menu.
-// If a new button is added to the menu, it should also be added to this list.
 constexpr ProfileMenuViewBase::ActionableItem
     kActionableItems_IncognitoProfile[] = {
         ProfileMenuViewBase::ActionableItem::kExitProfileButton,
@@ -833,6 +810,105 @@ PROFILE_MENU_CLICK_TEST(kActionableItems_IncognitoProfile,
 
   RunTest();
 }
+
+// List of actionable items in the correct order as they appear in the menu.
+// If a new button is added to the menu, it should also be added to this list.
+constexpr ProfileMenuViewBase::ActionableItem kActionableItems_GuestProfile[] =
+    {ProfileMenuViewBase::ActionableItem::kExitProfileButton,
+     ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+     ProfileMenuViewBase::ActionableItem::kOtherProfileButton,
+     ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+     // The first button is added again to finish the cycle and test that
+     // there are no other buttons at the end.
+     // Note that the test does not rely on the specific order of running test
+     // instances, but considers the relative order of the actionable items in
+     // this array. So for the last item, it does N+1 steps through the menu (N
+     // being the number of items in the menu) and checks if the last item in
+     // this array triggers the same action as the first one.
+     ProfileMenuViewBase::ActionableItem::kExitProfileButton};
+
+// TODO(https://crbug.com/1125474): Revert to using PROFILE_MENU_CLICK_TEST when
+// non-ephemeral Guest profiles are removed.
+class GuestProfileMenuClickTest : public ProfileMenuClickTest {
+ public:
+  GuestProfileMenuClickTest() {
+    TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
+        scoped_feature_list_, false);
+  }
+
+  ProfileMenuViewBase::ActionableItem GetExpectedActionableItemAtIndex(
+      size_t index) override {
+    return kActionableItems_GuestProfile[index];
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  DISALLOW_COPY_AND_ASSIGN(GuestProfileMenuClickTest);
+};
+
+IN_PROC_BROWSER_TEST_P(GuestProfileMenuClickTest,
+                       ProfileMenuClickTest_GuestProfile) {
+  Browser* browser = CreateGuestBrowser();
+  ASSERT_TRUE(browser);
+
+  // Open a second guest browser window, so the ExitProfileButton is shown.
+  SetTargetBrowser(CreateGuestBrowser());
+
+  RunTest();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GuestProfileMenuClickTest,
+    ::testing::Range(size_t(0), base::size(kActionableItems_GuestProfile)));
+
+// TODO(https://crbug.com/1125474): Remove OS_CHROMEOS and enable for Lacros
+// when supported.
+#if defined(OS_WIN) || defined(OS_MAC) || \
+    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+// List of actionable items in the correct order as they appear in the menu.
+// If a new button is added to the menu, it should also be added to this list.
+constexpr ProfileMenuViewBase::ActionableItem
+    kActionableItems_EphemeralGuestProfile[] = {
+        ProfileMenuViewBase::ActionableItem::kExitProfileButton};
+
+class EphemeralGuestProfileMenuClickTest : public ProfileMenuClickTest {
+ public:
+  EphemeralGuestProfileMenuClickTest() {
+    EXPECT_TRUE(TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
+        scoped_feature_list_, true));
+  }
+
+  ProfileMenuViewBase::ActionableItem GetExpectedActionableItemAtIndex(
+      size_t index) override {
+    return kActionableItems_EphemeralGuestProfile[index];
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  DISALLOW_COPY_AND_ASSIGN(EphemeralGuestProfileMenuClickTest);
+};
+
+IN_PROC_BROWSER_TEST_P(EphemeralGuestProfileMenuClickTest,
+                       ProfileMenuClickTest_GuestProfile) {
+  Browser* browser = CreateGuestBrowser();
+  ASSERT_TRUE(browser);
+
+  // Open a second guest browser window, so the ExitProfileButton is shown.
+  SetTargetBrowser(CreateGuestBrowser());
+
+  RunTest();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    EphemeralGuestProfileMenuClickTest,
+    ::testing::Range(size_t(0),
+                     base::size(kActionableItems_EphemeralGuestProfile)));
+#endif  // defined(OS_WIN) || defined(OS_MAC) || (defined(OS_LINUX) &&
+        // !defined(OS_CHROMEOS))
 
 class ProfileMenuClickKeyAcceleratorTest : public ProfileMenuClickTestBase {
  public:
