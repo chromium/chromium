@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #include "base/macros.h"
+#include "ios/public/provider/chrome/browser/user_feedback/user_feedback_sender.h"
 
 @protocol ApplicationCommands;
 
@@ -58,6 +59,13 @@ class UserFeedbackProvider {
   // on behalf of the UserFeedbackProvider.
   // TODO(crbug.com/1117041): Send a configuration object instead of these
   // parameters.
+  virtual UIViewController* CreateViewController(
+      id<UserFeedbackDataSource> data_source,
+      id<ApplicationCommands> handler,
+      UserFeedbackSender sender);
+  // TODO(crbug.com/1138523): Remove the method below, once
+  // CreateViewController(id<UserFeedbackDataSource>,
+  // id<ApplicationCommands>, CategoryTag) is implemented downstream.
   virtual UIViewController* CreateViewController(
       id<UserFeedbackDataSource> data_source,
       id<ApplicationCommands> handler);
