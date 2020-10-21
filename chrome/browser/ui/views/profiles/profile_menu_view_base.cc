@@ -941,6 +941,14 @@ void ProfileMenuViewBase::Reset() {
                      kMenuWidth);
   layout->StartRow(1.0f, 0);
   layout->AddView(std::move(scroll_view));
+
+  // Set the first container as initial focus, so focus manager will search the
+  // first focusable item in case no other view is explicitly focused (e.g. with
+  // Ctrl+Shift+M, focus is set to the profile list for quick profile change).
+  // Setting focus inside the dialog is important for accessibility: when focus
+  // changes to a view inside the dialog, screen readers will announce the
+  // dialog to give context to the focus change.
+  SetInitiallyFocusedView(heading_container_);
 }
 
 void ProfileMenuViewBase::FocusButtonOnKeyboardOpen() {
@@ -965,14 +973,6 @@ void ProfileMenuViewBase::OnThemeChanged() {
   SetBackground(views::CreateSolidBackground(GetNativeTheme()->GetSystemColor(
       ui::NativeTheme::kColorId_DialogBackground)));
   UpdateSyncInfoContainerBackground();
-}
-
-ax::mojom::Role ProfileMenuViewBase::GetAccessibleWindowRole() {
-  // Return |ax::mojom::Role::kDialog| which will make screen readers announce
-  // the following in the listed order:
-  // the title of the dialog, labels (if any), the focused View within the
-  // dialog (if any)
-  return ax::mojom::Role::kDialog;
 }
 
 bool ProfileMenuViewBase::HandleContextMenu(
