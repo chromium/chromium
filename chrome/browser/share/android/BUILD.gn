@@ -6,6 +6,7 @@ import("//build/config/android/rules.gni")
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable-ldrtl/text_icon.xml",
     "java/res/drawable/camera_img.xml",
     "java/res/drawable/custom_toast_background.xml",
     "java/res/drawable/delete.xml",
@@ -17,7 +18,7 @@ android_resources("java_resources") {
     "java/res/drawable/qrcode_background.xml",
     "java/res/drawable/save.xml",
     "java/res/drawable/share.xml",
-    "java/res/drawable/text.xml",
+    "java/res/drawable/text_icon.xml",
     "java/res/layout/custom_toast_layout.xml",
     "java/res/layout/qrcode_camera_error_layout.xml",
     "java/res/layout/qrcode_dialog.xml",
