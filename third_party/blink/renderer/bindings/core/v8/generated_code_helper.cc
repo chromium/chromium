@@ -160,6 +160,44 @@ void V8SetReflectedNullableDOMStringAttribute(
 
 namespace bindings {
 
+void SetupIDLInterfaceTemplates(
+    v8::Isolate* isolate,
+    const WrapperTypeInfo* wrapper_type_info,
+    v8::Local<v8::ObjectTemplate> instance_template,
+    v8::Local<v8::ObjectTemplate> prototype_template,
+    v8::Local<v8::FunctionTemplate> interface_template,
+    v8::Local<v8::FunctionTemplate> parent_interface_template) {
+  v8::Local<v8::String> class_string =
+      V8AtomicString(isolate, wrapper_type_info->interface_name);
+
+  if (!parent_interface_template.IsEmpty())
+    interface_template->Inherit(parent_interface_template);
+  interface_template->ReadOnlyPrototype();
+  interface_template->SetClassName(class_string);
+
+  prototype_template->Set(
+      v8::Symbol::GetToStringTag(isolate), class_string,
+      static_cast<v8::PropertyAttribute>(v8::ReadOnly | v8::DontEnum));
+
+  instance_template->SetInternalFieldCount(kV8DefaultWrapperInternalFieldCount);
+}
+
+void SetupIDLNamespaceTemplate(
+    v8::Isolate* isolate,
+    const WrapperTypeInfo* wrapper_type_info,
+    v8::Local<v8::ObjectTemplate> interface_template) {
+  // TODO(yukishiino): To be implemented.
+}
+
+void SetupIDLCallbackInterfaceTemplate(
+    v8::Isolate* isolate,
+    const WrapperTypeInfo* wrapper_type_info,
+    v8::Local<v8::FunctionTemplate> interface_template) {
+  interface_template->RemovePrototype();
+  interface_template->SetClassName(
+      V8AtomicString(isolate, wrapper_type_info->interface_name));
+}
+
 base::Optional<size_t> FindIndexInEnumStringTable(
     v8::Isolate* isolate,
     v8::Local<v8::Value> value,
@@ -278,7 +316,8 @@ v8::MaybeLocal<v8::Value> CreateNamedConstructorFunction(
         func_length, v8::ConstructorBehavior::kAllow,
         v8::SideEffectType::kHasSideEffect);
     v8::Local<v8::FunctionTemplate> interface_template =
-        wrapper_type_info->DomTemplate(isolate, world);
+        wrapper_type_info->GetV8ClassTemplate(isolate, world)
+            .As<v8::FunctionTemplate>();
     function_template->Inherit(interface_template);
     function_template->SetClassName(V8AtomicString(isolate, func_name));
     function_template->InstanceTemplate()->SetInternalFieldCount(
@@ -352,9 +391,9 @@ v8::Local<v8::Array> EnumerateIndexedProperties(v8::Isolate* isolate,
 void InstallCSSPropertyAttributes(
     v8::Isolate* isolate,
     const DOMWrapperWorld& world,
-    v8::Local<v8::ObjectTemplate> instance_template,
-    v8::Local<v8::ObjectTemplate> prototype_template,
-    v8::Local<v8::FunctionTemplate> interface_template,
+    v8::Local<v8::Template> instance_template,
+    v8::Local<v8::Template> prototype_template,
+    v8::Local<v8::Template> interface_template,
     v8::Local<v8::Signature> signature,
     base::span<const char* const> css_property_names) {
   const String kGetPrefix = "get ";

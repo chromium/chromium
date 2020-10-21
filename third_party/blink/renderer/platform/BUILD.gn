@@ -459,6 +459,7 @@ component("platform") {
     "bindings/v8_dom_wrapper.h",
     "bindings/v8_global_value_map.h",
     "bindings/v8_interface_bridge.h",
+    "bindings/v8_interface_bridge_base.h",
     "bindings/v8_object_constructor.cc",
     "bindings/v8_object_constructor.h",
     "bindings/v8_per_context_data.cc",

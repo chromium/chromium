@@ -202,7 +202,6 @@ def generate_callback_interface(callback_interface_identifier):
     ])
     installer_function_defs.accumulate(
         CodeGenAccumulator.require_include_headers([
-            "third_party/blink/renderer/bindings/core/v8/v8_dom_configuration.h",
             "third_party/blink/renderer/platform/bindings/idl_member_installer.h",
         ]))
 
@@ -311,13 +310,6 @@ def generate_callback_interface(callback_interface_identifier):
 
         class_def.public_section.append(get_wrapper_type_info_def)
         class_def.public_section.append(EmptyNode())
-        class_def.public_section.extend([
-            TextNode("// Migration adapter"),
-            TextNode("static v8::Local<v8::FunctionTemplate> DomTemplate("
-                     "v8::Isolate* isolate, "
-                     "const DOMWrapperWorld& world);"),
-            EmptyNode(),
-        ])
         class_def.private_section.append(wrapper_type_info_var_def)
         class_def.private_section.append(EmptyNode())
         source_blink_ns.body.extend([

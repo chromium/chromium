@@ -13,36 +13,29 @@ namespace blink {
 
 namespace {
 
-v8::Local<v8::FunctionTemplate> CreateCustomWrappableTemplate(
-    v8::Isolate* isolate,
-    const DOMWrapperWorld& world);
+void InstallCustomWrappableTemplate(v8::Isolate* isolate,
+                                    const DOMWrapperWorld& world,
+                                    v8::Local<v8::Template> v8_template);
 
 const WrapperTypeInfo custom_wrappable_info = {
     gin::kEmbedderBlink,
-    CreateCustomWrappableTemplate,
+    InstallCustomWrappableTemplate,
     nullptr,
     "CustomWrappableAdapter",
     nullptr,
     WrapperTypeInfo::kWrapperTypeNoPrototype,
     WrapperTypeInfo::kCustomWrappableId,
     WrapperTypeInfo::kNotInheritFromActiveScriptWrappable,
+    WrapperTypeInfo::kCustomWrappableKind,
 };
 
-void InstallCustomWrappableTemplate(
-    v8::Isolate* isolate,
-    const DOMWrapperWorld& world,
-    v8::Local<v8::FunctionTemplate> interfaceTemplate) {
+void InstallCustomWrappableTemplate(v8::Isolate* isolate,
+                                    const DOMWrapperWorld& world,
+                                    v8::Local<v8::Template> v8_template) {
   V8DOMConfiguration::InitializeDOMInterfaceTemplate(
-      isolate, interfaceTemplate, custom_wrappable_info.interface_name,
-      v8::Local<v8::FunctionTemplate>(), kV8DefaultWrapperInternalFieldCount);
-}
-
-v8::Local<v8::FunctionTemplate> CreateCustomWrappableTemplate(
-    v8::Isolate* isolate,
-    const DOMWrapperWorld& world) {
-  return V8DOMConfiguration::DomClassTemplate(
-      isolate, world, const_cast<WrapperTypeInfo*>(&custom_wrappable_info),
-      InstallCustomWrappableTemplate);
+      isolate, v8_template.As<v8::FunctionTemplate>(),
+      custom_wrappable_info.interface_name, v8::Local<v8::FunctionTemplate>(),
+      kV8DefaultWrapperInternalFieldCount);
 }
 
 }  // namespace

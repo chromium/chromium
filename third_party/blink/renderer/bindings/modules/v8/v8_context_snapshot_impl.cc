@@ -109,14 +109,14 @@ using InstallPropsPerContext =
              const DOMWrapperWorld& world,
              v8::Local<v8::Object> instance_object,
              v8::Local<v8::Object> prototype_object,
-             v8::Local<v8::Function> interface_object,
-             v8::Local<v8::FunctionTemplate> interface_template);
+             v8::Local<v8::Object> interface_object,
+             v8::Local<v8::Template> interface_template);
 using InstallPropsPerIsolate =
     void (*)(v8::Isolate* isolate,
              const DOMWrapperWorld& world,
-             v8::Local<v8::ObjectTemplate> instance_template,
-             v8::Local<v8::ObjectTemplate> prototype_template,
-             v8::Local<v8::FunctionTemplate> interface_template);
+             v8::Local<v8::Template> instance_template,
+             v8::Local<v8::Template> prototype_template,
+             v8::Local<v8::Template> interface_template);
 
 // Construction of |type_info_table| requires non-trivial initialization due
 // to cross-component address resolution.  We ignore this issue because the
@@ -292,7 +292,9 @@ void TakeSnapshotForWorld(v8::SnapshotCreator* snapshot_creator,
 
   // Set up the context and global object.
   v8::Local<v8::FunctionTemplate> window_interface_template =
-      V8Window::GetWrapperTypeInfo()->DomTemplate(isolate, world);
+      V8Window::GetWrapperTypeInfo()
+          ->GetV8ClassTemplate(isolate, world)
+          .As<v8::FunctionTemplate>();
   v8::Local<v8::ObjectTemplate> window_instance_template =
       window_interface_template->InstanceTemplate();
   v8::Local<v8::Context> context;
@@ -325,7 +327,7 @@ void TakeSnapshotForWorld(v8::SnapshotCreator* snapshot_creator,
   snapshot_creator->AddContext(context, SerializeInternalFieldCallback);
   for (const auto& type_info : type_info_table) {
     snapshot_creator->AddData(
-        type_info.wrapper_type_info->DomTemplate(isolate, world));
+        type_info.wrapper_type_info->GetV8ClassTemplate(isolate, world));
   }
 }
 
@@ -380,8 +382,8 @@ void V8ContextSnapshotImpl::InstallContextIndependentProps(
       continue;
 
     const auto* wrapper_type_info = type_info.wrapper_type_info;
-    v8::Local<v8::FunctionTemplate> interface_template =
-        wrapper_type_info->DomTemplate(isolate, world);
+    v8::Local<v8::Template> interface_template =
+        wrapper_type_info->GetV8ClassTemplate(isolate, world);
     v8::Local<v8::Function> interface_object =
         per_context_data->ConstructorForType(wrapper_type_info);
     v8::Local<v8::Object> prototype_object =

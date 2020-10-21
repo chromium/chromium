@@ -106,7 +106,10 @@ void RemoteWindowProxy::CreateContext() {
   // Create a new v8::Context with the window object as the global object
   // (aka the inner global). Reuse the outer global proxy if it already exists.
   v8::Local<v8::ObjectTemplate> global_template =
-      V8Window::DomTemplate(GetIsolate(), *world_)->InstanceTemplate();
+      V8Window::GetWrapperTypeInfo()
+          ->GetV8ClassTemplate(GetIsolate(), *world_)
+          .As<v8::FunctionTemplate>()
+          ->InstanceTemplate();
   CHECK(!global_template.IsEmpty());
 
   v8::Local<v8::Object> global_proxy =

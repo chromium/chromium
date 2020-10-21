@@ -99,6 +99,24 @@ void V8SetReflectedNullableDOMStringAttribute(
 
 namespace bindings {
 
+CORE_EXPORT void SetupIDLInterfaceTemplates(
+    v8::Isolate* isolate,
+    const WrapperTypeInfo* wrapper_type_info,
+    v8::Local<v8::ObjectTemplate> instance_template,
+    v8::Local<v8::ObjectTemplate> prototype_template,
+    v8::Local<v8::FunctionTemplate> interface_template,
+    v8::Local<v8::FunctionTemplate> parent_interface_template);
+
+CORE_EXPORT void SetupIDLNamespaceTemplate(
+    v8::Isolate* isolate,
+    const WrapperTypeInfo* wrapper_type_info,
+    v8::Local<v8::ObjectTemplate> interface_template);
+
+CORE_EXPORT void SetupIDLCallbackInterfaceTemplate(
+    v8::Isolate* isolate,
+    const WrapperTypeInfo* wrapper_type_info,
+    v8::Local<v8::FunctionTemplate> interface_template);
+
 // Returns the length of arguments ignoring the undefined values at the end.
 inline int NonUndefinedArgumentLength(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -232,9 +250,9 @@ bool ConvertDictionaryMember(v8::Isolate* isolate,
 CORE_EXPORT void InstallCSSPropertyAttributes(
     v8::Isolate* isolate,
     const DOMWrapperWorld& world,
-    v8::Local<v8::ObjectTemplate> instance_template,
-    v8::Local<v8::ObjectTemplate> prototype_template,
-    v8::Local<v8::FunctionTemplate> interface_template,
+    v8::Local<v8::Template> instance_template,
+    v8::Local<v8::Template> prototype_template,
+    v8::Local<v8::Template> interface_template,
     v8::Local<v8::Signature> signature,
     base::span<const char* const> css_property_names);
 CORE_EXPORT void CSSPropertyAttributeGet(

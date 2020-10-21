@@ -62,7 +62,8 @@ v8::Local<v8::Object> V8DOMWrapper::CreateWrapper(
     // V8PerContextData::createWrapperFromCache, though there is no need to
     // cache resulting objects or their constructors.
     const DOMWrapperWorld& world = DOMWrapperWorld::World(scope.GetContext());
-    wrapper = type->DomTemplate(isolate, world)
+    wrapper = type->GetV8ClassTemplate(isolate, world)
+                  .As<v8::FunctionTemplate>()
                   ->InstanceTemplate()
                   ->NewInstance(scope.GetContext())
                   .ToLocalChecked();

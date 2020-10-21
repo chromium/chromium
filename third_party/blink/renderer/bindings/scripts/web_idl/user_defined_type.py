@@ -17,16 +17,6 @@ class UserDefinedType(WithIdentifier):
         WithIdentifier.__init__(self, identifier)
 
     @property
-    def is_interface(self):
-        """Returns True if this is an IDL interface."""
-        return False
-
-    @property
-    def is_dictionary(self):
-        """Returns True if this is an IDL dictionary."""
-        return False
-
-    @property
     def is_callback_function(self):
         """Returns True if this is an IDL callback function."""
         return False
@@ -37,8 +27,23 @@ class UserDefinedType(WithIdentifier):
         return False
 
     @property
+    def is_dictionary(self):
+        """Returns True if this is an IDL dictionary."""
+        return False
+
+    @property
     def is_enumeration(self):
         """Returns True if this is an IDL enumeration."""
+        return False
+
+    @property
+    def is_interface(self):
+        """Returns True if this is an IDL interface."""
+        return False
+
+    @property
+    def is_namespace(self):
+        """Returns True if this is an IDL namespace."""
         return False
 
 

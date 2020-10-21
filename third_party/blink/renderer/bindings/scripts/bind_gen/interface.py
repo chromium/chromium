@@ -2652,6 +2652,10 @@ v8::Local<v8::Array> array =
     bindings::EnumerateIndexedProperties(${isolate}, length);
 bindings::V8SetReturnValue(${info}, array);
 """))
+    body.accumulate(
+        CodeGenAccumulator.require_include_headers([
+            "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h"
+        ]))
 
     return func_decl, func_def
 
@@ -4175,28 +4179,59 @@ def bind_installer_local_vars(code_node, cg_context):
     local_vars = []
 
     local_vars.extend([
-        S("instance_template",
-          ("v8::Local<v8::ObjectTemplate> ${instance_template} = "
-           "${interface_template}->InstanceTemplate();")),
-        S("interface_template",
-          ("v8::Local<v8::FunctionTemplate> ${interface_template} = "
-           "${wrapper_type_info}->DomTemplate(${isolate}, ${world});")),
         S("is_in_secure_context",
           ("const bool ${is_in_secure_context} = "
            "${execution_context}->IsSecureContext();")),
         S("isolate", "v8::Isolate* ${isolate} = ${v8_context}->GetIsolate();"),
-        S("prototype_template",
-          ("v8::Local<v8::ObjectTemplate> ${prototype_template} = "
-           "${interface_template}->PrototypeTemplate();")),
         S("script_state",
           "ScriptState* ${script_state} = ScriptState::From(${v8_context});"),
-        S("signature",
-          ("v8::Local<v8::Signature> ${signature} = "
-           "v8::Signature::New(${isolate}, ${interface_template});")),
         S("wrapper_type_info",
           ("const WrapperTypeInfo* const ${wrapper_type_info} = "
            "${class_name}::GetWrapperTypeInfo();")),
     ])
+
+    if cg_context.interface:
+        local_vars.extend([
+            S("interface_function_template",
+              ("v8::Local<v8::FunctionTemplate> "
+               "${interface_function_template} = "
+               "${interface_template}.As<v8::FunctionTemplate>();")),
+            S("instance_object_template",
+              ("v8::Local<v8::ObjectTemplate> ${instance_object_template} = "
+               "${interface_function_template}->InstanceTemplate();")),
+            S("instance_template",
+              ("v8::Local<v8::Template> ${instance_template} = "
+               "${instance_object_template};")),
+            S("prototype_object_template",
+              ("v8::Local<v8::ObjectTemplate> ${prototype_object_template} = "
+               "${interface_function_template}->PrototypeTemplate();")),
+            S("prototype_template",
+              ("v8::Local<v8::Template> ${prototype_template} = "
+               "${prototype_object_template};")),
+            S("signature", ("v8::Local<v8::Signature> ${signature} = "
+                            "v8::Signature::New(${isolate}, "
+                            "${interface_function_template});")),
+        ])
+    elif cg_context.namespace:
+        local_vars.extend([
+            S("instance_template",
+              "v8::Local<v8::Template> ${instance_template};"),
+            S("prototype_template",
+              "v8::Local<v8::Template> ${prototype_template};"),
+            S("signature", "v8::Local<v8::Signature> ${signature};"),
+        ])
+    elif cg_context.callback_interface:
+        local_vars.extend([
+            S("interface_function_template",
+              ("v8::Local<v8::FunctionTemplate> "
+               "${interface_function_template} = "
+               "${interface_template}.As<v8::FunctionTemplate>();")),
+            S("instance_template",
+              "v8::Local<v8::Template> ${instance_template};"),
+            S("prototype_template",
+              "v8::Local<v8::Template> ${prototype_template};"),
+            S("signature", "v8::Local<v8::Signature> ${signature};"),
+        ])
 
     # context_feature_settings
     node = S("context_feature_settings",
@@ -4232,8 +4267,9 @@ def bind_installer_local_vars(code_node, cg_context):
         # https://heycam.github.io/webidl/#named-properties-object
         _1 = " = ${npo_interface_template}"  # npo = named properties object
     elif interface.inherited:
-        _1 = (" = ${wrapper_type_info}->parent_class->dom_template_function"
-              "(${isolate}, ${world})")
+        _1 = (" = ${wrapper_type_info}->parent_class"
+              "->GetV8ClassTemplate(${isolate}, ${world})"
+              ".As<v8::FunctionTemplate>()")
     else:
         _1 = ""
     local_vars.append(S("parent_interface_template", _format(pattern, _1=_1)))
@@ -4247,12 +4283,13 @@ v8::Local<v8::FunctionTemplate> ${npo_interface_template} =
 v8::Local<v8::ObjectTemplate> ${npo_prototype_template} =
     ${npo_interface_template}->PrototypeTemplate();
 ${npo_interface_template}->Inherit(
-    ${wrapper_type_info}->parent_class->dom_template_function(
-        ${isolate}, ${world}));
+    ${wrapper_type_info}->parent_class
+    ->GetV8ClassTemplate(${isolate}, ${world}).As<v8::FunctionTemplate>());
 ${npo_prototype_template}->SetImmutableProto();
-V8DOMConfiguration::SetClassString(
-    ${isolate}, ${npo_prototype_template},
-    "${interface.identifier}Properties");
+${npo_prototype_template}->Set(
+    v8::Symbol::GetToStringTag(${isolate}),
+    V8AtomicString(${isolate}, "${interface.identifier}Properties"),
+    static_cast<v8::PropertyAttribute>(v8::ReadOnly | v8::DontEnum));
 // Make the named properties object look like the global object.  Note that
 // the named properties object is _not_ a prototype object, plus, we'd like
 // the named properties object to behave just like the global object (= the
@@ -5057,7 +5094,7 @@ def make_install_interface_template(cg_context, function_name, class_name,
     arg_decls = [
         "v8::Isolate* isolate",
         "const DOMWrapperWorld& world",
-        "v8::Local<v8::FunctionTemplate> interface_template",
+        "v8::Local<v8::Template> interface_template",
     ]
     return_type = "void"
 
@@ -5095,18 +5132,38 @@ def make_install_interface_template(cg_context, function_name, class_name,
     })
     bind_installer_local_vars(body, cg_context)
 
-    body.extend([
-        T("V8DOMConfiguration::InitializeDOMInterfaceTemplate("
-          "${isolate}, ${interface_template}, "
-          "${wrapper_type_info}->interface_name, ${parent_interface_template}, "
-          "kV8DefaultWrapperInternalFieldCount);"),
-        EmptyNode(),
-    ])
+    if cg_context.interface:
+        body.extend([
+            T("bindings::SetupIDLInterfaceTemplates("
+              "${isolate}, ${wrapper_type_info}, "
+              "${instance_object_template}, "
+              "${prototype_object_template}, "
+              "${interface_function_template}, "
+              "${parent_interface_template});"),
+            EmptyNode(),
+        ])
+    elif cg_context.namespace:
+        body.extend([
+            T("bindings::SetupIDLNamespaceTemplate("
+              "${isolate}, ${wrapper_type_info}, "
+              "${interface_function_template});"),
+            EmptyNode(),
+        ])
+    elif cg_context.callback_interface:
+        body.extend([
+            T("bindings::SetupIDLCallbackInterfaceTemplate("
+              "${isolate}, ${wrapper_type_info}, "
+              "${interface_function_template});"),
+            EmptyNode(),
+        ])
+    else:
+        assert False
 
     for entry in constructor_entries:
-        set_callback = _format("${interface_template}->SetCallHandler({});",
-                               entry.ctor_callback_name)
-        set_length = _format("${interface_template}->SetLength({});",
+        set_callback = _format(
+            "${interface_function_template}->SetCallHandler({});",
+            entry.ctor_callback_name)
+        set_length = _format("${interface_function_template}->SetLength({});",
                              entry.ctor_func_length)
         if entry.world == CodeGenContext.MAIN_WORLD:
             body.append(
@@ -5123,12 +5180,6 @@ def make_install_interface_template(cg_context, function_name, class_name,
         else:
             assert False
         body.append(EmptyNode())
-
-    if cg_context.callback_interface:
-        body.extend([
-            T("${interface_template}->RemovePrototype();"),
-            EmptyNode(),
-        ])
 
     body.extend([
         supplemental_install_node,
@@ -5169,7 +5220,8 @@ def make_install_interface_template(cg_context, function_name, class_name,
   intrinsic_error_prototype_interface_template->RemovePrototype();
   intrinsic_error_prototype_interface_template->SetIntrinsicDataProperty(
       V8AtomicString(${isolate}, "prototype"), v8::kErrorPrototype);
-  ${interface_template}->Inherit(intrinsic_error_prototype_interface_template);
+  ${interface_function_template}->Inherit(
+      intrinsic_error_prototype_interface_template);
 }
 """))
 
@@ -5185,7 +5237,7 @@ def make_install_interface_template(cg_context, function_name, class_name,
   intrinsic_iterator_prototype_interface_template->RemovePrototype();
   intrinsic_iterator_prototype_interface_template->SetIntrinsicDataProperty(
       V8AtomicString(${isolate}, "prototype"), v8::kAsyncIteratorPrototype);
-  ${interface_template}->Inherit(
+  ${interface_function_template}->Inherit(
       intrinsic_iterator_prototype_interface_template);
 }
 """))
@@ -5195,9 +5247,9 @@ def make_install_interface_template(cg_context, function_name, class_name,
             T("""\
 // HTMLAllCollection-specific settings
 // https://html.spec.whatwg.org/C/#the-htmlallcollection-interface
-${instance_template}->SetCallAsFunctionHandler(
+${instance_object_template}->SetCallAsFunctionHandler(
     ${class_name}::LegacyCallCustom);
-${instance_template}->MarkAsUndetectable();
+${instance_object_template}->MarkAsUndetectable();
 """))
 
     if class_like.identifier == "Iterator":
@@ -5212,7 +5264,7 @@ ${instance_template}->MarkAsUndetectable();
   intrinsic_iterator_prototype_interface_template->RemovePrototype();
   intrinsic_iterator_prototype_interface_template->SetIntrinsicDataProperty(
       V8AtomicString(${isolate}, "prototype"), v8::kIteratorPrototype);
-  ${interface_template}->Inherit(
+  ${interface_function_template}->Inherit(
       intrinsic_iterator_prototype_interface_template);
 }
 """))
@@ -5243,8 +5295,8 @@ ${instance_template}->Set(
         v8::ReadOnly | v8::DontEnum | v8::DontDelete));
 // 7.7.4.2 [[SetPrototypeOf]] ( V )
 // https://html.spec.whatwg.org/C/#location-setprototypeof
-${instance_template}->SetImmutableProto();
-${prototype_template}->SetImmutableProto();
+${instance_object_template}->SetImmutableProto();
+${prototype_object_template}->SetImmutableProto();
 """))
 
     if (interface and interface.indexed_and_named_properties
@@ -5278,8 +5330,8 @@ ${prototype_template}->SetIntrinsicDataProperty(
 // [Global]
 // 3.7.1. [[SetPrototypeOf]]
 // https://heycam.github.io/webidl/#platform-object-setprototypeof
-${instance_template}->SetImmutableProto();
-${prototype_template}->SetImmutableProto();
+${instance_object_template}->SetImmutableProto();
+${prototype_object_template}->SetImmutableProto();
 """))
     elif interface and any("Global" in derived.extended_attributes
                            for derived in interface.deriveds):
@@ -5288,7 +5340,7 @@ ${prototype_template}->SetImmutableProto();
 // [Global] - prototype object in the prototype chain of global objects
 // 3.7.1. [[SetPrototypeOf]]
 // https://heycam.github.io/webidl/#platform-object-setprototypeof
-${prototype_template}->SetImmutableProto();
+${prototype_object_template}->SetImmutableProto();
 """))
 
     func_call_pattern = ("{}(${isolate}, ${world}, ${instance_template}, "
@@ -5362,9 +5414,9 @@ def make_install_properties(cg_context, function_name, class_name,
         arg_decls = [
             "v8::Isolate* isolate",
             "const DOMWrapperWorld& world",
-            "v8::Local<v8::ObjectTemplate> instance_template",
-            "v8::Local<v8::ObjectTemplate> prototype_template",
-            "v8::Local<v8::FunctionTemplate> interface_template",
+            "v8::Local<v8::Template> instance_template",
+            "v8::Local<v8::Template> prototype_template",
+            "v8::Local<v8::Template> interface_template",
         ]
         arg_names = [
             "isolate",
@@ -5379,8 +5431,8 @@ def make_install_properties(cg_context, function_name, class_name,
             "const DOMWrapperWorld& world",
             "v8::Local<v8::Object> instance_object",
             "v8::Local<v8::Object> prototype_object",
-            "v8::Local<v8::Function> interface_object",
-            "v8::Local<v8::FunctionTemplate> interface_template",
+            "v8::Local<v8::Object> interface_object",
+            "v8::Local<v8::Template> interface_template",
             "FeatureSelector feature_selector",
         ]
         arg_names = [
@@ -5398,8 +5450,8 @@ def make_install_properties(cg_context, function_name, class_name,
             "const DOMWrapperWorld& world",
             "v8::Local<v8::Object> instance_object",
             "v8::Local<v8::Object> prototype_object",
-            "v8::Local<v8::Function> interface_object",
-            "v8::Local<v8::FunctionTemplate> interface_template",
+            "v8::Local<v8::Object> interface_object",
+            "v8::Local<v8::Template> interface_template",
         ]
         arg_names = [
             "context",
@@ -5508,16 +5560,16 @@ ${instance_object} = ${v8_context}->Global()->GetPrototype().As<v8::Object>();\
     if is_per_context_install:
         pattern = ("{install_func}("
                    "${isolate}, ${world}, "
-                   "v8::Local<v8::Object>(${instance_object}), "
-                   "v8::Local<v8::Object>(${prototype_object}), "
-                   "v8::Local<v8::Object>(${interface_object}), "
+                   "${instance_object}, "
+                   "${prototype_object}, "
+                   "${interface_object}, "
                    "${signature}, {table_name});")
     else:
         pattern = ("{install_func}("
                    "${isolate}, ${world}, "
-                   "v8::Local<v8::Template>(${instance_template}), "
-                   "v8::Local<v8::Template>(${prototype_template}), "
-                   "v8::Local<v8::Template>(${interface_template}), "
+                   "${instance_template}, "
+                   "${prototype_template}, "
+                   "${interface_template}, "
                    "${signature}, {table_name});")
 
     table_name = "kAttributeTable"
@@ -5649,7 +5701,7 @@ def make_indexed_and_named_property_callbacks_and_install_node(cg_context):
                 map(lambda flag: "int32_t({})".format(flag), flags))))
         pattern = """\
 // Named interceptors
-${instance_template}->SetHandler(
+${instance_object_template}->SetHandler(
     v8::NamedPropertyHandlerConfiguration(
         {impl_bridge}::NamedPropertyGetterCallback,
         {impl_bridge}::NamedPropertySetterCallback,
@@ -5708,7 +5760,7 @@ interface.indexed_and_named_properties.named_getter.extended_attributes:
         property_handler_flags = flags[0]
         pattern = """\
 // Indexed interceptors
-${instance_template}->SetHandler(
+${instance_object_template}->SetHandler(
     v8::IndexedPropertyHandlerConfiguration(
         {impl_bridge}::IndexedPropertyGetterCallback,
         {impl_bridge}::IndexedPropertySetterCallback,
@@ -5943,7 +5995,7 @@ def make_cross_origin_property_callbacks_and_install_node(
 
     text = """\
 // Cross origin properties
-${instance_template}->SetAccessCheckCallbackAndHandler(
+${instance_object_template}->SetAccessCheckCallbackAndHandler(
     CrossOriginAccessCheckCallback,
     v8::NamedPropertyHandlerConfiguration(
         CrossOriginNamedGetterCallback,
@@ -6001,7 +6053,7 @@ ${instance_template}->SetAccessCheckCallbackAndHandler(
 
     text = """\
 // Same origin interceptors
-${instance_template}->SetHandler(
+${instance_object_template}->SetHandler(
     v8::IndexedPropertyHandlerConfiguration(
         SameOriginIndexedGetterCallback,
         SameOriginIndexedSetterCallback,
@@ -6126,35 +6178,6 @@ def make_wrapper_type_info(cg_context, function_name,
     wrapper_type_info_def.set_base_template_vars(
         cg_context.template_bindings())
 
-    wrapper_type_info_def.append(
-        TextNode("""\
-// Migration adapters
-v8::Local<v8::FunctionTemplate> ${class_name}::DomTemplate(
-    v8::Isolate* isolate,
-    const DOMWrapperWorld& world) {
-  return V8DOMConfiguration::DomClassTemplate(
-      isolate, world,
-      const_cast<WrapperTypeInfo*>(${class_name}::GetWrapperTypeInfo()),
-      ${class_name}::InstallInterfaceTemplate);
-}
-"""))
-    if has_context_dependent_props:
-        pattern = """\
-static void InstallContextDependentPropertiesAdapter(
-    v8::Local<v8::Context> context,
-    const DOMWrapperWorld& world,
-    v8::Local<v8::Object> instance_object,
-    v8::Local<v8::Object> prototype_object,
-    v8::Local<v8::Function> interface_object,
-    v8::Local<v8::FunctionTemplate> interface_template) {{
-  ${class_name}::{}(
-      context, world, instance_object, prototype_object, interface_object,
-      interface_template,
-      bindings::V8InterfaceBridgeBase::FeatureSelector());
-}}
-"""
-        wrapper_type_info_def.append(
-            F(pattern, FN_INSTALL_CONTEXT_DEPENDENT_PROPS))
     pattern = """\
 // Construction of WrapperTypeInfo may require non-trivial initialization due
 // to cross-component address resolution in order to load the pointer to the
@@ -6168,13 +6191,14 @@ static void InstallContextDependentPropertiesAdapter(
 
 const WrapperTypeInfo ${class_name}::wrapper_type_info_{{
     gin::kEmbedderBlink,
-    ${class_name}::DomTemplate,
+    ${class_name}::{install_interface_template_func},
     {install_context_dependent_func},
     "${{class_like.identifier}}",
     {wrapper_type_info_of_inherited},
     {wrapper_type_prototype},
     {wrapper_class_id},
     {active_script_wrappable_inheritance},
+    {idl_definition_kind},
 }};
 
 #if defined(COMPONENT_BUILD) && defined(WIN32) && defined(__clang__)
@@ -6183,8 +6207,8 @@ const WrapperTypeInfo ${class_name}::wrapper_type_info_{{
 """
     class_like = cg_context.class_like
     if has_context_dependent_props:
-        install_context_dependent_func = (
-            "InstallContextDependentPropertiesAdapter")
+        install_context_dependent_func = _format(
+            "${class_name}::{}", FN_INSTALL_CONTEXT_DEPENDENT_PROPS)
     else:
         install_context_dependent_func = "nullptr"
     if class_like.is_interface and class_like.inherited:
@@ -6192,25 +6216,36 @@ const WrapperTypeInfo ${class_name}::wrapper_type_info_{{
             v8_bridge_class_name(class_like.inherited))
     else:
         wrapper_type_info_of_inherited = "nullptr"
-    wrapper_type_prototype = ("WrapperTypeInfo::kWrapperTypeObjectPrototype"
-                              if class_like.is_interface else
-                              "WrapperTypeInfo::kWrapperTypeNoPrototype")
-    wrapper_class_id = ("WrapperTypeInfo::kNodeClassId"
-                        if class_like.is_interface
-                        and class_like.does_implement("Node") else
-                        "WrapperTypeInfo::kObjectClassId")
-    active_script_wrappable_inheritance = (
-        "WrapperTypeInfo::kInheritFromActiveScriptWrappable"
-        if class_like.code_generator_info.is_active_script_wrappable else
-        "WrapperTypeInfo::kNotInheritFromActiveScriptWrappable")
+    if class_like.is_interface:
+        wrapper_type_prototype = "WrapperTypeInfo::kWrapperTypeObjectPrototype"
+    else:
+        wrapper_type_prototype = "WrapperTypeInfo::kWrapperTypeNoPrototype"
+    if class_like.is_interface and class_like.does_implement("Node"):
+        wrapper_class_id = "WrapperTypeInfo::kNodeClassId"
+    else:
+        wrapper_class_id = "WrapperTypeInfo::kObjectClassId"
+    if class_like.code_generator_info.is_active_script_wrappable:
+        active_script_wrappable_inheritance = (
+            "WrapperTypeInfo::kInheritFromActiveScriptWrappable")
+    else:
+        active_script_wrappable_inheritance = (
+            "WrapperTypeInfo::kNotInheritFromActiveScriptWrappable")
+    if class_like.is_interface:
+        idl_definition_kind = "WrapperTypeInfo::kIdlInterface"
+    elif class_like.is_namespace:
+        idl_definition_kind = "WrapperTypeInfo::kIdlNamespace"
+    elif class_like.is_callback_interface:
+        idl_definition_kind = "WrapperTypeInfo::kIdlCallbackInterface"
     wrapper_type_info_def.append(
         F(pattern,
+          install_interface_template_func=FN_INSTALL_INTERFACE_TEMPLATE,
           install_context_dependent_func=install_context_dependent_func,
           wrapper_type_info_of_inherited=wrapper_type_info_of_inherited,
           wrapper_type_prototype=wrapper_type_prototype,
           wrapper_class_id=wrapper_class_id,
           active_script_wrappable_inheritance=(
-              active_script_wrappable_inheritance)))
+              active_script_wrappable_inheritance),
+          idl_definition_kind=idl_definition_kind))
 
     if class_like.is_interface:
         blink_class = blink_class_name(class_like)
@@ -6392,9 +6427,9 @@ def _make_v8_context_snapshot_install_props_per_isolate_function(
     arg_decls = [
         "v8::Isolate* isolate",
         "const DOMWrapperWorld& world",
-        "v8::Local<v8::ObjectTemplate> instance_template",
-        "v8::Local<v8::ObjectTemplate> prototype_template",
-        "v8::Local<v8::FunctionTemplate> interface_template",
+        "v8::Local<v8::Template> instance_template",
+        "v8::Local<v8::Template> prototype_template",
+        "v8::Local<v8::Template> interface_template",
     ]
     arg_names = [
         "isolate",
@@ -6897,9 +6932,6 @@ def generate_interface(interface_identifier):
         component_export_header(api_component, for_testing),
         "third_party/blink/renderer/platform/bindings/v8_interface_bridge.h",
     ])
-    api_source_node.accumulator.add_include_headers([
-        "third_party/blink/renderer/bindings/core/v8/v8_dom_configuration.h",
-    ])
     if interface.inherited:
         api_source_node.accumulator.add_include_headers(
             [PathManager(interface.inherited).api_path(ext="h")])
@@ -6909,8 +6941,8 @@ def generate_interface(interface_identifier):
             component_export_header(impl_component, for_testing),
         ])
     impl_source_node.accumulator.add_include_headers([
+        "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h",
         "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h",
-        "third_party/blink/renderer/bindings/core/v8/v8_dom_configuration.h",
         "third_party/blink/renderer/bindings/core/v8/v8_set_return_value_for_core.h",
         "third_party/blink/renderer/platform/bindings/exception_messages.h",
         "third_party/blink/renderer/platform/bindings/idl_member_installer.h",
@@ -6940,13 +6972,6 @@ def generate_interface(interface_identifier):
 
     api_class_def.public_section.append(get_wrapper_type_info_def)
     api_class_def.public_section.append(EmptyNode())
-    api_class_def.public_section.extend([
-        TextNode("// Migration adapter"),
-        TextNode("static v8::Local<v8::FunctionTemplate> DomTemplate("
-                 "v8::Isolate* isolate, "
-                 "const DOMWrapperWorld& world);"),
-        EmptyNode(),
-    ])
     api_class_def.private_section.append(wrapper_type_info_var_def)
     api_class_def.private_section.append(EmptyNode())
     api_source_blink_ns.body.extend([
@@ -7220,14 +7245,14 @@ for (const auto& pair : wrapper_type_info_list) {
   v8::Local<v8::Object> instance_object;
   v8::Local<v8::Object> prototype_object;
   v8::Local<v8::Function> interface_object;
-  v8::Local<v8::FunctionTemplate> interface_template;
+  v8::Local<v8::Template> interface_template;
 
   if (!per_context_data->GetExistingConstructorAndPrototypeForType(
           wrapper_type_info, &prototype_object, &interface_object)) {
     continue;
   }
 
-  interface_template = wrapper_type_info->DomTemplate(isolate, world);
+  interface_template = wrapper_type_info->GetV8ClassTemplate(isolate, world);
   install_func(context, world, instance_object, prototype_object,
                interface_object, interface_template, feature_selector);
 }\

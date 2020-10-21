@@ -86,7 +86,8 @@ static void LocationAttributeGet(const CallbackInfo& info) {
     DOMWrapperWorld& world = DOMWrapperWorld::Current(isolate);
     const auto* location_wrapper_type = location->GetWrapperTypeInfo();
     v8::Local<v8::Object> new_wrapper =
-        location_wrapper_type->DomTemplate(isolate, world)
+        location_wrapper_type->GetV8ClassTemplate(isolate, world)
+            .As<v8::FunctionTemplate>()
             ->NewRemoteInstance()
             .ToLocalChecked();
 

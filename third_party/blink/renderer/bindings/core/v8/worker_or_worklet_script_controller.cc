@@ -134,7 +134,8 @@ void WorkerOrWorkletScriptController::Initialize(const KURL& url_for_debugger) {
   const WrapperTypeInfo* wrapper_type_info =
       script_wrappable->GetWrapperTypeInfo();
   v8::Local<v8::FunctionTemplate> global_interface_template =
-      wrapper_type_info->DomTemplate(isolate_, *world_);
+      wrapper_type_info->GetV8ClassTemplate(isolate_, *world_)
+          .As<v8::FunctionTemplate>();
   DCHECK(!global_interface_template.IsEmpty());
   v8::Local<v8::ObjectTemplate> global_template =
       global_interface_template->InstanceTemplate();

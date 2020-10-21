@@ -168,3 +168,8 @@ class Namespace(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
     def exposed_constructs(self):
         """Returns exposed constructs."""
         return ()
+
+    # UserDefinedType overrides
+    @property
+    def is_namespace(self):
+        return True
