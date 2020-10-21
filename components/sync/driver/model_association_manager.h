@@ -9,7 +9,6 @@
 #include "base/memory/weak_ptr.h"
 #include "components/sync/driver/configure_context.h"
 #include "components/sync/driver/data_type_controller.h"
-#include "components/sync/driver/data_type_manager.h"
 #include "components/sync/engine/shutdown_reason.h"
 
 namespace syncer {
@@ -39,8 +38,7 @@ class ModelAssociationManagerDelegate {
 
   // Called when the ModelAssociationManager has tried to perform model
   // association for all desired types and has nothing left to do.
-  virtual void OnModelAssociationDone(
-      const DataTypeManager::ConfigureResult& result) = 0;
+  virtual void OnModelAssociationDone(const ModelTypeSet& types) = 0;
 
   virtual ~ModelAssociationManagerDelegate() = default;
 };
@@ -100,11 +98,6 @@ class ModelAssociationManager {
   // This callback is passed to |LoadModels| function.
   void ModelLoadCallback(ModelType type, const SyncError& error);
 
-  // Called when all requested types are associated or association times out.
-  // Will clean up any unfinished types, and update |state_| to be |new_state|
-  // Finally, it will notify |delegate_| of the configuration result.
-  void ModelAssociationDone(State new_state);
-
   // A helper to stop an individual datatype.
   void StopDatatypeImpl(const SyncError& error,
                         ShutdownReason shutdown_reason,
@@ -129,18 +122,12 @@ class ModelAssociationManager {
   // Data types that are enabled.
   ModelTypeSet desired_types_;
 
-  // Data types that are requested to associate. Non-empty iff |state_| is
-  // ASSOCIATING.
-  ModelTypeSet requested_types_;
-
   // Data types that are loaded, i.e. ready to associate.
   ModelTypeSet loaded_types_;
 
   // Data types that are associated, i.e. no more action needed during
   // reconfiguration if not disabled.
   ModelTypeSet associated_types_;
-
-  DataTypeManager::ConfigureStatus configure_status_;
 
   bool notified_about_ready_for_configure_;
 

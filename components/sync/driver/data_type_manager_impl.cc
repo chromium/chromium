@@ -743,8 +743,7 @@ void DataTypeManagerImpl::OnSingleDataTypeAssociationDone(ModelType type) {
   }
 }
 
-void DataTypeManagerImpl::OnModelAssociationDone(
-    const DataTypeManager::ConfigureResult& result) {
+void DataTypeManagerImpl::OnModelAssociationDone(const ModelTypeSet& types) {
   DCHECK(state_ == STOPPING || state_ == CONFIGURING);
 
   if (state_ == STOPPING)
@@ -756,17 +755,12 @@ void DataTypeManagerImpl::OnModelAssociationDone(
     return;
   }
 
-  if (result.status == ABORTED) {
-    Abort(result.status);
-    return;
-  }
-
-  DCHECK(result.status == OK);
   DCHECK(!association_types_queue_.empty());
 
   // If this model association was for the full set of types, then this priority
   // set is done. Otherwise it was just the ready types and the unready types
   // still need to be associated.
+  ConfigureResult result(OK, types);
   if (result.requested_types == association_types_queue_.front().types) {
     association_types_queue_.pop();
     if (!association_types_queue_.empty()) {

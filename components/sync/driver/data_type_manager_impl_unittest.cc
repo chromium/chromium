@@ -198,16 +198,6 @@ class TestDataTypeManager : public DataTypeManagerImpl {
     custom_priority_types_ = priority_types;
   }
 
-  DataTypeManager::ConfigureResult configure_result() const {
-    return configure_result_;
-  }
-
-  void OnModelAssociationDone(
-      const DataTypeManager::ConfigureResult& result) override {
-    configure_result_ = result;
-    DataTypeManagerImpl::OnModelAssociationDone(result);
-  }
-
   void set_downloaded_types(ModelTypeSet downloaded_types) {
     downloaded_types_ = downloaded_types;
   }
@@ -218,8 +208,7 @@ class TestDataTypeManager : public DataTypeManagerImpl {
   }
 
  private:
-  ModelTypeSet custom_priority_types_ = ModelTypeSet();
-  DataTypeManager::ConfigureResult configure_result_;
+  ModelTypeSet custom_priority_types_;
 };
 
 // The actual test harness class, parametrized on nigori state (i.e., tests are

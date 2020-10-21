@@ -56,7 +56,6 @@ ModelAssociationManager::ModelAssociationManager(
     : controllers_(controllers),
       delegate_(processor),
       state_(IDLE),
-      configure_status_(DataTypeManager::UNKNOWN),
       notified_about_ready_for_configure_(false) {}
 
 ModelAssociationManager::~ModelAssociationManager() = default;
@@ -199,16 +198,11 @@ void ModelAssociationManager::Associate(
   DVLOG(1) << "Starting association for "
            << ModelTypeSetToString(types_to_associate);
 
-  requested_types_ = types_to_associate;
-
   ModelTypeSet associating_types = types_to_associate;
   associating_types.RetainAll(desired_types_);
   associating_types.RemoveAll(associated_types_);
 
   DCHECK(loaded_types_.HasAll(associating_types));
-
-  // Assume success.
-  configure_status_ = DataTypeManager::OK;
 
   // Associate types in specified order.
   for (ModelType type : kStartOrder) {
@@ -221,7 +215,8 @@ void ModelAssociationManager::Associate(
     }
   }
   DCHECK(associating_types.Empty());
-  ModelAssociationDone(INITIALIZED);
+
+  delegate_->OnModelAssociationDone(types_to_associate);
 }
 
 void ModelAssociationManager::Stop(ShutdownReason shutdown_reason) {
@@ -244,7 +239,6 @@ void ModelAssociationManager::Stop(ShutdownReason shutdown_reason) {
   loaded_types_.Clear();
   associated_types_.Clear();
 
-  DCHECK(requested_types_.Empty());
   state_ = IDLE;
 }
 
@@ -270,20 +264,6 @@ void ModelAssociationManager::ModelLoadCallback(ModelType type,
   DCHECK(!loaded_types_.Has(type));
   loaded_types_.Put(type);
   NotifyDelegateIfReadyForConfigure();
-}
-
-void ModelAssociationManager::ModelAssociationDone(State new_state) {
-  DVLOG(1) << "Model association complete for "
-           << ModelTypeSetToString(requested_types_);
-
-  DataTypeManager::ConfigureResult result(configure_status_, requested_types_);
-
-  // Need to reset state before invoking delegate in order to avoid re-entrancy
-  // issues (delegate may trigger a reconfiguration).
-  requested_types_.Clear();
-  state_ = new_state;
-
-  delegate_->OnModelAssociationDone(result);
 }
 
 void ModelAssociationManager::NotifyDelegateIfReadyForConfigure() {
