@@ -566,10 +566,13 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
     // not scrollable), returning the available width for tabs rather than the
     // actual width for tabs allows tabs to be dragged past the current bounds
     // of the tabstrip, anywhere along the tab strip region.
+    // N.B. The available width for tabs in this case needs to ignore tab
+    // closing mode.
     // 2) If the tabstrip is wider than the tab strip region (and thus is
     // scrollable), returning the tab area width allows tabs to be dragged
     // anywhere within the tabstrip, not just in the leftmost region of it.
-    return std::max(tab_strip_->CalculateAvailableWidthForTabs(),
+    return std::max(tab_strip_->GetAvailableWidthForTabStrip() -
+                        tab_strip_->GetRightSideReservedWidth(),
                     tab_strip_->GetTabAreaWidth());
   }
 
