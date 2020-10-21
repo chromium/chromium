@@ -27,7 +27,9 @@
         <!-- Subtitle: Powerwash state (depends on powerwash mode) -->
         <div hidden="[[!inPowerwashState_]]">
           <div>[[powerwashStateSubtitle_]]</div>
-          <div>[[i18nDynamic(locale, 'resetWarningDataDetails')]]</div>
+          <div>
+            [[i18nDynamic(locale, 'resetWarningDataDetails')]]
+          </div>
         </div>
         <!-- Help Link - Hidden when reverting/rolling back. -->
         <if expr="_google_chrome">
