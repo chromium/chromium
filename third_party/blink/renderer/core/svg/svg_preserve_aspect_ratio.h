@@ -28,6 +28,7 @@ namespace blink {
 
 class AffineTransform;
 class FloatRect;
+class FloatSize;
 class SVGPreserveAspectRatioTearOff;
 
 class SVGPreserveAspectRatio final
@@ -74,12 +75,8 @@ class SVGPreserveAspectRatio final
 
   void TransformRect(FloatRect& dest_rect, FloatRect& src_rect) const;
 
-  AffineTransform ComputeTransform(float logical_x,
-                                   float logical_y,
-                                   float logical_width,
-                                   float logical_height,
-                                   float physical_width,
-                                   float physical_height) const;
+  AffineTransform ComputeTransform(const FloatRect& view_box,
+                                   const FloatSize& viewport_size) const;
 
   String ValueAsString() const override;
   SVGParsingError SetValueAsString(const String&);

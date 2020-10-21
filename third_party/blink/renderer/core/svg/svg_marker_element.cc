@@ -99,11 +99,10 @@ void SVGMarkerElement::Trace(Visitor* visitor) const {
 }
 
 AffineTransform SVGMarkerElement::ViewBoxToViewTransform(
-    float view_width,
-    float view_height) const {
+    const FloatSize& viewport_size) const {
   return SVGFitToViewBox::ViewBoxToViewTransform(
       viewBox()->CurrentValue()->Value(), preserveAspectRatio()->CurrentValue(),
-      view_width, view_height);
+      viewport_size);
 }
 
 void SVGMarkerElement::SvgAttributeChanged(const QualifiedName& attr_name) {

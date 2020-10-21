@@ -481,8 +481,8 @@ SVGTransformChange LayoutSVGRoot::BuildLocalToBorderBoxTransform() {
   auto* svg = To<SVGSVGElement>(GetNode());
   DCHECK(svg);
   float scale = StyleRef().EffectiveZoom();
-  local_to_border_box_transform_ = svg->ViewBoxToViewTransform(
-      ContentWidth() / scale, ContentHeight() / scale);
+  FloatSize content_size(ContentWidth() / scale, ContentHeight() / scale);
+  local_to_border_box_transform_ = svg->ViewBoxToViewTransform(content_size);
 
   FloatPoint translate = svg->CurrentTranslate();
   LayoutSize border_and_padding(BorderLeft() + PaddingLeft(),

@@ -284,30 +284,20 @@ void SVGPreserveAspectRatio::TransformRect(FloatRect& dest_rect,
 }
 
 AffineTransform SVGPreserveAspectRatio::ComputeTransform(
-    float logical_x,
-    float logical_y,
-    float logical_width,
-    float logical_height,
-    float physical_width,
-    float physical_height) const {
-  DCHECK(logical_width);
-  DCHECK(logical_height);
-  DCHECK(physical_width);
-  DCHECK(physical_height);
+    const FloatRect& view_box,
+    const FloatSize& viewport_size) const {
+  DCHECK(!view_box.IsEmpty());
+  DCHECK(!viewport_size.IsEmpty());
+  DCHECK_NE(align_, kSvgPreserveaspectratioUnknown);
+
+  double extended_logical_x = view_box.X();
+  double extended_logical_y = view_box.Y();
+  double extended_logical_width = view_box.Width();
+  double extended_logical_height = view_box.Height();
+  double extended_physical_width = viewport_size.Width();
+  double extended_physical_height = viewport_size.Height();
 
   AffineTransform transform;
-  if (align_ == kSvgPreserveaspectratioUnknown)
-    return transform;
-
-  double extended_logical_x = logical_x;
-  double extended_logical_y = logical_y;
-  double extended_logical_width = logical_width;
-  double extended_logical_height = logical_height;
-  double extended_physical_width = physical_width;
-  double extended_physical_height = physical_height;
-  double logical_ratio = extended_logical_width / extended_logical_height;
-  double physical_ratio = extended_physical_width / extended_physical_height;
-
   if (align_ == kSvgPreserveaspectratioNone) {
     transform.ScaleNonUniform(
         extended_physical_width / extended_logical_width,
@@ -316,6 +306,8 @@ AffineTransform SVGPreserveAspectRatio::ComputeTransform(
     return transform;
   }
 
+  double logical_ratio = extended_logical_width / extended_logical_height;
+  double physical_ratio = extended_physical_width / extended_physical_height;
   if ((logical_ratio < physical_ratio &&
        (meet_or_slice_ == kSvgMeetorsliceMeet)) ||
       (logical_ratio >= physical_ratio &&

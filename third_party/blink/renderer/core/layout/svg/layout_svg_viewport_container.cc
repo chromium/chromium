@@ -77,7 +77,7 @@ SVGTransformChange LayoutSVGViewportContainer::CalculateLocalTransform(
   SVGTransformChangeDetector change_detector(local_to_parent_transform_);
   local_to_parent_transform_ =
       AffineTransform::Translation(viewport_.X(), viewport_.Y()) *
-      svg->ViewBoxToViewTransform(viewport_.Width(), viewport_.Height());
+      svg->ViewBoxToViewTransform(viewport_.Size());
   needs_transform_update_ = false;
   return change_detector.ComputeChange(local_to_parent_transform_);
 }

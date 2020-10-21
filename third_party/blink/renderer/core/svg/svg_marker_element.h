@@ -59,8 +59,7 @@ class SVGMarkerElement final : public SVGElement, public SVGFitToViewBox {
 
   explicit SVGMarkerElement(Document&);
 
-  AffineTransform ViewBoxToViewTransform(float view_width,
-                                         float view_height) const;
+  AffineTransform ViewBoxToViewTransform(const FloatSize& viewport_size) const;
 
   void setOrientToAuto();
   void setOrientToAngle(SVGAngleTearOff*);

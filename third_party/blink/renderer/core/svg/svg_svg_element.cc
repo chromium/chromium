@@ -483,10 +483,8 @@ AffineTransform SVGSVGElement::LocalCoordinateSpaceTransform(
       return matrix.ToAffineTransform();
     }
   }
-  if (!HasEmptyViewBox()) {
-    FloatSize size = CurrentViewportSize();
-    transform.Multiply(ViewBoxToViewTransform(size.Width(), size.Height()));
-  }
+  if (!HasEmptyViewBox())
+    transform.Multiply(ViewBoxToViewTransform(CurrentViewportSize()));
   return transform;
 }
 
@@ -669,11 +667,10 @@ float SVGSVGElement::IntrinsicHeight() const {
   return height()->CurrentValue()->Value(length_context);
 }
 
-AffineTransform SVGSVGElement::ViewBoxToViewTransform(float view_width,
-                                                      float view_height) const {
+AffineTransform SVGSVGElement::ViewBoxToViewTransform(
+    const FloatSize& viewport_size) const {
   AffineTransform ctm = SVGFitToViewBox::ViewBoxToViewTransform(
-      CurrentViewBoxRect(), CurrentPreserveAspectRatio(), view_width,
-      view_height);
+      CurrentViewBoxRect(), CurrentPreserveAspectRatio(), viewport_size);
   if (!view_spec_ || !view_spec_->Transform())
     return ctm;
   const SVGTransformList* transform_list = view_spec_->Transform();

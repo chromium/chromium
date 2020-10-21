@@ -81,15 +81,10 @@ void SVGFitToViewBox::Trace(Visitor* visitor) const {
 AffineTransform SVGFitToViewBox::ViewBoxToViewTransform(
     const FloatRect& view_box_rect,
     const SVGPreserveAspectRatio* preserve_aspect_ratio,
-    float view_width,
-    float view_height) {
-  if (!view_box_rect.Width() || !view_box_rect.Height() || !view_width ||
-      !view_height)
+    const FloatSize& viewport_size) {
+  if (view_box_rect.IsEmpty() || viewport_size.IsEmpty())
     return AffineTransform();
-
-  return preserve_aspect_ratio->ComputeTransform(
-      view_box_rect.X(), view_box_rect.Y(), view_box_rect.Width(),
-      view_box_rect.Height(), view_width, view_height);
+  return preserve_aspect_ratio->ComputeTransform(view_box_rect, viewport_size);
 }
 
 bool SVGFitToViewBox::IsKnownAttribute(const QualifiedName& attr_name) {

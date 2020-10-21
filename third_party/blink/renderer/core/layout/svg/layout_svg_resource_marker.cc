@@ -160,8 +160,7 @@ SVGTransformChange LayoutSVGResourceMarker::CalculateLocalTransform(
   viewport_size_ = FloatSize(width, height);
 
   SVGTransformChangeDetector change_detector(local_to_parent_transform_);
-  local_to_parent_transform_ = marker->ViewBoxToViewTransform(
-      viewport_size_.Width(), viewport_size_.Height());
+  local_to_parent_transform_ = marker->ViewBoxToViewTransform(viewport_size_);
 
   needs_transform_update_ = false;
   return change_detector.ComputeChange(local_to_parent_transform_);
