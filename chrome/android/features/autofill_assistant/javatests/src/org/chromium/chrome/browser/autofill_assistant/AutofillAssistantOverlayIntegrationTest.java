@@ -34,6 +34,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.BitmapDrawableProto;
@@ -57,6 +58,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.test.util.UiDisableIf;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -203,6 +205,7 @@ public class AutofillAssistantOverlayIntegrationTest {
      */
     @Test
     @MediumTest
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/1140957
     public void testShowCastOnDocumentElementInScrolledBrowserWindow() throws Exception {
         SelectorProto element =
                 (SelectorProto) SelectorProto.newBuilder()
