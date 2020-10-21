@@ -101,6 +101,16 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
     }
   }
 
+  content::WebContents* GetWebContents() const {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  std::string GetDocumentInnerHTML() const {
+    return content::EvalJs(GetWebContents(),
+                           "document.documentElement.innerHTML")
+        .ExtractString();
+  }
+
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleSearchRequest(
       const net::test_server::HttpRequest& request) {
@@ -122,7 +132,7 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
           std::make_unique<net::test_server::BasicHttpResponse>();
       resp->set_code(is_prefetch ? net::HTTP_BAD_GATEWAY : net::HTTP_OK);
       resp->set_content_type("text/html");
-      resp->set_content("<html><body>Test</body></html>");
+      resp->set_content("<html><body></body></html>");
       return resp;
     }
 
@@ -130,7 +140,10 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
         std::make_unique<net::test_server::BasicHttpResponse>();
     resp->set_code(net::HTTP_OK);
     resp->set_content_type("text/html");
-    resp->set_content("<html><body>" + request.relative_url + "</body></html>");
+    std::string content = "<html><body> ";
+    content.append(is_prefetch ? "prefetch" : "regular");
+    content.append(" </body></html>");
+    resp->set_content(content);
     return resp;
   }
 
@@ -329,4 +342,84 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest, BadURL) {
   GURL prefetch_url = GetSearchServerQueryURLWithNoQuery(search_path);
 
   EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+}
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
+                       BasicPrefetchServed) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  WaitUntilStatusChanges(base::ASCIIToUTF16(search_terms));
+
+  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
+      base::ASCIIToUTF16(search_terms));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kSuccessfullyCompleted,
+            prefetch_status.value());
+
+  ui_test_utils::NavigateToURL(browser(), prefetch_url);
+
+  auto inner_html = GetDocumentInnerHTML();
+
+  EXPECT_FALSE(base::Contains(inner_html, "regular"));
+  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+}
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
+                       RegularSearchQueryWhenNoPrefetch) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  GURL search_url = GetSearchServerQueryURL(search_terms);
+
+  ui_test_utils::NavigateToURL(browser(), search_url);
+
+  auto inner_html = GetDocumentInnerHTML();
+
+  EXPECT_TRUE(base::Contains(inner_html, "regular"));
+  EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
+}
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
+                       NonMatchingPrefetchURL) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+  std::string search_terms_other = "other";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  WaitUntilStatusChanges(base::ASCIIToUTF16(search_terms));
+
+  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
+      base::ASCIIToUTF16(search_terms));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kSuccessfullyCompleted,
+            prefetch_status.value());
+
+  ui_test_utils::NavigateToURL(browser(),
+                               GetSearchServerQueryURL(search_terms_other));
+
+  auto inner_html = GetDocumentInnerHTML();
+
+  EXPECT_TRUE(base::Contains(inner_html, "regular"));
+  EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
 }

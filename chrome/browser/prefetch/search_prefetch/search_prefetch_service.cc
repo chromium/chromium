@@ -21,6 +21,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "url/origin.h"
 
 SearchPrefetchService::PrefetchRequest::PrefetchRequest(
     const GURL& prefetch_url)
@@ -117,6 +118,11 @@ void SearchPrefetchService::PrefetchRequest::LoadDone(
   simple_loader_.reset();
 }
 
+std::unique_ptr<PrefetchedResponseContainer>
+SearchPrefetchService::PrefetchRequest::TakePrefetchResponse() {
+  return std::move(prefetch_response_container_);
+}
+
 SearchPrefetchService::SearchPrefetchService(Profile* profile)
     : profile_(profile) {
   DCHECK(!profile_->IsOffTheRecord());
@@ -159,4 +165,51 @@ SearchPrefetchService::GetSearchPrefetchStatusForTesting(
   if (prefetches_.find(search_terms) == prefetches_.end())
     return base::nullopt;
   return prefetches_[search_terms]->current_status();
+}
+
+std::unique_ptr<PrefetchedResponseContainer>
+SearchPrefetchService::TakePrefetchResponse(const GURL& url) {
+  auto* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile_);
+  if (!template_url_service)
+    return nullptr;
+
+  base::string16 search_terms;
+  template_url_service->GetDefaultSearchProvider()->ExtractSearchTermsFromURL(
+      url, template_url_service->search_terms_data(), &search_terms);
+
+  if (search_terms.length() == 0) {
+    return nullptr;
+  }
+
+  const auto& iter = prefetches_.find(search_terms);
+
+  if (iter == prefetches_.end()) {
+    return nullptr;
+  }
+
+  // Verify that the URL is the same origin as the prefetch URL. While other
+  // checks should address this by clearing prefetches on user changes to
+  // default search, it is paramount to never serve content from one origin to
+  // another.
+  if (url::Origin::Create(url) !=
+      url::Origin::Create(iter->second->prefetch_url())) {
+    return nullptr;
+  }
+
+  if (iter->second->current_status() !=
+      SearchPrefetchStatus::kSuccessfullyCompleted) {
+    return nullptr;
+  }
+
+  std::unique_ptr<PrefetchedResponseContainer> response =
+      iter->second->TakePrefetchResponse();
+
+  // TODO(ryansturm): For metrics reporting, the prefetch request data should be
+  // moved to the correct tab helper object, for now, the object can be deleted
+  // entirely. Alternatively, the object can remain here with a new timeout in
+  // a set of currently being served requests.
+  prefetches_.erase(iter);
+
+  return response;
 }

@@ -91,6 +91,10 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/plugins/pdf_iframe_navigation_throttle.h"
 #include "chrome/browser/plugins/plugin_utils.h"
+#include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_service_factory.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_url_loader_interceptor.h"
 #include "chrome/browser/prerender/chrome_prerender_contents_delegate.h"
 #include "chrome/browser/prerender/isolated/isolated_prerender_features.h"
 #include "chrome/browser/prerender/isolated/isolated_prerender_service.h"
@@ -4768,6 +4772,11 @@ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
     interceptors.push_back(
         std::make_unique<IsolatedPrerenderURLLoaderInterceptor>(
             frame_tree_node_id));
+  }
+
+  if (SearchPrefetchServiceIsEnabled()) {
+    interceptors.push_back(std::make_unique<SearchPrefetchURLLoaderInterceptor>(
+        frame_tree_node_id));
   }
 
   return interceptors;

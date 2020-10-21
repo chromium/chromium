@@ -38,6 +38,10 @@ class SearchPrefetchService : public KeyedService {
   // Returns whether the prefetch started or not.
   bool MaybePrefetchURL(const GURL& url);
 
+  // Takes the response from this object if |url| matches a prefetched URL.
+  std::unique_ptr<PrefetchedResponseContainer> TakePrefetchResponse(
+      const GURL& url);
+
   // Reports the status of a prefetch for a given search term.
   base::Optional<SearchPrefetchStatus> GetSearchPrefetchStatusForTesting(
       base::string16 search_terms);
@@ -57,6 +61,11 @@ class SearchPrefetchService : public KeyedService {
     void StartPrefetchRequest(Profile* profile);
 
     SearchPrefetchStatus current_status() const { return current_status_; }
+
+    const GURL& prefetch_url() const { return prefetch_url_; }
+
+    // Takes ownership of the prefetched data.
+    std::unique_ptr<PrefetchedResponseContainer> TakePrefetchResponse();
 
    private:
     // Called as a callback when the prefetch request is complete. Stores the
