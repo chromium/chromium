@@ -1708,6 +1708,24 @@
             ]
         }
     ],
+    "ClientStorageAccessContextAuditing": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ClientStorageAccessContextAuditing"
+                    ]
+                }
+            ]
+        }
+    ],
     "CodeCacheDeletionWithoutFilter": [
         {
             "platforms": [
