@@ -90,9 +90,21 @@ void ContentTestSuite::Initialize() {
         gpu_feature_info->disabled_extensions);
     gl::init::InitializeExtensionSettingsOneOffPlatform();
   }
-  testing::TestEventListeners& listeners =
-      testing::UnitTest::GetInstance()->listeners();
-  listeners.Append(new TestInitializationListener);
+  // TestEventListeners repeater event propagation is disabled in death test
+  // child process.
+  if (command_line->HasSwitch("gtest_internal_run_death_test")) {
+    test_content_client_initializer_ =
+        std::make_unique<TestContentClientInitializer>();
+  } else {
+    testing::TestEventListeners& listeners =
+        testing::UnitTest::GetInstance()->listeners();
+    listeners.Append(new TestInitializationListener);
+  }
+}
+
+void ContentTestSuite::Shutdown() {
+  test_content_client_initializer_.reset();
+  ContentTestSuiteBase::Shutdown();
 }
 
 }  // namespace content

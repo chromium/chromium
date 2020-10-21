@@ -791,6 +791,7 @@ class AppCacheUpdateJobTest : public testing::Test,
   }
 
   void TearDown() override {
+    blink::TrialTokenValidator::ResetOriginTrialPolicyGetter();
     weak_partition_factory_.reset();
     browser_context_.reset();
 

@@ -19,6 +19,8 @@
 
 namespace content {
 
+class TestContentClientInitializer;
+
 class ContentTestSuite : public ContentTestSuiteBase {
  public:
   ContentTestSuite(int argc, char** argv);
@@ -26,8 +28,11 @@ class ContentTestSuite : public ContentTestSuiteBase {
 
  protected:
   void Initialize() override;
+  void Shutdown() override;
 
  private:
+  std::unique_ptr<TestContentClientInitializer>
+      test_content_client_initializer_;
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
 
 #if defined(OS_WIN)

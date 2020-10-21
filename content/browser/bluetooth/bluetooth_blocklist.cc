@@ -184,8 +184,6 @@ void BluetoothBlocklist::PopulateWithDefaultValues() {
 }
 
 void BluetoothBlocklist::PopulateWithServerProvidedValues() {
-  // DCHECK to maybe help debug https://crbug.com/604078.
-  DCHECK(GetContentClient());
   Add(GetContentClient()->browser()->GetWebBluetoothBlocklist());
 }
 

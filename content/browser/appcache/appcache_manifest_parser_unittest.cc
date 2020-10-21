@@ -28,6 +28,9 @@ class AppCacheManifestParserTest : public testing::Test {
     blink::TrialTokenValidator::SetOriginTrialPolicyGetter(base::BindRepeating(
         []() -> blink::OriginTrialPolicy* { return &g_origin_trial_policy; }));
   }
+  void TearDown() override {
+    blink::TrialTokenValidator::ResetOriginTrialPolicyGetter();
+  }
 };
 
 TEST_F(AppCacheManifestParserTest, NoData) {

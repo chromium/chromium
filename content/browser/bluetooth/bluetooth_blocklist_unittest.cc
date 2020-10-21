@@ -53,20 +53,31 @@ TEST_F(BluetoothBlocklistTest, ExcludeWritesUUID) {
 }
 
 TEST_F(BluetoothBlocklistTest, InvalidUUID) {
+#ifdef OFFICIAL_BUILD
+  // The official build does not print the reason a CHECK failed.
+  const char kErrorRegex[] = "";
+#else
+  const char kErrorRegex[] = "uuid.IsValid\\(\\)";
+#endif
   BluetoothUUID empty_string_uuid("");
   EXPECT_DEATH_IF_SUPPORTED(
-      list_.Add(empty_string_uuid, BluetoothBlocklist::Value::EXCLUDE), "");
-  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcluded(empty_string_uuid), "");
-  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcludedFromReads(empty_string_uuid), "");
-  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcludedFromWrites(empty_string_uuid), "");
+      list_.Add(empty_string_uuid, BluetoothBlocklist::Value::EXCLUDE),
+      kErrorRegex);
+  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcluded(empty_string_uuid), kErrorRegex);
+  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcludedFromReads(empty_string_uuid),
+                            kErrorRegex);
+  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcludedFromWrites(empty_string_uuid),
+                            kErrorRegex);
 
   BluetoothUUID invalid_string_uuid("Not a valid UUID string.");
   EXPECT_DEATH_IF_SUPPORTED(
-      list_.Add(invalid_string_uuid, BluetoothBlocklist::Value::EXCLUDE), "");
-  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcluded(invalid_string_uuid), "");
-  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcludedFromReads(invalid_string_uuid), "");
+      list_.Add(invalid_string_uuid, BluetoothBlocklist::Value::EXCLUDE),
+      kErrorRegex);
+  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcluded(invalid_string_uuid), kErrorRegex);
+  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcludedFromReads(invalid_string_uuid),
+                            kErrorRegex);
   EXPECT_DEATH_IF_SUPPORTED(list_.IsExcludedFromWrites(invalid_string_uuid),
-                            "");
+                            kErrorRegex);
 }
 
 // Abreviated UUIDs used to create, or test against, the blocklist work
