@@ -24,6 +24,7 @@
   <include name="IDR_CR_ELEMENTS_CR_DIALOG_M_JS"
          file="${root_gen_dir}/ui/webui/resources/cr_elements/cr_dialog/cr_dialog.m.js"
          use_base_dir="false"
+         preprocess="true"
          type="BINDATA" />
   <include name="IDR_CR_ELEMENTS_CR_DRAWER_M_JS"
          file="${root_gen_dir}/ui/webui/resources/cr_elements/cr_drawer/cr_drawer.m.js"

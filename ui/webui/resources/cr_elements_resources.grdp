@@ -54,6 +54,7 @@
              type="chrome_html" />
   <structure name="IDR_CR_ELEMENTS_CR_DIALOG_HTML"
              file="cr_elements/cr_dialog/cr_dialog.html"
+             preprocess="true"
              type="chrome_html" />
   <structure name="IDR_CR_ELEMENTS_CR_DIALOG_JS"
              file="cr_elements/cr_dialog/cr_dialog.js"

@@ -145,9 +145,13 @@
         margin-top: 4px;
       }
     </style>
+    <!-- TODO(crbug/1139958): Remove "not chromeos" block when chromeVox issue is fixed-->
+    <!--Update both "not chromeos" and "chromeos" blocks if either changes-->
+<if expr="not chromeos">
     <dialog id="dialog" on-close="onNativeDialogClose_"
-        on-cancel="onNativeDialogCancel_" part="dialog" aria-labelledby="title">
-      <!-- This wrapper is necessary, such that the "pulse" animation is not
+        on-cancel="onNativeDialogCancel_" part="dialog"
+        aria-labelledby="title">
+    <!-- This wrapper is necessary, such that the "pulse" animation is not
         erroneously played when the user clicks on the outer-most scrollbar. -->
       <div id="content-wrapper" part="wrapper">
         <div class="top-container">
@@ -168,6 +172,32 @@
         <slot name="footer"></slot>
       </div>
     </dialog>
+</if>
+<if expr="chromeos">
+    <dialog id="dialog" on-close="onNativeDialogClose_"
+        on-cancel="onNativeDialogCancel_" part="dialog">
+    <!-- This wrapper is necessary, such that the "pulse" animation is not
+        erroneously played when the user clicks on the outer-most scrollbar. -->
+        <div id="content-wrapper" part="wrapper">
+          <div class="top-container">
+            <div id="title" class="title-container" tabindex="-1">
+              <slot name="title"></slot>
+            </div>
+            <cr-icon-button id="close" class="icon-clear"
+                hidden$="[[!showCloseButton]]" aria-label$="[[closeText]]"
+                on-click="cancel" on-keypress="onCloseKeypress_">
+            </cr-icon-button>
+          </div>
+          <slot name="header"></slot>
+          <div class="body-container" id="container" show-bottom-shadow
+              part="body-container">
+            <slot name="body"></slot>
+          </div>
+          <slot name="button-container"></slot>
+          <slot name="footer"></slot>
+        </div>
+    </dialog>
+</if>
   </template>
   <script src="cr_dialog.js"></script>
 </dom-module>
