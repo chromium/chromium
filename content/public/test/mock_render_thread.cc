@@ -58,18 +58,6 @@ class MockRenderMessageFilterImpl : public mojom::RenderMessageFilter {
 #endif
 };
 
-// Some tests require that a valid mojo::RouteProvider* be accessed to send
-// messages over. The RouteProvider does not need to be bound to any real
-// implementation, so we simply bind it to a pipe that we'll forget about, as to
-// drain all messages sent over the remote.
-mojom::RouteProvider* GetStaticRemoteRouteProvider() {
-  static mojo::Remote<mojom::RouteProvider> remote;
-  if (!remote) {
-    ignore_result(remote.BindNewPipeAndPassReceiver());
-  }
-  return remote.get();
-}
-
 }  // namespace
 
 MockRenderThread::MockRenderThread()
@@ -169,11 +157,6 @@ void MockRenderThread::AddObserver(RenderThreadObserver* observer) {
 
 void MockRenderThread::RemoveObserver(RenderThreadObserver* observer) {
   observers_.RemoveObserver(observer);
-}
-
-mojom::RouteProvider* MockRenderThread::GetRemoteRouteProvider(
-    util::PassKey<AgentSchedulingGroup>) {
-  return GetStaticRemoteRouteProvider();
 }
 
 void MockRenderThread::SetResourceDispatcherDelegate(

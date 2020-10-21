@@ -10,6 +10,7 @@
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -61,7 +62,8 @@ class CONTENT_EXPORT AgentSchedulingGroup
   void AddRoute(int32_t routing_id, IPC::Listener* listener);
   void RemoveRoute(int32_t routing_id);
 
-  mojom::RouteProvider* GetRemoteRouteProvider();
+  // This is virtual only for unit tests.
+  virtual mojom::RouteProvider* GetRemoteRouteProvider();
 
  private:
   // `MaybeAssociatedReceiver` and `MaybeAssociatedRemote` are temporary helper
@@ -99,6 +101,7 @@ class CONTENT_EXPORT AgentSchedulingGroup
         mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost>
             host_remote);
     ~MaybeAssociatedRemote();
+    mojom::AgentSchedulingGroupHost* get();
 
    private:
     absl::variant<mojo::Remote<mojom::AgentSchedulingGroupHost>,
@@ -118,6 +121,9 @@ class CONTENT_EXPORT AgentSchedulingGroup
       const FrameReplicationState& replicated_state,
       const base::UnguessableToken& frame_token,
       const base::UnguessableToken& devtools_frame_token) override;
+  void BindAssociatedRouteProvider(
+      mojo::PendingAssociatedRemote<mojom::RouteProvider> remote,
+      mojo::PendingAssociatedReceiver<mojom::RouteProvider> receiever) override;
 
   // mojom::RouteProvider
   void GetRoute(
@@ -140,6 +146,20 @@ class CONTENT_EXPORT AgentSchedulingGroup
   // Remote stub of mojom::AgentSchedulingGroupHost, used for sending calls to
   // the (browser-side) AgentSchedulingGroupHost.
   MaybeAssociatedRemote host_remote_;
+
+  // The |mojom::RouteProvider| mojo pair to setup
+  // |blink::AssociatedInterfaceProvider| routes between us and the browser-side
+  // |AgentSchedulingGroup|.
+  mojo::AssociatedRemote<mojom::RouteProvider> remote_route_provider_;
+  mojo::AssociatedReceiver<mojom::RouteProvider> route_provider_receiver_{this};
+
+  // The `blink::mojom::AssociatedInterfaceProvider` receiver set that *all*
+  // browser-side `blink::AssociatedInterfaceProvider` objects own a remote to.
+  // `AgentSchedulingGroupHost` will be responsible for routing each associated
+  // interface request to the appropriate renderer object.
+  mojo::AssociatedReceiverSet<blink::mojom::AssociatedInterfaceProvider,
+                              int32_t>
+      associated_interface_provider_receivers_;
 };
 
 }  // namespace content

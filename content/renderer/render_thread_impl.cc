@@ -630,8 +630,6 @@ void RenderThreadImpl::Init() {
           URLLoaderThrottleProviderType::kFrame);
 
   GetAssociatedInterfaceRegistry()->AddInterface(base::BindRepeating(
-      &RenderThreadImpl::OnRouteProviderReceiver, base::Unretained(this)));
-  GetAssociatedInterfaceRegistry()->AddInterface(base::BindRepeating(
       &RenderThreadImpl::OnRendererInterfaceReceiver, base::Unretained(this)));
 
   const base::CommandLine& command_line =
@@ -948,16 +946,6 @@ RenderThreadImpl::CreateVideoFrameCompositorTaskRunner() {
   }
 
   return video_frame_compositor_task_runner_;
-}
-
-mojom::RouteProvider* RenderThreadImpl::GetRemoteRouteProvider(
-    util::PassKey<AgentSchedulingGroup>) {
-  if (!remote_route_provider_) {
-    DCHECK(GetChannel());
-    GetChannel()->GetRemoteAssociatedInterface(&remote_route_provider_);
-  }
-
-  return remote_route_provider_.get();
 }
 
 void RenderThreadImpl::InitializeWebKit(mojo::BinderMap* binders) {
@@ -1891,26 +1879,6 @@ void RenderThreadImpl::OnMemoryPressure(
   }
 }
 
-void RenderThreadImpl::GetRoute(
-    int32_t routing_id,
-    mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterfaceProvider>
-        receiver) {
-  associated_interface_provider_receivers_.Add(this, std::move(receiver),
-                                               routing_id);
-}
-
-void RenderThreadImpl::GetAssociatedInterface(
-    const std::string& name,
-    mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterface>
-        receiver) {
-  int32_t routing_id =
-      associated_interface_provider_receivers_.current_context();
-  // We delegate to ChildThreadImpl when we actually need to communicate with
-  // IPC::Listeners, since it owns the router.
-  ChildThreadImpl::GetAssociatedInterface(routing_id, name,
-                                          std::move(receiver));
-}
-
 scoped_refptr<base::SingleThreadTaskRunner>
 RenderThreadImpl::GetMediaThreadTaskRunner() {
   DCHECK(main_thread_runner()->BelongsToCurrentThread());
@@ -2098,14 +2066,6 @@ void RenderThreadImpl::OnSyncMemoryPressure(
       v8_memory_pressure_level);
   blink::MemoryPressureNotificationToWorkerThreadIsolates(
       v8_memory_pressure_level);
-}
-
-void RenderThreadImpl::OnRouteProviderReceiver(
-    mojo::PendingAssociatedReceiver<mojom::RouteProvider> receiver) {
-  DCHECK(!route_provider_receiver_.is_bound());
-  route_provider_receiver_.Bind(
-      std::move(receiver),
-      GetWebMainThreadScheduler()->DeprecatedDefaultTaskRunner());
 }
 
 void RenderThreadImpl::OnRendererInterfaceReceiver(

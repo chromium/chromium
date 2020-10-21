@@ -1947,8 +1947,6 @@ void RenderProcessHostImpl::InitializeChannelProxy() {
   //
   // See OnProcessLaunched() for some additional details of this somewhat
   // surprising behavior.
-  remote_route_provider_.reset();
-  channel_->GetRemoteAssociatedInterface(&remote_route_provider_);
   renderer_interface_.reset();
   channel_->GetRemoteAssociatedInterface(&renderer_interface_);
 
@@ -2483,8 +2481,6 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
   // This base::Unretained() usage is safe since the associated_registry is
   // owned by this RPHI.
   associated_registry->AddInterface(base::BindRepeating(
-      &RenderProcessHostImpl::BindRouteProvider, base::Unretained(this)));
-  associated_registry->AddInterface(base::BindRepeating(
       &RenderProcessHostImpl::CreateRendererHost, base::Unretained(this)));
 
   AddUIThreadInterface(
@@ -2537,31 +2533,10 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
       std::move(registry), std::move(child_host_pending_receiver_));
 }
 
-void RenderProcessHostImpl::BindRouteProvider(
-    mojo::PendingAssociatedReceiver<mojom::RouteProvider> receiver) {
-  if (route_provider_receiver_.is_bound())
-    return;
-  route_provider_receiver_.Bind(std::move(receiver));
-}
-
-void RenderProcessHostImpl::GetRoute(
-    int32_t routing_id,
-    mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterfaceProvider>
-        receiver) {
-  DCHECK(receiver.is_valid());
-  associated_interface_provider_receivers_.Add(this, std::move(receiver),
-                                               routing_id);
-}
-
-void RenderProcessHostImpl::GetAssociatedInterface(
-    const std::string& name,
-    mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterface>
-        receiver) {
-  int32_t routing_id =
-      associated_interface_provider_receivers_.current_context();
-  IPC::Listener* listener = listeners_.Lookup(routing_id);
-  if (listener)
-    listener->OnAssociatedInterfaceRequest(name, receiver.PassHandle());
+IPC::Listener* RenderProcessHostImpl::GetListener(
+    util::PassKey<AgentSchedulingGroupHost>,
+    int32_t routing_id) {
+  return listeners_.Lookup(routing_id);
 }
 
 void RenderProcessHostImpl::CreateEmbeddedFrameSinkProvider(
@@ -2854,11 +2829,6 @@ bool RenderProcessHostImpl::IsUnused() {
 
 void RenderProcessHostImpl::SetIsUsed() {
   is_unused_ = false;
-}
-
-mojom::RouteProvider* RenderProcessHostImpl::GetRemoteRouteProvider(
-    util::PassKey<AgentSchedulingGroupHost>) {
-  return remote_route_provider_.get();
 }
 
 void RenderProcessHostImpl::AddRoute(int32_t routing_id,
@@ -4634,8 +4604,6 @@ void RenderProcessHostImpl::ProcessDied(
 void RenderProcessHostImpl::ResetIPC() {
   renderer_host_receiver_.reset();
   io_thread_host_impl_.reset();
-  route_provider_receiver_.reset();
-  associated_interface_provider_receivers_.Clear();
   associated_interfaces_.reset();
   coordinator_connector_receiver_.reset();
   tracing_registration_.reset();

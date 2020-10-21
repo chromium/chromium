@@ -124,8 +124,6 @@ class CONTENT_EXPORT RenderThreadImpl
     : public RenderThread,
       public ChildThreadImpl,
       public mojom::Renderer,
-      public mojom::RouteProvider,
-      public blink::mojom::AssociatedInterfaceProvider,
       public viz::mojom::CompositingModeWatcher,
       public CompositorDependencies {
  public:
@@ -427,9 +425,6 @@ class CONTENT_EXPORT RenderThreadImpl
     video_frame_compositor_task_runner_ = task_runner;
   }
 
-  mojom::RouteProvider* GetRemoteRouteProvider(
-      util::PassKey<AgentSchedulingGroup>) override;
-
  private:
   friend class RenderThreadImplBrowserTest;
   friend class AgentSchedulingGroup;
@@ -494,18 +489,6 @@ class CONTENT_EXPORT RenderThreadImpl
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 
-  // mojom::RouteProvider implementation:
-  void GetRoute(
-      int32_t routing_id,
-      mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterfaceProvider>
-          receiver) override;
-
-  // blink::mojom::AssociatedInterfaceProvider implementation:
-  void GetAssociatedInterface(
-      const std::string& name,
-      mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterface>
-          receiver) override;
-
   bool RendererIsHidden() const;
   void OnRendererHidden();
   void OnRendererVisible();
@@ -528,8 +511,6 @@ class CONTENT_EXPORT RenderThreadImpl
   std::unique_ptr<viz::SyntheticBeginFrameSource>
   CreateSyntheticBeginFrameSource();
 
-  void OnRouteProviderReceiver(
-      mojo::PendingAssociatedReceiver<mojom::RouteProvider> receiver);
   void OnRendererInterfaceReceiver(
       mojo::PendingAssociatedReceiver<mojom::Renderer> receiver);
 
@@ -630,12 +611,6 @@ class CONTENT_EXPORT RenderThreadImpl
   std::map<int, mojo::PendingReceiver<mojom::Frame>> pending_frames_;
 
   mojo::AssociatedRemote<mojom::RendererHost> renderer_host_;
-
-  mojo::AssociatedReceiver<mojom::RouteProvider> route_provider_receiver_{this};
-  mojo::AssociatedReceiverSet<blink::mojom::AssociatedInterfaceProvider,
-                              int32_t>
-      associated_interface_provider_receivers_;
-  mojo::AssociatedRemote<mojom::RouteProvider> remote_route_provider_;
 
   blink::AssociatedInterfaceRegistry associated_interfaces_;
 

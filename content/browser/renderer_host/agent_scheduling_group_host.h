@@ -13,6 +13,7 @@
 #include "content/common/renderer.mojom-forward.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -188,6 +189,20 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   // Remote stub of `mojom::AgentSchedulingGroup`, used for sending calls to the
   // (renderer-side) `AgentSchedulingGroup`.
   MaybeAssociatedRemote mojo_remote_;
+
+  // The `mojom::RouteProvider` mojo pair to setup
+  // `blink::AssociatedInterfaceProvider` routes between this and the
+  // renderer-side `AgentSchedulingGroup`.
+  mojo::AssociatedRemote<mojom::RouteProvider> remote_route_provider_;
+  mojo::AssociatedReceiver<mojom::RouteProvider> route_provider_receiver_{this};
+
+  // The `blink::mojom::AssociatedInterfaceProvider` receiver set that *all*
+  // renderer-side `blink::AssociatedInterfaceProvider` objects own a remote to.
+  // `AgentSchedulingGroupHost` will be responsible for routing each associated
+  // interface request to the appropriate renderer host object.
+  mojo::AssociatedReceiverSet<blink::mojom::AssociatedInterfaceProvider,
+                              int32_t>
+      associated_interface_provider_receivers_;
 };
 
 }  // namespace content

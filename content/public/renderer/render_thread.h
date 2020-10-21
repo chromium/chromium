@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/single_thread_task_runner.h"
-#include "base/util/type_safety/pass_key.h"
 #include "content/common/content_export.h"
 #include "content/public/child/child_thread.h"
 #include "ipc/ipc_channel_proxy.h"
@@ -43,12 +42,6 @@ class Extension;
 }  // namespace v8
 
 namespace content {
-class AgentSchedulingGroup;
-
-namespace mojom {
-class RouteProvider;
-}  // namespace mojom
-
 class RenderThreadObserver;
 class ResourceDispatcherDelegate;
 
@@ -81,9 +74,6 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
   // Add/remove observers for the process.
   virtual void AddObserver(RenderThreadObserver* observer) = 0;
   virtual void RemoveObserver(RenderThreadObserver* observer) = 0;
-
-  virtual mojom::RouteProvider* GetRemoteRouteProvider(
-      util::PassKey<AgentSchedulingGroup>) = 0;
 
   // Set the ResourceDispatcher delegate object for this process.
   virtual void SetResourceDispatcherDelegate(

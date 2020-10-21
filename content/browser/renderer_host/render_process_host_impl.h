@@ -29,6 +29,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/sequence_bound.h"
+#include "base/util/type_safety/pass_key.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_launcher.h"
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
@@ -159,8 +160,6 @@ typedef base::Thread* (*RendererMainThreadFactoryFunction)(
 class CONTENT_EXPORT RenderProcessHostImpl
     : public RenderProcessHost,
       public ChildProcessLauncher::Client,
-      public mojom::RouteProvider,
-      public blink::mojom::AssociatedInterfaceProvider,
       public mojom::RendererHost,
       public blink::mojom::DomStorageProvider,
       public memory_instrumentation::mojom::CoordinatorConnector {
@@ -272,9 +271,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
   void DumpProfilingData(base::OnceClosure callback) override;
 #endif
-
-  mojom::RouteProvider* GetRemoteRouteProvider(
-      util::PassKey<AgentSchedulingGroupHost>);
 
   // IPC::Sender via RenderProcessHost.
   bool Send(IPC::Message* msg) override;
@@ -747,17 +743,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Registers Mojo interfaces to be exposed to the renderer.
   void RegisterMojoInterfaces();
 
-  // mojom::RouteProvider:
-  void GetRoute(
-      int32_t routing_id,
-      mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterfaceProvider>
-          receiver) override;
-
-  // blink::mojom::AssociatedInterfaceProvider:
-  void GetAssociatedInterface(
-      const std::string& name,
-      mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterface>
-          receiver) override;
+  // TODO(crbug.com/1132901): We'll be able to remove this method once
+  // `AgentSchedulingGroupHost` maintains its own map of IPC::Listeners, but for
+  // now we'll let it delegate to this class.
+  IPC::Listener* GetListener(util::PassKey<AgentSchedulingGroupHost>,
+                             int32_t routing_id);
 
   // mojom::RendererHost
   using BrowserHistogramCallback =
@@ -769,9 +759,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void ResolveProxy(
       const GURL& url,
       mojom::RendererHost::ResolveProxyCallback callback) override;
-
-  void BindRouteProvider(
-      mojo::PendingAssociatedReceiver<mojom::RouteProvider> receiver);
 
   void CreateEmbeddedFrameSinkProvider(
       mojo::PendingReceiver<blink::mojom::EmbeddedFrameSinkProvider> receiver);
@@ -986,11 +973,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // nature (e.g. metrics, memory usage).
   std::unique_ptr<blink::AssociatedInterfaceRegistry> associated_interfaces_;
 
-  mojo::AssociatedReceiver<mojom::RouteProvider> route_provider_receiver_{this};
-  mojo::AssociatedReceiverSet<blink::mojom::AssociatedInterfaceProvider,
-                              int32_t>
-      associated_interface_provider_receivers_;
-
   // These fields are cached values that are updated in
   // UpdateProcessPriorityInputs, and are used to compute priority sent to
   // ChildProcessLauncher.
@@ -1169,7 +1151,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   mojo::Remote<mojom::ChildProcess> child_process_;
   // This will be bound to |io_thread_host_impl_|.
   mojo::PendingReceiver<mojom::ChildProcessHost> child_host_pending_receiver_;
-  mojo::AssociatedRemote<mojom::RouteProvider> remote_route_provider_;
   mojo::AssociatedRemote<mojom::Renderer> renderer_interface_;
   mojo::AssociatedReceiver<mojom::RendererHost> renderer_host_receiver_{this};
   mojo::Receiver<memory_instrumentation::mojom::CoordinatorConnector>

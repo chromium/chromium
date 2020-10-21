@@ -29,8 +29,8 @@
 #include "content/public/renderer/render_view_visitor.h"
 #include "content/public/test/fake_render_widget_host.h"
 #include "content/public/test/frame_load_waiter.h"
-#include "content/renderer/agent_scheduling_group.h"
 #include "content/renderer/loader/resource_dispatcher.h"
+#include "content/renderer/mock_agent_scheduling_group.h"
 #include "content/renderer/render_process.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/render_view_impl.h"
@@ -226,15 +226,17 @@ bool GetWindowsKeyCode(char ascii_character, int* key_code) {
 
 std::unique_ptr<AgentSchedulingGroup> CreateAgentSchedulingGroup(
     RenderThread& render_thread) {
+  // Fake mojos for the AgentSchedulingGroupHost interface.
   mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost>
       agent_scheduling_group_host;
   ignore_result(
       agent_scheduling_group_host.InitWithNewEndpointAndPassReceiver());
   mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup>
-      agent_scheduling_group_mojo;
-  return std::make_unique<AgentSchedulingGroup>(
+      agent_scheduling_group_receiver;
+
+  return std::make_unique<MockAgentSchedulingGroup>(
       render_thread, std::move(agent_scheduling_group_host),
-      std::move(agent_scheduling_group_mojo),
+      std::move(agent_scheduling_group_receiver),
       base::OnceCallback<void(const AgentSchedulingGroup*)>());
 }
 

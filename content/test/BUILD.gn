@@ -253,6 +253,8 @@ static_library("test_support") {
     "../public/test/web_contents_tester.h",
     "../public/test/web_ui_browsertest_util.cc",
     "../public/test/web_ui_browsertest_util.h",
+    "../renderer/mock_agent_scheduling_group.cc",
+    "../renderer/mock_agent_scheduling_group.h",
     "content_browser_consistency_checker.cc",
     "content_browser_consistency_checker.h",
     "content_test_suite.cc",

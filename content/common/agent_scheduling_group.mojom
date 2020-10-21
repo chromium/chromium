@@ -4,6 +4,7 @@
 
 module content.mojom;
 
+import "content/common/associated_interfaces.mojom";
 import "content/common/document_scoped_interface_bundle.mojom";
 import "content/common/native_types.mojom";
 import "ipc/constants.mojom";
@@ -206,6 +207,21 @@ interface AgentSchedulingGroupHost {
 // AgentSchedulingGroupHost and the renderer process's AgentSchedulingGroup.
 // Implemented by content::AgentSchedulingGroup (in the renderer process).
 interface AgentSchedulingGroup {
+  // Tells the renderer to bind the receiver to a backing RouteProvider
+  // implementation, which in practice is itself. Also passes a remote to the
+  // RouteProvider interface owned by AgentSchedulingGroupHost so that we
+  // immediately have bidirectional RouteProvider communication between
+  // AgentSchedulingGroup <=> AgentSchedulingGroupHost. We have this as a
+  // method on this interface, as opposed to passing this remote/receiver pair
+  // over the method that creates the remote AgentSchedulingGroup. This is
+  // because we need the RouteProvider remote/receiver pair to be associated
+  // with the message pipe that the AgentSchedulingGroup is associated with,
+  // which may be different than the message pipe that we create the
+  // AgentSchedulingGroup over.
+  BindAssociatedRouteProvider(
+    pending_associated_remote<RouteProvider> remote,
+    pending_associated_receiver<RouteProvider> receiver);
+
   // Tells the renderer to create a new view.
   CreateView(CreateViewParams params);
 

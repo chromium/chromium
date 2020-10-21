@@ -11,7 +11,6 @@
 #include "base/observer_list.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string16.h"
-#include "base/util/type_safety/pass_key.h"
 #include "build/build_config.h"
 #include "content/public/common/widget_type.h"
 #include "content/public/renderer/render_thread.h"
@@ -41,7 +40,6 @@ namespace mojom {
 class CreateNewWindowParams;
 class CreateNewWindowReply;
 class RenderMessageFilter;
-class RouteProvider;
 }
 
 // This class is a very simple mock of RenderThread. It simulates an IPC channel
@@ -70,8 +68,6 @@ class MockRenderThread : public RenderThread {
   void RemoveFilter(IPC::MessageFilter* filter) override;
   void AddObserver(RenderThreadObserver* observer) override;
   void RemoveObserver(RenderThreadObserver* observer) override;
-  mojom::RouteProvider* GetRemoteRouteProvider(
-      util::PassKey<AgentSchedulingGroup>) override;
   void SetResourceDispatcherDelegate(
       ResourceDispatcherDelegate* delegate) override;
   void RecordAction(const base::UserMetricsAction& action) override;

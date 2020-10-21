@@ -843,14 +843,8 @@ bool ChildThreadImpl::IsInBrowserProcess() const {
   return static_cast<bool>(browser_process_io_runner_);
 }
 
-void ChildThreadImpl::GetAssociatedInterface(
-    int32_t routing_id,
-    const std::string& name,
-    mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterface>
-        receiver) {
-  Listener* route = router_.GetRoute(routing_id);
-  if (route)
-    route->OnAssociatedInterfaceRequest(name, receiver.PassHandle());
+IPC::Listener* ChildThreadImpl::GetListener(int32_t routing_id) {
+  return router_.GetRoute(routing_id);
 }
 
 }  // namespace content

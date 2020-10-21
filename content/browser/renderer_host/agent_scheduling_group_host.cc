@@ -199,10 +199,6 @@ bool AgentSchedulingGroupHost::InitProcessAndMojos() {
 }
 
 ChannelProxy* AgentSchedulingGroupHost::GetChannel() {
-  // TODO(crbug.com/1111231): If the process is not initialized, it also implies
-  // that it is not Ready, meaning the channel we return here will not be valid.
-  // In that case we should return |nullptr|, but that causes certain tests to
-  // fail. This should be changed once those tests are fixed.
   if (process_.IsInitializedAndNotDead())
     SetUpMojoIfNeeded();
 
@@ -232,11 +228,8 @@ void AgentSchedulingGroupHost::RemoveRoute(int32_t routing_id) {
 }
 
 mojom::RouteProvider* AgentSchedulingGroupHost::GetRemoteRouteProvider() {
-  // TODO(domfarolino): Remove `GetRemoteRouteProvider` from `RenderProcessHost`
-  // and make `AgentSchedulingGroupHost` a fully-fledged RouteProvider.
-  RenderProcessHostImpl& process =
-      static_cast<RenderProcessHostImpl&>(process_);
-  return process.GetRemoteRouteProvider(PassKey());
+  SetUpMojoIfNeeded();
+  return remote_route_provider_.get();
 }
 
 void AgentSchedulingGroupHost::CreateFrame(mojom::CreateFrameParamsPtr params) {
@@ -277,34 +270,52 @@ void AgentSchedulingGroupHost::GetRoute(
     int32_t routing_id,
     mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterfaceProvider>
         receiver) {
-  // TODO(crbug.com/1111231): Make AgentSchedulingGroupHost a fully-fledged
-  // RouteProvider, so we can register routes directly with an
-  // AgentSchedulingGroupHost rather than RenderProcessHostImpl.
-  static_cast<RenderProcessHostImpl&>(process_).GetRoute(routing_id,
-                                                         std::move(receiver));
+  DCHECK(receiver.is_valid());
+  associated_interface_provider_receivers_.Add(this, std::move(receiver),
+                                               routing_id);
 }
 
 void AgentSchedulingGroupHost::GetAssociatedInterface(
     const std::string& name,
     mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterface>
         receiver) {
-  // TODO(crbug.com/1111231): Make AgentSchedulingGroupHost a fully-fledged
-  // AssociatedInterfaceProvider, so we can start associating interfaces
-  // directly with the AgentSchedulingGroupHost interface.
-  static_cast<RenderProcessHostImpl&>(process_).GetAssociatedInterface(
-      name, std::move(receiver));
+  int32_t routing_id =
+      associated_interface_provider_receivers_.current_context();
+  IPC::Listener* listener =
+      static_cast<RenderProcessHostImpl&>(process_).GetListener(PassKey(),
+                                                                routing_id);
+  if (listener)
+    listener->OnAssociatedInterfaceRequest(name, receiver.PassHandle());
 }
 
 void AgentSchedulingGroupHost::ResetMojo() {
   receiver_.reset();
   mojo_remote_.reset();
+  remote_route_provider_.reset();
+  route_provider_receiver_.reset();
+  associated_interface_provider_receivers_.Clear();
+  // TODO(domfarolino): Move the SetUpMojoIfNeeded() logic to this method, along
+  // with invoking RenderProcessHostImpl::EnableSendQueue(), so that upon
+  // renderer process crash, we immediately reset our mojos.
 }
 
 void AgentSchedulingGroupHost::SetUpMojoIfNeeded() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(process_.IsInitializedAndNotDead());
+  // We don't DCHECK |process_.IsInitializedAndNotDead()| here because we may
+  // end up here after the render process has died but before the
+  // RenderProcessHostImpl is re-initialized (and thus not considered dead
+  // anymore).
 
-  DCHECK_EQ(receiver_.is_bound(), mojo_remote_.is_bound());
+  // The bind states of all of |AgentSchedulingGroupHost|'s remotes and
+  // receivers are expected to be equivalent.
+  DCHECK(process_.GetRendererInterface());
+
+  // Make sure that the bind state of all mojos are equivalent.
+  DCHECK_EQ(mojo_remote_.is_bound(), receiver_.is_bound());
+  DCHECK_EQ(receiver_.is_bound(), remote_route_provider_.is_bound());
+  DCHECK_EQ(remote_route_provider_.is_bound(),
+            route_provider_receiver_.is_bound());
+
   if (receiver_.is_bound())
     return;
 
@@ -317,6 +328,10 @@ void AgentSchedulingGroupHost::SetUpMojoIfNeeded() {
         receiver_.BindNewPipeAndPassRemote(),
         mojo_remote_.BindNewPipeAndPassReceiver());
   }
+
+  mojo_remote_.get()->BindAssociatedRouteProvider(
+      route_provider_receiver_.BindNewEndpointAndPassRemote(),
+      remote_route_provider_.BindNewEndpointAndPassReceiver());
 }
 
 }  // namespace content
