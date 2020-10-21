@@ -112,7 +112,7 @@ scoped_refptr<history::TopSites> TopSitesFactory::BuildTopSites(
                                            ServiceAccessType::EXPLICIT_ACCESS);
   scoped_refptr<history::TopSitesImpl> top_sites(new history::TopSitesImpl(
       profile->GetPrefs(), history_service, prepopulated_page_list,
-      base::Bind(CanAddURLToHistory)));
+      base::BindRepeating(CanAddURLToHistory)));
   top_sites->Init(context->GetPath().Append(history::kTopSitesFilename));
   return top_sites;
 }
