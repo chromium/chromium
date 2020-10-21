@@ -853,16 +853,11 @@ int main(int argc, const char* argv[]) {
   //     int (*func_ptr)();
   //     int (MyStruct::* member_func_ptr)(char);
   //     int (*ptr_to_array_of_ints)[123]
-  //     StructOrClassWithDeletedOperatorNew* stack_or_gc_ptr;
   //   };
   // matches |int*|, but not the other types.
-  auto record_with_deleted_allocation_operator_type_matcher =
-      recordType(hasDeclaration(cxxRecordDecl(
-          hasMethod(allOf(hasOverloadedOperatorName("new"), isDeleted())))));
   auto supported_pointer_types_matcher =
       pointerType(unless(pointee(hasUnqualifiedDesugaredType(
-          anyOf(record_with_deleted_allocation_operator_type_matcher,
-                functionType(), memberPointerType(), arrayType())))));
+          anyOf(functionType(), memberPointerType(), arrayType())))));
 
   // Implicit field declarations =========
   // Matches field declarations that do not explicitly appear in the source
@@ -898,7 +893,7 @@ int main(int argc, const char* argv[]) {
       fieldDecl(
           allOf(hasType(supported_pointer_types_matcher),
                 unless(anyOf(isExpansionInSystemHeader(), isInExternCContext(),
-                             isInThirdPartyLocation(), isInGeneratedLocation(),
+                             isInThirdPartyLocation(),
                              isInLocationListedInFilterFile(&paths_to_exclude),
                              isFieldDeclListedInFilterFile(&fields_to_exclude),
                              implicit_field_decl_matcher))))
@@ -1062,6 +1057,46 @@ int main(int argc, const char* argv[]) {
   FilteredExprWriter global_destructor_writer(&output_helper,
                                               "global-destructor");
   match_finder.addMatcher(global_destructor_matcher, &global_destructor_writer);
+
+  // Matches rewritable fields in generated code - see the testcase in
+  // tests/gen-generated-code-test.cc
+  auto field_in_generated_code_matcher =
+      fieldDecl(allOf(field_decl_matcher, isInGeneratedLocation()));
+  FilteredExprWriter field_in_generated_code_writer(&output_helper,
+                                                    "generated-code");
+  match_finder.addMatcher(field_in_generated_code_matcher,
+                          &field_in_generated_code_writer);
+
+  // Matches CXXRecordDecls with a deleted operator new - e.g.
+  // StructWithNoOperatorNew below:
+  //     struct StructWithNoOperatorNew {
+  //       void* operator new(size_t) = delete;
+  //     };
+  auto record_with_deleted_allocation_operator_type_matcher = cxxRecordDecl(
+      hasMethod(allOf(hasOverloadedOperatorName("new"), isDeleted())));
+  // Matches rewritable fields inside structs with no operator new.  See the
+  // testcase in tests/gen-deleted-operator-new-test.cc
+  auto field_in_record_with_deleted_operator_new_matcher = fieldDecl(
+      allOf(field_decl_matcher,
+            hasParent(record_with_deleted_allocation_operator_type_matcher)));
+  FilteredExprWriter field_in_record_with_deleted_operator_new_writer(
+      &output_helper, "embedder-has-no-operator-new");
+  match_finder.addMatcher(field_in_record_with_deleted_operator_new_matcher,
+                          &field_in_record_with_deleted_operator_new_writer);
+  // Matches rewritable fields that contain a pointer, pointing to a pointee
+  // with no operator new.  See the testcase in
+  // tests/gen-deleted-operator-new-test.cc
+  auto field_pointing_to_record_with_deleted_operator_new_matcher =
+      fieldDecl(allOf(
+          field_decl_matcher,
+          hasType(pointerType(
+              pointee(hasUnqualifiedDesugaredType(recordType(hasDeclaration(
+                  record_with_deleted_allocation_operator_type_matcher))))))));
+  FilteredExprWriter field_pointing_to_record_with_deleted_operator_new_writer(
+      &output_helper, "pointee-has-no-operator-new");
+  match_finder.addMatcher(
+      field_pointing_to_record_with_deleted_operator_new_matcher,
+      &field_pointing_to_record_with_deleted_operator_new_writer);
 
   // Matches fields in unions - see the testcases in tests/gen-unions-test.cc.
   auto union_field_decl_matcher = fieldDecl(

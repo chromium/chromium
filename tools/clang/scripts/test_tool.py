@@ -97,6 +97,7 @@ def _ApplyTool(tools_clang_scripts_directory,
           os.path.join(tools_clang_scripts_directory, 'apply_edits.py'), '-p',
           test_directory_for_tool
       ]
+      args.extend(actual_files)  # Limit edits to the test files.
       processes.append(subprocess.Popen(
           args, stdin=processes[-1].stdout, stdout=subprocess.PIPE))
 

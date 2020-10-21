@@ -1,0 +1,9 @@
+==== BEGIN EDITS ====
+include-user-header:::/usr/local/google/home/lukasza/src/chromium4/src/tools/clang/rewrite_raw_ptr_fields/tests/gen-deleted-operator-new-actual.cc:::-1:::-1:::base/memory/checked_ptr.h
+r:::/usr/local/google/home/lukasza/src/chromium4/src/tools/clang/rewrite_raw_ptr_fields/tests/gen-deleted-operator-new-actual.cc:::1837:::5:::CheckedPtr<int> 
+r:::/usr/local/google/home/lukasza/src/chromium4/src/tools/clang/rewrite_raw_ptr_fields/tests/gen-deleted-operator-new-actual.cc:::2313:::15:::CheckedPtr<NoNewOperator> 
+==== END EDITS ====
+==== BEGIN FIELD FILTERS ====
+MyStruct::pointer_to_pointee_with_no_operator_new  # pointee-has-no-operator-new
+NoNewOperator::field_in_struct_with_no_operator_new  # embedder-has-no-operator-new
+==== END FIELD FILTERS ====

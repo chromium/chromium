@@ -1,0 +1,9 @@
+==== BEGIN EDITS ====
+include-user-header:::/usr/local/google/home/lukasza/src/chromium4/src/tools/clang/rewrite_raw_ptr_fields/tests/gen/generated_header.h:::-1:::-1:::base/memory/checked_ptr.h
+r:::/usr/local/google/home/lukasza/src/chromium4/src/tools/clang/rewrite_raw_ptr_fields/tests/gen/generated_header.h:::552:::5:::CheckedPtr<int> 
+r:::/usr/local/google/home/lukasza/src/chromium4/src/tools/clang/rewrite_raw_ptr_fields/tests/gen/generated_header.h:::570:::11:::CheckedPtr<SomeClass> 
+==== END EDITS ====
+==== BEGIN FIELD FILTERS ====
+GeneratedStruct::ptr_field  # generated-code
+GeneratedStruct::ptr_field2  # generated-code
+==== END FIELD FILTERS ====

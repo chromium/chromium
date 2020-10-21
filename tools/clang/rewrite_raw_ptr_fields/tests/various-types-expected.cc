@@ -23,16 +23,7 @@ struct SomeTemplate {
   T t;
 };
 
-// The class below deletes the |operator new| - this simulate's Blink's
-// STACK_ALLOCATED macro and/or OilPan / GarbageCollected<T> classes.
-class NoNewOperator {
-  void* operator new(size_t) = delete;
-};
-
 struct MyStruct {
-  // No rewrite expected for classes with no |operator new|.
-  NoNewOperator* no_new_ptr;
-
   // Expected rewrite: CheckedPtr<CheckedPtr<SomeClass>> double_ptr;
   // TODO(lukasza): Handle recursion/nesting.
   CheckedPtr<SomeClass*> double_ptr;
