@@ -258,6 +258,7 @@ class AvdConfig(object):
 
         config_ini_contents.update({
             'disk.dataPartition.size': '4G',
+            'hw.keyboard': 'yes',
             'hw.lcd.density': density,
             'hw.lcd.height': height,
             'hw.lcd.width': width,
