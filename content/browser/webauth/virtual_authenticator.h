@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -52,14 +53,14 @@ class CONTENT_EXPORT VirtualAuthenticator
   // false otherwise.
   bool AddRegistration(std::vector<uint8_t> key_handle,
                        const std::string& rp_id,
-                       const std::vector<uint8_t>& private_key,
+                       base::span<const uint8_t> private_key,
                        int32_t counter);
 
   // Register a new resident credential. Returns true if the registration was
   // successful, false otherwise.
   bool AddResidentRegistration(std::vector<uint8_t> key_handle,
                                std::string rp_id,
-                               const std::vector<uint8_t>& private_key,
+                               base::span<const uint8_t> private_key,
                                int32_t counter,
                                std::vector<uint8_t> user_handle);
 
@@ -69,11 +70,6 @@ class CONTENT_EXPORT VirtualAuthenticator
   // Remove a credential identified by |key_handle|. Returns true if the
   // credential was found and removed, false otherwise.
   bool RemoveRegistration(const std::vector<uint8_t>& key_handle);
-
-  // Returns the large blob associated with the credential identified by
-  // |key_handle|, if any.
-  base::Optional<std::vector<uint8_t>> GetLargeBlob(
-      base::span<const uint8_t> key_handle);
 
   // Sets whether tests of user presence succeed or not for new requests sent to
   // this authenticator. The default is true.
@@ -129,7 +125,7 @@ class CONTENT_EXPORT VirtualAuthenticator
       GetLargeBlobCallback callback,
       data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result);
   void OnLargeBlobCompressed(
-      const std::vector<uint8_t>& key_handle,
+      base::span<const uint8_t> key_handle,
       SetLargeBlobCallback callback,
       data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result);
 

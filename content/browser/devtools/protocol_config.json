@@ -110,7 +110,8 @@
             },
             {
                 "domain": "WebAuthn",
-                "include": ["enable", "disable", "addVirtualAuthenticator", "removeVirtualAuthenticator", "addCredential", "removeCredential", "clearCredentials", "getCredential", "getCredentials", "setUserVerified", "setAutomaticPresenceSimulation"]
+                "include": ["enable", "disable", "addVirtualAuthenticator", "removeVirtualAuthenticator", "addCredential", "removeCredential", "clearCredentials", "getCredential", "getCredentials", "setUserVerified", "setAutomaticPresenceSimulation"],
+                "async": ["addCredential", "getCredential", "getCredentials"]
             }
         ]
     },

@@ -8255,6 +8255,11 @@ experimental domain WebAuthn
       # Client To Authenticator Protocol 2.
       ctap2
 
+  type Ctap2Version extends string
+    enum
+      ctap2_0
+      ctap2_1
+
   type AuthenticatorTransport extends string
     enum
       # Cross-Platform authenticator attachments:
@@ -8268,6 +8273,8 @@ experimental domain WebAuthn
   type VirtualAuthenticatorOptions extends object
     properties
       AuthenticatorProtocol protocol
+      # Defaults to ctap2_0. Ignored if |protocol| == u2f.
+      optional Ctap2Version ctap2Version
       AuthenticatorTransport transport
       # Defaults to false.
       optional boolean hasResidentKey
@@ -8300,6 +8307,9 @@ experimental domain WebAuthn
       # assertion.
       # See https://w3c.github.io/webauthn/#signature-counter
       integer signCount
+      # The large blob associated with the credential.
+      # See https://w3c.github.io/webauthn/#sctn-large-blob-extension
+      optional binary largeBlob
 
   # Enable the WebAuthn domain and start intercepting credential storage and
   # retrieval with a virtual authenticator.

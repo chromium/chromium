@@ -59,5 +59,12 @@
   credentialOptions.credential.userHandle = btoa("nina");
   testRunner.log(await dp.WebAuthn.addCredential(credentialOptions));
 
+  // Try with a large blob on a non resident credential.
+  credentialOptions.credential.privateKey =
+      await session.evaluateAsync("generateBase64Key()");
+  credentialOptions.credential.largeBlob = btoa("large blob");
+  credentialOptions.credential.isResidentCredential = false;
+  testRunner.log(await dp.WebAuthn.addCredential(credentialOptions));
+
   testRunner.completeTest();
 })

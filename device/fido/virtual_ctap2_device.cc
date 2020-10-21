@@ -564,8 +564,10 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
   if (config.large_blob_support) {
     DCHECK(config.resident_key_support);
     DCHECK(base::Contains(config.ctap2_versions, Ctap2Version::kCtap2_1));
-    DCHECK(config.pin_uv_auth_token_support)
-        << "PinUvAuthToken support is required to write large blobs";
+    DCHECK((!config.pin_support && !config.internal_uv_support) ||
+           config.pin_uv_auth_token_support)
+        << "PinUvAuthToken support is required to write large blobs for "
+           "uv-enabled authenticators";
     options_updated = true;
     options.supports_large_blobs = true;
   }

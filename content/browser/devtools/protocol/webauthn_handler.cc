@@ -9,6 +9,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -30,6 +33,8 @@ static constexpr char kCableNotSupportedOnU2f[] =
     "U2F only supports the \"usb\", \"ble\" and \"nfc\" transports";
 static constexpr char kCouldNotCreateCredential[] =
     "An error occurred trying to create the credential";
+static constexpr char kCouldNotStoreLargeBlob[] =
+    "An error occurred trying to store the large blob";
 static constexpr char kCredentialNotFound[] =
     "Could not find a credential matching the ID";
 static constexpr char kDevToolsNotAttached[] =
@@ -38,10 +43,16 @@ static constexpr char kErrorCreatingAuthenticator[] =
     "An error occurred when trying to create the authenticator";
 static constexpr char kHandleRequiredForResidentCredential[] =
     "The User Handle is required for Resident Credentials";
+static constexpr char kInvalidCtapVersion[] =
+    "Invalid CTAP version. Valid values are \"ctap2_0\" and \"ctap2_1\"";
 static constexpr char kInvalidProtocol[] = "The protocol is not valid";
 static constexpr char kInvalidTransport[] = "The transport is not valid";
 static constexpr char kInvalidUserHandle[] =
     "The User Handle must have a maximum size of ";
+static constexpr char kLargeBlobRequiresResidentKey[] =
+    "Large blob requires resident key support";
+static constexpr char kLargeBlobRequiresCtap2_1[] =
+    "Large blob requires a CTAP 2.1 authenticator";
 static constexpr char kResidentCredentialNotSupported[] =
     "The Authenticator does not support Resident Credentials.";
 static constexpr char kRpIdRequired[] =
@@ -50,12 +61,53 @@ static constexpr char kVirtualEnvironmentNotEnabled[] =
     "The Virtual Authenticator Environment has not been enabled for this "
     "session";
 
+class GetCredentialCallbackAggregator
+    : public base::RefCounted<GetCredentialCallbackAggregator> {
+ public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
+  explicit GetCredentialCallbackAggregator(
+      std::unique_ptr<WebAuthn::Backend::GetCredentialsCallback> callback)
+      : callback_(std::move(callback)) {}
+  GetCredentialCallbackAggregator(const GetCredentialCallbackAggregator&) =
+      delete;
+  GetCredentialCallbackAggregator operator=(
+      const GetCredentialCallbackAggregator&) = delete;
+
+  void OnLargeBlob(std::unique_ptr<WebAuthn::Credential> credential,
+                   const base::Optional<std::vector<uint8_t>>& blob) {
+    if (blob) {
+      credential->SetLargeBlob(Binary::fromVector(*blob));
+    }
+    credentials_->emplace_back(std::move(credential));
+  }
+
+ private:
+  friend class base::RefCounted<GetCredentialCallbackAggregator>;
+  ~GetCredentialCallbackAggregator() {
+    callback_->sendSuccess(std::move(credentials_));
+  }
+
+  std::unique_ptr<WebAuthn::Backend::GetCredentialsCallback> callback_;
+  std::unique_ptr<Array<WebAuthn::Credential>> credentials_ =
+      std::make_unique<Array<WebAuthn::Credential>>();
+};
+
 device::ProtocolVersion ConvertToProtocolVersion(base::StringPiece protocol) {
   if (protocol == WebAuthn::AuthenticatorProtocolEnum::Ctap2)
     return device::ProtocolVersion::kCtap2;
   if (protocol == WebAuthn::AuthenticatorProtocolEnum::U2f)
     return device::ProtocolVersion::kU2f;
   return device::ProtocolVersion::kUnknown;
+}
+
+base::Optional<device::Ctap2Version> ConvertToCtap2Version(
+    base::StringPiece version) {
+  if (version == WebAuthn::Ctap2VersionEnum::Ctap2_0)
+    return device::Ctap2Version::kCtap2_0;
+  if (version == WebAuthn::Ctap2VersionEnum::Ctap2_1)
+    return device::Ctap2Version::kCtap2_1;
+  return base::nullopt;
 }
 
 std::vector<uint8_t> CopyBinaryToVector(const Binary& binary) {
@@ -143,6 +195,20 @@ Response WebAuthnHandler::AddVirtualAuthenticator(
     return Response::InvalidParams(kCableNotSupportedOnU2f);
   }
 
+  auto ctap2_version = ConvertToCtap2Version(
+      options->GetCtap2Version(WebAuthn::Ctap2VersionEnum::Ctap2_0));
+  if (!ctap2_version)
+    return Response::InvalidParams(kInvalidCtapVersion);
+
+  bool has_large_blob = options->GetHasLargeBlob(/*default=*/false);
+  bool has_resident_key = options->GetHasResidentKey(/*default=*/false);
+  if (has_large_blob && !has_resident_key)
+    return Response::InvalidParams(kLargeBlobRequiresResidentKey);
+  if (has_large_blob && (protocol != device::ProtocolVersion::kCtap2 ||
+                         ctap2_version < device::Ctap2Version::kCtap2_1)) {
+    return Response::InvalidParams(kLargeBlobRequiresCtap2_1);
+  }
+
   VirtualAuthenticator* authenticator = nullptr;
   switch (protocol) {
     case device::ProtocolVersion::kU2f:
@@ -150,13 +216,12 @@ Response WebAuthnHandler::AddVirtualAuthenticator(
       break;
     case device::ProtocolVersion::kCtap2:
       authenticator = authenticator_manager->CreateCTAP2Authenticator(
-          device::Ctap2Version::kCtap2_0, *transport,
+          *ctap2_version, *transport,
           transport == device::FidoTransportProtocol::kInternal
               ? device::AuthenticatorAttachment::kPlatform
               : device::AuthenticatorAttachment::kCrossPlatform,
-          options->GetHasResidentKey(/*default=*/false),
-          options->GetHasUserVerification(/*default=*/false),
-          options->GetHasLargeBlob(/*default=*/false));
+          has_resident_key, options->GetHasUserVerification(/*default=*/false),
+          has_large_blob);
       break;
     case device::ProtocolVersion::kUnknown:
       NOTREACHED();
@@ -188,84 +253,136 @@ Response WebAuthnHandler::RemoveVirtualAuthenticator(
   return Response::Success();
 }
 
-Response WebAuthnHandler::AddCredential(
+void WebAuthnHandler::AddCredential(
     const String& authenticator_id,
-    std::unique_ptr<WebAuthn::Credential> credential) {
+    std::unique_ptr<WebAuthn::Credential> credential,
+    std::unique_ptr<AddCredentialCallback> callback) {
   VirtualAuthenticator* authenticator;
   Response response = FindAuthenticator(authenticator_id, &authenticator);
-  if (!response.IsSuccess())
-    return response;
+  if (!response.IsSuccess()) {
+    callback->sendFailure(std::move(response));
+    return;
+  }
 
   Binary user_handle = credential->GetUserHandle(Binary());
   if (credential->HasUserHandle() &&
       user_handle.size() > device::kUserHandleMaxLength) {
-    return Response::InvalidParams(
+    callback->sendFailure(Response::InvalidParams(
         kInvalidUserHandle +
-        base::NumberToString(device::kUserHandleMaxLength));
+        base::NumberToString(device::kUserHandleMaxLength)));
+    return;
   }
 
-  if (!credential->HasRpId())
-    return Response::InvalidParams(kRpIdRequired);
+  if (!credential->HasRpId()) {
+    callback->sendFailure(Response::InvalidParams(kRpIdRequired));
+    return;
+  }
+  if (credential->HasLargeBlob() && !credential->GetIsResidentCredential()) {
+    callback->sendFailure(
+        Response::InvalidParams(kLargeBlobRequiresResidentKey));
+    return;
+  }
 
   bool credential_created;
+  std::vector<uint8_t> credential_id =
+      CopyBinaryToVector(credential->GetCredentialId());
   if (credential->GetIsResidentCredential()) {
-    if (!authenticator->has_resident_key())
-      return Response::InvalidParams(kResidentCredentialNotSupported);
+    if (!authenticator->has_resident_key()) {
+      callback->sendFailure(
+          Response::InvalidParams(kResidentCredentialNotSupported));
+      return;
+    }
 
-    if (!credential->HasUserHandle())
-      return Response::InvalidParams(kHandleRequiredForResidentCredential);
+    if (!credential->HasUserHandle()) {
+      callback->sendFailure(
+          Response::InvalidParams(kHandleRequiredForResidentCredential));
+      return;
+    }
 
     credential_created = authenticator->AddResidentRegistration(
-        CopyBinaryToVector(credential->GetCredentialId()),
-        credential->GetRpId(""),
-        CopyBinaryToVector(credential->GetPrivateKey()),
+        credential_id, credential->GetRpId(""), credential->GetPrivateKey(),
         credential->GetSignCount(), CopyBinaryToVector(user_handle));
   } else {
     credential_created = authenticator->AddRegistration(
-        CopyBinaryToVector(credential->GetCredentialId()),
-        credential->GetRpId(""),
-        CopyBinaryToVector(credential->GetPrivateKey()),
+        credential_id, credential->GetRpId(""), credential->GetPrivateKey(),
         credential->GetSignCount());
   }
 
-  if (!credential_created)
-    return Response::ServerError(kCouldNotCreateCredential);
+  if (!credential_created) {
+    callback->sendFailure(Response::ServerError(kCouldNotCreateCredential));
+    return;
+  }
 
-  return Response::Success();
+  if (credential->HasLargeBlob()) {
+    authenticator->SetLargeBlob(
+        credential_id, CopyBinaryToVector(credential->GetLargeBlob({})),
+        base::BindOnce(
+            [](std::unique_ptr<AddCredentialCallback> callback, bool success) {
+              if (!success) {
+                callback->sendFailure(
+                    Response::ServerError(kCouldNotStoreLargeBlob));
+                return;
+              }
+              callback->sendSuccess();
+            },
+            std::move(callback)));
+    return;
+  }
+
+  callback->sendSuccess();
 }
 
-Response WebAuthnHandler::GetCredential(
+void WebAuthnHandler::GetCredential(
     const String& authenticator_id,
     const Binary& credential_id,
-    std::unique_ptr<WebAuthn::Credential>* out_credential) {
+    std::unique_ptr<GetCredentialCallback> callback) {
   VirtualAuthenticator* authenticator;
   Response response = FindAuthenticator(authenticator_id, &authenticator);
-  if (!response.IsSuccess())
-    return response;
+  if (!response.IsSuccess()) {
+    callback->sendFailure(response);
+    return;
+  }
 
   auto registration =
       authenticator->registrations().find(CopyBinaryToVector(credential_id));
-  if (registration == authenticator->registrations().end())
-    return Response::InvalidParams(kCredentialNotFound);
+  if (registration == authenticator->registrations().end()) {
+    callback->sendFailure(Response::InvalidParams(kCredentialNotFound));
+    return;
+  }
 
-  *out_credential = BuildCredentialFromRegistration(*registration);
-  return Response::Success();
+  authenticator->GetLargeBlob(
+      registration->first,
+      base::BindOnce(
+          [](std::unique_ptr<WebAuthn::Credential> registration,
+             std::unique_ptr<GetCredentialCallback> callback,
+             const base::Optional<std::vector<uint8_t>>& blob) {
+            if (blob) {
+              registration->SetLargeBlob(Binary::fromVector(*blob));
+            }
+            callback->sendSuccess(std::move(registration));
+          },
+          BuildCredentialFromRegistration(*registration), std::move(callback)));
 }
 
-Response WebAuthnHandler::GetCredentials(
+void WebAuthnHandler::GetCredentials(
     const String& authenticator_id,
-    std::unique_ptr<Array<WebAuthn::Credential>>* out_credentials) {
+    std::unique_ptr<GetCredentialsCallback> callback) {
   VirtualAuthenticator* authenticator;
   Response response = FindAuthenticator(authenticator_id, &authenticator);
-  if (!response.IsSuccess())
-    return response;
-
-  *out_credentials = std::make_unique<Array<WebAuthn::Credential>>();
-  for (const auto& registration : authenticator->registrations()) {
-    (*out_credentials)
-        ->emplace_back(BuildCredentialFromRegistration(registration));
+  if (!response.IsSuccess()) {
+    callback->sendFailure(response);
+    return;
   }
-  return Response::Success();
+
+  auto aggregator = base::MakeRefCounted<GetCredentialCallbackAggregator>(
+      std::move(callback));
+  for (const auto& registration : authenticator->registrations()) {
+    authenticator->GetLargeBlob(
+        registration.first,
+        base::BindOnce(&GetCredentialCallbackAggregator::OnLargeBlob,
+                       aggregator,
+                       BuildCredentialFromRegistration(registration)));
+  }
 }
 
 Response WebAuthnHandler::RemoveCredential(const String& authenticator_id,

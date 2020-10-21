@@ -51,7 +51,7 @@ void VirtualAuthenticator::AddReceiver(
 bool VirtualAuthenticator::AddRegistration(
     std::vector<uint8_t> key_handle,
     const std::string& rp_id,
-    const std::vector<uint8_t>& private_key,
+    base::span<const uint8_t> private_key,
     int32_t counter) {
   base::Optional<std::unique_ptr<device::VirtualFidoDevice::PrivateKey>>
       fido_private_key =
@@ -71,7 +71,7 @@ bool VirtualAuthenticator::AddRegistration(
 bool VirtualAuthenticator::AddResidentRegistration(
     std::vector<uint8_t> key_handle,
     std::string rp_id,
-    const std::vector<uint8_t>& private_key,
+    base::span<const uint8_t> private_key,
     int32_t counter,
     std::vector<uint8_t> user_handle) {
   base::Optional<std::unique_ptr<device::VirtualFidoDevice::PrivateKey>>
@@ -221,7 +221,7 @@ void VirtualAuthenticator::OnLargeBlobUncompressed(
 }
 
 void VirtualAuthenticator::OnLargeBlobCompressed(
-    const std::vector<uint8_t>& key_handle,
+    base::span<const uint8_t> key_handle,
     SetLargeBlobCallback callback,
     data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result) {
   auto registration = state_->registrations.find(key_handle);

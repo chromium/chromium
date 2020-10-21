@@ -18,6 +18,14 @@ Check that the WebAuthn addVirtualAuthenticator command validates parameters
 {
     error : {
         code : -32602
+        message : Invalid CTAP version. Valid values are "ctap2_0" and "ctap2_1"
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32602
         message : The transport is not valid
     }
     id : <number>
@@ -27,6 +35,30 @@ Check that the WebAuthn addVirtualAuthenticator command validates parameters
     error : {
         code : -32602
         message : U2F only supports the "usb", "ble" and "nfc" transports
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32602
+        message : Large blob requires resident key support
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32602
+        message : Large blob requires a CTAP 2.1 authenticator
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32602
+        message : Large blob requires a CTAP 2.1 authenticator
     }
     id : <number>
     sessionId : <string>
