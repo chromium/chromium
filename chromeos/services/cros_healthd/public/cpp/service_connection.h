@@ -65,8 +65,6 @@ class ServiceConnection {
   // src/chromeos/service/cros_healthd/public/mojom/cros_healthd.mojom for
   // details.
   virtual void RunBatteryCapacityRoutine(
-      uint32_t low_mah,
-      uint32_t high_mah,
       mojom::CrosHealthdDiagnosticsService::RunBatteryCapacityRoutineCallback
           callback) = 0;
 
@@ -74,8 +72,6 @@ class ServiceConnection {
   // src/chromeos/service/cros_healthd/public/mojom/cros_healthd.mojom for
   // details.
   virtual void RunBatteryHealthRoutine(
-      uint32_t maximum_cycle_count,
-      uint32_t percent_battery_wear_allowed,
       mojom::CrosHealthdDiagnosticsService::RunBatteryHealthRoutineCallback
           callback) = 0;
 

@@ -43,13 +43,9 @@ class ServiceConnectionImpl : public ServiceConnection {
       mojom::CrosHealthdDiagnosticsService::RunUrandomRoutineCallback callback)
       override;
   void RunBatteryCapacityRoutine(
-      uint32_t low_mah,
-      uint32_t high_mah,
       mojom::CrosHealthdDiagnosticsService::RunBatteryCapacityRoutineCallback
           callback) override;
   void RunBatteryHealthRoutine(
-      uint32_t maximum_cycle_count,
-      uint32_t percent_battery_wear_allowed,
       mojom::CrosHealthdDiagnosticsService::RunBatteryHealthRoutineCallback
           callback) override;
   void RunSmartctlCheckRoutine(
@@ -226,25 +222,21 @@ void ServiceConnectionImpl::RunUrandomRoutine(
 }
 
 void ServiceConnectionImpl::RunBatteryCapacityRoutine(
-    uint32_t low_mah,
-    uint32_t high_mah,
     mojom::CrosHealthdDiagnosticsService::RunBatteryCapacityRoutineCallback
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindCrosHealthdDiagnosticsServiceIfNeeded();
   cros_healthd_diagnostics_service_->RunBatteryCapacityRoutine(
-      low_mah, high_mah, std::move(callback));
+      std::move(callback));
 }
 
 void ServiceConnectionImpl::RunBatteryHealthRoutine(
-    uint32_t maximum_cycle_count,
-    uint32_t percent_battery_wear_allowed,
     mojom::CrosHealthdDiagnosticsService::RunBatteryHealthRoutineCallback
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindCrosHealthdDiagnosticsServiceIfNeeded();
   cros_healthd_diagnostics_service_->RunBatteryHealthRoutine(
-      maximum_cycle_count, percent_battery_wear_allowed, std::move(callback));
+      std::move(callback));
 }
 
 void ServiceConnectionImpl::RunSmartctlCheckRoutine(

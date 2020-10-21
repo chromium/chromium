@@ -137,56 +137,19 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
   switch (routine_enum_) {
     case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::
         kBatteryCapacity: {
-      constexpr char kLowMahFieldName[] = "lowMah";
-      constexpr char kHighMahFieldName[] = "highMah";
-      base::Optional<int> low_mah = params_dict_.FindIntKey(kLowMahFieldName);
-      base::Optional<int> high_mah = params_dict_.FindIntKey(kHighMahFieldName);
-      // The battery capacity routine expects two integers >= 0.
-      if (!low_mah.has_value() || !high_mah.has_value() ||
-          low_mah.value() < 0 || high_mah.value() < 0) {
-        SYSLOG(ERROR) << "Invalid parameters for BatteryCapacity routine.";
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
-            FROM_HERE, base::BindOnce(std::move(failed_callback),
-                                      std::make_unique<Payload>(
-                                          MakeInvalidParametersResponse())));
-        break;
-      }
       chromeos::cros_healthd::ServiceConnection::GetInstance()
-          ->RunBatteryCapacityRoutine(
-              low_mah.value(), high_mah.value(),
-              base::BindOnce(
-                  &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
-                  weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
-                  std::move(failed_callback)));
+          ->RunBatteryCapacityRoutine(base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
+              std::move(failed_callback)));
       break;
     }
     case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryHealth: {
-      constexpr char kMaximumCycleCountFieldName[] = "maximumCycleCount";
-      constexpr char kPercentBatteryWearAllowedFieldName[] =
-          "percentBatteryWearAllowed";
-      base::Optional<int> maximum_cycle_count =
-          params_dict_.FindIntKey(kMaximumCycleCountFieldName);
-      base::Optional<int> percent_battery_wear_allowed =
-          params_dict_.FindIntKey(kPercentBatteryWearAllowedFieldName);
-      // The battery health routine expects two integers >= 0.
-      if (!maximum_cycle_count.has_value() ||
-          !percent_battery_wear_allowed.has_value() ||
-          maximum_cycle_count.value() < 0 ||
-          percent_battery_wear_allowed.value() < 0) {
-        SYSLOG(ERROR) << "Invalid parameters for BatteryHealth routine.";
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
-            FROM_HERE, base::BindOnce(std::move(failed_callback),
-                                      std::make_unique<Payload>(
-                                          MakeInvalidParametersResponse())));
-        break;
-      }
       chromeos::cros_healthd::ServiceConnection::GetInstance()
-          ->RunBatteryHealthRoutine(
-              maximum_cycle_count.value(), percent_battery_wear_allowed.value(),
-              base::BindOnce(
-                  &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
-                  weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
-                  std::move(failed_callback)));
+          ->RunBatteryHealthRoutine(base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
+              std::move(failed_callback)));
       break;
     }
     case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kUrandom: {
