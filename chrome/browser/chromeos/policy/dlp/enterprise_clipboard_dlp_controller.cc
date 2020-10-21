@@ -41,7 +41,7 @@ void EnterpriseClipboardDlpController::Init() {
 bool EnterpriseClipboardDlpController::IsDataReadAllowed(
     const ui::ClipboardDataEndpoint* const data_src,
     const ui::ClipboardDataEndpoint* const data_dst) const {
-  if (!data_src) {
+  if (!data_src || data_src->type() == ui::EndpointType::kClipboardHistory) {
     return true;
   }
 
