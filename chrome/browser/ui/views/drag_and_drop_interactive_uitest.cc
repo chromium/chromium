@@ -775,7 +775,8 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
 
   content::RenderFrameHost* GetFrameByName(const std::string& name_to_find) {
     return content::FrameMatchingPredicate(
-        web_contents(), base::Bind(&content::FrameMatchesName, name_to_find));
+        web_contents(),
+        base::BindRepeating(&content::FrameMatchesName, name_to_find));
   }
 
   void AssertTestPageIsLoaded() {

@@ -46,7 +46,7 @@ class FileIFrameAPITest : public extensions::ExtensionBrowserTest {
     ASSERT_TRUE(background_host);
     content::RenderFrameHost* file_iframe = content::FrameMatchingPredicate(
         background_host->host_contents(),
-        base::Bind(&content::FrameMatchesName, "file_iframe"));
+        base::BindRepeating(&content::FrameMatchesName, "file_iframe"));
     bool is_file_url = file_iframe->GetLastCommittedURL() == GURL("file:///");
     EXPECT_EQ(expect_will_load_file_iframe, is_file_url)
         << "Unexpected committed url: "

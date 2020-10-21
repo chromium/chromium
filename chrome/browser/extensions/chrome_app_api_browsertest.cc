@@ -93,7 +93,7 @@ class ChromeAppAPITest : public extensions::ExtensionBrowserTest {
   content::RenderFrameHost* GetIFrame() {
     return content::FrameMatchingPredicate(
         browser()->tab_strip_model()->GetActiveWebContents(),
-        base::Bind(&content::FrameIsChildOfMainFrame));
+        base::BindRepeating(&content::FrameIsChildOfMainFrame));
   }
 };
 

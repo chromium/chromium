@@ -363,7 +363,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^chrome/browser/signin/',
   '^chrome/browser/site_isolation/site_per_process_text_input_browsertest.cc',
   '^chrome/browser/ssl/',
-  '^chrome/browser/subresource_filter/',
   '^chrome/browser/supervised_user/',
   '^chrome/browser/sync_file_system/',
   '^chrome/browser/sync/',

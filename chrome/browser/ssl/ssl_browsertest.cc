@@ -3269,7 +3269,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestGoodFrameNavigation) {
   // And the frame should be blocked.
   bool is_content_evil = true;
   content::RenderFrameHost* content_frame = content::FrameMatchingPredicate(
-      tab, base::Bind(&content::FrameMatchesName, "contentFrame"));
+      tab, base::BindRepeating(&content::FrameMatchesName, "contentFrame"));
   std::string is_evil_js(
       "window.domAutomationController.send("
       "document.getElementById('evilDiv') != null);");
@@ -3405,7 +3405,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestUnauthenticatedFrameNavigation) {
   // And the frame should have been blocked (see bug #2316).
   bool is_content_evil = true;
   content::RenderFrameHost* content_frame = content::FrameMatchingPredicate(
-      tab, base::Bind(&content::FrameMatchesName, "contentFrame"));
+      tab, base::BindRepeating(&content::FrameMatchesName, "contentFrame"));
   std::string is_evil_js(
       "window.domAutomationController.send("
       "document.getElementById('evilDiv') != null);");
