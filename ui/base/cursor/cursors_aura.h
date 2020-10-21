@@ -18,8 +18,6 @@ namespace ui {
 class Cursor;
 enum class CursorSize;
 
-const int kAnimatedCursorFrameDelayMs = 25;
-
 // Returns data about |id|, where id is a cursor constant like
 // ui::mojom::CursorType::kHelp. The IDR will be placed in |resource_id| and
 // the hotspots for the different DPIs will be placed in |hot_1x| and
@@ -30,14 +28,6 @@ bool GetCursorDataFor(CursorSize cursor_size,
                       float scale_factor,
                       int* resource_id,
                       gfx::Point* point);
-
-// Like above, but for animated cursors.
-COMPONENT_EXPORT(UI_BASE_CURSOR)
-bool GetAnimatedCursorDataFor(CursorSize cursor_size,
-                              mojom::CursorType id,
-                              float scale_factor,
-                              int* resource_id,
-                              gfx::Point* point);
 
 SkBitmap GetDefaultBitmap(const Cursor& cursor);
 

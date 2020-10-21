@@ -17,7 +17,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/cursor.h"
-#include "ui/base/cursor/image_cursors.h"
+#include "ui/base/cursor/cursor_loader.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/ime/input_method.h"
@@ -57,21 +57,21 @@ class ShellNativeCursorManager : public wm::NativeCursorManager {
  public:
   explicit ShellNativeCursorManager(
       ShellDesktopControllerAura* desktop_controller)
-      : desktop_controller_(desktop_controller),
-        image_cursors_(new ui::ImageCursors) {}
+      : desktop_controller_(desktop_controller) {}
   ~ShellNativeCursorManager() override {}
 
   // wm::NativeCursorManager overrides.
   void SetDisplay(const display::Display& display,
                   wm::NativeCursorManagerDelegate* delegate) override {
-    if (image_cursors_->SetDisplay(display, display.device_scale_factor()))
+    if (cursor_loader_->SetDisplayData(display.panel_rotation(),
+                                       display.device_scale_factor()))
       SetCursor(delegate->GetCursor(), delegate);
   }
 
   void SetCursor(gfx::NativeCursor cursor,
                  wm::NativeCursorManagerDelegate* delegate) override {
-    image_cursors_->SetPlatformCursor(&cursor);
-    cursor.set_image_scale_factor(image_cursors_->GetScale());
+    cursor_loader_->SetPlatformCursor(&cursor);
+    cursor.set_image_scale_factor(cursor_loader_->scale());
     delegate->CommitCursor(cursor);
 
     if (delegate->IsCursorVisible())
@@ -86,14 +86,14 @@ class ShellNativeCursorManager : public wm::NativeCursorManager {
       SetCursor(delegate->GetCursor(), delegate);
     } else {
       gfx::NativeCursor invisible_cursor(ui::mojom::CursorType::kNone);
-      image_cursors_->SetPlatformCursor(&invisible_cursor);
+      cursor_loader_->SetPlatformCursor(&invisible_cursor);
       SetCursorOnAllRootWindows(invisible_cursor);
     }
   }
 
   void SetCursorSize(ui::CursorSize cursor_size,
                      wm::NativeCursorManagerDelegate* delegate) override {
-    image_cursors_->SetCursorSize(cursor_size);
+    cursor_loader_->set_size(cursor_size);
     delegate->CommitCursorSize(cursor_size);
     if (delegate->IsCursorVisible())
       SetCursor(delegate->GetCursor(), delegate);
@@ -115,7 +115,8 @@ class ShellNativeCursorManager : public wm::NativeCursorManager {
 
   ShellDesktopControllerAura* desktop_controller_;  // Not owned.
 
-  std::unique_ptr<ui::ImageCursors> image_cursors_;
+  std::unique_ptr<ui::CursorLoader> cursor_loader_ =
+      ui::CursorLoader::Create(/*use_platform_cursors=*/false);
 
   DISALLOW_COPY_AND_ASSIGN(ShellNativeCursorManager);
 };
