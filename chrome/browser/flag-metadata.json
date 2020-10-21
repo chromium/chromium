@@ -1758,7 +1758,7 @@
   {
     "name": "enable-md-rounded-corners-on-dialogs",
     "owners": [ "tluk" ],
-    "expiry_milestone": 87
+    "expiry_milestone": 90
   },
   {
     "name": "enable-media-feeds",
