@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "build/buildflag.h"
 #include "chromeos/services/ime/constants.h"
+#include "chromeos/services/ime/ime_decoder.h"
 #include "chromeos/services/ime/public/cpp/buildflags.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_file_permission.h"
@@ -30,16 +31,6 @@ inline constexpr bool CrosImeSharedDataEnabled() {
 #else
   return false;
 #endif
-}
-
-constexpr int dlopen_flag = RTLD_LAZY | RTLD_NODELETE;
-
-void PreloadSharedLibrary() {
-  if (ImeDecoderInstalled()) {
-    if (!dlopen(kCrosImeDecoderLib, dlopen_flag))
-      LOG(ERROR) << "Unable to open " << kCrosImeDecoderLib << " : "
-                 << dlerror();
-  }
 }
 
 void AddBundleFolder(std::vector<BrokerFilePermission>* permissions) {
@@ -86,7 +77,6 @@ std::vector<BrokerFilePermission> GetImeFilePermissions() {
       BrokerFilePermission::ReadOnly("/dev/urandom"),
       BrokerFilePermission::ReadOnly("/sys/devices/system/cpu")};
 
-  PreloadSharedLibrary();
   AddBundleFolder(&permissions);
   AddUserDataFolder(&permissions);
   AddSharedDataFolderIfEnabled(&permissions);
@@ -110,6 +100,8 @@ bool ImePreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
                                sandbox::policy::SandboxLinux::PreSandboxHook(),
                                options);
 
+  // Try to load IME decoder shared library by creating its instance.
+  ImeDecoder::GetInstance();
   instance->EngageNamespaceSandboxIfPossible();
   return true;
 }

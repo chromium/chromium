@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "chromeos/services/ime/constants.h"
 #include "chromeos/services/ime/decoder/proto_conversion.h"
+#include "chromeos/services/ime/ime_decoder.h"
 #include "chromeos/services/ime/public/cpp/buildflags.h"
 #include "chromeos/services/ime/public/proto/messages.pb.h"
 
@@ -94,33 +95,15 @@ DecoderEngine::DecoderEngine(ImeCrosPlatform* platform) : platform_(platform) {
 DecoderEngine::~DecoderEngine() {}
 
 bool DecoderEngine::TryLoadDecoder() {
-  if (!ImeDecoderInstalled()) {
-    LOG(WARNING) << "IME decoder shared library is not installed.";
-    return false;
-  }
-
   if (engine_main_entry_)
     return true;
 
-  // Load the decoder whose DSO has been preloaded before sandbox is engaged.
-  base::FilePath lib_path(kCrosImeDecoderLib);
-  library_ = base::ScopedNativeLibrary(lib_path);
-
-  if (!library_.is_valid()) {
-    LOG(ERROR) << "Failed to load decoder shared library from: " << lib_path
-               << ", error: " << library_.GetError()->ToString();
-    return false;
+  auto* decoder = ImeDecoder::GetInstance();
+  if (decoder->GetStatus() == ImeDecoder::Status::kSuccess) {
+    engine_main_entry_ = decoder->CreateMainEntry(platform_);
+    return true;
   }
-
-  // Prepare the decoder data directory before initialization.
-  base::FilePath data_dir(platform_->GetImeUserHomeDir());
-  base::CreateDirectory(data_dir.Append(kLanguageDataDirName));
-
-  ImeMainEntryCreateFn createMainEntryFn =
-      reinterpret_cast<ImeMainEntryCreateFn>(
-          library_.GetFunctionPointer(IME_MAIN_ENTRY_CREATE_FN_NAME));
-  engine_main_entry_ = createMainEntryFn(platform_);
-  return true;
+  return false;
 }
 
 bool DecoderEngine::BindRequest(

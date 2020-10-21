@@ -44,13 +44,6 @@ extern const base::FilePath::CharType kLanguageDataDirName[];
 // The domain of Google Keyboard language dictionary download URL.
 COMPONENT_EXPORT(CHROMEOS_IME_CONSTANTS)
 extern const char kGoogleKeyboardDownloadDomain[];
-
-// The name of ChromeOS IME decoder shared Library.
-COMPONENT_EXPORT(CHROMEOS_IME_CONSTANTS)
-extern const char kCrosImeDecoderLib[];
-
-// Whether IME decoder is installed.
-COMPONENT_EXPORT(CHROMEOS_IME_CONSTANTS) bool ImeDecoderInstalled();
 }  // namespace ime
 }  // namespace chromeos
 

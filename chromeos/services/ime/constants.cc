@@ -27,18 +27,6 @@ const base::FilePath::CharType kSharedInputMethodsDirPath[] =
     FILE_PATH_LITERAL("/home/chronos/" IME_DIR_STRING);
 const base::FilePath::CharType kLanguageDataDirName[] =
     FILE_PATH_LITERAL("google");
-const char kCrosImeDecoderLib[] = "libimedecoder.so";
-
-bool ImeDecoderInstalled() {
-  base::FilePath lib_path("/usr");
-#if defined(__x86_64__) || defined(__aarch64__)
-  lib_path = lib_path.Append("lib64");
-#else
-  lib_path = lib_path.Append("lib");
-#endif
-  lib_path = lib_path.Append(kCrosImeDecoderLib);
-  return base::PathExists(lib_path);
-}
 #else
 // IME service does not support third-party IME yet, so the paths below kind
 // of act like a placeholder. In the future, put some well-designed paths here.
@@ -50,12 +38,6 @@ const base::FilePath::CharType kSharedInputMethodsDirPath[] =
     FILE_PATH_LITERAL("/tmp/" IME_DIR_STRING);
 const base::FilePath::CharType kLanguageDataDirName[] =
     FILE_PATH_LITERAL("data");
-// IME service does not support third-party IME decoder yet.
-const char kCrosImeDecoderLib[] = "";
-
-bool ImeDecoderInstalled() {
-  return false;
-}
 #endif
 
 const char kGoogleKeyboardDownloadDomain[] = "dl.google.com";

@@ -17,6 +17,21 @@ component("constants") {
   ]
 }
 
+source_set("decoder") {
+  sources = [
+    "ime_decoder.cc",
+    "ime_decoder.h",
+  ]
+
+  deps = [
+    ":constants",
+    "//base",
+    "//chromeos/constants",
+    "//chromeos/services/ime/public/cpp:buildflags",
+    "//chromeos/services/ime/public/cpp/shared_lib:interfaces",
+  ]
+}
+
 source_set("lib") {
   sources = [
     "decoder/decoder_engine.cc",
@@ -33,6 +48,7 @@ source_set("lib") {
 
   deps = [
     ":constants",
+    ":decoder",
     "//base",
     "//chromeos/constants",
     "//chromeos/services/ime/public/cpp:buildflags",
@@ -51,6 +67,7 @@ source_set("sandbox_hook") {
 
   deps = [
     ":constants",
+    ":decoder",
     "//base",
     "//chromeos/services/ime/public/cpp:buildflags",
     "//sandbox/linux:sandbox_services",
