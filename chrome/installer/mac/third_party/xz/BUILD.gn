@@ -127,6 +127,7 @@ source_set("common") {
     ":common_config",
     ":compress_config",
     ":decompress_config",
+    "//chrome/installer/mac:fat_binary_config",
   ]
 
   sources = [
@@ -213,6 +214,7 @@ source_set("decompress") {
   configs += [
     ":common_config",
     ":decompress_config",
+    "//chrome/installer/mac:fat_binary_config",
   ]
 
   sources = [
@@ -256,6 +258,7 @@ source_set("compress") {
   configs += [
     ":common_config",
     ":compress_config",
+    "//chrome/installer/mac:fat_binary_config",
   ]
 
   sources = [
@@ -317,9 +320,15 @@ source_set("lzma") {
 # is distributed in Google Chrome update disk images and is used by more
 # than one tool.
 shared_library("lzma_decompress") {
+  # Avoid default deps, which pull in the hermetic libc++, which is not needed
+  # for this pure C executable, and which doesn't play well with creating
+  # one-off universal binaries, since libc++ is not built as universal.
+  no_default_deps = true
+
   configs += [
     ":common_config",
     ":decompress_config",
+    "//chrome/installer/mac:fat_binary_config",
   ]
 
   public_configs = [ ":lzma_decompress_config" ]
@@ -343,10 +352,16 @@ shared_library("lzma_decompress") {
 }
 
 executable("xz") {
+  # Avoid default deps, which pull in the hermetic libc++, which is not needed
+  # for this pure C executable, and which doesn't play well with creating
+  # one-off universal binaries, since libc++ is not built as universal.
+  no_default_deps = true
+
   configs += [
     ":common_config",
     ":decompress_config",
     ":compress_config",
+    "//chrome/installer/mac:fat_binary_config",
   ]
 
   sources = [
@@ -378,9 +393,15 @@ executable("xz") {
 }
 
 executable("xzdec") {
+  # Avoid default deps, which pull in the hermetic libc++, which is not needed
+  # for this pure C executable, and which doesn't play well with creating
+  # one-off universal binaries, since libc++ is not built as universal.
+  no_default_deps = true
+
   configs += [
     ":common_config",
     ":decompress_config",
+    "//chrome/installer/mac:fat_binary_config",
   ]
 
   sources = [
