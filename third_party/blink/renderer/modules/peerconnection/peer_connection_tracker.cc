@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/power_monitor/power_observer.h"
+#include "base/stl_util.h"
 #include "base/values.h"
 #include "third_party/blink/public/common/peerconnection/peer_connection_tracker_mojom_traits.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
@@ -705,9 +706,20 @@ void PeerConnectionTracker::Bind(
 
 void PeerConnectionTracker::OnSuspend() {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
-  for (auto it = peer_connection_local_id_map_.begin();
-       it != peer_connection_local_id_map_.end(); ++it) {
-    it->key->CloseClientPeerConnection();
+  // Closing peer connections fires events. If JavaScript triggers the creation
+  // or garbage collection of more peer connections, this would invalidate the
+  // |peer_connection_local_id_map_| iterator. Therefor we iterate on a copy.
+  PeerConnectionLocalIdMap peer_connection_map_copy =
+      peer_connection_local_id_map_;
+  for (const auto& pair : peer_connection_map_copy) {
+    RTCPeerConnectionHandler* peer_connection_handler = pair.key;
+    if (!base::Contains(peer_connection_local_id_map_,
+                        peer_connection_handler)) {
+      // Skip peer connections that have been unregistered during this method
+      // call. Avoids use-after-free.
+      continue;
+    }
+    peer_connection_handler->CloseClientPeerConnection();
   }
 }
 
