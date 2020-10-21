@@ -28,6 +28,7 @@ MarkingVisitorBase::MarkingVisitorBase(ThreadState* state,
       ephemeron_pairs_to_process_worklist_(
           Heap().GetEphemeronPairsToProcessWorklist(),
           task_id),
+      weak_containers_worklist_(Heap().GetWeakContainersWorklist()),
       marking_mode_(marking_mode),
       task_id_(task_id) {}
 
@@ -115,6 +116,7 @@ void MarkingVisitorBase::VisitWeakContainer(
   //   non-empty/deleted buckets have been moved to the new backing store.
   MarkHeaderNoTracing(header);
   AccountMarkedBytes(header);
+  weak_containers_worklist_->Push(header);
 
   // Register final weak processing of the backing store.
   RegisterWeakCallback(weak_callback, weak_callback_parameter);
@@ -242,8 +244,24 @@ void MarkingVisitor::ConservativelyMarkAddress(BasePage* page,
           ? static_cast<LargeObjectPage*>(page)->ObjectHeader()
           : static_cast<NormalPage*>(page)->ConservativelyFindHeaderFromAddress(
                 address);
-  if (!header || header->IsMarked())
+  if (!header)
     return;
+  if (header->IsMarked()) {
+    // Weak containers found through conservative GC need to be strongified. In
+    // case the container was previously marked and weakly traced, it should be
+    // retraced strongly now. Previously marked/traced weak containers are
+    // marked using the |weak_containers_worklist_|. Other marked object can be
+    // skipped.
+    if (weak_containers_worklist_->Contains(header)) {
+      DCHECK(!header->IsInConstruction());
+      // Remove from the set so multiple iterators don't cause multiple
+      // retracings of the backing store.
+      weak_containers_worklist_->Erase(header);
+      marking_worklist_.Push(
+          {header->Payload(), GCInfo::From(header->GcInfoIndex()).trace});
+    }
+    return;
+  }
 
   // Simple case for fully constructed objects. This just adds the object to the
   // regular marking worklist.

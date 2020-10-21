@@ -59,6 +59,24 @@
 
 namespace blink {
 
+void WeakContainersWorklist::Push(const HeapObjectHeader* object) {
+  DCHECK(object);
+  WTF::MutexLocker locker(lock_);
+  objects_.insert(object);
+}
+
+void WeakContainersWorklist::Erase(const HeapObjectHeader* object) {
+  // This method is called only during atomic pause, so lock is not needed.
+  DCHECK(object);
+  objects_.erase(object);
+}
+
+bool WeakContainersWorklist::Contains(const HeapObjectHeader* object) {
+  // This method is called only during atomic pause, so lock is not needed.
+  DCHECK(object);
+  return objects_.find(object) != objects_.end();
+}
+
 HeapAllocHooks::AllocationHook* HeapAllocHooks::allocation_hook_ = nullptr;
 HeapAllocHooks::FreeHook* HeapAllocHooks::free_hook_ = nullptr;
 
@@ -180,6 +198,7 @@ void ThreadHeap::SetupWorklists(bool should_initialize_compaction_worklists) {
   v8_references_worklist_ = std::make_unique<V8ReferencesWorklist>();
   not_safe_to_concurrently_trace_worklist_ =
       std::make_unique<NotSafeToConcurrentlyTraceWorklist>();
+  weak_containers_worklist_ = std::make_unique<WeakContainersWorklist>();
   if (should_initialize_compaction_worklists) {
     movable_reference_worklist_ = std::make_unique<MovableReferenceWorklist>();
   }
@@ -193,6 +212,7 @@ void ThreadHeap::DestroyMarkingWorklists(BlinkGC::StackState stack_state) {
   ephemeron_pairs_to_process_worklist_.reset();
   v8_references_worklist_.reset();
   not_safe_to_concurrently_trace_worklist_.reset();
+  weak_containers_worklist_.reset();
   // The fixed point iteration may have found not-fully-constructed objects.
   // Such objects should have already been found through the stack scan though
   // and should thus already be marked.

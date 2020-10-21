@@ -33,6 +33,7 @@
 
 #include <limits>
 #include <memory>
+#include <unordered_set>
 
 #include "base/macros.h"
 #include "build/build_config.h"
@@ -49,6 +50,7 @@
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/sanitizers.h"
+#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace blink {
 
@@ -101,6 +103,17 @@ using EphemeronPairsWorklist =
 using V8ReferencesWorklist = Worklist<V8Reference, 16 /* local entries */>;
 using NotSafeToConcurrentlyTraceWorklist =
     Worklist<NotSafeToConcurrentlyTraceItem, 64 /* local entries */>;
+
+class WeakContainersWorklist {
+ public:
+  void Push(const HeapObjectHeader*);
+  void Erase(const HeapObjectHeader*);
+  bool Contains(const HeapObjectHeader*);
+
+ private:
+  WTF::Mutex lock_;
+  std::unordered_set<const HeapObjectHeader*> objects_;
+};
 
 class PLATFORM_EXPORT HeapAllocHooks {
   STATIC_ONLY(HeapAllocHooks);
@@ -242,6 +255,11 @@ class PLATFORM_EXPORT ThreadHeap {
       const {
     return not_safe_to_concurrently_trace_worklist_.get();
   }
+
+  WeakContainersWorklist* GetWeakContainersWorklist() const {
+    return weak_containers_worklist_.get();
+  }
+
   // Register an ephemeron table for fixed-point iteration.
   void RegisterWeakTable(void* container_object,
                          EphemeronCallback);
@@ -445,6 +463,8 @@ class PLATFORM_EXPORT ThreadHeap {
 
   std::unique_ptr<NotSafeToConcurrentlyTraceWorklist>
       not_safe_to_concurrently_trace_worklist_;
+
+  std::unique_ptr<WeakContainersWorklist> weak_containers_worklist_;
 
   std::unique_ptr<HeapCompact> compaction_;
 

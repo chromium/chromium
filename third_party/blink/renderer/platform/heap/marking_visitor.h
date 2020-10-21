@@ -86,6 +86,7 @@ class PLATFORM_EXPORT MarkingVisitorBase : public Visitor {
   MovableReferenceWorklist::View movable_reference_worklist_;
   EphemeronPairsWorklist::View discovered_ephemeron_pairs_worklist_;
   EphemeronPairsWorklist::View ephemeron_pairs_to_process_worklist_;
+  WeakContainersWorklist* const weak_containers_worklist_;
   size_t marked_bytes_ = 0;
   const MarkingMode marking_mode_;
   int task_id_;

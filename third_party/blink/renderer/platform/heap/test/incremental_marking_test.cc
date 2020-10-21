@@ -1826,5 +1826,53 @@ TEST_F(IncrementalMarkingTest, LinkedHashSetMovingCallback) {
   EXPECT_EQ(10u, Destructed::n_destructed);
 }
 
+class DestructedAndTraced final : public GarbageCollected<DestructedAndTraced> {
+ public:
+  ~DestructedAndTraced() { n_destructed++; }
+
+  void Trace(Visitor*) const { n_traced++; }
+
+  static size_t n_destructed;
+  static size_t n_traced;
+};
+
+size_t DestructedAndTraced::n_destructed = 0;
+size_t DestructedAndTraced::n_traced = 0;
+
+TEST_F(IncrementalMarkingTest, ConservativeGCOfWeakContainer) {
+  // Regression test: https://crbug.com/1108676
+  //
+  // Test ensures that on-stack references to weak containers (e.g. iterators)
+  // force re-tracing of the entire container. Otherwise, if the container was
+  // previously traced and is not re-traced, some bucket might be deleted which
+  // will make existing iterators invalid.
+
+  using WeakContainer = HeapHashMap<WeakMember<DestructedAndTraced>, size_t>;
+  Persistent<WeakContainer> map = MakeGarbageCollected<WeakContainer>();
+  static constexpr size_t kNumObjects = 10u;
+  for (size_t i = 0; i < kNumObjects; ++i) {
+    map->insert(MakeGarbageCollected<DestructedAndTraced>(), i);
+  }
+  DestructedAndTraced::n_destructed = 0;
+
+  for (auto it = map->begin(); it != map->end(); ++it) {
+    size_t value = it->value;
+    DestructedAndTraced::n_traced = 0;
+    IncrementalMarkingTestDriver driver(ThreadState::Current());
+    driver.Start();
+    driver.FinishSteps();
+    // map should now be marked, but has not been traced since it's weak.
+    EXPECT_EQ(0u, DestructedAndTraced::n_traced);
+    ConservativelyCollectGarbage();
+    // map buckets were traced (at least once).
+    EXPECT_NE(kNumObjects, DestructedAndTraced::n_traced);
+    // Check that iterator is still valid.
+    EXPECT_EQ(value, it->value);
+  }
+
+  // All buckets were kept alive.
+  EXPECT_EQ(0u, DestructedAndTraced::n_destructed);
+}
+
 }  // namespace incremental_marking_test
 }  // namespace blink
