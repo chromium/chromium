@@ -575,7 +575,7 @@ void CrossThreadMediaSourceAttachment::CompleteAttachingToMediaElement(
     MediaSourceTracer* /* tracer */,
     std::unique_ptr<WebMediaSource> web_media_source) {
   DVLOG(1) << __func__ << " this=" << this
-           << ", web_media_source=" << web_media_source;
+           << ", web_media_source=" << web_media_source.get();
   DCHECK(web_media_source);
 
   {
@@ -618,7 +618,7 @@ void CrossThreadMediaSourceAttachment::
     DCHECK(worker_runner_->BelongsToCurrentThread());
 
     DVLOG(1) << __func__ << " this=" << this
-             << ", web_media_source=" << web_media_source;
+             << ", web_media_source=" << web_media_source.get();
 
     // While awaiting task scheduling, the media element could have begun
     // detachment or main context could have been destroyed. Return early in
