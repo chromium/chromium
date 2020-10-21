@@ -73,12 +73,6 @@ const size_t kWaitTimeForNewNetworkSecs = 10;
 
 const size_t kMinRetryTimeForDefaultNetworkSecs = 1;
 
-// Default value for maximum number of consecutive pings that can be sent
-// with aggressive initial retransmittable on wire timeout if there is no new
-// data received. After which, the timeout will be exponentially back off until
-// exceeds the default ping timeout.
-const int kDefaultMaxAggressiveRetransmittableOnWirePingCount = 200;
-
 // Maximum RTT time for this session when set initial timeout for probing
 // network.
 const int kDefaultRTTMilliSecs = 300;
@@ -910,13 +904,6 @@ QuicChromiumClientSession::QuicChromiumClientSession(
   if (!retransmittable_on_wire_timeout.IsZero()) {
     connection->set_initial_retransmittable_on_wire_timeout(
         retransmittable_on_wire_timeout);
-    if (GetQuicFlag(
-            FLAGS_quic_max_aggressive_retransmittable_on_wire_ping_count) ==
-        0) {
-      // Set a default value for this flag if no custom value is provided.
-      SetQuicFlag(FLAGS_quic_max_aggressive_retransmittable_on_wire_ping_count,
-                  kDefaultMaxAggressiveRetransmittableOnWirePingCount);
-    }
   }
 }
 

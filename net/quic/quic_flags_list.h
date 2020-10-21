@@ -148,13 +148,18 @@ QUIC_FLAG(int32_t, FLAGS_quic_max_buffered_crypto_bytes, 16 * 1024)
 // and starts a new one.
 QUIC_FLAG(double, FLAGS_quic_ack_aggregation_bandwidth_threshold, 1.0)
 
-// If set to non-zero, the maximum number of consecutive pings that can be sent
-// with aggressive initial retransmittable on wire timeout if there is no new
-// data received. After which, the timeout will be exponentially back off until
+// Maximum number of consecutive pings that can be sent with the aggressive
+// initial retransmittable on the wire timeout if there is no new stream data
+// received. After this limit, the timeout will be doubled each ping until it
 // exceeds the default ping timeout.
 QUIC_FLAG(int32_t,
           FLAGS_quic_max_aggressive_retransmittable_on_wire_ping_count,
-          0)
+          5)
+
+// Maximum number of pings that can be sent with the retransmittable on the wire
+// timeout, over the lifetime of a connection. After this limit, the timeout
+// will be the default ping timeout.
+QUIC_FLAG(int32_t, FLAGS_quic_max_retransmittable_on_wire_ping_count, 1000)
 
 // The maximum congestion window in packets.
 QUIC_FLAG(int32_t, FLAGS_quic_max_congestion_window, 2000)
