@@ -225,12 +225,9 @@
   "chrome/browser/resources/bluetooth_internals/resources.grd": {
     "includes": [2020],
   },
-    "chrome/browser/resources/chromeos/bluetooth_pairing_dialog/bluetooth_pairing_dialog_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/bluetooth_pairing_dialog/bluetooth_pairing_dialog_resources.grd": {
+    "META": {"sizes": {"includes": [10],}},
     "includes": [2030],
-    "structures": [2050],
-  },
-  "chrome/browser/resources/chromeos/bluetooth_pairing_dialog/bluetooth_pairing_dialog_resources_vulcanized.grd": {
-    "includes": [2070],
   },
   "chrome/browser/resources/gaia_auth_host/gaia_auth_host_resources.grd": {
     "includes": [2080],

@@ -477,21 +477,22 @@ if (is_chromeos) {
     grit_flags = [
       "-E",
       "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+      "-E",
+      "root_src_dir=" + rebase_path("//", root_build_dir),
     ]
 
-    if (optimize_webui) {
-      source = "chromeos/bluetooth_pairing_dialog/bluetooth_pairing_dialog_resources_vulcanized.grd"
-
-      deps = [
-        "//chrome/browser/resources/chromeos/bluetooth_pairing_dialog:build",
-      ]
-    } else {
-      source = "chromeos/bluetooth_pairing_dialog/bluetooth_pairing_dialog_resources.grd"
-
-      deps = [ "//chrome/browser/resources/chromeos/bluetooth_pairing_dialog:web_components" ]
-    }
-
     defines = chrome_grit_defines
+
+    # These arguments are needed since the grd is generated at build time.
+    enable_input_discovery_for_gn_analyze = false
+    defines += [ "SHARED_INTERMEDIATE_DIR=" +
+                 rebase_path(root_gen_dir, root_build_dir) ]
+    bluetooth_gen_dir = "$root_gen_dir/chrome/browser/resources/chromeos/bluetooth_pairing_dialog"
+    source = "$bluetooth_gen_dir/bluetooth_pairing_dialog_resources.grd"
+    deps = [
+      "//chrome/browser/resources/chromeos/bluetooth_pairing_dialog:build_grd",
+    ]
+
     outputs = [
       "grit/bluetooth_pairing_dialog_resources.h",
       "grit/bluetooth_pairing_dialog_resources_map.cc",
