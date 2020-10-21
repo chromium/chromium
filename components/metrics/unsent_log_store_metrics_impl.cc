@@ -15,14 +15,16 @@ void UnsentLogStoreMetricsImpl::RecordLogReadStatus(
                                 UnsentLogStoreMetrics::END_RECALL_STATUS);
 }
 
-void UnsentLogStoreMetricsImpl::RecordCompressionRatio(
-    size_t compressed_size, size_t original_size) {
+void UnsentLogStoreMetricsImpl::RecordCompressionRatio(size_t compressed_size,
+                                                       size_t original_size) {
   base::UmaHistogramPercentageObsoleteDoNotUse(
       "UMA.ProtoCompressionRatio",
       static_cast<int>(100 * compressed_size / original_size));
 }
 
 void UnsentLogStoreMetricsImpl::RecordDroppedLogSize(size_t size) {
+  base::UmaHistogramCounts1M("UMA.UnsentLogs.DroppedSize",
+                             static_cast<int>(size));
 }
 
 void UnsentLogStoreMetricsImpl::RecordDroppedLogsNum(int dropped_logs_num) {

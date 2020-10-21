@@ -10,6 +10,22 @@
 
 namespace metrics {
 
+TEST(UnsentLogStoreMetricsImplTest, RecordDroppedLogSize) {
+  UnsentLogStoreMetricsImpl impl;
+  base::HistogramTester histogram_tester;
+
+  impl.RecordDroppedLogSize(99999);
+  histogram_tester.ExpectBucketCount("UMA.UnsentLogs.DroppedSize", 99999, 1);
+}
+
+TEST(UnsentLogStoreMetricsImplTest, RecordDroppedLogsNum) {
+  UnsentLogStoreMetricsImpl impl;
+  base::HistogramTester histogram_tester;
+
+  impl.RecordDroppedLogsNum(17);
+  histogram_tester.ExpectBucketCount("UMA.UnsentLogs.Dropped", 17, 1);
+}
+
 TEST(UnsentLogStoreMetricsImplTest, RecordLastUnsentLogMetadataMetrics) {
   base::test::ScopedFeatureList feature_override;
   feature_override.InitAndEnableFeature(

@@ -590,6 +590,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="UMA.UnsentLogs.DroppedSize" units="bytes"
+    expires_after="2021-08-30">
+  <owner>akirabaruah@chromium.org</owner>
+  <owner>rkaplow@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Size of unsent logs removed from persistent storage due to exceeding the
+    individual log size limit. Unsent log trimming occurs immediately after
+    initial logs creation, upon successful log upload, or whenever
+    MetricsService stops recording.
+  </summary>
+</histogram>
+
 <histogram name="UMA.UnsentLogs.PersistedSizeInKB" units="KB"
     expires_after="2021-05-30">
   <owner>michaelbai@chromium.org</owner>
