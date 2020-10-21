@@ -651,6 +651,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEditPasswordsInSettingsName,
      flag_descriptions::kEditPasswordsInSettingsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(password_manager::features::kEditPasswordsInSettings)},
+    {"enable-incognito-authentication-ios",
+     flag_descriptions::kIncognitoAuthenticationName,
+     flag_descriptions::kIncognitoAuthenticationDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIncognitoAuthentication)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

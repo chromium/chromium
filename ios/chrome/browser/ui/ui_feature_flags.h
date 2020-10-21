@@ -81,4 +81,7 @@ extern const base::Feature kDefaultBrowserSettings;
 // finished. Flag to modernize the tabstrip without disturbing the existing one.
 extern const base::Feature kModernTabStrip;
 
+// Adds a setting to enable biometric authentication for incognito tabs.
+extern const base::Feature kIncognitoAuthentication;
+
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_

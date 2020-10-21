@@ -240,6 +240,11 @@ extern const char kFullscreenSmoothScrollingDescription[];
 extern const char kFullscreenControllerBrowserScopedName[];
 extern const char kFullscreenControllerBrowserScopedDescription[];
 
+// Title and dscription for the flag to allow biometric authentication for
+// accessing incognito.
+extern const char kIncognitoAuthenticationName[];
+extern const char kIncognitoAuthenticationDescription[];
+
 // Title and description for the flag to enable new illustrations and
 // UI on empty states.
 extern const char kIllustratedEmptyStatesName[];

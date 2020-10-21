@@ -1679,6 +1679,11 @@
     "expiry_milestone": 80
   },
   {
+    "name": "enable-incognito-authentication-ios",
+    "owners": [ "stkhapugin", "bling-flags" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "enable-incognito-shortcut-on-desktop",
     "owners": [ "rhalavati", "chrome-privacy-core@google.com" ],
     "expiry_milestone": 92

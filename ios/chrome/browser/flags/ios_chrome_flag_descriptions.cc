@@ -281,6 +281,12 @@ const char kFullscreenControllerBrowserScopedDescription[] =
     "When enabled, FullscreenController will be stored and retrieved using the "
     "Browser.";
 
+const char kIncognitoAuthenticationName[] =
+    "Device Authentication for Incognito";
+extern const char kIncognitoAuthenticationDescription[] =
+    "When enabled, a setting appears to enable biometric authentication for "
+    "accessing incognito.";
+
 const char kIllustratedEmptyStatesName[] = "Illustrated empty states";
 const char kIllustratedEmptyStatesDescription[] =
     "Display new illustrations and layout on empty states.";
