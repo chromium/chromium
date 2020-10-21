@@ -192,7 +192,11 @@ public class AccountPickerBottomSheetTest {
         // torn down in the end of the test in AccountManagerTestRule.
         AccountManagerFacadeProvider.setInstanceForTests(
                 new FakeAccountManagerFacade(mFakeProfileDataSource));
-        buildAndShowCollapsedBottomSheet();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mCoordinator = new AccountPickerBottomSheetCoordinator(sActivityTestRule.getActivity(),
+                    getBottomSheetController(), mAccountPickerDelegateMock,
+                    mIncognitoInterstitialDelegateMock);
+        });
         checkZeroAccountBottomSheet();
     }
 
@@ -285,7 +289,11 @@ public class AccountPickerBottomSheetTest {
     public void testAccountReappearedOnCollapsedSheet() {
         mAccountManagerTestRule.removeAccountAndWaitForSeeding(PROFILE_DATA1.getAccountName());
         mAccountManagerTestRule.removeAccountAndWaitForSeeding(PROFILE_DATA2.getAccountName());
-        buildAndShowCollapsedBottomSheet();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mCoordinator = new AccountPickerBottomSheetCoordinator(sActivityTestRule.getActivity(),
+                    getBottomSheetController(), mAccountPickerDelegateMock,
+                    mIncognitoInterstitialDelegateMock);
+        });
         checkZeroAccountBottomSheet();
 
         mAccountManagerTestRule.addAccount(PROFILE_DATA1.getAccountName());
@@ -651,7 +659,7 @@ public class AccountPickerBottomSheetTest {
                     mIncognitoInterstitialDelegateMock);
         });
         CriteriaHelper.pollUiThread(mCoordinator.getBottomSheetViewForTesting().findViewById(
-                R.id.account_picker_continue_as_button)::isShown);
+                R.id.account_picker_selected_account)::isShown);
     }
 
     private void buildAndShowExpandedBottomSheet() {

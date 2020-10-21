@@ -352,7 +352,7 @@ public class AccountPickerBottomSheetRenderTest {
                     mIncognitoInterstitialDelegateMock);
         });
         CriteriaHelper.pollUiThread(mCoordinator.getBottomSheetViewForTesting().findViewById(
-                R.id.account_picker_continue_as_button)::isShown);
+                R.id.account_picker_selected_account)::isShown);
     }
 
     private BottomSheetController getBottomSheetController() {
