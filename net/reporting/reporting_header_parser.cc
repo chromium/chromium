@@ -206,8 +206,7 @@ void ReportingHeaderParser::ParseHeader(
 
   // Remove the client if it has no valid endpoint groups.
   if (parsed_header.empty()) {
-    // TODO(chlily): Pass NIK to cache.
-    cache->RemoveClient(NetworkIsolationKey::Todo(), origin);
+    cache->RemoveClient(network_isolation_key, origin);
     return;
   }
 

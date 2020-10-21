@@ -142,9 +142,9 @@ class ReportingHeaderParserTest : public ReportingTestBase,
   const url::Origin kOrigin1_ = url::Origin::Create(kUrl1_);
   const GURL kUrl2_ = GURL("https://origin2.test/path");
   const url::Origin kOrigin2_ = url::Origin::Create(kUrl2_);
-  const NetworkIsolationKey kNik_;
+  const NetworkIsolationKey kNik_ = NetworkIsolationKey(kOrigin1_, kOrigin1_);
   const NetworkIsolationKey kOtherNik_ =
-      NetworkIsolationKey(kOrigin1_, kOrigin2_);
+      NetworkIsolationKey(kOrigin2_, kOrigin2_);
   const GURL kUrlEtld_ = GURL("https://co.uk/foo.html/");
   const url::Origin kOriginEtld_ = url::Origin::Create(kUrlEtld_);
   const GURL kEndpoint1_ = GURL("https://endpoint1.test/");
@@ -1414,6 +1414,164 @@ TEST_P(ReportingHeaderParserTest, ZeroMaxAgeRemovesEndpointGroup) {
       kGroup2_, std::vector<ReportingEndpoint::EndpointInfo>(),
       OriginSubdomains::DEFAULT, base::TimeDelta::FromSeconds(0)));
   ParseHeader(kNik_, kUrl1_, header3);
+
+  // Deletion of the last remaining group also deletes the client for this
+  // origin.
+  EXPECT_FALSE(ClientExistsInCacheForOrigin(kOrigin1_));
+  EXPECT_EQ(0u, cache()->GetEndpointGroupCountForTesting());
+  EXPECT_EQ(0u, cache()->GetEndpointCount());
+  if (mock_store()) {
+    mock_store()->Flush();
+    EXPECT_EQ(2,
+              mock_store()->CountCommands(CommandType::ADD_REPORTING_ENDPOINT));
+    EXPECT_EQ(2, mock_store()->CountCommands(
+                     CommandType::ADD_REPORTING_ENDPOINT_GROUP));
+    EXPECT_EQ(1 + 1, mock_store()->CountCommands(
+                         CommandType::DELETE_REPORTING_ENDPOINT));
+    EXPECT_EQ(1 + 1, mock_store()->CountCommands(
+                         CommandType::DELETE_REPORTING_ENDPOINT_GROUP));
+    MockPersistentReportingStore::CommandList expected_commands;
+    expected_commands.emplace_back(CommandType::DELETE_REPORTING_ENDPOINT,
+                                   kGroupKey12_, kEndpoint2_);
+    expected_commands.emplace_back(CommandType::DELETE_REPORTING_ENDPOINT_GROUP,
+                                   kGroupKey12_);
+    EXPECT_THAT(mock_store()->GetAllCommands(),
+                testing::IsSupersetOf(expected_commands));
+  }
+}
+
+// Invalid advertisements that parse as JSON should remove an endpoint group,
+// while those that don't are ignored.
+TEST_P(ReportingHeaderParserTest, InvalidAdvertisementRemovesEndpointGroup) {
+  std::string invalid_non_json_header = "Goats should wear hats.";
+  std::string invalid_json_header = "\"Goats should wear hats.\"";
+
+  // Without a pre-existing client, neither invalid header does anything.
+
+  ASSERT_EQ(0u, cache()->GetEndpointCount());
+  ParseHeader(kNik_, kUrl1_, invalid_non_json_header);
+  EXPECT_EQ(0u, cache()->GetEndpointCount());
+  if (mock_store()) {
+    mock_store()->Flush();
+    EXPECT_EQ(0,
+              mock_store()->CountCommands(CommandType::ADD_REPORTING_ENDPOINT));
+    EXPECT_EQ(0, mock_store()->CountCommands(
+                     CommandType::ADD_REPORTING_ENDPOINT_GROUP));
+  }
+
+  ASSERT_EQ(0u, cache()->GetEndpointCount());
+  ParseHeader(kNik_, kUrl1_, invalid_json_header);
+  EXPECT_EQ(0u, cache()->GetEndpointCount());
+  if (mock_store()) {
+    mock_store()->Flush();
+    EXPECT_EQ(0,
+              mock_store()->CountCommands(CommandType::ADD_REPORTING_ENDPOINT));
+    EXPECT_EQ(0, mock_store()->CountCommands(
+                     CommandType::ADD_REPORTING_ENDPOINT_GROUP));
+  }
+
+  // Set a header with two endpoint groups.
+  std::vector<ReportingEndpoint::EndpointInfo> endpoints1 = {{kEndpoint1_}};
+  std::vector<ReportingEndpoint::EndpointInfo> endpoints2 = {{kEndpoint2_}};
+  std::string header1 =
+      ConstructHeaderGroupString(MakeEndpointGroup(kGroup1_, endpoints1)) +
+      ", " +
+      ConstructHeaderGroupString(MakeEndpointGroup(kGroup2_, endpoints2));
+  ParseHeader(kNik_, kUrl1_, header1);
+
+  EXPECT_TRUE(ClientExistsInCacheForOrigin(kOrigin1_));
+  EXPECT_EQ(2u, cache()->GetEndpointGroupCountForTesting());
+  EXPECT_TRUE(
+      EndpointGroupExistsInCache(kGroupKey11_, OriginSubdomains::DEFAULT));
+  EXPECT_TRUE(
+      EndpointGroupExistsInCache(kGroupKey12_, OriginSubdomains::DEFAULT));
+  EXPECT_EQ(2u, cache()->GetEndpointCount());
+  if (mock_store()) {
+    mock_store()->Flush();
+    EXPECT_EQ(2,
+              mock_store()->CountCommands(CommandType::ADD_REPORTING_ENDPOINT));
+    EXPECT_EQ(2, mock_store()->CountCommands(
+                     CommandType::ADD_REPORTING_ENDPOINT_GROUP));
+    MockPersistentReportingStore::CommandList expected_commands;
+    expected_commands.emplace_back(CommandType::ADD_REPORTING_ENDPOINT,
+                                   kGroupKey11_, kEndpoint1_);
+    expected_commands.emplace_back(CommandType::ADD_REPORTING_ENDPOINT,
+                                   kGroupKey12_, kEndpoint2_);
+    expected_commands.emplace_back(CommandType::ADD_REPORTING_ENDPOINT_GROUP,
+                                   kGroupKey11_);
+    expected_commands.emplace_back(CommandType::ADD_REPORTING_ENDPOINT_GROUP,
+                                   kGroupKey12_);
+    EXPECT_THAT(mock_store()->GetAllCommands(),
+                testing::IsSupersetOf(expected_commands));
+  }
+
+  // Set another header with max_age: 0 to delete one of the groups.
+  std::string header2 = ConstructHeaderGroupString(MakeEndpointGroup(
+                            kGroup1_, endpoints1, OriginSubdomains::DEFAULT,
+                            base::TimeDelta::FromSeconds(0))) +
+                        ", " +
+                        ConstructHeaderGroupString(MakeEndpointGroup(
+                            kGroup2_, endpoints2));  // Other group stays.
+  ParseHeader(kNik_, kUrl1_, header2);
+
+  EXPECT_TRUE(ClientExistsInCacheForOrigin(kOrigin1_));
+  EXPECT_EQ(1u, cache()->GetEndpointGroupCountForTesting());
+
+  // Group was deleted.
+  EXPECT_FALSE(
+      EndpointGroupExistsInCache(kGroupKey11_, OriginSubdomains::DEFAULT));
+  // Other group remains in the cache.
+  EXPECT_TRUE(
+      EndpointGroupExistsInCache(kGroupKey12_, OriginSubdomains::DEFAULT));
+  EXPECT_EQ(1u, cache()->GetEndpointCount());
+  if (mock_store()) {
+    mock_store()->Flush();
+    EXPECT_EQ(2,
+              mock_store()->CountCommands(CommandType::ADD_REPORTING_ENDPOINT));
+    EXPECT_EQ(2, mock_store()->CountCommands(
+                     CommandType::ADD_REPORTING_ENDPOINT_GROUP));
+    EXPECT_EQ(
+        1, mock_store()->CountCommands(CommandType::DELETE_REPORTING_ENDPOINT));
+    EXPECT_EQ(1, mock_store()->CountCommands(
+                     CommandType::DELETE_REPORTING_ENDPOINT_GROUP));
+    MockPersistentReportingStore::CommandList expected_commands;
+    expected_commands.emplace_back(CommandType::DELETE_REPORTING_ENDPOINT,
+                                   kGroupKey11_, kEndpoint1_);
+    expected_commands.emplace_back(CommandType::DELETE_REPORTING_ENDPOINT_GROUP,
+                                   kGroupKey11_);
+    EXPECT_THAT(mock_store()->GetAllCommands(),
+                testing::IsSupersetOf(expected_commands));
+  }
+
+  // Invalid header values that are not JSON lists (without the outer brackets)
+  // are ignored.
+  ParseHeader(kNik_, kUrl1_, invalid_non_json_header);
+  EXPECT_TRUE(ClientExistsInCacheForOrigin(kOrigin1_));
+  EXPECT_TRUE(
+      EndpointGroupExistsInCache(kGroupKey12_, OriginSubdomains::DEFAULT));
+  EXPECT_EQ(1u, cache()->GetEndpointCount());
+  if (mock_store()) {
+    mock_store()->Flush();
+    EXPECT_EQ(2,
+              mock_store()->CountCommands(CommandType::ADD_REPORTING_ENDPOINT));
+    EXPECT_EQ(2, mock_store()->CountCommands(
+                     CommandType::ADD_REPORTING_ENDPOINT_GROUP));
+    EXPECT_EQ(
+        1, mock_store()->CountCommands(CommandType::DELETE_REPORTING_ENDPOINT));
+    EXPECT_EQ(1, mock_store()->CountCommands(
+                     CommandType::DELETE_REPORTING_ENDPOINT_GROUP));
+    MockPersistentReportingStore::CommandList expected_commands;
+    expected_commands.emplace_back(CommandType::DELETE_REPORTING_ENDPOINT,
+                                   kGroupKey11_, kEndpoint1_);
+    expected_commands.emplace_back(CommandType::DELETE_REPORTING_ENDPOINT_GROUP,
+                                   kGroupKey11_);
+    EXPECT_THAT(mock_store()->GetAllCommands(),
+                testing::IsSupersetOf(expected_commands));
+  }
+
+  // Invalid headers that do parse as JSON should delete the corresponding
+  // client.
+  ParseHeader(kNik_, kUrl1_, invalid_json_header);
 
   // Deletion of the last remaining group also deletes the client for this
   // origin.
