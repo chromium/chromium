@@ -1,7 +1,7 @@
 {% macro generateMethodAnnotation(method) %}
   /**
 {%-   for param in method.parameters %}
-   * @param { {{param.kind|param_type_in_js_module}} } {{param.name|sanitize_identifier}}
+   * @param { {{param.kind|type_in_js_module_with_nullability}} } {{param.name|sanitize_identifier}}
 {%-   endfor -%}
 {%-   if method.response_parameters != None %}
 {%-     if method.response_parameters|length == 0 %}
@@ -9,7 +9,7 @@
 {%-     else %}
    * @return {!Promise<{
 {%-       for response_parameter in method.response_parameters %}
-        {{response_parameter.name}}: {{response_parameter.kind|param_type_in_js_module}},
+        {{response_parameter.name}}: {{response_parameter.kind|type_in_js_module_with_nullability}},
 {%-       endfor %}
    *  }>}
 {%-     endif %}

@@ -58,7 +58,7 @@ mojo.internal.align = function(size, alignment) {
 /**
  * @param {!DataView} dataView
  * @param {number} byteOffset
- * @param {number|bigint} value
+ * @param {number} value
  */
 mojo.internal.setInt64 = function(dataView, byteOffset, value) {
   if (mojo.internal.kHostLittleEndian) {
@@ -66,12 +66,11 @@ mojo.internal.setInt64 = function(dataView, byteOffset, value) {
         byteOffset, Number(BigInt(value) & BigInt(0xffffffff)),
         mojo.internal.kHostLittleEndian);
     dataView.setInt32(
-        byteOffset + 4,
-        Number((BigInt(value) >> BigInt(32)) & BigInt(0xffffffff)),
+        byteOffset + 4, Number(BigInt(value) >> BigInt(32)),
         mojo.internal.kHostLittleEndian);
   } else {
     dataView.setInt32(
-        byteOffset, Number((BigInt(value) >> BigInt(32)) & BigInt(0xffffffff)),
+        byteOffset, Number(BigInt(value) >> BigInt(32)),
         mojo.internal.kHostLittleEndian);
     dataView.setUint32(
         byteOffset + 4, Number(BigInt(value) & BigInt(0xffffffff)),
@@ -82,7 +81,7 @@ mojo.internal.setInt64 = function(dataView, byteOffset, value) {
 /**
  * @param {!DataView} dataView
  * @param {number} byteOffset
- * @param {number|bigint} value
+ * @param {number} value
  */
 mojo.internal.setUint64 = function(dataView, byteOffset, value) {
   if (mojo.internal.kHostLittleEndian) {
@@ -90,12 +89,11 @@ mojo.internal.setUint64 = function(dataView, byteOffset, value) {
         byteOffset, Number(BigInt(value) & BigInt(0xffffffff)),
         mojo.internal.kHostLittleEndian);
     dataView.setUint32(
-        byteOffset + 4,
-        Number((BigInt(value) >> BigInt(32)) & BigInt(0xffffffff)),
+        byteOffset + 4, Number(BigInt(value) >> BigInt(32)),
         mojo.internal.kHostLittleEndian);
   } else {
     dataView.setUint32(
-        byteOffset, Number((BigInt(value) >> BigInt(32)) & BigInt(0xffffffff)),
+        byteOffset, Number(BigInt(value) >> BigInt(32)),
         mojo.internal.kHostLittleEndian);
     dataView.setUint32(
         byteOffset + 4, Number(BigInt(value) & BigInt(0xffffffff)),
@@ -106,7 +104,7 @@ mojo.internal.setUint64 = function(dataView, byteOffset, value) {
 /**
  * @param {!DataView} dataView
  * @param {number} byteOffset
- * @return {bigint}
+ * @return {bigint|number}
  */
 mojo.internal.getInt64 = function(dataView, byteOffset) {
   let low, high;
@@ -117,24 +115,12 @@ mojo.internal.getInt64 = function(dataView, byteOffset) {
     low = dataView.getUint32(byteOffset + 4, mojo.internal.kHostLittleEndian);
     high = dataView.getInt32(byteOffset, mojo.internal.kHostLittleEndian);
   }
-  return (BigInt(high) << BigInt(32)) | BigInt(low);
-};
-
-/**
- * @param {!DataView} dataView
- * @param {number} byteOffset
- * @return {bigint}
- */
-mojo.internal.getUint64 = function(dataView, byteOffset) {
-  let low, high;
-  if (mojo.internal.kHostLittleEndian) {
-    low = dataView.getUint32(byteOffset, mojo.internal.kHostLittleEndian);
-    high = dataView.getUint32(byteOffset + 4, mojo.internal.kHostLittleEndian);
-  } else {
-    low = dataView.getUint32(byteOffset + 4, mojo.internal.kHostLittleEndian);
-    high = dataView.getUint32(byteOffset, mojo.internal.kHostLittleEndian);
+  const value = (BigInt(high) << BigInt(32)) | BigInt(low);
+  if (value <= BigInt(Number.MAX_SAFE_INTEGER) &&
+      value >= BigInt(Number.MIN_SAFE_INTEGER)) {
+    return Number(value);
   }
-  return (BigInt(high) << BigInt(32)) | BigInt(low);
+  return value;
 };
 
 /**
@@ -234,6 +220,26 @@ mojo.internal.computeTotalArraySize = function(arraySpec, value) {
   }
 
   return totalSize;
+};
+
+/**
+ * @param {!DataView} dataView
+ * @param {number} byteOffset
+ * @return {bigint|number}
+ */
+mojo.internal.getUint64 = function(dataView, byteOffset) {
+  let low, high;
+  if (mojo.internal.kHostLittleEndian) {
+    low = dataView.getUint32(byteOffset, mojo.internal.kHostLittleEndian);
+    high = dataView.getUint32(byteOffset + 4, mojo.internal.kHostLittleEndian);
+  } else {
+    low = dataView.getUint32(byteOffset + 4, mojo.internal.kHostLittleEndian);
+    high = dataView.getUint32(byteOffset, mojo.internal.kHostLittleEndian);
+  }
+  const value = (BigInt(high) << BigInt(32)) | BigInt(low);
+  if (value <= BigInt(Number.MAX_SAFE_INTEGER))
+    return Number(value);
+  return value;
 };
 
 /** Owns an outgoing message buffer and facilitates serialization. */
@@ -650,9 +656,7 @@ mojo.internal.Decoder = class {
     const relativeOffset = this.decodeUint64(offset);
     if (relativeOffset == 0)
       return 0;
-    if (relativeOffset > BigInt(Number.MAX_SAFE_INTEGER))
-      throw new Error('Mesage offset too large');
-    return this.data_.byteOffset + offset + Number(relativeOffset);
+    return this.data_.byteOffset + offset + relativeOffset;
   }
 
   /**

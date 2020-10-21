@@ -318,13 +318,12 @@ class Generator(generator.Generator):
   def GetFilters(self):
     js_filters = {
         "closure_type": self._ClosureType,
-        "constant_value": self._GetConstantValue,
-        "constant_value_in_js_module": self._GetConstantValueInJsModule,
         "decode_snippet": self._JavaScriptDecodeSnippet,
         "default_value": self._JavaScriptDefaultValue,
         "default_value_in_js_module": self._DefaultValueInJsModule,
         "encode_snippet": self._JavaScriptEncodeSnippet,
         "expression_to_text": self._ExpressionToText,
+        "expression_to_text_lite": self._ExpressionToTextLite,
         "field_offset": JavaScriptFieldOffset,
         "field_type_in_js_module": self._GetFieldTypeInJsModule,
         "get_relative_url": GetRelativeUrl,
@@ -508,10 +507,6 @@ class Generator(generator.Generator):
     # Indicates whether a kind of suitable to stringify and use as an Object
     # property name. This is checked for map key types to allow most kinds of
     # mojom maps to be represented as either a Map or an Object.
-    if kind == mojom.INT64 or kind == mojom.UINT64:
-      # JS BigInts are not stringable and cannot be used as Object property
-      # names.
-      return False
     return (mojom.IsIntegralKind(kind) or mojom.IsFloatKind(kind)
             or mojom.IsDoubleKind(kind) or mojom.IsStringKind(kind)
             or mojom.IsEnumKind(kind))
@@ -526,8 +521,6 @@ class Generator(generator.Generator):
                                              for_module=for_module)
 
     def get_type_name(kind):
-      if kind == mojom.INT64 or kind == mojom.UINT64:
-        return "bigint"
       if kind in mojom.PRIMITIVES:
         return _kind_to_closure_type[kind]
       if mojom.IsArrayKind(kind):
@@ -785,8 +778,6 @@ class Generator(generator.Generator):
         assert field.default == "default"
         return "null"
       return self._ExpressionToTextLite(field.default, for_module=for_module)
-    if field.kind == mojom.INT64 or field.kind == mojom.UINT64:
-      return "BigInt(0)"
     if field.kind in mojom.PRIMITIVES:
       return _kind_to_javascript_default_value[field.kind]
     if mojom.IsEnumKind(field.kind):
@@ -987,16 +978,6 @@ class Generator(generator.Generator):
       return ".".join(name_prefix) + separator + ".".join(name)
 
     return self._ExpressionToText(token)
-
-  def _GetConstantValue(self, constant, for_module=False):
-    assert isinstance(constant, mojom.Constant)
-    text = self._ExpressionToTextLite(constant.value, for_module=for_module)
-    if constant.kind == mojom.INT64 or constant.kind == mojom.UINT64:
-      return "BigInt('{}')".format(text)
-    return text
-
-  def _GetConstantValueInJsModule(self, constant):
-    return self._GetConstantValue(constant, for_module=True)
 
   def _GenerateHtmlImports(self):
     result = []
