@@ -9,17 +9,17 @@
     Exposed=(Window,Worker,Worklet)
 ] interface WritableStreamDefaultWriter {
     [CallWith=ScriptState, RaisesException] constructor(WritableStream stream);
-    [CallWith=ScriptState] readonly attribute Promise<void>
+    [CallWith=ScriptState, NotEnumerable] readonly attribute Promise<void>
         closed;
-    [RaisesException, CallWith=ScriptState] readonly attribute
+    [RaisesException, CallWith=ScriptState, NotEnumerable] readonly attribute
         any desiredSize;
-    [CallWith=ScriptState] readonly attribute Promise<void>
+    [CallWith=ScriptState, NotEnumerable] readonly attribute Promise<void>
         ready;
 
-    [CallWith=ScriptState, RaisesException] Promise<void> abort(
+    [CallWith=ScriptState, RaisesException, NotEnumerable] Promise<void> abort(
         optional any reason);
-    [CallWith=ScriptState, RaisesException] Promise<void> close();
+    [CallWith=ScriptState, RaisesException, NotEnumerable] Promise<void> close();
     [CallWith=ScriptState, NotEnumerable] void releaseLock();
-    [CallWith=ScriptState, RaisesException] Promise<void> write(
+    [CallWith=ScriptState, RaisesException, NotEnumerable] Promise<void> write(
         optional any chunk);
 };
