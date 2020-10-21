@@ -50,6 +50,7 @@ README   text eol=lf
 README.*   text eol=lf
 WATCHLISTS   text eol=lf
 VERSION   text eol=lf
+DIR_METADATA   text eol=lf
 
 # Skip Tricium by default on files in third_party.
 third_party/** -tricium
