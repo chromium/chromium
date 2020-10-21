@@ -461,10 +461,6 @@ class TabStrip : public views::View,
   // edge of the new tab button.
   int TabToNewTabButtonSpacing() const;
 
-  // Returns the space to reserve after the tabs to guarantee the user can grab
-  // part of the window frame (to move the window with).
-  int FrameGrabWidth() const;
-
   // Returns whether the window background behind the tabstrip is transparent.
   bool TitlebarBackgroundIsTransparent() const;
 

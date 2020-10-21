@@ -2719,13 +2719,6 @@ int TabStrip::TabToNewTabButtonSpacing() const {
   return -TabStyle::GetTabInternalPadding().right();
 }
 
-int TabStrip::FrameGrabWidth() const {
-  // The grab area is adjacent to the new tab button.  Treat the padding in the
-  // new tab button as part of the grab area.
-  constexpr int kApparentWidth = 50;
-  return kApparentWidth - new_tab_button_->GetInsets().right();
-}
-
 bool TabStrip::TitlebarBackgroundIsTransparent() const {
 #if defined(OS_WIN)
   // Windows 8+ uses transparent window contents (because the titlebar area is
@@ -2796,8 +2789,7 @@ int TabStrip::GetTabAreaWidth() const {
 }
 
 int TabStrip::GetRightSideReservedWidth() const {
-  return new_tab_button_ideal_bounds_.width() + TabToNewTabButtonSpacing() +
-         FrameGrabWidth();
+  return new_tab_button_ideal_bounds_.width() + TabToNewTabButtonSpacing();
 }
 
 const Tab* TabStrip::GetLastVisibleTab() const {

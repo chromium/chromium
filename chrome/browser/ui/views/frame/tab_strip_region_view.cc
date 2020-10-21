@@ -44,6 +44,17 @@ std::unique_ptr<views::ImageButton> CreateScrollButton(
   scroll_button->SetInkDropMode(views::Button::InkDropMode::ON);
   return scroll_button;
 }
+
+class FrameGrabHandle : public views::View {
+ public:
+  gfx::Size GetMinimumSize() const override {
+    // Reserve some space for the frame to be grabbed by, even if the tabstrip
+    // is full.
+    // TODO(tbergquist): Define this relative to the NTB insets again.
+    return gfx::Size(42, 0);
+  }
+};
+
 }  // namespace
 
 TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
@@ -96,11 +107,8 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
                                       tab_strip_container_flex_spec);
   }
 
-  reserved_grab_handle_space_ = AddChildView(std::make_unique<views::View>());
-  // TODO(tbergquist): Give |reserved_grab_handle_space_| a minimum size. For
-  // now, this space is reserved by the tabstrip itself, and we're just using
-  // this view to eat up flex space so that |tab_search_button| can be end-
-  // aligned.
+  reserved_grab_handle_space_ =
+      AddChildView(std::make_unique<FrameGrabHandle>());
   reserved_grab_handle_space_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
