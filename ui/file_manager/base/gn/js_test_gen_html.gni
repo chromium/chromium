@@ -27,6 +27,12 @@ import("//third_party/closure_compiler/js_unit_tests.gni")
 #     generates HTMLImport instead of <script>. Only the main element is
 #     imported.
 #
+#   js_module:
+#     Boolean indicating that it's a JS module so the HTML file will only
+#     contain <script type="module" src="..._unittest.m.js"> and traditional
+#     <script>s for mocks.
+#
+#
 # Non-Polymer example:
 #   js_test_gen_html("folder_tests") {
 #     deps = [
@@ -70,6 +76,7 @@ template("js_test_gen_html") {
                              "deps",
                              "mocks",
                              "html_import",
+                             "js_module",
                            ])
     testonly = true
     sources = []
@@ -92,6 +99,10 @@ template("js_test_gen_html") {
 
     if (defined(html_import) && html_import) {
       args += [ "--html_import" ]
+    }
+
+    if (defined(js_module) && js_module) {
+      args += [ "--js_module" ]
     }
 
     if (defined(mocks)) {

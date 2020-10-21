@@ -90,6 +90,8 @@ class TestFilesDataSource : public content::URLDataSource {
     std::move(callback).Run(response.get());
   }
 
+  bool ShouldServeMimeTypeAsContentTypeHeader() override { return true; }
+
   // It currently only serves HTML/JS/CSS/SVG.
   std::string GetMimeType(const std::string& path) override {
     if (base::EndsWith(path, ".html", base::CompareCase::INSENSITIVE_ASCII)) {
