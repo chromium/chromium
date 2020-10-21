@@ -439,25 +439,26 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
 
   LayoutBox* EnclosingScrollableBox() const;
 
-  // Returns the root of the inline formatting context |this| belongs to. |this|
-  // must be |IsInline()|. The root is the object that holds |NGInlineNodeData|
-  // and the root |NGPaintFragment| if it's in LayoutNG context. See also
-  // |ContainingFragmentainer()|.
-  LayoutBlockFlow* RootInlineFormattingContext() const;
-
   // Returns the |LayoutBlockFlow| that has |NGFragmentItems| for |this|. This
-  // is usually the same as |RootInlineFormattingContext()|, but it is the child
-  // of that when the IFC has multicol applied. TODO(crbug.com/1076470)
+  // is usually the same as |ContainingNGBlockFlow()|, but it is the child of
+  // that when the IFC has multicol applied. TODO(crbug.com/1076470)
   LayoutBlockFlow* FragmentItemsContainer() const;
 
   // Returns the containing block flow if it's a LayoutNGBlockFlow, or nullptr
   // otherwise. Note that the semantics is different from |EnclosingBox| for
   // atomic inlines that this function returns the container, while
   // |EnclosingBox| returns the atomic inline itself.
+  //
+  // |this| must be |IsInline()|. The root is the object that holds
+  // |NGInlineNodeData| and the root |NGPaintFragment| if it's in
+  // LayoutNG context.
   LayoutBlockFlow* ContainingNGBlockFlow() const;
 
   // Returns |NGPhysicalBoxFragment| for |ContainingNGBlockFlow()| or nullptr
   // otherwise.
+  //
+  // TODO(crbug.com/1061423): Remove this method. We shouldn't assume
+  // that there's only one fragment.
   const NGPhysicalBoxFragment* ContainingBlockFlowFragment() const;
 
   // Function to return our enclosing flow thread if we are contained inside

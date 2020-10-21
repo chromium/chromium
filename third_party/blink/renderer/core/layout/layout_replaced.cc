@@ -972,10 +972,12 @@ static std::pair<LayoutUnit, LayoutUnit> SelectionTopAndBottom(
   const std::pair<LayoutUnit, LayoutUnit> fallback(
       layout_replaced.LogicalTop(), layout_replaced.LogicalBottom());
 
-  const NGPhysicalBoxFragment* fragmentainer =
+  // TODO(crbug.com/1061423): Shouldn't assume that there's only one
+  // fragment.
+  const NGPhysicalBoxFragment* fragment =
       layout_replaced.IsInline() ? layout_replaced.ContainingBlockFlowFragment()
                                  : nullptr;
-  if (fragmentainer) {
+  if (fragment) {
     // Step 1: Find the line box containing |layout_replaced|.
     NGInlineCursor line_box;
     line_box.MoveTo(layout_replaced);
@@ -994,7 +996,7 @@ static std::pair<LayoutUnit, LayoutUnit> SelectionTopAndBottom(
         line_box.Current().OffsetInContainerBlock();
     const PhysicalSize line_box_size = line_box.Current().Size();
     const LogicalOffset logical_offset = line_box_offset.ConvertToLogical(
-        writing_direction, fragmentainer->Size(), line_box.Current().Size());
+        writing_direction, fragment->Size(), line_box.Current().Size());
     const LogicalSize logical_size =
         line_box_size.ConvertToLogical(writing_direction.GetWritingMode());
     return {logical_offset.block_offset,

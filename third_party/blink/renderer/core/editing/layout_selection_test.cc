@@ -39,7 +39,7 @@ class LayoutSelectionTestBase : public EditingTestBase {
                                   const LayoutText& layout_text,
                                   SelectionState state) {
     if (layout_text.IsInLayoutNGInlineFormattingContext()) {
-      NGInlineCursor cursor(*layout_text.RootInlineFormattingContext());
+      NGInlineCursor cursor(*layout_text.ContainingNGBlockFlow());
       cursor.MoveTo(layout_text);
       if (!cursor)
         return;
@@ -979,7 +979,7 @@ class NGLayoutSelectionTest
   LayoutSelectionStatus ComputeLayoutSelectionStatus(
       const LayoutObject& layout_object) const {
     DCHECK(layout_object.IsText());
-    NGInlineCursor cursor(*layout_object.RootInlineFormattingContext());
+    NGInlineCursor cursor(*layout_object.ContainingNGBlockFlow());
     cursor.MoveTo(layout_object);
     return Selection().ComputeLayoutSelectionStatus(cursor);
   }

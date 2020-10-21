@@ -141,14 +141,14 @@ const LayoutBlockFlow* NGInlineCursor::GetLayoutBlockFlow() const {
             DynamicTo<LayoutBlockFlow>(layout_object))
       return block_flow;
     DCHECK(layout_object->IsLayoutInline());
-    return layout_object->RootInlineFormattingContext();
+    return layout_object->ContainingNGBlockFlow();
   }
   if (IsItemCursor()) {
     const NGFragmentItem& item = fragment_items_->front();
     const LayoutObject* layout_object = item.GetLayoutObject();
     if (item.Type() == NGFragmentItem::kLine)
       return To<LayoutBlockFlow>(layout_object);
-    return layout_object->RootInlineFormattingContext();
+    return layout_object->ContainingNGBlockFlow();
   }
   NOTREACHED();
   return nullptr;
@@ -420,11 +420,9 @@ UBiDiLevel NGInlineCursorPosition::BidiLevel() const {
   }
 
   if (IsAtomicInline()) {
-    const NGPhysicalBoxFragment* fragmentainer =
-        GetLayoutObject()->ContainingBlockFlowFragment();
-    DCHECK(fragmentainer);
+    DCHECK(GetLayoutObject()->ContainingNGBlockFlow());
     const LayoutBlockFlow& block_flow =
-        *To<LayoutBlockFlow>(fragmentainer->GetLayoutObject());
+        *GetLayoutObject()->ContainingNGBlockFlow();
     const Vector<NGInlineItem> items =
         block_flow.GetNGInlineNodeData()->ItemsData(UsesFirstLineStyle()).items;
     const LayoutObject* const layout_object = GetLayoutObject();
@@ -1532,8 +1530,7 @@ void NGInlineCursor::MoveTo(const LayoutObject& layout_object) {
     // If this cursor is rootless, find the root of the inline formatting
     // context.
     if (!HasRoot()) {
-      const LayoutBlockFlow& root =
-          *layout_object.RootInlineFormattingContext();
+      const LayoutBlockFlow& root = *layout_object.ContainingNGBlockFlow();
       DCHECK(&root);
       SetRoot(root);
       if (!HasRoot()) {

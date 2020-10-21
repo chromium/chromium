@@ -886,20 +886,6 @@ LayoutBox* LayoutObject::EnclosingBox() const {
   return nullptr;
 }
 
-LayoutBlockFlow* LayoutObject::RootInlineFormattingContext() const {
-  NOT_DESTROYED();
-  for (LayoutObject* parent = Parent(); parent; parent = parent->Parent()) {
-    if (auto* block_flow = DynamicTo<LayoutBlockFlow>(parent)) {
-      // Skip |LayoutFlowThread| because it is skipped when finding the first
-      // child in |GetLayoutObjectForFirstChildNode|.
-      if (UNLIKELY(block_flow->IsLayoutFlowThread()))
-        return DynamicTo<LayoutBlockFlow>(block_flow->Parent());
-      return block_flow;
-    }
-  }
-  return nullptr;
-}
-
 LayoutBlockFlow* LayoutObject::FragmentItemsContainer() const {
   NOT_DESTROYED();
   for (LayoutObject* parent = Parent(); parent; parent = parent->Parent()) {
@@ -914,12 +900,15 @@ LayoutBlockFlow* LayoutObject::ContainingNGBlockFlow() const {
   DCHECK(IsInline());
   if (!RuntimeEnabledFeatures::LayoutNGEnabled())
     return nullptr;
-  if (LayoutObject* parent = Parent()) {
-    LayoutBox* box = parent->EnclosingBox();
-    DCHECK(box);
-    if (NGBlockNode::CanUseNewLayout(*box)) {
-      DCHECK(box->IsLayoutBlockFlow());
-      return To<LayoutBlockFlow>(box);
+  for (LayoutObject* parent = Parent(); parent; parent = parent->Parent()) {
+    if (auto* block_flow = DynamicTo<LayoutBlockFlow>(parent)) {
+      // Skip |LayoutFlowThread| because it is skipped when finding the first
+      // child in |GetLayoutObjectForFirstChildNode|.
+      if (UNLIKELY(block_flow->IsLayoutFlowThread()))
+        block_flow = DynamicTo<LayoutBlockFlow>(block_flow->Parent());
+      if (!NGBlockNode::CanUseNewLayout(*block_flow))
+        return nullptr;
+      return block_flow;
     }
   }
   return nullptr;

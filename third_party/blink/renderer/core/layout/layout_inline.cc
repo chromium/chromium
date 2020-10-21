@@ -59,6 +59,7 @@ namespace {
 
 // TODO(layout-dev): Once we generate fragment for all inline element, we should
 // use |LayoutObject::EnclosingBlockFlowFragment()|.
+// TODO(crbug.com/1061423): Shouldn't assume that there's only one fragment.
 const NGPhysicalBoxFragment* ContainingBlockFlowFragmentOf(
     const LayoutInline& node) {
   if (!RuntimeEnabledFeatures::LayoutNGEnabled())
