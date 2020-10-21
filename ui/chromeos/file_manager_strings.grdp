@@ -962,6 +962,15 @@
  <message name="IDS_FILE_BROWSER_CONFIRM_DELETE_SOME" desc="Asks the user if they are sure they want to delete multiple files/directories.">
    Are you sure you want to delete <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items?
  </message>
+ <message name="IDS_FILE_BROWSER_UNDO_DELETE_ONE" desc="Confirm to a user that they have deleted a single file and offer to undo">
+   <ph name="FILE_NAME">$1<ex>file.txt</ex></ph> deleted
+ </message>
+ <message name="IDS_FILE_BROWSER_UNDO_DELETE_SOME" desc="Confirm to a user that they have deleted multiple files and offer to undo">
+   <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items deleted
+ </message>
+ <message name="IDS_FILE_BROWSER_UNDO_DELETE_ACTION_LABEL" desc="Undo label shown on toast to undo delete operation">
+   Undo
+ </message>
 
   <message name="IDS_FILE_BROWSER_UNKNOWN_FILESYSTEM_WARNING" desc="Displayed when device contents cannot be read because filesystem is unknown.">
     This device cannot be opened because its filesystem was not recognized.
