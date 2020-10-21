@@ -56,6 +56,14 @@ class ArcAppDialogView : public views::DialogDelegateView,
   void ConfirmOrCancelForTest(bool confirm);
 
  private:
+  // views::WidgetDelegate:
+  base::string16 GetWindowTitle() const override;
+  ui::ModalType GetModalType() const override;
+  bool ShouldShowCloseButton() const override;
+
+  // views::View:
+  gfx::Size CalculatePreferredSize() const override;
+
   // AppIconLoaderDelegate:
   void OnAppImageUpdated(const std::string& app_id,
                          const gfx::ImageSkia& image) override;
@@ -72,6 +80,7 @@ class ArcAppDialogView : public views::DialogDelegateView,
   Profile* const profile_;
 
   const std::string app_id_;
+  const base::string16 window_title_;
   ArcAppConfirmCallback confirm_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(ArcAppDialogView);
@@ -91,8 +100,8 @@ ArcAppDialogView::ArcAppDialogView(Profile* profile,
                                    ArcAppConfirmCallback confirm_callback)
     : profile_(profile),
       app_id_(app_id),
+      window_title_(window_title),
       confirm_callback_(std::move(confirm_callback)) {
-  SetTitle(window_title);
   SetButtonLabel(ui::DIALOG_BUTTON_OK, confirm_button_text);
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, cancel_button_text);
   SetAcceptCallback(base::BindOnce(&ArcAppDialogView::OnDialogAccepted,
@@ -106,11 +115,6 @@ ArcAppDialogView::ArcAppDialogView(Profile* profile,
       views::BoxLayout::Orientation::kHorizontal,
       provider->GetDialogInsetsForContentType(views::TEXT, views::TEXT),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
-
-  SetModalType(ui::MODAL_TYPE_WINDOW);
-  SetShowCloseButton(false);
-  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   auto icon_view = std::make_unique<views::ImageView>();
   icon_view->SetPreferredSize(gfx::Size(kArcAppIconSize, kArcAppIconSize));
@@ -166,6 +170,18 @@ void ArcAppDialogView::ConfirmOrCancelForTest(bool confirm) {
   }
 }
 
+base::string16 ArcAppDialogView::GetWindowTitle() const {
+  return window_title_;
+}
+
+ui::ModalType ArcAppDialogView::GetModalType() const {
+  return ui::MODAL_TYPE_WINDOW;
+}
+
+bool ArcAppDialogView::ShouldShowCloseButton() const {
+  return false;
+}
+
 void ArcAppDialogView::OnDialogAccepted() {
   // The dialog can either be accepted or cancelled, but never both.
   DCHECK(confirm_callback_);
@@ -176,6 +192,12 @@ void ArcAppDialogView::OnDialogCancelled() {
   // The dialog can either be accepted or cancelled, but never both.
   DCHECK(confirm_callback_);
   std::move(confirm_callback_).Run(false);
+}
+
+gfx::Size ArcAppDialogView::CalculatePreferredSize() const {
+  const int default_width = views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
+  return gfx::Size(default_width, GetHeightForWidth(default_width));
 }
 
 void ArcAppDialogView::OnAppImageUpdated(const std::string& app_id,

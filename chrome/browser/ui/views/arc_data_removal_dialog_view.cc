@@ -46,6 +46,13 @@ class DataRemovalConfirmationDialog : public views::DialogDelegateView,
       DataRemovalConfirmationCallback confirm_data_removal);
   ~DataRemovalConfirmationDialog() override;
 
+  // views::WidgetDelegate:
+  base::string16 GetWindowTitle() const override;
+  ui::ModalType GetModalType() const override;
+
+  // views::View:
+  gfx::Size CalculatePreferredSize() const override;
+
   // AppIconLoaderDelegate:
   void OnAppImageUpdated(const std::string& app_id,
                          const gfx::ImageSkia& image) override;
@@ -72,7 +79,6 @@ DataRemovalConfirmationDialog::DataRemovalConfirmationDialog(
     Profile* profile,
     DataRemovalConfirmationCallback confirm_callback)
     : profile_(profile), confirm_callback_(std::move(confirm_callback)) {
-  SetTitle(l10n_util::GetStringUTF16(IDS_ARC_DATA_REMOVAL_CONFIRMATION_TITLE));
   SetButtonLabel(
       ui::DIALOG_BUTTON_OK,
       l10n_util::GetStringUTF16(IDS_ARC_DATA_REMOVAL_CONFIRMATION_OK_BUTTON));
@@ -83,10 +89,6 @@ DataRemovalConfirmationDialog::DataRemovalConfirmationDialog(
   SetAcceptCallback(base::BindOnce(run_callback, base::Unretained(this), true));
   SetCancelCallback(
       base::BindOnce(run_callback, base::Unretained(this), false));
-
-  SetModalType(ui::MODAL_TYPE_WINDOW);
-  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
 
@@ -126,6 +128,20 @@ DataRemovalConfirmationDialog::~DataRemovalConfirmationDialog() {
 
   DCHECK_EQ(g_current_data_removal_confirmation, this);
   g_current_data_removal_confirmation = nullptr;
+}
+
+base::string16 DataRemovalConfirmationDialog::GetWindowTitle() const {
+  return l10n_util::GetStringUTF16(IDS_ARC_DATA_REMOVAL_CONFIRMATION_TITLE);
+}
+
+ui::ModalType DataRemovalConfirmationDialog::GetModalType() const {
+  return ui::MODAL_TYPE_WINDOW;
+}
+
+gfx::Size DataRemovalConfirmationDialog::CalculatePreferredSize() const {
+  const int default_width = views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
+  return gfx::Size(default_width, GetHeightForWidth(default_width));
 }
 
 void DataRemovalConfirmationDialog::OnAppImageUpdated(

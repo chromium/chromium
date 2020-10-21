@@ -26,7 +26,11 @@ class CaretBrowsingDialogDelegate : public views::DialogDelegateView {
       delete;
   ~CaretBrowsingDialogDelegate() override;
 
-  PrefService* const pref_service_;
+  // DialogDelegateView.
+  ui::ModalType GetModalType() const override;
+  gfx::Size CalculatePreferredSize() const override;
+
+  PrefService* pref_service_;
 
   // Checkbox where the user can say they don't want to be asked when they
   // toggle caret browsing next time.

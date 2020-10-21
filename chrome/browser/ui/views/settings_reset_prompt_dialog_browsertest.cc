@@ -180,10 +180,9 @@ class SettingsResetPromptDialogCloseTest : public DialogBrowserTest {
         ModelParams{SettingType::DEFAULT_SEARCH_ENGINE, 0});
 
     dialog_ = new SettingsResetPromptDialog(
-        browser(),
         new safe_browsing::SettingsResetPromptController(
             std::move(model), std::make_unique<BrandcodedDefaultSettings>()));
-    dialog_->Show();
+    dialog_->Show(browser());
   }
   void DismissUi() override { dialog_->Close(); }
 

@@ -22,10 +22,6 @@ FolderUploadConfirmationView::FolderUploadConfirmationView(
     std::vector<ui::SelectedFileInfo> selected_files)
     : callback_(std::move(callback)),
       selected_files_(std::move(selected_files)) {
-  SetTitle(l10n_util::GetPluralStringFUTF16(
-      IDS_CONFIRM_FILE_UPLOAD_TITLE,
-      base::saturated_cast<int>(selected_files_.size())));
-
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_CONFIRM_FILE_UPLOAD_OK_BUTTON));
 
@@ -44,11 +40,6 @@ FolderUploadConfirmationView::FolderUploadConfirmationView(
         std::move(dialog->callback_).Run({});
       },
       base::Unretained(this)));
-
-  SetModalType(ui::MODAL_TYPE_CHILD);
-  SetShowCloseButton(false);
-  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
   auto label = std::make_unique<views::Label>(
@@ -80,8 +71,29 @@ views::Widget* FolderUploadConfirmationView::ShowDialog(
                                                      web_contents);
 }
 
+base::string16 FolderUploadConfirmationView::GetWindowTitle() const {
+  return l10n_util::GetPluralStringFUTF16(
+      IDS_CONFIRM_FILE_UPLOAD_TITLE,
+      base::saturated_cast<int>(selected_files_.size()));
+}
+
 views::View* FolderUploadConfirmationView::GetInitiallyFocusedView() {
   return GetCancelButton();
+}
+
+bool FolderUploadConfirmationView::ShouldShowCloseButton() const {
+  return false;
+}
+
+gfx::Size FolderUploadConfirmationView::CalculatePreferredSize() const {
+  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
+                        views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
+                    margins().width();
+  return gfx::Size(width, GetHeightForWidth(width));
+}
+
+ui::ModalType FolderUploadConfirmationView::GetModalType() const {
+  return ui::MODAL_TYPE_CHILD;
 }
 
 void ShowFolderUploadConfirmationDialog(
