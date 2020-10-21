@@ -4794,10 +4794,40 @@
             ],
             "experiments": [
                 {
-                    "name": "ButtonRowWithPedals",
+                    "name": "ButtonRowWithPedalsAndKeywordButton",
+                    "params": {
+                        "PedalSuggestionsCounterfactualArm": "false"
+                    },
+                    "enable_features": [
+                        "OmniboxKeywordSearchButton",
+                        "OmniboxPedalSuggestions",
+                        "OmniboxSuggestionButtonRow"
+                    ]
+                },
+                {
+                    "name": "ButtonRowWithPedals_Experiment",
+                    "params": {
+                        "PedalSuggestionsCounterfactualArm": "false"
+                    },
                     "enable_features": [
                         "OmniboxPedalSuggestions",
                         "OmniboxSuggestionButtonRow"
+                    ],
+                    "disable_features": [
+                        "OmniboxKeywordSearchButton"
+                    ]
+                },
+                {
+                    "name": "ButtonRowWithPedals_Counterfactual",
+                    "params": {
+                        "PedalSuggestionsCounterfactualArm": "true"
+                    },
+                    "enable_features": [
+                        "OmniboxPedalSuggestions",
+                        "OmniboxSuggestionButtonRow"
+                    ],
+                    "disable_features": [
+                        "OmniboxKeywordSearchButton"
                     ]
                 },
                 {
@@ -4806,6 +4836,7 @@
                         "OmniboxSuggestionButtonRow"
                     ],
                     "disable_features": [
+                        "OmniboxKeywordSearchButton",
                         "OmniboxPedalSuggestions"
                     ]
                 }

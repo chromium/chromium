@@ -387,7 +387,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_DeleteOmniboxSuggestionResult) {
   ASSERT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
 
   // Input a keyword query and wait for suggestions from the extension.
-  InputKeys(browser(), {ui::VKEY_K, ui::VKEY_W, ui::VKEY_SPACE, ui::VKEY_D});
+  InputKeys(browser(), {ui::VKEY_K, ui::VKEY_W, ui::VKEY_TAB, ui::VKEY_D});
 
   WaitForAutocompleteDone(browser());
   EXPECT_TRUE(autocomplete_controller->done());
@@ -446,6 +446,12 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_DeleteOmniboxSuggestionResult) {
 // Tests typing something but not staying in keyword mode.
 IN_PROC_BROWSER_TEST_F(OmniboxApiTest, ExtensionSuggestionsOnlyInKeywordMode) {
   ASSERT_TRUE(RunExtensionTest("omnibox")) << message_;
+
+  // This test covers the behavior of entering keyword mode by space, then
+  // exiting by pressing backspace.  AcceptKeywordBySpace is disabled when
+  // keyword search button is enabled, so for that case do not run this test.
+  if (OmniboxFieldTrial::IsKeywordSearchButtonEnabled())
+    return;
 
   // The results depend on the TemplateURLService being loaded. Make sure it is
   // loaded so that the autocomplete results are consistent.

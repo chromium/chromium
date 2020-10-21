@@ -895,7 +895,11 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, SearchDisabledDontCrashOnQuestionMark) {
 #define MAYBE_AcceptKeywordBySpace AcceptKeywordBySpace
 #endif
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, MAYBE_AcceptKeywordBySpace) {
-  OmniboxView* omnibox_view = NULL;
+  // AcceptKeywordBySpace is disabled when keyword search button is enabled.
+  if (OmniboxFieldTrial::IsKeywordSearchButtonEnabled())
+    return;
+
+  OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
   base::string16 search_keyword(ASCIIToUTF16(kSearchKeyword));

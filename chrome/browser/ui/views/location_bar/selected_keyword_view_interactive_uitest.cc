@@ -45,7 +45,7 @@ IN_PROC_BROWSER_TEST_F(SelectedKeywordViewTest,
   ASSERT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
 
   // Activate the extension's omnibox keyword.
-  InputKeys(browser(), {ui::VKEY_K, ui::VKEY_E, ui::VKEY_Y, ui::VKEY_SPACE});
+  InputKeys(browser(), {ui::VKEY_K, ui::VKEY_E, ui::VKEY_Y, ui::VKEY_TAB});
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   SelectedKeywordView* selected_keyword_view =
