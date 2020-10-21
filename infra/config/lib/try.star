@@ -157,7 +157,7 @@ def try_builder(
 
     # Enable "chromium.resultdb.result_sink" on all try builders for 10% by default.
     experiments = experiments or {}
-    experiments.setdefault("chromium.resultdb.result_sink", 10)
+    experiments.setdefault("chromium.resultdb.result_sink", 50)
 
     # Define the builder first so that any validation of luci.builder arguments
     # (e.g. bucket) occurs before we try to use it
