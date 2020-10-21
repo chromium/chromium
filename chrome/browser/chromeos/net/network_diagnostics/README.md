@@ -103,7 +103,7 @@ Problems:
 Tests whether the DNS latency is below an acceptable threshold.
 
 Problems:
-* `kFailedToResolveAllHosts`: Failed to resolve one or more hosts.
+* `kHostResolutionFailure`: Failed to resolve one or more hosts.
 * `kSlightlyAboveThreshold`: Average DNS latency across hosts is slightly above
    expected threshold.
 * `kSignificantlyAboveThreshold`: Average DNS latency across hosts is

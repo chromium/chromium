@@ -233,7 +233,7 @@ TEST_F(DnsLatencyRoutineTest, TestUnsuccessfulResolution) {
   // because a failed resolution attempt already results in a problem.
   SetUpAndRunRoutine(fake_dns_result.get(), kSuccessfulDnsResolutionDelayMs,
                      mojom::RoutineVerdict::kProblem,
-                     {mojom::DnsLatencyProblem::kFailedToResolveAllHosts});
+                     {mojom::DnsLatencyProblem::kHostResolutionFailure});
 }
 
 // This test case represents the scenario where a DNS resolution was successful;

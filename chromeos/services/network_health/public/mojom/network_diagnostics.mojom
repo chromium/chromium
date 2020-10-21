@@ -60,9 +60,8 @@ enum DnsResolverPresentProblem {
 // Problems related to the DnsLatencyProblem routine.
 [Extensible]
 enum DnsLatencyProblem {
-  // The routine was unable to successfully resolve all the hosts. Note that
-  // this will be true if one or more hosts could not be successfully resolved.
-  kFailedToResolveAllHosts,
+  // The routine was unable to resolve one or more hosts.
+  kHostResolutionFailure,
   // Average DNS latency across hosts is slightly above expected threshold
   kSlightlyAboveThreshold,
   // Average DNS latency across hosts is significantly above expected threshold
