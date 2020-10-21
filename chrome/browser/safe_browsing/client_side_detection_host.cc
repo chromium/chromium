@@ -21,7 +21,6 @@
 #include "base/time/tick_clock.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/browser_feature_extractor.h"
 #include "chrome/browser/safe_browsing/client_side_detection_service.h"
 #include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -35,7 +34,6 @@
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "components/security_interstitials/content/unsafe_resource_util.h"
-#include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
@@ -308,27 +306,21 @@ ClientSideDetectionHost::ClientSideDetectionHost(WebContents* tab)
       tab_(tab),
       classification_request_(nullptr),
       pageload_complete_(false),
-      unsafe_unique_page_id_(-1),
       tick_clock_(base::DefaultTickClock::GetInstance()) {
   DCHECK(tab);
   // Note: csd_service_ and sb_service will be nullptr here in testing.
   csd_service_ = ClientSideDetectionServiceFactory::GetForProfile(
       Profile::FromBrowserContext(tab->GetBrowserContext()));
-  feature_extractor_.reset(new BrowserFeatureExtractor(tab));
 
   scoped_refptr<SafeBrowsingService> sb_service =
       g_browser_process->safe_browsing_service();
   if (sb_service.get()) {
     ui_manager_ = sb_service->ui_manager();
     database_manager_ = sb_service->database_manager();
-    ui_manager_->AddObserver(this);
   }
 }
 
 ClientSideDetectionHost::~ClientSideDetectionHost() {
-  if (ui_manager_.get())
-    ui_manager_->RemoveObserver(this);
-
   if (csd_service_)
     csd_service_->RemoveClientSideDetectionHost(this);
 }
@@ -361,21 +353,8 @@ void ClientSideDetectionHost::DidFinishNavigation(
   if (!csd_service_) {
     return;
   }
-  browse_info_.reset(new BrowseInfo);
 
-  // Store redirect chain information.
-  if (navigation_handle->GetURL().host() != cur_host_) {
-    cur_host_ = navigation_handle->GetURL().host();
-    cur_host_redirects_ = navigation_handle->GetRedirectChain();
-  }
-  browse_info_->url = navigation_handle->GetURL();
-  browse_info_->host_redirects = cur_host_redirects_;
-  browse_info_->url_redirects = navigation_handle->GetRedirectChain();
-  browse_info_->referrer = navigation_handle->GetReferrer().url;
-  if (navigation_handle->GetResponseHeaders()) {
-    browse_info_->http_status_code =
-        navigation_handle->GetResponseHeaders()->response_code();
-  }
+  current_url_ = navigation_handle->GetURL();
 
   pageload_complete_ = false;
 
@@ -402,40 +381,11 @@ void ClientSideDetectionHost::SendModelToRenderFrame() {
   }
 }
 
-void ClientSideDetectionHost::OnSafeBrowsingHit(
-    const security_interstitials::UnsafeResource& resource) {
-  if (!web_contents())
-    return;
-
-  // Check that the hit is either malware or phishing.
-  if (resource.threat_type != SB_THREAT_TYPE_URL_PHISHING &&
-      resource.threat_type != SB_THREAT_TYPE_URL_MALWARE)
-    return;
-
-  // Check that this notification is really for us.
-  if (web_contents() != resource.web_contents_getter.Run())
-    return;
-
-  NavigationEntry* entry = GetNavigationEntryForResource(resource);
-  if (!entry)
-    return;
-
-  // Store the unique page ID for later.
-  unsafe_unique_page_id_ = entry->GetUniqueID();
-
-  // We also keep the resource around in order to be able to send the
-  // malicious URL to the server.
-  unsafe_resource_.reset(new security_interstitials::UnsafeResource(resource));
-  unsafe_resource_->callback.Reset();  // Don't do anything stupid.
-}
-
 void ClientSideDetectionHost::WebContentsDestroyed() {
   // Tell any pending classification request that it is being canceled.
   if (classification_request_.get()) {
     classification_request_->Cancel();
   }
-  // Cancel all pending feature extractions.
-  feature_extractor_.reset();
   if (csd_service_)
     csd_service_->RemoveClientSideDetectionHost(this);
 }
@@ -452,14 +402,14 @@ void ClientSideDetectionHost::RenderFrameCreated(
 void ClientSideDetectionHost::OnPhishingPreClassificationDone(
     bool should_classify) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (browse_info_.get() && should_classify) {
+  if (should_classify) {
     content::RenderFrameHost* rfh = web_contents()->GetMainFrame();
     phishing_detector_.reset();
     rfh->GetRemoteInterfaces()->GetInterface(
         phishing_detector_.BindNewPipeAndPassReceiver());
     phishing_detection_start_time_ = tick_clock_->NowTicks();
     phishing_detector_->StartPhishingDetection(
-        browse_info_->url,
+        current_url_,
         base::BindOnce(&ClientSideDetectionHost::PhishingDetectionDone,
                        weak_factory_.GetWeakPtr()));
   }
@@ -473,7 +423,6 @@ void ClientSideDetectionHost::PhishingDetectionDone(
   // this method is called.  The renderer should not start phishing detection
   // if there isn't any service class in the browser.
   DCHECK(csd_service_);
-  DCHECK(browse_info_.get());
 
   UmaHistogramMediumTimes(
       "SBClientPhishing.PhishingDetectionDuration",
@@ -491,7 +440,6 @@ void ClientSideDetectionHost::PhishingDetectionDone(
   // send the verdict further.
   std::unique_ptr<ClientPhishingRequest> verdict(new ClientPhishingRequest);
   if (csd_service_ &&
-      browse_info_.get() &&
       verdict->ParseFromString(verdict_str) &&
       verdict->IsInitialized()) {
     VLOG(2) << "Phishing classification score: " << verdict->client_score();
@@ -510,15 +458,15 @@ void ClientSideDetectionHost::PhishingDetectionDone(
 
     // We only send phishing verdict to the server if the verdict is phishing.
     if (verdict->is_phishing()) {
-      if (DidShowSBInterstitial()) {
-        browse_info_->unsafe_resource = std::move(unsafe_resource_);
-      }
-      // Start browser-side feature extraction.  Once we're done it will send
-      // the client verdict request.
-      feature_extractor_->ExtractFeatures(
-          browse_info_.get(), std::move(verdict),
-          base::BindOnce(&ClientSideDetectionHost::FeatureExtractionDone,
-                         weak_factory_.GetWeakPtr()));
+      ClientSideDetectionService::ClientReportPhishingRequestCallback callback =
+          base::Bind(&ClientSideDetectionHost::MaybeShowPhishingWarning,
+                     weak_factory_.GetWeakPtr(),
+                     /*is_from_cache=*/false);
+      Profile* profile =
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+      csd_service_->SendClientReportPhishingRequest(
+          std::move(verdict), IsExtendedReportingEnabled(*profile->GetPrefs()),
+          IsEnhancedProtectionEnabled(*profile->GetPrefs()), callback);
     }
   }
 }
@@ -562,40 +510,6 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(bool is_from_cache,
   }
 }
 
-void ClientSideDetectionHost::FeatureExtractionDone(
-    bool success,
-    std::unique_ptr<ClientPhishingRequest> request) {
-  DCHECK(request);
-  ClientSideDetectionService::ClientReportPhishingRequestCallback callback;
-  // If the client-side verdict isn't phishing we don't care about the server
-  // response because we aren't going to display a warning.
-  if (request->is_phishing()) {
-    callback = base::Bind(&ClientSideDetectionHost::MaybeShowPhishingWarning,
-                          weak_factory_.GetWeakPtr(), /*is_from_cache=*/false);
-  }
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  // Send ping even if the browser feature extraction failed.
-  csd_service_->SendClientReportPhishingRequest(
-      std::move(request), IsExtendedReportingEnabled(*profile->GetPrefs()),
-      IsEnhancedProtectionEnabled(*profile->GetPrefs()), callback);
-}
-
-bool ClientSideDetectionHost::DidShowSBInterstitial() const {
-  if (unsafe_unique_page_id_ <= 0 || !web_contents()) {
-    return false;
-  }
-  // DidShowSBInterstitial is called after client side detection is finished to
-  // see if a SB interstitial was shown on the same page. Client Side Detection
-  // only runs on the currently committed page, so an unconditional
-  // GetLastCommittedEntry is correct here. GetNavigationEntryForResource cannot
-  // be used since it may no longer be valid (eg, if the UnsafeResource was for
-  // a blocking main page load which was then proceeded through).
-  NavigationEntry* nav_entry =
-      web_contents()->GetController().GetLastCommittedEntry();
-  return (nav_entry && nav_entry->GetUniqueID() == unsafe_unique_page_id_);
-}
-
 void ClientSideDetectionHost::set_client_side_detection_service(
     ClientSideDetectionService* service) {
   csd_service_ = service;
@@ -603,12 +517,7 @@ void ClientSideDetectionHost::set_client_side_detection_service(
 
 void ClientSideDetectionHost::set_ui_manager(
     SafeBrowsingUIManager* ui_manager) {
-  if (ui_manager_.get())
-    ui_manager_->RemoveObserver(this);
-
   ui_manager_ = ui_manager;
-  if (ui_manager)
-    ui_manager_->AddObserver(this);
 }
 
 void ClientSideDetectionHost::set_database_manager(

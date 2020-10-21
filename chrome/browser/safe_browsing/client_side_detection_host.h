@@ -13,7 +13,6 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "chrome/browser/safe_browsing/browser_feature_extractor.h"
 #include "chrome/browser/safe_browsing/client_side_model_loader.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
@@ -37,8 +36,7 @@ class ClientSideDetectionService;
 // class relays this information to the client-side detection service
 // class which sends a ping to a server to validate the verdict.
 // TODO(noelutz): move all client-side detection IPCs to this class.
-class ClientSideDetectionHost : public content::WebContentsObserver,
-                                public SafeBrowsingUIManager::Observer {
+class ClientSideDetectionHost : public content::WebContentsObserver {
  public:
   // The caller keeps ownership of the tab object and is responsible for
   // ensuring that it stays valid until WebContentsDestroyed is called.
@@ -54,13 +52,6 @@ class ClientSideDetectionHost : public content::WebContentsObserver,
 
   // Send the model to all the render frame hosts in this WebContents.
   void SendModelToRenderFrame();
-
-  // Called when the SafeBrowsingService found a hit with one of the
-  // SafeBrowsing lists.  This method is called on the UI thread.
-  void OnSafeBrowsingHit(
-      const security_interstitials::UnsafeResource& resource) override;
-
-  BrowseInfo* GetBrowseInfo() const { return browse_info_.get(); }
 
  protected:
   explicit ClientSideDetectionHost(content::WebContents* tab);
@@ -98,12 +89,6 @@ class ClientSideDetectionHost : public content::WebContentsObserver,
                                 GURL phishing_url,
                                 bool is_phishing);
 
-  // Callback that is called when the browser feature extractor is done.
-  // This method is responsible for deleting the request object.  Called on
-  // the UI thread.
-  void FeatureExtractionDone(bool success,
-                             std::unique_ptr<ClientPhishingRequest> request);
-
   // Returns true if the user has seen a regular SafeBrowsing
   // interstitial for the current page.  This is only true if the user has
   // actually clicked through the warning.  This method is called on the UI
@@ -129,16 +114,8 @@ class ClientSideDetectionHost : public content::WebContentsObserver,
   // Keep a handle to the latest classification request so that we can cancel
   // it if necessary.
   scoped_refptr<ShouldClassifyUrlRequest> classification_request_;
-  // Browser-side feature extractor.
-  std::unique_ptr<BrowserFeatureExtractor> feature_extractor_;
-  // Keeps some info about the current page visit while the renderer
-  // classification is going on.  Since we cancel classification on
-  // every page load we can simply keep this data around as a member
-  // variable.  This information will be passed on to the feature extractor.
-  std::unique_ptr<BrowseInfo> browse_info_;
-  // Redirect chain that leads to the first page of the current host. We keep
-  // track of this for browse_info_.
-  std::vector<GURL> cur_host_redirects_;
+  // The current URL
+  GURL current_url_;
   // Current host, used to help determine cur_host_redirects_.
   std::string cur_host_;
   // The currently active message pipe to the renderer PhishingDetector.
@@ -147,11 +124,6 @@ class ClientSideDetectionHost : public content::WebContentsObserver,
   // Max number of ips we save for each browse
   static const size_t kMaxIPsPerBrowse;
   bool pageload_complete_;
-
-  // Unique page ID of the most recent unsafe site that was loaded in this tab
-  // as well as the UnsafeResource.
-  int unsafe_unique_page_id_;
-  std::unique_ptr<security_interstitials::UnsafeResource> unsafe_resource_;
 
   // Records the start time of when phishing detection started.
   base::TimeTicks phishing_detection_start_time_;

@@ -73,10 +73,6 @@ static_library("safe_browsing") {
     # "Safe Browsing Basic" files used for safe browsing in full mode
     # (safe_browsing=1) and mobile (=2)
     sources += [
-      "browser_feature_extractor.cc",
-      "browser_feature_extractor.h",
-      "browser_features.cc",
-      "browser_features.h",
       "certificate_reporting_metrics_provider.cc",
       "certificate_reporting_metrics_provider.h",
       "certificate_reporting_service.cc",
