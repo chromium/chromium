@@ -44,6 +44,9 @@ struct JavaScriptErrorReport {
 
   // String containing the stack trace for the error. Not sent if not present.
   base::Optional<std::string> stack_trace;
+
+  // String containing the application locale. Not sent if not present.
+  base::Optional<std::string> app_locale;
 };
 
 #endif  // COMPONENTS_CRASH_CONTENT_BROWSER_ERROR_REPORTING_JAVASCRIPT_ERROR_REPORT_H_

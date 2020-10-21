@@ -101,7 +101,8 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, Basic) {
   ASSERT_TRUE(report);
   EXPECT_THAT(
       report->query,
-      MatchesRegex("browser=Chrome&browser_process_uptime_ms=\\d+&browser_"
+      MatchesRegex("app_locale=en-US&browser=Chrome&browser_process_uptime_ms="
+                   "\\d+&browser_"
                    "version=1.2.3.4&channel=Stable&"
                    "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2F&"
                    "os=ChromeOS&os_version=" +
@@ -132,7 +133,8 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, ExtraParamsAndStackTrace) {
   // "Chrome%20(Chrome%20OS)" and then the second escapes the '%' into '%25'.
   EXPECT_THAT(
       report->query,
-      MatchesRegex("browser=Chrome&browser_process_uptime_ms=\\d+&browser_"
+      MatchesRegex("app_locale=en-US&browser=Chrome&browser_process_uptime_ms="
+                   "\\d+&browser_"
                    "version=1.2.3.4&channel=Stable&column=456&"
                    "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2Ffoo"
                    "&line=123&os=ChromeOS&os_version=" +
@@ -162,14 +164,14 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, StackTraceWithErrorMessage) {
   ASSERT_TRUE(report);
   EXPECT_THAT(
       report->query,
-      MatchesRegex(
-          "browser=Chrome&browser_process_uptime_ms=\\d+&browser_version=1.2."
-          "3.4&channel=Stable&column=456&"
-          "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2Ffoo&"
-          "line=123&os=ChromeOS&os_version=" +
-          GetOsVersion() +
-          "&prod=TestApp&src=http%3A%2F%2Fwww.test.com%2Ffoo&type="
-          "JavascriptError&url=%2Ffoo&ver=1.0.0.0"));
+      MatchesRegex("app_locale=en-US&browser=Chrome&browser_process_uptime_ms="
+                   "\\d+&browser_version=1.2."
+                   "3.4&channel=Stable&column=456&"
+                   "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2Ffoo&"
+                   "line=123&os=ChromeOS&os_version=" +
+                   GetOsVersion() +
+                   "&prod=TestApp&src=http%3A%2F%2Fwww.test.com%2Ffoo&type="
+                   "JavascriptError&url=%2Ffoo&ver=1.0.0.0"));
   EXPECT_EQ(report->content, "");
 }
 
@@ -194,7 +196,8 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, RedactMessage) {
   EXPECT_THAT(
       report->query,
       MatchesRegex(
-          "browser=Chrome&browser_process_uptime_ms=\\d+&browser_version=1.2."
+          "app_locale=en-US&browser=Chrome&browser_process_uptime_ms=\\d+&"
+          "browser_version=1.2."
           "3.4&channel=Stable&column=456&"
           "error_message=%5BMAC%20OUI%3D06%3A00%3A00%20IFACE%3D1%5D&"
           "full_url=http%3A%2F%2Fwww.test.com%2Ffoo&line=123&os=ChromeOS&"

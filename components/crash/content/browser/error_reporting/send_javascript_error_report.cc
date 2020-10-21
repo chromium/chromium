@@ -283,12 +283,12 @@ void OnConsentCheckCompleted(
     params["line"] = base::NumberToString(*error_report->line_number);
   if (error_report->column_number)
     params["column"] = base::NumberToString(*error_report->column_number);
-
   // TODO(crbug/1121816): Chrome crashes have "Process uptime" and "Process
   // type" fields, eventually consider using that for process uptime.
   params["browser_process_uptime_ms"] =
       base::NumberToString(browser_process_uptime.InMilliseconds());
-
+  if (error_report->app_locale)
+    params["app_locale"] = std::move(*error_report->app_locale);
   const GURL url(base::StrCat(
       {crash_endpoint_string, "?", BuildPostRequestQueryString(params)}));
   std::string body;

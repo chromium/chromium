@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/crash_report_private/crash_report_private_api.h"
 
 #include "base/time/default_clock.h"
+#include "chrome/browser/browser_process.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"
 #include "components/crash/content/browser/error_reporting/send_javascript_error_report.h"
 
@@ -63,6 +64,8 @@ ExtensionFunction::ResponseAction CrashReportPrivateReportErrorFunction::Run() {
   if (params->info.stack_trace) {
     error_report.stack_trace = std::move(*params->info.stack_trace);
   }
+
+  error_report.app_locale = g_browser_process->GetApplicationLocale();
 
   SendJavaScriptErrorReport(
       std::move(error_report),
