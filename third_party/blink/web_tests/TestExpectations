@@ -1647,7 +1647,7 @@ crbug.com/626703 external/wpt/css/css-text/text-transform/text-transform-capital
 crbug.com/626703 external/wpt/css/css-text/text-transform/text-transform-tailoring-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/text-transform/text-transform-upperlower-006.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/word-break/word-break-break-all-006.html [ Failure ]
-crbug.com/626703 [ Linux ] external/wpt/css/css-text/word-break/word-break-break-all-007.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-text/word-break/word-break-break-all-007.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/word-break/word-break-break-all-008.html [ Failure ]
 crbug.com/626703 [ Win ] external/wpt/css/css-text/word-break/word-break-normal-km-000.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/word-break/word-break-normal-my-000.html [ Failure ]
