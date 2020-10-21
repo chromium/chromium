@@ -2031,7 +2031,7 @@
           'script': '//tools/perf/process_perf_results.py',
         },
         'android_swarming': {
-          'shards': 3,
+          'shards': 4,
         },
       },
     },
