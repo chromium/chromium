@@ -12,6 +12,7 @@
 #include "components/variations/service/buildflags.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -118,6 +119,50 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest, SamplingScreenAPIs) {
           Key(HashFeature(
               blink::mojom::WebFeature::kV8Screen_AvailWidth_AttributeGetter)),
       }));
+}
+
+IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest, CallsCanvasToBlob) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::DOMMessageQueue messages;
+  base::RunLoop run_loop;
+
+  recorder().SetOnAddEntryCallback(ukm::builders::Identifiability::kEntryName,
+                                   run_loop.QuitClosure());
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL(
+                          "/privacy_budget/calls_canvas_to_blob.html")));
+
+  // The document calls an instrumented method and sends a message
+  // back to the test. Receipt of the message indicates that the script
+  // successfully completed. However, we must also wait for the UKM metric to be
+  // recorded, which happens on a TaskRunner.
+  std::string blob_type;
+  ASSERT_TRUE(messages.WaitForMessage(&blob_type));
+
+  // Navigating away from the test page causes the document to be unloaded. That
+  // will cause any buffered metrics to be flushed.
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents(),
+                                                      GURL("about:blank"), 1);
+
+  // Wait for the metrics to come down the pipe.
+  content::RunAllTasksUntilIdle();
+  run_loop.Run();
+
+  auto merged_entries = recorder().GetMergedEntriesByName(
+      ukm::builders::Identifiability::kEntryName);
+  // Shouldn't be more than one source here. If this changes, then we'd need to
+  // adjust this test to deal.
+  ASSERT_EQ(1u, merged_entries.size());
+
+  constexpr uint64_t input_digest = 0;
+  EXPECT_THAT(merged_entries.begin()->second->metrics,
+              IsSupersetOf({
+                  Key(blink::IdentifiableSurface::FromTypeAndToken(
+                          blink::IdentifiableSurface::Type::kCanvasReadback,
+                          input_digest)
+                          .ToUkmMetricHash()),
+              }));
 }
 
 #if BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
