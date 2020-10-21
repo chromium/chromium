@@ -141,6 +141,7 @@ class UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper {
  public:
   BlockingTaskRunnerHelper(
       base::ScopedFD fd,
+      base::ScopedFD lifeline_fd,
       scoped_refptr<UsbDeviceHandleUsbfs> device_handle,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~BlockingTaskRunnerHelper();
@@ -162,6 +163,7 @@ class UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper {
   void OnFileCanWriteWithoutBlocking();
 
   base::ScopedFD fd_;
+  base::ScopedFD lifeline_fd_;
   scoped_refptr<UsbDeviceHandleUsbfs> device_handle_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<base::FileDescriptorWatcher::Controller> watch_controller_;
@@ -208,9 +210,11 @@ struct UsbDeviceHandleUsbfs::Transfer final {
 
 UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper::BlockingTaskRunnerHelper(
     base::ScopedFD fd,
+    base::ScopedFD lifeline_fd,
     scoped_refptr<UsbDeviceHandleUsbfs> device_handle,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : fd_(std::move(fd)),
+      lifeline_fd_(std::move(lifeline_fd)),
       device_handle_(std::move(device_handle)),
       task_runner_(std::move(task_runner)) {}
 
@@ -432,6 +436,7 @@ void UsbDeviceHandleUsbfs::Transfer::RunIsochronousCallback(
 UsbDeviceHandleUsbfs::UsbDeviceHandleUsbfs(
     scoped_refptr<UsbDevice> device,
     base::ScopedFD fd,
+    base::ScopedFD lifeline_fd,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner)
     : device_(device),
       fd_(fd.get()),
@@ -441,8 +446,8 @@ UsbDeviceHandleUsbfs::UsbDeviceHandleUsbfs(
   DCHECK(fd.is_valid());
   DCHECK(blocking_task_runner_);
 
-  helper_.reset(
-      new BlockingTaskRunnerHelper(std::move(fd), this, task_runner_));
+  helper_ = std::make_unique<BlockingTaskRunnerHelper>(
+      std::move(fd), std::move(lifeline_fd), this, task_runner_);
   blocking_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&BlockingTaskRunnerHelper::Start,
                                 base::Unretained(helper_.get())));
@@ -471,6 +476,9 @@ void UsbDeviceHandleUsbfs::Close() {
   device_ = nullptr;
   // The device is no longer attached so we don't have any endpoints either.
   endpoints_.clear();
+
+  // The destruction of the |helper_| below will close the lifeline pipe if it
+  // exists and re-attach kernel driver.
 
   // Releases |helper_|.
   blocking_task_runner_->PostTask(

@@ -33,6 +33,7 @@ class UsbDeviceHandleUsbfs : public UsbDeviceHandle {
   UsbDeviceHandleUsbfs(
       scoped_refptr<UsbDevice> device,
       base::ScopedFD fd,
+      base::ScopedFD lifeline_fd,
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner);
 
   // UsbDeviceHandle implementation.

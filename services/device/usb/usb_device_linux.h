@@ -52,7 +52,9 @@ class UsbDeviceLinux : public UsbDevice {
 
  private:
 #if defined(OS_CHROMEOS)
-  void OnOpenRequestComplete(OpenCallback callback, base::ScopedFD fd);
+  void OnOpenRequestComplete(OpenCallback callback,
+                             base::ScopedFD fd,
+                             base::ScopedFD lifeline_fd);
   void OnOpenRequestError(OpenCallback callback,
                           const std::string& error_name,
                           const std::string& error_message);
@@ -63,6 +65,7 @@ class UsbDeviceLinux : public UsbDevice {
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner);
 #endif  // defined(OS_CHROMEOS)
   void Opened(base::ScopedFD fd,
+              base::ScopedFD lifeline_fd,
               OpenCallback callback,
               scoped_refptr<base::SequencedTaskRunner> blocking_task_runner);
 
