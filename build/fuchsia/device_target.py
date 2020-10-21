@@ -28,8 +28,8 @@ BOOT_DISCOVERY_ATTEMPTS = 30
 # Number of failed connection attempts before redirecting system logs to stdout.
 CONNECT_RETRY_COUNT_BEFORE_LOGGING = 10
 
-# Number of seconds to wait when querying a list of all devices over mDNS.
-_LIST_DEVICES_TIMEOUT_SECS = 3
+# Number of seconds to wait for device discovery.
+BOOT_DISCOVERY_TIMEOUT_SECS = 2 * 60
 
 # Time between a reboot command is issued and when connection attempts from the
 # host begin.
@@ -166,13 +166,19 @@ class DeviceTarget(target.Target):
     dev_finder_path = GetHostToolPathFromPlatform('device-finder')
 
     if self._node_name:
-      command = [dev_finder_path, 'resolve',
-                 '-device-limit', '1',  # Exit early as soon as a host is found.
-                 self._node_name]
+      command = [
+          dev_finder_path,
+          'resolve',
+          '-timeout',
+          "%ds" % BOOT_DISCOVERY_TIMEOUT_SECS / BOOT_DISCOVERY_ATTEMPTS,
+          '-device-limit',
+          '1',  # Exit early as soon as a host is found.
+          self._node_name
+      ]
     else:
       command = [
           dev_finder_path, 'list', '-full', '-timeout',
-          "%ds" % _LIST_DEVICES_TIMEOUT_SECS
+          "%ds" % BOOT_DISCOVERY_TIMEOUT_SECS / BOOT_DISCOVERY_ATTEMPTS
       ]
 
     proc = subprocess.Popen(command,
@@ -180,7 +186,6 @@ class DeviceTarget(target.Target):
                             stderr=open(os.devnull, 'w'))
 
     output = set(proc.communicate()[0].strip().split('\n'))
-
     if proc.returncode != 0:
       return False
 
