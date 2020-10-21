@@ -123,6 +123,22 @@ Polymer({
   },
 
   /**
+   * @return {string}
+   * @private
+   */
+  getEnabledButtonClass_() {
+    return this.allowOptionSubLabel ? 'two-line' : '';
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getDisabledButtonClass_() {
+    return this.blockOptionSubLabel ? 'two-line' : '';
+  },
+
+  /**
    * A handler for changing the default permission value for a content type.
    * This is also called during page setup after we get the default state.
    * @private

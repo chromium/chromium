@@ -12,6 +12,11 @@
         --settings-collapse-toggle-min-height: var(--settings-row-min-height);
       }
 
+      settings-collapse-radio-button.two-line {
+        --settings-collapse-toggle-min-height:
+            var(--settings-row-two-line-min-height);
+      }
+
       settings-collapse-radio-button:not(:first-of-type) {
         --settings-collapse-separator-line: var(--cr-separator-line);
       }
@@ -565,7 +570,7 @@
                 </settings-collapse-radio-button>
                 <template is="dom-if"
                     if="[[enableQuietNotificationPromptsSetting_]]">
-                  <settings-collapse-radio-button no-collapse
+                  <settings-collapse-radio-button no-collapse class="two-line"
                       name="[[notificationSettingEnum_.QUIETER_MESSAGING]]"
                       pref="[[prefs.generated.notification]]"
                       label="$i18n{siteSettingsNotificationsAllowed}"
@@ -573,7 +578,7 @@
                       icon="settings:notifications">
                   </settings-collapse-radio-button>
                 </template>
-                <settings-collapse-radio-button no-collapse
+                <settings-collapse-radio-button no-collapse class="two-line"
                     name="[[notificationSettingEnum_.BLOCK]]"
                     pref="[[prefs.generated.notification]]"
                     label="$i18n{siteSettingsNotificationsBlocked}"
