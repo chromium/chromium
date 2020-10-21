@@ -149,6 +149,13 @@ class Executive(object):
             if error.errno == errno.ECHILD:
                 # Can't wait on a non-child process, but the kill worked.
                 return
+            if error.errno == errno.EPERM and \
+                    kill_tree and sys.platform == 'darwin':
+                # Calling killpg on a process group whose leader is defunct
+                # causes a permission error on macOS, in which case we try to
+                # collect the defunct process.
+                if os.waitpid(pid, os.WNOHANG) == (0, 0):
+                    return
             raise
 
     def _win32_check_running_pid(self, pid):
