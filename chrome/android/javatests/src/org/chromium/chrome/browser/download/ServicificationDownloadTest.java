@@ -31,7 +31,7 @@ import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Tests interrupted download can be resumed with Service Manager only mode.
@@ -70,7 +70,7 @@ public final class ServicificationDownloadTest {
         private boolean mDownloadCompleted;
 
         @Override
-        public void onItemsAdded(ArrayList<OfflineItem> items) {}
+        public void onItemsAdded(List<OfflineItem> items) {}
 
         @Override
         public void onItemRemoved(ContentId id) {}

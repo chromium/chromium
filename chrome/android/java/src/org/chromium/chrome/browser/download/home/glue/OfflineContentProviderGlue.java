@@ -189,7 +189,7 @@ public class OfflineContentProviderGlue implements OfflineContentProvider.Observ
 
     // OfflineContentProvider.Observer implementation.
     @Override
-    public void onItemsAdded(ArrayList<OfflineItem> items) {
+    public void onItemsAdded(List<OfflineItem> items) {
         for (OfflineContentProvider.Observer observer : mObservers) observer.onItemsAdded(items);
     }
 

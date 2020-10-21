@@ -7,9 +7,7 @@ package org.chromium.base;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,22 +30,6 @@ public final class CollectionUtil {
         HashSet<E> set = new HashSet<E>(elements.length);
         Collections.addAll(set, elements);
         return set;
-    }
-
-    @SafeVarargs
-    public static <E> ArrayList<E> newArrayList(E... elements) {
-        ArrayList<E> list = new ArrayList<E>(elements.length);
-        Collections.addAll(list, elements);
-        return list;
-    }
-
-    @VisibleForTesting
-    public static <E> ArrayList<E> newArrayList(Iterable<E> iterable) {
-        ArrayList<E> list = new ArrayList<E>();
-        for (E element : iterable) {
-            list.add(element);
-        }
-        return list;
     }
 
     @SafeVarargs

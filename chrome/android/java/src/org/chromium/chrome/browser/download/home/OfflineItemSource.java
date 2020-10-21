@@ -14,10 +14,11 @@ import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.UpdateDelta;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -94,7 +95,7 @@ public class OfflineItemSource implements OfflineItemFilterSource, OfflineConten
 
     // OfflineContentProvider.Observer implementation.
     @Override
-    public void onItemsAdded(ArrayList<OfflineItem> items) {
+    public void onItemsAdded(List<OfflineItem> items) {
         Set<OfflineItem> addedItems = new HashSet<OfflineItem>();
         for (OfflineItem item : items) {
             if (mItems.containsKey(item.id)) {
@@ -123,7 +124,7 @@ public class OfflineItemSource implements OfflineItemFilterSource, OfflineConten
     public void onItemUpdated(OfflineItem item, UpdateDelta updateDelta) {
         OfflineItem oldItem = mItems.get(item.id);
         if (oldItem == null) {
-            onItemsAdded(CollectionUtil.newArrayList(item));
+            onItemsAdded(Collections.singletonList(item));
         } else {
             mItems.put(item.id, item);
             for (OfflineItemFilterObserver observer : mObservers) {

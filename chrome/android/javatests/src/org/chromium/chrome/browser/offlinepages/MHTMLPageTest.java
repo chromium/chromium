@@ -35,7 +35,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.PageTransition;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -87,7 +87,7 @@ public class MHTMLPageTest implements CustomMainActivityStart {
         }
 
         @Override
-        public void onItemsAdded(ArrayList<OfflineItem> items) {}
+        public void onItemsAdded(List<OfflineItem> items) {}
 
         @Override
         public void onItemRemoved(ContentId id) {}

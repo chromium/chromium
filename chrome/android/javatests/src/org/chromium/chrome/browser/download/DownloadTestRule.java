@@ -30,7 +30,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -222,7 +221,7 @@ public class DownloadTestRule extends ChromeActivityTestRule<ChromeActivity> {
 
     private class TestDownloadBackendObserver implements OfflineContentProvider.Observer {
         @Override
-        public void onItemsAdded(ArrayList<OfflineItem> items) {}
+        public void onItemsAdded(List<OfflineItem> items) {}
 
         @Override
         public void onItemRemoved(ContentId id) {}

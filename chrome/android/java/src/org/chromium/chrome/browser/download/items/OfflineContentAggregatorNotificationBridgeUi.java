@@ -18,8 +18,8 @@ import org.chromium.components.offline_items_collection.OpenParams;
 import org.chromium.components.offline_items_collection.UpdateDelta;
 import org.chromium.components.offline_items_collection.VisualsCallback;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * A glue class that bridges the Profile-attached OfflineContentProvider with the
@@ -73,7 +73,7 @@ public class OfflineContentAggregatorNotificationBridgeUi
 
     // OfflineContentProvider.Observer implementation.
     @Override
-    public void onItemsAdded(ArrayList<OfflineItem> items) {
+    public void onItemsAdded(List<OfflineItem> items) {
         for (int i = 0; i < items.size(); ++i) getVisualsAndUpdateItem(items.get(i), null);
     }
 

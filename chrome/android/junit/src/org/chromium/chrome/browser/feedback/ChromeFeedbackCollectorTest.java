@@ -44,6 +44,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -94,7 +95,7 @@ public class ChromeFeedbackCollectorTest {
         Pair<String, String> logs1 = Pair.create(KEY_4, VALUE_4);
         Pair<String, String> logs2 = Pair.create(KEY_5, VALUE_5);
 
-        return CollectionUtil.newArrayList(new MockFeedbackSource(map1, null),
+        return Arrays.asList(new MockFeedbackSource(map1, null),
                 new MockFeedbackSource(map2, logs1), new MockFeedbackSource(null, logs2),
                 new MockFeedbackSource(null, null));
     }
@@ -121,7 +122,7 @@ public class ChromeFeedbackCollectorTest {
         Pair<String, String> logs1 = Pair.create(KEY_9, VALUE_9);
         Pair<String, String> logs2 = Pair.create(KEY_10, VALUE_10);
 
-        return CollectionUtil.newArrayList(new MockAsyncFeedbackSource(map1, null),
+        return Arrays.asList(new MockAsyncFeedbackSource(map1, null),
                 new MockAsyncFeedbackSource(map2, logs1), new MockAsyncFeedbackSource(null, logs2),
                 new MockAsyncFeedbackSource(null, null));
     }
@@ -340,8 +341,8 @@ public class ChromeFeedbackCollectorTest {
             @Override
             protected List<FeedbackSource> buildSynchronousFeedbackSources(
                     ChromeFeedbackCollector.InitParams initParams) {
-                List<FeedbackSource> list =
-                        ChromeFeedbackCollectorTest.buildSynchronousFeedbackSources();
+                ArrayList<FeedbackSource> list = new ArrayList<>(
+                        ChromeFeedbackCollectorTest.buildSynchronousFeedbackSources());
                 list.add(new FeedbackContextFeedbackSource(FEEDBACK_CONTEXT));
                 return list;
             }

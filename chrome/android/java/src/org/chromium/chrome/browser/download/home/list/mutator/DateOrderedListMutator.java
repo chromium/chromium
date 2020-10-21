@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.download.home.list.mutator;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.chrome.browser.download.home.JustNowProvider;
 import org.chromium.chrome.browser.download.home.filter.OfflineItemFilterObserver;
 import org.chromium.chrome.browser.download.home.filter.OfflineItemFilterSource;
@@ -15,6 +14,7 @@ import org.chromium.components.offline_items_collection.OfflineItem;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * A class responsible for turning a {@link Collection} of {@link OfflineItem}s into a list meant
@@ -108,8 +108,8 @@ public class DateOrderedListMutator implements OfflineItemFilterObserver {
                 || mJustNowProvider.isJustNowItem(oldItem) != mJustNowProvider.isJustNowItem((item))
                 || offlineItemScheduleDiffer(item, oldItem)) {
             // TODO(shaktisahu): Collect UMA when this happens.
-            onItemsRemoved(CollectionUtil.newArrayList(oldItem));
-            onItemsAdded(CollectionUtil.newArrayList(item));
+            onItemsRemoved(Collections.singletonList(oldItem));
+            onItemsAdded(Collections.singletonList(item));
         } else {
             for (int i = 0; i < mSortedItems.size(); i++) {
                 if (item.id.equals(((OfflineItemListItem) mSortedItems.get(i)).item.id)) {

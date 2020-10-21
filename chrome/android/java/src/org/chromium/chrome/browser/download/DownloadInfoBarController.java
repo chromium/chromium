@@ -374,7 +374,7 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
 
     // OfflineContentProvider.Observer implementation.
     @Override
-    public void onItemsAdded(ArrayList<OfflineItem> items) {
+    public void onItemsAdded(List<OfflineItem> items) {
         for (OfflineItem item : items) {
             if (!isVisibleToUser(item)) continue;
             computeNextStepForUpdate(item);

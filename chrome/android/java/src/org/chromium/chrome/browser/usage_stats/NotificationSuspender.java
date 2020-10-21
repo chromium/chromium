@@ -17,7 +17,6 @@ import android.service.notification.StatusBarNotification;
 import android.text.TextUtils;
 import android.webkit.URLUtil;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Promise;
 import org.chromium.base.annotations.JNINamespace;
@@ -32,6 +31,7 @@ import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.BrowserStartupController.StartupCallback;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -63,7 +63,7 @@ public class NotificationSuspender {
                     if (!fqdns.contains(getValidFqdnOrEmptyString(notification))) return false;
                     UsageStatsService.getInstance()
                             .getNotificationSuspender()
-                            .storeNotificationResources(CollectionUtil.newArrayList(notification));
+                            .storeNotificationResources(Collections.singletonList(notification));
                     return true;
                 });
     }

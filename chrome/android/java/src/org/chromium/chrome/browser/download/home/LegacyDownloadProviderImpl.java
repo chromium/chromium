@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.download.home;
 import android.text.TextUtils;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.ObserverList;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.download.DownloadInfo;
@@ -29,6 +28,7 @@ import org.chromium.components.offline_items_collection.VisualsCallback;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -55,8 +55,7 @@ class LegacyDownloadProviderImpl implements DownloadObserver, LegacyDownloadProv
     public void onDownloadItemCreated(DownloadItem item) {
         if (!canShowDownloadItem(item)) return;
         for (OfflineContentProvider.Observer observer : mObservers) {
-            observer.onItemsAdded(
-                    CollectionUtil.newArrayList(DownloadItem.createOfflineItem(item)));
+            observer.onItemsAdded(Collections.singletonList(DownloadItem.createOfflineItem(item)));
         }
     }
 

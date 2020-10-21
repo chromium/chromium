@@ -17,6 +17,7 @@ import org.chromium.components.offline_items_collection.UpdateDelta;
 import org.chromium.components.offline_items_collection.VisualsCallback;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Filters out download offline items till downloads backend fully supports offline content
@@ -109,7 +110,7 @@ class DownloadBlockedOfflineContentProvider
     }
 
     @Override
-    public void onItemsAdded(ArrayList<OfflineItem> items) {
+    public void onItemsAdded(List<OfflineItem> items) {
         ArrayList<OfflineItem> filteredList = getFilteredList(items);
         for (Observer observer : mObservers) {
             observer.onItemsAdded(filteredList);
@@ -132,7 +133,7 @@ class DownloadBlockedOfflineContentProvider
         }
     }
 
-    private ArrayList<OfflineItem> getFilteredList(ArrayList<OfflineItem> items) {
+    private ArrayList<OfflineItem> getFilteredList(List<OfflineItem> items) {
         ArrayList<OfflineItem> filteredList = new ArrayList<>();
         for (OfflineItem item : items) {
             if (LegacyHelpers.isLegacyDownload(item.id)) continue;

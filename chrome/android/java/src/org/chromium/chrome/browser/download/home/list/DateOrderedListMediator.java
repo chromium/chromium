@@ -53,6 +53,7 @@ import org.chromium.components.offline_items_collection.VisualsCallback;
 import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -333,7 +334,7 @@ class DateOrderedListMediator {
 
     private void onDeleteItem(OfflineItem item) {
         UmaUtils.recordItemAction(ViewAction.MENU_DELETE);
-        deleteItemsInternal(CollectionUtil.newArrayList(item));
+        deleteItemsInternal(Collections.singletonList(item));
     }
 
     private void onShareItem(OfflineItem item) {

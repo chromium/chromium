@@ -111,7 +111,7 @@ public class IncognitoDownloadLeakageTest {
     private OfflineContentProvider.Observer mTestDownloadBackendObserver =
             new OfflineContentProvider.Observer() {
                 @Override
-                public void onItemsAdded(ArrayList<OfflineItem> items) {}
+                public void onItemsAdded(List<OfflineItem> items) {}
 
                 @Override
                 public void onItemRemoved(ContentId id) {}

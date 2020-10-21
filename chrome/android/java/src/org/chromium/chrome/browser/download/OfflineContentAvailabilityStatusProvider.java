@@ -14,8 +14,8 @@ import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.UpdateDelta;
 
-import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -69,7 +69,7 @@ public class OfflineContentAvailabilityStatusProvider implements OfflineContentP
     // OfflineContentProvider.Observer overrides
 
     @Override
-    public void onItemsAdded(ArrayList<OfflineItem> items) {
+    public void onItemsAdded(List<OfflineItem> items) {
         if (items.isEmpty()) return;
 
         for (OfflineItem item : items) {

@@ -29,7 +29,6 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Feature;
@@ -46,6 +45,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -248,9 +248,9 @@ public class IntentHandlerTest {
     public void testGetQueryFromVoiceSearchResultIntent_validVoiceQuery() {
         Intent intent = new Intent(RecognizerResultsIntent.ACTION_VOICE_SEARCH_RESULTS);
         intent.putStringArrayListExtra(RecognizerResultsIntent.EXTRA_VOICE_SEARCH_RESULT_STRINGS,
-                CollectionUtil.newArrayList(VOICE_SEARCH_QUERY));
+                new ArrayList<>(Collections.singletonList(VOICE_SEARCH_QUERY)));
         intent.putStringArrayListExtra(RecognizerResultsIntent.EXTRA_VOICE_SEARCH_RESULT_URLS,
-                CollectionUtil.newArrayList(VOICE_SEARCH_QUERY_URL));
+                new ArrayList<>(Collections.singletonList(VOICE_SEARCH_QUERY_URL)));
         String query = IntentHandler.getUrlFromVoiceSearchResult(intent);
         Assert.assertEquals(VOICE_SEARCH_QUERY_URL, query);
     }
@@ -262,9 +262,9 @@ public class IntentHandlerTest {
     public void testGetQueryFromVoiceSearchResultIntent_validUrlQuery() {
         Intent intent = new Intent(RecognizerResultsIntent.ACTION_VOICE_SEARCH_RESULTS);
         intent.putStringArrayListExtra(RecognizerResultsIntent.EXTRA_VOICE_SEARCH_RESULT_STRINGS,
-                CollectionUtil.newArrayList(VOICE_URL_QUERY));
+                new ArrayList<>(Collections.singletonList(VOICE_URL_QUERY)));
         intent.putStringArrayListExtra(RecognizerResultsIntent.EXTRA_VOICE_SEARCH_RESULT_URLS,
-                CollectionUtil.newArrayList(VOICE_URL_QUERY_URL));
+                new ArrayList<>(Collections.singletonList(VOICE_URL_QUERY_URL)));
         String query = IntentHandler.getUrlFromVoiceSearchResult(intent);
         Assert.assertTrue(String.format("Expected qualified URL: %s, to start "
                                           + "with http://www.google.com",

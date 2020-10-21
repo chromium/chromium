@@ -21,10 +21,10 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
+import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 
 /** Unit tests for the FileDeletionQueue class. */
@@ -74,7 +74,7 @@ public class FileDeletionQueueTest {
     @Test
     public void testMultipleDeletionsAPI() {
         FileDeletionQueue queue = new FileDeletionQueue(mWrappedDeleter);
-        queue.delete(CollectionUtil.newArrayList("test1", "test2", "test3"));
+        queue.delete(Arrays.asList("test1", "test2", "test3"));
 
         mWrappedDeleter.waitFor(3);
         verify(mDeleter, times(1)).onResult("test1");
@@ -85,7 +85,7 @@ public class FileDeletionQueueTest {
     @Test
     public void testOneDeletionHappensAtATime() {
         FileDeletionQueue queue = new FileDeletionQueue(mWrappedDeleter);
-        queue.delete(CollectionUtil.newArrayList("test1", "test2", "test3"));
+        queue.delete(Arrays.asList("test1", "test2", "test3"));
 
         mWrappedDeleter.waitFor(1);
         verify(mDeleter, times(1)).onResult("test1");

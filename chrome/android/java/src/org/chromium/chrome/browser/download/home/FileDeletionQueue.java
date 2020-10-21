@@ -7,10 +7,10 @@ package org.chromium.chrome.browser.download.home;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.FileUtils;
 import org.chromium.base.task.AsyncTask;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -93,6 +93,6 @@ class FileDeletionQueue {
     private static class LazyHolder {
         private static final FileDeletionQueue INSTANCE = new FileDeletionQueue(fileName
                 -> FileUtils.batchDeleteFiles(
-                        CollectionUtil.newArrayList(fileName), FileUtils.DELETE_ALL));
+                        Collections.singletonList(fileName), FileUtils.DELETE_ALL));
     }
 }

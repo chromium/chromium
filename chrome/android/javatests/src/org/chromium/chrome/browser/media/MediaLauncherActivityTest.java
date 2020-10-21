@@ -21,7 +21,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -34,6 +33,7 @@ import org.chromium.chrome.test.util.ActivityUtils;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -90,7 +90,7 @@ public class MediaLauncherActivityTest {
     @Test
     @SmallTest
     public void testFilterURI() {
-        List<Pair<String, String>> testCases = CollectionUtil.newArrayList(
+        List<Pair<String, String>> testCases = Arrays.asList(
                 new Pair<>("file:///test.jpg", "file:///test.jpg"),
                 new Pair<>("file:///test.jp!g", "file:///test.jp!g"),
                 new Pair<>("file:///test!$'.jpg", "file:///test.jpg"),

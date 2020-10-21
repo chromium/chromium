@@ -125,7 +125,7 @@ public class ChannelsInitializer {
 
     private void ensureInitializedWithEnabledState(String channelId, boolean enabled) {
         Collection<String> groupIds = Collections.emptyList();
-        Collection<String> channelIds = CollectionUtil.newArrayList(channelId);
+        Collection<String> channelIds = Collections.singletonList(channelId);
         ensureInitializedWithEnabledState(groupIds, channelIds, enabled);
     }
 

@@ -13,11 +13,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.search_engines.TemplateUrl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /** Unit tests for {@link SearchEngineAdapter}. */
@@ -47,8 +47,8 @@ public class SearchEngineAdapterTest {
         MockTemplateUrl custom4 = new MockTemplateUrl(104, "custom_keyword4", currentTime - 3);
         MockTemplateUrl custom5 = new MockTemplateUrl(105, "custom_keyword5", currentTime - 4);
 
-        List<TemplateUrl> templateUrls = CollectionUtil.newArrayList(
-                dse, prepopulated1, prepopulated2, prepopulated3, custom1, custom2, custom3);
+        ArrayList<TemplateUrl> templateUrls = new ArrayList<>(Arrays.asList(
+                dse, prepopulated1, prepopulated2, prepopulated3, custom1, custom2, custom3));
 
         List<TemplateUrl> output = new ArrayList<>(templateUrls);
         SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(output, dse);
@@ -81,8 +81,8 @@ public class SearchEngineAdapterTest {
 
         // Specify an older custom search engine as default, and ensure it is included as well as
         // the 3 most recent custom search engines.
-        output = CollectionUtil.newArrayList(
-                prepopulated1, prepopulated2, custom1, custom2, custom3, custom4, custom5);
+        output = new ArrayList<>(Arrays.asList(
+                prepopulated1, prepopulated2, custom1, custom2, custom3, custom4, custom5));
         SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(output, custom2);
         assertThat(
                 output, contains(prepopulated1, prepopulated2, custom2, custom3, custom4, custom5));
@@ -103,8 +103,7 @@ public class SearchEngineAdapterTest {
         prepopulated3.isPrepopulated = true;
         prepopulated3.prepopulatedId = 4;
 
-        List<TemplateUrl> templateUrls =
-                CollectionUtil.newArrayList(prepopulated1, prepopulated2, prepopulated3);
+        List<TemplateUrl> templateUrls = Arrays.asList(prepopulated1, prepopulated2, prepopulated3);
 
         List<TemplateUrl> output = new ArrayList<>(templateUrls);
         SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(output, prepopulated1);
