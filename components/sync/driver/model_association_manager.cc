@@ -215,8 +215,6 @@ void ModelAssociationManager::Associate(
     }
   }
   DCHECK(associating_types.Empty());
-
-  delegate_->OnModelAssociationDone(types_to_associate);
 }
 
 void ModelAssociationManager::Stop(ShutdownReason shutdown_reason) {

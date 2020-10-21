@@ -544,8 +544,7 @@ void DataTypeManagerImpl::StartNextDownload(
   association_info.high_priority_types_before = high_priority_types_before;
   association_types_queue_.push(association_info);
 
-  // Start associating those types that are already downloaded (does nothing
-  // if model associator is busy).
+  // Start associating those types that are already downloaded.
   StartNextAssociation(READY_AT_CONFIG);
 }
 
@@ -682,6 +681,33 @@ void DataTypeManagerImpl::StartNextAssociation(AssociationGroup group) {
 
   DVLOG(1) << "Associating " << ModelTypeSetToString(types_to_associate);
   model_association_manager_.Associate(types_to_associate);
+
+  DCHECK(state_ == STOPPING || state_ == CONFIGURING);
+
+  if (state_ == STOPPING)
+    return;
+
+  if (needs_reconfigure_) {
+    ProcessReconfigure();
+    return;
+  }
+
+  // If this model association was for the full set of types, then this priority
+  // set is done. Otherwise it was just the ready types and the unready types
+  // still need to be associated.
+  if (types_to_associate == association_types_queue_.front().types) {
+    association_types_queue_.pop();
+    if (!association_types_queue_.empty()) {
+      StartNextAssociation(READY_AT_CONFIG);
+    } else if (download_types_queue_.empty()) {
+      state_ = CONFIGURED;
+      NotifyDone(ConfigureResult(OK, types_to_associate));
+    }
+  } else {
+    DCHECK_EQ(association_types_queue_.front().ready_types, types_to_associate);
+    // Will do nothing if the types are still downloading.
+    StartNextAssociation(UNREADY_AT_CONFIG);
+  }
 }
 
 void DataTypeManagerImpl::OnSingleDataTypeWillStop(ModelType type,
@@ -739,40 +765,6 @@ void DataTypeManagerImpl::OnSingleDataTypeAssociationDone(ModelType type) {
     configuration_stats_.back().same_priority_types_configured_before =
         info.configured_types;
     info.configured_types.Put(type);
-  }
-}
-
-void DataTypeManagerImpl::OnModelAssociationDone(const ModelTypeSet& types) {
-  DCHECK(state_ == STOPPING || state_ == CONFIGURING);
-
-  if (state_ == STOPPING)
-    return;
-
-  // Ignore abort/unrecoverable error if we need to reconfigure anyways.
-  if (needs_reconfigure_) {
-    ProcessReconfigure();
-    return;
-  }
-
-  DCHECK(!association_types_queue_.empty());
-
-  // If this model association was for the full set of types, then this priority
-  // set is done. Otherwise it was just the ready types and the unready types
-  // still need to be associated.
-  ConfigureResult result(OK, types);
-  if (result.requested_types == association_types_queue_.front().types) {
-    association_types_queue_.pop();
-    if (!association_types_queue_.empty()) {
-      StartNextAssociation(READY_AT_CONFIG);
-    } else if (download_types_queue_.empty()) {
-      state_ = CONFIGURED;
-      NotifyDone(result);
-    }
-  } else {
-    DCHECK_EQ(association_types_queue_.front().ready_types,
-              result.requested_types);
-    // Will do nothing if the types are still downloading.
-    StartNextAssociation(UNREADY_AT_CONFIG);
   }
 }
 

@@ -36,10 +36,6 @@ class ModelAssociationManagerDelegate {
   virtual void OnSingleDataTypeWillStop(ModelType type,
                                         const SyncError& error) = 0;
 
-  // Called when the ModelAssociationManager has tried to perform model
-  // association for all desired types and has nothing left to do.
-  virtual void OnModelAssociationDone(const ModelTypeSet& types) = 0;
-
   virtual ~ModelAssociationManagerDelegate() = default;
 };
 

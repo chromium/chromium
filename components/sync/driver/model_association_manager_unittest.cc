@@ -43,10 +43,6 @@ class MockModelAssociationManagerDelegate
               OnSingleDataTypeWillStop,
               (ModelType, const SyncError& error),
               (override));
-  MOCK_METHOD(void,
-              OnModelAssociationDone,
-              (const ModelTypeSet& result),
-              (override));
 };
 
 class SyncModelAssociationManagerTest : public testing::Test {
@@ -76,7 +72,6 @@ TEST_F(SyncModelAssociationManagerTest, SimpleModelStart) {
   ModelAssociationManager model_association_manager(&controllers_, &delegate_);
   ModelTypeSet types(BOOKMARKS, APPS);
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
-  EXPECT_CALL(delegate_, OnModelAssociationDone(types));
 
   EXPECT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
   EXPECT_EQ(GetController(APPS)->state(), DataTypeController::NOT_RUNNING);
@@ -99,7 +94,6 @@ TEST_F(SyncModelAssociationManagerTest, StopAfterFinish) {
   ModelAssociationManager model_association_manager(&controllers_, &delegate_);
   ModelTypeSet types;
   types.Put(BOOKMARKS);
-  EXPECT_CALL(delegate_, OnModelAssociationDone(types));
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(BOOKMARKS, _));
 
   model_association_manager.Initialize(/*desired_types=*/types,
@@ -125,7 +119,6 @@ TEST_F(SyncModelAssociationManagerTest, ModelLoadFailBeforeAssociationStart) {
   ModelTypeSet types;
   types.Put(BOOKMARKS);
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(BOOKMARKS, _));
-  EXPECT_CALL(delegate_, OnModelAssociationDone(types));
 
   model_association_manager.Initialize(/*desired_types=*/types,
                                        /*preferred_types=*/types,
@@ -142,7 +135,6 @@ TEST_F(SyncModelAssociationManagerTest, StopAfterConfiguration) {
   ModelAssociationManager model_association_manager(&controllers_, &delegate_);
   ModelTypeSet types;
   types.Put(BOOKMARKS);
-  EXPECT_CALL(delegate_, OnModelAssociationDone(types));
 
   model_association_manager.Initialize(/*desired_types=*/types,
                                        /*preferred_types=*/types,
@@ -364,7 +356,6 @@ TEST_F(SyncModelAssociationManagerTest, KeepsMetadataForPreferredDataType) {
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
   EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(BOOKMARKS));
   EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(APPS));
-  EXPECT_CALL(delegate_, OnModelAssociationDone(desired_types));
 
   model_association_manager.Initialize(desired_types, preferred_types,
                                        BuildConfigureContext());
@@ -403,7 +394,6 @@ TEST_F(SyncModelAssociationManagerTest, ClearsMetadataForNotPreferredDataType) {
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
   EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(BOOKMARKS));
   EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(APPS));
-  EXPECT_CALL(delegate_, OnModelAssociationDone(desired_types));
 
   model_association_manager.Initialize(desired_types, preferred_types,
                                        BuildConfigureContext());
@@ -449,7 +439,6 @@ TEST_F(SyncModelAssociationManagerTest,
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
   EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(BOOKMARKS));
   EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(APPS));
-  EXPECT_CALL(delegate_, OnModelAssociationDone(desired_types));
 
   model_association_manager.Initialize(desired_types, preferred_types,
                                        configure_context);
@@ -470,7 +459,6 @@ TEST_F(SyncModelAssociationManagerTest,
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(BOOKMARKS, _));
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
   EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(BOOKMARKS));
-  EXPECT_CALL(delegate_, OnModelAssociationDone(desired_types));
 
   model_association_manager.Initialize(desired_types, preferred_types,
                                        configure_context);
@@ -503,7 +491,6 @@ TEST_F(SyncModelAssociationManagerTest,
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
   EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(BOOKMARKS));
   EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(APPS));
-  EXPECT_CALL(delegate_, OnModelAssociationDone(desired_types));
 
   model_association_manager.Initialize(desired_types, preferred_types,
                                        configure_context);
@@ -524,7 +511,6 @@ TEST_F(SyncModelAssociationManagerTest,
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(BOOKMARKS, _));
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
   EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(BOOKMARKS));
-  EXPECT_CALL(delegate_, OnModelAssociationDone(desired_types));
 
   model_association_manager.Initialize(desired_types, preferred_types,
                                        configure_context);
