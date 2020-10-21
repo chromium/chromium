@@ -32,11 +32,6 @@ bool AmbientAuthenticationTestHelper::IsGuestAllowedInPolicy(int policy_value) {
   return policy_value & static_cast<int>(AmbientAuthProfileBit::GUEST);
 }
 
-Profile* AmbientAuthenticationTestHelper::GetGuestProfile() {
-  Profile* guest_profile = OpenGuestBrowser()->profile();
-  return guest_profile;
-}
-
 bool AmbientAuthenticationTestHelper::IsAmbientAuthAllowedForProfile(
     Profile* profile) {
   ProfileNetworkContextService* profile_network_context_service =
@@ -50,34 +45,4 @@ bool AmbientAuthenticationTestHelper::IsAmbientAuthAllowedForProfile(
   return network_context_params.http_auth_static_network_context_params
              ->allow_default_credentials ==
          net::HttpAuthPreferences::ALLOW_DEFAULT_CREDENTIALS;
-}
-
-// OpenGuestBrowser method code borrowed from
-// chrome/browser/profiles/profile_window_browsertest.cc
-Browser* AmbientAuthenticationTestHelper::OpenGuestBrowser() {
-  size_t num_browsers = BrowserList::GetInstance()->size();
-
-  // Create a guest browser nicely. Using CreateProfile() and CreateBrowser()
-  // does incomplete initialization that would lead to
-  // SystemUrlRequestContextGetter being leaked.
-  profiles::SwitchToGuestProfile(ProfileManager::CreateCallback());
-  ui_test_utils::WaitForBrowserToOpen();
-
-  DCHECK_NE(static_cast<Profile*>(nullptr),
-            g_browser_process->profile_manager()->GetProfileByPath(
-                ProfileManager::GetGuestProfilePath()));
-  EXPECT_EQ(num_browsers + 1, BrowserList::GetInstance()->size());
-
-  Profile* guest = g_browser_process->profile_manager()->GetProfileByPath(
-      ProfileManager::GetGuestProfilePath());
-  Browser* browser = chrome::FindAnyBrowser(guest, true);
-  EXPECT_TRUE(browser);
-
-  // When |browser| closes a BrowsingDataRemover will be created and executed.
-  // It needs a loaded TemplateUrlService or else it hangs on to a
-  // CallbackList::Subscription forever.
-  search_test_utils::WaitForTemplateURLServiceToLoad(
-      TemplateURLServiceFactory::GetForProfile(guest));
-
-  return browser;
 }

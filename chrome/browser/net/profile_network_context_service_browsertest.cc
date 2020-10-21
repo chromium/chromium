@@ -39,6 +39,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -287,9 +288,13 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheChangeBrowsertest,
       "None scoped_feature_list_trial_group None");
 }
 
-class AmbientAuthenticationTestWithPolicy : public policy::PolicyTest {
+class AmbientAuthenticationTestWithPolicy
+    : public policy::PolicyTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   AmbientAuthenticationTestWithPolicy() {
+    TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
+        scoped_feature_list_, GetParam());
     policy::PolicyTest::SetUpInProcessBrowserTestFixture();
   }
 
@@ -316,7 +321,7 @@ class AmbientAuthenticationTestWithPolicy : public policy::PolicyTest {
 #if !defined(OS_CHROMEOS)
     EXPECT_EQ(
         AmbientAuthenticationTestHelper::IsAmbientAuthAllowedForProfile(
-            AmbientAuthenticationTestHelper::GetGuestProfile()),
+            CreateGuestBrowser()->profile()),
         AmbientAuthenticationTestHelper::IsGuestAllowedInPolicy(policy_value));
 #endif
   }
@@ -330,29 +335,34 @@ class AmbientAuthenticationTestWithPolicy : public policy::PolicyTest {
 
  private:
   policy::PolicyMap policies_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(AmbientAuthenticationTestWithPolicy, RegularOnly) {
+IN_PROC_BROWSER_TEST_P(AmbientAuthenticationTestWithPolicy, RegularOnly) {
   EnablePolicyWithValue(net::AmbientAuthAllowedProfileTypes::REGULAR_ONLY);
   IsAmbientAuthAllowedForProfilesTest();
 }
 
-IN_PROC_BROWSER_TEST_F(AmbientAuthenticationTestWithPolicy,
+IN_PROC_BROWSER_TEST_P(AmbientAuthenticationTestWithPolicy,
                        IncognitoAndRegular) {
   EnablePolicyWithValue(
       net::AmbientAuthAllowedProfileTypes::INCOGNITO_AND_REGULAR);
   IsAmbientAuthAllowedForProfilesTest();
 }
 
-IN_PROC_BROWSER_TEST_F(AmbientAuthenticationTestWithPolicy, GuestAndRegular) {
+IN_PROC_BROWSER_TEST_P(AmbientAuthenticationTestWithPolicy, GuestAndRegular) {
   EnablePolicyWithValue(net::AmbientAuthAllowedProfileTypes::GUEST_AND_REGULAR);
   IsAmbientAuthAllowedForProfilesTest();
 }
 
-IN_PROC_BROWSER_TEST_F(AmbientAuthenticationTestWithPolicy, All) {
+IN_PROC_BROWSER_TEST_P(AmbientAuthenticationTestWithPolicy, All) {
   EnablePolicyWithValue(net::AmbientAuthAllowedProfileTypes::ALL);
   IsAmbientAuthAllowedForProfilesTest();
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AmbientAuthenticationTestWithPolicy,
+                         /*ephemeral_guest_profile_enabled=*/testing::Bool());
 
 // Test subclass that adds switches::kDiskCacheDir and switches::kDiskCacheSize
 // to the command line, to make sure they're respected.
