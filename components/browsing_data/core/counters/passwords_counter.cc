@@ -47,7 +47,8 @@ class PasswordStoreFetcher : public password_manager::PasswordStoreConsumer,
              base::OnceClosure fetch_complete);
 
   void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> results) override;
+      std::vector<std::unique_ptr<password_manager::PasswordForm>> results)
+      override;
 
   // Called when the contents of the password store change. Triggers new
   // counting.
@@ -102,20 +103,20 @@ void PasswordStoreFetcher::Fetch(base::Time start,
 }
 
 void PasswordStoreFetcher::OnGetPasswordStoreResults(
-    std::vector<std::unique_ptr<autofill::PasswordForm>> results) {
+    std::vector<std::unique_ptr<password_manager::PasswordForm>> results) {
   domain_examples_.clear();
 
   results.erase(
       std::remove_if(
           results.begin(), results.end(),
-          [this](const std::unique_ptr<autofill::PasswordForm>& form) {
+          [this](const std::unique_ptr<password_manager::PasswordForm>& form) {
             return (form->date_created < start_ || form->date_created >= end_);
           }),
       results.end());
   num_passwords_ = results.size();
   std::sort(results.begin(), results.end(),
-            [](const std::unique_ptr<autofill::PasswordForm>& a,
-               const std::unique_ptr<autofill::PasswordForm>& b) {
+            [](const std::unique_ptr<password_manager::PasswordForm>& a,
+               const std::unique_ptr<password_manager::PasswordForm>& b) {
               return a->times_used > b->times_used;
             });
 

@@ -16,6 +16,7 @@
 #include "base/optional.h"
 #include "base/synchronization/lock.h"
 #include "components/password_manager/core/browser/http_auth_manager.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/login_delegate.h"
@@ -45,10 +46,10 @@ class LoginHandler : public content::LoginDelegate,
   // the constructor DCHECKs that |login_model| is not null.
   struct LoginModelData {
     LoginModelData(password_manager::HttpAuthManager* login_model,
-                   const autofill::PasswordForm& observed_form);
+                   const password_manager::PasswordForm& observed_form);
 
     password_manager::HttpAuthManager* const model;
-    const autofill::PasswordForm& form;
+    const password_manager::PasswordForm& form;
   };
 
   ~LoginHandler() override;
@@ -166,7 +167,7 @@ class LoginHandler : public content::LoginDelegate,
 
   // Helper to create a PasswordForm for PasswordManager to start looking for
   // saved credentials.
-  static autofill::PasswordForm MakeInputForPasswordManager(
+  static password_manager::PasswordForm MakeInputForPasswordManager(
       const GURL& url,
       const net::AuthChallengeInfo& auth_info);
 
@@ -201,7 +202,7 @@ class LoginHandler : public content::LoginDelegate,
   // The PasswordForm sent to the PasswordManager. This is so we can refer to it
   // when later notifying the password manager if the credentials were accepted
   // or rejected.  This should only be accessed on the UI loop.
-  autofill::PasswordForm password_form_;
+  password_manager::PasswordForm password_form_;
 
   // Observes other login handlers so this login handler can respond.
   content::NotificationRegistrar registrar_;

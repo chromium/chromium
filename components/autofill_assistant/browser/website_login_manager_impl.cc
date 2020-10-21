@@ -24,10 +24,10 @@ namespace {
 
 // Creates a |PasswordForm| with minimal initialization (origin, username,
 // password).
-autofill::PasswordForm CreatePasswordForm(
+password_manager::PasswordForm CreatePasswordForm(
     const WebsiteLoginManager::Login& login,
     const std::string& password) {
-  autofill::PasswordForm form;
+  password_manager::PasswordForm form;
   form.url = login.origin.GetOrigin();
   form.signon_realm = password_manager::GetSignonRealm(form.url);
   form.username_value = base::UTF8ToUTF16(login.username);
@@ -141,7 +141,7 @@ class WebsiteLoginManagerImpl::PendingFetchPasswordRequest
  protected:
   // From PendingRequest:
   void OnFetchCompleted() override {
-    std::vector<const autofill::PasswordForm*> matches =
+    std::vector<const password_manager::PasswordForm*> matches =
         form_fetcher_->GetNonFederatedMatches();
     for (const auto* match : matches) {
       if (base::UTF16ToUTF8(match->username_value) == login_.username) {
@@ -184,8 +184,8 @@ class WebsiteLoginManagerImpl::UpdatePasswordRequest
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
     password_manager::PasswordStore::FormDigest digest(
-        autofill::PasswordForm::Scheme::kHtml, password_form_.signon_realm,
-        password_form_.url);
+        password_manager::PasswordForm::Scheme::kHtml,
+        password_form_.signon_realm, password_form_.url);
     form_fetcher_ = std::make_unique<password_manager::FormFetcherImpl>(
         digest, client, true);
   }
@@ -217,7 +217,7 @@ class WebsiteLoginManagerImpl::UpdatePasswordRequest
   }
 
  private:
-  const autofill::PasswordForm password_form_;
+  const password_manager::PasswordForm password_form_;
   const autofill::FormData form_data_;
   password_manager::PasswordManagerClient* const client_ = nullptr;
   // This callback will execute when presaving is completed.
@@ -242,7 +242,8 @@ void WebsiteLoginManagerImpl::GetLoginsForUrl(
     base::OnceCallback<void(std::vector<Login>)> callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   password_manager::PasswordStore::FormDigest digest(
-      autofill::PasswordForm::Scheme::kHtml, url.GetOrigin().spec(), GURL());
+      password_manager::PasswordForm::Scheme::kHtml, url.GetOrigin().spec(),
+      GURL());
   pending_requests_.emplace_back(std::make_unique<PendingFetchLoginsRequest>(
       digest, client_, std::move(callback),
       base::BindOnce(&WebsiteLoginManagerImpl::OnRequestFinished,
@@ -255,7 +256,8 @@ void WebsiteLoginManagerImpl::GetPasswordForLogin(
     base::OnceCallback<void(bool, std::string)> callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   password_manager::PasswordStore::FormDigest digest(
-      autofill::PasswordForm::Scheme::kHtml, login.origin.spec(), GURL());
+      password_manager::PasswordForm::Scheme::kHtml, login.origin.spec(),
+      GURL());
   pending_requests_.emplace_back(std::make_unique<PendingFetchPasswordRequest>(
       digest, client_, login, std::move(callback),
       base::BindOnce(&WebsiteLoginManagerImpl::OnRequestFinished,

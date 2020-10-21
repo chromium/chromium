@@ -14,7 +14,6 @@
 #include "base/strings/string_piece.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/html_based_username_detector.h"
-#include "components/autofill/core/common/password_form.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "url/gurl.h"
 

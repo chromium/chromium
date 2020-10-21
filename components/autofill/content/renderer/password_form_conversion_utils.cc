@@ -10,7 +10,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "components/autofill/content/renderer/html_based_username_detector.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/autofill/core/common/renderer_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"

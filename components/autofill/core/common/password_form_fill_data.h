@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/autofill/core/common/renderer_id.h"
 
 namespace autofill {

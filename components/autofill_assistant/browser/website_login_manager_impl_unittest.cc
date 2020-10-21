@@ -20,8 +20,8 @@
 
 using autofill::FormData;
 using autofill::FormFieldData;
-using autofill::PasswordForm;
 using base::ASCIIToUTF16;
+using password_manager::PasswordForm;
 using testing::_;
 using testing::Invoke;
 using testing::Mock;
@@ -163,7 +163,7 @@ TEST_F(WebsiteLoginManagerImplTest, SaveGeneratedPassword) {
           })));
 
   password_manager::PasswordStore::FormDigest form_digest(
-      autofill::PasswordForm::Scheme::kHtml, kFakeUrl, GURL(kFakeUrl));
+      password_manager::PasswordForm::Scheme::kHtml, kFakeUrl, GURL(kFakeUrl));
   // Presave generated password. Form with empty username is presaved.
   EXPECT_CALL(*store(), GetLogins(form_digest, _));
   EXPECT_CALL(*store(),

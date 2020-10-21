@@ -26,7 +26,6 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"

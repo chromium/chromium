@@ -102,7 +102,7 @@ bool SavedPasswordsPresenter::EditSavedPasswords(
       PasswordStore& store =
           old_form.IsUsingAccountStore() ? *account_store_ : *profile_store_;
 
-      autofill::PasswordForm new_form = old_form;
+      PasswordForm new_form = old_form;
       new_form.username_value = new_username;
       new_form.password_value = new_password;
 

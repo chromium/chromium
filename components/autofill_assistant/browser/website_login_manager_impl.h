@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/autofill_assistant/browser/website_login_manager.h"
 #include "content/public/browser/web_contents.h"
 

@@ -24,7 +24,6 @@
 #include "components/autofill/content/renderer/html_based_username_detector.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/renderer_id.h"
 #include "content/public/renderer/render_frame_observer.h"
