@@ -98,6 +98,20 @@ void CdmFactoryDaemonProxy::GetOutputProtection(
   OutputProtectionImpl::Create(std::move(output_protection));
 }
 
+void CdmFactoryDaemonProxy::GetHwConfigData(GetHwConfigDataCallback callback) {
+  DCHECK(mojo_task_runner_->RunsTasksInCurrentSequence());
+  DVLOG(1) << "CdmFactoryDaemonProxy::GetHwConfigData called";
+  if (daemon_remote_.is_bound()) {
+    DVLOG(1) << "CdmFactoryDaemon mojo connection already exists, re-use it";
+    ProxyGetHwConfigData(std::move(callback));
+    return;
+  }
+
+  EstablishDaemonConnection(
+      base::BindOnce(&CdmFactoryDaemonProxy::ProxyGetHwConfigData,
+                     base::Unretained(this), std::move(callback)));
+}
+
 void CdmFactoryDaemonProxy::SendDBusRequest(base::ScopedFD fd,
                                             base::OnceClosure callback) {
   chromeos::CdmFactoryDaemonClient::Get()->BootstrapMojoConnection(
@@ -184,6 +198,16 @@ void CdmFactoryDaemonProxy::CompleteOemCryptoConnection(
   daemon_remote_->ConnectOemCrypto(std::move(oemcryptor),
                                    std::move(protected_buffer_manager),
                                    std::move(output_protection));
+}
+
+void CdmFactoryDaemonProxy::ProxyGetHwConfigData(
+    GetHwConfigDataCallback callback) {
+  if (!daemon_remote_ || !daemon_remote_.is_bound()) {
+    LOG(ERROR) << "daemon_remote_ interface is not connected";
+    std::move(callback).Run(false, std::vector<uint8_t>());
+    return;
+  }
+  daemon_remote_->GetHwConfigData(std::move(callback));
 }
 
 // static

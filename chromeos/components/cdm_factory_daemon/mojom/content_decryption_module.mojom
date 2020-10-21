@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 1
+// Next MinVersion: 2
 
 module chromeos.cdm.mojom;
 
@@ -132,7 +132,7 @@ enum DecryptStatus {
   kFailure
 };
 
-// Next Method ID: 9
+// Next Method ID: 10
 interface ContentDecryptionModule {
   // Provides a server certificate to be used to encrypt messages to the
   // license server.
@@ -178,6 +178,14 @@ interface ContentDecryptionModule {
   // should be done before making this call.
   Decrypt@8(array<uint8> encrypted_data, DecryptConfig decrypt_config)
       => (DecryptStatus status, array<uint8> decrypted_data);
+
+  // Returns HW information for a specific key that is passed along as part of
+  // HW decrypt+decode. |hw_identifier| is specific to the HW implementation
+  // to allow it to correlate the decode session with the context to get the key
+  // from.
+  [MinVersion=1] GetHwKeyData@9(DecryptConfig decrypt_config,
+                                array<uint8> hw_identifier) =>
+      (DecryptStatus status, array<uint8> key_data);
 };
 
 // Session callbacks. See media/base/content_decryption_module.h for details.

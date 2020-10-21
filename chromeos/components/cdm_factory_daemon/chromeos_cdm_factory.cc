@@ -29,11 +29,30 @@ mojo::Remote<cdm::mojom::CdmFactoryDaemon>& GetCdmFactoryDaemonRemote() {
   return *remote;
 }
 
-// This holds the PendingRemote until we can bind it on the proper thread.
-mojo::PendingRemote<cdm::mojom::CdmFactoryDaemon>& GetBrowserProxy() {
-  static base::NoDestructor<mojo::PendingRemote<cdm::mojom::CdmFactoryDaemon>>
-      browser_proxy;
-  return *browser_proxy;
+// This holds the task runner we are bound to.
+scoped_refptr<base::SequencedTaskRunner>& GetFactoryTaskRunner() {
+  static base::NoDestructor<scoped_refptr<base::SequencedTaskRunner>> runner;
+  return *runner;
+}
+
+void CreateFactoryOnTaskRunner(
+    const std::string& key_system,
+    cdm::mojom::CdmFactoryDaemon::CreateFactoryCallback callback) {
+  GetCdmFactoryDaemonRemote()->CreateFactory(key_system, std::move(callback));
+}
+
+void CreateFactoryCallback(
+    scoped_refptr<base::SingleThreadTaskRunner> runner,
+    cdm::mojom::CdmFactoryDaemon::CreateFactoryCallback callback,
+    mojo::PendingRemote<cdm::mojom::CdmFactory> remote_factory) {
+  runner->PostTask(FROM_HERE, base::BindOnce(std::move(callback),
+                                             std::move(remote_factory)));
+}
+
+void GetOutputProtectionOnTaskRunner(
+    mojo::PendingReceiver<cdm::mojom::OutputProtection> output_protection) {
+  GetCdmFactoryDaemonRemote()->GetOutputProtection(
+      std::move(output_protection));
 }
 
 }  // namespace
@@ -51,10 +70,9 @@ mojo::PendingReceiver<cdm::mojom::CdmFactoryDaemon>
 ChromeOsCdmFactory::GetCdmFactoryDaemonReceiver() {
   mojo::PendingRemote<chromeos::cdm::mojom::CdmFactoryDaemon> browser_proxy;
   auto receiver = browser_proxy.InitWithNewPipeAndPassReceiver();
+  GetCdmFactoryDaemonRemote().Bind(std::move(browser_proxy));
 
-  // This does not get called from the mojo thread we will be using, so hold
-  // onto it and then bind it when we get the first call.
-  GetBrowserProxy() = std::move(browser_proxy);
+  GetFactoryTaskRunner() = base::SequencedTaskRunnerHandle::Get();
   return receiver;
 }
 
@@ -84,6 +102,17 @@ void ChromeOsCdmFactory::Create(
       std::move(cdm_created_cb)));
 }
 
+// static
+void ChromeOsCdmFactory::GetHwConfigData(GetHwConfigDataCB callback) {
+  if (!GetFactoryTaskRunner()->RunsTasksInCurrentSequence()) {
+    GetFactoryTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(&ChromeOsCdmFactory::GetHwConfigData,
+                                  std::move(callback)));
+    return;
+  }
+  GetCdmFactoryDaemonRemote()->GetHwConfigData(std::move(callback));
+}
+
 void ChromeOsCdmFactory::OnVerifiedAccessEnabled(
     const std::string& key_system,
     const media::CdmConfig& cdm_config,
@@ -101,23 +130,23 @@ void ChromeOsCdmFactory::OnVerifiedAccessEnabled(
                                   "Verified Access is disabled."));
     return;
   }
-  // This tests if it is bound already.
-  if (!GetCdmFactoryDaemonRemote()) {
-    DCHECK(GetBrowserProxy());
-    DVLOG(1) << "Binding the CdmFactoryDaemon browser proxy";
-    GetCdmFactoryDaemonRemote().Bind(std::move(GetBrowserProxy()));
-  }
-
   // If we haven't retrieved the remote CDM factory, do that first.
-  if (!remote_factory_.is_bound()) {
-    // Now invoke the call to create the Mojo interface for the CDM factory.
-    GetCdmFactoryDaemonRemote()->CreateFactory(
-        key_system,
-        base::BindOnce(&ChromeOsCdmFactory::OnCreateFactory,
-                       weak_factory_.GetWeakPtr(), cdm_config,
-                       session_message_cb, session_closed_cb,
-                       session_keys_change_cb, session_expiration_update_cb,
-                       std::move(cdm_created_cb)));
+  if (!remote_factory_) {
+    // Now invoke the call to create the Mojo interface for the CDM factory. We
+    // need to invoke the CreateFactory call on the factory task runner, but
+    // we then need to process the callback on the current runner, so there's a
+    // few layers of indirection here.
+    GetFactoryTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &CreateFactoryOnTaskRunner, key_system,
+            base::BindOnce(
+                &CreateFactoryCallback, base::ThreadTaskRunnerHandle::Get(),
+                base::BindOnce(
+                    &ChromeOsCdmFactory::OnCreateFactory,
+                    weak_factory_.GetWeakPtr(), cdm_config, session_message_cb,
+                    session_closed_cb, session_keys_change_cb,
+                    session_expiration_update_cb, std::move(cdm_created_cb)))));
     return;
   }
 
@@ -192,8 +221,11 @@ void ChromeOsCdmFactory::CreateCdm(
 
   // Create the OutputProtection interface to pass to the CDM.
   mojo::PendingRemote<cdm::mojom::OutputProtection> output_protection_remote;
-  GetCdmFactoryDaemonRemote()->GetOutputProtection(
-      output_protection_remote.InitWithNewPipeAndPassReceiver());
+  GetFactoryTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &GetOutputProtectionOnTaskRunner,
+          output_protection_remote.InitWithNewPipeAndPassReceiver()));
 
   // Now create the remote CDM instance that links everything up.
   remote_factory_->CreateCdm(cdm->GetClientInterface(),

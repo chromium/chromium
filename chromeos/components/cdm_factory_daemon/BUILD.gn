@@ -27,6 +27,7 @@ component("cdm_factory_daemon_gpu") {
   sources = [
     "cdm_storage_adapter.cc",
     "cdm_storage_adapter.h",
+    "chromeos_cdm_context.h",
     "chromeos_cdm_factory.cc",
     "chromeos_cdm_factory.h",
     "content_decryption_module_adapter.cc",

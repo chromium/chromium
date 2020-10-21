@@ -86,6 +86,11 @@ class MockDaemonCdm : public cdm::mojom::ContentDecryptionModule {
               (const std::vector<uint8_t>&,
                cdm::mojom::DecryptConfigPtr,
                DecryptCallback));
+  MOCK_METHOD(void,
+              GetHwKeyData,
+              (cdm::mojom::DecryptConfigPtr,
+               const std::vector<uint8_t>&,
+               GetHwKeyDataCallback callback));
 
  private:
   mojo::AssociatedReceiver<ContentDecryptionModule> receiver_{this};

@@ -22,10 +22,6 @@ mojom_component("mojom") {
     {
       types = [
         {
-          mojom = "chromeos.cdm.mojom.CdmKeyStatus"
-          cpp = "::media::CdmKeyInformation::KeyStatus"
-        },
-        {
           mojom = "chromeos.cdm.mojom.CdmMessageType"
           cpp = "::media::CdmMessageType"
         },

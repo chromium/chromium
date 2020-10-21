@@ -52,4 +52,10 @@ FuchsiaCdmContext* CdmContext::GetFuchsiaCdmContext() {
 }
 #endif
 
+#if defined(OS_CHROMEOS)
+chromeos::ChromeOsCdmContext* CdmContext::GetChromeOsCdmContext() {
+  return nullptr;
+}
+#endif
+
 }  // namespace media

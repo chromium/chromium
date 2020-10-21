@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/bind.h"
 #include "base/time/time.h"
 #include "media/base/cdm_promise.h"
 #include "media/base/decoder_buffer.h"
@@ -249,6 +250,37 @@ ContentDecryptionModuleAdapter::RegisterEventCB(EventCB event_cb) {
 
 media::Decryptor* ContentDecryptionModuleAdapter::GetDecryptor() {
   return this;
+}
+
+ChromeOsCdmContext* ContentDecryptionModuleAdapter::GetChromeOsCdmContext() {
+  return this;
+}
+
+void ContentDecryptionModuleAdapter::GetHwKeyData(
+    const media::DecryptConfig* decrypt_config,
+    const std::vector<uint8_t>& hw_identifier,
+    GetHwKeyDataCB callback) {
+  // This can get called from decoder threads or mojo threads, so we may need
+  // to repost the task.
+  if (!mojo_task_runner_->RunsTasksInCurrentSequence()) {
+    mojo_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&ContentDecryptionModuleAdapter::GetHwKeyData,
+                                  weak_factory_.GetWeakPtr(), decrypt_config,
+                                  hw_identifier, std::move(callback)));
+    return;
+  }
+  if (!cros_cdm_remote_) {
+    std::move(callback).Run(media::Decryptor::Status::kError,
+                            std::vector<uint8_t>());
+    return;
+  }
+  auto cros_decrypt_config = cdm::mojom::DecryptConfig::New();
+  cros_decrypt_config->key_id = decrypt_config->key_id();
+  cros_decrypt_config->iv = decrypt_config->iv();
+  cros_decrypt_config->encryption_scheme = decrypt_config->encryption_scheme();
+
+  cros_cdm_remote_->GetHwKeyData(std::move(cros_decrypt_config), hw_identifier,
+                                 std::move(callback));
 }
 
 void ContentDecryptionModuleAdapter::OnSessionMessage(

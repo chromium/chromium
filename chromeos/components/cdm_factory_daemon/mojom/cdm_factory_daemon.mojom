@@ -9,7 +9,7 @@
 // interface can also be used to connect directly to the OEMCrypto
 // implementation for ARC.
 
-// Next MinVersion: 2
+// Next MinVersion: 3
 
 module chromeos.cdm.mojom;
 
@@ -38,7 +38,7 @@ interface CdmFactory {
               pending_remote<OutputProtection> output_protection);
 };
 
-// Next Method ID: 4
+// Next Method ID: 5
 // Used for bootstrapping the connection between Chrome and the daemon, then
 // methods can be invoked to obtain interfaces to perform CDM or OEMCrypto
 // operations.
@@ -67,4 +67,10 @@ interface CdmFactoryDaemon {
   // CreateCdm call in CdmFactory.
   [MinVersion=1]
   GetOutputProtection@3(pending_receiver<OutputProtection> output_protection);
+
+  // Returns binary configuration data used for setting up HW decrypt+decode. If
+  // successful, |success| will be true and |config_data| will be valid.
+  // Otherwise |success| will be false and |config_data| should not be used.
+  [MinVersion=2]
+  GetHwConfigData@4() => (bool success, array<uint8> config_data);
 };

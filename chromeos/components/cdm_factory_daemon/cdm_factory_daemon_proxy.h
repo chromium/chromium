@@ -54,6 +54,7 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) CdmFactoryDaemonProxy
       override;
   void GetOutputProtection(mojo::PendingReceiver<cdm::mojom::OutputProtection>
                                output_protection) override;
+  void GetHwConfigData(GetHwConfigDataCallback callback) override;
 
  private:
   void SendDBusRequest(base::ScopedFD fd, base::OnceClosure callback);
@@ -66,6 +67,7 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) CdmFactoryDaemonProxy
       mojo::PendingRemote<arc::mojom::ProtectedBufferManager>
           protected_buffer_manager,
       mojo::PendingRemote<cdm::mojom::OutputProtection> output_protection);
+  void ProxyGetHwConfigData(GetHwConfigDataCallback callback);
   void OnGpuMojoConnectionError();
   void OnDaemonMojoConnectionError();
   void BindReceiver(mojo::PendingReceiver<CdmFactoryDaemon> receiver);

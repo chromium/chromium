@@ -18,6 +18,12 @@
 struct IMFCdmProxy;
 #endif
 
+#if defined(OS_CHROMEOS)
+namespace chromeos {
+class ChromeOsCdmContext;
+}
+#endif
+
 namespace media {
 
 class CallbackRegistration;
@@ -113,6 +119,12 @@ class MEDIA_EXPORT CdmContext {
   // Returns FuchsiaCdmContext interface when the context is backed by Fuchsia
   // CDM. Otherwise returns nullptr.
   virtual FuchsiaCdmContext* GetFuchsiaCdmContext();
+#endif
+
+#if defined(OS_CHROMEOS)
+  // Returns a ChromeOsCdmContext interface when the context is backed by the
+  // ChromeOS CdmFactoryDaemon. Otherwise return nullptr.
+  virtual chromeos::ChromeOsCdmContext* GetChromeOsCdmContext();
 #endif
 
  protected:
