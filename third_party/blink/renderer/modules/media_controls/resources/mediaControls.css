@@ -898,6 +898,7 @@ video::-internal-media-controls-overflow-menu-list-item {
 
   font-family: Roboto-Regular, Roboto, sans-serif;
   font-size: 12px;
+  background-color: -internal-light-dark(#FFFFFF, #3B3B3B);
   color: -internal-light-dark(rgba(0,0,0,0.87), rgba(255,255,255,0.87));
   letter-spacing: 0;
 
@@ -1019,9 +1020,14 @@ audio::-internal-media-controls-overflow-menu-list-item:focus,
 video::-internal-media-controls-overflow-menu-list-item:focus,
 audio::-internal-media-controls-text-track-list-item:focus,
 video::-internal-media-controls-text-track-list-item:focus {
-  background-color: -internal-light-dark(#e0e0e0, #3b3b3b);
+  background-color: -internal-light-dark(#e0e0e0, #545454);
   color: -internal-light-dark(rgba(0,0,0,0.87), rgba(255,255,255,0.87));
   outline: none;
+}
+
+audio::-internal-media-controls-overflow-menu-list-item:active,
+video::-internal-media-controls-overflow-menu-list-item:active {
+  background-color: -internal-light-dark(#e0e0e0, #454545);
 }
 
 audio::-internal-media-controls-text-track-list-header,
@@ -1090,7 +1096,7 @@ audio::-webkit-media-controls-enclosure,
 video::-webkit-media-controls.audio-only [pseudo="-webkit-media-controls-enclosure"] {
   max-height: 54px;
   flex-direction: row;
-  background: -internal-light-dark(#F1F3F4, #3B3B3B);
+  background: -internal-light-dark(#F1F3F4, rgba(59, 59, 59, .9));
   border-radius: 100px;
   overflow: hidden;
 }
