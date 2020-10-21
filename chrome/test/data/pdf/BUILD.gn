@@ -193,9 +193,13 @@ js_library("viewer_pdf_toolbar_new_test") {
 
 js_library("viewer_thumbnail_bar_test") {
   deps = [
+    ":test_util",
+    "../webui:test_util.m",
     "//chrome/browser/resources/pdf/elements:viewer-thumbnail",
     "//chrome/browser/resources/pdf/elements:viewer-thumbnail-bar",
+    "//third_party/polymer/v3_0/components-chromium/iron-test-helpers:mock-interactions",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js/cr/ui:focus_outline_manager.m",
   ]
   externs_list = [ "$externs_path/test.js" ]
 }

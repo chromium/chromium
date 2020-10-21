@@ -5,6 +5,8 @@
 import {eventToPromise} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_util.m.js';
 import {ViewerThumbnailBarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/elements/viewer-thumbnail-bar.js';
 import {ViewerThumbnailElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/elements/viewer-thumbnail.js';
+import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
+import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {testAsync} from './test_util.js';
@@ -28,6 +30,14 @@ function getTestThumbnailBarHeight() {
   // Add 24 to cover padding between thumbnails.
   const thumbnailBarHeight = sizerThumbnail.offsetHeight + 24;
   return thumbnailBarHeight;
+}
+
+/**
+ * @param {!HTMLElement} element
+ * @param {string} key
+ */
+function keydown(element, key) {
+  keyDownOn(element, 0, [], key);
 }
 
 // Unit tests for the viewer-thumbnail-bar element.
@@ -55,7 +65,7 @@ const tests = [
        */
       function testNavigateThumbnail(thumbnail, expectedPageIndex) {
         const whenChanged = eventToPromise('change-page', thumbnailBar);
-        thumbnail.shadowRoot.querySelector('#thumbnail').click();
+        thumbnail.getClickTarget().click();
         return whenChanged.then(e => {
           chrome.test.assertEq(expectedPageIndex, e.detail.page);
           chrome.test.assertEq('thumbnail', e.detail.origin);
@@ -156,6 +166,129 @@ const tests = [
       }
     });
   },
+  function testThumbnailForwardFocus() {
+    const testDocLength = 10;
+    const thumbnailBar = createThumbnailBar();
+    thumbnailBar.docLength = testDocLength;
+
+    flush();
+
+    testAsync(async () => {
+      /**
+       * @param {number} pageNumber
+       * @return {!Promise}
+       */
+      function waitForwardFocus(pageNumber) {
+        // Reset focus.
+        thumbnailBar.blur();
+
+        const toThumbnail = /** @type {!ViewerThumbnailElement} */ (
+            thumbnailBar.getThumbnailForPage(pageNumber));
+        const whenActiveThumbnailFocused = eventToPromise('focus', toThumbnail);
+
+        // Calling focus() on `thumbnailBar` in this test doesn't trigger the
+        // event listener, but manually dispatching an event does.
+        thumbnailBar.dispatchEvent(new FocusEvent('focus'));
+        return whenActiveThumbnailFocused;
+      }
+
+      // When there's no active page, focus should forward to the first
+      // thumbnail.
+      await waitForwardFocus(1);
+
+      // When there's an active page, focus should forward to the thumbnail of
+      // the active page.
+      let activePage = 3;
+      thumbnailBar.activePage = activePage;
+      await waitForwardFocus(activePage);
+
+      activePage = 10;
+      thumbnailBar.activePage = activePage;
+      await waitForwardFocus(activePage);
+    });
+  },
+  function testThumbnailUpDownFocus() {
+    const testDocLength = 3;
+    const thumbnailBar = createThumbnailBar();
+    thumbnailBar.docLength = testDocLength;
+
+    flush();
+
+    testAsync(async () => {
+      /**
+       * @param {!ViewerThumbnailElement} fromThumbnail
+       * @param {boolean} up
+       */
+      async function pressUpDownArrow(fromThumbnail, up) {
+        const fromPageNumber = fromThumbnail.pageNumber;
+        const toPageNumber = up ? fromPageNumber - 1 : fromPageNumber + 1;
+        const toThumbnail = /** @type {!ViewerThumbnailElement} */ (
+            thumbnailBar.getThumbnailForPage(toPageNumber));
+
+        const whenToThumbnailFocused = eventToPromise('focus', toThumbnail);
+        keydown(fromThumbnail, up ? 'ArrowUp' : 'ArrowDown');
+        await whenToThumbnailFocused;
+      }
+
+      const thumbnails =
+          /** @type {!NodeList<!ViewerThumbnailElement>} */ (
+              thumbnailBar.shadowRoot.querySelectorAll('viewer-thumbnail'));
+
+      // Start focus on the second of three thumbnails.
+      // Simulate this focus by mouse so `ViewerThumbnailElement.onFocus_()`
+      // doesn't forward the focus.
+      FocusOutlineManager.forDocument(document).visible = false;
+      let focusedIndex = 1;
+      thumbnails[focusedIndex].focus();
+
+      await pressUpDownArrow(thumbnails[focusedIndex], /*up=*/ true);
+      focusedIndex -= 1;
+      chrome.test.assertEq(
+          thumbnails[focusedIndex], thumbnailBar.shadowRoot.activeElement);
+
+      await pressUpDownArrow(thumbnails[focusedIndex], /*up=*/ false);
+      focusedIndex += 1;
+      chrome.test.assertEq(
+          thumbnails[focusedIndex], thumbnailBar.shadowRoot.activeElement);
+
+      await pressUpDownArrow(thumbnails[focusedIndex], /*up=*/ false);
+      focusedIndex += 1;
+      chrome.test.assertEq(
+          thumbnails[focusedIndex], thumbnailBar.shadowRoot.activeElement);
+
+      await pressUpDownArrow(thumbnails[focusedIndex], /*up=*/ true);
+      focusedIndex -= 1;
+      chrome.test.assertEq(
+          thumbnails[focusedIndex], thumbnailBar.shadowRoot.activeElement);
+    });
+  },
+  function testThumbnailLeftRightSelect() {
+    const testDocLength = 2;
+    const thumbnailBar = createThumbnailBar();
+    thumbnailBar.docLength = testDocLength;
+
+    flush();
+
+    thumbnailBar.activePage = 1;
+    let whenChanged = eventToPromise('change-page', thumbnailBar);
+    keydown(thumbnailBar, 'ArrowRight');
+    return whenChanged
+        .then(e => {
+          // The event contains the zero-based page index.
+          chrome.test.assertEq(1, e.detail.page);
+
+          thumbnailBar.activePage = 2;
+          whenChanged = eventToPromise('change-page', thumbnailBar);
+          keydown(thumbnailBar, 'ArrowLeft');
+          return whenChanged;
+        })
+        .then(e => {
+          // The event contains the zero-based page index.
+          chrome.test.assertEq(0, e.detail.page);
+
+          chrome.test.succeed();
+        });
+  }
 ];
 
 chrome.test.runTests(tests);

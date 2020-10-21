@@ -84,7 +84,7 @@ export class ViewerThumbnailBarElement extends PolymerElement {
    */
   activePageChanged_() {
     if (this.shadowRoot.activeElement) {
-      this.getThumbnailForPage_(this.activePage).focusAndScroll();
+      this.getThumbnailForPage(this.activePage).focusAndScroll();
     }
   }
 
@@ -97,7 +97,16 @@ export class ViewerThumbnailBarElement extends PolymerElement {
       return;
     }
 
-    this.getThumbnailForPage_(pageNumber).getClickTarget().click();
+    this.getThumbnailForPage(pageNumber).getClickTarget().click();
+  }
+
+  /**
+   * @param {number} pageNumber
+   * @return {?ViewerThumbnailElement}
+   */
+  getThumbnailForPage(pageNumber) {
+    return /** @type {ViewerThumbnailElement} */ (this.shadowRoot.querySelector(
+        `viewer-thumbnail:nth-child(${pageNumber})`));
   }
 
   /**
@@ -115,16 +124,6 @@ export class ViewerThumbnailBarElement extends PolymerElement {
    */
   getAriaLabel_(pageNumber) {
     return loadTimeData.getStringF('thumbnailPageAriaLabel', pageNumber);
-  }
-
-  /**
-   * @param {number} pageNumber
-   * @return {ViewerThumbnailElement}
-   * @private
-   */
-  getThumbnailForPage_(pageNumber) {
-    return /** @type {ViewerThumbnailElement} */ (this.shadowRoot.querySelector(
-        `viewer-thumbnail:nth-child(${pageNumber})`));
   }
 
   /**
