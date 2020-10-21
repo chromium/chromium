@@ -112,7 +112,8 @@ class PluginVmInstaller : public KeyedService,
   bool IsProcessing();
 
   // Start the installation. Progress updates will be sent to the observer.
-  void Start();
+  // Returns a FailureReason if the installation couldn't be started.
+  base::Optional<FailureReason> Start();
   // Cancel the installation.
   void Cancel();
 
