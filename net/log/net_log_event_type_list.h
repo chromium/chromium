@@ -2247,6 +2247,12 @@ EVENT_TYPE(QUIC_SESSION_DROPPED_UNDECRYPTABLE_PACKET)
 // }
 EVENT_TYPE(QUIC_SESSION_ATTEMPTING_TO_PROCESS_UNDECRYPTABLE_PACKET)
 
+// Session has updated to the next set of 1-RTT keys.
+// {
+//   "reason": <the reason the key update was triggered>
+// }
+EVENT_TYPE(QUIC_SESSION_KEY_UPDATE)
+
 // ------------------------------------------------------------------------
 // QuicHttpStream
 // ------------------------------------------------------------------------

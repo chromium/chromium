@@ -2495,6 +2495,12 @@ void QuicChromiumClientSession::OnForwardProgressMadeAfterPathDegrading() {
     observer.OnSessionResumedPostPathDegrading(this, current_network);
 }
 
+void QuicChromiumClientSession::OnKeyUpdate(quic::KeyUpdateReason reason) {
+  net_log_.AddEventWithStringParams(NetLogEventType::QUIC_SESSION_KEY_UPDATE,
+                                    "reason",
+                                    quic::KeyUpdateReasonString(reason));
+}
+
 void QuicChromiumClientSession::OnProofValid(
     const quic::QuicCryptoClientConfig::CachedState& cached) {
   DCHECK(cached.proof_valid());
