@@ -23,6 +23,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -900,9 +901,19 @@ TEST_F(HangWatchScopeEnabledBlockingTest, ScopeBlocksDuringCapture) {
   VerifyScopesDontBlock();
 }
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// Flaky hangs on arm64 Macs: https://crbug.com/1140207
+#define MAYBE_NewScopeDoesNotBlockDuringCapture \
+  DISABLED_NewScopeDoesNotBlockDuringCapture
+#else
+#define MAYBE_NewScopeDoesNotBlockDuringCapture \
+  NewScopeDoesNotBlockDuringCapture
+#endif
+
 // Test that execution does not block in ~HangWatchScopeEnabled() when the scope
 // was created after the start of a capture.
-TEST_F(HangWatchScopeEnabledBlockingTest, NewScopeDoesNotBlockDuringCapture) {
+TEST_F(HangWatchScopeEnabledBlockingTest,
+       MAYBE_NewScopeDoesNotBlockDuringCapture) {
   // Start a HangWatchScopeEnabled that expires right away. Ensures that the
   // first monitor will detect a hang.
   HangWatchScopeEnabled expires_right_away(base::TimeDelta{});
