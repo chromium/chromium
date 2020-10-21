@@ -927,8 +927,8 @@ template("ios_app_bundle") {
         sources = [ "${_default_variant.bundle_gen_dir}/$_bundle_short_name" ]
         outputs = [ "$root_out_dir/$_bundle_short_name" ]
 
-        args = rebase_path(sources, root_out_dir) +
-               rebase_path(outputs, root_out_dir)
+        args = rebase_path(sources, root_build_dir) +
+               rebase_path(outputs, root_build_dir)
       }
     }
   }
