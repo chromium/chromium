@@ -470,6 +470,19 @@ void AppServiceProxy::GetMenuModel(
                              std::move(callback));
 }
 
+void AppServiceProxy::ExecuteContextMenuCommand(const std::string& app_id,
+                                                int command_id,
+                                                const std::string& shortcut_id,
+                                                int64_t display_id) {
+  if (!app_service_.is_connected()) {
+    return;
+  }
+
+  apps::mojom::AppType app_type = cache_.GetAppType(app_id);
+  app_service_->ExecuteContextMenuCommand(app_type, app_id, command_id,
+                                          shortcut_id, display_id);
+}
+
 void AppServiceProxy::OpenNativeSettings(const std::string& app_id) {
   if (app_service_.is_connected()) {
     cache_.ForOneApp(app_id, [this](const apps::AppUpdate& update) {

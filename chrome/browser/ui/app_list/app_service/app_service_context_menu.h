@@ -50,7 +50,7 @@ class AppServiceContextMenu : public app_list::AppContextMenu {
 
   void SetLaunchType(int command_id);
 
-  void ExecuteArcShortcutCommand(int command_id);
+  void ExecutePublisherContextMenuCommand(int command_id);
 
   apps::mojom::AppType app_type_;
 
@@ -60,6 +60,8 @@ class AppServiceContextMenu : public app_list::AppContextMenu {
   std::unique_ptr<extensions::ContextMenuMatcher> extension_menu_items_;
 
   // Caches the app shortcut items.
+  // TODO(crbug.com/1140356): Extract arc::ArcAppShortcutItems class as public
+  // apps::AppShortcutItems.
   std::unique_ptr<arc::ArcAppShortcutItems> app_shortcut_items_;
 
   base::WeakPtrFactory<AppServiceContextMenu> weak_ptr_factory_{this};

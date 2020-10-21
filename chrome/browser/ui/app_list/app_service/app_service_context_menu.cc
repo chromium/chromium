@@ -24,8 +24,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_context_menu_delegate.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/app_list/extension_app_utils.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
@@ -171,7 +169,7 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
 
       if (command_id >= ash::LAUNCH_APP_SHORTCUT_FIRST &&
           command_id <= ash::LAUNCH_APP_SHORTCUT_LAST) {
-        ExecuteArcShortcutCommand(command_id);
+        ExecutePublisherContextMenuCommand(command_id);
         return;
       }
 
@@ -274,7 +272,6 @@ void AppServiceContextMenu::OnGetMenuModel(
           static_cast<ash::CommandId>(menu_items->items[i]->command_id),
           menu_items->items[i]->string_id);
     } else {
-      DCHECK_EQ(apps::mojom::AppType::kArc, app_type_);
       apps::PopulateItemFromMojoMenuItems(std::move(menu_items->items[i]),
                                           menu_model.get(),
                                           app_shortcut_items_.get());
@@ -354,14 +351,17 @@ void AppServiceContextMenu::SetLaunchType(int command_id) {
   }
 }
 
-void AppServiceContextMenu::ExecuteArcShortcutCommand(int command_id) {
+void AppServiceContextMenu::ExecutePublisherContextMenuCommand(int command_id) {
   DCHECK(command_id >= ash::LAUNCH_APP_SHORTCUT_FIRST &&
          command_id <= ash::LAUNCH_APP_SHORTCUT_LAST);
   const size_t index = command_id - ash::LAUNCH_APP_SHORTCUT_FIRST;
   DCHECK(app_shortcut_items_);
   DCHECK_LT(index, app_shortcut_items_->size());
 
-  arc::ExecuteArcShortcutCommand(profile(), app_id(),
-                                 app_shortcut_items_->at(index).shortcut_id,
-                                 controller()->GetAppListDisplayId());
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile());
+
+  proxy->ExecuteContextMenuCommand(app_id(), command_id,
+                                   app_shortcut_items_->at(index).shortcut_id,
+                                   controller()->GetAppListDisplayId());
 }

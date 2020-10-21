@@ -233,6 +233,14 @@ void WebAppsChromeOs::GetMenuModel(const std::string& app_id,
   std::move(callback).Run(std::move(menu_items));
 }
 
+void WebAppsChromeOs::ExecuteContextMenuCommand(const std::string& app_id,
+                                                int command_id,
+                                                const std::string& shortcut_id,
+                                                int64_t display_id) {
+  // TODO(crbug.com/1129721) Implement it for shortcut menu in web apps.
+  NOTIMPLEMENTED();
+}
+
 void WebAppsChromeOs::OnWebAppUninstalled(const web_app::AppId& app_id) {
   const web_app::WebApp* web_app = GetWebApp(app_id);
   if (!web_app || !Accepts(app_id)) {

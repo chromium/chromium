@@ -97,6 +97,14 @@ interface AppService {
       MenuType menu_type,
       int64 display_id) => (MenuItems menu_items);
 
+  // Executes the menu item command for an app with |app_id|.
+  ExecuteContextMenuCommand(
+      AppType app_type,
+      string app_id,
+      int32 command_id,
+      string shortcut_id,
+      int64 display_id);
+
   // Opens native settings for the app with |app_id|.
   OpenNativeSettings(
       AppType app_type,
@@ -191,6 +199,13 @@ interface Publisher {
       string app_id,
       MenuType menu_type,
       int64 display_id) => (MenuItems menu_items);
+
+  // Executes the menu item command for an app with |app_id|.
+  ExecuteContextMenuCommand(
+      string app_id,
+      int32 command_id,
+      string shortcut_id,
+      int64 display_id);
 
   // Opens native settings for the app with |app_id|.
   OpenNativeSettings(

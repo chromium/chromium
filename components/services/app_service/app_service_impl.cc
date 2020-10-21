@@ -293,6 +293,20 @@ void AppServiceImpl::GetMenuModel(apps::mojom::AppType app_type,
                              std::move(callback));
 }
 
+void AppServiceImpl::ExecuteContextMenuCommand(apps::mojom::AppType app_type,
+                                               const std::string& app_id,
+                                               int command_id,
+                                               const std::string& shortcut_id,
+                                               int64_t display_id) {
+  auto iter = publishers_.find(app_type);
+  if (iter == publishers_.end()) {
+    return;
+  }
+
+  iter->second->ExecuteContextMenuCommand(app_id, command_id, shortcut_id,
+                                          display_id);
+}
+
 void AppServiceImpl::OpenNativeSettings(apps::mojom::AppType app_type,
                                         const std::string& app_id) {
   auto iter = publishers_.find(app_type);

@@ -68,7 +68,7 @@ void AddArcCommandItem(int command_id,
                        const gfx::ImageSkia& icon,
                        apps::mojom::MenuItemsPtr* menu_items) {
   apps::mojom::MenuItemPtr menu_item = apps::mojom::MenuItem::New();
-  menu_item->type = apps::mojom::MenuItemType::kArcCommand;
+  menu_item->type = apps::mojom::MenuItemType::kPublisherCommand;
   menu_item->command_id = command_id;
   menu_item->shortcut_id = shortcut_id;
   menu_item->label = label;
@@ -182,7 +182,7 @@ bool PopulateNewItemFromMojoMenuItems(
       break;
     case apps::mojom::MenuItemType::kRadio:
     case apps::mojom::MenuItemType::kSeparator:
-    case apps::mojom::MenuItemType::kArcCommand:
+    case apps::mojom::MenuItemType::kPublisherCommand:
       NOTREACHED();
       return false;
   }
@@ -197,7 +197,7 @@ void PopulateItemFromMojoMenuItems(
     case apps::mojom::MenuItemType::kSeparator:
       model->AddSeparator(static_cast<ui::MenuSeparatorType>(item->command_id));
       break;
-    case apps::mojom::MenuItemType::kArcCommand: {
+    case apps::mojom::MenuItemType::kPublisherCommand: {
       model->AddItemWithIcon(item->command_id, base::UTF8ToUTF16(item->label),
                              ui::ImageModel::FromImageSkia(item->image));
       arc::ArcAppShortcutItem arc_shortcut_item;

@@ -45,8 +45,13 @@ class AppServiceShelfContextMenu : public ShelfContextMenu {
   // Build additional extension app menu items.
   void BuildExtensionAppShortcutsMenu(ui::SimpleMenuModel* menu_model);
 
-  // Build additional ARC app shortcuts menu items.
-  // TODO(crbug.com/1038487): consider merging into AppService.
+  // Build additional app shortcuts menu items.
+  void BuildAppShortcutsMenu(apps::mojom::MenuItemsPtr menu_items,
+                             std::unique_ptr<ui::SimpleMenuModel> menu_model,
+                             GetMenuModelCallback callback,
+                             size_t shortcut_index);
+
+  // Build ARC-specific app shortcuts menu items.
   void BuildArcAppShortcutsMenu(apps::mojom::MenuItemsPtr menu_items,
                                 std::unique_ptr<ui::SimpleMenuModel> menu_model,
                                 GetMenuModelCallback callback,
@@ -72,7 +77,7 @@ class AppServiceShelfContextMenu : public ShelfContextMenu {
 
   bool ShouldAddPinMenu();
 
-  void ExecuteArcShortcutCommand(int command_id);
+  void ExecutePublisherContextMenuCommand(int command_id);
 
   apps::mojom::AppType app_type_;
 
@@ -80,6 +85,8 @@ class AppServiceShelfContextMenu : public ShelfContextMenu {
   std::unique_ptr<ui::SimpleMenuModel> submenu_;
 
   // Caches the app shortcut items.
+  // TODO(crbug.com/1140356): Extract arc::ArcAppShortcutItems class as public
+  // apps::AppShortcutItems.
   std::unique_ptr<arc::ArcAppShortcutItems> app_shortcut_items_;
 
   std::unique_ptr<extensions::ContextMenuMatcher> extension_menu_items_;

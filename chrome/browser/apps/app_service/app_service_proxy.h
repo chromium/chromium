@@ -203,6 +203,14 @@ class AppServiceProxy : public KeyedService,
                     int64_t display_id,
                     apps::mojom::Publisher::GetMenuModelCallback callback);
 
+  // Executes a shortcut menu |command_id| and |shortcut_id| for a menu item
+  // previously built with GetMenuModel(). |app_id| is the menu app.
+  // |display_id| is the id of the display from which the app is launched.
+  void ExecuteContextMenuCommand(const std::string& app_id,
+                                 int command_id,
+                                 const std::string& shortcut_id,
+                                 int64_t display_id);
+
   // Opens native settings for the app with |app_id|.
   void OpenNativeSettings(const std::string& app_id);
 

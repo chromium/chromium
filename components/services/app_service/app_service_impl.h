@@ -89,6 +89,11 @@ class AppServiceImpl : public apps::mojom::AppService {
                     apps::mojom::MenuType menu_type,
                     int64_t display_id,
                     GetMenuModelCallback callback) override;
+  void ExecuteContextMenuCommand(apps::mojom::AppType app_type,
+                                 const std::string& app_id,
+                                 int command_id,
+                                 const std::string& shortcut_id,
+                                 int64_t display_id) override;
   void OpenNativeSettings(apps::mojom::AppType app_type,
                           const std::string& app_id) override;
   void AddPreferredApp(apps::mojom::AppType app_type,

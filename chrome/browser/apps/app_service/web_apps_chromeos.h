@@ -64,6 +64,10 @@ class WebAppsChromeOs : public WebAppsBase,
                     apps::mojom::MenuType menu_type,
                     int64_t display_id,
                     GetMenuModelCallback callback) override;
+  void ExecuteContextMenuCommand(const std::string& app_id,
+                                 int command_id,
+                                 const std::string& shortcut_id,
+                                 int64_t display_id) override;
 
   // web_app::AppRegistrarObserver:
   void OnWebAppUninstalled(const web_app::AppId& app_id) override;

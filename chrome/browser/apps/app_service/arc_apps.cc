@@ -962,6 +962,13 @@ void ArcApps::GetMenuModel(const std::string& app_id,
                        std::move(callback));
 }
 
+void ArcApps::ExecuteContextMenuCommand(const std::string& app_id,
+                                        int command_id,
+                                        const std::string& shortcut_id,
+                                        int64_t display_id) {
+  arc::ExecuteArcShortcutCommand(profile_, app_id, shortcut_id, display_id);
+}
+
 void ArcApps::OpenNativeSettings(const std::string& app_id) {
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
   if (!prefs) {

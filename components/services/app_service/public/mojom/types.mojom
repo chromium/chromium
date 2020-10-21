@@ -237,7 +237,7 @@ enum PermissionValueType {
 // kRadio      -> [command_id, string_id, radio_group_id].
 // kSeparator  -> [command_id].
 // kSubmenu    -> [command_id, string_id, submenu].
-// kArcCommand -> [command_id, shortcut_id, label, image].
+// kPublisherCommand -> [command_id, shortcut_id, label, image].
 //
 struct MenuItems {
   array<MenuItem> items;
@@ -260,7 +260,7 @@ enum MenuItemType {
   kRadio,      // Can be selected/checked among a group of choices.
   kSeparator,  // Shows a horizontal line separator.
   kSubmenu,    // Presents a submenu within another menu.
-  kArcCommand, // Performs an ARC shortcut action when selected.
+  kPublisherCommand, // Performs an app publisher shortcut action when selected.
 };
 
 // Which component requests context menus, the app list or shelf.
