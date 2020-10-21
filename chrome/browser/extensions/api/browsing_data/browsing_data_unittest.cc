@@ -93,10 +93,10 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
       uint64_t expected_mask) {
     auto function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
     SCOPED_TRACE(data_types);
-    EXPECT_EQ(NULL, RunFunctionAndReturnSingleResult(
-                        function.get(),
-                        std::string("[{\"since\": 1},") + data_types + "]",
-                        browser()));
+    EXPECT_EQ(nullptr, RunFunctionAndReturnSingleResult(
+                           function.get(),
+                           std::string("[{\"since\": 1},") + data_types + "]",
+                           browser()));
     EXPECT_EQ(expected_mask, GetRemovalMask());
     EXPECT_EQ(UNPROTECTED_WEB, GetOriginTypeMask());
   }
@@ -113,11 +113,11 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
       uint64_t expected_mask) {
     auto function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
     SCOPED_TRACE(protectedStr);
-    EXPECT_EQ(NULL, RunFunctionAndReturnSingleResult(
-                        function.get(),
-                        "[{\"originTypes\": " + protectedStr +
-                            "}, {\"cookies\": true}]",
-                        browser()));
+    EXPECT_EQ(nullptr, RunFunctionAndReturnSingleResult(
+                           function.get(),
+                           "[{\"originTypes\": " + protectedStr +
+                               "}, {\"cookies\": true}]",
+                           browser()));
     EXPECT_EQ(expected_mask, GetOriginTypeMask());
   }
 
@@ -125,7 +125,7 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
   void RunAndCompareRemovalMask(uint64_t expected_mask) {
     scoped_refptr<ShortcutFunction> function = new ShortcutFunction();
     SCOPED_TRACE(ShortcutFunction::static_function_name());
-    EXPECT_EQ(NULL,
+    EXPECT_EQ(nullptr,
               RunFunctionAndReturnSingleResult(
                   function.get(), std::string("[{\"since\": 1}]"), browser()));
     EXPECT_EQ(expected_mask, GetRemovalMask());
@@ -270,8 +270,8 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
                   content::BrowsingDataRemover::DATA_TYPE_INDEXED_DB) |
         GetAsMask(data_to_remove, "localStorage",
                   content::BrowsingDataRemover::DATA_TYPE_LOCAL_STORAGE) |
-        GetAsMask(data_to_remove, "pluginData",
-                  ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PLUGIN_DATA) |
+        // PluginData is not supported anymore.
+        GetAsMask(data_to_remove, "pluginData", 0) |
         GetAsMask(data_to_remove, "passwords",
                   ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PASSWORDS) |
         GetAsMask(data_to_remove, "serviceWorkers",
@@ -289,8 +289,8 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
     std::string args = "[{\"since\": 1}," + data_types + "]";
 
     if (permitted) {
-      EXPECT_EQ(NULL, RunFunctionAndReturnSingleResult(function.get(), args,
-                                                       browser()))
+      EXPECT_EQ(nullptr, RunFunctionAndReturnSingleResult(function.get(), args,
+                                                          browser()))
           << " for " << args;
     } else {
       EXPECT_EQ(RunFunctionAndReturnError(function.get(), args, browser()),
@@ -367,8 +367,9 @@ TEST_F(BrowsingDataApiTest, RemovalProhibited) {
 
 TEST_F(BrowsingDataApiTest, RemoveBrowsingDataAll) {
   auto function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
-  EXPECT_EQ(NULL, RunFunctionAndReturnSingleResult(
-                      function.get(), kRemoveEverythingArguments, browser()));
+  EXPECT_EQ(nullptr,
+            RunFunctionAndReturnSingleResult(
+                function.get(), kRemoveEverythingArguments, browser()));
 
   EXPECT_EQ(base::Time::FromDoubleT(1.0), GetBeginTime());
   EXPECT_EQ(
@@ -439,7 +440,6 @@ TEST_F(BrowsingDataApiTest, BrowsingDataRemovalMask) {
       "localStorage", content::BrowsingDataRemover::DATA_TYPE_LOCAL_STORAGE);
   RunBrowsingDataRemoveWithKeyAndCompareRemovalMask(
       "passwords", ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PASSWORDS);
-  // We can't remove plugin data inside a test profile.
   RunBrowsingDataRemoveWithKeyAndCompareRemovalMask(
       "serviceWorkers",
       content::BrowsingDataRemover::DATA_TYPE_SERVICE_WORKERS);
@@ -493,7 +493,7 @@ TEST_F(BrowsingDataApiTest, BrowsingDataRemovalInputFromSettings) {
   {
     auto remove_function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
     SCOPED_TRACE("remove_json");
-    EXPECT_EQ(NULL,
+    EXPECT_EQ(nullptr,
               RunFunctionAndReturnSingleResult(
                   remove_function.get(),
                   std::string("[{\"since\": 1},") + json + "]", browser()));
@@ -523,7 +523,6 @@ TEST_F(BrowsingDataApiTest, ShortcutFunctionRemovalMask) {
       content::BrowsingDataRemover::DATA_TYPE_INDEXED_DB);
   RunAndCompareRemovalMask<BrowsingDataRemoveLocalStorageFunction>(
       content::BrowsingDataRemover::DATA_TYPE_LOCAL_STORAGE);
-  // We can't remove plugin data inside a test profile.
   RunAndCompareRemovalMask<BrowsingDataRemovePasswordsFunction>(
       ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PASSWORDS);
   RunAndCompareRemovalMask<BrowsingDataRemoveServiceWorkersFunction>(
@@ -571,33 +570,24 @@ TEST_F(BrowsingDataApiTest, SettingsFunctionSimple) {
 
 // Test cookie and app data settings.
 TEST_F(BrowsingDataApiTest, SettingsFunctionSiteData) {
-  int supported_site_data_except_plugins =
+  int supported_site_data =
       (content::BrowsingDataRemover::DATA_TYPE_COOKIES |
        content::BrowsingDataRemover::DATA_TYPE_DOM_STORAGE) &
       ~content::BrowsingDataRemover::DATA_TYPE_BACKGROUND_FETCH &
       ~content::BrowsingDataRemover::DATA_TYPE_EMBEDDER_DOM_STORAGE;
-  int supported_site_data =
-      supported_site_data_except_plugins |
-      ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PLUGIN_DATA;
-
   SetPrefsAndVerifySettings(content::BrowsingDataRemover::DATA_TYPE_COOKIES,
-                            UNPROTECTED_WEB,
-                            supported_site_data_except_plugins);
+                            UNPROTECTED_WEB, supported_site_data);
   SetPrefsAndVerifySettings(
       ChromeBrowsingDataRemoverDelegate::DATA_TYPE_HOSTED_APP_DATA_TEST_ONLY,
-      PROTECTED_WEB, supported_site_data_except_plugins);
+      PROTECTED_WEB, supported_site_data);
   SetPrefsAndVerifySettings(content::BrowsingDataRemover::DATA_TYPE_COOKIES |
                                 ChromeBrowsingDataRemoverDelegate::
                                     DATA_TYPE_HOSTED_APP_DATA_TEST_ONLY,
                             PROTECTED_WEB | UNPROTECTED_WEB,
-                            supported_site_data_except_plugins);
-  SetPrefsAndVerifySettings(
-      content::BrowsingDataRemover::DATA_TYPE_COOKIES |
-          ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PLUGIN_DATA,
-      UNPROTECTED_WEB, supported_site_data);
+                            supported_site_data);
   SetBasicPrefsAndVerifySettings(
       content::BrowsingDataRemover::DATA_TYPE_COOKIES, UNPROTECTED_WEB,
-      supported_site_data_except_plugins);
+      supported_site_data);
 }
 
 // Test an arbitrary assortment of settings.

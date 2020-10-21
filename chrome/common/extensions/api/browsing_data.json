@@ -122,6 +122,7 @@
           "pluginData": {
             "type": "boolean",
             "optional": true,
+            "deprecated": "Support for Flash has been removed. This data type will be ignored.",
             "description": "Plugins' data."
           },
           "serviceWorkers": {
@@ -374,6 +375,7 @@
       {
         "name": "removePluginData",
         "description": "Clears plugins' data.",
+        "deprecated": "Support for Flash has been removed. This function has no effect.",
         "type": "function",
         "parameters": [
           {

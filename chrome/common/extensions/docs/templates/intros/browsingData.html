@@ -51,7 +51,6 @@ chrome.browsingData.remove({
   "history": true,
   "indexedDB": true,
   "localStorage": true,
-  "pluginData": true,
   "passwords": true,
   "serviceWorkers": true,
   "webSQL": true
@@ -98,7 +97,7 @@ chrome.browsingData.removeCookies({
 deletion, you can use the <code>RemovalOptions.origins</code> and
 <code>RemovalOptions.excludeOrigins</code> parameters. They can only be applied
 to cookies, cache, and storage (CacheStorage, FileSystems, IndexedDB,
-LocalStorage, PluginData, ServiceWorkers, and WebSQL).
+LocalStorage, ServiceWorkers, and WebSQL).
 </p>
 
 <pre>chrome.browsingData.remove({
@@ -109,7 +108,6 @@ LocalStorage, PluginData, ServiceWorkers, and WebSQL).
   "fileSystems": true,
   "indexedDB": true,
   "localStorage": true,
-  "pluginData": true,
   "serviceWorkers": true,
   "webSQL": true
 }, callback);</pre>
@@ -178,8 +176,6 @@ chrome.browsingData.remove({
   "history": true,
   "indexedDB": true,
   "localStorage": true,
-  "serverBoundCertificates": true,
-  "pluginData": true,
   "passwords": true,
   "serviceWorkers": true,
   "webSQL": true
