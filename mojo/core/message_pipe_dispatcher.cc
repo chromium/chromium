@@ -199,42 +199,51 @@ MojoResult MessagePipeDispatcher::ReadMessage(
 }
 
 MojoResult MessagePipeDispatcher::SetQuota(MojoQuotaType type, uint64_t limit) {
-  base::AutoLock lock(signal_lock_);
+  base::Optional<uint64_t> new_ack_request_interval;
+  {
+    base::AutoLock lock(signal_lock_);
+    switch (type) {
+      case MOJO_QUOTA_TYPE_RECEIVE_QUEUE_LENGTH:
+        if (limit == MOJO_QUOTA_LIMIT_NONE)
+          receive_queue_length_limit_.reset();
+        else
+          receive_queue_length_limit_ = limit;
+        break;
 
-  switch (type) {
-    case MOJO_QUOTA_TYPE_RECEIVE_QUEUE_LENGTH:
-      if (limit == MOJO_QUOTA_LIMIT_NONE)
-        receive_queue_length_limit_.reset();
-      else
-        receive_queue_length_limit_ = limit;
-      break;
+      case MOJO_QUOTA_TYPE_RECEIVE_QUEUE_MEMORY_SIZE:
+        if (limit == MOJO_QUOTA_LIMIT_NONE)
+          receive_queue_memory_size_limit_.reset();
+        else
+          receive_queue_memory_size_limit_ = limit;
+        break;
 
-    case MOJO_QUOTA_TYPE_RECEIVE_QUEUE_MEMORY_SIZE:
-      if (limit == MOJO_QUOTA_LIMIT_NONE)
-        receive_queue_memory_size_limit_.reset();
-      else
-        receive_queue_memory_size_limit_ = limit;
-      break;
+      case MOJO_QUOTA_TYPE_UNREAD_MESSAGE_COUNT:
+        if (limit == MOJO_QUOTA_LIMIT_NONE) {
+          unread_message_count_limit_.reset();
+          new_ack_request_interval = 0;
+        } else {
+          unread_message_count_limit_ = limit;
+          // Setting the acknowledge request interval for the port to half the
+          // unread quota limit, means the ack roundtrip has half the window to
+          // catch up with sent messages. In other words, if the producer is
+          // producing messages at a steady rate of limit/2 packets per message
+          // round trip or lower, the quota limit won't be exceeded. This is
+          // assuming the consumer is consuming messages at the same rate.
+          new_ack_request_interval = (limit + 1) / 2;
+        }
+        break;
 
-    case MOJO_QUOTA_TYPE_UNREAD_MESSAGE_COUNT:
-      if (limit == MOJO_QUOTA_LIMIT_NONE) {
-        unread_message_count_limit_.reset();
-        node_controller_->node()->SetAcknowledgeRequestInterval(port_, 0);
-      } else {
-        unread_message_count_limit_ = limit;
-        // Setting the acknowledge request interval for the port to half the
-        // unread quota limit, means the ack roundtrip has half the window to
-        // catch up with sent messages. In other words, if the producer is
-        // producing messages at a steady rate of limit/2 packets per message
-        // round trip or lower, the quota limit won't be exceeded. This is
-        // assuming the consumer is consuming messages at the same rate.
-        node_controller_->node()->SetAcknowledgeRequestInterval(
-            port_, (limit + 1) / 2);
-      }
-      break;
+      default:
+        return MOJO_RESULT_INVALID_ARGUMENT;
+    }
+  }
 
-    default:
-      return MOJO_RESULT_INVALID_ARGUMENT;
+  if (new_ack_request_interval.has_value()) {
+    // NOTE: It is not safe to call into SetAcknowledgeRequestInterval while
+    // holding a `signal_lock_`, as it may re-enter this object when the peer is
+    // in the same process.
+    node_controller_->node()->SetAcknowledgeRequestInterval(
+        port_, *new_ack_request_interval);
   }
 
   return MOJO_RESULT_OK;
