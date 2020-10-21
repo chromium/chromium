@@ -746,10 +746,13 @@ void SkiaRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
 
   skia_output_surface_->SwapBuffers(std::move(output_frame));
   swap_buffer_rect_ = gfx::Rect();
+
+  FlushOutputSurface();
 }
 
 void SkiaRenderer::SwapBuffersSkipped() {
   skia_output_surface_->SwapBuffersSkipped();
+  FlushOutputSurface();
 }
 
 void SkiaRenderer::SwapBuffersComplete() {
@@ -2504,20 +2507,27 @@ void SkiaRenderer::FinishDrawingQuadList() {
   if (delegated_ink_point_renderer_)
     DrawDelegatedInkTrail();
 
+  bool is_root_render_pass =
+      current_frame()->current_render_pass == current_frame()->root_render_pass;
+
   base::OnceClosure on_finished_callback;
   // Signal |current_frame_resource_fence_| when the root render pass is
   // finished.
   if (current_frame_resource_fence_ &&
-      current_frame_resource_fence_->WasSet() &&
-      current_frame()->current_render_pass ==
-          current_frame()->root_render_pass) {
+      current_frame_resource_fence_->WasSet() && is_root_render_pass) {
     on_finished_callback = base::BindOnce(
         &FrameResourceFence::Signal, std::move(current_frame_resource_fence_));
   }
-  gpu::SyncToken sync_token =
-      skia_output_surface_->SubmitPaint(std::move(on_finished_callback));
+  skia_output_surface_->EndPaint(std::move(on_finished_callback));
 
-  lock_set_for_external_use_->UnlockResources(sync_token);
+  // Defer flushing drawing task for root render pass, to avoid extra
+  // MakeCurrent() call. It is expensive on GL.
+  // TODO(https://crbug.com/1141008): Consider deferring drawing tasks for
+  // all render passes.
+  if (is_root_render_pass)
+    return;
+
+  FlushOutputSurface();
 }
 
 void SkiaRenderer::GenerateMipmap() {
@@ -2579,6 +2589,11 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
       render_pass_id,
       RenderPassBacking({requirements.size, requirements.generate_mipmap,
                          color_space, format}));
+}
+
+void SkiaRenderer::FlushOutputSurface() {
+  auto sync_token = skia_output_surface_->Flush();
+  lock_set_for_external_use_->UnlockResources(sync_token);
 }
 
 #if defined(OS_APPLE)

@@ -129,7 +129,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   // Optionally the caller may specify |on_finished| callback to be called after
   // the GPU has finished processing all submitted commands. The callback may be
   // called on a different thread.
-  virtual gpu::SyncToken SubmitPaint(base::OnceClosure on_finished) = 0;
+  virtual void EndPaint(base::OnceClosure on_finished) = 0;
 
   // Make a promise SkImage from a render pass id. The render pass has been
   // painted with BeginPaintRenderPass and FinishPaintRenderPass. The format
@@ -169,6 +169,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   virtual void ScheduleGpuTaskForTesting(
       base::OnceClosure callback,
       std::vector<gpu::SyncToken> sync_tokens) = 0;
+
+  // Flush pending GPU tasks.
+  virtual gpu::SyncToken Flush() = 0;
 
 #if defined(OS_APPLE)
   virtual SkCanvas* BeginPaintRenderPassOverlay(

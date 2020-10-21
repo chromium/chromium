@@ -106,7 +106,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
                                  ResourceFormat format,
                                  bool mipmap,
                                  sk_sp<SkColorSpace> color_space) override;
-  gpu::SyncToken SubmitPaint(base::OnceClosure on_finished) override;
+  void EndPaint(base::OnceClosure on_finished) override;
   void MakePromiseSkImage(ImageContext* image_context) override;
   sk_sp<SkImage> MakePromiseSkImageFromRenderPass(
       const AggregatedRenderPassId& id,
@@ -126,6 +126,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
                   std::unique_ptr<CopyOutputRequest> request) override;
   void AddContextLostObserver(ContextLostObserver* observer) override;
   void RemoveContextLostObserver(ContextLostObserver* observer) override;
+  gpu::SyncToken Flush() override;
 
 #if defined(OS_APPLE)
   SkCanvas* BeginPaintRenderPassOverlay(

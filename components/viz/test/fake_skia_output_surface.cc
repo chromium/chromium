@@ -207,18 +207,13 @@ SkCanvas* FakeSkiaOutputSurface::BeginPaintRenderPass(
   return sk_surface->getCanvas();
 }
 
-gpu::SyncToken FakeSkiaOutputSurface::SubmitPaint(
-    base::OnceClosure on_finished) {
+void FakeSkiaOutputSurface::EndPaint(base::OnceClosure on_finished) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   sk_surfaces_[current_render_pass_id_]->flushAndSubmit();
   current_render_pass_id_ = AggregatedRenderPassId{0};
 
   if (on_finished)
     std::move(on_finished).Run();
-
-  gpu::SyncToken sync_token;
-  context_provider()->ContextGL()->GenSyncTokenCHROMIUM(sync_token.GetData());
-  return sync_token;
 }
 
 sk_sp<SkImage> FakeSkiaOutputSurface::MakePromiseSkImageFromRenderPass(
@@ -314,6 +309,12 @@ void FakeSkiaOutputSurface::AddContextLostObserver(
 void FakeSkiaOutputSurface::RemoveContextLostObserver(
     ContextLostObserver* observer) {
   NOTIMPLEMENTED();
+}
+
+gpu::SyncToken FakeSkiaOutputSurface::Flush() {
+  gpu::SyncToken sync_token;
+  context_provider()->ContextGL()->GenSyncTokenCHROMIUM(sync_token.GetData());
+  return sync_token;
 }
 
 #if defined(OS_APPLE)

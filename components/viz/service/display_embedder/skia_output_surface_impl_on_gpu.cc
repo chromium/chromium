@@ -480,7 +480,6 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
     sk_sp<SkDeferredDisplayList> overdraw_ddl,
     std::vector<ImageContextImpl*> image_contexts,
     std::vector<gpu::SyncToken> sync_tokens,
-    uint64_t sync_fence_release,
     base::OnceClosure on_finished,
     base::Optional<gfx::Rect> draw_rectangle) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame");
@@ -577,7 +576,6 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
       return;
     }
   }
-  ReleaseFenceSyncAndPushTextureUpdates(sync_fence_release);
 }
 
 void SkiaOutputSurfaceImplOnGpu::ScheduleOutputSurfaceAsOverlay(
@@ -610,8 +608,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     AggregatedRenderPassId id,
     sk_sp<SkDeferredDisplayList> ddl,
     std::vector<ImageContextImpl*> image_contexts,
-    std::vector<gpu::SyncToken> sync_tokens,
-    uint64_t sync_fence_release) {
+    std::vector<gpu::SyncToken> sync_tokens) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(ddl);
@@ -670,7 +667,6 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
       return;
     }
   }
-  ReleaseFenceSyncAndPushTextureUpdates(sync_fence_release);
 }
 
 void SkiaOutputSurfaceImplOnGpu::RemoveRenderPassResource(
@@ -960,8 +956,7 @@ SkiaOutputSurfaceImplOnGpu::GetGrContextThreadSafeProxy() {
 
 void SkiaOutputSurfaceImplOnGpu::ReleaseImageContexts(
     std::vector<std::unique_ptr<ExternalUseClient::ImageContext>>
-        image_contexts,
-    uint64_t sync_fence_release) {
+        image_contexts) {
   DCHECK(!image_contexts.empty());
   // The window could be destroyed already, and the MakeCurrent will fail with
   // an destroyed window, so MakeCurrent without requiring the fbo0.
@@ -971,7 +966,6 @@ void SkiaOutputSurfaceImplOnGpu::ReleaseImageContexts(
   }
 
   image_contexts.clear();
-  ReleaseFenceSyncAndPushTextureUpdates(sync_fence_release);
 }
 
 void SkiaOutputSurfaceImplOnGpu::ScheduleOverlays(

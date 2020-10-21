@@ -123,7 +123,6 @@ class SkiaOutputSurfaceImplOnGpu
                                sk_sp<SkDeferredDisplayList> overdraw_ddl,
                                std::vector<ImageContextImpl*> image_contexts,
                                std::vector<gpu::SyncToken> sync_tokens,
-                               uint64_t sync_fence_release,
                                base::OnceClosure on_finished,
                                base::Optional<gfx::Rect> draw_rectangle);
   void ScheduleOutputSurfaceAsOverlay(
@@ -140,8 +139,7 @@ class SkiaOutputSurfaceImplOnGpu
                              AggregatedRenderPassId id,
                              sk_sp<SkDeferredDisplayList> ddl,
                              std::vector<ImageContextImpl*> image_contexts,
-                             std::vector<gpu::SyncToken> sync_tokens,
-                             uint64_t sync_fence_release);
+                             std::vector<gpu::SyncToken> sync_tokens);
   // Deletes resources for RenderPasses in |ids|. Also takes ownership of
   // |images_contexts| and destroys them on GPU thread.
   void RemoveRenderPassResource(
@@ -162,8 +160,7 @@ class SkiaOutputSurfaceImplOnGpu
   size_t max_resource_cache_bytes() const { return max_resource_cache_bytes_; }
   void ReleaseImageContexts(
       std::vector<std::unique_ptr<ExternalUseClient::ImageContext>>
-          image_contexts,
-      uint64_t sync_fence_release);
+          image_contexts);
   void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays,
                         std::vector<ImageContextImpl*> image_contexts);
 
@@ -209,6 +206,8 @@ class SkiaOutputSurfaceImplOnGpu
   // It will do nothing when Vulkan is used.
   bool MakeCurrent(bool need_framebuffer);
 
+  void ReleaseFenceSyncAndPushTextureUpdates(uint64_t sync_fence_release);
+
  private:
   class OffscreenSurface;
   class DisplayContext;
@@ -233,8 +232,6 @@ class SkiaOutputSurfaceImplOnGpu
       bool is_lost);
 
   void PullTextureUpdates(std::vector<gpu::SyncToken> sync_token);
-
-  void ReleaseFenceSyncAndPushTextureUpdates(uint64_t sync_fence_release);
 
   void SwapBuffersInternal(OutputSurfaceFrame* frame = nullptr);
 

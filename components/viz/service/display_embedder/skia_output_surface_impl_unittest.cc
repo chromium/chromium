@@ -94,7 +94,8 @@ gpu::SyncToken SkiaOutputSurfaceImplTest::PaintRootRenderPass(
   SkCanvas* root_canvas = output_surface_->BeginPaintCurrentFrame();
   root_canvas->drawRect(
       SkRect::MakeXYWH(rect.x(), rect.y(), rect.height(), rect.width()), paint);
-  return output_surface_->SubmitPaint(std::move(closure));
+  output_surface_->EndPaint(std::move(closure));
+  return output_surface_->Flush();
 }
 
 void SkiaOutputSurfaceImplTest::BlockMainThread() {
@@ -132,7 +133,7 @@ void SkiaOutputSurfaceImplTest::CopyRequestCallbackOnGpuThread(
   UnblockMainThread();
 }
 
-TEST_F(SkiaOutputSurfaceImplTest, SubmitPaint) {
+TEST_F(SkiaOutputSurfaceImplTest, EndPaint) {
   output_surface_->Reshape(kSurfaceRect.size(), 1, gfx::ColorSpace(),
                            gfx::BufferFormat::RGBX_8888, /*use_stencil=*/false);
   constexpr gfx::Rect output_rect(0, 0, 10, 10);
@@ -162,9 +163,10 @@ TEST_F(SkiaOutputSurfaceImplTest, SubmitPaint) {
   output_surface_->CopyOutput(AggregatedRenderPassId{0}, geometry, color_space,
                               std::move(request));
   output_surface_->SwapBuffersSkipped();
+  output_surface_->Flush();
   BlockMainThread();
 
-  // SubmitPaint draw is deferred until CopyOutput.
+  // EndPaint draw is deferred until CopyOutput.
   base::OnceClosure closure =
       base::BindOnce(&SkiaOutputSurfaceImplTest::CheckSyncTokenOnGpuThread,
                      base::Unretained(this), sync_token);
@@ -227,6 +229,7 @@ TEST_F(SkiaOutputSurfaceImplTest, CopyOutputBitmapSupportedColorSpace) {
   output_surface_->CopyOutput(AggregatedRenderPassId{0}, geometry, color_space,
                               std::move(request));
   output_surface_->SwapBuffersSkipped();
+  output_surface_->Flush();
   run_loop.Run();
 
   EXPECT_EQ(color_space, result->GetRGBAColorSpace());
@@ -265,6 +268,7 @@ TEST_F(SkiaOutputSurfaceImplTest, CopyOutputBitmapUnsupportedColorSpace) {
   output_surface_->CopyOutput(AggregatedRenderPassId{0}, geometry, color_space,
                               std::move(request));
   output_surface_->SwapBuffersSkipped();
+  output_surface_->Flush();
   run_loop.Run();
 
   EXPECT_EQ(gfx::ColorSpace::CreateSRGB(), result->GetRGBAColorSpace());

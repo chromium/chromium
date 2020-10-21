@@ -242,6 +242,10 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // Returns the color filter that should be applied to the current canvas.
   sk_sp<SkColorFilter> GetContentColorFilter();
 
+  // Flush SkiaOutputSurface, so all pending GPU tasks in SkiaOutputSurface will
+  // be sent to GPU scheduler.
+  void FlushOutputSurface();
+
 #if defined(OS_APPLE)
   void PrepareRenderPassOverlay(CALayerOverlay* overlay);
 #endif
