@@ -55,7 +55,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OptimizationGuide.ClearHostModelFeatures.StoreAvailable"
-    units="BooleanAvailable" expires_after="2020-11-30">
+    units="BooleanAvailable" expires_after="2021-03-31">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -65,9 +65,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OptimizationGuide.HintCache.HintType.Loaded"
-    enum="HintCacheStoreEntryType" expires_after="2020-11-30">
+    enum="HintCacheStoreEntryType" expires_after="2021-03-31">
   <owner>mcrouse@chromium.org</owner>
-  <owner>dougarnett@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
   <summary>
     Records the store entry type of a hint when it is loaded from the hint cache
     store.
@@ -76,8 +76,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult"
     enum="OptimizationGuideHintCacheLevelDBStoreLoadMetadataResult"
-    expires_after="2020-11-30">
-  <owner>dougarnett@chromium.org</owner>
+    expires_after="2021-03-31">
+  <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
     Records the result of loading the metadata while initializing the
@@ -88,7 +88,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="OptimizationGuide.HintCacheLevelDBStore.Status"
     enum="OptimizationGuideHintCacheLevelDBStoreStatus"
     expires_after="2021-04-18">
-  <owner>dougarnett@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
     Records each status change within the HintCacheLevelDBStore.
@@ -97,7 +97,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="OptimizationGuide.HintsFetcher.GetHintsRequest.ActiveRequestCanceled"
-    units="counts" expires_after="2020-11-30">
+    units="counts" expires_after="2021-03-31">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -129,7 +129,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount"
     units="total host count" expires_after="2021-03-15">
   <owner>mcrouse@chromium.org</owner>
-  <owner>dougarnett@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
   <summary>
     Records the number of hosts selected for sending a hint request. This will
     be captured when any hint request is initiated.
@@ -139,7 +139,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="OptimizationGuide.HintsFetcher.GetHintsRequest.NetErrorCode"
     enum="NetErrorCodes" expires_after="2021-04-04">
   <owner>mcrouse@chromium.org</owner>
-  <owner>dougarnett@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
   <summary>
     Net error codes for HintsFetch requests to the Optimization Guide Service on
     success and failure.
@@ -149,7 +149,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="OptimizationGuide.HintsFetcher.GetHintsRequest.Status"
     enum="HttpResponseCode" expires_after="2021-04-04">
   <owner>mcrouse@chromium.org</owner>
-  <owner>dougarnett@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
   <summary>
     For each HintsFetch request to the Optimization Guide Service, log the HTTP
     response code on success and failure.
@@ -170,7 +170,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="OptimizationGuideHintsFetcherRequestStatus"
     expires_after="2021-04-04">
   <owner>mcrouse@chromium.org</owner>
-  <owner>dougarnett@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
   <summary>
     The status of making a Batch Update context request of the OptmizationGuide
     HintsFetcher. This includes whether a network request was actually sent or
@@ -182,7 +182,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="OptimizationGuideHintsFetcherRequestStatus"
     expires_after="2021-04-04">
   <owner>mcrouse@chromium.org</owner>
-  <owner>dougarnett@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
   <summary>
     The status of making a Page Navigation context request of the
     OptmizationGuide HintsFetcher. This includes whether a network request was
@@ -192,9 +192,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="OptimizationGuide.HintsFetcher.TopHostProvider.BlacklistSize.OnInitialize"
-    units="total host count" expires_after="2020-11-30">
+    units="total host count" expires_after="2021-03-31">
   <owner>mcrouse@chromium.org</owner>
-  <owner>dougarnett@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
   <summary>
     Records the number of hosts placed on the HintsFetcherTopHostBlacklist when
     it is initialized.
@@ -203,9 +203,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="OptimizationGuide.HintsFetcher.TopHostProvider.BlacklistSize.OnRequest"
-    units="total host count" expires_after="2020-11-30">
+    units="total host count" expires_after="2021-03-31">
   <owner>mcrouse@chromium.org</owner>
-  <owner>dougarnett@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
   <summary>
     Records the number of hosts on the HintsFetcherTopHostBlacklist when top
     hosts are requested.
@@ -214,7 +214,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="OptimizationGuide.HintsManager.ConcurrentPageNavigationFetches"
-    units="counts" expires_after="2020-11-30">
+    units="counts" expires_after="2021-03-31">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -238,7 +238,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OptimizationGuide.IsPredictionModelValid" units="BooleanValid"
-    expires_after="2020-11-30">
+    expires_after="2021-03-31">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -250,7 +250,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="OptimizationGuide.OptimizationFilterStatus"
     enum="OptimizationGuideOptimizationFilterStatus" expires_after="2021-04-04">
-  <owner>dougarnett@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
     Status of processing OptimizationFilter configurations for server-provided
@@ -260,7 +260,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OptimizationGuide.OptimizationHintsComponent.MajorVersion"
-    units="major version number" expires_after="2020-11-30">
+    units="major version number" expires_after="2021-03-31">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -282,7 +282,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OptimizationGuide.PredictionManager.HostModelFeaturesMapSize"
-    units="total host count" expires_after="2020-11-30">
+    units="total host count" expires_after="2021-03-31">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -307,7 +307,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="OptimizationGuide.PredictionModelFetcher.GetModelsRequest.HostCount"
-    units="total host count" expires_after="2021-01-31">
+    units="total host count" expires_after="2021-03-31">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -319,7 +319,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="OptimizationGuide.PredictionModelFetcher.GetModelsResponse.HostModelFeatureCount"
-    units="units" expires_after="2020-11-30">
+    units="units" expires_after="2021-03-31">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -330,7 +330,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="OptimizationGuide.PredictionModelFetcher.GetModelsResponse.NetErrorCode"
-    enum="NetErrorCodes" expires_after="2021-01-31">
+    enum="NetErrorCodes" expires_after="2021-03-31">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -341,7 +341,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="OptimizationGuide.PredictionModelFetcher.GetModelsResponse.Status"
-    enum="HttpResponseCode" expires_after="2021-01-31">
+    enum="HttpResponseCode" expires_after="2021-03-31">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -351,7 +351,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OptimizationGuide.PredictionModelLoadedVersion"
-    units="version number" expires_after="2020-11-30">
+    units="version number" expires_after="2021-03-31">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -363,7 +363,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="OptimizationGuide.PredictionModelStore.HostModelFeaturesLoadMetadataResult"
-    enum="BooleanLoaded" expires_after="2020-11-30">
+    enum="BooleanLoaded" expires_after="2021-03-31">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -373,7 +373,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OptimizationGuide.PredictionModelUpdateVersion"
-    units="version number" expires_after="2021-01-31">
+    units="version number" expires_after="2021-03-31">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -383,7 +383,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OptimizationGuide.PredictionModelValidationLatency" units="ms"
-    expires_after="2021-01-31">
+    expires_after="2021-03-31">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -396,7 +396,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="OptimizationGuide.ProcessHintsResult"
     enum="OptimizationGuideProcessHintsResult" expires_after="2021-04-04">
-  <owner>dougarnett@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
     Whether processing the hints succeeded or failed at a particular step.
@@ -433,7 +433,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="OptimizationGuide.TargetDecision"
     enum="OptimizationGuideOptimizationTargetDecision"
-    expires_after="2021-01-31">
+    expires_after="2021-03-31">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
