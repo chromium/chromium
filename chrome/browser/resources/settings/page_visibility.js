@@ -48,12 +48,15 @@ export let PrivacyPageVisibility;
 export let pageVisibility;
 
 if (loadTimeData.getBoolean('isGuest')) {
+  const isEphemeralGuestProfile =
+      loadTimeData.getBoolean('isEphemeralGuestProfile');
+
   // "if not chromeos" and "if chromeos" in two completely separate blocks
   // to work around closure compiler.
   // <if expr="not chromeos">
   pageVisibility = {
-    autofill: false,
-    people: false,
+    autofill: isEphemeralGuestProfile,
+    people: isEphemeralGuestProfile,
     privacy: false,
     onStartup: false,
     reset: false,
