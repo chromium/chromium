@@ -613,9 +613,7 @@ TEST_F(
   EXPECT_EQ(expectation, dump);
 }
 
-// TODO(bebeaudr): Enable when http://crbug.com/1115584 is fixed.
-TEST_F(NGOutOfFlowLayoutPartTest,
-       DISABLED_PositionedFragmentationWithBottomProperty) {
+TEST_F(NGOutOfFlowLayoutPartTest, PositionedFragmentationWithBottomProperty) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
