@@ -193,6 +193,23 @@ public class LensUtilsTest {
     }
 
     /**
+     * Test {@link LensUtils#isGoogleLensFeatureEnabled()} method when shopping chip is enabled.
+     */
+    @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_SHOP_WITH_GOOGLE_LENS
+                    + "<FakeStudyName," + ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP
+                    + "<FakeStudyName",
+            "force-fieldtrials=FakeStudyName/Enabled",
+            "force-fieldtrial-params=FakeStudyName.Enabled:disableOnIncognito/true/"
+                    + "lensShopVariation/ShopSimilarProducts"})
+    @Test
+    @SmallTest
+    public void
+    isGoogleLensShoppingFeatureEnabled_shoppingChipEnabled() {
+        Assert.assertFalse("Feature incorrectly enabled when shopping chip was enabled",
+                isGoogleLensShoppingFeatureEnabledOnUiThread(false));
+    }
+
+    /**
      * Test {@link LensUtils#enableImageChip()} method when disable incognito param is
      * unset and user is incognito.
      */

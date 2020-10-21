@@ -331,7 +331,9 @@ public class LensUtils {
                 && !(isIncognito
                         && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                                 ChromeFeatureList.CONTEXT_MENU_SHOP_WITH_GOOGLE_LENS,
-                                DISABLE_ON_INCOGNITO_PARAM_NAME, true));
+                                DISABLE_ON_INCOGNITO_PARAM_NAME, true))
+                // Dont enable both the chip and the shopping menu item.
+                && !ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP);
     }
 
     /**
