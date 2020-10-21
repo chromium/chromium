@@ -52,8 +52,8 @@ DirectoryTestHelper::~DirectoryTestHelper() = default;
 
 mojo::Remote<mojom::Directory> DirectoryTestHelper::CreateTempDir() {
   mojo::Remote<mojom::Directory> remote;
-  blocking_state_.Post(FROM_HERE, &BlockingState::BindNewTempDirectory,
-                       remote.BindNewPipeAndPassReceiver());
+  blocking_state_.AsyncCall(&BlockingState::BindNewTempDirectory)
+      .WithArgs(remote.BindNewPipeAndPassReceiver());
   return remote;
 }
 
