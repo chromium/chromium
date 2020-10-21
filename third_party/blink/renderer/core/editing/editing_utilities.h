@@ -261,6 +261,17 @@ PositionWithAffinity PositionRespectingEditingBoundary(
     const Position&,
     const PhysicalOffset& local_point,
     Node* target_node);
+
+// Move specified position to start/end of non-editable region.
+// If it can be found, we prefer a visually equivalent position that is
+// editable.
+// See also LayoutObject::CreatePositionWithAffinity()
+// Example:
+//  <editable><non-editable>|abc</non-editable></editable>
+//  =>
+//  <editable>|<non-editable>abc</non-editable></editable>
+PositionWithAffinity AdjustForEditingBoundary(const PositionWithAffinity&);
+
 Position ComputePositionForNodeRemoval(const Position&, const Node&);
 
 // TODO(editing-dev): These two functions should be eliminated.

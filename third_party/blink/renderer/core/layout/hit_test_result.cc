@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
@@ -73,6 +74,7 @@ HitTestResult::HitTestResult(const HitTestResult& other)
       local_point_(other.LocalPoint()),
       inner_url_element_(other.URLElement()),
       scrollbar_(other.GetScrollbar()),
+      box_fragment_(other.box_fragment_),
       is_over_embedded_content_view_(other.IsOverEmbeddedContentView()),
       canvas_region_id_(other.CanvasRegionId()) {
   // Only copy the NodeSet in case of list hit test.
@@ -100,6 +102,7 @@ bool HitTestResult::EqualForCacheability(const HitTestResult& other) const {
          local_point_ == other.LocalPoint() &&
          inner_url_element_ == other.URLElement() &&
          scrollbar_ == other.GetScrollbar() &&
+         box_fragment_ == other.box_fragment_ &&
          is_over_embedded_content_view_ == other.IsOverEmbeddedContentView();
 }
 
@@ -117,6 +120,8 @@ void HitTestResult::PopulateFromCachedResult(const HitTestResult& other) {
   local_point_ = other.LocalPoint();
   inner_url_element_ = other.URLElement();
   scrollbar_ = other.GetScrollbar();
+  box_fragment_ = other.box_fragment_;
+
   is_over_embedded_content_view_ = other.IsOverEmbeddedContentView();
   cacheable_ = other.cacheable_;
   canvas_region_id_ = other.CanvasRegionId();
@@ -138,6 +143,14 @@ void HitTestResult::Trace(Visitor* visitor) const {
   visitor->Trace(list_based_test_result_);
 }
 
+void HitTestResult::SetNodeAndPosition(
+    Node* node,
+    scoped_refptr<const NGPhysicalBoxFragment> box_fragment,
+    const PhysicalOffset& position) {
+  SetNodeAndPosition(node, position);
+  box_fragment_ = std::move(box_fragment);
+}
+
 PositionWithAffinity HitTestResult::GetPosition() const {
   if (!inner_possibly_pseudo_node_)
     return PositionWithAffinity();
@@ -149,6 +162,10 @@ PositionWithAffinity HitTestResult::GetPosition() const {
     return PositionWithAffinity(MostForwardCaretPosition(
         Position(inner_node_, PositionAnchorType::kBeforeChildren)));
   }
+  // TODO(mstensho): Remove check for Items() when the code is ready
+  // for it. Right now it doesn't support block children.
+  if (box_fragment_ && box_fragment_->Items())
+    return box_fragment_->PositionForPoint(LocalPoint());
   return layout_object->PositionForPoint(LocalPoint());
 }
 

@@ -246,33 +246,6 @@ bool LayoutNGBlockFlowMixin<Base>::NodeAtPoint(
                                       accumulated_offset, action);
 }
 
-// Move specified position to start/end of non-editable region.
-// If it can be found, we prefer a visually equivalent position that is
-// editable.
-// See also LayoutObject::CreatePositionWithAffinity()
-// Example:
-//  <editable><non-editable>|abc</non-editable></editable>
-//  =>
-//  <editable>|<non-editable>abc</non-editable></editable>
-static PositionWithAffinity AdjustForEditingBoundary(
-    const PositionWithAffinity& position_with_affinity) {
-  if (position_with_affinity.IsNull())
-    return position_with_affinity;
-  const Position& position = position_with_affinity.GetPosition();
-  const Node& node = *position.ComputeContainerNode();
-  if (HasEditableStyle(node))
-    return position_with_affinity;
-  const Position& forward =
-      MostForwardCaretPosition(position, kCanCrossEditingBoundary);
-  if (HasEditableStyle(*forward.ComputeContainerNode()))
-    return PositionWithAffinity(forward);
-  const Position& backward =
-      MostBackwardCaretPosition(position, kCanCrossEditingBoundary);
-  if (HasEditableStyle(*backward.ComputeContainerNode()))
-    return PositionWithAffinity(backward);
-  return position_with_affinity;
-}
-
 template <typename Base>
 PositionWithAffinity LayoutNGBlockFlowMixin<Base>::PositionForPoint(
     const PhysicalOffset& point) const {
@@ -295,17 +268,7 @@ PositionWithAffinity LayoutNGBlockFlowMixin<Base>::PositionForPoint(
             paint_fragment->PositionForPoint(point_in_contents))
       return AdjustForEditingBoundary(position);
   } else if (const NGPhysicalBoxFragment* fragment = CurrentFragment()) {
-    if (const NGFragmentItems* items = fragment->Items()) {
-      // The given offset is relative to this |LayoutBlockFlow|. Convert to the
-      // contents offset.
-      PhysicalOffset point_in_contents = point;
-      Base::OffsetForContents(point_in_contents);
-      NGInlineCursor cursor(*items);
-      if (const PositionWithAffinity position =
-              cursor.PositionForPointInInlineFormattingContext(
-                  point_in_contents, *fragment))
-        return AdjustForEditingBoundary(position);
-    }
+    return fragment->PositionForPoint(point);
   }
 
   return Base::CreatePositionWithAffinity(0);

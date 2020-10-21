@@ -1348,6 +1348,25 @@ PositionWithAffinity PositionRespectingEditingBoundary(
   return target_object->PositionForPoint(selection_end_point);
 }
 
+PositionWithAffinity AdjustForEditingBoundary(
+    const PositionWithAffinity& position_with_affinity) {
+  if (position_with_affinity.IsNull())
+    return position_with_affinity;
+  const Position& position = position_with_affinity.GetPosition();
+  const Node& node = *position.ComputeContainerNode();
+  if (HasEditableStyle(node))
+    return position_with_affinity;
+  const Position& forward =
+      MostForwardCaretPosition(position, kCanCrossEditingBoundary);
+  if (HasEditableStyle(*forward.ComputeContainerNode()))
+    return PositionWithAffinity(forward);
+  const Position& backward =
+      MostBackwardCaretPosition(position, kCanCrossEditingBoundary);
+  if (HasEditableStyle(*backward.ComputeContainerNode()))
+    return PositionWithAffinity(backward);
+  return position_with_affinity;
+}
+
 Position ComputePositionForNodeRemoval(const Position& position,
                                        const Node& node) {
   if (position.IsNull())

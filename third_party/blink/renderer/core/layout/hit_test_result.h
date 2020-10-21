@@ -45,6 +45,7 @@ class HTMLMediaElement;
 class Image;
 class KURL;
 class MediaStreamDescriptor;
+class NGPhysicalBoxFragment;
 class Node;
 class LayoutObject;
 class Region;
@@ -119,6 +120,9 @@ class CORE_EXPORT HitTestResult {
     local_point_ = p;
     SetInnerNode(node);
   }
+  void SetNodeAndPosition(Node*,
+                          scoped_refptr<const NGPhysicalBoxFragment>,
+                          const PhysicalOffset&);
 
   PositionWithAffinity GetPosition() const;
   LayoutObject* GetLayoutObject() const;
@@ -206,6 +210,7 @@ class CORE_EXPORT HitTestResult {
   // For non-URL, this is the enclosing that triggers navigation.
   Member<Element> inner_url_element_;
   Member<Scrollbar> scrollbar_;
+  scoped_refptr<const NGPhysicalBoxFragment> box_fragment_;
   // Returns true if we are over a EmbeddedContentView (and not in the
   // border/padding area of a LayoutEmbeddedContent for example).
   bool is_over_embedded_content_view_;

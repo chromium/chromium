@@ -207,6 +207,7 @@ class NGBoxFragmentPainter : public BoxPainterBase {
     // Add |node| to |HitTestResult|. Returns true if the hit-testing should
     // stop.
     bool AddNodeToResult(Node* node,
+                         const NGPhysicalBoxFragment* box_fragment,
                          const PhysicalRect& bounds_rect,
                          const PhysicalOffset& offset) const;
 

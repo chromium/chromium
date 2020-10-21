@@ -230,6 +230,8 @@ class CORE_EXPORT NGPhysicalBoxFragment final
                            NGOutlineType include_block_overflows,
                            Vector<PhysicalRect>* outline_rects) const;
 
+  PositionWithAffinity PositionForPoint(PhysicalOffset) const;
+
   UBiDiLevel BidiLevel() const;
 
   PhysicalBoxSides SidesToInclude() const {
