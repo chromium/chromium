@@ -73,11 +73,13 @@ class BASE_EXPORT ScopedSingleClientServiceBinding {
  public:
   // |outgoing_directory| and |impl| must outlive the binding.
   ScopedSingleClientServiceBinding(sys::OutgoingDirectory* outgoing_directory,
-                                   Interface* impl)
+                                   Interface* impl,
+                                   std::string name = Interface::Name_)
       : binding_(impl) {
     publisher_.emplace(
         outgoing_directory,
-        fit::bind_member(this, &ScopedSingleClientServiceBinding::BindClient));
+        fit::bind_member(this, &ScopedSingleClientServiceBinding::BindClient),
+                         std::move(name));
     binding_.set_error_handler(fit::bind_member(
         this, &ScopedSingleClientServiceBinding::OnBindingEmpty));
   }

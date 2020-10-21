@@ -21,6 +21,19 @@ TEST_F(ScopedServiceBindingTest, ConnectTwice) {
   VerifyTestInterface(&stub2, ZX_OK);
 }
 
+// Verifies that ScopedSingleClientServiceBinding allows a different name.
+TEST_F(ScopedServiceBindingTest, SingleClientConnectNewName) {
+  const std::string interface_name = "fuchsia.TestInterface2";
+  auto service_binding_new_name_ = std::make_unique<
+      ScopedSingleClientServiceBinding<testfidl::TestInterface>>(
+          outgoing_directory_.get(), &test_service_, interface_name);
+
+  testfidl::TestInterfacePtr stub;
+  public_service_directory_->Connect(interface_name,
+                                     stub.NewRequest().TakeChannel());
+  VerifyTestInterface(&stub, ZX_OK);
+}
+
 // Verify that if we connect twice to a prefer-new bound service, the existing
 // connection gets closed.
 TEST_F(ScopedServiceBindingTest, SingleClientPreferNew) {
