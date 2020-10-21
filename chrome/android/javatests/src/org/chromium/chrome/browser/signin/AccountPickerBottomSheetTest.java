@@ -29,8 +29,10 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 
+import androidx.test.espresso.ViewInteraction;
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -155,12 +157,8 @@ public class AccountPickerBottomSheetTest {
     @MediumTest
     public void testExpandedSheet() {
         buildAndShowExpandedBottomSheet();
-        // Since PROFILE_DATA1 exists also in the hidden view of the selected account,
-        // withEffectiveVisibility(VISIBLE) is needed here
-        onView(allOf(withText(PROFILE_DATA1.getAccountName()), withEffectiveVisibility(VISIBLE)))
-                .check(matches(isDisplayed()));
-        onView(allOf(withText(PROFILE_DATA1.getFullName()), withEffectiveVisibility(VISIBLE)))
-                .check(matches(isDisplayed()));
+        onVisibleView(withText(PROFILE_DATA1.getAccountName())).check(matches(isDisplayed()));
+        onVisibleView(withText(PROFILE_DATA1.getFullName())).check(matches(isDisplayed()));
         onView(withText(PROFILE_DATA2.getAccountName())).check(matches(isDisplayed()));
         onView(withText(R.string.signin_add_account_to_device)).check(matches(isDisplayed()));
         onView(withText(R.string.signin_incognito_button)).check(matches(isDisplayed()));
@@ -175,12 +173,8 @@ public class AccountPickerBottomSheetTest {
     public void testExpandedSheetWithIncognitoModeDisabled() {
         IncognitoUtils.setEnabledForTesting(false);
         buildAndShowExpandedBottomSheet();
-        // Since PROFILE_DATA1 exists also in the hidden view of the selected account,
-        // withEffectiveVisibility(VISIBLE) is needed here
-        onView(allOf(withText(PROFILE_DATA1.getAccountName()), withEffectiveVisibility(VISIBLE)))
-                .check(matches(isDisplayed()));
-        onView(allOf(withText(PROFILE_DATA1.getFullName()), withEffectiveVisibility(VISIBLE)))
-                .check(matches(isDisplayed()));
+        onVisibleView(withText(PROFILE_DATA1.getAccountName())).check(matches(isDisplayed()));
+        onVisibleView(withText(PROFILE_DATA1.getFullName())).check(matches(isDisplayed()));
         onView(withText(PROFILE_DATA2.getAccountName())).check(matches(isDisplayed()));
         onView(withText(R.string.signin_add_account_to_device)).check(matches(isDisplayed()));
 
@@ -257,10 +251,8 @@ public class AccountPickerBottomSheetTest {
         onView(withText(R.string.signin_account_picker_bottom_sheet_subtitle))
                 .check(matches(isDisplayed()));
         onView(withId(R.id.account_picker_horizontal_divider)).check(matches(isDisplayed()));
-        onView(allOf(withText(PROFILE_DATA1.getAccountName()), withEffectiveVisibility(VISIBLE)))
-                .check(matches(isDisplayed()));
-        onView(allOf(withText(PROFILE_DATA1.getFullName()), withEffectiveVisibility(VISIBLE)))
-                .check(matches(isDisplayed()));
+        onVisibleView(withText(PROFILE_DATA1.getAccountName())).check(matches(isDisplayed()));
+        onVisibleView(withText(PROFILE_DATA1.getFullName())).check(matches(isDisplayed()));
         onView(withText(PROFILE_DATA2.getAccountName())).check(matches(isDisplayed()));
         onView(withText(R.string.signin_add_account_to_device)).check(matches(isDisplayed()));
 
@@ -328,8 +320,8 @@ public class AccountPickerBottomSheetTest {
                     new ProfileDataSource.ProfileData(
                             PROFILE_DATA1.getAccountName(), null, newFullName, newGivenName));
         });
-        onView(allOf(withText(newFullName), withEffectiveVisibility(VISIBLE)))
-                .check(matches(isDisplayed()));
+        onVisibleView(withText(PROFILE_DATA1.getAccountName())).check(matches(isDisplayed()));
+        onVisibleView(withText(newFullName)).check(matches(isDisplayed()));
         // Check that profile data update when the bottom sheet is expanded won't
         // toggle out any hidden part.
         onView(withId(R.id.account_picker_selected_account)).check(matches(not(isDisplayed())));
@@ -531,8 +523,7 @@ public class AccountPickerBottomSheetTest {
     @MediumTest
     public void testSelectTheSameAccountOnExpandedSheet() {
         buildAndShowExpandedBottomSheet();
-        onView(allOf(withText(PROFILE_DATA1.getAccountName()), withEffectiveVisibility(VISIBLE)))
-                .perform(click());
+        onVisibleView(withText(PROFILE_DATA1.getAccountName())).perform(click());
         checkCollapsedAccountList(PROFILE_DATA1);
     }
 
@@ -624,15 +615,11 @@ public class AccountPickerBottomSheetTest {
     }
 
     private void checkZeroAccountBottomSheet() {
-        onView(allOf(withText(PROFILE_DATA1.getAccountName()), withEffectiveVisibility(VISIBLE)))
-                .check(doesNotExist());
-        onView(allOf(withText(PROFILE_DATA2.getAccountName()), withEffectiveVisibility(VISIBLE)))
-                .check(doesNotExist());
+        onVisibleView(withText(PROFILE_DATA1.getAccountName())).check(doesNotExist());
+        onVisibleView(withText(PROFILE_DATA2.getAccountName())).check(doesNotExist());
         onView(withId(R.id.account_picker_account_list)).check(matches(not(isDisplayed())));
         onView(withId(R.id.account_picker_selected_account)).check(matches(not(isDisplayed())));
-        onView(allOf(withText(R.string.signin_add_account_to_device),
-                       withEffectiveVisibility(VISIBLE)))
-                .perform(click());
+        onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
         verify(mAccountPickerDelegateMock).addAccount(notNull());
     }
 
@@ -643,14 +630,11 @@ public class AccountPickerBottomSheetTest {
         onView(withText(R.string.signin_account_picker_bottom_sheet_subtitle))
                 .check(matches(isDisplayed()));
         onView(withId(R.id.account_picker_horizontal_divider)).check(matches(isDisplayed()));
-        onView(allOf(withText(profileData.getAccountName()), withEffectiveVisibility(VISIBLE)))
-                .check(matches(isDisplayed()));
+        onVisibleView(withText(profileData.getAccountName())).check(matches(isDisplayed()));
         if (profileData.getFullName() != null) {
-            onView(allOf(withText(profileData.getFullName()), withEffectiveVisibility(VISIBLE)))
-                    .check(matches(isDisplayed()));
+            onVisibleView(withText(profileData.getFullName())).check(matches(isDisplayed()));
         }
-        onView(allOf(withId(R.id.account_selection_mark), withEffectiveVisibility(VISIBLE)))
-                .check(matches(isDisplayed()));
+        onVisibleView(withId(R.id.account_selection_mark)).check(matches(isDisplayed()));
         String continueAsText =
                 sActivityTestRule.getActivity().getString(R.string.signin_promo_continue_as,
                         profileData.getGivenName() != null ? profileData.getGivenName()
@@ -679,5 +663,12 @@ public class AccountPickerBottomSheetTest {
         return sActivityTestRule.getActivity()
                 .getRootUiCoordinatorForTesting()
                 .getBottomSheetController();
+    }
+
+    private static ViewInteraction onVisibleView(Matcher<View> matcher) {
+        // Some view elements like PROFILE_DATA1 exist in both visible view and hidden view,
+        // withEffectiveVisibility(VISIBLE) is needed here to get only the visible view of the
+        // matcher.
+        return onView(allOf(matcher, withEffectiveVisibility(VISIBLE)));
     }
 }
