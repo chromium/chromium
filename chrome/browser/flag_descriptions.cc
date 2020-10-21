@@ -3894,12 +3894,6 @@ const char kEnhancedClipboardDescription[] =
     "history. Selecting something from the menu will result in a paste to the "
     "active window.";
 
-extern const char kEnhancedClipboardNudgeSessionResetName[] =
-    "Enable resetting enhanced clipboard nudge data";
-extern const char kEnhancedClipboardNudgeSessionResetDescription[] =
-    "When enabled, this will reset the clipboard nudge shown data on every new "
-    "user session, allowing the nudge to be shown again.";
-
 const char kEnhancedClipboardSimpleRenderName[] =
     "Only renders html in the Enhanced Clipboard if there are img or table "
     "tags";

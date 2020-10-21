@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/util/values/values_util.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -34,15 +33,11 @@ ClipboardNudgeController::ClipboardNudgeController(
     : clipboard_history_(clipboard_history) {
   clipboard_history_->AddObserver(this);
   ui::ClipboardMonitor::GetInstance()->AddObserver(this);
-  if (chromeos::features::IsClipboardHistoryNudgeSessionResetEnabled())
-    Shell::Get()->session_controller()->AddObserver(this);
 }
 
 ClipboardNudgeController::~ClipboardNudgeController() {
   clipboard_history_->RemoveObserver(this);
   ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
-  if (chromeos::features::IsClipboardHistoryNudgeSessionResetEnabled())
-    Shell::Get()->session_controller()->RemoveObserver(this);
 }
 
 // static
@@ -101,14 +96,6 @@ void ClipboardNudgeController::OnClipboardDataRead() {
     case ClipboardState::kShouldShowNudge:
       return;
   }
-}
-
-void ClipboardNudgeController::OnActiveUserPrefServiceChanged(
-    PrefService* prefs) {
-  // Reset the nudge prefs so that the nudge can be shown again.
-  DictionaryPrefUpdate update(prefs, prefs::kMultipasteNudges);
-  update->SetIntPath(kShownCount, 0);
-  update->SetPath(kLastTimeShown, util::TimeToValue(base::Time()));
 }
 
 void ClipboardNudgeController::ShowNudge() {

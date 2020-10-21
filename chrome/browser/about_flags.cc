@@ -6189,11 +6189,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"enhanced_clipboard", flag_descriptions::kEnhancedClipboardName,
      flag_descriptions::kEnhancedClipboardDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kClipboardHistory)},
-    {"enhanced_clipboard_nudge_session_reset",
-     flag_descriptions::kEnhancedClipboardNudgeSessionResetName,
-     flag_descriptions::kEnhancedClipboardNudgeSessionResetDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         chromeos::features::kClipboardHistoryNudgeSessionReset)},
     {"enhanced_clipboard_simple_render",
      flag_descriptions::kEnhancedClipboardSimpleRenderName,
      flag_descriptions::kEnhancedClipboardSimpleRenderDescription, kOsCrOS,

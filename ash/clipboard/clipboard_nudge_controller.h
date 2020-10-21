@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/clipboard/clipboard_history.h"
-#include "ash/public/cpp/session/session_observer.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
@@ -32,8 +31,7 @@ enum class ClipboardState {
 };
 
 class ASH_EXPORT ClipboardNudgeController : public ClipboardHistory::Observer,
-                                            public ui::ClipboardObserver,
-                                            public SessionObserver {
+                                            public ui::ClipboardObserver {
  public:
   ClipboardNudgeController(ClipboardHistory* clipboard_history);
   ClipboardNudgeController(const ClipboardNudgeController&) = delete;
@@ -48,9 +46,6 @@ class ASH_EXPORT ClipboardNudgeController : public ClipboardHistory::Observer,
 
   // ui::ClipboardObserver:
   void OnClipboardDataRead() override;
-
-  // SessionObserver:
-  void OnActiveUserPrefServiceChanged(PrefService* prefs) override;
 
   // Resets nudge state and show nudge timer.
   void HandleNudgeShown();
