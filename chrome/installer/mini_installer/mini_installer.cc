@@ -736,115 +736,6 @@ bool GetWorkDir(HMODULE module,
          CreateWorkDir(base_path.get(), work_dir, exit_code);
 }
 
-// Returns true for ".." and "." directories.
-bool IsCurrentOrParentDirectory(const wchar_t* dir) {
-  return dir && dir[0] == L'.' &&
-         (dir[1] == L'\0' || (dir[1] == L'.' && dir[2] == L'\0'));
-}
-
-// Best effort directory tree deletion including the directory specified
-// by |path|, which must not end in a separator.
-// The |path| argument is writable so that each recursion can use the same
-// buffer as was originally allocated for the path.  The path will be unchanged
-// upon return.
-void RecursivelyDeleteDirectory(PathString* path) {
-  // |path| will never have a trailing backslash.
-  size_t end = path->length();
-  if (!path->append(L"\\*.*"))
-    return;
-
-  WIN32_FIND_DATA find_data = {0};
-  HANDLE find = ::FindFirstFile(path->get(), &find_data);
-  if (find != INVALID_HANDLE_VALUE) {
-    do {
-      // Chrome never creates files/directories with reparse points (i.e.,
-      // mounted folders, links, etc), so never try to delete them.
-      if (find_data.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)
-        continue;
-
-      // Use the short name if available to make the most of our buffer.
-      const wchar_t* name = find_data.cAlternateFileName[0]
-                                ? find_data.cAlternateFileName
-                                : find_data.cFileName;
-      if (IsCurrentOrParentDirectory(name))
-        continue;
-
-      path->truncate_at(end + 1);  // Keep the trailing backslash.
-      if (!path->append(name))
-        continue;  // Continue in spite of too long names.
-
-      if (find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-        RecursivelyDeleteDirectory(path);
-      else
-        ::DeleteFile(path->get());
-    } while (::FindNextFile(find, &find_data));
-    ::FindClose(find);
-  }
-
-  // Restore the path and delete the directory before we return.
-  path->truncate_at(end);
-  ::RemoveDirectory(path->get());
-}
-
-// Enumerates subdirectories of |parent_dir| and deletes all subdirectories
-// that match with a given |prefix|.  |parent_dir| must have a trailing
-// backslash.
-// The process is done on a best effort basis, so conceivably there might
-// still be matches left when the function returns.
-void DeleteDirectoriesWithPrefix(const wchar_t* parent_dir,
-                                 const wchar_t* prefix) {
-  // |parent_dir| is guaranteed to always have a trailing backslash.
-  PathString spec;
-  if (!spec.assign(parent_dir) || !spec.append(prefix) || !spec.append(L"*.*"))
-    return;
-
-  WIN32_FIND_DATA find_data = {0};
-  HANDLE find = ::FindFirstFileEx(spec.get(), FindExInfoStandard, &find_data,
-                                  FindExSearchLimitToDirectories, nullptr, 0);
-  if (find == INVALID_HANDLE_VALUE)
-    return;
-
-  PathString path;
-  do {
-    // Chrome never creates files/directories with reparse points (i.e., mounted
-    // folders, links, etc), so never try to delete them.
-    if (find_data.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)
-      continue;
-
-    if (find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-      // Use the short name if available to make the most of our buffer.
-      const wchar_t* name = find_data.cAlternateFileName[0]
-                                ? find_data.cAlternateFileName
-                                : find_data.cFileName;
-      if (IsCurrentOrParentDirectory(name))
-        continue;
-      if (path.assign(parent_dir) && path.append(name))
-        RecursivelyDeleteDirectory(&path);
-    }
-  } while (::FindNextFile(find, &find_data));
-  ::FindClose(find);
-}
-
-// Attempts to free up space by deleting temp directories that previous
-// installer runs have failed to clean up.
-void DeleteOldChromeTempDirectories() {
-  static const wchar_t* const kDirectoryPrefixes[] = {
-      kTempPrefix,
-      L"chrome_"  // Previous installers created directories with this prefix
-                  // and there are still some lying around.
-  };
-
-  ProcessExitResult ignore(SUCCESS_EXIT_CODE);
-  PathString temp;
-  // GetTempDir always returns a path with a trailing backslash.
-  if (!GetTempDir(&temp, &ignore))
-    return;
-
-  for (size_t i = 0; i < _countof(kDirectoryPrefixes); ++i) {
-    DeleteDirectoriesWithPrefix(temp.get(), kDirectoryPrefixes[i]);
-  }
-}
-
 // Checks the command line for specific mini installer flags.
 // If the function returns true, the command line has been processed and all
 // required actions taken.  The installer must exit and return the returned
@@ -864,12 +755,6 @@ bool ProcessNonInstallOperations(const Configuration& configuration,
 }
 
 ProcessExitResult WMain(HMODULE module) {
-  // Always start with deleting potential leftovers from previous installations.
-  // This can make the difference between success and failure.  We've seen
-  // many installations out in the field fail due to out of disk space problems
-  // so this could buy us some space.
-  DeleteOldChromeTempDirectories();
-
   ProcessExitResult exit_code = ProcessExitResult(SUCCESS_EXIT_CODE);
 
   // Parse configuration from the command line and resources.
