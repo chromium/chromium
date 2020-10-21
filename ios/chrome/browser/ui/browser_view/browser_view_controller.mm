@@ -89,6 +89,7 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
+#include "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_animatee.h"
 #import "ios/chrome/browser/ui/image_util/image_copier.h"
 #import "ios/chrome/browser/ui/image_util/image_saver.h"
@@ -467,6 +468,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   // Presenter for in-product help bubbles.
   BubblePresenter* _bubblePresenter;
+
+  // The disabler that prevents the toolbar from being scrolled offscreen when
+  // the thumb strip is visible.
+  std::unique_ptr<ScopedFullscreenDisabler> _fullscreenDisabler;
 }
 
 // Activates/deactivates the object. This will enable/disable the ability for
@@ -2814,6 +2819,13 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 #pragma mark - ViewRevealingAnimatee
 
 - (void)willAnimateViewReveal:(ViewRevealState)currentViewRevealState {
+  // Disable fullscreen if the thumb strip is about to be shown.
+  if (currentViewRevealState == ViewRevealState::Hidden &&
+      !_fullscreenDisabler) {
+    _fullscreenDisabler = std::make_unique<ScopedFullscreenDisabler>(
+        FullscreenController::FromBrowser(_browser));
+  }
+
   // Hide the tab strip and take a snapshot of it. If a snapshot of a hidden
   // view is taken, the snapshot will be a blank view. However, if the view's
   // parent is hidden but the view itself is not, the snapshot will not be a
@@ -2858,6 +2870,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   self.tabStripView.hidden = (viewRevealState != ViewRevealState::Hidden);
   [self.tabStripSnapshot removeFromSuperview];
   self.bottomPosition = (viewRevealState == ViewRevealState::Revealed);
+
+  if (viewRevealState == ViewRevealState::Hidden) {
+    // Stop disabling fullscreen.
+    _fullscreenDisabler.reset();
+  }
 }
 
 #pragma mark - BubblePresenterDelegate
