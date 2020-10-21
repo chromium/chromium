@@ -94,13 +94,23 @@ const PhysicalRect NGLayoutOverflowCalculator::Result(
   // Adjust the layout-overflow if we have "overflow: clip" present.
   if (!is_scroll_container_ && has_non_visible_overflow_) {
     const OverflowClipAxes overflow_clip_axes = node_.GetOverflowClipAxes();
-    if (overflow_clip_axes & kOverflowClipX) {
-      layout_overflow_.offset.left = padding_rect_.offset.left;
-      layout_overflow_.size.width = padding_rect_.size.width;
-    }
-    if (overflow_clip_axes & kOverflowClipY) {
-      layout_overflow_.offset.top = padding_rect_.offset.top;
-      layout_overflow_.size.height = padding_rect_.size.height;
+    const LayoutUnit overflow_clip_margin = node_.Style().OverflowClipMargin();
+    if (overflow_clip_margin != LayoutUnit()) {
+      // overflow_clip_margin should only be set if 'overflow' is 'clip' along
+      // both axis.
+      DCHECK_EQ(overflow_clip_axes, kOverflowClipBothAxis);
+      PhysicalRect expanded_padding_rect = padding_rect_;
+      expanded_padding_rect.Inflate(overflow_clip_margin);
+      layout_overflow_.Intersect(expanded_padding_rect);
+    } else {
+      if (overflow_clip_axes & kOverflowClipX) {
+        layout_overflow_.offset.left = padding_rect_.offset.left;
+        layout_overflow_.size.width = padding_rect_.size.width;
+      }
+      if (overflow_clip_axes & kOverflowClipY) {
+        layout_overflow_.offset.top = padding_rect_.offset.top;
+        layout_overflow_.size.height = padding_rect_.size.height;
+      }
     }
   }
 
@@ -275,7 +285,8 @@ PhysicalRect NGLayoutOverflowCalculator::LayoutOverflowForPropagation(
   // layout overflow.
   PhysicalRect overflow = {{}, child_fragment.Size()};
   if (!child_fragment.ShouldApplyLayoutContainment() &&
-      !child_fragment.ShouldClipOverflowAlongBothAxis() &&
+      (!child_fragment.ShouldClipOverflowAlongBothAxis() ||
+       child_fragment.Style().OverflowClipMargin() != LayoutUnit()) &&
       !child_fragment.IsInlineBox())
     overflow.UniteEvenIfEmpty(child_fragment.LayoutOverflow());
 

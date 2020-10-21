@@ -661,6 +661,9 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
       SetNeedsPaintPropertyUpdate();
     }
 
+    if (old_style->OverflowClipMargin() != new_style.OverflowClipMargin())
+      SetNeedsPaintPropertyUpdate();
+
     if (IsInLayoutNGInlineFormattingContext() && IsAtomicInlineLevel() &&
         old_style->Direction() != new_style.Direction()) {
       SetNeedsCollectInlines();
@@ -2757,7 +2760,9 @@ PhysicalRect LayoutBox::OverflowClipRect(
     clip_rect.Move(location);
     if (HasNonVisibleOverflow()) {
       const auto overflow_clip = GetOverflowClipAxes();
-      if (overflow_clip != kOverflowClipBothAxis) {
+      if (overflow_clip == kOverflowClipBothAxis) {
+        clip_rect.Inflate(StyleRef().OverflowClipMargin());
+      } else {
         auto infinite_rect = LayoutRect::InfiniteIntRect();
         if ((overflow_clip & kOverflowClipX) == kNoOverflowClip) {
           clip_rect.offset.left = LayoutUnit(infinite_rect.X());
@@ -7185,8 +7190,11 @@ LayoutRect LayoutBox::LayoutOverflowRectForPropagation(
   // Only propagate interior layout overflow if we don't clip it.
   LayoutRect rect = BorderBoxRect();
 
-  if (!ShouldApplyLayoutContainment() && !ShouldClipOverflowAlongBothAxis())
+  if (!ShouldApplyLayoutContainment() &&
+      (!ShouldClipOverflowAlongBothAxis() ||
+       StyleRef().OverflowClipMargin() != LayoutUnit())) {
     rect.Unite(LayoutOverflowRect());
+  }
 
   bool has_transform = HasLayer() && Layer()->Transform();
   if (IsInFlowPositioned() || has_transform) {
@@ -7226,11 +7234,32 @@ LayoutRect LayoutBox::VisualOverflowRect() const {
   NOT_DESTROYED();
   if (!VisualOverflowIsSet())
     return BorderBoxRect();
-  const OverflowClipAxes overflow_clip_axes = GetOverflowClipAxes();
-  if (overflow_clip_axes == kOverflowClipBothAxis || HasMask())
-    return overflow_->visual_overflow->SelfVisualOverflowRect();
+
   const LayoutRect& self_visual_overflow_rect =
       overflow_->visual_overflow->SelfVisualOverflowRect();
+  if (HasMask())
+    return self_visual_overflow_rect;
+
+  const OverflowClipAxes overflow_clip_axes = GetOverflowClipAxes();
+  const LayoutUnit overflow_clip_margin = StyleRef().OverflowClipMargin();
+  if (overflow_clip_margin != LayoutUnit()) {
+    // overflow_clip_margin should only be set if 'overflow' is 'clip' along
+    // both axis.
+    DCHECK_EQ(overflow_clip_axes, kOverflowClipBothAxis);
+    const LayoutRect& contents_visual_overflow_rect =
+        overflow_->visual_overflow->ContentsVisualOverflowRect();
+    if (!contents_visual_overflow_rect.IsEmpty()) {
+      LayoutRect result = BorderBoxRect();
+      result.Inflate(overflow_clip_margin);
+      result.Intersect(contents_visual_overflow_rect);
+      result.Unite(self_visual_overflow_rect);
+      return result;
+    }
+  }
+
+  if (overflow_clip_axes == kOverflowClipBothAxis)
+    return self_visual_overflow_rect;
+
   LayoutRect result = overflow_->visual_overflow->ContentsVisualOverflowRect();
   result.Unite(self_visual_overflow_rect);
   ApplyOverflowClip(overflow_clip_axes, self_visual_overflow_rect, result);
@@ -7688,9 +7717,18 @@ void LayoutBox::ApplyOverflowClipToLayoutOverflowRect() {
   if (overflow_clip_axes == kNoOverflowClip)
     return;
 
-  const LayoutRect no_overflow_rect = NoOverflowRect();
+  LayoutRect no_overflow_rect = NoOverflowRect();
   LayoutRect overflow_rect = overflow_->layout_overflow->LayoutOverflowRect();
-  ApplyOverflowClip(overflow_clip_axes, no_overflow_rect, overflow_rect);
+  const LayoutUnit overflow_clip_margin = StyleRef().OverflowClipMargin();
+  if (overflow_clip_margin != LayoutUnit()) {
+    // overflow_clip_margin should only be set if 'overflow' is 'clip' along
+    // both axis.
+    DCHECK_EQ(overflow_clip_axes, kOverflowClipBothAxis);
+    no_overflow_rect.Inflate(overflow_clip_margin);
+    overflow_rect.Intersect(no_overflow_rect);
+  } else {
+    ApplyOverflowClip(overflow_clip_axes, no_overflow_rect, overflow_rect);
+  }
   overflow_->layout_overflow->SetLayoutOverflow(overflow_rect);
 }
 

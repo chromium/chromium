@@ -513,6 +513,57 @@ TEST_P(LayoutBoxTest, VisualOverflowRectOverflowClip) {
   EXPECT_EQ(LayoutRect(0, 0, 300, 50), clip_y->VisualOverflowRect());
 }
 
+TEST_P(LayoutBoxTest, VisualOverflowRectWithOverflowClipMargin) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .parent { width: 100px; height: 50px; overflow: clip; }
+      .child { width: 110px; height: 55px; }
+    </style>
+    <div id="clip1" style="overflow-clip-margin: 4px" class="parent">
+      <div class="child"></div>
+    </div>
+    <div id="clip2" style="overflow-clip-margin: 11px" class="parent">
+      <div class="child"></div>
+    </div>
+  )HTML");
+
+  LayoutBox* clip1 = GetLayoutBoxByElementId("clip1");
+  EXPECT_FALSE(clip1->IsScrollContainer());
+  EXPECT_TRUE(clip1->ShouldClipOverflowAlongBothAxis());
+  EXPECT_EQ(LayoutRect(0, 0, 104, 54), clip1->VisualOverflowRect());
+
+  LayoutBox* clip2 = GetLayoutBoxByElementId("clip2");
+  EXPECT_FALSE(clip2->IsScrollContainer());
+  EXPECT_TRUE(clip2->ShouldClipOverflowAlongBothAxis());
+  EXPECT_EQ(LayoutRect(0, 0, 110, 55), clip2->VisualOverflowRect());
+}
+
+TEST_P(LayoutBoxTest, LayoutOverflowRectWithOverflowClipMargin) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .parent { width: 100px; height: 50px; overflow: clip; }
+      .child { position: relative; top: -5px; left: -6px; width: 110px;
+               height: 112px; }
+    </style>
+    <div id="clip1" style="overflow-clip-margin: 4px" class="parent">
+      <div class="child"></div>
+    </div>
+    <div id="clip2" style="overflow-clip-margin: 10px" class="parent">
+      <div class="child"></div>
+    </div>
+  )HTML");
+
+  LayoutBox* clip1 = GetLayoutBoxByElementId("clip1");
+  EXPECT_FALSE(clip1->IsScrollContainer());
+  EXPECT_TRUE(clip1->ShouldClipOverflowAlongBothAxis());
+  EXPECT_EQ(LayoutRect(-4, -4, 108, 58), clip1->LayoutOverflowRect());
+
+  LayoutBox* clip2 = GetLayoutBoxByElementId("clip2");
+  EXPECT_FALSE(clip2->IsScrollContainer());
+  EXPECT_TRUE(clip2->ShouldClipOverflowAlongBothAxis());
+  EXPECT_EQ(LayoutRect(-6, -5, 110, 65), clip2->LayoutOverflowRect());
+}
+
 TEST_P(LayoutBoxTest, ContentsVisualOverflowPropagation) {
   SetBodyInnerHTML(R"HTML(
     <style>

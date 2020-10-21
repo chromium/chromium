@@ -220,7 +220,8 @@
         fields_to_diff: ["width", "min-width", "max-width", "height", "min-height",
                 "max-height", "VerticalAlignLength", "box-sizing", "align-content",
                 "align-items", "align-self", "justify-content", "justify-items",
-                "justify-self", "contain", "contain-intrinsic-size", "aspect-ratio"],
+                "justify-self", "contain", "contain-intrinsic-size", "aspect-ratio",
+                "overflow-clip-margin"],
         methods_to_diff: [
           {
             method: "VerticalAlign()",
@@ -379,7 +380,6 @@
     },
     {
         name: "UpdatePropertySpecificDifferencesNeedsRecomputeVisualOverflow",
-        fields_to_diff: ["overflow-clip-margin"],
         predicates_to_test: [
           {
             predicate: "a.BoxShadowDataEquivalent(b)",
