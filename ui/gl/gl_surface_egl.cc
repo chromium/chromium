@@ -183,6 +183,7 @@ EGLDisplayPlatform g_native_display(EGL_DEFAULT_DISPLAY);
 
 const char* g_egl_extensions = nullptr;
 bool g_egl_create_context_robustness_supported = false;
+bool g_egl_robustness_video_memory_purge_supported = false;
 bool g_egl_create_context_bind_generates_resource_supported = false;
 bool g_egl_create_context_webgl_compatability_supported = false;
 bool g_egl_sync_control_supported = false;
@@ -955,6 +956,8 @@ bool GLSurfaceEGL::InitializeOneOffCommon() {
 
   g_egl_create_context_robustness_supported =
       HasEGLExtension("EGL_EXT_create_context_robustness");
+  g_egl_robustness_video_memory_purge_supported =
+      HasEGLExtension("EGL_NV_robustness_video_memory_purge");
   g_egl_create_context_bind_generates_resource_supported =
       HasEGLExtension("EGL_CHROMIUM_create_context_bind_generates_resource");
   g_egl_create_context_webgl_compatability_supported =
@@ -1095,6 +1098,7 @@ void GLSurfaceEGL::ShutdownOneOff() {
 
   g_egl_extensions = nullptr;
   g_egl_create_context_robustness_supported = false;
+  g_egl_robustness_video_memory_purge_supported = false;
   g_egl_create_context_bind_generates_resource_supported = false;
   g_egl_create_context_webgl_compatability_supported = false;
   g_egl_sync_control_supported = false;
@@ -1133,6 +1137,11 @@ bool GLSurfaceEGL::HasEGLExtension(const char* name) {
 // static
 bool GLSurfaceEGL::IsCreateContextRobustnessSupported() {
   return g_egl_create_context_robustness_supported;
+}
+
+// static
+bool GLSurfaceEGL::IsRobustnessVideoMemoryPurgeSupported() {
+  return g_egl_robustness_video_memory_purge_supported;
 }
 
 bool GLSurfaceEGL::IsCreateContextBindGeneratesResourceSupported() {

@@ -69,6 +69,11 @@
 #define EGL_HIGH_POWER_ANGLE 0x0002
 #endif /* EGL_ANGLE_power_preference */
 
+#ifndef EGL_NV_robustness_video_memory_purge
+#define EGL_NV_robustness_video_memory_purge 1
+#define EGL_GENERATE_RESET_ON_VIDEO_MEMORY_PURGE_NV 0x334C
+#endif /*EGL_NV_robustness_video_memory_purge */
+
 using ui::GetLastEGLErrorString;
 
 namespace gl {
@@ -137,6 +142,12 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
       context_attributes.push_back(
           EGL_CONTEXT_OPENGL_RESET_NOTIFICATION_STRATEGY_EXT);
       context_attributes.push_back(EGL_LOSE_CONTEXT_ON_RESET_EXT);
+
+      if (GLSurfaceEGL::IsRobustnessVideoMemoryPurgeSupported()) {
+        context_attributes.push_back(
+            EGL_GENERATE_RESET_ON_VIDEO_MEMORY_PURGE_NV);
+        context_attributes.push_back(EGL_TRUE);
+      }
     }
   } else {
     // At some point we should require the presence of the robustness

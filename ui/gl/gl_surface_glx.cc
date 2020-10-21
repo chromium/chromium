@@ -49,6 +49,7 @@ namespace {
 
 bool g_glx_context_create = false;
 bool g_glx_create_context_robustness_supported = false;
+bool g_glx_robustness_video_memory_purge_supported = false;
 bool g_glx_create_context_profile_supported = false;
 bool g_glx_create_context_profile_es2_supported = false;
 bool g_glx_texture_from_pixmap_supported = false;
@@ -518,6 +519,8 @@ bool GLSurfaceGLX::InitializeExtensionSettingsOneOff() {
   g_glx_context_create = HasGLXExtension("GLX_ARB_create_context");
   g_glx_create_context_robustness_supported =
       HasGLXExtension("GLX_ARB_create_context_robustness");
+  g_glx_robustness_video_memory_purge_supported =
+      HasGLXExtension("GLX_NV_robustness_video_memory_purge");
   g_glx_create_context_profile_supported =
       HasGLXExtension("GLX_ARB_create_context_profile");
   g_glx_create_context_profile_es2_supported =
@@ -542,6 +545,7 @@ void GLSurfaceGLX::ShutdownOneOff() {
   initialized_ = false;
   g_glx_context_create = false;
   g_glx_create_context_robustness_supported = false;
+  g_glx_robustness_video_memory_purge_supported = false;
   g_glx_create_context_profile_supported = false;
   g_glx_create_context_profile_es2_supported = false;
   g_glx_texture_from_pixmap_supported = false;
@@ -590,6 +594,11 @@ bool GLSurfaceGLX::IsCreateContextSupported() {
 // static
 bool GLSurfaceGLX::IsCreateContextRobustnessSupported() {
   return g_glx_create_context_robustness_supported;
+}
+
+// static
+bool GLSurfaceGLX::IsRobustnessVideoMemoryPurgeSupported() {
+  return g_glx_robustness_video_memory_purge_supported;
 }
 
 // static
