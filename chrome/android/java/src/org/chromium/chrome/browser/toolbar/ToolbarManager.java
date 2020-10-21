@@ -254,7 +254,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mActivity = activity;
         mBrowserControlsSizer = controlsSizer;
         mFullscreenManager = fullscreenManager;
-        mActionBarDelegate = new ViewShiftingActionBarDelegate(activity, controlContainer);
+        mActionBarDelegate = new ViewShiftingActionBarDelegate(activity.getSupportActionBar(),
+                controlContainer, activity.findViewById(R.id.action_bar_black_background));
         mShareDelegateSupplier = shareDelegateSupplier;
         mCanAnimateNativeBrowserControls = canAnimateNativeBrowserControls;
         mScrimCoordinator = scrimCoordinator;

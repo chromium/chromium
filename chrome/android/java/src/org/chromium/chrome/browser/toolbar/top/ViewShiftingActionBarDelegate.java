@@ -9,26 +9,29 @@ import android.view.ViewGroup;
 
 import androidx.appcompat.app.ActionBar;
 
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
-
 /**
  * An {@link ActionModeController.ActionBarDelegate} that shifts a view as the action bar appears.
  */
 public class ViewShiftingActionBarDelegate implements ActionModeController.ActionBarDelegate {
+    /** The action bar which this delegate works for. */
+    private final ActionBar mActionBar;
+
     /** The view that will be shifted as the action bar appears. */
     private final View mShiftingView;
 
-    /** A handle to a {@link ChromeActivity}. */
-    private final ChromeActivity mActivity;
+    /** Action bar background view. */
+    private final View mBackgroundView;
 
     /**
-     * @param activity A handle to the {@link ChromeActivity}.
+     * @param actionBar The {@link ActionBar} in use.
      * @param shiftingView The view that will shift when the action bar appears.
+     * @param backgroundView Background view for shadow effect.
      */
-    public ViewShiftingActionBarDelegate(ChromeActivity activity, View shiftingView) {
-        mActivity = activity;
+    public ViewShiftingActionBarDelegate(
+            ActionBar actionBar, View shiftingView, View backgroundView) {
+        mActionBar = actionBar;
         mShiftingView = shiftingView;
+        mBackgroundView = backgroundView;
     }
 
     @Override
@@ -48,13 +51,13 @@ public class ViewShiftingActionBarDelegate implements ActionModeController.Actio
 
     @Override
     public ActionBar getSupportActionBar() {
-        return mActivity.getSupportActionBar();
+        return mActionBar;
     }
 
     @Override
     public void setActionBarBackgroundVisibility(boolean visible) {
         int visibility = visible ? View.VISIBLE : View.GONE;
-        mActivity.findViewById(R.id.action_bar_black_background).setVisibility(visibility);
+        mBackgroundView.setVisibility(visibility);
         // TODO(tedchoc): Add support for changing the color based on the brand color.
     }
 }
