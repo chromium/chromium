@@ -6,5 +6,5 @@
 
 // https://streams.spec.whatwg.org/#ws-default-controller-class-definition
 interface WritableStreamDefaultController {
-    [CallWith=ScriptState, NotEnumerable] void error(optional any e);
+    [CallWith=ScriptState] void error(optional any e);
 };

@@ -124,10 +124,10 @@ PASS WritableStream interface object name
 PASS WritableStream interface: existence and properties of interface prototype object
 PASS WritableStream interface: existence and properties of interface prototype object's "constructor" property
 PASS WritableStream interface: existence and properties of interface prototype object's @@unscopables property
-FAIL WritableStream interface: attribute locked assert_true: property should be enumerable expected true got false
-FAIL WritableStream interface: operation abort(optional any) assert_true: property should be enumerable expected true got false
-FAIL WritableStream interface: operation close() assert_true: property should be enumerable expected true got false
-FAIL WritableStream interface: operation getWriter() assert_true: property should be enumerable expected true got false
+PASS WritableStream interface: attribute locked
+PASS WritableStream interface: operation abort(optional any)
+PASS WritableStream interface: operation close()
+PASS WritableStream interface: operation getWriter()
 PASS WritableStream must be primary interface of new WritableStream()
 PASS Stringification of new WritableStream()
 PASS WritableStream interface: new WritableStream() must inherit property "locked" with the proper type
@@ -141,13 +141,13 @@ PASS WritableStreamDefaultWriter interface object name
 PASS WritableStreamDefaultWriter interface: existence and properties of interface prototype object
 PASS WritableStreamDefaultWriter interface: existence and properties of interface prototype object's "constructor" property
 PASS WritableStreamDefaultWriter interface: existence and properties of interface prototype object's @@unscopables property
-FAIL WritableStreamDefaultWriter interface: attribute closed assert_true: property should be enumerable expected true got false
-FAIL WritableStreamDefaultWriter interface: attribute desiredSize assert_true: property should be enumerable expected true got false
-FAIL WritableStreamDefaultWriter interface: attribute ready assert_true: property should be enumerable expected true got false
-FAIL WritableStreamDefaultWriter interface: operation abort(optional any) assert_true: property should be enumerable expected true got false
-FAIL WritableStreamDefaultWriter interface: operation close() assert_true: property should be enumerable expected true got false
+PASS WritableStreamDefaultWriter interface: attribute closed
+PASS WritableStreamDefaultWriter interface: attribute desiredSize
+PASS WritableStreamDefaultWriter interface: attribute ready
+PASS WritableStreamDefaultWriter interface: operation abort(optional any)
+PASS WritableStreamDefaultWriter interface: operation close()
 FAIL WritableStreamDefaultWriter interface: operation releaseLock() assert_true: property should be enumerable expected true got false
-FAIL WritableStreamDefaultWriter interface: operation write(optional any) assert_true: property should be enumerable expected true got false
+PASS WritableStreamDefaultWriter interface: operation write(optional any)
 PASS WritableStreamDefaultWriter must be primary interface of (new WritableStream()).getWriter()
 PASS Stringification of (new WritableStream()).getWriter()
 PASS WritableStreamDefaultWriter interface: (new WritableStream()).getWriter() must inherit property "closed" with the proper type
