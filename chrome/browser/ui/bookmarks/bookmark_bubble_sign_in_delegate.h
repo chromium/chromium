@@ -19,8 +19,6 @@ class BookmarkBubbleSignInDelegate : public BubbleSyncPromoDelegate,
                                      public BrowserListObserver {
  public:
   explicit BookmarkBubbleSignInDelegate(Browser* browser);
-
- private:
   ~BookmarkBubbleSignInDelegate() override;
 
   // BubbleSyncPromoDelegate:
@@ -29,6 +27,7 @@ class BookmarkBubbleSignInDelegate : public BubbleSyncPromoDelegate,
   // BrowserListObserver:
   void OnBrowserRemoved(Browser* browser) override;
 
+ private:
   // Makes sure |browser_| points to a valid browser.
   void EnsureBrowser();
 

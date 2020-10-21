@@ -131,8 +131,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkBubbleSignInDelegateTest, BrowserRemoved) {
 
   int starting_tab_count = extra_browser->tab_strip_model()->count();
 
-  std::unique_ptr<BubbleSyncPromoDelegate> delegate;
-  delegate.reset(new BookmarkBubbleSignInDelegate(browser()));
+  std::unique_ptr<BubbleSyncPromoDelegate> delegate =
+      std::make_unique<BookmarkBubbleSignInDelegate>(browser());
 
   BrowserList::SetLastActive(extra_browser);
 

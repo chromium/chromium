@@ -442,7 +442,7 @@ void ToolbarView::ShowBookmarkBubble(
   std::unique_ptr<BubbleSyncPromoDelegate> delegate;
 #if !defined(OS_CHROMEOS)
   // ChromeOS does not show the signin promo.
-  delegate.reset(new BookmarkBubbleSignInDelegate(browser_));
+  delegate = std::make_unique<BookmarkBubbleSignInDelegate>(browser_);
 #endif
   BookmarkBubbleView::ShowBubble(anchor_view, bookmark_star_icon, observer,
                                  std::move(delegate), browser_->profile(), url,
