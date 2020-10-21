@@ -43,11 +43,9 @@
 <translation id="5057360777601936059">Dit kamera er ikke tilgængeligt lige nu.
         Tjek, om kameraet er tilsluttet korrekt.</translation>
 <translation id="5152121255775685072">Gå til galleri</translation>
-<translation id="5422455049771430511">Dine billeder og videoer har fået et nyt hjem</translation>
 <translation id="5671277269877808209">Kvadrat</translation>
 <translation id="5775960006311140197">Eksperttilstand</translation>
 <translation id="5869546221129391014">Gitter</translation>
-<translation id="6040143037577758943">Luk</translation>
 <translation id="6073451960410192870">Stop optagelse</translation>
 <translation id="6197807149213783179">Gem metadata</translation>
 <translation id="6233780560267770709">3 gange 3</translation>
@@ -59,7 +57,6 @@
 Hvis din feedback omhandler billed- eller videokvalitet, bedes du vedhæfte et billede eller en video af problemet og beskrive, hvad der er galt (f.eks. billedet er for mørkt, eller motivet er ikke i fokus).</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapixels</translation>
 <translation id="6681668084120808868">Tag billede</translation>
-<translation id="6739700533200816396">Billeder og videoer gemmes nu i en ny mappe i appen Filer: Mine filer &gt; Kamera. Eksisterende billeder og videoer flyttes ikke til den nye mappe.</translation>
 <translation id="6778482348691154169">Der kan ikke tages et billede</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 sekunder</translation>

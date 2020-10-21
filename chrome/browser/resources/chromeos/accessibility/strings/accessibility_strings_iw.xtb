@@ -154,7 +154,7 @@
 <translation id="2126597928985245619">אין טקסט זמין בשביל הפריט הזה</translation>
 <translation id="2127747486437921899">נטוי</translation>
 <translation id="2163782704988363449">תיקוני טעויות</translation>
-<translation id="2169714232367507776">לחץ על הפריט הנוכחי</translation>
+<translation id="2169714232367507776">יש ללחוץ על הפריט הנוכחי</translation>
 <translation id="2179452035581866348">‏ChromeVox משתמש בצליל כדי לספק לך מידע נוסף וחשוב. כדאי ללמוד את המשמעות של כל צליל כדי להשתמש בצלילים האלו לניווט מהיר יותר. אחרי שמתרגלים לצלילים, אפשר להשבית את התיאורים המילוליים ולהפעיל אותם רק כדי לקבל מידע חשוב על הדף. הנה רשימה של כל הצלילים והמשמעות שלהם.</translation>
 <translation id="2188751878842439466">{COUNT,plural, =1{סגור סוגריים}two{# סימני סגור סוגריים}many{# סימני סגור סוגריים}other{# סימני סגור סוגריים}}</translation>
 <translation id="2197863150503783129">חום אוכף</translation>
@@ -203,7 +203,7 @@
 <translation id="2592212930811759050">לחיצה פעמיים מפעילה עריכה</translation>
 <translation id="2598495320872286378">שגיאת דקדוק</translation>
 <translation id="2603828437139726540">העברת הסמן לתו הבא</translation>
-<translation id="2624431853467395961">פתח מצב למידה</translation>
+<translation id="2624431853467395961">פתיחת מצב למידה</translation>
 <translation id="2626530649491650971">clickable</translation>
 <translation id="2637227747952042642">Math</translation>
 <translation id="2638785836053527382">ההורדה של <ph name="FILE_NAME" /> נמשכת</translation>
@@ -240,7 +240,7 @@
 <translation id="2843837985843789981">הקבוצה הקודמת</translation>
 <translation id="2864481629947106776">הקישור הקודם</translation>
 <translation id="2867808975387772810">ביבליוגרפיה</translation>
-<translation id="2873259058405069099">עבור לתחילת הטבלה</translation>
+<translation id="2873259058405069099">מעבר לתחילת הטבלה</translation>
 <translation id="287383510823843610">כתום כהה</translation>
 <translation id="2879867157561757640">החלקה מטה עם שלוש אצבעות</translation>
 <translation id="288178314850623291">‏אפשר להשתמש בפקודות מעבר כדי לדלג אל סוגים ספציפיים של רכיבים. כדי לעבור קדימה בין כותרות, מקישים על מקש החיפוש ועל מקש H. כדי לעבור אחורה, מקישים יחד על מקש החיפוש, Shift ו-H.</translation>
@@ -377,7 +377,7 @@
 <translation id="3810838688059735925">וידאו</translation>
 <translation id="3813387282697781382">אלמוג בהיר</translation>
 <translation id="3816633764618089385">המדיה הבאה</translation>
-<translation id="385383972552776628">פתח את דף האפשרויות</translation>
+<translation id="385383972552776628">פתיחת דף האפשרויות</translation>
 <translation id="3856075812838139784">קריאה בלבד</translation>
 <translation id="3857141338659865495">טורקיז בינוני</translation>
 <translation id="3870295413168340326">אין כותרת קודמת מרמה 3</translation>
@@ -639,7 +639,7 @@
 <translation id="5906974869830879618">יש להזין קוד אימות</translation>
 <translation id="5921587111466148855">פרק</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{סימן שווה}two{# סימני שווה}many{# סימני שווה}other{# סימני שווה}}</translation>
-<translation id="5948123859135882163">עבור בין פירוש מבני וסמנטי של ביטויים מתמטיים</translation>
+<translation id="5948123859135882163">מעבר בין פירוש מבני וסמנטי של ביטויים מתמטיים</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5956928062748260866">דו-שיח</translation>
 <translation id="5963413905009737549">קטע</translation>

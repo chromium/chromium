@@ -43,11 +43,9 @@
 <translation id="5057360777601936059">Ekki er hægt að nota myndavélina eins og er.
         Athugaðu hvort myndavélin er rétt tengd.</translation>
 <translation id="5152121255775685072">Opna safn</translation>
-<translation id="5422455049771430511">Myndirnar þínar og myndskeiðin eru komin á nýjan stað</translation>
 <translation id="5671277269877808209">Ferningur</translation>
 <translation id="5775960006311140197">Ítarlegar stillingar</translation>
 <translation id="5869546221129391014">Tafla</translation>
-<translation id="6040143037577758943">Loka</translation>
 <translation id="6073451960410192870">Stöðva upptöku</translation>
 <translation id="6197807149213783179">Vista lýsigögn</translation>
 <translation id="6233780560267770709">3 sinnum 3</translation>
@@ -58,7 +56,6 @@
 Ef ábendingin þín snýr að gæðum mynda eða myndskeiða máttu hengja við sýnishorn af mynd eða myndskeiði og lýsa því sem er að. (Til dæmis: myndin er of dökk eða myndefnið er ekki í fókus.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapixlar</translation>
 <translation id="6681668084120808868">Taka mynd</translation>
-<translation id="6739700533200816396">Myndir og myndskeið verða nú vistuð í nýrri möppu í forritinu Files: Skrárnar mínar &gt; Myndavél. Fyrri myndir og myndskeið verða ekki færð í nýju möppuna.</translation>
 <translation id="6778482348691154169">Ekki tókst að taka mynd</translation>
 <translation id="6965382102122355670">Í lagi</translation>
 <translation id="698156982839284926">3 sekúndur</translation>

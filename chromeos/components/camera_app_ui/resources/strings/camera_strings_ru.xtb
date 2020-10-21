@@ -43,11 +43,9 @@
 <translation id="5057360777601936059">Камера недоступна.
         Проверьте, правильно ли подключена камера.</translation>
 <translation id="5152121255775685072">Перейти в галерею</translation>
-<translation id="5422455049771430511">Теперь фото и видео сохраняются в другой папке</translation>
 <translation id="5671277269877808209">Квадрат</translation>
 <translation id="5775960006311140197">Режим эксперта</translation>
 <translation id="5869546221129391014">Сетка</translation>
-<translation id="6040143037577758943">Закрыть</translation>
 <translation id="6073451960410192870">Остановить запись</translation>
 <translation id="6197807149213783179">Сохранение метаданных</translation>
 <translation id="6233780560267770709">3 на 3</translation>
@@ -58,7 +56,6 @@
 Если ваш отзыв касается качества фото или видео, прикрепите файл с примером проблемы (например, слишком темный или размытый снимок).</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> Мп</translation>
 <translation id="6681668084120808868">Сфотографировать</translation>
-<translation id="6739700533200816396">Для них предназначена новая папка в приложении "Файлы" (Мои Файлы &gt; Камера). Сделанные ранее фотографии и видео не будут перенесены туда автоматически.</translation>
 <translation id="6778482348691154169">Не удалось сделать снимок</translation>
 <translation id="6965382102122355670">ОК</translation>
 <translation id="698156982839284926">3 секунды</translation>

@@ -43,11 +43,9 @@
 <translation id="5057360777601936059">Понастоящем няма достъп до камерата ви.
         Моля, проверете дали камерата е свързана правилно.</translation>
 <translation id="5152121255775685072">Към галерията</translation>
-<translation id="5422455049771430511">Снимките и видеоклиповете ви имат нов дом</translation>
 <translation id="5671277269877808209">Квадрат</translation>
 <translation id="5775960006311140197">Експертен режим</translation>
 <translation id="5869546221129391014">Таблица</translation>
-<translation id="6040143037577758943">Затваряне</translation>
 <translation id="6073451960410192870">Спиране на записа</translation>
 <translation id="6197807149213783179">Запазване на метаданните</translation>
 <translation id="6233780560267770709">3 на 3</translation>
@@ -58,7 +56,6 @@
 Ако те се отнасят за качеството на изображение или видеоклип, моля, прикачете откъс и опишете какво не е наред. (Например снимката е твърде тъмна или предметът не е на фокус.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" /> x <ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> мегапиксела</translation>
 <translation id="6681668084120808868">Снимане</translation>
-<translation id="6739700533200816396">Снимките и видеоклиповете вече ще се запазват в нова папка в приложението „Файлове“: „Моите файлове“ &gt; „Камера“. Досегашните снимки и видеоклипове няма да бъдат преместени в новата папка.</translation>
 <translation id="6778482348691154169">Не може да се направи снимка</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 секунди</translation>

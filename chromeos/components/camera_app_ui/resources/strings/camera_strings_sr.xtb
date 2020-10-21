@@ -43,11 +43,9 @@
 <translation id="5057360777601936059">Камера тренутно није доступна.
         Проверите да ли је камера исправно повезана.</translation>
 <translation id="5152121255775685072">Иди у галерију</translation>
-<translation id="5422455049771430511">Слике и видео снимци су сада на новом месту</translation>
 <translation id="5671277269877808209">Квадрат</translation>
 <translation id="5775960006311140197">Режим за стручњаке</translation>
 <translation id="5869546221129391014">Мрежа</translation>
-<translation id="6040143037577758943">Затвори</translation>
 <translation id="6073451960410192870">Заустави снимање</translation>
 <translation id="6197807149213783179">Сачувај метаподатке</translation>
 <translation id="6233780560267770709">3 са 3</translation>
@@ -58,7 +56,6 @@
 Ако су повратне информације у вези са квалитетом слике или видеа, приложите узорак слике или видеа и опишите шта није у реду. (На пример, слика је превише тамна или субјекат није у фокусу.)</translation>
 <translation id="6420689864531458495">Мегапиксели: <ph name="MEGAPIXEL" /> (<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />x<ph name="HEIGHT" />)</translation>
 <translation id="6681668084120808868">Снимите фотографију</translation>
-<translation id="6739700533200816396">Слике и видео снимци се сада чувају у новом фолдеру у апликацији Фајлови: Моји фајлови &gt; Камера. Раније слике и видео снимци се неће преместити у нови фолдер.</translation>
 <translation id="6778482348691154169">Снимање слике није успело</translation>
 <translation id="6965382102122355670">Потврди</translation>
 <translation id="698156982839284926">3 секунде</translation>

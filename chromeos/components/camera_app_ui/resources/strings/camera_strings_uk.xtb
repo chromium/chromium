@@ -43,11 +43,9 @@
 <translation id="5057360777601936059">Камера зараз недоступна.
         Перевірте, чи правильно її під’єднано.</translation>
 <translation id="5152121255775685072">Перейти в галерею</translation>
-<translation id="5422455049771430511">Нове сховище для ваших фотографій і відео</translation>
 <translation id="5671277269877808209">Квадрат</translation>
 <translation id="5775960006311140197">Режим експерта</translation>
 <translation id="5869546221129391014">Сітка</translation>
-<translation id="6040143037577758943">Закрити</translation>
 <translation id="6073451960410192870">Припинити запис</translation>
 <translation id="6197807149213783179">Зберегти метадані</translation>
 <translation id="6233780560267770709">3 на 3</translation>
@@ -58,7 +56,6 @@
 Якщо ви хочете поділитися враженнями про якість зображення чи відео, долучіть зразок і опишіть проблему (наприклад, "фотографія надто темна" або "об'єкт на зображенні розмитий").</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> мегапікс.</translation>
 <translation id="6681668084120808868">Зробити фото</translation>
-<translation id="6739700533200816396">Фотографії й відео тепер зберігатимуться в новій папці в додатку Файли: "Мої файли" &gt; "Камера". Попередні фотографії й відео не буде переміщено туди.</translation>
 <translation id="6778482348691154169">Не вдається сфотографувати</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 секунди</translation>

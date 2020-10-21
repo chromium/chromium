@@ -43,11 +43,9 @@
 <translation id="5057360777601936059">Aparat jest obecnie niedostępny.
         Sprawdź, czy jest prawidłowo podłączony.</translation>
 <translation id="5152121255775685072">Otwórz galerię</translation>
-<translation id="5422455049771430511">Masz nowe miejsce na zdjęcia i filmy</translation>
 <translation id="5671277269877808209">Kwadrat</translation>
 <translation id="5775960006311140197">Tryb eksperta</translation>
 <translation id="5869546221129391014">Siatka</translation>
-<translation id="6040143037577758943">Zamknij</translation>
 <translation id="6073451960410192870">Zatrzymaj nagrywanie</translation>
 <translation id="6197807149213783179">Zapisz metadane</translation>
 <translation id="6233780560267770709">3 na 3</translation>
@@ -58,7 +56,6 @@
 Jeśli dotyczyła ona jakości zdjęć lub filmów, zamieść tutaj przykładowe zdjęcie lub film i opisz, na czym polega problem (na przykład zdjęcie jest za ciemne lub obiekt jest nieostry).</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> Mpix</translation>
 <translation id="6681668084120808868">Zrób zdjęcie</translation>
-<translation id="6739700533200816396">Zdjęcia i filmy będą teraz zapisywane w nowym folderze w aplikacji Pliki: Moje pliki &gt; Aparat. Poprzednio zapisane zdjęcia i filmy pozostaną w dotychczasowym miejscu.</translation>
 <translation id="6778482348691154169">Nie udało się zrobić zdjęcia</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 sekundy</translation>

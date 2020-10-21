@@ -43,11 +43,9 @@
 <translation id="5057360777601936059">Tu cámara no está disponible en este momento.
         Comprueba si está conectada correctamente.</translation>
 <translation id="5152121255775685072">Ir a la galería</translation>
-<translation id="5422455049771430511">Tus fotos y vídeos tienen un nuevo hogar</translation>
 <translation id="5671277269877808209">Cuadrado</translation>
 <translation id="5775960006311140197">Modo experto</translation>
 <translation id="5869546221129391014">Cuadrícula</translation>
-<translation id="6040143037577758943">Cerrar</translation>
 <translation id="6073451960410192870">Detener grabación</translation>
 <translation id="6197807149213783179">Guardar metadatos</translation>
 <translation id="6233780560267770709">Tres por tres</translation>
@@ -58,7 +56,6 @@
 Si tu comentario está relacionado con la calidad de imagen o de vídeo, adjunta una foto o un vídeo de muestra y describe el problema. Por ejemplo, indica si la foto está demasiado oscura o el sujeto no está enfocado.</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapíxeles</translation>
 <translation id="6681668084120808868">Sacar foto</translation>
-<translation id="6739700533200816396">Las fotos y los vídeos se guardarán ahora en una carpeta nueva en la aplicación Archivos: Mis archivos &gt; Cámara. Los vídeos y fotos anteriores no se moverán a la nueva carpeta.</translation>
 <translation id="6778482348691154169">No se puede hacer la foto</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="698156982839284926">3 segundos</translation>

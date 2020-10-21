@@ -43,11 +43,9 @@
 <translation id="5057360777601936059">Tаны камер одоогоор боломжгүй байна.
         Камераа зөв залгасан эсэхээ шалгана уу.</translation>
 <translation id="5152121255775685072">Галлерей руу очих</translation>
-<translation id="5422455049771430511">Таны зураг болон видеонууд шинэ гэртэй боллоо</translation>
 <translation id="5671277269877808209">Дөрвөлжин</translation>
 <translation id="5775960006311140197">Мэргэжилтэн горим</translation>
 <translation id="5869546221129391014">Сүлжээний тор</translation>
-<translation id="6040143037577758943">Хаах</translation>
 <translation id="6073451960410192870">Бичихийг зогсоох</translation>
 <translation id="6197807149213783179">Мета өгөгдлийг хадгалах</translation>
 <translation id="6233780560267770709">3-г харьцах нь 3</translation>
@@ -58,7 +56,6 @@
 Хэрэв таны санал хүсэлт зургийн эсвэл видеоны чанартай холбоотой бол жишээ зураг эсвэл видеог хавсаргаад ямар алдаа байгааг тодорхойлно уу. (Жишээлбэл, зураг хэт бараан эсвэл субъект фокусгүй байна.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> мега пиксел</translation>
 <translation id="6681668084120808868">Гэрэл зураг авах</translation>
-<translation id="6739700533200816396">Зураг болон видеонуудыг одоо Файлс аппын шинэ фолдерт хадгална: Миний файлууд &gt; Камер. Өмнөх зураг болон видеонуудыг шинэ фолдер луу зөөхгүй.</translation>
 <translation id="6778482348691154169">Зураг авах боломжгүй байна</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 секунд</translation>

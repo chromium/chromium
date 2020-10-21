@@ -43,11 +43,9 @@
 <translation id="5057360777601936059">Fotoaparát momentálně není dostupný.
         Zkontrolujte, zda je fotoaparát správně připojen.</translation>
 <translation id="5152121255775685072">Přejít do galerie</translation>
-<translation id="5422455049771430511">Vaše fotky a videa mají nový domov</translation>
 <translation id="5671277269877808209">Čtverec</translation>
 <translation id="5775960006311140197">Režim pro experty</translation>
 <translation id="5869546221129391014">Mřížka</translation>
-<translation id="6040143037577758943">Zavřít</translation>
 <translation id="6073451960410192870">Zastavit nahrávání</translation>
 <translation id="6197807149213783179">Uložit metadata</translation>
 <translation id="6233780560267770709">3 krát 3</translation>
@@ -58,7 +56,6 @@
 Pokud se zpětná vazba týká kvality fotek nebo videí, připojte ukázkovou fotku nebo video a popište, kde je problém. (Například fotka je příliš tmavá nebo objekt není zaostřen.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" /> : <ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" /> × <ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> Mpx</translation>
 <translation id="6681668084120808868">Vyfotit</translation>
-<translation id="6739700533200816396">Fotky a videa se teď budou ukládat do nové složky v aplikaci Soubory: Moje soubory &gt; Fotoaparát. Předchozí fotky a videa se do nové složky nepřesunou.</translation>
 <translation id="6778482348691154169">Fotku se nepodařilo pořídit</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 sekundy</translation>

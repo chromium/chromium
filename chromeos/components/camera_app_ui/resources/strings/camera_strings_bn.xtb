@@ -43,11 +43,9 @@
 <translation id="5057360777601936059">আপনার ক্যামেরা বর্তমানে উপলভ্য নেই।
         ক্যামেরা ঠিকভাবে কানেক্ট করা আছে কিনা দেখুন।</translation>
 <translation id="5152121255775685072">গ্যালারিতে যান</translation>
-<translation id="5422455049771430511">আপনার ফটো ও ভিডিও সেভ করার নতুন জায়গা</translation>
 <translation id="5671277269877808209">চৌকো</translation>
 <translation id="5775960006311140197">বিশেষজ্ঞ মোড</translation>
 <translation id="5869546221129391014">গ্রিড</translation>
-<translation id="6040143037577758943">বন্ধ</translation>
 <translation id="6073451960410192870">রেকর্ডিং বন্ধ করুন</translation>
 <translation id="6197807149213783179">মেটাডেটা সেভ করুন</translation>
 <translation id="6233780560267770709">৩ x ৩</translation>
@@ -58,7 +56,6 @@
 যদি আপনি কোনও ছবি বা ভিডিওর কোয়ালিটির ব্যাপারে মতামত জানাতে চান, তাহলে উদাহরণস্বরূপ একটি ফটো বা ভিডিও এখানে অ্যাটাচ করুন এবং আমাদের জানান সেটিতে কোন বিষয়টি আপনার খারাপ লেগেছে। (যেমন, ফটোতে পর্যাপ্ত আলোর অভাব রয়েছে বা যার ফটো তোলা হয়েছে, তাকে ফোকাসে রেখে ফটোটি তোলা হয়নি।)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> মেগা পিক্সেল</translation>
 <translation id="6681668084120808868">ফটো তুলুন</translation>
-<translation id="6739700533200816396">ফটো এবং ভিডিওগুলি এখন Files অ্যাপের নতুন ফোল্ডারে সেভ করা হবে: আমার ফাইল &gt; ক্যামেরা। আগের ফটো এবং ভিডিওগুলি নতুন ফোল্ডারে সরানো যাবে না।</translation>
 <translation id="6778482348691154169">ফটো তোলা যাচ্ছে না</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="698156982839284926">৩ সেকেন্ড</translation>

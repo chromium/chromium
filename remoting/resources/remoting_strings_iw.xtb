@@ -10,7 +10,7 @@
 <translation id="1520828917794284345">שנה את גודל שולחן העבודה</translation>
 <translation id="1546934824884762070">אירעה שגיאה לא צפויה. דיווח על בעיה זו למפתחים.</translation>
 <translation id="1697532407822776718">הכל מוכן!</translation>
-<translation id="1742469581923031760">מתחבר…</translation>
+<translation id="1742469581923031760">ההתחברות מתבצעת…</translation>
 <translation id="177096447311351977">‏IP הערוץ של הלקוח: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' ערוץ='<ph name="CHANNEL_TYPE" />' חיבור='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">מחק</translation>
 <translation id="2009755455353575666">החיבור נכשל</translation>
@@ -109,7 +109,7 @@
 <translation id="6040143037577758943">סגור</translation>
 <translation id="6062854958530969723">אתחול המארח נכשל.</translation>
 <translation id="6099500228377758828">‏שירות Chrome Remote Desktop</translation>
-<translation id="6122191549521593678">מקוון</translation>
+<translation id="6122191549521593678">אונליין</translation>
 <translation id="6178645564515549384">מארח העברת הודעות ייעודי עבור סיוע מרוחק</translation>
 <translation id="618120821413932081">יש לעדכן את הפתרון המרוחק כך שיתאים לגודל החלון</translation>
 <translation id="6223301979382383752">פתיחת ההעדפות להקלטת מסך</translation>
@@ -129,7 +129,7 @@
 <translation id="7026930240735156896">יש להגדיר את המחשב לגישה מרחוק בהתאם להוראות</translation>
 <translation id="7067321367069083429">המסך פועל כמסך מגע</translation>
 <translation id="7116737094673640201">‏ברוך בואך אל Chrome Remote Desktop</translation>
-<translation id="7144878232160441200">נסה שוב</translation>
+<translation id="7144878232160441200">יש לנסות שוב</translation>
 <translation id="7312846573060934304">המארח אינו מקוון.</translation>
 <translation id="7319983568955948908">הפסק את השיתוף</translation>
 <translation id="7401733114166276557">Chrome Remote Desktop</translation>

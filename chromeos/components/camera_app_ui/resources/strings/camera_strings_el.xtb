@@ -43,11 +43,9 @@
 <translation id="5057360777601936059">Η κάμερά σας δεν είναι διαθέσιμη προς το παρόν.
         Ελέγξτε εάν η κάμερα έχει συνδεθεί σωστά.</translation>
 <translation id="5152121255775685072">Μετάβαση στο gallery</translation>
-<translation id="5422455049771430511">Οι φωτογραφίες και τα βίντεό σας βρήκαν νέα στέγη</translation>
 <translation id="5671277269877808209">Τετράγωνο</translation>
 <translation id="5775960006311140197">Λειτουργία Expert</translation>
 <translation id="5869546221129391014">Πλέγμα</translation>
-<translation id="6040143037577758943">Κλείσιμο</translation>
 <translation id="6073451960410192870">Διακοπή εγγραφής</translation>
 <translation id="6197807149213783179">Αποθήκευση μεταδεδομένων</translation>
 <translation id="6233780560267770709">3 επί 3</translation>
@@ -58,7 +56,6 @@
 Εάν τα σχόλιά σας αφορούν την ποιότητα φωτογραφίας ή βίντεο, επισυνάψτε ένα δείγμα εικόνας ή βίντεο και περιγράψτε το πρόβλημα. (Για παράδειγμα, η φωτογραφία είναι υπερβολικά σκοτεινή ή δεν είναι εστιασμένο το θέμα.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="6681668084120808868">Λήψη φωτογραφίας</translation>
-<translation id="6739700533200816396">Οι φωτογραφίες και τα βίντεο θα αποθηκεύονται πλέον σε έναν νέο φάκελο στην εφαρμογή Αρχεία: Τα αρχεία μου &gt; Κάμερα. Τυχόν προηγούμενες φωτογραφίες και βίντεο δεν θα μετακινηθούν στον νέο φάκελο.</translation>
 <translation id="6778482348691154169">Δεν είναι δυνατή η λήψη φωτογραφίας</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 δευτερόλεπτα</translation>

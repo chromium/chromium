@@ -43,11 +43,9 @@ Las apps que tengan permiso de almacenamiento podrán acceder a tus fotos y vide
 <translation id="5057360777601936059">La cámara no está disponible en este momento.
         Asegúrate de que esté conectada de forma correcta.</translation>
 <translation id="5152121255775685072">Ir a la galería</translation>
-<translation id="5422455049771430511">Tus fotos y videos tienen un nuevo hogar</translation>
 <translation id="5671277269877808209">Cuadrado</translation>
 <translation id="5775960006311140197">Modo experto</translation>
 <translation id="5869546221129391014">Cuadrícula</translation>
-<translation id="6040143037577758943">Cerrar</translation>
 <translation id="6073451960410192870">Detener grabación</translation>
 <translation id="6197807149213783179">Guardar metadatos</translation>
 <translation id="6233780560267770709">3 por 3</translation>
@@ -58,7 +56,6 @@ Las apps que tengan permiso de almacenamiento podrán acceder a tus fotos y vide
 Si tus comentarios están relacionados con la calidad de imagen o video, adjunta una foto o video de muestra y describe el problema (p. ej., la foto sale demasiado oscura o fuera de foco).</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" /> × <ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapíxel</translation>
 <translation id="6681668084120808868">Tomar foto</translation>
-<translation id="6739700533200816396">Las fotos y videos ahora se guardan en una carpeta nueva de la app de Archivos: Mis archivos &gt; Cámara. No se moverán las fotos y videos anteriores a la carpeta nueva.</translation>
 <translation id="6778482348691154169">No se puede tomar la foto</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="698156982839284926">3 segundos</translation>

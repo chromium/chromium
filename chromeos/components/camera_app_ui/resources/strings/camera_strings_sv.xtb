@@ -43,11 +43,9 @@
 <translation id="5057360777601936059">Kameran är inte tillgänglig.
         Kontrollera kameraanslutningen.</translation>
 <translation id="5152121255775685072">Besök galleriet</translation>
-<translation id="5422455049771430511">Nu hittar du dina foton och videor på ett nytt ställe</translation>
 <translation id="5671277269877808209">Kvadratiskt</translation>
 <translation id="5775960006311140197">Expertläge</translation>
 <translation id="5869546221129391014">Rutnät</translation>
-<translation id="6040143037577758943">Stäng</translation>
 <translation id="6073451960410192870">Sluta spela in</translation>
 <translation id="6197807149213783179">Spara metadata</translation>
 <translation id="6233780560267770709">Tre gånger tre</translation>
@@ -58,7 +56,6 @@
 Om din feedback handlar om bild- eller videokvalitet bifogar du en exempelbild eller exempelvideo och beskriver problemet. (Till exempel: fotot är för mörkt eller motivet är inte i fokus.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" /> x <ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="6681668084120808868">Ta foto</translation>
-<translation id="6739700533200816396">Nu sparas foton och videor i en ny mapp i Files-appen under Mina filer &gt; Kamera. Befintliga foton och videor flyttas inte till den nya mappen.</translation>
 <translation id="6778482348691154169">Det gick inte att ta ett foto</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">Tre sekunder</translation>

@@ -23,7 +23,7 @@
 <translation id="1155759005174418845">קטלאנית</translation>
 <translation id="1172970565351728681">נותרו כ-<ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">שנה שם</translation>
-<translation id="117624967391683467">מעתיק את <ph name="FILE_NAME" />...</translation>
+<translation id="117624967391683467">העתקת <ph name="FILE_NAME" /> מתבצעת...</translation>
 <translation id="1178581264944972037">השהיה</translation>
 <translation id="1190144681599273207">הבאת קובץ זה תשתמש בערך ב-<ph name="FILE_SIZE" /> מחבילת הגלישה.</translation>
 <translation id="1201402288615127009">הבא</translation>
@@ -133,7 +133,7 @@
 <translation id="2384596874640104496">מקלדת סינהלה</translation>
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> זמין</translation>
 <translation id="2425665904502185219">גודל הקובץ הכולל</translation>
-<translation id="2428749644083375155">מעתיק <ph name="NUMBER_OF_ITEMS" /> פריטים אל <ph name="FOLDER_NAME" /></translation>
+<translation id="2428749644083375155">העתקת <ph name="NUMBER_OF_ITEMS" /> פריטים אל <ph name="FOLDER_NAME" /> מתבצעת</translation>
 <translation id="2448312741937722512">סוג</translation>
 <translation id="2453576648990281505">הקובץ כבר קיים</translation>
 <translation id="2464079411014186876">גלידה</translation>
@@ -289,7 +289,7 @@
 <translation id="4197674956721858839">כיווץ הקבצים שנבחרו</translation>
 <translation id="421017592316736757">עליך להיות במצב מקוון כדי לגשת לקובץ זה.</translation>
 <translation id="4212740939091998969">כבר קיימת תיקייה בשם "<ph name="FOLDER_NAME" />". יש לבחור שם אחר.</translation>
-<translation id="4215448920900139318">מגבה <ph name="FILE_COUNT" /></translation>
+<translation id="4215448920900139318">הגיבוי של <ph name="FILE_COUNT" /> מתבצע</translation>
 <translation id="426015154560005552">מקלדת ערבית</translation>
 <translation id="4261901459838235729">‏מצגת Google</translation>
 <translation id="4290535918735525311">‏תיקייה אחת שותפה עם Linux</translation>
@@ -519,7 +519,7 @@
 <translation id="6505918941256367791">‏מקלדת טמילית (InScript)</translation>
 <translation id="6509122719576673235">נורווגית</translation>
 <translation id="6527303717912515753">שיתוף</translation>
-<translation id="653019979737152879">מסנכרן את <ph name="FILE_NAME" />...</translation>
+<translation id="653019979737152879">הסנכרון של <ph name="FILE_NAME" /> מתבצע...</translation>
 <translation id="6549689063733911810">מהזמן האחרון</translation>
 <translation id="6556866813142980365">ביצוע מחדש</translation>
 <translation id="6558280019477628686">אירעה שגיאה. ייתכן שפריטים מסוימים לא נמחקו.</translation>
@@ -570,7 +570,7 @@
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> תיקיות נבחרו</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">ההתקנה נכשלה.</translation>
-<translation id="7040138676081995583">פתח באמצעות...</translation>
+<translation id="7040138676081995583">פתיחה באמצעות...</translation>
 <translation id="7100897339030255923">נבחרו <ph name="COUNT" /> פריטים</translation>
 <translation id="7106346894903675391">קנה שטח אחסון נוסף...</translation>
 <translation id="7126604456862387217">‏'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' – &lt;em&gt;חיפוש ב-‏Drive‏&lt;/em‏&gt;</translation>
@@ -615,7 +615,7 @@
 <translation id="7627790789328695202">אופס, <ph name="FILE_NAME" /> כבר קיים. שנה את השם שלו ונסה שוב.</translation>
 <translation id="7628656427739290098">‏‎<ph name="PERCENT" />%‎ הושלמו.</translation>
 <translation id="7649070708921625228">עזרה</translation>
-<translation id="7654209398114106148">מתבצעת העברה של<ph name="NUMBER_OF_ITEMS" /> פריטים…</translation>
+<translation id="7654209398114106148">מתבצעת העברה של <ph name="NUMBER_OF_ITEMS" /> פריטים…</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7693909743393669729">פירמוט של התקן אחסון ימחק את כל הנתונים המאוחסנים בו ויסיר את כל המחיצות הקיימות, כולל מחיצות שאינן גלויות. לא ניתן לבטל פעולה זו.</translation>
 <translation id="7695430100978772476">לא ניתן לפרמט את <ph name="DRIVE_NAME" /></translation>
@@ -650,7 +650,7 @@
 <translation id="78946041517601018">‏כונני Drive משותפים</translation>
 <translation id="7896906914454843592">מקלדת מורחבת של ארה"ב</translation>
 <translation id="7898607018410277265">מקלדת גוג'אראטי (פונטית חדשה)</translation>
-<translation id="7908793776359722643">פירמוט מחיצה ימחק את כל הנתונים המאוחסנים בה. לא ניתן לבטל פעולה זו.</translation>
+<translation id="7908793776359722643">פרמוט מחיצה ימחק את כל הנתונים המאוחסנים בה. לא ניתן לבטל פעולה זו.</translation>
 <translation id="7917972308273378936">מקלדת ליטאית </translation>
 <translation id="7925686952655276919">אין להשתמש בנתונים ניידים עבור סנכרון</translation>
 <translation id="7928710562641958568">הוצא את המכשיר</translation>
@@ -702,7 +702,7 @@
 <translation id="8342318071240498787">קובץ או ספריה עם אותו שם כבר קיימים.</translation>
 <translation id="8382450452152102026">בתיקייה <ph name="FOLDER_NAME" /></translation>
 <translation id="8391950649760071442">‏תעתוק (emandi → ఏమండీ)</translation>
-<translation id="8395901698320285466">מימדים</translation>
+<translation id="8395901698320285466">מידות</translation>
 <translation id="8412586565681117057">‏שיטת קלט Quick</translation>
 <translation id="8418113698656761985">מקלדת רומנית</translation>
 <translation id="8432745813735585631">‏מקלדת Colemak אנגלית (ארה"ב)</translation>

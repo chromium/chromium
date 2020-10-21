@@ -43,11 +43,9 @@
 <translation id="5057360777601936059">La càmera no està disponible en aquest moment.
         Comprova que estigui ben connectada.</translation>
 <translation id="5152121255775685072">Ves a la galeria</translation>
-<translation id="5422455049771430511">Les teves fotos i els teus vídeos han canviat de lloc</translation>
 <translation id="5671277269877808209">Quadrat</translation>
 <translation id="5775960006311140197">Mode expert</translation>
 <translation id="5869546221129391014">Quadrícula</translation>
-<translation id="6040143037577758943">Tanca</translation>
 <translation id="6073451960410192870">Atura la gravació</translation>
 <translation id="6197807149213783179">Desa les metadades</translation>
 <translation id="6233780560267770709">3 per 3</translation>
@@ -58,7 +56,6 @@
 Si els teus suggeriments fan referència a la qualitat d'imatge o de vídeo, adjunta una foto o un vídeo de mostra i descriu quin problema hi ha. Per exemple, la foto és massa fosca o el motiu central no està enfocat.</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapíxels</translation>
 <translation id="6681668084120808868">Fes una foto</translation>
-<translation id="6739700533200816396">Ara, les fotos i els vídeos es desaran en una carpeta nova de l'aplicació Fitxers: Els meus fitxers &gt; Càmera. Les fotos i els vídeos anteriors no es mouran a la carpeta nova.</translation>
 <translation id="6778482348691154169">No es pot fer la foto</translation>
 <translation id="6965382102122355670">D'acord</translation>
 <translation id="698156982839284926">3 segons</translation>

@@ -43,11 +43,9 @@
 <translation id="5057360777601936059">A cámara non está dispoñible nestes momentos.
         Comproba se está conectada correctamente.</translation>
 <translation id="5152121255775685072">Ir á galería</translation>
-<translation id="5422455049771430511">As túas fotos e vídeos cambiaron de lugar</translation>
 <translation id="5671277269877808209">Cadrado</translation>
 <translation id="5775960006311140197">Modo experto</translation>
 <translation id="5869546221129391014">Grade</translation>
-<translation id="6040143037577758943">Pechar</translation>
 <translation id="6073451960410192870">Deter gravación</translation>
 <translation id="6197807149213783179">Gardar metadatos</translation>
 <translation id="6233780560267770709">3 por 3</translation>
@@ -58,7 +56,6 @@
 Se está relacionado coa calidade da imaxe ou do vídeo, anexa unha foto ou un vídeo de mostra e indica cal é o problema (por exemplo, a foto está demasiado escura ou desenfocada).</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapíxeles</translation>
 <translation id="6681668084120808868">Tirar foto</translation>
-<translation id="6739700533200816396">Agora as fotos e os vídeos gardaranse nun novo cartafol da aplicación Ficheiros: Os meus ficheiros &gt; Cámara. As fotos e os vídeos que xa teñas non se moverán ao cartafol novo.</translation>
 <translation id="6778482348691154169">Non se puido sacar a foto</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="698156982839284926">3 segundos</translation>

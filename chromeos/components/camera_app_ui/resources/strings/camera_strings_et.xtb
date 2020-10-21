@@ -43,11 +43,9 @@ Salvestusruumi kasutuse lubadega rakendustel on juurdepääs teie fotodele ja vi
 <translation id="5057360777601936059">Teie kaamera pole praegu saadaval.
         Kontrollige, kas kaamera on korralikult ühendatud.</translation>
 <translation id="5152121255775685072">Ava galerii</translation>
-<translation id="5422455049771430511">Teie fotodel ja videotel on nüüd uus kodu</translation>
 <translation id="5671277269877808209">Ruut</translation>
 <translation id="5775960006311140197">Ekspertrežiim</translation>
 <translation id="5869546221129391014">Ruudustik</translation>
-<translation id="6040143037577758943">Sulge</translation>
 <translation id="6073451960410192870">Peata salvestamine</translation>
 <translation id="6197807149213783179">Salvesta metaandmed</translation>
 <translation id="6233780560267770709">3 korda 3</translation>
@@ -58,7 +56,6 @@ Salvestusruumi kasutuse lubadega rakendustel on juurdepääs teie fotodele ja vi
 Kui teie tagasiside on seotud pildi- või videokvaliteediga, lisage manusena näidisfoto või -video ja kirjeldage, mis on valesti. (Näiteks foto on liiga tume või objekt pole teravustatud.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" /> × <ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapikslit</translation>
 <translation id="6681668084120808868">Tee foto</translation>
-<translation id="6739700533200816396">Fotod ja videod salvestatakse rakenduses Failid nüüd uude kausta: Minu failid &gt; Kaamera. Varasemaid fotosid ja videoid uude kausta ei teisaldata.</translation>
 <translation id="6778482348691154169">Foto jäädvustamine ebaõnnestus</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 sekundit</translation>

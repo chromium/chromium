@@ -43,11 +43,9 @@
 <translation id="5057360777601936059">Kamera ez dago erabilgarri une honetan.
         Egiaztatu kamera ongi konektatuta dagoela.</translation>
 <translation id="5152121255775685072">Joan galeriara</translation>
-<translation id="5422455049771430511">Etxe berria dute zure argazki eta bideoek</translation>
 <translation id="5671277269877808209">Karratua</translation>
 <translation id="5775960006311140197">Adituen modua</translation>
 <translation id="5869546221129391014">Sareta</translation>
-<translation id="6040143037577758943">Itxi</translation>
 <translation id="6073451960410192870">Utzi grabatzeari</translation>
 <translation id="6197807149213783179">Gorde metadatuak</translation>
 <translation id="6233780560267770709">3 x 3</translation>
@@ -58,7 +56,6 @@
 Irudi edo bideoaren kalitateari buruzko iritzia eman nahi baduzu, erantsi argazki edo bideo bat lagin gisa eta azal iezaguzu zein den arazoa (adibidez, argazkia ilunegia da edo subjektua ez dago fokuratuta).</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" /> x <ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="6681668084120808868">Atera argazkia</translation>
-<translation id="6739700533200816396">Orain, Fitxategiak aplikazioko karpeta honetan gordeko dira argazkiak eta bideoak: Nire fitxategiak &gt; Kamera. Aurretik egin dituzun argazkiak eta bideoak ez ditugu eramango karpeta berrira.</translation>
 <translation id="6778482348691154169">Ezin da atera argazkia</translation>
 <translation id="6965382102122355670">Ados</translation>
 <translation id="698156982839284926">3 segundo</translation>

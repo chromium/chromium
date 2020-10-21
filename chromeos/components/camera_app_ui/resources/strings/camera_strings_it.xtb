@@ -43,11 +43,9 @@ Le app con autorizzazioni di accesso allo spazio di archiviazione potranno acced
 <translation id="5057360777601936059">La tua fotocamera non è attualmente disponibile.
         Controlla se la fotocamera è collegata correttamente.</translation>
 <translation id="5152121255775685072">Vai alla galleria</translation>
-<translation id="5422455049771430511">Le tue foto e i tuoi video hanno cambiato posto</translation>
 <translation id="5671277269877808209">Quadrato</translation>
 <translation id="5775960006311140197">Modalità Esperto</translation>
 <translation id="5869546221129391014">Griglia</translation>
-<translation id="6040143037577758943">Chiudi</translation>
 <translation id="6073451960410192870">Interrompi registrazione</translation>
 <translation id="6197807149213783179">Salva metadati</translation>
 <translation id="6233780560267770709">3 x 3</translation>
@@ -58,7 +56,6 @@ Le app con autorizzazioni di accesso allo spazio di archiviazione potranno acced
 Se il feedback riguarda la qualità di immagini o video, allega una foto o un video di esempio e descrivi il problema (ad esempio, la foto è troppo scura o il soggetto non è a fuoco).</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="6681668084120808868">Scatta foto</translation>
-<translation id="6739700533200816396">Le foto e i video verranno salvati in una nuova cartella dell'app File: I miei file &gt; Fotocamera. Le foto e i video precedenti non verranno spostati nella nuova cartella.</translation>
 <translation id="6778482348691154169">Impossibile scattare una foto</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 secondi</translation>

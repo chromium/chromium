@@ -43,11 +43,9 @@
 <translation id="5057360777601936059">Your camera is currently unavailable.
         Please check if the camera is properly connected.</translation>
 <translation id="5152121255775685072">Go to gallery</translation>
-<translation id="5422455049771430511">Your photos and videos have a new home</translation>
 <translation id="5671277269877808209">Square</translation>
 <translation id="5775960006311140197">Expert mode</translation>
 <translation id="5869546221129391014">Grid</translation>
-<translation id="6040143037577758943">Close</translation>
 <translation id="6073451960410192870">Stop recording</translation>
 <translation id="6197807149213783179">Save metadata</translation>
 <translation id="6233780560267770709">3 by 3</translation>
@@ -58,7 +56,6 @@
 If your feedback is about image or video quality, please attach a sample photo or video and describe what's wrong. (For example, photo is too dark or subject isn’t in focus.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> mega pixel</translation>
 <translation id="6681668084120808868">Take photo</translation>
-<translation id="6739700533200816396">Photos and videos will now be saved to a new folder in the Files app: My files &gt; Camera. Previous photos and videos won't move to the new folder.</translation>
 <translation id="6778482348691154169">Unable to take photo</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 seconds</translation>

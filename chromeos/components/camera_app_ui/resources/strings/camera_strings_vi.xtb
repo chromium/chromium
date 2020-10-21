@@ -43,11 +43,9 @@
 <translation id="5057360777601936059">Máy ảnh của bạn hiện chưa sẵn sàng.
         Vui lòng kiểm tra xem máy ảnh có được kết nối đúng cách không.</translation>
 <translation id="5152121255775685072">Truy cập thư viện</translation>
-<translation id="5422455049771430511">Ảnh và video của bạn sẽ có nơi lưu trữ mới</translation>
 <translation id="5671277269877808209">Vuông</translation>
 <translation id="5775960006311140197">Chế độ Chuyên gia</translation>
 <translation id="5869546221129391014">Lưới</translation>
-<translation id="6040143037577758943">Đóng</translation>
 <translation id="6073451960410192870">Dừng ghi</translation>
 <translation id="6197807149213783179">Lưu siêu dữ liệu</translation>
 <translation id="6233780560267770709">3 x 3</translation>
@@ -58,7 +56,6 @@
 Nếu ý kiến phản hồi của bạn là về chất lượng ảnh hoặc video, vui lòng đính kèm ví dụ về ảnh hoặc video và mô tả vấn đề bạn gặp phải. (Ví dụ: ảnh quá tối hoặc chủ thể trong ảnh không nét.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="6681668084120808868">Chụp ảnh</translation>
-<translation id="6739700533200816396">Giờ đây, ảnh và video sẽ được lưu vào thư mục mới trong ứng dụng Files: Tệp của tôi &gt; Máy ảnh. Những ảnh và video trước đây sẽ không được chuyển sang thư mục mới.</translation>
 <translation id="6778482348691154169">Không thể chụp ảnh</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 giây</translation>

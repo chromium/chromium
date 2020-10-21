@@ -43,11 +43,9 @@
 <translation id="5057360777601936059">Kamera trenutno nije dostupna.
         Proverite da li je kamera ispravno povezana.</translation>
 <translation id="5152121255775685072">Idi u galeriju</translation>
-<translation id="5422455049771430511">Slike i video snimci su sada na novom mestu</translation>
 <translation id="5671277269877808209">Kvadrat</translation>
 <translation id="5775960006311140197">Režim za stručnjake</translation>
 <translation id="5869546221129391014">Mreža</translation>
-<translation id="6040143037577758943">Zatvori</translation>
 <translation id="6073451960410192870">Zaustavi snimanje</translation>
 <translation id="6197807149213783179">Sačuvaj metapodatke</translation>
 <translation id="6233780560267770709">3 sa 3</translation>
@@ -58,7 +56,6 @@
 Ako su povratne informacije u vezi sa kvalitetom slike ili videa, priložite uzorak slike ili videa i opišite šta nije u redu. (Na primer, slika je previše tamna ili subjekat nije u fokusu.)</translation>
 <translation id="6420689864531458495">Megapikseli: <ph name="MEGAPIXEL" /> (<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />x<ph name="HEIGHT" />)</translation>
 <translation id="6681668084120808868">Snimite fotografiju</translation>
-<translation id="6739700533200816396">Slike i video snimci se sada čuvaju u novom folderu u aplikaciji Fajlovi: Moji fajlovi &gt; Kamera. Ranije slike i video snimci se neće premestiti u novi folder.</translation>
 <translation id="6778482348691154169">Snimanje slike nije uspelo</translation>
 <translation id="6965382102122355670">Potvrdi</translation>
 <translation id="698156982839284926">3 sekunde</translation>

@@ -43,11 +43,9 @@
 <translation id="5057360777601936059">A kamera jelenleg nem használható.
         Ellenőrizze, hogy a kamera megfelelően van-e csatlakoztatva.</translation>
 <translation id="5152121255775685072">Ugrás a galériába</translation>
-<translation id="5422455049771430511">Fényképei és videói új otthonba költöztek.</translation>
 <translation id="5671277269877808209">Négyzet</translation>
 <translation id="5775960006311140197">Szakértői mód</translation>
 <translation id="5869546221129391014">Rács</translation>
-<translation id="6040143037577758943">Bezárás</translation>
 <translation id="6073451960410192870">Felvétel leállítása</translation>
 <translation id="6197807149213783179">Metaadatok mentése</translation>
 <translation id="6233780560267770709">Háromszor hármas</translation>
@@ -58,7 +56,6 @@
 Ha visszajelzése a kép vagy a videó minőségével kapcsolatos, kérjük, mellékeljen valamilyen mintafotót vagy -videót, és ismertesse a problémát. (Például túl sötét a fotó, vagy a kép tárgya nincs fókuszban.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" /> × <ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="6681668084120808868">Fényképkészítés</translation>
-<translation id="6739700533200816396">A fotók és videók mostantól a Fájlok alkalmazás egy új mappájába lesznek elmentve: Saját fájlok &gt; Kamera. A régebbi fotók és videók nem kerülnek át az új mappába.</translation>
 <translation id="6778482348691154169">Nem sikerült elkészíteni a fotót</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 másodperc</translation>

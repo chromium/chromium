@@ -43,11 +43,9 @@
 <translation id="5057360777601936059">Votre appareil photo n'est pas accessible pour le moment.
         Veuillez vérifier si l'appareil photo est connecté correctement.</translation>
 <translation id="5152121255775685072">Accéder à la galerie</translation>
-<translation id="5422455049771430511">Nouveau répertoire pour les photos et les vidéos</translation>
 <translation id="5671277269877808209">Carré</translation>
 <translation id="5775960006311140197">Mode Expert</translation>
 <translation id="5869546221129391014">Grille</translation>
-<translation id="6040143037577758943">Fermer</translation>
 <translation id="6073451960410192870">Arrêter l'enregistrement</translation>
 <translation id="6197807149213783179">Enregistrer les métadonnées</translation>
 <translation id="6233780560267770709">3 par 3</translation>
@@ -58,7 +56,6 @@
 Si vos commentaires portaient sur la qualité de l'image ou de la vidéo, veuillez joindre un échantillon de photo ou de vidéo et décrire la situation. (Par exemple, la photo est trop sombre ou la mise au point du sujet est floue.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> à <ph name="WIDTH" /> x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> mégapixels</translation>
 <translation id="6681668084120808868">Prendre une photo</translation>
-<translation id="6739700533200816396">Les photos et vidéos sont à présent enregistrées dans un nouveau dossier de l'application Fichiers : Mes fichiers &gt; Appareil photo. Les photos et vidéos existantes ne seront pas déplacées vers le nouveau dossier.</translation>
 <translation id="6778482348691154169">Impossible de prendre la photo</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 secondes</translation>

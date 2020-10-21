@@ -43,11 +43,9 @@
 <translation id="5057360777601936059">현재 카메라를 사용할 수 없습니다.
         카메라가 제대로 연결되어 있는지 확인하세요.</translation>
 <translation id="5152121255775685072">갤러리로 이동</translation>
-<translation id="5422455049771430511">사진과 동영상이 새로운 폴더에 저장됩니다</translation>
 <translation id="5671277269877808209">정사각형</translation>
 <translation id="5775960006311140197">전문가 모드</translation>
 <translation id="5869546221129391014">격자</translation>
-<translation id="6040143037577758943">닫기</translation>
 <translation id="6073451960410192870">녹화 중지</translation>
 <translation id="6197807149213783179">메타데이터 저장</translation>
 <translation id="6233780560267770709">3x3</translation>
@@ -58,7 +56,6 @@
 이미지 또는 동영상 품질에 관한 의견인 경우 샘플 사진이나 동영상을 첨부하고 문제를 설명해 주세요. 예를 들면 사진이 너무 어둡다거나 대상에 초점이 맞지 않는다고 설명할 수 있습니다.</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" />메가픽셀</translation>
 <translation id="6681668084120808868">사진 찍기</translation>
-<translation id="6739700533200816396">이제 사진과 동영상이 파일 앱의 내 파일 &gt; 카메라에 있는 새로운 폴더에 저장됩니다. 이전 사진과 동영상은 새 폴더로 이동되지 않습니다.</translation>
 <translation id="6778482348691154169">사진을 찍을 수 없습니다.</translation>
 <translation id="6965382102122355670">확인</translation>
 <translation id="698156982839284926">3초</translation>

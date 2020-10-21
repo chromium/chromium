@@ -43,11 +43,9 @@
 <translation id="5057360777601936059">ขณะนี้กล้องไม่พร้อมใช้งาน
         โปรดตรวจสอบว่ากล้องเชื่อมต่ออย่างถูกต้อง</translation>
 <translation id="5152121255775685072">ไปที่แกลเลอรี</translation>
-<translation id="5422455049771430511">โฟลเดอร์ใหม่สำหรับรูปภาพและวิดีโอ</translation>
 <translation id="5671277269877808209">สี่เหลี่ยมจัตุรัส</translation>
 <translation id="5775960006311140197">โหมดผู้เชี่ยวชาญ</translation>
 <translation id="5869546221129391014">ตาราง</translation>
-<translation id="6040143037577758943">ปิด</translation>
 <translation id="6073451960410192870">หยุดบันทึก</translation>
 <translation id="6197807149213783179">บันทึกข้อมูลเมตา</translation>
 <translation id="6233780560267770709">3 x 3</translation>
@@ -58,7 +56,6 @@
 หากความคิดนั้นเห็นเกี่ยวกับคุณภาพของรูปภาพหรือวิดีโอ โปรดแนบตัวอย่างรูปภาพหรือวิดีโอแล้วอธิบายปัญหาที่พบ (เช่น รูปภาพมืดเกินไปหรือวัตถุไม่อยู่ในโฟกัส)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> เมกะพิกเซล</translation>
 <translation id="6681668084120808868">ถ่ายภาพ</translation>
-<translation id="6739700533200816396">ตอนนี้รูปภาพและวิดีโอจะบันทึกลงในโฟลเดอร์ใหม่ในแอปไฟล์ที่ไฟล์ของฉัน &gt; กล้องถ่ายรูป ระบบจะไม่ย้ายรูปภาพและวิดีโอเก่าๆ ไปยังโฟลเดอร์ใหม่</translation>
 <translation id="6778482348691154169">ถ่ายภาพไม่ได้</translation>
 <translation id="6965382102122355670">ตกลง</translation>
 <translation id="698156982839284926">3 วินาที</translation>

@@ -43,11 +43,9 @@
 <translation id="5057360777601936059">Камераңыз учурда жеткиликсиз.
         Камера туура туташканын текшериңиз.</translation>
 <translation id="5152121255775685072">Галереяга өтүү</translation>
-<translation id="5422455049771430511">Сүрөттөрүңүз менен видеолоруңуз жаңы үйгө ээ болду</translation>
 <translation id="5671277269877808209">Чарчы</translation>
 <translation id="5775960006311140197">Адис режими</translation>
 <translation id="5869546221129391014">Тор</translation>
-<translation id="6040143037577758943">Жабуу</translation>
 <translation id="6073451960410192870">Жаздырууну токтотуу</translation>
 <translation id="6197807149213783179">Метадайындарды сактоо</translation>
 <translation id="6233780560267770709">3 х 3</translation>
@@ -58,7 +56,6 @@
 Эгер сүрөттүн же видеонун сапаты жөнүндө пикир билдирип жатсаңыз, анын үлгүсүн тиркеп, маселе эмнеде экенин түшүндүрүңүз. (Мисалы, сүрөт өтө караңгы же объект бүдөмүк болуп турат.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> мега-пиксель</translation>
 <translation id="6681668084120808868">Сүрөт тартуу</translation>
-<translation id="6739700533200816396">Сүрөттөр жана видеолор эми Файлдар колдонмосундагы жаңы папкага сакталат: Менин файлдарым &gt; Камера. Мурунку сүрөттөр жана видеолор жаңы папкага жылдырылбайт.</translation>
 <translation id="6778482348691154169">Сүрөт тартылбай жатат</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 секунд</translation>

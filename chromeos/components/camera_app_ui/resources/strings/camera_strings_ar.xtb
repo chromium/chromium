@@ -43,11 +43,9 @@
 <translation id="5057360777601936059">الكاميرا غير مُتاحة حاليًا.
         يُرجى التحقُّق من اتصال الكاميرا بشكلٍ صحيح.</translation>
 <translation id="5152121255775685072">الانتقال إلى المعرض</translation>
-<translation id="5422455049771430511">سيتم حفظ صورك وفيديوهاتك في مكان جديد</translation>
 <translation id="5671277269877808209">وضع المربّع</translation>
 <translation id="5775960006311140197">الوضع المختصّ</translation>
 <translation id="5869546221129391014">شبكة</translation>
-<translation id="6040143037577758943">إغلاق</translation>
 <translation id="6073451960410192870">إيقاف التسجيل</translation>
 <translation id="6197807149213783179">حفظ البيانات الوصفية</translation>
 <translation id="6233780560267770709">3 × 3</translation>
@@ -59,7 +57,6 @@
 إذا كان تعليقك بخصوص جودة صورة أو فيديو، يُرجى إرفاق نموذج لصورة أو فيديو ووصف المشكلة. على سبيل المثال، الصورة داكنة للغاية أو لا يتم التركيز على الهدف.</translation>
 <translation id="6420689864531458495">‏(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> ميغابكسل</translation>
 <translation id="6681668084120808868">التقاط صورة</translation>
-<translation id="6739700533200816396">سيتم الآن حفظ الصور والفيديوهات في مجلد جديد في تطبيق "الملفات": ملفاتي &gt; الكاميرا. ولن يتم نقل الصور والفيديوهات القديمة إلى المجلد الجديد.</translation>
 <translation id="6778482348691154169">تعذّر التقاط الصورة</translation>
 <translation id="6965382102122355670">حسنًا</translation>
 <translation id="698156982839284926">3 ثوانٍ</translation>

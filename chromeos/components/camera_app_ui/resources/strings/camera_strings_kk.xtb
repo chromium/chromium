@@ -43,11 +43,9 @@
 <translation id="5057360777601936059">Камераңыз әзірге қолжетімді емес.
         Камераның дұрыс жалғанғанын тексеріңіз.</translation>
 <translation id="5152121255775685072">Галереяға өту</translation>
-<translation id="5422455049771430511">Фотосуреттеріңіз бен бейнелеріңіз сақталатын жаңа орын пайда болды</translation>
 <translation id="5671277269877808209">Шаршы</translation>
 <translation id="5775960006311140197">Сарапшы режимі</translation>
 <translation id="5869546221129391014">Тор</translation>
-<translation id="6040143037577758943">Жабу</translation>
 <translation id="6073451960410192870">Бейнеге түсіруді тоқтату</translation>
 <translation id="6197807149213783179">Метадеректі сақтау</translation>
 <translation id="6233780560267770709">3 x 3</translation>
@@ -58,7 +56,6 @@
 Егер пікір сурет не бейне сапасы туралы болса, үлгі ретінде суретті не бейнені жіберіп, не дұрыс емес екенін (мысалы, фотосурет тым күңгірт немесе нысан фокусқа алынбаған) көрсетіңіз.</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> мегапиксел</translation>
 <translation id="6681668084120808868">Фотосуретке түсіру</translation>
-<translation id="6739700533200816396">Фотосуреттер мен бейнелер енді Files қолданбасының жаңа қалтасында сақталады: "Менің файлдарым &gt; Камера". Ескі фотосуреттер мен бейнелер жаңа қалтаға жылжытылмайды.</translation>
 <translation id="6778482348691154169">Фотосуретке түсірілмеді.</translation>
 <translation id="6965382102122355670">Жарайды</translation>
 <translation id="698156982839284926">3 секунд</translation>
