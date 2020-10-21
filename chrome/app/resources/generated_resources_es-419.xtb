@@ -5360,6 +5360,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7375235221357833624">{0,plural, =1{Actualiza el dispositivo en el transcurso de una hora}other{Actualiza el dispositivo en el transcurso de # horas}}</translation>
 <translation id="7376553024552204454">Resaltar el cursor del mouse cuando se mueve</translation>
 <translation id="7377451353532943397">Seguir bloqueando el acceso a los sensores</translation>
+<translation id="7378611153938412599">Las contraseñas poco seguras son fáciles de adivinar. Asegúrate de crear contraseñas seguras. <ph name="BEGIN_LINK" />Obtén más sugerencias de seguridad.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Abrir Chrome Web Store</translation>
 <translation id="7378812711085314936">Obtener conexión de datos</translation>
 <translation id="7380622428988553498">El nombre del dispositivo incluye caracteres no válidos</translation>
@@ -6338,6 +6339,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="850875081535031620">No se encontró software dañino</translation>
 <translation id="8509177919508253835">Restablece las llaves de seguridad y crea PIN</translation>
 <translation id="8509646642152301857">Ocurrió un error en la descarga del diccionario del corrector ortográfico.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{No se encontraron contraseñas poco seguras.}=1{Se encontró {COUNT} contraseña poco segura.}other{Se encontraron {COUNT} contraseñas poco seguras.}}</translation>
 <translation id="8512476990829870887">Finalizar proceso</translation>
 <translation id="851263357009351303">Siempre permitir que <ph name="HOST" /> muestre imágenes</translation>
 <translation id="8513108775083588393">Giro autom.</translation>

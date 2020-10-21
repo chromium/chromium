@@ -80,7 +80,7 @@
 <translation id="1549000191223877751">अन्य विंडोवर हलवा</translation>
 <translation id="1553358976309200471">Chrome अपडेट करा</translation>
 <translation id="1569387923882100876">कनेक्‍ट केलेले डिव्हाइस</translation>
-<translation id="1571304935088121812">वापरकर्तानाव कॉपी करा</translation>
+<translation id="1571304935088121812">वापरकर्ता नाव कॉपी करा</translation>
 <translation id="1592864538817356322">साधारण संरक्षण:</translation>
 <translation id="1612196535745283361">डिव्हाइस स्कॅन करण्‍यासाठी Chrome ला स्थान ॲक्सेसची आवश्यकता असते. स्थान ॲक्सेस <ph name="BEGIN_LINK" />या डिव्हाइसाठी बंद केला आहे<ph name="END_LINK" />.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 निवडलेला आयटम काढून टाका}other{# निवडलेले आयटम काढून टाका}}</translation>
@@ -92,7 +92,7 @@
 <translation id="1672586136351118594">पुन्हा दाखवू नका</translation>
 <translation id="1680919990519905526">Google Lens ने इमेज खरेदी करा <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">आता करून पाहा</translation>
-<translation id="1692118695553449118">संकालन सुरू आहे</translation>
+<translation id="1692118695553449118">सिंक सुरू आहे</translation>
 <translation id="1718835860248848330">शेवटच्या तासामधील</translation>
 <translation id="1736419249208073774">एक्सप्लोर करा</translation>
 <translation id="1749561566933687563">तुमचे बुकमार्क सिंक करा</translation>
@@ -248,7 +248,7 @@
 <translation id="2827278682606527653">फीड कार्ड मेनू अर्ध्या उंचीवर आहे</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{एका दिवसापूर्वी तपासले}other{# दिवसांपूर्वी तपासले}}</translation>
 <translation id="2842985007712546952">मुख्य फोल्डर</translation>
-<translation id="2860954141821109167">या डिव्हाइसवर फोन ॲप सुरू केले असल्याची खात्री करा</translation>
+<translation id="2860954141821109167">या डिव्हाइसवर फोन अ‍ॅप सुरू केले असल्याची खात्री करा</translation>
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2876369937070532032">तुमची सुरक्षा धोक्यात असते तेव्हा, तुम्ही भेट दिलेल्या काही पेजचे URL Google ला पाठवते</translation>
 <translation id="2888126860611144412">Chrome बद्दल</translation>
@@ -295,7 +295,7 @@
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> हटवले</translation>
 <translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> न वाचलेली पेज</translation>
 <translation id="321773570071367578">तुमचा सांकेतिक पासफ्रेझ विसरल्यास किंवा हे सेटिंग बदलू इच्छित असल्यास, <ph name="BEGIN_LINK" />सिंक रीसेट करा<ph name="END_LINK" /></translation>
-<translation id="3232754137068452469">वेब ॲप</translation>
+<translation id="3232754137068452469">वेब अ‍ॅप</translation>
 <translation id="3236059992281584593">1 मिनिट शिल्लक</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3254409185687681395">या पृष्ठास बुकमार्क करा</translation>
@@ -318,7 +318,7 @@
 <translation id="3350687908700087792">सर्व गुप्त टॅब बंद करा</translation>
 <translation id="3353615205017136254">Google द्वारे पुरवलेले लाइट पेज. मूळ पेज लोड करण्यासाठी मूळ लोड करा बटणावर टॅप करा.</translation>
 <translation id="3359667936385849800">तुमचा सध्याचा सेवा पुरवठादार वापरा</translation>
-<translation id="3367813778245106622">संकालन प्रारंभ करण्‍यासाठी पुन्हा साइन इन करा</translation>
+<translation id="3367813778245106622">सिंक प्रारंभ करण्‍यासाठी पुन्हा साइन इन करा</translation>
 <translation id="337236281855091893">शोधण्यासाठी, शब्दावर टॅप करण्याऐवजी त्याला स्पर्श करा आणि धरून ठेवा</translation>
 <translation id="3373979091428520308">हे पेज दुसर्‍या डिव्हाइसवर शेअर करण्यासाठी, दुसर्‍या डिव्हाइसवर Chrome सेटिंग्जमध्ये सिंक सुरू करा</translation>
 <translation id="3374023511497244703">तुमचे बुकमार्क, इतिहास, पासवर्ड आणि इतर Chrome डेटा आता तुमच्या Google खात्यामध्ये सिंक केला जाणार नाही</translation>
@@ -548,7 +548,7 @@
 <translation id="509429900233858213">एक एरर आली आहे.</translation>
 <translation id="510275257476243843">1 तास शिल्लक</translation>
 <translation id="5123685120097942451">गुप्त टॅब</translation>
-<translation id="5127805178023152808">संकालन बंद आहे</translation>
+<translation id="5127805178023152808">सिंक बंद आहे</translation>
 <translation id="5132942445612118989">सर्व डिव्हाइसवर तुमचे पासवर्ड, इतिहास आणि बरेच काही सिंक करा</translation>
 <translation id="5136035049889637840">सारखी उत्पादने खरेदी करा <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Google ड्राइव्ह कसे वापरावे ते जाणून घ्या</translation>
@@ -583,7 +583,7 @@
 <translation id="5423934151118863508">तुमची सर्वाधिक भेट दिलेली पेज येथे दिसतील</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB उपलब्ध आहे</translation>
 <translation id="543338862236136125">पासवर्ड संपादित करा</translation>
-<translation id="5433691172869980887">वापरकर्तानाव कॉपी केले</translation>
+<translation id="5433691172869980887">वापरकर्ता नाव कॉपी केले</translation>
 <translation id="543509235395288790">(<ph name="MEGABYTES" />) च्या <ph name="COUNT" /> फाइल डाउनलोड करत आहे.</translation>
 <translation id="5441466871879044658">या भाषेमध्ये भाषांतर करा</translation>
 <translation id="5441522332038954058">अ‍ॅड्रेस बारवर जा</translation>
@@ -723,7 +723,7 @@
 <translation id="6303969859164067831">साइन आउट करा आणि सिंक बंद करा</translation>
 <translation id="6312687380483398334">वेब अ‍ॅप्स (शांत)</translation>
 <translation id="6316139424528454185">Android आवृत्तीला सपोर्ट नाही</translation>
-<translation id="6324034347079777476">Android सिस्‍टीम संकालन अक्षम केले</translation>
+<translation id="6324034347079777476">Android सिस्‍टीम सिंक अक्षम केले</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> द्वारे शेअर करा</translation>
 <translation id="6337234675334993532">एंक्रिप्शन</translation>
 <translation id="6341580099087024258">फाइल कुठे सेव्ह करायच्या ते विचारा</translation>
@@ -815,7 +815,7 @@
 <translation id="6891726759199484455">तुमचा पासवर्ड कॉपी करण्यासाठी अनलॉक करा</translation>
 <translation id="6896758677409633944">कॉपी करा</translation>
 <translation id="6900532703269623216">वर्धित संरक्षण</translation>
-<translation id="6903907808598579934">संकालन सुरू करा</translation>
+<translation id="6903907808598579934">सिंक सुरू करा</translation>
 <translation id="6929699136511445623">Android सिस्‍टमचे सिंक सुरू करा</translation>
 <translation id="6941901516114974832">गुप्त टॅबमध्ये, तुमची अ‍ॅक्टिव्हिटी तरीही तुम्ही भेट देत असलेल्या वेबसाइट, तुमचा नियोक्ता किंवा शाळा आणि तुमचा इंटरनेट सेवा पुरवठादार यांना <ph name="BEGIN_BOLD1" />दृश्यमान असू शकते<ph name="END_BOLD1" />.
 
@@ -909,7 +909,7 @@
 <translation id="7588219262685291874">तुमच्या डिव्हाइसचे बॅटरी सेव्हर सुरू असेल तेव्हा गडद थीम सुरू करा</translation>
 <translation id="7593557518625677601">Chrome सिंक सुरू करण्यासाठी Android सेटिंग्ज उघडा आणि Android सिस्टम सिंक पुन्हा सक्षम करा</translation>
 <translation id="7596558890252710462">ऑपरेटिंग सिस्टम</translation>
-<translation id="7605594153474022051">संकालन कार्य करत नाही</translation>
+<translation id="7605594153474022051">सिंक कार्य करत नाही</translation>
 <translation id="7606077192958116810">लाइट मोड सुरू आहे. ते सेटिंग्जमध्ये व्यवस्थापित करा.</translation>
 <translation id="7612619742409846846">Google मध्ये हे म्हणून साइन इन केले</translation>
 <translation id="7619072057915878432">नेटवर्क बिघाडामुळे <ph name="FILE_NAME" /> डाउनलोड अयशस्वी झाले.</translation>
@@ -1035,7 +1035,7 @@
 <translation id="8493948351860045254">जागा मोकळी करा</translation>
 <translation id="8497726226069778601">अद्याप… येथे पाहण्यासाठी काहीही नाही</translation>
 <translation id="8503559462189395349">Chrome पासवर्ड</translation>
-<translation id="8503813439785031346">वापरकर्तानाव</translation>
+<translation id="8503813439785031346">वापरकर्ता नाव</translation>
 <translation id="8514477925623180633">Chrome सह स्टोअर केलेला पासवर्ड पाठवा</translation>
 <translation id="8514577642972634246">गुप्त मोडमध्ये प्रवेश करा</translation>
 <translation id="8516012719330875537">इमेज संपादक</translation>
@@ -1055,8 +1055,8 @@
 <translation id="860043288473659153">कार्डधारकाचे नाव</translation>
 <translation id="8616006591992756292">तुमच्या Google खात्यात <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> वर ब्राउझिंग इतिहासाची अन्य स्वरूपे असू शकतात.</translation>
 <translation id="8617240290563765734">डाउनलोड केलेल्या आशयमध्ये नमूद केलेली सुचविलेली URL उघडायची?</translation>
-<translation id="8636825310635137004">आपल्या इतर डिव्हाइसेस मधून तुमचे टॅब प्राप्त करण्यासाठी, संकालन सुरू करा</translation>
-<translation id="8641930654639604085">प्रौढ सामग्री असलेल्या साइटना अवरोधित करण्‍याचा प्रयत्न करा</translation>
+<translation id="8636825310635137004">आपल्या इतर डिव्हाइसेस मधून तुमचे टॅब प्राप्त करण्यासाठी, सिंक सुरू करा</translation>
+<translation id="8641930654639604085">प्रौढ आशय असलेल्या साइटना अवरोधित करण्‍याचा प्रयत्न करा</translation>
 <translation id="8655129584991699539">तुम्ही Chrome सेटिंग्जमध्ये डेटा साफ करू शकता</translation>
 <translation id="8656747343598256512">तुमच्या Google खाते सह या साइट आणि Chrome वर साइन इन करा. तुम्ही सिंक करणे नंतर सुरू करू शकता.</translation>
 <translation id="8659579665266920523">Chrome सह कसे शोधावे</translation>
@@ -1068,7 +1068,7 @@
 <translation id="8699120352855309748">या भाषांचे भाषांतर करणे ऑफर करू नका</translation>
 <translation id="8712637175834984815">समजले</translation>
 <translation id="8725066075913043281">पुन्हा प्रयत्न करा</translation>
-<translation id="8748850008226585750">सामग्री लपविली</translation>
+<translation id="8748850008226585750">आशय लपविली</translation>
 <translation id="8788265440806329501">नेव्हिगेशन इतिहास बंद आहे</translation>
 <translation id="8788968922598763114">अखेरीस बंद केलेला टॅब पुन्हा उघडा</translation>
 <translation id="8798449543960971550">वाचलेले</translation>

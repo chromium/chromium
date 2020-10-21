@@ -234,7 +234,7 @@
 <translation id="3583509704582854624">वर्णांक इनपुट (जपानी कीबोर्डसाठी)</translation>
 <translation id="3603385196401704894">कॅनेडियन फ्रेंच</translation>
 <translation id="3606220979431771195">तुर्की-F</translation>
-<translation id="3609785682760573515">संकालन करत आहे...</translation>
+<translation id="3609785682760573515">सिंक करत आहे...</translation>
 <translation id="3616113530831147358">ऑडिओ</translation>
 <translation id="3619115746895587757">कॅपिचिनो</translation>
 <translation id="3620292326130836921">सर्व बॅकअप घेतला!</translation>
@@ -327,7 +327,7 @@
 <translation id="4694604912444486114">माकड</translation>
 <translation id="4697043402264950621"><ph name="COLUMN_NAME" /> नुसार चढत्या क्रमाने क्रमवारी लावलेली फाइल सूची.</translation>
 <translation id="4711094779914110278">तुर्की</translation>
-<translation id="4713544552769165154">ही फाइल Macintosh सॉफ्टवेअर वापरून एका कॉंप्युटरसाठी डिझाइन केली आहे. ही Chrome OS चालवणार्‍या तुमच्या डिव्हाइसशी सुसंगत नाही. कृपया एका सोयीस्कर रिप्लेसमेंट ॲप साठी <ph name="BEGIN_LINK" />Chrome वेब स्टोअर<ph name="END_LINK" /> शोधा.<ph name="BEGIN_LINK_HELP" />अधिक जाणून घ्या<ph name="END_LINK_HELP" /></translation>
+<translation id="4713544552769165154">ही फाइल Macintosh सॉफ्टवेअर वापरून एका कॉंप्युटरसाठी डिझाइन केली आहे. ही Chrome OS चालवणार्‍या तुमच्या डिव्हाइसशी सुसंगत नाही. कृपया एका सोयीस्कर रिप्लेसमेंट अ‍ॅप साठी <ph name="BEGIN_LINK" />Chrome वेब स्टोअर<ph name="END_LINK" /> शोधा.<ph name="BEGIN_LINK_HELP" />अधिक जाणून घ्या<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> फोटोंचा बॅकअप घेतला</translation>
 <translation id="4725511304875193254">कॉर्गी</translation>
 <translation id="4732760563705710320">क्षमस्‍व, आपल्‍या कास्‍ट डिव्‍हाइसद्वारे हा व्‍हिडिओ समर्थित नाही.</translation>
@@ -559,7 +559,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
     <ph name="FILE_COUNT" />आढळले</translation>
 <translation id="6935521024859866267">उलट सुलट</translation>
 <translation id="6939777852457331078">यूएस कामगार कीबोर्ड</translation>
-<translation id="696203921837389374">मोबाइल डेटावर संकालन सुरू करा</translation>
+<translation id="696203921837389374">मोबाइल डेटावर सिंक सुरू करा</translation>
 <translation id="6965382102122355670">ठीक आहे</translation>
 <translation id="6970230597523682626">बल्गेरियन</translation>
 <translation id="6973630695168034713">फोल्डर</translation>

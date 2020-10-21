@@ -78,7 +78,7 @@
 <translation id="1687475363370981210">सर्व वाचले चिन्हांकित करा</translation>
 <translation id="1689333818294560261">टोपणनाव</translation>
 <translation id="1690731385917361335">कोणतेही आयटम नाहीत</translation>
-<translation id="1692118695553449118">संकालन सुरू आहे</translation>
+<translation id="1692118695553449118">सिंक सुरू आहे</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> निवडले</translation>
 <translation id="1740468249224277719">इंस्टॉल करण्यासाठी दोनदा टॅप करा.</translation>
 <translation id="1746815479209538200">वेब ब्राउझ करण्यासाठी नवीन टॅब जोडा.</translation>
@@ -249,7 +249,7 @@
 खालील पायऱ्या फॉलो करा:</translation>
 <translation id="3603009562372709545">लिंक URL कॉपी करा</translation>
 <translation id="3607167657931203000">ऑटोफिल डेटा</translation>
-<translation id="3609785682760573515">संकालन करत आहे...</translation>
+<translation id="3609785682760573515">सिंक करत आहे...</translation>
 <translation id="3638472932233958418">वेबपृष्ठे प्रीलोड करा</translation>
 <translation id="3670030362669914947">नंबर</translation>
 <translation id="3691593122358196899"><ph name="FOLDER_TITLE" /> मध्ये बुकमार्क केले</translation>
@@ -373,7 +373,7 @@
 <translation id="5083464117946352670">फाईल आकार निर्धारित करू शकत नाही.</translation>
 <translation id="5094827893301452931">Tweet पूर्ण केले.</translation>
 <translation id="5118764316110575523">बंद</translation>
-<translation id="5127805178023152808">संकालन बंद आहे</translation>
+<translation id="5127805178023152808">सिंक बंद आहे</translation>
 <translation id="5132942445612118989">सर्व डिव्हाइसवर तुमचे पासवर्ड, इतिहास आणि बरेच काही सिंक करा</translation>
 <translation id="5140288047769711648">Chrome तुमच्यासाठी हा पासवर्ड लक्षात ठेवेल. तुम्हाला तो लक्षात ठेवण्याची गरज नाही.</translation>
 <translation id="5150492518600715772">तुमच्या डिव्हाइसवर पाठवा</translation>
@@ -382,7 +382,7 @@
 <translation id="5188482106078495165">तुमची कुकी सेटिंग्ज सर्व टॅबना लागू होतात. उघड्या टॅबवर नवीन सेटिंग लागू करण्यासाठी, टॅब रीलोड करा.</translation>
 <translation id="5190835502935405962">बुकमार्क बार</translation>
 <translation id="5197255632782567636">इंटरनेट</translation>
-<translation id="5228579091201413441">संकालन सुरू करा</translation>
+<translation id="5228579091201413441">सिंक सुरू करा</translation>
 <translation id="5234764350956374838">डिसमिस करा</translation>
 <translation id="5245322853195994030">सिंक रद्द करा</translation>
 <translation id="5271549068863921519">पासवर्ड सेव्ह करा</translation>
@@ -396,7 +396,7 @@
 <translation id="5409365236829784218">ही फाईल उघडू शकणारे कोणतेही ॲप्लिकेशन इंस्टॉल केलेले नाहीत.</translation>
 <translation id="5416022985862681400">मागील सात दिवस</translation>
 <translation id="543338862236136125">पासवर्ड संपादित करा</translation>
-<translation id="5433691172869980887">वापरकर्तानाव कॉपी केले</translation>
+<translation id="5433691172869980887">वापरकर्ता नाव कॉपी केले</translation>
 <translation id="54401264925851789">पृष्‍ठ सुरक्षितता माहिती</translation>
 <translation id="5443952882982198570">क्रेडिट कार्ड</translation>
 <translation id="5457226814769348910">ऑफलाइन आवृत्ती उघडा</translation>
@@ -477,7 +477,7 @@
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> भाषांतरित करण्यासाठी ऑफर</translation>
 <translation id="6303969859164067831">साइन आउट करा आणि सिंक बंद करा</translation>
 <translation id="6308436439357671616">हे तुम्हाला फोटो घेऊ आणि अपलोड करू देते.</translation>
-<translation id="6324528485781869530">संकालन खाते स्विच करा</translation>
+<translation id="6324528485781869530">सिंक खाते स्विच करा</translation>
 <translation id="6324669097367352121">साइन इन सेटिंग्ज</translation>
 <translation id="6337234675334993532">एंक्रिप्शन</translation>
 <translation id="633809752005859102">खरोखर काहीतरी चूक झाली. आम्ही त्यावर कार्य करू.</translation>
@@ -485,7 +485,7 @@
 <translation id="6344783595350022745">मजकूर साफ करा</translation>
 <translation id="6346549652287021269">नवीन डाउनलोड सुरू करायचे?</translation>
 <translation id="6362362396625799311">कोणतेही गुप्त टॅब नाहीत</translation>
-<translation id="6363526231572697780">वापरकर्तानाव नाही</translation>
+<translation id="6363526231572697780">वापरकर्ता नाव नाही</translation>
 <translation id="6374469231428023295">पुन्हा प्रयत्न करा</translation>
 <translation id="6377118281273296434">साइट सुरक्षितता</translation>
 <translation id="6380866119319257197">तुमचा सांकेतिक पासफ्रेझ विसरल्यास किंवा हे सेटिंग बदलू इच्छित असल्यास, <ph name="BEGIN_LINK" />सिंक रीसेट करा<ph name="END_LINK" /></translation>
@@ -545,7 +545,7 @@
 <translation id="6873263987691478642">विभाजित दृश्य</translation>
 <translation id="6888009575607455378">तुम्हाला तुमचे बदल नक्की काढून टाकायचे आहेत का?</translation>
 <translation id="6896758677409633944">कॉपी करा</translation>
-<translation id="6903907808598579934">संकालन सुरू करा</translation>
+<translation id="6903907808598579934">सिंक सुरू करा</translation>
 <translation id="6914583639806229067">तुम्ही कॉपी केलेली इमेज शोधा</translation>
 <translation id="6914783257214138813">एक्सपोर्ट करण्यात आलेली फाइल दिसणार्‍या प्रत्येकाला, तुमचा पासवर्ड दिसेल.</translation>
 <translation id="6930799952781667037">ही भाषा बदलण्यासाठी टॅप करा.</translation>
@@ -678,7 +678,7 @@
 <translation id="8487667956631253959">सुरू करा</translation>
 <translation id="8487700953926739672">ऑफलाइन उपलब्ध</translation>
 <translation id="8490978609246021741">बदल सेव्ह करा</translation>
-<translation id="8503813439785031346">वापरकर्तानाव</translation>
+<translation id="8503813439785031346">वापरकर्ता नाव</translation>
 <translation id="850600235656508448">गुप्त प्रकारात उघडा</translation>
 <translation id="8510057420705599706">हे तुम्हाला साइन आउट करेल आणि सिंक बंद करेल पण तुमचे बुकमार्क, इतिहास, पासवर्ड आणि इतर Chrome डेटा या डिव्हाइसवर राहील.</translation>
 <translation id="8517375800490286174">मुक्त स्रोत परवाने</translation>
@@ -694,7 +694,7 @@
 <translation id="8591976964826315682">तृतीय पक्ष कुकी गुप्त मोडमध्ये ब्लॉक करा</translation>
 <translation id="8605219856220328675">टॅब बंद करा.</translation>
 <translation id="8620640915598389714">संपादित करा</translation>
-<translation id="8636825310635137004">आपल्या इतर डिव्हाइसेस मधून तुमचे टॅब प्राप्त करण्यासाठी, संकालन सुरू करा</translation>
+<translation id="8636825310635137004">आपल्या इतर डिव्हाइसेस मधून तुमचे टॅब प्राप्त करण्यासाठी, सिंक सुरू करा</translation>
 <translation id="8654802032646794042">रद्द करा</translation>
 <translation id="8668210798914567634">हे पृष्‍ठ आपल्या वाचन सूचीमध्ये सेव्ह केले गेले आहे.</translation>
 <translation id="8680787084697685621">खाते साइन-इन तपशील कालबाह्य झाला.</translation>

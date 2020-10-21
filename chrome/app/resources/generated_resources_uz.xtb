@@ -6338,7 +6338,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="850875081535031620">Birorta ham zararli dastur topilmadi</translation>
 <translation id="8509177919508253835">Elektron kalitlarni asliga qaytarish va PIN kodlar yaratish</translation>
 <translation id="8509646642152301857">Imlo lug‘atini yuklab olish amalga oshmadi.</translation>
-<translation id="8512396579636492893">{COUNT,plural, =0{Kuchsiz parol topilmadi}=1{{COUNT} ta kuchsiz parol topildi}other{{COUNT} ta kuchsiz parol topildi}}</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Kuchsiz parollar topilmadi}=1{{COUNT} ta kuchsiz parol topildi}other{{COUNT} ta kuchsiz parol topildi}}</translation>
 <translation id="8512476990829870887">Jarayonni yakunlash</translation>
 <translation id="851263357009351303"><ph name="HOST" /> rasmlarni doim ko‘rsatsin</translation>
 <translation id="8513108775083588393">Avto-burilish</translation>

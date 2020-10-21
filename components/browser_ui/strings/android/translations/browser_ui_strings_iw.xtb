@@ -102,7 +102,7 @@
 <translation id="3763247130972274048">בלחיצה פעמיים על הסרטון בצד ימין או שמאל אפשר לדלג על 10 שניות</translation>
 <translation id="381841723434055211">מספרי טלפון</translation>
 <translation id="385051799172605136">חזרה</translation>
-<translation id="3859306556332390985">הרץ קדימה</translation>
+<translation id="3859306556332390985">הרצה קדימה</translation>
 <translation id="3955193568934677022">אתרים יוכלו להפעיל תוכן מוגן (מומלץ)</translation>
 <translation id="3987993985790029246">העתק קישור</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -260,7 +260,7 @@
 <translation id="8116925261070264013">מושתקים</translation>
 <translation id="8131740175452115882">אישור</translation>
 <translation id="8197286292360124385">פועלת: <ph name="PERMISSION_1" /></translation>
-<translation id="8200772114523450471">חדש</translation>
+<translation id="8200772114523450471">חידוש</translation>
 <translation id="8206354486702514201">הגדרה זו נאכפת על ידי מנהל המערכת שלך.</translation>
 <translation id="8249310407154411074">העברה לראש הרשימה</translation>
 <translation id="8261506727792406068">מחיקה</translation>
@@ -272,7 +272,7 @@
 <translation id="8380167699614421159">באתר הזה מוצגות מודעות מפריעות או מטעות</translation>
 <translation id="8394832520002899662">כדי לחזור לאתר, יש להקיש כאן</translation>
 <translation id="8425213833346101688">שנה</translation>
-<translation id="8441146129660941386">הרץ לאחור</translation>
+<translation id="8441146129660941386">הרצה לאחור</translation>
 <translation id="8444433999583714703">‏כדי לאפשר ל-<ph name="APP_NAME" /> לגשת אל המיקום, צריך להפעיל את המיקום גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">שלול הרשאות מכשיר</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{‏קובץ cookie אחד נמצא בשימוש}two{‏# קובצי cookie נמצאים בשימוש}many{‏# קובצי cookie נמצאים בשימוש}other{‏# קובצי cookie נמצאים בשימוש}}</translation>
