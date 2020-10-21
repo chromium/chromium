@@ -9,7 +9,6 @@
 #include "chromeos/components/media_app_ui/media_app_guest_ui.h"
 #include "chromeos/components/media_app_ui/media_app_page_handler.h"
 #include "chromeos/components/media_app_ui/url_constants.h"
-#include "chromeos/components/web_applications/manifest_request_filter.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_media_app_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"

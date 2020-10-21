@@ -7,7 +7,6 @@
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/print_management/mojom/printing_manager.mojom.h"
 #include "chromeos/components/print_management/url_constants.h"
-#include "chromeos/components/web_applications/manifest_request_filter.h"
 #include "chromeos/grit/chromeos_print_management_resources.h"
 #include "chromeos/grit/chromeos_print_management_resources_map.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
