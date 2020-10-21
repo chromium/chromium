@@ -7,6 +7,7 @@
 #include "base/callback.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/generated_cookie_prefs.h"
+#include "chrome/browser/content_settings/generated_notification_pref.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util_enums.h"
 #include "chrome/browser/password_manager/generated_password_leak_detection_pref.h"
@@ -99,6 +100,8 @@ void GeneratedPrefs::CreatePrefs() {
       std::make_unique<GeneratedPasswordLeakDetectionPref>(profile_);
   prefs_[safe_browsing::kGeneratedSafeBrowsingPref] =
       std::make_unique<safe_browsing::GeneratedSafeBrowsingPref>(profile_);
+  prefs_[content_settings::kGeneratedNotificationPref] =
+      std::make_unique<content_settings::GeneratedNotificationPref>(profile_);
 }
 
 }  // namespace settings_private

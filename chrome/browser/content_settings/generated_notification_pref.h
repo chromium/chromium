@@ -17,7 +17,13 @@ namespace content_settings {
 
 extern const char kGeneratedNotificationPref[];
 
-enum class NotificationSetting { ASK, QUIETER_MESSAGING, BLOCK };
+// Must be kept in sync with the enum of the same name in
+// chrome/browser/resources/settings/site_settings/constants.js
+enum class NotificationSetting {
+  ASK = 0,
+  QUIETER_MESSAGING = 1,
+  BLOCK = 2,
+};
 
 // A generated preference which represents the effective Notification setting
 // state based on the Notification content setting and quieter UI user

@@ -1,6 +1,19 @@
     <style include="cr-shared-style settings-shared iron-flex">
-      .content-settings-header {
+      .content-settings-header,
+      #notificationRadioGroup {
         padding: 0 var(--cr-section-padding);
+      }
+
+      #notificationSubHeading {
+        padding-bottom: 10px;
+      }
+
+      settings-collapse-radio-button {
+        --settings-collapse-toggle-min-height: var(--settings-row-min-height);
+      }
+
+      settings-collapse-radio-button:not(:first-of-type) {
+        --settings-collapse-separator-line: var(--cr-separator-line);
       }
     </style>
     <template is="dom-if" if="[[showClearBrowsingDataDialog_]]" restamp>
@@ -534,33 +547,79 @@
         <settings-subpage page-title="$i18n{siteSettingsCategoryNotifications}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <template is="dom-if" if="[[enableQuietNotificationPromptsSetting_]]">
-            <category-default-setting
-                toggle-off-label="$i18n{siteSettingsNotificationsAsk}"
-                toggle-on-label="$i18n{siteSettingsNotificationsAsk}"
+          <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
+            <div id="notificationRadioGroup">
+              <h2>$i18n{siteSettingsNotificationsDescription}</h2>
+              <h2>$i18n{siteSettingsDefaultBehavior}</h2>
+              <div id="notificationSubHeading" class="secondary">
+                $i18n{siteSettingsDefaultBehaviorDescription}
+              </div>
+              <settings-radio-group
+                  pref="{{prefs.generated.notification}}"
+                  selectable-elements="settings-collapse-radio-button">
+                <settings-collapse-radio-button no-collapse
+                    name="[[notificationSettingEnum_.ASK]]"
+                    pref="[[prefs.generated.notification]]"
+                    label="$i18n{siteSettingsNotificationsAllowed}"
+                    icon="settings:notifications">
+                </settings-collapse-radio-button>
+                <template is="dom-if"
+                    if="[[enableQuietNotificationPromptsSetting_]]">
+                  <settings-collapse-radio-button no-collapse
+                      name="[[notificationSettingEnum_.QUIETER_MESSAGING]]"
+                      pref="[[prefs.generated.notification]]"
+                      label="$i18n{siteSettingsNotificationsAllowed}"
+                      sub-label="$i18n{siteSettingsNotificationsPartial}"
+                      icon="settings:notifications">
+                  </settings-collapse-radio-button>
+                </template>
+                <settings-collapse-radio-button no-collapse
+                    name="[[notificationSettingEnum_.BLOCK]]"
+                    pref="[[prefs.generated.notification]]"
+                    label="$i18n{siteSettingsNotificationsBlocked}"
+                    sub-label="$i18n{siteSettingsNotificationsBlockedSubLabel}"
+                    icon="settings:block">
+                </settings-collapse-radio-button>
+              </settings-radio-group>
+            </div>
+            <category-setting-exceptions
                 category="[[ContentSettingsTypes.NOTIFICATIONS]]"
-                sub-option-pref="{{prefs.profile.content_settings.enable_quiet_permission_ui.notifications}}"
-                sub-option-label=
-                    "$i18n{siteSettingsEnableQuietNotificationPrompts}"
-                sub-option-mode="pref">
-            </category-default-setting>
+                allow-header="$i18n{siteSettingsNotificationsAllowedExceptions}"
+                block-header="$i18n{siteSettingsNotificationsBlockedExceptions}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
-          <template is="dom-if" if="[[!enableQuietNotificationPromptsSetting_]]">
-            <category-default-setting
-                toggle-off-label="$i18n{siteSettingsCategoryNotifications}"
-                toggle-on-label="$i18n{siteSettingsCategoryNotifications}"
-                toggle-off-description="$i18n{siteSettingsNotificationsBlock}"
-                toggle-on-description="$i18n{siteSettingsNotificationsAsk}"
+          <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
+            <template is="dom-if"
+                if="[[enableQuietNotificationPromptsSetting_]]">
+              <category-default-setting
+                  toggle-off-label="$i18n{siteSettingsNotificationsAsk}"
+                  toggle-on-label="$i18n{siteSettingsNotificationsAsk}"
+                  category="[[ContentSettingsTypes.NOTIFICATIONS]]"
+                  sub-option-pref="{{prefs.profile.content_settings.enable_quiet_permission_ui.notifications}}"
+                  sub-option-label=
+                      "$i18n{siteSettingsEnableQuietNotificationPrompts}"
+                  sub-option-mode="pref">
+              </category-default-setting>
+            </template>
+            <template is="dom-if"
+                if="[[!enableQuietNotificationPromptsSetting_]]">
+              <category-default-setting
+                  toggle-off-label="$i18n{siteSettingsCategoryNotifications}"
+                  toggle-on-label="$i18n{siteSettingsCategoryNotifications}"
+                  toggle-off-description="$i18n{siteSettingsNotificationsBlock}"
+                  toggle-on-description="$i18n{siteSettingsNotificationsAsk}"
+                  category="[[ContentSettingsTypes.NOTIFICATIONS]]"
+                  sub-option-mode="none">
+              </category-default-setting>
+            </template>
+            <category-setting-exceptions
                 category="[[ContentSettingsTypes.NOTIFICATIONS]]"
-                sub-option-mode="none">
-            </category-default-setting>
+                block-header="$i18n{siteSettingsBlock}"
+                allow-header="$i18n{siteSettingsAllow}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
           </template>
-          <category-setting-exceptions
-              category="[[ContentSettingsTypes.NOTIFICATIONS]]"
-              block-header="$i18n{siteSettingsBlock}"
-              allow-header="$i18n{siteSettingsAllow}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/flash" no-search>

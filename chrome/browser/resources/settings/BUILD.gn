@@ -532,6 +532,7 @@ js_library("lazy_load") {
     "languages_page:languages_page",
     "privacy_page:cookies_page",
     "privacy_page:security_page",
+    "site_settings:category_setting_exceptions",
     "site_settings:local_data_browser_proxy",
     "site_settings:protocol_handlers",
     "site_settings:settings_category_default_radio_group",

@@ -1839,6 +1839,30 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_INSECURE_CONTENT_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the insecure content content setting.">
     Not allowed to show insecure content
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_DESCRIPTION" desc="Description of the notifications content setting.">
+    Sites usually send notifications to let you know about breaking news or chat messages
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_ALLOWED" desc="Label for the enabled option of the notifications content setting.">
+    Sites can ask to send notifications
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_PARTIAL" desc="Label for the partial option of the notifications content setting.">
+    Use quieter messaging (recommended)
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_PARTIAL_SUB_LABEL" desc="Sub-label for the partial option of the notifications content setting.">
+    Sites can't interrupt you by asking to send notifications
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_BLOCKED" desc="Label for the blocked option of the notifications content setting.">
+    Block notifications
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_BLOCKED_SUB_LABEL" desc="Sub-label for the blocked option of the notifications content setting.">
+    Features that need notifications won't work
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the notifications content setting.">
+    Allowed to send notifications
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the notifications content setting.">
+    Not allowed to send notifications
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PAYMENT_HANDLERS_DESCRIPTION" desc="Description of the payment handlers content setting.">
     Sites usually install payment handlers for shopping features like easier checkout
   </message>

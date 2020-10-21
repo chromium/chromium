@@ -109,6 +109,18 @@ export const SiteSettingSource = {
 };
 
 /**
+ * Enumeration of states for the notification default setting generated pref.
+ * Must be kept in sync with the enum of the same name located in:
+ * chrome/browser/content_settings/generated_notification_pref.h
+ * @enum {number}
+ */
+export const NotificationSetting = {
+  ASK: 0,
+  QUIETER_MESSAGING: 1,
+  BLOCK: 2,
+};
+
+/**
  * A category value to use for the All Sites list.
  * @type {string}
  */
