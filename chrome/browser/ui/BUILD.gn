@@ -1504,6 +1504,7 @@ static_library("ui") {
       "//chrome/browser/resource_coordinator:tab_metrics_event_proto",
       "//chrome/browser/resource_coordinator/tab_ranker",
       "//chrome/browser/safe_browsing:advanced_protection",
+      "//chrome/browser/search/recipe_tasks:mojo_bindings",
       "//chrome/browser/search/shopping_tasks:mojo_bindings",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/color:mixers",

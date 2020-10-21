@@ -66,6 +66,10 @@ const base::Feature kWebUIThemeModeDoodles{"WebUIThemeModeDoodles",
 // If enabled, modules will be shown.
 const base::Feature kModules{"NtpModules", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, recipe tasks module will be shown.
+const base::Feature kNtpRecipeTasksModule{"NtpRecipeTasksModule",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, shopping tasks module will be shown.
 const base::Feature kNtpShoppingTasksModule{"NtpShoppingTasksModule",
                                             base::FEATURE_DISABLED_BY_DEFAULT};

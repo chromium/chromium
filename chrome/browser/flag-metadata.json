@@ -3285,6 +3285,11 @@
     "expiry_milestone": 88
   },
   {
+    "name": "ntp-recipe-tasks-module",
+    "owners": [ "aee", "mahmadi", "tiborg" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "ntp-repeatable-queries",
     "owners": [ "aee", "mahmadi", "ramyan", "tiborg" ],
     "expiry_milestone": 89
