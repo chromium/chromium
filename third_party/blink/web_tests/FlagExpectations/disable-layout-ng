@@ -17,6 +17,9 @@ crbug.com/591099 accessibility/listitem-presentation-inherited.html [ Failure ]
 crbug.com/591099 accessibility/presentation-owned-elements.html [ Failure ]
 crbug.com/591099 accessibility/role-attribute.html [ Failure ]
 
+### editing/pasteboard/
+crbug.com/591099 editing/pasteboard/mathml-sanitizer-bypass.html [ Failure ]
+
 ### editing/selection/mouse/
 crbug.com/591099 editing/selection/mouse/drag_over_text_transform.html [ Crash ]
 
@@ -49,6 +52,12 @@ crbug.com/591099 external/wpt/css/CSS2/normal-flow/min-height-separates-margin.h
 
 ### external/wpt/css/CSS2/text/
 crbug.com/591099 external/wpt/css/CSS2/text/white-space-mixed-003.xht [ Failure ]
+
+### external/wpt/css/css-flexbox/
+crbug.com/591099 external/wpt/css/css-flexbox/image-as-flexitem-size-003.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-flexbox/image-as-flexitem-size-003v.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-flexbox/image-as-flexitem-size-004.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-flexbox/image-as-flexitem-size-004v.html [ Failure ]
 
 ### external/wpt/css/css-fonts/
 crbug.com/591099 external/wpt/css/css-fonts/font-features-across-space-1.html [ Failure ]
@@ -95,6 +104,9 @@ crbug.com/1108830 external/wpt/css/css-pseudo/marker-text-transform-uppercase.ht
 crbug.com/1108830 external/wpt/css/css-pseudo/marker-word-break.html [ Failure ]
 crbug.com/1012289 external/wpt/css/css-pseudo/marker-unicode-bidi-default.html [ Failure ]
 crbug.com/1012289 external/wpt/css/css-pseudo/marker-unicode-bidi-normal.html [ Failure ]
+
+### external/wpt/css/css-ruby/
+crbug.com/591099 external/wpt/css/css-ruby/ruby-line-breaking-002.html [ Failure ]
 
 ### external/wpt/css/css-shapes/shape-outside/shape-box/
 crbug.com/591099 external/wpt/css/css-shapes/shape-outside/shape-box/shape-outside-border-box-border-radius-003.html [ Failure ]
@@ -213,6 +225,15 @@ crbug.com/591099 external/wpt/css/css-text/white-space/white-space-pre-wrap-trai
 crbug.com/591099 external/wpt/css/css-text/word-break/word-break-break-all-004.html [ Failure ]
 crbug.com/964181 external/wpt/css/css-text/word-break/word-break-break-all-inline-006.html [ Failure ]
 crbug.com/1017164 external/wpt/css/css-text/word-break/word-break-break-all-inline-008.html [ Failure ]
+
+### external/wpt/css/css-text-decor/
+crbug.com/591099 external/wpt/css/css-text-decor/text-decoration-skip-ink-vertical-001.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-text-decor/text-decoration-skip-ink-vertical-002.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-text-decor/text-decoration-thickness-overline-001.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-text-decor/text-decoration-thickness-scroll-001.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-text-decor/text-decoration-thickness-underline-001.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-text-decor/text-decoration-thickness-vertical-001.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-text-decor/text-underline-offset-scroll-001.html [ Failure ]
 
 ### external/wpt/css/css-ui/
 crbug.com/591099 external/wpt/css/css-ui/text-overflow-010.html [ Failure ]
@@ -362,6 +383,7 @@ crbug.com/591099 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftest
 crbug.com/591099 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/sizing/hori-block-size-small-or-larger-than-container-with-min-or-max-content-2a.html [ Failure ]
 crbug.com/591099 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/sizing/hori-block-size-small-or-larger-than-container-with-min-or-max-content-2b.html [ Failure ]
 crbug.com/591099 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/sizing/vert-block-size-small-or-larger-than-container-with-min-or-max-content-2a.html [ Failure ]
+crbug.com/591099 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/sizing/vert-block-size-small-or-larger-than-container-with-min-or-max-content-2b.html [ Failure ]
 
 ### external/wpt/quirks/
 crbug.com/591099 external/wpt/quirks/line-height-trailing-collapsable-whitespace.html [ Failure ]
@@ -372,6 +394,13 @@ crbug.com/612641 fast/box-decoration-break/box-decoration-break-min-max.html [ F
 ### fast/css/
 crbug.com/591099 fast/css/absolute-inline-alignment-2.html [ Failure ]
 crbug.com/591099 fast/css/text-overflow-ellipsis-button.html [ Failure ]
+
+### fast/forms/color-scheme/href/
+crbug.com/591099 fast/forms/color-scheme/href/href-appearance-basic.html [ Failure ]
+
+### fast/replaced/
+crbug.com/591099 fast/replaced/border-radius-clip-content-edge.html [ Failure ]
+crbug.com/591099 fast/replaced/outline-replaced-elements.html [ Failure ]
 
 ### fast/writing-mode/
 crbug.com/591099 fast/writing-mode/flipped-blocks-inline-map-local-to-container.html [ Failure ]
@@ -392,8 +421,21 @@ crbug.com/639223 virtual/text-antialias/line-break-between-text-nodes-latin1.htm
 ### http/tests/
 crbug.com/591099 http/tests/devtools/elements/highlight/highlight-node-vertical-rl.js [ Failure ]
 
+### http/tests/images/
+crbug.com/591099 http/tests/images/png-partial-load-as-document.html [ Failure ]
+
+### http/tests/misc/
+crbug.com/591099 http/tests/misc/favicon-as-image.html [ Failure ]
+
+### images/
+crbug.com/591099 images/favicon-as-image.html [ Failure ]
+
 ### inspector-protocol/
 crbug.com/591099 inspector-protocol/layout-fonts/languages-emoji-rare-glyphs.js [ Failure ]
+
+### media/
+crbug.com/591099 media/controls-layout-direction.html [ Failure ]
+crbug.com/591099 media/media-controls-clone.html [ Failure ]
 
 # Newline painting difference with LayoutNG disabled.
 crbug.com/591099 external/wpt/forced-colors-mode/forced-colors-mode-14.html [ Failure ]
@@ -410,11 +452,28 @@ crbug.com/591099 http/tests/csslayout/* [ Skip ]
 ### virtual/controls-refresh-hc/
 virtual/controls-refresh-hc/* [ Skip ]
 
+### virtual/dark-color-scheme/fast/forms/color-scheme/href/
+crbug.com/591099 virtual/dark-color-scheme/fast/forms/color-scheme/href/href-appearance-basic.html [ Failure ]
+
+### virtual/dark-color-scheme/media/
+crbug.com/591099 virtual/dark-color-scheme/media/audio-controls-rendering.html [ Failure ]
+crbug.com/591099 virtual/dark-color-scheme/media/audio-focus-ring.html [ Failure ]
+
+### virtual/exotic-color-space/images/
+crbug.com/591099 virtual/exotic-color-space/images/favicon-as-image.html [ Failure ]
+
+### virtual/gpu-rasterization/images/
+crbug.com/591099 virtual/gpu-rasterization/images/color-profile-image-filter-all.html [ Slow Failure ]
+crbug.com/591099 virtual/gpu-rasterization/images/favicon-as-image.html [ Failure ]
+
 ### virtual/layout_ng_block_frag/
 virtual/layout_ng_block_frag/* [ Skip ]
 
 ### virtual/layout_ng_fragment_traversal/
 virtual/layout_ng_fragment_traversal/* [ Skip ]
+
+### virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/
+crbug.com/591099 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/orthogonal-positioned-grid-descendants-001.html [ Failure ]
 
 ### virtual/layout_ng_printing/
 virtual/layout_ng_printing/* [ Skip ]
@@ -673,6 +732,9 @@ crbug.com/591099 external/wpt/html/links/manifest/wrong-mime-type-text-plain-man
 
 ### virtual/stable/compositing/filters/
 crbug.com/591099 virtual/stable/compositing/filters/sw-nested-shadow-overlaps-hw-nested-shadow.html [ Failure ]
+
+### webcodecs/
+crbug.com/591099 webcodecs/basic_video_encoding.html [ Failure ]
 
 # broken by https://chromium-review.googlesource.com/c/chromium/src/+/2392444
 crbug.com/958381 external/wpt/css/css-flexbox/table-as-item-wide-content.html [ Failure ]
