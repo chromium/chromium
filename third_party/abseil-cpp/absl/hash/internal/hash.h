@@ -855,7 +855,14 @@ class ABSL_DLL CityHashState
   // On other platforms this is still going to be non-deterministic but most
   // probably per-build and not per-process.
   ABSL_ATTRIBUTE_ALWAYS_INLINE static uint64_t Seed() {
+#if (!defined(__clang__) || __clang_major__ > 11) && \
+    !defined(__apple_build_version__)
+    return static_cast<uint64_t>(reinterpret_cast<uintptr_t>(&kSeed));
+#else
+    // Workaround the absence of
+    // https://github.com/llvm/llvm-project/commit/bc15bf66dcca76cc06fe71fca35b74dc4d521021.
     return static_cast<uint64_t>(reinterpret_cast<uintptr_t>(kSeed));
+#endif
   }
   static const void* const kSeed;
 

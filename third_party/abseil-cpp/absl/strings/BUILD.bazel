@@ -54,6 +54,7 @@ cc_library(
         "ascii.h",
         "charconv.h",
         "escaping.h",
+        "internal/string_constant.h",
         "match.h",
         "numbers.h",
         "str_cat.h",
@@ -218,6 +219,19 @@ cc_test(
     deps = [
         ":internal",
         "//absl/base:core_headers",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "string_constant_test",
+    size = "small",
+    srcs = ["internal/string_constant_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    visibility = ["//visibility:private"],
+    deps = [
+        ":strings",
+        "//absl/meta:type_traits",
         "@com_google_googletest//:gtest_main",
     ],
 )

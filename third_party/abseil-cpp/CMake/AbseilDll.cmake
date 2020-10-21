@@ -196,6 +196,7 @@ set(ABSL_INTERNAL_DLL_FILES
   "strings/internal/charconv_parse.cc"
   "strings/internal/charconv_parse.h"
   "strings/internal/stl_type_traits.h"
+  "strings/internal/string_constant.h"
   "strings/match.cc"
   "strings/match.h"
   "strings/numbers.cc"

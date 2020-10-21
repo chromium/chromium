@@ -607,6 +607,7 @@
 // When used with unsupported compilers, the ABSL_FALLTHROUGH_INTENDED macro
 // has no effect on diagnostics. In any case this macro has no effect on runtime
 // behavior and performance of code.
+
 #ifdef ABSL_FALLTHROUGH_INTENDED
 #error "ABSL_FALLTHROUGH_INTENDED should not be defined."
 #endif

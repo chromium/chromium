@@ -1065,7 +1065,9 @@ class raw_hash_set {
   }
 
   iterator insert(const_iterator, node_type&& node) {
-    return insert(std::move(node)).first;
+    auto res = insert(std::move(node));
+    node = std::move(res.node);
+    return res.position;
   }
 
   // This overload kicks in if we can deduce the key from args. This enables us

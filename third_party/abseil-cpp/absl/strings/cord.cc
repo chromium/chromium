@@ -241,6 +241,7 @@ static void UnrefInternal(CordRep* rep) {
 
   absl::InlinedVector<CordRep*, kInlinedVectorSize> pending;
   while (true) {
+    assert(!rep->refcount.IsImmortal());
     if (rep->tag == CONCAT) {
       CordRepConcat* rep_concat = rep->concat();
       CordRep* right = rep_concat->right;
@@ -256,6 +257,7 @@ static void UnrefInternal(CordRep* rep) {
       }
     } else if (rep->tag == EXTERNAL) {
       CordRepExternal* rep_external = rep->external();
+      assert(rep_external->releaser_invoker != nullptr);
       rep_external->releaser_invoker(rep_external);
       rep = nullptr;
     } else if (rep->tag == SUBSTRING) {

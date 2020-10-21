@@ -181,6 +181,8 @@ class CordTestPeer {
       const Cord& c, absl::FunctionRef<void(absl::string_view)> callback) {
     c.ForEachChunk(callback);
   }
+
+  static bool IsTree(const Cord& c) { return c.contents_.is_tree(); }
 };
 
 ABSL_NAMESPACE_END
@@ -1626,4 +1628,84 @@ TEST(CordDeathTest, Hardening) {
   EXPECT_DEATH_IF_SUPPORTED(*cord.chunk_end(), "");
   EXPECT_DEATH_IF_SUPPORTED(static_cast<void>(cord.chunk_end()->empty()), "");
   EXPECT_DEATH_IF_SUPPORTED(++cord.chunk_end(), "");
+}
+
+class AfterExitCordTester {
+ public:
+  bool Set(absl::Cord* cord, absl::string_view expected) {
+    cord_ = cord;
+    expected_ = expected;
+    return true;
+  }
+
+  ~AfterExitCordTester() {
+    EXPECT_EQ(*cord_, expected_);
+  }
+ private:
+  absl::Cord* cord_;
+  absl::string_view expected_;
+};
+
+template <typename Str>
+void TestConstinitConstructor(Str) {
+  const auto expected = Str::value;
+  // Defined before `cord` to be destroyed after it.
+  static AfterExitCordTester exit_tester;  // NOLINT
+  ABSL_CONST_INIT static absl::Cord cord(Str{});  // NOLINT
+  static bool init_exit_tester = exit_tester.Set(&cord, expected);
+  (void)init_exit_tester;
+
+  EXPECT_EQ(cord, expected);
+  // Copy the object and test the copy, and the original.
+  {
+    absl::Cord copy = cord;
+    EXPECT_EQ(copy, expected);
+  }
+  // The original still works
+  EXPECT_EQ(cord, expected);
+
+  // Try making adding more structure to the tree.
+  {
+    absl::Cord copy = cord;
+    std::string expected_copy(expected);
+    for (int i = 0; i < 10; ++i) {
+      copy.Append(cord);
+      absl::StrAppend(&expected_copy, expected);
+      EXPECT_EQ(copy, expected_copy);
+    }
+  }
+
+  // Make sure we are using the right branch during constant evaluation.
+  EXPECT_EQ(absl::CordTestPeer::IsTree(cord), cord.size() >= 16);
+
+  for (int i = 0; i < 10; ++i) {
+    // Make a few more Cords from the same global rep.
+    // This tests what happens when the refcount for it gets below 1.
+    EXPECT_EQ(expected, absl::Cord(Str{}));
+  }
+}
+
+constexpr int SimpleStrlen(const char* p) {
+  return *p ? 1 + SimpleStrlen(p + 1) : 0;
+}
+
+struct ShortView {
+  constexpr absl::string_view operator()() const {
+    return absl::string_view("SSO string", SimpleStrlen("SSO string"));
+  }
+};
+
+struct LongView {
+  constexpr absl::string_view operator()() const {
+    return absl::string_view("String that does not fit SSO.",
+                             SimpleStrlen("String that does not fit SSO."));
+  }
+};
+
+
+TEST(Cord, ConstinitConstructor) {
+  TestConstinitConstructor(
+      absl::strings_internal::MakeStringConstant(ShortView{}));
+  TestConstinitConstructor(
+      absl::strings_internal::MakeStringConstant(LongView{}));
 }

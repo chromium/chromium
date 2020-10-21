@@ -183,6 +183,7 @@ absl_cc_library(
   DEPS
     absl::base
     absl::config
+    absl::flags_commandlineflag
     absl::flags_commandlineflag_internal
     absl::flags_config
     absl::flags_marshalling

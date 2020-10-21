@@ -34,31 +34,36 @@ if [[ -z ${ABSL_CMAKE_BUILD_TYPES:-} ]]; then
   ABSL_CMAKE_BUILD_TYPES="Debug Release"
 fi
 
+if [[ -z ${ABSL_CMAKE_BUILD_SHARED:-} ]]; then
+  ABSL_CMAKE_BUILD_SHARED="OFF ON"
+fi
+
 source "${ABSEIL_ROOT}/ci/linux_docker_containers.sh"
 readonly DOCKER_CONTAINER=${LINUX_GCC_LATEST_CONTAINER}
 
 for std in ${ABSL_CMAKE_CXX_STANDARDS}; do
   for compilation_mode in ${ABSL_CMAKE_BUILD_TYPES}; do
-    echo "--------------------------------------------------------------------"
-    echo "Testing with CMAKE_BUILD_TYPE=${compilation_mode} and -std=c++${std}"
-
-    time docker run \
-      --volume="${ABSEIL_ROOT}:/abseil-cpp:ro" \
-      --workdir=/abseil-cpp \
-      --tmpfs=/buildfs:exec \
-      --cap-add=SYS_PTRACE \
-      --rm \
-      -e CFLAGS="-Werror" \
-      -e CXXFLAGS="-Werror" \
-      ${DOCKER_CONTAINER} \
-      /bin/bash -c "
-        cd /buildfs && \
-        cmake /abseil-cpp \
-          -DABSL_USE_GOOGLETEST_HEAD=ON \
-          -DABSL_RUN_TESTS=ON \
-          -DCMAKE_BUILD_TYPE=${compilation_mode} \
-          -DCMAKE_CXX_STANDARD=${std} && \
-        make -j$(nproc) && \
-        ctest -j$(nproc) --output-on-failure"
+    for build_shared in ${ABSL_CMAKE_BUILD_SHARED}; do
+      time docker run \
+        --mount type=bind,source="${ABSEIL_ROOT}",target=/abseil-cpp,readonly \
+        --workdir=/abseil-cpp \
+        --tmpfs=/buildfs:exec \
+        --cap-add=SYS_PTRACE \
+        --rm \
+        -e CFLAGS="-Werror" \
+        -e CXXFLAGS="-Werror" \
+        ${DOCKER_CONTAINER} \
+        /bin/bash -c "
+          cd /buildfs && \
+          cmake /abseil-cpp \
+            -DABSL_USE_GOOGLETEST_HEAD=ON \
+            -DABSL_RUN_TESTS=ON \
+            -DBUILD_SHARED_LIBS=${build_shared} \
+            -DCMAKE_BUILD_TYPE=${compilation_mode} \
+            -DCMAKE_CXX_STANDARD=${std} \
+            -DCMAKE_MODULE_LINKER_FLAGS=\"-Wl,--no-undefined\" && \
+          make -j$(nproc) && \
+          ctest -j$(nproc) --output-on-failure"
+    done
   done
 done

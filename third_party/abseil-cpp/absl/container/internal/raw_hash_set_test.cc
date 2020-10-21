@@ -1711,6 +1711,26 @@ TEST(Nodes, ExtractInsert) {
   EXPECT_FALSE(node);
 }
 
+TEST(Nodes, HintInsert) {
+  IntTable t = {1, 2, 3};
+  auto node = t.extract(1);
+  EXPECT_THAT(t, UnorderedElementsAre(2, 3));
+  auto it = t.insert(t.begin(), std::move(node));
+  EXPECT_THAT(t, UnorderedElementsAre(1, 2, 3));
+  EXPECT_EQ(*it, 1);
+  EXPECT_FALSE(node);
+
+  node = t.extract(2);
+  EXPECT_THAT(t, UnorderedElementsAre(1, 3));
+  // reinsert 2 to make the next insert fail.
+  t.insert(2);
+  EXPECT_THAT(t, UnorderedElementsAre(1, 2, 3));
+  it = t.insert(t.begin(), std::move(node));
+  EXPECT_EQ(*it, 2);
+  // The node was not emptied by the insert call.
+  EXPECT_TRUE(node);
+}
+
 IntTable MakeSimpleTable(size_t size) {
   IntTable t;
   while (t.size() < size) t.insert(t.size());

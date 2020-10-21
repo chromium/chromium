@@ -806,6 +806,7 @@ EXPORTS
     ?resize@?$vector@UTransitionType@cctz@time_internal@absl@@V?$allocator@UTransitionType@cctz@time_internal@absl@@@__1@std@@@__1@std@@QEAAX_K@Z
     ?rfind@string_view@absl@@QEBA_KD_K@Z
     ?rfind@string_view@absl@@QEBA_KV12@_K@Z
+    ?safe_strto128_base@numbers_internal@absl@@YA_NVstring_view@2@PEAVint128@2@H@Z
     ?safe_strto32_base@numbers_internal@absl@@YA_NVstring_view@2@PEAHH@Z
     ?safe_strto64_base@numbers_internal@absl@@YA_NVstring_view@2@PEA_JH@Z
     ?safe_strtou128_base@numbers_internal@absl@@YA_NVstring_view@2@PEAVuint128@2@H@Z

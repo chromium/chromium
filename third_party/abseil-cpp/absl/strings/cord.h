@@ -79,6 +79,7 @@
 #include "absl/meta/type_traits.h"
 #include "absl/strings/internal/cord_internal.h"
 #include "absl/strings/internal/resize_uninitialized.h"
+#include "absl/strings/internal/string_constant.h"
 #include "absl/strings/string_view.h"
 #include "absl/types/optional.h"
 
@@ -624,6 +625,14 @@ class Cord {
     return c.HashFragmented(std::move(hash_state));
   }
 
+  // Create a Cord with the contents of StringConstant<T>::value.
+  // No allocations will be done and no data will be copied.
+  // This is an INTERNAL API and subject to change or removal. This API can only
+  // be used by spelling absl::strings_internal::MakeStringConstant, which is
+  // also an internal API.
+  template <typename T>
+  explicit constexpr Cord(strings_internal::StringConstant<T>);
+
  private:
   friend class CordTestPeer;
   friend bool operator==(const Cord& lhs, const Cord& rhs);
@@ -654,6 +663,8 @@ class Cord {
     InlineRep(InlineRep&& src);
     InlineRep& operator=(const InlineRep& src);
     InlineRep& operator=(InlineRep&& src) noexcept;
+
+    explicit constexpr InlineRep(cord_internal::InlineData data);
 
     void Swap(InlineRep* rhs);
     bool empty() const;
@@ -884,6 +895,9 @@ Cord MakeCordFromExternal(absl::string_view data, Releaser&& releaser) {
   return cord;
 }
 
+constexpr Cord::InlineRep::InlineRep(cord_internal::InlineData data)
+    : data_(data) {}
+
 inline Cord::InlineRep::InlineRep(const Cord::InlineRep& src) {
   data_ = src.data_;
 }
@@ -980,6 +994,18 @@ inline void Cord::InlineRep::CopyToArray(char* dst) const {
 }
 
 constexpr inline Cord::Cord() noexcept {}
+
+template <typename T>
+constexpr Cord::Cord(strings_internal::StringConstant<T>)
+    : contents_(strings_internal::StringConstant<T>::value.size() <=
+                        cord_internal::kMaxInline
+                    ? cord_internal::InlineData(
+                          strings_internal::StringConstant<T>::value)
+                    : cord_internal::InlineData(cord_internal::AsTree{
+                          &cord_internal::ConstInitExternalStorage<
+                              strings_internal::StringConstant<T>>::value,
+                          {},
+                          cord_internal::kTreeFlag})) {}
 
 inline Cord& Cord::operator=(const Cord& x) {
   contents_ = x.contents_;

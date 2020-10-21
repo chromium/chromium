@@ -127,6 +127,8 @@ inline void PutTwoDigits(size_t i, char* buf) {
 // safe_strto?() functions for implementing SimpleAtoi()
 bool safe_strto32_base(absl::string_view text, int32_t* value, int base);
 bool safe_strto64_base(absl::string_view text, int64_t* value, int base);
+bool safe_strto128_base(absl::string_view text, absl::int128* value,
+                         int base);
 bool safe_strtou32_base(absl::string_view text, uint32_t* value, int base);
 bool safe_strtou64_base(absl::string_view text, uint64_t* value, int base);
 bool safe_strtou128_base(absl::string_view text, absl::uint128* value,
@@ -253,6 +255,11 @@ inline size_t FastHexToBufferZeroPad16(uint64_t val, char* out) {
 template <typename int_type>
 ABSL_MUST_USE_RESULT bool SimpleAtoi(absl::string_view str, int_type* out) {
   return numbers_internal::safe_strtoi_base(str, out, 10);
+}
+
+ABSL_MUST_USE_RESULT inline bool SimpleAtoi(absl::string_view str,
+                                            absl::int128* out) {
+  return numbers_internal::safe_strto128_base(str, out, 10);
 }
 
 ABSL_MUST_USE_RESULT inline bool SimpleAtoi(absl::string_view str,
