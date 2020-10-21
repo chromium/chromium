@@ -98,7 +98,7 @@ TEST_F(SendTabToSelfSubMenuModelTest, ExecuteCommandTab) {
       BuildTargetDeviceInfo("device2", "2")};
 
   EXPECT_CALL(*model_mock, GetTargetDeviceInfoSortedList())
-      .WillOnce(Return(devices));
+      .WillRepeatedly(Return(devices));
   SendTabToSelfSubMenuModel sub_menu_model(
       browser()->tab_strip_model()->GetActiveWebContents(),
       send_tab_to_self::SendTabToSelfMenuType::kTab);
