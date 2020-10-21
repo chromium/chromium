@@ -218,7 +218,7 @@ void PCScan<thread_safe>::PCScanTask::ClearQuarantinedObjects() const {
 }
 
 template <bool thread_safe>
-size_t PCScan<thread_safe>::PCScanTask::ScanPartition() NO_SANITIZE("thread") {
+size_t NO_SANITIZE("thread") PCScan<thread_safe>::PCScanTask::ScanPartition() {
   static_assert(alignof(uintptr_t) % alignof(void*) == 0,
                 "Alignment of uintptr_t must be at least as strict as "
                 "alignment of a pointer type.");
