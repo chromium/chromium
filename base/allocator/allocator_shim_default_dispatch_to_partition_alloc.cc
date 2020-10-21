@@ -6,6 +6,7 @@
 #include "base/allocator/allocator_shim_internals.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/bits.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
@@ -78,7 +79,8 @@ base::ThreadSafePartitionRoot& Allocator() {
 
   auto* new_root = new (g_allocator_buffer) base::ThreadSafePartitionRoot(
       {base::PartitionOptions::Alignment::kRegular,
-       base::PartitionOptions::ThreadCache::kEnabled});
+       base::PartitionOptions::ThreadCache::kEnabled,
+       base::PartitionOptions::PCScan::kDisabledByDefault});
   g_root_.store(new_root, std::memory_order_release);
 
   // Semantically equivalent to base::Lock::Release().
@@ -108,8 +110,10 @@ void* PartitionCalloc(const AllocatorDispatch*,
 base::ThreadSafePartitionRoot* AlignedAllocator() {
   // Since the general-purpose allocator uses the thread cache, this one cannot.
   static base::NoDestructor<base::ThreadSafePartitionRoot> aligned_allocator(
-      base::PartitionOptions{base::PartitionOptions::Alignment::kAlignedAlloc,
-                             base::PartitionOptions::ThreadCache::kDisabled});
+      base::PartitionOptions{
+          base::PartitionOptions::Alignment::kAlignedAlloc,
+          base::PartitionOptions::ThreadCache::kDisabled,
+          base::PartitionOptions::PCScan::kDisabledByDefault});
   return aligned_allocator.get();
 }
 
@@ -185,6 +189,21 @@ size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
 }
 
 }  // namespace
+
+namespace base {
+namespace allocator {
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+void EnablePCScanIfNeeded() {
+  if (!features::IsPartitionAllocPCScanEnabled())
+    return;
+  Allocator().EnablePCScan();
+  AlignedAllocator()->EnablePCScan();
+}
+#endif
+
+}  // namespace allocator
+}  // namespace base
 
 constexpr AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &PartitionMalloc,          /* alloc_function */

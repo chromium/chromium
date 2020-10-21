@@ -15,6 +15,7 @@
 
 #include "base/allocator/allocator_check.h"
 #include "base/allocator/allocator_extension.h"
+#include "base/allocator/allocator_shim.h"
 #include "base/allocator/buildflags.h"
 #include "base/at_exit.h"
 #include "base/base_switches.h"
@@ -230,6 +231,13 @@ void InitializeV8IfNeeded(const base::CommandLine& command_line,
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
   LoadV8SnapshotFile();
 #endif  // V8_USE_EXTERNAL_STARTUP_DATA
+}
+
+void EnablePCScanForMallocPartitionsIfNeeded() {
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  CHECK(base::FeatureList::GetInstance());
+  base::allocator::EnablePCScanIfNeeded();
+#endif
 }
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
@@ -479,6 +487,10 @@ int RunZygote(ContentMainDelegate* delegate) {
   InitializeFieldTrialAndFeatureList();
   delegate->PostFieldTrialInitialization();
 
+  // After feature list has been initialized, enable pcscan on malloc
+  // partitions.
+  EnablePCScanForMallocPartitionsIfNeeded();
+
   for (size_t i = 0; i < base::size(kMainFunctions); ++i) {
     if (process_type == kMainFunctions[i].name)
       return kMainFunctions[i].function(main_params);
@@ -527,6 +539,11 @@ int RunOtherNamedProcessTypeMain(const std::string& process_type,
         return exit_code;
       return kMainFunctions[i].function(main_function_params);
     }
+  }
+
+  if (process_type != switches::kZygoteProcess) {
+    // Zygote processes are handled in RunZygote.
+    EnablePCScanForMallocPartitionsIfNeeded();
   }
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
@@ -826,6 +843,10 @@ int ContentMainRunnerImpl::Run(bool start_service_manager_only) {
       // has been updated.
       InitializeFieldTrialAndFeatureList();
       delegate_->PostFieldTrialInitialization();
+
+      // After feature list has been initialized, enable pcscan on malloc
+      // partitions.
+      EnablePCScanForMallocPartitionsIfNeeded();
     }
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -964,6 +985,9 @@ int ContentMainRunnerImpl::RunServiceManager(MainFunctionParams& main_params,
     }
 #endif
   }
+
+  // Enable PCScan once we are certain that FeatureList was initialized.
+  EnablePCScanForMallocPartitionsIfNeeded();
 
   if (should_start_service_manager_only) {
     DVLOG(0) << "Chrome is running in ServiceManager only mode.";

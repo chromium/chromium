@@ -18,6 +18,7 @@
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
 #include "base/allocator/partition_allocator/partition_oom.h"
 #include "base/allocator/partition_allocator/partition_page.h"
+#include "base/allocator/partition_allocator/partition_root.h"
 #include "base/check_op.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
@@ -278,6 +279,7 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
   // the beginning of the slot.
   allow_extras = (opts.alignment != PartitionOptions::Alignment::kAlignedAlloc);
 
+  scannable = (opts.pcscan != PartitionOptions::PCScan::kAlwaysDisabled);
   // Concurrent freeing in PCScan can only safely work on thread-safe
   // partitions.
   if (thread_safe && opts.pcscan == PartitionOptions::PCScan::kEnabled)

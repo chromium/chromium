@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "base/allocator/buildflags.h"
 #include "base/base_export.h"
 #include "build/build_config.h"
 
@@ -149,6 +150,10 @@ BASE_EXPORT void RemoveAllocatorDispatchForTesting(AllocatorDispatch* dispatch);
 // On macOS, the allocator shim needs to be turned on during runtime.
 BASE_EXPORT void InitializeAllocatorShim();
 #endif  // defined(OS_APPLE)
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+BASE_EXPORT void EnablePCScanIfNeeded();
+#endif
 
 }  // namespace allocator
 }  // namespace base

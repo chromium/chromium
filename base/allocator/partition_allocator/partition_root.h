@@ -13,6 +13,7 @@
 #include "base/allocator/partition_allocator/partition_tag.h"
 #include "base/allocator/partition_allocator/pcscan.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
+#include "base/optional.h"
 
 namespace base {
 
@@ -40,13 +41,20 @@ struct PartitionOptions {
   };
 
   enum class PCScan {
-    kDisabled,
+    // Should be used for value partitions, i.e. partitions that are known to
+    // not have pointers. No metadata (quarantine bitmaps) is allocated for such
+    // partitions.
+    kAlwaysDisabled,
+    // PCScan is disabled by default, but can be enabled by calling
+    // PartitionRoot::EnablePCScan().
+    kDisabledByDefault,
+    // PCScan is always enabled.
     kEnabled,
   };
 
   Alignment alignment = Alignment::kRegular;
   ThreadCache thread_cache = ThreadCache::kDisabled;
-  PCScan pcscan = PCScan::kDisabled;
+  PCScan pcscan = PCScan::kAlwaysDisabled;
 };
 
 // Never instantiate a PartitionRoot directly, instead use
@@ -70,6 +78,7 @@ struct BASE_EXPORT PartitionRoot {
   // nothing) instead of true|false, so that we can just add or subtract the
   // size instead of having an if branch on the hot paths.
   bool allow_extras;
+  bool scannable = false;
   bool initialized = false;
 
 #if ENABLE_TAG_FOR_CHECKED_PTR2 || ENABLE_TAG_FOR_MTE_CHECKED_PTR
@@ -223,6 +232,13 @@ struct BASE_EXPORT PartitionRoot {
 
   bool UsesGigaCage() const {
     return features::IsPartitionAllocGigaCageEnabled() && allow_extras;
+  }
+
+  void EnablePCScan() {
+    // TODO(bikineev): Make CHECK once PCScan is enabled.
+    if (!scannable || pcscan.has_value())
+      return;
+    pcscan.emplace(this);
   }
 
  private:

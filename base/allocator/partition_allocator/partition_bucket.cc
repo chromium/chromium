@@ -291,12 +291,12 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   char* tag_bitmap = super_page + PartitionPageSize();
   char* quarantine_bitmaps = tag_bitmap + ReservedTagBitmapSize();
   const size_t quarantine_bitmaps_size =
-      root->pcscan ? 2 * sizeof(QuarantineBitmap) : 0;
+      root->scannable ? 2 * sizeof(QuarantineBitmap) : 0;
   PA_DCHECK(quarantine_bitmaps_size % PartitionPageSize() == 0);
   char* ret = quarantine_bitmaps + quarantine_bitmaps_size;
   root->next_partition_page = ret + total_size;
   root->next_partition_page_end = root->next_super_page - PartitionPageSize();
-  PA_DCHECK(ret == SuperPagePayloadBegin(super_page, root->pcscan.has_value()));
+  PA_DCHECK(ret == SuperPagePayloadBegin(super_page, root->scannable));
   PA_DCHECK(root->next_partition_page_end == SuperPagePayloadEnd(super_page));
 
   // The first slot span is accessible. The given committed_size is equal to

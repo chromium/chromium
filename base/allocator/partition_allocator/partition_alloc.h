@@ -80,7 +80,6 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/partition_alloc_buildflags.h"
 #include "base/stl_util.h"
 #include "base/synchronization/lock.h"
