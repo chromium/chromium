@@ -18,8 +18,6 @@
 
 namespace syncer {
 
-const char kPayloadKey[] = "payload";
-
 // Lower bound time between two token validations when listening.
 const int kTokenValidationPeriodMinutesDefault = 60 * 24;
 
@@ -109,14 +107,8 @@ void FCMHandler::OnMessage(const std::string& app_id,
   DCHECK_EQ(app_id, app_id_);
   DCHECK(base::FeatureList::IsEnabled(switches::kUseSyncInvalidations));
 
-  auto it = message.data.find(kPayloadKey);
-  std::string payload;
-  if (it != message.data.end()) {
-    payload = it->second;
-  }
-
   for (InvalidationsListener& listener : listeners_) {
-    listener.OnInvalidationReceived(payload);
+    listener.OnInvalidationReceived(message.raw_data);
   }
 }
 

@@ -36,7 +36,6 @@ namespace {
 
 const char kDefaultSenderId[] = "fake_sender_id";
 const char kSyncInvalidationsAppId[] = "com.google.chrome.sync.invalidations";
-const char kPayloadKey[] = "payload";
 
 const int kTokenValidationPeriodMinutesDefault = 60 * 24;
 
@@ -150,7 +149,7 @@ TEST_F(FCMHandlerTest, ShouldPropagatePayloadToListener) {
   fcm_handler_.AddListener(&mock_listener);
 
   gcm::IncomingMessage gcm_message;
-  gcm_message.data[kPayloadKey] = kPayloadValue;
+  gcm_message.raw_data = kPayloadValue;
 
   EXPECT_CALL(mock_listener, OnInvalidationReceived(kPayloadValue));
   fcm_handler_.OnMessage(kSyncInvalidationsAppId, gcm_message);
