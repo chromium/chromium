@@ -78,6 +78,8 @@ typedef std::vector<DCLayerOverlay> DCLayerOverlayList;
 class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
     : public ui::GpuSwitchingObserver {
  public:
+  using FilterOperationsMap =
+      base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>;
   // When |skip_initialization_for_testing| is true, object will be isolated
   // for unit tests.
   // allowed_yuv_overlay_count will be limited to 1 if
@@ -94,6 +96,8 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
   // Virtual for testing.
   virtual void Process(DisplayResourceProvider* resource_provider,
                        const gfx::RectF& display_rect,
+                       const FilterOperationsMap& render_pass_filters,
+                       const FilterOperationsMap& render_pass_backdrop_filters,
                        AggregatedRenderPassList* render_passes,
                        gfx::Rect* damage_rect,
                        SurfaceDamageRectList* surface_damage_rect_list,

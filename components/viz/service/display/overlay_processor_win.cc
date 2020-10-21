@@ -88,7 +88,8 @@ void OverlayProcessorWin::ProcessForOverlays(
 
   dc_layer_overlay_processor_->Process(
       resource_provider, gfx::RectF(root_render_pass->output_rect),
-      render_passes, damage_rect, surface_damage_rect_list, candidates);
+      render_pass_filters, render_pass_backdrop_filters, render_passes,
+      damage_rect, surface_damage_rect_list, candidates);
 
   bool was_using_dc_layers = using_dc_layers_;
   if (!candidates->empty()) {

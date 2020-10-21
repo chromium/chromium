@@ -2529,9 +2529,11 @@ class MockDCLayerOverlayProcessor : public DCLayerOverlayProcessor {
                                 /*allowed_yuv_overlay_count=*/1,
                                 true) {}
   ~MockDCLayerOverlayProcessor() override = default;
-  MOCK_METHOD6(Process,
+  MOCK_METHOD8(Process,
                void(DisplayResourceProvider* resource_provider,
                     const gfx::RectF& display_rect,
+                    const FilterOperationsMap& render_pass_filters,
+                    const FilterOperationsMap& render_pass_backdrop_filters,
                     AggregatedRenderPassList* render_passes,
                     gfx::Rect* damage_rect,
                     SurfaceDamageRectList* surface_damage_rect_list,
@@ -2738,7 +2740,7 @@ TEST_F(GLRendererTest, DontOverlayWithCopyRequests) {
   EXPECT_CALL(*mock_ca_processor, ProcessForCALayerOverlays(_, _, _, _, _, _))
       .Times(0);
 #elif defined(OS_WIN)
-  EXPECT_CALL(*dc_processor, Process(_, _, _, _, _, _)).Times(0);
+  EXPECT_CALL(*dc_processor, Process(_, _, _, _, _, _, _, _)).Times(0);
 #endif
   DrawFrame(&renderer, viewport_size);
 #if defined(USE_OZONE) || defined(OS_ANDROID)
@@ -2770,7 +2772,7 @@ TEST_F(GLRendererTest, DontOverlayWithCopyRequests) {
   EXPECT_CALL(*mock_ca_processor, ProcessForCALayerOverlays(_, _, _, _, _, _))
       .Times(1);
 #elif defined(OS_WIN)
-  EXPECT_CALL(*dc_processor, Process(_, _, _, _, _, _)).Times(1);
+  EXPECT_CALL(*dc_processor, Process(_, _, _, _, _, _, _, _)).Times(1);
 #endif
   DrawFrame(&renderer, viewport_size);
 

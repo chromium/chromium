@@ -36,8 +36,6 @@ namespace {
 constexpr int kDCLayerDebugBorderWidth = 4;
 constexpr gfx::Insets kDCLayerDebugBorderInsets = gfx::Insets(-2);
 
-using RenderPassListWithFilters = base::flat_map<AggregatedRenderPassId, float>;
-
 // This is used for a histogram to determine why overlays are or aren't used,
 // so don't remove entries and make sure to update enums.xml if it changes.
 enum DCLayerResult {
@@ -255,7 +253,7 @@ bool HasOccludingQuads(
     const gfx::RectF& target_quad,
     QuadList::ConstIterator quad_list_begin,
     QuadList::ConstIterator quad_list_end,
-    RenderPassListWithFilters& render_pass_has_pixel_moving_filters) {
+    const DCLayerOverlayProcessor::FilterOperationsMap& render_pass_filters) {
   for (auto overlap_iter = quad_list_begin; overlap_iter != quad_list_end;
        ++overlap_iter) {
     float opacity = overlap_iter->shared_quad_state->opacity;
@@ -267,13 +265,13 @@ bool HasOccludingQuads(
     // Expand the overlap_rect for the render pass draw quad with pixel moving
     // foreground filters.
     bool has_pixel_moving_filter = false;
-    if (!render_pass_has_pixel_moving_filters.empty() &&
+    if (!render_pass_filters.empty() &&
         quad->material == DrawQuad::Material::kAggregatedRenderPass) {
       const auto* rpdq = AggregatedRenderPassDrawQuad::MaterialCast(quad);
-      auto render_pass_it =
-          render_pass_has_pixel_moving_filters.find(rpdq->render_pass_id);
-      if (render_pass_it != render_pass_has_pixel_moving_filters.end()) {
-        float max_pixel_movement = render_pass_it->second;
+      auto render_pass_it = render_pass_filters.find(rpdq->render_pass_id);
+      if (render_pass_it != render_pass_filters.end()) {
+        auto* filters = render_pass_it->second;
+        float max_pixel_movement = filters->MaximumPixelMovement();
         overlap_rect =
             GetExpandedRectWithPixelMovingFilter(rpdq, max_pixel_movement);
         has_pixel_moving_filter = true;
@@ -581,6 +579,8 @@ bool DCLayerOverlayProcessor::IsPreviousFrameUnderlayRect(
 void DCLayerOverlayProcessor::Process(
     DisplayResourceProvider* resource_provider,
     const gfx::RectF& display_rect,
+    const FilterOperationsMap& render_pass_filters,
+    const FilterOperationsMap& render_pass_backdrop_filters,
     AggregatedRenderPassList* render_pass_list,
     gfx::Rect* damage_rect,
     SurfaceDamageRectList* surface_damage_rect_list,
@@ -589,21 +589,6 @@ void DCLayerOverlayProcessor::Process(
   bool this_frame_has_occluding_damage_rect = false;
   processed_yuv_overlay_count_ = 0;
   surface_damage_rect_list_ = surface_damage_rect_list;
-
-  // Which render passes have backdrop filters or pixel moving foreground
-  // filters.
-  base::flat_set<AggregatedRenderPassId> render_pass_has_backdrop_filters;
-  RenderPassListWithFilters render_pass_has_pixel_moving_filters;
-
-  for (const auto& render_pass : *render_pass_list) {
-    if (!render_pass->backdrop_filters.IsEmpty())
-      render_pass_has_backdrop_filters.insert(render_pass->id);
-
-    if (render_pass->filters.HasFilterThatMovesPixels()) {
-      render_pass_has_pixel_moving_filters.insert(
-          {render_pass->id, render_pass->filters.MaximumPixelMovement()});
-    }
-  }
 
   // Output rects of child render passes that have backdrop filters in target
   // space. These rects are used to determine if the overlay rect could be read
@@ -632,7 +617,9 @@ void DCLayerOverlayProcessor::Process(
   for (auto it = quad_list->begin(); it != quad_list->end(); ++it, ++index) {
     if (it->material == DrawQuad::Material::kAggregatedRenderPass) {
       const auto* rpdq = AggregatedRenderPassDrawQuad::MaterialCast(*it);
-      if (render_pass_has_backdrop_filters.count(rpdq->render_pass_id)) {
+      auto render_pass_it =
+          render_pass_backdrop_filters.find(rpdq->render_pass_id);
+      if (render_pass_it != render_pass_backdrop_filters.end()) {
         backdrop_filter_rects.push_back(
             gfx::ToEnclosingRect(ClippedQuadRectangle(rpdq)));
       }
@@ -704,9 +691,9 @@ void DCLayerOverlayProcessor::Process(
         gfx::ToEnclosingRect(ClippedQuadRectangle(*it));
 
     // Quad is considered an "overlay" if it has no occluders.
-    bool is_overlay = !HasOccludingQuads(
-        gfx::RectF(quad_rectangle_in_target_space), quad_list->begin(), it,
-        render_pass_has_pixel_moving_filters);
+    bool is_overlay =
+        !HasOccludingQuads(gfx::RectF(quad_rectangle_in_target_space),
+                           quad_list->begin(), it, render_pass_filters);
 
     // Protected video is always put in an overlay, but texture quads can be
     // skipped if they're not underlay compatible.
