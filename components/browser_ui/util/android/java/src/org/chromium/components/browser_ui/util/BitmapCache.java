@@ -12,13 +12,13 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.LruCache;
 
+import org.chromium.base.CollectionUtil;
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -164,13 +164,7 @@ public class BitmapCache {
      * garbage collector.
      */
     private static void compactDeduplicationCache() {
-        // Too many angle brackets for clang-format :-(
-        // clang-format off
-        for (Iterator<Map.Entry<String, WeakReference<Bitmap>>> it =
-                sDeduplicationCache.entrySet().iterator(); it.hasNext();) {
-            // clang-format on
-            if (it.next().getValue().get() == null) it.remove();
-        }
+        CollectionUtil.strengthen(sDeduplicationCache.values());
     }
 
     @VisibleForTesting

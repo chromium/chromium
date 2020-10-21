@@ -9,6 +9,7 @@ import android.app.Activity;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.CollectionUtil;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
@@ -249,12 +250,9 @@ public class UsageStatsService {
     }
 
     private void notifyObserversOfSuspensions(List<String> fqdns, boolean suspended) {
-        for (WeakReference<PageViewObserver> observerRef : mPageViewObservers) {
-            PageViewObserver observer = observerRef.get();
-            if (observer != null) {
-                for (String fqdn : fqdns) {
-                    observer.notifySiteSuspensionChanged(fqdn, suspended);
-                }
+        for (PageViewObserver observer : CollectionUtil.strengthen(mPageViewObservers)) {
+            for (String fqdn : fqdns) {
+                observer.notifySiteSuspensionChanged(fqdn, suspended);
             }
         }
     }

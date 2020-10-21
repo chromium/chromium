@@ -207,9 +207,8 @@ public final class CallbackController {
     public void destroy() {
         try (AutoCloseableLock acl = AutoCloseableLock.lock(mReadWriteLock.writeLock())) {
             checkNotCanceled();
-            for (WeakReference<Cancelable> cancelableWeakReference : mCancelables) {
-                Cancelable cancelable = cancelableWeakReference.get();
-                if (cancelable != null) cancelable.cancel();
+            for (Cancelable cancelable : CollectionUtil.strengthen(mCancelables)) {
+                cancelable.cancel();
             }
             mCancelables = null;
         }

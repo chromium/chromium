@@ -14,11 +14,11 @@ import android.view.autofill.AutofillValue;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.CollectionUtil;
 import org.chromium.base.Log;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * The class to call Android's AutofillManager.
@@ -158,25 +158,9 @@ public class AutofillManagerWrapper {
         mInputUIObservers.add(new WeakReference<InputUIObserver>(observer));
     }
 
-    public void removeInputUIObserver(InputUIObserver observer) {
-        if (observer == null) return;
-        for (Iterator<WeakReference<InputUIObserver>> i = mInputUIObservers.listIterator();
-                i.hasNext();) {
-            WeakReference<InputUIObserver> o = i.next();
-            if (o.get() == null || o.get() == observer) i.remove();
-        }
-    }
-
     @VisibleForTesting
     public void notifyInputUIChange() {
-        for (Iterator<WeakReference<InputUIObserver>> i = mInputUIObservers.listIterator();
-                i.hasNext();) {
-            WeakReference<InputUIObserver> o = i.next();
-            InputUIObserver observer = o.get();
-            if (observer == null) {
-                i.remove();
-                continue;
-            }
+        for (InputUIObserver observer : CollectionUtil.strengthen(mInputUIObservers)) {
             observer.onInputUIShown();
         }
     }
