@@ -38,6 +38,7 @@
 #include "content/public/renderer/content_renderer_client.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "v8/include/v8.h"
 
@@ -159,17 +160,20 @@ RenderProcessImpl::RenderProcessImpl()
     v8::V8::SetFlagsFromString(kWasmThreadsFlag, sizeof(kWasmThreadsFlag));
     enableSharedArrayBuffer = true;
   } else {
+    bool processIscrossOriginIsolated =
+        base::FeatureList::IsEnabled(network::features::kCrossOriginIsolated) &&
+        blink::IsCrossOriginIsolated();
     enableSharedArrayBuffer =
         base::FeatureList::IsEnabled(features::kSharedArrayBuffer) ||
-        base::FeatureList::IsEnabled(network::features::kCrossOriginIsolated);
+        processIscrossOriginIsolated;
   }
 
   if (enableSharedArrayBuffer) {
-    SetV8FlagIfFeature(features::kSharedArrayBuffer,
-                       "--harmony-sharedarraybuffer");
+    constexpr char kSABFlag[] = "--harmony-sharedarraybuffer";
+    v8::V8::SetFlagsFromString(kSABFlag, sizeof(kSABFlag));
   } else {
-    SetV8FlagIfNotFeature(features::kSharedArrayBuffer,
-                          "--no-harmony-sharedarraybuffer");
+    constexpr char kNoSABFlag[] = "--no-harmony-sharedarraybuffer";
+    v8::V8::SetFlagsFromString(kNoSABFlag, sizeof(kNoSABFlag));
   }
 
   SetV8FlagIfFeature(features::kWebAssemblyTiering, "--wasm-tier-up");
