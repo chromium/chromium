@@ -81,11 +81,14 @@ STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID* ppv) {
 
   HRESULT hr = _AtlModule.DllGetClassObject(rclsid, riid, ppv);
 
-  // Start refreshing token handle validity as soon as possible so that when
-  // their validity is requested later on by the credential providers they may
-  // already be available and no wait is needed.
-  if (SUCCEEDED(hr))
+  if (SUCCEEDED(hr)) {
+    // Start refreshing token handle validity as soon as possible so that when
+    // their validity is requested later on by the credential providers they may
+    // already be available and no wait is needed.
     _AtlModule.RefreshTokenHandleValidity();
+
+    _AtlModule.CheckGCPWExtension();
+  }
 
   return hr;
 }

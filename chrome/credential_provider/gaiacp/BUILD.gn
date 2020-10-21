@@ -160,6 +160,7 @@ source_set("gaiacp_lib") {
     ":string_resources",
     ":util",
     "../eventlog:gcp_eventlog_messages",
+    "../extension:common",
     "//build:branding_buildflags",
     "//chrome/common:non_code_constants",
     "//chrome/common:version_header",

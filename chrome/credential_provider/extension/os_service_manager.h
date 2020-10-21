@@ -38,6 +38,9 @@ class OSServiceManager {
   // function, and the service is not running.
   virtual DWORD DeleteService();
 
+  // Starts the GCPW extension using StartService Windows API.
+  virtual DWORD StartGCPWService();
+
   // Calls the ControlService API to change the state of the service. |control|
   // needs to be one of the service controls as specified in documentation [1].
   // As a result |service_status| is returned that has the latest state of the

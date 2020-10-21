@@ -4,8 +4,6 @@
 
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 
-#include <Windows.h>
-
 #include <atlbase.h>
 
 #include "base/base64.h"

@@ -18,15 +18,6 @@ namespace credential_provider {
 
 struct FakesForTesting;
 
-// Define command line swtiches for setup.
-
-// Installs GCPW Extension service. If there is an already GCPW extension, it is
-// stopped and deleted initially.
-DWORD InstallGCPWExtension(const base::FilePath& extension_exe_path);
-
-// Uninstalls GCPW Extension service by stopping and deleting the service.
-DWORD UninstallGCPWExtension();
-
 // Does a full install of GCP.  |installer_path| is the full path to the
 // installer exe and |product_version| is the version of GCP being installed.
 HRESULT DoInstall(const base::FilePath& installer_path,

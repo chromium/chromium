@@ -34,11 +34,16 @@ source_set("common") {
   sources = [
     "extension_strings.cc",
     "extension_strings.h",
+    "extension_utils.cc",
+    "extension_utils.h",
     "os_service_manager.cc",
     "os_service_manager.h",
     "scoped_handle.h",
   ]
-  deps = [ "//base:base" ]
+  deps = [
+    "../gaiacp:util",
+    "//base:base",
+  ]
   configs += [ "//build/config/win:windowed" ]
 }
 

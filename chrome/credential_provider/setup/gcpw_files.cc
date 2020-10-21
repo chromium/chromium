@@ -4,8 +4,7 @@
 
 #include "chrome/credential_provider/setup/gcpw_files.h"
 
-#include "chrome/credential_provider/extension/extension_strings.h"
-#include "chrome/credential_provider/gaiacp/reg_utils.h"
+#include "chrome/credential_provider/extension/extension_utils.h"
 
 namespace credential_provider {
 
@@ -40,7 +39,7 @@ std::vector<base::FilePath::StringType> GCPWFiles::GetEffectiveInstallFiles() {
   std::vector<base::FilePath::StringType> files;
   for (auto& file : kFileNames) {
     if (file.compare(kCredentialProviderExtensionExe) == 0 &&
-        !GetGlobalFlagOrDefault(extension::kEnableGCPWExtension, 0))
+        !extension::IsGCPWExtensionEnabled())
       continue;
     files.push_back(file);
   }
