@@ -1770,8 +1770,9 @@ class HoldWorkersObserver : public WorkerThreadObserver {
 // 4. Task A enters a second WILL_BLOCK ScopedBlockingCall. This should no-op
 //    because there are already enough workers.
 // 5. Unblock HoldWorkersObserver and wait for all tasks to complete.
+// Disabled: https://crbug.com/1140651
 TEST_F(ThreadGroupImplImplStartInBodyTest,
-       RepeatedWillBlockDoesNotCreateTooManyWorkers) {
+       DISABLED_RepeatedWillBlockDoesNotCreateTooManyWorkers) {
   constexpr size_t kNumWorkers = 2U;
   HoldWorkersObserver worker_observer;
   StartThreadGroup(TimeDelta::Max(),   // |suggested_reclaim_time|
