@@ -473,6 +473,7 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
 
   // Records whether or not the Segment heap is in use.
 #if defined(OS_WIN)
+
   if (base::win::GetVersion() >= base::win::Version::WIN10_20H1) {
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial("WinSegmentHeap",
 #if BUILDFLAG(ENABLE_SEGMENT_HEAP)
@@ -495,7 +496,18 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
                                                             "Disabled"
 #endif
   );
+
 #endif  // defined(OS_WIN)
+
+  // Records whether or not PartitionAlloc is used as the default allocator.
+  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      "PartitionAllocEverywhere",
+#if BUILDFLAG(USE_PARTITION_ALLOC_EVERYWHERE)
+      "Enabled"
+#else
+      "Disabled"
+#endif
+  );
 }
 
 void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
