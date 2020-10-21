@@ -2943,6 +2943,13 @@ def make_named_property_definer_callback(cg_context, function_name):
 // CSSStyleDeclaration is abusing named properties.
 // Do not intercept.  Fallback to OrdinaryDefineOwnProperty.
 """))
+    elif cg_context.interface.identifier in ("HTMLEmbedElement",
+                                             "HTMLObjectElement"):
+        body.append(
+            TextNode("""\
+// HTMLEmbedElement and HTMLObjectElement are abusing named properties.
+// Do not intercept.  Fallback to OrdinaryDefineOwnProperty.
+"""))
     elif not cg_context.interface.indexed_and_named_properties.named_setter:
         body.append(
             TextNode("""\
@@ -2986,17 +2993,7 @@ if (v8_property_desc.has_get() || v8_property_desc.has_set()) {
   }
   return;
 }
-"""))
-        if cg_context.interface.identifier in ("HTMLEmbedElement",
-                                               "HTMLObjectElement"):
-            body.append(
-                TextNode("""\
-// HTMLEmbedElement and HTMLObjectElement's named properties implementation
-// depend on the default fallback behavior.  So, just fallback.
-"""))
-        else:
-            body.append(
-                TextNode("""\
+
 // step 2.2.2.2. Invoke the named property setter with P and Desc.[[Value]].
 ${class_name}::NamedPropertySetterCallback(
     ${v8_property_name}, ${v8_property_desc}.value(), ${info});
