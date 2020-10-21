@@ -3883,7 +3883,7 @@ crbug.com/1050754 external/wpt/screen-wake-lock/wakelock-type.https.window.html 
 crbug.com/1050754 external/wpt/screen-wake-lock/wakelockpermissiondescriptor.https.html [ Failure ]
 crbug.com/1050754 external/wpt/screen_enumeration/getScreens.tentative.https.window.html [ Failure ]
 crbug.com/1050754 external/wpt/screen_enumeration/getScreens.values.https.html [ Failure ]
-crbug.com/1050754 external/wpt/screen_enumeration/screen_enumeration_permission.window.html [ Failure ]
+crbug.com/1050754 external/wpt/screen_enumeration/screen_enumeration_permission.https.window.html [ Failure ]
 crbug.com/1050754 external/wpt/scroll-animations/cancel-animation.html [ Failure ]
 crbug.com/1050754 external/wpt/scroll-animations/constructor-no-document.html [ Failure ]
 crbug.com/1050754 external/wpt/scroll-animations/constructor.html [ Failure ]
