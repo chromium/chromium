@@ -176,10 +176,9 @@ void OverlayProcessorUsingStrategy::UpdateDamageRect(
     }
 
     if (overlay.plane_z_order) {
-      RecordOverlayDamageRectHistograms(
-          (overlay.plane_z_order > 0), !overlay.no_occluding_damage,
-          damage_rect->IsEmpty(),
-          false /* occluding_damage_equal_to_damage_rect */);
+      RecordOverlayDamageRectHistograms((overlay.plane_z_order > 0),
+                                        !overlay.no_occluding_damage,
+                                        damage_rect->IsEmpty());
     }
   }
 

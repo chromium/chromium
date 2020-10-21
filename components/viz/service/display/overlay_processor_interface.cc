@@ -34,7 +34,7 @@ namespace {
 enum class UnderlayDamage {
   kZeroDamageRect,
   kNonOccludingDamageOnly,
-  kOccludingDamageOnly,
+  kOccludingDamageOnly,  // deprecated
   kOccludingAndNonOccludingDamages,
   kMaxValue = kOccludingAndNonOccludingDamages,
 };
@@ -52,8 +52,7 @@ enum class UnderlayDamage {
 void OverlayProcessorInterface::RecordOverlayDamageRectHistograms(
     bool is_overlay,
     bool has_occluding_surface_damage,
-    bool zero_damage_rect,
-    bool occluding_damage_equal_to_damage_rect) {
+    bool zero_damage_rect) {
   if (is_overlay) {
     UMA_HISTOGRAM_BOOLEAN("Viz.DisplayCompositor.RootDamageRect.Overlay",
                           !zero_damage_rect);
@@ -63,11 +62,7 @@ void OverlayProcessorInterface::RecordOverlayDamageRectHistograms(
       underlay_damage = UnderlayDamage::kZeroDamageRect;
     } else {
       if (has_occluding_surface_damage) {
-        if (occluding_damage_equal_to_damage_rect) {
-          underlay_damage = UnderlayDamage::kOccludingDamageOnly;
-        } else {
-          underlay_damage = UnderlayDamage::kOccludingAndNonOccludingDamages;
-        }
+        underlay_damage = UnderlayDamage::kOccludingAndNonOccludingDamages;
       } else {
         underlay_damage = UnderlayDamage::kNonOccludingDamageOnly;
       }

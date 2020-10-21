@@ -61,8 +61,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
   static void RecordOverlayDamageRectHistograms(
       bool is_overlay,
       bool has_occluding_surface_damage,
-      bool zero_damage_rect,
-      bool occluding_damage_equal_to_damage_rect);
+      bool zero_damage_rect);
 
   // Data needed to represent |OutputSurface| as an overlay plane. Due to the
   // default values for the primary plane, this is a partial list of

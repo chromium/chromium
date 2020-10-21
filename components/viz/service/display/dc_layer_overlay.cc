@@ -372,11 +372,8 @@ void RecordOverlayHistograms(DCLayerOverlayList* dc_layer_overlays,
     }
   }
 
-  // TODO(magchen@): deprecate histogram UnderlayDamage::kOccludingDamageOnly
-  // and remove occluding_damage_equal_to_damage_rect here.
   OverlayProcessorInterface::RecordOverlayDamageRectHistograms(
-      is_overlay, has_occluding_surface_damage, damage_rect->IsEmpty(),
-      /*occluding_damage_equal_to_damage_rect=*/false);
+      is_overlay, has_occluding_surface_damage, damage_rect->IsEmpty());
 }
 }  // namespace
 
