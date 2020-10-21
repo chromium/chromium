@@ -97,6 +97,13 @@ void AppServiceAppWindowArcTracker::OnWindowVisibilityChanged(
 
 void AppServiceAppWindowArcTracker::OnWindowDestroying(aura::Window* window) {
   app_service_controller_->UnregisterWindow(window);
+  // Replace the pointers to the window by nullptr to prevent from using it
+  // before OnTaskDestroyed() is called to remove the entry from
+  // |task_id_to_arc_app_window_info_|;
+  const int task_id = arc::GetWindowTaskId(window);
+  auto it = task_id_to_arc_app_window_info_.find(task_id);
+  if (it != task_id_to_arc_app_window_info_.end())
+    it->second->set_window(nullptr);
 }
 
 void AppServiceAppWindowArcTracker::OnAppStatesChanged(
