@@ -231,7 +231,7 @@ class CORE_EXPORT ContentSecurityPolicy final
   void AddPolicyFromHeaderValue(const String&,
                                 network::mojom::ContentSecurityPolicyType,
                                 network::mojom::ContentSecurityPolicySource);
-  void ReportAccumulatedHeaders(LocalFrame*) const;
+  void ReportAccumulatedHeaders() const;
 
   Vector<CSPHeaderAndType> Headers() const;
 

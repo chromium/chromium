@@ -413,12 +413,13 @@ void ContentSecurityPolicy::AddPolicyFromHeaderValue(
   }
 }
 
-void ContentSecurityPolicy::ReportAccumulatedHeaders(LocalFrame* frame) const {
+void ContentSecurityPolicy::ReportAccumulatedHeaders() const {
   WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr> policies;
   for (const auto& policy : policies_)
     policies.push_back(policy->ExposeForNavigationalChecks());
-  frame->GetLocalFrameHostRemote().DidAddContentSecurityPolicies(
-      std::move(policies));
+
+  DCHECK(delegate_);
+  delegate_->DidAddContentSecurityPolicies(std::move(policies));
 }
 
 void ContentSecurityPolicy::AddAndReportPolicyFromHeaderValue(

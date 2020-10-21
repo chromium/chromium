@@ -1320,8 +1320,7 @@ void DocumentLoader::StartLoadingResponse() {
   //
   // It is important to forward all the CSP data before loading the response
   // body, otherwise some loaded content might not be blocked.
-  frame_->DomWindow()->GetContentSecurityPolicy()->ReportAccumulatedHeaders(
-      frame_);
+  frame_->DomWindow()->GetContentSecurityPolicy()->ReportAccumulatedHeaders();
 
   CreateParserPostCommit();
 
