@@ -503,20 +503,24 @@ TEST_F(PasswordManagerPresenterTestWithAccountStore,
        TestMovePasswordToAccountStore) {
   base::HistogramTester histogram_tester;
 
-  // Fill the profile store with two entries in the same equivalence class.
+  // Fill the profile store with 3 entries of which 2 are in the same
+  // equivalence class.
   password_manager::PasswordForm password =
       AddPasswordEntry(GURL(kExampleCom), kUsername, kPassword);
   AddPasswordEntry(GURL(kExampleCom).Resolve("someOtherPath"), kUsername,
                    kPassword);
+  password_manager::PasswordForm password2 =
+      AddPasswordEntry(GURL(kExampleCom), kUsername2, kPassword);
   // Since there are 2 stores, SetPasswordList() and SetPasswordExceptionList()
   // are called twice.
   EXPECT_CALL(GetUIController(), SetPasswordList).Times(2);
   EXPECT_CALL(GetUIController(), SetPasswordExceptionList).Times(2);
   UpdatePasswordLists();
-  ASSERT_THAT(
-      GetUsernamesAndPasswords(
-          GetPasswordsInStoreForRealm(*profile_store(), kExampleCom)),
-      ElementsAre(Pair(kUsername, kPassword), Pair(kUsername, kPassword)));
+  ASSERT_THAT(GetUsernamesAndPasswords(
+                  GetPasswordsInStoreForRealm(*profile_store(), kExampleCom)),
+              UnorderedElementsAre(Pair(kUsername, kPassword),
+                                   Pair(kUsername, kPassword),
+                                   Pair(kUsername2, kPassword)));
   ASSERT_THAT(GetUsernamesAndPasswords(
                   GetPasswordsInStoreForRealm(*account_store(), kExampleCom)),
               IsEmpty());
@@ -524,26 +528,29 @@ TEST_F(PasswordManagerPresenterTestWithAccountStore,
 
   // Move |password| to account and wait for stores to be updated.
   GetUIController().GetPasswordManagerPresenter()->MovePasswordToAccountStore(
-      password_manager::CreateSortKey(password), client());
+      {password_manager::CreateSortKey(password),
+       password_manager::CreateSortKey(password2)},
+      client());
   PasswordStoreWaiter profile_store_waiter(profile_store());
   PasswordStoreWaiter account_store_waiter(account_store());
 
-  // Both passwords should have moved.
+  // All passwords should have moved.
   EXPECT_CALL(GetUIController(), SetPasswordList).Times(2);
   EXPECT_CALL(GetUIController(), SetPasswordExceptionList).Times(2);
   UpdatePasswordLists();
   EXPECT_THAT(GetPasswordsInStoreForRealm(*profile_store(), kExampleCom),
               IsEmpty());
-  EXPECT_THAT(
-      GetUsernamesAndPasswords(
-          GetPasswordsInStoreForRealm(*account_store(), kExampleCom)),
-      ElementsAre(Pair(kUsername, kPassword), Pair(kUsername, kPassword)));
+  EXPECT_THAT(GetUsernamesAndPasswords(
+                  GetPasswordsInStoreForRealm(*account_store(), kExampleCom)),
+              UnorderedElementsAre(Pair(kUsername, kPassword),
+                                   Pair(kUsername, kPassword),
+                                   Pair(kUsername2, kPassword)));
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted",
       password_manager::metrics_util::MoveToAccountStoreTrigger::
           kExplicitlyTriggeredInSettings,
-      1);
+      2);
 }
 
 }  // namespace

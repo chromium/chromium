@@ -95,12 +95,13 @@ class PasswordManagerPresenter
   // Undoes the last saved password or exception removal.
   void UndoRemoveSavedPasswordOrException();
 
-  // Moves a password stored in the profile store to the account store. Results
-  // in a no-op if any of these is true: |sort_key| is invalid, |sort_key|
-  // corresponds to a password already in the account store, or the user is not
-  // using the account-scoped password storage.
+  // Moves a list of passwords stored in the profile store to the account store.
+  // For each password to move, the result is a no-op if any of these is true:
+  // |sort_key| is invalid, |sort_key| corresponds to a password already in the
+  // account store, or the user is not using the account-scoped password
+  // storage.
   void MovePasswordToAccountStore(
-      const std::string& sort_key,
+      const std::vector<std::string>& sort_keys,
       password_manager::PasswordManagerClient* client);
 
 #if !defined(OS_ANDROID)

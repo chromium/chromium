@@ -435,7 +435,8 @@ void PasswordsPrivateDelegateImpl::MovePasswordToAccount(
   auto* client = ChromePasswordManagerClient::FromWebContents(web_contents);
   DCHECK(client);
   if (const std::string* sort_key = password_id_generator_.TryGetKey(id))
-    password_manager_presenter_->MovePasswordToAccountStore(*sort_key, client);
+    password_manager_presenter_->MovePasswordToAccountStore({*sort_key},
+                                                            client);
 }
 
 void PasswordsPrivateDelegateImpl::ImportPasswords(

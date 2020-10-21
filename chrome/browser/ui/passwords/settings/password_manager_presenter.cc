@@ -377,7 +377,7 @@ void PasswordManagerPresenter::UndoRemoveSavedPasswordOrException() {
 }
 
 void PasswordManagerPresenter::MovePasswordToAccountStore(
-    const std::string& sort_key,
+    const std::vector<std::string>& sort_keys,
     password_manager::PasswordManagerClient* client) {
   if (!client->GetPasswordFeatureManager()->IsOptedInForAccountStorage() ||
       ProfileSyncServiceFactory::GetForProfile(password_view_->GetProfile())
@@ -385,25 +385,27 @@ void PasswordManagerPresenter::MovePasswordToAccountStore(
     return;
   }
 
-  auto it = password_map_.find(sort_key);
-  if (it == password_map_.end())
-    return;
+  for (const std::string& sort_key : sort_keys) {
+    auto it = password_map_.find(sort_key);
+    if (it == password_map_.end())
+      continue;
 
-  // MovePasswordToAccountStoreHelper takes care of moving the entire
-  // equivalence class, so passing the first element is fine.
-  const password_manager::PasswordForm& form = *(it->second[0]);
+    // MovePasswordToAccountStoreHelper takes care of moving the entire
+    // equivalence class, so passing the first element is fine.
+    const password_manager::PasswordForm& form = *(it->second[0]);
 
-  // Insert nullptr first to obtain the iterator passed to the callback.
-  MovePasswordToAccountStoreHelperList::iterator helper_it =
-      move_to_account_helpers_.insert(move_to_account_helpers_.begin(),
-                                      nullptr);
-  // The presenter outlives the helper so it's safe to use base::Unretained.
-  *helper_it = std::make_unique<
-      PasswordManagerPresenter::MovePasswordToAccountStoreHelper>(
-      form, client,
-      base::BindOnce(
-          &PasswordManagerPresenter::OnMovePasswordToAccountCompleted,
-          base::Unretained(this), helper_it));
+    // Insert nullptr first to obtain the iterator passed to the callback.
+    MovePasswordToAccountStoreHelperList::iterator helper_it =
+        move_to_account_helpers_.insert(move_to_account_helpers_.begin(),
+                                        nullptr);
+    // The presenter outlives the helper so it's safe to use base::Unretained.
+    *helper_it = std::make_unique<
+        PasswordManagerPresenter::MovePasswordToAccountStoreHelper>(
+        form, client,
+        base::BindOnce(
+            &PasswordManagerPresenter::OnMovePasswordToAccountCompleted,
+            base::Unretained(this), helper_it));
+  }
 }
 
 void PasswordManagerPresenter::OnMovePasswordToAccountCompleted(
