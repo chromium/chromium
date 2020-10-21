@@ -26,7 +26,7 @@ class StopwatchTest : public testing::Test {
   Stopwatch stopwatch_;
 };
 
-TEST_F(StopwatchTest, StopwatchSimpleRun) {
+TEST_F(StopwatchTest, SimpleRun) {
   base::subtle::ScopedTimeClockOverrides overrides(
       nullptr, &TimeTicksOverride::Now, nullptr);
   EXPECT_TRUE(stopwatch_.Start());
@@ -50,7 +50,7 @@ TEST_F(StopwatchTest, StopwatchSimpleRun) {
   EXPECT_EQ(base::TimeDelta::FromSeconds(5), stopwatch_.TotalElapsed());
 }
 
-TEST_F(StopwatchTest, StopwatchAddTime) {
+TEST_F(StopwatchTest, AddTime) {
   base::subtle::ScopedTimeClockOverrides overrides(
       nullptr, &TimeTicksOverride::Now, nullptr);
   stopwatch_.Start();
@@ -60,7 +60,7 @@ TEST_F(StopwatchTest, StopwatchAddTime) {
   EXPECT_EQ(base::TimeDelta::FromSeconds(3), stopwatch_.TotalElapsed());
 }
 
-TEST_F(StopwatchTest, StopwatchRemoveTime) {
+TEST_F(StopwatchTest, RemoveTime) {
   base::subtle::ScopedTimeClockOverrides overrides(
       nullptr, &TimeTicksOverride::Now, nullptr);
   stopwatch_.Start();
@@ -70,7 +70,7 @@ TEST_F(StopwatchTest, StopwatchRemoveTime) {
   EXPECT_EQ(base::TimeDelta::FromSeconds(1), stopwatch_.TotalElapsed());
 }
 
-TEST_F(StopwatchTest, StopwatchRemoveGreaterThanElapsed) {
+TEST_F(StopwatchTest, RemoveGreaterThanElapsed) {
   base::subtle::ScopedTimeClockOverrides overrides(
       nullptr, &TimeTicksOverride::Now, nullptr);
   stopwatch_.Start();
@@ -80,6 +80,10 @@ TEST_F(StopwatchTest, StopwatchRemoveGreaterThanElapsed) {
   EXPECT_EQ(base::TimeDelta::FromSeconds(0), stopwatch_.TotalElapsed());
 }
 
+// This parameterized test uses 4 parameters: time to start at, time to stop at,
+// expected time before the stop is invoked and expected time at the end.
+// If start at or stop at times are 0, the regular Start() and Stop() methods
+// are used instead of the StartAt(time) or StopAt(time).
 class StopwatchStartStopTest
     : public StopwatchTest,
       public testing::WithParamInterface<std::tuple<long, long, long, long>> {};

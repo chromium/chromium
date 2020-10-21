@@ -1,6 +1,7 @@
 // Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "components/autofill_assistant/browser/actions/stopwatch.h"
 
 #include <ostream>
@@ -15,21 +16,17 @@ Stopwatch::Stopwatch() {
 }
 
 bool Stopwatch::Start() {
-  if (!running_) {
-    running_ = true;
-    start_time_ = base::TimeTicks::Now();
-    return true;
+  if (running_) {
+    return false;
   }
-  return false;
+  running_ = true;
+  start_time_ = base::TimeTicks::Now();
+  return true;
 }
 
-bool Stopwatch::StartAt(base::TimeTicks start_time) {
-  if (!running_) {
-    running_ = true;
-    start_time_ = start_time;
-    return true;
-  }
-  return false;
+void Stopwatch::StartAt(base::TimeTicks start_time) {
+  running_ = true;
+  start_time_ = start_time;
 }
 
 bool Stopwatch::Stop() {

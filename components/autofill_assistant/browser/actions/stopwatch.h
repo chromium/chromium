@@ -17,18 +17,25 @@ class Stopwatch {
  public:
   Stopwatch();
   // Start measuring the time when the method is called.
+  // Returns true if the stopwatch was not already running.
   bool Start();
-  // Starts measuring the time from `start_time`.
-  bool StartAt(base::TimeTicks start_time);
-  // Stops the stopwatch and, if it was running, adds to the elapsed time.
+  // Starts measuring the time from `start_time`, if the stopwatch was already
+  // running, it simply updates the recorded start time of the current run.
+  void StartAt(base::TimeTicks start_time);
+  // Stops the stopwatch and, if it was running, adds to the cumulative elapsed
+  // time. If the stopwatch was not running, it has no effect and returns false.
   bool Stop();
-  // Same as above, but at `stop_time` rather than the current time.
+  // Stops the stopwatch at `stop_time` and, if it was running, adds to the
+  // cumulative elapsed time. If the stopwatch was not running, it has no effect
+  // and returns false.
   bool StopAt(base::TimeTicks stop_time);
   // Adds `time` to the cumulative elapsed time held by this stopwatch.
   void AddTime(base::TimeDelta time);
   // Remove `time` from the cumulative elapsed time held by this stopwatch.
   void RemoveTime(base::TimeDelta time);
+  // Returns the total time accumulated by this stopwatch.
   base::TimeDelta TotalElapsed() const;
+  // Whether the stopwatch is running or not.
   bool IsRunning() const;
 
   friend std::ostream& operator<<(std::ostream& out, const Stopwatch& action);
