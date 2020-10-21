@@ -23,7 +23,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 
@@ -48,7 +47,7 @@ public class LocationBarFocusScrimHandlerTest {
     @Mock
     private ScrimCoordinator mScrimCoordinator;
     @Mock
-    private NewTabPage mNewTabPage;
+    private NewTabPageDelegate mNewTabPageDelegate;
 
     LocationBarFocusScrimHandler mScrimHandler;
 
@@ -63,6 +62,8 @@ public class LocationBarFocusScrimHandlerTest {
 
     @Test
     public void testScrimShown_thenHidden() {
+        doReturn(mNewTabPageDelegate).when(mToolbarDataProvider).getNewTabPageDelegate();
+        doReturn(false).when(mNewTabPageDelegate).isLocationBarShown();
         mScrimHandler.onUrlFocusChange(true);
 
         verify(mScrimCoordinator).showScrim(any());
@@ -77,8 +78,8 @@ public class LocationBarFocusScrimHandlerTest {
 
     @Test
     public void testScrimShown_afterAnimation() {
-        doReturn(mNewTabPage).when(mToolbarDataProvider).getNewTabPageForCurrentTab();
-        doReturn(true).when(mNewTabPage).isLocationBarShownInNTP();
+        doReturn(mNewTabPageDelegate).when(mToolbarDataProvider).getNewTabPageDelegate();
+        doReturn(true).when(mNewTabPageDelegate).isLocationBarShown();
         mScrimHandler.onUrlFocusChange(true);
 
         verify(mScrimCoordinator, never()).showScrim(any());

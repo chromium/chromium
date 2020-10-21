@@ -21,6 +21,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusView.StatusViewDelegate;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
+import org.chromium.chrome.browser.toolbar.NewTabPageDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
@@ -72,7 +73,7 @@ public class StatusViewRenderTest extends DummyUiActivityTestCase {
                                   .findViewById(org.chromium.chrome.R.id.location_bar_status);
             mStatusView.setCompositeTouchDelegate(new CompositeTouchDelegate(view));
             mStatusView.setToolbarCommonPropertiesModel(
-                    new LocationBarModel(mStatusView.getContext()));
+                    new LocationBarModel(mStatusView.getContext(), NewTabPageDelegate.EMPTY));
             mStatusModel = new PropertyModel.Builder(StatusProperties.ALL_KEYS).build();
             PropertyModelChangeProcessor.create(mStatusModel, mStatusView, new StatusViewBinder());
         });

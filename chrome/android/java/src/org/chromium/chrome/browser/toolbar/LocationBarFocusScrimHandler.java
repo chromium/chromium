@@ -125,7 +125,6 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
      *         animating.
      */
     private boolean showScrimAfterAnimationCompletes() {
-        if (mToolbarDataProvider.getNewTabPageForCurrentTab() == null) return false;
-        return mToolbarDataProvider.getNewTabPageForCurrentTab().isLocationBarShownInNTP();
+        return mToolbarDataProvider.getNewTabPageDelegate().isLocationBarShown();
     }
 }

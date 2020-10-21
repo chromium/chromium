@@ -10,10 +10,10 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.NewTabPageDelegate;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
@@ -90,8 +90,8 @@ class SearchBoxDataProvider implements ToolbarDataProvider {
     }
 
     @Override
-    public NewTabPage getNewTabPageForCurrentTab() {
-        return null;
+    public NewTabPageDelegate getNewTabPageDelegate() {
+        return NewTabPageDelegate.EMPTY;
     }
 
     @Override

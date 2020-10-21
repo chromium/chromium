@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
-import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -233,11 +232,6 @@ public final class LocationBarCoordinator implements LocationBar {
     @Override
     public boolean isUrlBarFocused() {
         return mLocationBarLayout.isUrlBarFocused();
-    }
-
-    @Override
-    public boolean isCurrentPage(NativePage nativePage) {
-        return mLocationBarLayout.isCurrentPage(nativePage);
     }
 
     @Nullable

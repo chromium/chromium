@@ -65,7 +65,6 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
-import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.page_info.PageInfoController;
@@ -867,12 +866,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         public void setUrlBarFocus(boolean shouldBeFocused, @Nullable String pastedText,
                 @OmniboxFocusReason int reason) {}
 
-        @Override
-        public boolean isCurrentPage(NativePage nativePage) {
-            return false;
-        }
-
-        @Nullable
         @Override
         public VoiceRecognitionHandler getVoiceRecognitionHandler() {
             return null;
