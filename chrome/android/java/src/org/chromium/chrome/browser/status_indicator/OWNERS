@@ -1,9 +1,10 @@
 # Primary:
-mdjones@chromium.org
+sinansahin@google.com
 
 # Secondary:
+mdjones@chromium.org
 twellington@chromium.org
 
-# COMPONENT: UI>Browser>Mobile
+# COMPONENT: UI>Browser>Mobile>StatusIndicator
 # OS: Android
-# TEAM: chrome-android-app@chromium.org
+# TEAM: clank-app-team@google.com

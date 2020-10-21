@@ -9,5 +9,4 @@
 monorail {
   component: "UI>Browser>Mobile>Messages"
 }
-team_email: "chrome-android-app@chromium.org"
 os: ANDROID

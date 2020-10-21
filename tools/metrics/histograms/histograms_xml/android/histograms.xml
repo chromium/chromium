@@ -400,7 +400,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-06-01">
   <owner>wylieb@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Records if Chrome altered a google homepage/search request to include the
     dark theme. Recorded only when navigating to google or google search.
@@ -412,7 +412,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Android.DarkTheme.EnabledReason" enum="DarkThemeEnabledReason"
     expires_after="M90">
   <owner>twellington@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Records the reason why dark theme is enabled when dark theme is visible to
     user.
@@ -422,7 +422,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Android.DarkTheme.EnabledState" enum="BooleanEnabled"
     expires_after="M90">
   <owner>twellington@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Records whether dark theme is enabled or not on cold start and when the
     enabled state changes.
@@ -432,7 +432,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Android.DarkTheme.Preference.State"
     enum="DarkThemePreferences" expires_after="M90">
   <owner>twellington@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Records user theme preference of system default, light or dark theme on cold
     start and when the theme preference changes.
@@ -526,7 +526,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-04-04">
   <owner>twellington@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Records the largest display dimension in dp during deferred startup. The
     display size is not affected by Android N multi-window mode. Clamped at
@@ -538,7 +538,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-04-04">
   <owner>twellington@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Records the smallest display dimension in dp during deferred startup. The
     display size is not affected by Android N multi-window mode. Clamped at 0 to
@@ -1241,7 +1241,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Android.ModalDialog.SecurityFilteredTouchResult"
     enum="SecurityFilteredTouchResult" expires_after="2021-04-01">
   <owner>pavely@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Records the action taken on a security sensitive touch event in modal
     dialog. As of M84 it is used for site premission dialogs.
@@ -1265,7 +1265,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
   <owner>twellington@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Records on every metrics upload whether the activity is running in Android N
     multi-window mode or not.
@@ -1960,7 +1960,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Android.Survey.DownloadRequested" enum="BooleanRequested"
     expires_after="2021-06-01">
   <owner>twellington@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Recorded when a survey download is requested. If the client already has
     successfully downloaded a survey, 'not requested' is recorded.
@@ -1970,14 +1970,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Android.Survey.DownloadResponseCode"
     enum="SurveyDownloadResponseCodes" expires_after="2021-06-01">
   <owner>twellington@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>The response code of the completed survey download request.</summary>
 </histogram>
 
 <histogram name="Android.Survey.InfoBarClosingState"
     enum="InfoBarClosingStates" expires_after="2021-06-01">
   <owner>twellington@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     If the infobar was visible when it was closed and if it was closed directly
     or not.
@@ -1987,7 +1987,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Android.Survey.ShowSurvey" enum="BooleanSuccess"
     expires_after="2021-06-01">
   <owner>twellington@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Whether or not the survey was successfully shown after its download.
   </summary>
@@ -1996,7 +1996,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Android.Survey.SurveyFilteringResults"
     enum="SurveyFilteringResult" expires_after="2021-06-01">
   <owner>twellington@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     The result of the survey filtering process. Each enum represents a different
     filter that caught the user. This is recorded on cold starts when we check

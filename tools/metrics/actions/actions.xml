@@ -1653,7 +1653,7 @@ should be able to be added at any place in this file.
 
 <action name="Android.BookmarkPage.RemoveItem">
   <owner>twellington@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     User removed an item on the native Android bookmark page by clicking
     &quot;delete&quot; from the &quot;more&quot; menu.
@@ -1662,7 +1662,7 @@ should be able to be added at any place in this file.
 
 <action name="Android.BookmarkPage.SelectFromMenu">
   <owner>twellington@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     User selected an item on the native Android bookmark page by clicking
     &quot;select&quot; from the &quot;more&quot; menu.
@@ -1903,7 +1903,7 @@ should be able to be added at any place in this file.
 
 <action name="Android.DarkTheme.Preference">
   <owner>twellington@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     User changed preference to use system default, light, or dark theme.
   </description>
@@ -2402,7 +2402,7 @@ should be able to be added at any place in this file.
 
 <action name="Android.LifeCycle.HasPausedActivities">
   <owner>ssid@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     Chrome application has at least one paused and no running activites.
     Recorded when the state of the application changes.
@@ -2411,7 +2411,7 @@ should be able to be added at any place in this file.
 
 <action name="Android.LifeCycle.HasRunningActivities">
   <owner>ssid@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     Chrome application has at least one activity in running state. Recorded when
     the state of the application changes.
@@ -2420,7 +2420,7 @@ should be able to be added at any place in this file.
 
 <action name="Android.LifeCycle.HasStoppedActivities">
   <owner>ssid@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     Chrome application has at least one activity in stopped state, and none
     running or paused. Recorded when the state of the application changes.
@@ -12971,7 +12971,7 @@ should be able to be added at any place in this file.
 <action name="MobileBookmarkManagerClose">
   <owner>twellington@google.com</owner>
   <owner>sczs@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     Recorded when a user closes bookmark manager on iOS or Android.
   </description>
@@ -12979,7 +12979,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileBookmarkManagerDeleteBulk">
   <owner>twellington@google.com</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     Recorded when a user deletes all selected bookmarks in the Android bookmark
     manager.
@@ -12997,7 +12997,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileBookmarkManagerEditBookmark">
   <owner>twellington@google.com</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     Recorded when a user edits a bookmark in the Android bookmark manager.
   </description>
@@ -13005,7 +13005,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileBookmarkManagerEditFolder">
   <owner>twellington@google.com</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     Recorded when a user edits a folder in the Android bookmark manager.
   </description>
@@ -13033,7 +13033,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileBookmarkManagerEntryOpenedInIncognito">
   <owner>twellington@google.com</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     Recorded when all selected bookmarks are opened in new incognito tabs from
     the Android bookmarks manager.
@@ -13042,7 +13042,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileBookmarkManagerEntryOpenedInNewTab">
   <owner>twellington@google.com</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     Recorded when all selected bookmarks are opened in new tabs from the Android
     bookmarks manager.
@@ -13051,7 +13051,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileBookmarkManagerLongPressToggleSelect">
   <owner>twellington@google.com</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     Recorded when a user long presses on a bookmark item to toggle selection in
     the Android bookmark manager.
@@ -13069,7 +13069,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileBookmarkManagerMoveToFolder">
   <owner>twellington@google.com</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     Recorded when a user moves one bookmark to a new folder in the Android
     bookmark manager.
@@ -13078,7 +13078,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileBookmarkManagerMoveToFolderBulk">
   <owner>twellington@google.com</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     Recorded when a user moves all selected bookmark items to a new folder in
     the Android bookmark manager.
@@ -13104,7 +13104,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileBookmarkManagerOpenFolder">
   <owner>twellington@google.com</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     Recorded when a user opens a folder in the Android bookmark manager.
   </description>
@@ -13129,7 +13129,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileBookmarkManagerShowInFolder">
   <owner>twellington@google.com</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     Recorded when a user uses the &quot;Show in folder&quot; button from Android
     bookmark search in order to see the bookmark of interest inside of its
@@ -13139,7 +13139,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileBookmarkManagerTapToggleSelect">
   <owner>twellington@google.com</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     Recorded when a user taps on an item in order to select it from the Android
     bookmark manager (this can only occur while in selection mode).
@@ -13149,7 +13149,7 @@ should be able to be added at any place in this file.
 <action name="MobileBottomToolbarHomeButton">
   <obsolete>Removed as of 2020/09/09.</obsolete>
   <owner>mdjones@chromium.org</owner>
-  <owner>chrome-android-apps@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     The user tapped on the bottom toolbar's home button.
   </description>
@@ -13157,7 +13157,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileBottomToolbarNewTabButton">
   <owner>mdjones@chromium.org</owner>
-  <owner>chrome-android-apps@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     The user tapped on the bottom toolbar's new tab button.
   </description>
@@ -13165,7 +13165,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileBottomToolbarShareButton">
   <owner>mdjones@chromium.org</owner>
-  <owner>chrome-android-apps@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     The user tapped on the bottom toolbar's share button.
   </description>
@@ -13174,13 +13174,13 @@ should be able to be added at any place in this file.
 <action name="MobileBottomToolbarShowMenu">
   <obsolete>Removed as of 5/2020</obsolete>
   <owner>mdjones@chromium.org</owner>
-  <owner>chrome-android-apps@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>The bottom toolbar's overflow menu was shown.</description>
 </action>
 
 <action name="MobileBottomToolbarTabSwitcherButtonInBrowsingView">
   <owner>mdjones@chromium.org</owner>
-  <owner>chrome-android-apps@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     The user tapped on the bottom toolbar's tab switcher button.
   </description>
@@ -15330,7 +15330,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileToolbarCloseAllIncognitoTabsButtonTap">
   <owner>mdjones@chromium.org</owner>
-  <owner>chrome-android-apps@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     User tapped the close all incognito tabs button in the tab switcher bottom
     toolbar.
@@ -15339,7 +15339,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileToolbarCloseAllRegularTabsButtonTap">
   <owner>mdjones@chromium.org</owner>
-  <owner>chrome-android-apps@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     User tapped the close all regular tabs button in the tab switcher bottom
     toolbar.
@@ -15360,7 +15360,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileToolbarIdentityDiscTap">
   <owner>pavely@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>User tapped on IdentityDisc button on toolbar.</description>
 </action>
 
@@ -15380,7 +15380,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileToolbarOmniboxAcceleratorTap">
   <owner>mdjones@chromium.org</owner>
-  <owner>chrome-android-apps@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     User tapped the omnibox accelerator button in the bottom toolbar.
   </description>
@@ -15470,7 +15470,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileToolbarStackViewButtonInBrowsingView">
   <owner>mdjones@chromium.org</owner>
-  <owner>chrome-android-apps@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     User in the Android browsing mode tapped the tab switcher button on the
     toolbar to enter the tab switcher.
@@ -15518,13 +15518,13 @@ should be able to be added at any place in this file.
 <action name="MobileTopToolbarHomeButton">
   <obsolete>Removed as of 2020/09/09.</obsolete>
   <owner>mdjones@chromium.org</owner>
-  <owner>chrome-android-apps@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>The user tapped on the top toolbar's home button.</description>
 </action>
 
 <action name="MobileTopToolbarNewTabButton">
   <owner>mdjones@chromium.org</owner>
-  <owner>chrome-android-apps@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     The user tapped on the top toolbar's new tab button.
   </description>
@@ -15539,7 +15539,7 @@ should be able to be added at any place in this file.
 <action name="MobileTopToolbarShowMenu">
   <obsolete>Removed as of 5/2020</obsolete>
   <owner>mdjones@chromium.org</owner>
-  <owner>chrome-android-apps@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     Action indicating the top toolbar's overflow menu was shown.
   </description>
@@ -24485,7 +24485,7 @@ should be able to be added at any place in this file.
 
 <action name="Suggestions.ExpandableHeader.Collapsed">
   <owner>twellington@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     The suggestions section is collapsed through the section header.
   </description>
@@ -24493,7 +24493,7 @@ should be able to be added at any place in this file.
 
 <action name="Suggestions.ExpandableHeader.Expanded">
   <owner>twellington@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     The suggestions section is expanded through the section header.
   </description>

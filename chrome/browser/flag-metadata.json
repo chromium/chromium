@@ -1289,7 +1289,7 @@
   },
   {
     "name": "enable-command-line-on-non-rooted-devices",
-    "owners": [ "chrome-android-app" ],
+    "owners": [ "clank-app-team@google.com" ],
     // This flag is used for debugging on Android; it causes Android Chromium
     // builds to read command-line arguments from a writable location on disk.
     "expiry_milestone": -1
@@ -2839,12 +2839,12 @@
   },
   {
     "name": "homepage-promo-card",
-    "owners": [ "wenyufu", "chrome-android-app@chromium.org" ],
+    "owners": [ "wenyufu", "clank-app-team@google.com" ],
     "expiry_milestone": 90
   },
   {
     "name": "homepage-settings-ui-conversion",
-    "owners": [ "wenyufu", "chrome-android-app@chromium.org" ],
+    "owners": [ "wenyufu", "clank-app-team@google.com" ],
     "expiry_milestone": 86
   },
   {

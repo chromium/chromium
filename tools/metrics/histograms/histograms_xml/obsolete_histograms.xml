@@ -1676,7 +1676,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Removed in July, 2020
   </obsolete>
   <owner>twellington@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Records the number of other devices listed in recent tabs page when recent
     tabs page is loaded.
@@ -1689,7 +1689,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Removed in July, 2020
   </obsolete>
   <owner>twellington@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Records the number of recently-closed tabs shown in recent tabs page when
     recent tabs page is loaded.
@@ -1702,7 +1702,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Removed in July, 2020
   </obsolete>
   <owner>twellington@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Records the total number of tabs listed in recent tabs page (sum of all tab
     from other devices plus recently-closed tabs) when recent tabs page is
@@ -25403,7 +25403,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Removed 2020/02. Replaced by Cancelled.
   </obsolete>
   <owner>jinsukkim@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Overscroll gestures that were abandoned before they were completed.
     Implemented for Android.
@@ -25416,7 +25416,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Removed 2020/02.
   </obsolete>
   <owner>jinsukkim@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Overscroll gesture was made beyond a threshold that, upon release, would
     trigger navigation. Users can swipe back below the threshold but this event
@@ -25430,7 +25430,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Removed 2020/02. Replaced by Activated.
   </obsolete>
   <owner>jinsukkim@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Overscroll gestures initiated by the user. Note that not all overscroll
     gestures triggered are completed (e.g. the overscroll gesture is aborted if

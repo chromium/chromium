@@ -1483,7 +1483,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Bookmarks.Count.OpenInIncognito" units="bookmarks"
     expires_after="M82">
   <owner>twellington@google.com</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Records the number of bookmarks which are opened using the &quot;Open in
     incognito tab&quot; button from selection mode in the Android bookmark
@@ -1494,7 +1494,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Bookmarks.Count.OpenInNewTab" units="bookmarks"
     expires_after="M82">
   <owner>twellington@google.com</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Records the number of bookmarks which are opened using the &quot;Open in new
     tab&quot; button from selection mode in the Android bookmark manager.
@@ -2806,7 +2806,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="ContextMenu.ThumbnailFetched" enum="BooleanSuccess"
     expires_after="2020-06-30">
   <owner>twellington@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Logged when the callback to fetch the thumbnail returns a result: Success
     (bitmap data received) or Failure (null bitmap). Android only.
@@ -2816,7 +2816,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="ContextMenu.TimeToTakeAction.Abandoned" units="ms"
     expires_after="2021-03-28">
   <owner>twellington@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     The time it takes for the user to abandon the context menu after it's shown
     by pressing back or touching outside the menu. This is only logged if the
@@ -2829,7 +2829,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="ContextMenu.TimeToTakeAction.SelectedItem" units="ms"
     expires_after="2021-03-28">
   <owner>twellington@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     The time it takes for the user to select an item. This is only logged if the
     menu is closed as a result of the user clicking a menu item or a DirectShare
@@ -2841,7 +2841,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="ContextMenu.URLClicked" enum="BooleanClicked"
     expires_after="2021-06-30">
   <owner>twellington@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>Logged when the URL is clicked. Android only.</summary>
 </histogram>
 
@@ -5468,7 +5468,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="GestureNavigation.Activated" enum="GestureNavigationDirection"
     expires_after="2021-12-28">
   <owner>jinsukkim@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Overscroll gesture was made beyond a threshold big enough to regard it as a
     valid gesture navigation i.e. at least 1/3 of the arrow puck is visible.
@@ -5480,7 +5480,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="GestureNavigation.Cancelled" enum="GestureNavigationDirection"
     expires_after="2021-12-28">
   <owner>jinsukkim@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Overscroll gestures that were cancelled before they were completed. Similar
     to 'Abandoned' but is used in pair with 'Activated' on M81 forward to
@@ -5491,7 +5491,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="GestureNavigation.Completed" enum="GestureNavigationDirection"
     expires_after="2021-12-28">
   <owner>jinsukkim@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Navigations that were triggered due to completed overscroll gesture.
     Implemented for Android.
@@ -5501,7 +5501,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="GestureNavigation.Reversed" enum="GestureNavigationDirection"
     expires_after="2021-12-28">
   <owner>jinsukkim@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Overscroll gesture was made to trigger navigation, but within 3 seconds user
     used overscroll gesture to navigate back to the page. Implemented for
@@ -5512,7 +5512,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="GestureNavigation.Sheet.Peeked"
     enum="GestureNavigationDirection" expires_after="2020-09-23">
   <owner>jinsukkim@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Overscroll gesture was made to trigger navigation bottom sheet to peeked
     state. Peek state can be entered and exited more than once in a sequence of
@@ -5524,7 +5524,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="GestureNavigation.Sheet.Selected" units="units"
     expires_after="2020-09-23">
   <owner>jinsukkim@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Index of the entries in the navigation bottom sheet that user tapped.
     Negative means navigating backward, positive forward. Zero index means that
@@ -5535,7 +5535,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="GestureNavigation.Sheet.Used"
     enum="GestureNavigationDirection" expires_after="2020-09-23">
   <owner>jinsukkim@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     User tapped one of the entries in the expanded navigation bottom sheet to
     navigate to other page. Implemented for Android.
@@ -5545,7 +5545,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="GestureNavigation.Sheet.Viewed"
     enum="GestureNavigationDirection" expires_after="2020-09-23">
   <owner>jinsukkim@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Overscroll gesture was made to trigger navigation bottom sheet to expanded
     state where the whole list of history items are presented.
@@ -5555,7 +5555,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="GestureNavigation.Type" enum="GestureNavigationType"
     expires_after="2021-12-28">
   <owner>jinsukkim@chromium.org</owner>
-  <owner>chrome-android-app@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Gesture navigation type. It can be either Chrome's own gesture UI that
     supports back and forward navigation or OS-provided default system gesture

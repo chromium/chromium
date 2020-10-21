@@ -115,7 +115,7 @@ If adding a new theme, make sure the parent (or any indirect ancestor) theme of 
   * `RemoteView` is an exception. See [RemoteViewsWithNightModeInflater.java](https://cs.chromium.org/chromium/src/chrome/android/java/src/org/chromium/chrome/browser/night_mode/RemoteViewsWithNightModeInflater.java) for details.
 * Make sure color resources are accessed from `Activity` or `View` context instead of `Application` context
 * Check whether `Configuration.uiMode & UI_MODE_NIGHT_MASK` gives the correct UI night mode
-  * If uiMode is not correct, it could be a support library issue or an Android framework issue. You can contact chrome-android-app@chromium.org for help.
+  * If uiMode is not correct, it could be a support library issue or an Android framework issue. You can contact clank-app-team@google.com for help.
 
 ## Test new features in night mode
 ### Automatic Testing
