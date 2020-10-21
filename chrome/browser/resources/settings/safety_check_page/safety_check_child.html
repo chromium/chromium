@@ -60,9 +60,10 @@
   </template>
   <template is="dom-if" if="[[rowClickable]]">
     <cr-icon-button id="rowClickableIndicator"
-        iron-icon="[[getRowClickableIcon_(external)]]"
+        iron-icon="[[rowClickableIcon_]]"
         aria-describedby="subLabel"
-        aria-labelledby="label">
+        aria-labelledby="label"
+        aria-roledescription$="[[getRoleDescription_(rowClickableIcon_)]]">
     </cr-icon-button>
   </template>
 </div>

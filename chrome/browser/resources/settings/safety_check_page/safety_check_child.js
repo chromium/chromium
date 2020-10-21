@@ -75,6 +75,11 @@ Polymer({
       value: false,
     },
 
+    rowClickableIcon_: {
+      type: String,
+      computed: 'computeRowClickableIcon_(external)',
+    },
+
     // Right hand managed icon. |null| removes it from the DOM.
     managedIcon: String,
   },
@@ -176,7 +181,18 @@ Polymer({
    * @return {string}
    * @private
    */
-  getRowClickableIcon_() {
+  computeRowClickableIcon_() {
     return this.external ? 'cr:open-in-new' : 'cr:arrow-right';
   },
+
+  /**
+   * Return the subpage role description if the arrow right icon is used.
+   * @return {string}
+   * @private
+   */
+  getRoleDescription_() {
+    return this.rowClickableIcon_ === 'cr:arrow-right' ?
+        this.i18n('subpageArrowRoleDescription') :
+        '';
+  }
 });
