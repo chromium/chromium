@@ -420,9 +420,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, WindowsBasic) {
   EXPECT_EQ(1, histogram_tester.GetBucketCount(
                    "Extensions.Functions.ExtensionServiceWorkerCalls",
                    functions::HistogramValue::WINDOWS_GET));
-  EXPECT_EQ(1, histogram_tester.GetBucketCount(
-                   "Extensions.Functions.ExtensionServiceWorkerCalls",
-                   functions::HistogramValue::WINDOWS_GETCURRENT));
 }
 
 // Tests chrome.webRequest APIs.

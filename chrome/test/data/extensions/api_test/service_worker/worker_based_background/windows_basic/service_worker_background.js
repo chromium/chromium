@@ -27,14 +27,6 @@ var getWindowUtil = function(windowId, getCallback) {
   }
 }
 
-var getCurrentWindowUtil = function(getCurrentCallback) {
-  try {
-    chrome.windows.getCurrent(getCurrentCallback);
-  } catch (e) {
-    chrome.test.fail(e);
-  }
-}
-
 chrome.test.runTests([
   // Get the window that was automatically created.
   function testWindowGetAllBeforeCreate() {
@@ -63,12 +55,6 @@ chrome.test.runTests([
         chrome.test.assertEq(400, windowData.height);
         chrome.test.succeed();
       });
-      // Check that the created window is the current window.
-      getCurrentWindowUtil(function(currentWindowData) {
-        chrome.test.assertEq(createdWindowId, currentWindowData.id);
-        chrome.test.succeed();
-      });
-      chrome.test.succeed();
     });
   },
   ]);
