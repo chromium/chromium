@@ -7984,6 +7984,22 @@
             ]
         }
     ],
+    "WebRtcLibvpxEncodeNV12": [
+        {
+            "platforms": [
+                "chromeos",
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebRtcLibvpxEncodeNV12"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebSocketReassembleShortMessages": [
         {
             "platforms": [
