@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.offlinepages.indicator;
+package org.chromium.chrome.browser.net.connectivitydetector;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -168,7 +168,7 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
                 if (capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
                         && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
                         && capabilities.hasCapability(
-                                   NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED)) {
+                                NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED)) {
                     return ConnectionState.VALIDATED;
                 }
                 if (capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_CAPTIVE_PORTAL)) {
@@ -428,8 +428,7 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
             protected void onPostExecute(Integer result) {
                 callback.onResult(result);
             }
-        }
-                .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private void scheduleNextConnectivityCheck() {
@@ -482,15 +481,15 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
         setConnectionState(newConnectionState);
     }
 
-    @VisibleForTesting
-    void setConnectionState(@ConnectionState int connectionState) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public void setConnectionState(@ConnectionState int connectionState) {
         if (mConnectionState == connectionState) return;
         mConnectionState = connectionState;
         if (mObserver != null) mObserver.onConnectionStateChanged(mConnectionState);
     }
 
-    @VisibleForTesting
-    static void setDelegateForTesting(Delegate delegate) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public static void setDelegateForTesting(Delegate delegate) {
         sOveriddenDelegate = delegate;
     }
 

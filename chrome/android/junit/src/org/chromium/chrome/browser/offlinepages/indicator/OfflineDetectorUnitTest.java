@@ -26,7 +26,8 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ApplicationState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.offlinepages.indicator.ConnectivityDetector.ConnectionState;
+import org.chromium.chrome.browser.net.connectivitydetector.ConnectivityDetector;
+import org.chromium.chrome.browser.net.connectivitydetector.ConnectivityDetector.ConnectionState;
 
 /**
  * Unit tests for {@link OfflineDetector}.

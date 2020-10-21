@@ -1,0 +1,4 @@
+file://chrome/android/java/src/org/chromium/chrome/browser/offlinepages/OWNERS
+
+# TEAM: offline-dev@chromium.org
+# COMPONENT: UI>Browser>Offline

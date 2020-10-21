@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.offlinepages.indicator;
+package org.chromium.chrome.browser.net.connectivitydetector;
 
 /**
  * Stub of ConnectivityDetector.Delegate for testing purpose.

@@ -34,7 +34,8 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.offlinepages.indicator.ConnectivityDetector.ConnectionState;
+import org.chromium.chrome.browser.net.connectivitydetector.ConnectivityDetector;
+import org.chromium.chrome.browser.net.connectivitydetector.ConnectivityDetector.ConnectionState;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 
 /**

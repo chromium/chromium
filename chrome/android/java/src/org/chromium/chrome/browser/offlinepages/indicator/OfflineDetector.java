@@ -16,7 +16,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.offlinepages.indicator.ConnectivityDetector.ConnectionState;
+import org.chromium.chrome.browser.net.connectivitydetector.ConnectivityDetector;
+import org.chromium.chrome.browser.net.connectivitydetector.ConnectivityDetector.ConnectionState;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.variations.VariationsAssociatedData;
 
