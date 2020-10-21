@@ -81,17 +81,10 @@ CaretBrowsingDialogDelegate::CaretBrowsingDialogDelegate(
         base::UserMetricsAction("Accessibility.CaretBrowsing.CancelDialog"));
   };
   SetCancelCallback(base::BindOnce(on_cancel));
+
+  SetModalType(ui::MODAL_TYPE_WINDOW);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 }
 
-CaretBrowsingDialogDelegate::~CaretBrowsingDialogDelegate() {}
-
-ui::ModalType CaretBrowsingDialogDelegate::GetModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
-}
-
-gfx::Size CaretBrowsingDialogDelegate::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
-}
+CaretBrowsingDialogDelegate::~CaretBrowsingDialogDelegate() = default;

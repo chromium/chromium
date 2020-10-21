@@ -44,19 +44,10 @@ class FolderUploadConfirmationView : public views::DialogDelegateView {
       std::vector<ui::SelectedFileInfo> selected_files,
       content::WebContents* web_contents);
 
-  // views::DialogDelegateView:
-  base::string16 GetWindowTitle() const override;
-
   // It's really important that this dialog *does not* accept by default /
   // when a user presses enter without looking as we're looking for explicit
   // approval to share this many files with the site.
   views::View* GetInitiallyFocusedView() override;
-
-  bool ShouldShowCloseButton() const override;
-
-  gfx::Size CalculatePreferredSize() const override;
-
-  ui::ModalType GetModalType() const override;
 
  private:
   base::OnceCallback<void(const std::vector<ui::SelectedFileInfo>&)> callback_;

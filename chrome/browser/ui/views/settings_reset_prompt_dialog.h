@@ -17,10 +17,6 @@ namespace safe_browsing {
 class SettingsResetPromptController;
 }
 
-namespace views {
-class View;
-}
-
 // A dialog intended for prompting users to reset some of their settings to
 // their original default values. The dialog has two sections:
 // 1. Main section with an explanation text
@@ -28,22 +24,18 @@ class View;
 //    operation.
 class SettingsResetPromptDialog : public views::DialogDelegateView {
  public:
-  explicit SettingsResetPromptDialog(
+  SettingsResetPromptDialog(
+      Browser* browser,
       safe_browsing::SettingsResetPromptController* controller);
   ~SettingsResetPromptDialog() override;
 
-  void Show(Browser* browser);
+  void Show();
 
-  // views::WidgetDelegate overrides.
-  ui::ModalType GetModalType() const override;
+  // views::DialogDelegateView:
   base::string16 GetWindowTitle() const override;
-  bool ShouldShowCloseButton() const override;
-
-  // views::View overrides.
-  gfx::Size CalculatePreferredSize() const override;
 
  private:
-  Browser* browser_;
+  Browser* const browser_;
   safe_browsing::SettingsResetPromptController* controller_;
 
   DISALLOW_COPY_AND_ASSIGN(SettingsResetPromptDialog);
