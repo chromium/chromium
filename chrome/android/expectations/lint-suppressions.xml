@@ -135,6 +135,10 @@ Still reading?
   <issue id="PrivateApi" severity="ignore"/>
   <!-- Chrome is a system app. -->
   <issue id="ProtectedPermissions" severity="ignore"/>
+  <issue id="RestrictedApi">
+    <!-- Chrome uses these GMS core APIs. -->
+    <ignore regexp="is marked as internal and should not be accessed from apps"/>
+  </issue>
   <issue id="Recycle" severity="ignore"/>
   <issue id="Registered" severity="ignore"/>
   <issue id="ResourceAsColor" severity="ignore"/>
