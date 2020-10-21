@@ -41,7 +41,7 @@ ThreadSafePartitionRoot& PCScanMetadataAllocator() {
 // STL allocator which is needed to keep internal data structures required by
 // PCScan.
 template <typename T>
-class MetadataAllocator final {
+class MetadataAllocator {
  public:
   using value_type = T;
 
