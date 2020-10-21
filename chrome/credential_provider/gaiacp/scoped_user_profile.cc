@@ -327,8 +327,15 @@ HRESULT UpdateProfilePicturesForWindows8AndNewer(
       continue;
     }
 
-    std::string current_picture_url =
-        base::UTF16ToUTF8(picture_url) + base::StringPrintf("=s%i", image_size);
+    std::size_t found = base::UTF16ToUTF8(picture_url).rfind("=s");
+    std::string current_picture_url;
+    if (found != std::string::npos)
+      current_picture_url = base::UTF16ToUTF8(picture_url).substr(0, found) +
+                            base::StringPrintf("=s%i", image_size);
+    else
+      // Fallback to default picture url if parsing fails.
+      current_picture_url = base::UTF16ToUTF8(picture_url) +
+                            base::StringPrintf("=s%i", image_size);
 
     auto fetcher = WinHttpUrlFetcher::Create(GURL(current_picture_url));
     if (!fetcher) {
