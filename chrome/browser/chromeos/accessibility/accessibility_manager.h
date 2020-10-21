@@ -489,10 +489,14 @@ class AccessibilityManager
   // Used to set the audio focus enforcement type for ChromeVox.
   mojo::Remote<media_session::mojom::AudioFocusManager> audio_focus_manager_;
 
+  // Whether the virtual keyboard was enabled before Switch Access loaded.
+  bool was_vk_enabled_before_switch_access_ = false;
+
   base::WeakPtrFactory<AccessibilityManager> weak_ptr_factory_{this};
 
   friend class DictationTest;
   friend class SwitchAccessTest;
+
   DISALLOW_COPY_AND_ASSIGN(AccessibilityManager);
 };
 
