@@ -774,6 +774,8 @@ crbug.com/1130708 [ mac apple-apple-a12z no-passthrough ] conformance2/textures/
 crbug.com/1130708 [ mac apple-apple-a12z no-passthrough ] conformance2/textures/webgl_canvas/tex-2d-rgb5_a1-rgba-unsigned_byte.html [ Failure ]
 crbug.com/1130708 [ mac apple-apple-a12z no-passthrough ] conformance2/textures/misc/tex-mipmap-levels.html [ Failure ]
 crbug.com/1130711 [ mac apple-apple-a12z no-passthrough ] deqp/functional/gles3/negativeshaderapi.html [ Failure ]
+crbug.com/1141066 [ mac apple-apple-a12z angle-opengl passthrough ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
+crbug.com/1141066 [ mac apple-apple-a12z angle-opengl passthrough ] conformance/textures/misc/texture-copying-feedback-loops.html [ Failure ]
 
 ####################
 # Linux failures   #

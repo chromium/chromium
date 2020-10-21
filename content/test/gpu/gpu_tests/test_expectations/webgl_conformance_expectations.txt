@@ -485,6 +485,8 @@ crbug.com/1130759 [ mac apple-apple-a12z angle-metal ] conformance/rendering/ren
 crbug.com/1130759 [ mac apple-apple-a12z angle-metal ] conformance/textures/misc/texture-mips.html [ Failure ]
 crbug.com/1130760 [ mac apple-apple-a12z angle-metal ] conformance/extensions/webgl-draw-buffers.html [ Failure ]
 crbug.com/1130760 [ mac apple-apple-a12z angle-metal ] conformance/ogles/GL/discard/discard_001_to_002.html [ Failure ]
+crbug.com/1141066 [ mac apple-apple-a12z angle-opengl passthrough ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
+crbug.com/1141066 [ mac apple-apple-a12z angle-opengl passthrough ] conformance/textures/misc/texture-copying-feedback-loops.html [ Failure ]
 
 ####################
 # Linux failures   #
