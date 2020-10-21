@@ -253,6 +253,8 @@ void AppServiceAppWindowLauncherController::OnWindowDestroying(
   observed_windows_.Remove(window);
   if (arc_tracker_)
     arc_tracker_->RemoveCandidateWindow(window);
+  if (crostini_tracker_)
+    crostini_tracker_->OnWindowDestroying(window);
 
   // When the window is destroyed, we should search all proxies, because the
   // window could be teleported from the inactive user, and isn't saved in the
