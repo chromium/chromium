@@ -190,5 +190,31 @@ struct TrustTokenKeyCommitmentResult {
   // can be used to verify Signed Redemption Record (SRR) signatures
   // subsequently provided by the issuer.
   string signed_redemption_record_verification_key;
+
+  // |request_issuance_locally_on| specifies operating systems on which to
+  // divert issuance requests for this issuer to the system (i.e. to request
+  // "platform-provided" tokens)
+  enum Os {
+    kAndroid,
+  };
+  array<Os> request_issuance_locally_on;
+
+  // When specifying that the browser should attempt local issuance on at least
+  // one operating system, issuers could benefit from a couple different
+  // fallback behaviors depending on their particular requirements.
+  //
+  // |unavailable_local_issuance_fallback|'s value specifies what action to take
+  // when both of the following hold simultaneously:
+  // (1) local issuance is specified on at least one OS (i.e.
+  // |request_issuance_locally_on| is nonempty) and
+  // (2) we're not on any of the specified OSes.
+  enum UnavailableLocalIssuanceFallback {
+    // If we're not on a matching OS, instead attempt a standard web
+    // issuance request against the issuance request's destination URL.
+    kWebIssuance,
+    // If we're not on a matching OS, just fail the issuance request.
+    kReturnWithError,
+  };
+  UnavailableLocalIssuanceFallback unavailable_local_issuance_fallback;
 };
 

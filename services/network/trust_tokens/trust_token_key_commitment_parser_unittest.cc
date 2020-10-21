@@ -429,6 +429,8 @@ TEST(TrustTokenKeyCommitmentParser, ParsesBatchSize) {
      "protocol_version": "TrustTokenV1", "id": 1, "batchsize": 5,
      "srrkey": "aaaa"
    })";
+  // Double-check that the input is actually valid JSON.
+  ASSERT_TRUE(base::JSONReader::Read(input));
 
   mojom::TrustTokenKeyCommitmentResultPtr result =
       TrustTokenKeyCommitmentParser().Parse(input);
@@ -440,8 +442,10 @@ TEST(TrustTokenKeyCommitmentParser, ParsesBatchSize) {
 TEST(TrustTokenKeyCommitmentParser, RejectsMissingBatchSize) {
   std::string input =
       R"({
-     "protocol_version": "TrustTokenV1", "id": 1, "srrkey": "aaaa",
+     "protocol_version": "TrustTokenV1", "id": 1, "srrkey": "aaaa"
    })";
+  // Double-check that the input is actually valid JSON.
+  ASSERT_TRUE(base::JSONReader::Read(input));
 
   mojom::TrustTokenKeyCommitmentResultPtr result =
       TrustTokenKeyCommitmentParser().Parse(input);
@@ -452,8 +456,10 @@ TEST(TrustTokenKeyCommitmentParser, RejectsNonpositiveBatchSize) {
   std::string input =
       R"({
      "protocol_version": "TrustTokenV1", "id": 1, "srrkey": "aaaa",
-     "batchsize": "0",
+     "batchsize": 0
    })";
+  // Double-check that the input is actually valid JSON.
+  ASSERT_TRUE(base::JSONReader::Read(input));
 
   mojom::TrustTokenKeyCommitmentResultPtr result =
       TrustTokenKeyCommitmentParser().Parse(input);
@@ -466,10 +472,224 @@ TEST(TrustTokenKeyCommitmentParser, RejectsTypeUnsafeBatchSize) {
      "protocol_version": "TrustTokenV1", "id": 1, "srrkey": "aaaa",
      "batchsize": "not a number"
    })";
+  // Double-check that the input is actually valid JSON.
+  ASSERT_TRUE(base::JSONReader::Read(input));
 
   mojom::TrustTokenKeyCommitmentResultPtr result =
       TrustTokenKeyCommitmentParser().Parse(input);
   EXPECT_FALSE(result);
+}
+
+TEST(TrustTokenKeyCommitmentParser, RequestIssuanceLocallyOn) {
+  std::string input =
+      R"({
+     "srrkey": "aaaa",
+     "batchsize": 1,
+     "protocol_version": "TrustTokenV1",
+     "id": 1,
+     "request_issuance_locally_on": ["android"],
+     "unavailable_local_issuance_fallback": "web_issuance"
+   })";
+  // Double-check that the input is actually valid JSON.
+  ASSERT_TRUE(base::JSONReader::Read(input));
+
+  mojom::TrustTokenKeyCommitmentResultPtr result =
+      TrustTokenKeyCommitmentParser().Parse(input);
+  ASSERT_TRUE(result);
+  EXPECT_THAT(result->request_issuance_locally_on,
+              ElementsAre(mojom::TrustTokenKeyCommitmentResult::Os::kAndroid));
+}
+
+TEST(TrustTokenKeyCommitmentParser, DeduplicatesRequestIssuanceLocallyOn) {
+  std::string input =
+      R"({
+     "srrkey": "aaaa",
+     "batchsize": 1,
+     "protocol_version": "TrustTokenV1",
+     "id": 1,
+     "request_issuance_locally_on": ["android", "android", "android"],
+     "unavailable_local_issuance_fallback": "web_issuance"
+   })";
+  // Double-check that the input is actually valid JSON.
+  ASSERT_TRUE(base::JSONReader::Read(input));
+
+  mojom::TrustTokenKeyCommitmentResultPtr result =
+      TrustTokenKeyCommitmentParser().Parse(input);
+  ASSERT_TRUE(result);
+  EXPECT_THAT(result->request_issuance_locally_on,
+              ElementsAre(mojom::TrustTokenKeyCommitmentResult::Os::kAndroid));
+}
+
+TEST(TrustTokenKeyCommitmentParser, NoRequestIssuanceLocallyOn) {
+  std::string input =
+      R"({
+     "srrkey": "aaaa",
+     "batchsize": 1,
+     "protocol_version": "TrustTokenV1",
+     "id": 1
+   })";
+  // Double-check that the input is actually valid JSON.
+  ASSERT_TRUE(base::JSONReader::Read(input));
+
+  mojom::TrustTokenKeyCommitmentResultPtr result =
+      TrustTokenKeyCommitmentParser().Parse(input);
+  ASSERT_TRUE(result);
+  EXPECT_TRUE(result->request_issuance_locally_on.empty());
+}
+
+TEST(TrustTokenKeyCommitmentParser, RejectsTypeUnsafeRequestIssuanceLocallyOn) {
+  std::string input =
+      R"({
+     "srrkey": "aaaa",
+     "batchsize": 1,
+     "protocol_version": "TrustTokenV1",
+     "id": 1,
+     "request_issuance_locally_on": "not an array",
+     "unavailable_local_issuance_fallback": "web_issuance"
+   })";
+  // Double-check that the input is actually valid JSON.
+  ASSERT_TRUE(base::JSONReader::Read(input));
+
+  mojom::TrustTokenKeyCommitmentResultPtr result =
+      TrustTokenKeyCommitmentParser().Parse(input);
+  EXPECT_FALSE(result);
+}
+
+TEST(TrustTokenKeyCommitmentParser,
+     RejectsTypeUnsafeRequestIssuanceLocallyOnMember) {
+  std::string input =
+      R"({
+     "srrkey": "aaaa",
+     "batchsize": 1,
+     "protocol_version": "TrustTokenV1",
+     "id": 1,
+     "request_issuance_locally_on": ["android", 47],
+     "unavailable_local_issuance_fallback": "web_issuance"
+   })";
+  // Double-check that the input is actually valid JSON.
+  ASSERT_TRUE(base::JSONReader::Read(input));
+
+  mojom::TrustTokenKeyCommitmentResultPtr result =
+      TrustTokenKeyCommitmentParser().Parse(input);
+  EXPECT_FALSE(result);
+}
+
+TEST(TrustTokenKeyCommitmentParser,
+     RejectsUnrecognizedOsInRequestIssuanceLocallyOn) {
+  std::string input =
+      R"({
+     "srrkey": "aaaa",
+     "batchsize": 1,
+     "protocol_version": "TrustTokenV1",
+     "id": 1,
+     "request_issuance_locally_on": ["android", "imaginaryOS"],
+     "unavailable_local_issuance_fallback": "web_issuance"
+   })";
+  // Double-check that the input is actually valid JSON.
+  ASSERT_TRUE(base::JSONReader::Read(input));
+
+  mojom::TrustTokenKeyCommitmentResultPtr result =
+      TrustTokenKeyCommitmentParser().Parse(input);
+  EXPECT_FALSE(result);
+}
+
+TEST(TrustTokenKeyCommitmentParser,
+     ProvidingLocalIssuanceOsRequiresSpecifyingIssuanceFallback) {
+  std::string input =
+      R"({
+     "srrkey": "aaaa",
+     "batchsize": 1,
+     "protocol_version": "TrustTokenV1",
+     "id": 1,
+     "request_issuance_locally_on": ["android"]
+   })";
+  // Double-check that the input is actually valid JSON.
+  ASSERT_TRUE(base::JSONReader::Read(input));
+
+  mojom::TrustTokenKeyCommitmentResultPtr result =
+      TrustTokenKeyCommitmentParser().Parse(input);
+  EXPECT_FALSE(result);
+}
+
+TEST(TrustTokenKeyCommitmentParser,
+     RejectsTypeUnsafeUnavailableLocalIssuanceFallback) {
+  std::string input =
+      R"({
+     "srrkey": "aaaa",
+     "batchsize": 1,
+     "protocol_version": "TrustTokenV1",
+     "id": 1,
+     "request_issuance_locally_on": ["android"],
+     "unavailable_local_issuance_fallback": 57
+   })";
+  // Double-check that the input is actually valid JSON.
+  ASSERT_TRUE(base::JSONReader::Read(input));
+
+  mojom::TrustTokenKeyCommitmentResultPtr result =
+      TrustTokenKeyCommitmentParser().Parse(input);
+  EXPECT_FALSE(result);
+}
+
+TEST(TrustTokenKeyCommitmentParser,
+     RejectsUnrecognizedUnavailableLocalIssuanceFallback) {
+  std::string input =
+      R"({
+     "srrkey": "aaaa",
+     "batchsize": 1,
+     "protocol_version": "TrustTokenV1",
+     "id": 1,
+     "request_issuance_locally_on": ["android"],
+     "unavailable_local_issuance_fallback": "not a valid enum value"
+   })";
+  // Double-check that the input is actually valid JSON.
+  ASSERT_TRUE(base::JSONReader::Read(input));
+
+  mojom::TrustTokenKeyCommitmentResultPtr result =
+      TrustTokenKeyCommitmentParser().Parse(input);
+  EXPECT_FALSE(result);
+}
+
+TEST(TrustTokenKeyCommitmentParser, ParsesLocalIssuanceFallbackWebIssuance) {
+  std::string input =
+      R"({
+     "srrkey": "aaaa",
+     "batchsize": 1,
+     "protocol_version": "TrustTokenV1",
+     "id": 1,
+     "request_issuance_locally_on": ["android"],
+     "unavailable_local_issuance_fallback": "web_issuance"
+   })";
+  // Double-check that the input is actually valid JSON.
+  ASSERT_TRUE(base::JSONReader::Read(input));
+
+  mojom::TrustTokenKeyCommitmentResultPtr result =
+      TrustTokenKeyCommitmentParser().Parse(input);
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->unavailable_local_issuance_fallback,
+            mojom::TrustTokenKeyCommitmentResult::
+                UnavailableLocalIssuanceFallback::kWebIssuance);
+}
+
+TEST(TrustTokenKeyCommitmentParser,
+     ParsesLocalIssuanceFallbackReturnWithError) {
+  std::string input =
+      R"({
+     "srrkey": "aaaa",
+     "batchsize": 1,
+     "protocol_version": "TrustTokenV1",
+     "id": 1,
+     "request_issuance_locally_on": ["android"],
+     "unavailable_local_issuance_fallback": "return_with_error"
+   })";
+  // Double-check that the input is actually valid JSON.
+  ASSERT_TRUE(base::JSONReader::Read(input));
+
+  mojom::TrustTokenKeyCommitmentResultPtr result =
+      TrustTokenKeyCommitmentParser().Parse(input);
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->unavailable_local_issuance_fallback,
+            mojom::TrustTokenKeyCommitmentResult::
+                UnavailableLocalIssuanceFallback::kReturnWithError);
 }
 
 TEST(TrustTokenKeyCommitmentParser, ParsesProtocolVersion) {
@@ -478,6 +698,8 @@ TEST(TrustTokenKeyCommitmentParser, ParsesProtocolVersion) {
      "protocol_version": "TrustTokenV1", "id": 1, "batchsize": 5,
      "srrkey": "aaaa"
    })";
+  // Make sure the input is actually valid JSON.
+  ASSERT_TRUE(base::JSONReader::Read(input));
 
   mojom::TrustTokenKeyCommitmentResultPtr result =
       TrustTokenKeyCommitmentParser().Parse(input);
@@ -489,8 +711,10 @@ TEST(TrustTokenKeyCommitmentParser, ParsesProtocolVersion) {
 TEST(TrustTokenKeyCommitmentParser, RejectsMissingProtocolVersion) {
   std::string input =
       R"({
-     "id": 1, "batchsize": 5, "srrkey": "aaaa",
+     "id": 1, "batchsize": 5, "srrkey": "aaaa"
    })";
+  // Make sure the input is actually valid JSON.
+  ASSERT_TRUE(base::JSONReader::Read(input));
 
   mojom::TrustTokenKeyCommitmentResultPtr result =
       TrustTokenKeyCommitmentParser().Parse(input);
@@ -503,6 +727,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsUnknownProtocolVersion) {
      "protocol_version": "TrustTokenJunk", "id": 1, "srrkey": "aaaa",
      "batchsize": 5
    })";
+  // Make sure the input is actually valid JSON.
+  ASSERT_TRUE(base::JSONReader::Read(input));
 
   mojom::TrustTokenKeyCommitmentResultPtr result =
       TrustTokenKeyCommitmentParser().Parse(input);
@@ -515,6 +741,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsTypeUnsafeProtocolVersion) {
      "protocol_version": 5, "id": 1, "srrkey": "aaaa",
      "batchsize": 5
    })";
+  // Make sure the input is actually valid JSON.
+  ASSERT_TRUE(base::JSONReader::Read(input));
 
   mojom::TrustTokenKeyCommitmentResultPtr result =
       TrustTokenKeyCommitmentParser().Parse(input);
@@ -527,6 +755,8 @@ TEST(TrustTokenKeyCommitmentParser, ParsesID) {
      "protocol_version": "TrustTokenV1", "id": 1, "batchsize": 5,
      "srrkey": "aaaa"
    })";
+  // Make sure the input is actually valid JSON.
+  ASSERT_TRUE(base::JSONReader::Read(input));
 
   mojom::TrustTokenKeyCommitmentResultPtr result =
       TrustTokenKeyCommitmentParser().Parse(input);
@@ -538,8 +768,10 @@ TEST(TrustTokenKeyCommitmentParser, ParsesID) {
 TEST(TrustTokenKeyCommitmentParser, RejectsMissingID) {
   std::string input =
       R"({
-     "protocol_version": "TrustTokenV1", "batchsize": 5, "srrkey": "aaaa",
+     "protocol_version": "TrustTokenV1", "batchsize": 5, "srrkey": "aaaa"
    })";
+  // Make sure the input is actually valid JSON.
+  ASSERT_TRUE(base::JSONReader::Read(input));
 
   mojom::TrustTokenKeyCommitmentResultPtr result =
       TrustTokenKeyCommitmentParser().Parse(input);
@@ -552,6 +784,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsTypeUnsafeID) {
      "protocol_version": "TrustTokenV1", "id": "foo", "srrkey": "aaaa",
      "batchsize": 5
    })";
+  // Make sure the input is actually valid JSON.
+  ASSERT_TRUE(base::JSONReader::Read(input));
 
   mojom::TrustTokenKeyCommitmentResultPtr result =
       TrustTokenKeyCommitmentParser().Parse(input);
@@ -569,6 +803,8 @@ TEST(TrustTokenKeyCommitmentParserMultipleIssuers, InvalidJson) {
 
 TEST(TrustTokenKeyCommitmentParserMultipleIssuers, NotADictionary) {
   std::string input = "3";
+  // Make sure the input is actually valid JSON.
+  ASSERT_TRUE(base::JSONReader::Read(input));
 
   auto result = TrustTokenKeyCommitmentParser().ParseMultipleIssuers(input);
   EXPECT_FALSE(result);

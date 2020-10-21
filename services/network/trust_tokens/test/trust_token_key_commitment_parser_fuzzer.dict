@@ -36,3 +36,7 @@
 "Y"
 "expiry"
 "https"
+"protocol_version"
+"id"
+"unavailable_local_issuance_fallback"
+"request_issuance_locally_on"

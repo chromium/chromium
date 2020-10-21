@@ -7,14 +7,29 @@
 #include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
-#include "services/network/public/mojom/trust_tokens.mojom-forward.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
 
 namespace network {
+
+const char kTrustTokenKeyCommitmentProtocolVersionField[] = "protocol_version";
+const char kTrustTokenKeyCommitmentIDField[] = "id";
+const char kTrustTokenKeyCommitmentBatchsizeField[] = "batchsize";
+const char kTrustTokenKeyCommitmentSrrkeyField[] = "srrkey";
+const char kTrustTokenKeyCommitmentExpiryField[] = "expiry";
+const char kTrustTokenKeyCommitmentKeyField[] = "Y";
+const char kTrustTokenKeyCommitmentRequestIssuanceLocallyOnField[] =
+    "request_issuance_locally_on";
+const char kTrustTokenLocalIssuanceOsAndroid[] = "android";
+const char kTrustTokenKeyCommitmentUnavailableLocalIssuanceFallbackField[] =
+    "unavailable_local_issuance_fallback";
+const char kTrustTokenLocalIssuanceFallbackWebIssuance[] = "web_issuance";
+const char kTrustTokenLocalIssuanceFallbackReturnWithError[] =
+    "return_with_error";
 
 namespace {
 
@@ -71,6 +86,82 @@ ParseKeyResult ParseSingleKeyExceptLabel(
   return ParseKeyResult::kSucceed;
 }
 
+base::Optional<mojom::TrustTokenKeyCommitmentResult::Os> ParseOs(
+    base::StringPiece os_string) {
+  if (os_string == kTrustTokenLocalIssuanceOsAndroid)
+    return mojom::TrustTokenKeyCommitmentResult::Os::kAndroid;
+  return base::nullopt;
+}
+
+// Attempts to parse a string representation of a member of the
+// UnavailableLocalIssuanceFallback enum, returning true on success and false on
+// failure.
+bool ParseUnavailableLocalIssuanceFallback(
+    base::StringPiece fallback_string,
+    mojom::TrustTokenKeyCommitmentResult::UnavailableLocalIssuanceFallback*
+        fallback_out) {
+  if (fallback_string == kTrustTokenLocalIssuanceFallbackWebIssuance) {
+    *fallback_out = mojom::TrustTokenKeyCommitmentResult::
+        UnavailableLocalIssuanceFallback::kWebIssuance;
+    return true;
+  }
+  if (fallback_string == kTrustTokenLocalIssuanceFallbackReturnWithError) {
+    *fallback_out = mojom::TrustTokenKeyCommitmentResult::
+        UnavailableLocalIssuanceFallback::kReturnWithError;
+    return true;
+  }
+  return false;
+}
+
+// Given a per-issuer key commitment dictionary, looks for the local Trust
+// Tokens issuance-related fields request_issuance_locally_on and
+// unavailable_local_issuance_fallback.
+//
+// Returns true if both are absent, or if both are present and well-formed; in
+// the latter case, updates |result| to with their parsed values. Otherwise,
+// returns false.
+bool ParseLocalIssuanceFieldsIfPresent(
+    const base::Value& value,
+    mojom::TrustTokenKeyCommitmentResult* result) {
+  const base::Value* maybe_request_issuance_locally_on =
+      value.FindKey(kTrustTokenKeyCommitmentRequestIssuanceLocallyOnField);
+
+  // The local issuance field is optional...
+  if (!maybe_request_issuance_locally_on)
+    return true;
+
+  // ...but needs to be the right type if it's provided.
+  if (!maybe_request_issuance_locally_on->is_list())
+    return false;
+
+  for (const base::Value& maybe_os_value :
+       maybe_request_issuance_locally_on->GetList()) {
+    if (!maybe_os_value.is_string())
+      return false;
+    base::Optional<mojom::TrustTokenKeyCommitmentResult::Os> maybe_os =
+        ParseOs(maybe_os_value.GetString());
+    if (!maybe_os)
+      return false;
+    result->request_issuance_locally_on.push_back(*maybe_os);
+  }
+
+  // Deduplicate the OS values:
+  auto& oses = result->request_issuance_locally_on;
+  base::ranges::sort(oses);
+  auto to_remove = base::ranges::unique(oses);
+  oses.erase(to_remove, oses.end());
+
+  const std::string* maybe_fallback = value.FindStringKey(
+      kTrustTokenKeyCommitmentUnavailableLocalIssuanceFallbackField);
+  if (!maybe_fallback ||
+      !ParseUnavailableLocalIssuanceFallback(
+          *maybe_fallback, &result->unavailable_local_issuance_fallback)) {
+    return false;
+  }
+
+  return true;
+}
+
 mojom::TrustTokenKeyCommitmentResultPtr ParseSingleIssuer(
     const base::Value& value) {
   if (!value.is_dict())
@@ -112,6 +203,9 @@ mojom::TrustTokenKeyCommitmentResultPtr ParseSingleIssuer(
                           &result->signed_redemption_record_verification_key)) {
     return nullptr;
   }
+
+  if (!ParseLocalIssuanceFieldsIfPresent(value, result.get()))
+    return nullptr;
 
   // Parse the key commitments in the result (these are exactly the
   // key-value pairs in the dictionary with dictionary-typed values).
@@ -155,13 +249,6 @@ mojom::TrustTokenKeyCommitmentResultPtr& commitment(Entry& e) {
 
 }  // namespace
 
-const char kTrustTokenKeyCommitmentProtocolVersionField[] = "protocol_version";
-const char kTrustTokenKeyCommitmentIDField[] = "id";
-const char kTrustTokenKeyCommitmentBatchsizeField[] = "batchsize";
-const char kTrustTokenKeyCommitmentSrrkeyField[] = "srrkey";
-const char kTrustTokenKeyCommitmentExpiryField[] = "expiry";
-const char kTrustTokenKeyCommitmentKeyField[] = "Y";
-
 // https://docs.google.com/document/d/1TNnya6B8pyomDK2F1R9CL3dY10OAmqWlnCxsWyOBDVQ/edit#bookmark=id.6wh9crbxdizi
 // {
 //   "protocol_version" : ..., // Protocol Version; value of type string.
@@ -169,6 +256,12 @@ const char kTrustTokenKeyCommitmentKeyField[] = "Y";
 //   "batchsize" : ...,        // Batch size; value of type int.
 //   "srrkey" : ...,           // Required Signed Redemption Record (SRR)
 //                             // verification key, in base64.
+//
+//   // Optional operating systems on which to request issuance via system
+//   // mediation (valid values are: "android"), and (required if at least one
+//   // OS is specified) fallback behavior on other operating systems:
+//   "request_issuance_locally_on": [<os 1>, ..., <os N>],
+//   "unavailable_local_issuance_fallback": "web_issuance" | "return_with_error"
 //
 //   "1" : {                   // Key label, a number in uint32_t range; ignored
 //                             // except for checking that it is present and

@@ -14,22 +14,35 @@
 
 namespace network {
 
-// Field names from the key commitment JSON format specified in the Trust Tokens
-// design doc
-// (https://docs.google.com/document/d/1TNnya6B8pyomDK2F1R9CL3dY10OAmqWlnCxsWyOBDVQ/edit#bookmark=id.6wh9crbxdizi):
-// - "protocol_version" (version of Trust Token used for this commitment)
+// These field names are from the key commitment JSON format specified in the
+// Trust Tokens design doc
+// (https://docs.google.com/document/d/1TNnya6B8pyomDK2F1R9CL3dY10OAmqWlnCxsWyOBDVQ/edit#bookmark=id.6wh9crbxdizi).
+// "protocol version" (version of Trust Token used for this commitment):
 extern const char kTrustTokenKeyCommitmentProtocolVersionField[];
-// - "id" (ID for this key commitment)
+// This commitment's ID, used for mediating between concurrencyID for this key
+// commitment):
 extern const char kTrustTokenKeyCommitmentIDField[];
-// - "batch size" (number of blinded tokens to provide per issuance request)
+// "Batch size" (number of blinded tokens to provide per issuance request):
 extern const char kTrustTokenKeyCommitmentBatchsizeField[];
-// - verification key for the signatures the issuer provides over its Signed
-// Redemption Records (SRRs)
+// Verification key for the signatures the issuer provides over its Signed
+// Redemption Records (SRRs):
 extern const char kTrustTokenKeyCommitmentSrrkeyField[];
-// - each issuance key's expiry timestamp
+// Each issuance key's expiry timestamp:
 extern const char kTrustTokenKeyCommitmentExpiryField[];
-// - each issuance key's key material
+// Each issuance key's key material:
 extern const char kTrustTokenKeyCommitmentKeyField[];
+
+// The operating systems on which to request issuance via system mediation
+// rather than through a request to the issuer's website:
+extern const char kTrustTokenKeyCommitmentRequestIssuanceLocallyOnField[];
+extern const char kTrustTokenKeyCommitmentOsAndroid[];
+
+// The desired fallback behavior when local issuance isn't available on the
+// requested operating system:
+extern const char
+    kTrustTokenKeyCommitmentUnavailableLocalIssuanceFallbackField[];
+extern const char kTrustTokenLocalIssuanceFallbackWebIssuance[];
+extern const char kTrustTokenLocalIssuanceFallbackReturnWithError[];
 
 class TrustTokenKeyCommitmentParser
     : public TrustTokenKeyCommitmentController::Parser {
@@ -37,18 +50,12 @@ class TrustTokenKeyCommitmentParser
   TrustTokenKeyCommitmentParser() = default;
   ~TrustTokenKeyCommitmentParser() override = default;
 
-  // Parses a JSON key commitment response.
+  // Parses a JSON key commitment response, returning nullptr if the input is
+  // not a valid representation of a JSON dictionary containing all required
+  // fields listed in the Trust Tokens design doc, the current normative source
+  // for key commitment responses' format:
   //
-  // This method returns nullptr unless:
-  // - the input is valid JSON; and
-  // - the JSON represents a nonempty dictionary; and
-  // - within this inner dictionary (which stores metadata like batch size, as
-  // well as more dictionaries denoting keys' information):
-  //   - every dictionary-type value has an expiry field
-  //   (|kTrustTokenKeyCommitmentExpiryField| above) and a key body field
-  //   (|kTrustTokenKeyCommitmentKeyField|), and
-  //   - the expiry field is a positive integer (microseconds since the Unix
-  //   epoch) storing a time in the future.
+  // https://docs.google.com/document/d/1TNnya6B8pyomDK2F1R9CL3dY10OAmqWlnCxsWyOBDVQ/edit#heading=h.wkezf6pcskvh
   mojom::TrustTokenKeyCommitmentResultPtr Parse(
       base::StringPiece response_body) override;
 
