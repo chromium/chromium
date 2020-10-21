@@ -36,7 +36,6 @@
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/browsing_data/browsing_data_remover_impl.h"
 #include "content/browser/child_process_security_policy_impl.h"
-#include "content/browser/content_service_delegate_impl.h"
 #include "content/browser/download/download_manager_impl.h"
 #include "content/browser/media/browser_feature_provider.h"
 #include "content/browser/permissions/permission_controller_impl.h"
@@ -60,7 +59,6 @@
 #include "media/learning/common/media_learning_tasks.h"
 #include "media/learning/impl/learning_session_impl.h"
 #include "media/mojo/services/video_decode_perf_history.h"
-#include "services/content/service.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/database/database_tracker.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -73,19 +71,11 @@ namespace {
 
 class ContentServiceHolder : public base::SupportsUserData::Data {
  public:
-  explicit ContentServiceHolder(BrowserContext* browser_context)
-      : delegate_(browser_context) {
-    delegate_.AddService(&service_);
-  }
+  explicit ContentServiceHolder(BrowserContext* browser_context) {}
 
   ~ContentServiceHolder() override = default;
 
-  content::Service& service() { return service_; }
-
  private:
-  ContentServiceDelegateImpl delegate_;
-  content::Service service_{&delegate_};
-
   DISALLOW_COPY_AND_ASSIGN(ContentServiceHolder);
 };
 
@@ -542,19 +532,6 @@ std::string BrowserContext::CreateRandomMediaDeviceIDSalt() {
 
 const std::string& BrowserContext::UniqueId() {
   return unique_id_;
-}
-
-void BrowserContext::BindNavigableContentsFactory(
-    mojo::PendingReceiver<content::mojom::NavigableContentsFactory> receiver) {
-  auto* service_holder =
-      static_cast<ContentServiceHolder*>(GetUserData(kContentServiceKey));
-  if (!service_holder) {
-    auto new_holder = std::make_unique<ContentServiceHolder>(this);
-    service_holder = new_holder.get();
-    SetUserData(kContentServiceKey, std::move(new_holder));
-  }
-
-  service_holder->service().BindNavigableContentsFactory(std::move(receiver));
 }
 
 media::VideoDecodePerfHistory* BrowserContext::GetVideoDecodePerfHistory() {

@@ -66,8 +66,6 @@ include_rules = [
   # dependency.
   "+services",
   "-services/content",
-  "+services/content/public",
-  "+services/content/navigable_contents_delegate.h",
   "+services/content/service.h",
   "+services/content/service_delegate.h",
   "-services/network",

@@ -133,7 +133,6 @@
 #include "net/ssl/ssl_config_service.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/audio/service.h"
-#include "services/content/public/cpp/navigable_contents_view.h"
 #include "services/data_decoder/public/cpp/service_provider.h"
 #include "services/network/transitional_url_loader_factory_owner.h"
 #include "skia/ext/event_tracer_impl.h"
@@ -1470,10 +1469,6 @@ void BrowserMainLoop::InitializeMojo() {
     // thread.
     mojo::SyncCallRestrictions::DisallowSyncCall();
   }
-
-  // Ensure that any NavigableContentsViews constructed in the browser process
-  // know they're running in the same process as the service.
-  content::NavigableContentsView::SetClientRunningInServiceProcess();
 
   // Start startup tracing through TracingController's interface. TraceLog has
   // been enabled in content_main_runner where threads are not available. Now We

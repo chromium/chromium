@@ -25,7 +25,6 @@ test("services_unittests") {
   deps = [
     "//services/cert_verifier:tests",
     "//services/cert_verifier/cert_net_url_loader:tests",
-    "//services/content:tests",
     "//services/metrics/public/cpp:tests",
     "//services/network:tests",
     "//services/network/public/cpp:tests",

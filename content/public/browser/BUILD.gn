@@ -423,7 +423,6 @@ source_set("browser_sources") {
     "//mojo/public/cpp/system",
     "//services/audio/public/mojom",
     "//services/cert_verifier/public/mojom",
-    "//services/content/public/mojom",
     "//services/data_decoder/public/mojom",
     "//services/device/public/mojom:device_service",
     "//services/device/public/mojom:usb",

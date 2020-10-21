@@ -10,7 +10,6 @@ include_rules = [
   "+device/vr/public/cpp",
   "+device/vr/public/mojom",
   "+services/audio/public",
-  "+services/content/public",
   "+services/data_decoder/public",
   "+services/device/public",
   "+services/media_session/public",
