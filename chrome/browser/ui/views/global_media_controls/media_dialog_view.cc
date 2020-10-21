@@ -215,7 +215,7 @@ MediaDialogView::MediaDialogView(views::View* anchor_view,
                                  Profile* profile)
     : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_RIGHT),
       service_(service),
-      profile_(profile),
+      profile_(profile->GetOriginalProfile()),
       active_sessions_view_(
           AddChildView(std::make_unique<MediaNotificationListView>())) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
