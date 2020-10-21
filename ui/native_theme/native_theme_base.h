@@ -76,7 +76,15 @@ class NATIVE_THEME_EXPORT NativeThemeBase : public NativeTheme {
     kScrollbarThumb,
     kScrollbarThumbHovered,
     kScrollbarThumbPressed,
-    kScrollbarThumbInactive
+    kScrollbarThumbInactive,
+    kButtonBorder,
+    kButtonDisabledBorder,
+    kButtonHoveredBorder,
+    kButtonPressedBorder,
+    kButtonFill,
+    kButtonDisabledFill,
+    kButtonHoveredFill,
+    kButtonPressedFill
   };
 
   using NativeTheme::NativeTheme;
@@ -260,6 +268,9 @@ class NATIVE_THEME_EXPORT NativeThemeBase : public NativeTheme {
                                   const SkScalar border_radius,
                                   ColorScheme color_scheme) const;
 
+  SkColor ButtonBorderColorForState(State state,
+                                    ColorScheme color_scheme) const;
+  SkColor ButtonFillColorForState(State state, ColorScheme color_scheme) const;
   SkColor ControlsAccentColorForState(State state,
                                       ColorScheme color_scheme) const;
   SkColor ControlsBorderColorForState(State state,
