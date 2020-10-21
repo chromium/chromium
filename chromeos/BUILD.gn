@@ -285,7 +285,7 @@ if (is_chromeos_device) {
     tast_disabled_tests = [
       # crbug.com/1115622
       "ui.ChromeLoginGAIA",
-      "inputs.VirtualKeyboardOOBE",
+      "inputs.VirtualKeyboardOOBE.stable",
 
       # crbug.com/1097630
       "security.OpenFDs",
