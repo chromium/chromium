@@ -182,14 +182,14 @@ class SequenceBound {
   // to a const lvalue reference) is not allowed.
   template <typename R, typename... Args>
   auto AsyncCall(R (T::*method)(Args...),
-                 const Location& location = Location::Current()) {
+                 const Location& location = Location::Current()) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return AsyncCallBuilder<R (T::*)(Args...)>(this, &location, method);
   }
 
   template <typename R, typename... Args>
   auto AsyncCall(R (T::*method)(Args...) const,
-                 const Location& location = Location::Current()) {
+                 const Location& location = Location::Current()) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return AsyncCallBuilder<R (T::*)(Args...) const>(this, &location, method);
   }
@@ -329,13 +329,14 @@ class SequenceBound {
   template <typename MethodPtrType>
   class AsyncCallBuilderBase {
    protected:
-    AsyncCallBuilderBase(SequenceBound* sequence_bound,
+    AsyncCallBuilderBase(const SequenceBound* sequence_bound,
                          const Location* location,
                          MethodPtrType method)
         : sequence_bound_(sequence_bound),
           location_(location),
           method_(method) {
       // Common entry point for `AsyncCall()`, so check preconditions here.
+      DCHECK(sequence_bound_);
       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_bound_->sequence_checker_);
       DCHECK(sequence_bound_->t_);
     }
@@ -358,7 +359,7 @@ class SequenceBound {
     //   destructor will `CHECK()` if `sequence_bound_` is non-null, since that
     //   indicates `Then()` was not invoked. Similarly, note this branch should
     //   be eliminated by the optimizer if the code is free of bugs. :)
-    SequenceBound* sequence_bound_;
+    const SequenceBound* sequence_bound_;
     // Subtle: this typically points at a Location *temporary*. This is used to
     // try to detect errors resulting from lifetime extension of the async call
     // factory temporaries, since the factory destructors can perform work. If
@@ -455,7 +456,7 @@ class SequenceBound {
 
     template <typename... BoundArgs>
     auto WithArgs(BoundArgs&&... bound_args) {
-      SequenceBound* const sequence_bound =
+      const SequenceBound* const sequence_bound =
           std::exchange(this->sequence_bound_, nullptr);
       return AsyncCallWithBoundArgsBuilder<ReturnType>(
           sequence_bound, this->location_,
@@ -482,12 +483,13 @@ class SequenceBound {
   template <typename ReturnType>
   class AsyncCallWithBoundArgsBuilderBase {
    protected:
-    AsyncCallWithBoundArgsBuilderBase(SequenceBound* sequence_bound,
+    AsyncCallWithBoundArgsBuilderBase(const SequenceBound* sequence_bound,
                                       const Location* location,
                                       base::OnceCallback<ReturnType()> callback)
         : sequence_bound_(sequence_bound),
           location_(location),
           callback_(std::move(callback)) {
+      DCHECK(sequence_bound_);
       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_bound_->sequence_checker_);
       DCHECK(sequence_bound_->t_);
     }
@@ -501,7 +503,7 @@ class SequenceBound {
     AsyncCallWithBoundArgsBuilderBase& operator=(
         AsyncCallWithBoundArgsBuilderBase&&) noexcept = default;
 
-    SequenceBound* sequence_bound_;
+    const SequenceBound* sequence_bound_;
     const Location* const location_;
     base::OnceCallback<ReturnType()> callback_;
   };
@@ -580,7 +582,7 @@ class SequenceBound {
 
   void PostTaskAndThenHelper(const Location& location,
                              OnceCallback<void()> callback,
-                             OnceClosure then_callback) {
+                             OnceClosure then_callback) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     impl_task_runner_->PostTaskAndReply(location, std::move(callback),
                                         std::move(then_callback));
@@ -593,7 +595,7 @@ class SequenceBound {
             typename = EnableIfIsBaseCallback<CallbackType>>
   void PostTaskAndThenHelper(const Location& location,
                              OnceCallback<ReturnType()> callback,
-                             CallbackType<void(ThenArg)> then_callback) {
+                             CallbackType<void(ThenArg)> then_callback) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     OnceCallback<void(ThenArg)>&& once_then_callback = std::move(then_callback);
     impl_task_runner_->PostTaskAndReplyWithResult(

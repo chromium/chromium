@@ -615,6 +615,14 @@ TEST_F(SequenceBoundTest, AsyncCallWithArgsIntThen) {
   }
 }
 
+TEST_F(SequenceBoundTest, AsyncCallIsConstQualified) {
+  // Tests that both const and non-const methods may be called through a
+  // const-qualified SequenceBound.
+  const SequenceBound<NoArgsVoidReturn> s(task_runner_);
+  s.AsyncCall(&NoArgsVoidReturn::ConstMethod);
+  s.AsyncCall(&NoArgsVoidReturn::Method);
+}
+
 // TODO(dcheng): Maybe use the nocompile harness here instead of being
 // "clever"...
 TEST_F(SequenceBoundTest, NoCompileTests) {
