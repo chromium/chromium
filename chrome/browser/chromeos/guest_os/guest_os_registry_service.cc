@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/clock.h"
@@ -383,6 +384,12 @@ std::string GuestOsRegistryService::Registration::ContainerName() const {
 }
 
 std::string GuestOsRegistryService::Registration::Name() const {
+  if (VmType() ==
+      GuestOsRegistryService::VmType::ApplicationList_VmType_PLUGIN_VM) {
+    return l10n_util::GetStringFUTF8(
+        IDS_PLUGIN_VM_APP_NAME_WINDOWS_SUFFIX,
+        base::UTF8ToUTF16(LocalizedString(guest_os::prefs::kAppNameKey)));
+  }
   return LocalizedString(guest_os::prefs::kAppNameKey);
 }
 

@@ -5487,6 +5487,9 @@
   <message name="IDS_PLUGIN_VM_INSUFFICIENT_DISK_SPACE_MESSAGE" desc="Error message shown if Plugin VM installation fails because there is not enough free space on the device.">
       Your device is low on storage. At least <ph name="MINIMUM_SPACE">$1<ex>16GB</ex></ph> of free space is required to use <ph name="APP_NAME">$2<ex>Plugin VM</ex></ph>. To increase free space, delete files from device.
   </message>
+  <message name="IDS_PLUGIN_VM_APP_NAME_WINDOWS_SUFFIX" desc="Application name with ' (Windows)' suffix. Do not translate 'Windows'">
+    <ph name="APP_NAME">$1<ex>Notepad</ex></ph> (Windows)
+  </message>
 
   <!-- Strings for camera/mic permission -->
   <message name="IDS_CAMERA_NOTIFICATION_SOURCE" desc="The name of the source of a camera notification ">

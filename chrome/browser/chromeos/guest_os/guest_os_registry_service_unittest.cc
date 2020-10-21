@@ -625,4 +625,30 @@ TEST_F(GuestOsRegistryServiceTest, GetEnabledApps) {
   EXPECT_THAT(GetEnabledAppIds(), testing::IsEmpty());
 }
 
+TEST_F(GuestOsRegistryServiceTest, PluginVmNameSuffix) {
+  ApplicationList crostini_list;
+  crostini_list.set_vm_type(
+      GuestOsRegistryService::VmType::ApplicationList_VmType_TERMINA);
+  crostini_list.set_vm_name("termina");
+  crostini_list.set_container_name("penguin");
+  *crostini_list.add_apps() = crostini::CrostiniTestHelper::BasicApp("c");
+  std::string c =
+      crostini::CrostiniTestHelper::GenerateAppId("c", "termina", "penguin");
+  service()->UpdateApplicationList(crostini_list);
+
+  ApplicationList plugin_vm_list;
+  plugin_vm_list.set_vm_type(
+      GuestOsRegistryService::VmType::ApplicationList_VmType_PLUGIN_VM);
+  plugin_vm_list.set_vm_name("PvmDefault");
+  plugin_vm_list.set_container_name("penguin");
+  *plugin_vm_list.add_apps() = crostini::CrostiniTestHelper::BasicApp("p");
+  std::string p =
+      crostini::CrostiniTestHelper::GenerateAppId("p", "PvmDefault", "penguin");
+  service()->UpdateApplicationList(plugin_vm_list);
+
+  // Crostini apps have name unchanged, PluginVM has ' (Windows)' suffix.
+  EXPECT_EQ("c", service()->GetRegistration(c)->Name());
+  EXPECT_EQ("p (Windows)", service()->GetRegistration(p)->Name());
+}
+
 }  // namespace guest_os
