@@ -28,7 +28,7 @@ namespace blink {
 // HTTP header, or can be set by the |allow| attributes on the iframe element
 // which embeds the document.
 //
-// See https://wicg.github.io/FeaturePolicy/
+// See https://w3c.github.io/webappsec-permissions-policy/
 //
 // Key concepts:
 //
