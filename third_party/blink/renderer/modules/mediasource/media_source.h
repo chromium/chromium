@@ -86,6 +86,7 @@ class MediaSource final : public EventTargetWithInlineData,
       LOCKS_EXCLUDED(attachment_link_lock_);
 
   static bool isTypeSupported(ExecutionContext* context, const String& type);
+  static bool canConstructInDedicatedWorker();
 
   // Methods needed by a MediaSourceAttachmentSupplement to service operations
   // proxied from an HTMLMediaElement.

@@ -787,6 +787,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method decodingInfo
 [Worker]     method encodingInfo
 [Worker] interface MediaSource : EventTarget
+[Worker]     static getter canConstructInDedicatedWorker
 [Worker]     static method isTypeSupported
 [Worker]     attribute @@toStringTag
 [Worker]     getter activeSourceBuffers

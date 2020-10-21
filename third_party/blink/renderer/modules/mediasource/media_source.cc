@@ -420,6 +420,14 @@ bool MediaSource::isTypeSupported(ExecutionContext* context,
   return result;
 }
 
+// static
+bool MediaSource::canConstructInDedicatedWorker() {
+  // This method's visibility in IDL is restricted to MSE-in-Workers feature
+  // being enabled.
+  DCHECK(RuntimeEnabledFeatures::MediaSourceInWorkersEnabled());
+  return true;
+}
+
 void MediaSource::RecordIdentifiabilityMetric(ExecutionContext* context,
                                               const String& type,
                                               bool result) {
