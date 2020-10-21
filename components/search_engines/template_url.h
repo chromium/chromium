@@ -68,6 +68,13 @@ class TemplateURLRef {
   // the |post_data|. See http://tools.ietf.org/html/rfc2046 for the details.
   typedef std::pair<std::string, std::string> PostContent;
 
+  // Enumeration of the known search or suggest request sources.
+  enum RequestSource {
+    SEARCHBOX,          // Omnibox or the NTP realbox. The default.
+    CROS_APP_LIST,      // Chrome OS app list search box.
+    NON_SEARCHBOX_NTP,  // Non-searchbox NTP surfaces.
+  };
+
   // This struct encapsulates arguments passed to
   // TemplateURLRef::ReplaceSearchTerms methods.  By default, only search_terms
   // is required and is passed in the constructor.
@@ -228,9 +235,8 @@ class TemplateURLRef {
     // When searching for an image, the original size of the image.
     gfx::Size image_original_size;
 
-    // True if the search was made using the app list search box. Otherwise, the
-    // search was made using the omnibox.
-    bool from_app_list = false;
+    // Source of the search or suggest request.
+    RequestSource request_source = SEARCHBOX;
 
     ContextualSearchParams contextual_search_params;
   };

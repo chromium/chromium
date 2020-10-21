@@ -46,7 +46,7 @@ std::string SearchTermsData::GetSearchClient() const {
   return std::string();
 }
 
-std::string SearchTermsData::GetSuggestClient() const {
+std::string SearchTermsData::GetSuggestClient(bool from_ntp) const {
   return std::string();
 }
 

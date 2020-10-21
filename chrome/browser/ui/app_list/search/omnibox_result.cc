@@ -151,7 +151,7 @@ OmniboxResult::OmniboxResult(Profile* profile,
       match_(match),
       is_zero_suggestion_(is_zero_suggestion) {
   if (match_.search_terms_args && autocomplete_controller_) {
-    match_.search_terms_args->from_app_list = true;
+    match_.search_terms_args->request_source = TemplateURLRef::CROS_APP_LIST;
     autocomplete_controller_->UpdateMatchDestinationURL(
         *match_.search_terms_args, &match_);
   }

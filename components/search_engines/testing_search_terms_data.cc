@@ -27,6 +27,10 @@ std::string TestingSearchTermsData::GetSearchClient() const {
   return search_client_;
 }
 
+std::string TestingSearchTermsData::GetSuggestClient(bool from_ntp) const {
+  return from_ntp ? suggest_client_ + "_from_ntp" : suggest_client_;
+}
+
 std::string TestingSearchTermsData::GoogleImageSearchSource() const {
   return "google_image_search_source";
 }

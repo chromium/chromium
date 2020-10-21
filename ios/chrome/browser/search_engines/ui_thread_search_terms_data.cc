@@ -71,7 +71,9 @@ std::string UIThreadSearchTermsData::GetSearchClient() const {
   return std::string();
 }
 
-std::string UIThreadSearchTermsData::GetSuggestClient() const {
+std::string UIThreadSearchTermsData::GetSuggestClient(bool from_ntp) const {
+  // IOS does not send non-searchbox suggest requests from NTP at this time.
+  DCHECK(!from_ntp);
   DCHECK(thread_checker_.CalledOnValidThread());
   return "chrome";
 }

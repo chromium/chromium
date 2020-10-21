@@ -80,14 +80,16 @@ std::string UIThreadSearchTermsData::GetSearchClient() const {
 }
 #endif
 
-std::string UIThreadSearchTermsData::GetSuggestClient() const {
+std::string UIThreadSearchTermsData::GetSuggestClient(bool from_ntp) const {
   DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
       BrowserThread::CurrentlyOn(BrowserThread::UI));
 #if defined(OS_ANDROID)
+  // Android does not send non-searchbox suggest requests from NTP at this time.
+  DCHECK(!from_ntp);
   return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE ?
       "chrome" : "chrome-omni";
 #else
-  return "chrome-omni";
+  return from_ntp ? "chrome-ntp" : "chrome-omni";
 #endif
 }
 
