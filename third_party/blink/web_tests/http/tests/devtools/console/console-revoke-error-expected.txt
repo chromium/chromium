@@ -5,17 +5,17 @@ Message added: error log
 Message added: error log
 Message added: error log
 
-3 errors
+Open Console to view 3 errors
 console-message-wrapper console-error-level
 console-message-wrapper console-error-level
 console-message-wrapper console-error-level
 
 Handling promise
-1 error
+Open Console to view 1 error
 console-message-wrapper console-error-level
 
 Enable verbose filter
-1 error
+Open Console to view 1 error
 console-message-wrapper console-verbose-level
 console-message-wrapper console-error-level
 console-message-wrapper console-verbose-level
