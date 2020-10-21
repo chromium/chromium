@@ -32,6 +32,10 @@ class ASH_EXPORT QuickActionsView : public views::View {
   // Add all the quick actions items to the view.
   void InitQuickActionItems();
 
+  // Helper function to add an item to the view given its controller.
+  QuickActionItem* AddItem(
+      std::unique_ptr<QuickActionControllerBase> controller);
+
   // Controllers of quick actions items. Owned by this.
   std::vector<std::unique_ptr<QuickActionControllerBase>>
       quick_action_controllers_;

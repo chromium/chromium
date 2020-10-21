@@ -32,18 +32,6 @@ SilencePhoneQuickActionController::~SilencePhoneQuickActionController() {
   dnd_controller_->RemoveObserver(this);
 }
 
-void SilencePhoneQuickActionController::AddObserver(Observer* observer) {
-  observer_list_.AddObserver(observer);
-}
-
-void SilencePhoneQuickActionController::RemoveObserver(Observer* observer) {
-  observer_list_.RemoveObserver(observer);
-}
-
-bool SilencePhoneQuickActionController::IsItemEnabled() {
-  return item_->IsToggled();
-}
-
 QuickActionItem* SilencePhoneQuickActionController::CreateItem() {
   DCHECK(!item_);
   item_ = new QuickActionItem(this, IDS_ASH_PHONE_HUB_SILENCE_PHONE_TITLE,
@@ -102,9 +90,6 @@ void SilencePhoneQuickActionController::SetItemState(ActionState state) {
   item_->SetIconTooltip(
       l10n_util::GetStringFUTF16(IDS_ASH_PHONE_HUB_QUICK_ACTIONS_TOGGLE_TOOLTIP,
                                  item_->GetItemLabel(), tooltip_state));
-
-  for (auto& observer : observer_list_)
-    observer.OnSilencePhoneItemStateChanged();
 }
 
 void SilencePhoneQuickActionController::CheckRequestedState() {
