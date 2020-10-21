@@ -67,7 +67,9 @@ struct CORE_EXPORT NGInlineItemResult {
   // is needed in the line breaker.
   scoped_refptr<const ShapeResultView> shape_result;
 
-  // Hyphen character and its |ShapeResult| if this text is hyphenated.
+  // Hyphen character and its |ShapeResult|.
+  // Use |is_hyphenated| to determine whether this item is hyphenated or not.
+  // These fields may be set even when this item is not hyphenated.
   String hyphen_string;
   scoped_refptr<const ShapeResult> hyphen_shape_result;
 
@@ -130,6 +132,10 @@ struct CORE_EXPORT NGInlineItemResult {
   // |should_create_line_box|. It indicates if there are (at the current
   // position) any unpositioned floats.
   bool has_unpositioned_floats = false;
+
+  // True if this is hyphenated. The hyphen is in |hyphen_string| and
+  // |hyphen_shape_result|.
+  bool is_hyphenated = false;
 
   NGInlineItemResult();
   NGInlineItemResult(const NGInlineItem*,

@@ -239,7 +239,9 @@ void NGInlineLayoutAlgorithm::CreateLine(
 
       DCHECK(item.TextType() == NGTextType::kNormal ||
              item.TextType() == NGTextType::kSymbolMarker);
-      if (UNLIKELY(item_result.hyphen_shape_result)) {
+      if (UNLIKELY(item_result.is_hyphenated)) {
+        DCHECK(item_result.hyphen_string);
+        DCHECK(item_result.hyphen_shape_result);
         LayoutUnit hyphen_inline_size = item_result.HyphenInlineSize();
         line_box->AddChild(item, std::move(item_result.shape_result),
                            item_result.TextOffset(), box->text_top,

@@ -134,18 +134,6 @@ LayoutUnit ComputeFloatAncestorInlineEndSize(const NGConstraintSpace& space,
   return inline_end_size;
 }
 
-void CreateHyphen(NGInlineNode node,
-                  WritingMode writing_mode,
-                  const NGInlineItem& item,
-                  NGInlineItemResult* item_result) {
-  DCHECK(item.Style());
-  const ComputedStyle& style = *item.Style();
-  TextDirection direction = style.Direction();
-  item_result->hyphen_string = style.HyphenString();
-  HarfBuzzShaper shaper(item_result->hyphen_string);
-  item_result->hyphen_shape_result = shaper.Shape(&style.GetFont(), direction);
-}
-
 }  // namespace
 
 inline void NGLineBreaker::ClearNeedsLayout(const NGInlineItem& item) {
@@ -318,6 +306,97 @@ void NGLineBreaker::RecalcClonedBoxDecorations() {
   DCHECK_GE(available_width_, cloned_box_decorations_initial_size_);
 }
 
+// Add a hyphen string to the |NGInlineItemResult|.
+//
+// This function changes |NGInlineItemResult::inline_size|, but does not change
+// |position_|
+LayoutUnit NGLineBreaker::AddHyphen(NGInlineItemResults* item_results,
+                                    wtf_size_t index,
+                                    NGInlineItemResult* item_result,
+                                    const NGInlineItem& item) {
+  DCHECK(!HasHyphen());
+  DCHECK_EQ(index,
+            static_cast<wtf_size_t>(item_result - item_results->begin()));
+  DCHECK_LT(index, item_results->size());
+  hyphen_index_ = index;
+
+  if (!item_result->hyphen_string) {
+    DCHECK(!item_result->hyphen_shape_result);
+    DCHECK(item.Style());
+    const ComputedStyle& style = *item.Style();
+    DCHECK(!item_result->hyphen_string);
+    item_result->hyphen_string = style.HyphenString();
+    HarfBuzzShaper shaper(item_result->hyphen_string);
+    item_result->hyphen_shape_result =
+        shaper.Shape(&style.GetFont(), style.Direction());
+    has_any_hyphens_ = true;
+  }
+  DCHECK(item_result->hyphen_string);
+  DCHECK(item_result->hyphen_shape_result);
+  DCHECK(has_any_hyphens_);
+
+  const LayoutUnit hyphen_inline_size = item_result->HyphenInlineSize();
+  item_result->inline_size += hyphen_inline_size;
+  return hyphen_inline_size;
+}
+
+LayoutUnit NGLineBreaker::AddHyphen(NGInlineItemResults* item_results,
+                                    wtf_size_t index) {
+  NGInlineItemResult* item_result = &(*item_results)[index];
+  DCHECK(item_result->item);
+  return AddHyphen(item_results, index, item_result, *item_result->item);
+}
+
+LayoutUnit NGLineBreaker::AddHyphen(NGInlineItemResults* item_results,
+                                    NGInlineItemResult* item_result,
+                                    const NGInlineItem& item) {
+  return AddHyphen(item_results, item_result - item_results->begin(),
+                   item_result, item);
+}
+
+// Remove the hyphen string from the |NGInlineItemResult|.
+//
+// This function changes |NGInlineItemResult::inline_size|, but does not change
+// |position_|
+LayoutUnit NGLineBreaker::RemoveHyphen(NGInlineItemResults* item_results) {
+  DCHECK(HasHyphen());
+  NGInlineItemResult* item_result = &(*item_results)[*hyphen_index_];
+  DCHECK(item_result->hyphen_string);
+  DCHECK(item_result->hyphen_shape_result);
+  const LayoutUnit hyphen_inline_size = item_result->HyphenInlineSize();
+  item_result->inline_size -= hyphen_inline_size;
+  // |hyphen_string| and |hyphen_shape_result| may be reused when rewinded.
+  hyphen_index_.reset();
+  return hyphen_inline_size;
+}
+
+// Add a hyphen string to the last inflow item in |item_results| if it is
+// hyphenated. This can restore the hyphenation state after rewind.
+void NGLineBreaker::RestoreLastHyphen(NGInlineItemResults* item_results) {
+  DCHECK(!hyphen_index_);
+  DCHECK(has_any_hyphens_);
+  for (NGInlineItemResult& item_result : base::Reversed(*item_results)) {
+    DCHECK(item_result.item);
+    const NGInlineItem& item = *item_result.item;
+    if (item_result.hyphen_string) {
+      AddHyphen(item_results, &item_result, item);
+      return;
+    }
+    if (item.Type() == NGInlineItem::kText ||
+        item.Type() == NGInlineItem::kAtomicInline)
+      return;
+  }
+}
+
+// Set the final hyphenation results to |item_results|.
+void NGLineBreaker::FinalizeHyphen(NGInlineItemResults* item_results) {
+  DCHECK(HasHyphen());
+  NGInlineItemResult* item_result = &(*item_results)[*hyphen_index_];
+  DCHECK(item_result->hyphen_string);
+  DCHECK(item_result->hyphen_shape_result);
+  item_result->is_hyphenated = true;
+}
+
 // Initialize internal states for the next line.
 void NGLineBreaker::PrepareNextLine(NGLineInfo* line_info) {
   // NGLineInfo is not supposed to be re-used because it's not much gain and to
@@ -357,6 +436,8 @@ void NGLineBreaker::PrepareNextLine(NGLineInfo* line_info) {
     SetCurrentStyle(line_info->LineStyle());
   ComputeBaseDirection();
   line_info->SetBaseDirection(base_direction_);
+  hyphen_index_.reset();
+  has_any_hyphens_ = false;
 
   // Use 'text-indent' as the initial position. This lets tab positions to align
   // regardless of 'text-indent'.
@@ -375,6 +456,8 @@ void NGLineBreaker::NextLine(
     NGLineInfo* line_info) {
   PrepareNextLine(line_info);
   BreakLine(percentage_resolution_block_size_for_min_max, line_info);
+  if (UNLIKELY(HasHyphen()))
+    FinalizeHyphen(line_info->MutableResults());
   RemoveTrailingCollapsibleSpace(line_info);
 
   const NGInlineItemResults& item_results = line_info->Results();
@@ -420,6 +503,8 @@ void NGLineBreaker::BreakLine(
       // Still check overflow because the last item may have overflowed.
       if (HandleOverflowIfNeeded(line_info) && item_index_ != items.size())
         continue;
+      if (UNLIKELY(HasHyphen()))
+        position_ -= RemoveHyphen(line_info->MutableResults());
       line_info->SetIsLastLine(true);
       return;
     }
@@ -594,6 +679,9 @@ void NGLineBreaker::HandleText(const NGInlineItem& item,
     return;
   }
 
+  if (UNLIKELY(HasHyphen()))
+    position_ -= RemoveHyphen(line_info->MutableResults());
+
   NGInlineItemResult* item_result = AddItem(item, line_info);
   item_result->should_create_line_box = true;
   // Try to commit |pending_end_overhang_| of a prior NGInlineItemResult.
@@ -711,6 +799,11 @@ NGLineBreaker::BreakResult NGLineBreaker::BreakText(
   DCHECK(&item_shape_result);
   item.AssertOffset(item_result->StartOffset());
 
+  // The hyphenation state should be cleared before the entry. This function
+  // may reset it, but this function cannot determine whether it should update
+  // |position_| or not.
+  DCHECK(!HasHyphen());
+
   DCHECK_EQ(item_shape_result.StartIndex(), item.StartOffset());
   DCHECK_EQ(item_shape_result.EndIndex(), item.EndOffset());
   struct ShapeCallbackContext {
@@ -778,27 +871,23 @@ NGLineBreaker::BreakResult NGLineBreaker::BreakText(
     CHECK_GT(result.break_offset, item_result->StartOffset());
 
     inline_size = shape_result->SnappedWidth().ClampNegativeToZero();
+    item_result->inline_size = inline_size;
     if (UNLIKELY(result.is_hyphenated)) {
-      const WritingMode writing_mode = constraint_space_.GetWritingMode();
-      CreateHyphen(node_, writing_mode, item, item_result);
-      DCHECK(item_result->hyphen_shape_result);
-      DCHECK(item_result->hyphen_string);
-      LayoutUnit hyphen_inline_size = item_result->HyphenInlineSize();
+      NGInlineItemResults* item_results = line_info->MutableResults();
+      const LayoutUnit hyphen_inline_size =
+          AddHyphen(item_results, item_result, item);
       // If the hyphen overflows, retry with the reduced available width.
       if (!result.is_overflow && inline_size <= available_width) {
-        LayoutUnit space_for_hyphen =
+        const LayoutUnit space_for_hyphen =
             available_width_with_hyphens - inline_size;
         if (space_for_hyphen >= 0 && hyphen_inline_size > space_for_hyphen) {
           available_width -= hyphen_inline_size;
+          RemoveHyphen(item_results);
           continue;
         }
       }
-      inline_size += hyphen_inline_size;
-    } else if (UNLIKELY(item_result->hyphen_shape_result)) {
-      item_result->hyphen_shape_result = nullptr;
-      item_result->hyphen_string = String();
+      inline_size = item_result->inline_size;
     }
-    item_result->inline_size = inline_size;
     item_result->text_offset.end = result.break_offset;
     item_result->text_offset.AssertNotEmpty();
     item_result->non_hangable_run_end = result.non_hangable_run_end;
@@ -1333,11 +1422,14 @@ void NGLineBreaker::HandleControlItem(const NGInlineItem& item,
       break;
     }
 
+    if (UNLIKELY(HasHyphen()))
+      position_ -= RemoveHyphen(line_info->MutableResults());
     is_after_forced_break_ = true;
     line_info->SetIsLastLine(true);
     state_ = LineBreakState::kDone;
     return;
   }
+
   DCHECK_EQ(item.TextType(), NGTextType::kFlowControl);
   UChar character = Text()[item.StartOffset()];
   switch (character) {
@@ -1462,6 +1554,11 @@ void NGLineBreaker::HandleAtomicInline(
     state_ = LineBreakState::kContinue;
     line_info->SetHasOverflow(false);
   }
+
+  // Last item may have ended with a hyphen, because at that point the line may
+  // have ended there. Remove it because there are more items.
+  if (UNLIKELY(HasHyphen()))
+    position_ -= RemoveHyphen(line_info->MutableResults());
 
   // When we're just computing min/max content sizes, we can skip the full
   // layout and just compute those sizes. On the other hand, for regular
@@ -1813,8 +1910,13 @@ void NGLineBreaker::HandleOverflow(NGLineInfo* line_info) {
   // True if there is at least one item that has `break-word`.
   bool has_break_anywhere_if_overflow = break_anywhere_if_overflow_;
 
-  // Search for a break opportunity that can fit.
+  // Save the hyphenation states before we may make changes.
   NGInlineItemResults* item_results = line_info->MutableResults();
+  base::Optional<wtf_size_t> hyphen_index_before = hyphen_index_;
+  if (UNLIKELY(HasHyphen()))
+    position_ -= RemoveHyphen(item_results);
+
+  // Search for a break opportunity that can fit.
   for (unsigned i = item_results->size(); i;) {
     NGInlineItemResult* item_result = &(*item_results)[--i];
     has_break_anywhere_if_overflow |= item_result->break_anywhere_if_overflow;
@@ -1903,6 +2005,8 @@ void NGLineBreaker::HandleOverflow(NGLineInfo* line_info) {
         }
 
         // Failed to break to fit. Restore to the original state.
+        if (UNLIKELY(HasHyphen()))
+          RemoveHyphen(item_results);
         *item_result = std::move(item_result_before);
         SetCurrentStyle(*was_current_style);
       }
@@ -1925,6 +2029,11 @@ void NGLineBreaker::HandleOverflow(NGLineInfo* line_info) {
 
   // Let this line overflow.
   line_info->SetHasOverflow();
+
+  // Restore the hyphenation states to before the loop if needed.
+  DCHECK(!HasHyphen());
+  if (UNLIKELY(hyphen_index_before))
+    position_ += AddHyphen(item_results, *hyphen_index_before);
 
   // If there was a break opportunity, the overflow should stop there.
   if (break_before) {
@@ -2067,6 +2176,8 @@ void NGLineBreaker::Rewind(unsigned new_end, NGLineInfo* line_info) {
     DCHECK(item_results[new_end].can_break_after);
     ++new_end;
     if (new_end == item_results.size()) {
+      if (UNLIKELY(!hyphen_index_ && has_any_hyphens_))
+        RestoreLastHyphen(&item_results);
       position_ = line_info->ComputeWidth();
       return;
     }
@@ -2085,6 +2196,8 @@ void NGLineBreaker::Rewind(unsigned new_end, NGLineInfo* line_info) {
       // still better than rewinding them.
       new_end = i + 1;
       if (new_end == item_results.size()) {
+        if (UNLIKELY(!hyphen_index_ && has_any_hyphens_))
+          RestoreLastHyphen(&item_results);
         position_ = line_info->ComputeWidth();
         return;
       }
@@ -2128,8 +2241,11 @@ void NGLineBreaker::Rewind(unsigned new_end, NGLineInfo* line_info) {
   item_results.Shrink(new_end);
 
   trailing_collapsible_space_.reset();
+  if (UNLIKELY(hyphen_index_ && *hyphen_index_ >= new_end))
+    hyphen_index_.reset();
+  if (UNLIKELY(!hyphen_index_ && has_any_hyphens_))
+    RestoreLastHyphen(&item_results);
   position_ = line_info->ComputeWidth();
-
   if (UNLIKELY(has_cloned_box_decorations_))
     RecalcClonedBoxDecorations();
 }

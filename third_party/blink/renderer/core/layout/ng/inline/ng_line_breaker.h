@@ -220,6 +220,20 @@ class CORE_EXPORT NGLineBreaker {
 
   void ClearNeedsLayout(const NGInlineItem& item);
 
+  // True if the current line is hyphenated.
+  bool HasHyphen() const { return hyphen_index_.has_value(); }
+  LayoutUnit AddHyphen(NGInlineItemResults* item_results,
+                       wtf_size_t index,
+                       NGInlineItemResult* item_result,
+                       const NGInlineItem& item);
+  LayoutUnit AddHyphen(NGInlineItemResults* item_results, wtf_size_t index);
+  LayoutUnit AddHyphen(NGInlineItemResults* item_results,
+                       NGInlineItemResult* item_result,
+                       const NGInlineItem& item);
+  LayoutUnit RemoveHyphen(NGInlineItemResults* item_results);
+  void RestoreLastHyphen(NGInlineItemResults* item_results);
+  void FinalizeHyphen(NGInlineItemResults* item_results);
+
   // Represents the current offset of the input.
   LineBreakState state_;
   unsigned item_index_ = 0;
@@ -290,6 +304,9 @@ class CORE_EXPORT NGLineBreaker {
   ShapeResultSpacing<String> spacing_;
   bool previous_line_had_forced_break_ = false;
   const Hyphenation* hyphenation_ = nullptr;
+
+  base::Optional<wtf_size_t> hyphen_index_;
+  bool has_any_hyphens_ = false;
 
   // Cache the result of |ComputeTrailingCollapsibleSpace| to avoid shaping
   // multiple times.

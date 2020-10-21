@@ -146,6 +146,9 @@ class PLATFORM_EXPORT ShapingLineBreaker final {
                                                   unsigned range_start,
                                                   unsigned range_end);
 
+  void SetBreakOffset(unsigned break_offset, const String&, Result*);
+  void SetBreakOffset(const BreakOpportunity&, const String&, Result*);
+
   const ShapeCallback shape_callback_;
   void* shape_callback_context_;
   scoped_refptr<const ShapeResult> result_;
