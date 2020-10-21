@@ -1165,6 +1165,11 @@ uint64_t FakeEventLogsUploadManager::GetNumLogsUploaded() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+FakeUserPoliciesManager::FakeUserPoliciesManager()
+    : original_manager_(*GetInstanceStorage()) {
+  *GetInstanceStorage() = this;
+}
+
 FakeUserPoliciesManager::FakeUserPoliciesManager(bool cloud_policies_enabled)
     : original_manager_(*GetInstanceStorage()) {
   *GetInstanceStorage() = this;
