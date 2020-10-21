@@ -96,8 +96,6 @@ OobeSpokenFeedbackTest.*
 OobeTest.*
 OobeZeroTouchInteractiveUITest.*
 PackagedLicenseScreenTest.*
-ParentalHandoffScreenBrowserTest.*
-ParentalHandoffScreenChildBrowserTest.*
 PolicyProvidedCertsOnUserSessionInitTest.*
 PresetPolicyDeviceDisablingTest.*
 PrimaryUserPoliciesProxiedTest.*

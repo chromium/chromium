@@ -137,7 +137,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/packaged_license_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/parental_handoff_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/recommend_apps_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
@@ -683,11 +682,6 @@ std::vector<std::unique_ptr<BaseScreen>> WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnSignInFatalErrorScreenExit,
                           weak_factory_.GetWeakPtr())));
 
-  append(std::make_unique<ParentalHandoffScreen>(
-      oobe_ui->GetView<ParentalHandoffScreenHandler>(),
-      base::BindRepeating(&WizardController::OnParentalHandoffScreenExit,
-                          weak_factory_.GetWeakPtr())));
-
   return result;
 }
 
@@ -881,10 +875,6 @@ void WizardController::ShowEduCoexistenceLoginScreen() {
   SetCurrentScreen(GetScreen(EduCoexistenceLoginScreen::kScreenId));
 }
 
-void WizardController::ShowParentalHandoffScreen() {
-  SetCurrentScreen(GetScreen(ParentalHandoffScreenView::kScreenId));
-}
-
 void WizardController::ShowActiveDirectoryPasswordChangeScreen(
     const std::string& username) {
   ActiveDirectoryPasswordChangeScreen::Get(screen_manager())
@@ -953,13 +943,6 @@ void WizardController::OnEduCoexistenceLoginScreenExit(
   OnScreenExit(EduCoexistenceLoginScreen::kScreenId,
                EduCoexistenceLoginScreen::GetResultString(result));
   ShowSyncConsentScreen();
-}
-
-void WizardController::OnParentalHandoffScreenExit(
-    ParentalHandoffScreen::Result result) {
-  OnScreenExit(ParentalHandoffScreenView::kScreenId,
-               ParentalHandoffScreen::GetResultString(result));
-  ShowMultiDeviceSetupScreen();
 }
 
 void WizardController::SkipToLoginForTesting() {
@@ -1416,7 +1399,7 @@ void WizardController::OnAssistantOptInFlowScreenExit(
     AssistantOptInFlowScreen::Result result) {
   OnScreenExit(AssistantOptInFlowScreenView::kScreenId,
                AssistantOptInFlowScreen::GetResultString(result));
-  ShowParentalHandoffScreen();
+  ShowMultiDeviceSetupScreen();
 }
 
 void WizardController::OnMultiDeviceSetupScreenExit(
@@ -1932,8 +1915,7 @@ void WizardController::SkipPostLoginScreensForTesting() {
       current_screen_id == FingerprintSetupScreenView::kScreenId ||
       current_screen_id == ArcTermsOfServiceScreenView::kScreenId ||
       current_screen_id == DiscoverScreenView::kScreenId ||
-      current_screen_id == MarketingOptInScreenView::kScreenId ||
-      current_screen_id == ParentalHandoffScreenView::kScreenId) {
+      current_screen_id == MarketingOptInScreenView::kScreenId) {
     default_controller()->OnOobeFlowFinished();
   } else {
     LOG(WARNING) << "SkipPostLoginScreensForTesting(): Ignore screen "
