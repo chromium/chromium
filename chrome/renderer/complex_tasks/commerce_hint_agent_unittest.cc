@@ -25,6 +25,7 @@ const char* kAddToCart[] = {
   "add-to-cart: 123",
   "queryString=submit.addToCart",
   "queryString=submit.AddToCart",
+  "&link=Add%20to%20Cart",
 };
 
 const char* kNotAddToCart[] = {

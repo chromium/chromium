@@ -37,6 +37,7 @@ namespace {
 
 constexpr unsigned kLengthLimit = 4096;
 constexpr char kAmazonDomain[] = "amazon.com";
+constexpr char kEbayDomain[] = "ebay.com";
 
 // TODO: dedup with chrome/browser/complex_tasks/commerce_hint_service.cc
 std::string eTLDPlusOne(const GURL& url) {
@@ -152,7 +153,7 @@ const re2::RE2& GetAddToCartPattern() {
   options.set_case_sensitive(false);
   static base::NoDestructor<re2::RE2> instance(
       "(\\b|[^a-z])"
-      "((add[_-]?to[_-]?(cart|basket))|(cart\\/add))"
+      "((add(-|_|(%20))?to(-|_|(%20))?(cart|basket))|(cart\\/add))"
       "(\\b|[^a-z])",
       options);
   return *instance;
@@ -193,12 +194,12 @@ bool IsSameDomainXHR(const std::string& host,
 
 void DetectAddToCart(content::RenderFrame* render_frame,
                      const blink::WebURLRequest& request) {
+  GURL url = request.Url();
   // Only handle XHR POST requests here.
   // Other matches like navigation is handled in DidStartNavigation().
-  if (!request.HttpMethod().Equals("POST"))
+  if (!request.HttpMethod().Equals("POST") && !url.DomainIs(kEbayDomain))
     return;
 
-  GURL url = request.Url();
   if (CommerceHintAgent::IsAddToCart(url.path_piece())) {
     RecordCommerceEvent(CommerceEvent::kAddToCartByURL);
     OnAddToCart(render_frame);

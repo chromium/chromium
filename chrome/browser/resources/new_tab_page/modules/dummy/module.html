@@ -4,7 +4,10 @@
     border-radius: 8px;
     color: var(--cr-primary-text-color);
     height: 146px;
-    margin: 16px 8px;
+    margin-bottom: 16px;
+    margin-inline-end: -8px;
+    margin-inline-start: 16px;
+    margin-top: 16px;
     text-decoration: none;
     width: 114px;
   }
@@ -107,7 +110,7 @@
         <template is="dom-if"
           if="[[shouldShowFallback_(item.imageUrls.length)]]">
           <img id="thumbnail-fallback" 
-          src="chrome://new-tab-page/icons/cart.svg">
+          src="chrome://new-tab-page/icons/cart_fallback.svg">
         </template>
       </div>
     </a>
