@@ -57,7 +57,7 @@ TEST_F(PinnedTabServiceTest, Popup) {
 
   // Create a popup.
   Browser::CreateParams params(Browser::TYPE_POPUP, profile(), true);
-  std::unique_ptr<Browser> popup(CreateBrowserWithTestWindowForParams(&params));
+  std::unique_ptr<Browser> popup(CreateBrowserWithTestWindowForParams(params));
 
   // Close the browser. This should trigger saving the tabs. No need to destroy
   // the browser (this happens automatically in the test destructor).

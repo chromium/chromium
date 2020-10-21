@@ -259,6 +259,6 @@ class TestBrowserWindowOwner : public BrowserListObserver {
 
 // Helper that handle the lifetime of TestBrowserWindow instances.
 std::unique_ptr<Browser> CreateBrowserWithTestWindowForParams(
-    Browser::CreateParams* params);
+    Browser::CreateParams params);
 
 #endif  // CHROME_TEST_BASE_TEST_BROWSER_WINDOW_H_

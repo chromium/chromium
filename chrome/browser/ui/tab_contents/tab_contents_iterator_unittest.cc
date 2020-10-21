@@ -36,14 +36,14 @@ TEST_F(BrowserListTest, TabContentsIteratorVerifyCount) {
   // Create more browsers/windows.
   Browser::CreateParams native_params(profile(), true);
   std::unique_ptr<Browser> browser2(
-      CreateBrowserWithTestWindowForParams(&native_params));
+      CreateBrowserWithTestWindowForParams(native_params));
   // Create browser 3 and 4 on the Ash desktop (the iterator shouldn't see the
   // difference).
   Browser::CreateParams ash_params(profile(), true);
   std::unique_ptr<Browser> browser3(
-      CreateBrowserWithTestWindowForParams(&ash_params));
+      CreateBrowserWithTestWindowForParams(ash_params));
   std::unique_ptr<Browser> browser4(
-      CreateBrowserWithTestWindowForParams(&ash_params));
+      CreateBrowserWithTestWindowForParams(ash_params));
 
   // Sanity checks.
   EXPECT_EQ(4U, BrowserList::GetInstance()->size());
@@ -82,12 +82,12 @@ TEST_F(BrowserListTest, TabContentsIteratorVerifyBrowser) {
   // Create more browsers/windows.
   Browser::CreateParams native_params(profile(), true);
   std::unique_ptr<Browser> browser2(
-      CreateBrowserWithTestWindowForParams(&native_params));
+      CreateBrowserWithTestWindowForParams(native_params));
   // Create browser 3 on the Ash desktop (the iterator shouldn't see the
   // difference).
   Browser::CreateParams ash_params(profile(), true);
   std::unique_ptr<Browser> browser3(
-      CreateBrowserWithTestWindowForParams(&ash_params));
+      CreateBrowserWithTestWindowForParams(ash_params));
 
   // Sanity checks.
   EXPECT_EQ(3U, BrowserList::GetInstance()->size());

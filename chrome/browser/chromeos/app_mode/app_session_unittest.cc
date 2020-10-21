@@ -44,15 +44,15 @@ TEST_F(AppSessionTest, WebKioskTracksBrowserCreation) {
   TestingProfile profile;
 
   Browser::CreateParams params(&profile, true);
-  auto app_browser = CreateBrowserWithTestWindowForParams(&params);
+  auto app_browser = CreateBrowserWithTestWindowForParams(params);
 
   app_session->InitForWebKiosk(app_browser.get());
 
   Browser::CreateParams another_params(&profile, true);
-  auto another_browser = CreateBrowserWithTestWindowForParams(&another_params);
+  auto another_browser = CreateBrowserWithTestWindowForParams(another_params);
 
   base::RunLoop loop;
-  static_cast<TestBrowserWindow*>(another_params.window)
+  static_cast<TestBrowserWindow*>(another_browser->window())
       ->SetCloseCallback(
           base::BindLambdaForTesting([&loop]() { loop.Quit(); }));
   loop.Run();

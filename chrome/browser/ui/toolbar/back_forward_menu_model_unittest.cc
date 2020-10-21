@@ -503,7 +503,7 @@ TEST_F(BackFwdMenuModelTest, EscapeLabel) {
 TEST_F(BackFwdMenuModelTest, FaviconLoadTest) {
   Browser::CreateParams native_params(profile(), true);
   std::unique_ptr<Browser> browser(
-      CreateBrowserWithTestWindowForParams(&native_params));
+      CreateBrowserWithTestWindowForParams(native_params));
   FaviconDelegate favicon_delegate;
 
   BackForwardMenuModel back_model(browser.get(),

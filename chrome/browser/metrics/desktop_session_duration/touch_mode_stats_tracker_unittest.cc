@@ -79,7 +79,7 @@ class TouchModeStatsTrackerTest : public ::testing::Test {
         ui::TouchUiController::Get());
 
     Browser::CreateParams params(profile_, false);
-    browser_ = CreateBrowserWithTestWindowForParams(&params);
+    browser_ = CreateBrowserWithTestWindowForParams(params);
   }
 
   void TearDown() override {

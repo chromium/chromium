@@ -57,7 +57,7 @@ class ProfileActivityMetricsRecorderTest : public testing::Test {
 
   void ActivateBrowser(Profile* profile) {
     Browser::CreateParams browser_params(profile, false);
-    browsers_.push_back(CreateBrowserWithTestWindowForParams(&browser_params));
+    browsers_.push_back(CreateBrowserWithTestWindowForParams(browser_params));
 
     // This triggers the recorder to post a task, wait until that's done.
     BrowserList::SetLastActive(browsers_.back().get());

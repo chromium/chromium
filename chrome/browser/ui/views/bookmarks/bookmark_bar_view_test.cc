@@ -304,7 +304,7 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
     profile_->GetPrefs()->SetBoolean(bookmarks::prefs::kShowBookmarkBar, true);
 
     Browser::CreateParams native_params(profile_.get(), true);
-    browser_ = CreateBrowserWithTestWindowForParams(&native_params);
+    browser_ = CreateBrowserWithTestWindowForParams(native_params);
 
     model_->ClearStore();
 

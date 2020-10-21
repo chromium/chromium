@@ -239,7 +239,7 @@ TEST_F(BrowserCommandControllerTest, AvatarMenuAlwaysEnabledInIncognitoMode) {
   Browser::CreateParams profile_params(original_profile->GetPrimaryOTRProfile(),
                                        true);
   std::unique_ptr<Browser> otr_browser(
-      CreateBrowserWithTestWindowForParams(&profile_params));
+      CreateBrowserWithTestWindowForParams(profile_params));
 
   chrome::BrowserCommandController command_controller(otr_browser.get());
   const CommandUpdater* command_updater = &command_controller;
@@ -489,7 +489,7 @@ TEST_F(BrowserCommandControllerTest, IncognitoModeOnSigninAllowedPrefChange) {
   // Create a new browser based on the off the record profile.
   Browser::CreateParams profile_params(profile1->GetPrimaryOTRProfile(), true);
   std::unique_ptr<Browser> browser2(
-      CreateBrowserWithTestWindowForParams(&profile_params));
+      CreateBrowserWithTestWindowForParams(profile_params));
 
   chrome::BrowserCommandController command_controller(browser2.get());
   const CommandUpdater* command_updater = &command_controller;

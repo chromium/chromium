@@ -14,11 +14,12 @@
 // Helpers --------------------------------------------------------------------
 
 std::unique_ptr<Browser> CreateBrowserWithTestWindowForParams(
-    Browser::CreateParams* params) {
+    Browser::CreateParams params) {
+  DCHECK(!params.window);
   TestBrowserWindow* window = new TestBrowserWindow;
   new TestBrowserWindowOwner(window);
-  params->window = window;
-  return std::make_unique<Browser>(*params);
+  params.window = window;
+  return std::make_unique<Browser>(params);
 }
 
 // TestBrowserWindow::TestLocationBar -----------------------------------------

@@ -203,7 +203,7 @@ TEST_F(ProfileMenuControllerTest, SetActiveAndRemove) {
   // Create a browser and "show" it.
   Browser::CreateParams profile2_params(profile2, true);
   std::unique_ptr<Browser> p2_browser(
-      CreateBrowserWithTestWindowForParams(&profile2_params));
+      CreateBrowserWithTestWindowForParams(profile2_params));
   [controller() activeBrowserChangedTo:p2_browser.get()];
   VerifyProfileNamedIsActive(@"Profile 2", __LINE__);
 
@@ -215,7 +215,7 @@ TEST_F(ProfileMenuControllerTest, SetActiveAndRemove) {
   // Open a new browser and make sure it takes effect.
   Browser::CreateParams profile3_params(profile3, true);
   std::unique_ptr<Browser> p3_browser(
-      CreateBrowserWithTestWindowForParams(&profile3_params));
+      CreateBrowserWithTestWindowForParams(profile3_params));
   [controller() activeBrowserChangedTo:p3_browser.get()];
   VerifyProfileNamedIsActive(@"Profile 3", __LINE__);
 

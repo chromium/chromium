@@ -38,15 +38,14 @@ class CrOSActionRecorderTabTrackerTest
     CrOSActionRecorder::GetCrosActionRecorder()->Init(profile());
 
     // Initialize browser.
-    params_ = std::make_unique<Browser::CreateParams>(profile(), true);
-    browser_ = CreateBrowserWithTestWindowForParams(params_.get());
+    browser_ = CreateBrowserWithTestWindowForParams(
+        Browser::CreateParams(profile(), true));
     tab_strip_model_ = browser_->tab_strip_model();
   }
 
   void TearDown() override {
     tab_strip_model_->CloseAllTabs();
     browser_.reset();
-    params_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -75,7 +74,6 @@ class CrOSActionRecorderTabTrackerTest
 
   TabActivitySimulator tab_activity_simulator_;
   TabStripModel* tab_strip_model_;
-  std::unique_ptr<Browser::CreateParams> params_;
   std::unique_ptr<Browser> browser_;
 };
 
