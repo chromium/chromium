@@ -3032,11 +3032,14 @@
   <message desc="Describes gesture that simulates pressing the enter key. No associated UI with this string which is spoken using text-to-speech." name="IDS_CHROMEVOX_ENTER_GESTURE_DESCRIPTION" is_accessibility_with_no_ui="true">
     Enter
   </message>
-  <message desc="Describes gesture that movees to the previous important section on the screen (e.g. the Launcher, Status Tray, etc). No associated UI with this string which is spoken using text-to-speech." name="IDS_CHROMEVOX_PREVIOUS_PANE_GESTURE_DESCRIPTION" is_accessibility_with_no_ui="true">
+  <message desc="Describes gesture that moves to the previous important section on the screen (e.g. the Launcher, Status Tray, etc). No associated UI with this string which is spoken using text-to-speech." name="IDS_CHROMEVOX_PREVIOUS_PANE_GESTURE_DESCRIPTION" is_accessibility_with_no_ui="true">
     Move to previous section. Examples include the Status Tray and Launcher.
   </message>
-  <message desc="Describes gesture that movees to the next important section on the screen (e.g. the Launcher, Status Tray, etc). No associated UI with this string which is spoken using text-to-speech." name="IDS_CHROMEVOX_NEXT_PANE_GESTURE_DESCRIPTION" is_accessibility_with_no_ui="true">
+  <message desc="Describes gesture that moves to the next important section on the screen (e.g. the Launcher, Status Tray, etc). No associated UI with this string which is spoken using text-to-speech." name="IDS_CHROMEVOX_NEXT_PANE_GESTURE_DESCRIPTION" is_accessibility_with_no_ui="true">
     Move to next section. Examples include the Status Tray and Launcher.
+  </message>
+  <message desc="Describes an element with the ARIA role mark. We use 'marked content' since it's more descriptive than 'mark'." name="IDS_CHROMEVOX_ROLE_MARK" is_accessibility_with_no_ui="true">
+    Marked content
   </message>
 
 </grit-part>

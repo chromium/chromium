@@ -1585,3 +1585,44 @@ TEST_F('ChromeVoxEditingTest', 'ContentEditableEvents', function() {
     assertEquals('ab', contentEditable.value);
   });
 });
+
+TEST_F('ChromeVoxEditingTest', 'MarkedContent', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <div contenteditable role="textbox">
+      <p>Start</p>
+      <span>This is </span><span role="mark">my</span><span> text.</span>
+      <br>
+      <span>This is </span><span role="mark"
+          aria-roledescription="Comment">your</span><span> text.</span>
+      <br>
+      <span>This is </span><span role="suggestion"><span
+          role="insertion">their</span></span><span> text.</span>
+      <br>
+      <span>This is </span><span role="suggestion"><span
+          role="deletion">everyone's</span></span><span> text.</span>
+    </div>
+  `;
+  this.runWithLoadedTree(site, function(root) {
+    const input = root.find({role: RoleType.TEXT_FIELD});
+    this.listenOnce(input, 'focus', function() {
+      mockFeedback.call(this.press(KeyCode.DOWN))
+          .expectSpeech(
+              'This is ', 'my', 'Marked content', ' text.',
+              'Exited Marked content.')
+          .call(this.press(KeyCode.DOWN))
+          .expectSpeech(
+              'This is ', 'your', 'Comment', ' text.', 'Exited Comment.')
+          .call(this.press(KeyCode.DOWN))
+          .expectSpeech(
+              'This is ', 'their', 'Insertion', 'Suggestion', ' text.',
+              'Exited Suggestion.', 'Exited Insertion.')
+          .call(this.press(KeyCode.DOWN))
+          .expectSpeech(
+              'This is ', `everyone's`, 'Deletion', 'Suggestion', ' text.',
+              'Exited Suggestion.', 'Exited Deletion.')
+          .replay();
+    });
+    input.focus();
+  });
+});

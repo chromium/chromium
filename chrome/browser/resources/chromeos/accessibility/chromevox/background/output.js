@@ -2292,6 +2292,7 @@ Output.ROLE_INFO_ = {
       {msgId: 'role_listitem', earconId: 'LIST_ITEM', inherits: 'abstractItem'},
   log: {msgId: 'role_log', inherits: 'abstractNameFromContents'},
   main: {msgId: 'role_main', inherits: 'abstractContainer'},
+  mark: {msgId: 'role_mark', inherits: 'abstractContainer'},
   marquee: {msgId: 'role_marquee', inherits: 'abstractNameFromContents'},
   math: {msgId: 'role_math', inherits: 'abstractContainer'},
   menu: {msgId: 'role_menu', outputContextFirst: true, ignoreAncestry: true},
@@ -2411,6 +2412,12 @@ Output.PRESSED_STATE_MAP = {
 /**
  * Rules specifying format of AutomationNodes for output.
  * @type {!Object<Object<Object<string>>>}
+ * Please see below for more information on properties.
+ * speak: The speech rule for when ChromeVox range lands exactly on the node.
+ * braille: The braille rule for when ChromeVox range lands exactly on the node.
+ * enter: The rule for when ChromeVox range enters the node's subtree.
+ *    Can contain speak and braille properties.
+ * leave: The rule for when ChromeVox range exits the node's subtree.
  */
 Output.RULES = {
   navigate: {

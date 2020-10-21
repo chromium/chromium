@@ -36,6 +36,14 @@ Msgs = class {
       return Msgs.applySubstitutions_(message, opt_subs);
     }
     message = chrome.i18n.getMessage(Msgs.NAMESPACE_ + messageId, opt_subs);
+    if ((message === undefined || message === '') &&
+        messageId.endsWith('_brl')) {
+      // Braille string entries are optional. If we couldn't find a braille-
+      // specific string, try again without the '_brl' suffix.
+      message = chrome.i18n.getMessage(
+          Msgs.NAMESPACE_ + messageId.replace('_brl', ''), opt_subs);
+    }
+
     if (message == undefined || message == '') {
       throw new Error('Invalid ChromeVox message id: ' + messageId);
     }

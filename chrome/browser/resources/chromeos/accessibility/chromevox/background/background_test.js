@@ -3255,3 +3255,56 @@ TEST_F('ChromeVoxBackgroundTest', 'AriaLeaves', function() {
         .replay();
   });
 });
+
+TEST_F('ChromeVoxBackgroundTest', 'MarkedContent', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <p>Start</p>
+    <span>This is </span><span role="mark">my</span><span> text.</span>
+    <br>
+    <span>This is </span><span role="mark"
+        aria-roledescription="Comment">your</span><span> text.</span>
+    <br>
+    <span>This is </span><span role="suggestion"><span
+        role="insertion">their</span></span><span> text.</span>
+    <br>
+    <span>This is </span><span role="suggestion"><span
+        role="deletion">everyone's</span></span><span> text.</span>
+  `;
+  this.runWithLoadedTree(site, function(rootNode) {
+    mockFeedback.expectSpeech('Start')
+        .call(doCmd('nextObject'))
+        .expectSpeech('This is ')
+        .call(doCmd('nextObject'))
+        .expectSpeech('my', 'Marked content')
+        .expectBraille('my Marked content')
+        .call(doCmd('nextObject'))
+        .expectSpeech(' text.', 'Exited Marked content.')
+        .expectBraille(' text. Exited Marked content.')
+        .call(doCmd('nextObject'))
+        .expectSpeech('This is ')
+        .call(doCmd('nextObject'))
+        .expectSpeech('your', 'Comment')
+        .expectBraille('your Comment')
+        .call(doCmd('nextObject'))
+        .expectSpeech(' text.', 'Exited Comment.')
+        .expectBraille(' text. Exited Comment.')
+        .call(doCmd('nextObject'))
+        .expectSpeech('This is ')
+        .call(doCmd('nextObject'))
+        .expectSpeech('their', 'Insertion', 'Suggestion')
+        .expectBraille('their Insertion Suggestion')
+        .call(doCmd('nextObject'))
+        .expectSpeech(' text.', 'Exited Suggestion.', 'Exited Insertion.')
+        .expectBraille(' text. Exited Suggestion. Exited Insertion.')
+        .call(doCmd('nextObject'))
+        .expectSpeech('This is ')
+        .call(doCmd('nextObject'))
+        .expectSpeech(`everyone's`, 'Deletion', 'Suggestion')
+        .expectBraille(`everyone's Deletion Suggestion`)
+        .call(doCmd('nextObject'))
+        .expectSpeech(' text.', 'Exited Suggestion.', 'Exited Deletion.')
+        .expectBraille(' text. Exited Suggestion. Exited Deletion.')
+        .replay();
+  });
+});
