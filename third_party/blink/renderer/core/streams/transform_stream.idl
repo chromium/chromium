@@ -9,6 +9,6 @@
     [CallWith=ScriptState, RaisesException] constructor(optional any transformer,
                 optional any writableStrategy,
                 optional any readableStrategy);
-    readonly attribute ReadableStream readable;
-    readonly attribute WritableStream writable;
+    [NotEnumerable] readonly attribute ReadableStream readable;
+    [NotEnumerable] readonly attribute WritableStream writable;
 };

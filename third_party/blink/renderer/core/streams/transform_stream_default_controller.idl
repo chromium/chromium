@@ -6,9 +6,9 @@
 
 // https://streams.spec.whatwg.org/#rs-default-controller-class-definition
 interface TransformStreamDefaultController {
-    readonly attribute double? desiredSize;
-    [CallWith=ScriptState, RaisesException] void enqueue(
+    [NotEnumerable] readonly attribute double? desiredSize;
+    [CallWith=ScriptState, NotEnumerable, RaisesException] void enqueue(
         optional any chunk);
-    [CallWith=ScriptState] void error(optional any reason);
-    [CallWith=ScriptState] void terminate();
+    [CallWith=ScriptState, NotEnumerable] void error(optional any reason);
+    [CallWith=ScriptState, NotEnumerable] void terminate();
 };
