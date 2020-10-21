@@ -9,6 +9,7 @@ java_prebuilt("google_truth_java") {
 
   # Uses the difflib package, which doesn't exist in third_party.
   enable_bytecode_checks = false
+  enable_desugar = false
   supports_android = true
 
   # requires_android because of dependency on guava_android.

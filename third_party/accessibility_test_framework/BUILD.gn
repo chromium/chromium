@@ -10,6 +10,7 @@ android_java_prebuilt("accessibility_test_framework_java") {
   # Uses wrong version of proto (not protolite).
   # Disable these to avoid build warnings.
   enable_bytecode_checks = false
+  enable_desugar = false
 
   jar_path = "lib/accessibility-test-framework.jar"
   deps = [
