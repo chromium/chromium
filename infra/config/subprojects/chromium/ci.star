@@ -996,6 +996,7 @@ ci.android_fyi_builder(
         category = "tester|weblayer",
         short_name = "10",
     ),
+    triggered_by = ["android-weblayer-x86-fyi-rel"],
 )
 
 ci.android_fyi_builder(
