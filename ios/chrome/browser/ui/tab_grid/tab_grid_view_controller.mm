@@ -467,6 +467,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
           0, [self hiddenTopToolbarYTranslation]);
       [self gridViewControllerForPage:self.currentPage].gridView.transform =
           CGAffineTransformMakeTranslation(0, kThumbStripSlideInHeight);
+      self.topToolbar.alpha = 0;
       break;
     case ViewRevealState::Peeked:
       self.foregroundView.alpha = 0;
@@ -474,6 +475,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
           0, [self hiddenTopToolbarYTranslation]);
       [self gridViewControllerForPage:self.currentPage].gridView.transform =
           CGAffineTransformIdentity;
+      self.topToolbar.alpha = 0;
       break;
     case ViewRevealState::Revealed:
       self.foregroundView.alpha = 0;
@@ -482,6 +484,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
           CGAffineTransformMakeTranslation(
               0, self.topToolbar.intrinsicContentSize.height);
       [self contentWillAppearAnimated:YES];
+      self.topToolbar.alpha = 1;
       break;
   }
 }
