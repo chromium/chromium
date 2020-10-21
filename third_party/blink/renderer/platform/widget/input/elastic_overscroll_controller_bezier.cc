@@ -55,17 +55,27 @@ base::TimeDelta CalculateBounceBackDuration(double bounce_back_distance) {
 }
 }  // namespace
 
+// Scale one of the control points of the Cubic Bezier curve based on the
+// initial_velocity (which is expressed in terms of pixels / ms).
+gfx::CubicBezier InitialVelocityBasedBezierCurve(const double initial_velocity,
+                                                 const double x1,
+                                                 const double y1,
+                                                 const double x2,
+                                                 const double y2) {
+  const double velocity = std::abs(initial_velocity);
+  double x = x1, y = y1;
+  if (x1 * velocity < y1) {
+    y = x1 * velocity;
+  } else {
+    x = y1 / velocity;
+  }
+
+  return gfx::CubicBezier(x, y, x2, y2);
+}
+
 ElasticOverscrollControllerBezier::ElasticOverscrollControllerBezier(
     cc::ScrollElasticityHelper* helper)
-    : ElasticOverscrollController(helper),
-      bounce_forwards_curve_(gfx::CubicBezier(kBounceForwardsX1,
-                                              kBounceForwardsY1,
-                                              kBounceForwardsX2,
-                                              kBounceForwardsY2)),
-      bounce_backwards_curve_(gfx::CubicBezier(kBounceBackwardsX1,
-                                               kBounceBackwardsY1,
-                                               kBounceBackwardsX2,
-                                               kBounceBackwardsY2)) {}
+    : ElasticOverscrollController(helper) {}
 
 // Returns the maximum amount to be overscrolled.
 gfx::Vector2dF ElasticOverscrollControllerBezier::OverscrollBoundary(
@@ -84,6 +94,8 @@ void ElasticOverscrollControllerBezier::DidEnterMomentumAnimatedState() {
       fabs(scroll_velocity().y()) > kIgnoreForwardBounceVelocityThreshold
           ? scroll_velocity().y() / 1000.f
           : 0.f);
+
+  residual_velocity_ = velocity;
 
   gfx::Vector2dF bounce_forwards_delta(gfx::Vector2dF(
       sqrt(std::abs(velocity.x())), sqrt(std::abs(velocity.y()))));
@@ -124,6 +136,7 @@ void ElasticOverscrollControllerBezier::DidEnterMomentumAnimatedState() {
 }
 
 double ElasticOverscrollControllerBezier::StretchAmountForForwardBounce(
+    const gfx::CubicBezier bounce_forwards_curve,
     const base::TimeDelta& delta,
     const base::TimeDelta& bounce_forwards_duration,
     const double velocity,
@@ -135,7 +148,7 @@ double ElasticOverscrollControllerBezier::StretchAmountForForwardBounce(
     if (delta < bounce_forwards_duration) {
       double curve_progress =
           delta.InMillisecondsF() / bounce_forwards_duration.InMillisecondsF();
-      double progress = bounce_forwards_curve_.Solve(curve_progress);
+      double progress = bounce_forwards_curve.Solve(curve_progress);
       return initial_stretch * (1 - progress) +
              bounce_forwards_distance * progress;
     }
@@ -144,13 +157,14 @@ double ElasticOverscrollControllerBezier::StretchAmountForForwardBounce(
 }
 
 double ElasticOverscrollControllerBezier::StretchAmountForBackwardBounce(
+    const gfx::CubicBezier bounce_backwards_curve,
     const base::TimeDelta& delta,
     const base::TimeDelta& bounce_backwards_duration,
     const double bounce_forwards_distance) const {
   if (delta < bounce_backwards_duration) {
     double curve_progress =
         delta.InMillisecondsF() / bounce_backwards_duration.InMillisecondsF();
-    double progress = bounce_backwards_curve_.Solve(curve_progress);
+    double progress = bounce_backwards_curve.Solve(curve_progress);
     return bounce_forwards_distance * (1 - progress);
   }
   return 0.f;
@@ -163,15 +177,23 @@ gfx::Vector2d ElasticOverscrollControllerBezier::StretchAmountForTimeDelta(
   // if the velocity isn't 0, a bounce forwards animation will need to be
   // played.
   base::TimeDelta time_delta = delta;
+  const gfx::CubicBezier bounce_forwards_curve_x =
+      InitialVelocityBasedBezierCurve(residual_velocity_.x(), kBounceForwardsX1,
+                                      kBounceForwardsY1, kBounceForwardsX2,
+                                      kBounceForwardsY2);
+  const gfx::CubicBezier bounce_forwards_curve_y =
+      InitialVelocityBasedBezierCurve(residual_velocity_.y(), kBounceForwardsX1,
+                                      kBounceForwardsY1, kBounceForwardsX2,
+                                      kBounceForwardsY2);
   const gfx::Vector2d forward_animation(gfx::ToRoundedVector2d(gfx::Vector2dF(
-      StretchAmountForForwardBounce(time_delta, bounce_forwards_duration_x_,
-                                    scroll_velocity().x(),
-                                    momentum_animation_initial_stretch_.x(),
-                                    bounce_forwards_distance_.x()),
-      StretchAmountForForwardBounce(time_delta, bounce_forwards_duration_y_,
-                                    scroll_velocity().y(),
-                                    momentum_animation_initial_stretch_.y(),
-                                    bounce_forwards_distance_.y()))));
+      StretchAmountForForwardBounce(
+          bounce_forwards_curve_x, time_delta, bounce_forwards_duration_x_,
+          scroll_velocity().x(), momentum_animation_initial_stretch_.x(),
+          bounce_forwards_distance_.x()),
+      StretchAmountForForwardBounce(
+          bounce_forwards_curve_y, time_delta, bounce_forwards_duration_y_,
+          scroll_velocity().y(), momentum_animation_initial_stretch_.y(),
+          bounce_forwards_distance_.y()))));
 
   if (!forward_animation.IsZero())
     return forward_animation;
@@ -180,10 +202,20 @@ gfx::Vector2d ElasticOverscrollControllerBezier::StretchAmountForTimeDelta(
   time_delta -= bounce_forwards_duration_x_;
   time_delta -= bounce_forwards_duration_y_;
 
+  const gfx::CubicBezier bounce_backwards_curve_x =
+      InitialVelocityBasedBezierCurve(residual_velocity_.x(),
+                                      kBounceBackwardsX1, kBounceBackwardsY1,
+                                      kBounceBackwardsX2, kBounceBackwardsY2);
+  const gfx::CubicBezier bounce_backwards_curve_y =
+      InitialVelocityBasedBezierCurve(residual_velocity_.y(),
+                                      kBounceBackwardsX1, kBounceBackwardsY1,
+                                      kBounceBackwardsX2, kBounceBackwardsY2);
   return gfx::ToRoundedVector2d(gfx::Vector2dF(
-      StretchAmountForBackwardBounce(time_delta, bounce_backwards_duration_x_,
+      StretchAmountForBackwardBounce(bounce_backwards_curve_x, time_delta,
+                                     bounce_backwards_duration_x_,
                                      bounce_forwards_distance_.x()),
-      StretchAmountForBackwardBounce(time_delta, bounce_backwards_duration_y_,
+      StretchAmountForBackwardBounce(bounce_backwards_curve_y, time_delta,
+                                     bounce_backwards_duration_y_,
                                      bounce_forwards_distance_.y())));
 }
 

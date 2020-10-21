@@ -34,12 +34,14 @@ class PLATFORM_EXPORT ElasticOverscrollControllerBezier
       const gfx::Vector2dF& delta) const override;
   gfx::Vector2dF OverscrollBoundary(const gfx::Size& scroller_bounds) const;
   double StretchAmountForForwardBounce(
+      const gfx::CubicBezier bounce_forwards_curve,
       const base::TimeDelta& delta,
       const base::TimeDelta& bounce_forwards_duration,
       const double velocity,
       const double initial_stretch,
       const double bounce_forwards_distance) const;
   double StretchAmountForBackwardBounce(
+      const gfx::CubicBezier bounce_backwards_curve,
       const base::TimeDelta& delta,
       const base::TimeDelta& bounce_backwards_duration,
       const double bounce_forwards_distance) const;
@@ -50,12 +52,15 @@ class PLATFORM_EXPORT ElasticOverscrollControllerBezier
   FRIEND_TEST_ALL_PREFIXES(ElasticOverscrollControllerBezierTest,
                            VerifyForwardAnimationIsNotPlayed);
 
-  const gfx::CubicBezier bounce_forwards_curve_;
+  // This is the velocity (in px/ms) of the fling at the moment the scroller
+  // reaches its bounds. This is useful to tweak the Cubic Bezier curve for the
+  // bounce animation that is about to get played.
+  gfx::Vector2dF residual_velocity_;
+
   base::TimeDelta bounce_forwards_duration_x_;
   base::TimeDelta bounce_forwards_duration_y_;
   gfx::Vector2dF bounce_forwards_distance_;
 
-  const gfx::CubicBezier bounce_backwards_curve_;
   base::TimeDelta bounce_backwards_duration_x_;
   base::TimeDelta bounce_backwards_duration_y_;
   DISALLOW_COPY_AND_ASSIGN(ElasticOverscrollControllerBezier);
