@@ -142,6 +142,7 @@
 <translation id="2494837236724268445">古吉拉特语键盘（注音）</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">英语（美国）键盘</translation>
+<translation id="2534155362429831547">删除了 <ph name="NUMBER_OF_ITEMS" /> 项</translation>
 <translation id="2542049655219295786">Google 表格</translation>
 <translation id="2547921442987553570">添加到“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="255937426064304553">美国英语（国际）</translation>
@@ -267,7 +268,6 @@
 <translation id="383652340667548381">塞尔维亚语</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3855472144336161447">德语Neo 2</translation>
-<translation id="3856075812838139784">只读</translation>
 <translation id="3858678421048828670">意大利语键盘</translation>
 <translation id="386548886866354912">使用“<ph name="EXTENSION_NAME" />”打包</translation>
 <translation id="3866249974567520381">说明</translation>
@@ -596,7 +596,6 @@
 <translation id="7417705661718309329">Google 地图</translation>
 <translation id="7419631653042041064">加泰罗尼亚语键盘</translation>
 <translation id="7434823369735508263">英语（英国）德沃夏克键盘</translation>
-<translation id="7447678886297481665">此文件夹中的文件都是只读文件，所以不支持某些活动。</translation>
 <translation id="7460898608667578234">乌克兰语</translation>
 <translation id="7474889694310679759">英语（加拿大）键盘</translation>
 <translation id="7489215562877293245">找到了 <ph name="FILE_COUNT" />

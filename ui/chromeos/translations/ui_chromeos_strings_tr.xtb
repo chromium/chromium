@@ -142,6 +142,7 @@
 <translation id="2494837236724268445">Guceratça klavye (Fonetik)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">ABD klavye</translation>
+<translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> öğe silindi</translation>
 <translation id="2542049655219295786">Google tablosu</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> uzantısına ekle</translation>
 <translation id="255937426064304553">ABD uluslararası</translation>
@@ -267,7 +268,6 @@
 <translation id="383652340667548381">Sırpça</translation>
 <translation id="385051799172605136">Geri</translation>
 <translation id="3855472144336161447">Alman Neo 2</translation>
-<translation id="3856075812838139784">Salt okunur</translation>
 <translation id="3858678421048828670">İtalyanca klavye</translation>
 <translation id="386548886866354912"><ph name="EXTENSION_NAME" /> uzantısıyla paketle</translation>
 <translation id="3866249974567520381">Açıklama</translation>
@@ -601,7 +601,6 @@
 <translation id="7417705661718309329">Google harita</translation>
 <translation id="7419631653042041064">Katalanca klavye</translation>
 <translation id="7434823369735508263">İngiltere Dvorak klavye</translation>
-<translation id="7447678886297481665">Bu klasördeki dosyalar salt okunurdur. Bazı işlemler desteklenmez.</translation>
 <translation id="7460898608667578234">Ukraynaca</translation>
 <translation id="7474889694310679759">İngilizce (Kanada) klavye</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> bulundu

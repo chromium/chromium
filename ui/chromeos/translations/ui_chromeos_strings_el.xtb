@@ -144,6 +144,7 @@
 <translation id="2494837236724268445">Πληκτρολόγιο Γκουγιαράτι (Φωνητικό)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">Πληκτρολόγιο με αγγλικούς χαρακτήρες (ΗΠΑ)</translation>
+<translation id="2534155362429831547">Διαγράφηκαν <ph name="NUMBER_OF_ITEMS" /> στοιχεία</translation>
 <translation id="2542049655219295786">Πίνακας Google</translation>
 <translation id="2547921442987553570">Προσθήκη στην επέκταση <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Διεθνές ΗΠΑ</translation>
@@ -275,7 +276,6 @@
 </translation>
 <translation id="385051799172605136">Πίσω</translation>
 <translation id="3855472144336161447">Γερμανικά Neo 2</translation>
-<translation id="3856075812838139784">Μόνο για ανάγνωση</translation>
 <translation id="3858678421048828670">Πληκτρολόγιο με ιταλικούς χαρακτήρες</translation>
 <translation id="386548886866354912">Συμπίεση με <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Περιγραφή</translation>
@@ -615,7 +615,6 @@
 <translation id="7417705661718309329">Χάρτης Google</translation>
 <translation id="7419631653042041064">Πληκτρολόγιο με καταλανικούς χαρακτήρες</translation>
 <translation id="7434823369735508263">Πληκτρολόγιο Dvorak ΗΒ</translation>
-<translation id="7447678886297481665">Τα αρχεία σε αυτόν τον φάκελο είναι μόνο για ανάγνωση. Δεν υποστηρίζονται ορισμένες δραστηριότητες.</translation>
 <translation id="7460898608667578234">Ουκρανικά
 </translation>
 <translation id="7474889694310679759">Πληκτρολόγιο με αγγλικούς χαρακτήρες (Καναδά)</translation>

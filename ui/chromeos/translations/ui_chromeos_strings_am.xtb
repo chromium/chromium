@@ -142,6 +142,7 @@
 <translation id="2494837236724268445">የጉጃራቲ ቁልፍ ሰሌዳ (ፎነቲክ)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">የአሜሪካ ቁልፍ ሰሌዳ</translation>
+<translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> ንጥሎች ተሰርዟል</translation>
 <translation id="2542049655219295786">Google ሠንጠረዥ</translation>
 <translation id="2547921442987553570">ወደ <ph name="EXTENSION_NAME" /> አክል</translation>
 <translation id="255937426064304553">አሜሪካ ዓለምአቀፍ</translation>
@@ -267,7 +268,6 @@
 <translation id="383652340667548381">ሰርቢኛ</translation>
 <translation id="385051799172605136">ተመለስ</translation>
 <translation id="3855472144336161447">ጀርመንኛ ኒዮ 2</translation>
-<translation id="3856075812838139784">ተነባቢ ብቻ</translation>
 <translation id="3858678421048828670">የጣሊያንኛ ቁልፍ ሰሌዳ</translation>
 <translation id="386548886866354912">በ<ph name="EXTENSION_NAME" /> ጋር ጠቅልል</translation>
 <translation id="3866249974567520381">ማብራሪያ</translation>
@@ -600,7 +600,6 @@
 <translation id="7417705661718309329">Google ካርታ</translation>
 <translation id="7419631653042041064">የካታላን ቁልፍ ሰሌዳ</translation>
 <translation id="7434823369735508263">የዩናይትድ ኪንግደም ድቮራክ ቁልፍ ሰሌዳ</translation>
-<translation id="7447678886297481665">በዚህ አቃፊ ውስጥ ያሉ ፋይሎች ተነባቢ ብቻ ናቸው። አንዳንድ እንቅስቃሴዎች አይደገፉም።</translation>
 <translation id="7460898608667578234">ዩክረኒኛ</translation>
 <translation id="7474889694310679759">የካናዳ እንግሊዝኛ ቁልፍ ሰሌዳ</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> ተገኝቷል

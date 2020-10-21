@@ -142,6 +142,7 @@
 <translation id="2494837236724268445">Tastatură gujarati (Fonetică)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">Tastatură S.U.A.</translation>
+<translation id="2534155362429831547">Elemente șterse: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2542049655219295786">Tabel Google</translation>
 <translation id="2547921442987553570">Adaugă la <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">S.U.A. internațională</translation>
@@ -267,7 +268,6 @@
 <translation id="383652340667548381">Sârbă</translation>
 <translation id="385051799172605136">Înapoi</translation>
 <translation id="3855472144336161447">Germană Neo 2</translation>
-<translation id="3856075812838139784">Numai în citire</translation>
 <translation id="3858678421048828670">Tastatură italiană</translation>
 <translation id="386548886866354912">Arhivează cu <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Descriere</translation>
@@ -601,7 +601,6 @@
 <translation id="7417705661718309329">Hartă Google</translation>
 <translation id="7419631653042041064">Tastatură catalană</translation>
 <translation id="7434823369735508263">Tastatură UK Dvorak</translation>
-<translation id="7447678886297481665">Fișierele din acest dosar sunt numai în citire. Unele activități nu sunt acceptate.</translation>
 <translation id="7460898608667578234">Ucraineană</translation>
 <translation id="7474889694310679759">Tastatură engleză canadiană</translation>
 <translation id="7489215562877293245">S-au găsit <ph name="FILE_COUNT" />

@@ -142,6 +142,7 @@
 <translation id="2494837236724268445">Teclado gujarati (fonético)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">Teclado americano</translation>
+<translation id="2534155362429831547">Itens excluídos: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2542049655219295786">Tabela do Google</translation>
 <translation id="2547921442987553570">Adicionar à extensão <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Internacional: Estados Unidos</translation>
@@ -267,7 +268,6 @@
 <translation id="383652340667548381">Sérvio</translation>
 <translation id="385051799172605136">Voltar</translation>
 <translation id="3855472144336161447">Alemão (Neo 2)</translation>
-<translation id="3856075812838139784">Somente leitura</translation>
 <translation id="3858678421048828670">Teclado italiano</translation>
 <translation id="386548886866354912">Compactar com <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Descrição</translation>
@@ -601,7 +601,6 @@
 <translation id="7417705661718309329">Mapa do Google</translation>
 <translation id="7419631653042041064">Teclado catalão</translation>
 <translation id="7434823369735508263">Teclado Dvorak do Reino Unido</translation>
-<translation id="7447678886297481665">Os arquivos dessa pasta são somente leitura. Algumas atividades estão indisponíveis.</translation>
 <translation id="7460898608667578234">Ucraniano</translation>
 <translation id="7474889694310679759">Teclado canadense (inglês)</translation>
 <translation id="7489215562877293245">Total de arquivos encontrados: <ph name="FILE_COUNT" />

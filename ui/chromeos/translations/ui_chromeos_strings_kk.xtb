@@ -142,6 +142,7 @@
 <translation id="2494837236724268445">Гуджарати пернетақтасы (Фонетикалық)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">АҚШ пернетақтасы</translation>
+<translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> элемент жойылды.</translation>
 <translation id="2542049655219295786">Google кестесі</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> кеңейтіміне қосу</translation>
 <translation id="255937426064304553">АҚШ халықаралық</translation>
@@ -267,7 +268,6 @@
 <translation id="383652340667548381">серб</translation>
 <translation id="385051799172605136">Артқа</translation>
 <translation id="3855472144336161447">Неміс (Neo 2)</translation>
-<translation id="3856075812838139784">Тек оқуға арналған</translation>
 <translation id="3858678421048828670">Итальян пернетақтасы</translation>
 <translation id="386548886866354912"><ph name="EXTENSION_NAME" /> кеңейтімді пакет</translation>
 <translation id="3866249974567520381">Сипаттама</translation>
@@ -600,7 +600,6 @@
 <translation id="7417705661718309329">Google картасы</translation>
 <translation id="7419631653042041064">Каталан пернетақтасы</translation>
 <translation id="7434823369735508263">Ұлыбритания Дворак пернетақтасы</translation>
-<translation id="7447678886297481665">Бұл қалталардағы файлдарды тек оқуға болады. Кейбір әрекеттерге қолдау көрсетілмейді.</translation>
 <translation id="7460898608667578234">украин</translation>
 <translation id="7474889694310679759">Ағылшын пернетақтасы (Канадалық)</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> файл табылды

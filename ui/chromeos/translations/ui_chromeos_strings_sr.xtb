@@ -142,6 +142,7 @@
 <translation id="2494837236724268445">Гуџарати тастатура (фонетска)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">Језик тастатуре: енглески (САД)</translation>
+<translation id="2534155362429831547">Избрисаних ставки: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2542049655219295786">Google табела</translation>
 <translation id="2547921442987553570">Додај у <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">међународна америчка</translation>
@@ -267,7 +268,6 @@
 <translation id="383652340667548381">српски</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3855472144336161447">немачка Neo 2</translation>
-<translation id="3856075812838139784">Само за читање</translation>
 <translation id="3858678421048828670">Језик тастатуре: италијански</translation>
 <translation id="386548886866354912">Спакуј помоћу додатка <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Опис</translation>
@@ -601,7 +601,6 @@
 <translation id="7417705661718309329">Google мапа</translation>
 <translation id="7419631653042041064">Језик тастатуре: каталонски</translation>
 <translation id="7434823369735508263">Језик тастатуре: енглески (УК дворак)</translation>
-<translation id="7447678886297481665">Датотеке у овом директоријуму су само за читање. Неке активности нису подржане.</translation>
 <translation id="7460898608667578234">украјински</translation>
 <translation id="7474889694310679759">Језик тастатуре: енглески (Канада)</translation>
 <translation id="7489215562877293245">Пронађене су датотеке (<ph name="FILE_COUNT" />)

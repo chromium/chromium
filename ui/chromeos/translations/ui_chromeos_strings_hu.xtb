@@ -142,6 +142,7 @@
 <translation id="2494837236724268445">Gudzsaráti billentyűzet (fonetikus)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">USA billentyűzet</translation>
+<translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> elem törölve</translation>
 <translation id="2542049655219295786">Google-tábla</translation>
 <translation id="2547921442987553570">Hozzáadás a következőhöz: <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">USA nemzetközi</translation>
@@ -267,7 +268,6 @@
 <translation id="383652340667548381">szerb</translation>
 <translation id="385051799172605136">Vissza</translation>
 <translation id="3855472144336161447">német Neo 2</translation>
-<translation id="3856075812838139784">Csak olvasható</translation>
 <translation id="3858678421048828670">Olasz billentyűzet</translation>
 <translation id="386548886866354912">Csomagolás a következővel: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Leírás</translation>
@@ -601,7 +601,6 @@
 <translation id="7417705661718309329">Google-térkép</translation>
 <translation id="7419631653042041064">Katalán billentyűzet</translation>
 <translation id="7434823369735508263">Brit Dvorak billentyűzet</translation>
-<translation id="7447678886297481665">Az ebben a mappában található fájlok írásvédettek. Bizonyos műveletek nem hajthatók végre velük.</translation>
 <translation id="7460898608667578234">ukrán</translation>
 <translation id="7474889694310679759">Kanadai angol billentyűzet</translation>
 <translation id="7489215562877293245">A következőket találtuk: <ph name="FILE_COUNT" />

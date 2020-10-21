@@ -2923,7 +2923,7 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
 
       Se il criterio viene impostato su False, il port forwarding nei container Crostini viene disattivato.</translation>
 <translation id="538108065117008131">Consenti a <ph name="PRODUCT_FRAME_NAME" /> di gestire i seguenti tipi di contenuto.</translation>
-<translation id="5383436189211119400">Se il criterio "DeviceArcDataSnapshotHours" viene impostato, viene attivato il meccanismo di creazione di istantanee dei dati ARC. L'aggiornamento delle istantanee dei dati ARC può essere avviato automaticamente durante gli intervalli di tempo definiti. Quando inizia un intervallo, l'aggiornamento delle istantanee dei dati ARC è necessario e non ci sono utenti che hanno eseguito l'accesso, la procedura di aggiornamento delle istantanee dei dati ARC viene avviata senza informare l'utente. Se è attiva la sessione utente, nell'interfaccia utente viene mostrata la notifica, che deve essere accettata per poter riavviare un dispositivo e avviare la procedura di aggiornamento delle istantanee dei dati ARC. Nota: durante la procedura di aggiornamento delle istantanee dei dati ARC non è possibile usare il dispositivo.</translation>
+<translation id="5383436189211119400">Se il criterio "DeviceArcDataSnapshotHours" viene impostato, viene attivato il meccanismo di creazione di istantanee dei dati ARC. L'aggiornamento delle istantanee dei dati ARC può essere avviato automaticamente durante gli intervalli di tempo definiti. Quando inizia un intervallo, l'aggiornamento delle istantanee dei dati ARC è necessario e non ci sono utenti che hanno eseguito l'accesso, la procedura di aggiornamento delle istantanee dei dati ARC viene avviata senza informare l'utente. Se è attiva la sessione utente, nell'interfaccia utente viene mostrata la notifica, che deve essere accettata per poter riavviare il dispositivo e avviare la procedura di aggiornamento delle istantanee dei dati ARC. Nota: durante la procedura di aggiornamento delle istantanee dei dati ARC non è possibile usare il dispositivo.</translation>
 <translation id="538768040137709073">Consente di attivare la funzione Appunti condivisi che permette agli utenti di inviare testi tra computer desktop Chrome e un dispositivo Android quando la sincronizzazione è attivata e l'utente ha effettuato l'accesso.
 
           Se il criterio è impostato su true, la funzionalità di invio testi tra dispositivi è attivata per gli utenti Chrome.
@@ -4479,7 +4479,7 @@ Se l'impostazione viene disattivata, questa funzione non sarà disponibile.</tra
 
       Questo criterio è deprecato. Usa il criterio <ph name="PRINTERS_BULK_BLOCKLIST" />.
       </translation>
-<translation id="7358744897221281073">Se questa impostazione viene attivata, gli utenti che hanno già attivato Phone Hub potranno continuare su Chrome OS attività quali la visualizzazione delle pagine web del loro telefono.
+<translation id="7358744897221281073">Se questa impostazione viene attivata, gli utenti che hanno già attivato Phone Hub potranno continuare attività su Chrome OS, come ad esempio la visualizzazione di pagine web che avevano iniziato a consultare sul telefono.
 
       Se viene disattivata, gli utenti non potranno usare questa funzionalità. Gli utenti non potranno usare questa funzionalità anche se viene disattivato il criterio PhoneHubAllowed.
 

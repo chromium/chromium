@@ -19,15 +19,15 @@
           ‏&gt;
           <ph name="PROXIES_TITLE" />
           ובדוק שהתצורה שלך מוגדרת לאפשרות "ללא שרת proxy‏" או "ישיר".</translation>
-<translation id="6341737370356890233">‏עבור אל
+<translation id="6341737370356890233">‏יש לעבור אל
         תפריט Chrome‏ &gt;
         <ph name="SETTINGS_TITLE" />
         &gt;
         <ph name="ADVANCED_TITLE" />
-        ובטל את הבחירה באפשרות '<ph name="NO_PREFETCH_DESCRIPTION" />'.
+        ולבטל את הבחירה באפשרות '<ph name="NO_PREFETCH_DESCRIPTION" />'.
         אם פעולה זו אינה פותרת את הבעיה, מומלץ לבחור שוב באפשרות זו
         לקבלת ביצועים משופרים.</translation>
-<translation id="6855094794438142393">‏עבור אל
+<translation id="6855094794438142393">‏יש לעבור אל
           תפריט Chrome ‏&gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
@@ -36,7 +36,7 @@
           <ph name="PROXIES_TITLE" />
           &gt;
           הגדרות LAN
-          ובטל את הבחירה באפשרות "השתמש בשרת עבור רשת LAN".</translation>
+          ולבטל את הבחירה באפשרות "שימוש בשרת עבור רשת LAN".</translation>
 <translation id="8187289872471304532">‏עבור אל
           'יישומים' &gt; 'העדפות מערכת' &gt; 'רשת' &gt; 'מתקדם' &gt; שרתי Proxy'
           ובטל את הבחירה בשרתי proxy שנבחרו.</translation>

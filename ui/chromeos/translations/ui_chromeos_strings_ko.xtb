@@ -142,6 +142,7 @@
 <translation id="2494837236724268445">구자라트어 키보드(음역)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">영어(미국식) 키보드</translation>
+<translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" />개 항목 삭제함</translation>
 <translation id="2542049655219295786">Google 표</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" />에 추가</translation>
 <translation id="255937426064304553">영어(미국 국제)</translation>
@@ -267,7 +268,6 @@
 <translation id="383652340667548381">세르비아어</translation>
 <translation id="385051799172605136">뒤로</translation>
 <translation id="3855472144336161447">독일어 Neo 2</translation>
-<translation id="3856075812838139784">읽기 전용</translation>
 <translation id="3858678421048828670">이탈리아어 키보드</translation>
 <translation id="386548886866354912"><ph name="EXTENSION_NAME" />(으)로 보관처리</translation>
 <translation id="3866249974567520381">설명</translation>
@@ -601,7 +601,6 @@
 <translation id="7417705661718309329">Google 지도</translation>
 <translation id="7419631653042041064">카탈로니아어 키보드</translation>
 <translation id="7434823369735508263">영어(영국식) 드보락 키보드</translation>
-<translation id="7447678886297481665">이 폴더의 파일은 읽기 전용입니다. 일부 활동이 지원되지 않습니다.</translation>
 <translation id="7460898608667578234">우크라이나어</translation>
 <translation id="7474889694310679759">캐나다 영어 키보드</translation>
 <translation id="7489215562877293245">파일 <ph name="FILE_COUNT" />개 있음

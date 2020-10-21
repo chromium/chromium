@@ -142,6 +142,7 @@
 <translation id="2494837236724268445">గుజరాతీ కీబోర్డ్ (ఫొనెటిక్)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">US కీబోర్డ్</translation>
+<translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> అంశాలు తొలగించబడ్డాయి</translation>
 <translation id="2542049655219295786">Google పట్టిక</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" />కి జోడించండి</translation>
 <translation id="255937426064304553">యుఎస్ అంతర్జాతీయం</translation>
@@ -267,7 +268,6 @@
 <translation id="383652340667548381">సెర్బియన్</translation>
 <translation id="385051799172605136">వెనుకకు</translation>
 <translation id="3855472144336161447">జర్మన్ నియో 2</translation>
-<translation id="3856075812838139784">చదవడానికి మాత్రమే</translation>
 <translation id="3858678421048828670">ఇటాలియన్ కీబోర్డ్</translation>
 <translation id="386548886866354912"><ph name="EXTENSION_NAME" /> గల ప్యాక్</translation>
 <translation id="3866249974567520381">వివరణ</translation>
@@ -601,7 +601,6 @@
 <translation id="7417705661718309329">Google మ్యాప్</translation>
 <translation id="7419631653042041064">కెటలాన్ కీబోర్డ్</translation>
 <translation id="7434823369735508263">UK డ్వొరక్ కీబోర్డ్</translation>
-<translation id="7447678886297481665">ఈ ఫోల్డర్‌లో ఉన్న ఫైల్‌లు చదవడానికి మాత్రమే. కొన్ని యాక్టివిటీలకు మద్దతు లేదు.</translation>
 <translation id="7460898608667578234">ఉక్రెయినియన్</translation>
 <translation id="7474889694310679759">కెనెడియన్ ఇంగ్లీష్ కీబోర్డ్</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> కనుగొనబడ్డాయి

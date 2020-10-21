@@ -142,6 +142,7 @@
 <translation id="2494837236724268445">ຄີບອດພາສາກູຈາຣາຕີ (ການອອກສຽງ​)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">ຄີບອດສະ​ຫະ​ລັດ</translation>
+<translation id="2534155362429831547">ລຶບ <ph name="NUMBER_OF_ITEMS" /> ລາຍ​ການ​​ແລ້ວ</translation>
 <translation id="2542049655219295786">ຕາ​ຕະ​ລາງ​ Google</translation>
 <translation id="2547921442987553570">ເພີ່ມໃສ່ <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">US ສາ​ກົນ</translation>
@@ -267,7 +268,6 @@
 <translation id="383652340667548381">ພາສາເຊີ​ເບຍ</translation>
 <translation id="385051799172605136">ກັບ​ຄືນ​</translation>
 <translation id="3855472144336161447">ພາສາເຢຍລະັມນ Neo 2</translation>
-<translation id="3856075812838139784">ອ່ານເທົ່ານັ້ນ</translation>
 <translation id="3858678421048828670">ຄີບອດພາສາອີຕາລີ</translation>
 <translation id="386548886866354912">ເກັບຮວມກັນກັບ <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">ລາຍ​ລະ​ອຽດ</translation>
@@ -600,7 +600,6 @@
 <translation id="7417705661718309329">ແຜນ​ທີ່ Google</translation>
 <translation id="7419631653042041064">ຄີບອດພາສາກາຕາລັນ</translation>
 <translation id="7434823369735508263">ຄີບອດດີວໍຣັກສະ​ຫະ​ລາດຊະອານາຈັກ</translation>
-<translation id="7447678886297481665">ໄຟລ໌ໃນໂຟນເດີນີ້ເປັນແບບອ່ານເທົ່ານັ້ນ. ບໍ່ຮອງຮັບບາງກິດຈະກຳ.</translation>
 <translation id="7460898608667578234">ພາສາຢູ​ເຄຣນ</translation>
 <translation id="7474889694310679759">ຄີບອດພາສາອັງກິດການາດາ</translation>
 <translation id="7489215562877293245">ພົບ <ph name="FILE_COUNT" />

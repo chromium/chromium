@@ -142,6 +142,7 @@
 <translation id="2494837236724268445">গুজৰাটী কীব’ৰ্ড (উচ্চাৰণগত)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">ইউএছ কীব'র্ড</translation>
+<translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> টা সমল মচা হ’ল</translation>
 <translation id="2542049655219295786">Google তালিকা</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" />ত যোগ কৰক</translation>
 <translation id="255937426064304553">US আন্তৰ্জাতিক</translation>
@@ -266,7 +267,6 @@
 <translation id="383652340667548381">ছার্বিয়ান</translation>
 <translation id="385051799172605136">উভতি যাওক</translation>
 <translation id="3855472144336161447">জার্মান NEO 2 কীব’র্ড</translation>
-<translation id="3856075812838139784">কেৱল পঢ়িব পৰা</translation>
 <translation id="3858678421048828670">ইটালীয়ান কীব’র্ড</translation>
 <translation id="386548886866354912"><ph name="EXTENSION_NAME" /> জৰিয়তে পেক কৰক</translation>
 <translation id="3866249974567520381">বিৱৰণ</translation>
@@ -595,7 +595,6 @@
 <translation id="7417705661718309329">Google মেপ</translation>
 <translation id="7419631653042041064">কেটালান কীব’ৰ্ড</translation>
 <translation id="7434823369735508263">গ্ৰে‘ট ব্ৰিটেইন ড‘ভৰাক কীব’ৰ্ড</translation>
-<translation id="7447678886297481665">এই ফ’ল্ডাৰটোৰ ফাইলসমূহ কেৱল পঢ়িব পৰা। কিছুমান কার্যকলাপ সমৰ্থিত নহয়।</translation>
 <translation id="7460898608667578234">ইউক্ৰেনিয়ান</translation>
 <translation id="7474889694310679759">কানাডিয়ান ইংৰাজী কীব'ৰ্ড</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> বিচাৰি পোৱা গৈছে

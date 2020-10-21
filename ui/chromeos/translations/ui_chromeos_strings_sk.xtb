@@ -142,6 +142,7 @@
 <translation id="2494837236724268445">Gudžarátska klávesnica (fonetický prepis)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">americká klávesnica</translation>
+<translation id="2534155362429831547">Odstránené položky: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2542049655219295786">Tabuľka Google</translation>
 <translation id="2547921442987553570">Pridať do rozšírenia <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Americká klávesnica s medzinárodným rozložením klávesov</translation>
@@ -267,7 +268,6 @@
 <translation id="383652340667548381">Srbčina</translation>
 <translation id="385051799172605136">Späť</translation>
 <translation id="3855472144336161447">Nemecká klávesnica Neo 2</translation>
-<translation id="3856075812838139784">Iba na čítanie</translation>
 <translation id="3858678421048828670">talianska klávesnica</translation>
 <translation id="386548886866354912">Komprimovať pomocou rozšírenia <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Popis</translation>
@@ -601,7 +601,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="7417705661718309329">Mapa Google</translation>
 <translation id="7419631653042041064">katalánska klávesnica</translation>
 <translation id="7434823369735508263">americká klávesnica s rozložením klávesov dvorak</translation>
-<translation id="7447678886297481665">Súbory v tomto priečinku sú iba na čítanie. Niektoré aktivity nie sú podporované.</translation>
 <translation id="7460898608667578234">Ukrajinčina</translation>
 <translation id="7474889694310679759">kanadskoanglická klávesnica</translation>
 <translation id="7489215562877293245">Počet nájdených: <ph name="FILE_COUNT" />

@@ -142,6 +142,7 @@
 <translation id="2494837236724268445">Gudžarátská klávesnice (fonetická)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">Americká klávesnice</translation>
+<translation id="2534155362429831547">Byly smazány položky (celkem <ph name="NUMBER_OF_ITEMS" />)</translation>
 <translation id="2542049655219295786">Tabulka Google</translation>
 <translation id="2547921442987553570">Přidat do rozšíření <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Americká klávesnice (mezinárodní)</translation>
@@ -267,7 +268,6 @@
 <translation id="383652340667548381">srbština</translation>
 <translation id="385051799172605136">Zpět</translation>
 <translation id="3855472144336161447">Německá klávesnice Neo 2</translation>
-<translation id="3856075812838139784">Pouze ke čtení</translation>
 <translation id="3858678421048828670">Italská klávesnice</translation>
 <translation id="386548886866354912">Zabalit pomocí rozšíření <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Popis</translation>
@@ -600,7 +600,6 @@
 <translation id="7417705661718309329">Mapa Google</translation>
 <translation id="7419631653042041064">Katalánská klávesnice</translation>
 <translation id="7434823369735508263">Britská klávesnice s rozložením Dvorak</translation>
-<translation id="7447678886297481665">Soubory v této složce jsou pouze ke čtení. Některé aktivity nejsou podporovány.</translation>
 <translation id="7460898608667578234">ukrajinština</translation>
 <translation id="7474889694310679759">Kanadská anglická klávesnice</translation>
 <translation id="7489215562877293245">Nalezeno: <ph name="FILE_COUNT" />.

@@ -142,6 +142,7 @@
 <translation id="2494837236724268445">古吉拉特文鍵盤 (拼音)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">美式鍵盤</translation>
+<translation id="2534155362429831547">已刪除 <ph name="NUMBER_OF_ITEMS" /> 個項目</translation>
 <translation id="2542049655219295786">Google 表格</translation>
 <translation id="2547921442987553570">新增至「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="255937426064304553">美國國際鍵盤</translation>
@@ -267,7 +268,6 @@
 <translation id="383652340667548381">塞爾維亞語</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3855472144336161447">德文 Neo 2 鍵盤</translation>
-<translation id="3856075812838139784">唯讀</translation>
 <translation id="3858678421048828670">義大利文鍵盤</translation>
 <translation id="386548886866354912">使用「<ph name="EXTENSION_NAME" />」壓縮</translation>
 <translation id="3866249974567520381">描述</translation>
@@ -601,7 +601,6 @@
 <translation id="7417705661718309329">Google 地圖</translation>
 <translation id="7419631653042041064">卡達隆尼亞文鍵盤</translation>
 <translation id="7434823369735508263">英式 Dvorak 鍵盤</translation>
-<translation id="7447678886297481665">此資料夾中的檔案是唯讀檔案，因此不支援部份活動。</translation>
 <translation id="7460898608667578234">烏克蘭文</translation>
 <translation id="7474889694310679759">加拿大英文鍵盤</translation>
 <translation id="7489215562877293245">已找到 <ph name="FILE_COUNT" />

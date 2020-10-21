@@ -142,6 +142,7 @@
 <translation id="2494837236724268445">გუჯარათის კლავიატურა (ფონეტიკური)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">შეერთებული შტატების კლავიატურა</translation>
+<translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> ერთეული წაიშალა</translation>
 <translation id="2542049655219295786">Google ცხრილი</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" />-ში დამატება</translation>
 <translation id="255937426064304553">აშშ საერთაშორისო</translation>
@@ -267,7 +268,6 @@
 <translation id="383652340667548381">სერბული</translation>
 <translation id="385051799172605136">უკან</translation>
 <translation id="3855472144336161447">გერმანული Neo 2</translation>
-<translation id="3856075812838139784">მხოლოდ კითხვადი</translation>
 <translation id="3858678421048828670">იტალიური კლავიატურა</translation>
 <translation id="386548886866354912"><ph name="EXTENSION_NAME" />-ით შეფუთვა</translation>
 <translation id="3866249974567520381">აღწერა</translation>
@@ -600,7 +600,6 @@
 <translation id="7417705661718309329">Google რუკა</translation>
 <translation id="7419631653042041064">კატალანური კლავიატურა</translation>
 <translation id="7434823369735508263">დიდი ბრიტანეთის Dvorak კლავიატურა</translation>
-<translation id="7447678886297481665">ამ საქაღალდეში არსებული ფაილები მხოლოდ კითხვადია. ზოგიერთი მოქმედება მხარდაუჭერელია.</translation>
 <translation id="7460898608667578234">უკრაინული</translation>
 <translation id="7474889694310679759">კანადურ ინგლისური კლავიატურა</translation>
 <translation id="7489215562877293245">მოიძებნა <ph name="FILE_COUNT" />

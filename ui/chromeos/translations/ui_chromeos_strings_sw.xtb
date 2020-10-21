@@ -142,6 +142,7 @@
 <translation id="2494837236724268445">Kibodi ya Gujarati (Fonetiki)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">Kibodi ya Kimarekani</translation>
+<translation id="2534155362429831547">Umefuta vipengee <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2542049655219295786">Jedwali la Google</translation>
 <translation id="2547921442987553570">Ongeza kwenye <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Kiingereza cha Marekani cha Kimataifa</translation>
@@ -267,7 +268,6 @@
 <translation id="383652340667548381">Kiserbia</translation>
 <translation id="385051799172605136">Rudi nyuma</translation>
 <translation id="3855472144336161447">Kijerumani Neo 2</translation>
-<translation id="3856075812838139784">Soma tu</translation>
 <translation id="3858678421048828670">Kibodi ya Kiitaliano</translation>
 <translation id="386548886866354912">Fungasha kwa <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Maelezo</translation>
@@ -601,7 +601,6 @@
 <translation id="7417705661718309329">Ramani ya Google</translation>
 <translation id="7419631653042041064">Kibodi ya Kikatalani</translation>
 <translation id="7434823369735508263">Kibodi ya Dvorak, Uingereza</translation>
-<translation id="7447678886297481665">Faili kwenye folda hizi ni za kusoma tu. Baadhi ya shughuli hazitumiki.</translation>
 <translation id="7460898608667578234">Kiukrania</translation>
 <translation id="7474889694310679759">Kibodi ya Kiingereza cha Kanada</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> imepatikana 

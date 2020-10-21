@@ -142,6 +142,7 @@
 <translation id="2494837236724268445">گجراتی کی بورڈ (فونیٹک)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">امریکی کی بورڈ</translation>
+<translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> آئٹمز حذف ہو گئے</translation>
 <translation id="2542049655219295786">‏Google ٹیبل</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> میں شامل کریں</translation>
 <translation id="255937426064304553">امریکی بین الاقوامی</translation>
@@ -267,7 +268,6 @@
 <translation id="383652340667548381">صربی</translation>
 <translation id="385051799172605136">پیچھے</translation>
 <translation id="3855472144336161447">جرمن نیو 2</translation>
-<translation id="3856075812838139784">صرف پڑھنے کیلئے</translation>
 <translation id="3858678421048828670">اطالوی کی بورڈ</translation>
 <translation id="386548886866354912"><ph name="EXTENSION_NAME" /> کے ساتھ پیک کریں</translation>
 <translation id="3866249974567520381">تفصیل</translation>
@@ -600,7 +600,6 @@
 <translation id="7417705661718309329">‏Google نقشہ</translation>
 <translation id="7419631653042041064">کیٹلان کی بورڈ</translation>
 <translation id="7434823369735508263">‏UK ڈوراک کی بورڈ</translation>
-<translation id="7447678886297481665">اس فولڈر میں موجود فائلز صرف پڑھنے کے لیے ہیں۔ کچھ سرگرمیاں تعاون یافتہ نہیں ہیں۔</translation>
 <translation id="7460898608667578234">يُوکرينی</translation>
 <translation id="7474889694310679759">کینیڈین انگریزی کی بورڈ</translation>
 <translation id="7489215562877293245">‏<ph name="FILE_COUNT" /> ملیں
