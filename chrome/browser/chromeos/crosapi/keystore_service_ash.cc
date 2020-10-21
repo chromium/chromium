@@ -31,8 +31,8 @@ void KeystoreServiceAsh::ChallengeAttestationOnlyKeystore(
     ChallengeAttestationOnlyKeystoreCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!crosapi::mojom::IsKnownEnumValue(type)) {
-    mojom::ChallengeAttestationOnlyKeystoreResultPtr result_ptr =
-        mojom::ChallengeAttestationOnlyKeystoreResult::New();
+    crosapi::mojom::KeystoreStringResultPtr result_ptr =
+        mojom::KeystoreStringResult::New();
     result_ptr->set_error_message("unsupported keystore type");
     std::move(callback).Run(std::move(result_ptr));
     return;
@@ -110,8 +110,8 @@ void KeystoreServiceAsh::DidChallengeAttestationOnlyKeystore(
     void* challenge_key_ptr,
     const chromeos::attestation::TpmChallengeKeyResult& result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  mojom::ChallengeAttestationOnlyKeystoreResultPtr result_ptr =
-      mojom::ChallengeAttestationOnlyKeystoreResult::New();
+  crosapi::mojom::KeystoreStringResultPtr result_ptr =
+      mojom::KeystoreStringResult::New();
   if (result.IsSuccess()) {
     result_ptr->set_challenge_response(result.challenge_response);
   } else {

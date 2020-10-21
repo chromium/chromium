@@ -106,7 +106,7 @@ EnterprisePlatformKeysChallengeMachineKeyFunction::Run() {
 
 void EnterprisePlatformKeysChallengeMachineKeyFunction::
     OnChallengeAttestationOnlyKeystore(ResultPtr result) {
-  using Result = crosapi::mojom::ChallengeAttestationOnlyKeystoreResult;
+  using Result = crosapi::mojom::KeystoreStringResult;
   switch (result->which()) {
     case Result::Tag::ERROR_MESSAGE:
       Respond(Error(result->get_error_message()));
@@ -148,7 +148,7 @@ EnterprisePlatformKeysChallengeUserKeyFunction::Run() {
 
 void EnterprisePlatformKeysChallengeUserKeyFunction::
     OnChallengeAttestationOnlyKeystore(ResultPtr result) {
-  using Result = crosapi::mojom::ChallengeAttestationOnlyKeystoreResult;
+  using Result = crosapi::mojom::KeystoreStringResult;
   switch (result->which()) {
     case Result::Tag::ERROR_MESSAGE:
       Respond(Error(result->get_error_message()));

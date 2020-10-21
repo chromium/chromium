@@ -68,7 +68,7 @@ class EnterprisePlatformKeysChallengeMachineKeyFunction
   ~EnterprisePlatformKeysChallengeMachineKeyFunction() override = default;
   ResponseAction Run() override;
 
-  using ResultPtr = crosapi::mojom::ChallengeAttestationOnlyKeystoreResultPtr;
+  using ResultPtr = crosapi::mojom::KeystoreStringResultPtr;
   void OnChallengeAttestationOnlyKeystore(ResultPtr result);
   DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.challengeMachineKey",
                              ENTERPRISE_PLATFORMKEYS_CHALLENGEMACHINEKEY)
@@ -80,7 +80,7 @@ class EnterprisePlatformKeysChallengeUserKeyFunction
   ~EnterprisePlatformKeysChallengeUserKeyFunction() override = default;
   ResponseAction Run() override;
 
-  using ResultPtr = crosapi::mojom::ChallengeAttestationOnlyKeystoreResultPtr;
+  using ResultPtr = crosapi::mojom::KeystoreStringResultPtr;
   void OnChallengeAttestationOnlyKeystore(ResultPtr result);
   DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.challengeUserKey",
                              ENTERPRISE_PLATFORMKEYS_CHALLENGEUSERKEY)

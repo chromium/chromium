@@ -33,7 +33,7 @@ class KeystoreServiceLacrosBrowserTest : public InProcessBrowserTest {
 // Tests that providing an incorrectly formatted user keystore challenge returns
 // failure.
 IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, WrongFormattingUser) {
-  crosapi::mojom::ChallengeAttestationOnlyKeystoreResultPtr result;
+  crosapi::mojom::KeystoreStringResultPtr result;
   std::string challenge = "asdf";
   crosapi::mojom::KeystoreServiceAsyncWaiter async_waiter(
       keystore_service_remote().get());
