@@ -17,6 +17,11 @@
 // should *not* request other services from their factories via the relevant
 // Context object (e.g., Profile), as the association between that Context
 // object and its keyed services is dropped after the shutdown phase.
+// Shutdown of KeyedServices is generally initiated by the embedder's
+// destruction of Profile (or analogous object).
+// CAVEAT: Not all embedders destroy the Profiles (or Profile analogs) as part
+// of embedder shutdown, so it is not guaranteed that the keyed service shutdown
+// process will run at shutdown of a given embedder.
 class KEYED_SERVICE_EXPORT KeyedService {
  public:
   KeyedService();
