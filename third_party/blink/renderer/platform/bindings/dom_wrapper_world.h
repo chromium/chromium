@@ -150,6 +150,7 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
            world_type_ == WorldType::kInspectorIsolated;
   }
 
+  WorldType GetWorldType() const { return world_type_; }
   int GetWorldId() const { return world_id_; }
   DOMDataStore& DomDataStore() const { return *dom_data_store_; }
 
