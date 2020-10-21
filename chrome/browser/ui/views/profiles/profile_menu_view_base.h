@@ -180,6 +180,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   void Init() final;
   void WindowClosing() override;
   void OnThemeChanged() override;
+  ax::mojom::Role GetAccessibleWindowRole() override;
 
   // content::WebContentsDelegate:
   bool HandleContextMenu(content::RenderFrameHost* render_frame_host,

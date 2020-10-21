@@ -536,7 +536,7 @@ class ProfileMenuClickTest : public ProfileMenuClickTestBase,
     // about the histogram recorded.
     ASSERT_TRUE(profile_menu_view());
     profile_menu_view()->set_perform_menu_actions_for_testing(false);
-    AdvanceFocus(/*count=*/GetParam());
+    AdvanceFocus(/*count=*/GetParam() + 1);
     ASSERT_TRUE(GetFocusedItem());
     Click(GetFocusedItem());
     LOG(INFO) << "Clicked item at index " << GetParam();
