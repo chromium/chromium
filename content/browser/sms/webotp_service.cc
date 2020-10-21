@@ -69,8 +69,10 @@ WebOTPService::WebOTPService(
 }
 
 WebOTPService::~WebOTPService() {
-  if (callback_)
-    CompleteRequest(SmsStatus::kUnhandledRequest);
+  // Resolve any pending callback and invoke clean up to unsubscribe this
+  // service from fetcher.
+  CompleteRequest(SmsStatus::kUnhandledRequest);
+
   DCHECK(!callback_);
 }
 

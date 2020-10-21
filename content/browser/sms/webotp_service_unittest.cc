@@ -371,6 +371,10 @@ TEST_F(WebOTPServiceTest, CancelForNoDelegate) {
   loop.Run();
 
   ASSERT_FALSE(fetcher.HasSubscribers());
+
+  // Explicitly delete contents to ensure the invariant that the fetcher
+  // lifetime is longer than service.
+  DeleteContents();
 }
 
 TEST_F(WebOTPServiceTest, Abort) {
