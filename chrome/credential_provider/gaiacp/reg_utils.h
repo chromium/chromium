@@ -65,6 +65,17 @@ DWORD GetGlobalFlagOrDefault(const base::string16& reg_key,
 // Sets global DWORD flag.
 HRESULT SetGlobalFlag(const base::string16& name, DWORD value);
 
+// Sets the client flag under |kRegUpdaterClientsAppPath|.
+HRESULT SetUpdaterClientsAppPathFlag(const base::string16&, DWORD value);
+
+// Gets client DWORD flag from |kRegUpdaterClientsAppPath|.
+HRESULT GetUpdaterClientsAppPathFlag(const base::string16& name, DWORD* value);
+
+// Gets client DWORD flag under |kRegUpdaterClientsAppPath|.  Returns
+// |default_value| if no value is set or there was an error fetching the flag.
+DWORD GetUpdaterClientsAppPathFlagOrDefault(const base::string16& reg_key,
+                                            const DWORD& default_value);
+
 // Sets global base::string16 flag.
 HRESULT SetGlobalFlag(const base::string16& name, const base::string16& value);
 

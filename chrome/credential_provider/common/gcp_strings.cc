@@ -57,6 +57,23 @@ const wchar_t kRegUsageStatsName[] = L"usagestats";
 const wchar_t kRegUpdateTracksName[] = L"ap";
 const wchar_t kRegVersionName[] = L"pv";
 
+const wchar_t kRegUninstall[] =
+    L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall";
+const wchar_t kRegUninstallProduct[] = L"GCPW";
+const wchar_t kRegUninstallString[] = L"UninstallString";
+const wchar_t kRegUninstallDisplayName[] = L"DisplayName";
+const wchar_t kRegInstallLocation[] = L"InstallLocation";
+const wchar_t kRegDisplayIcon[] = L"DisplayIcon";
+const wchar_t kRegNoModify[] = L"NoModify";
+const wchar_t kRegNoRepair[] = L"NoRepair";
+const wchar_t kRegPublisherName[] = L"Publisher";
+const wchar_t kRegVersion[] = L"Version";
+const wchar_t kRegDisplayVersion[] = L"DisplayVersion";
+const wchar_t kRegInstallDate[] = L"InstallDate";
+const wchar_t kRegVersionMajor[] = L"VersionMajor";
+const wchar_t kRegVersionMinor[] = L"VersionMinor";
+const wchar_t kRegPublisher[] = L"Google LLC";
+
 // Chrome is being opened to show the credential provider logon page.  This
 // page is always shown in incognito mode.
 const char kGcpwSigninSwitch[] = "gcpw-signin";

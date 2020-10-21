@@ -33,6 +33,7 @@
 #include "chrome/credential_provider/gaiacp/logging.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "chrome/credential_provider/setup/gcpw_files.h"
+#include "chrome/credential_provider/setup/setup_utils.h"
 #include "chrome/installer/util/delete_after_reboot_helper.h"
 
 namespace credential_provider {
@@ -156,31 +157,6 @@ HRESULT UnregisterDlls(const base::FilePath& dest_path,
 }
 
 }  // namespace
-
-namespace switches {
-
-// These are command line switches to the setup program.
-
-// Indicates the handle of the parent setup process when setup relaunches itself
-// during uninstall.
-const char kParentHandle[] = "parent-handle";
-
-// Indicates the full path to the GCP installation to delete.  This switch is
-// only used during uninstall.
-const char kInstallPath[] = "install-path";
-
-// Indicates to setup that it is being run to inunstall GCP.  If this switch
-// is not present the assumption is to install GCP.
-const char kUninstall[] = "uninstall";
-
-// Command line arguments used to either enable or disable stats and crash
-// dump collection.  When either of these command line args is used setup
-// will perform the requested action and exit without trying to install or
-// uninstall anything.  Disable takes precedence over enable.
-const char kEnableStats[] = "enable-stats";
-const char kDisableStats[] = "disable-stats";
-
-}  // namespace switches
 
 DWORD InstallGCPWExtension(const base::FilePath& extension_exe_path) {
   credential_provider::extension::OSServiceManager* service_manager =
@@ -306,7 +282,7 @@ HRESULT DoInstall(const base::FilePath& installer_path,
     // through.
   }
 
-  hr = WriteCredentialProviderRegistryValues();
+  hr = WriteCredentialProviderRegistryValues(dest_path);
   if (FAILED(hr)) {
     LOGFN(ERROR) << "WriteCredentialProviderRegistryValues failed hr="
                  << putHR(hr);
@@ -354,6 +330,13 @@ HRESULT DoUninstall(const base::FilePath& installer_path,
   // delete the parent directory if possible.
   if (base::IsDirectoryEmpty(dest_path.DirName()))
     has_failures |= !base::DeleteFile(dest_path.DirName());
+
+  StandaloneInstallerConfigurator* installer_config =
+      StandaloneInstallerConfigurator::Get();
+  if (installer_config->IsStandaloneInstallation()) {
+    has_failures |= FAILED(HRESULT_FROM_WIN32(
+        StandaloneInstallerConfigurator::Get()->RemoveUninstallKey()));
+  }
 
   // TODO(rogerta): ask user to reboot if anything went wrong during uninstall.
 
@@ -464,17 +447,25 @@ HRESULT WriteUninstallRegistryValues(const base::FilePath& setup_exe) {
   return HRESULT_FROM_WIN32(status);
 }
 
-HRESULT WriteCredentialProviderRegistryValues() {
+HRESULT WriteCredentialProviderRegistryValues(
+    const base::FilePath& install_path) {
+  HRESULT hr =
+      StandaloneInstallerConfigurator::Get()->AddUninstallKey(install_path);
+  if (FAILED(hr)) {
+    LOGFN(ERROR) << "AddUninstallKey  hr=" << putHR(hr);
+    return hr;
+  }
+
   base::win::RegKey key;
   LONG status = key.Create(HKEY_LOCAL_MACHINE, kGcpRootKeyName, KEY_SET_VALUE);
   if (status != ERROR_SUCCESS) {
-    HRESULT hr = HRESULT_FROM_WIN32(status);
+    hr = HRESULT_FROM_WIN32(status);
     LOGFN(ERROR) << "Unable to create " << kGcpRootKeyName
                  << " hr=" << putHR(hr);
     return hr;
   }
 
-  return HRESULT_FROM_WIN32(status);
+  return S_OK;
 }
 
 }  // namespace credential_provider

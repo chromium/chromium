@@ -5,6 +5,7 @@
 #include <atlbase.h>
 #include <atlcom.h>
 #include <atlcomcli.h>
+#include <datetimeapi.h>
 #include <lmerr.h>
 #include <unknwn.h>
 #include <wrl/client.h>
@@ -23,6 +24,7 @@
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_reg_util_win.h"
@@ -30,6 +32,7 @@
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/win_util.h"
 #include "build/build_config.h"
+#include "chrome/common/chrome_version.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/extension/extension_strings.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider.h"
@@ -38,6 +41,7 @@
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "chrome/credential_provider/setup/gcpw_files.h"
 #include "chrome/credential_provider/setup/setup_lib.h"
+#include "chrome/credential_provider/setup/setup_utils.h"
 #include "chrome/credential_provider/test/gcp_fakes.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -88,8 +92,95 @@ class GcpSetupTest : public ::testing::Test {
 
   FakesForTesting* fakes_for_testing() { return &fakes_; }
 
+  std::wstring uninstall_reg_key() {
+    std::wstring uninstall_reg = kRegUninstall;
+    uninstall_reg.append(L"\\");
+    uninstall_reg.append(kRegUninstallProduct);
+    return uninstall_reg;
+  }
+
+  void assert_addremove_reg_exists() {
+    base::win::RegKey uninstall_key;
+    ASSERT_EQ(ERROR_SUCCESS,
+              uninstall_key.Open(HKEY_LOCAL_MACHINE,
+                                 uninstall_reg_key().c_str(), KEY_ALL_ACCESS));
+    base::string16 uninstall_args;
+    base::string16 display_name;
+    base::string16 install_location;
+    base::string16 display_icon;
+    base::string16 install_date;
+    DWORD no_modify;
+    DWORD no_repair;
+    base::string16 publisher_name;
+    base::string16 version_str;
+    base::string16 display_version;
+    DWORD version_major;
+    DWORD version_minor;
+    ASSERT_EQ(ERROR_SUCCESS,
+              uninstall_key.ReadValue(kRegUninstallString, &uninstall_args));
+    ASSERT_EQ(ERROR_SUCCESS,
+              uninstall_key.ReadValue(kRegUninstallDisplayName, &display_name));
+    ASSERT_EQ(ERROR_SUCCESS,
+              uninstall_key.ReadValue(kRegInstallLocation, &install_location));
+    ASSERT_EQ(ERROR_SUCCESS,
+              uninstall_key.ReadValue(kRegDisplayIcon, &display_icon));
+    ASSERT_EQ(ERROR_SUCCESS,
+              uninstall_key.ReadValue(kRegInstallDate, &install_date));
+    ASSERT_EQ(ERROR_SUCCESS,
+              uninstall_key.ReadValueDW(kRegNoModify, &no_modify));
+    ASSERT_EQ(ERROR_SUCCESS,
+              uninstall_key.ReadValueDW(kRegNoRepair, &no_repair));
+    ASSERT_EQ(ERROR_SUCCESS,
+              uninstall_key.ReadValue(kRegPublisherName, &publisher_name));
+    ASSERT_EQ(ERROR_SUCCESS,
+              uninstall_key.ReadValue(kRegVersion, &version_str));
+    ASSERT_EQ(ERROR_SUCCESS,
+              uninstall_key.ReadValue(kRegDisplayVersion, &display_version));
+    ASSERT_EQ(ERROR_SUCCESS,
+              uninstall_key.ReadValueDW(kRegVersionMajor, &version_major));
+    ASSERT_EQ(ERROR_SUCCESS,
+              uninstall_key.ReadValueDW(kRegVersionMinor, &version_minor));
+
+    base::CommandLine uninstall_cmdline(
+        installed_path().Append(kCredentialProviderSetupExe));
+    uninstall_cmdline.AppendSwitch(switches::kUninstall);
+    ASSERT_EQ(uninstall_args, uninstall_cmdline.GetCommandLineString().c_str());
+    ASSERT_EQ(display_name, GetStringResource(IDS_PROJNAME_BASE));
+    ASSERT_EQ(install_location, installed_path().value());
+    ASSERT_EQ(publisher_name, kRegPublisher);
+
+    base::FilePath setup_exe =
+        installed_path().Append(kCredentialProviderSetupExe);
+    ASSERT_EQ(display_icon, (setup_exe.value() + L",0").c_str());
+    ASSERT_EQ(install_date, GetCurrentDateForTesting());
+    ASSERT_EQ(no_modify, (DWORD)1);
+    ASSERT_EQ(no_repair, (DWORD)1);
+
+    base::Version version(CHROME_VERSION_STRING);
+    ASSERT_EQ(version_str, base::ASCIIToUTF16(version.GetString()));
+    ASSERT_EQ(display_version, base::ASCIIToUTF16(version.GetString()));
+
+    const std::vector<uint32_t>& version_components = version.components();
+    ASSERT_EQ(version_major, static_cast<DWORD>(version_components[2]));
+    ASSERT_EQ(version_minor, static_cast<DWORD>(version_components[3]));
+  }
+
  private:
   void SetUp() override;
+
+  base::string16 GetCurrentDateForTesting() {
+    static const wchar_t kDateFormat[] = L"yyyyMMdd";
+    wchar_t date_str[base::size(kDateFormat)] = {0};
+    int len = GetDateFormatW(LOCALE_INVARIANT, 0, nullptr, kDateFormat,
+                             date_str, base::size(date_str));
+    if (len) {
+      --len;  // Subtract terminating \0.
+    } else {
+      return L"";
+    }
+
+    return base::string16(date_str, len);
+  }
 
   void GetModulePathAndProductVersion(base::FilePath* module_path,
                                       base::string16* product_version);
@@ -439,11 +530,27 @@ TEST_F(GcpSetupTest, LaunchGcpAfterInstall) {
   ExpectAllFilesToExist(false, old_version);
 }
 
-TEST_F(GcpSetupTest, DoUninstall) {
+class GcpInstallerTest : public GcpSetupTest,
+                         public ::testing::WithParamInterface<int> {};
+
+TEST_P(GcpInstallerTest, DoUninstall) {
+  int standalone_installer = GetParam();
+
   logging::ResetEventSourceForTesting();
 
+  if (standalone_installer) {
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    command_line.AppendSwitch(switches::kStandaloneInstall);
+
+    StandaloneInstallerConfigurator::Get()->ConfigureInstallationType(
+        command_line);
+  }
   ASSERT_EQ(S_OK,
             DoInstall(module_path(), product_version(), fakes_for_testing()));
+
+  if (standalone_installer)
+    assert_addremove_reg_exists();
+
   CreateSentinelFileToSimulateCrash(product_version());
   logging::ResetEventSourceForTesting();
 
@@ -460,7 +567,14 @@ TEST_F(GcpSetupTest, DoUninstall) {
   EXPECT_TRUE(fake_scoped_lsa_policy_factory()
                   ->private_data()[kLsaKeyGaiaUsername]
                   .empty());
+
+  base::win::RegKey uninstall_key;
+  EXPECT_NE(ERROR_SUCCESS,
+            uninstall_key.Open(HKEY_LOCAL_MACHINE, uninstall_reg_key().c_str(),
+                               KEY_ALL_ACCESS));
 }
+
+INSTANTIATE_TEST_SUITE_P(All, GcpInstallerTest, ::testing::Values(0, 1));
 
 TEST_F(GcpSetupTest, DoUninstallWithExtension) {
   logging::ResetEventSourceForTesting();
@@ -491,6 +605,8 @@ TEST_F(GcpSetupTest, DoUninstallWithExtension) {
 }
 
 TEST_F(GcpSetupTest, ValidLsaWithNoExistingUser) {
+  logging::ResetEventSourceForTesting();
+
   // Create the default user so that name is not taken when the user is created.
   CComBSTR sid;
   DWORD error;
@@ -503,7 +619,6 @@ TEST_F(GcpSetupTest, ValidLsaWithNoExistingUser) {
       L"gaia1";
   fake_scoped_lsa_policy_factory()->private_data()[kLsaKeyGaiaPassword] =
       L"password";
-  logging::ResetEventSourceForTesting();
 
   ASSERT_EQ(S_OK,
             DoInstall(module_path(), product_version(), fakes_for_testing()));
@@ -581,7 +696,7 @@ TEST_F(GcpSetupTest, EnableDisableStats) {
   EXPECT_EQ(0u, value);
 }
 
-TEST_F(GcpSetupTest, WriteUninstallStrings) {
+TEST_F(GcpSetupTest, WriteUninstallStringsForMSI) {
   base::win::RegKey key;
 
   ASSERT_EQ(ERROR_SUCCESS,
@@ -616,12 +731,25 @@ TEST_F(GcpSetupTest, WriteCredentialProviderRegistryValues) {
   ASSERT_NE(ERROR_SUCCESS,
             key.Open(HKEY_LOCAL_MACHINE, kGcpRootKeyName, KEY_ALL_ACCESS));
 
+  base::win::RegKey uninstall_key;
+  ASSERT_NE(ERROR_SUCCESS,
+            uninstall_key.Open(HKEY_LOCAL_MACHINE, uninstall_reg_key().c_str(),
+                               KEY_ALL_ACCESS));
+
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitch(switches::kStandaloneInstall);
+
+  StandaloneInstallerConfigurator::Get()->ConfigureInstallationType(
+      command_line);
+
   // Write GCPW registry keys.
-  ASSERT_EQ(S_OK, WriteCredentialProviderRegistryValues());
+  ASSERT_EQ(S_OK, WriteCredentialProviderRegistryValues(installed_path()));
 
   // Verify keys were created.
   ASSERT_EQ(ERROR_SUCCESS,
             key.Open(HKEY_LOCAL_MACHINE, kGcpRootKeyName, KEY_ALL_ACCESS));
+
+  assert_addremove_reg_exists();
 }
 
 TEST_F(GcpSetupTest, DoInstallWritesUninstallStrings) {
