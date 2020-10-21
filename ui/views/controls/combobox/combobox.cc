@@ -577,6 +577,14 @@ void Combobox::OnComboboxModelChanged(ui::ComboboxModel* model) {
   SchedulePaint();
 }
 
+const base::RepeatingClosure& Combobox::GetCallback() const {
+  return callback_;
+}
+
+const std::unique_ptr<ui::ComboboxModel>& Combobox::GetOwnedModel() const {
+  return owned_model_;
+}
+
 void Combobox::UpdateBorder() {
   std::unique_ptr<FocusableBorder> border(new FocusableBorder());
   if (invalid_)
@@ -717,6 +725,9 @@ PrefixSelector* Combobox::GetPrefixSelector() {
 }
 
 BEGIN_METADATA(Combobox, View)
+ADD_PROPERTY_METADATA(base::RepeatingClosure, Callback)
+ADD_PROPERTY_METADATA(std::unique_ptr<ui::ComboboxModel>, OwnedModel)
+ADD_PROPERTY_METADATA(ui::ComboboxModel*, Model)
 ADD_PROPERTY_METADATA(int, SelectedIndex)
 ADD_PROPERTY_METADATA(bool, Invalid)
 ADD_PROPERTY_METADATA(bool, SizeToLargestLabel)

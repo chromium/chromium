@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -157,6 +158,15 @@ struct TypeConverter<base::Optional<T>> {
     auto ret = TypeConverter<T>::FromString(source_value);
     return ret ? base::make_optional(ret) : base::nullopt;
   }
+};
+
+template <typename T>
+struct TypeConverter<std::unique_ptr<T>> {
+  static constexpr bool is_serializable = false;
+  static bool IsSerializable() { return is_serializable; }
+  static base::string16 ToString(const std::unique_ptr<T>& source_value);
+  static base::Optional<std::unique_ptr<T>> FromString(
+      const base::string16& source_value);
 };
 
 }  // namespace metadata

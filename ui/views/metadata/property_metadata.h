@@ -7,6 +7,7 @@
 
 #include <string>
 #include <type_traits>
+#include <utility>
 
 #include "base/macros.h"
 #include "base/strings/string16.h"
@@ -73,7 +74,7 @@ class ClassPropertyMetaData
       return;
     if (base::Optional<TValue> result =
             TypeConverter<TValue>::FromString(new_value)) {
-      (static_cast<TClass*>(obj)->*Set)(result.value());
+      (static_cast<TClass*>(obj)->*Set)(std::move(result.value()));
     }
   }
 

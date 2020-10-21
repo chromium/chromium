@@ -45,30 +45,27 @@ ComboboxExample::~ComboboxExample() = default;
 void ComboboxExample::CreateExampleView(View* container) {
   container->SetLayoutManager(std::make_unique<FillLayout>());
 
-  Combobox* disabled_combobox;
+  auto view =
+      Builder<BoxLayoutView>()
+          .SetOrientation(BoxLayout::Orientation::kVertical)
+          .SetInsideBorderInsets(gfx::Insets(10, 0))
+          .SetBetweenChildSpacing(5)
+          .AddChildren(
+              {Builder<Combobox>()
+                   .CopyAddressTo(&combobox_)
+                   .SetOwnedModel(std::make_unique<ComboboxModelExample>())
+                   .SetSelectedIndex(3)
+                   .SetCallback(base::BindRepeating(
+                       &ComboboxExample::ValueChanged, base::Unretained(this))),
+               Builder<Combobox>()
+                   .SetOwnedModel(std::make_unique<ComboboxModelExample>())
+                   .SetEnabled(false)
+                   .SetSelectedIndex(4)
+                   .SetCallback(
+                       base::BindRepeating(&ComboboxExample::ValueChanged,
+                                           base::Unretained(this)))})
+          .Build();
 
-  auto view = Builder<BoxLayoutView>()
-                  .SetOrientation(BoxLayout::Orientation::kVertical)
-                  .SetInsideBorderInsets(gfx::Insets(10, 0))
-                  .SetBetweenChildSpacing(5)
-                  .AddChildren({Builder<Combobox>().CopyAddressTo(&combobox_),
-                                Builder<Combobox>()
-                                    .CopyAddressTo(&disabled_combobox)
-                                    .SetEnabled(false)})
-                  .Build();
-
-  combobox_->SetOwnedModel(std::make_unique<ComboboxModelExample>());
-  combobox_->SetCallback(base::BindRepeating(&ComboboxExample::ValueChanged,
-                                             base::Unretained(this)));
-  // The index is set outside of the builder because SetOwnedModel will override
-  // set indices.
-  combobox_->SetSelectedIndex(3);
-  disabled_combobox->SetOwnedModel(std::make_unique<ComboboxModelExample>());
-  disabled_combobox->SetCallback(base::BindRepeating(
-      &ComboboxExample::ValueChanged, base::Unretained(this)));
-  // The index is set outside of the builder because SetOwnedModel will override
-  // set indices.
-  disabled_combobox->SetSelectedIndex(4);
   container->AddChildView(std::move(view));
 }
 

@@ -78,6 +78,7 @@ class VIEWS_EXPORT Combobox : public View,
   bool SelectValue(const base::string16& value);
 
   void SetOwnedModel(std::unique_ptr<ui::ComboboxModel> model);
+
   void SetModel(ui::ComboboxModel* model);
   ui::ComboboxModel* GetModel() const { return model_; }
 
@@ -124,6 +125,10 @@ class VIEWS_EXPORT Combobox : public View,
  protected:
   // Overridden from ComboboxModelObserver:
   void OnComboboxModelChanged(ui::ComboboxModel* model) override;
+
+  // Getters to be used by metadata.
+  const base::RepeatingClosure& GetCallback() const;
+  const std::unique_ptr<ui::ComboboxModel>& GetOwnedModel() const;
 
  private:
   friend class test::ComboboxTestApi;
@@ -226,6 +231,9 @@ class VIEWS_EXPORT Combobox : public View,
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Combobox, View)
+VIEW_BUILDER_PROPERTY(base::RepeatingClosure, Callback)
+VIEW_BUILDER_PROPERTY(std::unique_ptr<ui::ComboboxModel>, OwnedModel)
+VIEW_BUILDER_PROPERTY(ui::ComboboxModel*, Model)
 VIEW_BUILDER_PROPERTY(int, SelectedIndex)
 VIEW_BUILDER_PROPERTY(bool, Invalid)
 VIEW_BUILDER_PROPERTY(bool, SizeToLargestLabel)
