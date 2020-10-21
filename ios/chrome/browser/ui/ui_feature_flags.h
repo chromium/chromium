@@ -84,4 +84,14 @@ extern const base::Feature kModernTabStrip;
 // Adds a setting to enable biometric authentication for incognito tabs.
 extern const base::Feature kIncognitoAuthentication;
 
+// Feature flag that removes the location permissions prompt from First Run.
+extern const base::Feature kLocationRemoveFirstRunPrompt;
+
+// Feature flag that changes the string in the location permissions prompt.
+extern const base::Feature kLocationStringChange;
+
+// Feature flag that adds a modal in First Run that details Chrome location data
+// usage.
+extern const base::Feature kLocationFirstRunModal;
+
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_

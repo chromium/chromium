@@ -3035,6 +3035,21 @@
     "expiry_milestone": -1
   },
   {
+    "name": "location-change-string",
+    "owners": [ "thegreenfrog", "bling-team" ],
+    "expiry_milestone": 91
+  },
+  {
+    "name": "location-first-run-modal",
+    "owners": [ "thegreenfrog", "bling-team" ],
+    "expiry_milestone": 91
+  },
+  {
+    "name": "location-remove-first-run",
+    "owners": [ "thegreenfrog", "bling-team" ],
+    "expiry_milestone": 91
+  },
+  {
     "name": "lock-screen-media-controls",
     "owners": [ "beccahughes", "media-dev" ],
     "expiry_milestone": 82

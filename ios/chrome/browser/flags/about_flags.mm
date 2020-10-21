@@ -655,6 +655,16 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIncognitoAuthenticationName,
      flag_descriptions::kIncognitoAuthenticationDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIncognitoAuthentication)},
+    {"location-first-run-modal", flag_descriptions::kLocationFirstRunModalName,
+     flag_descriptions::kLocationFirstRunModalDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kLocationFirstRunModal)},
+    {"location-remove-first-run",
+     flag_descriptions::kLocationRemoveFirstRunPromptName,
+     flag_descriptions::kLocationRemoveFirstRunPromptDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLocationRemoveFirstRunPrompt)},
+    {"location-change-string", flag_descriptions::kLocationStringChangeName,
+     flag_descriptions::kLocationStringChangeDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kLocationStringChange)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

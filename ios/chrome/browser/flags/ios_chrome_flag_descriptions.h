@@ -279,6 +279,21 @@ extern const char kIOSLegacyTLSInterstitialsDescription[];
 extern const char kIOSLookalikeUrlNavigationSuggestionsUIName[];
 extern const char kIOSLookalikeUrlNavigationSuggestionsUIDescription[];
 
+// Title and description for the flag to add a First Run modal for location
+// permissions.
+extern const char kLocationFirstRunModalName[];
+extern const char kLocationFirstRunModalDescription[];
+
+// Title and description for the flag to remove the First Run location
+// permissions prompt.
+extern const char kLocationRemoveFirstRunPromptName[];
+extern const char kLocationRemoveFirstRunPromptDescription[];
+
+// Title and description for the flag to change the string in the location
+// permissions prompt.
+extern const char kLocationStringChangeName[];
+extern const char kLocationStringChangeDescription[];
+
 // Title and description for the flag to lock the bottom toolbar into place.
 extern const char kLockBottomToolbarName[];
 extern const char kLockBottomToolbarDescription[];
