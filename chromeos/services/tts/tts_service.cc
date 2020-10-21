@@ -205,8 +205,10 @@ void TtsService::StopLocked(bool clear_buffers) {
     return;
 
   output_device_->Pause();
-  if (clear_buffers)
+  if (clear_buffers) {
     buffers_.clear();
+    libchrometts_.GoogleTtsFinalizeBuffered();
+  }
 
   is_playing_ = false;
 }
