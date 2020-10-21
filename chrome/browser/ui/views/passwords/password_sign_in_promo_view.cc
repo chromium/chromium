@@ -31,9 +31,8 @@ PasswordSignInPromoView::DiceSyncPromoDelegate::~DiceSyncPromoDelegate() =
     default;
 
 void PasswordSignInPromoView::DiceSyncPromoDelegate::OnEnableSync(
-    const AccountInfo& account,
-    bool is_default_promo_account) {
-  controller_->OnSignInToChromeClicked(account, is_default_promo_account);
+    const AccountInfo& account) {
+  controller_->OnSignInToChromeClicked(account);
 }
 
 PasswordSignInPromoView::PasswordSignInPromoView(

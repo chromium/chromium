@@ -25,12 +25,11 @@ Profile* SignInPromoBubbleController::GetProfile() const {
 }
 
 void SignInPromoBubbleController::OnSignInToChromeClicked(
-    const AccountInfo& account,
-    bool is_default_promo_account) {
+    const AccountInfo& account) {
   // Enabling sync for an existing account and starting a new sign-in are
   // triggered by the user interacting with the sign-in promo.
   GetProfile()->GetPrefs()->SetBoolean(
       password_manager::prefs::kWasSignInPasswordPromoClicked, true);
   if (delegate_)
-    delegate_->EnableSync(account, is_default_promo_account);
+    delegate_->EnableSync(account);
 }

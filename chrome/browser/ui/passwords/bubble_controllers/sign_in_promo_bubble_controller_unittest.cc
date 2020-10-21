@@ -73,10 +73,9 @@ TEST_F(SignInPromoBubbleControllerTest, SignInPromoOK) {
   account.account_id = CoreAccountId("foo_account_id");
   account.gaia = "foo_gaia_id";
   account.email = "foo@bar.com";
-  EXPECT_CALL(*delegate(), EnableSync(AccountEq(account), false));
+  EXPECT_CALL(*delegate(), EnableSync(AccountEq(account)));
 
-  controller()->OnSignInToChromeClicked(account,
-                                        false /* is_default_promo_account */);
+  controller()->OnSignInToChromeClicked(account);
   EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
       password_manager::prefs::kWasSignInPasswordPromoClicked));
 }

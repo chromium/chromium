@@ -43,10 +43,8 @@ SaveCardBubbleViews::SyncPromoDelegate::SyncPromoDelegate(
 }
 
 void SaveCardBubbleViews::SyncPromoDelegate::OnEnableSync(
-    const AccountInfo& account,
-    bool is_default_promo_account) {
-  controller_->OnSyncPromoAccepted(account, access_point_,
-                                   is_default_promo_account);
+    const AccountInfo& account) {
+  controller_->OnSyncPromoAccepted(account, access_point_);
 }
 
 SaveCardBubbleViews::SaveCardBubbleViews(views::View* anchor_view,

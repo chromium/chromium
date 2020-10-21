@@ -349,13 +349,12 @@ bool SaveCardBubbleControllerImpl::ShouldShowSignInPromo() const {
 
 void SaveCardBubbleControllerImpl::OnSyncPromoAccepted(
     const AccountInfo& account,
-    signin_metrics::AccessPoint access_point,
-    bool is_default_promo_account) {
+    signin_metrics::AccessPoint access_point) {
   DCHECK(current_bubble_type_ == BubbleType::SIGN_IN_PROMO ||
          current_bubble_type_ == BubbleType::MANAGE_CARDS);
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   signin_ui_util::EnableSyncFromPromo(browser, account, access_point,
-                                      is_default_promo_account);
+                                      /*is_default_promo_account=*/true);
 }
 
 void SaveCardBubbleControllerImpl::OnSaveButton(

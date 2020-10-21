@@ -64,8 +64,7 @@ class SaveCardBubbleViews : public SaveCardBubbleView,
                       signin_metrics::AccessPoint access_point);
 
     // BubbleSyncPromoDelegate:
-    void OnEnableSync(const AccountInfo& account,
-                      bool is_default_promo_account) override;
+    void OnEnableSync(const AccountInfo& account) override;
 
    private:
     SaveCardBubbleController* controller_;

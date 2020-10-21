@@ -158,8 +158,7 @@ class ManagePasswordsUIController
       password_manager::ManagePasswordsReferrer referrer) override;
   void NavigateToPasswordManagerSettingsPage(
       password_manager::ManagePasswordsReferrer referrer) override;
-  void EnableSync(const AccountInfo& account,
-                  bool is_default_promo_account) override;
+  void EnableSync(const AccountInfo& account) override;
   void OnDialogHidden() override;
   bool AuthenticateUser() override;
   void AuthenticateUserForAccountStoreOptInAndSavePassword(

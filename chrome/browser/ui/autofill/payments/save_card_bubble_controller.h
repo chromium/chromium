@@ -84,9 +84,9 @@ class SaveCardBubbleController {
 
   // Interaction.
   // OnSyncPromoAccepted is called when the Dice Sign-in promo is clicked.
-  virtual void OnSyncPromoAccepted(const AccountInfo& account,
-                                   signin_metrics::AccessPoint access_point,
-                                   bool is_default_promo_account) = 0;
+  virtual void OnSyncPromoAccepted(
+      const AccountInfo& account,
+      signin_metrics::AccessPoint access_point) = 0;
   // OnSaveButton takes in a struct representing the cardholder name,
   // expiration date month and expiration date year confirmed/entered by the
   // user if they were requested, or struct with empty strings otherwise.

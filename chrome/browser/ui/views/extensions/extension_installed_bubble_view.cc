@@ -135,8 +135,7 @@ class ExtensionInstalledBubbleView : public BubbleSyncPromoDelegate,
   void Init() override;
 
   // BubbleSyncPromoDelegate:
-  void OnEnableSync(const AccountInfo& account_info,
-                    bool is_default_promo_account) override;
+  void OnEnableSync(const AccountInfo& account_info) override;
 
   void LinkClicked();
 
@@ -254,12 +253,11 @@ void ExtensionInstalledBubbleView::Init() {
   }
 }
 
-void ExtensionInstalledBubbleView::OnEnableSync(const AccountInfo& account,
-                                                bool is_default_promo_account) {
+void ExtensionInstalledBubbleView::OnEnableSync(const AccountInfo& account) {
   signin_ui_util::EnableSyncFromPromo(
       browser_, account,
       signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE,
-      is_default_promo_account);
+      /*is_default_promo_account=*/true);
   GetWidget()->Close();
 }
 

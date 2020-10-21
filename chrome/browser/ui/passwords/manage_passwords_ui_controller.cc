@@ -623,13 +623,12 @@ void ManagePasswordsUIController::NavigateToPasswordCheckup(
   password_manager::LogPasswordCheckReferrer(referrer);
 }
 
-void ManagePasswordsUIController::EnableSync(const AccountInfo& account,
-                                             bool is_default_promo_account) {
+void ManagePasswordsUIController::EnableSync(const AccountInfo& account) {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   signin_ui_util::EnableSyncFromPromo(
       browser, account,
       signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE,
-      is_default_promo_account);
+      /*is_default_promo_account=*/true);
 }
 
 void ManagePasswordsUIController::OnDialogHidden() {

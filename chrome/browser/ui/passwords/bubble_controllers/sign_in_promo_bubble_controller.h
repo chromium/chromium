@@ -22,8 +22,7 @@ class SignInPromoBubbleController {
 
   // Called by the view when the "Sign in" button or the "Sync to" button in the
   // promo bubble is clicked.
-  void OnSignInToChromeClicked(const AccountInfo& account,
-                               bool is_default_promo_account);
+  void OnSignInToChromeClicked(const AccountInfo& account);
 
  private:
   // A bridge to ManagePasswordsUIController instance.
