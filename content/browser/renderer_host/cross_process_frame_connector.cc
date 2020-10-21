@@ -29,21 +29,6 @@
 
 namespace content {
 
-namespace {
-
-// Return the root RenderFrameHost in the outermost WebContents.
-RenderFrameHostImpl* RootRenderFrameHost(RenderFrameHostImpl* frame) {
-  RenderFrameHostImpl* current = frame;
-  while (true) {
-    RenderFrameHostImpl* parent = current->ParentOrOuterDelegateFrame();
-    if (!parent)
-      return current;
-    current = parent;
-  };
-}
-
-}  // namespace
-
 CrossProcessFrameConnector::CrossProcessFrameConnector(
     RenderFrameProxyHost* frame_proxy_in_parent_renderer)
     : FrameConnectorDelegate(IsUseZoomForDSFEnabled()),
@@ -55,7 +40,8 @@ CrossProcessFrameConnector::CrossProcessFrameConnector(
   // GetScreenInfo() on the root RenderWidgetHost, which will be guaranteed to
   // be on the correct display. All subsequent updates to |screen_info_|
   // ultimately come from the root, so it makes sense to do it here as well.
-  RootRenderFrameHost(current_child_frame_host())
+  current_child_frame_host()
+      ->GetOutermostMainFrame()
       ->GetRenderWidgetHost()
       ->GetScreenInfo(&screen_info_);
 }
@@ -381,7 +367,8 @@ CrossProcessFrameConnector::GetRootRenderWidgetHostView() {
   if (!frame_proxy_in_parent_renderer_)
     return nullptr;
 
-  RenderFrameHostImpl* root = RootRenderFrameHost(current_child_frame_host());
+  RenderFrameHostImpl* root =
+      current_child_frame_host()->GetOutermostMainFrame();
   return static_cast<RenderWidgetHostViewBase*>(root->GetView());
 }
 

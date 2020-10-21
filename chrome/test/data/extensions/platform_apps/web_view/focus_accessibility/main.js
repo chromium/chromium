@@ -18,7 +18,11 @@ function CreateWebViewAndGuest(callback) {
     webview.removeEventListener('loadabort', onLoadAbort);
   };
   webview.src = 'data:text/html,' +
-      '<html><body><button>Guest button</button></body></html>';
+      '<html><body><button>Guest button</button>' +
+      '<iframe src="data:text/html,' +
+      '<html><body><input type=text aria-label=InnerFrameTextField></input>' +
+      '</body></html>"></iframe>' +
+      '</body></html>';
   return webview;
 }
 

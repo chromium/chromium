@@ -3739,6 +3739,43 @@ IN_PROC_BROWSER_TEST_F(WebViewAccessibilityTest, FocusAccessibility) {
             node_data.GetStringAttribute(ax::mojom::StringAttribute::kName));
 }
 
+// Validate that an inner frame within a guest WebContents correctly receives
+// focus when requested by accessibility. Previously the root
+// BrowserAccessibilityManager would not be updated due to how we were updating
+// the AXTreeData.
+IN_PROC_BROWSER_TEST_F(WebViewAccessibilityTest,
+                       FocusAccessibilityNestedFrame) {
+  LoadAppWithGuest("web_view/focus_accessibility");
+  content::WebContents* web_contents = GetFirstAppWindowWebContents();
+  content::EnableAccessibilityForWebContents(web_contents);
+  content::WebContents* guest_web_contents = GetGuestWebContents();
+  content::EnableAccessibilityForWebContents(guest_web_contents);
+
+  // Wait for focus to land on the "root web area" role, representing
+  // focus on the main document itself.
+  while (content::GetFocusedAccessibilityNodeInfo(web_contents).role !=
+         ax::mojom::Role::kRootWebArea) {
+    content::WaitForAccessibilityFocusChange();
+  }
+
+  // Now keep pressing the Tab key until focus lands on a text field.
+  // This is testing that the inner frame within the guest WebContents receives
+  // focus, and that the focus state is accurately reflected in the accessiblity
+  // state.
+  while (content::GetFocusedAccessibilityNodeInfo(web_contents).role !=
+         ax::mojom::Role::kTextField) {
+    content::SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('\t'),
+                              ui::DomCode::TAB, ui::VKEY_TAB, false, false,
+                              false, false);
+    content::WaitForAccessibilityFocusChange();
+  }
+
+  ui::AXNodeData node_data =
+      content::GetFocusedAccessibilityNodeInfo(web_contents);
+  EXPECT_EQ("InnerFrameTextField",
+            node_data.GetStringAttribute(ax::mojom::StringAttribute::kName));
+}
+
 class WebContentsAccessibilityEventWatcher
     : public content::WebContentsObserver {
  public:

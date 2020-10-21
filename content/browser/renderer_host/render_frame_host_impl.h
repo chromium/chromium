@@ -1563,6 +1563,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // WebContents.
   RenderFrameHostImpl* ParentOrOuterDelegateFrame();
 
+  // Returns the global root RenderFrameHostImpl in the outermost WebContents.
+  RenderFrameHostImpl* GetOutermostMainFrame();
+
   void SetIsOuterDelegateFrame(bool is_outer_frame) {
     is_outer_delegate_frame_ = is_outer_frame;
   }

@@ -9494,6 +9494,16 @@ RenderFrameHostImpl* RenderFrameHostImpl::ParentOrOuterDelegateFrame() {
   return nullptr;
 }
 
+RenderFrameHostImpl* RenderFrameHostImpl::GetOutermostMainFrame() {
+  RenderFrameHostImpl* current = this;
+  while (true) {
+    RenderFrameHostImpl* parent = current->ParentOrOuterDelegateFrame();
+    if (!parent)
+      return current;
+    current = parent;
+  };
+}
+
 scoped_refptr<WebAuthRequestSecurityChecker>
 RenderFrameHostImpl::GetWebAuthRequestSecurityChecker() {
   if (!webauth_request_security_checker_)
