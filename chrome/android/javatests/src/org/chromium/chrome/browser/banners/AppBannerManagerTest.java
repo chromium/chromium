@@ -66,9 +66,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.infobar.InstallableAmbientBadgeInfoBar;
-import org.chromium.chrome.browser.init.BrowserParts;
-import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.chrome.browser.init.EmptyBrowserParts;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -88,7 +85,10 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.infobars.InfoBarAnimationListener;
 import org.chromium.components.infobars.InfoBarUiItem;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -101,7 +101,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Tests the app banners.
@@ -235,7 +234,8 @@ public class AppBannerManagerTest {
             }
         };
 
-        loadNative();
+        AccountManagerFacadeProvider.setInstanceForTests(new FakeAccountManagerFacade(null));
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
 
         ThreadUtils.runOnUiThreadBlocking(() -> {
             Profile profile = Profile.getLastUsedRegularProfile();
@@ -260,22 +260,6 @@ public class AppBannerManagerTest {
         if (mTestServer != null) {
             mTestServer.stopAndDestroyServer();
         }
-    }
-
-    private void loadNative() {
-        final AtomicBoolean mNativeLoaded = new AtomicBoolean();
-        final BrowserParts parts = new EmptyBrowserParts() {
-            @Override
-            public void finishNativeInitialization() {
-                mNativeLoaded.set(true);
-            }
-        };
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
-            ChromeBrowserInitializer.getInstance().handlePreNativeStartup(parts);
-            ChromeBrowserInitializer.getInstance().handlePostNativeStartup(true, parts);
-        });
-        CriteriaHelper.pollUiThread(
-                () -> mNativeLoaded.get(), "Failed while waiting for starting native.");
     }
 
     private void resetEngagementForUrl(final String url, final double engagement) {
