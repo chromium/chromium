@@ -56,6 +56,10 @@ struct SplitAutocompletion {
                       std::vector<gfx::Range> selections);
   SplitAutocompletion();
   SplitAutocompletion(const SplitAutocompletion& copy);
+  SplitAutocompletion(SplitAutocompletion&&) noexcept;
+  SplitAutocompletion& operator=(const SplitAutocompletion&);
+  SplitAutocompletion& operator=(SplitAutocompletion&&) noexcept;
+
   ~SplitAutocompletion();
 
   bool Empty() const;

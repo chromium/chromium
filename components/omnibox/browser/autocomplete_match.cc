@@ -85,6 +85,12 @@ SplitAutocompletion::SplitAutocompletion(base::string16 display_text,
 SplitAutocompletion::SplitAutocompletion() = default;
 SplitAutocompletion::SplitAutocompletion(const SplitAutocompletion& copy) =
     default;
+SplitAutocompletion::SplitAutocompletion(SplitAutocompletion&& other) noexcept =
+    default;
+SplitAutocompletion& SplitAutocompletion::operator=(
+    const SplitAutocompletion&) = default;
+SplitAutocompletion& SplitAutocompletion::operator=(
+    SplitAutocompletion&&) noexcept = default;
 
 SplitAutocompletion::~SplitAutocompletion() = default;
 
