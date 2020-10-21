@@ -252,7 +252,11 @@ window.setupFn = () => {
 
 
 suite('UsbInternalsUITest', function() {
+  let app = null;
+
   suiteSetup(function() {
+    app = document.querySelector('usb-internals-app');
+
     // Before tests are run, make sure setup completes.
     return setupResolver.promise.then(function() {
       return Promise.all([
@@ -270,17 +274,17 @@ suite('UsbInternalsUITest', function() {
     const EXPECT_DEVICES_NUM = 2;
 
     // Totally 2 tables: 'TestDevice' table and 'Device' table.
-    const tables = document.querySelectorAll('table');
+    const tables = app.shadowRoot.querySelectorAll('table');
     expectEquals(2, tables.length);
 
     // Only 2 tabs after loading page.
-    const tabs = document.querySelectorAll('tab');
+    const tabs = app.shadowRoot.querySelectorAll('tab');
     expectEquals(2, tabs.length);
-    const tabPanels = document.querySelectorAll('tabpanel');
+    const tabPanels = app.shadowRoot.querySelectorAll('tabpanel');
     expectEquals(2, tabPanels.length);
 
     // The second is the devices table, which has 8 columns.
-    const devicesTable = document.querySelectorAll('table')[1];
+    const devicesTable = app.shadowRoot.querySelectorAll('table')[1];
     const columns = devicesTable.querySelector('thead')
                         .querySelector('tr')
                         .querySelectorAll('th');
@@ -292,29 +296,29 @@ suite('UsbInternalsUITest', function() {
   });
 
   test('DeviceTabAdded', function() {
-    const devicesTable = document.querySelector('#device-list');
+    const devicesTable = app.$('#device-list');
     // Click the inspect button to open information about the first device.
     // The device info is opened as a third tab panel.
     devicesTable.querySelectorAll('button')[0].click();
-    assertEquals(3, document.querySelectorAll('tab').length);
-    assertEquals(3, document.querySelectorAll('tabpanel').length);
-    expectTrue(document.querySelectorAll('tabpanel')[2].selected);
+    assertEquals(3, app.shadowRoot.querySelectorAll('tab').length);
+    assertEquals(3, app.shadowRoot.querySelectorAll('tabpanel').length);
+    expectTrue(app.shadowRoot.querySelectorAll('tabpanel')[2].selected);
 
     // Check that clicking the inspect button for another device will open a
     // new tabpanel.
     devicesTable.querySelectorAll('button')[1].click();
-    assertEquals(4, document.querySelectorAll('tab').length);
-    assertEquals(4, document.querySelectorAll('tabpanel').length);
-    expectTrue(document.querySelectorAll('tabpanel')[3].selected);
-    expectFalse(document.querySelectorAll('tabpanel')[2].selected);
+    assertEquals(4, app.shadowRoot.querySelectorAll('tab').length);
+    assertEquals(4, app.shadowRoot.querySelectorAll('tabpanel').length);
+    expectTrue(app.shadowRoot.querySelectorAll('tabpanel')[3].selected);
+    expectFalse(app.shadowRoot.querySelectorAll('tabpanel')[2].selected);
 
     // Check that clicking the inspect button for the same device a second
     // time will open the same tabpanel.
     devicesTable.querySelectorAll('button')[0].click();
-    assertEquals(4, document.querySelectorAll('tab').length);
-    assertEquals(4, document.querySelectorAll('tabpanel').length);
-    expectTrue(document.querySelectorAll('tabpanel')[2].selected);
-    expectFalse(document.querySelectorAll('tabpanel')[3].selected);
+    assertEquals(4, app.shadowRoot.querySelectorAll('tab').length);
+    assertEquals(4, app.shadowRoot.querySelectorAll('tabpanel').length);
+    expectTrue(app.shadowRoot.querySelectorAll('tabpanel')[2].selected);
+    expectFalse(app.shadowRoot.querySelectorAll('tabpanel')[3].selected);
   });
 
   test('RenderDeviceInfoTree', function() {
@@ -322,7 +326,7 @@ suite('UsbInternalsUITest', function() {
     // showing WebUSB information. Check the tree displays correct data.
     // The tab panel of the first device is opened in previous test as the
     // third tab panel.
-    const deviceTab = document.querySelectorAll('tabpanel')[2];
+    const deviceTab = app.shadowRoot.querySelectorAll('tabpanel')[2];
     const tree = deviceTab.querySelector('tree');
     const treeItems = tree.querySelectorAll('.tree-item');
     assertEquals(11, treeItems.length);
@@ -347,7 +351,7 @@ suite('UsbInternalsUITest', function() {
     await deviceTabInitializedResolver.promise;
     // The tab panel of the first device is opened in previous test as the
     // third tab panel. This device has correct device descriptor.
-    const deviceTab = document.querySelectorAll('tabpanel')[2];
+    const deviceTab = app.shadowRoot.querySelectorAll('tabpanel')[2];
     deviceTab.querySelector('.device-descriptor-button').click();
 
     await deviceDescriptorRenderResolver.promise;
@@ -413,11 +417,11 @@ suite('UsbInternalsUITest', function() {
 
   test('RenderShortDeviceDescriptor', async function() {
     await deviceManagerGetDevicesResolver.promise;
-    const devicesTable = document.querySelector('#device-list');
+    const devicesTable = app.$('#device-list');
     // Inspect the second device, which has short device descriptor.
     devicesTable.querySelectorAll('button')[1].click();
     // The fourth is the device tab (a third tab was opened in a previous test).
-    const deviceTab = document.querySelectorAll('tabpanel')[3];
+    const deviceTab = app.shadowRoot.querySelectorAll('tabpanel')[3];
 
     await deviceTabInitializedResolver.promise;
     deviceDescriptorRenderResolver = new PromiseResolver();

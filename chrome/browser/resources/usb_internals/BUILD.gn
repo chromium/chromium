@@ -4,19 +4,21 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
+import("//tools/polymer/html_to_js.gni")
 
 js_type_check("closure_compile") {
   deps = [
+    ":app",
     ":descriptor_panel",
     ":devices_page",
-    ":usb_internals",
   ]
 }
 
-js_library("usb_internals") {
+js_library("app") {
   deps = [
     ":devices_page",
     "//chrome/browser/ui/webui/usb_internals:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr",
     "//ui/webui/resources/js:util",
     "//ui/webui/resources/js/cr/ui:tabs",
@@ -28,6 +30,7 @@ js_library("devices_page") {
   deps = [
     ":descriptor_panel",
     "//chrome/browser/ui/webui/usb_internals:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr",
   ]
 }
@@ -50,5 +53,12 @@ grit("resources") {
     "-E",
     "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
   ]
-  deps = [ "//chrome/browser/ui/webui/usb_internals:mojo_bindings_js" ]
+  deps = [
+    ":web_components",
+    "//chrome/browser/ui/webui/usb_internals:mojo_bindings_js",
+  ]
+}
+
+html_to_js("web_components") {
+  js_files = [ "app.js" ]
 }

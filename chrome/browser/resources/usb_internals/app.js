@@ -5,11 +5,34 @@
 /**
  * Javascript for usb_internals.html, served from chrome://usb-internals/.
  */
-cr.define('usb_internals', function() {
-  class UsbInternals {
-    constructor() {}
 
-    async initializeViews() {
+window.setupFn = window.setupFn || function() {
+  return Promise.resolve();
+};
+
+  class UsbInternalsAppElement extends HTMLElement {
+    static get template() {
+      return `{__html_template__}`;
+    }
+
+    constructor() {
+      super();
+
+      this.attachShadow({mode: 'open'});
+      const template = document.createElement('template');
+      template.innerHTML = this.constructor.template || '';
+      this.shadowRoot.appendChild(template.content.cloneNode(true));
+    }
+
+    /**
+     * @param {string} query
+     * @return {?Element}
+     */
+    $(query) {
+      return this.shadowRoot.querySelector(query);
+    }
+
+    async connectedCallback() {
       // window.setupFn() provides a hook for the test suite to perform setup
       // actions after the page is loaded but before any script is run.
       await window.setupFn();
@@ -24,28 +47,29 @@ cr.define('usb_internals', function() {
           usbManager.$.bindNewPipeAndPassReceiver());
 
       /** @private {devices_page.DevicesPage} */
-      this.devicesPage_ = new devices_page.DevicesPage(usbManager);
+      this.devicesPage_ = new devices_page.DevicesPage(
+          usbManager, assert(this.shadowRoot));
 
       /** @private {device.mojom.UsbDeviceManagerTestRemote} */
       this.usbManagerTest_ = new device.mojom.UsbDeviceManagerTestRemote;
       await pageHandler.bindTestInterface(
           this.usbManagerTest_.$.bindNewPipeAndPassReceiver());
 
-      $('add-test-device-form').addEventListener('submit', (event) => {
+      this.$('#add-test-device-form').addEventListener('submit', (event) => {
         this.addTestDevice(event);
       });
       this.refreshTestDeviceList();
 
-      cr.ui.decorate('tabbox', cr.ui.TabBox);
+      cr.ui.decorate(assert(this.$('tabbox')), cr.ui.TabBox);
     }
 
     async refreshTestDeviceList() {
       const response = await this.usbManagerTest_.getTestDevices();
 
-      const tableBody = $('test-device-list');
+      const tableBody = this.$('#test-device-list');
       tableBody.innerHTML = trustedTypes.emptyHTML;
 
-      const rowTemplate = document.querySelector('#test-device-row');
+      const rowTemplate = this.$('#test-device-row');
       const td = rowTemplate.content.querySelectorAll('td');
 
       for (const device of response.devices) {
@@ -69,28 +93,16 @@ cr.define('usb_internals', function() {
       event.preventDefault();
 
       const response = await this.usbManagerTest_.addDeviceForTesting(
-          $('test-device-name').value, $('test-device-serial').value,
-          $('test-device-landing-page').value);
+          this.$('#test-device-name').value, this.$('#test-device-serial').value,
+          this.$('#test-device-landing-page').value);
       if (response.success) {
         this.refreshTestDeviceList();
       }
 
-      $('add-test-device-result').textContent = response.message;
-      $('add-test-device-result').className =
+      this.$('#add-test-device-result').textContent = response.message;
+      this.$('#add-test-device-result').className =
           response.success ? 'action-success' : 'action-failure';
     }
   }
+  customElements.define('usb-internals-app', UsbInternalsAppElement);
 
-  return {
-    UsbInternals,
-  };
-});
-
-window.setupFn = window.setupFn || function() {
-  return Promise.resolve();
-};
-
-document.addEventListener('DOMContentLoaded', () => {
-  const usbInternalsPage = new usb_internals.UsbInternals();
-  usbInternalsPage.initializeViews();
-});

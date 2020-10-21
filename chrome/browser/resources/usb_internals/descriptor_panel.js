@@ -166,7 +166,9 @@ cr.define('descriptor_panel', function() {
           this.stringDescriptorPanel_.stringDescriptorIndexes.add(index);
         }
 
-        const buttonTemplate = queryRequiredElement('#raw-data-tree-button');
+        const buttonTemplate = queryRequiredElement(
+            '#raw-data-tree-button',
+            /** @type {!DocumentFragment} */ (this.rootElement_.getRootNode()));
         const button = document.importNode(buttonTemplate.content, true)
                            .querySelector('button');
         item.labelElement.appendChild(button);
@@ -200,7 +202,9 @@ cr.define('descriptor_panel', function() {
     renderUrlDescriptorIndexItem_(rawData, offset, item, fieldLabel) {
       const index = rawData[offset];
       if (index > 0) {
-        const buttonTemplate = queryRequiredElement('#raw-data-tree-button');
+        const buttonTemplate = queryRequiredElement(
+            '#raw-data-tree-button',
+            /** @type {!DocumentFragment} */ (this.rootElement_.getRootNode()));
         const button = document.importNode(buttonTemplate.content, true)
                            .querySelector('button');
         item.labelElement.appendChild(button);
@@ -238,7 +242,9 @@ cr.define('descriptor_panel', function() {
       const msOs20DescriptorSetLength =
           data.getUint16(MS_OS_20_SET_TOTAL_LENGTH_OFFSET, true);
 
-      const buttonTemplate = queryRequiredElement('#raw-data-tree-button');
+      const buttonTemplate = queryRequiredElement(
+          '#raw-data-tree-button',
+          /** @type {!DocumentFragment} */ (this.rootElement_.getRootNode()));
       const button = document.importNode(buttonTemplate.content, true)
                          .querySelector('button');
       item.labelElement.appendChild(button);
@@ -277,7 +283,9 @@ cr.define('descriptor_panel', function() {
       if (altEnumCode !== 0) {
         const vendorCode = rawData[offset + MS_OS_20_VENDOR_CODE_ITEM_OFFSET];
 
-        const buttonTemplate = queryRequiredElement('#raw-data-tree-button');
+        const buttonTemplate = queryRequiredElement(
+            '#raw-data-tree-button',
+            /** @type {!DocumentFragment} */ (this.rootElement_.getRootNode()));
         const button = document.importNode(buttonTemplate.content, true)
                            .querySelector('button');
         item.labelElement.appendChild(button);
@@ -2648,8 +2656,9 @@ cr.define('descriptor_panel', function() {
    */
   function addNewDescriptorDisplayElement(
       rootElement, descriptorPanelTitle = undefined) {
-    const descriptorPanelTemplate =
-        queryRequiredElement('#descriptor-panel-template');
+    const descriptorPanelTemplate = queryRequiredElement(
+        '#descriptor-panel-template',
+        /** @type {!DocumentFragment} */ (rootElement.getRootNode()));
 
     const descriptorPanelClone = /** @type {!HTMLElement} */
         (document.importNode(descriptorPanelTemplate.content, true));
@@ -2665,8 +2674,9 @@ cr.define('descriptor_panel', function() {
     rawDataTreeRoot.detail = {payload: {}, children: {}};
 
     if (descriptorPanelTitle) {
-      const descriptorPanelTitleTemplate =
-          queryRequiredElement('#descriptor-panel-title');
+      const descriptorPanelTitleTemplate = queryRequiredElement(
+          '#descriptor-panel-title',
+          /** @type {!DocumentFragment} */ (rootElement.getRootNode()));
       const clone =
           document.importNode(descriptorPanelTitleTemplate.content, true)
               .querySelector('descriptorpaneltitle');
@@ -2857,14 +2867,17 @@ cr.define('descriptor_panel', function() {
    * @param {!Uint8Array} rawData
    */
   function renderRawDataBytes(rawDataByteElement, rawData) {
-    const rawDataByteContainerTemplate =
-        queryRequiredElement('#raw-data-byte-container-template');
+    const rawDataByteContainerTemplate = queryRequiredElement(
+        '#raw-data-byte-container-template',
+        /** @type {!DocumentFragment} */ (rawDataByteElement.getRootNode()));
     const rawDataByteContainerClone =
         document.importNode(rawDataByteContainerTemplate.content, true);
     const rawDataByteContainerElement =
         rawDataByteContainerClone.querySelector('div');
 
-    const rawDataByteTemplate = queryRequiredElement('#raw-data-byte-template');
+    const rawDataByteTemplate = queryRequiredElement(
+        '#raw-data-byte-template',
+        /** @type {!DocumentFragment} */ (rawDataByteElement.getRootNode()));
     for (const value of rawData) {
       const rawDataByteClone =
           document.importNode(rawDataByteTemplate.content, true);

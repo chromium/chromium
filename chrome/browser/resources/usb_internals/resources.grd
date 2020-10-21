@@ -24,11 +24,12 @@
                flattenhtml="true"
                allowexternalscript="true"
                type="BINDATA" />
-      <include name="IDR_USB_INTERNALS_JS"
-               file="usb_internals.js"
-               type="BINDATA" />
       <include name="IDR_USB_INTERNALS_MOJOM_LITE_JS"
                file="${root_gen_dir}\chrome\browser\ui\webui\usb_internals\usb_internals.mojom-lite.js"
+               use_base_dir="false"
+               type="BINDATA" />
+      <include name="IDR_USB_INTERNALS_APP_JS"
+               file="${root_gen_dir}\chrome\browser\resources\usb_internals\app.js"
                use_base_dir="false"
                type="BINDATA" />
     </includes>

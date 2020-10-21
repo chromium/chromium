@@ -16,10 +16,12 @@ cr.define('devices_page', function() {
   class DevicesPage {
     /**
      * @param {!device.mojom.UsbDeviceManagerRemote} usbManager
+     * @param {!ShadowRoot} root
      */
-    constructor(usbManager) {
+    constructor(usbManager, root) {
       /** @private {!device.mojom.UsbDeviceManagerRemote} */
       this.usbManager_ = usbManager;
+      this.root = root;
       this.renderDeviceList_();
     }
 
@@ -33,10 +35,10 @@ cr.define('devices_page', function() {
       /** @type {!Array<!device.mojom.UsbDeviceInfo>} */
       const devices = response.results;
 
-      const tableBody = $('device-list');
+      const tableBody = this.root.querySelector('#device-list');
       tableBody.innerHTML = trustedTypes.emptyHTML;
 
-      const rowTemplate = document.querySelector('#device-row');
+      const rowTemplate = this.root.querySelector('#device-row');
 
       for (const device of devices) {
         /** @type {DocumentFragment|Node} */
@@ -78,10 +80,10 @@ cr.define('devices_page', function() {
     switchToTab_(device) {
       const tabId = device.guid;
 
-      if (null == $(tabId)) {
-        const devicePage = new DevicePage(this.usbManager_, device);
+      if (null == this.root.getElementById(tabId)) {
+        const devicePage = new DevicePage(this.usbManager_, device, this.root);
       }
-      $(tabId).selected = true;
+      this.root.getElementById(tabId).selected = true;
     }
   }
 
@@ -93,9 +95,11 @@ cr.define('devices_page', function() {
     /**
      * @param {!device.mojom.UsbDeviceManagerRemote} usbManager
      * @param {!device.mojom.UsbDeviceInfo} device
+     * @param {!ShadowRoot} root
      */
-    constructor(usbManager, device) {
+    constructor(usbManager, device, root) {
       this.usbManager_ = usbManager;
+      this.root = root;
       this.renderTab_(device);
     }
 
@@ -105,9 +109,9 @@ cr.define('devices_page', function() {
      * @private
      */
     renderTab_(device) {
-      const tabs = queryRequiredElement('tabs');
+      const tabs = queryRequiredElement('tabs', this.root);
 
-      const tabTemplate = queryRequiredElement('#tab-template');
+      const tabTemplate = queryRequiredElement('#tab-template', this.root);
       /** @type {DocumentFragment|Node} */
       const tabClone = document.importNode(tabTemplate.content, true);
 
@@ -122,11 +126,11 @@ cr.define('devices_page', function() {
       tab.id = device.guid;
 
       tabs.appendChild(tabClone);
-      cr.ui.decorate('tab', cr.ui.Tab);
+      cr.ui.decorate(tab, cr.ui.Tab);
 
-      const tabPanels = queryRequiredElement('tabpanels');
+      const tabPanels = queryRequiredElement('tabpanels', this.root);
       const tabPanelTemplate =
-          queryRequiredElement('#device-tabpanel-template');
+          queryRequiredElement('#device-tabpanel-template', this.root);
       /** @type {DocumentFragment|Node} */
       const tabPanelClone = document.importNode(tabPanelTemplate.content, true);
 
@@ -368,8 +372,8 @@ cr.define('devices_page', function() {
     const button = queryRequiredElement(`.${panelType}-button`, tabPanel);
     const displayElement =
         queryRequiredElement(`.${panelType}-panel`, tabPanel);
-    const descriptorPanel =
-        new descriptor_panel.DescriptorPanel(usbDevice, displayElement);
+    const descriptorPanel = new descriptor_panel.DescriptorPanel(
+        usbDevice, /** @type {!HTMLElement} */ (displayElement));
     switch (panelType) {
       case 'string-descriptor':
         descriptorPanel.initialStringDescriptorPanel(guid);
