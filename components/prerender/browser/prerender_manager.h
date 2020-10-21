@@ -177,17 +177,6 @@ class PrerenderManager : public content::RenderProcessHostObserver,
   bool IsWebContentsPrerendering(
       const content::WebContents* web_contents) const;
 
-  // Whether the PrerenderManager has an active prerender with the given url and
-  // SessionStorageNamespace associated with the given WebContents.
-  bool HasPrerenderedUrl(GURL url, content::WebContents* web_contents) const;
-
-  // Whether the PrerenderManager has an active prerender with the given url and
-  // SessionStorageNamespace associated with the given WebContents, and that
-  // prerender has finished loading..
-  bool HasPrerenderedAndFinishedLoadingUrl(
-      GURL url,
-      content::WebContents* web_contents) const;
-
   // Returns the PrerenderContents object for the given web_contents, otherwise
   // returns NULL. Note that the PrerenderContents may have been Destroy()ed,
   // but not yet deleted.
@@ -199,11 +188,6 @@ class PrerenderManager : public content::RenderProcessHostObserver,
   // Destroy()ed, but not yet deleted.
   virtual PrerenderContents* GetPrerenderContentsForRoute(int child_id,
                                                           int route_id) const;
-
-  // Returns the PrerenderContents object that is found in active prerenders to
-  // match the |render_process_id|. Otherwise returns a nullptr.
-  PrerenderContents* GetPrerenderContentsForProcess(
-      int render_process_id) const;
 
   // Returns a list of all WebContents being prerendered.
   std::vector<content::WebContents*> GetAllPrerenderingContents() const;

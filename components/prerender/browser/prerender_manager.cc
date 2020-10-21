@@ -286,36 +286,6 @@ bool PrerenderManager::IsWebContentsPrerendering(
   return GetPrerenderContents(web_contents);
 }
 
-bool PrerenderManager::HasPrerenderedUrl(
-    GURL url,
-    content::WebContents* web_contents) const {
-  content::SessionStorageNamespace* session_storage_namespace =
-      web_contents->GetController().GetDefaultSessionStorageNamespace();
-
-  for (const auto& prerender_data : active_prerenders_) {
-    PrerenderContents* prerender_contents = prerender_data->contents();
-    if (prerender_contents->Matches(url, session_storage_namespace))
-      return true;
-  }
-  return false;
-}
-
-bool PrerenderManager::HasPrerenderedAndFinishedLoadingUrl(
-    GURL url,
-    content::WebContents* web_contents) const {
-  content::SessionStorageNamespace* session_storage_namespace =
-      web_contents->GetController().GetDefaultSessionStorageNamespace();
-
-  for (const auto& prerender_data : active_prerenders_) {
-    PrerenderContents* prerender_contents = prerender_data->contents();
-    if (prerender_contents->Matches(url, session_storage_namespace) &&
-        prerender_contents->has_finished_loading()) {
-      return true;
-    }
-  }
-  return false;
-}
-
 PrerenderContents* PrerenderManager::GetPrerenderContents(
     const content::WebContents* web_contents) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -346,19 +316,6 @@ PrerenderContents* PrerenderManager::GetPrerenderContentsForRoute(
   RenderViewHost* render_view_host = RenderViewHost::FromID(child_id, route_id);
   web_contents = WebContents::FromRenderViewHost(render_view_host);
   return web_contents ? GetPrerenderContents(web_contents) : nullptr;
-}
-
-PrerenderContents* PrerenderManager::GetPrerenderContentsForProcess(
-    int render_process_id) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  for (auto& prerender_data : active_prerenders_) {
-    PrerenderContents* prerender_contents = prerender_data->contents();
-    if (prerender_contents->GetRenderViewHost()->GetProcess()->GetID() ==
-        render_process_id) {
-      return prerender_contents;
-    }
-  }
-  return nullptr;
 }
 
 std::vector<WebContents*>
