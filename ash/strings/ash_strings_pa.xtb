@@ -100,6 +100,7 @@
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ। ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਨੂੰ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) 'ਤੇ ਬਦਲ ਦਿੱਤਾ ਗਿਆ ਸੀ। ਤਬਦੀਲੀਆਂ ਨੂੰ ਰੱਖਣ ਲਈ ਤਸਦੀਕ ਕਰੋ 'ਤੇ ਕਲਿੱਕ ਕਰੋ। ਪਿਛਲੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ <ph name="TIMEOUT_SECONDS" /> ਵਿੱਚ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="1919743966458266018">ਕਾਰਜ ਪ੍ਰਬੰਧਕ ਖੋਲ੍ਹਣ ਲਈ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ <ph name="OLD_SHORTCUT" /> ਦੀ ਥਾਂ <ph name="NEW_SHORTCUT" /> ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="1923539912171292317">ਆਟੋਮੈਟਿਕ ਕਲਿਕ</translation>
+<translation id="1924640696879807758">ਫ਼ੋਨ ਤੋਂ</translation>
 <translation id="1928739107511554905">ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਅਟੈਚ ਕੀਤੇ ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਆਪਣੀ Chromebook ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰਨ ਲਈ ਟੱਚਸਕ੍ਰੀਨ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="1951012854035635156">ਸਹਾਇਕ</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -686,6 +687,7 @@
 <translation id="7904094684485781019">ਇਸ ਖਾਤੇ ਦੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਬਹੁ-ਗਿਣਤੀ ਸਾਈਨ-ਇਨ ਨੂੰ ਇਜਾਜ਼ਤ ਨਹੀਂ ਦਿੱਤੀ ਹੈ।</translation>
 <translation id="7933084174919150729">Google ਅਸਿਸਟੈਂਟ ਸਿਰਫ਼ ਪ੍ਰਾਇਮਰੀ ਪ੍ਰੋਫਾਈਲ ਲਈ ਹੀ ਉਪਲਬਧ ਹੈ।</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> ਅਤੇ <ph name="SECOND_PARENT_EMAIL" /> ਵੱਲੋਂ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
+<translation id="793716872548410480">ਆਪਣੇ ਕਲਿੱਪਬੋਰਡ ਨੂੰ ਦੇਖਣ ਲਈ <ph name="SHORTCUT_KEY_NAME" /> + V ਨੂੰ ਦਬਾਓ। ਤੁਹਾਡੇ ਵੱਲੋਂ ਕਾਪੀ ਕੀਤੀਆਂ ਗਈਆਂ ਆਖਰੀ 5 ਆਈਟਮਾਂ ਨੂੰ ਤੁਹਾਡੇ ਕਲਿੱਪਬੋਰਡ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="7955885781510802139">ਉੱਚ-ਵਖਰੇਵਾਂ ਮੋਡ</translation>
 <translation id="7977927628060636163">ਮੋਬਾਈਲ ਨੈੱਟਵਰਕਾਂ ਦੀ ਖੋਜ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="7980780401175799550">Chrome OS 'ਤੇ ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਨਵੇਂ ਤਰੀਕੇ ਵਰਤ ਕੇ ਦੇਖੋ</translation>

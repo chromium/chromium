@@ -675,9 +675,9 @@
 <translation id="3704162925118123524">ייתכן שתוצג דרישה להיכנס לדף ההתחברות של הרשת שבה אתה משתמש.</translation>
 <translation id="3704609568417268905"><ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> ‏- <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="370665806235115550">טוען...</translation>
+<translation id="370665806235115550">בטעינה...</translation>
 <translation id="3709599264800900598">טקסט שהעתקת</translation>
-<translation id="3711895659073496551">השהה</translation>
+<translation id="3711895659073496551">השהיה</translation>
 <translation id="3712624925041724820">אין מספיק רישיונות</translation>
 <translation id="3714780639079136834">‏להפעיל את חבילת הגלישה או את ה-Wi-Fi</translation>
 <translation id="3715597595485130451">‏התחברות ל-Wi-Fi</translation>
@@ -702,7 +702,7 @@
 <translation id="3784372983762739446">‏מכשירי Bluetooth</translation>
 <translation id="3787705759683870569">תאריך תפוגה: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">גודל 16</translation>
-<translation id="3789841737615482174">התקן</translation>
+<translation id="3789841737615482174">התקנה</translation>
 <translation id="3793574014653384240">כמות הקריסות שאירעו לאחרונה והסיבות שהובילו לקריסות האלה</translation>
 <translation id="3797522431967816232">Prc3 (Envelope)‎</translation>
 <translation id="3799805948399000906">גופן שהתבקש</translation>
@@ -873,7 +873,7 @@
 <translation id="4432792777822557199">דפים ב<ph name="SOURCE_LANGUAGE" /> יתורגמו ל<ph name="TARGET_LANGUAGE" /> מעכשיו והלאה</translation>
 <translation id="4434045419905280838">חלונות קופצים והפניות אוטומטיות</translation>
 <translation id="4435702339979719576">Postcard)‎</translation>
-<translation id="443673843213245140">‏השימוש בשרת Proxy הושבת, אך צויינה תצורת שרת Proxy מפורשת.</translation>
+<translation id="443673843213245140">‏השימוש בשרת Proxy הושבת, אך צוינה תצורת שרת Proxy מפורשת.</translation>
 <translation id="4466881336512663640">השינויים בטופס יתבטלו. להמשיך?</translation>
 <translation id="4476953670630786061">הטופס הזה לא מאובטח. המילוי האוטומטי נכבה.</translation>
 <translation id="4477350412780666475">הטראק הבא</translation>
@@ -1129,7 +1129,7 @@ Del</translation>
 <translation id="5492298309214877701">כתובת האתר הזה באינטראנט של החברה, הארגון או מוסד הלימודים, זהה לכתובת
 של אתר חיצוני.
 <ph name="LINE_BREAK" />
- נסה ליצור קשר עם מנהל המערכת.</translation>
+יש לנסות ליצור קשר עם מנהל המערכת.</translation>
 <translation id="549333378215107354">גודל 3</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">סימניות מנוהלות</translation>
@@ -1378,7 +1378,7 @@ Del</translation>
 <translation id="6468485451923838994">גופנים</translation>
 <translation id="647261751007945333">מדיניות המכשיר</translation>
 <translation id="6476284679642588870">ניהול אמצעי תשלום</translation>
-<translation id="6489534406876378309">התחל להעלות קריסות</translation>
+<translation id="6489534406876378309">התחלת ההעלאה של קריסות</translation>
 <translation id="6499038740797743453">לאפס את הסיסמה?</translation>
 <translation id="6502991525169604759">ללא השינויים שלך</translation>
 <translation id="6508722015517270189">‏הפעלה מחדש של Chrome</translation>
@@ -2016,7 +2016,7 @@ Del</translation>
 <translation id="9157595877708044936">מגדיר...</translation>
 <translation id="9158625974267017556">C6 (Envelope)‎</translation>
 <translation id="9168814207360376865">מתן הרשאה לאתרים לבדוק אם שמרת אמצעי תשלום</translation>
-<translation id="9169664750068251925">חסום תמיד באתר זה</translation>
+<translation id="9169664750068251925">אני רוצה לחסום תמיד באתר זה</translation>
 <translation id="9170848237812810038">&amp;ביטול</translation>
 <translation id="9171296965991013597">לצאת מהאפליקציה?</translation>
 <translation id="9173282814238175921">מסמך יחיד/גיליון חדש</translation>

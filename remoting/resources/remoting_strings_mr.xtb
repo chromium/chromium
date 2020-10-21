@@ -11,7 +11,7 @@
 <translation id="1546934824884762070">एक अनपेक्षित एरर आली. कृपया डेव्हलपरकडे या समस्येची तक्रार करा.</translation>
 <translation id="1697532407822776718">तुम्ही पूर्णपणे तयार आहात!</translation>
 <translation id="1742469581923031760">कनेक्ट करीत आहे...</translation>
-<translation id="177096447311351977">क्लायंट साठी चॅनेल IP: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
+<translation id="177096447311351977">क्लायंट साठी चॅनल IP: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">हटवा</translation>
 <translation id="2009755455353575666">कनेक्शन अयशस्वी</translation>
 <translation id="2038229918502634450">धोरण बदल विचारात घेण्यासाठी, होस्ट रीस्टार्ट करीत आहे.</translation>

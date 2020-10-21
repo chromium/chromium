@@ -958,7 +958,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2090165459409185032">Visita il sito google.com/accounts/recovery per recuperare i dati del tuo account</translation>
 <translation id="2090876986345970080">Impostazioni di sicurezza del sistema</translation>
 <translation id="2091887806945687916">Audio</translation>
-<translation id="209539936453343974">Per configurare la funzionalità Controllo genitori, un bambino deve avere un Account Google gestito da un genitore. <ph name="DEVICE_TYPE_PLURAL" /> consentono ai genitori di impostare dei limiti per il tempo di utilizzo, approvare o bloccare siti web e altro ancora tramite l'app Family Link. Se il bambino deve fare i compiti su siti come Google Classroom, è possibile aggiungere un account della scuola in un secondo momento.</translation>
+<translation id="209539936453343974">Per configurare la funzionalità Controllo genitori, un bambino deve avere un Account Google gestito da un genitore. I dispositivi <ph name="DEVICE_TYPE_PLURAL" /> consentono ai genitori di impostare dei limiti per il tempo di utilizzo, approvare o bloccare siti web e altro ancora tramite l'app Family Link. Se il bambino deve fare i compiti su siti come Google Classroom, è possibile aggiungere un account della scuola in un secondo momento.</translation>
 <translation id="2096715839409389970">Cancella cookie di terze parti</translation>
 <translation id="2097372108957554726">Devi accedere a Chrome per registrare nuovi dispositivi</translation>
 <translation id="2098805196501063469">Controlla le password rimanenti</translation>
@@ -5362,7 +5362,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7324297612904500502">Forum per la versione Beta</translation>
 <translation id="7325209047678309347">Carta inceppata</translation>
 <translation id="7325437708553334317">Estensione Contrasto elevato</translation>
-<translation id="7326004502692201767">Configura questo <ph name="DEVICE_TYPE" /> per un bambino</translation>
+<translation id="7326004502692201767">Configura il dispositivo <ph name="DEVICE_TYPE" /> per un bambino</translation>
 <translation id="7328699668338161242">L'assistente è già in grado di riconoscere la tua voce</translation>
 <translation id="7328867076235380839">Combinazione non valida</translation>
 <translation id="7329154610228416156">Accesso non riuscito perché è stato configurato l'utilizzo di un URL non protetto (<ph name="BLOCKED_URL" />). Contatta l'amministratore.</translation>
@@ -6210,7 +6210,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="826905130698769948">Certificato client non valido</translation>
 <translation id="8270242299912238708">Documenti PDF</translation>
 <translation id="827097179112817503">Mostra pulsante Home</translation>
-<translation id="8271379370373330993">I prossimi passaggi devono essere eseguiti dai genitori. Il <ph name="DEVICE_TYPE" /> può essere restituito al bambino dopo la creazione dell'account.</translation>
+<translation id="8271379370373330993">I prossimi passaggi devono essere eseguiti dai genitori. Il dispositivo <ph name="DEVICE_TYPE" /> può essere restituito al bambino dopo la creazione dell'account.</translation>
 <translation id="8272443605911821513">Gestisci le tue estensioni facendo clic su Estensioni nel menu "Altri strumenti".</translation>
 <translation id="8274332263553132018">Trasmetti file</translation>
 <translation id="8274924778568117936">Non spegnere o chiudere il tuo dispositivo <ph name="DEVICE_TYPE" /> fino al termine dell'aggiornamento. Il dispositivo <ph name="DEVICE_TYPE" /> si riavvierà al termine dell'installazione.</translation>
@@ -6235,7 +6235,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8300011035382349091">Modifica il preferito per questa scheda</translation>
 <translation id="8300374739238450534">Blu notte</translation>
 <translation id="8300849813060516376">OTASP non riuscito</translation>
-<translation id="8304383784961451596">Non disponi dell'autorizzazione per utilizzare questo dispositivo. Contatta l'amministratore per richiedere l'autorizzazione di accesso o per accedere con un Account Google supervisionato tramite Family Link.</translation>
+<translation id="8304383784961451596">Non disponi dell'autorizzazione per utilizzare questo dispositivo. Contatta l'amministratore per richiedere l'autorizzazione di accesso o accedi con un Account Google supervisionato tramite Family Link.</translation>
 <translation id="8308179586020895837">Chiedi conferma se <ph name="HOST" /> vuole accedere alla webcam</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">Il certificato esiste già</translation>

@@ -838,7 +838,7 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1931152874660185993">Nebyly nainstalovány žádné komponenty.</translation>
 <translation id="1932098463447129402">Nikoli před</translation>
 <translation id="1933809209549026293">Připojte prosím myš nebo klávesnici. Pokud používáte zařízení Bluetooth, zkontrolujte, zda je připraveno ke spárování.</translation>
-<translation id="1935303383381416800">Povolen přístup k vaší poloze</translation>
+<translation id="1935303383381416800">Povolení k přístupu k vaší poloze</translation>
 <translation id="1936931585862840749">Počet kopií, které chcete vytisknout, je třeba zadat jako číslo (od 1 do <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Typ architektury kontejneru <ph name="ARCHITECTURE_CONTAINER" /> do tohoto zařízení s architekturou <ph name="ARCHITECTURE_DEVICE" /> nelze importovat. Můžete tento kontejner zkusit obnovit do jiného zařízení nebo soubory v obrazu kontejneru otevřít v aplikaci Soubory.</translation>
 <translation id="1938351510777341717">Externí příkaz</translation>
@@ -5488,7 +5488,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7465635034594602553">Došlo k chybě. Několik minut počkejte a spusťte aplikaci <ph name="APP_NAME" /> znovu.</translation>
 <translation id="7465778193084373987">Adresa URL pro odvolání certifikátu Netscape</translation>
 <translation id="7469894403370665791">Automaticky připojit k této síti</translation>
-<translation id="7470424110735398630">Povolen přístup ke schránce</translation>
+<translation id="7470424110735398630">Povolení přístupu ke schránce</translation>
 <translation id="747114903913869239">Chyba: Nelze dekódovat rozšíření</translation>
 <translation id="7473891865547856676">Ne, děkuji</translation>
 <translation id="747459581954555080">Obnovit vše</translation>
@@ -6248,7 +6248,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8322814362483282060">Přístup této stránky k vašemu mikrofonu je zablokován.</translation>
 <translation id="8323167517179506834">Zadejte adresu URL.</translation>
 <translation id="8324784016256120271">Weby mohou pomocí souborů cookie sledovat vaši aktivitu prohlížení na různých webech, například k personalizaci reklam</translation>
-<translation id="8325413836429495820">Zakázán přístup ke schránce</translation>
+<translation id="8325413836429495820">Zákaz přístupu ke schránce</translation>
 <translation id="8326478304147373412">PKCS #7, řetězec certifikátu</translation>
 <translation id="8327039559959785305">Při připojování souborů systému Linux došlo k chybě. Zkuste to znovu.</translation>
 <translation id="8327676037044516220">Oprávnění a nastavení obsahu</translation>
@@ -6298,7 +6298,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8382913212082956454">Kopírovat &amp;e-mailovou adresu</translation>
 <translation id="8386091599636877289">Zásady nebyly nalezeny.</translation>
 <translation id="8386903983509584791">Vyhledávání je dokončeno</translation>
-<translation id="8387361103813440603">Zakázán přístup k vaší poloze</translation>
+<translation id="8387361103813440603">Zákaz přístupu k vaší poloze</translation>
 <translation id="8389416080014625855">Vytvořit QR kód pro tuto stránku</translation>
 <translation id="8389492867173948260">Povolit tomuto rozšíření číst a měnit všechna vaše data na navštívených webech:</translation>
 <translation id="8390449457866780408">Server není dostupný.</translation>

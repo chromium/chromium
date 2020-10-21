@@ -16,6 +16,7 @@
 <translation id="1105960400813249514">ಪರದೆ ಕ್ಯಾಪ್ಚರ್</translation>
 <translation id="1111673857033749125">ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಉಳಿಸಲಾದ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ.</translation>
 <translation id="1113597929977215864">ಸರಳೀಕೃತ ವೀಕ್ಷಣೆಯನ್ನು ತೋರಿಸಿ</translation>
+<translation id="1123070903960493543">ನೀವು Chrome ಜೊತೆಗೆ ಹೇಗೆ ಸಂವಹನ ನಡೆಸುತ್ತೀರಿ, ನೀವು ಆಯ್ಕೆಮಾಡಿರುವ ಸೆಟ್ಟಿಂಗ್‌ಗಳು, Chrome ಕ್ರ್ಯಾಶ್‌ಗಳ ಕುರಿತು ವಿವರಗಳು</translation>
 <translation id="1126809382673880764">ಅಪಾಯಕಾರಿ ವೆಬ್‌ಸೈಟ್‌ಗಳು, ಡೌನ್‌ಲೋಡ್‌ಗಳು ಮತ್ತು ವಿಸ್ತರಣೆಗಳ ವಿರುದ್ಧ ನಿಮಗೆ ರಕ್ಷಣೆ ನೀಡುವುದಿಲ್ಲ. Gmail ಮತ್ತು Search ನಂತಹ ಲಭ್ಯವಿರುವ ಇತರ Google ಸೇವೆಗಳಲ್ಲಿ, ನೀವು ಈಗಲೂ ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ರಕ್ಷಣೆಯನ್ನು ಪಡೆಯುತ್ತೀರಿ.</translation>
 <translation id="1129510026454351943">ವಿವರಗಳು: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1141800923049248244">{FILE_COUNT,plural, =1{1 ಡೌನ್‌ಲೋಡ್ ಬಾಕಿ ಇದೆ.}one{# ಡೌನ್‌ಲೋಡ್‌ಗಳು ಬಾಕಿ ಇವೆ.}other{# ಡೌನ್‌ಲೋಡ್‌ಗಳು ಬಾಕಿ ಇವೆ.}}</translation>
@@ -72,6 +73,7 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" />ವನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="1477626028522505441">ಸರ್ವರ್ ಸಮಸ್ಯೆಗಳ ಕಾರಣದಿಂದಾಗಿ <ph name="FILE_NAME" /> ಡೌನ್‌ಲೋಡ್ ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="1506061864768559482">ಹುಡುಕಾಟ ಇಂಜಿನ್</translation>
+<translation id="151267239139452619">ಡೌನ್‌ಲೋಡ್‌ಗಳಿಗೆ ಸೇರಿಸಿ</translation>
 <translation id="1513352483775369820">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ವೆಬ್ ಇತಿಹಾಸ</translation>
 <translation id="1513858653616922153">ಪಾಸ್‌ವರ್ಡ್ ಅಳಿಸಿ</translation>
 <translation id="1521774566618522728">ಇಂದು ಸಕ್ರಿಯ</translation>
@@ -158,6 +160,7 @@
 <translation id="2131665479022868825"><ph name="DATA" /> ಉಳಿತಾಯ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> ಮುಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="2139186145475833000">ಹೋಮ್ ಪರದೆಗೆ ಸೇರಿಸಿ</translation>
+<translation id="214888715418183969">ನೀವು Chrome ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲು ಬಯಸುವುದನ್ನು ಆರಿಸಿ. ನೀವು ಹಂಚಿಕೊಳ್ಳುವ ಮೆಟ್ರಿಕ್‌ಗಳನ್ನು Chrome ನ ವೈಶಿಷ್ಟ್ಯಗಳು, ಕಾರ್ಯಕ್ಷಮತೆ ಮತ್ತು ಸ್ಥಿರತೆಯನ್ನು ಸುಧಾರಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ.</translation>
 <translation id="2154484045852737596">ಕಾರ್ಡ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="2154710561487035718">URL ನಕಲಿಸಿ</translation>
 <translation id="2156074688469523661">ಉಳಿದ ಸೈಟ್‌ಗಳು (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -167,6 +170,7 @@
 <translation id="2175927920773552910">QR ಕೋಡ್</translation>
 <translation id="218608176142494674">ಹಂಚಿಕೆ</translation>
 <translation id="2195339740518523951">Chrome ನ ಪ್ರಬಲ ಭದ್ರತೆಯನ್ನು ಪಡೆಯಿರಿ</translation>
+<translation id="2200113223741723867">ಬಳಕೆಯ ಡೇಟಾ ಹಂಚಿಕೊಳ್ಳುವಿಕೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> ನಂತೆ ಮುಂದುವರಿಸಿ</translation>
 <translation id="2234876718134438132">ಸಿಂಕ್ ಮತ್ತು Google ಸೇವೆಗಳು</translation>
 <translation id="2239812875700136898">ಡಿಸ್ಕವರ್‌ಗಾಗಿ ಆಯ್ಕೆಗಳ ಬಟನ್‌ನಿಂದ ನಿಮ್ಮ ಕಥೆಗಳನ್ನು ನಿಯಂತ್ರಿಸಿ</translation>
@@ -371,6 +375,7 @@
 <translation id="3771290962915251154">ಪೋಷಕರ ನಿಯಂತ್ರಣಗಳು ಆನ್ ಆಗಿರುವ ಕಾರಣ, ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="3771694256347217732">Google ಸೇವಾ ನಿಯಮಗಳು</translation>
 <translation id="3773755127849930740">ಜೋಡಿಸುವಿಕೆ ಅನುಮತಿಸಲು <ph name="BEGIN_LINK" />ಬ್ಲೂಟೂತ್ ಆನ್ ಮಾಡಿ<ph name="END_LINK" /></translation>
+<translation id="3773856050682458546">ನೀವು ಭೇಟಿ ನೀಡುವ ವೆಬ್‌ಸೈಟ್‌ಗಳು ಮತ್ತು ನೀವು ಬಳಸುವ ಆ್ಯಪ್‌ಗಳ ಕುರಿತು ಮೂಲ ಡೇಟಾ ಹಾಗೂ ಮಾಹಿತಿ</translation>
 <translation id="3775705724665058594">ನಿಮ್ಮ ಸಾಧನಗಳಿಗೆ ಕಳುಹಿಸಿ</translation>
 <translation id="3778956594442850293">ಹೋಮ್‌ನ ಪರದೆಗೆ ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="3789841737615482174">ಇನ್‌ಸ್ಟಾಲ್</translation>
@@ -404,7 +409,9 @@
 <translation id="3988466920954086464">ಈ ಫಲಕದಲ್ಲಿ ತತ್‌ಕ್ಷಣ ಹುಡುಕಾಟ ಫಲಿತಾಂಶಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="4000212216660919741">ಆಫ್‌ಲೈನ್ ಹೋಮ್</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ಗಂಟೆ}one{# ಗಂಟೆಗಳು}other{# ಗಂಟೆಗಳು}}</translation>
+<translation id="4045764304651014138">ಬಳಕೆಯ ಡೇಟಾ</translation>
 <translation id="4056223980640387499">ಸೆಪಿಯಾ</translation>
+<translation id="4057643060762047384">ಇದಕ್ಕೆ ಸೇರಿಸಿ:</translation>
 <translation id="4060598801229743805">ಪರದೆಯ ಮೇಲಿನ ಭಾಗದಲ್ಲಿ ಲಭ್ಯವಿರುವ ಆಯ್ಕೆಗಳು</translation>
 <translation id="4062305924942672200">ಕಾನೂನು ಮಾಹಿತಿ</translation>
 <translation id="4084682180776658562">ಬುಕ್‌ಮಾರ್ಕ್</translation>
@@ -544,6 +551,7 @@
 <translation id="5039804452771397117">ಅನುಮತಿಸಿ</translation>
 <translation id="5040262127954254034">ಗೌಪ್ಯತೆ</translation>
 <translation id="5087580092889165836">ಕಾರ್ಡ್ ಸೇರಿಸಿ</translation>
+<translation id="5091249083535528968">ಬಳಕೆಯ ಡೇಟಾವನ್ನು ವಿಸ್ತರಿಸಲಾಗಿದೆ</translation>
 <translation id="509429900233858213">ದೋಷವೊಂದು ಕಾಣಿಸಿಕೊಂಡಿದೆ.</translation>
 <translation id="510275257476243843">1 ಗಂಟೆ ಉಳಿದಿದೆ</translation>
 <translation id="5123685120097942451">ಅದೃಶ್ಯ ಟ್ಯಾಬ್‌</translation>
@@ -650,6 +658,7 @@
 <translation id="5833984609253377421">ಲಿಂಕ್ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="5836192821815272682">Chrome ಅಪ್‌ಡೇಟ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="5853623416121554550">ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ</translation>
+<translation id="5854512288214985237">ಯಾವುದೇ ಅಂಕಿಅಂಶಗಳು ಅಥವಾ ಕ್ರ್ಯಾಶ್ ವರದಿಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸುವುದಿಲ್ಲ</translation>
 <translation id="5854790677617711513">30 ದಿನಗಳಿಗಿಂತ ಹಳೆಯದು</translation>
 <translation id="5855546874025048181">ಪರಿಷ್ಕರಿಸಿ: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">ಬ್ಲೂಟೂತ್ ಅಡಾಪ್ಟರ್ ಆನ್ ಮಾಡಲು Chrome ಗೆ ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
@@ -722,6 +731,7 @@
 <translation id="6303969859164067831">ಸೈನ್ ಔಟ್ ಮಾಡಿ ಮತ್ತು ಸಿಂಕ್ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="6312687380483398334">ವೆಬ್ ಆ್ಯಪ್‌ಗಳು (ನಿಶ್ಶಬ್ದ)</translation>
 <translation id="6316139424528454185">Android ಆವೃತ್ತಿಗೆ ಬೆಂಬಲವಿಲ್ಲ</translation>
+<translation id="6321526113093607004">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳಿಗೆ ಸೇರಿಸಿ</translation>
 <translation id="6324034347079777476">Android ಸಿಸ್ಟಂ ಸಿಂಕ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> ಮೂಲಕ ಹಂಚು</translation>
 <translation id="6337234675334993532">ಎನ್‌ಕ್ರಿಪ್ಶನ್</translation>
@@ -739,6 +749,7 @@
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> ನಲ್ಲಿ <ph name="ERROR_CODE" /></translation>
 <translation id="6404511346730675251">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="6406506848690869874">ಸಿಂಕ್</translation>
+<translation id="6410404864818553978">ಮೂಲ ಬಳಕೆಯ ಡೇಟಾ</translation>
 <translation id="6410883413783534063">ಒಂದೇ ಸಮಯದಲ್ಲಿ ಬೇರೆಬೇರೆ ಪುಟಗಳಿಗೆ ಭೇಟಿ ನೀಡಲು ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="6412673304250309937">Chrome ನಲ್ಲಿ ಸಂಗ್ರಹಣೆ ಮಾಡಲಾಗಿರುವ ಅಸುರಕ್ಷಿತ ಸೈಟ್‌ಗಳ ಪಟ್ಟಿಯನ್ನು ಬಳಸಿ, URL ಗಳನ್ನು ಪರಿಶೀಲಿಸುತ್ತದೆ. ಯಾವುದಾದರೂ ಸೈಟ್, ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಕದಿಯಲು ಪ್ರಯತ್ನಿಸಿದರೆ ಅಥವಾ ನೀವು ಹಾನಿಕಾರಕ ಫೈಲ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದಾಗ, ಪುಟದ ಕಂಟೆಂಟ್‌ನ ತುಣುಕುಗಳನ್ನು ಒಳಗೊಂಡ URL ಗಳನ್ನು ಸಹ Chrome, ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್‌ಗೆ ಕಳುಹಿಸಬಹುದು.</translation>
 <translation id="641643625718530986">ಮುದ್ರಿಸು...</translation>
@@ -832,6 +843,7 @@
 <translation id="7015203776128479407">ಪ್ರಾರಂಭಿಕ ಸಿಂಕ್ ಸೆಟಪ್ ಮುಗಿದಿಲ್ಲ. ಸಿಂಕ್ ಆಫ್ ಆಗಿದೆ.</translation>
 <translation id="7022756207310403729">ಬ್ರೌಸರ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="702463548815491781">TalkBack ಅಥವಾ ಪ್ರವೇಶ ಬದಲಾಯಿಸಿ ಆನ್ ಆಗಿದ್ದಾಗ ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="7027549951530753705"><ph name="ITEM_TITLE" /> ಅನ್ನು ಮರುಸ್ಥಾಪಿಸಲಾಗಿದೆ</translation>
 <translation id="7029809446516969842">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="703523980599857277">ಮುಖಪುಟವನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="7054588988317389591">ಚಿತ್ರದ ವಿವರಣೆ ಪಡೆಯಬೇಕೇ?</translation>
@@ -1014,6 +1026,7 @@
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> ಮತ್ತು ಹೆಚ್ಚಿನ ಸೈಟ್‌ಗಳು</translation>
 <translation id="8327155640814342956">ಉತ್ತಮ ಬ್ರೌಸಿಂಗ್ ಅನುಭವಕ್ಕಾಗಿ, Chrome ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲು ತೆರೆಯಿರಿ</translation>
 <translation id="8349013245300336738">ಬಳಸಿದ ಡೇಟಾ ಪ್ರಮಾಣದ ಪ್ರಕಾರ ವಿಂಗಡಿಸಿ</translation>
+<translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> ಡೌನ್‌ಲೋಡ್‌ಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಲಾಗಿದೆ</translation>
 <translation id="8364299278605033898">ಜನಪ್ರಿಯ ವೆಬ್‌ಸೈಟ್‌ಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="8368027906805972958">ಅಪರಿಚಿತ ಅಥವಾ ಬೆಂಬಲಿತವಲ್ಲದ ಸಾಧನ (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> ಸಿದ್ಧವಾಗಿದೆ.</translation>
@@ -1122,6 +1135,7 @@
 <translation id="9148126808321036104">ಪುನಃ ಸೈನ್ ಇನ್  ಆಗಿ</translation>
 <translation id="9155898266292537608">ನೀವು ಪದವನ್ನು ಕ್ಷಿಪ್ರವಾಗಿ ಟ್ಯಾಪ್ ಮಾಡುವ ಮೂಲಕವೂ ಹುಡುಕಬಹುದು</translation>
 <translation id="9169507124922466868">ನ್ಯಾವಿಗೇಷನ್ ಇತಿಹಾಸವು ಅರ್ಧ-ತೆರೆದಿದೆ</translation>
+<translation id="9191031968346938109">ಇದಕ್ಕೆ ಸೇರಿಸಿ…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 ನಿಮಿಷದ ಹಿಂದೆ ಪರಿಶೀಲಿಸಲಾಗಿದೆ}one{# ನಿಮಿಷಗಳ ಹಿಂದೆ ಪರಿಶೀಲಿಸಲಾಗಿದೆ}other{# ನಿಮಿಷಗಳ ಹಿಂದೆ ಪರಿಶೀಲಿಸಲಾಗಿದೆ}}</translation>
 <translation id="9204836675896933765">1 ಫೈಲ್ ಬಾಕಿ ಉಳಿದಿದೆ</translation>
 <translation id="9206873250291191720">A</translation>
@@ -1134,6 +1148,7 @@
 <translation id="938850635132480979">ದೋಷ: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="95817756606698420">Chrome ಚೀನಾದಲ್ಲಿ ಹುಡುಕಲು <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> ಬಳಸಬಹುದು. ನೀವು ಇದನ್ನು <ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳು<ph name="END_LINK" /> ನಲ್ಲಿ ಬದಲಾಯಿಸಬಹುದು.</translation>
+<translation id="962979164594783469">ಈ ಆ್ಯಪ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
 <translation id="968900484120156207">ನೀವು ಭೇಟಿ ನೀಡುವ ಪುಟಗಳು ಇಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತವೆ</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> ನಿಮಿಷಗಳು ಉಳಿದಿವೆ</translation>
 <translation id="974555521953189084">ಸಿಂಕ್ ಪ್ರಾರಂಭಿಸಲು ನಿಮ್ಮ ಪಾಸ್‌ಫ್ರೇಸ್ ನಮೂದಿಸಿ</translation>

@@ -3782,7 +3782,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5449588825071916739">Dodaj wszystkie karty do zakładek</translation>
 <translation id="5449716055534515760">Zamknij o&amp;kno</translation>
 <translation id="5452974209916053028">Bieżąca sesja incognito: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
-<translation id="5454005855577728171">Dymek z napisami został przesunięty <ph name="POSITION_ON_SCREEN_FROM_LEFT" />% w poprzek, <ph name="POSITION_ON_SCREEN_FROM_TOP" />% w dół</translation>
+<translation id="5454005855577728171">Dymek z napisami został przesunięty o <ph name="POSITION_ON_SCREEN_FROM_LEFT" />% w poprzek, <ph name="POSITION_ON_SCREEN_FROM_TOP" />% w dół</translation>
 <translation id="5454166040603940656">za pomocą <ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">Nieprawidłowe</translation>
 <translation id="5457459357461771897">Odczyt i usuwanie zdjęć, muzyki oraz innych multimediów na komputerze</translation>

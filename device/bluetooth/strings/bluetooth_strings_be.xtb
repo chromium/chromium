@@ -16,6 +16,7 @@
 <translation id="4986357476502426173">Відэапрылада (<ph name="DEVICE_NAME" />)</translation>
 <translation id="5271696982761495740">Планшэт (<ph name="ADDRESS" />)</translation>
 <translation id="5376363957846771741">Прылада невядомая або не падтрымліваецца (<ph name="ADDRESS" />)</translation>
+<translation id="571460437990229974"><ph name="DEVICE_NAME_AND_TYPE" /> <ph name="CONNECTION_STATUS" /></translation>
 <translation id="5716052956047449618">Мадэм (<ph name="DEVICE_NAME" />)</translation>
 <translation id="6459740836740815150">Аўтамабільная аўдыясістэма (<ph name="DEVICE_NAME" />)</translation>
 <translation id="6542922424766292144">Клавіятура (<ph name="DEVICE_NAME" />)</translation>

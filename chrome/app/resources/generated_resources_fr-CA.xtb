@@ -17,6 +17,7 @@
 <translation id="1012794136286421601">Vos fichiers Documents, Feuilles de calcul, Présentations et Dessins sont en cours de synchronisation. Ouvrez l'application Google Disque pour y accéder en ligne ou hors ligne.</translation>
 <translation id="1012876632442809908">Appareil USB-C (port avant)</translation>
 <translation id="1013707859758800957">L'exécution hors carré de sable d'un plugiciel a été autorisée sur cette page.</translation>
+<translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Modifier le nom du dossier</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Dernière journée pour mettre à jour l'appareil <ph name="DEVICE_TYPE" />}one{Mettez à jour l'appareil <ph name="DEVICE_TYPE" /> d'ici {NUM_DAYS} jour}other{Mettez à jour l'appareil <ph name="DEVICE_TYPE" /> d'ici {NUM_DAYS} jours}}</translation>
 <translation id="1016566241875885511">Détails supplémentaires (facultatif)</translation>
@@ -5116,7 +5117,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7005848115657603926">Numéros de pages non valides, utilisez le format <ph name="EXAMPLE_PAGE_RANGE" />.</translation>
 <translation id="7006634003215061422">Marge inférieure</translation>
 <translation id="7007648447224463482">Tout ouvrir dans une nouvelle fenêtre</translation>
-<translation id="7009709314043432820"><ph name="APP_NAME" /> utiliser votre caméra</translation>
+<translation id="7009709314043432820"><ph name="APP_NAME" /> utilise votre caméra</translation>
 <translation id="701080569351381435">Afficher le code source</translation>
 <translation id="7014174261166285193">Échec de l'installation.</translation>
 <translation id="7017004637493394352">Dites « Ok Google » encore une fois</translation>
@@ -5797,7 +5798,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7819857487979277519">PSK (WPA ou RSN)</translation>
 <translation id="7819992334107904369">Synchronisation Google Chrome</translation>
 <translation id="782057141565633384">C&amp;opier l'adresse de la vidéo</translation>
-<translation id="7822187537422052256">Voulez-vous vraiment cette adresse?</translation>
+<translation id="7822187537422052256">Voulez-vous vraiment retirer cette adresse?</translation>
 <translation id="7824864914877854148">Une erreur s'est produite et la sauvegarde n'a pas pu être terminée</translation>
 <translation id="7825666486843191125">Tous les contacts à proximité lorsque votre écran est déverrouillé</translation>
 <translation id="782590969421016895">Utilisez les pages actuelles</translation>
@@ -6874,7 +6875,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{Il vous reste une tentative.}one{Il vous reste # tentative.}other{Il vous reste # tentatives.}}</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9040661932550800571">Mettre à jour le mot de passe pour <ph name="ORIGIN" />?</translation>
-<translation id="9041049756004505730">La transcription instantanée est visible, appuyez sur ⌘+Option+flèche vers le haut ou vers le pour basculer la sélection</translation>
+<translation id="9041049756004505730">La transcription instantanée est visible, appuyez sur ⌘+Option+flèche vers le haut ou vers le bas pour basculer la sélection</translation>
 <translation id="9041692268811217999">Votre administrateur a désactivé l'accès aux fichiers locaux sur votre ordinateur</translation>
 <translation id="904224458472510106">Cette opération est irréversible</translation>
 <translation id="9042893549633094279">Sécurité et confidentialité</translation>

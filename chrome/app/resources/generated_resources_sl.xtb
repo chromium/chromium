@@ -17,6 +17,7 @@
 <translation id="1012794136286421601">Datoteke v Google Dokumentih, Google Preglednicah, Google Predstavitvah in Google Risbah se sinhronizirajo. Če želite dostopati do njih, ko imate internetno povezavo ali ste brez nje, odprite aplikacijo Google Drive.</translation>
 <translation id="1012876632442809908">Naprava USB-C (sprednja vrata)</translation>
 <translation id="1013707859758800957">Vtičniku brez varnostnih omejitev je bilo dovoljeno izvajanje na tej strani.</translation>
+<translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Urejanje imena mape</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Zadnji dan za posodobitev naprave <ph name="DEVICE_TYPE" />}one{Napravo <ph name="DEVICE_TYPE" /> posodobite v {NUM_DAYS} dnevu}two{Napravo <ph name="DEVICE_TYPE" /> posodobite v {NUM_DAYS} dnevih}few{Napravo <ph name="DEVICE_TYPE" /> posodobite v {NUM_DAYS} dnevih}other{Napravo <ph name="DEVICE_TYPE" /> posodobite v {NUM_DAYS} dnevih}}</translation>
 <translation id="1016566241875885511">Dodatni podatki (izbirno)</translation>

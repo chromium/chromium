@@ -17,6 +17,7 @@
 <translation id="1012794136286421601">正在同步您的文档、表格、幻灯片和绘图文件。打开Google云端硬盘应用可在线或离线访问这些文件。</translation>
 <translation id="1012876632442809908">USB-C 设备（前方端口）</translation>
 <translation id="1013707859758800957">某个未经过沙盒屏蔽的插件已获准在此页上运行。</translation>
+<translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">修改文件夹名称</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{今天是 <ph name="DEVICE_TYPE" /> 更新期限的最后一天}other{请在 {NUM_DAYS} 天内更新 <ph name="DEVICE_TYPE" />}}</translation>
 <translation id="1016566241875885511">其他信息（选填）</translation>

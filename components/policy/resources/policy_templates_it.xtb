@@ -2406,7 +2406,7 @@ Il valore della norma dovrebbe essere specificato in secondi. Il valore minimo d
 
       Se il criterio viene impostato su 0, la memorizzazione nella cache dei dati di autenticazione viene disattivata. I dati specifici dell'area di autenticazione vengono recuperati a ogni accesso, quindi la relativa memorizzazione nella cache può rallentare in modo significativo l'accesso degli utenti.
 
-      Se non viene configurato, i dati di autenticazione memorizzati nella cache possono essere riutilizzati fino a 73 ore dopo il primo accesso.
+      Se non viene configurato, i dati di autenticazione memorizzati nella cache possono essere riutilizzati per un periodo massimo di 73 ore.
 
       Nota: se il dispositivo viene riavviato, la cache viene svuotata. Anche i dati relativi all'area di autenticazione degli utenti temporanei vengono memorizzati nella cache. Disattiva la cache per impedire il tracciamento dell'area di autenticazione degli utenti temporanei.</translation>
 <translation id="4591366717022345234">Fornisce agli utenti una build di correzione rapida</translation>
@@ -2625,7 +2625,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="5017369989680827157">Se il criterio è impostato su True o se non viene configurato, gli utenti possono controllare la compilazione automatica per gli indirizzi nella UI.
 
       Se il criterio è impostato su False, la compilazione automatica non fornisce mai suggerimenti né compila le informazioni relative agli indirizzi, né salva le nuove informazioni inviate dagli utenti durante la navigazione sul Web.</translation>
-<translation id="5021550478471824215">La configurazione del criterio consente di specificare un elenco di condivisioni file di rete preimpostata. Ogni elemento ha un oggetto con 2 proprietà: <ph name="SHARE_URL_FIELD_NAME" /> e <ph name="MODE_FIELD_NAME" />.
+<translation id="5021550478471824215">La configurazione del criterio consente di specificare un elenco di condivisioni file di rete preimpostate. Ogni elemento ha un oggetto con 2 proprietà: <ph name="SHARE_URL_FIELD_NAME" /> e <ph name="MODE_FIELD_NAME" />.
 
       L'URL condivisione deve essere <ph name="SHARE_URL_FIELD_NAME" />.
 

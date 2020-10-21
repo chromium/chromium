@@ -4214,7 +4214,7 @@ Kebijakan ini hanya berlaku jika dukungan aplikasi Linux diaktifkan.</translatio
 <translation id="7068108874199666656">Memungkinkan pendorongan konfigurasi jaringan untuk diterapkan pada semua pengguna ke perangkat <ph name="PRODUCT_OS_NAME" />. Konfigurasi jaringan adalah string berformat JSON seperti yang didefinisikan oleh format Konfigurasi Jaringan Terbuka.</translation>
 <translation id="7070525176564511548">Sandi harus dimasukkan setiap minggu (168 jam)</translation>
 <translation id="7072208053150563108">Tingkat perubahan sandi mesin</translation>
-<translation id="7072567600438630966">Mengizinkan pengaktifan Phone Hub.</translation>
+<translation id="7072567600438630966">Izinkan pengaktifan Phone Hub.</translation>
 <translation id="7079519252486108041">Cekal pop-up di situs ini</translation>
 <translation id="7080072532759721791">Mengizinkan pengguna untuk mengupload atau mendownload file yang dilindungi sandi</translation>
 <translation id="7086677522575756117">Menentukan persentase yang digunakan untuk menskalakan penundaan peredupan layar ketika terdapat aktivitas pengguna saat layar redup atau segera setelah layar dimatikan.
@@ -4392,7 +4392,7 @@ Error yang sesuai ditampilkan jika pengguna mencoba untuk menyetel akun utama br
 Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Google apa pun sebagai akun utama browser di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="723103540848640830">Setel panjang minimum PIN layar kunci.</translation>
 <translation id="7234280155140786597">Nama hosting perpesanan asli yang dilarang (atau * untuk semua)</translation>
-<translation id="7246767840750730334">Mengizinkan pengaktifan notifikasi Phone Hub.</translation>
+<translation id="7246767840750730334">Izinkan pengaktifan notifikasi Phone Hub.</translation>
 <translation id="7249828445670652637">Mengaktifkan sertifikat CA <ph name="PRODUCT_OS_NAME" /> untuk aplikasi ARC</translation>
 <translation id="7252681704926980614">Kirimkan nama pengguna dan nama file ke server printer native beserta setiap pekerjaan cetak. Setelan defaultnya bukan untuk mengirim.
 
@@ -4973,7 +4973,7 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
       Kebijakan ini selalu berlaku untuk <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="8050080920415773384">Pencetakan Asli</translation>
 <translation id="8053580360728293758">Mengganti mode warna pencetakan default. Jika mode tersebut tidak tersedia, kebijakan ini akan diabaikan.</translation>
-<translation id="8056237304861875584">Mengizinkan pengaktifan kelanjutan tugas Phone Hub.</translation>
+<translation id="8056237304861875584">Izinkan pengaktifkan kelanjutan tugas Phone Hub.</translation>
 <translation id="8059164285174960932">URL tempat klien akses jarak jauh seharusnya memperoleh token autentikasi mereka</translation>
 <translation id="8077245272412229388">Menambahkan akun Kerberos yang telah diisi. Jika kredensial Kerberos cocok dengan kredensial login, akun dapat dikonfigurasi untuk menggunakan kembali kredensial login dengan menentukan '<ph name="LOGIN_EMAIL_PLACEHOLDER" />' dan <ph name="PASSWORD_PLACEHOLDER" />', masing-masing untuk akun utama dan sandi, sehingga tiket Kerberos dapat diambil secara otomatis kecuali autentikasi 2 langkah dikonfigurasi. Pengguna tidak dapat memodifikasi akun yang ditambahkan melalui kebijakan ini.
 

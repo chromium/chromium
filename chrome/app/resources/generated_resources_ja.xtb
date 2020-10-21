@@ -17,6 +17,7 @@
 <translation id="1012794136286421601">ドキュメント、スプレッドシート、スライド、図形描画ファイルは同期されています。Google ドライブ アプリを起動すると、これらのファイルにオンラインまたはオフラインでアクセスします。</translation>
 <translation id="1012876632442809908">USB-C デバイス（前面のポート）</translation>
 <translation id="1013707859758800957">このページでのサンドボックスの無効化プラグインの実行が許可されました。</translation>
+<translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">フォルダ名の編集</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{<ph name="DEVICE_TYPE" />の更新は今日が期限です}other{{NUM_DAYS} 日以内に <ph name="DEVICE_TYPE" />を更新してください}}</translation>
 <translation id="1016566241875885511">追加情報（省略可）</translation>
@@ -870,6 +871,7 @@
 <translation id="1976307821760494606"><ph name="DOMAIN" /> により ADB デバッグが無効になりました。<ph name="DEVICE_TYPE" /> は 24 時間以内にリセットされます。必要なファイルがあればバックアップしてください。</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" /> のロックを解除するにはスマートフォンを近づけます。</translation>
 <translation id="1978006917103730774">今後はソフトウェアとセキュリティに関するアップデートが自動的にインストールされます。</translation>
+<translation id="1978057560491495741">住所を削除</translation>
 <translation id="1979095679518582070">この機能をオフにしても、システム アップデートやセキュリティといった重要なサービスで必要な情報はデバイスから引き続き送信されます。</translation>
 <translation id="1979280758666859181">古いバージョンの <ph name="PRODUCT_NAME" /> のチャンネルに変更しようとしています。このチャンネル変更は、チャンネルのバージョンとお使いのデバイスにインストールされているバージョンとが一致したときに適用されます。</translation>
 <translation id="197989455406964291">KDC でサポートされていない暗号化タイプです</translation>
@@ -1072,6 +1074,7 @@
 <translation id="2224444042887712269">この設定は <ph name="OWNER_EMAIL" /> に帰属します。</translation>
 <translation id="2224551243087462610">フォルダ名の編集</translation>
 <translation id="2225864335125757863">アカウントのセキュリティ保護のため、今すぐ次のパスワードを変更してください。</translation>
+<translation id="2226204716217107988">別のプロフィールに切り替えますか？</translation>
 <translation id="2226449515541314767">このサイトには MIDI デバイスのフル コントロールは許可されていません。</translation>
 <translation id="2226907662744526012">PIN を入力して自動的にロックを解除する</translation>
 <translation id="222704500187107962">この例外は、現在のシークレット モード セッションを終了した後に自動的に削除されます</translation>
@@ -1141,6 +1144,7 @@
 <translation id="2307462900900812319">ネットワークを設定</translation>
 <translation id="230927227160767054">このページはサービス ハンドラのインストールを求めています。</translation>
 <translation id="2309620859903500144">このサイトではモーション センサーまたは光センサーへのアクセスがブロックされています。</translation>
+<translation id="2312219318583366810">ページの URL</translation>
 <translation id="2314165183524574721">現在の公開設定は非表示です</translation>
 <translation id="2314774579020744484">この言語を使用してページを翻訳します</translation>
 <translation id="2315414688463285945">[Linux ファイル] の設定中にエラーが発生しました。もう一度お試しください。</translation>
@@ -2346,6 +2350,7 @@
 <translation id="3713047097299026954">このセキュリティ キーにはログインデータが保存されていません</translation>
 <translation id="3714195043138862580">このデモデバイスはプロビジョニングを解除されている状態です。</translation>
 <translation id="3714633008798122362">ウェブ カレンダー</translation>
+<translation id="3715954932774762075">複数の言語に対応しているアプリやウェブサイトでは、次のリストの最初にある対応言語が使用されます。これらの設定はブラウザの設定と同期されています。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">トップページ</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Google の設定</translation>
@@ -2506,6 +2511,7 @@
 <translation id="3882165008614329320">カメラやファイルに保存されている動画</translation>
 <translation id="3886446263141354045">このサイトへのアクセス リクエストを <ph name="NAME" /> さんに送信しました</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> でメモをとる</translation>
+<translation id="3890064827463908288">Wi-Fi 同期を使用するには Chrome 同期をオンにしてください</translation>
 <translation id="3892414795099177503">OpenVPN / L2TP を追加...</translation>
 <translation id="3893536212201235195">ユーザー補助設定の読み取りと変更</translation>
 <translation id="3893630138897523026">ChromeVox（音声フィードバック）</translation>
@@ -3780,6 +3786,7 @@
 <translation id="5449588825071916739">すべてのタブをブックマークに追加する</translation>
 <translation id="5449716055534515760">ウィンドウを閉じる(&amp;D)</translation>
 <translation id="5452974209916053028">現在のシークレット モード セッション: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />、<ph name="RECENT_PERMISSIONS_CHANGE_1" />、<ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
+<translation id="5454005855577728171">字幕のふきだしが、左から <ph name="POSITION_ON_SCREEN_FROM_LEFT" />%、上から <ph name="POSITION_ON_SCREEN_FROM_TOP" />% の位置に移動しました</translation>
 <translation id="5454166040603940656">- <ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">無効</translation>
 <translation id="5457459357461771897">パソコンからの写真、音楽、その他のメディアの読み取りと削除</translation>
@@ -3923,6 +3930,7 @@
 <translation id="5602765853043467355">ブックマーク、履歴、パスワード、その他の設定情報をこのデバイスから削除する</translation>
 <translation id="5605623530403479164">その他の検索エンジン</translation>
 <translation id="5605758115928394442">本人確認の通知をご使用のスマートフォンに送信しました。</translation>
+<translation id="560834977503641186">Wi-Fi 同期の詳細</translation>
 <translation id="5608580678041221894">トリミング範囲を調整または移動するには次のキーをタップします</translation>
 <translation id="5609231933459083978">アプリケーションが無効になっているようです。</translation>
 <translation id="5610038042047936818">カメラモードに切り替え</translation>
@@ -4114,6 +4122,7 @@
 <translation id="5841270259333717135">イーサネットを設定する</translation>
 <translation id="5842497610951477805">Bluetooth 有効</translation>
 <translation id="5843706793424741864">華氏</translation>
+<translation id="584451707753263735">自動字幕起こしが表示されています。F6 キーを押すと、フォーカスを順番に移動できます</translation>
 <translation id="5844574845205796324">提案されるコンテンツの範囲を拡大する</translation>
 <translation id="5846200638699387931">関係を表す構文にエラーがあります: <ph name="ERROR_LINE" /></translation>
 <translation id="5846807460505171493">アップデートやアプリをインストールします。続行すると、Google、ご利用の携帯通信会社、デバイスの製造元からのアップデートやアプリもデバイスで自動的にダウンロードおよびインストールされる場合があることについて、同意したものと見なされます（ダウンロードの際にはモバイルデータ通信が使用される可能性もあります）。こうしたアプリの一部ではアプリ内購入が提案される場合もあります。</translation>
@@ -5370,6 +5379,7 @@
 <translation id="7340431621085453413">現在 <ph name="FULLSCREEN_ORIGIN" /> は全画面表示です。</translation>
 <translation id="7340650977506865820">サイトで画面が共有されています</translation>
 <translation id="7341834142292923918">このサイトへのアクセス許可が必要です</translation>
+<translation id="7343372807593926528">問題の詳細を記入してからフィードバックを送信してください。</translation>
 <translation id="7345706641791090287">パスワードを再入力</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7347452120014970266"><ph name="ORIGIN_NAME" /> により保存されたすべてのデータと Cookie、インストールされたアプリが削除されます</translation>
@@ -5787,6 +5797,7 @@
 <translation id="7819857487979277519">PSK（WPA または RSN）</translation>
 <translation id="7819992334107904369">Chrome 同期</translation>
 <translation id="782057141565633384">動画アドレスをコピー(&amp;C)</translation>
+<translation id="7822187537422052256">この住所を削除してもよろしいですか？</translation>
 <translation id="7824864914877854148">エラーが発生したため、バックアップを完了できませんでした</translation>
 <translation id="7825666486843191125">画面のロックが解除されているときに近くにいるすべての連絡先</translation>
 <translation id="782590969421016895">現在のページを使用</translation>
@@ -6314,6 +6325,7 @@
 <translation id="8419098111404128271">「<ph name="SEARCH_TEXT" />」の検索結果</translation>
 <translation id="8419368276599091549"><ph name="DEVICE_TYPE" /> へようこそ</translation>
 <translation id="8420308167132684745">辞書のエントリを編集</translation>
+<translation id="8421361468937925547">自動字幕起こし（英語のみ）</translation>
 <translation id="8422787418163030046">トレイがありません</translation>
 <translation id="8425213833346101688">変更</translation>
 <translation id="8425492902634685834">タスクバーに固定</translation>
@@ -6342,6 +6354,7 @@
 <translation id="8449036207308062757">ストレージを管理</translation>
 <translation id="8452135315243592079">SIM カードがありません</translation>
 <translation id="8455026683977728932">ADB のイラストレーションを有効にできませんでした。</translation>
+<translation id="8456398879271637452">自動字幕起こしが表示されています。Ctrl+戻る、または Ctrl+次へを押すと、フォーカスを順番に移動できます</translation>
 <translation id="845702320058262034">接続できません。スマートフォンの Bluetooth がオンになっていることを確認してください。</translation>
 <translation id="8457451314607652708">ブックマークをインポート</translation>
 <translation id="8458627787104127436">新しいウィンドウですべて開く（<ph name="URL_COUNT" /> 件の URL）</translation>
@@ -6853,6 +6866,7 @@
 <translation id="9027459031423301635">新しいタブで開く(&amp;T)</translation>
 <translation id="9030515284705930323">組織の設定により、アカウントで Google Play ストアをご利用いただくことができません。詳しくは管理者にお尋ねください。</translation>
 <translation id="9030785788945687215">Gmail</translation>
+<translation id="9030855135435061269">「<ph name="PLUGIN_NAME" />」のサポートは終了しました</translation>
 <translation id="9031549947500880805">Google ドライブにデータをバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ内容にはアプリのデータが含まれます。</translation>
 <translation id="9033765790910064284">続行</translation>
 <translation id="9033857511263905942">貼り付け(&amp;P)</translation>
@@ -6861,6 +6875,7 @@
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{あと 1 回試行できます。}other{あと # 回試行できます。}}</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9040661932550800571"><ph name="ORIGIN" /> のパスワードを更新しますか？</translation>
+<translation id="9041049756004505730">自動字幕起こしが表示されています。⌘+option+上矢印または下矢印を押すと、フォーカスを順番に移動できます。</translation>
 <translation id="9041692268811217999">パソコンのローカル ファイルへのアクセスは管理者によって無効にされています</translation>
 <translation id="904224458472510106">この操作は元に戻せません</translation>
 <translation id="9042893549633094279">プライバシーとセキュリティ</translation>
@@ -6899,6 +6914,7 @@
 <translation id="9088446193279799727">Linux を設定できませんでした。インターネットに接続してから、もう一度お試しください。</translation>
 <translation id="9088917181875854783">「<ph name="DEVICE_NAME" />」でこのパスキーが表示されていることを確認してください:</translation>
 <translation id="9089416786594320554">入力方法</translation>
+<translation id="909108997331068008"><ph name="EXISTING_USER" /> さんのプロフィールで <ph name="NEW_USER" /> にすでにログインしています</translation>
 <translation id="9093429538970210897">アップグレードを完了できない場合に備えて、ファイルをバックアップしておくことをおすすめします。アップグレードを開始すると、Linux（ベータ版）はシャットダウンされます。続行する前に、開いているファイルを保存してください。</translation>
 <translation id="9094033019050270033">パスワードを更新</translation>
 <translation id="9094038138851891550">無効なユーザー名です</translation>
@@ -7072,5 +7088,6 @@
 <translation id="994289308992179865">ループ(&amp;L)</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">安全な接続を確立しています...</translation>
+<translation id="99731366405731005">Wi-Fi 同期を使用するには <ph name="LINK1_BEGIN" />Chrome 同期<ph name="LINK1_END" />をオンにしてください。<ph name="LINK2_BEGIN" />詳細<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">検証(&amp;I)</translation>
 </translationbundle>

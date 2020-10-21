@@ -9,6 +9,7 @@
 <translation id="1131805035311359397">Para comprobar si tus contraseñas están a salvo de violaciones de la seguridad de los datos y otros problemas de seguridad, <ph name="BEGIN_LINK" />accede a Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Acerca de Chromium</translation>
 <translation id="1315551408014407711">Configura tu nuevo perfil de Chromium</translation>
+<translation id="1357932062193643861">Preguntar al abrir Chromium</translation>
 <translation id="1396446129537741364">Chromium está intentando mostrar contraseñas.</translation>
 <translation id="1414495520565016063">Accediste a Chromium.</translation>
 <translation id="151962892725702025">El Sistema operativo Chromium no pudo sincronizar los datos porque la sincronización no está disponible para el dominio.</translation>
@@ -179,6 +180,7 @@
 <translation id="6863361426438995919">Google Pay (copiada en Chromium)</translation>
 <translation id="6893813176749746474">Chromium fue actualizado, pero no lo has utilizado en los últimos 30 días.</translation>
 <translation id="6964305034639999644">Abrir vínculo en una ventana de navegación de incó&amp;gnito de Chromium</translation>
+<translation id="6978145336957848883">Las contraseñas poco seguras son fáciles de adivinar. Permite que Chromium <ph name="BEGIN_LINK" />cree y recuerde contraseñas seguras para ti<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium necesita permiso para acceder a tu micrófono para este sitio</translation>
 <translation id="701244094609242530">Chromium no puede revisar las extensiones. Vuelve a intentarlo más tarde.</translation>
 <translation id="7028347026395185822">{NUM_HOURS,plural, =1{Chromium no encontró software dañino conocido en la computadora. Última verificación: hace 1 hora.}other{Chromium no encontró software dañino conocido en la computadora. Última verificación: hace {NUM_HOURS} horas.}}</translation>
@@ -240,7 +242,7 @@
 <translation id="8621669128220841554">La instalación falló debido a un error no especificado. Descarga Chromium otra vez.</translation>
 <translation id="8697124171261953979">También controla qué página se muestra al iniciar Chromium o al realizar búsquedas desde el cuadro multifunción.</translation>
 <translation id="8704119203788522458">Este es tu Chromium</translation>
-<translation id="8733034664173984083">Se produjo un error cuando Chromium comprobaba que la computadora no tuviera software dañino</translation>
+<translation id="8733034664173984083">Se produjo un error cuando Chromium buscaba software dañino en la computadora</translation>
 <translation id="8796602469536043152">Chromium necesita permiso para acceder a tu cámara y micrófono para este sitio</translation>
 <translation id="8803635938069941624">Condiciones del Sistema operativo Chromium</translation>
 <translation id="8821041990367117597">Chromium no pudo sincronizar los datos porque los datos de acceso de la cuenta están obsoletos.</translation>

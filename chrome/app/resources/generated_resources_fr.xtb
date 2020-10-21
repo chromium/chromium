@@ -1689,7 +1689,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2932883381142163287">Signaler un abus</translation>
 <translation id="2933632078076743449">Dernière mise à jour</translation>
 <translation id="2934999512438267372">Contrôle total des appareils MIDI autorisé</translation>
-<translation id="2935654492420446828">Ajoutez un compte scolaire ultérieurement</translation>
+<translation id="2935654492420446828">Ajouter un compte scolaire plus tard</translation>
 <translation id="2936851848721175671">Sauvegarde et restauration</translation>
 <translation id="2938225289965773019">Ouvrir les liens "<ph name="PROTOCOL" />"</translation>
 <translation id="2938845886082362843">Afficher et supprimer les données de connexion stockées sur votre clé de sécurité</translation>
@@ -2814,7 +2814,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="425573743389990240">Taux de décharge de la batterie en watts (une valeur négative signifie que la batterie est en charge)</translation>
 <translation id="4256316378292851214">En&amp;registrer la vidéo sous...</translation>
 <translation id="4258348331913189841">Systèmes de fichiers</translation>
-<translation id="4259388776256904261">Cette opération peut prendre quelques instants</translation>
+<translation id="4259388776256904261">Cette opération peut prendre un certain temps</translation>
 <translation id="4260182282978351200">Le fichier <ph name="FILE_NAME" /> est peut-être dangereux. Souhaitez-vous l'envoyer au service Protection Avancée de Google pour analyse ? Appuyez sur Maj+F6 pour accéder à la barre de téléchargements.</translation>
 <translation id="4263223596040212967">Vérifiez la disposition de votre clavier et réessayez.</translation>
 <translation id="4263757076580287579">L'enregistrement de l'imprimante a été annulé.</translation>
@@ -3785,7 +3785,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5449588825071916739">Ajouter tous les onglets aux favoris…</translation>
 <translation id="5449716055534515760">Fe&amp;rmer la fenêtre</translation>
 <translation id="5452974209916053028">Session de navigation privée actuelle : <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
-<translation id="5454005855577728171">Bulle de sous-titres décalée de <ph name="POSITION_ON_SCREEN_FROM_LEFT" /> % sur l'axe des abscisses et de <ph name="POSITION_ON_SCREEN_FROM_TOP" /> % sur l'axe des ordonnées</translation>
+<translation id="5454005855577728171">Bulle de sous-titres décalée de <ph name="POSITION_ON_SCREEN_FROM_LEFT" /> % sur la droite et de <ph name="POSITION_ON_SCREEN_FROM_TOP" /> % vers le bas</translation>
 <translation id="5454166040603940656">avec <ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">Non valide</translation>
 <translation id="5457459357461771897">Accéder aux photos, à la musique et aux autres fichiers multimédias stockés sur votre ordinateur et les supprimer</translation>
@@ -4985,7 +4985,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6865313869410766144">Données de saisie automatique</translation>
 <translation id="6865598234501509159">La page n'est pas en <ph name="LANGUAGE" /></translation>
 <translation id="6865708901122695652">Journaux d'événements WebRTC (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
-<translation id="686609795364435700">Fort</translation>
+<translation id="686609795364435700">Faible</translation>
 <translation id="686664946474413495">Température des couleurs</translation>
 <translation id="6868934826811377550">Voir les détails</translation>
 <translation id="6871644448911473373">Répondeur OCSP : <ph name="LOCATION" /></translation>
@@ -6212,7 +6212,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="826905130698769948">Certificat client non valide</translation>
 <translation id="8270242299912238708">Documents PDF</translation>
 <translation id="827097179112817503">Afficher le bouton Accueil</translation>
-<translation id="8271379370373330993">Les étapes suivantes sont réservées aux parents. Vous pourrez rendre le <ph name="DEVICE_TYPE" /> à votre enfant après la configuration du compte.</translation>
+<translation id="8271379370373330993">Les étapes suivantes sont réservées aux parents. Vous pourrez redonner l'appareil <ph name="DEVICE_TYPE" /> à votre enfant après la configuration du compte.</translation>
 <translation id="8272443605911821513">Cliquer sur "Extensions" dans le menu "Autres outils" pour gérer les extensions</translation>
 <translation id="8274332263553132018">Caster le fichier</translation>
 <translation id="8274924778568117936">N'éteignez pas et ne fermez pas votre <ph name="DEVICE_TYPE" /> avant la fin de la mise à jour. Votre <ph name="DEVICE_TYPE" /> redémarrera une fois l'installation terminée.</translation>

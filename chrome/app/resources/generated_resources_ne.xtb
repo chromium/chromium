@@ -866,6 +866,7 @@
 <translation id="1976307821760494606"><ph name="DOMAIN" /> ले ADB डिबग प्रक्रिया असक्षम पारेको छ। परिणामस्वरूप, अबको २४ घन्टामा तपाईंको <ph name="DEVICE_TYPE" /> रिसेट हुने छ। आफूले सुरक्षित राख्न चाहेका सबै फाइलहरू ब्याकअप गर्नुहोस्।</translation>
 <translation id="1977965994116744507">आफ्नो <ph name="DEVICE_TYPE" /> अनलक गर्न तपाईं फोनलाई अझ नजिक ल्याउनुहोस्‌।</translation>
 <translation id="1978006917103730774">भविष्यमा सफ्टवेयर र सुरक्षासम्बन्धी अद्यावधिकहरू स्वतः स्थापना गरिने छन्।</translation>
+<translation id="1978057560491495741">ठेगाना हटाउनुहोस्</translation>
 <translation id="1979095679518582070">यो सुविधा निष्क्रिय पार्नुले प्रणालीको अद्यावधिक र सुरक्षा जस्ता अत्यावश्यक सेवाहरूलाई आवश्यक पर्ने जानकारी पठाउने यस यन्त्रको क्षमतालाई असर गर्दैन।</translation>
 <translation id="1979280758666859181">तपाइँले <ph name="PRODUCT_NAME" /> को पुरानो संस्करण भएको च्यानलमा परिवर्नत गर्दै हुनुहुन्छ। तपाइँ यन्त्रमा हालै स्थपित संस्करणसँग च्यानल संस्करण मेल खायो पछि च्यानल परिवर्तन लागू हुनेछ।</translation>
 <translation id="197989455406964291">KDC ले इन्क्रिप्सनको यो प्रकारलाई समर्थन गर्दैन</translation>
@@ -1067,6 +1068,7 @@
 <translation id="2224444042887712269">यो सेटिङ <ph name="OWNER_EMAIL" /> को हो</translation>
 <translation id="2224551243087462610">फोल्डर नाम सम्पादन गर्नुहोस्</translation>
 <translation id="2225864335125757863">आफ्नो खाता सुरक्षित राख्न यी पासवर्डहरू तुरुन्तै बदल्नुहोस्:</translation>
+<translation id="2226204716217107988">अर्को प्रोफाइल प्रयोग गर्न थाल्ने हो?</translation>
 <translation id="2226449515541314767">MIDI यन्त्रहरूको पूरा नियन्त्रणको लागि यो साइट ब्लक गरिएको छ।</translation>
 <translation id="2226907662744526012">एक पटक PIN प्रविष्टि गरेपछि स्वतः अनलक हुने सुविधा सक्षम पार्नुहोस्</translation>
 <translation id="222704500187107962">तपाईं हालको इन्कग्निटो सत्रबाट बाहिरिएपछि यो अपवाद स्वतः हटाइने छ</translation>
@@ -1136,6 +1138,7 @@
 <translation id="2307462900900812319">नेटवर्क कन्फिगर गर्नुहोस्</translation>
 <translation id="230927227160767054">यस पृष्ठले एक सेवा सञ्चालनकर्ता स्थापना गर्न चाहन्छ।</translation>
 <translation id="2309620859903500144">यो साइटलाई तपाईंको चाल वा प्रकाशसम्बन्धी सेन्सरहरूको पहुँच राख्नबाट रोक लागाइएको छ।</translation>
+<translation id="2312219318583366810">पेजको URL</translation>
 <translation id="2314165183524574721">हालको भिजिबिलिटी सेटिङ यस प्रकार छ: लुकाइएको</translation>
 <translation id="2314774579020744484">पृष्ठहरू अनुवाद गर्दा प्रयोग हुने भाषा</translation>
 <translation id="2315414688463285945">Linux का फाइलहरू कन्फिगर गर्ने क्रममा त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
@@ -2340,6 +2343,7 @@
 <translation id="3713047097299026954">यो सुरक्षा साँचोमा साइन इन गर्न चाहिने कुनै पनि डेटा छैन</translation>
 <translation id="3714195043138862580">यो डेमो यन्त्रलाई प्रयोगबाट हटाइएको छ।</translation>
 <translation id="3714633008798122362">वेब पात्रो</translation>
+<translation id="3715954932774762075">एकभन्दा बढी भाषामा उपलब्ध एप र वेबसाइटहरूले यो सूचीको प्रयोग गर्न मिल्ने पहिलो भाषा प्रयोग गर्ने छन्। यी प्राथमिकताहरू तपाईंको ब्राउजरका सेटिङसँग सिंक गरिन्छन्। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">होमपेज</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">तपाईं र Google</translation>
@@ -2500,6 +2504,7 @@
 <translation id="3882165008614329320">क्यामेरा वा फाइलको विद्यमान भिडियो</translation>
 <translation id="3886446263141354045">यो साइटमाथि पहुँच राख्ने तपाईंको अनुरोध <ph name="NAME" /> लाई पठाइएको छ</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> मार्फत टिपोट लिँदै</translation>
+<translation id="3890064827463908288">Wi-Fi सिंक प्रयोग गर्न Chrome सिंक अन गर्नुहोस्</translation>
 <translation id="3892414795099177503">OpenVPN / L2TP थप्नुहोस्...</translation>
 <translation id="3893536212201235195">तपाईंको पहुँच सेटिङहरू पढेर परिवर्तन गर्नुहोस्</translation>
 <translation id="3893630138897523026">ChromeVox (बोली पृष्ठपोषण)</translation>
@@ -3770,6 +3775,7 @@
 <translation id="5449588825071916739">सबै ट्याबहरूलाई बुकमार्क गर्नुहोस्</translation>
 <translation id="5449716055534515760">सञ्झ्या&amp;ल बन्द गर्नुहोस्</translation>
 <translation id="5452974209916053028">हालको इन्कोग्निटो सत्र: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
+<translation id="5454005855577728171">क्याप्सन बबल बायाँदेखि दायाँ <ph name="POSITION_ON_SCREEN_FROM_LEFT" />% र माथिदेखि त‌ल <ph name="POSITION_ON_SCREEN_FROM_TOP" />% सारियो</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> सँग</translation>
 <translation id="5457113250005438886">अवैध</translation>
 <translation id="5457459357461771897">तपाईंको कम्प्युटरबाट तस्बिरहरू, सङ्गीत, र अन्य मिडिया पहुँच गर्नुहोस् र हटाउनुहोस्</translation>
@@ -3913,6 +3919,7 @@
 <translation id="5602765853043467355">यो यन्त्रबाट पुस्तक चिन्ह, इतिहास, पासवर्ड र थप कुराहरू खाली गर्नुहोस्</translation>
 <translation id="5605623530403479164">अन्य खोज इन्धनहरू</translation>
 <translation id="5605758115928394442">यो व्यक्ति तपाईं नै हो भन्ने सुनिश्चित गर्न तपाईंको फोनमा एउटा सूचना पठाइयो।</translation>
+<translation id="560834977503641186">Wi-Fi सिंकका बारेमा थप जान्नुहोस्</translation>
 <translation id="5608580678041221894">क्रप गर्ने क्षेत्रलाई समायोजन गर्न वा सार्न निम्न कुञ्जीहरूमा ट्याप गर्नुहोस्</translation>
 <translation id="5609231933459083978">एप अवैध जस्तो देखिन्छ।</translation>
 <translation id="5610038042047936818">क्यामेरा मोड प्रयोग गर्नुहोस्</translation>
@@ -4103,6 +4110,7 @@
 <translation id="5841270259333717135">इथरनेट कन्फिगर गर्नुहोस्</translation>
 <translation id="5842497610951477805">ब्लुटुथ सक्षम</translation>
 <translation id="5843706793424741864">फरेनहाइट</translation>
+<translation id="584451707753263735">लाइभ क्याप्सन देखिइरहेको छ, फोकस सारेर अर्को डायलगमा लैजान F6 थिच्नुहोस्</translation>
 <translation id="5844574845205796324">अन्वेषण गरिनु पर्ने नयाँ सामग्री सिफारिस गरियोस्</translation>
 <translation id="5846200638699387931">सम्बन्धको विन्याससम्बन्धी त्रुटि: <ph name="ERROR_LINE" /></translation>
 <translation id="5846807460505171493">एप र तिनका अद्यावधिकहरू स्थापना गर्नुहोस्। जारी राखेर, तपाईं यस यन्त्रले Google, तपाईंका सेवा प्रदायक र तपाईंको यन्त्रका उत्पादकहरूका एप र तिनका अद्यावधिकहरू स्वत: डाउनलोड गरी स्थापना गर्न पनि सक्छ तथा यो काममा सम्भवतः मोबाइल इन्टरनेटको प्रयोग पनि हुन सक्छ भन्ने कुरामा सहमति जनाउनुहुन्छ। यीमध्ये केही एपहरूले एपभित्र किनमेल गर्ने सुविधा प्रदान गर्न सक्छन्।</translation>
@@ -5355,6 +5363,7 @@
 <translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> अब पूर्ण स्क्रीन छ।</translation>
 <translation id="7340650977506865820">साइटले तपाईंको स्क्रिन आदान प्रदान गर्दै छ</translation>
 <translation id="7341834142292923918">यो साइटमाथि पहुँच राख्न चाहन्छ</translation>
+<translation id="7343372807593926528">कृपया प्रतिक्रिया पठाउनुअघि आफ्नो समस्या वर्णन गर्नुहोस्।</translation>
 <translation id="7345706641791090287">तपाईँको पासवर्ड पुष्टि गर्नुहोस्</translation>
 <translation id="7346909386216857016">ठिक छ, बुझेँ</translation>
 <translation id="7347452120014970266">यस कार्यले <ph name="ORIGIN_NAME" /> र यसमा इन्स्टल गरिएका एपहरूले भण्डारण गरेका सबै डेटा र कुकीहरू हटाउने छ</translation>
@@ -5771,6 +5780,7 @@
 <translation id="7819857487979277519">PSK (WPA वा RSN)</translation>
 <translation id="7819992334107904369">Chrome सिंक</translation>
 <translation id="782057141565633384">भिडियो ठेगानाको प्रतिलिपि बनाउनुहोस्</translation>
+<translation id="7822187537422052256">तपाईंले यो ठेगाना हटाउन खोज्नुभएकै हो?</translation>
 <translation id="7824864914877854148">कुनै त्रुटि भएकाले ब्याकअप पूरा गर्न सकिएन</translation>
 <translation id="7825666486843191125">तपाईंको स्क्रिन अनलक हुँदा तपाईंको नजिकै रहेका सम्पर्क सूचीमा भएका सबै व्यक्तिहरू</translation>
 <translation id="782590969421016895">हालका पृष्ठहरू प्रयोग गर्नुहोस्</translation>
@@ -6296,6 +6306,7 @@
 <translation id="8419098111404128271">'<ph name="SEARCH_TEXT" />' सम्बन्धी खोजका परिणामहरू</translation>
 <translation id="8419368276599091549">तपाईंको <ph name="DEVICE_TYPE" /> मा स्वागत छ!</translation>
 <translation id="8420308167132684745">शब्दकोशका प्रविष्टिहरू सम्पादन गर्नुहोस्</translation>
+<translation id="8421361468937925547">लाइभ क्याप्सन (अङ्ग्रेजी भाषामा मात्र)</translation>
 <translation id="8422787418163030046">ट्रे छैन</translation>
 <translation id="8425213833346101688">परिवर्तन गर्नुहोस्</translation>
 <translation id="8425492902634685834">कार्यपट्टीमा पिन गर्नुहोस्</translation>
@@ -6324,6 +6335,7 @@
 <translation id="8449036207308062757">भण्डारणको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="8452135315243592079">SIM कार्ड उपलब्ध छैन</translation>
 <translation id="8455026683977728932">ADB चित्रण सक्षम पार्न सकिएन</translation>
+<translation id="8456398879271637452">लाइभ क्याप्सन देखिइरहेको छ, फोकस सारेर अर्को डायलगमा लैजान Ctrl + Back वा Ctrl + Forward थिच्नुहोस्</translation>
 <translation id="845702320058262034">जडान गर्न सकिएन। आफ्नो फोनको ब्लुटुथ सक्रिय गरिएको कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="8457451314607652708">बुकमार्कहरू आयात गर्नुहोस्</translation>
 <translation id="8458627787104127436">सबै (<ph name="URL_COUNT" />) URL नयाँ विन्डोमा खोल्नुहोस्</translation>
@@ -6834,6 +6846,7 @@
 <translation id="9027459031423301635">लिङ्कलाई नयाँ &amp;ट्याबमा खोल्नुहोस्</translation>
 <translation id="9030515284705930323">तपाईँको संगठनले तपाईँको खाताको लागि Google Play स्टोरलाई सक्रिय गरेको छैन। थप जानकारीका लागि आफ्नो प्रशासकलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="9030785788945687215">Gmail</translation>
+<translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> अब उप्रान्त प्रयोग गर्न मिल्दैन</translation>
 <translation id="9031549947500880805">Google ड्राइभमा ब्याकअप गर्नुहोस् जुनसुकै बेला सजिलैसँग आफ्नो डेटा पुनर्स्थापना गर्नुहोस् वा यन्त्र बदल्नुहोस्। तपाईंको ब्याकअपमा एपको डेटा समावेश हुन्छ।</translation>
 <translation id="9033765790910064284">जे भए पनि जारी राख्नुहोस्</translation>
 <translation id="9033857511263905942">&amp;टाँस्नुहोस्</translation>
@@ -6842,6 +6855,7 @@
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{तपाईं अब एक पटक प्रयास गर्न सक्नुहुन्छ।}other{तपाईं अब # पटक प्रयास गर्न सक्नुहुन्छ।}}</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9040661932550800571"><ph name="ORIGIN" /> को पासवर्ड अद्यावधिक गर्ने हो?</translation>
+<translation id="9041049756004505730">लाइभ क्याप्सन देखिइरहेको छ, फोकस सारेर अर्को डायलगमा लैजान ⌘ + Option + अप एरो वा डाउन एरो थिच्नुहोस्</translation>
 <translation id="9041692268811217999">तपाईंको प्रशासकले तपाईंको यन्त्रमा रहेका स्थानीय फाइलहरूमाथिको पहुँचलाई असक्षम पार्नुभएको छ</translation>
 <translation id="904224458472510106">यो कारबाही अन्डू गर्न सकिँदैन</translation>
 <translation id="9042893549633094279">गोपनीयता र सुरक्षा</translation>
@@ -6880,6 +6894,7 @@
 <translation id="9088446193279799727">Linux कन्फिगर गर्न सकिएन। इन्टरनेट जोड्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="9088917181875854783">कृपया यो पासकुञ्जी "<ph name="DEVICE_NAME" />" मा देखाइएको छ भनेर पुष्टि गर्नुहोस्:</translation>
 <translation id="9089416786594320554">आगत विधिहरू</translation>
+<translation id="909108997331068008"><ph name="EXISTING_USER" /> को प्रोफाइल <ph name="NEW_USER" /> मा साइन इन गरिसकिएको छ</translation>
 <translation id="9093429538970210897">अपग्रेड गर्ने कार्य पूरा हुन नसकेका खण्डमा फाइलहरू नगुमुन् भन्नाका खातिर अपग्रेड गर्नुअघि फाइलहरू ब्याकअप गर्नुहोस्। तपाईंले अपग्रेड सुरु गर्नुभयो भने Linux (बिटा) बन्द हुने छ। कृपया सुरु गर्नुअघि खोलिएका फाइलहरू सुरक्षित गर्नुहोस्।</translation>
 <translation id="9094033019050270033">पासवर्ड अपडेट गर्नुहोस्</translation>
 <translation id="9094038138851891550">प्रयोगकर्ताको नाम अमान्य छ</translation>
@@ -7053,5 +7068,6 @@
 <translation id="994289308992179865">&amp;लुप</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">सुरक्षित जडान स्थापना गर्दै...</translation>
+<translation id="99731366405731005">Wi-Fi सिंक प्रयोग गर्न <ph name="LINK1_BEGIN" />Chrome Sync<ph name="LINK1_END" /> अन गर्नुहोस्। <ph name="LINK2_BEGIN" />थप जान्नुहोस्<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">निरीक्षण गर्नुहोस्</translation>
 </translationbundle>

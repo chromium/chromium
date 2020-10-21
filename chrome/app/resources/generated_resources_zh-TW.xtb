@@ -17,6 +17,7 @@
 <translation id="1012794136286421601">系統正在同步處理你的文件、試算表、簡報和繪圖檔案。開啟 Google 雲端硬碟應用程式即可上網或離線存取你的檔案。</translation>
 <translation id="1012876632442809908">USB-C 裝置 (前方連接埠)</translation>
 <translation id="1013707859758800957">已允許這個網頁執行無沙箱防護的外掛程。</translation>
+<translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">編輯資料夾名稱</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{今天是「<ph name="DEVICE_TYPE" />」更新期限的最後一天}other{請在 {NUM_DAYS} 天內更新「<ph name="DEVICE_TYPE" />」}}</translation>
 <translation id="1016566241875885511">其他資訊 (選填)</translation>
@@ -558,7 +559,7 @@
 <translation id="1627408615528139100">已下載</translation>
 <translation id="1628948239858170093">要先掃描檔案再開啟嗎？</translation>
 <translation id="1629314197035607094">密碼已過期</translation>
-<translation id="163072119192489970">可以繼續完成傳送及接收資料</translation>
+<translation id="163072119192489970">可以完成資料的傳送和接收</translation>
 <translation id="1630768113285622200">重新啟動並繼續</translation>
 <translation id="1632082166874334883">儲存在 Google 帳戶中的密碼</translation>
 <translation id="1632803087685957583">讓你調整鍵盤按鍵重複輸入速率、字詞預測功能等等</translation>
@@ -957,7 +958,7 @@
 <translation id="2090165459409185032">如要還原您的帳戶資訊，請前往 google.com/accounts/recovery</translation>
 <translation id="2090876986345970080">系統安全性設定</translation>
 <translation id="2091887806945687916">音訊</translation>
-<translation id="209539936453343974">如要設定家長監護功能，孩子必須擁有受家長管理的 Google 帳戶。<ph name="DEVICE_TYPE_PLURAL" /> 可讓家長透過 Family Link 應用程式限制裝置使用時間、核准/封鎖網站，以及執行更多操作。如果孩子需要在 Google Classroom 等網站上完成學校作業，可於稍後新增學校帳戶。</translation>
+<translation id="209539936453343974">如要設定家長監護功能，孩子必須擁有由家長管理的 Google 帳戶。<ph name="DEVICE_TYPE_PLURAL" /> 可讓家長透過 Family Link 應用程式限制裝置使用時間、核准/封鎖網站，以及執行更多操作。如果孩子需要在 Google Classroom 等網站上完成學校作業，之後可再新增學校帳戶。</translation>
 <translation id="2096715839409389970">清除第三方 Cookie</translation>
 <translation id="2097372108957554726">你必須登入 Chrome 註冊新裝置</translation>
 <translation id="2098805196501063469">檢查其餘密碼</translation>
@@ -2502,7 +2503,7 @@
 <translation id="3873423927483480833">顯示 PIN 碼</translation>
 <translation id="3873915545594852654">ARC++ 發生問題。</translation>
 <translation id="3874164307099183178">開啟 Google 助理</translation>
-<translation id="3877075909000773256"><ph name="USER_NAME" />在裝置上的「鄰近分享」設定，所用分享帳戶為 <ph name="USER_EMAIL" />。</translation>
+<translation id="3877075909000773256"><ph name="USER_NAME" />在裝置上的「鄰近分享」設定，透過 <ph name="USER_EMAIL" /> 進行分享。</translation>
 <translation id="387771067039689031">不得使用外掛程式存取電腦</translation>
 <translation id="3879748587602334249">下載管理員</translation>
 <translation id="3881478300875776315">顯示較少行</translation>
@@ -2665,7 +2666,7 @@
 <translation id="4058793769387728514">立即檢查文件</translation>
 <translation id="406070391919917862">背景應用程式</translation>
 <translation id="4061374428807229313">如要共用資料夾，請在「檔案」應用程式中的資料夾上按一下滑鼠右鍵，然後選取 [與 Parallels Desktop 共用]。</translation>
-<translation id="406213378265872299">自訂行為</translation>
+<translation id="406213378265872299">自訂設定</translation>
 <translation id="4065876735068446555">目前使用的網路 (<ph name="NETWORK_ID" />) 可能會要求您造訪登入網頁。</translation>
 <translation id="4066207411788646768">如要查看網路中的可用印表機，請檢查你的連線狀態</translation>
 <translation id="4068776064906523561">已儲存的指紋</translation>
@@ -3835,7 +3836,7 @@
 <translation id="5500709606820808700">今天已執行安全檢查</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{無法從「<ph name="DEVICE_NAME" />」接收 <ph name="ATTACHMENTS" />}other{無法從「<ph name="DEVICE_NAME" />」接收 <ph name="ATTACHMENTS" />}}</translation>
 <translation id="5502500733115278303">從 Firefox 匯入的書籤</translation>
-<translation id="5502915260472117187">兒童</translation>
+<translation id="5502915260472117187">孩子</translation>
 <translation id="5503982651688210506">繼續允許 <ph name="HOST" /> 使用與調整攝影機，以及存取麥克風</translation>
 <translation id="5505264765875738116">網站無法要求傳送通知給你</translation>
 <translation id="5505307013568720083">墨水已用盡</translation>
@@ -4515,7 +4516,7 @@
 <translation id="6295158916970320988">所有網站</translation>
 <translation id="6295855836753816081">儲存中...</translation>
 <translation id="6298962879096096191">使用 Google Play 安裝 Android 應用程式</translation>
-<translation id="6300177430812514606">不得繼續完成傳送或接收資料</translation>
+<translation id="6300177430812514606">不得完成資料的傳送或接收</translation>
 <translation id="630065524203833229">結束(&amp;X)</translation>
 <translation id="6300718114348072351">無法自動設定「<ph name="PRINTER_NAME" />」。請手動設定印表機的進階選項。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="6301076166764763868">如要將個人瀏覽與 <ph name="EXISTING_USER" /> 的瀏覽區隔開來，請為「<ph name="NEW_USER" />」建立新的設定檔</translation>
@@ -6208,7 +6209,7 @@
 <translation id="826905130698769948">用戶端憑證無效</translation>
 <translation id="8270242299912238708">PDF 文件</translation>
 <translation id="827097179112817503">顯示 [首頁] 按鈕</translation>
-<translation id="8271379370373330993">後續幾個步驟須由家長完成。你可以在完成帳戶設定後將 <ph name="DEVICE_TYPE" /> 返還給孩子。</translation>
+<translation id="8271379370373330993">後續幾個步驟須由家長完成。你可以在完成帳戶設定後將 <ph name="DEVICE_TYPE" /> 交還給孩子。</translation>
 <translation id="8272443605911821513">如要管理擴充功能，只需按一下 [其他工具] 選單裡的 [擴充功能] 即可。</translation>
 <translation id="8274332263553132018">投放檔案</translation>
 <translation id="8274924778568117936">完成更新前，請勿將 <ph name="DEVICE_TYPE" /> 關機。<ph name="DEVICE_TYPE" /> 會在安裝完成後重新啟動。</translation>
@@ -6233,7 +6234,7 @@
 <translation id="8300011035382349091">編輯此分頁的書籤</translation>
 <translation id="8300374739238450534">午夜藍</translation>
 <translation id="8300849813060516376">OTASP 失敗</translation>
-<translation id="8304383784961451596">你未獲授權，無法使用這個裝置。請與管理員聯絡，要求對方授予登入權限，或是使用 Family Link 受監督的 Google 帳戶登入。</translation>
+<translation id="8304383784961451596">你未獲授權，無法使用這個裝置。請與管理員聯絡，要求對方授予登入權限，或使用受 Family Link 監督的 Google 帳戶登入。</translation>
 <translation id="8308179586020895837">當 <ph name="HOST" /> 要求存取攝影機時詢問我。</translation>
 <translation id="830868413617744215">測試版</translation>
 <translation id="8309458809024885768">憑證已存在</translation>

@@ -17,6 +17,7 @@
 <translation id="1012794136286421601">A Dokumentumok, Táblázatok, Diák és Rajzok fájljainak szinkronizálása következik. A fájlok online vagy offline eléréséhez nyissa meg a Google Drive alkalmazást.</translation>
 <translation id="1012876632442809908">C típusú USB-vel kompatibilis eszköz (elülső port)</translation>
 <translation id="1013707859758800957">A rendszer engedélyezte egy nem sandbox-technológiát alkalmazó beépülő modul futását az oldalon.</translation>
+<translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Mappa nevének szerkesztése</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Az eszköz (<ph name="DEVICE_TYPE" />) frissítésére rendelkezésre álló utolsó nap}other{Az eszköz (<ph name="DEVICE_TYPE" />) frissítésére {NUM_DAYS} nap áll rendelkezésre}}</translation>
 <translation id="1016566241875885511">További információk (nem kötelező)</translation>

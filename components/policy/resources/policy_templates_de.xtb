@@ -41,7 +41,7 @@
 
       Diese Richtlinie betrifft nur Nutzer, deren Domain der Geräteanmeldedomain entspricht. Bei allen anderen Nutzern werden die vom IdP gesetzten Cookies nur während der ersten Anmeldung auf dem Gerät an das Nutzerprofil gesendet.</translation>
 <translation id="1029052664284722254">Bei Nutzerabmeldung Geräteneustart erzwingen</translation>
-<translation id="1032533786864478457">Wenn die Richtlinie aktiviert ist, können Nutzer die SMS auf ihren Geräten mit Chromebooks synchronisieren. Diese Funktion muss durch die Nutzer eingerichtet und explizit freigeschaltet werden. Anschließend können sie auf ihren Chromebooks SMS senden und empfangen.
+<translation id="1032533786864478457">Wenn die Richtlinie aktiviert ist, können Nutzer ihre SMS mit Chromebooks synchronisieren. Diese Funktion muss durch die Nutzer eingerichtet und explizit freigeschaltet werden. Anschließend können sie auf ihren Chromebooks SMS senden und empfangen.
 
       Ist die Richtlinie deaktiviert, kann die Synchronisierung von SMS nicht eingerichtet werden.
 
@@ -624,7 +624,7 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
           Bitte beachten Sie, dass die Richtlinie pro Renderer-Prozess angewendet wird. Dabei wird der letzte Wert der Richtlinie angewendet, wenn ein Renderer-Prozess startet. Wenn Sie sicherstellen möchten, dass alle geladenen Tabs die gleiche Richtlinieneinstellung erhalten, ist ein Neustart des Browsers nötig. Allerdings ist es kein Problem, wenn einzelne Prozesse mit unterschiedlichen Werten für diese Richtlinie laufen.</translation>
 <translation id="2030905906517501646">Suchbegriff der Standardsuchmaschine</translation>
 <translation id="203096360153626918">Diese Richtlinie hat keine Auswirkungen auf die Android-Apps. Der Vollbildmodus kann aktiviert werden, auch wenn diese Richtlinie auf <ph name="FALSE" /> gesetzt ist.</translation>
-<translation id="2036522553891755455">Wenn die Richtlinie aktiviert ist, verwendet die Freigabeerkennung, also die Funktion zur Netzwerk-Dateifreigabe für <ph name="PRODUCT_NAME" />, das <ph name="NETBIOS_PROTOCOL" />, um Dateifreigaben im Netzwerk zu erkennen. Wenn die Richtlinie deaktiviert ist, kann die Freigabeerkennung dieses Protokoll nicht verwenden, um Freigaben zu erkennen.
+<translation id="2036522553891755455">Wenn die Richtlinie aktiviert ist, verwendet die Freigabeerkennung, also die Funktion zur Netzwerkfreigabe für <ph name="PRODUCT_NAME" />, das <ph name="NETBIOS_PROTOCOL" />, um Dateifreigaben im Netzwerk zu erkennen. Wenn die Richtlinie deaktiviert ist, kann die Freigabeerkennung dieses Protokoll nicht verwenden, um Freigaben zu erkennen.
 
       Ist sie nicht konfiguriert, wird dieses Verhalten für verwaltete Nutzer standardmäßig deaktiviert und für andere Nutzer hingegen aktiviert.</translation>
 <translation id="2037214548071298156">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden über registrierte Geräte Hardwarestatistiken wie die CPU/RAM-Nutzung gemeldet.
@@ -638,7 +638,7 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
           Wenn diese Einstellung deaktiviert ist, können keine Dateien übertragen werden. Ist die Einstellung aktiviert oder nicht konfiguriert, ist eine Dateiübertragung möglich.</translation>
 <translation id="2057317273526988987">Zugriff auf eine Liste mit URLs erlauben</translation>
 <translation id="2061810934846663491">Erforderliche Domainnamen für Remotezugriff-Hosts konfigurieren</translation>
-<translation id="2069350366303315077">Wenn die Richtlinie aktiviert ist, erzwingt <ph name="PRODUCT_NAME" /> Gastsitzungen und verhindert die Anmeldung über Nutzerprofile. Gastsitzungen basieren auf <ph name="PRODUCT_NAME" />-Profilen, bei denen die Programmfenster im Inkognitomodus ausgeführt werden.
+<translation id="2069350366303315077">Wenn die Richtlinie aktiviert ist, erzwingt <ph name="PRODUCT_NAME" /> Gastsitzungen und verhindert die Anmeldung über Nutzerprofile. Gastsitzungen sind <ph name="PRODUCT_NAME" />-Profile, bei denen die Fenster im Inkognitomodus ausgeführt werden.
 
       Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist bzw. der Gastmodus des Browsers durch <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" /> deaktiviert ist, können sowohl neue als auch vorhandene Profile verwendet werden.</translation>
 <translation id="2073552873076775140">Anmeldung in <ph name="PRODUCT_NAME" /> erlauben</translation>
@@ -976,7 +976,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2482676533225429905">Natives Messaging</translation>
 <translation id="2483146640187052324">Netzwerkaktionen über alle Netzwerkverbindungen vervollständigen</translation>
 <translation id="2498238926436517902">Ablage immer automatisch ausblenden</translation>
-<translation id="250022556568924228">Wenn die Richtlinie aktiviert ist, lädt <ph name="PRODUCT_OS_NAME" /> Nutzungsbedingungen herunter und zeigt sie jedes Mal an, wenn eine Sitzung mit einem lokalen Gerätekonto gestartet wird. Die Nutzer können sich erst in der Sitzung anmelden, nachdem sie die Nutzungsbedingungen akzeptiert haben.
+<translation id="250022556568924228">Wenn die Richtlinie aktiviert ist, lädt <ph name="PRODUCT_OS_NAME" /> die Nutzungsbedingungen herunter und zeigt sie jedes Mal an, wenn eine Sitzung mit einem lokalen Gerätekonto gestartet wird. Die Nutzer können sich erst in der Sitzung anmelden, nachdem sie die Nutzungsbedingungen akzeptiert haben.
 
       Wenn die Richtlinie nicht konfiguriert ist, werden keine Nutzungsbedingungen angezeigt.
 
@@ -1047,7 +1047,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
           Diese Richtlinie wird nur beachtet, wenn die Richtlinie "DefaultSearchProviderEnabled" aktiviert ist.</translation>
 <translation id="2567227673131796227">Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen <ph name="NATIVE_MESSAGING_BLOCKLIST_POLICY_NAME" />.
 
-      Wenn diese Richtlinie konfiguriert ist, wird festgelegt, welche nativen Nachrichtenhosts nicht geladen werden dürfen. Der Wert <ph name="WILDCARD_VALUE" /> der Liste der blockierten nativen Hosts gibt an, dass alle nativen Nachrichtenhosts gesperrt sind, sofern sie nicht ausdrücklich zugelassen wurden.
+      Wenn diese Richtlinie konfiguriert ist, wird festgelegt, welche nativen Nachrichtenhosts nicht geladen werden dürfen. Der Wert <ph name="WILDCARD_VALUE" /> in der Liste der blockierten nativen Hosts gibt an, dass alle nativen Nachrichtenhosts gesperrt sind, sofern sie nicht ausdrücklich zugelassen wurden.
 
       Wenn die Richtlinie nicht konfiguriert ist, werden alle installierten nativen Nachrichtenhosts von <ph name="PRODUCT_NAME" /> geladen.</translation>
 <translation id="2571066091915960923">Aktiviert oder deaktiviert den Proxy für die Datenkomprimierung und verhindert, dass die Nutzer diese Einstellung ändern können.
@@ -1167,7 +1167,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2759224876420453487">Nutzerverhalten in Mehrfachprofil-Sitzung steuern</translation>
 <translation id="2759426227259007018">Mit der Konfiguration der Richtlinie werden die Apps festgelegt, die Nutzer als Notizen-App auf dem Sperrbildschirm von <ph name="PRODUCT_OS_NAME" /> aktivieren können.
 
-      Wenn die bevorzugte App für den Sperrbildschirm konfiguriert ist, erscheint ein UI-Element zum Starten der bevorzugten Notizen-App auf dem Bildschirm. Nach dem Starten der App wird über dem Sperrbildschirm ein Fenster eingeblendet, in das Notizen eingegeben werden können. Sie können einstellen, dass die App nach dem Entsperren Notizen in die Hauptsitzung importiert. Nur <ph name="PRODUCT_NAME" />-Notizen-Apps werden auf dem Sperrbildschirm unterstützt.
+      Wenn die bevorzugte App für den Sperrbildschirm konfiguriert ist, erscheint ein UI-Element zum Starten der bevorzugten Notizen-App auf dem Bildschirm. Nach dem Starten der App wird über dem Sperrbildschirm ein Fenster eingeblendet, in das Notizen eingegeben werden können. Die App kann nach dem Entsperren Notizen in die Hauptsitzung importieren. Nur <ph name="PRODUCT_NAME" />-Notizen-Apps werden auf dem Sperrbildschirm unterstützt.
 
       Wenn die Richtlinie aktiviert und die Erweiterungs-ID einer App in der entsprechenden Liste aufgeführt ist, können Nutzer diese App auf dem Sperrbildschirm starten. Die Vorgabe einer leeren Liste führt demnach dazu, dass auf dem Sperrbildschirm keine Notizen erstellt werden können. Die Konfiguration der Richtlinie mit einer App-ID bedeutet jedoch nicht unbedingt, dass Nutzer die jeweilige App als Notizen-App auf dem Sperrbildschirm aktivieren können. Bei <ph name="PRODUCT_NAME" /> 61 ist beispielsweise auch durch die Plattform festgelegt, welche Apps verfügbar sind.
 
@@ -1461,7 +1461,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
           Der Wert für die Richtlinie muss in Millisekunden angegeben werden.</translation>
 <translation id="3205825995289802549">Erstes Browserfenster bei der ersten Ausführung maximieren</translation>
-<translation id="3210408472559816322">Wenn diese Richtlinie konfiguriert ist, wird festgelegt, welche nativen Nachrichtenhosts nicht geladen werden dürfen. Der Wert <ph name="WILDCARD_VALUE" /> der Liste der blockierten nativen Hosts gibt an, dass alle nativen Nachrichtenhosts gesperrt sind, sofern sie nicht ausdrücklich zugelassen wurden.
+<translation id="3210408472559816322">Wenn diese Richtlinie konfiguriert ist, wird festgelegt, welche nativen Nachrichtenhosts nicht geladen werden dürfen. Der Wert <ph name="WILDCARD_VALUE" /> in der Liste der blockierten nativen Hosts gibt an, dass alle nativen Nachrichtenhosts gesperrt sind, sofern sie nicht ausdrücklich zugelassen wurden.
 
       Wenn die Richtlinie nicht konfiguriert ist, werden alle installierten nativen Nachrichtenhosts von <ph name="PRODUCT_NAME" /> geladen.</translation>
 <translation id="3211426942294667684">Einstellungen für die Anmeldung im Browser</translation>
@@ -2392,7 +2392,7 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 
       Wenn die Richtlinie nicht konfiguriert ist, können gespeicherte Authentifizierungsdaten bis zu 73 Stunden lang wiederverwendet werden.
 
-      Hinweis: Durch einen Neustart des Geräts wird der Cache geleert. Auch für vorübergehende Nutzer werden Bereichsdaten im Cache gespeichert. Schalten Sie den Cache aus, um zu verhindern, dass Bereichsdaten von vorübergehenden Nutzern gespeichert werden.</translation>
+      Hinweis: Durch einen Neustart des Geräts wird der Cache geleert. Auch für Nutzer im flüchtigen Modus werden Bereichsdaten im Cache gespeichert. Schalten Sie den Cache aus, um zu verhindern, dass Bereichsdaten von Nutzern im flüchtigen Modus gespeichert werden.</translation>
 <translation id="4591366717022345234">Nutzern einen Quick-Fix-Build bereitstellen</translation>
 <translation id="4592246263545654202">Gibt an, ob der Nutzer Seiten in <ph name="PRODUCT_NAME" /> im Inkognitomodus öffnen kann.
 
@@ -2501,7 +2501,7 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
       <ph name="PAGE_SIZE_NAME" /> sollte eines der aufgelisteten Formate oder "custom" enthalten, wenn sich die erforderliche Papiergröße nicht in der Liste befindet. Wenn der Wert "custom" angegeben wird, sollte die Property "<ph name="PAGE_SIZE_CUSTOM_SIZE" />" festgelegt werden. Sie beschreibt die gewünschte Höhe und Breite in Mikrometern. In anderen Fällen sollte die Property "<ph name="PAGE_SIZE_CUSTOM_SIZE" />" nicht verwendet werden. Richtlinien, die gegen diese Regeln verstoßen, werden ignoriert.
 
       Wenn die Seitengröße auf dem vom Nutzer gewählten Drucker nicht verfügbar ist, wird diese Richtlinie ignoriert.</translation>
-<translation id="4790588245699320140">Google Assistant darf auf den Bildschirmkontext zugreifen</translation>
+<translation id="4790588245699320140">Google Assistant erlauben, auf den Bildschirmkontext zuzugreifen</translation>
 <translation id="4802744647065138872">Begrenzt die Anzahl der Snapshots von Nutzerdaten, die für den Fall eines Notfall-Rollbacks aufbewahrt werden.</translation>
 <translation id="4802905909524200151">Updateverhalten von <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmware konfigurieren</translation>
 <translation id="4804828344300125154">Nach Nutzerabmeldung immer neu starten.</translation>
@@ -2770,7 +2770,7 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
 
       Ist die Richtlinie deaktiviert, können Nutzer keine neuen Passwörter speichern lassen. Zuvor gespeicherte Passwörter funktionieren aber weiterhin.
 
-      Ist die Richtlinie festgelegt, können Nutzer die Datenleckprüfung nicht in <ph name="PRODUCT_NAME" /> ändern. Wenn die Richtlinie nicht konfiguriert ist, können Nutzer das Speichern von Passwörtern deaktivieren.</translation>
+      Ist die Richtlinie festgelegt, können Nutzer sie in <ph name="PRODUCT_NAME" /> nicht ändern. Wenn die Richtlinie nicht konfiguriert ist, können Nutzer das Speichern von Passwörtern deaktivieren.</translation>
 <translation id="5239333626804545932">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, scannt das Chrome Cleanup Tool das System regelmäßig nach unerwünschter Software und fragt gegebenenfalls den Nutzer, ob diese entfernt werden soll. Das Chrome Cleanup Tool kann auch manuell über chrome://settings gestartet werden.
 
       Ist die Richtlinie deaktiviert, werden keine regelmäßigen Scans durchgeführt und auch die Option zum manuellen Starten ist deaktiviert.
@@ -3255,9 +3255,9 @@ Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, können Nutz
 <translation id="5832274826894536455">Veraltete Richtlinien</translation>
 <translation id="5835253272509953988">Wenn die Richtlinie aktiviert ist, können Nutzer von <ph name="PRODUCT_NAME" /> prüfen lassen, ob die eingegebenen Nutzernamen und Passwörter Teil eines Datenlecks sind.
 
-      Ist die Richtlinie festgelegt, können Nutzer die Datenleckprüfung nicht in <ph name="PRODUCT_NAME" /> ändern. Sollte sie nicht festgelegt sein, ist die Datenleckprüfung zulässig, kann jedoch vom Nutzer deaktiviert werden. 
+      Ist die Richtlinie festgelegt, können Nutzer sie in <ph name="PRODUCT_NAME" /> nicht ändern. Sollte sie nicht festgelegt sein, ist die Datenleckprüfung zulässig, kann jedoch vom Nutzer deaktiviert werden. 
 
-      Dieses Verhalten wird nicht ausgelöst, wenn SafeBrowsing durch eine Richtlinie oder den Nutzer deaktiviert wurde. Wenn Sie die Aktivierung von SafeBrowsing erzwingen möchten, verwenden Sie die Richtlinie „<ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" />“ oder „<ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />“.</translation>
+      Dieses Verhalten wird nicht ausgelöst, wenn Safe Browsing durch eine Richtlinie oder den Nutzer deaktiviert wurde. Wenn Sie die Aktivierung von Safe Browsing erzwingen möchten, verwenden Sie die Richtlinie „<ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" />“ oder „<ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />“.</translation>
 <translation id="5836064773277134605">Vom Host für den Remotezugriff verwendeten UDP-Portbereich einschränken</translation>
 <translation id="5845686745936515940">Hiermit kann für alle Cookies das alte "<ph name="ATTRIBUTE_SAMESITE_NAME" />"-Verhalten wiederhergestellt werden. Wird es wiederhergestellt, werden Cookies, für die kein "<ph name="ATTRIBUTE_SAMESITE_NAME" />"-Attribut angegeben ist, so behandelt, als würden sie "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" enthalten. Außerdem wird nicht mehr vorausgesetzt, dass Cookies mit dem Attribut "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" auch das Attribut "<ph name="ATTRIBUTE_SECURE_NAME" />" enthalten müssen, und bei der Auswertung, ob zwei Websites identisch sind, werden die Schemata nicht verglichen. Eine vollständige Beschreibung steht unter https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies zur Verfügung.
 
@@ -3566,7 +3566,7 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
       Details zu <ph name="CORS" /> erhalten Sie unter <ph name="CORS_HELP_URL" />.
 
       Hinweis: Diese Richtlinie sollte ursprünglich planmäßig in <ph name="PRODUCT_NAME" />-Version 82 entfernt werden, wurde aber erst in Version 84 entfernt.</translation>
-<translation id="6279722058145292462">Wenn die Richtlinie konfiguriert ist, wird in Tagen angegeben, wie häufig ein Client das Computerpasswort ändert. Das Passwort wird vom Client zufällig generiert und ist für den Nutzer nicht sichtbar. Eine Deaktivierung dieser Richtlinie oder die Auswahl einer hohen Anzahl von Tagen kann sich negativ auf die Sicherheit auswirken, da potenzielle Angreifer so mehr Zeit haben, das Computerpasswort herauszufinden und zu missbrauchen.
+<translation id="6279722058145292462">Wenn die Richtlinie konfiguriert ist, wird in Tagen angegeben, wie häufig ein Client das Computerpasswort ändert. Das Passwort wird vom Client zufällig generiert und ist für den Nutzer nicht sichtbar. Eine Deaktivierung dieser Richtlinie oder die Auswahl einer hohen Anzahl von Tagen kann sich negativ auf die Sicherheit auswirken, da potenzielle Angreifer so mehr Zeit haben, das Computerpasswort herauszufinden und missbräuchlich zu verwenden.
 
       Wenn die Richtlinie nicht konfiguriert ist, wird das Computerpasswort alle 30 Tage geändert.
 
@@ -3711,11 +3711,11 @@ Durch Festlegen dieser Richtlinie bestimmen Sie, ob sich ein Nutzer in <ph name=
 
       Mit der Konfiguration der Richtlinie werden die Apps festgelegt, die Nutzer als Notizen-App auf dem Sperrbildschirm von <ph name="PRODUCT_OS_NAME" /> aktivieren können.
 
-      Wenn die bevorzugte App für den Sperrbildschirm konfiguriert ist, erscheint ein UI-Element zum Starten der bevorzugten Notizen-App auf dem Bildschirm. Nach dem Starten der App wird über dem Sperrbildschirm ein Fenster eingeblendet, in das Notizen eingegeben werden können. Sie können einstellen, dass die App nach dem Entsperren Notizen in die Hauptsitzung importiert. Nur <ph name="PRODUCT_NAME" />-Notizen-Apps werden auf dem Sperrbildschirm unterstützt.
+      Wenn die bevorzugte App für den Sperrbildschirm konfiguriert ist, erscheint ein UI-Element zum Starten der bevorzugten Notizen-App auf dem Bildschirm. Nach dem Starten der App wird über dem Sperrbildschirm ein Fenster eingeblendet, in das Notizen eingegeben werden können. Die App kann nach dem Entsperren Notizen in die Hauptsitzung importieren. Nur <ph name="PRODUCT_NAME" />-Notizen-Apps werden auf dem Sperrbildschirm unterstützt.
 
       Wenn die Richtlinie aktiviert und die Erweiterungs-ID einer App in der entsprechenden Liste aufgeführt ist, können Nutzer diese App auf dem Sperrbildschirm starten. Die Vorgabe einer leeren Liste führt demnach dazu, dass auf dem Sperrbildschirm keine Notizen erstellt werden können. Die Konfiguration der Richtlinie mit einer App-ID bedeutet jedoch nicht unbedingt, dass Nutzer die jeweilige App als Notizen-App auf dem Sperrbildschirm aktivieren können. Bei <ph name="PRODUCT_NAME" /> 61 ist beispielsweise auch durch die Plattform festgelegt, welche Apps verfügbar sind.
 
-      Wenn die Richtlinie nicht konfiguriert ist, werden dadurch die Apps, die Nutzer auf dem Sperrbildschirm aktivieren können, nicht eingeschränkt.</translation>
+      Wenn die Richtlinie nicht konfiguriert ist, werden dadurch die Apps, die Nutzer auf dem Sperrbildschirm aktivieren können, nicht durch die Richtlinie eingeschränkt.</translation>
 <translation id="6506486086262398387">Wenn die Richtlinie aktiviert ist, verwendet die Funktion zur Netzwerkfreigabe für <ph name="PRODUCT_OS_NAME" /> bei Bedarf NTLM zur Authentifizierung gegenüber SMB-Freigaben. Ist die Richtlinie deaktiviert, wird die NTLM-Authentifizierung gegenüber SMB-Freigaben ausgeschaltet.
 
       Ist sie nicht konfiguriert, wird dieses Verhalten für verwaltete Nutzer standardmäßig deaktiviert und für andere Nutzer hingegen aktiviert.</translation>
@@ -3747,7 +3747,7 @@ Durch Festlegen dieser Richtlinie bestimmen Sie, ob sich ein Nutzer in <ph name=
           Genaue Informationen zu gültigen URL-Mustern finden Sie unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="6553143066970470539">Displayhelligkeit in %</translation>
 <translation id="6559057113164934677">Keine Website darf auf meine Kamera oder mein Mikrofon zugreifen</translation>
-<translation id="6559475864956112261">Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+<translation id="6559475864956112261">Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie „<ph name="PROXY_SETTINGS_POLICY_NAME" />“.
 
        Durch Aktivieren der Richtlinie können Sie angeben, welcher Proxyserver von Chrome verwendet werden soll, und verhindern, dass Nutzer die Proxyeinstellungen ändern. Alle Proxyoptionen, die über die Befehlszeile eingegeben werden, werden von Chrome- und ARC-Apps ignoriert. Die Richtlinie ist nur wirksam, wenn die Richtlinie „<ph name="PROXY_SETTINGS_POLICY_NAME" />“ nicht konfiguriert wurde.
 
@@ -5162,7 +5162,7 @@ Unter Windows ist es empfehlenswert, Richtlinien über Gruppenrichtlinienobjekte
 <translation id="8417305981081876834">Maximale Länge der Sperrbildschirm-PIN festlegen</translation>
 <translation id="841853753509411428">Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen <ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" />.
 
-      Wenn diese Richtlinie konfiguriert ist, wird festgelegt, dass native Nachrichtenhosts der Liste der blockierten nativen Hosts nicht unterliegen. Der Wert <ph name="WILDCARD_VALUE" /> der Liste der blockierten nativen Hosts gibt an, dass alle nativen Nachrichtenhosts gesperrt sind, sofern sie nicht ausdrücklich zugelassen wurden.
+      Wenn diese Richtlinie konfiguriert ist, wird festgelegt, welche nativen Nachrichtenhosts nicht der Liste der blockierten nativen Hosts unterliegen. Der Wert <ph name="WILDCARD_VALUE" /> in der Liste der blockierten nativen Hosts gibt an, dass alle nativen Nachrichtenhosts gesperrt sind, sofern sie nicht ausdrücklich zugelassen wurden.
 
       Standardmäßig sind alle nativen Nachrichtenhosts zulässig. Wurden jedoch alle nativen Nachrichtenhosts durch eine Richtlinie gesperrt, kann der Administrator diese Richtlinie mithilfe der Zulassungsliste ändern.</translation>
 <translation id="841977920223099909">Auslöser für Passwortschutzwarnung</translation>
@@ -5381,7 +5381,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 <translation id="8767743923206070405">Wenn die Richtlinie aktiviert ist, wird die Startbildschirmtaste in der Symbolleiste von <ph name="PRODUCT_NAME" /> angezeigt. Ist die Richtlinie deaktiviert, erscheint die Startbildschirmtaste nicht.
 
       Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern in <ph name="PRODUCT_NAME" /> nicht geändert werden. Wenn die Richtlinie nicht konfiguriert ist, können Nutzer selbst entscheiden, ob die Startbildschirmtaste angezeigt werden soll.</translation>
-<translation id="8768528324886802059">Wenn diese Richtlinie konfiguriert ist, wird festgelegt, dass native Nachrichtenhosts der Liste der blockierten nativen Hosts nicht unterliegen. Der Wert <ph name="WILDCARD_VALUE" /> der Liste der blockierten nativen Hosts gibt an, dass alle nativen Nachrichtenhosts gesperrt sind, sofern sie nicht ausdrücklich zugelassen wurden.
+<translation id="8768528324886802059">Wenn diese Richtlinie konfiguriert ist, wird festgelegt, welche nativen Nachrichtenhosts nicht der Liste der blockierten nativen Hosts unterliegen. Der Wert <ph name="WILDCARD_VALUE" /> in der Liste der blockierten nativen Hosts gibt an, dass alle nativen Nachrichtenhosts gesperrt sind, sofern sie nicht ausdrücklich zugelassen wurden.
 
       Standardmäßig sind alle nativen Nachrichtenhosts zulässig. Wurden jedoch alle nativen Nachrichtenhosts durch eine Richtlinie gesperrt, kann der Administrator diese Richtlinie mithilfe der Zulassungsliste ändern.</translation>
 <translation id="877185520360032968">Wenn die Richtlinie konfiguriert ist, wird das Standardverzeichnis festgelegt, das Chrome zum Herunterladen von Dateien verwendet. Nutzer können das Verzeichnis jedoch ändern.

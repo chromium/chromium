@@ -3,6 +3,7 @@
 <translationbundle lang="as">
 <translation id="1018656279737460067">বাতিল কৰা হ’ল</translation>
 <translation id="1195447618553298278">অজ্ঞাত আসোঁৱাহ।</translation>
+<translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">বিফল হৈছে - ফিল্টাৰ বিফল হৈছে</translation>
 <translation id="1468664791493211953">অ'ফাৰসমূহ</translation>
 <translation id="1478594628797167447">স্কেনাৰ</translation>
@@ -46,6 +47,7 @@
 <translation id="4227825898293920515">পাছৱর্ডৰ ম্যাদ উকলাৰ সময় <ph name="TIME" /></translation>
 <translation id="4238516577297848345">কোনো প্ৰিণ্টৰ কাম চলি থকা নাই</translation>
 <translation id="4297501883039923494">বন্ধ হৈছে - অজ্ঞাত আসোঁৱাহ</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Kerberos টিকেটৰ ম্যাদ শীঘ্ৰেই উকলি যাব</translation>
 <translation id="445059817448385655">পুৰণি পাছৱৰ্ড</translation>
 <translation id="4627232916386272576"><ph name="TOTAL_PAGE_NUMBER" />ৰ ভিতৰত <ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />। প্ৰিণ্টৰ কাৰ্যটো বাতিল কৰিবলৈ এণ্টাৰ টিপক।</translation>
@@ -73,6 +75,7 @@
 <translation id="6058625436358447366">সম্পূর্ণ কৰিবলৈ আপোনাৰ পুৰণি আৰু নতুন পাছৱর্ডসমূহ দিয়ক</translation>
 <translation id="6106186594183574873">সম্পূর্ণ কৰিবলৈ আপোনাৰ পুৰণি পাছৱর্ড দিয়ক</translation>
 <translation id="6146993107019042706">সম্পূর্ণ কৰিবলৈ আপোনাৰ নতুন পাছৱর্ড দিয়ক</translation>
+<translation id="6147514244879357420">PNG</translation>
 <translation id="636850387210749493">এন্টাৰপ্ৰাইজৰ পঞ্জীয়ন</translation>
 <translation id="649050271426829538">বন্ধ হৈছে - কাগজ ঠাহ খাই গৈছে</translation>
 <translation id="6517239166834772319">অন্বেষণ</translation>
@@ -82,6 +85,7 @@
 <translation id="6747215703636344499">বন্ধ হৈছে - আউটপুট ভৰ্তি হৈ গৈছে</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7359657277149375382">ফাইলৰ প্রকাৰ</translation>
 <translation id="7561454561030345039">এই কাৰ্যটো আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="7658239707568436148">বাতিল কৰক</translation>
 <translation id="7690294790491645610">নতুন পাছৱর্ড নিশ্চিত কৰক</translation>

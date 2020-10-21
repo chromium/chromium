@@ -3784,7 +3784,7 @@
 <translation id="5449588825071916739">모든 탭 북마크</translation>
 <translation id="5449716055534515760">창 닫기(&amp;D)</translation>
 <translation id="5452974209916053028">현재 시크릿 세션: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
-<translation id="5454005855577728171">자막 도움말 풍선이 <ph name="POSITION_ON_SCREEN_FROM_LEFT" />% 옆으로, <ph name="POSITION_ON_SCREEN_FROM_TOP" />% 아래로 이동함</translation>
+<translation id="5454005855577728171">자막 도움말 풍선이 <ph name="POSITION_ON_SCREEN_FROM_LEFT" />% 오른쪽으로, <ph name="POSITION_ON_SCREEN_FROM_TOP" />% 아래로 이동함</translation>
 <translation id="5454166040603940656">제공업체: <ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">잘못된 데이터</translation>
 <translation id="5457459357461771897">컴퓨터에서 사진, 음악, 기타 미디어 조회 및 삭제</translation>
@@ -6352,7 +6352,7 @@
 <translation id="8449036207308062757">저장용량 관리</translation>
 <translation id="8452135315243592079">SIM 카드 없음</translation>
 <translation id="8455026683977728932">ADB 사용 설정 실패 삽화</translation>
-<translation id="8456398879271637452">실시간 자막 표시, Ctrl과 뒤로 또는 Ctrl과 앞으로를 눌러 포커스 전환</translation>
+<translation id="8456398879271637452">실시간 자막 표시, Ctrl 키와 뒤로 또는 Ctrl 키와 앞으로를 눌러 포커스 전환</translation>
 <translation id="845702320058262034">연결할 수 없습니다. 휴대전화의 블루투스가 켜져 있는지 확인하세요.</translation>
 <translation id="8457451314607652708">북마크 가져오기</translation>
 <translation id="8458627787104127436">새 창에서 모두(<ph name="URL_COUNT" />개) 열기</translation>
@@ -6873,7 +6873,7 @@
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{앞으로 1번 더 시도할 수 있습니다.}other{앞으로 #번 더 시도할 수 있습니다.}}</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9040661932550800571"><ph name="ORIGIN" /> 비밀번호를 업데이트하시겠습니까?</translation>
-<translation id="9041049756004505730">실시간 자막 표시, ⌘와 Option과 위쪽 또는 아래쪽 화살표를 눌러 포커스 전환</translation>
+<translation id="9041049756004505730">실시간 자막 표시, ⌘ 키와 Option 키와 위쪽 또는 아래쪽 화살표를 눌러 포커스 전환</translation>
 <translation id="9041692268811217999">관리자가 시스템의 로컬 파일 액세스를 차단했습니다</translation>
 <translation id="904224458472510106">이 작업은 되돌릴 수 없습니다.</translation>
 <translation id="9042893549633094279">개인정보 및 보안</translation>

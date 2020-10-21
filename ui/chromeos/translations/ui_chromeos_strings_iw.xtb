@@ -149,7 +149,7 @@
 <translation id="2563185590376525700">צפרדע</translation>
 <translation id="2614589611416690597">קובץ וידאו בפורמט <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">‏לא ניתן להגיע אל Google Drive בשלב זה.</translation>
-<translation id="2638942478653899953">‏לא ניתן היה להגיע אל Google Drive‏. <ph name="BEGIN_LINK" />צא<ph name="END_LINK" /> ואז התחבר שוב.</translation>
+<translation id="2638942478653899953">‏לא ניתן היה להגיע אל Google Drive‏. <ph name="BEGIN_LINK" />יש לצאת<ph name="END_LINK" /> ואז להתחבר שוב.</translation>
 <translation id="2649120831653069427">דג</translation>
 <translation id="2661146741306740526">16x9</translation>
 <translation id="2664412712123763093">מיקום הקובץ</translation>
@@ -252,7 +252,7 @@
 <translation id="3749289110408117711">שם קובץ</translation>
 <translation id="3780536599611287598">אין לך הרשאה להעביר קבצים אל '<ph name="FOLDER_NAME" />'.</translation>
 <translation id="3786301125658655746">אינך מחובר לאינטרנט</translation>
-<translation id="3789841737615482174">התקן</translation>
+<translation id="3789841737615482174">התקנה</translation>
 <translation id="3793469551756281394">נותרו כ-<ph name="REMAINING_TIME_HOUR" /> ו-<ph name="REMAINING_TIME_MINUTE" /></translation>
 <translation id="3798449238516105146">גרסה</translation>
 <translation id="3801082500826908679">פארואזית</translation>
@@ -288,7 +288,7 @@
 <translation id="418179967336296930">‏מקלדת רוסית פונטית (YaZHert)</translation>
 <translation id="4193154014135846272">‏מסמך Google</translation>
 <translation id="4195249722193633765">‏התקנת אפליקציה באמצעות Linux (בטא)</translation>
-<translation id="4197674956721858839">כווץ את הקבצים שנבחרו</translation>
+<translation id="4197674956721858839">כיווץ הקבצים שנבחרו</translation>
 <translation id="421017592316736757">עליך להיות במצב מקוון כדי לגשת לקובץ זה.</translation>
 <translation id="4212740939091998969">כבר קיימת תיקייה בשם "<ph name="FOLDER_NAME" />". יש לבחור שם אחר.</translation>
 <translation id="4215448920900139318">מגבה <ph name="FILE_COUNT" /></translation>
@@ -494,7 +494,7 @@
 <translation id="6129953537138746214">רווח</translation>
 <translation id="6133173853026656527">מעביר את <ph name="FILE_NAME" />...</translation>
 <translation id="6146563240635539929">סרטונים</translation>
-<translation id="6150853954427645995">כדי לשמור קובץ זה לשימוש לא מקוון, חזור למצב מקוון, לחץ לחיצה ימנית על הקובץ ובחר את האפשרות <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="6150853954427645995">כדי לשמור קובץ זה לשימוש אופליין, יש לחזור למצב אונליין, ללחוץ לחיצה ימנית על הקובץ ולבחור את האפשרות <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">פרפרים</translation>
 <translation id="6170470584681422115">כריך</translation>
 <translation id="6189412234224385711">פתח באמצעות <ph name="EXTENSION_NAME" /></translation>
@@ -628,7 +628,7 @@
 <translation id="7705251383879779343">ההעתקה של <ph name="FILE_NAME" /> הסתיימה.</translation>
 <translation id="7706319470528945664">מקלדת פורטוגזית</translation>
 <translation id="7711920809702896782">פרטי התמונה</translation>
-<translation id="7724603315864178912">חתוך</translation>
+<translation id="7724603315864178912">חיתוך</translation>
 <translation id="7730494089396812859">הצגת פרטים של גיבוי בענן</translation>
 <translation id="7748626145866214022">‏אפשרויות נוספות זמינות בסרגל הפעולות. הקשה על Alt + A תדגיש את סרגל הפעולות.</translation>
 <translation id="7765158879357617694">העברה</translation>

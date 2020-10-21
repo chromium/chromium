@@ -394,7 +394,7 @@
 <translation id="3935615366277838204"><ph name="LETTER" /> גדולה</translation>
 <translation id="3936394396199829062">סומק לבנדר</translation>
 <translation id="3943857333388298514">הדבק</translation>
-<translation id="3962990492275676168">התחל לקרוא מהמיקום הנוכחי</translation>
+<translation id="3962990492275676168">יש להתחיל לקרוא מהמיקום הנוכחי</translation>
 <translation id="3970951409746498040">חום חול</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">מוקסין</translation>
@@ -858,7 +858,7 @@
 <translation id="7714340021005120797">אין עוד תיבות משולבות</translation>
 <translation id="772146615414628379">‏מזל טוב! למדת את כל המידע הבסיסי שיאפשר לך להשתמש ב-ChromeVox. חשוב לזכור שאפשר לפתוח את תפריט הפקודות של ChromeVox בכל שלב על ידי הקשה על Search+מקש הנקודה. כדי לקבל מידע נוסף על ChromeVox ו-Chrome OS, אפשר לעיין במאמרים הבאים.
     אם סיימת עם המדריך, אפשר להשתמש ב-ChromeVox כדי לנווט ללחצן 'סגירה' וללחוץ עליו.</translation>
-<translation id="7724603315864178912">חתוך</translation>
+<translation id="7724603315864178912">חיתוך</translation>
 <translation id="7731785449856576010">אין עוד ווידג'טים של מדיה</translation>
 <translation id="773906353055481349">‏כדי לנווט לפי תא, יש להקיש על Search+Ctrl+Alt ביחד עם מקשי החיצים</translation>
 <translation id="7763537600611320912">ההורדה של <ph name="FILE_NAME" /> התחילה</translation>
@@ -950,12 +950,12 @@
 <translation id="8463645336674919227">יציאה משגיאת דקדוק</translation>
 <translation id="847040613207937740">אין עוד תיבות סימון</translation>
 <translation id="8473540203671727883">הקראת הטקסט שנמצא מתחת לסמן של העכבר</translation>
-<translation id="8476408756881832830">‏השהה את ההשמעה כשתוסף ה-ChromeVox מקריא</translation>
+<translation id="8476408756881832830">‏אני רוצה להשהות את ההשמעה כשתוסף ה-ChromeVox מקריא</translation>
 <translation id="8476508772960940536">סקירת חלון</translation>
 <translation id="8503360654911991865">הקטן רמת פירוט של ניווט</translation>
 <translation id="8520472399088452386">לחצן סיבוב</translation>
 <translation id="8534394844575788431">עיצוב</translation>
-<translation id="8542271685829952264">‏כדי לראות את כל הפקודות והקיצורים הזמינים ב-ChromeVox, הקש על מקש החיפוש ומקש הנקודה. לאחר מכן השתמש במקשי החיצים כדי לנווט בתפריטים. השתמש במקש Enter כדי להפעיל פקודה. הקשה על מקש החיפוש יחד עם o ולאחר מכן t תחזיר אותך לכאן.</translation>
+<translation id="8542271685829952264">‏כדי לראות את כל הפקודות והקיצורים הזמינים ב-ChromeVox, יש להקיש על מקש החיפוש ומקש הנקודה. לאחר מכן יש להשתמש במקשי החיצים כדי לנווט בתפריטים. יש להשתמש במקש Enter כדי להפעיל פקודה. הקשה על מקש החיפוש יחד עם o ולאחר מכן t תחזיר אותך לכאן.</translation>
 <translation id="8548973727659841685">תו</translation>
 <translation id="8561322612995434619">כולל חלון קופץ</translation>
 <translation id="8571096049907249734">בחירה מרובה</translation>

@@ -279,6 +279,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="204357726431741734">Accede a tu Cuenta de Google para usar las contraseñas guardadas allí</translation>
 <translation id="2053111141626950936">No se traducirán las páginas en <ph name="LANGUAGE" />.</translation>
 <translation id="2053553514270667976">Código Postal</translation>
+<translation id="2054665754582400095">Tu presencia</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 sugerencia}other{# sugerencias}}</translation>
 <translation id="2079545284768500474">Deshacer</translation>
 <translation id="20817612488360358">Se ha establecido la configuración de proxy del sistema, pero también se ha especificado una configuración explícita de proxy.</translation>

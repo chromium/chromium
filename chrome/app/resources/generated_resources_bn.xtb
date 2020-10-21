@@ -870,6 +870,7 @@
 <translation id="1976307821760494606"><ph name="DOMAIN" /> ADB ডিবাগিং বন্ধ করে দিয়েছে। এতে ২৪ ঘণ্টায় আপনার <ph name="DEVICE_TYPE" /> রিসেট হয়ে যাবে। কোনও ফাইল রাখতে চাইলে, সেটির ব্যাক-আপ নিন।</translation>
 <translation id="1977965994116744507">আপনার <ph name="DEVICE_TYPE" /> আনলক করতে আপনার ফোন কাছাকাছি আনুন।</translation>
 <translation id="1978006917103730774">ভবিষ্যতে সফ্টওয়্যার এবং সুরক্ষা সংক্রান্ত আপডেট অটোমেটিক ইনস্টল হয়ে যাবে।</translation>
+<translation id="1978057560491495741">ঠিকানা সরিয়ে দিন</translation>
 <translation id="1979095679518582070">এই ফিচারটি বন্ধ করে দিলেও এই ডিভাইসটি সিস্টেম আপডেট এবং নিরাপত্তার জন্য প্রয়োজনীয় পরিষেবা সম্পর্কিত তথ্য পাঠাতে পারে।</translation>
 <translation id="1979280758666859181"><ph name="PRODUCT_NAME" />-এর পুরনো ভার্সন দিয়ে একটি চ্যানেলে পরিবর্তন করছেন৷ যখন আপনার ডিভাইসে বর্তমানে ইনস্টল করা ভার্সনের সঙ্গে চ্যানেলের ভার্সনটি মিলে যাবে তখনই চ্যানেল পরিবর্তন প্রযুক্ত হবে৷</translation>
 <translation id="197989455406964291">উল্লিখিত এনক্রিপশনের ধরন KDC-তে কাজ করে না</translation>
@@ -1071,6 +1072,7 @@
 <translation id="2224444042887712269">এই সেটিংটি <ph name="OWNER_EMAIL" /> এর৷</translation>
 <translation id="2224551243087462610">ফোল্ডার নাম সম্পাদনা করুন</translation>
 <translation id="2225864335125757863">আপনার অ্যাকাউন্ট নিরাপদে রাখতে এই পাসওয়ার্ডগুলি পরিবর্তন করুন:</translation>
+<translation id="2226204716217107988">অন্য প্রোফাইলে পরিবর্তন করবেন?</translation>
 <translation id="2226449515541314767">MIDI ডিভাইসগুলির সম্পূর্ণ নিয়ন্ত্রণ থেকে এই সাইটিকে অবরুদ্ধ করা হয়েছে৷</translation>
 <translation id="2226907662744526012">পিন লেখা হলে অটোমেটিক আনলক করার সুবিধা চালু করুন</translation>
 <translation id="222704500187107962">আপনি ছদ্মবেশী সেশন ছেড়ে গেলেই অটোমেটিক ভাবে এই এক্সেপশন সরিয়ে দেওয়া হবে</translation>
@@ -1140,6 +1142,7 @@
 <translation id="2307462900900812319">নেটওয়ার্ক কনফিগার করুন</translation>
 <translation id="230927227160767054">এই পৃষ্ঠাটি একটি পরিষেবা নিয়ন্ত্রক ইনস্টল করতে চায়৷</translation>
 <translation id="2309620859903500144">এই সাইটটি আপনার মোশন এবং লাইট সেন্সর অ্যাক্সেস করতে পারবে না।</translation>
+<translation id="2312219318583366810">পৃষ্ঠার ইউআরএল</translation>
 <translation id="2314165183524574721">বর্তমানে 'ডিভাইসের দৃশ্যমানতা' সেটিং লুকানো রয়েছে</translation>
 <translation id="2314774579020744484">পৃষ্ঠা অনুবাদ করার সময় ব্যবহার করা ভাষা</translation>
 <translation id="2315414688463285945">Linux ফাইল কনফিগার করতে সমস্যা হচ্ছে। আবার চেষ্টা করুন।</translation>
@@ -2342,6 +2345,7 @@
 <translation id="3713047097299026954">এই নিরাপত্তা কীয়ে কোনও সাইন-ইন ডেটা নেই</translation>
 <translation id="3714195043138862580">এই ডেমো ডিভাইসটির অধিকার বাতিল করা হয়েছে।</translation>
 <translation id="3714633008798122362">ওয়েব ক্যালেন্ডার</translation>
+<translation id="3715954932774762075">যেসব অ্যাপ ও ওয়েবসাইট একাধিক ভাষায় উপলভ্য রয়েছে সেগুলি এই তালিকা থেকে উপযুক্ত প্রথম ভাষাটি ব্যবহার করবে। আপনার ব্রাউজার সেটিংসের সাথে এই পছন্দগুলি সিঙ্ক করা আছে। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">হোমপেজ</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">আপনি এবং Google</translation>
@@ -2502,6 +2506,7 @@
 <translation id="3882165008614329320">ক্যামেরা বা ফাইলে আগে থেকে থাকা ভিডিও</translation>
 <translation id="3886446263141354045">এই সাইটটি অ্যাক্সেস করার জন্য আপনার অনুরোধ <ph name="NAME" />কে পাঠানো হয়েছে</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> ব্যবহার করে নোট নেওয়া হচ্ছে</translation>
+<translation id="3890064827463908288">ওয়াই-ফাই সিঙ্ক ব্যবহার করতে Chrome সিঙ্ক চালু করুন</translation>
 <translation id="3892414795099177503">OpenVPN / L2TP যোগ করুন...</translation>
 <translation id="3893536212201235195">আপনার অ্যাক্সেসিবিলিটি সেটিংস পড়ুন ও পরিবর্তন করুন</translation>
 <translation id="3893630138897523026">ChromeVox (কথ্য প্রতিবার্তা)</translation>
@@ -3772,6 +3777,7 @@
 <translation id="5449588825071916739">সবকটি ট্যাব বুকমার্ক করুন...</translation>
 <translation id="5449716055534515760">Close Win&amp;dow</translation>
 <translation id="5452974209916053028">বর্তমান ছদ্মবেশী সেশন: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
+<translation id="5454005855577728171">ক্যাপশন বাবল বাঁদিক থেকে ডানদিকে <ph name="POSITION_ON_SCREEN_FROM_LEFT" />%, উপর থেকে নিচে <ph name="POSITION_ON_SCREEN_FROM_TOP" />% সরানো হয়েছে</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> সহ</translation>
 <translation id="5457113250005438886">ভুল</translation>
 <translation id="5457459357461771897">আপনার কম্পিউটার থেকে ফটো, সঙ্গীত ও অন্যান্য মিডিয়া পড়ুন এবং মুছুন</translation>
@@ -3915,6 +3921,7 @@
 <translation id="5602765853043467355">এই ডিভাইসের বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং আরও অনেক কিছু খালি করুন</translation>
 <translation id="5605623530403479164">অন্যান্য সার্চ ইঞ্জিন</translation>
 <translation id="5605758115928394442">এটি যে আপনি তা কনফার্ম করতে আপনার ফোনে একটি বিজ্ঞপ্তি পাঠানো হয়েছে।</translation>
+<translation id="560834977503641186">Wi-Fi সিঙ্ক, আরও জানুন</translation>
 <translation id="5608580678041221894">কাটছাঁট করার এলাকা সমন্বয় করতে বা সরাতে নীচের কী’গুলি আলতো চাপুন</translation>
 <translation id="5609231933459083978">অ্যাপটি ভুল বলে মনে হচ্ছে৷</translation>
 <translation id="5610038042047936818">ক্যামেরা মোডে যান</translation>
@@ -4106,6 +4113,7 @@
 <translation id="5841270259333717135">ইথারনেট কনফিগার করুন</translation>
 <translation id="5842497610951477805">ব্লুটুথ সক্ষম</translation>
 <translation id="5843706793424741864">ফারেনহাইট</translation>
+<translation id="584451707753263735">লাইভ ক্যাপশন দেখা যাচ্ছে, ফোকাস অন্য কোনও ডায়ালগে সরাতে F6 প্রেস করুন</translation>
 <translation id="5844574845205796324">নতুন কন্টেন্ট চেক করে দেখতে সাজেস্ট করুন</translation>
 <translation id="5846200638699387931">রিলেশন সিন্ট্যাক্সে সমস্যা হয়েছে: <ph name="ERROR_LINE" /></translation>
 <translation id="5846807460505171493">আপডেট এবং অ্যাপ ইনস্টল করুন। চালিয়ে যাওয়ার অর্থ, আপনি সম্মতি দিচ্ছেন যে, এই ডিভাইসটি অটোমেটিক Google, আপনার পরিষেবা প্রদানকারী এবং আপনার ডিভাইসের প্রস্তুতকারকের থেকে হয়ত মোবাইল ডেটা ব্যবহার করে অ্যাপ এবং আপডেট ডাউনলোড করে ইনস্টল করতে পারে। এই অ্যাপগুলির মধ্যে কয়েকটিতে অ্যাপ-মধ্যস্থ কেনাকাটার সুবিধা থাকতে পারে।</translation>
@@ -5360,6 +5368,7 @@
 <translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> এখন পূর্ণ পর্দায় রয়েছে৷</translation>
 <translation id="7340650977506865820">সাইটটি আপনার স্ক্রিন শেয়ার করছে</translation>
 <translation id="7341834142292923918">এই সাইটে অ্যাক্সেস চায়</translation>
+<translation id="7343372807593926528">মতামত পাঠানোর আগে সমস্যাটি বর্ণনা করুন।</translation>
 <translation id="7345706641791090287">আপনার পাসওয়ার্ড নিশ্চিত করুন</translation>
 <translation id="7346909386216857016">ঠিক আছে, বুঝেছি</translation>
 <translation id="7347452120014970266">এর ফলে <ph name="ORIGIN_NAME" /> ও এর ইনস্টল করা অ্যাপগুলির স্টোর করা সমস্ত ডেটা ও কুকি মুছে যাবে</translation>
@@ -5775,6 +5784,7 @@
 <translation id="7819857487979277519">PSK (WPA বা RSN)</translation>
 <translation id="7819992334107904369">Chrome সিঙ্ক</translation>
 <translation id="782057141565633384">ভি&amp;ডিও ঠিকানা কপি করুন</translation>
+<translation id="7822187537422052256">আপনি কি এই ঠিকানা সরানোর ব্যাপারে নিশ্চিত?</translation>
 <translation id="7824864914877854148">কোনও সমস্যার জন্য সম্পূর্ণ ব্যাক-আপ নেওয়া যায়নি</translation>
 <translation id="7825666486843191125">আপনার স্ক্রিন আনলক করা থাকলে আশেপাশের সমস্ত পরিচিতি আপনার ডিভাইস দেখতে পাবে</translation>
 <translation id="782590969421016895">বর্তমান পৃষ্ঠাগুলি ব্যবহার করুন</translation>
@@ -6300,6 +6310,7 @@
 <translation id="8419098111404128271">'<ph name="SEARCH_TEXT" />' এর সার্চ ফলাফল</translation>
 <translation id="8419368276599091549">আপনার <ph name="DEVICE_TYPE" /> এ স্বাগতম!</translation>
 <translation id="8420308167132684745">অভিধানের এন্ট্রিগুলি এডিট করুন</translation>
+<translation id="8421361468937925547">লাইভ ক্যাপশন (শুধু ইংরেজি)</translation>
 <translation id="8422787418163030046">ট্রে লাগানো নেই</translation>
 <translation id="8425213833346101688">পরিবর্তন</translation>
 <translation id="8425492902634685834">টাস্কবারে পিন করুন</translation>
@@ -6328,6 +6339,7 @@
 <translation id="8449036207308062757">স্টোরেজ পরিচালনা করুন</translation>
 <translation id="8452135315243592079">সিম কার্ড পাওয়া যাচ্ছে না</translation>
 <translation id="8455026683977728932">ADB ইলাস্ট্রেশন চালু করা যায়নি</translation>
+<translation id="8456398879271637452">লাইভ ক্যাপশন দেখা যাচ্ছে, ফোকাস অন্য ডায়ালগে সরাতে Ctrl + Back বা Ctrl + Forward প্রেস করুন</translation>
 <translation id="845702320058262034">কানেক্ট করা যাচ্ছে না। আপনার ফোনের ব্লুটুথ চালানো আছে কিনা দেখুন।</translation>
 <translation id="8457451314607652708">বুকমার্কগুলি ইমপোর্ট করুন</translation>
 <translation id="8458627787104127436">সবগুলি (<ph name="URL_COUNT" />টি) নতুন উইন্ডোতে খুলুন</translation>
@@ -6838,6 +6850,7 @@
 <translation id="9027459031423301635">নতুন ট্যাবে লিঙ্ক খুলুন</translation>
 <translation id="9030515284705930323">আপনার প্রতিষ্ঠান আপনার অ্যাকাউন্টের জন্য Google Play স্টোর চালু করেনি। আরও তথ্যের জন্য আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="9030785788945687215">Gmail</translation>
+<translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> আর কাজ করে না</translation>
 <translation id="9031549947500880805">Google Drive-এ ব্যাক-আপ নিন। যেকোনও সময় সহজেই ডেটা রিস্টোর করুন অথবা অন্য ডিভাইস ব্যবহার করুন। আপনার ব্যাক-আপে অ্যাপ ডেটা থাকে।</translation>
 <translation id="9033765790910064284">যাই হোক, চালিয়ে যান</translation>
 <translation id="9033857511263905942">&amp;প্রতিলেপন</translation>
@@ -6846,6 +6859,7 @@
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{আপনি আর মাত্র একবার চেষ্টা করতে পারবেন।}one{আপনি আর মাত্র # বার চেষ্টা করতে পারবেন।}other{আপনি আর # বার চেষ্টা করতে পারবেন।}}</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9040661932550800571"><ph name="ORIGIN" />-এর জন্য পাসওয়ার্ড আপডেট করবেন?</translation>
+<translation id="9041049756004505730">লাইভ ক্যাপশন দেখা যাচ্ছে, ফোকাস অন্য ডায়ালগে সরাতে ⌘ + Option + ঊর্ধ্বমুখী বা নিম্নমুখী তীরচিহ্নটি প্রেস করুন</translation>
 <translation id="9041692268811217999">আপনার মেশিনে স্থানীয় ফাইলগুলিতে অ্যাক্সেস আপনার অ্যাডমিনিস্ট্রেটর বন্ধ করেছেন</translation>
 <translation id="904224458472510106">এই কাজটি আর আগের অবস্থায় ফেরানো যাবে না</translation>
 <translation id="9042893549633094279">গোপনীয়তা এবং নিরাপত্তা</translation>
@@ -6884,6 +6898,7 @@
 <translation id="9088446193279799727">Linux কনফিগার করা যায়নি। ইন্টারনেটে কানেক্ট করে আবার চেষ্টা করুন।</translation>
 <translation id="9088917181875854783">দয়া করে "<ph name="DEVICE_NAME" />"-এ দেখানো এই পাসকীটি নিশ্চিত করুন:</translation>
 <translation id="9089416786594320554">ইনপুট পদ্ধতিগুলি</translation>
+<translation id="909108997331068008"><ph name="EXISTING_USER" /> আগে থেকেই <ph name="NEW_USER" />-এর প্রোফাইলে সাইন-ইন করেছেন</translation>
 <translation id="9093429538970210897">কখনও এমনও হতে পারে যে আপগ্রেড করার প্রক্রিয়া সম্পূর্ণ হল না, তাই আপনাকে আগে থেকে ফাইলের ব্যাকআপ নিয়ে রাখতে বলা হচ্ছে। আপগ্রেড করার প্রক্রিয়া শুরু করলেই, Linux (বিটা ভার্সন) বন্ধ হয়ে যাবে। কাজে অগ্রসর হওয়ার আগে, তাই আগে থেকে খুলে রাখা ফাইলগুলিকে সেভ করে নিন।</translation>
 <translation id="9094033019050270033">পাসওয়ার্ড আপডেট করুন</translation>
 <translation id="9094038138851891550">ভুল ইউজারনেম</translation>
@@ -7057,5 +7072,6 @@
 <translation id="994289308992179865">&amp;লুপ</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">নিরাপদ সংযোগ স্থাপন করা হচ্ছে...</translation>
+<translation id="99731366405731005">ওয়াই-ফাই সিঙ্ক ব্যবহার করতে <ph name="LINK1_BEGIN" />Chrome সিঙ্ক<ph name="LINK1_END" /> চালু করুন। <ph name="LINK2_BEGIN" />আরও জানুন<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">স&amp;তর্কভাবে পরীক্ষা করুন</translation>
 </translationbundle>

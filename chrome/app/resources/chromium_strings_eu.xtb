@@ -11,6 +11,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1131805035311359397">Pasahitzak datuen isilpekotasunaren urratzeen eta beste segurtasun-arazoen aurka babestuta dauden egiaztatzeko, <ph name="BEGIN_LINK" />hasi saioa Chromium-en<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Chromium arakatzaileari buruz</translation>
 <translation id="1315551408014407711">Konfiguratu Chromium-eko profil berria</translation>
+<translation id="1357932062193643861">Galdetu Chromium irekitzean</translation>
 <translation id="1396446129537741364">Chromium pasahitzak erakusten saiatzen ari da.</translation>
 <translation id="1414495520565016063">Chromium-en saioa hasi duzu.</translation>
 <translation id="151962892725702025">Chromium OS sistema eragileak ezin izan ditu sinkronizatu zure datuak sinkronizazioa ez dagoelako erabilgarri zure domeinuan.</translation>
@@ -73,7 +74,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="347328004046849135">Arriskuan dagoen pasahitz batekin hasten baduzu saioa, jakinarazi egingo dizu Chromium-ek</translation>
 <translation id="3474745554856756813">Gailuko <ph name="ITEMS_COUNT" /> elementu ezabatuko dira. Geroago datuak eskuratu nahi izanez gero, hasi saioa Chromium-en <ph name="USER_EMAIL" /> gisa.</translation>
 <translation id="3509308970982693815">Itxi Chromium leiho guztiak eta saiatu berriro.</translation>
-<translation id="3527440529060401414">Ordenagailuan software kaltegarria bila dezake Chromium-ek</translation>
+<translation id="3527440529060401414">Software kaltegarria bila dezake Chromium-ek ordenagailuan</translation>
 <translation id="3575459661164320785">Software kaltegarria duzu ordenagailuan. Chromium-ek hura kendu, ezarpenak leheneratu eta luzapenak desgai ditzake, arakatzaileak ohiko moduan funtziona dezan berriro.</translation>
 <translation id="3639635944603682591">Pertsona honen arakatze-datuak gailutik ezabatuko dira. Datuak berreskuratzeko, hasi saioa Chromium-en <ph name="USER_EMAIL" /> gisa.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Chromium-en eguneratze bat erabilgarri dago eta sistema eragilea berrabiarazten duzunean aplikatuko da.}=1{Chromium-en eguneratze bat erabilgarri dago eta sistema eragilea berrabiarazten duzunean aplikatuko da. Ezkutuko moduko leihoa ez da berriro irekiko.}other{Chromium-en eguneratze bat erabilgarri dago eta sistema eragilea berrabiarazten duzunean aplikatuko da. Ezkutuko moduko # leihoak ez dira berriro irekiko.}}</translation>
@@ -89,7 +90,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3945058413678539331">Pasahitzak kopiatzen saiatzen ari da Chromium. Hori baimentzeko, idatzi Windows-eko pasahitza.</translation>
 <translation id="4036079820698952681">Lagundu Chromium hobetzen <ph name="BEGIN_LINK" />uneko ezarpenen<ph name="END_LINK" /> berri emanda</translation>
 <translation id="4050175100176540509">Segurtasun-hobekuntza garrantzitsuak eta eginbide berriak dituzu erabilgarri azken bertsioan.</translation>
-<translation id="4136604564421273381">Ordenagailutik software kaltegarria kentzen ari da Chromium...</translation>
+<translation id="4136604564421273381">Ordenagailutik software kaltegarria kentzen ari da Chromium…</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Hasi saioa sarean - Chromium</translation>
 <translation id="421369550622382712">Ezagutu Chromium-erako aplikazio, joko, luzapen eta gai bikainak.</translation>
 <translation id="4216212958613226427">Hizkuntza honetan dago Chromium-en erabiltzaile-interfazea</translation>

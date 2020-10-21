@@ -3,6 +3,7 @@
 <translationbundle lang="ur">
 <translation id="1018656279737460067">منسوخ کردہ</translation>
 <translation id="1195447618553298278">نامعلوم خرابی۔</translation>
+<translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">ناکام ہو گیا - فلٹر ناکام ہو گیا</translation>
 <translation id="1468664791493211953">پیشکشیں</translation>
 <translation id="1478594628797167447">اسکینر</translation>
@@ -46,6 +47,7 @@
 <translation id="4227825898293920515">پاس ورڈ کی میعاد <ph name="TIME" /> میں ختم ہونے والی ہے</translation>
 <translation id="4238516577297848345">کوئی پرنٹ جاب پیشرفت میں نہیں</translation>
 <translation id="4297501883039923494">رک گیا - نامعلوم خرابی</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">‏Kerberos کی ٹکٹ کی میعاد جلد ہی ختم ہو جائے گی</translation>
 <translation id="445059817448385655">پرانا پاس ورڈ</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="TOTAL_PAGE_NUMBER" /> میں سے <ph name="PRINTED_PAGE_NUMBER" />۔ براہ کرم پرنٹ جاب منسوخ کرنے کے لیے enter دبائیں۔</translation>
@@ -72,6 +74,7 @@
 <translation id="6058625436358447366">مکمل کرنے کے لئے اپنے پرانے اور نئے پاس ورڈز درج کریں</translation>
 <translation id="6106186594183574873">مکمل کرنے کے لئے اپنا پرانا پاس ورڈ درج کریں</translation>
 <translation id="6146993107019042706">مکمل کرنے کے لئے اپنا نیا پاس ورڈ درج کریں</translation>
+<translation id="6147514244879357420">PNG</translation>
 <translation id="636850387210749493">انٹرپرائز اندراج</translation>
 <translation id="649050271426829538">رک گیا - پیپر جام</translation>
 <translation id="6517239166834772319">دریافت</translation>
@@ -81,6 +84,7 @@
 <translation id="6747215703636344499">رک گیا - آؤٹ پٹ بھر گیا ہے</translation>
 <translation id="7162487448488904999">گیلری</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7359657277149375382">فائل کی قسم</translation>
 <translation id="7561454561030345039">یہ کارروائی آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="7658239707568436148">منسوخ کریں</translation>
 <translation id="7690294790491645610">نئے پاس ورڈ کی توثیق کریں</translation>

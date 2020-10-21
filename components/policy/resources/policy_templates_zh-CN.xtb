@@ -1086,6 +1086,7 @@
       如果您不设置此政策，系统不会将任何网站加入列表。
 
       注意：系统也可通过 <ph name="USE_IE_SITELIST_POLICY_NAME" /> 和 <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> 政策向该列表添加元素。</translation>
+<translation id="2640898752536996430">强制用户退出。</translation>
 <translation id="264093234299818170">显示除屏蔽名单所含打印机之外的所有打印机。</translation>
 <translation id="264252574246191885">不公开</translation>
 <translation id="2647069081229792812">启用或停用书签修改功能</translation>
@@ -1417,6 +1418,7 @@
 <translation id="3072847235228302527">为设备本地帐号设置服务条款</translation>
 <translation id="3086995894968271156">在 <ph name="PRODUCT_NAME" />中配置 Cast 接收器。</translation>
 <translation id="3091832372132789233">为主要连接到外部电源的设备的电池充电。</translation>
+<translation id="309416443108680956">此政策用于指定：当通过安全令牌（例如使用智能卡）验证身份的用户在会话过程中移除该令牌时，会发生什么情况。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />：不会发生任何情况。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />：屏幕会被锁定，直到用户重新验证身份为止。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />：会话会被结束，并且用户会被强制退出。如果此政策未设置，它将默认等同于已设为 <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />。</translation>
 <translation id="3096595567015595053">已启用插件的列表</translation>
 <translation id="3101501961102569744">选择如何指定代理服务器设置</translation>
 <translation id="3101709781009526431">日期和时间</translation>
@@ -1829,6 +1831,7 @@
       如果您设置了此政策，用户将无法更改 <ph name="PRODUCT_NAME" /> 中的主页类型。如果您未设置此政策，用户便可自行决定是否使用“新标签页”页面作为主页。
 
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
+<translation id="3695706037816556327">当用户从 <ph name="PRODUCT_OS_NAME" />设备上移除安全令牌（例如智能卡）时，系统会执行什么操作。</translation>
 <translation id="3701121231485832347">控制由 <ph name="MS_AD_NAME" /> 管理的 <ph name="PRODUCT_OS_NAME" />设备的专用设置。</translation>
 <translation id="3702518095257671450">远程证明</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" />（我们已弃用并将于日后移除单行字段。请开始使用下面的多行文本框。）</translation>
@@ -1865,6 +1868,8 @@
 
       如果您未设置这些政策，用户将可以自行选择代理设置。</translation>
 <translation id="3758249152301468420">停用开发者工具</translation>
+<translation id="3760231600118073732">锁定当前会话。</translation>
+<translation id="3764097800332238572">仅当 <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> 政策设为 <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> 或 <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />，并且通过智能卡验证身份的用户移除该卡时，此政策才会生效。通过设置此政策，您可指定旨在让用户知道系统即将执行的操作的通知应持续显示多少秒。此通知会遮住屏幕上的其他内容。仅当此通知显示完毕后，系统才会执行相应操作。用户只需在此通知显示完毕前重新插入智能卡，便能阻止系统执行该操作。如果此政策设为零，系统将不会显示任何通知，并且会立即执行该操作。</translation>
 <translation id="3765260570442823273">待机退出警告讯息的持续时间</translation>
 <translation id="377044054160169374">针对误导性体验的强制干预政策</translation>
 <translation id="3780152581321609624">在 Kerberos SPN 中加入非标准端口</translation>
@@ -3854,6 +3859,7 @@
 <translation id="6672070613706645316">允许用户在“新标签页”页面上自定义背景</translation>
 <translation id="6672630473862787247">为常规会话、无痕会话和访客会话启用静默身份验证。</translation>
 <translation id="6685903773201985073">为访客会话和常规会话启用静默身份验证。</translation>
+<translation id="6689343802305995925">不执行任何操作。</translation>
 <translation id="6689792153960219308">报告硬件状态</translation>
 <translation id="6690425645391461516">停用 DNS 拦截检查功能；允许使用“您是不是要前往 http://intranetsite/？”信息栏。</translation>
 <translation id="6698632841807204978">启用单色打印</translation>
@@ -4120,6 +4126,7 @@
 
       如果此政策已停用，当切换到备用浏览器后，<ph name="PRODUCT_NAME" /> 会关闭所含的标签页（即使仅剩下此标签页）。这会导致 <ph name="PRODUCT_NAME" /> 彻底关闭。</translation>
 <translation id="7019805045859631636">快</translation>
+<translation id="7026351325994257733">允许在 <ph name="PRODUCT_OS_NAME" />设备和一部已连接的 Android 手机之间同步 Wi-Fi 网络配置。</translation>
 <translation id="7027785306666625591">配置<ph name="PRODUCT_OS_NAME" />中的电源管理设置。
 
       这些政策可让您配置在用户停止操作一定时间后<ph name="PRODUCT_OS_NAME" />的行为。</translation>
@@ -4484,6 +4491,13 @@
 
       - 如果此政策已停用，管理员必须告知设备的最终用户。</translation>
 <translation id="747275827471712187">将这些网站上的 Cookie 恢复为旧版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行为</translation>
+<translation id="7476621944304431784">如果此设置已启用，用户将能够在其 <ph name="PRODUCT_OS_NAME" />设备和一部已连接的 Android 手机之间同步 Wi-Fi 网络配置。不过，用户必须通过完成一个设置流程来明确选择启用这项功能，才能同步 Wi-Fi 网络配置。
+
+      如果此设置已停用，用户将无法同步 Wi-Fi 网络配置。
+
+      这项功能有赖于在 Chrome 同步设置中启用 <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" /> 数据类型。如果 <ph name="SYNC_TYPES_LIST_DISABLED_POLICY_NAME" /> 政策已停用 <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" />，或者 <ph name="SYNC_DISABLED_POLICY_NAME" /> 政策已停用 Chrome 同步，系统将不会启用这项功能。
+
+      如果此政策未设置，默认情况下，受管用户将无法使用这项功能。</translation>
 <translation id="7477231245051133709">启用“单声道音频”无障碍功能</translation>
 <translation id="7477239290070847560">基于 Zeroconf (mDNS + DNS-SD) 的协议目的地</translation>
 <translation id="7485481791539008776">默认打印机选择规则</translation>
@@ -5674,6 +5688,7 @@
 <translation id="9152473318295429890">允许根据上下文建议相关的网页</translation>
 <translation id="9153446010242995516">如果操作系统版本比目标版本新，则回滚到目标版本，并一直使用此版本。如果可能，会尝试通过回滚过程保留设备级配置（包括网络凭据），但即使无法恢复数据（因为目标版本不支持恢复数据，或因为发生了无法向后兼容的更改），也会通过执行完整的 Powerwash 操作进行回滚。
           <ph name="PRODUCT_OS_NAME" /> 75 及更高版本均支持。对于旧版客户端，此值意味着禁用回滚。</translation>
+<translation id="9155218447258425310">当用户从 <ph name="PRODUCT_OS_NAME" />设备上移除智能卡时，通知会持续显示多长时间。</translation>
 <translation id="9155375380628728544">如果您设置了此政策，用户只能将此政策所列出的语言之一添加到首选语言列表内。
 
       如果此政策设为一个空列表或未设置，用户可将任何语言指定为首选语言。

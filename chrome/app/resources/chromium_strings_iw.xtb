@@ -9,6 +9,7 @@
 <translation id="1131805035311359397">‏כדי לבדוק אם שאר הסיסמאות מוגנות מפני פרצות באבטחת מידע ובעיות אבטחה אחרות, <ph name="BEGIN_LINK" />יש להיכנס ל-Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">‏על Chromium</translation>
 <translation id="1315551408014407711">‏הגדרת הפרופיל החדש שלך ב-Chromium</translation>
+<translation id="1357932062193643861">‏הצגת שאלה בפתיחה של Chromium</translation>
 <translation id="1396446129537741364">‏Chromium מנסה להציג סיסמאות.</translation>
 <translation id="1414495520565016063">‏נכנסת ל-Chromium!</translation>
 <translation id="151962892725702025">‏מערכת ההפעלה של Chromium לא הצליחה לסנכרן את הנתונים שלך מפני שסנכרון אינו זמין עבור הדומיין שלך.</translation>
@@ -51,7 +52,7 @@
 <translation id="2910007522516064972">‏מידע על &amp;Chromium‏</translation>
 <translation id="2977470724722393594">‏Chromium‏ מעודכן</translation>
 <translation id="2983934633046890458">‏Chromium מנסה לערוך את הסיסמאות.</translation>
-<translation id="3031887101543416445">{NUM_DAYS,plural, =1{‏Chromium לא גילה תוכנות מזיקות ידועות במחשב שלך. בדיקה אחרונה: לפני יום אחד.}two{‏Chromium לא גילה תוכנות מזיקות ידועות במחשב שלך. בדיקה אחרונה: לפני יומיים ({NUM_DAYS}).}many{‏Chromium לא גילה תוכנות מזיקות ידועות במחשב שלך. בדיקה אחרונה: לפני {NUM_DAYS} ימים.}other{‏Chromium לא גילה תוכנות מזיקות ידועות במחשב שלך. בדיקה אחרונה: לפני {NUM_DAYS} ימים.}}</translation>
+<translation id="3031887101543416445">{NUM_DAYS,plural, =1{‏Chromium לא גילה תוכנות מזיקות ידועות במחשב שלך. בדיקה אחרונה: לפני יום אחד.}two{‏Chromium לא גילה תוכנות מזיקות ידועות במחשב שלך. בדיקה אחרונה: לפני ({NUM_DAYS}) ימים.}many{‏Chromium לא גילה תוכנות מזיקות ידועות במחשב שלך. בדיקה אחרונה: לפני {NUM_DAYS} ימים.}other{‏Chromium לא גילה תוכנות מזיקות ידועות במחשב שלך. בדיקה אחרונה: לפני {NUM_DAYS} ימים.}}</translation>
 <translation id="3032706164202344641">‏Chromium לא יכול לבדוק את הסיסמאות שלך. כדאי לנסות שוב מאוחר יותר.</translation>
 <translation id="3032787606318309379">‏הוספה ל-Chromium</translation>
 <translation id="3068515742935458733">‏עזור לשפר את Chromium על ידי שליחת דוחות קריסה ו-<ph name="UMA_LINK" /> אל Google</translation>
@@ -85,7 +86,7 @@
 <translation id="3945058413678539331">‏Chromium מנסה להעתיק את הסיסמאות. כדי לאפשר למערכת לעשות זאת, יש להזין את הסיסמה שלך ל-Windows.</translation>
 <translation id="4036079820698952681">‏דיווח על <ph name="BEGIN_LINK" />ההגדרות הנוכחיות<ph name="END_LINK" /> יעזור לשפר את Chromium</translation>
 <translation id="4050175100176540509">הגרסה החדשה כוללת שיפורי בטיחות חשובים ותכונות חדשות.</translation>
-<translation id="4136604564421273381">‏Chromium מסיר תוכנה מזיקה מהמחשב שלך…</translation>
+<translation id="4136604564421273381">‏Chromium מסיר כעת תוכנה מזיקה מהמחשב שלך…</translation>
 <translation id="419998258129752635">‏<ph name="PAGE_TITLE" /> – כניסה לרשת – Chromium</translation>
 <translation id="421369550622382712">‏אפליקציות, משחקים, תוספים ועיצובים מעולים בשביל Chromium.</translation>
 <translation id="4216212958613226427">‏זו השפה שבה מוצג ממשק המשתמש של Chromium</translation>
@@ -130,7 +131,7 @@
 <translation id="5496810170689441661">‏Chromium מנסה לערוך את הסיסמאות. כדי לאפשר זאת, יש להזין את הסיסמה שלך ל-Windows.</translation>
 <translation id="5623402015214259806">{0,plural, =0{‏יש עדכון ל-Chromium}=1{‏יש עדכון ל-Chromium}two{‏עדכון של Chromium זמין כבר # ימים}many{‏עדכון של Chromium זמין כבר # ימים}other{‏עדכון של Chromium זמין כבר # ימים}}</translation>
 <translation id="5631814766731275228">‏שם ותמונה ב-Chromium</translation>
-<translation id="5634636535844844681">‏כדי להשתמש ב-Chromium יש צורך ב-Windows מגירסה 7 ואילך.</translation>
+<translation id="5634636535844844681">‏כדי להשתמש ב-Chromium יש צורך ב-Windows מגרסה 7 ואילך.</translation>
 <translation id="5653831366781983928">‏יש להפעיל מחדש את Chromium</translation>
 <translation id="5698481217667032250">‏הצג את Chromium בשפה זו</translation>
 <translation id="5820394555380036790">‏מערכת ההפעלה של Chromium</translation>
@@ -170,7 +171,7 @@
 <translation id="6676384891291319759">גישה אל האינטרנט</translation>
 <translation id="6717134281241384636">‏לא ניתן להשתמש בפרופיל שלך משום שהוא מגיע מגרסה חדשה יותר של Chromium.
 
-ייתכן שחלק מהתכונות לא יהיו זמינות. ציין ספריית פרופיל אחרת או השתמש בגרסה חדשה יותר של Chromium.</translation>
+ייתכן שחלק מהתכונות לא יהיו זמינות. יש לציין ספריית פרופיל אחרת או להשתמש בגרסה חדשה יותר של Chromium.</translation>
 <translation id="6734080038664603509">‏עדכן &amp;את Chromium‏</translation>
 <translation id="6734291798041940871">‏Chromium כבר מותקן במחשב ונגיש לכל המשתמשים.</translation>
 <translation id="6737557815519435616">‏Chromium לא גילה תוכנות מזיקות ידועות במחשב שלך. בדיקה אחרונה: לפני כמה רגעים.</translation>

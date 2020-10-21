@@ -555,7 +555,7 @@
 <translation id="1627408615528139100">Bereits heruntergeladen</translation>
 <translation id="1628948239858170093">Datei vor dem Öffnen scannen?</translation>
 <translation id="1629314197035607094">Passwort abgelaufen</translation>
-<translation id="163072119192489970">Dürfen den Datenversand und -empfang abschließen</translation>
+<translation id="163072119192489970">Dürfen den Datenversand und ‑empfang abschließen</translation>
 <translation id="1630768113285622200">Neu starten und fortfahren</translation>
 <translation id="1632082166874334883">In Ihrem Google-Konto gespeichertes Passwort</translation>
 <translation id="1632803087685957583">Ermöglicht die Anpassung der Tastatur-Wiederholungsrate, Wortvervollständigung und mehr</translation>
@@ -953,7 +953,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2090165459409185032">Besuchen Sie die folgende Seite, um Ihre Kontoinformationen wiederzuherstellen: google.com/accounts/recovery</translation>
 <translation id="2090876986345970080">Sicherheitseinstellung des Systems</translation>
 <translation id="2091887806945687916">Ton</translation>
-<translation id="209539936453343974">Damit Jugendschutzeinstellungen eingerichtet werden können, muss das Kind ein Google-Konto haben, das von einem Elternteil verwaltet wird. Auf <ph name="DEVICE_TYPE_PLURAL" /> können Eltern mit der Family App beispielsweise die Gerätenutzungsdauer beschränken oder Websites genehmigen oder blockieren. Wenn ein Kind Hausaufgaben auf Websites wie Google Classroom machen muss, kann später ein Schulkonto hinzugefügt werden.</translation>
+<translation id="209539936453343974">Damit Jugendschutzeinstellungen eingerichtet werden können, muss das Kind ein Google-Konto haben, das von einem Elternteil verwaltet wird. Mit der Family Link App können Eltern für <ph name="DEVICE_TYPE_PLURAL" /> beispielsweise die Gerätenutzungsdauer beschränken oder Websites genehmigen oder blockieren. Wenn das Kind Hausaufgaben auf Websites wie Google Classroom zu erledigen hat, kann später ein Konto einer Bildungseinrichtung hinzugefügt werden.</translation>
 <translation id="2096715839409389970">Cookies von Drittanbietern löschen</translation>
 <translation id="2097372108957554726">Melden Sie sich in Chrome an, um neue Geräte zu registrieren.</translation>
 <translation id="2098805196501063469">Restliche Passwörter prüfen</translation>
@@ -1069,7 +1069,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2224444042887712269">Inhaber dieser Einstellung ist <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Ordnername bearbeiten</translation>
 <translation id="2225864335125757863">Bitte ändern Sie umgehend die folgenden Passwörter, um Ihr Konto zu schützen:</translation>
-<translation id="2226204716217107988">Möchten Sie zu einem anderen Profil wechseln?</translation>
+<translation id="2226204716217107988">Zu einem anderen Profil wechseln?</translation>
 <translation id="2226449515541314767">Dieser Website wurde keine vollständige Kontrolle über MIDI-Geräte gewährt.</translation>
 <translation id="2226907662744526012">Automatisch entsperren, wenn die PIN eingegeben wurde</translation>
 <translation id="222704500187107962">Wenn Sie die aktuelle Inkognitositzung beenden, wird diese Ausnahme automatisch entfernt</translation>
@@ -1683,7 +1683,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2932883381142163287">Missbrauch melden</translation>
 <translation id="2933632078076743449">Letzte Aktualisierung</translation>
 <translation id="2934999512438267372">Vollständige Kontrolle über MIDI-Geräte erlaubt</translation>
-<translation id="2935654492420446828">Schulkonto später hinzufügen</translation>
+<translation id="2935654492420446828">Konto einer Bildungseinrichtung später hinzufügen</translation>
 <translation id="2936851848721175671">Sicherung &amp; Wiederherstellung</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" />-Links öffnen</translation>
 <translation id="2938845886082362843">Auf Ihrem Sicherheitsschlüssel gespeicherte Anmeldedaten abrufen und löschen</translation>
@@ -2051,7 +2051,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3404249063913988450">Bildschirmschoner aktivieren</translation>
 <translation id="3405664148539009465">Schriftart anpassen</translation>
 <translation id="3405763860805964263">...</translation>
-<translation id="3406290648907941085">Dürfen Virtual-Reality-Geräte und -Daten verwenden</translation>
+<translation id="3406290648907941085">Dürfen Virtual-Reality-Geräte und ‑Daten verwenden</translation>
 <translation id="3406396172897554194">Anhand einer Sprache oder Eingabemethode suchen</translation>
 <translation id="3406605057700382950">&amp;Lesezeichenleiste anzeigen</translation>
 <translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{Diese Erweiterung könnte schädlich sein}other{Diese Erweiterungen könnten schädlich sein}}</translation>
@@ -2660,7 +2660,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4058793769387728514">Dokument jetzt prüfen</translation>
 <translation id="406070391919917862">Apps im Hintergrund</translation>
 <translation id="4061374428807229313">Wenn Sie einen Ordner freigeben möchten, rechtsklicken Sie in der App "Dateien" darauf und wählen Sie dann "Teilen mit Parallels Desktop" aus.</translation>
-<translation id="406213378265872299">Personalisiertes Verhalten</translation>
+<translation id="406213378265872299">Benutzerdefinierte Einstellungen</translation>
 <translation id="4065876735068446555">Eventuell müssen Sie die Anmeldeseite des verwendeten Netzwerks (<ph name="NETWORK_ID" />) aufrufen.</translation>
 <translation id="4066207411788646768">Stellen Sie eine Internetverbindung her, damit Sie verfügbare Drucker im Netzwerk sehen können</translation>
 <translation id="4068776064906523561">Gespeicherte Fingerabdrücke</translation>
@@ -3775,7 +3775,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5449588825071916739">Alle Tabs als Lesezeichen speichern</translation>
 <translation id="5449716055534515760">Fen&amp;ster schließen</translation>
 <translation id="5452974209916053028">Aktuelle Inkognitositzung: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
-<translation id="5454005855577728171">Untertitelfeld wurde auf <ph name="POSITION_ON_SCREEN_FROM_LEFT" /> % waagerecht, <ph name="POSITION_ON_SCREEN_FROM_TOP" /> % senkrecht verschoben</translation>
+<translation id="5454005855577728171">Untertitelfeld wurde <ph name="POSITION_ON_SCREEN_FROM_LEFT" /> % nach rechts, <ph name="POSITION_ON_SCREEN_FROM_TOP" /> % nach unten verschoben</translation>
 <translation id="5454166040603940656">mit <ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">Ungültig</translation>
 <translation id="5457459357461771897">Fotos, Musik und andere Medien auf Ihrem Computer lesen und löschen</translation>
@@ -4110,7 +4110,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5841270259333717135">Ethernet konfigurieren</translation>
 <translation id="5842497610951477805">Bluetooth aktivieren</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
-<translation id="584451707753263735">Automatische Untertitel sind sichtbar. Drücken Sie F6, um den Fokus zu wechseln.</translation>
+<translation id="584451707753263735">Automatische Untertitel sind sichtbar. Drücke F6, um den Fokus zu wechseln.</translation>
 <translation id="5844574845205796324">Inhaltsvorschläge erhalten</translation>
 <translation id="5846200638699387931">Bezugs-Syntaxfehler: <ph name="ERROR_LINE" /></translation>
 <translation id="5846807460505171493">Updates und Apps installieren. Wenn Sie fortfahren, stimmen Sie zu, dass dieses Gerät automatisch Updates und Apps von Google, Ihrem Mobilfunkanbieter und dem Hersteller Ihres Geräts herunterladen und installieren darf, möglicherweise über eine mobile Datenverbindung. Einige dieser Apps bieten eventuell In-App-Käufe an.</translation>
@@ -4505,7 +4505,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6295158916970320988">Alle Websites</translation>
 <translation id="6295855836753816081">Wird gespeichert...</translation>
 <translation id="6298962879096096191">Google Play verwenden, um Android-Apps zu installieren</translation>
-<translation id="6300177430812514606">Dürfen den Datenversand und -empfang nicht abschließen</translation>
+<translation id="6300177430812514606">Dürfen den Datenversand und ‑empfang nicht abschließen</translation>
 <translation id="630065524203833229">&amp;Beenden</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> konnte nicht automatisch konfiguriert werden. Bitte legen Sie erweiterte Einstellungen für den Drucker fest. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="6301076166764763868">Wenn Sie Ihre privaten und die Browsingaktivitäten für <ph name="EXISTING_USER" />getrennt halten möchten, erstellen Sie ein neues Profil für <ph name="NEW_USER" /></translation>
@@ -5020,7 +5020,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6922745772873733498">Geben Sie zum Ausdrucken eine PIN ein</translation>
 <translation id="6923132443355966645">Scrollen/Klicken</translation>
 <translation id="6923633482430812883">Fehler beim Bereitstellen der Freigabe. Der Dateiserver, zu dem Sie eine Verbindung herstellen, muss SMBv2 oder höher unterstützen.</translation>
-<translation id="6929126689972602640">Jugendschutzeinstellungen werden für Schulkonten nicht unterstützt. Wenn Sie ein Schulkonto für den Zugriff auf Google Classroom oder auf andere Websites für Schulaufgaben hinzufügen möchten, melden Sie sich zuerst im privaten Konto des Kindes an. Sie können das Schulkonto später in den Einstellungen hinzufügen.</translation>
+<translation id="6929126689972602640">Jugendschutzeinstellungen werden für Konten einer Bildungseinrichtung nicht unterstützt. Wenn du ein Konto einer Bildungseinrichtung für den Zugriff auf Google Classroom oder auf andere Websites für Schulaufgaben hinzufügen möchtest, melde dich zuerst im privaten Konto des Kindes an. Du kannst das Konto einer Bildungseinrichtung später in den Einstellungen hinzufügen.</translation>
 <translation id="6929760895658557216">Ok Google</translation>
 <translation id="6930036377490597025">Externer Sicherheitsschlüssel oder integrierter Sensor</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Eine Erweiterung wurde abgelehnt}other{# Erweiterungen wurden abgelehnt}}</translation>
@@ -5584,7 +5584,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7607002721634913082">Angehalten</translation>
 <translation id="7608810328871051088">Android-Einstellungen</translation>
 <translation id="7609148976235050828">Stellen Sie eine Internetverbindung her und versuchen Sie es dann noch einmal.</translation>
-<translation id="7612655942094160088">Funktionen des verbundenen Smartphones aktivieren.</translation>
+<translation id="7612655942094160088">Funktionen für verbundenes Smartphone aktivieren.</translation>
 <translation id="7614260613810441905">Nachfragen, wenn eine Website Dateien oder Ordner auf meinem Gerät bearbeiten möchte (empfohlen)</translation>
 <translation id="761530003705945209">In Google Drive sichern. Sie können Ihre Daten jederzeit wiederherstellen – auch auf einem anderen Gerät. In Ihrer Sicherung sind auch App-Daten enthalten. Ihre Sicherungen werden an Google gesendet und mit dem Passwort Ihres Google-Kontos verschlüsselt.</translation>
 <translation id="7615365294369022248">Fehler beim Hinzufügen eines Kontos</translation>
@@ -5781,7 +5781,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7819857487979277519">PSK (WPA oder RSN)</translation>
 <translation id="7819992334107904369">Chrome-Synchronisierung</translation>
 <translation id="782057141565633384">Videoadresse k&amp;opieren</translation>
-<translation id="7822187537422052256">Möchten Sie diese Adresse wirklich entfernen?</translation>
+<translation id="7822187537422052256">Adresse wirklich entfernen?</translation>
 <translation id="7824864914877854148">Sicherung konnte aufgrund eines Fehlers nicht abgeschlossen werden</translation>
 <translation id="7825666486843191125">Alle Kontakte in meiner Nähe, wenn das Display entsperrt ist</translation>
 <translation id="782590969421016895">Aktuelle Seiten verwenden</translation>
@@ -6194,7 +6194,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="826905130698769948">Ungültiges Clientzertifikat</translation>
 <translation id="8270242299912238708">PDF-Dokumente</translation>
 <translation id="827097179112817503">Schaltfläche "Startseite" anzeigen</translation>
-<translation id="8271379370373330993">Liebe Eltern, die nächsten Schritte müssen Sie ausführen. Sie können <ph name="DEVICE_TYPE" /> nach der Kontoeinrichtung wieder Ihrem Kind geben.</translation>
+<translation id="8271379370373330993">Liebe Eltern, die nächsten Schritte müsst ihr ausführen. Du kannst das Gerät (<ph name="DEVICE_TYPE" />) nach der Kontoeinrichtung wieder deinem Kind geben.</translation>
 <translation id="8272443605911821513">Zum Verwalten Ihrer Erweiterungen klicken Sie im Menü "Mehr Tools" auf "Erweiterungen".</translation>
 <translation id="8274332263553132018">Datei streamen</translation>
 <translation id="8274924778568117936">Schalten Sie Ihr <ph name="DEVICE_TYPE" /> nicht aus bzw. schließen Sie es nicht, bis das Update abgeschlossen ist. Nach Abschluss der Installation wird Ihr <ph name="DEVICE_TYPE" /> neu gestartet.</translation>
@@ -6219,7 +6219,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8300011035382349091">Lesezeichen für diesen Tab bearbeiten</translation>
 <translation id="8300374739238450534">Mitternachtsblau</translation>
 <translation id="8300849813060516376">OTASP fehlgeschlagen</translation>
-<translation id="8304383784961451596">Sie sind nicht zur Verwendung dieses Geräts berechtigt. Bitten Sie den Administrator um eine Anmeldeberechtigung oder melden Sie sich mit einem Google-Konto an, das über Family Link beaufsichtigt wird.</translation>
+<translation id="8304383784961451596">Du bist nicht zur Verwendung dieses Geräts berechtigt. Bitte den Administrator um eine Anmeldeberechtigung oder melde dich mit einem Google-Konto an, das über Family Link beaufsichtigt wird.</translation>
 <translation id="8308179586020895837">Nachfragen, wenn <ph name="HOST" /> auf Ihre Kamera zugreifen möchte</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">Das Zertifikat ist bereits vorhanden</translation>
@@ -6336,7 +6336,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8449036207308062757">Speicherplatz verwalten</translation>
 <translation id="8452135315243592079">Keine SIM-Karte vorhanden</translation>
 <translation id="8455026683977728932">Fehler bei der Aktivierung der ADB-Illustration</translation>
-<translation id="8456398879271637452">Automatische Untertitel sind sichtbar. Drücken Sie Strg + Zurück oder Strg + Vor, um den Fokus zu wechseln.</translation>
+<translation id="8456398879271637452">Automatische Untertitel sind sichtbar. Drücke „Strg + Zurück“ oder „Strg + Weiter“, um den Fokus zu wechseln.</translation>
 <translation id="845702320058262034">Verbindung nicht möglich. Kontrollieren Sie, ob Bluetooth auf Ihrem Smartphone aktiviert ist.</translation>
 <translation id="8457451314607652708">Lesezeichen importieren</translation>
 <translation id="8458627787104127436">Alle (<ph name="URL_COUNT" />) in neuem Fenster öffnen</translation>
@@ -6551,7 +6551,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8714838604780058252">Hintergrundgrafiken</translation>
 <translation id="8715480913140015283">Ein Tab im Hintergrund verwendet Ihre Kamera</translation>
 <translation id="8716931980467311658">Alle Linux-Anwendungen und Daten im Ordner "Linux-Dateien" von diesem <ph name="DEVICE_TYPE" /> löschen?</translation>
-<translation id="8717145295869185525">Dürfen keine Virtual-Reality-Geräte und -Daten verwenden</translation>
+<translation id="8717145295869185525">Dürfen keine Virtual-Reality-Geräte und ‑Daten verwenden</translation>
 <translation id="8717864919010420084">Link kopieren</translation>
 <translation id="8719472795285728850">Auf Erweiterungsaktivitäten wird gewartet…</translation>
 <translation id="8719653885894320876">Fehler beim Download von <ph name="PLUGIN_NAME" /></translation>
@@ -6856,7 +6856,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{Sie haben noch einen Eingabeversuch.}other{Sie haben noch # Eingabeversuche.}}</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9040661932550800571">Passwort für <ph name="ORIGIN" /> aktualisieren?</translation>
-<translation id="9041049756004505730">Automatische Untertitel sind sichtbar. Drücken Sie ⌘ + Option + Aufwärtspfeil oder Abwärtspfeil, um den Fokus zu wechseln.</translation>
+<translation id="9041049756004505730">Automatische Untertitel sind sichtbar. Drücke ⌘ + Option + Aufwärtspfeil oder Abwärtspfeil, um den Fokus zu wechseln.</translation>
 <translation id="9041692268811217999">Der Zugriff auf lokale Dateien auf Ihrem Gerät wurde von Ihrem Administrator deaktiviert</translation>
 <translation id="904224458472510106">Dieser Vorgang kann nicht rückgängig gemacht werden</translation>
 <translation id="9042893549633094279">Datenschutz und Sicherheit</translation>
@@ -6895,7 +6895,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="9088446193279799727">Linux konnte nicht konfiguriert werden. Stellen Sie eine Verbindung zum Internet her und versuchen Sie es noch einmal.</translation>
 <translation id="9088917181875854783">Bitte bestätigen Sie, dass dieser Zugangscode auf "<ph name="DEVICE_NAME" />" angezeigt wird:</translation>
 <translation id="9089416786594320554">Eingabemethoden</translation>
-<translation id="909108997331068008"><ph name="NEW_USER" /> ist bereits mit dem Profil von <ph name="EXISTING_USER" /> angemeldet</translation>
+<translation id="909108997331068008">Das Profil von <ph name="EXISTING_USER" /> ist bereits in <ph name="NEW_USER" /> angemeldet</translation>
 <translation id="9093429538970210897">Wir empfehlen, vor diesem Update Dateien zu sichern, für den Fall, dass es nicht abgeschlossen werden kann. Beim Start des Upgrades wird Linux (Beta) heruntergefahren. Speichern Sie bitte die geöffneten Dateien, bevor Sie fortfahren.</translation>
 <translation id="9094033019050270033">Passwort aktualisieren</translation>
 <translation id="9094038138851891550">Nutzername ungültig</translation>
@@ -7069,6 +7069,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="994289308992179865">Sch&amp;leife</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Sichere Verbindung wird hergestellt...</translation>
-<translation id="99731366405731005">Aktivieren Sie die <ph name="LINK1_BEGIN" />Chrome-Synchronisierung<ph name="LINK1_END" />, um die WLAN-Synchronisation zu verwenden. <ph name="LINK2_BEGIN" />Weitere Informationen<ph name="LINK2_END" /></translation>
+<translation id="99731366405731005"><ph name="LINK1_BEGIN" />Chrome-Synchronisierung<ph name="LINK1_END" /> aktivieren, um die WLAN-Synchronisation zu verwenden. <ph name="LINK2_BEGIN" />Weitere Informationen<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">Untersuchen</translation>
 </translationbundle>

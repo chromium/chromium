@@ -17,6 +17,7 @@
 <translation id="1012794136286421601">Google Dokümanlar, E-Tablolar, Slaytlar ve Çizimler dosyalarınız senkronize ediliyor. Bunlara çevrimiçi veya çevrimdışı olarak erişmek için Google Drive uygulamasını açın.</translation>
 <translation id="1012876632442809908">USB-C cihaz (ön bağlantı noktası)</translation>
 <translation id="1013707859758800957">Korumalı alanda olmayan bir eklentinin bu sayfada çalışmasına izin verildi.</translation>
+<translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Klasör Adını Düzenle</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{<ph name="DEVICE_TYPE" /> cihazı güncellemek için son gün}other{<ph name="DEVICE_TYPE" /> cihazı {NUM_DAYS} gün içinde güncelleyin}}</translation>
 <translation id="1016566241875885511">Ek bilgi (isteğe bağlı)</translation>
@@ -2510,7 +2511,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3882165008614329320">Kameradan veya dosyadan mevcut video</translation>
 <translation id="3886446263141354045">Bu siteye erişim isteğiniz şu kişiye gönderildi: <ph name="NAME" /></translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> ile not alınıyor</translation>
-<translation id="3890064827463908288">Wi-Fi Senkronizasyonunu kullanmak için Chrome Senkronizasyonunu açın</translation>
+<translation id="3890064827463908288">Wi-Fi Senkronizasyonu'nu kullanmak için Chrome Senkronizasyonu'nu açın</translation>
 <translation id="3892414795099177503">OpenVPN / L2TP Ekle...</translation>
 <translation id="3893536212201235195">Erişilebilirlik ayarlarınızı okuma ve değiştirme</translation>
 <translation id="3893630138897523026">ChromeVox (sesli geri bildirim)</translation>
@@ -7087,6 +7088,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="994289308992179865">&amp;Döngü</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Güvenli bağlantı oluşturuluyor...</translation>
-<translation id="99731366405731005">Wi-Fi Senkronizasyonunu kullanmak için <ph name="LINK1_BEGIN" />Chrome Senkronizasyonunu<ph name="LINK1_END" /> açın. <ph name="LINK2_BEGIN" />Daha fazla bilgi<ph name="LINK2_END" /></translation>
+<translation id="99731366405731005">Wi-Fi Senkronizasyonu'nu kullanmak için <ph name="LINK1_BEGIN" />Chrome Senkronizasyonu<ph name="LINK1_END" />'nu açın. <ph name="LINK2_BEGIN" />Daha fazla bilgi<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">İ&amp;ncele</translation>
 </translationbundle>

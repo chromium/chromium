@@ -260,7 +260,7 @@
 <translation id="3775743491439407556">הסינכרון לא פועל</translation>
 <translation id="3779810277399252432">אין חיבור לאינטרנט.</translation>
 <translation id="3783017676699494206">שמור תמונה</translation>
-<translation id="3789841737615482174">התקן</translation>
+<translation id="3789841737615482174">התקנה</translation>
 <translation id="3803696231112616155">הצגה של הצעה לתרגם את הדף הזה</translation>
 <translation id="385051799172605136">חזרה</translation>
 <translation id="3892144330757387737">ההיסטוריה זמינה כאן</translation>
@@ -369,7 +369,7 @@
 <translation id="5039804452771397117">זה בסדר</translation>
 <translation id="5056446788882570708">נמצאו בעיות <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">אישור</translation>
-<translation id="5062321486222145940">‏התקן את Google Drive</translation>
+<translation id="5062321486222145940">‏התקנת Google Drive</translation>
 <translation id="5083464117946352670">גודל הקובץ אינו ידוע.</translation>
 <translation id="5094827893301452931">הציוץ בוצע.</translation>
 <translation id="5118764316110575523">כבויה</translation>
@@ -512,7 +512,7 @@
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> פריטים נמחקו</translation>
 <translation id="651505212789431520">לבטל את הסנכרון? אפשר להפעיל את הסנכרון בכל זמן דרך 'הגדרות'.</translation>
 <translation id="6561262006871132942">הגדלת התצוגה</translation>
-<translation id="6585618849026997638">כדי לחזור אל דף חשוב עבורך אפשר להוסיף אותו לסימניות</translation>
+<translation id="6585618849026997638">כדי לחזור אל דף שחשוב לך אפשר להוסיף אותו לסימניות</translation>
 <translation id="6610002944194042868">אפשרויות תרגום</translation>
 <translation id="6620279676667515405">ביטול</translation>
 <translation id="6624219055418309072">חסימה במצב אנונימי</translation>
@@ -718,10 +718,10 @@
 <translation id="8976382372951310360">עזרה</translation>
 <translation id="8981454092730389528">‏בחירת הפעילויות ב-Google</translation>
 <translation id="8985320356172329008">‏מחובר ל-Google בשם</translation>
-<translation id="9034759925968272072">‏לא תבוצע יציאה מחשבון Google שלך. ייתכן שתוכל לגשת לסוגים אחרים של היסטוריית גלישה בחשבון Google בכתובת <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
+<translation id="9034759925968272072">‏לא תבוצע יציאה מחשבון Google שלך. ייתכן שיהיה באפשרותך לגשת לסוגים אחרים של היסטוריית גלישה בחשבון Google בכתובת <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">הצג מקור</translation>
 <translation id="9039373489628511875">רוחב פס</translation>
-<translation id="9055772144595778347">לא מצליח להיכנס</translation>
+<translation id="9055772144595778347">לא ניתן להיכנס</translation>
 <translation id="9065203028668620118">עריכה</translation>
 <translation id="9079935439869366234">סמן את הכול כ'לא נקרא'</translation>
 <translation id="9081058212938299310">לעדכן את הסיסמה של <ph name="USERNAME" />?</translation>

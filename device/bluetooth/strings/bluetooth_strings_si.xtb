@@ -16,6 +16,7 @@
 <translation id="4986357476502426173"><ph name="DEVICE_NAME" />, වීඩියෝ උපාංගය</translation>
 <translation id="5271696982761495740">ටැබ්ලට් (<ph name="ADDRESS" />)</translation>
 <translation id="5376363957846771741">නොදන්නා හෝ සහාය නොදක්වන උපාංග (<ph name="ADDRESS" />)</translation>
+<translation id="571460437990229974"><ph name="DEVICE_NAME_AND_TYPE" /> <ph name="CONNECTION_STATUS" /></translation>
 <translation id="5716052956047449618"><ph name="DEVICE_NAME" />, මොඩමය</translation>
 <translation id="6459740836740815150"><ph name="DEVICE_NAME" />, මෝටර් රථ ශ්‍රව්‍ය උපාංගය</translation>
 <translation id="6542922424766292144"><ph name="DEVICE_NAME" />, යතුරු පුවරුව</translation>

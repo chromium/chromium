@@ -107,11 +107,11 @@
 
       Estos son los efectos de cada valor:
 
-      * "All" admite los tipos de cifrado AES aes256-cts-hmac-sha1-96 y aes128-cts-hmac-sha1-96, así como el tipo de cifrado RC4 rc4-hmac. El cifrado AES tiene preferencia si el servidor admite los tipos de cifrado AES y RC4.
+      * "Todos" admite los tipos de cifrado AES "aes256-cts-hmac-sha1-96" y "aes128-cts-hmac-sha1-96", así como el tipo de cifrado RC4 "rc4-hmac". El cifrado AES tiene preferencia si el servidor admite los tipos de cifrado AES y RC4.
 
-      * "Strong" o no asignar ningún valor permite únicamente los tipos de cifrado AES.
+      * "Seguros" o no asignar ningún valor permite únicamente los tipos de cifrado AES.
 
-      * "Legacy" solo admite el tipo de cifrado RC4. El cifrado RC4 no es seguro. Solo debería ser necesario en circunstancias muy específicas. Si es posible, vuelve a configurar el servidor para que admita el cifrado AES.
+      * "Antiguos" solo admite el tipo de cifrado RC4. El cifrado RC4 no es seguro. Solo debería ser necesario en circunstancias muy específicas. Si es posible, vuelve a configurar el servidor para que admita el cifrado AES.
 
       Consulta también la página https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed#Kerberos_client_encryption_types.</translation>
 <translation id="1177567780207290133">Si la política se define, controla el filtro de URL SafeSites, que usa la API Google Safe Search para clasificar las URL como pornográficas o no.
@@ -1071,7 +1071,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
           Solo se aplica si se habilita la política "DefaultSearchProviderEnabled".</translation>
 <translation id="2567227673131796227">Esta política está obsoleta. Se debe usar la política <ph name="NATIVE_MESSAGING_BLOCKLIST_POLICY_NAME" /> en su lugar.
 
-      Si se establece esta política, se especificará qué hosts de mensajes nativos no se deben cargar. Un valor de lista de denegación de <ph name="WILDCARD_VALUE" /> significa que todos los hosts de mensajes nativos han sido denegados, excepto los que estén permitidos explícitamente.
+      Si se establece esta política, se especificará qué hosts de mensajes nativos no se deben cargar. Un valor de lista de bloqueados de <ph name="WILDCARD_VALUE" /> significa que todos los hosts de mensajes nativos han sido denegados, excepto los que estén permitidos explícitamente.
 
       Si no se le asigna un valor a la política, <ph name="PRODUCT_NAME" /> cargará todos los hosts de mensajes nativos instalados.</translation>
 <translation id="2571066091915960923">Habilita o inhabilita el proxy de compresión de datos y evita que los usuarios cambien esta opción.
@@ -1492,7 +1492,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
           El valor de esta política debe especificarse en milisegundos.</translation>
 <translation id="3205825995289802549">Maximizar la primera ventana del navegador en la primera ejecución</translation>
-<translation id="3210408472559816322">Si se establece esta política, se especificará qué hosts de mensajes nativos no se deben cargar. Un valor de lista de denegación de <ph name="WILDCARD_VALUE" /> significa que todos los hosts de mensajes nativos han sido denegados, excepto los que estén permitidos explícitamente.
+<translation id="3210408472559816322">Si se establece esta política, se especificará qué hosts de mensajes nativos no se deben cargar. Un valor de lista de bloqueados de <ph name="WILDCARD_VALUE" /> significa que todos los hosts de mensajes nativos han sido denegados, excepto los que estén permitidos explícitamente.
 
       Si no se le asigna un valor a la política, <ph name="PRODUCT_NAME" /> cargará todos los hosts de mensajes nativos instalados.</translation>
 <translation id="3211426942294667684">Configuración de inicio de sesión en el navegador</translation>
@@ -1874,7 +1874,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Si se le asigna un valor a esta política, los usuarios no podrán cambiar su tipo de página principal en <ph name="PRODUCT_NAME" />. Si no se le asigna ningún valor, los usuarios podrán elegir si quieren establecer la página Nueva pestaña como su página principal.
 
       En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" />, que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
-<translation id="3695706037816556327">Qué acción se realiza al quitar el token de seguridad (por ejemplo, la tarjeta inteligente) de <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="3695706037816556327">Acción al quitar el token de seguridad (por ejemplo, una tarjeta inteligente) en <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3701121231485832347">Controla la configuración específica de los dispositivos con <ph name="PRODUCT_OS_NAME" /> gestionados con <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Confirmación remota</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (el campo de una línea está obsoleto y desaparecerá en el futuro; a partir de ahora, debes utilizar el campo de varias líneas que aparece más abajo).</translation>
@@ -3297,7 +3297,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 <translation id="5832274826894536455">Políticas obsoletas</translation>
 <translation id="5835253272509953988">Si se habilita esta política, se permitirá que los usuarios hagan que <ph name="PRODUCT_NAME" /> compruebe si los nombres de usuario y las contraseñas que han escrito forman parte de alguna filtración de datos.
 
-      Si se asigna un valor a esta política, los usuarios no podrán modificarlo en <ph name="PRODUCT_NAME" />. Si no se le asigna ningún valor, se permitirá la comprobación de filtraciones de credenciales, pero el usuario podrá desactivarla. 
+      Si se asigna un valor a esta política, los usuarios no podrán modificar la comprobación de filtraciones en <ph name="PRODUCT_NAME" />. Si no se le asigna ningún valor, se permitirá la comprobación de filtraciones de credenciales, pero el usuario podrá desactivarla. 
 
       Este comportamiento no se activará si Navegación segura está inhabilitada, ya sea por obra de una política o del propio usuario. Para activar Navegación segura de forma forzosa, se debe usar la política <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> o la política <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />.</translation>
 <translation id="5836064773277134605">Restringe el intervalo de puertos UDP utilizado por el host de acceso remoto</translation>
@@ -4656,7 +4656,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       Si el dispositivo del usuario está administrado, la disponibilidad de esta función dependerá también de la política de dispositivos correspondiente.
 
       Si el dispositivo del usuario no está administrado, la disponibilidad de esta función dependerá también de si el usuario es el propietario del dispositivo.</translation>
-<translation id="7570111012674064005">Si se establece esta política, se especificará si la política de usuarios de Group Policy Object (GPO) del ordenador se procesa o no y cómo lo hace
+<translation id="7570111012674064005">Si se establece esta política, se especificará si la política de usuarios de Group Policy Object (GPO) del ordenador se procesa o no y cómo lo hace.
 
       * "Default" o no asignar ningún valor hará que la política de usuarios solo pueda leerse desde los GPO del usuario. Se ignorarán los GPO del ordenador.
 
@@ -5233,7 +5233,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 <translation id="8417305981081876834">Definir la longitud máxima del PIN para la pantalla de bloqueo</translation>
 <translation id="841853753509411428">Esta política está obsoleta. Se debe usar la política <ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" /> en su lugar.
 
-      Si se establece esta política, se especificará qué hosts de mensajes nativos no están sujetos a la lista de denegación. Un valor de lista de denegación de <ph name="WILDCARD_VALUE" /> significa que todos los hosts de mensajes nativos han sido denegados, excepto los que estén permitidos explícitamente.
+      Si se establece esta política, se especificará qué hosts de mensajes nativos no están sujetos a la lista de bloqueados. Un valor de lista de bloqueados de <ph name="WILDCARD_VALUE" /> significa que todos los hosts de mensajes nativos han sido denegados, excepto los que estén permitidos explícitamente.
 
       Todos los hosts de mensajes nativos están permitidos de forma predeterminada. Sin embargo, si la política deniega todos los hosts de mensajes nativos, el administrador podrá usar la lista de permitidos para anular dicha política.</translation>
 <translation id="841977920223099909">Activar advertencia de protección de contraseña</translation>
@@ -5456,7 +5456,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 <translation id="8767743923206070405">Si se habilita esta política, se mostrará el botón de página principal en la barra de herramientas de <ph name="PRODUCT_NAME" />. Si se inhabilita esta política, no se mostrará el botón de página principal.
 
       Si se le asigna un valor a esta política, los usuarios no podrán cambiarlo en <ph name="PRODUCT_NAME" />. Si no se le asigna ningún valor, los usuarios podrán decidir si quieren que se muestre el botón de página principal.</translation>
-<translation id="8768528324886802059">Si se establece esta política, se especificará qué hosts de mensajes nativos no están sujetos a la lista de denegación. Un valor de lista de denegación de <ph name="WILDCARD_VALUE" /> significa que todos los hosts de mensajes nativos han sido denegados, excepto los que estén permitidos explícitamente.
+<translation id="8768528324886802059">Si se establece esta política, se especificará qué hosts de mensajes nativos no están sujetos a la lista de bloqueados. Un valor de lista de bloqueados de <ph name="WILDCARD_VALUE" /> significa que todos los hosts de mensajes nativos han sido denegados, excepto los que estén permitidos explícitamente.
 
       Todos los hosts de mensajes nativos están permitidos de forma predeterminada. Sin embargo, si la política deniega todos los hosts de mensajes nativos, el administrador podrá usar la lista de permitidos para anular dicha política.</translation>
 <translation id="877185520360032968">Si se le asigna un valor a esta política, cambia el directorio predeterminado donde Chrome descarga los archivos, pero los usuarios pueden cambiar el directorio.
@@ -5804,7 +5804,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 <translation id="9152473318295429890">Habilitar las sugerencias contextuales de páginas web relacionadas</translation>
 <translation id="9153446010242995516">Vuelve a instalar la versión anterior de destino si la versión del SO es más reciente y se puede conservar la configuración de nivel de dispositivo durante el proceso, incluidas las credenciales de red. Sin embargo, instala la versión anterior con un Powerwash completo, aunque no se puedan restaurar los datos, ya sea porque la versión de destino no admite restaurar datos o por cambios incompatibles con la versión anterior.
           Compatible con <ph name="PRODUCT_OS_NAME" /> 75 y versiones superiores, lo que significa que los clientes más antiguos no pueden instalar versiones anteriores.</translation>
-<translation id="9155218447258425310">Duración de la notificación que se muestra al quitar la tarjeta inteligente de <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="9155218447258425310">Duración de la notificación al quitar la tarjeta inteligente en <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="9155375380628728544">Si se le asigna un valor a esta política, los usuarios podrán añadir solo uno de los idiomas incluidos en esta política a la lista de idiomas preferidos.
 
       Si no se le asigna ningún valor o se le asigna una lista vacía, los usuarios podrán especificar los idiomas que deseen.

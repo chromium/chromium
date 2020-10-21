@@ -19,6 +19,7 @@
 <translation id="1979103255016296513">パスワードの変更期限を過ぎました</translation>
 <translation id="2049639323467105390">このデバイスは <ph name="DOMAIN" /> によって管理されています。</translation>
 <translation id="2161394479394250669">印刷ジョブをキャンセル</translation>
+<translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">近くのデバイスを検出するには Bluetooth をオンにしてください</translation>
 <translation id="2375079107209812402">あと <ph name="ATTEMPTS_LEFT" /> 回</translation>
 <translation id="2517472476991765520">スキャン</translation>

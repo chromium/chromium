@@ -870,6 +870,7 @@
 <translation id="1976307821760494606"><ph name="DOMAIN" /> ਨੇ ADB ਡੀਬੱਗਿੰਗ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ। ਇਸ ਨਾਲ ਤੁਹਾਡੀ <ph name="DEVICE_TYPE" /> 24 ਘੰਟਿਆਂ ਵਿੱਚ ਰੀਸੈੱਟ ਹੋ ਜਾਵੇਗੀ। ਉਹਨਾਂ ਫ਼ਾਈਲਾਂ ਦਾ ਬੈਕਅੱਪ ਲਓ ਜਿਨ੍ਹਾਂ ਨੂੰ ਤੁਸੀਂ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ।</translation>
 <translation id="1977965994116744507">ਆਪਣੀ <ph name="DEVICE_TYPE" /> ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ ਫ਼ੋਨ ਨੂੰ ਨੇੜੇ ਲਿਆਓ।</translation>
 <translation id="1978006917103730774">ਭਵਿੱਖੀ ਸਾਫ਼ਟਵੇਅਰ ਅਤੇ ਸੁਰੱਖਿਆ ਅੱਪਡੇਟ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸਥਾਪਤ ਕੀਤੇ ਜਾਣਗੇ।</translation>
+<translation id="1978057560491495741">ਪਤਾ ਹਟਾਓ</translation>
 <translation id="1979095679518582070">ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਬੰਦ ਕਰਨ ਨਾਲ ਇਸ ਡੀਵਾਈਸ ਦੀਆਂ ਜ਼ਰੂਰੀ ਸੇਵਾਵਾਂ ਜਿਵੇਂ ਕਿ ਸਿਸਟਮ ਅੱਪਡੇਟ ਅਤੇ ਸੁਰੱਖਿਆ ਲਈ ਜ਼ਰੂਰੀ ਜਾਣਕਾਰੀ ਨੂੰ ਭੇਜਣ ਦੀ ਸਮਰੱਥਾ 'ਤੇ ਕੋਈ ਅਸਰ ਨਹੀਂ ਪੈਂਦਾ।</translation>
 <translation id="1979280758666859181">ਤੁਸੀਂ <ph name="PRODUCT_NAME" /> ਦੇ ਇੱਕ ਪੁਰਾਣੇ ਵਰਜਨ ਨਾਲ ਕਿਸੇ ਚੈਨਲ ਤੋਂ ਖਰਚਾ ਲੈ ਰਹੇ ਹੋ। ਜਦੋਂ ਚੈਨਲ ਵਰਜਨ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਇਸ ਵੇਲੇ ਸਥਾਪਤ ਕੀਤੇ ਵਰਜਨ ਨਾਲ ਮੇਲ ਖਾਂਦਾ ਹੈ ਤਾਂ ਚੈਨਲ ਤਬਦੀਲੀ ਨੂੰ ਲਾਗੂ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="197989455406964291">KDC ਵਿੱਚ ਇਨਕ੍ਰਿਪਸ਼ਨ ਕਿਸਮ ਦੀ ਸੁਵਿਧਾ ਨਹੀਂ ਹੈ</translation>
@@ -1072,6 +1073,7 @@
 <translation id="2224444042887712269">ਇਹ ਸੈਟਿੰਗ <ph name="OWNER_EMAIL" /> ਨਾਲ ਸੰਬੰਧਿਤ ਹੈ।</translation>
 <translation id="2224551243087462610">ਫੋਲਡਰ ਨਾਮ ਸੰਪਾਦਿਤ ਕਰੋ</translation>
 <translation id="2225864335125757863">ਆਪਣੇ ਖਾਤੇ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਲਈ ਤੁਰੰਤ ਇਹਨਾਂ ਪਾਸਵਰਡਾਂ ਨੂੰ ਬਦਲੋ:</translation>
+<translation id="2226204716217107988">ਕੀ ਕਿਸੇ ਹੋਰ ਪ੍ਰੋਫਾਈਲ 'ਤੇ ਸਵਿੱਚ ਕਰਨਾ ਹੈ?</translation>
 <translation id="2226449515541314767">ਇਹ ਸਾਈਟ MIDI ਡਿਵਾਈਸਾਂ 'ਤੇ ਪੂਰਾ ਕੰਟਰੋਲ ਪਾਉਣ ਤੋਂ ਬਲਾਕ ਕੀਤੀ ਗਈ ਹੈ।</translation>
 <translation id="2226907662744526012">ਇੱਕ ਵਾਰ ਪਿੰਨ ਦਾਖਲ ਹੋਣ 'ਤੇ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਅਣਲਾਕ ਕਰੋ</translation>
 <translation id="222704500187107962">ਇਸ ਅਪਵਾਦ ਨੂੰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਮੌਜੂਦਾ ਇਨਕੋਗਨਿਟੋ ਸੈਸ਼ਨ ਤੋਂ ਬਾਹਰ ਜਾਣ 'ਤੇ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਹਟਾਇਆ ਜਾਵੇਗਾ</translation>
@@ -1141,6 +1143,7 @@
 <translation id="2307462900900812319">ਨੈੱਟਵਰਕ ਸੰਰੂਪਿਤ ਕਰੋ</translation>
 <translation id="230927227160767054">ਇਹ ਪੰਨਾ ਇੱਕ ਸੇਵਾ ਹੈਂਡਲਰ ਸਥਾਪਤ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ।</translation>
 <translation id="2309620859903500144">ਇਸ ਸਾਈਟ ਨੂੰ ਤੁਹਾਡੇ ਮੋਸ਼ਨ ਜਾਂ ਲਾਈਟ ਸੈਂਸਰਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਤੋਂ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ।</translation>
+<translation id="2312219318583366810">URL ਪੰਨਾ</translation>
 <translation id="2314165183524574721">ਮੌਜੂਦਾ ਦਿਖਣਯੋਗਤਾ ਸੈਟਿੰਗ 'ਲੁਕੀ ਹੋਈ' 'ਤੇ ਸੈੱਟ ਹੈ</translation>
 <translation id="2314774579020744484">ਪੰਨਿਆਂ ਦਾ ਅਨੁਵਾਦ ਕਰਨ ਵੇਲੇ ਵਰਤੀ ਜਾਂਦੀ ਭਾਸ਼ਾ</translation>
 <translation id="2315414688463285945">Linux ਫ਼ਾਈਲਾਂ ਦਾ ਸੰਰੂਪਣ ਕਰਨ ਵੇਲੇ ਗੜਬੜ ਹੋ ਗਈ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
@@ -2344,6 +2347,7 @@
 <translation id="3713047097299026954">ਇਸ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਵਿੱਚ ਕੋਈ ਸਾਈਨ-ਇਨ ਡਾਟਾ ਨਹੀਂ ਹੈ</translation>
 <translation id="3714195043138862580">ਇਸ ਡੈਮੋ ਡੀਵਾਈਸ ਨੂੰ ਕਿਸੇ ਵਾਂਝਾਕਿਰਤ ਸਥਿਤੀ ਵਿੱਚ ਰੱਖਿਆ ਗਿਆ ਹੈ।</translation>
 <translation id="3714633008798122362">ਵੈਬ ਕੈਲੰਡਰ</translation>
+<translation id="3715954932774762075">ਕਈ ਭਾਸ਼ਾਵਾਂ ਵਿੱਚ ਉਪਲਬਧ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਇਸ ਸੂਚੀ ਤੋਂ ਪਹਿਲੀ ਸਮਰਥਿਤ ਭਾਸ਼ਾ ਦੀ ਵਰਤੋਂ ਕਰਨਗੀਆਂ। ਇਹ ਤਰਜੀਹਾਂ ਤੁਹਾਡੀਆਂ ਬ੍ਰਾਊਜ਼ਰ ਸੈਟਿੰਗਾਂ ਨਾਲ ਸਮਕਾਲੀਕਿਰਤ ਕੀਤੀਆਂ ਜਾਂਦੀਆਂ ਹਨ। <ph name="BEGIN_LINK_LEARN_MORE" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">ਹੋਮਪੇਜ</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">ਤੁਸੀਂ ਅਤੇ Google</translation>
@@ -2504,6 +2508,7 @@
 <translation id="3882165008614329320">ਕੈਮਰੇ ਜਾਂ ਫ਼ਾਈਲ ਤੋਂ ਮੌਜੂਦਾ ਵੀਡੀਓ</translation>
 <translation id="3886446263141354045">ਇਸ ਸਾਈਟ 'ਤੇ ਪਹੁੰਚ ਦੀ ਤੁਹਾਡੀ ਬੇਨਤੀ <ph name="NAME" /> ਨੂੰ ਭੇਜੀ ਗਈ ਹੈ</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> ਨਾਲ ਨੋਟ-ਕਥਨ ਲਏ ਜਾ ਰਹੇ ਹਨ</translation>
+<translation id="3890064827463908288">ਵਾਈ-ਫਾਈ ਸਿੰਕ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ Chrome ਸਮਕਾਲੀਕਰਨ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="3892414795099177503">OpenVPN / L2TP ਸ਼ਾਮਲ ਕਰੋ...</translation>
 <translation id="3893536212201235195">ਆਪਣੀਆਂ ਪਹੁੰਚਯੋਗਤਾ ਸੈਟਿੰਗਾਂ ਪੜ੍ਹੋ ਅਤੇ ਬਦਲੋ</translation>
 <translation id="3893630138897523026">ChromeVox (ਬੋਲੀ ਪ੍ਰਤੀਕਰਮ)</translation>
@@ -3778,6 +3783,7 @@
 <translation id="5449588825071916739">ਸਾਰੀਆਂ ਟੈਬਾਂ ਨੂੰ ਬੁੱਕਮਾਰਕ ਕਰੋ</translation>
 <translation id="5449716055534515760">Win&amp;dow ਬੰਦ ਕਰੋ</translation>
 <translation id="5452974209916053028">ਮੌਜੂਦਾ ਇਨਕੋਗਨਿਟੋ ਸੈਸ਼ਨ: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
+<translation id="5454005855577728171">ਸੁਰਖੀ ਵਾਲਾ ਬੁਲਬੁਲਾ <ph name="POSITION_ON_SCREEN_FROM_LEFT" />% ਖੱਬੇ ਤੋਂ ਸੱਜੇ, <ph name="POSITION_ON_SCREEN_FROM_TOP" />% ਉੱਪਰ ਤੋਂ ਹੇਠਾਂ ਨੂੰ ਲਿਜਾਇਆ ਗਿਆ</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> ਨਾਲ</translation>
 <translation id="5457113250005438886">ਅਵੈਧ</translation>
 <translation id="5457459357461771897">ਆਪਣੇ ਕੰਪਿਊਟਰ ਤੋਂ ਫ਼ੋਟੋਆਂ, ਸੰਗੀਤ ਅਤੇ ਹੋਰ ਮੀਡੀਆ ਪੜ੍ਹੋ ਅਤੇ ਮਿਟਾਓ</translation>
@@ -3921,6 +3927,7 @@
 <translation id="5602765853043467355">ਇਸ ਡੀਵਾਈਸ ਵਿੱਚੋਂ ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ, ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="5605623530403479164">ਹੋਰ ਖੋਜ ਇੰਜਣ</translation>
 <translation id="5605758115928394442">ਤੁਹਾਡੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ ਇੱਕ ਸੂਚਨਾ ਤੁਹਾਡੇ ਫ਼ੋਨ 'ਤੇ ਭੇਜੀ ਗਈ।</translation>
+<translation id="560834977503641186">ਵਾਈ-ਫਾਈ ਸਿੰਕ, ਹੋਰ ਜਾਣੋ</translation>
 <translation id="5608580678041221894">ਕਾਂਟ-ਛਾਂਟ ਕਰਨ ਸਬੰਧੀ ਖੇਤਰ ਨੂੰ ਵਿਵਸਥਿਤ ਕਰਨ ਜਾਂ ਖਿਸਕਾਉਣ ਲਈ ਅੱਗੇ ਦਿੱਤੀਆਂ ਕੁੰਜੀਆਂ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="5609231933459083978">ਐਪਲੀਕੇਸ਼ਨ ਅਵੈਧ ਜਾਪਦੀ ਹੈ।</translation>
 <translation id="5610038042047936818">ਕੈਮਰਾ ਮੋਡ 'ਤੇ ਸਵਿੱਚ ਕਰੋ</translation>
@@ -4112,6 +4119,7 @@
 <translation id="5841270259333717135">ਈਥਰਨੈੱਟ ਦਾ ਸੰਰੂਪਣ ਕਰੋ</translation>
 <translation id="5842497610951477805">ਬਲੂਟੁੱਥ ਚਾਲੂ</translation>
 <translation id="5843706793424741864">ਫਾਰੇਨਹੀਟ</translation>
+<translation id="584451707753263735">ਲਾਈਵ ਸੁਰਖੀਆਂ ਦਿਖਣਯੋਗ, ਫੋਕਸ ਕਰਨ ਲਈ F6 ਦਬਾਓ</translation>
 <translation id="5844574845205796324">ਪੜਚੋਲ ਕਰਨ ਲਈ ਨਵੀਂ ਸਮੱਗਰੀ ਦਾ ਸੁਝਾਅ ਦਿਓ</translation>
 <translation id="5846200638699387931">ਰਿਲੇਸ਼ਨ ਦੇ ਸਿਨਟੈਕਸ ਵਿੱਚ ਗੜਬੜ: <ph name="ERROR_LINE" /></translation>
 <translation id="5846807460505171493">ਅੱਪਡੇਟ ਅਤੇ ਐਪਾਂ ਨੂੰ ਸਥਾਪਤ ਕਰੋ। ਜਾਰੀ ਰੱਖ ਕੇ, ਤੁਸੀਂ ਸਹਿਮਤੀ ਦਿੰਦੇ ਹੋ ਕਿ ਇਹ ਡੀਵਾਈਸ ਸੰਭਾਵੀ ਤੌਰ 'ਤੇ ਸੈਲਿਊਲਰ ਡਾਟੇ ਦੀ ਵਰਤੋਂ ਨਾਲ Google, ਤੁਹਾਡੇ ਕੈਰੀਅਰ ਅਤੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੇ ਨਿਰਮਾਤਾ ਤੋਂ ਵੀ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਅੱਪਡੇਟ ਅਤੇ ਐਪਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਅਤੇ ਸਥਾਪਤ ਕਰ ਸਕਦਾ ਹੈ। ਇਹਨਾਂ ਐਪਾਂ ਵਿੱਚੋਂ ਕੁਝ ਐਪ-ਅੰਦਰ ਖਰੀਦਾਂ ਦੀ ਪੇਸ਼ਕਸ਼ ਕਰ ਸਕਦੀਆਂ ਹਨ।</translation>
@@ -5368,6 +5376,7 @@
 <translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> ਹੁਣ ਪੂਰੀ ਸਕ੍ਰੀਨ ਹੈ।</translation>
 <translation id="7340650977506865820">ਸਾਈਟ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਨੂੰ ਸਾਂਝਾ ਕਰ ਰਹੀ ਹੈ</translation>
 <translation id="7341834142292923918">ਇਸ ਸਾਈਟ ਤੱਕ ਪਹੁੰਚ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ</translation>
+<translation id="7343372807593926528">ਵਿਚਾਰ ਭੇਜਣ ਤੋਂ ਪਹਿਲਾਂ ਕਿਰਪਾ ਕਰਕੇ ਸਮੱਸਿਆ ਦਾ ਵਰਣਨ ਕਰੋ।</translation>
 <translation id="7345706641791090287">ਆਪਣੇ ਪਾਸਵਰਡ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="7346909386216857016">ਠੀਕ, ਸਮਝ ਲਿਆ</translation>
 <translation id="7347452120014970266">ਇੰਝ ਕਰਨ ਨਾਲ <ph name="ORIGIN_NAME" /> ਵੱਲੋਂ ਸਟੋਰ ਕੀਤੇ ਸਾਰੇ ਡਾਟੇ ਅਤੇ ਕੁਕੀਜ਼ ਅਤੇ ਇਸਦੀਆਂ ਸਥਾਪਤ ਕੀਤੀਆਂ ਐਪਾਂ ਨੂੰ ਕਲੀਅਰ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
@@ -5784,6 +5793,7 @@
 <translation id="7819857487979277519">PSK (WPA ਜਾਂ RSN)</translation>
 <translation id="7819992334107904369">Chrome ਸਮਕਾਲੀਕਰਨ</translation>
 <translation id="782057141565633384">ਵੀਡੀਓ ਪਤਾ ਕਾ&amp;ਪੀ ਕਰੋ</translation>
+<translation id="7822187537422052256">ਕੀ ਤੁਸੀਂ ਪੱਕਾ ਇਸ ਪਤੇ ਨੂੰ ਹਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="7824864914877854148">ਕਿਸੇ ਗੜਬੜ ਕਰਕੇ ਬੈਕਅੱਪ ਪੂਰਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="7825666486843191125">ਉਹ ਸਾਰੇ ਸੰਪਰਕ ਜੋ ਸਕ੍ਰੀਨ ਅਣਲਾਕ ਹੋਣ 'ਤੇ ਤੁਹਾਡੇ ਨੇੜੇ ਹੁੰਦੇ ਹਨ</translation>
 <translation id="782590969421016895">ਮੌਜੂਦਾ ਸਫ਼ੇ ਵਰਤੋ</translation>
@@ -6309,6 +6319,7 @@
 <translation id="8419098111404128271">'<ph name="SEARCH_TEXT" />' ਦੇ ਖੋਜ ਨਤੀਜੇ</translation>
 <translation id="8419368276599091549">ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਵਿੱਚ ਜੀ ਆਇਆਂ ਨੂੰ!</translation>
 <translation id="8420308167132684745">ਸ਼ਬਦਕੋਸ਼ ਇੰਦਰਾਜ਼ਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
+<translation id="8421361468937925547">ਲਾਈਵ ਸੁਰਖੀਆਂ (ਸਿਰਫ਼ ਅੰਗਰੇਜ਼ੀ)</translation>
 <translation id="8422787418163030046">ਟ੍ਰੇਅ ਮੌਜੂਦ ਨਹੀਂ ਹੈ</translation>
 <translation id="8425213833346101688">ਬਦਲੋ</translation>
 <translation id="8425492902634685834">ਟਾਸਕਬਾਰ ਤੇ ਪਿਨ ਕਰੋ</translation>
@@ -6337,6 +6348,7 @@
 <translation id="8449036207308062757">ਸਟੋਰੇਜ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="8452135315243592079">ਗੁੰਮ ਸਿਮ ਕਾਰਡ</translation>
 <translation id="8455026683977728932">ADB ਚਿੱਤਰ ਨੂੰ ਚਾਲੂ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
+<translation id="8456398879271637452">ਲਾਈਵ ਸੁਰਖੀਆਂ ਦਿਖਣਯੋਗ, ਫੋਕਸ ਕਰਨ ਲਈ Ctrl + ਪਿੱਛੇ ਜਾਂ Ctrl + ਅੱਗੇ ਨੂੰ ਦਬਾਓ</translation>
 <translation id="845702320058262034">ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਫ਼ੋਨ ਦਾ ਬਲੂਟੁੱਥ ਚਾਲੂ ਹੈ।</translation>
 <translation id="8457451314607652708">ਬੁੱਕਮਾਰਕ ਆਯਾਤ ਕਰੋ</translation>
 <translation id="8458627787104127436">ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਸਾਰੇ (<ph name="URL_COUNT" />) ਖੋਲ੍ਹੋ</translation>
@@ -6848,6 +6860,7 @@
 <translation id="9027459031423301635">ਨਵੀਂ &amp;ਟੈਬ ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="9030515284705930323">ਤੁਹਾਡੇ ਸੰਗਠਨ ਨੇ ਤੁਹਾਡੇ ਖਾਤੇ ਲਈ 'Google Play ਸਟੋਰ' ਨੂੰ ਚਾਲੂ ਨਹੀਂ ਕੀਤਾ ਹੋਇਆ ਹੈ। ਵਧੇਰੇ ਜਾਣਕਾਰੀ ਲਈ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="9030785788945687215">Gmail</translation>
+<translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> ਹੁਣ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="9031549947500880805">'Google ਡਰਾਈਵ' ਵਿੱਚ ਬੈਕਅੱਪ ਲਓ। ਕਿਸੇ ਵੇਲੇ ਵੀ ਅਸਾਨੀ ਨਾਲ ਆਪਣਾ ਡਾਟਾ ਮੁੜ-ਬਹਾਲ ਕਰੋ ਜਾਂ ਡੀਵਾਈਸਾਂ ਵਿਚਾਲੇ ਅਦਲਾ-ਬਦਲੀ ਕਰੋ। ਤੁਹਾਡੇ ਬੈਕਅੱਪ ਵਿੱਚ ਐਪ ਡਾਟਾ ਸ਼ਾਮਲ ਹੈ।</translation>
 <translation id="9033765790910064284">ਫਿਰ ਵੀ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="9033857511263905942">&amp;ਪੇਸਟ ਕਰੋ</translation>
@@ -6856,6 +6869,7 @@
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{ਤੁਹਾਡੇ ਕੋਲ ਇੱਕ ਕੋਸ਼ਿਸ਼ ਬਾਕੀ ਹੈ।}one{ਤੁਹਾਡੇ ਕੋਲ # ਕੋਸ਼ਿਸ਼ ਬਾਕੀ ਹੈ।}other{ਤੁਹਾਡੇ ਕੋਲ # ਕੋਸ਼ਿਸ਼ਾਂ ਬਾਕੀ ਹਨ।}}</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9040661932550800571">ਕੀ <ph name="ORIGIN" /> ਲਈ ਪਾਸਵਰਡ ਅੱਪਡੇਟ ਕਰਨਾ ਹੈ?</translation>
+<translation id="9041049756004505730">ਲਾਈਵ ਸੁਰਖੀਆਂ ਦਿਖਣਯੋਗ, ਫੋਕਸ ਕਰਨ ਲਈ ⌘ + ਵਿਕਲਪ + ਉੱਪਰ ਤੀਰ ਜਾਂ ਹੇਠਾਂ ਤੀਰ ਵਾਲੀ ਕੁੰਜੀ ਦਬਾਓ</translation>
 <translation id="9041692268811217999">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਤੁਹਾਡੀ ਮਸ਼ੀਨ 'ਤੇ ਸਥਾਨਕ ਫ਼ਾਈਲਾਂ ਤੱਕ ਪਹੁੰਚ ਬੰਦ ਕਰ ਦਿੱਤੀ ਹੈ</translation>
 <translation id="904224458472510106">ਇਸ ਕਾਰਵਾਈ ਨੂੰ ਅਣਕੀਤਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="9042893549633094279">ਪਰਦੇਦਾਰੀ ਅਤੇ ਸੁਰੱਖਿਆ</translation>
@@ -6894,6 +6908,7 @@
 <translation id="9088446193279799727">Linux ਦਾ ਸੰਰੂਪਣ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="9088917181875854783">ਕਿਰਪਾ ਕਰਕੇ ਪੁਸ਼ਟੀ ਕਰੋ ਕਿ ਇਹ ਪਾਸਕੁੰਜੀ "<ph name="DEVICE_NAME" />" ਤੇ ਦਿਖਾਈ ਜਾਂਦੀ ਹੈ:</translation>
 <translation id="9089416786594320554">ਇਨਪੁਟ ਵਿਧੀਆਂ</translation>
+<translation id="909108997331068008"><ph name="EXISTING_USER" /> ਦਾ ਪ੍ਰੋਫਾਈਲ ਪਹਿਲਾਂ ਹੀ <ph name="NEW_USER" /> ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਹੋਇਆ ਹੈ</translation>
 <translation id="9093429538970210897">ਅੱਪਗ੍ਰੇਡ ਪੂਰਾ ਨਾ ਹੋਣ ਦੀ ਹਾਲਤ ਵਿੱਚ ਫ਼ਾਈਲਾਂ ਦਾ ਬੈਕਅੱਪ ਲੈਣ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। ਅੱਪਗ੍ਰੇਡ ਸ਼ੁਰੂ ਕਰਨ 'ਤੇ Linux (ਬੀਟਾ) ਬੰਦ ਹੋ ਜਾਵੇਗਾ। ਕਿਰਪਾ ਕਰਕੇ ਅੱਗੇ ਵਧਣ ਤੋਂ ਪਹਿਲਾਂ ਖੁੱਲ੍ਹੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰ ਲਵੋ।</translation>
 <translation id="9094033019050270033">ਪਾਸਵਰਡ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="9094038138851891550">ਅਵੈਧ ਵਰਤੋਂਕਾਰ ਨਾਮ</translation>
@@ -7067,5 +7082,6 @@
 <translation id="994289308992179865">&amp;ਲੂਪ</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">ਸੁਰੱਖਿ੍ਤ ਕਨੈਕਸ਼ਨ ਸਥਾਪਿਤ ਕਰ ਰਿਹਾ ਹੈ...</translation>
+<translation id="99731366405731005">ਵਾਈ-ਫਾਈ ਸਿੰਕ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ <ph name="LINK1_BEGIN" />Chrome ਸਮਕਾਲੀਕਰਨ<ph name="LINK1_END" /> ਨੂੰ ਚਾਲੂ ਕਰੋ। <ph name="LINK2_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">ਜਾਂ&amp;ਚ ਕਰੋ</translation>
 </translationbundle>

@@ -6401,7 +6401,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="850875081535031620">Software berbahaya tidak ditemukan</translation>
 <translation id="8509177919508253835">Reset kunci keamanan dan buat PIN</translation>
 <translation id="8509646642152301857">Download kamus periksa ejaan gagal.</translation>
-<translation id="8512396579636492893">{COUNT,plural, =0{Tidak ditemukan sandi yang lemah}=1{{COUNT} sandi lemah ditemukan}other{{COUNT} sandi lemah ditemukan}}</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Tidak ditemukan sandi yang lemah}=1{Ditemukan {COUNT} sandi yang lemah}other{Ditemukan {COUNT} sandi yang lemah}}</translation>
 <translation id="8512476990829870887">Akhiri Proses</translation>
 <translation id="851263357009351303">Selalu izinkan <ph name="HOST" /> menampilkan gambar</translation>
 <translation id="8513108775083588393">Putar otomatis</translation>

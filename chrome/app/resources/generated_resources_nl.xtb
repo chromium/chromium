@@ -2511,7 +2511,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3882165008614329320">Bestaande video van camera of uit bestand</translation>
 <translation id="3886446263141354045">Je verzoek voor toegang tot deze website is verzonden naar <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Notities maken met <ph name="LOCK_SCREEN_APP_NAME" /></translation>
-<translation id="3890064827463908288">Chrome-synchronisatie aanzetten om wifi-synchronisatie te gebruiken</translation>
+<translation id="3890064827463908288">Chrome-synchronisatie inschakelen om wifi-synchronisatie te gebruiken</translation>
 <translation id="3892414795099177503">OpenVPN/L2TP toevoegen...</translation>
 <translation id="3893536212201235195">Je toegankelijkheidsinstellingen lezen en wijzigen</translation>
 <translation id="3893630138897523026">ChromeVox (gesproken feedback)</translation>
@@ -6866,7 +6866,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="9027459031423301635">Link openen op nieuw &amp;tabblad</translation>
 <translation id="9030515284705930323">Je organisatie heeft de Google Play Store niet ingeschakeld voor jouw account. Neem contact op met je beheerder voor meer informatie.</translation>
 <translation id="9030785788945687215">Gmail</translation>
-<translation id="9030855135435061269">'<ph name="PLUGIN_NAME" />' wordt niet meer ondersteund</translation>
+<translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> wordt niet meer ondersteund</translation>
 <translation id="9031549947500880805">Maak een back-up op Google Drive. Zet je gegevens eenvoudig terug of schakel wanneer je wilt tussen apparaten. De back-up bevat app-gegevens.</translation>
 <translation id="9033765790910064284">Toch doorgaan</translation>
 <translation id="9033857511263905942">&amp;Plakken</translation>
@@ -7088,6 +7088,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="994289308992179865">&amp;Herhalen</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Beveiligde verbinding tot stand brengen...</translation>
-<translation id="99731366405731005">Zet <ph name="LINK1_BEGIN" />Chrome-synchronisatie<ph name="LINK1_END" /> aan om wifi-synchronisatie te gebruiken. <ph name="LINK2_BEGIN" />Meer informatie<ph name="LINK2_END" /></translation>
+<translation id="99731366405731005">Schakel <ph name="LINK1_BEGIN" />Chrome-synchronisatie<ph name="LINK1_END" /> in om wifi-synchronisatie te gebruiken. <ph name="LINK2_BEGIN" />Meer informatie<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">I&amp;nspecteren</translation>
 </translationbundle>

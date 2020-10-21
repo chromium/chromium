@@ -261,7 +261,7 @@
 <translation id="2893180576842394309">Google 可能會使用你的歷史記錄，為你提供個人化的搜尋服務和其他各項 Google 服務</translation>
 <translation id="2898264748040935573">編輯已儲存的密碼</translation>
 <translation id="2900528713135656174">建立活動</translation>
-<translation id="2901411048554510387">顯示「<ph name="WEBSITE_TITLE" />」的建議項目</translation>
+<translation id="2901411048554510387">此處顯示的是與「<ph name="WEBSITE_TITLE" />」相關的建議</translation>
 <translation id="2904414404539560095">要共用分頁的裝置清單已開啟，顯示於整個畫面。</translation>
 <translation id="2905036901251765993">如要與附近的使用者分享，請讓對方掃描這個 QR 圖碼</translation>
 <translation id="2909615210195135082">Google 通知平台</translation>
@@ -300,6 +300,7 @@
 <translation id="3211426585530211793">已刪除「<ph name="ITEM_TITLE" />」</translation>
 <translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> 個未讀網頁</translation>
 <translation id="321773570071367578">如果您忘記通關密語，或是想變更這項設定，請<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" /></translation>
+<translation id="3227557059438308877">使用 Google Chrome 做為安全金鑰</translation>
 <translation id="3232754137068452469">網頁應用程式</translation>
 <translation id="3236059992281584593">還剩 1 分鐘</translation>
 <translation id="3244271242291266297">月</translation>

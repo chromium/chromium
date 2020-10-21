@@ -1214,7 +1214,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2387052489799050037">Boshiga</translation>
 <translation id="2387458720915042159">Proksi-server orqali ulanish turi</translation>
 <translation id="2390347491606624519">Proksi-serverga ulanilmadi, hisobingizga qaytadan kiring</translation>
-<translation id="2390782873446084770">Wi-Fi sinxronizatsiyasi</translation>
+<translation id="2390782873446084770">Wi-Fi Sync</translation>
 <translation id="2391082728065870591">Fikr va mulohaza hisobotini yuborish</translation>
 <translation id="2391419135980381625">Standard shrift</translation>
 <translation id="2392163307141705938">Ota-onangiz <ph name="IDS_SHORT_PRODUCT_NAME" /> uchun belgilagan foydalanish vaqti tugadi.</translation>
@@ -2509,7 +2509,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3882165008614329320">Kamera yoki galereyadan olingan video</translation>
 <translation id="3886446263141354045">Bu saytni ochishga ruxsat so‘rovi <ph name="NAME" />ga yuborildi</translation>
 <translation id="3888550877729210209">Qaydlar <ph name="LOCK_SCREEN_APP_NAME" /> dasturida yoziladi</translation>
-<translation id="3890064827463908288">Wi-Fi tarmoqlarni sinxronlash uchun Chrome sinxronizatsiyasini yoqing</translation>
+<translation id="3890064827463908288">Wi-Fi Sync ishlatish uchun Chrome Sync funksiyasini yoqing</translation>
 <translation id="3892414795099177503">OpenVPN yoki L2TP qo‘shish...</translation>
 <translation id="3893536212201235195">Maxsus imkoniyatlar sozlamarini o‘qish va o‘zgartirish</translation>
 <translation id="3893630138897523026">ChromeVox (ovozli ta’rif)</translation>
@@ -3928,7 +3928,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="5602765853043467355">Qurilmadagi xatcho‘plar, tarix, parollar va boshqa ma’lumotlarni tozalash</translation>
 <translation id="5605623530403479164">Boshqa qidiruv tizimlari</translation>
 <translation id="5605758115928394442">Telefoningizga bildirishnoma yuborildi. Shaxsingizni tasdiqlang.</translation>
-<translation id="560834977503641186">Wi-Fi sinxronizatsiyasi, Batafsil</translation>
+<translation id="560834977503641186">Wi-Fi Sync, Batafsil</translation>
 <translation id="5608580678041221894">Qirqilayotgan maydonni surish yoki moslash uchun quyidagi tugmalar ustiga bosing</translation>
 <translation id="5609231933459083978">Ilova nomi noto‘g‘ri kiritilganga o‘xshaydi.</translation>
 <translation id="5610038042047936818">Foto rejimini yoqish</translation>
@@ -4983,7 +4983,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6865313869410766144">Avtomatik to‘ldirish ma’lumotlari</translation>
 <translation id="6865598234501509159">Sahifa <ph name="LANGUAGE" /> tilida emas</translation>
 <translation id="6865708901122695652">WebRTC hodisa jurnallari (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
-<translation id="686609795364435700">Tinch joy</translation>
+<translation id="686609795364435700">Sokin</translation>
 <translation id="686664946474413495">Rang harorati</translation>
 <translation id="6868934826811377550">Batafsil</translation>
 <translation id="6871644448911473373">OCSP javob beruvchisi: <ph name="LOCATION" /></translation>
@@ -5206,7 +5206,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7121362699166175603">Manzil qatoridagi tarix va avto‘ldirishlarni tozalaydi. Google hisobingiz orqali bajargan internetdagi faoliyatingizni <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> orqali ko‘rishingiz mumkin.</translation>
 <translation id="7121438501124788993">Dasturchi rejimi</translation>
 <translation id="7121728544325372695">Smart tirelar</translation>
-<translation id="7123030151043029868">Bir nechta fayllarni avtomati yuklashga ruxsat berilgan</translation>
+<translation id="7123030151043029868">Bir nechta faylni avtomatik yuklashga ruxsat berilgan</translation>
 <translation id="7123360114020465152">Printer ta’minoti to‘xtatilgan</translation>
 <translation id="7125148293026877011">Crostini tizimini oʻchirish</translation>
 <translation id="7127980134843952133">Yuklanishlar tarixi</translation>
@@ -6321,7 +6321,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8419098111404128271">“<ph name="SEARCH_TEXT" />” uchun qidiruv natijalari</translation>
 <translation id="8419368276599091549"><ph name="DEVICE_TYPE" /> qurilmasiga xush kelibsiz!</translation>
 <translation id="8420308167132684745">Lugʻat yozuvlarini tahrirlash</translation>
-<translation id="8421361468937925547">Jonli izoh (Faqat ingliz tilida)</translation>
+<translation id="8421361468937925547">Jonli izoh (faqat ingliz tilida)</translation>
 <translation id="8422787418163030046">Tarnov joyida emas</translation>
 <translation id="8425213833346101688">O‘zgartirish</translation>
 <translation id="8425492902634685834">Vazifalar paneliga qadash</translation>
@@ -6397,7 +6397,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="850875081535031620">Birorta ham zararli dastur topilmadi</translation>
 <translation id="8509177919508253835">Elektron kalitlarni asliga qaytarish va PIN kodlar yaratish</translation>
 <translation id="8509646642152301857">Imlo lug‘atini yuklab olish amalga oshmadi.</translation>
-<translation id="8512396579636492893">{COUNT,plural, =0{Kuchsiz parol topilmadi}=1{{COUNT} ta kuchsiz parol topildi}other{{COUNT} ta kuchsiz parol topildi}}</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Kuchsiz parollar topilmadi}=1{{COUNT} ta kuchsiz parol topildi}other{{COUNT} ta kuchsiz parol topildi}}</translation>
 <translation id="8512476990829870887">Jarayonni yakunlash</translation>
 <translation id="851263357009351303"><ph name="HOST" /> rasmlarni doim ko‘rsatsin</translation>
 <translation id="8513108775083588393">Avto-burilish</translation>
@@ -7085,6 +7085,6 @@ parollar va boshqa sozlamalaringiz Google hisobingizga sinxronlanadi.</translati
 <translation id="994289308992179865">&amp;Takrorlash</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Xavfsiz aloqa o‘rnatilmoqda...</translation>
-<translation id="99731366405731005">Wi-Fi tarmoqlarni sinxronlash uchun <ph name="LINK1_BEGIN" />Chrome sinxronizatsiyasini<ph name="LINK1_END" /> yoqing <ph name="LINK2_BEGIN" />Batafsil<ph name="LINK2_END" /></translation>
+<translation id="99731366405731005">Wi-Fi Sync ishlatish uchun <ph name="LINK1_BEGIN" />Chrome Sync<ph name="LINK1_END" /> funksiyasini yoqing <ph name="LINK2_BEGIN" />Batafsil<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">Kodini ko‘rish</translation>
 </translationbundle>

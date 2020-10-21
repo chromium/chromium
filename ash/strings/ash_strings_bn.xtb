@@ -100,6 +100,7 @@
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" />-এ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> হার্জ) কাজ করে না। রেজোলিউশন পরিবর্তন করে <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) করা হয়েছে। পরিবর্তিত সেটিংস রেখে দিতে 'কনফার্ম করুন' বিকল্পে ক্লিক করুন। <ph name="TIMEOUT_SECONDS" />-এর মধ্যে পুরনো সেটিংসে ফিরিয়ে নিয়ে যাওয়া হবে।</translation>
 <translation id="1919743966458266018">কার্য পরিচালক খোলার শর্টকাটটি পরিবর্তিত হয়েছে। <ph name="OLD_SHORTCUT" /> এর পরিবর্তে দয়া করে <ph name="NEW_SHORTCUT" /> ব্যবহার করুন।</translation>
 <translation id="1923539912171292317">স্বয়ংক্রিয় ক্লিকগুলি</translation>
+<translation id="1924640696879807758">ফোন থেকে</translation>
 <translation id="1928739107511554905">আপডেট পেতে, অ্যাটাচ করা কীবোর্ডের মাধ্যমে আপনার Chromebook রিস্টার্ট করার জন্য টাচস্ক্রিন ব্যবহার করুন।</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1957803754585243749">০°</translation>
@@ -687,6 +688,7 @@
 <translation id="7904094684485781019">এই অ্যাকাউন্টের অ্যাডমিনিস্ট্রেটর একাধিক সাইন-ইন অননুমোদিত করেছেন৷</translation>
 <translation id="7933084174919150729">Google অ্যাসিস্ট্যান্ট শুধুমাত্র প্রাথমিক প্রোফাইলেই ব্যবহার করা যায়।</translation>
 <translation id="79341161159229895">অ্যাকাউন্টটি <ph name="FIRST_PARENT_EMAIL" /> এবং <ph name="SECOND_PARENT_EMAIL" /> ম্যানেজ করছেন</translation>
+<translation id="793716872548410480">আপনার ক্লিপবোর্ড দেখতে <ph name="SHORTCUT_KEY_NAME" /> + V প্রেস করুন। আপনার কপি করা শেষ ৫টি আইটেম ক্লিপবোর্ডে সেভ করা হয়েছে।</translation>
 <translation id="7955885781510802139">হাই-কনট্রাস্ট মোড</translation>
 <translation id="7977927628060636163">মোবাইল নেটওয়ার্কগুলির জন্য সার্চ করছে...</translation>
 <translation id="7980780401175799550">Chrome OS নেভিগেট করার নতুন পদ্ধতিগুলি ব্যবহার করে দেখুন</translation>

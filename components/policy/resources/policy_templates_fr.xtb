@@ -103,7 +103,7 @@
 <translation id="1160939557934457296">Désactiver l'accès au site lors de l'affichage de la page d'avertissement par le service de navigation sécurisée</translation>
 <translation id="1163080558183062209">Permet de désactiver les types d'imprimantes figurant sur la liste deny</translation>
 <translation id="117059611145966538">Serveurs d'impression externes</translation>
-<translation id="1171785618439752042">Le fait de configurer cette règle désigne les types de chiffrement autorisés lors de la demande de tickets Kerberos envoyés par un serveur <ph name="MS_AD_NAME" />.
+<translation id="1171785618439752042">Cette règle permet de désigner les types de chiffrement autorisés lors de la demande de tickets Kerberos envoyés par un serveur <ph name="MS_AD_NAME" />.
 
       Configurations possibles :
 
@@ -807,7 +807,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, les avertissements liés à la confidentialité dans les sessions Invité gérées lancées automatiquement sont épinglés jusqu'à ce que les utilisateurs les ferment.</translation>
 <translation id="228665601367357543">Permet d'établir une liste de formats d'URL indiquant les sites qui sont automatiquement autorisés à accéder à un appareil USB avec les ID produit et ID de fournisseur indiqués. Pour que la règle soit valide, chaque élément de la liste doit contenir un champ "devices" et un champ "urls". Chaque élément du champ "devices" peut contenir à son tour un champ "vendor_id" et un champ "product_id". Si vous ne renseignez pas le champ "vendor_id", la règle qui est créée correspond à tous les appareils. Si vous ne renseignez pas le champ "product_id", la règle qui est créée correspond à tous les appareils ayant l'ID de fournisseur donné. Une règle contenant un champ "product_id", mais pas de champ "vendor_id", n'est pas valide.
 
-      Le modèle d'autorisation USB utilise l'URL de requête et l'URL d'intégration (du site du cadre de premier niveau) pour permettre à l'URL de requête d'accéder à l'appareil USB. L'URL de requête peut être différente de l'URL d'intégration si le site à l'origine de la demande est chargé dans un iFrame. Le champ "URL" peut de ce fait contenir jusqu'à deux chaînes d'URL séparées par une virgule, afin d'indiquer ces URL. Si vous ne spécifiez qu'une seule URL, l'accès aux appareils USB concernés est autorisé si l'URL du site à l'origine de la demande correspond à cette URL, quel que soit l'état d'intégration. Si les URL indiquées dans le champ "URL" ne sont pas valides, la règle est ignorée.
+      Le modèle d'autorisation USB utilise l'URL de requête et l'URL d'intégration (du site du cadre de premier niveau) pour permettre à l'URL de requête d'accéder à l'appareil USB. L'URL de requête peut être différente de l'URL d'intégration si le site à l'origine de la demande est chargé dans un iFrame. Le champ "urls" peut de ce fait contenir jusqu'à deux chaînes d'URL séparées par une virgule, afin d'indiquer ces URL. Si vous ne spécifiez qu'une seule URL, l'accès aux appareils USB concernés est autorisé si l'URL du site à l'origine de la demande correspond à cette URL, quel que soit l'état d'intégration. Si les URL indiquées dans le champ "urls" ne sont pas valides, la règle est ignorée.
 
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> s'applique, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre spécifié par l'utilisateur s'applique.
 
@@ -1010,7 +1010,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       Si cette règle n'est pas configurée, les conditions d'utilisation ne sont pas présentées aux utilisateurs.
 
-      La règle doit être définie sur une URL à partir de laquelle <ph name="PRODUCT_OS_NAME" /> peut télécharger les conditions d'utilisation. Ces conditions doivent être en texte brut et proposées au format texte/brut au type MIME. Aucun balisage n'est autorisé.</translation>
+      La règle doit être définie sur une URL à partir de laquelle <ph name="PRODUCT_OS_NAME" /> peut télécharger les conditions d'utilisation. Ces conditions doivent être en texte brut et proposées avec le type MIME text/plain. Aucun balisage n'est autorisé.</translation>
 <translation id="2502467045153796624">Comportement de retour à une version antérieure</translation>
 <translation id="250670737672448119">Active la fonctionnalité d'accessibilité de mise en surbrillance du curseur de saisie.
 
@@ -1077,7 +1077,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
           Cette règle n'est respectée que si la règle "DefaultSearchProviderEnabled" est activée.</translation>
 <translation id="2567227673131796227">Cette règle est obsolète (veuillez utiliser la règle "<ph name="NATIVE_MESSAGING_BLOCKLIST_POLICY_NAME" />" à la place).
 
-      Définir la règle permet de déterminer les hôtes de messagerie native qui ne doivent pas être chargés. Si vous saisissez la valeur <ph name="WILDCARD_VALUE" /> dans la liste deny, tous les hôtes de messagerie native sont refusés, sauf s'ils sont explicitement autorisés.
+      Cette règle permet de spécifier les hôtes de messagerie native qui ne doivent pas être chargés. Si vous définissez la valeur liée à la liste noire sur <ph name="WILDCARD_VALUE" />, tous les hôtes de messagerie native sont refusés, sauf s'ils sont explicitement autorisés.
 
       Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> charge tous les hôtes de messagerie native qui sont installés.</translation>
 <translation id="2571066091915960923">Activer ou désactiver le proxy pour la compression de données et empêcher les utilisateurs de modifier ce paramètre
@@ -1197,11 +1197,11 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="2759224876420453487">Contrôler le comportement de l'utilisateur lors d'une session à plusieurs profils</translation>
 <translation id="2759426227259007018">Permet de spécifier les applications que les utilisateurs peuvent activer comme applications de prise de notes sur l'écran de verrouillage <ph name="PRODUCT_OS_NAME" />.
 
-      Si l'application de prise de notes préférée est activée sur l'écran de verrouillage, un élément d'interface utilisateur destiné à la lancer s'affiche à l'écran. Une fois démarrée, l'application peut ouvrir une fenêtre en haut de l'écran de verrouillage et créer des notes dans ce contexte. L'application peut importer les notes créées dans la session de l'utilisateur principal (lorsque la session est déverrouillée). Seules les applications de prise de notes <ph name="PRODUCT_NAME" /> sont acceptées sur l'écran de verrouillage.
+      Si l'application de prise de notes préférée est activée sur l'écran de verrouillage, un élément d'interface utilisateur destiné à la lancer s'affiche à l'écran. Une fois démarrée, l'application peut ouvrir une fenêtre au-dessus de l'écran de verrouillage et créer des notes dans ce contexte. L'application peut importer les notes créées dans la session de l'utilisateur principal (lorsque la session est déverrouillée). Seules les applications de prise de notes <ph name="PRODUCT_NAME" /> sont acceptées sur l'écran de verrouillage.
 
-      Si cette règle est configurée, les utilisateurs ne peuvent activer une application sur l'écran de verrouillage que si l'ID d'extension de cette application figure dans la liste d'autorisation de la règle. Par conséquent, si la liste est vide, la prise de notes est désactivée sur l'écran de verrouillage. Lorsque la règle inclut un ID d'application, cela ne signifie pas nécessairement que les utilisateurs peuvent activer l'application en question comme application de prise de notes sur l'écran de verrouillage. Par exemple, dans <ph name="PRODUCT_NAME" /> 61, l'accès de l'ensemble des applications disponibles est également limité par la plate-forme.
+      Si cette règle est configurée, les utilisateurs ne peuvent activer une application sur l'écran de verrouillage que si l'ID d'extension de cette application figure dans la liste d'autorisation de la règle. Par conséquent, si la liste est vide, la prise de notes est désactivée sur l'écran de verrouillage. Lorsque la règle inclut un ID d'application, cela ne signifie pas nécessairement que les utilisateurs peuvent activer l'application en question comme application de prise de notes sur l'écran de verrouillage. Par exemple, dans <ph name="PRODUCT_NAME" /> 61, l'ensemble d'applications disponible est également limité par la plate-forme.
 
-      Si cette règle n'est pas configurée, aucune restriction qu'elle impose n'est appliquée à l'ensemble des applications que les utilisateurs peuvent activer sur l'écran de verrouillage.</translation>
+      Si cette règle n'est pas configurée, aucune restriction qu'elle impose n'est appliquée à l'ensemble d'applications que les utilisateurs peuvent activer sur l'écran de verrouillage.</translation>
 <translation id="2761483219396643566">Délai d'inactivité avant l'affichage d'un avertissement (en cas d'utilisation de la batterie)</translation>
 <translation id="2765601181281280493">Permet de répertorier les formats d'URL indiquant les sites non autorisés à demander aux utilisateurs d'accéder à un port série.
 
@@ -1496,7 +1496,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
           La valeur de la règle doit être indiquée en millisecondes.</translation>
 <translation id="3205825995289802549">Agrandir la première fenêtre du navigateur à la première exécution</translation>
-<translation id="3210408472559816322">Définir la règle permet de déterminer les hôtes de messagerie native qui ne doivent pas être chargés. Si vous saisissez la valeur <ph name="WILDCARD_VALUE" /> dans la liste deny, tous les hôtes de messagerie native sont refusés, sauf s'ils sont explicitement autorisés.
+<translation id="3210408472559816322">Cette règle permet de spécifier les hôtes de messagerie native qui ne doivent pas être chargés. Si vous définissez la valeur liée à la liste noire sur <ph name="WILDCARD_VALUE" />, tous les hôtes de messagerie native sont refusés, sauf s'ils sont explicitement autorisés.
 
       Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> charge tous les hôtes de messagerie native qui sont installés.</translation>
 <translation id="3211426942294667684">Paramètres de connexion au navigateur</translation>
@@ -2821,7 +2821,7 @@ Si vous activez ce paramètre, <ph name="PRODUCT_NAME" /> ignore toutes les opti
 
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, le mode bureau unifié est désactivé, et les utilisateurs ne peuvent pas l'activer.</translation>
 <translation id="5255162913209987122">Peut être recommandée</translation>
-<translation id="5264066441613395613">La définition de cette règle permet de configurer les paramètres de proxy pour Chrome et les applications ARC, qui ignorent toutes les options liées au proxy spécifiées à partir de la ligne de commande.
+<translation id="5264066441613395613">Cette règle permet de configurer les paramètres de proxy pour Chrome et les applications ARC, qui ignorent toutes les options liées au proxy spécifiées à partir de la ligne de commande.
 
        Si cette règle n'est pas configurée, les utilisateurs peuvent sélectionner les paramètres de proxy.
 
@@ -3233,7 +3233,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="5697306356229823047">Générer une liste des utilisateurs de l'appareil</translation>
 <translation id="570062449808736508">Lorsque ce règlement est défini sur une chaîne non vide, WebView lit les restrictions d'URL depuis le fournisseur de contenu portant le nom de l'autorité indiquée.</translation>
 <translation id="5708969689202733975">Configurer les modes de déverrouillage rapide autorisés</translation>
-<translation id="5715617256528927547">Cette règle permet de spécifier la durée de mise en cache (en heures) des GPO ; c'est-à-dire la durée maximale pendant laquelle les GPO peuvent être réutilisés avant d'être de nouveau téléchargés Au lieu de les télécharger de nouveau à chaque récupération de règle, le système peut réutiliser ceux mis en cache tant que leur version ne change pas.
+<translation id="5715617256528927547">Cette règle permet de spécifier la durée de mise en cache (en heures) des GPO, c'est-à-dire la durée maximale pendant laquelle les GPO peuvent être réutilisés avant d'être de nouveau téléchargés. Au lieu de les télécharger de nouveau à chaque récupération de règle, le système peut réutiliser ceux mis en cache tant que leur version ne change pas.
 
       Si vous définissez la règle sur 0, la mise en cache des GPO est désactivée. Cela a pour effet d'augmenter la charge du serveur, car les GPO sont de nouveau téléchargés à chaque récupération de règle, même s'ils n'ont pas été modifiés.
 
@@ -3743,7 +3743,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
       Si l'application de prise de notes préférée est activée sur l'écran de verrouillage, un élément d'interface utilisateur destiné à la lancer s'affiche à l'écran. Une fois démarrée, l'application peut ouvrir une fenêtre en haut de l'écran de verrouillage et créer des notes dans ce contexte. L'application peut importer les notes créées dans la session de l'utilisateur principal (lorsque la session est déverrouillée). Seules les applications de prise de notes <ph name="PRODUCT_NAME" /> sont acceptées sur l'écran de verrouillage.
 
-      Si cette règle est configurée, les utilisateurs ne peuvent activer une application sur l'écran de verrouillage que si l'ID d'extension de cette application figure dans la liste d'autorisation de la règle. Par conséquent, si la liste est vide, la prise de notes est désactivée sur l'écran de verrouillage. Lorsque la règle inclut un ID d'application, cela ne signifie pas nécessairement que les utilisateurs peuvent activer l'application en question comme application de prise de notes sur l'écran de verrouillage. Par exemple, dans <ph name="PRODUCT_NAME" /> 61, l'accès de l'ensemble des applications disponibles est également limité par la plate-forme.
+      Si cette règle est configurée, les utilisateurs ne peuvent activer une application sur l'écran de verrouillage que si l'ID d'extension de cette application figure dans la liste d'autorisation de la règle. Par conséquent, si la liste est vide, la prise de notes est désactivée sur l'écran de verrouillage. Lorsque la règle inclut un ID d'application, cela ne signifie pas nécessairement que les utilisateurs peuvent activer l'application en question comme application de prise de notes sur l'écran de verrouillage. Par exemple, dans <ph name="PRODUCT_NAME" /> 61, l'ensemble d'applications disponible est également limité par la plate-forme.
 
       Si cette règle n'est pas configurée, aucune restriction qu'elle impose n'est appliquée à l'ensemble des applications que les utilisateurs peuvent activer sur l'écran de verrouillage.</translation>
 <translation id="6506486086262398387">Si cette règle est activée, la fonctionnalité Partages de fichiers en réseau de <ph name="PRODUCT_OS_NAME" /> utilise le protocole NTLM pour s'authentifier sur les partages SMB, si nécessaire. Si elle est désactivée, l'authentification NTLM sur les partages SMB l'est également.
@@ -3786,7 +3786,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
          * <ph name="PROXY_MODE_ENUM_SYSTEM" /> : les paramètres de proxy utilisés sont ceux du système.
          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> : le serveur proxy est détecté automatiquement.
 
-       
+Si vous sélectionnez les options suivantes :
          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> : les serveurs proxy définis sont utilisés. Vous pouvez définir d'autres options avec les règles <ph name="PROXY_SERVER_POLICY_NAME" /> et <ph name="PROXY_BYPASS_LIST_POLICY_NAME" />. Les applications ARC n'utilisent que le serveur proxy HTTP ayant la priorité la plus élevée.
          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> : un script de proxy .pac est utilisé. Utilisez la règle <ph name="PROXY_PAC_URL_POLICY_NAME" /> pour définir l'URL d'un fichier .pac de proxy.
 
@@ -5208,7 +5208,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8417305981081876834">Définir le nombre maximal de caractères pour le code de l'écran de verrouillage</translation>
 <translation id="841853753509411428">Cette règle est obsolète (veuillez utiliser la règle <ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" /> à la place).
 
-      Cette règle permet de déterminer les hôtes de messagerie native à exclure de la liste deny. Si vous saisissez la valeur <ph name="WILDCARD_VALUE" /> dans la liste deny, tous les hôtes de messagerie native sont refusés, sauf s'ils sont explicitement autorisés.
+      Cette règle permet de déterminer les hôtes de messagerie native à exclure de la liste noire. Si vous définissez la valeur liée à la liste noire sur <ph name="WILDCARD_VALUE" />, tous les hôtes de messagerie native sont refusés, sauf s'ils sont explicitement autorisés.
 
       Tous les hôtes de messagerie native sont autorisés par défaut. Cependant, si tous sont refusés par la règle, l'administrateur peut utiliser la liste d'autorisation pour modifier cette règle.</translation>
 <translation id="841977920223099909">Déclencheur d'avertissement de protection par mot de passe</translation>
@@ -5427,7 +5427,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8767743923206070405">Si cette règle est activée, le bouton d'accueil s'affiche sur la barre d'outils de <ph name="PRODUCT_NAME" />. Si elle est désactivée, le bouton d'accueil ne s'affiche pas.
 
       Si cette règle est configurée, les utilisateurs ne peuvent pas la modifier dans <ph name="PRODUCT_NAME" />. Si elle n'est pas configurée, les utilisateurs peuvent choisir d'afficher ou non le bouton d'accueil.</translation>
-<translation id="8768528324886802059">Cette règle permet de déterminer les hôtes de messagerie native à exclure de la liste deny. Si vous saisissez la valeur <ph name="WILDCARD_VALUE" /> dans la liste deny, tous les hôtes de messagerie native sont refusés, sauf s'ils sont explicitement autorisés.
+<translation id="8768528324886802059">Cette règle permet de spécifier les hôtes de messagerie native à exclure de la liste noire. Si vous définissez la valeur liée à la liste noire sur <ph name="WILDCARD_VALUE" />, tous les hôtes de messagerie native sont refusés, sauf s'ils sont explicitement autorisés.
 
       Tous les hôtes de messagerie native sont autorisés par défaut. Cependant, si tous sont refusés par la règle, l'administrateur peut utiliser la liste d'autorisation pour modifier cette règle.</translation>
 <translation id="877185520360032968">Cette règle définit le répertoire par défaut utilisé par Chrome pour le téléchargement de fichiers. Les utilisateurs peuvent modifier la destination.

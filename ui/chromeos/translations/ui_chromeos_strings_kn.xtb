@@ -203,6 +203,7 @@
 <translation id="3252266817569339921">ಫ್ರೆಂಚ್</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> ಫೈಲ್‌ಗಳಿಗಾಗಿ ಡಿಫಾಲ್ಟ್ ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ಆರಿಸಿ:</translation>
 <translation id="3264582393905923483">ಸಂದರ್ಭ</translation>
+<translation id="3272909651715601089">"<ph name="PATH" />" ತೆರೆಯಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="3280431534455935878">ತಯಾರಿ ನಡೆಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3280987981688031357">ವಿನೈಲ್ ರೆಕಾರ್ಡ್</translation>
 <translation id="3296763833017966289">ಜಾರ್ಜಿಯನ್</translation>
@@ -305,6 +306,7 @@
 <translation id="4477219268485577442">ಬಲ್ಗೇರಿಯನ್ ಫೊನೆಟಿಕ್</translation>
 <translation id="4479812471636796472">ಯುಎಸ್ ಡಿವೊರಾಕ್ ಕೀಬೋರ್ಡ್</translation>
 <translation id="4522570452068850558">ವಿವರಗಳು</translation>
+<translation id="4527800702232535228">ಈ ಫೋಲ್ಡರ್ ಅನ್ನು Parallels Desktop ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="4552678318981539154">ಇನ್ನಷ್ಟು ಸಂಗ್ರಹಣೆಯನ್ನು ಖರೀದಿಸಿ</translation>
 <translation id="4559767610552730302">ಬೊಕೆ</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ಫೈಲ್</translation>
@@ -322,6 +324,7 @@
 <translation id="4694604912444486114">ಕೋತಿ</translation>
 <translation id="4697043402264950621">ಫೈಲ್ ಪಟ್ಟಿಯನ್ನು <ph name="COLUMN_NAME" /> ಪ್ರಕಾರವಾಗಿ ಕೆಳಗಿನಿಂದ ಮೇಲೆ ಕ್ರಮದಲ್ಲಿ ವಿಂಗಡಿಸಲಾಗಿದೆ.</translation>
 <translation id="4711094779914110278">ಟರ್ಕಿಶ್</translation>
+<translation id="4712283082407695269">"<ph name="PATH" />" ತೆರೆಯಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4713544552769165154">Macintosh ಸಾಫ್ಟ್‌ವೇರ್‌‌ ಬಳಸಿಕೊಂಡು ಕಂಪ್ಯೂಟರ್‌‌ಗಾಗಿ ಈ ಫೈಲ್‌ ಅನ್ನು ವಿನ್ಯಾಸಗೊಳಿಸಲಾಗಿದೆ. Chrome OS ಅನ್ನು ರನ್‌ ಮಾಡುವ ಸಾಧನದ ಜೊತೆಗೆ ಇದು ಹೊಂದಾಣಿಕೆಗೊಳ್ಳುವುದಿಲ್ಲ. ದಯವಿಟ್ಟು ಸೂಕ್ತವಾದ ಬದಲಿ ಅಪ್ಲಿಕೇಶನ್‌ಗಾಗಿ <ph name="BEGIN_LINK" />Chrome ವೆಬ್‌ ಸ್ಟೋರ್‌ನಲ್ಲಿ<ph name="END_LINK" /> ಹುಡುಕಿ.<ph name="BEGIN_LINK_HELP" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> ಫೋಟೋಗಳನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4725511304875193254">ಕಾರ್ಗಿ</translation>
@@ -521,6 +524,7 @@
 <translation id="6558280019477628686">ದೋಷ ಸಂಭವಿಸಿದೆ. ಕೆಲವು ಐಟಂಗಳನ್ನು ಅಳಿಸಲು ಸಾಧ್ಯವಾಗದಿರಬಹುದು.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" ಅಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="6581162200855843583">Google ಡ್ರೈವ್ ಲಿಂಕ್</translation>
+<translation id="6594855146910089723">ಈ ಫೋಲ್ಡರ್ ಅನ್ನು Linux ಮತ್ತು Parallels Desktop ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="6607272825297743757">ಫೈಲ್ ಮಾಹಿತಿ</translation>
 <translation id="6609332149380188670">Parallels Desktop ಮೂಲಕ <ph name="NUMBER_OF_ITEMS" /> ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="6629841649550503054"><ph name="BEGIN_LINK" />Google ಡ್ರೈವ್<ph name="END_LINK" /> ಗೆ ಎಲ್ಲವನ್ನೂ ಬ್ಯಾಕಪ್ ಮಾಡಲಾಗಿದೆ!</translation>

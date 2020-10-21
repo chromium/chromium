@@ -17,6 +17,7 @@
 <translation id="1012794136286421601">‏تجري مزامنة المستندات وجداول البيانات والعروض التقديمية والرسومات. افتح تطبيق Google Drive للدخول إليها على الإنترنت أو بلا إنترنت.</translation>
 <translation id="1012876632442809908">‏جهاز USB-C (المنفذ الأمامي)</translation>
 <translation id="1013707859758800957">تم السماح بتشغيل مكون إضافي غير محمي على هذه الصفحة.</translation>
+<translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">تعديل اسم المجلد</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{آخر يوم لتحديث جهاز <ph name="DEVICE_TYPE" />}zero{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} يوم}two{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال يومَين ({NUM_DAYS})}few{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} أيام}many{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} يومًا}other{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} يوم}}</translation>
 <translation id="1016566241875885511">معلومات إضافية (اختياري)</translation>
@@ -1432,7 +1433,7 @@
 <translation id="2638662041295312666">صورة الملف الشخصي</translation>
 <translation id="2640549051766135490">تمّ اختيار ألبوم <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="264083724974021997">الاتصال بهاتفك - مربع حوار</translation>
-<translation id="2641065435954454414">جارٍ التحضير للتنزيل</translation>
+<translation id="2641065435954454414">جارٍ التحضير لعملية التنزيل</translation>
 <translation id="2642111877055905627">كرة القدم</translation>
 <translation id="2643698698624765890">يمكنك إدارة الإضافات من خلال النقر على "الإضافات" في القائمة "نافذة".</translation>
 <translation id="264810637653812429">لم يتم العثور على أي أجهزة متوافقة.</translation>
@@ -7086,6 +7087,6 @@
 <translation id="994289308992179865">ت&amp;كرار</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">إنشاء اتصال آمن...</translation>
-<translation id="99731366405731005">‏يُرجي تفعيل <ph name="LINK1_BEGIN" />مزامنة Chrome<ph name="LINK1_END" /> لاستخدام ميزة "مزامنة الواي فاي". <ph name="LINK2_BEGIN" />مزيد من المعلومات<ph name="LINK2_END" /></translation>
+<translation id="99731366405731005">‏يُرجى تفعيل <ph name="LINK1_BEGIN" />مزامنة Chrome<ph name="LINK1_END" /> لاستخدام ميزة "مزامنة الواي فاي". <ph name="LINK2_BEGIN" />مزيد من المعلومات<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">ف&amp;حص</translation>
 </translationbundle>

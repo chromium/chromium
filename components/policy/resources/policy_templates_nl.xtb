@@ -981,7 +981,7 @@ Als dit beleid niet is ingesteld, is het privacyscherm in eerste instantie uitge
 
       Als je het beleid niet instelt, worden er geen servicevoorwaarden weergegeven.
 
-      Het beleid moet worden ingesteld op een URL waar <ph name="PRODUCT_OS_NAME" /> de servicevoorwaarden kan downloaden. De servicevoorwaarden moeten in platte tekst zijn, weergegeven als MIME-type text/plain. Er is geen opmaak toegestaan.</translation>
+      Het beleid moet worden ingesteld op een URL waar <ph name="PRODUCT_OS_NAME" /> de servicevoorwaarden kan downloaden. De servicevoorwaarden moeten in platte tekst worden weergegeven als MIME-type text/plain. Er is geen opmaak toegestaan.</translation>
 <translation id="2502467045153796624">Downgradegedrag voor kanalen</translation>
 <translation id="250670737672448119">De toegankelijkheidsfunctie voor markering van het caret-teken inschakelen.
 
@@ -1520,7 +1520,7 @@ Dit beleid kan alleen worden ingesteld via de Google Beheerdersconsole.</transla
       Geconfigureerde websites worden automatisch geopend in een andere browser dan <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3255624750680556186">Als je het beleid inschakelt of niet instelt, kan een apparaat Powerwash activeren.
 
-      Als je het beleid uitschakelt of niet instelt, kan een apparaat Powerwash niet activeren. Een uitzondering waarbij Powerwash nog wel is toegestaan, is als <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> is ingesteld op een waarde die de TPM-firmware-update toestaat en de TPM-firmware nog niet is geüpdatet.</translation>
+      Als je het beleid uitschakelt, kan een apparaat Powerwash niet activeren. Een uitzondering waarbij Powerwash nog wel is toegestaan, is als <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> is ingesteld op een waarde die de TPM-firmware-update toestaat en de TPM-firmware nog niet is geüpdatet.</translation>
 <translation id="3255762580838224124">Als je het beleid instelt, wordt elk scherm naar de opgegeven stand gedraaid: elke keer dat er opnieuw wordt opgestart en de eerste keer dat het scherm wordt verbonden nadat de beleidswaarde is gewijzigd. Gebruikers kunnen na inloggen de rotatie van het scherm wijzigen op de pagina met instellingen, maar de rotatie wordt bij de volgende keer opnieuw opstarten weer teruggezet. Dit beleid is van toepassing op primaire en secundaire schermen.
 
       Als je het beleid niet instelt, is de standaardwaarde 0 graden en kunnen gebruikers dit wijzigen. In dat geval wordt de standaardwaarde niet opnieuw toegepast bij opnieuw opstarten.</translation>

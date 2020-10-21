@@ -100,6 +100,7 @@
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> は <ph name="SPECIFIED_RESOLUTION" />（<ph name="SPECIFIED_REFRESH_RATE" /> Hz）に対応していません。解像度を <ph name="FALLBACK_RESOLUTION" />（<ph name="FALLBACK_REFRESH_RATE" />）に変更しました。変更を保存するには確定してください。<ph name="TIMEOUT_SECONDS" /> 秒後に以前の設定に戻ります。</translation>
 <translation id="1919743966458266018">タスク マネージャを起動するショートカットが変わりました。<ph name="OLD_SHORTCUT" /> ではなく <ph name="NEW_SHORTCUT" /> をご使用ください。</translation>
 <translation id="1923539912171292317">自動クリック</translation>
+<translation id="1924640696879807758">スマートフォンから</translation>
 <translation id="1928739107511554905">アップデートを取得するには、キーボードが接続された状態で、タッチスクリーンを使って Chromebook を再起動してください。</translation>
 <translation id="1951012854035635156">アシスタント</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -687,6 +688,7 @@
 <translation id="7904094684485781019">このアカウントの管理者がマルチログインを許可していません。</translation>
 <translation id="7933084174919150729">Google アシスタントはメインのプロフィールでのみご利用いただけます。</translation>
 <translation id="79341161159229895">このアカウントは <ph name="FIRST_PARENT_EMAIL" /> と <ph name="SECOND_PARENT_EMAIL" /> により管理されています</translation>
+<translation id="793716872548410480"><ph name="SHORTCUT_KEY_NAME" />+V キーを押すと、クリップボードを表示できます。クリップボードに、コピーした最新のアイテム 5 件が保存されています。</translation>
 <translation id="7955885781510802139">ハイコントラスト モード</translation>
 <translation id="7977927628060636163">モバイル ネットワークを検索しています...</translation>
 <translation id="7980780401175799550">Chrome OS の新しい操作方法をお試しください</translation>

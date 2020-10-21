@@ -415,7 +415,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
-<translation id="4946376291507881335">Capturar</translation>
+<translation id="4946376291507881335">Capturar imagen</translation>
 <translation id="495046168593986294">Desplazarse hacia arriba</translation>
 <translation id="4961318399572185831">Enviar pantalla</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>

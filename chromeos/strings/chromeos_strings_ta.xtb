@@ -3,6 +3,7 @@
 <translationbundle lang="ta">
 <translation id="1018656279737460067">ரத்து செய்யப்பட்டது</translation>
 <translation id="1195447618553298278">தெரியாத பிழை.</translation>
+<translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">ஃபில்டர் வேலை செய்யாததால் அச்சிட முடியவில்லை</translation>
 <translation id="1468664791493211953">ஆஃபர்கள்</translation>
 <translation id="1478594628797167447">ஸ்கேனர்</translation>
@@ -46,6 +47,7 @@
 <translation id="4227825898293920515">கடவுச்சொல் காலாவதியாக இன்னும் <ph name="TIME" /></translation>
 <translation id="4238516577297848345">அச்சுப் பணி எதுவும் செயலில் இல்லை</translation>
 <translation id="4297501883039923494">அறியப்படாத பிழை காரணமாக அச்சிட முடியவில்லை</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Kerberos டிக்கெட் விரைவில் காலாவதியாகும்</translation>
 <translation id="445059817448385655">தற்போதைய கடவுச்சொல்</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. அச்சுப் பணியை ரத்துசெய்ய என்ட்டர் விசையை அழுத்தவும்.</translation>
@@ -73,6 +75,7 @@
 <translation id="6058625436358447366">நிறைவுசெய்ய தற்போதைய கடவுச்சொல்லையும் புதிய கடவுச்சொல்லையும் உள்ளிடவும்</translation>
 <translation id="6106186594183574873">நிறைவுசெய்ய தற்போதைய கடவுச்சொல்லை உள்ளிடவும்</translation>
 <translation id="6146993107019042706">நிறைவுசெய்ய புதிய கடவுச்சொல்லை உள்ளிடவும்</translation>
+<translation id="6147514244879357420">PNG</translation>
 <translation id="636850387210749493">நிறுவனப் பதிவு</translation>
 <translation id="649050271426829538">காகிதம் சிக்கிக் கொண்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="6517239166834772319">Explore</translation>

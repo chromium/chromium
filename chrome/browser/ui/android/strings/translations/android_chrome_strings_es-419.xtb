@@ -300,6 +300,7 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="3211426585530211793">Se borró <ph name="ITEM_TITLE" /></translation>
 <translation id="3211503082155944789"><ph name="READING_LIST_COUNT" /> páginas no leídas</translation>
 <translation id="321773570071367578">Si olvidaste la frase de contraseña o quieres cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la contraseña<ph name="END_LINK" /></translation>
+<translation id="3227557059438308877">Google Chrome como llave de seguridad</translation>
 <translation id="3232754137068452469">Aplicación web</translation>
 <translation id="3236059992281584593">1 minuto restante</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -551,7 +552,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5040262127954254034">Privacidad</translation>
 <translation id="5087580092889165836">Agregar tarjeta</translation>
-<translation id="5091249083535528968">Datos de uso extendido</translation>
+<translation id="5091249083535528968">Datos de uso extendidos</translation>
 <translation id="509429900233858213">Se ha producido un error.</translation>
 <translation id="510275257476243843">1 hora restante</translation>
 <translation id="5123685120097942451">Pestaña de incógnito</translation>
