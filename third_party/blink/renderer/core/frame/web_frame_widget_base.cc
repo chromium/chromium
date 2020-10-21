@@ -183,7 +183,13 @@ WebFrameWidgetBase::WebFrameWidgetBase(
                  ThreadScheduler::Current()->DeprecatedDefaultTaskRunner());
 }
 
-WebFrameWidgetBase::~WebFrameWidgetBase() = default;
+WebFrameWidgetBase::~WebFrameWidgetBase() {
+  // Ensure that Close is called and we aren't releasing |widget_base_| in the
+  // destructor.
+  // TODO(crbug.com/1139104): This CHECK can be changed to a DCHECK once
+  // the issue is solved.
+  CHECK(!widget_base_);
+}
 
 void WebFrameWidgetBase::BindLocalRoot(WebLocalFrame& local_root) {
   local_root_ = To<WebLocalFrameImpl>(local_root);
