@@ -35,6 +35,9 @@ bool RecordRdata::HasValidSize(const base::StringPiece& data, uint16_t type) {
       return data.size() == IPAddress::kIPv6AddressSize;
     case dns_protocol::kExperimentalTypeIntegrity:
       return data.size() >= kIntegrityMinimumSize;
+    case dns_protocol::kTypeHttps:
+      // TODO(crbug.com/1138620): Implement actual size minimum.
+      return data.size() == 0;
     case dns_protocol::kTypeCNAME:
     case dns_protocol::kTypePTR:
     case dns_protocol::kTypeTXT:

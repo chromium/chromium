@@ -116,6 +116,12 @@ void HttpssvcMetrics::SaveForIntegrity(
   integrity_resolve_time_ = integrity_resolve_time;
 }
 
+void HttpssvcMetrics::SaveForHttps(base::Optional<std::string> doh_provider_id,
+                                   enum HttpssvcDnsRcode rcode,
+                                   base::TimeDelta https_resolve_time) {
+  // TODO(crbug.com/1138620): Implement.
+}
+
 void HttpssvcMetrics::set_doh_provider_id(
     base::Optional<std::string> new_doh_provider_id) {
   // "Other" never gets updated.
@@ -150,7 +156,8 @@ void HttpssvcMetrics::RecordIntegrityMetrics() {
   // The HTTPSSVC experiment and its feature param indicating INTEGRITY must
   // both be enabled.
   DCHECK(base::FeatureList::IsEnabled(features::kDnsHttpssvc));
-  DCHECK(features::kDnsHttpssvcUseIntegrity.Get());
+  DCHECK(features::kDnsHttpssvcUseIntegrity.Get() ||
+         features::kDnsHttpssvcUseHttpssvc.Get());
 
   DCHECK(!already_recorded_);
   already_recorded_ = true;

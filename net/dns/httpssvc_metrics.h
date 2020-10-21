@@ -81,6 +81,9 @@ class NET_EXPORT_PRIVATE HttpssvcMetrics {
                         enum HttpssvcDnsRcode rcode,
                         const std::vector<bool>& condensed_records,
                         base::TimeDelta integrity_resolve_time);
+  void SaveForHttps(base::Optional<std::string> doh_provider_id,
+                    enum HttpssvcDnsRcode rcode,
+                    base::TimeDelta https_resolve_time);
 
  private:
   std::string BuildMetricName(base::StringPiece leaf_name) const;

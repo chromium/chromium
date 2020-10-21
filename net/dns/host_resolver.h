@@ -100,6 +100,8 @@ class NET_EXPORT HostResolver {
 
     // INTEGRITY results for an initial experiment related to HTTPSSVC. Each
     // boolean value indicates the intactness of an INTEGRITY record.
+    // TODO(crbug.com/1138620): Generalize to be used for other experimental
+    // records.
     NET_EXPORT virtual const base::Optional<std::vector<bool>>&
     GetIntegrityResultsForTesting() const;
 

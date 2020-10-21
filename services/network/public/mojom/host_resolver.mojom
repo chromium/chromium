@@ -163,6 +163,7 @@ enum DnsQueryType {
   TXT,
   PTR,
   SRV,
+  HTTPS,
 };
 
 // Parameter-grouping struct for additional optional parameters for

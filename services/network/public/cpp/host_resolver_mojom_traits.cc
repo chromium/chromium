@@ -214,6 +214,8 @@ DnsQueryType EnumTraits<DnsQueryType, net::DnsQueryType>::ToMojom(
       return DnsQueryType::PTR;
     case net::DnsQueryType::SRV:
       return DnsQueryType::SRV;
+    case net::DnsQueryType::HTTPS:
+      return DnsQueryType::HTTPS;
     case net::DnsQueryType::INTEGRITY:
       NOTIMPLEMENTED();
       return DnsQueryType::UNSPECIFIED;
@@ -242,6 +244,9 @@ bool EnumTraits<DnsQueryType, net::DnsQueryType>::FromMojom(
       return true;
     case DnsQueryType::SRV:
       *output = net::DnsQueryType::SRV;
+      return true;
+    case DnsQueryType::HTTPS:
+      *output = net::DnsQueryType::HTTPS;
       return true;
   }
 }

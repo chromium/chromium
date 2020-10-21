@@ -80,7 +80,9 @@ DnsResourceRecord BuildTestDnsRecord(std::string name,
   record.type = type;
   record.klass = dns_protocol::kClassIN;
   record.ttl = ttl.InSeconds();
-  record.SetOwnedRdata(std::move(rdata));
+
+  if (!rdata.empty())
+    record.SetOwnedRdata(std::move(rdata));
 
   return record;
 }

@@ -149,6 +149,7 @@ static const uint16_t kTypeAAAA = 28;
 static const uint16_t kTypeSRV = 33;
 static const uint16_t kTypeOPT = 41;
 static const uint16_t kTypeNSEC = 47;
+static const uint16_t kTypeHttps = 65;
 static const uint16_t kTypeANY = 255;
 
 // Experimental DNS record types pending IANA assignment.
