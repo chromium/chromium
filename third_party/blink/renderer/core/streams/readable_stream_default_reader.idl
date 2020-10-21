@@ -8,11 +8,11 @@
     ImplementedAs=ReadableStreamReader
 ] interface ReadableStreamDefaultReader {
     [CallWith=ScriptState, RaisesException] constructor(ReadableStream stream);
-    [CallWith=ScriptState, NotEnumerable] readonly attribute Promise<void>
+    [CallWith=ScriptState] readonly attribute Promise<void>
         closed;
 
-    [CallWith=ScriptState, RaisesException, NotEnumerable] Promise<void> cancel(
+    [CallWith=ScriptState, RaisesException] Promise<void> cancel(
         optional any reason);
-    [CallWith=ScriptState, RaisesException, NotEnumerable] Promise<void> read();
-    [CallWith=ScriptState, NotEnumerable, RaisesException] void releaseLock();
+    [CallWith=ScriptState, RaisesException] Promise<void> read();
+    [CallWith=ScriptState, RaisesException] void releaseLock();
 };

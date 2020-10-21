@@ -7,15 +7,14 @@
     Exposed=(Window,Worker,Worklet)
 ] interface ReadableStream {
     [CallWith=ScriptState, RaisesException] constructor(optional any underlyingSource, optional any strategy);
-    [NotEnumerable] readonly attribute boolean locked;
+    readonly attribute boolean locked;
 
     // TODO(yhirano): function length is different from what's specced. Fix it.
-    [RaisesException, CallWith=ScriptState, NotEnumerable] Promise<any> cancel(
-        optional any reason);
-    [RaisesException, CallWith=ScriptState, NotEnumerable, MeasureAs=ReadableStreamGetReader] ReadableStreamDefaultReader getReader(optional any mode);
-    [RaisesException, CallWith=ScriptState, NotEnumerable, MeasureAs=ReadableStreamPipeThrough] any pipeThrough(
+    [RaisesException, CallWith=ScriptState] Promise<any> cancel(optional any reason);
+    [RaisesException, CallWith=ScriptState, MeasureAs=ReadableStreamGetReader] ReadableStreamDefaultReader getReader(optional any mode);
+    [RaisesException, CallWith=ScriptState, MeasureAs=ReadableStreamPipeThrough] any pipeThrough(
         any transformStream, optional any options);
-    [RaisesException, CallWith=ScriptState, NotEnumerable, MeasureAs=ReadableStreamPipeTo] Promise<any> pipeTo(
+    [RaisesException, CallWith=ScriptState, MeasureAs=ReadableStreamPipeTo] Promise<any> pipeTo(
         any destination, optional any option);
-    [RaisesException, CallWith=ScriptState, NotEnumerable] any tee();
+    [RaisesException, CallWith=ScriptState] any tee();
 };
