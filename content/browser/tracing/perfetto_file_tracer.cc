@@ -166,8 +166,8 @@ void PerfettoFileTracer::ReadBuffers() {
           },
           base::Unretained(this), has_been_disabled_));
 
-  background_drainer_.Post(FROM_HERE, &BackgroundDrainer::StartDrain,
-                           std::move(data_pipe.consumer_handle));
+  background_drainer_.AsyncCall(&BackgroundDrainer::StartDrain)
+      .WithArgs(std::move(data_pipe.consumer_handle));
 }
 
 void PerfettoFileTracer::OnTracingSessionEnded() {

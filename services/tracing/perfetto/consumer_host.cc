@@ -495,8 +495,8 @@ void ConsumerHost::TracingSession::OnJSONTraceData(std::string json,
                                                    bool has_more) {
   auto slice = std::make_unique<StreamWriter::Slice>();
   slice->swap(json);
-  read_buffers_stream_writer_.Post(FROM_HERE, &StreamWriter::WriteToStream,
-                                   std::move(slice), has_more);
+  read_buffers_stream_writer_.AsyncCall(&StreamWriter::WriteToStream)
+      .WithArgs(std::move(slice), has_more);
 
   if (!has_more) {
     read_buffers_stream_writer_.Reset();
@@ -559,8 +559,8 @@ void ConsumerHost::TracingSession::OnTraceData(
       chunk->append(static_cast<const char*>(slice.start), slice.size);
     }
   }
-  read_buffers_stream_writer_.Post(FROM_HERE, &StreamWriter::WriteToStream,
-                                   std::move(chunk), has_more);
+  read_buffers_stream_writer_.AsyncCall(&StreamWriter::WriteToStream)
+      .WithArgs(std::move(chunk), has_more);
   if (!has_more) {
     read_buffers_stream_writer_.Reset();
   }
