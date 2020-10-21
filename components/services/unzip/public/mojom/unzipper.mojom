@@ -5,8 +5,8 @@
 module unzip.mojom;
 
 import "components/services/filesystem/public/mojom/directory.mojom";
-import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/read_only_file.mojom";
 
 interface UnzipFilter {
   [Sync]
@@ -16,14 +16,14 @@ interface UnzipFilter {
 interface Unzipper {
   // Unzip |zip_file| into |output_dir|.
   // Returns true on success, false otherwise.
-  Unzip(mojo_base.mojom.File zip_file,
+  Unzip(mojo_base.mojom.ReadOnlyFile zip_file,
         pending_remote<filesystem.mojom.Directory> output_dir)
        => (bool result);
 
   // Same as |unzip| but only includes the files for which |filter| returns
   // true. Note that this incurs one IPC for each file of the archive.
   UnzipWithFilter(
-      mojo_base.mojom.File zip_file,
+      mojo_base.mojom.ReadOnlyFile zip_file,
       pending_remote<filesystem.mojom.Directory> output_dir,
       pending_remote<UnzipFilter> filter) => (bool result);
 };
