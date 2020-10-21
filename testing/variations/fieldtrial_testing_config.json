@@ -6894,8 +6894,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "TabSearch",
-                        "TabSearchFixedEntrypoint"
+                        "TabSearch"
                     ]
                 }
             ]

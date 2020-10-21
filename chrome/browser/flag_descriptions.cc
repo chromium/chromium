@@ -974,12 +974,6 @@ const char kEnableTabSearchName[] = "Enable Tab Search";
 const char kEnableTabSearchDescription[] =
     "Enable the Tab Search feature in Top Chrome UI, which will show a popup "
     "bubble that allows users to search over their currently open tabs.";
-const char kEnableTabSearchFixedEntrypointName[] =
-    "Enable Tab Search fixed "
-    "entrypoint";
-const char kEnableTabSearchFixedEntrypointDescription[] =
-    "Enable the Tab "
-    "Search feature in Top Chrome UI having a fixed button position.";
 #endif  // BUILDFLAG(ENABLE_TAB_SEARCH)";
 
 const char kEnableTextFragmentAnchorName[] = "Enable Text Fragment Anchor.";

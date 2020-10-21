@@ -105,10 +105,6 @@ const base::Feature kTabSearch{"TabSearch", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kTabSearchFeedback{"TabSearchFeedback",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables the tab search bubble having a fixed tab strip position.
-const base::Feature kTabSearchFixedEntrypoint{
-    "TabSearchFixedEntrypoint", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::FeatureParam<bool> kTabSearchSearchIgnoreLocation{
     &kTabSearch, "TabSearchSearchIgnoreLocation", true};
 

@@ -565,8 +565,6 @@ extern const char kEnableSubresourceRedirectDescription[];
 #if BUILDFLAG(ENABLE_TAB_SEARCH)
 extern const char kEnableTabSearchName[];
 extern const char kEnableTabSearchDescription[];
-extern const char kEnableTabSearchFixedEntrypointName[];
-extern const char kEnableTabSearchFixedEntrypointDescription[];
 #endif  // BUILDFLAG(ENABLE_TAB_SEARCH)
 
 extern const char kEnableTextFragmentAnchorName[];
