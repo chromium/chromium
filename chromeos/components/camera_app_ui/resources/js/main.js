@@ -193,11 +193,31 @@ export class App {
 
     try {
       await filesystem.initialize();
-      const cameraDir = filesystem.getCameraDirectory();
-      assert(cameraDir !== null);
-      this.galleryButton_.initialize(cameraDir);
+
+      const promptMigrate = async () => {
+        // Prompt to migrate pictures if needed.
+        const message = browserProxy.getI18nMessage('migrate_pictures_msg');
+        const acked = await nav.open(
+            ViewName.MESSAGE_DIALOG, {message, cancellable: false});
+        if (!acked) {
+          throw new Error('no-migrate');
+        }
+      };
+      // Migrate pictures might take some time. Since it won't affect other
+      // camera functions, we don't await here to avoid harming UX.
+      filesystem.checkMigration(promptMigrate).then((ackMigrate) => {
+        metrics.sendLaunchEvent({ackMigrate});
+      });
+
+      const externalDir = filesystem.getExternalDirectory();
+      assert(externalDir !== null);
+      this.galleryButton_.initialize(externalDir);
     } catch (error) {
       console.error(error);
+      if (error && error.message === 'no-migrate') {
+        window.close();
+        return;
+      }
       nav.open(ViewName.WARNING, 'filesystem-failure');
     }
 
@@ -213,7 +233,6 @@ export class App {
       this.backgroundOps_.getPerfLogger().stopLaunch({hasError: !isSuccess});
     })();
 
-    metrics.sendLaunchEvent({ackMigrate: false});
     return Promise.all([showWindow, startCamera]);
   }
 

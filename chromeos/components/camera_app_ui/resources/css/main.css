@@ -1115,66 +1115,6 @@ body:not(.recording-ui-paused) #record-time [i18n-content=record_video_paused_ms
   }
 }
 
-#banner {
-  background: white;
-  border-radius: 8px;
-  bottom: -130px;
-  display: none;
-  padding: 26px 29px;
-  width: 460px;
-}
-
-#banner.animate {
-  animation: emerge 12000ms cubic-bezier(0.0, 0.0, 0.2, 1);
-  display: block;
-}
-
-@keyframes emerge {
-  0%,
-  100% {
-    bottom: -130;
-  }
-  4%,
-  96% {
-    animation-timing-function: cubic-bezier(0.4, 0.0, 1.0, 1.0);
-    bottom: 31px;
-  }
-}
-
-#banner-title {
-  color: rgb(26, 115, 232);
-  margin-bottom: 10px;
-}
-
-#banner-title-icon {
-  background-image: url(/images/camera_intro_banner_icon.svg);
-  display: inline-block;
-  height: 20px;
-  margin-right: 10px;
-  vertical-align: middle;
-  width: 20px;
-}
-
-#banner-title-text {
-  font: 450 18px var(--default-font-family);
-  vertical-align: middle;
-}
-
-#banner-msg {
-  color: rgb(95, 99, 104);
-  font: 375 15px/22px var(--default-font-family);
-}
-
-#banner-close {
-  background-image: url(/images/camera_intro_banner_close.svg);
-  display: block;
-  height: 20px;
-  position: absolute;
-  right: 15px;
-  top: 15px;
-  width: 20px;
-}
-
 .menu {
   background: rgba(0, 0, 0, 0.75);
   display: flex;

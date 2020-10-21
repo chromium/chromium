@@ -40,7 +40,6 @@
       <structure name="IDR_CAMERA_INIT_JS" file="js/init.js" type="chrome_html" />
       <structure name="IDR_CAMERA_INTENT_JS" file="js/intent.js" type="chrome_html" />
       <structure name="IDR_CAMERA_LAYOUT_JS" file="js/views/camera/layout.js" type="chrome_html" />
-      <structure name="IDR_CAMERA_LAZY_DIRECTORY_ENTRY_JS" file="js/models/lazy_directory_entry.js" type="chrome_html" />
       <structure name="IDR_CAMERA_MAIN_CSS" file="css/main.css" type="chrome_html" />
       <structure name="IDR_CAMERA_MAIN_HTML" file="views/main.html" type="chrome_html" />
       <structure name="IDR_CAMERA_MAIN_JS" file="js/main.js" type="chrome_html" />
@@ -172,8 +171,6 @@
       <include name="IDR_CAMERA_CAMERA_BUTTON_FPS_60_SVG" file="images/camera_button_fps_60.svg" type="BINDATA" />
       <include name="IDR_CAMERA_CAMERA_INTENT_RESULT_CANCEL_SVG" file="images/camera_intent_result_cancel.svg" type="BINDATA" />
       <include name="IDR_CAMERA_CAMERA_INTENT_RESULT_CONFIRM_SVG" file="images/camera_intent_result_confirm.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_CAMERA_INTRO_BANNER_ICON_SVG" file="images/camera_intro_banner_icon.svg" type="BINDATA" />
-      <include name="IDR_CAMERA_CAMERA_INTRO_BANNER_CLOSE_SVG" file="images/camera_intro_banner_close.svg" type="BINDATA" />
     </includes>
   </release>
 </grit>

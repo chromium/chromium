@@ -440,15 +440,6 @@
 
 If your feedback is about image or video quality, please attach a sample photo or video and describe what's wrong. (For example, photo is too dark or subject isn’t in focus.)
       </message>
-      <message desc="Title of banner shown for introducing new camera App UI." name="IDS_BANNER_TITLE">
-        Your photos and videos have a new home
-      </message>
-      <message desc="Message in the banner shown for introducing new camera App UI." name="IDS_BANNER_MSG">
-        Photos and videos will now be saved to a new folder in the Files app: My files > Camera. Previous photos and videos won't move to the new folder.
-      </message>
-      <message desc="Label for close introducing new camera App UI banner button." name="IDS_BANNER_CLOSE_BUTTON">
-        Close
-      </message>
     </messages>
   </release>
 </grit>

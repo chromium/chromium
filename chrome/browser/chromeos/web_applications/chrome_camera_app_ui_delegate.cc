@@ -89,11 +89,11 @@ void ChromeCameraAppUIDelegate::SetLaunchDirectory() {
   // path in it.
   base::FilePath empty_file_path("/dev/null");
 
-  auto my_files_folder_path =
-      file_manager::util::GetMyFilesFolderForProfile(profile);
+  auto downloads_folder_path =
+      file_manager::util::GetDownloadsFolderForProfile(profile);
 
   web_launch::WebLaunchFilesHelper::SetLaunchDirectoryAndLaunchPaths(
-      web_contents, web_contents->GetURL(), my_files_folder_path,
+      web_contents, web_contents->GetURL(), downloads_folder_path,
       std::vector<base::FilePath>{empty_file_path});
   web_app::WebAppTabHelper::CreateForWebContents(web_contents);
 }
@@ -119,9 +119,9 @@ void ChromeCameraAppUIDelegate::OpenFileInGallery(const std::string& name) {
 
   Profile* profile = Profile::FromWebUI(web_ui_);
 
-  base::FilePath path = file_manager::util::GetMyFilesFolderForProfile(profile)
-                            .Append("Camera")
-                            .Append(name_component);
+  base::FilePath path =
+      file_manager::util::GetDownloadsFolderForProfile(profile).Append(
+          name_component);
   auto&& file_paths = std::vector<base::FilePath>({path});
   apps::mojom::FilePathsPtr launch_files =
       apps::mojom::FilePaths::New(file_paths);

@@ -100,9 +100,6 @@ const struct {
     {"record_video_pause_button", IDS_RECORD_VIDEO_PAUSE_BUTTON},
     {"record_video_resume_button", IDS_RECORD_VIDEO_RESUME_BUTTON},
     {"feedback_description_placeholder", IDS_FEEDBACK_DESCRIPTION_PLACEHOLDER},
-    {"banner_title", IDS_BANNER_TITLE},
-    {"banner_msg", IDS_BANNER_MSG},
-    {"banner_close_button", IDS_BANNER_CLOSE_BUTTON},
 };
 
 const struct {

@@ -4,9 +4,7 @@
 
 import {assert, promisify} from '../chrome_util.js';
 import {ChromeDirectoryEntry} from '../models/chrome_file_system_entry.js';
-import {getMaybeLazyDirectory} from '../models/lazy_directory_entry.js';
 import {Resolution} from '../type.js';
-
 // eslint-disable-next-line no-unused-vars
 import {BrowserProxy} from './browser_proxy_interface.js';
 
@@ -41,7 +39,7 @@ class ChromeAppBrowserProxy {
   }
 
   /** @override */
-  async getCameraDirectory() {
+  async getExternalDir() {
     let volumes;
     try {
       volumes = await promisify(chrome.fileSystem.getVolumeList)();
@@ -69,8 +67,9 @@ class ChromeAppBrowserProxy {
         continue;
       }
 
-      const myFilesDir = new ChromeDirectoryEntry(root);
-      return getMaybeLazyDirectory(myFilesDir, 'Camera');
+      const rootEntry = new ChromeDirectoryEntry(root);
+      const entries = await rootEntry.getDirectories();
+      return entries.find((entry) => entry.name === 'Downloads') || null;
     }
     return null;
   }

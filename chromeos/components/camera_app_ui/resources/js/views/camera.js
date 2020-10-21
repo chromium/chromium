@@ -180,11 +180,6 @@ export class Camera extends View {
     this.take_ = null;
 
     /**
-     * @type {!HTMLElement}
-     */
-    this.banner_ = dom.get('#banner', HTMLElement);
-
-    /**
      * Gets type of ways to trigger shutter from click event.
      * @param {!MouseEvent} e
      * @return {!metrics.ShutterType}
@@ -241,11 +236,6 @@ export class Camera extends View {
       onLabel: 'record_video_resume_button',
       offLabel: 'record_video_pause_button',
     });
-
-    dom.get('#banner-close', HTMLButtonElement)
-        .addEventListener('click', () => {
-          util.animateCancel(this.banner_);
-        });
 
     // Monitor the states to stop camera when locked/minimized.
     browserProxy.addOnLockListener((isLocked) => {
@@ -343,22 +333,9 @@ export class Camera extends View {
    * @override
    */
   focus() {
-    const focusOnShutterButton = () => {
-      // Avoid focusing invisible shutters.
-      dom.getAll('button.shutter', HTMLButtonElement)
-          .forEach((btn) => btn.offsetParent && btn.focus());
-    };
-    (async () => {
-      const values =
-          await browserProxy.localStorageGet({isFolderChangeMsgShown: false});
-      await this.configuring_;
-      if (!values['isFolderChangeMsgShown']) {
-        browserProxy.localStorageSet({isFolderChangeMsgShown: true});
-        util.animateOnce(this.banner_, focusOnShutterButton);
-      } else {
-        focusOnShutterButton();
-      }
-    })();
+    // Avoid focusing invisible shutters.
+    dom.getAll('button.shutter', HTMLButtonElement)
+        .forEach((btn) => btn.offsetParent && btn.focus());
   }
 
   /**

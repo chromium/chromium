@@ -12,6 +12,12 @@ import {
 } from './file_system_entry.js';
 
 /**
+ * The prefix of thumbnail files.
+ * @type {string}
+ */
+const THUMBNAIL_PREFIX = 'thumb-';
+
+/**
  * Checks if the entry's name has the video prefix.
  * @param {!AbstractFileEntry} entry File entry.
  * @return {boolean} Has the video prefix or not.
@@ -30,23 +36,41 @@ function hasImagePrefix(entry) {
 }
 
 /**
+ * Directory in the internal file system.
+ * @type {?AbstractDirectoryEntry}
+ */
+let internalDir = null;
+
+/**
  * Temporary directory in the internal file system.
  * @type {?AbstractDirectoryEntry}
  */
 let internalTempDir = null;
 
 /**
- * Camera directory in the external file system.
+ * Directory in the external file system.
  * @type {?AbstractDirectoryEntry}
  */
-let cameraDir = null;
+let externalDir = null;
 
 /**
- * Gets camera directory used by CCA.
+ * Gets global external directory used by CCA.
  * @return {?AbstractDirectoryEntry}
  */
-export function getCameraDirectory() {
-  return cameraDir;
+export function getExternalDirectory() {
+  return externalDir;
+}
+
+/**
+ * Initializes the directory in the internal file system.
+ * @return {!Promise<!AbstractDirectoryEntry>} Promise for the directory result.
+ */
+function initInternalDir() {
+  return new Promise((resolve, reject) => {
+    webkitRequestFileSystem(
+        window.PERSISTENT, 768 * 1024 * 1024 /* 768MB */,
+        (fs) => resolve(new ChromeDirectoryEntry(fs.root)), reject);
+  });
 }
 
 /**
@@ -62,11 +86,52 @@ function initInternalTempDir() {
 }
 
 /**
- * Initializes the camera directory in the external file system.
+ * Initializes the directory in the external file system.
  * @return {!Promise<?AbstractDirectoryEntry>} Promise for the directory result.
  */
-async function initCameraDirectory() {
-  return browserProxy.getCameraDirectory();
+async function initExternalDir() {
+  return browserProxy.getExternalDir();
+}
+
+/**
+ * Regulates the picture name to the desired format if it's in legacy formats.
+ * @param {!AbstractFileEntry} entry Picture entry whose name to be regulated.
+ * @return {string} Name in the desired format.
+ */
+function regulatePictureName(entry) {
+  if (hasVideoPrefix(entry) || hasImagePrefix(entry)) {
+    const match = entry.name.match(/(\w{3}_\d{8}_\d{6})(?:_(\d+))?(\..+)?$/);
+    if (match) {
+      const idx = match[2] ? ' (' + match[2] + ')' : '';
+      const ext = match[3] ? match[3].replace(/\.webm$/, '.mkv') : '';
+      return match[1] + idx + ext;
+    }
+  } else {
+    // Early pictures are in legacy file name format (crrev.com/c/310064).
+    const match = entry.name.match(/(\d+).(?:\d+)/);
+    if (match) {
+      return (new Filenamer(parseInt(match[1], 10))).newImageName();
+    }
+  }
+  return entry.name;
+}
+
+/**
+ * Migrates all picture-files except thumbnails from internal storage to
+ * external storage. For thumbnails, we just remove them.
+ * @return {!Promise} Promise for the operation.
+ */
+async function migratePictures() {
+  const internalEntries = await internalDir.getFiles();
+  for (const entry of internalEntries) {
+    if (entry.name.startsWith(THUMBNAIL_PREFIX)) {
+      await entry.remove();
+      continue;
+    }
+    const name = regulatePictureName(entry);
+    assert(externalDir !== null);
+    await entry.moveTo(externalDir, name);
+  }
 }
 
 /**
@@ -75,11 +140,55 @@ async function initCameraDirectory() {
  * @return {!Promise}
  */
 export async function initialize() {
+  internalDir = await initInternalDir();
+  assert(internalDir !== null);
+
   internalTempDir = await initInternalTempDir();
   assert(internalTempDir !== null);
 
-  cameraDir = await initCameraDirectory();
-  assert(cameraDir !== null);
+  externalDir = await initExternalDir();
+  assert(externalDir !== null);
+}
+
+/**
+ * Checks and performs migration if it's needed.
+ * @param {function(): !Promise} promptMigrate Callback to instantiate a promise
+ *     that prompts users to migrate pictures if no acknowledgement yet.
+ * @return {!Promise<boolean>} Return a promise that will be resolved to a
+ *     boolean indicates if the user ackes the migration dialog once the
+ *     migration is skipped or completed.
+ */
+export async function checkMigration(promptMigrate) {
+  const isDoneMigration =
+      (await browserProxy.localStorageGet({doneMigration: 0}))['doneMigration'];
+  if (isDoneMigration) {
+    return false;
+  }
+
+  const doneMigrate = () => browserProxy.localStorageSet({doneMigration: 1});
+  const ackMigrate = () =>
+      browserProxy.localStorageSet({ackMigratePictures: 1});
+
+  const internalEntries = await internalDir.getFiles();
+  const migrationNeeded = internalEntries.length > 0;
+  if (!migrationNeeded) {
+    // If there is already no picture in the internal file system, it implies
+    // done migration and then doesn't need acknowledge-prompt.
+    await ackMigrate();
+    await doneMigrate();
+    return false;
+  }
+
+  const isAckedMigration = (await browserProxy.localStorageGet(
+      {ackMigratePictures: 0}))['ackMigratePictures'];
+  if (!isAckedMigration) {
+    await promptMigrate();
+    await ackMigrate();
+  }
+  await migratePictures();
+  await doneMigrate();
+
+  return !isAckedMigration;
 }
 
 /**
@@ -89,7 +198,9 @@ export async function initialize() {
  * @return {!Promise<?AbstractFileEntry>} Promise for the result.
  */
 export async function saveBlob(blob, name) {
-  const file = await cameraDir.createFile(name);
+  assert(externalDir !== null);
+
+  const file = await externalDir.createFile(name);
   assert(file !== null);
 
   await file.write(blob);
@@ -102,8 +213,9 @@ export async function saveBlob(blob, name) {
  * @throws {!Error} If failed to create video file.
  */
 export async function createVideoFile() {
+  assert(externalDir !== null);
   const name = new Filenamer().newVideoName();
-  const file = await cameraDir.createFile(name);
+  const file = await externalDir.createFile(name);
   if (file === null) {
     throw new Error('Failed to create video temp file.');
   }
@@ -136,7 +248,7 @@ export async function createPrivateTempVideoFile() {
  *     entries.
  */
 export async function getEntries() {
-  const entries = await cameraDir.getFiles();
+  const entries = await externalDir.getFiles();
   return entries.filter((entry) => {
     if (!hasVideoPrefix(entry) && !hasImagePrefix(entry)) {
       return false;
