@@ -7,6 +7,8 @@
 
 module arc.mojom;
 
+import "components/arc/mojom/gfx.mojom";
+
 [Extensible]
 enum VideoCodecProfile {
   // The values must match to the values in media::VideoCodecProfile.
@@ -86,12 +88,6 @@ enum VideoPixelFormat {
 struct VideoFramePlane {
   int32 offset;
   int32 stride;
-};
-
-// The graphics dimension. Both width and height should be non-negative.
-struct Size {
-  int32 width;
-  int32 height;
 };
 
 // The information of a plane of a video frame that describes how physical

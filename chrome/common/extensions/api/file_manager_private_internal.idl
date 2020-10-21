@@ -123,6 +123,10 @@ namespace fileManagerPrivateInternal {
                                 long width,
                                 long height,
                                 GetThumbnailCallback callback);
+    static void getArcDocumentsProviderThumbnail(DOMString url,
+                                                 long widthHint,
+                                                 long heightHint,
+                                                 GetThumbnailCallback callback);
     static void sharesheetHasTargets(DOMString[] urls, BooleanCallback callback);
     static void invokeSharesheet(DOMString[] urls, SimpleCallback callback);
     static void toggleAddedToHoldingSpace(DOMString[] urls, boolean add,

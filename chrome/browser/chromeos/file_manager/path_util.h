@@ -126,6 +126,12 @@ using ConvertToContentUrlsCallback =
 // Always returns a vector of the same size as |file_system_urls|.
 // Empty GURLs are filled in the vector if conversion fails.
 void ConvertToContentUrls(
+    Profile* profile,
+    const std::vector<storage::FileSystemURL>& file_system_urls,
+    ConvertToContentUrlsCallback callback);
+
+// Convers Chrome OS file system URLs using a primary profile.
+void ConvertToContentUrls(
     const std::vector<storage::FileSystemURL>& file_system_urls,
     ConvertToContentUrlsCallback callback);
 

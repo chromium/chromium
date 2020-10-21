@@ -271,13 +271,6 @@ void ArcDocumentsProviderRoot::GetExtraFileMetadata(
     std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND, {});
     return;
   }
-  if (read_only_) {
-    // We can return default metadata for read-only roots without Mojo calls,
-    // since all properties on ExtraFileMetadata are about write capabilities.
-    std::move(callback).Run(base::File::FILE_OK, {});
-    return;
-  }
-
   GetDocument(path, base::BindOnce(
                         &ArcDocumentsProviderRoot::GetExtraMetadataFromDocument,
                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -727,6 +720,7 @@ void ArcDocumentsProviderRoot::GetExtraMetadataFromDocument(
   metadata.supports_delete = document->supports_delete;
   metadata.supports_rename = document->supports_rename;
   metadata.dir_supports_create = document->dir_supports_create;
+  metadata.supports_thumbnail = document->supports_thumbnail;
   std::move(callback).Run(base::File::FILE_OK, metadata);
 }
 

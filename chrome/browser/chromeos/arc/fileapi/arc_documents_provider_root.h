@@ -41,8 +41,7 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
     base::Time last_modified;
   };
 
-  // Extra metadata about write capabilities. All fields are false on read-only
-  // roots.
+  // Extra metadata in addition to the metadata provided in base::File::Info.
   struct ExtraFileMetadata {
     // True if a document is deletable.
     bool supports_delete;
@@ -51,6 +50,9 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
     // True if a document is a directory that supports creation of new files
     // within it.
     bool dir_supports_create;
+    // True if a document will return a valid thumbnail from
+    // the DocumentsProvider.openDocumentThumbnail() Android API call.
+    bool supports_thumbnail;
   };
 
   // TODO(crbug.com/755451): Use OnceCallback/RepeatingCallback.
@@ -186,8 +188,6 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
                            ResolveToContentUrlCallback callback);
 
   // Get extra metadata of the file at |path|.
-  // The metadata is about capatility of write operations.
-  // See ExtraFileMetadata for the supported capabilities.
   void GetExtraFileMetadata(const base::FilePath& path,
                             GetExtraMetadataCallback callback);
 

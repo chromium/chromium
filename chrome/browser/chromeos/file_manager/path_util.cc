@@ -570,6 +570,7 @@ bool ConvertPathToArcUrl(const base::FilePath& path, GURL* arc_url_out) {
 }
 
 void ConvertToContentUrls(
+    Profile* profile,
     const std::vector<storage::FileSystemURL>& file_system_urls,
     ConvertToContentUrlsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -579,7 +580,6 @@ void ConvertToContentUrls(
     return;
   }
 
-  Profile* profile = GetPrimaryProfile();
   auto* documents_provider_root_map =
       profile ? arc::ArcDocumentsProviderRootMap::GetForBrowserContext(profile)
               : nullptr;
@@ -622,6 +622,13 @@ void ConvertToContentUrls(
 
     single_content_url_callback.Run(index, GURL());
   }
+}
+
+void ConvertToContentUrls(
+    const std::vector<storage::FileSystemURL>& file_system_urls,
+    ConvertToContentUrlsCallback callback) {
+  ConvertToContentUrls(GetPrimaryProfile(), file_system_urls,
+                       std::move(callback));
 }
 
 bool ReplacePrefix(std::string* s,

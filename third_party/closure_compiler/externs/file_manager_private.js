@@ -1136,6 +1136,19 @@ chrome.fileManagerPrivate.getDriveThumbnail = function(entry, cropToSquare, call
 chrome.fileManagerPrivate.getPdfThumbnail = function(entry, width, height, callback) {};
 
 /**
+  Retrieves a thumbnail of an ARC DocumentsProvider file, close in size to
+  |widthHint| and |heightHint|, but not necessarily exactly this size.
+ * @param {!FileEntry} entry
+ * @param {number} widthHint
+ * @param {number} heightHint
+ * @param {function(string): void} callback |thumbnailDataUrl| A data URL for the
+ *     thumbnail; |thumbnailDataUrl| is empty if no thumbnail was available.
+ *     Note: The thumbnail data may originate from third-party application code,
+ *     and is untrustworthy (Security).
+ */
+chrome.fileManagerPrivate.getArcDocumentsProviderThumbnail = function(entry, widthHint, heightHint, callback) {};
+
+/**
  * @param {!Array<string>} extensions
  * @param {function(!Array<chrome.fileManagerPrivate.AndroidApp>): void} callback
  *     Completion callback.

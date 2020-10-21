@@ -896,14 +896,16 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     GridView, /* grid_view.js */
     FilesAppBrowserTest,
-    ::testing::Values(TestCase("showGridViewDownloads").DisableFilesNg(),
-                      TestCase("showGridViewDownloads").InGuestMode(),
-                      TestCase("showGridViewDownloads").FilesNg(),
-                      TestCase("showGridViewDrive"),
-                      TestCase("showGridViewButtonSwitches"),
-                      TestCase("showGridViewKeyboardSelectionA11y"),
-                      TestCase("showGridViewTitles").FilesNg(),
-                      TestCase("showGridViewMouseSelectionA11y")));
+    ::testing::Values(
+        TestCase("showGridViewDownloads").DisableFilesNg(),
+        TestCase("showGridViewDownloads").InGuestMode(),
+        TestCase("showGridViewDownloads").FilesNg(),
+        TestCase("showGridViewDrive"),
+        TestCase("showGridViewButtonSwitches"),
+        TestCase("showGridViewKeyboardSelectionA11y"),
+        TestCase("showGridViewTitles").FilesNg(),
+        TestCase("showGridViewMouseSelectionA11y"),
+        TestCase("showGridViewDocumentsProvider").EnableDocumentsProvider()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Providers, /* providers.js */

@@ -155,6 +155,16 @@ ImageRequestTask.ExtensionContentTypeMap = {
 };
 
 /**
+ * Extracts MIME type of a data URL.
+ * @param {string|undefined} dataUrl Data URL.
+ * @return {?string} MIME type string, or null if the URL is invalid.
+ */
+ImageRequestTask.getDataUrlMimeType = function(dataUrl) {
+  const dataUrlMatches = (dataUrl || '').match(/^data:([^,;]*)[,;]/);
+  return dataUrlMatches ? dataUrlMatches[1] : null;
+};
+
+/**
  * Returns ID of the request.
  * @return {string} Request ID.
  */
@@ -211,7 +221,7 @@ ImageRequestTask.prototype.downloadAndProcess = function(callback) {
   }
 
   this.downloadCallback_ = callback;
-  this.downloadOriginal_(
+  this.downloadThumbnail_(
       this.onImageLoad_.bind(this), this.onImageError_.bind(this));
 };
 
@@ -300,7 +310,7 @@ ImageRequestTask.prototype.targetThumbnailSize_ = function() {
  * @param {function()} onFailure Failure callback.
  * @private
  */
-ImageRequestTask.prototype.downloadOriginal_ = function(onSuccess, onFailure) {
+ImageRequestTask.prototype.downloadThumbnail_ = function(onSuccess, onFailure) {
   // Load methods below set |this.image_.src|. Call revokeObjectURL(src) to
   // release resources if the image src was created with createObjectURL().
   this.image_.onload = function() {
@@ -313,10 +323,11 @@ ImageRequestTask.prototype.downloadOriginal_ = function(onSuccess, onFailure) {
   }.bind(this);
 
   // Load dataURL sources directly.
-  const dataUrlMatches = this.request_.url.match(/^data:([^,;]*)[,;]/);
-  if (dataUrlMatches) {
+  const dataUrlMimeType =
+      ImageRequestTask.getDataUrlMimeType(this.request_.url);
+  if (dataUrlMimeType) {
     this.image_.src = this.request_.url;
-    this.contentType_ = dataUrlMatches[1];
+    this.contentType_ = dataUrlMimeType;
     return;
   }
 
@@ -333,7 +344,7 @@ ImageRequestTask.prototype.downloadOriginal_ = function(onSuccess, onFailure) {
       onFailure();
     } else if (dataUrl) {
       this.image_.src = dataUrl;
-      this.contentType_ = 'image/png';
+      this.contentType_ = ImageRequestTask.getDataUrlMimeType(dataUrl);
     } else {
       onFailure();
     }
@@ -358,6 +369,18 @@ ImageRequestTask.prototype.downloadOriginal_ = function(onSuccess, onFailure) {
         this.request_.url,
         entry => chrome.fileManagerPrivate.getPdfThumbnail(
             entry, width, height, onExternalThumbnail));
+    return;
+  }
+
+  // Load DocumentsProvider thumbnail, if supported.
+  const isDocumentsProviderRequest = !!this.request_.url.match(RegExp(
+      'filesystem:chrome-extension://[a-z]+/external/arc-documents-provider/.*'));
+  if (isDocumentsProviderRequest) {
+    const {width, height} = this.targetThumbnailSize_();
+    resolveLocalFileSystemUrl(this.request_.url, entry => {
+      chrome.fileManagerPrivate.getArcDocumentsProviderThumbnail(
+          entry, width, height, onExternalThumbnail);
+    });
     return;
   }
 

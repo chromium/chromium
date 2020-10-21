@@ -26,3 +26,9 @@ struct Range {
   // End offset in UTF-16 index.
   uint32 end;
 };
+
+// The graphics dimension. Both width and height should be non-negative.
+struct Size {
+  int32 width;
+  int32 height;
+};

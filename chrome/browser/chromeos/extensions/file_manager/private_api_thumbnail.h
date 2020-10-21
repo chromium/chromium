@@ -13,9 +13,12 @@
 
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_base.h"
 
+#include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_root.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
+#include "chrome/common/extensions/api/file_manager_private_internal.h"
 #include "chrome/services/printing/public/mojom/pdf_thumbnailer.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 class SkBitmap;
 
@@ -91,6 +94,38 @@ class FileManagerPrivateInternalGetPdfThumbnailFunction
   // thumbnail. The value of 30 is selected so that a US Letter size page does
   // not overflow a kSize x kSize thumbnail.
   constexpr static int kDpi = 30;
+};
+
+class FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction
+    : public FileManagerPrivateGetThumbnailFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION(
+      "fileManagerPrivateInternal.getArcDocumentsProviderThumbnail",
+      FILEMANAGERPRIVATEINTERNAL_GETARCDOCUMENTSPROVIDERTHUMBNAIL)
+
+  FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction();
+
+ protected:
+  ~FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction()
+      override;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+
+ private:
+  // A callback invoked when ExtraFileMetadata is returned from ARC.
+  void OnGetExtraFileMetadata(
+      const gfx::Size& size_hint,
+      const storage::FileSystemURL& file_system_url,
+      base::File::Error result,
+      const arc::ArcDocumentsProviderRoot::ExtraFileMetadata& metadata);
+
+  // A callback invoked when a FilesystemURL is resolved to content URLs.
+  void GotContentUrls(const gfx::Size& size_hint,
+                      const std::vector<GURL>& urls);
+
+  // A callback invoked when ARC thumbnail file has been opened.
+  void GotArcThumbnailFileHandle(mojo::ScopedHandle handle);
 };
 
 }  // namespace extensions

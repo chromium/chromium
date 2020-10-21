@@ -37,6 +37,7 @@ mojom::DocumentPtr MakeDocument(const FakeFileSystemInstance::Document& doc) {
   document->supports_delete = doc.supports_delete;
   document->supports_rename = doc.supports_rename;
   document->dir_supports_create = doc.dir_supports_create;
+  document->supports_thumbnail = doc.supports_thumbnail;
   return document;
 }
 
@@ -63,6 +64,8 @@ constexpr size_t kMaxBytesToReadFromPipe = 8 * 1024;  // 8KB;
 }  // namespace
 
 constexpr base::FilePath::CharType FakeFileSystemInstance::kFakeAndroidPath[];
+
+constexpr gfx::Size FakeFileSystemInstance::kDefaultThumbnailSize;
 
 FakeFileSystemInstance::File::File(const std::string& url,
                                    const std::string& content,
@@ -91,7 +94,8 @@ FakeFileSystemInstance::Document::Document(
                last_modified,
                true,
                true,
-               true) {}
+               true,
+               false) {}
 
 FakeFileSystemInstance::Document::Document(
     const std::string& authority,
@@ -103,7 +107,8 @@ FakeFileSystemInstance::Document::Document(
     uint64_t last_modified,
     bool supports_delete,
     bool supports_rename,
-    bool dir_supports_create)
+    bool dir_supports_create,
+    bool supports_thumbnail)
     : authority(authority),
       document_id(document_id),
       parent_document_id(parent_document_id),
@@ -113,7 +118,8 @@ FakeFileSystemInstance::Document::Document(
       last_modified(last_modified),
       supports_delete(supports_delete),
       supports_rename(supports_rename),
-      dir_supports_create(dir_supports_create) {}
+      dir_supports_create(dir_supports_create),
+      supports_thumbnail(supports_thumbnail) {}
 
 FakeFileSystemInstance::Document::Document(const Document& that) = default;
 
@@ -367,6 +373,41 @@ void FakeFileSystemInstance::OpenFileToWrite(const std::string& url,
           ? CreateRegularFileDescriptor(file, base::File::Flags::FLAG_OPEN |
                                                   base::File::Flags::FLAG_WRITE)
           : CreateStreamFileDescriptorToWrite(file.url);
+  mojo::ScopedHandle wrapped_handle =
+      mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(fd)));
+  DCHECK(wrapped_handle.is_valid());
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), std::move(wrapped_handle)));
+}
+
+void FakeFileSystemInstance::OpenThumbnail(const std::string& url,
+                                           const gfx::Size& size_hint,
+                                           OpenThumbnailCallback callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  auto iter = files_.find(url);
+  if (iter == files_.end()) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), mojo::ScopedHandle()));
+    return;
+  }
+  const File& file = iter->second;
+  if (file.thumbnail_content.empty()) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), mojo::ScopedHandle()));
+    return;
+  }
+  // This validates that size_hint parameter is propagated properly from the
+  // client, so OpenThumbnail should always be called with same default value in
+  // tests.
+  if (size_hint != kDefaultThumbnailSize) {
+    LOG(ERROR) << "Unexpected thumbnail size hint: " << size_hint.width() << "x"
+               << size_hint.height();
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), mojo::ScopedHandle()));
+    return;
+  }
+  base::ScopedFD fd = CreateStreamFileDescriptorToRead(file.thumbnail_content);
   mojo::ScopedHandle wrapped_handle =
       mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(fd)));
   DCHECK(wrapped_handle.is_valid());

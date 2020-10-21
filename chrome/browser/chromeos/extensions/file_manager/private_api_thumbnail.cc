@@ -9,18 +9,23 @@
 #include "base/files/file_util.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_root_map.h"
+#include "chrome/browser/chromeos/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/browser/chromeos/drive/drive_integration_service.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
+#include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/printing/printing_service.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
 #include "components/signin/public/identity_manager/consent_level.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "net/base/mime_sniffer.h"
+#include "net/base/mime_util.h"
 #include "storage/browser/file_system/file_system_context.h"
-#include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -29,11 +34,14 @@
 namespace extensions {
 namespace {
 
-// Encodes PNG data as a data URL.
-std::string MakeThumbnailDataUrlOnThreadPool(
-    base::span<const uint8_t> png_data) {
+constexpr char kMimeTypeImagePng[] = "image/png";
+
+// Encodes binary data as a data URL.
+std::string MakeThumbnailDataUrlOnThreadPool(const std::string& mimeType,
+                                             base::span<const uint8_t> data) {
   base::AssertLongCPUWorkAllowed();
-  return base::StrCat({"data:image/png;base64,", base::Base64Encode(png_data)});
+  return base::StrCat(
+      {"data:", mimeType, ";base64,", base::Base64Encode(data)});
 }
 
 // Converts bitmap to a PNG image and encodes it as a data URL.
@@ -49,7 +57,7 @@ std::string ConvertAndEncode(const SkBitmap& bitmap) {
     return std::string();
   }
   return MakeThumbnailDataUrlOnThreadPool(
-      base::make_span(png_data->bytes(), png_data->size()));
+      kMimeTypeImagePng, base::make_span(png_data->bytes(), png_data->size()));
 }
 
 // The maximum size of the input PDF file for which thumbnails are generated.
@@ -73,6 +81,30 @@ std::string ReadLocalPdf(const base::FilePath& pdf_file_path) {
     return std::string();
   }
   return contents;
+}
+
+// Max size of a file returned by DocumentsProvider openDocumentThumbnail()
+// Arbitrary, but sets some sensible upper limit.
+constexpr int kDocumentsProviderMaxThumbnailSizeInBytes = 1024 * 1024;
+
+std::string ReadMojoHandleToDataUrl(mojo::PlatformHandle&& handle) {
+  base::ScopedFILE file(FileToFILE(base::File(handle.ReleaseFD()), "rb"));
+  std::string contents;
+  if (!base::ReadStreamToStringWithMaxSize(
+          file.get(), kDocumentsProviderMaxThumbnailSizeInBytes, &contents)) {
+    return std::string();
+  }
+  std::string mime_type;
+  if (!net::SniffMimeTypeFromLocalData(contents, &mime_type)) {
+    return std::string();
+  }
+  if (!net::MatchesMimeType("image/*", mime_type)) {
+    return std::string();
+  }
+  return MakeThumbnailDataUrlOnThreadPool(
+      mime_type,
+      base::make_span(reinterpret_cast<const uint8_t*>(contents.c_str()),
+                      contents.size()));
 }
 
 }  // namespace
@@ -148,7 +180,9 @@ void FileManagerPrivateInternalGetDriveThumbnailFunction::GotThumbnail(
     return;
   }
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&MakeThumbnailDataUrlOnThreadPool, *data),
+      FROM_HERE,
+      base::BindOnce(&MakeThumbnailDataUrlOnThreadPool, kMimeTypeImagePng,
+                     *data),
       base::BindOnce(&FileManagerPrivateInternalGetDriveThumbnailFunction::
                          SendEncodedThumbnail,
                      this));
@@ -238,6 +272,110 @@ void FileManagerPrivateInternalGetPdfThumbnailFunction::GotThumbnail(
       base::BindOnce(&FileManagerPrivateInternalGetPdfThumbnailFunction::
                          SendEncodedThumbnail,
                      this));
+}
+
+FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::
+    FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction() =
+        default;
+
+FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::
+    ~FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction() =
+        default;
+
+ExtensionFunction::ResponseAction
+FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::Run() {
+  using extensions::api::file_manager_private_internal::
+      GetArcDocumentsProviderThumbnail::Params;
+  const std::unique_ptr<Params> params(Params::Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  scoped_refptr<storage::FileSystemContext> file_system_context =
+      file_manager::util::GetFileSystemContextForRenderFrameHost(
+          chrome_details_.GetProfile(), render_frame_host());
+  const GURL url = GURL(params->url);
+  const storage::FileSystemURL file_system_url =
+      file_system_context->CrackURL(url);
+
+  auto* root_map = arc::ArcDocumentsProviderRootMap::GetForBrowserContext(
+      chrome_details_.GetProfile());
+  base::FilePath path;
+  auto* root = root_map->ParseAndLookup(file_system_url, &path);
+  if (!root) {
+    return RespondNow(Error("File not found"));
+  }
+
+  const gfx::Size size_hint(params->width_hint, params->height_hint);
+  root->GetExtraFileMetadata(
+      path,
+      base::BindOnce(
+          &FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::
+              OnGetExtraFileMetadata,
+          this, size_hint, file_system_url));
+  return RespondLater();
+}
+
+void FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::
+    OnGetExtraFileMetadata(
+        const gfx::Size& size_hint,
+        const storage::FileSystemURL& file_system_url,
+        base::File::Error result,
+        const arc::ArcDocumentsProviderRoot::ExtraFileMetadata& metadata) {
+  if (result != base::File::FILE_OK) {
+    Respond(Error(base::File::ErrorToString(result)));
+    return;
+  }
+
+  if (!metadata.supports_thumbnail) {
+    Respond(OneArgument(std::make_unique<base::Value>("")));
+    return;
+  }
+
+  file_manager::util::ConvertToContentUrls(
+      chrome_details_.GetProfile(),
+      std::vector<storage::FileSystemURL>{file_system_url},
+      base::BindOnce(
+          &FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::
+              GotContentUrls,
+          this, size_hint));
+}
+
+void FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::
+    GotContentUrls(const gfx::Size& size_hint, const std::vector<GURL>& urls) {
+  if (urls.size() != 1 || urls[0] == GURL()) {
+    Respond(Error("Failed to resolve to countent URL"));
+    return;
+  }
+
+  const auto& url = urls[0];
+  auto* runner = arc::ArcFileSystemOperationRunner::GetForBrowserContext(
+      chrome_details_.GetProfile());
+  runner->OpenThumbnail(
+      url, size_hint,
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(
+              &FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::
+                  GotArcThumbnailFileHandle,
+              this),
+          mojo::ScopedHandle()));
+}
+
+void FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::
+    GotArcThumbnailFileHandle(mojo::ScopedHandle handle) {
+  mojo::PlatformHandle platform_handle =
+      mojo::UnwrapPlatformHandle(std::move(handle));
+
+  if (!platform_handle.is_valid()) {
+    Respond(Error("File not found"));
+    return;
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&ReadMojoHandleToDataUrl, std::move(platform_handle)),
+      base::BindOnce(
+          &FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::
+              SendEncodedThumbnail,
+          this));
 }
 
 }  // namespace extensions

@@ -124,3 +124,58 @@ testcase.showGridViewTitles = async () => {
   const titleTexts = titles.map((title) => title.text).sort();
   chrome.test.checkDeepEq(['Files', 'Folders'], titleTexts);
 };
+
+/**
+ * Tests that Grid View shows DocumentsProvider thumbnails.
+ */
+testcase.showGridViewDocumentsProvider = async () => {
+  const caller = getCaller();
+
+  // Open Files app.
+  const appId = await openNewWindow(RootPath.DOWNLOADS);
+
+  // Add files to the DocumentsProvider volume.
+  await addEntries(['documents_provider'], BASIC_LOCAL_ENTRY_SET);
+
+  // Wait for the DocumentsProvider volume to mount.
+  const documentsProviderVolumeQuery =
+      '[has-children="true"] [volume-type-icon="documents_provider"]';
+  await remoteCall.waitForElement(appId, documentsProviderVolumeQuery);
+
+  // Click to open the DocumentsProvider volume.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'fakeMouseClick', appId, [documentsProviderVolumeQuery]),
+      'fakeMouseClick failed');
+
+  // Click the grid view button.
+  await remoteCall.waitForElement(appId, '#view-button');
+  await remoteCall.callRemoteTestUtil(
+      'fakeEvent', appId, ['#view-button', 'click']);
+
+  // Wait for the grid view to load.
+  await remoteCall.callRemoteTestUtil(
+      'queryAllElements', appId, ['grid:not([hidden])']);
+
+  // Check that all DocumentsProvider thumbnails are loaded where expected.
+  await repeatUntil(async () => {
+    for (const [fname, hasThumbnail] of [
+             [ENTRIES.hello.targetPath, false],
+             [ENTRIES.world.targetPath, true],
+             [ENTRIES.desktop.targetPath, true],
+             [ENTRIES.beautiful.targetPath, false],
+             [ENTRIES.photos.targetPath, false],
+    ]) {
+      const item = await remoteCall.waitForElement(
+          appId, `#file-list [file-name="${fname}"]`);
+      const thumbnailLoaded =
+          item.attributes['class'].split(/\s+/).includes('thumbnail-loaded');
+      if (thumbnailLoaded !== hasThumbnail) {
+        return pending(
+            caller, 'Unexpected thumbnail state for %j: %j', fname,
+            hasThumbnail);
+      }
+    }
+    return true;
+  });
+};

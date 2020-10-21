@@ -175,6 +175,27 @@ void ArcFileSystemOperationRunner::OpenFileToRead(
   file_system_instance->OpenFileToRead(url.spec(), std::move(callback));
 }
 
+void ArcFileSystemOperationRunner::OpenThumbnail(
+    const GURL& url,
+    const gfx::Size& size,
+    OpenThumbnailCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (should_defer_) {
+    deferred_operations_.emplace_back(base::BindOnce(
+        &ArcFileSystemOperationRunner::OpenThumbnail,
+        weak_ptr_factory_.GetWeakPtr(), url, size, std::move(callback)));
+    return;
+  }
+  auto* file_system_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->file_system(), OpenThumbnail);
+  if (!file_system_instance) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), mojo::ScopedHandle()));
+    return;
+  }
+  file_system_instance->OpenThumbnail(url.spec(), size, std::move(callback));
+}
+
 void ArcFileSystemOperationRunner::OpenFileToWrite(
     const GURL& url,
     OpenFileToWriteCallback callback) {

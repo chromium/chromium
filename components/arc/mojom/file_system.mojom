@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 15
+// Next MinVersion: 16
 
 module arc.mojom;
 
 import "components/arc/mojom/bitmap.mojom";
+import "components/arc/mojom/gfx.mojom";
 import "components/arc/mojom/intent_common.mojom";
+import "components/arc/mojom/video_common.mojom";
 import "url/mojom/url.mojom";
 
 // Represents a document in Android DocumentsProvider.
@@ -58,6 +60,10 @@ struct Document {
   // Flag indicating that a document can be moved to another location within
   // the same document provider.
   [MinVersion=12] bool supports_move;
+
+  // Flag indicating that a document has a thumbnail available that can be
+  // fetched with OpenThumbnail.
+  [MinVersion=15] bool supports_thumbnail;
 };
 
 // Represents a root in Android DocumentsProvider.
@@ -285,7 +291,7 @@ interface FileSystemHost {
       (FileSelectorElements elements);
 };
 
-// Next method ID: 21
+// Next method ID: 22
 interface FileSystemInstance {
   // Notes about Android Documents Provider:
   //
@@ -401,6 +407,11 @@ interface FileSystemInstance {
   // Asks the ContentResolver to get a FD to write the file specified by the
   // URL.
   [MinVersion=13] OpenFileToWrite@18(string url) => (handle? fd);
+
+  // Asks the ContentResolver to get a FD to read the thumbnail of a
+  // DocumentsProvider file specified by the URL. The thumbnail should be close
+  // in size (width and height) but not necessarily the same as |size_hint|.
+  [MinVersion=15] OpenThumbnail@21(string url, Size size_hint) => (handle? fd);
 
   // Uninstalls a document watcher.
   //

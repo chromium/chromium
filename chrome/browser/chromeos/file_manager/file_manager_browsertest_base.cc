@@ -337,6 +337,7 @@ struct AddEntriesMessage {
     EntryType type;                  // Entry type: file or directory.
     SharedOption shared_option;      // File entry sharing option.
     std::string source_file_name;    // Source file name prototype.
+    std::string thumbnail_file_name;  // DocumentsProvider thumbnail file name.
     std::string target_path;         // Target file or directory path.
     std::string name_text;           // Display file name.
     std::string team_drive_name;     // Name of team drive this entry is in.
@@ -349,6 +350,11 @@ struct AddEntriesMessage {
 
     TestEntryInfo& SetSharedOption(SharedOption option) {
       shared_option = option;
+      return *this;
+    }
+
+    TestEntryInfo& SetThumbnailFileName(const std::string& file_name) {
+      thumbnail_file_name = file_name;
       return *this;
     }
 
@@ -396,6 +402,8 @@ struct AddEntriesMessage {
                                      &MapStringToEntryType);
       converter->RegisterStringField("sourceFileName",
                                      &TestEntryInfo::source_file_name);
+      converter->RegisterStringField("thumbnailFileName",
+                                     &TestEntryInfo::thumbnail_file_name);
       converter->RegisterStringField("targetPath", &TestEntryInfo::target_path);
       converter->RegisterStringField("nameText", &TestEntryInfo::name_text);
       converter->RegisterStringField("teamDriveName",
@@ -1285,7 +1293,8 @@ class DocumentsProviderTestVolume : public TestVolume {
         authority_, entry.name_text, root_document_id_, entry.name_text,
         GetMimeType(entry), GetFileSize(entry),
         entry.last_modified_time.ToJavaTime(), entry.capabilities.can_delete,
-        entry.capabilities.can_rename, entry.capabilities.can_add_children);
+        entry.capabilities.can_rename, entry.capabilities.can_add_children,
+        !entry.thumbnail_file_name.empty());
     file_system_instance_->AddDocument(document);
 
     if (entry.type != AddEntriesMessage::FILE)
@@ -1293,9 +1302,13 @@ class DocumentsProviderTestVolume : public TestVolume {
 
     std::string canonical_url = base::StrCat(
         {"content://", authority_, "/document/", EncodeURI(entry.name_text)});
-    file_system_instance_->AddFile(arc::FakeFileSystemInstance::File(
+    arc::FakeFileSystemInstance::File file(
         canonical_url, GetTestFileContent(entry.source_file_name),
-        GetMimeType(entry), arc::FakeFileSystemInstance::File::Seekable::NO));
+        GetMimeType(entry), arc::FakeFileSystemInstance::File::Seekable::NO);
+    if (!entry.thumbnail_file_name.empty()) {
+      file.thumbnail_content = GetTestFileContent(entry.thumbnail_file_name);
+    }
+    file_system_instance_->AddFile(file);
   }
 
   virtual bool Mount(Profile* profile) {

@@ -6,6 +6,7 @@
 
 module arc.mojom;
 
+import "components/arc/mojom/gfx.mojom";
 import "components/arc/mojom/video_common.mojom";
 
 // Next method ID: 3

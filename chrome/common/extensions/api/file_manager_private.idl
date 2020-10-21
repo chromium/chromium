@@ -912,8 +912,8 @@ callback InstallLinuxPackageCallback = void(
 // |result| String representing the detected coding system.
 callback DetectCharacterEncodingCallback = void(DOMString result);
 
-// |thumbnailDataUrl| A data URL for the thumbnail as a PNG; |thumbnailDataUrl|
-// is empty if no thumbnail was available.
+// |thumbnailDataUrl| A data URL for the thumbnail; |thumbnailDataUrl| is empty
+// if no thumbnail was available.
 callback GetThumbnailCallback = void(DOMString thumbnailDataUrl);
 
 // |apps| List of Android picker apps.
@@ -1321,6 +1321,19 @@ interface Functions {
                               long width,
                               long height,
                               GetThumbnailCallback callback);
+
+  // Retrieves a thumbnail of an ARC DocumentsProvider file, closely matching
+  // the hinted size specified by |widthHint| and |heightHint|, but not
+  // necessarily the exact size. |callback| is called with thumbnail data
+  // encoded as a data URL. If the document does not support thumbnails,
+  // |callback| is called with an empty string.
+  // Note: The thumbnail data may originate from third-party application code,
+  // and is untrustworthy (Security).
+  [nocompile]
+  static void getArcDocumentsProviderThumbnail([instanceof=FileEntry] object entry,
+                                               long widthHint,
+                                               long heightHint,
+                                               GetThumbnailCallback callback);
 
   // Returns a guessed character encoding of a hex-encoded string. Every 2
   // characters of |bytes| represent one byte by 2-digit hexadecimal number.

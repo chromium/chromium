@@ -308,6 +308,13 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
     fileManagerPrivateInternal.getPdfThumbnail(url, width, height, callback);
   });
 
+  apiFunctions.setHandleRequest('getArcDocumentsProviderThumbnail', function(
+        entry, widthHint, heightHint, callback) {
+    var url = getEntryURL(entry);
+    fileManagerPrivateInternal.getArcDocumentsProviderThumbnail(
+        url, widthHint, heightHint, callback);
+  });
+
   apiFunctions.setCustomCallback('searchFiles',
       function(name, request, callback, response) {
     if (response && !response.error && response.entries) {

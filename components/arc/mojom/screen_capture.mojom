@@ -14,7 +14,7 @@
 
 module arc.mojom;
 
-// For gfx::Size.
+import "components/arc/mojom/gfx.mojom";
 import "components/arc/mojom/video_common.mojom";
 
 // Implemented by Chrome in order to allow requesting of permissions to perform
