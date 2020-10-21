@@ -1886,13 +1886,17 @@ void ProfileManager::OnBrowserClosed(Browser* browser) {
   if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile())
     CleanUpGuestProfile();
 
+  ProfileAttributesEntry* entry;
+  bool background_mode =
+      GetProfileAttributesStorage().GetProfileAttributesWithPath(
+          profile->GetPath(), &entry) &&
+      entry->GetBackgroundStatus();
   if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose) &&
       !profile->IsOffTheRecord() &&
-      !profile->GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles)) {
+      !profile->GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles) &&
+      !background_mode) {
     // TODO(crbug.com/88586): Add EarlyProfileCleanup support for Guest and
     // Ephemeral profiles.
-
-    // TODO(crbug.com/88586): Make sure this works with Background Mode.
 
     // Post a task to remove the Profile, so other OnBrowserClosed() hooks and
     // the destructor for Browser can run without referencing a deleted Profile.
