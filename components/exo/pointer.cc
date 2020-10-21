@@ -30,8 +30,9 @@
 #include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/cursor_util.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/base/layout.h"
+#include "ui/base/resource/scale_factor.h"
 #include "ui/display/manager/display_manager.h"
-#include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -750,10 +751,12 @@ void Pointer::UpdateCursor() {
 
     // TODO(oshima|weidongg): Add cutsom cursor API to handle size/display
     // change without explicit management like this. https://crbug.com/721601.
-    const display::Display& display = cursor_client->GetDisplay();
-    float scale =
-        helper->GetDisplayInfo(display.id()).GetDensityRatio() / capture_ratio_;
 
+    // Scaling bitmap to match the corresponding supported scale factor of ash.
+    const display::Display& display = cursor_client->GetDisplay();
+    float scale = ui::GetScaleForScaleFactor(ui::GetSupportedScaleFactor(
+                      display.device_scale_factor())) /
+                  capture_scale_;
     if (cursor_client->GetCursorSize() == ui::CursorSize::kLarge)
       scale *= kLargeCursorScale;
 
