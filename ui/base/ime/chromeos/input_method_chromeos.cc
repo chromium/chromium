@@ -379,7 +379,8 @@ bool InputMethodChromeOS::SetComposingRange(
   if (IsTextInputTypeNone())
     return false;
 
-  const gfx::Range composition_range(start, end);
+  const auto ordered_range = std::minmax(start, end);
+  const gfx::Range composition_range(ordered_range.first, ordered_range.second);
 
   // If we have pending key events, then delay the operation until
   // |ProcessKeyEventPostIME|. Otherwise, process it immediately.

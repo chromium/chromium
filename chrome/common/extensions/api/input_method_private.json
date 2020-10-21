@@ -599,7 +599,7 @@
                 "type": "integer"
               },
               "end": {
-                "description": "The ending index of the composing range, in bytes.",
+                "description": "The ending index of the composing range, in bytes. The order of the start and end index does not matter.",
                 "type": "integer"
               },
               "segments": {
