@@ -26,7 +26,6 @@
 #include "components/sync/engine/engine_components_factory_impl.h"
 #include "components/sync/engine/events/protocol_event.h"
 #include "components/sync/engine/net/http_bridge.h"
-#include "components/sync/engine/sync_backend_registrar.h"
 #include "components/sync/engine/sync_engine_host.h"
 #include "components/sync/engine/sync_manager_factory.h"
 #include "components/sync/engine/sync_string_conversions.h"
@@ -59,15 +58,12 @@ SyncEngineImpl::SyncEngineImpl(
 
 SyncEngineImpl::~SyncEngineImpl() {
   DCHECK(!backend_ && !host_) << "Must call Shutdown before destructor.";
-  DCHECK(!registrar_);
 }
 
 void SyncEngineImpl::Initialize(InitParams params) {
   DCHECK(params.host);
-  DCHECK(params.registrar);
 
   host_ = params.host;
-  registrar_ = params.registrar.get();
 
   sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoInitialize, backend_,
@@ -193,9 +189,7 @@ void SyncEngineImpl::Shutdown(ShutdownReason reason) {
 
   model_type_connector_.reset();
 
-  // Shut down and destroy SyncManager. SyncManager holds a pointer to
-  // |registrar_| so its destruction must be sequenced before the destruction of
-  // |registrar_|.
+  // Shut down and destroy SyncManager.
   sync_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&SyncEngineBackend::DoShutdown, backend_, reason));
@@ -203,8 +197,6 @@ void SyncEngineImpl::Shutdown(ShutdownReason reason) {
   // Ensure that |backend_| destroyed inside Sync sequence, not inside current
   // one.
   sync_task_runner_->ReleaseSoon(FROM_HERE, std::move(backend_));
-  DCHECK(!backend_);
-  registrar_ = nullptr;
 }
 
 void SyncEngineImpl::ConfigureDataTypes(ConfigureParams params) {
@@ -219,9 +211,6 @@ void SyncEngineImpl::ConfigureDataTypes(ConfigureParams params) {
 void SyncEngineImpl::ActivateDataType(
     ModelType type,
     std::unique_ptr<DataTypeActivationResponse> activation_response) {
-  registrar_->RegisterDataType(type);
-  if (activation_response->model_type_state.initial_sync_done())
-    registrar_->AddRestoredDataType(type);
   model_type_connector_->ConnectDataType(type, std::move(activation_response));
 }
 

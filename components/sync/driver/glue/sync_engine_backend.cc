@@ -25,7 +25,6 @@
 #include "components/sync/engine/engine_components_factory.h"
 #include "components/sync/engine/events/protocol_event.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
-#include "components/sync/engine/sync_backend_registrar.h"
 #include "components/sync/engine/sync_manager.h"
 #include "components/sync/engine/sync_manager_factory.h"
 #include "components/sync/invalidations/switches.h"
@@ -127,21 +126,12 @@ void SyncEngineBackend::OnInitializationComplete(
 
   LoadAndConnectNigoriController();
 
-  // Before proceeding any further, we need to download the control types and
-  // purge any partial data (ie. data downloaded for a type that was on its way
-  // to being initially synced, but didn't quite make it.).  The following
-  // configure cycle will take care of this.  It depends on the registrar state
-  // which we initialize below to ensure that we don't perform any downloads if
-  // all control types have already completed their initial sync.
-  registrar_->SetInitialTypes(sync_manager_->InitialSyncEndedTypes());
-
   ConfigureReason reason = sync_manager_->InitialSyncEndedTypes().Empty()
                                ? CONFIGURE_REASON_NEW_CLIENT
                                : CONFIGURE_REASON_NEWLY_ENABLED_DATA_TYPE;
 
-  ModelTypeSet new_control_types = registrar_->ConfigureDataTypes(
-      /*types_to_add=*/ControlTypes(),
-      /*types_to_remove=*/ModelTypeSet());
+  ModelTypeSet new_control_types =
+      Difference(ControlTypes(), sync_manager_->InitialSyncEndedTypes());
 
   SDVLOG(1) << "Control Types " << ModelTypeSetToString(new_control_types)
             << " added; calling ConfigureSyncer";
@@ -261,10 +251,6 @@ void SyncEngineBackend::DoInitialize(SyncEngine::InitParams params) {
 
   authenticated_account_id_ = params.authenticated_account_id;
 
-  DCHECK(!registrar_);
-  DCHECK(params.registrar);
-  registrar_ = std::move(params.registrar);
-
   auto nigori_processor = std::make_unique<NigoriModelTypeProcessor>();
   nigori_controller_ = std::make_unique<ModelTypeController>(
       NIGORI, std::make_unique<ForwardingModelTypeControllerDelegate>(
@@ -362,7 +348,7 @@ void SyncEngineBackend::DoInitialProcessControlTypes() {
 
   host_.Call(
       FROM_HERE, &SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop,
-      registrar_->GetLastConfiguredTypes(), js_backend_, debug_info_listener_,
+      sync_manager_->GetEnabledTypes(), js_backend_, debug_info_listener_,
       base::Passed(sync_manager_->GetModelTypeConnectorProxy()),
       sync_manager_->birthday(), sync_manager_->bag_of_chips());
 
@@ -402,8 +388,6 @@ void SyncEngineBackend::DoShutdown(ShutdownReason reason) {
   }
   DoDestroySyncManager();
 
-  registrar_ = nullptr;
-
   if (reason == DISABLE_SYNC) {
     DeleteLegacyDirectoryFilesAndNigoriStorage(sync_data_folder_);
   }
@@ -441,8 +425,6 @@ void SyncEngineBackend::DoConfigureSyncer(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!params.ready_task.is_null());
 
-  registrar_->ConfigureDataTypes(params.enabled_types, params.disabled_types);
-
   base::OnceClosure chained_ready_task(
       base::BindOnce(&SyncEngineBackend::DoFinishConfigureDataTypes,
                      weak_ptr_factory_.GetWeakPtr(), params.to_download,
@@ -461,7 +443,8 @@ void SyncEngineBackend::DoFinishConfigureDataTypes(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Update the enabled types for the bridge and sync manager.
-  ModelTypeSet enabled_types = registrar_->GetTypesWithRoutingInfo();
+  // TODO(crbug.com/1140938): track |enabled_types| directly in SyncEngineImpl.
+  ModelTypeSet enabled_types = sync_manager_->GetEnabledTypes();
   enabled_types.RemoveAll(ProxyTypes());
 
   const ModelTypeSet failed_configuration_types =

@@ -29,7 +29,6 @@ class ModelTypeConfigurer {
 
     ConfigureReason reason;
     ModelTypeSet enabled_types;
-    ModelTypeSet disabled_types;
     ModelTypeSet to_download;
     ModelTypeSet to_purge;
     // Run when configuration is done with the set of all types that failed

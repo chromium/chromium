@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "components/sync/base/weak_handle.h"
 #include "components/sync/engine/sync_engine.h"
+#include "components/sync/engine/sync_status.h"
 
 namespace syncer {
 

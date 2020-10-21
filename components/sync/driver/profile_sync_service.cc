@@ -534,7 +534,6 @@ void ProfileSyncService::StartUpSlowEngineComponents() {
 
   SyncEngine::InitParams params;
   params.host = this;
-  params.registrar = std::make_unique<SyncBackendRegistrar>(debug_identifier_);
   params.encryption_observer_proxy = crypto_.GetEncryptionObserverProxy();
 
   params.extensions_activity = sync_client_->GetExtensionsActivity();

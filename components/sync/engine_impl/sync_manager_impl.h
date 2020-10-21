@@ -57,6 +57,7 @@ class SyncManagerImpl
   // SyncManager implementation.
   void Init(InitArgs* args) override;
   ModelTypeSet InitialSyncEndedTypes() override;
+  ModelTypeSet GetEnabledTypes() override;
   void UpdateCredentials(const SyncCredentials& credentials) override;
   void InvalidateCredentials() override;
   void StartSyncingNormally(base::Time last_poll_time) override;

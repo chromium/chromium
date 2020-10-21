@@ -115,6 +115,11 @@ ModelTypeSet SyncManagerImpl::InitialSyncEndedTypes() {
   return model_type_registry_->GetInitialSyncEndedTypes();
 }
 
+ModelTypeSet SyncManagerImpl::GetEnabledTypes() {
+  DCHECK(initialized_);
+  return model_type_registry_->GetEnabledDataTypes();
+}
+
 void SyncManagerImpl::ConfigureSyncer(ConfigureReason reason,
                                       ModelTypeSet to_download,
                                       SyncFeatureState sync_feature_state,

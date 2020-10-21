@@ -140,6 +140,14 @@ ModelTypeSet ModelTypeRegistry::GetInitialSyncEndedTypes() const {
   return result;
 }
 
+ModelTypeSet ModelTypeRegistry::GetEnabledDataTypes() const {
+  ModelTypeSet enabled_types;
+  for (const auto& worker : model_type_workers_) {
+    enabled_types.Put(worker->GetModelType());
+  }
+  return enabled_types;
+}
+
 const UpdateHandler* ModelTypeRegistry::GetUpdateHandler(ModelType type) const {
   auto it = update_handler_map_.find(type);
   return it == update_handler_map_.end() ? nullptr : it->second;
@@ -232,14 +240,6 @@ void ModelTypeRegistry::OnEncryptionStateChanged() {
       worker->UpdateCryptographer(cryptographer_->Clone());
     }
   }
-}
-
-ModelTypeSet ModelTypeRegistry::GetEnabledDataTypes() const {
-  ModelTypeSet enabled_types;
-  for (const auto& worker : model_type_workers_) {
-    enabled_types.Put(worker->GetModelType());
-  }
-  return enabled_types;
 }
 
 }  // namespace syncer

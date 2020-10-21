@@ -24,10 +24,12 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/weak_handle.h"
 #include "components/sync/engine/configure_reason.h"
+#include "components/sync/engine/connection_status.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/model_type_configurer.h"
 #include "components/sync/engine/sync_credentials.h"
 #include "components/sync/engine/sync_engine.h"
+#include "components/sync/engine/sync_status.h"
 #include "components/sync/invalidations/invalidations_listener.h"
 #include "components/sync/protocol/encryption.pb.h"
 #include "components/sync/protocol/sync_protocol_error.h"
@@ -38,7 +40,10 @@ class InvalidationService;
 
 namespace syncer {
 
-class SyncBackendRegistrar;
+class DataTypeDebugInfoListener;
+class JsBackend;
+class ModelTypeConnector;
+class ProtocolEvent;
 class SyncEngineBackend;
 class SyncInvalidationsService;
 class SyncPrefs;
@@ -185,9 +190,6 @@ class SyncEngineImpl : public SyncEngine,
   // The host which we serve (and are owned by). Set in Initialize() and nulled
   // out in StopSyncingForShutdown().
   SyncEngineHost* host_ = nullptr;
-
-  // A pointer to the registrar; owned by |backend_|.
-  SyncBackendRegistrar* registrar_ = nullptr;
 
   invalidation::InvalidationService* invalidator_ = nullptr;
   bool invalidation_handler_registered_ = false;

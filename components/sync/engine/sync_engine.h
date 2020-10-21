@@ -23,15 +23,18 @@
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/model_type_configurer.h"
 #include "components/sync/engine/shutdown_reason.h"
-#include "components/sync/engine/sync_backend_registrar.h"
 #include "components/sync/engine/sync_credentials.h"
+#include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/sync_manager_factory.h"
 #include "url/gurl.h"
 
 namespace syncer {
 
+class EngineComponentsFactory;
 class HttpPostProviderFactory;
+class JsEventHandler;
 class SyncEngineHost;
+struct SyncStatus;
 
 // The interface into the sync engine, which is the part of sync that performs
 // communication between model types and the sync server. In prod the engine
@@ -51,7 +54,6 @@ class SyncEngine : public ModelTypeConfigurer {
     ~InitParams();
 
     SyncEngineHost* host = nullptr;
-    std::unique_ptr<SyncBackendRegistrar> registrar;
     std::unique_ptr<SyncEncryptionHandler::Observer> encryption_observer_proxy;
     scoped_refptr<ExtensionsActivity> extensions_activity;
     WeakHandle<JsEventHandler> event_handler;

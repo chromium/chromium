@@ -80,6 +80,10 @@ ModelTypeSet FakeSyncManager::InitialSyncEndedTypes() {
   return initial_sync_ended_types_;
 }
 
+ModelTypeSet FakeSyncManager::GetEnabledTypes() {
+  return progress_marker_types_;
+}
+
 void FakeSyncManager::UpdateCredentials(const SyncCredentials& credentials) {
   NOTIMPLEMENTED();
 }

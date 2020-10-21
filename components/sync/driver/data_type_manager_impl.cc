@@ -644,7 +644,6 @@ ModelTypeSet DataTypeManagerImpl::PrepareConfigureParams(
 
   params->reason = last_requested_context_.reason;
   params->enabled_types = enabled_types;
-  params->disabled_types = disabled_types;
   params->to_download = types_to_download;
   params->to_purge = types_to_purge;
   params->ready_task = base::BindOnce(&DataTypeManagerImpl::DownloadCompleted,

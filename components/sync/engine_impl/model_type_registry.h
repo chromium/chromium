@@ -70,6 +70,9 @@ class ModelTypeRegistry : public ModelTypeConnector,
   // applied.
   ModelTypeSet GetInitialSyncEndedTypes() const;
 
+  // Returns set of enabled types, i.e. types that has alive ModelTypeWorker.
+  ModelTypeSet GetEnabledDataTypes() const;
+
   // Returns the update handler for |type|.
   const UpdateHandler* GetUpdateHandler(ModelType type) const;
 
@@ -84,8 +87,6 @@ class ModelTypeRegistry : public ModelTypeConnector,
 
  private:
   void OnEncryptionStateChanged();
-
-  ModelTypeSet GetEnabledDataTypes() const;
 
   // Enabled proxy types, which don't have a worker.
   ModelTypeSet enabled_proxy_types_;

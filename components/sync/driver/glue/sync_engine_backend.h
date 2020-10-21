@@ -23,6 +23,7 @@
 #include "components/sync/engine/model_type_configurer.h"
 #include "components/sync/engine/shutdown_reason.h"
 #include "components/sync/engine/sync_encryption_handler.h"
+#include "components/sync/engine/sync_manager.h"
 #include "components/sync/engine/sync_status_observer.h"
 #include "components/sync/engine_impl/cancelation_signal.h"
 #include "url/gurl.h"
@@ -172,9 +173,6 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
 
   // Our parent SyncEngineImpl.
   WeakHandle<SyncEngineImpl> host_;
-
-  // Non-null only between calls to DoInitialize() and DoShutdown().
-  std::unique_ptr<SyncBackendRegistrar> registrar_;
 
   // Our encryptor, which uses Chrome's encryption functions.
   SystemEncryptor encryptor_;

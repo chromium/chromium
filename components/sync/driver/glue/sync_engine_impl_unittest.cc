@@ -236,7 +236,6 @@ class SyncEngineImplTest : public testing::Test {
 
     SyncEngine::InitParams params;
     params.host = &host_;
-    params.registrar = std::make_unique<SyncBackendRegistrar>(std::string());
     params.http_factory_getter = base::BindOnce(&CreateHttpBridgeFactory);
     params.authenticated_account_id = CoreAccountId("account_id");
     params.sync_manager_factory = std::move(fake_manager_factory_);
@@ -263,7 +262,6 @@ class SyncEngineImplTest : public testing::Test {
     ModelTypeConfigurer::ConfigureParams params;
     params.reason = CONFIGURE_REASON_RECONFIGURATION;
     params.enabled_types = Difference(enabled_types_, unready_types);
-    params.disabled_types = Union(disabled_types, unready_types);
     params.to_download = Difference(params.enabled_types, engine_types_);
     if (!params.to_download.Empty()) {
       params.to_download.Put(NIGORI);
