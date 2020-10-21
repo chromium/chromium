@@ -71,8 +71,7 @@ struct WebPrintPresetOptions;
 class CORE_EXPORT WebPluginContainerImpl final
     : public GarbageCollected<WebPluginContainerImpl>,
       public EmbeddedContentView,
-      public WebPluginContainer,
-      public ExecutionContextClient {
+      public WebPluginContainer {
   USING_PRE_FINALIZER(WebPluginContainerImpl, PreFinalize);
 
  public:

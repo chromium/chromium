@@ -34,13 +34,13 @@
 
 namespace blink {
 
-class LocalFrame;
+class LocalDOMWindow;
 
 class StyleMedia final : public ScriptWrappable, public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit StyleMedia(LocalFrame*);
+  explicit StyleMedia(LocalDOMWindow*);
 
   AtomicString type() const;
   bool matchMedium(const String&) const;

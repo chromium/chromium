@@ -156,7 +156,7 @@ Screen::Screen(display::mojom::blink::DisplayPtr display,
                bool internal,
                bool primary,
                const String& id)
-    : ExecutionContextClient(static_cast<LocalFrame*>(nullptr)),
+    : ExecutionContextClient(static_cast<ExecutionContext*>(nullptr)),
       display_(std::move(display)),
       internal_(internal),
       primary_(primary),

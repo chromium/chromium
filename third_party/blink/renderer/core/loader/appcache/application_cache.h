@@ -36,14 +36,14 @@ namespace blink {
 
 class ApplicationCacheHostForFrame;
 class ExceptionState;
-class LocalFrame;
+class LocalDOMWindow;
 
 class ApplicationCache final : public EventTargetWithInlineData,
                                public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit ApplicationCache(LocalFrame*);
+  explicit ApplicationCache(LocalDOMWindow*);
   ~ApplicationCache() override = default;
 
   uint16_t status() const;

@@ -925,7 +925,7 @@ ApplicationCache* LocalDOMWindow::applicationCache() {
         this, WebFeature::kApplicationCacheAPIInsecureOrigin);
   }
   if (!application_cache_)
-    application_cache_ = MakeGarbageCollected<ApplicationCache>(GetFrame());
+    application_cache_ = MakeGarbageCollected<ApplicationCache>(this);
   return application_cache_.Get();
 }
 
@@ -1447,9 +1447,9 @@ Document* LocalDOMWindow::document() const {
   return document_.Get();
 }
 
-StyleMedia* LocalDOMWindow::styleMedia() const {
+StyleMedia* LocalDOMWindow::styleMedia() {
   if (!media_)
-    media_ = MakeGarbageCollected<StyleMedia>(GetFrame());
+    media_ = MakeGarbageCollected<StyleMedia>(this);
   return media_.Get();
 }
 

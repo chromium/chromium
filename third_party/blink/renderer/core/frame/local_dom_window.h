@@ -238,7 +238,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   Document* document() const;
 
   // CSSOM View Module
-  StyleMedia* styleMedia() const;
+  StyleMedia* styleMedia();
 
   // WebKit extensions
   double devicePixelRatio() const;
