@@ -95,6 +95,12 @@ void PositionView(UIView* view, CGPoint point) {
     _snapshotView = snapshotView;
     _closeTapTargetButton = closeTapTargetButton;
 
+    self.layer.shadowColor = [UIColor blackColor].CGColor;
+    self.layer.shadowOffset = CGSizeMake(0, 0);
+    self.layer.shadowRadius = 4.0f;
+    self.layer.shadowOpacity = 0.5f;
+    self.layer.masksToBounds = NO;
+
     NSArray* constraints = @[
       [topBar.topAnchor constraintEqualToAnchor:contentView.topAnchor],
       [topBar.leadingAnchor constraintEqualToAnchor:contentView.leadingAnchor],
