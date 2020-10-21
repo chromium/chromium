@@ -22,10 +22,30 @@ BatteryMetrics::BatteryMonitorBinder& GetBinderOverride() {
   return *binder;
 }
 
+#if defined(OS_ANDROID)
+bool IsAppVisible(base::android::ApplicationState state) {
+  return state == base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES;
+}
+#endif  // defined(OS_ANDROID)
+
 }  // namespace
 
 BatteryMetrics::BatteryMetrics() {
   StartRecording();
+
+#if defined(OS_ANDROID)
+  // On Android, also track the battery capacity drain while Chrome is the
+  // foreground activity.
+  app_state_listener_ =
+      base::android::ApplicationStatusListener::New(base::BindRepeating(
+          [](BatteryMetrics* metrics, base::android::ApplicationState state) {
+            metrics->android_metrics_.OnAppVisibilityChanged(
+                IsAppVisible(state));
+          },
+          base::Unretained(this)));
+  android_metrics_.OnAppVisibilityChanged(
+      IsAppVisible(base::android::ApplicationStatusListener::GetState()));
+#endif  // defined(OS_ANDROID)
 }
 
 BatteryMetrics::~BatteryMetrics() = default;

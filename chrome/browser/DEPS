@@ -216,6 +216,7 @@ include_rules = [
   "+components/permissions",
   "+components/pdf/browser",
   "+components/policy",
+  "+components/power_metrics",
   "+components/pref_registry",
   "+components/prefs",
   "+components/prerender",

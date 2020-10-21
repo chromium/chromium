@@ -17,7 +17,8 @@
 #include "services/device/public/mojom/battery_status.mojom-forward.h"
 
 #if defined(OS_ANDROID)
-#include "chrome/browser/android/battery/android_battery_metrics.h"
+#include "base/android/application_status_listener.h"
+#include "components/power_metrics/android_battery_metrics.h"
 #endif  // defined(OS_ANDROID)
 
 // Records metrics around battery usage on all platforms. Connects to
@@ -55,7 +56,8 @@ class BatteryMetrics {
   mojo::Remote<device::mojom::BatteryMonitor> battery_monitor_;
 
 #if defined(OS_ANDROID)
-  AndroidBatteryMetrics android_metrics_;
+  power_metrics::AndroidBatteryMetrics android_metrics_;
+  std::unique_ptr<base::android::ApplicationStatusListener> app_state_listener_;
 #endif  // defined(OS_ANDROID)
 
   SEQUENCE_CHECKER(sequence_checker_);
