@@ -98,10 +98,7 @@ void ProfileDestroyer::DestroyRegularProfileNow(Profile* const profile) {
   // on later.
   HostSet profile_hosts = GetHostsForProfile(profile);
   void* profile_ptr = profile;
-  // TODO(https://crbug.com/1033903): Updated to cover all OTR profiles.
-  void* otr_profile_ptr = profile->HasPrimaryOTRProfile()
-                              ? profile->GetPrimaryOTRProfile()
-                              : nullptr;
+  std::vector<Profile*> otr_profiles = profile->GetAllOffTheRecordProfiles();
 #endif  // DCHECK_IS_ON()
 
   delete profile;
@@ -111,8 +108,9 @@ void ProfileDestroyer::DestroyRegularProfileNow(Profile* const profile) {
   // and off-the-record Profile.
   const size_t profile_hosts_count = GetHostsForProfile(profile_ptr).size();
   base::debug::Alias(&profile_hosts_count);
-  const size_t off_the_record_profile_hosts_count =
-      otr_profile_ptr ? GetHostsForProfile(otr_profile_ptr).size() : 0u;
+  size_t off_the_record_profile_hosts_count = 0;
+  for (Profile* otr : otr_profiles)
+    off_the_record_profile_hosts_count += GetHostsForProfile(otr).size();
   base::debug::Alias(&off_the_record_profile_hosts_count);
 
   // |profile| is not off-the-record, so if |profile_hosts| is not empty then
