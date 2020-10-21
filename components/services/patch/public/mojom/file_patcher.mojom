@@ -5,21 +5,22 @@
 module patch.mojom;
 
 import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/read_only_file.mojom";
 
 interface FilePatcher {
   // Patch |input_file| with |patch_file| using the bsdiff algorithm
   // (Courgette's version) and place the output in |output_file|.
   // Returns |result| bsdiff::BSDiffStatus::OK on success.
   PatchFileBsdiff(
-      mojo_base.mojom.File input_file,
-      mojo_base.mojom.File patch_file,
+      mojo_base.mojom.ReadOnlyFile input_file,
+      mojo_base.mojom.ReadOnlyFile patch_file,
       mojo_base.mojom.File output_file) => (int32 result);
 
   // Patch |input_file| with |patch_file| using the Courgette algorithm
   // and place the output in |output_file|.
   // Returns |result| courgette::Status::C_OK on success.
   PatchFileCourgette(
-      mojo_base.mojom.File input_file,
-      mojo_base.mojom.File patch_file,
+      mojo_base.mojom.ReadOnlyFile input_file,
+      mojo_base.mojom.ReadOnlyFile patch_file,
       mojo_base.mojom.File output_file) => (int32 result);
 };
