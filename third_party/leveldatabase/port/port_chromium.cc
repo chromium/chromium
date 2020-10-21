@@ -4,6 +4,8 @@
 
 #include "port/port_chromium.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <string>
 
 #include "third_party/crc32c/src/include/crc32c/crc32c.h"

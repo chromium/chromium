@@ -7,15 +7,14 @@
 #ifndef STORAGE_LEVELDB_PORT_PORT_CHROMIUM_H_
 #define STORAGE_LEVELDB_PORT_PORT_CHROMIUM_H_
 
-#include <cassert>
-#include <condition_variable>  // NOLINT
-#include <cstring>
-#include <mutex>  // NOLINT
+#include <cstddef>
+#include <cstdint>
 #include <string>
 
-#include "base/macros.h"
+#include "base/check.h"
+#include "base/synchronization/condition_variable.h"
+#include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
-#include "build/build_config.h"
 
 namespace leveldb {
 namespace port {
@@ -28,35 +27,30 @@ class LOCKABLE Mutex {
   Mutex(const Mutex&) = delete;
   Mutex& operator=(const Mutex&) = delete;
 
-  void Lock() EXCLUSIVE_LOCK_FUNCTION() { mu_.lock(); }
-  void Unlock() UNLOCK_FUNCTION() { mu_.unlock(); }
-  void AssertHeld() ASSERT_EXCLUSIVE_LOCK() {}
+  void Lock() EXCLUSIVE_LOCK_FUNCTION() { lock_.Acquire(); }
+  void Unlock() UNLOCK_FUNCTION() { lock_.Release(); }
+  void AssertHeld() ASSERT_EXCLUSIVE_LOCK() { lock_.AssertAcquired(); }
 
  private:
   friend class CondVar;
-  std::mutex mu_;
+  base::Lock lock_;
 };
 
 // Thinly wraps std::condition_variable.
 class CondVar {
  public:
-  explicit CondVar(Mutex* mu) : mu_(mu) { assert(mu != nullptr); }
+  explicit CondVar(Mutex* mu) : cv_(&mu->lock_) { DCHECK(mu); }
   ~CondVar() = default;
 
   CondVar(const CondVar&) = delete;
   CondVar& operator=(const CondVar&) = delete;
 
-  void Wait() {
-    std::unique_lock<std::mutex> lock(mu_->mu_, std::adopt_lock);
-    cv_.wait(lock);
-    lock.release();
-  }
-  void Signal() { cv_.notify_one(); }
-  void SignalAll() { cv_.notify_all(); }
+  void Wait() { cv_.Wait(); }
+  void Signal() { cv_.Signal(); }
+  void SignalAll() { cv_.Broadcast(); }
 
  private:
-  std::condition_variable cv_;
-  Mutex* const mu_;
+  base::ConditionVariable cv_;
 };
 
 bool Snappy_Compress(const char* input, size_t input_length,
