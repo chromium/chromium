@@ -86,7 +86,7 @@ const base::Feature kNotificationExpansionAnimation{
     "NotificationExpansionAnimation", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kNotificationExperimentalShortTimeouts{
-    "NotificationExperimentalShortTimeouts", base::FEATURE_DISABLED_BY_DEFAULT};
+    "NotificationExperimentalShortTimeouts", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kNotificationScrollBar{"NotificationScrollBar",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
