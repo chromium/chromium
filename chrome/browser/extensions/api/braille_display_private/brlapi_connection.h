@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "library_loaders/libbrlapi.h"
 
 namespace extensions {
@@ -32,7 +31,9 @@ class BrlapiConnection {
 
   static std::unique_ptr<BrlapiConnection> Create(LibBrlapiLoader* loader);
 
-  virtual ~BrlapiConnection();
+  BrlapiConnection(const BrlapiConnection&) = delete;
+  BrlapiConnection& operator=(const BrlapiConnection&) = delete;
+  virtual ~BrlapiConnection() = default;
 
   virtual ConnectResult Connect(const OnDataReadyCallback& onDataReady) = 0;
 
@@ -71,8 +72,7 @@ class BrlapiConnection {
   virtual bool GetCellSize(unsigned int* cell_size) = 0;
 
  protected:
-  BrlapiConnection();
-  DISALLOW_COPY_AND_ASSIGN(BrlapiConnection);
+  BrlapiConnection() = default;
 };
 
 }  // namespace braille_display_private

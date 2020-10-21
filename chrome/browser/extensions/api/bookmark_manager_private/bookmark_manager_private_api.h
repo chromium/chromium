@@ -6,8 +6,9 @@
 #define CHROME_BROWSER_EXTENSIONS_API_BOOKMARK_MANAGER_PRIVATE_BOOKMARK_MANAGER_PRIVATE_API_H_
 
 #include <memory>
+#include <string>
+#include <vector>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/bookmarks/bookmarks_api.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
@@ -95,6 +96,10 @@ class BookmarkManagerPrivateDragEventRouter
  public:
   explicit BookmarkManagerPrivateDragEventRouter(
       content::WebContents* web_contents);
+  BookmarkManagerPrivateDragEventRouter(
+      const BookmarkManagerPrivateDragEventRouter&) = delete;
+  BookmarkManagerPrivateDragEventRouter& operator=(
+      const BookmarkManagerPrivateDragEventRouter&) = delete;
   ~BookmarkManagerPrivateDragEventRouter() override;
 
   // BookmarkTabHelper::BookmarkDrag interface
@@ -123,8 +128,6 @@ class BookmarkManagerPrivateDragEventRouter
   bookmarks::BookmarkNodeData bookmark_drag_data_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkManagerPrivateDragEventRouter);
 };
 
 class ClipboardBookmarkManagerFunction : public extensions::BookmarksFunction {

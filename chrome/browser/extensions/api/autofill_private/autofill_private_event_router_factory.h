@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_PRIVATE_EVENT_ROUTER_FACTORY_H_
 #define CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_PRIVATE_EVENT_ROUTER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -27,6 +26,11 @@ class AutofillPrivateEventRouterFactory
   // Returns the AutofillPrivateEventRouterFactory instance.
   static AutofillPrivateEventRouterFactory* GetInstance();
 
+  AutofillPrivateEventRouterFactory(const AutofillPrivateEventRouterFactory&) =
+      delete;
+  AutofillPrivateEventRouterFactory& operator=(
+      const AutofillPrivateEventRouterFactory&) = delete;
+
  protected:
   // BrowserContextKeyedServiceFactory overrides:
   content::BrowserContext* GetBrowserContextToUse(
@@ -37,13 +41,11 @@ class AutofillPrivateEventRouterFactory
   friend struct base::DefaultSingletonTraits<AutofillPrivateEventRouterFactory>;
 
   AutofillPrivateEventRouterFactory();
-  ~AutofillPrivateEventRouterFactory() override;
+  ~AutofillPrivateEventRouterFactory() override = default;
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillPrivateEventRouterFactory);
 };
 
 }  // namespace extensions

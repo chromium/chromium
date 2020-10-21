@@ -6,6 +6,8 @@
 
 #include <errno.h>
 
+#include <string>
+
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
@@ -34,7 +36,8 @@ class BrlapiConnectionImpl : public BrlapiConnection {
  public:
   explicit BrlapiConnectionImpl(LibBrlapiLoader* loader) :
       libbrlapi_loader_(loader) {}
-
+  BrlapiConnectionImpl(const BrlapiConnectionImpl&) = delete;
+  BrlapiConnectionImpl& operator=(const BrlapiConnectionImpl&) = delete;
   ~BrlapiConnectionImpl() override { Disconnect(); }
 
   ConnectResult Connect(const OnDataReadyCallback& on_data_ready) override;
@@ -54,15 +57,7 @@ class BrlapiConnectionImpl : public BrlapiConnection {
   LibBrlapiLoader* libbrlapi_loader_;
   std::unique_ptr<brlapi_handle_t, base::FreeDeleter> handle_;
   std::unique_ptr<base::FileDescriptorWatcher::Controller> fd_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrlapiConnectionImpl);
 };
-
-BrlapiConnection::BrlapiConnection() {
-}
-
-BrlapiConnection::~BrlapiConnection() {
-}
 
 std::unique_ptr<BrlapiConnection> BrlapiConnection::Create(
     LibBrlapiLoader* loader) {
@@ -73,9 +68,10 @@ std::unique_ptr<BrlapiConnection> BrlapiConnection::Create(
 BrlapiConnection::ConnectResult BrlapiConnectionImpl::Connect(
     const OnDataReadyCallback& on_data_ready) {
   DCHECK(!handle_);
-  handle_.reset((brlapi_handle_t*) malloc(
-      libbrlapi_loader_->brlapi_getHandleSize()));
-  int fd = libbrlapi_loader_->brlapi__openConnection(handle_.get(), NULL, NULL);
+  handle_.reset(reinterpret_cast<brlapi_handle_t*>(
+      malloc(libbrlapi_loader_->brlapi_getHandleSize())));
+  int fd = libbrlapi_loader_->brlapi__openConnection(handle_.get(), nullptr,
+                                                     nullptr);
   if (fd < 0) {
     handle_.reset();
     VLOG(1) << "Error connecting to brlapi: " << BrlapiStrError();
@@ -87,10 +83,10 @@ BrlapiConnection::ConnectResult BrlapiConnectionImpl::Connect(
   if (base::SysInfo::IsRunningOnChromeOS())
     path[pathElements++] = kDefaultTtyChromeOS;
 #endif
-  if (pathElements == 0 && getenv("WINDOWPATH") == NULL)
+  if (pathElements == 0 && getenv("WINDOWPATH") == nullptr)
     path[pathElements++] = kDefaultTtyLinux;
   if (libbrlapi_loader_->brlapi__enterTtyModeWithPath(
-          handle_.get(), path, pathElements, NULL) < 0) {
+          handle_.get(), path, pathElements, nullptr) < 0) {
     LOG(ERROR) << "brlapi: couldn't enter tty mode: " << BrlapiStrError();
     Disconnect();
     return CONNECT_ERROR_RETRY;

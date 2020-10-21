@@ -52,7 +52,7 @@ BrowserContextKeyedAPIFactory<ActivityLogAPI>::DeclareFactoryDependencies() {
 }
 
 ActivityLogAPI::ActivityLogAPI(content::BrowserContext* context)
-    : browser_context_(context), initialized_(false) {
+    : browser_context_(context) {
   if (!EventRouter::Get(browser_context_)) {  // Check for testing.
     DVLOG(1) << "ExtensionSystem event_router does not exist.";
     return;
@@ -63,9 +63,6 @@ ActivityLogAPI::ActivityLogAPI(content::BrowserContext* context)
       this, activity_log_private::OnExtensionActivity::kEventName);
   activity_log_->AddObserver(this);
   initialized_ = true;
-}
-
-ActivityLogAPI::~ActivityLogAPI() {
 }
 
 void ActivityLogAPI::Shutdown() {

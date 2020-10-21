@@ -18,7 +18,9 @@ namespace extensions {
 
 class BookmarksApiUnittest : public ExtensionServiceTestBase {
  public:
-  BookmarksApiUnittest() {}
+  BookmarksApiUnittest() = default;
+  BookmarksApiUnittest(const BookmarksApiUnittest&) = delete;
+  BookmarksApiUnittest& operator=(const BookmarksApiUnittest&) = delete;
 
   void SetUp() override {
     ExtensionServiceTestBase::SetUp();
@@ -40,8 +42,6 @@ class BookmarksApiUnittest : public ExtensionServiceTestBase {
  private:
   bookmarks::BookmarkModel* model_ = nullptr;
   std::string node_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarksApiUnittest);
 };
 
 // Tests that running updating a bookmark folder's url does not succeed.

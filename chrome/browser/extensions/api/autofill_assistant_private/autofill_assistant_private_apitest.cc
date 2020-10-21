@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/values.h"
@@ -41,6 +40,10 @@ using testing::StrEq;
 class AutofillAssistantPrivateApiTest : public ExtensionApiTest {
  public:
   AutofillAssistantPrivateApiTest() = default;
+  AutofillAssistantPrivateApiTest(const AutofillAssistantPrivateApiTest&) =
+      delete;
+  AutofillAssistantPrivateApiTest& operator=(
+      const AutofillAssistantPrivateApiTest&) = delete;
 
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
@@ -82,8 +85,6 @@ class AutofillAssistantPrivateApiTest : public ExtensionApiTest {
  private:
   std::unique_ptr<MockService> service_;
   MockService* mock_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillAssistantPrivateApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(AutofillAssistantPrivateApiTest, DefaultTest) {

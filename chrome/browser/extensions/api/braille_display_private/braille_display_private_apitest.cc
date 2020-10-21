@@ -279,9 +279,11 @@ class BrailleDisplayPrivateAPIUserTest : public BrailleDisplayPrivateApiTest {
   class MockEventDelegate : public BrailleDisplayPrivateAPI::EventDelegate {
    public:
     MockEventDelegate() = default;
+    MockEventDelegate(const MockEventDelegate&) = delete;
+    MockEventDelegate& operator=(const MockEventDelegate&) = delete;
     ~MockEventDelegate() override = default;
 
-    int GetEventCount() { return event_count_; }
+    int GetEventCount() const { return event_count_; }
 
     // BrailleDisplayPrivateAPI::EventDelegate:
     void BroadcastEvent(std::unique_ptr<Event> event) override {
@@ -291,11 +293,13 @@ class BrailleDisplayPrivateAPIUserTest : public BrailleDisplayPrivateApiTest {
 
    private:
     int event_count_ = 0;
-
-    DISALLOW_COPY_AND_ASSIGN(MockEventDelegate);
   };
 
   BrailleDisplayPrivateAPIUserTest() = default;
+  BrailleDisplayPrivateAPIUserTest(const BrailleDisplayPrivateAPIUserTest&) =
+      delete;
+  BrailleDisplayPrivateAPIUserTest& operator=(
+      const BrailleDisplayPrivateAPIUserTest&) = delete;
   ~BrailleDisplayPrivateAPIUserTest() override = default;
 
   MockEventDelegate* SetMockEventDelegate(BrailleDisplayPrivateAPI* api) {
@@ -320,8 +324,6 @@ class BrailleDisplayPrivateAPIUserTest : public BrailleDisplayPrivateApiTest {
 
  protected:
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrailleDisplayPrivateAPIUserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(BrailleDisplayPrivateAPIUserTest, KeyEventOnLockScreen) {

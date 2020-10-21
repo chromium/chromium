@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/common/extensions/api/autofill_private.h"
@@ -18,8 +17,10 @@ namespace {
 
 class AutofillPrivateApiTest : public ExtensionApiTest {
  public:
-  AutofillPrivateApiTest() {}
-  ~AutofillPrivateApiTest() override {}
+  AutofillPrivateApiTest() = default;
+  AutofillPrivateApiTest(const AutofillPrivateApiTest&) = delete;
+  AutofillPrivateApiTest& operator=(const AutofillPrivateApiTest&) = delete;
+  ~AutofillPrivateApiTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExtensionApiTest::SetUpCommandLine(command_line);
@@ -35,9 +36,6 @@ class AutofillPrivateApiTest : public ExtensionApiTest {
     return RunExtensionSubtest("autofill_private", "main.html?" + subtest,
                                kFlagNone, kFlagLoadAsComponent);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutofillPrivateApiTest);
 };
 
 }  // namespace

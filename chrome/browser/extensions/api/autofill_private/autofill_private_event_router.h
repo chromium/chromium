@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_PRIVATE_EVENT_ROUTER_H_
 #define CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_PRIVATE_EVENT_ROUTER_H_
 
-#include "base/macros.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/event_router.h"
@@ -29,7 +28,10 @@ class AutofillPrivateEventRouter :
  public:
   static AutofillPrivateEventRouter* Create(
       content::BrowserContext* browser_context);
-  ~AutofillPrivateEventRouter() override;
+  AutofillPrivateEventRouter(const AutofillPrivateEventRouter&) = delete;
+  AutofillPrivateEventRouter& operator=(const AutofillPrivateEventRouter&) =
+      delete;
+  ~AutofillPrivateEventRouter() override = default;
 
  protected:
   explicit AutofillPrivateEventRouter(content::BrowserContext* context);
@@ -43,11 +45,9 @@ class AutofillPrivateEventRouter :
  private:
   content::BrowserContext* context_;
 
-  EventRouter* event_router_;
+  EventRouter* event_router_ = nullptr;
 
-  autofill::PersonalDataManager* personal_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillPrivateEventRouter);
+  autofill::PersonalDataManager* personal_data_ = nullptr;
 };
 
 }  // namespace extensions

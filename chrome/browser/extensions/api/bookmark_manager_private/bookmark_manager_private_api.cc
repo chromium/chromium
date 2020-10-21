@@ -205,7 +205,7 @@ BookmarkManagerPrivateAPI::BookmarkManagerPrivateAPI(
     : browser_context_(browser_context) {
 }
 
-BookmarkManagerPrivateAPI::~BookmarkManagerPrivateAPI() {}
+BookmarkManagerPrivateAPI::~BookmarkManagerPrivateAPI() = default;
 
 void BookmarkManagerPrivateAPI::Shutdown() {
   EventRouter::Get(browser_context_)->UnregisterObserver(this);
