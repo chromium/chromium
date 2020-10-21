@@ -210,8 +210,13 @@ HeadlessRequestContextManager::HeadlessRequestContextManager(
               : nullptr),
       resource_context_(std::make_unique<content::ResourceContext>()) {
   if (!proxy_config_) {
-    proxy_config_monitor_ = std::make_unique<HeadlessProxyConfigMonitor>(
-        base::ThreadTaskRunnerHandle::Get());
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(switches::kNoSystemProxyConfigService)) {
+      proxy_config_ = std::make_unique<net::ProxyConfig>();
+    } else {
+      proxy_config_monitor_ = std::make_unique<HeadlessProxyConfigMonitor>(
+          base::ThreadTaskRunnerHandle::Get());
+    }
   }
 #if defined(OS_LINUX) && !defined(OS_CHROMEOS)
   auto crypt_config = BuildCryptConfigOnce(user_data_path_);

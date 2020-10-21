@@ -75,6 +75,9 @@ const char kProxyBypassList[] = "proxy-bypass-list";
 // affects HTTP and HTTPS requests.
 const char kProxyServer[] = "proxy-server";
 
+// Do not use system proxy configuration service.
+const char kNoSystemProxyConfigService[] = "no-system-proxy-config-service";
+
 // Use the given address instead of the default loopback for accepting remote
 // debugging connections. Should be used together with --remote-debugging-port.
 // Note that the remote debugging protocol does not perform any authentication,

@@ -16,6 +16,7 @@
 #include "components/viz/common/switches.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "headless/app/headless_shell_switches.h"
 #include "headless/public/devtools/domains/runtime.h"
 #include "headless/public/headless_browser.h"
 #include "headless/public/headless_browser_context.h"
@@ -56,6 +57,10 @@ class HeadlessProtocolBrowserTest
     // Make sure the navigations spawn new processes. We run test harness
     // in one process (harness.test) and tests in another.
     command_line->AppendSwitch(::switches::kSitePerProcess);
+
+    // Make sure proxy related tests are not affected by a platform specific
+    // system proxy configuration service.
+    command_line->AppendSwitch(switches::kNoSystemProxyConfigService);
   }
 
  private:
@@ -286,8 +291,8 @@ class HeadlessProtocolCompositorBrowserTest
     static const char* const compositor_switches[] = {
         // We control BeginFrames ourselves and need all compositing stages to
         // run.
-        switches::kRunAllCompositorStagesBeforeDraw,
-        switches::kDisableNewContentRenderingTimeout,
+        ::switches::kRunAllCompositorStagesBeforeDraw,
+        ::switches::kDisableNewContentRenderingTimeout,
 
         // Animtion-only BeginFrames are only supported when updates from the
         // impl-thread are disabled, see go/headless-rendering.
@@ -433,13 +438,7 @@ HEADLESS_PROTOCOL_COMPOSITOR_TEST(RendererCanvas, "sanity/renderer-canvas.js")
 
 HEADLESS_PROTOCOL_COMPOSITOR_TEST(RendererOpacityAnimation,
                                   "sanity/renderer-opacity-animation.js")
-// Flaky on Windows (crbug.com/1134929).
-#if defined(OS_WIN)
-#define MAYBE_BrowserSetInitialProxyConfig DISABLED_BrowserSetInitialProxyConfig
-#else
-#define MAYBE_BrowserSetInitialProxyConfig BrowserSetInitialProxyConfig
-#endif
-HEADLESS_PROTOCOL_COMPOSITOR_TEST(MAYBE_BrowserSetInitialProxyConfig,
+HEADLESS_PROTOCOL_COMPOSITOR_TEST(BrowserSetInitialProxyConfig,
                                   "sanity/browser-set-initial-proxy-config.js")
 
 }  // namespace headless
