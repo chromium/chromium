@@ -191,8 +191,8 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
   ASSERT_TRUE(request->trusted_params);
   url::Origin cross_origin = url::Origin::Create(cross_origin_target_url);
   EXPECT_TRUE(net::IsolationInfo::Create(
-                  net::IsolationInfo::RedirectMode::kUpdateNothing,
-                  cross_origin, cross_origin, net::SiteForCookies())
+                  net::IsolationInfo::RequestType::kOther, cross_origin,
+                  cross_origin, net::SiteForCookies())
                   .IsEqualForTesting(request->trusted_params->isolation_info));
 }
 
@@ -701,8 +701,8 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
   ASSERT_TRUE(request->trusted_params);
   url::Origin cross_origin = url::Origin::Create(cross_origin_target_url);
   EXPECT_TRUE(net::IsolationInfo::Create(
-                  net::IsolationInfo::RedirectMode::kUpdateNothing,
-                  cross_origin, cross_origin, net::SiteForCookies())
+                  net::IsolationInfo::RequestType::kOther, cross_origin,
+                  cross_origin, net::SiteForCookies())
                   .IsEqualForTesting(request->trusted_params->isolation_info));
 }
 

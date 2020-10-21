@@ -158,7 +158,7 @@ ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
   // shared network resources like the http cache.
   resource_request.trusted_params = network::ResourceRequest::TrustedParams();
   resource_request.trusted_params->isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RedirectMode::kUpdateNothing, origin, origin,
+      net::IsolationInfo::RequestType::kOther, origin, origin,
       net::SiteForCookies::FromOrigin(origin));
 
   if (is_main_script_) {

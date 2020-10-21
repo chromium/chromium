@@ -273,7 +273,7 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   // been visited before.
   url::Origin origin = url::Origin::Create(params->url());
   request->trusted_params->isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RedirectMode::kUpdateTopFrame, origin, origin,
+      net::IsolationInfo::RequestType::kMainFrame, origin, origin,
       net::SiteForCookies::FromOrigin(origin));
 
   request->do_not_prompt_for_login = params->do_not_prompt_for_login();

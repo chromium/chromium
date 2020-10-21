@@ -41,10 +41,10 @@ void WebSocketFactory::CreateWebSocket(
     mojo::PendingRemote<mojom::WebSocketHandshakeClient> handshake_client,
     mojo::PendingRemote<mojom::AuthenticationHandler> auth_handler,
     mojo::PendingRemote<mojom::TrustedHeaderClient> header_client) {
-  if (isolation_info.redirect_mode() !=
-      net::IsolationInfo::RedirectMode::kUpdateNothing) {
+  if (isolation_info.request_type() !=
+      net::IsolationInfo::RequestType::kOther) {
     mojo::ReportBadMessage(
-        "WebSocket's IsolationInfo::RedirectMode must be kUpdateNothing");
+        "WebSocket's IsolationInfo::RequestType must be kOther");
     return;
   }
 

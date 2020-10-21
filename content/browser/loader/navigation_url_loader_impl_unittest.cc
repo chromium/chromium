@@ -205,8 +205,8 @@ class NavigationURLLoaderImplTest : public testing::Test {
         new NavigationRequestInfo(
             std::move(common_params), std::move(begin_params),
             net::IsolationInfo::Create(
-                net::IsolationInfo::RedirectMode::kUpdateTopFrame, origin,
-                origin, net::SiteForCookies::FromUrl(url)),
+                net::IsolationInfo::RequestType::kMainFrame, origin, origin,
+                net::SiteForCookies::FromUrl(url)),
             is_main_frame, false /* parent_is_main_frame */,
             false /* are_ancestors_secure */, -1 /* frame_tree_node_id */,
             false /* is_for_guests_only */, false /* report_raw_headers */,
@@ -326,9 +326,9 @@ TEST_F(NavigationURLLoaderImplTest, IsolationInfoOfMainFrameNavigation) {
   ASSERT_TRUE(most_recent_resource_request_);
   ASSERT_TRUE(most_recent_resource_request_->trusted_params);
   EXPECT_TRUE(
-      net::IsolationInfo::Create(
-          net::IsolationInfo::RedirectMode::kUpdateTopFrame, origin, origin,
-          net::SiteForCookies::FromOrigin(origin))
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kMainFrame,
+                                 origin, origin,
+                                 net::SiteForCookies::FromOrigin(origin))
           .IsEqualForTesting(
               most_recent_resource_request_->trusted_params->isolation_info));
 }
@@ -345,9 +345,9 @@ TEST_F(NavigationURLLoaderImplTest,
 
   ASSERT_TRUE(most_recent_resource_request_->trusted_params);
   EXPECT_TRUE(
-      net::IsolationInfo::Create(
-          net::IsolationInfo::RedirectMode::kUpdateTopFrame, origin, origin,
-          net::SiteForCookies::FromOrigin(origin))
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kMainFrame,
+                                 origin, origin,
+                                 net::SiteForCookies::FromOrigin(origin))
           .IsEqualForTesting(
               most_recent_resource_request_->trusted_params->isolation_info));
 }

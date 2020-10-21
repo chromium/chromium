@@ -163,9 +163,9 @@ void PrefetchURLLoaderService::CreateLoaderAndStart(
     url::Origin destination_origin = url::Origin::Create(resource_request.url);
     resource_request.trusted_params = network::ResourceRequest::TrustedParams();
     resource_request.trusted_params->isolation_info =
-        net::IsolationInfo::Create(
-            net::IsolationInfo::RedirectMode::kUpdateNothing,
-            destination_origin, destination_origin, net::SiteForCookies());
+        net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                   destination_origin, destination_origin,
+                                   net::SiteForCookies());
   }
 
   // Recursive prefetch from a cross-origin main resource prefetch.
@@ -348,7 +348,7 @@ base::UnguessableToken PrefetchURLLoaderService::GenerateRecursivePrefetchToken(
   // Create IsolationInfo.
   url::Origin destination_origin = url::Origin::Create(request.url);
   net::IsolationInfo preload_isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RedirectMode::kUpdateNothing, destination_origin,
+      net::IsolationInfo::RequestType::kOther, destination_origin,
       destination_origin, net::SiteForCookies());
 
   // Generate token.

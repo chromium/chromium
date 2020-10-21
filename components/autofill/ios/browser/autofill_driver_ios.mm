@@ -175,7 +175,7 @@ net::IsolationInfo AutofillDriverIOS::IsolationInfo() {
     return net::IsolationInfo();
 
   return net::IsolationInfo::Create(
-      net::IsolationInfo::RedirectMode::kUpdateNothing,
+      net::IsolationInfo::RequestType::kOther,
       url::Origin::Create(main_web_frame->GetSecurityOrigin()),
       url::Origin::Create(web_frame->GetSecurityOrigin()),
       net::SiteForCookies());

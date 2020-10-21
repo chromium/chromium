@@ -51,9 +51,8 @@ class OriginPolicyManagerTest : public testing::Test {
       const base::Optional<std::string>& header) {
     manager_->RetrieveOriginPolicy(
         origin,
-        net::IsolationInfo::Create(
-            net::IsolationInfo::RedirectMode::kUpdateNothing, origin, origin,
-            net::SiteForCookies()),
+        net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                   origin, origin, net::SiteForCookies()),
         header,
         base::BindOnce(&OriginPolicyManagerTest::Callback,
                        base::Unretained(this)));

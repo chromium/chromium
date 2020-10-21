@@ -536,9 +536,9 @@ TEST_F(PreflightControllerTest, CheckRequestNetworkIsolationKey) {
   const url::Origin& origin = test_initiator_origin();
   request.request_initiator = origin;
   ResourceRequest::TrustedParams trusted_params;
-  trusted_params.isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RedirectMode::kUpdateNothing, origin, origin,
-      net::SiteForCookies());
+  trusted_params.isolation_info =
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                 origin, origin, net::SiteForCookies());
   request.trusted_params = {trusted_params};
 
   PerformPreflightCheck(request);
@@ -554,9 +554,9 @@ TEST_F(PreflightControllerTest, CheckRequestNetworkIsolationKey) {
   url::Origin second_origin = url::Origin::Create(GURL("https://example.com/"));
   request.request_initiator = second_origin;
   SetAccessControlAllowOrigin(second_origin);
-  request.trusted_params->isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RedirectMode::kUpdateNothing, origin, second_origin,
-      net::SiteForCookies());
+  request.trusted_params->isolation_info =
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                 origin, second_origin, net::SiteForCookies());
   PerformPreflightCheck(request);
   EXPECT_EQ(net::OK, net_error());
   ASSERT_FALSE(status());
@@ -571,9 +571,9 @@ TEST_F(PreflightControllerTest, CheckFactoryNetworkIsolationKey) {
   const url::Origin& origin = test_initiator_origin();
   request.request_initiator = origin;
 
-  const net::IsolationInfo isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RedirectMode::kUpdateNothing, origin, origin,
-      net::SiteForCookies());
+  const net::IsolationInfo isolation_info =
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                 origin, origin, net::SiteForCookies());
 
   PerformPreflightCheck(request, false, isolation_info);
   EXPECT_EQ(net::OK, net_error());

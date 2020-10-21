@@ -98,8 +98,8 @@ class WebSocketStreamRequestImpl : public WebSocketStreamRequestAPI {
                                             traffic_annotation)),
         connect_delegate_(std::move(connect_delegate)),
         api_delegate_(std::move(api_delegate)) {
-    DCHECK_EQ(IsolationInfo::RedirectMode::kUpdateNothing,
-              isolation_info.redirect_mode());
+    DCHECK_EQ(IsolationInfo::RequestType::kOther,
+              isolation_info.request_type());
 
     HttpRequestHeaders headers = additional_headers;
     headers.SetHeader(websockets::kUpgrade, websockets::kWebSocketLowercase);

@@ -29,8 +29,8 @@ OriginPolicyFetcher::OriginPolicyFetcher(
   DCHECK(callback_);
   DCHECK(!isolation_info.IsEmpty());
   // Policy requests shouldn't update frame origins on redirect.
-  DCHECK_EQ(net::IsolationInfo::RedirectMode::kUpdateNothing,
-            isolation_info.redirect_mode());
+  DCHECK_EQ(net::IsolationInfo::RequestType::kOther,
+            isolation_info.request_type());
   // While they use CredentialsMode::kOmit, so it shouldn't matter, policy
   // requests should have a null SiteForCookies.
   DCHECK(isolation_info.site_for_cookies().IsNull());

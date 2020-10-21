@@ -865,8 +865,8 @@ IN_PROC_BROWSER_TEST_P(NetworkIsolationNavigationBrowserTest,
       monitor.GetRequestInfo(url);
   ASSERT_TRUE(request->trusted_params);
   EXPECT_TRUE(net::IsolationInfo::Create(
-                  net::IsolationInfo::RedirectMode::kUpdateTopFrame, origin,
-                  origin, net::SiteForCookies::FromOrigin(origin))
+                  net::IsolationInfo::RequestType::kMainFrame, origin, origin,
+                  net::SiteForCookies::FromOrigin(origin))
                   .IsEqualForTesting(request->trusted_params->isolation_info));
 }
 
@@ -883,8 +883,8 @@ IN_PROC_BROWSER_TEST_P(NetworkIsolationNavigationBrowserTest,
       monitor.GetRequestInfo(url);
   ASSERT_TRUE(request->trusted_params);
   EXPECT_TRUE(net::IsolationInfo::Create(
-                  net::IsolationInfo::RedirectMode::kUpdateTopFrame, origin,
-                  origin, net::SiteForCookies::FromOrigin(origin))
+                  net::IsolationInfo::RequestType::kMainFrame, origin, origin,
+                  net::SiteForCookies::FromOrigin(origin))
                   .IsEqualForTesting(request->trusted_params->isolation_info));
 }
 
@@ -903,8 +903,8 @@ IN_PROC_BROWSER_TEST_P(NetworkIsolationNavigationBrowserTest,
   ASSERT_TRUE(main_frame_request.has_value());
   ASSERT_TRUE(main_frame_request->trusted_params);
   EXPECT_TRUE(net::IsolationInfo::Create(
-                  net::IsolationInfo::RedirectMode::kUpdateTopFrame, origin,
-                  origin, net::SiteForCookies::FromOrigin(origin))
+                  net::IsolationInfo::RequestType::kMainFrame, origin, origin,
+                  net::SiteForCookies::FromOrigin(origin))
                   .IsEqualForTesting(
                       main_frame_request->trusted_params->isolation_info));
 
@@ -912,9 +912,9 @@ IN_PROC_BROWSER_TEST_P(NetworkIsolationNavigationBrowserTest,
       monitor.GetRequestInfo(iframe_document);
   ASSERT_TRUE(iframe_request->trusted_params);
   EXPECT_TRUE(
-      net::IsolationInfo::Create(
-          net::IsolationInfo::RedirectMode::kUpdateFrameOnly, origin,
-          iframe_origin, net::SiteForCookies::FromOrigin(origin))
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kSubFrame,
+                                 origin, iframe_origin,
+                                 net::SiteForCookies::FromOrigin(origin))
           .IsEqualForTesting(iframe_request->trusted_params->isolation_info));
 }
 

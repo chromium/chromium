@@ -703,9 +703,9 @@ class SimpleURLLoaderTest
         network::ResourceRequest::TrustedParams();
     url::Origin request_origin = url::Origin::Create(url);
     resource_request->trusted_params->isolation_info =
-        net::IsolationInfo::Create(
-            net::IsolationInfo::RedirectMode::kUpdateNothing, request_origin,
-            request_origin, net::SiteForCookies());
+        net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                   request_origin, request_origin,
+                                   net::SiteForCookies());
     return std::make_unique<SimpleLoaderTestHelper>(std::move(resource_request),
                                                     GetParam());
   }

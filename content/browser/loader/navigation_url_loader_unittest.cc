@@ -81,8 +81,8 @@ class NavigationURLLoaderTest : public testing::Test {
         new NavigationRequestInfo(
             std::move(common_params), std::move(begin_params),
             net::IsolationInfo::Create(
-                net::IsolationInfo::RedirectMode::kUpdateTopFrame, origin,
-                origin, net::SiteForCookies::FromUrl(url)),
+                net::IsolationInfo::RequestType::kMainFrame, origin, origin,
+                net::SiteForCookies::FromUrl(url)),
             true /* is_main_frame */, false /* parent_is_main_frame */,
             false /* are_ancestors_secure */, -1 /* frame_tree_node_id */,
             false /* is_for_guests_only */, false /* report_raw_headers */,

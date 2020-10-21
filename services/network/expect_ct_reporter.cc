@@ -271,7 +271,7 @@ void ExpectCTReporter::SendPreflight(
   url_request->set_allow_credentials(false);
   url_request->set_method(net::HttpRequestHeaders::kOptionsMethod);
   url_request->set_isolation_info(net::IsolationInfo::CreatePartial(
-      net::IsolationInfo::RedirectMode::kUpdateNothing, network_isolation_key));
+      net::IsolationInfo::RequestType::kOther, network_isolation_key));
 
   net::HttpRequestHeaders extra_headers;
   extra_headers.SetHeader("Origin", "null");

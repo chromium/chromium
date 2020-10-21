@@ -126,7 +126,7 @@ DetachedResourceRequest::DetachedResourceRequest(
   // key.
   resource_request->trusted_params = network::ResourceRequest::TrustedParams();
   resource_request->trusted_params->isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RedirectMode::kUpdateNothing, site_for_cookies_origin,
+      net::IsolationInfo::RequestType::kOther, site_for_cookies_origin,
       site_for_cookies_origin,
       net::SiteForCookies::FromOrigin(site_for_cookies_origin));
 

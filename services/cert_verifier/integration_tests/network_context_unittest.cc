@@ -135,7 +135,7 @@ std::unique_ptr<network::TestURLLoaderClient> FetchRequest(
   // NIK must be consistent with |site_for_cookies|.
   if (request.site_for_cookies.IsNull()) {
     params->isolation_info = net::IsolationInfo::Create(
-        net::IsolationInfo::RedirectMode::kUpdateNothing,
+        net::IsolationInfo::RequestType::kOther,
         url::Origin::Create(GURL("https://abc.invalid")),
         url::Origin::Create(GURL("https://xyz.invalid")),
         request.site_for_cookies);

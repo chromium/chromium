@@ -29,32 +29,32 @@ class NET_EXPORT IsolationInfo {
  public:
   // The update-on-redirect patterns.
   //
-  // In general, almost everything should use kUpdateNothing, as a
-  // kUpdateTopFrame request accidentally sent or redirected to an attacker
-  // allows cross-site tracking, and kUpdateFrameOnly allows information
+  // In general, almost everything should use kOther, as a
+  // kMainFrame request accidentally sent or redirected to an attacker
+  // allows cross-site tracking, and kSubFrame allows information
   // leaks between sites that iframe each other. Anything that uses
-  // kUpdateTopFrame should be user triggered and user visible, like a main
+  // kMainFrame should be user triggered and user visible, like a main
   // frame navigation or downloads.
   //
-  // The RedirectMode is a core part of an IsolationInfo, and using an
+  // The RequestType is a core part of an IsolationInfo, and using an
   // IsolationInfo with one value to create an IsolationInfo with another
-  // RedirectMode is generally not a good idea, unless the RedirectMode of the
-  // new IsolationInfo is kUpdateNothing.
-  enum class RedirectMode {
-    // Update top level origin, frame origin, and SiteForCookies on redirect.
+  // RequestType is generally not a good idea, unless the RequestType of the
+  // new IsolationInfo is kOther.
+  enum class RequestType {
+    // Updates top level origin, frame origin, and SiteForCookies on redirect.
     // These requests allow users to be recognized across sites on redirect, so
     // should not generally be used for anything other than navigations.
-    kUpdateTopFrame,
+    kMainFrame,
 
-    // Only update frame origin on redirect.
-    kUpdateFrameOnly,
+    // Only updates frame origin on redirect.
+    kSubFrame,
 
-    // Update nothing on redirect.
-    kUpdateNothing,
+    // Updates nothing on redirect.
+    kOther,
   };
 
   // Default constructor returns an IsolationInfo with empty origins, a null
-  // SiteForCookies(), and a RedirectMode of kUpdateNothing.
+  // SiteForCookies(), and a RequestType of kOther.
   IsolationInfo();
   IsolationInfo(const IsolationInfo&);
   IsolationInfo(IsolationInfo&&);
@@ -64,8 +64,8 @@ class NET_EXPORT IsolationInfo {
   IsolationInfo& operator=(IsolationInfo&&);
 
   // Simple constructor for internal requests. Sets |frame_origin| and
-  // |site_for_cookies| match |top_frame_origin|. Sets |redirect_mode| to
-  // kUpdateNothing. Will only send SameSite cookies to the site associated with
+  // |site_for_cookies| match |top_frame_origin|. Sets |request_type| to
+  // kOther. Will only send SameSite cookies to the site associated with
   // the passed in origin.
   static IsolationInfo CreateForInternalRequest(
       const url::Origin& top_frame_origin);
@@ -82,19 +82,19 @@ class NET_EXPORT IsolationInfo {
 
   // Creates an IsolationInfo with the provided parameters. If the parameters
   // are inconsistent, DCHECKs. In particular:
-  // * If |redirect_mode| is kUpdateTopFrame, |top_frame_origin| must equal
+  // * If |request_type| is kMainFrame, |top_frame_origin| must equal
   //   |frame_origin|, and |site_for_cookies| must be either null or first party
   //   with respect to them.
-  // * If |redirect_mode| is kUpdateFrameOnly, |top_frame_origin| must be
+  // * If |request_type| is kSubFrame, |top_frame_origin| must be
   //   first party with respect to |site_for_cookies|, or |site_for_cookies|
   //   must be null.
-  // * If |redirect_mode| is kUpdateNothing, |top_frame_origin| and
+  // * If |request_type| is kOther, |top_frame_origin| and
   //   |frame_origin| must be first party with respect to |site_for_cookies|, or
   //   |site_for_cookies| must be null.
   //
   // Note that the |site_for_cookies| consistency checks are skipped when
   // |site_for_cookies| is not HTTP/HTTPS.
-  static IsolationInfo Create(RedirectMode redirect_mode,
+  static IsolationInfo Create(RequestType request_type,
                               const url::Origin& top_frame_origin,
                               const url::Origin& frame_origin,
                               const SiteForCookies& site_for_cookies);
@@ -102,7 +102,7 @@ class NET_EXPORT IsolationInfo {
   // Create an IsolationInfos that may not be fully correct - in particular,
   // the SiteForCookies will always set to null, and if the NetworkIsolationKey
   // only has a top frame origin, the frame origin will either be set to the top
-  // frame origin, in the kUpdateTopFrame case, or be replaced by an opaque
+  // frame origin, in the kMainFrame case, or be replaced by an opaque
   // origin in all other cases. If the NetworkIsolationKey is not fully
   // populated, will create an empty IsolationInfo. This is intended for use
   // while transitioning from NIKs being set on only some requests to
@@ -110,7 +110,7 @@ class NET_EXPORT IsolationInfo {
   //
   // TODO(https://crbug.com/1060631): Remove this once no longer needed.
   static IsolationInfo CreatePartial(
-      RedirectMode redirect_mode,
+      RequestType request_type,
       const net::NetworkIsolationKey& network_isolation_key);
 
   // Returns nullopt if the arguments are not consistent. Otherwise, returns a
@@ -120,7 +120,7 @@ class NET_EXPORT IsolationInfo {
   //
   // Intended for use by cross-process deserialization.
   static base::Optional<IsolationInfo> CreateIfConsistent(
-      RedirectMode redirect_mode,
+      RequestType request_type,
       const base::Optional<url::Origin>& top_frame_origin,
       const base::Optional<url::Origin>& frame_origin,
       const SiteForCookies& site_for_cookies,
@@ -130,7 +130,7 @@ class NET_EXPORT IsolationInfo {
   // unmodified.
   IsolationInfo CreateForRedirect(const url::Origin& new_origin) const;
 
-  RedirectMode redirect_mode() const { return redirect_mode_; }
+  RequestType request_type() const { return request_type_; }
 
   bool IsEmpty() const { return !top_frame_origin_; }
 
@@ -164,13 +164,13 @@ class NET_EXPORT IsolationInfo {
   bool IsEqualForTesting(const IsolationInfo& other) const;
 
  private:
-  IsolationInfo(RedirectMode redirect_mode,
+  IsolationInfo(RequestType request_type,
                 const base::Optional<url::Origin>& top_frame_origin,
                 const base::Optional<url::Origin>& frame_origin,
                 const SiteForCookies& site_for_cookies,
                 bool opaque_and_non_transient);
 
-  RedirectMode redirect_mode_;
+  RequestType request_type_;
 
   base::Optional<url::Origin> top_frame_origin_;
   base::Optional<url::Origin> frame_origin_;

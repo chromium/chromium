@@ -87,7 +87,7 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
 
   original.trusted_params = ResourceRequest::TrustedParams();
   original.trusted_params->isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RedirectMode::kUpdateTopFrame,
+      net::IsolationInfo::RequestType::kMainFrame,
       url::Origin::Create(original.url), url::Origin::Create(original.url),
       original.site_for_cookies);
   original.trusted_params->disable_secure_dns = true;

@@ -3624,8 +3624,8 @@ IN_PROC_BROWSER_TEST_P(RedirectInfoWebRequestApiTest,
   EXPECT_TRUE(
       resource_request->trusted_params->isolation_info.IsEqualForTesting(
           net::IsolationInfo::Create(
-              net::IsolationInfo::RedirectMode::kUpdateTopFrame,
-              redirected_origin, redirected_origin,
+              net::IsolationInfo::RequestType::kMainFrame, redirected_origin,
+              redirected_origin,
               net::SiteForCookies::FromOrigin(redirected_origin))));
 }
 
@@ -3675,8 +3675,8 @@ IN_PROC_BROWSER_TEST_P(RedirectInfoWebRequestApiTest,
   EXPECT_TRUE(
       resource_request->trusted_params->isolation_info.IsEqualForTesting(
           net::IsolationInfo::Create(
-              net::IsolationInfo::RedirectMode::kUpdateFrameOnly,
-              top_level_origin, redirected_origin,
+              net::IsolationInfo::RequestType::kSubFrame, top_level_origin,
+              redirected_origin,
               net::SiteForCookies::FromOrigin(top_level_origin))));
 }
 

@@ -70,9 +70,8 @@ class WorkerScriptLoaderFactoryTest : public testing::Test {
     resource_request.trusted_params = network::ResourceRequest::TrustedParams();
     resource_request.trusted_params->isolation_info =
         net::IsolationInfo::Create(
-            net::IsolationInfo::RedirectMode::kUpdateNothing,
-            url::Origin::Create(url), url::Origin::Create(url),
-            net::SiteForCookies());
+            net::IsolationInfo::RequestType::kOther, url::Origin::Create(url),
+            url::Origin::Create(url), net::SiteForCookies());
     resource_request.resource_type =
         static_cast<int>(blink::mojom::ResourceType::kSharedWorker);
     factory->CreateLoaderAndStart(

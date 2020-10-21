@@ -92,9 +92,8 @@ static net::SiteForCookies SiteForCookies() {
 
 static IsolationInfo CreateIsolationInfo() {
   url::Origin origin = Origin();
-  return IsolationInfo::Create(IsolationInfo::RedirectMode::kUpdateNothing,
-                               origin, origin,
-                               SiteForCookies::FromOrigin(origin));
+  return IsolationInfo::Create(IsolationInfo::RequestType::kOther, origin,
+                               origin, SiteForCookies::FromOrigin(origin));
 }
 
 class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,

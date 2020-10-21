@@ -548,9 +548,9 @@ URLLoader::URLLoader(
     }
   } else if (factory_params_->automatically_assign_isolation_info) {
     url::Origin origin = url::Origin::Create(request.url);
-    url_request_->set_isolation_info(net::IsolationInfo::Create(
-        net::IsolationInfo::RedirectMode::kUpdateNothing, origin, origin,
-        net::SiteForCookies()));
+    url_request_->set_isolation_info(
+        net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                   origin, origin, net::SiteForCookies()));
   }
 
   if (url_request_context_->require_network_isolation_key())
@@ -1366,7 +1366,7 @@ void URLLoader::ContinueOnResponseStarted() {
     // Create IsolationInfo as if this were an uncredentialed subresource
     // request of the original URL.
     net::IsolationInfo isolation_info = net::IsolationInfo::Create(
-        net::IsolationInfo::RedirectMode::kUpdateNothing,
+        net::IsolationInfo::RequestType::kOther,
         url_request_->isolation_info().top_frame_origin().value(),
         url_request_->isolation_info().frame_origin().value(),
         net::SiteForCookies());

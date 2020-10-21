@@ -303,9 +303,9 @@ SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForWorker(
           worker_process_host_, instance_.constructor_origin(),
-          net::IsolationInfo::Create(
-              net::IsolationInfo::RedirectMode::kUpdateNothing, origin, origin,
-              net::SiteForCookies::FromOrigin(origin)),
+          net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                     origin, origin,
+                                     net::SiteForCookies::FromOrigin(origin)),
           /*coep_reporter=*/mojo::NullRemote());
   return factory_params;
 }

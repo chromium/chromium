@@ -156,8 +156,7 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
     upload->request->SetLoadFlags(LOAD_DISABLE_CACHE);
     upload->request->set_allow_credentials(false);
     upload->request->set_isolation_info(IsolationInfo::CreatePartial(
-        IsolationInfo::RedirectMode::kUpdateNothing,
-        upload->network_isolation_key));
+        IsolationInfo::RequestType::kOther, upload->network_isolation_key));
 
     upload->request->SetExtraRequestHeaderByName(
         HttpRequestHeaders::kOrigin, upload->report_origin.Serialize(), true);
@@ -189,8 +188,7 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
     upload->request->SetLoadFlags(LOAD_DISABLE_CACHE);
     upload->request->set_allow_credentials(false);
     upload->request->set_isolation_info(IsolationInfo::CreatePartial(
-        IsolationInfo::RedirectMode::kUpdateNothing,
-        upload->network_isolation_key));
+        IsolationInfo::RequestType::kOther, upload->network_isolation_key));
 
     upload->request->SetExtraRequestHeaderByName(
         HttpRequestHeaders::kContentType, kUploadContentType, true);

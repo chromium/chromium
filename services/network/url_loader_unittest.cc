@@ -5240,7 +5240,7 @@ TEST_F(URLLoaderTest, OriginPolicyManagerCalled) {
         CreateResourceRequest("GET", server.GetURL("/with_policy"));
     // This is what the IsolationInfo for a main frame will normally look like.
     request.trusted_params->isolation_info = net::IsolationInfo::Create(
-        net::IsolationInfo::RedirectMode::kUpdateTopFrame,
+        net::IsolationInfo::RequestType::kMainFrame,
         test_server_origin /* top_frame_origin */,
         test_server_origin /* frame_origin */,
         net::SiteForCookies::FromOrigin(test_server_origin));
@@ -5284,13 +5284,13 @@ TEST_F(URLLoaderTest, OriginPolicyManagerCalled) {
 
     // Check IsolationInfo sent to the OriginPolicyManager. Both origins should
     // be the same as the |isolation_info| field of
-    // ResourceRequest::trusted_params, but the RedirectMode should be
-    // kUpdateNothing, and the SiteForCookies should be null.
+    // ResourceRequest::trusted_params, but the RequestType should be
+    // kOther, and the SiteForCookies should be null.
     EXPECT_TRUE(
-        net::IsolationInfo::Create(
-            net::IsolationInfo::RedirectMode::kUpdateNothing,
-            test_server_origin /* top_frame_origin */,
-            test_server_origin /* frame_origin */, net::SiteForCookies())
+        net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                   test_server_origin /* top_frame_origin */,
+                                   test_server_origin /* frame_origin */,
+                                   net::SiteForCookies())
             .IsEqualForTesting(mock_origin_policy_manager.isolation_info()));
   }
 
@@ -5384,7 +5384,7 @@ TEST_F(URLLoaderTest, OriginPolicyManagerCalled) {
     // IsolationInfo used for the ResourceRequest. This is what the
     // IsolationInfo for a cross-origin subframe will normally look like.
     request.trusted_params->isolation_info = net::IsolationInfo::Create(
-        net::IsolationInfo::RedirectMode::kUpdateFrameOnly, top_frame_origin,
+        net::IsolationInfo::RequestType::kSubFrame, top_frame_origin,
         test_server_origin /* frame_origin */, net::SiteForCookies());
     request.site_for_cookies =
         request.trusted_params->isolation_info.site_for_cookies();
@@ -5418,11 +5418,11 @@ TEST_F(URLLoaderTest, OriginPolicyManagerCalled) {
 
     // Check IsolationInfo sent to the OriginPolicyManager. Both origins should
     // be the same as the |isolation_info| field of
-    // ResourceRequest::trusted_params, but the RedirectMode should be
-    // kUpdateNothing, and the SiteForCookies should be null.
+    // ResourceRequest::trusted_params, but the RequestType should be
+    // kOther, and the SiteForCookies should be null.
     EXPECT_TRUE(
         net::IsolationInfo::Create(
-            net::IsolationInfo::RedirectMode::kUpdateNothing, top_frame_origin,
+            net::IsolationInfo::RequestType::kOther, top_frame_origin,
             test_server_origin /* frame_origin */, net::SiteForCookies())
             .IsEqualForTesting(mock_origin_policy_manager.isolation_info()));
   }

@@ -193,8 +193,8 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
   DCHECK(context_);
   DCHECK(origin_access_list_);
   DCHECK_NE(mojom::kInvalidProcessId, process_id_);
-  DCHECK_EQ(net::IsolationInfo::RedirectMode::kUpdateNothing,
-            params->isolation_info.redirect_mode());
+  DCHECK_EQ(net::IsolationInfo::RequestType::kOther,
+            params->isolation_info.request_type());
   if (params->automatically_assign_isolation_info) {
     DCHECK(params->isolation_info.IsEmpty());
     // Only the browser process is currently permitted to use automatically

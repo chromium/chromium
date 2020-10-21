@@ -17,20 +17,20 @@ namespace mojo {
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
-    EnumTraits<network::mojom::IsolationInfoRedirectMode,
-               net::IsolationInfo::RedirectMode> {
-  static network::mojom::IsolationInfoRedirectMode ToMojom(
-      net::IsolationInfo::RedirectMode redirect_mode);
-  static bool FromMojom(network::mojom::IsolationInfoRedirectMode redirect_mode,
-                        net::IsolationInfo::RedirectMode* out);
+    EnumTraits<network::mojom::IsolationInfoRequestType,
+               net::IsolationInfo::RequestType> {
+  static network::mojom::IsolationInfoRequestType ToMojom(
+      net::IsolationInfo::RequestType request_type);
+  static bool FromMojom(network::mojom::IsolationInfoRequestType request_type,
+                        net::IsolationInfo::RequestType* out);
 };
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     StructTraits<network::mojom::IsolationInfoDataView, net::IsolationInfo> {
-  static net::IsolationInfo::RedirectMode redirect_mode(
+  static net::IsolationInfo::RequestType request_type(
       const net::IsolationInfo& input) {
-    return input.redirect_mode();
+    return input.request_type();
   }
 
   static const base::Optional<url::Origin>& top_frame_origin(

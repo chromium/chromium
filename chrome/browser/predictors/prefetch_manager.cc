@@ -237,8 +237,8 @@ void PrefetchManager::PrefetchUrl(
 
   request.trusted_params = network::ResourceRequest::TrustedParams();
   request.trusted_params->isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RedirectMode::kUpdateNothing, top_frame_origin,
-      frame_origin, net::SiteForCookies::FromUrl(info.url));
+      net::IsolationInfo::RequestType::kOther, top_frame_origin, frame_origin,
+      net::SiteForCookies::FromUrl(info.url));
 
   // TODO(crbug.com/1092329): Ensure the request is seen by extensions.
 

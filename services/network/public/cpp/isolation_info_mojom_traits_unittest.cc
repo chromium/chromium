@@ -24,21 +24,20 @@ TEST(IsolationInfoMojomTraitsTest, SerializeAndDeserialize) {
       net::IsolationInfo(),
       net::IsolationInfo::CreateTransient(),
       net::IsolationInfo::CreateOpaqueAndNonTransient(),
-      net::IsolationInfo::Create(
-          net::IsolationInfo::RedirectMode::kUpdateTopFrame, kOrigin1, kOrigin1,
-          net::SiteForCookies::FromOrigin(kOrigin1)),
-      net::IsolationInfo::Create(
-          net::IsolationInfo::RedirectMode::kUpdateFrameOnly, kOrigin1,
-          kOrigin2, net::SiteForCookies::FromOrigin(kOrigin1)),
-      net::IsolationInfo::Create(
-          net::IsolationInfo::RedirectMode::kUpdateFrameOnly, kOrigin1,
-          kOrigin2, net::SiteForCookies()),
-      net::IsolationInfo::Create(
-          net::IsolationInfo::RedirectMode::kUpdateNothing, kOrigin1, kOrigin1,
-          net::SiteForCookies::FromOrigin(kOrigin1)),
-      net::IsolationInfo::Create(
-          net::IsolationInfo::RedirectMode::kUpdateNothing, url::Origin(),
-          url::Origin(), net::SiteForCookies()),
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kMainFrame,
+                                 kOrigin1, kOrigin1,
+                                 net::SiteForCookies::FromOrigin(kOrigin1)),
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kSubFrame,
+                                 kOrigin1, kOrigin2,
+                                 net::SiteForCookies::FromOrigin(kOrigin1)),
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kSubFrame,
+                                 kOrigin1, kOrigin2, net::SiteForCookies()),
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                 kOrigin1, kOrigin1,
+                                 net::SiteForCookies::FromOrigin(kOrigin1)),
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                 url::Origin(), url::Origin(),
+                                 net::SiteForCookies()),
   };
 
   for (auto original : keys) {

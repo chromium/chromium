@@ -44,7 +44,7 @@ network::ResourceRequest CreateResourceRequest(
     return request;
 
   request.trusted_params->isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RedirectMode::kUpdateNothing,
+      net::IsolationInfo::RequestType::kOther,
       url::Origin::Create(GURL(isolation_info_top_frame_origin_url)),
       url::Origin::Create(GURL(isolation_info_frame_origin_url)),
       net::SiteForCookies());

@@ -116,7 +116,7 @@ void MediaFeedsFetcher::FetchFeed(const GURL& url,
   resource_request->site_for_cookies = net::SiteForCookies::FromOrigin(origin);
   resource_request->trusted_params = network::ResourceRequest::TrustedParams();
   resource_request->trusted_params->isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RedirectMode::kUpdateNothing, origin, origin,
+      net::IsolationInfo::RequestType::kOther, origin, origin,
       net::SiteForCookies::FromOrigin(origin));
 
   if (bypass_cache)

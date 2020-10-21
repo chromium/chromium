@@ -326,8 +326,8 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
       creator_render_frame_host, net::SiteForCookies::FromOrigin(worker_origin),
       host->instance().constructor_origin(),
       net::IsolationInfo::Create(
-          net::IsolationInfo::RedirectMode::kUpdateNothing, worker_origin,
-          worker_origin, net::SiteForCookies::FromOrigin(worker_origin)),
+          net::IsolationInfo::RequestType::kOther, worker_origin, worker_origin,
+          net::SiteForCookies::FromOrigin(worker_origin)),
       credentials_mode, std::move(outside_fetch_client_settings_object),
       blink::mojom::ResourceType::kSharedWorker, service_worker_context_,
       service_worker_handle_raw, std::move(appcache_host),

@@ -231,7 +231,7 @@ std::unique_ptr<TestURLLoaderClient> FetchRequest(
   // NIK must be consistent with |site_for_cookies|.
   if (request.site_for_cookies.IsNull()) {
     params->isolation_info = net::IsolationInfo::Create(
-        net::IsolationInfo::RedirectMode::kUpdateNothing,
+        net::IsolationInfo::RequestType::kOther,
         url::Origin::Create(GURL("https://abc.com")),
         url::Origin::Create(GURL("https://xyz.com")), request.site_for_cookies);
   } else {
@@ -6443,8 +6443,8 @@ class NetworkContextSplitCacheTest : public NetworkContextTest {
     auto params = mojom::URLLoaderFactoryParams::New();
     params->process_id = mojom::kBrowserProcessId;
     params->is_corb_enabled = false;
-    if (isolation_info.redirect_mode() ==
-        net::IsolationInfo::RedirectMode::kUpdateNothing) {
+    if (isolation_info.request_type() ==
+        net::IsolationInfo::RequestType::kOther) {
       params->isolation_info = isolation_info;
     } else {
       request.trusted_params = ResourceRequest::TrustedParams();
@@ -6513,18 +6513,18 @@ TEST_F(NetworkContextSplitCacheTest,
        NavigationResourceCachedUsingNetworkIsolationKey) {
   GURL url = test_server()->GetURL("othersite.test", "/main.html");
   url::Origin origin_a = url::Origin::Create(url);
-  net::IsolationInfo info_a = net::IsolationInfo::Create(
-      net::IsolationInfo::RedirectMode::kUpdateFrameOnly, origin_a, origin_a,
-      net::SiteForCookies());
+  net::IsolationInfo info_a =
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kSubFrame,
+                                 origin_a, origin_a, net::SiteForCookies());
   LoadAndVerifyCached(url, info_a, false /* was_cached */);
 
   // Load again with a different isolation key. The cached entry should not be
   // loaded.
   GURL url_b = test_server()->GetURL("/main.html");
   url::Origin origin_b = url::Origin::Create(url_b);
-  net::IsolationInfo info_b = net::IsolationInfo::Create(
-      net::IsolationInfo::RedirectMode::kUpdateFrameOnly, origin_b, origin_b,
-      net::SiteForCookies());
+  net::IsolationInfo info_b =
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kSubFrame,
+                                 origin_b, origin_b, net::SiteForCookies());
   LoadAndVerifyCached(url_b, info_b, false /* was_cached */);
 
   // Load again with the same isolation key. The cached entry should be loaded.
@@ -6541,17 +6541,17 @@ TEST_F(NetworkContextSplitCacheTest,
 
   GURL url = test_server()->GetURL("/resource");
   url::Origin origin_a = url::Origin::Create(GURL("http://a.test/"));
-  net::IsolationInfo info_a = net::IsolationInfo::Create(
-      net::IsolationInfo::RedirectMode::kUpdateNothing, origin_a, origin_a,
-      net::SiteForCookies());
+  net::IsolationInfo info_a =
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                 origin_a, origin_a, net::SiteForCookies());
   LoadAndVerifyCached(url, info_a, false /* was_cached */);
 
   // Load again with a different isolation key. The cached entry should not be
   // loaded.
   url::Origin origin_b = url::Origin::Create(GURL("http://b.test/"));
-  net::IsolationInfo info_b = net::IsolationInfo::Create(
-      net::IsolationInfo::RedirectMode::kUpdateNothing, origin_a, origin_b,
-      net::SiteForCookies());
+  net::IsolationInfo info_b =
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                 origin_a, origin_b, net::SiteForCookies());
   LoadAndVerifyCached(url, info_b, false /* was_cached */);
 }
 
@@ -6563,7 +6563,7 @@ TEST_F(NetworkContextSplitCacheTest,
       test_server()->GetURL("othersite.test", "/title1.html").spec());
   url::Origin origin = url::Origin::Create(url);
   net::IsolationInfo info = net::IsolationInfo::Create(
-      net::IsolationInfo::RedirectMode::kUpdateTopFrame, origin, origin,
+      net::IsolationInfo::RequestType::kMainFrame, origin, origin,
       net::SiteForCookies::FromOrigin(origin));
   LoadAndVerifyCached(url, info, false /* was_cached */,
                       true /* expect_redirect */);
@@ -6578,7 +6578,7 @@ TEST_F(NetworkContextSplitCacheTest,
   // A non-navigation resource with the same key and url should also be cached.
   net::IsolationInfo non_navigation_redirected_info =
       net::IsolationInfo::Create(
-          net::IsolationInfo::RedirectMode::kUpdateNothing, redirected_origin,
+          net::IsolationInfo::RequestType::kOther, redirected_origin,
           redirected_origin,
           net::SiteForCookies::FromOrigin(redirected_origin));
   LoadAndVerifyCached(redirected_url, non_navigation_redirected_info,

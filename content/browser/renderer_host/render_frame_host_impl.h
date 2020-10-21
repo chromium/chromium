@@ -1999,7 +1999,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // subresources, |frame_origin| is the value of |last_committed_origin_|.
   net::IsolationInfo ComputeIsolationInfoInternal(
       const url::Origin& frame_origin,
-      net::IsolationInfo::RedirectMode redirect_mode) const;
+      net::IsolationInfo::RequestType request_type) const;
 
 #if defined(OS_ANDROID)
   void ForwardGetInterfaceToRenderFrame(const std::string& interface_name,

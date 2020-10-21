@@ -262,9 +262,9 @@ ServiceWorkerDevToolsAgentHost::CreateNetworkFactoryParamsForDevTools() {
   const url::Origin origin = url::Origin::Create(url_);
   auto factory = URLLoaderFactoryParamsHelper::CreateForWorker(
       rph, origin,
-      net::IsolationInfo::Create(
-          net::IsolationInfo::RedirectMode::kUpdateNothing, origin, origin,
-          net::SiteForCookies::FromOrigin(origin)),
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                 origin, origin,
+                                 net::SiteForCookies::FromOrigin(origin)),
       /*coep_reporter=*/mojo::NullRemote());
   return {url::Origin::Create(GetURL()), net::SiteForCookies::FromUrl(GetURL()),
           std::move(factory)};

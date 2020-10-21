@@ -6695,22 +6695,22 @@ TEST_F(URLRequestTestHTTP, IsolationInfoUpdatedOnRedirect) {
     IsolationInfo expected_info_after_redirect;
   } kTestCases[] = {
       {IsolationInfo(), IsolationInfo()},
-      {IsolationInfo::Create(IsolationInfo::RedirectMode::kUpdateTopFrame,
+      {IsolationInfo::Create(IsolationInfo::RequestType::kMainFrame,
                              original_origin, original_origin,
                              SiteForCookies()),
-       IsolationInfo::Create(IsolationInfo::RedirectMode::kUpdateTopFrame,
+       IsolationInfo::Create(IsolationInfo::RequestType::kMainFrame,
                              redirect_origin, redirect_origin,
                              SiteForCookies::FromOrigin(redirect_origin))},
-      {IsolationInfo::Create(IsolationInfo::RedirectMode::kUpdateFrameOnly,
+      {IsolationInfo::Create(IsolationInfo::RequestType::kSubFrame,
                              original_origin, original_origin,
                              SiteForCookies::FromOrigin(original_origin)),
-       IsolationInfo::Create(IsolationInfo::RedirectMode::kUpdateFrameOnly,
+       IsolationInfo::Create(IsolationInfo::RequestType::kSubFrame,
                              original_origin, redirect_origin,
                              SiteForCookies::FromOrigin(original_origin))},
-      {IsolationInfo::Create(IsolationInfo::RedirectMode::kUpdateNothing,
+      {IsolationInfo::Create(IsolationInfo::RequestType::kOther,
                              original_origin, original_origin,
                              SiteForCookies()),
-       IsolationInfo::Create(IsolationInfo::RedirectMode::kUpdateNothing,
+       IsolationInfo::Create(IsolationInfo::RequestType::kOther,
                              original_origin, original_origin,
                              SiteForCookies())},
       {transient_isolation_info, transient_isolation_info},
@@ -6746,8 +6746,8 @@ TEST_F(URLRequestTestHTTP, IsolationInfoUpdatedOnRedirect) {
       EXPECT_EQ(!test_case.expected_info_after_redirect.network_isolation_key()
                      .IsTransient(),
                 r->was_cached());
-      EXPECT_EQ(test_case.expected_info_after_redirect.redirect_mode(),
-                r->isolation_info().redirect_mode());
+      EXPECT_EQ(test_case.expected_info_after_redirect.request_type(),
+                r->isolation_info().request_type());
       EXPECT_EQ(test_case.expected_info_after_redirect.top_frame_origin(),
                 r->isolation_info().top_frame_origin());
       EXPECT_EQ(test_case.expected_info_after_redirect.frame_origin(),

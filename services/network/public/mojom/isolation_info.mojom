@@ -7,19 +7,19 @@ module network.mojom;
 import "services/network/public/mojom/site_for_cookies.mojom";
 import "url/mojom/origin.mojom";
 
-// Mapped to net::IsolationInfo::RedirectMode, which is what consumers should
+// Mapped to net::IsolationInfo::RequestType, which is what consumers should
 // be using instead of using this directly.
-enum IsolationInfoRedirectMode {
-  kUpdateTopFrame,
-  kUpdateFrameOnly,
-  kUpdateNothing,
+enum IsolationInfoRequestType {
+  kMainFrame,
+  kSubFrame,
+  kOther,
 };
 
 // Mapped to net::IsolationInfo.
 struct IsolationInfo {
   // These fields should not be used directly, but rather through the mapped
   // net::IsolationInfo.
-  IsolationInfoRedirectMode redirect_mode;
+  IsolationInfoRequestType request_type;
   url.mojom.Origin? top_frame_origin;
   url.mojom.Origin? frame_origin;
   bool opaque_and_non_transient;

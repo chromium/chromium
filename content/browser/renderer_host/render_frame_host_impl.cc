@@ -2569,12 +2569,12 @@ const url::Origin& RenderFrameHostImpl::ComputeTopFrameOrigin(
 
 net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoForNavigation(
     const GURL& destination) const {
-  net::IsolationInfo::RedirectMode redirect_mode =
+  net::IsolationInfo::RequestType request_type =
       frame_tree_node_->IsMainFrame()
-          ? net::IsolationInfo::RedirectMode::kUpdateTopFrame
-          : net::IsolationInfo::RedirectMode::kUpdateFrameOnly;
+          ? net::IsolationInfo::RequestType::kMainFrame
+          : net::IsolationInfo::RequestType::kSubFrame;
   return ComputeIsolationInfoInternal(url::Origin::Create(destination),
-                                      redirect_mode);
+                                      request_type);
 }
 
 net::SiteForCookies RenderFrameHostImpl::ComputeSiteForCookies() {
@@ -2583,7 +2583,7 @@ net::SiteForCookies RenderFrameHostImpl::ComputeSiteForCookies() {
 
 net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoInternal(
     const url::Origin& frame_origin,
-    net::IsolationInfo::RedirectMode redirect_mode) const {
+    net::IsolationInfo::RequestType request_type) const {
   url::Origin top_frame_origin = ComputeTopFrameOrigin(frame_origin);
 
   net::SiteForCookies candidate_site_for_cookies =
@@ -2594,7 +2594,7 @@ net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoInternal(
           ->ShouldTreatURLSchemeAsFirstPartyWhenTopLevel(
               top_frame_origin.scheme(),
               GURL::SchemeIsCryptographic(frame_origin.scheme()))) {
-    return net::IsolationInfo::Create(redirect_mode, top_frame_origin,
+    return net::IsolationInfo::Create(request_type, top_frame_origin,
                                       frame_origin, candidate_site_for_cookies);
   }
 
@@ -2606,23 +2606,23 @@ net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoInternal(
        rfh = rfh->parent_) {
     if (!candidate_site_for_cookies.IsEquivalent(
             net::SiteForCookies::FromOrigin(rfh->last_committed_origin_))) {
-      return net::IsolationInfo::Create(redirect_mode, top_frame_origin,
+      return net::IsolationInfo::Create(request_type, top_frame_origin,
                                         frame_origin, net::SiteForCookies());
     }
     candidate_site_for_cookies.MarkIfCrossScheme(rfh->last_committed_origin_);
   }
 
-  // If |redirect_mode| is kUpdateNothing, then IsolationInfo is being computed
+  // If |request_type| is kOther, then IsolationInfo is being computed
   // for subresource requests. In that case, also need to check the
   // SiteForCookies against the frame origin.
-  if (redirect_mode == net::IsolationInfo::RedirectMode::kUpdateNothing &&
+  if (request_type == net::IsolationInfo::RequestType::kOther &&
       !candidate_site_for_cookies.IsEquivalent(
           net::SiteForCookies::FromOrigin(frame_origin))) {
-    return net::IsolationInfo::Create(redirect_mode, top_frame_origin,
+    return net::IsolationInfo::Create(request_type, top_frame_origin,
                                       frame_origin, net::SiteForCookies());
   }
 
-  return net::IsolationInfo::Create(redirect_mode, top_frame_origin,
+  return net::IsolationInfo::Create(request_type, top_frame_origin,
                                     frame_origin, candidate_site_for_cookies);
 }
 
@@ -2643,7 +2643,7 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
                                      ? new_frame_creator.DeriveNewOpaqueOrigin()
                                      : new_frame_creator;
   isolation_info_ = ComputeIsolationInfoInternal(
-      new_frame_origin, net::IsolationInfo::RedirectMode::kUpdateNothing);
+      new_frame_origin, net::IsolationInfo::RequestType::kOther);
   SetLastCommittedOrigin(new_frame_origin);
 
   // Construct the frame's feature policy only once we know its initial
@@ -6124,9 +6124,9 @@ void RenderFrameHostImpl::CommitNavigation(
   // for opaque origin same document navigations, a new origin should not be
   // created as that would be different from the original.
   if (!is_same_document) {
-    isolation_info_ = ComputeIsolationInfoInternal(
-        main_world_origin_for_url_loader_factory,
-        net::IsolationInfo::RedirectMode::kUpdateNothing);
+    isolation_info_ =
+        ComputeIsolationInfoInternal(main_world_origin_for_url_loader_factory,
+                                     net::IsolationInfo::RequestType::kOther);
   }
   DCHECK(!isolation_info_.IsEmpty());
 

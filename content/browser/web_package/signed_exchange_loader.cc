@@ -151,7 +151,7 @@ void SignedExchangeLoader::OnStartLoadingResponseBody(
       (outer_request_.trusted_params &&
        !outer_request_.trusted_params->isolation_info.IsEmpty())
           ? net::IsolationInfo::Create(
-                net::IsolationInfo::RedirectMode::kUpdateNothing,
+                net::IsolationInfo::RequestType::kOther,
                 *outer_request_.trusted_params->isolation_info
                      .top_frame_origin(),
                 *outer_request_.trusted_params->isolation_info.frame_origin(),

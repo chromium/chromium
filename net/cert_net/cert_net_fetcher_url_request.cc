@@ -522,10 +522,9 @@ void Job::StartURLRequest(URLRequestContext* context) {
   // result to still be cached in the HTTP cache, and lets URLRequest DCHECK
   // that all requests have non-empty IsolationInfos.
   url::Origin origin = url::Origin::Create(request_params_->url);
-  url_request_->set_isolation_info(
-      IsolationInfo::Create(IsolationInfo::RedirectMode::kUpdateNothing,
-                            origin /* top_frame_origin */,
-                            origin /* frame_origin */, SiteForCookies()));
+  url_request_->set_isolation_info(IsolationInfo::Create(
+      IsolationInfo::RequestType::kOther, origin /* top_frame_origin */,
+      origin /* frame_origin */, SiteForCookies()));
 
   url_request_->Start();
 

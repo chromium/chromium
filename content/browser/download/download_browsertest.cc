@@ -3590,7 +3590,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
   // The IsolationInfo after the cross-site redirect should be the same as
   // if there were a top-level navigation to the final URL.
   net::IsolationInfo expected_isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RedirectMode::kUpdateTopFrame, final_url_origin,
+      net::IsolationInfo::RequestType::kMainFrame, final_url_origin,
       final_url_origin, net::SiteForCookies::FromOrigin(final_url_origin));
 
   // <origin_one>/download-attribute.html initiates a download of
@@ -4066,7 +4066,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
       kOriginTwo, SlowDownloadHttpResponse::kKnownSizeUrl);
   url::Origin download_origin = url::Origin::Create(slow_download_url);
   net::IsolationInfo expected_isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RedirectMode::kUpdateTopFrame, download_origin,
+      net::IsolationInfo::RequestType::kMainFrame, download_origin,
       download_origin, net::SiteForCookies::FromOrigin(download_origin));
 
   GURL frame_url = embedded_test_server()->GetURL(
@@ -4135,7 +4135,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
   // The IsolationInfo of the download should be the same as that of a top-level
   // navigation to the download.
   net::IsolationInfo expected_isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RedirectMode::kUpdateFrameOnly, download_origin,
+      net::IsolationInfo::RequestType::kSubFrame, download_origin,
       download_origin, net::SiteForCookies::FromOrigin(download_origin));
 
   GURL frame_url = origin_one.GetURL("/download-attribute.html?target=" +

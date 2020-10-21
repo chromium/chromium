@@ -63,7 +63,7 @@ class WellKnownChangePasswordStateTest
   WellKnownChangePasswordStateTest() {
     auto origin = url::Origin::Create(GURL(kOrigin));
     trusted_params_.isolation_info = net::IsolationInfo::CreatePartial(
-        net::IsolationInfo::RedirectMode::kUpdateNothing,
+        net::IsolationInfo::RequestType::kOther,
         net::NetworkIsolationKey(origin, origin));
     state_.FetchNonExistingResource(
         test_shared_loader_factory_.get(), GURL(kOrigin),

@@ -696,7 +696,7 @@ void IsolatedPrerenderTabHelper::StartSinglePrefetch() {
 
   url::Origin origin = url::Origin::Create(url);
   net::IsolationInfo isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RedirectMode::kUpdateTopFrame, origin, origin,
+      net::IsolationInfo::RequestType::kMainFrame, origin, origin,
       net::SiteForCookies::FromOrigin(origin));
   network::ResourceRequest::TrustedParams trusted_params;
   trusted_params.isolation_info = isolation_info;

@@ -144,7 +144,7 @@ WellKnownChangePasswordNavigationThrottle::WillStartRequest() {
   // redirects.
   network::ResourceRequest::TrustedParams trusted_params;
   trusted_params.isolation_info = net::IsolationInfo::CreatePartial(
-      net::IsolationInfo::RedirectMode::kUpdateNothing,
+      net::IsolationInfo::RequestType::kOther,
       navigation_handle()->GetIsolationInfo().network_isolation_key());
   well_known_change_password_state_.FetchNonExistingResource(
       url_loader_factory.get(), request_url_,

@@ -840,9 +840,9 @@ class WebSocketChannelTest : public TestWithTaskEnvironment {
         : socket_url("ws://ws/"),
           origin(url::Origin::Create(GURL("http://ws"))),
           site_for_cookies(SiteForCookies::FromUrl(GURL("http://ws/"))) {
-      this->isolation_info = IsolationInfo::Create(
-          IsolationInfo::RedirectMode::kUpdateNothing, origin, origin,
-          SiteForCookies::FromOrigin(origin));
+      this->isolation_info =
+          IsolationInfo::Create(IsolationInfo::RequestType::kOther, origin,
+                                origin, SiteForCookies::FromOrigin(origin));
     }
 
     // URLRequestContext object.
@@ -981,7 +981,7 @@ TEST_F(WebSocketChannelTest, EverythingIsPassedToTheCreatorFunction) {
   connect_data_.site_for_cookies =
       SiteForCookies::FromUrl(GURL("http://example.com/"));
   connect_data_.isolation_info = net::IsolationInfo::Create(
-      IsolationInfo::RedirectMode::kUpdateNothing, connect_data_.origin,
+      IsolationInfo::RequestType::kOther, connect_data_.origin,
       connect_data_.origin, SiteForCookies::FromOrigin(connect_data_.origin));
   connect_data_.requested_subprotocols.push_back("Sinbad");
 

@@ -131,7 +131,7 @@ WebApkIconHasher::WebApkIconHasher(
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->trusted_params = network::ResourceRequest::TrustedParams();
   resource_request->trusted_params->isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RedirectMode::kUpdateNothing, request_initiator,
+      net::IsolationInfo::RequestType::kOther, request_initiator,
       request_initiator, net::SiteForCookies());
   resource_request->request_initiator = request_initiator;
   resource_request->url = icon_url;

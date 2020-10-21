@@ -236,7 +236,7 @@ TEST_F(ThroughputAnalyzerTest, MAYBE_MaximumRequestsWithNetworkIsolationKey) {
                                 TRAFFIC_ANNOTATION_FOR_TESTS));
       if (use_network_isolation_key)
         request->set_isolation_info(IsolationInfo::CreatePartial(
-            IsolationInfo::RedirectMode::kUpdateNothing, kNetworkIsolationKey));
+            IsolationInfo::RequestType::kOther, kNetworkIsolationKey));
       throughput_analyzer.NotifyStartTransaction(*(request.get()));
       requests.push_back(std::move(request));
     }
