@@ -102,6 +102,7 @@ FloatSize StyleFetchedImageSet::ImageSize(
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
     return ImageSizeForSVGImage(svg_image, multiplier, default_object_size);
   }
+  respect_orientation = ForceOrientationIfNecessary(respect_orientation);
   FloatSize natural_size(image->Size(respect_orientation));
   FloatSize scaled_image_size(ApplyZoom(natural_size, multiplier));
   scaled_image_size.Scale(1 / image_scale_factor_);
@@ -141,6 +142,19 @@ scoped_refptr<Image> StyleFetchedImageSet::GetImage(
 bool StyleFetchedImageSet::KnownToBeOpaque(const Document&,
                                            const ComputedStyle&) const {
   return best_fit_image_->GetImage()->CurrentFrameKnownToBeOpaque();
+}
+
+RespectImageOrientationEnum StyleFetchedImageSet::ForceOrientationIfNecessary(
+    RespectImageOrientationEnum default_orientation) const {
+  // SVG Images don't have orientation and assert on loading when
+  // IsAccessAllowed is called.
+  if (best_fit_image_->GetImage()->IsSVGImage())
+    return default_orientation;
+  // Cross-origin images must always respect orientation to prevent
+  // potentially private data leakage.
+  if (!best_fit_image_->IsAccessAllowed())
+    return kRespectImageOrientation;
+  return default_orientation;
 }
 
 void StyleFetchedImageSet::Trace(Visitor* visitor) const {

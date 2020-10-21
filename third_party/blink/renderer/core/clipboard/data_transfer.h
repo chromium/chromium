@@ -148,7 +148,6 @@ class CORE_EXPORT DataTransfer final : public ScriptWrappable,
   static std::unique_ptr<DragImage> CreateDragImageForFrame(
       LocalFrame&,
       float,
-      RespectImageOrientationEnum,
       const FloatSize& css_size,
       const FloatPoint& paint_offset,
       PaintRecordBuilder&,

@@ -1820,11 +1820,16 @@ BoxPainterBase::FillLayerInfo NGBoxFragmentPainter::GetFillLayerInfo(
     BackgroundBleedAvoidance bleed_avoidance,
     bool is_painting_scrolling_background) const {
   const NGPhysicalBoxFragment& fragment = PhysicalFragment();
+  RespectImageOrientationEnum respect_orientation =
+      LayoutObject::ShouldRespectImageOrientation(fragment.GetLayoutObject());
+  if (auto* style_image = bg_layer.GetImage()) {
+    respect_orientation =
+        style_image->ForceOrientationIfNecessary(respect_orientation);
+  }
   return BoxPainterBase::FillLayerInfo(
       fragment.GetLayoutObject()->GetDocument(), fragment.Style(),
       fragment.IsScrollContainer(), color, bg_layer, bleed_avoidance,
-      LayoutObject::ShouldRespectImageOrientation(fragment.GetLayoutObject()),
-      box_fragment_.SidesToInclude(),
+      respect_orientation, box_fragment_.SidesToInclude(),
       fragment.GetLayoutObject()->IsLayoutInline(),
       is_painting_scrolling_background);
 }

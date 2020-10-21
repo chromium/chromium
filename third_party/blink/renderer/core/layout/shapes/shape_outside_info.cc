@@ -190,10 +190,14 @@ std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
     WritingMode writing_mode,
     float margin) const {
   DCHECK(!style_image->IsPendingImage());
+
+  RespectImageOrientationEnum respect_orientation =
+      style_image->ForceOrientationIfNecessary(
+          LayoutObject::ShouldRespectImageOrientation(layout_box_));
+
   const LayoutSize& image_size = RoundedLayoutSize(style_image->ImageSize(
       layout_box_->GetDocument(), layout_box_->StyleRef().EffectiveZoom(),
-      FloatSize(reference_box_logical_size_),
-      LayoutObject::ShouldRespectImageOrientation(layout_box_)));
+      FloatSize(reference_box_logical_size_), respect_orientation));
 
   const LayoutRect& margin_rect =
       GetShapeImageMarginRect(*layout_box_, reference_box_logical_size_);
@@ -206,9 +210,9 @@ std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
       style_image->GetImage(*layout_box_, layout_box_->GetDocument(),
                             layout_box_->StyleRef(), FloatSize(image_size));
 
-  return Shape::CreateRasterShape(
-      image.get(), shape_image_threshold, image_rect, margin_rect, writing_mode,
-      margin, LayoutObject::ShouldRespectImageOrientation(layout_box_));
+  return Shape::CreateRasterShape(image.get(), shape_image_threshold,
+                                  image_rect, margin_rect, writing_mode, margin,
+                                  respect_orientation);
 }
 
 const Shape& ShapeOutsideInfo::ComputedShape() const {

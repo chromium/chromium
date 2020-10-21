@@ -74,6 +74,9 @@ class StyleFetchedImage final : public StyleImage,
 
   void LoadDeferredImage(const Document& document);
 
+  RespectImageOrientationEnum ForceOrientationIfNecessary(
+      RespectImageOrientationEnum default_orientation) const override;
+
   void Trace(Visitor*) const override;
 
  private:

@@ -251,13 +251,22 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
     }
   }
 
-  context.DrawImage(
-      image.get(), decode_mode, FloatRect(pixel_snapped_dest_rect), &src_rect,
-      layout_image_.StyleRef().HasFilterInducingProperty(),
-      SkBlendMode::kSrcOver,
-      LayoutObject::ShouldRespectImageOrientation(&layout_image_));
-
   ImageResourceContent* image_content = image_resource.CachedImage();
+
+  // Always respect the orientation of opaque origin images to avoid leaking
+  // image data. Otherwise pull orientation from the layout object's style.
+  RespectImageOrientationEnum respect_orientation =
+      LayoutObject::ShouldRespectImageOrientation(&layout_image_);
+  if (image_content) {
+    respect_orientation =
+        image_content->ForceOrientationIfNecessary(respect_orientation);
+  }
+
+  context.DrawImage(image.get(), decode_mode,
+                    FloatRect(pixel_snapped_dest_rect), &src_rect,
+                    layout_image_.StyleRef().HasFilterInducingProperty(),
+                    SkBlendMode::kSrcOver, respect_orientation);
+
   if ((IsA<HTMLImageElement>(node) || IsA<HTMLVideoElement>(node)) &&
       image_content && image_content->IsLoaded()) {
     LocalDOMWindow* window = layout_image_.GetDocument().domWindow();

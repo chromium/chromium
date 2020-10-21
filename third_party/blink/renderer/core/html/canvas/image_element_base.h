@@ -60,11 +60,6 @@ class CORE_EXPORT ImageElementBase : public CanvasImageSource,
   // Used with HTMLImageElement and SVGImageElement types.
   Image::ImageDecodingMode GetDecodingModeForPainting(PaintImage::Id);
 
-  // Return the image orientation setting from the layout object, if available.
-  // In the absence of a layout object, kRespectImageOrientation will be
-  // returned.
-  RespectImageOrientationEnum RespectImageOrientation() const;
-
  protected:
   Image::ImageDecodingMode decoding_mode_ =
       Image::ImageDecodingMode::kUnspecifiedDecode;

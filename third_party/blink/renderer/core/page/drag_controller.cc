@@ -1092,17 +1092,24 @@ static std::unique_ptr<DragImage> DragImageForImage(
       interpolation_quality = kInterpolationNone;
   }
 
-  RespectImageOrientationEnum respect_image_orientation =
+  // Always respect the orientation of opaque origin images to avoid leaking
+  // image data. Otherwise pull orientation from the layout object's style.
+  ImageResourceContent* image_content = GetImageResource(element);
+  RespectImageOrientationEnum respect_orientation =
       LayoutObject::ShouldRespectImageOrientation(element->GetLayoutObject());
+  if (image_content) {
+    respect_orientation =
+        image_content->ForceOrientationIfNecessary(respect_orientation);
+  }
 
-  IntSize image_size = image->Size(respect_image_orientation);
+  IntSize image_size = image->Size(respect_orientation);
   FloatSize image_scale =
       DragImage::ClampedImageScale(image_size, image_element_size_in_pixels,
                                    MaxDragImageSize(device_scale_factor));
 
   if (image_size.Area() <= kMaxOriginalImageArea &&
       (drag_image = DragImage::Create(
-           image, respect_image_orientation, device_scale_factor,
+           image, respect_orientation, device_scale_factor,
            interpolation_quality, kDragImageAlpha, image_scale))) {
     IntSize original_size = image_element_size_in_pixels;
     origin = image_element_location;
@@ -1180,8 +1187,8 @@ std::unique_ptr<DragImage> DragController::DragImageForSelection(
                                  .LocalBorderBoxProperties()
                                  .Unalias();
   return DataTransfer::CreateDragImageForFrame(
-      frame, opacity, kRespectImageOrientation, painting_rect.Size(),
-      painting_rect.Location(), builder, property_tree_state);
+      frame, opacity, painting_rect.Size(), painting_rect.Location(), builder,
+      property_tree_state);
 }
 
 bool DragController::StartDrag(LocalFrame* src,

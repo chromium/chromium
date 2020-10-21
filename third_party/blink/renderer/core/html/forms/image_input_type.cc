@@ -188,7 +188,7 @@ unsigned ImageInputType::Height() const {
     HTMLImageLoader* image_loader = GetElement().ImageLoader();
     if (image_loader && image_loader->GetContent()) {
       return image_loader->GetContent()
-          ->IntrinsicSize(LayoutObject::ShouldRespectImageOrientation(nullptr))
+          ->IntrinsicSize(kRespectImageOrientation)
           .Height();
     }
   }
@@ -214,7 +214,7 @@ unsigned ImageInputType::Width() const {
     HTMLImageLoader* image_loader = GetElement().ImageLoader();
     if (image_loader && image_loader->GetContent()) {
       return image_loader->GetContent()
-          ->IntrinsicSize(LayoutObject::ShouldRespectImageOrientation(nullptr))
+          ->IntrinsicSize(kRespectImageOrientation)
           .Width();
     }
   }

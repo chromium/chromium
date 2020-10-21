@@ -80,6 +80,9 @@ class StyleFetchedImageSet final : public StyleImage,
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const override;
   ImageResourceContent* CachedImage() const override;
 
+  RespectImageOrientationEnum ForceOrientationIfNecessary(
+      RespectImageOrientationEnum default_orientation) const override;
+
   void Trace(Visitor*) const override;
 
  private:

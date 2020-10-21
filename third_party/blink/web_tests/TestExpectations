@@ -396,10 +396,6 @@ crbug.com/1076121 external/wpt/css/css-images/image-orientation/image-orientatio
 crbug.com/1076121 external/wpt/css/css-images/image-orientation/image-orientation-border-image.html [ Failure ]
 crbug.com/1076121 external/wpt/css/css-images/image-orientation/image-orientation-background-image.html [ Failure ]
 
-# Cross origin failures
-crbug.com/1110330 external/wpt/css/css-images/image-orientation/image-orientation-none-cross-origin.html [ Failure ]
-crbug.com/1110330 external/wpt/css/css-images/image-orientation/image-orientation-none-cross-origin-canvas.html [ Failure ]
-
 crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-size-near-zero-png.html [ Failure ]
 crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-size-near-zero-svg.html [ Failure ]
 

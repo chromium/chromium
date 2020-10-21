@@ -170,9 +170,4 @@ Image::ImageDecodingMode ImageElementBase::GetDecodingModeForPainting(
   return decoding_mode_;
 }
 
-RespectImageOrientationEnum ImageElementBase::RespectImageOrientation() const {
-  return LayoutObject::ShouldRespectImageOrientation(
-      GetElement().GetLayoutObject());
-}
-
 }  // namespace blink
