@@ -6,6 +6,8 @@
 
 #include <windows.h>
 
+#include <memory>
+
 #include "base/lazy_instance.h"
 #include "base/notreached.h"
 #include "ui/base/cursor/cursor.h"
@@ -122,8 +124,8 @@ const wchar_t* GetCursorId(gfx::NativeCursor native_cursor) {
 
 }  // namespace
 
-CursorLoader* CursorLoader::Create() {
-  return new CursorLoaderWin;
+std::unique_ptr<CursorLoader> CursorLoader::Create() {
+  return std::make_unique<CursorLoaderWin>();
 }
 
 CursorLoaderWin::CursorLoaderWin() {

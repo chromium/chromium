@@ -5,6 +5,8 @@
 #ifndef UI_BASE_CURSOR_CURSOR_LOADER_H_
 #define UI_BASE_CURSOR_CURSOR_LOADER_H_
 
+#include <memory>
+
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-forward.h"
@@ -60,7 +62,7 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) CursorLoader {
   virtual void SetPlatformCursor(gfx::NativeCursor* cursor) = 0;
 
   // Creates a CursorLoader.
-  static CursorLoader* Create();
+  static std::unique_ptr<CursorLoader> Create();
 
  private:
   // The current scale of the mouse cursor icon.

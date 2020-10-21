@@ -4,6 +4,7 @@
 
 #include "ui/base/cursor/cursor_loader_ozone.h"
 
+#include <memory>
 #include <vector>
 
 #include "ui/base/cursor/cursor_factory.h"
@@ -98,8 +99,8 @@ PlatformCursor CursorLoaderOzone::CreateFallbackCursor(mojom::CursorType type) {
   return nullptr;
 }
 
-CursorLoader* CursorLoader::Create() {
-  return new CursorLoaderOzone();
+std::unique_ptr<CursorLoader> CursorLoader::Create() {
+  return std::make_unique<CursorLoaderOzone>();
 }
 
 }  // namespace ui
