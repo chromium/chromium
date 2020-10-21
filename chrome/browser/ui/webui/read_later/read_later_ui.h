@@ -12,11 +12,11 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/webui/mojo_bubble_web_ui_controller.h"
 
 class ReadLaterPageHandler;
 
-class ReadLaterUI : public ui::MojoWebUIController,
+class ReadLaterUI : public ui::MojoBubbleWebUIController,
                     public read_later::mojom::PageHandlerFactory {
  public:
   explicit ReadLaterUI(content::WebUI* web_ui);

@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
+#include "chrome/browser/ui/webui/read_later/read_later_ui.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/url_formatter/url_formatter.h"
@@ -40,10 +41,12 @@ int64_t TimeToUS(const base::Time& time) {
 
 ReadLaterPageHandler::ReadLaterPageHandler(
     mojo::PendingReceiver<read_later::mojom::PageHandler> receiver,
-    mojo::PendingRemote<read_later::mojom::Page> page)
+    mojo::PendingRemote<read_later::mojom::Page> page,
+    ReadLaterUI* read_later_ui)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       browser_(chrome::FindLastActive()),
+      read_later_ui_(read_later_ui),
       clock_(base::DefaultClock::GetInstance()) {
   DCHECK(browser_);
 
@@ -91,6 +94,12 @@ void ReadLaterPageHandler::UpdateReadStatus(const GURL& url, bool read) {
 void ReadLaterPageHandler::RemoveEntry(const GURL& url) {
   reading_list_model_->RemoveEntryByURL(url);
   page_->ItemsChanged();
+}
+
+void ReadLaterPageHandler::ShowUI() {
+  auto embedder = read_later_ui_->embedder();
+  if (embedder)
+    embedder->ShowUI();
 }
 
 read_later::mojom::ReadLaterEntryPtr ReadLaterPageHandler::GetEntryData(

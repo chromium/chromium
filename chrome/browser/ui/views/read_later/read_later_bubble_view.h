@@ -7,40 +7,28 @@
 
 #include <memory>
 
-#include "base/memory/weak_ptr.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
-#include "ui/views/bubble/bubble_dialog_delegate_view.h"
-
-namespace views {
-class WebView;
-}
+#include "ui/views/controls/webview/web_bubble_dialog_view.h"
 
 class Browser;
 
 // This bubble view displays a list of read-later entries.
 // This class is only used with the kReadLater feature.
-class ReadLaterBubbleView : public views::BubbleDialogDelegateView,
+class ReadLaterBubbleView : public views::WebBubbleDialogView,
                             public ReadingListModelObserver {
  public:
-  ReadLaterBubbleView(const ReadLaterBubbleView&) = delete;
-  ReadLaterBubbleView& operator=(const ReadLaterBubbleView&) = delete;
-
   // Displays the read-later dialog under |anchor_view|, attached to |browser|.
   static base::WeakPtr<ReadLaterBubbleView> Show(const Browser* browser,
                                                  views::View* anchor_view);
 
- private:
   ReadLaterBubbleView(const Browser* browser, views::View* anchor_view);
-
+  ReadLaterBubbleView(const ReadLaterBubbleView&) = delete;
+  ReadLaterBubbleView& operator=(const ReadLaterBubbleView&) = delete;
   ~ReadLaterBubbleView() override;
 
-  // views::BubbleDialogDelegateView:
-  void AddedToWidget() override;
-
+ private:
   // ReadingListModelObserver:
   void ReadingListModelLoaded(const ReadingListModel* model) override;
-
-  std::unique_ptr<views::WebView> const web_view_;
 
   base::WeakPtrFactory<ReadLaterBubbleView> weak_factory_{this};
 };

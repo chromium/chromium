@@ -34,7 +34,7 @@ void AddLocalizedString(content::WebUIDataSource* source,
 }  // namespace
 
 ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui) {
+    : ui::MojoBubbleWebUIController(web_ui) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIReadLaterHost);
   source->AddResourcePath("read_later.mojom-lite.js",
@@ -72,5 +72,5 @@ void ReadLaterUI::CreatePageHandler(
     mojo::PendingReceiver<read_later::mojom::PageHandler> receiver) {
   DCHECK(page);
   page_handler_ = std::make_unique<ReadLaterPageHandler>(std::move(receiver),
-                                                         std::move(page));
+                                                         std::move(page), this);
 }

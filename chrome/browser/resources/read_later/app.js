@@ -43,6 +43,12 @@ export class ReadLaterAppElement extends PolymerElement {
   ready() {
     super.ready();
     this.updateItems_();
+    // Push ShowUI() callback to the event queue to allow deferred rendering to
+    // take place.
+    // TODO(corising): Determine the ideal place to make this call.
+    setTimeout(() => {
+      this.apiProxy_.showUI();
+    }, 0);
   }
 
   /** @override */

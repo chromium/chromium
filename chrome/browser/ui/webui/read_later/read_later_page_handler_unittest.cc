@@ -59,7 +59,8 @@ class TestReadLaterPageHandler : public ReadLaterPageHandler {
       mojo::PendingRemote<read_later::mojom::Page> page)
       : ReadLaterPageHandler(
             mojo::PendingReceiver<read_later::mojom::PageHandler>(),
-            std::move(page)) {}
+            std::move(page),
+            nullptr) {}
 };
 
 class TestReadLaterPageHandlerTest : public BrowserWithTestWindowTest {

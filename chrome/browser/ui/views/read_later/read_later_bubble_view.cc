@@ -17,17 +17,7 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 
-namespace {
-// ReadLaterWebView ---------------------------------------------------------
-class ReadLaterWebView : public views::WebView {
- public:
-  explicit ReadLaterWebView(content::BrowserContext* context)
-      : views::WebView(context) {}
-  ReadLaterWebView(const ReadLaterWebView&) = delete;
-  ReadLaterWebView& operator=(const ReadLaterWebView&) = delete;
-};
-
-}  // namespace
+#include "chrome/browser/ui/webui/read_later/read_later_ui.h"
 
 // ReadLaterBubbleView ---------------------------------------------------------
 
@@ -35,35 +25,19 @@ class ReadLaterWebView : public views::WebView {
 base::WeakPtr<ReadLaterBubbleView> ReadLaterBubbleView::Show(
     const Browser* browser,
     views::View* anchor_view) {
-  ReadLaterBubbleView* bubble = new ReadLaterBubbleView(browser, anchor_view);
-  views::Widget* const widget = BubbleDialogDelegateView::CreateBubble(bubble);
-  widget->Show();
-  return bubble->weak_factory_.GetWeakPtr();
+  auto bubble_view =
+      std::make_unique<ReadLaterBubbleView>(browser, anchor_view);
+  auto weak_ptr = bubble_view->weak_factory_.GetWeakPtr();
+  views::WebBubbleDialogView::CreateWebBubbleDialog<ReadLaterUI>(
+      std::move(bubble_view), GURL(chrome::kChromeUIReadLaterURL));
+  return weak_ptr;
 }
 
 ReadLaterBubbleView::ReadLaterBubbleView(const Browser* browser,
                                          views::View* anchor_view)
-    : BubbleDialogDelegateView(anchor_view,
-                               views::BubbleBorder::Arrow::TOP_RIGHT),
-      web_view_(std::make_unique<ReadLaterWebView>(browser->profile())) {
-  SetButtons(ui::DIALOG_BUTTON_NONE);
-  set_margins(gfx::Insets());
-
-  AddChildView(web_view_.get());
-
-  SetLayoutManager(std::make_unique<views::FillLayout>());
-
-  // TODO(corising): Remove this and add function to calculate preferred size.
-  web_view_->SetPreferredSize(gfx::Size(300, 500));
-  web_view_->LoadInitialURL(GURL(chrome::kChromeUIReadLaterURL));
-}
+    : WebBubbleDialogView(browser->profile(), anchor_view) {}
 
 ReadLaterBubbleView::~ReadLaterBubbleView() = default;
-
-void ReadLaterBubbleView::AddedToWidget() {
-  BubbleDialogDelegateView::AddedToWidget();
-  web_view_->holder()->SetCornerRadii(gfx::RoundedCornersF(GetCornerRadius()));
-}
 
 void ReadLaterBubbleView::ReadingListModelLoaded(
     const ReadingListModel* model) {}

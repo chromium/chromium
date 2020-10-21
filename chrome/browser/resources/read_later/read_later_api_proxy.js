@@ -28,6 +28,8 @@ export class ReadLaterApiProxy {
   /** @param {!url.mojom.Url} url */
   removeEntry(url) {}
 
+  showUI() {}
+
   /** @return {!readLater.mojom.PageCallbackRouter} */
   getCallbackRouter() {}
 }
@@ -65,6 +67,11 @@ export class ReadLaterApiProxyImpl {
   /** @override */
   removeEntry(url) {
     this.handler.removeEntry(url);
+  }
+
+  /** @override */
+  showUI() {
+    this.handler.showUI();
   }
 
   /** @override */

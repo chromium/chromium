@@ -12,6 +12,7 @@ class ReadLaterBubbleView;
 
 // Button in the bookmarks bar that provides access to the corresponding
 // read later menu.
+// TODO(corising): Handle the the async presentation of the UI bubble.
 class ReadLaterButton : public ToolbarButton {
  public:
   explicit ReadLaterButton(Browser* browser);
