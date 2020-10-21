@@ -1947,7 +1947,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.Survey.DownloadRequested" enum="BooleanRequested"
-    expires_after="2020-12-01">
+    expires_after="2021-06-01">
   <owner>twellington@chromium.org</owner>
   <owner>chrome-android-app@chromium.org</owner>
   <summary>
@@ -1957,14 +1957,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.Survey.DownloadResponseCode"
-    enum="SurveyDownloadResponseCodes" expires_after="2020-12-01">
+    enum="SurveyDownloadResponseCodes" expires_after="2021-06-01">
   <owner>twellington@chromium.org</owner>
   <owner>chrome-android-app@chromium.org</owner>
   <summary>The response code of the completed survey download request.</summary>
 </histogram>
 
 <histogram name="Android.Survey.InfoBarClosingState"
-    enum="InfoBarClosingStates" expires_after="2020-12-01">
+    enum="InfoBarClosingStates" expires_after="2021-06-01">
   <owner>twellington@chromium.org</owner>
   <owner>chrome-android-app@chromium.org</owner>
   <summary>
@@ -1974,7 +1974,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.Survey.ShowSurvey" enum="BooleanSuccess"
-    expires_after="2020-12-01">
+    expires_after="2021-06-01">
   <owner>twellington@chromium.org</owner>
   <owner>chrome-android-app@chromium.org</owner>
   <summary>
@@ -1983,7 +1983,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.Survey.SurveyFilteringResults"
-    enum="SurveyFilteringResult" expires_after="2020-12-01">
+    enum="SurveyFilteringResult" expires_after="2021-06-01">
   <owner>twellington@chromium.org</owner>
   <owner>chrome-android-app@chromium.org</owner>
   <summary>
