@@ -72,6 +72,8 @@ void HeadlessDevToolsManagerDelegate::ClientDetached(
 std::vector<content::BrowserContext*>
 HeadlessDevToolsManagerDelegate::GetBrowserContexts() {
   std::vector<content::BrowserContext*> contexts;
+  if (!browser_)
+    return contexts;
   for (auto* context : browser_->GetAllBrowserContexts()) {
     if (context != browser_->GetDefaultBrowserContext())
       contexts.push_back(HeadlessBrowserContextImpl::From(context));
@@ -80,11 +82,15 @@ HeadlessDevToolsManagerDelegate::GetBrowserContexts() {
 }
 content::BrowserContext*
 HeadlessDevToolsManagerDelegate::GetDefaultBrowserContext() {
-  return HeadlessBrowserContextImpl::From(browser_->GetDefaultBrowserContext());
+  return browser_ ? HeadlessBrowserContextImpl::From(
+                        browser_->GetDefaultBrowserContext())
+                  : nullptr;
 }
 
 content::BrowserContext*
 HeadlessDevToolsManagerDelegate::CreateBrowserContext() {
+  if (!browser_)
+    return nullptr;
   auto builder = browser_->CreateBrowserContextBuilder();
   builder.SetIncognitoMode(true);
   HeadlessBrowserContext* browser_context = builder.Build();
