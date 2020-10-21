@@ -437,7 +437,7 @@ void WebAppSyncBridge::MergeLocalAppsToSync(
   // Sort only once.
   base::flat_set<AppId> sync_server_apps(std::move(storage_keys));
 
-  for (const WebApp& app : registrar_->AllApps()) {
+  for (const WebApp& app : registrar_->GetAppsIncludingStubs()) {
     if (!app.IsSynced())
       continue;
 
@@ -621,7 +621,7 @@ void WebAppSyncBridge::GetData(StorageKeyList storage_keys,
 void WebAppSyncBridge::GetAllDataForDebugging(DataCallback callback) {
   auto data_batch = std::make_unique<syncer::MutableDataBatch>();
 
-  for (const WebApp& app : registrar_->AllApps()) {
+  for (const WebApp& app : registrar_->GetAppsIncludingStubs()) {
     if (app.IsSynced())
       data_batch->Put(app.app_id(), CreateSyncEntityData(app));
   }
@@ -648,7 +648,7 @@ std::string WebAppSyncBridge::GetStorageKey(
 void WebAppSyncBridge::MaybeInstallAppsInSyncInstall() {
   std::vector<WebApp*> apps_in_sync_install;
 
-  for (WebApp& app : registrar_->AllAppsMutable()) {
+  for (WebApp& app : registrar_->GetAppsIncludingStubsMutable()) {
     if (app.is_in_sync_install())
       apps_in_sync_install.push_back(&app);
   }

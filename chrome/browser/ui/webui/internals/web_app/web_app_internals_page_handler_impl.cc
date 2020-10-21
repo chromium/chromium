@@ -51,7 +51,7 @@ void WebAppInternalsPageHandlerImpl::GetWebApps(GetWebAppsCallback callback) {
   }
 
   std::vector<mojom::web_app_internals::WebAppPtr> result;
-  for (const web_app::WebApp& web_app : registrar->AllApps()) {
+  for (const web_app::WebApp& web_app : registrar->GetAppsIncludingStubs()) {
     mojom::web_app_internals::WebAppPtr info(
         mojom::web_app_internals::WebApp::New());
     info->name = web_app.name();

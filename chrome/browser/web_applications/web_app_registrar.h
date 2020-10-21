@@ -149,11 +149,10 @@ class WebAppRegistrar : public AppRegistrar, public ProfileManagerObserver {
   };
 
   // Returns all apps in the registry (a superset) including stubs.
-  // TODO(loyso): Rename this method to GetAppsIncludingStubs().
-  const AppSet AllApps() const;
+  const AppSet GetAppsIncludingStubs() const;
   // Returns all apps excluding stubs for apps in sync install. Apps in sync
   // install are being installed and should be hidden for most subsystems. This
-  // is a subset of AllApps().
+  // is a subset of GetAppsIncludingStubs().
   const AppSet GetApps() const;
 
  protected:
@@ -185,8 +184,7 @@ class WebAppRegistrarMutable : public WebAppRegistrar {
 
   AppSet FilterAppsMutable(Filter filter);
 
-  // TODO(loyso): Rename this method to GetAppsIncludingStubsMutable().
-  AppSet AllAppsMutable();
+  AppSet GetAppsIncludingStubsMutable();
   AppSet GetAppsMutable();
 
   using WebAppRegistrar::CountMutation;

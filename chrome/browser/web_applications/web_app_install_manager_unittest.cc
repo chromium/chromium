@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -386,10 +387,12 @@ class WebAppInstallManagerTest : public WebAppTest {
 
   int GetNumFullyInstalledApps() const {
     int num_apps = 0;
-    for (const WebApp& app : test_registry_controller_->registrar().AllApps()) {
-      if (!app.is_in_sync_install())
-        ++num_apps;
+
+    for (const WebApp& app : test_registry_controller_->registrar().GetApps()) {
+      ALLOW_UNUSED_LOCAL(app);
+      ++num_apps;
     }
+
     return num_apps;
   }
 

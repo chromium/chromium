@@ -267,7 +267,7 @@ TEST_F(WebAppRegistrarTest, DestroyRegistrarOwningRegisteredApps) {
 TEST_F(WebAppRegistrarTest, InitRegistrarAndDoForEachApp) {
   std::set<AppId> ids = InitRegistrarWithApps("https://example.com/path", 100);
 
-  for (const WebApp& web_app : registrar().AllApps()) {
+  for (const WebApp& web_app : registrar().GetAppsIncludingStubs()) {
     const size_t num_removed = ids.erase(web_app.app_id());
     EXPECT_EQ(1U, num_removed);
   }
@@ -275,10 +275,10 @@ TEST_F(WebAppRegistrarTest, InitRegistrarAndDoForEachApp) {
   EXPECT_TRUE(ids.empty());
 }
 
-TEST_F(WebAppRegistrarTest, AllAppsMutable) {
+TEST_F(WebAppRegistrarTest, GetAppsIncludingStubsMutable) {
   std::set<AppId> ids = InitRegistrarWithApps("https://example.com/path", 10);
 
-  for (WebApp& web_app : mutable_registrar().AllAppsMutable()) {
+  for (WebApp& web_app : mutable_registrar().GetAppsIncludingStubsMutable()) {
     web_app.SetDisplayMode(DisplayMode::kStandalone);
     const size_t num_removed = ids.erase(web_app.app_id());
     EXPECT_EQ(1U, num_removed);
@@ -294,7 +294,7 @@ TEST_F(WebAppRegistrarTest, DoForEachAndUnregisterAllApps) {
   auto ids = RegisterAppsForTesting(std::move(registry));
   EXPECT_EQ(100UL, ids.size());
 
-  for (const WebApp& web_app : registrar().AllApps()) {
+  for (const WebApp& web_app : registrar().GetAppsIncludingStubs()) {
     const size_t num_removed = ids.erase(web_app.app_id());
     EXPECT_EQ(1U, num_removed);
   }
@@ -346,7 +346,7 @@ TEST_F(WebAppRegistrarTest, GetApps) {
   RegisterApp(std::move(web_app_in_sync2));
 
   int all_apps_count = 0;
-  for (const WebApp& web_app : registrar().AllApps()) {
+  for (const WebApp& web_app : registrar().GetAppsIncludingStubs()) {
     ALLOW_UNUSED_LOCAL(web_app);
     ++all_apps_count;
   }
@@ -830,10 +830,10 @@ TEST_F(WebAppRegistrarTest, AppsInSyncInstallExcludedFromGetAppIds) {
   for (const AppId& app_id : ids)
     EXPECT_NE(app_id, web_app_in_sync_install_id);
 
-  // Tests that AllApps() returns a web app which is either in GetAppIds() set
-  // or it is the web app in sync install:
+  // Tests that GetAppsIncludingStubs() returns a web app which is either in
+  // GetAppIds() set or it is the web app in sync install:
   bool web_app_in_sync_install_found = false;
-  for (const WebApp& web_app : registrar().AllApps()) {
+  for (const WebApp& web_app : registrar().GetAppsIncludingStubs()) {
     if (web_app.app_id() == web_app_in_sync_install_id)
       web_app_in_sync_install_found = true;
     else

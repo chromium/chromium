@@ -415,11 +415,7 @@ void WebAppsBase::OnContentSettingChanged(
     return;
   }
 
-  for (const web_app::WebApp& web_app : registrar->AllApps()) {
-    if (web_app.is_in_sync_install()) {
-      continue;
-    }
-
+  for (const web_app::WebApp& web_app : registrar->GetApps()) {
     if (primary_pattern.Matches(web_app.start_url()) &&
         Accepts(web_app.app_id())) {
       apps::mojom::AppPtr app = apps::mojom::App::New();
@@ -548,8 +544,8 @@ void WebAppsBase::ConvertWebApps(apps::mojom::Readiness readiness,
   if (!registrar)
     return;
 
-  for (const web_app::WebApp& web_app : registrar->AllApps()) {
-    if (!web_app.is_in_sync_install() && Accepts(web_app.app_id())) {
+  for (const web_app::WebApp& web_app : registrar->GetApps()) {
+    if (Accepts(web_app.app_id())) {
       apps_out->push_back(Convert(&web_app, readiness));
     }
   }

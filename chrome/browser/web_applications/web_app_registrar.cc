@@ -58,7 +58,7 @@ bool WebAppRegistrar::WasInstalledByUser(const AppId& app_id) const {
 
 int WebAppRegistrar::CountUserInstalledApps() const {
   int num_user_installed = 0;
-  for (const WebApp& app : AllApps()) {
+  for (const WebApp& app : GetAppsIncludingStubs()) {
     if (app.is_locally_installed() && app.WasInstalledByUser())
       ++num_user_installed;
   }
@@ -203,7 +203,7 @@ void WebAppRegistrar::OnProfileMarkedForPermanentDeletion(
   if (profile() != profile_to_be_deleted)
     return;
 
-  for (const auto& app : AllApps()) {
+  for (const auto& app : GetAppsIncludingStubs()) {
     NotifyWebAppProfileWillBeDeleted(app.app_id());
     WebAppProviderBase::GetProviderBase(profile())
         ->os_integration_manager()
@@ -251,7 +251,7 @@ WebAppRegistrar::AppSet::const_iterator WebAppRegistrar::AppSet::end() const {
                         registrar_->registry_.end(), filter_);
 }
 
-const WebAppRegistrar::AppSet WebAppRegistrar::AllApps() const {
+const WebAppRegistrar::AppSet WebAppRegistrar::GetAppsIncludingStubs() const {
   return AppSet(this, nullptr);
 }
 
@@ -294,7 +294,7 @@ WebAppRegistrar::AppSet WebAppRegistrarMutable::FilterAppsMutable(
   return AppSet(this, filter);
 }
 
-WebAppRegistrar::AppSet WebAppRegistrarMutable::AllAppsMutable() {
+WebAppRegistrar::AppSet WebAppRegistrarMutable::GetAppsIncludingStubsMutable() {
   return AppSet(this, nullptr);
 }
 
