@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "build/build_config.h"
-#include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/buildflags.h"
@@ -18,13 +17,6 @@
 #include "chrome/grit/webui_js_exception_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_features.h"
-
-#if !BUILDFLAG(OPTIMIZE_WEBUI)
-namespace {
-constexpr char kGeneratedPath[] =
-    "@out_folder@/gen/chrome/browser/resources/webui_js_exception/";
-}  // namespace
-#endif  // !BUILDFLAG(OPTIMIZE_WEBUI)
 
 WebUIJsExceptionUI::WebUIJsExceptionUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
@@ -41,18 +33,11 @@ WebUIJsExceptionUI::WebUIJsExceptionUI(content::WebUI* web_ui)
 
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIWebUIJsExceptionHost);
-#if BUILDFLAG(OPTIMIZE_WEBUI)
-  webui::SetupBundledWebUIDataSource(
-      source, "webui_js_exception.js",
-      IDR_WEBUI_JS_EXCEPTION_UI_WEBUI_JS_EXCEPTION_ROLLUP_JS,
-      IDR_WEBUI_JS_EXCEPTION_UI_WEBUI_JS_EXCEPTION_HTML);
-#else   // if !BUILDFLAG(OPTIMIZE_WEBUI)
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kWebuiJsExceptionResources,
-                      kWebuiJsExceptionResourcesSize),
-      kGeneratedPath, IDR_WEBUI_JS_EXCEPTION_UI_WEBUI_JS_EXCEPTION_HTML);
-#endif  // !BUILDFLAG(OPTIMIZE_WEBUI)
+  webui::SetupWebUIDataSource(source,
+                              base::make_span(kWebuiJsExceptionResources,
+                                              kWebuiJsExceptionResourcesSize),
+                              std::string(),
+                              IDR_WEBUI_JS_EXCEPTION_WEBUI_JS_EXCEPTION_HTML);
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource::Add(profile, source);
 }

@@ -679,21 +679,23 @@ if (enable_webui_tab_strip) {
 
 if (is_linux || is_chromeos) {
   grit("webui_js_exception_resources") {
-    if (optimize_webui) {
-      source = "webui_js_exception/webui_js_exception_resources_vulcanized.grd"
-      deps = [ "//chrome/browser/resources/webui_js_exception:build" ]
-    } else {
-      source = "webui_js_exception/webui_js_exception_resources.grd"
-      deps =
-          [ "//chrome/browser/resources/webui_js_exception:webui_js_exception" ]
-    }
-
     grit_flags = [
       "-E",
       "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+      "-E",
+      "root_src_dir=" + rebase_path("//", root_build_dir),
     ]
 
     defines = chrome_grit_defines
+
+    # These arguments are needed since the grd is generated at build time.
+    enable_input_discovery_for_gn_analyze = false
+    defines += [ "SHARED_INTERMEDIATE_DIR=" +
+                 rebase_path(root_gen_dir, root_build_dir) ]
+    js_gen_dir = "$root_gen_dir/chrome/browser/resources/webui_js_exception"
+    source = "$js_gen_dir/webui_js_exception_resources.grd"
+    deps = [ "//chrome/browser/resources/webui_js_exception:build_grd" ]
+
     outputs = [
       "grit/webui_js_exception_resources.h",
       "grit/webui_js_exception_resources_map.cc",

@@ -4,51 +4,52 @@
 
 import("//chrome/browser/resources/optimize_webui.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_grit.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 
-js_library("webui_js_exception") {
-}
+preprocess_folder = "preprocessed"
+preprocess_manifest = "preprocessed_manifest.json"
 
 if (optimize_webui) {
-  grit("flattened_resources") {
-    source = "webui_js_exception_resources.grd"
-
-    deps = [ ":webui_js_exception" ]
-
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-    ]
-
-    outputs = [
-      "grit/webui_js_exception_resources.h",
-      "grit/webui_js_exception_resources_map.cc",
-      "grit/webui_js_exception_resources_map.h",
-      "webui_js_exception_resources.pak",
-    ]
-    output_dir = "$root_gen_dir/chrome/browser/resources/webui_js_exception"
-  }
-
-  unpak("unpak") {
-    pak_file = "webui_js_exception_resources.pak"
-    out_folder = "unpak"
-    deps = [ ":flattened_resources" ]
-  }
+  build_manifest = "build_manifest.json"
 
   optimize_webui("build") {
     host = "webui_js_exception"
-    input = rebase_path("$target_gen_dir/unpak", root_build_dir)
-    deps = [
-      ":unpak",
-      "//ui/webui/resources:modulize",
-    ]
+    input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
+    deps = [ ":preprocess" ]
     js_module_in_files = [ "webui_js_exception.js" ]
     js_out_files = [ "webui_js_exception.rollup.js" ]
-    excludes = [ "chrome://resources/js/cr.m.js" ]
+    out_manifest = "$target_gen_dir/$build_manifest"
   }
+}
+
+preprocess_grit("preprocess") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_manifest"
+  in_files = [ "webui_js_exception.js" ]
+}
+
+generate_grd("build_grd") {
+  input_files = [ "webui_js_exception.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+  if (optimize_webui) {
+    deps = [ ":build" ]
+    resource_path_rewrites =
+        [ "webui_js_exception.rollup.js|webui_js_exception.js" ]
+    manifest_files = [ "$target_gen_dir/$build_manifest" ]
+  } else {
+    deps = [ ":preprocess" ]
+    manifest_files = [ "$target_gen_dir/$preprocess_manifest" ]
+  }
+  grd_prefix = "webui_js_exception"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 }
 
 js_type_check("closure_compile") {
   deps = [ ":webui_js_exception" ]
+}
+
+js_library("webui_js_exception") {
 }
