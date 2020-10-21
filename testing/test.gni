@@ -432,7 +432,13 @@ template("test") {
       ]
 
       if (_use_ash_chrome) {
-        executable_args += [ "--ash-chrome-version=for_bots" ]
+        if (also_build_ash_chrome) {
+          executable_args += [ "--ash-chrome-path=ash_clang_x64/chrome" ]
+        } else {
+          # TODO(crbug.com/1129223): Remove in ~1week after
+          # http://crrev.com/c/2487696 lands and is not reverted.
+          executable_args += [ "--ash-chrome-version=for_bots" ]
+        }
       }
 
       if (is_asan) {
