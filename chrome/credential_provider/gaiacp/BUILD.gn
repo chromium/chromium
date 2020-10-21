@@ -85,6 +85,8 @@ source_set("util") {
     "reg_utils.h",
     "scoped_lsa_policy.cc",
     "scoped_lsa_policy.h",
+    "token_generator.cc",
+    "token_generator.h",
   ]
   public_configs = [ ":util_config" ]
   public_deps = [ "//chrome/credential_provider/common:common_constants" ]

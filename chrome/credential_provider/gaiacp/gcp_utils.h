@@ -372,6 +372,15 @@ base::FilePath GetChromePath();
 // Returns the file path to system installed chrome.exe.
 base::FilePath GetSystemChromePath();
 
+// Generates gcpw dm token for the given |sid|. If any of the lsa operations
+// fail, function returns a result other than S_OK.
+HRESULT GenerateGCPWDmToken(const base::string16& sid);
+
+// Reads the gcpw dm token from lsa store for the given |sid| and writes it back
+// in |token| output parameter.  If any of the lsa operations fail, function
+// returns a result other than S_OK.
+HRESULT GetGCPWDmToken(const base::string16& sid, base::string16* token);
+
 }  // namespace credential_provider
 
 #endif  // CHROME_CREDENTIAL_PROVIDER_GAIACP_GCP_UTILS_H_

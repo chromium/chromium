@@ -31,6 +31,7 @@
 #include "chrome/credential_provider/gaiacp/password_recovery_manager.h"
 #include "chrome/credential_provider/gaiacp/scoped_lsa_policy.h"
 #include "chrome/credential_provider/gaiacp/scoped_user_profile.h"
+#include "chrome/credential_provider/gaiacp/token_generator.h"
 #include "chrome/credential_provider/gaiacp/user_policies_manager.h"
 #include "chrome/credential_provider/gaiacp/win_http_url_fetcher.h"
 #include "chrome/credential_provider/setup/gcpw_files.h"
@@ -599,7 +600,7 @@ class FakeEventLogsUploadManager : public EventLogsUploadManager {
 
 class FakeUserPoliciesManager : public UserPoliciesManager {
  public:
-  explicit FakeUserPoliciesManager();
+  FakeUserPoliciesManager();
   explicit FakeUserPoliciesManager(bool cloud_policies_enabled);
   ~FakeUserPoliciesManager() override;
 
@@ -725,6 +726,22 @@ class FakeTaskManager : public extension::TaskManager {
 
   int num_of_times_executed_;
   base::Time start_time_;
+};
+
+///////////////////////////////////////////////////////////////////////////////
+
+class FakeTokenGenerator : public TokenGenerator {
+ public:
+  FakeTokenGenerator();
+  ~FakeTokenGenerator() override;
+
+  std::string GenerateToken() override;
+
+  void SetTokensForTesting(const std::vector<std::string>& test_tokens);
+
+ private:
+  TokenGenerator* token_generator_ = nullptr;
+  std::vector<std::string> test_tokens_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

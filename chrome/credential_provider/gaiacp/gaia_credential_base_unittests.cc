@@ -12,6 +12,7 @@
 #include "base/base64.h"
 #include "base/base_paths_win.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/guid.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -20,7 +21,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
 #include "base/time/time_override.h"
-
 #include "chrome/browser/ui/startup/credential_provider_signin_dialog_win_test_data.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential_base.h"
@@ -3156,9 +3156,7 @@ TEST_P(GcpGaiaCredentialBaseUploadDeviceDetailsTest, UploadDeviceDetails) {
   GoogleRegistrationDataForTesting g_registration_data(serial_number);
   base::string16 domain = L"domain";
   base::string16 machine_guid = L"machine_guid";
-  std::string dm_token = "dm_token";
   SetMachineGuidForTesting(machine_guid);
-  SetDmTokenForTesting(dm_token);
 
   std::vector<std::string> mac_addresses;
   mac_addresses.push_back("mac_address_1");
@@ -3172,6 +3170,10 @@ TEST_P(GcpGaiaCredentialBaseUploadDeviceDetailsTest, UploadDeviceDetails) {
                       kDefaultUsername, L"password", L"Full Name", L"comment",
                       base::UTF8ToUTF16(kDefaultGaiaId), base::string16(),
                       domain, &sid));
+
+  std::string dm_token = base::GenerateGUID();
+  FakeTokenGenerator fake_token_generator;
+  fake_token_generator.SetTokensForTesting({dm_token});
 
   // Change token response to an invalid one.
   SetDefaultTokenHandleResponse(kDefaultValidTokenHandleResponse);
@@ -3255,9 +3257,7 @@ TEST_P(GcpGaiaCredentialBaseUploadDeviceDetailsTest, UploadDeviceDetails) {
   ASSERT_TRUE(request_dict.FindBoolKey("is_ad_joined_user").has_value());
   ASSERT_EQ(request_dict.FindBoolKey("is_ad_joined_user").value(), true);
   ASSERT_TRUE(request_dict.FindKey("wlan_mac_addr")->is_list());
-  std::string encoded_dm_token;
-  base::Base64Encode(dm_token, &encoded_dm_token);
-  ASSERT_EQ(*request_dict.FindStringKey("dm_token"), encoded_dm_token);
+  ASSERT_EQ(*request_dict.FindStringKey("dm_token"), dm_token);
 
   std::vector<std::string> actual_mac_address_list;
   for (const base::Value& value :

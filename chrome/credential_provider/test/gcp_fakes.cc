@@ -1397,4 +1397,26 @@ void FakeTaskManager::RunTasksInternal() {
   TaskManager::RunTasksInternal();
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+FakeTokenGenerator::FakeTokenGenerator()
+    : token_generator_(*GetInstanceStorage()) {
+  *GetInstanceStorage() = this;
+}
+
+FakeTokenGenerator::~FakeTokenGenerator() {
+  *GetInstanceStorage() = token_generator_;
+}
+
+std::string FakeTokenGenerator::GenerateToken() {
+  auto token = test_tokens_.front();
+  test_tokens_.erase(test_tokens_.begin());
+  return token;
+}
+
+void FakeTokenGenerator::SetTokensForTesting(
+    const std::vector<std::string>& test_tokens) {
+  test_tokens_ = test_tokens;
+}
+
 }  // namespace credential_provider

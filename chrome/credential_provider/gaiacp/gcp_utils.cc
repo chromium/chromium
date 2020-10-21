@@ -52,6 +52,7 @@
 #include "chrome/credential_provider/gaiacp/gaia_resources.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
+#include "chrome/credential_provider/gaiacp/token_generator.h"
 #include "chrome/installer/launcher_support/chrome_launcher_support.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_switches.h"
@@ -90,6 +91,9 @@ constexpr char kMinimumSupportedChromeVersionStr[] = "77.0.3865.65";
 
 constexpr char kSentinelFilename[] = "gcpw_startup.sentinel";
 constexpr int64_t kMaxConsecutiveCrashCount = 5;
+
+// L$ prefix means this secret can only be accessed locally.
+const wchar_t kLsaKeyDMTokenPrefix[] = L"L$GCPW-DM-Token-";
 
 constexpr base::win::i18n::LanguageSelector::LangToOffset
     kLanguageOffsetPairs[] = {
@@ -167,6 +171,57 @@ void DeleteVersionDirectory(const base::FilePath& version_path) {
   locks.clear();
   if (all_deletes_succeeded && !base::DeletePathRecursively(version_path))
     LOGFN(ERROR) << "Could not delete version " << version_path.BaseName();
+}
+
+// Reads the dm token for |sid| from lsa store and writes into |token| output
+// parameter. If |refresh| is true, token is re-generated before returning.
+HRESULT GetGCPWDmTokenInternal(const base::string16& sid,
+                               base::string16* token,
+                               bool refresh) {
+  DCHECK(token);
+
+  base::string16 store_key = kLsaKeyDMTokenPrefix + sid;
+
+  auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
+
+  if (!policy) {
+    HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+    LOGFN(ERROR) << "ScopedLsaPolicy::Create hr=" << putHR(hr);
+    return hr;
+  }
+
+  if (refresh) {
+    if (policy->PrivateDataExists(store_key.c_str())) {
+      HRESULT hr = policy->RemovePrivateData(store_key.c_str());
+      if (FAILED(hr)) {
+        LOGFN(ERROR) << "ScopedLsaPolicy::RemovePrivateData hr=" << putHR(hr);
+        return hr;
+      }
+    }
+
+    base::string16 new_token =
+        base::UTF8ToUTF16(TokenGenerator::Get()->GenerateToken());
+
+    HRESULT hr = policy->StorePrivateData(store_key.c_str(), new_token.c_str());
+    if (FAILED(hr)) {
+      LOGFN(ERROR) << "ScopedLsaPolicy::StorePrivateData hr=" << putHR(hr);
+      return hr;
+    }
+
+    *token = new_token;
+  } else {
+    wchar_t dm_token_lsa_data[1024];
+    HRESULT hr = policy->RetrievePrivateData(
+        store_key.c_str(), dm_token_lsa_data, base::size(dm_token_lsa_data));
+    if (FAILED(hr)) {
+      LOGFN(ERROR) << "ScopedLsaPolicy::RetrievePrivateData hr=" << putHR(hr);
+      return hr;
+    }
+
+    *token = dm_token_lsa_data;
+  }
+
+  return S_OK;
 }
 
 }  // namespace
@@ -1153,6 +1208,15 @@ base::FilePath GetSystemChromePath() {
 
   return chrome_launcher_support::GetChromePathForInstallationLevel(
       chrome_launcher_support::SYSTEM_LEVEL_INSTALLATION, false);
+}
+
+HRESULT GenerateGCPWDmToken(const base::string16& sid) {
+  base::string16 dm_token;
+  return GetGCPWDmTokenInternal(sid, &dm_token, true);
+}
+
+HRESULT GetGCPWDmToken(const base::string16& sid, base::string16* token) {
+  return GetGCPWDmTokenInternal(sid, token, false);
 }
 
 FakesForTesting::FakesForTesting() {}
