@@ -266,14 +266,14 @@ typedef Callback<void(bool, const vector<bool>&)> IndexerCallback;
 DevToolsFileSystemIndexer::FileSystemIndexingJob::FileSystemIndexingJob(
     const FilePath& file_system_path,
     const std::vector<base::FilePath>& excluded_folders,
-    const TotalWorkCallback& total_work_callback,
+    TotalWorkCallback total_work_callback,
     const WorkedCallback& worked_callback,
-    const DoneCallback& done_callback)
+    DoneCallback done_callback)
     : file_system_path_(file_system_path),
       excluded_folders_(excluded_folders),
-      total_work_callback_(total_work_callback),
+      total_work_callback_(std::move(total_work_callback)),
       worked_callback_(worked_callback),
-      done_callback_(done_callback),
+      done_callback_(std::move(done_callback)),
       files_indexed_(0),
       stopped_(false) {
   current_trigrams_set_.resize(kTrigramCount);
@@ -322,7 +322,7 @@ void DevToolsFileSystemIndexer::FileSystemIndexingJob::CollectFilesToIndex() {
 
   if (file_path.empty()) {
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, BindOnce(total_work_callback_, file_path_times_.size()));
+        FROM_HERE, BindOnce(std::move(total_work_callback_), file_path_times_.size()));
     indexing_it_ = file_path_times_.begin();
     IndexFiles();
     return;
@@ -358,7 +358,7 @@ void DevToolsFileSystemIndexer::FileSystemIndexingJob::IndexFiles() {
     return;
   if (indexing_it_ == file_path_times_.end()) {
     g_trigram_index.Get().NormalizeVectors();
-    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, done_callback_);
+    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(done_callback_));
     return;
   }
   FilePath file_path = indexing_it_->first;
@@ -475,17 +475,17 @@ scoped_refptr<DevToolsFileSystemIndexer::FileSystemIndexingJob>
 DevToolsFileSystemIndexer::IndexPath(
     const string& file_system_path,
     const vector<string>& excluded_folders,
-    const TotalWorkCallback& total_work_callback,
+    TotalWorkCallback total_work_callback,
     const WorkedCallback& worked_callback,
-    const DoneCallback& done_callback) {
+    DoneCallback done_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   vector<base::FilePath> paths;
   for (const string& path : excluded_folders) {
     paths.push_back(FilePath::FromUTF8Unsafe(path));
   }
   scoped_refptr<FileSystemIndexingJob> indexing_job = new FileSystemIndexingJob(
-      FilePath::FromUTF8Unsafe(file_system_path), paths, total_work_callback,
-      worked_callback, done_callback);
+      FilePath::FromUTF8Unsafe(file_system_path), paths, std::move(total_work_callback),
+      worked_callback, std::move(done_callback));
   indexing_job->Start();
   return indexing_job;
 }
@@ -493,18 +493,18 @@ DevToolsFileSystemIndexer::IndexPath(
 void DevToolsFileSystemIndexer::SearchInPath(
     const std::string& file_system_path,
     const std::string& query,
-    const SearchCallback& callback) {
+    SearchCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   impl_task_runner()->PostTask(
       FROM_HERE,
       BindOnce(&DevToolsFileSystemIndexer::SearchInPathOnImplSequence, this,
-               file_system_path, query, callback));
+               file_system_path, query, std::move(callback)));
 }
 
 void DevToolsFileSystemIndexer::SearchInPathOnImplSequence(
     const std::string& file_system_path,
     const std::string& query,
-    const SearchCallback& callback) {
+    SearchCallback callback) {
   DCHECK(impl_task_runner()->RunsTasksInCurrentSequence());
   vector<FilePath> file_paths = g_trigram_index.Get().Search(query);
   vector<string> result;
@@ -515,5 +515,5 @@ void DevToolsFileSystemIndexer::SearchInPathOnImplSequence(
       result.push_back(it->AsUTF8Unsafe());
   }
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, BindOnce(callback, std::move(result)));
+      FROM_HERE, BindOnce(std::move(callback), std::move(result)));
 }

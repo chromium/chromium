@@ -27,10 +27,10 @@ class DevToolsFileSystemIndexer
     : public base::RefCountedThreadSafe<DevToolsFileSystemIndexer> {
  public:
 
-  typedef base::Callback<void(int)> TotalWorkCallback;
-  typedef base::Callback<void(int)> WorkedCallback;
-  typedef base::Callback<void()> DoneCallback;
-  typedef base::Callback<void(const std::vector<std::string>&)> SearchCallback;
+  typedef base::OnceCallback<void(int)> TotalWorkCallback;
+  typedef base::RepeatingCallback<void(int)> WorkedCallback;
+  typedef base::OnceCallback<void()> DoneCallback;
+  typedef base::OnceCallback<void(const std::vector<std::string>&)> SearchCallback;
 
   class FileSystemIndexingJob
       : public base::RefCountedThreadSafe<FileSystemIndexingJob> {
@@ -42,9 +42,9 @@ class DevToolsFileSystemIndexer
     friend class DevToolsFileSystemIndexer;
     FileSystemIndexingJob(const base::FilePath& file_system_path,
                           const std::vector<base::FilePath>& excluded_folders,
-                          const TotalWorkCallback& total_work_callback,
+                          TotalWorkCallback total_work_callback,
                           const WorkedCallback& worked_callback,
-                          const DoneCallback& done_callback);
+                          DoneCallback done_callback);
     virtual ~FileSystemIndexingJob();
 
     void Start();
@@ -88,14 +88,14 @@ class DevToolsFileSystemIndexer
   scoped_refptr<FileSystemIndexingJob> IndexPath(
       const std::string& file_system_path,
       const std::vector<std::string>& excluded_folders,
-      const TotalWorkCallback& total_work_callback,
+      TotalWorkCallback total_work_callback,
       const WorkedCallback& worked_callback,
-      const DoneCallback& done_callback);
+      DoneCallback done_callback);
 
   // Performs trigram search for given |query| in |file_system_path|.
   void SearchInPath(const std::string& file_system_path,
                     const std::string& query,
-                    const SearchCallback& callback);
+                    SearchCallback callback);
 
  private:
   friend class base::RefCountedThreadSafe<DevToolsFileSystemIndexer>;
@@ -104,7 +104,7 @@ class DevToolsFileSystemIndexer
 
   void SearchInPathOnImplSequence(const std::string& file_system_path,
                                   const std::string& query,
-                                  const SearchCallback& callback);
+                                  SearchCallback callback);
 
   DISALLOW_COPY_AND_ASSIGN(DevToolsFileSystemIndexer);
 };

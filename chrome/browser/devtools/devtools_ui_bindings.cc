@@ -1032,15 +1032,15 @@ void DevToolsUIBindings::IndexPath(
       scoped_refptr<DevToolsFileSystemIndexer::FileSystemIndexingJob>(
           file_system_indexer_->IndexPath(
               file_system_path, excluded_folders,
-              Bind(&DevToolsUIBindings::IndexingTotalWorkCalculated,
-                   weak_factory_.GetWeakPtr(), index_request_id,
-                   file_system_path),
-              Bind(&DevToolsUIBindings::IndexingWorked,
-                   weak_factory_.GetWeakPtr(), index_request_id,
-                   file_system_path),
-              Bind(&DevToolsUIBindings::IndexingDone,
-                   weak_factory_.GetWeakPtr(), index_request_id,
-                   file_system_path)));
+              BindOnce(&DevToolsUIBindings::IndexingTotalWorkCalculated,
+                       weak_factory_.GetWeakPtr(), index_request_id,
+                       file_system_path),
+              BindRepeating(&DevToolsUIBindings::IndexingWorked,
+                       weak_factory_.GetWeakPtr(), index_request_id,
+                       file_system_path),
+              BindOnce(&DevToolsUIBindings::IndexingDone,
+                       weak_factory_.GetWeakPtr(), index_request_id,
+                       file_system_path)));
 }
 
 void DevToolsUIBindings::StopIndexing(int index_request_id) {
@@ -1065,10 +1065,10 @@ void DevToolsUIBindings::SearchInPath(int search_request_id,
   }
   file_system_indexer_->SearchInPath(file_system_path,
                                      query,
-                                     Bind(&DevToolsUIBindings::SearchCompleted,
-                                          weak_factory_.GetWeakPtr(),
-                                          search_request_id,
-                                          file_system_path));
+                                     BindOnce(&DevToolsUIBindings::SearchCompleted,
+                                              weak_factory_.GetWeakPtr(),
+                                              search_request_id,
+                                              file_system_path));
 }
 
 void DevToolsUIBindings::SetWhitelistedShortcuts(const std::string& message) {
