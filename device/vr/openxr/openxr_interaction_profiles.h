@@ -28,7 +28,8 @@ enum class OpenXrInteractionProfileType {
   kHTCVive = 4,
   kSamsungOdyssey = 5,
   kHPReverbG2 = 6,
-  kCount = 7,
+  kHandSelect = 7,
+  kCount = 8,
 };
 
 enum class OpenXrButtonType {
@@ -94,6 +95,7 @@ struct OpenXrControllerInteractionProfile {
 // Valve index controller.
 // HTC vive controller
 // HP Reverb G2 controller
+// MSFT Hand Interaction
 // Declare OpenXR input profile bindings for other runtimes when they become
 // available.
 constexpr const char* kMicrosoftMotionInputProfiles[] = {
@@ -116,6 +118,9 @@ constexpr const char* kSamsungOdysseyInputProfiles[] = {
 
 constexpr const char* kHPReverbG2InputProfiles[] = {
     "hp-mixed-reality", "oculus-touch", "generic-trigger-squeeze"};
+
+constexpr const char* kGenericHandSelectInputProfile[] = {
+    "generic-hand-select"};
 
 constexpr OpenXrButtonPathMap kMicrosoftMotionControllerButtonPathMaps[] = {
     {OpenXrButtonType::kTrigger,
@@ -274,6 +279,12 @@ constexpr OpenXrButtonPathMap kHPReverbG2RightControllerButtonPathMaps[] = {
      1},
 };
 
+constexpr OpenXrButtonPathMap kGenericHandSelectButtonPathMaps[] = {
+    {OpenXrButtonType::kTrigger,
+     {{OpenXrButtonActionType::kValue, "/input/select/value"}},
+     1},
+};
+
 constexpr OpenXrAxisPathMap kMicrosoftMotionControllerAxisPathMaps[] = {
     {OpenXrAxisType::kTrackpad, "/input/trackpad"},
     {OpenXrAxisType::kThumbstick, "/input/thumbstick"},
@@ -396,11 +407,30 @@ constexpr OpenXrControllerInteractionProfile kHPReverbG2InteractionProfile = {
     base::size(kHPReverbG2ControllerAxisPathMaps)};
 
 constexpr OpenXrControllerInteractionProfile
+    kHandInteractionMSFTInteractionProfile = {
+        OpenXrInteractionProfileType::kHandSelect,
+        "/interaction_profiles/microsoft/hand_interaction",
+        kMSFTHandInteractionExtensionName,
+        GamepadMapping::kNone,
+        kGenericHandSelectInputProfile,
+        base::size(kGenericHandSelectInputProfile),
+        kGenericHandSelectButtonPathMaps,
+        base::size(kGenericHandSelectButtonPathMaps),
+        kGenericHandSelectButtonPathMaps,
+        base::size(kGenericHandSelectButtonPathMaps),
+        nullptr,
+        0};
+
+constexpr OpenXrControllerInteractionProfile
     kOpenXrControllerInteractionProfiles[] = {
-        kMicrosoftMotionInteractionProfile, kKHRSimpleInteractionProfile,
-        kOculusTouchInteractionProfile,     kValveIndexInteractionProfile,
-        kHTCViveInteractionProfile,         kSamsungOdysseyInteractionProfile,
-        kHPReverbG2InteractionProfile};
+        kMicrosoftMotionInteractionProfile,
+        kKHRSimpleInteractionProfile,
+        kOculusTouchInteractionProfile,
+        kValveIndexInteractionProfile,
+        kHTCViveInteractionProfile,
+        kSamsungOdysseyInteractionProfile,
+        kHPReverbG2InteractionProfile,
+        kHandInteractionMSFTInteractionProfile};
 
 }  // namespace device
 

@@ -10,6 +10,7 @@ constexpr char kExtSamsungOdysseyControllerExtensionName[] =
     "XR_EXT_samsung_odyssey_controller";
 constexpr char kExtHPMixedRealityControllerExtensionName[] =
     "XR_EXT_hp_mixed_reality_controller";
+constexpr char kMSFTHandInteractionExtensionName[] = "XR_MSFT_hand_interaction";
 
 }  // namespace device
 
