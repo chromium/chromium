@@ -66,6 +66,8 @@ FileSystemContext* CreateIncognitoFileSystemContextForTesting(
     QuotaManagerProxy* quota_manager_proxy,
     const base::FilePath& base_path) {
   std::vector<std::unique_ptr<FileSystemBackend>> additional_providers;
+  additional_providers.push_back(std::make_unique<TestFileSystemBackend>(
+      base::ThreadTaskRunnerHandle::Get().get(), base_path));
   return CreateIncognitoFileSystemContextWithAdditionalProvidersForTesting(
       io_task_runner, file_task_runner, quota_manager_proxy,
       std::move(additional_providers), base_path);
