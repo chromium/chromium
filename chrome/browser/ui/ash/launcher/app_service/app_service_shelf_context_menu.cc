@@ -37,7 +37,7 @@
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/views/crostini/crostini_app_restart_view.h"
+#include "chrome/browser/ui/views/crostini/crostini_app_restart_dialog.h"
 #include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
@@ -182,7 +182,7 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
       const bool scaled = command_id == ash::CROSTINI_USE_LOW_DENSITY;
       registry_service->SetAppScaled(item().id.app_id, scaled);
       if (controller()->IsOpen(item().id))
-        CrostiniAppRestartView::Show(display_id());
+        crostini::ShowAppRestartDialog(display_id());
       return;
     }
 
