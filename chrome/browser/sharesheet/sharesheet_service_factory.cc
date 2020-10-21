@@ -20,13 +20,6 @@ namespace sharesheet {
 
 // static
 SharesheetService* SharesheetServiceFactory::GetForProfile(Profile* profile) {
-  // TODO: decide the right behaviour in incognito (non-guest) profiles:
-  //   - return nullptr (means we need to null check the service at call sites
-  //     OR ensure it's never accessed from an incognito profile),
-  //   - return the service attached to the Profile that the incognito profile
-  //     is branched from (i.e. "inherit" the parent service),
-  //   - return a temporary service just for the incognito session (probably
-  //     the least sensible option).
   return static_cast<SharesheetService*>(
       SharesheetServiceFactory::GetInstance()->GetServiceForBrowserContext(
           profile, true /* create */));
@@ -63,13 +56,13 @@ content::BrowserContext* SharesheetServiceFactory::GetBrowserContextToUse(
     return nullptr;
   }
 
-  // We allow sharing in guest mode.
+  // We allow sharing in guest mode or incognito mode..
   if (profile->IsGuestSession()) {
     return chrome::GetBrowserContextOwnInstanceInIncognito(context);
   }
 #endif  // OS_CHROMEOS
 
-  return BrowserContextKeyedServiceFactory::GetBrowserContextToUse(context);
+  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 bool SharesheetServiceFactory::ServiceIsCreatedWithBrowserContext() const {
