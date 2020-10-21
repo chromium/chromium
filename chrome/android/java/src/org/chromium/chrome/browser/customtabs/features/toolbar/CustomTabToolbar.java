@@ -60,8 +60,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.toolbar.ToolbarColors;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
-import org.chromium.chrome.browser.toolbar.ToolbarTabController;
-import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
@@ -159,7 +157,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private int mState = STATE_DOMAIN_ONLY;
     private String mFirstUrl;
 
-    protected ToolbarDataProvider mToolbarDataProvider;
     private CustomTabLocationBar mLocationBar;
 
     private Runnable mTitleAnimationStarter = new Runnable() {
@@ -191,8 +188,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mLiteStatusView = findViewById(R.id.url_bar_lite_status);
         mLiteStatusSeparatorView = findViewById(R.id.url_bar_lite_status_separator);
         mUrlCoordinator = new UrlBarCoordinator((UrlBar) mUrlBar);
-        mLocationBar = new CustomTabLocationBar();
-        mUrlCoordinator.setDelegate(mLocationBar);
         mUrlCoordinator.setAllowFocus(false);
         mTitleBar = findViewById(R.id.title_bar);
         mLocationBarFrameLayout = findViewById(R.id.location_bar_frame_layout);
@@ -205,14 +200,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mCloseButton.setOnLongClickListener(this);
         mAnimDelegate = new CustomTabToolbarAnimationDelegate(
                 mSecurityButton, mTitleUrlContainer, R.dimen.location_bar_icon_width);
-    }
-
-    @Override
-    protected void initialize(ToolbarDataProvider toolbarDataProvider,
-            ToolbarTabController tabController, MenuButtonCoordinator menuButtonCoordinator) {
-        super.initialize(toolbarDataProvider, tabController, menuButtonCoordinator);
-        mLocationBar.setToolbarDataProvider(toolbarDataProvider);
-        mLocationBar.updateVisualsForState();
     }
 
     @Override
@@ -256,6 +243,27 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 mCustomActionButtons.getChildCount() - 1 - index);
         assert button != null;
         updateCustomActionButtonVisuals(button, drawable, description);
+    }
+
+    /**
+     *
+     * @param toolbarDataProvider {@link ToolbarDataProvider} to be used for accessing Toolbar
+     *         state.
+     * @return The LocationBar implementation for this CustomTabToolbar.
+     */
+    public LocationBar createLocationBar(ToolbarDataProvider toolbarDataProvider) {
+        mLocationBar = new CustomTabLocationBar(toolbarDataProvider);
+        mUrlCoordinator.setDelegate(mLocationBar);
+        mLocationBar.updateVisualsForState();
+        return mLocationBar;
+    }
+
+    /**
+     *
+     * @param actionModeCallback The default callback for text editing action bar to use.
+     */
+    public void setDefaultTextEditActionModeCallback(ToolbarActionModeCallback actionModeCallback) {
+        mUrlCoordinator.setActionModeCallback(actionModeCallback);
     }
 
     private void updateCustomActionButtonVisuals(
@@ -389,7 +397,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     private void updateToolbarLayoutMargin() {
         // We show the Incognito logo for Incognito CCT case
-        if (mToolbarDataProvider.isIncognito()) mIncognitoButton.setVisibility(VISIBLE);
+        if (getToolbarDataProvider().isIncognito()) mIncognitoButton.setVisibility(VISIBLE);
 
         int startMargin = calculateStartMarginWhenCloseButtonVisibilityGone();
 
@@ -616,7 +624,18 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     /**
      * Custom tab-specific implementation of the LocationBar interface.
      */
-    public class CustomTabLocationBar implements LocationBar {
+    private class CustomTabLocationBar implements LocationBar {
+        private ToolbarDataProvider mToolbarDataProvider;
+
+        public CustomTabLocationBar(ToolbarDataProvider toolbarDataProvider) {
+            mToolbarDataProvider = toolbarDataProvider;
+        }
+
+        /** Gets the {@link ToolbarDataProvider} to be used for accessing {@link Toolbar} state. */
+        ToolbarDataProvider getToolbarDataProvider() {
+            return mToolbarDataProvider;
+        }
+
         @Override
         public void onNativeLibraryReady() {
             mSecurityButton.setOnClickListener(v -> {
@@ -756,16 +775,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             updateStatusIcon();
         }
 
-        /** Sets the {@link ToolbarDataProvider} to be used for accessing {@link Toolbar} state. */
-        public void setToolbarDataProvider(ToolbarDataProvider model) {
-            mToolbarDataProvider = model;
-        }
-
-        /** Gets the {@link ToolbarDataProvider} to be used for accessing {@link Toolbar} state. */
-        public ToolbarDataProvider getToolbarDataProvider() {
-            return mToolbarDataProvider;
-        }
-
         @Override
         public void updateVisualsForState() {
             Resources resources = getResources();
@@ -822,10 +831,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         @Override
         public View getSecurityIconView() {
             return mSecurityButton;
-        }
-
-        public void setDefaultTextEditActionModeCallback(ToolbarActionModeCallback callback) {
-            mUrlCoordinator.setActionModeCallback(callback);
         }
 
         @Override

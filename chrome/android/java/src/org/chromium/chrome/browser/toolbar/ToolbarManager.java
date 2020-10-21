@@ -47,7 +47,6 @@ import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior.OverviewModeObserver;
 import org.chromium.chrome.browser.compositor.layouts.SceneChangeObserver;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
-import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.CustomTabLocationBar;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.findinpage.FindToolbarManager;
 import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
@@ -345,13 +344,10 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mActionModeController.setTabStripHeight(mToolbar.getTabStripHeight());
 
         if (toolbarLayout instanceof CustomTabToolbar) {
-            CustomTabLocationBar customTabLocationBar =
-                    (CustomTabLocationBar) mToolbar.getLocationBar();
-            // TODO(https://crbug.com/1140188): Use a factory to wire these dependencies.
-            customTabLocationBar.setToolbarDataProvider(mLocationBarModel);
-            customTabLocationBar.setDefaultTextEditActionModeCallback(
+            CustomTabToolbar customTabToolbar = ((CustomTabToolbar) toolbarLayout);
+            mLocationBar = customTabToolbar.createLocationBar(mLocationBarModel);
+            customTabToolbar.setDefaultTextEditActionModeCallback(
                     mActionModeController.getActionModeCallback());
-            mLocationBar = customTabLocationBar;
         } else {
             LocationBarCoordinator locationBarCoordinator = new LocationBarCoordinator(
                     mActivity.findViewById(R.id.location_bar), profileSupplier, mLocationBarModel,
