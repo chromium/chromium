@@ -13,8 +13,8 @@
 namespace chromeos {
 namespace ime {
 
-// Only used in tests to create a fake `ImeEngineMainEntry`.
-void FakeEngineMainEntryForTesting();
+// Only used in tests to set a fake `ImeEngineMainEntry`.
+void FakeEngineMainEntryForTesting(ImeEngineMainEntry* main_entry);
 
 // An enhanced implementation of the basic InputEngine which allows the input
 // engine to call a customized transliteration library (aka decoder) to provide
@@ -33,6 +33,8 @@ class DecoderEngine : public InputEngine {
   void ProcessMessage(const std::vector<uint8_t>& message,
                       ProcessMessageCallback callback) override;
   void OnFocus() override;
+  void OnKeyEvent(mojom::PhysicalKeyEventPtr event,
+                  OnKeyEventCallback callback) override;
 
  private:
   // Try to load the decoding functions from some decoder shared library.
@@ -41,6 +43,10 @@ class DecoderEngine : public InputEngine {
 
   // Returns whether the decoder shared library supports this ime_spec.
   bool IsImeSupportedByDecoder(const std::string& ime_spec);
+
+  // Called when there's a reply from the shared library.
+  // Deserializes |message| and converts it into Mojo calls to the receiver.
+  void OnReply(const std::vector<uint8_t>& message);
 
   // Shared library handle of the implementation for input logic with decoders.
   base::ScopedNativeLibrary library_;
@@ -52,7 +58,9 @@ class DecoderEngine : public InputEngine {
   mojo::ReceiverSet<mojom::InputChannel> decoder_channel_receivers_;
 
   // Sequence ID for protobuf messages sent from the engine.
-  int current_seq_id_ = 0;
+  uint64_t current_seq_id_ = 0;
+
+  std::map<uint64_t, OnKeyEventCallback> pending_key_event_callbacks_;
 
   DISALLOW_COPY_AND_ASSIGN(DecoderEngine);
 };

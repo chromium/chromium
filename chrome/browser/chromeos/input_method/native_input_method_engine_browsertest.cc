@@ -150,7 +150,7 @@ class NativeInputMethodEngineTest : public InProcessBrowserTest,
 
  protected:
   void SetUp() override {
-    chromeos::ime::FakeEngineMainEntryForTesting();
+    chromeos::ime::FakeEngineMainEntryForTesting(nullptr);
     mojo::core::Init();
     InProcessBrowserTest::SetUp();
     ui::IMEBridge::Initialize();

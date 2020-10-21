@@ -115,6 +115,9 @@ interface InputChannel {
   // Called when there's a new focused input field.
   OnFocus();
 
+  // Process a PhysicalKeyEvent for non-rule-based engines.
+  OnKeyEvent(PhysicalKeyEvent event) => (bool consumed);
+
   // Process a PhysicalKeyEvent using the rule-based engine and return a
   // KeypressResponseForRulebased object with a list of operations to be handled
   // by the caller.

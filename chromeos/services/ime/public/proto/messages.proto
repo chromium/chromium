@@ -28,11 +28,53 @@ message Wrapper {
 message PublicMessage {
   optional int32 seq_id = 1;
 
-  oneof param { OnFocus on_focus = 2; }
+  oneof param {
+    OnFocus on_focus = 2;
+    OnKeyEvent on_key_event = 3;
+    OnKeyEventReply on_key_event_reply = 4;
+  }
 }
 
 // Protobuf version of InputEngine::OnFocus in
 // chromeos/services/ime/public/mojom/input_engine.mojom
 message OnFocus {
   // TODO(crbug/1019541): Add information about the input field.
+}
+
+// Protobuf version of InputEngine::OnKeyEvent in
+// chromeos/services/ime/public/mojom/input_engine.mojom
+message OnKeyEvent {
+  optional PhysicalKeyEvent key_event = 1;
+}
+
+// Protobuf version of the reply from InputEngine::OnKeyEvent in
+// chromeos/services/ime/public/mojom/input_engine.mojom
+message OnKeyEventReply {
+  optional bool consumed = 1;
+}
+
+// Protobuf version of InputEngine::PhysicalKeyEvent in
+// chromeos/services/ime/public/mojom/input_engine.mojom
+message PhysicalKeyEvent {
+  enum EventType {
+    EVENT_TYPE_UNSPECIFIED = 0;
+    EVENT_TYPE_KEY_DOWN = 1;
+    EVENT_TYPE_KEY_UP = 2;
+  }
+
+  optional EventType type = 1;
+  optional string code = 2;
+  optional string key = 3;
+  optional ModifierState modifier_state = 4;
+}
+
+// Protobuf version of InputEngine::PhysicalKeyEvent in
+// chromeos/services/ime/public/mojom/input_engine.mojom
+message ModifierState {
+  optional bool alt = 1;
+  optional bool alt_graph = 2;
+  optional bool caps_lock = 3;
+  optional bool control = 4;
+  optional bool meta = 5;
+  optional bool shift = 6;
 }

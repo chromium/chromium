@@ -23,6 +23,8 @@ source_set("lib") {
     "decoder/decoder_engine.h",
     "decoder/downloader_impl.cc",
     "decoder/downloader_impl.h",
+    "decoder/proto_conversion.cc",
+    "decoder/proto_conversion.h",
     "ime_service.cc",
     "ime_service.h",
     "input_engine.cc",
@@ -68,10 +70,15 @@ source_set("services_unittests") {
     "//base",
     "//base/test:test_support",
     "//chromeos/services/ime/public/mojom",
+    "//chromeos/services/ime/public/proto:messages_proto",
     "//mojo/public/cpp/bindings",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
-  sources = [ "ime_service_unittest.cc" ]
+  sources = [
+    "decoder/decoder_engine_unittest.cc",
+    "decoder/proto_conversion_unittest.cc",
+    "ime_service_unittest.cc",
+  ]
 }

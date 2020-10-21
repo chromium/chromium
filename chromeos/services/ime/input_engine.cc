@@ -153,6 +153,11 @@ void InputEngine::ProcessKeypressForRulebased(
   std::move(callback).Run(std::move(keypress_response));
 }
 
+void InputEngine::OnKeyEvent(mojom::PhysicalKeyEventPtr event,
+                             OnKeyEventCallback callback) {
+  NOTIMPLEMENTED();  // Not used in the rulebased engine.
+}
+
 void InputEngine::ResetForRulebased() {
   auto& context = channel_receivers_.current_context();
   auto& engine = context.get()->engine;

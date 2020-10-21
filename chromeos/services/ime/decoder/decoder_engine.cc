@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "chromeos/services/ime/constants.h"
+#include "chromeos/services/ime/decoder/proto_conversion.h"
 #include "chromeos/services/ime/public/cpp/buildflags.h"
 #include "chromeos/services/ime/public/proto/messages.pb.h"
 
@@ -16,15 +17,23 @@ namespace ime {
 
 namespace {
 
-// Whether to create a fake main entry.
-bool g_fake_main_entry_for_testing = false;
+ImeEngineMainEntry* g_fake_main_entry_for_testing = nullptr;
 
-// A client delegate that makes calls on client side.
+using ReplyCallback =
+    base::RepeatingCallback<void(const std::vector<uint8_t>&)>;
+
+// A client delegate passed to the shared library in order for the
+// shared library to send replies back to the engine.
 class ClientDelegate : public ImeClientDelegate {
  public:
+  // All replies from the shared library will be sent to both |remote| and
+  // |callback|.
   ClientDelegate(const std::string& ime_spec,
-                 mojo::PendingRemote<mojom::InputChannel> remote)
-      : ime_spec_(ime_spec), client_remote_(std::move(remote)) {
+                 mojo::PendingRemote<mojom::InputChannel> remote,
+                 ReplyCallback callback)
+      : ime_spec_(ime_spec),
+        client_remote_(std::move(remote)),
+        callback_(callback) {
     client_remote_.set_disconnect_handler(base::BindOnce(
         &ClientDelegate::OnDisconnected, base::Unretained(this)));
   }
@@ -37,6 +46,7 @@ class ClientDelegate : public ImeClientDelegate {
     if (client_remote_ && client_remote_.is_bound()) {
       std::vector<uint8_t> msg(data, data + size);
       client_remote_->ProcessMessage(msg, base::DoNothing());
+      callback_.Run(msg);
     }
   }
 
@@ -53,25 +63,27 @@ class ClientDelegate : public ImeClientDelegate {
 
   // The InputChannel remote used to talk to the client.
   mojo::Remote<mojom::InputChannel> client_remote_;
+
+  ReplyCallback callback_;
 };
 
-std::vector<uint8_t> SerializeMessage(ime::PublicMessage message) {
-  ime::Wrapper wrapper;
+std::vector<uint8_t> WrapAndSerializeMessage(PublicMessage message) {
+  Wrapper wrapper;
   *wrapper.mutable_public_message() = std::move(message);
-  std::vector<uint8_t> output;
-  wrapper.SerializeToArray(output.data(), wrapper.ByteSizeLong());
+  std::vector<uint8_t> output(wrapper.ByteSizeLong());
+  wrapper.SerializeToArray(output.data(), output.size());
   return output;
 }
 
 }  // namespace
 
-void FakeEngineMainEntryForTesting() {
-  g_fake_main_entry_for_testing = true;
+void FakeEngineMainEntryForTesting(ImeEngineMainEntry* main_entry) {
+  g_fake_main_entry_for_testing = main_entry;
 }
 
 DecoderEngine::DecoderEngine(ImeCrosPlatform* platform) : platform_(platform) {
   if (g_fake_main_entry_for_testing) {
-    // TODO(b/156897880): Add a fake main entry.
+    engine_main_entry_ = g_fake_main_entry_for_testing;
   } else {
     if (!TryLoadDecoder()) {
       LOG(WARNING) << "DecoderEngine INIT INCOMPLETED.";
@@ -122,7 +134,9 @@ bool DecoderEngine::BindRequest(
     // make safe calls on the client.
     if (engine_main_entry_->ActivateIme(
             ime_spec.c_str(),
-            new ClientDelegate(ime_spec, std::move(remote)))) {
+            new ClientDelegate(ime_spec, std::move(remote),
+                               base::BindRepeating(&DecoderEngine::OnReply,
+                                                   base::Unretained(this))))) {
       decoder_channel_receivers_.Add(this, std::move(receiver));
       // TODO(https://crbug.com/837156): Registry connection error handler.
       return true;
@@ -141,11 +155,22 @@ bool DecoderEngine::IsImeSupportedByDecoder(const std::string& ime_spec) {
 }
 
 void DecoderEngine::OnFocus() {
-  ime::PublicMessage message;
-  message.set_seq_id(current_seq_id_++);
-  *message.mutable_on_focus() = ime::OnFocus();
+  const uint64_t seq_id = current_seq_id_;
+  ++current_seq_id_;
 
-  ProcessMessage(SerializeMessage(std::move(message)), base::DoNothing());
+  ProcessMessage(WrapAndSerializeMessage(OnFocusToProto(seq_id)),
+                 base::DoNothing());
+}
+
+void DecoderEngine::OnKeyEvent(mojom::PhysicalKeyEventPtr event,
+                               OnKeyEventCallback callback) {
+  const uint64_t seq_id = current_seq_id_;
+  ++current_seq_id_;
+
+  pending_key_event_callbacks_.emplace(seq_id, std::move(callback));
+  ProcessMessage(
+      WrapAndSerializeMessage(OnKeyEventToProto(seq_id, std::move(event))),
+      base::DoNothing());
 }
 
 void DecoderEngine::ProcessMessage(const std::vector<uint8_t>& message,
@@ -158,6 +183,29 @@ void DecoderEngine::ProcessMessage(const std::vector<uint8_t>& message,
     engine_main_entry_->Process(message.data(), message.size());
 
   std::move(callback).Run(result);
+}
+
+void DecoderEngine::OnReply(const std::vector<uint8_t>& message) {
+  ime::Wrapper wrapper;
+  if (!wrapper.ParseFromArray(message.data(), message.size()) ||
+      !wrapper.has_public_message()) {
+    return;
+  }
+
+  const ime::PublicMessage& reply = wrapper.public_message();
+  switch (reply.param_case()) {
+    case ime::PublicMessage::kOnKeyEventReply: {
+      const auto it = pending_key_event_callbacks_.find(reply.seq_id());
+      CHECK(it != pending_key_event_callbacks_.end());
+      auto callback = std::move(it->second);
+      std::move(callback).Run(reply.on_key_event_reply().consumed());
+      pending_key_event_callbacks_.erase(it);
+      break;
+    }
+    default:
+      NOTREACHED();
+      break;
+  }
 }
 
 }  // namespace ime

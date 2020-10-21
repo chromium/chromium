@@ -96,6 +96,8 @@ class NativeInputMethodEngine : public InputMethodEngine {
     void ProcessKeypressForRulebased(
         ime::mojom::PhysicalKeyEventPtr event,
         ProcessKeypressForRulebasedCallback callback) override {}
+    void OnKeyEvent(ime::mojom::PhysicalKeyEventPtr event,
+                    OnKeyEventCallback callback) override {}
     void ResetForRulebased() override {}
     void GetRulebasedKeypressCountForTesting(
         GetRulebasedKeypressCountForTestingCallback callback) override {}
@@ -114,8 +116,8 @@ class NativeInputMethodEngine : public InputMethodEngine {
     // Called when there's a connection error.
     void OnError(base::Time start);
 
-    // Called when a key press is processed by Mojo.
-    void OnKeyEventResponse(
+    // Called when a rule-based key press is processed by Mojo.
+    void OnRuleBasedKeyEventResponse(
         base::Time start,
         ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback,
         ime::mojom::KeypressResponseForRulebasedPtr response);

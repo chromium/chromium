@@ -200,14 +200,21 @@ void NativeInputMethodEngine::ImeObserver::OnKeyEvent(
       return;
     }
   }
+
+  auto key_event = ime::mojom::PhysicalKeyEvent::New(
+      event.type == "keydown" ? ime::mojom::KeyEventType::kKeyDown
+                              : ime::mojom::KeyEventType::kKeyUp,
+      event.code, event.key, ModifierStateFromEvent(event));
+
   if (ShouldUseRuleBasedMojoEngine(engine_id) && remote_to_engine_.is_bound()) {
     remote_to_engine_->ProcessKeypressForRulebased(
-        ime::mojom::PhysicalKeyEvent::New(
-            event.type == "keydown" ? ime::mojom::KeyEventType::kKeyDown
-                                    : ime::mojom::KeyEventType::kKeyUp,
-            event.code, event.key, ModifierStateFromEvent(event)),
-        base::BindOnce(&ImeObserver::OnKeyEventResponse, base::Unretained(this),
-                       base::Time::Now(), std::move(callback)));
+        std::move(key_event),
+        base::BindOnce(&ImeObserver::OnRuleBasedKeyEventResponse,
+                       base::Unretained(this), base::Time::Now(),
+                       std::move(callback)));
+  } else if (ShouldUseFstMojoEngine(engine_id) &&
+             remote_to_engine_.is_bound()) {
+    remote_to_engine_->OnKeyEvent(std::move(key_event), std::move(callback));
   } else {
     base_observer_->OnKeyEvent(engine_id, event, std::move(callback));
   }
@@ -353,7 +360,7 @@ void NativeInputMethodEngine::ImeObserver::OnError(base::Time start) {
   active_engine_id_.reset();
 }
 
-void NativeInputMethodEngine::ImeObserver::OnKeyEventResponse(
+void NativeInputMethodEngine::ImeObserver::OnRuleBasedKeyEventResponse(
     base::Time start,
     ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback,
     ime::mojom::KeypressResponseForRulebasedPtr response) {
