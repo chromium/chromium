@@ -385,6 +385,7 @@ crbug.com/875235 external/wpt/html/rendering/non-replaced-elements/the-fieldset-
 ### virtual/text-antialias/
 crbug.com/591099 virtual/text-antialias/justify-ideograph-simple.html [ Failure ]
 crbug.com/591099 virtual/text-antialias/apply-start-width-after-skipped-text.html [ Failure ]
+crbug.com/870219 virtual/text-antialias/hyphens/hyphens-auto-mock.html [ Failure ]
 crbug.com/591099 virtual/text-antialias/hyphens/hyphens-auto-nowrap.html [ Failure ]
 crbug.com/639223 virtual/text-antialias/line-break-between-text-nodes-latin1.html [ Failure ]
 

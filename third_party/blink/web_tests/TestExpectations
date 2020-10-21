@@ -1634,7 +1634,6 @@ crbug.com/676270 external/wpt/css/css-text/hyphens/hyphens-auto-001.html [ Failu
 crbug.com/1024331 external/wpt/css/css-text/hyphens/hyphens-out-of-flow-001.html [ Failure ]
 crbug.com/1024331 external/wpt/css/css-text/hyphens/hyphens-out-of-flow-002.html [ Failure ]
 crbug.com/1140728 external/wpt/css/css-text/hyphens/hyphens-span-002.html [ Failure ]
-crbug.com/870219 virtual/text-antialias/hyphens/hyphens-auto-mock.html [ Failure ]
 crbug.com/1139693 virtual/text-antialias/hyphens/midword-break-priority.html [ Failure ]
 
 crbug.com/626703 external/wpt/css/css-text/letter-spacing/letter-spacing-control-chars-001.html [ Failure ]
