@@ -634,8 +634,8 @@ if (additional_toolchains == [] || current_toolchain == default_toolchain) {
 
       outputs = [ _output ]
 
-      args = [ rebase_path(_output, root_out_dir) ] +
-             rebase_path(_dsyms, root_out_dir)
+      args = [ rebase_path(_output, root_build_dir) ] +
+             rebase_path(_dsyms, root_build_dir)
 
       deps = [ ":web_view" ]
     }
