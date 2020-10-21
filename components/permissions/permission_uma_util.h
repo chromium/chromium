@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "base/time/time.h"
+#include "base/version.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_result.h"
 #include "components/permissions/permission_util.h"
@@ -49,6 +50,9 @@ enum class PermissionSourceUI {
   // Currently this value is only used when revoking notification permission
   // through the notification UI.
   INLINE_SETTINGS = 5,
+
+  // Permission settings changes as part of the abusive origins revocation.
+  AUTO_REVOCATION = 6,
 
   // Always keep this at the end.
   NUM,
@@ -111,6 +115,14 @@ enum class AdaptiveTriggers {
   THREE_CONSECUTIVE_DENIES = 0x01,
 };
 
+enum class PermissionAutoRevocationHistory {
+  // Permission has not been automatically revoked.
+  NONE = 0,
+
+  // Permission has been automatically revoked.
+  PREVIOUSLY_AUTO_REVOKED = 0x01,
+};
+
 // Provides a convenient way of logging UMA for permission related operations.
 class PermissionUmaUtil {
  public:
@@ -160,6 +172,11 @@ class PermissionUmaUtil {
   static void RecordWithBatteryBucket(const std::string& histogram);
 
   static void RecordInfobarDetailsExpanded(bool expanded);
+
+  static void RecordCrowdDenyIsLoadedAtAbuseCheckTime(bool loaded);
+
+  static void RecordCrowdDenyVersionAtAbuseCheckTime(
+      const base::Optional<base::Version>& version);
 
   // Record UMAs related to the Android "Missing permissions" infobar.
   static void RecordMissingPermissionInfobarShouldShow(

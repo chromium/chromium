@@ -4,9 +4,11 @@
 
 #include "chrome/browser/permissions/abusive_origin_permission_revocation_request.h"
 
+#include "base/files/scoped_temp_dir.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/permissions/abusive_origin_notifications_permission_revocation_config.h"
 #include "chrome/browser/permissions/crowd_deny_fake_safe_browsing_database_manager.h"
 #include "chrome/browser/permissions/crowd_deny_preload_data.h"
@@ -22,14 +24,21 @@ class AbusiveOriginPermissionRevocationRequestTest : public testing::Test {
   using Outcome = AbusiveOriginPermissionRevocationRequest::Outcome;
   using SiteReputation = CrowdDenyPreloadData::SiteReputation;
 
-  AbusiveOriginPermissionRevocationRequestTest()
-      : testing_profile_(std::make_unique<TestingProfile>()) {}
+  AbusiveOriginPermissionRevocationRequestTest() = default;
 
   ~AbusiveOriginPermissionRevocationRequestTest() override = default;
 
  protected:
   void SetUp() override {
     testing::Test::SetUp();
+
+    DCHECK(profile_dir_.CreateUniqueTempDir());
+    TestingProfile::Builder profile_builder;
+    profile_builder.SetPath(profile_dir_.GetPath());
+    profile_builder.AddTestingFactory(
+        HistoryServiceFactory::GetInstance(),
+        HistoryServiceFactory::GetDefaultFactory());
+    testing_profile_ = profile_builder.Build();
 
     fake_database_manager_ =
         base::MakeRefCounted<CrowdDenyFakeSafeBrowsingDatabaseManager>();
@@ -99,6 +108,7 @@ class AbusiveOriginPermissionRevocationRequestTest : public testing::Test {
   TestingProfile* GetTestingProfile() { return testing_profile_.get(); }
 
  private:
+  base::ScopedTempDir profile_dir_;
   content::BrowserTaskEnvironment task_environment_;
   testing::ScopedCrowdDenyPreloadDataOverride testing_preload_data_;
   std::unique_ptr<TestingProfile> testing_profile_;

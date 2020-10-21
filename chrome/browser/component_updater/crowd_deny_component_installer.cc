@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "chrome/browser/permissions/crowd_deny_preload_data.h"
+#include "components/permissions/permission_uma_util.h"
 
 namespace {
 
@@ -86,7 +87,7 @@ void CrowdDenyComponentInstallerPolicy::ComponentReady(
   }
 
   CrowdDenyPreloadData::GetInstance()->LoadFromDisk(
-      GetPreloadDataFilePath(install_dir));
+      GetPreloadDataFilePath(install_dir), version);
 }
 
 base::FilePath CrowdDenyComponentInstallerPolicy::GetRelativeInstallDir()

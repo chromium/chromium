@@ -146,6 +146,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Permissions.CrowdDeny.PreloadData.IsLoadedAtAbuseCheckTime"
+    enum="Boolean" expires_after="2021-04-04">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records, each time during an abusive origin verification, whether preload
+    data has been loaded from the disk.
+  </summary>
+</histogram>
+
 <histogram name="Permissions.CrowdDeny.PreloadData.NotificationUxQuality"
     enum="CrowdDenyNotificationUxQuality" expires_after="2021-01-31">
   <owner>andypaicu@chromium.org</owner>
@@ -154,6 +164,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Records, each time a notification permission prompt is about to be shown,
     the NotificationUxQuality result for the requesting origin.
+  </summary>
+</histogram>
+
+<histogram name="Permissions.CrowdDeny.PreloadData.VersionAtAbuseCheckTime"
+    units="date" expires_after="2021-04-04">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records, each time abusive origin verification is performed, the version of
+    the Crowd Deny preload data on disk (not necessarily loaded).
   </summary>
 </histogram>
 

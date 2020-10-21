@@ -11,14 +11,12 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/version.h"
 #include "chrome/browser/permissions/crowd_deny.pb.h"
 #include "url/origin.h"
 
 namespace base {
 class SequencedTaskRunner;
-}
-
-namespace base {
 class FilePath;
 }
 
@@ -53,19 +51,27 @@ class CrowdDenyPreloadData {
 
   // Parses a single instance of chrome_browser_crowd_deny::PreloadData message
   // in binary wire format from the file at |preload_data_path|.
-  void LoadFromDisk(const base::FilePath& preload_data_path);
+  void LoadFromDisk(const base::FilePath& preload_data_path,
+                    const base::Version& version);
+
+  inline bool is_loaded_from_disk() { return is_loaded_from_disk_; }
+  inline const base::Optional<base::Version>& version_on_disk() {
+    return version_on_disk_;
+  }
 
  private:
   friend class testing::ScopedCrowdDenyPreloadDataOverride;
 
   void set_site_reputations(DomainToReputationMap map) {
     domain_to_reputation_map_ = std::move(map);
+    is_loaded_from_disk_ = true;
   }
 
   DomainToReputationMap TakeSiteReputations();
-
+  bool is_loaded_from_disk_ = false;
   DomainToReputationMap domain_to_reputation_map_;
   scoped_refptr<base::SequencedTaskRunner> loading_task_runner_;
+  base::Optional<base::Version> version_on_disk_;
 
   DISALLOW_COPY_AND_ASSIGN(CrowdDenyPreloadData);
 };

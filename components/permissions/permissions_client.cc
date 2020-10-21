@@ -91,6 +91,13 @@ base::Optional<url::Origin> PermissionsClient::GetAutoApprovalOrigin() {
   return base::nullopt;
 }
 
+base::Optional<bool> PermissionsClient::HasPreviouslyAutoRevokedPermission(
+    content::BrowserContext* browser_context,
+    const GURL& origin,
+    ContentSettingsType permission) {
+  return base::nullopt;
+}
+
 bool PermissionsClient::CanBypassEmbeddingOriginCheck(
     const GURL& requesting_origin,
     const GURL& embedding_origin) {

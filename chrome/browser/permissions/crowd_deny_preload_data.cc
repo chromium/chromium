@@ -16,6 +16,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
+#include "components/permissions/permission_uma_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -85,7 +86,9 @@ CrowdDenyPreloadData::GetReputationDataForSite(
   return nullptr;
 }
 
-void CrowdDenyPreloadData::LoadFromDisk(const base::FilePath& proto_path) {
+void CrowdDenyPreloadData::LoadFromDisk(const base::FilePath& proto_path,
+                                        const base::Version& version) {
+  version_on_disk_ = version;
   // On failure, LoadAndParseAndIndexPreloadDataFromDisk will return an empty
   // map. Replace the in-memory state with that regardless, so that the stale
   // old data will no longer be used.

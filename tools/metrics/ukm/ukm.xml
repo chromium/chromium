@@ -10124,6 +10124,13 @@ be describing additional metrics about the same event.
       initiated by a user gesture.
     </summary>
   </metric>
+  <metric name="PermissionAutoRevocationHistory"
+      enum="PermissionAutoRevocationHistory">
+    <summary>
+      An enum of type PermissionAutoRevocationHistory, representing whether the
+      permission has been automatically revoked in the past at least once.
+    </summary>
+  </metric>
   <metric name="PermissionType">
     <summary>
       An enum of type ContentSettingsType.

@@ -143,6 +143,14 @@ class PermissionsClient {
   virtual base::Optional<bool> HadThreeConsecutiveNotificationPermissionDenies(
       content::BrowserContext* browser_context);
 
+  // Returns whether the |permission| has already been auto-revoked due to abuse
+  // at least once for the given |origin|. Returns `nullopt` if permission
+  // auto-revocation is not supported for a given permission type.
+  virtual base::Optional<bool> HasPreviouslyAutoRevokedPermission(
+      content::BrowserContext* browser_context,
+      const GURL& origin,
+      ContentSettingsType permission);
+
   // If the embedder returns an origin here, any requests matching that origin
   // will be approved. Requests that do not match the returned origin will
   // immediately be finished without granting/denying the permission.
