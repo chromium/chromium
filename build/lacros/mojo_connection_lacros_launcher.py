@@ -3,7 +3,8 @@
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Helps launch lacros-chrome with mojo connection established on Linux.
+"""Helps launch lacros-chrome with mojo connection established on Linux
+  or Chrome OS. Use on Chrome OS is for dev purposes.
 
   The main use case is to be able to launch lacros-chrome in a debugger.
 
@@ -47,12 +48,15 @@ def _ReceiveFD(sock):
   # This function is borrowed from with modifications:
   # https://docs.python.org/3/library/socket.html#socket.socket.recvmsg
   fds = array.array("i")  # Array of ints
-  _, ancdata, _, _ = sock.recvmsg(0, socket.CMSG_LEN(fds.itemsize))
+  # Along with the file descriptor, ash-chrome also sends the version in the
+  # regular data.
+  version, ancdata, _, _ = sock.recvmsg(1, socket.CMSG_LEN(fds.itemsize))
   for cmsg_level, cmsg_type, cmsg_data in ancdata:
     if cmsg_level == socket.SOL_SOCKET and cmsg_type == socket.SCM_RIGHTS:
       assert len(cmsg_data) == fds.itemsize, 'Expecting exactly 1 FD'
       fds.frombytes(cmsg_data[:fds.itemsize])
 
+  assert version == b'\x00', 'Expecting version code to be 0'
   assert len(list(fds)) == 1, 'Expecting exactly 1 FD'
   return os.fdopen(list(fds)[0])
 
