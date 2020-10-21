@@ -4,9 +4,16 @@
 
 #include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 
-const base::Feature kSearchPrefetchService{"SearchPrefecthService",
+const base::Feature kSearchPrefetchService{"SearchPrefetchService",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kSearchPrefetchServicePrefetching{
+    "SearchPrefetchServicePrefetching", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool SearchPrefetchServiceIsEnabled() {
   return base::FeatureList::IsEnabled(kSearchPrefetchService);
+}
+
+bool SearchPrefetchServicePrefetchingIsEnabled() {
+  return base::FeatureList::IsEnabled(kSearchPrefetchServicePrefetching);
 }

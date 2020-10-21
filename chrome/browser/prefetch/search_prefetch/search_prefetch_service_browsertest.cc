@@ -2,18 +2,159 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/prefs/pref_service.h"
+#include "components/search_engines/template_url_service.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/http/http_status_code.h"
+#include "net/test/embedded_test_server/default_handlers.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
+#include "url/gurl.h"
 
-class SearchPrefetchServiceDisabledBrowserTest : public InProcessBrowserTest {
+class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
+ public:
+  SearchPrefetchBaseBrowserTest() {
+    search_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
+    search_server_->ServeFilesFromSourceDirectory("chrome/test/data");
+    search_server_->RegisterRequestHandler(
+        base::BindRepeating(&SearchPrefetchBaseBrowserTest::HandleSearchRequest,
+                            base::Unretained(this)));
+    EXPECT_TRUE(search_server_->Start());
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+
+    host_resolver()->AddRule("search.test", "127.0.0.1");
+
+    TemplateURLService* model =
+        TemplateURLServiceFactory::GetForProfile(browser()->profile());
+    ASSERT_TRUE(model);
+    search_test_utils::WaitForTemplateURLServiceToLoad(model);
+    ASSERT_TRUE(model->loaded());
+
+    TemplateURLData data;
+    data.SetShortName(base::ASCIIToUTF16("search.test"));
+    data.SetKeyword(data.short_name());
+    data.SetURL(GetSearchServerQueryURL("{searchTerms}").spec());
+
+    TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
+    ASSERT_TRUE(template_url);
+    model->SetUserSelectedDefaultSearchProvider(template_url);
+  }
+
+  void SetUpCommandLine(base::CommandLine* cmd) override {
+    InProcessBrowserTest::SetUpCommandLine(cmd);
+    // For the proxy.
+    cmd->AppendSwitch("ignore-certificate-errors");
+    cmd->AppendSwitch("force-enable-metrics-reporting");
+  }
+
+  size_t search_server_request_count() const {
+    return search_server_request_count_;
+  }
+
+  size_t search_server_prefetch_request_count() const {
+    return search_server_prefetch_request_count_;
+  }
+
+  const std::vector<net::test_server::HttpRequest>& search_server_requests()
+      const {
+    return search_server_requests_;
+  }
+
+  GURL GetSearchServerQueryURL(const std::string& path) const {
+    return search_server_->GetURL("search.test", "/search_page.html?q=" + path);
+  }
+
+  GURL GetSearchServerQueryURLWithNoQuery(const std::string& path) const {
+    return search_server_->GetURL("search.test", path);
+  }
+
+  void WaitUntilStatusChanges(base::string16 search_terms) {
+    auto* search_prefetch_service =
+        SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+    auto status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
+        search_terms);
+    while (status == search_prefetch_service->GetSearchPrefetchStatusForTesting(
+                         search_terms)) {
+      base::RunLoop run_loop;
+      run_loop.RunUntilIdle();
+    }
+  }
+
+ private:
+  std::unique_ptr<net::test_server::HttpResponse> HandleSearchRequest(
+      const net::test_server::HttpRequest& request) {
+    if (request.GetURL().spec().find("favicon") != std::string::npos)
+      return nullptr;
+
+    bool is_prefetch =
+        request.headers.find("Purpose") != request.headers.end() &&
+        request.headers.find("Purpose")->second == "prefetch";
+
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&SearchPrefetchBaseBrowserTest::
+                           MonitorSearchResourceRequestOnUIThread,
+                       base::Unretained(this), request, is_prefetch));
+
+    if (request.GetURL().spec().find("502_on_prefetch") != std::string::npos) {
+      std::unique_ptr<net::test_server::BasicHttpResponse> resp =
+          std::make_unique<net::test_server::BasicHttpResponse>();
+      resp->set_code(is_prefetch ? net::HTTP_BAD_GATEWAY : net::HTTP_OK);
+      resp->set_content_type("text/html");
+      resp->set_content("<html><body>Test</body></html>");
+      return resp;
+    }
+
+    std::unique_ptr<net::test_server::BasicHttpResponse> resp =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    resp->set_code(net::HTTP_OK);
+    resp->set_content_type("text/html");
+    resp->set_content("<html><body>" + request.relative_url + "</body></html>");
+    return resp;
+  }
+
+  void MonitorSearchResourceRequestOnUIThread(
+      net::test_server::HttpRequest request,
+      bool has_prefetch_header) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    search_server_request_count_++;
+    search_server_requests_.push_back(request);
+    if (has_prefetch_header) {
+      search_server_prefetch_request_count_++;
+    }
+  }
+
+  std::unique_ptr<net::EmbeddedTestServer> search_server_;
+
+  std::vector<net::test_server::HttpRequest> search_server_requests_;
+
+  size_t search_server_request_count_ = 0;
+  size_t search_server_prefetch_request_count_ = 0;
+};
+
+class SearchPrefetchServiceDisabledBrowserTest
+    : public SearchPrefetchBaseBrowserTest {
  public:
   SearchPrefetchServiceDisabledBrowserTest() {
     feature_list_.InitAndDisableFeature(kSearchPrefetchService);
@@ -29,10 +170,57 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceDisabledBrowserTest,
             SearchPrefetchServiceFactory::GetForProfile(browser()->profile()));
 }
 
-class SearchPrefetchServiceEnabledBrowserTest : public InProcessBrowserTest {
+class SearchPrefetchServiceEnabledWithoutPrefetchingBrowserTest
+    : public SearchPrefetchBaseBrowserTest {
+ public:
+  SearchPrefetchServiceEnabledWithoutPrefetchingBrowserTest() {
+    feature_list_.InitWithFeatures({kSearchPrefetchService},
+                                   {kSearchPrefetchServicePrefetching});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SearchPrefetchServiceEnabledWithoutPrefetchingBrowserTest,
+    ServiceNotCreatedWhenIncognito) {
+  EXPECT_EQ(nullptr, SearchPrefetchServiceFactory::GetForProfile(
+                         browser()->profile()->GetPrimaryOTRProfile()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SearchPrefetchServiceEnabledWithoutPrefetchingBrowserTest,
+    ServiceCreatedWhenFeatureEnabled) {
+  EXPECT_NE(nullptr,
+            SearchPrefetchServiceFactory::GetForProfile(browser()->profile()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SearchPrefetchServiceEnabledWithoutPrefetchingBrowserTest,
+    NoFetchWhenPrefetchDisabled) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+
+  EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+
+  EXPECT_FALSE(prefetch_status.has_value());
+}
+
+class SearchPrefetchServiceEnabledBrowserTest
+    : public SearchPrefetchBaseBrowserTest {
  public:
   SearchPrefetchServiceEnabledBrowserTest() {
-    feature_list_.InitAndEnableFeature(kSearchPrefetchService);
+    feature_list_.InitWithFeatures(
+        {kSearchPrefetchService, kSearchPrefetchServicePrefetching}, {});
   }
 
  private:
@@ -49,4 +237,96 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
                        ServiceCreatedWhenFeatureEnabled) {
   EXPECT_NE(nullptr,
             SearchPrefetchServiceFactory::GetForProfile(browser()->profile()));
+}
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
+                       BasicPrefetchFunctionality) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kInFlight, prefetch_status.value());
+
+  WaitUntilStatusChanges(base::ASCIIToUTF16(search_terms));
+
+  EXPECT_EQ(1u, search_server_requests().size());
+  EXPECT_NE(std::string::npos,
+            search_server_requests()[0].GetURL().spec().find(search_terms));
+  EXPECT_EQ(1u, search_server_request_count());
+  EXPECT_EQ(1u, search_server_prefetch_request_count());
+
+  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
+      base::ASCIIToUTF16(search_terms));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kSuccessfullyCompleted,
+            prefetch_status.value());
+}
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
+                       502PrefetchFunctionality) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "502_on_prefetch";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kInFlight, prefetch_status.value());
+
+  WaitUntilStatusChanges(base::ASCIIToUTF16(search_terms));
+
+  EXPECT_EQ(1u, search_server_requests().size());
+  EXPECT_NE(std::string::npos,
+            search_server_requests()[0].GetURL().spec().find(search_terms));
+  EXPECT_EQ(1u, search_server_request_count());
+  EXPECT_EQ(1u, search_server_prefetch_request_count());
+
+  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
+      base::ASCIIToUTF16(search_terms));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kRequestFailed, prefetch_status.value());
+}
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
+                       FetchSameTermsOnlyOnce) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+
+  WaitUntilStatusChanges(base::ASCIIToUTF16(search_terms));
+
+  EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+}
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest, BadURL) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_path = "/bad_path";
+
+  GURL prefetch_url = GetSearchServerQueryURLWithNoQuery(search_path);
+
+  EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
 }

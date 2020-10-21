@@ -8,7 +8,10 @@
 #include "base/feature_list.h"
 
 extern const base::Feature kSearchPrefetchService;
+extern const base::Feature kSearchPrefetchServicePrefetching;
 
 bool SearchPrefetchServiceIsEnabled();
+
+bool SearchPrefetchServicePrefetchingIsEnabled();
 
 #endif  // CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_FIELD_TRIAL_SETTINGS_H_
