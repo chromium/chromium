@@ -9,6 +9,7 @@ import android.util.Size;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UnguessableToken;
+import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.components.paintpreview.player.PlayerCompositorDelegate;
 
 /**
@@ -23,15 +24,17 @@ public class PlayerFrameBitmapStateController {
     private final Size mContentSize;
     private final PlayerCompositorDelegate mCompositorDelegate;
     private final PlayerFrameMediatorDelegate mMediatorDelegate;
+    private final SequencedTaskRunner mTaskRunner;
 
     PlayerFrameBitmapStateController(UnguessableToken guid, PlayerFrameViewport viewport,
             Size contentSize, PlayerCompositorDelegate compositorDelegate,
-            PlayerFrameMediatorDelegate mediatorDelegate) {
+            PlayerFrameMediatorDelegate mediatorDelegate, SequencedTaskRunner taskRunner) {
         mGuid = guid;
         mViewport = viewport;
         mContentSize = contentSize;
         mCompositorDelegate = compositorDelegate;
         mMediatorDelegate = mediatorDelegate;
+        mTaskRunner = taskRunner;
     }
 
     @VisibleForTesting
@@ -50,9 +53,10 @@ public class PlayerFrameBitmapStateController {
                 (mLoadingBitmapState == null) ? mVisibleBitmapState : mLoadingBitmapState;
         if (scaleUpdated || activeLoadingState == null) {
             invalidateLoadingBitmaps();
-            mLoadingBitmapState = new PlayerFrameBitmapState(mGuid, mViewport.getWidth() / 2,
-                    mViewport.getHeight() / 2, mViewport.getScale(), mContentSize,
-                    mCompositorDelegate, this);
+            mLoadingBitmapState =
+                    new PlayerFrameBitmapState(mGuid, Math.round(mViewport.getWidth() / 2.0f),
+                            Math.round(mViewport.getHeight() / 2.0f), mViewport.getScale(),
+                            mContentSize, mCompositorDelegate, this, mTaskRunner);
             if (mVisibleBitmapState == null) {
                 mLoadingBitmapState.skipWaitingForVisibleBitmaps();
                 swap(mLoadingBitmapState);

@@ -4,7 +4,6 @@
 
 package org.chromium.components.paintpreview.player.frame;
 
-import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.util.Size;
@@ -67,7 +66,7 @@ public interface PlayerFrameMediatorDelegate {
     /**
      * Updates the bitmap matrix in the model.
      */
-    void updateBitmapMatrix(Bitmap[][] bitmapMatrix);
+    void updateBitmapMatrix(CompressibleBitmap[][] bitmapMatrix);
 
     /**
      * Update the model when the bitmap state is swapped.

@@ -4,7 +4,6 @@
 
 package org.chromium.components.paintpreview.player.frame;
 
-import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.util.Size;
@@ -13,6 +12,9 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UnguessableToken;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.SequencedTaskRunner;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.components.paintpreview.player.PlayerCompositorDelegate;
 import org.chromium.components.paintpreview.player.PlayerGestureListener;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -28,8 +30,8 @@ import java.util.List;
  * <li>Maintaining a viewport {@link Rect} that represents the current user-visible section of this
  * frame. The dimension of the viewport is constant and is equal to the initial values received on
  * {@link #setLayoutDimensions}.</li>
- * <li>Constructing a matrix of {@link Bitmap} tiles that represents the content of this frame for a
- * given scale factor. Each tile is as big as the view port.</li>
+ * <li>Constructing a matrix of {@link CompressibleBitmap} tiles that represents the content of this
+ * frame for a given scale factor. Each tile is as big as the view port.</li>
  * <li>Requesting bitmaps from Paint Preview compositor.</li>
  * <li>Updating the viewport on touch gesture notifications (scrolling and scaling).<li/>
  * <li>Determining which sub-frames are visible given the current viewport and showing them.<li/>
@@ -85,8 +87,10 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
         mInitialScaleFactor = 0f;
         mGuid = frameGuid;
         mContentSize = contentSize;
+        SequencedTaskRunner taskRunner =
+                PostTask.createSequencedTaskRunner(TaskTraits.USER_VISIBLE);
         mBitmapStateController = new PlayerFrameBitmapStateController(
-                mGuid, mViewport, mContentSize, mCompositorDelegate, this);
+                mGuid, mViewport, mContentSize, mCompositorDelegate, this, taskRunner);
         mViewport.offset(initialScrollX, initialScrollY);
         mViewport.setScale(0f);
     }
@@ -271,7 +275,7 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
     }
 
     @Override
-    public void updateBitmapMatrix(Bitmap[][] bitmapMatrix) {
+    public void updateBitmapMatrix(CompressibleBitmap[][] bitmapMatrix) {
         mModel.set(PlayerFrameProperties.BITMAP_MATRIX, bitmapMatrix);
     }
 
