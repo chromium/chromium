@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
+#include "components/autofill/core/browser/pattern_provider/test_pattern_provider.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,13 +25,11 @@ namespace autofill {
 
 class AddressFieldTest : public testing::Test {
  public:
-  AddressFieldTest() {}
+  AddressFieldTest() = default;
+  AddressFieldTest(const AddressFieldTest&) = delete;
+  AddressFieldTest& operator=(const AddressFieldTest&) = delete;
 
  protected:
-  std::vector<std::unique_ptr<AutofillField>> list_;
-  std::unique_ptr<AddressField> field_;
-  FieldCandidatesMap field_candidates_map_;
-
   // Downcast for tests.
   static std::unique_ptr<AddressField> Parse(AutofillScanner* scanner) {
     // An empty page_language means the language is unknown and patterns of all
@@ -41,8 +40,12 @@ class AddressFieldTest : public testing::Test {
         static_cast<AddressField*>(field.release()));
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AddressFieldTest);
+  std::vector<std::unique_ptr<AutofillField>> list_;
+  std::unique_ptr<AddressField> field_;
+  FieldCandidatesMap field_candidates_map_;
+
+  // RAII object to mock the the PatternProvider.
+  TestPatternProvider test_pattern_provider_;
 };
 
 TEST_F(AddressFieldTest, Empty) {

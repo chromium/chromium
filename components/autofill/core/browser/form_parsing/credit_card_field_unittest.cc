@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
+#include "components/autofill/core/browser/pattern_provider/test_pattern_provider.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,14 +24,11 @@ namespace autofill {
 
 class CreditCardFieldTestBase {
  public:
-  CreditCardFieldTestBase() {}
-  ~CreditCardFieldTestBase() {}
+  CreditCardFieldTestBase() = default;
+  CreditCardFieldTestBase(const CreditCardFieldTestBase&) = delete;
+  CreditCardFieldTestBase& operator=(const CreditCardFieldTestBase&) = delete;
 
  protected:
-  std::vector<std::unique_ptr<AutofillField>> list_;
-  std::unique_ptr<const CreditCardField> field_;
-  FieldCandidatesMap field_candidates_map_;
-
   // Parses the contents of |list_| as a form, and stores the result into
   // |field_|.
   void Parse() {
@@ -67,17 +65,20 @@ class CreditCardFieldTestBase {
     return field_->AddClassifications(&field_candidates_map_);
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(CreditCardFieldTestBase);
+  std::vector<std::unique_ptr<AutofillField>> list_;
+  std::unique_ptr<const CreditCardField> field_;
+  FieldCandidatesMap field_candidates_map_;
+
+  // RAII object to mock the the PatternProvider.
+  TestPatternProvider test_pattern_provider_;
 };
 
 class CreditCardFieldTest : public CreditCardFieldTestBase,
                             public testing::Test {
  public:
-  CreditCardFieldTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CreditCardFieldTest);
+  CreditCardFieldTest() = default;
+  CreditCardFieldTest(const CreditCardFieldTest&) = delete;
+  CreditCardFieldTest& operator=(const CreditCardFieldTest&) = delete;
 };
 
 TEST_F(CreditCardFieldTest, Empty) {

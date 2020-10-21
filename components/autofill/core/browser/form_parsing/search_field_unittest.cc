@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
+#include "components/autofill/core/browser/pattern_provider/test_pattern_provider.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,13 +23,11 @@ namespace autofill {
 
 class SearchFieldTest : public testing::Test {
  public:
-  SearchFieldTest() {}
+  SearchFieldTest() = default;
+  SearchFieldTest(const SearchFieldTest&) = delete;
+  SearchFieldTest& operator=(const SearchFieldTest&) = delete;
 
  protected:
-  std::vector<std::unique_ptr<AutofillField>> list_;
-  std::unique_ptr<SearchField> field_;
-  FieldCandidatesMap field_candidates_map_;
-
   // Downcast for tests.
   static std::unique_ptr<SearchField> Parse(AutofillScanner* scanner) {
     // An empty page_language means the language is unknown and patterns of all
@@ -39,8 +38,12 @@ class SearchFieldTest : public testing::Test {
         static_cast<SearchField*>(field.release()));
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SearchFieldTest);
+  std::vector<std::unique_ptr<AutofillField>> list_;
+  std::unique_ptr<SearchField> field_;
+  FieldCandidatesMap field_candidates_map_;
+
+  // RAII object to mock the the PatternProvider.
+  TestPatternProvider test_pattern_provider_;
 };
 
 TEST_F(SearchFieldTest, ParseSearchTerm) {

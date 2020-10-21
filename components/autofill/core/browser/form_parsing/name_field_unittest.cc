@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
+#include "components/autofill/core/browser/pattern_provider/test_pattern_provider.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regex_constants.h"
 #include "components/autofill/core/common/autofill_regexes.h"
@@ -25,13 +26,11 @@ namespace autofill {
 
 class NameFieldTest : public testing::Test {
  public:
-  NameFieldTest() {}
+  NameFieldTest() = default;
+  NameFieldTest(const NameFieldTest&) = delete;
+  NameFieldTest& operator=(const NameFieldTest&) = delete;
 
  protected:
-  std::vector<std::unique_ptr<AutofillField>> list_;
-  std::unique_ptr<NameField> field_;
-  FieldCandidatesMap field_candidates_map_;
-
   // Downcast for tests.
   static std::unique_ptr<NameField> Parse(AutofillScanner* scanner) {
     // An empty page_language means the language is unknown and patterns of all
@@ -41,8 +40,12 @@ class NameFieldTest : public testing::Test {
     return std::unique_ptr<NameField>(static_cast<NameField*>(field.release()));
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(NameFieldTest);
+  std::vector<std::unique_ptr<AutofillField>> list_;
+  std::unique_ptr<NameField> field_;
+  FieldCandidatesMap field_candidates_map_;
+
+  // RAII object to mock the the PatternProvider.
+  TestPatternProvider test_pattern_provider_;
 };
 
 TEST_F(NameFieldTest, FirstMiddleLast) {
