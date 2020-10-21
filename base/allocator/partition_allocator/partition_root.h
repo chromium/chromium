@@ -6,6 +6,7 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ROOT_H_
 
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
@@ -218,6 +219,10 @@ struct BASE_EXPORT PartitionRoot {
 #else
     return 0;
 #endif
+  }
+
+  bool UsesGigaCage() const {
+    return features::IsPartitionAllocGigaCageEnabled() && allow_extras;
   }
 
  private:

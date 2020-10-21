@@ -50,7 +50,7 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
   // Allocate from GigaCage, if enabled. However, the exception to this is when
   // tags aren't allowed, as CheckedPtr assumes that everything inside GigaCage
   // uses tags (specifically, inside the GigaCage's normal bucket pool).
-  if (root->allow_extras && features::IsPartitionAllocGigaCageEnabled()) {
+  if (root->UsesGigaCage()) {
     ptr = internal::AddressPoolManager::GetInstance()->Alloc(GetDirectMapPool(),
                                                              nullptr, map_size);
   } else {

@@ -237,7 +237,7 @@ size_t NO_SANITIZE("thread") PCScan<thread_safe>::PCScanTask::ScanPartition() {
 #if defined(PA_HAS_64_BITS_POINTERS)
       // On partitions without extras (partitions with aligned allocations),
       // memory is not allocated from the GigaCage.
-      if (features::IsPartitionAllocGigaCageEnabled() && root_.allow_extras) {
+      if (root_.UsesGigaCage()) {
         // With GigaCage, we first do a fast bitmask check to see if the pointer
         // points to the normal bucket pool.
         if (!PartitionAddressSpace::IsInNormalBucketPool(
