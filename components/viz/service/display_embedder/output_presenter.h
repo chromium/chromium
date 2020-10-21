@@ -86,6 +86,9 @@ class VIZ_SERVICE_EXPORT OutputPresenter {
       gfx::ColorSpace color_space,
       gfx::Size image_size,
       size_t num_images) = 0;
+  virtual std::unique_ptr<Image> AllocateBackgroundImage(
+      gfx::ColorSpace color_space,
+      gfx::Size image_size);
   virtual void SwapBuffers(SwapCompletionCallback completion_callback,
                            BufferPresentedCallback presentation_callback) = 0;
   virtual void PostSubBuffer(const gfx::Rect& rect,
@@ -102,6 +105,7 @@ class VIZ_SERVICE_EXPORT OutputPresenter {
       gpu::SharedImageRepresentationOverlay::ScopedReadAccess;
   virtual void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays,
                                 std::vector<ScopedOverlayAccess*> accesses) = 0;
+  virtual void ScheduleBackground(Image* image);
 };
 
 }  // namespace viz

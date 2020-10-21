@@ -11,6 +11,8 @@ source_set("common") {
   sources = [
     "egl_util.cc",
     "egl_util.h",
+    "features.cc",
+    "features.h",
     "gl_ozone_egl.cc",
     "gl_ozone_egl.h",
     "gl_surface_egl_readback.cc",
@@ -19,7 +21,10 @@ source_set("common") {
     "stub_overlay_manager.h",
   ]
 
-  public_deps = [ "//ui/ozone:ozone_base" ]
+  public_deps = [
+    "//build:chromeos_buildflags",
+    "//ui/ozone:ozone_base",
+  ]
 
   deps = [
     "//ui/gfx/ipc/color",

@@ -49,6 +49,8 @@ class VIZ_SERVICE_EXPORT OutputPresenterGL : public OutputPresenter {
       gfx::ColorSpace color_space,
       gfx::Size image_size,
       size_t num_images) final;
+  std::unique_ptr<Image> AllocateBackgroundImage(gfx::ColorSpace color_space,
+                                                 gfx::Size image_size) final;
   void SwapBuffers(SwapCompletionCallback completion_callback,
                    BufferPresentedCallback presentation_callback) final;
   void PostSubBuffer(const gfx::Rect& rect,
@@ -62,6 +64,7 @@ class VIZ_SERVICE_EXPORT OutputPresenterGL : public OutputPresenter {
       bool is_submitted) final;
   void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays,
                         std::vector<ScopedOverlayAccess*> accesses) final;
+  void ScheduleBackground(Image* image) final;
 
  private:
   scoped_refptr<gl::GLSurface> gl_surface_;
