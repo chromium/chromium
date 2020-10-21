@@ -1096,4 +1096,24 @@ TEST(ComputedStyleTest, ClonedStyleTransitionsAreIndependent) {
   EXPECT_EQ(1u, style->Transitions()->PropertyList().size());
 }
 
+TEST(ComputedStyleTest, ApplyInitialAnimationNameAndTransitionProperty) {
+  std::unique_ptr<DummyPageHolder> dummy_page_holder_ =
+      std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+
+  const ComputedStyle* initial = &ComputedStyle::InitialStyle();
+  StyleResolverState state(dummy_page_holder_->GetDocument(),
+                           *dummy_page_holder_->GetDocument().documentElement(),
+                           initial, initial);
+
+  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+  state.SetStyle(style);
+  EXPECT_FALSE(style->Animations());
+  EXPECT_FALSE(style->Transitions());
+
+  To<Longhand>(GetCSSPropertyAnimationName()).ApplyInitial(state);
+  To<Longhand>(GetCSSPropertyTransitionProperty()).ApplyInitial(state);
+  EXPECT_FALSE(style->Animations());
+  EXPECT_FALSE(style->Transitions());
+}
+
 }  // namespace blink

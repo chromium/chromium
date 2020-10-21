@@ -218,6 +218,8 @@ To<Longhand>(resolved_property).{{apply_call}};
     {% set animation = 'Animation' if property.style_builder_template == 'animation' else 'Transition' %}
     {% set vector = attribute + "List()" %}
     {% call(property) apply_initial(property) %}
+  if (!state.Style()->{{animation}}s())
+    return;
   CSS{{animation}}Data& data = state.Style()->Access{{animation}}s();
   data.{{vector}}.clear();
   data.{{vector}}.push_back(CSS{{animation}}Data::Initial{{attribute}}());
