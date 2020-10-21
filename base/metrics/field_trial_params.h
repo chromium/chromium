@@ -121,6 +121,9 @@ BASE_EXPORT bool GetFieldTrialParamByFeatureAsBool(
 //
 // See the individual definitions below for the appropriate interfaces.
 // Attempting to use it with any other type is a compile error.
+//
+// Getting a param value from a FeatureParam<T> will have the same semantics as
+// GetFieldTrialParamValueByFeature(), see that function's comments for details.
 template <typename T, bool IsEnum = std::is_enum<T>::value>
 struct FeatureParam {
   // Prevent use of FeatureParam<> with unsupported types (e.g. void*). Uses T
@@ -134,8 +137,8 @@ struct FeatureParam {
 //     constexpr FeatureParam<string> kAssistantName{
 //         &kAssistantFeature, "assistant_name", "HAL"};
 //
-// If the feature is not set, or set to the empty string, then Get() will return
-// the default value.
+// If the parameter is not set, or set to the empty string, then Get() will
+// return the default value.
 template <>
 struct FeatureParam<std::string> {
   constexpr FeatureParam(const Feature* feature,
@@ -143,6 +146,8 @@ struct FeatureParam<std::string> {
                          const char* default_value)
       : feature(feature), name(name), default_value(default_value) {}
 
+  // Calling Get() will activate the field trial associated with |feature|. See
+  // GetFieldTrialParamValueByFeature() for more details.
   BASE_EXPORT std::string Get() const;
 
   const Feature* const feature;
@@ -155,8 +160,8 @@ struct FeatureParam<std::string> {
 //     constexpr FeatureParam<double> kAssistantTriggerThreshold{
 //         &kAssistantFeature, "trigger_threshold", 0.10};
 //
-// If the feature is not set, or set to an invalid double value, then Get() will
-// return the default value.
+// If the parameter is not set, or set to an invalid double value, then Get()
+// will return the default value.
 template <>
 struct FeatureParam<double> {
   constexpr FeatureParam(const Feature* feature,
@@ -164,6 +169,8 @@ struct FeatureParam<double> {
                          double default_value)
       : feature(feature), name(name), default_value(default_value) {}
 
+  // Calling Get() will activate the field trial associated with |feature|. See
+  // GetFieldTrialParamValueByFeature() for more details.
   BASE_EXPORT double Get() const;
 
   const Feature* const feature;
@@ -176,7 +183,7 @@ struct FeatureParam<double> {
 //     constexpr FeatureParam<int> kAssistantParallelism{
 //         &kAssistantFeature, "parallelism", 4};
 //
-// If the feature is not set, or set to an invalid int value, then Get() will
+// If the parameter is not set, or set to an invalid int value, then Get() will
 // return the default value.
 template <>
 struct FeatureParam<int> {
@@ -185,6 +192,8 @@ struct FeatureParam<int> {
                          int default_value)
       : feature(feature), name(name), default_value(default_value) {}
 
+  // Calling Get() will activate the field trial associated with |feature|. See
+  // GetFieldTrialParamValueByFeature() for more details.
   BASE_EXPORT int Get() const;
 
   const Feature* const feature;
@@ -197,8 +206,8 @@ struct FeatureParam<int> {
 //     constexpr FeatureParam<int> kAssistantIsHelpful{
 //         &kAssistantFeature, "is_helpful", true};
 //
-// If the feature is not set, or set to value other than "true" or "false", then
-// Get() will return the default value.
+// If the parameter is not set, or set to value other than "true" or "false",
+// then Get() will return the default value.
 template <>
 struct FeatureParam<bool> {
   constexpr FeatureParam(const Feature* feature,
@@ -206,6 +215,8 @@ struct FeatureParam<bool> {
                          bool default_value)
       : feature(feature), name(name), default_value(default_value) {}
 
+  // Calling Get() will activate the field trial associated with |feature|. See
+  // GetFieldTrialParamValueByFeature() for more details.
   BASE_EXPORT bool Get() const;
 
   const Feature* const feature;
@@ -218,7 +229,7 @@ struct FeatureParam<bool> {
 //     constexpr base::FeatureParam<base::TimeDelta> kPerAgentDelayMs{
 //         &kPerAgentSchedulingExperiments, "delay_ms", base::TimeDelta()};
 //
-// If the feature is not set, or set to an invalid value (as defined by
+// If the parameter is not set, or set to an invalid value (as defined by
 // base::TimeDelta::FromString()), then Get() will return the default value.
 template <>
 struct FeatureParam<base::TimeDelta> {
@@ -227,6 +238,8 @@ struct FeatureParam<base::TimeDelta> {
                          base::TimeDelta default_value)
       : feature(feature), name(name), default_value(default_value) {}
 
+  // Calling Get() will activate the field trial associated with |feature|. See
+  // GetFieldTrialParamValueByFeature() for more details.
   BASE_EXPORT base::TimeDelta Get() const;
 
   const Feature* const feature;
@@ -274,6 +287,8 @@ struct FeatureParam<Enum, true> {
     static_assert(option_count >= 1, "FeatureParam<enum> has no options");
   }
 
+  // Calling Get() will activate the field trial associated with |feature|. See
+  // GetFieldTrialParamValueByFeature() for more details.
   Enum Get() const {
     std::string value = GetFieldTrialParamValueByFeature(*feature, name);
     if (value.empty())
