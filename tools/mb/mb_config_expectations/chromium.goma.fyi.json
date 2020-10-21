@@ -319,6 +319,7 @@
       "is_debug": false,
       "symbol_level": 0,
       "target_cpu": "arm64",
+      "target_environment": "device",
       "target_os": "ios",
       "use_goma": true
     }
@@ -331,6 +332,7 @@
       "is_debug": false,
       "symbol_level": 0,
       "target_cpu": "arm64",
+      "target_environment": "device",
       "target_os": "ios",
       "use_goma": true
     }
@@ -344,6 +346,7 @@
       "is_debug": false,
       "symbol_level": 0,
       "target_cpu": "arm64",
+      "target_environment": "device",
       "target_os": "ios",
       "use_goma": true
     }
@@ -357,6 +360,7 @@
       "is_debug": false,
       "symbol_level": 0,
       "target_cpu": "arm64",
+      "target_environment": "device",
       "target_os": "ios",
       "use_goma": true
     }

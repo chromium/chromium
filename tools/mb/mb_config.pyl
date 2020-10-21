@@ -2040,45 +2040,44 @@
     'ios_error': [ 'error'],
 
     'ios_clang_tot_xctest': [
-      'clang_tot', 'ios_simulator', 'ios_disable_code_signing', 'release', 'static', 'xctest',
+      'clang_tot', 'ios', 'ios_simulator', 'ios_cpu_x64', 'ios_disable_code_signing', 'release', 'static', 'xctest',
     ],
 
     'ios_clang_device_tot_xctest': [
-      'clang_tot', 'ios_device', 'release', 'ios_chromium_cert', 'xctest',
+      'clang_tot', 'ios', 'ios_device', 'ios_cpu_arm64', 'release', 'ios_chromium_cert', 'xctest',
     ],
 
     'ios_cronet_xctest': [
-      'additional_target_cpus_x86', 'cronet_ios', 'debug_static_bot',
-      'ios_deployment_target_10_0', 'ios_simulator', 'xctest',
+      'additional_target_cpus_x86', 'cronet_ios', 'debug_static_bot', 'ios_deployment_target_10_0', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest',
     ],
 
     'ios_device_release_compile_only': [
-        'compile_only', 'ios_device', 'ios_google_cert', 'ios_disable_code_signing', 'release_bot'
+        'compile_only', 'ios', 'ios_device', 'ios_cpu_arm64', 'ios_google_cert', 'ios_disable_code_signing', 'release_bot'
     ],
 
     'ios_device_release_rbe_compile_only': [
-        'compile_only', 'ios_device', 'ios_google_cert', 'ios_disable_code_signing', 'ios_use_goma_rbe', 'release_bot'
+        'compile_only', 'ios', 'ios_device', 'ios_cpu_arm64', 'ios_google_cert', 'ios_disable_code_signing', 'ios_use_goma_rbe', 'release_bot'
     ],
 
     # doesn't have symbol_level=0
     'ios_device_release_static_rbe_bot_xctest': [
-        'ios_device', 'ios_disable_code_signing', 'ios_use_goma_rbe', 'release_bot', 'xctest',
+        'ios', 'ios_device', 'ios_cpu_arm64', 'ios_disable_code_signing', 'ios_use_goma_rbe', 'release_bot', 'xctest',
     ],
 
     'ios_simulator_debug_static_bot_xctest': [
-        'debug_static_bot', 'ios_simulator', 'xctest',
+        'debug_static_bot', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest',
     ],
 
     'ios_simulator_debug_static_bot_multi_window_xctest': [
-        'debug_static_bot', 'ios_enable_multi_window', 'ios_simulator', 'xctest',
+        'debug_static_bot', 'ios_enable_multi_window', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest',
     ],
 
     'ios_simulator_debug_static_rbe_bot_xctest': [
-        'debug_static_bot', 'ios_simulator', 'ios_use_goma_rbe', 'xctest',
+        'debug_static_bot', 'ios', 'ios_simulator', 'ios_cpu_x64', 'ios_use_goma_rbe', 'xctest',
     ],
 
     'ios_simulator_release_static_asan_bot_xctest': [
-        'ios_simulator', 'release_bot', 'asan', 'xctest',
+        'ios', 'ios_simulator', 'ios_cpu_x64', 'release_bot', 'asan', 'xctest',
     ],
 
     'lacros_on_linux_release_bot': [
@@ -2837,9 +2836,20 @@
       'gn_args': 'ios_deployment_target=\"10.0\"',
     },
 
-    'ios_device': {
-      'mixins': ['ios'],
+    'ios_cpu_x64': {
+      'gn_args': 'target_cpu="x64"',
+    },
+
+    'ios_cpu_arm64': {
       'gn_args': 'target_cpu="arm64"',
+    },
+
+    'ios_device': {
+      'gn_args': 'target_environment="device"',
+    },
+
+    'ios_simulator': {
+      'gn_args': 'target_environment="simulator"',
     },
 
     'ios_disable_code_signing': {
@@ -2849,11 +2859,6 @@
 
     'ios_enable_multi_window': {
       'gn_args': 'ios_enable_multi_window=true'
-    },
-
-    'ios_simulator': {
-      'mixins': ['ios'],
-      'gn_args': 'target_cpu="x64"',
     },
 
     'ios_use_goma_rbe': {
