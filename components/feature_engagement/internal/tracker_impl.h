@@ -12,7 +12,6 @@
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/supports_user_data.h"
 #include "components/feature_engagement/public/tracker.h"
 
 namespace feature_engagement {
@@ -25,7 +24,7 @@ class EventModel;
 class TimeProvider;
 
 // The internal implementation of the Tracker.
-class TrackerImpl : public Tracker, public base::SupportsUserData {
+class TrackerImpl : public Tracker {
  public:
   TrackerImpl(std::unique_ptr<EventModel> event_model,
               std::unique_ptr<AvailabilityModel> availability_model,

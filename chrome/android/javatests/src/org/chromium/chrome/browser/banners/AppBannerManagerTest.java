@@ -66,6 +66,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.infobar.InstallableAmbientBadgeInfoBar;
+import org.chromium.chrome.browser.init.BrowserParts;
+import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
+import org.chromium.chrome.browser.init.EmptyBrowserParts;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -98,12 +101,13 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Tests the app banners.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "use-java-proxy-tracker"})
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AppBannerManagerTest {
     @Rule
     public ChromeTabbedActivityTestRule mTabbedActivityTestRule =
@@ -223,9 +227,6 @@ public class AppBannerManagerTest {
             }
         });
 
-        mTabbedActivityTestRule.startMainActivityOnBlankPage();
-        // Must be set after native has loaded.
-        mDetailsDelegate = new MockAppDetailsDelegate();
         mTracker = new CppWrappedTestTracker(FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE) {
             @Override
             public void notifyEvent(String event) {
@@ -234,12 +235,19 @@ public class AppBannerManagerTest {
             }
         };
 
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            AppBannerManager.setAppDetailsDelegate(mDetailsDelegate);
+        loadNative();
 
+        ThreadUtils.runOnUiThreadBlocking(() -> {
             Profile profile = Profile.getLastUsedRegularProfile();
-            TrackerFactory.getTrackerForProfile(profile).injectTracker(mTracker);
+            TrackerFactory.setTestingFactory(profile, mTracker);
         });
+
+        mTabbedActivityTestRule.startMainActivityOnBlankPage();
+        // Must be set after native has loaded.
+        mDetailsDelegate = new MockAppDetailsDelegate();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> { AppBannerManager.setAppDetailsDelegate(mDetailsDelegate); });
 
         AppBannerManager.ignoreChromeChannelForTesting();
         AppBannerManager.setTotalEngagementForTesting(10);
@@ -252,6 +260,22 @@ public class AppBannerManagerTest {
         if (mTestServer != null) {
             mTestServer.stopAndDestroyServer();
         }
+    }
+
+    private void loadNative() {
+        final AtomicBoolean mNativeLoaded = new AtomicBoolean();
+        final BrowserParts parts = new EmptyBrowserParts() {
+            @Override
+            public void finishNativeInitialization() {
+                mNativeLoaded.set(true);
+            }
+        };
+        PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+            ChromeBrowserInitializer.getInstance().handlePreNativeStartup(parts);
+            ChromeBrowserInitializer.getInstance().handlePostNativeStartup(true, parts);
+        });
+        CriteriaHelper.pollUiThread(
+                () -> mNativeLoaded.get(), "Failed while waiting for starting native.");
     }
 
     private void resetEngagementForUrl(final String url, final double engagement) {

@@ -114,11 +114,6 @@ public class CppWrappedTestTracker implements Tracker {
         callback.onResult(true);
     }
 
-    @Override
-    public final void injectTracker(Tracker tracker) {
-        assert false : "This should only be called on a production tracker";
-    }
-
     private boolean ourFeature(String feature) {
         return TextUtils.equals(mOurFeature, feature);
     }

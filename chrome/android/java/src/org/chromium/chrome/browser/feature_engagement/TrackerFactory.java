@@ -34,6 +34,16 @@ public final class TrackerFactory {
     }
 
     /**
+     * Sets up a testing factory in C++ and pass it a Tracker object for wrapping and proxying of
+     * calls back up to Java.
+     * @param The {@link profile} the current profile object.
+     * @param The {@link Tracker} the test tracker for C++ to wrap.
+     */
+    public static void setTestingFactory(Profile profile, Tracker testTracker) {
+        TrackerFactoryJni.get().setTestingFactory(profile, testTracker);
+    }
+
+    /**
      * Set a {@Tracker} to use for testing. All calls to {@link #getTrackerForProfile(Profile)}
      * will return the test tracker rather than the real tracker.
      *
@@ -48,5 +58,6 @@ public final class TrackerFactory {
     @NativeMethods
     interface Natives {
         Tracker getTrackerForProfile(Profile profile);
+        void setTestingFactory(Profile profile, Tracker testTracker);
     }
 }

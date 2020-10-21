@@ -28,6 +28,15 @@ source_set("public") {
     "//components/flags_ui",
     "//components/keyed_service/core",
   ]
+
+  if (is_android) {
+    sources += [
+      "android/wrapping_test_tracker.cc",
+      "android/wrapping_test_tracker.h",
+    ]
+
+    deps += [ "//components/feature_engagement/public:jni_headers" ]
+  }
 }
 
 source_set("unit_tests") {

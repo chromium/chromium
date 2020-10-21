@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
+#include "base/supports_user_data.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -47,7 +48,7 @@ class DisplayLockHandle {
 // input about user behavior. Whenever the frontend gives a trigger signal that
 // IPH could be displayed, the backend will provide an answer to whether it is
 // appropriate to show it or not.
-class Tracker : public KeyedService {
+class Tracker : public KeyedService, public base::SupportsUserData {
  public:
   // Describes the state of whether in-product helps has already been displayed
   // enough times or not within the bounds of the configuration for a
