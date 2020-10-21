@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
+import org.chromium.chrome.browser.messages.MessageContainerCoordinator;
 import org.chromium.chrome.browser.metrics.UkmRecorder;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
@@ -86,6 +87,7 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.messages.ManagedMessageDispatcher;
+import org.chromium.components.messages.MessageContainer;
 import org.chromium.components.messages.MessagesFactory;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -164,6 +166,8 @@ public class RootUiCoordinator
     private final OneshotSupplier<StartSurface> mStartSurfaceSupplier;
     @Nullable
     private ManagedMessageDispatcher mMessageDispatcher;
+    @Nullable
+    private MessageContainerCoordinator mMessageContainerCoordinator;
     private LayoutManager mLayoutManager;
 
     /**
@@ -256,6 +260,11 @@ public class RootUiCoordinator
             mMessageDispatcher = null;
         }
 
+        if (mMessageContainerCoordinator != null) {
+            mMessageContainerCoordinator.destroy();
+            mMessageContainerCoordinator = null;
+        }
+
         if (mLayoutManager != null) {
             mLayoutManager.removeSceneChangeObserver(mContextualSearchSceneChangeObserver);
         }
@@ -343,8 +352,10 @@ public class RootUiCoordinator
         initFindToolbarManager();
         initializeToolbar();
         if (CachedFeatureFlags.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE)) {
-            mMessageDispatcher = MessagesFactory.createMessageDispatcher(
-                    mActivity.findViewById(R.id.message_container));
+            MessageContainer container = mActivity.findViewById(R.id.message_container);
+            mMessageContainerCoordinator =
+                    new MessageContainerCoordinator(container, getBrowserControlsManager());
+            mMessageDispatcher = MessagesFactory.createMessageDispatcher(container);
             MessagesFactory.attachMessageDispatcher(
                     mActivity.getWindowAndroid(), mMessageDispatcher);
         }
