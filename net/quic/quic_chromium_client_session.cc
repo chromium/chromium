@@ -135,6 +135,10 @@ void RecordConnectionCloseErrorCodeImpl(const std::string& histogram,
   }
 }
 
+void LogMigrateToSocketStatus(bool success) {
+  UMA_HISTOGRAM_BOOLEAN("Net.QuicSession.MigrateToSocketSuccess", success);
+}
+
 void RecordConnectionCloseErrorCode(const quic::QuicConnectionCloseFrame& frame,
                                     quic::ConnectionCloseSource source,
                                     const std::string& hostname,
@@ -865,6 +869,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
       max_allowed_push_id_(max_allowed_push_id),
       attempted_zero_rtt_(false),
       num_pings_sent_(0),
+      num_migrations_(0),
       push_promise_index_(std::move(push_promise_index)) {
   // Make sure connection migration and goaway on path degrading are not turned
   // on at the same time.
@@ -1875,6 +1880,7 @@ void QuicChromiumClientSession::OnConnectionClosed(
     UMA_HISTOGRAM_LONG_TIMES_100(
         "Net.QuicSession.ConnectionDuration",
         tick_clock_->NowTicks() - connect_timing_.connect_end);
+    UMA_HISTOGRAM_COUNTS_100("Net.QuicSession.NumMigrations", num_migrations_);
   } else {
     if (error == quic::QUIC_PUBLIC_RESET) {
       RecordHandshakeFailureReason(HANDSHAKE_FAILURE_PUBLIC_RESET);
@@ -2178,10 +2184,13 @@ void QuicChromiumClientSession::OnProbeSucceeded(
   // be acquired by connection and used as default on success.
   if (!MigrateToSocket(std::move(socket), std::move(reader),
                        std::move(writer))) {
+    LogMigrateToSocketStatus(false);
     net_log_.AddEvent(
         NetLogEventType::QUIC_CONNECTION_MIGRATION_FAILURE_AFTER_PROBING);
     return;
   }
+
+  LogMigrateToSocketStatus(true);
 
   // Notify the connection that migration succeeds after probing.
   if (connection()->IsPathDegrading())
@@ -2190,6 +2199,7 @@ void QuicChromiumClientSession::OnProbeSucceeded(
   net_log_.AddEventWithInt64Params(
       NetLogEventType::QUIC_CONNECTION_MIGRATION_SUCCESS_AFTER_PROBING,
       "migrate_to_network", network);
+  num_migrations_++;
   HistogramAndLogMigrationSuccess(connection_id());
   if (network == default_network_) {
     DVLOG(1) << "Client successfully migrated to default network: "
