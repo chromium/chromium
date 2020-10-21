@@ -31,32 +31,44 @@ void ProfileReportGenerator::set_policies_enabled(bool enabled) {
 
 std::unique_ptr<em::ChromeUserProfileInfo>
 ProfileReportGenerator::MaybeGenerate(const base::FilePath& path,
-                                      const std::string& name) {
+                                      const std::string& name,
+                                      ReportType report_type) {
   if (!delegate_->Init(path)) {
     return nullptr;
   }
 
   report_ = std::make_unique<em::ChromeUserProfileInfo>();
   report_->set_id(path.AsUTF8Unsafe());
-  report_->set_name(name);
-  report_->set_is_full_report(true);
 
-  delegate_->GetSigninUserInfo(report_.get());
-  if (extensions_enabled_) {
-    delegate_->GetExtensionInfo(report_.get());
-  }
-  delegate_->GetExtensionRequest(report_.get());
+  if (report_type == ReportType::kExtensionRequest) {
+#if defined(OS_CHROMEOS)
+    // Extension request is aggregated at the user level on CrOS.
+    report_->set_name(name);
+    delegate_->GetSigninUserInfo(report_.get());
+#endif  // defined(OS_CHROMEOS)
+    delegate_->GetExtensionRequest(report_.get());
 
-  if (policies_enabled_) {
-    // TODO(crbug.com/983151): Upload policy error as their IDs.
-    auto client = delegate_->MakePolicyConversionsClient();
-    policies_ = policy::DictionaryPolicyConversions(std::move(client))
-                    .EnableConvertTypes(false)
-                    .EnablePrettyPrint(false)
-                    .ToValue();
-    GetChromePolicyInfo();
-    GetExtensionPolicyInfo();
-    GetPolicyFetchTimestampInfo();
+  } else {
+    report_->set_name(name);
+    report_->set_is_full_report(true);
+
+    delegate_->GetSigninUserInfo(report_.get());
+    if (extensions_enabled_) {
+      delegate_->GetExtensionInfo(report_.get());
+    }
+    delegate_->GetExtensionRequest(report_.get());
+
+    if (policies_enabled_) {
+      // TODO(crbug.com/983151): Upload policy error as their IDs.
+      auto client = delegate_->MakePolicyConversionsClient();
+      policies_ = policy::DictionaryPolicyConversions(std::move(client))
+                      .EnableConvertTypes(false)
+                      .EnablePrettyPrint(false)
+                      .ToValue();
+      GetChromePolicyInfo();
+      GetExtensionPolicyInfo();
+      GetPolicyFetchTimestampInfo();
+    }
   }
 
   return std::move(report_);

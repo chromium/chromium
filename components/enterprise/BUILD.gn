@@ -34,6 +34,7 @@ static_library("enterprise") {
       "browser/reporting/report_request_queue_generator.h",
       "browser/reporting/report_scheduler.cc",
       "browser/reporting/report_scheduler.h",
+      "browser/reporting/report_type.h",
       "browser/reporting/report_uploader.cc",
       "browser/reporting/report_uploader.h",
       "browser/reporting/reporting_delegate_factory.h",

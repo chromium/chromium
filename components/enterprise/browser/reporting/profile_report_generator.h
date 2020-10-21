@@ -9,6 +9,8 @@
 #include <string>
 
 #include "base/values.h"
+#include "components/enterprise/browser/reporting/report_request_definition.h"
+#include "components/enterprise/browser/reporting/report_type.h"
 #include "components/policy/core/browser/policy_conversions_client.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
@@ -72,7 +74,8 @@ class ProfileReportGenerator {
   // generated.
   std::unique_ptr<enterprise_management::ChromeUserProfileInfo> MaybeGenerate(
       const base::FilePath& path,
-      const std::string& name);
+      const std::string& name,
+      ReportType report_type = ReportType::kFull);
 
  protected:
   void GetChromePolicyInfo();
