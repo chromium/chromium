@@ -120,7 +120,7 @@ EnterprisePlatformKeysGetCertificatesFunction::Run() {
           browser_context());
   platform_keys_service->GetCertificates(
       platform_keys_token_id.value(),
-      base::Bind(
+      base::BindOnce(
           &EnterprisePlatformKeysGetCertificatesFunction::OnGotCertificates,
           this));
   return RespondLater();
@@ -181,9 +181,9 @@ EnterprisePlatformKeysImportCertificateFunction::Run() {
 
   platform_keys_service->ImportCertificate(
       platform_keys_token_id.value(), cert_x509,
-      base::Bind(&EnterprisePlatformKeysImportCertificateFunction::
-                     OnImportedCertificate,
-                 this));
+      base::BindOnce(&EnterprisePlatformKeysImportCertificateFunction::
+                         OnImportedCertificate,
+                     this));
   return RespondLater();
 }
 
@@ -228,9 +228,9 @@ EnterprisePlatformKeysRemoveCertificateFunction::Run() {
 
   platform_keys_service->RemoveCertificate(
       platform_keys_token_id.value(), cert_x509,
-      base::Bind(&EnterprisePlatformKeysRemoveCertificateFunction::
-                     OnRemovedCertificate,
-                 this));
+      base::BindOnce(&EnterprisePlatformKeysRemoveCertificateFunction::
+                         OnRemovedCertificate,
+                     this));
   return RespondLater();
 }
 

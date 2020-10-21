@@ -59,9 +59,9 @@ using GetAllKeysCallback =
     base::OnceCallback<void(std::vector<std::string> public_key_spki_der_list,
                             Status status)>;
 
-using ImportCertificateCallback = base::Callback<void(Status status)>;
+using ImportCertificateCallback = base::OnceCallback<void(Status status)>;
 
-using RemoveCertificateCallback = base::Callback<void(Status status)>;
+using RemoveCertificateCallback = base::OnceCallback<void(Status status)>;
 
 using RemoveKeyCallback = base::OnceCallback<void(Status status)>;
 
