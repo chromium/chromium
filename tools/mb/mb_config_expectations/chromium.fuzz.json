@@ -17,6 +17,7 @@
       "is_debug": false,
       "is_lsan": true,
       "use_goma": true,
+      "use_vaapi": false,
       "v8_enable_verify_heap": true
     }
   },
@@ -54,6 +55,7 @@
       "is_debug": false,
       "target_cpu": "x86",
       "use_goma": true,
+      "use_vaapi": false,
       "v8_enable_verify_heap": true,
       "v8_target_cpu": "arm"
     }
@@ -69,6 +71,7 @@
       "proprietary_codecs": true,
       "target_cpu": "x86",
       "use_goma": true,
+      "use_vaapi": false,
       "v8_enable_verify_heap": true,
       "v8_target_cpu": "arm"
     }
@@ -97,6 +100,7 @@
       "is_lsan": true,
       "target_os": "chromeos",
       "use_goma": true,
+      "use_vaapi": false,
       "v8_enable_verify_heap": true
     }
   },
@@ -340,6 +344,7 @@
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true,
+      "use_vaapi": false,
       "v8_enable_verify_heap": true
     }
   },
@@ -353,6 +358,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "use_goma": true,
+      "use_vaapi": false,
       "v8_enable_verify_heap": true
     }
   },
@@ -400,6 +406,7 @@
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true,
+      "use_vaapi": false,
       "v8_enable_verify_heap": true
     }
   },
@@ -413,6 +420,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "use_goma": true,
+      "use_vaapi": false,
       "v8_enable_verify_heap": true
     }
   }

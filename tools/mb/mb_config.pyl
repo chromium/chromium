@@ -2761,7 +2761,8 @@
     },
 
     'fuzzer': {
-      'gn_args': 'enable_ipc_fuzzer=true',
+      # TODO(crbug.com/1140770): Remove use_vaapi=false once fixed.
+      'gn_args': 'enable_ipc_fuzzer=true use_vaapi=false',
     },
 
     'gn_linux_upload': {

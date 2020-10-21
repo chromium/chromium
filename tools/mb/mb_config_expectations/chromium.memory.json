@@ -142,6 +142,7 @@
       "is_debug": false,
       "symbol_level": 1,
       "use_goma": true,
+      "use_vaapi": false,
       "v8_enable_verify_heap": true
     }
   }
