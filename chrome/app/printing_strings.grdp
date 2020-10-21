@@ -16,6 +16,9 @@
     <message name="IDS_PRINT_PREVIEW_TITLE" desc="Fallback title for print preview page.">
       Print
     </message>
+    <message name="IDS_PRINT_PREVIEW_DESCRIPTION" desc="Accessibility text: title/description of the Print Preview dialog Web Contents, read by screenreaders.">
+      Print preview dialog
+    </message>
     <message name="IDS_PRINT_PREVIEW_LOADING" desc="Message to display while the print preview is still loading.">
       Loading preview
     </message>

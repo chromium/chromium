@@ -271,6 +271,7 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
     {"optionShortEdge", IDS_PRINT_PREVIEW_OPTION_SHORT_EDGE},
     {"optionTwoSided", IDS_PRINT_PREVIEW_OPTION_TWO_SIDED},
     {"optionsLabel", IDS_PRINT_PREVIEW_OPTIONS_LABEL},
+    {"pageDescription", IDS_PRINT_PREVIEW_DESCRIPTION},
     {"pageRangeLimitInstructionWithValue",
      IDS_PRINT_PREVIEW_PAGE_RANGE_LIMIT_INSTRUCTION_WITH_VALUE},
     {"pageRangeSyntaxInstruction",
