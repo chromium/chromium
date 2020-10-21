@@ -236,6 +236,7 @@ PhoneHubNotificationController::CreateNotification(
 
   message_center::RichNotificationData optional_fields;
   optional_fields.small_image = app_metadata.icon;
+  optional_fields.ignore_accent_color_for_small_image = true;
   optional_fields.timestamp = notification->timestamp();
 
   auto shared_image = notification->shared_image();

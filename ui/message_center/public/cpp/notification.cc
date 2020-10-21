@@ -145,10 +145,20 @@ gfx::Image Notification::GenerateMaskedSmallIcon(int dip_size,
   // If |vector_small_image| is not available, fallback to raster based
   // masking and resizing.
   gfx::ImageSkia image = small_image().AsImageSkia();
-  gfx::ImageSkia masked = gfx::ImageSkiaOperations::CreateMaskedImage(
-      CreateSolidColorImage(image.width(), image.height(), color), image);
+
+#if defined(OS_CHROMEOS)
+  bool create_masked_image =
+      !optional_fields_.ignore_accent_color_for_small_image;
+#else
+  bool create_masked_image = false;
+#endif  // defined(OS_CHROMEOS)
+
+  if (create_masked_image) {
+    image = gfx::ImageSkiaOperations::CreateMaskedImage(
+        CreateSolidColorImage(image.width(), image.height(), color), image);
+  }
   gfx::ImageSkia resized = gfx::ImageSkiaOperations::CreateResizedImage(
-      masked, skia::ImageOperations::ResizeMethod::RESIZE_BEST,
+      image, skia::ImageOperations::ResizeMethod::RESIZE_BEST,
       gfx::Size(dip_size, dip_size));
   return gfx::Image(resized);
 }
