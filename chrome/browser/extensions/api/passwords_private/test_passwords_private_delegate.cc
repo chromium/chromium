@@ -136,9 +136,9 @@ void TestPasswordsPrivateDelegate::RequestPlaintextPassword(
 }
 
 void TestPasswordsPrivateDelegate::MovePasswordToAccount(
-    int id,
+    const std::vector<int>& ids,
     content::WebContents* web_contents) {
-  last_moved_password_ = id;
+  last_moved_password_ = ids;
 }
 
 void TestPasswordsPrivateDelegate::ImportPasswords(

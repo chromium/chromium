@@ -102,7 +102,7 @@ class PasswordsPrivateApiTest : public ExtensionApiTest {
     s_test_delegate_->AddCompromisedCredential(id);
   }
 
-  base::Optional<int> last_moved_password() const {
+  const std::vector<int>& last_moved_password() const {
     return s_test_delegate_->last_moved_password();
   }
 
@@ -300,9 +300,9 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, GetPasswordCheckStatus) {
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, MovePasswordToAccount) {
-  EXPECT_FALSE(last_moved_password().has_value());
+  EXPECT_TRUE(last_moved_password().empty());
   EXPECT_TRUE(RunPasswordsSubtest("movePasswordToAccount")) << message_;
-  EXPECT_EQ(42, last_moved_password());
+  EXPECT_EQ(42, last_moved_password()[0]);
 }
 
 }  // namespace extensions
