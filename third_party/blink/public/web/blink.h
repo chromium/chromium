@@ -112,6 +112,7 @@ BLINK_EXPORT void ForceNextDrawingBufferCreationToFailForTest();
 // agents, not both.
 // This is called at most once. This is called earlier than any frame commit.
 BLINK_EXPORT void SetIsCrossOriginIsolated(bool value);
+BLINK_EXPORT bool IsCrossOriginIsolated();
 
 }  // namespace blink
 

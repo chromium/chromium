@@ -194,6 +194,11 @@ void SetIsCrossOriginIsolated(bool value) {
   Agent::SetIsCrossOriginIsolated(value);
 }
 
+// Function defined in third_party/blink/public/web/blink.h.
+bool IsCrossOriginIsolated() {
+  return Agent::IsCrossOriginIsolated();
+}
+
 void BlinkInitializer::RegisterInterfaces(mojo::BinderMap& binders) {
   ModulesInitializer::RegisterInterfaces(binders);
   Thread* main_thread = Thread::MainThread();
