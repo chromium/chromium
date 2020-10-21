@@ -128,10 +128,6 @@ class SearchBoxViewBase : public views::WidgetDelegateView,
   // Nofifies the active status change.
   void NotifyActiveChanged();
 
-  // Sets the search box color.
-  void SetSearchBoxColor(SkColor color);
-  SkColor search_box_color() const { return search_box_color_; }
-
   // Updates the visibility of close button.
   void UpdateButtonsVisisbility();
 
@@ -206,8 +202,6 @@ class SearchBoxViewBase : public views::WidgetDelegateView,
   bool show_close_button_when_active_ = false;
   // Whether to show assistant button.
   bool show_assistant_button_ = false;
-  // The current search box color.
-  SkColor search_box_color_ = kDefaultSearchboxColor;
 
   views::PropertyChangedSubscription enabled_changed_subscription_ =
       AddEnabledChangedCallback(

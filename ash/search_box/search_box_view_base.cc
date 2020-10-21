@@ -269,7 +269,8 @@ SearchBoxViewBase::SearchBoxViewBase(SearchBoxViewDelegate* delegate)
 
   search_icon_ = new views::ImageView();
   content_container_->AddChildView(search_icon_);
-  search_box_->set_placeholder_text_color(search_box_color_);
+  search_box_->set_placeholder_text_color(
+      kDefaultSearchboxPlaceholderTextColor);
   search_box_->set_placeholder_text_draw_flags(gfx::Canvas::TEXT_ALIGN_CENTER);
   search_box_->SetFontList(search_box_->GetFontList().DeriveWithSizeDelta(2));
   search_box_->SetCursorEnabled(is_search_box_active_);
@@ -346,8 +347,9 @@ void SearchBoxViewBase::SetSearchBoxActive(bool active,
       active ? (base::i18n::IsRTL() ? gfx::Canvas::TEXT_ALIGN_RIGHT
                                     : gfx::Canvas::TEXT_ALIGN_LEFT)
              : gfx::Canvas::TEXT_ALIGN_CENTER);
-  search_box_->set_placeholder_text_color(active ? kZeroQuerySearchboxColor
-                                                 : search_box_color_);
+  search_box_->set_placeholder_text_color(
+      active ? kZeroQuerySearchboxColor
+             : kDefaultSearchboxPlaceholderTextColor);
   search_box_->SetCursorEnabled(active);
 
   if (active) {
@@ -463,11 +465,6 @@ void SearchBoxViewBase::NotifyQueryChanged() {
 void SearchBoxViewBase::NotifyActiveChanged() {
   DCHECK(delegate_);
   delegate_->ActiveChanged(this);
-}
-
-void SearchBoxViewBase::SetSearchBoxColor(SkColor color) {
-  search_box_color_ =
-      SK_ColorTRANSPARENT == color ? kDefaultSearchboxColor : color;
 }
 
 void SearchBoxViewBase::UpdateButtonsVisisbility() {
