@@ -77,6 +77,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/l10n_util.h"
 #include "chrome/browser/ui/webui/chromeos/login/tpm_error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/update_required_screen_handler.h"
+#include "chrome/browser/ui/webui/management_ui_handler.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -1220,6 +1221,14 @@ void ExistingUserController::OnProfilePrepared(Profile* profile,
       user_context.GetUserType() != user_manager::USER_TYPE_CHILD;
   user_manager::known_user::SetIsEnterpriseManaged(user_context.GetAccountId(),
                                                    is_enterprise_managed);
+
+  if (is_enterprise_managed) {
+    std::string manager = ManagementUIHandler::GetAccountManager(profile);
+    if (!manager.empty()) {
+      user_manager::known_user::SetAccountManager(user_context.GetAccountId(),
+                                                  manager);
+    }
+  }
 
   // Inform `auth_status_consumers_` about successful login.
   // TODO(nkostylev): Pass UserContext back crbug.com/424550

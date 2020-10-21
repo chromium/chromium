@@ -168,7 +168,7 @@ Try tapping the mic to ask me anything.
 
       <!-- Managed user session warning -->
       <message name="IDS_ASH_LOGIN_MANAGED_SESSION_MONITORING_USER_WARNING" desc="Text shown in the user pod in case the user is managed.">
-        <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph> manages this user. It may remotely manage settings and monitor user activity.
+        <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph> manages this user and may remotely manage settings and monitor user activity.
       </message>
 
       <!-- Pop-up enterprise management. -->

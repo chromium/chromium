@@ -81,6 +81,10 @@ const char kOfflineSigninLimit[] = "offline_signin_limit";
 // Key of the boolean flag telling if user is enterprise managed.
 const char kIsEnterpriseManaged[] = "is_enterprise_managed";
 
+// Key of the name of the entity (either a domain or email address) that manages
+// the policies for this account.
+const char kAccountManager[] = "enterprise_account_manager";
+
 // Key of the last input method user used which is suitable for login/lock
 // screen.
 const char kLastInputMethod[] = "last_input_method";
@@ -112,6 +116,7 @@ const char* kReservedKeys[] = {kCanonicalEmail,
                                kLastOnlineSignin,
                                kOfflineSigninLimit,
                                kIsEnterpriseManaged,
+                               kAccountManager,
                                kLastInputMethod,
                                kPinAutosubmitLength,
                                kPinAutosubmitBackfillNeeded,
@@ -676,6 +681,15 @@ bool GetIsEnterpriseManaged(const AccountId& account_id) {
   if (GetBooleanPref(account_id, kIsEnterpriseManaged, &is_enterprise_managed))
     return is_enterprise_managed;
   return false;
+}
+
+void SetAccountManager(const AccountId& account_id,
+                       const std::string& manager) {
+  SetStringPref(account_id, kAccountManager, manager);
+}
+
+bool GetAccountManager(const AccountId& account_id, std::string* manager) {
+  return GetStringPref(account_id, kAccountManager, manager);
 }
 
 void SetUserLastInputMethod(const AccountId& account_id,

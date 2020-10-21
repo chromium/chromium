@@ -232,6 +232,10 @@ void USER_MANAGER_EXPORT SetIsEnterpriseManaged(const AccountId& account_id,
 
 bool USER_MANAGER_EXPORT GetIsEnterpriseManaged(const AccountId& account_id);
 
+void USER_MANAGER_EXPORT SetAccountManager(const AccountId& account_id,
+                                           const std::string& manager);
+bool USER_MANAGER_EXPORT GetAccountManager(const AccountId& account_id,
+                                           std::string* manager);
 void USER_MANAGER_EXPORT
 SetUserLastInputMethod(const AccountId& account_id,
                        const std::string& input_method);

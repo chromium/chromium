@@ -1102,8 +1102,14 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
     if (user_manager::known_user::GetIsEnterpriseManaged(
             user->GetAccountId()) &&
         user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
-      user_info.user_enterprise_domain =
-          gaia::ExtractDomainName(user->display_email());
+      std::string account_manager;
+      if (user_manager::known_user::GetAccountManager(user->GetAccountId(),
+                                                      &account_manager)) {
+        user_info.user_account_manager = account_manager;
+      } else {
+        user_info.user_account_manager =
+            gaia::ExtractDomainName(user->display_email());
+      }
     }
     chromeos::CrosSettings::Get()->GetBoolean(
         chromeos::kDeviceShowNumericKeyboardForPassword,

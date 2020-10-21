@@ -280,9 +280,11 @@ struct ASH_PUBLIC_EXPORT LoginUserInfo {
   // screen for this user.
   bool show_display_password_button = false;
 
-  // The domain name displayed in the login screen UI for user-level
-  // management. This is only set if the relevant user is managed.
-  base::Optional<std::string> user_enterprise_domain;
+  // The name of the entity that manages this user's account displayed in the
+  // login screen UI for user-level management. Will be either a domain name
+  // (foo.com) or the email address of the admin (some_user@foo.com).
+  // This is only set if the relevant user is managed.
+  base::Optional<std::string> user_account_manager;
 
   // Contains the public account information if user type is PUBLIC_ACCOUNT.
   base::Optional<PublicAccountInfo> public_account_info;

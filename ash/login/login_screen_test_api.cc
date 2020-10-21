@@ -681,6 +681,19 @@ base::string16 LoginScreenTestApi::GetDisabledAuthMessage(
 }
 
 // static
+base::string16 LoginScreenTestApi::GetManagementDisclosureText(
+    const AccountId& account_id) {
+  LoginBigUserView* big_user_view = GetBigUserView(account_id);
+  if (!big_user_view) {
+    ADD_FAILURE() << "Could not find user " << account_id.Serialize();
+    return base::string16();
+  }
+  LoginUserView::TestApi user_test(big_user_view->GetUserView());
+  LoginUserMenuView::TestApi user_menu_test(user_test.menu());
+  return user_menu_test.management_disclosure_label()->GetText();
+}
+
+// static
 bool LoginScreenTestApi::IsOobeDialogVisible() {
   LockScreen::TestApi lock_screen_test(LockScreen::Get());
   LockContentsView::TestApi lock_contents_test(

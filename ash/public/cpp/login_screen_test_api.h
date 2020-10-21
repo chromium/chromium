@@ -64,6 +64,8 @@ class ASH_PUBLIC_EXPORT LoginScreenTestApi {
 
   static std::string GetDisplayedName(const AccountId& account_id);
   static base::string16 GetDisabledAuthMessage(const AccountId& account_id);
+  static base::string16 GetManagementDisclosureText(
+      const AccountId& account_id);
 
   static bool ExpandPublicSessionPod(const AccountId& account_id);
   static bool HidePublicSessionExpandedPod();

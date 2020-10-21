@@ -1494,10 +1494,10 @@ void LockContentsView::ShowAuthErrorMessageForDebug(int unlock_attempt) {
 void LockContentsView::ToggleManagementForUserForDebug(const AccountId& user) {
   auto replace = [](const LoginUserInfo& user_info) {
     auto changed = user_info;
-    if (user_info.user_enterprise_domain)
-      changed.user_enterprise_domain.reset();
+    if (user_info.user_account_manager)
+      changed.user_account_manager.reset();
     else
-      changed.user_enterprise_domain = "example@example.com";
+      changed.user_account_manager = "example@example.com";
     return changed;
   };
 

@@ -25,12 +25,16 @@
 #include "chrome/browser/chromeos/login/existing_user_controller.h"
 #include "chrome/browser/chromeos/login/help_app_launcher.h"
 #include "chrome/browser/chromeos/login/helper.h"
+#include "chrome/browser/chromeos/login/lock/screen_locker_tester.h"
+#include "chrome/browser/chromeos/login/login_manager_test.h"
+#include "chrome/browser/chromeos/login/screens/user_selection_screen.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager_test_api.h"
 #include "chrome/browser/chromeos/login/test/js_checker.h"
 #include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
 #include "chrome/browser/chromeos/login/test/oobe_base_test.h"
 #include "chrome/browser/chromeos/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/chromeos/login/test/user_policy_mixin.h"
 #include "chrome/browser/chromeos/login/ui/mock_login_display.h"
 #include "chrome/browser/chromeos/login/ui/mock_login_display_host.h"
 #include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
@@ -59,6 +63,7 @@
 #include "chromeos/network/network_state_test_helper.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/settings/cros_settings_provider.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/arc/enterprise/arc_data_snapshotd_manager.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -72,6 +77,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -81,6 +87,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 using ::testing::_;
 using ::testing::AnyNumber;
@@ -102,6 +109,10 @@ const char kNewUser[] = "new_test_user@gmail.com";
 const char kNewGaiaID[] = "11111";
 const char kExistingUser[] = "existing_test_user@gmail.com";
 const char kExistingGaiaID[] = "22222";
+const char kManagedUser[] = "user@example.com";
+const char kManagedGaiaID[] = "33333";
+const char kManager[] = "admin@example.com";
+const char kManagedDomain[] = "example.com";
 const char kUserAllowlist[] = "*@ad-domain.com";
 const char kUserNotMatchingAllowlist[] = "user@another_mail.com";
 const char kSupervisedUserID[] = "supervised_user@locally-managed.localhost";
@@ -1233,6 +1244,122 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest,
 
   FakeCryptohomeClient::Get()->ReportServiceIsNotAvailable();
   WaitForAuthErrorMessage();
+}
+
+class ExistingUserControllerProfileTest : public LoginManagerTest {
+ public:
+  ExistingUserControllerProfileTest() = default;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    LoginManagerTest::SetUpInProcessBrowserTestFixture();
+    // Login as a managed user would save force-online-signin to true and
+    // invalidate the auth token into local state, which would prevent to focus
+    // during the second part of the test which happens in the login screen.
+    UserSelectionScreen::SetSkipForceOnlineSigninForTesting(true);
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    LoginManagerTest::TearDownInProcessBrowserTestFixture();
+    UserSelectionScreen::SetSkipForceOnlineSigninForTesting(false);
+  }
+
+ protected:
+  void SetManagedBy(std::string managed_by) {
+    std::unique_ptr<ScopedUserPolicyUpdate> scoped_user_policy_update =
+        user_policy_mixin_.RequestPolicyUpdate();
+    if (!managed_by.empty()) {
+      scoped_user_policy_update->policy_data()->set_managed_by(managed_by);
+    } else {
+      scoped_user_policy_update->policy_data()->clear_managed_by();
+    }
+  }
+
+  void Login(const LoginManagerMixin::TestUserInfo& test_user) {
+    chromeos::WizardController::SkipPostLoginScreensForTesting();
+
+    auto context = LoginManagerMixin::CreateDefaultUserContext(test_user);
+    login_manager_mixin_.LoginAndWaitForActiveSession(context);
+  }
+
+  base::string16 ConstructManagedSessionUserWarning(std::string manager) {
+    return l10n_util::GetStringFUTF16(
+        IDS_ASH_LOGIN_MANAGED_SESSION_MONITORING_USER_WARNING,
+        base::UTF8ToUTF16(manager));
+  }
+
+  const LoginManagerMixin::TestUserInfo not_managed_user_{
+      AccountId::FromUserEmailGaiaId(kNewUser, kNewGaiaID)};
+  const LoginManagerMixin::TestUserInfo managed_user_{
+      AccountId::FromUserEmailGaiaId(kManagedUser, kManagedGaiaID)};
+  UserPolicyMixin user_policy_mixin_{&mixin_host_, managed_user_.account_id};
+  LoginManagerMixin login_manager_mixin_{&mixin_host_};
+  ScreenLockerTester screen_locker_tester_;
+};
+
+IN_PROC_BROWSER_TEST_F(ExistingUserControllerProfileTest,
+                       ManagedUserManagedBy) {
+  SetManagedBy(kManager);
+  Login(managed_user_);
+  EXPECT_TRUE(user_manager::known_user::GetIsEnterpriseManaged(
+      managed_user_.account_id));
+
+  // Verify that managed_by has been stored in prefs
+  std::string manager;
+  EXPECT_TRUE(user_manager::known_user::GetAccountManager(
+      managed_user_.account_id, &manager));
+  EXPECT_EQ(manager, kManager);
+
+  // Set the lock screen so that the managed warning can be queried.
+  screen_locker_tester_.Lock();
+
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsManagedMessageInMenuShown(
+      managed_user_.account_id));
+
+  // Verify that the lock screen text uses the prefs value for its construction.
+  EXPECT_EQ(ash::LoginScreenTestApi::GetManagementDisclosureText(
+                managed_user_.account_id),
+            ConstructManagedSessionUserWarning(kManager));
+}
+
+IN_PROC_BROWSER_TEST_F(ExistingUserControllerProfileTest, ManagedUserDomain) {
+  SetManagedBy(std::string());
+  Login(managed_user_);
+  EXPECT_TRUE(user_manager::known_user::GetIsEnterpriseManaged(
+      managed_user_.account_id));
+
+  // Verify that managed_by has been stored in prefs
+  std::string manager;
+  EXPECT_TRUE(user_manager::known_user::GetAccountManager(
+      managed_user_.account_id, &manager));
+  EXPECT_EQ(manager, kManagedDomain);
+
+  // Set the lock screen so that the managed warning can be queried.
+  screen_locker_tester_.Lock();
+
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsManagedMessageInMenuShown(
+      managed_user_.account_id));
+
+  // Verify that the lock screen text uses the prefs value for its construction.
+  EXPECT_EQ(ash::LoginScreenTestApi::GetManagementDisclosureText(
+                managed_user_.account_id),
+            ConstructManagedSessionUserWarning(kManagedDomain));
+}
+
+IN_PROC_BROWSER_TEST_F(ExistingUserControllerProfileTest, NotManagedUserLogin) {
+  Login(not_managed_user_);
+  EXPECT_FALSE(user_manager::known_user::GetIsEnterpriseManaged(
+      not_managed_user_.account_id));
+
+  // Verify that no value is stored in prefs for this user.
+  std::string manager;
+  EXPECT_FALSE(user_manager::known_user::GetAccountManager(
+      not_managed_user_.account_id, &manager));
+
+  screen_locker_tester_.Lock();
+
+  // Verify that no managed warning is shown for an unmanaged user.
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsManagedMessageInMenuShown(
+      not_managed_user_.account_id));
 }
 
 }  // namespace chromeos
