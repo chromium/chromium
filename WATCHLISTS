@@ -892,6 +892,9 @@
                   '|chrome/browser/chromeos/printing/'\
                   '|printing/',
     },
+    'cursor': {
+      'filepath': 'ui/base/cursor/',
+    },
     'custom_proxy': {
       'filepath': 'services/network/network_service_proxy_delegate.*',
     },
@@ -2438,6 +2441,7 @@
     'crostini': ['crostini-ui@chromium.org'],
     'cups_printing': ['print-reviews+cups@chromium.org',
                       'cros-printing-reviews@google.com'],
+    'cursor': ['hferreiro@igalia.com'],
     'custom_proxy': ['lbendig@opera.com',
                      'wdzierzanowski@opera.com'],
     'custom_tabs': ['amalova+watch@chromium.org',
