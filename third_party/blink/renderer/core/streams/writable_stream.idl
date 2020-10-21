@@ -7,9 +7,9 @@
     Exposed=(Window,Worker,Worklet)
 ] interface WritableStream {
     [CallWith=ScriptState, RaisesException, MeasureAs=WritableStreamConstructor] constructor(optional any underlyingSink, optional any strategy);
-    [NotEnumerable] readonly attribute boolean locked;
-    [RaisesException, CallWith=ScriptState, NotEnumerable] Promise<void> abort(
+    readonly attribute boolean locked;
+    [RaisesException, CallWith=ScriptState] Promise<void> abort(
         optional any reason);
-    [RaisesException, CallWith=ScriptState, NotEnumerable] Promise<void> close();
-    [RaisesException, CallWith=ScriptState, NotEnumerable] WritableStreamDefaultWriter getWriter();
+    [RaisesException, CallWith=ScriptState] Promise<void> close();
+    [RaisesException, CallWith=ScriptState] WritableStreamDefaultWriter getWriter();
 };
