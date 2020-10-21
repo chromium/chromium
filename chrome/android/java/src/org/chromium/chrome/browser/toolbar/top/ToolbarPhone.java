@@ -520,9 +520,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             if (isNativeLibraryReady()
                     && PartnerBrowserCustomizations.getInstance()
                                .isHomepageProviderAvailableAndEnabled()) {
-                Profile profile = isIncognito()
-                        ? Profile.getLastUsedRegularProfile().getOffTheRecordProfile()
-                        : Profile.getLastUsedRegularProfile();
+                Profile profile = getToolbarDataProvider().getProfile();
                 TrackerFactory.getTrackerForProfile(profile).notifyEvent(
                         EventConstants.PARTNER_HOME_PAGE_BUTTON_PRESSED);
             }
