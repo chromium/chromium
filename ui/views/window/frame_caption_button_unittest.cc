@@ -33,7 +33,8 @@ TEST(FrameCaptionButtonTest, ThemedColorContrast) {
 }
 
 TEST(FrameCaptionButtonTest, DefaultAccessibilityFocus) {
-  FrameCaptionButton button(nullptr, CAPTION_BUTTON_ICON_MINIMIZE, HTMINBUTTON);
+  FrameCaptionButton button(Button::PressedCallback(),
+                            CAPTION_BUTTON_ICON_MINIMIZE, HTMINBUTTON);
   EXPECT_EQ(View::FocusBehavior::ACCESSIBLE_ONLY, button.GetFocusBehavior());
 }
 

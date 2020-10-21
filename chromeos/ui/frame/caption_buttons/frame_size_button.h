@@ -27,8 +27,7 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
     : public views::FrameCaptionButton {
  public:
-  FrameSizeButton(views::ButtonListener* listener,
-                  FrameSizeButtonDelegate* delegate);
+  FrameSizeButton(PressedCallback callback, FrameSizeButtonDelegate* delegate);
 
   ~FrameSizeButton() override;
 

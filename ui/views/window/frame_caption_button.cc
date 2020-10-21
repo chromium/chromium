@@ -5,6 +5,7 @@
 #include "ui/views/window/frame_caption_button.h"
 
 #include <memory>
+#include <utility>
 
 #include "ui/base/hit_test.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -66,10 +67,10 @@ class FrameCaptionButton::HighlightPathGenerator
 // static
 const char FrameCaptionButton::kViewClassName[] = "FrameCaptionButton";
 
-FrameCaptionButton::FrameCaptionButton(views::ButtonListener* listener,
+FrameCaptionButton::FrameCaptionButton(PressedCallback callback,
                                        CaptionButtonIcon icon,
                                        int hit_test_type)
-    : Button(listener),
+    : Button(std::move(callback)),
       icon_(icon),
       background_color_(SK_ColorWHITE),
       paint_as_active_(false),

@@ -111,9 +111,9 @@ class FrameSizeButton::SnappingWindowObserver : public aura::WindowObserver {
   DISALLOW_COPY_AND_ASSIGN(SnappingWindowObserver);
 };
 
-FrameSizeButton::FrameSizeButton(views::ButtonListener* listener,
+FrameSizeButton::FrameSizeButton(PressedCallback callback,
                                  FrameSizeButtonDelegate* delegate)
-    : views::FrameCaptionButton(listener,
+    : views::FrameCaptionButton(std::move(callback),
                                 views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE,
                                 HTMAXBUTTON),
       delegate_(delegate),

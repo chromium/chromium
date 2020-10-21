@@ -13,7 +13,6 @@
 #include "chromeos/ui/frame/caption_buttons/frame_size_button_delegate.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "ui/views/animation/animation_delegate_views.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 #include "ui/views/window/frame_caption_button.h"
 
@@ -36,7 +35,6 @@ namespace chromeos {
 // utilities).
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
     : public views::View,
-      public views::ButtonListener,
       public FrameSizeButtonDelegate,
       public views::AnimationDelegateViews {
  public:
@@ -128,8 +126,10 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
                      views::CaptionButtonIcon icon,
                      Animate animate);
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
+  void MinimizeButtonPressed();
+  void SizeButtonPressed();
+  void CloseButtonPressed();
+  void MenuButtonPressed();
 
   // FrameSizeButtonDelegate:
   bool IsMinimizeButtonVisible() const override;

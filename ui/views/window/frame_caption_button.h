@@ -29,7 +29,7 @@ class VIEWS_EXPORT FrameCaptionButton : public views::Button {
 
   static const char kViewClassName[];
 
-  FrameCaptionButton(views::ButtonListener* listener,
+  FrameCaptionButton(PressedCallback callback,
                      CaptionButtonIcon icon,
                      int hit_test_type);
   ~FrameCaptionButton() override;

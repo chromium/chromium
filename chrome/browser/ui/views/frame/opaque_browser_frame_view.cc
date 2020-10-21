@@ -536,8 +536,8 @@ views::Button* OpaqueBrowserFrameView::CreateFrameCaptionButton(
     views::CaptionButtonIcon icon_type,
     int ht_component,
     const gfx::VectorIcon& icon_image) {
-  views::FrameCaptionButton* button =
-      new views::FrameCaptionButton(nullptr, icon_type, ht_component);
+  views::FrameCaptionButton* button = new views::FrameCaptionButton(
+      views::Button::PressedCallback(), icon_type, ht_component);
   button->SetImage(button->icon(), views::FrameCaptionButton::ANIMATE_NO,
                    icon_image);
   return button;

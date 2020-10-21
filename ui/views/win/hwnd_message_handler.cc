@@ -3038,7 +3038,7 @@ LRESULT HWNDMessageHandler::HandleMouseEventInternal(UINT message,
         // we need to tell the RootView to send the mouse pressed event (which
         // sets capture, allowing subsequent WM_LBUTTONUP (note, _not_
         // WM_NCLBUTTONUP) to fire so that the appropriate WM_SYSCOMMAND can be
-        // sent by the applicable button's ButtonListener. We _have_ to do this
+        // sent by the applicable button's callback. We _have_ to do this this
         // way rather than letting Windows just send the syscommand itself (as
         // would happen if we never did this dance) because for some insane
         // reason DefWindowProc for WM_NCLBUTTONDOWN also renders the pressed

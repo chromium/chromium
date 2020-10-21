@@ -21,17 +21,14 @@ namespace views {
 
 using AccessiblePaneViewTest = ViewsTestBase;
 
-class TestBarView : public AccessiblePaneView, public ButtonListener {
+class TestBarView : public AccessiblePaneView {
  public:
   TestBarView();
   ~TestBarView() override;
 
-  void ButtonPressed(Button* sender, const ui::Event& event) override;
-  LabelButton* child_button() const { return child_button_.get(); }
-  LabelButton* second_child_button() const {
-    return second_child_button_.get();
-  }
-  LabelButton* third_child_button() const { return third_child_button_.get(); }
+  LabelButton* child_button() const { return child_button_; }
+  LabelButton* second_child_button() const { return second_child_button_; }
+  LabelButton* third_child_button() const { return third_child_button_; }
   LabelButton* not_child_button() const { return not_child_button_.get(); }
 
   View* GetDefaultFocusableChild() override;
@@ -39,9 +36,9 @@ class TestBarView : public AccessiblePaneView, public ButtonListener {
  private:
   void Init();
 
-  std::unique_ptr<LabelButton> child_button_;
-  std::unique_ptr<LabelButton> second_child_button_;
-  std::unique_ptr<LabelButton> third_child_button_;
+  LabelButton* child_button_;
+  LabelButton* second_child_button_;
+  LabelButton* third_child_button_;
   std::unique_ptr<LabelButton> not_child_button_;
 
   DISALLOW_COPY_AND_ASSIGN(TestBarView);
@@ -54,22 +51,17 @@ TestBarView::TestBarView() {
 
 TestBarView::~TestBarView() = default;
 
-void TestBarView::ButtonPressed(Button* sender, const ui::Event& event) {}
-
 void TestBarView::Init() {
   SetLayoutManager(std::make_unique<FillLayout>());
   base::string16 label;
-  child_button_ = std::make_unique<LabelButton>(this, label);
-  AddChildView(child_button_.get());
-  second_child_button_ = std::make_unique<LabelButton>(this, label);
-  AddChildView(second_child_button_.get());
-  third_child_button_ = std::make_unique<LabelButton>(this, label);
-  AddChildView(third_child_button_.get());
-  not_child_button_ = std::make_unique<LabelButton>(this, label);
+  child_button_ = AddChildView(std::make_unique<LabelButton>());
+  second_child_button_ = AddChildView(std::make_unique<LabelButton>());
+  third_child_button_ = AddChildView(std::make_unique<LabelButton>());
+  not_child_button_ = std::make_unique<LabelButton>();
 }
 
 View* TestBarView::GetDefaultFocusableChild() {
-  return child_button_.get();
+  return child_button_;
 }
 
 TEST_F(AccessiblePaneViewTest, SimpleSetPaneFocus) {

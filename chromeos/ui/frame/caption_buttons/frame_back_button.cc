@@ -18,7 +18,10 @@
 namespace chromeos {
 
 FrameBackButton::FrameBackButton()
-    : FrameCaptionButton(this, views::CAPTION_BUTTON_ICON_BACK, HTMENU) {
+    : FrameCaptionButton(base::BindRepeating(&FrameBackButton::ButtonPressed,
+                                             base::Unretained(this)),
+                         views::CAPTION_BUTTON_ICON_BACK,
+                         HTMENU) {
   SetPreferredSize(views::GetCaptionButtonLayoutSize(
       views::CaptionButtonLayoutSize::kNonBrowserCaption));
   SetAccessibleName(l10n_util::GetStringUTF16(IDS_APP_ACCNAME_BACK));
@@ -26,7 +29,7 @@ FrameBackButton::FrameBackButton()
 
 FrameBackButton::~FrameBackButton() = default;
 
-void FrameBackButton::ButtonPressed(Button* sender, const ui::Event& event) {
+void FrameBackButton::ButtonPressed() {
   // Send up event as well as down event as ARC++ clients expect this sequence.
   // TODO: Investigate if we should be using the current modifiers.
   aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();

@@ -177,23 +177,33 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
 
   // Insert the buttons left to right.
   menu_button_ = new views::FrameCaptionButton(
-      this, views::CAPTION_BUTTON_ICON_MENU, HTMENU);
+      base::BindRepeating(&FrameCaptionButtonContainerView::MenuButtonPressed,
+                          base::Unretained(this)),
+      views::CAPTION_BUTTON_ICON_MENU, HTMENU);
   menu_button_->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MENU));
   AddChildView(menu_button_);
 
   minimize_button_ = new views::FrameCaptionButton(
-      this, views::CAPTION_BUTTON_ICON_MINIMIZE, HTMINBUTTON);
+      base::BindRepeating(
+          &FrameCaptionButtonContainerView::MinimizeButtonPressed,
+          base::Unretained(this)),
+      views::CAPTION_BUTTON_ICON_MINIMIZE, HTMINBUTTON);
   minimize_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MINIMIZE));
   AddChildView(minimize_button_);
 
-  size_button_ = new FrameSizeButton(this, this);
+  size_button_ = new FrameSizeButton(
+      base::BindRepeating(&FrameCaptionButtonContainerView::SizeButtonPressed,
+                          base::Unretained(this)),
+      this);
   size_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MAXIMIZE));
   AddChildView(size_button_);
 
   close_button_ = new views::FrameCaptionButton(
-      this, views::CAPTION_BUTTON_ICON_CLOSE, HTCLOSE);
+      base::BindRepeating(&FrameCaptionButtonContainerView::CloseButtonPressed,
+                          base::Unretained(this)),
+      views::CAPTION_BUTTON_ICON_CLOSE, HTCLOSE);
   close_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
   AddChildView(close_button_);
@@ -397,47 +407,57 @@ void FrameCaptionButtonContainerView::SetButtonIcon(
     button->SetImage(icon, fcb_animate, *it->second);
 }
 
-void FrameCaptionButtonContainerView::ButtonPressed(views::Button* sender,
-                                                    const ui::Event& event) {
+void FrameCaptionButtonContainerView::MinimizeButtonPressed() {
   // Abort any animations of the button icons.
   SetButtonsToNormal(ANIMATE_NO);
 
-  using base::RecordAction;
-  using base::UserMetricsAction;
-  if (sender == minimize_button_) {
-    frame_->Minimize();
-    RecordAction(UserMetricsAction("MinButton_Clk"));
-  } else if (sender == size_button_) {
-    if (frame_->IsFullscreen()) {  // Can be clicked in immersive fullscreen.
-      frame_->Restore();
-      RecordAction(UserMetricsAction("MaxButton_Clk_ExitFS"));
-    } else if (frame_->IsMaximized()) {
-      frame_->Restore();
-      RecordAction(UserMetricsAction("MaxButton_Clk_Restore"));
-    } else {
-      frame_->Maximize();
-      RecordAction(UserMetricsAction("MaxButton_Clk_Maximize"));
-    }
-  } else if (sender == close_button_) {
-    frame_->Close();
-    if (chromeos::TabletState::Get()->InTabletMode())
-      RecordAction(UserMetricsAction("Tablet_WindowCloseFromCaptionButton"));
-    else
-      RecordAction(UserMetricsAction("CloseButton_Clk"));
-  } else if (sender == menu_button_) {
-    // Send up event as well as down event as ARC++ clients expect this
-    // sequence.
-    aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
-    ui::KeyEvent press_key_event(ui::ET_KEY_PRESSED, ui::VKEY_APPS,
-                                 ui::EF_NONE);
-    ignore_result(root_window->GetHost()->event_sink()->OnEventFromSource(
-        &press_key_event));
-    ui::KeyEvent release_key_event(ui::ET_KEY_RELEASED, ui::VKEY_APPS,
-                                   ui::EF_NONE);
-    ignore_result(root_window->GetHost()->event_sink()->OnEventFromSource(
-        &release_key_event));
-    // TODO(oshima): Add metrics
+  frame_->Minimize();
+  base::RecordAction(base::UserMetricsAction("MinButton_Clk"));
+}
+
+void FrameCaptionButtonContainerView::SizeButtonPressed() {
+  // Abort any animations of the button icons.
+  SetButtonsToNormal(ANIMATE_NO);
+
+  if (frame_->IsFullscreen()) {  // Can be clicked in immersive fullscreen.
+    frame_->Restore();
+    base::RecordAction(base::UserMetricsAction("MaxButton_Clk_ExitFS"));
+  } else if (frame_->IsMaximized()) {
+    frame_->Restore();
+    base::RecordAction(base::UserMetricsAction("MaxButton_Clk_Restore"));
+  } else {
+    frame_->Maximize();
+    base::RecordAction(base::UserMetricsAction("MaxButton_Clk_Maximize"));
   }
+}
+
+void FrameCaptionButtonContainerView::CloseButtonPressed() {
+  // Abort any animations of the button icons.
+  SetButtonsToNormal(ANIMATE_NO);
+
+  frame_->Close();
+  if (chromeos::TabletState::Get()->InTabletMode()) {
+    base::RecordAction(
+        base::UserMetricsAction("Tablet_WindowCloseFromCaptionButton"));
+  } else {
+    base::RecordAction(base::UserMetricsAction("CloseButton_Clk"));
+  }
+}
+
+void FrameCaptionButtonContainerView::MenuButtonPressed() {
+  // Abort any animations of the button icons.
+  SetButtonsToNormal(ANIMATE_NO);
+
+  // Send up event as well as down event as ARC++ clients expect this sequence.
+  aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
+  ui::KeyEvent press_key_event(ui::ET_KEY_PRESSED, ui::VKEY_APPS, ui::EF_NONE);
+  ignore_result(root_window->GetHost()->event_sink()->OnEventFromSource(
+      &press_key_event));
+  ui::KeyEvent release_key_event(ui::ET_KEY_RELEASED, ui::VKEY_APPS,
+                                 ui::EF_NONE);
+  ignore_result(root_window->GetHost()->event_sink()->OnEventFromSource(
+      &release_key_event));
+  // TODO(oshima): Add metrics
 }
 
 bool FrameCaptionButtonContainerView::IsMinimizeButtonVisible() const {

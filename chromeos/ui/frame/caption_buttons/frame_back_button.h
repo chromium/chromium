@@ -13,16 +13,14 @@ namespace chromeos {
 // A button to send back key events. It's used in Chrome hosted app windows,
 // among other places.
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameBackButton
-    : public views::FrameCaptionButton,
-      public views::ButtonListener {
+    : public views::FrameCaptionButton {
  public:
   FrameBackButton();
   ~FrameBackButton() override;
 
-  // views::ButtonListener:
-  void ButtonPressed(Button* sender, const ui::Event& event) override;
-
  private:
+  void ButtonPressed();
+
   DISALLOW_COPY_AND_ASSIGN(FrameBackButton);
 };
 
