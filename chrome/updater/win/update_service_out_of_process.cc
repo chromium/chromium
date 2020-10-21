@@ -292,7 +292,6 @@ void UpdateServiceOutOfProcess::GetVersion(
               [](scoped_refptr<base::SequencedTaskRunner> taskrunner,
                  base::OnceCallback<void(const base::Version&)> callback,
                  const base::Version& version) {
-                DCHECK(version.IsValid());
                 taskrunner->PostTask(
                     FROM_HERE, base::BindOnce(std::move(callback), version));
               },

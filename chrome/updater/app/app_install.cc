@@ -91,6 +91,21 @@ void AppInstall::FirstTaskRun() {
   splash_screen_ = splash_screen_maker_.Run();
   splash_screen_->Show();
 
+  // Capture `update_service` to manage the object lifetime.
+  scoped_refptr<UpdateService> update_service = CreateUpdateService();
+  update_service->GetVersion(
+      base::BindOnce(&AppInstall::GetVersionDone, this, update_service));
+}
+
+void AppInstall::GetVersionDone(scoped_refptr<UpdateService>,
+                                const base::Version& version) {
+  VLOG_IF(1, (version.IsValid()))
+      << "Found active version: " << version.GetString();
+  if (version.IsValid() && version >= base::Version(UPDATER_VERSION_STRING)) {
+    splash_screen_->Dismiss(base::BindOnce(&AppInstall::MaybeInstallApp, this));
+    return;
+  }
+
   InstallCandidate(
       false,
       base::BindOnce(
