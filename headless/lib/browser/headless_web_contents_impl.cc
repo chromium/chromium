@@ -40,7 +40,7 @@
 #include "headless/lib/browser/protocol/headless_handler.h"
 #include "headless/public/internal/headless_devtools_client_impl.h"
 #include "printing/buildflags/buildflags.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/switches.h"

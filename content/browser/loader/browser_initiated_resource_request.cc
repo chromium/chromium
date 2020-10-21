@@ -18,7 +18,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/request_mode.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 
 namespace content {
 
@@ -26,7 +26,7 @@ void UpdateAdditionalHeadersForBrowserInitiatedRequest(
     net::HttpRequestHeaders* headers,
     BrowserContext* browser_context,
     bool should_update_existing_headers,
-    const blink::mojom::RendererPreferences& renderer_preferences) {
+    const blink::RendererPreferences& renderer_preferences) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Set the DoNotTrack header if appropriate.

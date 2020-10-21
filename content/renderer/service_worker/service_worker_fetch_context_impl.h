@@ -9,8 +9,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom-forward.h"
 #include "third_party/blink/public/mojom/worker/subresource_loader_updater.mojom.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_fetch_context.h"
@@ -41,7 +41,7 @@ class CONTENT_EXPORT ServiceWorkerFetchContextImpl final
   // browser process so that it doesn't need to be throttled in the renderer
   // again.
   ServiceWorkerFetchContextImpl(
-      const blink::mojom::RendererPreferences& renderer_preferences,
+      const blink::RendererPreferences& renderer_preferences,
       const GURL& worker_script_url,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_url_loader_factory,
@@ -92,9 +92,9 @@ class CONTENT_EXPORT ServiceWorkerFetchContextImpl final
   ~ServiceWorkerFetchContextImpl() override;
 
   // Implements blink::mojom::RendererPreferenceWatcher.
-  void NotifyUpdate(blink::mojom::RendererPreferencesPtr new_prefs) override;
+  void NotifyUpdate(const blink::RendererPreferences& new_prefs) override;
 
-  blink::mojom::RendererPreferences renderer_preferences_;
+  blink::RendererPreferences renderer_preferences_;
   const GURL worker_script_url_;
   // Consumed on the worker thread to create |web_url_loader_factory_|.
   std::unique_ptr<network::PendingSharedURLLoaderFactory>

@@ -32,8 +32,8 @@ class WebThemeEngineDefault : public blink::WebThemeEngine {
                                              system_theme_color) const override;
 #if defined(OS_WIN)
   // Caches the scrollbar metrics. These are retrieved in the browser and passed
-  // to the renderer in blink::mojom::RendererPreferences because the required
-  // Windows system calls cannot be made in sandboxed renderers.
+  // to the renderer in blink::RendererPreferences because the required Windows
+  // system calls cannot be made in sandboxed renderers.
   static void cacheScrollBarMetrics(int32_t vertical_scroll_bar_width,
                                     int32_t horizontal_scroll_bar_height,
                                     int32_t vertical_arrow_bitmap_height,

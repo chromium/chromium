@@ -21,7 +21,7 @@
 namespace content {
 
 ServiceWorkerFetchContextImpl::ServiceWorkerFetchContextImpl(
-    const blink::mojom::RendererPreferences& renderer_preferences,
+    const blink::RendererPreferences& renderer_preferences,
     const GURL& worker_script_url,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_url_loader_factory,
@@ -192,11 +192,11 @@ void ServiceWorkerFetchContextImpl::UpdateSubresourceLoaderFactories(
 }
 
 void ServiceWorkerFetchContextImpl::NotifyUpdate(
-    blink::mojom::RendererPreferencesPtr new_prefs) {
+    const blink::RendererPreferences& new_prefs) {
   DCHECK(accept_languages_watcher_);
-  if (renderer_preferences_.accept_languages != new_prefs->accept_languages)
+  if (renderer_preferences_.accept_languages != new_prefs.accept_languages)
     accept_languages_watcher_->NotifyUpdate();
-  renderer_preferences_ = *new_prefs;
+  renderer_preferences_ = new_prefs;
 }
 
 blink::WebString ServiceWorkerFetchContextImpl::GetAcceptLanguages() const {

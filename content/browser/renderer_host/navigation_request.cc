@@ -115,10 +115,10 @@
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
@@ -281,11 +281,10 @@ void AddAdditionalRequestHeaders(
     return;
 
   bool is_reload = NavigationTypeUtils::IsReload(navigation_type);
-  blink::mojom::RendererPreferences render_prefs =
-      frame_tree_node->render_manager()
-          ->current_host()
-          ->GetDelegate()
-          ->GetRendererPrefs();
+  blink::RendererPreferences render_prefs = frame_tree_node->render_manager()
+                                                ->current_host()
+                                                ->GetDelegate()
+                                                ->GetRendererPrefs();
   UpdateAdditionalHeadersForBrowserInitiatedRequest(headers, browser_context,
                                                     is_reload, render_prefs);
 

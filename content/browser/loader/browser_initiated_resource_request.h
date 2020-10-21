@@ -10,9 +10,7 @@ class HttpRequestHeaders;
 }  // namespace net
 
 namespace blink {
-namespace mojom {
-class RendererPreferences;
-}  // namespace mojom
+struct RendererPreferences;
 }  // namespace blink
 
 namespace content {
@@ -29,7 +27,7 @@ void UpdateAdditionalHeadersForBrowserInitiatedRequest(
     net::HttpRequestHeaders* headers,
     BrowserContext* browser_context,
     bool should_update_existing_headers,
-    const blink::mojom::RendererPreferences& renderer_preferences);
+    const blink::RendererPreferences& renderer_preferences);
 
 }  // namespace content
 

@@ -14,7 +14,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/language/core/browser/pref_names.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 
 #if defined(OS_CHROMEOS)
 #include "ash/public/cpp/ash_pref_names.h"
@@ -140,10 +140,10 @@ void PrefWatcher::UpdateRendererPreferences() {
   for (auto* helper : tab_helpers_)
     helper->UpdateRendererPreferences();
 
-  blink::mojom::RendererPreferences prefs;
+  blink::RendererPreferences prefs;
   renderer_preferences_util::UpdateFromSystemSettings(&prefs, profile_);
   for (auto& watcher : renderer_preference_watchers_)
-    watcher->NotifyUpdate(prefs.Clone());
+    watcher->NotifyUpdate(prefs);
 }
 
 void PrefWatcher::OnWebPrefChanged(const std::string& pref_name) {

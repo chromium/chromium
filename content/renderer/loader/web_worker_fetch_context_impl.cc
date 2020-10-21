@@ -163,7 +163,7 @@ class WebWorkerFetchContextImpl::Factory : public blink::WebURLLoaderFactory {
 
 scoped_refptr<WebWorkerFetchContextImpl> WebWorkerFetchContextImpl::Create(
     ServiceWorkerProviderContext* provider_context,
-    blink::mojom::RendererPreferences renderer_preferences,
+    const blink::RendererPreferences& renderer_preferences,
     mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
         watcher_receiver,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
@@ -199,7 +199,7 @@ scoped_refptr<WebWorkerFetchContextImpl> WebWorkerFetchContextImpl::Create(
 
   scoped_refptr<WebWorkerFetchContextImpl> worker_fetch_context =
       base::AdoptRef(new WebWorkerFetchContextImpl(
-          std::move(renderer_preferences), std::move(watcher_receiver),
+          renderer_preferences, std::move(watcher_receiver),
           std::move(service_worker_client_receiver),
           std::move(service_worker_worker_client_registry),
           std::move(service_worker_container_host),
@@ -225,7 +225,7 @@ scoped_refptr<WebWorkerFetchContextImpl> WebWorkerFetchContextImpl::Create(
 }
 
 WebWorkerFetchContextImpl::WebWorkerFetchContextImpl(
-    blink::mojom::RendererPreferences renderer_preferences,
+    const blink::RendererPreferences& renderer_preferences,
     mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
         preference_watcher_receiver,
     mojo::PendingReceiver<blink::mojom::ServiceWorkerWorkerClient>
@@ -256,7 +256,7 @@ WebWorkerFetchContextImpl::WebWorkerFetchContextImpl(
       pending_fallback_factory_(std::move(pending_fallback_factory)),
       pending_subresource_loader_updater_(
           std::move(pending_subresource_loader_updater)),
-      renderer_preferences_(std::move(renderer_preferences)),
+      renderer_preferences_(renderer_preferences),
       preference_watcher_pending_receiver_(
           std::move(preference_watcher_receiver)),
       throttle_provider_(std::move(throttle_provider)),
@@ -667,13 +667,13 @@ void WebWorkerFetchContextImpl::UpdateSubresourceLoaderFactories(
 }
 
 void WebWorkerFetchContextImpl::NotifyUpdate(
-    blink::mojom::RendererPreferencesPtr new_prefs) {
+    const blink::RendererPreferences& new_prefs) {
   if (accept_languages_watcher_ &&
-      renderer_preferences_.accept_languages != new_prefs->accept_languages)
+      renderer_preferences_.accept_languages != new_prefs.accept_languages)
     accept_languages_watcher_->NotifyUpdate();
-  renderer_preferences_ = *new_prefs;
+  renderer_preferences_ = new_prefs;
   for (auto& watcher : child_preference_watchers_)
-    watcher->NotifyUpdate(new_prefs.Clone());
+    watcher->NotifyUpdate(new_prefs);
 }
 
 blink::WebString WebWorkerFetchContextImpl::GetAcceptLanguages() const {

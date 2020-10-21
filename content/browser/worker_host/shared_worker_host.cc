@@ -36,6 +36,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
@@ -175,9 +176,9 @@ void SharedWorkerHost::Start(
       instance_.creation_address_space(),
       std::move(outside_fetch_client_settings_object)));
 
-  auto renderer_preferences = blink::mojom::RendererPreferences::New();
+  auto renderer_preferences = blink::RendererPreferences();
   GetContentClient()->browser()->UpdateRendererPreferencesForWorker(
-      worker_process_host_->GetBrowserContext(), renderer_preferences.get());
+      worker_process_host_->GetBrowserContext(), &renderer_preferences);
 
   // Create a RendererPreferenceWatcher to observe updates in the preferences.
   mojo::PendingRemote<blink::mojom::RendererPreferenceWatcher> watcher_remote;

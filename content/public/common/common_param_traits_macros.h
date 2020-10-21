@@ -17,12 +17,12 @@
 #include "services/network/public/cpp/network_ipc_param_traits.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/security/security_style.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/page_state/page_state.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "third_party/blink/public/platform/web_rect.h"
@@ -109,7 +109,7 @@ IPC_STRUCT_TRAITS_BEGIN(blink::UserAgentOverride)
   IPC_STRUCT_TRAITS_MEMBER(ua_metadata_override)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_TRAITS_BEGIN(blink::mojom::RendererPreferences)
+IPC_STRUCT_TRAITS_BEGIN(blink::RendererPreferences)
   IPC_STRUCT_TRAITS_MEMBER(can_accept_load_drops)
   IPC_STRUCT_TRAITS_MEMBER(should_antialias_text)
   IPC_STRUCT_TRAITS_MEMBER(hinting)
@@ -154,6 +154,9 @@ IPC_STRUCT_TRAITS_BEGIN(blink::mojom::RendererPreferences)
   IPC_STRUCT_TRAITS_MEMBER(horizontal_scroll_bar_height_in_dips)
   IPC_STRUCT_TRAITS_MEMBER(arrow_bitmap_height_vertical_scroll_bar_in_dips)
   IPC_STRUCT_TRAITS_MEMBER(arrow_bitmap_width_horizontal_scroll_bar_in_dips)
+#endif
+#if defined(USE_X11) || defined(USE_OZONE)
+  IPC_STRUCT_TRAITS_MEMBER(selection_clipboard_buffer_available)
 #endif
 IPC_STRUCT_TRAITS_END()
 

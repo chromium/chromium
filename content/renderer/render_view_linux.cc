@@ -5,7 +5,7 @@
 #include "content/renderer/render_view_impl.h"
 
 #include "skia/ext/legacy_display_globals.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/platform/web_font_render_style.h"
 #include "ui/gfx/font_render_params.h"
 
@@ -16,7 +16,7 @@ namespace content {
 namespace {
 
 SkFontHinting RendererPreferencesToSkiaHinting(
-    const blink::mojom::RendererPreferences& prefs) {
+    const blink::RendererPreferences& prefs) {
   if (!prefs.should_antialias_text) {
     // When anti-aliasing is off, GTK maps all non-zero hinting settings to
     // 'Normal' hinting so we do the same. Otherwise, folks who have 'Slight'
@@ -52,7 +52,7 @@ SkFontHinting RendererPreferencesToSkiaHinting(
 }  // namespace
 
 void RenderViewImpl::UpdateFontRenderingFromRendererPrefs() {
-  const blink::mojom::RendererPreferences& prefs = renderer_preferences_;
+  const blink::RendererPreferences& prefs = renderer_preferences_;
   WebFontRenderStyle::SetHinting(RendererPreferencesToSkiaHinting(prefs));
   WebFontRenderStyle::SetAutoHint(prefs.use_autohinter);
   WebFontRenderStyle::SetUseBitmaps(prefs.use_bitmaps);

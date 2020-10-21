@@ -89,7 +89,7 @@ DedicatedWorkerHostFactoryClient::CloneWorkerFetchContext(
 
 scoped_refptr<WebWorkerFetchContextImpl>
 DedicatedWorkerHostFactoryClient::CreateWorkerFetchContext(
-    blink::mojom::RendererPreferences renderer_preference,
+    const blink::RendererPreferences& renderer_preference,
     mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
         watcher_receiver,
     mojo::PendingRemote<blink::mojom::ResourceLoadInfoNotifier>
@@ -98,8 +98,8 @@ DedicatedWorkerHostFactoryClient::CreateWorkerFetchContext(
   DCHECK(subresource_loader_factory_bundle_);
   scoped_refptr<WebWorkerFetchContextImpl> worker_fetch_context =
       WebWorkerFetchContextImpl::Create(
-          service_worker_provider_context_.get(),
-          std::move(renderer_preference), std::move(watcher_receiver),
+          service_worker_provider_context_.get(), renderer_preference,
+          std::move(watcher_receiver),
           subresource_loader_factory_bundle_->Clone(),
           subresource_loader_factory_bundle_->CloneWithoutAppCacheFactory(),
           std::move(pending_subresource_loader_updater_),

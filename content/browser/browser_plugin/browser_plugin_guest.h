@@ -77,8 +77,8 @@ class CONTENT_EXPORT BrowserPluginGuest : public GuestHost,
   // container, then this call is a no-op. For guest types that can be
   // navigated, this call adds the associated RenderWdigetHostViewGuest to the
   // view hierarchy and sets up the appropriate
-  // blink::mojom::RendererPreferences so that this guest can navigate and
-  // resize offscreen.
+  // blink::RendererPreferences so that this guest can navigate and resize
+  // offscreen.
   void Init();
 
   // Returns a WeakPtr to this BrowserPluginGuest.

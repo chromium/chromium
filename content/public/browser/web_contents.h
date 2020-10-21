@@ -52,14 +52,12 @@
 #endif
 
 namespace blink {
-namespace mojom {
-class RendererPreferences;
-}
 namespace web_pref {
 struct WebPreferences;
 }
 struct Manifest;
 struct UserAgentOverride;
+struct RendererPreferences;
 }  // namespace blink
 
 namespace base {
@@ -836,7 +834,7 @@ class WebContents : public PageNavigator,
   virtual const std::string& GetContentsMimeType() = 0;
 
   // Returns the settings which get passed to the renderer.
-  virtual blink::mojom::RendererPreferences* GetMutableRendererPrefs() = 0;
+  virtual blink::RendererPreferences* GetMutableRendererPrefs() = 0;
 
   // Tells the tab to close now. The tab will take care not to close until it's
   // out of nested run loops.

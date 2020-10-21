@@ -21,7 +21,7 @@
 #include "content/public/browser/renderer_preferences_util.h"
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/public_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_features.h"
@@ -94,7 +94,7 @@ std::vector<std::string> GetLocalIpsAllowedUrls(
 
 namespace renderer_preferences_util {
 
-void UpdateFromSystemSettings(blink::mojom::RendererPreferences* prefs,
+void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
                               Profile* profile) {
   const PrefService* pref_service = profile->GetPrefs();
   if (profile->IsOffTheRecord()) {

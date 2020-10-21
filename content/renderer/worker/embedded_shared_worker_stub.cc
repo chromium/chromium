@@ -38,7 +38,7 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
     const blink::UserAgentMetadata& ua_metadata,
     bool pause_on_start,
     const base::UnguessableToken& devtools_worker_token,
-    const blink::mojom::RendererPreferences& renderer_preferences,
+    const blink::RendererPreferences& renderer_preferences,
     mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
         preference_watcher_receiver,
     mojo::PendingRemote<blink::mojom::WorkerContentSettingsProxy>
@@ -141,7 +141,7 @@ void EmbeddedSharedWorkerStub::WorkerContextDestroyed() {
 scoped_refptr<blink::WebWorkerFetchContext>
 EmbeddedSharedWorkerStub::CreateWorkerFetchContext(
     const GURL& url,
-    const blink::mojom::RendererPreferences& renderer_preferences,
+    const blink::RendererPreferences& renderer_preferences,
     mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
         preference_watcher_receiver,
     const std::vector<std::string>& cors_exempt_header_list) {
@@ -154,8 +154,7 @@ EmbeddedSharedWorkerStub::CreateWorkerFetchContext(
   // |pending_resource_load_info_notifier| are not used for shared workers.
   scoped_refptr<WebWorkerFetchContextImpl> worker_fetch_context =
       WebWorkerFetchContextImpl::Create(
-          service_worker_provider_context_.get(),
-          std::move(renderer_preferences),
+          service_worker_provider_context_.get(), renderer_preferences,
           std::move(preference_watcher_receiver),
           subresource_loader_factory_bundle_->Clone(),
           std::move(fallback_factory),

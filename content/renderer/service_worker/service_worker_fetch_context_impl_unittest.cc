@@ -8,6 +8,7 @@
 #include "content/public/renderer/websocket_handshake_throttle_provider.h"
 #include "content/renderer/loader/request_extra_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 
 namespace content {
 
@@ -42,7 +43,7 @@ TEST_F(ServiceWorkerFetchContextImplTest, SkipThrottling) {
   const GURL kScriptUrl("https://example.com/main.js");
   const GURL kScriptUrlToSkipThrottling("https://example.com/skip.js");
   auto context = base::MakeRefCounted<ServiceWorkerFetchContextImpl>(
-      blink::mojom::RendererPreferences(), kScriptUrl,
+      blink::RendererPreferences(), kScriptUrl,
       /*pending_url_loader_factory=*/nullptr,
       /*pending_script_loader_factory=*/nullptr, kScriptUrlToSkipThrottling,
       std::make_unique<FakeURLLoaderThrottleProvider>(),

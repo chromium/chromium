@@ -103,7 +103,7 @@ void MockSharedWorkerFactory::CreateSharedWorker(
     const blink::UserAgentMetadata& ua_metadata,
     bool pause_on_start,
     const base::UnguessableToken& devtools_worker_token,
-    blink::mojom::RendererPreferencesPtr renderer_preferences,
+    const blink::RendererPreferences& renderer_preferences,
     mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
         preference_watcher_receiver,
     mojo::PendingRemote<blink::mojom::WorkerContentSettingsProxy>

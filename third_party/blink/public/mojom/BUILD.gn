@@ -401,6 +401,15 @@ mojom("mojom_platform") {
     {
       types = [
         {
+          mojom = "blink.mojom.RendererPreferences"
+          cpp = "::blink::RendererPreferences"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/renderer_preferences/renderer_preferences_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
           mojom = "blink.mojom.WebPreferences"
           cpp = "::blink::web_pref::WebPreferences"
         },

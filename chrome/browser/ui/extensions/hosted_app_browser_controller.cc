@@ -36,7 +36,6 @@
 #include "extensions/common/extension.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 

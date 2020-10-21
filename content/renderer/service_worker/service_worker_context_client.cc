@@ -94,7 +94,7 @@ ServiceWorkerContextClient::ServiceWorkerContextClient(
     const GURL& service_worker_scope,
     const GURL& script_url,
     bool is_starting_installed_worker,
-    blink::mojom::RendererPreferencesPtr renderer_preferences,
+    const blink::RendererPreferences& renderer_preferences,
     mojo::PendingReceiver<blink::mojom::ServiceWorker> service_worker_receiver,
     mojo::PendingReceiver<blink::mojom::ControllerServiceWorker>
         controller_receiver,
@@ -117,7 +117,7 @@ ServiceWorkerContextClient::ServiceWorkerContextClient(
       script_url_(script_url),
       is_starting_installed_worker_(is_starting_installed_worker),
       script_url_to_skip_throttling_(script_url_to_skip_throttling),
-      renderer_preferences_(std::move(renderer_preferences)),
+      renderer_preferences_(renderer_preferences),
       preference_watcher_receiver_(std::move(preference_watcher_receiver)),
       initiator_thread_task_runner_(std::move(initiator_thread_task_runner)),
       proxy_(nullptr),
@@ -377,7 +377,7 @@ ServiceWorkerContextClient::CreateWorkerFetchContextOnInitiatorThread() {
           service_worker_provider_info_->script_loader_factory_remote));
 
   return base::MakeRefCounted<ServiceWorkerFetchContextImpl>(
-      *renderer_preferences_, script_url_, loader_factories_->PassInterface(),
+      renderer_preferences_, script_url_, loader_factories_->PassInterface(),
       std::move(pending_script_loader_factory), script_url_to_skip_throttling_,
       GetContentClient()->renderer()->CreateURLLoaderThrottleProvider(
           URLLoaderThrottleProviderType::kWorker),

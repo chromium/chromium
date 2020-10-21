@@ -12,7 +12,7 @@ include_rules = [
   "+storage/common/quota",
   "+third_party/skia/include",
   "+third_party/blink/public/mojom/quota",
-  "+third_party/blink/public/mojom/renderer_preferences.mojom.h",
+  "+third_party/blink/public/common/renderer_preferences/renderer_preferences.h",
   "+ui/aura",
   "+ui/compositor",
   "+ui/events/keycodes/dom",

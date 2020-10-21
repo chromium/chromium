@@ -81,8 +81,8 @@
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 
 using content::RenderFrameHost;
 using content::WebContents;
@@ -129,14 +129,12 @@ std::string AppTypeParamToString(
 }
 
 void CheckWebContentsHasAppPrefs(content::WebContents* web_contents) {
-  blink::mojom::RendererPreferences* prefs =
-      web_contents->GetMutableRendererPrefs();
+  blink::RendererPreferences* prefs = web_contents->GetMutableRendererPrefs();
   EXPECT_FALSE(prefs->can_accept_load_drops);
 }
 
 void CheckWebContentsDoesNotHaveAppPrefs(content::WebContents* web_contents) {
-  blink::mojom::RendererPreferences* prefs =
-      web_contents->GetMutableRendererPrefs();
+  blink::RendererPreferences* prefs = web_contents->GetMutableRendererPrefs();
   EXPECT_TRUE(prefs->can_accept_load_drops);
 }
 

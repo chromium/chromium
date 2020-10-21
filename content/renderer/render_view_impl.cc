@@ -172,7 +172,7 @@ void RenderViewImpl::Initialize(
   if (params->window_was_created_with_opener)
     GetWebView()->SetOpenedByDOM();
 
-  OnSetRendererPrefs(*params->renderer_preferences);
+  OnSetRendererPrefs(params->renderer_preferences);
 
   GetContentClient()->renderer()->RenderViewCreated(this);
 
@@ -480,7 +480,7 @@ WebView* RenderViewImpl::CreateView(
   DCHECK_EQ(GetRoutingID(), creator_frame->render_view()->GetRoutingID());
 
   view_params->window_was_created_with_opener = true;
-  view_params->renderer_preferences = renderer_preferences_.Clone();
+  view_params->renderer_preferences = renderer_preferences_;
   view_params->web_preferences = webview_->GetWebPreferences();
   view_params->view_id = reply->route_id;
   view_params->main_frame_frame_token = reply->main_frame_frame_token;
@@ -753,13 +753,13 @@ blink::WebView* RenderViewImpl::GetWebView() {
 }
 
 void RenderViewImpl::OnSetRendererPrefs(
-    const blink::mojom::RendererPreferences& renderer_prefs) {
+    const blink::RendererPreferences& renderer_prefs) {
   std::string old_accept_languages = renderer_preferences_.accept_languages;
 
   renderer_preferences_ = renderer_prefs;
 
   for (auto& watcher : renderer_preference_watchers_)
-    watcher->NotifyUpdate(renderer_prefs.Clone());
+    watcher->NotifyUpdate(renderer_prefs);
 
   UpdateFontRenderingFromRendererPrefs();
   UpdateThemePrefs();

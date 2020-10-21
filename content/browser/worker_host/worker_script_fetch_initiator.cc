@@ -51,7 +51,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
 #include "url/origin.h"
 
@@ -278,7 +278,7 @@ void WorkerScriptFetchInitiator::AddAdditionalRequestHeaders(
   resource_request->headers.SetHeaderIfMissing(
       net::HttpRequestHeaders::kAccept, network::kDefaultAcceptHeaderValue);
 
-  blink::mojom::RendererPreferences renderer_preferences;
+  blink::RendererPreferences renderer_preferences;
   GetContentClient()->browser()->UpdateRendererPreferencesForWorker(
       browser_context, &renderer_preferences);
   UpdateAdditionalHeadersForBrowserInitiatedRequest(

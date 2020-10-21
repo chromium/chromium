@@ -25,7 +25,6 @@
 #include "components/security_interstitials/core/controller_client.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 
 #if defined(OS_WIN)
 #include "base/enterprise_util.h"

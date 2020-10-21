@@ -17,7 +17,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/common/extension_messages.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 
 namespace extensions {
 

@@ -18,9 +18,9 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info_notifier.mojom.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
@@ -73,7 +73,7 @@ class CONTENT_EXPORT WebWorkerFetchContextImpl
   // chrome-extension://).
   static scoped_refptr<WebWorkerFetchContextImpl> Create(
       ServiceWorkerProviderContext* provider_context,
-      blink::mojom::RendererPreferences renderer_preferences,
+      const blink::RendererPreferences& renderer_preferences,
       mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
           watcher_receiver,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
@@ -192,7 +192,7 @@ class CONTENT_EXPORT WebWorkerFetchContextImpl
   //
   // Regarding the rest of params, see the comments on Create().
   WebWorkerFetchContextImpl(
-      blink::mojom::RendererPreferences renderer_preferences,
+      const blink::RendererPreferences& renderer_preferences,
       mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
           watcher_receiver,
       mojo::PendingReceiver<blink::mojom::ServiceWorkerWorkerClient>
@@ -243,7 +243,7 @@ class CONTENT_EXPORT WebWorkerFetchContextImpl
           subresource_loader_factories) override;
 
   // Implements blink::mojom::RendererPreferenceWatcher.
-  void NotifyUpdate(blink::mojom::RendererPreferencesPtr new_prefs) override;
+  void NotifyUpdate(const blink::RendererPreferences& new_prefs) override;
 
   void ResetWeakWrapperResourceLoadInfoNotifier();
 
@@ -325,7 +325,7 @@ class CONTENT_EXPORT WebWorkerFetchContextImpl
   net::SiteForCookies site_for_cookies_;
   base::Optional<url::Origin> top_frame_origin_;
 
-  blink::mojom::RendererPreferences renderer_preferences_;
+  blink::RendererPreferences renderer_preferences_;
 
   // |preference_watcher_receiver_| and |child_preference_watchers_| are for
   // keeping track of updates in the renderer preferences.

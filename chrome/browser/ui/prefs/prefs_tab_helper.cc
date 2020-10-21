@@ -43,8 +43,8 @@
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -314,7 +314,7 @@ PrefsTabHelper::PrefsTabHelper(WebContents* contents)
     PrefWatcher::Get(profile_)->RegisterHelper(this);
   }
 
-  blink::mojom::RendererPreferences* render_prefs =
+  blink::RendererPreferences* render_prefs =
       web_contents_->GetMutableRendererPrefs();
   renderer_preferences_util::UpdateFromSystemSettings(render_prefs, profile_);
 
@@ -448,8 +448,7 @@ void PrefsTabHelper::UpdateWebPreferences() {
 }
 
 void PrefsTabHelper::UpdateRendererPreferences() {
-  blink::mojom::RendererPreferences* prefs =
-      web_contents_->GetMutableRendererPrefs();
+  blink::RendererPreferences* prefs = web_contents_->GetMutableRendererPrefs();
   renderer_preferences_util::UpdateFromSystemSettings(prefs, profile_);
   web_contents_->SyncRendererPrefs();
 }

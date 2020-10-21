@@ -520,7 +520,7 @@ base::TimeDelta GtkUi::GetCursorBlinkInterval() const {
 
   // Dividing GTK's cursor blink cycle time (in milliseconds) by this value
   // yields an appropriate value for
-  // blink::mojom::RendererPreferences::caret_blink_interval.
+  // blink::RendererPreferences::caret_blink_interval.
   static const double kGtkCursorBlinkCycleFactor = 2000.0;
 
   gint cursor_blink_time = kGtkDefaultCursorBlinkTime;

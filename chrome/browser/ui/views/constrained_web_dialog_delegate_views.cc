@@ -283,8 +283,7 @@ ConstrainedWebDialogDelegateViews::ConstrainedWebDialogDelegateViews(
   WebContentsObserver::Observe(web_contents_);
   zoom::ZoomController::CreateForWebContents(web_contents_);
   web_contents_->SetDelegate(override_tab_delegate_.get());
-  blink::mojom::RendererPreferences* prefs =
-      web_contents_->GetMutableRendererPrefs();
+  blink::RendererPreferences* prefs = web_contents_->GetMutableRendererPrefs();
   renderer_preferences_util::UpdateFromSystemSettings(
       prefs, Profile::FromBrowserContext(browser_context));
 

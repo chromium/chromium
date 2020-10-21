@@ -50,8 +50,8 @@
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
-#include "third_party/blink/public/mojom/renderer_preference_watcher.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "url/gurl.h"
@@ -382,7 +382,7 @@ bool ContentBrowserClient::IsDataSaverEnabled(BrowserContext* context) {
 
 void ContentBrowserClient::UpdateRendererPreferencesForWorker(
     BrowserContext* browser_context,
-    blink::mojom::RendererPreferences* out_prefs) {
+    blink::RendererPreferences* out_prefs) {
   // |browser_context| may be null (e.g. during shutdown of a service worker).
 }
 

@@ -8,16 +8,14 @@
 #include "content/common/content_export.h"
 
 namespace blink {
-namespace mojom {
-class RendererPreferences;
-}
+struct RendererPreferences;
 }  // namespace blink
 
 namespace content {
 
 // Updates |prefs| from system settings.
 CONTENT_EXPORT void UpdateFontRendererPreferencesFromSystemSettings(
-    blink::mojom::RendererPreferences* prefs);
+    blink::RendererPreferences* prefs);
 
 }  // namespace content
 

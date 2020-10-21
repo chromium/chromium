@@ -94,7 +94,7 @@ class CONTENT_EXPORT ServiceWorkerContextClient
       const GURL& service_worker_scope,
       const GURL& script_url,
       bool is_starting_installed_worker,
-      blink::mojom::RendererPreferencesPtr renderer_preferences,
+      const blink::RendererPreferences& renderer_preferences,
       mojo::PendingReceiver<blink::mojom::ServiceWorker>
           service_worker_receiver,
       mojo::PendingReceiver<blink::mojom::ControllerServiceWorker>
@@ -222,7 +222,7 @@ class CONTENT_EXPORT ServiceWorkerContextClient
   // See comments in EmbeddedWorkerStartParams::script_url_to_skip_throttling.
   const GURL script_url_to_skip_throttling_;
 
-  blink::mojom::RendererPreferencesPtr renderer_preferences_;
+  blink::RendererPreferences renderer_preferences_;
   // Passed on creation of ServiceWorkerFetchContext.
   mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
       preference_watcher_receiver_;

@@ -31,7 +31,7 @@ void SharedWorkerFactoryImpl::CreateSharedWorker(
     const blink::UserAgentMetadata& ua_metadata,
     bool pause_on_start,
     const base::UnguessableToken& devtools_worker_token,
-    blink::mojom::RendererPreferencesPtr renderer_preferences,
+    const blink::RendererPreferences& renderer_preferences,
     mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
         preference_watcher_receiver,
     mojo::PendingRemote<blink::mojom::WorkerContentSettingsProxy>
@@ -51,7 +51,7 @@ void SharedWorkerFactoryImpl::CreateSharedWorker(
   // Bound to the lifetime of the underlying blink::WebSharedWorker instance.
   new EmbeddedSharedWorkerStub(
       std::move(info), token, constructor_origin, user_agent, ua_metadata,
-      pause_on_start, devtools_worker_token, *renderer_preferences,
+      pause_on_start, devtools_worker_token, renderer_preferences,
       std::move(preference_watcher_receiver), std::move(content_settings),
       std::move(service_worker_container_info),
       appcache_host_id.value_or(base::UnguessableToken()),

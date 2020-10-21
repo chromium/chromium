@@ -1276,7 +1276,7 @@ const char kEnableDoNotTrack[] = "enable_do_not_track";
 // use of Clear Key key sytems, which is always allowed as required by the spec.
 // TODO(crbug.com/784675): This pref was used as a WebPreference which is why
 // the string is prefixed with "webkit.webprefs". Now this is used in
-// blink::mojom::RendererPreferences and we should migrate the pref to use a new
+// blink::RendererPreferences and we should migrate the pref to use a new
 // non-webkit-prefixed string.
 const char kEnableEncryptedMedia[] = "webkit.webprefs.encrypted_media_enabled";
 

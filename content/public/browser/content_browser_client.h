@@ -85,7 +85,6 @@ class SequencedTaskRunner;
 namespace blink {
 namespace mojom {
 class BadgeService;
-class RendererPreferences;
 class RendererPreferenceWatcher;
 class WebUsbService;
 class WindowFeatures;
@@ -95,6 +94,7 @@ namespace web_pref {
 struct WebPreferences;
 }  // namespace web_pref
 class AssociatedInterfaceRegistry;
+struct RendererPreferences;
 class URLLoaderThrottle;
 }  // namespace blink
 
@@ -673,7 +673,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // from their closest ancestor frame.
   virtual void UpdateRendererPreferencesForWorker(
       BrowserContext* browser_context,
-      blink::mojom::RendererPreferences* out_prefs);
+      blink::RendererPreferences* out_prefs);
 
   // Allow the embedder to control if access to file system by a shared worker
   // is allowed.

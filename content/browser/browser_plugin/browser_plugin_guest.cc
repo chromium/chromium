@@ -22,6 +22,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom.h"
 
 #if defined(OS_MAC)
@@ -102,7 +103,7 @@ void BrowserPluginGuest::InitInternal(WebContentsImpl* owner_web_contents) {
     owner_web_contents_ = owner_web_contents;
   }
 
-  blink::mojom::RendererPreferences* renderer_prefs =
+  blink::RendererPreferences* renderer_prefs =
       GetWebContents()->GetMutableRendererPrefs();
   blink::UserAgentOverride guest_user_agent_override =
       renderer_prefs->user_agent_override;

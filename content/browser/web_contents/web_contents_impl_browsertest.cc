@@ -2972,7 +2972,7 @@ class OutgoingSetRendererPrefsIPCWatcher {
     run_loop_.reset();
   }
 
-  const blink::mojom::RendererPreferences& renderer_preferences() const {
+  const blink::RendererPreferences& renderer_preferences() const {
     return renderer_preferences_;
   }
 
@@ -2983,8 +2983,7 @@ class OutgoingSetRendererPrefsIPCWatcher {
     IPC_END_MESSAGE_MAP()
   }
 
-  void OnSetRendererPrefs(
-      const blink::mojom::RendererPreferences& renderer_prefs) {
+  void OnSetRendererPrefs(const blink::RendererPreferences& renderer_prefs) {
     outgoing_message_seen_ = true;
     renderer_preferences_ = renderer_prefs;
     if (run_loop_)
@@ -2994,7 +2993,7 @@ class OutgoingSetRendererPrefsIPCWatcher {
   RenderProcessHostImpl* rph_;
   bool outgoing_message_seen_;
   std::unique_ptr<base::RunLoop> run_loop_;
-  blink::mojom::RendererPreferences renderer_preferences_;
+  blink::RendererPreferences renderer_preferences_;
 };
 }  // namespace
 
@@ -3009,7 +3008,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, SyncRendererPrefs) {
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   // Retrieve an arbitrary renderer preference.
-  blink::mojom::RendererPreferences* renderer_preferences =
+  blink::RendererPreferences* renderer_preferences =
       web_contents->GetMutableRendererPrefs();
   const bool use_custom_colors_old = renderer_preferences->use_custom_colors;
 

@@ -24,7 +24,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "net/http/http_util.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 
 using base::android::ConvertJavaStringToUTF16;
@@ -239,8 +239,7 @@ void AwSettings::UpdateRendererPreferencesLocked(
     return;
 
   bool update_prefs = false;
-  blink::mojom::RendererPreferences* prefs =
-      web_contents()->GetMutableRendererPrefs();
+  blink::RendererPreferences* prefs = web_contents()->GetMutableRendererPrefs();
 
   if (!renderer_prefs_initialized_) {
     content::UpdateFontRendererPreferencesFromSystemSettings(prefs);

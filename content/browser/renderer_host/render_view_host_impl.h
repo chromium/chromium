@@ -34,6 +34,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_states.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/page/page.mojom.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "third_party/blink/public/web/web_console_message.h"
@@ -94,8 +95,7 @@ class CONTENT_EXPORT RenderViewHostImpl
   // Convenience function, just like RenderViewHost::From.
   static RenderViewHostImpl* From(RenderWidgetHost* rwh);
 
-  static void GetPlatformSpecificPrefs(
-      blink::mojom::RendererPreferences* prefs);
+  static void GetPlatformSpecificPrefs(blink::RendererPreferences* prefs);
 
   // Checks whether any RenderViewHostImpl instance associated with a given
   // process is not currently in the back-forward cache.

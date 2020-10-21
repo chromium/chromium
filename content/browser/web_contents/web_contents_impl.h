@@ -67,6 +67,7 @@
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "third_party/blink/public/common/frame/transient_allow_fullscreen.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
@@ -75,7 +76,6 @@
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/display_cutout.mojom.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -473,7 +473,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       base::OnceCallback<void(uint64_t, data_decoder::mojom::WebBundlerError)>
           callback) override;
   const std::string& GetContentsMimeType() override;
-  blink::mojom::RendererPreferences* GetMutableRendererPrefs() override;
+  blink::RendererPreferences* GetMutableRendererPrefs() override;
   void Close() override;
   void SetClosedByUserGesture(bool value) override;
   bool GetClosedByUserGesture() override;
@@ -788,7 +788,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                               const base::string16& message,
                               int32_t line_no,
                               const base::string16& source_id) override;
-  blink::mojom::RendererPreferences GetRendererPrefs() const override;
+  const blink::RendererPreferences& GetRendererPrefs() const override;
   void DidReceiveInputEvent(RenderWidgetHostImpl* render_widget_host,
                             const blink::WebInputEvent& event) override;
   bool ShouldIgnoreInputEvents() override;
@@ -1850,7 +1850,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool is_showing_before_unload_dialog_;
 
   // Settings that get passed to the renderer process.
-  blink::mojom::RendererPreferences renderer_preferences_;
+  blink::RendererPreferences renderer_preferences_;
 
   // The time that this WebContents was last made active. The initial value is
   // the WebContents creation time.

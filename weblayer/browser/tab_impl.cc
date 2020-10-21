@@ -45,8 +45,8 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/renderer_preferences_util.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/window_open_disposition.h"
 #include "weblayer/browser/autofill_client_impl.h"
@@ -1242,8 +1242,7 @@ void TabImpl::OnExitFullscreen() {
 }
 
 void TabImpl::UpdateRendererPrefs(bool should_sync_prefs) {
-  blink::mojom::RendererPreferences* prefs =
-      web_contents_->GetMutableRendererPrefs();
+  blink::RendererPreferences* prefs = web_contents_->GetMutableRendererPrefs();
   content::UpdateFontRendererPreferencesFromSystemSettings(prefs);
   prefs->accept_languages = i18n::GetAcceptLangs();
   if (should_sync_prefs)

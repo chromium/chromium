@@ -30,7 +30,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 
 namespace {
 
@@ -479,7 +479,7 @@ TEST_F(BrowserCommandsTest, ToggleCaretBrowsing) {
   for (int i = 0; i < tab_count; ++i) {
     WebContents* web_contents =
         browser()->tab_strip_model()->GetWebContentsAt(i);
-    blink::mojom::RendererPreferences* renderer_preferences =
+    blink::RendererPreferences* renderer_preferences =
         web_contents->GetMutableRendererPrefs();
     EXPECT_TRUE(renderer_preferences->caret_browsing_enabled);
   }
@@ -497,7 +497,7 @@ TEST_F(BrowserCommandsTest, ToggleCaretBrowsing) {
   for (int i = 0; i < tab_count; ++i) {
     WebContents* web_contents =
         browser()->tab_strip_model()->GetWebContentsAt(i);
-    blink::mojom::RendererPreferences* renderer_preferences =
+    blink::RendererPreferences* renderer_preferences =
         web_contents->GetMutableRendererPrefs();
     EXPECT_FALSE(renderer_preferences->caret_browsing_enabled);
   }

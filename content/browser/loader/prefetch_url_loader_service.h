@@ -98,7 +98,7 @@ class CONTENT_EXPORT PrefetchURLLoaderService final
       const network::ResourceRequest& request);
 
   // blink::mojom::RendererPreferenceWatcher.
-  void NotifyUpdate(blink::mojom::RendererPreferencesPtr new_prefs) override;
+  void NotifyUpdate(const blink::RendererPreferences& new_prefs) override;
 
   // For URLLoaderThrottlesGetter.
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>>

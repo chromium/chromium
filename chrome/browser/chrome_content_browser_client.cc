@@ -350,8 +350,8 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/switches.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
 #include "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
@@ -2468,7 +2468,7 @@ bool ChromeContentBrowserClient::IsDataSaverEnabled(
 
 void ChromeContentBrowserClient::UpdateRendererPreferencesForWorker(
     content::BrowserContext* browser_context,
-    blink::mojom::RendererPreferences* out_prefs) {
+    blink::RendererPreferences* out_prefs) {
   DCHECK(browser_context);
   DCHECK(out_prefs);
   renderer_preferences_util::UpdateFromSystemSettings(

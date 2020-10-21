@@ -21,7 +21,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_factory.mojom.h"
@@ -83,7 +83,7 @@ class MockSharedWorkerFactory : public blink::mojom::SharedWorkerFactory {
       const blink::UserAgentMetadata& ua_metadata,
       bool pause_on_start,
       const base::UnguessableToken& devtools_worker_token,
-      blink::mojom::RendererPreferencesPtr renderer_preferences,
+      const blink::RendererPreferences& renderer_preferences,
       mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
           preference_watcher_receiver,
       mojo::PendingRemote<blink::mojom::WorkerContentSettingsProxy>

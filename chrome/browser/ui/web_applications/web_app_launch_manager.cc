@@ -45,7 +45,6 @@
 #include "content/public/common/referrer.h"
 #include "extensions/common/constants.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/scoped_display_for_new_windows.h"

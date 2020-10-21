@@ -2777,8 +2777,8 @@ const blink::web_pref::WebPreferences& RenderFrameImpl::GetBlinkPreferences() {
   return render_view_->GetBlinkPreferences();
 }
 
-const blink::mojom::RendererPreferences&
-RenderFrameImpl::GetRendererPreferences() const {
+const blink::RendererPreferences& RenderFrameImpl::GetRendererPreferences()
+    const {
   return render_view_->renderer_preferences();
 }
 

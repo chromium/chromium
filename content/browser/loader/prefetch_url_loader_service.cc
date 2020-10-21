@@ -25,8 +25,8 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 
 namespace {
 void DumpWithoutCrashing(const network::ResourceRequest& request) {
@@ -330,8 +330,8 @@ void PrefetchURLLoaderService::Clone(
 }
 
 void PrefetchURLLoaderService::NotifyUpdate(
-    blink::mojom::RendererPreferencesPtr new_prefs) {
-  SetAcceptLanguages(new_prefs->accept_languages);
+    const blink::RendererPreferences& new_prefs) {
+  SetAcceptLanguages(new_prefs.accept_languages);
 }
 
 base::UnguessableToken PrefetchURLLoaderService::GenerateRecursivePrefetchToken(

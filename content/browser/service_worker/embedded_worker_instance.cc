@@ -365,12 +365,12 @@ void SetupOnUIThread(
       std::move(coep_reporter_for_subresources),
       ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerSubResource);
 
-  // TODO(crbug.com/862854): Support changes to
-  // blink::mojom::RendererPreferences while the worker is running.
+  // TODO(crbug.com/862854): Support changes to blink::RendererPreferences while
+  // the worker is running.
   DCHECK(process_manager->browser_context() || process_manager->IsShutdown());
-  params->renderer_preferences = blink::mojom::RendererPreferences::New();
+  params->renderer_preferences = blink::RendererPreferences();
   GetContentClient()->browser()->UpdateRendererPreferencesForWorker(
-      process_manager->browser_context(), params->renderer_preferences.get());
+      process_manager->browser_context(), &params->renderer_preferences);
 
   // Create a RendererPreferenceWatcher to observe updates in the preferences.
   mojo::PendingRemote<blink::mojom::RendererPreferenceWatcher> watcher_remote;

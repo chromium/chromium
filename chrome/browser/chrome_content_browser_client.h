@@ -232,7 +232,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool IsDataSaverEnabled(content::BrowserContext* context) override;
   void UpdateRendererPreferencesForWorker(
       content::BrowserContext* browser_context,
-      blink::mojom::RendererPreferences* out_prefs) override;
+      blink::RendererPreferences* out_prefs) override;
   bool AllowAppCache(const GURL& manifest_url,
 
                      const GURL& site_for_cookies,

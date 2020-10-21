@@ -361,7 +361,7 @@ class TestRunner {
   // Disable any mock orientation on |view| that is set.
   void DisableMockScreenOrientation(WebViewTestProxy* view);
 
-  // Modify accept_languages in blink::mojom::RendererPreferences.
+  // Modify accept_languages in blink::RendererPreferences.
   void SetAcceptLanguages(const std::string& accept_languages);
 
   ///////////////////////////////////////////////////////////////////////////

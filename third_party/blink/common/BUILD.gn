@@ -150,6 +150,8 @@ source_set("common") {
     "peerconnection/peer_connection_tracker_mojom_traits.cc",
     "peerconnection/webrtc_ip_handling_policy.cc",
     "permissions/permission_utils.cc",
+    "renderer_preferences/renderer_preferences.cc",
+    "renderer_preferences/renderer_preferences_mojom_traits.cc",
     "scheduler/web_scheduler_tracked_feature.cc",
     "service_worker/service_worker_scope_match.cc",
     "service_worker/service_worker_status_code.cc",

@@ -42,9 +42,9 @@
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/feature_policy/feature_policy_features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_console_message.h"
@@ -140,7 +140,7 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // or not.
   bool widgets_never_composited() const { return widgets_never_composited_; }
 
-  const blink::mojom::RendererPreferences& renderer_preferences() const {
+  const blink::RendererPreferences& renderer_preferences() const {
     return renderer_preferences_;
   }
 
@@ -173,7 +173,7 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   unsigned GetLocalSessionHistoryLengthForTesting() const;
 
   // Registers a watcher to observe changes in the
-  // blink::mojom::RendererPreferences.
+  // blink::RendererPreferences.
   void RegisterRendererPreferenceWatcher(
       mojo::PendingRemote<blink::mojom::RendererPreferenceWatcher> watcher);
 
@@ -329,8 +329,7 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
       blink::WebNavigationPolicy policy);
 
   void OnMoveOrResizeStarted();
-  void OnSetRendererPrefs(
-      const blink::mojom::RendererPreferences& renderer_prefs);
+  void OnSetRendererPrefs(const blink::RendererPreferences& renderer_prefs);
 
   // Misc private functions ----------------------------------------------------
 
@@ -391,7 +390,7 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
 
   // Settings ------------------------------------------------------------------
 
-  blink::mojom::RendererPreferences renderer_preferences_;
+  blink::RendererPreferences renderer_preferences_;
   // These are observing changes in |renderer_preferences_|. This is used for
   // keeping WorkerFetchContext in sync.
   mojo::RemoteSet<blink::mojom::RendererPreferenceWatcher>

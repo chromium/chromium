@@ -253,7 +253,7 @@ RenderViewHostImpl* RenderViewHostImpl::From(RenderWidgetHost* rwh) {
 
 // static
 void RenderViewHostImpl::GetPlatformSpecificPrefs(
-    blink::mojom::RendererPreferences* prefs) {
+    blink::RendererPreferences* prefs) {
 #if defined(OS_WIN)
   // Note that what is called "height" in this struct is actually the font size;
   // font "height" typically includes ascender, descender, and padding and is
@@ -442,9 +442,8 @@ bool RenderViewHostImpl::CreateRenderView(
   GetWidget()->set_renderer_initialized(true);
 
   mojom::CreateViewParamsPtr params = mojom::CreateViewParams::New();
-  params->renderer_preferences = delegate_->GetRendererPrefs().Clone();
-  RenderViewHostImpl::GetPlatformSpecificPrefs(
-      params->renderer_preferences.get());
+  params->renderer_preferences = delegate_->GetRendererPrefs();
+  RenderViewHostImpl::GetPlatformSpecificPrefs(&params->renderer_preferences);
   params->web_preferences = delegate_->GetOrCreateWebPreferences();
   params->view_id = GetRoutingID();
   if (main_rfh) {

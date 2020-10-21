@@ -25,6 +25,7 @@
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 
 namespace content {
 
@@ -55,7 +56,7 @@ void SetUpOnUI(
                     network::kDefaultAcceptHeaderValue);
 
   BrowserContext* browser_context = process_manager->browser_context();
-  blink::mojom::RendererPreferences renderer_preferences;
+  blink::RendererPreferences renderer_preferences;
   GetContentClient()->browser()->UpdateRendererPreferencesForWorker(
       browser_context, &renderer_preferences);
   UpdateAdditionalHeadersForBrowserInitiatedRequest(

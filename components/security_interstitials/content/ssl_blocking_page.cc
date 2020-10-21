@@ -26,7 +26,6 @@
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/net_errors.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 
 using base::TimeTicks;
 using content::NavigationEntry;
