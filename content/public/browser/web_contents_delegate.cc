@@ -165,10 +165,6 @@ WebContentsDelegate::ShowBluetoothScanningPrompt(
   return nullptr;
 }
 
-bool WebContentsDelegate::EmbedsFullscreenWidget() {
-  return false;
-}
-
 bool WebContentsDelegate::IsFullscreenForTabOrPending(
     const WebContents* web_contents) {
   return false;

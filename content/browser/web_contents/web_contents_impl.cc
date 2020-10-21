@@ -820,9 +820,6 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
       maximum_zoom_percent_(
           static_cast<int>(blink::kMaximumPageZoomFactor * 100)),
       zoom_scroll_remainder_(0),
-      fullscreen_widget_process_id_(ChildProcessHost::kInvalidUniqueID),
-      fullscreen_widget_routing_id_(MSG_ROUTING_NONE),
-      fullscreen_widget_had_focus_at_shutdown_(false),
       force_disable_overscroll_content_(false),
       last_dialog_suppressed_(false),
       accessibility_mode_(
@@ -1334,12 +1331,6 @@ RenderWidgetHostView* WebContentsImpl::GetTopLevelRenderWidgetHostView() {
   if (GetOuterWebContents())
     return GetOuterWebContents()->GetTopLevelRenderWidgetHostView();
   return GetRenderManager()->GetRenderWidgetHostView();
-}
-
-RenderWidgetHostView* WebContentsImpl::GetFullscreenRenderWidgetHostView() {
-  if (auto* widget_host = GetFullscreenRenderWidgetHost())
-    return widget_host->GetView();
-  return nullptr;
 }
 
 WebContentsView* WebContentsImpl::GetView() const {
@@ -2703,21 +2694,11 @@ void WebContentsImpl::Observe(int type,
   switch (type) {
     case NOTIFICATION_RENDER_WIDGET_HOST_DESTROYED: {
       RenderWidgetHost* host = Source<RenderWidgetHost>(source).ptr();
-      RenderWidgetHostView* view = host->GetView();
-      if (view == GetFullscreenRenderWidgetHostView()) {
-        // We cannot just call view_->RestoreFocus() here.  On some platforms,
-        // attempting to focus the currently-invisible WebContentsView will be
-        // flat-out ignored.  Therefore, this boolean is used to track whether
-        // we will request focus after the fullscreen widget has been
-        // destroyed.
-        fullscreen_widget_had_focus_at_shutdown_ = (view && view->HasFocus());
-      } else {
-        for (auto i = pending_widget_views_.begin();
-             i != pending_widget_views_.end(); ++i) {
-          if (host->GetView() == i->second) {
-            pending_widget_views_.erase(i);
-            break;
-          }
+      for (auto i = pending_widget_views_.begin();
+           i != pending_widget_views_.end(); ++i) {
+        if (host->GetView() == i->second) {
+          pending_widget_views_.erase(i);
+          break;
         }
       }
       break;
@@ -2975,47 +2956,10 @@ void WebContentsImpl::RenderWidgetDeleted(
   if (is_being_destroyed_)
     return;
 
-  if (render_widget_host &&
-      render_widget_host->GetRoutingID() == fullscreen_widget_routing_id_ &&
-      render_widget_host->GetProcess()->GetID() ==
-          fullscreen_widget_process_id_) {
-    if (delegate_ && delegate_->EmbedsFullscreenWidget())
-      delegate_->ExitFullscreenModeForTab(this);
-    observers_.ForEachObserver([&](WebContentsObserver* observer) {
-      observer->DidDestroyFullscreenWidget();
-    });
-    fullscreen_widget_process_id_ = ChildProcessHost::kInvalidUniqueID;
-    fullscreen_widget_routing_id_ = MSG_ROUTING_NONE;
-    if (fullscreen_widget_had_focus_at_shutdown_)
-      view_->RestoreFocus();
-  }
-
   if (render_widget_host == mouse_lock_widget_)
     LostMouseLock(mouse_lock_widget_);
 
   CancelKeyboardLock(render_widget_host);
-}
-
-void WebContentsImpl::RenderWidgetGotFocus(
-    RenderWidgetHostImpl* render_widget_host) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::RenderWidgetGotFocus",
-                        "render_widget_host", render_widget_host);
-  // Notify the observers if an embedded fullscreen widget was focused.
-  if (delegate_ && render_widget_host && delegate_->EmbedsFullscreenWidget() &&
-      render_widget_host->GetView() == GetFullscreenRenderWidgetHostView()) {
-    NotifyWebContentsFocused(render_widget_host);
-  }
-}
-
-void WebContentsImpl::RenderWidgetLostFocus(
-    RenderWidgetHostImpl* render_widget_host) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::RenderWidgetLostFocus",
-                        "render_widget_host", render_widget_host);
-  // Notify the observers if an embedded fullscreen widget lost focus.
-  if (delegate_ && render_widget_host && delegate_->EmbedsFullscreenWidget() &&
-      render_widget_host->GetView() == GetFullscreenRenderWidgetHostView()) {
-    NotifyWebContentsLostFocus(render_widget_host);
-  }
 }
 
 void WebContentsImpl::RenderWidgetWasResized(
@@ -3189,14 +3133,6 @@ void WebContentsImpl::EnterFullscreenMode(
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::EnterFullscreenMode");
   DCHECK(CanEnterFullscreenMode());
 
-  // This method is being called to enter renderer-initiated fullscreen mode.
-  // Make sure any existing fullscreen widget is shut down first.
-  RenderWidgetHostView* const widget_view = GetFullscreenRenderWidgetHostView();
-  if (widget_view) {
-    RenderWidgetHostImpl::From(widget_view->GetRenderWidgetHost())
-        ->ShutdownAndDestroyWidget(true);
-  }
-
   if (delegate_) {
     delegate_->EnterFullscreenModeForTab(requesting_frame, options);
 
@@ -3213,14 +3149,6 @@ void WebContentsImpl::EnterFullscreenMode(
 void WebContentsImpl::ExitFullscreenMode(bool will_cause_resize) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::ExitFullscreenMode",
                         "will_cause_resize", will_cause_resize);
-  // This method is being called to leave renderer-initiated fullscreen mode.
-  // Make sure any existing fullscreen widget is shut down first.
-  RenderWidgetHostView* const widget_view = GetFullscreenRenderWidgetHostView();
-  if (widget_view) {
-    RenderWidgetHostImpl::From(widget_view->GetRenderWidgetHost())
-        ->ShutdownAndDestroyWidget(true);
-  }
-
   if (delegate_) {
     delegate_->ExitFullscreenModeForTab(this);
 
@@ -3500,9 +3428,7 @@ bool WebContentsImpl::HasMouseLock(RenderWidgetHostImpl* render_widget_host) {
 
 RenderWidgetHostImpl* WebContentsImpl::GetMouseLockWidget() {
   auto* widget_host = GetTopLevelRenderWidgetHostView();
-  if ((widget_host && widget_host->IsMouseLocked()) ||
-      (GetFullscreenRenderWidgetHostView() &&
-       GetFullscreenRenderWidgetHostView()->IsMouseLocked())) {
+  if (widget_host && widget_host->IsMouseLocked()) {
     return mouse_lock_widget_;
   }
 
@@ -7391,15 +7317,6 @@ void WebContentsImpl::UpdateTargetURL(RenderFrameHost* render_frame_host,
                         "render_frame_host",
                         base::trace_event::ToTracedValue(render_frame_host),
                         "url", base::trace_event::ValueToString(url));
-  if (fullscreen_widget_routing_id_ != MSG_ROUTING_NONE) {
-    // If we're in flash fullscreen (i.e. Pepper plugin fullscreen) only update
-    // the url if it's from the fullscreen renderer.
-    RenderWidgetHostView* fs = GetFullscreenRenderWidgetHostView();
-    RenderViewHost* render_view_host = render_frame_host->GetRenderViewHost();
-    if (fs && fs->GetRenderWidgetHost() != render_view_host->GetWidget())
-      return;
-  }
-
   // In case of racey updates from multiple RenderViewHosts, the last URL should
   // be shown - see also some discussion in https://crbug.com/807776.
   if (!url.is_valid() && render_frame_host != frame_that_set_last_target_url_)
@@ -8008,11 +7925,6 @@ bool WebContentsImpl::IsHidden() {
 
 int WebContentsImpl::GetOuterDelegateFrameTreeNodeId() {
   return node_.outer_contents_frame_tree_node_id();
-}
-
-RenderWidgetHostImpl* WebContentsImpl::GetFullscreenRenderWidgetHost() const {
-  return RenderWidgetHostImpl::FromID(fullscreen_widget_process_id_,
-                                      fullscreen_widget_routing_id_);
 }
 
 RenderFrameHostManager* WebContentsImpl::GetRenderManager() const {

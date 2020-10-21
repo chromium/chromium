@@ -44,8 +44,7 @@ ExclusiveAccessManager::GetExclusiveAccessExitBubbleType() const {
     if (!fullscreen_controller_.IsTabFullscreen())
       return EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION;
 
-    if (mouse_lock_controller_.IsMouseLockedSilently() ||
-        fullscreen_controller_.IsPrivilegedFullscreenForTab()) {
+    if (mouse_lock_controller_.IsMouseLockedSilently()) {
       return EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE;
     }
 

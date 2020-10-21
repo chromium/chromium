@@ -819,10 +819,7 @@ void WebContentsViewAura::Focus() {
   if (delegate_ && delegate_->Focus())
     return;
 
-  RenderWidgetHostView* rwhv =
-      web_contents_->GetFullscreenRenderWidgetHostView();
-  if (!rwhv)
-    rwhv = web_contents_->GetRenderWidgetHostView();
+  RenderWidgetHostView* rwhv = web_contents_->GetRenderWidgetHostView();
   if (rwhv)
     rwhv->Focus();
 }
@@ -852,12 +849,6 @@ void WebContentsViewAura::FocusThroughTabTraversal(bool reverse) {
   if (delegate_)
     delegate_->ResetStoredFocus();
 
-  content::RenderWidgetHostView* fullscreen_view =
-      web_contents_->GetFullscreenRenderWidgetHostView();
-  if (fullscreen_view) {
-    fullscreen_view->Focus();
-    return;
-  }
   web_contents_->GetRenderViewHost()->SetInitialFocus(reverse);
 }
 

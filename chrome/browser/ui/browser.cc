@@ -1935,10 +1935,6 @@ void Browser::EnumerateDirectory(
   FileSelectHelper::EnumerateDirectory(web_contents, std::move(listener), path);
 }
 
-bool Browser::EmbedsFullscreenWidget() {
-  return true;
-}
-
 void Browser::EnterFullscreenModeForTab(
     content::RenderFrameHost* requesting_frame,
     const blink::mojom::FullscreenOptions& options) {

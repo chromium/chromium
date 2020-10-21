@@ -54,12 +54,6 @@ class WEBVIEW_EXPORT WebView : public View,
   // those it implicitly creates via GetWebContents() above.
   void SetWebContents(content::WebContents* web_contents);
 
-  // If |mode| is true, WebView will register itself with WebContents as a
-  // WebContentsObserver, monitor for the showing/destruction of fullscreen
-  // render widgets, and alter its child view hierarchy to embed the fullscreen
-  // widget or restore the normal WebContentsView.
-  void SetEmbedFullscreenWidgetMode(bool mode);
-
   content::BrowserContext* GetBrowserContext();
   void SetBrowserContext(content::BrowserContext* browser_context);
 
@@ -142,9 +136,6 @@ class WEBVIEW_EXPORT WebView : public View,
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
 
-  // Overridden from content::WebContentsDelegate:
-  bool EmbedsFullscreenWidget() override;
-
   // Overridden from content::WebContentsObserver:
   void RenderViewCreated(content::RenderViewHost* render_view_host) override;
   void RenderViewReady() override;
@@ -152,8 +143,6 @@ class WEBVIEW_EXPORT WebView : public View,
   void RenderViewHostChanged(content::RenderViewHost* old_host,
                              content::RenderViewHost* new_host) override;
   void WebContentsDestroyed() override;
-  void DidShowFullscreenWidget() override;
-  void DidDestroyFullscreenWidget() override;
   void DidToggleFullscreenModeForTab(bool entered_fullscreen,
                                      bool will_cause_resize) override;
   // Workaround for MSVC++ linker bug/feature that requires
@@ -174,7 +163,6 @@ class WEBVIEW_EXPORT WebView : public View,
 
   void AttachWebContentsNativeView();
   void DetachWebContentsNativeView();
-  void ReattachForFullscreenChange(bool enter_fullscreen);
   void UpdateCrashedOverlayView();
   void NotifyAccessibilityWebContentsChanged();
 
@@ -192,12 +180,6 @@ class WEBVIEW_EXPORT WebView : public View,
       AddChildView(std::make_unique<NativeViewHost>());
   // Non-NULL if |web_contents()| was created and is owned by this WebView.
   std::unique_ptr<content::WebContents> wc_owner_;
-  // When true, WebView auto-embeds fullscreen widgets as a child view.
-  bool embed_fullscreen_widget_mode_enabled_ = false;
-  // Set to true while WebView is embedding a fullscreen widget view as a child
-  // view instead of the normal WebContentsView render view. Note: This will be
-  // false in the case of non-Flash fullscreen.
-  bool is_embedding_fullscreen_widget_ = false;
   // Set to true when |holder_| is letterboxed (scaled to be smaller than this
   // view, to preserve its aspect ratio).
   bool is_letterboxing_ = false;
@@ -214,13 +196,6 @@ class WEBVIEW_EXPORT WebView : public View,
   // Tracks the child accessibility tree id which is associated with the
   // WebContents's main RenderFrameHost.
   ui::AXTreeID child_ax_tree_id_;
-
-  // Used as the fullscreen NativeView if
-  // |embed_fullscreen_widget_mode_enabled_| is enabled. This is only set in
-  // tests as injecting a different value for
-  // WebContents::GetFullscreenRenderWidgetHostView() is rather tricky in
-  // unit-tests.
-  gfx::NativeView fullscreen_native_view_for_testing_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(WebView);
 };

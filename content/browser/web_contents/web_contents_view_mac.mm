@@ -174,10 +174,7 @@ void WebContentsViewMac::Focus() {
   // Focus the the fullscreen view, if one exists; otherwise, focus the content
   // native view. This ensures that the view currently attached to a NSWindow is
   // being used to query or set first responder state.
-  RenderWidgetHostView* rwhv =
-      web_contents_->GetFullscreenRenderWidgetHostView();
-  if (!rwhv)
-    rwhv = web_contents_->GetRenderWidgetHostView();
+  RenderWidgetHostView* rwhv = web_contents_->GetRenderWidgetHostView();
   if (!rwhv)
     return;
 
@@ -215,12 +212,6 @@ void WebContentsViewMac::FocusThroughTabTraversal(bool reverse) {
   if (delegate())
     delegate()->ResetStoredFocus();
 
-  content::RenderWidgetHostView* fullscreen_view =
-      web_contents_->GetFullscreenRenderWidgetHostView();
-  if (fullscreen_view) {
-    fullscreen_view->Focus();
-    return;
-  }
   web_contents_->GetRenderViewHost()->SetInitialFocus(reverse);
 }
 

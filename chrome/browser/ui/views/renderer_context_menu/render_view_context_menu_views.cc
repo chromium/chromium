@@ -400,10 +400,7 @@ aura::Window* RenderViewContextMenuViews::GetActiveNativeView() {
     LOG(ERROR) << "RenderViewContextMenuViews::Show, couldn't find WebContents";
     return NULL;
   }
-  return web_contents->GetFullscreenRenderWidgetHostView()
-             ? web_contents->GetFullscreenRenderWidgetHostView()
-                   ->GetNativeView()
-             : web_contents->GetNativeView();
+  return web_contents->GetNativeView();
 }
 
 void RenderViewContextMenuViews::OnSubmenuViewBoundsChanged(

@@ -108,7 +108,6 @@ class OffscreenTab final : public ProfileObserver,
       const GURL& opener_url,
       const std::string& frame_name,
       const GURL& target_url) final;
-  bool EmbedsFullscreenWidget() final;
   void EnterFullscreenModeForTab(
       content::RenderFrameHost* requesting_frame,
       const blink::mojom::FullscreenOptions& options) final;
@@ -125,7 +124,6 @@ class OffscreenTab final : public ProfileObserver,
                                   blink::mojom::MediaStreamType type) final;
 
   // content::WebContentsObserver overrides
-  void DidShowFullscreenWidget() final;
   void DidStartNavigation(content::NavigationHandle* navigation_handle) final;
 
   bool in_fullscreen_mode() const { return !non_fullscreen_size_.IsEmpty(); }

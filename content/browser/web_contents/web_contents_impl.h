@@ -348,7 +348,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   RenderWidgetHostView* GetRenderWidgetHostView() override;
   RenderWidgetHostView* GetTopLevelRenderWidgetHostView() override;
   void ClosePage() override;
-  RenderWidgetHostView* GetFullscreenRenderWidgetHostView() override;
   base::Optional<SkColor> GetThemeColor() override;
   base::Optional<SkColor> GetBackgroundColor() override;
   WebUI* GetWebUI() override;
@@ -871,8 +870,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void SetTopControlsGestureScrollInProgress(bool in_progress) override;
   void RenderWidgetCreated(RenderWidgetHostImpl* render_widget_host) override;
   void RenderWidgetDeleted(RenderWidgetHostImpl* render_widget_host) override;
-  void RenderWidgetGotFocus(RenderWidgetHostImpl* render_widget_host) override;
-  void RenderWidgetLostFocus(RenderWidgetHostImpl* render_widget_host) override;
   void RenderWidgetWasResized(RenderWidgetHostImpl* render_widget_host,
                               bool width_changed) override;
   void ResizeDueToAutoResize(RenderWidgetHostImpl* render_widget_host,
@@ -973,7 +970,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool FocusLocationBarByDefault() override;
   bool IsHidden() override;
   int GetOuterDelegateFrameTreeNodeId() override;
-  RenderWidgetHostImpl* GetFullscreenRenderWidgetHost() const override;
 
   // blink::mojom::ColorChooserFactory ---------------------------------------
 

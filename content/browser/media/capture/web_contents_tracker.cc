@@ -171,14 +171,4 @@ void WebContentsTracker::WebContentsDestroyed() {
   OnPossibleTargetChange(true);
 }
 
-void WebContentsTracker::DidShowFullscreenWidget() {
-  DVLOG(1) << "DidShowFullscreenWidget()";
-  OnPossibleTargetChange(false);
-}
-
-void WebContentsTracker::DidDestroyFullscreenWidget() {
-  DVLOG(1) << "DidDestroyFullscreenWidget()";
-  OnPossibleTargetChange(false);
-}
-
 }  // namespace content

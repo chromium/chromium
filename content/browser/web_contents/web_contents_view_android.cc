@@ -178,12 +178,6 @@ void WebContentsViewAndroid::RestoreFocus() {
 }
 
 void WebContentsViewAndroid::FocusThroughTabTraversal(bool reverse) {
-  content::RenderWidgetHostView* fullscreen_view =
-      web_contents_->GetFullscreenRenderWidgetHostView();
-  if (fullscreen_view) {
-    fullscreen_view->Focus();
-    return;
-  }
   web_contents_->GetRenderViewHost()->SetInitialFocus(reverse);
 }
 

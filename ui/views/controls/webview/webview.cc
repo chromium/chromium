@@ -93,23 +93,10 @@ void WebView::SetWebContents(content::WebContents* replacement) {
   UpdateCrashedOverlayView();
   if (wc_owner_.get() != replacement)
     wc_owner_.reset();
-  if (embed_fullscreen_widget_mode_enabled_) {
-    is_embedding_fullscreen_widget_ =
-        fullscreen_native_view_for_testing_ ||
-        (web_contents() && web_contents()->GetFullscreenRenderWidgetHostView());
-  } else {
-    DCHECK(!is_embedding_fullscreen_widget_);
-  }
   AttachWebContentsNativeView();
   NotifyAccessibilityWebContentsChanged();
 
   MaybeEnableAutoResize();
-}
-
-void WebView::SetEmbedFullscreenWidgetMode(bool enable) {
-  DCHECK(!web_contents())
-      << "Cannot change mode while a WebContents is attached.";
-  embed_fullscreen_widget_mode_enabled_ = enable;
 }
 
 content::BrowserContext* WebView::GetBrowserContext() {
@@ -175,13 +162,11 @@ void WebView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   // Only WebContentses that are in fullscreen mode and being screen-captured
   // will engage the special layout/sizing behavior.
   gfx::Rect holder_bounds = GetContentsBounds();
-  if (!embed_fullscreen_widget_mode_enabled_ || !web_contents() ||
-      !web_contents()->IsBeingCaptured() ||
+  if (!web_contents() || !web_contents()->IsBeingCaptured() ||
       web_contents()->GetPreferredSize().IsEmpty() ||
-      !(is_embedding_fullscreen_widget_ ||
-        (web_contents()->GetDelegate() &&
-         web_contents()->GetDelegate()->IsFullscreenForTabOrPending(
-             web_contents())))) {
+      !(web_contents()->GetDelegate() &&
+        web_contents()->GetDelegate()->IsFullscreenForTabOrPending(
+            web_contents()))) {
     // Reset the native view size.
     holder_->SetNativeViewSize(gfx::Size());
     holder_->SetBoundsRect(holder_bounds);
@@ -302,11 +287,6 @@ void WebView::OnAXModeAdded(ui::AXMode mode) {
 ////////////////////////////////////////////////////////////////////////////////
 // WebView, content::WebContentsDelegate implementation:
 
-bool WebView::EmbedsFullscreenWidget() {
-  DCHECK(wc_owner_.get());
-  return embed_fullscreen_widget_mode_enabled_;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // WebView, content::WebContentsObserver implementation:
 
@@ -337,20 +317,8 @@ void WebView::WebContentsDestroyed() {
   NotifyAccessibilityWebContentsChanged();
 }
 
-void WebView::DidShowFullscreenWidget() {
-  if (embed_fullscreen_widget_mode_enabled_)
-    ReattachForFullscreenChange(true);
-}
-
-void WebView::DidDestroyFullscreenWidget() {
-  if (embed_fullscreen_widget_mode_enabled_)
-    ReattachForFullscreenChange(false);
-}
-
 void WebView::DidToggleFullscreenModeForTab(bool entered_fullscreen,
                                             bool will_cause_resize) {
-  if (embed_fullscreen_widget_mode_enabled_)
-    ReattachForFullscreenChange(entered_fullscreen);
 }
 
 void WebView::OnWebContentsFocused(
@@ -385,26 +353,12 @@ void WebView::AttachWebContentsNativeView() {
   if (!GetWidget() || !web_contents())
     return;
 
-  gfx::NativeView view_to_attach;
-  if (is_embedding_fullscreen_widget_) {
-    view_to_attach = fullscreen_native_view_for_testing_
-                         ? fullscreen_native_view_for_testing_
-                         : web_contents()
-                               ->GetFullscreenRenderWidgetHostView()
-                               ->GetNativeView();
-  } else {
-    view_to_attach = web_contents()->GetNativeView();
-  }
+  gfx::NativeView view_to_attach = web_contents()->GetNativeView();
   OnBoundsChanged(bounds());
   if (holder_->native_view() == view_to_attach)
     return;
 
   holder_->Attach(view_to_attach);
-  // Attach() asynchronously sets the bounds of the widget. Pepper expects
-  // fullscreen widgets to be sized immediately, so force a layout now.
-  // See https://crbug.com/361408 and https://crbug.com/id=959118.
-  if (is_embedding_fullscreen_widget_)
-    holder_->Layout();
 
   // We set the parent accessible of the native view to be our parent.
   UpdateNativeViewHostAccessibleParent(holder(), parent());
@@ -421,26 +375,6 @@ void WebView::DetachWebContentsNativeView() {
   TRACE_EVENT0("views", "WebView::DetachWebContentsNativeView");
   if (web_contents())
     holder_->Detach();
-}
-
-void WebView::ReattachForFullscreenChange(bool enter_fullscreen) {
-  DCHECK(embed_fullscreen_widget_mode_enabled_);
-  const bool web_contents_has_separate_fs_widget =
-      fullscreen_native_view_for_testing_ ||
-      (web_contents() && web_contents()->GetFullscreenRenderWidgetHostView());
-  if (is_embedding_fullscreen_widget_ || web_contents_has_separate_fs_widget) {
-    // Shutting down or starting up the embedding of the separate fullscreen
-    // widget.  Need to detach and re-attach to a different native view.
-    DetachWebContentsNativeView();
-    is_embedding_fullscreen_widget_ =
-        enter_fullscreen && web_contents_has_separate_fs_widget;
-    AttachWebContentsNativeView();
-  } else {
-    // Entering or exiting "non-Flash" fullscreen mode, where the native view is
-    // the same.  So, do not change attachment.
-    OnBoundsChanged(bounds());
-  }
-  NotifyAccessibilityWebContentsChanged();
 }
 
 void WebView::UpdateCrashedOverlayView() {

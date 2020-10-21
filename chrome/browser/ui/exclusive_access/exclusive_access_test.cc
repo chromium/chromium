@@ -183,10 +183,6 @@ void ExclusiveAccessTest::Reload() {
   observer.Wait();
 }
 
-void ExclusiveAccessTest::SetPrivilegedFullscreen(bool is_privileged) {
-  GetFullscreenController()->SetPrivilegedFullscreenForTesting(is_privileged);
-}
-
 void ExclusiveAccessTest::EnterActiveTabFullscreen() {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   FullscreenNotificationObserver fullscreen_observer(browser());

@@ -108,11 +108,6 @@ class CONTENT_EXPORT WebContentsTracker
   // has been permanently lost.
   void WebContentsDestroyed() final;
 
-  // WebContentsObserver overrides to notify the client that the capture target
-  // may have changed due to a separate fullscreen widget shown/destroyed.
-  void DidShowFullscreenWidget() final;
-  void DidDestroyFullscreenWidget() final;
-
   // Pointer to the RenderWidgetHostView provided in the last run of
   // |callback_|. This is used to eliminate duplicate callback runs.
   RenderWidgetHostView* last_target_view_;

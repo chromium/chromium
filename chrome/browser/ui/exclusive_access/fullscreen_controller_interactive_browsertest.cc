@@ -415,37 +415,6 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_TRUE(IsWindowFullscreenForTabOrPending());
 }
 
-// Tests mouse lock and fullscreen for the privileged fullscreen case (e.g.,
-// embedded flash fullscreen, since the Flash plugin handles user permissions
-// requests itself).
-// Flaky on Linux: crbug.com/1066607
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
-#define MAYBE_PrivilegedMouseLockAndFullscreen \
-  DISABLED_PrivilegedMouseLockAndFullscreen
-#else
-#define MAYBE_PrivilegedMouseLockAndFullscreen PrivilegedMouseLockAndFullscreen
-#endif
-IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
-                       MAYBE_PrivilegedMouseLockAndFullscreen) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(kFullscreenMouseLockHTML));
-
-  ASSERT_FALSE(IsExclusiveAccessBubbleDisplayed());
-
-  SetPrivilegedFullscreen(true);
-
-  // Request to lock the mouse and enter fullscreen.
-  FullscreenNotificationObserver fullscreen_observer(browser());
-  PressKeyAndWaitForMouseLockRequest(ui::VKEY_B);
-  fullscreen_observer.Wait();
-
-  // Confirm they are enabled and there is no prompt.
-  ASSERT_FALSE(IsExclusiveAccessBubbleDisplayed());
-  ASSERT_TRUE(IsMouseLocked());
-  ASSERT_TRUE(IsWindowFullscreenForTabOrPending());
-}
-
 // Flaky on Linux, CrOS: http://crbug.com/159000
 // Flaky on Windows; see https://crbug.com/791539.
 // Flaky on Mac: https://crbug.com/876617.

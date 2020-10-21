@@ -589,7 +589,6 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   auto contents_web_view =
       std::make_unique<ContentsWebView>(browser_->profile());
   contents_web_view->SetID(VIEW_ID_TAB_CONTAINER);
-  contents_web_view->SetEmbedFullscreenWidgetMode(true);
 
   auto contents_container = std::make_unique<views::View>();
   devtools_web_view_ =

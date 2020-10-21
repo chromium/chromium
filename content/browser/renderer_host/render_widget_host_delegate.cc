@@ -122,11 +122,6 @@ RenderViewHostDelegateView* RenderWidgetHostDelegate::GetDelegateView() {
   return nullptr;
 }
 
-RenderWidgetHostImpl* RenderWidgetHostDelegate::GetFullscreenRenderWidgetHost()
-    const {
-  return nullptr;
-}
-
 bool RenderWidgetHostDelegate::OnUpdateDragCursor() {
   return false;
 }

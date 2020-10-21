@@ -86,9 +86,7 @@ views::View* ChromeWebContentsViewFocusHelper::GetStoredFocus() {
 }
 
 gfx::NativeView ChromeWebContentsViewFocusHelper::GetActiveNativeView() {
-  return web_contents_->GetFullscreenRenderWidgetHostView() ?
-      web_contents_->GetFullscreenRenderWidgetHostView()->GetNativeView() :
-      web_contents_->GetNativeView();
+  return web_contents_->GetNativeView();
 }
 
 views::Widget* ChromeWebContentsViewFocusHelper::GetTopLevelWidget() {

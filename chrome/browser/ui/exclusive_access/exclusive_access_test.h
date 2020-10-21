@@ -74,7 +74,6 @@ class ExclusiveAccessTest : public InProcessBrowserTest {
   bool IsExclusiveAccessBubbleDisplayed();
   void GoBack();
   void Reload();
-  void SetPrivilegedFullscreen(bool is_privileged);
   void EnterActiveTabFullscreen();
   void ToggleBrowserFullscreen();
   void EnterExtensionInitiatedFullscreen();

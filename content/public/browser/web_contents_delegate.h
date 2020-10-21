@@ -448,12 +448,6 @@ class CONTENT_EXPORT WebContentsDelegate {
       RenderFrameHost* frame,
       const BluetoothScanningPrompt::EventHandler& event_handler);
 
-  // Returns true if the delegate will embed a WebContents-owned fullscreen
-  // render widget.  In this case, the delegate may access the widget by calling
-  // WebContents::GetFullscreenRenderWidgetHostView().  If false is returned,
-  // WebContents will be responsible for showing the fullscreen widget.
-  virtual bool EmbedsFullscreenWidget();
-
   // Called when the renderer puts a tab into fullscreen mode.
   // |requesting_frame| is the specific content frame requesting fullscreen.
   virtual void EnterFullscreenModeForTab(

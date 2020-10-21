@@ -382,10 +382,6 @@ class WebContents : public PageNavigator,
   // handler.
   virtual void ClosePage() = 0;
 
-  // Returns the currently active fullscreen widget. If there is none, returns
-  // nullptr.
-  virtual RenderWidgetHostView* GetFullscreenRenderWidgetHostView() = 0;
-
   // Returns the theme color for the underlying content as set by the
   // theme-color meta tag if any.
   virtual base::Optional<SkColor> GetThemeColor() = 0;

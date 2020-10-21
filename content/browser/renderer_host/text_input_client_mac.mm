@@ -21,20 +21,6 @@ namespace content {
 
 namespace {
 
-// TODO(ekaramad): TextInputClientMac expects to have a RenderWidgetHost to use
-// for handling mojo calls. However, for fullscreen flash, we end up with a
-// PepperWidget. For those scenarios, do not send the mojo calls. We need to
-// figure out what features are properly supported and perhaps send the
-// mojo call to the parent widget of the plugin (https://crbug.com/663384).
-bool IsFullScreenRenderWidget(RenderWidgetHost* widget) {
-  RenderWidgetHostImpl* rwhi = RenderWidgetHostImpl::From(widget);
-  if (!rwhi->delegate() ||
-      rwhi == rwhi->delegate()->GetFullscreenRenderWidgetHost()) {
-    return true;
-  }
-  return false;
-}
-
 RenderFrameHostImpl* GetFocusedRenderFrameHostImpl(RenderWidgetHost* widget) {
   RenderWidgetHostImpl* rwhi = RenderWidgetHostImpl::From(widget);
   FrameTree* tree = rwhi->delegate()->GetFrameTree();
@@ -88,9 +74,6 @@ void TextInputClientMac::GetStringFromRange(RenderWidgetHost* rwh,
 
 uint32_t TextInputClientMac::GetCharacterIndexAtPoint(RenderWidgetHost* rwh,
                                                       const gfx::Point& point) {
-  if (IsFullScreenRenderWidget(rwh))
-    return UINT32_MAX;
-
   RenderFrameHostImpl* rfhi = GetFocusedRenderFrameHostImpl(rwh);
   // If it doesn't have a focused frame, it calls
   // SetCharacterIndexAndSignal() with index 0.
@@ -117,9 +100,6 @@ uint32_t TextInputClientMac::GetCharacterIndexAtPoint(RenderWidgetHost* rwh,
 
 gfx::Rect TextInputClientMac::GetFirstRectForRange(RenderWidgetHost* rwh,
                                                    const gfx::Range& range) {
-  if (IsFullScreenRenderWidget(rwh))
-    return gfx::Rect();
-
   RenderFrameHostImpl* rfhi = GetFocusedRenderFrameHostImpl(rwh);
   if (!rfhi)
     return gfx::Rect();

@@ -280,7 +280,6 @@ class TabImpl : public Tab,
       content::WebContents* web_contents) override;
   bool OnlyExpandTopControlsAtPageTop() override;
   bool ShouldAnimateBrowserControlsHeightChanges() override;
-  bool EmbedsFullscreenWidget() override;
   void RequestMediaAccessPermission(
       content::WebContents* web_contents,
       const content::MediaStreamRequest& request,

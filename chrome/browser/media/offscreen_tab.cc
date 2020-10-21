@@ -290,11 +290,6 @@ bool OffscreenTab::IsWebContentsCreationOverridden(
   return true;
 }
 
-bool OffscreenTab::EmbedsFullscreenWidget() {
-  // OffscreenTab will manage fullscreen widgets.
-  return true;
-}
-
 void OffscreenTab::EnterFullscreenModeForTab(
     content::RenderFrameHost* requesting_frame,
     const blink::mojom::FullscreenOptions& options) {
@@ -348,16 +343,6 @@ bool OffscreenTab::CheckMediaAccessPermission(
             content::WebContents::FromRenderFrameHost(render_frame_host));
   return type == blink::mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE ||
          type == blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE;
-}
-
-void OffscreenTab::DidShowFullscreenWidget() {
-  if (!offscreen_tab_web_contents_->IsBeingCaptured() ||
-      offscreen_tab_web_contents_->GetPreferredSize().IsEmpty())
-    return;  // Do nothing, since no preferred size is specified.
-  content::RenderWidgetHostView* const current_fs_view =
-      offscreen_tab_web_contents_->GetFullscreenRenderWidgetHostView();
-  if (current_fs_view)
-    current_fs_view->SetSize(offscreen_tab_web_contents_->GetPreferredSize());
 }
 
 void OffscreenTab::DidStartNavigation(

@@ -70,18 +70,11 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // The RenderWidgetHost is going to be deleted.
   virtual void RenderWidgetDeleted(RenderWidgetHostImpl* render_widget_host) {}
 
-  // The RenderWidgetHost got the focus.
-  virtual void RenderWidgetGotFocus(RenderWidgetHostImpl* render_widget_host) {}
-
   // If a main frame navigation is in progress, this will return the zoom level
   // for the pending page. Otherwise, this returns the zoom level for the
   // current page. Note that subframe navigations do not affect the zoom level,
   // which is tracked at the level of the page.
   virtual double GetPendingPageZoomLevel();
-
-  // The RenderWidgetHost lost the focus.
-  virtual void RenderWidgetLostFocus(
-      RenderWidgetHostImpl* render_widget_host) {}
 
   // The RenderWidget was resized.
   virtual void RenderWidgetWasResized(RenderWidgetHostImpl* render_widget_host,
@@ -271,11 +264,6 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
 
   // Returns the associated RenderViewHostDelegateView*, if possible.
   virtual RenderViewHostDelegateView* GetDelegateView();
-
-  // Returns the current Flash fullscreen RenderWidgetHostImpl if any. This is
-  // not intended for use with other types of fullscreen, such as HTML
-  // fullscreen, and will return nullptr for those cases.
-  virtual RenderWidgetHostImpl* GetFullscreenRenderWidgetHost() const;
 
   // Allow the delegate to handle the cursor update. Returns true if handled.
   virtual bool OnUpdateDragCursor();

@@ -135,9 +135,7 @@ ChromeWebContentsViewDelegateMac::CreateRenderViewContextMenu(
 
 content::RenderWidgetHostView*
 ChromeWebContentsViewDelegateMac::GetActiveRenderWidgetHostView() const {
-  return web_contents_->GetFullscreenRenderWidgetHostView() ?
-      web_contents_->GetFullscreenRenderWidgetHostView() :
-      web_contents_->GetTopLevelRenderWidgetHostView();
+  return web_contents_->GetTopLevelRenderWidgetHostView();
 }
 
 NSWindow* ChromeWebContentsViewDelegateMac::GetNSWindowForFocusTracker() const {
