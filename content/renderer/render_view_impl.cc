@@ -541,12 +541,20 @@ blink::WebPagePopup* RenderViewImpl::CreatePopup(
       blink_widget_host_receiver =
           blink_widget_host.InitWithNewEndpointAndPassReceiver();
 
+  mojo::PendingAssociatedRemote<blink::mojom::PopupWidgetHost>
+      blink_popup_widget_host;
+  mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
+      blink_popup_widget_host_receiver =
+          blink_popup_widget_host.InitWithNewEndpointAndPassReceiver();
+
   // Do a synchronous IPC to obtain a routing ID.
   int32_t widget_routing_id = MSG_ROUTING_NONE;
   bool success =
-      RenderFrameImpl::FromWebFrame(creator)->GetFrameHost()->CreateNewWidget(
-          std::move(blink_widget_host_receiver), std::move(blink_widget),
-          &widget_routing_id);
+      RenderFrameImpl::FromWebFrame(creator)
+          ->GetFrameHost()
+          ->CreateNewPopupWidget(std::move(blink_popup_widget_host_receiver),
+                                 std::move(blink_widget_host_receiver),
+                                 std::move(blink_widget), &widget_routing_id);
   if (!success) {
     // When the renderer is being killed the mojo message will fail.
     return nullptr;
@@ -564,9 +572,9 @@ blink::WebPagePopup* RenderViewImpl::CreatePopup(
 
   // The returned WebPagePopup is self-referencing, so the pointer here is not
   // an owning pointer. It is de-referenced by calling Close().
-  blink::WebPagePopup* popup_web_widget =
-      blink::WebPagePopup::Create(popup_widget, std::move(blink_widget_host),
-                                  std::move(blink_widget_receiver));
+  blink::WebPagePopup* popup_web_widget = blink::WebPagePopup::Create(
+      popup_widget, std::move(blink_popup_widget_host),
+      std::move(blink_widget_host), std::move(blink_widget_receiver));
 
   // Adds a self-reference on the |popup_widget| so it will not be destroyed
   // when leaving scope. The WebPagePopup takes responsibility for Close()ing

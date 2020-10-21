@@ -146,6 +146,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       public IPC::Listener,
       public RenderFrameMetadataProvider::Observer,
       public blink::mojom::FrameWidgetHost,
+      public blink::mojom::PopupWidgetHost,
       public blink::mojom::WidgetHost,
       public blink::mojom::PointerLockContext {
  public:
@@ -322,6 +323,11 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void BindWidgetInterfaces(
       mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost> widget_host,
       mojo::PendingAssociatedRemote<blink::mojom::Widget> widget);
+
+  // Bind the provided popup widget interface.
+  void BindPopupWidgetInterface(
+      mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
+          popup_widget_host);
 
   // Allocate and bind new frame widget interfaces.
   std::pair<mojo::PendingAssociatedRemote<blink::mojom::FrameWidgetHost>,
@@ -1321,6 +1327,11 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   mojo::AssociatedReceiver<blink::mojom::FrameWidgetHost>
       blink_frame_widget_host_receiver_{this};
   mojo::AssociatedRemote<blink::mojom::FrameWidget> blink_frame_widget_;
+
+  // If this is initialized with a popup this member will be valid and
+  // manages the lifecycle of the popup in blink.
+  mojo::AssociatedReceiver<blink::mojom::PopupWidgetHost>
+      blink_popup_widget_host_receiver_{this};
 
   mojo::AssociatedReceiver<blink::mojom::WidgetHost>
       blink_widget_host_receiver_{this};

@@ -32,10 +32,6 @@
 // Browser -> Renderer Messages.
 //
 
-// Tells the render widget to close.
-// Expects a Close_ACK message when finished.
-IPC_MESSAGE_ROUTED0(WidgetMsg_Close)
-
 // Reply to WidgetHostMsg_RequestSetBounds, WidgetHostMsg_ShowWidget, and
 // FrameHostMsg_ShowCreatedWindow, to inform the renderer that the browser has
 // processed the bounds-setting.  The browser may have ignored the new bounds,
@@ -50,8 +46,7 @@ IPC_MESSAGE_ROUTED0(WidgetMsg_SetBounds_ACK)
 
 // Sent by the renderer process to request that the browser close the widget.
 // This corresponds to the window.close() API, and the browser may ignore
-// this message.  Otherwise, the browser will generate a WidgetMsg_Close
-// message to close the widget.
+// this message.
 IPC_MESSAGE_ROUTED0(WidgetHostMsg_Close)
 
 // Sent by the renderer process to request that the browser change the bounds of

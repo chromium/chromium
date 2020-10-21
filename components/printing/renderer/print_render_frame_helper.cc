@@ -44,6 +44,7 @@
 #include "third_party/blink/public/common/css/page_orientation.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom.h"
+#include "third_party/blink/public/mojom/page/widget.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_double_size.h"
@@ -696,16 +697,25 @@ void PrintRenderFrameHelper::PrintHeaderAndFooter(
       nullptr);
 
   blink::WebWidgetClient web_widget_client;
+  mojo::AssociatedRemote<blink::mojom::FrameWidget> frame_widget;
+  mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget>
+      frame_widget_receiver =
+          frame_widget.BindNewEndpointAndPassDedicatedReceiver();
+
+  mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> frame_widget_host;
+  ignore_result(frame_widget_host.BindNewEndpointAndPassDedicatedReceiver());
+
+  mojo::AssociatedRemote<blink::mojom::Widget> widget_remote;
+  mojo::PendingAssociatedReceiver<blink::mojom::Widget> widget_receiver =
+      widget_remote.BindNewEndpointAndPassDedicatedReceiver();
+
+  mojo::AssociatedRemote<blink::mojom::WidgetHost> widget_host_remote;
+  ignore_result(widget_host_remote.BindNewEndpointAndPassDedicatedReceiver());
+
   blink::WebFrameWidget::CreateForMainFrame(
-      &web_widget_client, frame,
-      blink::CrossVariantMojoAssociatedRemote<
-          blink::mojom::FrameWidgetHostInterfaceBase>(),
-      blink::CrossVariantMojoAssociatedReceiver<
-          blink::mojom::FrameWidgetInterfaceBase>(),
-      blink::CrossVariantMojoAssociatedRemote<
-          blink::mojom::WidgetHostInterfaceBase>(),
-      blink::CrossVariantMojoAssociatedReceiver<
-          blink::mojom::WidgetInterfaceBase>());
+      &web_widget_client, frame, frame_widget_host.Unbind(),
+      std::move(frame_widget_receiver), widget_host_remote.Unbind(),
+      std::move(widget_receiver));
   web_view->DidAttachLocalMainFrame();
 
   base::Value html(
@@ -942,16 +952,26 @@ void PrepareFrameAndViewForPrint::CopySelection(
   blink::WebLocalFrame* main_frame = blink::WebLocalFrame::CreateMainFrame(
       web_view, this, nullptr, base::UnguessableToken::Create(), nullptr);
   frame_.Reset(main_frame);
+  blink::WebWidgetClient web_widget_client;
+  mojo::AssociatedRemote<blink::mojom::FrameWidget> frame_widget;
+  mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget>
+      frame_widget_receiver =
+          frame_widget.BindNewEndpointAndPassDedicatedReceiver();
+
+  mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> frame_widget_host;
+  ignore_result(frame_widget_host.BindNewEndpointAndPassDedicatedReceiver());
+
+  mojo::AssociatedRemote<blink::mojom::Widget> widget_remote;
+  mojo::PendingAssociatedReceiver<blink::mojom::Widget> widget_receiver =
+      widget_remote.BindNewEndpointAndPassDedicatedReceiver();
+
+  mojo::AssociatedRemote<blink::mojom::WidgetHost> widget_host_remote;
+  ignore_result(widget_host_remote.BindNewEndpointAndPassDedicatedReceiver());
+
   blink::WebFrameWidget::CreateForMainFrame(
-      this, main_frame,
-      blink::CrossVariantMojoAssociatedRemote<
-          blink::mojom::FrameWidgetHostInterfaceBase>(),
-      blink::CrossVariantMojoAssociatedReceiver<
-          blink::mojom::FrameWidgetInterfaceBase>(),
-      blink::CrossVariantMojoAssociatedRemote<
-          blink::mojom::WidgetHostInterfaceBase>(),
-      blink::CrossVariantMojoAssociatedReceiver<
-          blink::mojom::WidgetInterfaceBase>());
+      this, main_frame, frame_widget_host.Unbind(),
+      std::move(frame_widget_receiver), widget_host_remote.Unbind(),
+      std::move(widget_receiver));
   web_view->DidAttachLocalMainFrame();
   node_to_print_.Reset();
 

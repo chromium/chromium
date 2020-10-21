@@ -208,7 +208,6 @@ bool RenderWidget::OnMessageReceived(const IPC::Message& message) {
 
   bool handled = false;
   IPC_BEGIN_MESSAGE_MAP(RenderWidget, message)
-    IPC_MESSAGE_HANDLER(WidgetMsg_Close, OnClose)
     IPC_MESSAGE_HANDLER(WidgetMsg_SetBounds_ACK, OnRequestSetBoundsAck)
     IPC_MESSAGE_HANDLER(DragMsg_TargetDragEnter, OnDragTargetDragEnter)
     IPC_MESSAGE_UNHANDLED(handled = false)
@@ -229,7 +228,7 @@ bool RenderWidget::Send(IPC::Message* message) {
   return agent_scheduling_group_.Send(message);
 }
 
-void RenderWidget::OnClose() {
+void RenderWidget::BrowserClosedIpcChannelForPopupWidget() {
   DCHECK(for_popup_);
 
   Close(base::WrapUnique(this));

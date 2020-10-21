@@ -248,11 +248,14 @@ bool PagePopupFeaturesClient::IsEnabled(Document*,
 
 WebPagePopupImpl::WebPagePopupImpl(
     WebPagePopupClient* client,
+    CrossVariantMojoAssociatedRemote<mojom::blink::PopupWidgetHostInterfaceBase>
+        popup_widget_host,
     CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
         widget_host,
     CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
         widget)
     : web_page_popup_client_(client),
+      popup_widget_host_(std::move(popup_widget_host)),
       widget_base_(
           std::make_unique<WidgetBase>(this,
                                        std::move(widget_host),
@@ -261,6 +264,8 @@ WebPagePopupImpl::WebPagePopupImpl(
                                        /*never_composited=*/false,
                                        /*is_for_child_local_root=*/false)) {
   DCHECK(client);
+  popup_widget_host_.set_disconnect_handler(WTF::Bind(
+      &WebPagePopupImpl::WidgetHostDisconnected, WTF::Unretained(this)));
 }
 
 WebPagePopupImpl::~WebPagePopupImpl() {
@@ -809,6 +814,12 @@ KURL WebPagePopupImpl::GetURLForDebugTrace() {
   return {};
 }
 
+void WebPagePopupImpl::WidgetHostDisconnected() {
+  DCHECK(web_page_popup_client_);
+  web_page_popup_client_->BrowserClosedIpcChannelForPopupWidget();
+  // Careful, this is now destroyed.
+}
+
 void WebPagePopupImpl::Close(
     scoped_refptr<base::SingleThreadTaskRunner> cleanup_runner) {
   // If the popup is closed from the renderer via Cancel(), then ClosePopup()
@@ -945,6 +956,8 @@ WebPagePopupImpl::AllocateNewLayerTreeFrameSink() {
 
 WebPagePopup* WebPagePopup::Create(
     WebPagePopupClient* client,
+    CrossVariantMojoAssociatedRemote<mojom::blink::PopupWidgetHostInterfaceBase>
+        popup_widget_host,
     CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
         widget_host,
     CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
@@ -957,7 +970,8 @@ WebPagePopup* WebPagePopup::Create(
   // We need them because the closing operation is asynchronous and the widget
   // can be closed while the WebViewImpl is unaware of it.
   auto popup = base::AdoptRef(
-      new WebPagePopupImpl(client, std::move(widget_host), std::move(widget)));
+      new WebPagePopupImpl(client, std::move(popup_widget_host),
+                           std::move(widget_host), std::move(widget)));
   popup->AddRef();
   return popup.get();
 }

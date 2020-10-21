@@ -3680,9 +3680,11 @@ RenderFrameHostDelegate* WebContentsImpl::CreateNewWindow(
   return new_contents_impl;
 }
 
-void WebContentsImpl::CreateNewWidget(
+void WebContentsImpl::CreateNewPopupWidget(
     AgentSchedulingGroupHost& agent_scheduling_group,
     int32_t route_id,
+    mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
+        blink_popup_widget_host,
     mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost> blink_widget_host,
     mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget) {
   OPTIONAL_TRACE_EVENT1(
@@ -3703,6 +3705,7 @@ void WebContentsImpl::CreateNewWidget(
 
   widget_host->BindWidgetInterfaces(std::move(blink_widget_host),
                                     std::move(blink_widget));
+  widget_host->BindPopupWidgetInterface(std::move(blink_popup_widget_host));
   RenderWidgetHostViewBase* widget_view =
       static_cast<RenderWidgetHostViewBase*>(
           view_->CreateViewForChildWidget(widget_host));

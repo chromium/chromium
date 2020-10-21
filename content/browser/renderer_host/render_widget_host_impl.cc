@@ -587,6 +587,13 @@ void RenderWidgetHostImpl::BindWidgetInterfaces(
   blink_widget_.Bind(std::move(widget));
 }
 
+void RenderWidgetHostImpl::BindPopupWidgetInterface(
+    mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
+        popup_widget_host) {
+  blink_popup_widget_host_receiver_.reset();
+  blink_popup_widget_host_receiver_.Bind(std::move(popup_widget_host));
+}
+
 std::pair<mojo::PendingAssociatedRemote<blink::mojom::FrameWidgetHost>,
           mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget>>
 RenderWidgetHostImpl::BindNewFrameWidgetInterfaces() {
@@ -650,15 +657,6 @@ void RenderWidgetHostImpl::ShutdownAndDestroyWidget(bool also_delete) {
   CancelKeyboardLock();
   RejectMouseLockOrUnlockIfNecessary(
       blink::mojom::PointerLockResult::kElementDestroyed);
-
-  if (GetProcess()->IsInitializedAndNotDead() && !owner_delegate()) {
-    // Tell the RendererWidget to close. We only want to do this if the
-    // RenderWidget is the root of the renderer object graph, which is for
-    // pepper fullscreen and popups.
-    bool rv = Send(new WidgetMsg_Close(routing_id_));
-    DCHECK(rv);
-  }
-
   Destroy(also_delete);
 }
 
@@ -2170,6 +2168,10 @@ void RenderWidgetHostImpl::Destroy(bool also_delete) {
     view_->Destroy();
     view_.reset();
   }
+
+  // Reset the popup host receiver, this will cause a disconnection notification
+  // on the renderer to delete Popup widgets.
+  blink_popup_widget_host_receiver_.reset();
 
   render_process_blocked_state_changed_subscription_.reset();
   pending_show_closure_.Reset();

@@ -282,6 +282,32 @@ class WebViewTest : public testing::Test {
     return detector;
   }
 
+  // Helper function that creates a widget for a main frame.
+  // Copy the steps done from WebViewHelper::InitializeWithOpener() to set up
+  // the appropriate pointers!
+  WebFrameWidget* CreateWidgetForMainFrame(WebWidgetClient* client,
+                                           WebLocalFrame* frame) {
+    mojo::AssociatedRemote<mojom::blink::FrameWidget> frame_widget;
+    mojo::PendingAssociatedReceiver<mojom::blink::FrameWidget>
+        frame_widget_receiver =
+            frame_widget.BindNewEndpointAndPassDedicatedReceiver();
+
+    mojo::AssociatedRemote<mojom::blink::FrameWidgetHost> frame_widget_host;
+    ignore_result(frame_widget_host.BindNewEndpointAndPassDedicatedReceiver());
+
+    mojo::AssociatedRemote<mojom::blink::Widget> widget_remote;
+    mojo::PendingAssociatedReceiver<mojom::blink::Widget> widget_receiver =
+        widget_remote.BindNewEndpointAndPassDedicatedReceiver();
+
+    mojo::AssociatedRemote<mojom::blink::WidgetHost> widget_host_remote;
+    ignore_result(widget_host_remote.BindNewEndpointAndPassDedicatedReceiver());
+
+    return blink::WebFrameWidget::CreateForMainFrame(
+        client, frame, frame_widget_host.Unbind(),
+        std::move(frame_widget_receiver), widget_host_remote.Unbind(),
+        std::move(widget_receiver));
+  }
+
   std::string base_url_;
   frame_test_helpers::WebViewHelper web_view_helper_;
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
@@ -496,12 +522,8 @@ TEST_F(WebViewTest, SetBaseBackgroundColorBeforeMainFrame) {
   {
     // Copy the steps done from WebViewHelper::InitializeWithOpener() to set up
     // the appropriate pointers!
-    WebFrameWidget* widget = blink::WebFrameWidget::CreateForMainFrame(
-        &web_widget_client, frame,
-        CrossVariantMojoAssociatedRemote<mojom::FrameWidgetHostInterfaceBase>(),
-        CrossVariantMojoAssociatedReceiver<mojom::FrameWidgetInterfaceBase>(),
-        CrossVariantMojoAssociatedRemote<mojom::WidgetHostInterfaceBase>(),
-        CrossVariantMojoAssociatedReceiver<mojom::WidgetInterfaceBase>());
+    WebFrameWidget* widget =
+        CreateWidgetForMainFrame(&web_widget_client, frame);
     cc::LayerTreeSettings layer_tree_settings =
         frame_test_helpers::GetSynchronousSingleThreadLayerTreeSettings();
     web_widget_client.set_layer_tree_host(widget->InitializeCompositing(
@@ -2722,12 +2744,7 @@ TEST_F(WebViewTest, ClientTapHandlingNullWebViewClient) {
       WebLocalFrame::CreateMainFrame(web_view, &web_frame_client, nullptr,
                                      base::UnguessableToken::Create(), nullptr);
   web_frame_client.Bind(local_frame);
-  blink::WebFrameWidget::CreateForMainFrame(
-      &web_widget_client, local_frame,
-      CrossVariantMojoAssociatedRemote<mojom::FrameWidgetHostInterfaceBase>(),
-      CrossVariantMojoAssociatedReceiver<mojom::FrameWidgetInterfaceBase>(),
-      CrossVariantMojoAssociatedRemote<mojom::WidgetHostInterfaceBase>(),
-      CrossVariantMojoAssociatedReceiver<mojom::WidgetInterfaceBase>());
+  CreateWidgetForMainFrame(&web_widget_client, local_frame);
 
   WebGestureEvent event(WebInputEvent::Type::kGestureTap,
                         WebInputEvent::kNoModifiers,
@@ -4186,13 +4203,24 @@ TEST_F(WebViewTest, SetHasTouchEventConsumers) {
       frame_widget_host.BindNewFrameWidgetInterfaces();
 
   {
+    mojo::AssociatedRemote<mojom::blink::FrameWidget> frame_widget;
+    mojo::PendingAssociatedReceiver<mojom::blink::FrameWidget>
+        frame_widget_receiver =
+            frame_widget.BindNewEndpointAndPassDedicatedReceiver();
+
+    mojo::AssociatedRemote<mojom::blink::Widget> widget_remote;
+    mojo::PendingAssociatedReceiver<mojom::blink::Widget> widget_receiver =
+        widget_remote.BindNewEndpointAndPassDedicatedReceiver();
+
+    mojo::AssociatedRemote<mojom::blink::WidgetHost> widget_host_remote;
+    ignore_result(widget_host_remote.BindNewEndpointAndPassDedicatedReceiver());
+
     // Copy the steps done from WebViewHelper::InitializeWithOpener() to set up
     // the appropriate pointers!
     WebFrameWidget* widget = blink::WebFrameWidget::CreateForMainFrame(
         &web_widget_client, frame, std::move(blink_frame_widget_host),
-        CrossVariantMojoAssociatedReceiver<mojom::FrameWidgetInterfaceBase>(),
-        CrossVariantMojoAssociatedRemote<mojom::WidgetHostInterfaceBase>(),
-        CrossVariantMojoAssociatedReceiver<mojom::WidgetInterfaceBase>());
+        std::move(frame_widget_receiver), widget_host_remote.Unbind(),
+        std::move(widget_receiver));
     cc::LayerTreeSettings layer_tree_settings =
         frame_test_helpers::GetSynchronousSingleThreadLayerTreeSettings();
     web_widget_client.set_layer_tree_host(widget->InitializeCompositing(

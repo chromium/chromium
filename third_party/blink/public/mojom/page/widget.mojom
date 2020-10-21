@@ -260,3 +260,12 @@ interface WidgetCompositor {
   // frame is generated and presented in the display compositor.
   VisualStateRequest() => ();
 };
+
+// Implemented in Browser, this interface defines popup-widget-specific methods
+// that will be invoked from the render process (e.g. RenderWidgetHostImpl).
+// Popup widgets in the renderer are owned by the PopupWidgetHost in the browser
+// process, so the PopupWidgetHost channel disconnecting indicates that the
+// widget in the renderer should be destroyed.
+interface PopupWidgetHost {
+  // TODO(dtapuska): Add ShowPopup method that will replace ViewHostMsg_ShowWidget
+};

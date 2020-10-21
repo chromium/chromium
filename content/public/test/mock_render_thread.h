@@ -43,9 +43,8 @@ class RenderMessageFilter;
 }
 
 // This class is a very simple mock of RenderThread. It simulates an IPC channel
-// which supports only three messages:
-// ViewHostMsg_CreateWidget : sync message sent by the Widget.
-// WidgetMsg_Close : async, send to the Widget.
+// which supports the following message:
+// FrameHostMsg_CreateChildFrame : sync message sent by the renderer.
 class MockRenderThread : public RenderThread {
  public:
   MockRenderThread();

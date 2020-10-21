@@ -2018,11 +2018,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
       CreatePortalCallback callback) override;
   void AdoptPortal(const blink::PortalToken& portal_token,
                    AdoptPortalCallback callback) override;
-  void CreateNewWidget(
+  void CreateNewPopupWidget(
+      mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
+          blink_popup_widget_host,
       mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost>
           blink_widget_host,
       mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget,
-      CreateNewWidgetCallback callback) override;
+      CreateNewPopupWidgetCallback callback) override;
   void IssueKeepAliveHandle(
       mojo::PendingReceiver<mojom::KeepAliveHandle> receiver) override;
   void DidCommitProvisionalLoad(

@@ -70,12 +70,15 @@ class WidgetCompositorTest : public cc::LayerTreeTest {
   using CompositorMode = cc::CompositorMode;
 
   void BeginTest() override {
+    mojo::AssociatedRemote<mojom::blink::Widget> widget_remote;
+    mojo::PendingAssociatedReceiver<mojom::blink::Widget> widget_receiver =
+        widget_remote.BindNewEndpointAndPassDedicatedReceiver();
+
+    mojo::AssociatedRemote<mojom::blink::WidgetHost> widget_host_remote;
+    ignore_result(widget_host_remote.BindNewEndpointAndPassDedicatedReceiver());
+
     widget_base_ = std::make_unique<WidgetBase>(
-        &client_,
-        blink::CrossVariantMojoAssociatedRemote<
-            blink::mojom::WidgetHostInterfaceBase>(),
-        blink::CrossVariantMojoAssociatedReceiver<
-            blink::mojom::WidgetInterfaceBase>(),
+        &client_, widget_host_remote.Unbind(), std::move(widget_receiver),
         /*is_hidden=*/false,
         /*never_composited=*/false,
         /*is_for_child_local_root=*/false);

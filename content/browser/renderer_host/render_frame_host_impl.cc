@@ -5271,15 +5271,18 @@ void RenderFrameHostImpl::AdoptPortal(const blink::PortalToken& portal_token,
       proxy_host->GetFrameToken(), portal->GetDevToolsFrameToken());
 }
 
-void RenderFrameHostImpl::CreateNewWidget(
+void RenderFrameHostImpl::CreateNewPopupWidget(
+    mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
+        blink_popup_widget_host,
     mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost> blink_widget_host,
     mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget,
-    CreateNewWidgetCallback callback) {
+    CreateNewPopupWidgetCallback callback) {
   int32_t widget_route_id = GetProcess()->GetNextRoutingID();
   std::move(callback).Run(widget_route_id);
-  delegate_->CreateNewWidget(agent_scheduling_group_, widget_route_id,
-                             std::move(blink_widget_host),
-                             std::move(blink_widget));
+  delegate_->CreateNewPopupWidget(agent_scheduling_group_, widget_route_id,
+                                  std::move(blink_popup_widget_host),
+                                  std::move(blink_widget_host),
+                                  std::move(blink_widget));
 }
 
 void RenderFrameHostImpl::IssueKeepAliveHandle(

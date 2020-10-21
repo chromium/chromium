@@ -129,7 +129,9 @@ class MockFrameHost : public mojom::FrameHost {
     return true;
   }
 
-  bool CreateNewWidget(
+  bool CreateNewPopupWidget(
+      mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
+          blink_popup_widget_host,
       mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost>
           blink_widget_host,
       mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget,
@@ -140,11 +142,13 @@ class MockFrameHost : public mojom::FrameHost {
     return true;
   }
 
-  void CreateNewWidget(
+  void CreateNewPopupWidget(
+      mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
+          blink_popup_widget_host,
       mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost>
           blink_widget_host,
       mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget,
-      CreateNewWidgetCallback callback) override {
+      CreateNewPopupWidgetCallback callback) override {
     std::move(callback).Run(MSG_ROUTING_NONE);
   }
 

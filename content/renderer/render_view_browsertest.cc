@@ -751,11 +751,7 @@ TEST_F(RenderViewImplEmulatingPopupTest, EmulatingPopupRect) {
     EXPECT_EQ(widget_screen_rect, gfx::Rect(popup->ViewRect()));
     EXPECT_EQ(screen_rect, gfx::Rect(popup->GetScreenInfo().rect));
 
-    // Close and destroy the widget.
-    {
-      WidgetMsg_Close msg(popup_widget->routing_id());
-      popup_widget->OnMessageReceived(msg);
-    }
+    popup->GetClientForTesting()->BrowserClosedIpcChannelForPopupWidget();
   }
 
   // Enable device emulation on the parent widget.
@@ -814,11 +810,7 @@ TEST_F(RenderViewImplEmulatingPopupTest, EmulatingPopupRect) {
     EXPECT_EQ(emulated_widget_rect,
               gfx::Rect(main_widget()->GetWebWidget()->GetScreenInfo().rect));
 
-    // Close and destroy the widget.
-    {
-      WidgetMsg_Close msg(popup_widget->routing_id());
-      popup_widget->OnMessageReceived(msg);
-    }
+    popup->GetClientForTesting()->BrowserClosedIpcChannelForPopupWidget();
   }
 }
 
@@ -1264,18 +1256,26 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
   widget_params->routing_id = kProxyRoutingId + 2;
   widget_params->visual_properties = test_visual_properties;
 
+  mojo::AssociatedRemote<blink::mojom::Widget> blink_widget;
+  mojo::PendingAssociatedReceiver<blink::mojom::Widget> blink_widget_receiver =
+      blink_widget.BindNewEndpointAndPassDedicatedReceiver();
+
+  mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
+  ignore_result(blink_widget_host.BindNewEndpointAndPassDedicatedReceiver());
+
   mojo::AssociatedRemote<blink::mojom::FrameWidget> blink_frame_widget;
   mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget>
       blink_frame_widget_receiver =
           blink_frame_widget.BindNewEndpointAndPassDedicatedReceiver();
 
   mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> blink_frame_widget_host;
-  mojo::PendingAssociatedReceiver<blink::mojom::FrameWidgetHost>
-      blink_frame_widget_host_receiver =
-          blink_frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
+  ignore_result(
+      blink_frame_widget_host.BindNewEndpointAndPassDedicatedReceiver());
 
   widget_params->frame_widget = std::move(blink_frame_widget_receiver);
   widget_params->frame_widget_host = blink_frame_widget_host.Unbind();
+  widget_params->widget = std::move(blink_widget_receiver);
+  widget_params->widget_host = blink_widget_host.Unbind();
 
   RenderFrameImpl::CreateFrame(
       *agent_scheduling_group_, routing_id, std::move(stub_interface_provider),

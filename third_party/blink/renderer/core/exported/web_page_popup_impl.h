@@ -33,6 +33,7 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_context.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-blink.h"
@@ -210,6 +211,8 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
 
   WebPagePopupImpl(
       WebPagePopupClient*,
+      CrossVariantMojoAssociatedRemote<
+          mojom::blink::PopupWidgetHostInterfaceBase> popup_widget_host,
       CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
           widget_host,
       CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
@@ -225,6 +228,8 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
                                 ui::ScrollGranularity granularity,
                                 cc::ElementId scrollable_area_element_id,
                                 WebInputEvent::Type injected_type);
+
+  void WidgetHostDisconnected();
 
   WebPagePopupClient* web_page_popup_client_;
   WebViewImpl* web_view_ = nullptr;
@@ -251,6 +256,10 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   gfx::Point opener_widget_screen_origin_;
   gfx::Point opener_original_widget_screen_origin_;
   float opener_emulator_scale_ = 0;
+
+  // The channel associated with the browser. When this is closed the popup will
+  // be destroyed.
+  mojo::AssociatedRemote<mojom::blink::PopupWidgetHost> popup_widget_host_;
 
   // Base functionality all widgets have. This is a member as to avoid
   // complicated inheritance structures.

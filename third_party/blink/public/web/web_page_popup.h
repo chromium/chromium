@@ -49,6 +49,10 @@ class WebPagePopupClient : public WebWidgetClient {
   // WebWidget will be closed asynchronously as a result of this
   // request.
   virtual void ClosePopupWidgetSoon() = 0;
+
+  // Request to destroy the WebPagePopupClient immediately given that the
+  // browser has closed the associated mojom connection.
+  virtual void BrowserClosedIpcChannelForPopupWidget() = 0;
 };
 
 class WebPagePopup : public WebWidget {
@@ -57,6 +61,8 @@ class WebPagePopup : public WebWidget {
   // be released when the popup is closed via Close().
   BLINK_EXPORT static WebPagePopup* Create(
       WebPagePopupClient*,
+      CrossVariantMojoAssociatedRemote<mojom::PopupWidgetHostInterfaceBase>
+          popup_widget_host,
       CrossVariantMojoAssociatedRemote<mojom::WidgetHostInterfaceBase>
           widget_host,
       CrossVariantMojoAssociatedReceiver<mojom::WidgetInterfaceBase> widget);

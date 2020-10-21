@@ -339,12 +339,20 @@ void MockRenderThread::OnCreateWindow(
           blink_frame_widget.BindNewEndpointAndPassDedicatedReceiver();
 
   mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> blink_frame_widget_host;
-  mojo::PendingAssociatedReceiver<blink::mojom::FrameWidgetHost>
-      blink_frame_widget_host_receiver =
-          blink_frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
+  ignore_result(
+      blink_frame_widget_host.BindNewEndpointAndPassDedicatedReceiver());
+
+  mojo::AssociatedRemote<blink::mojom::Widget> blink_widget;
+  mojo::PendingAssociatedReceiver<blink::mojom::Widget> blink_widget_receiver =
+      blink_widget.BindNewEndpointAndPassDedicatedReceiver();
+
+  mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
+  ignore_result(blink_widget_host.BindNewEndpointAndPassDedicatedReceiver());
 
   reply->frame_widget = std::move(blink_frame_widget_receiver);
   reply->frame_widget_host = blink_frame_widget_host.Unbind();
+  reply->widget = std::move(blink_widget_receiver);
+  reply->widget_host = blink_widget_host.Unbind();
 }
 
 }  // namespace content
