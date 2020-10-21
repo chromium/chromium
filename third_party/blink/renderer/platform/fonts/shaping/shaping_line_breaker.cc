@@ -98,21 +98,21 @@ unsigned ShapingLineBreaker::Hyphenate(unsigned offset,
     return 0;
 
   const String& text = GetText();
+  const StringView word(text, word_start, word_len);
+  const unsigned word_offset = offset - word_start;
   if (backwards) {
-    unsigned before_index = offset - word_start;
-    if (before_index <= Hyphenation::kMinimumPrefixLength)
+    if (word_offset < Hyphenation::kMinimumPrefixLength)
       return 0;
-    unsigned prefix_length = hyphenation_->LastHyphenLocation(
-        StringView(text, word_start, word_len), before_index);
-    DCHECK(!prefix_length || prefix_length < before_index);
+    unsigned prefix_length =
+        hyphenation_->LastHyphenLocation(word, word_offset + 1);
+    DCHECK(!prefix_length || prefix_length <= word_offset);
     return prefix_length;
   } else {
-    unsigned after_index = offset - word_start;
-    if (word_len <= after_index + Hyphenation::kMinimumSuffixLength)
+    if (word_len - word_offset < Hyphenation::kMinimumSuffixLength)
       return 0;
     unsigned prefix_length = hyphenation_->FirstHyphenLocation(
-        StringView(text, word_start, word_len), after_index);
-    DCHECK(!prefix_length || prefix_length > after_index);
+        word, word_offset ? word_offset - 1 : 0);
+    DCHECK(!prefix_length || prefix_length >= word_offset);
     return prefix_length;
   }
 }

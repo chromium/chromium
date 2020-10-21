@@ -1643,7 +1643,6 @@ crbug.com/639223 external/wpt/css/css-text/hyphens/hyphens-shaping-002.html [ Fa
 crbug.com/639223 external/wpt/css/css-text/hyphens/hyphens-span-001.html [ Failure ]
 crbug.com/639223 external/wpt/css/css-text/hyphens/hyphens-span-002.html [ Failure ]
 crbug.com/639223 external/wpt/css/css-text/hyphens/shy-styling-001.html [ Failure ]
-crbug.com/870219 virtual/text-antialias/hyphens/hyphen-min-preferred-width-mock.html [ Failure ]
 crbug.com/870219 virtual/text-antialias/hyphens/hyphens-auto-mock.html [ Failure ]
 crbug.com/1139693 virtual/text-antialias/hyphens/midword-break-priority.html [ Failure ]
 
