@@ -92,7 +92,7 @@ class ProfileReportGeneratorTest : public ::testing::Test {
       const base::FilePath& path,
       const std::string& name) {
     std::unique_ptr<em::ChromeUserProfileInfo> report =
-        generator_.MaybeGenerate(path, name);
+        generator_.MaybeGenerate(path, name, ReportType::kFull);
     return report;
   }
 
@@ -154,7 +154,7 @@ TEST_F(ProfileReportGeneratorTest, ProfileNotActivated) {
       profile_path, base::ASCIIToUTF16(kIdleProfile), std::string(),
       base::string16(), false, 0, std::string(), EmptyAccountId());
   std::unique_ptr<em::ChromeUserProfileInfo> response =
-      generator_.MaybeGenerate(profile_path, kIdleProfile);
+      generator_.MaybeGenerate(profile_path, kIdleProfile, ReportType::kFull);
   ASSERT_FALSE(response.get());
 }
 
@@ -300,6 +300,41 @@ TEST_F(ProfileReportGeneratorTest, ExtensionRequestOnlyReport) {
   EXPECT_EQ(0, report->chrome_policies_size());
   EXPECT_EQ(0, report->extensions_size());
   EXPECT_EQ(0, report->policy_fetched_timestamps_size());
+}
+
+TEST_F(ProfileReportGeneratorTest, ExtensionRequestOnlyReportWithoutPolicy) {
+  profile()->GetTestingPrefService()->SetManagedPref(
+      prefs::kCloudExtensionRequestEnabled,
+      std::make_unique<base::Value>(false));
+  IdentityTestEnvironmentProfileAdaptor identity_test_env_adaptor(profile());
+  auto expected_info =
+      identity_test_env_adaptor.identity_test_env()->SetPrimaryAccount(
+          "test@mail.com");
+
+  auto report = generator_.MaybeGenerate(profile()->GetPath(),
+                                         profile()->GetProfileUserName(),
+                                         ReportType::kExtensionRequest);
+  EXPECT_FALSE(report);
+}
+
+TEST_F(ProfileReportGeneratorTest,
+       ExtensionRequestOnlyReportWithoutAnyRequest) {
+  profile()->GetTestingPrefService()->SetManagedPref(
+      prefs::kCloudExtensionRequestEnabled,
+      std::make_unique<base::Value>(true));
+  std::vector<std::string> ids;
+  SetExtensionToPendingList(ids);
+
+  IdentityTestEnvironmentProfileAdaptor identity_test_env_adaptor(profile());
+  auto expected_info =
+      identity_test_env_adaptor.identity_test_env()->SetPrimaryAccount(
+          "test@mail.com");
+
+  auto report = generator_.MaybeGenerate(profile()->GetPath(),
+                                         profile()->GetProfileUserName(),
+                                         ReportType::kExtensionRequest);
+
+  EXPECT_FALSE(report);
 }
 
 }  // namespace enterprise_reporting

@@ -75,7 +75,7 @@ class ProfileReportGenerator {
   std::unique_ptr<enterprise_management::ChromeUserProfileInfo> MaybeGenerate(
       const base::FilePath& path,
       const std::string& name,
-      ReportType report_type = ReportType::kFull);
+      ReportType report_type);
 
  protected:
   void GetChromePolicyInfo();

@@ -41,13 +41,16 @@ ProfileReportGenerator::MaybeGenerate(const base::FilePath& path,
   report_->set_id(path.AsUTF8Unsafe());
 
   if (report_type == ReportType::kExtensionRequest) {
+    delegate_->GetExtensionRequest(report_.get());
+    // There is no need to create extension request report without any request.
+    if (report_->extension_requests_size() == 0)
+      return nullptr;
+
 #if defined(OS_CHROMEOS)
     // Extension request is aggregated at the user level on CrOS.
     report_->set_name(name);
     delegate_->GetSigninUserInfo(report_.get());
 #endif  // defined(OS_CHROMEOS)
-    delegate_->GetExtensionRequest(report_.get());
-
   } else {
     report_->set_name(name);
     report_->set_is_full_report(true);

@@ -23,8 +23,15 @@ BrowserReportGenerator::BrowserReportGenerator(
 
 BrowserReportGenerator::~BrowserReportGenerator() = default;
 
-void BrowserReportGenerator::Generate(ReportCallback callback) {
+void BrowserReportGenerator::Generate(ReportType report_type,
+                                      ReportCallback callback) {
   auto report = std::make_unique<em::BrowserReport>();
+  if (report_type == ReportType::kExtensionRequest) {
+    report->set_executable_path(delegate_->GetExecutablePath());
+    std::move(callback).Run(std::move(report));
+    // TODO(zmin): Append profiles that has extension requests update.
+    return;
+  }
   GenerateBasicInfo(report.get());
   delegate_->GenerateProfileInfo(report.get());
 

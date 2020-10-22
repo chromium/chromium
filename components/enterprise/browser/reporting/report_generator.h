@@ -15,6 +15,7 @@
 #include "components/enterprise/browser/reporting/browser_report_generator.h"
 #include "components/enterprise/browser/reporting/report_request_definition.h"
 #include "components/enterprise/browser/reporting/report_request_queue_generator.h"
+#include "components/enterprise/browser/reporting/report_type.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace enterprise_reporting {
@@ -44,17 +45,17 @@ class ReportGenerator {
   virtual ~ReportGenerator();
 
   // Asynchronously generates a queue of report requests, providing them to
-  // |callback| when ready. If |with_profiles| is true, full details are
-  // included for all loaded profiles; otherwise, only profile name and path
-  // are included.
-  virtual void Generate(bool with_profiles, ReportCallback callback);
+  // |callback| when ready. If |report_type| is kFull, all details are
+  // included for all loaded profiles. Otherwise, the report only contains
+  // information that are needed by that particular type.
+  virtual void Generate(ReportType report_type, ReportCallback callback);
 
   void SetMaximumReportSizeForTesting(size_t size);
 
  protected:
   // Creates a basic request that will be used by all Profiles.
   void CreateBasicRequest(std::unique_ptr<ReportRequest> basic_request,
-                          bool with_profiles,
+                          ReportType report_type,
                           ReportCallback callback);
 
   // Returns an OS report contains basic OS information includes OS name, OS
@@ -73,7 +74,7 @@ class ReportGenerator {
 
  private:
   void OnBrowserReportReady(
-      bool with_profiles,
+      ReportType report_type,
       ReportCallback callback,
       std::unique_ptr<ReportRequest> basic_request,
       std::unique_ptr<enterprise_management::BrowserReport> browser_report);

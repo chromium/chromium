@@ -199,12 +199,12 @@ class ReportGeneratorTest : public ::testing::Test {
   }
 
   std::vector<std::unique_ptr<ReportRequest>> GenerateRequests(
-      bool with_profiles) {
+      ReportType report_type) {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
     base::RunLoop run_loop;
     std::vector<std::unique_ptr<ReportRequest>> rets;
     generator_.Generate(
-        with_profiles,
+        report_type,
         base::BindLambdaForTesting(
             [&run_loop, &rets](ReportGenerator::ReportRequests requests) {
               while (!requests.empty()) {
@@ -214,7 +214,7 @@ class ReportGeneratorTest : public ::testing::Test {
               run_loop.Quit();
             }));
     run_loop.Run();
-    if (with_profiles)
+    if (report_type == kFull)
       VerifyMetrics(rets);  // Only generated for reports with profiles.
     return rets;
   }
@@ -294,7 +294,7 @@ TEST_F(ReportGeneratorTest, GenerateBasicReport) {
   auto profile_names = CreateProfiles(/*number*/ 2, kIdle);
   CreatePlugin();
 
-  auto requests = GenerateRequests(/*with_profiles=*/true);
+  auto requests = GenerateRequests(ReportType::kFull);
   EXPECT_EQ(1u, requests.size());
 
   auto* basic_request = requests[0].get();
@@ -315,6 +315,8 @@ TEST_F(ReportGeneratorTest, GenerateBasicReport) {
   EXPECT_NE(std::string(), os_report.arch());
   EXPECT_NE(std::string(), os_report.version());
 #endif
+
+  EXPECT_EQ(0, basic_request->partial_report_types_size());
 
   EXPECT_TRUE(basic_request->has_browser_report());
   auto& browser_report = basic_request->browser_report();
@@ -347,7 +349,7 @@ TEST_F(ReportGeneratorTest, GenerateWithoutProfiles) {
   auto profile_names = CreateProfiles(/*number*/ 2, kActive);
   CreatePlugin();
 
-  auto requests = GenerateRequests(/*with_profiles=*/false);
+  auto requests = GenerateRequests(ReportType::kBrowserVersion);
   EXPECT_EQ(1u, requests.size());
 
   auto* basic_request = requests[0].get();
@@ -393,6 +395,30 @@ TEST_F(ReportGeneratorTest, GenerateWithoutProfiles) {
                       profile_names, browser_report);
 }
 
+TEST_F(ReportGeneratorTest, ExtensionRequestOnly) {
+  auto profile_names = CreateProfiles(/*number*/ 2, kActive);
+  CreatePlugin();
+
+  auto requests = GenerateRequests(ReportType::kExtensionRequest);
+  EXPECT_EQ(1u, requests.size());
+
+  auto* basic_request = requests[0].get();
+
+#if !defined(OS_CHROMEOS)
+  EXPECT_FALSE(basic_request->has_computer_name());
+  EXPECT_FALSE(basic_request->has_os_user_name());
+  EXPECT_FALSE(basic_request->has_os_report());
+  EXPECT_FALSE(basic_request->has_serial_number());
+#else
+  EXPECT_EQ(0, basic_request->android_app_infos_size());
+#endif
+  EXPECT_TRUE(basic_request->has_browser_report());
+
+  EXPECT_EQ(1, basic_request->partial_report_types_size());
+  EXPECT_EQ(em::PartialReportType::EXTENSION_REQUEST,
+            basic_request->partial_report_types(0));
+}
+
 #if defined(OS_CHROMEOS)
 
 TEST_F(ReportGeneratorTest, ReportArcAppInChromeOS) {
@@ -410,7 +436,7 @@ TEST_F(ReportGeneratorTest, ReportArcAppInChromeOS) {
 
   // Verify the Arc application information in the report is same as the test
   // data.
-  auto requests = GenerateRequests(/*with_profiles=*/true);
+  auto requests = GenerateRequests(ReportType::kFull);
   EXPECT_EQ(1u, requests.size());
 
   ReportRequest* request = requests.front().get();
@@ -422,7 +448,7 @@ TEST_F(ReportGeneratorTest, ReportArcAppInChromeOS) {
 
   // Generate the Arc application information again and make sure the report
   // remains the same.
-  requests = GenerateRequests(/*with_profiles=*/true);
+  requests = GenerateRequests(ReportType::kFull);
   EXPECT_EQ(1u, requests.size());
 
   request = requests.front().get();
@@ -451,7 +477,7 @@ TEST_F(ReportGeneratorTest, ArcPlayStoreDisabled) {
   // No Arc application information is reported after the Arc Play Store
   // support for given profile is disabled.
   primary_profile.GetPrefs()->SetBoolean(arc::prefs::kArcEnabled, false);
-  auto requests = GenerateRequests(/*with_profiles=*/true);
+  auto requests = GenerateRequests(ReportType::kFull);
   EXPECT_EQ(1u, requests.size());
 
   ReportRequest* request = requests.front().get();

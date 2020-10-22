@@ -164,7 +164,7 @@ void ReportScheduler::GenerateAndUploadReport(ReportTrigger trigger) {
   }
 
   active_trigger_ = trigger;
-  bool with_profiles = true;
+  ReportType report_type = kFull;
   switch (trigger) {
     case kTriggerNone:
       NOTREACHED();
@@ -174,17 +174,17 @@ void ReportScheduler::GenerateAndUploadReport(ReportTrigger trigger) {
       break;
     case kTriggerUpdate:
       VLOG(1) << "Generating basic enterprise report upon update.";
-      with_profiles = false;
+      report_type = kBrowserVersion;
       break;
     case kTriggerNewVersion:
       VLOG(1) << "Generating basic enterprise report upon new version.";
-      with_profiles = false;
+      report_type = kBrowserVersion;
       break;
   }
 
   report_generator_->Generate(
-      with_profiles, base::BindOnce(&ReportScheduler::OnReportGenerated,
-                                    base::Unretained(this)));
+      report_type, base::BindOnce(&ReportScheduler::OnReportGenerated,
+                                  base::Unretained(this)));
 }
 
 void ReportScheduler::OnReportGenerated(

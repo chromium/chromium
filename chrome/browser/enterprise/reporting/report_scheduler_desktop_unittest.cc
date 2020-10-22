@@ -68,10 +68,11 @@ class MockReportGenerator : public ReportGenerator {
   explicit MockReportGenerator(
       ReportingDelegateFactoryDesktop* delegate_factory)
       : ReportGenerator(delegate_factory) {}
-  void Generate(bool with_profiles, ReportCallback callback) override {
-    OnGenerate(with_profiles, callback);
+  void Generate(ReportType report_type, ReportCallback callback) override {
+    OnGenerate(report_type, callback);
   }
-  MOCK_METHOD2(OnGenerate, void(bool with_profiles, ReportCallback& callback));
+  MOCK_METHOD2(OnGenerate,
+               void(ReportType report_type, ReportCallback& callback));
   MOCK_METHOD0(GenerateBasic, ReportRequests());
 };
 
@@ -225,7 +226,7 @@ TEST_F(ReportSchedulerTest, NoReportWithoutClientId) {
 
 TEST_F(ReportSchedulerTest, UploadReportSucceeded) {
   EXPECT_CALL_SetupRegistration();
-  EXPECT_CALL(*generator_, OnGenerate(/*with_profiles=*/true, _))
+  EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
   EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _))
       .WillOnce(RunOnceCallback<1>(ReportUploader::kSuccess));
@@ -246,7 +247,7 @@ TEST_F(ReportSchedulerTest, UploadReportSucceeded) {
 
 TEST_F(ReportSchedulerTest, UploadReportTransientError) {
   EXPECT_CALL_SetupRegistration();
-  EXPECT_CALL(*generator_, OnGenerate(/*with_profiles=*/true, _))
+  EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
   EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _))
       .WillOnce(RunOnceCallback<1>(ReportUploader::kTransientError));
@@ -267,7 +268,7 @@ TEST_F(ReportSchedulerTest, UploadReportTransientError) {
 
 TEST_F(ReportSchedulerTest, UploadReportPersistentError) {
   EXPECT_CALL_SetupRegistrationWithSetDMToken();
-  EXPECT_CALL(*generator_, OnGenerate(/*with_profiles=*/true, _))
+  EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
   EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _))
       .WillOnce(RunOnceCallback<1>(ReportUploader::kPersistentError));
@@ -293,7 +294,7 @@ TEST_F(ReportSchedulerTest, UploadReportPersistentError) {
 
 TEST_F(ReportSchedulerTest, NoReportGenerate) {
   EXPECT_CALL_SetupRegistrationWithSetDMToken();
-  EXPECT_CALL(*generator_, OnGenerate(/*with_profiles=*/true, _))
+  EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(0)));
   EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _)).Times(0);
 
@@ -321,7 +322,7 @@ TEST_F(ReportSchedulerTest, TimerDelayWithLastUploadTimestamp) {
   SetLastUploadInHour(gap);
 
   EXPECT_CALL_SetupRegistration();
-  EXPECT_CALL(*generator_, OnGenerate(/*with_profiles=*/true, _))
+  EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
   EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _))
       .WillOnce(RunOnceCallback<1>(ReportUploader::kSuccess));
@@ -342,7 +343,7 @@ TEST_F(ReportSchedulerTest, TimerDelayWithLastUploadTimestamp) {
 
 TEST_F(ReportSchedulerTest, TimerDelayWithoutLastUploadTimestamp) {
   EXPECT_CALL_SetupRegistration();
-  EXPECT_CALL(*generator_, OnGenerate(/*with_profiles=*/true, _))
+  EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
   EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _))
       .WillOnce(RunOnceCallback<1>(ReportUploader::kSuccess));
@@ -379,7 +380,7 @@ TEST_F(ReportSchedulerTest,
 
 TEST_F(ReportSchedulerTest, ReportingIsDisabledWhileNewReportIsPosted) {
   EXPECT_CALL_SetupRegistration();
-  EXPECT_CALL(*generator_, OnGenerate(/*with_profiles=*/true, _))
+  EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
   EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _))
       .WillOnce(RunOnceCallback<1>(ReportUploader::kSuccess));
@@ -412,7 +413,7 @@ TEST_F(ReportSchedulerTest, OnUpdate) {
   // kicked off during startup.
   SetLastUploadInHour(base::TimeDelta::FromHours(1));
   EXPECT_CALL_SetupRegistration();
-  EXPECT_CALL(*generator_, OnGenerate(/*with_profiles=*/false, _))
+  EXPECT_CALL(*generator_, OnGenerate(ReportType::kBrowserVersion, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
   EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _))
       .WillOnce(RunOnceCallback<1>(ReportUploader::kSuccess));
@@ -437,7 +438,7 @@ TEST_F(ReportSchedulerTest, DeferredTimer) {
   CreateScheduler();
 
   // An update arrives, triggering report generation and upload (sans profiles).
-  EXPECT_CALL(*generator_, OnGenerate(/*with_profiles=*/false, _))
+  EXPECT_CALL(*generator_, OnGenerate(ReportType::kBrowserVersion, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
 
   // Hang on to the uploader's ReportCallback.
@@ -462,7 +463,7 @@ TEST_F(ReportSchedulerTest, DeferredTimer) {
 
   // Once the previous upload completes, a new report should be generated
   // forthwith.
-  EXPECT_CALL(*generator_, OnGenerate(/*with_profiles=*/true, _))
+  EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
   auto new_uploader = std::make_unique<MockReportUploader>();
   EXPECT_CALL(*new_uploader, SetRequestAndUpload(_, _))
@@ -493,7 +494,7 @@ TEST_F(ReportSchedulerTest, OnNewVersion) {
   SetLastUploadInHour(base::TimeDelta::FromHours(1));
 
   EXPECT_CALL_SetupRegistration();
-  EXPECT_CALL(*generator_, OnGenerate(/*with_profiles=*/false, _))
+  EXPECT_CALL(*generator_, OnGenerate(ReportType::kBrowserVersion, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
   EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _))
       .WillOnce(RunOnceCallback<1>(ReportUploader::kSuccess));
@@ -523,7 +524,7 @@ TEST_F(ReportSchedulerTest, OnNewVersionRegularReport) {
   SetLastUploadInHour(base::TimeDelta::FromHours(25));
 
   EXPECT_CALL_SetupRegistration();
-  EXPECT_CALL(*generator_, OnGenerate(/*with_profiles=*/true, _))
+  EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
   EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _))
       .WillOnce(RunOnceCallback<1>(ReportUploader::kSuccess));

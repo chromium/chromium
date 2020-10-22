@@ -53,7 +53,8 @@ void ReportRequestQueueGenerator::SetMaximumReportSizeForTesting(
 }
 
 ReportRequestQueueGenerator::ReportRequests
-ReportRequestQueueGenerator::Generate(const ReportRequest& basic_request) {
+ReportRequestQueueGenerator::Generate(ReportType report_type,
+                                      const ReportRequest& basic_request) {
   ReportRequests requests;
   size_t basic_request_size = basic_request.ByteSizeLong();
   base::UmaHistogramMemoryKB(kBasicRequestSizeMetricsName,
@@ -64,7 +65,8 @@ ReportRequestQueueGenerator::Generate(const ReportRequest& basic_request) {
     int profile_infos_size =
         basic_request.browser_report().chrome_user_profile_infos_size();
     for (int index = 0; index < profile_infos_size; index++) {
-      GenerateProfileReportWithIndex(basic_request, index, &requests);
+      GenerateProfileReportWithIndex(index, report_type, basic_request,
+                                     &requests);
     }
 
     base::UmaHistogramMemoryKB(kRequestSizeMetricsName,
@@ -77,8 +79,9 @@ ReportRequestQueueGenerator::Generate(const ReportRequest& basic_request) {
 }
 
 void ReportRequestQueueGenerator::GenerateProfileReportWithIndex(
-    const ReportRequest& basic_request,
     int profile_index,
+    ReportType report_type,
+    const ReportRequest& basic_request,
     ReportRequests* requests) {
   DCHECK_LT(profile_index,
             basic_request.browser_report().chrome_user_profile_infos_size());
@@ -87,7 +90,8 @@ void ReportRequestQueueGenerator::GenerateProfileReportWithIndex(
   auto basic_profile =
       basic_request.browser_report().chrome_user_profile_infos(profile_index);
   auto profile_report = profile_report_generator_.MaybeGenerate(
-      base::FilePath::FromUTF8Unsafe(basic_profile.id()), basic_profile.name());
+      base::FilePath::FromUTF8Unsafe(basic_profile.id()), basic_profile.name(),
+      report_type);
 
   // Return if Profile is not loaded and there is no full report.
   if (!profile_report)
