@@ -15,7 +15,35 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
 
+#if defined(USE_OZONE)
+#include "ui/base/ui_base_features.h"
+#endif
+
 namespace ui {
+
+// static
+bool Clipboard::IsSupportedClipboardBuffer(ClipboardBuffer buffer) {
+  switch (buffer) {
+    case ClipboardBuffer::kCopyPaste:
+      return true;
+    case ClipboardBuffer::kSelection:
+#if defined(USE_OZONE) && !defined(OS_CHROMEOS)
+      if (features::IsUsingOzonePlatform()) {
+        ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+        CHECK(clipboard);
+        return clipboard->IsSelectionBufferAvailable();
+      }
+#endif
+#if !defined(OS_WIN) && !defined(OS_APPLE) && !defined(OS_CHROMEOS)
+      return true;
+#else
+      return false;
+#endif
+    case ClipboardBuffer::kDrag:
+      return false;
+  }
+  NOTREACHED();
+}
 
 // static
 void Clipboard::SetAllowedThreads(

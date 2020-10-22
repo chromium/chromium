@@ -255,7 +255,7 @@ void TestClipboard::ClearLastModifiedTime() {
 
 #if defined(USE_OZONE)
 bool TestClipboard::IsSelectionBufferAvailable() const {
-  return false;
+  return true;
 }
 #endif  // defined(USE_OZONE)
 

@@ -133,10 +133,6 @@
 #include "ui/display/win/test/scoped_screen_win.h"
 #endif
 
-#if defined(USE_X11)
-#include "ui/base/ui_base_features.h"
-#endif
-
 using testing::_;
 
 using blink::WebGestureEvent;
@@ -6296,12 +6292,15 @@ TEST_F(InputMethodStateAuraTest, GetTextFromRange) {
   }
 }
 
-#if defined(USE_X11)
 // This test will verify that after selection, the selected text is written to
 // the clipboard from the focused widget.
 TEST_F(InputMethodStateAuraTest, SelectedTextCopiedToClipboard) {
-  if (features::IsUsingOzonePlatform())
+  // Skip test for platforms that do not support selection clipboard.
+  if (!ui::Clipboard::IsSupportedClipboardBuffer(
+          ui::ClipboardBuffer::kSelection)) {
     return;
+  }
+
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   EXPECT_TRUE(!!clipboard);
   std::vector<std::string> texts = {"text0", "text1", "text2", "text3"};
@@ -6324,7 +6323,6 @@ TEST_F(InputMethodStateAuraTest, SelectedTextCopiedToClipboard) {
     EXPECT_EQ(expected_text, result_text);
   }
 }
-#endif
 
 // This test verifies that when any view on the page cancels an ongoing
 // composition, the RenderWidgetHostViewAura will receive the notification and

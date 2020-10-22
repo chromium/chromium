@@ -649,7 +649,11 @@ void ClipboardNonBacked::ReadData(const ClipboardFormatType& format,
 }
 
 bool ClipboardNonBacked::IsSelectionBufferAvailable() const {
+#if defined(OS_CHROMEOS)
   return false;
+#else
+  return true;
+#endif
 }
 
 void ClipboardNonBacked::WritePortableRepresentations(

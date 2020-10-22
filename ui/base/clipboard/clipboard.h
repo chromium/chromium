@@ -47,21 +47,7 @@ class ClipboardDataEndpoint;
 class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
     : public base::ThreadChecker {
  public:
-  static bool IsSupportedClipboardBuffer(ClipboardBuffer buffer) {
-    switch (buffer) {
-      case ClipboardBuffer::kCopyPaste:
-        return true;
-      case ClipboardBuffer::kSelection:
-#if !defined(OS_WIN) && !defined(OS_APPLE) && !defined(OS_CHROMEOS)
-        return true;
-#else
-        return false;
-#endif
-      case ClipboardBuffer::kDrag:
-        return false;
-    }
-    NOTREACHED();
-  }
+  static bool IsSupportedClipboardBuffer(ClipboardBuffer buffer);
 
   // Sets the list of threads that are allowed to access the clipboard.
   static void SetAllowedThreads(
@@ -203,12 +189,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   // Resets the clipboard last modified time to Time::Time().
   virtual void ClearLastModifiedTime();
 
-#if defined(USE_OZONE)
-  // Returns whether the selection buffer is available.  This is true for some
-  // Linux platforms.
-  virtual bool IsSelectionBufferAvailable() const = 0;
-#endif  // defined(USE_OZONE)
-
  protected:
   // PortableFormat designates the type of data to be stored in the clipboard.
   // This designation is shared across all OSes. The system-specific designation
@@ -337,6 +317,12 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   friend struct std::default_delete<Clipboard>;
 
   static base::PlatformThreadId GetAndValidateThreadID();
+
+#if defined(USE_OZONE)
+  // Returns whether the selection buffer is available.  This is true for some
+  // Linux platforms.
+  virtual bool IsSelectionBufferAvailable() const = 0;
+#endif  // defined(USE_OZONE)
 
   // A list of allowed threads. By default, this is empty and no thread checking
   // is done (in the unit test case), but a user (like content) can set which

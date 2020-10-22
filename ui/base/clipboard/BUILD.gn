@@ -107,6 +107,7 @@ component("clipboard") {
     "//mojo/public/cpp/base",
     "//net",
     "//skia",
+    "//ui/base:features",
     "//ui/gfx",
     "//ui/gfx/geometry",
   ]

@@ -149,20 +149,6 @@ void GetFontInfo(gfx::win::SystemFont system_font,
 }
 #endif  // OS_WIN
 
-#if defined(USE_OZONE) || defined(USE_X11)
-bool IsSelectionBufferAvailable() {
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform())
-    return ui::Clipboard::GetForCurrentThread()->IsSelectionBufferAvailable();
-#endif
-#if defined(USE_X11)
-  return true;
-#else
-  return false;
-#endif
-}
-#endif  // defined(USE_OZONE) || defined(USE_X11)
-
 // Set of RenderViewHostImpl* that can be attached as UserData to a
 // RenderProcessHost. Used to keep track of whether any RenderViewHostImpl
 // instances are in the bfcache.
@@ -287,7 +273,9 @@ void RenderViewHostImpl::GetPlatformSpecificPrefs(
   prefs->focus_ring_color = SK_AlphaTRANSPARENT;
 #endif
 #if defined(USE_OZONE) || defined(USE_X11)
-  prefs->selection_clipboard_buffer_available = IsSelectionBufferAvailable();
+  prefs->selection_clipboard_buffer_available =
+      ui::Clipboard::IsSupportedClipboardBuffer(
+          ui::ClipboardBuffer::kSelection);
 #endif
 }
 

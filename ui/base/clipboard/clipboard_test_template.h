@@ -262,10 +262,10 @@ TYPED_TEST(ClipboardTest, RTFTest) {
 
 #if defined(OS_LINUX) && !defined(OS_CHROMEOS)
 TYPED_TEST(ClipboardTest, MultipleBufferTest) {
-#if defined(USE_OZONE)
-  if (!this->clipboard().IsSelectionBufferAvailable())
+  if (!ui::Clipboard::IsSupportedClipboardBuffer(
+          ui::ClipboardBuffer::kSelection)) {
     return;
-#endif
+  }
 
   base::string16 text(ASCIIToUTF16("Standard")), text_result;
   base::string16 markup(ASCIIToUTF16("<string>Selection</string>"));
