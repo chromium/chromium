@@ -2,14 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-function testSlice() {
+// clang-format off
+// #import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
+// clang-format on
+
+/* #export */ function testSlice() {
   var m = new cr.ui.ArrayDataModel([0, 1, 2]);
   assertArrayEquals([0, 1, 2], m.slice());
   assertArrayEquals([1, 2], m.slice(1));
   assertArrayEquals([1], m.slice(1, 2));
 }
 
-function testPush() {
+/* #export */ function testPush() {
   var m = new cr.ui.ArrayDataModel([0, 1, 2]);
 
   var count = 0;
@@ -27,7 +31,7 @@ function testPush() {
   assertEquals(1, count, 'The splice event should only fire once');
 }
 
-function testSplice() {
+/* #export */ function testSplice() {
   function compare(array, args) {
     var m = new cr.ui.ArrayDataModel(array.slice());
     var expected = array.slice();
@@ -46,7 +50,7 @@ function testSplice() {
   compare([1, 2, 3], [5, 3, 1, 2, 3]);
 }
 
-function testPermutation() {
+/* #export */ function testPermutation() {
   function doTest(sourceArray, spliceArgs) {
     var m = new cr.ui.ArrayDataModel(sourceArray.slice());
     var permutation;
@@ -73,7 +77,7 @@ function testPermutation() {
   doTest([1, 2, 3], [0, 3, 1, 2, 3]);
 }
 
-function testUpdateIndexes() {
+/* #export */ function testUpdateIndexes() {
   var m = new cr.ui.ArrayDataModel([1, 2, 3]);
   var changedIndexes = [];
   m.addEventListener('change', function(event) {
@@ -83,7 +87,7 @@ function testUpdateIndexes() {
   assertArrayEquals([0, 1, 2], changedIndexes);
 }
 
-function testReplaceItem() {
+/* #export */ function testReplaceItem() {
   var m = new cr.ui.ArrayDataModel([1, 2, 3]);
   var permutation = null;
   var changeIndex;
@@ -97,3 +101,10 @@ function testReplaceItem() {
   assertEquals(null, permutation);
   assertEquals(1, changeIndex);
 }
+
+window.testSlice = testSlice;
+window.testPush = testPush;
+window.testSplice = testSplice;
+window.testPermutation = testPermutation;
+window.testUpdateIndexes = testUpdateIndexes;
+window.testReplaceItem = testReplaceItem;

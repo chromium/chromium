@@ -441,7 +441,7 @@ group("modulize") {
     "./cr_components:modulize",
     "./cr_components/chromeos:modulize",
     "./cr_elements:modulize",
-    "./js/cr/ui:modulize",
+    "./js/cr:modulize",
     "./resources:modulize",
     "./settings:modulize",
   ]
@@ -454,6 +454,7 @@ group("modulize") {
 js_modulizer("modulize_local") {
   input_files = [
     "cr_focus_row_behavior_test.js",
+    "cr_test.js",
     "fake_chrome_event.js",
     "mock_controller.js",
     "mock_timer.js",
@@ -461,7 +462,8 @@ js_modulizer("modulize_local") {
     "test_store.js",
     "test_util.js",
   ]
-  namespace_rewrites = test_namespace_rewrites
+  namespace_rewrites =
+      test_namespace_rewrites + [ "cr.addSingletonGetter|addSingletonGetter" ]
 }
 
 group("closure_compile") {

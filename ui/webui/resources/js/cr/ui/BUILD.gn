@@ -4,6 +4,7 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("../../../tools/js_modulizer.gni")
+import("../../cr.gni")
 
 group("closure_compile") {
   deps = [
@@ -275,43 +276,7 @@ js_modulizer("modulize") {
     "tabs.js",
     "tree.js",
   ]
-  namespace_rewrites = [
-    "cr.getPropertyDescriptor|getPropertyDescriptor",
-    "cr.PropertyKind|PropertyKind",
-    "cr.dispatchPropertyChange|dispatchPropertyChange",
-    "cr.EventTarget|EventTarget",
-    "cr.ui.Command|Command",
-    "cr.ui.decorate|decorate",
-    "cr.ui.dialogs.BaseDialog|BaseDialog",
-    "cr.ui.dialogs.AlertDialog|AlertDialog",
-    "cr.ui.dialogs.ConfirmDialog|ConfirmDialog",
-    "cr.ui.dialogs.PromptDialog|PromptDialog",
-    "cr.ui.Action|Action",
-    "cr.ui.AnchorType|AnchorType",
-    "cr.ui.ArrayDataModel|ArrayDataModel",
-    "cr.ui.define|crUiDefine",
-    "cr.ui.DeferredAction|DeferredAction",
-    "cr.ui.DragWrapperDelegate|DragWrapperDelegate",
-    "cr.ui.FocusRowDelegate|FocusRowDelegate",
-    "cr.ui.FocusRow|FocusRow",
-    "cr.ui.Grid|Grid",
-    "cr.ui.HideType|HideType",
-    "cr.ui.limitInputWidth|limitInputWidth",
-    "cr.ui.List|List",
-    "cr.ui.ListItem|ListItem",
-    "cr.ui.ListSelectionModel|ListSelectionModel",
-    "cr.ui.ListSelectionController|ListSelectionController",
-    "cr.ui.Menu|Menu",
-    "cr.ui.positionPopupAroundElement|positionPopupAroundElement",
-    "cr.ui.positionPopupAtPoint|positionPopupAtPoint",
-    "cr.ui.swallowDoubleClick|swallowDoubleClick",
-    "cr.ui.Size|Size",
-    "cr.ui.StoreObserver|StoreObserver",
-    "cr.ui.Tab|Tab",
-    "cr.ui.Tree|Tree",
-    "cr.ui.TreeItem|TreeItem",
-    "cr.ui.VirtualFocusRow|VirtualFocusRow",
-  ]
+  namespace_rewrites = cr_namespace_rewrites
 }
 
 js_type_check("ui_resources_modules") {

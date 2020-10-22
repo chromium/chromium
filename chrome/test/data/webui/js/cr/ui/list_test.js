@@ -2,7 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-function testClearPinnedItem() {
+// clang-format off
+// #import {List} from 'chrome://resources/js/cr/ui/list.m.js';
+// #import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
+// clang-format on
+
+/* #export */ function testClearPinnedItem() {
   var list = document.createElement('ul');
   list.style.position = 'absolute';
   list.style.width = '800px';
@@ -24,7 +29,7 @@ function testClearPinnedItem() {
   assertEquals('Item B', list.querySelectorAll('li')[0].textContent);
 }
 
-function testClickOutsideListItem() {
+/* #export */ function testClickOutsideListItem() {
   const list = document.createElement('ul');
   list.style.position = 'absolute';
   list.style.width = '800px';
@@ -57,3 +62,6 @@ function testClickOutsideListItem() {
   assertEquals(item, list.getListItemAncestor(item));
   assertEquals(item, list.getListItemAncestor(span));
 }
+
+window.testClearPinnedItem = testClearPinnedItem;
+window.testClickOutsideListItem = testClickOutsideListItem;

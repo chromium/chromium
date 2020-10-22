@@ -1,0 +1,17 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
+
+group("modulize") {
+  deps = [
+    ":modulize_local",
+    "./ui:modulize",
+  ]
+}
+
+js_modulizer("modulize_local") {
+  input_files = [ "event_target_test.js" ]
+}

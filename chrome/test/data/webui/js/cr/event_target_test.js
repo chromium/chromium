@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/* @const */ var EventTarget;
+// clang-format off
+// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+// clang-format on
 
-function setUp() {
-  EventTarget = cr.EventTarget;
+/* #ignore */ /* @const */ var EventTarget;
+
+/* #export */ function setUp() {
+  /* #ignore */ EventTarget = cr.EventTarget;
 }
 
-function testFunctionListener() {
+/* #export */ function testFunctionListener() {
   var fi = 0;
   function f(e) {
     fi++;
@@ -37,7 +41,7 @@ function testFunctionListener() {
   assertEquals(1, gi, 'Should have been called once');
 }
 
-function testHandleEvent() {
+/* #export */ function testHandleEvent() {
   var fi = 0;
   var f = {
     handleEvent: function(e) {
@@ -70,7 +74,7 @@ function testHandleEvent() {
   assertEquals(1, gi, 'Should have been called once');
 }
 
-function testPreventDefault() {
+/* #export */ function testPreventDefault() {
   var i = 0;
   function prevent(e) {
     i++;
@@ -95,3 +99,8 @@ function testPreventDefault() {
   assertEquals(2, j);
   assertEquals(1, i);
 }
+
+window.setUp = setUp;
+window.testFunctionListener = testFunctionListener;
+window.testHandleEvent = testHandleEvent;
+window.testPreventDefault = testPreventDefault;

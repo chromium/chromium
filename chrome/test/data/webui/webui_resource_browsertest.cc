@@ -51,8 +51,18 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ArrayDataModelTest) {
   LoadTestUrl("js/cr/ui/array_data_model_test.html");
 }
 
+#if defined(OS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ArrayDataModelModuleTest) {
+  LoadTestUrl("?module=js/cr/ui/array_data_model_test.m.js");
+}
+#endif
+
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CrTest) {
   LoadTestUrl("cr_test.html");
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CrModuleTest) {
+  LoadTestUrl("?module=cr_test.m.js");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CrReloadTest) {
@@ -61,6 +71,10 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CrReloadTest) {
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, EventTargetTest) {
   LoadTestUrl("js/cr/event_target_test.html");
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, EventTargetModuleTest) {
+  LoadTestUrl("?module=js/cr/event_target_test.m.js");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, I18nProcessCssTest) {
@@ -122,6 +136,10 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListTest) {
 }
 
 #if defined(OS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListModuleTest) {
+  LoadTestUrl("?module=js/cr/ui/list_test.m.js");
+}
+
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, GridTest) {
   LoadTestUrl("js/cr/ui/grid_test.html");
 }
@@ -159,9 +177,21 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CommandTest) {
   LoadTestUrl("js/cr/ui/command_test.html");
 }
 
+#if defined(OS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CommandModuleTest) {
+  LoadTestUrl("?module=js/cr/ui/command_test.m.js");
+}
+#endif
+
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ContextMenuHandlerTest) {
   LoadTestUrl("js/cr/ui/context_menu_handler_test.html");
 }
+
+#if defined(OS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ContextMenuHandlerModuleTest) {
+  LoadTestUrl("?module=js/cr/ui/context_menu_handler_test.m.js");
+}
+#endif
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MenuButtonTest) {
   LoadTestUrl("js/cr/ui/menu_button_test.html");

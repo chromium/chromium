@@ -2,7 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-function testCommandDefaultPrevented() {
+// #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
+// #import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+
+/* #export */ function setUp() {
+  const cmd = document.createElement('command');
+  cmd.setAttribute('shortcut', 'n|Ctrl');
+  document.body.appendChild(cmd);
+}
+
+/* #export */ function testCommandDefaultPrevented() {
   var calls = 0;
   document.addEventListener('canExecute', function(e) {
     ++calls;
@@ -28,7 +37,7 @@ function createEvent(key, code, keyCode) {
   };
 }
 
-function testShortcuts() {
+/* #export */ function testShortcuts() {
   cr.ui.decorate('command', cr.ui.Command);
   const cmd = document.querySelector('command');
   // US keyboard - qwerty-N should work.
@@ -40,3 +49,7 @@ function testShortcuts() {
   // RU keyboard - qwerty-N (Cyrillic Te) should work.
   assertTrue(cmd.matchesEvent(createEvent('т', 'KeyN', 0x4e)));
 }
+
+window.setUp = setUp;
+window.testCommandDefaultPrevented = testCommandDefaultPrevented;
+window.testShortcuts = testShortcuts;

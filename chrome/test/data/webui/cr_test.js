@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var EventTarget;
+// #import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+
+/* #ignore */ var EventTarget;
 
 function setUp() {
-  EventTarget = cr.EventTarget;
+  /* #ignore */ EventTarget = cr.EventTarget;
 }
 
 function testDefineProperty() {
@@ -218,7 +220,7 @@ function testDefinePropertyBoolAttrEventWithHook() {
   assertTrue(hit);
 }
 
-function testAddSingletonGetter() {
+/* #export */ function testAddSingletonGetter() {
   function Foo() {}
   cr.addSingletonGetter(Foo);
 
@@ -242,7 +244,7 @@ function testAddSingletonGetter() {
       x, z, 'Should return a different object after clearing for testing');
 }
 
-function testDefineWithGetter() {
+/* #export */ function testDefineWithGetter() {
   var v = 0;
   cr.define('foo', function() {
     return {
@@ -257,3 +259,6 @@ function testDefineWithGetter() {
   v = 1;
   assertEquals(1, foo.v);
 }
+
+window.setUp = setUp;
+window.testAddSingletonGetter = testAddSingletonGetter;
