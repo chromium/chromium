@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import './signin_icons.js';
+import 'chrome://resources/cr_elements/icons.m.js';
 import './profile_card_menu.js';
 import './profile_picker_shared_css.js';
 

@@ -33,7 +33,6 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
                           IDR_PROFILE_CUSTOMIZATION_APP_JS);
   source->AddResourcePath("profile_customization_browser_proxy.js",
                           IDR_PROFILE_CUSTOMIZATION_BROWSER_PROXY_JS);
-  source->AddResourcePath("signin_icons.js", IDR_SIGNIN_ICONS_JS);
   source->AddResourcePath("signin_shared_css.js", IDR_SIGNIN_SHARED_CSS_JS);
   source->AddResourcePath("signin_vars_css.js", IDR_SIGNIN_VARS_CSS_JS);
 

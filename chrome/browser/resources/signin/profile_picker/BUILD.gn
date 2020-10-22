@@ -12,7 +12,6 @@ import("../../optimize_webui.gni")
 preprocess_folder = "preprocessed"
 preprocess_manifest = "preprocessed_manifest.json"
 preprocess_gen_manifest = "preprocessed_gen_manifest.json"
-preprocess_shared_manifest = "preprocessed_shared_manifest.json"
 
 if (optimize_webui) {
   build_manifest = "build_manifest.json"
@@ -34,7 +33,6 @@ if (optimize_webui) {
     deps = [
       ":preprocess",
       ":preprocess_generated",
-      ":shared",
       "../../../../../ui/webui/resources:preprocess",
     ]
     excludes = [
@@ -70,12 +68,10 @@ generate_grd("build_grd") {
     deps = [
       ":preprocess",
       ":preprocess_generated",
-      ":shared",
     ]
     manifest_files = [
       "$target_gen_dir/$preprocess_manifest",
       "$target_gen_dir/$preprocess_gen_manifest",
-      "$target_gen_dir/$preprocess_shared_manifest",
     ]
   }
 }
@@ -93,13 +89,6 @@ preprocess_grit("preprocess") {
     "ensure_lazy_loaded.js",
     "manage_profiles_browser_proxy.js",
   ]
-}
-
-preprocess_grit("shared") {
-  in_folder = "../"
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_shared_manifest"
-  in_files = [ "signin_icons.js" ]
 }
 
 preprocess_grit("preprocess_generated") {

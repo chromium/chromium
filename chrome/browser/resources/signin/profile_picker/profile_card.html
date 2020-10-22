@@ -28,22 +28,23 @@
   }
 
   #iconContainer {
-    --iron-icon-height: 18px;
-    --iron-icon-width: 24px;
-    --business-icon-size: 24px;
-    --business-icon-border-size: 2px;
+    --iron-icon-height: 16px;
+    --iron-icon-width: 16px;
+    --domain-icon-size: 24px;
+    --domain-icon-border-size: 2px;
     align-items: center;
     background-color: white;
-    border: var(--business-icon-border-size) solid var(--card-background-color);
+    border: var(--domain-icon-border-size) solid var(--card-background-color);
     border-radius: 50%;
     box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px rgba(60, 64, 67, 0.15);
     display: flex;
-    height: var(--business-icon-size);
+    justify-content: center;
+    height: var(--domain-icon-size);
     position: absolute;
     right: -6px;
-    top: calc(var(--avatar-icon-size) - var(--business-icon-size)
-      - var(--business-icon-border-size));
-    width: var(--business-icon-size);
+    top: calc(var(--avatar-icon-size) - var(--domain-icon-size)
+      - var(--domain-icon-border-size));
+    width: var(--domain-icon-size);
   }
 
   :host-context([dir='rtl']) #iconContainer {
@@ -83,7 +84,7 @@
   <div id="avatarContainer">
     <img class="profile-avatar" alt="" src="[[profileState.avatarIcon]]">
     <div id="iconContainer" hidden="[[!profileState.isManaged]]">
-      <iron-icon icon="signin:business"></iron-icon>
+      <iron-icon icon="cr:domain"></iron-icon>
     </div>
   </div>
   <div class="profile-card-info">[[profileState.gaiaName]]</div>
