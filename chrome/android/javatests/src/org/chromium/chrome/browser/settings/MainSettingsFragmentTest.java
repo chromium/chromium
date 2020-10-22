@@ -418,6 +418,20 @@ public class MainSettingsFragmentTest {
     }
 
     @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    @Features.EnableFeatures({ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY})
+    public void testSyncPromoView() throws Exception {
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        launchSettingsActivity();
+
+        Preference syncPromoPreference = mMainSettings.findPreference(MainSettings.PREF_SYNC_PROMO);
+        CriteriaHelper.pollUiThread(() -> syncPromoPreference.isVisible());
+        View syncPromoView = mMainSettings.getView().findViewById(R.id.signin_promo_view_container);
+        mRenderTestRule.render(syncPromoView, "main_settings_sync_promo");
+    }
+
+    @Test
     @SmallTest
     public void testRemoveSettings() {
         // Disable night mode
