@@ -22,6 +22,22 @@ class TrashDirs {
 }
 
 /**
+ * Result from calling Trash.removeFileOrDirectory().
+ */
+class TrashItem {
+  /**
+   * @param {string} name
+   * @param {!Entry} filesEntry
+   * @param {!FileEntry} infoEntry
+   */
+  constructor(name, filesEntry, infoEntry) {
+    this.name = name;
+    this.filesEntry = filesEntry;
+    this.infoEntry = infoEntry;
+  }
+}
+
+/**
  * Implementation of trash.
  */
 class Trash {
@@ -63,8 +79,8 @@ class Trash {
    * @param {!Entry} entry The entry to remove.
    * @param {boolean} permanentlyDelete If true, entry is deleted, else it is
    *     moved to trash.
-   * @return {!Promise<!Entry|undefined>} Promise which resolves when entry is
-   *     removed, rejects with DOMError.
+   * @return {!Promise<!TrashItem|undefined>} Promise which resolves when entry
+   *     is removed, rejects with DOMError.
    */
   removeFileOrDirectory(volumeManager, entry, permanentlyDelete) {
     if (!permanentlyDelete && this.shouldMoveToTrash_(volumeManager, entry)) {
@@ -120,18 +136,24 @@ class Trash {
 
   /**
    * Write /.Trash/info/<name>.trashinfo file.
+   * Creates empty /.Trash/info/<name>.trashinfo.tmp file, writes to file,
+   * then moves to /.Trash/info/<name>.trashinfo. By using mv as the final
+   * operation we guarantee that another process such as removing old items
+   * will not read an incomplete *.trashinfo file.
    *
-   * @param {!Entry} trashInfoDir /.Trash/info directory.
+   * @param {!DirectoryEntry} trashInfoDir /.Trash/info directory.
    * @param {string} name name for <name>.trashinfo file.
    * @param {string} path path to use in .trashinfo file.
-   * @return {!Promise<void>}
+   * @return {!Promise<!FileEntry>}
    * @private
    */
-  writeTrashInfoFile_(trashInfoDir, name, path) {
-    return new Promise((resolve, reject) => {
-      trashInfoDir.getFile(name + '.trashinfo', {create: true}, infoFile => {
+  async writeTrashInfoFile_(trashInfoDir, name, path) {
+    const tmpName = `${name}.trashinfo.tmp`;
+    const finalName = `${name}.trashinfo`;
+    const tmpFile = await new Promise((resolve, reject) => {
+      trashInfoDir.getFile(tmpName, {create: true}, infoFile => {
         infoFile.createWriter(writer => {
-          writer.onwriteend = resolve;
+          writer.onwriteend = resolve.bind(null, infoFile);
           writer.onerror = reject;
           const info = `[Trash Info]\nPath=${path}\nDeletionDate=${
               new Date().toISOString()}`;
@@ -139,15 +161,17 @@ class Trash {
         }, reject);
       }, reject);
     });
+    return this.moveTo_(tmpFile, trashInfoDir, finalName);
   }
 
   /**
    * Promise wrapper for FileSystemEntry.moveTo().
    *
-   * @param {!Entry} srcEntry source entry to move.
+   * @param {!T} srcEntry source entry to move.
    * @param {!DirectoryEntry} dstDirEntry destination directory.
    * @param {string} name name of entry in destination directory.
-   * @return {!Promise<!Entry>} Promise which resolves with moved entry.
+   * @return {!Promise<!T>} Promise which resolves with moved entry.
+   * @template T
    * @private
    */
   moveTo_(srcEntry, dstDirEntry, name) {
@@ -162,14 +186,63 @@ class Trash {
    *
    * @param {!VolumeManager} volumeManager
    * @param {!Entry} entry The entry to remove.
-   * @return {!Promise<!Entry>}
+   * @return {!Promise<!TrashItem>}
    * @private
    */
   async trashLocalFileOrDirectory_(volumeManager, entry) {
     const trashDirs = await this.getTrashDirs_(volumeManager);
     const name =
         await fileOperationUtil.deduplicatePath(trashDirs.files, entry.name);
-    await this.writeTrashInfoFile_(trashDirs.info, name, entry.fullPath);
-    return this.moveTo_(entry, trashDirs.files, name);
+
+    // Write trashinfo first, then only move file if info write succeeds.
+    // If any step fails, the file will be unchanged, and any partial trashinfo
+    // file created will be cleaned up when we remove old items.
+    // TODO(crbug.com/953310): Remove old items.
+    const infoEntry =
+        await this.writeTrashInfoFile_(trashDirs.info, name, entry.fullPath);
+    const filesEntry = await this.moveTo_(entry, trashDirs.files, name);
+    return new TrashItem(entry.name, filesEntry, infoEntry);
+  }
+
+  /**
+   * Restores the specified trash item.
+   *
+   * @param {!VolumeManager} volumeManager
+   * @param {!TrashItem} trashItem item in trash.
+   * @return {Promise<void>} Promise which resolves when file is restored.
+   */
+  async restore(volumeManager, trashItem) {
+    // Read Path from info entry.
+    const file = await new Promise(
+        (resolve, reject) => trashItem.infoEntry.file(resolve, reject));
+    const text = await file.text();
+    const found = text.match(/^Path=\/(.*)/m);
+    if (!found) {
+      throw new DOMException(`No Path found to restore in ${
+          trashItem.infoEntry.fullPath}, text=${text}`);
+    }
+    const path = found[1];
+    const parts = path.split('/');
+
+    // Move to last directory in path, making sure dirs are created if needed.
+    let dir = trashItem.filesEntry.filesystem.root;
+    const cd = (directory, path) => {
+      return new Promise((resolve, reject) => {
+        directory.getDirectory(path, {create: true}, resolve, reject);
+      });
+    };
+    for (let i = 0; i < parts.length - 1; i++) {
+      dir = await cd(dir, parts[i]);
+    }
+
+    // Restore filesEntry first, then remove its trash infoEntry.
+    // If any step fails, then either we still have the file in trash with a
+    // valid trashinfo, or file is restored and trashinfo will be cleaned up
+    // when we remove old items.
+    // TODO(crbug.com/953310): Remove old items.
+    const name =
+        await fileOperationUtil.deduplicatePath(dir, parts[parts.length - 1]);
+    await this.moveTo_(trashItem.filesEntry, dir, name);
+    await this.permanentlyDeleteFileOrDirectory_(trashItem.infoEntry);
   }
 }

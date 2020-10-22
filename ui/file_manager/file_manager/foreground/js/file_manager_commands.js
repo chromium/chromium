@@ -1180,6 +1180,35 @@ CommandHandler.COMMANDS_['delete'] = new class extends Command {
 };
 
 /**
+ * Register listener on background for delete event, and show undo toast if
+ * files are in trash and can be restored.
+ * @param {!CommandHandlerDeps} fileManager
+ */
+CommandHandler.registerUndoDeleteToast = function(fileManager) {
+  /**
+   * @param {!FileOperationProgressEvent} e
+   */
+  const onDeleted = (e) => {
+    if (e.reason === 'BEGIN' || e.reason === 'PROGRESS' ||
+        !e.trashedItems.length) {
+      return;
+    }
+    const message = e.trashedItems.length === 1 ?
+        strf('UNDO_DELETE_ONE', e.trashedItems[0].name) :
+        strf('UNDO_DELETE_SOME', e.trashedItems.length);
+    fileManager.ui.toast.show(message, {
+      text: str('UNDO_DELETE_ACTION_LABEL'),
+      callback: () => {
+        fileManager.fileOperationManager.restoreDeleted(e.trashedItems);
+      }
+    });
+  };
+
+  util.addEventListenerToBackgroundComponent(
+      assert(fileManager.fileOperationManager), 'delete', onDeleted);
+};
+
+/**
  * Pastes files from clipboard.
  */
 CommandHandler.COMMANDS_['paste'] = new class extends Command {

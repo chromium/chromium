@@ -15,7 +15,7 @@ loadTimeData.overrideValues({
   'FILES_NG_ENABLED': true,
   'FILES_SINGLE_PARTITION_FORMAT_ENABLED': false,
   'FILES_TRANSFER_DETAILS_ENABLED': true,
-  'FILES_TRASH_ENABLED': false,
+  'FILES_TRASH_ENABLED': true,
   'FILTERS_IN_RECENTS_ENABLED': false,
   'GOOGLE_DRIVE_OVERVIEW_URL':
       'https://support.google.com/chromebook/?p=filemanager_drive',

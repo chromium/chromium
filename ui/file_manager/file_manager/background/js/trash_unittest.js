@@ -157,3 +157,53 @@ async function testTrashLocalFileOrDirectory(done) {
 
   done();
 }
+
+/**
+ * Test restore().
+ */
+async function testRestore(done) {
+  window.loadTimeData.data['FILES_TRASH_ENABLED'] = true;
+  const trash = new Trash();
+  const deletePermanently = false;
+  const downloads = volumeManager.getCurrentProfileVolumeInfo(
+      VolumeManagerCommon.VolumeType.DOWNLOADS);
+  const fs = downloads.fileSystem;
+
+  const dir = MockDirectoryEntry.create(fs, '/dir');
+  const file1 = MockFileEntry.create(fs, '/dir/file1', null, new Blob(['f1']));
+  const file2 = MockFileEntry.create(fs, '/dir/file2', null, new Blob(['f2']));
+  const file3 = MockFileEntry.create(fs, '/dir/file3', null, new Blob(['f3']));
+
+  // Move /dir/file1 to trash.
+  const file1TrashItem = await trash.removeFileOrDirectory(
+      volumeManager, file1, deletePermanently);
+  assertEquals(9, Object.keys(fs.entries).length);
+  assertFalse(!!fs.entries['/dir/file1']);
+  assertEquals('file1', file1TrashItem.name);
+  assertEquals(fs.entries['/.Trash/files/file1'], file1TrashItem.filesEntry);
+  assertEquals(
+      fs.entries['/.Trash/info/file1.trashinfo'], file1TrashItem.infoEntry);
+
+  // Restore it.
+  await trash.restore(volumeManager, assert(file1TrashItem));
+  assertEquals(8, Object.keys(fs.entries).length);
+  assertTrue(!!fs.entries['/dir/file1']);
+
+  // Move /dir/file2 to trash, recreate a new /dir/file2,
+  // original should restore to '/dir/file2 (1)'.
+  const file2TrashItem = await trash.removeFileOrDirectory(
+      volumeManager, file2, deletePermanently);
+  assertFalse(!!fs.entries['/dir/file2']);
+  assertEquals(9, Object.keys(fs.entries).length);
+  MockFileEntry.create(fs, '/dir/file2', null, new Blob(['f2v2']));
+  assertEquals(10, Object.keys(fs.entries).length);
+  await trash.restore(volumeManager, assert(file2TrashItem));
+  assertEquals(9, Object.keys(fs.entries).length);
+  assertTrue(!!fs.entries['/dir/file2 (1)']);
+  let text = await fs.entries['/dir/file2'].content.text();
+  assertEquals('f2v2', text);
+  text = await fs.entries['/dir/file2 (1)'].content.text();
+  assertEquals('f2', text);
+
+  done();
+}

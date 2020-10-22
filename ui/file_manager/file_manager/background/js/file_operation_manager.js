@@ -522,7 +522,14 @@ class FileOperationManagerImpl {
    * @param {Array<!fileOperationUtil.TrashItem>} trashItems The trash items.
    */
   restoreDeleted(trashItems) {
-    // TODO(crbug.com/953310): to be implemented in crrev.com/c/2469340.
+    const volumeManager = assert(this.volumeManager_);
+    while (trashItems.length) {
+      this.trash_
+          .restore(
+              volumeManager,
+              /** @type {!TrashItem} */ (trashItems.pop()))
+          .catch(e => console.error('Error restoring deleted file', e));
+    }
   }
 
   /**

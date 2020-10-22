@@ -56,3 +56,31 @@ testcase.trashMoveToTrash = async () => {
   await remoteCall.waitForElement(
       appId, '#file-list [file-name="hello.txt.trashinfo"]');
 };
+
+/**
+ * Delete files then restore via toast 'Undo'.
+ */
+testcase.trashRestore = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
+
+  // Select hello.txt.
+  await remoteCall.waitAndClickElement(
+      appId, '#file-list [file-name="hello.txt"]');
+
+  // Delete item and confirm delete.
+  await remoteCall.waitAndClickElement(appId, '#delete-button');
+  await remoteCall.waitAndClickElement(
+      appId, '.files-confirm-dialog .cr-dialog-ok');
+
+  // Wait for file to be removed from list.
+  await remoteCall.waitForElementLost(
+      appId, '#file-list [file-name="hello.txt"]');
+
+  // Wait for the undo toast and click undo.
+  await remoteCall.waitAndClickElement(
+      appId, ['#toast', '#action:not([hidden])']);
+
+  // Wait for file to reappear in list.
+  await remoteCall.waitForElement(appId, '#file-list [file-name="hello.txt"]');
+};

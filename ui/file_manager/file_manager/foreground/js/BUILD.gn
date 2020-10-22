@@ -412,8 +412,11 @@ js_library("file_manager_commands") {
     "//ui/webui/resources/cr_elements/cr_input:cr_input",
   ]
   externs_list = [
+    "//ui/file_manager/externs/background/file_operation_manager.js",
     "//ui/file_manager/externs/background/progress_center.js",
     "//ui/file_manager/externs/command_handler_deps.js",
+    "//ui/file_manager/externs/file_operation_progress_event.js",
+    "//ui/file_manager/externs/file_operation_util.js",
   ]
 }
 

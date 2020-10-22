@@ -702,6 +702,7 @@ class FileManager extends cr.EventTarget {
     this.document_.addEventListener(
         'command',
         this.ui_.listContainer.clearHover.bind(this.ui_.listContainer));
+    CommandHandler.registerUndoDeleteToast(this);
   }
 
   /**
