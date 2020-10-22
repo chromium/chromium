@@ -334,7 +334,7 @@ public class AwMetricsIntegrationTest {
 
             // Load a page to ensure the renderer process is created.
             mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                    embeddedTestServer.getURL("/simple_page.html"));
+                    embeddedTestServer.getURL("/android_webview/test/data/hello_world.html"));
             helper.waitForCallback(finalMetricsCollectedCount, 1);
 
             // At this point we know one of two things must be true:
@@ -353,7 +353,7 @@ public class AwMetricsIntegrationTest {
             // have been copied into the browser process.
 
             mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                    embeddedTestServer.getURL("/simple_page.html"));
+                    embeddedTestServer.getURL("/android_webview/test/data/hello_world.html"));
             helper.waitForCallback(finalMetricsCollectedCount, 2);
 
             Assert.assertEquals(1,

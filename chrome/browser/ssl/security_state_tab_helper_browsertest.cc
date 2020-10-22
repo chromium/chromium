@@ -2262,8 +2262,8 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest, FormSecurityLevelHistogram) {
   ASSERT_TRUE(broken_https_server.Start());
 
   // Make the form target the expired certificate server.
-  net::HostPortPair host_port_pair =
-      net::HostPortPair::FromURL(broken_https_server.GetURL("/google.html"));
+  net::HostPortPair host_port_pair = net::HostPortPair::FromURL(
+      broken_https_server.GetURL("/ssl/google.html"));
   std::string replacement_path = GetFilePathWithHostAndPortReplacement(
       "/ssl/page_with_form_targeting_insecure_url.html", host_port_pair);
   ui_test_utils::NavigateToURL(browser(),
@@ -2301,7 +2301,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest, SafetyTipFormHistogram) {
     // Use a different host for targeting the form so that a Safety Tip doesn't
     // trigger on the form submission navigation.
     net::HostPortPair host_port_pair = net::HostPortPair::FromURL(
-        form_server.GetURL("example.test", "/google.html"));
+        form_server.GetURL("example.test", "/ssl/google.html"));
     std::string replacement_path = GetFilePathWithHostAndPortReplacement(
         "/ssl/page_with_form_targeting_http_url.html", host_port_pair);
     ui_test_utils::NavigateToURL(browser(), server.GetURL(replacement_path));

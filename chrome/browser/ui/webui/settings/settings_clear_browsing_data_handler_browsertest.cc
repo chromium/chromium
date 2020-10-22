@@ -79,7 +79,7 @@ class ClearBrowsingDataHandlerBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(ClearBrowsingDataHandlerBrowserTest, GetInstalledApps) {
-  GURL url(https_server()->GetURL("/"));
+  GURL url(https_server()->GetURL("/title1.html"));
   InstallAndLaunchApp(url);
   base::ListValue args;
   args.AppendString(kWebUiFunctionName);

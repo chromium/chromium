@@ -604,7 +604,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
   BlockHost(kExampleHost);
 
   GURL blocked_url = embedded_test_server()->GetURL(
-      kExampleHost, "/supervised_user/with_frames.html");
+      kExampleHost, "/supervised_user/with_iframes.html");
   ui_test_utils::NavigateToURL(browser(), blocked_url);
   EXPECT_TRUE(IsInterstitialBeingShownInMainFrame(browser()));
 
@@ -623,7 +623,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
 
   // Navigate to another allowed url.
   GURL allowed_url = embedded_test_server()->GetURL(
-      kExampleHost2, "/supervised_user/with_frames.html");
+      kExampleHost2, "/supervised_user/with_iframes.html");
   ui_test_utils::NavigateToURL(browser(), allowed_url);
   EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
 

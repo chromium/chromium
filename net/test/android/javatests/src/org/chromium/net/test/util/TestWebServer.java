@@ -416,13 +416,13 @@ public class TestWebServer extends WebServer {
                 copyHeadersToResponse = false;
             }
         } else if (response.mIsNoContent) {
-            stream.println("HTTP/1.0 200 OK");
+            stream.println("HTTP/1.0 204 No Content");
             copyHeadersToResponse = false;
         } else if (response.mIsRedirect) {
             stream.println("HTTP/1.0 302 Found");
             textBody.append(String.format(bodyTemplate, "Found", "Found"));
         } else if (response.mIsEmptyResponse) {
-            stream.println("HTTP/1.0 403 Forbidden");
+            stream.println("HTTP/1.0 200 OK");
             copyHeadersToResponse = false;
         } else {
             if (response.mResponseAction != null) response.mResponseAction.run();

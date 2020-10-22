@@ -230,7 +230,7 @@ public class PopupWindowTest {
                         + "}</script>");
 
         mActivityTestRule.triggerPopup(mParentContents, mParentContentsClient, mWebServer,
-                parentPageHtml, null /* 204 response */, popupPath, "tryOpenWindow()");
+                parentPageHtml, "<html></html>", popupPath, "tryOpenWindow()");
         PopupInfo popupInfo = mActivityTestRule.createPopupContents(mParentContents);
         TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
                 popupInfo.popupContentsClient.getOnPageFinishedHelper();

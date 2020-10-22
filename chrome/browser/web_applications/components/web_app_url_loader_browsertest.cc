@@ -44,14 +44,18 @@ std::unique_ptr<net::test_server::HttpResponse> HandleServerRedirect(
 }
 
 // Run |handler| on requests that exactly match the |relative_url|.
-std::unique_ptr<net::test_server::HttpResponse> HandleMatchingRequest(
+std::unique_ptr<net::test_server::HttpResponse>
+HandleMatchingRequestOrReturnEmptyPage(
     const std::string& relative_url,
     const net::EmbeddedTestServer::HandleRequestCallback& handler,
     const net::test_server::HttpRequest& request) {
   GURL match = request.GetURL().Resolve(relative_url);
   if (request.GetURL() == match)
     return handler.Run(request);
-  return nullptr;
+
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HTTP_OK);
+  return http_response;
 }
 
 class WebAppUrlLoaderTest : public InProcessBrowserTest {
@@ -100,9 +104,9 @@ class WebAppUrlLoaderTest : public InProcessBrowserTest {
   // Set up a server redirect from |src_relative| (a relative URL) to |dest|.
   // Must be called before the server is started.
   void SetupRedirect(const std::string& src_relative, const std::string& dest) {
-    embedded_test_server()->RegisterRequestHandler(
-        base::BindRepeating(&HandleMatchingRequest, src_relative,
-                            base::BindRepeating(&HandleServerRedirect, dest)));
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        &HandleMatchingRequestOrReturnEmptyPage, src_relative,
+        base::BindRepeating(&HandleServerRedirect, dest)));
   }
 
  private:

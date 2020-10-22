@@ -196,7 +196,7 @@ public class AwNetworkConfigurationTest {
         mTestServer = EmbeddedTestServer.createAndStartServer(
                 InstrumentationRegistry.getInstrumentation().getContext());
         try {
-            final String url = mTestServer.getURL("/any-http-url-will-suffice.html");
+            final String url = mTestServer.getURL("/android_webview/test/data/hello_world.html");
             mActivityTestRule.loadUrlSync(
                     mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
             AwWebResourceRequest request =

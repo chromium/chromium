@@ -453,7 +453,8 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, NoPopupsLaunchWhenTabIsClosed) {
       embedded_test_server()->GetURL("/popup_blocker/popup-on-unload.html"));
   ui_test_utils::NavigateToURL(browser(), url);
 
-  GURL url2(embedded_test_server()->GetURL("/popup_blocker/"));
+  GURL url2(
+      embedded_test_server()->GetURL("/popup_blocker/popup-success.html"));
   ui_test_utils::NavigateToURL(browser(), url2);
 
   // Expect no popup.
@@ -520,8 +521,9 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerSpecialPolicyBrowserTest,
   DisableProactiveBrowsingInstanceSwapFor(
       browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
 
-  NavigateAndCheckPopupShown(embedded_test_server()->GetURL("/popup_blocker/"),
-                             kExpectPopup);
+  NavigateAndCheckPopupShown(
+      embedded_test_server()->GetURL("/popup_blocker/popup-success.html"),
+      kExpectPopup);
 }
 
 // Verify that when you unblock popup, the popup shows in history and omnibox.
