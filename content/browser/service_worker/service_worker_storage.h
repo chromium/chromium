@@ -110,10 +110,6 @@ class CONTENT_EXPORT ServiceWorkerStorage {
       scoped_refptr<base::SequencedTaskRunner> database_task_runner,
       storage::QuotaManagerProxy* quota_manager_proxy);
 
-  // Used for DeleteAndStartOver. Creates new storage based on |old_storage|.
-  static std::unique_ptr<ServiceWorkerStorage> Create(
-      ServiceWorkerStorage* old_storage);
-
   // Returns all origins which have service worker registrations.
   void GetRegisteredOrigins(GetRegisteredOriginsCallback callback);
 

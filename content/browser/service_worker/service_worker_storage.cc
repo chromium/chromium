@@ -105,14 +105,6 @@ std::unique_ptr<ServiceWorkerStorage> ServiceWorkerStorage::Create(
       quota_manager_proxy));
 }
 
-// static
-std::unique_ptr<ServiceWorkerStorage> ServiceWorkerStorage::Create(
-    ServiceWorkerStorage* old_storage) {
-  return base::WrapUnique(new ServiceWorkerStorage(
-      old_storage->user_data_directory_, old_storage->database_task_runner_,
-      old_storage->quota_manager_proxy_.get()));
-}
-
 void ServiceWorkerStorage::GetRegisteredOrigins(
     GetRegisteredOriginsCallback callback) {
   switch (state_) {

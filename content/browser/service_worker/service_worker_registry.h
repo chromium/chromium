@@ -83,8 +83,6 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
 
   ~ServiceWorkerRegistry();
 
-  ServiceWorkerStorage* storage() const;
-
   // Creates a new in-memory representation of registration. Can be null when
   // storage is disabled. This method must be called after storage is
   // initialized.

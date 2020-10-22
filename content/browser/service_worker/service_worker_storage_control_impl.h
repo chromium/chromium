@@ -36,10 +36,6 @@ class CONTENT_EXPORT ServiceWorkerStorageControlImpl
 
   ~ServiceWorkerStorageControlImpl() override;
 
-  // TODO(crbug.com/1055677): Remove this accessor after all
-  // ServiceWorkerStorage method calls are replaced with mojo methods.
-  ServiceWorkerStorage* storage() const { return storage_.get(); }
-
   void Bind(mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl>
                 receiver);
 

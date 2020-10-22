@@ -145,7 +145,10 @@ ServiceWorkerRegistry::ServiceWorkerRegistry(
     ServiceWorkerRegistry* old_registry)
     : context_(context),
       storage_control_(std::make_unique<ServiceWorkerStorageControlImpl>(
-          ServiceWorkerStorage::Create(old_registry->storage()))),
+          ServiceWorkerStorage::Create(
+              old_registry->user_data_directory_,
+              old_registry->database_task_runner_,
+              old_registry->quota_manager_proxy_.get()))),
       special_storage_policy_(old_registry->special_storage_policy_) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   DCHECK(context_);
@@ -153,10 +156,6 @@ ServiceWorkerRegistry::ServiceWorkerRegistry(
 }
 
 ServiceWorkerRegistry::~ServiceWorkerRegistry() = default;
-
-ServiceWorkerStorage* ServiceWorkerRegistry::storage() const {
-  return storage_control_->storage();
-}
 
 void ServiceWorkerRegistry::CreateNewRegistration(
     blink::mojom::ServiceWorkerRegistrationOptions options,
