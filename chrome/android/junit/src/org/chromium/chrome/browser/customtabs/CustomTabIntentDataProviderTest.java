@@ -8,31 +8,49 @@ import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK;
 import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Bundle;
 
 import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSession;
 import androidx.browser.trusted.ScreenOrientation;
 import androidx.browser.trusted.TrustedWebActivityIntentBuilder;
+import androidx.test.core.app.ApplicationProvider;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.device.mojom.ScreenOrientationLockType;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 /** Tests for {@link CustomTabIntentDataProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@Features.EnableFeatures({ChromeFeatureList.SHARE_BY_DEFAULT_IN_CCT})
 public class CustomTabIntentDataProviderTest {
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
+
+    private static final String BUTTON_DESCRIPTION = "buttonDescription";
 
     @Test
     public void colorSchemeParametersAreRetrieved() {
@@ -52,10 +70,10 @@ public class CustomTabIntentDataProviderTest {
                 .build()
                 .intent;
 
-        CustomTabIntentDataProvider lightProvider = new CustomTabIntentDataProvider(intent,
-                RuntimeEnvironment.application, COLOR_SCHEME_LIGHT);
-        CustomTabIntentDataProvider darkProvider = new CustomTabIntentDataProvider(intent,
-                RuntimeEnvironment.application, COLOR_SCHEME_DARK);
+        CustomTabIntentDataProvider lightProvider = new CustomTabIntentDataProvider(
+                intent, ApplicationProvider.getApplicationContext(), COLOR_SCHEME_LIGHT);
+        CustomTabIntentDataProvider darkProvider = new CustomTabIntentDataProvider(
+                intent, ApplicationProvider.getApplicationContext(), COLOR_SCHEME_DARK);
 
         assertEquals((int) lightParams.toolbarColor, lightProvider.getToolbarColor());
         assertEquals((int) darkParams.toolbarColor, darkProvider.getToolbarColor());
@@ -71,8 +89,8 @@ public class CustomTabIntentDataProviderTest {
      * orientation.
      */
     @Test
-    public void defaultOrientationIsSet() throws Exception {
-        Context mContext = RuntimeEnvironment.application;
+    public void defaultOrientationIsSet() {
+        Context mContext = ApplicationProvider.getApplicationContext();
         CustomTabsSession mSession = CustomTabsSession.createMockSessionForTesting(
                 new ComponentName(mContext, ChromeLauncherActivity.class));
 
@@ -94,8 +112,148 @@ public class CustomTabIntentDataProviderTest {
                 customTabIntentDataProvider.getDefaultOrientation());
     }
 
+    @Test
+    public void shareStateDefault_noButtonInToolbar_hasShareInToolbar() {
+        Context context = ApplicationProvider.getApplicationContext();
+        Intent intent = new Intent().putExtra(
+                CustomTabsIntent.EXTRA_SHARE_STATE, CustomTabsIntent.SHARE_STATE_DEFAULT);
+
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, context, COLOR_SCHEME_LIGHT);
+
+        assertEquals(context.getResources().getString(R.string.share),
+                dataProvider.getCustomButtonsOnToolbar().get(0).getDescription());
+    }
+
+    @Test
+    public void shareStateDefault_buttonInToolbar_hasShareItemInMenu() {
+        Context context = ApplicationProvider.getApplicationContext();
+        Intent intent = new Intent()
+                                .putExtra(CustomTabsIntent.EXTRA_SHARE_STATE,
+                                        CustomTabsIntent.SHARE_STATE_DEFAULT)
+                                .putExtra(CustomTabsIntent.EXTRA_ACTION_BUTTON_BUNDLE,
+                                        createActionButtonInToolbarBundle());
+
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, context, COLOR_SCHEME_LIGHT);
+
+        assertEquals(BUTTON_DESCRIPTION,
+                dataProvider.getCustomButtonsOnToolbar().get(0).getDescription());
+        assertTrue(dataProvider.shouldShowShareMenuItem());
+    }
+
+    @Test
+    public void shareStateDefault_buttonInToolbarAndCustomMenuItems_hasNoShare() {
+        Context context = ApplicationProvider.getApplicationContext();
+        Intent intent =
+                new Intent()
+                        .putExtra(CustomTabsIntent.EXTRA_SHARE_STATE,
+                                CustomTabsIntent.SHARE_STATE_DEFAULT)
+                        .putExtra(CustomTabsIntent.EXTRA_ACTION_BUTTON_BUNDLE,
+                                createActionButtonInToolbarBundle())
+                        .putExtra(CustomTabsIntent.EXTRA_MENU_ITEMS,
+                                new ArrayList<>(Collections.singletonList(createMenuItemBundle())));
+
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, context, COLOR_SCHEME_LIGHT);
+
+        assertEquals(BUTTON_DESCRIPTION,
+                dataProvider.getCustomButtonsOnToolbar().get(0).getDescription());
+        assertFalse(dataProvider.shouldShowShareMenuItem());
+    }
+
+    @Test
+    public void shareStateOn_buttonInToolbar_hasShareItemInMenu() {
+        Context context = ApplicationProvider.getApplicationContext();
+        ArrayList<Bundle> buttons =
+                new ArrayList<>(Collections.singleton(createActionButtonInToolbarBundle()));
+        Intent intent = new Intent()
+                                .putExtra(CustomTabsIntent.EXTRA_SHARE_STATE,
+                                        CustomTabsIntent.SHARE_STATE_ON)
+                                .putExtra(CustomTabsIntent.EXTRA_TOOLBAR_ITEMS, buttons);
+
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, context, COLOR_SCHEME_LIGHT);
+
+        assertEquals(BUTTON_DESCRIPTION,
+                dataProvider.getCustomButtonsOnToolbar().get(0).getDescription());
+        assertTrue(dataProvider.shouldShowShareMenuItem());
+    }
+
+    @Test
+    public void shareStateOn_buttonInToolbarAndCustomMenuItems_hasNoShare() {
+        Context context = ApplicationProvider.getApplicationContext();
+        ArrayList<Bundle> buttons =
+                new ArrayList<>(Collections.singleton(createActionButtonInToolbarBundle()));
+        Intent intent =
+                new Intent()
+                        .putExtra(
+                                CustomTabsIntent.EXTRA_SHARE_STATE, CustomTabsIntent.SHARE_STATE_ON)
+                        .putExtra(CustomTabsIntent.EXTRA_TOOLBAR_ITEMS, buttons)
+                        .putExtra(CustomTabsIntent.EXTRA_MENU_ITEMS,
+                                new ArrayList<>(Collections.singletonList(createMenuItemBundle())));
+
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, context, COLOR_SCHEME_LIGHT);
+
+        assertEquals(BUTTON_DESCRIPTION,
+                dataProvider.getCustomButtonsOnToolbar().get(0).getDescription());
+        assertFalse(dataProvider.shouldShowShareMenuItem());
+    }
+
+    @Test
+    @Features.DisableFeatures({ChromeFeatureList.SHARE_BY_DEFAULT_IN_CCT})
+    public void shareStateDefaultFlagDisabled_hasShareItemInMenu() {
+        Context context = ApplicationProvider.getApplicationContext();
+        Intent intent = new Intent()
+                                .putExtra(CustomTabsIntent.EXTRA_SHARE_STATE,
+                                        CustomTabsIntent.SHARE_STATE_DEFAULT)
+                                .putExtra(CustomTabsIntent.EXTRA_DEFAULT_SHARE_MENU_ITEM, true);
+
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, context, COLOR_SCHEME_LIGHT);
+
+        assertTrue(dataProvider.getCustomButtonsOnToolbar().isEmpty());
+        assertTrue(dataProvider.shouldShowShareMenuItem());
+    }
+
+    @Test
+    public void shareStateOff_noShareItems() {
+        Context context = ApplicationProvider.getApplicationContext();
+        Intent intent = new Intent().putExtra(
+                CustomTabsIntent.EXTRA_SHARE_STATE, CustomTabsIntent.SHARE_STATE_OFF);
+
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, context, COLOR_SCHEME_LIGHT);
+
+        assertTrue(dataProvider.getCustomButtonsOnToolbar().isEmpty());
+        assertFalse(dataProvider.shouldShowShareMenuItem());
+    }
+
+    private Bundle createActionButtonInToolbarBundle() {
+        Context context = ApplicationProvider.getApplicationContext();
+        Bundle bundle = new Bundle();
+        bundle.putInt(CustomTabsIntent.KEY_ID, CustomTabsIntent.TOOLBAR_ACTION_BUTTON_ID);
+        int iconHeight = context.getResources().getDimensionPixelSize(R.dimen.toolbar_icon_height);
+        bundle.putParcelable(CustomTabsIntent.KEY_ICON,
+                Bitmap.createBitmap(iconHeight, iconHeight, Bitmap.Config.ALPHA_8));
+        bundle.putString(CustomTabsIntent.KEY_DESCRIPTION, BUTTON_DESCRIPTION);
+        bundle.putParcelable(CustomTabsIntent.KEY_PENDING_INTENT,
+                PendingIntent.getBroadcast(context, 0, new Intent(), 0));
+        bundle.putBoolean(CustomButtonParams.SHOW_ON_TOOLBAR, true);
+        return bundle;
+    }
+
+    private Bundle createMenuItemBundle() {
+        Context context = ApplicationProvider.getApplicationContext();
+        Bundle bundle = new Bundle();
+        bundle.putString(CustomTabsIntent.KEY_MENU_ITEM_TITLE, "title");
+        bundle.putParcelable(CustomTabsIntent.KEY_PENDING_INTENT,
+                PendingIntent.getBroadcast(context, 0, new Intent(), 0));
+        return bundle;
+    }
+
     protected Uri getLaunchingUrl() {
         return Uri.parse("https://www.example.com/");
     }
 }
-
