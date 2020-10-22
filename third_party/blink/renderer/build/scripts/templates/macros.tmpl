@@ -25,7 +25,7 @@
 
 
 {% macro trie_leaf(index, object, return_macro, lowercase_data) %}
-{% set name, value = object.items()[0] %}
+{% set name, value = (object.items()|list)[0] %}
 {% if name|length %}
 if (
     {%- for c in name -%}
@@ -45,7 +45,7 @@ return {{ return_macro(value) }};
 
 
 {% macro trie_switch(trie, index, return_macro, lowercase_data) %}
-{% if trie|length == 1 and trie.values()[0] is string %}
+{% if trie|length == 1 and (trie.values()|list)[0] is string %}
 {{ trie_leaf(index, trie, return_macro, lowercase_data) -}}
 {% else %}
     {% if lowercase_data %}
