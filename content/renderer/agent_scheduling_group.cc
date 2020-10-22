@@ -7,7 +7,10 @@
 #include "base/feature_list.h"
 #include "base/util/type_safety/pass_key.h"
 #include "content/public/common/content_features.h"
+#include "content/renderer/compositor/compositor_dependencies.h"
+#include "content/renderer/render_frame_proxy.h"
 #include "content/renderer/render_thread_impl.h"
+#include "content/renderer/render_view_impl.h"
 
 namespace content {
 
@@ -128,16 +131,50 @@ mojom::RouteProvider* AgentSchedulingGroup::GetRemoteRouteProvider() {
 }
 
 void AgentSchedulingGroup::CreateView(mojom::CreateViewParamsPtr params) {
-  ToImpl(render_thread_).CreateView(std::move(params), PassKey());
+  RenderThreadImpl& renderer = ToImpl(render_thread_);
+
+  RenderViewImpl::Create(
+      *this, &renderer, std::move(params), RenderWidget::ShowCallback(),
+      // TODO(crbug.com/1111231): Use proper per-ASG task-runner.
+      renderer.GetWebMainThreadScheduler()->DefaultTaskRunner());
 }
 
 void AgentSchedulingGroup::DestroyView(int32_t view_id,
                                        DestroyViewCallback callback) {
-  ToImpl(render_thread_).DestroyView(view_id, std::move(callback), PassKey());
+  RenderViewImpl* view = RenderViewImpl::FromRoutingID(view_id);
+  DCHECK(view);
+
+  // This IPC can be called from re-entrant contexts. We can't destroy a
+  // RenderViewImpl while references still exist on the stack, so we dispatch a
+  // non-nestable task. This method is called exactly once by the browser
+  // process, and is used to release ownership of the corresponding
+  // RenderViewImpl instance. https://crbug.com/1000035.
+  base::ThreadTaskRunnerHandle::Get()->PostNonNestableTask(
+      FROM_HERE, base::BindOnce(
+                     [](RenderViewImpl* view, DestroyViewCallback callback) {
+                       view->Destroy();
+                       std::move(callback).Run();
+                     },
+                     base::Unretained(view), std::move(callback)));
 }
 
 void AgentSchedulingGroup::CreateFrame(mojom::CreateFrameParamsPtr params) {
-  ToImpl(render_thread_).CreateFrame(std::move(params), PassKey());
+  mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
+      interface_provider(
+          std::move(params->interface_bundle->interface_provider));
+  mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
+      browser_interface_broker(
+          std::move(params->interface_bundle->browser_interface_broker));
+
+  RenderFrameImpl::CreateFrame(
+      *this, params->routing_id, std::move(interface_provider),
+      std::move(browser_interface_broker), params->previous_routing_id,
+      params->opener_frame_token, params->parent_routing_id,
+      params->previous_sibling_routing_id, params->frame_token,
+      params->devtools_frame_token, params->replication_state,
+      &ToImpl(render_thread_), std::move(params->widget_params),
+      std::move(params->frame_owner_properties),
+      params->has_committed_real_load);
 }
 
 void AgentSchedulingGroup::CreateFrameProxy(
@@ -148,10 +185,9 @@ void AgentSchedulingGroup::CreateFrameProxy(
     const FrameReplicationState& replicated_state,
     const base::UnguessableToken& frame_token,
     const base::UnguessableToken& devtools_frame_token) {
-  ToImpl(render_thread_)
-      .CreateFrameProxy(routing_id, render_view_routing_id, opener_frame_token,
-                        parent_routing_id, replicated_state, frame_token,
-                        devtools_frame_token, PassKey());
+  RenderFrameProxy::CreateFrameProxy(
+      *this, routing_id, render_view_routing_id, opener_frame_token,
+      parent_routing_id, replicated_state, frame_token, devtools_frame_token);
 }
 
 void AgentSchedulingGroup::BindAssociatedRouteProvider(

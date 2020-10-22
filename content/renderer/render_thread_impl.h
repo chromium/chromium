@@ -207,24 +207,6 @@ class CONTENT_EXPORT RenderThreadImpl
   // viz::mojom::CompositingModeWatcher implementation.
   void CompositingModeFallbackToSoftware() override;
 
-  // Formerly in mojom::Renderer (moved to mojom::AgentSchedulingGroup):
-  void CreateView(mojom::CreateViewParamsPtr params,
-                  util::PassKey<AgentSchedulingGroup>);
-  void DestroyView(int32_t view_id,
-                   mojom::AgentSchedulingGroup::DestroyViewCallback,
-                   util::PassKey<AgentSchedulingGroup>);
-  void CreateFrame(mojom::CreateFrameParamsPtr params,
-                   util::PassKey<AgentSchedulingGroup>);
-  void CreateFrameProxy(
-      int32_t routing_id,
-      int32_t render_view_routing_id,
-      const base::Optional<base::UnguessableToken>& opener_frame_token,
-      int32_t parent_routing_id,
-      const FrameReplicationState& replicated_state,
-      const base::UnguessableToken& frame_token,
-      const base::UnguessableToken& devtools_frame_token,
-      util::PassKey<AgentSchedulingGroup>);
-
   // Whether gpu compositing is being used or is disabled for software
   // compositing. Clients of the compositor should give resources that match
   // the appropriate mode.

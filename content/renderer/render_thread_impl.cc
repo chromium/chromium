@@ -1639,72 +1639,6 @@ gpu::GpuChannelHost* RenderThreadImpl::GetGpuChannel() {
   return gpu_->GetGpuChannel().get();
 }
 
-void RenderThreadImpl::CreateView(mojom::CreateViewParamsPtr params,
-                                  PassKey<AgentSchedulingGroup>) {
-  CompositorDependencies* compositor_deps = this;
-  is_scroll_animator_enabled_ = params->web_preferences.enable_scroll_animator;
-  // TODO(crbug.com/1111231): For as long as views are created via the
-  // `Renderer` interface (as opposed to `AgentSchedulingGroup`), we will always
-  // have *exactly one* `AgentSchedulingGroup` in the process.
-  DCHECK_EQ(agent_scheduling_groups_.size(), 1ul);
-  AgentSchedulingGroup& agent_scheduling_group =
-      *agent_scheduling_groups_.begin()->get();
-
-  RenderViewImpl::Create(agent_scheduling_group, compositor_deps,
-                         std::move(params), RenderWidget::ShowCallback(),
-                         GetWebMainThreadScheduler()->DefaultTaskRunner());
-}
-
-void RenderThreadImpl::DestroyView(
-    int32_t view_id,
-    mojom::AgentSchedulingGroup::DestroyViewCallback callback,
-    PassKey<AgentSchedulingGroup>) {
-  RenderViewImpl* view = RenderViewImpl::FromRoutingID(view_id);
-  DCHECK(view);
-
-  // This IPC can be called from re-entrant contexts. We can't destroy a
-  // RenderViewImpl while references still exist on the stack, so we dispatch a
-  // non-nestable task. This method is called exactly once by the browser
-  // process, and is used to release ownership of the corresponding
-  // RenderViewImpl instance. https://crbug.com/1000035.
-  base::ThreadTaskRunnerHandle::Get()->PostNonNestableTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](RenderViewImpl* view,
-             mojom::AgentSchedulingGroup::DestroyViewCallback callback) {
-            view->Destroy();
-            std::move(callback).Run();
-          },
-          base::Unretained(view), std::move(callback)));
-}
-
-void RenderThreadImpl::CreateFrame(mojom::CreateFrameParamsPtr params,
-                                   PassKey<AgentSchedulingGroup>) {
-  CompositorDependencies* compositor_deps = this;
-  mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
-      interface_provider(
-          std::move(params->interface_bundle->interface_provider));
-  mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
-      browser_interface_broker(
-          std::move(params->interface_bundle->browser_interface_broker));
-  // TODO(crbug.com/1111231): For as long as frames are created via the
-  // `Renderer` interface (as opposed to `AgentSchedulingGroup`), we will always
-  // have *exactly one* `AgentSchedulingGroup` in the process.
-  DCHECK_EQ(agent_scheduling_groups_.size(), 1ul);
-  AgentSchedulingGroup& agent_scheduling_group =
-      *agent_scheduling_groups_.begin()->get();
-
-  RenderFrameImpl::CreateFrame(
-      agent_scheduling_group, params->routing_id, std::move(interface_provider),
-      std::move(browser_interface_broker), params->previous_routing_id,
-      params->opener_frame_token, params->parent_routing_id,
-      params->previous_sibling_routing_id, params->frame_token,
-      params->devtools_frame_token, params->replication_state, compositor_deps,
-      std::move(params->widget_params),
-      std::move(params->frame_owner_properties),
-      params->has_committed_real_load);
-}
-
 void RenderThreadImpl::CreateAgentSchedulingGroup(
     mojo::PendingRemote<mojom::AgentSchedulingGroupHost>
         agent_scheduling_group_host,
@@ -1722,28 +1656,6 @@ void RenderThreadImpl::CreateAssociatedAgentSchedulingGroup(
   agent_scheduling_groups_.emplace(std::make_unique<AgentSchedulingGroup>(
       *this, std::move(agent_scheduling_group_host),
       std::move(agent_scheduling_group)));
-}
-
-void RenderThreadImpl::CreateFrameProxy(
-    int32_t routing_id,
-    int32_t render_view_routing_id,
-    const base::Optional<base::UnguessableToken>& opener_frame_token,
-    int32_t parent_routing_id,
-    const FrameReplicationState& replicated_state,
-    const base::UnguessableToken& frame_token,
-    const base::UnguessableToken& devtools_frame_token,
-    PassKey<AgentSchedulingGroup>) {
-  // TODO(crbug.com/1111231): For as long as frame proxies are created via the
-  // `Renderer` interface (as opposed to `AgentSchedulingGroup`), we will always
-  // have *exactly one* `AgentSchedulingGroup` in the process.
-  DCHECK_EQ(agent_scheduling_groups_.size(), 1ul);
-  AgentSchedulingGroup& agent_scheduling_group =
-      *agent_scheduling_groups_.begin()->get();
-
-  RenderFrameProxy::CreateFrameProxy(agent_scheduling_group, routing_id,
-                                     render_view_routing_id, opener_frame_token,
-                                     parent_routing_id, replicated_state,
-                                     frame_token, devtools_frame_token);
 }
 
 void RenderThreadImpl::OnNetworkConnectionChanged(
