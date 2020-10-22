@@ -13,7 +13,6 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
-#include "ui/events/ozone/evdev/keyboard_util_evdev.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/types/event_type.h"
@@ -119,8 +118,7 @@ void KeyboardEvdev::RefreshModifiers() {
   for (int key = 0; key < KEY_CNT; ++key) {
     if (!key_state_.test(key))
       continue;
-    DomCode dom_code =
-        KeycodeConverter::NativeKeycodeToDomCode(EvdevCodeToNativeCode(key));
+    DomCode dom_code = KeycodeConverter::EvdevCodeToDomCode(key);
     if (dom_code == DomCode::NONE)
       continue;
     DomKey dom_key;
@@ -141,8 +139,7 @@ void KeyboardEvdev::DispatchKey(unsigned int key,
                                 base::TimeTicks timestamp,
                                 int device_id,
                                 int flags) {
-  DomCode dom_code =
-      KeycodeConverter::NativeKeycodeToDomCode(EvdevCodeToNativeCode(key));
+  DomCode dom_code = KeycodeConverter::EvdevCodeToDomCode(key);
   if (dom_code == DomCode::NONE)
     return;
   int modifier_flags = modifiers_->GetModifierFlags();

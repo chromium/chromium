@@ -11,10 +11,10 @@
 #include "ui/events/event_modifiers.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/ozone/evdev/cursor_delegate_evdev.h"
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
 #include "ui/events/ozone/evdev/keyboard_evdev.h"
-#include "ui/events/ozone/evdev/keyboard_util_evdev.h"
 
 namespace ui {
 
@@ -78,9 +78,7 @@ void InputInjectorEvdev::InjectKeyEvent(DomCode physical_key,
   if (physical_key == DomCode::NONE)
     return;
 
-  int native_keycode = KeycodeConverter::DomCodeToNativeKeycode(physical_key);
-  int evdev_code = NativeCodeToEvdevCode(native_keycode);
-
+  int evdev_code = KeycodeConverter::DomCodeToEvdevCode(physical_key);
   dispatcher_->DispatchKeyEvent(KeyEventParams(
       kDeviceIdForInjection, ui::EF_NONE, evdev_code, 0 /*scan_code*/, down,
       suppress_auto_repeat, EventTimeForNow()));

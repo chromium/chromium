@@ -16,7 +16,6 @@
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
-#include "ui/events/ozone/evdev/keyboard_util_evdev.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/types/event_type.h"
@@ -189,8 +188,7 @@ void WaylandKeyboard::DispatchKey(uint32_t key,
                                   base::TimeTicks timestamp,
                                   int device_id,
                                   int flags) {
-  DomCode dom_code =
-      KeycodeConverter::NativeKeycodeToDomCode(EvdevCodeToNativeCode(key));
+  DomCode dom_code = KeycodeConverter::EvdevCodeToDomCode(key);
   if (dom_code == ui::DomCode::NONE)
     return;
 

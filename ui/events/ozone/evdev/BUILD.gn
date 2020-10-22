@@ -63,8 +63,6 @@ component("evdev") {
     "input_injector_evdev.h",
     "keyboard_evdev.cc",
     "keyboard_evdev.h",
-    "keyboard_util_evdev.cc",
-    "keyboard_util_evdev.h",
     "mouse_button_map_evdev.cc",
     "mouse_button_map_evdev.h",
     "stylus_button_event_converter_evdev.cc",
@@ -152,8 +150,8 @@ component("evdev") {
   }
 
   visibility += [
-    "//ui/ozone/*",
     "//ui/chromeos/*",
+    "//ui/ozone/*",
   ]
 }
 

@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <string>
 
-#include "base/macros.h"
+#include "build/build_config.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 
 // For reference, the W3C UI Event spec is located at:
@@ -46,6 +46,10 @@ typedef struct {
 // spec (http://www.w3.org/TR/uievents/).
 class KeycodeConverter {
  public:
+  KeycodeConverter() = delete;
+  KeycodeConverter(const KeycodeConverter&) = delete;
+  KeycodeConverter& operator=(const KeycodeConverter&) = delete;
+
   // Return the value that identifies an invalid native keycode.
   static int InvalidNativeKeycode();
 
@@ -54,6 +58,20 @@ class KeycodeConverter {
 
   // Convert a DomCode into a native keycode.
   static int DomCodeToNativeKeycode(DomCode code);
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  // Convert a XKB keycode into a DomCode.
+  static DomCode XkbKeycodeToDomCode(uint32_t xkb_keycode);
+
+  // Convert a DomCode into a XKB keycode.
+  static uint32_t DomCodeToXkbKeycode(DomCode code);
+
+  // Convert an evdev code into DomCode.
+  static DomCode EvdevCodeToDomCode(int evdev_code);
+
+  // Convert a DomCode into an evdev code.
+  static int DomCodeToEvdevCode(DomCode code);
+#endif
 
   // Convert a UI Events |code| string value into a DomCode.
   static DomCode CodeStringToDomCode(const std::string& code);
@@ -110,9 +128,6 @@ class KeycodeConverter {
   static size_t NumKeycodeMapEntriesForTest();
   static const KeycodeMapEntry* GetKeycodeMapForTest();
   static const char* DomKeyStringForTest(size_t index);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeycodeConverter);
 };
 
 }  // namespace ui

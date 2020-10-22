@@ -20,7 +20,6 @@
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/evdev/event_device_util.h"
-#include "ui/events/ozone/evdev/keyboard_util_evdev.h"
 #include "ui/events/ozone/evdev/libgestures_glue/gesture_property_provider.h"
 #include "ui/events/ozone/evdev/libgestures_glue/gesture_timer_provider.h"
 #include "ui/gfx/geometry/point_f.h"
