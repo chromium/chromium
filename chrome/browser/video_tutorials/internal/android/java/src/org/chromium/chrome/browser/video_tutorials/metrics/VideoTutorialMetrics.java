@@ -18,14 +18,16 @@ import java.lang.annotation.RetentionPolicy;
 public class VideoTutorialMetrics {
     // Please treat this list as append only and keep it in sync with
     // VideoTutorials.WatchState in enums.xml.
-    @IntDef({WatchState.STARTED, WatchState.COMPLETED, WatchState.PAUSED, WatchState.RESUMED})
+    @IntDef({WatchState.STARTED, WatchState.COMPLETED, WatchState.PAUSED, WatchState.RESUMED,
+            WatchState.WATCHED})
     @Retention(RetentionPolicy.SOURCE)
     public @interface WatchState {
         int STARTED = 0;
         int COMPLETED = 1;
         int PAUSED = 2;
         int RESUMED = 3;
-        int NUM_ENTRIES = 4;
+        int WATCHED = 4;
+        int NUM_ENTRIES = 5;
     }
 
     // Please treat this list as append only and keep it in sync with
@@ -60,7 +62,7 @@ public class VideoTutorialMetrics {
         String histogramSuffix = histogramSuffixFromFeatureType(feature);
         RecordHistogram.recordEnumeratedHistogram(
                 "VideoTutorials." + histogramSuffix + ".Player.Progress", state,
-                FeatureType.MAX_VALUE);
+                WatchState.NUM_ENTRIES);
     }
 
     private static String histogramSuffixFromFeatureType(@FeatureType int feature) {

@@ -36,13 +36,15 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
     private final Callback<Tutorial> mTryNowCallback;
     private final Runnable mCloseCallback;
     private final LanguageInfoProvider mLanguageInfoProvider;
+    private final PlaybackStateObserver mPlaybackStateObserver;
     private long mVideoStartTime;
 
     /** Constructor. */
     public VideoPlayerMediator(Context context, PropertyModel model,
             VideoTutorialService videoTutorialService, LanguagePickerCoordinator languagePicker,
             LanguageInfoProvider languageInfoProvider, WebContents webContents,
-            Callback<Tutorial> tryNowCallback, Runnable closeCallback) {
+            PlaybackStateObserver playbackStateObserver, Callback<Tutorial> tryNowCallback,
+            Runnable closeCallback) {
         mContext = context;
         mModel = model;
         mVideoTutorialService = videoTutorialService;
@@ -51,6 +53,7 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
         mWebContents = webContents;
         mTryNowCallback = tryNowCallback;
         mCloseCallback = closeCallback;
+        mPlaybackStateObserver = playbackStateObserver;
 
         mModel.set(VideoPlayerProperties.SHOW_LOADING_SCREEN, false);
         mModel.set(VideoPlayerProperties.SHOW_LANGUAGE_PICKER, false);
@@ -60,6 +63,13 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
         mModel.set(VideoPlayerProperties.CALLBACK_TRY_NOW, this::tryNow);
         mModel.set(VideoPlayerProperties.CALLBACK_SHARE, this::share);
         mModel.set(VideoPlayerProperties.CALLBACK_CLOSE, this::close);
+    }
+
+    /** Called when the player is getting destroyed. */
+    public void destroy() {
+        if (mPlaybackStateObserver.getWatchStateInfo().videoWatched()) {
+            VideoTutorialMetrics.recordWatchStateUpdate(mTutorial.featureType, WatchState.WATCHED);
+        }
     }
 
     boolean handleBackPressed() {
@@ -72,7 +82,7 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
                     mTutorial.featureType, UserAction.BACK_PRESS_WHEN_SHOWING_VIDEO_PLAYER);
         }
 
-        return true;
+        return false;
     }
 
     /**
@@ -125,6 +135,11 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
         updateChangeLanguageButtonText();
     }
 
+    @Override
+    public void onError() {
+        // TODO(shaktisahu): Determine UI for error state.
+    }
+
     private void changeLanguage() {
         mModel.set(VideoPlayerProperties.SHOW_LANGUAGE_PICKER, true);
         mLanguagePicker.showLanguagePicker(this::onLanguageSelected, () -> {} /* closeCallback */);
@@ -162,6 +177,7 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
     }
 
     private void startVideo(Tutorial tutorial) {
+        mPlaybackStateObserver.reset();
         VideoTutorialMetrics.recordWatchStateUpdate(mTutorial.featureType, WatchState.STARTED);
         mVideoStartTime = System.currentTimeMillis();
         mTutorial = tutorial;
@@ -180,6 +196,9 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
     }
 
     private void onWatchNextClicked() {
+        if (mPlaybackStateObserver.getWatchStateInfo().videoWatched()) {
+            VideoTutorialMetrics.recordWatchStateUpdate(mTutorial.featureType, WatchState.WATCHED);
+        }
         VideoTutorialMetrics.recordUserAction(mTutorial.featureType, UserAction.WATCH_NEXT_VIDEO);
         VideoTutorialUtils.getNextTutorial(mVideoTutorialService, mTutorial, this::startVideo);
     }

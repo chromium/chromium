@@ -74773,6 +74773,7 @@ Full version information for the fingerprint enum values:
   <int value="1" label="Completed"/>
   <int value="2" label="Paused"/>
   <int value="3" label="Resumed"/>
+  <int value="4" label="Watched"/>
 </enum>
 
 <enum name="ViewFileType">

@@ -61,7 +61,8 @@ public class VideoPlayerCoordinatorImpl implements VideoPlayerCoordinator {
                 new LanguagePickerCoordinator(mView.getView().findViewById(R.id.language_picker),
                         mVideoTutorialService, languageInfoProvider);
         mMediator = new VideoPlayerMediator(mContext, mModel, videoTutorialService, mLanguagePicker,
-                languageInfoProvider, mWebContents, tryNowCallback, closeCallback);
+                languageInfoProvider, mWebContents, mMediaSessionObserver, tryNowCallback,
+                closeCallback);
         PropertyModelChangeProcessor.create(mModel, mView, new VideoPlayerViewBinder());
     }
 
@@ -94,7 +95,8 @@ public class VideoPlayerCoordinatorImpl implements VideoPlayerCoordinator {
         mWebContents = pair.first;
         ContentView webContentView = pair.second;
         mWebContentsDelegate = new WebContentsDelegateAndroid();
-        mMediaSessionObserver = new PlaybackStateObserver(mWebContents, mMediator);
+        mMediaSessionObserver =
+                new PlaybackStateObserver(mWebContents, () -> { return mMediator; });
 
         ThinWebView thinWebView = ThinWebViewFactory.create(mContext, new ThinWebViewConstraints());
         thinWebView.attachWebContents(mWebContents, webContentView, mWebContentsDelegate);
