@@ -986,6 +986,9 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kBreakAll ||
              value_id == CSSValueID::kKeepAll ||
              value_id == CSSValueID::kBreakWord;
+    case CSSPropertyID::kScrollbarWidth:
+      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kThin ||
+             value_id == CSSValueID::kNone;
     case CSSPropertyID::kScrollSnapStop:
       return value_id == CSSValueID::kNormal || value_id == CSSValueID::kAlways;
     case CSSPropertyID::kOverscrollBehaviorInline:
@@ -1111,6 +1114,7 @@ bool CSSParserFastPaths::IsKeywordPropertyID(CSSPropertyID property_id) {
     case CSSPropertyID::kWhiteSpace:
     case CSSPropertyID::kWordBreak:
     case CSSPropertyID::kWritingMode:
+    case CSSPropertyID::kScrollbarWidth:
     case CSSPropertyID::kScrollSnapStop:
     case CSSPropertyID::kOriginTrialTestProperty:
       return true;

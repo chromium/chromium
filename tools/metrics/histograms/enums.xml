@@ -47291,6 +47291,7 @@ Called by update_use_counter_css.py.-->
   <int value="677" label="math-depth"/>
   <int value="678" label="advance-proportional-override"/>
   <int value="679" label="overflow-clip-margin"/>
+  <int value="680" label="scrollbar-width"/>
 </enum>
 
 <enum name="MappedEditingCommands">

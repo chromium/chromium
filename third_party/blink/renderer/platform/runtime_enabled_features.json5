@@ -589,6 +589,12 @@
       name: "CSSRevert",
       status: "stable",
     },
+    // Scrollbar styling.
+    // https://drafts.csswg.org/css-scrollbars/
+    {
+      name: "CSSScrollbars",
+      status: "test",
+    },
     // Support for declarative parts of scroll-animations-1, i.e.
     // the animation-timeline property and the @scroll-timeline rule.
     //
@@ -1708,6 +1714,10 @@
     {
       name: "ScrollbarGutter",
       status: "experimental",
+    },
+    {
+      name: "ScrollbarWidth",
+      status: "test",
     },
     {
       name: "ScrollCustomization",

@@ -348,6 +348,7 @@ scrollSnapAlign
 scrollSnapStop
 scrollSnapType
 scrollbarGutter
+scrollbarWidth
 setProperty
 shapeImageThreshold
 shapeMargin

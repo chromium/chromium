@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>'scrollbar-gutter' property</title>
+<title>'scrollbar-width' property</title>
 <link rel="help" href="https://drafts.css-houdini.org/css-typed-om-1/#dom-stylepropertymap-get">
 <link rel="help" href="https://drafts.css-houdini.org/css-typed-om-1/#dom-stylepropertymap-set">
 <link rel="help" href="https://drafts.css-houdini.org/css-typed-om-1/#property-stle-value-normalization">
@@ -13,18 +13,10 @@
 <script>
 'use strict';
 
-runPropertyTests('scrollbar-gutter', [
-    { syntax: 'auto' },
-    { syntax: 'stable' },
-    { syntax: 'always' },
-]);
-runUnsupportedPropertyTests('scrollbar-gutter', [
-    'stable both',
-    'stable force',
-    'stable both force',
-    'always both',
-    'always force',
-    'always both force'
+runPropertyTests('scrollbar-width', [
+  { syntax: 'auto' },
+  { syntax: 'thin' },
+  { syntax: 'none' },
 ]);
 
 </script>

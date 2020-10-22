@@ -5434,6 +5434,14 @@ const CSSValue* ScrollbarGutter::CSSValueFromComputedStyleInternal(
   return list;
 }
 
+const CSSValue* ScrollbarWidth::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const SVGComputedStyle&,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  return CSSIdentifierValue::Create(style.ScrollbarWidth());
+}
+
 const CSSValue* ScrollBehavior::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const SVGComputedStyle&,

@@ -3138,6 +3138,17 @@
       runtime_flag: "ScrollbarGutter",
     },
     {
+      name: "scrollbar-width",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      inherited: false,
+      field_group: "*",
+      field_template: "keyword",
+      keywords: ["auto", "thin", "none"],
+      default_value: "auto",
+      typedom_types: ["Keyword"],
+      runtime_flag: "CSSScrollbars",
+    },
+    {
       name: "scroll-behavior",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "*",
