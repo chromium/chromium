@@ -42,9 +42,8 @@ class FakeInSessionAuthDialogController
   void SetClient(ash::InSessionAuthDialogClient* client) override {}
   void ShowAuthenticationDialog(FinishCallback callback) override {}
   void DestroyAuthenticationDialog() override {}
-  void AuthenticateUserWithPasswordOrPin(
-      const std::string& password,
-      OnAuthenticateCallback callback) override {}
+  void AuthenticateUserWithPin(const std::string& pin,
+                               OnAuthenticateCallback callback) override {}
   void AuthenticateUserWithFingerprint(
       base::OnceCallback<void(bool, ash::FingerprintState)> callback) override {
   }

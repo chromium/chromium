@@ -33,9 +33,8 @@ class InSessionAuthDialogControllerImpl : public InSessionAuthDialogController {
   void SetClient(InSessionAuthDialogClient* client) override;
   void ShowAuthenticationDialog(FinishCallback finish_callback) override;
   void DestroyAuthenticationDialog() override;
-  void AuthenticateUserWithPasswordOrPin(
-      const std::string& password,
-      OnAuthenticateCallback callback) override;
+  void AuthenticateUserWithPin(const std::string& pin,
+                               OnAuthenticateCallback callback) override;
   void AuthenticateUserWithFingerprint(
       base::OnceCallback<void(bool, FingerprintState)> callback) override;
   void Cancel() override;

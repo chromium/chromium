@@ -119,7 +119,6 @@ void InSessionAuthDialogClient::AuthenticateUserWithPasswordOrPin(
         user_context.GetAccountId(), *user_context.GetKey(),
         base::BindOnce(&InSessionAuthDialogClient::OnPinAttemptDone,
                        weak_factory_.GetWeakPtr(), user_context));
-    // OnPinAttemptDone will call AuthenticateWithPassword if attempt fails.
     return;
   }
 
@@ -143,8 +142,11 @@ void InSessionAuthDialogClient::OnPinAttemptDone(
     }
     OnAuthSuccess(user_context);
   } else {
-    // PIN authentication has failed; try submitting as a normal password.
-    AuthenticateWithPassword(user_context);
+    // Do not try submitting as password.
+    if (pending_auth_state_) {
+      std::move(pending_auth_state_->callback).Run(false);
+      pending_auth_state_.reset();
+    }
   }
 }
 

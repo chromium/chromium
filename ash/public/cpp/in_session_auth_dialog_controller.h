@@ -34,12 +34,11 @@ class ASH_PUBLIC_EXPORT InSessionAuthDialogController {
   // Destroys the authentication dialog.
   virtual void DestroyAuthenticationDialog() = 0;
 
-  // Takes a password or PIN and sends it to InSessionAuthDialogClient to
+  // Takes a PIN and sends it to InSessionAuthDialogClient to
   // authenticate. The InSessionAuthDialogClient should already know the current
   // session's active user, so the user account is not provided here.
-  virtual void AuthenticateUserWithPasswordOrPin(
-      const std::string& password,
-      OnAuthenticateCallback callback) = 0;
+  virtual void AuthenticateUserWithPin(const std::string& pin,
+                                       OnAuthenticateCallback callback) = 0;
 
   // Requests ChromeOS to report fingerprint scan result through |callback|.
   virtual void AuthenticateUserWithFingerprint(

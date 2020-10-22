@@ -413,16 +413,15 @@ views::LabelButton* AuthDialogContentsView::AddButton(const std::string& text,
   return view;
 }
 
-void AuthDialogContentsView::OnAuthSubmit(const base::string16& password) {
-  InSessionAuthDialogController::Get()->AuthenticateUserWithPasswordOrPin(
-      base::UTF16ToUTF8(password),
-      base::BindOnce(&AuthDialogContentsView::OnPasswordOrPinAuthComplete,
+void AuthDialogContentsView::OnAuthSubmit(const base::string16& pin) {
+  InSessionAuthDialogController::Get()->AuthenticateUserWithPin(
+      base::UTF16ToUTF8(pin),
+      base::BindOnce(&AuthDialogContentsView::OnPinAuthComplete,
                      weak_factory_.GetWeakPtr()));
 }
 
-// TODO(b/156258540): Clear password/PIN if auth failed and retry is allowed.
-void AuthDialogContentsView::OnPasswordOrPinAuthComplete(
-    base::Optional<bool> success) {}
+// TODO(b/156258540): Clear PIN if auth failed and retry is allowed.
+void AuthDialogContentsView::OnPinAuthComplete(base::Optional<bool> success) {}
 
 void AuthDialogContentsView::OnFingerprintAuthComplete(
     bool success,

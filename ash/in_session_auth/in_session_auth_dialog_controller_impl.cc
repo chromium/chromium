@@ -35,8 +35,8 @@ void InSessionAuthDialogControllerImpl::ShowAuthenticationDialog(
 
   AccountId account_id =
       Shell::Get()->session_controller()->GetActiveAccountId();
-  // Password should always be available.
-  uint32_t auth_methods = AuthDialogContentsView::kAuthPassword;
+  // GAIA password option is not offered.
+  uint32_t auth_methods = 0;
 
   if (client_->IsFingerprintAuthAvailable(account_id)) {
     client_->StartFingerprintAuthSession(
@@ -73,6 +73,14 @@ void InSessionAuthDialogControllerImpl::OnPinCanAuthenticate(
   if (pin_auth_available)
     auth_methods |= AuthDialogContentsView::kAuthPin;
 
+  if (auth_methods == 0) {
+    // If neither fingerprint nor PIN is available, we shouldn't receive the
+    // request.
+    LOG(ERROR) << "Neither fingerprint nor PIN is available.";
+    Cancel();
+    return;
+  }
+
   dialog_ = std::make_unique<InSessionAuthDialog>(auth_methods);
 }
 
@@ -87,16 +95,20 @@ void InSessionAuthDialogControllerImpl::DestroyAuthenticationDialog() {
   dialog_.reset();
 }
 
-void InSessionAuthDialogControllerImpl::AuthenticateUserWithPasswordOrPin(
-    const std::string& password,
+void InSessionAuthDialogControllerImpl::AuthenticateUserWithPin(
+    const std::string& pin,
     OnAuthenticateCallback callback) {
   DCHECK(client_);
 
   // TODO(b/156258540): Check that PIN is enabled / set up for this user.
-  bool authenticated_by_pin = base::ContainsOnlyChars(password, "0123456789");
+
+  if (!base::ContainsOnlyChars(pin, "0123456789")) {
+    OnAuthenticateComplete(std::move(callback), false);
+    return;
+  }
 
   client_->AuthenticateUserWithPasswordOrPin(
-      password, authenticated_by_pin,
+      pin, true,
       base::BindOnce(&InSessionAuthDialogControllerImpl::OnAuthenticateComplete,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
