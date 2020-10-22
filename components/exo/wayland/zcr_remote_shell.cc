@@ -1143,11 +1143,10 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
       int bounds_change) {
     zcr_remote_surface_v1_bounds_change_reason reason =
         ZCR_REMOTE_SURFACE_V1_BOUNDS_CHANGE_REASON_RESIZE;
-    if (!resize) {
-      reason = current_state == WindowStateType::kPip
-                   ? ZCR_REMOTE_SURFACE_V1_BOUNDS_CHANGE_REASON_MOVE_PIP
-                   : ZCR_REMOTE_SURFACE_V1_BOUNDS_CHANGE_REASON_MOVE;
-    }
+    if (!resize)
+      reason = ZCR_REMOTE_SURFACE_V1_BOUNDS_CHANGE_REASON_MOVE;
+    if (current_state == WindowStateType::kPip)
+      reason = ZCR_REMOTE_SURFACE_V1_BOUNDS_CHANGE_REASON_PIP;
     if (bounds_change & ash::WindowResizer::kBoundsChange_Resizes) {
       reason = ZCR_REMOTE_SURFACE_V1_BOUNDS_CHANGE_REASON_DRAG_RESIZE;
     } else if (bounds_change & ash::WindowResizer::kBoundsChange_Repositions) {

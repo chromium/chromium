@@ -734,7 +734,7 @@
 	     summary="the window bounds is moved due to other WM operations"/>
       <entry name="resize" value="6"
 	     summary="the window bounds is reiszed due to other WM operations"/>
-      <entry name="move_pip" value="7" summary="the window bounds is resized for PIP"/>
+      <entry name="pip" value="7" summary="the window bounds is resized or moved for PIP"/>
     </enum>
 
     <event name="bounds_changed" since="10">
