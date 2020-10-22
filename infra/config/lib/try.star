@@ -37,6 +37,7 @@ defaults = args.defaults(
     list_view = args.COMPUTE,
     main_list_view = None,
     subproject_list_view = None,
+    resultdb_bigquery_exports = [],
 )
 
 def _sorted_list_view_graph_key(console_name):
@@ -121,6 +122,7 @@ def try_builder(
         subproject_list_view = args.DEFAULT,
         tryjob = None,
         experiments = None,
+        resultdb_bigquery_exports = args.DEFAULT,
         **kwargs):
     """Define a try builder.
 
@@ -151,6 +153,10 @@ def try_builder(
         builder, obtained by calling the `tryjob` function.
       experiments - a dict of experiment name to the percentage chance (0-100)
         that it will apply to builds generated from this builder.
+      resultdb_bigquery_exports - a list of resultdb.export_test_results(...)
+        specifying additional parameters for exporting test results to BigQuery.
+        Will always upload to the luci-resultdb.chromium.try_test_results table
+        in addition to any tables specified by the list's elements.
     """
     if not branches.matches(branch_selector):
         return
@@ -159,14 +165,24 @@ def try_builder(
     experiments = experiments or {}
     experiments.setdefault("chromium.resultdb.result_sink", 0)
 
+    merged_resultdb_bigquery_exports = [
+        resultdb.export_test_results(
+            bq_table = "luci-resultdb.chromium.try_test_results",
+        ),
+    ]
+    merged_resultdb_bigquery_exports.extend(
+        defaults.get_value(
+            "resultdb_bigquery_exports",
+            resultdb_bigquery_exports,
+        ),
+    )
+
     # Define the builder first so that any validation of luci.builder arguments
     # (e.g. bucket) occurs before we try to use it
     builders.builder(
         name = name,
         branch_selector = branch_selector,
-        resultdb_bigquery_exports = [resultdb.export_test_results(
-            bq_table = "luci-resultdb.chromium.try_test_results",
-        )],
+        resultdb_bigquery_exports = merged_resultdb_bigquery_exports,
         experiments = experiments,
         **kwargs
     )
@@ -400,12 +416,22 @@ def chromium_win_builder(
         **kwargs
     )
 
+gpu_try_resultdb_exports = [
+    resultdb.export_test_results(
+        bq_table = "luci-resultdb.chromium.gpu_try_test_results",
+        predicate = resultdb.test_result_predicate(
+            test_id_regexp = "ninja://chrome/test:telemetry_gpu_integration_test/.+",
+        ),
+    ),
+]
+
 def gpu_try_builder(*, name, builderless = False, execution_timeout = 6 * time.hour, **kwargs):
     return try_builder(
         name = name,
         builderless = builderless,
         execution_timeout = execution_timeout,
         service_account = "chromium-try-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
+        resultdb_bigquery_exports = gpu_try_resultdb_exports,
         **kwargs
     )
 
@@ -474,4 +500,5 @@ try_ = struct(
     gpu_chromium_linux_builder = gpu_chromium_linux_builder,
     gpu_chromium_mac_builder = gpu_chromium_mac_builder,
     gpu_chromium_win_builder = gpu_chromium_win_builder,
+    gpu_try_resultdb_exports = gpu_try_resultdb_exports,
 )
