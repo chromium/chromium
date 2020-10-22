@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "media/base/media_util.h"
 #include "media/media_buildflags.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk.h"
@@ -22,6 +23,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_init.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/inspector/inspector_media_context_impl.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_decoder.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_frame.h"
@@ -43,10 +45,28 @@ template <typename Traits>
 DecoderTemplate<Traits>::DecoderTemplate(ScriptState* script_state,
                                          const InitType* init,
                                          ExceptionState& exception_state)
-    : script_state_(script_state), state_(V8CodecState::Enum::kUnconfigured) {
+    : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
+      script_state_(script_state),
+      state_(V8CodecState::Enum::kUnconfigured) {
   DVLOG(1) << __func__;
   DCHECK(init->hasOutput());
   DCHECK(init->hasError());
+
+  ExecutionContext* context = GetExecutionContext();
+
+  DCHECK(context);
+
+  parent_media_log_ = Platform::Current()->GetMediaLog(
+      MediaInspectorContextImpl::From(*context),
+      context->GetTaskRunner(TaskType::kInternalMedia));
+
+  if (!parent_media_log_)
+    parent_media_log_ = std::make_unique<media::NullMediaLog>();
+
+  // This allows us to destroy |parent_media_log_| and stop logging,
+  // without causing problems to |media_log_| users.
+  media_log_ = parent_media_log_->Clone();
+
   output_cb_ = init->output();
   error_cb_ = init->error();
 }
@@ -204,7 +224,6 @@ bool DecoderTemplate<Traits>::ProcessConfigureRequest(Request* request) {
   // until there is a decode request.
 
   if (!decoder_) {
-    media_log_ = std::make_unique<media::NullMediaLog>();
     decoder_ = Traits::CreateDecoder(*ExecutionContext::From(script_state_),
                                      media_log_.get());
     if (!decoder_) {
@@ -491,6 +510,12 @@ void DecoderTemplate<Traits>::Trace(Visitor* visitor) const {
   visitor->Trace(pending_request_);
   visitor->Trace(pending_decodes_);
   ScriptWrappable::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
+}
+
+template <typename Traits>
+void DecoderTemplate<Traits>::ContextDestroyed() {
+  parent_media_log_ = nullptr;
 }
 
 template <typename Traits>

@@ -28,6 +28,7 @@ include_rules = [
     "+media/base/audio_capturer_source.h",
     "+media/base/audio_renderer_sink.h",
     "+media/base/eme_constants.h",
+    "+media/base/media_log.h",
     "+media/base/video_frame_metadata.h",
     "+media/base/video_transformation.h",
     "+mojo/public",

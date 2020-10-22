@@ -38,8 +38,7 @@ class CONTENT_EXPORT BatchingMediaLog : public media::MediaLog {
     virtual void OnWebMediaPlayerDestroyed() = 0;
   };
 
-  BatchingMediaLog(const GURL& security_origin,
-                   scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+  BatchingMediaLog(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
                    std::vector<std::unique_ptr<EventHandler>> impl);
   ~BatchingMediaLog() override;
 
@@ -59,9 +58,6 @@ class CONTENT_EXPORT BatchingMediaLog : public media::MediaLog {
   void SendQueuedMediaEvents();
 
   std::string MediaEventToMessageString(const media::MediaLogRecord& event);
-
-  // Security origin of the current frame.
-  const GURL security_origin_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

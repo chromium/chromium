@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/unguessable_token.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 
 namespace blink {
@@ -19,18 +19,21 @@ const char MediaInspectorContextImpl::kSupplementName[] =
 
 // static
 MediaInspectorContextImpl* MediaInspectorContextImpl::From(
-    LocalDOMWindow& window) {
-  auto* context =
-      Supplement<LocalDOMWindow>::From<MediaInspectorContextImpl>(window);
+    ExecutionContext& execution_context) {
+  auto* context = Supplement<ExecutionContext>::From<MediaInspectorContextImpl>(
+      execution_context);
   if (!context) {
-    context = MakeGarbageCollected<MediaInspectorContextImpl>(window);
-    Supplement<LocalDOMWindow>::ProvideTo(window, context);
+    context =
+        MakeGarbageCollected<MediaInspectorContextImpl>(execution_context);
+    Supplement<ExecutionContext>::ProvideTo(execution_context, context);
   }
   return context;
 }
 
-MediaInspectorContextImpl::MediaInspectorContextImpl(LocalDOMWindow& frame)
-    : Supplement<LocalDOMWindow>(frame) {}
+MediaInspectorContextImpl::MediaInspectorContextImpl(ExecutionContext& context)
+    : Supplement<ExecutionContext>(context) {
+  DCHECK(context.IsWindow() || context.IsWorkerGlobalScope());
+}
 
 // Local to cc file for converting
 template <typename T, typename Iterable>
@@ -42,7 +45,7 @@ static Vector<T> Iter2Vector(const Iterable& iterable) {
 
 // Garbage collection method.
 void MediaInspectorContextImpl::Trace(Visitor* visitor) const {
-  Supplement<LocalDOMWindow>::Trace(visitor);
+  Supplement<ExecutionContext>::Trace(visitor);
   visitor->Trace(players_);
 }
 

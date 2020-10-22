@@ -43,6 +43,7 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_renderer_sink.h"
+#include "media/base/media_log.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -108,6 +109,7 @@ class RasterContextProvider;
 namespace blink {
 
 class BrowserInterfaceBrokerProxy;
+class MediaInspectorContext;
 class ThreadSafeBrowserInterfaceBrokerProxy;
 class Thread;
 struct ThreadCreationParams;
@@ -704,6 +706,23 @@ class BLINK_PLATFORM_EXPORT Platform {
   // Media Capabilities --------------------------------------------------
 
   virtual WebMediaCapabilitiesClient* MediaCapabilitiesClient() {
+    return nullptr;
+  }
+
+  // Media Log -----------------------------------------------------------
+
+  // MediaLog is used by WebCodecs to report events and errors up to the
+  // chrome://media-internals page and the DevTools media tab.
+  // |owner_task_runner| must be bound to the main thead or the worker thread
+  // on which WebCodecs will using the MediaLog. It is safe to add logs to
+  // MediaLog from any thread, but it must be destroyed on |owner_task_runner|.
+  // MediaLog owners should destroy the MediaLog if the ExecutionContext is
+  // destroyed, since |inspector_context| may no longer be valid at that point.
+  // Note: |inspector_context| is only used on |owner_task_runner|, so
+  // destroying the MediaLog on |owner_task_runner| should avoid races.
+  virtual std::unique_ptr<media::MediaLog> GetMediaLog(
+      MediaInspectorContext* inspector_context,
+      scoped_refptr<base::SingleThreadTaskRunner> owner_task_runner) {
     return nullptr;
   }
 

@@ -213,6 +213,9 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
       override;
   std::unique_ptr<blink::WebURLLoaderFactory> WrapSharedURLLoaderFactory(
       scoped_refptr<network::SharedURLLoaderFactory> factory) override;
+  std::unique_ptr<media::MediaLog> GetMediaLog(
+      blink::MediaInspectorContext* inspector_context,
+      scoped_refptr<base::SingleThreadTaskRunner> owner_task_runner) override;
 
   media::GpuVideoAcceleratorFactories* GetGpuFactories() override;
   void SetRenderingColorSpace(const gfx::ColorSpace& color_space) override;

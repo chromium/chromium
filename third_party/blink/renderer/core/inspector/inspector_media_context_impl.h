@@ -13,7 +13,7 @@
 
 namespace blink {
 
-class LocalDOMWindow;
+class ExecutionContext;
 
 struct MediaPlayer final : public GarbageCollected<MediaPlayer> {
   void Trace(Visitor*) const {}
@@ -27,14 +27,14 @@ struct MediaPlayer final : public GarbageCollected<MediaPlayer> {
 
 class CORE_EXPORT MediaInspectorContextImpl final
     : public GarbageCollected<MediaInspectorContextImpl>,
-      public Supplement<LocalDOMWindow>,
+      public Supplement<ExecutionContext>,
       public MediaInspectorContext {
  public:
   static const char kSupplementName[];
 
-  static MediaInspectorContextImpl* From(LocalDOMWindow&);
+  static MediaInspectorContextImpl* From(ExecutionContext&);
 
-  explicit MediaInspectorContextImpl(LocalDOMWindow&);
+  explicit MediaInspectorContextImpl(ExecutionContext&);
 
   // MediaInspectorContext methods.
   WebString CreatePlayer() override;

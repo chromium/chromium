@@ -40,9 +40,7 @@ class BatchingMediaLogTest : public testing::Test {
  public:
   BatchingMediaLogTest()
       : task_runner_(new base::TestMockTimeTaskRunner()),
-        log_(GURL("http://foo.com"),
-             task_runner_,
-             TestEventHandler::Create(this)) {
+        log_(task_runner_, TestEventHandler::Create(this)) {
     log_.SetTickClockForTesting(&tick_clock_);
   }
 

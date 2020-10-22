@@ -21,7 +21,6 @@
 #include "media/mojo/mojom/interface_factory.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/platform/web_media_player_source.h"
-#include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_set_sink_id_callbacks.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_media_inspector.h"
@@ -129,7 +128,6 @@ class MediaFactory {
       blink::WebMediaPlayerClient* client,
       blink::MediaInspectorContext* inspector_context,
       const blink::WebString& sink_id,
-      const blink::WebSecurityOrigin& security_origin,
       blink::WebLocalFrame* frame,
       viz::FrameSinkId parent_frame_sink_id,
       const cc::LayerTreeSettings& settings);

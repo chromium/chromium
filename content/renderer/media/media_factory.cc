@@ -358,12 +358,10 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
     viz::FrameSinkId parent_frame_sink_id,
     const cc::LayerTreeSettings& settings) {
   blink::WebLocalFrame* web_frame = render_frame_->GetWebFrame();
-  blink::WebSecurityOrigin security_origin =
-      render_frame_->GetWebFrame()->GetSecurityOrigin();
   if (source.IsMediaStream()) {
-    return CreateWebMediaPlayerForMediaStream(
-        client, inspector_context, sink_id, security_origin, web_frame,
-        parent_frame_sink_id, settings);
+    return CreateWebMediaPlayerForMediaStream(client, inspector_context,
+                                              sink_id, web_frame,
+                                              parent_frame_sink_id, settings);
   }
 
   // If |source| was not a MediaStream, it must be a URL.
@@ -408,7 +406,6 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
   // This must be created for every new WebMediaPlayer, each instance generates
   // a new player id which is used to collate logs on the browser side.
   auto media_log = std::make_unique<BatchingMediaLog>(
-      url::Origin(security_origin).GetURL(),
       render_frame_->GetTaskRunner(blink::TaskType::kInternalMedia),
       std::move(handlers));
 
@@ -685,7 +682,6 @@ blink::WebMediaPlayer* MediaFactory::CreateWebMediaPlayerForMediaStream(
     blink::WebMediaPlayerClient* client,
     blink::MediaInspectorContext* inspector_context,
     const blink::WebString& sink_id,
-    const blink::WebSecurityOrigin& security_origin,
     blink::WebLocalFrame* frame,
     viz::FrameSinkId parent_frame_sink_id,
     const cc::LayerTreeSettings& settings) {
@@ -702,7 +698,6 @@ blink::WebMediaPlayer* MediaFactory::CreateWebMediaPlayerForMediaStream(
   // This must be created for every new WebMediaPlayer, each instance generates
   // a new player id which is used to collate logs on the browser side.
   auto media_log = std::make_unique<BatchingMediaLog>(
-      url::Origin(security_origin).GetURL(),
       render_frame_->GetTaskRunner(blink::TaskType::kInternalMedia),
       std::move(handlers));
 

@@ -45,6 +45,9 @@
 #include "content/renderer/loader/resource_dispatcher.h"
 #include "content/renderer/loader/web_url_loader_impl.h"
 #include "content/renderer/media/audio_decoder.h"
+#include "content/renderer/media/batching_media_log.h"
+#include "content/renderer/media/inspector_media_event_handler.h"
+#include "content/renderer/media/render_media_event_handler.h"
 #include "content/renderer/media/renderer_webaudiodevice_impl.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
@@ -91,6 +94,7 @@
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/modules/media/audio/web_audio_device_factory.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_media_inspector.h"
 #include "third_party/sqlite/sqlite3.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/gl/buildflags.h"
@@ -916,6 +920,27 @@ void RendererBlinkPlatformImpl::RecordMetricsForBackgroundedRendererPurge() {
   if (!render_thread)
     return;
   render_thread->RecordMetricsForBackgroundedRendererPurge();
+}
+
+//------------------------------------------------------------------------------
+
+// The returned BatchingMediaLog can be used on any thread, but must be
+// destroyed on |owner_task_runner|. The aggregated MediaLogRecords will be
+// sent back to the Browser via Mojo objects bound to |owner_task_runner|.
+std::unique_ptr<media::MediaLog> RendererBlinkPlatformImpl::GetMediaLog(
+    blink::MediaInspectorContext* inspector_context,
+    scoped_refptr<base::SingleThreadTaskRunner> owner_task_runner) {
+  std::vector<std::unique_ptr<BatchingMediaLog::EventHandler>> handlers;
+
+  // For chrome://media-internals.
+  handlers.push_back(std::make_unique<RenderMediaEventHandler>());
+
+  // For devtools' media tab.
+  handlers.push_back(
+      std::make_unique<InspectorMediaEventHandler>(inspector_context));
+
+  return std::make_unique<BatchingMediaLog>(owner_task_runner,
+                                            std::move(handlers));
 }
 
 //------------------------------------------------------------------------------
