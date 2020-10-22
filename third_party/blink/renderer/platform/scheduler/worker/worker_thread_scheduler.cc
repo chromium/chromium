@@ -207,7 +207,7 @@ void WorkerThreadScheduler::OnTaskCompleted(
   PerformMicrotaskCheckpoint();
 
   task_timing->RecordTaskEnd(lazy_now);
-  worker_metrics_helper_.RecordTaskMetrics(task_queue, task, *task_timing);
+  worker_metrics_helper_.RecordTaskMetrics(task, *task_timing);
 
   if (task_queue_throttler_) {
     task_queue_throttler_->OnTaskRunTimeReported(

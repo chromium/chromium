@@ -56,8 +56,7 @@ void CompositorThreadScheduler::OnTaskCompleted(
     base::sequence_manager::TaskQueue::TaskTiming* task_timing,
     base::sequence_manager::LazyNow* lazy_now) {
   task_timing->RecordTaskEnd(lazy_now);
-  compositor_metrics_helper_.RecordTaskMetrics(worker_task_queue, task,
-                                               *task_timing);
+  compositor_metrics_helper_.RecordTaskMetrics(task, *task_timing);
 }
 
 scoped_refptr<scheduler::SingleThreadIdleTaskRunner>

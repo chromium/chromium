@@ -241,10 +241,10 @@ void MainThreadMetricsHelper::RecordTaskMetrics(
     MainThreadTaskQueue* queue,
     const base::sequence_manager::Task& task,
     const base::sequence_manager::TaskQueue::TaskTiming& task_timing) {
-  if (ShouldDiscardTask(queue, task, task_timing))
+  if (ShouldDiscardTask(task, task_timing))
     return;
 
-  MetricsHelper::RecordCommonTaskMetrics(queue, task, task_timing);
+  MetricsHelper::RecordCommonTaskMetrics(task, task_timing);
 
   total_task_time_reporter_.RecordAdditionalDuration(
       task_timing.wall_duration());

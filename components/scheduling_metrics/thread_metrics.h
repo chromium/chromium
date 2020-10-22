@@ -25,13 +25,11 @@ class COMPONENT_EXPORT(SCHEDULING_METRICS) ThreadMetrics {
   ~ThreadMetrics();
 
   bool ShouldDiscardTask(
-      base::sequence_manager::TaskQueue* queue,
       const base::sequence_manager::Task& task,
       const base::sequence_manager::TaskQueue::TaskTiming& task_timing);
 
   // Record task metrics which are shared between threads.
   void RecordTaskMetrics(
-      base::sequence_manager::TaskQueue* queue,
       const base::sequence_manager::Task& task,
       const base::sequence_manager::TaskQueue::TaskTiming& task_timing);
 

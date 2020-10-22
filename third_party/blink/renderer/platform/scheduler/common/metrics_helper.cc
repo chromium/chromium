@@ -71,7 +71,6 @@ MetricsHelper::MetricsHelper(ThreadType thread_type,
 MetricsHelper::~MetricsHelper() {}
 
 bool MetricsHelper::ShouldDiscardTask(
-    base::sequence_manager::TaskQueue* queue,
     const base::sequence_manager::Task& task,
     const base::sequence_manager::TaskQueue::TaskTiming& task_timing) {
   // TODO(altimin): Investigate the relationship between thread time and
@@ -82,10 +81,9 @@ bool MetricsHelper::ShouldDiscardTask(
 }
 
 void MetricsHelper::RecordCommonTaskMetrics(
-    base::sequence_manager::TaskQueue* queue,
     const base::sequence_manager::Task& task,
     const base::sequence_manager::TaskQueue::TaskTiming& task_timing) {
-  thread_metrics_.RecordTaskMetrics(queue, task, task_timing);
+  thread_metrics_.RecordTaskMetrics(task, task_timing);
 
   thread_task_duration_reporter_.RecordTask(thread_type_,
                                             task_timing.wall_duration());

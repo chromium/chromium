@@ -40,19 +40,16 @@ TEST(MetricsHelperTest, TaskDurationPerThreadType) {
                                false /* has_cpu_timing_for_each_task */);
 
   main_thread_metrics.RecordTaskMetrics(
-      nullptr, FakeTask(),
-      FakeTaskTiming(Seconds(10), Seconds(50), ThreadSeconds(0),
-                     ThreadSeconds(15)));
+      FakeTask(), FakeTaskTiming(Seconds(10), Seconds(50), ThreadSeconds(0),
+                                 ThreadSeconds(15)));
   compositor_metrics.RecordTaskMetrics(
-      nullptr, FakeTask(),
-      FakeTaskTiming(Seconds(10), Seconds(80), ThreadSeconds(0),
-                     ThreadSeconds(5)));
+      FakeTask(), FakeTaskTiming(Seconds(10), Seconds(80), ThreadSeconds(0),
+                                 ThreadSeconds(5)));
   compositor_metrics.RecordTaskMetrics(
-      nullptr, FakeTask(), FakeTaskTiming(Seconds(100), Seconds(200)));
+      FakeTask(), FakeTaskTiming(Seconds(100), Seconds(200)));
   worker_metrics.RecordTaskMetrics(
-      nullptr, FakeTask(),
-      FakeTaskTiming(Seconds(10), Seconds(125), ThreadSeconds(0),
-                     ThreadSeconds(25)));
+      FakeTask(), FakeTaskTiming(Seconds(10), Seconds(125), ThreadSeconds(0),
+                                 ThreadSeconds(25)));
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
@@ -84,13 +81,11 @@ TEST(MetricsHelperTest, TrackedCPUTimeMetrics) {
                                     true /* has_cpu_timing_for_each_task */);
 
   main_thread_metrics.RecordTaskMetrics(
-      nullptr, FakeTask(),
-      FakeTaskTiming(Seconds(10), Seconds(50), ThreadSeconds(5),
-                     ThreadSeconds(15)));
+      FakeTask(), FakeTaskTiming(Seconds(10), Seconds(50), ThreadSeconds(5),
+                                 ThreadSeconds(15)));
   main_thread_metrics.RecordTaskMetrics(
-      nullptr, FakeTask(),
-      FakeTaskTiming(Seconds(10), Seconds(50), ThreadSeconds(20),
-                     ThreadSeconds(25)));
+      FakeTask(), FakeTaskTiming(Seconds(10), Seconds(50), ThreadSeconds(20),
+                                 ThreadSeconds(25)));
 
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Scheduler.Experimental.CPUTimePerThread.Tracked"),
