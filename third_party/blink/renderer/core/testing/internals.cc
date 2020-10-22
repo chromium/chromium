@@ -2591,9 +2591,8 @@ void Internals::forceFullRepaint(Document* document,
     return;
   }
 
-  auto* layout_view = document->GetLayoutView();
-  if (layout_view)
-    layout_view->InvalidatePaintForViewAndCompositedLayers();
+  if (auto* layout_view = document->GetLayoutView())
+    layout_view->InvalidatePaintForViewAndDescendants();
 }
 
 DOMRectList* Internals::draggableRegions(Document* document,

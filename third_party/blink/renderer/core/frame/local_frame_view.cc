@@ -4260,7 +4260,7 @@ void LocalFrameView::InvalidateForThrottlingChange() {
   // painting them while the frame was throttled.
   LayoutView* layout_view = GetLayoutView();
   if (layout_view) {
-    layout_view->InvalidatePaintForViewAndCompositedLayers();
+    layout_view->InvalidatePaintForViewAndDescendants();
     // Also need to update all paint properties that might be skipped while
     // the frame was throttled.
     layout_view->AddSubtreePaintPropertyUpdateReason(

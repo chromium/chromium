@@ -825,7 +825,7 @@ void Page::InvalidatePaint() {
     if (!local_frame)
       continue;
     if (LayoutView* view = local_frame->ContentLayoutObject())
-      view->InvalidatePaintForViewAndCompositedLayers();
+      view->InvalidatePaintForViewAndDescendants();
   }
 }
 

@@ -164,8 +164,6 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
   PhysicalOffset OffsetForFixedPosition() const;
   PhysicalOffset PixelSnappedOffsetForFixedPosition() const;
 
-  void InvalidatePaintForViewAndCompositedLayers();
-
   void Paint(const PaintInfo&) const override;
   void PaintBoxDecorationBackground(
       const PaintInfo&,
@@ -291,7 +289,7 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
   // Invalidates paint for the entire view, including composited descendants,
   // but not including child frames.
   // It is very likely you do not want to call this method.
-  void SetShouldDoFullPaintInvalidationForViewAndAllDescendants();
+  void InvalidatePaintForViewAndDescendants();
 
   bool ShouldPlaceBlockDirectionScrollbarOnLogicalLeft() const override;
 

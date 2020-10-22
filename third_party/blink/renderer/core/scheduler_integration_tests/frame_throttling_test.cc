@@ -1304,7 +1304,7 @@ TEST_P(FrameThrottlingTest, SkipPaintingLayersInThrottledFrames) {
   // (e.g., by video playback).
   frame_document->View()
       ->GetLayoutView()
-      ->InvalidatePaintForViewAndCompositedLayers();
+      ->InvalidatePaintForViewAndDescendants();
 
   // The layer inside the throttled frame should not get painted.
   auto commands2 = CompositeFrame();

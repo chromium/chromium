@@ -496,17 +496,12 @@ static void InvalidatePaintForViewAndDescendantsRecursively(PaintLayer& layer) {
     InvalidatePaintForViewAndDescendantsRecursively(*child);
 }
 
-void LayoutView::SetShouldDoFullPaintInvalidationForViewAndAllDescendants() {
+void LayoutView::InvalidatePaintForViewAndDescendants() {
   NOT_DESTROYED();
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
     SetSubtreeShouldDoFullPaintInvalidation();
   else
     InvalidatePaintForViewAndDescendantsRecursively(*Layer());
-}
-
-void LayoutView::InvalidatePaintForViewAndCompositedLayers() {
-  NOT_DESTROYED();
-  SetShouldDoFullPaintInvalidationForViewAndAllDescendants();
 }
 
 bool LayoutView::MapToVisualRectInAncestorSpace(
