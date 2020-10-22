@@ -912,7 +912,13 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ModifySelectFieldAndFill) {
 }
 
 // Test that autofill works when the website prefills the form.
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, PrefillFormAndFill) {
+// TODO(crbug.com/1141208): Disabled due to flakiness on MAC
+#if defined(OS_MAC)
+#define MAYBE_PrefillFormAndFill DISABLED_PrefillFormAndFill
+#else
+#define MAYBE_PrefillFormAndFill PrefillFormAndFill
+#endif
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, MAYBE_PrefillFormAndFill) {
   const char kPrefillScript[] =
       "<script>"
       "document.getElementById('firstname').value = 'Seb';"
