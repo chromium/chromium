@@ -193,6 +193,10 @@ public class TranslateBridge {
         TranslateBridgeJni.get().setExplicitLanguageAskPromptShown(shown);
     }
 
+    public static void setIgnoreMissingKeyForTesting(boolean ignore) {
+        TranslateBridgeJni.get().setIgnoreMissingKeyForTesting(ignore); // IN-TEST
+    }
+
     @NativeMethods
     interface Natives {
         void manualTranslateWhenReady(WebContents webContents);
@@ -213,5 +217,6 @@ public class TranslateBridge {
         void setLanguageBlockedState(String language, boolean blocked);
         boolean getExplicitLanguageAskPromptShown();
         void setExplicitLanguageAskPromptShown(boolean shown);
+        void setIgnoreMissingKeyForTesting(boolean ignore);
     }
 }

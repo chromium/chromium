@@ -16,26 +16,22 @@ import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
-import org.chromium.chrome.browser.infobar.TranslateCompactInfoBar;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
+import org.chromium.chrome.test.util.TranslateUtil;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
@@ -50,58 +46,36 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(Batch.PER_CLASS)
 public class TranslateIntentTest {
-    @ClassRule
-    public static final ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
     @Rule
-    public final BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private static final String TRANSLATE_PAGE = "/chrome/test/data/translate/fr_test.html";
     private static final String NON_TRANSLATE_PAGE =
             "/chrome/test/data/translate/english_page.html";
 
     private InfoBarContainer mInfoBarContainer;
-    private InfoBarTestAnimationListener mListener;
 
     /**
      * Wait until the activity tab is translatable. This is useful in cases where we can't wait on
      * the infobar.
      */
     private void waitUntilTranslatable() {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            Tab tab = sActivityTestRule.getActivity().getActivityTab();
+        CriteriaHelper.pollUiThread(() -> {
+            Tab tab = mActivityTestRule.getActivity().getActivityTab();
             Criteria.checkThat(tab, Matchers.notNullValue());
-            boolean canManuallyTranslate = false;
-            try {
-                canManuallyTranslate = TestThreadUtils.runOnUiThreadBlocking(
-                        () -> TranslateBridge.canManuallyTranslate(tab));
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-                canManuallyTranslate = false;
-            }
-            Criteria.checkThat(canManuallyTranslate, Matchers.is(true));
+            Criteria.checkThat(TranslateBridge.canManuallyTranslate(tab), Matchers.is(true));
         });
     }
 
     /**
-     * Wait until the given translate infobar is in the given state.
+     * Returns true if a test that requires internet access should be skipped due to an
+     * out-of-process NetworkService. When the NetworkService is run out-of-process, a fake DNS
+     * resolver is used that will fail to resolve any non-local names. crbug.com/1134812 is tracking
+     * the changes to make the translate service mockable and remove the internet requirement.
      */
-    private void waitForTranslateInfoBarState(boolean expectTranslated) {
-        TranslateCompactInfoBar infoBar =
-                (TranslateCompactInfoBar) mInfoBarContainer.getInfoBarsForTesting().get(0);
-
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            if (expectTranslated) {
-                return !infoBar.isSourceTabSelectedForTesting()
-                        && infoBar.isTargetTabSelectedForTesting();
-            } else {
-                return infoBar.isSourceTabSelectedForTesting()
-                        && !infoBar.isTargetTabSelectedForTesting();
-            }
-        });
+    private boolean shouldSkipDueToNetworkService() {
+        return !ChromeFeatureList.isEnabled("NetworkServiceInProcess");
     }
 
     /**
@@ -118,86 +92,84 @@ public class TranslateIntentTest {
         }
         IntentHandler.addTrustedIntentExtras(intent);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> sActivityTestRule.getActivity().onNewIntent(intent));
+                () -> mActivityTestRule.getActivity().onNewIntent(intent));
     }
 
     @Before
     public void setUp() {
-        mInfoBarContainer = sActivityTestRule.getInfoBarContainer();
-        mListener = new InfoBarTestAnimationListener();
-        mInfoBarContainer.addAnimationListener(mListener);
+        mActivityTestRule.startMainActivityOnBlankPage();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> TranslateBridge.setIgnoreMissingKeyForTesting(true));
+        mInfoBarContainer = mActivityTestRule.getInfoBarContainer();
     }
 
     @After
     public void tearDown() {
-        mInfoBarContainer.removeAnimationListener(mListener);
     }
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1127786 and https://crbug.com/1135682")
+    @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
-    public void
-    testTranslateIntentDisabled() throws TimeoutException {
-        final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
+    public void testTranslateIntentDisabled() throws TimeoutException {
+        if (shouldSkipDueToNetworkService()) return;
+        final String url = mActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
         // Load a page that triggers the translate recommendation.
-        sActivityTestRule.loadUrl(url);
-        mListener.addInfoBarAnimationFinished("InfoBar not opened.");
-        waitForTranslateInfoBarState(false);
+        mActivityTestRule.loadUrl(url);
+        TranslateUtil.waitForTranslateInfoBarState(mInfoBarContainer, /*expectTranslated=*/false);
 
         sendTranslateIntent(url, null);
 
         // No translation occurs.
-        waitForTranslateInfoBarState(false);
+        TranslateUtil.waitForTranslateInfoBarState(mInfoBarContainer, /*expectTranslated=*/false);
     }
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1127786 and https://crbug.com/1135682")
+    @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
-    public void
-    testTranslateIntentOnTranslatePage() throws TimeoutException {
-        final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
+    public void testTranslateIntentOnTranslatePage() throws TimeoutException {
+        if (shouldSkipDueToNetworkService()) return;
+        final String url = mActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
         // Load a page that triggers the translate recommendation.
-        sActivityTestRule.loadUrl(url);
-        mListener.addInfoBarAnimationFinished("InfoBar not opened.");
-        waitForTranslateInfoBarState(false);
+        mActivityTestRule.loadUrl(url);
+        TranslateUtil.waitForTranslateInfoBarState(mInfoBarContainer, /*expectTranslated=*/false);
 
         sendTranslateIntent(url, null);
 
         // Only the target tab is selected.
-        waitForTranslateInfoBarState(true);
+        TranslateUtil.waitForTranslateInfoBarState(mInfoBarContainer, /*expectTranslated=*/true);
     }
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1127786 and https://crbug.com/1135682")
+    @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
-    public void
-    testTranslateIntentOnNonTranslatePage() throws TimeoutException {
-        final String url = sActivityTestRule.getTestServer().getURL(NON_TRANSLATE_PAGE);
+    public void testTranslateIntentOnNonTranslatePage() throws TimeoutException {
+        if (shouldSkipDueToNetworkService()) return;
+        final String url = mActivityTestRule.getTestServer().getURL(NON_TRANSLATE_PAGE);
         // Load a page that doesn't trigger the translate recommendation.
-        sActivityTestRule.loadUrl(url);
+        mActivityTestRule.loadUrl(url);
 
         waitUntilTranslatable();
         Assert.assertTrue(mInfoBarContainer.getInfoBarsForTesting().isEmpty());
 
         sendTranslateIntent(url, null);
-        mListener.addInfoBarAnimationFinished("InfoBar not opened.");
 
         // Only the target tab is selected.
-        waitForTranslateInfoBarState(true);
+        TranslateUtil.waitForTranslateInfoBarState(mInfoBarContainer, /*expectTranslated=*/true);
     }
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1127786 and https://crbug.com/1135682")
+    @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
-    public void
-    testTranslateIntentWithTargetLanguage() throws TimeoutException, ExecutionException {
-        final String url = sActivityTestRule.getTestServer().getURL(NON_TRANSLATE_PAGE);
+    public void testTranslateIntentWithTargetLanguage()
+            throws TimeoutException, ExecutionException {
+        if (shouldSkipDueToNetworkService()) return;
+        final String url = mActivityTestRule.getTestServer().getURL(NON_TRANSLATE_PAGE);
         // Load a page that doesn't trigger the translate recommendation.
-        sActivityTestRule.loadUrl(url);
+        mActivityTestRule.loadUrl(url);
 
         waitUntilTranslatable();
         Assert.assertTrue(mInfoBarContainer.getInfoBarsForTesting().isEmpty());
@@ -207,10 +179,9 @@ public class TranslateIntentTest {
         Assert.assertFalse(acceptCodes.contains("de"));
 
         sendTranslateIntent(url, "de");
-        mListener.addInfoBarAnimationFinished("InfoBar not opened.");
 
         // Only the target tab is selected.
-        waitForTranslateInfoBarState(true);
+        TranslateUtil.waitForTranslateInfoBarState(mInfoBarContainer, /*expectTranslated=*/true);
 
         // Verify that German has been added to the user's accept languages.
         acceptCodes =
@@ -220,13 +191,13 @@ public class TranslateIntentTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1127786 and https://crbug.com/1135682")
+    @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
-    public void
-    testTranslateIntentWithUnsupportedTargetLanguage() throws TimeoutException {
-        final String url = sActivityTestRule.getTestServer().getURL(NON_TRANSLATE_PAGE);
+    public void testTranslateIntentWithUnsupportedTargetLanguage() throws TimeoutException {
+        if (shouldSkipDueToNetworkService()) return;
+        final String url = mActivityTestRule.getTestServer().getURL(NON_TRANSLATE_PAGE);
         // Load a page that doesn't trigger the translate recommendation.
-        sActivityTestRule.loadUrl(url);
+        mActivityTestRule.loadUrl(url);
 
         waitUntilTranslatable();
         Assert.assertTrue(mInfoBarContainer.getInfoBarsForTesting().isEmpty());
@@ -238,97 +209,96 @@ public class TranslateIntentTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1127786 and https://crbug.com/1135682")
+    @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
-    public void
-    testTranslateIntentOnIncognito() throws TimeoutException {
-        final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
+    public void testTranslateIntentOnIncognito() throws TimeoutException {
+        if (shouldSkipDueToNetworkService()) return;
+        final String url = mActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
         // Load a page that triggers the translate recommendation.
-        sActivityTestRule.loadUrlInNewTab(url, /*incognito=*/true);
+        mActivityTestRule.loadUrlInNewTab(url, /*incognito=*/true);
         // A new tab is opened for this test so we need to get the new container.
-        mInfoBarContainer = sActivityTestRule.getInfoBarContainer();
-        InfoBarTestAnimationListener mListener = new InfoBarTestAnimationListener();
-        mInfoBarContainer.addAnimationListener(mListener);
-        mListener.addInfoBarAnimationFinished("InfoBar not opened.");
-        waitForTranslateInfoBarState(false);
+        mInfoBarContainer = mActivityTestRule.getInfoBarContainer();
+        TranslateUtil.waitForTranslateInfoBarState(mInfoBarContainer, /*expectTranslated=*/false);
 
         sendTranslateIntent(url, null);
 
         // No translation should happen.
-        waitForTranslateInfoBarState(false);
+        TranslateUtil.waitForTranslateInfoBarState(mInfoBarContainer, /*expectTranslated=*/false);
+
+        // We opened a new tab for this test. Ensure that it's closed.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mActivityTestRule.getActivity().getTabModelSelector().closeAllTabs(); });
     }
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1127786 and https://crbug.com/1135682")
+    @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
-    public void
-    testTranslateIntentWithUrlMismatch() throws TimeoutException {
-        final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
+    public void testTranslateIntentWithUrlMismatch() throws TimeoutException {
+        if (shouldSkipDueToNetworkService()) return;
+        final String url = mActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
         // Load a page that triggers the translate recommendation.
-        sActivityTestRule.loadUrl(url);
-        mListener.addInfoBarAnimationFinished("InfoBar not opened.");
-        waitForTranslateInfoBarState(false);
+        mActivityTestRule.loadUrl(url);
+        TranslateUtil.waitForTranslateInfoBarState(mInfoBarContainer, /*expectTranslated=*/false);
 
         sendTranslateIntent("http://incorrect.com", null);
 
         // No translation should happen.
-        waitForTranslateInfoBarState(false);
+        TranslateUtil.waitForTranslateInfoBarState(mInfoBarContainer, /*expectTranslated=*/false);
     }
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1127786 and https://crbug.com/1135682")
+    @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
-    public void
-    testTranslateIntentWithoutExpectedUrl() throws TimeoutException {
-        final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
+    public void testTranslateIntentWithoutExpectedUrl() throws TimeoutException {
+        if (shouldSkipDueToNetworkService()) return;
+        final String url = mActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
         // Load a page that triggers the translate recommendation.
-        sActivityTestRule.loadUrl(url);
-        mListener.addInfoBarAnimationFinished("InfoBar not opened.");
-        waitForTranslateInfoBarState(false);
+        mActivityTestRule.loadUrl(url);
+        TranslateUtil.waitForTranslateInfoBarState(mInfoBarContainer, /*expectTranslated=*/false);
 
         sendTranslateIntent(null, null);
 
         // No translation should happen.
-        waitForTranslateInfoBarState(false);
+        TranslateUtil.waitForTranslateInfoBarState(mInfoBarContainer, /*expectTranslated=*/false);
     }
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1127786 and https://crbug.com/1135682")
+    @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
-    public void
-    testTranslateIntentVerifyComponent() throws TimeoutException {
-        final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
+    public void testTranslateIntentVerifyComponent() throws TimeoutException {
+        if (shouldSkipDueToNetworkService()) return;
+        final String url = mActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
         // Load a page that triggers the translate recommendation.
-        sActivityTestRule.loadUrl(url);
-        mListener.addInfoBarAnimationFinished("InfoBar not opened.");
-        waitForTranslateInfoBarState(false);
+        mActivityTestRule.loadUrl(url);
+        TranslateUtil.waitForTranslateInfoBarState(mInfoBarContainer, /*expectTranslated=*/false);
 
         Context context = ContextUtils.getApplicationContext();
 
         final Intent intent = new Intent(TranslateIntentHandler.ACTION_TRANSLATE_TAB);
         intent.setClassName(context, "com.google.android.apps.chrome.TranslateDispatcher");
         intent.putExtra(TranslateIntentHandler.EXTRA_EXPECTED_URL, url);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         // Send this via startActivity so we don't bypass LaunchIntentHandler.
-        TestThreadUtils.runOnUiThreadBlocking(() -> context.startActivity(intent));
+        mActivityTestRule.startActivityCompletely(intent);
+        mActivityTestRule.waitForActivityNativeInitializationComplete();
 
         // Only the target tab is selected.
-        waitForTranslateInfoBarState(true);
+        TranslateUtil.waitForTranslateInfoBarState(mInfoBarContainer, /*expectTranslated=*/true);
     }
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1127786 and https://crbug.com/1135682")
+    @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
-    public void
-    testTranslateIntentIncorrectComponent() throws TimeoutException {
-        final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
+    public void testTranslateIntentIncorrectComponent() throws TimeoutException {
+        if (shouldSkipDueToNetworkService()) return;
+        final String url = mActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
         // Load a page that triggers the translate recommendation.
-        sActivityTestRule.loadUrl(url);
-        mListener.addInfoBarAnimationFinished("InfoBar not opened.");
-        waitForTranslateInfoBarState(false);
+        mActivityTestRule.loadUrl(url);
+        TranslateUtil.waitForTranslateInfoBarState(mInfoBarContainer, /*expectTranslated=*/false);
 
         Context context = ContextUtils.getApplicationContext();
 
@@ -336,10 +306,11 @@ public class TranslateIntentTest {
         // Bypassing the TranslateDispatcher activity alias should reject the intent.
         intent.setClass(context, ChromeLauncherActivity.class);
         intent.putExtra(TranslateIntentHandler.EXTRA_EXPECTED_URL, url);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         TestThreadUtils.runOnUiThreadBlocking(() -> context.startActivity(intent));
 
         // No translation should happen.
-        waitForTranslateInfoBarState(false);
+        TranslateUtil.waitForTranslateInfoBarState(mInfoBarContainer, /*expectTranslated=*/false);
     }
 
     @Test

@@ -412,3 +412,10 @@ static void JNI_TranslateBridge_SetExplicitLanguageAskPromptShown(
       ChromeTranslateClient::CreateTranslatePrefs(GetPrefService());
   translate_prefs->SetExplicitLanguageAskPromptShown(shown);
 }
+
+static void JNI_TranslateBridge_SetIgnoreMissingKeyForTesting(  // IN-TEST
+    JNIEnv* env,
+    jboolean ignore) {
+  translate::TranslateManager::SetIgnoreMissingKeyForTesting(  // IN-TEST
+      ignore);
+}
