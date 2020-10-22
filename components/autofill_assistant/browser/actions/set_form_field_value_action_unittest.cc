@@ -145,7 +145,7 @@ TEST_F(SetFormFieldValueActionTest, Username) {
   SetFormFieldValueAction action(&mock_action_delegate_, proto_);
 
   const ElementFinder::Result& expected_element =
-      test_util::MockFindElement(mock_action_delegate_, fake_selector_, 2);
+      test_util::MockFindElement(mock_action_delegate_, fake_selector_);
   EXPECT_CALL(
       mock_action_delegate_,
       SetValueAttribute(kFakeUsername, EqualsElement(expected_element), _))
@@ -166,7 +166,7 @@ TEST_F(SetFormFieldValueActionTest, PasswordToFill) {
   SetFormFieldValueAction action(&mock_action_delegate_, proto_);
 
   const ElementFinder::Result& expected_element =
-      test_util::MockFindElement(mock_action_delegate_, fake_selector_, 2);
+      test_util::MockFindElement(mock_action_delegate_, fake_selector_);
   EXPECT_CALL(
       mock_action_delegate_,
       SetValueAttribute(kFakePassword, EqualsElement(expected_element), _))
@@ -265,7 +265,7 @@ TEST_F(SetFormFieldValueActionTest, Text) {
   SetFormFieldValueAction action(&mock_action_delegate_, proto_);
 
   const ElementFinder::Result& expected_element =
-      test_util::MockFindElement(mock_action_delegate_, fake_selector_, 2);
+      test_util::MockFindElement(mock_action_delegate_, fake_selector_);
   EXPECT_CALL(
       mock_action_delegate_,
       SetValueAttribute("SomeText𠜎", EqualsElement(expected_element), _))
@@ -353,13 +353,17 @@ TEST_F(SetFormFieldValueActionTest, MultipleValuesAndSimulateKeypress) {
   set_form_field_proto_->set_fill_strategy(SIMULATE_KEY_PRESSES);
 
   SetFormFieldValueAction action(&mock_action_delegate_, proto_);
+  const ElementFinder::Result& expected_element =
+      test_util::MockFindElement(mock_action_delegate_, fake_selector_);
   EXPECT_CALL(mock_action_delegate_,
-              OnSendKeyboardInput(UTF8ToUnicode("SomeText"), _, _, _))
+              OnSendKeyboardInput(UTF8ToUnicode("SomeText"), _,
+                                  EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus()));
   // The second entry, a deprecated keycode is transformed into a
   // field_input.keyboard_input.
   EXPECT_CALL(mock_action_delegate_,
-              OnSendKeyboardInput(std::vector<int>{13}, _, _, _))
+              OnSendKeyboardInput(std::vector<int>{13}, _,
+                                  EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus()));
 
   EXPECT_CALL(
@@ -377,7 +381,7 @@ TEST_F(SetFormFieldValueActionTest, ClientMemoryKey) {
   SetFormFieldValueAction action(&mock_action_delegate_, proto_);
 
   const ElementFinder::Result& expected_element =
-      test_util::MockFindElement(mock_action_delegate_, fake_selector_, 2);
+      test_util::MockFindElement(mock_action_delegate_, fake_selector_);
   EXPECT_CALL(
       mock_action_delegate_,
       SetValueAttribute("SomeText𠜎", EqualsElement(expected_element), _))
@@ -409,20 +413,15 @@ TEST_F(SetFormFieldValueActionTest, FallbackToSimulateKeystrokes) {
   value->set_text("123");
   SetFormFieldValueAction action(&mock_action_delegate_, proto_);
 
+  const ElementFinder::Result& expected_element =
+      test_util::MockFindElement(mock_action_delegate_, fake_selector_);
   EXPECT_CALL(mock_action_delegate_,
-              SetValueAttribute("123",
-                                EqualsElement(test_util::MockFindElement(
-                                    mock_action_delegate_, fake_selector_)),
-                                _))
+              SetValueAttribute("123", EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
   EXPECT_CALL(mock_action_delegate_,
-              GetFieldValue(EqualsElement(test_util::MockFindElement(
-                                mock_action_delegate_, fake_selector_)),
-                            _))
+              GetFieldValue(EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), std::string()));
 
-  auto expected_element =
-      test_util::MockFindElement(mock_action_delegate_, fake_selector_);
   EXPECT_CALL(mock_action_delegate_,
               SetValueAttribute("", EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
@@ -448,20 +447,16 @@ TEST_F(SetFormFieldValueActionTest, FallbackForPassword) {
   value->set_use_password(true);
   SetFormFieldValueAction action(&mock_action_delegate_, proto_);
 
-  EXPECT_CALL(mock_action_delegate_,
-              SetValueAttribute(kFakePassword,
-                                EqualsElement(test_util::MockFindElement(
-                                    mock_action_delegate_, fake_selector_)),
-                                _))
+  const ElementFinder::Result& expected_element =
+      test_util::MockFindElement(mock_action_delegate_, fake_selector_);
+  EXPECT_CALL(
+      mock_action_delegate_,
+      SetValueAttribute(kFakePassword, EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
   EXPECT_CALL(mock_action_delegate_,
-              GetFieldValue(EqualsElement(test_util::MockFindElement(
-                                mock_action_delegate_, fake_selector_)),
-                            _))
+              GetFieldValue(EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), std::string()));
 
-  auto expected_element =
-      test_util::MockFindElement(mock_action_delegate_, fake_selector_);
   EXPECT_CALL(mock_action_delegate_,
               SetValueAttribute("", EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
@@ -489,50 +484,40 @@ TEST_F(SetFormFieldValueActionTest, FallbackForMultipleValues) {
   enter->set_text("SomeOtherText");
   SetFormFieldValueAction action(&mock_action_delegate_, proto_);
 
+  const ElementFinder::Result& expected_element =
+      test_util::MockFindElement(mock_action_delegate_, fake_selector_);
+
   // First value.
   EXPECT_CALL(mock_action_delegate_,
-              SetValueAttribute("SomeText",
-                                EqualsElement(test_util::MockFindElement(
-                                    mock_action_delegate_, fake_selector_)),
-                                _))
+              SetValueAttribute("SomeText", EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
   EXPECT_CALL(mock_action_delegate_,
-              GetFieldValue(EqualsElement(test_util::MockFindElement(
-                                mock_action_delegate_, fake_selector_)),
-                            _))
+              GetFieldValue(EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), std::string()));
 
-  auto expected_element_1 =
-      test_util::MockFindElement(mock_action_delegate_, fake_selector_);
   EXPECT_CALL(mock_action_delegate_,
-              SetValueAttribute("", EqualsElement(expected_element_1), _))
+              SetValueAttribute("", EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
   EXPECT_CALL(mock_action_delegate_,
               OnSendKeyboardInput(UTF8ToUnicode("SomeText"), _,
-                                  EqualsElement(expected_element_1), _))
+                                  EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus()));
 
   // Second value.
-  EXPECT_CALL(mock_action_delegate_,
-              SetValueAttribute("SomeOtherText",
-                                EqualsElement(test_util::MockFindElement(
-                                    mock_action_delegate_, fake_selector_)),
-                                _))
+  EXPECT_CALL(
+      mock_action_delegate_,
+      SetValueAttribute("SomeOtherText", EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
   EXPECT_CALL(mock_action_delegate_,
-              GetFieldValue(EqualsElement(test_util::MockFindElement(
-                                mock_action_delegate_, fake_selector_)),
-                            _))
+              GetFieldValue(EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), std::string()));
 
-  auto expected_element_2 =
-      test_util::MockFindElement(mock_action_delegate_, fake_selector_);
   EXPECT_CALL(mock_action_delegate_,
-              SetValueAttribute("", EqualsElement(expected_element_2), _))
+              SetValueAttribute("", EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
   EXPECT_CALL(mock_action_delegate_,
               OnSendKeyboardInput(UTF8ToUnicode("SomeOtherText"), _,
-                                  EqualsElement(expected_element_2), _))
+                                  EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus()));
 
   EXPECT_CALL(callback_,
@@ -607,7 +592,7 @@ TEST_F(SetFormFieldValueActionTest, SetFieldFromProfileValue) {
   SetFormFieldValueAction action(&mock_action_delegate_, proto_);
 
   const ElementFinder::Result& expected_element =
-      test_util::MockFindElement(mock_action_delegate_, fake_selector_, 2);
+      test_util::MockFindElement(mock_action_delegate_, fake_selector_);
   EXPECT_CALL(mock_action_delegate_,
               SetValueAttribute("John", EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
