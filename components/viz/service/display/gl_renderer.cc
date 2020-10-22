@@ -1798,9 +1798,9 @@ void GLRenderer::UpdateRPDQUniforms(DrawRenderPassDrawQuadParams* params) {
 
   SetShaderOpacity(params->quad->shared_quad_state->opacity);
   if (current_program_->rounded_corner_rect_location() != -1) {
-    SetShaderRoundedCorner(params->quad->shared_quad_state->mask_filter_info
-                               .rounded_corner_bounds(),
-                           params->window_matrix * params->projection_matrix);
+    SetShaderRoundedCorner(
+        params->quad->shared_quad_state->rounded_corner_bounds,
+        params->window_matrix * params->projection_matrix);
   }
   SetShaderQuadF(params->surface_quad);
 }
@@ -2201,7 +2201,7 @@ void GLRenderer::DrawSolidColorQuad(const SolidColorDrawQuad* quad,
     SetShaderColor(color, opacity);
     if (current_program_->rounded_corner_rect_location() != -1) {
       SetShaderRoundedCorner(
-          quad->shared_quad_state->mask_filter_info.rounded_corner_bounds(),
+          quad->shared_quad_state->rounded_corner_bounds,
           current_frame()->window_matrix * current_frame()->projection_matrix);
     }
 
@@ -2388,7 +2388,7 @@ void GLRenderer::DrawContentQuadAA(const ContentDrawQuadBase* quad,
   SetShaderOpacity(quad->shared_quad_state->opacity);
   if (current_program_->rounded_corner_rect_location() != -1) {
     SetShaderRoundedCorner(
-        quad->shared_quad_state->mask_filter_info.rounded_corner_bounds(),
+        quad->shared_quad_state->rounded_corner_bounds,
         current_frame()->window_matrix * current_frame()->projection_matrix);
   }
   DCHECK(CanApplyBlendModeUsingBlendFunc(quad->shared_quad_state->blend_mode));
@@ -2488,7 +2488,7 @@ void GLRenderer::DrawContentQuadNoAA(const ContentDrawQuadBase* quad,
   SetShaderOpacity(quad->shared_quad_state->opacity);
   if (current_program_->rounded_corner_rect_location() != -1) {
     SetShaderRoundedCorner(
-        quad->shared_quad_state->mask_filter_info.rounded_corner_bounds(),
+        quad->shared_quad_state->rounded_corner_bounds,
         current_frame()->window_matrix * current_frame()->projection_matrix);
   }
 
@@ -2628,7 +2628,7 @@ void GLRenderer::DrawYUVVideoQuad(const YUVVideoDrawQuad* quad,
 
   if (current_program_->rounded_corner_rect_location() != -1) {
     SetShaderRoundedCorner(
-        quad->shared_quad_state->mask_filter_info.rounded_corner_bounds(),
+        quad->shared_quad_state->rounded_corner_bounds,
         current_frame()->window_matrix * current_frame()->projection_matrix);
   }
 
@@ -2772,7 +2772,7 @@ void GLRenderer::DrawStreamVideoQuad(const StreamVideoDrawQuad* quad,
   SetShaderOpacity(quad->shared_quad_state->opacity);
   if (current_program_->rounded_corner_rect_location() != -1) {
     SetShaderRoundedCorner(
-        quad->shared_quad_state->mask_filter_info.rounded_corner_bounds(),
+        quad->shared_quad_state->rounded_corner_bounds,
         current_frame()->window_matrix * current_frame()->projection_matrix);
   }
   gfx::Size texture_size = lock.size();
@@ -2832,7 +2832,7 @@ void GLRenderer::FlushTextureQuadCache(BoundGeometry flush_binding) {
 
   if (current_program_->rounded_corner_rect_location() != -1) {
     SetShaderRoundedCorner(
-        draw_cache_.mask_filter_info.rounded_corner_bounds(),
+        draw_cache_.rounded_corner_bounds,
         current_frame()->window_matrix * current_frame()->projection_matrix);
   }
 
@@ -2945,8 +2945,8 @@ void GLRenderer::EnqueueTextureQuad(const TextureDrawQuad* quad,
       draw_cache_.needs_blending != quad->ShouldDrawWithBlending() ||
       draw_cache_.nearest_neighbor != quad->nearest_neighbor ||
       draw_cache_.background_color != quad->background_color ||
-      draw_cache_.mask_filter_info !=
-          quad->shared_quad_state->mask_filter_info ||
+      draw_cache_.rounded_corner_bounds !=
+          quad->shared_quad_state->rounded_corner_bounds ||
       draw_cache_.matrix_data.size() >= max_quads ||
       draw_cache_.is_video_frame != quad->is_video_frame) {
     FlushTextureQuadCache(SHARED_BINDING);
@@ -2956,7 +2956,8 @@ void GLRenderer::EnqueueTextureQuad(const TextureDrawQuad* quad,
     draw_cache_.needs_blending = quad->ShouldDrawWithBlending();
     draw_cache_.nearest_neighbor = quad->nearest_neighbor;
     draw_cache_.background_color = quad->background_color;
-    draw_cache_.mask_filter_info = quad->shared_quad_state->mask_filter_info;
+    draw_cache_.rounded_corner_bounds =
+        quad->shared_quad_state->rounded_corner_bounds;
     draw_cache_.is_video_frame = quad->is_video_frame;
   }
 
@@ -4206,6 +4207,7 @@ GLRenderer::ScheduleRenderPassDrawQuad(const CALayerOverlay* ca_layer_overlay) {
                           ca_layer_overlay->shared_state->clip_rect.y(),
                           ca_layer_overlay->shared_state->clip_rect.width(),
                           ca_layer_overlay->shared_state->clip_rect.height()};
+
   const gfx::RectF& rect =
       ca_layer_overlay->shared_state->rounded_corner_bounds.rect();
   GLfloat rounded_corner_rect[5] = {
@@ -4352,9 +4354,9 @@ bool GLRenderer::CanUseFastSolidColorDraw(
   if (!use_fast_path_solid_color_quad_)
     return false;
 
-  // Mask filters require blending with the background, which is not possible
+  // Rounded corners require blending with the background, which is not possible
   // with the glClear draw method.
-  if (!sqs->mask_filter_info.IsEmpty())
+  if (!sqs->rounded_corner_bounds.IsEmpty())
     return false;
 
   // 3D transforms need vertex computation in 3D and cannot be handled using

@@ -706,25 +706,27 @@ ConditionalClip LayerClipRect(PropertyTrees* property_trees, LayerImpl* layer) {
                                 layer->clip_tree_index(), target_node->id);
 }
 
-gfx::MaskFilterInfo GetMaskFilterInfo(const PropertyTrees* property_trees,
-                                      int effect_tree_index,
-                                      bool for_render_surface) {
-  static const gfx::MaskFilterInfo kEmptyMaskFilterInfo;
+std::pair<gfx::RRectF, bool> GetRoundedCornerRRect(
+    const PropertyTrees* property_trees,
+    int effect_tree_index,
+    bool for_render_surface) {
+  static const std::pair<gfx::RRectF, bool> kEmptyRoundedCornerInfo(
+      gfx::RRectF(), false);
   const EffectTree* effect_tree = &property_trees->effect_tree;
   const EffectNode* effect_node = effect_tree->Node(effect_tree_index);
   const int target_id = effect_node->target_id;
 
-  // Return empty mask info if this node has a render surface but the function
-  // call was made for a non render surface.
+  // Return empty rrect if this node has a render surface but the function call
+  // was made for a non render surface.
   if (effect_node->HasRenderSurface() && !for_render_surface)
-    return kEmptyMaskFilterInfo;
+    return kEmptyRoundedCornerInfo;
 
   // Traverse the parent chain up to the render target to find a node which has
   // a rounded corner bounds set.
   const EffectNode* node = effect_node;
   bool found_rounded_corner = false;
   while (node) {
-    if (node->mask_filter_info.HasRoundedCorners()) {
+    if (!node->rounded_corner_bounds.IsEmpty()) {
       found_rounded_corner = true;
       break;
     }
@@ -747,16 +749,17 @@ gfx::MaskFilterInfo GetMaskFilterInfo(const PropertyTrees* property_trees,
   // While traversing up the parent chain we did not find any node with a
   // rounded corner.
   if (!node || !found_rounded_corner)
-    return kEmptyMaskFilterInfo;
+    return kEmptyRoundedCornerInfo;
 
   gfx::Transform to_target;
   if (!property_trees->GetToTarget(node->transform_id, target_id, &to_target))
-    return kEmptyMaskFilterInfo;
+    return kEmptyRoundedCornerInfo;
 
-  auto result = node->mask_filter_info;
+  auto result =
+      std::make_pair(node->rounded_corner_bounds, node->is_fast_rounded_corner);
 
-  if (!result.Transform(to_target))
-    return kEmptyMaskFilterInfo;
+  if (!to_target.TransformRRectF(&result.first))
+    return kEmptyRoundedCornerInfo;
 
   return result;
 }
@@ -836,9 +839,10 @@ void ComputeSurfaceDrawProperties(PropertyTrees* property_trees,
   SetSurfaceDrawOpacity(property_trees->effect_tree, render_surface);
   SetSurfaceDrawTransform(property_trees, render_surface);
 
-  render_surface->SetMaskFilterInfo(
-      GetMaskFilterInfo(property_trees, render_surface->EffectTreeIndex(),
-                        /*for_render_surface=*/true));
+  render_surface->SetRoundedCornerRRect(
+      GetRoundedCornerRRect(property_trees, render_surface->EffectTreeIndex(),
+                            /*for_render_surface*/ true)
+          .first);
   render_surface->SetScreenSpaceTransform(
       property_trees->ToScreenSpaceTransformWithoutSurfaceContentsScale(
           render_surface->TransformTreeIndex(),
@@ -1138,10 +1142,12 @@ void ComputeDrawPropertiesOfVisibleLayers(const LayerImplList* layer_list,
         layer, property_trees->transform_tree, property_trees->effect_tree);
     layer->draw_properties().screen_space_transform_is_animating =
         transform_node->to_screen_is_potentially_animated;
-    auto mask_filter_info =
-        GetMaskFilterInfo(property_trees, layer->effect_tree_index(),
-                          /*from_render_surface=*/false);
-    layer->draw_properties().mask_filter_info = mask_filter_info;
+    auto rounded_corner_info =
+        GetRoundedCornerRRect(property_trees, layer->effect_tree_index(),
+                              /*from_render_surface*/ false);
+    layer->draw_properties().rounded_corner_bounds = rounded_corner_info.first;
+    layer->draw_properties().is_fast_rounded_corner =
+        rounded_corner_info.second;
   }
 
   // Compute effects and determine if render surfaces have contributing layers

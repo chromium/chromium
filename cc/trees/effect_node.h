@@ -11,7 +11,6 @@
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size_f.h"
-#include "ui/gfx/mask_filter_info.h"
 #include "ui/gfx/rrect_f.h"
 
 namespace base {
@@ -81,10 +80,9 @@ struct CC_EXPORT EffectNode {
   // image.
   ElementId backdrop_mask_element_id;
 
-  // The mask filter information applied to this effect node. The coordinates of
-  // in the mask info is in the space of the transform node associated with this
-  // effect node.
-  gfx::MaskFilterInfo mask_filter_info;
+  // Bounds of rounded corner rrect in the space of the transform node
+  // associated with this effect node.
+  gfx::RRectF rounded_corner_bounds;
 
   SkBlendMode blend_mode;
 
@@ -129,6 +127,9 @@ struct CC_EXPORT EffectNode {
   // frame. Needed in order to compute damage rect.
   bool effect_changed : 1;
   bool subtree_has_copy_request : 1;
+  // If set, the effect node tries to not trigger a render surface due to it
+  // having a rounded corner.
+  bool is_fast_rounded_corner : 1;
   // If the node or it's parent has the filters, it sets to true.
   bool node_or_ancestor_has_filters : 1;
   // All node in the subtree starting from the containing render surface, and
