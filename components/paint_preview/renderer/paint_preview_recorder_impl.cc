@@ -163,7 +163,7 @@ void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
 
   DCHECK_EQ(is_main_frame_, params->is_main_frame);
   // Default to using the clip rect.
-  gfx::Rect bounds = gfx::Rect(params->clip_rect.size());
+  gfx::Rect bounds = params->clip_rect;
   if (bounds.IsEmpty() || params->clip_rect_is_hint) {
     // If the clip rect is empty or only a hint try to use the document size.
     auto size = frame->DocumentSize();
@@ -192,6 +192,8 @@ void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
   cc::PaintRecorder recorder;
   cc::PaintCanvas* canvas =
       recorder.beginRecording(bounds.width(), bounds.height());
+  canvas->save();
+  canvas->concat(SkMatrix::Translate(-bounds.x(), -bounds.y()));
   canvas->SetPaintPreviewTracker(tracker.get());
 
   // Use time ticks manually rather than a histogram macro so as to;
@@ -204,6 +206,7 @@ void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
   bool success = frame->CapturePaintPreview(
       bounds, canvas, /*include_linked_destinations=*/params->capture_links);
   TRACE_EVENT_END0("paint_preview", "WebLocalFrame::CapturePaintPreview");
+  canvas->restore();
   base::TimeDelta capture_time = base::TimeTicks::Now() - start_time;
   response->blink_recording_time = capture_time;
 

@@ -420,6 +420,10 @@ void PaintPreviewClient::RequestCaptureOnUIThread(
     mojom::PaintPreviewStatus status,
     mojom::PaintPreviewCaptureParamsPtr capture_params) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // For the main frame, apply a clip rect if one is provided.
+  if (params.is_main_frame)
+    capture_params->clip_rect_is_hint = false;
+
   auto it = all_document_data_.find(params.document_guid);
   if (it == all_document_data_.end())
     return;

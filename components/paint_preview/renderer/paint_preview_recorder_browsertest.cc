@@ -63,14 +63,16 @@ class PaintPreviewRecorderRenderViewTest : public content::RenderViewTest {
 
   base::FilePath RunCapture(content::RenderFrame* frame,
                             mojom::PaintPreviewCaptureResponsePtr* out_response,
-                            bool is_main_frame = true) {
+                            bool is_main_frame = true,
+                            gfx::Rect clip_rect = gfx::Rect()) {
     base::FilePath skp_path = MakeTestFilePath("test.skp");
 
     mojom::PaintPreviewCaptureParamsPtr params =
         mojom::PaintPreviewCaptureParams::New();
     auto token = base::UnguessableToken::Create();
     params->guid = token;
-    params->clip_rect = gfx::Rect();
+    params->clip_rect = clip_rect;
+    params->clip_rect_is_hint = false;
     params->is_main_frame = is_main_frame;
     params->capture_links = true;
     base::File skp_file(
@@ -289,6 +291,52 @@ TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureLocalFrame) {
 
   EXPECT_TRUE(out_response->embedding_token.has_value());
   EXPECT_EQ(out_response->content_id_to_embedding_token.size(), 0U);
+}
+
+TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureCustomClipRect) {
+  LoadHTML(
+      "<!doctype html>"
+      "<body>"
+      "  <div style='width: 600px; height: 600px; background-color: #0000ff;'>"
+      "     <div style='width: 300px; height: 300px; background-color: "
+      "          #ffff00; position: relative; left: 150px; top: 150px'></div>"
+      "  </div>"
+      "  <a style='position: absolute; left: 160px; top: 170px; width: 40px; "
+      "   height: 30px;' href='http://www.example.com'>Foo</a>"
+      "</body>");
+
+  auto out_response = mojom::PaintPreviewCaptureResponse::New();
+  content::RenderFrame* frame = GetFrame();
+  gfx::Rect clip_rect = gfx::Rect(150, 150, 300, 300);
+  base::FilePath skp_path = RunCapture(frame, &out_response, true, clip_rect);
+
+  EXPECT_TRUE(out_response->embedding_token.has_value());
+  EXPECT_EQ(frame->GetWebFrame()->GetEmbeddingToken(),
+            out_response->embedding_token.value());
+  EXPECT_EQ(out_response->content_id_to_embedding_token.size(), 0U);
+
+  sk_sp<SkPicture> pic;
+  {
+    base::ScopedAllowBlockingForTesting scope;
+    FileRStream rstream(base::File(
+        skp_path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ));
+    pic = SkPicture::MakeFromStream(&rstream, nullptr);
+  }
+  EXPECT_EQ(pic->cullRect().height(), 300);
+  EXPECT_EQ(pic->cullRect().width(), 300);
+  SkBitmap bitmap;
+  ASSERT_TRUE(bitmap.tryAllocN32Pixels(pic->cullRect().width(),
+                                       pic->cullRect().height()));
+  SkCanvas canvas(bitmap);
+  canvas.drawPicture(pic);
+  EXPECT_EQ(bitmap.getColor(100, 100), 0xFFFFFF00U);
+
+  ASSERT_EQ(out_response->links.size(), 1U);
+  EXPECT_EQ(out_response->links[0]->url, GURL("http://www.example.com"));
+  EXPECT_EQ(out_response->links[0]->rect.x(), 10);
+  EXPECT_EQ(out_response->links[0]->rect.y(), 20);
+  EXPECT_EQ(out_response->links[0]->rect.width(), 40);
+  EXPECT_EQ(out_response->links[0]->rect.height(), 30);
 }
 
 TEST_F(PaintPreviewRecorderRenderViewTest, CaptureWithTranslate) {

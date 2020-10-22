@@ -106,8 +106,6 @@ sk_sp<const SkPicture> PaintRecordToSkPicture(
       base::BindRepeating(&PaintPreviewTracker::CustomDataToSkPictureCallback,
                           base::Unretained(tracker));
 
-  DCHECK_EQ(bounds.x(), 0);
-  DCHECK_EQ(bounds.y(), 0);
   auto skp =
       ToSkPicture(recording, SkRect::MakeWH(bounds.width(), bounds.height()),
                   nullptr, custom_callback);
