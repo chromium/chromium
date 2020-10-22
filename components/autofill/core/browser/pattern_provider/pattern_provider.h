@@ -51,6 +51,8 @@ class PatternProvider {
 
   const std::vector<MatchingPattern> GetAllPatternsBaseOnType(
       const std::string& type);
+  // desc
+  void EnrichPatternsWithEnVersion();
 
  protected:
   PatternProvider();

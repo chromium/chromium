@@ -12,7 +12,7 @@ TestPatternProvider::TestPatternProvider() {
   base::Optional<PatternProvider::Map> patterns =
       field_type_parsing::GetPatternsFromResourceBundleSynchronously();
   if (patterns)
-    patterns_ = patterns.value();
+    SetPatterns(patterns.value(), base::Version(), true);
 
   PatternProvider::SetPatternProviderForTesting(this);
 }

@@ -32,6 +32,7 @@ void PatternProvider::SetPatterns(PatternProvider::Map patterns,
       (overwrite_equal_version && pattern_version_ == version)) {
     patterns_ = patterns;
     pattern_version_ = version;
+    EnrichPatternsWithEnVersion();
   }
 }
 
@@ -93,6 +94,31 @@ void PatternProvider::SetPatternProviderForTesting(
 // static.
 void PatternProvider::ResetPatternProvider() {
   g_pattern_provider = nullptr;
+}
+
+void PatternProvider::EnrichPatternsWithEnVersion() {
+  for (auto& p : patterns_) {
+    std::map<std::string, std::vector<MatchingPattern>>& lg_to_patterns =
+        p.second;
+
+    auto it = lg_to_patterns.find("en");
+    if (it == lg_to_patterns.end())
+      continue;
+    std::vector<MatchingPattern> en_patterns = it->second;
+
+    for (MatchingPattern& en_pattern : en_patterns) {
+      en_pattern.match_field_attributes = MATCH_NAME;
+    }
+
+    for (auto& q : lg_to_patterns) {
+      const std::string& page_language = q.first;
+      std::vector<MatchingPattern>& patterns = q.second;
+
+      if (page_language != "en") {
+        patterns.insert(patterns.end(), en_patterns.begin(), en_patterns.end());
+      }
+    }
+  }
 }
 
 const std::vector<MatchingPattern> PatternProvider::GetAllPatternsBaseOnType(
