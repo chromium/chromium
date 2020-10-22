@@ -93,7 +93,7 @@ StorageArea* DOMWindowStorage::sessionStorage(
   auto storage_area =
       storage_namespace->GetCachedArea(window->GetSecurityOrigin());
   session_storage_ =
-      StorageArea::Create(window->GetFrame(), std::move(storage_area),
+      StorageArea::Create(window, std::move(storage_area),
                           StorageArea::StorageType::kSessionStorage);
 
   if (!session_storage_->CanAccessStorage()) {
@@ -137,9 +137,8 @@ StorageArea* DOMWindowStorage::localStorage(
     return nullptr;
   auto storage_area = StorageController::GetInstance()->GetLocalStorageArea(
       window->GetSecurityOrigin());
-  local_storage_ =
-      StorageArea::Create(window->GetFrame(), std::move(storage_area),
-                          StorageArea::StorageType::kLocalStorage);
+  local_storage_ = StorageArea::Create(window, std::move(storage_area),
+                                       StorageArea::StorageType::kLocalStorage);
 
   if (!local_storage_->CanAccessStorage()) {
     exception_state.ThrowSecurityError(access_denied_message);

@@ -81,7 +81,6 @@ class CORE_EXPORT ExecutionContextClient : public GarbageCollectedMixin {
 
  protected:
   explicit ExecutionContextClient(ExecutionContext*);
-  explicit ExecutionContextClient(LocalFrame*);
 
  private:
   WeakMember<ExecutionContext> execution_context_;
@@ -110,6 +109,10 @@ class CORE_EXPORT ExecutionContextLifecycleObserver
   // From then on, returns null instead.
   ExecutionContext* GetExecutionContext() const;
   virtual void SetExecutionContext(ExecutionContext*);
+
+  // If the execution context is a window, returns it. Returns nullptr if the
+  // execution context is not a window or if it has been detached.
+  LocalDOMWindow* DomWindow() const;
 
   // If associated with a live document, returns the associated frame.
   // Returns null otherwise.

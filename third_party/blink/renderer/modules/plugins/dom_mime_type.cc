@@ -31,9 +31,9 @@
 
 namespace blink {
 
-DOMMimeType::DOMMimeType(LocalFrame* frame,
+DOMMimeType::DOMMimeType(LocalDOMWindow* window,
                          const MimeClassInfo& mime_class_info)
-    : ExecutionContextClient(frame), mime_class_info_(&mime_class_info) {}
+    : ExecutionContextClient(window), mime_class_info_(&mime_class_info) {}
 
 void DOMMimeType::Trace(Visitor* visitor) const {
   visitor->Trace(mime_class_info_);
@@ -65,11 +65,12 @@ DOMPlugin* DOMMimeType::enabledPlugin() const {
   // FIXME: allowPlugins is just a client call. We should not need
   // to bounce through the loader to get there.
   // Something like: frame()->page()->client()->allowPlugins().
-  if (!GetFrame() ||
-      !GetFrame()->Loader().AllowPlugins(kNotAboutToInstantiatePlugin))
+  if (!DomWindow() || !DomWindow()->GetFrame()->Loader().AllowPlugins(
+                          kNotAboutToInstantiatePlugin)) {
     return nullptr;
+  }
 
-  return NavigatorPlugins::plugins(*GetFrame()->DomWindow()->navigator())
+  return NavigatorPlugins::plugins(*DomWindow()->navigator())
       ->namedItem(AtomicString(mime_class_info_->Plugin()->Name()));
 }
 

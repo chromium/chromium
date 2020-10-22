@@ -14,9 +14,6 @@ ExecutionContextClient::ExecutionContextClient(
     ExecutionContext* execution_context)
     : execution_context_(execution_context) {}
 
-ExecutionContextClient::ExecutionContextClient(LocalFrame* frame)
-    : execution_context_(frame ? frame->DomWindow() : nullptr) {}
-
 ExecutionContext* ExecutionContextClient::GetExecutionContext() const {
   return execution_context_ && !execution_context_->IsContextDestroyed()
              ? execution_context_.Get()
@@ -53,8 +50,12 @@ void ExecutionContextLifecycleObserver::SetExecutionContext(
   SetContextLifecycleNotifier(execution_context);
 }
 
+LocalDOMWindow* ExecutionContextLifecycleObserver::DomWindow() const {
+  return DynamicTo<LocalDOMWindow>(GetExecutionContext());
+}
+
 LocalFrame* ExecutionContextLifecycleObserver::GetFrame() const {
-  auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext());
+  auto* window = DomWindow();
   return window ? window->GetFrame() : nullptr;
 }
 

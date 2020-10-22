@@ -224,7 +224,7 @@ Response InspectorDOMStorageAgent::FindStorageArea(
           "Security origin cannot access local storage");
     }
     storage_area = StorageArea::CreateForInspectorAgent(
-        frame,
+        frame->DomWindow(),
         StorageController::GetInstance()->GetLocalStorageArea(
             frame->DomWindow()->GetSecurityOrigin()),
         StorageArea::StorageType::kLocalStorage);
@@ -242,7 +242,7 @@ Response InspectorDOMStorageAgent::FindStorageArea(
   DCHECK(session_namespace->IsSessionStorage());
 
   storage_area = StorageArea::CreateForInspectorAgent(
-      frame,
+      frame->DomWindow(),
       session_namespace->GetCachedArea(frame->DomWindow()->GetSecurityOrigin()),
       StorageArea::StorageType::kSessionStorage);
   return Response::Success();

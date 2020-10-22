@@ -5,14 +5,13 @@
 #include "third_party/blink/renderer/modules/netinfo/navigator_network_information.h"
 
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/netinfo/network_information.h"
 
 namespace blink {
 
 NavigatorNetworkInformation::NavigatorNetworkInformation(Navigator& navigator)
-    : ExecutionContextClient(navigator.GetFrame()) {}
+    : ExecutionContextClient(navigator.DomWindow()) {}
 
 NavigatorNetworkInformation& NavigatorNetworkInformation::From(
     Navigator& navigator) {
@@ -40,11 +39,8 @@ NetworkInformation* NavigatorNetworkInformation::connection(
 }
 
 NetworkInformation* NavigatorNetworkInformation::connection() {
-  if (!connection_ && GetFrame()) {
-    DCHECK(GetFrame()->DomWindow());
-    connection_ = MakeGarbageCollected<NetworkInformation>(
-        GetFrame()->DomWindow()->GetExecutionContext());
-  }
+  if (!connection_ && DomWindow())
+    connection_ = MakeGarbageCollected<NetworkInformation>(DomWindow());
   return connection_.Get();
 }
 

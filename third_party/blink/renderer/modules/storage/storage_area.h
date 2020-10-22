@@ -37,7 +37,7 @@
 namespace blink {
 
 class ExceptionState;
-class LocalFrame;
+class LocalDOMWindow;
 
 class StorageArea final : public ScriptWrappable,
                           public ExecutionContextClient,
@@ -47,17 +47,17 @@ class StorageArea final : public ScriptWrappable,
  public:
   enum class StorageType { kLocalStorage, kSessionStorage };
 
-  static StorageArea* Create(LocalFrame*,
+  static StorageArea* Create(LocalDOMWindow*,
                              scoped_refptr<CachedStorageArea>,
                              StorageType);
 
   // This storage area doesn't enqueue any events. This avoids duplicate event
   // dispatch when an inspector agent is present.
-  static StorageArea* CreateForInspectorAgent(LocalFrame*,
+  static StorageArea* CreateForInspectorAgent(LocalDOMWindow*,
                                               scoped_refptr<CachedStorageArea>,
                                               StorageType);
 
-  StorageArea(LocalFrame*,
+  StorageArea(LocalDOMWindow*,
               scoped_refptr<CachedStorageArea>,
               StorageType,
               bool should_enqueue_events);

@@ -31,7 +31,7 @@
 namespace blink {
 
 class ExceptionState;
-class LocalFrame;
+class LocalDOMWindow;
 class PluginData;
 
 class DOMMimeTypeArray final : public ScriptWrappable,
@@ -40,7 +40,7 @@ class DOMMimeTypeArray final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit DOMMimeTypeArray(LocalFrame*);
+  explicit DOMMimeTypeArray(LocalDOMWindow*);
 
   void UpdatePluginData();
 

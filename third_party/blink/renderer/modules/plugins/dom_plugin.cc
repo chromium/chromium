@@ -19,14 +19,15 @@
 
 #include "third_party/blink/renderer/modules/plugins/dom_plugin.h"
 
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/page/plugin_data.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
-DOMPlugin::DOMPlugin(LocalFrame* frame, const PluginInfo& plugin_info)
-    : ExecutionContextClient(frame), plugin_info_(&plugin_info) {}
+DOMPlugin::DOMPlugin(LocalDOMWindow* window, const PluginInfo& plugin_info)
+    : ExecutionContextClient(window), plugin_info_(&plugin_info) {}
 
 void DOMPlugin::Trace(Visitor* visitor) const {
   visitor->Trace(plugin_info_);
@@ -56,7 +57,7 @@ DOMMimeType* DOMPlugin::item(unsigned index) {
   if (!mime)
     return nullptr;
 
-  return MakeGarbageCollected<DOMMimeType>(GetFrame(), *mime);
+  return MakeGarbageCollected<DOMMimeType>(DomWindow(), *mime);
 }
 
 DOMMimeType* DOMPlugin::namedItem(const AtomicString& property_name) {
@@ -65,7 +66,7 @@ DOMMimeType* DOMPlugin::namedItem(const AtomicString& property_name) {
   if (!mime)
     return nullptr;
 
-  return MakeGarbageCollected<DOMMimeType>(GetFrame(), *mime);
+  return MakeGarbageCollected<DOMMimeType>(DomWindow(), *mime);
 }
 
 void DOMPlugin::NamedPropertyEnumerator(Vector<String>& property_names,

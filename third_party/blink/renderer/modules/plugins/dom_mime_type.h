@@ -30,14 +30,14 @@
 namespace blink {
 
 class DOMPlugin;
-class LocalFrame;
+class LocalDOMWindow;
 
 class DOMMimeType final : public ScriptWrappable,
                           public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DOMMimeType(LocalFrame*, const MimeClassInfo&);
+  DOMMimeType(LocalDOMWindow*, const MimeClassInfo&);
 
   const String& type() const;
   String suffixes() const;

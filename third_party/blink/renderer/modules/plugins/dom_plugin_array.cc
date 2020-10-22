@@ -33,9 +33,9 @@
 
 namespace blink {
 
-DOMPluginArray::DOMPluginArray(LocalFrame* frame)
-    : ExecutionContextLifecycleObserver(frame ? frame->DomWindow() : nullptr),
-      PluginsChangedObserver(frame ? frame->GetPage() : nullptr) {
+DOMPluginArray::DOMPluginArray(LocalDOMWindow* window)
+    : ExecutionContextLifecycleObserver(window),
+      PluginsChangedObserver(window ? window->GetFrame()->GetPage() : nullptr) {
   UpdatePluginData();
 }
 
@@ -56,7 +56,7 @@ DOMPlugin* DOMPluginArray::item(unsigned index) {
 
   if (!dom_plugins_[index]) {
     dom_plugins_[index] = MakeGarbageCollected<DOMPlugin>(
-        GetFrame(), *GetPluginData()->Plugins()[index]);
+        DomWindow(), *GetPluginData()->Plugins()[index]);
   }
 
   return dom_plugins_[index];
@@ -96,14 +96,14 @@ bool DOMPluginArray::NamedPropertyQuery(const AtomicString& property_name,
 }
 
 void DOMPluginArray::refresh(bool reload) {
-  if (!GetFrame())
+  if (!DomWindow())
     return;
 
   PluginData::RefreshBrowserSidePluginCache();
   if (PluginData* data = GetPluginData())
     data->ResetPluginData();
 
-  for (Frame* frame = GetFrame()->GetPage()->MainFrame(); frame;
+  for (Frame* frame = DomWindow()->GetFrame()->GetPage()->MainFrame(); frame;
        frame = frame->Tree().TraverseNext()) {
     auto* local_frame = DynamicTo<LocalFrame>(frame);
     if (!local_frame)
@@ -114,13 +114,11 @@ void DOMPluginArray::refresh(bool reload) {
   }
 
   if (reload)
-    GetFrame()->Reload(WebFrameLoadType::kReload);
+    DomWindow()->GetFrame()->Reload(WebFrameLoadType::kReload);
 }
 
 PluginData* DOMPluginArray::GetPluginData() const {
-  if (!GetFrame())
-    return nullptr;
-  return GetFrame()->GetPluginData();
+  return DomWindow() ? DomWindow()->GetFrame()->GetPluginData() : nullptr;
 }
 
 void DOMPluginArray::UpdatePluginData() {

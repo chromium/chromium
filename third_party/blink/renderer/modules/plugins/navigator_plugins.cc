@@ -7,9 +7,8 @@
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
-#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/modules/plugins/dom_mime_type.h"
 #include "third_party/blink/renderer/modules/plugins/dom_mime_type_array.h"
 #include "third_party/blink/renderer/modules/plugins/dom_plugin_array.h"
@@ -40,12 +39,12 @@ const char NavigatorPlugins::kSupplementName[] = "NavigatorPlugins";
 
 // static
 DOMPluginArray* NavigatorPlugins::plugins(Navigator& navigator) {
-  return NavigatorPlugins::From(navigator).plugins(navigator.GetFrame());
+  return NavigatorPlugins::From(navigator).plugins(navigator.DomWindow());
 }
 
 // static
 DOMMimeTypeArray* NavigatorPlugins::mimeTypes(Navigator& navigator) {
-  return NavigatorPlugins::From(navigator).mimeTypes(navigator.GetFrame());
+  return NavigatorPlugins::From(navigator).mimeTypes(navigator.DomWindow());
 }
 
 // static
@@ -55,64 +54,41 @@ bool NavigatorPlugins::javaEnabled(Navigator& navigator) {
 
 namespace {
 
-void RecordPlugins(LocalFrame* frame, DOMPluginArray* plugins) {
+void RecordPlugins(LocalDOMWindow* window, DOMPluginArray* plugins) {
   if (!IdentifiabilityStudySettings::Get()->IsWebFeatureAllowed(
           WebFeature::kNavigatorPlugins) ||
-      !frame) {
+      !window) {
     return;
   }
-  if (Document* document = frame->GetDocument()) {
-    IdentifiableTokenBuilder builder;
-    for (unsigned i = 0; i < plugins->length(); i++) {
-      DOMPlugin* plugin = plugins->item(i);
-      builder.AddToken(IdentifiabilityBenignStringToken(plugin->name()));
-      builder.AddToken(IdentifiabilityBenignStringToken(plugin->description()));
-      builder.AddToken(IdentifiabilityBenignStringToken(plugin->filename()));
-      for (unsigned j = 0; j < plugin->length(); j++) {
-        DOMMimeType* mimeType = plugin->item(j);
-        builder.AddToken(IdentifiabilityBenignStringToken(mimeType->type()));
-        builder.AddToken(
-            IdentifiabilityBenignStringToken(mimeType->description()));
-        builder.AddToken(
-            IdentifiabilityBenignStringToken(mimeType->suffixes()));
-      }
+  IdentifiableTokenBuilder builder;
+  for (unsigned i = 0; i < plugins->length(); i++) {
+    DOMPlugin* plugin = plugins->item(i);
+    builder.AddToken(IdentifiabilityBenignStringToken(plugin->name()));
+    builder.AddToken(IdentifiabilityBenignStringToken(plugin->description()));
+    builder.AddToken(IdentifiabilityBenignStringToken(plugin->filename()));
+    for (unsigned j = 0; j < plugin->length(); j++) {
+      DOMMimeType* mimeType = plugin->item(j);
+      builder.AddToken(IdentifiabilityBenignStringToken(mimeType->type()));
+      builder.AddToken(
+          IdentifiabilityBenignStringToken(mimeType->description()));
+      builder.AddToken(IdentifiabilityBenignStringToken(mimeType->suffixes()));
     }
-    IdentifiabilityMetricBuilder(document->UkmSourceID())
-        .SetWebfeature(WebFeature::kNavigatorPlugins, builder.GetToken())
-        .Record(document->UkmRecorder());
   }
+  IdentifiabilityMetricBuilder(window->UkmSourceID())
+      .SetWebfeature(WebFeature::kNavigatorPlugins, builder.GetToken())
+      .Record(window->UkmRecorder());
 }
 
-}  // namespace
-
-DOMPluginArray* NavigatorPlugins::plugins(LocalFrame* frame) const {
-  if (!plugins_)
-    plugins_ = MakeGarbageCollected<DOMPluginArray>(frame);
-
-  DOMPluginArray* result = plugins_.Get();
-  RecordPlugins(frame, result);
-  return result;
-}
-
-DOMMimeTypeArray* NavigatorPlugins::mimeTypes(LocalFrame* frame) const {
-  if (!mime_types_) {
-    mime_types_ = MakeGarbageCollected<DOMMimeTypeArray>(frame);
-    RecordMimeTypes(frame);
-  }
-  return mime_types_.Get();
-}
-
-void NavigatorPlugins::RecordMimeTypes(LocalFrame* frame) const {
+void RecordMimeTypes(LocalDOMWindow* window, DOMMimeTypeArray* mime_types) {
   constexpr IdentifiableSurface surface = IdentifiableSurface::FromTypeAndToken(
       IdentifiableSurface::Type::kWebFeature, WebFeature::kNavigatorMimeTypes);
-  if (!IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(surface) || !frame)
+  if (!IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(surface) ||
+      !window) {
     return;
-  Document* document = frame->GetDocument();
-  if (!document)
-    return;
+  }
   IdentifiableTokenBuilder builder;
-  for (unsigned i = 0; i < mime_types_->length(); i++) {
-    DOMMimeType* mime_type = mime_types_->item(i);
+  for (unsigned i = 0; i < mime_types->length(); i++) {
+    DOMMimeType* mime_type = mime_types->item(i);
     builder.AddToken(IdentifiabilityBenignStringToken(mime_type->type()));
     builder.AddToken(
         IdentifiabilityBenignStringToken(mime_type->description()));
@@ -124,9 +100,28 @@ void NavigatorPlugins::RecordMimeTypes(LocalFrame* frame) const {
       builder.AddToken(IdentifiabilityBenignStringToken(plugin->description()));
     }
   }
-  IdentifiabilityMetricBuilder(document->UkmSourceID())
+  IdentifiabilityMetricBuilder(window->UkmSourceID())
       .Set(surface, builder.GetToken())
-      .Record(document->UkmRecorder());
+      .Record(window->UkmRecorder());
+}
+
+}  // namespace
+
+DOMPluginArray* NavigatorPlugins::plugins(LocalDOMWindow* window) const {
+  if (!plugins_)
+    plugins_ = MakeGarbageCollected<DOMPluginArray>(window);
+
+  DOMPluginArray* result = plugins_.Get();
+  RecordPlugins(window, result);
+  return result;
+}
+
+DOMMimeTypeArray* NavigatorPlugins::mimeTypes(LocalDOMWindow* window) const {
+  if (!mime_types_) {
+    mime_types_ = MakeGarbageCollected<DOMMimeTypeArray>(window);
+    RecordMimeTypes(window, mime_types_.Get());
+  }
+  return mime_types_.Get();
 }
 
 void NavigatorPlugins::Trace(Visitor* visitor) const {

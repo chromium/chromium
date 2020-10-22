@@ -29,9 +29,9 @@
 
 namespace blink {
 
-DOMMimeTypeArray::DOMMimeTypeArray(LocalFrame* frame)
-    : ExecutionContextLifecycleObserver(frame ? frame->DomWindow() : nullptr),
-      PluginsChangedObserver(frame ? frame->GetPage() : nullptr) {
+DOMMimeTypeArray::DOMMimeTypeArray(LocalDOMWindow* window)
+    : ExecutionContextLifecycleObserver(window),
+      PluginsChangedObserver(window ? window->GetFrame()->GetPage() : nullptr) {
   UpdatePluginData();
 }
 
@@ -50,7 +50,7 @@ DOMMimeType* DOMMimeTypeArray::item(unsigned index) {
     return nullptr;
   if (!dom_mime_types_[index]) {
     dom_mime_types_[index] = MakeGarbageCollected<DOMMimeType>(
-        GetFrame(), *GetPluginData()->Mimes()[index]);
+        DomWindow(), *GetPluginData()->Mimes()[index]);
   }
 
   return dom_mime_types_[index];
@@ -90,9 +90,9 @@ bool DOMMimeTypeArray::NamedPropertyQuery(const AtomicString& property_name,
 }
 
 PluginData* DOMMimeTypeArray::GetPluginData() const {
-  if (!GetFrame())
+  if (!DomWindow())
     return nullptr;
-  return GetFrame()->GetPluginData();
+  return DomWindow()->GetFrame()->GetPluginData();
 }
 
 void DOMMimeTypeArray::UpdatePluginData() {

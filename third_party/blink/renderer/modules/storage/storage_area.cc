@@ -44,32 +44,32 @@
 
 namespace blink {
 
-StorageArea* StorageArea::Create(LocalFrame* frame,
+StorageArea* StorageArea::Create(LocalDOMWindow* window,
                                  scoped_refptr<CachedStorageArea> storage_area,
                                  StorageType storage_type) {
-  return MakeGarbageCollected<StorageArea>(frame, std::move(storage_area),
+  return MakeGarbageCollected<StorageArea>(window, std::move(storage_area),
                                            storage_type,
                                            /* should_enqueue_events */ true);
 }
 
 StorageArea* StorageArea::CreateForInspectorAgent(
-    LocalFrame* frame,
+    LocalDOMWindow* window,
     scoped_refptr<CachedStorageArea> storage_area,
     StorageType storage_type) {
-  return MakeGarbageCollected<StorageArea>(frame, std::move(storage_area),
+  return MakeGarbageCollected<StorageArea>(window, std::move(storage_area),
                                            storage_type,
                                            /* should_enqueue_events */ false);
 }
 
-StorageArea::StorageArea(LocalFrame* frame,
+StorageArea::StorageArea(LocalDOMWindow* window,
                          scoped_refptr<CachedStorageArea> storage_area,
                          StorageType storage_type,
                          bool should_enqueue_events)
-    : ExecutionContextClient(frame),
+    : ExecutionContextClient(window),
       cached_area_(std::move(storage_area)),
       storage_type_(storage_type),
       should_enqueue_events_(should_enqueue_events) {
-  DCHECK(frame);
+  DCHECK(window);
   DCHECK(cached_area_);
   cached_area_->RegisterSource(this);
 }
@@ -179,22 +179,21 @@ void StorageArea::Trace(Visitor* visitor) const {
 }
 
 bool StorageArea::CanAccessStorage() const {
-  LocalFrame* frame = GetFrame();
-  if (!frame || !frame->GetPage())
+  if (!DomWindow())
     return false;
 
   if (did_check_can_access_storage_)
     return can_access_storage_cached_result_;
-  can_access_storage_cached_result_ =
-      StorageController::CanAccessStorageArea(frame, storage_type_);
+  can_access_storage_cached_result_ = StorageController::CanAccessStorageArea(
+      DomWindow()->GetFrame(), storage_type_);
   did_check_can_access_storage_ = true;
   return can_access_storage_cached_result_;
 }
 
 void StorageArea::RecordModificationInMetrics() {
   TRACE_EVENT0("blink", "StorageArea::RecordModificationInMetrics");
-  if (!GetFrame() || !GetFrame()->GetPage() ||
-      !GetFrame()->GetPage()->DispatchedPagehideAndStillHidden()) {
+  if (!DomWindow() ||
+      !DomWindow()->GetFrame()->GetPage()->DispatchedPagehideAndStillHidden()) {
     return;
   }
   // The storage modification is done after the pagehide event got dispatched
@@ -205,8 +204,8 @@ void StorageArea::RecordModificationInMetrics() {
   // should track this case to measure how often this is happening, except for
   // when the unload event is currently in progress, which means the page is not
   // actually stored in the back-forward cache and this behavior is ok.
-  if (GetFrame()->GetDocument() &&
-      GetFrame()->GetDocument()->UnloadEventInProgress()) {
+  if (DomWindow()->document() &&
+      DomWindow()->document()->UnloadEventInProgress()) {
     return;
   }
   UMA_HISTOGRAM_ENUMERATION(
@@ -217,10 +216,7 @@ void StorageArea::RecordModificationInMetrics() {
 }
 
 KURL StorageArea::GetPageUrl() const {
-  LocalFrame* frame = GetFrame();
-  if (!frame)
-    return KURL();
-  return GetFrame()->GetDocument()->Url();
+  return DomWindow() ? DomWindow()->Url() : KURL();
 }
 
 bool StorageArea::EnqueueStorageEvent(const String& key,
@@ -229,12 +225,9 @@ bool StorageArea::EnqueueStorageEvent(const String& key,
                                       const String& url) {
   if (!should_enqueue_events_)
     return true;
-  if (!GetExecutionContext())
+  if (!DomWindow())
     return false;
-  LocalFrame* frame = GetFrame();
-  if (!frame)
-    return true;
-  frame->DomWindow()->EnqueueWindowEvent(
+  DomWindow()->EnqueueWindowEvent(
       *StorageEvent::Create(event_type_names::kStorage, key, old_value,
                             new_value, url, this),
       TaskType::kDOMManipulation);
@@ -244,11 +237,12 @@ bool StorageArea::EnqueueStorageEvent(const String& key,
 blink::WebScopedVirtualTimePauser StorageArea::CreateWebScopedVirtualTimePauser(
     const char* name,
     WebScopedVirtualTimePauser::VirtualTaskDuration duration) {
-  LocalFrame* frame = GetFrame();
-  if (!frame)
+  if (!DomWindow())
     return blink::WebScopedVirtualTimePauser();
-  return frame->GetFrameScheduler()->CreateWebScopedVirtualTimePauser(name,
-                                                                      duration);
+  return DomWindow()
+      ->GetFrame()
+      ->GetFrameScheduler()
+      ->CreateWebScopedVirtualTimePauser(name, duration);
 }
 
 }  // namespace blink
