@@ -361,10 +361,9 @@ void ProfileMenuView::OnSigninAccountButtonClicked(AccountInfo account) {
   if (!perform_menu_actions())
     return;
   Hide();
-  signin_ui_util::EnableSyncFromPromo(
+  signin_ui_util::EnableSyncFromSingleAccountPromo(
       browser(), account,
-      signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
-      true /* is_default_promo_account */);
+      signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
 }
 
 #if !defined(OS_CHROMEOS)

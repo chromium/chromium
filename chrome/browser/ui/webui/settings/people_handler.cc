@@ -515,7 +515,7 @@ void PeopleHandler::HandleStartSyncingWithEmail(const base::ListValue* args) {
           ->FindExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
               email->GetString());
 
-  signin_ui_util::EnableSyncFromPromo(
+  signin_ui_util::EnableSyncFromMultiAccountPromo(
       browser,
       maybe_account.has_value() ? maybe_account.value() : AccountInfo(),
       signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
