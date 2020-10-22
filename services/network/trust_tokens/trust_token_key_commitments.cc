@@ -117,7 +117,7 @@ mojom::TrustTokenKeyCommitmentResultPtr TrustTokenKeyCommitments::GetSync(
 
   if (!additional_commitments_from_command_line_.empty()) {
     auto it = additional_commitments_from_command_line_.find(*suitable_origin);
-    if (it != commitments_.end()) {
+    if (it != additional_commitments_from_command_line_.end()) {
       return FilterCommitments(it->second->Clone());
     }
   }
