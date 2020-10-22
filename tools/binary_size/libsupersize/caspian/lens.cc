@@ -80,8 +80,8 @@ std::string_view GeneratedLens::ParentName(const BaseSymbol& symbol) {
     return "C++ Protocol Buffers";
   }
 
-  static LazyRE2 mojo_regex = {".mojom|^mojo/|^mojo::"};
-  if (PartialMatch(symbol.ObjectPath(), *mojo_regex)) {
+  static LazyRE2 mojo_regex = {"\\bmojom?\\b|^mojo::"};
+  if (PartialMatch(symbol.SourcePath(), *mojo_regex)) {
     return "Mojo";
   }
 

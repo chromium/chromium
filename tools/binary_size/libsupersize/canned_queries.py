@@ -132,10 +132,7 @@ def _CategorizeGenerated(symbols):
       '/protobuf/' in s.object_path or
       s.object_path.endswith('.pbzero.o') or
       s.object_path.endswith('.pb.o'))))
-  symbols = g.Add('Mojo', symbols.Filter(lambda s: (
-      '.mojom' in s.source_path or  # Blink uses .mojom-blink.cc
-      s.source_path.startswith('mojo/') or
-      s.name.startswith('mojo::'))))
+  symbols = g.Add('Mojo', symbols.WhereSourcePathMatches(r'\bmojom?\b|^mojo::'))
   symbols = g.Add('DevTools', symbols.WhereSourcePathMatches(
       r'\b(?:protocol|devtools)\b'))
   symbols = g.Add('Blink (bindings)', symbols.WherePathMatches(
