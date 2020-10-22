@@ -8,7 +8,11 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/stl_util.h"
+#include "base/strings/string16.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -23,6 +27,7 @@
 #include "components/autofill/content/renderer/test_password_autofill_agent.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/renderer_id.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -50,6 +55,18 @@ using testing::AtMost;
 using testing::Eq;
 
 namespace autofill {
+
+namespace {
+
+// Utility method that tries to find a field in `form` whose `id_attribute`
+// matches `id`. Returns nullptr if no such field exists.
+const FormFieldData* FindFieldById(const FormData& form, base::StringPiece id) {
+  auto it = base::ranges::find(form.fields, base::UTF8ToUTF16(id),
+                               &FormFieldData::id_attribute);
+  return it != form.fields.end() ? base::to_address(it) : nullptr;
+}
+
+}  // namespace
 
 constexpr char kSigninFormHTML[] =
     "<FORM name = 'blah' action = 'http://www.random.com/'> "
@@ -514,6 +531,13 @@ TEST_F(PasswordGenerationAgentTest, EditingTest) {
   EXPECT_EQ(edited_password, second_password_element.Value().Utf16());
   EXPECT_TRUE(first_password_element.IsAutofilled());
   EXPECT_TRUE(second_password_element.IsAutofilled());
+  ASSERT_TRUE(fake_driver_.form_data_maybe_submitted().has_value());
+  EXPECT_THAT(FindFieldById(*fake_driver_.form_data_maybe_submitted(),
+                            "first_password"),
+              testing::Field(&FormFieldData::value, edited_password));
+  EXPECT_THAT(FindFieldById(*fake_driver_.form_data_maybe_submitted(),
+                            "second_password"),
+              testing::Field(&FormFieldData::value, edited_password));
 
   // Verify that password mirroring works correctly even when the password
   // is deleted.
@@ -524,6 +548,13 @@ TEST_F(PasswordGenerationAgentTest, EditingTest) {
   EXPECT_EQ(base::string16(), second_password_element.Value().Utf16());
   EXPECT_FALSE(first_password_element.IsAutofilled());
   EXPECT_FALSE(second_password_element.IsAutofilled());
+  ASSERT_TRUE(fake_driver_.form_data_maybe_submitted().has_value());
+  EXPECT_THAT(FindFieldById(*fake_driver_.form_data_maybe_submitted(),
+                            "first_password"),
+              testing::Field(&FormFieldData::value, base::string16()));
+  EXPECT_THAT(FindFieldById(*fake_driver_.form_data_maybe_submitted(),
+                            "second_password"),
+              testing::Field(&FormFieldData::value, base::string16()));
 }
 
 TEST_F(PasswordGenerationAgentTest, EditingEventsTest) {
