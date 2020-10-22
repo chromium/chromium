@@ -26,7 +26,7 @@ namespace multidevice_setup {
 
 namespace {
 
-constexpr std::array<mojom::Feature, 3> kPhoneHubSubFeatures{
+constexpr std::array<mojom::Feature, 2> kPhoneHubSubFeatures{
     mojom::Feature::kPhoneHubNotifications,
     mojom::Feature::kPhoneHubTaskContinuation};
 
