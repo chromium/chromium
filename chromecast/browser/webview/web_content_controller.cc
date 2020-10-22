@@ -31,6 +31,33 @@
 
 namespace chromecast {
 
+WebContentController::WebviewWindowVisibilityObserver::
+    WebviewWindowVisibilityObserver(aura::Window* window,
+                                    WebContentController* controller)
+    : window_(window), controller_(controller) {
+  DCHECK(window_);
+  DCHECK(controller_);
+  window_->AddObserver(this);
+}
+
+void WebContentController::WebviewWindowVisibilityObserver::
+    OnWindowVisibilityChanged(aura::Window* window, bool visible) {
+  if (window == window_ && visible && window->CanFocus())
+    controller_->OnVisible(window);
+}
+
+void WebContentController::WebviewWindowVisibilityObserver::OnWindowDestroyed(
+    aura::Window* window) {
+  if (window == window_)
+    window_ = nullptr;
+}
+
+WebContentController::WebviewWindowVisibilityObserver::
+    ~WebviewWindowVisibilityObserver() {
+  if (window_)
+    window_->RemoveObserver(this);
+}
+
 WebContentController::WebContentController(Client* client) : client_(client) {
   js_channels_ = std::make_unique<WebContentJsChannels>(client_);
   JsClientInstance::AddObserver(this);
@@ -149,6 +176,11 @@ void WebContentController::ProcessRequest(
 }
 
 void WebContentController::AttachTo(aura::Window* window, int window_id) {
+  // Register our observer on the window so we can act later once it
+  // becomes visible.
+  window_visibility_observer_ =
+      std::make_unique<WebviewWindowVisibilityObserver>(window, this);
+
   content::WebContents* contents = GetWebContents();
   auto* contents_window = contents->GetNativeView();
   contents_window->set_id(window_id);
@@ -168,6 +200,11 @@ void WebContentController::AttachTo(aura::Window* window, int window_id) {
   surface_->SetEmbeddedSurfaceId(base::BindRepeating(
       &WebContentController::GetSurfaceId, base::Unretained(this)));
   HandleResize(contents_window->bounds().size());
+}
+
+void WebContentController::OnVisible(aura::Window* window) {
+  // Acquire initial focus.
+  GetWebContents()->SetInitialFocus();
 }
 
 void WebContentController::ProcessInputEvent(const webview::InputEvent& ev) {

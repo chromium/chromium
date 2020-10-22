@@ -63,6 +63,9 @@ class WebContentController
   // Attach this web contents to an aura window as a child.
   void AttachTo(aura::Window* window, int window_id);
 
+  // Invoked when the aura window becomes visible and is fully initialized.
+  void OnVisible(aura::Window* window);
+
  protected:
   // content::WebContentsObserver
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
@@ -138,6 +141,30 @@ class WebContentController
   std::set<std::string> current_javascript_channel_set_;
   std::set<content::RenderFrameHost*> current_render_frame_set_;
   std::set<content::RenderWidgetHost*> current_render_widget_set_;
+
+  // Observes the aura window and calls back to the controller for visibility
+  // events.
+  class WebviewWindowVisibilityObserver : public aura::WindowObserver {
+   public:
+    explicit WebviewWindowVisibilityObserver(aura::Window* window,
+                                             WebContentController* controller);
+    ~WebviewWindowVisibilityObserver() override;
+
+    WebviewWindowVisibilityObserver(const WebviewWindowVisibilityObserver&) =
+        delete;
+    WebviewWindowVisibilityObserver& operator=(
+        const WebviewWindowVisibilityObserver&) = delete;
+
+   private:
+    // aura::WindowObserver
+    void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
+    void OnWindowDestroyed(aura::Window* window) override;
+
+    aura::Window* window_;
+    WebContentController* controller_;
+  };
+
+  std::unique_ptr<WebviewWindowVisibilityObserver> window_visibility_observer_;
 
   base::WeakPtrFactory<WebContentController> weak_ptr_factory_{this};
 
