@@ -8,8 +8,6 @@ if (is_android) {
 
 source_set("announcement_notification") {
   sources = [
-    "announcement_notification_metrics.cc",
-    "announcement_notification_metrics.h",
     "announcement_notification_service.cc",
     "announcement_notification_service.h",
     "announcement_notification_service_factory.cc",
@@ -34,7 +32,6 @@ source_set("announcement_notification") {
       "announcement_notification_delegate_android.cc",
       "announcement_notification_delegate_android.h",
     ]
-    deps += [ "//chrome/android:chrome_jni_headers" ]
   } else {
     sources += [
       "announcement_notification_delegate.cc",
@@ -44,12 +41,6 @@ source_set("announcement_notification") {
     ]
 
     deps += [ "//chrome/browser/ui" ]
-  }
-}
-
-if (is_android) {
-  java_cpp_enum("jni_enums") {
-    sources = [ "announcement_notification_metrics.h" ]
   }
 }
 

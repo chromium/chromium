@@ -544,7 +544,6 @@ android_library("chrome_java") {
     "//chrome/browser:sharing_send_message_result_generated_enum",
     "//chrome/browser/notifications/scheduler/public:jni_enums",
     "//chrome/browser/supervised_user/supervised_user_error_page:enums_srcjar",
-    "//chrome/browser/updates/announcement_notification:jni_enums",
     "//components/autofill_assistant/browser:autofill_assistant_enums_java",
     "//components/browsing_data/core:browsing_data_utils_java",
     "//components/browsing_data/core:clear_browsing_data_tab_java",

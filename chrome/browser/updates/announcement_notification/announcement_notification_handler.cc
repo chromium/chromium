@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/updates/announcement_notification/announcement_notification_delegate.h"
-#include "chrome/browser/updates/announcement_notification/announcement_notification_metrics.h"
 
 namespace {
 
@@ -26,7 +25,6 @@ AnnouncementNotificationHandler::~AnnouncementNotificationHandler() = default;
 void AnnouncementNotificationHandler::OnShow(
     Profile* profile,
     const std::string& notification_id) {
-  RecordAnnouncementHistogram(AnnouncementNotificationEvent::kShown);
 }
 
 void AnnouncementNotificationHandler::OnClose(
@@ -35,7 +33,6 @@ void AnnouncementNotificationHandler::OnClose(
     const std::string& notification_id,
     bool by_user,
     base::OnceClosure completed_closure) {
-  RecordAnnouncementHistogram(AnnouncementNotificationEvent::kClose);
   std::move(completed_closure).Run();
 }
 
@@ -51,16 +48,12 @@ void AnnouncementNotificationHandler::OnClick(
   // Open the announcement link when the user clicks the notification or clicks
   // the button to open.
   if (button_index == kReviewButtonIndex || !action_index.has_value()) {
-    RecordAnnouncementHistogram(action_index.has_value()
-                                    ? AnnouncementNotificationEvent::kOpen
-                                    : AnnouncementNotificationEvent::kClick);
     OpenAnnouncement(profile);
     std::move(completed_closure).Run();
     return;
   }
 
   // Otherwise, close the notification.
-  RecordAnnouncementHistogram(AnnouncementNotificationEvent::kAck);
   NotificationDisplayServiceFactory::GetInstance()
       ->GetForProfile(profile)
       ->Close(NotificationHandler::Type::ANNOUNCEMENT,

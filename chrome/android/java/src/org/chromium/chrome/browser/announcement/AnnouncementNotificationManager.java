@@ -14,7 +14,6 @@ import androidx.annotation.IntDef;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
@@ -73,18 +72,14 @@ public class AnnouncementNotificationManager {
                         case IntentType.UNKNOWN:
                             break;
                         case IntentType.CLICK:
-                            recordHistogram(AnnouncementNotificationEvent.CLICK);
                             openUrl(context, url);
                             break;
                         case IntentType.CLOSE:
-                            recordHistogram(AnnouncementNotificationEvent.CLOSE);
                             break;
                         case IntentType.ACK:
-                            recordHistogram(AnnouncementNotificationEvent.ACK);
                             close();
                             break;
                         case IntentType.OPEN:
-                            recordHistogram(AnnouncementNotificationEvent.OPEN);
                             openUrl(context, url);
                             close();
                             break;
@@ -116,11 +111,6 @@ public class AnnouncementNotificationManager {
         // Dismiss the notification.
         new NotificationManagerProxyImpl(ContextUtils.getApplicationContext())
                 .cancel(ANNOUNCEMENT_NOTIFICATION_TAG, ANNOUNCEMENT_NOTIFICATION_ID);
-    }
-
-    private static void recordHistogram(@AnnouncementNotificationEvent int event) {
-        RecordHistogram.recordEnumeratedHistogram("Notifications.Announcement.Events", event,
-                AnnouncementNotificationEvent.MAX_VALUE + 1);
     }
 
     @CalledByNative
@@ -157,8 +147,6 @@ public class AnnouncementNotificationManager {
         NotificationUmaTracker.getInstance().onNotificationShown(
                 NotificationUmaTracker.SystemNotificationType.ANNOUNCEMENT,
                 notification.getNotification());
-
-        recordHistogram(AnnouncementNotificationEvent.SHOWN);
     }
 
     @CalledByNative
