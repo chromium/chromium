@@ -16,6 +16,14 @@
         android:layout_height="wrap_content"
         app:elevation="0dp">
         <LinearLayout
+            android:id="@+id/top_toolbar_placeholder"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/toolbar_height_no_shadow"
+            android:background="@android:color/transparent"
+            android:orientation="vertical"
+            app:layout_scrollFlags="scroll">
+        </LinearLayout>
+        <LinearLayout
             android:id="@+id/scroll_component_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

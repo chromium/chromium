@@ -66,6 +66,11 @@ public interface TasksSurface {
     View getView();
 
     /**
+     * Get the view {@link View} of the top transparent placeholder on start surface.
+     */
+    View getTopToolbarPlaceholderView();
+
+    /**
      * Called when the native initialization is completed. Anything to construct a TasksSurface but
      * require native initialization should be constructed here.
      */

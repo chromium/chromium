@@ -143,6 +143,11 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     }
 
     @Override
+    public View getTopToolbarPlaceholderView() {
+        return mView != null ? mView.findViewById(R.id.top_toolbar_placeholder) : null;
+    }
+
+    @Override
     public void onFinishNativeInitialization(Context context, FakeboxDelegate fakeboxDelegate) {
         if (mTabSwitcher != null) {
             ChromeActivity activity = (ChromeActivity) context;
