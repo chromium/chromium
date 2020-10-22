@@ -574,7 +574,8 @@ void CreateAndSwitchToProfile(const std::string& basepath) {
   base::FilePath path = profile_manager->user_data_dir().AppendASCII(basepath);
   base::RunLoop run_loop;
   profile_manager->CreateProfileAsync(
-      path, base::Bind(&UnblockOnProfileInitialized, run_loop.QuitClosure()),
+      path,
+      base::BindRepeating(&UnblockOnProfileInitialized, run_loop.QuitClosure()),
       base::string16(), std::string());
   // Run the message loop to allow profile creation to take place; the loop is
   // terminated by UnblockOnProfileCreation when the profile is created.

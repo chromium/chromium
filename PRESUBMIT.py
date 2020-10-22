@@ -372,7 +372,7 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^chrome/browser/web_applications/',
   '^chrome/browser/win/',
   '^chrome/services/',
-  '^chrome/test/',
+  '^chrome/test/chromedriver/server/http_handler.cc',
   '^chrome/tools/',
   '^chromecast/media/',
   '^chromeos/attestation/',

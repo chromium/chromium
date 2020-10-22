@@ -475,7 +475,7 @@ Profile* SyncTest::MakeProfileForUISignin(base::FilePath profile_path) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::RunLoop run_loop;
   ProfileManager::CreateCallback create_callback =
-      base::Bind(&CreateProfileCallback, run_loop.QuitClosure());
+      base::BindRepeating(&CreateProfileCallback, run_loop.QuitClosure());
   profile_manager->CreateProfileAsync(profile_path, create_callback,
                                       base::string16(), std::string());
   run_loop.Run();

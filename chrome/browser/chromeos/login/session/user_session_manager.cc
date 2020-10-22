@@ -1151,8 +1151,8 @@ void UserSessionManager::PrepareProfile(const base::FilePath& profile_path) {
   // path or not. See https://codereview.chromium.org/171423009
   g_browser_process->profile_manager()->CreateProfileAsync(
       profile_path,
-      base::Bind(&UserSessionManager::OnProfileCreated, AsWeakPtr(),
-                 user_context_, is_demo_session),
+      base::BindRepeating(&UserSessionManager::OnProfileCreated, AsWeakPtr(),
+                          user_context_, is_demo_session),
       base::string16(), std::string());
 }
 

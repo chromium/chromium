@@ -260,8 +260,8 @@ void OpenBrowserWindowForProfile(ProfileManager::CreateCallback callback,
 void LoadProfileAsync(const base::FilePath& path,
                       ProfileManager::CreateCallback callback) {
   g_browser_process->profile_manager()->CreateProfileAsync(
-      path, base::Bind(&ProfileLoadedCallback, callback), base::string16(),
-      std::string());
+      path, base::BindRepeating(&ProfileLoadedCallback, callback),
+      base::string16(), std::string());
 }
 
 void SwitchToProfile(const base::FilePath& path,
@@ -269,16 +269,16 @@ void SwitchToProfile(const base::FilePath& path,
                      ProfileManager::CreateCallback callback) {
   g_browser_process->profile_manager()->CreateProfileAsync(
       path,
-      base::Bind(&profiles::OpenBrowserWindowForProfile, callback,
-                 always_create, false, false),
+      base::BindRepeating(&profiles::OpenBrowserWindowForProfile, callback,
+                          always_create, false, false),
       base::string16(), std::string());
 }
 
 void SwitchToGuestProfile(ProfileManager::CreateCallback callback) {
   g_browser_process->profile_manager()->CreateProfileAsync(
       ProfileManager::GetGuestProfilePath(),
-      base::Bind(&profiles::OpenBrowserWindowForProfile, callback, false, false,
-                 false),
+      base::BindRepeating(&profiles::OpenBrowserWindowForProfile, callback,
+                          false, false, false),
       base::string16(), std::string());
 }
 #endif
@@ -300,8 +300,8 @@ void CreateAndSwitchToNewProfile(ProfileManager::CreateCallback callback,
   ProfileManager::CreateMultiProfileAsync(
       storage.ChooseNameForNewProfile(placeholder_avatar_index),
       profiles::GetDefaultAvatarIconUrl(placeholder_avatar_index),
-      base::Bind(&profiles::OpenBrowserWindowForProfile, callback, true, true,
-                 false));
+      base::BindRepeating(&profiles::OpenBrowserWindowForProfile, callback,
+                          true, true, false));
   ProfileMetrics::LogProfileAddNewUser(metric);
 }
 
@@ -408,12 +408,9 @@ void CreateSystemProfileForUserManager(
   // from the system profile.
   g_browser_process->profile_manager()->CreateProfileAsync(
       ProfileManager::GetSystemProfilePath(),
-      base::Bind(&OnUserManagerSystemProfileCreated,
-                 profile_path_to_focus,
-                 user_manager_action,
-                 callback),
-      base::string16(),
-      std::string());
+      base::BindRepeating(&OnUserManagerSystemProfileCreated,
+                          profile_path_to_focus, user_manager_action, callback),
+      base::string16(), std::string());
 }
 
 void BubbleViewModeFromAvatarBubbleMode(BrowserWindow::AvatarBubbleMode mode,

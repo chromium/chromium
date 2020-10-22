@@ -70,7 +70,7 @@ void OpenNewWindowForProfile(Profile* profile) {
       ShowUserManager(ProfileManager::CreateCallback());
     } else {
       ShowUserManager(
-          base::Bind(&ShowUnlockDialog, GetProfileUserName(profile)));
+          base::BindRepeating(&ShowUnlockDialog, GetProfileUserName(profile)));
     }
     return;
   }

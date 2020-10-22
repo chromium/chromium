@@ -269,7 +269,7 @@ class UkmBrowserTestBase : public SyncTest {
         profile_manager->GenerateNextProfileDirectoryPath();
     base::RunLoop run_loop;
     profile_manager->CreateProfileAsync(
-        new_path, base::Bind(&UnblockOnProfileCreation, &run_loop),
+        new_path, base::BindRepeating(&UnblockOnProfileCreation, &run_loop),
         base::string16(), std::string());
     run_loop.Run();
     Profile* profile = profile_manager->GetProfileByPath(new_path);

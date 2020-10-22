@@ -185,11 +185,11 @@ class ProfileManagerTest : public testing::Test {
   void CreateProfileAsync(ProfileManager* manager,
                           const std::string& name,
                           MockObserver* mock_observer) {
-    manager->CreateProfileAsync(temp_dir_.GetPath().AppendASCII(name),
-                                base::Bind(&MockObserver::OnProfileCreated,
-                                           base::Unretained(mock_observer)),
-                                base::UTF8ToUTF16(name),
-                                profiles::GetDefaultAvatarIconUrl(0));
+    manager->CreateProfileAsync(
+        temp_dir_.GetPath().AppendASCII(name),
+        base::BindRepeating(&MockObserver::OnProfileCreated,
+                            base::Unretained(mock_observer)),
+        base::UTF8ToUTF16(name), profiles::GetDefaultAvatarIconUrl(0));
   }
 
   // Helper function to add a profile with |profile_name| to |profile_manager|'s
@@ -1752,8 +1752,8 @@ TEST_F(ProfileManagerTest, CannotCreateProfileOusideUserDirAsync) {
 
   profile_manager->CreateProfileAsync(
       dest_path,
-      base::Bind(&MockObserver::OnProfileCreated,
-                 base::Unretained(&mock_observer)),
+      base::BindRepeating(&MockObserver::OnProfileCreated,
+                          base::Unretained(&mock_observer)),
       base::UTF8ToUTF16(profile_name), profiles::GetDefaultAvatarIconUrl(0));
   content::RunAllTasksUntilIdle();
 }

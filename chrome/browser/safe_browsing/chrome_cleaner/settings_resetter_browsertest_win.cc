@@ -52,7 +52,8 @@ Profile* CreateProfile() {
   base::RunLoop run_loop;
   profile_manager->CreateProfileAsync(
       profile_manager->GenerateNextProfileDirectoryPath(),
-      base::Bind(&CreateProfileCallback, &profile, run_loop.QuitClosure()),
+      base::BindRepeating(&CreateProfileCallback, &profile,
+                          run_loop.QuitClosure()),
       base::string16(), std::string());
   run_loop.Run();
   return profile;
