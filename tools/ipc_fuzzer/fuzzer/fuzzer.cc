@@ -1488,36 +1488,6 @@ struct FuzzTraits<media::AudioParameters> {
 };
 
 template <>
-struct FuzzTraits<media::cast::FrameId> {
-  static bool Fuzz(media::cast::FrameId* p, Fuzzer* fuzzer) {
-    int64_t rhs;
-    if (!FuzzParam(&rhs, fuzzer))
-      return false;
-    if (RandEvent(2)) {
-      *p += rhs;
-      return true;
-    } else {
-      *p -= rhs;
-      return true;
-    }
-  }
-};
-
-template <>
-struct FuzzTraits<media::cast::RtpTimeTicks> {
-  static bool Fuzz(media::cast::RtpTimeTicks* p, Fuzzer* fuzzer) {
-    base::TimeDelta delta;
-    int base;
-    if (!FuzzParam(&delta, fuzzer))
-      return false;
-    if (!FuzzParam(&base, fuzzer))
-      return false;
-    *p = media::cast::RtpTimeTicks::FromTimeDelta(delta, base);
-    return true;
-  }
-};
-
-template <>
 struct FuzzTraits<media::OverlayInfo> {
   static bool Fuzz(media::OverlayInfo* p, Fuzzer* fuzzer) {
     if (!FuzzParam(&p->is_fullscreen, fuzzer))

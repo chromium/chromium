@@ -252,8 +252,6 @@ static_library("common") {
 
   if (enable_extensions) {
     sources += [
-      "cast_messages.cc",
-      "cast_messages.h",
       "extensions/api/commands/commands_handler.cc",
       "extensions/api/commands/commands_handler.h",
       "extensions/api/notifications/notification_style.cc",

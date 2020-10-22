@@ -18,14 +18,6 @@
 #include "media/media_buildflags.h"
 #include "printing/buildflags/buildflags.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#undef CHROME_COMMON_CAST_MESSAGES_H_
-#include "chrome/common/cast_messages.h"
-#ifndef CHROME_COMMON_CAST_MESSAGES_H_
-#error "Failed to include header chrome/common/cast_messages.h"
-#endif
-#endif
-
 #if BUILDFLAG(ENABLE_PRINTING)
 #undef CHROME_COMMON_CHROME_UTILITY_PRINTING_MESSAGES_H_
 #include "chrome/common/chrome_utility_printing_messages.h"
