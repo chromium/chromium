@@ -2256,6 +2256,9 @@ extern const char kDragToSnapInClamshellModeDescription[];
 extern const char kEnhancedClipboardName[];
 extern const char kEnhancedClipboardDescription[];
 
+extern const char kEnhancedClipboardNudgeSessionResetName[];
+extern const char kEnhancedClipboardNudgeSessionResetDescription[];
+
 extern const char kEnhancedClipboardSimpleRenderName[];
 extern const char kEnhancedClipboardSimpleRenderDescription[];
 
