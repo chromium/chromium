@@ -9,15 +9,17 @@ import static org.junit.Assert.assertEquals;
 import static org.chromium.chrome.browser.browserservices.TestTrustedWebActivityService.COMMAND_SET_RESPONSE;
 import static org.chromium.chrome.browser.browserservices.TestTrustedWebActivityService.SET_RESPONSE_BUNDLE;
 import static org.chromium.chrome.browser.browserservices.TestTrustedWebActivityService.SET_RESPONSE_NAME;
-import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.RESPONSE_ACKNOWLEDGE;
-import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.RESPONSE_GET_DETAILS;
-import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.createAcknowledgeResponseBundle;
-import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.createGetDetailsResponseBundle;
-import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.createItemDetailsBundle;
+import static org.chromium.chrome.browser.browserservices.digitalgoods.AcknowledgeConverter.RESPONSE_ACKNOWLEDGE;
+import static org.chromium.chrome.browser.browserservices.digitalgoods.GetDetailsConverter.RESPONSE_GET_DETAILS;
 
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.browser.trusted.TrustedWebActivityCallback;
+import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -44,11 +46,6 @@ import org.chromium.payments.mojom.DigitalGoods.GetDetailsResponse;
 import org.chromium.payments.mojom.ItemDetails;
 
 import java.util.concurrent.TimeoutException;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.browser.trusted.TrustedWebActivityCallback;
-import androidx.test.filters.MediumTest;
 
 /**
  * Tests for the Digital Goods flow.
@@ -118,9 +115,10 @@ public class DigitalGoodsTest {
     public void twaServiceConnected() throws TimeoutException {
         DigitalGoodsImpl impl = createFixedDigitalGoods();
 
-        setTwaServiceResponse(RESPONSE_GET_DETAILS, createGetDetailsResponseBundle(0,
-                createItemDetailsBundle("id1", "Item 1", "Desc 1", "GBP", "10")
-        ));
+        setTwaServiceResponse(RESPONSE_GET_DETAILS,
+                GetDetailsConverter.createResponseBundle(0,
+                        GetDetailsConverter.createItemDetailsBundle(
+                                "id1", "Item 1", "Desc 1", "GBP", "10")));
 
         CallbackHelper helper = new CallbackHelper();
         impl.getDetails(new String[] { "id1" }, new GetDetailsResponse() {
@@ -148,9 +146,10 @@ public class DigitalGoodsTest {
 
         // Note: The response code much be 0 for success otherwise it doesn't propagate through to
         // JS.
-        setTwaServiceResponse(RESPONSE_GET_DETAILS, createGetDetailsResponseBundle(0,
-                createItemDetailsBundle("id1", "Item 1", "Desc 1", "GBP", "10")
-        ));
+        setTwaServiceResponse(RESPONSE_GET_DETAILS,
+                GetDetailsConverter.createResponseBundle(0,
+                        GetDetailsConverter.createItemDetailsBundle(
+                                "id1", "Item 1", "Desc 1", "GBP", "10")));
 
         exec("populateDigitalGoodsService()");
         waitForNonNull("digitalGoodsService");
@@ -168,7 +167,7 @@ public class DigitalGoodsTest {
     public void acknowledge() throws TimeoutException {
         DigitalGoodsFactoryImpl.setDigitalGoodsForTesting(createFixedDigitalGoods());
 
-        setTwaServiceResponse(RESPONSE_ACKNOWLEDGE, createAcknowledgeResponseBundle(0));
+        setTwaServiceResponse(RESPONSE_ACKNOWLEDGE, AcknowledgeConverter.createResponseBundle(0));
 
         exec("populateDigitalGoodsService()");
         waitForNonNull("digitalGoodsService");
@@ -184,7 +183,7 @@ public class DigitalGoodsTest {
     public void acknowledge_failsOnNonZeroResponse() throws TimeoutException {
         DigitalGoodsFactoryImpl.setDigitalGoodsForTesting(createFixedDigitalGoods());
 
-        setTwaServiceResponse(RESPONSE_ACKNOWLEDGE, createAcknowledgeResponseBundle(1));
+        setTwaServiceResponse(RESPONSE_ACKNOWLEDGE, AcknowledgeConverter.createResponseBundle(1));
 
         exec("populateDigitalGoodsService()");
         waitForNonNull("digitalGoodsService");

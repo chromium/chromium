@@ -4,23 +4,17 @@
 
 package org.chromium.chrome.browser.browserservices.digitalgoods;
 
-import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.convertAcknowledgeCallback;
-import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.convertAcknowledgeParams;
-import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.convertGetDetailsCallback;
-import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.convertGetDetailsParams;
-import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.returnClientAppError;
-import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.returnClientAppUnavailable;
-
 import android.net.Uri;
 import android.os.Bundle;
+
+import androidx.browser.trusted.TrustedWebActivityCallback;
+import androidx.browser.trusted.TrustedWebActivityServiceConnection;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.payments.mojom.DigitalGoods.AcknowledgeResponse;
 import org.chromium.payments.mojom.DigitalGoods.GetDetailsResponse;
-
-import androidx.browser.trusted.TrustedWebActivityServiceConnection;
 
 /**
  * This class uses the {@link DigitalGoodsConverter} to convert data types between mojo types and
@@ -40,62 +34,50 @@ public class DigitalGoodsAdapter {
         mClient = client;
     }
 
-    public void getDetails(Uri scope, String[] itemIds, GetDetailsResponse callback) {
-        // TODO(1096428): Combine this and the below method (the difficulty comes from callback
-        // being different types).
-        mClient.connectAndExecute(scope, new TrustedWebActivityClient.ExecutionCallback() {
-            @Override
-            public void onConnected(Origin origin, TrustedWebActivityServiceConnection service) {
-                // Wrap this call so that crashes in the TWA client don't cause crashes in Chrome.
-                Bundle result = null;
-                try {
-                    result = service.sendExtraCommand(COMMAND_GET_DETAILS,
-                            convertGetDetailsParams(itemIds), convertGetDetailsCallback(callback));
-                } catch (Exception e) {
-                    Log.w(TAG, "Exception communicating with client.");
-                    returnClientAppError(callback);
-                }
+    public void getDetails(Uri scope, String[] itemIds, GetDetailsResponse response) {
+        Bundle args = GetDetailsConverter.convertParams(itemIds);
+        TrustedWebActivityCallback callback = GetDetailsConverter.convertCallback(response);
+        Runnable onError = () -> GetDetailsConverter.returnClientAppError(response);
+        Runnable onUnavailable = () -> GetDetailsConverter.returnClientAppUnavailable(response);
 
-                boolean success = result != null &&
-                        result.getBoolean(KEY_SUCCESS, false);
-                if (!success) {
-                    returnClientAppError(callback);
-                }
-            }
-
-            @Override
-            public void onNoTwaFound() {
-                returnClientAppUnavailable(callback);
-            }
-        });
+        execute(scope, COMMAND_GET_DETAILS, args, callback, onError, onUnavailable);
     }
 
     public void acknowledge(Uri scope, String purchaseToken, boolean makeAvailableAgain,
-            AcknowledgeResponse callback) {
+            AcknowledgeResponse response) {
+        Bundle args = AcknowledgeConverter.convertParams(purchaseToken, makeAvailableAgain);
+        TrustedWebActivityCallback callback = AcknowledgeConverter.convertCallback(response);
+        Runnable onError = () -> AcknowledgeConverter.returnClientAppError(response);
+        Runnable onUnavailable = () -> AcknowledgeConverter.returnClientAppUnavailable(response);
+
+        execute(scope, COMMAND_ACKNOWLEDGE, args, callback, onError, onUnavailable);
+    }
+
+    private void execute(Uri scope, String command, Bundle args,
+            TrustedWebActivityCallback callback, Runnable onClientAppError,
+            Runnable onClientAppUnavailable) {
         mClient.connectAndExecute(scope, new TrustedWebActivityClient.ExecutionCallback() {
             @Override
             public void onConnected(Origin origin, TrustedWebActivityServiceConnection service) {
                 // Wrap this call so that crashes in the TWA client don't cause crashes in Chrome.
                 Bundle result = null;
                 try {
-                    result = service.sendExtraCommand(COMMAND_ACKNOWLEDGE,
-                            convertAcknowledgeParams(purchaseToken, makeAvailableAgain),
-                            convertAcknowledgeCallback(callback));
+                    result = service.sendExtraCommand(command, args, callback);
                 } catch (Exception e) {
                     Log.w(TAG, "Exception communicating with client.");
-                    returnClientAppError(callback);
+                    onClientAppError.run();
                 }
 
                 boolean success = result != null &&
                         result.getBoolean(KEY_SUCCESS, false);
                 if (!success) {
-                    returnClientAppError(callback);
+                    onClientAppError.run();
                 }
             }
 
             @Override
             public void onNoTwaFound() {
-                returnClientAppUnavailable(callback);
+                onClientAppUnavailable.run();
             }
         });
     }

@@ -7,21 +7,23 @@ package org.chromium.chrome.browser.browserservices.digitalgoods;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
-import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.PARAM_ACKNOWLEDGE_MAKE_AVAILABLE_AGAIN;
-import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.PARAM_ACKNOWLEDGE_PURCHASE_TOKEN;
-import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.PARAM_GET_DETAILS_ITEM_IDS;
+import static org.chromium.chrome.browser.browserservices.digitalgoods.AcknowledgeConverter.PARAM_ACKNOWLEDGE_MAKE_AVAILABLE_AGAIN;
+import static org.chromium.chrome.browser.browserservices.digitalgoods.AcknowledgeConverter.PARAM_ACKNOWLEDGE_PURCHASE_TOKEN;
+import static org.chromium.chrome.browser.browserservices.digitalgoods.AcknowledgeConverter.RESPONSE_ACKNOWLEDGE;
+import static org.chromium.chrome.browser.browserservices.digitalgoods.AcknowledgeConverter.RESPONSE_ACKNOWLEDGE_RESPONSE_CODE;
 import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.PLAY_BILLING_ITEM_ALREADY_OWNED;
 import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.PLAY_BILLING_ITEM_NOT_OWNED;
 import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.PLAY_BILLING_ITEM_UNAVAILABLE;
 import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.PLAY_BILLING_OK;
-import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.RESPONSE_ACKNOWLEDGE;
-import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.RESPONSE_ACKNOWLEDGE_RESPONSE_CODE;
-import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.RESPONSE_GET_DETAILS;
-import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.RESPONSE_GET_DETAILS_DETAILS_LIST;
-import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.RESPONSE_GET_DETAILS_RESPONSE_CODE;
+import static org.chromium.chrome.browser.browserservices.digitalgoods.GetDetailsConverter.PARAM_GET_DETAILS_ITEM_IDS;
+import static org.chromium.chrome.browser.browserservices.digitalgoods.GetDetailsConverter.RESPONSE_GET_DETAILS;
+import static org.chromium.chrome.browser.browserservices.digitalgoods.GetDetailsConverter.RESPONSE_GET_DETAILS_DETAILS_LIST;
+import static org.chromium.chrome.browser.browserservices.digitalgoods.GetDetailsConverter.RESPONSE_GET_DETAILS_RESPONSE_CODE;
 
 import android.os.Bundle;
 import android.os.Parcelable;
+
+import androidx.browser.trusted.TrustedWebActivityCallback;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,8 +37,6 @@ import org.chromium.payments.mojom.ItemDetails;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import androidx.browser.trusted.TrustedWebActivityCallback;
-
 /**
  * Tests for {@link DigitalGoodsConverterTest}.
  */
@@ -49,7 +49,7 @@ public class DigitalGoodsConverterTest {
     public void convertGetDetailsParams() {
         String[] itemIds = { "id1", "id2" };
 
-        Bundle b = DigitalGoodsConverter.convertGetDetailsParams(itemIds);
+        Bundle b = GetDetailsConverter.convertParams(itemIds);
 
         String[] out = b.getStringArray(PARAM_GET_DETAILS_ITEM_IDS);
         assertArrayEquals(itemIds, out);
@@ -64,9 +64,9 @@ public class DigitalGoodsConverterTest {
         String value = "10";
 
         Bundle bundle =
-                DigitalGoodsConverter.createItemDetailsBundle(id, title, desc, currency, value);
+                GetDetailsConverter.createItemDetailsBundle(id, title, desc, currency, value);
 
-        ItemDetails item = DigitalGoodsConverter.convertItemDetails(bundle);
+        ItemDetails item = GetDetailsConverter.convertItemDetails(bundle);
         assertItemDetails(item, id, title, desc, currency, value);
     }
 
@@ -87,14 +87,13 @@ public class DigitalGoodsConverterTest {
         };
 
         TrustedWebActivityCallback convertedCallback =
-                DigitalGoodsConverter.convertGetDetailsCallback(callback);
+                GetDetailsConverter.convertCallback(callback);
 
         Bundle args = new Bundle();
         int responseCode = 0;
         Parcelable[] items = {
-                DigitalGoodsConverter.createItemDetailsBundle("1", "t1", "d1", "c1", "v1"),
-                DigitalGoodsConverter.createItemDetailsBundle("2", "t2", "d2", "c2", "v2")
-        };
+                GetDetailsConverter.createItemDetailsBundle("1", "t1", "d1", "c1", "v1"),
+                GetDetailsConverter.createItemDetailsBundle("2", "t2", "d2", "c2", "v2")};
         args.putInt(RESPONSE_GET_DETAILS_RESPONSE_CODE, responseCode);
         args.putParcelableArray(RESPONSE_GET_DETAILS_DETAILS_LIST, items);
 
@@ -119,7 +118,7 @@ public class DigitalGoodsConverterTest {
         String token = "abcdef";
         boolean makeAvailableAgain = true;
 
-        Bundle b = DigitalGoodsConverter.convertAcknowledgeParams(token, makeAvailableAgain);
+        Bundle b = AcknowledgeConverter.convertParams(token, makeAvailableAgain);
 
         String outToken = b.getString(PARAM_ACKNOWLEDGE_PURCHASE_TOKEN);
         boolean outMakeAvailableAgain = b.getBoolean(PARAM_ACKNOWLEDGE_MAKE_AVAILABLE_AGAIN);
@@ -137,7 +136,7 @@ public class DigitalGoodsConverterTest {
         AcknowledgeResponse callback = (responseCode) -> state.set(responseCode);
 
         TrustedWebActivityCallback convertedCallback =
-                DigitalGoodsConverter.convertAcknowledgeCallback(callback);
+                AcknowledgeConverter.convertCallback(callback);
 
         Bundle args = new Bundle();
         int responseCode = 0;

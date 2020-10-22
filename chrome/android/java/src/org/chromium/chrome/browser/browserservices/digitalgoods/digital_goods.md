@@ -19,5 +19,5 @@ Android APIs are the source of truth for information such as price.
 * `TrustedWebActivityClient` is the class that talks to Trusted Web Activities.
 * `DigitalGoodsAdapter` sits between `DigitalGoodsImpl` and
   `TrustedWebActivityClient`, transforming between appropriate data types.
-* `DigitalGoodsConverter` contains the lower level transformations that
-  `DigitalGoodsAdapter` uses.
+* `DigitalGoodsConverter`, `GetDetailsConverter` and `AcknowledgeConverter` contain the lower level
+   transformations that `DigitalGoodsAdapter` uses.
