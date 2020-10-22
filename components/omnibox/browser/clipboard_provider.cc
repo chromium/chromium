@@ -596,7 +596,7 @@ void ClipboardProvider::ConstructImageMatchCallback(
 
   if (!base::GetFieldTrialParamByFeatureAsBool(
           omnibox::kEnableClipboardProviderImageSuggestions,
-          OmniboxFieldTrial::kImageSearchSuggestionThumbnail, false)) {
+          OmniboxFieldTrial::kImageSearchSuggestionThumbnail, true)) {
     // If Omnibox image suggestion do not need thumbnail, release memory.
     match.search_terms_args.reset();
   }

@@ -4861,24 +4861,6 @@
             ]
         }
     ],
-    "OmniboxEnableClipboardProviderImageSuggestions": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "ImageSearchSuggestionThumbnail": "true"
-                    },
-                    "enable_features": [
-                        "OmniboxEnableClipboardProviderImageSuggestions"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxLocalEntities": [
         {
             "platforms": [

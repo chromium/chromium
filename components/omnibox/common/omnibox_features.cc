@@ -22,13 +22,6 @@ const auto enabled_by_default_android_only =
     base::FEATURE_DISABLED_BY_DEFAULT;
 #endif
 
-const auto enabled_by_default_ios_only =
-#if defined(OS_IOS)
-    base::FEATURE_ENABLED_BY_DEFAULT;
-#else
-    base::FEATURE_DISABLED_BY_DEFAULT;
-#endif
-
 const auto enabled_by_default_desktop_android =
 #if defined(OS_IOS)
     base::FEATURE_DISABLED_BY_DEFAULT;
@@ -87,7 +80,7 @@ const base::Feature kExperimentalKeywordMode{"OmniboxExperimentalKeywordMode",
 // Feature to enable clipboard provider to suggest searching for copied images.
 const base::Feature kEnableClipboardProviderImageSuggestions{
     "OmniboxEnableClipboardProviderImageSuggestions",
-    enabled_by_default_ios_only};
+    enabled_by_default_android_ios};
 
 // Feature to enable the search provider to send a request to the suggest
 // server on focus.  This allows the suggest server to warm up, by, for
