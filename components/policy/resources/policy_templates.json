@@ -16778,7 +16778,7 @@
     },
     {
       'name': 'DeviceArcDataSnapshotHours',
-      'owners': ['file://components/policy/resources/OWNERS'],
+      'owners': ['pbond@chromium.org', 'file://components/policy/resources/OWNERS'],
       'type': 'dict',
       'schema': {
         'type': 'object',
@@ -16826,7 +16826,7 @@
       'id': 794,
       'caption': '''Intervals when ARC data snapshot update process can be started for Managed Guest Sessions''',
       'tags': [],
-      'desc': '''If "DeviceArcDataSnapshotHours" policy is set, then the ARC data snapshotting mechanism is turned on. And the ARC data snapshotting update can be started automatically during the defined time intervals. When an interval starts, ARC snapshot update is required and no user is logged-in, the ARC data snapshot update process is started without user notification. If the user session is active, the UI notification is shown and have to be accepted in order to reboot a device and start ARC data snapshot update process. Note: a device is blocked for usage during the ARC data snapshot update process.''',
+      'desc': '''If "DeviceArcDataSnapshotHours" policy is set, then the ARC data snapshotting mechanism is turned on. And the ARC data snapshot update can be started automatically during the defined time intervals. When an interval starts, ARC data snapshot update is required and no user is logged-in, the ARC data snapshot update process is started without user notification. If the user session is active, the UI notification is shown and have to be accepted in order to reboot a device and start ARC data snapshot update process. Note: a device is blocked for usage during the ARC data snapshot update process.''',
     },
     {
       'name': 'IsolateOrigins',
