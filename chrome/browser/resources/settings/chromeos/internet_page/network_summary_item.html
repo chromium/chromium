@@ -85,6 +85,7 @@
         <cr-toggle id="deviceEnabledButton"
             class="margin-matches-padding"
             aria-label$="[[getToggleA11yString_(deviceState)]]"
+            aria-describedby$="[[getToggleA11yDescribedBy_(deviceState)]]"
             checked="[[deviceIsEnabled_(deviceState)]]"
             disabled="[[!enableToggleIsEnabled_(deviceState)]]"
             on-change="onDeviceEnabledChange_">

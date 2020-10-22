@@ -291,6 +291,22 @@ Polymer({
   },
 
   /**
+   * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
+   * @return {string}
+   * @private
+   */
+  getToggleA11yDescribedBy_(deviceState) {
+    // Use network state text to describe toggle for uninitialized tether
+    // device. This announces details about enabling bluetooth.
+    if (this.enableToggleIsVisible_(deviceState) &&
+        deviceState.type === mojom.NetworkType.kTether &&
+        deviceState.deviceState == mojom.DeviceStateType.kUninitialized) {
+      return 'networkState';
+    }
+    return '';
+  },
+
+  /**
    * @return {boolean} True if VPNs are disabled by policy and the current
    *     device is VPN.
    * @private
