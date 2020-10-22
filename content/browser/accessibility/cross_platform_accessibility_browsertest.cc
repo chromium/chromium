@@ -1471,8 +1471,16 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_GT(bounds.y(), 0);
 }
 
+// http://crbug.com/1141280
+#if defined(OS_LINUX)
+#define MAYBE_NonInteractiveChangesAreBatched \
+  DISABLED_NonInteractiveChangesAreBatched
+#else
+#define MAYBE_NonInteractiveChangesAreBatched NonInteractiveChangesAreBatched
+#endif
+
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
-                       NonInteractiveChangesAreBatched) {
+                       MAYBE_NonInteractiveChangesAreBatched) {
   // Ensure that normal DOM changes are batched together, and do not occur
   // more than once every kDelayForDeferredUpdatesAfterPageLoad.
   const char url_str[] =
