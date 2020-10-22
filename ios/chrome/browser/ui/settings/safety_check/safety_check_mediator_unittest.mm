@@ -93,7 +93,7 @@
 
 namespace {
 
-typedef NS_ENUM(NSInteger, SafteyCheckItemType) {
+typedef NS_ENUM(NSInteger, SafetyCheckItemType) {
   // CheckTypes section.
   UpdateItemType = kItemTypeEnumZero,
   PasswordItemType,
@@ -523,4 +523,57 @@ TEST_F(SafetyCheckMediatorTest, UpdateCheckChannelUI) {
       mediator_.updateCheckItem.detailText,
       GetNSString(IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_CHANNEL_CANARY_DESC));
   EXPECT_TRUE(mediator_.updateCheckItem.infoButtonHidden);
+}
+
+// Clickable tests.
+TEST_F(SafetyCheckMediatorTest, UpdateClickableOutOfDate) {
+  mediator_.updateCheckRowState = UpdateCheckRowStateOutOfDate;
+  [mediator_ reconfigureUpdateCheckItem];
+  TableViewItem* updateItem =
+      [[TableViewItem alloc] initWithType:SafetyCheckItemType::UpdateItemType];
+  EXPECT_TRUE([mediator_ isItemClickable:updateItem]);
+}
+
+TEST_F(SafetyCheckMediatorTest, UpdateNonclickableUpToDate) {
+  mediator_.updateCheckRowState = UpdateCheckRowStateUpToDate;
+  [mediator_ reconfigureUpdateCheckItem];
+  TableViewItem* updateItem =
+      [[TableViewItem alloc] initWithType:SafetyCheckItemType::UpdateItemType];
+  EXPECT_FALSE([mediator_ isItemClickable:updateItem]);
+}
+
+TEST_F(SafetyCheckMediatorTest, PasswordClickableUnsafe) {
+  mediator_.passwordCheckRowState = PasswordCheckRowStateUnSafe;
+  [mediator_ reconfigurePasswordCheckItem];
+  TableViewItem* passwordItem = [[TableViewItem alloc]
+      initWithType:SafetyCheckItemType::PasswordItemType];
+  EXPECT_TRUE([mediator_ isItemClickable:passwordItem]);
+}
+
+TEST_F(SafetyCheckMediatorTest, PasswordNonclickableSafe) {
+  mediator_.passwordCheckRowState = PasswordCheckRowStateSafe;
+  [mediator_ reconfigurePasswordCheckItem];
+  TableViewItem* passwordItem = [[TableViewItem alloc]
+      initWithType:SafetyCheckItemType::PasswordItemType];
+  EXPECT_FALSE([mediator_ isItemClickable:passwordItem]);
+}
+
+TEST_F(SafetyCheckMediatorTest, SafeBrowsingNonClickableDefault) {
+  mediator_.safeBrowsingCheckRowState = SafeBrowsingCheckRowStateDefault;
+  [mediator_ reconfigureSafeBrowsingCheckItem];
+  TableViewItem* safeBrowsingItem = [[TableViewItem alloc]
+      initWithType:SafetyCheckItemType::SafeBrowsingItemType];
+  EXPECT_FALSE([mediator_ isItemClickable:safeBrowsingItem]);
+}
+
+TEST_F(SafetyCheckMediatorTest, CheckNowClickableAll) {
+  mediator_.checkStartState = CheckStartStateCancel;
+  [mediator_ reconfigureCheckStartSection];
+  TableViewItem* checkStartItem = [[TableViewItem alloc]
+      initWithType:SafetyCheckItemType::CheckStartItemType];
+  EXPECT_TRUE([mediator_ isItemClickable:checkStartItem]);
+
+  mediator_.checkStartState = CheckStartStateDefault;
+  [mediator_ reconfigureCheckStartSection];
+  EXPECT_TRUE([mediator_ isItemClickable:checkStartItem]);
 }

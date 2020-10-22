@@ -390,6 +390,22 @@ typedef NS_ENUM(NSInteger, SafteyCheckItemType) {
   }
 }
 
+- (BOOL)isItemClickable:(TableViewItem*)item {
+  SafteyCheckItemType type = static_cast<SafteyCheckItemType>(item.type);
+  switch (type) {
+    case UpdateItemType:
+      return self.updateCheckRowState == UpdateCheckRowStateOutOfDate;
+    case PasswordItemType:
+      return self.passwordCheckRowState == PasswordCheckRowStateUnSafe;
+    case CheckStartItemType:
+      return YES;
+    case SafeBrowsingItemType:
+    case HeaderItem:
+    case TimestampFooterItem:
+      return NO;
+  }
+}
+
 - (BOOL)isItemWithErrorInfo:(TableViewItem*)item {
   SafteyCheckItemType type = static_cast<SafteyCheckItemType>(item.type);
   return (type != CheckStartItemType);
