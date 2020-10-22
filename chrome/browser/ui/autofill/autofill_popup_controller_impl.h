@@ -67,6 +67,8 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   // view is destroyed.
   void PinView();
 
+  void KeepPopupOpenForTesting() { keep_popup_open_for_testing_ = true; }
+
   // Returns (not elided) suggestions currently held by the controller.
   base::span<const Suggestion> GetUnelidedSuggestions() const;
 
@@ -172,6 +174,10 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
 
   // The current Autofill query values.
   std::vector<Suggestion> suggestions_;
+
+  // If set to true, the popup will stay open regardless of external changes on
+  // the machine that would normally cause the popup to be hidden.
+  bool keep_popup_open_for_testing_ = false;
 
   // The line that is currently selected by the user, null indicates that no
   // line is currently selected.

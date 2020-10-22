@@ -501,6 +501,12 @@ void ChromeAutofillClient::ShowAutofillPopup(
   popup_controller_->Show(open_args.suggestions,
                           open_args.autoselect_first_suggestion.value(),
                           open_args.popup_type);
+
+  // When testing, try to keep popup open when the reason to hide is from an
+  // external browser frame resize that is extraneous to our testing goals.
+  if (keep_popup_open_for_testing_ && popup_controller_.get()) {
+    popup_controller_->KeepPopupOpenForTesting();
+  }
 }
 
 void ChromeAutofillClient::UpdateAutofillPopupDataListValues(

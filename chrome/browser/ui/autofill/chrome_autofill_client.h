@@ -160,6 +160,7 @@ class ChromeAutofillClient
   base::WeakPtr<AutofillPopupControllerImpl> popup_controller_for_testing() {
     return popup_controller_;
   }
+  void KeepPopupOpenForTesting() { keep_popup_open_for_testing_ = true; }
 
 #if !defined(OS_ANDROID)
   // ZoomObserver implementation.
@@ -180,6 +181,9 @@ class ChromeAutofillClient
   base::WeakPtr<AutofillPopupControllerImpl> popup_controller_;
   CardUnmaskPromptControllerImpl unmask_controller_;
   std::unique_ptr<LogManager> log_manager_;
+  // If set to true, the popup will stay open regardless of external changes on
+  // the test machine, that may normally cause the popup to be hidden
+  bool keep_popup_open_for_testing_ = false;
 #if defined(OS_ANDROID)
   CardExpirationDateFixFlowControllerImpl
       card_expiration_date_fix_flow_controller_;
