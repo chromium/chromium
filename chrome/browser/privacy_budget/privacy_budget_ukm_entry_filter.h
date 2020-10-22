@@ -16,7 +16,7 @@
 // Doesn't affect any other kind of UKM event other than Identifiability events.
 class PrivacyBudgetUkmEntryFilter : public ukm::UkmEntryFilter {
  public:
-  // |settings| must outlive PrivacyBudgetUkmEntryFilter.
+  // |state| must outlive PrivacyBudgetUkmEntryFilter.
   explicit PrivacyBudgetUkmEntryFilter(IdentifiabilityStudyState* state);
 
   PrivacyBudgetUkmEntryFilter(const PrivacyBudgetUkmEntryFilter&) = delete;
