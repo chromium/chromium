@@ -62,7 +62,7 @@ using Instruction = uint32_t;
 // Use an enum here rather than separate constexpr vars because otherwise some
 // of the vars will end up unused on each platform, upsetting
 // -Wunused-const-variable.
-enum {
+enum : Instruction {
   // There are multiple valid encodings of return (which is really a special
   // form of branch). This is the one clang seems to use:
   kRet = 0xd65f03c0,
