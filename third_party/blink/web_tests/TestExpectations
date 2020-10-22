@@ -57,8 +57,6 @@ crbug.com/807686 crbug.com/24182 jquery/manipulation.html [ Timeout Pass ]
 # available in child/sibling frames.  This assumption doesn't hold with User
 # Activation v2 (UAv2).
 crbug.com/906791 external/wpt/fullscreen/api/element-ready-check-allowed-cross-origin-manual.sub.html [ Timeout ]
-crbug.com/860713 external/wpt/bluetooth/requestDevice/cross-origin-iframe.sub.https.html [ Failure Timeout ]
-crbug.com/860713 external/wpt/bluetooth/requestDevice/request-from-sandboxed-iframe.https.html [ Failure Timeout ]
 
 # These two are left over from crbug.com/881040, I rebaselined them twice and
 # they continue to fail.
