@@ -813,10 +813,14 @@ void ServiceWorkerStorage::GetUserKeysAndDataByKeyPrefix(
       break;
   }
 
-  // TODO(bashi): Consider replacing these DCHECKs with returning errors once
-  // this class is moved to the Storage Service.
-  DCHECK_NE(registration_id, blink::mojom::kInvalidServiceWorkerRegistrationId);
-  DCHECK(!key_prefix.empty());
+  if (registration_id == blink::mojom::kInvalidServiceWorkerRegistrationId ||
+      key_prefix.empty()) {
+    RunSoon(FROM_HERE,
+            base::BindOnce(std::move(callback),
+                           ServiceWorkerDatabase::Status::kErrorFailed,
+                           base::flat_map<std::string, std::string>()));
+    return;
+  }
 
   database_task_runner_->PostTask(
       FROM_HERE,
