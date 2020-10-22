@@ -52,6 +52,7 @@ class ReportingServiceImpl : public ReportingService {
   }
 
   void QueueReport(const GURL& url,
+                   const NetworkIsolationKey& network_isolation_key,
                    const std::string& user_agent,
                    const std::string& group,
                    const std::string& type,
@@ -72,8 +73,6 @@ class ReportingServiceImpl : public ReportingService {
 
     // base::Unretained is safe because the callback is stored in
     // |task_backlog_| which will not outlive |this|.
-    // TODO(chlily): Get NetworkIsolationKey from caller.
-    NetworkIsolationKey network_isolation_key = NetworkIsolationKey::Todo();
     DoOrBacklogTask(base::BindOnce(
         &ReportingServiceImpl::DoQueueReport, base::Unretained(this),
         network_isolation_key, std::move(sanitized_url), user_agent, group,

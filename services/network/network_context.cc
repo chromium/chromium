@@ -862,9 +862,10 @@ void NetworkContext::QueueReport(const std::string& type,
   }
 
   // Send the crash report to the Reporting API.
-  reporting_service->QueueReport(url, reported_user_agent, group, type,
-                                 base::Value::ToUniquePtrValue(std::move(body)),
-                                 0 /* depth */);
+  // TODO(mmenke): Get a NetworkIsolationKey from the caller.
+  reporting_service->QueueReport(
+      url, net::NetworkIsolationKey::Todo(), reported_user_agent, group, type,
+      base::Value::ToUniquePtrValue(std::move(body)), 0 /* depth */);
 }
 
 void NetworkContext::QueueSignedExchangeReport(

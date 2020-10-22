@@ -299,13 +299,16 @@ TestReportingService::Report::Report(Report&& other)
       body(std::move(other.body)),
       depth(other.depth) {}
 
-TestReportingService::Report::Report(const GURL& url,
-                                     const std::string& user_agent,
-                                     const std::string& group,
-                                     const std::string& type,
-                                     std::unique_ptr<const base::Value> body,
-                                     int depth)
+TestReportingService::Report::Report(
+    const GURL& url,
+    const NetworkIsolationKey& network_isolation_key,
+    const std::string& user_agent,
+    const std::string& group,
+    const std::string& type,
+    std::unique_ptr<const base::Value> body,
+    int depth)
     : url(url),
+      network_isolation_key(network_isolation_key),
       user_agent(user_agent),
       group(group),
       type(type),
@@ -318,14 +321,16 @@ TestReportingService::TestReportingService() = default;
 
 TestReportingService::~TestReportingService() = default;
 
-void TestReportingService::QueueReport(const GURL& url,
-                                       const std::string& user_agent,
-                                       const std::string& group,
-                                       const std::string& type,
-                                       std::unique_ptr<const base::Value> body,
-                                       int depth) {
-  reports_.push_back(
-      Report(url, user_agent, group, type, std::move(body), depth));
+void TestReportingService::QueueReport(
+    const GURL& url,
+    const NetworkIsolationKey& network_isolation_key,
+    const std::string& user_agent,
+    const std::string& group,
+    const std::string& type,
+    std::unique_ptr<const base::Value> body,
+    int depth) {
+  reports_.emplace_back(Report(url, network_isolation_key, user_agent, group,
+                               type, std::move(body), depth));
 }
 
 void TestReportingService::ProcessHeader(const GURL& url,

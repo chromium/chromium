@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "net/base/network_isolation_key.h"
 #include "net/base/rand_callback.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_context.h"
@@ -283,6 +284,7 @@ class TestReportingService : public ReportingService {
     Report(Report&& other);
 
     Report(const GURL& url,
+           const NetworkIsolationKey& network_isolation_key,
            const std::string& user_agent,
            const std::string& group,
            const std::string& type,
@@ -292,6 +294,7 @@ class TestReportingService : public ReportingService {
     ~Report();
 
     GURL url;
+    NetworkIsolationKey network_isolation_key;
     std::string user_agent;
     std::string group;
     std::string type;
@@ -311,6 +314,7 @@ class TestReportingService : public ReportingService {
   ~TestReportingService() override;
 
   void QueueReport(const GURL& url,
+                   const NetworkIsolationKey& network_isolation_key,
                    const std::string& user_agent,
                    const std::string& group,
                    const std::string& type,

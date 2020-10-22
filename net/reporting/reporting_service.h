@@ -21,6 +21,7 @@ class Value;
 
 namespace net {
 
+class NetworkIsolationKey;
 class ReportingContext;
 struct ReportingPolicy;
 class URLRequestContext;
@@ -47,6 +48,8 @@ class NET_EXPORT ReportingService {
       std::unique_ptr<ReportingContext> reporting_context);
 
   // Queues a report for delivery. |url| is the URL that originated the report.
+  // |network_isolation_key| is used to restrict what reports can be merged, and
+  // for sending the report.
   // |user_agent| is the User-Agent header that was used for the request.
   // |group| is the endpoint group to which the report should be delivered.
   // |type| is the type of the report. |body| is the body of the report.
@@ -54,6 +57,7 @@ class NET_EXPORT ReportingService {
   // The Reporting system will take ownership of |body|; all other parameters
   // will be copied.
   virtual void QueueReport(const GURL& url,
+                           const NetworkIsolationKey& network_isolation_key,
                            const std::string& user_agent,
                            const std::string& group,
                            const std::string& type,

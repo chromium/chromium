@@ -460,8 +460,11 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
              << ", status=" << details.status_code
              << ", depth=" << details.reporting_upload_depth << ") for "
              << details.uri;
+
+    // TODO(https://crbug.com/993805): Pass in a NetworkIsolationKey.
     reporting_service_->QueueReport(
-        details.uri, details.user_agent, policy->report_to, kReportType,
+        details.uri, NetworkIsolationKey::Todo(), details.user_agent,
+        policy->report_to, kReportType,
         CreateReportBody(phase_string, type_string, sampling_fraction.value(),
                          details),
         details.reporting_upload_depth);
@@ -505,8 +508,11 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
                           : RequestOutcome::kDiscardedUnsampledFailure);
       return;
     }
+
+    // TODO(https://crbug.com/993805): Pass in a NetworkIsolationKey.
     reporting_service_->QueueReport(
-        details.outer_url, details.user_agent, policy->report_to, kReportType,
+        details.outer_url, NetworkIsolationKey::Todo(), details.user_agent,
+        policy->report_to, kReportType,
         CreateSignedExchangeReportBody(details, sampling_fraction.value()),
         0 /* depth */);
     RecordSignedExchangeRequestOutcome(RequestOutcome::kQueued);
