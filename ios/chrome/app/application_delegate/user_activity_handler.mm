@@ -170,9 +170,14 @@ std::vector<GURL> createGURLVectorFromIntentURLs(NSArray<NSURL*>* intentURLs) {
         base::mac::ObjCCastStrict<SearchInChromeIntent>(
             userActivity.interaction.intent);
 
-    NSString* searchPhrase = intent.searchPhrase;
+    if (!intent) {
+      return NO;
+    }
 
-    if ([searchPhrase length]) {
+    id searchPhrase = [intent valueForKey:@"searchPhrase"];
+
+    if ([searchPhrase isKindOfClass:[NSString class]] &&
+        [searchPhrase length]) {
       startupParams.textQuery = searchPhrase;
     } else {
       startupParams.postOpeningAction = FOCUS_OMNIBOX;
