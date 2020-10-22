@@ -68,13 +68,13 @@ class MockWebController : public WebController {
                     base::OnceCallback<void(const ClientStatus&)>& callback));
 
   void GetFieldValue(
-      const Selector& selector,
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&, const std::string&)>
           callback) override {
-    OnGetFieldValue(selector, callback);
+    OnGetFieldValue(element, callback);
   }
   MOCK_METHOD2(OnGetFieldValue,
-               void(const Selector& selector,
+               void(const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&,
                                             const std::string&)>& callback));
 
@@ -142,6 +142,12 @@ class MockWebController : public WebController {
           callback) override {
     OnWaitForDocumentReadyState(frame, min_ready_state, callback);
   }
+
+  base::WeakPtr<WebController> GetWeakPtr() const override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  base::WeakPtrFactory<MockWebController> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill_assistant

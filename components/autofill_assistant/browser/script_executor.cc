@@ -580,10 +580,10 @@ void ScriptExecutor::SetStepProgressBarConfiguration(
 }
 
 void ScriptExecutor::GetFieldValue(
-    const Selector& selector,
+    const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&, const std::string&)>
         callback) {
-  delegate_->GetWebController()->GetFieldValue(selector, std::move(callback));
+  delegate_->GetWebController()->GetFieldValue(element, std::move(callback));
 }
 
 void ScriptExecutor::GetStringAttribute(

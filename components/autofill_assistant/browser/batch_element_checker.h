@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/selector.h"
+#include "components/autofill_assistant/browser/web/element_finder.h"
 
 namespace autofill_assistant {
 class WebController;
@@ -68,11 +69,24 @@ class BatchElementChecker {
   void Run(WebController* web_controller);
 
  private:
+  using FindGetFieldValueCallback = base::OnceCallback<void(
+      const ElementFinder::Result&,
+      base::OnceCallback<void(const ClientStatus&, const std::string&)>)>;
+
   void OnElementChecked(std::vector<ElementCheckCallback>* callbacks,
                         const ClientStatus& element_status);
-  void OnGetFieldValue(std::vector<GetFieldValueCallback>* callbacks,
-                       const ClientStatus& element_status,
+  void OnFindElementForGetFieldValue(
+      FindGetFieldValueCallback perform,
+      GetFieldValueCallback done,
+      const ClientStatus& element_status,
+      std::unique_ptr<ElementFinder::Result> element_result);
+  void OnGetFieldValue(std::unique_ptr<ElementFinder::Result> element,
+                       GetFieldValueCallback done,
+                       const ClientStatus& status,
                        const std::string& value);
+  void OnFieldValueCheckDone(std::vector<GetFieldValueCallback>* callbacks,
+                             const ClientStatus& status,
+                             const std::string& value);
   void CheckDone();
 
   // A map of ElementCheck arguments (check_type, selector) to callbacks that

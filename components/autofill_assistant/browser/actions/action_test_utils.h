@@ -8,6 +8,7 @@
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
+#include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
@@ -22,10 +23,25 @@ MATCHER_P(EqualsStatus, status, "") {
 
 namespace test_util {
 
+// Mock |ActionDelegate::FindElement| an unspecified amount of times for any
+// selector.
 void MockFindAnyElement(MockActionDelegate& delegate);
 
+// Expect |ActionDelegate::FindElement| being called a specified amount of
+// times for the given |Selector|.
 ElementFinder::Result MockFindElement(MockActionDelegate& delegate,
-                                      const Selector& selector);
+                                      const Selector& selector,
+                                      int times = 1);
+
+// Mock |WebController::FindElement| an unspecified amount of times for any
+// selector.
+void MockFindAnyElement(MockWebController& web_controller);
+
+// Expect |WebController::FindElement| being called a specified amount of times
+// for the given |Selector|.
+ElementFinder::Result MockFindElement(MockWebController& web_controller,
+                                      const Selector& selector,
+                                      int times = 1);
 
 }  // namespace test_util
 }  // namespace autofill_assistant

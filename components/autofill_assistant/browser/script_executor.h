@@ -182,7 +182,7 @@ class ScriptExecutor : public ActionDelegate,
   void SetTouchableElementArea(
       const ElementAreaProto& touchable_element_area) override;
   void GetFieldValue(
-      const Selector& selector,
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&, const std::string&)>
           callback) override;
   void GetStringAttribute(

@@ -1015,32 +1015,16 @@ void WebController::ScrollToElementPosition(
 }
 
 void WebController::GetFieldValue(
-    const Selector& selector,
+    const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&, const std::string&)>
         callback) {
-  FindElement(
-      selector,
-      /* strict_mode= */ true,
-      base::BindOnce(&WebController::OnFindElementForGetFieldValue,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void WebController::OnFindElementForGetFieldValue(
-    base::OnceCallback<void(const ClientStatus&, const std::string&)> callback,
-    const ClientStatus& status,
-    std::unique_ptr<ElementFinder::Result> element_result) {
-  if (!status.ok()) {
-    std::move(callback).Run(status, "");
-    return;
-  }
-
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
-          .SetObjectId(element_result->object_id)
+          .SetObjectId(element.object_id)
           .SetFunctionDeclaration(std::string(kGetValueAttributeScript))
           .SetReturnByValue(true)
           .Build(),
-      element_result->node_frame_id,
+      element.node_frame_id,
       base::BindOnce(
           &WebController::OnJavaScriptResultForString,
           weak_ptr_factory_.GetWeakPtr(),
@@ -1387,6 +1371,10 @@ void WebController::GetElementTag(
           base::BindOnce(&DecorateControllerStatusWithValue<std::string>,
                          WebControllerErrorInfoProto::GET_ELEMENT_TAG,
                          std::move(callback))));
+}
+
+base::WeakPtr<WebController> WebController::GetWeakPtr() const {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 WebController::ScopedAssistantActionStateRunning::

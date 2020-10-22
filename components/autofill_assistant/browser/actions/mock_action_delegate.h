@@ -179,15 +179,10 @@ class MockActionDelegate : public ActionDelegate {
            base::OnceCallback<void(std::unique_ptr<autofill::CreditCard> card,
                                    const base::string16& cvc)>& callback));
 
-  void GetFieldValue(const Selector& selector,
-                     base::OnceCallback<void(const ClientStatus&,
-                                             const std::string&)> callback) {
-    OnGetFieldValue(selector, callback);
-  }
-  MOCK_METHOD2(OnGetFieldValue,
-               void(const Selector& selector,
+  MOCK_METHOD2(GetFieldValue,
+               void(const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&,
-                                            const std::string&)>& callback));
+                                            const std::string&)> callback));
 
   MOCK_METHOD3(GetStringAttribute,
                void(const std::vector<std::string>& attributes,

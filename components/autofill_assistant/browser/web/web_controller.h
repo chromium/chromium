@@ -141,13 +141,13 @@ class WebController {
       const TopPadding& top_padding,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
-  // Get the value of |selector| and return the result through |callback|. The
-  // returned value might be false, if the element cannot be found, true and the
-  // empty string in case of error or empty value.
+  // Get the value attribute of an |element| and return the result through
+  // |callback|. If the lookup fails, the value will be empty. An empty result
+  // does not mean an error.
   //
   // Normally done through BatchElementChecker.
   virtual void GetFieldValue(
-      const Selector& selector,
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&, const std::string&)>
           callback);
 
@@ -247,6 +247,8 @@ class WebController {
       DocumentReadyState min_ready_state,
       base::OnceCallback<void(const ClientStatus&,
                               DocumentReadyState end_state)> callback);
+
+  virtual base::WeakPtr<WebController> GetWeakPtr() const;
 
  private:
   friend class WebControllerBrowserTest;
@@ -370,11 +372,6 @@ class WebController {
   void OnSelectOption(base::OnceCallback<void(const ClientStatus&)> callback,
                       const DevtoolsClient::ReplyStatus& reply_status,
                       std::unique_ptr<runtime::CallFunctionOnResult> result);
-  void OnFindElementForGetFieldValue(
-      base::OnceCallback<void(const ClientStatus&, const std::string&)>
-          callback,
-      const ClientStatus& status,
-      std::unique_ptr<ElementFinder::Result> element_result);
   void DispatchKeyboardTextDownEvent(
       const std::string& node_frame_id,
       const std::vector<UChar32>& codepoints,

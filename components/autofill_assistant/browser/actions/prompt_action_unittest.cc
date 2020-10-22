@@ -40,9 +40,6 @@ class PromptActionTest : public testing::Test {
   void SetUp() override {
     ON_CALL(mock_web_controller_, OnElementCheck(_, _))
         .WillByDefault(RunOnceCallback<1>(ClientStatus()));
-    ON_CALL(mock_web_controller_, OnGetFieldValue(_, _))
-        .WillByDefault(RunOnceCallback<1>(ClientStatus(), ""));
-
     EXPECT_CALL(mock_action_delegate_, OnWaitForDom(_, _, _, _))
         .WillRepeatedly(Invoke(this, &PromptActionTest::FakeWaitForDom));
     ON_CALL(mock_action_delegate_, Prompt(_, _, _, _, _))

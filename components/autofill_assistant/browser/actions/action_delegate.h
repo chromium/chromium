@@ -223,11 +223,11 @@ class ActionDelegate {
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 
-  // Get the value of |selector| and return the result through |callback|. The
-  // returned value might be false, if the element cannot be found, true and the
-  // empty string in case of error or empty value.
+  // Get the value attribute of an |element| and return the result through
+  // |callback|. If the lookup fails, the value will be empty. An empty result
+  // does not mean an error.
   virtual void GetFieldValue(
-      const Selector& selector,
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&, const std::string&)>
           callback) = 0;
 

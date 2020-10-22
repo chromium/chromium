@@ -245,8 +245,9 @@ void SetFormFieldValueAction::OnSetFieldValueAndCheckFallback(
     EndAction(status);
     return;
   }
-  delegate_->GetFieldValue(
-      selector_,
+  action_delegate_util::FindElementAndGetProperty(
+      delegate_, selector_,
+      base::BindOnce(&ActionDelegate::GetFieldValue, delegate_->GetWeakPtr()),
       base::BindOnce(&SetFormFieldValueAction::OnGetFieldValue,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(next_field_callback), requested_value));

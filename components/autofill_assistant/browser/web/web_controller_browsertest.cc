@@ -523,22 +523,44 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     ASSERT_EQ(selectors.size(), expected_values.size());
     size_t pending_number_of_checks = selectors.size();
     for (size_t i = 0; i < selectors.size(); i++) {
-      web_controller_->GetFieldValue(
-          selectors[i],
-          base::BindOnce(&WebControllerBrowserTest::OnGetFieldValue,
-                         base::Unretained(this), run_loop.QuitClosure(),
-                         &pending_number_of_checks, expected_values[i]));
+      web_controller_->FindElement(
+          selectors[i], /* strict= */ true,
+          base::BindOnce(
+              &WebControllerBrowserTest::GetFieldValueElementCallback,
+              base::Unretained(this), run_loop.QuitClosure(),
+              &pending_number_of_checks, expected_values[i]));
     }
     run_loop.Run();
   }
 
-  void OnGetFieldValue(base::OnceClosure done_callback,
+  void GetFieldValueElementCallback(
+      base::OnceClosure done_callback,
+      size_t* pending_number_of_checks_output,
+      const std::string& expected_value,
+      const ClientStatus& element_status,
+      std::unique_ptr<ElementFinder::Result> element_result) {
+    if (!element_status.ok()) {
+      OnGetFieldValue(nullptr, std::move(done_callback),
+                      pending_number_of_checks_output, expected_value,
+                      element_status, std::string());
+      return;
+    }
+    web_controller_->GetFieldValue(
+        *element_result,
+        base::BindOnce(&WebControllerBrowserTest::OnGetFieldValue,
+                       base::Unretained(this), std::move(element_result),
+                       std::move(done_callback),
+                       pending_number_of_checks_output, expected_value));
+  }
+
+  void OnGetFieldValue(std::unique_ptr<ElementFinder::Result> element,
+                       base::OnceClosure done_callback,
                        size_t* pending_number_of_checks_output,
                        const std::string& expected_value,
                        const ClientStatus& status,
                        const std::string& value) {
-    // Don't use ASSERT_EQ here: if the check fails, this would result in
-    // an endless loop without meaningful test results.
+    // Don't use ASSERT: If the check fails, this would result in an endless
+    // loop without meaningful test results.
     EXPECT_EQ(expected_value, value);
     *pending_number_of_checks_output -= 1;
     if (*pending_number_of_checks_output == 0) {
