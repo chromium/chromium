@@ -9,12 +9,11 @@ namespace download {
 DownloadUrlParameters::DownloadUrlParameters(
     const GURL& url,
     const net::NetworkTrafficAnnotationTag& traffic_annotation)
-    : DownloadUrlParameters(url, -1, -1, -1, traffic_annotation) {}
+    : DownloadUrlParameters(url, -1, -1, traffic_annotation) {}
 
 DownloadUrlParameters::DownloadUrlParameters(
     const GURL& url,
     int render_process_host_id,
-    int render_view_host_routing_id,
     int render_frame_host_routing_id,
     const net::NetworkTrafficAnnotationTag& traffic_annotation)
     : content_initiated_(false),
@@ -25,7 +24,6 @@ DownloadUrlParameters::DownloadUrlParameters(
       referrer_policy_(
           net::ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE),
       render_process_host_id_(render_process_host_id),
-      render_view_host_routing_id_(render_view_host_routing_id),
       render_frame_host_routing_id_(render_frame_host_routing_id),
       url_(url),
       do_not_prompt_for_login_(false),

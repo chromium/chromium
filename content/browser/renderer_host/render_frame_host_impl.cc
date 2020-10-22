@@ -3540,7 +3540,6 @@ void RenderFrameHostImpl::DownloadURL(
   std::unique_ptr<download::DownloadUrlParameters> parameters(
       new download::DownloadUrlParameters(blink_parameters->url,
                                           GetProcess()->GetID(),
-                                          GetRenderViewHost()->GetRoutingID(),
                                           GetRoutingID(), traffic_annotation));
   parameters->set_content_initiated(true);
   parameters->set_suggested_name(

@@ -214,7 +214,6 @@ void DownloadsDOMHandler::RetryDownload(const std::string& id) {
   // |render_frame_host|.
   auto dl_params = std::make_unique<download::DownloadUrlParameters>(
       url, render_frame_host->GetProcess()->GetID(),
-      render_frame_host->GetRenderViewHost()->GetRoutingID(),
       render_frame_host->GetRoutingID(), traffic_annotation);
   dl_params->set_content_initiated(true);
   dl_params->set_initiator(url::Origin::Create(GURL("chrome://downloads")));
