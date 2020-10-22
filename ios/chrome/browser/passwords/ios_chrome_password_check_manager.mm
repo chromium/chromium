@@ -168,6 +168,8 @@ bool IOSChromePasswordCheckManager::EditPasswordForm(
     base::StringPiece new_password) {
   auto duplicates =
       GetDuplicatesOfForm(form, saved_passwords_presenter_.GetSavedPasswords());
+  if (duplicates.size() == 0)
+    return false;
   return saved_passwords_presenter_.EditSavedPasswords(
       duplicates, base::UTF8ToUTF16(new_username),
       base::UTF8ToUTF16(new_password));
