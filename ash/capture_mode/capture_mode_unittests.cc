@@ -423,7 +423,7 @@ TEST_F(CaptureModeTest, CaptureRegionEdgeResizeBehavior) {
 
   auto* controller = StartImageRegionCapture();
   // Create the initial region.
-  const gfx::Rect target_region(gfx::Rect(200, 200, 400, 400));
+  const gfx::Rect target_region(gfx::Rect(200, 200, 200, 200));
   SelectRegion(target_region);
 
   // For each edge point try dragging to several points and verify that the
@@ -447,7 +447,8 @@ TEST_F(CaptureModeTest, CaptureRegionEdgeResizeBehavior) {
 
   // Drag to a couple of points that change both x and y. In all these cases,
   // only the width or height should change.
-  auto drag_test_points = {gfx::Point(350, 350), gfx::Point(450, 450)};
+  auto drag_test_points = {gfx::Point(150, 150), gfx::Point(350, 350),
+                           gfx::Point(450, 450)};
   auto* event_generator = GetEventGenerator();
   for (auto test_case : kDragEdgeCases) {
     SCOPED_TRACE(test_case.trace);

@@ -727,10 +727,25 @@ void CaptureModeSession::OnLocatedEventDragged(
   }
 
   // The new region is defined by the rectangle which encloses the anchor
-  // point(s) and |location_in_root|.
+  // point(s) and |resizing_point|, which is based off of |location_in_root| but
+  // prevents edge drags from resizing the region in the non-desired direction.
   std::vector<gfx::Point> points = anchor_points_;
   DCHECK(!points.empty());
-  points.push_back(location_in_root);
+  gfx::Point resizing_point = location_in_root;
+
+  // For edge dragging, there will be two anchor points with the same primary
+  // axis value. Setting |resizing_point|'s secondary axis value to match either
+  // one of the anchor points secondary axis value will ensure that for the
+  // duration of a drag, GetRectEnclosingPoints will return a rect whose
+  // secondary dimension does not change.
+  if (fine_tune_position_ == FineTunePosition::kLeftCenter ||
+      fine_tune_position_ == FineTunePosition::kRightCenter) {
+    resizing_point.set_y(points.front().y());
+  } else if (fine_tune_position_ == FineTunePosition::kTopCenter ||
+             fine_tune_position_ == FineTunePosition::kBottomCenter) {
+    resizing_point.set_x(points.front().x());
+  }
+  points.push_back(resizing_point);
   UpdateCaptureRegion(GetRectEnclosingPoints(points), /*is_resizing=*/true);
   MaybeShowMagnifierGlassAtPoint(location_in_root);
 }
