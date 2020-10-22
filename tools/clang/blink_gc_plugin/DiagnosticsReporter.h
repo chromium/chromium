@@ -82,6 +82,10 @@ class DiagnosticsReporter {
   void OptionalUsedWithGC(const clang::Expr* expr,
                           const clang::CXXRecordDecl* optional,
                           const clang::CXXRecordDecl* gc_type);
+  void VariantUsedWithGC(const clang::Expr* expr,
+                         const clang::CXXRecordDecl* variant,
+                         const clang::CXXRecordDecl* gc_type);
+
  private:
   clang::DiagnosticBuilder ReportDiagnostic(
       clang::SourceLocation location,
@@ -139,6 +143,7 @@ class DiagnosticsReporter {
 
   unsigned diag_unique_ptr_used_with_gc_;
   unsigned diag_optional_used_with_gc_;
+  unsigned diag_variant_used_with_gc_;
 };
 
 #endif // TOOLS_BLINK_GC_PLUGIN_DIAGNOSTICS_REPORTER_H_

@@ -1,0 +1,16 @@
+variant_of_gced_type.cpp:10:23: warning: [blink-gc] Disallowed construction of 'variant<blink::Base>' found; 'Base' is a garbage-collected type. absl::variant cannot hold garbage-collected objects.
+  absl::variant<Base> not_ok;
+                      ^~~~~~
+variant_of_gced_type.cpp:13:29: warning: [blink-gc] Disallowed construction of 'variant<blink::Base, blink::Base>' found; 'Base' is a garbage-collected type. absl::variant cannot hold garbage-collected objects.
+  absl::variant<Base, Base> similarly_not_ok;
+                            ^~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:16:28: warning: [blink-gc] Disallowed construction of 'variant<int, blink::Base>' found; 'Base' is a garbage-collected type. absl::variant cannot hold garbage-collected objects.
+  absl::variant<int, Base> not_ok_either;
+                           ^~~~~~~~~~~~~
+variant_of_gced_type.cpp:19:31: warning: [blink-gc] Disallowed construction of 'variant<int, blink::Derived>' found; 'Derived' is a garbage-collected type. absl::variant cannot hold garbage-collected objects.
+  absl::variant<int, Derived> ditto;
+                              ^~~~~
+variant_of_gced_type.cpp:22:7: warning: [blink-gc] Disallowed construction of 'variant<blink::Mixin>' found; 'Mixin' is a garbage-collected type. absl::variant cannot hold garbage-collected objects.
+  new absl::variant<Mixin>;
+      ^~~~
+5 warnings generated.

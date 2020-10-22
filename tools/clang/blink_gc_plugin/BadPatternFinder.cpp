@@ -9,6 +9,7 @@
 #include "clang/AST/ASTContext.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
 #include "clang/ASTMatchers/ASTMatchers.h"
+#include "clang/ASTMatchers/ASTMatchersMacros.h"
 
 using namespace clang::ast_matchers;
 
@@ -42,7 +43,7 @@ class UniquePtrGarbageCollectedMatcher : public MatchFinder::MatchCallback {
     match_finder.addDynamicMatcher(make_unique_matcher, this);
   }
 
-  void run(const MatchFinder::MatchResult& result) {
+  void run(const MatchFinder::MatchResult& result) override {
     auto* bad_use = result.Nodes.getNodeAs<clang::Expr>("bad");
     auto* bad_function = result.Nodes.getNodeAs<clang::FunctionDecl>("badfunc");
     auto* gc_type = result.Nodes.getNodeAs<clang::CXXRecordDecl>("gctype");
@@ -72,11 +73,65 @@ class OptionalGarbageCollectedMatcher : public MatchFinder::MatchCallback {
     match_finder.addDynamicMatcher(optional_construction, this);
   }
 
-  void run(const MatchFinder::MatchResult& result) {
+  void run(const MatchFinder::MatchResult& result) override {
     auto* bad_use = result.Nodes.getNodeAs<clang::Expr>("bad");
     auto* optional = result.Nodes.getNodeAs<clang::CXXRecordDecl>("optional");
     auto* gc_type = result.Nodes.getNodeAs<clang::CXXRecordDecl>("gctype");
     diagnostics_.OptionalUsedWithGC(bad_use, optional, gc_type);
+  }
+
+ private:
+  DiagnosticsReporter& diagnostics_;
+};
+
+// For the absl::variant checker, we need to match the inside of a variadic
+// template class, which doesn't seem easy with the built-in matchers: define a
+// custom matcher to go through the template parameter list.
+AST_MATCHER_P(clang::TemplateArgument,
+              parameterPackHasAnyElement,
+              // Clang exports other instantiations of Matcher via
+              // using-declarations in public headers, e.g. `using TypeMatcher =
+              // Matcher<QualType>`.
+              //
+              // Once https://reviews.llvm.org/D89920, a Clang patch adding a
+              // similar alias for template arguments, lands, this can be
+              // changed to TemplateArgumentMatcher and won't need to use the
+              // internal namespace any longer.
+              clang::ast_matchers::internal::Matcher<clang::TemplateArgument>,
+              InnerMatcher) {
+  if (Node.getKind() != clang::TemplateArgument::Pack)
+    return false;
+  return llvm::any_of(Node.pack_elements(),
+                      [&](const clang::TemplateArgument& Arg) {
+                        return InnerMatcher.matches(Arg, Finder, Builder);
+                      });
+}
+
+class VariantGarbageCollectedMatcher : public MatchFinder::MatchCallback {
+ public:
+  explicit VariantGarbageCollectedMatcher(DiagnosticsReporter& diagnostics)
+      : diagnostics_(diagnostics) {}
+
+  void Register(MatchFinder& match_finder) {
+    // Matches any constructed absl::variant where a template argument is
+    // known to refer to a garbage-collected type.
+    auto variant_construction =
+        cxxConstructExpr(
+            hasDeclaration(cxxConstructorDecl(
+                ofClass(classTemplateSpecializationDecl(
+                            hasName("::absl::variant"),
+                            hasAnyTemplateArgument(parameterPackHasAnyElement(
+                                refersToType(GarbageCollectedType()))))
+                            .bind("variant")))))
+            .bind("bad");
+    match_finder.addDynamicMatcher(variant_construction, this);
+  }
+
+  void run(const MatchFinder::MatchResult& result) override {
+    auto* bad_use = result.Nodes.getNodeAs<clang::Expr>("bad");
+    auto* variant = result.Nodes.getNodeAs<clang::CXXRecordDecl>("variant");
+    auto* gc_type = result.Nodes.getNodeAs<clang::CXXRecordDecl>("gctype");
+    diagnostics_.VariantUsedWithGC(bad_use, variant, gc_type);
   }
 
  private:
@@ -94,6 +149,9 @@ void FindBadPatterns(clang::ASTContext& ast_context,
 
   OptionalGarbageCollectedMatcher optional_gc(diagnostics);
   optional_gc.Register(match_finder);
+
+  VariantGarbageCollectedMatcher variant_gc(diagnostics);
+  variant_gc.Register(match_finder);
 
   match_finder.matchAST(ast_context);
 }

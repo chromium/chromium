@@ -508,6 +508,10 @@ _CONFIG = [
             'base::mac::(CFToNSCast|NSToCFCast)',
             'base::mac::Is(AtMost|AtLeast)?OS.+',
             'base::(scoped_nsobject|ScopedCFTypeRef)',
+
+            # absl::variant and getters:
+            'absl::variant',
+            'absl::get_if',
         ],
         'disallowed': [
             ('base::Bind(|Once|Repeating)',

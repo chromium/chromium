@@ -174,6 +174,13 @@ class Optional {};
 
 }  // namespace base
 
+namespace absl {
+
+template <class... Ts>
+class variant {};
+
+}  // namespace absl
+
 namespace blink {
 
 using namespace WTF;

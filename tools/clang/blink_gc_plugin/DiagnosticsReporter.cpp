@@ -145,6 +145,10 @@ const char kOptionalUsedWithGC[] =
     "[blink-gc] Disallowed construction of %0 found; %1 is a garbage-collected "
     "type. optional cannot hold garbage-collected objects.";
 
+const char kVariantUsedWithGC[] =
+    "[blink-gc] Disallowed construction of %0 found; %1 is a garbage-collected "
+    "type. absl::variant cannot hold garbage-collected objects.";
+
 } // namespace
 
 DiagnosticBuilder DiagnosticsReporter::ReportDiagnostic(
@@ -246,6 +250,8 @@ DiagnosticsReporter::DiagnosticsReporter(
       diagnostic_.getCustomDiagID(getErrorLevel(), kUniquePtrUsedWithGC);
   diag_optional_used_with_gc_ =
       diagnostic_.getCustomDiagID(getErrorLevel(), kOptionalUsedWithGC);
+  diag_variant_used_with_gc_ =
+      diagnostic_.getCustomDiagID(getErrorLevel(), kVariantUsedWithGC);
 }
 
 bool DiagnosticsReporter::hasErrorOccurred() const
@@ -540,4 +546,12 @@ void DiagnosticsReporter::OptionalUsedWithGC(
     const clang::CXXRecordDecl* gc_type) {
   ReportDiagnostic(expr->getBeginLoc(), diag_optional_used_with_gc_)
       << optional << gc_type << expr->getSourceRange();
+}
+
+void DiagnosticsReporter::VariantUsedWithGC(
+    const clang::Expr* expr,
+    const clang::CXXRecordDecl* variant,
+    const clang::CXXRecordDecl* gc_type) {
+  ReportDiagnostic(expr->getBeginLoc(), diag_variant_used_with_gc_)
+      << variant << gc_type << expr->getSourceRange();
 }
