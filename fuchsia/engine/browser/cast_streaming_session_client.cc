@@ -37,7 +37,7 @@ void CastStreamingSessionClient::OnReceiverEnabled() {
                                 base::SequencedTaskRunnerHandle::Get());
 }
 
-void CastStreamingSessionClient::OnInitializationSuccess(
+void CastStreamingSessionClient::OnSessionInitialization(
     base::Optional<cast_streaming::CastStreamingSession::AudioStreamInfo>
         audio_stream_info,
     base::Optional<cast_streaming::CastStreamingSession::VideoStreamInfo>
@@ -65,11 +65,6 @@ void CastStreamingSessionClient::OnInitializationSuccess(
       std::move(mojo_audio_stream_info), std::move(mojo_video_stream_info));
 }
 
-void CastStreamingSessionClient::OnInitializationFailure() {
-  DVLOG(1) << __func__;
-  cast_streaming_receiver_.reset();
-}
-
 void CastStreamingSessionClient::OnAudioBufferReceived(
     media::mojom::DecoderBufferPtr buffer) {
   DVLOG(3) << __func__;
@@ -84,7 +79,26 @@ void CastStreamingSessionClient::OnVideoBufferReceived(
   video_remote_->ProvideBuffer(std::move(buffer));
 }
 
-void CastStreamingSessionClient::OnReceiverSessionEnded() {
+void CastStreamingSessionClient::OnSessionReinitialization(
+    base::Optional<cast_streaming::CastStreamingSession::AudioStreamInfo>
+        audio_stream_info,
+    base::Optional<cast_streaming::CastStreamingSession::VideoStreamInfo>
+        video_stream_info) {
+  DVLOG(1) << __func__;
+  DCHECK(audio_stream_info || video_stream_info);
+
+  if (audio_stream_info) {
+    audio_remote_->OnNewAudioConfig(audio_stream_info->decoder_config,
+                                    std::move(audio_stream_info->data_pipe));
+  }
+
+  if (video_stream_info) {
+    video_remote_->OnNewVideoConfig(video_stream_info->decoder_config,
+                                    std::move(video_stream_info->data_pipe));
+  }
+}
+
+void CastStreamingSessionClient::OnSessionEnded() {
   DVLOG(1) << __func__;
 
   // Tear down the Mojo connection.
@@ -108,8 +122,8 @@ void CastStreamingSessionClient::OnMojoDisconnect() {
     return;
   }
 
-  // Close the Cast Streaming Session. This will eventually call
-  // OnReceiverSessionEnded(), which will tear down the Mojo connection.
+  // Close the Cast Streaming Session. OnSessionEnded() will be called as part
+  // of the Session shutdown, which will tear down the Mojo connection.
   cast_streaming_session_.Stop();
 
   // Tear down all remaining Mojo objects.

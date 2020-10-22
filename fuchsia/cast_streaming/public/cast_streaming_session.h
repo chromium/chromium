@@ -5,9 +5,9 @@
 #ifndef FUCHSIA_CAST_STREAMING_PUBLIC_CAST_STREAMING_SESSION_H_
 #define FUCHSIA_CAST_STREAMING_PUBLIC_CAST_STREAMING_SESSION_H_
 
-#include <memory>
-
 #include <fuchsia/web/cpp/fidl.h>
+
+#include <memory>
 
 #include "base/callback.h"
 #include "base/optional.h"
@@ -35,7 +35,7 @@ class CastStreamingSession {
   // Sets the NetworkContextGetter. This must be called before any call to
   // Start() and must only be called once. If the NetworkContext crashes, any
   // existing Cast Streaming Session will eventually terminate and call
-  // OnReceiverSessionEnded().
+  // OnSessionEnded().
   static void SetNetworkContextGetter(NetworkContextGetter getter);
 
   template <class T>
@@ -51,25 +51,28 @@ class CastStreamingSession {
     // Called when the Cast Streaming Session has been successfully initialized.
     // It is guaranteed that at least one of |audio_stream_info| or
     // |video_stream_info| will be set.
-    virtual void OnInitializationSuccess(
+    virtual void OnSessionInitialization(
         base::Optional<AudioStreamInfo> audio_stream_info,
         base::Optional<VideoStreamInfo> video_stream_info) = 0;
 
-    // Called when the Cast Stream Session failed to initialize.
-    virtual void OnInitializationFailure() = 0;
-
-    // Called on every new audio buffer after OnInitializationSuccess(). The
+    // Called on every new audio buffer after OnSessionInitialization(). The
     // frame data must be accessed via the |data_pipe| property in StreamInfo.
     virtual void OnAudioBufferReceived(
         media::mojom::DecoderBufferPtr buffer) = 0;
 
-    // Called on every new video buffer after OnInitializationSuccess(). The
+    // Called on every new video buffer after OnSessionInitialization(). The
     // frame data must be accessed via the |data_pipe| property in StreamInfo.
     virtual void OnVideoBufferReceived(
         media::mojom::DecoderBufferPtr buffer) = 0;
 
+    // Called on receiver session reinitialization. It is guaranteed that at
+    // least one of |audio_stream_info| or |video_stream_info| will be set.
+    virtual void OnSessionReinitialization(
+        base::Optional<AudioStreamInfo> audio_stream_info,
+        base::Optional<VideoStreamInfo> video_stream_info) = 0;
+
     // Called when the Cast Streaming Session has ended.
-    virtual void OnReceiverSessionEnded() = 0;
+    virtual void OnSessionEnded() = 0;
 
    protected:
     virtual ~Client();
@@ -84,10 +87,12 @@ class CastStreamingSession {
   // Starts the Cast Streaming Session. This can only be called once during the
   // lifespan of this object. |client| must not be null and must outlive this
   // object.
-  // * On success, OnInitializationSuccess() will be called and
+  // * On success, OnSessionInitialization() will be called and
   //   OnAudioFrameReceived() and/or OnVideoFrameReceived() will be called on
   //   every subsequent Frame.
-  // * On failure, OnInitializationFailure() will be called.
+  // * On failure, OnSessionEnded() will be called.
+  // * When a new offer is sent by the Cast Streaming Sender,
+  //   OnSessionReinitialization() will be called.
   void Start(
       Client* client,
       fidl::InterfaceRequest<fuchsia::web::MessagePort> message_port_request,

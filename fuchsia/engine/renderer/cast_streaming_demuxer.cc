@@ -27,7 +27,8 @@ class CastStreamingDemuxerStream : public media::DemuxerStream,
           pending_receiver,
       mojo::ScopedDataPipeConsumerHandle consumer)
       : receiver_(this, std::move(pending_receiver)),
-        decoder_buffer_reader_(std::move(consumer)) {
+        decoder_buffer_reader_(std::make_unique<media::MojoDecoderBufferReader>(
+            std::move(consumer))) {
     DVLOG(1) << __func__;
 
     // Mojo service disconnection means the Cast Streaming Session ended and no
@@ -55,11 +56,40 @@ class CastStreamingDemuxerStream : public media::DemuxerStream,
       std::move(pending_read_cb_).Run(Status::kAborted, nullptr);
   }
 
+ protected:
+  void ChangeDataPipe(mojo::ScopedDataPipeConsumerHandle data_pipe) {
+    DVLOG(1) << __func__;
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    pending_config_change_ = true;
+
+    // Reset the buffer reader and the current buffer. Data from the old pipe is
+    // no longer valid.
+    current_buffer_.reset();
+    decoder_buffer_reader_ =
+        std::make_unique<media::MojoDecoderBufferReader>(std::move(data_pipe));
+    CompletePendingConfigChange();
+  }
+
+  void CompletePendingConfigChange() {
+    DVLOG(1) << __func__;
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK(pending_config_change_);
+
+    if (!pending_read_cb_)
+      return;
+
+    std::move(pending_read_cb_).Run(Status::kConfigChanged, nullptr);
+    pending_config_change_ = false;
+  }
+
+  // True when this stream is undergoing a decoder configuration change.
+  bool pending_config_change_ = false;
+
  private:
   void CompletePendingRead() {
     DVLOG(3) << __func__;
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!pending_read_cb_ || !current_buffer_)
+    if (pending_config_change_ || !pending_read_cb_ || !current_buffer_)
       return;
 
     if (current_buffer_->end_of_stream()) {
@@ -81,7 +111,7 @@ class CastStreamingDemuxerStream : public media::DemuxerStream,
     media::mojom::DecoderBufferPtr buffer =
         std::move(pending_buffer_metadata_.front());
     pending_buffer_metadata_.pop_front();
-    decoder_buffer_reader_.ReadDecoderBuffer(
+    decoder_buffer_reader_->ReadDecoderBuffer(
         std::move(buffer),
         base::BindOnce(&CastStreamingDemuxerStream::OnBufferRead,
                        base::Unretained(this)));
@@ -90,6 +120,11 @@ class CastStreamingDemuxerStream : public media::DemuxerStream,
   void OnBufferRead(scoped_refptr<media::DecoderBuffer> buffer) {
     DVLOG(3) << __func__;
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    // The pending buffer reads are cancelled when we reset the data pipe on a
+    // configuration change. Just ignore them and return early here.
+    if (!buffer)
+      return;
 
     // Stop processing the pending buffer. OnMojoDisconnect() will trigger
     // sending kAborted on subsequent Read() calls. This can happen if this
@@ -118,14 +153,18 @@ class CastStreamingDemuxerStream : public media::DemuxerStream,
     DVLOG(3) << __func__;
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(pending_read_cb_.is_null());
+
     pending_read_cb_ = std::move(read_cb);
-    CompletePendingRead();
+    if (pending_config_change_)
+      CompletePendingConfigChange();
+    else
+      CompletePendingRead();
   }
   Liveness liveness() const final { return Liveness::LIVENESS_LIVE; }
-  bool SupportsConfigChanges() final { return false; }
+  bool SupportsConfigChanges() final { return true; }
 
   mojo::Receiver<CastStreamingBufferReceiver> receiver_;
-  media::MojoDecoderBufferReader decoder_buffer_reader_;
+  std::unique_ptr<media::MojoDecoderBufferReader> decoder_buffer_reader_;
 
   ReadCB pending_read_cb_;
   base::circular_deque<media::mojom::DecoderBufferPtr> pending_buffer_metadata_;
@@ -150,6 +189,20 @@ class CastStreamingAudioDemuxerStream : public CastStreamingDemuxerStream {
   ~CastStreamingAudioDemuxerStream() final = default;
 
  private:
+  // CastStreamingBufferReceiver implementation.
+  void OnNewAudioConfig(const media::AudioDecoderConfig& decoder_config,
+                        mojo::ScopedDataPipeConsumerHandle data_pipe) final {
+    config_ = decoder_config;
+    DVLOG(1) << __func__
+             << ": config info: " << config_.AsHumanReadableString();
+    ChangeDataPipe(std::move(data_pipe));
+  }
+
+  void OnNewVideoConfig(const media::VideoDecoderConfig& decoder_config,
+                        mojo::ScopedDataPipeConsumerHandle data_pipe) final {
+    NOTREACHED();
+  }
+
   // DemuxerStream implementation.
   media::AudioDecoderConfig audio_decoder_config() final { return config_; }
   media::VideoDecoderConfig video_decoder_config() final {
@@ -175,6 +228,20 @@ class CastStreamingVideoDemuxerStream : public CastStreamingDemuxerStream {
   ~CastStreamingVideoDemuxerStream() final = default;
 
  private:
+  // CastStreamingBufferReceiver implementation.
+  void OnNewAudioConfig(const media::AudioDecoderConfig& decoder_config,
+                        mojo::ScopedDataPipeConsumerHandle data_pipe) final {
+    NOTREACHED();
+  }
+
+  void OnNewVideoConfig(const media::VideoDecoderConfig& decoder_config,
+                        mojo::ScopedDataPipeConsumerHandle data_pipe) final {
+    config_ = decoder_config;
+    DVLOG(1) << __func__
+             << ": config info: " << config_.AsHumanReadableString();
+    ChangeDataPipe(std::move(data_pipe));
+  }
+
   // DemuxerStream implementation.
   media::AudioDecoderConfig audio_decoder_config() final {
     NOTREACHED();
