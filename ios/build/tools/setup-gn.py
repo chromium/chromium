@@ -72,6 +72,11 @@ class GnGenerator(object):
     }
   }
 
+  TARGET_ENVIRONMENT_VALUES = {
+    'iphoneos': '"device"',
+    'iphonesimulator': '"simulator"',
+  }
+
   def __init__(self, settings, config, target):
     assert target in SUPPORTED_TARGETS
     assert config in SUPPORTED_CONFIGS
@@ -103,7 +108,7 @@ class GnGenerator(object):
     args.append(('enable_stripping', 'enable_dsyms'))
     args.append(('is_official_build', self._config == 'Official'))
     args.append(('is_chrome_branded', 'is_official_build'))
-    args.append(('use_xcode_clang', 'false'))
+    args.append(('use_xcode_clang', False))
     args.append(('use_clang_coverage', self._config == 'Coverage'))
     args.append(('is_component_build', False))
 
@@ -119,6 +124,10 @@ class GnGenerator(object):
           [cpu for cpu in cpu_values.itervalues() if cpu != target_cpu]))
     else:
       args.append(('target_cpu', cpu_values[build_arch]))
+
+    args.append((
+        'target_environment',
+        self.TARGET_ENVIRONMENT_VALUES[self._target]))
 
     # Add user overrides after the other configurations so that they can
     # refer to them and override them.
