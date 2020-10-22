@@ -8,16 +8,17 @@
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 
 #include "third_party/blink/renderer/core/css/css_initial_value.h"
+#include "third_party/blink/renderer/core/css/scoped_css_value.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
 class CSSValue;
-class StyleResolverState;
 class CSSParserContext;
 class CSSParserLocalContext;
 class CSSParserTokenRange;
+class StyleResolverState;
 
 class Longhand : public CSSProperty {
  public:
@@ -30,6 +31,12 @@ class Longhand : public CSSProperty {
   }
   virtual void ApplyInitial(StyleResolverState&) const { NOTREACHED(); }
   virtual void ApplyInherit(StyleResolverState&) const { NOTREACHED(); }
+  // Properties which take tree-scoped references should override this method to
+  // handle the TreeScope during application.
+  virtual void ApplyValue(StyleResolverState& state,
+                          const ScopedCSSValue& scoped_value) const {
+    ApplyValue(state, scoped_value.GetCSSValue());
+  }
   virtual void ApplyValue(StyleResolverState&, const CSSValue&) const {
     NOTREACHED();
   }

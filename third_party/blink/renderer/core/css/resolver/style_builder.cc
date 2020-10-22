@@ -106,7 +106,7 @@ void StyleBuilder::ApplyProperty(const CSSProperty& property,
   else if (is_inherit)
     To<Longhand>(property).ApplyInherit(state);
   else
-    To<Longhand>(property).ApplyValue(state, value);
+    To<Longhand>(property).ApplyValue(state, scoped_value);
 }
 
 }  // namespace blink

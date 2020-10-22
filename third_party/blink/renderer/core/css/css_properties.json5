@@ -494,6 +494,15 @@
       default: false,
       valid_type: "bool",
     },
+
+    // - tree_scoped_value: true
+    // Whether the property takes a tree-scoped reference as its value.
+    // https://drafts.csswg.org/css-scoping/#css-tree-scoped-reference
+    tree_scoped_value: {
+      default: false,
+      valid_type: "bool",
+    },
+
   },
 
   // Members in the data objects should appear in the same order as in the
@@ -575,6 +584,7 @@
       typedom_types: ["Keyword"],
       separator: ",",
       valid_for_marker: true,
+      tree_scoped_value: true,
     },
     {
       name: "animation-play-state",
@@ -734,6 +744,7 @@
       valid_for_first_letter: true,
       valid_for_cue: true,
       valid_for_marker: true,
+      tree_scoped_value: true,
     },
     {
       name: "font-kerning",

@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
+#include "third_party/blink/renderer/core/css/scoped_css_value.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/zoom_adjusted_pixel_value.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
@@ -310,6 +311,12 @@ const CSSValue* AnimationName::InitialValue() const {
   DEFINE_STATIC_LOCAL(const Persistent<CSSValue>, value,
                       (CSSIdentifierValue::Create(CSSValueID::kNone)));
   return value;
+}
+
+void AnimationName::ApplyValue(StyleResolverState& state,
+                               const ScopedCSSValue& scoped_value) const {
+  // TODO(futhark): Set the TreeScope on CSSAnimationData.
+  ApplyValue(state, scoped_value.GetCSSValue());
 }
 
 const CSSValue* AnimationPlayState::ParseSingleValue(
@@ -2711,6 +2718,13 @@ const CSSValue* FontFamily::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style) const {
   return ComputedStyleUtils::ValueForFontFamily(style);
+}
+
+void FontFamily::ApplyValue(StyleResolverState& state,
+                            const ScopedCSSValue& scoped_value) const {
+  // TODO(futhark): Set TreeScope on the FontBuilder so that it can create a
+  // Font with a FontSelector for that TreeScope.
+  ApplyValue(state, scoped_value.GetCSSValue());
 }
 
 const CSSValue* FontFeatureSettings::ParseSingleValue(

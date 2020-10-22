@@ -63,6 +63,7 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   bool IsComputedValueComparable() const {
     return flags_ & kComputedValueComparable;
   }
+  bool TakesTreeScopedValue() const { return flags_ & kTreeScopedValue; }
 
   bool IsRepeated() const { return repetition_separator_ != '\0'; }
   char RepetitionSeparator() const { return repetition_separator_; }
@@ -149,6 +150,8 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     kBorder = 1 << 17,
     // Set if ComputedValuesEqual is implemented for the given CSSProperty.
     kComputedValueComparable = 1 << 18,
+    // Set if the property values are tree-scoped references.
+    kTreeScopedValue = 1 << 19,
   };
 
   constexpr CSSProperty(CSSPropertyID property_id,
