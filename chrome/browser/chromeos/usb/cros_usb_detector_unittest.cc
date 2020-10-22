@@ -167,17 +167,31 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
     chromeos::CrosUsbDetector::Get()->ConnectToDeviceManager();
   }
 
-  void AttachDeviceToVm(const std::string& vm_name, const std::string& guid) {
+  void AttachDeviceToVm(const std::string& vm_name,
+                        const std::string& guid,
+                        bool success = true) {
+    base::Optional<vm_tools::concierge::AttachUsbDeviceResponse> response;
+    response.emplace();
+    response->set_success(success);
+    response->set_guest_port(0);
+    fake_concierge_client_->set_attach_usb_device_response(response);
+
     cros_usb_detector_->AttachUsbDeviceToVm(
         vm_name, guid,
-        base::BindOnce([](bool result) { EXPECT_TRUE(result); }));
+        base::BindOnce(
+            [](bool expected, bool actual) { EXPECT_EQ(expected, actual); },
+            success));
     base::RunLoop().RunUntilIdle();
   }
 
-  void DetachDeviceFromVm(const std::string& vm_name, const std::string& guid) {
+  void DetachDeviceFromVm(const std::string& vm_name,
+                          const std::string& guid,
+                          bool expected_success) {
     cros_usb_detector_->DetachUsbDeviceFromVm(
         vm_name, guid,
-        base::BindOnce([](bool result) { EXPECT_TRUE(result); }));
+        base::BindOnce(
+            [](bool expected, bool actual) { EXPECT_EQ(expected, actual); },
+            expected_success));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -852,7 +866,7 @@ TEST_F(CrosUsbDetectorTest, DeviceAllowedInterfacesMaskSetCorrectly) {
   EXPECT_EQ(0x00000006U, device_info.allowed_interfaces_mask);
 }
 
-TEST_F(CrosUsbDetectorTest, DetachBeforeAttach) {
+TEST_F(CrosUsbDetectorTest, SwitchAttachedDevice) {
   ConnectToDeviceManager();
   base::RunLoop().RunUntilIdle();
 
@@ -865,16 +879,66 @@ TEST_F(CrosUsbDetectorTest, DetachBeforeAttach) {
   EXPECT_FALSE(device_info.shared_vm_name.has_value());
 
   AttachDeviceToVm("VM1", device_info.guid);
-  base::RunLoop().RunUntilIdle();
   device_info = GetSingleDeviceInfo();
   EXPECT_TRUE(device_info.shared_vm_name.has_value());
   EXPECT_EQ("VM1", *device_info.shared_vm_name);
+  EXPECT_TRUE(device_info.guest_port.has_value());
   EXPECT_FALSE(fake_concierge_client_->detach_usb_device_called());
 
+  // Device is attached to VM1. We need to detach before sharing with VM2.
   AttachDeviceToVm("VM2", device_info.guid);
-  base::RunLoop().RunUntilIdle();
   device_info = GetSingleDeviceInfo();
   EXPECT_TRUE(device_info.shared_vm_name.has_value());
   EXPECT_EQ("VM2", *device_info.shared_vm_name);
   EXPECT_TRUE(fake_concierge_client_->detach_usb_device_called());
+}
+
+TEST_F(CrosUsbDetectorTest, SwitchNotAttachedDevice) {
+  ConnectToDeviceManager();
+  base::RunLoop().RunUntilIdle();
+
+  auto device_1 = base::MakeRefCounted<device::FakeUsbDeviceInfo>(
+      0, 1, kManufacturerName, kProductName_1, "002");
+  device_manager_.AddDevice(device_1);
+  base::RunLoop().RunUntilIdle();
+
+  auto device_info = GetSingleDeviceInfo();
+  EXPECT_FALSE(device_info.shared_vm_name.has_value());
+
+  AttachDeviceToVm("VM1", device_info.guid, /*success=*/false);
+  device_info = GetSingleDeviceInfo();
+  EXPECT_TRUE(device_info.shared_vm_name.has_value());
+  EXPECT_EQ("VM1", *device_info.shared_vm_name);
+  EXPECT_FALSE(device_info.guest_port.has_value());
+
+  // Device is shared with but not attached to VM1, e.g. it hasn't yet been
+  // started. We don't need to detach.
+  AttachDeviceToVm("VM2", device_info.guid);
+  device_info = GetSingleDeviceInfo();
+  EXPECT_TRUE(device_info.shared_vm_name.has_value());
+  EXPECT_EQ("VM2", *device_info.shared_vm_name);
+  EXPECT_FALSE(fake_concierge_client_->detach_usb_device_called());
+}
+
+TEST_F(CrosUsbDetectorTest, DetachFromDifferentVM) {
+  ConnectToDeviceManager();
+  base::RunLoop().RunUntilIdle();
+
+  auto device_1 = base::MakeRefCounted<device::FakeUsbDeviceInfo>(
+      0, 1, kManufacturerName, kProductName_1, "002");
+  device_manager_.AddDevice(device_1);
+  base::RunLoop().RunUntilIdle();
+
+  auto device_info = GetSingleDeviceInfo();
+  EXPECT_FALSE(device_info.shared_vm_name.has_value());
+
+  AttachDeviceToVm("VM1", device_info.guid);
+  device_info = GetSingleDeviceInfo();
+  EXPECT_TRUE(device_info.shared_vm_name.has_value());
+  EXPECT_EQ("VM1", *device_info.shared_vm_name);
+
+  // Device is not attached to VM2, so this will no-op.
+  DetachDeviceFromVm("VM2", device_info.guid, /*expected_success=*/false);
+  EXPECT_FALSE(fake_concierge_client_->detach_usb_device_called());
+  EXPECT_EQ("VM1", *device_info.shared_vm_name);
 }

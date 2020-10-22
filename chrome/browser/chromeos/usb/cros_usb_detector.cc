@@ -605,16 +605,32 @@ void CrosUsbDetector::DetachUsbDeviceFromVm(
   }
 
   base::Optional<uint8_t> guest_port;
-  for (const auto& device : usb_devices_) {
-    if (device.guid == guid && device.shared_vm_name == vm_name) {
-      guest_port = device.guest_port;
-      break;
-    }
-  }
+  for (auto& device : usb_devices_) {
+    if (device.guid != guid)
+      continue;
 
-  if (!guest_port) {
-    LOG(ERROR) << "No port found to detach " << guid;
-    std::move(callback).Run(/*success=*/true);
+    guest_port = device.guest_port;
+    if (device.shared_vm_name == vm_name && guest_port)
+      break;
+
+    LOG(WARNING) << "Failed to detach " << guid << " from " << vm_name
+                 << ". It appears to be shared with "
+                 << (device.shared_vm_name ? *device.shared_vm_name
+                                           : "[not shared]")
+                 << " at port "
+                 << (guest_port ? base::NumberToString(*guest_port)
+                                : "[not attached]")
+                 << ".";
+    if (device.shared_vm_name == vm_name) {
+      // The VM hasn't been started yet, attaching is in progress, or attaching
+      // failed.
+      // TODO(timloh): Check what happens if attaching to a different VM races
+      // with an in progress attach.
+      device.shared_vm_name = base::nullopt;
+      std::move(callback).Run(/*success=*/true);
+      return;
+    }
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
