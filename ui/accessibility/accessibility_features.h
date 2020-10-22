@@ -70,6 +70,18 @@ AX_BASE_EXPORT extern const base::Feature kAugmentExistingImageLabels;
 // Returns true if augmenting existing image labels is enabled.
 AX_BASE_EXPORT bool IsAugmentExistingImageLabelsEnabled();
 
+// Once this flag is enabled, a single codebase in AXPosition will be used for
+// handling document markers on all platforms, including the announcement of
+// spelling mistakes.
+AX_BASE_EXPORT extern const base::Feature kUseAXPositionForDocumentMarkers;
+
+// Returns true if document markers are exposed on inline text boxes in the
+// accessibility tree in addition to on static text nodes. This in turn enables
+// AXPosition on the browser to discover and work with document markers, instead
+// of the legacy code that collects document markers manually from static text
+// nodes and which is different for each platform.
+AX_BASE_EXPORT bool IsUseAXPositionForDocumentMarkersEnabled();
+
 }  // namespace features
 
 #endif  // UI_ACCESSIBILITY_ACCESSIBILITY_FEATURES_H_

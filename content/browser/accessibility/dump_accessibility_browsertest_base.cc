@@ -127,6 +127,12 @@ void DumpAccessibilityTestBase::ChooseFeatures(
   enabled_features->emplace_back(
       features::kEnableAccessibilityExposeDisplayNone);
 
+  // For the best test coverage during development of this feature, enable the
+  // code that expposes document markers on AXInlineTextBox objects and the
+  // corresponding code in AXPosition on the browser that collects those
+  // markers.
+  enabled_features->emplace_back(features::kUseAXPositionForDocumentMarkers);
+
   enabled_features->emplace_back(blink::features::kPortals);
 
   // TODO(dmazzoni): DumpAccessibilityTree expectations are based on the

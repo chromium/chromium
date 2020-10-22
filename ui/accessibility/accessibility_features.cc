@@ -80,4 +80,12 @@ bool IsAugmentExistingImageLabelsEnabled() {
   return base::FeatureList::IsEnabled(::features::kAugmentExistingImageLabels);
 }
 
+const base::Feature kUseAXPositionForDocumentMarkers{
+    "UseAXPositionForDocumentMarkers", base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsUseAXPositionForDocumentMarkersEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kUseAXPositionForDocumentMarkers);
+}
+
 }  // namespace features

@@ -21,6 +21,8 @@ AccessibilityTest::AccessibilityTest(LocalFrameClient* local_frame_client)
 void AccessibilityTest::SetUp() {
   RenderingTest::SetUp();
   RuntimeEnabledFeatures::SetAccessibilityExposeHTMLElementEnabled(true);
+  RuntimeEnabledFeatures::
+      SetAccessibilityUseAXPositionForDocumentMarkersEnabled(true);
   ax_context_ = std::make_unique<AXContext>(GetDocument());
 }
 
