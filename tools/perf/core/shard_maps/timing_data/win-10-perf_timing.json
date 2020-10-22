@@ -4196,10 +4196,6 @@
         "name": "base_perftests/_gtest_"
     },
     {
-        "duration": "1988.0",
-        "name": "angle_perftests/_gtest_"
-    },
-    {
         "duration": "7.0",
         "name": "views_perftests/_gtest_"
     }

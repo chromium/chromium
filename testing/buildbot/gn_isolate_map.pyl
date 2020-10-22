@@ -156,18 +156,6 @@
     "label": "//third_party/angle/src/tests:angle_end2end_tests",
     "type": "windowed_test_launcher",
   },
-  "angle_perftests": {
-    "args": [
-      "angle_perftests",
-      "--non-telemetry=true",
-      "--test-launcher-print-test-stdio=always",
-      "--test-launcher-jobs=1",
-      "--test-launcher-retry-limit=0",
-    ],
-    "label": "//third_party/angle/src/tests:angle_perftests",
-    "script": "//testing/scripts/run_performance_tests.py",
-    "type": "script",
-  },
   "angle_restricted_trace_gold_tests": {
     "type": "script",
     "label": "//third_party/angle/src/tests/restricted_traces:angle_restricted_trace_gold_tests",

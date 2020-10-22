@@ -268,7 +268,6 @@ BUILDERS = {
     'android-builder-perf': {
         'additional_compile_targets': [
             'microdump_stackwalk',
-            'angle_perftests',
             'chrome_apk',
             'system_webview_google_apk',
             'android_tools',
@@ -329,7 +328,6 @@ BUILDERS = {
     'android_arm64-builder-perf': {
         'additional_compile_targets': [
             'microdump_stackwalk',
-            'angle_perftests',
             'chrome_apk',
             'system_webview_google_apk',
             'android_tools',
@@ -824,35 +822,36 @@ class BenchmarkMetadata(object):
 
 
 GTEST_BENCHMARKS = {
-    'angle_perftests': BenchmarkMetadata(
-        'jmadill@chromium.org, chrome-gpu-perf-owners@chromium.org',
-        'Internals>GPU>ANGLE'),
-    'base_perftests': BenchmarkMetadata(
-        'skyostil@chromium.org, gab@chromium.org',
-        'Internals>SequenceManager',
+    'base_perftests':
+    BenchmarkMetadata(
+        'skyostil@chromium.org, gab@chromium.org', 'Internals>SequenceManager',
         ('https://chromium.googlesource.com/chromium/src/+/HEAD/base/' +
          'README.md#performance-testing')),
-    'gpu_perftests': BenchmarkMetadata(
+    'gpu_perftests':
+    BenchmarkMetadata(
         'reveman@chromium.org, chrome-gpu-perf-owners@chromium.org',
         'Internals>GPU'),
-    'tracing_perftests': BenchmarkMetadata(
-        'eseckler@chromium.org, oysteine@chromium.org',
-        'Speed>Tracing'),
-    'load_library_perf_tests': BenchmarkMetadata(
-        'xhwang@chromium.org, jrummell@chromium.org',
-        'Internals>Media>Encrypted'),
-    'performance_browser_tests': BenchmarkMetadata(
-        'miu@chromium.org', 'Internals>Media>ScreenCapture'),
-    'media_perftests': BenchmarkMetadata(
-        'liberato@chromium.org, dalecurtis@chromium.org',
-        'Internals>Media'),
-    'views_perftests': BenchmarkMetadata(
-        'tapted@chromium.org', 'Internals>Views'),
-    'components_perftests': BenchmarkMetadata('csharrison@chromium.org'),
-    'dawn_perf_tests': BenchmarkMetadata(
+    'tracing_perftests':
+    BenchmarkMetadata('eseckler@chromium.org, oysteine@chromium.org',
+                      'Speed>Tracing'),
+    'load_library_perf_tests':
+    BenchmarkMetadata('xhwang@chromium.org, jrummell@chromium.org',
+                      'Internals>Media>Encrypted'),
+    'performance_browser_tests':
+    BenchmarkMetadata('miu@chromium.org', 'Internals>Media>ScreenCapture'),
+    'media_perftests':
+    BenchmarkMetadata('liberato@chromium.org, dalecurtis@chromium.org',
+                      'Internals>Media'),
+    'views_perftests':
+    BenchmarkMetadata('tapted@chromium.org', 'Internals>Views'),
+    'components_perftests':
+    BenchmarkMetadata('csharrison@chromium.org'),
+    'dawn_perf_tests':
+    BenchmarkMetadata(
         'enga@chromium.org, chrome-gpu-perf-owners@chromium.org',
         'Internals>GPU>Dawn',
-        'https://dawn.googlesource.com/dawn/+/HEAD/src/tests/perf_tests/README.md'),
+        'https://dawn.googlesource.com/dawn/+/HEAD/src/tests/perf_tests/README.md'
+    ),
 }
 
 

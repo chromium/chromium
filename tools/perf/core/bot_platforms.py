@@ -228,16 +228,6 @@ _OFFICIAL_EXCEPT_DISPLAY_LOCKING_JETSTREAM2 = PerfSuite(
         ['blink_perf.display_locking', 'jetstream2'])
 
 
-def _angle_perftests(estimated_runtime=1988):
-  return ExecutableConfig('angle_perftests',
-                          flags=[
-                              '--test-launcher-retry-limit=0',
-                              '--test-launcher-jobs=1',
-                              '--test-launcher-batch-limit=1',
-                          ],
-                          estimated_runtime=estimated_runtime)
-
-
 def _base_perftests(estimated_runtime=270):
   return ExecutableConfig(
       'base_perftests',
@@ -352,7 +342,6 @@ _WIN_10_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'v8.runtime_stats.top_25',
 ])
 _WIN_10_EXECUTABLE_CONFIGS = frozenset([
-    _angle_perftests(),
     _base_perftests(20),
     _components_perftests(),
     _dawn_perf_tests(600),

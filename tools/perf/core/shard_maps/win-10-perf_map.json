@@ -1,15 +1,6 @@
 {
     "0": {
-        "executables": {
-            "angle_perftests": {
-                "path": "angle_perftests",
-                "arguments": [
-                    "--test-launcher-retry-limit=0",
-                    "--test-launcher-jobs=1",
-                    "--test-launcher-batch-limit=1"
-                ]
-            }
-        }
+        "executables": {}
     },
     "1": {
         "benchmarks": {
