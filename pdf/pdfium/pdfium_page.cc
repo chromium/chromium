@@ -74,13 +74,14 @@ gfx::RectF FloatPageRectToPixelRect(FPDF_PAGE page, const gfx::RectF& input) {
   int min_y;
   int max_x;
   int max_y;
-  FPDF_BOOL ret = FPDF_PageToDevice(page, 0, 0, output_width, output_height, 0,
-                                    input.x(), input.y(), &min_x, &min_y);
-  DCHECK(ret);
-  ret = FPDF_PageToDevice(page, 0, 0, output_width, output_height, 0,
-                          input.right(), input.bottom(), &max_x, &max_y);
-  DCHECK(ret);
-
+  if (!FPDF_PageToDevice(page, 0, 0, output_width, output_height, 0, input.x(),
+                         input.y(), &min_x, &min_y)) {
+    return gfx::RectF();
+  }
+  if (!FPDF_PageToDevice(page, 0, 0, output_width, output_height, 0,
+                         input.right(), input.bottom(), &max_x, &max_y)) {
+    return gfx::RectF();
+  }
   if (max_x < min_x)
     std::swap(min_x, max_x);
   if (max_y < min_y)
