@@ -638,7 +638,7 @@ void NGLineBreaker::HandleText(const NGInlineItem& item,
 
   // If we're trailing, only trailing spaces can be included in this line.
   if (UNLIKELY(state_ == LineBreakState::kTrailing)) {
-    HandleTrailingSpaces(item, shape_result, line_info);
+    HandleTrailingSpaces(item, &shape_result, line_info);
     return;
   }
 
@@ -670,7 +670,7 @@ void NGLineBreaker::HandleText(const NGInlineItem& item,
     // rewind, but in most cases it will rewind.
     const String& text = Text();
     if (auto_wrap_ && IsBreakableSpace(text[offset_])) {
-      HandleTrailingSpaces(item, shape_result, line_info);
+      HandleTrailingSpaces(item, &shape_result, line_info);
       if (state_ != LineBreakState::kDone) {
         state_ = LineBreakState::kContinue;
         return;
@@ -718,7 +718,7 @@ void NGLineBreaker::HandleText(const NGInlineItem& item,
       // items follow, only trailable spaces if any. This is very common that
       // shortcut to handling trailing spaces.
       if (item_result->EndOffset() < item.EndOffset())
-        return HandleTrailingSpaces(item, shape_result, line_info);
+        return HandleTrailingSpaces(item, &shape_result, line_info);
 
       // The break point found at the end of this text item. Continue looking
       // next items, because the next item maybe trailable, or can prohibit
@@ -1155,29 +1155,26 @@ void NGLineBreaker::UpdateShapeResult(const NGLineInfo& line_info,
   item_result->inline_size = item_result->shape_result->SnappedWidth();
 }
 
-void NGLineBreaker::HandleTrailingSpacesIfNeeded(NGLineInfo* line_info) {
+void NGLineBreaker::HandleTrailingSpaces(NGLineInfo* line_info) {
   const Vector<NGInlineItem>& items = Items();
-  if (item_index_ >= items.size())
-    return;
-  const NGInlineItem& item = items[item_index_];
-  if (const ShapeResult* shape_result = item.TextShapeResult())
-    HandleTrailingSpaces(item, *shape_result, line_info);
+  if (item_index_ < items.size())
+    HandleTrailingSpaces(items[item_index_], line_info);
 }
 
 inline void NGLineBreaker::HandleTrailingSpaces(const NGInlineItem& item,
                                                 NGLineInfo* line_info) {
   const ShapeResult* shape_result = item.TextShapeResult();
-  DCHECK(shape_result);
-  HandleTrailingSpaces(item, *shape_result, line_info);
+  // Call |HandleTrailingSpaces| even if |item| does not have |ShapeResult|, so
+  // that we skip spaces.
+  HandleTrailingSpaces(item, shape_result, line_info);
 }
 
 void NGLineBreaker::HandleTrailingSpaces(const NGInlineItem& item,
-                                         const ShapeResult& shape_result,
+                                         const ShapeResult* shape_result,
                                          NGLineInfo* line_info) {
   DCHECK(item.Type() == NGInlineItem::kText ||
          (item.Type() == NGInlineItem::kControl &&
           Text()[item.StartOffset()] == kTabulationCharacter));
-  DCHECK(&shape_result);
   bool is_control_tab = item.Type() == NGInlineItem::kControl &&
                         Text()[item.StartOffset()] == kTabulationCharacter;
   DCHECK(item.Type() == NGInlineItem::kText || is_control_tab);
@@ -1228,10 +1225,11 @@ void NGLineBreaker::HandleTrailingSpaces(const NGInlineItem& item,
     // Probably we can (koji). We would need to review usage of these
     // item results, and change them to use "non_hangable_run_end"
     // instead.
+    DCHECK(shape_result);
     NGInlineItemResult* item_result = AddItem(item, end, line_info);
     item_result->non_hangable_run_end = offset_;
     item_result->has_only_trailing_spaces = true;
-    item_result->shape_result = ShapeResultView::Create(&shape_result);
+    item_result->shape_result = ShapeResultView::Create(shape_result);
     if (item_result->StartOffset() == item.StartOffset() &&
         item_result->EndOffset() == item.EndOffset()) {
       item_result->inline_size = item_result->shape_result
@@ -2089,7 +2087,7 @@ void NGLineBreaker::RewindOverflow(unsigned new_end, NGLineInfo* line_info) {
           // and break there.
           // TODO: optimize more?
           Rewind(index, line_info);
-          HandleTrailingSpacesIfNeeded(line_info);
+          HandleTrailingSpaces(line_info);
 #if DCHECK_IS_ON()
           item_results.back().CheckConsistency(false);
 #endif
