@@ -8,4 +8,7 @@ per-file *login*=file://ash/login/OWNERS
 per-file keyboard_*=yhanada@chromium.org
 per-file *wallpaper*=file://ash/wallpaper/OWNERS
 
+# Must be updated when a new OS settings section is added.
+per-file chrome_new_window_client*=file://chrome/browser/resources/settings/chromeos/OWNERS
+
 # COMPONENT: UI>Shell
