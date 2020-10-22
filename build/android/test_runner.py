@@ -933,7 +933,11 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
         iteration_count += 1
         for r in iteration_results.GetAll():
           if result_sink_client:
-            result_sink_client.Post(r.GetName(), r.GetType(), r.GetLog())
+            # Some tests put in non utf-8 char as part of the test
+            # which breaks uploads, so need to decode and re-encode.
+            result_sink_client.Post(
+                r.GetName(), r.GetType(),
+                r.GetLog().decode('utf-8', 'replace').encode('utf-8'))
 
           result_counts[r.GetName()][r.GetType()] += 1
         report_results.LogFull(
