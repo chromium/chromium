@@ -781,7 +781,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
     // Immediately hide the new tab button if the last tab is being dragged.
     const Tab* last_visible_tab = tab_strip_->GetLastVisibleTab();
     if (last_visible_tab && last_visible_tab->dragging())
-      SetNewTabButtonVisible(true);
+      SetNewTabButtonVisible(false);
 
     std::vector<gfx::Rect> bounds = CalculateBoundsForDraggedViews(views);
     DCHECK_EQ(views.size(), bounds.size());
