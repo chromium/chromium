@@ -44,6 +44,7 @@ class GL_EXPORT GLSurfaceGLX : public GLSurface {
   static bool HasGLXExtension(const char* name);
   static bool IsCreateContextSupported();
   static bool IsCreateContextRobustnessSupported();
+  static bool IsRobustnessVideoMemoryPurgeSupported();
   static bool IsCreateContextProfileSupported();
   static bool IsCreateContextES2ProfileSupported();
   static bool IsTextureFromPixmapSupported();

@@ -17,6 +17,11 @@
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface_glx.h"
 
+#ifndef GLX_NV_robustness_video_memory_purge
+#define GLX_NV_robustness_video_memory_purge 1
+#define GLX_GENERATE_RESET_ON_VIDEO_MEMORY_PURGE_NV 0x20F7
+#endif /* GLX_NV_robustness_video_memory_purge */
+
 namespace gl {
 
 namespace {
@@ -37,6 +42,11 @@ GLXContext CreateContextAttribs(x11::Connection* connection,
   if (GLSurfaceGLX::IsCreateContextRobustnessSupported()) {
     attribs.push_back(GLX_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB);
     attribs.push_back(GLX_LOSE_CONTEXT_ON_RESET_ARB);
+
+    if (GLSurfaceGLX::IsRobustnessVideoMemoryPurgeSupported()) {
+      attribs.push_back(GLX_GENERATE_RESET_ON_VIDEO_MEMORY_PURGE_NV);
+      attribs.push_back(GL_TRUE);
+    }
   }
 
   if (version.first != 0 || version.second != 0) {

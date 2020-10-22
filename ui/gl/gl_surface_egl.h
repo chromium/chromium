@@ -109,6 +109,7 @@ class GL_EXPORT GLSurfaceEGL : public GLSurface {
   static const char* GetEGLExtensions();
   static bool HasEGLExtension(const char* name);
   static bool IsCreateContextRobustnessSupported();
+  static bool IsRobustnessVideoMemoryPurgeSupported();
   static bool IsCreateContextBindGeneratesResourceSupported();
   static bool IsCreateContextWebGLCompatabilitySupported();
   static bool IsEGLSurfacelessContextSupported();
