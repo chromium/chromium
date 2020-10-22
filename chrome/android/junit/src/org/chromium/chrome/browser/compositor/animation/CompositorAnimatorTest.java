@@ -22,8 +22,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
-import org.chromium.chrome.browser.compositor.layouts.MockLayoutUpdateHost;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -37,16 +35,6 @@ import java.util.concurrent.atomic.AtomicInteger;
         // specification once we upgrade to a version in which it works. crbug.com/774357
         sdk = Build.VERSION_CODES.N_MR1)
 public final class CompositorAnimatorTest {
-    /** A mock implementation of {@link LayoutUpdateHost} that tracks update requests. */
-    private static class MockLayoutUpdateHostWithCallback extends MockLayoutUpdateHost {
-        private final CallbackHelper mUpdateCallbackHelper = new CallbackHelper();
-
-        @Override
-        public void requestUpdate() {
-            mUpdateCallbackHelper.notifyCalled();
-        }
-    }
-
     /** An animation update listener that counts calls to its methods. */
     private static class TestUpdateListener implements CompositorAnimator.AnimatorUpdateListener {
         private final CallbackHelper mUpdateCallbackHelper = new CallbackHelper();
@@ -81,8 +69,7 @@ public final class CompositorAnimatorTest {
         }
     }
 
-    /** A mock {@link LayoutUpdateHost} to track update requests. */
-    private MockLayoutUpdateHostWithCallback mHost;
+    private final CallbackHelper mRequestRenderCallbackHelper = new CallbackHelper();
 
     /** The handler that is responsible for managing all {@link CompositorAnimator}s. */
     private CompositorAnimationHandler mHandler;
@@ -96,9 +83,8 @@ public final class CompositorAnimatorTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mHost = new MockLayoutUpdateHostWithCallback();
 
-        mHandler = new CompositorAnimationHandler(mHost);
+        mHandler = new CompositorAnimationHandler(mRequestRenderCallbackHelper::notifyCalled);
 
         mUpdateListener = new TestUpdateListener();
         mListener = new TestAnimatorListener();
@@ -118,7 +104,7 @@ public final class CompositorAnimatorTest {
         animator.addListener(mListener);
 
         assertEquals("No updates should have been requested.", 0,
-                mHost.mUpdateCallbackHelper.getCallCount());
+                mRequestRenderCallbackHelper.getCallCount());
         assertEquals(
                 "There should be no active animations.", 0, mHandler.getActiveAnimationCount());
         assertEquals("The 'start' event should not have been called.", 0,
@@ -127,7 +113,7 @@ public final class CompositorAnimatorTest {
         animator.start();
 
         assertEquals("One update should have been requested.", 1,
-                mHost.mUpdateCallbackHelper.getCallCount());
+                mRequestRenderCallbackHelper.getCallCount());
         assertEquals(
                 "There should be one active animation.", 1, mHandler.getActiveAnimationCount());
         assertEquals("The 'start' event should have been called.", 1,
@@ -141,7 +127,7 @@ public final class CompositorAnimatorTest {
         animator.addListener(mListener);
 
         assertEquals("No updates should have been requested.", 0,
-                mHost.mUpdateCallbackHelper.getCallCount());
+                mRequestRenderCallbackHelper.getCallCount());
         assertEquals(
                 "There should be no active animations.", 0, mHandler.getActiveAnimationCount());
         assertEquals("The 'end' event should not have been called.", 0,
@@ -150,14 +136,14 @@ public final class CompositorAnimatorTest {
         animator.start();
 
         assertEquals("One update should have been requested.", 1,
-                mHost.mUpdateCallbackHelper.getCallCount());
+                mRequestRenderCallbackHelper.getCallCount());
         assertEquals(
                 "There should be one active animation.", 1, mHandler.getActiveAnimationCount());
 
         mHandler.pushUpdate(15);
 
         assertEquals("Two updates should have been requested", 2,
-                mHost.mUpdateCallbackHelper.getCallCount());
+                mRequestRenderCallbackHelper.getCallCount());
         assertEquals(
                 "There should be no active animations.", 0, mHandler.getActiveAnimationCount());
         assertEquals("The 'cancel' event should not have been called.", 0,
@@ -173,7 +159,7 @@ public final class CompositorAnimatorTest {
         animator.addListener(mListener);
 
         assertEquals("No updates should have been requested.", 0,
-                mHost.mUpdateCallbackHelper.getCallCount());
+                mRequestRenderCallbackHelper.getCallCount());
         assertEquals(
                 "There should be no active animations.", 0, mHandler.getActiveAnimationCount());
         assertEquals("The 'end' event should not have been called.", 0,
@@ -182,14 +168,14 @@ public final class CompositorAnimatorTest {
         animator.start();
 
         assertEquals("One update should have been requested.", 1,
-                mHost.mUpdateCallbackHelper.getCallCount());
+                mRequestRenderCallbackHelper.getCallCount());
         assertEquals(
                 "There should be one active animation.", 1, mHandler.getActiveAnimationCount());
 
         animator.cancel();
 
         assertEquals("One update should have been requested.", 1,
-                mHost.mUpdateCallbackHelper.getCallCount());
+                mRequestRenderCallbackHelper.getCallCount());
         assertEquals(
                 "There should be no active animations.", 0, mHandler.getActiveAnimationCount());
         assertEquals("The 'cancel' event should have been called.", 1,

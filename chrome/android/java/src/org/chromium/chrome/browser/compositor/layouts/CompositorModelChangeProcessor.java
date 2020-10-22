@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.compositor.layouts;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -28,10 +29,11 @@ public class CompositorModelChangeProcessor<V extends SceneLayer> {
      * request another frame.
      */
     public static class FrameRequestSupplier extends ObservableSupplierImpl<Long> {
-        private final LayoutUpdateHost mHost;
+        @NonNull
+        private final Runnable mRenderRequestRunnable;
 
-        public FrameRequestSupplier(LayoutUpdateHost host) {
-            mHost = host;
+        public FrameRequestSupplier(@NonNull Runnable renderRequestRunnable) {
+            mRenderRequestRunnable = renderRequestRunnable;
         }
 
         /**
@@ -39,7 +41,7 @@ public class CompositorModelChangeProcessor<V extends SceneLayer> {
          */
         @VisibleForTesting
         void request() {
-            mHost.requestUpdate();
+            mRenderRequestRunnable.run();
         }
     }
 

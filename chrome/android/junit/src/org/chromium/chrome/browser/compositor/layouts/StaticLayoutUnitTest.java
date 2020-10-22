@@ -127,7 +127,7 @@ public class StaticLayoutUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mCompositorAnimationHandler = new CompositorAnimationHandler(mUpdateHost);
+        mCompositorAnimationHandler = new CompositorAnimationHandler(mUpdateHost::requestUpdate);
         CompositorAnimationHandler.setTestingMode(true);
 
         mTab1 = prepareTab(TAB1_ID, TAB1_URL);

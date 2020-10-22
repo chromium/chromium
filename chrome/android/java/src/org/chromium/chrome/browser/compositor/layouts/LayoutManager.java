@@ -287,11 +287,12 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
         assert contentContainer != null;
         mContentContainer = contentContainer;
 
-        mAnimationHandler = new CompositorAnimationHandler(this);
+        mAnimationHandler = new CompositorAnimationHandler(this::requestUpdate);
 
         mOverlayPanelManager = new OverlayPanelManager();
 
-        mFrameRequestSupplier = new CompositorModelChangeProcessor.FrameRequestSupplier(this);
+        mFrameRequestSupplier =
+                new CompositorModelChangeProcessor.FrameRequestSupplier(this::requestUpdate);
 
         mLayoutStateProviderOneshotSupplier.set(this);
     }

@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,10 +18,12 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.compositor.scene_layer.SceneLayer;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -32,12 +35,12 @@ public class CompositorModelChangeProcessorUnitTest {
     private static final PropertyModel.WritableBooleanPropertyKey PROPERTY_CHANGED =
             new PropertyModel.WritableBooleanPropertyKey();
 
+    private final CallbackHelper mRequestRenderCallbackHelper = new CallbackHelper();
+
     @Mock
     private SceneLayer mView;
     @Mock
     private PropertyModelChangeProcessor.ViewBinder mViewBinder;
-    @Mock
-    private LayoutUpdateHost mLayoutUpdateHost;
 
     private CompositorModelChangeProcessor.FrameRequestSupplier mFrameSupplier;
     private CompositorModelChangeProcessor mCompositorMCP;
@@ -48,7 +51,8 @@ public class CompositorModelChangeProcessorUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mFrameSupplier = new CompositorModelChangeProcessor.FrameRequestSupplier(mLayoutUpdateHost);
+        mFrameSupplier = new CompositorModelChangeProcessor.FrameRequestSupplier(
+                mRequestRenderCallbackHelper::notifyCalled);
         mModel = new PropertyModel(PROPERTY_CHANGED);
 
         mCompositorMCP = CompositorModelChangeProcessor.create(
@@ -56,9 +60,10 @@ public class CompositorModelChangeProcessorUnitTest {
     }
 
     @Test
-    public void testBindAndRequestFrame() {
+    public void testBindAndRequestFrame() throws TimeoutException {
+        int callCount = mRequestRenderCallbackHelper.getCallCount();
         mModel.set(PROPERTY_CHANGED, mPropertyChangedValue.getAndSet(!mPropertyChangedValue.get()));
-        verify(mLayoutUpdateHost).requestUpdate();
+        mRequestRenderCallbackHelper.waitForCallback(callCount, 1);
 
         mFrameSupplier.set(System.currentTimeMillis());
         verify(mViewBinder).bind(eq(mModel), eq(mView), eq(null));
@@ -66,17 +71,20 @@ public class CompositorModelChangeProcessorUnitTest {
 
     @Test
     public void testBindAndNoRequestFrame() {
+        int callCount = mRequestRenderCallbackHelper.getCallCount();
         mFrameSupplier.set(System.currentTimeMillis());
 
         verify(mViewBinder).bind(eq(mModel), eq(mView), eq(null));
-        verify(mLayoutUpdateHost, never()).requestUpdate();
+        Assert.assertEquals("A render should not have been requested!", callCount,
+                mRequestRenderCallbackHelper.getCallCount());
     }
 
     @Test
-    public void testRequestFrameAndNoBindOnPropertyChanged() {
+    public void testRequestFrameAndNoBindOnPropertyChanged() throws TimeoutException {
+        int callCount = mRequestRenderCallbackHelper.getCallCount();
         mModel.set(PROPERTY_CHANGED, mPropertyChangedValue.getAndSet(!mPropertyChangedValue.get()));
+        mRequestRenderCallbackHelper.waitForCallback(callCount, 1);
 
-        verify(mLayoutUpdateHost).requestUpdate();
         verify(mViewBinder, never()).bind(any(), any(), any());
     }
 }

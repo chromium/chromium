@@ -12,8 +12,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
-import org.chromium.chrome.browser.compositor.layouts.MockLayoutUpdateHost;
 
 /**
  * Unit tests for {@link CompositorAnimator}.
@@ -25,13 +23,11 @@ public class CompositorAnimationHandlerTest {
     private static final long SLOW_DURATION_MS = 1000;
 
     private CompositorAnimationHandler mAnimations;
-    private LayoutUpdateHost mUpdateHost;
 
     @Test
     @SmallTest
     public void testConcurrentAnimationsFinishSeparately() {
-        mUpdateHost = new MockLayoutUpdateHostWithAnimationHandler(mAnimations);
-        mAnimations = new CompositorAnimationHandler(mUpdateHost);
+        mAnimations = new CompositorAnimationHandler(() -> {});
 
         CompositorAnimator mFastAnimation =
                 CompositorAnimator.ofFloat(mAnimations, 0.f, 1.f, FAST_DURATION_MS, null);
@@ -52,19 +48,5 @@ public class CompositorAnimationHandlerTest {
         mAnimations.pushUpdateInTestingMode(1 + SLOW_DURATION_MS);
         Assert.assertFalse(mFastAnimation.isRunning());
         Assert.assertFalse(mSlowAnimation.isRunning());
-    }
-
-    /** A mock implementation of {@link LayoutUpdateHost} with animation handler. */
-    private class MockLayoutUpdateHostWithAnimationHandler extends MockLayoutUpdateHost {
-        private CompositorAnimationHandler mAnimationHandler;
-
-        MockLayoutUpdateHostWithAnimationHandler(CompositorAnimationHandler animationHandler) {
-            mAnimationHandler = animationHandler;
-        }
-
-        @Override
-        public CompositorAnimationHandler getAnimationHandler() {
-            return mAnimationHandler;
-        }
     }
 }

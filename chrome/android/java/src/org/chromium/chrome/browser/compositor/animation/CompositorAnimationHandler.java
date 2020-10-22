@@ -10,8 +10,6 @@ import android.animation.AnimatorListenerAdapter;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
-
 import java.util.ArrayList;
 
 /**
@@ -25,8 +23,8 @@ public class CompositorAnimationHandler {
     /** A list of all the handler's animators. */
     private final ArrayList<CompositorAnimator> mAnimators = new ArrayList<>();
 
-    /** This handler's update host. */
-    private final LayoutUpdateHost mUpdateHost;
+    /** A means of requesting a render from the compositor. */
+    private final Runnable mRenderRequestRunnable;
 
     /**
      * A cached copy of the list of {@link CompositorAnimator}s to prevent allocating a new list
@@ -45,12 +43,12 @@ public class CompositorAnimationHandler {
 
     /**
      * Default constructor.
-     * @param host A {@link LayoutUpdateHost} responsible for requesting frames when an animation
-     *             updates.
+     * @param renderRequestRunnable A {@link Runnable} responsible for requesting frames when an
+     *                              animation updates.
      */
-    public CompositorAnimationHandler(@NonNull LayoutUpdateHost host) {
-        assert host != null;
-        mUpdateHost = host;
+    public CompositorAnimationHandler(@NonNull Runnable renderRequestRunnable) {
+        assert renderRequestRunnable != null;
+        mRenderRequestRunnable = renderRequestRunnable;
     }
 
     /**
@@ -72,7 +70,7 @@ public class CompositorAnimationHandler {
         mAnimators.add(animator);
 
         if (!mWasUpdateRequestedForAnimationStart) {
-            mUpdateHost.requestUpdate();
+            mRenderRequestRunnable.run();
             mWasUpdateRequestedForAnimationStart = true;
         }
 
@@ -114,7 +112,7 @@ public class CompositorAnimationHandler {
         }
         mCachedList.clear();
 
-        mUpdateHost.requestUpdate();
+        mRenderRequestRunnable.run();
 
         return mAnimators.isEmpty();
     }
