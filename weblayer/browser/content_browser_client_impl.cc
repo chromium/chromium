@@ -712,13 +712,11 @@ ContentBrowserClientImpl::CreateThrottlesForNavigation(
       throttles.push_back(
           GetSafeBrowsingService()->CreateSafeBrowsingNavigationThrottle(
               handle));
-      if (handle->IsInMainFrame()) {
-        throttles.push_back(
-            navigation_interception::InterceptNavigationDelegate::
-                CreateThrottleFor(
-                    handle, navigation_interception::SynchronyMode::kAsync));
-      }
     }
+
+    throttles.push_back(
+        navigation_interception::InterceptNavigationDelegate::CreateThrottleFor(
+            handle, navigation_interception::SynchronyMode::kAsync));
   }
 #endif
   return throttles;
