@@ -374,16 +374,12 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^chrome/services/',
   '^chrome/test/chromedriver/server/http_handler.cc',
   '^chrome/tools/',
-  '^chromecast/media/',
   '^chromeos/attestation/',
   '^chromeos/components/',
-  '^components/arc/',
   '^components/cast_channel/',
   '^components/component_updater/',
   '^components/content_settings/',
   '^components/drive/',
-  '^components/nacl/',
-  '^components/navigation_interception/',
   '^components/ownership/',
   '^components/policy/',
   '^components/search_engines/',
@@ -411,7 +407,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^net/url_request/',
   '^ppapi/proxy/',
   '^services/',
-  '^third_party/blink/',
   '^tools/clang/base_bind_rewriters/',  # Intentional.
   '^tools/gdb/gdb_chrome.py',  # Intentional.
 ))
