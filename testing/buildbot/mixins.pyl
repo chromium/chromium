@@ -217,11 +217,27 @@
   },
   'chromeos-amd64-generic': {
     'swarming': {
-      'dimensions': {
-        'kvm': '1',
-        'os': 'Ubuntu-16.04',
-        'pool': 'chromium.tests.cros.vm',
+      'dimension_sets': [
+        {
+          'cpu': 'x86',
+          'kvm': '1',
+          'os': 'Ubuntu-16.04',
+          'pool': 'chromium.tests',
+        }
+      ],
+      'optional_dimensions': {
+        '60': [
+          {
+            'caches': 'cros_vm',
+          }
+        ],
       },
+      'named_caches': [
+        {
+          'name': 'cros_vm',
+          'path': 'magic_cros_vm_cache',
+        },
+      ],
     },
   },
   'chromeos-kevin': {
