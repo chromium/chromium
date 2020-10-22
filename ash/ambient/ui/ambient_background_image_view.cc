@@ -85,20 +85,6 @@ AmbientBackgroundImageView::AmbientBackgroundImageView(
 
 AmbientBackgroundImageView::~AmbientBackgroundImageView() = default;
 
-// views::View:
-bool AmbientBackgroundImageView::OnMousePressed(const ui::MouseEvent& event) {
-  delegate_->OnBackgroundPhotoEvents();
-  return true;
-}
-
-// views::View:
-void AmbientBackgroundImageView::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->type() == ui::ET_GESTURE_TAP) {
-    delegate_->OnBackgroundPhotoEvents();
-    event->SetHandled();
-  }
-}
-
 void AmbientBackgroundImageView::OnBoundsChanged(
     const gfx::Rect& previous_bounds) {
   if (!GetVisible())

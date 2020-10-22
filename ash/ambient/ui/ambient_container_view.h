@@ -28,11 +28,9 @@ class ASH_EXPORT AmbientContainerView : public views::View {
   const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   void Layout() override;
-  void AddedToWidget() override;
 
  private:
   friend class AmbientAshTestBase;
-  class HostWidgetEventObserver;
 
   void Init();
 
@@ -42,17 +40,11 @@ class ASH_EXPORT AmbientContainerView : public views::View {
   void LayoutPhotoView();
   void LayoutAssistantView();
 
-  // Invoked on specific types of events.
-  void HandleEvent();
-
   AmbientViewDelegate* delegate_ = nullptr;
 
   // Owned by view hierarchy.
   PhotoView* photo_view_ = nullptr;
   AmbientAssistantContainerView* ambient_assistant_container_view_ = nullptr;
-
-  // Observes events from its host widget.
-  std::unique_ptr<HostWidgetEventObserver> event_observer_;
 
   DISALLOW_COPY_AND_ASSIGN(AmbientContainerView);
 };

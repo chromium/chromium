@@ -13,19 +13,10 @@
 #include "ash/ambient/util/ambient_util.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/assistant/util/animation_util.h"
-#include "ash/login/ui/lock_screen.h"
-#include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/shell.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "ui/aura/window.h"
-#include "ui/events/event.h"
-#include "ui/events/event_observer.h"
-#include "ui/events/types/event_type.h"
-#include "ui/gfx/geometry/point.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/views/background.h"
-#include "ui/views/event_monitor.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -38,78 +29,7 @@ using chromeos::assistant::features::IsAmbientAssistantEnabled;
 // Appearance.
 constexpr int kAssistantPreferredHeightDip = 128;
 
-// A tolerance threshold used to ignore spurious mouse move.
-constexpr int kMouseMoveErrorTolerancePx = 3;
-
 }  // namespace
-
-// HostWidgetEventObserver----------------------------------
-
-// A pre target event handler installed on the hosting widget of
-// |AmbientContainerView| to capture key and mouse events regardless of whether
-// |AmbientContainerView| has focus.
-class AmbientContainerView::HostWidgetEventObserver : public ui::EventObserver {
- public:
-  explicit HostWidgetEventObserver(AmbientContainerView* container)
-      : container_(container) {
-    DCHECK(container_);
-    event_monitor_ = views::EventMonitor::CreateWindowMonitor(
-        this, container_->GetWidget()->GetNativeWindow()->GetRootWindow(),
-        {ui::ET_KEY_PRESSED, ui::ET_MOUSE_ENTERED, ui::ET_MOUSE_MOVED,
-         ui::ET_TOUCH_PRESSED, ui::ET_TOUCH_MOVED});
-  }
-
-  ~HostWidgetEventObserver() override = default;
-
-  HostWidgetEventObserver(const HostWidgetEventObserver&) = delete;
-  HostWidgetEventObserver& operator=(const HostWidgetEventObserver&) = delete;
-
-  // ui::EventObserver:
-  void OnEvent(const ui::Event& event) override {
-    switch (event.type()) {
-      case ui::ET_KEY_PRESSED:
-        DCHECK(event.IsKeyEvent());
-        container_->HandleEvent();
-        break;
-      case ui::ET_TOUCH_PRESSED:
-      case ui::ET_TOUCH_MOVED:
-        container_->HandleEvent();
-        break;
-      case ui::ET_MOUSE_ENTERED:
-        DCHECK(event.IsMouseEvent());
-        // Updates the mouse enter location.
-        mouse_enter_location_ = event.AsMouseEvent()->location();
-        break;
-      case ui::ET_MOUSE_MOVED:
-        DCHECK(event.IsMouseEvent());
-        if (CountAsRealMove(event.AsMouseEvent()->location()))
-          container_->HandleEvent();
-        break;
-      default:
-        NOTREACHED();
-        break;
-    }
-  }
-
-  bool CountAsRealMove(const gfx::Point& new_mouse_location) {
-    // We will ignore all tiny moves (when the cursor moves within
-    // |kMouseMoveErrorTolerancePlx| on both directions) to avoid being too
-    // sensitive to mouse movement. Any mouse moves beyond that are considered
-    // as real mouse move events.
-    return (abs(new_mouse_location.x() - mouse_enter_location_.x()) >
-                kMouseMoveErrorTolerancePx ||
-            abs(new_mouse_location.y() - mouse_enter_location_.y()) >
-                kMouseMoveErrorTolerancePx);
-  }
-
- private:
-  AmbientContainerView* const container_;
-  std::unique_ptr<views::EventMonitor> event_monitor_;
-
-  // Tracks the mouse location when entering the control boundary of the host
-  // widget.
-  gfx::Point mouse_enter_location_;
-};
 
 AmbientContainerView::AmbientContainerView(AmbientViewDelegate* delegate)
     : delegate_(delegate) {
@@ -117,9 +37,7 @@ AmbientContainerView::AmbientContainerView(AmbientViewDelegate* delegate)
   Init();
 }
 
-AmbientContainerView::~AmbientContainerView() {
-  event_observer_.reset();
-}
+AmbientContainerView::~AmbientContainerView() = default;
 
 const char* AmbientContainerView::GetClassName() const {
   return "AmbientContainerView";
@@ -140,10 +58,6 @@ void AmbientContainerView::Layout() {
     LayoutAssistantView();
 
   View::Layout();
-}
-
-void AmbientContainerView::AddedToWidget() {
-  event_observer_ = std::make_unique<HostWidgetEventObserver>(this);
 }
 
 void AmbientContainerView::Init() {
@@ -171,10 +85,6 @@ void AmbientContainerView::LayoutAssistantView() {
   int preferred_height = kAssistantPreferredHeightDip;
   ambient_assistant_container_view_->SetBoundsRect(
       gfx::Rect(0, 0, preferred_width, preferred_height));
-}
-
-void AmbientContainerView::HandleEvent() {
-  delegate_->OnBackgroundPhotoEvents();
 }
 
 }  // namespace ash

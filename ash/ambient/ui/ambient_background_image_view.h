@@ -39,8 +39,6 @@ class ASH_EXPORT AmbientBackgroundImageView : public views::View,
   ~AmbientBackgroundImageView() override;
 
   // views::View:
-  bool OnMousePressed(const ui::MouseEvent& event) override;
-  void OnGestureEvent(ui::GestureEvent* event) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   // views::ViewObserver:

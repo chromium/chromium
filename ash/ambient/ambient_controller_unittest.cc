@@ -19,7 +19,10 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
+#include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/events/pointer_details.h"
+#include "ui/events/types/event_type.h"
 
 namespace ash {
 
@@ -434,33 +437,46 @@ TEST_F(AmbientControllerTest,
                    device::mojom::WakeLockType::kPreventDisplaySleep));
 }
 
-TEST_F(AmbientControllerTest, ShouldDismissContainerViewWhenKeyPressed) {
-  ShowAmbientScreen();
-  FastForwardTiny();
-  EXPECT_TRUE(container_view()->GetWidget()->IsVisible());
+// TODO(cowmoo): find a way to simulate events to trigger |UserActivityDetector|
+TEST_F(AmbientControllerTest, ShouldDismissContainerViewOnEvents) {
+  std::vector<std::unique_ptr<ui::Event>> events;
 
-  // Simulates a random keyboard press event.
-  GetEventGenerator()->PressKey(ui::VKEY_SPACE, /*flags=*/0);
+  for (auto mouse_event_type : {ui::ET_MOUSE_PRESSED, ui::ET_MOUSE_MOVED}) {
+    events.emplace_back(std::make_unique<ui::MouseEvent>(
+        mouse_event_type, gfx::Point(), gfx::Point(), base::TimeTicks(),
+        ui::EF_NONE, ui::EF_NONE));
+  }
 
-  EXPECT_FALSE(container_view());
+  events.emplace_back(std::make_unique<ui::MouseWheelEvent>(
+      gfx::Vector2d(), gfx::PointF(), gfx::PointF(), base::TimeTicks(),
+      ui::EF_NONE, ui::EF_NONE));
 
-  // Clean up.
-  CloseAmbientScreen();
-}
+  events.emplace_back(std::make_unique<ui::KeyEvent>(
+      ui::ET_KEY_PRESSED, ui::VKEY_SPACE, ui::EF_NONE));
 
-TEST_F(AmbientControllerTest, ShouldDismissContainerViewOnRealMouseMove) {
-  ShowAmbientScreen();
-  FastForwardTiny();
-  EXPECT_TRUE(container_view()->GetWidget()->IsVisible());
+  events.emplace_back(std::make_unique<ui::ScrollEvent>(
+      ui::ET_SCROLL, gfx::PointF(), gfx::PointF(), base::TimeTicks(),
+      ui::EF_NONE, /*x_offset=*/0.0f,
+      /*y_offset=*/0.0f,
+      /*x_offset_ordinal=*/0.0f,
+      /*x_offset_ordinal=*/0.0f, /*finger_count=*/2));
 
-  // Simulates a tiny mouse move within the threshold, which should be ignored.
-  GetEventGenerator()->MoveMouseBy(/*x=*/1, /*y=*/1);
-  EXPECT_TRUE(container_view()->GetWidget()->IsVisible());
+  events.emplace_back(std::make_unique<ui::TouchEvent>(
+      ui::ET_TOUCH_PRESSED, gfx::PointF(), gfx::PointF(), base::TimeTicks(),
+      ui::PointerDetails()));
 
-  // Simulates a big mouse move beyond the threshold, which should take effect
-  // and dismiss the ambient.
-  GetEventGenerator()->MoveMouseBy(/*x=*/15, /*y=*/15);
-  EXPECT_FALSE(container_view());
+  for (const auto& event : events) {
+    ShowAmbientScreen();
+    FastForwardTiny();
+    EXPECT_TRUE(container_view()->GetWidget()->IsVisible());
+
+    ambient_controller()->OnUserActivity(event.get());
+
+    EXPECT_FALSE(container_view());
+
+    // Clean up.
+    CloseAmbientScreen();
+  }
 }
 
 TEST_F(AmbientControllerTest, ShouldDismissAndThenComesBack) {
@@ -469,7 +485,9 @@ TEST_F(AmbientControllerTest, ShouldDismissAndThenComesBack) {
   FastForwardTiny();
   EXPECT_TRUE(container_view()->GetWidget()->IsVisible());
 
-  GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_1, ui::EF_NONE);
+  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::KeyboardCode::VKEY_1,
+                         ui::EF_NONE);
+  ambient_controller()->OnUserActivity(&key_event);
   EXPECT_FALSE(container_view());
 
   FastForwardToInactivity();
