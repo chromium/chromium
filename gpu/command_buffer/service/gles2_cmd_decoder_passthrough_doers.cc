@@ -4911,7 +4911,7 @@ error::Error GLES2DecoderPassthroughImpl::DoScheduleCALayerCHROMIUM(
 }
 
 error::Error GLES2DecoderPassthroughImpl::DoScheduleCALayerInUseQueryCHROMIUM(
-    GLuint n,
+    GLsizei n,
     const volatile GLuint* textures) {
   // Validate that count is non-negative before allocating a vector
   if (n < 0) {
@@ -4921,7 +4921,7 @@ error::Error GLES2DecoderPassthroughImpl::DoScheduleCALayerInUseQueryCHROMIUM(
 
   std::vector<gl::GLSurface::CALayerInUseQuery> queries;
   queries.reserve(n);
-  for (GLuint i = 0; i < n; ++i) {
+  for (GLsizei i = 0; i < n; ++i) {
     gl::GLImage* image = nullptr;
     GLuint texture_id = textures[i];
     if (texture_id) {

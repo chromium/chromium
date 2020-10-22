@@ -933,7 +933,7 @@ error::Error DoScheduleCALayerCHROMIUM(GLuint contents_texture_id,
                                        GLenum filter,
                                        const GLfloat* bounds_rect);
 error::Error DoScheduleCALayerInUseQueryCHROMIUM(
-    GLuint n,
+    GLsizei n,
     const volatile GLuint* textures);
 error::Error DoScheduleDCLayerCHROMIUM(GLuint texture_0,
                                        GLuint texture_1,
