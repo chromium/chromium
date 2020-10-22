@@ -10,7 +10,6 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
 #include "ash/system/tray/tray_popup_utils.h"
-#include "ash/system/unified/unified_system_tray_view.h"
 #include "base/i18n/rtl.h"
 #include "base/stl_util.h"
 #include "components/vector_icons/vector_icons.h"
@@ -65,7 +64,8 @@ class MoreButton : public views::Button {
                     2),
         2));
 
-    const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
+    auto* color_provider = AshColorProvider::Get();
+    const SkColor icon_color = color_provider->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kIconColorPrimary);
 
     if (!features::IsSystemTrayMicGainSettingEnabled()) {
@@ -89,7 +89,8 @@ class MoreButton : public views::Button {
 
     views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                   kTrayItemCornerRadius);
-    focus_ring()->SetColor(UnifiedSystemTrayView::GetFocusRingColor());
+    focus_ring()->SetColor(color_provider->GetControlsLayerColor(
+        AshColorProvider::ControlsLayerType::kFocusRingColor));
   }
 
   ~MoreButton() override = default;

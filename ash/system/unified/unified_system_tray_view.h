@@ -65,9 +65,6 @@ class ASH_EXPORT UnifiedSystemTrayView : public views::View,
                                          public views::FocusTraversable,
                                          public views::FocusChangeListener {
  public:
-  // Get focus ring color for system tray elements.
-  static SkColor GetFocusRingColor();
-
   UnifiedSystemTrayView(UnifiedSystemTrayController* controller,
                         bool initially_expanded);
   ~UnifiedSystemTrayView() override;

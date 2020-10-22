@@ -6,7 +6,6 @@
 
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_popup_utils.h"
-#include "ash/system/unified/unified_system_tray_view.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -28,8 +27,6 @@ TopShortcutButton::TopShortcutButton(const gfx::VectorIcon& icon,
                AshColorProvider::Get()->GetContentLayerColor(
                    AshColorProvider::ContentLayerType::kIconColorPrimary)));
   SetEnabled(false);
-
-  focus_ring()->SetColor(UnifiedSystemTrayView::GetFocusRingColor());
 }
 
 TopShortcutButton::TopShortcutButton(views::ButtonListener* listener,
@@ -45,8 +42,6 @@ TopShortcutButton::TopShortcutButton(views::ButtonListener* listener,
       views::Button::STATE_DISABLED,
       gfx::CreateVectorIcon(icon, kTrayTopShortcutButtonIconSize,
                             AshColorProvider::GetDisabledColor(icon_color)));
-
-  focus_ring()->SetColor(UnifiedSystemTrayView::GetFocusRingColor());
 }
 
 TopShortcutButton::TopShortcutButton(views::ButtonListener* listener,
@@ -58,10 +53,9 @@ TopShortcutButton::TopShortcutButton(views::ButtonListener* listener,
     SetTooltipText(l10n_util::GetStringUTF16(accessible_name_id));
 
   TrayPopupUtils::ConfigureTrayPopupButton(this);
-
   views::InstallCircleHighlightPathGenerator(this);
-
-  focus_ring()->SetColor(UnifiedSystemTrayView::GetFocusRingColor());
+  focus_ring()->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
 TopShortcutButton::~TopShortcutButton() = default;

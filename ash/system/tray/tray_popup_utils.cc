@@ -19,7 +19,6 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_item_style.h"
 #include "ash/system/tray/unfocusable_label.h"
-#include "ash/system/unified/unified_system_tray_view.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
@@ -247,8 +246,9 @@ views::ToggleButton* TrayPopupUtils::CreateToggleButton(
 
 std::unique_ptr<views::Painter> TrayPopupUtils::CreateFocusPainter() {
   return views::Painter::CreateSolidFocusPainter(
-      UnifiedSystemTrayView::GetFocusRingColor(), kFocusBorderThickness,
-      gfx::InsetsF());
+      AshColorProvider::Get()->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kFocusRingColor),
+      kFocusBorderThickness, gfx::InsetsF());
 }
 
 void TrayPopupUtils::ConfigureTrayPopupButton(views::Button* button) {

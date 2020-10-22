@@ -21,7 +21,6 @@
 #include "ash/system/supervised/supervised_icon_string.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/tray/tray_popup_utils.h"
-#include "ash/system/unified/unified_system_tray_view.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -95,9 +94,10 @@ DateView::DateView(UnifiedSystemTrayController* controller)
   SetLayoutManager(std::make_unique<views::FillLayout>());
   AddChildView(label_);
 
+  auto* color_provider = AshColorProvider::Get();
   label_->SetAutoColorReadabilityEnabled(false);
   label_->SetSubpixelRenderingEnabled(false);
-  label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+  label_->SetEnabledColor(color_provider->GetContentLayerColor(
       ContentLayerType::kTextColorPrimary));
   Update();
 
@@ -107,7 +107,8 @@ DateView::DateView(UnifiedSystemTrayController* controller)
 
   SetInstallFocusRingOnFocus(true);
   SetFocusForPlatform();
-  focus_ring()->SetColor(UnifiedSystemTrayView::GetFocusRingColor());
+  focus_ring()->SetColor(color_provider->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusRingColor));
 
   SetInkDropMode(views::InkDropHostView::InkDropMode::OFF);
 }
@@ -267,17 +268,18 @@ ManagedStateView::ManagedStateView(views::ButtonListener* listener,
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
       kUnifiedSystemInfoSpacing));
 
+  auto* color_provider = AshColorProvider::Get();
   auto* label = new views::Label;
   label->SetAutoColorReadabilityEnabled(false);
   label->SetSubpixelRenderingEnabled(false);
-  label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+  label->SetEnabledColor(color_provider->GetContentLayerColor(
       ContentLayerType::kTextColorSecondary));
   label->SetText(l10n_util::GetStringUTF16(label_id));
   AddChildView(label);
 
   auto* image = new views::ImageView;
   image->SetImage(
-      gfx::CreateVectorIcon(icon, AshColorProvider::Get()->GetContentLayerColor(
+      gfx::CreateVectorIcon(icon, color_provider->GetContentLayerColor(
                                       ContentLayerType::kIconColorSecondary)));
   image->SetPreferredSize(
       gfx::Size(kUnifiedSystemInfoHeight, kUnifiedSystemInfoHeight));
@@ -285,7 +287,8 @@ ManagedStateView::ManagedStateView(views::ButtonListener* listener,
 
   SetInstallFocusRingOnFocus(true);
   SetFocusForPlatform();
-  focus_ring()->SetColor(UnifiedSystemTrayView::GetFocusRingColor());
+  focus_ring()->SetColor(color_provider->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusRingColor));
 
   SetInkDropMode(views::InkDropHostView::InkDropMode::OFF);
 }

@@ -6,7 +6,6 @@
 
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_popup_utils.h"
-#include "ash/system/unified/unified_system_tray_view.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
@@ -19,7 +18,8 @@ namespace ash {
 RoundedLabelButton::RoundedLabelButton(views::ButtonListener* listener,
                                        const base::string16& text)
     : views::LabelButton(listener, text) {
-  SetEnabledTextColors(AshColorProvider::Get()->GetContentLayerColor(
+  auto* color_provider = AshColorProvider::Get();
+  SetEnabledTextColors(color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary));
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   SetBorder(views::CreateEmptyBorder(gfx::Insets()));
@@ -31,7 +31,8 @@ RoundedLabelButton::RoundedLabelButton(views::ButtonListener* listener,
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 kTrayItemSize / 2.f);
 
-  focus_ring()->SetColor(UnifiedSystemTrayView::GetFocusRingColor());
+  focus_ring()->SetColor(color_provider->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
 RoundedLabelButton::~RoundedLabelButton() = default;

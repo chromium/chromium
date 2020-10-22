@@ -171,11 +171,6 @@ class UnifiedSystemTrayView::SystemTrayContainer : public views::View {
   views::BoxLayout* const layout_manager_;
 };
 
-// static
-SkColor UnifiedSystemTrayView::GetFocusRingColor() {
-  return ShelfConfig::Get()->shelf_focus_border_color();
-}
-
 UnifiedSystemTrayView::UnifiedSystemTrayView(
     UnifiedSystemTrayController* controller,
     bool initially_expanded)

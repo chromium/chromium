@@ -10,7 +10,6 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/phone_hub_tray.h"
 #include "ash/system/status_area_widget.h"
-#include "ash/system/unified/unified_system_tray_view.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -35,8 +34,10 @@ constexpr gfx::Size kTitleViewSize(100, 40);
 ContinueBrowsingChip::ContinueBrowsingChip(
     const chromeos::phonehub::BrowserTabsModel::BrowserTabMetadata& metadata)
     : views::Button(this), url_(metadata.url) {
+  auto* color_provider = AshColorProvider::Get();
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  focus_ring()->SetColor(UnifiedSystemTrayView::GetFocusRingColor());
+  focus_ring()->SetColor(color_provider->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusRingColor));
 
   // Install this highlight path generator to set the desired shape for
   // our focus ring.
@@ -69,7 +70,7 @@ ContinueBrowsingChip::ContinueBrowsingChip(
       header_view->AddChildView(std::make_unique<views::Label>(metadata.title));
   title_label->SetAutoColorReadabilityEnabled(false);
   title_label->SetSubpixelRenderingEnabled(false);
-  title_label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+  title_label->SetEnabledColor(color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary));
   title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label->SetMultiLine(true);
@@ -82,7 +83,7 @@ ContinueBrowsingChip::ContinueBrowsingChip(
       std::make_unique<views::Label>(base::UTF8ToUTF16(metadata.url.host())));
   url_label->SetAutoColorReadabilityEnabled(false);
   url_label->SetSubpixelRenderingEnabled(false);
-  url_label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+  url_label->SetEnabledColor(color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary));
 }
 
