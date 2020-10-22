@@ -81,7 +81,7 @@ base::Optional<SkColor> SkColorFromColorId(
     case ui::NativeTheme::kColorId_NotificationDefaultBackground:
       return GetBgColor("");
     case ui::NativeTheme::kColorId_DialogForeground:
-    case ui::NativeTheme::kColorId_AvatarIcon:
+    case ui::NativeTheme::kColorId_AvatarIconIncognito:
       return GetFgColor("GtkLabel");
     case ui::NativeTheme::kColorId_BubbleFooterBackground:
       return GetBgColor("#statusbar");
@@ -119,6 +119,7 @@ base::Optional<SkColor> SkColorFromColorId(
       return GetFgColor("GtkMenu#menu GtkMenuItem#menuitem:hover GtkLabel");
     case ui::NativeTheme::kColorId_DisabledMenuItemForegroundColor:
       return GetFgColor("GtkMenu#menu GtkMenuItem#menuitem:disabled GtkLabel");
+    case ui::NativeTheme::kColorId_AvatarIconGuest:
     case ui::NativeTheme::kColorId_MenuItemMinorTextColor:
       if (GtkCheckVersion(3, 20)) {
         return GetFgColor("GtkMenu#menu GtkMenuItem#menuitem #accelerator");

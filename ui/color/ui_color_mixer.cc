@@ -18,7 +18,8 @@ void AddUiColorMixer(ColorProvider* provider) {
       BlendForMinContrastWithSelf(kColorButtonBackground, 1.2f);
 
   mixer[kColorAvatarHeaderArt] = {kColorMidground};
-  mixer[kColorAvatarIcon] = {kColorPrimaryForeground};
+  mixer[kColorAvatarIconGuest] = {kColorSecondaryForeground};
+  mixer[kColorAvatarIconIncognito] = {kColorPrimaryForeground};
   mixer[kColorBubbleBackground] = {kColorPrimaryBackground};
   mixer[kColorBubbleFooterBackground] = {kColorSubtleEmphasisBackground};
   mixer[kColorButtonBackground] = {kColorPrimaryBackground};

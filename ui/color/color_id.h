@@ -27,7 +27,8 @@
   \
   /* Further UI element colors */ \
   E(kColorAvatarHeaderArt, NativeTheme::kColorId_AvatarHeaderArt) \
-  E(kColorAvatarIcon, NativeTheme::kColorId_AvatarIcon) \
+  E(kColorAvatarIconGuest, NativeTheme::kColorId_AvatarIconGuest) \
+  E(kColorAvatarIconIncognito, NativeTheme::kColorId_AvatarIconIncognito) \
   E(kColorBubbleBackground, NativeTheme::kColorId_BubbleBackground) \
   E(kColorBubbleFooterBackground, \
     NativeTheme::kColorId_BubbleFooterBackground) \

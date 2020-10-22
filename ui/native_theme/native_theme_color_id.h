@@ -17,7 +17,8 @@
   OP(kColorId_BubbleFooterBackground),                                         \
   /* Avatar and Header Asset */                                                \
   OP(kColorId_AvatarHeaderArt),                                                \
-  OP(kColorId_AvatarIcon),                                                     \
+  OP(kColorId_AvatarIconGuest),                                                \
+  OP(kColorId_AvatarIconIncognito),                                            \
   /* FocusableBorder */                                                        \
   OP(kColorId_FocusedBorderColor),                                             \
   OP(kColorId_UnfocusedBorderColor),                                           \

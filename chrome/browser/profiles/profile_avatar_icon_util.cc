@@ -355,7 +355,8 @@ constexpr size_t kPlaceholderAvatarIndex = 0;
 ui::ImageModel GetGuestAvatar(int size) {
   if (base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
     return ui::ImageModel::FromVectorIcon(
-        kUserAccountAvatarIcon, ui::NativeTheme::kColorId_AvatarIcon, size);
+        kUserAccountAvatarIcon, ui::NativeTheme::kColorId_AvatarIconGuest,
+        size);
   }
   return ui::ImageModel::FromVectorIcon(kUserAccountAvatarIcon,
                                         gfx::kGoogleGrey500, size);

@@ -59,8 +59,8 @@ void IncognitoMenuView::BuildMenu() {
       /*profile_name=*/base::string16(),
       /*background_color=*/SK_ColorTRANSPARENT,
       /*edit_button=*/base::nullopt,
-      ui::ImageModel::FromVectorIcon(kIncognitoProfileIcon,
-                                     ui::NativeTheme::kColorId_AvatarIcon),
+      ui::ImageModel::FromVectorIcon(
+          kIncognitoProfileIcon, ui::NativeTheme::kColorId_AvatarIconIncognito),
       l10n_util::GetStringUTF16(IDS_INCOGNITO_PROFILE_MENU_TITLE),
       incognito_window_count > 1
           ? l10n_util::GetPluralStringFUTF16(IDS_INCOGNITO_WINDOW_COUNT_MESSAGE,
