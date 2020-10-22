@@ -127,8 +127,9 @@ bool UseSeparateGLTexture(SharedContextState* context_state,
   if (format != viz::ResourceFormat::BGRA_8888)
     return false;
 
-  const auto* version_info = context_state->real_context()->GetVersionInfo();
-  const auto& ext = gl::g_current_gl_driver->ext;
+  auto* gl_context = context_state->real_context();
+  const auto* version_info = gl_context->GetVersionInfo();
+  const auto& ext = gl_context->GetCurrentGL()->Driver->ext;
   if (!ext.b_GL_EXT_texture_format_BGRA8888)
     return true;
 
