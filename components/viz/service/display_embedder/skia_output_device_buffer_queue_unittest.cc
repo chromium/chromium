@@ -290,7 +290,7 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
             gl_surface_, dependency_.get(), shared_image_factory_.get(),
             shared_image_representation_factory_.get()),
         dependency_.get(), shared_image_representation_factory_.get(),
-        memory_tracker_.get(), present_callback);
+        memory_tracker_.get(), present_callback, false);
   }
 
   void TearDownOnGpu() override {

@@ -234,9 +234,11 @@ class WaylandBufferManagerHost::Surface {
 
     // If the same buffer has been submitted again right after the client
     // received OnSubmission for that buffer, just damage the buffer and
-    // commit the surface again.
+    // commit the surface again. However, if the buffer is released, it's safe
+    // to reattach the buffer.
     if (submitted_buffers_.empty() ||
-        submitted_buffers_.back().buffer_id != buffer->buffer_id) {
+        submitted_buffers_.back().buffer_id != buffer->buffer_id ||
+        buffer->released) {
       // Once the BufferRelease is called, the buffer will be released.
       DCHECK(buffer->released);
       buffer->released = false;
@@ -350,16 +352,32 @@ class WaylandBufferManagerHost::Surface {
     // Releases may not necessarily come in order, so search the submitted
     // buffers.
     WaylandBuffer* buffer = nullptr;
-    for (const auto& b : submitted_buffers_) {
-      auto* submitted_buffer = GetBuffer(b.buffer_id);
+    for (const auto& buff : submitted_buffers_) {
+      auto* submitted_buffer = GetBuffer(buff.buffer_id);
       if (submitted_buffer && wl_buffer == submitted_buffer->wl_buffer.get()) {
         buffer = submitted_buffer;
         break;
       }
     }
-    DCHECK(buffer);
-    DCHECK(!buffer->released);
-    buffer->released = true;
+    if (!buffer)
+      return;
+
+    // Some Wayland compositors (e.g. Gnome) do not send buffer.release for
+    // buffers that are discarded from a wayland subsurface's cached state. In
+    // such case, later buffer.release implies buffers attached to the same
+    // wl_surface previously are also unuesed.
+    for (const auto& buff : submitted_buffers_) {
+      auto* submitted_buffer = GetBuffer(buff.buffer_id);
+      // It's possible that the first buffer is already released because
+      // MaybeProcessSubmittedBuffers() does not erase buffers when
+      // submitted_buffers_.size() is 1.
+      DCHECK(!submitted_buffer->released ||
+             submitted_buffer->buffer_id ==
+                 submitted_buffers_.front().buffer_id);
+      submitted_buffer->released = true;
+      if (submitted_buffer == buffer)
+        break;
+    }
 
     // A release means we may be able to send OnSubmission for previously
     // submitted buffers.
@@ -923,11 +941,21 @@ void WaylandBufferManagerHost::DestroyBuffer(gfx::AcceleratedWidget widget,
       if (!surface->HasBuffers() && !surface->HasSurface())
         surfaces_.erase(window->root_surface());
     }
-    const auto& subsurfaces = window->wayland_subsurfaces();
-    for (const auto& it : subsurfaces) {
-      Surface* subsurface = GetSurface((*it).wayland_surface());
-      if (subsurface)
-        destroyed_count += subsurface->DestroyBuffer(buffer_id);
+    if (!destroyed_count) {
+      surface = GetSurface(window->primary_subsurface()->wayland_surface());
+      if (surface) {
+        destroyed_count = surface->DestroyBuffer(buffer_id);
+        if (!surface->HasBuffers() && !surface->HasSurface())
+          surfaces_.erase(window->root_surface());
+      }
+    }
+    if (!destroyed_count) {
+      const auto& subsurfaces = window->wayland_subsurfaces();
+      for (const auto& it : subsurfaces) {
+        Surface* subsurface = GetSurface((*it).wayland_surface());
+        if (subsurface)
+          destroyed_count += subsurface->DestroyBuffer(buffer_id);
+      }
     }
   } else {
     // Case 3)

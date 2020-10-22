@@ -19,13 +19,11 @@ gfx::Rect AdjustSubsurfaceBounds(const gfx::Rect& bounds_px,
                                  int32_t parent_buffer_scale) {
   // TODO(fangzhoug): Verify the correctness of using ui_scale here, and in
   // other ozone wayland files.
-  const auto parent_bounds_dip =
-      gfx::ScaleToRoundedRect(parent_bounds_px, 1.0 / ui_scale);
+  // Currently, the subsurface tree is at most 1 depth, gpu already sees buffer
+  // bounds in the root_surface-local coordinates. So translation is not
+  // needed for now.
   const auto bounds_dip = gfx::ScaleToRoundedRect(bounds_px, 1.0 / ui_scale);
-  auto new_bounds_dip =
-      wl::TranslateBoundsToParentCoordinates(bounds_dip, parent_bounds_dip);
-  return gfx::ScaleToRoundedRect(new_bounds_dip,
-                                 ui_scale / parent_buffer_scale);
+  return gfx::ScaleToRoundedRect(bounds_dip, ui_scale / parent_buffer_scale);
 }
 
 }  // namespace
