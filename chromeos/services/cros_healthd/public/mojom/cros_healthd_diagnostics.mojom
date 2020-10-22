@@ -37,6 +37,7 @@ enum DiagnosticRoutineEnum {
   kHasSecureWiFiConnection = 18,
   kDnsResolverPresent = 19,
   kDnsLatency = 20,
+  kDnsResolution = 21,
 };
 
 // Enumeration of the possible DiskRead routine's command type

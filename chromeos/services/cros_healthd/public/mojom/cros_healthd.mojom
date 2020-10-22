@@ -359,6 +359,16 @@ interface CrosHealthdDiagnosticsService {
   // * |response| - contains a unique identifier and status for the created
   //                routine.
   RunDnsLatencyRoutine() => (RunRoutineResponse response);
+
+  // Requests that the DnsResolution routine is created and started on the
+  // platform. This routine checks whether a DNS resolution can be completed
+  // successfully. This routine is only available if GetAvailableRoutines
+  // returned kDnsResolution.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunDnsResolutionRoutine() => (RunRoutineResponse response);
 };
 
 // Event interface exposed by the cros_healthd daemon.
