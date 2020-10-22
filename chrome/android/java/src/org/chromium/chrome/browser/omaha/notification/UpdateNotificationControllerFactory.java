@@ -3,22 +3,26 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.omaha.notification;
 
-import org.chromium.chrome.browser.app.ChromeActivity;
+import android.app.Activity;
+
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
 /**
  * A factory that creates an {@link UpdateNotificationController} instance.
  */
 public class UpdateNotificationControllerFactory {
     /**
-     * @param activity A {@link ChromeActivity} instance the notification will be shown in.
+     * @param activity Activity the notification will be shown in.
+     * @param lifecycleDispatcher Lifecycle of an Activity the notification will be shown in.
      * @return a new {@link UpdateNotificationController} to use.
      */
-    public static UpdateNotificationController create(ChromeActivity activity) {
+    public static UpdateNotificationController create(
+            Activity activity, ActivityLifecycleDispatcher lifecycleDispatcher) {
         if (ChromeFeatureList.isEnabled(
                     ChromeFeatureList.UPDATE_NOTIFICATION_SCHEDULING_INTEGRATION)) {
-            return new UpdateNotificationServiceBridge(activity);
+            return new UpdateNotificationServiceBridge(lifecycleDispatcher);
         }
-        return new UpdateNotificationControllerImpl(activity);
+        return new UpdateNotificationControllerImpl(activity, lifecycleDispatcher);
     }
 }

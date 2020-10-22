@@ -19,8 +19,8 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateState;
@@ -37,17 +37,17 @@ public class UpdateNotificationServiceBridge implements UpdateNotificationContro
         processUpdateStatus();
     };
 
-    private ChromeActivity mActivity;
+    private ActivityLifecycleDispatcher mActivityLifecycle;
     private @Nullable UpdateStatusProvider.UpdateStatus mUpdateStatus;
     private static final String TAG = "cr_UpdateNotif";
 
     /**
-     * @param activity A {@link ChromeActivity} instance the notification will be shown in.
+     * @param lifecycleDispatcher Lifecycle of an Activity the notification will be shown in.
      */
-    public UpdateNotificationServiceBridge(ChromeActivity activity) {
-        mActivity = activity;
+    public UpdateNotificationServiceBridge(ActivityLifecycleDispatcher lifecycleDispatcher) {
+        mActivityLifecycle = lifecycleDispatcher;
         UpdateStatusProvider.getInstance().addObserver(mObserver);
-        mActivity.getLifecycleDispatcher().register(this);
+        mActivityLifecycle.register(this);
     }
 
     // UpdateNotificationController implementation.
@@ -60,8 +60,8 @@ public class UpdateNotificationServiceBridge implements UpdateNotificationContro
     @Override
     public void destroy() {
         UpdateStatusProvider.getInstance().removeObserver(mObserver);
-        mActivity.getLifecycleDispatcher().unregister(this);
-        mActivity = null;
+        mActivityLifecycle.unregister(this);
+        mActivityLifecycle = null;
     }
 
     private void processUpdateStatus() {

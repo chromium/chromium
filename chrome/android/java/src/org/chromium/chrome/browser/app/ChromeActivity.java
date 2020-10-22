@@ -1005,7 +1005,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         VrModuleProvider.getDelegate().onNewIntentWithNative(this, intent);
         mIntentHandler.onNewIntent(intent);
         if (mUpdateNotificationController == null) {
-            mUpdateNotificationController = UpdateNotificationControllerFactory.create(this);
+            mUpdateNotificationController =
+                    UpdateNotificationControllerFactory.create(this, getLifecycleDispatcher());
         }
         mUpdateNotificationController.onNewIntent(intent);
     }
@@ -1053,8 +1054,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             if (isActivityFinishingOrDestroyed()) return;
             UpdateInfoBarController.createInstance(ChromeActivity.this);
             if (mUpdateNotificationController == null) {
-                mUpdateNotificationController =
-                        UpdateNotificationControllerFactory.create(ChromeActivity.this);
+                mUpdateNotificationController = UpdateNotificationControllerFactory.create(
+                        ChromeActivity.this, ChromeActivity.this.getLifecycleDispatcher());
             }
             mUpdateNotificationController.onNewIntent(getIntent());
         });
