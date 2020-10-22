@@ -113,8 +113,10 @@ class EncoderAdapter : public webrtc::VideoEncoderFactory {
       return nullptr;
 
     if (base::EqualsCaseInsensitiveASCII(format.name.c_str(),
-                                         cricket::kVp9CodecName)) {
-      // For VP9, we don't use simulcast.
+                                         cricket::kVp9CodecName) ||
+        base::EqualsCaseInsensitiveASCII(format.name.c_str(),
+                                         cricket::kAv1CodecName)) {
+      // For VP9 and AV1 we don't use simulcast.
       if (supported_in_hardware && supported_in_software) {
         return Wrap(software_encoder_factory_.CreateVideoEncoder(format),
                     hardware_encoder_factory_->CreateVideoEncoder(format));
