@@ -31,6 +31,7 @@ crbug.com/977228 [ Linux ] external/wpt/webdriver/tests/get_window_rect/user_pro
 crbug.com/977228 [ Linux ] external/wpt/webdriver/tests/is_element_enabled/user_prompts.py>>test_default[alert-None] [ Failure Pass ]
 crbug.com/977228 [ Linux ] external/wpt/webdriver/tests/is_element_selected/user_prompts.py>>test_accept[capabilities0-alert-None] [ Failure Pass ]
 crbug.com/977228 [ Linux ] external/wpt/webdriver/tests/is_element_selected/user_prompts.py>>test_ignore[capabilities0-alert] [ Failure Pass ]
+crbug.com/977228 [ Linux ] external/wpt/webdriver/tests/maximize_window/maximize.py>>test_fully_exit_fullscreen [ Failure Pass ]
 crbug.com/977228 [ Linux ] external/wpt/webdriver/tests/maximize_window/maximize.py>>test_restore_the_window [ Failure Pass ]
 crbug.com/977228 [ Linux ] external/wpt/webdriver/tests/minimize_window/minimize.py>>test_minimize [ Failure Pass ]
 crbug.com/977228 [ Linux ] external/wpt/webdriver/tests/minimize_window/minimize.py>>test_minimize_twice_is_idempotent [ Failure Pass ]
