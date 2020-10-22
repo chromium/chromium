@@ -208,8 +208,8 @@ def main():
                           androidx_snapshot_repository_url)
 
     fetch_all_cmd = [
-        _FETCH_ALL_PATH, '--android-deps-dir',
-        os.path.join('third_party', 'androidx'), '--ignore-vulnerabilities'
+        _FETCH_ALL_PATH, '--android-deps-dir', _ANDROIDX_PATH,
+        '--ignore-vulnerabilities'
     ]
     subprocess.run(fetch_all_cmd, check=True)
 
