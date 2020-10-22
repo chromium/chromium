@@ -107,7 +107,7 @@ public class LayoutManagerChrome
                 if (mOverviewLayout != null) {
                     mOverviewLayout.setTabContentManager(manager);
                 }
-                mTabContentManagerSupplier.removeObserver(this);
+                tabContentManagerSupplier.removeObserver(this);
             }
         });
 
