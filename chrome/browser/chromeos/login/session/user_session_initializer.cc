@@ -148,7 +148,7 @@ void UserSessionInitializer::InitializeCerts(Profile* profile) {
   if (NetworkCertLoader::IsInitialized() &&
       base::SysInfo::IsRunningOnChromeOS()) {
     GetNSSCertDatabaseForProfile(profile,
-                                 base::Bind(&OnGetNSSCertDatabaseForUser));
+                                 base::BindOnce(&OnGetNSSCertDatabaseForUser));
   }
 }
 

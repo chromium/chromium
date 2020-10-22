@@ -130,10 +130,9 @@ void UserNetworkConfigurationUpdater::Observe(
   Profile* profile = content::Source<Profile>(source).ptr();
 
   GetNSSCertDatabaseForProfile(
-      profile, base::AdaptCallbackForRepeating(
-                   base::BindOnce(&UserNetworkConfigurationUpdater::
-                                      CreateAndSetClientCertificateImporter,
-                                  weak_factory_.GetWeakPtr())));
+      profile, base::BindOnce(&UserNetworkConfigurationUpdater::
+                                  CreateAndSetClientCertificateImporter,
+                              weak_factory_.GetWeakPtr()));
 }
 
 void UserNetworkConfigurationUpdater::CreateAndSetClientCertificateImporter(

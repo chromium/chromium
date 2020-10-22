@@ -48,6 +48,6 @@ void EnableNSSSystemKeySlotForResourceContext(
 // It's accessing profile, so it should be called on the UI thread.
 void GetNSSCertDatabaseForProfile(
     Profile* profile,
-    const base::RepeatingCallback<void(net::NSSCertDatabase*)>& callback);
+    base::OnceCallback<void(net::NSSCertDatabase*)> callback);
 
 #endif  // CHROME_BROWSER_NET_NSS_CONTEXT_H_

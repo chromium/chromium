@@ -76,8 +76,8 @@ class PlatformKeysTest : public PlatformKeysTestBase {
       base::RunLoop loop;
       GetNSSCertDatabaseForProfile(
           profile(),
-          base::BindRepeating(&PlatformKeysTest::SetupTestCerts,
-                              base::Unretained(this), loop.QuitClosure()));
+          base::BindOnce(&PlatformKeysTest::SetupTestCerts,
+                         base::Unretained(this), loop.QuitClosure()));
       loop.Run();
     }
 

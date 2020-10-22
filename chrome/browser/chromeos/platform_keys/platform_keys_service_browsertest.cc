@@ -135,8 +135,8 @@ class PlatformKeysServiceBrowserTestBase
       base::RunLoop loop;
       GetNSSCertDatabaseForProfile(
           profile_,
-          base::BindRepeating(&PlatformKeysServiceBrowserTestBase::SetUserSlot,
-                              base::Unretained(this), loop.QuitClosure()));
+          base::BindOnce(&PlatformKeysServiceBrowserTestBase::SetUserSlot,
+                         base::Unretained(this), loop.QuitClosure()));
       loop.Run();
     }
     ASSERT_TRUE(profile_);

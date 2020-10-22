@@ -189,8 +189,8 @@ void ArcCertStoreBridge::ListCertificates(ListCertificatesCallback callback) {
 
   GetNSSCertDatabaseForProfile(
       Profile::FromBrowserContext(context_),
-      base::Bind(&ArcCertStoreBridge::OnGetNSSCertDatabaseForProfile,
-                 weak_ptr_factory_.GetWeakPtr(), base::Passed(&callback)));
+      base::BindOnce(&ArcCertStoreBridge::OnGetNSSCertDatabaseForProfile,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ArcCertStoreBridge::GetKeyCharacteristics(

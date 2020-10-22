@@ -1998,8 +1998,8 @@ class SSLUITestWithClientCert : public SSLUITestBase {
     base::RunLoop loop;
     GetNSSCertDatabaseForProfile(
         browser()->profile(),
-        base::Bind(&SSLUITestWithClientCert::DidGetCertDatabase,
-                   base::Unretained(this), &loop));
+        base::BindOnce(&SSLUITestWithClientCert::DidGetCertDatabase,
+                       base::Unretained(this), &loop));
     loop.Run();
   }
 
@@ -5873,8 +5873,8 @@ class SSLUITestCustomCACerts : public SSLUITestNoCert {
       base::RunLoop loop;
       GetNSSCertDatabaseForProfile(
           profile_1_,
-          base::Bind(&SSLUITestCustomCACerts::DidGetCertDatabase,
-                     base::Unretained(this), &loop, &profile_1_cert_db_));
+          base::BindOnce(&SSLUITestCustomCACerts::DidGetCertDatabase,
+                         base::Unretained(this), &loop, &profile_1_cert_db_));
       loop.Run();
     }
 
@@ -5882,8 +5882,8 @@ class SSLUITestCustomCACerts : public SSLUITestNoCert {
       base::RunLoop loop;
       GetNSSCertDatabaseForProfile(
           profile_2_,
-          base::Bind(&SSLUITestCustomCACerts::DidGetCertDatabase,
-                     base::Unretained(this), &loop, &profile_2_cert_db_));
+          base::BindOnce(&SSLUITestCustomCACerts::DidGetCertDatabase,
+                         base::Unretained(this), &loop, &profile_2_cert_db_));
       loop.Run();
     }
 

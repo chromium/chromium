@@ -247,8 +247,8 @@ class ArcCertStoreBridgeTest : public MixinBasedInProcessBrowserTest {
     base::RunLoop loop;
     GetNSSCertDatabaseForProfile(
         browser()->profile(),
-        base::Bind(&ArcCertStoreBridgeTest::SetUpTestClientCerts,
-                   base::Unretained(this), loop.QuitClosure()));
+        base::BindOnce(&ArcCertStoreBridgeTest::SetUpTestClientCerts,
+                       base::Unretained(this), loop.QuitClosure()));
     loop.Run();
     // Certificates must be imported.
     ASSERT_NE(nullptr, client_cert1_);

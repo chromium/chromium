@@ -48,8 +48,8 @@ void OncImportMessageHandler::OnImportONC(const base::ListValue* list) {
   AllowJavascript();
   GetNSSCertDatabaseForProfile(
       Profile::FromWebUI(web_ui()),
-      base::Bind(&OncImportMessageHandler::ImportONCToNSSDB,
-                 weak_factory_.GetWeakPtr(), callback_id, onc_blob));
+      base::BindOnce(&OncImportMessageHandler::ImportONCToNSSDB,
+                     weak_factory_.GetWeakPtr(), callback_id, onc_blob));
 }
 
 void OncImportMessageHandler::ImportONCToNSSDB(const std::string& callback_id,

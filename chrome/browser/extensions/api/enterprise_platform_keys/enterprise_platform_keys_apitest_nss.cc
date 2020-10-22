@@ -255,9 +255,8 @@ IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysTest, Basic) {
    base::RunLoop loop;
    GetNSSCertDatabaseForProfile(
        profile(),
-       base::Bind(&EnterprisePlatformKeysTest::DidGetCertDatabase,
-                  base::Unretained(this),
-                  loop.QuitClosure()));
+       base::BindOnce(&EnterprisePlatformKeysTest::DidGetCertDatabase,
+                      base::Unretained(this), loop.QuitClosure()));
    loop.Run();
   }
   policy_test_utils::SetExtensionInstallForcelistPolicy(
