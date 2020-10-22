@@ -51,25 +51,30 @@ class FastInitiationManager : public device::BluetoothAdvertisement::Observer {
 
   // Begin broadcasting Fast Initiation advertisement.
   virtual void StartAdvertising(FastInitType type,
-                                base::OnceCallback<void()> callback,
-                                base::OnceCallback<void()> error_callback);
+                                base::OnceClosure callback,
+                                base::OnceClosure error_callback);
 
   // Stop broadcasting Fast Initiation advertisement.
-  virtual void StopAdvertising(base::OnceCallback<void()> callback);
+  virtual void StopAdvertising(base::OnceClosure callback);
 
  private:
   // device::BluetoothAdvertisement::Observer:
   void AdvertisementReleased(
       device::BluetoothAdvertisement* advertisement) override;
 
-  void RegisterAdvertisement(FastInitType type);
+  void RegisterAdvertisement(FastInitType type,
+                             base::OnceClosure callback,
+                             base::OnceClosure error_callback);
   void OnRegisterAdvertisement(
+      base::OnceClosure callback,
       scoped_refptr<device::BluetoothAdvertisement> advertisement);
   void OnRegisterAdvertisementError(
+      base::OnceClosure error_callback,
       device::BluetoothAdvertisement::ErrorCode error_code);
-  void UnregisterAdvertisement();
-  void OnUnregisterAdvertisement();
+  void UnregisterAdvertisement(base::OnceClosure callback);
+  void OnUnregisterAdvertisement(base::OnceClosure callback);
   void OnUnregisterAdvertisementError(
+      base::OnceClosure callback,
       device::BluetoothAdvertisement::ErrorCode error_code);
 
   // Fast Init V1 metadata has 2 bytes, in format
@@ -79,9 +84,6 @@ class FastInitiationManager : public device::BluetoothAdvertisement::Observer {
 
   scoped_refptr<device::BluetoothAdapter> adapter_;
   scoped_refptr<device::BluetoothAdvertisement> advertisement_;
-  base::OnceCallback<void()> start_callback_;
-  base::OnceCallback<void()> start_error_callback_;
-  base::OnceCallback<void()> stop_callback_;
   base::WeakPtrFactory<FastInitiationManager> weak_ptr_factory_{this};
 };
 

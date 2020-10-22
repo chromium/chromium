@@ -68,31 +68,24 @@ void FastInitiationManager::StartAdvertising(
     base::OnceCallback<void()> error_callback) {
   DCHECK(adapter_->IsPresent() && adapter_->IsPowered());
   DCHECK(!advertisement_);
-
-  // These callbacks are instances of OnceCallback, but BluetoothAdapter methods
-  // expect RepeatingCallbacks. Passing these as arguments is possible using
-  // Passed(), but this is dangerous so we just store them to run later.
-  start_callback_ = std::move(callback);
-  start_error_callback_ = std::move(error_callback);
-
-  RegisterAdvertisement(type);
+  RegisterAdvertisement(type, std::move(callback), std::move(error_callback));
 }
 
 void FastInitiationManager::StopAdvertising(
     base::OnceCallback<void()> callback) {
-  stop_callback_ = std::move(callback);
-
   if (!advertisement_) {
-    std::move(stop_callback_).Run();
+    std::move(callback).Run();
     // |this| might be destroyed here, do not access local fields.
     return;
   }
 
-  UnregisterAdvertisement();
+  UnregisterAdvertisement(std::move(callback));
 }
 
 void FastInitiationManager::RegisterAdvertisement(
-    FastInitiationManager::FastInitType type) {
+    FastInitiationManager::FastInitType type,
+    base::OnceClosure callback,
+    base::OnceClosure error_callback) {
   auto advertisement_data =
       std::make_unique<device::BluetoothAdvertisement::Data>(
           device::BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST);
@@ -114,51 +107,55 @@ void FastInitiationManager::RegisterAdvertisement(
   adapter_->RegisterAdvertisement(
       std::move(advertisement_data),
       base::BindOnce(&FastInitiationManager::OnRegisterAdvertisement,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       base::BindOnce(&FastInitiationManager::OnRegisterAdvertisementError,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(error_callback)));
 }
 
 void FastInitiationManager::OnRegisterAdvertisement(
+    base::OnceClosure callback,
     scoped_refptr<device::BluetoothAdvertisement> advertisement) {
   advertisement_ = advertisement;
   advertisement_->AddObserver(this);
-  std::move(start_callback_).Run();
-  start_error_callback_.Reset();
+  std::move(callback).Run();
 }
 
 void FastInitiationManager::OnRegisterAdvertisementError(
+    base::OnceClosure error_callback,
     device::BluetoothAdvertisement::ErrorCode error_code) {
   NS_LOG(ERROR)
       << "FastInitiationManager::StartAdvertising() failed with error code = "
       << error_code;
-  start_callback_.Reset();
-  std::move(start_error_callback_).Run();
+  std::move(error_callback).Run();
   // |this| might be destroyed here, do not access local fields.
 }
 
-void FastInitiationManager::UnregisterAdvertisement() {
+void FastInitiationManager::UnregisterAdvertisement(
+    base::OnceClosure callback) {
   advertisement_->RemoveObserver(this);
   advertisement_->Unregister(
       base::BindOnce(&FastInitiationManager::OnUnregisterAdvertisement,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       base::BindOnce(&FastInitiationManager::OnUnregisterAdvertisementError,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void FastInitiationManager::OnUnregisterAdvertisement() {
+void FastInitiationManager::OnUnregisterAdvertisement(
+    base::OnceClosure callback) {
   advertisement_.reset();
-  std::move(stop_callback_).Run();
+  std::move(callback).Run();
   // |this| might be destroyed here, do not access local fields.
 }
 
 void FastInitiationManager::OnUnregisterAdvertisementError(
+    base::OnceClosure callback,
     device::BluetoothAdvertisement::ErrorCode error_code) {
   NS_LOG(WARNING)
       << "FastInitiationManager::StopAdvertising() failed with error code = "
       << error_code;
   advertisement_.reset();
-  std::move(stop_callback_).Run();
+  std::move(callback).Run();
   // |this| might be destroyed here, do not access local fields.
 }
 
