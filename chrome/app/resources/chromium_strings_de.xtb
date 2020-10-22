@@ -180,6 +180,7 @@ Einige Funktionen stehen möglicherweise nicht zur Verfügung. Geben Sie bitte e
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium prüft Ihr Gerät einmal pro Woche auf unerwünschte Software. Zuletzt geprüft: vor 1 Tag.}other{Chromium prüft Ihr Gerät einmal pro Woche auf unerwünschte Software. Zuletzt geprüft: vor {NUM_DAYS} Tagen.}}</translation>
 <translation id="6893813176749746474">Chromium wurde aktualisiert, Sie haben den Browser jedoch mindestens 30 Tage nicht verwendet.</translation>
 <translation id="6964305034639999644">Link in Chromium-Inkognitofenster öffnen</translation>
+<translation id="6978145336957848883">Schwache Passwörter sind einfach zu erraten. Erlauben Sie Chromium, ein <ph name="BEGIN_LINK" />sicheres Passwort für Ihre Onlinekonten zu erstellen und zu speichern<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium benötigt für diese Website die Berechtigung, auf Ihr Mikrofon zuzugreifen</translation>
 <translation id="701244094609242530">Chromium kann Ihre Erweiterungen nicht prüfen. Versuchen Sie es später noch einmal.</translation>
 <translation id="705851970750939768">Chromium aktualisieren</translation>

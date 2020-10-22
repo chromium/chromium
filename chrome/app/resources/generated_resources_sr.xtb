@@ -108,7 +108,7 @@
 <translation id="1119447706177454957">Интерна грешка</translation>
 <translation id="1122068467107743258">Посао</translation>
 <translation id="1122198203221319518">&amp;Алатке</translation>
-<translation id="1122242684574577509">Потврда аутентичности није успела. Кликните да бисте посетили страницу за пријављивање за Wi-Fi мрежу коју користите (<ph name="NETWORK_ID" />).</translation>
+<translation id="1122242684574577509">Потврда аутентичности није успела. Кликните да бисте посетили страницу за пријављивање за WiFi мрежу коју користите (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122960773616686544">Назив обележивача</translation>
 <translation id="1123753900084781868">Титл уживо тренутно није доступан</translation>
 <translation id="1124772482545689468">Корисник</translation>
@@ -463,7 +463,7 @@
 <translation id="1523978563989812243">Механизми за претварање текста у говор</translation>
 <translation id="1524430321211440688">Тастатура</translation>
 <translation id="1524563461097350801">Не, хвала</translation>
-<translation id="1525740877599838384">Користи само Wi-Fi за одређивање локације</translation>
+<translation id="1525740877599838384">Користи само WiFi за одређивање локације</translation>
 <translation id="152629053603783244">Рестартуј Linux</translation>
 <translation id="1526335046150927198">Омогући убрзање померања тачпедом</translation>
 <translation id="1526560967942511387">Ненасловљени документ</translation>
@@ -471,7 +471,7 @@
 <translation id="1529891865407786369">Извор напајања</translation>
 <translation id="1530838837447122178">Отвори подешавања уређаја за миш и тачпед</translation>
 <translation id="1531004739673299060">Прозор за апликацију</translation>
-<translation id="1531275250079031713">Прикажи дијалог „Додај нову Wi-Fi мрежу“</translation>
+<translation id="1531275250079031713">Прикажи дијалог „Додај нову WiFi мрежу“</translation>
 <translation id="1536754031901697553">Веза се прекида...</translation>
 <translation id="1537254971476575106">Лупа за цео екран</translation>
 <translation id="15373452373711364">Велики курсор</translation>
@@ -499,7 +499,7 @@
 <translation id="1567993339577891801">JavaScript конзола</translation>
 <translation id="1568323446248056064">Отвори подешавања уређаја за екран</translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (гост)</translation>
-<translation id="1572266655485775982">Омогући Wi-Fi</translation>
+<translation id="1572266655485775982">Омогући WiFi</translation>
 <translation id="1572876035008611720">Унесите имејл</translation>
 <translation id="1575741822946219011">Језици и уноси</translation>
 <translation id="1576594961618857597">Подразумевани бели аватар</translation>
@@ -508,7 +508,7 @@
 <translation id="1580772913177567930">Обратите се администратору</translation>
 <translation id="1581962803218266616">Прикажи у Finder-у</translation>
 <translation id="1582955169539260415">избришите [<ph name="FINGERPRINT_NAME" />]</translation>
-<translation id="1584990664401018068">Wi-Fi мрежа коју користите (<ph name="NETWORK_ID" />) ће можда захтевати потврду аутентичности.</translation>
+<translation id="1584990664401018068">WiFi мрежа коју користите (<ph name="NETWORK_ID" />) ће можда захтевати потврду аутентичности.</translation>
 <translation id="1585717515139318619">Други програм на рачунару је додао тему која може да промени начин на који Chrome функционише.
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -547,7 +547,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1621729191093924223">Функције којима је потребан микрофон неће радити</translation>
 <translation id="1621831347985899379">Подаци на уређају <ph name="DEVICE_TYPE" /> ће бити избрисани</translation>
-<translation id="1622054403950683339">Заборави Wi-Fi мрежу</translation>
+<translation id="1622054403950683339">Заборави WiFi мрежу</translation>
 <translation id="1623132449929929218">Слике тренутно нису доступне. Поново се повежите на интернет да бисте прегледали колекције позадина.</translation>
 <translation id="1623723619460186680">Смањивање плавог светла</translation>
 <translation id="1624012933569991823">Подешавања</translation>
@@ -693,7 +693,7 @@
 <translation id="177989070088644880">Апликација (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Затвори групу</translation>
 <translation id="1781291988450150470">Актуелни PIN</translation>
-<translation id="1781398670452016618"><ph name="DOMAIN" /> захтева да се одмах повежете на Wi-Fi и да преузмете ажурирање.</translation>
+<translation id="1781398670452016618"><ph name="DOMAIN" /> захтева да се одмах повежете на WiFi и да преузмете ажурирање.</translation>
 <translation id="1781502536226964113">Отвори нову картицу</translation>
 <translation id="1781771911845953849">Налози и синхронизација</translation>
 <translation id="1782196717298160133">Тражимо телефон</translation>
@@ -880,7 +880,7 @@
 <translation id="1999115740519098545">При покретању</translation>
 <translation id="2000419248597011803">Подразумеваном претраживачу шаље неке колачиће и претраге из траке за адресу и оквира за претрагу</translation>
 <translation id="2002109485265116295">У реалном времену</translation>
-<translation id="2003130567827682533">Да бисте активирали податке „<ph name="NAME" />“, прво се повежите са Wi-Fi мрежом</translation>
+<translation id="2003130567827682533">Да бисте активирали податке „<ph name="NAME" />“, прво се повежите са WiFi мрежом</translation>
 <translation id="2006638907958895361">Отвори линк у <ph name="APP" /></translation>
 <translation id="2007404777272201486">Пријави проблем...</translation>
 <translation id="2010501376126504057">Компатибилни уређаји</translation>
@@ -900,7 +900,7 @@
 <translation id="202918510990975568">Унесите лозинку да бисте конфигурисали безбедност и пријављивање</translation>
 <translation id="2030455719695904263">Додирна табла</translation>
 <translation id="2031639749079821948">Лозинка је сачувана на Google налогу</translation>
-<translation id="2034346955588403444">Додај другу Wi-Fi мрежу</translation>
+<translation id="2034346955588403444">Додај другу WiFi мрежу</translation>
 <translation id="203574396658008164">Омогући прављење белешки са закључаног екрана</translation>
 <translation id="2037445849770872822">Надзор је подешен за овај Google налог. Да бисте подесили додатни родитељски надзор, изаберите Настави.
 
@@ -1011,7 +1011,7 @@
 <translation id="2157474325782140681">Да бисте користили додатне функције, користите Dell базну станицу компатибилну са овим Chromebook-ом.</translation>
 <translation id="215753907730220065">Изађи из режима целог екрана</translation>
 <translation id="2157875535253991059">Ова страница је сада у режиму целог екрана.</translation>
-<translation id="216169395504480358">Додај Wi-Fi...</translation>
+<translation id="216169395504480358">Додај WiFi...</translation>
 <translation id="2162155940152307086">Синхронизација ће почети када изађете из подешавања синхронизације</translation>
 <translation id="2162838847352058695">Онемогући сајтовима да аутоматски преузимају више фајлова</translation>
 <translation id="2163470535490402084">Повежите се на интернет да бисте се пријавили на <ph name="DEVICE_TYPE" />.</translation>
@@ -1035,7 +1035,7 @@
 <translation id="2187906491731510095">Додаци су ажурирани</translation>
 <translation id="2188100037674302806">Parallels Desktop</translation>
 <translation id="2188881192257509750">Отвори <ph name="APPLICATION" /></translation>
-<translation id="2190069059097339078">Добијање акредитива за Wi-Fi</translation>
+<translation id="2190069059097339078">Добијање акредитива за WiFi</translation>
 <translation id="219008588003277019">Модул оригиналног клијента: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(празно)</translation>
 <translation id="2191754378957563929">Укључено</translation>
@@ -1147,7 +1147,7 @@
 <translation id="2319993584768066746">Слике екрана за пријављивање</translation>
 <translation id="2322193970951063277">Заглавља и подножја</translation>
 <translation id="2322318151094136999">Питај када сајт жели да приступи серијским портовима (препоручено)</translation>
-<translation id="2323018538045954000">Сачуване Wi-Fi мреже</translation>
+<translation id="2323018538045954000">Сачуване WiFi мреже</translation>
 <translation id="2325444234681128157">Запамти лозинку</translation>
 <translation id="2326160999284776503">Пријавите се помоћу Google налога детета</translation>
 <translation id="2326188115274135041">Потврдите PIN да бисте укључили аутоматско откључавање</translation>
@@ -1231,7 +1231,7 @@
 <translation id="2423578206845792524">Са&amp;чувај слику као...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Гост}one{Гост (#)}few{Гост (#)}other{Гост (#)}}</translation>
 <translation id="2428510569851653187">Опишите шта сте радили када је картица отказала</translation>
-<translation id="2428939361789119025">Искључите Wi-Fi</translation>
+<translation id="2428939361789119025">Искључите WiFi</translation>
 <translation id="2431027948063157455">Google помоћник није успео да се учита. Проверите мрежну везу, па покушајте поново.</translation>
 <translation id="2431846145771260397">Желите ли стварно да резервишете диск фиксне величине за Linux (бета)?</translation>
 <translation id="2432753757290432042">Потребно је ажурирање за Linux (бета)</translation>
@@ -1265,7 +1265,7 @@
 <translation id="2462724976360937186">ИД кључа ауторитета за издавање сертификата</translation>
 <translation id="2462752602710430187">Додато је: <ph name="PRINTER_NAME" /></translation>
 <translation id="2464089476039395325">HTTP прокси</translation>
-<translation id="2465237718053447668"><ph name="DOMAIN" /> захтева да се одмах повежете на Wi-Fi и да преузмете ажурирање. Или преузмите помоћу везе са ограничењем (можда ће се наплаћивати трошкови).</translation>
+<translation id="2465237718053447668"><ph name="DOMAIN" /> захтева да се одмах повежете на WiFi и да преузмете ажурирање. Или преузмите помоћу везе са ограничењем (можда ће се наплаћивати трошкови).</translation>
 <translation id="2467267713099745100">Мрежа <ph name="NETWORK_TYPE" />, искључена је</translation>
 <translation id="2468178265280335214">Убрзање померања тачпедом</translation>
 <translation id="2468205691404969808">Користи колачиће да би се запамтила подешавања, чак и када не посећујете те странице</translation>
@@ -1410,7 +1410,7 @@
 <translation id="2626799779920242286">Пробајте поново касније.</translation>
 <translation id="2628770867680720336">Chromebook мора да се врати на фабричка подешавања да би се омогућило ADB отклањање грешака <ph name="BEGIN_LINK_LEARN_MORE" />Сазнајте више<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Програмирајте Android апликације</translation>
-<translation id="2630681426381349926">Повежите са Wi-Fi-јем да бисте започели</translation>
+<translation id="2630681426381349926">Повежите са WiFi-јем да бисте започели</translation>
 <translation id="2631498379019108537">Приказуј опције уноса у полици</translation>
 <translation id="2633212996805280240">Желите ли да уклоните „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> није могао да доврши инсталацију, али ће наставити да се покреће са слике диска.</translation>
@@ -1438,7 +1438,7 @@
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Функције се разликују у зависности од уређаја</translation>
 <translation id="2659971421398561408">Промена величине диска за Crostini</translation>
 <translation id="2660779039299703961">Догађај</translation>
-<translation id="266079277508604648">Повезивање са штампачем није успело. Проверите да ли је штампач укључен и повезан са Chromebook-ом помоћу Wi-Fi-ја или USB-а.</translation>
+<translation id="266079277508604648">Повезивање са штампачем није успело. Проверите да ли је штампач укључен и повезан са Chromebook-ом помоћу WiFi-ја или USB-а.</translation>
 <translation id="2661714428027871023">Прегледајте брже и користите мање података помоћу Lite режима. Кликните да бисте сазнали више.</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2663302507110284145">Језик</translation>
@@ -1592,7 +1592,7 @@
 <translation id="2822910719211888134">Грешка при прављењу резервне копије Linux-а</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> користи подешавања проксија администратора</translation>
 <translation id="2825758591930162672">Јавни кључ субјекта</translation>
-<translation id="2828650939514476812">Повезивање са Wi-Fi мрежом</translation>
+<translation id="2828650939514476812">Повезивање са WiFi мрежом</translation>
 <translation id="2835547721736623118">Услуга за препознавање говора</translation>
 <translation id="2836269494620652131">Отказивање</translation>
 <translation id="2836635946302913370">Администратор је онемогућио пријављивање помоћу овог корисничког имена.</translation>
@@ -1706,7 +1706,7 @@
 <translation id="2961695502793809356">Кликните да бисте отишли напред, задржите да бисте видели историју</translation>
 <translation id="2962131322798295505">Бирач позадине</translation>
 <translation id="2963151496262057773">Следећа додатна компонента се не одазива: <ph name="PLUGIN_NAME" /> Желите ли да је зауставите?</translation>
-<translation id="2964193600955408481">Онемогући Wi-Fi</translation>
+<translation id="2964193600955408481">Онемогући WiFi</translation>
 <translation id="2966937470348689686">Управљајте Android подешавањима</translation>
 <translation id="2972581237482394796">&amp;Понови радњу</translation>
 <translation id="2973324205039581528">Искључи звук сајта</translation>
@@ -1730,7 +1730,7 @@
 <translation id="3003144360685731741">Жељене мреже</translation>
 <translation id="3003623123441819449">CSS кеш</translation>
 <translation id="3003828226041301643">Придруживање уређаја домену није успело. Проверите налог да бисте се уверили да имате привилегије за додавање уређаја.</translation>
-<translation id="3003967365858406397"><ph name="PHONE_NAME" /> ће направити приватну Wi-Fi везу.</translation>
+<translation id="3003967365858406397"><ph name="PHONE_NAME" /> ће направити приватну WiFi везу.</translation>
 <translation id="3004391367407090544">Вратите се касније</translation>
 <translation id="3006881078666935414">Нема података о коришћењу</translation>
 <translation id="3007771295016901659">Направи дупликат картице</translation>
@@ -1955,7 +1955,7 @@
 <translation id="328571385944182268">Желите ли да сачувате лозинке?</translation>
 <translation id="3288047731229977326">Додаци покренути у режиму програмера могу да нашкоде рачунару. Ако нисте програмер, требало би да онемогућите ове додатке покренуте у режиму програмера да бисте се заштитили.</translation>
 <translation id="3289668031376215426">Аутоматско писање великих почетних слова</translation>
-<translation id="3289856944988573801">Да бисте потражили ажурирања, користите етернет или Wi-Fi.</translation>
+<translation id="3289856944988573801">Да бисте потражили ажурирања, користите етернет или WiFi.</translation>
 <translation id="3290356915286466215">Незаштићено</translation>
 <translation id="3293644607209440645">Пошаљи ову страницу</translation>
 <translation id="32939749466444286">Linux контејнер се није покренуо. Пробајте поново.</translation>
@@ -2188,7 +2188,7 @@
 <translation id="3560034655160545939">&amp;Провера правописа</translation>
 <translation id="3562423906127931518">Ово може да потраје неколико минута. Подешава се Linux контејнер.</translation>
 <translation id="3563432852173030730">Није могуће преузети киоск апликацију.</translation>
-<translation id="3564334271939054422">Wi-Fi мрежа коју користите (<ph name="NETWORK_ID" />) ће можда захтевати да посетите страницу за пријављивање.</translation>
+<translation id="3564334271939054422">WiFi мрежа коју користите (<ph name="NETWORK_ID" />) ће можда захтевати да посетите страницу за пријављивање.</translation>
 <translation id="3564848315152754834">USB безбедносни кључ</translation>
 <translation id="3566325075220776093">Са овог уређаја</translation>
 <translation id="3566721612727112615">Ниједан сајт није додат</translation>
@@ -2202,7 +2202,7 @@
 <translation id="3576324189521867626">Инсталирано је</translation>
 <translation id="3578594933904494462">Садржај ове картице се дели.</translation>
 <translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; жели да дели штампач &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; са групом чији сте власник: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Ако прихватите, сви чланови групе ће моћи да штампају помоћу штампача.</translation>
-<translation id="357889014807611375">Wi-Fi са ограничењем</translation>
+<translation id="357889014807611375">WiFi са ограничењем</translation>
 <translation id="3581605050355435601">Аутоматски конфигуриши IP адресу</translation>
 <translation id="3582057310199111521">Унето на обмањујућем сајту и пронађено при упаду у податке</translation>
 <translation id="3584169441612580296">Читање слика, музике и других медија са рачунара и мењање тих медија</translation>
@@ -2273,7 +2273,7 @@
 <translation id="3650753875413052677">Грешка при регистрацији</translation>
 <translation id="3650845953328929506">Отпремање евиденције је на чекању.</translation>
 <translation id="3650952250015018111">Дозволите да „<ph name="APP_NAME" />“ приступа:</translation>
-<translation id="3651488188562686558">прекинути везу са Wi-Fi-јем</translation>
+<translation id="3651488188562686558">прекинути везу са WiFi-јем</translation>
 <translation id="3652817283076144888">Покреће се</translation>
 <translation id="3653160965917900914">Дељења датотека на мрежи</translation>
 <translation id="3653842108912548333">Приступајте Помоћнику помоћу Voice Match-а</translation>
@@ -2323,7 +2323,7 @@
 <translation id="3704331259350077894">Престанак рада</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706463572498736864">Странице по листу</translation>
-<translation id="370649949373421643">Омогући Wi-Fi</translation>
+<translation id="370649949373421643">Омогући WiFi</translation>
 <translation id="370665806235115550">Учитава се...</translation>
 <translation id="3709244229496787112">Прегледач је затворен пре него што је преузимање завршено.</translation>
 <translation id="3711931198657368127">Налепи и иди на <ph name="URL" /></translation>
@@ -2799,7 +2799,7 @@
 <translation id="4260182282978351200">Датотека <ph name="FILE_NAME" /> је можда опасна. Желите ли да је пошаљете у Google напредну заштиту ради скенирања? Притискајте Shift + F6 да бисте прешли на област траке са преузимањима.</translation>
 <translation id="4263223596040212967">Проверите распоред тастатуре и пробајте поново.</translation>
 <translation id="4263757076580287579">Регистрација штампача је отказана.</translation>
-<translation id="426564820080660648">Да бисте потражили ажурирања, користите етернет, Wi-Fi или податке за мобилне уређаје.</translation>
+<translation id="426564820080660648">Да бисте потражили ажурирања, користите етернет, WiFi или податке за мобилне уређаје.</translation>
 <translation id="4266679478228765574">Уклањањем директоријума прекинуће се дељење, али датотеке неће бити избрисане.</translation>
 <translation id="4267455501101322486">Треба ти дозвола родитеља за додавање налога ради приступа образовним ресурсима</translation>
 <translation id="4267924571297947682">Замоли родитеља за дозволу</translation>
@@ -3079,7 +3079,7 @@
 <translation id="4595560905247879544">Апликације и додатке може да мења само менаџер (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">Имате сачуване сертификате који идентификују ове сервере</translation>
 <translation id="4598556348158889687">Управљање меморијским простором</translation>
-<translation id="4598776695426288251">Доступан је Wi-Fi преко више уређаја</translation>
+<translation id="4598776695426288251">Доступан је WiFi преко више уређаја</translation>
 <translation id="4602466770786743961">Увек дозволи да <ph name="HOST" /> приступа камери и микрофону</translation>
 <translation id="4606551464649945562">Не дозвољавајте сајтовима да праве 3D мапу окружења или да прате положај камере</translation>
 <translation id="4608500690299898628">&amp;Пронађи...</translation>
@@ -3115,10 +3115,10 @@
 <translation id="4638930039313743000">Омогући ADB отклањање грешака</translation>
 <translation id="4641539339823703554">Chrome није могао да подеси системско време. Проверите време у наставку и исправите га ако је потребно.</translation>
 <translation id="4643612240819915418">&amp;Отвори видео снимак на новој картици</translation>
-<translation id="4645551927492192497">{NUM_DAYS,plural, =1{<ph name="DOMAIN" /> захтева да се данас повежете на Wi-Fi да бисте преузели ажурирање. Или преузмите помоћу везе са ограничењем (можда се наплаћују трошкови).}one{<ph name="DOMAIN" /> захтева да се повежете на Wi-Fi да бисте преузели ажурирање пре него што истекне рок. Или преузмите помоћу везе са ограничењем (можда се наплаћују трошкови).}few{<ph name="DOMAIN" /> захтева да се повежете на Wi-Fi да бисте преузели ажурирање пре него што истекне рок. Или преузмите помоћу везе са ограничењем (можда се наплаћују трошкови).}other{<ph name="DOMAIN" /> захтева да се повежете на Wi-Fi да бисте преузели ажурирање пре него што истекне рок. Или преузмите помоћу везе са ограничењем (можда се наплаћују трошкови).}}</translation>
+<translation id="4645551927492192497">{NUM_DAYS,plural, =1{<ph name="DOMAIN" /> захтева да се данас повежете на WiFi да бисте преузели ажурирање. Или преузмите помоћу везе са ограничењем (можда се наплаћују трошкови).}one{<ph name="DOMAIN" /> захтева да се повежете на WiFi да бисте преузели ажурирање пре него што истекне рок. Или преузмите помоћу везе са ограничењем (можда се наплаћују трошкови).}few{<ph name="DOMAIN" /> захтева да се повежете на WiFi да бисте преузели ажурирање пре него што истекне рок. Или преузмите помоћу везе са ограничењем (можда се наплаћују трошкови).}other{<ph name="DOMAIN" /> захтева да се повежете на WiFi да бисте преузели ажурирање пре него што истекне рок. Или преузмите помоћу везе са ограничењем (можда се наплаћују трошкови).}}</translation>
 <translation id="4645676300727003670">&amp;Задржи</translation>
 <translation id="4646675363240786305">Портови</translation>
-<translation id="4646949265910132906">Безбедна Wi-Fi веза</translation>
+<translation id="4646949265910132906">Безбедна WiFi веза</translation>
 <translation id="4647090755847581616">&amp;Close Tab (Затвори картицу)</translation>
 <translation id="4647283074445570750"><ph name="CURRENT_STEP" />. корак од <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{Покрените апликацију када се пријавите на таблет}computer{Покрените апликацију када се пријавите на рачунар}other{Покрените апликацију када се пријавите на уређај}}</translation>
@@ -3158,7 +3158,7 @@
 <translation id="4688036121858134881">ИД локалне евиденције: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">Одаберите подешавања демонстрације</translation>
 <translation id="4689421377817139245">Синхронизујте овај обележивач са iPhone-ом</translation>
-<translation id="4690091457710545971">&lt;Четири датотеке које је генерисао Intel фирмвер за Wi-Fi: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon.  Прве три датотеке су бинарне датотеке које садрже исписе регистара и Intel потврђује да не садрже личне податке нити податке који могу да идентификују уређај.  Последња датотека је траг извршења Intel фирмвера; из ње су уклоњени било какви лични подаци или подаци који могу да идентификују уређај, али је превелика да бисмо је овде приказали.  Ове датотеке су генерисане као одговор на недавне проблеме са Wi-Fi-јем на уређају и делићемо их са Intel-ом да бисмо решили те проблеме.&gt;</translation>
+<translation id="4690091457710545971">&lt;Четири датотеке које је генерисао Intel фирмвер за WiFi: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon.  Прве три датотеке су бинарне датотеке које садрже исписе регистара и Intel потврђује да не садрже личне податке нити податке који могу да идентификују уређај.  Последња датотека је траг извршења Intel фирмвера; из ње су уклоњени било какви лични подаци или подаци који могу да идентификују уређај, али је превелика да бисмо је овде приказали.  Ове датотеке су генерисане као одговор на недавне проблеме са WiFi-јем на уређају и делићемо их са Intel-ом да бисмо решили те проблеме.&gt;</translation>
 <translation id="4691791363716065510"><ph name="ORIGIN" /> ће моћи да прегледа датотеку <ph name="FILENAME" /> док не затворите све картице овог сајта</translation>
 <translation id="4692623383562244444">Претраживачи</translation>
 <translation id="4693155481716051732">Суши</translation>
@@ -3413,7 +3413,7 @@
 <translation id="5018526990965779848">Шаљите податке о коришћењу и дијагностичке податке. Помозите нам да вам пружимо бољи доживљај Android-а тако што ћете аутоматски слати податке о дијагностици, уређају и коришћењу апликација Google-у. То доприноси одржавању стабилности система и апликације и другим подешавањима. Неки обједињени подаци ће такође помоћи Google апликацијама и партнерима, попут Android програмера. Ако укључите подешавање додатне активности на вебу и у апликацијама, ти подаци ће се можда чувати на Google налогу.</translation>
 <translation id="5019392775062123007">Видљиво уређајима у близини као <ph name="DEVICE_NAME" /></translation>
 <translation id="5021750053540820849">Још није ажурирано</translation>
-<translation id="5026806129670917316">Укључите Wi-Fi</translation>
+<translation id="5026806129670917316">Укључите WiFi</translation>
 <translation id="5026874946691314267">Не приказуј ово поново</translation>
 <translation id="5027550639139316293">Сертификат за е-пошту</translation>
 <translation id="5027562294707732951">Додај додатак</translation>
@@ -3954,7 +3954,7 @@
 <translation id="5677928146339483299">Блокирано</translation>
 <translation id="5678550637669481956">Одобрен је приступ за <ph name="VOLUME_NAME" /> ради читања и писања.</translation>
 <translation id="5678955352098267522">Читање ваших података на <ph name="WEBSITE_1" /></translation>
-<translation id="5684181005476681636">Детаљи о Wi-Fi мрежи</translation>
+<translation id="5684181005476681636">Детаљи о WiFi мрежи</translation>
 <translation id="5684661240348539843">Идентификатор елемента</translation>
 <translation id="5687326903064479980">Временска зона</translation>
 <translation id="5689516760719285838">Локација</translation>
@@ -4093,7 +4093,7 @@
 <translation id="5852112051279473187">Упс! Дошло је до озбиљног проблема док смо пријављивали овај уређај. Пробајте поново или контактирајте представника подршке.</translation>
 <translation id="5852137567692933493">Рестартуј и обави Powerwash</translation>
 <translation id="5854912040170951372">Парче</translation>
-<translation id="5855267860608268405">Познате Wi-Fi мреже</translation>
+<translation id="5855267860608268405">Познате WiFi мреже</translation>
 <translation id="5855643921295613558">0,6 секунди</translation>
 <translation id="5856721540245522153">Омогућавање функција за отклањање грешака</translation>
 <translation id="5857090052475505287">Нови директоријум</translation>
@@ -4129,7 +4129,7 @@
 <translation id="5884474295213649357">Ова картица је повезана са USB уређајем.</translation>
 <translation id="5886009770935151472">Прст 1</translation>
 <translation id="5889282057229379085">Највећи број посредничких CA: <ph name="NUM_INTERMEDIATE_CA" /></translation>
-<translation id="5891688036610113830">Примарне Wi-Fi мреже</translation>
+<translation id="5891688036610113830">Примарне WiFi мреже</translation>
 <translation id="5893589697005440881">Делите фајлове са људима у близини</translation>
 <translation id="5895138241574237353">Покрени поново</translation>
 <translation id="5900302528761731119">Слика Google профила</translation>
@@ -4214,7 +4214,7 @@
 <translation id="5984222099446776634">Недавно посећено</translation>
 <translation id="598472838394900788">{0,plural, =1{Без архивирања}one{Без архивирања (#)}few{Без архивирања (#)}other{Без архивирања (#)}}</translation>
 <translation id="5985458664595100876">Неважећи формат URL-а. Подржани формати су \\server\share и smb://server/share.</translation>
-<translation id="5990266201903445068">Само Wi-Fi</translation>
+<translation id="5990266201903445068">Само WiFi</translation>
 <translation id="5990386583461751448">Преведено</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Да бисте се уверили да можете да наставите да прегледате веб, затражите од администратора да уклони ову апликацију.}one{Да бисте се уверили да можете да наставите да прегледате веб, затражите од администратора да уклони ове апликације.}few{Да бисте се уверили да можете да наставите да прегледате веб, затражите од администратора да уклони ове апликације.}other{Да бисте се уверили да можете да наставите да прегледате веб, затражите од администратора да уклони ове апликације.}}</translation>
 <translation id="5997337190805127100">Сазнајте више о приступу сајтовима</translation>
@@ -4341,7 +4341,7 @@
 <translation id="6129839611163153407">Ваше дете</translation>
 <translation id="6129938384427316298">Коментар Netscape сертификата</translation>
 <translation id="6129953537138746214">Размак</translation>
-<translation id="6130692320435119637">Додај Wi-Fi</translation>
+<translation id="6130692320435119637">Додај WiFi</translation>
 <translation id="6136114942382973861">Затвори траку са преузимањима</translation>
 <translation id="6137767437444130246">Кориснички сертификат</translation>
 <translation id="6138680304137685902">Потпис X9.62 ECDSA путем SHA-384</translation>
@@ -4413,7 +4413,7 @@
 <translation id="6225475702458870625">Веза за пренос података је доступна на телефону <ph name="PHONE_NAME" /></translation>
 <translation id="6226777517901268232">Датотека приватног кључа (опционално)</translation>
 <translation id="6227280783235722609">додатак</translation>
-<translation id="6229849828796482487">Прекини везу са Wi-Fi мрежом</translation>
+<translation id="6229849828796482487">Прекини везу са WiFi мрежом</translation>
 <translation id="6229890768313448549">Услови коришћења услуге Google Play не могу да се учитају. Пробајте поново.</translation>
 <translation id="6231782223312638214">Предложено</translation>
 <translation id="6231881193380278751">Додајте параметар упита у URL да бисте аутоматски освежили страницу: chrome://device-log/?refresh=&lt;sec&gt;</translation>
@@ -4976,7 +4976,7 @@
 <translation id="6910211073230771657">Избрисано</translation>
 <translation id="691024665142758461">да преузме више датотека</translation>
 <translation id="691106080621596509">Овим бришете све податке и колачиће које чувају сајт <ph name="SITE_GROUP_NAME" />, сви њему подређени сајтови и његове инсталиране апликације</translation>
-<translation id="6911324888870229398">Мрежна веза је изгубљена. Проверите везу или пробајте са другом Wi-Fi мрежом.</translation>
+<translation id="6911324888870229398">Мрежна веза је изгубљена. Проверите везу или пробајте са другом WiFi мрежом.</translation>
 <translation id="6911734910326569517">Меморијски простор у употреби</translation>
 <translation id="6912007319859991306">PIN SIM-а за мобилну мрежу</translation>
 <translation id="691289340230098384">Подешавања титла</translation>
@@ -5266,7 +5266,7 @@
 <translation id="7256069762010468647">Сајт користи камеру</translation>
 <translation id="7256405249507348194">Непозната грешка: <ph name="DESC" /></translation>
 <translation id="7256710573727326513">Отвори на картици</translation>
-<translation id="7257173066616499747">Wi-Fi мреже</translation>
+<translation id="7257173066616499747">WiFi мреже</translation>
 <translation id="725758059478686223">Услуга штампања</translation>
 <translation id="7257666756905341374">Читање података које прекопирате</translation>
 <translation id="7258225044283673131">Апликација не реагује. Изаберите „Принудно затвори“ да бисте затворили апликацију.</translation>
@@ -5585,7 +5585,7 @@
 <translation id="7647403192093989392">Нема недавних активности</translation>
 <translation id="7649070708921625228">Помоћ</translation>
 <translation id="7650511557061837441">„<ph name="TRIGGERING_EXTENSION_NAME" />“ жели да уклони „<ph name="EXTENSION_NAME" />“.</translation>
-<translation id="7650677314924139716">Актуелно подешавање потрошње података је „Само Wi-Fi“</translation>
+<translation id="7650677314924139716">Актуелно подешавање потрошње података је „Само WiFi“</translation>
 <translation id="7652808307838961528">Измени особу, <ph name="PROFILE_NAME" /></translation>
 <translation id="765293928828334535">Апликације, додаци и скрипте корисника не могу да се додају са овог веб-сајта</translation>
 <translation id="7652954539215530680">Направите PIN</translation>
@@ -5854,7 +5854,7 @@
 <translation id="7930294771522048157">Сачувани начини плаћања ће се приказивати овде</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> дели екран и звук.</translation>
 <translation id="7931318309563332511">Непознато</translation>
-<translation id="793293630927785390">Дијалог Нова Wi-Fi мрежа</translation>
+<translation id="793293630927785390">Дијалог Нова WiFi мрежа</translation>
 <translation id="7932969338829957666">Дељени директоријуми су доступни у Linux-у на <ph name="BASE_DIR" />.</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Укључи звук сајта}one{Укључи звук сајтова}few{Укључи звук сајтова}other{Укључи звук сајтова}}</translation>
 <translation id="7933634003144813719">Управљајте дељеним директоријумима</translation>
@@ -6498,7 +6498,7 @@
 <translation id="869891660844655955">Датум истека</translation>
 <translation id="8703346390800944767">Прескочи оглас</translation>
 <translation id="8705331520020532516">Серијски број</translation>
-<translation id="8705580154597116082">Доступан је Wi-Fi преко телефона</translation>
+<translation id="8705580154597116082">Доступан је WiFi преко телефона</translation>
 <translation id="8705629851992224300">Очитавање безбедносног кључа није успело</translation>
 <translation id="8708000541097332489">Обриши при затварању</translation>
 <translation id="870805141700401153">Microsoft потписивање појединачних кодова</translation>
@@ -6608,7 +6608,7 @@
 <translation id="8813698869395535039">Пријављивање на <ph name="USERNAME" /> није успело</translation>
 <translation id="8813872945700551674">Затражи од родитеља да одобри додатак <ph name="EXTENSION_NAME" /></translation>
 <translation id="8813969267212093033">Системски текст се приказује на овом језику</translation>
-<translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8814190375133053267">WiFi</translation>
 <translation id="8814319344131658221">Језици за проверу правописа се заснивају на подешавању језика</translation>
 <translation id="8814644416678422095">Хард-диск</translation>
 <translation id="8814687660896548945">Сачекајте, архива се скенира...</translation>
@@ -6909,7 +6909,7 @@
 <translation id="9159643062839240276">Испробајте:
     <ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" />Проверите мрежне каблове, модем и рутер
-      <ph name="LIST_ITEM" />Поново се повежите на Wi-Fi
+      <ph name="LIST_ITEM" />Поново се повежите на WiFi
       <ph name="LIST_ITEM" />Покрените Chrome дијагностику повезивости
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Слика у слици</translation>

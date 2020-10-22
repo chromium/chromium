@@ -72,7 +72,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1589090746204042747">Pristupite svim aktivnostima u ovoj sesiji</translation>
 <translation id="1611993646327628135">Uključeno</translation>
 <translation id="1632985212731562677">Pristup pomoću prekidača može da se onemogući u odeljku Podešavanja &gt; Pristupačnost.</translation>
-<translation id="1651447046299738444">Izgleda da je isključen Bluetooth ili Wi-Fi na Chromebook-u. Proverite vezu da biste koristili Phone Hub.</translation>
+<translation id="1651447046299738444">Izgleda da je isključen Bluetooth ili WiFi na Chromebook-u. Proverite vezu da biste koristili Phone Hub.</translation>
 <translation id="1654477262762802994">Započnite glasovnu pretragu</translation>
 <translation id="1667964833127753507">Režim neutralnih boja ne koristi boje iz pozadina i zamenjuje ih skupom neutralnih svetlih i tamnih nijansi.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> je preostalo</translation>
@@ -93,7 +93,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1823873187264960516">Eternet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Pomoćnik (učitava se...)</translation>
 <translation id="1838895407229022812">Noćno svetlo je isključeno.</translation>
-<translation id="1850504506766569011">Wi-Fi je isključen.</translation>
+<translation id="1850504506766569011">WiFi je isključen.</translation>
 <translation id="1864454756846565995">Uređaj sa USB priključkom tipa C (zadnji port)</translation>
 <translation id="1882897271359938046">Preslikavanje u <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Otključajte otiskom prsta</translation>
@@ -174,7 +174,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2653659639078652383">Pošalji</translation>
 <translation id="2658778018866295321">Kliknite i prevucite</translation>
 <translation id="2700493154570097719">Podesite tastaturu</translation>
-<translation id="2704781753052663061">Pridruži se drugim Wi-Fi mrežama</translation>
+<translation id="2704781753052663061">Pridruži se drugim WiFi mrežama</translation>
 <translation id="2705001408393684014">Uključite/isključite mikrofon. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Nagore</translation>
 <translation id="2718395828230677721">Noćno svetlo</translation>
@@ -732,7 +732,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="8433977262951327081">Promenjena je prečica za prikazivanje oblačića za meni Opcije unosa na polici. Koristite <ph name="NEW_SHORTCUT" /> umesto <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Radna površina <ph name="DESK_TITILE" /> je aktivirana</translation>
 <translation id="8452135315243592079">SIM kartica nedostaje</translation>
-<translation id="8454013096329229812">Wi-Fi je uključen.</translation>
+<translation id="8454013096329229812">WiFi je uključen.</translation>
 <translation id="847056008324733326">Podešavanja razmere prikaza</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> – <ph name="FEATURE_STATE" />: <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Pritisnite Alt + taster za pretragu ili Shift da biste otkazali.</translation>
@@ -766,7 +766,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="8759408218731716181">Nije moguće podesiti višestruko prijavljivanje</translation>
 <translation id="8785070478575117577">Povežite se sa uređajem <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
-<translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8814190375133053267">WiFi</translation>
 <translation id="8825863694328519386">Prevucite sa leve strane da biste se vratili</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Dugme Nazad</translation>
@@ -798,7 +798,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="9070640332319875144">Podešavanja Pomoćnika</translation>
 <translation id="9072519059834302790">Još <ph name="TIME_LEFT" /> i baterija će biti prazna.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
+<translation id="9079731690316798640">WiFi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Prevucite nagore da biste otišli na početni ekran</translation>
 <translation id="9080206825613744995">Mikrofon se koristi.</translation>
 <translation id="9084606467167974638">Promenite položaj menija</translation>

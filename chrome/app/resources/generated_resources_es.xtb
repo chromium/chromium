@@ -6,7 +6,7 @@
 <translation id="1003363546227723021">Muestra fotos, la hora, el tiempo e información multimedia mientras la pantalla esté inactiva</translation>
 <translation id="1004218526896219317">Acceso al sitio web</translation>
 <translation id="1005274289863221750">Utilizar el micrófono y la cámara</translation>
-<translation id="1005333234656240382">¿Quieres habilitar la depuración adb?</translation>
+<translation id="1005333234656240382">¿Quieres habilitar la depuración ADB?</translation>
 <translation id="1006873397406093306">Esta extensión puede leer y cambiar tus datos en los sitios web. Puedes controlar a qué sitios web puede acceder la extensión.</translation>
 <translation id="1007408791287232274">No se han podido cargar dispositivos.</translation>
 <translation id="1008186147501209563">Exportar marcadores</translation>
@@ -31,7 +31,7 @@
 <translation id="1032605640136438169">Revisa los nuevos términos</translation>
 <translation id="103279545524624934">Libera espacio del disco para iniciar aplicaciones de Android.</translation>
 <translation id="1033780634303702874">Acceder a tus dispositivos en serie</translation>
-<translation id="1034942643314881546">Ilustración de habilitar ADB para crear aplicaciones</translation>
+<translation id="1034942643314881546">Ilustración de habilitar adb para crear aplicaciones</translation>
 <translation id="1036348656032585052">Desactivar</translation>
 <translation id="1036511912703768636">Acceder a cualquiera de estos dispositivos USB</translation>
 <translation id="1036982837258183574">Pulsa |<ph name="ACCELERATOR" />| para salir del modo de pantalla completa</translation>
@@ -290,7 +290,7 @@
 <translation id="1326317727527857210">Inicia sesión en Chrome para ver las pestañas de tus otros dispositivos.</translation>
 <translation id="1327074568633507428">Impresora en Google Cloud Print</translation>
 <translation id="1327272175893960498">Tickets de Kerberos</translation>
-<translation id="1327495825214193325">Para habilitar la depuración adb, es necesario reiniciar este <ph name="DEVICE_TYPE" />. Para inhabilitarla, es necesario restablecer la configuración de fábrica.</translation>
+<translation id="1327495825214193325">Para habilitar la depuración ADB, es necesario reiniciar este <ph name="DEVICE_TYPE" />. Para inhabilitarla, es necesario restablecer la configuración de fábrica.</translation>
 <translation id="1327794256477341646">Las funciones que necesiten la ubicación no se podrán utilizar</translation>
 <translation id="1327977588028644528">Pasarela</translation>
 <translation id="1329584516321524826">Actualizada ahora mismo</translation>
@@ -864,7 +864,7 @@
 <translation id="1974821797477522211">Conectarse a la red</translation>
 <translation id="1975841812214822307">Quitar...</translation>
 <translation id="1976150099241323601">Iniciar sesión en al dispositivo de seguridad</translation>
-<translation id="1976307821760494606"><ph name="DOMAIN" /> ha inhabilitado la depuración adb. Este proceso restablecerá tu <ph name="DEVICE_TYPE" /> dentro de 24 horas. Haz copias de seguridad de los archivos que quieras conservar.</translation>
+<translation id="1976307821760494606"><ph name="DOMAIN" /> ha inhabilitado la depuración ADB. Este proceso restablecerá tu <ph name="DEVICE_TYPE" /> dentro de 24 horas. Haz copias de seguridad de los archivos que quieras conservar.</translation>
 <translation id="1977965994116744507">Acerca el teléfono para desbloquear tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978006917103730774">Las futuras actualizaciones de software y seguridad se instalarán automáticamente.</translation>
 <translation id="1979095679518582070">Aunque esta opción esté desactivada, el dispositivo seguirá pudiendo enviar la información necesaria para realizar los servicios esenciales relacionados, por ejemplo, con la seguridad y las actualizaciones del sistema.</translation>
@@ -1411,7 +1411,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">Esta página tiene acceso a la cámara y al micrófono.</translation>
 <translation id="2626799779920242286">Vuelve a intentarlo más tarde.</translation>
-<translation id="2628770867680720336">Para habilitar la depuración adb, deben restablecerse los ajustes de fábrica de este Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="2628770867680720336">Para habilitar la depuración ADB, deben restablecerse los ajustes de fábrica de este Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Desarrollar aplicaciones de Android</translation>
 <translation id="2630681426381349926">Conéctate a una red Wi-Fi para empezar</translation>
 <translation id="2631498379019108537">Mostrar opciones de entrada en la estantería</translation>
@@ -2897,7 +2897,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4390000551125140321">{0,plural, =1{Incógnito}other{# ventanas de incógnito abiertas}}</translation>
 <translation id="439266289085815679">El usuario <ph name="USER_EMAIL" /> controla la configuración del Bluetooth.</translation>
 <translation id="4392896746540753732">Edita el archivo de configuración.</translation>
-<translation id="4393691030048716353"><ph name="DOMAIN" /> ha inhabilitado la depuración adb. Cuando reinicies tu <ph name="DEVICE_TYPE" />, no podrás instalar aplicaciones de fuentes desconocidas.</translation>
+<translation id="4393691030048716353"><ph name="DOMAIN" /> ha inhabilitado la depuración ADB. Cuando reinicies tu <ph name="DEVICE_TYPE" />, no podrás instalar aplicaciones de fuentes desconocidas.</translation>
 <translation id="4394049700291259645">Inhabilitar</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Abrir todas}=1{&amp;Abrir marcador}other{&amp;Abrir todas ({COUNT})}}</translation>
 <translation id="439817266247065935">Tu dispositivo no se apagó correctamente. Reinicia Linux para usar sus aplicaciones.</translation>
@@ -3114,7 +3114,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4635444580397524003">Copia de seguridad de Linux restaurada correctamente.</translation>
 <translation id="4636930964841734540">Información</translation>
 <translation id="4637083375689622795">Más acciones, <ph name="EMAIL" /></translation>
-<translation id="4638930039313743000">Habilitar depuración adb</translation>
+<translation id="4638930039313743000">Habilitar depuración ADB</translation>
 <translation id="4641539339823703554">Chrome no ha podido establecer la hora del sistema. Comprueba la hora a continuación y corrígela si es necesario.</translation>
 <translation id="4643612240819915418">&amp;Abrir vídeo en una pestaña nueva</translation>
 <translation id="4645551927492192497">{NUM_DAYS,plural, =1{<ph name="DOMAIN" /> requiere que te conectes a una red Wi‑Fi hoy para descargar una actualización. También puedes descargarla con una conexión de uso medido (es posible que se apliquen cargos).}other{<ph name="DOMAIN" /> requiere que te conectes a una red Wi‑Fi y descargues una actualización antes de la fecha límite. También puedes descargarla con una conexión de uso medido (es posible que se apliquen cargos).}}</translation>
@@ -4080,7 +4080,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5833726373896279253">Esta configuración solo puede modificarla el propietario:</translation>
 <translation id="5834581999798853053">Unos <ph name="TIME" /> minutos</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" />: grabación de la cámara o del micrófono</translation>
-<translation id="5839574759884227787"><ph name="DOMAIN" /> ha inhabilitado la depuración adb, por lo que se restablecerá tu <ph name="DEVICE_TYPE" />. Haz una copia de seguridad de tus archivos antes de reiniciar.</translation>
+<translation id="5839574759884227787"><ph name="DOMAIN" /> ha inhabilitado la depuración ADB, por lo que se restablecerá tu <ph name="DEVICE_TYPE" />. Haz una copia de seguridad de tus archivos antes de reiniciar.</translation>
 <translation id="5840680448799937675">Los archivos siempre se compartirán sin conexión</translation>
 <translation id="5841270259333717135">Configurar Ethernet</translation>
 <translation id="5842497610951477805">Habilitar Bluetooth</translation>
@@ -4376,7 +4376,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6169040057125497443">Comprueba el micrófono.</translation>
 <translation id="6169666352732958425">No se ha podido enviar el escritorio.</translation>
 <translation id="6170470584681422115">Bocadillo</translation>
-<translation id="6170498031581934115">No se ha podido habilitar la depuración adb. Ve a Ajustes y vuelve a intentarlo.</translation>
+<translation id="6170498031581934115">No se ha podido habilitar la depuración ADB. Ve a Ajustes y vuelve a intentarlo.</translation>
 <translation id="6173623053897475761">Vuelve a escribir tu PIN</translation>
 <translation id="6173870063490457111">Bloquear ventanas emergentes y redirecciones (recomendado)</translation>
 <translation id="6175314957787328458">GUID de dominio de Microsoft</translation>
@@ -5747,7 +5747,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7824864914877854148">No se ha podido completar la copia de seguridad debido a un error</translation>
 <translation id="7825666486843191125">Todos los contactos que haya cerca de ti cuando tu pantalla esté desbloqueada</translation>
 <translation id="782590969421016895">Utilizar páginas actuales</translation>
-<translation id="7826249772873145665">Depuración adb inhabilitada</translation>
+<translation id="7826249772873145665">Depuración ADB inhabilitada</translation>
 <translation id="7826254698725248775">Identificador de dispositivo en conflicto.</translation>
 <translation id="7826346148677309647">Puedes buscar más aplicaciones para tu dispositivo en Play Store.</translation>
 <translation id="7826790948326204519"><ph name="BEGIN_H3" />Funciones de depuración<ph name="END_H3" />
@@ -5958,7 +5958,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8045253504249021590">La sincronización se ha detenido mediante el Panel de Control de Google.</translation>
 <translation id="8045923671629973368">Introducir el ID de la aplicación o la URL de Chrome Web Store</translation>
 <translation id="8047242494569930800">Mover a cuenta de Google</translation>
-<translation id="804786196054284061">Acuerdo de licencia de usuario final</translation>
+<translation id="804786196054284061">Contrato de licencia de usuario final</translation>
 <translation id="8049705080247101012">Google ha marcado "<ph name="EXTENSION_NAME" />" como extensión maliciosa, por lo que ha evitado que se instale</translation>
 <translation id="8049948037269924837">Desplazamiento inverso del panel táctil</translation>
 <translation id="8050038245906040378">Firma de código comercial de Microsoft</translation>
@@ -5989,9 +5989,9 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8076492880354921740">Pestañas</translation>
 <translation id="8076835018653442223">Tu administrador ha inhabilitado el acceso a los archivos locales de tu dispositivo</translation>
 <translation id="808089508890593134">Google</translation>
-<translation id="8081989000209387414">¿Quieres inhabilitar la depuración adb?</translation>
+<translation id="8081989000209387414">¿Quieres inhabilitar la depuración ADB?</translation>
 <translation id="8082106343289440791">¿Quieres vincular "<ph name="DEVICE_NAME" />"?</translation>
-<translation id="8082390128630131497">Si se inhabilita la depuración adb, se restablecerá la configuración de fábrica de este <ph name="DEVICE_TYPE" />. Se borrarán todas las cuentas de usuario y todos los datos locales.</translation>
+<translation id="8082390128630131497">Si se inhabilita la depuración ADB, se restablecerá la configuración de fábrica de este <ph name="DEVICE_TYPE" />. Se borrarán todas las cuentas de usuario y todos los datos locales.</translation>
 <translation id="8083058154738359867">Obtén subtítulos para tu contenido multimedia habilitando Subtítulos automáticos en los ajustes</translation>
 <translation id="8084114998886531721">Contraseña guardada</translation>
 <translation id="8086015605808120405">Configurando <ph name="PRINTER_NAME" />...</translation>

@@ -5359,6 +5359,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7375235221357833624">{0,plural, =1{Gerät innerhalb von einer Stunde aktualisieren}other{Gerät innerhalb von # Stunden aktualisieren}}</translation>
 <translation id="7376553024552204454">Cursor bei Bewegung hervorheben</translation>
 <translation id="7377451353532943397">Zugriff auf den Sensor weiterhin blockieren</translation>
+<translation id="7378611153938412599">Schwache Passwörter sind einfach zu erraten. Erstellen Sie deshalb am besten starke Passwörter. <ph name="BEGIN_LINK" />Weitere Sicherheitstipps ansehen.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Chrome Web Store öffnen</translation>
 <translation id="7378812711085314936">Datenverbindung nutzen</translation>
 <translation id="7380622428988553498">Gerätename enthält ungültige Zeichen</translation>
@@ -6336,6 +6337,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="850875081535031620">Keine schädliche Software gefunden</translation>
 <translation id="8509177919508253835">Sicherheitsschlüssel zurücksetzen und PINs erstellen</translation>
 <translation id="8509646642152301857">Beim Herunterladen des Wörterbuchs für die Rechtschreibprüfung ist ein Fehler aufgetreten.</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Keine schwachen Passwörter gefunden}=1{{COUNT} schwaches Passwort gefunden}other{{COUNT} schwache Passwörter gefunden}}</translation>
 <translation id="8512476990829870887">Prozess beenden</translation>
 <translation id="851263357009351303">Anzeige von Bildern für <ph name="HOST" /> immer zulassen</translation>
 <translation id="8513108775083588393">Autom. drehen</translation>

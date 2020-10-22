@@ -45,7 +45,7 @@
 <translation id="1156303062776767266">Pregledate lokalnu ili deljenu datoteku</translation>
 <translation id="1158211211994409885">Host <ph name="HOST_NAME" /> je neočekivano prekinuo vezu.</translation>
 <translation id="115926840831309955">Proverite CVC i probajte ponovo ili ažurirajte datum isteka</translation>
-<translation id="1161325031994447685">ponovo da se povežete sa Wi-Fi mrežom</translation>
+<translation id="1161325031994447685">ponovo da se povežete sa WiFi mrežom</translation>
 <translation id="1165039591588034296">Greška</translation>
 <translation id="1165174597379888365">Stranica je posećena</translation>
 <translation id="1174723505405632867">Želite li da dozvolite da <ph name="EMBEDDED_URL" /> koristi kolačiće i podatke o sajtovima na <ph name="TOP_LEVEL_URL" />?
@@ -144,7 +144,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1484290072879560759">Odaberite adresu za isporuku</translation>
 <translation id="1492194039220927094">Slanje smernica:</translation>
 <translation id="1501859676467574491">Prikazuj kartice sa mog Google naloga</translation>
-<translation id="1507202001669085618">&lt;p&gt;Ova greška se prikazuje ako koristite Wi-Fi portal na kome morate da se prijavite da biste se povezali na internet.&lt;/p&gt;
+<translation id="1507202001669085618">&lt;p&gt;Ova greška se prikazuje ako koristite WiFi portal na kome morate da se prijavite da biste se povezali na internet.&lt;/p&gt;
     &lt;p&gt;Da biste otklonili tu grešku, kliknite na &lt;strong&gt;Poveži se&lt;/strong&gt; na stranici koju pokušavate da otvorite.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Lista unosa u istoriji</translation>
 <translation id="1517433312004943670">Broj telefona je obavezan</translation>
@@ -193,7 +193,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1662550410081243962">Čuvaj i unosi načine plaćanja</translation>
 <translation id="1663943134801823270">Kartice i adrese su iz Chrome-a. Njima možete da upravljate u <ph name="BEGIN_LINK" />podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="1671391448414634642">Stranice na jeziku <ph name="SOURCE_LANGUAGE" /> se od sada prevode na <ph name="TARGET_LANGUAGE" />.</translation>
-<translation id="1676269943528358898"><ph name="SITE" /> obično koristi šifrovanje da bi zaštitio informacije. Kada je Google Chrome ovog puta pokušao da se poveže sa <ph name="SITE" />, veb-sajt je vratio neobične i netačne akreditive. Ili napadač pokušava da se predstavi kao <ph name="SITE" /> ili je ekran za Wi-Fi prijavljivanje prekinuo vezu. Informacije su i dalje bezbedne zato što je Google Chrome prekinuo vezu pre nego što su razmenjeni bilo kakvi podaci.</translation>
+<translation id="1676269943528358898"><ph name="SITE" /> obično koristi šifrovanje da bi zaštitio informacije. Kada je Google Chrome ovog puta pokušao da se poveže sa <ph name="SITE" />, veb-sajt je vratio neobične i netačne akreditive. Ili napadač pokušava da se predstavi kao <ph name="SITE" /> ili je ekran za WiFi prijavljivanje prekinuo vezu. Informacije su i dalje bezbedne zato što je Google Chrome prekinuo vezu pre nego što su razmenjeni bilo kakvi podaci.</translation>
 <translation id="1682696192498422849">Prvo kratka ivica</translation>
 <translation id="168693727862418163">Validacija šeme ove vrednosti za smernice nije uspela i zanemariće se.</translation>
 <translation id="168841957122794586">Sertifikat servera sadrži slab kriptografski ključ.</translation>
@@ -538,7 +538,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3150653042067488994">Privremena greška na serveru</translation>
 <translation id="3154506275960390542">Ova stranica sadrži obrazac čije slanje može da bude nebezbedno. Podatke koje pošaljete mogu da vide i drugi dok su u prolazu i napadač može da ih izmeni da bi promenio sadržaj koji server prima.</translation>
 <translation id="3157931365184549694">Ponovo otvori</translation>
-<translation id="3162559335345991374">Wi-Fi mreža koju koristite će možda zahtevati da posetite stranicu za prijavljivanje.</translation>
+<translation id="3162559335345991374">WiFi mreža koju koristite će možda zahtevati da posetite stranicu za prijavljivanje.</translation>
 <translation id="3167968892399408617">Stranice koje pregledate na karticama bez arhiviranja se neće zadržavati u istoriji pregledača, skladištu kolačića ili istoriji pretrage kada zatvorite sve kartice bez arhiviranja. Sačuvaćemo sve preuzete datoteke ili napravljene obeleživače.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174168572213147020">Ostrvo</translation>
@@ -678,8 +678,8 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3709599264800900598">Tekst koji ste kopirali</translation>
 <translation id="3711895659073496551">Isključi</translation>
 <translation id="3712624925041724820">Nema više licenci</translation>
-<translation id="3714780639079136834">da uključite podatke za mobilne uređaje ili Wi-Fi</translation>
-<translation id="3715597595485130451">Povezivanje sa Wi-Fi mrežom</translation>
+<translation id="3714780639079136834">da uključite podatke za mobilne uređaje ili WiFi</translation>
+<translation id="3715597595485130451">Povezivanje sa WiFi mrežom</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />da proverite konfiguraciju proksija, zaštitnog zida i DNS-a<ph name="END_LINK" /></translation>
 <translation id="372429172604983730">Aplikacije koje mogu da dovedu do ove greške obuhvataju antivirusni softver, zaštitni zid i veb-filtriranje ili proksi softver.</translation>
 <translation id="373042150751172459">B4 (koverat)</translation>
@@ -802,7 +802,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4220128509585149162">Otkazivanja</translation>
 <translation id="422022731706691852">Napadači na <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> mogu da pokušaju da vas navedu da instalirate programe koji štete doživljaju pregledanja (na primer, tako što menjaju početnu stranicu ili prikazuju dodatne oglase na sajtovima koje posećujete). <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4221630205957821124">&lt;h4&gt;1. korak: Prijavite se na portal&lt;/h4&gt;
-    &lt;p&gt;Na mestima poput kafića ili aerodroma morate da se prijavite na Wi-Fi mreže. Da biste videli stranicu za prijavljivanje, posetite stranicu koja koristi &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
+    &lt;p&gt;Na mestima poput kafića ili aerodroma morate da se prijavite na WiFi mreže. Da biste videli stranicu za prijavljivanje, posetite stranicu koja koristi &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
     &lt;ol&gt;
     &lt;li&gt;Idite na bilo koji veb-sajt koji počinje sa &lt;code&gt;http://&lt;/code&gt;, poput &lt;a href="http://example.com" target="_blank"&gt;http://example.com&lt;/a&gt;.&lt;/li&gt;
     &lt;li&gt;Da biste koristili internet, prijavite se na stranici za prijavljivanje koja se otvori.&lt;/li&gt;
@@ -1607,7 +1607,7 @@ Dodatni detalji:
 <translation id="7503664977220660814">Upravo ste uneli lozinku na obmanjujućem sajtu. Chromium vam preporučuje da proverite sačuvane lozinke za <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> i druge sajtove na kojima trenutno koristite ovu lozinku.</translation>
 <translation id="7508255263130623398">Vraćeni ID uređaja za smernice je prazan ili se ne podudara sa aktuelnim ID-om uređaja</translation>
 <translation id="7508870219247277067">Zelenožuta</translation>
-<translation id="7511955381719512146">Wi-Fi mreža koju koristite će možda zahtevati da posetite <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="7511955381719512146">WiFi mreža koju koristite će možda zahtevati da posetite <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7514365320538308">Preuzmi</translation>
 <translation id="7518003948725431193">Nijedna veb-stranica nije pronađena za veb adresu: <ph name="URL" /></translation>
 <translation id="7520302887438682816">C8 (koverat)</translation>
@@ -1702,7 +1702,7 @@ Dodatni detalji:
 <translation id="7813600968533626083">Želite li da uklonite predlog iz Chrome-a?</translation>
 <translation id="781440967107097262">Dozvolićete deljenje privremene memorije?</translation>
 <translation id="7815407501681723534">Pronašli smo <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> za „<ph name="SEARCH_STRING" />“</translation>
-<translation id="782886543891417279">Wi-Fi mreža koju koristite (<ph name="WIFI_NAME" />) će možda zahtevati da posetite stranicu za prijavljivanje.</translation>
+<translation id="782886543891417279">WiFi mreža koju koristite (<ph name="WIFI_NAME" />) će možda zahtevati da posetite stranicu za prijavljivanje.</translation>
 <translation id="7836231406687464395">Postfix (koverat)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Nijedna}=1{1 aplikacija (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikacije (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# aplikacija (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}few{# aplikacije (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# aplikacija (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="785549533363645510">Ali, niste nevidljivi. Prelaskom u režim bez arhiviranja nećete sakriti pregledanje od poslodavca, internet provajdera ili veb-sajtova koje posećujete.</translation>
@@ -1816,7 +1816,7 @@ Dodatni detalji:
 <translation id="8289355894181816810">Kontaktirajte administratora mreže ako niste sigurni šta to znači.</translation>
 <translation id="8293206222192510085">Dodavanje obeleživača</translation>
 <translation id="8294431847097064396">Izvor</translation>
-<translation id="8298115750975731693">Wi-Fi mreža koju koristite (<ph name="WIFI_NAME" />) će možda zahtevati da posetite <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8298115750975731693">WiFi mreža koju koristite (<ph name="WIFI_NAME" />) će možda zahtevati da posetite <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8303854710873047864">Prikazuje se odeljak „<ph name="SECTION" />“</translation>
 <translation id="830498451218851433">Presavijanje napola</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
@@ -1990,7 +1990,7 @@ Dodatni detalji:
 <translation id="9089260154716455634">Smernice sa vremenskim rasporedom:</translation>
 <translation id="9095388113577226029">Još jezika...</translation>
 <translation id="9101630580131696064">1. fioka</translation>
-<translation id="9103872766612412690"><ph name="SITE" /> obično koristi šifrovanje da bi zaštitio informacije. Kada je Chromium ovog puta pokušao da se poveže sa <ph name="SITE" />, veb-sajt je vratio neobične i netačne akreditive. Ili napadač pokušava da se predstavi kao <ph name="SITE" /> ili je ekran za Wi-Fi prijavljivanje prekinuo vezu. Informacije su i dalje bezbedne zato što je Chromium prekinuo vezu pre nego što su razmenjeni bilo kakvi podaci.</translation>
+<translation id="9103872766612412690"><ph name="SITE" /> obično koristi šifrovanje da bi zaštitio informacije. Kada je Chromium ovog puta pokušao da se poveže sa <ph name="SITE" />, veb-sajt je vratio neobične i netačne akreditive. Ili napadač pokušava da se predstavi kao <ph name="SITE" /> ili je ekran za WiFi prijavljivanje prekinuo vezu. Informacije su i dalje bezbedne zato što je Chromium prekinuo vezu pre nego što su razmenjeni bilo kakvi podaci.</translation>
 <translation id="9106062320799175032">Dodajte adresu za obračun</translation>
 <translation id="9114524666733003316">Kartica se potvrđuje...</translation>
 <translation id="9114581008513152754">Ovim pregledačem ne upravlja kompanija niti druga organizacija. Aktivnostima na ovom uređaju se možda upravlja van Chrome-a. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>

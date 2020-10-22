@@ -72,7 +72,7 @@
 <translation id="1589090746204042747">Приступите свим активностима у овој сесији</translation>
 <translation id="1611993646327628135">Укључено</translation>
 <translation id="1632985212731562677">Приступ помоћу прекидача може да се онемогући у одељку Подешавања &gt; Приступачност.</translation>
-<translation id="1651447046299738444">Изгледа да је искључен Bluetooth или Wi-Fi на Chromebook-у. Проверите везу да бисте користили Phone Hub.</translation>
+<translation id="1651447046299738444">Изгледа да је искључен Bluetooth или WiFi на Chromebook-у. Проверите везу да бисте користили Phone Hub.</translation>
 <translation id="1654477262762802994">Започните гласовну претрагу</translation>
 <translation id="1667964833127753507">Режим неутралних боја не користи боје из позадина и замењује их скупом неутралних светлих и тамних нијанси.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> је преостало</translation>
@@ -93,7 +93,7 @@
 <translation id="1823873187264960516">Етернет: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Помоћник (учитава се...)</translation>
 <translation id="1838895407229022812">Ноћно светло је искључено.</translation>
-<translation id="1850504506766569011">Wi-Fi је искључен.</translation>
+<translation id="1850504506766569011">WiFi је искључен.</translation>
 <translation id="1864454756846565995">Уређај са USB прикључком типа C (задњи порт)</translation>
 <translation id="1882897271359938046">Пресликавање у <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Откључајте отиском прста</translation>
@@ -174,7 +174,7 @@
 <translation id="2653659639078652383">Пошаљи</translation>
 <translation id="2658778018866295321">Кликните и превуците</translation>
 <translation id="2700493154570097719">Подесите тастатуру</translation>
-<translation id="2704781753052663061">Придружи се другим Wi-Fi мрежама</translation>
+<translation id="2704781753052663061">Придружи се другим WiFi мрежама</translation>
 <translation id="2705001408393684014">Укључите/искључите микрофон. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Нагоре</translation>
 <translation id="2718395828230677721">Ноћно светло</translation>
@@ -732,7 +732,7 @@
 <translation id="8433977262951327081">Промењена је пречица за приказивање облачића за мени Опције уноса на полици. Користите <ph name="NEW_SHORTCUT" /> уместо <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Радна површина <ph name="DESK_TITILE" /> је активирана</translation>
 <translation id="8452135315243592079">SIM картица недостаје</translation>
-<translation id="8454013096329229812">Wi-Fi је укључен.</translation>
+<translation id="8454013096329229812">WiFi је укључен.</translation>
 <translation id="847056008324733326">Подешавања размере приказа</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> – <ph name="FEATURE_STATE" />: <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Притисните Alt + тастер за претрагу или Shift да бисте отказали.</translation>
@@ -766,7 +766,7 @@
 <translation id="8759408218731716181">Није могуће подесити вишеструко пријављивање</translation>
 <translation id="8785070478575117577">Повежите се са уређајем <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
-<translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8814190375133053267">WiFi</translation>
 <translation id="8825863694328519386">Превуците са леве стране да бисте се вратили</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Дугме Назад</translation>
@@ -798,7 +798,7 @@
 <translation id="9070640332319875144">Подешавања Помоћника</translation>
 <translation id="9072519059834302790">Још <ph name="TIME_LEFT" /> и батерија ће бити празна.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
+<translation id="9079731690316798640">WiFi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Превуците нагоре да бисте отишли на почетни екран</translation>
 <translation id="9080206825613744995">Микрофон се користи.</translation>
 <translation id="9084606467167974638">Промените положај менија</translation>
