@@ -3171,6 +3171,9 @@ crbug.com/626703 [ Win ] external/wpt/css/css-writing-modes/box-offsets-rel-pos-
 crbug.com/626703 [ Win ] external/wpt/css/css-writing-modes/box-offsets-rel-pos-vrl-004.xht [ Failure ]
 crbug.com/626703 external/wpt/html/dom/elements/global-attributes/dir_auto-N-EN-ref.html [ Failure ]
 
+# Changed error messages, rebaselining after v8 roll
+crbug.com/v8/6513 virtual/json-modules/external/wpt/html/semantics/scripting-1/the-script-element/json-module/parse-error.tentative.html [ Skip ]
+
 crbug.com/1051773 external/wpt/css/CSS2/floats/float-nowrap-3-ref.html [ Crash ]
 crbug.com/1051773 external/wpt/css/CSS2/floats/float-nowrap-4.html [ Timeout Crash ]
 
