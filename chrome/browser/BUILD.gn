@@ -4276,7 +4276,7 @@ static_library("browser") {
       "performance_manager/policies/userspace_swap_policy_chromeos.h",
       "performance_manager/policies/working_set_trimmer_policy_chromeos.cc",
       "performance_manager/policies/working_set_trimmer_policy_chromeos.h",
-      "platform_util_chromeos.cc",
+      "platform_util_ash.cc",
       "policy/default_geolocation_policy_handler.cc",
       "policy/default_geolocation_policy_handler.h",
       "renderer_context_menu/quick_answers_menu_observer.cc",
@@ -4418,8 +4418,7 @@ static_library("browser") {
     ]
   }
 
-  # TODO(crbug.com/1052397): Rename chromeos_is_browser_only to is_lacros.
-  if (chromeos_is_browser_only) {
+  if (is_lacros) {
     assert(enable_native_notifications)
     sources += [
       "feedback/show_feedback_page_lacros.cc",
@@ -4443,6 +4442,7 @@ static_library("browser") {
       "notifications/notification_platform_bridge_delegate.h",
       "notifications/notification_platform_bridge_lacros.cc",
       "notifications/notification_platform_bridge_lacros.h",
+      "platform_util_lacros.cc",
     ]
     deps += [
       "//chromeos/crosapi/mojom",
@@ -4862,7 +4862,6 @@ static_library("browser") {
       "first_run/upgrade_util_linux.cc",
       "first_run/upgrade_util_linux.h",
       "icon_loader_auralinux.cc",
-      "platform_util_linux.cc",
       "shell_integration_linux.cc",
       "shell_integration_linux.h",
       "themes/theme_service_aura_linux.cc",
@@ -4877,12 +4876,15 @@ static_library("browser") {
       deps += [ "//components/dbus/thread_linux" ]
     }
 
-    # TODO(crbug.com/1052397): Rename chromeos_is_browser_only to is_lacros.
-    if (enable_native_notifications && !chromeos_is_browser_only) {
-      sources += [
-        "notifications/notification_platform_bridge_linux.cc",
-        "notifications/notification_platform_bridge_linux.h",
-      ]
+    if (!is_lacros) {
+      sources += [ "platform_util_linux.cc" ]
+
+      if (enable_native_notifications) {
+        sources += [
+          "notifications/notification_platform_bridge_linux.cc",
+          "notifications/notification_platform_bridge_linux.h",
+        ]
+      }
     }
 
     if (use_x11) {
