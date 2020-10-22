@@ -53,7 +53,12 @@ AccessibilityTest.define('WelcomeA11y', {
   tests: {
     'Landing Page': function() {
       // Make sure we're in the right page.
-      assertEquals('Make Chrome your own', getDeepActiveElement().textContent);
+      assertEquals(
+          'Make Chrome your own',
+          document.body.querySelector('welcome-app')
+              .$$('landing-view')
+              .$$('h1')
+              .textContent);
     },
   },
 });
