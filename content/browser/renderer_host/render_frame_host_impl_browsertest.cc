@@ -3842,14 +3842,13 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // has time to see the otp usage, and records it, before we test for it below.
   EXPECT_EQ("hello", EvalJs(shell(), script));
 
-  RenderFrameHostImpl* main_rfh = web_contents()->GetMainFrame();
-  EXPECT_TRUE(main_rfh->DocumentUsedWebOTP());
+  EXPECT_TRUE(web_contents()->GetMainFrame()->DocumentUsedWebOTP());
 
   // Loads a URL that maps to the same SiteInstance as the first URL, to make
   // sure the navigation will not be cross-process.
   const GURL second_url(embedded_test_server()->GetURL("/title2.html"));
   ASSERT_TRUE(NavigateToURL(shell(), second_url));
-  EXPECT_FALSE(main_rfh->DocumentUsedWebOTP());
+  EXPECT_FALSE(web_contents()->GetMainFrame()->DocumentUsedWebOTP());
 }
 
 // It is hard to test this feature fully at the integration test level. Indeed,
