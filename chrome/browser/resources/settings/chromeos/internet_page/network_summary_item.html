@@ -70,8 +70,8 @@
           </cr-policy-indicator>
         </template>
 
-        <template is="dom-if" if="[[showDetailsIsVisible_(activeNetworkState,
-            deviceState, networkStateList)]]">
+        <template is="dom-if" if="[[showArrowButton_(activeNetworkState,
+                                      deviceState, networkStateList)]]">
           <cr-icon-button class="subpage-arrow"
               aria-labelledby="networkTitleText"
               aria-describedby="networkState networkIcon"
