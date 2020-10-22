@@ -193,6 +193,8 @@ YUVToRGBConverter::YUVToRGBConverter(const GLVersionInfo& gl_version_info,
   has_get_tex_level_parameter_ =
       !gl_version_info.is_es || gl_version_info.IsAtLeastGLES(3, 1) ||
       g_current_gl_driver->ext.b_GL_ANGLE_get_tex_level_parameter;
+  has_robust_resource_init_ =
+      g_current_gl_driver->ext.b_GL_ANGLE_robust_resource_initialization;
 }
 
 YUVToRGBConverter::~YUVToRGBConverter() {
@@ -263,6 +265,11 @@ void YUVToRGBConverter::CopyYUV420ToRGB(unsigned target,
   if (needs_texture_init) {
     glTexImage2D(target, 0, GL_RGB, size.width(), size.height(), 0, GL_RGB,
                  rgb_texture_type, nullptr);
+    if (has_robust_resource_init_) {
+      // We're about to overwrite the whole texture with a draw, notify the
+      // driver that it doesn't need to perform robust resource init.
+      glTexParameteri(target, GL_RESOURCE_INITIALIZED_ANGLE, GL_TRUE);
+    }
   }
 
   // Set up and issue the draw call.

@@ -43,6 +43,7 @@ class YUVToRGBConverter {
   unsigned vertex_array_object_ = 0;
   unsigned source_texture_target_ = 0;
   bool has_get_tex_level_parameter_ = false;
+  bool has_robust_resource_init_ = false;
 };
 
 }  // namespace gl

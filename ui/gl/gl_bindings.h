@@ -127,6 +127,7 @@ struct XVisualInfo;
 
 // GL_ANGLE_robust_resource_initialization
 #define GL_ROBUST_RESOURCE_INITIALIZATION_ANGLE 0x93AB
+#define GL_RESOURCE_INITIALIZED_ANGLE 0x969F
 
 // GL_ANGLE_request_extension
 #define GL_REQUESTABLE_EXTENSIONS_ANGLE 0x93A8

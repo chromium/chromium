@@ -1962,6 +1962,7 @@ struct ExtensionsGL {
   bool b_GL_ANGLE_multi_draw;
   bool b_GL_ANGLE_request_extension;
   bool b_GL_ANGLE_robust_client_memory;
+  bool b_GL_ANGLE_robust_resource_initialization;
   bool b_GL_ANGLE_semaphore_fuchsia;
   bool b_GL_ANGLE_texture_external_update;
   bool b_GL_ANGLE_translated_shader_source;

@@ -301,6 +301,8 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
       gfx::HasExtension(extensions, "GL_ANGLE_request_extension");
   ext.b_GL_ANGLE_robust_client_memory =
       gfx::HasExtension(extensions, "GL_ANGLE_robust_client_memory");
+  ext.b_GL_ANGLE_robust_resource_initialization =
+      gfx::HasExtension(extensions, "GL_ANGLE_robust_resource_initialization");
   ext.b_GL_ANGLE_semaphore_fuchsia =
       gfx::HasExtension(extensions, "GL_ANGLE_semaphore_fuchsia");
   ext.b_GL_ANGLE_texture_external_update =
