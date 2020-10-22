@@ -15,7 +15,6 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
@@ -999,8 +998,6 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
   GetNumberOfOutputStreams();
   CrasAudioClient::Get()->SetFixA2dpPacketSize(base::FeatureList::IsEnabled(
       chromeos::features::kBluetoothFixA2dpPacketSize));
-  CrasAudioClient::Get()->SetNextHandsfreeProfile(base::FeatureList::IsEnabled(
-      chromeos::features::kBluetoothNextHandsfreeProfile));
 }
 
 void CrasAudioHandler::ApplyAudioPolicy() {

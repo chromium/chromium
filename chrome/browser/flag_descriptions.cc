@@ -3660,12 +3660,6 @@ const char kBluetoothFixA2dpPacketSizeDescription[] =
     "Fixes Bluetooth A2DP packet size to a smaller default value to improve "
     "audio quality and may fix audio stutter.";
 
-const char kBluetoothNextHandsfreeProfileName[] =
-    "Enable next version of Bluetooth Handsfree profile";
-const char kBluetoothNextHandsfreeProfileDescription[] =
-    "Enable next version of Bluetooth Handsfree profile 1.7 which includes "
-    "WBS(wideband speech) feature";
-
 const char kCameraSystemWebAppName[] = "Camera System Web App";
 const char kCameraSystemWebAppDescription[] =
     "Run the Chrome Camera App as a System Web App.";

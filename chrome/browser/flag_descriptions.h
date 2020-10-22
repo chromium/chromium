@@ -2113,9 +2113,6 @@ extern const char kBluetoothAggressiveAppearanceFilterDescription[];
 extern const char kBluetoothFixA2dpPacketSizeName[];
 extern const char kBluetoothFixA2dpPacketSizeDescription[];
 
-extern const char kBluetoothNextHandsfreeProfileName[];
-extern const char kBluetoothNextHandsfreeProfileDescription[];
-
 extern const char kCameraSystemWebAppName[];
 extern const char kCameraSystemWebAppDescription[];
 

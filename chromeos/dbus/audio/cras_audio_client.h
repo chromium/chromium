@@ -134,8 +134,6 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
 
   // Enables or disables the usage of fixed A2DP packet size in CRAS.
   virtual void SetFixA2dpPacketSize(bool enabled) = 0;
-  // Enables or disables the next Handsfree profile next version in CRAS.
-  virtual void SetNextHandsfreeProfile(bool enabled) = 0;
 
   // Adds input node |node_id| to the active input list. This is used to add
   // an additional active input node besides the one set by SetActiveInputNode.

@@ -273,16 +273,6 @@ class CrasAudioClientImpl : public CrasAudioClient {
                             base::DoNothing());
   }
 
-  void SetNextHandsfreeProfile(bool enabled) override {
-    dbus::MethodCall method_call(cras::kCrasControlInterface,
-                                 cras::kSetNextHandsfreeProfile);
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendBool(enabled);
-    cras_proxy_->CallMethod(&method_call,
-                            dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-                            base::DoNothing());
-  }
-
   void AddActiveInputNode(uint64_t node_id) override {
     dbus::MethodCall method_call(cras::kCrasControlInterface,
                                  cras::kAddActiveInputNode);

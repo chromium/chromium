@@ -205,7 +205,6 @@ void FakeCrasAudioClient::SetHotwordModel(uint64_t node_id,
                                           VoidDBusMethodCallback callback) {}
 
 void FakeCrasAudioClient::SetFixA2dpPacketSize(bool enabled) {}
-void FakeCrasAudioClient::SetNextHandsfreeProfile(bool enabled) {}
 
 void FakeCrasAudioClient::AddActiveInputNode(uint64_t node_id) {
   for (size_t i = 0; i < node_list_.size(); ++i) {
