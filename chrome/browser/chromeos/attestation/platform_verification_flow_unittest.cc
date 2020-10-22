@@ -20,7 +20,8 @@
 #include "chromeos/attestation/mock_attestation_flow.h"
 #include "chromeos/cryptohome/mock_async_method_caller.h"
 #include "chromeos/dbus/attestation/attestation.pb.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
+#include "chromeos/dbus/attestation/fake_attestation_client.h"
+#include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -102,14 +103,21 @@ class PlatformVerificationFlowTest : public ::testing::Test {
       : certificate_status_(ATTESTATION_SUCCESS),
         fake_certificate_index_(0),
         sign_challenge_success_(true),
-        result_(PlatformVerificationFlow::INTERNAL_ERROR) {}
+        result_(PlatformVerificationFlow::INTERNAL_ERROR) {
+    ::chromeos::AttestationClient::InitializeFake();
+  }
+  ~PlatformVerificationFlowTest() override {
+    ::chromeos::AttestationClient::Shutdown();
+  }
 
   void SetUp() {
     // Create a verifier for tests to call.
-    verifier_ = new PlatformVerificationFlow(&mock_attestation_flow_,
-                                             &mock_async_caller_,
-                                             &fake_cryptohome_client_,
-                                             &fake_delegate_);
+    // We don't need cryptohome_client in unittests because it is only needed
+    // for real AttestationFlow and in unittests we uses mocked one.
+    verifier_ = new PlatformVerificationFlow(
+        &mock_attestation_flow_, &mock_async_caller_,
+        /*cryptohome_client=*/nullptr, AttestationClient::Get(),
+        &fake_delegate_);
 
     // Create callbacks for tests to use with verifier_.
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
@@ -184,7 +192,6 @@ class PlatformVerificationFlowTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   StrictMock<MockAttestationFlow> mock_attestation_flow_;
   cryptohome::MockAsyncMethodCaller mock_async_caller_;
-  chromeos::FakeCryptohomeClient fake_cryptohome_client_;
   FakeDelegate fake_delegate_;
   ScopedCrosSettingsTestHelper settings_helper_;
   scoped_refptr<PlatformVerificationFlow> verifier_;
@@ -259,7 +266,20 @@ TEST_F(PlatformVerificationFlowTest, ChallengeSigningError) {
 }
 
 TEST_F(PlatformVerificationFlowTest, DBusFailure) {
-  fake_cryptohome_client_.SetServiceIsAvailable(false);
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->ConfigureEnrollmentPreparationsStatus(::attestation::STATUS_DBUS_ERROR);
+  verifier_->ChallengePlatformKey(nullptr, kTestID, kTestChallenge,
+                                  CreateChallengeCallback());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(PlatformVerificationFlow::INTERNAL_ERROR, result_);
+}
+
+TEST_F(PlatformVerificationFlowTest, AttestationServiceInternalError) {
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->ConfigureEnrollmentPreparationsStatus(
+          ::attestation::STATUS_UNEXPECTED_DEVICE_ERROR);
   verifier_->ChallengePlatformKey(nullptr, kTestID, kTestChallenge,
                                   CreateChallengeCallback());
   base::RunLoop().RunUntilIdle();
@@ -380,8 +400,9 @@ TEST_F(PlatformVerificationFlowTest, UnsupportedMode) {
 }
 
 TEST_F(PlatformVerificationFlowTest, AttestationNotPrepared) {
-  fake_cryptohome_client_.set_tpm_attestation_is_enrolled(false);
-  fake_cryptohome_client_.set_tpm_attestation_is_prepared(false);
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->ConfigureEnrollmentPreparations(false);
   verifier_->ChallengePlatformKey(nullptr, kTestID, kTestChallenge,
                                   CreateChallengeCallback());
   base::RunLoop().RunUntilIdle();

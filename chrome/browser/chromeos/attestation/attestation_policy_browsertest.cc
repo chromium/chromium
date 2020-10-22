@@ -14,6 +14,7 @@
 #include "chrome/browser/chromeos/settings/device_settings_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chromeos/dbus/attestation/fake_attestation_client.h"
 #include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "content/public/test/browser_test.h"
@@ -64,7 +65,8 @@ class AttestationDevicePolicyTest
   PlatformVerificationFlow::Result SyncContentProtectionAttestation() {
     scoped_refptr<PlatformVerificationFlow> verifier(
         new PlatformVerificationFlow(
-            nullptr, nullptr, chromeos::FakeCryptohomeClient::Get(), nullptr));
+            nullptr, nullptr, chromeos::FakeCryptohomeClient::Get(),
+            chromeos::FakeAttestationClient::Get(), nullptr));
     verifier->ChallengePlatformKey(
         browser()->tab_strip_model()->GetActiveWebContents(), "fake_service_id",
         "fake_challenge",

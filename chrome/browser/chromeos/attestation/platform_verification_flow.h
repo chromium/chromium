@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "url/gurl.h"
 
@@ -33,6 +34,7 @@ class User;
 
 namespace chromeos {
 
+class AttestationClient;
 class CryptohomeClient;
 
 namespace attestation {
@@ -130,6 +132,7 @@ class PlatformVerificationFlow
   PlatformVerificationFlow(AttestationFlow* attestation_flow,
                            cryptohome::AsyncMethodCaller* async_caller,
                            CryptohomeClient* cryptohome_client,
+                           AttestationClient* attestation_client,
                            Delegate* delegate);
 
   // Invokes an asynchronous operation to challenge a platform key.  Any user
@@ -174,10 +177,10 @@ class PlatformVerificationFlow
   ~PlatformVerificationFlow();
 
   // Callback for attestation preparation. The arguments to ChallengePlatformKey
-  // are in |context|, and |attestation_prepared| specifies whether attestation
-  // has been prepared on this device.
-  void OnAttestationPrepared(ChallengeContext context,
-                             bool attestation_prepared);
+  // are in |context|, and |reply| is the result of |GetEnrollmentPreparations|.
+  void OnAttestationPrepared(
+      ChallengeContext context,
+      const ::attestation::GetEnrollmentPreparationsReply& reply);
 
   // Initiates the flow to get a platform key certificate.  The arguments to
   // ChallengePlatformKey are in |context|.  |account_id| identifies the user
@@ -193,11 +196,11 @@ class PlatformVerificationFlow
   // completes.  The arguments to ChallengePlatformKey are in |context|.
   // |account_id| identifies the user for which the certificate was requested.
   // |operation_success| is true iff the certificate request operation
-  // succeeded.  |certificate_chain| holds the certificate for the platform key
-  // on success.  If the certificate request was successful, this method invokes
-  // a request to sign the challenge.  If the operation timed out prior to this
-  // method being called, this method does nothing - notably, the callback is
-  // not invoked.
+  // succeeded.  |certificate_chain| holds the certificate for the platform
+  // key on success.  If the certificate request was successful, this method
+  // invokes a request to sign the challenge.  If the operation timed out
+  // prior to this method being called, this method does nothing - notably,
+  // the callback is not invoked.
   void OnCertificateReady(
       scoped_refptr<base::RefCountedData<ChallengeContext>> context,
       const AccountId& account_id,
@@ -243,7 +246,8 @@ class PlatformVerificationFlow
   AttestationFlow* attestation_flow_;
   std::unique_ptr<AttestationFlow> default_attestation_flow_;
   cryptohome::AsyncMethodCaller* async_caller_;
-  CryptohomeClient* cryptohome_client_;
+  CryptohomeClient* const cryptohome_client_;
+  AttestationClient* const attestation_client_;
   Delegate* delegate_;
   std::unique_ptr<Delegate> default_delegate_;
   base::TimeDelta timeout_delay_;

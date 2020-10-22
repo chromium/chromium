@@ -3853,6 +3853,8 @@ source_set("unit_tests") {
     "//chromeos/cryptohome:test_support",
     "//chromeos/dbus:lorgnette_proto",
     "//chromeos/dbus:test_support",
+    "//chromeos/dbus/attestation",
+    "//chromeos/dbus/attestation:attestation_proto",
     "//chromeos/dbus/authpolicy",
     "//chromeos/dbus/cryptohome",
     "//chromeos/dbus/cryptohome:attestation_proto",
