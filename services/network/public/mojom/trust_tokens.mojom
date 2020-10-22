@@ -52,6 +52,10 @@ enum TrustTokenOperationStatus {
 
   // The operation failed for some other reason.
   kUnknownError,
+
+  // The operation was executed by a means other than sending the resource
+  // request at hand, so there's no response to provide for the request.
+  kOperationSuccessfullyFulfilledLocally,
 };
 
 // Trust Tokens operation parameterization
@@ -218,3 +222,45 @@ struct TrustTokenKeyCommitmentResult {
   UnavailableLocalIssuanceFallback unavailable_local_issuance_fallback;
 };
 
+// Struct FulfillTrustTokenIssuanceRequest represents a Trust Tokens issuance
+// request intended to be satisfied in a manner other than the standard direct
+// resource request to the issuer's server. It contains "the same information"
+// as a Trust-Tokens-over-HTTP request.
+struct FulfillTrustTokenIssuanceRequest {
+  // |issuer| is the Trust Tokens issuer corresponding to this Trust Tokens
+  // issuance operation. Like all Trust Tokens issuer origins, this should be
+  // both
+  // - potentially trustworthy and
+  // - HTTP or HTTPS.
+  url.mojom.Origin issuer;
+  // |request| is a base64-encoded issuance request (in other words, a value
+  // that could serve as to the Sec-Trust-Token request header in a Trust
+  // Tokens-over-HTTP issuance request).
+  string request;
+};
+
+// Struct FulfillTrustTokenIssuanceAnswer represents a Trust Tokens issuance
+// response obtained in a manner other than the standard direct resource
+// request to the issuer's server. It contains "the same information" as a
+// Trust-Tokens-over-HTTP response.
+//
+// Note: We can't call this "FulfillTrustTokenIssuanceResponse" if we want a
+// "FulfillTrustTokenIssuance" method in C++-to-Java interfaces down the line,
+// because the Java bindings append the suffix "Response" when generating
+// callback names.
+struct FulfillTrustTokenIssuanceAnswer {
+  enum Status {
+    kOk,
+    // It wasn't possible to route the issuance operation to the specified
+    // token issuer.
+    kNotFound,
+    // Some other error occurred.
+    kUnknownError
+  };
+  Status status;
+
+  // If |status| is kOk, |response| will contain a value intended to be
+  // interpreted identically to a Trust Tokens-over-HTTP Sec-Trust-Token
+  // response header. Otherwise, its value is indeterminate.
+  string response;
+};

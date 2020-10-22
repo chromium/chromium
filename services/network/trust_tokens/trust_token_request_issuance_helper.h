@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_REQUEST_ISSUANCE_HELPER_H_
 
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -14,6 +15,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "net/log/net_log_with_source.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
+#include "services/network/trust_tokens/local_trust_token_operation_delegate.h"
 #include "services/network/trust_tokens/proto/public.pb.h"
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
 #include "services/network/trust_tokens/trust_token_key_commitment_getter.h"
@@ -115,16 +117,25 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
   //   2. potentially trustworthy origin to satisfy Web security requirements.
   // - |token_store| will be responsible for storing underlying Trust Tokens
   // state. It must outlive this object.
-  // - |key_commitment_getter| and |cryptographer| are delegates that
-  // help execute the protocol; see their class comments.
+  // - |key_commitment_getter|, |cryptographer|, and |local_operation_delegate|
+  // are delegates that help execute the protocol; see their class comments.
+  // They must live outlive this object.
+  // - |is_current_os_callback| should return whether, when the given Os is
+  // present in the issuer's "request_issuance_locally_on" field in its key
+  // commitment, the issuance helper should attempt to forward requests to the
+  // local operation delegate.
   //
-  // REQUIRES: |token_store|, |key_commitment_getter|, and |cryptographer| must
-  // be non-null.
+  // REQUIRES: |token_store|, |key_commitment_getter|, |cryptographer|,
+  // |local_operation_delegate|, and |is_current_os_callback| must be non-null.
   TrustTokenRequestIssuanceHelper(
       SuitableTrustTokenOrigin top_level_origin,
       TrustTokenStore* token_store,
       const TrustTokenKeyCommitmentGetter* key_commitment_getter,
       std::unique_ptr<Cryptographer> cryptographer,
+      std::unique_ptr<LocalTrustTokenOperationDelegate>
+          local_operation_delegate,
+      base::RepeatingCallback<bool(mojom::TrustTokenKeyCommitmentResult::Os)>
+          is_current_os_callback,
       net::NetLogWithSource net_log = net::NetLogWithSource());
   ~TrustTokenRequestIssuanceHelper() override;
 
@@ -198,6 +209,13 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
       base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done,
       CryptographerAndBlindedTokens cryptographer_and_blinded_tokens);
 
+  // Continuation of |Finalize| after extracting the base64-encoded issuance
+  // response from a response header (or receiving it from a locally executed
+  // operation).
+  void ConfirmIssuanceResponse(
+      std::string issuance_response,
+      base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done);
+
   // Continuation of |Finalize| after a call to the cryptography delegate to
   // execute the bulk of the inbound half of the issuance operation.
   // Receives ownership of the cryptographer back from the asynchronous
@@ -205,6 +223,25 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
   void OnDelegateConfirmIssuanceCallComplete(
       base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done,
       CryptographerAndUnblindedTokens cryptographer_and_unblinded_tokens);
+
+  // DoneRequestingLocallyFulfilledIssuance proceeds with a locally fulfilled
+  // issuance operation by handling the operation's response |answer|,
+  // either terminating the operation with an error passed to |done| (if
+  // |answer| contains an error) or continuing to finalize the operation (if
+  // |answer| contains an issuance response).
+  void DoneRequestingLocallyFulfilledIssuance(
+      base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done,
+      mojom::FulfillTrustTokenIssuanceAnswerPtr answer);
+
+  // DoneFinalizingLocallyFulfilledIssuance determines a final response status
+  // to pass to the caller via |done|, then calls the callback.
+  //
+  // If the operation succeeded, calls |done| with
+  // kOperationSuccessfullyFulfilledLocally. Otherwise, calls |done| with
+  // |status|.
+  void DoneFinalizingLocallyFulfilledIssuance(
+      base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done,
+      mojom::TrustTokenOperationStatus status);
 
   // |issuer_| needs to be a nullable type because it is initialized in |Begin|,
   // but, once initialized, it will never be empty over the course of the
@@ -216,15 +253,31 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
 
   mojom::TrustTokenProtocolVersion protocol_version_;
 
+  // Set once we read the issuer's key commitment,
+  // |should_divert_issuance_request_to_os_| specifies whether, at the time we
+  // would return from an otherwise successful Begin half of this issuance
+  // operation, we should pass the issuance request to
+  // |local_operation_delegate_| rather than returning to the caller.
+  bool should_divert_issuance_request_to_os_ = false;
+
   // Relinquishes ownership during posted tasks for the potentially
   // computationally intensive cryptographic operations
   // (Cryptographer::BeginIssuance, Cryptographer::ConfirmIssuance); repopulated
   // when regaining ownership upon receiving each operation's results.
   std::unique_ptr<Cryptographer> cryptographer_;
 
+  // |local_operation_delegate_| is responsible for attempting to satisfying
+  // "platform-provided" issuance operations (e.g. by talking to a system
+  // service capable of replying to an issuance request).
+  std::unique_ptr<LocalTrustTokenOperationDelegate> local_operation_delegate_;
+
+  base::RepeatingCallback<bool(mojom::TrustTokenKeyCommitmentResult::Os)>
+      is_current_os_callback_;
+
   net::NetLogWithSource net_log_;
   base::WeakPtrFactory<TrustTokenRequestIssuanceHelper> weak_ptr_factory_{this};
 };
+
 }  // namespace network
 
 #endif  // SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_REQUEST_ISSUANCE_HELPER_H_

@@ -82,6 +82,8 @@ enum class TrustTokenOriginTrialSpec {
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::FeatureParam<TrustTokenOriginTrialSpec>
     kTrustTokenOperationsRequiringOriginTrial;
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::FeatureParam<bool> kPlatformProvidedTrustTokenIssuance;
 
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kOutOfBlinkCSPEE;

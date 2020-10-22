@@ -21,6 +21,8 @@
 #include "services/network/trust_tokens/boringssl_trust_token_redemption_cryptographer.h"
 #include "services/network/trust_tokens/ed25519_key_pair_generator.h"
 #include "services/network/trust_tokens/ed25519_trust_token_request_signer.h"
+#include "services/network/trust_tokens/local_trust_token_operation_delegate.h"
+#include "services/network/trust_tokens/operating_system_matching.h"
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
 #include "services/network/trust_tokens/trust_token_http_headers.h"
 #include "services/network/trust_tokens/trust_token_key_commitment_controller.h"
@@ -127,6 +129,24 @@ void TrustTokenRequestHelperFactory::CreateTrustTokenHelperForRequest(
       base::Passed(params.Clone()), request.net_log(), std::move(done)));
 }
 
+namespace {
+
+// TODO(crbug.com/1130272): Delete this upon adding a concrete instantiation
+// of the delegate.
+class NotImplementedLocalTrustTokenOperationDelegate
+    : public LocalTrustTokenOperationDelegate {
+  void FulfillIssuance(
+      mojom::FulfillTrustTokenIssuanceRequestPtr request,
+      base::OnceCallback<void(mojom::FulfillTrustTokenIssuanceAnswerPtr)> done)
+      override {
+    auto answer = mojom::FulfillTrustTokenIssuanceAnswer::New();
+    answer->status = mojom::FulfillTrustTokenIssuanceAnswer::Status::kNotFound;
+    std::move(done).Run(std::move(answer));
+  }
+};
+
+}  // namespace
+
 void TrustTokenRequestHelperFactory::ConstructHelperUsingStore(
     SuitableTrustTokenOrigin top_frame_origin,
     mojom::TrustTokenParamsPtr params,
@@ -143,6 +163,9 @@ void TrustTokenRequestHelperFactory::ConstructHelperUsingStore(
           new TrustTokenRequestIssuanceHelper(
               std::move(top_frame_origin), store, key_commitment_getter_,
               std::make_unique<BoringsslTrustTokenIssuanceCryptographer>(),
+              std::make_unique<
+                  NotImplementedLocalTrustTokenOperationDelegate>(),
+              base::BindRepeating(&IsCurrentOperatingSystem),
               std::move(net_log))));
       return;
     }

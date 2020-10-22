@@ -209,6 +209,12 @@ const base::FeatureParam<TrustTokenOriginTrialSpec>
         TrustTokenOriginTrialSpec::kOriginTrialNotRequired,
         &kTrustTokenOriginTrialParamOptions};
 
+// Determines whether Trust Tokens issuance requests should be diverted, at the
+// corresponding issuers' request, to the operating system instead of sent
+// to the issuers' servers.
+const base::FeatureParam<bool> kPlatformProvidedTrustTokenIssuance{
+    &kTrustTokens, "PlatformProvidedTrustTokenIssuance", false};
+
 // Enables the Content Security Policy Embedded Enforcement check out of blink
 const base::Feature kOutOfBlinkCSPEE{"OutOfBlinkCSPEE",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
