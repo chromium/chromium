@@ -211,6 +211,9 @@ void PerformanceObserver::observe(const PerformanceObserverInit* observer_init,
   if (filter_options_ & PerformanceEntry::kResource) {
     UseCounter::Count(GetExecutionContext(), WebFeature::kResourceTiming);
   }
+  if (filter_options_ & PerformanceEntry::kLongTask) {
+    UseCounter::Count(GetExecutionContext(), WebFeature::kLongTaskObserver);
+  }
   if (is_registered_)
     performance_->UpdatePerformanceObserverFilterOptions();
   else
