@@ -33,24 +33,20 @@ testcase.trashMoveToTrash = async () => {
 
   // Wait for menu item to appear.
   await remoteCall.waitForElement(
-      appId, '#gear-menu-toggle-hidden-files:not([disabled])');
-
-  // Wait for menu item to appear.
-  await remoteCall.waitForElement(
-      appId, '#gear-menu-toggle-hidden-files:not([checked])');
+      appId, '#gear-menu-toggle-hidden-files:not([disabled]):not([checked])');
 
   // Click the menu item.
   await remoteCall.callRemoteTestUtil(
       'fakeMouseClick', appId, ['#gear-menu-toggle-hidden-files']);
 
-  // Navigate to /My files/.Trash/files.
-  await navigateWithDirectoryTree(appId, '/My files/.Trash/files');
+  // Navigate to /My files/Downloads/.Trash/files.
+  await navigateWithDirectoryTree(appId, '/My files/Downloads/.Trash/files');
 
   // Ensure hello.txt exists.
   await remoteCall.waitForElement(appId, '#file-list [file-name="hello.txt"]');
 
   // Navigate to /My files/.Trash/files.
-  await navigateWithDirectoryTree(appId, '/My files/.Trash/info');
+  await navigateWithDirectoryTree(appId, '/My files/Downloads/.Trash/info');
 
   // Ensure hello.txt.trashinfo exists.
   await remoteCall.waitForElement(

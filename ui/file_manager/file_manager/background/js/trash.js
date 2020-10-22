@@ -22,6 +22,24 @@ class TrashDirs {
 }
 
 /**
+ * Configuration for where Trash is stored in a volume.
+ */
+class TrashConfig {
+  /**
+   * @param {VolumeManagerCommon.RootType} rootType
+   * @param {string} topDir Top directory of volume. Must end with a slash to
+   *     make comparisons simpler.
+   * @param {string} trashDir Trash directory. Must end with a slash to make
+   *     comparisons simpler.
+   */
+  constructor(rootType, topDir, trashDir) {
+    this.rootType = rootType;
+    this.topDir = topDir;
+    this.trashDir = trashDir;
+  }
+}
+
+/**
  * Result from calling Trash.removeFileOrDirectory().
  */
 class TrashItem {
@@ -43,32 +61,37 @@ class TrashItem {
 class Trash {
   constructor() {
     /**
-     * Store /.Trash/files and /.Trash/info to avoid repeated lookup
-     * @private {?TrashDirs}
+     * Store TrashDirs to avoid repeated lookup.
+     * @private {!Object<string, !TrashDirs>}
+     * @const
      */
-    this.trashDirs_;
+    this.trashDirs_ = {};
   }
 
   /**
-   * Only move to trash if feature is on, and entry is in MyFiles, but not
-   * already in /.Trash.
+   * Only move to trash if feature is on, and entry is in one of the supported
+   * volumes, but not already in the trash.
    *
    * @param {!VolumeManager} volumeManager
    * @param {!Entry} entry The entry to remove.
-   * @return {boolean} True if item should be moved to trash, else false if item
-   *     should be permanently deleted.
+   * @return {?TrashConfig} Valid TrashConfig if item should be moved to trash,
+   *     else null if item should be permanently deleted.
    * @private
    */
   shouldMoveToTrash_(volumeManager, entry) {
-    if (loadTimeData.getBoolean('FILES_TRASH_ENABLED')) {
-      const info = volumeManager.getLocationInfo(entry);
-      const entryInTrash =
-          entry.fullPath === '/.Trash' || entry.fullPath.startsWith('/.Trash/');
-      return !!info &&
-          info.rootType === VolumeManagerCommon.RootType.DOWNLOADS &&
-          !entryInTrash;
+    const info = volumeManager.getLocationInfo(entry);
+    if (!loadTimeData.getBoolean('FILES_TRASH_ENABLED') || !info) {
+      return null;
     }
-    return false;
+    const fullPathSlash = entry.fullPath + '/';
+    for (const config of Trash.CONFIG) {
+      const entryInVolume = fullPathSlash.startsWith(config.topDir);
+      if (config.rootType === info.rootType && entryInVolume) {
+        const entryInTrash = fullPathSlash.startsWith(config.trashDir);
+        return entryInTrash ? null : config;
+      }
+    }
+    return null;
   }
 
   /**
@@ -83,11 +106,13 @@ class Trash {
    *     is removed, rejects with DOMError.
    */
   removeFileOrDirectory(volumeManager, entry, permanentlyDelete) {
-    if (!permanentlyDelete && this.shouldMoveToTrash_(volumeManager, entry)) {
-      return this.trashLocalFileOrDirectory_(volumeManager, entry);
-    } else {
-      return this.permanentlyDeleteFileOrDirectory_(entry);
+    if (!permanentlyDelete) {
+      const config = this.shouldMoveToTrash_(volumeManager, entry);
+      if (config) {
+        return this.trashFileOrDirectory_(entry, config);
+      }
     }
+    return this.permanentlyDeleteFileOrDirectory_(entry);
   }
 
   /**
@@ -108,30 +133,32 @@ class Trash {
   }
 
   /**
-   * Get /.Trash/files and /.Trash/info directories.
+   * Get trash files and info directories.
    *
-   * @param {!VolumeManager} volumeManager
+   * @param {!Entry} entry The entry to remove.
+   * @param {!TrashConfig} config
    * @return {!Promise<!TrashDirs>} Promise which resolves with trash dirs.
    * @private
    */
-  getTrashDirs_(volumeManager) {
-    if (this.trashDirs_) {
-      return Promise.resolve(this.trashDirs_);
+  async getTrashDirs_(entry, config) {
+    const key = `${config.rootType}-${config.topDir}`;
+    let trashDirs = this.trashDirs_[key];
+    if (trashDirs) {
+      return trashDirs;
     }
 
-    const downloads = volumeManager.getCurrentProfileVolumeInfo(
-        VolumeManagerCommon.VolumeType.DOWNLOADS);
-    const root = downloads.fileSystem.root;
-    return new Promise((resolve, reject) => {
-      root.getDirectory('.Trash', {create: true}, (trashRoot) => {
-        trashRoot.getDirectory('files', {create: true}, (trashFiles) => {
-          trashRoot.getDirectory('info', {create: true}, trashInfo => {
-            this.trashDirs_ = new TrashDirs(trashFiles, trashInfo);
-            resolve(this.trashDirs_);
-          }, reject);
-        }, reject);
-      }, reject);
-    });
+    let trashRoot = entry.filesystem.root;
+    const parts = config.trashDir.split('/');
+    for (const part of parts) {
+      if (part) {
+        trashRoot = await this.getDirectory_(trashRoot, part);
+      }
+    }
+    const trashFiles = await this.getDirectory_(trashRoot, 'files');
+    const trashInfo = await this.getDirectory_(trashRoot, 'info');
+    trashDirs = new TrashDirs(trashFiles, trashInfo);
+    this.trashDirs_[key] = trashDirs;
+    return trashDirs;
   }
 
   /**
@@ -165,6 +192,21 @@ class Trash {
   }
 
   /**
+   * Promise wrapper for FileSystemDirectoryEntry.getDirectory().
+   *
+   * @param {!DirectoryEntry} dirEntry current directory.
+   * @param {string} path name of directory within dirEntry.
+   * @return {!Promise<!DirectoryEntry>} Promise which resolves with
+   *     <dirEntry>/<path>.
+   * @private
+   */
+  getDirectory_(dirEntry, path) {
+    return new Promise((resolve, reject) => {
+      dirEntry.getDirectory(path, {create: true}, resolve, reject);
+    });
+  }
+
+  /**
    * Promise wrapper for FileSystemEntry.moveTo().
    *
    * @param {!T} srcEntry source entry to move.
@@ -181,16 +223,15 @@ class Trash {
   }
 
   /**
-   * Move a file or a directory in the local DOWNLOADS volume to
-   * the trash.
+   * Move a file or a directory to the trash.
    *
-   * @param {!VolumeManager} volumeManager
    * @param {!Entry} entry The entry to remove.
+   * @param {!TrashConfig} config trash config for entry.
    * @return {!Promise<!TrashItem>}
    * @private
    */
-  async trashLocalFileOrDirectory_(volumeManager, entry) {
-    const trashDirs = await this.getTrashDirs_(volumeManager);
+  async trashFileOrDirectory_(entry, config) {
+    const trashDirs = await this.getTrashDirs_(entry, config);
     const name =
         await fileOperationUtil.deduplicatePath(trashDirs.files, entry.name);
 
@@ -226,13 +267,8 @@ class Trash {
 
     // Move to last directory in path, making sure dirs are created if needed.
     let dir = trashItem.filesEntry.filesystem.root;
-    const cd = (directory, path) => {
-      return new Promise((resolve, reject) => {
-        directory.getDirectory(path, {create: true}, resolve, reject);
-      });
-    };
     for (let i = 0; i < parts.length - 1; i++) {
-      dir = await cd(dir, parts[i]);
+      dir = await this.getDirectory_(dir, parts[i]);
     }
 
     // Restore filesEntry first, then remove its trash infoEntry.
@@ -246,3 +282,19 @@ class Trash {
     await this.permanentlyDeleteFileOrDirectory_(trashItem.infoEntry);
   }
 }
+
+/**
+ * Volumes supported for Trash, and location of Trash dir. Items will be
+ * searched in order.
+ *
+ * @type {!Array<!TrashConfig>}
+ */
+Trash.CONFIG = [
+  // MyFiles/Downloads is a separate volume on a physical device, and doing a
+  // move from MyFiles/Downloads/<path> to MyFiles/.Trash actually does a
+  // copy across volumes, so we have a dedicated MyFiles/Downloads/.Trash.
+  new TrashConfig(
+      VolumeManagerCommon.RootType.DOWNLOADS, '/Downloads/',
+      '/Downloads/.Trash/'),
+  new TrashConfig(VolumeManagerCommon.RootType.DOWNLOADS, '/', '/.Trash/'),
+];
