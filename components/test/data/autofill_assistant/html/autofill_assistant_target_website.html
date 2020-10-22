@@ -17,8 +17,8 @@ found in the LICENSE file.
         button.parentNode.removeChild(button);
       }
 
-      var removeTouchArea = function(element) {
-        var touch_area = document.getElementById(element);
+      var removeTouchArea = function(event) {
+        var touch_area = event.target;
         touch_area.parentNode.removeChild(touch_area);
       }
 
@@ -137,12 +137,13 @@ found in the LICENSE file.
   <body onload="moveTouchAreaTwoAndThree()">
     <!-- Touch areas can be accessed without needing scroll. -->
     <div>
-      <p id="touch_area_one" ontouchend="removeTouchArea('touch_area_one')" onmouseup="removeTouchArea('touch_area_one')">
+      <p id="touch_area_one" ontouchend="removeTouchArea(event)" onmouseup="removeTouchArea(event)">
         Touchable Area One</p>
       <br>
     </div>
+    <br> <!-- safety padding, do not remove: crbug/1140957 -->
     <div>
-      <p id="touch_area_four" ontouchend="removeTouchArea('touch_area_four')">
+      <p id="touch_area_four" ontouchend="removeTouchArea(event)">
         Touchable Area Four</p>
       <br>
     </div>
@@ -158,24 +159,25 @@ found in the LICENSE file.
 
     <!-- Touch areas get moved in intervals. -->
     <div>
-      <p id="touch_area_two" ontouchend="removeTouchArea('touch_area_two')">
+      <p id="touch_area_two" ontouchend="removeTouchArea(event)">
         Touchable Area Two</p>
       <br>
     </div>
     <div>
-      <p id="touch_area_three" ontouchend="removeTouchArea('touch_area_three')">
+      <p id="touch_area_three" ontouchend="removeTouchArea(event)">
         Touchable Area Three</p>
       <br>
     </div>
 
     <!-- Touch areas can only be accessed after scrolling. -->
     <div>
-      <p id="touch_area_five" ontouchend="removeTouchArea('touch_area_five')">
+      <p id="touch_area_five" ontouchend="removeTouchArea(event)">
         Touchable Area Five</p>
       <br>
     </div>
+    <br> <!-- safety padding, do not remove: crbug/1140957 -->
     <div>
-      <p id="touch_area_six" ontouchend="removeTouchArea('touch_area_six')" onclick="removeTouchArea('touch_area_six')">
+      <p id="touch_area_six" ontouchend="removeTouchArea(event)" onclick="removeTouchArea(event)">
         Touchable Area Six</p>
       <br>
     </div>
