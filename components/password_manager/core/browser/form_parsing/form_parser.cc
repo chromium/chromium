@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
@@ -200,7 +201,7 @@ struct SignificantFields {
   bool is_fallback = false;
 
   // True iff the new password field was found with server hints or autocomplete
-  // attributes.
+  // attributes or the kTreatNewPasswordHeuristicsAsReliable feature is enabled.
   bool is_new_password_reliable = false;
 
   // True if the current form has only username, but no passwords.
@@ -974,16 +975,10 @@ std::unique_ptr<PasswordForm> FormDataParser::Parse(const FormData& form_data,
     }
   }
 
-  // Pass the "reliability" information to mark the new-password fields as
-  // eligible for automatic password generation. This only makes sense when
-  // forms are analysed for filling, because no passwords are generated when the
-  // user saves the already entered one.
-  if (mode == Mode::kFilling && significant_fields.new_password) {
-    significant_fields.is_new_password_reliable = true;
-  }
-
   // (3) Now try to fill the gaps.
   const bool username_found_before_heuristic = significant_fields.username;
+  const bool new_password_found_before_heuristic =
+      significant_fields.new_password;
 
   // Try to parse with base heuristic.
   if (!significant_fields.is_single_username) {
@@ -1014,6 +1009,16 @@ std::unique_ptr<PasswordForm> FormDataParser::Parse(const FormData& form_data,
       }
     }
   }
+
+  // Pass the "reliability" information to mark the new-password fields as
+  // eligible for automatic password generation. This only makes sense when
+  // forms are analysed for filling, because no passwords are generated when the
+  // user saves the already entered one.
+  significant_fields.is_new_password_reliable =
+      mode == Mode::kFilling && significant_fields.new_password &&
+      (new_password_found_before_heuristic ||
+       base::FeatureList::IsEnabled(
+           features::kTreatNewPasswordHeuristicsAsReliable));
 
   base::UmaHistogramEnumeration("PasswordManager.UsernameDetectionMethod",
                                 method);

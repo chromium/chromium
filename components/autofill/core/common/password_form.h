@@ -305,8 +305,9 @@ struct PasswordForm {
   bool only_for_fallback = false;
 
   // True iff the new password field was found with server hints or autocomplete
-  // attributes. Only set on form parsing for filling, and not persisted. Used
-  // as signal for password generation eligibility.
+  // attributes or the kTreatNewPasswordHeuristicsAsReliable feature is enabled.
+  // Only set on form parsing for filling, and not persisted. Used as signal for
+  // password generation eligibility.
   bool is_new_password_reliable = false;
 
   // Serialized to prefs, so don't change numeric values!

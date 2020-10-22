@@ -90,6 +90,11 @@ const base::Feature kPasswordsWeaknessCheck = {
 const base::Feature kRecoverFromNeverSaveAndroid = {
     "RecoverFromNeverSaveAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Treat heuritistics to find new password fields as reliable. This enables
+// password generation on more forms, but could lead to false positives.
+const base::Feature kTreatNewPasswordHeuristicsAsReliable = {
+    "TreatNewPasswordHeuristicsAsReliable", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables support of filling and saving on username first flow.
 const base::Feature kUsernameFirstFlow = {"UsernameFirstFlow",
                                           base::FEATURE_DISABLED_BY_DEFAULT};

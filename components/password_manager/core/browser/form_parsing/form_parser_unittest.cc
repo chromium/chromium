@@ -10,6 +10,7 @@
 #include <set>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
@@ -449,6 +450,9 @@ TEST(FormParserTest, SkipNotTextFields) {
 }
 
 TEST(FormParserTest, OnlyPasswordFields) {
+  const bool kTreatNewPasswordHeuristicsAsReliable =
+      base::FeatureList::IsEnabled(
+          features::kTreatNewPasswordHeuristicsAsReliable);
   CheckTestData({
       {
           .description_for_logging = "1 password field",
@@ -472,7 +476,7 @@ TEST(FormParserTest, OnlyPasswordFields) {
                    .value = "pw",
                    .form_control_type = "password"},
               },
-          .is_new_password_reliable = false,
+          .is_new_password_reliable = kTreatNewPasswordHeuristicsAsReliable,
       },
       {
           .description_for_logging =
@@ -486,7 +490,7 @@ TEST(FormParserTest, OnlyPasswordFields) {
                    .value = "pw2",
                    .form_control_type = "password"},
               },
-          .is_new_password_reliable = false,
+          .is_new_password_reliable = kTreatNewPasswordHeuristicsAsReliable,
       },
       {
           .description_for_logging =
@@ -503,7 +507,7 @@ TEST(FormParserTest, OnlyPasswordFields) {
                    .value = "pw2",
                    .form_control_type = "password"},
               },
-          .is_new_password_reliable = false,
+          .is_new_password_reliable = kTreatNewPasswordHeuristicsAsReliable,
       },
       {
           .description_for_logging = "3 password fields with different values",
