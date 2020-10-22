@@ -18,11 +18,12 @@ namespace memory {
 namespace {
 
 base::HistogramBase* GetLowMemoryKillsCountHistogram() {
-  return base::StatisticsRecorder::FindHistogram("Arc.LowMemoryKiller.Count");
+  return base::StatisticsRecorder::FindHistogram(
+      "Memory.LowMemoryKiller.Count");
 }
 
 base::HistogramBase* GetOOMKillsCountHistogram() {
-  return base::StatisticsRecorder::FindHistogram("Arc.OOMKills.Count");
+  return base::StatisticsRecorder::FindHistogram("Memory.OOMKills.Count");
 }
 
 }  // namespace.
@@ -84,7 +85,7 @@ TEST_F(MemoryKillsMonitorTest, TestHistograms) {
 
   {
     auto* histogram_freed_size = base::StatisticsRecorder::FindHistogram(
-        "Arc.LowMemoryKiller.FreedSize");
+        "Memory.LowMemoryKiller.FreedSize");
     ASSERT_TRUE(histogram_freed_size);
     auto freed_size_samples = histogram_freed_size->SnapshotSamples();
     EXPECT_EQ(3, freed_size_samples->TotalCount());
@@ -96,7 +97,7 @@ TEST_F(MemoryKillsMonitorTest, TestHistograms) {
 
   {
     auto* histogram_time_delta = base::StatisticsRecorder::FindHistogram(
-        "Arc.LowMemoryKiller.TimeDelta");
+        "Memory.LowMemoryKiller.TimeDelta");
     ASSERT_TRUE(histogram_time_delta);
     auto time_delta_samples = histogram_time_delta->SnapshotSamples();
     EXPECT_EQ(3, time_delta_samples->TotalCount());

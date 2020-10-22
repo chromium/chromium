@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_MEMORY_MEMORY_KILLS_HISTOGRAM_H_
 #define CHROME_BROWSER_MEMORY_MEMORY_KILLS_HISTOGRAM_H_
 
-#include "base/metrics/histogram.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 
 namespace memory {

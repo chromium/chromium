@@ -649,7 +649,8 @@ void TabManagerDelegate::LowMemoryKillImpl(
   if (!first_kill_time.is_null()) {
     TimeDelta delta = first_kill_time - start_time;
     MEMORY_LOG(ERROR) << "Time to first kill " << delta;
-    UMA_HISTOGRAM_MEDIUM_TIMES("Arc.LowMemoryKiller.FirstKillLatency", delta);
+    UMA_HISTOGRAM_MEDIUM_TIMES("Memory.LowMemoryKiller.FirstKillLatency",
+                               delta);
   }
 
   // tab_discard_done runs when it goes out of the scope.

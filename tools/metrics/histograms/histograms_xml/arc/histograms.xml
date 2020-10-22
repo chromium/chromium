@@ -569,6 +569,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.LowMemoryKiller.Count" units="units" expires_after="M82">
+  <obsolete>
+    Removed in Oct 2020. Now reported as Memory.LowMemoryKiller.Count.
+  </obsolete>
   <owner>elijahtaylor@google.com</owner>
   <owner>shihuis@google.com</owner>
   <summary>Cumulative count of low memory kills in one user session.</summary>
@@ -576,6 +579,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Arc.LowMemoryKiller.FirstKillLatency" units="ms"
     expires_after="M82">
+  <obsolete>
+    Removed in Oct 2020. Now reported as
+    Memory.LowMemoryKiller.FirstKillLatency.
+  </obsolete>
   <owner>cywang@google.com</owner>
   <owner>elijahtaylor@google.com</owner>
   <owner>shihuis@google.com</owner>
@@ -588,6 +595,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Arc.LowMemoryKiller.FreedSize" units="KB"
     expires_after="2021-02-21">
+  <obsolete>
+    Removed in Oct 2020. Now reported as Memory.LowMemoryKiller.FreedSize.
+  </obsolete>
   <owner>elijahtaylor@google.com</owner>
   <owner>shihuis@google.com</owner>
   <summary>The memory size freed by each low memory kill event.</summary>
@@ -595,6 +605,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Arc.LowMemoryKiller.TimeDelta" units="ms"
     expires_after="2021-02-21">
+  <obsolete>
+    Removed in Oct 2020. Now reported as Memory.LowMemoryKiller.TimeDelta.
+  </obsolete>
   <owner>elijahtaylor@google.com</owner>
   <owner>shihuis@google.com</owner>
   <summary>The elapsed time to last low memory kill event.</summary>
@@ -615,6 +628,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.OOMKills.Count" units="kills" expires_after="2021-03-07">
+  <obsolete>
+    Removed in Oct 2020. Now reported as Memory.OOMKills.Count.
+  </obsolete>
   <owner>elijahtaylor@google.com</owner>
   <owner>shihuis@google.com</owner>
   <summary>Cumulative count of OOM kills in one user session.</summary>
