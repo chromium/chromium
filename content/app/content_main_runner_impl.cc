@@ -87,6 +87,7 @@
 #include "gin/v8_initializer.h"
 #include "media/base/media.h"
 #include "media/media_buildflags.h"
+#include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/dynamic_library_support.h"
@@ -486,6 +487,7 @@ int RunZygote(ContentMainDelegate* delegate) {
 
   InitializeFieldTrialAndFeatureList();
   delegate->PostFieldTrialInitialization();
+  mojo::core::InitFeatures();
 
   // After feature list has been initialized, enable pcscan on malloc
   // partitions.
@@ -847,6 +849,7 @@ int ContentMainRunnerImpl::Run(bool start_service_manager_only) {
       // After feature list has been initialized, enable pcscan on malloc
       // partitions.
       EnablePCScanForMallocPartitionsIfNeeded();
+      mojo::core::InitFeatures();
     }
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -897,6 +900,7 @@ int ContentMainRunnerImpl::RunServiceManager(MainFunctionParams& main_params,
       ANNOTATE_LEAKING_OBJECT_PTR(leaked_field_trial_list);
       ignore_result(leaked_field_trial_list);
       delegate_->PostFieldTrialInitialization();
+      mojo::core::InitFeatures();
     }
 
     if (GetContentClient()->browser()->ShouldCreateThreadPool()) {

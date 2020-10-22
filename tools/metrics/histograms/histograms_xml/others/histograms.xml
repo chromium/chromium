@@ -8609,6 +8609,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Mojo.Channel.WritevBatchedMessages" units="messages"
+    expires_after="2021-07-01">
+  <owner>amistry@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>rockot@google.com</owner>
+  <summary>The number of messages batched into a single writev call.</summary>
+</histogram>
+
 <histogram name="Mojo.Connector.MaxUnreadMessageQuotaUsed" units="messages"
     expires_after="2021-04-18">
   <owner>siggi@chromium.org</owner>

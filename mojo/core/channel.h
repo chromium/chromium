@@ -278,6 +278,11 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
       HandlePolicy handle_policy,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
 
+#if defined(OS_POSIX) && !defined(OS_NACL) && !defined(OS_MAC)
+  // At this point only ChannelPosix needs InitFeatures.
+  static void set_posix_use_writev(bool use_writev);
+#endif
+
   // Allows the caller to change the Channel's HandlePolicy after construction.
   void set_handle_policy(HandlePolicy policy) { handle_policy_ = policy; }
 

@@ -38,6 +38,14 @@ COMPONENT_EXPORT(MOJO_CORE_EMBEDDER) void Init();
 COMPONENT_EXPORT(MOJO_CORE_EMBEDDER)
 scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner();
 
+// InitFeatures will be called as soon as the base::FeatureList is initialized.
+// NOTE: This is temporarily necessary because of how Mojo is started with
+// respect to base::FeatureList.
+//
+// TODO(rockot): Remove once a long term solution is in place for using
+// base::Features inside of Mojo.
+COMPONENT_EXPORT(MOJO_CORE_EMBEDDER) void InitFeatures();
+
 }  // namespace core
 }  // namespace mojo
 
