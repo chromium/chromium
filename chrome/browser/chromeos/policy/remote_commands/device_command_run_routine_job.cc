@@ -502,6 +502,14 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
               std::move(failed_callback)));
       break;
     }
+    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kDnsLatency: {
+      chromeos::cros_healthd::ServiceConnection::GetInstance()
+          ->RunDnsLatencyRoutine(base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
+              std::move(failed_callback)));
+      break;
+    }
   }
 }
 

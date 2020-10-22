@@ -104,6 +104,7 @@ class FakeCrosHealthdService final
       RunHasSecureWiFiConnectionRoutineCallback callback) override;
   void RunDnsResolverPresentRoutine(
       RunDnsResolverPresentRoutineCallback callback) override;
+  void RunDnsLatencyRoutine(RunDnsLatencyRoutineCallback callback) override;
 
   // CrosHealthdEventService overrides:
   void AddBluetoothObserver(
