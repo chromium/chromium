@@ -48,12 +48,6 @@ base::TimeDelta GetCMSampleBufferTimestamp(CMSampleBufferRef sampleBuffer) {
   return timestamp;
 }
 
-std::string MacFourCCToString(OSType fourcc) {
-  char arr[] = {fourcc >> 24, (fourcc >> 16) & 255, (fourcc >> 8) & 255,
-                fourcc & 255, 0};
-  return arr;
-}
-
 class CMSampleBufferScopedAccessPermission
     : public media::VideoCaptureDevice::Client::Buffer::ScopedAccessPermission {
  public:
@@ -288,8 +282,9 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     }
   }
 
-  VLOG(2) << __func__ << ": configuring '" << MacFourCCToString(best_fourcc)
-          << "' " << width << "x" << height << "@" << frameRate;
+  VLOG(2) << __func__ << ": configuring '"
+          << media::MacFourCCToString(best_fourcc) << "' " << width << "x"
+          << height << "@" << frameRate;
 
   // The capture output has to be configured, despite Mac documentation
   // detailing that setting the sessionPreset would be enough. The reason for

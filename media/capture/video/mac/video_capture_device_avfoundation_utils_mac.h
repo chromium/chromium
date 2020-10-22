@@ -15,6 +15,8 @@
 
 namespace media {
 
+std::string CAPTURE_EXPORT MacFourCCToString(OSType fourcc);
+
 // Returns a dictionary of capture devices with friendly name and unique id.
 // VideoCaptureDeviceMac should call this function to fetch the list of devices
 // available in the system; this method returns the list of device names that

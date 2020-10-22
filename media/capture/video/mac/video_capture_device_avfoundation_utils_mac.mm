@@ -163,6 +163,12 @@ base::scoped_nsobject<NSDictionary> GetDeviceNames() {
 }
 }  // namespace
 
+std::string MacFourCCToString(OSType fourcc) {
+  char arr[] = {fourcc >> 24, (fourcc >> 16) & 255, (fourcc >> 8) & 255,
+                fourcc & 255, 0};
+  return arr;
+}
+
 void ExtractBaseAddressAndLength(char** base_address,
                                  size_t* length,
                                  CMSampleBufferRef sample_buffer) {
