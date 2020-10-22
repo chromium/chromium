@@ -128,6 +128,13 @@ class VolumeInfo {
      *     on "Downloads" VolumeInfo.
      */
     this.prefixEntry;
+
+    /**
+     * The path on the remote host where this volume is mounted, for crostini
+     * this is the user's homedir (/home/<username>).
+     * @type {(string|undefined)}
+     */
+    this.remoteMountPath;
   }
 
   /**

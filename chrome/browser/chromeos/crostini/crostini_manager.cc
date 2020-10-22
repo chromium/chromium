@@ -521,13 +521,15 @@ class CrostiniManager::CrostiniRestarter
       crostini_manager_->GetContainerSshKeys(
           container_id_,
           base::BindOnce(&CrostiniRestarter::GetContainerSshKeysFinished,
-                         weak_ptr_factory_.GetWeakPtr(), info->username));
+                         weak_ptr_factory_.GetWeakPtr(), info->username,
+                         info->homedir));
     } else {
       FinishRestart(result);
     }
   }
 
   void GetContainerSshKeysFinished(const std::string& container_username,
+                                   const base::FilePath& container_homedir,
                                    bool success,
                                    const std::string& container_public_key,
                                    const std::string& host_private_key,
@@ -551,6 +553,7 @@ class CrostiniManager::CrostiniRestarter
     // Call to sshfs to mount.
     source_path_ = base::StringPrintf(
         "sshfs://%s@%s:", container_username.c_str(), hostname.c_str());
+    container_homedir_ = container_homedir;
     StartStage(mojom::InstallerState::kMountContainer);
     dmgr->MountPath(source_path_, "",
                     file_manager::util::GetCrostiniMountPointName(profile_),
@@ -603,7 +606,7 @@ class CrostiniManager::CrostiniRestarter
 
     // VolumeManager is null in unittest.
     if (auto* vmgr = file_manager::VolumeManager::Get(profile_))
-      vmgr->AddSshfsCrostiniVolume(mount_path);
+      vmgr->AddSshfsCrostiniVolume(mount_path, container_homedir_);
 
     // Abort not checked until exiting this function.  On abort, do not
     // continue, but still remove observer and add volume as per above.
@@ -623,6 +626,7 @@ class CrostiniManager::CrostiniRestarter
   base::FilePath disk_path_;
   RestartOptions options_;
   std::string source_path_;
+  base::FilePath container_homedir_;
   bool is_initial_install_ = false;
   CrostiniManager::CrostiniResultCallback completed_callback_;
   std::vector<base::OnceClosure> abort_callbacks_;

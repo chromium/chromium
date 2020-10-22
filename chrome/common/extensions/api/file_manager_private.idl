@@ -487,6 +487,10 @@ dictionary VolumeMetadata {
   // Drive label of the volume. Removable partitions that belong to the
   // same physical removable device share the same drive label.
   DOMString? driveLabel;
+
+  // The path on the remote host where this volume is mounted, for crostini this
+  // is the user's homedir (/home/<username>).
+  DOMString? remoteMountPath;
 };
 
 // Payload data for mount event.

@@ -123,7 +123,8 @@ function addProvidedVolume(volumeManager, providerId, volumeId) {
       VolumeManagerCommon.Source.NETWORK,          // source
       VolumeManagerCommon.FileSystemType.UNKNOWN,  // diskFileSystemType
       {},                                          // iconSet
-      '');                                         // driveLabel
+      '',                                          // driveLabel
+      '');                                         // remoteMountPath
 
   volumeManager.volumeInfoList.add(volumeInfo);
 }

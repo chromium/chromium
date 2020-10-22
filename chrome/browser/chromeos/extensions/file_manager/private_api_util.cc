@@ -411,6 +411,10 @@ void VolumeToVolumeMetadata(
     volume_metadata->source_path =
         std::make_unique<std::string>(volume.source_path().AsUTF8Unsafe());
   }
+  if (!volume.remote_mount_path().empty()) {
+    volume_metadata->remote_mount_path =
+        std::make_unique<std::string>(volume.remote_mount_path().value());
+  }
 
   switch (volume.source()) {
     case SOURCE_FILE:

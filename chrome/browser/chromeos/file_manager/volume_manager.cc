@@ -372,13 +372,15 @@ std::unique_ptr<Volume> Volume::CreateForMediaView(
 
 // static
 std::unique_ptr<Volume> Volume::CreateForSshfsCrostini(
-    const base::FilePath& sshfs_mount_path) {
+    const base::FilePath& sshfs_mount_path,
+    const base::FilePath& remote_mount_path) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_CROSTINI;
   volume->device_type_ = chromeos::DEVICE_TYPE_UNKNOWN;
   // Keep source_path empty.
   volume->source_ = SOURCE_SYSTEM;
   volume->mount_path_ = sshfs_mount_path;
+  volume->remote_mount_path_ = remote_mount_path;
   volume->mount_condition_ = chromeos::disks::MOUNT_CONDITION_NONE;
   volume->volume_id_ = GenerateVolumeId(*volume);
   volume->watchable_ = false;
@@ -665,10 +667,11 @@ base::WeakPtr<Volume> VolumeManager::FindVolumeById(
 }
 
 void VolumeManager::AddSshfsCrostiniVolume(
-    const base::FilePath& sshfs_mount_path) {
+    const base::FilePath& sshfs_mount_path,
+    const base::FilePath& remote_mount_path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::unique_ptr<Volume> volume =
-      Volume::CreateForSshfsCrostini(sshfs_mount_path);
+      Volume::CreateForSshfsCrostini(sshfs_mount_path, remote_mount_path);
   // Ignore if volume already exists.
   if (mounted_volumes_.find(volume->volume_id()) != mounted_volumes_.end())
     return;
@@ -763,7 +766,7 @@ bool VolumeManager::RegisterCrostiniDirectoryForTesting(
           path);
   DoMountEvent(
       success ? chromeos::MOUNT_ERROR_NONE : chromeos::MOUNT_ERROR_INVALID_PATH,
-      Volume::CreateForSshfsCrostini(path));
+      Volume::CreateForSshfsCrostini(path, base::FilePath("/home/testuser")));
   return true;
 }
 
@@ -1478,8 +1481,9 @@ void VolumeManager::OnSshfsCrostiniUnmountCallback(
       (error_code == chromeos::MOUNT_ERROR_PATH_NOT_MOUNTED)) {
     // Remove metadata associated with the mount. It will be a no-op if it
     // wasn't mounted or unmounted out of band.
-    DoUnmountEvent(chromeos::MOUNT_ERROR_NONE,
-                   *Volume::CreateForSshfsCrostini(sshfs_mount_path));
+    DoUnmountEvent(
+        chromeos::MOUNT_ERROR_NONE,
+        *Volume::CreateForSshfsCrostini(sshfs_mount_path, base::FilePath()));
     if (callback)
       std::move(callback).Run(true);
     return;

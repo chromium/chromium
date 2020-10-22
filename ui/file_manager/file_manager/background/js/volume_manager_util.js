@@ -167,7 +167,7 @@ volumeManagerUtil.createVolumeInfo = volumeMetadata => {
                 (volumeMetadata.source),
                 /** @type {VolumeManagerCommon.FileSystemType} */
                 (volumeMetadata.diskFileSystemType), volumeMetadata.iconSet,
-                (volumeMetadata.driveLabel));
+                volumeMetadata.driveLabel, volumeMetadata.remoteMountPath);
           })
       .catch(
           /** @param {*} error */
@@ -191,6 +191,6 @@ volumeManagerUtil.createVolumeInfo = volumeMetadata => {
                 (volumeMetadata.source),
                 /** @type {VolumeManagerCommon.FileSystemType} */
                 (volumeMetadata.diskFileSystemType), volumeMetadata.iconSet,
-                (volumeMetadata.driveLabel));
+                volumeMetadata.driveLabel, volumeMetadata.remoteMountPath);
           });
 };

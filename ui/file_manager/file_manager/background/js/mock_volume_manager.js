@@ -80,12 +80,13 @@ class MockVolumeManager {
    * @param {string} volumeId
    * @param {string} label
    * @param {string=} providerId
+   * @param {string=} remoteMountPath
    *
    * @return {!VolumeInfo}
    */
-  createVolumeInfo(type, volumeId, label, providerId) {
+  createVolumeInfo(type, volumeId, label, providerId, remoteMountPath) {
     const volumeInfo = MockVolumeManager.createMockVolumeInfo(
-        type, volumeId, label, undefined, providerId);
+        type, volumeId, label, undefined, providerId, remoteMountPath);
     this.volumeInfoList.add(volumeInfo);
     return volumeInfo;
   }
@@ -165,9 +166,11 @@ class MockVolumeManager {
    * @param {string=} label Label.
    * @param {string=} devicePath Device path.
    * @param {string=} providerId Provider id.
+   * @param {string=} remoteMountPath Remote mount path.
    * @return {!VolumeInfo} Created mock VolumeInfo.
    */
-  static createMockVolumeInfo(type, volumeId, label, devicePath, providerId) {
+  static createMockVolumeInfo(
+      type, volumeId, label, devicePath, providerId, remoteMountPath) {
     const fileSystem = new MockFileSystem(volumeId, 'filesystem:' + volumeId);
 
     // If there's no label set it to volumeId to make it shorter to write
@@ -188,7 +191,8 @@ class MockVolumeManager {
         VolumeManagerCommon.Source.NETWORK,         // source
         VolumeManagerCommon.FileSystemType.UNKNOWN,  // diskFileSystemType
         {},                                          // iconSet
-        '');                                         // driveLabel
+        '',                                          // driveLabel
+        remoteMountPath);                            // remoteMountPath
 
     return volumeInfo;
   }

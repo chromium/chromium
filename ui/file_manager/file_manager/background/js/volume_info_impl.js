@@ -40,12 +40,15 @@ class VolumeInfoImpl {
    * @param {(string|undefined)} driveLabel Drive label of the volume. Removable
    *     partitions belonging to the same device will share the same drive
    *     label.
+   * @param {(string|undefined)} remoteMountPath The path on the remote host
+   *     where this volume is mounted, for crostini this is the user's homedir
+   *     (/home/<username>).
    */
   constructor(
       volumeType, volumeId, fileSystem, error, deviceType, devicePath,
       isReadOnly, isReadOnlyRemovableDevice, profile, label, providerId,
       hasMedia, configurable, watchable, source, diskFileSystemType, iconSet,
-      driveLabel) {
+      driveLabel, remoteMountPath) {
     this.volumeType_ = volumeType;
     this.volumeId_ = volumeId;
     this.fileSystem_ = fileSystem;
@@ -93,6 +96,7 @@ class VolumeInfoImpl {
     this.diskFileSystemType_ = diskFileSystemType;
     this.iconSet_ = iconSet;
     this.driveLabel_ = driveLabel;
+    this.remoteMountPath_ = remoteMountPath;
 
     /** @private @const {Promise<!DirectoryEntry>} */
     this.displayRootPromise_ = this.resolveDisplayRootImpl_();
@@ -257,6 +261,15 @@ class VolumeInfoImpl {
    */
   get driveLabel() {
     return this.driveLabel_;
+  }
+
+  /**
+   * The path on the remote host where this volume is mounted, for crostini this
+   * is the user's homedir (/home/<username>).
+   * @return {(string|undefined)}
+   */
+  get remoteMountPath() {
+    return this.remoteMountPath_;
   }
 
   /**
