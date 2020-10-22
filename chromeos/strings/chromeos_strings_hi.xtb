@@ -96,13 +96,11 @@
 <translation id="8347227221149377169">प्रिंट जॉब</translation>
 <translation id="8352772353338965963">एक से ज़्यादा साइन-इन के लिए कोई खाता जोड़ें. सभी साइन इन किए गए खातों को पासवर्ड के बिना एक्सेस किया जा सकता है, इसलिए इस सुविधा का इस्तेमाल सिर्फ़ विश्वसनीय खातों के साथ किया जाना चाहिए.</translation>
 <translation id="8668052347555487755">कलर मोड</translation>
-<translation id="8701136875688985581">इस उपयोगकर्ता को <ph name="ENROLLMENT_DOMAIN" /> प्रबंधित करता है. यह दूर से सेटिंग प्रबंधित कर सकता है. साथ ही, उपयोगकर्ता गतिविधि की निगरानी कर सकता है.</translation>
 <translation id="871560550817059752">प्रिंट नहीं हो पाया - स्याही खत्म हो गई</translation>
 <translation id="8726019395068607495">बंद हो गया - दरवाज़ा खुला है</translation>
 <translation id="8747900814994928677">बदलाव की पुष्टि करें</translation>
 <translation id="8919837981463578619">प्रिंट नहीं हो पाया - ट्रे मौजूद नहीं है</translation>
 <translation id="8928727111548978589">प्रिंट नहीं हो पाया - काग़ज़ खत्म हो गया</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> बार और कोशिश कर सकते हैं</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> के लिए टिकट रीफ़्रेश करें</translation>
 <translation id="9111102763498581341">अनलॉक करें</translation>
 </translationbundle>

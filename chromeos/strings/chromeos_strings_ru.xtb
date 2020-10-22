@@ -96,13 +96,11 @@
 <translation id="8347227221149377169">Задания печати</translation>
 <translation id="8352772353338965963">Добавить аккаунт в систему множественного входа. Для доступа к аккаунтам, в которые выполнен вход, пароль не требуется, поэтому эту функцию следует использовать только для надежных аккаунтов.</translation>
 <translation id="8668052347555487755">Цвета</translation>
-<translation id="8701136875688985581">Этот аккаунт находится под управлением домена <ph name="ENROLLMENT_DOMAIN" />, из которого можно отслеживать действия пользователя и удаленно изменять настройки.</translation>
 <translation id="871560550817059752">Сбой: закончились чернила</translation>
 <translation id="8726019395068607495">Печать прервана: открыта крышка</translation>
 <translation id="8747900814994928677">Подтверждение изменений</translation>
 <translation id="8919837981463578619">Сбой: нет лотка для бумаги</translation>
 <translation id="8928727111548978589">Сбой: закончилась бумага</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Осталось попыток: <ph name="ATTEMPTS_LEFT" />.</translation>
 <translation id="910415269708673980">Обновите билет для аккаунта <ph name="PRINCIPAL_NAME" />.</translation>
 <translation id="9111102763498581341">Разблокировать</translation>
 </translationbundle>

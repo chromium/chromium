@@ -1913,7 +1913,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Việc không đặt các chính sách này sẽ cho phép người dùng tự chọn cài đặt proxy.</translation>
 <translation id="3758249152301468420">Vô hiệu hóa công cụ dành cho nhà phát triển</translation>
 <translation id="3760231600118073732">Khóa phiên xác thực hiện tại.</translation>
-<translation id="3764097800332238572">Chính sách này chỉ có hiệu lực khi bạn đặt chính sách <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> thành <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> hoặc <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" /> và khi người dùng tháo thẻ thông minh mà họ dùng để xác thực. Khi đó, chính sách này sẽ chỉ rõ số giây hiển thị một thông báo cho người dùng biết về hành động sắp diễn ra. Thông báo này đang chặn màn hình. Hành động sẽ chỉ diễn ra sau khi thông báo này hết hạn. Người dùng có thể ngăn hành động diễn ra bằng cách lắp lại thẻ thông minh trước khi thông báo hết hạn. Nếu bạn đặt chính sách này thành 0, sẽ không có thông báo nào hiển thị và hành động sẽ diễn ra ngay lập tức.</translation>
 <translation id="3765260570442823273">Thời lượng hiển thị thông điệp cảnh báo đăng xuất khi không hoạt động</translation>
 <translation id="377044054160169374">Thực thi can thiệp trải nghiệm lạm dụng</translation>
 <translation id="3780152581321609624">Bao gồm cổng không chuẩn trong  Kerberos SPN</translation>
@@ -2946,7 +2945,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 
       Nếu bạn đặt chính sách này thành False, thì dịch vụ chuyển tiếp cổng vào vùng chứa Crostini sẽ tắt.</translation>
 <translation id="538108065117008131">Cho phép <ph name="PRODUCT_FRAME_NAME" /> xử lý các loại nội dung sau.</translation>
-<translation id="5383436189211119400">Nếu bạn đặt chính sách "DeviceArcDataSnapshotHours", cơ chế chụp nhanh dữ liệu App Runtime for Chrome (ARC) sẽ được bật. Quá trình cập nhật ảnh chụp nhanh dữ liệu ARC có thể tự động bắt đầu trong các khoảng thời gian đã định. Khi một khoảng thời gian bắt đầu, quá trình cập nhật ảnh chụp nhanh dữ liệu ARC sẽ buộc phải diễn ra và không người dùng nào được đăng nhập. Quá trình này bắt đầu mà không cần thông báo cho người dùng. Nếu phiên của người dùng đang hoạt động, họ sẽ thấy thông báo qua Giao diện người dùng và phải chấp nhận thông báo đó để khởi động lại thiết bị, cũng như bắt đầu quá trình cập nhật ảnh chụp nhanh dữ liệu ARC. Lưu ý: trong quá trình cập nhật ảnh chụp nhanh dữ liệu ARC, sẽ không ai dùng được thiết bị.</translation>
 <translation id="538768040137709073">Bật tính năng Khay nhớ tạm dùng chung. Tính năng này cho phép người dùng gửi văn bản giữa Máy tính Chrome và thiết bị Android khi tính năng Đồng bộ hóa được bật và người dùng đã đăng nhập.
 
           Nếu bạn đặt chính sách này thành true, thì người dùng Chrome có thể gửi văn bản trên các thiết bị.

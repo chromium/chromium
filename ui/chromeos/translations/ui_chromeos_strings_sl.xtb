@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">Angleška tipkovnica (ZDA)</translation>
 <translation id="2534155362429831547">Št. izbrisanih elementov: <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="2541377937973966830">Vsebina te mape je samo za branje. Nekatere dejavnosti niso podprte.</translation>
 <translation id="2542049655219295786">Googlova tabela</translation>
 <translation id="2547921442987553570">Dodajanje za: <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Združene države – mednarodna</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">Podrobnosti</translation>
 <translation id="4527800702232535228">Ta mapa je deljena s programom Parallels Desktop.</translation>
 <translation id="4552678318981539154">Nakup dodatnega prostora za shranjevanje ...</translation>
+<translation id="4559318885353833501">Datoteka <ph name="FILE_NAME" /> je bila izbrisana.</translation>
 <translation id="4559767610552730302">Boke</translation>
 <translation id="4572815280350369984">Datoteka <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Več ...</translation>
@@ -512,6 +514,7 @@
 <translation id="6356685157277930264">Okno za povratne informacije v aplikaciji Datoteke</translation>
 <translation id="6358884629796491903">Zmaj</translation>
 <translation id="637062427944097960">Ta datoteka je odprta na drugem namizju. Če si jo želite ogledati, preklopite na uporabnika <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
+<translation id="6394388407447716302">Samo za branje</translation>
 <translation id="6395575651121294044">Št. datotek: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6398765197997659313">Izhod iz celozaslonskega načina</translation>
 <translation id="642282551015776456">Tega imena ne morete uporabiti kot ime za datoteko ali mapo</translation>

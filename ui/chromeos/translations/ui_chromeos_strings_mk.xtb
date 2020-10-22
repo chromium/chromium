@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">САД тастатура</translation>
 <translation id="2534155362429831547">Избришани се <ph name="NUMBER_OF_ITEMS" /> ставки</translation>
+<translation id="2541377937973966830">Содржините во папкава се само за читање. Некои активности не се поддржани.</translation>
 <translation id="2542049655219295786">Табела на Google</translation>
 <translation id="2547921442987553570">Додајте во <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Меѓународен англиски (САД)</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">Детали</translation>
 <translation id="4527800702232535228">Папкава е споделена со Parallels Desktop</translation>
 <translation id="4552678318981539154">Купете поголем простор за складирање</translation>
+<translation id="4559318885353833501"><ph name="FILE_NAME" /> е избришана</translation>
 <translation id="4559767610552730302">Боке</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> датотека</translation>
 <translation id="457386861538956877">Повеќе…</translation>
@@ -511,6 +513,7 @@
 <translation id="6356685157277930264">Прозорец со информации за датотеките</translation>
 <translation id="6358884629796491903">Змеј</translation>
 <translation id="637062427944097960">Оваа датотека се отвори на друг десктоп. Поместете ја на <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) за да се прикаже.</translation>
+<translation id="6394388407447716302">Само за читање</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ставки</translation>
 <translation id="6398765197997659313">Излези од цел екран</translation>
 <translation id="642282551015776456">Имево не може да се користи како име на датотека или на папка</translation>

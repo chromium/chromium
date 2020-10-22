@@ -96,13 +96,11 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8347227221149377169">Zadania drukowania</translation>
 <translation id="8352772353338965963">Tu możesz dodać konto do wielokrotnego logowania. Ponieważ dostęp do wszystkich zalogowanych kont można uzyskać bez podawania hasła, tej funkcji należy używać tylko z zaufanymi kontami.</translation>
 <translation id="8668052347555487755">Tryb koloru</translation>
-<translation id="8701136875688985581">Tym użytkownikiem zarządza domena <ph name="ENROLLMENT_DOMAIN" />. Może ona zdalnie zarządzać ustawieniami i monitorować aktywność użytkownika.</translation>
 <translation id="871560550817059752">Niepowodzenie – brak tuszu</translation>
 <translation id="8726019395068607495">Zatrzymano – otwarte drzwiczki drukarki</translation>
 <translation id="8747900814994928677">Potwierdź zmianę</translation>
 <translation id="8919837981463578619">Niepowodzenie – nie znaleziono tacy</translation>
 <translation id="8928727111548978589">Niepowodzenie – brak papieru</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Pozostałe próby: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="910415269708673980">Odśwież bilet przypisany do konta <ph name="PRINCIPAL_NAME" />.</translation>
 <translation id="9111102763498581341">Odblokuj</translation>
 </translationbundle>

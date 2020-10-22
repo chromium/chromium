@@ -96,13 +96,11 @@
 <translation id="8347227221149377169">प्रिंट कार्ये</translation>
 <translation id="8352772353338965963">मल्टिपल साइन-इन वर खाते जोडा. सर्व साइन इन केलेल्या खात्यांवर पासवर्डशिवाय प्रवेश केला जाऊ शकतो, म्हणून हे वैशिष्ट्य केवळ विश्वसनीय खात्यांसह वापरले जावे.</translation>
 <translation id="8668052347555487755">रंगीत मोड</translation>
-<translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" /> हा वापरकर्ता व्यवस्थापित करते. ते रिमोट पद्धतीने सेटिंग्ज व्यवस्थापित करू शकते आणि वापरकर्ता अ‍ॅक्टिव्हिटीचे परीक्षण करू शकते.</translation>
 <translation id="871560550817059752">अयशस्वी झाले - शाई संपली आहे</translation>
 <translation id="8726019395068607495">थांबले - दार उघडे आहे</translation>
 <translation id="8747900814994928677">बदलाची खात्री करा</translation>
 <translation id="8919837981463578619">अयशस्वी झाले - ट्रे सापडला नाही</translation>
 <translation id="8928727111548978589">अयशस्वी झाले - कागद संपला आहे</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> प्रयत्न शिल्लक</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> चे तिकीट रिफ्रेश करा</translation>
 <translation id="9111102763498581341">अनलॉक करा</translation>
 </translationbundle>

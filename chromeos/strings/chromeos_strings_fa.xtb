@@ -96,13 +96,11 @@
 <translation id="8347227221149377169">کارهای چاپی</translation>
 <translation id="8352772353338965963">افزودن یک حساب برای ورود چندگانه به سیستم. کلیه حساب‌هایی که به سیستم وارد شده‌اند بدون گذرواژه قابل دسترسی هستند، بنابراین این قابلیت فقط باید با حساب‌های مورداعتماد استفاده شود.</translation>
 <translation id="8668052347555487755">حالت رنگی</translation>
-<translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" /> این کاربر را مدیریت می‌کند. می‌تواند تنظیمات را ازراه‌دور مدیریت کند و بر فعالیت کاربر نظارت کند.</translation>
 <translation id="871560550817059752">انجام نشد - جوهر تمام شده است</translation>
 <translation id="8726019395068607495">متوقف شد - در باز است</translation>
 <translation id="8747900814994928677">تأیید تغییر</translation>
 <translation id="8919837981463578619">انجام نشد - سینی موجود نیست</translation>
 <translation id="8928727111548978589">انجام نشد - کاغذ تمام شده است</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> فرصت باقی مانده است</translation>
 <translation id="910415269708673980">بازخوانی بلیت برای <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">باز کردن قفل</translation>
 </translationbundle>

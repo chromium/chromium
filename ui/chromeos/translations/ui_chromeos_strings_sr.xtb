@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">Језик тастатуре: енглески (САД)</translation>
 <translation id="2534155362429831547">Избрисаних ставки: <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="2541377937973966830">Садржај овог фолдера је само за читање. Неке активности нису подржане.</translation>
 <translation id="2542049655219295786">Google табела</translation>
 <translation id="2547921442987553570">Додај у <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">међународна америчка</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">Детаљи</translation>
 <translation id="4527800702232535228">Овај фолдер се дели помоћу Parallels Desktop-а</translation>
 <translation id="4552678318981539154">Купи још меморијског простора</translation>
+<translation id="4559318885353833501">Фајл <ph name="FILE_NAME" /> је избрисан</translation>
 <translation id="4559767610552730302">Бокех</translation>
 <translation id="4572815280350369984">Датотека <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Још...</translation>
@@ -512,6 +514,7 @@
 <translation id="6356685157277930264">Прозор за повратне информације датотека</translation>
 <translation id="6358884629796491903">Змај</translation>
 <translation id="637062427944097960">Ова датотека је отворена на другом профилу. Пређите на <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) да бисте је погледали.</translation>
+<translation id="6394388407447716302">Само за читање</translation>
 <translation id="6395575651121294044">Ставки: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6398765197997659313">Изађи из режима целог екрана</translation>
 <translation id="642282551015776456">Овај назив не може да се користи као назив датотеке или директоријума</translation>

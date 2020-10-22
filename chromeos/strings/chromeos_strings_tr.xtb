@@ -96,13 +96,11 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8347227221149377169">Yazdırma işleri</translation>
 <translation id="8352772353338965963">Çoklu oturum açmaya bir hesap ekleyin. Oturum açılmış tüm hesaplara şifresiz erişilebileceği için bu özellik sadece güvenilir hesaplarla kullanılmalıdır.</translation>
 <translation id="8668052347555487755">Renk modu</translation>
-<translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" />, bu kullanıcıyı yönetiyor. Ayarları uzaktan yönetebilir ve kullanıcı etkinliğini izleyebilir.</translation>
 <translation id="871560550817059752">İşlem başarısız - Mürekkep yok</translation>
 <translation id="8726019395068607495">Durduruldu - Kapak açık</translation>
 <translation id="8747900814994928677">Değişikliği onaylayın</translation>
 <translation id="8919837981463578619">İşlem başarısız - Tepsi yok</translation>
 <translation id="8928727111548978589">İşlem başarısız - Kağıt yok</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> deneme hakkınız kaldı</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> için bileti yenileyin</translation>
 <translation id="9111102763498581341">Kilidi Aç</translation>
 </translationbundle>

@@ -96,13 +96,11 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="8347227221149377169">Zadaci ispisa</translation>
 <translation id="8352772353338965963">Dodajte račun na višestruku prijavu. Svim računima na koje ste prijavljeni može se pristupiti bez zaporke, pa bi se ta značajka trebala upotrebljavati samo s pouzdanim računima.</translation>
 <translation id="8668052347555487755">Način boje</translation>
-<translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" /> upravlja ovim korisnikom. Može daljinski upravljati postavkama i nadzirati aktivnost korisnika.</translation>
 <translation id="871560550817059752">Nije uspjelo – nema tinte</translation>
 <translation id="8726019395068607495">Zaustavljeno – vratašca su otvorena</translation>
 <translation id="8747900814994928677">Potvrda promjena</translation>
 <translation id="8919837981463578619">Nije uspjelo – nema ladice</translation>
 <translation id="8928727111548978589">Nije uspjelo – nema papira</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Preostalo pokušaja: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="910415269708673980">Osvježite tiket za <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Otključaj</translation>
 </translationbundle>

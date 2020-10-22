@@ -96,13 +96,11 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="8347227221149377169">Utskriftsjobb</translation>
 <translation id="8352772353338965963">Lägg till ett konto för multiinloggning. Alla inloggade konton kan öppnas utan lösenord, så använd bara den här funktionen med konton du litar på.</translation>
 <translation id="8668052347555487755">Färgläge</translation>
-<translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" /> hanterar denna användare och kan fjärrhantera inställningar och övervaka användaraktivitet.</translation>
 <translation id="871560550817059752">Misslyckades – slut på bläck</translation>
 <translation id="8726019395068607495">Har stoppats – luckan är öppen</translation>
 <translation id="8747900814994928677">Bekräfta ändring</translation>
 <translation id="8919837981463578619">Misslyckades – fack saknas</translation>
 <translation id="8928727111548978589">Misslyckades – slut på papper</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> försök kvar</translation>
 <translation id="910415269708673980">Uppdatera biljetten för <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Lås upp</translation>
 </translationbundle>

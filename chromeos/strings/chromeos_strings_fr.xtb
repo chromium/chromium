@@ -96,13 +96,11 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8347227221149377169">Tâches d'impression</translation>
 <translation id="8352772353338965963">Ajoutez un compte à la connexion multicompte. Tous les comptes connectés sont accessibles sans mot de passe. Nous vous recommandons donc de n'utiliser cette fonctionnalité qu'avec des comptes fiables.</translation>
 <translation id="8668052347555487755">Mode couleur</translation>
-<translation id="8701136875688985581">Cet utilisateur est géré par <ph name="ENROLLMENT_DOMAIN" />, qui peut modifier ses paramètres et surveiller son activité à distance.</translation>
 <translation id="871560550817059752">Échec – À court d'encre</translation>
 <translation id="8726019395068607495">Tâche suspendue - Capot ouvert</translation>
 <translation id="8747900814994928677">Confirmer la modification</translation>
 <translation id="8919837981463578619">Échec – Bac à papier manquant</translation>
 <translation id="8928727111548978589">Échec – À court de papier</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> tentatives restantes</translation>
 <translation id="910415269708673980">Actualiser le ticket associé à <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Déverrouiller</translation>
 </translationbundle>

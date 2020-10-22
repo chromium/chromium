@@ -95,13 +95,11 @@
 <translation id="8347227221149377169">Udskriftsjobs</translation>
 <translation id="8352772353338965963">Føj en konto til samlet login fra flere konti. Det er muligt at få adgang til alle de konti, der er logget ind på, uden en adgangskode, så denne funktion bør kun bruges til de konti, du har tillid til.</translation>
 <translation id="8668052347555487755">Farvetilstand</translation>
-<translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" /> administrerer denne bruger. Det kan administrere indstillinger via fjernadgang og overvåge brugeraktivitet.</translation>
 <translation id="871560550817059752">Handlingen mislykkedes – Mangler blæk</translation>
 <translation id="8726019395068607495">Stoppet – Åben låge</translation>
 <translation id="8747900814994928677">Bekræft ændring</translation>
 <translation id="8919837981463578619">Handlingen mislykkedes – Bakke mangler</translation>
 <translation id="8928727111548978589">Handlingen mislykkedes – Papirbakken er tom</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> forsøg tilbage</translation>
 <translation id="910415269708673980">Gendan billetten for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Lås op</translation>
 </translationbundle>

@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">USA klaviatuur</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> üksust kustutati</translation>
+<translation id="2541377937973966830">Selle kausta sisu on kirjutuskaitstud. Mõnda toimingut ei toetata.</translation>
 <translation id="2542049655219295786">Google'i tabel</translation>
 <translation id="2547921442987553570">Lisa laiendusse <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">USA rahvusvaheline</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">Üksikasjad</translation>
 <translation id="4527800702232535228">Seda kausta jagatakse Parallels Desktopiga</translation>
 <translation id="4552678318981539154">Ostke rohkem salvestusruumi</translation>
+<translation id="4559318885353833501"><ph name="FILE_NAME" /> kustutati</translation>
 <translation id="4559767610552730302">Bokeh-efekt</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" />-file</translation>
 <translation id="457386861538956877">Rohkem ...</translation>
@@ -512,6 +514,7 @@
 <translation id="6356685157277930264">Failide tagasiside aken</translation>
 <translation id="6358884629796491903">Draakon</translation>
 <translation id="637062427944097960">Fail on avatud muul töölaual. Selle vaatamiseks avage <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
+<translation id="6394388407447716302">Kirjutuskaitstud</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> üksust</translation>
 <translation id="6398765197997659313">Välju täisekraanilt</translation>
 <translation id="642282551015776456">Seda nime ei saa faili või kausta nimena kasutada</translation>

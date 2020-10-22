@@ -96,13 +96,11 @@
 <translation id="8347227221149377169">Завдання друку</translation>
 <translation id="8352772353338965963">Додайте обліковий запис для паралельного входу. Доступ до всіх облікових записів, у які ви ввійшли, можна отримувати без пароля, тому цю функцію варто використовувати лише з надійними обліковими записами.</translation>
 <translation id="8668052347555487755">Режим кольору</translation>
-<translation id="8701136875688985581">Домен <ph name="ENROLLMENT_DOMAIN" /> керує цим користувачем. Він може віддалено змінювати налаштування й відстежувати дії користувача.</translation>
 <translation id="871560550817059752">Не надруковано – закінчилося чорнило</translation>
 <translation id="8726019395068607495">Зупинено – відкрито кришку принтера</translation>
 <translation id="8747900814994928677">Підтвердити зміни</translation>
 <translation id="8919837981463578619">Не надруковано – немає лотка</translation>
 <translation id="8928727111548978589">Не надруковано – закінчився папір</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" />. Залишилося спроб: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="910415269708673980">Оновити квиток для користувача <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Розблокувати</translation>
 </translationbundle>

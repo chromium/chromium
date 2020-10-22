@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">Amerikansk tastatur (USA)</translation>
 <translation id="2534155362429831547">Slettet <ph name="NUMBER_OF_ITEMS" /> elementer</translation>
+<translation id="2541377937973966830">Innholdet i denne mappen er skrivebeskyttet. Noen aktiviteter støttes ikke.</translation>
 <translation id="2542049655219295786">Google-tabell</translation>
 <translation id="2547921442987553570">Legg til i <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">USA internasjonalt</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">Detaljer</translation>
 <translation id="4527800702232535228">Denne mappen deles med Parallels Desktop</translation>
 <translation id="4552678318981539154">Kjøp mer lagringsplass</translation>
+<translation id="4559318885353833501"><ph name="FILE_NAME" /> er slettet</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" />-fil</translation>
 <translation id="457386861538956877">Mer</translation>
@@ -512,6 +514,7 @@
 <translation id="6356685157277930264">Tilbakemeldingsvindu for Filer</translation>
 <translation id="6358884629796491903">Drage</translation>
 <translation id="637062427944097960">Denne filen ble åpnet på et annet skrivebord. Flytt til <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) for å se den.</translation>
+<translation id="6394388407447716302">Skrivebeskyttet</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elementer</translation>
 <translation id="6398765197997659313">Avslutt fullskjerm</translation>
 <translation id="642282551015776456">Dette navnet kan ikke brukes som fil- eller mappenavn</translation>

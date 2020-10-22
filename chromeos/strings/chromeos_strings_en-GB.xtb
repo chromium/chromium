@@ -96,13 +96,11 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8347227221149377169">Print jobs</translation>
 <translation id="8352772353338965963">Add an account to multiple sign-in. All signed-in accounts can be accessed without a password, so this feature should only be used with trusted accounts.</translation>
 <translation id="8668052347555487755">Colour mode</translation>
-<translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" /> manages this user. It may remotely manage settings and monitor user activity.</translation>
 <translation id="871560550817059752">Failed – Out of ink</translation>
 <translation id="8726019395068607495">Stopped – door open</translation>
 <translation id="8747900814994928677">Confirm change</translation>
 <translation id="8919837981463578619">Failed – Tray missing</translation>
 <translation id="8928727111548978589">Failed – Out of paper</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> attempts left</translation>
 <translation id="910415269708673980">Refresh ticket for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Unlock</translation>
 </translationbundle>

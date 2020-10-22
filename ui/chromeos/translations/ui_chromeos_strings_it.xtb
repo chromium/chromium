@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">Tastiera USA</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> elementi eliminati</translation>
+<translation id="2541377937973966830">I contenuti in questa cartella sono di sola lettura. Alcune attività non sono supportate.</translation>
 <translation id="2542049655219295786">Tabella Google</translation>
 <translation id="2547921442987553570">Aggiungi all'estensione <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Internazionale USA</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">Dettagli</translation>
 <translation id="4527800702232535228">Questa cartella è condivisa con Parallels Desktop</translation>
 <translation id="4552678318981539154">Acquista più spazio di archiviazione</translation>
+<translation id="4559318885353833501"><ph name="FILE_NAME" /> eliminato</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984">File <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Altro...</translation>
@@ -511,6 +513,7 @@
 <translation id="6356685157277930264">Finestra di feedback dei file</translation>
 <translation id="6358884629796491903">Drago</translation>
 <translation id="637062427944097960">Questo file è aperto su un desktop differente. Passa a <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) per visualizzarlo.</translation>
+<translation id="6394388407447716302">Sola lettura</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elementi</translation>
 <translation id="6398765197997659313">Esci da schermo intero</translation>
 <translation id="642282551015776456">Questo nome non può essere utilizzato per un file o una cartella</translation>

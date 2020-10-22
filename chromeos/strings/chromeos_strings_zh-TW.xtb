@@ -96,13 +96,11 @@
 <translation id="8347227221149377169">列印工作</translation>
 <translation id="8352772353338965963">新增可多重登入的帳戶。這些帳戶的使用者不需提供密碼即可存取所有已登入的帳戶。因此，建議你只讓信任的帳戶使用這項功能。</translation>
 <translation id="8668052347555487755">色彩模式</translation>
-<translation id="8701136875688985581">由 <ph name="ENROLLMENT_DOMAIN" /> 管理這位使用者，因此可能會從遠端管理設定並監控使用者活動。</translation>
 <translation id="871560550817059752">失敗 - 墨水用盡</translation>
 <translation id="8726019395068607495">已停止 - 蓋子處於開啟狀態</translation>
 <translation id="8747900814994928677">確認變更</translation>
 <translation id="8919837981463578619">失敗 - 缺少紙匣</translation>
 <translation id="8928727111548978589">失敗 - 紙張用盡</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" />剩餘嘗試次數：<ph name="ATTEMPTS_LEFT" /> 次</translation>
 <translation id="910415269708673980">更新 <ph name="PRINCIPAL_NAME" /> 的票證</translation>
 <translation id="9111102763498581341">解除鎖定</translation>
 </translationbundle>

@@ -96,13 +96,11 @@
 <translation id="8347227221149377169">የኅትመት ሥራዎች</translation>
 <translation id="8352772353338965963">አንድ መለያ ባለብዙ መለያ መግቢያ ላይ ያክሉ። ሁሉም የተገባባቸው መለያዎች ያለይለፍ ቃል ሊደረስባቸው ይችላሉ፣ ስለዚህ ይህ ባህሪ በታመኑ መለያዎች ላይ ብቻ ነው መጠቀም ያለባቸው።</translation>
 <translation id="8668052347555487755">የቀለም ሁነታ</translation>
-<translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" /> እነኚህን ተጠቃሚ ያስተዳድራል። ቅንብሮችን የተጠቃሚ እንቅስቃሴን በርቀት ሊያስተዳድር እና ሊቆጣጠር ይችላል።</translation>
 <translation id="871560550817059752">አልተሳካም - ቀለም አልቋል</translation>
 <translation id="8726019395068607495">ቆሟል - በር ክፍት ነው</translation>
 <translation id="8747900814994928677">ለውጥን አረጋግጥ</translation>
 <translation id="8919837981463578619">አልተሳካም - መሳቢያ ይጎድላል</translation>
 <translation id="8928727111548978589">አልተሳካም - ወረቀት አልቋል</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> ቅንብሮች ቀርተዋል</translation>
 <translation id="910415269708673980">የ<ph name="PRINCIPAL_NAME" /> ቲኬትን ያድሱ</translation>
 <translation id="9111102763498581341">ክፈት</translation>
 </translationbundle>

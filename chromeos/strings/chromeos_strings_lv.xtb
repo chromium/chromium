@@ -96,13 +96,11 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8347227221149377169">Drukas uzdevumi</translation>
 <translation id="8352772353338965963">Pievienojiet kontu vairākkārtējās pierakstīšanās funkcijai. Visiem kontiem, kuros esat pierakstījies, varēs piekļūt, neievadot paroli, tāpēc šī funkcija ir jāizmanto tikai uzticamiem kontiem.</translation>
 <translation id="8668052347555487755">Krāsu režīms</translation>
-<translation id="8701136875688985581">Šis lietotājs tiek pārvaldīts domēnā<ph name="ENROLLMENT_DOMAIN" />. Šajā domēnā var tikt attālināti pārvaldīti iestatījumi un uzraudzītas lietotāja darbības.</translation>
 <translation id="871560550817059752">Neizdevās — beigusies tinte</translation>
 <translation id="8726019395068607495">Apturēts — durtiņas ir atvērtas</translation>
 <translation id="8747900814994928677">Apstiprināt izmaiņas</translation>
 <translation id="8919837981463578619">Neizdevās — trūkst paliktņa</translation>
 <translation id="8928727111548978589">Neizdevās — beidzies papīrs</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" />. Atlikušais mēģinājumu skaits: <ph name="ATTEMPTS_LEFT" />.</translation>
 <translation id="910415269708673980">Atsvaidziniet <ph name="PRINCIPAL_NAME" /> biļeti</translation>
 <translation id="9111102763498581341">Atbloķēt</translation>
 </translationbundle>

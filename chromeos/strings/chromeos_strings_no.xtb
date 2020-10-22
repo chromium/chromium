@@ -96,13 +96,11 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8347227221149377169">Utskriftsjobber</translation>
 <translation id="8352772353338965963">Legg til en konto for multipålogging. Alle påloggede kontoer kan brukes uten passord, så denne funksjonen burde bare brukes med pålitelige kontoer.</translation>
 <translation id="8668052347555487755">Fargemodus</translation>
-<translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" /> administrerer denne brukeren. Domenet kan administrere innstillinger og overvåke brukeraktivitet eksternt.</translation>
 <translation id="871560550817059752">Mislykket – tom for blekk</translation>
 <translation id="8726019395068607495">Stoppet – luken er åpen</translation>
 <translation id="8747900814994928677">Bekreft endringen</translation>
 <translation id="8919837981463578619">Mislykket – en skuff mangler</translation>
 <translation id="8928727111548978589">Mislykket – tom for papir</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> forsøk igjen</translation>
 <translation id="910415269708673980">Oppdater saken for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Lås opp</translation>
 </translationbundle>

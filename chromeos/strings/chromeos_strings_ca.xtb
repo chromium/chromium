@@ -96,13 +96,11 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8347227221149377169">Tasques d'impressió</translation>
 <translation id="8352772353338965963">Afegiu un compte per a l'inici de sessió múltiple. Es pot accedir a tots el comptes registrats sense contrasenya, de manera que només hauríeu d'utilitzar aquesta funció en comptes de confiança.</translation>
 <translation id="8668052347555487755">Mode de color</translation>
-<translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" /> gestiona aquest usuari. És possible que gestioni la configuració i monitori l'activitat de l'usuari de manera remota.</translation>
 <translation id="871560550817059752">Error: no hi ha tinta</translation>
 <translation id="8726019395068607495">S'ha aturat: porta oberta</translation>
 <translation id="8747900814994928677">Confirma el canvi</translation>
 <translation id="8919837981463578619">Error: no es troba la safata</translation>
 <translation id="8928727111548978589">Error: no hi ha paper</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Intents restants: <ph name="ATTEMPTS_LEFT" />.</translation>
 <translation id="910415269708673980">Actualitza el tiquet de: <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Desbloqueja</translation>
 </translationbundle>

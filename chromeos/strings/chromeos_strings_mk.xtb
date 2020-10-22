@@ -96,13 +96,11 @@
 <translation id="8347227221149377169">Налози за печатење</translation>
 <translation id="8352772353338965963">Додајте сметка за повеќекратно најавување. Сите најавени сметки се достапни без лозинка, така што оваа можност треба да се користи само со сметки на кои им се верува.</translation>
 <translation id="8668052347555487755">Режим во боја</translation>
-<translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" /> управува со корисников. Може далечински да управува со поставките и да ја следи активноста на корисникот.</translation>
 <translation id="871560550817059752">Неуспешно - нема мастило</translation>
 <translation id="8726019395068607495">Запрено - вратата е отворена</translation>
 <translation id="8747900814994928677">Потврдете ја измената</translation>
 <translation id="8919837981463578619">Неуспешно - недостасува фиоката</translation>
 <translation id="8928727111548978589">Неуспешно - нема хартија</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Преостанати обиди: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="910415269708673980">Освежете го билетот за <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Отклучи</translation>
 </translationbundle>

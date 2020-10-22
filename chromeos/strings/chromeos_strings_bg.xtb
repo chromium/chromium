@@ -96,13 +96,11 @@
 <translation id="8347227221149377169">Задания за отпечатване</translation>
 <translation id="8352772353338965963">Добавете профил към функцията за централизиран вход. Всички профили, в които влезете чрез нея, ще бъдат достъпни без парола, така че трябва да използвате тази функция само с надеждни профили.</translation>
 <translation id="8668052347555487755">Цветови режим</translation>
-<translation id="8701136875688985581">Този потребител се управлява от <ph name="ENROLLMENT_DOMAIN" />. Възможно е отдалечено управление на настройките и наблюдение на потребителската активност.</translation>
 <translation id="871560550817059752">Неуспешно – няма мастило</translation>
 <translation id="8726019395068607495">Спряло – вратичката е отворена</translation>
 <translation id="8747900814994928677">Потвърждаване на промяната</translation>
 <translation id="8919837981463578619">Неуспешно – липсваща тава</translation>
 <translation id="8928727111548978589">Неуспешно – няма хартия</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Оставащи опити: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="910415269708673980">Опресняване на пропуска за <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Отключване</translation>
 </translationbundle>

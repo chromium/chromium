@@ -96,13 +96,11 @@
 <translation id="8347227221149377169">Տպելու առաջադրանքներ</translation>
 <translation id="8352772353338965963">Ավելացնել հաշիվ բազմակի մուտքի համակարգում: Բոլոր մուտք գործած հաշիվները մատչելի են առանց գաղտնաբառի մուտքագրման, ուստի այս գործառույթը պետք է միայն օգտագործվի վստահելի հաշիվների հետ:</translation>
 <translation id="8668052347555487755">Գույների ռեժիմ</translation>
-<translation id="8701136875688985581">Այս օգտատերը կառավարվում է <ph name="ENROLLMENT_DOMAIN" /> տիրույթի կողմից։ Այն կարող է հեռակա կառավարել կարգավորումները և վերահսկել օգտատիրոջ գործողությունները։</translation>
 <translation id="871560550817059752">Չհաջողվեց տպել – Թանաքը սպառվել է</translation>
 <translation id="8726019395068607495">Դադարեցվել է – Դռնակը բաց է</translation>
 <translation id="8747900814994928677">Հաստատեք փոփոխությունը</translation>
 <translation id="8919837981463578619">Չհաջողվեց տպել – Դարակը բացակայում է</translation>
 <translation id="8928727111548978589">Չհաջողվեց տպել – Թուղթը սպառվել է</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Մնացած փորձերի քանակը՝ <ph name="ATTEMPTS_LEFT" />։</translation>
 <translation id="910415269708673980">Թարմացրեք <ph name="PRINCIPAL_NAME" /> հաշվի տոմսը</translation>
 <translation id="9111102763498581341">Ապակողպել</translation>
 </translationbundle>

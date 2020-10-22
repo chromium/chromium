@@ -3,6 +3,7 @@
 <translationbundle lang="de">
 <translation id="1018656279737460067">Abgebrochen</translation>
 <translation id="1195447618553298278">Unbekannter Fehler.</translation>
+<translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">Fehlgeschlagen – Filter funktioniert nicht</translation>
 <translation id="1468664791493211953">Angebote</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -46,6 +47,7 @@
 <translation id="4227825898293920515">Passwort läuft in <ph name="TIME" /> ab</translation>
 <translation id="4238516577297848345">Keine laufenden Druckaufträge</translation>
 <translation id="4297501883039923494">Angehalten – Unbekannter Fehler</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Kerberos-Ticket läuft bald ab</translation>
 <translation id="445059817448385655">Altes Passwort</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> von <ph name="TOTAL_PAGE_NUMBER" />. Wenn Sie den Druckauftrag abbrechen möchten, drücken Sie die Eingabetaste.</translation>
@@ -73,6 +75,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6058625436358447366">Geben Sie zum Schluss Ihr altes und Ihr neues Passwort ein</translation>
 <translation id="6106186594183574873">Geben Sie zum Schluss Ihr altes Passwort ein</translation>
 <translation id="6146993107019042706">Geben Sie zum Schluss Ihr neues Passwort ein</translation>
+<translation id="6147514244879357420">PNG</translation>
 <translation id="636850387210749493">Enterprise-Registrierung</translation>
 <translation id="649050271426829538">Angehalten – Papierstau</translation>
 <translation id="6517239166834772319">Entdecken</translation>
@@ -93,13 +96,11 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8347227221149377169">Druckaufträge</translation>
 <translation id="8352772353338965963">Fügen Sie ein Konto für die Mehrfachanmeldung hinzu. Sie können auf alle angemeldeten Konten zugreifen, ohne ein Passwort eingeben zu müssen. Verwenden Sie diese Funktion daher nur mit vertrauenswürdigen Konten.</translation>
 <translation id="8668052347555487755">Farbmodus</translation>
-<translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" /> verwaltet diesen Nutzer. Es werden möglicherweise per Remotezugriff Einstellungen verwaltet und Nutzeraktivitäten überwacht.</translation>
 <translation id="871560550817059752">Fehlgeschlagen – Keine Tinte</translation>
 <translation id="8726019395068607495">Angehalten – Druckerklappe offen</translation>
 <translation id="8747900814994928677">Änderung bestätigen</translation>
 <translation id="8919837981463578619">Fehlgeschlagen – Fach fehlt</translation>
 <translation id="8928727111548978589">Fehlgeschlagen – Kein Papier</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> verbleibende Versuche</translation>
 <translation id="910415269708673980">Aktualisieren Sie das Ticket für <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Entsperren</translation>
 </translationbundle>

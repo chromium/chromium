@@ -96,13 +96,11 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="8347227221149377169">Zadaci štampanja</translation>
 <translation id="8352772353338965963">Dodajte račun za višestruku prijavu. Svim računima na kojima je izvršena prijava je moguće pristupiti bez lozinke. Ovu funkciju treba koristiti isključivo s pouzdanim računima.</translation>
 <translation id="8668052347555487755">Način rada boja</translation>
-<translation id="8701136875688985581"><ph name="ENROLLMENT_DOMAIN" /> upravlja ovim korisnikom. Može udaljeno upravljati postavkama i pratiti aktivnost korisnika.</translation>
 <translation id="871560550817059752">Nije uspjelo – nema tinte</translation>
 <translation id="8726019395068607495">Zaustavljeno – poklopac je otvoren</translation>
 <translation id="8747900814994928677">Potvrdite promjenu</translation>
 <translation id="8919837981463578619">Nije uspjelo – nedostaje ladica</translation>
 <translation id="8928727111548978589">Nije uspjelo – nema papira</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Broj preostalih pokušaja: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="910415269708673980">Osvježite tiket za <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Otključaj</translation>
 </translationbundle>
