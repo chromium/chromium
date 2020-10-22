@@ -542,7 +542,11 @@ template("monochrome_public_common_apk_or_module_tmpl") {
         }
         deps += [ ":${target_name}__all_chrome_resources" ]
         if (is_component_build) {
-          shared_libraries += _chrome_module_shared_lib_deps
+          if (android_64bit_target_cpu && !invoker.is_64_bit_browser) {
+            secondary_abi_shared_libraries += _chrome_module_shared_lib_deps
+          } else {
+            shared_libraries += _chrome_module_shared_lib_deps
+          }
         } else {
           deps += _chrome_module_shared_lib_deps
         }
