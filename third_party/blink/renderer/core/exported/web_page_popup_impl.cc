@@ -851,18 +851,20 @@ void WebPagePopupImpl::ClosePopup() {
 
   // If the popup is closed from the renderer via Cancel(), then we want to
   // initiate closing immediately here, but send a request for completing the
-  // close process through the browser via ClosePopupWidgetSoon(), which will
-  // close the RenderWidget and come back to this class to Close().
-  // If |closing_| is already true, then the browser initiated the close on its
-  // own, via IPC to the RenderWidget, which means ClosePopup() is being run
-  // inside the same stack, and does not need to request the browser to close
-  // the RenderWidget.
+  // close process through the browser via PopupWidgetHost::RequestClosePopup(),
+  // which will disconnect the channel come back to this class to
+  // WidgetHostDisconnected(). If |closing_| is already true, then the browser
+  // initiated the close on its own, via WidgetHostDisconnected IPC, which means
+  // ClosePopup() is being run inside the same stack, and does not need to
+  // request the browser to close the widget.
   const bool running_inside_close = closing_;
   if (!running_inside_close) {
     // Bounce through the browser to get it to close the RenderWidget, which
     // will Close() this object too. Only if we're not currently already
-    // responding to the browser closing us though.
-    web_page_popup_client_->ClosePopupWidgetSoon();
+    // responding to the browser closing us though. We don't need to do a post
+    // task like WebViewImpl::CloseWindowSoon does because we shouldn't be
+    // executing javascript influencing this popup widget.
+    popup_widget_host_->RequestClosePopup();
   }
 
   closing_ = true;

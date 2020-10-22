@@ -3496,6 +3496,12 @@ void RenderFrameHostImpl::UpdateTargetURL(
   std::move(callback).Run();
 }
 
+void RenderFrameHostImpl::RequestClose() {
+  // If the renderer is telling us to close, it has already run the unload
+  // events, and we can take the fast path.
+  render_view_host_->ClosePageIgnoringUnloadEvents();
+}
+
 void RenderFrameHostImpl::UpdateFaviconURL(
     std::vector<blink::mojom::FaviconURLPtr> favicon_urls) {
   delegate_->UpdateFaviconURL(this, std::move(favicon_urls));

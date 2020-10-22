@@ -35,9 +35,6 @@ class CONTENT_EXPORT RenderWidgetHostOwnerDelegate {
   // The RenderWidgetHost has been initialized.
   virtual void RenderWidgetDidInit() = 0;
 
-  // The RenderWidget was closed. Only swapped-in RenderWidgets receive this.
-  virtual void RenderWidgetDidClose() = 0;
-
   // The RenderWidget finished the first visually non-empty paint.
   virtual void RenderWidgetDidFirstVisuallyNonEmptyPaint() = 0;
 

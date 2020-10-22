@@ -137,6 +137,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
+#include "third_party/blink/public/mojom/page/widget.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/screen.h"
@@ -7571,12 +7572,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // Test for https://crbug.com/568836.  From an A-embed-B page, navigate the
 // subframe from B to A.  This cleans up the process for B, but the test delays
 // the browser side from killing the B process right away.  This allows the
-// B process to process two WidgetMsg_Close messages sent to the subframe's
-// RenderWidget and to the RenderView, in that order.  In the bug, the latter
-// crashed while detaching the subframe's LocalFrame (triggered as part of
-// closing the RenderView), because this tried to access the subframe's
-// WebFrameWidget (from RenderFrameImpl::didChangeSelection), which had already
-// been cleared by the former.
+// B process to process the subframe's detached event and the DestroyView sent
+// to the RenderView. In the bug, the latter crashed while detaching the
+// subframe's LocalFrame (triggered as part of closing the RenderView), because
+// this tried to access the subframe's WebFrameWidget (from
+// RenderFrameImpl::didChangeSelection), which had already been cleared by the
+// former.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        CloseSubframeWidgetAndViewOnProcessExit) {
   GURL main_url(embedded_test_server()->GetURL(
@@ -8214,6 +8215,30 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(3u, Shell::windows().size());
 }
 
+// Intercepts calls to PopupWidgetHost's RequestClosePopup mojo method, and
+// discards it.
+class RequestCloseWidgetInterceptor
+    : public blink::mojom::PopupWidgetHostInterceptorForTesting {
+ public:
+  explicit RequestCloseWidgetInterceptor(
+      RenderWidgetHostImpl* render_widget_host)
+      : render_widget_host_(render_widget_host) {
+    render_widget_host_->popup_widget_host_receiver_for_testing()
+        .SwapImplForTesting(this);
+  }
+
+  ~RequestCloseWidgetInterceptor() override = default;
+
+  blink::mojom::PopupWidgetHost* GetForwardingInterface() override {
+    return render_widget_host_;
+  }
+
+  void RequestClosePopup() override {}
+
+ private:
+  RenderWidgetHostImpl* render_widget_host_;
+};
+
 // Test for https://crbug.com/612276.  Similar to
 // TwoSubframesOpenWindowsSimultaneously, but use popup menu widgets instead of
 // windows.
@@ -8266,6 +8291,19 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       event);
   filter1->Wait();
 
+  auto first_popup_global_id =
+      GlobalRoutingID(process1->GetID(), filter1->routing_id());
+  // Add an incerceptor for first popup widget so it doesn't get closed
+  // immediately while the other one is being opened.
+  EXPECT_TRUE(base::Contains(web_contents()->pending_widget_views_,
+                             first_popup_global_id));
+
+  RequestCloseWidgetInterceptor child1_popup_widget_interceptor(
+      static_cast<RenderWidgetHostImpl*>(
+          web_contents()
+              ->pending_widget_views_[first_popup_global_id]
+              ->GetRenderWidgetHost()));
+
   scoped_refptr<PendingWidgetMessageFilter> filter2 =
       new PendingWidgetMessageFilter();
   process2->AddFilter(filter2.get());
@@ -8275,9 +8313,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   filter2->Wait();
 
   // At this point, we should have two pending widgets.
-  EXPECT_TRUE(base::Contains(
-      web_contents()->pending_widget_views_,
-      GlobalRoutingID(process1->GetID(), filter1->routing_id())));
+  EXPECT_TRUE(base::Contains(web_contents()->pending_widget_views_,
+                             first_popup_global_id));
   EXPECT_TRUE(base::Contains(
       web_contents()->pending_widget_views_,
       GlobalRoutingID(process2->GetID(), filter2->routing_id())));

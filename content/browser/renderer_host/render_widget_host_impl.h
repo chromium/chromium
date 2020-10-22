@@ -287,6 +287,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserver>
           render_frame_metadata_observer) override;
 
+  // blink::mojom::PopupWidgetHost implementation.
+  void RequestClosePopup() override;
+
   // Notification that the screen info has changed.
   void NotifyScreenInfoChanged();
 
@@ -798,6 +801,12 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   mojo::AssociatedReceiver<blink::mojom::FrameWidgetHost>&
   frame_widget_host_receiver_for_testing() {
     return blink_frame_widget_host_receiver_;
+  }
+
+  // Exposed so that tests can swap the implementation and intercept calls.
+  mojo::AssociatedReceiver<blink::mojom::PopupWidgetHost>&
+  popup_widget_host_receiver_for_testing() {
+    return blink_popup_widget_host_receiver_;
   }
 
   // Exposed so that tests can swap the implementation and intercept calls.

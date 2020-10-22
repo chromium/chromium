@@ -766,12 +766,6 @@ void RenderViewHostImpl::RenderWidgetDidInit() {
   PostRenderViewReady();
 }
 
-void RenderViewHostImpl::RenderWidgetDidClose() {
-  // If the renderer is telling us to close, it has already run the unload
-  // events, and we can take the fast path.
-  ClosePageIgnoringUnloadEvents();
-}
-
 void RenderViewHostImpl::OnShowWidget(int widget_route_id,
                                       const gfx::Rect& initial_rect) {
   delegate_->ShowCreatedWidget(GetProcess()->GetID(), widget_route_id,

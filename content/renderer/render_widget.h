@@ -138,7 +138,8 @@ class CONTENT_EXPORT RenderWidget
   // because popups do not not need to be faked out.
   // A RenderWidget popup is owned by the browser process. The object will be
   // destroyed when the blink::mojom::WidgetHost channel is disconnected. The
-  // object can request its own destruction via ClosePopupWidgetSoon().
+  // object can request its own destruction via
+  // blink::mojom::PopupWidgetHost::RequestClose().
   static RenderWidget* CreateForPopup(
       AgentSchedulingGroup& agent_scheduling_group,
       int32_t widget_routing_id,
@@ -195,8 +196,6 @@ class CONTENT_EXPORT RenderWidget
 
   // blink::WebWidgetClient
   void ScheduleAnimation() override;
-  void CloseWidgetSoon() override;
-  void ClosePopupWidgetSoon() override;
   void BrowserClosedIpcChannelForPopupWidget() override;
   void Show(blink::WebNavigationPolicy) override;
   void SetWindowRect(const gfx::Rect&) override;
@@ -247,11 +246,6 @@ class CONTENT_EXPORT RenderWidget
   // Initializes the compositor and dependent systems, as part of the
   // Initialize() process.
   void InitCompositing(const blink::ScreenInfo& screen_info);
-
-  // Request the window to close from the renderer by sending the request to the
-  // browser.
-  static void DoDeferredClose(AgentSchedulingGroup* agent_scheduling_group,
-                              int widget_routing_id);
 
   // RenderWidget IPC message handlers.
   void OnRequestSetBoundsAck();

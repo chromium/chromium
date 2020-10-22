@@ -667,7 +667,6 @@ bool RenderWidgetHostImpl::OnMessageReceived(const IPC::Message &msg) {
 
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(RenderWidgetHostImpl, msg)
-    IPC_MESSAGE_HANDLER(WidgetHostMsg_Close, OnClose)
     IPC_MESSAGE_HANDLER(WidgetHostMsg_RequestSetBounds, OnRequestSetBounds)
     IPC_MESSAGE_HANDLER(DragHostMsg_UpdateDragCursor, OnUpdateDragCursor)
     IPC_MESSAGE_UNHANDLED(handled = false)
@@ -2250,12 +2249,9 @@ void RenderWidgetHostImpl::OnKeyboardEventAck(
   // HandleKeyboardEvent destroys this RenderWidgetHostImpl).
 }
 
-void RenderWidgetHostImpl::OnClose() {
-  if (owner_delegate_) {
-    owner_delegate_->RenderWidgetDidClose();
-  } else {
-    ShutdownAndDestroyWidget(true);
-  }
+void RenderWidgetHostImpl::RequestClosePopup() {
+  DCHECK(!owner_delegate_);
+  ShutdownAndDestroyWidget(true);
 }
 
 void RenderWidgetHostImpl::SetToolTipText(

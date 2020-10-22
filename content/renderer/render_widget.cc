@@ -336,41 +336,6 @@ void RenderWidget::InitCompositing(const blink::ScreenInfo& screen_info) {
   DCHECK(layer_tree_host_);
 }
 
-// static
-void RenderWidget::DoDeferredClose(AgentSchedulingGroup* agent_scheduling_group,
-                                   int widget_routing_id) {
-  // `DoDeferredClose()` was a posted task, which means the `RenderWidget` may
-  // have been destroyed in the meantime. So break the dependency on
-  // `RenderWidget` here, by making this method static and going passing in the
-  // `AgentSchedulingGroup` explicitly.
-  agent_scheduling_group->Send(new WidgetHostMsg_Close(widget_routing_id));
-}
-
-void RenderWidget::ClosePopupWidgetSoon() {
-  // Only should be called for popup widgets.
-  DCHECK(!for_child_local_root_frame_);
-  DCHECK(!delegate_);
-
-  CloseWidgetSoon();
-}
-
-void RenderWidget::CloseWidgetSoon() {
-  DCHECK(RenderThread::IsMainThread());
-
-  // If a page calls window.close() twice, we'll end up here twice, but that's
-  // OK.  It is safe to send multiple Close messages.
-  //
-  // Ask the RenderWidgetHost to initiate close.  We could be called from deep
-  // in Javascript.  If we ask the RenderWidgetHost to close now, the window
-  // could be closed before the JS finishes executing, thanks to nested message
-  // loops running and handling the resuliting Close IPC. So instead, post a
-  // message back to the message loop, which won't run until the JS is
-  // complete, and then the Close request can be sent.
-  compositor_deps_->GetCleanupTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&RenderWidget::DoDeferredClose,
-                                &agent_scheduling_group_, routing_id_));
-}
-
 void RenderWidget::Close(std::unique_ptr<RenderWidget> widget) {
   // At the end of this method, |widget| which points to this is deleted.
   DCHECK_EQ(widget.get(), this);

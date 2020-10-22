@@ -432,38 +432,30 @@ void WebViewImpl::SetPrerendererClient(
 }
 
 void WebViewImpl::CloseWindowSoon() {
-  if (GetPage()->MainFrame()->IsLocalFrame()) {
-    // If the main frame is in this RenderView's frame tree, then the Close
-    // request gets routed through the RenderWidget since non-frame
-    // RenderWidgets share the code path.
-    WebWidgetClient* widget_client =
-        MainFrameImpl()->FrameWidgetImpl()->Client();
-    DCHECK(widget_client);
-    widget_client->CloseWidgetSoon();
-  } else {
-    // Ask the RenderViewHost with a local main frame to initiate close.  We
-    // could be called from deep in Javascript.  If we ask the RenderViewHost to
-    // close now, the window could be closed before the JS finishes executing,
-    // thanks to nested message loops running and handling the resulting Close
-    // IPC. So instead, post a message back to the message loop, which won't run
-    // until the JS is complete, and then the Close request can be sent.
-    if (auto* main_thread_scheduler =
-            scheduler::WebThreadScheduler::MainThreadScheduler()) {
-      main_thread_scheduler->DeprecatedDefaultTaskRunner()->PostTask(
-          FROM_HERE, WTF::Bind(&WebViewImpl::DoDeferredCloseWindowSoon,
-                               weak_ptr_factory_.GetWeakPtr()));
-    }
-  }
+  // Ask the RenderViewHost with a local main frame to initiate close.  We
+  // could be called from deep in Javascript.  If we ask the RenderViewHost to
+  // close now, the window could be closed before the JS finishes executing,
+  // thanks to nested message loops running and handling the resulting
+  // DestroyView IPC. So instead, post a message back to the message loop, which
+  // won't run until the JS is complete, and then the
+  // RouteCloseEvent/RequestClose request can be sent.
+  Thread::MainThread()->GetTaskRunner()->PostTask(
+      FROM_HERE, WTF::Bind(&WebViewImpl::DoDeferredCloseWindowSoon,
+                           weak_ptr_factory_.GetWeakPtr()));
 }
 
 void WebViewImpl::DoDeferredCloseWindowSoon() {
-  // The main widget is currently not active. The active main frame widget is in
-  // a different process. Have the browser route the close request to the active
-  // widget instead, so that the correct unload handlers are run. We do an early
-  // return instead of a DCHECK to guard against DidDetachRemoteMainFrame()
-  // being called between this method is schedule and when it's actually run.
-  if (remote_main_frame_host_remote_.is_bound())
+  // Have the browser process a close request. We should have either a
+  // |local_main_frame_host_remote_| or |remote_main_frame_host_remote_|.
+  // This method will not execute if Close has been called as WeakPtrs
+  // will be invalidated in Close.
+  if (GetPage()->MainFrame()->IsLocalFrame()) {
+    DCHECK(local_main_frame_host_remote_);
+    local_main_frame_host_remote_->RequestClose();
+  } else {
+    DCHECK(remote_main_frame_host_remote_);
     remote_main_frame_host_remote_->RouteCloseEvent();
+  }
 }
 
 WebViewImpl::WebViewImpl(
@@ -1404,6 +1396,9 @@ void WebViewImpl::Close() {
   CHECK(page_);
   DCHECK(AllInstances().Contains(this));
   AllInstances().erase(this);
+
+  // Invalidate any weak ptrs as we are starting to shutdown.
+  weak_ptr_factory_.InvalidateWeakPtrs();
 
   // Initiate shutdown for the entire frameset.  This will cause a lot of
   // notifications to be sent. This will detach all frames in this WebView's

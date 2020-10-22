@@ -1701,6 +1701,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void UpdateTargetURL(const GURL& url,
                        blink::mojom::LocalMainFrameHost::UpdateTargetURLCallback
                            callback) override;
+  void RequestClose() override;
 
   void ReportNoBinderForInterface(const std::string& error);
 

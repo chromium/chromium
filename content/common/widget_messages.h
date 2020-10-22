@@ -43,11 +43,6 @@ IPC_MESSAGE_ROUTED0(WidgetMsg_SetBounds_ACK)
 // Renderer -> Browser Messages.
 //
 
-// Sent by the renderer process to request that the browser close the widget.
-// This corresponds to the window.close() API, and the browser may ignore
-// this message.
-IPC_MESSAGE_ROUTED0(WidgetHostMsg_Close)
-
 // Sent by the renderer process to request that the browser change the bounds of
 // the widget. This corresponds to the window.resizeTo() and window.moveTo()
 // APIs, and the browser may ignore this message.

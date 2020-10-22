@@ -83,11 +83,6 @@ class WebWidgetClient {
   // will unconditionally ensure that the compositor is actually run.
   virtual void ScheduleAnimationForWebTests() {}
 
-  // Called when some JS code has instructed the window associated to the main
-  // frame to close, which will result in a request to the browser to close the
-  // RenderWidget associated to it
-  virtual void CloseWidgetSoon() {}
-
   // Called when the cursor for the widget changes.
   virtual void DidChangeCursor(const ui::Cursor&) {}
 

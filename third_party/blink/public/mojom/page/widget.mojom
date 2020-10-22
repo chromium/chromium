@@ -268,4 +268,7 @@ interface WidgetCompositor {
 // widget in the renderer should be destroyed.
 interface PopupWidgetHost {
   // TODO(dtapuska): Add ShowPopup method that will replace ViewHostMsg_ShowWidget
+
+  // Request that this popup be dismissed.
+  RequestClosePopup();
 };

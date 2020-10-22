@@ -45,11 +45,6 @@ class WebView;
 
 class WebPagePopupClient : public WebWidgetClient {
  public:
-  // Called when the window for this popup widget should be closed. The
-  // WebWidget will be closed asynchronously as a result of this
-  // request.
-  virtual void ClosePopupWidgetSoon() = 0;
-
   // Request to destroy the WebPagePopupClient immediately given that the
   // browser has closed the associated mojom connection.
   virtual void BrowserClosedIpcChannelForPopupWidget() = 0;

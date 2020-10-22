@@ -998,6 +998,10 @@ interface LocalMainFrameHost {
   // method will reply back to the renderer once the target URL gets received,
   // in order to prevent target URLs spamming the browser.
   UpdateTargetURL(url.mojom.Url url) => ();
+
+  // Request close of the window. This corresponds to a window.close() javascript API call.
+  // Frame unload handlers should have already been called before this method is called.
+  RequestClose();
 };
 
 // Implemented in Browser, this interface defines remote-main-frame-specific
