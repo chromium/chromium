@@ -62,6 +62,7 @@ source_set("testing") {
   deps = [
     ":generated",
     ":testing_internal",
+    "//third_party/blink/renderer/core",
     "//third_party/blink/renderer/platform",
     "//v8",
   ]
