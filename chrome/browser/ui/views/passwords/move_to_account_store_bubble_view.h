@@ -22,8 +22,6 @@ class MoveToAccountStoreBubbleView : public PasswordBubbleViewBase {
   // PasswordBubbleViewBase
   void AddedToWidget() override;
   void OnThemeChanged() override;
-  gfx::Size CalculatePreferredSize() const override;
-  bool ShouldShowCloseButton() const override;
   MoveToAccountStoreBubbleController* GetController() override;
   const MoveToAccountStoreBubbleController* GetController() const override;
 

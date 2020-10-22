@@ -20,15 +20,11 @@ class PasswordGenerationConfirmationView : public PasswordBubbleViewBase {
   ~PasswordGenerationConfirmationView() override;
 
  private:
-  // PasswordBubbleViewBase
+  // PasswordBubbleViewBase:
   PasswordBubbleControllerBase* GetController() override;
   const PasswordBubbleControllerBase* GetController() const override;
 
   void StyledLabelLinkClicked();
-
-  // LocationBarBubbleDelegateView:
-  bool ShouldShowCloseButton() const override;
-  gfx::Size CalculatePreferredSize() const override;
 
   GenerationConfirmationBubbleController controller_;
 

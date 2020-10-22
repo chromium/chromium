@@ -27,13 +27,9 @@ class PasswordSaveUnsyncedCredentialsLocallyView
   ~PasswordSaveUnsyncedCredentialsLocallyView() override;
 
  private:
-  // PasswordBubbleViewBase overrides.
+  // PasswordBubbleViewBase:
   PasswordBubbleControllerBase* GetController() override;
   const PasswordBubbleControllerBase* GetController() const override;
-
-  // LocationBarBubbleDelegateView overrides.
-  bool ShouldShowCloseButton() const override;
-  gfx::Size CalculatePreferredSize() const override;
 
   void CreateLayout();
 

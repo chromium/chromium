@@ -36,6 +36,7 @@ PasswordAutoSignInView::PasswordAutoSignInView(
   SetLayoutManager(std::make_unique<views::FillLayout>());
   const autofill::PasswordForm& form = controller_.pending_password();
 
+  SetShowCloseButton(false);
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
   set_margins(
@@ -82,13 +83,6 @@ void PasswordAutoSignInView::OnWidgetActivationChanged(views::Widget* widget,
                  &PasswordAutoSignInView::OnTimer);
   }
   LocationBarBubbleDelegateView::OnWidgetActivationChanged(widget, active);
-}
-
-gfx::Size PasswordAutoSignInView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
 }
 
 void PasswordAutoSignInView::OnTimer() {

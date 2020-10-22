@@ -326,17 +326,6 @@ void MoveToAccountStoreBubbleView::OnThemeChanged() {
           : IDR_SAVE_PASSWORD_MULTI_DEVICE));
 }
 
-gfx::Size MoveToAccountStoreBubbleView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
-}
-
-bool MoveToAccountStoreBubbleView::ShouldShowCloseButton() const {
-  return true;
-}
-
 MoveToAccountStoreBubbleController*
 MoveToAccountStoreBubbleView::GetController() {
   return &controller_;

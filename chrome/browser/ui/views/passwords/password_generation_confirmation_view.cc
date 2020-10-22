@@ -60,20 +60,9 @@ PasswordGenerationConfirmationView::GetController() const {
   return &controller_;
 }
 
-bool PasswordGenerationConfirmationView::ShouldShowCloseButton() const {
-  return true;
-}
-
 void PasswordGenerationConfirmationView::StyledLabelLinkClicked() {
   controller_.OnNavigateToPasswordManagerAccountDashboardLinkClicked(
       password_manager::ManagePasswordsReferrer::
           kPasswordGenerationConfirmation);
   CloseBubble();
-}
-
-gfx::Size PasswordGenerationConfirmationView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
 }

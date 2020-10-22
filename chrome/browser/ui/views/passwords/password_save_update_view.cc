@@ -343,13 +343,6 @@ bool PasswordSaveUpdateView::Accept() {
   return true;
 }
 
-gfx::Size PasswordSaveUpdateView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
-}
-
 views::View* PasswordSaveUpdateView::GetInitiallyFocusedView() {
   if (username_dropdown_ && username_dropdown_->GetText().empty())
     return username_dropdown_;
@@ -371,10 +364,6 @@ bool PasswordSaveUpdateView::IsDialogButtonEnabled(
 
 gfx::ImageSkia PasswordSaveUpdateView::GetWindowIcon() {
   return gfx::ImageSkia();
-}
-
-bool PasswordSaveUpdateView::ShouldShowCloseButton() const {
-  return true;
 }
 
 void PasswordSaveUpdateView::AddedToWidget() {

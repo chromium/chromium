@@ -341,17 +341,6 @@ void PasswordItemsView::NotifyPasswordFormAction(
   controller_.OnPasswordAction(password_form, action);
 }
 
-bool PasswordItemsView::ShouldShowCloseButton() const {
-  return true;
-}
-
-gfx::Size PasswordItemsView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
-}
-
 void PasswordItemsView::OnFaviconReady(const gfx::Image& favicon) {
   if (!favicon.IsEmpty()) {
     favicon_ = favicon;

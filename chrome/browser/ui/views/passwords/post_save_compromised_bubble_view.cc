@@ -63,17 +63,6 @@ PostSaveCompromisedBubbleView::GetController() const {
   return &controller_;
 }
 
-gfx::Size PostSaveCompromisedBubbleView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
-}
-
-bool PostSaveCompromisedBubbleView::ShouldShowCloseButton() const {
-  return true;
-}
-
 void PostSaveCompromisedBubbleView::OnThemeChanged() {
   PasswordBubbleViewBase::OnThemeChanged();
   int image_id = controller_.GetImageID(

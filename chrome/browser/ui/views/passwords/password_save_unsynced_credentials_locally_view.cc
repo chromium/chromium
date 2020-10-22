@@ -120,15 +120,3 @@ void PasswordSaveUnsyncedCredentialsLocallyView::OnSaveClicked() {
   }
   controller_.OnSaveClicked(was_credential_selected);
 }
-
-bool PasswordSaveUnsyncedCredentialsLocallyView::ShouldShowCloseButton() const {
-  return true;
-}
-
-gfx::Size PasswordSaveUnsyncedCredentialsLocallyView::CalculatePreferredSize()
-    const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
-}

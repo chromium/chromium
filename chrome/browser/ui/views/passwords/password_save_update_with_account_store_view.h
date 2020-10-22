@@ -62,11 +62,9 @@ class PasswordSaveUpdateWithAccountStoreView
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // PasswordBubbleViewBase:
-  gfx::Size CalculatePreferredSize() const override;
   views::View* GetInitiallyFocusedView() override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   gfx::ImageSkia GetWindowIcon() override;
-  bool ShouldShowCloseButton() const override;
 
   // View:
   void AddedToWidget() override;

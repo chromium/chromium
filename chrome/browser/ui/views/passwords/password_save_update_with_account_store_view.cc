@@ -560,14 +560,6 @@ void PasswordSaveUpdateWithAccountStoreView::OnWidgetDestroying(
   }
 }
 
-gfx::Size PasswordSaveUpdateWithAccountStoreView::CalculatePreferredSize()
-    const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
-}
-
 views::View* PasswordSaveUpdateWithAccountStoreView::GetInitiallyFocusedView() {
   if (username_dropdown_ && username_dropdown_->GetText().empty())
     return username_dropdown_;
@@ -589,10 +581,6 @@ bool PasswordSaveUpdateWithAccountStoreView::IsDialogButtonEnabled(
 
 gfx::ImageSkia PasswordSaveUpdateWithAccountStoreView::GetWindowIcon() {
   return gfx::ImageSkia();
-}
-
-bool PasswordSaveUpdateWithAccountStoreView::ShouldShowCloseButton() const {
-  return true;
 }
 
 void PasswordSaveUpdateWithAccountStoreView::AddedToWidget() {

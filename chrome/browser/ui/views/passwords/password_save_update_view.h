@@ -35,11 +35,9 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase {
   const PasswordBubbleControllerBase* GetController() const override;
 
   // PasswordBubbleViewBase:
-  gfx::Size CalculatePreferredSize() const override;
   views::View* GetInitiallyFocusedView() override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   gfx::ImageSkia GetWindowIcon() override;
-  bool ShouldShowCloseButton() const override;
   bool Accept() override;
 
   // View:

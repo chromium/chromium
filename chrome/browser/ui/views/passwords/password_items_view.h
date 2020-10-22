@@ -35,10 +35,6 @@ class PasswordItemsView : public PasswordBubbleViewBase {
       PasswordBubbleControllerBase::PasswordAction action);
   void RecreateLayout();
 
-  // LocationBarBubbleDelegateView:
-  bool ShouldShowCloseButton() const override;
-  gfx::Size CalculatePreferredSize() const override;
-
   // Called when the favicon is loaded. If |favicon| isn't empty, it sets
   // |favicon_| and invokes RecreateLayout().
   void OnFaviconReady(const gfx::Image& favicon);

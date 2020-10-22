@@ -20,8 +20,6 @@ class PostSaveCompromisedBubbleView : public PasswordBubbleViewBase {
   // PasswordBubbleViewBase:
   PostSaveCompromisedBubbleController* GetController() override;
   const PostSaveCompromisedBubbleController* GetController() const override;
-  gfx::Size CalculatePreferredSize() const override;
-  bool ShouldShowCloseButton() const override;
   void OnThemeChanged() override;
 
   PostSaveCompromisedBubbleController controller_;

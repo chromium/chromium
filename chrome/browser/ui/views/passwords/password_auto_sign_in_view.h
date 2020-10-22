@@ -33,7 +33,6 @@ class PasswordAutoSignInView : public PasswordBubbleViewBase {
   const PasswordBubbleControllerBase* GetController() const override;
 
   // LocationBarBubbleDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
   void OnTimer();
