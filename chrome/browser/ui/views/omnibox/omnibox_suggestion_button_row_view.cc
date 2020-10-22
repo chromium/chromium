@@ -68,7 +68,11 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     return color_utils::GetColorWithMaxContrast(background()->get_color());
   }
 
-  void OnStyleRefresh() { focus_ring()->SchedulePaint(); }
+  void OnOmniboxBackgroundChange(SkColor omnibox_bg_color) {
+    focus_ring()->SchedulePaint();
+    omnibox_bg_color_ = omnibox_bg_color;
+    UpdateBackgroundColor();
+  }
 
   OmniboxPopupModel::Selection selection() { return selection_; }
 
@@ -96,16 +100,15 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
   }
 
   void UpdateBackgroundColor() override {
-    // See comment in OnThemeChanged.
+    if (!omnibox_bg_color_.has_value())
+      return;
+
     SkColor stroke_color =
-        GetOmniboxColor(GetThemeProvider(), OmniboxPart::RESULTS_BACKGROUND,
-                        OmniboxPartState::SELECTED);
-    SkColor bg_color =
-        GetOmniboxColor(GetThemeProvider(), OmniboxPart::RESULTS_BACKGROUND,
+        GetOmniboxColor(GetThemeProvider(), OmniboxPart::RESULTS_BUTTON_BORDER,
                         OmniboxPartState::NORMAL);
     SetBackground(CreateBackgroundFromPainter(
         views::Painter::CreateRoundRectWith1PxBorderPainter(
-            bg_color, stroke_color, GetCornerRadius())));
+            omnibox_bg_color_.value(), stroke_color, GetCornerRadius())));
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
@@ -119,6 +122,7 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
   const gfx::VectorIcon& icon_;
   OmniboxPopupContentsView* popup_contents_view_;
   OmniboxPopupModel::Selection selection_;
+  base::Optional<SkColor> omnibox_bg_color_;
 
   float CalculateInkDropHighlightOpacity() {
     // Ink drop highlight opacity is result of mixing a layer with hovered
@@ -217,10 +221,11 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
   SetVisible(is_any_button_visible);
 }
 
-void OmniboxSuggestionButtonRowView::OnStyleRefresh() {
-  keyword_button_->OnStyleRefresh();
-  pedal_button_->OnStyleRefresh();
-  tab_switch_button_->OnStyleRefresh();
+void OmniboxSuggestionButtonRowView::OnOmniboxBackgroundChange(
+    SkColor omnibox_bg_color) {
+  keyword_button_->OnOmniboxBackgroundChange(omnibox_bg_color);
+  pedal_button_->OnOmniboxBackgroundChange(omnibox_bg_color);
+  tab_switch_button_->OnOmniboxBackgroundChange(omnibox_bg_color);
 }
 
 views::Button* OmniboxSuggestionButtonRowView::GetActiveButton() const {

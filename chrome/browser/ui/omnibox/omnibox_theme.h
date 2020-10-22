@@ -28,6 +28,7 @@ enum class OmniboxPart {
   RESULTS_TEXT_URL,
   RESULTS_FOCUS_BAR,  // Vertical bar indicating focus, only used when
                       // #omnibox-refined-focus-ui is enabled
+  RESULTS_BUTTON_BORDER,
 };
 
 // An optional state for a given |OmniboxPart|.

@@ -670,6 +670,8 @@ base::Optional<ThemeHelper::OmniboxColor> ThemeHelper::GetOmniboxColorImpl(
       return url_color(results_bg_selected_color());
     case TP::COLOR_OMNIBOX_RESULTS_FOCUS_BAR:
       return {{dark ? gfx::kGoogleBlue300 : gfx::kGoogleBlue600, false}};
+    case TP::COLOR_OMNIBOX_RESULTS_BUTTON_BORDER:
+      return blend_toward_max_contrast(bg, gfx::kGoogleGreyAlpha400);
     case TP::COLOR_OMNIBOX_SECURITY_CHIP_DEFAULT:
     case TP::COLOR_OMNIBOX_SECURITY_CHIP_SECURE:
     case TP::COLOR_OMNIBOX_SECURITY_CHIP_DANGEROUS: {
