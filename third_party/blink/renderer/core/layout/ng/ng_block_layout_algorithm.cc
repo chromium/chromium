@@ -992,20 +992,35 @@ bool NGBlockLayoutAlgorithm::TryReuseFragmentsFromCache(
   if (!end_item || end_item == &previous_items->front())
     return false;
 
+  wtf_size_t max_lines = 0;
+  if (lines_until_clamp_) {
+    // There is an additional logic for the last clamped line. Reuse only up to
+    // before that to use the same logic.
+    if (*lines_until_clamp_ <= 1)
+      return false;
+    max_lines = *lines_until_clamp_ - 1;
+  }
+
   const auto& children = container_builder_.Children();
   const wtf_size_t children_before = children.size();
   NGFragmentItemsBuilder* items_builder = container_builder_.ItemsBuilder();
   const NGConstraintSpace& space = ConstraintSpace();
-  DCHECK_EQ(items_builder->GetWritingMode(), space.GetWritingMode());
-  DCHECK_EQ(items_builder->Direction(), space.Direction());
-  const auto result = items_builder->AddPreviousItems(
-      *previous_items, previous_fragment.Size(), &container_builder_, end_item);
-
+  DCHECK_EQ(items_builder->GetWritingDirection(), space.GetWritingDirection());
+  const auto result =
+      items_builder->AddPreviousItems(*previous_items, previous_fragment.Size(),
+                                      &container_builder_, end_item, max_lines);
   if (UNLIKELY(!result.succeeded)) {
     DCHECK_EQ(children.size(), children_before);
     DCHECK(!result.used_block_size);
     DCHECK(!result.inline_break_token);
     return false;
+  }
+
+  DCHECK_GT(result.line_count, 0u);
+  DCHECK(!max_lines || result.line_count <= max_lines);
+  if (lines_until_clamp_) {
+    DCHECK_GT(*lines_until_clamp_, static_cast<int>(result.line_count));
+    lines_until_clamp_ = *lines_until_clamp_ - result.line_count;
   }
 
   // |AddPreviousItems| may have added more than one lines. Propagate baselines
