@@ -11,6 +11,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/thumbnails/thumbnail_stats_tracker.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/skia_util.h"
 
@@ -35,10 +36,12 @@ ThumbnailImage::ThumbnailImage(Delegate* delegate) : delegate_(delegate) {
   DCHECK(delegate_);
   DCHECK(!delegate_->thumbnail_);
   delegate_->thumbnail_ = this;
+  ThumbnailStatsTracker::GetInstance().AddThumbnail(this);
 }
 
 ThumbnailImage::~ThumbnailImage() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ThumbnailStatsTracker::GetInstance().RemoveThumbnail(this);
   if (delegate_)
     delegate_->thumbnail_ = nullptr;
 }
@@ -86,6 +89,12 @@ void ThumbnailImage::RequestThumbnailImage() {
 void ThumbnailImage::RequestCompressedThumbnailData() {
   if (data_)
     NotifyCompressedDataObservers(data_);
+}
+
+size_t ThumbnailImage::GetCompressedDataSizeInBytes() const {
+  if (!data_)
+    return 0;
+  return data_->data.size();
 }
 
 void ThumbnailImage::AssignJPEGData(base::TimeTicks assign_sk_bitmap_time,
