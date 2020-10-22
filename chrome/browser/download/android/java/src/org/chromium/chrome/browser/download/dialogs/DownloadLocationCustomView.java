@@ -23,6 +23,8 @@ import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.chromium.chrome.browser.download.DirectoryOption;
 import org.chromium.chrome.browser.download.DownloadDialogBridge;
+import org.chromium.chrome.browser.download.DownloadLocationDialogMetrics;
+import org.chromium.chrome.browser.download.DownloadLocationDialogMetrics.DownloadLocationSuggestionEvent;
 import org.chromium.chrome.browser.download.DownloadLocationDialogType;
 import org.chromium.chrome.browser.download.DownloadPromptStatus;
 import org.chromium.chrome.browser.download.R;
@@ -192,6 +194,9 @@ public class DownloadLocationCustomView
                     getContext().getText(R.string.download_location_not_enough_space));
             textColor = ContextCompat.getColor(getContext(), R.color.input_underline_error_color);
             barColor = ContextCompat.getColor(getContext(), R.color.input_underline_error_color);
+
+            DownloadLocationDialogMetrics.recordDownloadLocationSuggestionEvent(
+                    DownloadLocationSuggestionEvent.NOT_ENOUGH_SPACE_SHOWN);
         }
 
         mLocationAvailableSpace.setText(locationAvailableSpaceText);

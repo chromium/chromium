@@ -10,6 +10,7 @@ import android.content.Context;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.download.DownloadLaterMetrics.DownloadLaterUiEvent;
+import org.chromium.chrome.browser.download.DownloadLocationDialogMetrics.DownloadLocationSuggestionEvent;
 import org.chromium.chrome.browser.download.dialogs.DownloadDateTimePickerDialog;
 import org.chromium.chrome.browser.download.dialogs.DownloadDateTimePickerDialogImpl;
 import org.chromium.chrome.browser.download.dialogs.DownloadDialogUtils;
@@ -114,6 +115,8 @@ public class DownloadDialogBridge
                     && DownloadDialogUtils.shouldSuggestDownloadLocation(
                             dirs, getDownloadDefaultDirectory(), totalBytes)) {
                 suggestedDialogType = DownloadLocationDialogType.LOCATION_SUGGESTION;
+                DownloadLocationDialogMetrics.recordDownloadLocationSuggestionEvent(
+                        DownloadLocationSuggestionEvent.LOCATION_SUGGESTION_SHOWN);
             }
 
             showDialog(activity, modalDialogManager, getPrefService(), totalBytes,

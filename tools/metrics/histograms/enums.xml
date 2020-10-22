@@ -18949,6 +18949,11 @@ Called by update_document_policy_enum.py.-->
   <int value="2" label="ERROR_OPTION"/>
 </enum>
 
+<enum name="DownloadLocationSuggestionEvent">
+  <int value="0" label="LOCATION_SUGGESTION_SHOWN"/>
+  <int value="1" label="NOT_ENOUGH_SPACE_SHOWN"/>
+</enum>
+
 <enum name="DownloadMimeTypeResult">
   <int value="0" label="Other">MIME type other than those listed below.</int>
   <int value="1" label="PK pass">application/vnd.apple.pkpass MIME type.</int>
