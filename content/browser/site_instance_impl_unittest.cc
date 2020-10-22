@@ -427,13 +427,6 @@ TEST_F(SiteInstanceTest, SiteInstanceDestructor) {
 // Ensure that default SiteInstances are deleted when all references to them
 // are gone.
 TEST_F(SiteInstanceTest, DefaultSiteInstanceDestruction) {
-  // Skip this test case if the --site-per-process switch is present (e.g. on
-  // Site Isolation Android chromium.fyi bot).
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kSitePerProcess)) {
-    return;
-  }
-
   TestBrowserContext browser_context;
   base::test::ScopedCommandLine scoped_command_line;
 
@@ -447,23 +440,10 @@ TEST_F(SiteInstanceTest, DefaultSiteInstanceDestruction) {
   auto site_instance = SiteInstanceImpl::CreateForUrlInfo(
       &browser_context, UrlInfo::CreateForTesting(GURL("http://foo.com")),
       CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
-  if (AreDefaultSiteInstancesEnabled()) {
-    EXPECT_TRUE(site_instance->IsDefaultSiteInstance());
-  } else {
-    // TODO(958060): Remove the creation of this second instance once
-    // CreateForUrlInfo() starts returning a default SiteInstance without
-    // the need to specify a command-line flag.
-    EXPECT_FALSE(site_instance->IsDefaultSiteInstance());
-    auto related_instance =
-        site_instance->GetRelatedSiteInstance(GURL("http://bar.com"));
-    EXPECT_TRUE(static_cast<SiteInstanceImpl*>(related_instance.get())
-                    ->IsDefaultSiteInstance());
 
-    related_instance.reset();
+  EXPECT_EQ(AreDefaultSiteInstancesEnabled(),
+            site_instance->IsDefaultSiteInstance());
 
-    EXPECT_EQ(1, browser_client()->GetAndClearSiteInstanceDeleteCount());
-    EXPECT_EQ(0, browser_client()->GetAndClearBrowsingInstanceDeleteCount());
-  }
   site_instance.reset();
 
   EXPECT_EQ(1, browser_client()->GetAndClearSiteInstanceDeleteCount());
