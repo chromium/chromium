@@ -23,11 +23,4 @@ UIViewController* UserFeedbackProvider::CreateViewController(
   return nil;
 }
 
-UIViewController* UserFeedbackProvider::CreateViewController(
-    id<UserFeedbackDataSource> data_source,
-    id<ApplicationCommands> handler) {
-  return CreateViewController(data_source, handler,
-                              UserFeedbackSender::ToolsMenu);
-}
-
 void UserFeedbackProvider::Synchronize() {}

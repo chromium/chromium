@@ -95,6 +95,7 @@ extern NSString* const kSettingsDoneButtonId;
                             delegate:(id<SettingsNavigationControllerDelegate>)
                                          delegate
                   feedbackDataSource:(id<UserFeedbackDataSource>)dataSource
+                              sender:(UserFeedbackSender)sender
                              handler:(id<ApplicationCommands>)handler;
 
 // Creates and displays a new ImportDataTableViewController. |browserState|

@@ -45,6 +45,7 @@ source_set("commands") {
   ]
 
   deps = [
+    "//ios/public/provider/chrome/browser/user_feedback",
     "//ios/web",
     "//net",
     "//url",

@@ -166,6 +166,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                             delegate:(id<SettingsNavigationControllerDelegate>)
                                          delegate
                   feedbackDataSource:(id<UserFeedbackDataSource>)dataSource
+                              sender:(UserFeedbackSender)sender
                              handler:(id<ApplicationCommands>)handler {
   DCHECK(browser);
   DCHECK(ios::GetChromeBrowserProvider()
@@ -174,7 +175,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   UIViewController* controller =
       ios::GetChromeBrowserProvider()
           ->GetUserFeedbackProvider()
-          ->CreateViewController(dataSource, handler);
+          ->CreateViewController(dataSource, handler, sender);
   DCHECK(controller);
   SettingsNavigationController* nc = [[SettingsNavigationController alloc]
       initWithRootViewController:controller

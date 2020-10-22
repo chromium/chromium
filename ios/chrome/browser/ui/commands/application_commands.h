@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#include "ios/public/provider/chrome/browser/user_feedback/user_feedback_sender.h"
+
 @class OpenNewTabCommand;
 @class ShowSigninCommand;
 @class StartVoiceSearchCommand;
@@ -113,12 +115,24 @@ enum class KeyRetrievalTriggerForUMA;
 
 // Shows the Report an Issue UI, presenting from |baseViewController|.
 - (void)showReportAnIssueFromViewController:
-    (UIViewController*)baseViewController;
+            (UIViewController*)baseViewController
+                                     sender:(UserFeedbackSender)sender;
+
+// Shows the Report an Issue UI, presenting from |baseViewController|, using
+// |specificProductData| for additional product data to be sent in the report
+// and UserFeedbackSender::ToolsMenu sender.
+// TODO(crbug.com/1138523): Remove this method after Downstream code stop using
+// it.
+- (void)
+    showReportAnIssueFromViewController:(UIViewController*)baseViewController
+                    specificProductData:(NSDictionary<NSString*, NSString*>*)
+                                            specificProductData;
 
 // Shows the Report an Issue UI, presenting from |baseViewController|, using
 // |specificProductData| for additional product data to be sent in the report.
 - (void)
     showReportAnIssueFromViewController:(UIViewController*)baseViewController
+                                 sender:(UserFeedbackSender)sender
                     specificProductData:(NSDictionary<NSString*, NSString*>*)
                                             specificProductData;
 

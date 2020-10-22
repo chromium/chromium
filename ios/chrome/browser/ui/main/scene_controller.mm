@@ -983,13 +983,25 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 }
 
 - (void)showReportAnIssueFromViewController:
-    (UIViewController*)baseViewController {
+            (UIViewController*)baseViewController
+                                     sender:(UserFeedbackSender)sender {
   [self showReportAnIssueFromViewController:baseViewController
+                                     sender:sender
                         specificProductData:nil];
 }
 
 - (void)
     showReportAnIssueFromViewController:(UIViewController*)baseViewController
+                    specificProductData:(NSDictionary<NSString*, NSString*>*)
+                                            specificProductData {
+  [self showReportAnIssueFromViewController:baseViewController
+                                     sender:UserFeedbackSender::ToolsMenu
+                        specificProductData:specificProductData];
+}
+
+- (void)
+    showReportAnIssueFromViewController:(UIViewController*)baseViewController
+                                 sender:(UserFeedbackSender)sender
                     specificProductData:(NSDictionary<NSString*, NSString*>*)
                                             specificProductData {
   DCHECK(baseViewController);
@@ -1005,6 +1017,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
         [SettingsNavigationController userFeedbackControllerForBrowser:browser
                                                               delegate:self
                                                     feedbackDataSource:self
+                                                                sender:sender
                                                                handler:self];
     [baseViewController presentViewController:self.settingsNavigationController
                                      animated:YES

@@ -91,7 +91,8 @@
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
   // clean up.
   [static_cast<id<ApplicationCommands>>(self.browser->GetCommandDispatcher())
-      showReportAnIssueFromViewController:self.baseViewController];
+      showReportAnIssueFromViewController:self.baseViewController
+                                   sender:UserFeedbackSender::SadTab];
 }
 
 - (void)sadTabViewController:(SadTabViewController*)sadTabViewController

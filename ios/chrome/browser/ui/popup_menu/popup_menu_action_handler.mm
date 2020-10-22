@@ -108,7 +108,8 @@ const char kManagementPageURL[] = "chrome://management";
     case PopupMenuActionReportIssue:
       RecordAction(UserMetricsAction("MobileMenuReportAnIssue"));
       [self.dispatcher
-          showReportAnIssueFromViewController:self.baseViewController];
+          showReportAnIssueFromViewController:self.baseViewController
+                                       sender:UserFeedbackSender::ToolsMenu];
       // Dismisses the popup menu without animation to allow the snapshot to be
       // taken without the menu presented.
       [self.dispatcher dismissPopupMenuAnimated:NO];

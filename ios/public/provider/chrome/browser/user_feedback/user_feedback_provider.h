@@ -63,12 +63,6 @@ class UserFeedbackProvider {
       id<UserFeedbackDataSource> data_source,
       id<ApplicationCommands> handler,
       UserFeedbackSender sender);
-  // TODO(crbug.com/1138523): Remove the method below, once
-  // CreateViewController(id<UserFeedbackDataSource>,
-  // id<ApplicationCommands>, CategoryTag) is implemented downstream.
-  virtual UIViewController* CreateViewController(
-      id<UserFeedbackDataSource> data_source,
-      id<ApplicationCommands> handler);
   // Uploads collected feedback reports.
   virtual void Synchronize();
 

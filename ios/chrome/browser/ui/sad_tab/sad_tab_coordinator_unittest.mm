@@ -217,7 +217,8 @@ TEST_F(SadTabCoordinatorTest, RepeatedFailureAction) {
       startDispatchingToTarget:mock_application_commands_handler_
                    forProtocol:@protocol(ApplicationCommands)];
   OCMExpect([mock_application_commands_handler_
-      showReportAnIssueFromViewController:base_view_controller_]);
+      showReportAnIssueFromViewController:base_view_controller_
+                                   sender:UserFeedbackSender::SadTab]);
 
   [coordinator sadTabTabHelper:nullptr
       presentSadTabForWebState:&web_state
