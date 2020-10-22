@@ -607,7 +607,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::LayoutCandidate(
       // have the same logic in legacy layout in
       // |LayoutBlockFlow::UpdateBlockLayout()|.
       if (node.GetLayoutBox()->IntrinsicLogicalWidthsDirty() &&
-          AbsoluteNeedsChildInlineSize(candidate_style)) {
+          AbsoluteNeedsChildInlineSize(node)) {
         // Freeze the scrollbars for this layout pass. We don't want them to
         // change *again*.
         freeze_scrollbars.emplace();
@@ -744,18 +744,15 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
   bool has_computed_block_dimensions = false;
   bool is_replaced = node.IsReplaced();
   bool should_be_considered_as_replaced = node.ShouldBeConsideredAsReplaced();
-  bool absolute_needs_child_block_size =
-      AbsoluteNeedsChildBlockSize(candidate_style);
+  bool absolute_needs_child_block_size = AbsoluteNeedsChildBlockSize(node);
   base::Optional<MinMaxSizes> minmax_intrinsic_sizes_for_ar;
 
   // We also include items with aspect ratio here, because if the inline size
   // is auto and we have a definite block size, we want to use that for the
   // inline size calculation.
-  bool compute_inline_from_ar =
-      IsInlineSizeComputableFromBlockSize(candidate_style);
-  if (AbsoluteNeedsChildInlineSize(candidate_style) ||
-      NeedMinMaxSize(candidate_style) || should_be_considered_as_replaced ||
-      compute_inline_from_ar) {
+  bool compute_inline_from_ar = IsInlineSizeComputableFromBlockSize(node);
+  if (AbsoluteNeedsChildInlineSize(node) || NeedMinMaxSize(candidate_style) ||
+      should_be_considered_as_replaced || compute_inline_from_ar) {
     MinMaxSizesInput input(kIndefiniteSize, MinMaxSizesType::kContent);
     if (is_replaced) {
       input.percentage_resolution_block_size =
@@ -764,7 +761,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
       // If we can determine our block-size ahead of time (it doesn't depend on
       // our content), we use this for our %-block-size.
       ComputeOutOfFlowBlockDimensions(
-          candidate_constraint_space, candidate_style, border_padding,
+          node, candidate_constraint_space, border_padding,
           candidate_static_position, base::nullopt, base::nullopt,
           default_writing_mode, container_direction, &node_dimensions);
       has_computed_block_dimensions = true;
@@ -810,11 +807,11 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
                     kIndefiniteSize};
   }
 
-  ComputeOutOfFlowInlineDimensions(candidate_constraint_space, candidate_style,
-                                   border_padding, candidate_static_position,
-                                   min_max_sizes, minmax_intrinsic_sizes_for_ar,
-                                   replaced_size, default_writing_mode,
-                                   container_direction, &node_dimensions);
+  ComputeOutOfFlowInlineDimensions(
+      node, candidate_constraint_space, border_padding,
+      candidate_static_position, min_max_sizes, minmax_intrinsic_sizes_for_ar,
+      replaced_size, default_writing_mode, container_direction,
+      &node_dimensions);
 
   // |should_be_considered_as_replaced| sets the inline-size.
   // It does not set the block-size. This is a compatibility quirk.
@@ -862,7 +859,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
   // our |min_max_sizes|, only run if needed.
   if (!has_computed_block_dimensions) {
     ComputeOutOfFlowBlockDimensions(
-        candidate_constraint_space, candidate_style, border_padding,
+        node, candidate_constraint_space, border_padding,
         candidate_static_position, block_estimate, replaced_size,
         default_writing_mode, container_direction, &node_dimensions);
     has_computed_block_dimensions = true;
