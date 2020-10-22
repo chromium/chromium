@@ -1439,6 +1439,11 @@
 <translation id="316778957754360075">此设置从 <ph name="PRODUCT_NAME" />版本 29 起开始弃用。我们建议您将托管 CRX 软件包的网站包含在 ExtensionInstallSources 中，然后将上述软件包的直接下载链接放在某网页上，从而建立一个由企业托管的扩展程序/应用包。相关网页的启动器可使用 ExtensionInstallForcelist 政策创建。</translation>
 <translation id="3168968618972302728">与 Kerberos 身份验证相关的政策。</translation>
 <translation id="3171369832001535378">设备网络主机名模板</translation>
+<translation id="3176903288465566098">如果您启用了此设置，已选择启用 Phone Hub 功能的用户将能够在 Chrome 操作系统上收发其手机中的通知。
+
+      如果您停用了此设置，用户将无法使用该功能。如果 PhoneHubAllowed 政策已停用，用户也将无法使用该功能。
+
+      如果您未设置此政策，默认情况下，受企业管理的用户和不受管理的用户都能选择启用 Phone Hub 功能。</translation>
 <translation id="3177802893484440532">要求为本地信任锚执行在线 OCSP/CRL 检查</translation>
 <translation id="3184161739683646075">控制 DNS-over-HTTPS 模式</translation>
 <translation id="3185009703220253572">从版本 <ph name="SINCE_VERSION" /> 开始</translation>
@@ -2891,6 +2896,7 @@
 
       如果此政策设为 False，系统会禁止将端口转发到 Crostini 容器。</translation>
 <translation id="538108065117008131">允许“<ph name="PRODUCT_FRAME_NAME" />”处理以下内容类型。</translation>
+<translation id="5383436189211119400">如果您设置了“DeviceArcDataSnapshotHours”政策，系统会开启 ARC 数据快照机制，并可在指定的时间间隔内自动启动 ARC 数据快照更新。当某个时间间隔已开始且 ARC 快照需要更新时，如果任何用户均未登录，系统会直接启动 ARC 数据快照更新过程，而不通知用户；如果用户会话正在进行中，系统会显示界面通知，且会等到用户接受通知后才重启设备并启动 ARC 数据快照更新过程。注意：在 ARC 数据快照更新过程中，用户无法使用设备。</translation>
 <translation id="538768040137709073">启用“共享剪贴板”功能，以允许已启用同步的已登录用户在 Chrome 桌面版和 Android 设备之间发送文字。
 
           如果此政策设为 true，面向 Chrome 用户提供的跨设备发送文字的功能将处于启用状态。
@@ -4155,6 +4161,7 @@
 <translation id="7068108874199666656">允许将要对所有用户应用的网络配置推送到 <ph name="PRODUCT_OS_NAME" />设备。网络配置是 JSON 格式的字符串，由开放网络配置格式定义。</translation>
 <translation id="7070525176564511548">每周（168 小时）必须输入一次密码</translation>
 <translation id="7072208053150563108">设备密码更改率</translation>
+<translation id="7072567600438630966">允许启用 Phone Hub。</translation>
 <translation id="7079519252486108041">在这些网站上阻止弹出式窗口</translation>
 <translation id="7080072532759721791">允许用户上传或下载受密码保护的文件</translation>
 <translation id="7086677522575756117">指定当在屏幕变暗后或在屏幕关闭不久后察觉到用户活动时，系统会对屏幕变暗延迟时间应用的调整幅度（百分比）。
@@ -4332,6 +4339,7 @@
       如果此政策未设置或为空，则用户可以将任何 Google 帐号设置为 <ph name="PRODUCT_NAME" /> 中的浏览器主帐号。</translation>
 <translation id="723103540848640830">设置锁定屏幕 PIN 码的长度下限</translation>
 <translation id="7234280155140786597">被禁的本地消息传递主机的名称（用“*”则表示全部禁止）</translation>
+<translation id="7246767840750730334">允许启用 Phone Hub 通知。</translation>
 <translation id="7249828445670652637">允许 ARC 应用使用 <ph name="PRODUCT_OS_NAME" /> CA 证书</translation>
 <translation id="7252681704926980614">每次执行打印任务时都向原生打印机服务器发送用户名和文件名。默认设置是不发送。
 
@@ -4436,6 +4444,11 @@
 
       此政策已被弃用，请改用 <ph name="PRINTERS_BULK_BLOCKLIST" />。
       </translation>
+<translation id="7358744897221281073">如果您启用了此设置，已选择启用 Phone Hub 功能的用户将能够在 Chrome 操作系统上继续执行尚未完成的任务（例如查看其手机中的网页）。
+
+      如果您停用了此设置，用户将无法使用该功能。如果 PhoneHubAllowed 政策已停用，用户也将无法使用该功能。
+
+      如果您未设置此政策，默认情况下，受企业管理的用户和不受管理的用户都能选择启用 Phone Hub 功能。</translation>
 <translation id="7360181094056034924">控制 <ph name="PRODUCT_NAME" /> 如何处理被视为需要扫描的上传数据和下载数据。延迟交付意味着 <ph name="PRODUCT_NAME" /> 将不会允许用户访问已下载的文件、选择要上传的文件、从剪贴板复制并粘贴数据或者拖放数据，直到系统扫描完相应内容并获悉扫描结果。此限制仅适用于需要扫描的文件或数据，是否需要扫描取决于 <ph name="SEND_FILES_FOR_MALWARE_CHECK_POLICY_NAME" />、<ph name="CHECK_CONTENT_COMPLIANCE_POLICY_NAME" /> 以及用于控制已启用检查功能的网域列表的政策。
 
       如果此政策未设置或设为“无”，则 <ph name="PRODUCT_NAME" /> 不会延迟上传任何文件，不会延迟从剪贴板复制并粘贴数据或者拖放数据，也不会延迟访问任何已下载的文件。扫描将在后台进行。
@@ -4638,6 +4651,7 @@
       如果您未设置此政策，大号光标会在登录屏幕上处于关闭状态。用户可以随时开启该功能，并且它在登录屏幕上的状态对所有用户都一致。
 
           注意：<ph name="DEVICE_LOGIN_SCREEN_LARGE_CURSOR_ENABLED" />（若已指定）会覆盖此政策。</translation>
+<translation id="7632147323011514740">可按照指定的时间间隔为受管理访客会话启动 ARC 数据快照更新过程</translation>
 <translation id="7632724434767231364">GSSAPI 库名称</translation>
 <translation id="7643883929273267746">限制可在<ph name="PRODUCT_NAME" />中显示的帐号</translation>
 <translation id="7648907905084499629">让所有网站上的 Cookie 都采用 <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> 行为</translation>
@@ -4909,6 +4923,7 @@
       对于 <ph name="PRODUCT_OS_NAME" />，此政策一直有效。</translation>
 <translation id="8050080920415773384">本机打印</translation>
 <translation id="8053580360728293758">替换默认打印颜色模式。如果这种模式不适用，则忽略此政策。</translation>
+<translation id="8056237304861875584">允许启用 Phone Hub 任务延续功能。</translation>
 <translation id="8059164285174960932">远程访问客户端获取身份验证令牌的网址</translation>
 <translation id="8077245272412229388">添加预先填充的 Kerberos 帐号。如果 Kerberos 凭据与登录凭据相匹配，则可以将帐号配置为重复使用登录凭据，方法是针对主帐号和密码分别指定“<ph name="LOGIN_EMAIL_PLACEHOLDER" />”和“<ph name="PASSWORD_PLACEHOLDER" />”；这样一来，除非配置了双重身份验证，否则系统便可以自动检索 Kerberos 票据。用户无法修改通过此政策添加的帐号。
 
@@ -5640,6 +5655,11 @@
 <translation id="9084985621503260744">指定视频活动是否影响电源管理</translation>
 <translation id="9088433379343318874">启用受监管用户内容提供方</translation>
 <translation id="9088444059179765143">配置自动检测时区方法</translation>
+<translation id="9095999573959728902">如果您启用了此设置，用户将能够选择启用 Phone Hub 功能，以便在 Chrome 操作系统设备上与其手机互动。
+
+      如果您停用了此设置，用户将无法选择启用 Phone Hub 功能。
+
+      如果您未设置此政策，默认情况下，受企业管理的用户无法选择启用 Phone Hub 功能，但不受管理的用户可以选择启用该功能。</translation>
 <translation id="9096086085182305205">身份验证服务器白名单</translation>
 <translation id="9105265795073104888">仅一小部分代理配置选项已可供 Android 应用使用。Android 应用可能会主动选择使用相应代理。您无法强制此类应用使用该代理。</translation>
 <translation id="9106865192244721694">允许这些网站使用 WebUSB</translation>

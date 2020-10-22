@@ -3046,7 +3046,7 @@
 <translation id="4545028762441890696">এটিকে আবার সক্ষম করতে, নতুন অনুমতিগুলি স্বীকার করুন:</translation>
 <translation id="4545759655004063573">অপর্যাপ্ত অনুমতির কারণে সংরক্ষণ করতে পারবেন না৷ দয়া করে অন্য কোনো স্থানে সংরক্ষণ করুন৷</translation>
 <translation id="4546308221697447294">Google Chrome দিয়ে দ্রুত ব্রাউজ করুন</translation>
-<translation id="4546345569117159016">ডানদিকের মাউস বোতাম</translation>
+<translation id="4546345569117159016">ডানদিকের বোতাম</translation>
 <translation id="4546692474302123343">Google Assistant-এর ভয়েস ইনপুট</translation>
 <translation id="4547659257713117923">অন্য ডিভাইসগুলি থেকে কোনো ট্যাব নেই</translation>
 <translation id="4547672827276975204">অটোমেটিক সেট হবে</translation>
@@ -4688,7 +4688,7 @@
 <translation id="6499681088828539489">শেয়ার করা নেটওয়ার্কগুলির জন্য প্রক্সির অনুমতি দেবেন না</translation>
 <translation id="650266656685499220">অ্যালবাম তৈরি করতে, Google Photos-এ যান</translation>
 <translation id="6503077044568424649">সর্বাধিক দেখা</translation>
-<translation id="650457560773015827">বাঁদিকের মাউস বোতাম</translation>
+<translation id="650457560773015827">বাঁদিকের বোতাম</translation>
 <translation id="6504611359718185067">একটি প্রিন্টার যোগ করার জন্য ইন্টারনেটের সাথে সংযোগ করুন</translation>
 <translation id="6506374932220792071">SHA-256 সহ X9.62 ECDSA স্বাক্ষর</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" /> সম্পর্কিত</translation>
@@ -6234,7 +6234,7 @@
 <translation id="8300011035382349091">এই ট্যাবের জন্য বুকমার্ক এডিট করুন</translation>
 <translation id="8300374739238450534">মধ্যরাতের নীল</translation>
 <translation id="8300849813060516376">OTASP ব্যর্থ</translation>
-<translation id="8304383784961451596">তোমাকে এই ডিভাইস ব্যবহার করার অনুমতি দেওয়া হয়নি। সাইন-ইনের জন্য অনুমতি পেতে অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করো অথবা Family Link-এর তত্ত্বাবধানে থাকা কোনও Google অ্যাকাউন্ট দিয়ে সাইন-ইন করো।</translation>
+<translation id="8304383784961451596">আপনার কাছে এই ডিভাইস ব্যবহার করার অনুমতি নেই। সাইন-ইনের জন্য অনুমতি পেতে অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন অথবা Family Link-এর তত্ত্বাবধানে থাকা কোনও Google অ্যাকাউন্ট দিয়ে সাইন-ইন করো।</translation>
 <translation id="8308179586020895837"><ph name="HOST" /> আপনার ক্যামেরা অ্যাক্সেস  করতে চায় কিনা জিজ্ঞাসা করুন</translation>
 <translation id="830868413617744215">বিটা</translation>
 <translation id="8309458809024885768">সার্টিফিকেট ইতিমধ্যে বিদ্যমান</translation>

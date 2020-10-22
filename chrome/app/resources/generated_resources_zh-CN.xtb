@@ -926,6 +926,7 @@
 <translation id="204914487372604757">创建快捷方式</translation>
 <translation id="2050339315714019657">纵向</translation>
 <translation id="2053312383184521053">闲置状态数据</translation>
+<translation id="2054665754582400095">您的状态</translation>
 <translation id="2055585478631012616">您将会自动退出这些网站（包括打开的标签页）</translation>
 <translation id="205560151218727633">Google 助理徽标</translation>
 <translation id="2058456167109518507">检测到的设备</translation>
@@ -1212,6 +1213,7 @@
 <translation id="2387052489799050037">转到主屏幕</translation>
 <translation id="2387458720915042159">代理连接类型</translation>
 <translation id="2390347491606624519">无法连接到代理，请重新登录</translation>
+<translation id="2390782873446084770">Wi-Fi 同步</translation>
 <translation id="2391082728065870591">发送反馈报告</translation>
 <translation id="2391419135980381625">标准字体</translation>
 <translation id="2392163307141705938">您已达到您家长为 <ph name="IDS_SHORT_PRODUCT_NAME" /> 设定的使用时限。</translation>
@@ -1867,6 +1869,7 @@
 <translation id="3157931365184549694">恢复</translation>
 <translation id="3158033540161634471">设置指纹</translation>
 <translation id="3159493096109238499">米黄色</translation>
+<translation id="3159978855457658359">修改设备名称</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]（由硬件支持）</translation>
 <translation id="3161522574479303604">所有语言</translation>
 <translation id="3162853326462195145">学校帐号</translation>
@@ -3226,6 +3229,7 @@
 <translation id="4761104368405085019">使用您的麦克风</translation>
 <translation id="4762718786438001384">设备磁盘空间严重不足</translation>
 <translation id="4763408175235639573">以下 Cookie 是系统在您查看此网页时设置的</translation>
+<translation id="4764368918650455114">请确保这两部设备均已解锁、相距很近且均已开启蓝牙。如果您的分享对象是一部 Chromebook，请确保已为它开启“附近分享”功能（先通过选择时间打开状态区，然后选择“附近分享”）。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4765582662863429759">允许 Android 信息将短信从手机转送到 Chromebook</translation>
 <translation id="476598255842811483">无（除非您的设备上打开了“附近分享”功能）</translation>
 <translation id="4768332406694066911">您有以下组织发给您的身份证书</translation>
@@ -3388,6 +3392,7 @@
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="496185450405387901">您的管理员已安装此应用。</translation>
 <translation id="4964455510556214366">排列方式</translation>
+<translation id="496446150016900060">将 Wi-Fi 网络配置同步到您的手机</translation>
 <translation id="4965808351167763748">确定要将此设备设为运行 Hangouts Meet 吗？</translation>
 <translation id="496888482094675990">通过“文件”应用，您可以快速存取自己保存在Google云端硬盘、外部存储设备和Chrome操作系统设备上的文件。</translation>
 <translation id="4971412780836297815">完成后打开</translation>
@@ -3694,6 +3699,7 @@
 <translation id="5341980496415249280">正在打包，请稍候…</translation>
 <translation id="5342091991439452114">PIN 码必须至少为 <ph name="MINIMUM" /> 位数</translation>
 <translation id="5344036115151554031">正在恢复 Linux</translation>
+<translation id="5345916423802287046">在您登录时启动应用</translation>
 <translation id="5350293332385664455">关闭 Google 助理</translation>
 <translation id="535123479159372765">从其他设备复制的文字</translation>
 <translation id="5352033265844765294">时间戳</translation>
@@ -4003,6 +4009,7 @@
 <translation id="5704875434923668958">同步到</translation>
 <translation id="5705005699929844214">总是显示无障碍选项</translation>
 <translation id="5705882733397021510">返回</translation>
+<translation id="5707117624115653804">为支持此设置的应用和网站自定义字幕大小和样式</translation>
 <translation id="5707185214361380026">无法加载以下来源的扩展程序：</translation>
 <translation id="5708171344853220004">Microsoft 主体名称</translation>
 <translation id="5709557627224531708">将 Chrome 设为您的默认浏览器</translation>
@@ -4166,6 +4173,7 @@
 <translation id="5904614460720589786">无法设置 <ph name="APP_NAME" />，因为出现了配置问题。请与您的管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="5906655207909574370">即将更新到最新版本！重新启动您的设备即可完成更新。</translation>
 <translation id="5906732635754427568">系统将会从此设备上移除与该应用相关的数据。</translation>
+<translation id="5908474332780919512">在您登录时启动应用</translation>
 <translation id="5908695239556627796">鼠标滚屏速度</translation>
 <translation id="5908769186679515905">禁止网站运行 Flash</translation>
 <translation id="5910363049092958439">图片存储为(&amp;V)...</translation>
@@ -4705,6 +4713,7 @@
 <translation id="6532527800157340614">登录失败，因为检索不到您的访问令牌。请检查您的网络连接，然后重试。</translation>
 <translation id="6532663472409656417">已向企业注册</translation>
 <translation id="6535331821390304775">始终允许 <ph name="ORIGIN" /> 在关联的应用中打开此类链接</translation>
+<translation id="6537613839935722475">名称可以使用字母、数字和连字符 (-)</translation>
 <translation id="6538635548667167211">当前的流量使用设置是“数据流量”</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />除非您有意这么做或被要求这样做，否则请不要随意启用这项功能，因为收集数据可能会降低性能。</translation>
 <translation id="6541638731489116978">此网站已被禁止使用您的动态传感器。</translation>
@@ -4793,6 +4802,7 @@
 <translation id="6650234781371031356">您为 <ph name="WEBSITE" /> 保存的密码已存储到此设备上和您的 Google 帐号中。您想删除存储在哪个位置的密码？</translation>
 <translation id="665061930738760572">在新窗口中打开(&amp;N)</translation>
 <translation id="6651237644330755633">信任该证书，以标识网站的身份</translation>
+<translation id="6651495917527016072">将 Wi-Fi 网络配置同步到您的手机。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">只有 x86_64 平台才支持 Chrome <ph name="MS_AD_NAME" /> 集成功能。采用 ARM 或 x86 平台的 Chromebook 不支持此功能。</translation>
 <translation id="6654509035557065241">设置首选网络</translation>
 <translation id="6655190889273724601">开发者模式</translation>
@@ -5396,6 +5406,7 @@
 <translation id="7375235221357833624">{0,plural, =1{请在 1 小时内更新此设备}other{请在 # 小时内更新此设备}}</translation>
 <translation id="7376553024552204454">在移动鼠标光标时突出显示光标</translation>
 <translation id="7377451353532943397">继续禁止使用传感器</translation>
+<translation id="7378611153938412599">安全系数低的密码容易被人猜到。请务必设置安全系数高的密码。<ph name="BEGIN_LINK" />查看更多安全提示<ph name="END_LINK" />。</translation>
 <translation id="73786666777299047">打开 Chrome 网上应用店</translation>
 <translation id="7378812711085314936">获取数据网络连接</translation>
 <translation id="7380622428988553498">设备名称包含无效字符</translation>
@@ -5920,6 +5931,7 @@
 <translation id="7959074893852789871">该文件包含多个证书，其中部分证书未导入：</translation>
 <translation id="7961015016161918242">一律不</translation>
 <translation id="7963001036288347286">触控板加速</translation>
+<translation id="7963608432878156675">此名称会对其他设备可见，以便建立蓝牙连接和网络连接</translation>
 <translation id="7963826112438303517">Google 助理会使用这些录音以及您的语音请求来创建和更新您的语音模型，语音模型仅会存储在已开启 Voice Match 的设备上。您可在 Google 助理的“设置”中查看或重新调校语音活动。</translation>
 <translation id="7966241909927244760">复制图片地址(&amp;O)</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{书签列表中现有 1 个条目}other{书签列表中现有 {COUNT} 个条目}}</translation>
@@ -6383,6 +6395,7 @@
 <translation id="850875081535031620">未发现任何有害软件</translation>
 <translation id="8509177919508253835">重置安全密钥并创建 PIN 码</translation>
 <translation id="8509646642152301857">拼写检查字典下载失败。</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{未发现任何安全系数低的密码}=1{发现了 {COUNT} 个安全系数低的密码}other{发现了 {COUNT} 个安全系数低的密码}}</translation>
 <translation id="8512476990829870887">结束进程</translation>
 <translation id="851263357009351303">始终允许 <ph name="HOST" /> 显示图片</translation>
 <translation id="8513108775083588393">自动旋转屏幕</translation>

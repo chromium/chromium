@@ -16,6 +16,7 @@
 <translation id="4986357476502426173"><ph name="DEVICE_NAME" />, ভিডিঅ’ ডিভাইচ</translation>
 <translation id="5271696982761495740">টেবলেট (<ph name="ADDRESS" />)</translation>
 <translation id="5376363957846771741">অজ্ঞাত বা অসমৰ্থিত ডিভাইচ (<ph name="ADDRESS" />)</translation>
+<translation id="571460437990229974"><ph name="DEVICE_NAME_AND_TYPE" /> <ph name="CONNECTION_STATUS" /></translation>
 <translation id="5716052956047449618"><ph name="DEVICE_NAME" />, ম’ডেম</translation>
 <translation id="6459740836740815150"><ph name="DEVICE_NAME" />, গাড়ীৰ অডিঅ’ ডিভাইচ</translation>
 <translation id="6542922424766292144"><ph name="DEVICE_NAME" />, কীব’ৰ্ড</translation>

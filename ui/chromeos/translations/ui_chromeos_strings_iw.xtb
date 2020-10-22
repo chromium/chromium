@@ -230,7 +230,7 @@
 <translation id="3519867315646775981">‏תעתוק (שלום ← shalom)</translation>
 <translation id="3522708245912499433">פורטוגזית</translation>
 <translation id="3524311639100184459">זהירות: הקבצים האלה זמניים, וייתכן שהם יימחקו באופן אוטומטי כדי לפנות מקום בכונן.  <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
-<translation id="3527085408025491307">תיקיה</translation>
+<translation id="3527085408025491307">תיקייה</translation>
 <translation id="3549797760399244642">‏מעבר אל drive.google.com...</translation>
 <translation id="3553048479571901246">‏כדי שניתן יהיה לפתוח קבצים באמצעות <ph name="APP_NAME" />, צריך להעתיק אותם לתיקיית קובצי Windows.</translation>
 <translation id="357479282490346887">ליטאית</translation>
@@ -414,7 +414,7 @@
 <translation id="5275973617553375938">‏קבצים ששוחזרו מ-Google Drive</translation>
 <translation id="5283140566205748520">צרפתית (בלגיה)</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
-<translation id="5317780077021120954">שמור</translation>
+<translation id="5317780077021120954">שמירה</translation>
 <translation id="5318819489018851358">‏שיתוף עם Linux</translation>
 <translation id="5319782540886810524">מקלדת לטבית</translation>
 <translation id="5323213332664049067">אמריקאית לטינית</translation>
@@ -736,7 +736,7 @@
 <translation id="872537912056138402">קרואטית</translation>
 <translation id="874420130893181774">‏שיטת קלט Traditional Pinyin</translation>
 <translation id="8770002329960263418">‏הולנדית (הולנד) עם מקלדת בינלאומית של ארה"ב ל-PC</translation>
-<translation id="8775404590947523323">שינויי העריכה שלך נשמרים אוטומטית.<ph name="BREAKS" />כדי לשמור עותק של התמונה המקורית, בטל את הסימון של "החלף קובץ מקורי"</translation>
+<translation id="8775404590947523323">שינויי העריכה שלך נשמרים אוטומטית.<ph name="BREAKS" />כדי לשמור עותק של התמונה המקורית, יש לבטל את הסימון של "החלפת קובץ מקורי"</translation>
 <translation id="8803496343472038847">מקלדת רוסית פונטית</translation>
 <translation id="8808686172382650546">חתול</translation>
 <translation id="8810671769985673465">הכיווץ נכשל, הפריט קיים: "<ph name="FILE_NAME" />"</translation>

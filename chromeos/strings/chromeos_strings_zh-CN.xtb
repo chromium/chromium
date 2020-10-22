@@ -3,6 +3,7 @@
 <translationbundle lang="zh-CN">
 <translation id="1018656279737460067">已取消</translation>
 <translation id="1195447618553298278">未知错误。</translation>
+<translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">失败 - 过滤器出问题了</translation>
 <translation id="1468664791493211953">优惠</translation>
 <translation id="1478594628797167447">扫描器</translation>
@@ -46,6 +47,7 @@
 <translation id="4227825898293920515">密码将于 <ph name="TIME" />后到期</translation>
 <translation id="4238516577297848345">没有正在进行的打印任务</translation>
 <translation id="4297501883039923494">已停止 - 未知错误</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4429881212383817840">Kerberos 票据即将过期</translation>
 <translation id="445059817448385655">旧密码</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，已打印 <ph name="PRINTED_PAGE_NUMBER" /> 页，共 <ph name="TOTAL_PAGE_NUMBER" /> 页。按 Enter 键即可取消这项打印任务。</translation>
@@ -73,6 +75,7 @@
 <translation id="6058625436358447366">要完成更改，请输入您的旧密码和新密码</translation>
 <translation id="6106186594183574873">要完成更改，请输入您的旧密码</translation>
 <translation id="6146993107019042706">要完成更改，请输入您的新密码</translation>
+<translation id="6147514244879357420">PNG</translation>
 <translation id="636850387210749493">企业注册</translation>
 <translation id="649050271426829538">已停止 - 卡纸了</translation>
 <translation id="6517239166834772319">探索</translation>

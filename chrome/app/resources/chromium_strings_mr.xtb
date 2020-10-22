@@ -10,6 +10,7 @@
 <translation id="1131805035311359397">तुमचे पासवर्ड डेटा भंग आणि इतर सुरक्षा समस्यांपासून सुरक्षित आहेत हे तपासण्यासाठी, <ph name="BEGIN_LINK" />Chromium मध्ये साइन इन करा<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Chromium बद्दल</translation>
 <translation id="1315551408014407711">तुमची नवीन Chromium प्रोफाइल सेट करा</translation>
+<translation id="1357932062193643861">Chromium उघडते तेव्हा विचारा</translation>
 <translation id="1396446129537741364">Chromium पासवर्ड दर्शविण्याचा प्रयत्न करत आहे.</translation>
 <translation id="1414495520565016063">तुम्ही Chromium मध्ये साइन इन केले आहे!</translation>
 <translation id="151962892725702025">आपल्या डोमेनसाठी सिंक उपलब्ध नसल्यामुळे Chromium OS तुमचा डेटा संकालित करू शकले नाही.</translation>
@@ -184,6 +185,7 @@
 <translation id="6863361426438995919">Google Pay (Chromium वर कॉपी केले)</translation>
 <translation id="6893813176749746474">Chromium अपडेट केले गेले, परंतु तुम्ही ते किमान 30 दिवसांपासून वापरलेले नाही.</translation>
 <translation id="6964305034639999644">लिंक Chromium गुप्त विंडो मध्ये उघडा</translation>
+<translation id="6978145336957848883">कमकुवत पासवर्ड ओळखणे सोपे असते. Chromium ला <ph name="BEGIN_LINK" />तुमच्यासाठी क्लिष्ट पासवर्ड तयार करून लक्षात ठेवू द्या<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">या साइटसाठी Chromium ला तुमचा मायक्रोफोन ॲक्सेस करण्याची परवानगी हवी आहे</translation>
 <translation id="701244094609242530">Chromium तुमची एक्स्टेंशन तपासू शकत नाही. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="7028347026395185822">{NUM_HOURS,plural, =1{Chromium ला तुमच्या कॉंप्युटरवर माहीत असलेले हानिकारक सॉफ्टवेअर आढळले नाही. शेवटची तपासणी: एका तासापूर्वी.}other{Chromium ला तुमच्या कॉंप्युटरवर माहीत असलेले हानिकारक सॉफ्टवेअर आढळले नाही. शेवटची तपासणी: {NUM_HOURS} तासांपूर्वी.}}</translation>

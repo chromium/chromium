@@ -238,7 +238,7 @@
 <translation id="35083190962747987">‏פתיחה של ${url}</translation>
 <translation id="3519193562722059437">פתח כרטיסייה כדי לגלוש באינטרנט.</translation>
 <translation id="3523473570015918798">‏יציאה תפסיק את הסנכרון של הסימניות, ההיסטוריה, הסיסמאות ונתונים אחרים ב-Chrome עם חשבון Google.</translation>
-<translation id="3527085408025491307">תיקיה</translation>
+<translation id="3527085408025491307">תיקייה</translation>
 <translation id="3529024052484145543">לא מאובטח</translation>
 <translation id="3533202363250687977">סגירה של כל כרטיסיות הגלישה בסתר</translation>
 <translation id="3533436815740441613">כרטיסייה חדשה</translation>
@@ -259,7 +259,7 @@
 <translation id="3771033907050503522">כרטיסיות גלישה בסתר</translation>
 <translation id="3775743491439407556">הסינכרון לא פועל</translation>
 <translation id="3779810277399252432">אין חיבור לאינטרנט.</translation>
-<translation id="3783017676699494206">שמור תמונה</translation>
+<translation id="3783017676699494206">שמירת תמונה</translation>
 <translation id="3789841737615482174">התקנה</translation>
 <translation id="3803696231112616155">הצגה של הצעה לתרגם את הדף הזה</translation>
 <translation id="385051799172605136">חזרה</translation>
@@ -388,7 +388,7 @@
 <translation id="5271549068863921519">שמור סיסמה</translation>
 <translation id="5295239312320826323">האם להסיר את החשבון <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">הצגה</translation>
-<translation id="5317780077021120954">שמור</translation>
+<translation id="5317780077021120954">שמירה</translation>
 <translation id="5327248766486351172">שם</translation>
 <translation id="5339316356165661760">הפעלת הסנכרון</translation>
 <translation id="5388358297987318779">פתיחת תמונה</translation>
@@ -531,7 +531,7 @@
 <translation id="6730682669179532099">אי אפשר לייצא סיסמאות</translation>
 <translation id="6748108480210050150">מאת</translation>
 <translation id="6780034285637185932">מיקוד</translation>
-<translation id="6785453220513215166">שולח דוח קריסה...</translation>
+<translation id="6785453220513215166">שליחת דוח קריסה מתבצעת...</translation>
 <translation id="679325081238418596">קבל את הסימניות, ההיסטוריה, הסיסמאות והגדרות נוספות בכל המכשירים</translation>
 <translation id="6797885426782475225">חיפוש קולי</translation>
 <translation id="6807889908376551050">הצגת הכול...</translation>

@@ -6399,7 +6399,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="850875081535031620">Nessun software dannoso trovato</translation>
 <translation id="8509177919508253835">Reimposta i token di sicurezza e crea PIN</translation>
 <translation id="8509646642152301857">Download del dizionario per il controllo ortografico non riuscito.</translation>
-<translation id="8512396579636492893">{COUNT,plural, =0{Nessuna password inefficace trovata}=1{È stata trovata {COUNT} password inefficace}other{Sono state trovate {COUNT} password inefficaci}}</translation>
+<translation id="8512396579636492893">{COUNT,plural, =0{Nessuna password inefficace trovata}=1{{COUNT} password inefficace trovata}other{{COUNT} password inefficaci trovate}}</translation>
 <translation id="8512476990829870887">Termina processo</translation>
 <translation id="851263357009351303">Consenti sempre la visualizzazione di immagini in <ph name="HOST" /></translation>
 <translation id="8513108775083588393">Rotazione aut.</translation>
