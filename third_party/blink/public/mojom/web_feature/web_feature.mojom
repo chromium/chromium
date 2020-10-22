@@ -3036,6 +3036,7 @@ enum WebFeature {
   kNewLayoutOverflowDifferentAndAlreadyScrollsFlex = 3705,
   kUnicodeBidiPlainText = 3706,
   kColorSchemeDarkSupportedOnRoot = 3707,
+  kWebBluetoothGetAvailability = 3708,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

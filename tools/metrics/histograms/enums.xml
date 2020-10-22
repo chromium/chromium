@@ -29959,6 +29959,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3705" label="NewLayoutOverflowDifferentAndAlreadyScrollsFlex"/>
   <int value="3706" label="UnicodeBidiPlainText"/>
   <int value="3707" label="ColorSchemeDarkSupportedOnRoot"/>
+  <int value="3708" label="WebBluetoothGetAvailability"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
