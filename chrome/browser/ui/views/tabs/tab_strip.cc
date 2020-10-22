@@ -558,8 +558,6 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
     return tab_strip_->GetActiveTabWidth();
   }
 
-  int GetTabAreaWidth() const override { return tab_strip_->GetTabAreaWidth(); }
-
   int GetTabDragAreaWidth() const override {
     // There are two cases here (with tab scrolling enabled):
     // 1) If the tab strip is not wider than the tab strip region (and thus

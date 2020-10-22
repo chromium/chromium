@@ -68,10 +68,6 @@ class TabDragContext {
   // Returns the width of the active tab.
   virtual int GetActiveTabWidth() const = 0;
 
-  // Returns the width of the area that contains tabs. This does not include
-  // the width of the new tab button.
-  virtual int GetTabAreaWidth() const = 0;
-
   // Returns the width of the region in which dragged tabs are allowed to exist.
   virtual int GetTabDragAreaWidth() const = 0;
 
