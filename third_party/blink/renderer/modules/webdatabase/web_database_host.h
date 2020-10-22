@@ -81,8 +81,6 @@ class WebDatabaseHost {
   // other database-related event is reported from the database thread instead.
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 
-  static WebDatabaseHost* instance_;
-
   DISALLOW_COPY_AND_ASSIGN(WebDatabaseHost);
 };
 

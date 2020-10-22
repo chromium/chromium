@@ -19,8 +19,6 @@
 
 namespace blink {
 
-WebDatabaseHost* WebDatabaseHost::instance_ = nullptr;
-
 // static
 WebDatabaseHost& WebDatabaseHost::GetInstance() {
   DEFINE_STATIC_LOCAL(WebDatabaseHost, instance, ());
