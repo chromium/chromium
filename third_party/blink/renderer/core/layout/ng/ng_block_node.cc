@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/mathml/ng_math_fraction_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/mathml/ng_math_layout_utils.h"
+#include "third_party/blink/renderer/core/layout/ng/mathml/ng_math_operator_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/mathml/ng_math_padded_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/mathml/ng_math_radical_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/mathml/ng_math_row_layout_algorithm.h"
@@ -137,7 +138,10 @@ NOINLINE void DetermineMathMLAlgorithmAndRun(
       return;
     } else if (IsA<MathMLElement>(element) &&
                To<MathMLElement>(*element).IsTokenElement()) {
-      CreateAlgorithmAndRun<NGBlockLayoutAlgorithm>(params, callback);
+      if (IsOperatorWithSpecialShaping(params.node))
+        CreateAlgorithmAndRun<NGMathOperatorLayoutAlgorithm>(params, callback);
+      else
+        CreateAlgorithmAndRun<NGBlockLayoutAlgorithm>(params, callback);
       return;
     } else if (IsA<MathMLScriptsElement>(element) &&
                IsValidMathMLScript(params.node)) {

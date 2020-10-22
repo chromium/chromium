@@ -412,14 +412,13 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   }
 
   void SetIsMathMLFraction() { is_math_fraction_ = true; }
+  void SetIsMathMLOperator() { is_math_operator_ = true; }
   void SetMathMLPaintInfo(
       UChar operator_character,
       scoped_refptr<const ShapeResultView> operator_shape_result_view,
       LayoutUnit operator_inline_size,
       LayoutUnit operator_ascent,
-      LayoutUnit operator_descent,
-      const LayoutUnit* radical_operator_inline_offset,
-      const NGBoxStrut* radical_base_margins) {
+      LayoutUnit operator_descent) {
     if (!mathml_paint_info_)
       mathml_paint_info_ = std::make_unique<NGMathMLPaintInfo>();
 
@@ -430,12 +429,27 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     mathml_paint_info_->operator_inline_size = operator_inline_size;
     mathml_paint_info_->operator_ascent = operator_ascent;
     mathml_paint_info_->operator_descent = operator_descent;
-    if (radical_base_margins)
-      mathml_paint_info_->radical_base_margins = *radical_base_margins;
-    if (radical_operator_inline_offset) {
-      mathml_paint_info_->radical_operator_inline_offset =
-          *radical_operator_inline_offset;
-    }
+  }
+  void SetMathMLPaintInfo(
+      scoped_refptr<const ShapeResultView> operator_shape_result_view,
+      LayoutUnit operator_inline_size,
+      LayoutUnit operator_ascent,
+      LayoutUnit operator_descent,
+      LayoutUnit radical_operator_inline_offset,
+      const NGBoxStrut& radical_base_margins) {
+    if (!mathml_paint_info_)
+      mathml_paint_info_ = std::make_unique<NGMathMLPaintInfo>();
+
+    mathml_paint_info_->operator_character = kSquareRootCharacter;
+    mathml_paint_info_->operator_shape_result_view =
+        std::move(operator_shape_result_view);
+
+    mathml_paint_info_->operator_inline_size = operator_inline_size;
+    mathml_paint_info_->operator_ascent = operator_ascent;
+    mathml_paint_info_->operator_descent = operator_descent;
+    mathml_paint_info_->radical_base_margins = radical_base_margins;
+    mathml_paint_info_->radical_operator_inline_offset =
+        radical_operator_inline_offset;
   }
 
   void SetSidesToInclude(LogicalBoxSides sides_to_include) {
@@ -569,6 +583,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   bool subtree_modified_margin_strut_ = false;
   bool has_seen_all_children_ = false;
   bool is_math_fraction_ = false;
+  bool is_math_operator_ = false;
   bool is_at_block_end_ = false;
   LayoutUnit consumed_block_size_;
   LayoutUnit block_offset_for_additional_columns_;

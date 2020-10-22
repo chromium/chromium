@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-FAIL Operator dictionary chunk 1 - largeop assert_true: largeop is supported expected true got false
-FAIL Operator dictionary chunk 2 - largeop assert_true: largeop is supported expected true got false
-FAIL Operator dictionary chunk 3 - largeop assert_true: largeop is supported expected true got false
-FAIL Operator dictionary chunk 4 - largeop assert_true: largeop is supported expected true got false
-FAIL Operator dictionary chunk 5 - largeop assert_true: largeop is supported expected true got false
-Harness: the test ran to completion.
-

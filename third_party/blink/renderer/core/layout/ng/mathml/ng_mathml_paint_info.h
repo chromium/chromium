@@ -18,13 +18,16 @@ struct CORE_EXPORT NGMathMLPaintInfo {
   USING_FAST_MALLOC(NGMathMLPaintInfo);
 
  public:
-  UChar operator_character;
+  bool IsRadicalOperator() const {
+    return radical_operator_inline_offset.has_value();
+  }
+  UChar operator_character{kNonCharacter};
   scoped_refptr<const ShapeResultView> operator_shape_result_view;
   LayoutUnit operator_inline_size;
   LayoutUnit operator_ascent;
   LayoutUnit operator_descent;
   NGBoxStrut radical_base_margins;
-  LayoutUnit radical_operator_inline_offset;
+  base::Optional<LayoutUnit> radical_operator_inline_offset;
 };
 
 }  // namespace blink

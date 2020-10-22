@@ -130,10 +130,9 @@ scoped_refptr<const NGLayoutResult> NGMathRadicalLayoutAlgorithm::Layout() {
                                         horizontal.kern_before_degree +
                                         horizontal.kern_after_degree;
     container_builder_.SetMathMLPaintInfo(
-        kSquareRootCharacter, std::move(shape_result_view),
-        LayoutUnit(surd_metrics.advance), LayoutUnit(surd_metrics.ascent),
-        LayoutUnit(surd_metrics.descent), &operator_inline_offset,
-        &base_margins);
+        std::move(shape_result_view), LayoutUnit(surd_metrics.advance),
+        LayoutUnit(surd_metrics.ascent), LayoutUnit(surd_metrics.descent),
+        operator_inline_offset, base_margins);
   }
 
   // Determine the metrics of the radical operator + the base.
