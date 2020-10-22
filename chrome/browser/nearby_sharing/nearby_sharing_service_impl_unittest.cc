@@ -204,6 +204,9 @@ const char kTextPayload[] = "Test text payload";
 
 constexpr int64_t kFreeDiskSpace = 10000;
 
+const int64_t kAdjustedAdvertisingInterval = 100;
+const int64_t kDefaultAdvertisingInterval = 0;
+
 const std::vector<uint8_t> kValidV1EndpointInfo = {
     0, 0, 0, 0,  0,   0,   0,   0,   0,  0,   0,  0,  0,   0,
     0, 0, 0, 10, 100, 101, 118, 105, 99, 101, 78, 97, 109, 101};
@@ -331,6 +334,23 @@ std::vector<std::unique_ptr<Attachment>> CreateFileAttachments(
   return attachments;
 }
 
+class MockBluetoothAdapterWithIntervals : public device::MockBluetoothAdapter {
+ public:
+  MOCK_METHOD2(OnSetAdvertisingInterval, void(int64_t, int64_t));
+
+  void SetAdvertisingInterval(
+      const base::TimeDelta& min,
+      const base::TimeDelta& max,
+      base::OnceClosure callback,
+      AdvertisementErrorCallback error_callback) override {
+    std::move(callback).Run();
+    OnSetAdvertisingInterval(min.InMilliseconds(), max.InMilliseconds());
+  }
+
+ protected:
+  ~MockBluetoothAdapterWithIntervals() override = default;
+};
+
 class NearbySharingServiceImplTest : public testing::Test {
  public:
   NearbySharingServiceImplTest()
@@ -354,7 +374,7 @@ class NearbySharingServiceImplTest : public testing::Test {
         &certificate_manager_factory_);
 
     mock_bluetooth_adapter_ =
-        base::MakeRefCounted<NiceMock<device::MockBluetoothAdapter>>();
+        base::MakeRefCounted<NiceMock<MockBluetoothAdapterWithIntervals>>();
     ON_CALL(*mock_bluetooth_adapter_, IsPresent())
         .WillByDefault(
             Invoke(this, &NearbySharingServiceImplTest::IsBluetoothPresent));
@@ -364,6 +384,9 @@ class NearbySharingServiceImplTest : public testing::Test {
     ON_CALL(*mock_bluetooth_adapter_, AddObserver(_))
         .WillByDefault(
             Invoke(this, &NearbySharingServiceImplTest::AddAdapterObserver));
+    ON_CALL(*mock_bluetooth_adapter_, OnSetAdvertisingInterval(_, _))
+        .WillByDefault(Invoke(
+            this, &NearbySharingServiceImplTest::OnSetAdvertisingInterval));
     device::BluetoothAdapterFactory::SetAdapterForTesting(
         mock_bluetooth_adapter_);
 
@@ -462,6 +485,12 @@ class NearbySharingServiceImplTest : public testing::Test {
   void AddAdapterObserver(device::BluetoothAdapter::Observer* observer) {
     DCHECK(!adapter_observer_);
     adapter_observer_ = observer;
+  }
+
+  void OnSetAdvertisingInterval(int64_t min, int64_t max) {
+    ++set_advertising_interval_call_count_;
+    last_advertising_interval_min_ = min;
+    last_advertising_interval_max_ = max;
   }
 
   void SetConnectionType(net::NetworkChangeNotifier::ConnectionType type) {
@@ -861,6 +890,18 @@ class NearbySharingServiceImplTest : public testing::Test {
     return path;
   }
 
+  size_t set_advertising_interval_call_count() {
+    return set_advertising_interval_call_count_;
+  }
+
+  int64_t last_advertising_interval_min() {
+    return last_advertising_interval_min_;
+  }
+
+  int64_t last_advertising_interval_max() {
+    return last_advertising_interval_max_;
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
   // We need to ensure that |network_notifier_| is created and destroyed after
@@ -889,9 +930,13 @@ class NearbySharingServiceImplTest : public testing::Test {
   bool is_bluetooth_present_ = true;
   bool is_bluetooth_powered_ = true;
   device::BluetoothAdapter::Observer* adapter_observer_ = nullptr;
-  scoped_refptr<NiceMock<device::MockBluetoothAdapter>> mock_bluetooth_adapter_;
+  scoped_refptr<NiceMock<MockBluetoothAdapterWithIntervals>>
+      mock_bluetooth_adapter_;
   NiceMock<chromeos::nearby::MockNearbySharingDecoder> mock_decoder_;
   FakeNearbyConnection connection_;
+  size_t set_advertising_interval_call_count_ = 0u;
+  int64_t last_advertising_interval_min_ = 0;
+  int64_t last_advertising_interval_max_ = 0;
 };
 
 struct ValidSendSurfaceTestData {
@@ -1004,6 +1049,9 @@ TEST_F(NearbySharingServiceImplTest, StartFastInitiationAdvertising) {
       service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
                                     SendSurfaceState::kForeground));
   EXPECT_EQ(1u, fast_initiation_manager_factory_->StartAdvertisingCount());
+  EXPECT_EQ(1u, set_advertising_interval_call_count());
+  EXPECT_EQ(kAdjustedAdvertisingInterval, last_advertising_interval_min());
+  EXPECT_EQ(kAdjustedAdvertisingInterval, last_advertising_interval_max());
 
   // Call RegisterSendSurface a second time and make sure StartAdvertising is
   // not called again.
@@ -1012,6 +1060,9 @@ TEST_F(NearbySharingServiceImplTest, StartFastInitiationAdvertising) {
       service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
                                     SendSurfaceState::kForeground));
   EXPECT_EQ(1u, fast_initiation_manager_factory_->StartAdvertisingCount());
+  EXPECT_EQ(1u, set_advertising_interval_call_count());
+  EXPECT_EQ(kAdjustedAdvertisingInterval, last_advertising_interval_min());
+  EXPECT_EQ(kAdjustedAdvertisingInterval, last_advertising_interval_max());
 }
 
 TEST_F(NearbySharingServiceImplTest, StartFastInitiationAdvertisingError) {
@@ -1070,11 +1121,17 @@ TEST_F(NearbySharingServiceImplTest, StopFastInitiationAdvertising) {
       service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
                                     SendSurfaceState::kForeground));
   EXPECT_EQ(1u, fast_initiation_manager_factory_->StartAdvertisingCount());
+  EXPECT_EQ(1u, set_advertising_interval_call_count());
+  EXPECT_EQ(kAdjustedAdvertisingInterval, last_advertising_interval_min());
+  EXPECT_EQ(kAdjustedAdvertisingInterval, last_advertising_interval_max());
   EXPECT_EQ(
       NearbySharingService::StatusCodes::kOk,
       service_->UnregisterSendSurface(&transfer_callback, &discovery_callback));
   EXPECT_TRUE(fast_initiation_manager_factory_
                   ->StopAdvertisingCalledAndManagerDestroyed());
+  EXPECT_EQ(2u, set_advertising_interval_call_count());
+  EXPECT_EQ(kDefaultAdvertisingInterval, last_advertising_interval_min());
+  EXPECT_EQ(kDefaultAdvertisingInterval, last_advertising_interval_max());
 }
 
 TEST_F(NearbySharingServiceImplTest,
@@ -1666,6 +1723,7 @@ TEST_F(NearbySharingServiceImplTest, SuspendDuringAdvertising) {
   power_client_->SetSuspended(false);
   EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
 }
+
 TEST_F(NearbySharingServiceImplTest,
        DataUsageChangedRegisterReceiveSurfaceRestartsAdvertising) {
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
@@ -1806,6 +1864,33 @@ TEST_F(NearbySharingServiceImplTest,
   service_->FlushMojoForTesting();
   EXPECT_FALSE(fake_nearby_connections_manager_->IsAdvertising());
   EXPECT_TRUE(fake_nearby_connections_manager_->is_shutdown());
+}
+
+TEST_F(NearbySharingServiceImplTest,
+       SetIntervalForNearbyConnectionsAdvertising) {
+  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
+  MockTransferUpdateCallback transfer_callback;
+  MockShareTargetDiscoveredCallback discovery_callback;
+  EXPECT_EQ(
+      NearbySharingService::StatusCodes::kOk,
+      service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
+                                    SendSurfaceState::kForeground));
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
+  EXPECT_EQ(1u, set_advertising_interval_call_count());
+  EXPECT_EQ(kAdjustedAdvertisingInterval, last_advertising_interval_min());
+  EXPECT_EQ(kAdjustedAdvertisingInterval, last_advertising_interval_max());
+
+  power_client_->SetSuspended(true);
+  EXPECT_FALSE(fake_nearby_connections_manager_->IsDiscovering());
+  EXPECT_EQ(2u, set_advertising_interval_call_count());
+  EXPECT_EQ(kDefaultAdvertisingInterval, last_advertising_interval_min());
+  EXPECT_EQ(kDefaultAdvertisingInterval, last_advertising_interval_max());
+
+  power_client_->SetSuspended(false);
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
+  EXPECT_EQ(3u, set_advertising_interval_call_count());
+  EXPECT_EQ(kAdjustedAdvertisingInterval, last_advertising_interval_min());
+  EXPECT_EQ(kAdjustedAdvertisingInterval, last_advertising_interval_max());
 }
 
 TEST_F(NearbySharingServiceImplTest,

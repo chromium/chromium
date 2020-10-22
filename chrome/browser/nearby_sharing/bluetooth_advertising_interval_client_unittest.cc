@@ -63,16 +63,6 @@ class BluetoothAdvertisingIntervalClientTest : public testing::Test {
         std::make_unique<BluetoothAdvertisingIntervalClient>(mock_adapter_);
   }
 
-  void SetAdvertisingInterval() {
-    client_->ReduceInterval(
-        base::BindOnce(&BluetoothAdvertisingIntervalClientTest::
-                           OnSetAdvertisingIntervalCallback,
-                       base::Unretained(this)),
-        base::BindOnce(&BluetoothAdvertisingIntervalClientTest::
-                           OnSetAdvertisingIntervalErrorCallback,
-                       base::Unretained(this)));
-  }
-
   void OnSetAdvertisingInterval(int64_t min, int64_t max) {
     ++set_advertising_interval_call_count_;
     last_advertising_interval_min_ = min;
@@ -83,14 +73,6 @@ class BluetoothAdvertisingIntervalClientTest : public testing::Test {
     ++set_advertising_interval_error_call_count_;
   }
 
-  void OnSetAdvertisingIntervalCallback() {
-    ++set_advertising_interval_callback_call_count_;
-  }
-
-  void OnSetAdvertisingIntervalErrorCallback() {
-    ++set_advertising_interval_error_callback_call_count_;
-  }
-
   void RestoreDefaultInterval() { client_->RestoreDefaultInterval(); }
 
   const size_t set_advertising_interval_call_count() {
@@ -99,14 +81,6 @@ class BluetoothAdvertisingIntervalClientTest : public testing::Test {
 
   const size_t set_advertising_interval_error_call_count() {
     return set_advertising_interval_error_call_count_;
-  }
-
-  const size_t set_advertising_interval_callback_call_count() {
-    return set_advertising_interval_callback_call_count_;
-  }
-
-  const size_t set_advertising_interval_error_callback_call_count() {
-    return set_advertising_interval_error_callback_call_count_;
   }
 
   const int64_t last_advertising_interval_min() {
@@ -121,34 +95,27 @@ class BluetoothAdvertisingIntervalClientTest : public testing::Test {
   std::unique_ptr<BluetoothAdvertisingIntervalClient> client_;
   size_t set_advertising_interval_call_count_ = 0u;
   size_t set_advertising_interval_error_call_count_ = 0u;
-  size_t set_advertising_interval_callback_call_count_ = 0u;
-  size_t set_advertising_interval_error_callback_call_count_ = 0u;
   int64_t last_advertising_interval_min_ = 0;
   int64_t last_advertising_interval_max_ = 0;
 };
 
 TEST_F(BluetoothAdvertisingIntervalClientTest, SetAndRestore) {
-  SetAdvertisingInterval();
+  client_->ReduceInterval();
   EXPECT_EQ(1, set_advertising_interval_call_count());
   EXPECT_EQ(0, set_advertising_interval_error_call_count());
-  EXPECT_EQ(1, set_advertising_interval_callback_call_count());
-  EXPECT_EQ(0, set_advertising_interval_error_callback_call_count());
   EXPECT_EQ(kInterval, last_advertising_interval_min());
   EXPECT_EQ(kInterval, last_advertising_interval_max());
 
   RestoreDefaultInterval();
   EXPECT_EQ(2, set_advertising_interval_call_count());
   EXPECT_EQ(0, set_advertising_interval_error_call_count());
-  EXPECT_EQ(0, set_advertising_interval_error_callback_call_count());
   EXPECT_EQ(kDefaultInterval, last_advertising_interval_min());
   EXPECT_EQ(kDefaultInterval, last_advertising_interval_max());
 }
 
 TEST_F(BluetoothAdvertisingIntervalClientTest, SetError) {
   mock_adapter_->SetAdvertisingIntervalError(true);
-  SetAdvertisingInterval();
+  client_->ReduceInterval();
   EXPECT_EQ(0, set_advertising_interval_call_count());
   EXPECT_EQ(1, set_advertising_interval_error_call_count());
-  EXPECT_EQ(0, set_advertising_interval_callback_call_count());
-  EXPECT_EQ(1, set_advertising_interval_error_callback_call_count());
 }

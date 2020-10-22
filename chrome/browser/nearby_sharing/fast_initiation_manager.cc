@@ -4,35 +4,16 @@
 
 #include "chrome/browser/nearby_sharing/fast_initiation_manager.h"
 
-#include <memory>
 #include <string>
-#include <utility>
-#include <vector>
 
 #include "base/bind_helpers.h"
-#include "base/time/time.h"
-#include "build/build_config.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
-#include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
 
 namespace {
 enum class FastInitVersion : uint8_t {
   kV1 = 0,
 };
-
-#if defined(OS_CHROMEOS)
-constexpr base::TimeDelta kMinFastInitAdvertisingInterval =
-    base::TimeDelta::FromMilliseconds(100);
-constexpr base::TimeDelta kMaxFastInitAdvertisingInterval =
-    base::TimeDelta::FromMilliseconds(100);
-
-// A value of 0 will restore the interval to the system default.
-constexpr base::TimeDelta kMinDefaultAdvertisingInterval =
-    base::TimeDelta::FromMilliseconds(0);
-constexpr base::TimeDelta kMaxDefaultAdvertisingInterval =
-    base::TimeDelta::FromMilliseconds(0);
-#endif
 
 constexpr const char kNearbySharingFastInitiationServiceUuid[] =
     "0000fe2c-0000-1000-8000-00805f9b34fb";
@@ -94,16 +75,7 @@ void FastInitiationManager::StartAdvertising(
   start_callback_ = std::move(callback);
   start_error_callback_ = std::move(error_callback);
 
-#if defined(OS_CHROMEOS)
-  adapter_->SetAdvertisingInterval(
-      kMinFastInitAdvertisingInterval, kMaxFastInitAdvertisingInterval,
-      base::BindOnce(&FastInitiationManager::OnSetAdvertisingInterval,
-                     weak_ptr_factory_.GetWeakPtr(), type),
-      base::BindOnce(&FastInitiationManager::OnSetAdvertisingIntervalError,
-                     weak_ptr_factory_.GetWeakPtr(), type));
-#else
   RegisterAdvertisement(type);
-#endif
 }
 
 void FastInitiationManager::StopAdvertising(
@@ -116,29 +88,7 @@ void FastInitiationManager::StopAdvertising(
     return;
   }
 
-#if defined(OS_CHROMEOS)
-  adapter_->SetAdvertisingInterval(
-      kMinDefaultAdvertisingInterval, kMaxDefaultAdvertisingInterval,
-      base::BindOnce(&FastInitiationManager::OnRestoreAdvertisingInterval,
-                     weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&FastInitiationManager::OnRestoreAdvertisingIntervalError,
-                     weak_ptr_factory_.GetWeakPtr()));
-#else
   UnregisterAdvertisement();
-#endif
-}
-
-void FastInitiationManager::OnSetAdvertisingInterval(
-    FastInitiationManager::FastInitType type) {
-  RegisterAdvertisement(type);
-}
-
-void FastInitiationManager::OnSetAdvertisingIntervalError(
-    FastInitiationManager::FastInitType type,
-    device::BluetoothAdvertisement::ErrorCode code) {
-  NS_LOG(WARNING) << "SetAdvertisingInterval() failed with error code = "
-                  << code;
-  RegisterAdvertisement(type);
 }
 
 void FastInitiationManager::RegisterAdvertisement(
@@ -185,17 +135,6 @@ void FastInitiationManager::OnRegisterAdvertisementError(
   start_callback_.Reset();
   std::move(start_error_callback_).Run();
   // |this| might be destroyed here, do not access local fields.
-}
-
-void FastInitiationManager::OnRestoreAdvertisingInterval() {
-  UnregisterAdvertisement();
-}
-
-void FastInitiationManager::OnRestoreAdvertisingIntervalError(
-    device::BluetoothAdvertisement::ErrorCode code) {
-  NS_LOG(WARNING) << "SetAdvertisingInterval() failed with error code = "
-                  << code;
-  UnregisterAdvertisement();
 }
 
 void FastInitiationManager::UnregisterAdvertisement() {

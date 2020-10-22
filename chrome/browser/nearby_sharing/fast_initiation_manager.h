@@ -62,18 +62,11 @@ class FastInitiationManager : public device::BluetoothAdvertisement::Observer {
   void AdvertisementReleased(
       device::BluetoothAdvertisement* advertisement) override;
 
-  void OnSetAdvertisingInterval(FastInitType type);
-  void OnSetAdvertisingIntervalError(
-      FastInitType type,
-      device::BluetoothAdvertisement::ErrorCode code);
   void RegisterAdvertisement(FastInitType type);
   void OnRegisterAdvertisement(
       scoped_refptr<device::BluetoothAdvertisement> advertisement);
   void OnRegisterAdvertisementError(
       device::BluetoothAdvertisement::ErrorCode error_code);
-  void OnRestoreAdvertisingInterval();
-  void OnRestoreAdvertisingIntervalError(
-      device::BluetoothAdvertisement::ErrorCode code);
   void UnregisterAdvertisement();
   void OnUnregisterAdvertisement();
   void OnUnregisterAdvertisementError(

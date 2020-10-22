@@ -26,11 +26,6 @@ constexpr const char kNearbySharingFastInitiationServiceUuid[] =
     "0000fe2c-0000-1000-8000-00805f9b34fb";
 const uint8_t kNearbySharingFastPairId[] = {0xfc, 0x12, 0x8e};
 
-#if defined(OS_CHROMEOS)
-const int64_t kFastInitAdvertisingInterval = 100;
-const int64_t kDefaultAdvertisingInterval = 0;
-#endif
-
 // Metadata bytes translate to 0b00000000 and 0b10111110, indicating "version
 // 0", "type 0 (notify)", and "transmission power of 66".
 const uint8_t kFastInitMetadataTypeNotify[] = {0x00, 0x42};
@@ -63,18 +58,6 @@ class MockBluetoothAdapterWithAdvertisements
  public:
   MOCK_METHOD1(RegisterAdvertisementWithArgsStruct,
                void(RegisterAdvertisementArgs*));
-  MOCK_METHOD2(OnSetAdvertisingInterval, void(int64_t, int64_t));
-
-#if defined(OS_CHROMEOS)
-  void SetAdvertisingInterval(
-      const base::TimeDelta& min,
-      const base::TimeDelta& max,
-      base::OnceClosure callback,
-      AdvertisementErrorCallback error_callback) override {
-    std::move(callback).Run();
-    OnSetAdvertisingInterval(min.InMilliseconds(), max.InMilliseconds());
-  }
-#endif
 
   void RegisterAdvertisement(
       std::unique_ptr<device::BluetoothAdvertisement::Data> advertisement_data,
@@ -130,10 +113,6 @@ class NearbySharingFastInitiationManagerTest : public testing::Test {
     ON_CALL(*mock_adapter_, RegisterAdvertisementWithArgsStruct(_))
         .WillByDefault(Invoke(this, &NearbySharingFastInitiationManagerTest::
                                         OnAdapterRegisterAdvertisement));
-    ON_CALL(*mock_adapter_, OnSetAdvertisingInterval(_, _))
-        .WillByDefault(Invoke(
-            this,
-            &NearbySharingFastInitiationManagerTest::OnSetAdvertisingInterval));
 
     fast_initiation_manager_ =
         std::make_unique<FastInitiationManager>(mock_adapter_);
@@ -187,27 +166,11 @@ class NearbySharingFastInitiationManagerTest : public testing::Test {
 
   void OnStopAdvertising() { called_on_stop_advertising_ = true; }
 
-  void OnSetAdvertisingInterval(int64_t min, int64_t max) {
-    ++set_advertising_interval_call_count_;
-    last_advertising_interval_min_ = min;
-    last_advertising_interval_max_ = max;
-  }
-
   bool called_on_start_advertising() { return called_on_start_advertising_; }
   bool called_on_start_advertising_error() {
     return called_on_start_advertising_error_;
   }
   bool called_on_stop_advertising() { return called_on_stop_advertising_; }
-  size_t set_advertising_interval_call_count() {
-    return set_advertising_interval_call_count_;
-  }
-
-  int64_t last_advertising_interval_min() {
-    return last_advertising_interval_min_;
-  }
-  int64_t last_advertising_interval_max() {
-    return last_advertising_interval_max_;
-  }
 
   scoped_refptr<NiceMock<MockBluetoothAdapterWithAdvertisements>> mock_adapter_;
   std::unique_ptr<FastInitiationManager> fast_initiation_manager_;
@@ -215,9 +178,6 @@ class NearbySharingFastInitiationManagerTest : public testing::Test {
   bool called_on_start_advertising_ = false;
   bool called_on_start_advertising_error_ = false;
   bool called_on_stop_advertising_ = false;
-  size_t set_advertising_interval_call_count_ = 0u;
-  int64_t last_advertising_interval_min_ = 0;
-  int64_t last_advertising_interval_max_ = 0;
 };
 
 TEST_F(NearbySharingFastInitiationManagerTest,
@@ -230,11 +190,6 @@ TEST_F(NearbySharingFastInitiationManagerTest,
   EXPECT_FALSE(called_on_start_advertising_error());
   EXPECT_FALSE(called_on_stop_advertising());
   EXPECT_TRUE(fake_advertisement->HasObserver(fast_initiation_manager_.get()));
-#if defined(OS_CHROMEOS)
-  EXPECT_EQ(1u, set_advertising_interval_call_count());
-  EXPECT_EQ(kFastInitAdvertisingInterval, last_advertising_interval_min());
-  EXPECT_EQ(kFastInitAdvertisingInterval, last_advertising_interval_max());
-#endif
 }
 
 TEST_F(NearbySharingFastInitiationManagerTest,
@@ -247,11 +202,6 @@ TEST_F(NearbySharingFastInitiationManagerTest,
   EXPECT_FALSE(called_on_start_advertising_error());
   EXPECT_FALSE(called_on_stop_advertising());
   EXPECT_TRUE(fake_advertisement->HasObserver(fast_initiation_manager_.get()));
-#if defined(OS_CHROMEOS)
-  EXPECT_EQ(1u, set_advertising_interval_call_count());
-  EXPECT_EQ(kFastInitAdvertisingInterval, last_advertising_interval_min());
-  EXPECT_EQ(kFastInitAdvertisingInterval, last_advertising_interval_max());
-#endif
 }
 
 TEST_F(NearbySharingFastInitiationManagerTest, TestStartAdvertising_Error) {
@@ -263,11 +213,6 @@ TEST_F(NearbySharingFastInitiationManagerTest, TestStartAdvertising_Error) {
   EXPECT_FALSE(called_on_start_advertising());
   EXPECT_TRUE(called_on_start_advertising_error());
   EXPECT_FALSE(called_on_stop_advertising());
-#if defined(OS_CHROMEOS)
-  EXPECT_EQ(1u, set_advertising_interval_call_count());
-  EXPECT_EQ(kFastInitAdvertisingInterval, last_advertising_interval_min());
-  EXPECT_EQ(kFastInitAdvertisingInterval, last_advertising_interval_max());
-#endif
 }
 
 // Regression test for crbug.com/1109581.
@@ -289,22 +234,11 @@ TEST_F(NearbySharingFastInitiationManagerTest, TestStopAdvertising) {
   auto fake_advertisement = base::MakeRefCounted<FakeBluetoothAdvertisement>();
   std::move(register_args_->callback).Run(fake_advertisement);
 
-#if defined(OS_CHROMEOS)
-  EXPECT_EQ(1u, set_advertising_interval_call_count());
-  EXPECT_EQ(kFastInitAdvertisingInterval, last_advertising_interval_min());
-  EXPECT_EQ(kFastInitAdvertisingInterval, last_advertising_interval_max());
-#endif
-
   StopAdvertising();
 
   EXPECT_TRUE(called_on_start_advertising());
   EXPECT_FALSE(called_on_start_advertising_error());
   EXPECT_TRUE(called_on_stop_advertising());
-#if defined(OS_CHROMEOS)
-  EXPECT_EQ(2u, set_advertising_interval_call_count());
-  EXPECT_EQ(kDefaultAdvertisingInterval, last_advertising_interval_min());
-  EXPECT_EQ(kDefaultAdvertisingInterval, last_advertising_interval_max());
-#endif
 }
 
 TEST_F(NearbySharingFastInitiationManagerTest, TestAdvertisementReleased) {
@@ -320,9 +254,4 @@ TEST_F(NearbySharingFastInitiationManagerTest, TestAdvertisementReleased) {
   EXPECT_FALSE(called_on_start_advertising_error());
   EXPECT_FALSE(called_on_stop_advertising());
   EXPECT_FALSE(fake_advertisement->HasObserver(fast_initiation_manager_.get()));
-#if defined(OS_CHROMEOS)
-  EXPECT_EQ(2u, set_advertising_interval_call_count());
-  EXPECT_EQ(kDefaultAdvertisingInterval, last_advertising_interval_min());
-  EXPECT_EQ(kDefaultAdvertisingInterval, last_advertising_interval_max());
-#endif
 }

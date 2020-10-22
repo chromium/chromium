@@ -28,14 +28,12 @@ class BluetoothAdvertisingIntervalClient {
 
   // Sets the advertising interval to a lowered value to allow for faster
   // connections.
-  void ReduceInterval(base::OnceClosure callback,
-                      base::OnceClosure error_callback);
+  void ReduceInterval();
   // Restores the advertising interval to the system default.
   void RestoreDefaultInterval();
 
  private:
   void OnSetIntervalForAdvertisingError(
-      base::OnceClosure error_callback,
       device::BluetoothAdvertisement::ErrorCode code);
   void OnRestoreDefaultIntervalError(
       device::BluetoothAdvertisement::ErrorCode code);

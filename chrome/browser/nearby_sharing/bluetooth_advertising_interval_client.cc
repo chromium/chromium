@@ -32,14 +32,12 @@ BluetoothAdvertisingIntervalClient::~BluetoothAdvertisingIntervalClient() {
   RestoreDefaultInterval();
 }
 
-void BluetoothAdvertisingIntervalClient::ReduceInterval(
-    base::OnceClosure callback,
-    base::OnceClosure error_callback) {
+void BluetoothAdvertisingIntervalClient::ReduceInterval() {
   adapter_->SetAdvertisingInterval(
-      kIntervalMin, kIntervalMax, std::move(callback),
+      kIntervalMin, kIntervalMax, base::DoNothing(),
       base::BindOnce(
           &BluetoothAdvertisingIntervalClient::OnSetIntervalForAdvertisingError,
-          weak_ptr_factory_.GetWeakPtr(), std::move(error_callback)));
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void BluetoothAdvertisingIntervalClient::RestoreDefaultInterval() {
@@ -51,17 +49,15 @@ void BluetoothAdvertisingIntervalClient::RestoreDefaultInterval() {
 }
 
 void BluetoothAdvertisingIntervalClient::OnSetIntervalForAdvertisingError(
-    base::OnceClosure error_callback,
     device::BluetoothAdvertisement::ErrorCode code) {
   NS_LOG(WARNING) << __func__
-                  << "SetAdvertisingInterval() failed with error code = "
+                  << ": SetAdvertisingInterval() failed with error code = "
                   << code;
-  std::move(error_callback).Run();
 }
 
 void BluetoothAdvertisingIntervalClient::OnRestoreDefaultIntervalError(
     device::BluetoothAdvertisement::ErrorCode code) {
   NS_LOG(WARNING) << __func__
-                  << "SetAdvertisingInterval() failed with error code = "
+                  << ": SetAdvertisingInterval() failed with error code = "
                   << code;
 }
