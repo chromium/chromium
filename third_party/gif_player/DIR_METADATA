@@ -1,0 +1,4 @@
+monorail {
+  component: "UI>Browser>NewTabPage"
+}
+os: ANDROID
