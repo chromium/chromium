@@ -32,7 +32,7 @@ void StreamsPrivateAPI::SendExecuteMimeTypeHandlerEvent(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   content::WebContents* web_contents = nullptr;
-  if (frame_tree_node_id != -1) {
+  if (frame_tree_node_id != content::RenderFrameHost::kNoFrameTreeNodeId) {
     web_contents =
         content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
   } else {

@@ -529,7 +529,7 @@ void Navigator::RequestOpenURL(
   // redirects.  http://crbug.com/311721.
   std::vector<GURL> redirect_chain;
 
-  int frame_tree_node_id = -1;
+  int frame_tree_node_id = FrameTreeNode::kFrameTreeNodeInvalidId;
 
   // Send the navigation to the current FrameTreeNode if it's destined for a
   // subframe in the current tab.  We'll assume it's for the main frame

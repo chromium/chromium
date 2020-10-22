@@ -174,7 +174,7 @@ MimeHandlerStreamManager::EmbedderObserver::EmbedderObserver(
       initial_load_for_frame_(true),
       new_host_(nullptr) {
   content::WebContents* web_contents = nullptr;
-  if (frame_tree_node_id != -1) {
+  if (frame_tree_node_id != content::RenderFrameHost::kNoFrameTreeNodeId) {
     web_contents =
         content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
   } else {
@@ -193,7 +193,8 @@ void MimeHandlerStreamManager::EmbedderObserver::RenderFrameDeleted(
   // final RenderFrameHost for the navigation has been chosen. When it is later
   // picked, a specualtive RenderFrameHost might be deleted. Do not abort the
   // stream in that case.
-  if (frame_tree_node_id_ != -1 && !render_frame_host->IsCurrent())
+  if (frame_tree_node_id_ != content::RenderFrameHost::kNoFrameTreeNodeId &&
+      !render_frame_host->IsCurrent())
     return;
 
   AbortStream();
@@ -215,7 +216,7 @@ void MimeHandlerStreamManager::EmbedderObserver::ReadyToCommitNavigation(
   // want to clean up the stream here. Update the RenderFrameHost tracking.
   if (initial_load_for_frame_) {
     initial_load_for_frame_ = false;
-    frame_tree_node_id_ = -1;
+    frame_tree_node_id_ = content::RenderFrameHost::kNoFrameTreeNodeId;
     render_frame_id_ = navigation_handle->GetRenderFrameHost()->GetRoutingID();
     render_process_id_ =
         navigation_handle->GetRenderFrameHost()->GetProcess()->GetID();
@@ -242,7 +243,7 @@ void MimeHandlerStreamManager::EmbedderObserver::RenderFrameHostChanged(
     return;
 
   // If this is an unrelated host, ignore.
-  if ((frame_tree_node_id_ != -1 &&
+  if ((frame_tree_node_id_ != content::RenderFrameHost::kNoFrameTreeNodeId &&
        old_host->GetFrameTreeNodeId() != frame_tree_node_id_) ||
       (render_frame_id_ != -1 &&
        (old_host->GetRoutingID() != render_frame_id_ ||
@@ -254,13 +255,14 @@ void MimeHandlerStreamManager::EmbedderObserver::RenderFrameHostChanged(
   // Update the RFID, RPIDs to those of the new RFH. This ensures
   // that if the new RFH gets deleted before loading the stream, we will
   // abort it.
-  DCHECK((frame_tree_node_id_ == -1) ||
-         (frame_tree_node_id_ == new_host_->GetFrameTreeNodeId()));
+  DCHECK(
+      (frame_tree_node_id_ == content::RenderFrameHost::kNoFrameTreeNodeId) ||
+      (frame_tree_node_id_ == new_host_->GetFrameTreeNodeId()));
   render_frame_id_ = new_host_->GetRoutingID();
   render_process_id_ = new_host_->GetProcess()->GetID();
   // No need to keep this around anymore since we have valid render frame IDs
   // now.
-  frame_tree_node_id_ = -1;
+  frame_tree_node_id_ = content::RenderFrameHost::kNoFrameTreeNodeId;
 }
 
 void MimeHandlerStreamManager::EmbedderObserver::WebContentsDestroyed() {
@@ -280,7 +282,7 @@ bool MimeHandlerStreamManager::EmbedderObserver::IsTrackedRenderFrameHost(
   if (new_host_ && (render_frame_host != new_host_))
     return false;
 
-  if (frame_tree_node_id_ != -1) {
+  if (frame_tree_node_id_ != content::RenderFrameHost::kNoFrameTreeNodeId) {
     return render_frame_host->GetFrameTreeNodeId() == frame_tree_node_id_;
   } else {
     DCHECK((render_frame_id_ != -1) && (render_process_id_ != -1));

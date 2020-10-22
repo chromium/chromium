@@ -283,9 +283,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
     return render_frame_host_routing_id_;
   }
 
-  void set_frame_tree_node_id(int id) { frame_tree_node_id_ = id; }
-  int frame_tree_node_id() const { return frame_tree_node_id_; }
-
   const RequestHeadersType& request_headers() const { return request_headers_; }
   const base::FilePath& file_path() const { return save_info_.file_path; }
   const base::string16& suggested_name() const {
@@ -340,7 +337,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   int render_process_host_id_;
   int render_view_host_routing_id_;
   int render_frame_host_routing_id_;
-  int frame_tree_node_id_;
   DownloadSaveInfo save_info_;
   GURL url_;
   bool do_not_prompt_for_login_;

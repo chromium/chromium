@@ -27,7 +27,6 @@ DownloadUrlParameters::DownloadUrlParameters(
       render_process_host_id_(render_process_host_id),
       render_view_host_routing_id_(render_view_host_routing_id),
       render_frame_host_routing_id_(render_frame_host_routing_id),
-      frame_tree_node_id_(-1),
       url_(url),
       do_not_prompt_for_login_(false),
       cross_origin_redirects_(network::mojom::RedirectMode::kFollow),

@@ -102,7 +102,7 @@ struct NavigateParams {
 
   // The browser-global ID of the frame to navigate, or
   // content::RenderFrameHost::kNoFrameTreeNodeId for the main frame.
-  int frame_tree_node_id = -1;
+  int frame_tree_node_id = content::RenderFrameHost::kNoFrameTreeNodeId;
 
   // Any redirect URLs that occurred for this navigation before |url|.
   // Usually empty.

@@ -348,7 +348,7 @@ NavigationEntryImpl::NavigationEntryImpl(
       should_replace_entry_(false),
       should_clear_history_list_(false),
       can_load_local_resources_(false),
-      frame_tree_node_id_(-1),
+      frame_tree_node_id_(FrameTreeNode::kFrameTreeNodeInvalidId),
       has_user_gesture_(false),
       reload_type_(ReloadType::NONE),
       started_from_context_menu_(false),
@@ -810,7 +810,7 @@ void NavigationEntryImpl::ResetForCommit(FrameNavigationEntry* frame_entry) {
   set_should_replace_entry(false);
 
   set_should_clear_history_list(false);
-  set_frame_tree_node_id(-1);
+  set_frame_tree_node_id(FrameTreeNode::kFrameTreeNodeInvalidId);
   set_reload_type(ReloadType::NONE);
 
   if (frame_entry) {

@@ -54,8 +54,6 @@ const double kLoadingProgressDone = 1.0;
 
 }  // namespace
 
-const int FrameTreeNode::kFrameTreeNodeInvalidId = -1;
-
 // This observer watches the opener of its owner FrameTreeNode and clears the
 // owner's opener if the opener is destroyed.
 class FrameTreeNode::OpenerDestroyedObserver : public FrameTreeNode::Observer {
@@ -86,6 +84,12 @@ class FrameTreeNode::OpenerDestroyedObserver : public FrameTreeNode::Observer {
 
   DISALLOW_COPY_AND_ASSIGN(OpenerDestroyedObserver);
 };
+
+const int FrameTreeNode::kFrameTreeNodeInvalidId = -1;
+
+static_assert(FrameTreeNode::kFrameTreeNodeInvalidId ==
+                  RenderFrameHost::kNoFrameTreeNodeId,
+              "Have consistent sentinel values for an invalid FTN id.");
 
 int FrameTreeNode::next_frame_tree_node_id_ = 1;
 

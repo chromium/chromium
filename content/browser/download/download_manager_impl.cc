@@ -923,8 +923,6 @@ void DownloadManagerImpl::DownloadUrl(
       params->download_source());
   auto* rfh = RenderFrameHost::FromID(params->render_process_host_id(),
                                       params->render_frame_host_routing_id());
-  if (rfh)
-    params->set_frame_tree_node_id(rfh->GetFrameTreeNodeId());
   BeginDownloadInternal(std::move(params), std::move(blob_url_loader_factory),
                         true,
                         rfh ? rfh->GetSiteInstance()->GetSiteURL() : GURL());

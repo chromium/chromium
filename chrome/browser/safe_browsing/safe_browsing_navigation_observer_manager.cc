@@ -491,7 +491,8 @@ void SafeBrowsingNavigationObserverManager::RecordNewWebContents(
   nav_event->original_request_url = cleaned_target_url;
   nav_event->target_tab_id =
       sessions::SessionTabHelper::IdForTab(target_web_contents);
-  nav_event->frame_id = rfh ? rfh->GetFrameTreeNodeId() : -1;
+  nav_event->frame_id = rfh ? rfh->GetFrameTreeNodeId()
+                            : content::RenderFrameHost::kNoFrameTreeNodeId;
   nav_event->maybe_launched_by_external_application =
       ui::PageTransitionCoreTypeIs(page_transition,
                                    ui::PAGE_TRANSITION_AUTO_TOPLEVEL);

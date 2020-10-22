@@ -36,7 +36,7 @@ NavigationEvent::NavigationEvent()
       original_request_url(),
       source_tab_id(SessionID::InvalidValue()),
       target_tab_id(SessionID::InvalidValue()),
-      frame_id(-1),
+      frame_id(content::RenderFrameHost::kNoFrameTreeNodeId),
       last_updated(base::Time::Now()),
       navigation_initiation(ReferrerChainEntry::UNDEFINED),
       has_committed(false),

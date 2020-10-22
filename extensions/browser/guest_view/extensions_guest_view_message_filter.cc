@@ -243,8 +243,8 @@ void ExtensionsGuestViewMessageFilter::CreateEmbeddedMimeHandlerViewGuest(
       std::move(transferrable_url_loader), original_url));
   MimeHandlerStreamManager::Get(browser_context)
       ->AddStream(view_id, std::move(stream_container),
-                  -1 /* frame_tree_node_id*/, render_process_id_,
-                  render_frame_id);
+                  content::RenderFrameHost::kNoFrameTreeNodeId,
+                  render_process_id_, render_frame_id);
 
   CreateMimeHandlerViewGuestOnUIThread(render_frame_id, view_id,
                                        element_instance_id, element_size,

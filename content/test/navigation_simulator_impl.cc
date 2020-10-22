@@ -88,7 +88,7 @@ FrameTreeNode* GetFrameTreeNodeForPendingEntry(WebContentsImpl* contents) {
       contents->GetController().GetPendingEntry();
   int frame_tree_node_id = pending_entry->frame_tree_node_id();
   FrameTree* frame_tree = contents->GetFrameTree();
-  if (frame_tree_node_id == -1)
+  if (frame_tree_node_id == FrameTreeNode::kFrameTreeNodeInvalidId)
     return frame_tree->root();
   return frame_tree->FindByID(frame_tree_node_id);
 }
