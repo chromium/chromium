@@ -428,7 +428,8 @@ void CronetURLRequestContext::NetworkTasks::Initialize(
   if (context_->network_error_logging_service()) {
     for (const auto& preloaded_header : config->preloaded_nel_headers) {
       context_->network_error_logging_service()->OnHeader(
-          preloaded_header.origin, net::IPAddress(), preloaded_header.value);
+          net::NetworkIsolationKey(), preloaded_header.origin, net::IPAddress(),
+          preloaded_header.value);
     }
   }
 #endif  // BUILDFLAG(ENABLE_REPORTING)

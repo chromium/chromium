@@ -48,9 +48,9 @@ class MockPersistentNelStore
     // Type of command.
     Type type;
 
-    // The origin of the policy that the command pertains to. (Only applies for
+    // The key of the policy that the command pertains to. (Only applies for
     // add, update, and delete)
-    url::Origin origin;
+    NetworkErrorLoggingService::NelPolicyKey key;
 
     // The supplied callback to be run when loading is complete. (Only applies
     // for load commands).

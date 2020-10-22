@@ -183,8 +183,8 @@ class SQLitePersistentReportingAndNelStoreTest
       const url::Origin& origin,
       base::Time last_used) {
     NetworkErrorLoggingService::NelPolicy policy;
-    policy.network_isolation_key = network_isolation_key;
-    policy.origin = origin;
+    policy.key =
+        NetworkErrorLoggingService::NelPolicyKey(network_isolation_key, origin);
     policy.received_ip_address = IPAddress::IPv4Localhost();
     policy.report_to = "group";
     policy.expires = kExpires;
@@ -270,8 +270,7 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest, TestInvalidMetaTableRecovery) {
   std::vector<NetworkErrorLoggingService::NelPolicy> policies;
   LoadNelPolicies(&policies);
   ASSERT_EQ(1u, policies.size());
-  EXPECT_EQ(policy1.network_isolation_key, policies[0].network_isolation_key);
-  EXPECT_EQ(policy1.origin, policies[0].origin);
+  EXPECT_EQ(policy1.key, policies[0].key);
   EXPECT_EQ(policy1.received_ip_address, policies[0].received_ip_address);
   EXPECT_EQ(policy1.report_to, policies[0].report_to);
   EXPECT_TRUE(WithinOneMicrosecond(policy1.expires, policies[0].expires));
@@ -311,8 +310,7 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest, TestInvalidMetaTableRecovery) {
   CreateStore();
   LoadNelPolicies(&policies);
   ASSERT_EQ(1u, policies.size());
-  EXPECT_EQ(policy2.network_isolation_key, policies[0].network_isolation_key);
-  EXPECT_EQ(policy2.origin, policies[0].origin);
+  EXPECT_EQ(policy2.key, policies[0].key);
   EXPECT_EQ(policy2.received_ip_address, policies[0].received_ip_address);
   EXPECT_EQ(policy2.report_to, policies[0].report_to);
   EXPECT_TRUE(WithinOneMicrosecond(policy2.expires, policies[0].expires));
@@ -338,8 +336,7 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest, PersistNelPolicy) {
   std::vector<NetworkErrorLoggingService::NelPolicy> policies;
   LoadNelPolicies(&policies);
   ASSERT_EQ(1u, policies.size());
-  EXPECT_EQ(policy.network_isolation_key, policies[0].network_isolation_key);
-  EXPECT_EQ(policy.origin, policies[0].origin);
+  EXPECT_EQ(policy.key, policies[0].key);
   EXPECT_EQ(policy.received_ip_address, policies[0].received_ip_address);
   EXPECT_EQ(policy.report_to, policies[0].report_to);
   EXPECT_TRUE(WithinOneMicrosecond(policy.expires, policies[0].expires));
@@ -383,8 +380,7 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest, UpdateNelPolicyAccessTime) {
   std::vector<NetworkErrorLoggingService::NelPolicy> policies;
   LoadNelPolicies(&policies);
   ASSERT_EQ(1u, policies.size());
-  EXPECT_EQ(policy.network_isolation_key, policies[0].network_isolation_key);
-  EXPECT_EQ(policy.origin, policies[0].origin);
+  EXPECT_EQ(policy.key, policies[0].key);
   EXPECT_TRUE(WithinOneMicrosecond(policy.last_used, policies[0].last_used));
 }
 
@@ -409,7 +405,7 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest, DeleteNelPolicy) {
   std::vector<NetworkErrorLoggingService::NelPolicy> policies;
   LoadNelPolicies(&policies);
   ASSERT_EQ(1u, policies.size());
-  EXPECT_EQ(policy2.origin, policies[0].origin);
+  EXPECT_EQ(policy2.key, policies[0].key);
 
   // Delete after having closed and reopened.
   store_->DeleteNelPolicy(policy2);
@@ -470,16 +466,13 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest,
 
   ASSERT_EQ(3u, policies.size());
 
-  EXPECT_EQ(policy1.network_isolation_key, policies[0].network_isolation_key);
-  EXPECT_EQ(policy1.origin, policies[0].origin);
+  EXPECT_EQ(policy1.key, policies[0].key);
   EXPECT_TRUE(WithinOneMicrosecond(policy1.last_used, policies[0].last_used));
 
-  EXPECT_EQ(policy2.network_isolation_key, policies[1].network_isolation_key);
-  EXPECT_EQ(policy2.origin, policies[1].origin);
+  EXPECT_EQ(policy2.key, policies[1].key);
   EXPECT_TRUE(WithinOneMicrosecond(policy2.last_used, policies[1].last_used));
 
-  EXPECT_EQ(policy3.network_isolation_key, policies[2].network_isolation_key);
-  EXPECT_EQ(policy3.origin, policies[2].origin);
+  EXPECT_EQ(policy3.key, policies[2].key);
   EXPECT_TRUE(WithinOneMicrosecond(policy3.last_used, policies[2].last_used));
 }
 
@@ -643,10 +636,12 @@ class SQLitePersistNelTest : public SQLitePersistentReportingAndNelStoreTest {
   }
 
   NetworkErrorLoggingService::RequestDetails MakeRequestDetails(
-      GURL url,
+      const NetworkIsolationKey& network_isolation_key,
+      const GURL& url,
       Error error_type) {
     NetworkErrorLoggingService::RequestDetails details;
 
+    details.network_isolation_key = network_isolation_key;
     details.uri = url;
     details.referrer = GURL("https://referrer.com/");
     details.user_agent = "Mozilla/1.0";
@@ -669,18 +664,18 @@ class SQLitePersistNelTest : public SQLitePersistentReportingAndNelStoreTest {
 TEST_F(SQLitePersistNelTest, AddAndRetrieveNelPolicy) {
   const GURL kUrl("https://www.foo.test");
   const url::Origin kOrigin = url::Origin::Create(kUrl);
+  const NetworkErrorLoggingService::NelPolicyKey kKey(kNik1_, kOrigin);
 
-  service_->OnHeader(kOrigin, kServerIP, kHeader);
+  service_->OnHeader(kNik1_, kOrigin, kServerIP, kHeader);
   RunUntilIdle();
 
-  EXPECT_EQ(1u, service_->GetPolicyOriginsForTesting().count(kOrigin));
+  EXPECT_EQ(1u, service_->GetPolicyKeysForTesting().count(kKey));
   SimulateRestart();
 
-  service_->OnRequest(MakeRequestDetails(kUrl, ERR_INVALID_RESPONSE));
+  service_->OnRequest(MakeRequestDetails(kNik1_, kUrl, ERR_INVALID_RESPONSE));
   RunUntilIdle();
 
-  EXPECT_EQ(1u, service_->GetPolicyOriginsForTesting().count(
-                    url::Origin::Create(kUrl)));
+  EXPECT_EQ(1u, service_->GetPolicyKeysForTesting().count(kKey));
 
   EXPECT_THAT(reporting_service_->reports(),
               testing::ElementsAre(ReportUrlIs(kUrl)));
@@ -689,32 +684,34 @@ TEST_F(SQLitePersistNelTest, AddAndRetrieveNelPolicy) {
 TEST_F(SQLitePersistNelTest, AddAndDeleteNelPolicy) {
   const GURL kUrl("https://www.foo.test");
   const url::Origin kOrigin = url::Origin::Create(kUrl);
+  const NetworkErrorLoggingService::NelPolicyKey kKey(kNik1_, kOrigin);
 
-  service_->OnHeader(kOrigin, kServerIP, kHeader);
+  service_->OnHeader(kNik1_, kOrigin, kServerIP, kHeader);
   RunUntilIdle();
 
-  EXPECT_EQ(1u, service_->GetPolicyOriginsForTesting().count(kOrigin));
+  EXPECT_EQ(1u, service_->GetPolicyKeysForTesting().count(kKey));
   SimulateRestart();
 
   // Deletes the stored policy.
-  service_->OnHeader(kOrigin, kServerIP, kHeaderMaxAge0);
+  service_->OnHeader(kNik1_, kOrigin, kServerIP, kHeaderMaxAge0);
   RunUntilIdle();
 
-  EXPECT_EQ(0u, service_->GetPolicyOriginsForTesting().count(kOrigin));
+  EXPECT_EQ(0u, service_->GetPolicyKeysForTesting().count(kKey));
   SimulateRestart();
 
-  service_->OnRequest(MakeRequestDetails(kUrl, ERR_INVALID_RESPONSE));
+  service_->OnRequest(MakeRequestDetails(kNik1_, kUrl, ERR_INVALID_RESPONSE));
   RunUntilIdle();
 
-  EXPECT_EQ(0u, service_->GetPolicyOriginsForTesting().count(kOrigin));
+  EXPECT_EQ(0u, service_->GetPolicyKeysForTesting().count(kKey));
   EXPECT_EQ(0u, reporting_service_->reports().size());
 }
 
 TEST_F(SQLitePersistNelTest, ExpirationTimeIsPersisted) {
   const GURL kUrl("https://www.foo.test");
   const url::Origin kOrigin = url::Origin::Create(kUrl);
+  const NetworkIsolationKey kNik;
 
-  service_->OnHeader(kOrigin, kServerIP, kHeader);
+  service_->OnHeader(kNik, kOrigin, kServerIP, kHeader);
   RunUntilIdle();
 
   // Makes the policy we just added expired.
@@ -722,17 +719,17 @@ TEST_F(SQLitePersistNelTest, ExpirationTimeIsPersisted) {
 
   SimulateRestart();
 
-  service_->OnRequest(MakeRequestDetails(kUrl, ERR_INVALID_RESPONSE));
+  service_->OnRequest(MakeRequestDetails(kNik, kUrl, ERR_INVALID_RESPONSE));
   RunUntilIdle();
 
   EXPECT_EQ(0u, reporting_service_->reports().size());
 
   // Add the policy again so that it is not expired.
-  service_->OnHeader(kOrigin, kServerIP, kHeader);
+  service_->OnHeader(kNik, kOrigin, kServerIP, kHeader);
 
   SimulateRestart();
 
-  service_->OnRequest(MakeRequestDetails(kUrl, ERR_INVALID_RESPONSE));
+  service_->OnRequest(MakeRequestDetails(kNik, kUrl, ERR_INVALID_RESPONSE));
   RunUntilIdle();
 
   EXPECT_THAT(reporting_service_->reports(),
@@ -743,14 +740,14 @@ TEST_F(SQLitePersistNelTest, OnRequestUpdatesAccessTime) {
   const GURL kUrl("https://www.foo.test");
   const url::Origin kOrigin = url::Origin::Create(kUrl);
 
-  service_->OnHeader(kOrigin, kServerIP, kHeader);
+  service_->OnHeader(kNik1_, kOrigin, kServerIP, kHeader);
   RunUntilIdle();
 
   SimulateRestart();
 
   // Update the access time by sending a request.
   clock_.Advance(base::TimeDelta::FromSeconds(100));
-  service_->OnRequest(MakeRequestDetails(kUrl, ERR_INVALID_RESPONSE));
+  service_->OnRequest(MakeRequestDetails(kNik1_, kUrl, ERR_INVALID_RESPONSE));
   RunUntilIdle();
 
   EXPECT_THAT(reporting_service_->reports(),
@@ -764,7 +761,7 @@ TEST_F(SQLitePersistNelTest, OnRequestUpdatesAccessTime) {
   std::vector<NetworkErrorLoggingService::NelPolicy> policies;
   LoadNelPolicies(&policies);
   ASSERT_EQ(1u, policies.size());
-  EXPECT_EQ(policy.origin, policies[0].origin);
+  EXPECT_EQ(policy.key, policies[0].key);
   EXPECT_TRUE(WithinOneMicrosecond(policy.last_used, policies[0].last_used));
 }
 
@@ -773,18 +770,20 @@ TEST_F(SQLitePersistNelTest, RemoveSomeBrowsingData) {
   const url::Origin kOrigin1 = url::Origin::Create(kUrl1);
   const url::Origin kOrigin2 =
       url::Origin::Create(GURL("https://www.bar.test"));
+  const NetworkErrorLoggingService::NelPolicyKey kKey1(kNik1_, kOrigin1);
+  const NetworkErrorLoggingService::NelPolicyKey kKey2(kNik2_, kOrigin2);
 
-  service_->OnHeader(kOrigin1, kServerIP, kHeader);
-  service_->OnHeader(kOrigin2, kServerIP, kHeader);
+  service_->OnHeader(kNik1_, kOrigin1, kServerIP, kHeader);
+  service_->OnHeader(kNik2_, kOrigin2, kServerIP, kHeader);
   RunUntilIdle();
 
   SimulateRestart();
 
-  service_->OnRequest(MakeRequestDetails(kUrl1, ERR_INVALID_RESPONSE));
+  service_->OnRequest(MakeRequestDetails(kNik1_, kUrl1, ERR_INVALID_RESPONSE));
   RunUntilIdle();
 
-  ASSERT_EQ(1u, service_->GetPolicyOriginsForTesting().count(kOrigin1));
-  ASSERT_EQ(1u, service_->GetPolicyOriginsForTesting().count(kOrigin2));
+  ASSERT_EQ(1u, service_->GetPolicyKeysForTesting().count(kKey1));
+  ASSERT_EQ(1u, service_->GetPolicyKeysForTesting().count(kKey2));
   EXPECT_THAT(reporting_service_->reports(),
               testing::ElementsAre(ReportUrlIs(kUrl1)));
 
@@ -797,15 +796,15 @@ TEST_F(SQLitePersistNelTest, RemoveSomeBrowsingData) {
       kOrigin1.host()));
   RunUntilIdle();
 
-  EXPECT_EQ(0u, service_->GetPolicyOriginsForTesting().count(kOrigin1));
-  EXPECT_EQ(1u, service_->GetPolicyOriginsForTesting().count(kOrigin2));
+  EXPECT_EQ(0u, service_->GetPolicyKeysForTesting().count(kKey1));
+  EXPECT_EQ(1u, service_->GetPolicyKeysForTesting().count(kKey2));
 
   SimulateRestart();
 
-  service_->OnRequest(MakeRequestDetails(kUrl1, ERR_INVALID_RESPONSE));
+  service_->OnRequest(MakeRequestDetails(kNik1_, kUrl1, ERR_INVALID_RESPONSE));
   RunUntilIdle();
-  EXPECT_EQ(0u, service_->GetPolicyOriginsForTesting().count(kOrigin1));
-  EXPECT_EQ(1u, service_->GetPolicyOriginsForTesting().count(kOrigin2));
+  EXPECT_EQ(0u, service_->GetPolicyKeysForTesting().count(kKey1));
+  EXPECT_EQ(1u, service_->GetPolicyKeysForTesting().count(kKey2));
   EXPECT_EQ(0u, reporting_service_->reports().size());
 }
 
@@ -814,19 +813,21 @@ TEST_F(SQLitePersistNelTest, RemoveAllBrowsingData) {
   const url::Origin kOrigin1 = url::Origin::Create(kUrl1);
   const GURL kUrl2("https://www.bar.test");
   const url::Origin kOrigin2 = url::Origin::Create(kUrl2);
+  const NetworkErrorLoggingService::NelPolicyKey kKey1(kNik1_, kOrigin1);
+  const NetworkErrorLoggingService::NelPolicyKey kKey2(kNik2_, kOrigin2);
 
-  service_->OnHeader(kOrigin1, kServerIP, kHeader);
-  service_->OnHeader(kOrigin2, kServerIP, kHeader);
+  service_->OnHeader(kNik1_, kOrigin1, kServerIP, kHeader);
+  service_->OnHeader(kNik2_, kOrigin2, kServerIP, kHeader);
   RunUntilIdle();
 
   SimulateRestart();
 
-  service_->OnRequest(MakeRequestDetails(kUrl1, ERR_INVALID_RESPONSE));
-  service_->OnRequest(MakeRequestDetails(kUrl2, ERR_INVALID_RESPONSE));
+  service_->OnRequest(MakeRequestDetails(kNik1_, kUrl1, ERR_INVALID_RESPONSE));
+  service_->OnRequest(MakeRequestDetails(kNik2_, kUrl2, ERR_INVALID_RESPONSE));
   RunUntilIdle();
 
-  ASSERT_EQ(1u, service_->GetPolicyOriginsForTesting().count(kOrigin1));
-  ASSERT_EQ(1u, service_->GetPolicyOriginsForTesting().count(kOrigin2));
+  ASSERT_EQ(1u, service_->GetPolicyKeysForTesting().count(kKey1));
+  ASSERT_EQ(1u, service_->GetPolicyKeysForTesting().count(kKey2));
   EXPECT_THAT(reporting_service_->reports(),
               testing::ElementsAre(ReportUrlIs(kUrl1), ReportUrlIs(kUrl2)));
 
@@ -835,16 +836,16 @@ TEST_F(SQLitePersistNelTest, RemoveAllBrowsingData) {
   service_->RemoveAllBrowsingData();
   RunUntilIdle();
 
-  EXPECT_EQ(0u, service_->GetPolicyOriginsForTesting().count(kOrigin1));
-  EXPECT_EQ(0u, service_->GetPolicyOriginsForTesting().count(kOrigin2));
+  EXPECT_EQ(0u, service_->GetPolicyKeysForTesting().count(kKey1));
+  EXPECT_EQ(0u, service_->GetPolicyKeysForTesting().count(kKey2));
 
   SimulateRestart();
 
-  service_->OnRequest(MakeRequestDetails(kUrl1, ERR_INVALID_RESPONSE));
-  service_->OnRequest(MakeRequestDetails(kUrl2, ERR_INVALID_RESPONSE));
+  service_->OnRequest(MakeRequestDetails(kNik1_, kUrl1, ERR_INVALID_RESPONSE));
+  service_->OnRequest(MakeRequestDetails(kNik2_, kUrl2, ERR_INVALID_RESPONSE));
   RunUntilIdle();
-  EXPECT_EQ(0u, service_->GetPolicyOriginsForTesting().count(kOrigin1));
-  EXPECT_EQ(0u, service_->GetPolicyOriginsForTesting().count(kOrigin2));
+  EXPECT_EQ(0u, service_->GetPolicyKeysForTesting().count(kKey1));
+  EXPECT_EQ(0u, service_->GetPolicyKeysForTesting().count(kKey2));
   EXPECT_EQ(0u, reporting_service_->reports().size());
 }
 

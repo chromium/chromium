@@ -880,6 +880,8 @@ void NetworkContext::QueueSignedExchangeReport(
     user_agent = request_context->http_user_agent_settings()->GetUserAgent();
   }
   net::NetworkErrorLoggingService::SignedExchangeReportDetails details;
+  // TODO(chlily): Add NIK to details.
+  details.network_isolation_key = net::NetworkIsolationKey::Todo();
   details.success = report->success;
   details.type = std::move(report->type);
   details.outer_url = std::move(report->outer_url);

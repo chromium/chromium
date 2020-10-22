@@ -151,29 +151,6 @@ class SQLitePersistentReportingAndNelStore::Backend
     DCHECK_EQ(0u, num_pending_);
   }
 
-  // Used to sort NEL policies.
-  // TODO(mmenke): Move this into NetworkErrorLoggingService, once that class
-  // supports NetworkIsolationKeys.
-  struct NelPolicyKey {
-    NelPolicyKey() = default;
-
-    NelPolicyKey(const NelPolicyKey& other) = default;
-
-    NelPolicyKey(const NetworkIsolationKey& network_isolation_key,
-                 const url::Origin& origin)
-        : network_isolation_key(network_isolation_key), origin(origin) {}
-
-    ~NelPolicyKey() = default;
-
-    bool operator<(const NelPolicyKey& other) const {
-      return std::tie(network_isolation_key, origin) <
-             std::tie(other.network_isolation_key, other.origin);
-    }
-
-    NetworkIsolationKey network_isolation_key;
-    url::Origin origin;
-  };
-
   // Represents a mutating operation to the database, specified by a type (add,
   // update access time, update data, or delete) and data representing the entry
   // in the database to be added/updated/deleted.
@@ -301,8 +278,8 @@ class SQLitePersistentReportingAndNelStore::Backend
   size_t num_pending_ GUARDED_BY(lock_);
 
   // Queue of pending operations pertaining to NEL policies, keyed on origin.
-  QueueType<NelPolicyKey, NelPolicyInfo> nel_policy_pending_ops_
-      GUARDED_BY(lock_);
+  QueueType<NetworkErrorLoggingService::NelPolicyKey, NelPolicyInfo>
+      nel_policy_pending_ops_ GUARDED_BY(lock_);
   // Queue of pending operations pertaining to Reporting endpoints, keyed on
   // origin, group name, and url.
   QueueType<ReportingEndpointKey, ReportingEndpointInfo>
@@ -409,9 +386,9 @@ struct SQLitePersistentReportingAndNelStore::Backend::NelPolicyInfo {
   NelPolicyInfo(const NetworkErrorLoggingService::NelPolicy& nel_policy,
                 std::string network_isolation_key_string)
       : network_isolation_key_string(std::move(network_isolation_key_string)),
-        origin_scheme(nel_policy.origin.scheme()),
-        origin_host(nel_policy.origin.host()),
-        origin_port(nel_policy.origin.port()),
+        origin_scheme(nel_policy.key.origin.scheme()),
+        origin_host(nel_policy.key.origin.host()),
+        origin_port(nel_policy.key.origin.port()),
         received_ip_address(nel_policy.received_ip_address.ToString()),
         report_to(nel_policy.report_to),
         expires_us_since_epoch(
@@ -429,7 +406,7 @@ struct SQLitePersistentReportingAndNelStore::Backend::NelPolicyInfo {
       PendingOperationType type,
       const NetworkErrorLoggingService::NelPolicy& nel_policy) {
     std::string network_isolation_key_string;
-    if (!NetworkIsolationKeyToString(nel_policy.network_isolation_key,
+    if (!NetworkIsolationKeyToString(nel_policy.key.network_isolation_key,
                                      &network_isolation_key_string)) {
       return nullptr;
     }
@@ -579,8 +556,7 @@ void SQLitePersistentReportingAndNelStore::Backend::AddNelPolicy(
       NelPolicyInfo::CreatePendingOperation(PendingOperationType::ADD, policy);
   if (!po)
     return;
-  BatchOperation(NelPolicyKey(policy.network_isolation_key, policy.origin),
-                 std::move(po), &nel_policy_pending_ops_);
+  BatchOperation(policy.key, std::move(po), &nel_policy_pending_ops_);
 }
 
 void SQLitePersistentReportingAndNelStore::Backend::UpdateNelPolicyAccessTime(
@@ -589,8 +565,7 @@ void SQLitePersistentReportingAndNelStore::Backend::UpdateNelPolicyAccessTime(
       PendingOperationType::UPDATE_ACCESS_TIME, policy);
   if (!po)
     return;
-  BatchOperation(NelPolicyKey(policy.network_isolation_key, policy.origin),
-                 std::move(po), &nel_policy_pending_ops_);
+  BatchOperation(policy.key, std::move(po), &nel_policy_pending_ops_);
 }
 
 void SQLitePersistentReportingAndNelStore::Backend::DeleteNelPolicy(
@@ -599,8 +574,7 @@ void SQLitePersistentReportingAndNelStore::Backend::DeleteNelPolicy(
                                                   policy);
   if (!po)
     return;
-  BatchOperation(NelPolicyKey(policy.network_isolation_key, policy.origin),
-                 std::move(po), &nel_policy_pending_ops_);
+  BatchOperation(policy.key, std::move(po), &nel_policy_pending_ops_);
 }
 
 void SQLitePersistentReportingAndNelStore::Backend::LoadReportingClients(
@@ -828,7 +802,8 @@ SQLitePersistentReportingAndNelStore::Backend::DoMigrateDatabaseSchema() {
 }
 
 void SQLitePersistentReportingAndNelStore::Backend::DoCommit() {
-  QueueType<NelPolicyKey, NelPolicyInfo> nel_policy_ops;
+  QueueType<NetworkErrorLoggingService::NelPolicyKey, NelPolicyInfo>
+      nel_policy_ops;
   QueueType<ReportingEndpointKey, ReportingEndpointInfo> reporting_endpoint_ops;
   QueueType<ReportingEndpointGroupKey, ReportingEndpointGroupInfo>
       reporting_endpoint_group_ops;
@@ -1332,11 +1307,11 @@ void SQLitePersistentReportingAndNelStore::Backend::
                                        &network_isolation_key))
       continue;
     NetworkErrorLoggingService::NelPolicy policy;
-    policy.network_isolation_key = network_isolation_key;
-    policy.origin = url::Origin::CreateFromNormalizedTuple(
-        /* origin_scheme = */ smt.ColumnString(1),
-        /* origin_host = */ smt.ColumnString(2),
-        /* origin_port = */ smt.ColumnInt(3));
+    policy.key = NetworkErrorLoggingService::NelPolicyKey(
+        network_isolation_key, url::Origin::CreateFromNormalizedTuple(
+                                   /* origin_scheme = */ smt.ColumnString(1),
+                                   /* origin_host = */ smt.ColumnString(2),
+                                   /* origin_port = */ smt.ColumnInt(3)));
     if (!policy.received_ip_address.AssignFromIPLiteral(smt.ColumnString(4)))
       policy.received_ip_address = IPAddress();
     policy.report_to = smt.ColumnString(5);

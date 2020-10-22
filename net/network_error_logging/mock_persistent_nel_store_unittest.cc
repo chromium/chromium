@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/location.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind_test_util.h"
 #include "net/network_error_logging/mock_persistent_nel_store.h"
 #include "net/network_error_logging/network_error_logging_service.h"
@@ -16,9 +17,15 @@ namespace net {
 
 namespace {
 
+// Serialized string of NetworkIsolationKey::Todo() which is used in
+// NelPolicyKeys for now.
+const char kTodoNikString[] = "null null";
+
+// TODO(chlily): Populate NIK.
 NetworkErrorLoggingService::NelPolicy MakePolicyForOrigin(url::Origin origin) {
   NetworkErrorLoggingService::NelPolicy policy;
-  policy.origin = std::move(origin);
+  policy.key = NetworkErrorLoggingService::NelPolicyKey(
+      NetworkIsolationKey::Todo(), origin);
   policy.expires = base::Time();
   policy.last_used = base::Time();
 
@@ -83,7 +90,7 @@ TEST(MockPersistentNelStoreTest, PreStoredPolicies) {
       MockPersistentNelStore::Command::Type::LOAD_NEL_POLICIES);
   store.FinishLoading(true /* load_success */);
   ASSERT_EQ(1u, loaded_policies.size());
-  EXPECT_EQ(kOrigin, loaded_policies[0].origin);
+  EXPECT_EQ(kOrigin, loaded_policies[0].key.origin);
 
   EXPECT_EQ(1u, store.GetAllCommands().size());
   EXPECT_TRUE(store.VerifyCommands(expected_commands));
@@ -145,7 +152,8 @@ TEST(MockPersistentNelStoreTest, Add) {
 
   EXPECT_EQ(3u, store.GetAllCommands().size());
   EXPECT_TRUE(store.VerifyCommands(expected_commands));
-  EXPECT_EQ("LOAD; ADD(" + kOrigin.Serialize() + "); FLUSH; ",
+  EXPECT_EQ(base::StrCat({"LOAD; ADD(", kTodoNikString, ", ",
+                          kOrigin.Serialize(), "); FLUSH; "}),
             store.GetDebugString());
 }
 
@@ -183,10 +191,9 @@ TEST(MockPersistentNelStoreTest, AddThenDelete) {
   EXPECT_EQ(4u, store.GetAllCommands().size());
 
   EXPECT_TRUE(store.VerifyCommands(expected_commands));
-  EXPECT_EQ("LOAD; ADD(" + kOrigin.Serialize() +
-                "); "
-                "DELETE(" +
-                kOrigin.Serialize() + "); FLUSH; ",
+  EXPECT_EQ(base::StrCat({"LOAD; ADD(", kTodoNikString, ", ",
+                          kOrigin.Serialize(), "); DELETE(", kTodoNikString,
+                          ", ", kOrigin.Serialize(), "); FLUSH; "}),
             store.GetDebugString());
 }
 
@@ -229,11 +236,11 @@ TEST(MockPersistentNelStoreTest, AddFlushThenDelete) {
   EXPECT_EQ(5u, store.GetAllCommands().size());
 
   EXPECT_TRUE(store.VerifyCommands(expected_commands));
-  EXPECT_EQ("LOAD; ADD(" + kOrigin.Serialize() +
-                "); FLUSH; "
-                "DELETE(" +
-                kOrigin.Serialize() + "); FLUSH; ",
-            store.GetDebugString());
+  EXPECT_EQ(
+      base::StrCat({"LOAD; ADD(", kTodoNikString, ", ", kOrigin.Serialize(),
+                    "); FLUSH; DELETE(", kTodoNikString, ", ",
+                    kOrigin.Serialize(), "); FLUSH; "}),
+      store.GetDebugString());
 }
 
 TEST(MockPersistentNelStoreTest, AddThenUpdate) {
@@ -269,10 +276,9 @@ TEST(MockPersistentNelStoreTest, AddThenUpdate) {
   EXPECT_EQ(4u, store.GetAllCommands().size());
 
   EXPECT_TRUE(store.VerifyCommands(expected_commands));
-  EXPECT_EQ("LOAD; ADD(" + kOrigin.Serialize() +
-                "); "
-                "UPDATE(" +
-                kOrigin.Serialize() + "); FLUSH; ",
+  EXPECT_EQ(base::StrCat({"LOAD; ADD(", kTodoNikString, ", ",
+                          kOrigin.Serialize(), "); UPDATE(", kTodoNikString,
+                          ", ", kOrigin.Serialize(), "); FLUSH; "}),
             store.GetDebugString());
 }
 

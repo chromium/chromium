@@ -992,7 +992,8 @@ class MockNetworkErrorLoggingService : public net::NetworkErrorLoggingService {
 
   ~MockNetworkErrorLoggingService() override = default;
 
-  void OnHeader(const url::Origin& origin,
+  void OnHeader(const net::NetworkIsolationKey& network_isolation_key,
+                const url::Origin& origin,
                 const net::IPAddress& received_ip_address,
                 const std::string& value) override {
     NOTREACHED();

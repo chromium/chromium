@@ -2307,18 +2307,19 @@ TEST_F(NetworkContextTest, ClearNetworkErrorLogging) {
   ASSERT_TRUE(logging_service);
 
   GURL domain("https://google.com");
-  logging_service->OnHeader(url::Origin::Create(domain),
+  logging_service->OnHeader(net::NetworkIsolationKey(),
+                            url::Origin::Create(domain),
                             net::IPAddress(192, 168, 0, 1),
                             "{\"report_to\":\"group\",\"max_age\":86400}");
 
-  ASSERT_EQ(1u, logging_service->GetPolicyOriginsForTesting().size());
+  ASSERT_EQ(1u, logging_service->GetPolicyKeysForTesting().size());
 
   base::RunLoop run_loop;
   network_context->ClearNetworkErrorLogging(nullptr /* filter */,
                                             run_loop.QuitClosure());
   run_loop.Run();
 
-  EXPECT_TRUE(logging_service->GetPolicyOriginsForTesting().empty());
+  EXPECT_TRUE(logging_service->GetPolicyKeysForTesting().empty());
 }
 
 TEST_F(NetworkContextTest, ClearNetworkErrorLoggingWithFilter) {
@@ -2332,15 +2333,17 @@ TEST_F(NetworkContextTest, ClearNetworkErrorLoggingWithFilter) {
   ASSERT_TRUE(logging_service);
 
   GURL domain1("https://google.com");
-  logging_service->OnHeader(url::Origin::Create(domain1),
+  logging_service->OnHeader(net::NetworkIsolationKey(),
+                            url::Origin::Create(domain1),
                             net::IPAddress(192, 168, 0, 1),
                             "{\"report_to\":\"group\",\"max_age\":86400}");
   GURL domain2("https://chromium.org");
-  logging_service->OnHeader(url::Origin::Create(domain2),
+  logging_service->OnHeader(net::NetworkIsolationKey(),
+                            url::Origin::Create(domain2),
                             net::IPAddress(192, 168, 0, 1),
                             "{\"report_to\":\"group\",\"max_age\":86400}");
 
-  ASSERT_EQ(2u, logging_service->GetPolicyOriginsForTesting().size());
+  ASSERT_EQ(2u, logging_service->GetPolicyKeysForTesting().size());
 
   mojom::ClearDataFilterPtr filter = mojom::ClearDataFilter::New();
   filter->type = mojom::ClearDataFilter_Type::KEEP_MATCHES;
@@ -2351,11 +2354,13 @@ TEST_F(NetworkContextTest, ClearNetworkErrorLoggingWithFilter) {
                                             run_loop.QuitClosure());
   run_loop.Run();
 
-  std::set<url::Origin> policy_origins =
-      logging_service->GetPolicyOriginsForTesting();
-  EXPECT_EQ(1u, policy_origins.size());
-  EXPECT_NE(policy_origins.end(),
-            policy_origins.find(url::Origin::Create(domain2)));
+  std::set<net::NetworkErrorLoggingService::NelPolicyKey> policy_keys =
+      logging_service->GetPolicyKeysForTesting();
+  EXPECT_EQ(1u, policy_keys.size());
+  EXPECT_THAT(
+      policy_keys,
+      testing::ElementsAre(net::NetworkErrorLoggingService::NelPolicyKey(
+          net::NetworkIsolationKey(), url::Origin::Create(domain2))));
 }
 
 TEST_F(NetworkContextTest, ClearEmptyNetworkErrorLogging) {
@@ -2368,14 +2373,14 @@ TEST_F(NetworkContextTest, ClearEmptyNetworkErrorLogging) {
       network_context->url_request_context()->network_error_logging_service();
   ASSERT_TRUE(logging_service);
 
-  ASSERT_TRUE(logging_service->GetPolicyOriginsForTesting().empty());
+  ASSERT_TRUE(logging_service->GetPolicyKeysForTesting().empty());
 
   base::RunLoop run_loop;
   network_context->ClearNetworkErrorLogging(nullptr /* filter */,
                                             run_loop.QuitClosure());
   run_loop.Run();
 
-  EXPECT_TRUE(logging_service->GetPolicyOriginsForTesting().empty());
+  EXPECT_TRUE(logging_service->GetPolicyKeysForTesting().empty());
 }
 
 TEST_F(NetworkContextTest, ClearEmptyNetworkErrorLoggingWithNoService) {

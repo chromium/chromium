@@ -14,6 +14,7 @@ TestNetworkErrorLoggingService::TestNetworkErrorLoggingService() = default;
 TestNetworkErrorLoggingService::~TestNetworkErrorLoggingService() = default;
 
 void TestNetworkErrorLoggingService::OnHeader(
+    const NetworkIsolationKey& network_isolation_key,
     const url::Origin& origin,
     const IPAddress& received_ip_address,
     const std::string& value) {

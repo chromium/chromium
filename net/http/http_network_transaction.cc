@@ -1372,8 +1372,9 @@ void HttpNetworkTransaction::ProcessNetworkErrorLoggingHeader() {
   if (remote_endpoint_.address().empty())
     return;
 
-  service->OnHeader(url::Origin::Create(url_), remote_endpoint_.address(),
-                    value);
+  // TODO(chlily): Populate NIK.
+  service->OnHeader(NetworkIsolationKey::Todo(), url::Origin::Create(url_),
+                    remote_endpoint_.address(), value);
 }
 
 void HttpNetworkTransaction::GenerateNetworkErrorLoggingReportIfError(int rv) {
@@ -1411,6 +1412,9 @@ void HttpNetworkTransaction::GenerateNetworkErrorLoggingReport(int rv) {
     return;
 
   NetworkErrorLoggingService::RequestDetails details;
+
+  // TODO(chlily): Add NIK to details.
+  details.network_isolation_key = NetworkIsolationKey::Todo();
 
   details.uri = url_;
   if (!request_referrer_.empty())

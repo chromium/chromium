@@ -291,13 +291,7 @@ base::TimeTicks ReportingTestBase::tomorrow() {
 
 TestReportingService::Report::Report() = default;
 
-TestReportingService::Report::Report(Report&& other)
-    : url(other.url),
-      user_agent(other.user_agent),
-      group(other.group),
-      type(other.type),
-      body(std::move(other.body)),
-      depth(other.depth) {}
+TestReportingService::Report::Report(Report&& other) = default;
 
 TestReportingService::Report::Report(
     const GURL& url,
