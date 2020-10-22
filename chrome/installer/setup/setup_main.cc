@@ -925,7 +925,8 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
                                                false))
         status = installer::IN_USE_UPDATED;
     } else {
-      if (ShellUtil::RegisterChromeBrowser(chrome_exe, suffix, false))
+      if (ShellUtil::RegisterChromeBrowser(chrome_exe, suffix,
+                                           /*elevate_if_not_admin=*/false))
         status = installer::IN_USE_UPDATED;
     }
     *exit_code = InstallUtil::GetInstallReturnCode(status);

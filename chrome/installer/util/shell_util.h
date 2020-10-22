@@ -532,6 +532,11 @@ class ShellUtil {
                                     const base::string16& unique_suffix,
                                     bool elevate_if_not_admin);
 
+  // Same as RegisterChromeBrowser above, except that we don't stop early if
+  // there is an error adding registry entries and we disable rollback.
+  // |elevate_if_not_admin| is false and unique_suffix is empty.
+  static void RegisterChromeBrowserBestEffort(const base::FilePath& chrome_exe);
+
   // This method declares to Windows that Chrome is capable of handling the
   // given protocol. This function will call the RegisterChromeBrowser function
   // to register with Windows as capable of handling the protocol, if it isn't
@@ -701,9 +706,12 @@ class ShellUtil {
 
   // This method converts all the RegistryEntries from the given list to
   // Set/CreateRegWorkItems and runs them using WorkItemList.
+  // |best_effort_no_rollback| is used to set WorkItemList::set_rollback_enabled
+  // and WorkItemList::set_best_effort.
   static bool AddRegistryEntries(
       HKEY root,
-      const std::vector<std::unique_ptr<RegistryEntry>>& entries);
+      const std::vector<std::unique_ptr<RegistryEntry>>& entries,
+      bool best_effort_no_rollback = false);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ShellUtil);

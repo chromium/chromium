@@ -149,7 +149,7 @@ bool SetRegValueWorkItem::DoImpl() {
   }
 
   // If there's something to be saved, save it.
-  if (result == ERROR_SUCCESS) {
+  if (result == ERROR_SUCCESS && (rollback_enabled() || get_value_callback_)) {
     if (!size) {
       previous_type_ = type;
     } else {

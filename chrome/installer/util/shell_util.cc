@@ -1503,6 +1503,99 @@ base::string16 ShortenAppModelIdComponent(const base::string16& component,
          component.substr(component.length() - ((desired_length + 1) / 2));
 }
 
+bool RegisterChromeBrowserImpl(const base::FilePath& chrome_exe,
+                               const base::string16& unique_suffix,
+                               bool elevate_if_not_admin,
+                               bool best_effort_no_rollback) {
+  base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
+
+  base::string16 suffix;
+  if (!unique_suffix.empty()) {
+    suffix = unique_suffix;
+  } else if (command_line.HasSwitch(
+                 installer::switches::kRegisterChromeBrowserSuffix)) {
+    suffix = command_line.GetSwitchValueNative(
+        installer::switches::kRegisterChromeBrowserSuffix);
+  } else if (!GetInstallationSpecificSuffix(chrome_exe, &suffix)) {
+    return false;
+  }
+
+  RemoveRunVerbOnWindows8();
+
+  bool user_level = InstallUtil::IsPerUserInstall();
+  HKEY root = DetermineRegistrationRoot(user_level);
+
+  // Look only in HKLM for system-level installs (otherwise, if a user-level
+  // install is also present, it will lead IsChromeRegistered() to think this
+  // system-level install isn't registered properly as it is shadowed by the
+  // user-level install's registrations).
+  uint32_t look_for_in = user_level ? RegistryEntry::LOOK_IN_HKCU_THEN_HKLM
+                                    : RegistryEntry::LOOK_IN_HKLM;
+
+  // Check if chrome is already registered with this suffix.
+  if (IsChromeRegistered(chrome_exe, suffix, look_for_in))
+    return true;
+
+  // Ensure that the shell is notified of the mutations below. Specific exit
+  // points may disable this if no mutations are made.
+  base::ScopedClosureRunner notify_on_exit(base::BindOnce([] {
+    SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
+  }));
+
+  // Do the full registration at user-level or if the user is an admin.
+  if (root == HKEY_CURRENT_USER || IsUserAnAdmin()) {
+    std::vector<std::unique_ptr<RegistryEntry>> progid_and_appreg_entries;
+    std::vector<std::unique_ptr<RegistryEntry>> shell_entries;
+    GetChromeProgIdEntries(chrome_exe, suffix, &progid_and_appreg_entries);
+    GetChromeAppRegistrationEntries(chrome_exe, suffix,
+                                    &progid_and_appreg_entries);
+    GetShellIntegrationEntries(chrome_exe, suffix, &shell_entries);
+    return ShellUtil::AddRegistryEntries(root, progid_and_appreg_entries,
+                                         best_effort_no_rollback) &&
+           ShellUtil::AddRegistryEntries(root, shell_entries,
+                                         best_effort_no_rollback);
+  }
+  // The installer is responsible for registration for system-level installs, so
+  // never try to do it here. Getting to this point for a system-level install
+  // likely means that IsChromeRegistered thinks registration is broken due to
+  // localization issues (see https://crbug.com/717913#c18). It likely is not,
+  // so return success to allow Chrome to be made default.
+  if (!user_level) {
+    notify_on_exit.Release().Reset();
+    return true;
+  }
+  // Try to elevate and register if requested for per-user installs if the user
+  // is not an admin.
+  if (elevate_if_not_admin &&
+      ElevateAndRegisterChrome(chrome_exe, suffix, base::string16())) {
+    return true;
+  }
+  // If we got to this point then all we can do is create ProgId and basic app
+  // registrations under HKCU.
+  std::vector<std::unique_ptr<RegistryEntry>> entries;
+  GetChromeProgIdEntries(chrome_exe, base::string16(), &entries);
+  // Prefer to use |suffix|; unless Chrome's ProgIds are already registered with
+  // no suffix (as per the old registration style): in which case some other
+  // registry entries could refer to them and since we were not able to set our
+  // HKLM entries above, we are better off not altering these here.
+  if (!AreEntriesAsDesired(entries, RegistryEntry::LOOK_IN_HKCU)) {
+    if (!suffix.empty()) {
+      entries.clear();
+      GetChromeProgIdEntries(chrome_exe, suffix, &entries);
+      GetChromeAppRegistrationEntries(chrome_exe, suffix, &entries);
+    }
+    return ShellUtil::AddRegistryEntries(HKEY_CURRENT_USER, entries,
+                                         best_effort_no_rollback);
+  }
+  // The ProgId is registered unsuffixed in HKCU, also register the app with
+  // Windows in HKCU (this was not done in the old registration style and thus
+  // needs to be done after the above check for the unsuffixed registration).
+  entries.clear();
+  GetChromeAppRegistrationEntries(chrome_exe, base::string16(), &entries);
+  return ShellUtil::AddRegistryEntries(HKEY_CURRENT_USER, entries,
+                                       best_effort_no_rollback);
+}
+
 }  // namespace
 
 const wchar_t* ShellUtil::kRegDefaultIcon = L"\\DefaultIcon";
@@ -2190,89 +2283,16 @@ bool ShellUtil::ShowMakeChromeDefaultProtocolClientSystemUI(
 bool ShellUtil::RegisterChromeBrowser(const base::FilePath& chrome_exe,
                                       const base::string16& unique_suffix,
                                       bool elevate_if_not_admin) {
-  base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
+  return RegisterChromeBrowserImpl(chrome_exe, unique_suffix,
+                                   elevate_if_not_admin,
+                                   /*best_effort_no_rollback=*/false);
+}
 
-  base::string16 suffix;
-  if (!unique_suffix.empty()) {
-    suffix = unique_suffix;
-  } else if (command_line.HasSwitch(
-                 installer::switches::kRegisterChromeBrowserSuffix)) {
-    suffix = command_line.GetSwitchValueNative(
-        installer::switches::kRegisterChromeBrowserSuffix);
-  } else if (!GetInstallationSpecificSuffix(chrome_exe, &suffix)) {
-    return false;
-  }
-
-  RemoveRunVerbOnWindows8();
-
-  bool user_level = InstallUtil::IsPerUserInstall();
-  HKEY root = DetermineRegistrationRoot(user_level);
-
-  // Look only in HKLM for system-level installs (otherwise, if a user-level
-  // install is also present, it will lead IsChromeRegistered() to think this
-  // system-level install isn't registered properly as it is shadowed by the
-  // user-level install's registrations).
-  uint32_t look_for_in = user_level ? RegistryEntry::LOOK_IN_HKCU_THEN_HKLM
-                                    : RegistryEntry::LOOK_IN_HKLM;
-
-  // Check if chrome is already registered with this suffix.
-  if (IsChromeRegistered(chrome_exe, suffix, look_for_in))
-    return true;
-
-  // Ensure that the shell is notified of the mutations below. Specific exit
-  // points may disable this if no mutations are made.
-  base::ScopedClosureRunner notify_on_exit(base::BindOnce([] {
-    SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
-  }));
-
-  // Do the full registration at user-level or if the user is an admin.
-  if (root == HKEY_CURRENT_USER || IsUserAnAdmin()) {
-    std::vector<std::unique_ptr<RegistryEntry>> progid_and_appreg_entries;
-    std::vector<std::unique_ptr<RegistryEntry>> shell_entries;
-    GetChromeProgIdEntries(chrome_exe, suffix, &progid_and_appreg_entries);
-    GetChromeAppRegistrationEntries(chrome_exe, suffix,
-                                    &progid_and_appreg_entries);
-    GetShellIntegrationEntries(chrome_exe, suffix, &shell_entries);
-    return AddRegistryEntries(root, progid_and_appreg_entries) &&
-           AddRegistryEntries(root, shell_entries);
-  }
-  // The installer is responsible for registration for system-level installs, so
-  // never try to do it here. Getting to this point for a system-level install
-  // likely means that IsChromeRegistered thinks registration is broken due to
-  // localization issues (see https://crbug.com/717913#c18). It likely is not,
-  // so return success to allow Chrome to be made default.
-  if (!user_level) {
-    notify_on_exit.Release().Reset();
-    return true;
-  }
-  // Try to elevate and register if requested for per-user installs if the user
-  // is not an admin.
-  if (elevate_if_not_admin &&
-      ElevateAndRegisterChrome(chrome_exe, suffix, base::string16())) {
-    return true;
-  }
-  // If we got to this point then all we can do is create ProgId and basic app
-  // registrations under HKCU.
-  std::vector<std::unique_ptr<RegistryEntry>> entries;
-  GetChromeProgIdEntries(chrome_exe, base::string16(), &entries);
-  // Prefer to use |suffix|; unless Chrome's ProgIds are already registered with
-  // no suffix (as per the old registration style): in which case some other
-  // registry entries could refer to them and since we were not able to set our
-  // HKLM entries above, we are better off not altering these here.
-  if (!AreEntriesAsDesired(entries, RegistryEntry::LOOK_IN_HKCU)) {
-    if (!suffix.empty()) {
-      entries.clear();
-      GetChromeProgIdEntries(chrome_exe, suffix, &entries);
-      GetChromeAppRegistrationEntries(chrome_exe, suffix, &entries);
-    }
-    return AddRegistryEntries(HKEY_CURRENT_USER, entries);
-  }
-  // The ProgId is registered unsuffixed in HKCU, also register the app with
-  // Windows in HKCU (this was not done in the old registration style and thus
-  // needs to be done after the above check for the unsuffixed registration).
-  entries.clear();
-  GetChromeAppRegistrationEntries(chrome_exe, base::string16(), &entries);
-  return AddRegistryEntries(HKEY_CURRENT_USER, entries);
+void ShellUtil::RegisterChromeBrowserBestEffort(
+    const base::FilePath& chrome_exe) {
+  RegisterChromeBrowserImpl(chrome_exe, base::string16(),
+                            /*elevate_if_not_admin=*/false,
+                            /*best_effort_no_rollback=*/true);
 }
 
 bool ShellUtil::RegisterChromeForProtocol(const base::FilePath& chrome_exe,
@@ -2608,9 +2628,11 @@ base::FilePath ShellUtil::GetApplicationPathForProgId(
 // static
 bool ShellUtil::AddRegistryEntries(
     HKEY root,
-    const std::vector<std::unique_ptr<RegistryEntry>>& entries) {
+    const std::vector<std::unique_ptr<RegistryEntry>>& entries,
+    bool best_effort_no_rollback) {
   std::unique_ptr<WorkItemList> items(WorkItem::CreateWorkItemList());
-
+  items->set_rollback_enabled(!best_effort_no_rollback);
+  items->set_best_effort(best_effort_no_rollback);
   for (const auto& entry : entries)
     entry->AddToWorkItemList(root, items.get());
 
