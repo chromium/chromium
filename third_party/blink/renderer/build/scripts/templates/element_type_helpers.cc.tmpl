@@ -22,7 +22,7 @@ HTMLTypeMap CreateHTMLTypeMap() {
     const char* name;
     HTMLElementType type;
   } kTags[] = {
-    {% for tag in tags|sort %}
+    {% for tag in tags|sort(attribute='name') %}
     { "{{tag.name}}", HTMLElementType::k{{tag.js_interface}} },
     {% endfor %}
   };
@@ -42,7 +42,7 @@ HTMLElementType htmlElementTypeForTag(const AtomicString& tagName, const Documen
   if (it == html_type_map.end())
     return HTMLElementType::kHTMLUnknownElement;
 
-  {% for tag in tags|sort %}
+  {% for tag in tags|sort(attribute='name') %}
   {% if tag.runtimeEnabled %}
   if (tagName == "{{tag.name}}") {
     if (!RuntimeEnabledFeatures::{{tag.runtimeEnabled}}Enabled(document->GetExecutionContext())) {

@@ -15,7 +15,7 @@ namespace blink {
 class Document;
 
 // Type checking.
-{% for tag in tags|sort if not tag.multipleTagNames and not tag.noTypeHelpers %}
+{% for tag in tags|sort(attribute='name') if not tag.multipleTagNames and not tag.noTypeHelpers %}
 class {{tag.interface}};
 template <>
 inline bool IsElementOfType<const {{tag.interface}}>(const Node& node) {

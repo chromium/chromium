@@ -26,7 +26,7 @@ using {{namespace}}FunctionMap = HashMap<AtomicString, {{namespace}}ConstructorF
 
 static {{namespace}}FunctionMap* g_{{namespace|lower}}_constructors = nullptr;
 
-{% for tag in tags|sort if not tag.noConstructor %}
+{% for tag in tags|sort(attribute='name') if not tag.noConstructor %}
 static {{namespace}}Element* {{namespace}}{{tag.name.to_upper_camel_case()}}Constructor(
     Document& document, const CreateElementFlags flags) {
   {% if tag.runtimeEnabled %}
@@ -52,7 +52,7 @@ static void Create{{namespace}}FunctionMap() {
   // Empty array initializer lists are illegal [dcl.init.aggr] and will not
   // compile in MSVC. If tags list is empty, add check to skip this.
   static const Create{{namespace}}FunctionMapData data[] = {
-  {% for tag in tags|sort if not tag.noConstructor %}
+  {% for tag in tags|sort(attribute='name') if not tag.noConstructor %}
     { {{cpp_namespace}}::{{tag|symbol}}Tag, {{namespace}}{{tag.name.to_upper_camel_case()}}Constructor },
   {% endfor %}
   };
