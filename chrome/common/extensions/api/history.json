@@ -40,6 +40,13 @@
             "description": "The <a href='#transition_types'>transition type</a> for this visit from its referrer."
           }
         }
+      },
+      {
+        "id": "UrlDetails",
+        "type": "object",
+        "properties": {
+          "url": {"type": "string", "description": "The URL for the operation. It must be in the format as returned from a call to history.search."}
+        }
       }
     ],
     "functions": [
@@ -74,10 +81,7 @@
         "parameters": [
           {
             "name": "details",
-            "type": "object",
-            "properties": {
-              "url": {"type": "string", "description": "The URL for which to retrieve visit information.  It must be in the format as returned from a call to history.search."}
-            }
+            "$ref": "UrlDetails"
           },
           {
             "name": "callback",
@@ -95,10 +99,7 @@
         "parameters": [
           {
             "name": "details",
-            "type": "object",
-            "properties": {
-              "url": {"type": "string", "description": "The URL to add."}
-            }
+            "$ref": "UrlDetails"
           },
           {
             "name": "callback",
@@ -115,10 +116,7 @@
         "parameters": [
           {
             "name": "details",
-            "type": "object",
-            "properties": {
-              "url": {"type": "string", "description": "The URL to remove."}
-            }
+            "$ref": "UrlDetails"
           },
           {
             "name": "callback",

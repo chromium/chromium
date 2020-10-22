@@ -314,7 +314,7 @@ ACMatchClassifications StyleTypesToACMatchClassifications(
     base::string16 description = base::UTF8ToUTF16(suggestion.description);
     std::vector<int> styles(description.length(), 0);
 
-    for (const omnibox::SuggestResult::DescriptionStylesType& style :
+    for (const omnibox::MatchClassification& style :
          *suggestion.description_styles) {
       int length = style.length ? *style.length : description.length();
       size_t offset = style.offset >= 0

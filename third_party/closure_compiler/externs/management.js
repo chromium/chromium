@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,7 @@
 
 /** @fileoverview Externs generated from namespace: management */
 
-/**
- * @const
- */
+/** @const */
 chrome.management = {};
 
 /**
@@ -103,6 +101,15 @@ chrome.management.ExtensionInstallType = {
 chrome.management.ExtensionInfo;
 
 /**
+ * Information about an icon belonging to an extension, app, or theme.
+ * @typedef {{
+ *   showConfirmDialog: (boolean|undefined)
+ * }}
+ * @see https://developer.chrome.com/extensions/management#type-UninstallOptions
+ */
+chrome.management.UninstallOptions;
+
+/**
  * Returns a list of information about installed extensions and apps.
  * @param {function(!Array<!chrome.management.ExtensionInfo>): void=} callback
  * @see https://developer.chrome.com/extensions/management#method-getAll
@@ -163,9 +170,7 @@ chrome.management.setEnabled = function(id, enabled, callback) {};
  * Uninstalls a currently installed app or extension.
  * @param {string} id This should be the id from an item of
  *     $(ref:management.ExtensionInfo).
- * @param {{
- *   showConfirmDialog: (boolean|undefined)
- * }=} options
+ * @param {!chrome.management.UninstallOptions=} options
  * @param {function(): void=} callback
  * @see https://developer.chrome.com/extensions/management#method-uninstall
  */
@@ -174,9 +179,7 @@ chrome.management.uninstall = function(id, options, callback) {};
 /**
  * Uninstalls the calling extension. Note: This function can be used without
  * requesting the 'management' permission in the manifest.
- * @param {{
- *   showConfirmDialog: (boolean|undefined)
- * }=} options
+ * @param {!chrome.management.UninstallOptions=} options
  * @param {function(): void=} callback
  * @see https://developer.chrome.com/extensions/management#method-uninstallSelf
  */

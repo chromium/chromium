@@ -887,8 +887,7 @@ ExtensionFunction::ResponseAction InputImeSetCursorPositionFunction::Run() {
 ExtensionFunction::ResponseAction InputImeSetMenuItemsFunction::Run() {
   std::unique_ptr<SetMenuItems::Params> parent_params(
       SetMenuItems::Params::Create(*args_));
-  const SetMenuItems::Params::Parameters& params =
-      parent_params->parameters;
+  const input_ime::MenuParameters& params = parent_params->parameters;
 
   std::string error;
   InputMethodEngine* engine =
@@ -914,8 +913,7 @@ ExtensionFunction::ResponseAction InputImeSetMenuItemsFunction::Run() {
 ExtensionFunction::ResponseAction InputImeUpdateMenuItemsFunction::Run() {
   std::unique_ptr<UpdateMenuItems::Params> parent_params(
       UpdateMenuItems::Params::Create(*args_));
-  const UpdateMenuItems::Params::Parameters& params =
-      parent_params->parameters;
+  const input_ime::MenuParameters& params = parent_params->parameters;
 
   std::string error;
   InputMethodEngine* engine =

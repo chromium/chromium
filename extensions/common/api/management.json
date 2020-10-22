@@ -160,7 +160,19 @@
             }
           }
         }
-     }
+      },
+      {
+        "id": "UninstallOptions",
+        "description": "Information about an icon belonging to an extension, app, or theme.",
+        "type": "object",
+        "properties": {
+          "showConfirmDialog": {
+            "type": "boolean",
+            "optional": true,
+            "description": "Whether or not a confirm-uninstall dialog should prompt the user. Defaults to false for self uninstalls. If an extension uninstalls another extension, this parameter is ignored and the dialog is always shown."
+          }
+        }
+      }
     ],
     "functions": [
       {
@@ -299,16 +311,9 @@
             "description": "This should be the id from an item of $(ref:management.ExtensionInfo)."
           },
           {
-            "type": "object",
             "name": "options",
-            "optional": true,
-            "properties": {
-              "showConfirmDialog": {
-                "type": "boolean",
-                "optional": true,
-                "description": "Whether or not a confirm-uninstall dialog should prompt the user. Defaults to false for self uninstalls. If an extension uninstalls another extension, this parameter is ignored and the dialog is always shown."
-              }
-            }
+            "$ref": "UninstallOptions",
+            "optional": true
           },
           {
             "name": "callback",
@@ -323,16 +328,9 @@
         "description": "Uninstalls the calling extension. Note: This function can be used without requesting the 'management' permission in the manifest.",
         "parameters": [
           {
-            "type": "object",
             "name": "options",
-            "optional": true,
-            "properties": {
-              "showConfirmDialog": {
-                "type": "boolean",
-                "optional": true,
-                "description": "Whether or not a confirm-uninstall dialog should prompt the user. Defaults to false."
-              }
-            }
+            "$ref": "UninstallOptions",
+            "optional": true
           },
           {
             "name": "callback",

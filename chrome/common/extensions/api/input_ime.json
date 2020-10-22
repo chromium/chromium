@@ -138,6 +138,23 @@
           "undo",
           "addToDictionary"
         ]
+      },
+      {
+        "id": "MenuParameters",
+        "type": "object",
+        "properties": {
+          "engineID": {
+            "description": "ID of the engine to use.",
+            "type": "string"
+          },
+          "items": {
+            "description": "MenuItems to add or update. They will be added in the order they exist in the array.",
+            "type": "array",
+            "items": {
+              "$ref": "MenuItem"
+            }
+          }
+        }
       }
     ],
     "functions": [
@@ -565,20 +582,7 @@
         "parameters": [
           {
             "name": "parameters",
-            "type": "object",
-            "properties": {
-              "engineID": {
-                "description": "ID of the engine to use",
-                "type": "string"
-              },
-              "items": {
-                "description": "MenuItems to add. They will be added in the order they exist in the array.",
-                "type": "array",
-                "items": {
-                  "$ref": "MenuItem"
-                }
-              }
-            }
+            "$ref": "MenuParameters"
           },
           {
             "type": "function",
@@ -597,20 +601,7 @@
         "parameters": [
           {
             "name": "parameters",
-            "type": "object",
-            "properties": {
-              "engineID": {
-                "description": "ID of the engine to use",
-                "type": "string"
-              },
-              "items": {
-                "description": "Array of MenuItems to update",
-                "type": "array",
-                "items": {
-                  "$ref": "MenuItem"
-                }
-              }
-            }
+            "$ref": "MenuParameters"
           },
           {
             "type": "function",

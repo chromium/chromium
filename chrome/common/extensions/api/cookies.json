@@ -45,6 +45,16 @@
         "type": "string",
         "enum": ["evicted", "expired", "explicit", "expired_overwrite", "overwrite"],
         "description": "The underlying reason behind the cookie's change. If a cookie was inserted, or removed via an explicit call to \"chrome.cookies.remove\", \"cause\" will be \"explicit\". If a cookie was automatically removed due to expiry, \"cause\" will be \"expired\". If a cookie was removed due to being overwritten with an already-expired expiration date, \"cause\" will be set to \"expired_overwrite\".  If a cookie was automatically removed due to garbage collection, \"cause\" will be \"evicted\".  If a cookie was automatically removed due to a \"set\" call that overwrote it, \"cause\" will be \"overwrite\". Plan your response accordingly."
+      },
+      {
+        "id": "CookieDetails",
+        "type": "object",
+        "description": "Details to identify the cookie.",
+        "properties": {
+          "url": {"type": "string", "description": "The URL with which the cookie to access is associated. This argument may be a full URL, in which case any data following the URL path (e.g. the query string) is simply ignored. If host permissions for this URL are not specified in the manifest file, the API call will fail."},
+          "name": {"type": "string", "description": "The name of the cookie to access."},
+          "storeId": {"type": "string", "optional": true, "description": "The ID of the cookie store in which to look for the cookie. By default, the current execution context's cookie store will be used."}
+        }
       }
     ],
     "functions": [
@@ -54,14 +64,8 @@
         "description": "Retrieves information about a single cookie. If more than one cookie of the same name exists for the given URL, the one with the longest path will be returned. For cookies with the same path length, the cookie with the earliest creation time will be returned.",
         "parameters": [
           {
-            "type": "object",
             "name": "details",
-            "description": "Details to identify the cookie being retrieved.",
-            "properties": {
-              "url": {"type": "string", "description": "The URL with which the cookie to retrieve is associated. This argument may be a full URL, in which case any data following the URL path (e.g. the query string) is simply ignored. If host permissions for this URL are not specified in the manifest file, the API call will fail."},
-              "name": {"type": "string", "description": "The name of the cookie to retrieve."},
-              "storeId": {"type": "string", "optional": true, "description": "The ID of the cookie store in which to look for the cookie. By default, the current execution context's cookie store will be used."}
-            }
+            "$ref": "CookieDetails"
           },
           {
             "type": "function",
@@ -145,14 +149,8 @@
         "description": "Deletes a cookie by name.",
         "parameters": [
           {
-            "type": "object",
             "name": "details",
-            "description": "Information to identify the cookie to remove.",
-            "properties": {
-              "url": {"type": "string", "description": "The URL associated with the cookie. If host permissions for this URL are not specified in the manifest file, the API call will fail."},
-              "name": {"type": "string", "description": "The name of the cookie to remove."},
-              "storeId": {"type": "string", "optional": true, "description": "The ID of the cookie store to look in for the cookie. If unspecified, the cookie is looked for by default in the current execution context's cookie store."}
-            }
+            "$ref": "CookieDetails"
           },
           {
             "type": "function",

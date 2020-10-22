@@ -71,6 +71,15 @@ chrome.windows.CreateType = {
 };
 
 /**
+ * @typedef {{
+ *   populate: (boolean|undefined),
+ *   windowTypes: (!Array<!chrome.windows.WindowType>|undefined)
+ * }}
+ * @see https://developer.chrome.com/extensions/windows#type-GetInfo
+ */
+chrome.windows.GetInfo;
+
+/**
  * The windowId value that represents the absence of a chrome browser window.
  * @type {number}
  * @see https://developer.chrome.com/extensions/windows#type-WINDOW_ID_NONE
@@ -87,24 +96,16 @@ chrome.windows.WINDOW_ID_CURRENT;
 /**
  * Gets details about a window.
  * @param {number} windowId
- * @param {?{
-  populate: (boolean|undefined),
-  windowTypes: (!Array<!chrome.windows.WindowType>|undefined)
-}|undefined}
- *     getInfo
- * @param {function(!chrome.windows.Window):void} callback
+ * @param {?chrome.windows.GetInfo|undefined} getInfo
+ * @param {function(!chrome.windows.Window): void} callback
  * @see https://developer.chrome.com/extensions/windows#method-get
  */
 chrome.windows.get = function(windowId, getInfo, callback) {};
 
 /**
  * Gets the <a href='#current-window'>current window</a>.
- * @param {?{
-  populate: (boolean|undefined),
-  windowTypes: (!Array<!chrome.windows.WindowType>|undefined)
-}|undefined}
- *     getInfo
- * @param {function(!chrome.windows.Window):void} callback
+ * @param {?chrome.windows.GetInfo|undefined} getInfo
+ * @param {function(!chrome.windows.Window): void} callback
  * @see https://developer.chrome.com/extensions/windows#method-getCurrent
  */
 chrome.windows.getCurrent = function(getInfo, callback) {};
@@ -112,24 +113,16 @@ chrome.windows.getCurrent = function(getInfo, callback) {};
 /**
  * Gets the window that was most recently focused &mdash; typically the window
  * 'on top'.
- * @param {?{
-  populate: (boolean|undefined),
-  windowTypes: (!Array<!chrome.windows.WindowType>|undefined)
-}|undefined}
- *     getInfo
- * @param {function(!chrome.windows.Window):void} callback
+ * @param {?chrome.windows.GetInfo|undefined} getInfo
+ * @param {function(!chrome.windows.Window): void} callback
  * @see https://developer.chrome.com/extensions/windows#method-getLastFocused
  */
 chrome.windows.getLastFocused = function(getInfo, callback) {};
 
 /**
  * Gets all windows.
- * @param {?{
-  populate: (boolean|undefined),
-  windowTypes: (!Array<!chrome.windows.WindowType>|undefined)
-}|undefined}
- *     getInfo
- * @param {function(!Array<!chrome.windows.Window>):void} callback
+ * @param {?chrome.windows.GetInfo|undefined} getInfo
+ * @param {function(!Array<!chrome.windows.Window>): void} callback
  * @see https://developer.chrome.com/extensions/windows#method-getAll
  */
 chrome.windows.getAll = function(getInfo, callback) {};
@@ -150,7 +143,7 @@ chrome.windows.getAll = function(getInfo, callback) {};
  *   state: (!chrome.windows.WindowState|undefined),
  *   setSelfAsOpener: (boolean|undefined)
  * }=} createData
- * @param {function((!chrome.windows.Window|undefined)):void=} callback
+ * @param {function((!chrome.windows.Window|undefined)): void=} callback
  * @see https://developer.chrome.com/extensions/windows#method-create
  */
 chrome.windows.create = function(createData, callback) {};
@@ -168,7 +161,7 @@ chrome.windows.create = function(createData, callback) {};
  *   drawAttention: (boolean|undefined),
  *   state: (!chrome.windows.WindowState|undefined)
  * }} updateInfo
- * @param {function(!chrome.windows.Window):void=} callback
+ * @param {function(!chrome.windows.Window): void=} callback
  * @see https://developer.chrome.com/extensions/windows#method-update
  */
 chrome.windows.update = function(windowId, updateInfo, callback) {};
@@ -176,7 +169,7 @@ chrome.windows.update = function(windowId, updateInfo, callback) {};
 /**
  * Removes (closes) a window and all the tabs inside it.
  * @param {number} windowId
- * @param {function():void=} callback
+ * @param {function(): void=} callback
  * @see https://developer.chrome.com/extensions/windows#method-remove
  */
 chrome.windows.remove = function(windowId, callback) {};
@@ -205,3 +198,11 @@ chrome.windows.onRemoved;
  * @see https://developer.chrome.com/extensions/windows#event-onFocusChanged
  */
 chrome.windows.onFocusChanged;
+
+/**
+ * Fired when a window has been resized; this event is only dispatched when the
+ * new bounds are committed, and not for in-progress changes.
+ * @type {!ChromeEvent}
+ * @see https://developer.chrome.com/extensions/windows#event-onBoundsChanged
+ */
+chrome.windows.onBoundsChanged;

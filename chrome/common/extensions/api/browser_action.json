@@ -27,6 +27,13 @@
         "isInstanceOf": "ImageData",
         "additionalProperties": { "type": "any" },
         "description": "Pixel data for an image. Must be an ImageData object; for example, from a <code>canvas</code> element."
+      },
+      {
+        "id": "TabDetails",
+        "type": "object",
+        "properties": {
+          "tabId": { "type": "integer", "optional": true, "minimum": 0, "description": "The ID of the tab to query state for. If no tab is specified, the non-tab-specific state is returned." }
+        }
       }
     ],
     "functions": [
@@ -60,14 +67,7 @@
         "parameters": [
           {
             "name": "details",
-            "type": "object",
-            "properties": {
-              "tabId": {
-                "type": "integer",
-                "optional": true,
-                "description": "The tab to get the title from. If no tab is specified, the default title is returned."
-              }
-            }
+            "$ref": "TabDetails"
           },
           {
             "type": "function",
@@ -158,14 +158,7 @@
         "parameters": [
           {
             "name": "details",
-            "type": "object",
-            "properties": {
-              "tabId": {
-                "type": "integer",
-                "optional": true,
-                "description": "The tab to get the popup from. If no tab is specified, the non-tab-specific popup is returned."
-              }
-            }
+            "$ref": "TabDetails"
           },
           {
             "type": "function",
@@ -210,14 +203,7 @@
         "parameters": [
           {
             "name": "details",
-            "type": "object",
-            "properties": {
-              "tabId": {
-                "type": "integer",
-                "optional": true,
-                "description": "The tab to get the badge text from. If no tab is specified, the non-tab-specific badge text is returned."
-              }
-            }
+            "$ref": "TabDetails"
           },
           {
             "type": "function",
@@ -264,14 +250,7 @@
         "parameters": [
           {
             "name": "details",
-            "type": "object",
-            "properties": {
-              "tabId": {
-                "type": "integer",
-                "optional": true,
-                "description": "The tab to get the badge background color from. If no tab is specified, the non-tab-specific badge background color is returned."
-              }
-            }
+            "$ref": "TabDetails"
           },
           {
             "type": "function",

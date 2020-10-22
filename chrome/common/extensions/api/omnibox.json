@@ -20,6 +20,27 @@
         "description": "The window disposition for the omnibox query. This is the recommended context to display results. For example, if the omnibox command is to navigate to a certain URL, a disposition of 'newForegroundTab' means the navigation should take place in a new selected tab."
       },
       {
+        "id": "MatchClassification",
+        "nodoc": true,
+        "type": "object",
+        "description": "The style ranges for the description, as provided by the extension.",
+        "properties": {
+          "offset": { "type": "integer" },
+          "type": { "description": "The style type", "$ref": "DescriptionStyleType"},
+          "length": { "type": "integer", "optional": true }
+        }
+      },
+      {
+        "id": "MatchClassificationRaw",
+        "nodoc": true,
+        "type": "object",
+        "description": "The style ranges for the description, as provided by ToValue().",
+        "properties": {
+          "offset": { "type": "integer" },
+          "type": { "type": "integer" }
+        }
+      },
+      {
         "id": "SuggestResult",
         "type": "object",
         "description": "A suggest result.",
@@ -45,14 +66,8 @@
             "type": "array",
             "description": "An array of style ranges for the description, as provided by the extension.",
             "items": {
-              "type": "object",
               "name": "matchClassification",
-              "description": "The style ranges for the description, as provided by the extension.",
-              "properties": {
-                "offset": { "type": "integer" },
-                "type": { "description": "The style type", "$ref": "DescriptionStyleType"},
-                "length": { "type": "integer", "optional": true }
-              }
+              "$ref": "MatchClassification"
             }
           },
           "descriptionStylesRaw": {
@@ -61,13 +76,8 @@
             "type": "array",
             "description": "An array of style ranges for the description, as provided by ToValue().",
             "items": {
-              "type": "object",
-              "name": "matchClassification",
-              "description": "The style ranges for the description, as provided by ToValue().",
-              "properties": {
-                "offset": { "type": "integer" },
-                "type": { "type": "integer" }
-              }
+              "name": "matchClassificationRaw",
+              "$ref": "MatchClassificationRaw"
             }
           }
         }
@@ -89,14 +99,8 @@
             "type": "array",
             "description": "An array of style ranges for the description, as provided by the extension.",
             "items": {
-              "type": "object",
               "name": "matchClassification",
-              "description": "The style ranges for the description, as provided by the extension.",
-              "properties": {
-                "offset": { "type": "integer" },
-                "type": { "description": "The style type", "$ref": "DescriptionStyleType"},
-                "length": { "type": "integer", "optional": true }
-              }
+              "$ref": "MatchClassification"
             }
           },
           "descriptionStylesRaw": {
@@ -105,13 +109,8 @@
             "type": "array",
             "description": "An array of style ranges for the description, as provided by ToValue().",
             "items": {
-              "type": "object",
-              "name": "matchClassification",
-              "description": "The style ranges for the description, as provided by ToValue().",
-              "properties": {
-                "offset": { "type": "integer" },
-                "type": { "type": "integer" }
-              }
+              "name": "matchClassificationRaw",
+              "$ref": "MatchClassificationRaw"
             }
           }
         }

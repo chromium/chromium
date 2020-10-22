@@ -9,6 +9,15 @@
     "compiler_options": {
       "implemented_in": "chrome/browser/extensions/api/extension_action/extension_action_api.h"
     },
+    "types": [
+      {
+        "id": "TabDetails",
+        "type": "object",
+        "properties": {
+          "tabId": { "type": "integer", "optional": true, "minimum": 0, "description": "The ID of the tab to query state for. If no tab is specified, the non-tab-specific state is returned." }
+        }
+      }
+    ],
     "functions": [{
       "name": "setTitle",
       "type": "function",
@@ -40,15 +49,7 @@
       "description": "Gets the title of the action.",
       "parameters": [{
         "name": "details",
-        "type": "object",
-        "properties": {
-          "tabId": {
-            "type": "integer",
-            "optional": true,
-            "minimum": 0,
-            "description": "Specify the tab to get the title from. If no tab is specified, the non-tab-specific title is returned."
-          }
-        }
+        "$ref": "TabDetails"
       }, {
         "type": "function",
         "name": "callback",
@@ -132,15 +133,7 @@
       "parameters": [
         {
           "name": "details",
-          "type": "object",
-          "properties": {
-            "tabId": {
-              "type": "integer",
-              "optional": true,
-              "minimum": 0,
-              "description": "Specify the tab to get the popup from. If no tab is specified, the non-tab-specific popup is returned."
-            }
-          }
+          "$ref": "TabDetails"
         },
         {
           "type": "function",
@@ -184,15 +177,7 @@
       "description": "Gets the badge text of the action. If no tab is specified, the non-tab-specific badge text is returned.",
       "parameters": [{
         "name": "details",
-        "type": "object",
-        "properties": {
-          "tabId": {
-            "type": "integer",
-            "optional": true,
-            "minimum": 0,
-            "description": "Specify the tab to get the badge text from. If no tab is specified, the non-tab-specific badge text is returned."
-          }
-        }
+        "$ref": "TabDetails"
       }, {
         "type": "function",
         "name": "callback",
@@ -235,15 +220,7 @@
       "description": "Gets the background color of the action.",
       "parameters": [{
         "name": "details",
-        "type": "object",
-        "properties": {
-          "tabId": {
-            "type": "integer",
-            "optional": true,
-            "minimum": 0,
-            "description": "Specify the tab to get the badge background color from. If no tab is specified, the non-tab-specific badge background color is returned."
-          }
-        }
+        "$ref": "TabDetails"
       }, {
         "type": "function",
         "name": "callback",
