@@ -48,6 +48,10 @@ const base::Feature kMuteNotificationsDuringScreenShare{
 // implementation.
 const base::Feature kNearbySharing{"NearbySharing",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables use of WebRTC in Nearby Share.
+const base::Feature kNearbySharingWebRtc{"NearbySharingWebRtc",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 #if defined(OS_MAC)

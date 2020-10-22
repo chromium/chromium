@@ -1410,6 +1410,10 @@ const char kNearbySharingName[] = "Nearby Sharing";
 const char kNearbySharingDescription[] =
     "Enables Nearby Sharing for sharing content between devices.";
 
+const char kNearbySharingWebRtcName[] = "Nearby Sharing WebRTC";
+const char kNearbySharingWebRtcDescription[] =
+    "Enables use of WebRTC in Nearby Share.";
+
 const char kNewCanvas2DAPIName[] = "Experimental canvas 2D API features";
 const char kNewCanvas2DAPIDescription[] =
     "Enables in-progress features for the canvas 2D API. See "

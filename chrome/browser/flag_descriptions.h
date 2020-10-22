@@ -832,6 +832,9 @@ extern const char kMouseSubframeNoImplicitCaptureDescription[];
 extern const char kNearbySharingName[];
 extern const char kNearbySharingDescription[];
 
+extern const char kNearbySharingWebRtcName[];
+extern const char kNearbySharingWebRtcDescription[];
+
 extern const char kUsernameFirstFlowName[];
 extern const char kUsernameFirstFlowDescription[];
 

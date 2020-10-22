@@ -6245,6 +6245,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"nearby-sharing", flag_descriptions::kNearbySharingName,
      flag_descriptions::kNearbySharingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kNearbySharing)},
+    {"nearby-sharing-webrtc", flag_descriptions::kNearbySharingWebRtcName,
+     flag_descriptions::kNearbySharingWebRtcDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kNearbySharingWebRtc)},
 #endif  // !defined(OS_ANDROID)
 
 #if defined(OS_ANDROID)

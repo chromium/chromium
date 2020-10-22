@@ -11,6 +11,8 @@
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/nearby_sharing/constants.h"
 #include "chrome/browser/nearby_sharing/mock_nearby_process_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_connection_impl.h"
@@ -128,6 +130,8 @@ class MockPayloadStatusListener
 class NearbyConnectionsManagerImplTest : public testing::Test {
  public:
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(features::kNearbySharingWebRtc);
+
     EXPECT_CALL(nearby_process_manager_,
                 GetOrStartNearbyConnections(testing::Eq(&profile_)))
         .WillRepeatedly(testing::Return(&nearby_connections_));
@@ -355,6 +359,7 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
     run_loop.Run();
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   bool should_use_web_rtc_ = true;
@@ -459,8 +464,11 @@ TEST_F(NearbyConnectionsManagerImplTest, StopDiscoveryBeforeStart) {
   nearby_connections_manager_.StopDiscovery();
 }
 
+/******************************************************************************/
+// Begin: NearbyConnectionsManagerImplTestConnectionMediums
+/******************************************************************************/
 using ConnectionMediumsTestParam =
-    std::tuple<DataUsage, net::NetworkChangeNotifier::ConnectionType>;
+    std::tuple<DataUsage, net::NetworkChangeNotifier::ConnectionType, bool>;
 class NearbyConnectionsManagerImplTestConnectionMediums
     : public NearbyConnectionsManagerImplTest,
       public testing::WithParamInterface<ConnectionMediumsTestParam> {};
@@ -471,10 +479,14 @@ TEST_P(NearbyConnectionsManagerImplTestConnectionMediums,
   DataUsage data_usage = std::get<0>(param);
   net::NetworkChangeNotifier::ConnectionType connection_type =
       std::get<1>(param);
+  bool is_webrtc_enabled = std::get<2>(GetParam());
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatureState(features::kNearbySharingWebRtc,
+                                            is_webrtc_enabled);
 
   network_notifier_->SetConnectionType(connection_type);
   should_use_web_rtc_ =
-      data_usage != DataUsage::kOffline &&
+      is_webrtc_enabled && data_usage != DataUsage::kOffline &&
       connection_type != net::NetworkChangeNotifier::CONNECTION_NONE &&
       (data_usage != DataUsage::kWifiOnly ||
        !net::NetworkChangeNotifier::IsConnectionCellular(connection_type));
@@ -519,8 +531,15 @@ INSTANTIATE_TEST_SUITE_P(
                         DataUsage::kOnline),
         testing::Values(net::NetworkChangeNotifier::CONNECTION_NONE,
                         net::NetworkChangeNotifier::CONNECTION_WIFI,
-                        net::NetworkChangeNotifier::CONNECTION_3G)));
+                        net::NetworkChangeNotifier::CONNECTION_3G),
+        testing::Bool()));
+/******************************************************************************/
+// End: NearbyConnectionsManagerImplTestConnectionMediums
+/******************************************************************************/
 
+/******************************************************************************/
+// Begin: NearbyConnectionsManagerImplTestConnectionBluetoothMacAddress
+/******************************************************************************/
 struct ConnectionBluetoothMacAddressTestData {
   base::Optional<std::vector<uint8_t>> bluetooth_mac_address;
   base::Optional<std::vector<uint8_t>> expected_bluetooth_mac_address;
@@ -571,6 +590,9 @@ INSTANTIATE_TEST_SUITE_P(
     NearbyConnectionsManagerImplTestConnectionBluetoothMacAddress,
     NearbyConnectionsManagerImplTestConnectionBluetoothMacAddress,
     testing::ValuesIn(kConnectionBluetoothMacAddressTestData));
+/******************************************************************************/
+// End: NearbyConnectionsManagerImplTestConnectionBluetoothMacAddress
+/******************************************************************************/
 
 TEST_F(NearbyConnectionsManagerImplTest, ConnectRejected) {
   // StartDiscovery will succeed.
@@ -1226,8 +1248,13 @@ TEST_F(NearbyConnectionsManagerImplTest, ClearIncomingPayloads) {
   EXPECT_FALSE(nearby_connections_manager_.GetIncomingPayload(kPayloadId));
 }
 
-using MediumsTestParam = std::
-    tuple<PowerLevel, DataUsage, net::NetworkChangeNotifier::ConnectionType>;
+/******************************************************************************/
+// Begin: NearbyConnectionsManagerImplTestMediums
+/******************************************************************************/
+using MediumsTestParam = std::tuple<PowerLevel,
+                                    DataUsage,
+                                    net::NetworkChangeNotifier::ConnectionType,
+                                    bool>;
 class NearbyConnectionsManagerImplTestMediums
     : public NearbyConnectionsManagerImplTest,
       public testing::WithParamInterface<MediumsTestParam> {};
@@ -1238,10 +1265,14 @@ TEST_P(NearbyConnectionsManagerImplTestMediums, StartAdvertising_Options) {
   DataUsage data_usage = std::get<1>(param);
   net::NetworkChangeNotifier::ConnectionType connection_type =
       std::get<2>(param);
+  bool is_webrtc_enabled = std::get<3>(GetParam());
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatureState(features::kNearbySharingWebRtc,
+                                            is_webrtc_enabled);
 
   network_notifier_->SetConnectionType(connection_type);
-  bool should_use_web_rtc =
-      data_usage != DataUsage::kOffline &&
+  should_use_web_rtc_ =
+      is_webrtc_enabled && data_usage != DataUsage::kOffline &&
       power_level != PowerLevel::kLowPower &&
       connection_type != net::NetworkChangeNotifier::CONNECTION_NONE &&
       (data_usage != DataUsage::kWifiOnly ||
@@ -1253,7 +1284,7 @@ TEST_P(NearbyConnectionsManagerImplTestMediums, StartAdvertising_Options) {
   auto expected_mediums = MediumSelection::New(
       /*bluetooth=*/is_high_power,
       /*ble=*/!is_high_power,
-      /*web_rtc=*/should_use_web_rtc,
+      /*web_rtc=*/should_use_web_rtc_,
       /*wifi_lan=*/false);
 
   const std::vector<uint8_t> local_endpoint_info(std::begin(kEndpointInfo),
@@ -1290,7 +1321,11 @@ INSTANTIATE_TEST_SUITE_P(
                         DataUsage::kOnline),
         testing::Values(net::NetworkChangeNotifier::CONNECTION_NONE,
                         net::NetworkChangeNotifier::CONNECTION_WIFI,
-                        net::NetworkChangeNotifier::CONNECTION_3G)));
+                        net::NetworkChangeNotifier::CONNECTION_3G),
+        testing::Bool()));
+/******************************************************************************/
+// End: NearbyConnectionsManagerImplTestMediums
+/******************************************************************************/
 
 TEST_F(NearbyConnectionsManagerImplTest, StopAdvertising_BeforeStart) {
   EXPECT_CALL(nearby_connections_, StopAdvertising).Times(0);
@@ -1394,6 +1429,21 @@ TEST_F(NearbyConnectionsManagerImplTest,
 
 TEST_F(NearbyConnectionsManagerImplTest,
        UpgradeBandwidthBeforeStartDiscoveryOrAdvertising) {
+  EXPECT_CALL(nearby_connections_, InitiateBandwidthUpgrade).Times(0);
+  nearby_connections_manager_.UpgradeBandwidth(kRemoteEndpointId);
+}
+
+TEST_F(NearbyConnectionsManagerImplTest,
+       DoNotUpgradeBandwidthIfWebRtcDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kNearbySharingWebRtc);
+
+  mojo::Remote<ConnectionLifecycleListener> listener_remote;
+  testing::NiceMock<MockIncomingConnectionListener>
+      incoming_connection_listener;
+  StartAdvertising(listener_remote, incoming_connection_listener);
+
+  // Bandwidth upgrade should not be attempted if WebRTC is disabled.
   EXPECT_CALL(nearby_connections_, InitiateBandwidthUpgrade).Times(0);
   nearby_connections_manager_.UpgradeBandwidth(kRemoteEndpointId);
 }

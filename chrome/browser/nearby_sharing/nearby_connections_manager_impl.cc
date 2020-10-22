@@ -8,6 +8,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/nearby_sharing/constants.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
@@ -24,6 +25,9 @@ const location::nearby::connections::mojom::Strategy kStrategy =
     location::nearby::connections::mojom::Strategy::kP2pPointToPoint;
 
 bool ShouldEnableWebRtc(DataUsage data_usage, PowerLevel power_level) {
+  if (!base::FeatureList::IsEnabled(features::kNearbySharingWebRtc))
+    return false;
+
   // We won't use internet if the user requested we don't.
   if (data_usage == DataUsage::kOffline)
     return false;
@@ -356,6 +360,10 @@ NearbyConnectionsManagerImpl::GetRawAuthenticationToken(
 void NearbyConnectionsManagerImpl::UpgradeBandwidth(
     const std::string& endpoint_id) {
   if (!nearby_connections_)
+    return;
+
+  // The only bandwidth upgrade at this point is WebRTC.
+  if (!base::FeatureList::IsEnabled(features::kNearbySharingWebRtc))
     return;
 
   nearby_connections_->InitiateBandwidthUpgrade(

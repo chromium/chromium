@@ -43912,6 +43912,7 @@ from previous Chrome versions.
   <int value="209792775" label="TabGroupsAndroid:enabled"/>
   <int value="212489101" label="AutofillAssistantChromeEntry:enabled"/>
   <int value="215328738" label="ImprovedGeoLanguageData:disabled"/>
+  <int value="215528151" label="NearbySharingWebRtc:enabled"/>
   <int value="217455219" label="SyncStandaloneTransport:enabled"/>
   <int value="218890378" label="ManualSaving:disabled"/>
   <int value="219117936" label="AllowReaderForAccessibility:enabled"/>
@@ -43994,6 +43995,7 @@ from previous Chrome versions.
   <int value="301869874" label="NTPPhysicalWebPageSuggestions:disabled"/>
   <int value="303058039" label="AccountConsistency:disabled"/>
   <int value="303252119" label="AutofillExpandedPopupViews:disabled"/>
+  <int value="303325901" label="NearbySharingWebRtc:disabled"/>
   <int value="304588364" label="TextureLayerSkipWaitForActivation:enabled"/>
   <int value="304901781" label="NewUsbBackend:enabled"/>
   <int value="305356014" label="WebViewMeasureScreenCoverage:disabled"/>
