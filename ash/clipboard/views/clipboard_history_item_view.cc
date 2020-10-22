@@ -170,11 +170,53 @@ void ClipboardHistoryItemView::Init() {
 }
 
 void ClipboardHistoryItemView::OnSelectionChanged() {
-  pseudo_focus_ =
-      container_->IsSelected() ? PseudoFocus::kMainButton : PseudoFocus::kEmpty;
+  if (!container_->IsSelected()) {
+    SetPseudoFocus(PseudoFocus::kEmpty);
+    return;
+  }
 
-  contents_view_->delete_button()->SetVisible(ShouldShowDeleteButton());
-  main_button_->SchedulePaint();
+  // If the pseudo focus is moved from another item view via focus traversal,
+  // `pseudo_focus_` is already up to date.
+  if (pseudo_focus_ != PseudoFocus::kEmpty)
+    return;
+
+  InitiatePseudoFocus(/*reverse=*/false);
+}
+
+bool ClipboardHistoryItemView::AdvancePseudoFocus(bool reverse) {
+  if (pseudo_focus_ == PseudoFocus::kEmpty) {
+    InitiatePseudoFocus(reverse);
+    return true;
+  }
+
+  // When the menu item is disabled, only the delete button is able to work.
+  if (!container_->GetEnabled()) {
+    DCHECK_EQ(PseudoFocus::kDeleteButton, pseudo_focus_);
+    SetPseudoFocus(PseudoFocus::kEmpty);
+    return false;
+  }
+
+  DCHECK(pseudo_focus_ == PseudoFocus::kMainButton ||
+         pseudo_focus_ == PseudoFocus::kDeleteButton);
+  int new_pseudo_focus = pseudo_focus_;
+  bool move_focus_out = false;
+  if (reverse) {
+    --new_pseudo_focus;
+    if (new_pseudo_focus == PseudoFocus::kEmpty)
+      move_focus_out = true;
+  } else {
+    ++new_pseudo_focus;
+    if (new_pseudo_focus == PseudoFocus::kMaxValue)
+      move_focus_out = true;
+  }
+
+  if (move_focus_out) {
+    SetPseudoFocus(PseudoFocus::kEmpty);
+    return false;
+  }
+
+  SetPseudoFocus(static_cast<PseudoFocus>(new_pseudo_focus));
+  return true;
 }
 
 void ClipboardHistoryItemView::RecordButtonPressedHistogram(
@@ -215,6 +257,7 @@ int ClipboardHistoryItemView::CalculateCommandId() const {
     case PseudoFocus::kDeleteButton:
       return ClipboardHistoryUtil::kDeleteCommandId;
     case PseudoFocus::kEmpty:
+    case PseudoFocus::kMaxValue:
       NOTREACHED();
       return -1;
   }
@@ -227,6 +270,25 @@ bool ClipboardHistoryItemView::ShouldHighlight() const {
 bool ClipboardHistoryItemView::ShouldShowDeleteButton() const {
   return (pseudo_focus_ == PseudoFocus::kMainButton && IsMouseHovered()) ||
          pseudo_focus_ == PseudoFocus::kDeleteButton;
+}
+
+void ClipboardHistoryItemView::InitiatePseudoFocus(bool reverse) {
+  PseudoFocus target_pseudo_focus;
+  if (!container_->GetEnabled() || reverse)
+    target_pseudo_focus = PseudoFocus::kDeleteButton;
+  else
+    target_pseudo_focus = PseudoFocus::kMainButton;
+
+  SetPseudoFocus(target_pseudo_focus);
+}
+
+void ClipboardHistoryItemView::SetPseudoFocus(PseudoFocus new_pseudo_focus) {
+  if (pseudo_focus_ == new_pseudo_focus)
+    return;
+
+  pseudo_focus_ = new_pseudo_focus;
+  contents_view_->delete_button()->SetVisible(ShouldShowDeleteButton());
+  main_button_->SchedulePaint();
 }
 
 }  // namespace ash

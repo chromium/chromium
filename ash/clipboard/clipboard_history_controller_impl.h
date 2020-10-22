@@ -62,7 +62,7 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
     return nudge_controller_.get();
   }
 
-  const ClipboardHistoryMenuModelAdapter* context_menu_for_test() const {
+  ClipboardHistoryMenuModelAdapter* context_menu_for_test() {
     return context_menu_.get();
   }
 
@@ -77,11 +77,21 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   bool CanShowMenu() const override;
 
   void ExecuteSelectedMenuItem(int event_flags);
-  void MenuOptionSelected(int command_id, int event_flags);
+
+  // Executes the command specified by `command_id` with the given event flags.
+  void ExecuteCommand(int command_id, int event_flags);
+
+  // Paste the clipboard data of the menu item specified by `command_id`.
+  // `paste_plain_text` indicates whether the plain text instead of the
+  // clipboard data should be pasted.
+  void PasteMenuItemData(int command_id, bool paste_plain_text);
 
   // Delete the menu item being selected and its corresponding data. If no item
   // is selected, do nothing.
   void DeleteSelectedMenuItemIfAny();
+
+  // Advances the pseudo focus (backward if `reverse` is true).
+  void AdvancePseudoFocus(bool reverse);
 
   gfx::Rect CalculateAnchorRect() const;
 

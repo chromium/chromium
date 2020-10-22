@@ -36,6 +36,10 @@ class ClipboardHistoryItemView : public views::View {
   // Called when the selection state has changed.
   void OnSelectionChanged();
 
+  // Advances the pseudo focus (backward if reverse is true). Returns whether
+  // the view still keeps the pseudo focus.
+  bool AdvancePseudoFocus(bool reverse);
+
   const views::View* delete_button_for_test() const {
     return contents_view_->delete_button();
   }
@@ -107,7 +111,20 @@ class ClipboardHistoryItemView : public views::View {
   // user actions on the menu item (like clicking the mouse or triggering an
   // accelerator). Note that the child under pseudo focus does not have view
   // focus. It is where "pseudo" comes from.
-  enum class PseudoFocus { kEmpty, kMainButton, kDeleteButton };
+  // The enumeration types are arranged in the forward focus traversal order.
+  enum PseudoFocus {
+    // No child is under pseudo focus.
+    kEmpty = 0,
+
+    // The main button has pseudo focus.
+    kMainButton = 1,
+
+    // The delete button has pseudo focus.
+    kDeleteButton = 2,
+
+    // Marks the end. It should not be assigned to `pseudo_focus_`.
+    kMaxValue = 3
+  };
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
@@ -122,6 +139,12 @@ class ClipboardHistoryItemView : public views::View {
   bool ShouldHighlight() const;
 
   bool ShouldShowDeleteButton() const;
+
+  // Called when receiving pseudo focus for the first time.
+  void InitiatePseudoFocus(bool reverse);
+
+  // Updates `pseudo_focus_` and children visibility.
+  void SetPseudoFocus(PseudoFocus new_pseudo_focus);
 
   // Owned by ClipboardHistoryMenuModelAdapter.
   const ClipboardHistoryItem* const clipboard_history_item_;
