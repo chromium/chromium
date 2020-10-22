@@ -99,6 +99,7 @@ public class ChromeCachedFlags {
                 StartSurfaceConfiguration.TRENDY_FAILURE_MIN_PERIOD_MS,
                 StartSurfaceConfiguration.TRENDY_SUCCESS_MIN_PERIOD_MS,
                 TabContentManager.ALLOW_TO_REFETCH_TAB_THUMBNAIL_VARIATION,
+                TabUiFeatureUtilities.ENABLE_LAUNCH_BUG_FIX,
                 TabUiFeatureUtilities.ENABLE_LAUNCH_POLISH,
                 TabUiFeatureUtilities.ENABLE_SEARCH_CHIP,
                 TabUiFeatureUtilities.ENABLE_PRICE_TRACKING,
