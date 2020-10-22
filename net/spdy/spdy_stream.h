@@ -85,8 +85,8 @@ class NET_EXPORT_PRIVATE SpdyStream {
     // Called when response headers have been received.  In case of a pushed
     // stream, the pushed request headers are also passed.
     virtual void OnHeadersReceived(
-        const spdy::SpdyHeaderBlock& response_headers,
-        const spdy::SpdyHeaderBlock* pushed_request_headers) = 0;
+        const spdy::Http2HeaderBlock& response_headers,
+        const spdy::Http2HeaderBlock* pushed_request_headers) = 0;
 
     // Called when data is received.  |buffer| may be NULL, which signals EOF.
     // May cause the stream to be closed.
@@ -96,7 +96,7 @@ class NET_EXPORT_PRIVATE SpdyStream {
     virtual void OnDataSent() = 0;
 
     // Called when trailers are received.
-    virtual void OnTrailers(const spdy::SpdyHeaderBlock& trailers) = 0;
+    virtual void OnTrailers(const spdy::Http2HeaderBlock& trailers) = 0;
 
     // Called when SpdyStream is closed. No other delegate functions
     // will be called after this is called, and the delegate must not
@@ -253,13 +253,13 @@ class NET_EXPORT_PRIVATE SpdyStream {
 
   // Called by SpdySession when headers are received for this stream.  May close
   // the stream.
-  void OnHeadersReceived(const spdy::SpdyHeaderBlock& response_headers,
+  void OnHeadersReceived(const spdy::Http2HeaderBlock& response_headers,
                          base::Time response_time,
                          base::TimeTicks recv_first_byte_time);
 
   // Called by the SpdySession when a frame carrying request headers opening a
   // push stream is received. Stream transits to STATE_RESERVED_REMOTE state.
-  void OnPushPromiseHeadersReceived(spdy::SpdyHeaderBlock headers, GURL url);
+  void OnPushPromiseHeadersReceived(spdy::Http2HeaderBlock headers, GURL url);
 
   // Called by the SpdySession when response data has been received
   // for this stream.  This callback may be called multiple times as
@@ -324,7 +324,7 @@ class NET_EXPORT_PRIVATE SpdyStream {
   // MORE_DATA_TO_SEND for bidirectional streams; for request/response streams,
   // it must be MORE_DATA_TO_SEND if the request has data to upload, or
   // NO_MORE_DATA_TO_SEND if not.
-  int SendRequestHeaders(spdy::SpdyHeaderBlock request_headers,
+  int SendRequestHeaders(spdy::Http2HeaderBlock request_headers,
                          SpdySendStatus send_status);
 
   // Sends a DATA frame. The delegate will be notified via
@@ -384,10 +384,10 @@ class NET_EXPORT_PRIVATE SpdyStream {
 
   bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const;
 
-  const spdy::SpdyHeaderBlock& request_headers() const {
+  const spdy::Http2HeaderBlock& request_headers() const {
     return request_headers_;
   }
-  const spdy::SpdyHeaderBlock& response_headers() const {
+  const spdy::Http2HeaderBlock& response_headers() const {
     return response_headers_;
   }
 
@@ -449,7 +449,7 @@ class NET_EXPORT_PRIVATE SpdyStream {
 
   // Saves the given headers into |response_headers_| and calls
   // OnHeadersReceived() on the delegate if attached.
-  void SaveResponseHeaders(const spdy::SpdyHeaderBlock& response_headers,
+  void SaveResponseHeaders(const spdy::Http2HeaderBlock& response_headers,
                            int status);
 
   static std::string DescribeState(State state);
@@ -487,7 +487,7 @@ class NET_EXPORT_PRIVATE SpdyStream {
 
   // The headers for the request to send.
   bool request_headers_valid_;
-  spdy::SpdyHeaderBlock request_headers_;
+  spdy::Http2HeaderBlock request_headers_;
 
   // Data waiting to be sent, and the close state of the local endpoint
   // after the data is fully written.
@@ -504,7 +504,7 @@ class NET_EXPORT_PRIVATE SpdyStream {
   // For cached responses, this time could be "far" in the past.
   base::Time request_time_;
 
-  spdy::SpdyHeaderBlock response_headers_;
+  spdy::Http2HeaderBlock response_headers_;
   ResponseState response_state_;
   base::Time response_time_;
 

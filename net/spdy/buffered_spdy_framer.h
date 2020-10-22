@@ -44,7 +44,7 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramerVisitorInterface {
                          spdy::SpdyStreamId parent_stream_id,
                          bool exclusive,
                          bool fin,
-                         spdy::SpdyHeaderBlock headers,
+                         spdy::Http2HeaderBlock headers,
                          base::TimeTicks recv_first_byte_time) = 0;
 
   // Called when a data frame header is received.
@@ -101,7 +101,7 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramerVisitorInterface {
   // Called when a PUSH_PROMISE frame has been parsed.
   virtual void OnPushPromise(spdy::SpdyStreamId stream_id,
                              spdy::SpdyStreamId promised_stream_id,
-                             spdy::SpdyHeaderBlock headers) = 0;
+                             spdy::Http2HeaderBlock headers) = 0;
 
   // Called when an ALTSVC frame has been parsed.
   virtual void OnAltSvc(

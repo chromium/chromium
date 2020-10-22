@@ -26,7 +26,7 @@ class NET_EXPORT_PRIVATE HeaderCoalescer
   void OnHeaderBlockEnd(size_t uncompressed_header_bytes,
                         size_t compressed_header_bytes) override {}
 
-  spdy::SpdyHeaderBlock release_headers();
+  spdy::Http2HeaderBlock release_headers();
   bool error_seen() const { return error_seen_; }
 
   // Returns the estimate of dynamically allocated memory in bytes.
@@ -36,7 +36,7 @@ class NET_EXPORT_PRIVATE HeaderCoalescer
   // Helper to add a header. Return true on success.
   bool AddHeader(base::StringPiece key, base::StringPiece value);
 
-  spdy::SpdyHeaderBlock headers_;
+  spdy::Http2HeaderBlock headers_;
   bool headers_valid_ = true;
   size_t header_list_size_ = 0;
   bool error_seen_ = false;

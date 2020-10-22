@@ -237,7 +237,7 @@ class QuicTestPacketMaker {
       bool should_include_version,
       bool fin,
       spdy::SpdyPriority priority,
-      spdy::SpdyHeaderBlock headers,
+      spdy::Http2HeaderBlock headers,
       quic::QuicStreamId parent_stream_id,
       size_t* spdy_headers_frame_length,
       const std::vector<std::string>& data_writes);
@@ -250,7 +250,7 @@ class QuicTestPacketMaker {
       bool should_include_version,
       bool fin,
       spdy::SpdyPriority priority,
-      spdy::SpdyHeaderBlock headers,
+      spdy::Http2HeaderBlock headers,
       quic::QuicStreamId parent_stream_id,
       size_t* spdy_headers_frame_length);
 
@@ -260,7 +260,7 @@ class QuicTestPacketMaker {
       bool should_include_version,
       bool fin,
       spdy::SpdyPriority priority,
-      spdy::SpdyHeaderBlock headers,
+      spdy::Http2HeaderBlock headers,
       quic::QuicStreamId parent_stream_id,
       size_t* spdy_headers_frame_length,
       quic::QuicRstStreamErrorCode error_code);
@@ -273,7 +273,7 @@ class QuicTestPacketMaker {
       quic::QuicStreamId promised_stream_id,
       bool should_include_version,
       bool fin,
-      spdy::SpdyHeaderBlock headers,
+      spdy::Http2HeaderBlock headers,
       size_t* spdy_headers_frame_length);
 
   // If |spdy_headers_frame_length| is non-null, it will be set to the size of
@@ -283,7 +283,7 @@ class QuicTestPacketMaker {
       quic::QuicStreamId stream_id,
       bool should_include_version,
       bool fin,
-      spdy::SpdyHeaderBlock headers,
+      spdy::Http2HeaderBlock headers,
       size_t* spdy_headers_frame_length);
 
   // Creates a packet containing the initial SETTINGS frame, and saves the
@@ -340,17 +340,17 @@ class QuicTestPacketMaker {
 
   void SetEncryptionLevel(quic::EncryptionLevel level);
 
-  spdy::SpdyHeaderBlock GetRequestHeaders(const std::string& method,
-                                          const std::string& scheme,
-                                          const std::string& path) const;
+  spdy::Http2HeaderBlock GetRequestHeaders(const std::string& method,
+                                           const std::string& scheme,
+                                           const std::string& path) const;
 
-  spdy::SpdyHeaderBlock ConnectRequestHeaders(
+  spdy::Http2HeaderBlock ConnectRequestHeaders(
       const std::string& host_port) const;
 
-  spdy::SpdyHeaderBlock GetResponseHeaders(const std::string& status) const;
+  spdy::Http2HeaderBlock GetResponseHeaders(const std::string& status) const;
 
-  spdy::SpdyHeaderBlock GetResponseHeaders(const std::string& status,
-                                           const std::string& alt_svc) const;
+  spdy::Http2HeaderBlock GetResponseHeaders(const std::string& status,
+                                            const std::string& alt_svc) const;
 
   spdy::SpdyFramer* spdy_request_framer() { return &spdy_request_framer_; }
   spdy::SpdyFramer* spdy_response_framer() { return &spdy_response_framer_; }
@@ -366,7 +366,7 @@ class QuicTestPacketMaker {
   }
 
   std::string QpackEncodeHeaders(quic::QuicStreamId stream_id,
-                                 spdy::SpdyHeaderBlock headers,
+                                 spdy::Http2HeaderBlock headers,
                                  size_t* encoded_data_length);
 
  private:
@@ -425,7 +425,7 @@ class QuicTestPacketMaker {
       quic::QuicStreamId stream_id,
       bool fin,
       spdy::SpdyPriority priority,
-      spdy::SpdyHeaderBlock headers,
+      spdy::Http2HeaderBlock headers,
       quic::QuicStreamId parent_stream_id);
 
   bool ShouldIncludeVersion(bool include_version) const;

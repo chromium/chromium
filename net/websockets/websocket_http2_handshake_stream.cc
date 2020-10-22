@@ -261,7 +261,7 @@ void WebSocketHttp2HandshakeStream::OnHeadersSent() {
 }
 
 void WebSocketHttp2HandshakeStream::OnHeadersReceived(
-    const spdy::SpdyHeaderBlock& response_headers) {
+    const spdy::Http2HeaderBlock& response_headers) {
   DCHECK(!response_headers_complete_);
   DCHECK(http_response_info_);
 

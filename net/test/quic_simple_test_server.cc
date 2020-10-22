@@ -138,11 +138,11 @@ const std::string QuicSimpleTestServer::GetSimpleHeaderValue() {
 }
 
 void SetupQuicMemoryCacheBackend() {
-  spdy::SpdyHeaderBlock headers;
+  spdy::Http2HeaderBlock headers;
   headers[kHelloHeaderName] = kHelloHeaderValue;
   headers[kStatusHeader] = kHelloStatus;
   headers[kCombinedHeaderName] = kCombinedHelloHeaderValue;
-  spdy::SpdyHeaderBlock trailers;
+  spdy::Http2HeaderBlock trailers;
   trailers[kHelloTrailerName] = kHelloTrailerValue;
   g_quic_cache_backend = new quic::QuicMemoryCacheBackend();
   g_quic_cache_backend->AddResponse(base::StringPrintf("%s", kTestServerHost),

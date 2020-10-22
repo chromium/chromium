@@ -30,13 +30,13 @@ TEST(SpdyLogUtilTest, ElideGoAwayDebugDataForNetLog) {
                 NetLogCaptureMode::kIncludeSensitive, "\xfe\xff\x00"));
 }
 
-TEST(SpdyLogUtilTest, ElideSpdyHeaderBlockForNetLog) {
-  spdy::SpdyHeaderBlock headers;
+TEST(SpdyLogUtilTest, ElideHttp2HeaderBlockForNetLog) {
+  spdy::Http2HeaderBlock headers;
   headers["foo"] = "bar";
   headers["cookie"] = "name=value";
 
   base::ListValue list =
-      ElideSpdyHeaderBlockForNetLog(headers, NetLogCaptureMode::kDefault);
+      ElideHttp2HeaderBlockForNetLog(headers, NetLogCaptureMode::kDefault);
 
   ASSERT_FALSE(list.is_none());
   ASSERT_EQ(2u, list.GetList().size());
@@ -47,8 +47,8 @@ TEST(SpdyLogUtilTest, ElideSpdyHeaderBlockForNetLog) {
   ASSERT_TRUE(list.GetList()[1].is_string());
   EXPECT_EQ("cookie: [10 bytes were stripped]", list.GetList()[1].GetString());
 
-  list = ElideSpdyHeaderBlockForNetLog(headers,
-                                       NetLogCaptureMode::kIncludeSensitive);
+  list = ElideHttp2HeaderBlockForNetLog(headers,
+                                        NetLogCaptureMode::kIncludeSensitive);
 
   ASSERT_FALSE(list.is_none());
   ASSERT_EQ(2u, list.GetList().size());
@@ -60,13 +60,13 @@ TEST(SpdyLogUtilTest, ElideSpdyHeaderBlockForNetLog) {
   EXPECT_EQ("cookie: name=value", list.GetList()[1].GetString());
 }
 
-TEST(SpdyLogUtilTest, SpdyHeaderBlockNetLogParams) {
-  spdy::SpdyHeaderBlock headers;
+TEST(SpdyLogUtilTest, Http2HeaderBlockNetLogParams) {
+  spdy::Http2HeaderBlock headers;
   headers["foo"] = "bar";
   headers["cookie"] = "name=value";
 
   std::unique_ptr<base::Value> dict = base::Value::ToUniquePtrValue(
-      SpdyHeaderBlockNetLogParams(&headers, NetLogCaptureMode::kDefault));
+      Http2HeaderBlockNetLogParams(&headers, NetLogCaptureMode::kDefault));
 
   ASSERT_TRUE(dict);
   ASSERT_TRUE(dict->is_dict());
@@ -84,7 +84,7 @@ TEST(SpdyLogUtilTest, SpdyHeaderBlockNetLogParams) {
   EXPECT_EQ("cookie: [10 bytes were stripped]",
             header_list->GetList()[1].GetString());
 
-  dict = base::Value::ToUniquePtrValue(SpdyHeaderBlockNetLogParams(
+  dict = base::Value::ToUniquePtrValue(Http2HeaderBlockNetLogParams(
       &headers, NetLogCaptureMode::kIncludeSensitive));
 
   ASSERT_TRUE(dict);
@@ -104,14 +104,14 @@ TEST(SpdyLogUtilTest, SpdyHeaderBlockNetLogParams) {
 }
 
 // Regression test for https://crbug.com/800282.
-TEST(SpdyLogUtilTest, ElideSpdyHeaderBlockForNetLogWithNonUTF8Characters) {
-  spdy::SpdyHeaderBlock headers;
+TEST(SpdyLogUtilTest, ElideHttp2HeaderBlockForNetLogWithNonUTF8Characters) {
+  spdy::Http2HeaderBlock headers;
   headers["foo"] = "bar\x81";
   headers["O\xe2"] = "bar";
   headers["\xde\xad"] = "\xbe\xef";
 
   base::ListValue list =
-      ElideSpdyHeaderBlockForNetLog(headers, NetLogCaptureMode::kDefault);
+      ElideHttp2HeaderBlockForNetLog(headers, NetLogCaptureMode::kDefault);
 
   ASSERT_EQ(3u, list.GetSize());
   std::string field;

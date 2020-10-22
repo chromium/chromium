@@ -34,11 +34,11 @@ class FuzzerDelegate : public net::SpdyStream::Delegate {
 
   void OnHeadersSent() override {}
   void OnHeadersReceived(
-      const spdy::SpdyHeaderBlock& response_headers,
-      const spdy::SpdyHeaderBlock* pushed_request_headers) override {}
+      const spdy::Http2HeaderBlock& response_headers,
+      const spdy::Http2HeaderBlock* pushed_request_headers) override {}
   void OnDataReceived(std::unique_ptr<net::SpdyBuffer> buffer) override {}
   void OnDataSent() override {}
-  void OnTrailers(const spdy::SpdyHeaderBlock& trailers) override {}
+  void OnTrailers(const spdy::Http2HeaderBlock& trailers) override {}
   void OnClose(int status) override { std::move(done_closure_).Run(); }
   bool CanGreaseFrameType() const override { return false; }
 

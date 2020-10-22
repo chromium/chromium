@@ -274,7 +274,7 @@ void CronetBidirectionalStreamAdapter::OnStreamReady(
 }
 
 void CronetBidirectionalStreamAdapter::OnHeadersReceived(
-    const spdy::SpdyHeaderBlock& response_headers) {
+    const spdy::Http2HeaderBlock& response_headers) {
   DCHECK(context_->IsOnNetworkThread());
   JNIEnv* env = base::android::AttachCurrentThread();
   // Get http status code from response headers.
@@ -331,7 +331,7 @@ void CronetBidirectionalStreamAdapter::OnDataSent() {
 }
 
 void CronetBidirectionalStreamAdapter::OnTrailersReceived(
-    const spdy::SpdyHeaderBlock& response_trailers) {
+    const spdy::Http2HeaderBlock& response_trailers) {
   DCHECK(context_->IsOnNetworkThread());
   JNIEnv* env = base::android::AttachCurrentThread();
   cronet::Java_CronetBidirectionalStream_onResponseTrailersReceived(
@@ -438,7 +438,7 @@ void CronetBidirectionalStreamAdapter::DestroyOnNetworkThread(
 base::android::ScopedJavaLocalRef<jobjectArray>
 CronetBidirectionalStreamAdapter::GetHeadersArray(
     JNIEnv* env,
-    const spdy::SpdyHeaderBlock& header_block) {
+    const spdy::Http2HeaderBlock& header_block) {
   DCHECK(context_->IsOnNetworkThread());
 
   std::vector<std::string> headers;

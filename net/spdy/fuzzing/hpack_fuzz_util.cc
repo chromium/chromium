@@ -71,9 +71,9 @@ void HpackFuzzUtil::InitializeGeneratorContext(GeneratorContext* context) {
 }
 
 // static
-SpdyHeaderBlock HpackFuzzUtil::NextGeneratedHeaderSet(
+Http2HeaderBlock HpackFuzzUtil::NextGeneratedHeaderSet(
     GeneratorContext* context) {
-  SpdyHeaderBlock headers;
+  Http2HeaderBlock headers;
 
   size_t header_count =
       1 + SampleExponential(kHeaderCountMean, kHeaderCountMax);

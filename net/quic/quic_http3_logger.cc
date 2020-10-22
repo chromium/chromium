@@ -365,7 +365,7 @@ void QuicHttp3Logger::OnDataFrameSent(quic::QuicStreamId stream_id,
 
 void QuicHttp3Logger::OnHeadersFrameSent(
     quic::QuicStreamId stream_id,
-    const spdy::SpdyHeaderBlock& header_block) {
+    const spdy::Http2HeaderBlock& header_block) {
   if (!net_log_.IsCapturing()) {
     return;
   }
@@ -376,7 +376,7 @@ void QuicHttp3Logger::OnHeadersFrameSent(
         dict.SetKey("stream_id",
                     NetLogNumberValue(static_cast<uint64_t>(stream_id)));
         dict.SetKey("headers",
-                    ElideSpdyHeaderBlockForNetLog(header_block, capture_mode));
+                    ElideHttp2HeaderBlockForNetLog(header_block, capture_mode));
         return dict;
       });
 }
@@ -384,7 +384,7 @@ void QuicHttp3Logger::OnHeadersFrameSent(
 void QuicHttp3Logger::OnPushPromiseFrameSent(
     quic::QuicStreamId stream_id,
     quic::QuicStreamId push_id,
-    const spdy::SpdyHeaderBlock& header_block) {
+    const spdy::Http2HeaderBlock& header_block) {
   if (!net_log_.IsCapturing()) {
     return;
   }
@@ -397,7 +397,7 @@ void QuicHttp3Logger::OnPushPromiseFrameSent(
         dict.SetKey("push_id",
                     NetLogNumberValue(static_cast<uint64_t>(push_id)));
         dict.SetKey("headers",
-                    ElideSpdyHeaderBlockForNetLog(header_block, capture_mode));
+                    ElideHttp2HeaderBlockForNetLog(header_block, capture_mode));
         return dict;
       });
 }

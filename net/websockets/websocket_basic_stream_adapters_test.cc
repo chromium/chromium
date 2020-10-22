@@ -274,7 +274,7 @@ class MockDelegate : public WebSocketSpdyStreamAdapter::Delegate {
  public:
   ~MockDelegate() override = default;
   MOCK_METHOD0(OnHeadersSent, void());
-  MOCK_METHOD1(OnHeadersReceived, void(const spdy::SpdyHeaderBlock&));
+  MOCK_METHOD1(OnHeadersReceived, void(const spdy::Http2HeaderBlock&));
   MOCK_METHOD1(OnClose, void(int));
 };
 
@@ -294,12 +294,12 @@ class WebSocketSpdyStreamAdapterTest : public TestWithTaskEnvironment {
 
   ~WebSocketSpdyStreamAdapterTest() override = default;
 
-  static spdy::SpdyHeaderBlock RequestHeaders() {
+  static spdy::Http2HeaderBlock RequestHeaders() {
     return WebSocketHttp2Request("/", "www.example.org:443",
                                  "http://www.example.org", {});
   }
 
-  static spdy::SpdyHeaderBlock ResponseHeaders() {
+  static spdy::Http2HeaderBlock ResponseHeaders() {
     return WebSocketHttp2Response({});
   }
 

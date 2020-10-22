@@ -55,7 +55,7 @@ void HeaderCoalescer::OnHeader(absl::string_view key, absl::string_view value) {
     error_seen_ = true;
 }
 
-spdy::SpdyHeaderBlock HeaderCoalescer::release_headers() {
+spdy::Http2HeaderBlock HeaderCoalescer::release_headers() {
   DCHECK(headers_valid_);
   headers_valid_ = false;
   return std::move(headers_);

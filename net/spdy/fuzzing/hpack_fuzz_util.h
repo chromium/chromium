@@ -32,7 +32,7 @@ class HpackFuzzUtil {
   static void InitializeGeneratorContext(GeneratorContext* context);
 
   // Generates a header set from the generator context.
-  static SpdyHeaderBlock NextGeneratedHeaderSet(GeneratorContext* context);
+  static Http2HeaderBlock NextGeneratedHeaderSet(GeneratorContext* context);
 
   // Samples a size from the exponential distribution with mean |mean|,
   // upper-bounded by |sanity_bound|.

@@ -178,14 +178,14 @@ class SessionOpeningDelegate : public SpdyStream::Delegate {
   void OnHeadersSent() override {}
 
   void OnHeadersReceived(
-      const spdy::SpdyHeaderBlock& response_headers,
-      const spdy::SpdyHeaderBlock* pushed_request_headers) override {}
+      const spdy::Http2HeaderBlock& response_headers,
+      const spdy::Http2HeaderBlock* pushed_request_headers) override {}
 
   void OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) override {}
 
   void OnDataSent() override {}
 
-  void OnTrailers(const spdy::SpdyHeaderBlock& trailers) override {}
+  void OnTrailers(const spdy::Http2HeaderBlock& trailers) override {}
 
   void OnClose(int status) override {
     ignore_result(CreateFakeSpdySession(spdy_session_pool_, key_));
@@ -860,7 +860,8 @@ TEST_F(SpdySessionPoolTest, IPAddressChanged) {
   test::StreamDelegateDoNothing delegateA(spdy_streamA);
   spdy_streamA->SetDelegate(&delegateA);
 
-  spdy::SpdyHeaderBlock headers(spdy_util.ConstructGetHeaderBlock(urlA.spec()));
+  spdy::Http2HeaderBlock headers(
+      spdy_util.ConstructGetHeaderBlock(urlA.spec()));
   spdy_streamA->SendRequestHeaders(std::move(headers), NO_MORE_DATA_TO_SEND);
 
   base::RunLoop().RunUntilIdle();  // Allow headers to write.
@@ -974,7 +975,7 @@ TEST_F(SpdySessionPoolTest, HandleIPAddressChangeThenShutdown) {
   test::StreamDelegateDoNothing delegate(spdy_stream);
   spdy_stream->SetDelegate(&delegate);
 
-  spdy::SpdyHeaderBlock headers(spdy_util.ConstructGetHeaderBlock(url.spec()));
+  spdy::Http2HeaderBlock headers(spdy_util.ConstructGetHeaderBlock(url.spec()));
   spdy_stream->SendRequestHeaders(std::move(headers), NO_MORE_DATA_TO_SEND);
 
   base::RunLoop().RunUntilIdle();
@@ -1032,7 +1033,7 @@ TEST_F(SpdySessionPoolTest, HandleGracefulGoawayThenShutdown) {
   test::StreamDelegateDoNothing delegate(spdy_stream);
   spdy_stream->SetDelegate(&delegate);
 
-  spdy::SpdyHeaderBlock headers(spdy_util.ConstructGetHeaderBlock(url.spec()));
+  spdy::Http2HeaderBlock headers(spdy_util.ConstructGetHeaderBlock(url.spec()));
   spdy_stream->SendRequestHeaders(std::move(headers), NO_MORE_DATA_TO_SEND);
 
   // Send headers.
@@ -1190,7 +1191,7 @@ TEST_F(SpdySessionPoolTest, IPConnectionPoolingWithWebSockets) {
   test::StreamDelegateDoNothing delegate(spdy_stream);
   spdy_stream->SetDelegate(&delegate);
 
-  spdy::SpdyHeaderBlock headers(spdy_util.ConstructGetHeaderBlock(url.spec()));
+  spdy::Http2HeaderBlock headers(spdy_util.ConstructGetHeaderBlock(url.spec()));
   spdy_stream->SendRequestHeaders(std::move(headers), NO_MORE_DATA_TO_SEND);
 
   base::RunLoop().RunUntilIdle();

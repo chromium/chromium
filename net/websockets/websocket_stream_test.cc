@@ -237,7 +237,7 @@ class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,
     spdy_util_.UpdateWithStreamDestruction(1);
 
     // WebSocket request.
-    spdy::SpdyHeaderBlock request_headers = WebSocketHttp2Request(
+    spdy::Http2HeaderBlock request_headers = WebSocketHttp2Request(
         socket_path, socket_host, kOrigin, extra_request_headers);
     frames_.push_back(spdy_util_.ConstructSpdyHeaders(
         3, std::move(request_headers), DEFAULT_PRIORITY, false));

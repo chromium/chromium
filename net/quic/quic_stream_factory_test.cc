@@ -425,7 +425,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
       quic::QuicStreamId stream_id,
       bool should_include_version,
       bool fin) {
-    spdy::SpdyHeaderBlock headers =
+    spdy::Http2HeaderBlock headers =
         client_maker_.GetRequestHeaders("GET", "https", "/");
     spdy::SpdyPriority priority =
         ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY);
@@ -441,7 +441,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
       quic::QuicStreamId parent_stream_id,
       bool should_include_version,
       bool fin) {
-    spdy::SpdyHeaderBlock headers =
+    spdy::Http2HeaderBlock headers =
         client_maker_.GetRequestHeaders("GET", "https", "/");
     spdy::SpdyPriority priority =
         ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY);
@@ -456,7 +456,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
       quic::QuicStreamId stream_id,
       bool should_include_version,
       bool fin) {
-    spdy::SpdyHeaderBlock headers = server_maker_.GetResponseHeaders("200 OK");
+    spdy::Http2HeaderBlock headers = server_maker_.GetResponseHeaders("200 OK");
     size_t spdy_headers_frame_len;
     return server_maker_.MakeResponseHeadersPacket(
         packet_number, stream_id, should_include_version, fin,

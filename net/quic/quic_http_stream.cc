@@ -598,7 +598,7 @@ int QuicHttpStream::DoSendHeaders() {
   if (rv > 0)
     headers_bytes_sent_ += rv;
 
-  request_headers_ = spdy::SpdyHeaderBlock();
+  request_headers_ = spdy::Http2HeaderBlock();
   return rv;
 }
 
@@ -672,7 +672,7 @@ int QuicHttpStream::DoSendBodyComplete(int rv) {
 }
 
 int QuicHttpStream::ProcessResponseHeaders(
-    const spdy::SpdyHeaderBlock& headers) {
+    const spdy::Http2HeaderBlock& headers) {
   if (!SpdyHeadersToHttpResponse(headers, response_info_)) {
     DLOG(WARNING) << "Invalid headers";
     return ERR_QUIC_PROTOCOL_ERROR;

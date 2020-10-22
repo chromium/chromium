@@ -550,7 +550,7 @@ QuicTestPacketMaker::MakeRequestHeadersAndMultipleDataFramesPacket(
     bool should_include_version,
     bool fin,
     spdy::SpdyPriority priority,
-    spdy::SpdyHeaderBlock headers,
+    spdy::Http2HeaderBlock headers,
     quic::QuicStreamId parent_stream_id,
     size_t* spdy_headers_frame_length,
     const std::vector<std::string>& data_writes) {
@@ -599,7 +599,7 @@ QuicTestPacketMaker::MakeRequestHeadersPacket(
     bool should_include_version,
     bool fin,
     spdy::SpdyPriority priority,
-    spdy::SpdyHeaderBlock headers,
+    spdy::Http2HeaderBlock headers,
     quic::QuicStreamId parent_stream_id,
     size_t* spdy_headers_frame_length) {
   InitializeHeader(packet_number, should_include_version);
@@ -637,7 +637,7 @@ QuicTestPacketMaker::MakeRequestHeadersAndRstPacket(
     bool should_include_version,
     bool fin,
     spdy::SpdyPriority priority,
-    spdy::SpdyHeaderBlock headers,
+    spdy::Http2HeaderBlock headers,
     quic::QuicStreamId parent_stream_id,
     size_t* spdy_headers_frame_length,
     quic::QuicRstStreamErrorCode error_code) {
@@ -685,7 +685,7 @@ QuicTestPacketMaker::MakePushPromisePacket(
     quic::QuicStreamId promised_stream_id,
     bool should_include_version,
     bool fin,
-    spdy::SpdyHeaderBlock headers,
+    spdy::Http2HeaderBlock headers,
     size_t* spdy_headers_frame_length) {
   InitializeHeader(packet_number, should_include_version);
 
@@ -726,7 +726,7 @@ QuicTestPacketMaker::MakeResponseHeadersPacket(
     quic::QuicStreamId stream_id,
     bool should_include_version,
     bool fin,
-    spdy::SpdyHeaderBlock headers,
+    spdy::Http2HeaderBlock headers,
     size_t* spdy_headers_frame_length) {
   InitializeHeader(packet_number, should_include_version);
 
@@ -965,11 +965,11 @@ void QuicTestPacketMaker::SetEncryptionLevel(quic::EncryptionLevel level) {
   }
 }
 
-spdy::SpdyHeaderBlock QuicTestPacketMaker::GetRequestHeaders(
+spdy::Http2HeaderBlock QuicTestPacketMaker::GetRequestHeaders(
     const std::string& method,
     const std::string& scheme,
     const std::string& path) const {
-  spdy::SpdyHeaderBlock headers;
+  spdy::Http2HeaderBlock headers;
   headers[":method"] = method;
   headers[":authority"] = host_;
   headers[":scheme"] = scheme;
@@ -977,26 +977,26 @@ spdy::SpdyHeaderBlock QuicTestPacketMaker::GetRequestHeaders(
   return headers;
 }
 
-spdy::SpdyHeaderBlock QuicTestPacketMaker::ConnectRequestHeaders(
+spdy::Http2HeaderBlock QuicTestPacketMaker::ConnectRequestHeaders(
     const std::string& host_port) const {
-  spdy::SpdyHeaderBlock headers;
+  spdy::Http2HeaderBlock headers;
   headers[":method"] = "CONNECT";
   headers[":authority"] = host_port;
   return headers;
 }
 
-spdy::SpdyHeaderBlock QuicTestPacketMaker::GetResponseHeaders(
+spdy::Http2HeaderBlock QuicTestPacketMaker::GetResponseHeaders(
     const std::string& status) const {
-  spdy::SpdyHeaderBlock headers;
+  spdy::Http2HeaderBlock headers;
   headers[":status"] = status;
   headers["content-type"] = "text/plain";
   return headers;
 }
 
-spdy::SpdyHeaderBlock QuicTestPacketMaker::GetResponseHeaders(
+spdy::Http2HeaderBlock QuicTestPacketMaker::GetResponseHeaders(
     const std::string& status,
     const std::string& alt_svc) const {
-  spdy::SpdyHeaderBlock headers;
+  spdy::Http2HeaderBlock headers;
   headers[":status"] = status;
   headers["alt-svc"] = alt_svc;
   headers["content-type"] = "text/plain";
@@ -1009,7 +1009,7 @@ void QuicTestPacketMaker::Reset() {
 
 std::string QuicTestPacketMaker::QpackEncodeHeaders(
     quic::QuicStreamId stream_id,
-    spdy::SpdyHeaderBlock headers,
+    spdy::Http2HeaderBlock headers,
     size_t* encoded_data_length) {
   DCHECK(quic::VersionUsesHttp3(version_.transport_version));
   std::string data;
@@ -1300,7 +1300,7 @@ spdy::SpdySerializedFrame QuicTestPacketMaker::MakeSpdyHeadersFrame(
     quic::QuicStreamId stream_id,
     bool fin,
     spdy::SpdyPriority priority,
-    spdy::SpdyHeaderBlock headers,
+    spdy::Http2HeaderBlock headers,
     quic::QuicStreamId parent_stream_id) {
   spdy::SpdyHeadersIR headers_frame(stream_id, std::move(headers));
   headers_frame.set_fin(fin);

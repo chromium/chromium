@@ -93,7 +93,7 @@ class TestDelegateBase : public BidirectionalStreamImpl::Delegate {
   }
 
   void OnHeadersReceived(
-      const spdy::SpdyHeaderBlock& response_headers) override {
+      const spdy::Http2HeaderBlock& response_headers) override {
     CHECK(!on_failed_called_);
     CHECK(!not_expect_callback_);
     response_headers_ = response_headers.Clone();
@@ -118,7 +118,7 @@ class TestDelegateBase : public BidirectionalStreamImpl::Delegate {
     on_data_sent_count_++;
   }
 
-  void OnTrailersReceived(const spdy::SpdyHeaderBlock& trailers) override {
+  void OnTrailersReceived(const spdy::Http2HeaderBlock& trailers) override {
     CHECK(!on_failed_called_);
     trailers_ = trailers.Clone();
     if (run_until_completion_)
@@ -204,10 +204,10 @@ class TestDelegateBase : public BidirectionalStreamImpl::Delegate {
   const std::string& data_received() const { return data_received_; }
   int bytes_read() const { return bytes_read_; }
   int error() const { return error_; }
-  const spdy::SpdyHeaderBlock& response_headers() const {
+  const spdy::Http2HeaderBlock& response_headers() const {
     return response_headers_;
   }
-  const spdy::SpdyHeaderBlock& trailers() const { return trailers_; }
+  const spdy::Http2HeaderBlock& trailers() const { return trailers_; }
   int on_data_read_count() const { return on_data_read_count_; }
   int on_data_sent_count() const { return on_data_sent_count_; }
   bool on_failed_called() const { return on_failed_called_; }
@@ -223,8 +223,8 @@ class TestDelegateBase : public BidirectionalStreamImpl::Delegate {
   int read_buf_len_;
   std::string data_received_;
   std::unique_ptr<base::RunLoop> loop_;
-  spdy::SpdyHeaderBlock response_headers_;
-  spdy::SpdyHeaderBlock trailers_;
+  spdy::Http2HeaderBlock response_headers_;
+  spdy::Http2HeaderBlock trailers_;
   int error_;
   int bytes_read_;
   int on_data_read_count_;

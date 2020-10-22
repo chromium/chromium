@@ -296,12 +296,13 @@ base::Value NetLogQuicClientSessionParams(
 }
 
 base::Value NetLogQuicPushPromiseReceivedParams(
-    const spdy::SpdyHeaderBlock* headers,
+    const spdy::Http2HeaderBlock* headers,
     spdy::SpdyStreamId stream_id,
     spdy::SpdyStreamId promised_stream_id,
     NetLogCaptureMode capture_mode) {
   base::DictionaryValue dict;
-  dict.SetKey("headers", ElideSpdyHeaderBlockForNetLog(*headers, capture_mode));
+  dict.SetKey("headers",
+              ElideHttp2HeaderBlockForNetLog(*headers, capture_mode));
   dict.SetInteger("id", stream_id);
   dict.SetInteger("promised_stream_id", promised_stream_id);
   return std::move(dict);
@@ -472,7 +473,7 @@ bool QuicChromiumClientSession::Handle::SharesSameSession(
 }
 
 int QuicChromiumClientSession::Handle::RendezvousWithPromised(
-    const spdy::SpdyHeaderBlock& headers,
+    const spdy::Http2HeaderBlock& headers,
     CompletionOnceCallback callback) {
   if (!session_)
     return ERR_CONNECTION_CLOSED;
@@ -580,9 +581,9 @@ bool QuicChromiumClientSession::Handle::WasEverUsed() const {
 }
 
 bool QuicChromiumClientSession::Handle::CheckVary(
-    const spdy::SpdyHeaderBlock& client_request,
-    const spdy::SpdyHeaderBlock& promise_request,
-    const spdy::SpdyHeaderBlock& promise_response) {
+    const spdy::Http2HeaderBlock& client_request,
+    const spdy::Http2HeaderBlock& promise_request,
+    const spdy::Http2HeaderBlock& promise_response) {
   HttpRequestInfo promise_request_info;
   ConvertHeaderBlockToHttpRequestHeaders(promise_request,
                                          &promise_request_info.extra_headers);
@@ -1039,7 +1040,7 @@ void QuicChromiumClientSession::Initialize() {
 
 size_t QuicChromiumClientSession::WriteHeadersOnHeadersStream(
     quic::QuicStreamId id,
-    spdy::SpdyHeaderBlock headers,
+    spdy::Http2HeaderBlock headers,
     bool fin,
     const spdy::SpdyStreamPrecedence& precedence,
     quic::QuicReferenceCountedPointer<quic::QuicAckListenerInterface>
@@ -3321,7 +3322,7 @@ bool QuicChromiumClientSession::IsAuthorized(const std::string& hostname) {
 bool QuicChromiumClientSession::HandlePromised(
     quic::QuicStreamId id,
     quic::QuicStreamId promised_id,
-    const spdy::SpdyHeaderBlock& headers) {
+    const spdy::Http2HeaderBlock& headers) {
   bool result =
       quic::QuicSpdyClientSessionBase::HandlePromised(id, promised_id, headers);
   if (result) {

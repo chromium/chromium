@@ -62,7 +62,7 @@ class QuicHttpProxyBackendTest : public QuicTest {
     quic_proxy_backend_url_ = "http://www.google.com:80";
     http_proxy_.InitializeBackend(quic_proxy_backend_url_);
 
-    spdy::SpdyHeaderBlock request_headers;
+    spdy::Http2HeaderBlock request_headers;
     request_headers[":authority"] = "www.example.org";
     request_headers[":method"] = "GET";
     std::string body = "Test Body";

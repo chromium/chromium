@@ -563,7 +563,7 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
   std::unique_ptr<quic::QuicReceivedPacket> ConstructResponseTrailersPacket(
       uint64_t packet_number,
       bool fin,
-      spdy::SpdyHeaderBlock trailers,
+      spdy::Http2HeaderBlock trailers,
       size_t* spdy_headers_frame_length) {
     return server_maker_.MakeResponseHeadersPacket(
         packet_number, stream_id_, !kIncludeVersion, fin, std::move(trailers),
@@ -676,15 +676,15 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
   HttpRequestHeaders headers_;
   HttpResponseInfo response_;
   scoped_refptr<IOBufferWithSize> read_buffer_;
-  spdy::SpdyHeaderBlock request_headers_;
-  spdy::SpdyHeaderBlock response_headers_;
+  spdy::Http2HeaderBlock request_headers_;
+  spdy::Http2HeaderBlock response_headers_;
   string request_data_;
   string response_data_;
 
   // For server push testing
   std::unique_ptr<QuicHttpStream> promised_stream_;
-  spdy::SpdyHeaderBlock push_promise_;
-  spdy::SpdyHeaderBlock promised_response_;
+  spdy::Http2HeaderBlock push_promise_;
+  spdy::Http2HeaderBlock promised_response_;
   const quic::QuicStreamId promise_id_;
   string promise_url_;
   const quic::QuicStreamId stream_id_;
@@ -933,7 +933,7 @@ TEST_P(QuicHttpStreamTest, GetRequestWithTrailers) {
   std::string header = ConstructDataHeader(strlen(kResponseBody));
   ProcessPacket(
       ConstructServerDataPacket(3, false, !kFin, header + kResponseBody));
-  spdy::SpdyHeaderBlock trailers;
+  spdy::Http2HeaderBlock trailers;
   size_t spdy_trailers_frame_length;
   trailers["foo"] = "bar";
   if (!quic::VersionUsesHttp3(version_.transport_version)) {

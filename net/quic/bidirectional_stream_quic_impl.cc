@@ -124,7 +124,7 @@ void BidirectionalStreamQuicImpl::SendRequestHeaders() {
 int BidirectionalStreamQuicImpl::WriteHeaders() {
   DCHECK(!has_sent_headers_);
 
-  spdy::SpdyHeaderBlock headers;
+  spdy::Http2HeaderBlock headers;
   HttpRequestInfo http_request_info;
   http_request_info.url = request_info_->url;
   http_request_info.method = request_info_->method;

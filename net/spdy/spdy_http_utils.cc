@@ -27,7 +27,7 @@ namespace {
 
 void AddSpdyHeader(const std::string& name,
                    const std::string& value,
-                   spdy::SpdyHeaderBlock* headers) {
+                   spdy::Http2HeaderBlock* headers) {
   if (headers->find(name) == headers->end()) {
     (*headers)[name] = value;
   } else {
@@ -40,10 +40,10 @@ void AddSpdyHeader(const std::string& name,
 
 }  // namespace
 
-bool SpdyHeadersToHttpResponse(const spdy::SpdyHeaderBlock& headers,
+bool SpdyHeadersToHttpResponse(const spdy::Http2HeaderBlock& headers,
                                HttpResponseInfo* response) {
   // The ":status" header is required.
-  spdy::SpdyHeaderBlock::const_iterator it =
+  spdy::Http2HeaderBlock::const_iterator it =
       headers.find(spdy::kHttp2StatusHeader);
   if (it == headers.end())
     return false;
@@ -93,7 +93,7 @@ bool SpdyHeadersToHttpResponse(const spdy::SpdyHeaderBlock& headers,
 
 void CreateSpdyHeadersFromHttpRequest(const HttpRequestInfo& info,
                                       const HttpRequestHeaders& request_headers,
-                                      spdy::SpdyHeaderBlock* headers) {
+                                      spdy::Http2HeaderBlock* headers) {
   (*headers)[spdy::kHttp2MethodHeader] = info.method;
   if (info.method == "CONNECT") {
     (*headers)[spdy::kHttp2AuthorityHeader] = GetHostAndPort(info.url);
@@ -118,7 +118,7 @@ void CreateSpdyHeadersFromHttpRequest(const HttpRequestInfo& info,
 void CreateSpdyHeadersFromHttpRequestForWebSocket(
     const GURL& url,
     const HttpRequestHeaders& request_headers,
-    spdy::SpdyHeaderBlock* headers) {
+    spdy::Http2HeaderBlock* headers) {
   (*headers)[spdy::kHttp2MethodHeader] = "CONNECT";
   (*headers)[spdy::kHttp2AuthorityHeader] = GetHostAndOptionalPort(url);
   (*headers)[spdy::kHttp2SchemeHeader] = "https";
@@ -159,7 +159,7 @@ ConvertSpdyPriorityToRequestPriority(spdy::SpdyPriority priority) {
 }
 
 NET_EXPORT_PRIVATE void ConvertHeaderBlockToHttpRequestHeaders(
-    const spdy::SpdyHeaderBlock& spdy_headers,
+    const spdy::Http2HeaderBlock& spdy_headers,
     HttpRequestHeaders* http_headers) {
   for (const auto& it : spdy_headers) {
     base::StringPiece key = base::StringViewToStringPiece(it.first);

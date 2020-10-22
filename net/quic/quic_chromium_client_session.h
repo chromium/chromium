@@ -204,7 +204,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     // returned, then |push_stream_| will be updated with the promised
     // stream.  If ERR_IO_PENDING is returned, then when the rendezvous is
     // eventually completed |callback| will be called.
-    int RendezvousWithPromised(const spdy::SpdyHeaderBlock& headers,
+    int RendezvousWithPromised(const spdy::Http2HeaderBlock& headers,
                                CompletionOnceCallback callback);
 
     // Starts a request to create a stream.  If OK is returned, then
@@ -272,9 +272,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     }
 
     // quic::QuicClientPushPromiseIndex::Delegate implementation
-    bool CheckVary(const spdy::SpdyHeaderBlock& client_request,
-                   const spdy::SpdyHeaderBlock& promise_request,
-                   const spdy::SpdyHeaderBlock& promise_response) override;
+    bool CheckVary(const spdy::Http2HeaderBlock& client_request,
+                   const spdy::Http2HeaderBlock& promise_request,
+                   const spdy::Http2HeaderBlock& promise_response) override;
     void OnRendezvousResult(quic::QuicSpdyStream* stream) override;
 
     // Returns true if the session's connection has sent or received any bytes.
@@ -518,7 +518,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // quic::QuicSpdySession methods:
   size_t WriteHeadersOnHeadersStream(
       quic::QuicStreamId id,
-      spdy::SpdyHeaderBlock headers,
+      spdy::Http2HeaderBlock headers,
       bool fin,
       const spdy::SpdyStreamPrecedence& precedence,
       quic::QuicReferenceCountedPointer<quic::QuicAckListenerInterface>
@@ -701,7 +701,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
   bool HandlePromised(quic::QuicStreamId associated_id,
                       quic::QuicStreamId promised_id,
-                      const spdy::SpdyHeaderBlock& headers) override;
+                      const spdy::Http2HeaderBlock& headers) override;
 
   void DeletePromised(quic::QuicClientPromisedInfo* promised) override;
 

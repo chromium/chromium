@@ -129,12 +129,12 @@ HttpRequestHeaders WebSocketCommonTestHeaders() {
   return request_headers;
 }
 
-spdy::SpdyHeaderBlock WebSocketHttp2Request(
+spdy::Http2HeaderBlock WebSocketHttp2Request(
     const std::string& path,
     const std::string& authority,
     const std::string& origin,
     const WebSocketExtraHeaders& extra_headers) {
-  spdy::SpdyHeaderBlock request_headers;
+  spdy::Http2HeaderBlock request_headers;
   request_headers[spdy::kHttp2MethodHeader] = "CONNECT";
   request_headers[spdy::kHttp2AuthorityHeader] = authority;
   request_headers[spdy::kHttp2SchemeHeader] = "https";
@@ -155,9 +155,9 @@ spdy::SpdyHeaderBlock WebSocketHttp2Request(
   return request_headers;
 }
 
-spdy::SpdyHeaderBlock WebSocketHttp2Response(
+spdy::Http2HeaderBlock WebSocketHttp2Response(
     const WebSocketExtraHeaders& extra_headers) {
-  spdy::SpdyHeaderBlock response_headers;
+  spdy::Http2HeaderBlock response_headers;
   response_headers[spdy::kHttp2StatusHeader] = "200";
   for (const auto& header : extra_headers) {
     response_headers[base::ToLowerASCII(header.first)] = header.second;

@@ -912,25 +912,25 @@ class TestBidirectionalDelegate : public BidirectionalStreamImpl::Delegate {
  public:
   void WaitUntilDone() { loop_.Run(); }
 
-  const spdy::SpdyHeaderBlock& response_headers() const {
+  const spdy::Http2HeaderBlock& response_headers() const {
     return response_headers_;
   }
 
  private:
   void OnStreamReady(bool request_headers_sent) override {}
   void OnHeadersReceived(
-      const spdy::SpdyHeaderBlock& response_headers) override {
+      const spdy::Http2HeaderBlock& response_headers) override {
     response_headers_ = response_headers.Clone();
     loop_.Quit();
   }
   void OnDataRead(int bytes_read) override { NOTREACHED(); }
   void OnDataSent() override { NOTREACHED(); }
-  void OnTrailersReceived(const spdy::SpdyHeaderBlock& trailers) override {
+  void OnTrailersReceived(const spdy::Http2HeaderBlock& trailers) override {
     NOTREACHED();
   }
   void OnFailed(int error) override { NOTREACHED(); }
   base::RunLoop loop_;
-  spdy::SpdyHeaderBlock response_headers_;
+  spdy::Http2HeaderBlock response_headers_;
 };
 
 // Helper class to encapsulate MockReads and MockWrites for QUIC.

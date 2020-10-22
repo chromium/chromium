@@ -384,7 +384,7 @@ void SpdyStream::SetRequestTime(base::Time t) {
 }
 
 void SpdyStream::OnHeadersReceived(
-    const spdy::SpdyHeaderBlock& response_headers,
+    const spdy::Http2HeaderBlock& response_headers,
     base::Time response_time,
     base::TimeTicks recv_first_byte_time) {
   switch (response_state_) {
@@ -392,7 +392,7 @@ void SpdyStream::OnHeadersReceived(
       // No header block has been received yet.
       DCHECK(response_headers_.empty());
 
-      spdy::SpdyHeaderBlock::const_iterator it =
+      spdy::Http2HeaderBlock::const_iterator it =
           response_headers.find(spdy::kHttp2StatusHeader);
       if (it == response_headers.end()) {
         const std::string error("Response headers do not include :status.");
@@ -494,7 +494,7 @@ bool SpdyStream::ShouldRetryRSTPushStream() const {
   return (response_headers_.empty() && type_ == SPDY_PUSH_STREAM && delegate_);
 }
 
-void SpdyStream::OnPushPromiseHeadersReceived(spdy::SpdyHeaderBlock headers,
+void SpdyStream::OnPushPromiseHeadersReceived(spdy::Http2HeaderBlock headers,
                                               GURL url) {
   CHECK(!request_headers_valid_);
   CHECK_EQ(io_state_, STATE_IDLE);
@@ -731,7 +731,7 @@ base::WeakPtr<SpdyStream> SpdyStream::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-int SpdyStream::SendRequestHeaders(spdy::SpdyHeaderBlock request_headers,
+int SpdyStream::SendRequestHeaders(spdy::Http2HeaderBlock request_headers,
                                    SpdySendStatus send_status) {
   CHECK_NE(type_, SPDY_PUSH_STREAM);
   CHECK_EQ(pending_send_status_, MORE_DATA_TO_SEND);
@@ -903,7 +903,7 @@ void SpdyStream::QueueNextDataFrame() {
 }
 
 void SpdyStream::SaveResponseHeaders(
-    const spdy::SpdyHeaderBlock& response_headers,
+    const spdy::Http2HeaderBlock& response_headers,
     int status) {
   DCHECK(response_headers_.empty());
   if (response_headers.find("transfer-encoding") != response_headers.end()) {
@@ -912,7 +912,7 @@ void SpdyStream::SaveResponseHeaders(
     return;
   }
 
-  for (spdy::SpdyHeaderBlock::const_iterator it = response_headers.begin();
+  for (spdy::Http2HeaderBlock::const_iterator it = response_headers.begin();
        it != response_headers.end(); ++it) {
     response_headers_.insert(*it);
   }

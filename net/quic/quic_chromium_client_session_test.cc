@@ -1152,7 +1152,7 @@ TEST_P(QuicChromiumClientSessionTest, PushStreamTimedOutNoResponse) {
       QuicChromiumClientSessionPeer::CreateOutgoingStream(session_.get());
   EXPECT_TRUE(stream);
 
-  spdy::SpdyHeaderBlock promise_headers;
+  spdy::Http2HeaderBlock promise_headers;
   promise_headers[":method"] = "GET";
   promise_headers[":authority"] = "www.example.org";
   promise_headers[":scheme"] = "https";
@@ -1208,7 +1208,7 @@ TEST_P(QuicChromiumClientSessionTest, PushStreamTimedOutWithResponse) {
       QuicChromiumClientSessionPeer::CreateOutgoingStream(session_.get());
   EXPECT_TRUE(stream);
 
-  spdy::SpdyHeaderBlock promise_headers;
+  spdy::Http2HeaderBlock promise_headers;
   promise_headers[":method"] = "GET";
   promise_headers[":authority"] = "www.example.org";
   promise_headers[":scheme"] = "https";
@@ -1220,7 +1220,7 @@ TEST_P(QuicChromiumClientSessionTest, PushStreamTimedOutWithResponse) {
       stream->id(), GetNthServerInitiatedUnidirectionalStreamId(0),
       promise_headers));
   session_->OnInitialHeadersComplete(
-      GetNthServerInitiatedUnidirectionalStreamId(0), spdy::SpdyHeaderBlock());
+      GetNthServerInitiatedUnidirectionalStreamId(0), spdy::Http2HeaderBlock());
   // Read data on the pushed stream.
   quic::QuicStreamFrame data(GetNthServerInitiatedUnidirectionalStreamId(0),
                              false, 0, absl::string_view("SP"));
@@ -1330,7 +1330,7 @@ TEST_P(QuicChromiumClientSessionTest, CancelPushWhenPendingValidation) {
       QuicChromiumClientSessionPeer::CreateOutgoingStream(session_.get());
   EXPECT_TRUE(stream);
 
-  spdy::SpdyHeaderBlock promise_headers;
+  spdy::Http2HeaderBlock promise_headers;
   promise_headers[":method"] = "GET";
   promise_headers[":authority"] = "www.example.org";
   promise_headers[":scheme"] = "https";
@@ -1346,7 +1346,7 @@ TEST_P(QuicChromiumClientSessionTest, CancelPushWhenPendingValidation) {
   EXPECT_TRUE(promised);
 
   // Initiate rendezvous.
-  spdy::SpdyHeaderBlock client_request = promise_headers.Clone();
+  spdy::Http2HeaderBlock client_request = promise_headers.Clone();
   quic::test::TestPushPromiseDelegate delegate(/*match=*/true);
   promised->HandleClientRequest(client_request, &delegate);
 
@@ -1391,7 +1391,7 @@ TEST_P(QuicChromiumClientSessionTest, CancelPushBeforeReceivingResponse) {
       QuicChromiumClientSessionPeer::CreateOutgoingStream(session_.get());
   EXPECT_TRUE(stream);
 
-  spdy::SpdyHeaderBlock promise_headers;
+  spdy::Http2HeaderBlock promise_headers;
   promise_headers[":method"] = "GET";
   promise_headers[":authority"] = "www.example.org";
   promise_headers[":scheme"] = "https";
@@ -1448,7 +1448,7 @@ TEST_P(QuicChromiumClientSessionTest, CancelPushAfterReceivingResponse) {
       QuicChromiumClientSessionPeer::CreateOutgoingStream(session_.get());
   EXPECT_TRUE(stream);
 
-  spdy::SpdyHeaderBlock promise_headers;
+  spdy::Http2HeaderBlock promise_headers;
   promise_headers[":method"] = "GET";
   promise_headers[":authority"] = "www.example.org";
   promise_headers[":scheme"] = "https";
@@ -1460,7 +1460,7 @@ TEST_P(QuicChromiumClientSessionTest, CancelPushAfterReceivingResponse) {
       stream->id(), GetNthServerInitiatedUnidirectionalStreamId(0),
       promise_headers));
   session_->OnInitialHeadersComplete(
-      GetNthServerInitiatedUnidirectionalStreamId(0), spdy::SpdyHeaderBlock());
+      GetNthServerInitiatedUnidirectionalStreamId(0), spdy::Http2HeaderBlock());
   // Read data on the pushed stream.
   quic::QuicStreamFrame data(GetNthServerInitiatedUnidirectionalStreamId(0),
                              false, 0, absl::string_view("SP"));
@@ -2212,7 +2212,7 @@ TEST_P(QuicChromiumClientSessionTest, ResetOnEmptyResponseHeaders) {
     // In case of IETF QUIC, QuicSpdyStream::OnStreamHeaderList() calls
     // QuicChromiumClientStream::OnInitialHeadersComplete() with the empty
     // header list, and QuicChromiumClientStream signals an error.
-    spdy::SpdyHeaderBlock header_block;
+    spdy::Http2HeaderBlock header_block;
     int rv = stream_handle->ReadInitialHeaders(&header_block,
                                                CompletionOnceCallback());
     EXPECT_THAT(rv, IsError(ERR_INVALID_RESPONSE));

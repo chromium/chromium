@@ -1181,7 +1181,7 @@ TEST_F(SpdyHttpStreamTest, DownloadWithEmptyDataFrame) {
   session_deps_.http2_end_stream_with_data_frame = true;
 
   // HEADERS frame without END_STREAM
-  spdy::SpdyHeaderBlock request_headers;
+  spdy::Http2HeaderBlock request_headers;
   request_headers[spdy::kHttp2MethodHeader] = "GET";
   spdy_util_.AddUrlToHeaderBlock(kDefaultUrl, &request_headers);
   spdy::SpdySerializedFrame req = spdy_util_.ConstructSpdyHeaders(

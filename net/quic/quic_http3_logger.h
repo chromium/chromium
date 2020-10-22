@@ -69,11 +69,11 @@ class NET_EXPORT_PRIVATE QuicHttp3Logger : public quic::Http3DebugVisitor {
   void OnDataFrameSent(quic::QuicStreamId stream_id,
                        quic::QuicByteCount payload_length) override;
   void OnHeadersFrameSent(quic::QuicStreamId stream_id,
-                          const spdy::SpdyHeaderBlock& header_block) override;
+                          const spdy::Http2HeaderBlock& header_block) override;
   void OnPushPromiseFrameSent(
       quic::QuicStreamId stream_id,
       quic::QuicStreamId push_id,
-      const spdy::SpdyHeaderBlock& header_block) override;
+      const spdy::Http2HeaderBlock& header_block) override;
 
  private:
   NetLogWithSource net_log_;

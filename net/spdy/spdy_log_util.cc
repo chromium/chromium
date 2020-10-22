@@ -24,8 +24,8 @@ base::Value ElideGoAwayDebugDataForNetLog(NetLogCaptureMode capture_mode,
       {"[", base::NumberToString(debug_data.size()), " bytes were stripped]"}));
 }
 
-base::ListValue ElideSpdyHeaderBlockForNetLog(
-    const spdy::SpdyHeaderBlock& headers,
+base::ListValue ElideHttp2HeaderBlockForNetLog(
+    const spdy::Http2HeaderBlock& headers,
     NetLogCaptureMode capture_mode) {
   base::ListValue headers_list;
   for (const auto& header : headers) {
@@ -39,10 +39,11 @@ base::ListValue ElideSpdyHeaderBlockForNetLog(
   return headers_list;
 }
 
-base::Value SpdyHeaderBlockNetLogParams(const spdy::SpdyHeaderBlock* headers,
-                                        NetLogCaptureMode capture_mode) {
+base::Value Http2HeaderBlockNetLogParams(const spdy::Http2HeaderBlock* headers,
+                                         NetLogCaptureMode capture_mode) {
   base::DictionaryValue dict;
-  dict.SetKey("headers", ElideSpdyHeaderBlockForNetLog(*headers, capture_mode));
+  dict.SetKey("headers",
+              ElideHttp2HeaderBlockForNetLog(*headers, capture_mode));
   return std::move(dict);
 }
 

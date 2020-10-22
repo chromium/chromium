@@ -25,14 +25,14 @@ ClosingDelegate::~ClosingDelegate() = default;
 void ClosingDelegate::OnHeadersSent() {}
 
 void ClosingDelegate::OnHeadersReceived(
-    const spdy::SpdyHeaderBlock& response_headers,
-    const spdy::SpdyHeaderBlock* pushed_request_headers) {}
+    const spdy::Http2HeaderBlock& response_headers,
+    const spdy::Http2HeaderBlock* pushed_request_headers) {}
 
 void ClosingDelegate::OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) {}
 
 void ClosingDelegate::OnDataSent() {}
 
-void ClosingDelegate::OnTrailers(const spdy::SpdyHeaderBlock& trailers) {}
+void ClosingDelegate::OnTrailers(const spdy::Http2HeaderBlock& trailers) {}
 
 void ClosingDelegate::OnClose(int status) {
   DCHECK(stream_);
@@ -64,8 +64,8 @@ void StreamDelegateBase::OnHeadersSent() {
 }
 
 void StreamDelegateBase::OnHeadersReceived(
-    const spdy::SpdyHeaderBlock& response_headers,
-    const spdy::SpdyHeaderBlock* pushed_request_headers) {
+    const spdy::Http2HeaderBlock& response_headers,
+    const spdy::Http2HeaderBlock* pushed_request_headers) {
   EXPECT_EQ(stream_->type() != SPDY_PUSH_STREAM, send_headers_completed_);
   response_headers_ = response_headers.Clone();
 }
@@ -77,7 +77,7 @@ void StreamDelegateBase::OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) {
 
 void StreamDelegateBase::OnDataSent() {}
 
-void StreamDelegateBase::OnTrailers(const spdy::SpdyHeaderBlock& trailers) {}
+void StreamDelegateBase::OnTrailers(const spdy::Http2HeaderBlock& trailers) {}
 
 void StreamDelegateBase::OnClose(int status) {
   if (!stream_.get())
@@ -114,7 +114,7 @@ std::string StreamDelegateBase::TakeReceivedData() {
 
 std::string StreamDelegateBase::GetResponseHeaderValue(
     const std::string& name) const {
-  spdy::SpdyHeaderBlock::const_iterator it = response_headers_.find(name);
+  spdy::Http2HeaderBlock::const_iterator it = response_headers_.find(name);
   return (it == response_headers_.end()) ? std::string()
                                          : std::string(it->second);
 }
@@ -138,8 +138,8 @@ StreamDelegateSendImmediate::StreamDelegateSendImmediate(
 StreamDelegateSendImmediate::~StreamDelegateSendImmediate() = default;
 
 void StreamDelegateSendImmediate::OnHeadersReceived(
-    const spdy::SpdyHeaderBlock& response_headers,
-    const spdy::SpdyHeaderBlock* pushed_request_headers) {
+    const spdy::Http2HeaderBlock& response_headers,
+    const spdy::Http2HeaderBlock* pushed_request_headers) {
   StreamDelegateBase::OnHeadersReceived(response_headers,
                                         pushed_request_headers);
   if (data_.data()) {
@@ -170,8 +170,8 @@ StreamDelegateCloseOnHeaders::StreamDelegateCloseOnHeaders(
 StreamDelegateCloseOnHeaders::~StreamDelegateCloseOnHeaders() = default;
 
 void StreamDelegateCloseOnHeaders::OnHeadersReceived(
-    const spdy::SpdyHeaderBlock& response_headers,
-    const spdy::SpdyHeaderBlock* pushed_request_headers) {
+    const spdy::Http2HeaderBlock& response_headers,
+    const spdy::Http2HeaderBlock* pushed_request_headers) {
   stream()->Cancel(ERR_ABORTED);
 }
 

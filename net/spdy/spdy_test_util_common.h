@@ -85,7 +85,7 @@ std::unique_ptr<MockWrite[]> ChopWriteFrame(
 // |headers| gets filled in from |extra_headers|.
 void AppendToHeaderBlock(const char* const extra_headers[],
                          int extra_header_count,
-                         spdy::SpdyHeaderBlock* headers);
+                         spdy::Http2HeaderBlock* headers);
 
 // Create an async MockWrite from the given spdy::SpdySerializedFrame.
 MockWrite CreateMockWrite(const spdy::SpdySerializedFrame& req);
@@ -315,21 +315,23 @@ class SpdyTestUtil {
 
   // Add the appropriate headers to put |url| into |block|.
   void AddUrlToHeaderBlock(base::StringPiece url,
-                           spdy::SpdyHeaderBlock* headers) const;
+                           spdy::Http2HeaderBlock* headers) const;
 
-  static spdy::SpdyHeaderBlock ConstructGetHeaderBlock(base::StringPiece url);
-  static spdy::SpdyHeaderBlock ConstructGetHeaderBlockForProxy(
+  static spdy::Http2HeaderBlock ConstructGetHeaderBlock(base::StringPiece url);
+  static spdy::Http2HeaderBlock ConstructGetHeaderBlockForProxy(
       base::StringPiece url);
-  static spdy::SpdyHeaderBlock ConstructHeadHeaderBlock(base::StringPiece url,
+  static spdy::Http2HeaderBlock ConstructHeadHeaderBlock(
+      base::StringPiece url,
+      int64_t content_length);
+  static spdy::Http2HeaderBlock ConstructPostHeaderBlock(
+      base::StringPiece url,
+      int64_t content_length);
+  static spdy::Http2HeaderBlock ConstructPutHeaderBlock(base::StringPiece url,
                                                         int64_t content_length);
-  static spdy::SpdyHeaderBlock ConstructPostHeaderBlock(base::StringPiece url,
-                                                        int64_t content_length);
-  static spdy::SpdyHeaderBlock ConstructPutHeaderBlock(base::StringPiece url,
-                                                       int64_t content_length);
 
   // Construct an expected SPDY reply string from the given headers.
   std::string ConstructSpdyReplyString(
-      const spdy::SpdyHeaderBlock& headers) const;
+      const spdy::Http2HeaderBlock& headers) const;
 
   // Construct an expected SPDY SETTINGS frame.
   // |settings| are the settings to set.
@@ -420,7 +422,7 @@ class SpdyTestUtil {
   spdy::SpdySerializedFrame ConstructSpdyPushPromise(
       spdy::SpdyStreamId associated_stream_id,
       spdy::SpdyStreamId stream_id,
-      spdy::SpdyHeaderBlock headers);
+      spdy::Http2HeaderBlock headers);
 
   spdy::SpdySerializedFrame ConstructSpdyPushHeaders(
       int stream_id,
@@ -431,19 +433,19 @@ class SpdyTestUtil {
   // END_STREAM flag set to |fin|.
   spdy::SpdySerializedFrame ConstructSpdyResponseHeaders(
       int stream_id,
-      spdy::SpdyHeaderBlock headers,
+      spdy::Http2HeaderBlock headers,
       bool fin);
 
   // Construct a HEADERS frame carrying exactly the given headers and priority.
   spdy::SpdySerializedFrame ConstructSpdyHeaders(int stream_id,
-                                                 spdy::SpdyHeaderBlock headers,
+                                                 spdy::Http2HeaderBlock headers,
                                                  RequestPriority priority,
                                                  bool fin);
 
   // Construct a reply HEADERS frame carrying exactly the given headers and the
   // default priority.
   spdy::SpdySerializedFrame ConstructSpdyReply(int stream_id,
-                                               spdy::SpdyHeaderBlock headers);
+                                               spdy::Http2HeaderBlock headers);
 
   // Constructs a standard SPDY HEADERS frame to match the SPDY GET.
   // |extra_headers| are the extra header-value pairs, which typically
@@ -520,9 +522,9 @@ class SpdyTestUtil {
  private:
   // |content_length| may be NULL, in which case the content-length
   // header will be omitted.
-  static spdy::SpdyHeaderBlock ConstructHeaderBlock(base::StringPiece method,
-                                                    base::StringPiece url,
-                                                    int64_t* content_length);
+  static spdy::Http2HeaderBlock ConstructHeaderBlock(base::StringPiece method,
+                                                     base::StringPiece url,
+                                                     int64_t* content_length);
 
   // Multiple SpdyFramers are required to keep track of header compression
   // state.

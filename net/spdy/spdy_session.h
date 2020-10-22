@@ -453,7 +453,7 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
       spdy::SpdyStreamId stream_id,
       RequestPriority priority,
       spdy::SpdyControlFlags flags,
-      spdy::SpdyHeaderBlock headers,
+      spdy::Http2HeaderBlock headers,
       NetLogSource source_dependency);
 
   // Creates and returns a SpdyBuffer holding a data frame with the given data.
@@ -710,7 +710,7 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
 
   void TryCreatePushStream(spdy::SpdyStreamId stream_id,
                            spdy::SpdyStreamId associated_stream_id,
-                           spdy::SpdyHeaderBlock headers);
+                           spdy::Http2HeaderBlock headers);
 
   // Close the stream pointed to by the given iterator. Note that that
   // stream may hold the last reference to the session.
@@ -847,7 +847,7 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
   void RecordHistograms();
   void RecordProtocolErrorHistogram(SpdyProtocolErrorDetails details);
   static void RecordPushedStreamVaryResponseHeaderHistogram(
-      const spdy::SpdyHeaderBlock& headers);
+      const spdy::Http2HeaderBlock& headers);
 
   // DCHECKs that |availability_state_| >= STATE_GOING_AWAY, that
   // there are no pending stream creation requests, and that there are
@@ -910,14 +910,14 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
                       int delta_window_size) override;
   void OnPushPromise(spdy::SpdyStreamId stream_id,
                      spdy::SpdyStreamId promised_stream_id,
-                     spdy::SpdyHeaderBlock headers) override;
+                     spdy::Http2HeaderBlock headers) override;
   void OnHeaders(spdy::SpdyStreamId stream_id,
                  bool has_priority,
                  int weight,
                  spdy::SpdyStreamId parent_stream_id,
                  bool exclusive,
                  bool fin,
-                 spdy::SpdyHeaderBlock headers,
+                 spdy::Http2HeaderBlock headers,
                  base::TimeTicks recv_first_byte_time) override;
   void OnAltSvc(spdy::SpdyStreamId stream_id,
                 base::StringPiece origin,

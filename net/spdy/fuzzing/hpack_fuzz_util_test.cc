@@ -32,7 +32,7 @@ TEST(HpackFuzzUtilTest, GeneratorContextInitialization) {
 TEST(HpackFuzzUtil, GeneratorContextExpansion) {
   HpackFuzzUtil::GeneratorContext context;
 
-  SpdyHeaderBlock headers = HpackFuzzUtil::NextGeneratedHeaderSet(&context);
+  Http2HeaderBlock headers = HpackFuzzUtil::NextGeneratedHeaderSet(&context);
 
   // Headers were generated, and the generator context was expanded.
   EXPECT_LT(0u, headers.size());
@@ -108,7 +108,7 @@ TEST(HpackFuzzUtilTest, PassValidInputThroughAllStages) {
   EXPECT_TRUE(
       HpackFuzzUtil::RunHeaderBlockThroughFuzzerStages(&context, input));
 
-  SpdyHeaderBlock expect;
+  Http2HeaderBlock expect;
   expect[":method"] = "GET";
   expect[":scheme"] = "http";
   expect[":path"] = "/";

@@ -79,7 +79,7 @@ class QuicHttpProxyBackendStream : public net::URLRequest::Delegate {
                   std::string quic_peer_ip);
 
   virtual bool SendRequestToBackend(
-      const spdy::SpdyHeaderBlock* incoming_request_headers,
+      const spdy::Http2HeaderBlock* incoming_request_headers,
       const std::string& incoming_body);
 
   quic::QuicConnectionId quic_connection_id() const {
@@ -115,16 +115,17 @@ class QuicHttpProxyBackendStream : public net::URLRequest::Delegate {
   void SendRequestOnBackendThread();
   void ReadOnceTask();
   void OnResponseCompleted();
-  void CopyHeaders(const spdy::SpdyHeaderBlock* incoming_request_headers);
+  void CopyHeaders(const spdy::Http2HeaderBlock* incoming_request_headers);
   bool ValidateHttpMethod(std::string method);
   bool AddRequestHeader(std::string name, std::string value);
   // Adds a request body to the request before it starts.
   void SetUpload(std::unique_ptr<net::UploadDataStream> upload);
   void SendResponseOnDelegateThread();
   void ReleaseRequest();
-  spdy::SpdyHeaderBlock getAsQuicHeaders(net::HttpResponseHeaders* resp_headers,
-                                         int response_code,
-                                         uint64_t response_decoded_body_size);
+  spdy::Http2HeaderBlock getAsQuicHeaders(
+      net::HttpResponseHeaders* resp_headers,
+      int response_code,
+      uint64_t response_decoded_body_size);
 
   // The quic proxy backend context
   QuicHttpProxyBackend* proxy_context_;

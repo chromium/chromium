@@ -145,7 +145,7 @@ void QuicChromiumClientStream::Handle::InvokeCallbacksOnClose(int error) {
 }
 
 int QuicChromiumClientStream::Handle::ReadInitialHeaders(
-    spdy::SpdyHeaderBlock* header_block,
+    spdy::Http2HeaderBlock* header_block,
     CompletionOnceCallback callback) {
   ScopedBoolSaver saver(&may_invoke_callbacks_, false);
   if (!stream_)
@@ -183,7 +183,7 @@ int QuicChromiumClientStream::Handle::ReadBody(
 }
 
 int QuicChromiumClientStream::Handle::ReadTrailingHeaders(
-    spdy::SpdyHeaderBlock* header_block,
+    spdy::Http2HeaderBlock* header_block,
     CompletionOnceCallback callback) {
   ScopedBoolSaver saver(&may_invoke_callbacks_, false);
   if (!stream_)
@@ -199,7 +199,7 @@ int QuicChromiumClientStream::Handle::ReadTrailingHeaders(
 }
 
 int QuicChromiumClientStream::Handle::WriteHeaders(
-    spdy::SpdyHeaderBlock header_block,
+    spdy::Http2HeaderBlock header_block,
     bool fin,
     quic::QuicReferenceCountedPointer<quic::QuicAckListenerInterface>
         ack_notifier_delegate) {
@@ -447,7 +447,7 @@ void QuicChromiumClientStream::OnInitialHeadersComplete(
     const quic::QuicHeaderList& header_list) {
   quic::QuicSpdyStream::OnInitialHeadersComplete(fin, frame_len, header_list);
 
-  spdy::SpdyHeaderBlock header_block;
+  spdy::Http2HeaderBlock header_block;
   int64_t length = -1;
   if (!quic::SpdyUtils::CopyAndValidateHeaders(header_list, &length,
                                                &header_block)) {
@@ -487,7 +487,7 @@ void QuicChromiumClientStream::OnPromiseHeaderList(
     quic::QuicStreamId promised_id,
     size_t frame_len,
     const quic::QuicHeaderList& header_list) {
-  spdy::SpdyHeaderBlock promise_headers;
+  spdy::Http2HeaderBlock promise_headers;
   int64_t content_length = -1;
   if (!quic::SpdyUtils::CopyAndValidateHeaders(header_list, &content_length,
                                                &promise_headers)) {
@@ -535,7 +535,7 @@ void QuicChromiumClientStream::OnCanWrite() {
 }
 
 size_t QuicChromiumClientStream::WriteHeaders(
-    spdy::SpdyHeaderBlock header_block,
+    spdy::Http2HeaderBlock header_block,
     bool fin,
     quic::QuicReferenceCountedPointer<quic::QuicAckListenerInterface>
         ack_listener) {
@@ -659,7 +659,7 @@ void QuicChromiumClientStream::NotifyHandleOfTrailingHeadersAvailable() {
 }
 
 int QuicChromiumClientStream::DeliverInitialHeaders(
-    spdy::SpdyHeaderBlock* headers) {
+    spdy::Http2HeaderBlock* headers) {
   if (!initial_headers_arrived_) {
     return ERR_IO_PENDING;
   }
@@ -682,7 +682,7 @@ int QuicChromiumClientStream::DeliverInitialHeaders(
 }
 
 bool QuicChromiumClientStream::DeliverTrailingHeaders(
-    spdy::SpdyHeaderBlock* headers,
+    spdy::Http2HeaderBlock* headers,
     int* frame_len) {
   if (received_trailers().empty())
     return false;

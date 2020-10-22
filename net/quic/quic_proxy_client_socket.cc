@@ -368,7 +368,7 @@ int QuicProxyClientSocket::DoSendRequest() {
                        NetLogEventType::HTTP_TRANSACTION_SEND_TUNNEL_HEADERS,
                        request_line, &request_.extra_headers);
 
-  spdy::SpdyHeaderBlock headers;
+  spdy::Http2HeaderBlock headers;
   CreateSpdyHeadersFromHttpRequest(request_, request_.extra_headers, &headers);
 
   return stream_->WriteHeaders(std::move(headers), false, nullptr);
@@ -444,7 +444,7 @@ int QuicProxyClientSocket::DoReadReplyComplete(int result) {
 }
 
 void QuicProxyClientSocket::OnReadResponseHeadersComplete(int result) {
-  // Convert the now-populated spdy::SpdyHeaderBlock to HttpResponseInfo
+  // Convert the now-populated spdy::Http2HeaderBlock to HttpResponseInfo
   if (result > 0)
     result = ProcessResponseHeaders(response_header_block_);
 
@@ -453,7 +453,7 @@ void QuicProxyClientSocket::OnReadResponseHeadersComplete(int result) {
 }
 
 int QuicProxyClientSocket::ProcessResponseHeaders(
-    const spdy::SpdyHeaderBlock& headers) {
+    const spdy::Http2HeaderBlock& headers) {
   if (!SpdyHeadersToHttpResponse(headers, &response_)) {
     DLOG(WARNING) << "Invalid headers";
     return ERR_QUIC_PROTOCOL_ERROR;

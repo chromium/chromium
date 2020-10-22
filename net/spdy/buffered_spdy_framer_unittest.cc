@@ -48,7 +48,7 @@ class TestBufferedSpdyVisitor : public BufferedSpdyFramerVisitorInterface {
                  spdy::SpdyStreamId parent_stream_id,
                  bool exclusive,
                  bool fin,
-                 spdy::SpdyHeaderBlock headers,
+                 spdy::Http2HeaderBlock headers,
                  base::TimeTicks recv_first_byte_time) override {
     header_stream_id_ = stream_id;
     headers_frame_count_++;
@@ -111,7 +111,7 @@ class TestBufferedSpdyVisitor : public BufferedSpdyFramerVisitorInterface {
 
   void OnPushPromise(spdy::SpdyStreamId stream_id,
                      spdy::SpdyStreamId promised_stream_id,
-                     spdy::SpdyHeaderBlock headers) override {
+                     spdy::Http2HeaderBlock headers) override {
     header_stream_id_ = stream_id;
     push_promise_frame_count_++;
     promised_stream_id_ = promised_stream_id;
@@ -169,7 +169,7 @@ class TestBufferedSpdyVisitor : public BufferedSpdyFramerVisitorInterface {
   spdy::SpdyStreamId promised_stream_id_;
 
   // Headers from OnHeaders and OnPushPromise for verification.
-  spdy::SpdyHeaderBlock headers_;
+  spdy::Http2HeaderBlock headers_;
 
   // OnGoAway parameters.
   spdy::SpdyStreamId goaway_last_accepted_stream_id_;
@@ -201,7 +201,7 @@ TEST_F(BufferedSpdyFramerTest, OnSetting) {
 }
 
 TEST_F(BufferedSpdyFramerTest, HeaderListTooLarge) {
-  spdy::SpdyHeaderBlock headers;
+  spdy::Http2HeaderBlock headers;
   std::string long_header_value(256 * 1024, 'x');
   headers["foo"] = long_header_value;
   spdy::SpdyHeadersIR headers_ir(/*stream_id=*/1, std::move(headers));
@@ -216,14 +216,14 @@ TEST_F(BufferedSpdyFramerTest, HeaderListTooLarge) {
   EXPECT_EQ(1, visitor.error_count_);
   EXPECT_EQ(0, visitor.headers_frame_count_);
   EXPECT_EQ(0, visitor.push_promise_frame_count_);
-  EXPECT_EQ(spdy::SpdyHeaderBlock(), visitor.headers_);
+  EXPECT_EQ(spdy::Http2HeaderBlock(), visitor.headers_);
 }
 
 TEST_F(BufferedSpdyFramerTest, ValidHeadersAfterInvalidHeaders) {
-  spdy::SpdyHeaderBlock headers;
+  spdy::Http2HeaderBlock headers;
   headers["invalid"] = "\r\n\r\n";
 
-  spdy::SpdyHeaderBlock headers2;
+  spdy::Http2HeaderBlock headers2;
   headers["alpha"] = "beta";
 
   SpdyTestUtil spdy_test_util;
@@ -243,7 +243,7 @@ TEST_F(BufferedSpdyFramerTest, ValidHeadersAfterInvalidHeaders) {
 }
 
 TEST_F(BufferedSpdyFramerTest, ReadHeadersHeaderBlock) {
-  spdy::SpdyHeaderBlock headers;
+  spdy::Http2HeaderBlock headers;
   headers["alpha"] = "beta";
   headers["gamma"] = "delta";
   spdy::SpdyHeadersIR headers_ir(/*stream_id=*/1, headers.Clone());
@@ -261,7 +261,7 @@ TEST_F(BufferedSpdyFramerTest, ReadHeadersHeaderBlock) {
 }
 
 TEST_F(BufferedSpdyFramerTest, ReadPushPromiseHeaderBlock) {
-  spdy::SpdyHeaderBlock headers;
+  spdy::Http2HeaderBlock headers;
   headers["alpha"] = "beta";
   headers["gamma"] = "delta";
   NetLogWithSource net_log;

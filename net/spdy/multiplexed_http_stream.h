@@ -35,7 +35,7 @@ class NET_EXPORT_PRIVATE MultiplexedHttpStream : public HttpStream {
 
  protected:
   void DispatchRequestHeadersCallback(
-      const spdy::SpdyHeaderBlock& spdy_headers);
+      const spdy::Http2HeaderBlock& spdy_headers);
 
   MultiplexedSessionHandle* session() { return session_.get(); }
   const MultiplexedSessionHandle* session() const { return session_.get(); }

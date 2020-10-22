@@ -229,14 +229,14 @@ class WebSocketHandshakeStreamCreateHelperTest
       }
       case HTTP2_HANDSHAKE_STREAM: {
         SpdyTestUtil spdy_util;
-        spdy::SpdyHeaderBlock request_header_block = WebSocketHttp2Request(
+        spdy::Http2HeaderBlock request_header_block = WebSocketHttp2Request(
             kPath, "www.example.org", kOrigin, extra_request_headers);
         spdy::SpdySerializedFrame request_headers(
             spdy_util.ConstructSpdyHeaders(1, std::move(request_header_block),
                                            DEFAULT_PRIORITY, false));
         MockWrite writes[] = {CreateMockWrite(request_headers, 0)};
 
-        spdy::SpdyHeaderBlock response_header_block =
+        spdy::Http2HeaderBlock response_header_block =
             WebSocketHttp2Response(extra_response_headers);
         spdy::SpdySerializedFrame response_headers(
             spdy_util.ConstructSpdyResponseHeaders(

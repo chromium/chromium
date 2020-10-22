@@ -29,7 +29,6 @@
 #include "net/http/http_transaction_factory.h"
 #include "net/http/http_util.h"
 #include "net/ssl/ssl_info.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_header_block.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "url/gurl.h"
@@ -177,7 +176,7 @@ void BidirectionalStream::OnStreamReady(bool request_headers_sent) {
 }
 
 void BidirectionalStream::OnHeadersReceived(
-    const spdy::SpdyHeaderBlock& response_headers) {
+    const spdy::Http2HeaderBlock& response_headers) {
   DCHECK(IsOnNetworkThread());
   DCHECK_EQ(STARTED, read_state_);
   if (!bidi_stream_)
@@ -241,7 +240,7 @@ void BidirectionalStream::OnDataSent() {
 }
 
 void BidirectionalStream::OnTrailersReceived(
-    const spdy::SpdyHeaderBlock& response_trailers) {
+    const spdy::Http2HeaderBlock& response_trailers) {
   DCHECK(IsOnNetworkThread());
   if (!bidi_stream_)
     return;

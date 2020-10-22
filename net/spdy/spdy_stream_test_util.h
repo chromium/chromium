@@ -32,11 +32,11 @@ class ClosingDelegate : public SpdyStream::Delegate {
   // SpdyStream::Delegate implementation.
   void OnHeadersSent() override;
   void OnHeadersReceived(
-      const spdy::SpdyHeaderBlock& response_headers,
-      const spdy::SpdyHeaderBlock* pushed_request_headers) override;
+      const spdy::Http2HeaderBlock& response_headers,
+      const spdy::Http2HeaderBlock* pushed_request_headers) override;
   void OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) override;
   void OnDataSent() override;
-  void OnTrailers(const spdy::SpdyHeaderBlock& trailers) override;
+  void OnTrailers(const spdy::Http2HeaderBlock& trailers) override;
   void OnClose(int status) override;
   bool CanGreaseFrameType() const override;
   NetLogSource source_dependency() const override;
@@ -57,11 +57,11 @@ class StreamDelegateBase : public SpdyStream::Delegate {
 
   void OnHeadersSent() override;
   void OnHeadersReceived(
-      const spdy::SpdyHeaderBlock& response_headers,
-      const spdy::SpdyHeaderBlock* pushed_request_headers) override;
+      const spdy::Http2HeaderBlock& response_headers,
+      const spdy::Http2HeaderBlock* pushed_request_headers) override;
   void OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) override;
   void OnDataSent() override;
-  void OnTrailers(const spdy::SpdyHeaderBlock& trailers) override;
+  void OnTrailers(const spdy::Http2HeaderBlock& trailers) override;
   void OnClose(int status) override;
   bool CanGreaseFrameType() const override;
   NetLogSource source_dependency() const override;
@@ -96,7 +96,7 @@ class StreamDelegateBase : public SpdyStream::Delegate {
   spdy::SpdyStreamId stream_id_;
   TestCompletionCallback callback_;
   bool send_headers_completed_;
-  spdy::SpdyHeaderBlock response_headers_;
+  spdy::Http2HeaderBlock response_headers_;
   SpdyReadQueue received_data_queue_;
   LoadTimingInfo load_timing_info_;
 };
@@ -118,8 +118,8 @@ class StreamDelegateSendImmediate : public StreamDelegateBase {
   ~StreamDelegateSendImmediate() override;
 
   void OnHeadersReceived(
-      const spdy::SpdyHeaderBlock& response_headers,
-      const spdy::SpdyHeaderBlock* pushed_request_headers) override;
+      const spdy::Http2HeaderBlock& response_headers,
+      const spdy::Http2HeaderBlock* pushed_request_headers) override;
 
  private:
   base::StringPiece data_;
@@ -146,8 +146,8 @@ class StreamDelegateCloseOnHeaders : public StreamDelegateBase {
   ~StreamDelegateCloseOnHeaders() override;
 
   void OnHeadersReceived(
-      const spdy::SpdyHeaderBlock& response_headers,
-      const spdy::SpdyHeaderBlock* pushed_request_headers) override;
+      const spdy::Http2HeaderBlock& response_headers,
+      const spdy::Http2HeaderBlock* pushed_request_headers) override;
 };
 
 }  // namespace test
