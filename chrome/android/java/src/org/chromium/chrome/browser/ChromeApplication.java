@@ -17,6 +17,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.CommandLineInitUtil;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.LocaleUtils;
 import org.chromium.base.PathUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.MainDex;
@@ -80,8 +81,10 @@ public class ChromeApplication extends SplitCompatApplication {
                 // context to use as the base context for the application.
                 // Must be initialized early to override Application level localizations.
                 if (GlobalAppLocaleController.getInstance().init(context)) {
-                    context = context.createConfigurationContext(
-                            GlobalAppLocaleController.getInstance().getOverrideConfig(context));
+                    Configuration config =
+                            GlobalAppLocaleController.getInstance().getOverrideConfig(context);
+                    LocaleUtils.setDefaultLocalesFromConfiguration(config);
+                    context = context.createConfigurationContext(config);
                 }
             }
 

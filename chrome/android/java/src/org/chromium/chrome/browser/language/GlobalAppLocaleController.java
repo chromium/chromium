@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.language;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.text.TextUtils;
 
 import org.chromium.base.LocaleUtils;
@@ -42,8 +43,8 @@ public class GlobalAppLocaleController {
     }
 
     /**
-     * If the application should be overridden returns the override Configuration and updates the
-     * default LocaleList/Locale. Called early in {@link ChromeActivity#attachBaseContext}.
+     * If the application locale should be overridden returns an updated override Configuration.
+     * Called early in {@link ChromeActivity#attachBaseContext}.
      * @param base The base Context for the application and has the system locales.
      * @return Configuration to override application context with or null.
      */
@@ -57,24 +58,24 @@ public class GlobalAppLocaleController {
         config.fontScale = 0;
 
         LocaleUtils.updateConfig(base, config, mOverrideLanguage);
-        LocaleUtils.setDefaultLocalesFromConfiguration(config);
         return config;
     }
 
     /**
-     * Do the Activity level locale override if app locale preference is set.
-     * Should be called from {@link Activity#attachBaseContext()}.
-     * @param base The base Context for the Activity which has the system locales.
-     * @param config The Configuration that will be used to update the Activity.
-     * @return boolean Whether or not config was modified.
+     * If the locale should be overridden update the context configuration to use new locale.
+     * @param base Context to update.
      */
-    public boolean applyActivityOverrides(Context base, Configuration config) {
+    public void maybeOverrideContextConfig(Context base) {
         if (!mIsOverridden) {
-            return false;
+            return;
         }
 
-        LocaleUtils.updateConfig(base, config, mOverrideLanguage);
-        return true;
+        Configuration config = getOverrideConfig(base);
+        Resources resources = base.getResources();
+        // Because of an Android bug with {@link Context#createConfigurationContext} the deprecated
+        // method {@link Resources#updateConfiguration} is used. (crbug.com/1075390#c20).
+        // TODO(crbug.com/1136096): Use #createConfigurationContext once that method is fixed.
+        resources.updateConfiguration(config, resources.getDisplayMetrics());
     }
 
     /**
