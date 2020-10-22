@@ -46,16 +46,17 @@ std::unique_ptr<HostStarter> HostStarter::Create(
       remoting::DaemonController::Create()));
 }
 
-void HostStarter::StartHost(
-    const std::string& host_name,
-    const std::string& host_pin,
-    bool consent_to_data_collection,
-    const std::string& auth_code,
-    const std::string& redirect_url,
-    CompletionCallback on_done) {
+void HostStarter::StartHost(const std::string& host_id,
+                            const std::string& host_name,
+                            const std::string& host_pin,
+                            bool consent_to_data_collection,
+                            const std::string& auth_code,
+                            const std::string& redirect_url,
+                            CompletionCallback on_done) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   DCHECK(on_done_.is_null());
 
+  host_id_ = host_id;
   host_name_ = host_name;
   host_pin_ = host_pin;
   consent_to_data_collection_ = consent_to_data_collection;
@@ -120,7 +121,8 @@ void HostStarter::OnGetUserEmailResponse(const std::string& user_email) {
     // This is the first callback, with the host owner credentials. Store the
     // owner's email, and register the host.
     host_owner_ = user_email;
-    host_id_ = base::GenerateGUID();
+    if (host_id_.empty())
+      host_id_ = base::GenerateGUID();
     key_pair_ = RsaKeyPair::Generate();
 
     std::string host_client_id;

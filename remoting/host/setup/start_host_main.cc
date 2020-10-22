@@ -143,6 +143,7 @@ int StartHostMain(int argc, char** argv) {
   std::string host_pin = command_line->GetSwitchValueASCII("pin");
   std::string auth_code = command_line->GetSwitchValueASCII("code");
   std::string redirect_url = command_line->GetSwitchValueASCII("redirect-url");
+  std::string host_id = command_line->GetSwitchValueASCII("host-id");
 
 #if defined(OS_POSIX)
   // Check if current user is root. If it is root, then throw an error message.
@@ -232,7 +233,7 @@ int StartHostMain(int argc, char** argv) {
   // Start the host.
   std::unique_ptr<HostStarter> host_starter(HostStarter::Create(
       url_loader_factory_owner.GetURLLoaderFactory()));
-  host_starter->StartHost(host_name, host_pin,
+  host_starter->StartHost(host_id, host_name, host_pin,
                           /*consent_to_data_collection=*/true, auth_code,
                           redirect_url, base::BindOnce(&OnDone));
 
