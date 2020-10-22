@@ -24,6 +24,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_CONTAINER_H_
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_model_object.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_content_container.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -87,6 +88,7 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
     NOT_DESTROYED();
     return Children();
   }
+  SVGContentContainer& Content() { return content_; }
 
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
@@ -119,14 +121,15 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
  private:
   const LayoutObjectChildList* Children() const {
     NOT_DESTROYED();
-    return &children_;
+    return &content_.Children();
   }
   LayoutObjectChildList* Children() {
     NOT_DESTROYED();
-    return &children_;
+    return &content_.Children();
   }
 
-  LayoutObjectChildList children_;
+  SVGContentContainer content_;
+  // TODO(fs): Some of this state can move to the "child list" object.
   FloatRect object_bounding_box_;
   FloatRect stroke_bounding_box_;
   bool object_bounding_box_valid_;

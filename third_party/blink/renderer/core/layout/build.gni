@@ -658,6 +658,8 @@ blink_core_sources_layout = [
   "svg/line/svg_root_inline_box.cc",
   "svg/line/svg_root_inline_box.h",
   "svg/svg_character_data.h",
+  "svg/svg_content_container.cc",
+  "svg/svg_content_container.h",
   "svg/svg_layout_support.cc",
   "svg/svg_layout_support.h",
   "svg/svg_layout_tree_as_text.cc",

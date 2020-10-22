@@ -38,8 +38,7 @@ void LayoutSVGHiddenContainer::UpdateLayout() {
       GetElement()->HasRelativeLengths() &&
       SVGLayoutSupport::LayoutSizeOfNearestViewportChanged(this);
 
-  SVGLayoutSupport::LayoutChildren(FirstChild(), SelfNeedsLayout(), false,
-                                   layout_size_changed);
+  Content().Layout(SelfNeedsLayout(), false, layout_size_changed);
   UpdateCachedBoundaries();
   ClearNeedsLayout();
 }

@@ -47,13 +47,6 @@ class CORE_EXPORT SVGLayoutSupport {
   STATIC_ONLY(SVGLayoutSupport);
 
  public:
-  // Shares child layouting code between
-  // LayoutSVGRoot/LayoutSVG(Hidden)Container
-  static void LayoutChildren(LayoutObject*,
-                             bool force_layout,
-                             bool screen_scaling_factor_changed,
-                             bool layout_size_changed);
-
   // Layout resources used by this node.
   static void LayoutResourcesIfNeeded(const LayoutObject&);
 
@@ -81,18 +74,6 @@ class CORE_EXPORT SVGLayoutSupport {
   static bool IntersectsClipPath(const LayoutObject&,
                                  const FloatRect& reference_box,
                                  const HitTestLocation&);
-
-  // Shared child hit-testing code between LayoutSVGRoot/LayoutSVGContainer.
-  static bool HitTestChildren(LayoutObject* last_child,
-                              HitTestResult&,
-                              const HitTestLocation&,
-                              const PhysicalOffset& accumulated_offset,
-                              HitTestAction);
-
-  static void ComputeContainerBoundingBoxes(const LayoutObject* container,
-                                            FloatRect& object_bounding_box,
-                                            bool& object_bounding_box_valid,
-                                            FloatRect& stroke_bounding_box);
 
   // Important functions used by nearly all SVG layoutObjects centralizing
   // coordinate transformations / visual rect calculations
@@ -143,8 +124,6 @@ class CORE_EXPORT SVGLayoutSupport {
   // Determines whether a svg node should isolate or not based on ComputedStyle.
   static bool WillIsolateBlendingDescendantsForStyle(const ComputedStyle&);
   static bool WillIsolateBlendingDescendantsForObject(const LayoutObject*);
-  template <typename LayoutObjectType>
-  static bool ComputeHasNonIsolatedBlendingDescendants(const LayoutObjectType*);
   static bool IsIsolationRequired(const LayoutObject*);
 
   static AffineTransform DeprecatedCalculateTransformToLayer(
@@ -155,12 +134,6 @@ class CORE_EXPORT SVGLayoutSupport {
                                                 const FloatPoint&);
 
   static void NotifySVGRootOfChangedCompositingReasons(const LayoutObject*);
-
- private:
-  static void UpdateObjectBoundingBox(FloatRect& object_bounding_box,
-                                      bool& object_bounding_box_valid,
-                                      LayoutObject* other,
-                                      FloatRect other_bounding_box);
 };
 
 class SubtreeContentTransformScope {
@@ -178,20 +151,6 @@ class SubtreeContentTransformScope {
   static AffineTransform::Transform current_content_transformation_;
   AffineTransform saved_content_transformation_;
 };
-
-template <typename LayoutObjectType>
-bool SVGLayoutSupport::ComputeHasNonIsolatedBlendingDescendants(
-    const LayoutObjectType* object) {
-  for (LayoutObject* child = object->FirstChild(); child;
-       child = child->NextSibling()) {
-    if (child->IsBlendingAllowed() && child->StyleRef().HasBlendMode())
-      return true;
-    if (child->HasNonIsolatedBlendingDescendants() &&
-        !WillIsolateBlendingDescendantsForObject(child))
-      return true;
-  }
-  return false;
-}
 
 }  // namespace blink
 

@@ -65,9 +65,7 @@ void LayoutSVGContainer::UpdateLayout() {
       GetElement()->HasRelativeLengths() &&
       SVGLayoutSupport::LayoutSizeOfNearestViewportChanged(this);
 
-  SVGLayoutSupport::LayoutChildren(FirstChild(), false,
-                                   did_screen_scale_factor_change_,
-                                   layout_size_changed);
+  content_.Layout(false, did_screen_scale_factor_change_, layout_size_changed);
 
   bool bbox_changed = false;
   if (needs_boundaries_update_) {
@@ -144,7 +142,7 @@ bool LayoutSVGContainer::HasNonIsolatedBlendingDescendants() const {
   NOT_DESTROYED();
   if (has_non_isolated_blending_descendants_dirty_) {
     has_non_isolated_blending_descendants_ =
-        SVGLayoutSupport::ComputeHasNonIsolatedBlendingDescendants(this);
+        content_.ComputeHasNonIsolatedBlendingDescendants();
     has_non_isolated_blending_descendants_dirty_ = false;
   }
   return has_non_isolated_blending_descendants_;
@@ -180,9 +178,8 @@ void LayoutSVGContainer::Paint(const PaintInfo& paint_info) const {
 bool LayoutSVGContainer::UpdateCachedBoundaries() {
   NOT_DESTROYED();
   auto old_object_bounding_box = object_bounding_box_;
-  SVGLayoutSupport::ComputeContainerBoundingBoxes(this, object_bounding_box_,
-                                                  object_bounding_box_valid_,
-                                                  stroke_bounding_box_);
+  content_.ComputeBoundingBoxes(
+      object_bounding_box_, object_bounding_box_valid_, stroke_bounding_box_);
   return old_object_bounding_box != object_bounding_box_;
 }
 
@@ -201,8 +198,7 @@ bool LayoutSVGContainer::NodeAtPoint(HitTestResult& result,
     return false;
 
   if (!ChildPaintBlockedByDisplayLock() &&
-      SVGLayoutSupport::HitTestChildren(LastChild(), result, *local_location,
-                                        accumulated_offset, hit_test_action))
+      content_.HitTest(result, *local_location, hit_test_action))
     return true;
 
   // pointer-events: bounding-box makes it possible for containers to be direct

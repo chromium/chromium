@@ -24,6 +24,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_ROOT_H_
 
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_content_container.h"
 
 namespace blink {
 
@@ -124,11 +125,11 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
 
   const LayoutObjectChildList* Children() const {
     NOT_DESTROYED();
-    return &children_;
+    return &content_.Children();
   }
   LayoutObjectChildList* Children() {
     NOT_DESTROYED();
-    return &children_;
+    return &content_.Children();
   }
 
   LayoutObjectChildList* VirtualChildren() override {
@@ -219,8 +220,9 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   CompositingReasons AdditionalCompositingReasons() const override;
   bool HasDescendantWithCompositingReason() const;
 
-  LayoutObjectChildList children_;
+  SVGContentContainer content_;
   LayoutSize container_size_;
+  // TODO(fs): Some of this state can move to the "child list" object.
   FloatRect object_bounding_box_;
   FloatRect stroke_bounding_box_;
   AffineTransform local_to_border_box_transform_;

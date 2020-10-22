@@ -249,9 +249,8 @@ void LayoutSVGRoot::UpdateLayout() {
   is_layout_size_changed_ =
       viewport_may_have_changed && svg->HasRelativeLengths();
 
-  SVGLayoutSupport::LayoutChildren(FirstChild(), false,
-                                   did_screen_scale_factor_change_,
-                                   is_layout_size_changed_);
+  content_.Layout(false, did_screen_scale_factor_change_,
+                  is_layout_size_changed_);
 
   if (needs_boundaries_or_transform_update_) {
     UpdateCachedBoundaries();
@@ -409,7 +408,7 @@ bool LayoutSVGRoot::HasNonIsolatedBlendingDescendants() const {
   NOT_DESTROYED();
   if (has_non_isolated_blending_descendants_dirty_) {
     has_non_isolated_blending_descendants_ =
-        SVGLayoutSupport::ComputeHasNonIsolatedBlendingDescendants(this);
+        content_.ComputeHasNonIsolatedBlendingDescendants();
     has_non_isolated_blending_descendants_dirty_ = false;
   }
   return has_non_isolated_blending_descendants_;
@@ -524,9 +523,9 @@ const LayoutObject* LayoutSVGRoot::PushMappingToContainer(
 void LayoutSVGRoot::UpdateCachedBoundaries() {
   NOT_DESTROYED();
   bool ignore;
-  SVGLayoutSupport::ComputeContainerBoundingBoxes(
-      this, object_bounding_box_,
-      /* object_bounding_box_valid */ ignore, stroke_bounding_box_);
+  content_.ComputeBoundingBoxes(object_bounding_box_,
+                                /* object_bounding_box_valid */ ignore,
+                                stroke_bounding_box_);
 }
 
 bool LayoutSVGRoot::NodeAtPoint(HitTestResult& result,
@@ -549,10 +548,7 @@ bool LayoutSVGRoot::NodeAtPoint(HitTestResult& result,
     TransformedHitTestLocation local_location(local_border_box_location,
                                               LocalToBorderBoxTransform());
     if (local_location) {
-      PhysicalOffset accumulated_offset_for_children;
-      if (SVGLayoutSupport::HitTestChildren(
-              LastChild(), result, *local_location,
-              accumulated_offset_for_children, hit_test_action))
+      if (content_.HitTest(result, *local_location, hit_test_action))
         return true;
     }
   }
