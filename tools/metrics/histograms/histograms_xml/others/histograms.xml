@@ -13428,6 +13428,17 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
+<histogram name="SiteIsolation.BrowsingInstance.MaxCountPerProcess"
+    units="units" expires_after="2021-10-15">
+  <owner>wjmaclean@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <summary>
+    The maximum number of BrowsingInstances seen in a RenderProcessHost over its
+    lifetime. Recorded once when
+    ChildProcessImpl::SecurityState::~SecurityState() is invoked.
+  </summary>
+</histogram>
+
 <histogram name="SiteIsolation.BrowsingInstanceCount" units="units"
     expires_after="2021-09-30">
   <owner>alexmos@chromium.org</owner>
