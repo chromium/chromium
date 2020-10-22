@@ -2063,6 +2063,9 @@ const char kServiceWorkerOnUIDescription[] =
     "Enables browser process logic related to service workers to run on the UI "
     "thread rather than the IO thread.";
 
+const char kSidePanelName[] = "Side panel";
+const char kSidePanelDescription[] = "Host some content in a side panel.";
+
 const char kShareByDefaultInCCTName[] = "Enable sharing by default in CCT.";
 const char kShareByDefaultInCCTDescription[] =
     "Enables a sharing option by default in Chrome Custom Tabs.";

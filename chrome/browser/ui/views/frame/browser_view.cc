@@ -119,6 +119,7 @@
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view_impl.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_icon_view.h"
 #include "chrome/browser/ui/views/sharing/sharing_dialog_view.h"
+#include "chrome/browser/ui/views/side_panel.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "chrome/browser/ui/views/tab_contents/chrome_web_contents_view_focus_helper.h"
 #include "chrome/browser/ui/views/tab_search/tab_search_bubble_view.h"
@@ -610,6 +611,9 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 
   contents_container_ = AddChildView(std::move(contents_container));
   set_contents_view(contents_container_);
+
+  if (base::FeatureList::IsEnabled(features::kSidePanel))
+    side_panel_ = AddChildView(std::make_unique<SidePanel>());
 
   // InfoBarContainer needs to be added as a child here for drop-shadow, but
   // needs to come after toolbar in focus order (see EnsureFocusOrder()).
@@ -2890,13 +2894,12 @@ void BrowserView::AddedToWidget() {
 
   // TODO(https://crbug.com/1036519): Remove BrowserViewLayout dependence on
   // Widget and move to the constructor.
-  auto browser_view_layout = std::make_unique<BrowserViewLayout>(
+  SetLayoutManager(std::make_unique<BrowserViewLayout>(
       std::make_unique<BrowserViewLayoutDelegateImpl>(this),
       GetWidget()->GetNativeView(), this, top_container_,
       tab_strip_region_view_, tabstrip_, toolbar_, infobar_container_,
-      contents_container_, immersive_mode_controller_.get(),
-      web_footer_experiment, contents_separator_);
-  SetLayoutManager(std::move(browser_view_layout));
+      contents_container_, side_panel_, immersive_mode_controller_.get(),
+      web_footer_experiment, contents_separator_));
 
   EnsureFocusOrder();
 

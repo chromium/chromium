@@ -64,6 +64,7 @@ class FeaturePromoControllerViews;
 class FullscreenControlHost;
 class InfoBarContainerView;
 class LocationBarView;
+class SidePanel;
 class StatusBubbleViews;
 class TabSearchButton;
 class TabStrip;
@@ -171,6 +172,8 @@ class BrowserView : public BrowserWindow,
 
   // Container for the web contents.
   views::View* contents_container() { return contents_container_; }
+
+  SidePanel* side_panel() { return side_panel_; }
 
   void set_contents_border_widget(views::Widget* contents_border_widget) {
     GetBrowserViewLayout()->set_contents_border_widget(contents_border_widget);
@@ -853,6 +856,9 @@ class BrowserView : public BrowserWindow,
   // The view managing the devtools and contents positions.
   // Handled by ContentsLayoutManager.
   views::View* contents_container_ = nullptr;
+
+  // The side panel.
+  SidePanel* side_panel_ = nullptr;
 
   // Provides access to the toolbar buttons this browser view uses. Buttons may
   // appear in a hosted app frame or in a tabbed UI toolbar.

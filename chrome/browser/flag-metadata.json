@@ -4304,6 +4304,11 @@
     "expiry_milestone": -1
   },
   {
+    "name" : "side-panel",
+    "owners": [ "chrome-desktop-ui-seattle@google.com", "pbos" ],
+    "expiry_milestone" : 92
+  },
+  {
     "name": "silent-debugger-extension-api",
     "owners": [ "//extensions/OWNERS" ],
     "expiry_milestone": 77

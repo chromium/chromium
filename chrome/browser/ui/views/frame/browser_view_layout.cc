@@ -140,6 +140,7 @@ BrowserViewLayout::BrowserViewLayout(
     views::View* toolbar,
     InfoBarContainerView* infobar_container,
     views::View* contents_container,
+    views::View* side_panel,
     ImmersiveModeController* immersive_mode_controller,
     views::View* web_footer_experiment,
     views::View* contents_separator)
@@ -151,6 +152,7 @@ BrowserViewLayout::BrowserViewLayout(
       toolbar_(toolbar),
       infobar_container_(infobar_container),
       contents_container_(contents_container),
+      side_panel_(side_panel),
       immersive_mode_controller_(immersive_mode_controller),
       web_footer_experiment_(web_footer_experiment),
       contents_separator_(contents_separator),
@@ -493,6 +495,31 @@ void BrowserViewLayout::LayoutContentsContainerView(int top, int bottom) {
     // resizing it.
     contents_container_bounds.Inset(0, 0, 0,
                                     -webui_tab_strip_->size().height());
+  }
+
+  if (side_panel_ && side_panel_->GetVisible()) {
+    // Side panel occupies some of the container's space.
+    gfx::Rect side_panel_bounds = contents_container_bounds;
+    side_panel_bounds.set_width(side_panel_->GetPreferredSize().width());
+
+    // Shrink container bounds to fit the side panel.
+    contents_container_bounds.set_width(contents_container_bounds.width() -
+                                        side_panel_bounds.width());
+    // Place the side panel to the right of contents.
+    side_panel_bounds.set_x(contents_container_bounds.x() +
+                            contents_container_bounds.width());
+
+    gfx::Rect separator_bounds = contents_separator_->bounds();
+    const int separator_height = separator_bounds.height();
+    // Raise the side panel bounds with the height of the separator to have it
+    // connected to the toolbar area (and not be spoofable by web content).
+    side_panel_bounds.set_y(side_panel_bounds.y() - separator_height);
+    side_panel_bounds.set_height(side_panel_bounds.height() + separator_height);
+    side_panel_->SetBoundsRect(side_panel_bounds);
+
+    // Resize separator so that it separates the contents area only.
+    separator_bounds.set_width(contents_container_bounds.width() + 1);
+    contents_separator_->SetBoundsRect(separator_bounds);
   }
 
   contents_container_->SetBoundsRect(contents_container_bounds);

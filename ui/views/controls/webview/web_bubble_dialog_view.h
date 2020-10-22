@@ -35,7 +35,9 @@ class WEBVIEW_EXPORT WebBubbleDialogView
   static Widget* CreateWebBubbleDialog(
       std::unique_ptr<WebBubbleDialogView> bubble_view,
       const GURL& url) {
+    bubble_view->SetVisible(true);
     bubble_view->LoadURL<T>(url);
+    bubble_view->hosted_in_bubble_ = true;
     return BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
   }
 
@@ -55,12 +57,14 @@ class WEBVIEW_EXPORT WebBubbleDialogView
   // MojoBubbleWebUIController::Embedder:
   void ShowUI() override;
 
- private:
   // The type T enables WebBubbleDialogView to know what WebUIController is
   // being used for the bubble's WebUI and allows it to make sure the associated
   // WebUI is a MojoBubbleWebUIController at compile time.
+  // TODO(pbos): Move LoadURL into BubbleWebView.
   template <typename T>
   void LoadURL(const GURL& url) {
+    // Lie to WebContents so it starts rendering and eventually calls ShowUI().
+    web_view_->GetWebContents()->WasShown();
     web_view_->LoadInitialURL(url);
     T* webui_bubble_controller = web_view_->GetWebContents()
                                      ->GetWebUI()
@@ -71,7 +75,15 @@ class WEBVIEW_EXPORT WebBubbleDialogView
     webui_bubble_controller->set_embedder(weak_ptr_factory_.GetWeakPtr());
   }
 
-  WebView* web_view_;
+  // Used for tests that create the bubble instead of calling
+  // CreateWebBubbleDialog().
+  void set_hosted_in_bubble_for_testing() { hosted_in_bubble_ = true; }
+
+ private:
+  WebView* const web_view_;
+  // TODO(pbos): Remove this by separating WebBubbleDialogView content from its
+  // BubbleDialogDelegateView parent.
+  bool hosted_in_bubble_ = false;
   base::WeakPtrFactory<WebBubbleDialogView> weak_ptr_factory_{this};
 };
 

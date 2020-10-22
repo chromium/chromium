@@ -4308,6 +4308,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kScrollableTabStripDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kScrollableTabStrip)},
 
+    {"side-panel", flag_descriptions::kSidePanelName,
+     flag_descriptions::kSidePanelDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kSidePanel)},
+
     {"tab-outlines-in-low-contrast-themes",
      flag_descriptions::kTabOutlinesInLowContrastThemesName,
      flag_descriptions::kTabOutlinesInLowContrastThemesDescription, kOsDesktop,

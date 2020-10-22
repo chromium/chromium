@@ -9,7 +9,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/read_later/read_later_bubble_view.h"
+#include "chrome/browser/ui/views/side_panel.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -57,10 +59,21 @@ int ReadLaterButton::GetIconSize() const {
 }
 
 void ReadLaterButton::ButtonPressed() {
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser_);
   if (read_later_bubble_) {
-    read_later_bubble_->GetWidget()->Close();
-
+    if (browser_view->side_panel()) {
+      browser_view->side_panel()->RemoveContent(read_later_bubble_.get());
+      DCHECK(!read_later_bubble_);
+      // TODO(pbos): Observe read_later_bubble_ so we don't need to
+      // SetHighlighted(false) here.
+      SetHighlighted(false);
+    } else {
+      read_later_bubble_->GetWidget()->Close();
+    }
   } else {
     read_later_bubble_ = ReadLaterBubbleView::Show(browser_, this);
+    if (browser_view->side_panel())
+      SetHighlighted(true);
   }
 }

@@ -44066,6 +44066,7 @@ from previous Chrome versions.
   <int value="345611669"
       label="OmniboxLocalZeroSuggestFrecencyRanking:enabled"/>
   <int value="345664265" label="BlinkHeapIncrementalMarking:disabled"/>
+  <int value="346430505" label="SidePanel:enabled"/>
   <int value="346711293" label="enable-save-password-bubble"/>
   <int value="347981012" label="TabToGTSAnimation:disabled"/>
   <int value="348449023"
@@ -44716,6 +44717,7 @@ from previous Chrome versions.
   <int value="1007444341" label="enable-prefixed-encrypted-media"/>
   <int value="1008677979"
       label="AutofillUseImprovedLabelDisambiguation:disabled"/>
+  <int value="1009976778" label="SidePanel:disabled"/>
   <int value="1012942422" label="HorizontalTabSwitcherAndroid:disabled"/>
   <int value="1014740148" label="FilesCameraFolder:enabled"/>
   <int value="1015012662" label="ChromeOSDirectVideoDecoder:enabled"/>

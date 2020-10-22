@@ -9,6 +9,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel.h"
 #include "chrome/common/webui_url_constants.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -28,8 +30,15 @@ base::WeakPtr<ReadLaterBubbleView> ReadLaterBubbleView::Show(
   auto bubble_view =
       std::make_unique<ReadLaterBubbleView>(browser, anchor_view);
   auto weak_ptr = bubble_view->weak_factory_.GetWeakPtr();
-  views::WebBubbleDialogView::CreateWebBubbleDialog<ReadLaterUI>(
-      std::move(bubble_view), GURL(chrome::kChromeUIReadLaterURL));
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser);
+  if (browser_view->side_panel()) {
+    bubble_view->LoadURL<ReadLaterUI>(GURL(chrome::kChromeUIReadLaterURL));
+    browser_view->side_panel()->AddContent(std::move(bubble_view));
+  } else {
+    views::WebBubbleDialogView::CreateWebBubbleDialog<ReadLaterUI>(
+        std::move(bubble_view), GURL(chrome::kChromeUIReadLaterURL));
+  }
   return weak_ptr;
 }
 

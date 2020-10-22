@@ -41,6 +41,8 @@ extern const base::Feature kReadLater;
 
 extern const base::Feature kScrollableTabStrip;
 
+extern const base::Feature kSidePanel;
+
 extern const base::Feature kProfilesUIRevamp;
 
 extern const base::Feature kTabGroups;

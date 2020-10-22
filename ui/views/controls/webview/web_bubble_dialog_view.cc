@@ -79,11 +79,16 @@ WebBubbleDialogView::WebBubbleDialogView(
   set_margins(gfx::Insets());
 
   SetLayoutManager(std::make_unique<FillLayout>());
+  SetVisible(false);
 }
 
 WebBubbleDialogView::~WebBubbleDialogView() = default;
 
 void WebBubbleDialogView::OnWebViewSizeChanged() {
+  if (!hosted_in_bubble_) {
+    PreferredSizeChanged();
+    return;
+  }
   SizeToContents();
 }
 
@@ -96,11 +101,14 @@ gfx::Size WebBubbleDialogView::CalculatePreferredSize() const {
 }
 
 void WebBubbleDialogView::AddedToWidget() {
+  if (!hosted_in_bubble_)
+    return;
   BubbleDialogDelegateView::AddedToWidget();
   web_view_->holder()->SetCornerRadii(gfx::RoundedCornersF(GetCornerRadius()));
 }
 
 void WebBubbleDialogView::ShowUI() {
+  SetVisible(true);
   DCHECK(GetWidget());
   GetWidget()->Show();
   web_view_->GetWebContents()->Focus();

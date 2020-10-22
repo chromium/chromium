@@ -58,6 +58,7 @@ class BrowserViewLayout : public views::LayoutManager {
                     views::View* toolbar,
                     InfoBarContainerView* infobar_container,
                     views::View* contents_container,
+                    views::View* side_panel,
                     ImmersiveModeController* immersive_mode_controller,
                     views::View* web_footer_experiment,
                     views::View* contents_separator);
@@ -151,6 +152,7 @@ class BrowserViewLayout : public views::LayoutManager {
   views::View* const toolbar_;
   InfoBarContainerView* const infobar_container_;
   views::View* const contents_container_;
+  views::View* const side_panel_;
   ImmersiveModeController* const immersive_mode_controller_;
   views::View* const web_footer_experiment_;
   views::View* const contents_separator_;

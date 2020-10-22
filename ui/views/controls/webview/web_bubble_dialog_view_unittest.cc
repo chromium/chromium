@@ -36,6 +36,7 @@ class WebBubbleDialogViewTest : public ViewsTestBase {
     auto bubble_view = std::make_unique<WebBubbleDialogView>(
         browser_context_.get(), anchor_widget_->GetContentsView());
     bubble_view_ = bubble_view.get();
+    bubble_view_->set_hosted_in_bubble_for_testing();
     bubble_widget_ =
         BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
   }
