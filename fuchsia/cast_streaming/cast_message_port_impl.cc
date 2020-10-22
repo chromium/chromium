@@ -273,6 +273,11 @@ void CastMessagePortImpl::PostMessage(
              << ", namespace=" << message_namespace
              << ", message=" << str_message;
   }
+
+  // Acknowledge the message and unblock the receipt of another.
+  fuchsia::web::MessagePort_PostMessage_Result result;
+  result.set_response(fuchsia::web::MessagePort_PostMessage_Response());
+  callback(std::move(result));
 }
 
 void CastMessagePortImpl::ReceiveMessage(
