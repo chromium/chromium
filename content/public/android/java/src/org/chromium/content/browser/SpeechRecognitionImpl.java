@@ -70,6 +70,8 @@ public class SpeechRecognitionImpl {
 
         @Override
         public void onBeginningOfSpeech() {
+            if (mNativeSpeechRecognizerImplAndroid == 0) return;
+
             mState = STATE_CAPTURING_SPEECH;
             SpeechRecognitionImplJni.get().onSoundStart(
                     mNativeSpeechRecognizerImplAndroid, SpeechRecognitionImpl.this);
@@ -86,6 +88,7 @@ public class SpeechRecognitionImpl {
             // equivalent (onsoundend) event. Thus, the only way to provide a valid onsoundend
             // event is to trigger it when the last result is received or the session is aborted.
             if (!mContinuous) {
+                if (mNativeSpeechRecognizerImplAndroid == 0) return;
                 SpeechRecognitionImplJni.get().onSoundEnd(
                         mNativeSpeechRecognizerImplAndroid, SpeechRecognitionImpl.this);
                 // Since Android doesn't have a dedicated event for when audio capture is finished,
@@ -141,6 +144,8 @@ public class SpeechRecognitionImpl {
 
         @Override
         public void onReadyForSpeech(Bundle bundle) {
+            if (mNativeSpeechRecognizerImplAndroid == 0) return;
+
             mState = STATE_AWAITING_SPEECH;
             SpeechRecognitionImplJni.get().onAudioStart(
                     mNativeSpeechRecognizerImplAndroid, SpeechRecognitionImpl.this);
@@ -159,6 +164,8 @@ public class SpeechRecognitionImpl {
         public void onRmsChanged(float rms) { }
 
         private void handleResults(Bundle bundle, boolean provisional) {
+            if (mNativeSpeechRecognizerImplAndroid == 0) return;
+
             if (mContinuous && provisional) {
                 // In continuous mode, Android's recognizer sends final results as provisional.
                 provisional = false;
