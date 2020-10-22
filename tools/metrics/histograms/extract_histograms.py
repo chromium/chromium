@@ -820,6 +820,8 @@ def _UpdateHistogramsWithSuffixes(tree, histograms):
           # group itself was obsolete as well.
           obsolete_reason = _GetObsoleteReason(suffix)
           if not obsolete_reason:
+            obsolete_reason = _GetObsoleteReason(affected_histogram)
+          if not obsolete_reason:
             obsolete_reason = group_obsolete_reason
 
           # If the suffix has an obsolete tag, all histograms it generates
@@ -1036,3 +1038,8 @@ def ExtractHistograms(filename):
 
 def ExtractNames(histograms):
   return sorted(histograms.keys())
+
+
+def ExtractObsoleteNames(histograms):
+  return sorted(
+      filter(lambda name: histograms[name].get("obsolete"), histograms.keys()))
