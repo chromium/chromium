@@ -42,9 +42,6 @@ class VIEWS_EXPORT MenuButtonController : public ButtonController {
   MenuButtonController(Button* button,
                        Button::PressedCallback callback,
                        std::unique_ptr<ButtonControllerDelegate> delegate);
-  MenuButtonController(Button* button,
-                       ButtonListener* listener,
-                       std::unique_ptr<ButtonControllerDelegate> delegate);
   ~MenuButtonController() override;
 
   // view::ButtonController

@@ -70,9 +70,11 @@ class TestContextMenuController : public ContextMenuController {
   DISALLOW_COPY_AND_ASSIGN(TestContextMenuController);
 };
 
-class TestButton : public Button, public ButtonListener {
+class TestButton : public Button {
  public:
-  explicit TestButton(bool has_ink_drop_action_on_click) : Button(this) {
+  explicit TestButton(bool has_ink_drop_action_on_click)
+      : Button(base::BindRepeating([](bool* pressed) { *pressed = true; },
+                                   &pressed_)) {
     SetHasInkDropActionOnClick(has_ink_drop_action_on_click);
   }
 
@@ -82,13 +84,6 @@ class TestButton : public Button, public ButtonListener {
     if (custom_key_click_action_ == KeyClickAction::kNone)
       return Button::GetKeyClickActionForEvent(event);
     return custom_key_click_action_;
-  }
-
-  void ButtonPressed(Button* sender, const ui::Event& event) override {
-    pressed_ = true;
-
-    if (!on_button_pressed_handler_.is_null())
-      on_button_pressed_handler_.Run();
   }
 
   void OnClickCanceled(const ui::Event& event) override { canceled_ = true; }
@@ -103,17 +98,15 @@ class TestButton : public Button, public ButtonListener {
     Button::RemoveInkDropLayer(ink_drop_layer);
   }
 
-  bool pressed() { return pressed_; }
-  bool canceled() { return canceled_; }
-  int ink_drop_layer_add_count() { return ink_drop_layer_add_count_; }
-  int ink_drop_layer_remove_count() { return ink_drop_layer_remove_count_; }
+  bool pressed() const { return pressed_; }
+  bool canceled() const { return canceled_; }
+  int ink_drop_layer_add_count() const { return ink_drop_layer_add_count_; }
+  int ink_drop_layer_remove_count() const {
+    return ink_drop_layer_remove_count_;
+  }
 
   void set_custom_key_click_action(KeyClickAction custom_key_click_action) {
     custom_key_click_action_ = custom_key_click_action;
-  }
-
-  void set_on_button_pressed_handler(const base::RepeatingClosure& callback) {
-    on_button_pressed_handler_ = callback;
   }
 
   void Reset() {
@@ -132,9 +125,6 @@ class TestButton : public Button, public ButtonListener {
   int ink_drop_layer_remove_count_ = 0;
 
   KeyClickAction custom_key_click_action_ = KeyClickAction::kNone;
-
-  // If available, will be triggered when the button is pressed.
-  base::RepeatingClosure on_button_pressed_handler_;
 
   DISALLOW_COPY_AND_ASSIGN(TestButton);
 };
@@ -169,21 +159,6 @@ class TestButtonObserver {
   PropertyChangedSubscription state_changed_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(TestButtonObserver);
-};
-
-class TestButtonListener : public ButtonListener {
- public:
-  void ButtonPressed(Button* sender, const ui::Event& event) override {
-    pressed_ = true;
-    sender_ = sender;
-  }
-
-  bool pressed() const { return pressed_; }
-  Button* sender() const { return sender_; }
-
- private:
-  bool pressed_ = false;
-  Button* sender_ = nullptr;
 };
 
 TestInkDrop* AddTestInkDrop(TestButton* button) {
@@ -446,7 +421,7 @@ TEST_F(ButtonTest, GestureEventsSetState) {
 // events will not revert the disabled state back to normal.
 // https://crbug.com/1084241.
 TEST_F(ButtonTest, GestureEventsRespectDisabledState) {
-  button()->set_on_button_pressed_handler(base::BindRepeating(
+  button()->SetCallback(base::BindRepeating(
       [](TestButton* button) { button->SetEnabled(false); }, button()));
 
   EXPECT_EQ(Button::STATE_NORMAL, button()->GetState());
@@ -754,8 +729,9 @@ TEST_F(ButtonTest, InkDropStaysHiddenWhileDragging) {
 
 // Ensure PressedCallback is dynamically settable.
 TEST_F(ButtonTest, SetCallback) {
-  TestButtonListener listener;
-  button()->SetCallback(Button::PressedCallback(&listener, button()));
+  bool pressed = false;
+  button()->SetCallback(
+      base::BindRepeating([](bool* pressed) { *pressed = true; }, &pressed));
 
   const gfx::Point center(10, 10);
   button()->OnMousePressed(ui::MouseEvent(
@@ -765,8 +741,7 @@ TEST_F(ButtonTest, SetCallback) {
   button()->OnMouseReleased(ui::MouseEvent(
       ui::ET_MOUSE_RELEASED, center, center, ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
-  EXPECT_TRUE(listener.pressed());
-  EXPECT_EQ(button(), listener.sender());
+  EXPECT_TRUE(pressed);
 }
 
 // VisibilityTestButton tests to see if an ink drop or a layer has been added to

@@ -90,14 +90,6 @@ MenuButtonController::MenuButtonController(
   set_notify_action(ButtonController::NotifyAction::kOnPress);
 }
 
-MenuButtonController::MenuButtonController(
-    Button* button,
-    ButtonListener* listener,
-    std::unique_ptr<ButtonControllerDelegate> delegate)
-    : MenuButtonController(button,
-                           Button::PressedCallback(listener, button),
-                           std::move(delegate)) {}
-
 MenuButtonController::~MenuButtonController() = default;
 
 bool MenuButtonController::OnMousePressed(const ui::MouseEvent& event) {
@@ -239,7 +231,7 @@ bool MenuButtonController::Activate(const ui::Event* event) {
     bool increment_pressed_lock_called = false;
     increment_pressed_lock_called_ = &increment_pressed_lock_called;
 
-    // Allow for ButtonPressed() to delete this.
+    // Allow for the button callback to delete this.
     auto ref = weak_factory_.GetWeakPtr();
 
     // TODO(pbos): Make sure we always propagate an event. This requires changes
