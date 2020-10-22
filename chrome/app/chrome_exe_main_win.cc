@@ -214,7 +214,9 @@ int main() {
   // GetLastError result if fiber conversion failed.
   DWORD fiber_error = ERROR_SUCCESS;
   if (!::IsThreadAFiber()) {
-    constexpr size_t kStackSize = 1536 * 1024;  // 1.5 MiB
+    // Make the main thread's stack size 4 MiB so that it has roughly the same
+    // effective size as the 64-bit build's 8 MiB stack.
+    constexpr size_t kStackSize = 4 * 1024 * 1024;  // 4 MiB
     // Leak the fiber on exit.
     LPVOID original_fiber =
         ::ConvertThreadToFiberEx(nullptr, FIBER_FLAG_FLOAT_SWITCH);
