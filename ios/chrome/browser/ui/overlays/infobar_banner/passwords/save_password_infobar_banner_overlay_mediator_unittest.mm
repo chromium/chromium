@@ -9,7 +9,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_feature.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"

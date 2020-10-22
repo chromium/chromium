@@ -49,7 +49,7 @@
   [self fetchPasswordIssues];
 }
 
-- (void)deletePassword:(const autofill::PasswordForm&)password {
+- (void)deletePassword:(const password_manager::PasswordForm&)password {
   for (const auto& credential : _compromisedCredentials) {
     if (std::tie(credential.signon_realm, credential.username,
                  credential.password) == std::tie(password.signon_realm,
@@ -82,7 +82,7 @@
   _compromisedCredentials = _manager->GetCompromisedCredentials();
   NSMutableArray* passwords = [[NSMutableArray alloc] init];
   for (auto credential : _compromisedCredentials) {
-    const autofill::PasswordForm form =
+    const password_manager::PasswordForm form =
         _manager->GetSavedPasswordsFor(credential)[0];
     [passwords
         addObject:[[PasswordIssueWithForm alloc] initWithPasswordForm:form]];

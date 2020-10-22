@@ -5,7 +5,7 @@
 #import "ios/web_view/internal/passwords/cwv_password_internal.h"
 
 #include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -21,7 +21,7 @@ using CWVPasswordTest = PlatformTest;
 
 // Tests CWVPassword initialization for a blacklisted site.
 TEST_F(CWVPasswordTest, Blacklisted) {
-  autofill::PasswordForm password_form;
+  password_manager::PasswordForm password_form;
   password_form.url = GURL("http://www.example.com/accounts/LoginAuth");
   password_form.action = GURL("http://www.example.com/accounts/Login");
   password_form.username_element = base::SysNSStringToUTF16(@"Email");
@@ -30,7 +30,7 @@ TEST_F(CWVPasswordTest, Blacklisted) {
   password_form.password_value = base::SysNSStringToUTF16(@"test");
   password_form.submit_element = base::SysNSStringToUTF16(@"signIn");
   password_form.signon_realm = "http://www.example.com/";
-  password_form.scheme = autofill::PasswordForm::Scheme::kHtml;
+  password_form.scheme = password_manager::PasswordForm::Scheme::kHtml;
   password_form.blocked_by_user = true;
   auto name_and_link =
       password_manager::GetShownOriginAndLinkUrl(password_form);
@@ -49,7 +49,7 @@ TEST_F(CWVPasswordTest, Blacklisted) {
 
 // Tests CWVPassword initialization for a non-blacklisted site.
 TEST_F(CWVPasswordTest, NonBlacklisted) {
-  autofill::PasswordForm password_form;
+  password_manager::PasswordForm password_form;
   password_form.url = GURL("http://www.example.com/accounts/LoginAuth");
   password_form.action = GURL("http://www.example.com/accounts/Login");
   password_form.username_element = base::SysNSStringToUTF16(@"Email");
@@ -58,7 +58,7 @@ TEST_F(CWVPasswordTest, NonBlacklisted) {
   password_form.password_value = base::SysNSStringToUTF16(@"test");
   password_form.submit_element = base::SysNSStringToUTF16(@"signIn");
   password_form.signon_realm = "http://www.example.com/";
-  password_form.scheme = autofill::PasswordForm::Scheme::kHtml;
+  password_form.scheme = password_manager::PasswordForm::Scheme::kHtml;
   password_form.blocked_by_user = false;
   auto name_and_link =
       password_manager::GetShownOriginAndLinkUrl(password_form);

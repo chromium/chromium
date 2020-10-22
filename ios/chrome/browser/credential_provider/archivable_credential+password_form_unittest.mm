@@ -6,7 +6,7 @@
 
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
 #include "url/gurl.h"
@@ -17,7 +17,7 @@
 
 namespace {
 
-using autofill::PasswordForm;
+using password_manager::PasswordForm;
 using ArchivableCredentialPasswordFormTest = PlatformTest;
 
 // Tests the creation of a credential from a password form.

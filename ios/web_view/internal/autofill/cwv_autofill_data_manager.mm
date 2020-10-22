@@ -80,7 +80,8 @@ class WebViewPasswordStoreConsumer
   explicit WebViewPasswordStoreConsumer(CWVAutofillDataManager* data_manager)
       : data_manager_(data_manager) {}
   void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> results) override {
+      std::vector<std::unique_ptr<password_manager::PasswordForm>> results)
+      override {
     NSMutableArray<CWVPassword*>* passwords = [NSMutableArray array];
     for (auto& form : results) {
       CWVPassword* password = [[CWVPassword alloc] initWithPasswordForm:*form];

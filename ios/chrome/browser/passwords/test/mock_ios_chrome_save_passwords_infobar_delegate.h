@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #include <memory>
 
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #import "ios/chrome/browser/passwords/ios_chrome_save_password_infobar_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
@@ -39,10 +39,10 @@ class MockIOSChromeSavePasswordInfoBarDelegate
 
  private:
   MockIOSChromeSavePasswordInfoBarDelegate(
-      std::unique_ptr<autofill::PasswordForm> form,
+      std::unique_ptr<password_manager::PasswordForm> form,
       std::unique_ptr<GURL> url);
 
-  std::unique_ptr<autofill::PasswordForm> form_;
+  std::unique_ptr<password_manager::PasswordForm> form_;
   std::unique_ptr<GURL> url_;
 };
 

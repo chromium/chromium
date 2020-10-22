@@ -188,7 +188,8 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
   autofill::prefs::SetUserOptedInWalletSyncTransport(_prefService, accountId,
                                                      /*opted_in=*/true);
   password_manager::features_util::SetDefaultPasswordStore(
-      _prefService, _syncService, autofill::PasswordForm::Store::kAccountStore);
+      _prefService, _syncService,
+      password_manager::PasswordForm::Store::kAccountStore);
   password_manager::features_util::OptInToAccountStorage(_prefService,
                                                          _syncService);
 }

@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_issue_with_form.h"
 
 #include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -17,7 +17,7 @@
 @synthesize website = _website;
 @synthesize username = _username;
 
-- (instancetype)initWithPasswordForm:(autofill::PasswordForm)form {
+- (instancetype)initWithPasswordForm:(password_manager::PasswordForm)form {
   self = [super init];
   if (self) {
     _form = form;

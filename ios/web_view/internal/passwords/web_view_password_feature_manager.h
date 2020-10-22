@@ -35,8 +35,9 @@ class WebViewPasswordFeatureManager
   bool ShouldShowAccountStorageBubbleUi() const override;
 
   void SetDefaultPasswordStore(
-      const autofill::PasswordForm::Store& store) override;
-  autofill::PasswordForm::Store GetDefaultPasswordStore() const override;
+      const password_manager::PasswordForm::Store& store) override;
+  password_manager::PasswordForm::Store GetDefaultPasswordStore()
+      const override;
 
   password_manager::metrics_util::PasswordAccountStorageUsageLevel
   ComputePasswordAccountStorageUsageLevel() const override;

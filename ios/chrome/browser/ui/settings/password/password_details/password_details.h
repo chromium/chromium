@@ -7,11 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#include "components/password_manager/core/browser/password_form_forward.h"
 #include "url/gurl.h"
-
-namespace autofill {
-struct PasswordForm;
-}
 
 // Object which is used by |PasswordDetailsViewController| to show
 // information about password.
@@ -35,7 +32,7 @@ struct PasswordForm;
 // URL which allows to change the password of compromised credential.
 @property(nonatomic, readonly) GURL changePasswordURL;
 
-- (instancetype)initWithPasswordForm:(const autofill::PasswordForm&)form
+- (instancetype)initWithPasswordForm:(const password_manager::PasswordForm&)form
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

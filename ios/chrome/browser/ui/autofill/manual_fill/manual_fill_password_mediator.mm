@@ -101,7 +101,8 @@ BOOL AreCredentialsAtIndexesConnected(
 
 - (void)passwordFetcher:(PasswordFetcher*)passwordFetcher
       didFetchPasswords:
-          (std::vector<std::unique_ptr<autofill::PasswordForm>>)passwords {
+          (std::vector<std::unique_ptr<password_manager::PasswordForm>>)
+              passwords {
   NSMutableArray<ManualFillCredential*>* credentials =
       [[NSMutableArray alloc] initWithCapacity:passwords.size()];
   for (const auto& form : passwords) {

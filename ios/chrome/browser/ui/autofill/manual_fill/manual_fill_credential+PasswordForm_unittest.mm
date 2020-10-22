@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_credential+PasswordForm.h"
 
 #include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "testing/platform_test.h"
 #include "url/gurl.h"
 
@@ -13,7 +13,7 @@
 #error "This file requires ARC support."
 #endif
 
-using autofill::PasswordForm;
+using password_manager::PasswordForm;
 using ManualFillCredentialFormPasswordiOSTest = PlatformTest;
 
 // Tests the creation of a credential from a password form.

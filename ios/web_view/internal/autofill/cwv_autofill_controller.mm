@@ -594,7 +594,8 @@ showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
   __block std::unique_ptr<password_manager::PasswordFormManagerForUI> formPtr(
       std::move(formToSave));
 
-  const autofill::PasswordForm& credentials = formPtr->GetPendingCredentials();
+  const password_manager::PasswordForm& credentials =
+      formPtr->GetPendingCredentials();
   CWVPassword* password =
       [[CWVPassword alloc] initWithPasswordForm:credentials];
 
@@ -628,7 +629,8 @@ showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
   __block std::unique_ptr<password_manager::PasswordFormManagerForUI> formPtr(
       std::move(formToUpdate));
 
-  const autofill::PasswordForm& credentials = formPtr->GetPendingCredentials();
+  const password_manager::PasswordForm& credentials =
+      formPtr->GetPendingCredentials();
   CWVPassword* password =
       [[CWVPassword alloc] initWithPasswordForm:credentials];
 

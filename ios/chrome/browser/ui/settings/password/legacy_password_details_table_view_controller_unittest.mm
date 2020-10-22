@@ -6,7 +6,7 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/web/chrome_web_test.h"
@@ -76,7 +76,7 @@ class LegacyPasswordDetailsTableViewControllerTest
   web::WebTaskEnvironment task_environment_;
   MockReauthenticationModule* reauthentication_module_;
   NSString* origin_;
-  autofill::PasswordForm form_;
+  password_manager::PasswordForm form_;
 };
 
 TEST_F(LegacyPasswordDetailsTableViewControllerTest,

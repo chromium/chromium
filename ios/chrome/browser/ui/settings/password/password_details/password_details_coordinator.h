@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_COORDINATOR_H_
 
+#include "components/password_manager/core/browser/password_form_forward.h"
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
 @protocol ApplicationCommands;
@@ -13,10 +14,6 @@ class IOSChromePasswordCheckManager;
 @protocol PasswordDetailsCoordinatorDelegate;
 @class ReauthenticationModule;
 
-namespace autofill {
-struct PasswordForm;
-}
-
 // This coordinator presents a password details for the user.
 @interface PasswordDetailsCoordinator : ChromeCoordinator
 
@@ -24,7 +21,8 @@ struct PasswordForm;
     initWithBaseNavigationController:
         (UINavigationController*)navigationController
                              browser:(Browser*)browser
-                            password:(const autofill::PasswordForm&)password
+                            password:
+                                (const password_manager::PasswordForm&)password
                         reauthModule:(ReauthenticationModule*)reauthModule
                 passwordCheckManager:(IOSChromePasswordCheckManager*)manager
     NS_DESIGNATED_INITIALIZER;

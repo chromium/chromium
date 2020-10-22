@@ -5,12 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_LEGACY_PASSWORD_DETAILS_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_LEGACY_PASSWORD_DETAILS_TABLE_VIEW_CONTROLLER_H_
 
+#include "components/password_manager/core/browser/password_form_forward.h"
 #import "ios/chrome/browser/ui/settings/password/legacy_password_details_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
-
-namespace autofill {
-struct PasswordForm;
-}  // namespace autofill
 
 @protocol ReauthenticationProtocol;
 
@@ -26,7 +23,7 @@ struct PasswordForm;
 
 // The designated initializer.
 - (nullable instancetype)
-      initWithPasswordForm:(const autofill::PasswordForm&)passwordForm
+      initWithPasswordForm:(const password_manager::PasswordForm&)passwordForm
                   delegate:
                       (nonnull
                            id<LegacyPasswordDetailsTableViewControllerDelegate>)

@@ -83,20 +83,21 @@ bool TestPasswordManagerClient::PromptUserToSaveOrUpdatePassword(
 }
 
 bool TestPasswordManagerClient::PromptUserToChooseCredentials(
-    std::vector<std::unique_ptr<autofill::PasswordForm>> local_forms,
+    std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
     const url::Origin& origin,
     CredentialsCallback callback) {
   EXPECT_FALSE(local_forms.empty());
-  const autofill::PasswordForm* form = local_forms[0].get();
+  const password_manager::PasswordForm* form = local_forms[0].get();
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback),
-                     base::Owned(new autofill::PasswordForm(*form))));
-  std::vector<autofill::PasswordForm*> raw_forms(local_forms.size());
-  std::transform(local_forms.begin(), local_forms.end(), raw_forms.begin(),
-                 [](const std::unique_ptr<autofill::PasswordForm>& form) {
-                   return form.get();
-                 });
+                     base::Owned(new password_manager::PasswordForm(*form))));
+  std::vector<password_manager::PasswordForm*> raw_forms(local_forms.size());
+  std::transform(
+      local_forms.begin(), local_forms.end(), raw_forms.begin(),
+      [](const std::unique_ptr<password_manager::PasswordForm>& form) {
+        return form.get();
+      });
   PromptUserToChooseCredentialsPtr(raw_forms, origin, base::DoNothing());
   return true;
 }

@@ -36,7 +36,7 @@
 
 namespace {
 
-using autofill::PasswordForm;
+using password_manager::PasswordForm;
 using password_manager::AffiliatedMatchHelper;
 using password_manager::PasswordStore;
 using password_manager::PasswordStoreChange;

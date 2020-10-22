@@ -9,7 +9,7 @@
 #include "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
@@ -146,14 +146,14 @@ class PasswordDetailsTableViewControllerTest
                    std::string username = kUsername,
                    std::string password = kPassword,
                    bool isCompromised = false) {
-    auto form = autofill::PasswordForm();
+    auto form = password_manager::PasswordForm();
     form.signon_realm = website;
     form.username_value = base::ASCIIToUTF16(username);
     form.password_value = base::ASCIIToUTF16(password);
     form.url = GURL(website);
     form.action = GURL(website + "/action");
     form.username_element = base::ASCIIToUTF16("email");
-    form.scheme = autofill::PasswordForm::Scheme::kHtml;
+    form.scheme = password_manager::PasswordForm::Scheme::kHtml;
 
     PasswordDetails* passwordDetails =
         [[PasswordDetails alloc] initWithPasswordForm:form];
@@ -165,7 +165,7 @@ class PasswordDetailsTableViewControllerTest
   }
 
   void SetFederatedPassword() {
-    auto form = autofill::PasswordForm();
+    auto form = password_manager::PasswordForm();
     form.username_value = base::ASCIIToUTF16("test@egmail.com");
     form.url = GURL(base::ASCIIToUTF16("http://www.example.com/"));
     form.signon_realm = form.url.spec();
@@ -179,7 +179,7 @@ class PasswordDetailsTableViewControllerTest
   }
 
   void SetBlockedOrigin() {
-    auto form = autofill::PasswordForm();
+    auto form = password_manager::PasswordForm();
     form.url = GURL("http://www.example.com/");
     form.blocked_by_user = true;
     form.signon_realm = form.url.spec();

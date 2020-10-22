@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator.h"
 
 #include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "ios/chrome/browser/passwords/password_check_observer_bridge.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
@@ -35,7 +35,8 @@ using InsecureCredentialsView =
 
 @implementation PasswordDetailsMediator
 
-- (instancetype)initWithPassword:(const autofill::PasswordForm&)passwordForm
+- (instancetype)initWithPassword:
+                    (const password_manager::PasswordForm&)passwordForm
             passwordCheckManager:(IOSChromePasswordCheckManager*)manager {
   self = [super init];
   if (self) {

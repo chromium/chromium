@@ -7,9 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-namespace autofill {
-struct PasswordForm;
-}  // namespace autofill
+#include "components/password_manager/core/browser/password_form_forward.h"
 
 @class LegacyPasswordDetailsTableViewController;
 
@@ -20,7 +18,8 @@ struct PasswordForm;
 - (void)passwordDetailsTableViewController:
             (LegacyPasswordDetailsTableViewController*)controller
                             deletePassword:
-                                (const autofill::PasswordForm&)passwordForm;
+                                (const password_manager::PasswordForm&)
+                                    passwordForm;
 
 @end
 

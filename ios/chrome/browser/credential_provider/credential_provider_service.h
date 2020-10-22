@@ -59,25 +59,26 @@ class CredentialProviderService
   // Replaces all data with credentials created from the passed forms and then
   // syncs to disk.
   void SyncAllCredentials(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> forms);
+      std::vector<std::unique_ptr<password_manager::PasswordForm>> forms);
 
   // Syncs the credential store to disk.
   void SyncStore(bool set_first_time_sync_flag);
 
   // Add credentials from |forms|.
   void AddCredentials(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> forms);
+      std::vector<std::unique_ptr<password_manager::PasswordForm>> forms);
 
   // Removes credentials from |forms|.
   void RemoveCredentials(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> forms);
+      std::vector<std::unique_ptr<password_manager::PasswordForm>> forms);
 
   // Syncs account_validation_id_.
   void UpdateAccountValidationId();
 
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> results) override;
+      std::vector<std::unique_ptr<password_manager::PasswordForm>> results)
+      override;
 
   // PasswordStore::Observer:
   void OnLoginsChanged(
@@ -86,7 +87,7 @@ class CredentialProviderService
   // Completion called after the affiliations are injected in the added forms.
   // If no affiliation matcher is available, it is called right away.
   void OnInjectedAffiliationAfterLoginsChanged(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> forms);
+      std::vector<std::unique_ptr<password_manager::PasswordForm>> forms);
 
   // syncer::SyncServiceObserver:
   void OnSyncConfigurationCompleted(syncer::SyncService* sync) override;

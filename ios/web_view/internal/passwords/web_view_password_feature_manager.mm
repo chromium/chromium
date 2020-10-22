@@ -52,14 +52,14 @@ bool WebViewPasswordFeatureManager::ShouldShowAccountStorageBubbleUi() const {
   return false;
 }
 
-autofill::PasswordForm::Store
+password_manager::PasswordForm::Store
 WebViewPasswordFeatureManager::GetDefaultPasswordStore() const {
   // ios/web_view should never write to the profile password store.
-  return autofill::PasswordForm::Store::kAccountStore;
+  return password_manager::PasswordForm::Store::kAccountStore;
 }
 
 void WebViewPasswordFeatureManager::SetDefaultPasswordStore(
-    const autofill::PasswordForm::Store& store) {
+    const password_manager::PasswordForm::Store& store) {
   NOTREACHED();
 }
 

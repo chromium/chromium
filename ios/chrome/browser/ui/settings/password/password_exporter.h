@@ -10,9 +10,7 @@
 #include <memory>
 #include <vector>
 
-namespace autofill {
-struct PasswordForm;
-}  // namespace autofill
+#include "components/password_manager/core/browser/password_form_forward.h"
 
 enum class WriteToURLStatus {
   SUCCESS,
@@ -43,7 +41,8 @@ enum class ExportState {
 // Posts task to serialize passwords and calls |serializedPasswordsHandler|
 // when serialization is finished.
 - (void)serializePasswords:
-            (std::vector<std::unique_ptr<autofill::PasswordForm>>)passwords
+            (std::vector<std::unique_ptr<password_manager::PasswordForm>>)
+                passwords
                    handler:(void (^)(std::string))serializedPasswordsHandler;
 
 @end
@@ -106,7 +105,7 @@ enum class ExportState {
 // Method to be called in order to start the export flow. This initiates
 // the reauthentication procedure and asks for password serialization.
 - (void)startExportFlow:
-    (std::vector<std::unique_ptr<autofill::PasswordForm>>)passwords;
+    (std::vector<std::unique_ptr<password_manager::PasswordForm>>)passwords;
 
 // Called when the user cancels the export operation.
 - (void)cancelExport;

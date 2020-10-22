@@ -6,14 +6,12 @@
 #define IOS_CHROME_BROWSER_AUTOFILL_MANUAL_FILL_PASSWORDS_FETCHER_H_
 
 #import <Foundation/Foundation.h>
+
 #include <memory>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-
-namespace autofill {
-struct PasswordForm;
-}  // namespace autofill
+#include "components/password_manager/core/browser/password_form_forward.h"
 
 @class PasswordFetcher;
 
@@ -29,7 +27,8 @@ class GURL;
 // Saved passwords has been fetched or updated.
 - (void)passwordFetcher:(PasswordFetcher*)passwordFetcher
       didFetchPasswords:
-          (std::vector<std::unique_ptr<autofill::PasswordForm>>)passwords;
+          (std::vector<std::unique_ptr<password_manager::PasswordForm>>)
+              passwords;
 
 @end
 

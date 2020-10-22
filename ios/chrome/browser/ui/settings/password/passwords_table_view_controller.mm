@@ -11,9 +11,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/google/core/common/google_util.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -95,12 +95,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeExportPasswordsButton,
 };
 
-std::vector<std::unique_ptr<autofill::PasswordForm>> CopyOf(
-    const std::vector<std::unique_ptr<autofill::PasswordForm>>& password_list) {
-  std::vector<std::unique_ptr<autofill::PasswordForm>> password_list_copy;
+std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
+    const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+        password_list) {
+  std::vector<std::unique_ptr<password_manager::PasswordForm>>
+      password_list_copy;
   for (const auto& form : password_list) {
     password_list_copy.push_back(
-        std::make_unique<autofill::PasswordForm>(*form));
+        std::make_unique<password_manager::PasswordForm>(*form));
   }
   return password_list_copy;
 }
@@ -108,7 +110,7 @@ std::vector<std::unique_ptr<autofill::PasswordForm>> CopyOf(
 }  // namespace
 
 @interface PasswordFormContentItem : TableViewDetailTextItem
-@property(nonatomic) autofill::PasswordForm* form;
+@property(nonatomic) password_manager::PasswordForm* form;
 @end
 @implementation PasswordFormContentItem
 @end
@@ -189,9 +191,9 @@ std::vector<std::unique_ptr<autofill::PasswordForm>> CopyOf(
   // The interface for getting and manipulating a user's saved passwords.
   scoped_refptr<password_manager::PasswordStore> _passwordStore;
   // The list of the user's saved passwords.
-  std::vector<std::unique_ptr<autofill::PasswordForm>> _savedForms;
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> _savedForms;
   // The list of the user's blocked sites.
-  std::vector<std::unique_ptr<autofill::PasswordForm>> _blockedForms;
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> _blockedForms;
   // Map containing duplicates of saved passwords.
   password_manager::DuplicatesMap _savedPasswordDuplicates;
   // Map containing duplicates of blocked passwords.
@@ -584,7 +586,8 @@ std::vector<std::unique_ptr<autofill::PasswordForm>> CopyOf(
 
 - (SavedFormContentItem*)savedFormItemWithText:(NSString*)text
                                  andDetailText:(NSString*)detailText
-                                       forForm:(autofill::PasswordForm*)form {
+                                       forForm:(password_manager::PasswordForm*)
+                                                   form {
   SavedFormContentItem* passwordItem =
       [[SavedFormContentItem alloc] initWithType:ItemTypeSavedPassword];
   passwordItem.text = text;
@@ -595,9 +598,9 @@ std::vector<std::unique_ptr<autofill::PasswordForm>> CopyOf(
   return passwordItem;
 }
 
-- (BlockedFormContentItem*)blockedFormItemWithText:(NSString*)text
-                                           forForm:
-                                               (autofill::PasswordForm*)form {
+- (BlockedFormContentItem*)
+    blockedFormItemWithText:(NSString*)text
+                    forForm:(password_manager::PasswordForm*)form {
   BlockedFormContentItem* passwordItem =
       [[BlockedFormContentItem alloc] initWithType:ItemTypeBlocked];
   passwordItem.text = text;
@@ -720,7 +723,7 @@ std::vector<std::unique_ptr<autofill::PasswordForm>> CopyOf(
 }
 
 - (void)setPasswordsForms:
-    (std::vector<std::unique_ptr<autofill::PasswordForm>>)results {
+    (std::vector<std::unique_ptr<password_manager::PasswordForm>>)results {
   if (base::FeatureList::IsEnabled(
           password_manager::features::kPasswordCheck)) {
     _blockedForms.clear();
@@ -1256,18 +1259,20 @@ std::vector<std::unique_ptr<autofill::PasswordForm>> CopyOf(
     auto& duplicates =
         blocked ? _blockedPasswordDuplicates : _savedPasswordDuplicates;
 
-    const autofill::PasswordForm& deletedForm = *item.form;
+    const password_manager::PasswordForm& deletedForm = *item.form;
     auto begin = blocked ? blockedIterator : passwordIterator;
     auto end = blocked ? blockedEndIterator : passwordEndIterator;
 
     auto formIterator = std::find_if(
         begin, end,
-        [&deletedForm](const std::unique_ptr<autofill::PasswordForm>& value) {
+        [&deletedForm](
+            const std::unique_ptr<password_manager::PasswordForm>& value) {
           return *value == deletedForm;
         });
     DCHECK(formIterator != end);
 
-    std::unique_ptr<autofill::PasswordForm> form = std::move(*formIterator);
+    std::unique_ptr<password_manager::PasswordForm> form =
+        std::move(*formIterator);
     std::string key = password_manager::CreateSortKey(*form);
     auto duplicatesRange = duplicates.equal_range(key);
     for (auto iterator = duplicatesRange.first;
@@ -1635,14 +1640,14 @@ std::vector<std::unique_ptr<autofill::PasswordForm>> CopyOf(
 }
 
 // Deletes passed password form and updates list accordingly.
-- (void)deletePasswordForm:(const autofill::PasswordForm&)form {
+- (void)deletePasswordForm:(const password_manager::PasswordForm&)form {
   _passwordStore->RemoveLogin(form);
 
-  std::vector<std::unique_ptr<autofill::PasswordForm>>& forms =
+  std::vector<std::unique_ptr<password_manager::PasswordForm>>& forms =
       form.blocked_by_user ? _blockedForms : _savedForms;
   auto iterator = std::find_if(
       forms.begin(), forms.end(),
-      [&form](const std::unique_ptr<autofill::PasswordForm>& value) {
+      [&form](const std::unique_ptr<password_manager::PasswordForm>& value) {
         return *value == form;
       });
   DCHECK(iterator != forms.end());

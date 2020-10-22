@@ -68,7 +68,7 @@ class WebViewPasswordManagerClient
       password_manager::PasswordManagerDriver* driver,
       autofill::mojom::FocusedFieldType focused_field_type) override;
   bool PromptUserToChooseCredentials(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> local_forms,
+      std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
       const url::Origin& origin,
       CredentialsCallback callback) override;
   void AutomaticPasswordSave(
@@ -83,10 +83,10 @@ class WebViewPasswordManagerClient
   password_manager::PasswordStore* GetProfilePasswordStore() const override;
   password_manager::PasswordStore* GetAccountPasswordStore() const override;
   void NotifyUserAutoSignin(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> local_forms,
+      std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
       const url::Origin& origin) override;
   void NotifyUserCouldBeAutoSignedIn(
-      std::unique_ptr<autofill::PasswordForm> form) override;
+      std::unique_ptr<password_manager::PasswordForm> form) override;
   void NotifySuccessfulLoginWithExistingPassword(
       std::unique_ptr<password_manager::PasswordFormManagerForUI>
           submitted_manager) override;

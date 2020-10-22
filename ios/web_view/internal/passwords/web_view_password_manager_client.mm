@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "components/autofill/core/browser/logging/log_manager.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/password_manager/ios/password_manager_ios_util.h"
@@ -97,7 +97,7 @@ SyncState WebViewPasswordManagerClient::GetPasswordSyncState() const {
 }
 
 bool WebViewPasswordManagerClient::PromptUserToChooseCredentials(
-    std::vector<std::unique_ptr<autofill::PasswordForm>> local_forms,
+    std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
     const url::Origin& origin,
     CredentialsCallback callback) {
   NOTIMPLEMENTED();
@@ -182,7 +182,7 @@ PasswordStore* WebViewPasswordManagerClient::GetAccountPasswordStore() const {
 }
 
 void WebViewPasswordManagerClient::NotifyUserAutoSignin(
-    std::vector<std::unique_ptr<autofill::PasswordForm>> local_forms,
+    std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
     const url::Origin& origin) {
   DCHECK(!local_forms.empty());
   helper_.NotifyUserAutoSignin();
@@ -190,7 +190,7 @@ void WebViewPasswordManagerClient::NotifyUserAutoSignin(
 }
 
 void WebViewPasswordManagerClient::NotifyUserCouldBeAutoSignedIn(
-    std::unique_ptr<autofill::PasswordForm> form) {
+    std::unique_ptr<password_manager::PasswordForm> form) {
   helper_.NotifyUserCouldBeAutoSignedIn(std::move(form));
 }
 

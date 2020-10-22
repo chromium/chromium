@@ -668,7 +668,8 @@ using base::UmaHistogramEnumeration;
 
 - (void)passwordFetcher:(PasswordFetcher*)passwordFetcher
       didFetchPasswords:
-          (std::vector<std::unique_ptr<autofill::PasswordForm>>)passwords {
+          (std::vector<std::unique_ptr<password_manager::PasswordForm>>)
+              passwords {
   self.consumer.passwordButtonHidden = passwords.empty();
 }
 

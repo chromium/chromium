@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -21,7 +21,7 @@ SavePasswordsConsumer::SavePasswordsConsumer(
 SavePasswordsConsumer::~SavePasswordsConsumer() = default;
 
 void SavePasswordsConsumer::OnGetPasswordStoreResults(
-    std::vector<std::unique_ptr<autofill::PasswordForm>> results) {
+    std::vector<std::unique_ptr<password_manager::PasswordForm>> results) {
   [delegate_ onGetPasswordStoreResults:std::move(results)];
 }
 

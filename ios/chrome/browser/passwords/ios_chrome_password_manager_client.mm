@@ -11,8 +11,8 @@
 #include "base/no_destructor.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_router.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
@@ -86,7 +86,7 @@ SyncState IOSChromePasswordManagerClient::GetPasswordSyncState() const {
 }
 
 bool IOSChromePasswordManagerClient::PromptUserToChooseCredentials(
-    std::vector<std::unique_ptr<autofill::PasswordForm>> local_forms,
+    std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
     const url::Origin& origin,
     CredentialsCallback callback) {
   NOTIMPLEMENTED();
@@ -180,7 +180,7 @@ PasswordStore* IOSChromePasswordManagerClient::GetAccountPasswordStore() const {
 }
 
 void IOSChromePasswordManagerClient::NotifyUserAutoSignin(
-    std::vector<std::unique_ptr<autofill::PasswordForm>> local_forms,
+    std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
     const url::Origin& origin) {
   DCHECK(!local_forms.empty());
   helper_.NotifyUserAutoSignin();
@@ -188,7 +188,7 @@ void IOSChromePasswordManagerClient::NotifyUserAutoSignin(
 }
 
 void IOSChromePasswordManagerClient::NotifyUserCouldBeAutoSignedIn(
-    std::unique_ptr<autofill::PasswordForm> form) {
+    std::unique_ptr<password_manager::PasswordForm> form) {
   helper_.NotifyUserCouldBeAutoSignedIn(std::move(form));
 }
 

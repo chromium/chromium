@@ -12,9 +12,9 @@
 #include "base/test/bind_test_util.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/mock_bulk_leak_check_service.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -172,7 +172,7 @@ class PasswordsTableViewControllerTest
   }
 
   // Adds a form to PasswordsTableViewController.
-  void AddPasswordForm(std::unique_ptr<autofill::PasswordForm> form) {
+  void AddPasswordForm(std::unique_ptr<password_manager::PasswordForm> form) {
     if (GetParam().password_check_enabled) {
       GetTestStore().AddLogin(*form);
       RunUntilIdle();
@@ -180,7 +180,7 @@ class PasswordsTableViewControllerTest
       PasswordsTableViewController* passwords_controller =
           static_cast<PasswordsTableViewController*>(controller());
       GetTestStore().AddLogin(*form);
-      std::vector<std::unique_ptr<autofill::PasswordForm>> passwords;
+      std::vector<std::unique_ptr<password_manager::PasswordForm>> passwords;
       passwords.push_back(std::move(form));
       [passwords_controller setPasswordsForms:std::move(passwords)];
     }
@@ -188,7 +188,7 @@ class PasswordsTableViewControllerTest
 
   // Creates and adds a saved password form.
   void AddSavedForm1() {
-    auto form = std::make_unique<autofill::PasswordForm>();
+    auto form = std::make_unique<password_manager::PasswordForm>();
     form->url = GURL("http://www.example.com/accounts/LoginAuth");
     form->action = GURL("http://www.example.com/accounts/Login");
     form->username_element = base::ASCIIToUTF16("Email");
@@ -197,14 +197,14 @@ class PasswordsTableViewControllerTest
     form->password_value = base::ASCIIToUTF16("test");
     form->submit_element = base::ASCIIToUTF16("signIn");
     form->signon_realm = "http://www.example.com/";
-    form->scheme = autofill::PasswordForm::Scheme::kHtml;
+    form->scheme = password_manager::PasswordForm::Scheme::kHtml;
     form->blocked_by_user = false;
     AddPasswordForm(std::move(form));
   }
 
   // Creates and adds a saved password form.
   void AddSavedForm2() {
-    auto form = std::make_unique<autofill::PasswordForm>();
+    auto form = std::make_unique<password_manager::PasswordForm>();
     form->url = GURL("http://www.example2.com/accounts/LoginAuth");
     form->action = GURL("http://www.example2.com/accounts/Login");
     form->username_element = base::ASCIIToUTF16("Email");
@@ -213,7 +213,7 @@ class PasswordsTableViewControllerTest
     form->password_value = base::ASCIIToUTF16("test");
     form->submit_element = base::ASCIIToUTF16("signIn");
     form->signon_realm = "http://www.example2.com/";
-    form->scheme = autofill::PasswordForm::Scheme::kHtml;
+    form->scheme = password_manager::PasswordForm::Scheme::kHtml;
     form->blocked_by_user = false;
     AddPasswordForm(std::move(form));
   }
@@ -221,7 +221,7 @@ class PasswordsTableViewControllerTest
   // Creates and adds a blocked site form to never offer to save
   // user's password to those sites.
   void AddBlockedForm1() {
-    auto form = std::make_unique<autofill::PasswordForm>();
+    auto form = std::make_unique<password_manager::PasswordForm>();
     form->url = GURL("http://www.secret.com/login");
     form->action = GURL("http://www.secret.com/action");
     form->username_element = base::ASCIIToUTF16("email");
@@ -230,7 +230,7 @@ class PasswordsTableViewControllerTest
     form->password_value = base::ASCIIToUTF16("cantsay");
     form->submit_element = base::ASCIIToUTF16("signIn");
     form->signon_realm = "http://www.secret.com/";
-    form->scheme = autofill::PasswordForm::Scheme::kHtml;
+    form->scheme = password_manager::PasswordForm::Scheme::kHtml;
     form->blocked_by_user = true;
     AddPasswordForm(std::move(form));
   }
@@ -238,7 +238,7 @@ class PasswordsTableViewControllerTest
   // Creates and adds another blocked site form to never offer to save
   // user's password to those sites.
   void AddBlockedForm2() {
-    auto form = std::make_unique<autofill::PasswordForm>();
+    auto form = std::make_unique<password_manager::PasswordForm>();
     form->url = GURL("http://www.secret2.com/login");
     form->action = GURL("http://www.secret2.com/action");
     form->username_element = base::ASCIIToUTF16("email");
@@ -247,7 +247,7 @@ class PasswordsTableViewControllerTest
     form->password_value = base::ASCIIToUTF16("cantsay");
     form->submit_element = base::ASCIIToUTF16("signIn");
     form->signon_realm = "http://www.secret2.com/";
-    form->scheme = autofill::PasswordForm::Scheme::kHtml;
+    form->scheme = password_manager::PasswordForm::Scheme::kHtml;
     form->blocked_by_user = true;
     AddPasswordForm(std::move(form));
   }

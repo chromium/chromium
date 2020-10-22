@@ -56,11 +56,12 @@ scoped_refptr<password_manager::PasswordStore> GetPasswordStore() {
 class TestStoreConsumer : public password_manager::PasswordStoreConsumer {
  public:
   void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> obtained) override {
+      std::vector<std::unique_ptr<password_manager::PasswordForm>> obtained)
+      override {
     obtained_ = std::move(obtained);
   }
 
-  const std::vector<autofill::PasswordForm>& GetStoreResults() {
+  const std::vector<password_manager::PasswordForm>& GetStoreResults() {
     results_.clear();
     ResetObtained();
     GetPasswordStore()->GetAllLogins(this);
@@ -94,19 +95,19 @@ class TestStoreConsumer : public password_manager::PasswordStoreConsumer {
   }
 
   // Temporary cache of obtained store results.
-  std::vector<std::unique_ptr<autofill::PasswordForm>> obtained_;
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> obtained_;
 
   // Combination of fillable and blocked credentials from the store.
-  std::vector<autofill::PasswordForm> results_;
+  std::vector<password_manager::PasswordForm> results_;
 };
 
 // Saves |form| to the password store and waits until the async processing is
 // done.
-void SaveToPasswordStore(const autofill::PasswordForm& form) {
+void SaveToPasswordStore(const password_manager::PasswordForm& form) {
   GetPasswordStore()->AddLogin(form);
   // When we retrieve the form from the store, |in_store| should be set.
-  autofill::PasswordForm expected_form = form;
-  expected_form.in_store = autofill::PasswordForm::Store::kProfileStore;
+  password_manager::PasswordForm expected_form = form;
+  expected_form.in_store = password_manager::PasswordForm::Store::kProfileStore;
   // Check the result and ensure PasswordStore processed this.
   TestStoreConsumer consumer;
   for (const auto& result : consumer.GetStoreResults()) {
@@ -117,7 +118,7 @@ void SaveToPasswordStore(const autofill::PasswordForm& form) {
 
 // Saves an example form in the store.
 void SaveExamplePasswordForm() {
-  autofill::PasswordForm example;
+  password_manager::PasswordForm example;
   example.username_value = base::ASCIIToUTF16(kExampleUsername);
   example.password_value = base::ASCIIToUTF16(kExamplePassword);
   example.url = GURL("https://example.com/");
@@ -127,7 +128,7 @@ void SaveExamplePasswordForm() {
 
 // Saves an example form in the store for the passed URL.
 void SaveLocalPasswordForm(const GURL& url) {
-  autofill::PasswordForm localForm;
+  password_manager::PasswordForm localForm;
   localForm.username_value = base::ASCIIToUTF16(kExampleUsername);
   localForm.password_value = base::ASCIIToUTF16(kExamplePassword);
   localForm.url = url;

@@ -36,7 +36,7 @@ constexpr char kUsername2[] = "bob";
 
 constexpr char kPassword[] = "s3cre3t";
 
-using autofill::PasswordForm;
+using password_manager::PasswordForm;
 using password_manager::CompromisedCredentials;
 using password_manager::CompromiseType;
 using password_manager::TestPasswordStore;

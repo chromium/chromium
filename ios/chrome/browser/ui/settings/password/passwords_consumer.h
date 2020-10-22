@@ -10,9 +10,7 @@
 #include <memory>
 #include <vector>
 
-namespace autofill {
-struct PasswordForm;
-}
+#include "components/password_manager/core/browser/password_form_forward.h"
 
 // Enum with all possible UI states of password check.
 typedef NS_ENUM(NSInteger, PasswordCheckUIState) {
@@ -39,7 +37,7 @@ typedef NS_ENUM(NSInteger, PasswordCheckUIState) {
 
 // Displays password and blocked forms.
 - (void)setPasswordsForms:
-    (std::vector<std::unique_ptr<autofill::PasswordForm>>)forms;
+    (std::vector<std::unique_ptr<password_manager::PasswordForm>>)forms;
 
 @end
 

@@ -24,7 +24,6 @@
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
 #include "components/autofill/core/common/renderer_id.h"
@@ -35,6 +34,7 @@
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager.h"
@@ -82,7 +82,7 @@
 using autofill::FormActivityObserverBridge;
 using autofill::FormData;
 using autofill::PasswordFormGenerationData;
-using autofill::PasswordForm;
+using password_manager::PasswordForm;
 using autofill::FormRendererId;
 using autofill::FieldRendererId;
 using base::SysNSStringToUTF16;
@@ -159,7 +159,7 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 
   // User credential waiting to be displayed in autosign-in snackbar, once tab
   // becomes active.
-  std::unique_ptr<autofill::PasswordForm> _pendingAutoSigninPasswordForm;
+  std::unique_ptr<PasswordForm> _pendingAutoSigninPasswordForm;
 }
 
 - (instancetype)initWithWebState:(WebState*)webState {
@@ -299,8 +299,7 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 
 // Shows auto sign-in notification and schedules hiding it after 3 seconds.
 // TODO(crbug.com/435048): Animate appearance.
-- (void)showAutosigninNotification:
-    (std::unique_ptr<autofill::PasswordForm>)formSignedIn {
+- (void)showAutosigninNotification:(std::unique_ptr<PasswordForm>)formSignedIn {
   if (!_webState)
     return;
 

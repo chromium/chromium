@@ -179,7 +179,7 @@ class SafetyCheckMediatorTest : public PlatformTest {
 
   void RunUntilIdle() { environment_.RunUntilIdle(); }
 
-  void AddPasswordForm(std::unique_ptr<autofill::PasswordForm> form) {
+  void AddPasswordForm(std::unique_ptr<password_manager::PasswordForm> form) {
     GetTestStore().AddLogin(*form);
     RunUntilIdle();
   }
@@ -194,7 +194,7 @@ class SafetyCheckMediatorTest : public PlatformTest {
 
   // Creates and adds a saved password form.
   void AddSavedForm() {
-    auto form = std::make_unique<autofill::PasswordForm>();
+    auto form = std::make_unique<password_manager::PasswordForm>();
     form->url = GURL("http://www.example.com/accounts/LoginAuth");
     form->action = GURL("http://www.example.com/accounts/Login");
     form->username_element = base::ASCIIToUTF16("Email");
@@ -203,7 +203,7 @@ class SafetyCheckMediatorTest : public PlatformTest {
     form->password_value = base::ASCIIToUTF16("test");
     form->submit_element = base::ASCIIToUTF16("signIn");
     form->signon_realm = "http://www.example.com/";
-    form->scheme = autofill::PasswordForm::Scheme::kHtml;
+    form->scheme = password_manager::PasswordForm::Scheme::kHtml;
     form->blocked_by_user = false;
     AddPasswordForm(std::move(form));
   }

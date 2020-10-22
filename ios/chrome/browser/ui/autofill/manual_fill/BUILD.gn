@@ -166,6 +166,7 @@ source_set("unit_tests") {
     "//components/autofill/ios/form_util:form_util",
     "//components/autofill/ios/form_util:test_support",
     "//components/leveldb_proto:leveldb_proto",
+    "//components/password_manager/core/browser",
     "//components/prefs",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state:test_support",

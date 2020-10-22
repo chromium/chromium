@@ -6,8 +6,8 @@
 
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #import "ios/chrome/browser/credential_provider/credential_provider_util.h"
 #include "url/gurl.h"
@@ -25,7 +25,8 @@ using base::SysUTF16ToNSString;
 
 @implementation ArchivableCredential (PasswordForm)
 
-- (instancetype)initWithPasswordForm:(const autofill::PasswordForm&)passwordForm
+- (instancetype)initWithPasswordForm:
+                    (const password_manager::PasswordForm&)passwordForm
                              favicon:(NSString*)favicon
                 validationIdentifier:(NSString*)validationIdentifier {
   if (passwordForm.blocked_by_user) {

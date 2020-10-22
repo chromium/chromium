@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/autofill/manual_fill/passwords_fetcher.h"
 
 #include "base/stl_util.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
@@ -87,7 +87,7 @@ class PasswordStoreObserverBridge
       _passwordStore->GetAutofillableLogins(_savedPasswordsConsumer.get());
     } else {
       password_manager::PasswordStore::FormDigest digest = {
-          autofill::PasswordForm::Scheme::kHtml, std::string(), URL};
+          password_manager::PasswordForm::Scheme::kHtml, std::string(), URL};
       digest.signon_realm = URL.spec();
       _passwordStore->GetLogins(digest, _savedPasswordsConsumer.get());
     }
@@ -102,7 +102,7 @@ class PasswordStoreObserverBridge
 #pragma mark - SavePasswordsConsumerDelegate
 
 - (void)onGetPasswordStoreResults:
-    (std::vector<std::unique_ptr<autofill::PasswordForm>>)results {
+    (std::vector<std::unique_ptr<password_manager::PasswordForm>>)results {
   // Filter out Android facet IDs and any blocked passwords.
   base::EraseIf(results, [](const auto& form) {
     return form->blocked_by_user ||

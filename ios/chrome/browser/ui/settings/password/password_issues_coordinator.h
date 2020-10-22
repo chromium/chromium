@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_ISSUES_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_ISSUES_COORDINATOR_H_
 
+#include "components/password_manager/core/browser/password_form_forward.h"
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
 @protocol ApplicationCommands;
@@ -12,10 +13,6 @@ class Browser;
 class IOSChromePasswordCheckManager;
 @class PasswordIssuesCoordinator;
 @class ReauthenticationModule;
-
-namespace autofill {
-struct PasswordForm;
-}
 
 // Delegate for PasswordIssuesCoordinator.
 @protocol PasswordIssuesCoordinatorDelegate
@@ -26,7 +23,8 @@ struct PasswordForm;
 
 // Called when the user deleted password. Returns whether presenter will
 // handle it or not.
-- (BOOL)willHandlePasswordDeletion:(const autofill::PasswordForm&)password;
+- (BOOL)willHandlePasswordDeletion:
+    (const password_manager::PasswordForm&)password;
 
 @end
 

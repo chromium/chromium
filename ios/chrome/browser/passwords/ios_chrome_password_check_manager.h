@@ -73,19 +73,20 @@ class IOSChromePasswordCheckManager
       const password_manager::CredentialWithPassword& credential) const;
 
   // Edits |username| and |password| for |form| and its duplicates.
-  bool EditPasswordForm(const autofill::PasswordForm& form,
+  bool EditPasswordForm(const password_manager::PasswordForm& form,
                         base::StringPiece new_username,
                         base::StringPiece new_password);
 
   // Edits password form using |insecure_credentials_manager_|.
-  void EditCompromisedPasswordForm(const autofill::PasswordForm& form,
+  void EditCompromisedPasswordForm(const password_manager::PasswordForm& form,
                                    base::StringPiece password);
 
   // Deletes |form| and its duplicates.
-  void DeletePasswordForm(const autofill::PasswordForm& form);
+  void DeletePasswordForm(const password_manager::PasswordForm& form);
 
   // Deletes compromised credentials which are related to |form|.
-  void DeleteCompromisedPasswordForm(const autofill::PasswordForm& form);
+  void DeleteCompromisedPasswordForm(
+      const password_manager::PasswordForm& form);
 
   void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
   void RemoveObserver(Observer* observer) {

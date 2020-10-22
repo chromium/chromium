@@ -248,7 +248,8 @@
   self.passwordIssuesCoordinator = nil;
 }
 
-- (BOOL)willHandlePasswordDeletion:(const autofill::PasswordForm&)password {
+- (BOOL)willHandlePasswordDeletion:
+    (const password_manager::PasswordForm&)password {
   return NO;
 }
 

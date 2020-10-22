@@ -7,7 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -35,7 +35,8 @@
 }
 
 - (void)serializePasswords:
-            (std::vector<std::unique_ptr<autofill::PasswordForm>>)passwords
+            (std::vector<std::unique_ptr<password_manager::PasswordForm>>)
+                passwords
                    handler:(void (^)(std::string))serializedPasswordsHandler {
   _serializedPasswordsHandler = serializedPasswordsHandler;
 }
@@ -106,13 +107,14 @@ class PasswordExporterTest : public PlatformTest {
                               delegate:password_exporter_delegate_];
   }
 
-  std::vector<std::unique_ptr<autofill::PasswordForm>> CreatePasswordList() {
-    auto password_form = std::make_unique<autofill::PasswordForm>();
+  std::vector<std::unique_ptr<password_manager::PasswordForm>>
+  CreatePasswordList() {
+    auto password_form = std::make_unique<password_manager::PasswordForm>();
     password_form->url = GURL("http://accounts.google.com/a/LoginAuth");
     password_form->username_value = base::ASCIIToUTF16("test@testmail.com");
     password_form->password_value = base::ASCIIToUTF16("test1");
 
-    std::vector<std::unique_ptr<autofill::PasswordForm>> password_forms;
+    std::vector<std::unique_ptr<password_manager::PasswordForm>> password_forms;
     password_forms.push_back(std::move(password_form));
     return password_forms;
   }

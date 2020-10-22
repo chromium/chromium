@@ -59,7 +59,7 @@ class PasswordIssuesTableViewControllerTest
 
   // Adds password issue to the view controller.
   void AddPasswordIssue() {
-    auto form = autofill::PasswordForm();
+    auto form = password_manager::PasswordForm();
     form.url = GURL("http://www.example.com/accounts/LoginAuth");
     form.action = GURL("http://www.example.com/accounts/Login");
     form.username_element = base::ASCIIToUTF16("Email");
@@ -68,7 +68,7 @@ class PasswordIssuesTableViewControllerTest
     form.password_value = base::ASCIIToUTF16("test");
     form.submit_element = base::ASCIIToUTF16("signIn");
     form.signon_realm = "http://www.example.com/";
-    form.scheme = autofill::PasswordForm::Scheme::kHtml;
+    form.scheme = password_manager::PasswordForm::Scheme::kHtml;
     NSMutableArray* passwords = [[NSMutableArray alloc] init];
     [passwords
         addObject:[[PasswordIssueWithForm alloc] initWithPasswordForm:form]];

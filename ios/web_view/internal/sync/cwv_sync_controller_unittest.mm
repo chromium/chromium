@@ -106,7 +106,7 @@ TEST_F(CWVSyncControllerTest, StartSyncWithIdentity) {
       &pref_service_, primary_account_info.account_id));
   EXPECT_EQ(password_manager::features_util::GetDefaultPasswordStore(
                 &pref_service_, &sync_service_),
-            autofill::PasswordForm::Store::kAccountStore);
+            password_manager::PasswordForm::Store::kAccountStore);
   EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
       &pref_service_, &sync_service_));
 }

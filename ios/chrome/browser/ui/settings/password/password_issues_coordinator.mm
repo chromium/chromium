@@ -104,7 +104,7 @@
 }
 
 - (void)presentPasswordIssueDetails:(id<PasswordIssue>)password {
-  autofill::PasswordForm form =
+  password_manager::PasswordForm form =
       base::mac::ObjCCastStrict<PasswordIssueWithForm>(password).form;
 
   DCHECK(!self.passwordDetails);
@@ -129,7 +129,8 @@
 }
 
 - (void)passwordDetailsCoordinator:(PasswordDetailsCoordinator*)coordinator
-                    deletePassword:(const autofill::PasswordForm&)password {
+                    deletePassword:
+                        (const password_manager::PasswordForm&)password {
   if (![self.delegate willHandlePasswordDeletion:password]) {
     [self.mediator deletePassword:password];
     [self.baseNavigationController popViewControllerAnimated:YES];

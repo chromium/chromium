@@ -151,7 +151,7 @@
   [self.passwordIssuesCoordinator start];
 }
 
-- (void)showDetailedViewForForm:(const autofill::PasswordForm&)form {
+- (void)showDetailedViewForForm:(const password_manager::PasswordForm&)form {
   if (base::FeatureList::IsEnabled(
           password_manager::features::kPasswordCheck)) {
     DCHECK(!self.passwordDetailsCoordinator);
@@ -190,7 +190,8 @@
   self.passwordIssuesCoordinator = nil;
 }
 
-- (BOOL)willHandlePasswordDeletion:(const autofill::PasswordForm&)password {
+- (BOOL)willHandlePasswordDeletion:
+    (const password_manager::PasswordForm&)password {
   [self.passwordsViewController deletePasswordForm:password];
   return YES;
 }
@@ -206,7 +207,8 @@
 }
 
 - (void)passwordDetailsCoordinator:(PasswordDetailsCoordinator*)coordinator
-                    deletePassword:(const autofill::PasswordForm&)password {
+                    deletePassword:
+                        (const password_manager::PasswordForm&)password {
   DCHECK_EQ(self.passwordDetailsCoordinator, coordinator);
   [self.passwordsViewController deletePasswordForm:password];
 }
@@ -215,7 +217,8 @@
 
 - (void)passwordDetailsTableViewController:
             (LegacyPasswordDetailsTableViewController*)controller
-                            deletePassword:(const autofill::PasswordForm&)form {
+                            deletePassword:
+                                (const password_manager::PasswordForm&)form {
   [self.passwordsViewController deletePasswordForm:form];
 }
 

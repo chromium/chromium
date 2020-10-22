@@ -13,7 +13,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
@@ -80,7 +80,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // Whether the password is shown in plain text form or in obscured form.
   BOOL _plainTextPasswordShown;
   // The password form.
-  autofill::PasswordForm _passwordForm;
+  password_manager::PasswordForm _passwordForm;
   // Module containing the reauthentication mechanism for viewing and copying
   // passwords.
   __weak id<ReauthenticationProtocol> _weakReauthenticationModule;
@@ -104,7 +104,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @synthesize deleteConfirmation = _deleteConfirmation;
 
 - (instancetype)
-      initWithPasswordForm:(const autofill::PasswordForm&)passwordForm
+      initWithPasswordForm:(const password_manager::PasswordForm&)passwordForm
                   delegate:
                       (id<LegacyPasswordDetailsTableViewControllerDelegate>)
                           delegate

@@ -7,7 +7,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_default.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -28,7 +28,7 @@
 
 namespace {
 
-using autofill::PasswordForm;
+using password_manager::PasswordForm;
 using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForFileOperationTimeout;
 using password_manager::PasswordStoreDefault;

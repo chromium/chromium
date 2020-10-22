@@ -303,7 +303,7 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
 #pragma mark - SavePasswordsConsumerDelegate
 
 - (void)onGetPasswordStoreResults:
-    (std::vector<std::unique_ptr<autofill::PasswordForm>>)results {
+    (std::vector<std::unique_ptr<password_manager::PasswordForm>>)results {
   DCHECK(self.consumer);
   [self.consumer setPasswordsForms:std::move(results)];
 }

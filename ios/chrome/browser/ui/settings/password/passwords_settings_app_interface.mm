@@ -9,8 +9,8 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -26,7 +26,7 @@
 #error "This file requires ARC support."
 #endif
 
-using autofill::PasswordForm;
+using password_manager::PasswordForm;
 using chrome_test_util::SetUpAndReturnMockReauthenticationModule;
 using chrome_test_util::SetUpAndReturnMockReauthenticationModuleForExport;
 
@@ -49,7 +49,8 @@ scoped_refptr<password_manager::PasswordStore> GetPasswordStore() {
 class FakeStoreConsumer : public password_manager::PasswordStoreConsumer {
  public:
   void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> obtained) override {
+      std::vector<std::unique_ptr<password_manager::PasswordForm>> obtained)
+      override {
     obtained_ = std::move(obtained);
   }
 
@@ -66,7 +67,7 @@ class FakeStoreConsumer : public password_manager::PasswordStoreConsumer {
     return responded;
   }
 
-  const std::vector<autofill::PasswordForm>& GetStoreResults() {
+  const std::vector<password_manager::PasswordForm>& GetStoreResults() {
     return results_;
   }
 
@@ -89,10 +90,10 @@ class FakeStoreConsumer : public password_manager::PasswordStoreConsumer {
   }
 
   // Temporary cache of obtained store results.
-  std::vector<std::unique_ptr<autofill::PasswordForm>> obtained_;
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> obtained_;
 
   // Combination of fillable and blacklisted credentials from the store.
-  std::vector<autofill::PasswordForm> results_;
+  std::vector<password_manager::PasswordForm> results_;
 };
 
 // Saves |form| to the password store and waits until the async processing is
@@ -100,8 +101,8 @@ class FakeStoreConsumer : public password_manager::PasswordStoreConsumer {
 bool SaveToPasswordStore(const PasswordForm& form) {
   GetPasswordStore()->AddLogin(form);
   // When we retrieve the form from the store, |in_store| should be set.
-  autofill::PasswordForm expected_form = form;
-  expected_form.in_store = autofill::PasswordForm::Store::kProfileStore;
+  password_manager::PasswordForm expected_form = form;
+  expected_form.in_store = password_manager::PasswordForm::Store::kProfileStore;
   // Check the result and ensure PasswordStore processed this.
   FakeStoreConsumer consumer;
   if (!consumer.FetchStoreResults()) {

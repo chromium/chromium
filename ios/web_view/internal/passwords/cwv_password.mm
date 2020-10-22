@@ -7,7 +7,7 @@
 #import <objc/runtime.h>
 
 #include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #import "ios/web_view/internal/utils/nsobject_description_utils.h"
 
@@ -16,11 +16,11 @@
 #endif
 
 @implementation CWVPassword {
-  autofill::PasswordForm _passwordForm;
+  password_manager::PasswordForm _passwordForm;
 }
 
 - (instancetype)initWithPasswordForm:
-    (const autofill::PasswordForm&)passwordForm {
+    (const password_manager::PasswordForm&)passwordForm {
   self = [super init];
   if (self) {
     _passwordForm = passwordForm;
@@ -62,7 +62,7 @@
 
 #pragma mark - Internal
 
-- (autofill::PasswordForm*)internalPasswordForm {
+- (password_manager::PasswordForm*)internalPasswordForm {
   return &_passwordForm;
 }
 

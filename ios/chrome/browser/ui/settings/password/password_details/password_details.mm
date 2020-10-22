@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 
 #include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/well_known_change_password_util.h"
 
@@ -16,7 +16,8 @@
 
 @implementation PasswordDetails
 
-- (instancetype)initWithPasswordForm:(const autofill::PasswordForm&)form {
+- (instancetype)initWithPasswordForm:
+    (const password_manager::PasswordForm&)form {
   self = [super init];
   if (self) {
     auto facetUri = password_manager::FacetURI::FromPotentiallyInvalidSpec(

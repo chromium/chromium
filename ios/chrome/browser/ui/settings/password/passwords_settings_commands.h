@@ -14,7 +14,7 @@
 - (void)showCompromisedPasswords;
 
 // Shows passwords details.
-- (void)showDetailedViewForForm:(const autofill::PasswordForm&)form;
+- (void)showDetailedViewForForm:(const password_manager::PasswordForm&)form;
 
 @end
 

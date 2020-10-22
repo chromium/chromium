@@ -38,7 +38,7 @@
 
 namespace {
 
-using autofill::PasswordForm;
+using password_manager::PasswordForm;
 using password_manager::CompromisedCredentials;
 using password_manager::CompromiseType;
 using password_manager::TestPasswordStore;
@@ -77,7 +77,7 @@ std::unique_ptr<KeyedService> BuildMockSyncSetupService(
 }
 
 - (void)setPasswordsForms:
-    (std::vector<std::unique_ptr<autofill::PasswordForm>>)form {
+    (std::vector<std::unique_ptr<password_manager::PasswordForm>>)form {
 }
 
 @end

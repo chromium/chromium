@@ -7,7 +7,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -31,7 +31,7 @@
 #endif
 
 @interface PasswordDetailsCoordinator () <PasswordDetailsHandler> {
-  autofill::PasswordForm _password;
+  password_manager::PasswordForm _password;
 
   // Manager responsible for password check feature.
   IOSChromePasswordCheckManager* _manager;
@@ -66,7 +66,8 @@
     initWithBaseNavigationController:
         (UINavigationController*)navigationController
                              browser:(Browser*)browser
-                            password:(const autofill::PasswordForm&)password
+                            password:
+                                (const password_manager::PasswordForm&)password
                         reauthModule:(ReauthenticationModule*)reauthModule
                 passwordCheckManager:(IOSChromePasswordCheckManager*)manager {
   self = [super initWithBaseViewController:navigationController

@@ -49,7 +49,7 @@ constexpr char kUsername2[] = "bob";
 constexpr char kPassword1[] = "s3cre3t";
 constexpr char kPassword2[] = "bett3r_S3cre3t";
 
-using autofill::PasswordForm;
+using password_manager::PasswordForm;
 using password_manager::BulkLeakCheckServiceInterface;
 using password_manager::CredentialWithPassword;
 using password_manager::MockBulkLeakCheckService;
