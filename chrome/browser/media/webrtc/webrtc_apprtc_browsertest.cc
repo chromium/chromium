@@ -143,7 +143,7 @@ class WebRtcApprtcBrowserTest : public WebRtcTestBase {
 
   bool LocalApprtcInstanceIsUp() {
     // Load the admin page and see if we manage to load it right.
-    ui_test_utils::NavigateToURL(browser(), GURL("localhost:9998"));
+    ui_test_utils::NavigateToURL(browser(), GURL("http://localhost:9998"));
     content::WebContents* tab_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     std::string javascript =
