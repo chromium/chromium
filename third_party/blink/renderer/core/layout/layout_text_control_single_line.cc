@@ -177,34 +177,6 @@ bool LayoutTextControlSingleLine::NodeAtPoint(
   return true;
 }
 
-LayoutUnit LayoutTextControlSingleLine::ScrollWidth() const {
-  NOT_DESTROYED();
-  // TODO(crbug.com/1040826): Move this logic to HTMLInputElement::scrollWidth.
-  if (LayoutBox* inner = InnerEditorElement()
-                             ? InnerEditorElement()->GetLayoutBox()
-                             : nullptr) {
-    // Adjust scrollWidth to inculde input element horizontal paddings and
-    // decoration width
-    LayoutUnit adjustment = ClientWidth() - inner->ClientWidth();
-    return inner->ScrollWidth() + adjustment;
-  }
-  return LayoutBlockFlow::ScrollWidth();
-}
-
-LayoutUnit LayoutTextControlSingleLine::ScrollHeight() const {
-  NOT_DESTROYED();
-  // TODO(crbug.com/1040826): Move this logic to HTMLInputElement::scrollHeight.
-  if (LayoutBox* inner = InnerEditorElement()
-                             ? InnerEditorElement()->GetLayoutBox()
-                             : nullptr) {
-    // Adjust scrollHeight to include input element vertical paddings and
-    // decoration height
-    LayoutUnit adjustment = ClientHeight() - inner->ClientHeight();
-    return inner->ScrollHeight() + adjustment;
-  }
-  return LayoutBlockFlow::ScrollHeight();
-}
-
 HTMLInputElement* LayoutTextControlSingleLine::InputElement() const {
   NOT_DESTROYED();
   return To<HTMLInputElement>(GetNode());

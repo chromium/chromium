@@ -71,7 +71,8 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
-#include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
@@ -1785,19 +1786,50 @@ bool HTMLInputElement::MatchesDefaultPseudoClass() const {
 }
 
 int HTMLInputElement::scrollWidth() {
+  if (!IsTextField())
+    return TextControlElement::scrollWidth();
   // If in preview state, fake the scroll width to prevent that any information
   // about the suggested content can be derived from the size.
-  if (IsTextField() && !SuggestedValue().IsEmpty())
+  if (!SuggestedValue().IsEmpty())
     return clientWidth();
-  return TextControlElement::scrollWidth();
+
+  GetDocument().UpdateStyleAndLayoutForNode(this,
+                                            DocumentUpdateReason::kJavaScript);
+  const auto* editor = InnerEditorElement();
+  const auto* editor_box = editor ? editor->GetLayoutBox() : nullptr;
+  const auto* box = GetLayoutBox();
+  if (!editor_box || !box)
+    return TextControlElement::scrollWidth();
+  // Adjust scrollWidth to include input element horizontal paddings and
+  // decoration width.
+  LayoutUnit adjustment = box->ClientWidth() - editor_box->ClientWidth();
+  return AdjustForAbsoluteZoom::AdjustLayoutUnit(
+             editor_box->ScrollWidth() + adjustment, box->StyleRef())
+      .Round();
 }
 
 int HTMLInputElement::scrollHeight() {
+  if (!IsTextField())
+    return TextControlElement::scrollHeight();
+
   // If in preview state, fake the scroll height to prevent that any information
   // about the suggested content can be derived from the size.
-  if (IsTextField() && !SuggestedValue().IsEmpty())
+  if (!SuggestedValue().IsEmpty())
     return clientHeight();
-  return TextControlElement::scrollHeight();
+
+  GetDocument().UpdateStyleAndLayoutForNode(this,
+                                            DocumentUpdateReason::kJavaScript);
+  const auto* editor = InnerEditorElement();
+  const auto* editor_box = editor ? editor->GetLayoutBox() : nullptr;
+  const auto* box = GetLayoutBox();
+  if (!editor_box || !box)
+    return TextControlElement::scrollHeight();
+  // Adjust scrollHeight to include input element vertical paddings and
+  // decoration height.
+  LayoutUnit adjustment = box->ClientHeight() - editor_box->ClientHeight();
+  return AdjustForAbsoluteZoom::AdjustLayoutUnit(
+             editor_box->ScrollHeight() + adjustment, box->StyleRef())
+      .Round();
 }
 
 bool HTMLInputElement::ShouldAppearChecked() const {

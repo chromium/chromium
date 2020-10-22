@@ -59,10 +59,6 @@ class LayoutTextControlSingleLine : public LayoutTextControl {
                    const PhysicalOffset& accumulated_offset,
                    HitTestAction) final;
 
-  // Subclassed to forward to our inner div.
-  LayoutUnit ScrollWidth() const final;
-  LayoutUnit ScrollHeight() const final;
-
   int TextBlockWidth() const;
 
   void ComputeVisualOverflow(bool recompute_floats) override;
