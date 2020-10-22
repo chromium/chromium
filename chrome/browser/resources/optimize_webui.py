@@ -148,12 +148,6 @@ def _update_dep_file(in_folder, args, manifest):
   deps = [_undo_mapping(url_mappings, u) for u in request_list]
   deps = map(os.path.normpath, deps)
 
-  # If the input was a folder holding an unpacked .pak file, the generated
-  # depfile should not list files already in the .pak file.
-  if args.input.endswith('unpak'):
-    filter_url = args.input
-    deps = [d for d in deps if not d.startswith(filter_url)]
-
   out_file_name = args.html_out_files[0] if args.html_out_files else \
                   args.js_out_files[0]
 
