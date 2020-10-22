@@ -1,0 +1,36 @@
+{
+  "facets": {
+    "fuchsia.test": {
+      "injected-services": {
+          "fuchsia.fonts.Provider": "fuchsia-pkg://fuchsia.com/fonts#meta/fonts.cmx",
+          "fuchsia.intl.PropertyProvider": "fuchsia-pkg://fuchsia.com/intl_property_manager#meta/intl_property_manager.cmx",
+          "fuchsia.memorypressure.Provider": "fuchsia-pkg://fuchsia.com/memory_monitor#meta/memory_monitor.cmx",
+          "fuchsia.netstack.Netstack": "fuchsia-pkg://fuchsia.com/netstack#meta/netstack.cmx",
+          "fuchsia.posix.socket.Provider": "fuchsia-pkg://fuchsia.com/netstack#meta/netstack.cmx",
+          "fuchsia.web.ContextProvider": "fuchsia-pkg://fuchsia.com/web_engine#meta/context_provider.cmx"
+      },
+      "system-services": [
+          "fuchsia.device.NameProvider",
+          "fuchsia.scheduler.ProfileProvider",
+          "fuchsia.sysmem.Allocator",
+          "fuchsia.vulkan.loader.Loader"
+      ]
+    }
+  },
+  "sandbox": {
+    "features": [
+        "isolated-persistent-storage",
+        "isolated-temp"
+    ],
+    "services": [
+        "fuchsia.fonts.Provider",
+        "fuchsia.intl.PropertyProvider",
+        "fuchsia.memorypressure.Provider",
+        "fuchsia.netstack.Netstack",
+        "fuchsia.posix.socket.Provider",
+        "fuchsia.process.Launcher",
+        "fuchsia.sys.Launcher",
+        "fuchsia.web.ContextProvider"
+    ]
+  }
+}

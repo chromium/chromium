@@ -207,6 +207,7 @@ test("cast_runner_integration_tests") {
       "web_engine",
     ],
   ]
+  manifest = "runners_integration_tests.test-cmx"
 }
 
 test("cast_runner_browsertests") {
@@ -280,6 +281,7 @@ test("web_runner_integration_tests") {
       "web_runner",
     ],
   ]
+  manifest = "runners_integration_tests.test-cmx"
 }
 
 if (is_official_build) {
