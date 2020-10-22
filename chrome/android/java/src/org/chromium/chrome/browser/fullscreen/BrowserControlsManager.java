@@ -34,9 +34,9 @@ import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tab.TabBrowserControlsOffsetHelper;
-import org.chromium.chrome.browser.tabmodel.TabModelImpl;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
+import org.chromium.chrome.browser.tabmodel.TabSwitchMetrics;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
@@ -598,7 +598,7 @@ public class BrowserControlsManager
             updateBrowserControlsOffsets(false, topControlsOffsetY, bottomControlsOffsetY,
                     contentOffsetY, topControlsMinHeightOffsetY, bottomControlsMinHeightOffsetY);
         }
-        TabModelImpl.setActualTabSwitchLatencyMetricRequired();
+        TabSwitchMetrics.setActualTabSwitchLatencyMetricRequired();
     }
 
     @Override

@@ -27,10 +27,10 @@ import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabThemeColorHelper;
-import org.chromium.chrome.browser.tabmodel.TabModelImpl;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
+import org.chromium.chrome.browser.tabmodel.TabSwitchMetrics;
 import org.chromium.chrome.browser.toolbar.ToolbarColors;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -446,7 +446,7 @@ public class StaticLayout extends Layout {
         //  restore. Potentially move to show().
         if (tabContentManager != null
                 && tabContentManager.hasFullCachedThumbnail(mModel.get(LayoutTab.TAB_ID))) {
-            TabModelImpl.logPerceivedTabSwitchLatencyMetric();
+            TabSwitchMetrics.logPerceivedTabSwitchLatencyMetric();
         }
     }
 
