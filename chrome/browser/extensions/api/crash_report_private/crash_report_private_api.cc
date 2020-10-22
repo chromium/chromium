@@ -8,6 +8,7 @@
 #include "chrome/browser/browser_process.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"
 #include "components/crash/content/browser/error_reporting/send_javascript_error_report.h"
+#include "content/public/browser/devtools_agent_host.h"
 
 namespace extensions {
 namespace api {
@@ -36,6 +37,13 @@ ExtensionFunction::ResponseAction CrashReportPrivateReportErrorFunction::Run() {
       GetClock()->Now() - g_last_called_time < base::TimeDelta::FromHours(1)) {
     return RespondNow(Error("Too many calls to this API"));
   }
+  content::WebContents* web_contents = GetSenderWebContents();
+  // Silently drop the crash report if devtools has ever been opened for this
+  // |web_contents|.
+  if (web_contents && content::DevToolsAgentHost::HasFor(web_contents)) {
+    return RespondNow(NoArguments());
+  }
+
   g_last_called_time = base::Time::Now();
 
   // TODO(https://crbug.com/986166): Use crash_reporter for Chrome OS.

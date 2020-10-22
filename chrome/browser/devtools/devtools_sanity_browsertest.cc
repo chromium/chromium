@@ -2450,6 +2450,22 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsSanityTest, InspectElement) {
   DevToolsWindowTesting::CloseDevToolsWindowSync(window);
 }
 
+IN_PROC_BROWSER_TEST_F(DevToolsSanityTest, ExistsForWebContentsAfterClosing) {
+  ASSERT_FALSE(content::DevToolsAgentHost::HasFor(GetInspectedTab()));
+
+  // Simulate opening devtools for the current tab.
+  OpenDevToolsWindow(kDebuggerTestPage, true);
+  ASSERT_TRUE(content::DevToolsAgentHost::HasFor(GetInspectedTab()));
+
+  // Closes devtools window for the current tab i.e. exit the devtools
+  // inspector.
+  CloseDevToolsWindow();
+
+  // The devtools window instance still exists for the current tab even though
+  // it is now closed.
+  ASSERT_TRUE(content::DevToolsAgentHost::HasFor(GetInspectedTab()));
+}
+
 IN_PROC_BROWSER_TEST_F(InProcessBrowserTest, BrowserCloseWithBeforeUnload) {
   EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
       KeepAliveOrigin::REMOTE_DEBUGGING));

@@ -4,11 +4,14 @@
 
 #include "base/system/sys_info.h"
 #include "base/test/simple_test_clock.h"
+#include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/api/crash_report_private/crash_report_private_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "components/crash/content/browser/error_reporting/mock_crash_endpoint.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/extension_host.h"
+#include "extensions/browser/process_manager.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
@@ -206,6 +209,39 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, RedactMessage) {
           "&prod=TestApp&src=http%3A%2F%2Fwww.test.com%2Ffoo&type="
           "JavascriptError&url=%2Ffoo&ver=1.0.0.0"));
   EXPECT_EQ(report->content, "");
+}
+
+IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, SuppressedIfDevtoolsOpen) {
+  // Open devtools, should suppress crash report.
+  ProcessManager* process_manager = ProcessManager::Get(browser()->profile());
+  ExtensionHost* host =
+      process_manager->GetBackgroundHostForExtension(extension_->id());
+  ASSERT_TRUE(host);
+  content::WebContents* web_contents = host->host_contents();
+  DevToolsWindow* devtools_window =
+      DevToolsWindowTesting::OpenDevToolsWindowSync(
+          web_contents, false /** is devtools docked. */);
+  constexpr char kTestScript[] = R"(
+    chrome.crashReportPrivate.reportError({
+        message: "hi",
+        url: "http://www.test.com",
+      },
+      () => {
+        window.domAutomationController.send(chrome.runtime.lastError ?
+            chrome.runtime.lastError.message : "")
+      });
+  )";
+  const base::Optional<MockCrashEndpoint::Report>& report = last_report();
+
+  // Ensure error is not reported since devtools is open.
+  EXPECT_EQ("", ExecuteScriptInBackgroundPage(extension_->id(), kTestScript));
+  ASSERT_FALSE(report);
+
+  DevToolsWindowTesting::CloseDevToolsWindow(devtools_window);
+
+  // Ensure error is not reported after devtools has been closed.
+  EXPECT_EQ("", ExecuteScriptInBackgroundPage(extension_->id(), kTestScript));
+  ASSERT_FALSE(report);
 }
 
 IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, Throttling) {

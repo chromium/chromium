@@ -2109,6 +2109,7 @@ if (!is_android) {
       }
 
       deps += [
+        "//chrome/browser/devtools:test_support",
         "//chrome/common/extensions/api",
         "//chrome/services/media_gallery_util/public/cpp:browser_tests",
         "//chrome/test/media_router:browser_tests",
