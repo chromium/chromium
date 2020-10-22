@@ -1906,8 +1906,15 @@ void RenderFrameHostImpl::AccessibilityFatalError() {
 
   accessibility_reset_count_++;
   if (accessibility_reset_count_ > max_accessibility_resets_) {
+    // This will both create an "Aw Snap..." and generate a second crash report
+    // in addition to the DumpWithoutCrashing() for the first reset.
     render_accessibility_->FatalError();
   } else {
+    // Crash keys set in BrowserAccessibilityManager::Unserialize().
+    if (accessibility_reset_count_ == 1) {
+      // Only send crash report first time -- don't skew crash stats too much.
+      base::debug::DumpWithoutCrashing();
+    }
     AccessibilityReset();
   }
 }

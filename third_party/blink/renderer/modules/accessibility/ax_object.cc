@@ -4612,6 +4612,32 @@ String AXObject::ToString(bool verbose) const {
       string_builder = string_builder + ">";
     }
 
+    // Add properties of interest that often contribute to errors:
+    if (SupportsARIAOwns())
+      string_builder = string_builder + " @aria-owns";
+    if (GetAOMPropertyOrARIAAttribute(AOMRelationProperty::kActiveDescendant))
+      string_builder = string_builder + " @aria-activedescendant";
+    if (IsFocused())
+      string_builder = string_builder + " focused";
+    if (AXObjectCache().IsAriaOwned(this))
+      string_builder = string_builder + " isAriaOwned";
+    if (AccessibilityIsIgnored()) {
+      string_builder = string_builder + " isIgnored";
+      if (!AccessibilityIsIncludedInTree())
+        string_builder = string_builder + " isRemovedFromTree";
+    }
+    if (GetNode() &&
+        DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
+            *GetNode(), DisplayLockActivationReason::kAccessibility)) {
+      string_builder = string_builder + " isDisplayLocked";
+    }
+    if (AriaHiddenRoot())
+      string_builder = string_builder + " isAriaHidden";
+    if (IsHiddenViaStyle())
+      string_builder = string_builder + " isHiddenViaCSS";
+    if (GetNode() && GetNode()->IsInert())
+      string_builder = string_builder + " isInert";
+
     string_builder = string_builder + " name=";
   } else {
     string_builder = string_builder + ": ";

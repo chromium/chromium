@@ -8,10 +8,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <ostream>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_export.h"
@@ -393,11 +396,25 @@ ClientTreeNode*
 AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::GetClientTreeNodeParent(
     ClientTreeNode* obj) {
   ClientTreeNode* parent = obj->parent;
-#if defined(AX_FAIL_FAST_BUILD)
   if (!parent)
     return nullptr;
-  DCHECK(ClientTreeNodeById(parent->id)) << "Parent not in id map.";
+  if (!ClientTreeNodeById(parent->id)) {
+    std::ostringstream error;
+    error << "Parent not in id map. Child was: "
+          << tree_->GetDebugString(tree_->GetFromId(obj->id))
+          << "\n  Parent was: "
+          << tree_->GetDebugString(tree_->GetFromId(parent->id));
+    static auto* ax_tree_serializer_missing_parent_id_error =
+        base::debug::AllocateCrashKeyString(
+            "ax_tree_serializer_missing_parent_id_error",
+            base::debug::CrashKeySize::Size64);
+    base::debug::SetCrashKeyString(ax_tree_serializer_missing_parent_id_error,
+                                   error.str());
+#if defined(AX_FAIL_FAST_BUILD)
+    CHECK(false);
 #endif  // defined(AX_FAIL_FAST_BUILD)
+    base::debug::DumpWithoutCrashing();
+  }
   return parent;
 }
 
@@ -580,21 +597,26 @@ bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::
 
     ClientTreeNode* client_child = ClientTreeNodeById(new_child_id);
     if (client_child && GetClientTreeNodeParent(client_child) != client_node) {
-#if defined(AX_FAIL_FAST_BUILD)
-      // TODO(accessibility) Remove all cases where this occurs and re-add
-      // NOTREACHED(), or add a histogram.
       // This condition leads to performance problems. It will
       // also reset virtual buffers, causing users to lose their place.
-      NOTREACHED()
-#else
-      LOG(ERROR)
+      std::ostringstream error;
+      error << "Illegal reparenting detected: "
+            << "\nPassed-in parent: "
+            << tree_->GetDebugString(tree_->GetFromId(client_node->id))
+            << "\nChild: " << tree_->GetDebugString(child)
+            << "\nChild's parent: "
+            << tree_->GetDebugString(tree_->GetFromId(client_child->parent->id))
+            << "\n-----------------------------------------\n\n\n";
+      static auto* ax_tree_serializer_illegal_reparenting_error =
+          base::debug::AllocateCrashKeyString(
+              "ax_tree_serializer_illegal_reparenting_error",
+              base::debug::CrashKeySize::Size64);
+      base::debug::SetCrashKeyString(
+          ax_tree_serializer_illegal_reparenting_error, error.str());
+#if defined(AX_FAIL_FAST_BUILD)
+      CHECK(false);
 #endif  // defined(AX_FAIL_FAST_BUILD)
-          << "Illegal reparenting detected: "
-          << "\nPassed-in parent: "
-          << tree_->GetDebugString(tree_->GetFromId(client_node->id))
-          << "\nChild: " << tree_->GetDebugString(child) << "\nChild's parent: "
-          << tree_->GetDebugString(tree_->GetFromId(client_child->parent->id))
-          << "\n-----------------------------------------\n\n\n";
+      base::debug::DumpWithoutCrashing();
       Reset();
       return false;
     }
@@ -674,22 +696,27 @@ bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::
       new_child->invalid = false;
       client_node->children.push_back(new_child);
       if (ClientTreeNodeById(child_id)) {
-#if defined(AX_FAIL_FAST_BUILD)
         // TODO(accessibility) Remove all cases where this occurs and re-add
-        // NOTREACHED(), or add a histogram.
         // This condition leads to performance problems. It will
         // also reset virtual buffers, causing users to lose their place.
-        NOTREACHED()
-#else
-        LOG(ERROR)
+        std::ostringstream error;
+        error << "Child id " << child_id << " already exists in map."
+              << "\nChild is "
+              << tree_->GetDebugString(tree_->GetFromId(child_id))
+              << "\nWanted as child of parent " << tree_->GetDebugString(node)
+              << "\nAlready had parent "
+              << tree_->GetDebugString(tree_->GetFromId(
+                     ClientTreeNodeById(child_id)->parent->id));
+        static auto* ax_tree_serializer_duplicate_id_error =
+            base::debug::AllocateCrashKeyString(
+                "ax_tree_serializer_duplicate_id_error",
+                base::debug::CrashKeySize::Size64);
+        base::debug::SetCrashKeyString(ax_tree_serializer_duplicate_id_error,
+                                       error.str());
+#if defined(AX_FAIL_FAST_BUILD)
+        CHECK(false);
 #endif  // defined(AX_FAIL_FAST_BUILD)
-            << "Child id " << child_id << " already exists in map."
-            << "\nChild is "
-            << tree_->GetDebugString(tree_->GetFromId(child_id))
-            << "\nWanted as child of parent " << tree_->GetDebugString(node)
-            << "\nAlready had parent "
-            << tree_->GetDebugString(
-                   tree_->GetFromId(ClientTreeNodeById(child_id)->parent->id));
+        base::debug::DumpWithoutCrashing();
         Reset();
         return false;
       }
