@@ -32,6 +32,7 @@ class ASH_EXPORT CloseDeskButton : public views::ImageButton,
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
       const override;
   SkColor GetInkDropBaseColor() const override;
+  void OnThemeChanged() override;
 
   // views::ViewTargeterDelegate:
   bool DoesIntersectRect(const views::View* target,

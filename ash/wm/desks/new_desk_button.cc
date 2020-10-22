@@ -43,10 +43,6 @@ NewDeskButton::NewDeskButton(views::ButtonListener* listener)
   layer()->SetFillsBoundsOpaquely(false);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
 
-  AshColorProvider::Get()->DecoratePillButton(
-      this, AshColorProvider::ButtonType::kPillButtonWithIcon,
-      kDesksNewDeskButtonIcon);
-
   SetInkDropMode(InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
   SetFocusPainter(nullptr);
@@ -57,7 +53,6 @@ NewDeskButton::NewDeskButton(views::ButtonListener* listener)
   views::InstallRoundRectHighlightPathGenerator(this, GetInsets(),
                                                 kCornerRadius);
 
-  UpdateButtonState();
   UpdateBorderState();
 }
 
@@ -168,6 +163,14 @@ std::unique_ptr<views::LabelButtonBorder> NewDeskButton::CreateDefaultBorder()
   std::unique_ptr<views::LabelButtonBorder> border =
       std::make_unique<views::LabelButtonBorder>();
   return border;
+}
+
+void NewDeskButton::OnThemeChanged() {
+  LabelButton::OnThemeChanged();
+  AshColorProvider::Get()->DecoratePillButton(
+      this, AshColorProvider::ButtonType::kPillButtonWithIcon,
+      kDesksNewDeskButtonIcon);
+  UpdateButtonState();
 }
 
 views::View* NewDeskButton::GetView() {

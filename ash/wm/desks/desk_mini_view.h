@@ -69,11 +69,12 @@ class ASH_EXPORT DeskMiniView
   // state of the corresponding desk.
   void UpdateBorderColor();
 
-  // views::Button:
+  // views::View:
   const char* GetClassName() const override;
   void Layout() override;
   gfx::Size CalculatePreferredSize() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void OnThemeChanged() override;
 
   // views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;

@@ -27,7 +27,6 @@
 #include "ui/aura/window.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/types/event_type.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/widget/widget.h"
@@ -137,9 +136,6 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
 
   background_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   background_view_->layer()->SetFillsBoundsOpaquely(false);
-  background_view_->layer()->SetColor(
-      AshColorProvider::Get()->GetShieldLayerColor(
-          AshColorProvider::ShieldLayerType::kShield80));
 
   AddChildView(background_view_);
   AddChildView(new_desk_button_);
@@ -300,6 +296,14 @@ void DesksBarView::OnGestureEvent(ui::GestureEvent* event) {
     default:
       break;
   }
+}
+
+void DesksBarView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  DCHECK_EQ(ui::LAYER_SOLID_COLOR, background_view_->layer()->type());
+  background_view_->layer()->SetColor(
+      AshColorProvider::Get()->GetShieldLayerColor(
+          AshColorProvider::ShieldLayerType::kShield80));
 }
 
 bool DesksBarView::UsesCompactLayout() const {

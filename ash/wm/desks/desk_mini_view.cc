@@ -37,11 +37,10 @@ constexpr int kCloseButtonMargin = 8;
 
 constexpr int kMinDeskNameViewWidth = 20;
 
+// TODO(minch): Use a color id in AshColorProvider instead.
 constexpr SkColor kDarkModeActiveColor = SK_ColorWHITE;
 constexpr SkColor kLightModeActiveColor = SK_ColorBLACK;
 constexpr SkColor kInactiveColor = SK_ColorTRANSPARENT;
-
-constexpr SkColor kDraggedOverColor = SkColorSetARGB(0xFF, 0x5B, 0xBC, 0xFF);
 
 // Returns the width of the desk preview based on its |preview_height| and the
 // aspect ratio of the root window taken from |root_window_size|.
@@ -135,10 +134,9 @@ void DeskMiniView::OnWidgetGestureTap(const gfx::Rect& screen_rect,
 void DeskMiniView::UpdateBorderColor() {
   DCHECK(desk_);
   auto* color_provider = AshColorProvider::Get();
-  if (owner_bar_->dragged_item_over_bar() &&
-      IsPointOnMiniView(owner_bar_->last_dragged_item_screen_location())) {
-    desk_preview_->SetBorderColor(kDraggedOverColor);
-  } else if (IsViewHighlighted()) {
+  if ((owner_bar_->dragged_item_over_bar() &&
+       IsPointOnMiniView(owner_bar_->last_dragged_item_screen_location())) ||
+      IsViewHighlighted()) {
     desk_preview_->SetBorderColor(color_provider->GetControlsLayerColor(
         AshColorProvider::ControlsLayerType::kFocusRingColor));
   } else if (!desk_->is_active()) {
@@ -210,6 +208,11 @@ void DeskMiniView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
         l10n_util::GetStringUTF8(
             IDS_ASH_OVERVIEW_CLOSABLE_HIGHLIGHT_ITEM_A11Y_EXTRA_TIP));
   }
+}
+
+void DeskMiniView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  UpdateBorderColor();
 }
 
 void DeskMiniView::ButtonPressed(views::Button* sender,

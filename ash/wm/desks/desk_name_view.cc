@@ -140,6 +140,7 @@ void DeskNameView::OnThemeChanged() {
   const SkColor selection_color = color_provider->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kFocusAuraColor);
   SetSelectionBackgroundColor(selection_color);
+  UpdateViewAppearance();
 }
 
 views::View* DeskNameView::GetView() {

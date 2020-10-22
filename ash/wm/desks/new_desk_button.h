@@ -51,6 +51,7 @@ class ASH_EXPORT NewDeskButton
   SkColor GetInkDropBaseColor() const override;
   std::unique_ptr<views::LabelButtonBorder> CreateDefaultBorder()
       const override;
+  void OnThemeChanged() override;
 
   // OverviewHighlightController::OverviewHighlightableView:
   views::View* GetView() override;
