@@ -27,19 +27,21 @@
         android:gravity="end"
         android:orientation="horizontal">
 
-        <TextView
+        <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/incognito_interstitial_learn_more"
+            style="@style/TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/learn_more"
-            android:textAppearance="@style/TextAppearance.TextMediumThick.Blue" />
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:text="@string/learn_more" />
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/incognito_interstitial_continue_button"
             style="@style/FilledButton.Flat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
+            android:layout_marginStart="16dp"
             android:text="@string/continue_button" />
 
     </LinearLayout>

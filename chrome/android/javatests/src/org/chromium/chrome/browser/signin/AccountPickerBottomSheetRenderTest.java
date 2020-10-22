@@ -81,7 +81,8 @@ public class AccountPickerBottomSheetRenderTest {
                     /* fullName= */ null, /* givenName= */ null);
 
     @Rule
-    public final RenderTestRule mRenderTestRule = RenderTestRule.Builder.withPublicCorpus().build();
+    public final RenderTestRule mRenderTestRule =
+            RenderTestRule.Builder.withPublicCorpus().setRevision(1).build();
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule =
