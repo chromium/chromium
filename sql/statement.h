@@ -190,10 +190,10 @@ class COMPONENT_EXPORT(SQL) Statement {
   // Set after Step() or Run() are called, reset by Reset().  Used to
   // prevent accidental calls to API functions which would not work
   // correctly after stepping has started.
-  bool stepped_;
+  bool stepped_ = false;
 
   // See Succeeded() for what this holds.
-  bool succeeded_;
+  bool succeeded_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(Statement);
 };

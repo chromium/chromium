@@ -113,7 +113,7 @@ class COMPONENT_EXPORT(SQL) MetaTable {
   void PrepareSetStatement(Statement* statement, const char* key);
   bool PrepareGetStatement(Statement* statement, const char* key);
 
-  Database* db_;
+  Database* db_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(MetaTable);
 };

@@ -240,17 +240,7 @@ static_assert(DatabaseOptions::kDefaultPageSize == SQLITE_DEFAULT_PAGE_SIZE,
 Database::Database() : Database({.exclusive_locking = false}) {}
 
 Database::Database(DatabaseOptions options)
-    : db_(nullptr),
-      options_(options),
-      transaction_nesting_(0),
-      needs_rollback_(false),
-      in_memory_(false),
-      poisoned_(false),
-      mmap_alt_status_(false),
-      mmap_disabled_(!enable_mmap_by_default_),
-      mmap_enabled_(false),
-      total_changes_at_last_release_(0),
-      stats_histogram_(nullptr) {
+    : options_(options), mmap_disabled_(!enable_mmap_by_default_) {
   DCHECK_GE(options.page_size, 512);
   DCHECK_LE(options.page_size, 65536);
   DCHECK(!(options.page_size & (options.page_size - 1)))

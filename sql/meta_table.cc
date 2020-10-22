@@ -55,7 +55,7 @@ void RecordDeprecationEvent(DeprecationEventType deprecation_event) {
 
 namespace sql {
 
-MetaTable::MetaTable() : db_(nullptr) {}
+MetaTable::MetaTable() = default;
 
 MetaTable::~MetaTable() = default;
 

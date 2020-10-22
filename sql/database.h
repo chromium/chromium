@@ -779,7 +779,7 @@ class COMPONENT_EXPORT(SQL) Database {
 
   // The actual sqlite database. Will be null before Init has been called or if
   // Init resulted in an error.
-  sqlite3* db_;
+  sqlite3* db_ = nullptr;
 
   // TODO(shuagga@microsoft.com): Make `options_` const after removing all
   // setters.
@@ -798,36 +798,36 @@ class COMPONENT_EXPORT(SQL) Database {
   std::set<StatementRef*> open_statements_;
 
   // Number of currently-nested transactions.
-  int transaction_nesting_;
+  int transaction_nesting_ = 0;
 
   // True if any of the currently nested transactions have been rolled back.
   // When we get to the outermost transaction, this will determine if we do
   // a rollback instead of a commit.
-  bool needs_rollback_;
+  bool needs_rollback_ = false;
 
   // True if database is open with OpenInMemory(), False if database is open
   // with Open().
-  bool in_memory_;
+  bool in_memory_ = false;
 
   // |true| if the Database was closed using RazeAndClose().  Used
   // to enable diagnostics to distinguish calls to never-opened
   // databases (incorrect use of the API) from calls to once-valid
   // databases.
-  bool poisoned_;
+  bool poisoned_ = false;
 
   // |true| to use alternate storage for tracking mmap status.
-  bool mmap_alt_status_;
+  bool mmap_alt_status_ = false;
 
   // |true| if SQLite memory-mapped I/O is not desired for this database.
   bool mmap_disabled_;
 
   // |true| if SQLite memory-mapped I/O was enabled for this database.
   // Used by ReleaseCacheMemoryIfNeeded().
-  bool mmap_enabled_;
+  bool mmap_enabled_ = false;
 
   // Used by ReleaseCacheMemoryIfNeeded() to track if new changes have happened
   // since memory was last released.
-  int total_changes_at_last_release_;
+  int total_changes_at_last_release_ = 0;
 
   ErrorCallback error_callback_;
 
@@ -835,7 +835,7 @@ class COMPONENT_EXPORT(SQL) Database {
   std::string histogram_tag_;
 
   // Linear histogram for RecordEvent().
-  base::HistogramBase* stats_histogram_;
+  base::HistogramBase* stats_histogram_ = nullptr;
 
   // Stores the dump provider object when db is open.
   std::unique_ptr<DatabaseMemoryDumpProvider> memory_dump_provider_;

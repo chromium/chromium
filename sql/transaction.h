@@ -50,7 +50,7 @@ class COMPONENT_EXPORT(SQL) Transaction {
 
   // True when the transaction is open, false when it's already been committed
   // or rolled back.
-  bool is_open_;
+  bool is_open_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(Transaction);
 };

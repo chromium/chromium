@@ -22,12 +22,10 @@ namespace sql {
 Statement::Statement()
     : ref_(base::MakeRefCounted<Database::StatementRef>(nullptr,
                                                         nullptr,
-                                                        false)),
-      stepped_(false),
-      succeeded_(false) {}
+                                                        false)) {}
 
 Statement::Statement(scoped_refptr<Database::StatementRef> ref)
-    : ref_(std::move(ref)), stepped_(false), succeeded_(false) {}
+    : ref_(std::move(ref)) {}
 
 Statement::~Statement() {
   // Free the resources associated with this statement. We assume there's only
