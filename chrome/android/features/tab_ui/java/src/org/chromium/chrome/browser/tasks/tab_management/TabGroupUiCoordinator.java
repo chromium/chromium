@@ -32,7 +32,10 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupUtils;
 import org.chromium.chrome.browser.toolbar.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -150,13 +153,20 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     }
 
     /**
-     * Handles a reset event originated from {@link TabGroupUiMediator}
-     * when the bottom sheet is collapsed or the dialog is hidden.
+     * Handles a reset event originated from {@link TabGroupUiMediator} to reset the tab strip.
      *
      * @param tabs List of Tabs to reset.
      */
     @Override
     public void resetStripWithListOfTabs(List<Tab> tabs) {
+        BottomSheetController bottomSheetController =
+                BottomSheetControllerProvider.from(mActivity.getWindowAndroid());
+        if (tabs != null && tabs.size() > 1
+                && bottomSheetController.getSheetState()
+                        == BottomSheetController.SheetState.HIDDEN) {
+            TabGroupUtils.maybeShowIPH(FeatureConstants.TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_FEATURE,
+                    mTabStripCoordinator.getContainerView());
+        }
         mTabStripCoordinator.resetWithListOfTabs(tabs);
     }
 
