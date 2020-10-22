@@ -43,20 +43,27 @@ constexpr char kLorgnetteUsbDeviceName[] = "test:04A91752_94370B";
 // A scanner name that does not correspond to a known scanner.
 constexpr char kUnknownScannerName[] = "Unknown Scanner";
 
-// Returns a ScannerInfo object with the given |name|.
-lorgnette::ScannerInfo CreateLorgnetteScanner(std::string name) {
+// Model which contains the manufacturer.
+constexpr char kModelContainingManufacturer[] = "TEST Model X";
+
+// Returns a ScannerInfo object with the given |name| and |model|, if provided.
+lorgnette::ScannerInfo CreateLorgnetteScanner(
+    std::string name,
+    const std::string& model = "MX3100") {
   lorgnette::ScannerInfo scanner;
   scanner.set_name(name);
   scanner.set_manufacturer("Test");
-  scanner.set_model("MX3100");
+  scanner.set_model(model);
   scanner.set_type("Flatbed");
   return scanner;
 }
 
 // Returns a ListScannersResponse containing a single ScannerInfo object created
-// with the given |name|.
-lorgnette::ListScannersResponse CreateListScannersResponse(std::string name) {
-  lorgnette::ScannerInfo scanner = CreateLorgnetteScanner(name);
+// with the given |name| and |model|, if provided.
+lorgnette::ListScannersResponse CreateListScannersResponse(
+    std::string name,
+    const std::string& model = "MX3100") {
+  lorgnette::ScannerInfo scanner = CreateLorgnetteScanner(name, model);
   lorgnette::ListScannersResponse response;
   *response.add_scanners() = std::move(scanner);
   return response;
@@ -259,7 +266,8 @@ TEST_F(LorgnetteScannerManagerTest, LorgnetteScanner) {
   GetScannerNames();
   WaitForResult();
   const auto& scanner = response.scanners()[0];
-  EXPECT_THAT(scanner_names(), ElementsAreArray({scanner.model()}));
+  std::string scanner_name = scanner.manufacturer() + " " + scanner.model();
+  EXPECT_THAT(scanner_names(), ElementsAreArray({scanner_name}));
 }
 
 // Test that two detected scanners with the same IP address are deduplicated and
@@ -285,7 +293,8 @@ TEST_F(LorgnetteScannerManagerTest, LorgnetteScannerWithUrl) {
   GetScannerNames();
   WaitForResult();
   auto& scanner = response.scanners()[0];
-  EXPECT_THAT(scanner_names(), ElementsAreArray({scanner.model()}));
+  std::string scanner_name = scanner.manufacturer() + " " + scanner.model();
+  EXPECT_THAT(scanner_names(), ElementsAreArray({scanner_name}));
 }
 
 // Test that detecting a lorgnette USB scanner results in a scanner name ending
@@ -297,8 +306,21 @@ TEST_F(LorgnetteScannerManagerTest, LorgnetteUSBScanner) {
   GetScannerNames();
   WaitForResult();
   auto& scanner = response.scanners()[0];
-  const std::string scanner_name = scanner.model() + " (USB)";
+  std::string scanner_name =
+      scanner.manufacturer() + " " + scanner.model() + " (USB)";
   EXPECT_THAT(scanner_names(), ElementsAreArray({scanner_name}));
+}
+
+// Test that a lorgnette scanner whose model includes the manufacturer doesn't
+// duplicate the manufacturer in the display name.
+TEST_F(LorgnetteScannerManagerTest, LorgnetteScannerNoDuplicatedManufacturer) {
+  lorgnette::ListScannersResponse response = CreateListScannersResponse(
+      kLorgnetteNetworkIpDeviceName, kModelContainingManufacturer);
+  GetLorgnetteManagerClient()->SetListScannersResponse(response);
+  GetScannerNames();
+  WaitForResult();
+  const auto& scanner = response.scanners()[0];
+  EXPECT_THAT(scanner_names(), ElementsAreArray({scanner.model()}));
 }
 
 // Test that two lorgnette scanners with the same manufacturer and model are

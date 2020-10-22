@@ -25,6 +25,7 @@
 #include "chromeos/dbus/lorgnette_manager_client.h"
 #include "chromeos/scanning/scanner.h"
 #include "net/base/ip_address.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace chromeos {
 
@@ -42,6 +43,26 @@ constexpr std::array<ScanProtocol, 4> kPrioritizedProtocols = {
 LorgnetteManagerClient* GetLorgnetteManagerClient() {
   DCHECK(DBusThreadManager::IsInitialized());
   return DBusThreadManager::Get()->GetLorgnetteManagerClient();
+}
+
+// Creates a base name by concatenating the manufacturer and model, if the
+// model doesn't already include the manufacturer. Appends "(USB)" for USB
+// scanners.
+std::string CreateBaseName(const lorgnette::ScannerInfo& lorgnette_scanner,
+                           const bool is_usb_scanner) {
+  const std::string model = lorgnette_scanner.model();
+  const std::string manufacturer = lorgnette_scanner.manufacturer();
+
+  // It's assumed that, if present, the manufacturer would be the first word in
+  // the model.
+  const std::string maybe_manufacturer =
+      RE2::PartialMatch(model.c_str(), base::StringPrintf("(?i)\\A%s\\b",
+                                                          manufacturer.c_str()))
+          ? ""
+          : manufacturer + " ";
+
+  return base::StringPrintf("%s%s%s", maybe_manufacturer.c_str(), model.c_str(),
+                            is_usb_scanner ? " (USB)" : "");
 }
 
 class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
@@ -179,8 +200,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
 
       const bool is_usb_scanner = protocol == ScanProtocol::kLegacyUsb;
       const std::string base_name =
-          base::StringPrintf("%s%s", lorgnette_scanner.model().c_str(),
-                             is_usb_scanner ? " (USB)" : "");
+          CreateBaseName(lorgnette_scanner, is_usb_scanner);
       const std::string display_name = CreateUniqueDisplayName(base_name);
 
       Scanner scanner;
