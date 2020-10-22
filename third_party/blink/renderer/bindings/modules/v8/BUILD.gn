@@ -77,8 +77,10 @@ group("generated") {
     "//third_party/blink/renderer/modules/*",
   ]
 
-  public_deps =
-      [ "//third_party/blink/renderer/bindings:generate_bindings_all" ]
+  public_deps = [
+    ":bindings_modules_v8_generated",
+    "//third_party/blink/renderer/bindings:generate_bindings_all",
+  ]
 }
 
 group("bindings_modules_v8_generated") {
@@ -89,6 +91,7 @@ group("bindings_modules_v8_generated") {
     ":generate_bindings_modules_v8_partial_interfaces",
     ":generate_bindings_modules_v8_partial_interfaces_for_testing",
     ":generate_v8_context_snapshot_external_references",
+    "//third_party/blink/renderer/bindings/core/v8:bindings_core_v8_generated",
   ]
 }
 
