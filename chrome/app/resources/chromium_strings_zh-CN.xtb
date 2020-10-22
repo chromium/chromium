@@ -180,6 +180,7 @@
 <translation id="6863846675160669383">{NUM_DAYS,plural, =1{Chromium 会以每周 1 次的频率检查是否有垃圾软件。上次检查时间：1 天前。}other{Chromium 会以每周 1 次的频率检查是否有垃圾软件。上次检查时间：{NUM_DAYS} 天前。}}</translation>
 <translation id="6893813176749746474">Chromium 已更新，但您已经至少 30 天未使用它了。</translation>
 <translation id="6964305034639999644">在 Chromium 无痕式窗口中打开链接(&amp;G)</translation>
+<translation id="6978145336957848883">安全系数低的密码容易被人猜到。不妨让 Chromium <ph name="BEGIN_LINK" />为您创建并记住安全系数高的密码<ph name="END_LINK" />。</translation>
 <translation id="6990124437352146030">Chromium 需要获得相应权限，才能允许此网站使用您的麦克风</translation>
 <translation id="701244094609242530">Chromium 无法检查您的扩展程序。请稍后重试。</translation>
 <translation id="705851970750939768">更新 Chromium</translation>
