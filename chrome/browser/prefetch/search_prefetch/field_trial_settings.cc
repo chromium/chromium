@@ -35,3 +35,9 @@ base::TimeDelta SearchPrefetchCachingLimit() {
                                              "prefetch_caching_limit_ms",
                                              60000));
 }
+
+size_t SearchPrefetchMaxAttemptsPerCachingDuration() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      kSearchPrefetchServicePrefetching, "max_attempts_per_caching_duration",
+      2);
+}

@@ -149,6 +149,9 @@ bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {
   if (search_terms.size() == 0)
     return false;
 
+  if (prefetches_.size() >= SearchPrefetchMaxAttemptsPerCachingDuration())
+    return false;
+
   // Don't prefetch the same search terms twice within the expiry duration.
   if (prefetches_.find(search_terms) != prefetches_.end()) {
     return false;

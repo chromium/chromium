@@ -20,4 +20,8 @@ bool SearchPrefetchServicePrefetchingIsEnabled();
 // The amount of time a response is considered valid after the prefetch starts.
 base::TimeDelta SearchPrefetchCachingLimit();
 
+// The number of prefetches that can be initiated (but not served) within a time
+// period as long as |SearchPrefetchCachingLimit()|
+size_t SearchPrefetchMaxAttemptsPerCachingDuration();
+
 #endif  // CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_FIELD_TRIAL_SETTINGS_H_

@@ -294,6 +294,35 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
+                       PrefetchRateLimiting) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(
+      GetSearchServerQueryURL("prefetch_1")));
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(
+      GetSearchServerQueryURL("prefetch_2")));
+  EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(
+      GetSearchServerQueryURL("prefetch_3")));
+
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16("prefetch_1"));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kInFlight, prefetch_status.value());
+
+  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
+      base::ASCIIToUTF16("prefetch_2"));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kInFlight, prefetch_status.value());
+
+  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
+      base::ASCIIToUTF16("prefetch_3"));
+  EXPECT_FALSE(prefetch_status.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
                        502PrefetchFunctionality) {
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
@@ -479,4 +508,23 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceZeroCacheTimeBrowserTest,
   // Prefetch should be gone now.
   EXPECT_FALSE(prefetch_status.has_value());
   EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+}
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceZeroCacheTimeBrowserTest,
+                       PrefetchRateLimitingClearsAfterRemoval) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(
+      GetSearchServerQueryURL("prefetch_1")));
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(
+      GetSearchServerQueryURL("prefetch_2")));
+  EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(
+      GetSearchServerQueryURL("prefetch_3")));
+
+  WaitUntilStatusChanges(base::ASCIIToUTF16("prefetch_1"));
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(
+      GetSearchServerQueryURL("prefetch_4")));
 }
