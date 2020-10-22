@@ -70,6 +70,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(GpuFeatures.ENABLE_SHARED_IMAGE_FOR_WEBVIEW,
                     "Enables shared images for WebView."),
             Flag.baseFeature(VizFeatures.VIZ_FOR_WEBVIEW, "Enables Viz for WebView."),
+            Flag.baseFeature(
+                    GpuFeatures.USE_GLES2_FOR_OOP_R, "Force Skia context to use es2 only."),
             Flag.baseFeature(AwFeatures.WEBVIEW_CONNECTIONLESS_SAFE_BROWSING,
                     "Uses GooglePlayService's 'connectionless' APIs for Safe Browsing "
                             + "security checks."),
