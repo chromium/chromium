@@ -331,9 +331,17 @@ def Main(argv):
   else:
     # TODO(crbug.com/1140474): Remove once iOS 14.2 reaches mass adoption.
     if options.lock_to_version:
+      # Pull in the PATCH number and format it to 3 digits.
+      VERSION_TOOL = os.path.join(TOP, 'build/util/version.py')
+      VERSION_FILE = os.path.join(TOP, 'chrome/VERSION')
+      (stdout,
+       retval) = _GetOutput([VERSION_TOOL, '-f', VERSION_FILE, '-t', '@PATCH@'])
+      if retval != 0:
+        return 2
+      patch = '{:03d}'.format(int(stdout))
       version_format_for_key = {
           'CFBundleShortVersionString': '@MAJOR@.@BUILD@.@PATCH@',
-          'CFBundleVersion': options.lock_to_version + '.@MAJOR@@PATCH@'
+          'CFBundleVersion': options.lock_to_version + '.@MAJOR@' + patch
       }
     else:
       version_format_for_key = {
