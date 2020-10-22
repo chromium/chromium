@@ -128,6 +128,7 @@
 #include "third_party/blink/public/mojom/payments/payment_app.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-forward.h"
+#include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
 #include "third_party/blink/public/mojom/screen_enumeration/screen_enumeration.mojom-forward.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom.h"
@@ -1454,6 +1455,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   void BindScreenEnumerationReceiver(
       mojo::PendingReceiver<blink::mojom::ScreenEnumeration> receiver);
+
+  void BindPrerenderProcessor(
+      mojo::PendingReceiver<blink::mojom::PrerenderProcessor> pending_receiver);
 
   // https://mikewest.github.io/corpp/#initialize-embedder-policy-for-global
   const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy()
@@ -3254,6 +3258,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // navigation commit time in DidCommitNewDocument with the policy container of
   // the new document.
   std::unique_ptr<PolicyContainer> policy_container_;
+
+  // Prerender2:
+  // Receivers for PrerenderProcessor that handle prerendering requests from a
+  // renderer process. These receivers are disconnected when the document
+  // explicitly cancels prerendering or the document gets destroyed.
+  mojo::UniqueReceiverSet<blink::mojom::PrerenderProcessor>
+      prerender_processor_receivers_;
 
   // NOTE: This must be the last member.
   base::WeakPtrFactory<RenderFrameHostImpl> weak_ptr_factory_{this};

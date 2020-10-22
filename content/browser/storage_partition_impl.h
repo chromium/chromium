@@ -37,6 +37,7 @@
 #include "content/browser/locks/lock_manager.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/payments/payment_app_context_impl.h"
+#include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/push_messaging/push_messaging_context.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/url_loader_factory_getter.h"
@@ -206,6 +207,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   NativeIOContext* GetNativeIOContext();
   ConversionManagerImpl* GetConversionManager();
   FontAccessManagerImpl* GetFontAccessManager();
+  PrerenderHostRegistry* GetPrerenderHostRegistry();
   std::string GetPartitionDomain();
 
   // blink::mojom::DomStorage interface.
@@ -519,6 +521,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   std::unique_ptr<NativeIOContext> native_io_context_;
   std::unique_ptr<ConversionManagerImpl> conversion_manager_;
   std::unique_ptr<FontAccessManagerImpl> font_access_manager_;
+  std::unique_ptr<PrerenderHostRegistry> prerender_host_registry_;
 
   // ReceiverSet for DomStorage, using the
   // ChildProcessSecurityPolicyImpl::Handle as the binding context type. The

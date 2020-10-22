@@ -131,6 +131,10 @@ const base::Feature kPortals {
 const base::Feature kPortalsCrossOrigin{"PortalsCrossOrigin",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable the prerender V2. https://crbug.com/1126305.
+const base::Feature kPrerender2{"Prerender2",
+                                base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable limiting previews loading hints to specific resource types.
 const base::Feature kPreviewsResourceLoadingHintsSpecificResourceTypes{
     "PreviewsResourceLoadingHintsSpecificResourceTypes",

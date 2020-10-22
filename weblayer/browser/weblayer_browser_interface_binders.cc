@@ -14,6 +14,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/installedapp/installed_app_provider.mojom.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
@@ -136,8 +137,11 @@ void PopulateWebLayerFrameBinders(
   map->Add<translate::mojom::ContentTranslateDriver>(
       base::BindRepeating(&BindContentTranslateDriver));
 
-  map->Add<blink::mojom::PrerenderProcessor>(
-      base::BindRepeating(&BindPrerenderProcessor));
+  // When Prerender2 is enabled, the content layer already added a binder.
+  if (!base::FeatureList::IsEnabled(blink::features::kPrerender2)) {
+    map->Add<blink::mojom::PrerenderProcessor>(
+        base::BindRepeating(&BindPrerenderProcessor));
+  }
   map->Add<prerender::mojom::PrerenderCanceler>(
       base::BindRepeating(&BindPrerenderCanceler));
 

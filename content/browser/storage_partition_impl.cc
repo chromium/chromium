@@ -1386,6 +1386,9 @@ void StoragePartitionImpl::Initialize(
   }
 
   font_access_manager_ = std::make_unique<FontAccessManagerImpl>();
+
+  if (base::FeatureList::IsEnabled(blink::features::kPrerender2))
+    prerender_host_registry_ = std::make_unique<PrerenderHostRegistry>();
 }
 
 void StoragePartitionImpl::OnStorageServiceDisconnected() {
@@ -1643,6 +1646,12 @@ ConversionManagerImpl* StoragePartitionImpl::GetConversionManager() {
 FontAccessManagerImpl* StoragePartitionImpl::GetFontAccessManager() {
   DCHECK(initialized_);
   return font_access_manager_.get();
+}
+
+PrerenderHostRegistry* StoragePartitionImpl::GetPrerenderHostRegistry() {
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2));
+  DCHECK(initialized_);
+  return prerender_host_registry_.get();
 }
 
 ContentIndexContextImpl* StoragePartitionImpl::GetContentIndexContext() {

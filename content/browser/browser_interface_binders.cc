@@ -749,6 +749,11 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
   map->Add<blink::mojom::TextInputHost>(
       base::BindRepeating(&BindTextInputHost));
 #endif
+
+  if (base::FeatureList::IsEnabled(blink::features::kPrerender2)) {
+    map->Add<blink::mojom::PrerenderProcessor>(base::BindRepeating(
+        &RenderFrameHostImpl::BindPrerenderProcessor, base::Unretained(host)));
+  }
 }
 
 void PopulateBinderMapWithContext(
@@ -760,8 +765,10 @@ void PopulateBinderMapWithContext(
   // production embedder (such as in tests).
   map->Add<blink::mojom::InsecureInputService>(base::BindRepeating(
       &EmptyBinderForFrame<blink::mojom::InsecureInputService>));
-  map->Add<blink::mojom::PrerenderProcessor>(base::BindRepeating(
-      &EmptyBinderForFrame<blink::mojom::PrerenderProcessor>));
+  if (!base::FeatureList::IsEnabled(blink::features::kPrerender2)) {
+    map->Add<blink::mojom::PrerenderProcessor>(base::BindRepeating(
+        &EmptyBinderForFrame<blink::mojom::PrerenderProcessor>));
+  }
   map->Add<payments::mojom::PaymentCredential>(base::BindRepeating(
       &EmptyBinderForFrame<payments::mojom::PaymentCredential>));
   map->Add<payments::mojom::PaymentRequest>(base::BindRepeating(
