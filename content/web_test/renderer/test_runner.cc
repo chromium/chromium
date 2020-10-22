@@ -23,7 +23,6 @@
 #include "cc/paint/paint_canvas.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
-#include "content/public/renderer/render_frame_observer.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/web_test/common/web_test_constants.h"
 #include "content/web_test/common/web_test_string_util.h"
@@ -197,21 +196,6 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
   blink::WebLocalFrame* GetWebFrame() { return frame_->GetWebFrame(); }
 
  private:
-  // Watches for the RenderFrame that the TestRunnerBindings is attached to
-  // being destroyed.
-  class TestRunnerBindingsRenderFrameObserver : public RenderFrameObserver {
-   public:
-    TestRunnerBindingsRenderFrameObserver(TestRunnerBindings* bindings,
-                                          RenderFrame* frame)
-        : RenderFrameObserver(frame), bindings_(bindings) {}
-
-    // RenderFrameObserver implementation.
-    void OnDestruct() override { bindings_->OnFrameDestroyed(); }
-
-   private:
-    TestRunnerBindings* const bindings_;
-  };
-
   explicit TestRunnerBindings(TestRunner* test_runner,
                               WebFrameTestProxy* frame,
                               SpellCheckClient* spell_check);
@@ -384,11 +368,7 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
   // TestRunningBindings should not do anything thereafter.
   void OnFrameDestroyed() {
     invalid_ = true;
-    weak_ptr_factory_.InvalidateWeakPtrs();
   }
-
-  // Observer for the |frame_| the TestRunningBindings is bound to.
-  TestRunnerBindingsRenderFrameObserver frame_observer_;
 
   // Becomes true when the underlying frame is destroyed. Then the class should
   // stop doing anything.
@@ -487,10 +467,7 @@ void TestRunnerBindings::Install(TestRunner* test_runner,
 TestRunnerBindings::TestRunnerBindings(TestRunner* runner,
                                        WebFrameTestProxy* frame,
                                        SpellCheckClient* spell_check)
-    : frame_observer_(this, frame),
-      runner_(runner),
-      frame_(frame),
-      spell_check_(spell_check) {}
+    : runner_(runner), frame_(frame), spell_check_(spell_check) {}
 
 TestRunnerBindings::~TestRunnerBindings() = default;
 
@@ -898,13 +875,13 @@ void TestRunnerBindings::QueueReload() {
 void TestRunnerBindings::QueueLoadingScript(const std::string& script) {
   if (invalid_)
     return;
-  runner_->QueueLoadingScript(script, weak_ptr_factory_.GetWeakPtr());
+  runner_->QueueLoadingScript(script);
 }
 
 void TestRunnerBindings::QueueNonLoadingScript(const std::string& script) {
   if (invalid_)
     return;
-  runner_->QueueNonLoadingScript(script, weak_ptr_factory_.GetWeakPtr());
+  runner_->QueueNonLoadingScript(script);
 }
 
 void TestRunnerBindings::QueueLoad(gin::Arguments* args) {
@@ -2199,9 +2176,14 @@ void TestRunner::WorkQueue::AddWork(WorkItem* work) {
 }
 
 void TestRunner::WorkQueue::ProcessWork() {
+  WebFrameTestProxy* in_process_main_frame =
+      controller_->FindInProcessMainWindowMainFrame();
+  if (!in_process_main_frame)
+    return;
+
   while (!queue_.empty()) {
     finished_loading_ = false;  // Watch for loading finishing inside Run().
-    bool started_load = queue_.front()->Run(controller_);
+    bool started_load = queue_.front()->Run(controller_, in_process_main_frame);
     delete queue_.front();
     queue_.pop_front();
 
@@ -2677,7 +2659,7 @@ class WorkItemBackForward : public TestRunner::WorkItem {
  public:
   explicit WorkItemBackForward(int distance) : distance_(distance) {}
 
-  bool Run(TestRunner* test_runner) override {
+  bool Run(TestRunner* test_runner, WebFrameTestProxy*) override {
     test_runner->GoToOffset(distance_);
     return true;  // FIXME: Did it really start a navigation?
   }
@@ -2723,7 +2705,7 @@ void TestRunner::QueueForwardNavigation(int how_far_forward) {
 
 class WorkItemReload : public TestRunner::WorkItem {
  public:
-  bool Run(TestRunner* test_runner) override {
+  bool Run(TestRunner* test_runner, WebFrameTestProxy*) override {
     test_runner->Reload();
     return true;
   }
@@ -2735,53 +2717,39 @@ void TestRunner::QueueReload() {
 
 class WorkItemLoadingScript : public TestRunner::WorkItem {
  public:
-  explicit WorkItemLoadingScript(const std::string& script,
-                                 base::WeakPtr<TestRunnerBindings> bindings)
-      : script_(script), bindings_(std::move(bindings)) {}
+  explicit WorkItemLoadingScript(const std::string& script) : script_(script) {}
 
-  bool Run(TestRunner*) override {
-    if (!bindings_)
-      return false;
-    bindings_->GetWebFrame()->ExecuteScript(
+  bool Run(TestRunner*, WebFrameTestProxy* main_frame) override {
+    main_frame->GetWebFrame()->ExecuteScript(
         blink::WebScriptSource(blink::WebString::FromUTF8(script_)));
     return true;  // FIXME: Did it really start a navigation?
   }
 
  private:
   std::string script_;
-  base::WeakPtr<TestRunnerBindings> bindings_;
 };
 
-void TestRunner::QueueLoadingScript(
-    const std::string& script,
-    base::WeakPtr<TestRunnerBindings> bindings) {
-  work_queue_.AddWork(new WorkItemLoadingScript(script, std::move(bindings)));
+void TestRunner::QueueLoadingScript(const std::string& script) {
+  work_queue_.AddWork(new WorkItemLoadingScript(script));
 }
 
 class WorkItemNonLoadingScript : public TestRunner::WorkItem {
  public:
-  explicit WorkItemNonLoadingScript(const std::string& script,
-                                    base::WeakPtr<TestRunnerBindings> bindings)
-      : script_(script), bindings_(std::move(bindings)) {}
+  explicit WorkItemNonLoadingScript(const std::string& script)
+      : script_(script) {}
 
-  bool Run(TestRunner*) override {
-    if (!bindings_)
-      return false;
-    bindings_->GetWebFrame()->ExecuteScript(
+  bool Run(TestRunner*, WebFrameTestProxy* main_frame) override {
+    main_frame->GetWebFrame()->ExecuteScript(
         blink::WebScriptSource(blink::WebString::FromUTF8(script_)));
     return false;
   }
 
  private:
   std::string script_;
-  base::WeakPtr<TestRunnerBindings> bindings_;
 };
 
-void TestRunner::QueueNonLoadingScript(
-    const std::string& script,
-    base::WeakPtr<TestRunnerBindings> bindings) {
-  work_queue_.AddWork(
-      new WorkItemNonLoadingScript(script, std::move(bindings)));
+void TestRunner::QueueNonLoadingScript(const std::string& script) {
+  work_queue_.AddWork(new WorkItemNonLoadingScript(script));
 }
 
 class WorkItemLoad : public TestRunner::WorkItem {
@@ -2789,7 +2757,7 @@ class WorkItemLoad : public TestRunner::WorkItem {
   WorkItemLoad(const GURL& url, const std::string& target)
       : url_(url), target_(target) {}
 
-  bool Run(TestRunner* test_runner) override {
+  bool Run(TestRunner* test_runner, WebFrameTestProxy*) override {
     test_runner->LoadURLForFrame(url_, target_);
     return true;  // FIXME: Did it really start a navigation?
   }
