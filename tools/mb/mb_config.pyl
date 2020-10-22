@@ -2654,7 +2654,8 @@
                   'default_min_sdk_version=16 '
                   'clang_use_default_sample_profile=false '
                   'use_thin_lto=false '
-                  'enable_resource_allowlist_generation=false'),
+                  'enable_resource_allowlist_generation=false '
+                  'enable_jdk_library_desugaring=false'),
     },
 
     'cronet_ios': {
