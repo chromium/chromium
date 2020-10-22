@@ -16,13 +16,20 @@ if ((is_linux || is_chromeos || is_android || is_apple ||
   _default_use_allocator_shim = false
 }
 
-if (_default_use_allocator_shim) {
-  _default_allocator = "partition"
-} else {
+# Temporarily disable tcmalloc on arm64 linux to get rid of compilation errors.
+if (is_android || is_apple || is_asan || is_lsan || is_tsan || is_msan ||
+    is_win || is_fuchsia ||
+    ((is_linux || is_chromeos) && target_cpu == "arm64") ||
+    (is_cast_audio_only && target_cpu == "arm")) {
   _default_allocator = "none"
+} else {
+  _default_allocator = "tcmalloc"
 }
 
 declare_args() {
+  # Don't ship this configuration, not ready yet.
+  assert(_default_allocator != "partition")
+
   # Memory allocator to use. Set to "none" to use default allocator.
   use_allocator = _default_allocator
 
