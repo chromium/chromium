@@ -1213,18 +1213,44 @@ Response InputHandler::EmulateTouchFromMouseEvent(const std::string& type,
   if (!host_ || !host_->GetRenderWidgetHost())
     return Response::InternalError();
 
+  base::OnceCallback<void(bool)> forward_event_func;
+
   if (wheel_event) {
-    host_->GetRenderWidgetHost()->ForwardWheelEvent(*wheel_event);
-    // Send a synthetic wheel event with phaseEnded to finish scrolling.
-    wheel_event->delta_x = 0;
-    wheel_event->delta_y = 0;
-    wheel_event->phase = blink::WebMouseWheelEvent::kPhaseEnded;
-    wheel_event->dispatch_type =
-        blink::WebInputEvent::DispatchType::kEventNonBlocking;
-    host_->GetRenderWidgetHost()->ForwardWheelEvent(*wheel_event);
+    forward_event_func = base::BindOnce(
+        [](base::WeakPtr<InputHandler> self, RenderWidgetHostImpl* widget_host,
+           blink::WebMouseWheelEvent* event,
+           ui::WebScopedInputEvent event_deleter, bool success) {
+          if (!self.get())
+            return;
+
+          widget_host->ForwardWheelEvent(*event);
+          // Send a synthetic wheel event with phaseEnded to finish scrolling.
+          event->delta_x = 0;
+          event->delta_y = 0;
+          event->phase = blink::WebMouseWheelEvent::kPhaseEnded;
+          event->dispatch_type =
+              blink::WebInputEvent::DispatchType::kEventNonBlocking;
+          widget_host->ForwardWheelEvent(*event);
+        },
+        weak_factory_.GetWeakPtr(), host_->GetRenderWidgetHost(), wheel_event,
+        std::move(event));
   } else {
-    host_->GetRenderWidgetHost()->ForwardMouseEvent(*mouse_event);
+    forward_event_func = base::BindOnce(
+        [](base::WeakPtr<InputHandler> self, RenderWidgetHostImpl* widget_host,
+           blink::WebMouseEvent* event, ui::WebScopedInputEvent event_deleter,
+           bool success) {
+          if (!self.get())
+            return;
+          widget_host->ForwardMouseEvent(*event);
+        },
+        weak_factory_.GetWeakPtr(), host_->GetRenderWidgetHost(), mouse_event,
+        std::move(event));
   }
+  // We make sure the compositor is up to date before sending a mouse event.
+  // Otherwise it wont be picked up by newly added event listeners on the main
+  // thread.
+  host_->GetRenderWidgetHost()->InsertVisualStateCallback(
+      std::move(forward_event_func));
   return Response::Success();
 }
 
