@@ -1610,6 +1610,10 @@ const char kProfilesLastActive[] = "profile.last_active_profiles";
 // directories.
 const char kProfilesNumCreated[] = "profile.profiles_created";
 
+// Total number of Guest profiles created for this Chrome build. Used to tag
+// ephemeral Guest profile directories.
+const char kGuestProfilesNumCreated[] = "profile.guest_profiles_created";
+
 // String containing the version of Chrome that the profile was created by.
 // If profile was created before this feature was added, this pref will default
 // to "1.0.0.0".

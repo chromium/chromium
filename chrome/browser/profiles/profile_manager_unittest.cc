@@ -541,13 +541,6 @@ TEST_F(ProfileManagerTest, AddProfileToStorageCheckOmitted) {
   EXPECT_FALSE(entry->IsOmitted());
 }
 
-TEST_F(ProfileManagerTest, GetGuestProfilePath) {
-  base::FilePath guest_path = ProfileManager::GetGuestProfilePath();
-  base::FilePath expected_path = temp_dir_.GetPath();
-  expected_path = expected_path.Append(chrome::kGuestProfileDir);
-  EXPECT_EQ(expected_path, guest_path);
-}
-
 TEST_F(ProfileManagerTest, GetSystemProfilePath) {
   base::FilePath system_profile_path = ProfileManager::GetSystemProfilePath();
   base::FilePath expected_path = temp_dir_.GetPath();
@@ -570,9 +563,17 @@ class UnittestGuestProfileManager : public UnittestProfileManager {
   }
 };
 
-class ProfileManagerGuestTest : public ProfileManagerTest  {
+class ProfileManagerGuestTest : public ProfileManagerTest,
+                                public ::testing::WithParamInterface<bool> {
  public:
-  ProfileManagerGuestTest() = default;
+  ProfileManagerGuestTest() {
+    is_ephemeral = GetParam();
+
+    // Update |is_ephemeral| if it's not supported on platform.
+    is_ephemeral &=
+        TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
+            scoped_feature_list_, is_ephemeral);
+  }
   ProfileManagerGuestTest(const ProfileManagerGuestTest&) = delete;
   ProfileManagerGuestTest& operator=(const ProfileManagerGuestTest&) = delete;
   ~ProfileManagerGuestTest() override = default;
@@ -591,6 +592,8 @@ class ProfileManagerGuestTest : public ProfileManagerTest  {
 #endif
   }
 
+  bool IsEphemeral() { return is_ephemeral; }
+
  protected:
   ProfileManager* CreateProfileManagerForTest() override {
     return new UnittestGuestProfileManager(temp_dir_.GetPath());
@@ -602,9 +605,13 @@ class ProfileManagerGuestTest : public ProfileManagerTest  {
         user_manager::UserManager::Get());
   }
 #endif
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  bool is_ephemeral;
 };
 
-TEST_F(ProfileManagerGuestTest, GetLastUsedProfileAllowedByPolicy) {
+TEST_P(ProfileManagerGuestTest, GetLastUsedProfileAllowedByPolicy) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ASSERT_TRUE(profile_manager);
 
@@ -614,7 +621,7 @@ TEST_F(ProfileManagerGuestTest, GetLastUsedProfileAllowedByPolicy) {
 }
 
 #if defined(OS_CHROMEOS)
-TEST_F(ProfileManagerGuestTest, GuestProfileIngonito) {
+TEST_P(ProfileManagerGuestTest, GuestProfileIngonito) {
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
   EXPECT_TRUE(primary_profile->IsOffTheRecord());
 
@@ -629,6 +636,27 @@ TEST_F(ProfileManagerGuestTest, GuestProfileIngonito) {
   EXPECT_TRUE(last_used_profile->IsSameOrParent(active_profile));
 }
 #endif
+
+TEST_P(ProfileManagerGuestTest, GetGuestProfilePath) {
+  base::FilePath guest_path = ProfileManager::GetGuestProfilePath();
+  base::FilePath expected_path = temp_dir_.GetPath();
+  const std::string kExpectedGuestProfileName =
+      IsEphemeral() ? "Guest 1" : "Guest Profile";
+#if defined(OS_WIN)
+  expected_path =
+      expected_path.Append(base::ASCIIToUTF16(kExpectedGuestProfileName));
+#else
+  expected_path = expected_path.Append(kExpectedGuestProfileName);
+#endif
+  EXPECT_EQ(expected_path, guest_path);
+
+  // TODO(https://crbug.com/1125474): Add browser test to ensure two ephemeral
+  // Guest profile do not share the path.
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ProfileManagerGuestTest,
+                         /*is_ephemeral=*/testing::Bool());
 
 TEST_F(ProfileManagerTest, AutoloadProfilesWithBackgroundApps) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -1330,7 +1358,7 @@ TEST_F(ProfileManagerTest, LastProfileDeleted) {
   EXPECT_EQ(dest_path2, storage.GetAllProfilesAttributes()[0]->GetPath());
 }
 
-TEST_F(ProfileManagerTest, LastProfileDeletedWithGuestActiveProfile) {
+TEST_P(ProfileManagerGuestTest, LastProfileDeletedWithGuestActiveProfile) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ASSERT_TRUE(profile_manager);
   ProfileAttributesStorage& storage =
@@ -1341,8 +1369,8 @@ TEST_F(ProfileManagerTest, LastProfileDeletedWithGuestActiveProfile) {
   base::FilePath dest_path1 = temp_dir_.GetPath().AppendASCII(profile_name1);
 
   MockObserver mock_observer;
-  EXPECT_CALL(mock_observer, OnProfileCreated(
-      testing::NotNull(), NotFail())).Times(testing::AtLeast(2));
+  EXPECT_CALL(mock_observer, OnProfileCreated(testing::NotNull(), NotFail()))
+      .Times(testing::AtLeast(2));
 
   CreateProfileAsync(profile_manager, profile_name1, &mock_observer);
   content::RunAllTasksUntilIdle();

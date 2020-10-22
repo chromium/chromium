@@ -521,6 +521,7 @@ extern const char kHadThreeConsecutiveNotificationPermissionDenies[];
 extern const char kProfileLastUsed[];
 extern const char kProfilesLastActive[];
 extern const char kProfilesNumCreated[];
+extern const char kGuestProfilesNumCreated[];
 extern const char kProfileInfoCache[];
 #if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
 extern const char kLegacyProfileNamesMigrated[];

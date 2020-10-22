@@ -798,13 +798,29 @@ base::FilePath ProfileManager::GetGuestProfilePath() {
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
-  // TODO(https://crbug.com/1125474): Consider adding a different naming system
-  // for Guest profiles.
   if (profile_manager->guest_profile_path_.empty()) {
-    profile_manager->guest_profile_path_ =
-        Profile::IsEphemeralGuestProfileEnabled()
-            ? profile_manager->GenerateNextProfileDirectoryPath()
-            : profile_manager->user_data_dir().Append(chrome::kGuestProfileDir);
+    if (Profile::IsEphemeralGuestProfileEnabled()) {
+      PrefService* local_state = g_browser_process->local_state();
+      DCHECK(local_state);
+
+      // Create the next Guest profile in the next available directory slot.
+      int next_directory =
+          local_state->GetInteger(prefs::kGuestProfilesNumCreated);
+      std::string profile_name = chrome::kEphemeralGuestProfileDirPrefix;
+      profile_name.append(base::NumberToString(next_directory));
+      base::FilePath new_path = profile_manager->user_data_dir();
+#if defined(OS_WIN)
+      new_path = new_path.Append(base::ASCIIToUTF16(profile_name));
+#else
+      new_path = new_path.Append(profile_name);
+#endif
+      local_state->SetInteger(prefs::kGuestProfilesNumCreated,
+                              ++next_directory);
+      profile_manager->guest_profile_path_ = new_path;
+    } else {
+      profile_manager->guest_profile_path_ =
+          profile_manager->user_data_dir().Append(chrome::kGuestProfileDir);
+    }
   }
 
   return profile_manager->guest_profile_path_;
