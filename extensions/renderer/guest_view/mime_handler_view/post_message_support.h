@@ -87,8 +87,6 @@ class PostMessageSupport {
   PostMessageSupport(const PostMessageSupport&) = delete;
   PostMessageSupport& operator=(const PostMessageSupport&) = delete;
 
-  void RecordUMAForPostMessage(v8::Local<v8::Value>& message);
-
   // The scriptable object that backs the plugin.
   v8::Global<v8::Object> scriptable_object_;
 
@@ -100,9 +98,6 @@ class PostMessageSupport {
   // When false, all sent messages are queued up in |message_queue_|. When true,
   // the messages are forwarded to the target frame.
   bool is_active_ = false;
-  // Currently used to avoid recording UMA stats for internal use of the
-  // postMessage API.
-  bool should_report_internal_messages_ = true;
 
   Delegate* const delegate_;
 

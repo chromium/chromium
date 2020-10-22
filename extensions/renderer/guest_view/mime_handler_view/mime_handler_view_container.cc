@@ -43,8 +43,6 @@
 
 namespace extensions {
 
-using UMAType = MimeHandlerViewUMATypes::Type;
-
 namespace {
 
 base::LazyInstance<mojo::AssociatedRemote<mojom::GuestView>>::Leaky
@@ -138,8 +136,6 @@ MimeHandlerViewContainer::MimeHandlerViewContainer(
               blink::WebSecurityOrigin::Create(original_url))) {
   DCHECK(!mime_type_.empty());
   g_mime_handler_view_container_base_map.Get()[render_frame].insert(this);
-  RecordInteraction(
-      MimeHandlerViewUMATypes::Type::kDidCreateMimeHandlerViewContainerBase);
 }
 
 MimeHandlerViewContainer::~MimeHandlerViewContainer() {
@@ -402,10 +398,6 @@ void MimeHandlerViewContainer::SetShowBeforeUnloadDialog(
 v8::Local<v8::Object> MimeHandlerViewContainer::GetScriptableObjectInternal(
     v8::Isolate* isolate) {
   return post_message_support()->GetScriptableObject(isolate);
-}
-
-void MimeHandlerViewContainer::RecordInteraction(UMAType uma_type) {
-  base::UmaHistogramEnumeration(MimeHandlerViewUMATypes::kUMAName, uma_type);
 }
 
 }  // namespace extensions

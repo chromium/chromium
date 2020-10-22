@@ -11,7 +11,6 @@
 
 #include "content/public/renderer/render_frame_observer.h"
 #include "extensions/common/api/mime_handler.mojom.h"
-#include "extensions/common/guest_view/mime_handler_view_uma_types.h"
 #include "extensions/common/mojom/guest_view.mojom.h"
 #include "extensions/renderer/guest_view/mime_handler_view/post_message_support.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -78,14 +77,11 @@ class MimeHandlerViewContainerManager
   v8::Local<v8::Object> GetScriptableObject(
       const blink::WebElement& plugin_element,
       v8::Isolate* isolate);
-  // Removes the |frame_container| from |frame_containers_| and destroys it. The
-  // |reason| is emitted for UMA.
+  // Removes the |frame_container| from |frame_containers_| and destroys it.
   // Note: Calling this function may delete |this| if we are removing the last
   // frame container, unless |retain_manager| is set to true.
-  void RemoveFrameContainerForReason(
-      MimeHandlerViewFrameContainer* frame_container,
-      MimeHandlerViewUMATypes::Type reason,
-      bool retain_manager);
+  void RemoveFrameContainer(MimeHandlerViewFrameContainer* frame_container,
+                            bool retain_manager);
   MimeHandlerViewFrameContainer* GetFrameContainer(
       const blink::WebElement& plugin_element);
   MimeHandlerViewFrameContainer* GetFrameContainer(int32_t element_instance_id);
@@ -111,19 +107,12 @@ class MimeHandlerViewContainerManager
                const GURL& resource_url) override;
 
  private:
-  // Static so it can be called after self-deletion.
-  static void RecordInteraction(MimeHandlerViewUMATypes::Type type);
-
   // PostMessageSupport::Delegate overrides.
   blink::WebLocalFrame* GetSourceFrame() override;
   blink::WebFrame* GetTargetFrame() override;
   bool IsEmbedded() const override;
   bool IsResourceAccessibleBySource() const override;
 
-  // Note: Calling this function may delete |this| if we are removing the last
-  // frame container, unless |retain_manager| is set to true.
-  bool RemoveFrameContainer(MimeHandlerViewFrameContainer* frame_container,
-                            bool retain_manager);
   // mime_handler::BeforeUnloadControl implementation.
   void SetShowBeforeUnloadDialog(
       bool show_dialog,

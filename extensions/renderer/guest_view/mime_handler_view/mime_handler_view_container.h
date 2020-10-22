@@ -15,7 +15,6 @@
 #include "base/optional.h"
 #include "components/guest_view/renderer/guest_view_container.h"
 #include "extensions/common/api/mime_handler.mojom.h"
-#include "extensions/common/guest_view/mime_handler_view_uma_types.h"
 #include "extensions/common/mojom/guest_view.mojom.h"
 #include "extensions/renderer/guest_view/mime_handler_view/post_message_support.h"
 #include "ipc/ipc_message.h"
@@ -117,7 +116,6 @@ class MimeHandlerViewContainer : public blink::WebAssociatedURLLoaderClient,
   void SendResourceRequest();
   void EmbedderRenderFrameWillBeGone();
   v8::Local<v8::Object> GetScriptableObjectInternal(v8::Isolate* isolate);
-  void RecordInteraction(MimeHandlerViewUMATypes::Type uma_type);
 
   // Called for embedded plugins when network service is enabled. This is called
   // by the URLLoaderThrottle which intercepts the resource load, which is then

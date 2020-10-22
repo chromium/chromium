@@ -7,7 +7,6 @@
 #include <string>
 
 #include "content/public/renderer/render_frame.h"
-#include "extensions/common/guest_view/mime_handler_view_uma_types.h"
 #include "extensions/renderer/guest_view/mime_handler_view/mime_handler_view_container_manager.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -17,7 +16,6 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace extensions {
-using UMATypes = MimeHandlerViewUMATypes::Type;
 
 MimeHandlerViewFrameContainer::MimeHandlerViewFrameContainer(
     MimeHandlerViewContainerManager* container_manager,
@@ -58,9 +56,7 @@ blink::WebFrame* MimeHandlerViewFrameContainer::GetContentFrame() const {
 
 bool MimeHandlerViewFrameContainer::AreFramesAlive() {
   if (!GetContentFrame() || !GetContentFrame()->FirstChild()) {
-    container_manager_->RemoveFrameContainerForReason(
-        this, UMATypes::kRemoveFrameContainerUnexpectedFrames,
-        false /* retain_manager */);
+    container_manager_->RemoveFrameContainer(this, false /* retain_manager */);
     return false;
   }
   return true;
@@ -85,9 +81,7 @@ bool MimeHandlerViewFrameContainer::AreFramesValid() {
       return true;
     }
   }
-  container_manager_->RemoveFrameContainerForReason(
-      this, UMATypes::kRemoveFrameContainerUnexpectedFrames,
-      false /* retain_manager */);
+  container_manager_->RemoveFrameContainer(this, false /* retain_manager */);
   return false;
 }
 

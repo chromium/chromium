@@ -2666,6 +2666,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Extensions.MimeHandlerViewEvents" enum="MimeHandlerViewEvents"
     expires_after="M81">
+  <obsolete>
+    2020.10.20 - Removed.
+  </obsolete>
   <owner>ekaramad@chromium.org</owner>
   <owner>wjmaclean@chromium.org</owner>
   <summary>

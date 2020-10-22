@@ -179,8 +179,6 @@ if (enable_extensions) {
       "file_util.cc",
       "file_util.h",
       "guest_view/extensions_guest_view_messages.h",
-      "guest_view/mime_handler_view_uma_types.cc",
-      "guest_view/mime_handler_view_uma_types.h",
       "hashed_extension_id.cc",
       "hashed_extension_id.h",
       "host_id.cc",

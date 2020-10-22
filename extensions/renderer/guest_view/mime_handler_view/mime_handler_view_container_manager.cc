@@ -26,8 +26,6 @@ namespace extensions {
 
 namespace {
 
-using UMAType = MimeHandlerViewUMATypes::Type;
-
 using RenderFrameMap =
     base::flat_map<int32_t, std::unique_ptr<MimeHandlerViewContainerManager>>;
 
@@ -91,18 +89,14 @@ bool MimeHandlerViewContainerManager::CreateFrameContainer(
   if (auto* old_frame_container = GetFrameContainer(plugin_element)) {
     if (old_frame_container->resource_url().EqualsIgnoringRef(resource_url) &&
         old_frame_container->mime_type() == mime_type) {
-      RecordInteraction(UMAType::kReuseFrameContaienr);
       // TODO(ekaramad): Fix page transitions using the 'ref' in GURL (see
       // https://crbug.com/318458 for context).
       // This should translate into a same document navigation.
       return true;
     }
     // If there is already a MHVFC for this |plugin_element|, destroy it.
-    RemoveFrameContainerForReason(old_frame_container,
-                                  UMAType::kRemoveFrameContainerUpdatePlugin,
-                                  true /* retain_manager */);
+    RemoveFrameContainer(old_frame_container, true /* retain_manager */);
   }
-  RecordInteraction(UMAType::kCreateFrameContainer);
   auto frame_container = std::make_unique<MimeHandlerViewFrameContainer>(
       this, plugin_element, resource_url, mime_type);
   frame_containers_.push_back(std::move(frame_container));
@@ -202,7 +196,6 @@ void MimeHandlerViewContainerManager::DestroyFrameContainer(
 
 void MimeHandlerViewContainerManager::DidLoad(int32_t element_instance_id,
                                               const GURL& resource_url) {
-  RecordInteraction(UMAType::kDidLoadExtension);
   if (post_message_support_ && !post_message_support_->is_active()) {
     // We don't need verification here, if any MHV has loaded inside this
     // |render_frame()| then the one corresponding to full-page must have done
@@ -264,18 +257,7 @@ MimeHandlerViewContainerManager::GetFrameContainer(
   return nullptr;
 }
 
-void MimeHandlerViewContainerManager::RemoveFrameContainerForReason(
-    MimeHandlerViewFrameContainer* frame_container,
-    MimeHandlerViewUMATypes::Type event,
-    bool retain_manager) {
-  if (!RemoveFrameContainer(frame_container, retain_manager))
-    return;
-  // At this point |this| may be invalid, but it's still OK to call
-  // RecordInteraction() as it's declared static.
-  RecordInteraction(event);
-}
-
-bool MimeHandlerViewContainerManager::RemoveFrameContainer(
+void MimeHandlerViewContainerManager::RemoveFrameContainer(
     MimeHandlerViewFrameContainer* frame_container,
     bool retain_manager) {
   auto it = std::find_if(frame_containers_.cbegin(), frame_containers_.cend(),
@@ -283,13 +265,13 @@ bool MimeHandlerViewContainerManager::RemoveFrameContainer(
                            return iter.get() == frame_container;
                          });
   if (it == frame_containers_.cend())
-    return false;
+    return;
   frame_containers_.erase(it);
 
   if (!retain_manager)
     SelfDeleteIfNecessary();
 
-  return true;
+  return;
 }
 
 void MimeHandlerViewContainerManager::SetShowBeforeUnloadDialog(
@@ -298,11 +280,6 @@ void MimeHandlerViewContainerManager::SetShowBeforeUnloadDialog(
   render_frame()->GetWebFrame()->GetDocument().SetShowBeforeUnloadDialog(
       show_dialog);
   std::move(callback).Run();
-}
-
-// static
-void MimeHandlerViewContainerManager::RecordInteraction(UMAType type) {
-  base::UmaHistogramEnumeration(MimeHandlerViewUMATypes::kUMAName, type);
 }
 
 PostMessageSupport* MimeHandlerViewContainerManager::GetPostMessageSupport() {
