@@ -3179,8 +3179,10 @@ void GLRenderer::GenerateMipmap() {
 }
 
 bool GLRenderer::FlippedFramebuffer() const {
+#if defined(OS_APPLE)
   if (force_drawing_frame_framebuffer_unflipped_)
     return false;
+#endif
   if (current_frame()->current_render_pass != current_frame()->root_render_pass)
     return true;
   return FlippedRootFramebuffer();

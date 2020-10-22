@@ -463,12 +463,14 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   // If true, tints all the composited content to red.
   bool tint_gl_composited_content_ = true;
 
+#if defined(OS_APPLE)
   // The method FlippedFramebuffer determines whether the framebuffer associated
   // with a DrawingFrame is flipped. It makes the assumption that the
   // DrawingFrame is being used as part of a render pass. If a DrawingFrame is
   // not being used as part of a render pass, setting it here forces
   // FlippedFramebuffer to return |true|.
   bool force_drawing_frame_framebuffer_unflipped_ = false;
+#endif
 
   BoundGeometry bound_geometry_;
 
