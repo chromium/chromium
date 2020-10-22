@@ -193,8 +193,7 @@ bool HardwareDisplayController::ScheduleOrTestPageFlip(
   }
 
   status &= GetDrmDevice()->plane_manager()->Commit(
-      &owned_hardware_planes_, /*should_modeset=*/false, page_flip_request,
-      out_fence);
+      &owned_hardware_planes_, page_flip_request, out_fence);
 
   return status;
 }

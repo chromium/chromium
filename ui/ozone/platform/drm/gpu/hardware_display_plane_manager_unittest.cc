@@ -227,8 +227,8 @@ void HardwareDisplayPlaneManagerTest::PerformPageFlip(
       state, assigns, crtc_properties_[crtc_idx].id));
   scoped_refptr<ui::PageFlipRequest> page_flip_request =
       base::MakeRefCounted<ui::PageFlipRequest>(base::TimeDelta());
-  ASSERT_TRUE(fake_drm_->plane_manager()->Commit(
-      state, /*should_modeset*/ false, page_flip_request, nullptr));
+  ASSERT_TRUE(
+      fake_drm_->plane_manager()->Commit(state, page_flip_request, nullptr));
 }
 
 uint64_t HardwareDisplayPlaneManagerTest::GetObjectPropertyValue(
@@ -654,8 +654,8 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, UnusedPlanesAreReleased) {
   fake_drm_->plane_manager()->BeginFrame(&hdpl);
   EXPECT_TRUE(fake_drm_->plane_manager()->AssignOverlayPlanes(
       &hdpl, assigns, crtc_properties_[0].id));
-  EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
-      &hdpl, /*should_modeset*/ false, page_flip_request, nullptr));
+  EXPECT_TRUE(
+      fake_drm_->plane_manager()->Commit(&hdpl, page_flip_request, nullptr));
   assigns.clear();
   assigns.push_back(ui::DrmOverlayPlane(primary_buffer, nullptr));
   fake_drm_->plane_manager()->BeginFrame(&hdpl);
@@ -664,8 +664,8 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, UnusedPlanesAreReleased) {
   EXPECT_NE(0u, GetPlanePropertyValue(kPlaneOffset, "FB_ID"));
   EXPECT_NE(0u, GetPlanePropertyValue(kPlaneOffset + 1, "FB_ID"));
 
-  EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
-      &hdpl, /*should_modeset*/ false, page_flip_request, nullptr));
+  EXPECT_TRUE(
+      fake_drm_->plane_manager()->Commit(&hdpl, page_flip_request, nullptr));
   EXPECT_NE(0u, GetPlanePropertyValue(kPlaneOffset, "FB_ID"));
   EXPECT_EQ(0u, GetPlanePropertyValue(kPlaneOffset + 1, "FB_ID"));
 }
@@ -689,8 +689,8 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, AssignPlanesRestoresInUse) {
   fake_drm_->plane_manager()->BeginFrame(&hdpl);
   EXPECT_TRUE(fake_drm_->plane_manager()->AssignOverlayPlanes(
       &hdpl, assigns, crtc_properties_[0].id));
-  EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
-      &hdpl, /*should_modeset*/ false, page_flip_request, nullptr));
+  EXPECT_TRUE(
+      fake_drm_->plane_manager()->Commit(&hdpl, page_flip_request, nullptr));
   EXPECT_TRUE(fake_drm_->plane_manager()->planes().front()->in_use());
   assigns.push_back(ui::DrmOverlayPlane(overlay_buffer, nullptr));
 
@@ -723,14 +723,13 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, PageflipTestRestoresInUse) {
   fake_drm_->plane_manager()->BeginFrame(&hdpl);
   EXPECT_TRUE(fake_drm_->plane_manager()->AssignOverlayPlanes(
       &hdpl, assigns, crtc_properties_[0].id));
-  EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
-      &hdpl, /*should_modeset*/ false, page_flip_request, nullptr));
+  EXPECT_TRUE(
+      fake_drm_->plane_manager()->Commit(&hdpl, page_flip_request, nullptr));
   assigns.clear();
   fake_drm_->plane_manager()->BeginFrame(&hdpl);
   EXPECT_TRUE(fake_drm_->plane_manager()->AssignOverlayPlanes(
       &hdpl, assigns, crtc_properties_[0].id));
-  EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
-      &hdpl, /*should_modeset*/ false, nullptr, nullptr));
+  EXPECT_TRUE(fake_drm_->plane_manager()->Commit(&hdpl, nullptr, nullptr));
   // The primary plane should still be in use since the commit was
   // a pageflip test and did not change any KMS state.
   EXPECT_TRUE(fake_drm_->plane_manager()->planes().front()->in_use());
@@ -1064,8 +1063,8 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest,
       base::MakeRefCounted<ui::PageFlipRequest>(base::TimeDelta());
 
   std::unique_ptr<gfx::GpuFence> out_fence;
-  EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
-      &state_, /*should_modeset*/ false, page_flip_request, &out_fence));
+  EXPECT_TRUE(fake_drm_->plane_manager()->Commit(&state_, page_flip_request,
+                                                 &out_fence));
   EXPECT_EQ(nullptr, out_fence);
 }
 
@@ -1305,8 +1304,8 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, OverlaySourceCrop) {
     std::unique_ptr<gfx::GpuFence> out_fence;
     scoped_refptr<ui::PageFlipRequest> page_flip_request =
         base::MakeRefCounted<ui::PageFlipRequest>(base::TimeDelta());
-    EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
-        &state_, /*should_modeset*/ false, page_flip_request, &out_fence));
+    EXPECT_TRUE(fake_drm_->plane_manager()->Commit(&state_, page_flip_request,
+                                                   &out_fence));
 
     EXPECT_EQ(2u << 16, GetPlanePropertyValue(kPlaneOffset, "SRC_W"));
     EXPECT_EQ(2u << 16, GetPlanePropertyValue(kPlaneOffset, "SRC_H"));
@@ -1326,8 +1325,8 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, OverlaySourceCrop) {
     scoped_refptr<ui::PageFlipRequest> page_flip_request =
         base::MakeRefCounted<ui::PageFlipRequest>(base::TimeDelta());
     std::unique_ptr<gfx::GpuFence> out_fence;
-    EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
-        &state_, /*should_modeset*/ false, page_flip_request, &out_fence));
+    EXPECT_TRUE(fake_drm_->plane_manager()->Commit(&state_, page_flip_request,
+                                                   &out_fence));
 
     EXPECT_EQ(1u << 16, GetPlanePropertyValue(kPlaneOffset, "SRC_W"));
     EXPECT_EQ(2u << 16, GetPlanePropertyValue(kPlaneOffset, "SRC_H"));
@@ -1347,8 +1346,8 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, OverlaySourceCrop) {
     scoped_refptr<ui::PageFlipRequest> page_flip_request =
         base::MakeRefCounted<ui::PageFlipRequest>(base::TimeDelta());
     std::unique_ptr<gfx::GpuFence> out_fence;
-    EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
-        &state_, /*should_modeset*/ false, page_flip_request, &out_fence));
+    EXPECT_TRUE(fake_drm_->plane_manager()->Commit(&state_, page_flip_request,
+                                                   &out_fence));
 
     EXPECT_EQ(2u << 16, GetPlanePropertyValue(kPlaneOffset, "SRC_W"));
     EXPECT_EQ(1u << 16, GetPlanePropertyValue(kPlaneOffset, "SRC_H"));

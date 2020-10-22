@@ -239,10 +239,9 @@ void HardwareDisplayPlaneManagerAtomic::SetAtomicPropsForCommit(
 
 bool HardwareDisplayPlaneManagerAtomic::Commit(
     HardwareDisplayPlaneList* plane_list,
-    bool should_modeset,
     scoped_refptr<PageFlipRequest> page_flip_request,
     std::unique_ptr<gfx::GpuFence>* out_fence) {
-  bool test_only = !should_modeset && !page_flip_request;
+  bool test_only = !page_flip_request;
 
   std::vector<uint32_t> crtcs = GetCrtcIdsOfPlanes(*plane_list);
 
@@ -268,11 +267,8 @@ bool HardwareDisplayPlaneManagerAtomic::Commit(
       }
     }
 
-    uint32_t flags = 0;
-    if (should_modeset)
-      flags = DRM_MODE_ATOMIC_ALLOW_MODESET;
-    else
-      flags = test_only ? DRM_MODE_ATOMIC_TEST_ONLY : DRM_MODE_ATOMIC_NONBLOCK;
+    uint32_t flags =
+        test_only ? DRM_MODE_ATOMIC_TEST_ONLY : DRM_MODE_ATOMIC_NONBLOCK;
 
     if (!drm_->CommitProperties(plane_list->atomic_property_set.get(), flags,
                                 crtcs.size(), page_flip_request)) {
