@@ -52,6 +52,30 @@ std::vector<mojo_ipc::PageSize> GetSupportedPageSizes(
   return page_sizes;
 }
 
+// Sets the scan region based on the given |page_size|. If |page_size| is
+// PageSize::kMax, the scan resion is left unset, which will cause the scanner
+// to scan the entire scannable area.
+void SetScanRegion(const mojo_ipc::PageSize page_size,
+                   lorgnette::ScanSettings& settings_out) {
+  // The default top-left and bottom-right coordinates are (0,0), so only the
+  // bottom-right coordinates need to be set.
+  lorgnette::ScanRegion region;
+  switch (page_size) {
+    case mojo_ipc::PageSize::kIsoA4:
+      region.set_bottom_right_x(kIsoA4PageSize.width);
+      region.set_bottom_right_y(kIsoA4PageSize.height);
+      break;
+    case mojo_ipc::PageSize::kNaLetter:
+      region.set_bottom_right_x(kNaLetterPageSize.width);
+      region.set_bottom_right_y(kNaLetterPageSize.height);
+      break;
+    case mojo_ipc::PageSize::kMax:
+      return;
+  }
+
+  *settings_out.mutable_scan_region() = std::move(region);
+}
+
 }  // namespace
 
 template <>
@@ -142,6 +166,7 @@ TypeConverter<lorgnette::ScanSettings, mojo_ipc::ScanSettingsPtr>::Convert(
   lorgnette_settings.set_color_mode(
       mojo::ConvertTo<lorgnette::ColorMode>(mojo_settings->color_mode));
   lorgnette_settings.set_resolution(mojo_settings->resolution_dpi);
+  SetScanRegion(mojo_settings->page_size, lorgnette_settings);
   return lorgnette_settings;
 }
 

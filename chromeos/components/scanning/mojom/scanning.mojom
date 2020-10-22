@@ -72,6 +72,8 @@ struct ScanSettings {
   FileType file_type;
   // The color mode with which to scan.
   ColorMode color_mode;
+  // The page size with which to scan.
+  PageSize page_size;
   // The resolution with which to scan in DPI.
   uint32 resolution_dpi;
 };

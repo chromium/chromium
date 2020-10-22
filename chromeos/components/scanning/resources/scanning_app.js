@@ -191,11 +191,12 @@ Polymer({
     this.scanButtonDisabled_ = true;
 
     // TODO(jschettler): Use the selected file type when ScanService supports
-    // it.
+    // it. Use the selected page size when the corresponding dropdown is added.
     const settings = {
       'sourceName': this.selectedSource,
       'fileType': chromeos.scanning.mojom.FileType.kPng,
       'colorMode': colorModeFromString(this.selectedColorMode),
+      'pageSize': chromeos.scanning.mojom.PageSize.kNaLetter,
       'resolutionDpi': Number(this.selectedResolution),
     };
     this.scanService_
