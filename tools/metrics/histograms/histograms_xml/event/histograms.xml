@@ -148,6 +148,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.FrameEventRouting.TouchEventAckQueueSize" units="units"
     expires_after="2020-07-19">
+  <obsolete>
+    2020.10.21 - Removed.
+  </obsolete>
   <owner>wjmaclean@chromium.org</owner>
   <owner>kenrb@chromium.org</owner>
   <summary>
