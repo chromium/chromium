@@ -6,6 +6,7 @@
 #define BASE_TEST_FAKE_IASYNC_OPERATION_WIN_H_
 
 #include <wrl/client.h>
+#include <wrl/implements.h>
 
 #include "base/notreached.h"
 #include "base/win/winrt_foundation_helpers.h"
