@@ -1514,28 +1514,28 @@ class ComputedStyle : public ComputedStyleBase,
   // Margin utility functions.
   void SetMarginTop(const Length& v) {
     if (MarginTop() != v) {
-      if (!v.IsZero())
+      if (!v.IsZero() || v.IsAuto())
         SetMayHaveMargin();
       MutableMarginTopInternal() = v;
     }
   }
   void SetMarginRight(const Length& v) {
     if (MarginRight() != v) {
-      if (!v.IsZero())
+      if (!v.IsZero() || v.IsAuto())
         SetMayHaveMargin();
       MutableMarginRightInternal() = v;
     }
   }
   void SetMarginBottom(const Length& v) {
     if (MarginBottom() != v) {
-      if (!v.IsZero())
+      if (!v.IsZero() || v.IsAuto())
         SetMayHaveMargin();
       MutableMarginBottomInternal() = v;
     }
   }
   void SetMarginLeft(const Length& v) {
     if (MarginLeft() != v) {
-      if (!v.IsZero())
+      if (!v.IsZero() || v.IsAuto())
         SetMayHaveMargin();
       MutableMarginLeftInternal() = v;
     }

@@ -25,12 +25,14 @@ enum class EBlockAlignment { kStart, kCenter, kEnd };
 
 inline EBlockAlignment BlockAlignment(const ComputedStyle& style,
                                       const ComputedStyle& container_style) {
-  bool start_auto = style.MarginStartUsing(container_style).IsAuto();
-  bool end_auto = style.MarginEndUsing(container_style).IsAuto();
-  if (start_auto || end_auto) {
-    if (start_auto)
-      return end_auto ? EBlockAlignment::kCenter : EBlockAlignment::kEnd;
-    return EBlockAlignment::kStart;
+  if (style.MayHaveMargin()) {
+    bool start_auto = style.MarginStartUsing(container_style).IsAuto();
+    bool end_auto = style.MarginEndUsing(container_style).IsAuto();
+    if (start_auto || end_auto) {
+      if (start_auto)
+        return end_auto ? EBlockAlignment::kCenter : EBlockAlignment::kEnd;
+      return EBlockAlignment::kStart;
+    }
   }
 
   // If none of the inline margins are auto, look for -webkit- text-align
