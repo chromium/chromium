@@ -6532,7 +6532,6 @@ void RenderFrameHostImpl::CommitNavigation(
 
     DCHECK(navigation_request->policy_container());
 
-    dom_content_loaded_ = false;
     SendCommitNavigation(
         navigation_client, navigation_request, std::move(common_params),
         std::move(commit_params), std::move(head), std::move(response_body),
@@ -8639,6 +8638,8 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   has_unload_handler_ = false;
   has_pagehide_handler_ = false;
   has_visibilitychange_handler_ = false;
+
+  dom_content_loaded_ = false;
 
   DCHECK(params.embedding_token.has_value());
   SetEmbeddingToken(params.embedding_token.value());
