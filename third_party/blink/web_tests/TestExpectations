@@ -2465,6 +2465,7 @@ crbug.com/27659 external/wpt/css/css-ruby/ruby-whitespace-002.html [ Failure ]
 # Disabling tests temporarily in order to land a devtools-frontend color-swatch change. Will re-enable soon.
 crbug.com/1137438 http/tests/devtools/elements/styles-1/color-swatch.js [ Failure Pass ]
 crbug.com/1137438 http/tests/devtools/elements/styles/url-color-swatch.js [ Failure Pass ]
+crbug.com/1137438 http/tests/devtools/sources/color-swatch-position.js [ Failure Pass ]
 
 # WebRTC: Perfect Negotiation times out in Plan B. This is expected.
 crbug.com/980872 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-perfect-negotiation.https.html [ Timeout ]
