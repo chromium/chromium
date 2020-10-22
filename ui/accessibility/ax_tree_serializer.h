@@ -405,9 +405,10 @@ AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::GetClientTreeNodeParent(
           << tree_->GetDebugString(tree_->GetFromId(parent->id));
     static auto* missing_parent_err = base::debug::AllocateCrashKeyString(
         "ax_ts_missing_parent_err", base::debug::CrashKeySize::Size256);
-    base::debug::SetCrashKeyString(missing_parent_err, error.str());
+    base::debug::SetCrashKeyString(missing_parent_err,
+                                   error.str().substr(0, 230));
 #if defined(AX_FAIL_FAST_BUILD)
-    CHECK(false);
+    CHECK(false) << error.str();
 #endif  // defined(AX_FAIL_FAST_BUILD)
     base::debug::DumpWithoutCrashing();
   }
@@ -605,8 +606,8 @@ bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::
                    tree_->GetFromId(client_child->parent->id));
       static auto* reparent_err = base::debug::AllocateCrashKeyString(
           "ax_ts_reparent_err", base::debug::CrashKeySize::Size256);
-      base::debug::SetCrashKeyString(reparent_err, error.str());
-      CHECK(false);
+      base::debug::SetCrashKeyString(reparent_err, error.str().substr(0, 230));
+      CHECK(false) << error.str();
 #endif  // defined(AX_FAIL_FAST_BUILD)
       // TODO: re-add this, including crash keys above.
       // base::debug::DumpWithoutCrashing();
@@ -702,9 +703,9 @@ bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::
                      ClientTreeNodeById(child_id)->parent->id));
         static auto* dupe_id_err = base::debug::AllocateCrashKeyString(
             "ax_ts_dupe_id_err", base::debug::CrashKeySize::Size256);
-        base::debug::SetCrashKeyString(dupe_id_err, error.str());
+        base::debug::SetCrashKeyString(dupe_id_err, error.str().substr(0, 230));
 #if defined(AX_FAIL_FAST_BUILD)
-        CHECK(false);
+        CHECK(false) << error.str();
 #endif  // defined(AX_FAIL_FAST_BUILD)
         base::debug::DumpWithoutCrashing();
         Reset();
