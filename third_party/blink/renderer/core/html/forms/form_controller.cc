@@ -629,7 +629,7 @@ void FormController::RestoreImmediately() {
 }
 
 void FormController::RestoreAllControlsInDocumentOrder() {
-  if (!document_->IsActive())
+  if (!document_->IsActive() || did_restore_all_)
     return;
   HeapHashSet<Member<HTMLFormElement>> finished_forms;
   EventQueueScope scope;

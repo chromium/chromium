@@ -5,8 +5,14 @@
 <body>
 <iframe src="resources/state-restore-dynamic-controls-frame.html"></iframe>
 <script>
+// A Promise for this function is resolved when the child frame dispatches
+// a 'pageshow' event.
+let promiseResolver = null;
+
 promise_test(async t => {
-  await waitForEvent(window, 'load', {once:true});
+  await new Promise((resolve, reject) => {
+    window.promiseResolver = resolve;
+  });
   const iframe = document.querySelector('iframe');
   const container = iframe.contentDocument.querySelector('div');
   // Change states of controls
@@ -21,9 +27,12 @@ promise_test(async t => {
   await waitForEvent(iframe, 'load', {once:true});
 
   // Navigate back
-  history.back();
-  await waitForEvent(iframe, 'load', {once:true});
-  // Wait until finishing the restore task.
+  await new Promise((resolve, reject) => {
+    window.promiseResolver = resolve;
+    history.back();
+  });
+
+  // Wait until finishing the scheduled restore task.
   await timeOut(t, 0);
   const inputs = iframe.contentDocument.querySelectorAll('input');
   assert_true(inputs[0].checked, 'Checkbox state should be restored.');
