@@ -61,9 +61,8 @@ Polymer({
   /** @private */
   onMoveButtonClick_() {
     assert(this.passwordToMove.isPresentOnDevice());
-    PasswordManagerImpl.getInstance()
-        .movePasswordToAccount(/** @type {number} */
-                               (this.passwordToMove.deviceId));
+    PasswordManagerImpl.getInstance().movePasswordToAccount(
+        [this.passwordToMove.deviceId]);
     this.$.dialog.close();
   },
 

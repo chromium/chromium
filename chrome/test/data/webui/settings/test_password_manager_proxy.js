@@ -120,8 +120,8 @@ export class TestPasswordManagerProxy extends TestBrowserProxy {
   }
 
   /** @override */
-  movePasswordToAccount(id) {
-    this.methodCalled('movePasswordToAccount', id);
+  movePasswordToAccount(ids) {
+    this.methodCalled('movePasswordToAccount', ids);
   }
 
   /** @override */

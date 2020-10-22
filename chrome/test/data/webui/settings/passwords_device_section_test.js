@@ -273,7 +273,7 @@ suite('PasswordsDeviceSection', function() {
     // for the device copy. Verify the dialog disappears.
     moveToAccountDialog.$.moveButton.click();
     const movedId = await passwordManager.whenCalled('movePasswordToAccount');
-    assertEquals(deviceCopy.id, movedId);
+    assertEquals(deviceCopy.id, movedId[0]);
   });
 
   // Test verifies that Chrome navigates to the standard passwords page if the

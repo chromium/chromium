@@ -539,7 +539,7 @@ var availableTests = [
   },
 
   function movePasswordToAccount() {
-    chrome.passwordsPrivate.movePasswordToAccount(42);
+    chrome.passwordsPrivate.movePasswordToAccount([42]);
     chrome.test.succeed();
   }
 ];

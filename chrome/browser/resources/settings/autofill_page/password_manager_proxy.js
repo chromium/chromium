@@ -67,10 +67,10 @@ export class PasswordManagerProxy {
   removeSavedPasswords(ids) {}
 
   /**
-   * Moves a password from the device to the account
-   * @param {number} id The id for the password entry being moved.
+   * Moves a list of passwords from the device to the account
+   * @param {!Array<number>} ids The ids for the password entries being moved.
    */
-  movePasswordToAccount(id) {}
+  movePasswordToAccount(ids) {}
 
   /**
    * Add an observer to the list of password exceptions.
@@ -412,8 +412,8 @@ export class PasswordManagerImpl {
   }
 
   /** @override */
-  movePasswordToAccount(id) {
-    chrome.passwordsPrivate.movePasswordToAccount(id);
+  movePasswordToAccount(ids) {
+    chrome.passwordsPrivate.movePasswordToAccount(ids);
   }
 
   /** @override */

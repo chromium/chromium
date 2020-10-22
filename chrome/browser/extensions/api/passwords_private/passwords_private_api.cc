@@ -194,7 +194,7 @@ ResponseAction PasswordsPrivateMovePasswordToAccountFunction::Run() {
       api::passwords_private::MovePasswordToAccount::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(parameters);
   GetDelegate(browser_context())
-      ->MovePasswordToAccount({parameters->id}, GetSenderWebContents());
+      ->MovePasswordToAccount(parameters->ids, GetSenderWebContents());
   return RespondNow(NoArguments());
 }
 
