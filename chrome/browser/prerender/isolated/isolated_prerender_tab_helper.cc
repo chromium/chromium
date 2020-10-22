@@ -1217,13 +1217,23 @@ void IsolatedPrerenderTabHelper::OnGotEligibilityResult(
     base::Optional<IsolatedPrerenderPrefetchStatus> status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // It is possible that this callback is being run late. That is, after the
+  // user has navigated away from the origin SRP. To detect this, check if the
+  // url exists in the set of predicted urls. If it doesn't, do nothing.
+  if (page_->original_prediction_ordering_.find(url) ==
+      page_->original_prediction_ordering_.end()) {
+    return;
+  }
+
   if (!eligible) {
     if (status) {
       OnPrefetchStatusUpdate(url, status.value());
 
-      DCHECK(page_->prefetch_metrics_collector_);
-      page_->prefetch_metrics_collector_->OnMainframeResourceNotEligible(
-          url, page_->original_prediction_ordering_.find(url)->second, *status);
+      if (page_->prefetch_metrics_collector_) {
+        page_->prefetch_metrics_collector_->OnMainframeResourceNotEligible(
+            url, page_->original_prediction_ordering_.find(url)->second,
+            *status);
+      }
     }
     return;
   }
