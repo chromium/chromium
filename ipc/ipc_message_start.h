@@ -33,8 +33,6 @@ enum IPCMessageStart {
   EncryptedMediaMsgStart,
   GinJavaBridgeMsgStart,
   ChromeUtilityPrintingMsgStart,
-  OzoneGpuMsgStart,
-  WebTestMsgStart,
   ExtensionsGuestViewMsgStart,
   GuestViewMsgStart,
   MediaPlayerDelegateMsgStart,

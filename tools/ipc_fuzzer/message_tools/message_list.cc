@@ -47,7 +47,6 @@ static bool check_msgtable() {
   // Exclude test and other non-browser files from consideration.  Do not
   // include message files used inside the actual chrome browser in this list.
   exemptions.push_back(TestMsgStart);
-  exemptions.push_back(WebTestMsgStart);
   exemptions.push_back(WorkerMsgStart);    // Now only used by tests.
   exemptions.push_back(ChromeUtilityPrintingMsgStart);  // BUILDFLAGS, sigh.
 
@@ -62,10 +61,6 @@ static bool check_msgtable() {
   exemptions.push_back(AndroidWebViewMsgStart);
   exemptions.push_back(ExtensionWorkerMsgStart);
 #endif  // !defined(OS_ANDROID)
-
-#if !defined(USE_OZONE)
-  exemptions.push_back(OzoneGpuMsgStart);
-#endif  // !defined(USE_OZONE)
 
   for (size_t i = 0; i < MSGTABLE_SIZE; ++i) {
     int class_id = IPC_MESSAGE_ID_CLASS(msgtable[i].id);

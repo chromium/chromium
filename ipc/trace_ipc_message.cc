@@ -83,12 +83,6 @@ void WriteIpcMessageIdAsProtozero(uint32_t message_id,
     case ChromeUtilityPrintingMsgStart:
       message_class = ChromeLegacyIpc::CLASS_CHROME_UTILITY_PRINTING;
       break;
-    case OzoneGpuMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_OZONE_GPU;
-      break;
-    case WebTestMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_WEB_TEST;
-      break;
     case ExtensionsGuestViewMsgStart:
       message_class = ChromeLegacyIpc::CLASS_EXTENSIONS_GUEST_VIEW;
       break;
