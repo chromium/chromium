@@ -579,6 +579,10 @@ class HttpNetworkTransactionTest : public PlatformTest,
 
   const CommonConnectJobParams dummy_connect_job_params_;
 
+  const net::NetworkIsolationKey kNetworkIsolationKey =
+      NetworkIsolationKey(url::Origin::Create(GURL("https://foo.test/")),
+                          url::Origin::Create(GURL("https://bar.test/")));
+
   // These clocks are defined here, even though they're only used in the
   // Reporting tests below, since they need to be destroyed after
   // |session_deps_|.
@@ -6285,7 +6289,6 @@ TEST_F(HttpNetworkTransactionTest, HttpProxyLoadTimingWithPacTwoRequests) {
 // Make sure that NetworkIsolationKeys are passed down to the proxy layer.
 TEST_F(HttpNetworkTransactionTest, ProxyResolvedWithNetworkIsolationKey) {
   const url::Origin kOrigin = url::Origin::Create(GURL("https://foo.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey(kOrigin, kOrigin);
 
   ProxyConfig proxy_config;
   proxy_config.set_auto_detect(true);
@@ -19692,6 +19695,11 @@ TEST_F(HttpNetworkTransactionTest, NoSupportedProxies) {
 #if BUILDFLAG(ENABLE_REPORTING)
 class HttpNetworkTransactionReportingTest : public HttpNetworkTransactionTest {
  protected:
+  HttpNetworkTransactionReportingTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kPartitionNelAndReportingByNetworkIsolationKey);
+  }
+
   void SetUp() override {
     HttpNetworkTransactionTest::SetUp();
     auto test_reporting_context = std::make_unique<TestReportingContext>(
@@ -19717,6 +19725,7 @@ class HttpNetworkTransactionReportingTest : public HttpNetworkTransactionTest {
     request.url = GURL(url_);
     request.traffic_annotation =
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+    request.network_isolation_key = kNetworkIsolationKey;
 
     MockWrite data_writes[] = {
         MockWrite("GET / HTTP/1.1\r\n"
@@ -19756,6 +19765,7 @@ class HttpNetworkTransactionReportingTest : public HttpNetworkTransactionTest {
   std::string url_ = "https://www.example.org/";
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   TestReportingContext* test_reporting_context_;
 };
 
@@ -19778,7 +19788,7 @@ TEST_F(HttpNetworkTransactionReportingTest, ProcessReportToHeaderHttps) {
   const ReportingEndpoint endpoint =
       reporting_context()->cache()->GetEndpointForTesting(
           ReportingEndpointGroupKey(
-              NetworkIsolationKey(),
+              kNetworkIsolationKey,
               url::Origin::Create(GURL("https://www.example.org/")), "nel"),
           GURL("https://www.example.org/upload/"));
   EXPECT_TRUE(endpoint);
@@ -19819,6 +19829,7 @@ class HttpNetworkTransactionNetworkErrorLoggingTest
 
     request_.method = "GET";
     request_.url = GURL(url_);
+    request_.network_isolation_key = kNetworkIsolationKey;
     request_.extra_headers = extra_headers_;
     request_.reporting_upload_depth = reporting_upload_depth_;
     request_.traffic_annotation =
@@ -19884,6 +19895,7 @@ class HttpNetworkTransactionNetworkErrorLoggingTest
     const NetworkErrorLoggingService::RequestDetails& error =
         network_error_logging_service()->errors()[index];
     EXPECT_EQ(url_, error.uri);
+    EXPECT_EQ(kNetworkIsolationKey, error.network_isolation_key);
     EXPECT_EQ(kReferrer, error.referrer);
     EXPECT_EQ(kUserAgent, error.user_agent);
     EXPECT_EQ(server_ip, error.server_ip);
@@ -19988,6 +20000,7 @@ TEST_F(HttpNetworkTransactionNetworkErrorLoggingTest, ProcessNelHeaderHttps) {
   RequestPolicy();
   ASSERT_EQ(1u, network_error_logging_service()->headers().size());
   const auto& header = network_error_logging_service()->headers()[0];
+  EXPECT_EQ(kNetworkIsolationKey, header.network_isolation_key);
   EXPECT_EQ(url::Origin::Create(GURL("https://www.example.org/")),
             header.origin);
   EXPECT_EQ(IPAddress::IPv4Localhost(), header.received_ip_address);

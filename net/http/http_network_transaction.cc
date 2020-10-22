@@ -1329,8 +1329,8 @@ void HttpNetworkTransaction::ProcessReportToHeader() {
   if (!response_.headers->GetNormalizedHeader("Report-To", &value))
     return;
 
-  ReportingService* service = session_->reporting_service();
-  if (!service)
+  ReportingService* reporting_service = session_->reporting_service();
+  if (!reporting_service)
     return;
 
   // Only accept Report-To headers on HTTPS connections that have no
@@ -1340,9 +1340,8 @@ void HttpNetworkTransaction::ProcessReportToHeader() {
   if (IsCertStatusError(response_.ssl_info.cert_status))
     return;
 
-  // TODO(https://crbug.com/993805):  Pass in the NetworkIsolationKey.
-  service->ProcessHeader(url_.GetOrigin(), net::NetworkIsolationKey::Todo(),
-                         value);
+  reporting_service->ProcessHeader(url_.GetOrigin(), network_isolation_key_,
+                                   value);
 }
 
 void HttpNetworkTransaction::ProcessNetworkErrorLoggingHeader() {
@@ -1352,9 +1351,9 @@ void HttpNetworkTransaction::ProcessNetworkErrorLoggingHeader() {
     return;
   }
 
-  NetworkErrorLoggingService* service =
+  NetworkErrorLoggingService* network_error_logging_service =
       session_->network_error_logging_service();
-  if (!service)
+  if (!network_error_logging_service)
     return;
 
   // Don't accept NEL headers received via a proxy, because the IP address of
@@ -1372,9 +1371,9 @@ void HttpNetworkTransaction::ProcessNetworkErrorLoggingHeader() {
   if (remote_endpoint_.address().empty())
     return;
 
-  // TODO(chlily): Populate NIK.
-  service->OnHeader(NetworkIsolationKey::Todo(), url::Origin::Create(url_),
-                    remote_endpoint_.address(), value);
+  network_error_logging_service->OnHeader(network_isolation_key_,
+                                          url::Origin::Create(url_),
+                                          remote_endpoint_.address(), value);
 }
 
 void HttpNetworkTransaction::GenerateNetworkErrorLoggingReportIfError(int rv) {
@@ -1413,9 +1412,7 @@ void HttpNetworkTransaction::GenerateNetworkErrorLoggingReport(int rv) {
 
   NetworkErrorLoggingService::RequestDetails details;
 
-  // TODO(chlily): Add NIK to details.
-  details.network_isolation_key = NetworkIsolationKey::Todo();
-
+  details.network_isolation_key = network_isolation_key_;
   details.uri = url_;
   if (!request_referrer_.empty())
     details.referrer = GURL(request_referrer_);
