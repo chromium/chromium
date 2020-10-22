@@ -396,7 +396,7 @@ def ci_builder(
     ]
     merged_resultdb_bigquery_exports.extend(resultdb_bigquery_exports or [])
 
-    # Enable "chromium.resultdb.result_sink" on all ci builders for 10% by default.
+    # Enable "chromium.resultdb.result_sink" on all ci builders for 50% by default.
     experiments = experiments or {}
     experiments.setdefault("chromium.resultdb.result_sink", 50)
 
