@@ -159,7 +159,8 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
 
     @Override
     public final void setContentViewAndLoadLibrary(Runnable onInflationCompleteCallback) {
-        boolean enableInstantStart = TabUiFeatureUtilities.supportInstantStart(isTablet());
+        boolean enableInstantStart =
+                TabUiFeatureUtilities.supportInstantStart(isTablet()) && !mHadWarmStart;
         mOnInflationCompleteCallback = onInflationCompleteCallback;
         if (enableInstantStart) {
             triggerLayoutInflation();
