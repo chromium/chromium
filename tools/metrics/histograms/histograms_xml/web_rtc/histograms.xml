@@ -344,6 +344,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="WebRTC.Audio.EchoCanceller.ActiveRender" enum="Boolean"
     expires_after="2020-12-01">
+  <obsolete>
+    No longer in use. Removed on 2020-10-19.
+  </obsolete>
   <owner>peah@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <summary>
@@ -423,6 +426,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="WebRTC.Audio.EchoCanceller.ErlBand0" units="dB (shifted)"
     expires_after="2020-12-01">
+  <obsolete>
+    No longer in use, EchoCanceller.Erl considered sufficient. Removed on
+    2020-10-19.
+  </obsolete>
   <owner>peah@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <summary>
@@ -433,6 +440,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="WebRTC.Audio.EchoCanceller.ErlBand1" units="dB (shifted)"
     expires_after="2020-12-01">
+  <obsolete>
+    No longer in use, EchoCanceller.Erl considered sufficient. Removed on
+    2020-10-19.
+  </obsolete>
   <owner>peah@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <summary>
@@ -454,6 +465,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="WebRTC.Audio.EchoCanceller.ErleBand0" units="dB (shifted)"
     expires_after="2020-12-01">
+  <obsolete>
+    No longer in use, EchoCanceller.Erle considered sufficient. Removed on
+    2020-10-19.
+  </obsolete>
   <owner>peah@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <summary>
@@ -464,6 +479,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="WebRTC.Audio.EchoCanceller.ErleBand1" units="dB (shifted)"
     expires_after="2020-12-01">
+  <obsolete>
+    No longer in use, EchoCanceller.Erle considered sufficient. Removed on
+    2020-10-19.
+  </obsolete>
   <owner>peah@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <summary>
@@ -545,6 +564,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="WebRTC.Audio.EchoCanceller.ModelBasedAecFeasible"
     enum="Boolean" expires_after="2020-12-01">
+  <obsolete>
+    No longer reported. Removed on 2020-10-19.
+  </obsolete>
   <owner>peah@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <summary>
