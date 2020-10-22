@@ -89,6 +89,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="DevTools.ComputedStyleGrouping"
     enum="DevToolsComputedStyleGrouping" expires_after="M87">
+  <obsolete>
+    Removed in M88 because it is no longer needed for analysis.
+  </obsolete>
   <owner>changhaohan@chromium.org</owner>
   <owner>yangguo@chromium.org</owner>
   <owner>mathias@chromium.org</owner>
