@@ -249,6 +249,43 @@ message ResizeRequest {
   int32 height = 2;
 }
 
+// Represents the type of a focused text input field.
+// Corresponds with blink's public/platform/WebTextInputType.h
+// Reference that source for more extended commentary on meaning of each value.
+enum TextInputType {
+  // Input caret is not in an editable node, no input method shall be used.
+  TEXT_INPUT_TYPE_NONE = 0;
+  TEXT_INPUT_TYPE_TEXT = 1;
+  TEXT_INPUT_TYPE_PASSWORD = 2;
+  TEXT_INPUT_TYPE_SEARCH = 3;
+  TEXT_INPUT_TYPE_EMAIL = 4;
+  TEXT_INPUT_TYPE_NUMBER = 5;
+  TEXT_INPUT_TYPE_TELEPHONE = 6;
+  TEXT_INPUT_TYPE_URL = 7;
+  TEXT_INPUT_TYPE_DATE = 8;
+  TEXT_INPUT_TYPE_DATE_TIME = 9;
+  TEXT_INPUT_TYPE_DATE_TIME_LOCAL = 10;
+  TEXT_INPUT_TYPE_MONTH = 11;
+  TEXT_INPUT_TYPE_TIME = 12;
+  TEXT_INPUT_TYPE_WEEK = 13;
+  TEXT_INPUT_TYPE_TEXT_AREA = 14;
+  TEXT_INPUT_TYPE_CONTENT_EDITABLE = 15;
+  TEXT_INPUT_TYPE_DATE_TIME_FIELD = 16;
+
+  // Input caret is in an editable node which doesn't support rich editing.
+  TEXT_INPUT_TYPE_NULL = 17;
+}
+
+// Represents a focus event for an input field within the webview's contents.
+message TextInputFocusEvent {
+  TextInputType type = 1;
+
+  // Flagged attributes of the focused text input field.
+  // Corresponds with those described in blink::WebTextInputFlags in
+  // public/platform/WebTextInputType.h
+  int32 flags = 2;
+}
+
 message WebviewRequest {
   // Unique identifier for the request. For requests that will have a response,
   // the response id will match the request id.
@@ -317,6 +354,7 @@ message WebviewResponse {
     // channels via AddJavascriptChannelsRequest.
     JavascriptChannelMessage javascript_channel_message = 10;
     ClearCookiesResponse clear_cookies = 11;
+    TextInputFocusEvent input_focus_event = 12;
     AssociateCastAppWindowResponse associate = 20;
   }
 }

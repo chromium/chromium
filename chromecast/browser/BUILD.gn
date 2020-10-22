@@ -450,6 +450,8 @@ cast_source_set("browser") {
       "webview/webview_browser_context.h",
       "webview/webview_controller.cc",
       "webview/webview_controller.h",
+      "webview/webview_input_method_observer.cc",
+      "webview/webview_input_method_observer.h",
       "webview/webview_navigation_throttle.cc",
       "webview/webview_navigation_throttle.h",
       "webview/webview_rpc_instance.cc",

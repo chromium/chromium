@@ -480,7 +480,10 @@ void WebviewClient::SendKeyEvent(const Webview* webview,
   key_input->set_key_code(keyboard_code);
   key_input->set_dom_code(static_cast<int32_t>(dom_code));
   key_input->set_dom_key(static_cast<int32_t>(dom_key));
-  key_input->set_is_char(dom_key.IsCharacter());
+
+  // Hardcoded to true for our purposes, as IsCharacter doesn't seem to work
+  // here. Just means we can't test with modifier keys.
+  key_input->set_is_char(true);
 
   auto key_event = std::make_unique<InputEvent>();
   key_event->set_event_type(down ? ui::EventType::ET_KEY_PRESSED
