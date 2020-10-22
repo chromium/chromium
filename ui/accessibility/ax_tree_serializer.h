@@ -400,16 +400,12 @@ AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::GetClientTreeNodeParent(
     return nullptr;
   if (!ClientTreeNodeById(parent->id)) {
     std::ostringstream error;
-    error << "Parent not in id map. Child was: "
-          << tree_->GetDebugString(tree_->GetFromId(obj->id))
-          << "\n  Parent was: "
+    error << "Child: " << tree_->GetDebugString(tree_->GetFromId(obj->id))
+          << "\nParent: "
           << tree_->GetDebugString(tree_->GetFromId(parent->id));
-    static auto* ax_tree_serializer_missing_parent_id_error =
-        base::debug::AllocateCrashKeyString(
-            "ax_tree_serializer_missing_parent_id_error",
-            base::debug::CrashKeySize::Size64);
-    base::debug::SetCrashKeyString(ax_tree_serializer_missing_parent_id_error,
-                                   error.str());
+    static auto* missing_parent_err = base::debug::AllocateCrashKeyString(
+        "ax_ts_missing_parent_err", base::debug::CrashKeySize::Size256);
+    base::debug::SetCrashKeyString(missing_parent_err, error.str());
 #if defined(AX_FAIL_FAST_BUILD)
     CHECK(false);
 #endif  // defined(AX_FAIL_FAST_BUILD)
@@ -597,26 +593,23 @@ bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::
 
     ClientTreeNode* client_child = ClientTreeNodeById(new_child_id);
     if (client_child && GetClientTreeNodeParent(client_child) != client_node) {
+#if defined(AX_FAIL_FAST_BUILD)
       // This condition leads to performance problems. It will
       // also reset virtual buffers, causing users to lose their place.
       std::ostringstream error;
-      error << "Illegal reparenting detected: "
-            << "\nPassed-in parent: "
+      error << "Passed-in parent: "
             << tree_->GetDebugString(tree_->GetFromId(client_node->id))
             << "\nChild: " << tree_->GetDebugString(child)
             << "\nChild's parent: "
-            << tree_->GetDebugString(tree_->GetFromId(client_child->parent->id))
-            << "\n-----------------------------------------\n\n\n";
-      static auto* ax_tree_serializer_illegal_reparenting_error =
-          base::debug::AllocateCrashKeyString(
-              "ax_tree_serializer_illegal_reparenting_error",
-              base::debug::CrashKeySize::Size64);
-      base::debug::SetCrashKeyString(
-          ax_tree_serializer_illegal_reparenting_error, error.str());
-#if defined(AX_FAIL_FAST_BUILD)
+            << tree_->GetDebugString(
+                   tree_->GetFromId(client_child->parent->id));
+      static auto* reparent_err = base::debug::AllocateCrashKeyString(
+          "ax_ts_reparent_err", base::debug::CrashKeySize::Size256);
+      base::debug::SetCrashKeyString(reparent_err, error.str());
       CHECK(false);
 #endif  // defined(AX_FAIL_FAST_BUILD)
-      base::debug::DumpWithoutCrashing();
+      // TODO: re-add this, including crash keys above.
+      // base::debug::DumpWithoutCrashing();
       Reset();
       return false;
     }
@@ -700,19 +693,16 @@ bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::
         // This condition leads to performance problems. It will
         // also reset virtual buffers, causing users to lose their place.
         std::ostringstream error;
-        error << "Child id " << child_id << " already exists in map."
-              << "\nChild is "
+        error << "Child id " << child_id << " already in map."
+              << "\nChild: "
               << tree_->GetDebugString(tree_->GetFromId(child_id))
-              << "\nWanted as child of parent " << tree_->GetDebugString(node)
+              << "\nWanted for parent " << tree_->GetDebugString(node)
               << "\nAlready had parent "
               << tree_->GetDebugString(tree_->GetFromId(
                      ClientTreeNodeById(child_id)->parent->id));
-        static auto* ax_tree_serializer_duplicate_id_error =
-            base::debug::AllocateCrashKeyString(
-                "ax_tree_serializer_duplicate_id_error",
-                base::debug::CrashKeySize::Size64);
-        base::debug::SetCrashKeyString(ax_tree_serializer_duplicate_id_error,
-                                       error.str());
+        static auto* dupe_id_err = base::debug::AllocateCrashKeyString(
+            "ax_ts_dupe_id_err", base::debug::CrashKeySize::Size256);
+        base::debug::SetCrashKeyString(dupe_id_err, error.str());
 #if defined(AX_FAIL_FAST_BUILD)
         CHECK(false);
 #endif  // defined(AX_FAIL_FAST_BUILD)
