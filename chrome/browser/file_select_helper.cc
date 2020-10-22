@@ -309,7 +309,7 @@ void FileSelectHelper::ConvertToFileChooserFileInfoList(
             ->GetFileSystemContext();
     file_manager::util::ConvertSelectedFileInfoListToFileChooserFileInfoList(
         file_system_context, site_instance->GetSiteURL(), files,
-        base::BindOnce(&FileSelectHelper::PerformSafeBrowsingDeepScanIfNeeded,
+        base::BindOnce(&FileSelectHelper::PerformContentAnalysisIfNeeded,
                        this));
     return;
   }
@@ -323,27 +323,27 @@ void FileSelectHelper::ConvertToFileChooserFileInfoList(
             base::FilePath(file.display_name).AsUTF16Unsafe())));
   }
 
-  PerformSafeBrowsingDeepScanIfNeeded(std::move(chooser_files));
+  PerformContentAnalysisIfNeeded(std::move(chooser_files));
 }
 
-void FileSelectHelper::PerformSafeBrowsingDeepScanIfNeeded(
+void FileSelectHelper::PerformContentAnalysisIfNeeded(
     std::vector<FileChooserFileInfoPtr> list) {
   if (AbortIfWebContentsDestroyed())
     return;
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-  safe_browsing::DeepScanningDialogDelegate::Data data;
-  if (safe_browsing::DeepScanningDialogDelegate::IsEnabled(
+  enterprise_connectors::ContentAnalysisDelegate::Data data;
+  if (enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
           profile_, render_frame_host_->GetLastCommittedURL(), &data,
           enterprise_connectors::AnalysisConnector::FILE_ATTACHED)) {
     data.paths.reserve(list.size());
     for (const auto& file : list)
       data.paths.push_back(file->get_native_file()->file_path);
 
-    safe_browsing::DeepScanningDialogDelegate::ShowForWebContents(
+    enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
         web_contents_, std::move(data),
-        base::BindOnce(&FileSelectHelper::DeepScanCompletionCallback, this,
-                       std::move(list)),
+        base::BindOnce(&FileSelectHelper::ContentAnalysisCompletionCallback,
+                       this, std::move(list)),
         safe_browsing::DeepScanAccessPoint::UPLOAD);
   } else {
     NotifyListenerAndEnd(std::move(list));
@@ -354,10 +354,10 @@ void FileSelectHelper::PerformSafeBrowsingDeepScanIfNeeded(
 }
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-void FileSelectHelper::DeepScanCompletionCallback(
+void FileSelectHelper::ContentAnalysisCompletionCallback(
     std::vector<blink::mojom::FileChooserFileInfoPtr> list,
-    const safe_browsing::DeepScanningDialogDelegate::Data& data,
-    const safe_browsing::DeepScanningDialogDelegate::Result& result) {
+    const enterprise_connectors::ContentAnalysisDelegate::Data& data,
+    const enterprise_connectors::ContentAnalysisDelegate::Result& result) {
   if (AbortIfWebContentsDestroyed())
     return;
 

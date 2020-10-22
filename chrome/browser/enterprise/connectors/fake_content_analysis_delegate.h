@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_FAKE_DEEP_SCANNING_DIALOG_DELEGATE_H_
-#define CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_FAKE_DEEP_SCANNING_DIALOG_DELEGATE_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_FAKE_CONTENT_ANALYSIS_DELEGATE_H_
+#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_FAKE_CONTENT_ANALYSIS_DELEGATE_H_
 
 #include <memory>
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/enterprise/connectors/content_analysis_delegate.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_dialog_delegate.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/safe_browsing/core/proto/webprotect.pb.h"
 
@@ -19,11 +19,11 @@ namespace content {
 class WebContents;
 }
 
-namespace safe_browsing {
+namespace enterprise_connectors {
 
-// A derivative of DeepScanningDialogDelegate that overrides calls to the
+// A derivative of ContentAnalysisDelegate that overrides calls to the
 // real binary upload service and re-implements them locally.
-class FakeDeepScanningDialogDelegate : public DeepScanningDialogDelegate {
+class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
  public:
   // Callback that determines the scan status of the file specified.  To
   // simulate a file that passes a scan return a successful response, such
@@ -39,19 +39,19 @@ class FakeDeepScanningDialogDelegate : public DeepScanningDialogDelegate {
   using EncryptionStatusCallback =
       base::RepeatingCallback<bool(const base::FilePath&)>;
 
-  FakeDeepScanningDialogDelegate(base::RepeatingClosure delete_closure,
-                                 StatusCallback status_callback,
-                                 EncryptionStatusCallback encryption_callback,
-                                 std::string dm_token,
-                                 content::WebContents* web_contents,
-                                 Data data,
-                                 CompletionCallback callback);
-  ~FakeDeepScanningDialogDelegate() override;
+  FakeContentAnalysisDelegate(base::RepeatingClosure delete_closure,
+                              StatusCallback status_callback,
+                              EncryptionStatusCallback encryption_callback,
+                              std::string dm_token,
+                              content::WebContents* web_contents,
+                              Data data,
+                              CompletionCallback callback);
+  ~FakeContentAnalysisDelegate() override;
 
-  // Use with DeepScanningDialogDelegate::SetFactoryForTesting() to create
+  // Use with ContentAnalysisDelegate::SetFactoryForTesting() to create
   // fake instances of this class.  Note that all but the last three arguments
   // will need to be bound at base::Bind() time.
-  static std::unique_ptr<DeepScanningDialogDelegate> Create(
+  static std::unique_ptr<ContentAnalysisDelegate> Create(
       base::RepeatingClosure delete_closure,
       StatusCallback status_callback,
       EncryptionStatusCallback encryption_callback,
@@ -87,32 +87,36 @@ class FakeDeepScanningDialogDelegate : public DeepScanningDialogDelegate {
       enterprise_connectors::TriggeredRule::Action dlp_action);
 
   // Sets the BinaryUploadService::Result to use in the next response callback.
-  static void SetResponseResult(BinaryUploadService::Result result);
+  static void SetResponseResult(
+      safe_browsing::BinaryUploadService::Result result);
 
  private:
   // Simulates a response from the binary upload service.  the |path| argument
   // is used to call |status_callback_| to determine if the path should succeed
   // or fail.
-  void Response(base::FilePath path,
-                std::unique_ptr<BinaryUploadService::Request> request);
+  void Response(
+      base::FilePath path,
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request);
 
-  // DeepScanningDialogDelegate overrides.
+  // ContentAnalysisDelegate overrides.
   void UploadTextForDeepScanning(
-      std::unique_ptr<BinaryUploadService::Request> request) override;
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
+      override;
   void UploadFileForDeepScanning(
-      BinaryUploadService::Result result,
+      safe_browsing::BinaryUploadService::Result result,
       const base::FilePath& path,
-      std::unique_ptr<BinaryUploadService::Request> request) override;
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
+      override;
 
-  static BinaryUploadService::Result result_;
+  static safe_browsing::BinaryUploadService::Result result_;
   base::RepeatingClosure delete_closure_;
   StatusCallback status_callback_;
   EncryptionStatusCallback encryption_callback_;
   std::string dm_token_;
 
-  base::WeakPtrFactory<FakeDeepScanningDialogDelegate> weakptr_factory_{this};
+  base::WeakPtrFactory<FakeContentAnalysisDelegate> weakptr_factory_{this};
 };
 
-}  // namespace safe_browsing
+}  // namespace enterprise_connectors
 
-#endif  // CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_FAKE_DEEP_SCANNING_DIALOG_DELEGATE_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_FAKE_CONTENT_ANALYSIS_DELEGATE_H_

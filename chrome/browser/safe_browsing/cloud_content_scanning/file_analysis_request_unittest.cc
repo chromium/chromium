@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/cloud_content_scanning/file_source_request.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
 
 #include "base/bind_helpers.h"
 #include "base/files/file_util.h"
@@ -12,8 +12,8 @@
 #include "base/test/bind_test_util.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/enterprise/connectors/content_analysis_delegate.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_dialog_delegate.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -36,14 +36,14 @@ BinaryUploadService::ContentAnalysisCallback DoNothingConnector() {
 
 }  // namespace
 
-class FileSourceRequestTest : public testing::Test {
+class FileAnalysisRequestTest : public testing::Test {
  public:
-  FileSourceRequestTest() = default;
+  FileAnalysisRequestTest() = default;
 
-  std::unique_ptr<FileSourceRequest> MakeRequest(bool block_unsupported_types,
-                                                 base::FilePath path,
-                                                 base::FilePath file_name) {
-    return std::make_unique<FileSourceRequest>(
+  std::unique_ptr<FileAnalysisRequest> MakeRequest(bool block_unsupported_types,
+                                                   base::FilePath path,
+                                                   base::FilePath file_name) {
+    return std::make_unique<FileAnalysisRequest>(
         settings(block_unsupported_types), path, file_name,
         DoNothingConnector());
   }
@@ -78,7 +78,7 @@ class FileSourceRequestTest : public testing::Test {
  private:
 };
 
-TEST_F(FileSourceRequestTest, InvalidFiles) {
+TEST_F(FileAnalysisRequestTest, InvalidFiles) {
   base::test::TaskEnvironment task_environment;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -133,7 +133,7 @@ TEST_F(FileSourceRequestTest, InvalidFiles) {
   }
 }
 
-TEST_F(FileSourceRequestTest, NormalFiles) {
+TEST_F(FileAnalysisRequestTest, NormalFiles) {
   base::test::TaskEnvironment task_environment;
 
   BinaryUploadService::Result result;
@@ -159,7 +159,7 @@ TEST_F(FileSourceRequestTest, NormalFiles) {
             "4F0E9C6A1A9A90F35B884D0F0E7343459C21060EEFEC6C0F2FA9DC1118DBE5BE");
 }
 
-TEST_F(FileSourceRequestTest, LargeFiles) {
+TEST_F(FileAnalysisRequestTest, LargeFiles) {
   base::test::TaskEnvironment task_environment;
 
   BinaryUploadService::Result result;
@@ -188,7 +188,7 @@ TEST_F(FileSourceRequestTest, LargeFiles) {
             "CEE41E98D0A6AD65CC0EC77A2BA50BF26D64DC9007F7F1C7D7DF68B8B71291A6");
 }
 
-TEST_F(FileSourceRequestTest, PopulatesDigest) {
+TEST_F(FileAnalysisRequestTest, PopulatesDigest) {
   base::test::TaskEnvironment task_environment;
   std::string file_contents = "Normal file contents";
   base::ScopedTempDir temp_dir;
@@ -215,7 +215,7 @@ TEST_F(FileSourceRequestTest, PopulatesDigest) {
             "29644C10BD036866FCFD2BDACFF340DB5DE47A90002D6AB0C42DE6A22C26158B");
 }
 
-TEST_F(FileSourceRequestTest, PopulatesFilename) {
+TEST_F(FileAnalysisRequestTest, PopulatesFilename) {
   base::test::TaskEnvironment task_environment;
   std::string file_contents = "contents";
   base::ScopedTempDir temp_dir;
@@ -240,7 +240,7 @@ TEST_F(FileSourceRequestTest, PopulatesFilename) {
   EXPECT_EQ(request->filename(), "foo.doc");
 }
 
-TEST_F(FileSourceRequestTest, CachesResults) {
+TEST_F(FileAnalysisRequestTest, CachesResults) {
   base::test::TaskEnvironment task_environment;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -288,7 +288,7 @@ TEST_F(FileSourceRequestTest, CachesResults) {
   EXPECT_EQ(sync_data.hash, async_data.hash);
 }
 
-TEST_F(FileSourceRequestTest, Encrypted) {
+TEST_F(FileAnalysisRequestTest, Encrypted) {
   content::BrowserTaskEnvironment browser_task_environment;
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper;
   base::ScopedTempDir temp_dir;
@@ -329,7 +329,7 @@ TEST_F(FileSourceRequestTest, Encrypted) {
   EXPECT_EQ(request->digest(), data.hash);
 }
 
-TEST_F(FileSourceRequestTest, UnsupportedFileTypeBlock) {
+TEST_F(FileAnalysisRequestTest, UnsupportedFileTypeBlock) {
   base::test::TaskEnvironment task_environment;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -370,7 +370,7 @@ TEST_F(FileSourceRequestTest, UnsupportedFileTypeBlock) {
   EXPECT_EQ(request->digest(), data.hash);
 }
 
-TEST_F(FileSourceRequestTest, UnsupportedFileTypeNoBlock) {
+TEST_F(FileAnalysisRequestTest, UnsupportedFileTypeNoBlock) {
   base::test::TaskEnvironment task_environment;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());

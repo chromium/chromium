@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_dialog_delegate.h"
+#include "chrome/browser/enterprise/connectors/content_analysis_delegate.h"
 
 #include <algorithm>
 #include <numeric>
@@ -28,19 +28,17 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
+#include "chrome/browser/enterprise/connectors/content_analysis_dialog.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/file_util_service.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service_factory.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_dialog_views.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/file_source_request.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
 #include "chrome/browser/safe_browsing/download_protection/check_client_download_request.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/services/file_util/public/cpp/sandboxed_rar_analyzer.h"
-#include "chrome/services/file_util/public/cpp/sandboxed_zip_analyzer.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/policy/core/browser/url_util.h"
 #include "components/policy/core/common/chrome_schema.h"
@@ -56,28 +54,30 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 
-namespace safe_browsing {
+using safe_browsing::BinaryUploadService;
+
+namespace enterprise_connectors {
 
 namespace {
 
 // Global pointer of factory function (RepeatingCallback) used to create
-// instances of DeepScanningDialogDelegate in tests.  !is_null() only in tests.
-DeepScanningDialogDelegate::Factory* GetFactoryStorage() {
-  static base::NoDestructor<DeepScanningDialogDelegate::Factory> factory;
+// instances of ContentAnalysisDelegate in tests.  !is_null() only in tests.
+ContentAnalysisDelegate::Factory* GetFactoryStorage() {
+  static base::NoDestructor<ContentAnalysisDelegate::Factory> factory;
   return factory.get();
 }
 
 // A BinaryUploadService::Request implementation that gets the data to scan
 // from a string.
-class StringSourceRequest : public BinaryUploadService::Request {
+class StringAnalysisRequest : public BinaryUploadService::Request {
  public:
-  StringSourceRequest(GURL analysis_url,
-                      std::string text,
-                      BinaryUploadService::ContentAnalysisCallback callback);
-  ~StringSourceRequest() override;
+  StringAnalysisRequest(GURL analysis_url,
+                        std::string text,
+                        BinaryUploadService::ContentAnalysisCallback callback);
+  ~StringAnalysisRequest() override;
 
-  StringSourceRequest(const StringSourceRequest&) = delete;
-  StringSourceRequest& operator=(const StringSourceRequest&) = delete;
+  StringAnalysisRequest(const StringAnalysisRequest&) = delete;
+  StringAnalysisRequest& operator=(const StringAnalysisRequest&) = delete;
 
   // BinaryUploadService::Request implementation.
   void GetRequestData(DataCallback callback) override;
@@ -88,7 +88,7 @@ class StringSourceRequest : public BinaryUploadService::Request {
       BinaryUploadService::Result::FILE_TOO_LARGE;
 };
 
-StringSourceRequest::StringSourceRequest(
+StringAnalysisRequest::StringAnalysisRequest(
     GURL analysis_url,
     std::string text,
     BinaryUploadService::ContentAnalysisCallback callback)
@@ -100,9 +100,9 @@ StringSourceRequest::StringSourceRequest(
   }
 }
 
-StringSourceRequest::~StringSourceRequest() = default;
+StringAnalysisRequest::~StringAnalysisRequest() = default;
 
-void StringSourceRequest::GetRequestData(DataCallback callback) {
+void StringAnalysisRequest::GetRequestData(DataCallback callback) {
   std::move(callback).Run(result_, data_);
 }
 
@@ -138,44 +138,45 @@ bool* UIEnabledStorage() {
   return &enabled;
 }
 
-EventResult CalculateEventResult(
+safe_browsing::EventResult CalculateEventResult(
     const enterprise_connectors::AnalysisSettings& settings,
     bool allowed_by_scan_result,
     bool should_warn) {
   bool wait_for_verdict = settings.block_until_verdict ==
                           enterprise_connectors::BlockUntilVerdict::BLOCK;
   return (allowed_by_scan_result || !wait_for_verdict)
-             ? EventResult::ALLOWED
-             : (should_warn ? EventResult::WARNED : EventResult::BLOCKED);
+             ? safe_browsing::EventResult::ALLOWED
+             : (should_warn ? safe_browsing::EventResult::WARNED
+                            : safe_browsing::EventResult::BLOCKED);
 }
 
 }  // namespace
 
-DeepScanningDialogDelegate::Data::Data() = default;
-DeepScanningDialogDelegate::Data::Data(Data&& other) = default;
-DeepScanningDialogDelegate::Data::~Data() = default;
+ContentAnalysisDelegate::Data::Data() = default;
+ContentAnalysisDelegate::Data::Data(Data&& other) = default;
+ContentAnalysisDelegate::Data::~Data() = default;
 
-DeepScanningDialogDelegate::Result::Result() = default;
-DeepScanningDialogDelegate::Result::Result(Result&& other) = default;
-DeepScanningDialogDelegate::Result::~Result() = default;
+ContentAnalysisDelegate::Result::Result() = default;
+ContentAnalysisDelegate::Result::Result(Result&& other) = default;
+ContentAnalysisDelegate::Result::~Result() = default;
 
-DeepScanningDialogDelegate::FileInfo::FileInfo() = default;
-DeepScanningDialogDelegate::FileInfo::FileInfo(FileInfo&& other) = default;
-DeepScanningDialogDelegate::FileInfo::~FileInfo() = default;
+ContentAnalysisDelegate::FileInfo::FileInfo() = default;
+ContentAnalysisDelegate::FileInfo::FileInfo(FileInfo&& other) = default;
+ContentAnalysisDelegate::FileInfo::~FileInfo() = default;
 
-DeepScanningDialogDelegate::FileContents::FileContents() = default;
-DeepScanningDialogDelegate::FileContents::FileContents(
+ContentAnalysisDelegate::FileContents::FileContents() = default;
+ContentAnalysisDelegate::FileContents::FileContents(
     BinaryUploadService::Result result)
     : result(result) {}
 
-DeepScanningDialogDelegate::FileContents::FileContents(FileContents&& other) =
+ContentAnalysisDelegate::FileContents::FileContents(FileContents&& other) =
     default;
-DeepScanningDialogDelegate::FileContents&
-DeepScanningDialogDelegate::FileContents::operator=(
-    DeepScanningDialogDelegate::FileContents&& other) = default;
-DeepScanningDialogDelegate::~DeepScanningDialogDelegate() = default;
+ContentAnalysisDelegate::FileContents&
+ContentAnalysisDelegate::FileContents::operator=(
+    ContentAnalysisDelegate::FileContents&& other) = default;
+ContentAnalysisDelegate::~ContentAnalysisDelegate() = default;
 
-void DeepScanningDialogDelegate::BypassWarnings() {
+void ContentAnalysisDelegate::BypassWarnings() {
   if (callback_.is_null())
     return;
 
@@ -211,7 +212,7 @@ void DeepScanningDialogDelegate::BypassWarnings() {
   RunCallback();
 }
 
-void DeepScanningDialogDelegate::Cancel(bool warning) {
+void ContentAnalysisDelegate::Cancel(bool warning) {
   if (callback_.is_null())
     return;
 
@@ -229,7 +230,7 @@ void DeepScanningDialogDelegate::Cancel(bool warning) {
 }
 
 // static
-bool DeepScanningDialogDelegate::ResultShouldAllowDataUse(
+bool ContentAnalysisDelegate::ResultShouldAllowDataUse(
     BinaryUploadService::Result result,
     const enterprise_connectors::AnalysisSettings& settings) {
   // Keep this implemented as a switch instead of a simpler if statement so that
@@ -259,7 +260,7 @@ bool DeepScanningDialogDelegate::ResultShouldAllowDataUse(
 }
 
 // static
-bool DeepScanningDialogDelegate::IsEnabled(
+bool ContentAnalysisDelegate::IsEnabled(
     Profile* profile,
     GURL url,
     Data* data,
@@ -293,23 +294,23 @@ bool DeepScanningDialogDelegate::IsEnabled(
 }
 
 // static
-void DeepScanningDialogDelegate::ShowForWebContents(
+void ContentAnalysisDelegate::CreateForWebContents(
     content::WebContents* web_contents,
     Data data,
     CompletionCallback callback,
-    DeepScanAccessPoint access_point) {
+    safe_browsing::DeepScanAccessPoint access_point) {
   Factory* testing_factory = GetFactoryStorage();
   bool wait_for_verdict = data.settings.block_until_verdict ==
                           enterprise_connectors::BlockUntilVerdict::BLOCK;
 
   // Using new instead of std::make_unique<> to access non public constructor.
-  auto delegate = testing_factory->is_null()
-                      ? std::unique_ptr<DeepScanningDialogDelegate>(
-                            new DeepScanningDialogDelegate(
-                                web_contents, std::move(data),
-                                std::move(callback), access_point))
-                      : testing_factory->Run(web_contents, std::move(data),
-                                             std::move(callback));
+  auto delegate =
+      testing_factory->is_null()
+          ? std::unique_ptr<ContentAnalysisDelegate>(
+                new ContentAnalysisDelegate(web_contents, std::move(data),
+                                            std::move(callback), access_point))
+          : testing_factory->Run(web_contents, std::move(data),
+                                 std::move(callback));
 
   bool work_being_done = delegate->UploadData();
 
@@ -319,13 +320,13 @@ void DeepScanningDialogDelegate::ShowForWebContents(
 
   // If the UI is enabled, create the modal dialog.
   if (show_ui) {
-    DeepScanningDialogDelegate* delegate_ptr = delegate.get();
+    ContentAnalysisDelegate* delegate_ptr = delegate.get();
 
     int files_count = delegate_ptr->data_.paths.size();
 
     delegate_ptr->dialog_ =
-        new DeepScanningDialogViews(std::move(delegate), web_contents,
-                                    std::move(access_point), files_count);
+        new ContentAnalysisDialog(std::move(delegate), web_contents,
+                                  std::move(access_point), files_count);
     return;
   }
 
@@ -346,26 +347,26 @@ void DeepScanningDialogDelegate::ShowForWebContents(
 }
 
 // static
-void DeepScanningDialogDelegate::SetFactoryForTesting(Factory factory) {
+void ContentAnalysisDelegate::SetFactoryForTesting(Factory factory) {
   *GetFactoryStorage() = factory;
 }
 
 // static
-void DeepScanningDialogDelegate::ResetFactoryForTesting() {
+void ContentAnalysisDelegate::ResetFactoryForTesting() {
   if (GetFactoryStorage())
     GetFactoryStorage()->Reset();
 }
 
 // static
-void DeepScanningDialogDelegate::DisableUIForTesting() {
+void ContentAnalysisDelegate::DisableUIForTesting() {
   *UIEnabledStorage() = false;
 }
 
-DeepScanningDialogDelegate::DeepScanningDialogDelegate(
+ContentAnalysisDelegate::ContentAnalysisDelegate(
     content::WebContents* web_contents,
     Data data,
     CompletionCallback callback,
-    DeepScanAccessPoint access_point)
+    safe_browsing::DeepScanAccessPoint access_point)
     : web_contents_(web_contents),
       data_(std::move(data)),
       callback_(std::move(callback)),
@@ -376,7 +377,7 @@ DeepScanningDialogDelegate::DeepScanningDialogDelegate(
   file_info_.resize(data_.paths.size());
 }
 
-void DeepScanningDialogDelegate::StringRequestCallback(
+void ContentAnalysisDelegate::StringRequestCallback(
     BinaryUploadService::Result result,
     enterprise_connectors::ContentAnalysisResponse response) {
   int64_t content_size = 0;
@@ -408,16 +409,16 @@ void DeepScanningDialogDelegate::StringRequestCallback(
     if (should_warn) {
       text_warning_ = true;
       text_response_ = std::move(response);
-      UpdateFinalResult(DeepScanningFinalResult::WARNING);
+      UpdateFinalResult(FinalResult::WARNING);
     } else {
-      UpdateFinalResult(DeepScanningFinalResult::FAILURE);
+      UpdateFinalResult(FinalResult::FAILURE);
     }
   }
 
   MaybeCompleteScanRequest();
 }
 
-void DeepScanningDialogDelegate::CompleteFileRequestCallback(
+void ContentAnalysisDelegate::CompleteFileRequestCallback(
     size_t index,
     base::FilePath path,
     BinaryUploadService::Result result,
@@ -443,21 +444,21 @@ void DeepScanningDialogDelegate::CompleteFileRequestCallback(
 
   if (!file_complies) {
     if (result == BinaryUploadService::Result::FILE_TOO_LARGE) {
-      UpdateFinalResult(DeepScanningFinalResult::LARGE_FILES);
+      UpdateFinalResult(FinalResult::LARGE_FILES);
     } else if (result == BinaryUploadService::Result::FILE_ENCRYPTED) {
-      UpdateFinalResult(DeepScanningFinalResult::ENCRYPTED_FILES);
+      UpdateFinalResult(FinalResult::ENCRYPTED_FILES);
     } else if (should_warn) {
       file_warnings_[index] = std::move(response);
-      UpdateFinalResult(DeepScanningFinalResult::WARNING);
+      UpdateFinalResult(FinalResult::WARNING);
     } else {
-      UpdateFinalResult(DeepScanningFinalResult::FAILURE);
+      UpdateFinalResult(FinalResult::FAILURE);
     }
   }
 
   MaybeCompleteScanRequest();
 }
 
-void DeepScanningDialogDelegate::FileRequestCallback(
+void ContentAnalysisDelegate::FileRequestCallback(
     base::FilePath path,
     BinaryUploadService::Result result,
     enterprise_connectors::ContentAnalysisResponse response) {
@@ -473,12 +474,12 @@ void DeepScanningDialogDelegate::FileRequestCallback(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&GetFileMimeType, path),
-      base::BindOnce(&DeepScanningDialogDelegate::CompleteFileRequestCallback,
+      base::BindOnce(&ContentAnalysisDelegate::CompleteFileRequestCallback,
                      weak_ptr_factory_.GetWeakPtr(), index, path, result,
                      response));
 }
 
-bool DeepScanningDialogDelegate::UploadData() {
+bool ContentAnalysisDelegate::UploadData() {
   upload_start_time_ = base::TimeTicks::Now();
 
   // Create a text request and a file request for each file.
@@ -489,7 +490,7 @@ bool DeepScanningDialogDelegate::UploadData() {
   return !text_request_complete_ || file_result_count_ != data_.paths.size();
 }
 
-void DeepScanningDialogDelegate::PrepareTextRequest() {
+void ContentAnalysisDelegate::PrepareTextRequest() {
   std::string full_text;
   for (const auto& text : data_.text)
     full_text.append(base::UTF16ToUTF8(text));
@@ -510,9 +511,9 @@ void DeepScanningDialogDelegate::PrepareTextRequest() {
   }
 
   if (!text_request_complete_) {
-    auto request = std::make_unique<StringSourceRequest>(
+    auto request = std::make_unique<StringAnalysisRequest>(
         data_.settings.analysis_url, std::move(full_text),
-        base::BindOnce(&DeepScanningDialogDelegate::StringRequestCallback,
+        base::BindOnce(&ContentAnalysisDelegate::StringRequestCallback,
                        weak_ptr_factory_.GetWeakPtr()));
 
     PrepareRequest(enterprise_connectors::BULK_DATA_ENTRY, request.get());
@@ -520,21 +521,20 @@ void DeepScanningDialogDelegate::PrepareTextRequest() {
   }
 }
 
-void DeepScanningDialogDelegate::PrepareFileRequest(
-    const base::FilePath& path) {
-  auto request = std::make_unique<FileSourceRequest>(
+void ContentAnalysisDelegate::PrepareFileRequest(const base::FilePath& path) {
+  auto request = std::make_unique<safe_browsing::FileAnalysisRequest>(
       data_.settings, path, path.BaseName(),
-      base::BindOnce(&DeepScanningDialogDelegate::FileRequestCallback,
+      base::BindOnce(&ContentAnalysisDelegate::FileRequestCallback,
                      weak_ptr_factory_.GetWeakPtr(), path));
-  FileSourceRequest* request_raw = request.get();
+  safe_browsing::FileAnalysisRequest* request_raw = request.get();
   PrepareRequest(enterprise_connectors::FILE_ATTACHED, request_raw);
 
   request_raw->GetRequestData(
-      base::BindOnce(&DeepScanningDialogDelegate::OnGotFileInfo,
+      base::BindOnce(&ContentAnalysisDelegate::OnGotFileInfo,
                      weak_ptr_factory_.GetWeakPtr(), std::move(request), path));
 }
 
-void DeepScanningDialogDelegate::PrepareRequest(
+void ContentAnalysisDelegate::PrepareRequest(
     enterprise_connectors::AnalysisConnector connector,
     BinaryUploadService::Request* request) {
   Profile* profile =
@@ -542,31 +542,31 @@ void DeepScanningDialogDelegate::PrepareRequest(
 
   request->set_device_token(policy::GetDMToken(profile).value());
   request->set_analysis_connector(connector);
-  request->set_email(GetProfileEmail(profile));
+  request->set_email(safe_browsing::GetProfileEmail(profile));
   request->set_url(data_.url.spec());
   request->set_tab_url(data_.url);
   for (const std::string& tag : data_.settings.tags)
     request->add_tag(tag);
 }
 
-void DeepScanningDialogDelegate::FillAllResultsWith(bool status) {
+void ContentAnalysisDelegate::FillAllResultsWith(bool status) {
   std::fill(result_.text_results.begin(), result_.text_results.end(), status);
   std::fill(result_.paths_results.begin(), result_.paths_results.end(), status);
 }
 
-BinaryUploadService* DeepScanningDialogDelegate::GetBinaryUploadService() {
-  return BinaryUploadServiceFactory::GetForProfile(
+BinaryUploadService* ContentAnalysisDelegate::GetBinaryUploadService() {
+  return safe_browsing::BinaryUploadServiceFactory::GetForProfile(
       Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
 }
 
-void DeepScanningDialogDelegate::UploadTextForDeepScanning(
+void ContentAnalysisDelegate::UploadTextForDeepScanning(
     std::unique_ptr<BinaryUploadService::Request> request) {
   BinaryUploadService* upload_service = GetBinaryUploadService();
   if (upload_service)
     upload_service->MaybeUploadForDeepScanning(std::move(request));
 }
 
-void DeepScanningDialogDelegate::UploadFileForDeepScanning(
+void ContentAnalysisDelegate::UploadFileForDeepScanning(
     BinaryUploadService::Result result,
     const base::FilePath& path,
     std::unique_ptr<BinaryUploadService::Request> request) {
@@ -575,7 +575,7 @@ void DeepScanningDialogDelegate::UploadFileForDeepScanning(
     upload_service->MaybeUploadForDeepScanning(std::move(request));
 }
 
-bool DeepScanningDialogDelegate::UpdateDialog() {
+bool ContentAnalysisDelegate::UpdateDialog() {
   if (!dialog_)
     return false;
 
@@ -583,13 +583,13 @@ bool DeepScanningDialogDelegate::UpdateDialog() {
   return true;
 }
 
-void DeepScanningDialogDelegate::MaybeCompleteScanRequest() {
+void ContentAnalysisDelegate::MaybeCompleteScanRequest() {
   if (!text_request_complete_ || file_result_count_ < data_.paths.size())
     return;
 
   // If showing the warning message, wait before running the callback. The
   // callback will be called either in BypassWarnings or Cancel.
-  if (final_result_ != DeepScanningFinalResult::WARNING)
+  if (final_result_ != FinalResult::WARNING)
     RunCallback();
 
   if (!UpdateDialog()) {
@@ -598,12 +598,12 @@ void DeepScanningDialogDelegate::MaybeCompleteScanRequest() {
   }
 }
 
-void DeepScanningDialogDelegate::RunCallback() {
+void ContentAnalysisDelegate::RunCallback() {
   if (!callback_.is_null())
     std::move(callback_).Run(data_, result_);
 }
 
-void DeepScanningDialogDelegate::OnGotFileInfo(
+void ContentAnalysisDelegate::OnGotFileInfo(
     std::unique_ptr<BinaryUploadService::Request> request,
     const base::FilePath& path,
     BinaryUploadService::Result result,
@@ -626,10 +626,9 @@ void DeepScanningDialogDelegate::OnGotFileInfo(
   UploadFileForDeepScanning(result, data_.paths[index], std::move(request));
 }
 
-void DeepScanningDialogDelegate::UpdateFinalResult(
-    DeepScanningFinalResult result) {
+void ContentAnalysisDelegate::UpdateFinalResult(FinalResult result) {
   if (result < final_result_)
     final_result_ = result;
 }
 
-}  // namespace safe_browsing
+}  // namespace enterprise_connectors

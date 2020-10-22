@@ -15,10 +15,10 @@
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
+#include "chrome/browser/enterprise/connectors/content_analysis_delegate.h"
+#include "chrome/browser/enterprise/connectors/fake_content_analysis_delegate.h"
 #include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_dialog_delegate.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/fake_deep_scanning_dialog_delegate.h"
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_handle_drop.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -65,7 +65,7 @@ class ChromeWebContentsViewDelegateHandleOnPerformDrop : public testing::Test {
 
     run_loop_.reset(new base::RunLoop());
 
-    using FakeDelegate = safe_browsing::FakeDeepScanningDialogDelegate;
+    using FakeDelegate = enterprise_connectors::FakeContentAnalysisDelegate;
     auto is_encrypted_callback =
         base::BindRepeating([](const base::FilePath&) { return false; });
 
@@ -85,12 +85,12 @@ class ChromeWebContentsViewDelegateHandleOnPerformDrop : public testing::Test {
                            enterprise_connectors::ContentAnalysisResponse::
                                Result::TriggeredRule::BLOCK);
         });
-    safe_browsing::DeepScanningDialogDelegate::SetFactoryForTesting(
+    enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
         base::BindRepeating(
-            &safe_browsing::FakeDeepScanningDialogDelegate::Create,
+            &enterprise_connectors::FakeContentAnalysisDelegate::Create,
             run_loop_->QuitClosure(), callback, is_encrypted_callback,
             "dm_token"));
-    safe_browsing::DeepScanningDialogDelegate::DisableUIForTesting();
+    enterprise_connectors::ContentAnalysisDelegate::DisableUIForTesting();
   }
 
   // Common code for running the test cases.

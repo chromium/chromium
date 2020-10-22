@@ -634,7 +634,7 @@
 #endif
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_dialog_delegate.h"
+#include "chrome/browser/enterprise/connectors/content_analysis_delegate.h"
 #endif
 
 #if BUILDFLAG(ENABLE_VR)
@@ -5714,17 +5714,17 @@ void ChromeContentBrowserClient::IsClipboardPasteAllowed(
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  safe_browsing::DeepScanningDialogDelegate::Data dialog_data;
-  if (safe_browsing::DeepScanningDialogDelegate::IsEnabled(
+  enterprise_connectors::ContentAnalysisDelegate::Data dialog_data;
+  if (enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
           profile, url, &dialog_data,
           enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY)) {
     dialog_data.text.push_back(base::UTF8ToUTF16(data));
-    safe_browsing::DeepScanningDialogDelegate::ShowForWebContents(
+    enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
         web_contents, std::move(dialog_data),
         base::BindOnce(
             [](IsClipboardPasteAllowedCallback callback,
-               const safe_browsing::DeepScanningDialogDelegate::Data& data,
-               const safe_browsing::DeepScanningDialogDelegate::Result&
+               const enterprise_connectors::ContentAnalysisDelegate::Data& data,
+               const enterprise_connectors::ContentAnalysisDelegate::Result&
                    result) {
               std::move(callback).Run(
                   ClipboardPasteAllowed(result.text_results[0]));

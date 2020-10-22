@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_FILE_SOURCE_REQUEST_H_
-#define CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_FILE_SOURCE_REQUEST_H_
+#ifndef CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_FILE_ANALYSIS_REQUEST_H_
+#define CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_FILE_ANALYSIS_REQUEST_H_
 
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
@@ -14,16 +14,16 @@ namespace safe_browsing {
 // A BinaryUploadService::Request implementation that gets the data to scan
 // from the contents of a file. It caches the results so that future calls to
 // GetRequestData will return quickly.
-class FileSourceRequest : public BinaryUploadService::Request {
+class FileAnalysisRequest : public BinaryUploadService::Request {
  public:
-  FileSourceRequest(
+  FileAnalysisRequest(
       const enterprise_connectors::AnalysisSettings& analysis_settings,
       base::FilePath path,
       base::FilePath file_name,
       BinaryUploadService::ContentAnalysisCallback callback);
-  FileSourceRequest(const FileSourceRequest&) = delete;
-  FileSourceRequest& operator=(const FileSourceRequest&) = delete;
-  ~FileSourceRequest() override;
+  FileAnalysisRequest(const FileAnalysisRequest&) = delete;
+  FileAnalysisRequest& operator=(const FileAnalysisRequest&) = delete;
+  ~FileAnalysisRequest() override;
 
   // BinaryUploadService::Request implementation.
   void GetRequestData(DataCallback callback) override;
@@ -55,9 +55,9 @@ class FileSourceRequest : public BinaryUploadService::Request {
   // File name excluding the path.
   base::FilePath file_name_;
 
-  base::WeakPtrFactory<FileSourceRequest> weakptr_factory_{this};
+  base::WeakPtrFactory<FileAnalysisRequest> weakptr_factory_{this};
 };
 
 }  // namespace safe_browsing
 
-#endif  // CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_FILE_SOURCE_REQUEST_H_
+#endif  // CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_FILE_ANALYSIS_REQUEST_H_

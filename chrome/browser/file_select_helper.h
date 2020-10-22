@@ -24,7 +24,7 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_dialog_delegate.h"
+#include "chrome/browser/enterprise/connectors/content_analysis_delegate.h"
 #endif
 
 class Profile;
@@ -77,15 +77,15 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, GetSanitizedFileName);
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, LastSelectedDirectory);
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest,
-                           DeepScanCompletionCallback_NoFiles);
+                           ContentAnalysisCompletionCallback_NoFiles);
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest,
-                           DeepScanCompletionCallback_OneOKFile);
+                           ContentAnalysisCompletionCallback_OneOKFile);
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest,
-                           DeepScanCompletionCallback_TwoOKFiles);
+                           ContentAnalysisCompletionCallback_TwoOKFiles);
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest,
-                           DeepScanCompletionCallback_TwoBadFiles);
+                           ContentAnalysisCompletionCallback_TwoBadFiles);
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest,
-                           DeepScanCompletionCallback_OKBadFiles);
+                           ContentAnalysisCompletionCallback_OKBadFiles);
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, GetFileTypesFromAcceptType);
 
   explicit FileSelectHelper(Profile* profile);
@@ -183,17 +183,17 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   //
   // ConvertToFileChooserFileInfoList: converts a vector of SelectedFileInfo
   // into a vector of FileChooserFileInfoPtr and then calls
-  // PerformSafeBrowsingDeepScanIfNeeded().  On chromeos, the conversion is
+  // PerformContentAnalysisIfNeeded().  On chromeos, the conversion is
   // performed asynchronously.
   //
-  // PerformSafeBrowsingDeepScanIfNeeded: if the deep scanning feature is
+  // PerformContentAnalysisIfNeeded: if the deep scanning feature is
   // enabled and it is determined by enterprise policy that scans are required,
-  // starts the scans and sets DeepScanCompletionCallback() as the async
+  // starts the scans and sets ContentAnalysisCompletionCallback() as the async
   // callback.  If deep scanning is not enabled or is not supported on the
   // platform, this function calls NotifyListenerAndEnd() directly.
   //
-  // DeepScanCompletionCallback: processes the results of the deep scan.  Any
-  // files that did not pass the scan are removed from the list.  Ends by
+  // ContentAnalysisCompletionCallback: processes the results of the deep scan.
+  // Any files that did not pass the scan are removed from the list.  Ends by
   // calling NotifyListenerAndEnd().
   //
   // NotifyListenerAndEnd: Informs the listener of the final list of files to
@@ -207,22 +207,21 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
       const std::vector<ui::SelectedFileInfo>& files);
 
   // Checks to see if scans are required for the specified files.
-  void PerformSafeBrowsingDeepScanIfNeeded(
+  void PerformContentAnalysisIfNeeded(
       std::vector<blink::mojom::FileChooserFileInfoPtr> list);
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-  // Callback used to receive the results of a deep scan.
-  void DeepScanCompletionCallback(
+  // Callback used to receive the results of a content analysis scan.
+  void ContentAnalysisCompletionCallback(
       std::vector<blink::mojom::FileChooserFileInfoPtr> list,
-      const safe_browsing::DeepScanningDialogDelegate::Data& data,
-      const safe_browsing::DeepScanningDialogDelegate::Result& result);
+      const enterprise_connectors::ContentAnalysisDelegate::Data& data,
+      const enterprise_connectors::ContentAnalysisDelegate::Result& result);
 #endif
 
-  // Finish the PerformSafeBrowsingDeepScanIfNeeded() handling after the
+  // Finish the PerformContentAnalysisIfNeeded() handling after the
   // deep scanning checks have been performed.  Deep scanning may change the
   // list of files chosen by the user, so the list of files passed here may be
-  // a subset of of the files passed to
-  // PerformSafeBrowsingDeepScanIfNeeded().
+  // a subset of of the files passed to PerformContentAnalysisIfNeeded().
   void NotifyListenerAndEnd(
       std::vector<blink::mojom::FileChooserFileInfoPtr> list);
 

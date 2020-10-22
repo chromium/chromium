@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/cloud_content_scanning/file_source_request.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
 
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
@@ -91,7 +91,7 @@ GetFileDataBlocking(const base::FilePath& path) {
 
 }  // namespace
 
-FileSourceRequest::FileSourceRequest(
+FileAnalysisRequest::FileAnalysisRequest(
     const enterprise_connectors::AnalysisSettings& analysis_settings,
     base::FilePath path,
     base::FilePath file_name,
@@ -104,9 +104,9 @@ FileSourceRequest::FileSourceRequest(
   set_filename(file_name_.AsUTF8Unsafe());
 }
 
-FileSourceRequest::~FileSourceRequest() = default;
+FileAnalysisRequest::~FileAnalysisRequest() = default;
 
-void FileSourceRequest::GetRequestData(DataCallback callback) {
+void FileAnalysisRequest::GetRequestData(DataCallback callback) {
   if (has_cached_result_) {
     std::move(callback).Run(cached_result_, cached_data_);
     return;
@@ -115,11 +115,11 @@ void FileSourceRequest::GetRequestData(DataCallback callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&GetFileDataBlocking, path_),
-      base::BindOnce(&FileSourceRequest::OnGotFileData,
+      base::BindOnce(&FileAnalysisRequest::OnGotFileData,
                      weakptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-bool FileSourceRequest::FileTypeUnsupportedByDlp() const {
+bool FileAnalysisRequest::FileTypeUnsupportedByDlp() const {
   for (const std::string& tag : content_analysis_request().tags()) {
     if (tag == "dlp")
       return !FileTypeSupportedForDlp(file_name_);
@@ -127,7 +127,7 @@ bool FileSourceRequest::FileTypeUnsupportedByDlp() const {
   return false;
 }
 
-bool FileSourceRequest::HasMalwareRequest() const {
+bool FileAnalysisRequest::HasMalwareRequest() const {
   for (const std::string& tag : content_analysis_request().tags()) {
     if (tag == "malware")
       return true;
@@ -135,7 +135,7 @@ bool FileSourceRequest::HasMalwareRequest() const {
   return false;
 }
 
-void FileSourceRequest::OnGotFileData(
+void FileAnalysisRequest::OnGotFileData(
     DataCallback callback,
     std::pair<BinaryUploadService::Result, Data> result_and_data) {
   set_digest(result_and_data.second.hash);
@@ -167,7 +167,7 @@ void FileSourceRequest::OnGotFileData(
   if (ext == FILE_PATH_LITERAL(".zip")) {
     auto analyzer = base::MakeRefCounted<SandboxedZipAnalyzer>(
         path_,
-        base::BindOnce(&FileSourceRequest::OnCheckedForEncryption,
+        base::BindOnce(&FileAnalysisRequest::OnCheckedForEncryption,
                        weakptr_factory_.GetWeakPtr(), std::move(callback),
                        std::move(result_and_data.second)),
         LaunchFileUtilService());
@@ -175,7 +175,7 @@ void FileSourceRequest::OnGotFileData(
   } else if (ext == FILE_PATH_LITERAL(".rar")) {
     auto analyzer = base::MakeRefCounted<SandboxedRarAnalyzer>(
         path_,
-        base::BindOnce(&FileSourceRequest::OnCheckedForEncryption,
+        base::BindOnce(&FileAnalysisRequest::OnCheckedForEncryption,
                        weakptr_factory_.GetWeakPtr(), std::move(callback),
                        std::move(result_and_data.second)),
         LaunchFileUtilService());
@@ -187,7 +187,7 @@ void FileSourceRequest::OnGotFileData(
   }
 }
 
-void FileSourceRequest::OnCheckedForEncryption(
+void FileAnalysisRequest::OnCheckedForEncryption(
     DataCallback callback,
     Data data,
     const ArchiveAnalyzerResults& analyzer_result) {
@@ -203,8 +203,8 @@ void FileSourceRequest::OnCheckedForEncryption(
   std::move(callback).Run(cached_result_, cached_data_);
 }
 
-void FileSourceRequest::CacheResultAndData(BinaryUploadService::Result result,
-                                           Data data) {
+void FileAnalysisRequest::CacheResultAndData(BinaryUploadService::Result result,
+                                             Data data) {
   has_cached_result_ = true;
   cached_result_ = result;
   cached_data_ = std::move(data);

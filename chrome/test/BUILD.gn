@@ -1012,6 +1012,8 @@ if (!is_android) {
       "../browser/download/download_frame_policy_browsertest.cc",
       "../browser/download/download_started_animation_browsertest.cc",
       "../browser/download/save_page_browsertest.cc",
+      "../browser/enterprise/connectors/content_analysis_delegate_browsertest.cc",
+      "../browser/enterprise/connectors/content_analysis_dialog_browsertest.cc",
       "../browser/enterprise/reporting/report_scheduler_browsertest.cc",
       "../browser/fast_shutdown_browsertest.cc",
       "../browser/favicon/content_favicon_driver_browsertest.cc",
@@ -1270,8 +1272,6 @@ if (!is_android) {
       "../browser/safe_browsing/client_side_detection_service_browsertest.cc",
       "../browser/safe_browsing/cloud_content_scanning/deep_scanning_browsertest_base.cc",
       "../browser/safe_browsing/cloud_content_scanning/deep_scanning_browsertest_base.h",
-      "../browser/safe_browsing/cloud_content_scanning/deep_scanning_dialog_delegate_browsertest.cc",
-      "../browser/safe_browsing/cloud_content_scanning/deep_scanning_dialog_views_browsertest.cc",
       "../browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.cc",
       "../browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h",
       "../browser/safe_browsing/download_protection/deep_scanning_browsertest.cc",
@@ -5539,6 +5539,7 @@ test("unit_tests") {
   if (safe_browsing_mode == 1) {
     # TODO(sgurun): enable tests for safe_browsing==2.
     sources += [
+      "../browser/enterprise/connectors/content_analysis_delegate_unittest.cc",
       "../browser/safe_browsing/advanced_protection_status_manager_factory_unittest.cc",
       "../browser/safe_browsing/advanced_protection_status_manager_unittest.cc",
       "../browser/safe_browsing/chrome_enterprise_url_lookup_service_unittest.cc",
@@ -5548,11 +5549,10 @@ test("unit_tests") {
       "../browser/safe_browsing/client_side_model_loader_unittest.cc",
       "../browser/safe_browsing/cloud_content_scanning/binary_fcm_service_unittest.cc",
       "../browser/safe_browsing/cloud_content_scanning/binary_upload_service_unittest.cc",
-      "../browser/safe_browsing/cloud_content_scanning/deep_scanning_dialog_delegate_unittest.cc",
       "../browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.cc",
       "../browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h",
       "../browser/safe_browsing/cloud_content_scanning/deep_scanning_utils_unittest.cc",
-      "../browser/safe_browsing/cloud_content_scanning/file_source_request_unittest.cc",
+      "../browser/safe_browsing/cloud_content_scanning/file_analysis_request_unittest.cc",
       "../browser/safe_browsing/cloud_content_scanning/multipart_uploader_unittest.cc",
       "../browser/safe_browsing/download_protection/deep_scanning_request_unittest.cc",
       "../browser/safe_browsing/download_protection/download_feedback_service_unittest.cc",

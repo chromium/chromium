@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_DEEP_SCANNING_DIALOG_VIEWS_H_
-#define CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_DEEP_SCANNING_DIALOG_VIEWS_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_CONTENT_ANALYSIS_DIALOG_H_
+#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_CONTENT_ANALYSIS_DIALOG_H_
 
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_dialog_delegate.h"
+#include "chrome/browser/enterprise/connectors/content_analysis_delegate.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/animation/bounds_animator.h"
@@ -31,7 +31,7 @@ class Throbber;
 class Widget;
 }  // namespace views
 
-namespace safe_browsing {
+namespace enterprise_connectors {
 class DeepScanningTopImageView;
 class DeepScanningSideIconImageView;
 class DeepScanningSideIconSpinnerView;
@@ -39,8 +39,8 @@ class DeepScanningMessageView;
 
 // Dialog shown for Deep Scanning to offer the possibility of cancelling the
 // upload to the user.
-class DeepScanningDialogViews : public views::DialogDelegate,
-                                public content::WebContentsObserver {
+class ContentAnalysisDialog : public views::DialogDelegate,
+                              public content::WebContentsObserver {
  public:
   // Enum used to represent what the dialog is currently showing.
   enum class DeepScanningDialogStatus {
@@ -65,37 +65,36 @@ class DeepScanningDialogViews : public views::DialogDelegate,
   };
 
   // TestObserver should be implemented by tests that need to track when certain
-  // DeepScanningDialogViews functions are called. The test can add itself as an
+  // ContentAnalysisDialog functions are called. The test can add itself as an
   // observer by using SetObserverForTesting.
   class TestObserver {
    public:
     virtual ~TestObserver() {}
 
-    // Called at the start of DeepScanningDialogViews's constructor. |views| is
-    // a pointer to the newly constructed DeepScanningDialogViews and should be
+    // Called at the start of ContentAnalysisDialog's constructor. |dialog| is
+    // a pointer to the newly constructed ContentAnalysisDialog and should be
     // kept in memory by the test in order to validate its state.
-    virtual void ConstructorCalled(DeepScanningDialogViews* views,
+    virtual void ConstructorCalled(ContentAnalysisDialog* dialog,
                                    base::TimeTicks timestamp) {}
 
-    // Called at the end of DeepScanningDialogViews::Show. |timestamp| is the
-    // time used by DeepScanningDialogViews to decide whether the pending state
+    // Called at the end of ContentAnalysisDialog::Show. |timestamp| is the
+    // time used by ContentAnalysisDialog to decide whether the pending state
     // has been shown for long enough. The test can keep this time in memory and
     // validate the pending time was sufficient in DialogUpdated.
-    virtual void ViewsFirstShown(DeepScanningDialogViews* views,
+    virtual void ViewsFirstShown(ContentAnalysisDialog* dialog,
                                  base::TimeTicks timestamp) {}
 
-    // Called at the end of DeepScanningDialogViews::UpdateDialog. |result| is
+    // Called at the end of ContentAnalysisDialog::UpdateDialog. |result| is
     // the value that UpdatedDialog used to transition from the pending state to
     // the success/failure/warning state.
-    virtual void DialogUpdated(
-        DeepScanningDialogViews* views,
-        DeepScanningDialogDelegate::DeepScanningFinalResult result) {}
+    virtual void DialogUpdated(ContentAnalysisDialog* dialog,
+                               ContentAnalysisDelegate::FinalResult result) {}
 
-    // Called at the end of DeepScanningDialogViews's destructor. |views| is a
-    // pointer to the DeepScanningDialogViews being destructed. It can be used
+    // Called at the end of ContentAnalysisDialog's destructor. |dialog| is a
+    // pointer to the ContentAnalysisDialog being destructed. It can be used
     // to compare it to the pointer obtained from ConstructorCalled to ensure
     // which view is being destroyed.
-    virtual void DestructorCalled(DeepScanningDialogViews* views) {}
+    virtual void DestructorCalled(ContentAnalysisDialog* dialog) {}
   };
 
   static void SetObserverForTesting(TestObserver* observer);
@@ -106,10 +105,10 @@ class DeepScanningDialogViews : public views::DialogDelegate,
   static base::TimeDelta GetMinimumPendingDialogTime();
   static base::TimeDelta GetSuccessDialogTimeout();
 
-  DeepScanningDialogViews(std::unique_ptr<DeepScanningDialogDelegate> delegate,
-                          content::WebContents* web_contents,
-                          DeepScanAccessPoint access_point,
-                          int files_count);
+  ContentAnalysisDialog(std::unique_ptr<ContentAnalysisDelegate> delegate,
+                        content::WebContents* web_contents,
+                        safe_browsing::DeepScanAccessPoint access_point,
+                        int files_count);
 
   // views::DialogDelegate:
   base::string16 GetWindowTitle() const override;
@@ -124,7 +123,7 @@ class DeepScanningDialogViews : public views::DialogDelegate,
 
   // Updates the dialog with the result, and simply delete it from memory if
   // nothing should be shown.
-  void ShowResult(DeepScanningDialogDelegate::DeepScanningFinalResult result);
+  void ShowResult(ContentAnalysisDelegate::FinalResult result);
 
   // Accessors to simplify |dialog_status_| checking.
   inline bool is_success() const {
@@ -161,7 +160,7 @@ class DeepScanningDialogViews : public views::DialogDelegate,
   views::Label* GetMessageForTesting() const;
 
  private:
-  ~DeepScanningDialogViews() override;
+  ~ContentAnalysisDialog() override;
 
   // Update the UI depending on |dialog_status_|.
   void UpdateDialog();
@@ -209,7 +208,7 @@ class DeepScanningDialogViews : public views::DialogDelegate,
   void AcceptButtonCallback();
   void CancelButtonCallback();
 
-  std::unique_ptr<DeepScanningDialogDelegate> delegate_;
+  std::unique_ptr<ContentAnalysisDelegate> delegate_;
 
   content::WebContents* web_contents_;
 
@@ -228,24 +227,24 @@ class DeepScanningDialogViews : public views::DialogDelegate,
   DeepScanningDialogStatus dialog_status_ = DeepScanningDialogStatus::PENDING;
 
   // Used to show the appropriate message.
-  DeepScanningDialogDelegate::DeepScanningFinalResult final_result_ =
-      DeepScanningDialogDelegate::DeepScanningFinalResult::SUCCESS;
+  ContentAnalysisDelegate::FinalResult final_result_ =
+      ContentAnalysisDelegate::FinalResult::SUCCESS;
 
   // Used to animate dialog height changes.
   std::unique_ptr<views::BoundsAnimator> bounds_animator_;
 
   // The access point that caused this dialog to open. This changes what text
   // and top image are shown to the user.
-  DeepScanAccessPoint access_point_;
+  safe_browsing::DeepScanAccessPoint access_point_;
 
   // Indicates whether the scan being done is for files (files_count_>0) or for
   // text (files_count_==0). This changes what text and top image are shown to
   // the user.
   int files_count_;
 
-  base::WeakPtrFactory<DeepScanningDialogViews> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ContentAnalysisDialog> weak_ptr_factory_{this};
 };
 
-}  // namespace safe_browsing
+}  // namespace enterprise_connectors
 
-#endif  // CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_DEEP_SCANNING_DIALOG_VIEWS_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_CONTENT_ANALYSIS_DIALOG_H_

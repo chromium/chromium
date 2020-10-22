@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_DEEP_SCANNING_DIALOG_DELEGATE_H_
-#define CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_DEEP_SCANNING_DIALOG_DELEGATE_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_CONTENT_ANALYSIS_DELEGATE_H_
+#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_CONTENT_ANALYSIS_DELEGATE_H_
 
 #include <memory>
 #include <string>
@@ -22,7 +22,6 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog_delegate.h"
-#include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/safe_browsing/core/proto/webprotect.pb.h"
 #include "content/public/browser/web_contents_view_delegate.h"
@@ -30,40 +29,41 @@
 
 class Profile;
 
-namespace safe_browsing {
+namespace enterprise_connectors {
 
-class BinaryUploadService;
-class DeepScanningDialogViews;
+class ContentAnalysisDialog;
 
-// A tab modal dialog delegate that informs the user of a background deep
-// scan happening in the given tab with an option to cancel the operation.
+// A class that performs deep scans of data (for example malicious or sensitive
+// content checks) before allowing a page to access it.
+//
+// If the UI is enabled, then a dialog is shown and blocks user interactions
+// with the page until a scan verdict is obtained.
 //
 // If the UI is not enabled, then the dialog is not shown and the delegate
 // proceeds as if all data (strings and files) have successfully passed the
 // deep checks.  However the checks are still performed in the background and
-// verdicts reported, implementing an audit-only mode.  The UI will be turned
-// on once finalized.
+// verdicts reported, implementing an audit-only mode.
 //
 // Users of this class normally call IsEnabled() first to determine if deep
 // scanning is required for the given web page.  If so, the caller fills in
-// the appropriate data members of |Data| and then call ShowForWebContents()
+// the appropriate data members of |Data| and then call CreateForWebContents()
 // to start the scan.
 //
 // Example:
 //
 //   contents::WebContent* contents = ...
 //   Profile* profile = ...
-//   safe_browsing::DeepScanningDialogDelegate::Data data;
-//   if (safe_browsing::DeepScanningDialogDelegate::IsEnabled(
+//   safe_browsing::ContentAnalysisDelegate::Data data;
+//   if (safe_browsing::ContentAnalysisDelegate::IsEnabled(
 //           profile, contents->GetLastCommittedURL(), &data)) {
 //     data.text.push_back(...);  // As needed.
 //     data.paths.push_back(...);  // As needed.
-//     safe_browsing::DeepScanningDialogDelegate::ShowForWebContents(
+//     safe_browsing::ContentAnalysisDelegate::CreateForWebContents(
 //         contents, std::move(data), base::BindOnce(...));
 //   }
-class DeepScanningDialogDelegate {
+class ContentAnalysisDelegate {
  public:
-  // Used as an input to ShowForWebContents() to describe what data needs
+  // Used as an input to CreateForWebContents() to describe what data needs
   // deeper scanning.  Any members can be empty.
   struct Data {
     Data();
@@ -122,12 +122,13 @@ class DeepScanningDialogDelegate {
   // File contents used as input for |file_info_| and the BinaryUploadService.
   struct FileContents {
     FileContents();
-    explicit FileContents(BinaryUploadService::Result result);
+    explicit FileContents(safe_browsing::BinaryUploadService::Result result);
     FileContents(FileContents&&);
     FileContents& operator=(FileContents&&);
 
-    BinaryUploadService::Result result = BinaryUploadService::Result::UNKNOWN;
-    BinaryUploadService::Request::Data data;
+    safe_browsing::BinaryUploadService::Result result =
+        safe_browsing::BinaryUploadService::Result::UNKNOWN;
+    safe_browsing::BinaryUploadService::Request::Data data;
 
     // Store the file size separately instead of using data.contents.size() to
     // keep track of size for large files.
@@ -138,7 +139,7 @@ class DeepScanningDialogDelegate {
   // Enum to identify which message to show once scanning is complete. Ordered
   // by precedence for when multiple files have conflicting results.
   // TODO(crbug.com/1055785): Refactor this to whatever solution is chosen.
-  enum class DeepScanningFinalResult {
+  enum class FinalResult {
     // Show that an issue was found and that the upload is blocked.
     FAILURE = 0,
 
@@ -155,23 +156,22 @@ class DeepScanningDialogDelegate {
     SUCCESS = 4,
   };
 
-  // Callback used with ShowForWebContents() that informs caller of verdict
+  // Callback used with CreateForWebContents() that informs caller of verdict
   // of deep scans.
   using CompletionCallback =
       base::OnceCallback<void(const Data& data, const Result& result)>;
 
-  // A factory function used in tests to create fake DeepScanningDialogDelegate
+  // A factory function used in tests to create fake ContentAnalysisDelegate
   // instances.
   using Factory =
-      base::RepeatingCallback<std::unique_ptr<DeepScanningDialogDelegate>(
+      base::RepeatingCallback<std::unique_ptr<ContentAnalysisDelegate>(
           content::WebContents*,
           Data,
           CompletionCallback)>;
 
-  DeepScanningDialogDelegate(const DeepScanningDialogDelegate&) = delete;
-  DeepScanningDialogDelegate& operator=(const DeepScanningDialogDelegate&) =
-      delete;
-  virtual ~DeepScanningDialogDelegate();
+  ContentAnalysisDelegate(const ContentAnalysisDelegate&) = delete;
+  ContentAnalysisDelegate& operator=(const ContentAnalysisDelegate&) = delete;
+  virtual ~ContentAnalysisDelegate();
 
   // Called when the user decides to bypass the verdict they obtained from DLP.
   // This will allow the upload of files marked as DLP warnings.
@@ -203,13 +203,14 @@ class DeepScanningDialogDelegate {
   // in the background.
   //
   // Whether the UI is enabled or not, verdicts of the scan will be reported.
-  static void ShowForWebContents(content::WebContents* web_contents,
-                                 Data data,
-                                 CompletionCallback callback,
-                                 DeepScanAccessPoint access_point);
+  static void CreateForWebContents(
+      content::WebContents* web_contents,
+      Data data,
+      CompletionCallback callback,
+      safe_browsing::DeepScanAccessPoint access_point);
 
   // In tests, sets a factory function for creating fake
-  // DeepScanningDialogDelegates.
+  // ContentAnalysisDelegates.
   static void SetFactoryForTesting(Factory factory);
   static void ResetFactoryForTesting();
 
@@ -219,26 +220,26 @@ class DeepScanningDialogDelegate {
   // Determines if a request result should be used to allow a data use or to
   // block it.
   static bool ResultShouldAllowDataUse(
-      BinaryUploadService::Result result,
+      safe_browsing::BinaryUploadService::Result result,
       const enterprise_connectors::AnalysisSettings& settings);
 
  protected:
-  DeepScanningDialogDelegate(content::WebContents* web_contents,
-                             Data data,
-                             CompletionCallback callback,
-                             DeepScanAccessPoint access_point);
+  ContentAnalysisDelegate(content::WebContents* web_contents,
+                          Data data,
+                          CompletionCallback callback,
+                          safe_browsing::DeepScanAccessPoint access_point);
 
   // Callbacks from uploading data.  Protected so they can be called from
   // testing derived classes.
   void StringRequestCallback(
-      BinaryUploadService::Result result,
+      safe_browsing::BinaryUploadService::Result result,
       enterprise_connectors::ContentAnalysisResponse response);
   void FileRequestCallback(
       base::FilePath path,
-      BinaryUploadService::Result result,
+      safe_browsing::BinaryUploadService::Result result,
       enterprise_connectors::ContentAnalysisResponse response);
 
-  base::WeakPtr<DeepScanningDialogDelegate> GetWeakPtr() {
+  base::WeakPtr<ContentAnalysisDelegate> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
@@ -259,7 +260,7 @@ class DeepScanningDialogDelegate {
   // Adds required fields to |request| before sending it to the binary upload
   // service.
   void PrepareRequest(enterprise_connectors::AnalysisConnector connector,
-                      BinaryUploadService::Request* request);
+                      safe_browsing::BinaryUploadService::Request* request);
 
   // Fills the arrays in |result_| with the given boolean status.
   void FillAllResultsWith(bool status);
@@ -269,11 +270,11 @@ class DeepScanningDialogDelegate {
   // The |result| argument exists as an optimization to finish the request early
   // when the result is known in advance to avoid using the upload service.
   virtual void UploadTextForDeepScanning(
-      std::unique_ptr<BinaryUploadService::Request> request);
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request);
   virtual void UploadFileForDeepScanning(
-      BinaryUploadService::Result result,
+      safe_browsing::BinaryUploadService::Result result,
       const base::FilePath& path,
-      std::unique_ptr<BinaryUploadService::Request> request);
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request);
 
   // Updates the tab modal dialog to show the scanning results. Returns false if
   // the UI was not enabled to indicate no action was taken. Virtual to override
@@ -291,27 +292,28 @@ class DeepScanningDialogDelegate {
 
   // Called when the file info for |path| has been fetched. Also begins the
   // upload process.
-  void OnGotFileInfo(std::unique_ptr<BinaryUploadService::Request> request,
-                     const base::FilePath& path,
-                     BinaryUploadService::Result result,
-                     const BinaryUploadService::Request::Data& data);
+  void OnGotFileInfo(
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+      const base::FilePath& path,
+      safe_browsing::BinaryUploadService::Result result,
+      const safe_browsing::BinaryUploadService::Request::Data& data);
 
   // Completion of |FileRequestCallback| once the mime type is obtained
   // asynchronously.
   void CompleteFileRequestCallback(
       size_t index,
       base::FilePath path,
-      BinaryUploadService::Result result,
+      safe_browsing::BinaryUploadService::Result result,
       enterprise_connectors::ContentAnalysisResponse response,
       std::string mime_type);
 
   // Updates |final_result_| following the precedence established by the
-  // DeepScanningFinalResult enum.
-  void UpdateFinalResult(DeepScanningFinalResult message);
+  // FinalResult enum.
+  void UpdateFinalResult(FinalResult message);
 
   // Returns the BinaryUploadService used to upload content for deep scanning.
   // Virtual to override in tests.
-  virtual BinaryUploadService* GetBinaryUploadService();
+  virtual safe_browsing::BinaryUploadService* GetBinaryUploadService();
 
   // The web contents that is attempting to access the data.
   content::WebContents* web_contents_ = nullptr;
@@ -344,19 +346,19 @@ class DeepScanningDialogDelegate {
   CompletionCallback callback_;
 
   // Pointer to UI when enabled.
-  DeepScanningDialogViews* dialog_ = nullptr;
+  ContentAnalysisDialog* dialog_ = nullptr;
 
   // Access point to use to record UMA metrics.
-  DeepScanAccessPoint access_point_;
+  safe_browsing::DeepScanAccessPoint access_point_;
 
   // Scanning result to be shown to the user once every request is done.
-  DeepScanningFinalResult final_result_ = DeepScanningFinalResult::SUCCESS;
+  FinalResult final_result_ = FinalResult::SUCCESS;
 
   base::TimeTicks upload_start_time_;
 
-  base::WeakPtrFactory<DeepScanningDialogDelegate> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ContentAnalysisDelegate> weak_ptr_factory_{this};
 };
 
-}  // namespace safe_browsing
+}  // namespace enterprise_connectors
 
-#endif  // CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_DEEP_SCANNING_DIALOG_DELEGATE_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_CONTENT_ANALYSIS_DELEGATE_H_

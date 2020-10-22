@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_dialog_views.h"
+#include "chrome/browser/enterprise/connectors/content_analysis_dialog.h"
 
 #include <memory>
 
@@ -38,7 +38,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
 
-namespace safe_browsing {
+namespace enterprise_connectors {
 
 namespace {
 
@@ -80,7 +80,7 @@ SkColor GetBackgroundColor(const views::Widget* widget) {
       ui::NativeTheme::kColorId_DialogBackground);
 }
 
-DeepScanningDialogViews::TestObserver* observer_for_testing = nullptr;
+ContentAnalysisDialog::TestObserver* observer_for_testing = nullptr;
 
 }  // namespace
 
@@ -89,12 +89,12 @@ DeepScanningDialogViews::TestObserver* observer_for_testing = nullptr;
 
 class DeepScanningBaseView {
  public:
-  explicit DeepScanningBaseView(DeepScanningDialogViews* dialog)
+  explicit DeepScanningBaseView(ContentAnalysisDialog* dialog)
       : dialog_(dialog) {}
-  DeepScanningDialogViews* dialog() { return dialog_; }
+  ContentAnalysisDialog* dialog() { return dialog_; }
 
  protected:
-  DeepScanningDialogViews* dialog_;
+  ContentAnalysisDialog* dialog_;
 };
 
 class DeepScanningTopImageView : public DeepScanningBaseView,
@@ -169,19 +169,19 @@ class DeepScanningMessageView : public DeepScanningBaseView,
 };
 
 // static
-base::TimeDelta DeepScanningDialogViews::GetMinimumPendingDialogTime() {
+base::TimeDelta ContentAnalysisDialog::GetMinimumPendingDialogTime() {
   return minimum_pending_dialog_time_;
 }
 
 // static
-base::TimeDelta DeepScanningDialogViews::GetSuccessDialogTimeout() {
+base::TimeDelta ContentAnalysisDialog::GetSuccessDialogTimeout() {
   return success_dialog_timeout_;
 }
 
-DeepScanningDialogViews::DeepScanningDialogViews(
-    std::unique_ptr<DeepScanningDialogDelegate> delegate,
+ContentAnalysisDialog::ContentAnalysisDialog(
+    std::unique_ptr<ContentAnalysisDelegate> delegate,
     content::WebContents* web_contents,
-    DeepScanAccessPoint access_point,
+    safe_browsing::DeepScanAccessPoint access_point,
     int files_count)
     : content::WebContentsObserver(web_contents),
       delegate_(std::move(delegate)),
@@ -196,26 +196,26 @@ DeepScanningDialogViews::DeepScanningDialogViews(
   Show();
 }
 
-base::string16 DeepScanningDialogViews::GetWindowTitle() const {
+base::string16 ContentAnalysisDialog::GetWindowTitle() const {
   return base::string16();
 }
 
-void DeepScanningDialogViews::AcceptButtonCallback() {
+void ContentAnalysisDialog::AcceptButtonCallback() {
   DCHECK(delegate_);
   DCHECK(is_warning());
   delegate_->BypassWarnings();
 }
 
-void DeepScanningDialogViews::CancelButtonCallback() {
+void ContentAnalysisDialog::CancelButtonCallback() {
   if (delegate_)
     delegate_->Cancel(is_warning());
 }
 
-bool DeepScanningDialogViews::ShouldShowCloseButton() const {
+bool ContentAnalysisDialog::ShouldShowCloseButton() const {
   return false;
 }
 
-views::View* DeepScanningDialogViews::GetContentsView() {
+views::View* ContentAnalysisDialog::GetContentsView() {
   if (!contents_view_) {
     contents_view_ = new views::View();  // Owned by caller.
 
@@ -271,39 +271,39 @@ views::View* DeepScanningDialogViews::GetContentsView() {
   return contents_view_;
 }
 
-views::Widget* DeepScanningDialogViews::GetWidget() {
+views::Widget* ContentAnalysisDialog::GetWidget() {
   return contents_view_->GetWidget();
 }
 
-const views::Widget* DeepScanningDialogViews::GetWidget() const {
+const views::Widget* ContentAnalysisDialog::GetWidget() const {
   return contents_view_->GetWidget();
 }
 
-ui::ModalType DeepScanningDialogViews::GetModalType() const {
+ui::ModalType ContentAnalysisDialog::GetModalType() const {
   return ui::MODAL_TYPE_CHILD;
 }
 
-void DeepScanningDialogViews::WebContentsDestroyed() {
+void ContentAnalysisDialog::WebContentsDestroyed() {
   // If |web_contents_| is destroyed, then the scan results don't matter so the
   // delegate can be destroyed as well.
   delegate_.reset(nullptr);
   CancelDialog();
 }
 
-void DeepScanningDialogViews::ShowResult(
-    DeepScanningDialogDelegate::DeepScanningFinalResult result) {
+void ContentAnalysisDialog::ShowResult(
+    ContentAnalysisDelegate::FinalResult result) {
   DCHECK(is_pending());
   final_result_ = result;
   switch (final_result_) {
-    case DeepScanningDialogDelegate::DeepScanningFinalResult::ENCRYPTED_FILES:
-    case DeepScanningDialogDelegate::DeepScanningFinalResult::LARGE_FILES:
-    case DeepScanningDialogDelegate::DeepScanningFinalResult::FAILURE:
+    case ContentAnalysisDelegate::FinalResult::ENCRYPTED_FILES:
+    case ContentAnalysisDelegate::FinalResult::LARGE_FILES:
+    case ContentAnalysisDelegate::FinalResult::FAILURE:
       dialog_status_ = DeepScanningDialogStatus::FAILURE;
       break;
-    case DeepScanningDialogDelegate::DeepScanningFinalResult::SUCCESS:
+    case ContentAnalysisDelegate::FinalResult::SUCCESS:
       dialog_status_ = DeepScanningDialogStatus::SUCCESS;
       break;
-    case DeepScanningDialogDelegate::DeepScanningFinalResult::WARNING:
+    case ContentAnalysisDelegate::FinalResult::WARNING:
       dialog_status_ = DeepScanningDialogStatus::WARNING;
       break;
   }
@@ -325,18 +325,18 @@ void DeepScanningDialogViews::ShowResult(
   } else {
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&DeepScanningDialogViews::UpdateDialog,
+        base::BindOnce(&ContentAnalysisDialog::UpdateDialog,
                        weak_ptr_factory_.GetWeakPtr()),
         GetMinimumPendingDialogTime() - time_shown);
   }
 }
 
-DeepScanningDialogViews::~DeepScanningDialogViews() {
+ContentAnalysisDialog::~ContentAnalysisDialog() {
   if (observer_for_testing)
     observer_for_testing->DestructorCalled(this);
 }
 
-void DeepScanningDialogViews::UpdateDialog() {
+void ContentAnalysisDialog::UpdateDialog() {
   DCHECK(shown_);
   views::Widget* widget = GetWidget();
   DCHECK(widget);
@@ -388,7 +388,7 @@ void DeepScanningDialogViews::UpdateDialog() {
     CancelDialog();
 }
 
-void DeepScanningDialogViews::Resize(int height_to_add) {
+void ContentAnalysisDialog::Resize(int height_to_add) {
   // Only resize if the dialog is updated to show a result.
   DCHECK(is_result());
   views::Widget* widget = GetWidget();
@@ -429,24 +429,23 @@ void DeepScanningDialogViews::Resize(int height_to_add) {
   widget->SetSize(new_size);
 }
 
-void DeepScanningDialogViews::SetupButtons() {
+void ContentAnalysisDialog::SetupButtons() {
   // TODO(domfc): Add "Learn more" button on scan failure.
   if (is_warning()) {
     // Include the Ok and Cancel buttons if there is a bypassable warning.
-    DialogDelegate::SetButtons(ui::DIALOG_BUTTON_CANCEL |
-                                ui::DIALOG_BUTTON_OK);
+    DialogDelegate::SetButtons(ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK);
     DialogDelegate::SetDefaultButton(ui::DIALOG_BUTTON_CANCEL);
 
     DialogDelegate::SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
-                                     GetCancelButtonText());
+                                   GetCancelButtonText());
     DialogDelegate::SetCancelCallback(
-        base::BindOnce(&DeepScanningDialogViews::CancelButtonCallback,
+        base::BindOnce(&ContentAnalysisDialog::CancelButtonCallback,
                        weak_ptr_factory_.GetWeakPtr()));
 
     DialogDelegate::SetButtonLabel(ui::DIALOG_BUTTON_OK,
-                                     GetBypassWarningButtonText());
+                                   GetBypassWarningButtonText());
     DialogDelegate::SetAcceptCallback(
-        base::BindOnce(&DeepScanningDialogViews::AcceptButtonCallback,
+        base::BindOnce(&ContentAnalysisDialog::AcceptButtonCallback,
                        weak_ptr_factory_.GetWeakPtr()));
   } else if (is_failure() || is_pending()) {
     // Include the Cancel button when the scan is pending or failing.
@@ -454,9 +453,9 @@ void DeepScanningDialogViews::SetupButtons() {
     DialogDelegate::SetDefaultButton(ui::DIALOG_BUTTON_NONE);
 
     DialogDelegate::SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
-                                     GetCancelButtonText());
+                                   GetCancelButtonText());
     DialogDelegate::SetCancelCallback(
-        base::BindOnce(&DeepScanningDialogViews::CancelButtonCallback,
+        base::BindOnce(&ContentAnalysisDialog::CancelButtonCallback,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
     // Include no buttons otherwise.
@@ -464,7 +463,7 @@ void DeepScanningDialogViews::SetupButtons() {
   }
 }
 
-base::string16 DeepScanningDialogViews::GetDialogMessage() const {
+base::string16 ContentAnalysisDialog::GetDialogMessage() const {
   switch (dialog_status_) {
     case DeepScanningDialogStatus::PENDING:
       return GetPendingMessage();
@@ -477,7 +476,7 @@ base::string16 DeepScanningDialogViews::GetDialogMessage() const {
   }
 }
 
-base::string16 DeepScanningDialogViews::GetCancelButtonText() const {
+base::string16 ContentAnalysisDialog::GetCancelButtonText() const {
   int text_id;
   switch (dialog_status_) {
     case DeepScanningDialogStatus::SUCCESS:
@@ -496,12 +495,12 @@ base::string16 DeepScanningDialogViews::GetCancelButtonText() const {
   return l10n_util::GetStringUTF16(text_id);
 }
 
-base::string16 DeepScanningDialogViews::GetBypassWarningButtonText() const {
+base::string16 ContentAnalysisDialog::GetBypassWarningButtonText() const {
   DCHECK(is_warning());
   return l10n_util::GetStringUTF16(IDS_DEEP_SCANNING_DIALOG_PROCEED_BUTTON);
 }
 
-void DeepScanningDialogViews::Show() {
+void ContentAnalysisDialog::Show() {
   DCHECK(!shown_);
 
   // The only state that cannot be shown immediately is SUCCESS, the dialog
@@ -524,7 +523,7 @@ void DeepScanningDialogViews::Show() {
     CancelDialog();
 }
 
-std::unique_ptr<views::View> DeepScanningDialogViews::CreateSideIcon() {
+std::unique_ptr<views::View> ContentAnalysisDialog::CreateSideIcon() {
   // The side icon is created either:
   // - When the pending dialog is shown
   // - When the response was fast enough that the failure dialog is shown first
@@ -551,7 +550,7 @@ std::unique_ptr<views::View> DeepScanningDialogViews::CreateSideIcon() {
   return icon;
 }
 
-SkColor DeepScanningDialogViews::GetSideImageBackgroundColor() const {
+SkColor ContentAnalysisDialog::GetSideImageBackgroundColor() const {
   DCHECK(is_result());
   const views::Widget* widget = GetWidget();
   DCHECK(widget);
@@ -561,7 +560,7 @@ SkColor DeepScanningDialogViews::GetSideImageBackgroundColor() const {
   return widget->GetNativeTheme()->GetSystemColor(color_id);
 }
 
-int DeepScanningDialogViews::GetPasteImageId(bool use_dark) const {
+int ContentAnalysisDialog::GetPasteImageId(bool use_dark) const {
   if (is_pending())
     return use_dark ? IDR_PASTE_SCANNING_DARK : IDR_PASTE_SCANNING;
   if (is_success())
@@ -569,7 +568,7 @@ int DeepScanningDialogViews::GetPasteImageId(bool use_dark) const {
   return use_dark ? IDR_PASTE_VIOLATION_DARK : IDR_PASTE_VIOLATION;
 }
 
-int DeepScanningDialogViews::GetUploadImageId(bool use_dark) const {
+int ContentAnalysisDialog::GetUploadImageId(bool use_dark) const {
   if (is_pending())
     return use_dark ? IDR_UPLOAD_SCANNING_DARK : IDR_UPLOAD_SCANNING;
   if (is_success())
@@ -577,23 +576,21 @@ int DeepScanningDialogViews::GetUploadImageId(bool use_dark) const {
   return use_dark ? IDR_UPLOAD_VIOLATION_DARK : IDR_UPLOAD_VIOLATION;
 }
 
-base::string16 DeepScanningDialogViews::GetPendingMessage() const {
+base::string16 ContentAnalysisDialog::GetPendingMessage() const {
   DCHECK(is_pending());
   return l10n_util::GetPluralStringFUTF16(
       IDS_DEEP_SCANNING_DIALOG_UPLOAD_PENDING_MESSAGE, files_count_);
 }
 
-base::string16 DeepScanningDialogViews::GetFailureMessage() const {
+base::string16 ContentAnalysisDialog::GetFailureMessage() const {
   DCHECK(is_failure());
 
-  if (final_result_ ==
-      DeepScanningDialogDelegate::DeepScanningFinalResult::LARGE_FILES) {
+  if (final_result_ == ContentAnalysisDelegate::FinalResult::LARGE_FILES) {
     return l10n_util::GetPluralStringFUTF16(
         IDS_DEEP_SCANNING_DIALOG_LARGE_FILE_FAILURE_MESSAGE, files_count_);
   }
 
-  if (final_result_ ==
-      DeepScanningDialogDelegate::DeepScanningFinalResult::ENCRYPTED_FILES) {
+  if (final_result_ == ContentAnalysisDelegate::FinalResult::ENCRYPTED_FILES) {
     return l10n_util::GetPluralStringFUTF16(
         IDS_DEEP_SCANNING_DIALOG_ENCRYPTED_FILE_FAILURE_MESSAGE, files_count_);
   }
@@ -602,23 +599,23 @@ base::string16 DeepScanningDialogViews::GetFailureMessage() const {
       IDS_DEEP_SCANNING_DIALOG_UPLOAD_FAILURE_MESSAGE, files_count_);
 }
 
-base::string16 DeepScanningDialogViews::GetWarningMessage() const {
+base::string16 ContentAnalysisDialog::GetWarningMessage() const {
   DCHECK(is_warning());
   return l10n_util::GetPluralStringFUTF16(
       IDS_DEEP_SCANNING_DIALOG_UPLOAD_WARNING_MESSAGE, files_count_);
 }
 
-base::string16 DeepScanningDialogViews::GetSuccessMessage() const {
+base::string16 ContentAnalysisDialog::GetSuccessMessage() const {
   DCHECK(is_success());
   return l10n_util::GetPluralStringFUTF16(
       IDS_DEEP_SCANNING_DIALOG_SUCCESS_MESSAGE, files_count_);
 }
 
-const gfx::ImageSkia* DeepScanningDialogViews::GetTopImage() const {
+const gfx::ImageSkia* ContentAnalysisDialog::GetTopImage() const {
   const bool use_dark = color_utils::IsDark(GetBackgroundColor(GetWidget()));
   const bool treat_as_text_paste =
-      access_point_ == DeepScanAccessPoint::PASTE ||
-      (access_point_ == DeepScanAccessPoint::DRAG_AND_DROP &&
+      access_point_ == safe_browsing::DeepScanAccessPoint::PASTE ||
+      (access_point_ == safe_browsing::DeepScanAccessPoint::DRAG_AND_DROP &&
        files_count_ == 0);
 
   int image_id = treat_as_text_paste ? GetPasteImageId(use_dark)
@@ -627,7 +624,7 @@ const gfx::ImageSkia* DeepScanningDialogViews::GetTopImage() const {
   return ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(image_id);
 }
 
-SkColor DeepScanningDialogViews::GetSideImageLogoColor() const {
+SkColor ContentAnalysisDialog::GetSideImageLogoColor() const {
   const views::Widget* widget = GetWidget();
   DCHECK(widget);
   switch (dialog_status_) {
@@ -645,32 +642,32 @@ SkColor DeepScanningDialogViews::GetSideImageLogoColor() const {
 }
 
 // static
-void DeepScanningDialogViews::SetMinimumPendingDialogTimeForTesting(
+void ContentAnalysisDialog::SetMinimumPendingDialogTimeForTesting(
     base::TimeDelta delta) {
   minimum_pending_dialog_time_ = delta;
 }
 
 // static
-void DeepScanningDialogViews::SetSuccessDialogTimeoutForTesting(
+void ContentAnalysisDialog::SetSuccessDialogTimeoutForTesting(
     base::TimeDelta delta) {
   success_dialog_timeout_ = delta;
 }
 
 // static
-void DeepScanningDialogViews::SetObserverForTesting(TestObserver* observer) {
+void ContentAnalysisDialog::SetObserverForTesting(TestObserver* observer) {
   observer_for_testing = observer;
 }
 
-views::ImageView* DeepScanningDialogViews::GetTopImageForTesting() const {
+views::ImageView* ContentAnalysisDialog::GetTopImageForTesting() const {
   return image_;
 }
 
-views::Throbber* DeepScanningDialogViews::GetSideIconSpinnerForTesting() const {
+views::Throbber* ContentAnalysisDialog::GetSideIconSpinnerForTesting() const {
   return side_icon_spinner_;
 }
 
-views::Label* DeepScanningDialogViews::GetMessageForTesting() const {
+views::Label* ContentAnalysisDialog::GetMessageForTesting() const {
   return message_;
 }
 
-}  // namespace safe_browsing
+}  // namespace enterprise_connectors

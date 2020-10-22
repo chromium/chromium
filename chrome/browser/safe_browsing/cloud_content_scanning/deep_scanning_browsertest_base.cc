@@ -6,10 +6,10 @@
 #include "base/bind_helpers.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
+#include "chrome/browser/enterprise/connectors/content_analysis_dialog.h"
+#include "chrome/browser/enterprise/connectors/fake_content_analysis_delegate.h"
 #include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_dialog_views.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/fake_deep_scanning_dialog_delegate.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/prefs/pref_service.h"
@@ -28,12 +28,13 @@ constexpr base::TimeDelta kMinimumPendingDelay =
 constexpr base::TimeDelta kSuccessTimeout =
     base::TimeDelta::FromMilliseconds(100);
 
-class UnresponsiveDeepScanningDialogDelegate
-    : public FakeDeepScanningDialogDelegate {
+class UnresponsiveContentAnalysisDelegate
+    : public enterprise_connectors::FakeContentAnalysisDelegate {
  public:
-  using FakeDeepScanningDialogDelegate::FakeDeepScanningDialogDelegate;
+  using enterprise_connectors::FakeContentAnalysisDelegate::
+      FakeContentAnalysisDelegate;
 
-  static std::unique_ptr<DeepScanningDialogDelegate> Create(
+  static std::unique_ptr<enterprise_connectors::ContentAnalysisDelegate> Create(
       base::RepeatingClosure delete_closure,
       StatusCallback status_callback,
       EncryptionStatusCallback encryption_callback,
@@ -41,7 +42,7 @@ class UnresponsiveDeepScanningDialogDelegate
       content::WebContents* web_contents,
       Data data,
       CompletionCallback callback) {
-    auto ret = std::make_unique<UnresponsiveDeepScanningDialogDelegate>(
+    auto ret = std::make_unique<UnresponsiveContentAnalysisDelegate>(
         delete_closure, status_callback, encryption_callback,
         std::move(dm_token), web_contents, std::move(data),
         std::move(callback));
@@ -71,9 +72,10 @@ DeepScanningBrowserTestBase::DeepScanningBrowserTestBase() {
 
   // Change the time values of the upload UI to smaller ones to make tests
   // showing it run faster.
-  DeepScanningDialogViews::SetMinimumPendingDialogTimeForTesting(
-      kMinimumPendingDelay);
-  DeepScanningDialogViews::SetSuccessDialogTimeoutForTesting(kSuccessTimeout);
+  enterprise_connectors::ContentAnalysisDialog::
+      SetMinimumPendingDialogTimeForTesting(kMinimumPendingDelay);
+  enterprise_connectors::ContentAnalysisDialog::
+      SetSuccessDialogTimeoutForTesting(kSuccessTimeout);
 }
 
 DeepScanningBrowserTestBase::~DeepScanningBrowserTestBase() = default;
@@ -84,7 +86,7 @@ void DeepScanningBrowserTestBase::SetUpOnMainThread() {
 
 void DeepScanningBrowserTestBase::TearDownOnMainThread() {
   enterprise_connectors::ConnectorsManager::GetInstance()->TearDownForTesting();
-  DeepScanningDialogDelegate::ResetFactoryForTesting();
+  enterprise_connectors::ContentAnalysisDelegate::ResetFactoryForTesting();
 
   SetDlpPolicyForConnectors(CheckContentComplianceValues::CHECK_NONE);
   SetMalwarePolicyForConnectors(SendFilesForMalwareCheckValues::DO_NOT_SCAN);
@@ -108,24 +110,27 @@ void DeepScanningBrowserTestBase::SetUnsafeEventsReportingPolicy(bool report) {
 
 void DeepScanningBrowserTestBase::SetUpDelegate() {
   SetDMTokenForTesting(policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  DeepScanningDialogDelegate::SetFactoryForTesting(base::BindRepeating(
-      &FakeDeepScanningDialogDelegate::Create, base::DoNothing(),
-      base::Bind(&DeepScanningBrowserTestBase::StatusCallback,
-                 base::Unretained(this)),
-      base::Bind(&DeepScanningBrowserTestBase::EncryptionStatusCallback,
-                 base::Unretained(this)),
-      kDmToken));
+  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(
+          &enterprise_connectors::FakeContentAnalysisDelegate::Create,
+          base::DoNothing(),
+          base::Bind(&DeepScanningBrowserTestBase::StatusCallback,
+                     base::Unretained(this)),
+          base::Bind(&DeepScanningBrowserTestBase::EncryptionStatusCallback,
+                     base::Unretained(this)),
+          kDmToken));
 }
 
 void DeepScanningBrowserTestBase::SetUpUnresponsiveDelegate() {
   SetDMTokenForTesting(policy::DMToken::CreateValidTokenForTesting(kDmToken));
-  DeepScanningDialogDelegate::SetFactoryForTesting(base::BindRepeating(
-      &UnresponsiveDeepScanningDialogDelegate::Create, base::DoNothing(),
-      base::Bind(&DeepScanningBrowserTestBase::StatusCallback,
-                 base::Unretained(this)),
-      base::Bind(&DeepScanningBrowserTestBase::EncryptionStatusCallback,
-                 base::Unretained(this)),
-      kDmToken));
+  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(
+          &UnresponsiveContentAnalysisDelegate::Create, base::DoNothing(),
+          base::Bind(&DeepScanningBrowserTestBase::StatusCallback,
+                     base::Unretained(this)),
+          base::Bind(&DeepScanningBrowserTestBase::EncryptionStatusCallback,
+                     base::Unretained(this)),
+          kDmToken));
 }
 
 void DeepScanningBrowserTestBase::SetQuitClosure(
@@ -156,7 +161,7 @@ bool DeepScanningBrowserTestBase::EncryptionStatusCallback(
 void DeepScanningBrowserTestBase::CreateFilesForTest(
     const std::vector<std::string>& paths,
     const std::vector<std::string>& contents,
-    DeepScanningDialogDelegate::Data* data) {
+    enterprise_connectors::ContentAnalysisDelegate::Data* data) {
   ASSERT_EQ(paths.size(), contents.size());
 
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());

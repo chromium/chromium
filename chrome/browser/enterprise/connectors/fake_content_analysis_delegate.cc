@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/cloud_content_scanning/fake_deep_scanning_dialog_delegate.h"
+#include "chrome/browser/enterprise/connectors/fake_content_analysis_delegate.h"
 
 #include <base/callback.h>
 #include <base/logging.h>
@@ -12,7 +12,7 @@
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "content/public/browser/browser_thread.h"
 
-namespace safe_browsing {
+namespace enterprise_connectors {
 
 namespace {
 
@@ -20,10 +20,11 @@ base::TimeDelta response_delay = base::TimeDelta::FromSeconds(0);
 
 }  // namespace
 
-BinaryUploadService::Result FakeDeepScanningDialogDelegate::result_ =
-    BinaryUploadService::Result::SUCCESS;
+safe_browsing::BinaryUploadService::Result
+    FakeContentAnalysisDelegate::result_ =
+        safe_browsing::BinaryUploadService::Result::SUCCESS;
 
-FakeDeepScanningDialogDelegate::FakeDeepScanningDialogDelegate(
+FakeContentAnalysisDelegate::FakeContentAnalysisDelegate(
     base::RepeatingClosure delete_closure,
     StatusCallback status_callback,
     EncryptionStatusCallback encryption_callback,
@@ -31,29 +32,28 @@ FakeDeepScanningDialogDelegate::FakeDeepScanningDialogDelegate(
     content::WebContents* web_contents,
     Data data,
     CompletionCallback callback)
-    : DeepScanningDialogDelegate(web_contents,
-                                 std::move(data),
-                                 std::move(callback),
-                                 DeepScanAccessPoint::UPLOAD),
+    : ContentAnalysisDelegate(web_contents,
+                              std::move(data),
+                              std::move(callback),
+                              safe_browsing::DeepScanAccessPoint::UPLOAD),
       delete_closure_(delete_closure),
       status_callback_(status_callback),
       encryption_callback_(encryption_callback),
       dm_token_(std::move(dm_token)) {}
 
-FakeDeepScanningDialogDelegate::~FakeDeepScanningDialogDelegate() {
+FakeContentAnalysisDelegate::~FakeContentAnalysisDelegate() {
   if (!delete_closure_.is_null())
     delete_closure_.Run();
 }
 
 // static
-void FakeDeepScanningDialogDelegate::SetResponseResult(
-    BinaryUploadService::Result result) {
+void FakeContentAnalysisDelegate::SetResponseResult(
+    safe_browsing::BinaryUploadService::Result result) {
   result_ = result;
 }
 
 // static
-std::unique_ptr<DeepScanningDialogDelegate>
-FakeDeepScanningDialogDelegate::Create(
+std::unique_ptr<ContentAnalysisDelegate> FakeContentAnalysisDelegate::Create(
     base::RepeatingClosure delete_closure,
     StatusCallback status_callback,
     EncryptionStatusCallback encryption_callback,
@@ -61,20 +61,20 @@ FakeDeepScanningDialogDelegate::Create(
     content::WebContents* web_contents,
     Data data,
     CompletionCallback callback) {
-  auto ret = std::make_unique<FakeDeepScanningDialogDelegate>(
+  auto ret = std::make_unique<FakeContentAnalysisDelegate>(
       delete_closure, status_callback, encryption_callback, std::move(dm_token),
       web_contents, std::move(data), std::move(callback));
   return ret;
 }
 
 // static
-void FakeDeepScanningDialogDelegate::SetResponseDelay(base::TimeDelta delay) {
+void FakeContentAnalysisDelegate::SetResponseDelay(base::TimeDelta delay) {
   response_delay = delay;
 }
 
 // static
 enterprise_connectors::ContentAnalysisResponse
-FakeDeepScanningDialogDelegate::SuccessfulResponse(
+FakeContentAnalysisDelegate::SuccessfulResponse(
     const std::set<std::string>& tags) {
   enterprise_connectors::ContentAnalysisResponse response;
 
@@ -89,7 +89,7 @@ FakeDeepScanningDialogDelegate::SuccessfulResponse(
 
 // static
 enterprise_connectors::ContentAnalysisResponse
-FakeDeepScanningDialogDelegate::MalwareResponse(
+FakeContentAnalysisDelegate::MalwareResponse(
     enterprise_connectors::TriggeredRule::Action action) {
   enterprise_connectors::ContentAnalysisResponse response;
 
@@ -106,7 +106,7 @@ FakeDeepScanningDialogDelegate::MalwareResponse(
 
 // static
 enterprise_connectors::ContentAnalysisResponse
-FakeDeepScanningDialogDelegate::DlpResponse(
+FakeContentAnalysisDelegate::DlpResponse(
     enterprise_connectors::ContentAnalysisResponse::Result::Status status,
     const std::string& rule_name,
     enterprise_connectors::TriggeredRule::Action action) {
@@ -125,7 +125,7 @@ FakeDeepScanningDialogDelegate::DlpResponse(
 
 // static
 enterprise_connectors::ContentAnalysisResponse
-FakeDeepScanningDialogDelegate::MalwareAndDlpResponse(
+FakeContentAnalysisDelegate::MalwareAndDlpResponse(
     enterprise_connectors::TriggeredRule::Action malware_action,
     enterprise_connectors::ContentAnalysisResponse::Result::Status dlp_status,
     const std::string& dlp_rule_name,
@@ -149,45 +149,46 @@ FakeDeepScanningDialogDelegate::MalwareAndDlpResponse(
   return response;
 }
 
-void FakeDeepScanningDialogDelegate::Response(
+void FakeContentAnalysisDelegate::Response(
     base::FilePath path,
-    std::unique_ptr<BinaryUploadService::Request> request) {
-  auto response = (status_callback_.is_null() ||
-                   result_ != BinaryUploadService::Result::SUCCESS)
-                      ? enterprise_connectors::ContentAnalysisResponse()
-                      : status_callback_.Run(path);
+    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request) {
+  auto response =
+      (status_callback_.is_null() ||
+       result_ != safe_browsing::BinaryUploadService::Result::SUCCESS)
+          ? enterprise_connectors::ContentAnalysisResponse()
+          : status_callback_.Run(path);
   if (path.empty())
     StringRequestCallback(result_, response);
   else
     FileRequestCallback(path, result_, response);
 }
 
-void FakeDeepScanningDialogDelegate::UploadTextForDeepScanning(
-    std::unique_ptr<BinaryUploadService::Request> request) {
+void FakeContentAnalysisDelegate::UploadTextForDeepScanning(
+    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request) {
   DCHECK_EQ(dm_token_, request->device_token());
 
   // Simulate a response.
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&FakeDeepScanningDialogDelegate::Response,
+      base::BindOnce(&FakeContentAnalysisDelegate::Response,
                      weakptr_factory_.GetWeakPtr(), base::FilePath(),
                      std::move(request)),
       response_delay);
 }
 
-void FakeDeepScanningDialogDelegate::UploadFileForDeepScanning(
-    BinaryUploadService::Result result,
+void FakeContentAnalysisDelegate::UploadFileForDeepScanning(
+    safe_browsing::BinaryUploadService::Result result,
     const base::FilePath& path,
-    std::unique_ptr<BinaryUploadService::Request> request) {
+    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request) {
   DCHECK(!path.empty());
   DCHECK_EQ(dm_token_, request->device_token());
 
   // Simulate a response.
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&FakeDeepScanningDialogDelegate::Response,
+      base::BindOnce(&FakeContentAnalysisDelegate::Response,
                      weakptr_factory_.GetWeakPtr(), path, std::move(request)),
       response_delay);
 }
 
-}  // namespace safe_browsing
+}  // namespace enterprise_connectors
