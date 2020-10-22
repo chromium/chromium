@@ -1832,6 +1832,49 @@ TEST_F(GcpGaiaCredentialBaseCloudLocalAccountTest,
   ASSERT_EQ(S_OK, FinishLogonProcess(true, true, 0));
 }
 
+// Customer configured invalid local account info.
+TEST_F(GcpGaiaCredentialBaseCloudLocalAccountTest,
+       GetSerialization_InvalidLocalAccountToSerialNumberConfigured) {
+  // Set token result a valid access token.
+  fake_http_url_fetcher_factory()->SetFakeResponse(
+      GURL(gaia_urls_->oauth2_token_url().spec().c_str()),
+      FakeWinHttpUrlFetcher::Headers(), "{\"access_token\": \"dummy_token\"}");
+
+  // Set a fake serial number.
+  base::string16 serial_number = L"1234";
+  GoogleRegistrationDataForTesting g_registration_data(serial_number);
+
+  const wchar_t invalid_user_name_1[] = L"invalid_user_name_1";
+  const wchar_t invalid_user_name_2[] = L"invalid_user_name_2";
+
+  // Invalid configuration in admin sdk. Don't set valid usernames.
+  std::string admin_sdk_response = base::StringPrintf(
+      "{\"customSchemas\": {\"Enhanced_desktop_security\": "
+      "{\"Local_Windows_accounts\":"
+      "[{ \"value\": \"un:%ls,sn:%ls\" },{ \"value\": \"un:%ls,sn:%ls\"}]}}}",
+      invalid_user_name_1, serial_number.c_str(), invalid_user_name_2,
+      serial_number.c_str());
+  fake_http_url_fetcher_factory()->SetFakeResponse(
+      GURL(get_cd_user_url_.c_str()), FakeWinHttpUrlFetcher::Headers(),
+      admin_sdk_response);
+
+  Microsoft::WRL::ComPtr<ITestCredential> test;
+  ASSERT_EQ(S_OK, cred_.As(&test));
+
+  ASSERT_EQ(S_OK, StartLogonProcessAndWait());
+
+  // Make sure new user was created since no valid mapping was found.
+  PSID sid = nullptr;
+  fake_os_user_manager()->GetUserSID(OSUserManager::GetLocalDomain().c_str(),
+                                     kDefaultUsername, &sid);
+  ASSERT_NE(nullptr, sid);
+
+  // New user is created.
+  EXPECT_EQ(2ul, fake_os_user_manager()->GetUserCount());
+
+  ASSERT_EQ(S_OK, FinishLogonProcess(true, true, 0));
+}
+
 TEST_F(GcpGaiaCredentialBaseCloudLocalAccountTest, MultipleLocalAccountInfo) {
   // Add the user as a local user.
   const wchar_t user_name[] = L"local_user";
@@ -1904,6 +1947,223 @@ TEST_F(GcpGaiaCredentialBaseCloudLocalAccountTest, MultipleLocalAccountInfo) {
 
 TEST_F(GcpGaiaCredentialBaseCloudLocalAccountTest,
        InvalidUserToSerialNumberMapping) {
+  // Add the user as a local user.
+  const wchar_t user_name[] = L"local_user";
+  const wchar_t password[] = L"password";
+
+  CComBSTR local_sid;
+  DWORD error;
+  HRESULT hr = fake_os_user_manager()->AddUser(
+      user_name, password, L"fullname", L"comment", true, &local_sid, &error);
+  ASSERT_EQ(S_OK, hr);
+  ASSERT_EQ(0u, error);
+
+  // Set token result as a valid access token.
+  fake_http_url_fetcher_factory()->SetFakeResponse(
+      GURL(gaia_urls_->oauth2_token_url().spec().c_str()),
+      FakeWinHttpUrlFetcher::Headers(), "{\"access_token\": \"dummy_token\"}");
+
+  std::string admin_sdk_response;
+  // Set a fake serial number.
+  base::string16 serial_number = L"1234";
+  GoogleRegistrationDataForTesting g_registration_data(serial_number);
+
+  const wchar_t another_user_name1[] = L"another_local_user_1";
+  const wchar_t another_user_name2[] = L"another_local_user_2";
+
+  // Set valid response from admin sdk with Local_Windows_accounts containing
+  // multiple mappings with matching "serial_number" in it and another
+  // one without serial number.
+  admin_sdk_response = base::StringPrintf(
+      "{\"customSchemas\": {\"Enhanced_desktop_security\": "
+      "{\"Local_Windows_accounts\":"
+      "[{ \"value\": \"un:%ls,sn:%ls\" },{ \"value\": \"un:%ls,sn:%ls\" },{ "
+      " \"value\": \"un:%ls\" }]}}}",
+      another_user_name1, serial_number.c_str(), another_user_name2,
+      serial_number.c_str(), user_name);
+  fake_http_url_fetcher_factory()->SetFakeResponse(
+      GURL(get_cd_user_url_.c_str()), FakeWinHttpUrlFetcher::Headers(),
+      admin_sdk_response);
+
+  Microsoft::WRL::ComPtr<ITestCredential> test;
+  ASSERT_EQ(S_OK, cred_.As(&test));
+
+  ASSERT_EQ(S_OK, StartLogonProcessAndWait());
+
+  EXPECT_EQ(test->GetFinalEmail(), kDefaultEmail);
+
+  // Make sure no user was created and the login happens on the
+  // existing user instead.
+  PSID sid = nullptr;
+  EXPECT_EQ(
+      HRESULT_FROM_WIN32(NERR_UserNotFound),
+      fake_os_user_manager()->GetUserSID(
+          OSUserManager::GetLocalDomain().c_str(), kDefaultUsername, &sid));
+  ASSERT_EQ(nullptr, sid);
+
+  // Finishing logon process should trigger credential changed and trigger
+  // GetSerialization.
+  ASSERT_EQ(S_OK, FinishLogonProcess(true, true, 0));
+
+  // Verify that the registry entry for the user was created.
+  std::wstring sid_str(local_sid, SysStringLen(local_sid));
+
+  wchar_t gaia_id[256];
+  ULONG length = base::size(gaia_id);
+  HRESULT gaia_id_hr =
+      GetUserProperty(sid_str.c_str(), kUserId, gaia_id, &length);
+  ASSERT_EQ(S_OK, gaia_id_hr);
+  ASSERT_TRUE(gaia_id[0]);
+
+  // Verify that the authentication results dictionary is now empty.
+  ASSERT_TRUE(test->IsAuthenticationResultsEmpty());
+}
+
+TEST_F(GcpGaiaCredentialBaseCloudLocalAccountTest,
+       OnlyOneValidUserToSerialMapping) {
+  // Add the user as a local user.
+  const wchar_t user_name[] = L"local_user";
+  const wchar_t password[] = L"password";
+
+  CComBSTR local_sid;
+  DWORD error;
+  HRESULT hr = fake_os_user_manager()->AddUser(
+      user_name, password, L"fullname", L"comment", true, &local_sid, &error);
+  ASSERT_EQ(S_OK, hr);
+  ASSERT_EQ(0u, error);
+
+  // Set token result as a valid access token.
+  fake_http_url_fetcher_factory()->SetFakeResponse(
+      GURL(gaia_urls_->oauth2_token_url().spec().c_str()),
+      FakeWinHttpUrlFetcher::Headers(), "{\"access_token\": \"dummy_token\"}");
+
+  std::string admin_sdk_response;
+  // Set a fake serial number.
+  base::string16 serial_number = L"1234";
+  GoogleRegistrationDataForTesting g_registration_data(serial_number);
+
+  const wchar_t another_user_name1[] = L"another_local_user_1";
+
+  // Set valid response from admin sdk with Local_Windows_accounts containing
+  // multiple mappings with matching "serial_number" in it and another
+  // one without serial number.
+  admin_sdk_response = base::StringPrintf(
+      "{\"customSchemas\": {\"Enhanced_desktop_security\": "
+      "{\"Local_Windows_accounts\":"
+      "[{ \"value\": \"un:%ls,sn:%ls\" },{ \"value\": \"un:%ls,sn:%ls\" }]}}}",
+      another_user_name1, serial_number.c_str(), user_name,
+      serial_number.c_str());
+  fake_http_url_fetcher_factory()->SetFakeResponse(
+      GURL(get_cd_user_url_.c_str()), FakeWinHttpUrlFetcher::Headers(),
+      admin_sdk_response);
+
+  Microsoft::WRL::ComPtr<ITestCredential> test;
+  ASSERT_EQ(S_OK, cred_.As(&test));
+
+  ASSERT_EQ(S_OK, StartLogonProcessAndWait());
+
+  EXPECT_EQ(test->GetFinalEmail(), kDefaultEmail);
+
+  // Make sure no user was created and the login happens on the
+  // existing user instead.
+  PSID sid = nullptr;
+  EXPECT_EQ(
+      HRESULT_FROM_WIN32(NERR_UserNotFound),
+      fake_os_user_manager()->GetUserSID(
+          OSUserManager::GetLocalDomain().c_str(), kDefaultUsername, &sid));
+  ASSERT_EQ(nullptr, sid);
+
+  // Finishing logon process should trigger credential changed and trigger
+  // GetSerialization.
+  ASSERT_EQ(S_OK, FinishLogonProcess(true, true, 0));
+
+  // Verify that the registry entry for the user was created.
+  std::wstring sid_str(local_sid, SysStringLen(local_sid));
+
+  wchar_t gaia_id[256];
+  ULONG length = base::size(gaia_id);
+  HRESULT gaia_id_hr =
+      GetUserProperty(sid_str.c_str(), kUserId, gaia_id, &length);
+  ASSERT_EQ(S_OK, gaia_id_hr);
+  ASSERT_TRUE(gaia_id[0]);
+
+  // Verify that the authentication results dictionary is now empty.
+  ASSERT_TRUE(test->IsAuthenticationResultsEmpty());
+}
+
+TEST_F(GcpGaiaCredentialBaseCloudLocalAccountTest, OnlyOneValidUserMapping) {
+  // Add the user as a local user.
+  const wchar_t user_name[] = L"local_user";
+  const wchar_t password[] = L"password";
+
+  CComBSTR local_sid;
+  DWORD error;
+  HRESULT hr = fake_os_user_manager()->AddUser(
+      user_name, password, L"fullname", L"comment", true, &local_sid, &error);
+  ASSERT_EQ(S_OK, hr);
+  ASSERT_EQ(0u, error);
+
+  // Set token result as a valid access token.
+  fake_http_url_fetcher_factory()->SetFakeResponse(
+      GURL(gaia_urls_->oauth2_token_url().spec().c_str()),
+      FakeWinHttpUrlFetcher::Headers(), "{\"access_token\": \"dummy_token\"}");
+
+  std::string admin_sdk_response;
+  // Set a fake serial number.
+  base::string16 serial_number = L"1234";
+  GoogleRegistrationDataForTesting g_registration_data(serial_number);
+
+  const wchar_t another_user_name1[] = L"another_local_user_1";
+
+  // Set valid response from admin sdk with Local_Windows_accounts containing
+  // multiple mappings with matching "serial_number" in it and another
+  // one without serial number.
+  admin_sdk_response = base::StringPrintf(
+      "{\"customSchemas\": {\"Enhanced_desktop_security\": "
+      "{\"Local_Windows_accounts\":"
+      "[{ \"value\": \"un:%ls,sn:%ls\" },{ \"value\": \"un:%ls,sn:%ls\" }]}}}",
+      another_user_name1, serial_number.c_str(), user_name,
+      serial_number.c_str());
+  fake_http_url_fetcher_factory()->SetFakeResponse(
+      GURL(get_cd_user_url_.c_str()), FakeWinHttpUrlFetcher::Headers(),
+      admin_sdk_response);
+
+  Microsoft::WRL::ComPtr<ITestCredential> test;
+  ASSERT_EQ(S_OK, cred_.As(&test));
+
+  ASSERT_EQ(S_OK, StartLogonProcessAndWait());
+
+  EXPECT_EQ(test->GetFinalEmail(), kDefaultEmail);
+
+  // Make sure no user was created and the login happens on the
+  // existing user instead.
+  PSID sid = nullptr;
+  EXPECT_EQ(
+      HRESULT_FROM_WIN32(NERR_UserNotFound),
+      fake_os_user_manager()->GetUserSID(
+          OSUserManager::GetLocalDomain().c_str(), kDefaultUsername, &sid));
+  ASSERT_EQ(nullptr, sid);
+
+  // Finishing logon process should trigger credential changed and trigger
+  // GetSerialization.
+  ASSERT_EQ(S_OK, FinishLogonProcess(true, true, 0));
+
+  // Verify that the registry entry for the user was created.
+  std::wstring sid_str(local_sid, SysStringLen(local_sid));
+
+  wchar_t gaia_id[256];
+  ULONG length = base::size(gaia_id);
+  HRESULT gaia_id_hr =
+      GetUserProperty(sid_str.c_str(), kUserId, gaia_id, &length);
+  ASSERT_EQ(S_OK, gaia_id_hr);
+  ASSERT_TRUE(gaia_id[0]);
+
+  // Verify that the authentication results dictionary is now empty.
+  ASSERT_TRUE(test->IsAuthenticationResultsEmpty());
+}
+
+TEST_F(GcpGaiaCredentialBaseCloudLocalAccountTest,
+       InvalidUsersToSerialNumberMapping) {
   // Add the user as a local user.
   const wchar_t user_name[] = L"local_user";
   const wchar_t password[] = L"password";
