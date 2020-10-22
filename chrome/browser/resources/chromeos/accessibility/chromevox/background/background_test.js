@@ -2721,51 +2721,6 @@ TEST_F('ChromeVoxBackgroundTest', 'SwipeToScrollByPage', function() {
       });
 });
 
-TEST_F('ChromeVoxBackgroundTest', 'ReadFromHereAccumulatesText', function() {
-  this.runWithLoadedTree(
-      `
-    <p>start</p>
-    <p><span>hi</span><span>there</span></p>
-    <p><span lang="es">hola</span><span>there</span></p>
-    <p>goodbye</p>
-  `,
-      async function(root) {
-        // Flip on language switching and fake out voices needed by the test.
-        localStorage['languageSwitching'] = 'true';
-        LocaleOutputHelper.instance.availableVoices_ =
-            [{lang: 'en-US'}, {lang: 'es'}];
-        const expectedText = [
-          {text: 'hi there'}, {text: 'espa\u00f1ol: hola', lang: 'es'},
-          {text: 'English (United States): there'}, {text: 'goodbye'}
-        ];
-        await new Promise(resolve => {
-          // Due to the way the text accumulates, we can't use MockFeedback here
-          // which only executes the speech end callback when the text is
-          // matched.
-          const keepWaiting = (text, queueMode, props) => {
-            if (text == expectedText[0].text) {
-              if (expectedText[0].lang) {
-                assertEquals(props.lang, expectedText[0].lang);
-              }
-              expectedText.shift();
-            }
-
-            if (expectedText.length == 0) {
-              resolve();
-              return;
-            }
-
-            const callback = props['endCallback'];
-            if (callback) {
-              callback();
-            }
-          };
-          ChromeVox.tts.speak = keepWaiting;
-          doCmd('readFromHere')();
-        });
-      });
-});
-
 TEST_F('ChromeVoxBackgroundTest', 'PointerOnOffOnRepeatsNode', function() {
   PointerHandler.MIN_NO_POINTER_ANCHOR_SOUND_DELAY_MS = -1;
   const mockFeedback = this.createMockFeedback();

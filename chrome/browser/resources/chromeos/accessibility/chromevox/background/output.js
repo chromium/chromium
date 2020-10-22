@@ -332,17 +332,10 @@ Output = class {
   /**
    * Output a string literal.
    * @param {string} value
-   * @param {AutomationNode=} opt_contextNode A node to help contextualize
-   *     |value| e.g. for locale detection.
    * @return {!Output}
    */
-  withString(value, opt_contextNode) {
-    if (opt_contextNode && localStorage['languageSwitching'] === 'true') {
-      this.assignLocaleAndAppend_(
-          value, opt_contextNode, this.speechBuffer_, {annotation: []});
-    } else {
-      this.append_(this.speechBuffer_, value);
-    }
+  withString(value) {
+    this.append_(this.speechBuffer_, value);
     this.append_(this.brailleBuffer_, value);
     this.speechRulesStr_.write('withString: ' + value + '\n');
     this.brailleRulesStr_.write('withString: ' + value + '\n');

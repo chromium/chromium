@@ -680,7 +680,6 @@ CommandHandler.onCommand = function(command) {
       }
     } break;
     case 'readFromHere':
-      const accumulatedText = [];
       ChromeVoxState.isReadingContinuously = true;
       const continueReading = function() {
         if (!ChromeVoxState.isReadingContinuously ||
@@ -689,43 +688,17 @@ CommandHandler.onCommand = function(command) {
         }
 
         const prevRange = ChromeVoxState.instance.currentRange;
-        const prevNode = prevRange.start.node;
-        const prevLocale = prevNode.detectedLanguage || prevNode.language;
         const newRange = ChromeVoxState.instance.currentRange.move(
             cursors.Unit.NODE, Dir.FORWARD);
-        const newNode = newRange.start.node;
-        const newLocale = newNode.detectedLanguage || newNode.language;
-
-        // Speak the accumulated text immediately if the new range is not text
-        // or we've crossed out of the same parent, or if the language changed.
-        const differentParent = newNode.parent != prevNode.parent;
-        if (accumulatedText.length &&
-            (!AutomationPredicate.text(newNode) || differentParent ||
-             newLocale != prevLocale)) {
-          const text = accumulatedText.join(' ');
-          accumulatedText.length = 0;
-          new Output()
-              .withString(text, prevRange.start.node)
-              .onSpeechEnd(continueReading)
-              .go();
-          return;
-        }
 
         // Stop if we've wrapped back to the document.
-        if (AutomationPredicate.root(newNode)) {
+        const maybeDoc = newRange.start.node;
+        if (AutomationPredicate.root(maybeDoc)) {
           ChromeVoxState.isReadingContinuously = false;
           return;
         }
 
         ChromeVoxState.instance.setCurrentRange(newRange);
-
-        // Accumulate the name of text nodes. It will be read above.
-        if (AutomationPredicate.text(newNode)) {
-          accumulatedText.push(newNode.name);
-          continueReading();
-          return;
-        }
-
         newRange.select();
 
         const o = new Output()
