@@ -32,9 +32,9 @@ class ChromeBrowserState;
 // On iOS 12, called when the mainSceneState is set.
 - (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState;
 
-// Called when the first scene becomes active.
+// Called when the first scene initializes its UI.
 - (void)appState:(AppState*)appState
-    firstSceneActivated:(SceneState*)sceneState;
+    firstSceneHasInitializedUI:(SceneState*)sceneState;
 
 // Called after the app exits safe mode.
 - (void)appStateDidExitSafeMode:(AppState*)appState;

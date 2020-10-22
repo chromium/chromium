@@ -152,9 +152,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // browser state level UrlLoadingService instances.
 @property(nonatomic, assign) SceneUrlLoadingService* sceneURLLoadingService;
 
-// A flag that keeps track of the UI initialization for the controlled scene.
-@property(nonatomic, assign) BOOL hasInitializedUI;
-
 // Returns YES if the settings are presented, either from
 // self.settingsNavigationController or from SigninCoordinator.
 @property(nonatomic, assign, readonly, getter=isSettingsViewPresented)
@@ -305,8 +302,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     // ends.
     return;
   }
-  BOOL initializingUIInColdStart =
-      level > SceneActivationLevelBackground && !self.hasInitializedUI;
+  BOOL initializingUIInColdStart = level > SceneActivationLevelBackground &&
+                                   !self.sceneState.hasInitializedUI;
   if (initializingUIInColdStart) {
     [self initializeUI];
     if (IsMultiwindowSupported()) {
@@ -361,7 +358,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     }
   }
 
-  if (self.hasInitializedUI && level == SceneActivationLevelUnattached) {
+  if (self.sceneState.hasInitializedUI &&
+      level == SceneActivationLevelUnattached) {
     if (IsMultiwindowSupported()) {
       if (@available(iOS 13, *)) {
         if (IsMultipleScenesSupported()) {
@@ -550,12 +548,12 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 #pragma mark - private
 
 - (void)initializeUI {
-  if (self.hasInitializedUI) {
+  if (self.sceneState.hasInitializedUI) {
     return;
   }
 
   [self startUpChromeUI];
-  self.hasInitializedUI = YES;
+  self.sceneState.hasInitializedUI = YES;
 }
 
 // Returns YES if restore prompt can be shown.
@@ -744,7 +742,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // This method completely destroys all of the UI. It should be called when the
 // scene is disconnected.
 - (void)teardownUI {
-  if (!self.hasInitializedUI) {
+  if (!self.sceneState.hasInitializedUI) {
     return;  // Nothing to do.
   }
 
@@ -775,7 +773,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   [self.browserViewWrangler shutdown];
   self.browserViewWrangler = nil;
 
-  self.hasInitializedUI = NO;
+  self.sceneState.hasInitializedUI = NO;
 
   [self.sceneState.appState removeObserver:self];
 }

@@ -26,6 +26,8 @@ enum SceneActivationLevel : NSUInteger;
 - (void)sceneStateWillHideModalOverlay:(SceneState*)sceneState;
 // Notifies when presentingModalOverlay has been set to false.
 - (void)sceneStateDidHideModalOverlay:(SceneState*)sceneState;
+// Notifies when hasInitializedUI has been set.
+- (void)sceneStateHasInitializedUI:(SceneState*)sceneState;
 // Notifies when URLContexts have been added to |URLContextsToOpen|.
 - (void)sceneState:(SceneState*)sceneState
     hasPendingURLs:(NSSet<UIOpenURLContext*>*)URLContexts

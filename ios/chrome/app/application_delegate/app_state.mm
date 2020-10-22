@@ -139,6 +139,9 @@ NSString* const kStartupAttemptReset = @"StartupAttempReset";
 // never reset.
 @property(nonatomic, assign) BOOL firstSceneHasActivated;
 
+// This flag is set when the first scene has initialized its UI and never reset.
+@property(nonatomic, assign) BOOL firstSceneHasInitializedUI;
+
 // The current blocker target if any.
 @property(nonatomic, weak, readwrite) id<UIBlockerTarget> uiBlockerTarget;
 
@@ -698,14 +701,21 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   return self.uiBlockerTarget;
 }
 
+#pragma mark - SceneStateObserver
+
+- (void)sceneStateHasInitializedUI:(SceneState*)sceneState {
+  if (self.firstSceneHasInitializedUI) {
+    return;
+  }
+  self.firstSceneHasInitializedUI = YES;
+  [self.observers appState:self firstSceneHasInitializedUI:sceneState];
+}
+
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
   if (level >= SceneActivationLevelForegroundActive) {
     if (!self.firstSceneHasActivated) {
       self.firstSceneHasActivated = YES;
-
-      [self.observers appState:self firstSceneActivated:sceneState];
-
       if (self.isInSafeMode) {
         // Safe mode can only be started when there's a window, so the actual
         // safe mode has been postponed until now.
