@@ -263,10 +263,21 @@ class CupsPrintersManagerImpl
   void OnActiveNetworksChanged(
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
           networks) override {
+    if (!HasNetworkDisconnected(networks)) {
+      // We only update the discovered list if we disconnected from our previous
+      // default network.
+      return;
+    }
+
+    PRINTER_LOG(DEBUG) << "Network change.  Refresh printers list.";
+
     // Clear the network detected printers when the active network changes.
     // This ensures that connecting to a new network will give us only newly
     // detected printers.
     ClearNetworkDetectedPrinters();
+
+    // Notify observers that the printer list has changed.
+    RebuildDetectedLists();
   }
   void OnNetworkStateChanged(
       chromeos::network_config::mojom::NetworkStatePropertiesPtr /* network */)
@@ -596,6 +607,33 @@ class CupsPrintersManagerImpl
     }
   }
 
+  // Returns true if we've disconnected from our current network. Updates
+  // the current active network. This method is not reentrant.
+  bool HasNetworkDisconnected(
+      const std::vector<
+          chromeos::network_config::mojom::NetworkStatePropertiesPtr>&
+          networks) {
+    // An empty current_network indicates that we're not connected to a valid
+    // network right now.
+    std::string current_network;
+    if (!networks.empty()) {
+      // The first network is the default network which receives mDNS
+      // multicasts.
+      current_network = networks.front()->guid;
+    }
+
+    // If we attach to a network after being disconnected, we do not want to
+    // forcibly clear our detected list.  It is either already empty or contains
+    // valid entries because we missed the original connection event.
+    bool network_disconnected =
+        !active_network_.empty() && current_network != active_network_;
+
+    // Ensure that we don't register network state updates as network changes.
+    active_network_ = std::move(current_network);
+
+    return network_disconnected;
+  }
+
   // Record in UMA the appropriate event with a setup attempt for a printer is
   // abandoned.
   void RecordSetupAbandoned(const Printer& printer) override {
@@ -701,6 +739,9 @@ class CupsPrintersManagerImpl
   // Equals true if the list of enterprise printers and related policies
   // is initialized and configured correctly.
   bool enterprise_printers_are_ready_ = false;
+
+  // GUID of the current default network.
+  std::string active_network_;
 
   // Tracks PpdReference resolution. Also stores USB manufacturer string if
   // available.
