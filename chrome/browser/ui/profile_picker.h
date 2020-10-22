@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_PROFILE_PICKER_H_
 #define CHROME_BROWSER_UI_PROFILE_PICKER_H_
 
+#include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace views {
@@ -52,6 +53,9 @@ class ProfilePicker {
 
   // Returns the web view (embedded in the picker) for testing.
   static views::WebView* GetWebViewForTesting();
+
+  // Overrides the timeout delay for waiting for extended account info.
+  static void SetExtendedAccountInfoTimeoutForTesting(base::TimeDelta timeout);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ProfilePicker);

@@ -58,6 +58,9 @@ constexpr int kWindowWidth = 1024;
 constexpr int kWindowHeight = 758;
 constexpr float kMaxRatioOfWorkArea = 0.9;
 
+constexpr base::TimeDelta kExtendedAccountInfoTimeout =
+    base::TimeDelta::FromSeconds(10);
+
 GURL CreateURLForEntryPoint(ProfilePicker::EntryPoint entry_point) {
   GURL base_url = GURL(chrome::kChromeUIProfilePickerUrl);
   switch (entry_point) {
@@ -123,9 +126,19 @@ views::View* ProfilePicker::GetViewForTesting() {
   return g_profile_picker_view;
 }
 
+// static
+void ProfilePicker::SetExtendedAccountInfoTimeoutForTesting(
+    base::TimeDelta timeout) {
+  if (g_profile_picker_view) {
+    g_profile_picker_view->SetExtendedAccountInfoTimeoutForTesting(  // IN-TEST
+        timeout);
+  }
+}
+
 ProfilePickerView::ProfilePickerView()
     : keep_alive_(KeepAliveOrigin::USER_MANAGER_VIEW,
-                  KeepAliveRestartOption::DISABLED) {
+                  KeepAliveRestartOption::DISABLED),
+      extended_account_info_timeout_(kExtendedAccountInfoTimeout) {
   SetHasWindowSizeControls(true);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetTitle(IDS_PRODUCT_NAME);
@@ -385,6 +398,12 @@ void ProfilePickerView::OnRefreshTokenUpdatedForAccount(
   // any follow-up UI is shown.
   web_view_->LoadInitialURL(GURL(url::kAboutBlankURL));
 
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&ProfilePickerView::OnExtendedAccountInfoTimeout,
+                     weak_ptr_factory_.GetWeakPtr(), account_info.email),
+      extended_account_info_timeout_);
+
   // DiceTurnSyncOnHelper deletes itself once done.
   new DiceTurnSyncOnHelper(
       signed_in_profile_being_created_,
@@ -404,14 +423,30 @@ void ProfilePickerView::OnExtendedAccountInfoUpdated(
     const AccountInfo& account_info) {
   if (!account_info.IsValid())
     return;
-  account_info_ = account_info;
+  name_for_signed_in_profile_ =
+      profiles::GetDefaultNameForNewSignedInProfile(account_info);
+  OnProfileNameAvailable();
+}
 
+void ProfilePickerView::SetExtendedAccountInfoTimeoutForTesting(
+    base::TimeDelta timeout) {
+  extended_account_info_timeout_ = timeout;
+}
+
+void ProfilePickerView::OnExtendedAccountInfoTimeout(const std::string& email) {
+  // As a fallback, use the email of the user as the profile name when extended
+  // account info is not available.
+  name_for_signed_in_profile_ = base::UTF8ToUTF16(email);
+  OnProfileNameAvailable();
+}
+
+void ProfilePickerView::OnProfileNameAvailable() {
   // Stop listening to further changes.
   identity_manager_observer_.Remove(
       IdentityManagerFactory::GetForProfile(signed_in_profile_being_created_));
 
-  if (on_account_info_available_)
-    std::move(on_account_info_available_).Run();
+  if (on_profile_name_available_)
+    std::move(on_profile_name_available_).Run();
 }
 
 void ProfilePickerView::FinishSignedInCreationFlow(
@@ -423,10 +458,8 @@ void ProfilePickerView::FinishSignedInCreationFlow(
     return;
   state_ = kFinalizing;
 
-  if (!account_info_.IsValid()) {
-    // TODO(crbug.com/1126913): Add a timeout so that Chrome deals with cases
-    // when the extended info is never available (firewall, etc).
-    on_account_info_available_ =
+  if (name_for_signed_in_profile_.empty()) {
+    on_profile_name_available_ =
         base::BindOnce(&ProfilePickerView::FinishSignedInCreationFlowImpl,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback));
     return;
@@ -437,7 +470,7 @@ void ProfilePickerView::FinishSignedInCreationFlow(
 
 void ProfilePickerView::FinishSignedInCreationFlowImpl(
     BrowserOpenedCallback callback) {
-  DCHECK(account_info_.IsValid());
+  DCHECK(!name_for_signed_in_profile_.empty());
 
   ProfileAttributesEntry* entry = nullptr;
   if (!g_browser_process->profile_manager()
@@ -450,10 +483,7 @@ void ProfilePickerView::FinishSignedInCreationFlowImpl(
 
   // Unmark this profile ephemeral so that it is not deleted upon next startup.
   entry->SetIsEphemeral(false);
-
-  // Set the profile name
-  entry->SetLocalProfileName(
-      profiles::GetDefaultNameForNewSignedInProfile(account_info_));
+  entry->SetLocalProfileName(name_for_signed_in_profile_);
 
   // TODO(crbug.com/1126913): Change the callback of
   // profiles::OpenBrowserWindowForProfile() to be a OnceCallback as it is only

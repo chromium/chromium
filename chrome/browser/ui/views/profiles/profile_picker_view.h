@@ -89,6 +89,11 @@ class ProfilePickerView : public views::DialogDelegateView,
       const CoreAccountInfo& account_info) override;
   void OnExtendedAccountInfoUpdated(const AccountInfo& account_info) override;
 
+  // Helper functions to deal with the lack of extended account info.
+  void SetExtendedAccountInfoTimeoutForTesting(base::TimeDelta timeout);
+  void OnExtendedAccountInfoTimeout(const std::string& email);
+  void OnProfileNameAvailable();
+
   // Finishes the creation flow by marking `profile_being_created_` as fully
   // created, opening a browser window for this profile and calling `callback`.
   void FinishSignedInCreationFlow(BrowserOpenedCallback callback);
@@ -109,8 +114,9 @@ class ProfilePickerView : public views::DialogDelegateView,
   // until the end of the flow (i.e. for the rest of the lifetime of this view).
   Profile* signed_in_profile_being_created_ = nullptr;
 
-  AccountInfo account_info_;
-  base::OnceClosure on_account_info_available_;
+  base::string16 name_for_signed_in_profile_;
+  base::OnceClosure on_profile_name_available_;
+  base::TimeDelta extended_account_info_timeout_;
 
   // Not null iff switching to sign-in is in progress.
   base::OnceClosure switch_failure_callback_;
