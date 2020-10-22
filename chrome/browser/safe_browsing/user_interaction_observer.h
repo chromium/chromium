@@ -59,7 +59,8 @@ enum class DelayedWarningEvent {
 };
 
 // Name of the recorded histograms when the user did not disable URL elision via
-// "Always Show Full URLs" menu option.
+// "Always Show Full URLs" menu option or by installing Suspicious Site Reporter
+// extension.
 extern const char kDelayedWarningsHistogram[];
 extern const char kDelayedWarningsTimeOnPageHistogram[];
 
@@ -121,6 +122,10 @@ class SafeBrowsingUserInteractionObserver
   // a desktop capture. Shows the delayed interstitial immediately.
   void OnDesktopCaptureRequest();
 
+  static void SetSuspiciousSiteReporterExtensionIdForTesting(
+      const char* extension_id);
+  static void ResetSuspiciousSiteReporterExtensionIdForTesting();
+
   void SetClockForTesting(base::Clock* clock);
   base::Time GetCreationTimeForTesting() const;
 
@@ -149,6 +154,9 @@ class SafeBrowsingUserInteractionObserver
   // However, this hook is also called for the initial navigation, so we ignore
   // it the first time the hook is called.
   bool initial_navigation_finished_ = false;
+
+  // Id of the Suspicious Site Reporter extension. Only set in tests.
+  static const char* suspicious_site_reporter_extension_id_;
 
   // The time that this observer was created. Used for recording histograms.
   base::Time creation_time_;

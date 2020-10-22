@@ -18,7 +18,16 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/browser/extension_registry.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 using blink::WebInputEvent;
+
+namespace {
+// Id for extension that enables users to report sites to Safe Browsing.
+const char kPreventElisionExtensionId[] = "jknemblkbdhdcpllfgbfekkdciegfboi";
+}  // namespace
 
 namespace safe_browsing {
 
@@ -35,12 +44,28 @@ namespace {
 const char kWebContentsUserDataKey[] =
     "web_contents_safe_browsing_user_interaction_observer";
 
-bool IsUrlElisionDisabled(Profile* profile) {
-  return profile &&
-         profile->GetPrefs()->GetBoolean(omnibox::kPreventUrlElisionsInOmnibox);
+bool IsUrlElisionDisabled(Profile* profile,
+                          const char* suspicious_site_reporter_extension_id) {
+  if (profile &&
+      profile->GetPrefs()->GetBoolean(omnibox::kPreventUrlElisionsInOmnibox)) {
+    return true;
+  }
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  DCHECK(suspicious_site_reporter_extension_id);
+  if (profile && extensions::ExtensionRegistry::Get(profile)
+                     ->enabled_extensions()
+                     .Contains(suspicious_site_reporter_extension_id)) {
+    return true;
+  }
+#endif
+  return false;
 }
 
 }  // namespace
+
+// static
+const char* SafeBrowsingUserInteractionObserver::
+    suspicious_site_reporter_extension_id_ = kPreventElisionExtensionId;
 
 SafeBrowsingUserInteractionObserver::SafeBrowsingUserInteractionObserver(
     content::WebContents* web_contents,
@@ -177,7 +202,8 @@ void SafeBrowsingUserInteractionObserver::Detach() {
   }
   base::TimeDelta time_on_page = clock_->Now() - creation_time_;
   if (IsUrlElisionDisabled(
-          Profile::FromBrowserContext(web_contents()->GetBrowserContext()))) {
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
+          suspicious_site_reporter_extension_id_)) {
     base::UmaHistogramLongTimes(
         kDelayedWarningsTimeOnPageWithElisionDisabledHistogram, time_on_page);
   } else {
@@ -247,6 +273,18 @@ void SafeBrowsingUserInteractionObserver::OnDesktopCaptureRequest() {
   // DO NOT add code past this point. |this| is destroyed.
 }
 
+// static
+void SafeBrowsingUserInteractionObserver::
+    SetSuspiciousSiteReporterExtensionIdForTesting(const char* extension_id) {
+  suspicious_site_reporter_extension_id_ = extension_id;
+}
+
+// static
+void SafeBrowsingUserInteractionObserver::
+    ResetSuspiciousSiteReporterExtensionIdForTesting() {
+  suspicious_site_reporter_extension_id_ = kPreventElisionExtensionId;
+}
+
 void SafeBrowsingUserInteractionObserver::SetClockForTesting(
     base::Clock* clock) {
   clock_ = clock;
@@ -260,7 +298,7 @@ base::Time SafeBrowsingUserInteractionObserver::GetCreationTimeForTesting()
 void SafeBrowsingUserInteractionObserver::RecordUMA(DelayedWarningEvent event) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  if (IsUrlElisionDisabled(profile)) {
+  if (IsUrlElisionDisabled(profile, suspicious_site_reporter_extension_id_)) {
     base::UmaHistogramEnumeration(kDelayedWarningsWithElisionDisabledHistogram,
                                   event);
   } else {
