@@ -11,11 +11,13 @@ import sys
 
 TAG_HEADER = """\
 # OS
-# tags: [ android android-pie
+# tags: [ android android-lollipop android-marshmallow android-nougat
+#             android-pie
 #         chromeos
 #         fuchsia
-#         linux
-#         mac catalina lion highsierra mojave mountainlion sierra
+#         linux ubuntu
+#         mac bigsur catalina lion highsierra mac-10.12 mojave mountainlion
+#             sierra
 #         win win7 win8 win10 ]
 # Devices
 # tags: [ android-nexus-5 android-nexus-5x android-nexus-6 android-nexus-6p
@@ -32,10 +34,11 @@ TAG_HEADER = """\
 # GPU
 # tags: [ amd amd-0x6613 amd-0x679e amd-0x6821 amd-0x699f
 #         apple apple-apple-a12z
+#         arm
+#         google google-0xffff
 #         intel intel-0xa2e intel-0xd26 intel-0xa011 intel-0x3e92 intel-0x5912
 #         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184
-#         qualcomm
-#         google-0xffff ]
+#         qualcomm ]
 # Decoder
 # tags: [ passthrough no-passthrough ]
 # ANGLE Backend

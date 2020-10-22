@@ -563,6 +563,26 @@ class GpuIntegrationTest(
         'qualcomm-adreno-(tm)-430',  # android-nexus-6p
         'qualcomm-adreno-(tm)-540',  # android-pixel-2
         'nvidia-nvidia-tegra',  # android-nexus-9 and android-shield-android-tv
+        'vmware',  # VMs
+        'vmware,-0x1050',  # ChromeOS VMs
+        # Fuchsia VMs
+        ('google-angle-(vulkan-1.1.0(swiftshader-device-('
+         'llvm-7.0.1)-(0x0000c0de)))'),
+        # These browsers are analogous to a particular OS, and specifying the
+        # OS name is clearer.
+        'cros-chrome',  # ChromeOS
+        'web-engine-shell',  # Fuchsia
+        # WebGL version is already handled by having expectations in separate
+        # files.
+        # TODO(crbug.com/1140283): Consider merging the two files and using
+        # these tags once stale expectations are removed and the files are more
+        # reasonably sized.
+        'webgl-version-1',
+        'webgl-version-2',
+        # GPU tests are always run in remote mode on the bots, and it shouldn't
+        # make a difference to these tests anyways.
+        'chromeos-local',
+        'chromeos-remote',
     ]
 
 
