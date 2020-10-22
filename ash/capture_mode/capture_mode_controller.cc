@@ -59,10 +59,15 @@ constexpr char kDateFmtStr[] = "%d-%02d-%02d";
 constexpr char k24HourTimeFmtStr[] = "%02d.%02d.%02d";
 constexpr char kAmPmTimeFmtStr[] = "%d.%02d.%02d";
 
-// The notification button index.
-enum NotificationButtonIndex {
+// The screenshot notification button index.
+enum ScreenshotNotificationButtonIndex {
   BUTTON_EDIT = 0,
   BUTTON_DELETE,
+};
+
+// The video notification button index.
+enum VideoNotificationButtonIndex {
+  BUTTON_DELETE_VIDEO = 0,
 };
 
 // Returns the date extracted from |timestamp| as a string to be part of
@@ -420,7 +425,7 @@ void CaptureModeController::OnImageFileSaved(
   DCHECK(png_bytes && png_bytes->size());
   const auto image = gfx::Image::CreateFrom1xPNGBytes(png_bytes);
   CopyImageToClipboard(image);
-  ShowPreviewNotification(path, image);
+  ShowPreviewNotification(path, image, CaptureModeType::kImage);
 
   if (features::IsTemporaryHoldingSpaceEnabled())
     HoldingSpaceController::Get()->client()->AddScreenshot(path);
@@ -440,7 +445,8 @@ void CaptureModeController::OnVideoFileSaved(bool success) {
   if (!success)
     ShowFailureNotification();
   else
-    ShowPreviewNotification(current_video_file_path_, gfx::Image());
+    ShowPreviewNotification(current_video_file_path_, gfx::Image(),
+                            CaptureModeType::kVideo);
 
   current_video_file_path_.clear();
   video_file_handler_.Reset();
@@ -448,18 +454,19 @@ void CaptureModeController::OnVideoFileSaved(bool success) {
 
 void CaptureModeController::ShowPreviewNotification(
     const base::FilePath& screen_capture_path,
-    const gfx::Image& preview_image) {
-  const base::string16 title =
-      l10n_util::GetStringUTF16(type_ == CaptureModeType::kImage
-                                    ? IDS_ASH_SCREEN_CAPTURE_SCREENSHOT_TITLE
-                                    : IDS_ASH_SCREEN_CAPTURE_RECORDING_TITLE);
+    const gfx::Image& preview_image,
+    const CaptureModeType type) {
+  const base::string16 title = l10n_util::GetStringUTF16(
+      type == CaptureModeType::kImage ? IDS_ASH_SCREEN_CAPTURE_SCREENSHOT_TITLE
+                                      : IDS_ASH_SCREEN_CAPTURE_RECORDING_TITLE);
   const base::string16 message =
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_MESSAGE);
 
   message_center::RichNotificationData optional_fields;
   message_center::ButtonInfo edit_button(
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_BUTTON_EDIT));
-  optional_fields.buttons.push_back(edit_button);
+  if (type == CaptureModeType::kImage)
+    optional_fields.buttons.push_back(edit_button);
   message_center::ButtonInfo delete_button(
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_BUTTON_DELETE));
   optional_fields.buttons.push_back(delete_button);
@@ -471,29 +478,45 @@ void CaptureModeController::ShowPreviewNotification(
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(&CaptureModeController::HandleNotificationClicked,
                               weak_ptr_factory_.GetWeakPtr(),
-                              screen_capture_path)));
+                              screen_capture_path, type)));
 }
 
 void CaptureModeController::HandleNotificationClicked(
     const base::FilePath& screen_capture_path,
+    const CaptureModeType type,
     base::Optional<int> button_index) {
+  message_center::MessageCenter::Get()->RemoveNotification(
+      kScreenCaptureNotificationId, /*by_user=*/false);
+
   if (!button_index.has_value()) {
     // Show the item in the folder.
     delegate_->ShowScreenCaptureItemInFolder(screen_capture_path);
-  } else {
-    // TODO(crbug.com/1136666): Remove edit button for video recording.
-    switch (button_index.value()) {
-      case NotificationButtonIndex::BUTTON_EDIT:
-        delegate_->OpenScreenshotInImageEditor(screen_capture_path);
-        break;
-      case NotificationButtonIndex::BUTTON_DELETE:
-        DeleteFileAsync(task_runner_, screen_capture_path);
-        break;
-    }
+    return;
   }
 
-  message_center::MessageCenter::Get()->RemoveNotification(
-      kScreenCaptureNotificationId, /*by_user=*/false);
+  const int button_index_value = button_index.value();
+
+  // Handle a button clicked for a video preview notification.
+  if (type == CaptureModeType::kVideo) {
+    DCHECK_EQ(button_index_value,
+              VideoNotificationButtonIndex::BUTTON_DELETE_VIDEO);
+    DeleteFileAsync(task_runner_, screen_capture_path);
+    return;
+  }
+
+  // Handle a button clicked for an image preview notification.
+  DCHECK_EQ(type, CaptureModeType::kImage);
+  switch (button_index_value) {
+    case ScreenshotNotificationButtonIndex::BUTTON_EDIT:
+      delegate_->OpenScreenshotInImageEditor(screen_capture_path);
+      break;
+    case ScreenshotNotificationButtonIndex::BUTTON_DELETE:
+      DeleteFileAsync(task_runner_, screen_capture_path);
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
 }
 
 base::FilePath CaptureModeController::BuildImagePath(

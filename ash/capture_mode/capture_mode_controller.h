@@ -132,8 +132,10 @@ class ASH_EXPORT CaptureModeController {
   // Shows a preview notification of the newly taken screenshot or screen
   // recording.
   void ShowPreviewNotification(const base::FilePath& screen_capture_path,
-                               const gfx::Image& preview_image);
+                               const gfx::Image& preview_image,
+                               const CaptureModeType type);
   void HandleNotificationClicked(const base::FilePath& screen_capture_path,
+                                 const CaptureModeType type,
                                  base::Optional<int> button_index);
 
   // Builds a path for a file of an image screenshot, or a video screen
