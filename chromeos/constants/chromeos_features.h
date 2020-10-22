@@ -86,6 +86,8 @@ extern const base::Feature kCdmFactoryDaemon;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kChildSpecificSignin;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kConnectivityDiagnosticsWebUi;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kCrostiniDiskResizing;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kCrostiniUseBusterImage;

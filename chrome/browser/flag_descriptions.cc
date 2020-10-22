@@ -3683,6 +3683,11 @@ const char kCdmFactoryDaemonName[] = "CDM Factory Daemon";
 const char kCdmFactoryDaemonDescription[] =
     "Use the CDM daemon instead of the library CDM";
 
+const char kConnectivityDiagnosticsWebUiName[] =
+    "Connectivity Diagnostics WebUI";
+const char kConnectivityDiagnosticsWebUiDescription[] =
+    "Use the WebUI version of the Connectivity Diagnostics App";
+
 const char kContextualNudgesName[] =
     "Contextual nudges for user gesture education";
 const char kContextualNudgesDescription[] =

@@ -43158,6 +43158,7 @@ from previous Chrome versions.
   <int value="-588669613"
       label="OmniboxClobberIsZeroSuggestEntrypoint:enabled"/>
   <int value="-582870536" label="BluetoothNextHandsfreeProfile:enabled"/>
+  <int value="-581236612" label="ConnectivityDiagnosticsWebUi:disabled"/>
   <int value="-579192400" label="disable-input-view"/>
   <int value="-577982497" label="CupsPrintersUiOverhaul:enabled"/>
   <int value="-574354898" label="PostQuantumCECPQ2:enabled"/>
@@ -44843,6 +44844,7 @@ from previous Chrome versions.
   <int value="1127427821" label="OmniboxEntitySuggestions:disabled"/>
   <int value="1129542111" label="CastAllowAllIPs:disabled"/>
   <int value="1129888794" label="ash-touch-hud"/>
+  <int value="1132521402" label="ConnectivityDiagnosticsWebUi:enabled"/>
   <int value="1133207726" label="MediaInspectorLogging:enabled"/>
   <int value="1133635187" label="force-gpu-rasterization"/>
   <int value="1135728116" label="PluginVmShowCameraPermissions:enabled"/>

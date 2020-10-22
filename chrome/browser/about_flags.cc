@@ -6677,6 +6677,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsWin | kOsLinux | kOsCrOS,
      FEATURE_VALUE_TYPE(blink::features::kInsertKeyToggleMode)},
 
+#if defined(OS_CHROMEOS)
+    {"connectivity-diagnostics-webui",
+     flag_descriptions::kConnectivityDiagnosticsWebUiName,
+     flag_descriptions::kConnectivityDiagnosticsWebUiDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kConnectivityDiagnosticsWebUi)},
+#endif  // defined(OS_CHROMEOS)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

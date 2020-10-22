@@ -2127,6 +2127,9 @@ extern const char kChromeOSDirectVideoDecoderDescription[];
 extern const char kCdmFactoryDaemonName[];
 extern const char kCdmFactoryDaemonDescription[];
 
+extern const char kConnectivityDiagnosticsWebUiName[];
+extern const char kConnectivityDiagnosticsWebUiDescription[];
+
 extern const char kContextualNudgesName[];
 extern const char kContextualNudgesDescription[];
 
