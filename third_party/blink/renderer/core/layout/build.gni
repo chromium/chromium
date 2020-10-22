@@ -704,7 +704,6 @@ blink_core_sources_layout = [
   "text_decoration_offset_base.h",
   "text_run_constructor.cc",
   "text_run_constructor.h",
-  "theme_types.h",
   "traced_layout_object.cc",
   "traced_layout_object.h",
   "vertical_position_cache.h",

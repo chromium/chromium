@@ -26,4 +26,9 @@ blink_core_sources("typed_arrays") {
     "flexible_array_buffer_view.h",
     "typed_flexible_array_buffer_view.h",
   ]
+
+  deps = [ "//third_party/blink/renderer/core:core_generated" ]
+
+  allow_circular_includes_from =
+      [ "//third_party/blink/renderer/core:core_generated" ]
 }
