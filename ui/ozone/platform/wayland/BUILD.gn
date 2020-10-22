@@ -383,7 +383,6 @@ source_set("wayland_unittests") {
     "//ui/gfx/linux:test_support",
     "//ui/ozone:platform",
     "//ui/ozone:test_support",
-    "//ui/ozone/common",
     "//ui/platform_window/wm",
   ]
 

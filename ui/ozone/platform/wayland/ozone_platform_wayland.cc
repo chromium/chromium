@@ -22,7 +22,6 @@
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/gfx/linux/client_native_pixmap_dmabuf.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/gpu/drm_render_node_path_finder.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
@@ -65,6 +64,11 @@
 namespace ui {
 
 namespace {
+
+constexpr OzonePlatform::InitializedHostProperties
+    kWaylandInitializedHostProperties = {
+        /*supports_overlays=*/false,
+};
 
 class OzonePlatformWayland : public OzonePlatform {
  public:
@@ -232,13 +236,6 @@ class OzonePlatformWayland : public OzonePlatform {
       properties->ignore_screen_bounds_for_menus = true;
       properties->app_modal_dialogs_use_event_blocker = true;
 
-      // Primary planes can be transluscent due to underlay strategy. As a
-      // result Wayland server draws contents occluded by an accelerated widget.
-      // To prevent this, an opaque background image is stacked below the
-      // accelerated widget to occlude contents below.
-      properties->needs_background_image =
-          ui::IsWaylandOverlayDelegationEnabled();
-
       initialised = true;
     }
 
@@ -246,14 +243,7 @@ class OzonePlatformWayland : public OzonePlatform {
   }
 
   const InitializedHostProperties& GetInitializedHostProperties() override {
-    static base::NoDestructor<OzonePlatform::InitializedHostProperties>
-        properties;
-    static bool initialized = false;
-    if (!initialized) {
-      properties->supports_overlays = ui::IsWaylandOverlayDelegationEnabled();
-      initialized = true;
-    }
-    return *properties;
+    return kWaylandInitializedHostProperties;
   }
 
   void AddInterfaces(mojo::BinderMap* binders) override {
