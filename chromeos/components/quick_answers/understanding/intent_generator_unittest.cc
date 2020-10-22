@@ -124,7 +124,8 @@ TEST_F(IntentGeneratorTest, TranslationIntentTextLengthAboveThreshold) {
   QuickAnswersRequest request;
   request.selected_text =
       "Search the world's information, including webpages, images, videos and "
-      "more.";
+      "more. Google has many special features to help you find exactly what "
+      "you're looking ...";
   request.context.device_properties.language = "es";
   intent_generator_->GenerateIntent(request);
 
@@ -133,8 +134,41 @@ TEST_F(IntentGeneratorTest, TranslationIntentTextLengthAboveThreshold) {
   EXPECT_EQ(IntentType::kUnknown, intent_info_.intent_type);
   EXPECT_EQ(
       "Search the world's information, including webpages, images, videos and "
-      "more.",
+      "more. Google has many special features to help you find exactly what "
+      "you're looking ...",
       intent_info_.intent_text);
+}
+
+TEST_F(IntentGeneratorTest, TranslationIntentWithAnnotation) {
+  QuickAnswersRequest request;
+  request.selected_text = "unfathomable";
+  request.context.device_properties.language = "es";
+
+  // Create the test annotations.
+  std::vector<TextEntityPtr> entities;
+  entities.emplace_back(
+      TextEntity::New("dictionary",             // Entity name.
+                      1.0,                      // Confidence score.
+                      TextEntityData::New()));  // Data extracted.
+
+  auto dictionary_annotation = TextAnnotation::New(0,   // Start offset.
+                                                   12,  // End offset.
+                                                   std::move(entities));
+
+  std::vector<TextAnnotationPtr> annotations;
+  annotations.push_back(dictionary_annotation->Clone());
+  std::vector<TextLanguagePtr> languages;
+  languages.push_back(DefaultLanguage());
+  UseFakeServiceConnection(annotations, languages);
+
+  intent_generator_->GenerateIntent(request);
+
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(IntentType::kTranslation, intent_info_.intent_type);
+  EXPECT_EQ("unfathomable", intent_info_.intent_text);
+  EXPECT_EQ("en", intent_info_.source_language);
+  EXPECT_EQ("es", intent_info_.target_language);
 }
 
 TEST_F(IntentGeneratorTest, TranslationIntentNotEnabled) {
