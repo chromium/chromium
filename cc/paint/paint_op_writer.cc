@@ -496,8 +496,8 @@ void PaintOpWriter::Write(const PaintShader* shader, SkFilterQuality quality) {
   WriteSimple(shader->end_degrees_);
 
   if (enable_security_constraints_) {
-    DrawImage draw_image(shader->image_, MakeSrcRect(shader->image_), quality,
-                         SkMatrix::I());
+    DrawImage draw_image(shader->image_, false, MakeSrcRect(shader->image_),
+                         quality, SkMatrix::I());
     SkSize scale_adjustment = SkSize::Make(1.f, 1.f);
     Write(draw_image, &scale_adjustment);
     DCHECK_EQ(scale_adjustment.width(), 1.f);
@@ -743,7 +743,7 @@ void PaintOpWriter::Write(const DisplacementMapEffectPaintFilter& filter) {
 
 void PaintOpWriter::Write(const ImagePaintFilter& filter) {
   DrawImage draw_image(
-      filter.image(),
+      filter.image(), false,
       SkIRect::MakeWH(filter.image().width(), filter.image().height()),
       filter.filter_quality(), SkMatrix::I());
   SkSize scale_adjustment = SkSize::Make(1.f, 1.f);

@@ -28,7 +28,8 @@ DrawImage CreateDrawImage(const PaintImage& image,
                           const SkMatrix& matrix) {
   if (!image)
     return DrawImage();
-  return DrawImage(image, SkIRect::MakeWH(image.width(), image.height()),
+  return DrawImage(image, flags->useDarkModeForImage(),
+                   SkIRect::MakeWH(image.width(), image.height()),
                    flags ? flags->getFilterQuality() : kLow_SkFilterQuality,
                    matrix);
 }
@@ -1437,8 +1438,9 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
     return;
   }
 
+  // Dark mode is applied only for OOP raster during serialization.
   DrawImage draw_image(
-      op->image, SkIRect::MakeWH(op->image.width(), op->image.height()),
+      op->image, false, SkIRect::MakeWH(op->image.width(), op->image.height()),
       flags ? flags->getFilterQuality() : kNone_SkFilterQuality,
       canvas->getTotalMatrix());
   auto scoped_result = params.image_provider->GetRasterContent(draw_image);
@@ -1519,8 +1521,9 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
   SkIRect int_src_rect;
   op->src.roundOut(&int_src_rect);
 
+  // Dark mode is applied only for OOP raster during serialization.
   DrawImage draw_image(
-      op->image, int_src_rect,
+      op->image, false, int_src_rect,
       flags ? flags->getFilterQuality() : kNone_SkFilterQuality, matrix);
   auto scoped_result = params.image_provider->GetRasterContent(draw_image);
   if (!scoped_result)

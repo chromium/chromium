@@ -25,13 +25,15 @@ bool ExtractScale(const SkMatrix& matrix, SkSize* scale) {
 }  // namespace
 
 DrawImage::DrawImage()
-    : src_rect_(SkIRect::MakeXYWH(0, 0, 0, 0)),
+    : use_dark_mode_(false),
+      src_rect_(SkIRect::MakeXYWH(0, 0, 0, 0)),
       filter_quality_(kNone_SkFilterQuality),
       scale_(SkSize::Make(1.f, 1.f)),
       matrix_is_decomposable_(true) {}
 
 DrawImage::DrawImage(PaintImage image)
     : paint_image_(std::move(image)),
+      use_dark_mode_(false),
       src_rect_(
           SkIRect::MakeXYWH(0, 0, paint_image_.width(), paint_image_.height())),
       filter_quality_(kNone_SkFilterQuality),
@@ -39,6 +41,7 @@ DrawImage::DrawImage(PaintImage image)
       matrix_is_decomposable_(true) {}
 
 DrawImage::DrawImage(PaintImage image,
+                     bool use_dark_mode,
                      const SkIRect& src_rect,
                      SkFilterQuality filter_quality,
                      const SkMatrix& matrix,
@@ -46,6 +49,7 @@ DrawImage::DrawImage(PaintImage image,
                      const base::Optional<gfx::ColorSpace>& color_space,
                      float sdr_white_level)
     : paint_image_(std::move(image)),
+      use_dark_mode_(use_dark_mode),
       src_rect_(src_rect),
       filter_quality_(filter_quality),
       frame_index_(frame_index),
@@ -60,6 +64,7 @@ DrawImage::DrawImage(const DrawImage& other,
                      const gfx::ColorSpace& color_space,
                      float sdr_white_level)
     : paint_image_(other.paint_image_),
+      use_dark_mode_(other.use_dark_mode_),
       src_rect_(other.src_rect_),
       filter_quality_(other.filter_quality_),
       scale_(SkSize::Make(other.scale_.width() * scale_adjustment,
@@ -80,7 +85,9 @@ DrawImage& DrawImage::operator=(DrawImage&& other) = default;
 DrawImage& DrawImage::operator=(const DrawImage& other) = default;
 
 bool DrawImage::operator==(const DrawImage& other) const {
-  return paint_image_ == other.paint_image_ && src_rect_ == other.src_rect_ &&
+  return paint_image_ == other.paint_image_ &&
+         use_dark_mode_ == other.use_dark_mode_ &&
+         src_rect_ == other.src_rect_ &&
          filter_quality_ == other.filter_quality_ && scale_ == other.scale_ &&
          matrix_is_decomposable_ == other.matrix_is_decomposable_ &&
          target_color_space_ == other.target_color_space_ &&

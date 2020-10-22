@@ -48,7 +48,7 @@ void DecodedImageTracker::QueueImageDecode(
   // Queue the decode in the image controller, but switch out the callback for
   // our own.
   auto image_bounds = SkIRect::MakeWH(image.width(), image.height());
-  DrawImage draw_image(image, image_bounds, kNone_SkFilterQuality,
+  DrawImage draw_image(image, false, image_bounds, kNone_SkFilterQuality,
                        SkMatrix::I(), frame_index, target_color_space);
   image_controller_->QueueImageDecode(
       draw_image, base::BindOnce(&DecodedImageTracker::ImageDecodeFinished,

@@ -51,7 +51,8 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyNoneQuality) {
   PaintImage paint_image = CreatePaintImage(100, 100);
   bool is_decomposable = true;
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()),
       kNone_SkFilterQuality,
       CreateMatrix(SkSize::Make(0.5f, 1.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
@@ -73,7 +74,8 @@ TEST(SoftwareImageDecodeCacheTest,
   PaintImage paint_image = CreatePaintImage(100, 100);
   bool is_decomposable = true;
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()),
       kLow_SkFilterQuality,
       CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
@@ -91,7 +93,8 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityDropsToLowIfMipLevel0) {
   PaintImage paint_image = CreatePaintImage(100, 100);
   bool is_decomposable = true;
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()),
       kMedium_SkFilterQuality,
       CreateMatrix(SkSize::Make(0.75f, 0.75f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
@@ -110,7 +113,8 @@ TEST(SoftwareImageDecodeCacheTest, LowUnscalableFormatStaysLow) {
   PaintImage paint_image = CreatePaintImage(100, 100);
   bool is_decomposable = true;
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()),
       kLow_SkFilterQuality,
       CreateMatrix(SkSize::Make(0.5f, 1.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
@@ -129,7 +133,8 @@ TEST(SoftwareImageDecodeCacheTest, HighUnscalableFormatBecomesLow) {
   PaintImage paint_image = CreatePaintImage(100, 100);
   bool is_decomposable = true;
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()),
       kHigh_SkFilterQuality,
       CreateMatrix(SkSize::Make(1.5f, 1.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
@@ -148,7 +153,8 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyLowQualityKeptLowIfUpscale) {
   PaintImage paint_image = CreatePaintImage(100, 100);
   bool is_decomposable = true;
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()),
       kLow_SkFilterQuality,
       CreateMatrix(SkSize::Make(1.5f, 1.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
@@ -169,8 +175,9 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyMediumQuality) {
   SkFilterQuality quality = kMedium_SkFilterQuality;
 
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.5f, 0.4f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.5f, 0.4f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   auto key = SoftwareImageDecodeCache::CacheKey::FromDrawImage(
@@ -188,8 +195,9 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityDropToLowIfEnlarging) {
   SkFilterQuality quality = kMedium_SkFilterQuality;
 
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(1.5f, 1.5f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(1.5f, 1.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   auto key = SoftwareImageDecodeCache::CacheKey::FromDrawImage(
@@ -208,8 +216,9 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityDropToLowIfIdentity) {
   SkFilterQuality quality = kMedium_SkFilterQuality;
 
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(1.f, 1.f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(1.f, 1.f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   auto key = SoftwareImageDecodeCache::CacheKey::FromDrawImage(
@@ -229,8 +238,9 @@ TEST(SoftwareImageDecodeCacheTest,
   SkFilterQuality quality = kMedium_SkFilterQuality;
 
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(1.001f, 1.001f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(1.001f, 1.001f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   auto key = SoftwareImageDecodeCache::CacheKey::FromDrawImage(
@@ -250,8 +260,9 @@ TEST(SoftwareImageDecodeCacheTest,
   SkFilterQuality quality = kMedium_SkFilterQuality;
 
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.999f, 0.999f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.999f, 0.999f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   auto key = SoftwareImageDecodeCache::CacheKey::FromDrawImage(
@@ -271,8 +282,9 @@ TEST(SoftwareImageDecodeCacheTest,
   SkFilterQuality quality = kMedium_SkFilterQuality;
 
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.5f, 1.5f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.5f, 1.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   auto key = SoftwareImageDecodeCache::CacheKey::FromDrawImage(
@@ -292,8 +304,9 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt1_5Scale) {
   SkFilterQuality quality = kMedium_SkFilterQuality;
 
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(1.5f, 1.5f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(1.5f, 1.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   auto key = SoftwareImageDecodeCache::CacheKey::FromDrawImage(
@@ -312,8 +325,9 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt1_0cale) {
   SkFilterQuality quality = kMedium_SkFilterQuality;
 
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(1.f, 1.f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(1.f, 1.f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   auto key = SoftwareImageDecodeCache::CacheKey::FromDrawImage(
@@ -332,8 +346,9 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyLowQualityAt0_75Scale) {
   SkFilterQuality quality = kMedium_SkFilterQuality;
 
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.75f, 0.75f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.75f, 0.75f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   auto key = SoftwareImageDecodeCache::CacheKey::FromDrawImage(
@@ -352,8 +367,9 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt0_5Scale) {
   SkFilterQuality quality = kMedium_SkFilterQuality;
 
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   auto key = SoftwareImageDecodeCache::CacheKey::FromDrawImage(
@@ -371,8 +387,9 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt0_49Scale) {
   SkFilterQuality quality = kMedium_SkFilterQuality;
 
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.49f, 0.49f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.49f, 0.49f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   auto key = SoftwareImageDecodeCache::CacheKey::FromDrawImage(
@@ -390,8 +407,9 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt0_1Scale) {
   SkFilterQuality quality = kMedium_SkFilterQuality;
 
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.1f, 0.1f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.1f, 0.1f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   auto key = SoftwareImageDecodeCache::CacheKey::FromDrawImage(
@@ -409,8 +427,9 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt0_01Scale) {
   SkFilterQuality quality = kMedium_SkFilterQuality;
 
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.01f, 0.01f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.01f, 0.01f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   auto key = SoftwareImageDecodeCache::CacheKey::FromDrawImage(
@@ -429,8 +448,9 @@ TEST(SoftwareImageDecodeCacheTest,
   SkFilterQuality quality = kHigh_SkFilterQuality;
 
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.5f, 0.2f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.5f, 0.2f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   auto key = SoftwareImageDecodeCache::CacheKey::FromDrawImage(
@@ -448,8 +468,9 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyUpscaleIsLowQuality) {
   SkFilterQuality quality = kHigh_SkFilterQuality;
 
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(2.5f, 1.5f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(2.5f, 1.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   auto key = SoftwareImageDecodeCache::CacheKey::FromDrawImage(
@@ -471,8 +492,9 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyHighQualityDropToMediumIfTooLarge) {
   // At least one dimension should scale down, so that medium quality doesn't
   // become low.
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.45f, 0.45f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.45f, 0.45f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   auto key = SoftwareImageDecodeCache::CacheKey::FromDrawImage(
@@ -491,8 +513,9 @@ TEST(SoftwareImageDecodeCacheTest,
   SkFilterQuality quality = kHigh_SkFilterQuality;
 
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.5f, 1.5f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.5f, 1.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   auto key = SoftwareImageDecodeCache::CacheKey::FromDrawImage(
@@ -511,8 +534,9 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyHighQualityDropToLowIfIdentity) {
   SkFilterQuality quality = kHigh_SkFilterQuality;
 
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(1.f, 1.f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(1.f, 1.f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   auto key = SoftwareImageDecodeCache::CacheKey::FromDrawImage(
@@ -532,8 +556,9 @@ TEST(SoftwareImageDecodeCacheTest,
   SkFilterQuality quality = kHigh_SkFilterQuality;
 
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(1.001f, 1.001f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(1.001f, 1.001f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   auto key = SoftwareImageDecodeCache::CacheKey::FromDrawImage(
@@ -553,8 +578,9 @@ TEST(SoftwareImageDecodeCacheTest,
   SkFilterQuality quality = kHigh_SkFilterQuality;
 
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.999f, 0.999f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.999f, 0.999f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   auto key = SoftwareImageDecodeCache::CacheKey::FromDrawImage(
@@ -587,7 +613,8 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyDownscaleMipLevelWithRounding) {
   PaintImage paint_image = CreatePaintImage(97, 61);
   bool is_decomposable = true;
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()),
       kMedium_SkFilterQuality,
       CreateMatrix(SkSize::Make(0.2f, 0.2f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
@@ -608,8 +635,9 @@ TEST(SoftwareImageDecodeCacheTest, OriginalDecodesAreEqual) {
   SkFilterQuality quality = kNone_SkFilterQuality;
 
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.5f, 0.5), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.5f, 0.5), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   auto key = SoftwareImageDecodeCache::CacheKey::FromDrawImage(
@@ -622,8 +650,9 @@ TEST(SoftwareImageDecodeCacheTest, OriginalDecodesAreEqual) {
   EXPECT_EQ(100u * 100u * 4u, key.locked_bytes());
 
   DrawImage another_draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(1.5f, 1.5), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(1.5f, 1.5), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   auto another_key = SoftwareImageDecodeCache::CacheKey::FromDrawImage(
@@ -644,7 +673,7 @@ TEST(SoftwareImageDecodeCacheTest, ImageRectDoesNotContainSrcRect) {
   SkFilterQuality quality = kHigh_SkFilterQuality;
 
   DrawImage draw_image(
-      paint_image,
+      paint_image, false,
       SkIRect::MakeXYWH(25, 35, paint_image.width(), paint_image.height()),
       quality, CreateMatrix(SkSize::Make(1.f, 1.f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
@@ -665,7 +694,7 @@ TEST(SoftwareImageDecodeCacheTest, ImageRectDoesNotContainSrcRectWithScale) {
   SkFilterQuality quality = kHigh_SkFilterQuality;
 
   DrawImage draw_image(
-      paint_image,
+      paint_image, false,
       SkIRect::MakeXYWH(20, 30, paint_image.width(), paint_image.height()),
       quality, CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
@@ -687,8 +716,9 @@ TEST(SoftwareImageDecodeCacheTest, GetTaskForImageSameImage) {
   SkFilterQuality quality = kHigh_SkFilterQuality;
 
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
   ImageDecodeCache::TaskResult result =
       cache.GetTaskForImageAndRef(draw_image, ImageDecodeCache::TracingInfo());
@@ -696,8 +726,9 @@ TEST(SoftwareImageDecodeCacheTest, GetTaskForImageSameImage) {
   EXPECT_TRUE(result.task);
 
   DrawImage another_draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
   ImageDecodeCache::TaskResult another_result = cache.GetTaskForImageAndRef(
       another_draw_image, ImageDecodeCache::TracingInfo());
@@ -717,8 +748,9 @@ TEST(SoftwareImageDecodeCacheTest, GetTaskForImageProcessUnrefCancel) {
   SkFilterQuality quality = kHigh_SkFilterQuality;
 
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
   ImageDecodeCache::TaskResult result =
       cache.GetTaskForImageAndRef(draw_image, ImageDecodeCache::TracingInfo());
@@ -746,7 +778,8 @@ TEST(SoftwareImageDecodeCacheTest, GetTaskForImageSameImageDifferentQuality) {
   bool is_decomposable = true;
 
   DrawImage high_quality_draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()),
       kHigh_SkFilterQuality,
       CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
@@ -757,7 +790,8 @@ TEST(SoftwareImageDecodeCacheTest, GetTaskForImageSameImageDifferentQuality) {
   EXPECT_TRUE(high_quality_result.task);
 
   DrawImage none_quality_draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()),
       kNone_SkFilterQuality,
       CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
@@ -782,8 +816,9 @@ TEST(SoftwareImageDecodeCacheTest, GetTaskForImageSameImageDifferentSize) {
   SkFilterQuality quality = kHigh_SkFilterQuality;
 
   DrawImage half_size_draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
   ImageDecodeCache::TaskResult half_size_result = cache.GetTaskForImageAndRef(
       half_size_draw_image, ImageDecodeCache::TracingInfo());
@@ -791,8 +826,9 @@ TEST(SoftwareImageDecodeCacheTest, GetTaskForImageSameImageDifferentSize) {
   EXPECT_TRUE(half_size_result.task);
 
   DrawImage quarter_size_draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.25f, 0.25f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.25f, 0.25f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
   ImageDecodeCache::TaskResult quarter_size_result =
       cache.GetTaskForImageAndRef(quarter_size_draw_image,
@@ -815,7 +851,7 @@ TEST(SoftwareImageDecodeCacheTest, GetTaskForImageDifferentImage) {
 
   PaintImage first_paint_image = CreatePaintImage(100, 100);
   DrawImage first_draw_image(
-      first_paint_image,
+      first_paint_image, false,
       SkIRect::MakeWH(first_paint_image.width(), first_paint_image.height()),
       quality, CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
@@ -826,7 +862,7 @@ TEST(SoftwareImageDecodeCacheTest, GetTaskForImageDifferentImage) {
 
   PaintImage second_paint_image = CreatePaintImage(100, 100);
   DrawImage second_draw_image(
-      second_paint_image,
+      second_paint_image, false,
       SkIRect::MakeWH(second_paint_image.width(), second_paint_image.height()),
       quality, CreateMatrix(SkSize::Make(0.25f, 0.25f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
@@ -864,8 +900,9 @@ TEST(SoftwareImageDecodeCacheTest, MAYBE_GetTaskForImageDifferentColorSpace) {
 
   PaintImage paint_image = CreatePaintImage(100, 100, color_space_a);
   DrawImage first_draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(1.0f, 1.0f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(1.0f, 1.0f), is_decomposable),
       PaintImage::kDefaultFrameIndex, color_space_b);
   ImageDecodeCache::TaskResult first_result = cache.GetTaskForImageAndRef(
       first_draw_image, ImageDecodeCache::TracingInfo());
@@ -873,8 +910,9 @@ TEST(SoftwareImageDecodeCacheTest, MAYBE_GetTaskForImageDifferentColorSpace) {
   EXPECT_TRUE(first_result.task);
 
   DrawImage second_draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(1.0f, 1.0f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(1.0f, 1.0f), is_decomposable),
       PaintImage::kDefaultFrameIndex, color_space_c);
   ImageDecodeCache::TaskResult second_result = cache.GetTaskForImageAndRef(
       second_draw_image, ImageDecodeCache::TracingInfo());
@@ -883,8 +921,9 @@ TEST(SoftwareImageDecodeCacheTest, MAYBE_GetTaskForImageDifferentColorSpace) {
   EXPECT_TRUE(first_result.task.get() != second_result.task.get());
 
   DrawImage third_draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(1.0f, 1.0f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(1.0f, 1.0f), is_decomposable),
       PaintImage::kDefaultFrameIndex, color_space_b);
   ImageDecodeCache::TaskResult third_result = cache.GetTaskForImageAndRef(
       third_draw_image, ImageDecodeCache::TracingInfo());
@@ -907,8 +946,9 @@ TEST(SoftwareImageDecodeCacheTest, GetTaskForImageAlreadyDecoded) {
 
   PaintImage paint_image = CreatePaintImage(100, 100);
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
   ImageDecodeCache::TaskResult result =
       cache.GetTaskForImageAndRef(draw_image, ImageDecodeCache::TracingInfo());
@@ -936,8 +976,9 @@ TEST(SoftwareImageDecodeCacheTest, GetTaskForImageAlreadyPrerolled) {
 
   PaintImage paint_image = CreatePaintImage(100, 100);
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(1.f, 1.f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(1.f, 1.f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
   ImageDecodeCache::TaskResult result =
       cache.GetTaskForImageAndRef(draw_image, ImageDecodeCache::TracingInfo());
@@ -971,8 +1012,9 @@ TEST(SoftwareImageDecodeCacheTest, GetTaskForImageCanceledGetsNewTask) {
 
   PaintImage paint_image = CreatePaintImage(100, 100);
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
   ImageDecodeCache::TaskResult result =
       cache.GetTaskForImageAndRef(draw_image, ImageDecodeCache::TracingInfo());
@@ -1012,8 +1054,9 @@ TEST(SoftwareImageDecodeCacheTest,
 
   PaintImage paint_image = CreatePaintImage(100, 100);
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
   ImageDecodeCache::TaskResult result =
       cache.GetTaskForImageAndRef(draw_image, ImageDecodeCache::TracingInfo());
@@ -1052,8 +1095,9 @@ TEST(SoftwareImageDecodeCacheTest, GetDecodedImageForDraw) {
 
   PaintImage paint_image = CreatePaintImage(100, 100);
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
   ImageDecodeCache::TaskResult result =
       cache.GetTaskForImageAndRef(draw_image, ImageDecodeCache::TracingInfo());
@@ -1084,7 +1128,7 @@ TEST(SoftwareImageDecodeCacheTest,
 
   PaintImage paint_image = CreatePaintImage(100, 100);
   DrawImage draw_image(
-      paint_image,
+      paint_image, false,
       SkIRect::MakeXYWH(20, 30, paint_image.width(), paint_image.height()),
       quality, CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
@@ -1116,8 +1160,9 @@ TEST(SoftwareImageDecodeCacheTest, GetDecodedImageForDrawAtRasterDecode) {
 
   PaintImage paint_image = CreatePaintImage(100, 100);
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   DecodedDrawImage decoded_draw_image =
@@ -1141,8 +1186,9 @@ TEST(SoftwareImageDecodeCacheTest,
 
   PaintImage paint_image = CreatePaintImage(100, 100);
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   DecodedDrawImage decoded_draw_image =
@@ -1171,8 +1217,9 @@ TEST(SoftwareImageDecodeCacheTest, ZeroSizedImagesAreSkipped) {
 
   PaintImage paint_image = CreatePaintImage(100, 100);
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.f, 0.f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.f, 0.f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   ImageDecodeCache::TaskResult result =
@@ -1194,7 +1241,7 @@ TEST(SoftwareImageDecodeCacheTest, NonOverlappingSrcRectImagesAreSkipped) {
 
   PaintImage paint_image = CreatePaintImage(100, 100);
   DrawImage draw_image(
-      paint_image,
+      paint_image, false,
       SkIRect::MakeXYWH(150, 150, paint_image.width(), paint_image.height()),
       quality, CreateMatrix(SkSize::Make(1.f, 1.f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
@@ -1218,8 +1265,9 @@ TEST(SoftwareImageDecodeCacheTest, LowQualityFilterIsHandled) {
 
   PaintImage paint_image = CreatePaintImage(100, 100);
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(1.f, 1.f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(1.f, 1.f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   ImageDecodeCache::TaskResult result =
@@ -1246,7 +1294,8 @@ TEST(SoftwareImageDecodeCacheTest, LowQualityScaledSubrectIsHandled) {
   SkFilterQuality quality = kLow_SkFilterQuality;
 
   PaintImage paint_image = CreatePaintImage(100, 100);
-  DrawImage draw_image(paint_image, SkIRect::MakeXYWH(10, 10, 80, 80), quality,
+  DrawImage draw_image(paint_image, false, SkIRect::MakeXYWH(10, 10, 80, 80),
+                       quality,
                        CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
                        PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
@@ -1279,7 +1328,8 @@ TEST(SoftwareImageDecodeCacheTest, NoneQualityScaledSubrectIsHandled) {
   SkFilterQuality quality = kNone_SkFilterQuality;
 
   PaintImage paint_image = CreatePaintImage(100, 100);
-  DrawImage draw_image(paint_image, SkIRect::MakeXYWH(10, 10, 80, 80), quality,
+  DrawImage draw_image(paint_image, false, SkIRect::MakeXYWH(10, 10, 80, 80),
+                       quality,
                        CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
                        PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
@@ -1310,8 +1360,9 @@ TEST(SoftwareImageDecodeCacheTest, MediumQualityAt01_5ScaleIsHandled) {
 
   PaintImage paint_image = CreatePaintImage(500, 200);
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(1.5f, 1.5f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(1.5f, 1.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   ImageDecodeCache::TaskResult result =
@@ -1341,8 +1392,9 @@ TEST(SoftwareImageDecodeCacheTest, MediumQualityAt1_0ScaleIsHandled) {
 
   PaintImage paint_image = CreatePaintImage(500, 200);
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(1.f, 1.f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(1.f, 1.f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   ImageDecodeCache::TaskResult result =
@@ -1372,8 +1424,9 @@ TEST(SoftwareImageDecodeCacheTest, MediumQualityAt0_75ScaleIsHandled) {
 
   PaintImage paint_image = CreatePaintImage(500, 200);
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.75f, 0.75f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.75f, 0.75f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   ImageDecodeCache::TaskResult result =
@@ -1403,8 +1456,9 @@ TEST(SoftwareImageDecodeCacheTest, MediumQualityAt0_5ScaleIsHandled) {
 
   PaintImage paint_image = CreatePaintImage(500, 200);
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   ImageDecodeCache::TaskResult result =
@@ -1434,8 +1488,9 @@ TEST(SoftwareImageDecodeCacheTest, MediumQualityAt0_49ScaleIsHandled) {
 
   PaintImage paint_image = CreatePaintImage(500, 200);
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.49f, 0.49f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.49f, 0.49f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   ImageDecodeCache::TaskResult result =
@@ -1465,8 +1520,9 @@ TEST(SoftwareImageDecodeCacheTest, MediumQualityAt0_1ScaleIsHandled) {
 
   PaintImage paint_image = CreatePaintImage(500, 200);
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.1f, 0.1f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.1f, 0.1f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   ImageDecodeCache::TaskResult result =
@@ -1496,8 +1552,9 @@ TEST(SoftwareImageDecodeCacheTest, MediumQualityAt0_01ScaleIsHandled) {
 
   PaintImage paint_image = CreatePaintImage(500, 200);
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.01f, 0.01f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.01f, 0.01f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   ImageDecodeCache::TaskResult result =
@@ -1527,8 +1584,9 @@ TEST(SoftwareImageDecodeCacheTest, MediumQualityAt0_001ScaleIsHandled) {
 
   PaintImage paint_image = CreatePaintImage(500, 200);
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.001f, 0.001f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.001f, 0.001f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   ImageDecodeCache::TaskResult result =
@@ -1551,12 +1609,14 @@ TEST(SoftwareImageDecodeCacheTest,
 
   PaintImage paint_image = CreatePaintImage(500, 200);
   DrawImage draw_image_50(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
   DrawImage draw_image_49(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.49f, 0.49f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.49f, 0.49f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   ImageDecodeCache::TaskResult result_50 = cache.GetTaskForImageAndRef(
@@ -1602,8 +1662,9 @@ TEST(SoftwareImageDecodeCacheTest, ClearCache) {
   for (int i = 0; i < 10; ++i) {
     PaintImage paint_image = CreatePaintImage(100, 100);
     DrawImage draw_image(
-        paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-        quality, CreateMatrix(SkSize::Make(1.0f, 1.0f), is_decomposable),
+        paint_image, false,
+        SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+        CreateMatrix(SkSize::Make(1.0f, 1.0f), is_decomposable),
         PaintImage::kDefaultFrameIndex, DefaultColorSpace());
     ImageDecodeCache::TaskResult result = cache.GetTaskForImageAndRef(
         draw_image, ImageDecodeCache::TracingInfo());
@@ -1639,8 +1700,8 @@ TEST(SoftwareImageDecodeCacheTest, CacheDecodesExpectedFrames) {
 
   bool is_decomposable = true;
   SkFilterQuality quality = kHigh_SkFilterQuality;
-  DrawImage draw_image(image, SkIRect::MakeWH(image.width(), image.height()),
-                       quality,
+  DrawImage draw_image(image, false,
+                       SkIRect::MakeWH(image.width(), image.height()), quality,
                        CreateMatrix(SkSize::Make(1.0f, 1.0f), is_decomposable),
                        1u, DefaultColorSpace());
   auto decoded_image = cache.GetDecodedImageForDraw(draw_image);
@@ -1662,7 +1723,7 @@ TEST(SoftwareImageDecodeCacheTest, CacheDecodesExpectedFrames) {
 
   // Subset.
   DrawImage subset_draw_image(
-      image, SkIRect::MakeWH(5, 5), quality,
+      image, false, SkIRect::MakeWH(5, 5), quality,
       CreateMatrix(SkSize::Make(1.0f, 1.0f), is_decomposable), 3u,
       DefaultColorSpace());
   decoded_image = cache.GetDecodedImageForDraw(subset_draw_image);
@@ -1682,7 +1743,8 @@ TEST(SoftwareImageDecodeCacheTest, SizeSubrectingIsHandled) {
   auto paint_image =
       CreateDiscardablePaintImage(gfx::Size(min_dimension, min_dimension),
                                   DefaultColorSpace().ToSkColorSpace(), false);
-  DrawImage draw_image(paint_image, SkIRect::MakeXYWH(0, 0, 10, 10), quality,
+  DrawImage draw_image(paint_image, false, SkIRect::MakeXYWH(0, 0, 10, 10),
+                       quality,
                        CreateMatrix(SkSize::Make(1.f, 1.f), is_decomposable),
                        PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
@@ -1715,7 +1777,7 @@ TEST(SoftwareImageDecodeCacheTest, EmptyTargetSizeDecode) {
   // Populate the cache with an original sized decode.
   auto paint_image = CreateDiscardablePaintImage(
       gfx::Size(100, 100), DefaultColorSpace().ToSkColorSpace());
-  DrawImage draw_image(paint_image, SkIRect::MakeWH(100, 100), quality,
+  DrawImage draw_image(paint_image, false, SkIRect::MakeWH(100, 100), quality,
                        CreateMatrix(SkSize::Make(1.f, 1.f), is_decomposable),
                        PaintImage::kDefaultFrameIndex, DefaultColorSpace());
   DecodedDrawImage decoded_draw_image =
@@ -1725,7 +1787,7 @@ TEST(SoftwareImageDecodeCacheTest, EmptyTargetSizeDecode) {
 
   // Ask for another decode, this time with an empty subrect.
   DrawImage empty_draw_image(
-      paint_image, SkIRect::MakeEmpty(), quality,
+      paint_image, false, SkIRect::MakeEmpty(), quality,
       CreateMatrix(SkSize::Make(1.f, 1.f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
   DecodedDrawImage empty_decoded_draw_image =
@@ -1742,8 +1804,9 @@ TEST(SoftwareImageDecodeCacheTest, BitmapImageColorConverted) {
 
   PaintImage paint_image = CreateBitmapImage(gfx::Size(100, 100));
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(1.f, 1.f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(1.f, 1.f), is_decomposable),
       PaintImage::kDefaultFrameIndex, target_color_space);
 
   DecodedDrawImage decoded_draw_image =
@@ -1766,8 +1829,9 @@ TEST(SoftwareImageDecodeCacheTest, BitmapImageNotColorConverted) {
 
   PaintImage paint_image = CreateBitmapImage(gfx::Size(100, 100));
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(1.f, 1.f), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(1.f, 1.f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   // The cache should not support this image.
@@ -1791,7 +1855,7 @@ TEST(SoftwareImageDecodeCacheTest, DISABLED_ContentIdCaching) {
     for (int j = 0; j < 2; ++j) {
       float scale = j == 0 ? 1.f : 0.5f;
       DrawImage draw_image(
-          paint_image,
+          paint_image, false,
           SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
           CreateMatrix(SkSize::Make(scale, scale), is_decomposable),
           PaintImage::kDefaultFrameIndex, DefaultColorSpace());
@@ -1831,8 +1895,9 @@ TEST(SoftwareImageDecodeCacheTest, DecodeToScale) {
   // Scale to mip level 1, there should be a single entry in the cache from
   // the direct decode.
   DrawImage draw_image1(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.5, 0.5), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.5, 0.5), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
   DecodedDrawImage decoded_image1 = cache.GetDecodedImageForDraw(draw_image1);
   ASSERT_TRUE(decoded_image1.image());
@@ -1848,8 +1913,9 @@ TEST(SoftwareImageDecodeCacheTest, DecodeToScale) {
   // Scale to mip level 2, we should be using the existing entry instead of
   // re-decoding.
   DrawImage draw_image2(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.25, 0.25), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.25, 0.25), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
   DecodedDrawImage decoded_image2 = cache.GetDecodedImageForDraw(draw_image2);
   ASSERT_TRUE(decoded_image2.image());
@@ -1888,7 +1954,7 @@ TEST(SoftwareImageDecodeCacheTest, DecodeToScaleSubrect) {
 
   // Scale to mip level 1, there should be 2 entries in the cache, since the
   // subrect vetoes decode to scale.
-  DrawImage draw_image(paint_image, SkIRect::MakeWH(50, 50), quality,
+  DrawImage draw_image(paint_image, false, SkIRect::MakeWH(50, 50), quality,
                        CreateMatrix(SkSize::Make(0.5, 0.5), is_decomposable),
                        PaintImage::kDefaultFrameIndex, DefaultColorSpace());
   DecodedDrawImage decoded_image = cache.GetDecodedImageForDraw(draw_image);
@@ -1924,8 +1990,9 @@ TEST(SoftwareImageDecodeCacheTest, DecodeToScaleNoneQuality) {
                                .TakePaintImage();
 
   DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      quality, CreateMatrix(SkSize::Make(0.5, 0.5), is_decomposable),
+      paint_image, false,
+      SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+      CreateMatrix(SkSize::Make(0.5, 0.5), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
   DecodedDrawImage decoded_image = cache.GetDecodedImageForDraw(draw_image);
   ASSERT_TRUE(decoded_image.image());
@@ -1956,10 +2023,10 @@ TEST(SoftwareImageDecodeCacheTest, HdrDecodeToHdr) {
                                     PaintImage::GetNextContentId())
                          .TakePaintImage();
 
-  DrawImage draw_image(image, SkIRect::MakeWH(image.width(), image.height()),
-                       kMedium_SkFilterQuality,
-                       CreateMatrix(SkSize::Make(0.5, 0.5), true),
-                       PaintImage::kDefaultFrameIndex, color_space);
+  DrawImage draw_image(
+      image, false, SkIRect::MakeWH(image.width(), image.height()),
+      kMedium_SkFilterQuality, CreateMatrix(SkSize::Make(0.5, 0.5), true),
+      PaintImage::kDefaultFrameIndex, color_space);
 
   DecodedDrawImage decoded_image = cache.GetDecodedImageForDraw(draw_image);
   EXPECT_EQ(decoded_image.image()->colorType(), kRGBA_F16_SkColorType);
@@ -1986,10 +2053,10 @@ TEST(SoftwareImageDecodeCacheTest, HdrDecodeToSdr) {
   // Note: We use P3 here since software cache shouldn't be used when conversion
   // to SRGB is needed.
   auto raster_color_space = gfx::ColorSpace::CreateDisplayP3D65();
-  DrawImage draw_image(image, SkIRect::MakeWH(image.width(), image.height()),
-                       kMedium_SkFilterQuality,
-                       CreateMatrix(SkSize::Make(0.5, 0.5), true),
-                       PaintImage::kDefaultFrameIndex, raster_color_space);
+  DrawImage draw_image(
+      image, false, SkIRect::MakeWH(image.width(), image.height()),
+      kMedium_SkFilterQuality, CreateMatrix(SkSize::Make(0.5, 0.5), true),
+      PaintImage::kDefaultFrameIndex, raster_color_space);
 
   DecodedDrawImage decoded_image = cache.GetDecodedImageForDraw(draw_image);
   EXPECT_NE(decoded_image.image()->colorType(), kRGBA_F16_SkColorType);

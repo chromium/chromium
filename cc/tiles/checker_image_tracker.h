@@ -137,6 +137,7 @@ class CC_EXPORT CheckerImageTracker {
   // queuing the image decode.
   struct DecodeState {
     DecodePolicy policy = DecodePolicy::SYNC;
+    bool use_dark_mode = false;
     SkFilterQuality filter_quality = kNone_SkFilterQuality;
     SkSize scale = SkSize::MakeEmpty();
     gfx::ColorSpace color_space;

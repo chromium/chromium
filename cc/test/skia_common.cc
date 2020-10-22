@@ -176,7 +176,7 @@ DrawImage CreateDiscardableDrawImage(const gfx::Size& size,
   SkIRect irect;
   rect.roundOut(&irect);
 
-  return DrawImage(CreateDiscardablePaintImage(size, color_space), irect,
+  return DrawImage(CreateDiscardablePaintImage(size, color_space), false, irect,
                    filter_quality, matrix);
 }
 

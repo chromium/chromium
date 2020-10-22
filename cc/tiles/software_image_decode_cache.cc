@@ -415,7 +415,7 @@ SoftwareImageDecodeCache::DecodeImageIfNecessary(const CacheKey& key,
               ? SkIRect::MakeWH(paint_image.width(), paint_image.height())
               : gfx::RectToSkIRect(key.src_rect());
       DrawImage candidate_draw_image(
-          paint_image, src_rect, kNone_SkFilterQuality, SkMatrix::I(),
+          paint_image, false, src_rect, kNone_SkFilterQuality, SkMatrix::I(),
           key.frame_key().frame_index(), key.target_color_space());
       candidate_key.emplace(CacheKey::FromDrawImage(
           candidate_draw_image,

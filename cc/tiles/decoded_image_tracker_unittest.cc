@@ -110,10 +110,10 @@ TEST_F(DecodedImageTrackerTest, Colorspace) {
   // filter quality here, since it shouldn't matter and the checks should
   // succeed anyway.
   DrawImage locked_draw_image(
-      paint_image, SkIRect::MakeWH(1, 1), kHigh_SkFilterQuality, SkMatrix::I(),
-      PaintImage::kDefaultFrameIndex, decoded_color_space);
+      paint_image, false, SkIRect::MakeWH(1, 1), kHigh_SkFilterQuality,
+      SkMatrix::I(), PaintImage::kDefaultFrameIndex, decoded_color_space);
   EXPECT_TRUE(image_controller()->IsDrawImageLocked(locked_draw_image));
-  DrawImage srgb_draw_image(paint_image, SkIRect::MakeWH(1, 1),
+  DrawImage srgb_draw_image(paint_image, false, SkIRect::MakeWH(1, 1),
                             kHigh_SkFilterQuality, SkMatrix::I(),
                             PaintImage::kDefaultFrameIndex, srgb_color_space);
   EXPECT_FALSE(image_controller()->IsDrawImageLocked(srgb_draw_image));
@@ -171,10 +171,10 @@ TEST_F(DecodedImageTrackerTest, ImageUsedInDraw) {
   EXPECT_EQ(2u, image_controller()->num_locked_images());
 
   // Create dummy draw images for each:
-  DrawImage draw_image_1(paint_image_1, SkIRect::MakeWH(1, 1),
+  DrawImage draw_image_1(paint_image_1, false, SkIRect::MakeWH(1, 1),
                          kHigh_SkFilterQuality, SkMatrix::I(), 0,
                          gfx::ColorSpace());
-  DrawImage draw_image_2(paint_image_2, SkIRect::MakeWH(1, 1),
+  DrawImage draw_image_2(paint_image_2, false, SkIRect::MakeWH(1, 1),
                          kHigh_SkFilterQuality, SkMatrix::I(), 0,
                          gfx::ColorSpace());
 

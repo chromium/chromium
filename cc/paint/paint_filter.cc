@@ -690,7 +690,8 @@ size_t ImagePaintFilter::SerializedSize() const {
 
 sk_sp<PaintFilter> ImagePaintFilter::SnapshotWithImagesInternal(
     ImageProvider* image_provider) const {
-  DrawImage draw_image(image_, SkIRect::MakeWH(image_.width(), image_.height()),
+  DrawImage draw_image(image_, false,
+                       SkIRect::MakeWH(image_.width(), image_.height()),
                        filter_quality_, SkMatrix::I());
   auto scoped_result = image_provider->GetRasterContent(draw_image);
   if (!scoped_result)

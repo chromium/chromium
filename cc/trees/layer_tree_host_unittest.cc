@@ -7978,7 +7978,7 @@ class LayerTreeHostTestQueueImageDecode : public LayerTreeHostTest {
       return;
     first_ = false;
 
-    image_ = DrawImage(CreateDiscardablePaintImage(gfx::Size(400, 400)),
+    image_ = DrawImage(CreateDiscardablePaintImage(gfx::Size(400, 400)), false,
                        SkIRect::MakeWH(400, 400), kNone_SkFilterQuality,
                        SkMatrix::I(), PaintImage::kDefaultFrameIndex,
                        gfx::ColorSpace());

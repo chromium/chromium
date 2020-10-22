@@ -45,7 +45,7 @@ class BaseTest : public testing::Test {
       float scale,
       const SkIRect src_rect = SkIRect::MakeEmpty()) {
     return DrawImage(
-        paint_image(),
+        paint_image(), false,
         src_rect.isEmpty()
             ? SkIRect::MakeWH(paint_image().width(), paint_image().height())
             : src_rect,

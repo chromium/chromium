@@ -62,7 +62,7 @@ class SoftwareImageDecodeCachePerfTest : public testing::Test {
                   .set_image(CreateImage(rect.width(), rect.height()),
                              PaintImage::GetNextContentId())
                   .TakePaintImage(),
-              subrect, quality,
+              false, subrect, quality,
               CreateMatrix(SkSize::Make(scale.first, scale.second)), 0u,
               gfx::ColorSpace());
         }

@@ -27,6 +27,7 @@ class CC_PAINT_EXPORT DrawImage {
   DrawImage();
   explicit DrawImage(PaintImage image);
   DrawImage(PaintImage image,
+            bool use_dark_mode,
             const SkIRect& src_rect,
             SkFilterQuality filter_quality,
             const SkMatrix& matrix,
@@ -50,6 +51,7 @@ class CC_PAINT_EXPORT DrawImage {
   bool operator==(const DrawImage& other) const;
 
   const PaintImage& paint_image() const { return paint_image_; }
+  bool use_dark_mode() const { return use_dark_mode_; }
   const SkSize& scale() const { return scale_; }
   const SkIRect& src_rect() const { return src_rect_; }
   SkFilterQuality filter_quality() const { return filter_quality_; }
@@ -69,6 +71,7 @@ class CC_PAINT_EXPORT DrawImage {
 
  private:
   PaintImage paint_image_;
+  bool use_dark_mode_;
   SkIRect src_rect_;
   SkFilterQuality filter_quality_;
   SkSize scale_;
