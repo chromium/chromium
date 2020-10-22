@@ -4995,7 +4995,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FCMInvalidations.ResetClientIDStatus" enum="InstanceIDResult"
-    expires_after="M88">
+    expires_after="2020-10-19">
+  <obsolete>
+    Removed 2020-10.
+  </obsolete>
   <owner>tschumann@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
