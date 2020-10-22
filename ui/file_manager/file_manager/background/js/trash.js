@@ -31,11 +31,16 @@ class TrashConfig {
    *     make comparisons simpler.
    * @param {string} trashDir Trash directory. Must end with a slash to make
    *     comparisons simpler.
+   * @param {boolean=} prefixPathWithRemoteMount Optional, if true, 'Path=' in
+   *     *.trashinfo is prefixed with the volume.remoteMountPath. For crostini,
+   *     this is the user's homedir (/home/<username>).
    */
-  constructor(rootType, topDir, trashDir) {
+  constructor(rootType, topDir, trashDir, prefixPathWithRemoteMount = false) {
     this.rootType = rootType;
     this.topDir = topDir;
     this.trashDir = trashDir;
+    this.prefixPathWithRemoteMount = prefixPathWithRemoteMount;
+    this.pathPrefix = '';
   }
 }
 
@@ -44,14 +49,17 @@ class TrashConfig {
  */
 class TrashItem {
   /**
-   * @param {string} name
-   * @param {!Entry} filesEntry
-   * @param {!FileEntry} infoEntry
+   * @param {string} name Name of the file deleted.
+   * @param {!Entry} filesEntry Trash files entry.
+   * @param {!FileEntry} infoEntry Trash info entry.
+   * @param {string=} pathPrefix Optional prefix for 'Path=' in *.trashinfo. For
+   *     crostini, this is the user's homedir (/home/<username>).
    */
-  constructor(name, filesEntry, infoEntry) {
+  constructor(name, filesEntry, infoEntry, pathPrefix = '') {
     this.name = name;
     this.filesEntry = filesEntry;
     this.infoEntry = infoEntry;
+    this.pathPrefix = pathPrefix;
   }
 }
 
@@ -87,6 +95,9 @@ class Trash {
     for (const config of Trash.CONFIG) {
       const entryInVolume = fullPathSlash.startsWith(config.topDir);
       if (config.rootType === info.rootType && entryInVolume) {
+        if (config.prefixPathWithRemoteMount) {
+          config.pathPrefix = info.volumeInfo.remoteMountPath;
+        }
         const entryInTrash = fullPathSlash.startsWith(config.trashDir);
         return entryInTrash ? null : config;
       }
@@ -239,10 +250,10 @@ class Trash {
     // If any step fails, the file will be unchanged, and any partial trashinfo
     // file created will be cleaned up when we remove old items.
     // TODO(crbug.com/953310): Remove old items.
-    const infoEntry =
-        await this.writeTrashInfoFile_(trashDirs.info, name, entry.fullPath);
+    const infoEntry = await this.writeTrashInfoFile_(
+        trashDirs.info, name, config.pathPrefix + entry.fullPath);
     const filesEntry = await this.moveTo_(entry, trashDirs.files, name);
-    return new TrashItem(entry.name, filesEntry, infoEntry);
+    return new TrashItem(entry.name, filesEntry, infoEntry, config.pathPrefix);
   }
 
   /**
@@ -257,13 +268,19 @@ class Trash {
     const file = await new Promise(
         (resolve, reject) => trashItem.infoEntry.file(resolve, reject));
     const text = await file.text();
-    const found = text.match(/^Path=\/(.*)/m);
+    const found = text.match(/^Path=(.*)/m);
     if (!found) {
       throw new DOMException(`No Path found to restore in ${
           trashItem.infoEntry.fullPath}, text=${text}`);
     }
     const path = found[1];
-    const parts = path.split('/');
+    if (!path.startsWith(trashItem.pathPrefix)) {
+      throw new DOMException(`Path does not match expected prefix in ${
+          trashItem.infoEntry.fullPath}, prefix=${trashItem.pathPrefix}, text=${
+          text}`);
+    }
+    const pathNoLeadingSlash = path.substring(trashItem.pathPrefix.length + 1);
+    const parts = pathNoLeadingSlash.split('/');
 
     // Move to last directory in path, making sure dirs are created if needed.
     let dir = trashItem.filesEntry.filesystem.root;
@@ -297,4 +314,7 @@ Trash.CONFIG = [
       VolumeManagerCommon.RootType.DOWNLOADS, '/Downloads/',
       '/Downloads/.Trash/'),
   new TrashConfig(VolumeManagerCommon.RootType.DOWNLOADS, '/', '/.Trash/'),
+  new TrashConfig(
+      VolumeManagerCommon.RootType.CROSTINI, '/', '/.local/share/Trash/',
+      /*prefixPathWithRemoteMount=*/ true),
 ];
