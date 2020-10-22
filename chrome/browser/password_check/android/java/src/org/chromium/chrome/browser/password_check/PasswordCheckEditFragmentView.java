@@ -40,7 +40,7 @@ public class PasswordCheckEditFragmentView extends PreferenceFragmentCompat {
     public static final String EXTRA_COMPROMISED_CREDENTIAL = "extra_compromised_credential";
     @VisibleForTesting
     static final String EXTRA_NEW_PASSWORD = "extra_new_password";
-    static final String EXTRA_PASSWORD_MASKED = "extra_password_masked";
+    static final String EXTRA_PASSWORD_VISIBLE = "extra_password_visible";
 
     private Supplier<PasswordCheck> mPasswordCheckFactory;
     private String mNewPassword;
@@ -78,7 +78,7 @@ public class PasswordCheckEditFragmentView extends PreferenceFragmentCompat {
         super.onViewCreated(view, savedInstanceState);
         mCredential = getCredentialFromInstanceStateOrLaunchBundle(savedInstanceState);
         mNewPassword = getNewPasswordFromInstanceStateOrLaunchBundle(savedInstanceState);
-        mPasswordVisible = getViewButtonPressedFromInstanceState(savedInstanceState);
+        mPasswordVisible = getPasswordVisibleFromInstanceState(savedInstanceState);
 
         TextView hintText = view.findViewById(R.id.edit_hint);
         hintText.setText(getString(R.string.password_edit_hint, mCredential.getDisplayOrigin()));
@@ -113,9 +113,9 @@ public class PasswordCheckEditFragmentView extends PreferenceFragmentCompat {
         mMaskPasswordButton = view.findViewById(R.id.password_entry_editor_mask_password);
         mMaskPasswordButton.setOnClickListener(unusedView -> this.maskPassword());
         if (mPasswordVisible) {
-            maskPassword();
-        } else {
             unmaskPassword();
+        } else {
+            maskPassword();
         }
     }
 
@@ -144,7 +144,7 @@ public class PasswordCheckEditFragmentView extends PreferenceFragmentCompat {
         super.onSaveInstanceState(outState);
         outState.putParcelable(EXTRA_COMPROMISED_CREDENTIAL, mCredential);
         outState.putString(EXTRA_NEW_PASSWORD, mNewPassword);
-        outState.putBoolean(EXTRA_PASSWORD_MASKED, mPasswordVisible);
+        outState.putBoolean(EXTRA_PASSWORD_VISIBLE, mPasswordVisible);
     }
 
     @Override
@@ -199,9 +199,10 @@ public class PasswordCheckEditFragmentView extends PreferenceFragmentCompat {
                                               : "");
     }
 
-    private boolean getViewButtonPressedFromInstanceState(Bundle savedInstanceState) {
-        return (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_PASSWORD_MASKED))
-                && savedInstanceState.getBoolean(EXTRA_PASSWORD_MASKED);
+    private boolean getPasswordVisibleFromInstanceState(Bundle savedInstanceState) {
+        return (savedInstanceState != null
+                       && savedInstanceState.containsKey(EXTRA_PASSWORD_VISIBLE))
+                && savedInstanceState.getBoolean(EXTRA_PASSWORD_VISIBLE);
     }
 
     private void maskPassword() {
