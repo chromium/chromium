@@ -6,8 +6,13 @@
  * Javascript for DescriptorPanel UI, served from
  *     chrome://usb-internals/.
  */
+import './mojo.js';
 
-cr.define('descriptor_panel', function() {
+import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
+import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {Tree, TreeItem} from 'chrome://resources/js/cr/ui/tree.m.js';
+import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+
   const INPUT_TYPE_DECIMAL_WITH_DROPDOWN = 0;
   const INPUT_TYPE_HEX_BYTE = 1;
 
@@ -109,7 +114,7 @@ cr.define('descriptor_panel', function() {
     0x9E, 0x64, 0x8A, 0x9F
   ];
 
-  class DescriptorPanel {
+  export class DescriptorPanel {
     /**
      * @param {!device.mojom.UsbDeviceInterface} usbDeviceProxy
      * @param {!HTMLElement} rootElement
@@ -125,10 +130,10 @@ cr.define('descriptor_panel', function() {
     /**
      * Adds the reference of the string descriptor panel of the device for
      * string descriptor functionality.
-     * @param {!descriptor_panel.DescriptorPanel} stringDescriptorPanel
+     * @param {!DescriptorPanel} stringDescriptorPanel
      */
     setStringDescriptorPanel(stringDescriptorPanel) {
-      /** @type {!descriptor_panel.DescriptorPanel} */
+      /** @type {!DescriptorPanel} */
       this.stringDescriptorPanel_ = stringDescriptorPanel;
     }
 
@@ -149,7 +154,7 @@ cr.define('descriptor_panel', function() {
      * the string descriptor panel.
      * @param {!Uint8Array} rawData
      * @param {number} offset The offset of the string descriptor index field.
-     * @param {!cr.ui.TreeItem} item
+     * @param {!TreeItem} item
      * @param {string} fieldLabel
      * @private
      */
@@ -194,7 +199,7 @@ cr.define('descriptor_panel', function() {
      * Adds a button for getting URL descriptor.
      * @param {!Uint8Array} rawData
      * @param {number} offset The offset of the URL descriptor index.
-     * @param {!cr.ui.TreeItem} item
+     * @param {!TreeItem} item
      * @param {string} fieldLabel Not used in this function, but used to match
      *     other extraTreeItemFormatter.
      * @private
@@ -225,7 +230,7 @@ cr.define('descriptor_panel', function() {
      * @param {!Uint8Array} rawData
      * @param {number} offset The start offset of the Microsoft OS 2.0
      *     descriptor set information.
-     * @param {!cr.ui.TreeItem} item
+     * @param {!TreeItem} item
      * @param {string} fieldLabel Not used in this function, but used to match
      *     other extraTreeItemFormatter.
      * @private
@@ -269,7 +274,7 @@ cr.define('descriptor_panel', function() {
      * @param {!Uint8Array} rawData
      * @param {number} offset The start offset of the Microsoft OS 2.0
      *     descriptor set information.
-     * @param {!cr.ui.TreeItem} item
+     * @param {!TreeItem} item
      * @param {string} fieldLabel Not used in this function, but used to match
      *     other extraTreeItemFormatter.
      * @private
@@ -303,7 +308,7 @@ cr.define('descriptor_panel', function() {
      * @param {!Uint8Array} rawData
      * @param {number} offset The start offset of the registry Property
      *     descriptor.
-     * @param {!cr.ui.TreeItem} item
+     * @param {!TreeItem} item
      * @param {string} fieldLabel Not used in this function, but used to match
      *     other extraTreeItemFormatter.
      * @param {number} featureRegistryPropertyDataType
@@ -344,13 +349,13 @@ cr.define('descriptor_panel', function() {
      * and raw form view.
      * @param {!Uint8Array} data
      * @param {number=} languageCode
-     * @param {cr.ui.TreeItem=} treeItem
+     * @param {TreeItem=} treeItem
      * @private
      */
     async renderStandardDescriptor_(
         data, languageCode = 0, treeItem = undefined) {
       const displayElement = addNewDescriptorDisplayElement(this.rootElement_);
-      /** @type {!cr.ui.Tree} */
+      /** @type {!Tree} */
       const rawDataTreeRoot = displayElement.rawDataTreeRoot;
       /** @type {!HTMLElement} */
       const rawDataByteElement = displayElement.rawDataByteElement;
@@ -486,7 +491,7 @@ cr.define('descriptor_panel', function() {
     /**
      * Renders a view to display device descriptor hex data in both tree view
      * and raw form.
-     * @param {!cr.ui.Tree} rawDataTreeRoot
+     * @param {!Tree} rawDataTreeRoot
      * @param {!HTMLElement} rawDataByteElement
      * @param {!Uint8Array} rawData
      * @param {number} offset The start offset of the device descriptor.
@@ -623,7 +628,7 @@ cr.define('descriptor_panel', function() {
     /**
      * Renders a view to display configuration descriptor hex data in both tree
      * view and raw form.
-     * @param {!cr.ui.Tree} rawDataTreeRoot
+     * @param {!Tree} rawDataTreeRoot
      * @param {!HTMLElement} rawDataByteElement
      * @param {!Uint8Array} rawData
      * @param {number} offset The start offset of the configuration descriptor.
@@ -683,13 +688,13 @@ cr.define('descriptor_panel', function() {
     /**
      * Renders a tree item to display interface descriptor at index
      * indexInterface.
-     * @param {!cr.ui.Tree} rawDataTreeRoot
+     * @param {!Tree} rawDataTreeRoot
      * @param {!HTMLElement} rawDataByteElement
      * @param {!Uint8Array} rawData
      * @param {number} offset The start offset of the interface
      *     descriptor.
      * @param {number} indexInterface
-     * @return {!cr.ui.TreeItem}
+     * @return {!TreeItem}
      * @private
      */
     renderInterfaceDescriptor_(
@@ -758,7 +763,7 @@ cr.define('descriptor_panel', function() {
     /**
      * Renders a tree item to display endpoint descriptor at index
      * indexEndpoint.
-     * @param {!cr.ui.Tree|!cr.ui.TreeItem} rawDataTreeRoot
+     * @param {!Tree|!TreeItem} rawDataTreeRoot
      * @param {!HTMLElement} rawDataByteElement
      * @param {!Uint8Array} rawData
      * @param {number} offset The start offset of the endpoint
@@ -814,7 +819,7 @@ cr.define('descriptor_panel', function() {
     /**
      * Renders a tree item to display length and type of unknown descriptor at
      * index indexUnknown.
-     * @param {!cr.ui.Tree} rawDataTreeRoot
+     * @param {!Tree} rawDataTreeRoot
      * @param {!HTMLElement} rawDataByteElement
      * @param {!Uint8Array} rawData
      * @param {number} originalOffset The start offset of the this descriptor.
@@ -922,7 +927,7 @@ cr.define('descriptor_panel', function() {
      * and language code, and display it.
      * @param {number} index
      * @param {number} languageCode
-     * @param {!cr.ui.TreeItem=} treeItem
+     * @param {!TreeItem=} treeItem
      * @private
      */
     async getStringDescriptorForLanguageCode_(
@@ -960,12 +965,12 @@ cr.define('descriptor_panel', function() {
     /**
      * Renders string descriptor of current device with given index and language
      * code.
-     * @param {!cr.ui.Tree} rawDataTreeRoot
+     * @param {!Tree} rawDataTreeRoot
      * @param {!HTMLElement} rawDataByteElement
      * @param {!Uint8Array} rawData
      * @param {number} offset The start offset of the string descriptor.
      * @param {number=} languageCode
-     * @param {cr.ui.TreeItem=} treeItem
+     * @param {TreeItem=} treeItem
      * @private
      */
     renderStringDescriptorForLanguageCode_(
@@ -1018,7 +1023,7 @@ cr.define('descriptor_panel', function() {
      * Gets string descriptor in all supported languages of current device with
      * given index.
      * @param {number} index
-     * @param {cr.ui.TreeItem=} treeItem
+     * @param {TreeItem=} treeItem
      * @private
      */
     async getStringDescriptorForAllLanguages_(index, treeItem = undefined) {
@@ -1127,7 +1132,7 @@ cr.define('descriptor_panel', function() {
     /**
      * Renders a view to display Binary device Object Store (BOS) descriptor hex
      * data in both tree view and raw form.
-     * @param {!cr.ui.Tree} rawDataTreeRoot
+     * @param {!Tree} rawDataTreeRoot
      * @param {!HTMLElement} rawDataByteElement
      * @param {!Uint8Array} rawData
      * @param {number} offset The start offset of the BOS descriptor.
@@ -1165,7 +1170,7 @@ cr.define('descriptor_panel', function() {
     /**
      * Renders a view to display device capability descriptor hex data in both
      * tree view and raw form.
-     * @param {!cr.ui.Tree} rawDataTreeRoot
+     * @param {!Tree} rawDataTreeRoot
      * @param {!HTMLElement} rawDataByteElement
      * @param {!Uint8Array} rawData
      * @param {number} offset The start offset of the BOS descriptor.
@@ -1199,7 +1204,7 @@ cr.define('descriptor_panel', function() {
     /**
      * Renders a tree item to display WebUSB platform capability descriptor at
      * index indexWebUsb.
-     * @param {!cr.ui.Tree} rawDataTreeRoot
+     * @param {!Tree} rawDataTreeRoot
      * @param {!HTMLElement} rawDataByteElement
      * @param {!Uint8Array} rawData
      * @param {number} offset The start offset of the WebUSB platform
@@ -1264,7 +1269,7 @@ cr.define('descriptor_panel', function() {
     /**
      * Renders a tree item to display Microsoft OS 2.0 platform capability
      * descriptor at index indexMsOs20.
-     * @param {!cr.ui.Tree} rawDataTreeRoot
+     * @param {!Tree} rawDataTreeRoot
      * @param {!HTMLElement} rawDataByteElement
      * @param {!Uint8Array} rawData
      * @param {number} offset The start offset of the Microsoft OS 2.0 platform
@@ -1327,7 +1332,7 @@ cr.define('descriptor_panel', function() {
     /**
      * Renders a tree item to display Microsoft OS 2.0 descriptor set
      * information at index indexMsOs20DescriptorSetInfo.
-     * @param {!cr.ui.Tree|!cr.ui.TreeItem} rawDataTreeRoot
+     * @param {!Tree|!TreeItem} rawDataTreeRoot
      * @param {!HTMLElement} rawDataByteElement
      * @param {!Uint8Array} rawData
      * @param {number} offset The start offset of the Microsoft OS 2.0
@@ -1386,7 +1391,7 @@ cr.define('descriptor_panel', function() {
     /**
      * Renders a tree item to display unknown device capability descriptor at
      * indexUnknownDevCapability
-     * @param {!cr.ui.Tree} rawDataTreeRoot
+     * @param {!Tree} rawDataTreeRoot
      * @param {!HTMLElement} rawDataByteElement
      * @param {!Uint8Array} rawData
      * @param {number} originalOffset The start offset of the unknown device
@@ -1441,7 +1446,7 @@ cr.define('descriptor_panel', function() {
      * the URL descriptor index item.
      * @param {!Uint8Array} rawData
      * @param {number} offset The offset of the WebUSB descriptor.
-     * @param {!cr.ui.TreeItem} item The URL descriptor index item.
+     * @param {!TreeItem} item The URL descriptor index item.
      * @private
      */
     async getUrlDescriptor_(rawData, offset, item) {
@@ -1595,7 +1600,7 @@ cr.define('descriptor_panel', function() {
     renderMsOs20DescriptorSet_(msOs20RawData) {
       const displayElement = addNewDescriptorDisplayElement(
           this.rootElement_, 'Microsoft OS 2.0 Descriptor Set');
-      /** @type {!cr.ui.Tree} */
+      /** @type {!Tree} */
       const rawDataTreeRoot = displayElement.rawDataTreeRoot;
       /** @type {!HTMLElement} */
       const rawDataByteElement = displayElement.rawDataByteElement;
@@ -1679,7 +1684,7 @@ cr.define('descriptor_panel', function() {
 
     /**
      * Renders a tree item to display Microsoft OS 2.0 descriptor set header.
-     * @param {!cr.ui.Tree} rawDataTreeRoot
+     * @param {!Tree} rawDataTreeRoot
      * @param {!HTMLElement} rawDataByteElement
      * @param {!Uint8Array} rawData
      * @param {number} originalOffset The start offset of the Microsoft OS 2.0
@@ -1733,7 +1738,7 @@ cr.define('descriptor_panel', function() {
     /**
      * Renders a tree item to display Microsoft OS 2.0 configuration subset
      * header.
-     * @param {!cr.ui.Tree} rawDataTreeRoot
+     * @param {!Tree} rawDataTreeRoot
      * @param {!HTMLElement} rawDataByteElement
      * @param {!Uint8Array} rawData
      * @param {number} originalOffset The start offset of the Microsoft OS 2.0
@@ -1799,7 +1804,7 @@ cr.define('descriptor_panel', function() {
 
     /**
      * Renders a tree item to display Microsoft OS 2.0 function subset header.
-     * @param {!cr.ui.Tree} rawDataTreeRoot
+     * @param {!Tree} rawDataTreeRoot
      * @param {!HTMLElement} rawDataByteElement
      * @param {!Uint8Array} rawData
      * @param {number} originalOffset The start offset of the Microsoft OS 2.0
@@ -1864,7 +1869,7 @@ cr.define('descriptor_panel', function() {
 
     /**
      * Renders a tree item to display Microsoft OS 2.0 compatible ID Descriptor.
-     * @param {!cr.ui.Tree} rawDataTreeRoot
+     * @param {!Tree} rawDataTreeRoot
      * @param {!HTMLElement} rawDataByteElement
      * @param {!Uint8Array} rawData
      * @param {number} originalOffset The start offset of the Microsoft OS 2.0
@@ -1925,7 +1930,7 @@ cr.define('descriptor_panel', function() {
     /**
      * Renders a tree item to display Microsoft OS 2.0 registry property
      * descriptor.
-     * @param {!cr.ui.Tree} rawDataTreeRoot
+     * @param {!Tree} rawDataTreeRoot
      * @param {!HTMLElement} rawDataByteElement
      * @param {!Uint8Array} rawData
      * @param {number} originalOffset The start offset of the Microsoft OS 2.0
@@ -2025,7 +2030,7 @@ cr.define('descriptor_panel', function() {
     /**
      * Renders a tree item to display Microsoft OS 2.0 minimum USB resume time
      * descriptor.
-     * @param {!cr.ui.Tree} rawDataTreeRoot
+     * @param {!Tree} rawDataTreeRoot
      * @param {!HTMLElement} rawDataByteElement
      * @param {!Uint8Array} rawData
      * @param {number} originalOffset The start offset of the Microsoft OS 2.0
@@ -2086,7 +2091,7 @@ cr.define('descriptor_panel', function() {
 
     /**
      * Renders a tree item to display Microsoft OS 2.0 model ID descriptor.
-     * @param {!cr.ui.Tree} rawDataTreeRoot
+     * @param {!Tree} rawDataTreeRoot
      * @param {!HTMLElement} rawDataByteElement
      * @param {!Uint8Array} rawData
      * @param {number} originalOffset The start offset of the Microsoft OS 2.0
@@ -2142,7 +2147,7 @@ cr.define('descriptor_panel', function() {
     /**
      * Renders a tree item to display Microsoft OS 2.0 Common Class Generic
      * Parent (CCGP) device descriptor.
-     * @param {!cr.ui.Tree} rawDataTreeRoot
+     * @param {!Tree} rawDataTreeRoot
      * @param {!HTMLElement} rawDataByteElement
      * @param {!Uint8Array} rawData
      * @param {number} originalOffset The start offset of the Microsoft OS 2.0
@@ -2195,7 +2200,7 @@ cr.define('descriptor_panel', function() {
     /**
      * Renders a tree item to display Microsoft OS 2.0 vendor revision
      * descriptor.
-     * @param {!cr.ui.Tree} rawDataTreeRoot
+     * @param {!Tree} rawDataTreeRoot
      * @param {!HTMLElement} rawDataByteElement
      * @param {!Uint8Array} rawData
      * @param {number} originalOffset The start offset of the Microsoft OS 2.0
@@ -2250,7 +2255,7 @@ cr.define('descriptor_panel', function() {
 
     /**
      * Renders a tree item to display an unknown Microsoft OS 2.0 descriptor.
-     * @param {!cr.ui.Tree} rawDataTreeRoot
+     * @param {!Tree} rawDataTreeRoot
      * @param {!HTMLElement} rawDataByteElement
      * @param {!Uint8Array} rawData
      * @param {number} originalOffset The start offset of the unknown Microsoft
@@ -2350,7 +2355,7 @@ cr.define('descriptor_panel', function() {
      */
     async renderTestingData_(rawData) {
       const displayElement = addNewDescriptorDisplayElement(this.rootElement_);
-      /** @type {!cr.ui.Tree} */
+      /** @type {!Tree} */
       const rawDataTreeRoot = displayElement.rawDataTreeRoot;
       rawDataTreeRoot.style.display = 'none';
       /** @type {!HTMLElement} */
@@ -2652,7 +2657,7 @@ cr.define('descriptor_panel', function() {
    * Adds a display area which contains a tree view and a byte view.
    * @param {!HTMLElement} rootElement
    * @param {string=} descriptorPanelTitle
-   * @return {{rawDataTreeRoot:!cr.ui.Tree,rawDataByteElement:!HTMLElement}}
+   * @return {{rawDataTreeRoot:!Tree,rawDataByteElement:!HTMLElement}}
    */
   function addNewDescriptorDisplayElement(
       rootElement, descriptorPanelTitle = undefined) {
@@ -2670,7 +2675,7 @@ cr.define('descriptor_panel', function() {
     const rawDataByteElement =
         queryRequiredElement('.raw-data-byte-view', descriptorPanelClone);
 
-    cr.ui.decorate(rawDataTreeRoot, cr.ui.Tree);
+    decorate(rawDataTreeRoot, Tree);
     rawDataTreeRoot.detail = {payload: {}, children: {}};
 
     if (descriptorPanelTitle) {
@@ -2713,10 +2718,10 @@ cr.define('descriptor_panel', function() {
    * Renders a customized TreeItem with the given content and class name.
    * @param {string} itemLabel
    * @param {string=} className
-   * @return {!cr.ui.TreeItem}
+   * @return {!TreeItem}
    */
   function customTreeItem(itemLabel, className = undefined) {
-    const item = new cr.ui.TreeItem({
+    const item = new TreeItem({
       label: itemLabel,
       icon: '',
     });
@@ -2728,7 +2733,7 @@ cr.define('descriptor_panel', function() {
 
   /**
    * Adds function for mapping between two views.
-   * @param {!cr.ui.Tree} rawDataTreeRoot
+   * @param {!Tree} rawDataTreeRoot
    * @param {!HTMLElement} rawDataByteElement
    */
   function addMappingAction(rawDataTreeRoot, rawDataByteElement) {
@@ -2811,7 +2816,7 @@ cr.define('descriptor_panel', function() {
 
   /**
    * Renders a tree view to display the raw data in readable text.
-   * @param {!cr.ui.Tree|!cr.ui.TreeItem} root
+   * @param {!Tree|!TreeItem} root
    * @param {!HTMLElement} rawDataByteElement
    * @param {!Array<Object>} fields
    * @param {!Uint8Array} rawData
@@ -3184,11 +3189,6 @@ cr.define('descriptor_panel', function() {
     }
     return true;
   }
-
-  return {
-    DescriptorPanel,
-  };
-});
 
 window.deviceDescriptorCompleteFn =
     window.deviceDescriptorCompleteFn || function() {};

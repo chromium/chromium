@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://usb-internals/mojo.js';
+import 'chrome://usb-internals/app.js';
+
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+
 /** @implements {mojom.UsbInternalsPageHandlerRemote} */
 class FakePageHandlerRemote extends TestBrowserProxy {
   constructor(handle) {
@@ -243,10 +249,10 @@ window.setupFn = () => {
       mojom.UsbInternalsPageHandler.$interfaceName);
   pageHandlerInterceptor.oninterfacerequest = (e) => {
     pageHandler = new FakePageHandlerRemote(e.handle);
+    setupResolver.resolve();
   };
   pageHandlerInterceptor.start();
 
-  setupResolver.resolve();
   return Promise.resolve();
 };
 
@@ -254,16 +260,15 @@ window.setupFn = () => {
 suite('UsbInternalsUITest', function() {
   let app = null;
 
-  suiteSetup(function() {
-    app = document.querySelector('usb-internals-app');
+  suiteSetup(async function() {
+    document.body.innerHTML = '';
+    app = document.createElement('usb-internals-app');
+    document.body.appendChild(app);
 
     // Before tests are run, make sure setup completes.
-    return setupResolver.promise.then(function() {
-      return Promise.all([
-        pageHandler.whenCalled('bindUsbDeviceManagerInterface'),
-        pageHandler.deviceManager.whenCalled('getDevices'),
-      ]);
-    });
+    await setupResolver.promise;
+    await pageHandler.whenCalled('bindUsbDeviceManagerInterface');
+    await pageHandler.deviceManager.whenCalled('getDevices');
   });
 
   teardown(function() {

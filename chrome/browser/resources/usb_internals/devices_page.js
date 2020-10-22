@@ -7,13 +7,22 @@
  *     chrome://usb-internals/.
  */
 
-cr.define('devices_page', function() {
+import './mojo.js';
+
+import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
+import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {Tab, TabPanel} from 'chrome://resources/js/cr/ui/tabs.m.js';
+import {Tree, TreeItem} from 'chrome://resources/js/cr/ui/tree.m.js';
+import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+
+import {DescriptorPanel} from './descriptor_panel.js';
+
   const UsbDeviceRemote = device.mojom.UsbDeviceRemote;
 
   /**
    * Page that contains a tab header and a tab panel displaying devices table.
    */
-  class DevicesPage {
+  export class DevicesPage {
     /**
      * @param {!device.mojom.UsbDeviceManagerRemote} usbManager
      * @param {!ShadowRoot} root
@@ -126,7 +135,7 @@ cr.define('devices_page', function() {
       tab.id = device.guid;
 
       tabs.appendChild(tabClone);
-      cr.ui.decorate(tab, cr.ui.Tab);
+      decorate(tab, Tab);
 
       const tabPanels = queryRequiredElement('tabpanels', this.root);
       const tabPanelTemplate =
@@ -139,7 +148,7 @@ cr.define('devices_page', function() {
        */
       const treeViewRoot = assertInstanceof(
           tabPanelClone.querySelector('.tree-view'), HTMLElement);
-      cr.ui.decorate(treeViewRoot, cr.ui.Tree);
+      decorate(treeViewRoot, Tree);
       treeViewRoot.detail = {payload: {}, children: {}};
       // Clear the tree first before populating it with the new content.
       treeViewRoot.innerText = '';
@@ -150,7 +159,7 @@ cr.define('devices_page', function() {
       this.initializeDescriptorPanels_(tabPanel, device.guid);
 
       tabPanels.appendChild(tabPanelClone);
-      cr.ui.decorate(tabPanel, cr.ui.TabPanel);
+      decorate(tabPanel, TabPanel);
     }
 
     /**
@@ -190,7 +199,7 @@ cr.define('devices_page', function() {
   /**
    * Renders a tree to display the device's detail information.
    * @param {!device.mojom.UsbDeviceInfo} device
-   * @param {!cr.ui.Tree} root
+   * @param {!Tree} root
    */
   function renderDeviceTree(device, root) {
     root.add(customTreeItem(`USB Version: ${device.usbVersionMajor}.${
@@ -247,7 +256,7 @@ cr.define('devices_page', function() {
   /**
    * Renders a tree item to display the device's configuration information.
    * @param {!Array<!device.mojom.UsbConfigurationInfo>} configurationsArray
-   * @param {!cr.ui.Tree} root
+   * @param {!Tree} root
    */
   function renderConfigurationTreeItem(configurationsArray, root) {
     for (const configuration of configurationsArray) {
@@ -269,7 +278,7 @@ cr.define('devices_page', function() {
   /**
    * Renders a tree item to display the device's interface information.
    * @param {!Array<!device.mojom.UsbInterfaceInfo>} interfacesArray
-   * @param {!cr.ui.TreeItem} root
+   * @param {!TreeItem} root
    */
   function renderInterfacesTreeItem(interfacesArray, root) {
     for (const currentInterface of interfacesArray) {
@@ -287,7 +296,7 @@ cr.define('devices_page', function() {
    * Renders a tree item to display the device's alternate interfaces
    * information.
    * @param {!Array<!device.mojom.UsbAlternateInterfaceInfo>} alternatesArray
-   * @param {!cr.ui.TreeItem} root
+   * @param {!TreeItem} root
    */
   function renderAlternatesTreeItem(alternatesArray, root) {
     for (const alternate of alternatesArray) {
@@ -317,7 +326,7 @@ cr.define('devices_page', function() {
   /**
    * Renders a tree item to display the device's endpoints information.
    * @param {!Array<!device.mojom.UsbEndpointInfo>} endpointsArray
-   * @param {!cr.ui.TreeItem} root
+   * @param {!TreeItem} root
    */
   function renderEndpointsTreeItem(endpointsArray, root) {
     for (const endpoint of endpointsArray) {
@@ -366,13 +375,13 @@ cr.define('devices_page', function() {
    * @param {string} panelType
    * @param {!device.mojom.UsbDeviceRemote} usbDevice
    * @param {string} guid
-   * @return {!descriptor_panel.DescriptorPanel}
+   * @return {!DescriptorPanel}
    */
   function initialInspectorPanel(tabPanel, panelType, usbDevice, guid) {
     const button = queryRequiredElement(`.${panelType}-button`, tabPanel);
     const displayElement =
         queryRequiredElement(`.${panelType}-panel`, tabPanel);
-    const descriptorPanel = new descriptor_panel.DescriptorPanel(
+    const descriptorPanel = new DescriptorPanel(
         usbDevice, /** @type {!HTMLElement} */ (displayElement));
     switch (panelType) {
       case 'string-descriptor':
@@ -429,20 +438,15 @@ cr.define('devices_page', function() {
   /**
    * Renders a customized TreeItem with the given content and class name.
    * @param {string} itemLabel
-   * @return {!cr.ui.TreeItem}
+   * @return {!TreeItem}
    * @private
    */
   function customTreeItem(itemLabel) {
-    return new cr.ui.TreeItem({
+    return new TreeItem({
       label: itemLabel,
       icon: '',
     });
   }
-
-  return {
-    DevicesPage,
-  };
-});
 
 window.deviceListCompleteFn = window.deviceListCompleteFn || function() {};
 

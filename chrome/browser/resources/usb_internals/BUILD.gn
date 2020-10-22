@@ -7,6 +7,7 @@ import("//tools/grit/grit_rule.gni")
 import("//tools/polymer/html_to_js.gni")
 
 js_type_check("closure_compile") {
+  uses_js_modules = true
   deps = [
     ":app",
     ":descriptor_panel",
@@ -17,35 +18,45 @@ js_type_check("closure_compile") {
 js_library("app") {
   deps = [
     ":devices_page",
-    "//chrome/browser/ui/webui/usb_internals:mojo_bindings_js_library_for_compile",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:util",
-    "//ui/webui/resources/js/cr/ui:tabs",
-    "//ui/webui/resources/js/cr/ui:tree",
+    ":mojo",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr/ui:tabs.m",
   ]
 }
 
 js_library("devices_page") {
   deps = [
     ":descriptor_panel",
-    "//chrome/browser/ui/webui/usb_internals:mojo_bindings_js_library_for_compile",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
+    ":mojo",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js/cr/ui:tabs.m",
+    "//ui/webui/resources/js/cr/ui:tree.m",
   ]
 }
 
 js_library("descriptor_panel") {
   deps = [
-    "//chrome/browser/ui/webui/usb_internals:mojo_bindings_js_library_for_compile",
-    "//ui/webui/resources/js:cr",
+    ":mojo",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr/ui:tree.m",
   ]
+}
+
+js_library("mojo") {
+  deps = [ "//chrome/browser/ui/webui/usb_internals:mojo_bindings_js_library_for_compile" ]
 }
 
 grit("resources") {
   source = "resources.grd"
   outputs = [
     "grit/usb_internals_resources.h",
+    "grit/usb_internals_resources_map.cc",
+    "grit/usb_internals_resources_map.h",
     "usb_internals_resources.pak",
   ]
   output_dir = "$root_gen_dir/chrome"

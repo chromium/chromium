@@ -5,6 +5,13 @@
 /**
  * Javascript for usb_internals.html, served from chrome://usb-internals/.
  */
+import './mojo.js';
+
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {TabBox} from 'chrome://resources/js/cr/ui/tabs.m.js';
+
+import {DevicesPage} from './devices_page.js';
 
 window.setupFn = window.setupFn || function() {
   return Promise.resolve();
@@ -46,9 +53,8 @@ window.setupFn = window.setupFn || function() {
       await pageHandler.bindUsbDeviceManagerInterface(
           usbManager.$.bindNewPipeAndPassReceiver());
 
-      /** @private {devices_page.DevicesPage} */
-      this.devicesPage_ = new devices_page.DevicesPage(
-          usbManager, assert(this.shadowRoot));
+      /** @private {!DevicesPage} */
+      this.devicesPage_ = new DevicesPage(usbManager, assert(this.shadowRoot));
 
       /** @private {device.mojom.UsbDeviceManagerTestRemote} */
       this.usbManagerTest_ = new device.mojom.UsbDeviceManagerTestRemote;
@@ -60,7 +66,7 @@ window.setupFn = window.setupFn || function() {
       });
       this.refreshTestDeviceList();
 
-      cr.ui.decorate(assert(this.$('tabbox')), cr.ui.TabBox);
+      decorate(assert(this.$('tabbox')), TabBox);
     }
 
     async refreshTestDeviceList() {

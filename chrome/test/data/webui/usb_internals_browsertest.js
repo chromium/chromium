@@ -18,7 +18,8 @@ UsbInternalsTest.prototype = {
   __proto__: testing.Test.prototype,
 
   /** @override */
-  browsePreload: 'chrome://usb-internals',
+  browsePreload:
+      'chrome://usb-internals/test_loader.html?module=usb_internals_test.js',
 
   /** @override */
   isAsync: true,
@@ -27,9 +28,6 @@ UsbInternalsTest.prototype = {
   extraLibraries: [
     '//third_party/mocha/mocha.js',
     '//chrome/test/data/webui/mocha_adapter.js',
-    '//ui/webui/resources/js/promise_resolver.js',
-    '//chrome/test/data/webui/test_browser_proxy.js',
-    '//chrome/test/data/webui/usb_internals_test.js',
   ],
 };
 
