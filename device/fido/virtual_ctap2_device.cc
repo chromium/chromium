@@ -2344,9 +2344,9 @@ CtapDeviceResponseCode VirtualCtap2Device::OnLargeBlobs(
             AuthenticatorSupportedOptions::UserVerificationAvailability::
                 kSupportedAndConfigured) {
       // verify(pinUvAuthToken,
-      //        32×0xff || h’0c00' || uint32LittleEndian(offset) ||
+      //        32×0xff || h’0c00' || uint32LittleEndian(offset) || SHA-256(
       //          contents of set byte string, i.e. not including an outer CBOR
-      //          tag with major type two,
+      //          tag with major type two),
       //        pinUvAuthParam)
       std::vector<uint8_t> pinauth_bytes;
       pinauth_bytes.insert(pinauth_bytes.begin(),
@@ -2357,7 +2357,10 @@ CtapDeviceResponseCode VirtualCtap2Device::OnLargeBlobs(
       auto offset_vec = fido_parsing_utils::Uint32LittleEndian(offset);
       pinauth_bytes.insert(pinauth_bytes.end(), offset_vec.begin(),
                            offset_vec.end());
-      pinauth_bytes.insert(pinauth_bytes.end(), set.begin(), set.end());
+      std::array<uint8_t, crypto::kSHA256Length> set_hash =
+          crypto::SHA256Hash(set);
+      pinauth_bytes.insert(pinauth_bytes.end(), set_hash.begin(),
+                           set_hash.end());
       CtapDeviceResponseCode pin_status = VerifyPINUVAuthToken(
           *device_info_, mutable_state()->pin_token, request_map,
           cbor::Value(

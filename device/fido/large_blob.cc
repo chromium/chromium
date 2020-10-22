@@ -91,9 +91,9 @@ void LargeBlobsRequest::SetPinParam(
   const std::array<uint8_t, 4> offset_array =
       fido_parsing_utils::Uint32LittleEndian(offset_);
   pin_auth.insert(pin_auth.end(), offset_array.begin(), offset_array.end());
-  if (set_) {
-    pin_auth.insert(pin_auth.end(), set_->begin(), set_->end());
-  }
+  std::array<uint8_t, crypto::kSHA256Length> set_hash =
+      crypto::SHA256Hash(*set_);
+  pin_auth.insert(pin_auth.end(), set_hash.begin(), set_hash.end());
   std::tie(pin_uv_auth_protocol_, pin_uv_auth_param_) =
       pin_uv_auth_token.PinAuth(pin_auth);
 }
