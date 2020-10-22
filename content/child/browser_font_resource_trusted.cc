@@ -19,18 +19,17 @@
 #include "ppapi/thunk/thunk.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
-#include "third_party/blink/public/platform/web_float_rect.h"
 #include "third_party/blink/public/platform/web_font.h"
 #include "third_party/blink/public/platform/web_font_description.h"
 #include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_text_run.h"
 #include "third_party/icu/source/common/unicode/ubidi.h"
 #include "third_party/skia/include/core/SkRect.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 using ppapi::StringVar;
 using ppapi::thunk::EnterResourceNoLock;
 using ppapi::thunk::PPB_ImageData_API;
-using blink::WebFloatRect;
 using blink::WebFont;
 using blink::WebFontDescription;
 using blink::WebRect;
@@ -398,10 +397,10 @@ int32_t BrowserFontResource_Trusted::PixelOffsetForCharacter(
       // 0 characters starting at the character in question, it would give us
       // a 0-width rect around the insertion point. But that will be on the
       // right side of the character for an RTL run, which would be wrong.
-      WebFloatRect rect = font_->SelectionRectForText(
+      gfx::RectF rect = font_->SelectionRectForText(
           run, gfx::PointF(), font_->Height(), char_offset - run_begin,
           char_offset - run_begin + 1);
-      return cur_pixel_offset + static_cast<int>(rect.x);
+      return cur_pixel_offset + static_cast<int>(rect.x());
     } else {
       // Character is past this run, account for the pixels and continue
       // looking.
