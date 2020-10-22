@@ -35,6 +35,12 @@ cr.define('settings', function() {
         notify: true,
       },
 
+      /** @private {!Map<string, (string|Function)>} */
+      focusConfig: {
+        type: Object,
+        observer: 'onFocusConfigChange_',
+      },
+
       /** @private Whether to show Caps Lock options. */
       showCapsLock_: Boolean,
 
@@ -172,6 +178,24 @@ cr.define('settings', function() {
           name: loadTimeData.getString('keyboardKeyDisabled')
         }
       ];
+    },
+
+    /** @private */
+    onFocusConfigChange_() {
+      let path, id;
+      if (this.languageSettingsV2Enabled_) {
+        path = settings.routes.OS_LANGUAGES_INPUT.path;
+        id = '#showLanguagesInput';
+      } else {
+        path = settings.routes.OS_LANGUAGES_DETAILS.path;
+        id = '#showLanguageDetails';
+      }
+
+      this.focusConfig.set(path, () => {
+        Polymer.RenderStatus.afterNextRender(this, () => {
+          cr.ui.focusWithoutInk(assert(this.$$(id)));
+        });
+      });
     },
 
     /**

@@ -64,7 +64,8 @@
         <settings-subpage
             associated-control="[[$$('#keyboardRow')]]"
             page-title="$i18n{keyboardTitle}">
-          <settings-keyboard prefs="{{prefs}}"></settings-keyboard>
+          <settings-keyboard prefs="{{prefs}}" focus-config="[[focusConfig_]]">
+          </settings-keyboard>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/stylus" no-search="[[!hasStylus_]]">

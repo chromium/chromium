@@ -142,17 +142,19 @@
         label="$i18n{showKeyboardShortcutViewer}" external
         deep-link-focus-id$="[[Setting.kKeyboardShortcuts]]"></cr-link-row>
     <template is="dom-if" if="[[!languageSettingsV2Enabled_]]">
-      <cr-link-row class="hr" on-click="onShowLanguageInputTap_"
+      <cr-link-row id="showLanguagesDetails"
+          class="hr" on-click="onShowLanguageInputTap_"
           label="$i18n{keyboardShowLanguageAndInput}"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
     </template>
     <template is="dom-if" if="[[languageSettingsV2Enabled_]]">
-      <cr-link-row class="hr" on-click="onShowInputSettingsTap_"
+      <cr-link-row id="showLanguagesInput"
+          class="hr" on-click="onShowInputSettingsTap_"
           label="$i18n{keyboardShowInputSettings}"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
-    </template>     
+    </template>
   </template>
   <script src="keyboard.js"></script>
 </dom-module>
