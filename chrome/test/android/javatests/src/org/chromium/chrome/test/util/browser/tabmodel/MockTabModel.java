@@ -59,6 +59,8 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
     @Override
     public void addTab(
             Tab tab, int index, @TabLaunchType int type, @TabCreationState int creationState) {
+        for (TabModelObserver observer : mObservers) observer.willAddTab(tab, type);
+
         if (index == -1) {
             mTabs.add(tab);
         } else {

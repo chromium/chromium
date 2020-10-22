@@ -239,6 +239,8 @@ public abstract class StackLayoutBase extends Layout {
     private TabListSceneLayer mSceneLayer;
     private boolean mShowPending;
 
+    private boolean mUiDoneEnteringStack;
+
     private class StackLayoutGestureHandler implements GestureHandler {
         @Override
         public void onDown(float x, float y, boolean fromMouse, int buttons) {
@@ -861,6 +863,7 @@ public abstract class StackLayoutBase extends Layout {
      * Called when a {@link Stack} instance is done animating the stack enter effect.
      */
     public void uiDoneEnteringStack() {
+        mUiDoneEnteringStack = true;
         // Tabs don't overlap in the horizontal tab switcher experiment, so the order comparator
         // already does what we want (the visibility comparator's logic actually doesn't compute
         // visibility properly in this case).
@@ -904,6 +907,7 @@ public abstract class StackLayoutBase extends Layout {
     @Override
     public void show(long time, boolean animate) {
         super.show(time, animate);
+        mUiDoneEnteringStack = false;
 
         if (!mIsActiveLayout) {
             // The mIsActiveLayout check is necessary because there are certain edge cases where
@@ -959,6 +963,8 @@ public abstract class StackLayoutBase extends Layout {
 
     @Override
     public void doneShowing() {
+        if (!mUiDoneEnteringStack) return;
+
         super.doneShowing();
 
         if (mBrowserControlsSupplier.get() != null) {

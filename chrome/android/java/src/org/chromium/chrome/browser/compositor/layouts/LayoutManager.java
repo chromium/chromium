@@ -445,9 +445,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
             if (layout.isStartingToHide()) {
                 layout.doneHiding();
             } else if (layout.isStartingToShow()) {
-                // TODO(crbug.com/1108496): Call layout.doneShowing() here after all Layout have
-                //  been consolidated into the new Layout System to avoid Layout tests become flaky,
-                //  especially the StartSurfaceLayoutTest.
+                layout.doneShowing();
             }
         }
 

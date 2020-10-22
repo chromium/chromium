@@ -79,6 +79,8 @@ public class StartSurfaceLayout extends Layout implements StartSurface.OverviewM
     private int mStartFrame;
     private float mThumbnailAspectRatio;
 
+    private boolean mAndroidViewFinishedShowing;
+
     interface PerfListener {
         void onAnimationDone(
                 int frameRendered, long elapsedMs, long maxFrameInterval, int dirtySpan);
@@ -114,10 +116,13 @@ public class StartSurfaceLayout extends Layout implements StartSurface.OverviewM
 
     // StartSurface.OverviewModeObserver implementation.
     @Override
-    public void startedShowing() {}
+    public void startedShowing() {
+        mAndroidViewFinishedShowing = false;
+    }
 
     @Override
     public void finishedShowing() {
+        mAndroidViewFinishedShowing = true;
         doneShowing();
         // The Tab-to-GTS animation is done, and it's time to renew the thumbnail without causing
         // janky frames.
@@ -257,6 +262,12 @@ public class StartSurfaceLayout extends Layout implements StartSurface.OverviewM
     public void doneHiding() {
         super.doneHiding();
         RecordUserAction.record("MobileExitStackView");
+    }
+
+    @Override
+    public void doneShowing() {
+        if (!mAndroidViewFinishedShowing) return;
+        super.doneShowing();
     }
 
     @Override

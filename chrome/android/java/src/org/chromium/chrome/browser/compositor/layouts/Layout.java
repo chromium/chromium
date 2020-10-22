@@ -448,6 +448,8 @@ public abstract class Layout implements TabContentManager.ThumbnailChangeListene
      * To be called when the transition into the layout is done.
      */
     public void doneShowing() {
+        if (!mIsStartingToShow) return;
+
         mIsStartingToShow = false;
         mUpdateHost.doneShowing();
     }
@@ -457,6 +459,8 @@ public abstract class Layout implements TabContentManager.ThumbnailChangeListene
      * This is currently called by the renderer when all the animation are done while hiding.
      */
     public void doneHiding() {
+        if (!mIsStartingToHide) return;
+
         mIsStartingToHide = false;
         if (mNextTabId != Tab.INVALID_TAB_ID) {
             TabModel model = mTabModelSelector.getModelForTabId(mNextTabId);
