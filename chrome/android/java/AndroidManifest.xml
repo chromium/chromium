@@ -179,46 +179,6 @@ by a child template that "extends" this file.
         {% block extra_application_attributes %}{% endblock %}>
 
       {% macro application_definitions() %}
-        <meta-data android:name="android.allow_multiple_resumed_activities" android:value="true" />
-
-        <!-- Samsung MultiWindow Support -->
-        <meta-data android:name="com.samsung.android.sdk.multiwindow.enable"
-            android:value="true" />
-
-        {% if min_sdk_version|int < 24 %}
-        <meta-data android:name="com.samsung.android.sdk.multiwindow.multiinstance.enable"
-            android:value="true" />
-        <meta-data android:name="com.samsung.android.sdk.multiwindow.multiinstance.launchmode"
-            android:value="singleTask" />
-        {% endif %}
-
-        <meta-data android:name="com.samsung.android.sdk.multiwindow.penwindow.enable"
-            android:value="true"/>
-
-        {% if backup_key is defined %}
-        <!-- Backup keys are channel dependent -->
-        <meta-data android:name="com.google.android.backup.api_key"
-            android:value="{{ backup_key }}" />
-        {% endif %}
-
-        {% if channel in ['dev', 'canary', 'default'] %}
-        <meta-data android:name="com.sec.android.support.multiwindow" android:value="true" />
-        {% endif %}
-        <meta-data android:name="android.content.APP_RESTRICTIONS"
-            android:resource="@xml/app_restrictions"/>
-
-        {% if include_arcore_manifest_flag == 'true' %}
-        <!-- ARCore APK integration -->
-        <!-- This tag indicates that this application optionally uses ARCore. -->
-        <meta-data android:name="com.google.ar.core" android:value="optional" />
-        {% endif %}
-
-        <!-- Cast support -->
-        <meta-data
-            android:name=
-            "com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
-            android:value="org.chromium.components.media_router.caf.CastOptionsProvider"/>
-
         <!-- Note: All activities directly or indirectly derived from ChromeActivity
              must specify android:hardwareAccelerated="false".
 
@@ -1262,6 +1222,46 @@ by a child template that "extends" this file.
       <!-- Downloads Google Sans from GMS Core -->
       <meta-data android:name="preloaded_fonts"
           android:resource="@array/chrome_preloaded_google_sans_fonts" />
+
+      <meta-data android:name="android.allow_multiple_resumed_activities" android:value="true" />
+
+      <!-- Samsung MultiWindow Support -->
+      <meta-data android:name="com.samsung.android.sdk.multiwindow.enable"
+          android:value="true" />
+
+      {% if min_sdk_version|int < 24 %}
+      <meta-data android:name="com.samsung.android.sdk.multiwindow.multiinstance.enable"
+          android:value="true" />
+      <meta-data android:name="com.samsung.android.sdk.multiwindow.multiinstance.launchmode"
+          android:value="singleTask" />
+      {% endif %}
+
+      <meta-data android:name="com.samsung.android.sdk.multiwindow.penwindow.enable"
+          android:value="true"/>
+
+      {% if backup_key is defined %}
+      <!-- Backup keys are channel dependent -->
+      <meta-data android:name="com.google.android.backup.api_key"
+          android:value="{{ backup_key }}" />
+      {% endif %}
+
+      {% if channel in ['dev', 'canary', 'default'] %}
+      <meta-data android:name="com.sec.android.support.multiwindow" android:value="true" />
+      {% endif %}
+      <meta-data android:name="android.content.APP_RESTRICTIONS"
+          android:resource="@xml/app_restrictions"/>
+
+      {% if include_arcore_manifest_flag == 'true' %}
+      <!-- ARCore APK integration -->
+      <!-- This tag indicates that this application optionally uses ARCore. -->
+      <meta-data android:name="com.google.ar.core" android:value="optional" />
+      {% endif %}
+
+      <!-- Cast support -->
+      <meta-data
+          android:name=
+          "com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
+          android:value="org.chromium.components.media_router.caf.CastOptionsProvider"/>
 
       {% block base_application_definitions %}
       {% endblock %}
