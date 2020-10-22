@@ -20,8 +20,12 @@
 namespace {
 
 static constexpr char kBase64UrlError[] = " must be a base64url encoded string";
+static constexpr char kExtensionsMustBeList[] =
+    "extensions must be a list of strings";
 static constexpr char kDevToolsDidNotReturnExpectedValue[] =
     "DevTools did not return the expected value";
+static constexpr char kUnrecognizedExtension[] =
+    " is not a recognized extension";
 
 // Creates a base::DictionaryValue by cloning the parameters specified by
 // |mapping| from |params|.
@@ -115,6 +119,29 @@ Status ExecuteAddVirtualAuthenticator(WebView* web_view,
       },
       params);
 
+  const base::Value* extensions = params.FindKey("extensions");
+  if (extensions) {
+    if (!extensions->is_list())
+      return Status(kInvalidArgument, kExtensionsMustBeList);
+    for (const base::Value& extension : extensions->GetList()) {
+      if (!extension.is_string())
+        return Status(kInvalidArgument, kExtensionsMustBeList);
+      const std::string& extension_string = extension.GetString();
+      if (extension_string == "largeBlob") {
+        mapped_params.SetPath("options.hasLargeBlob", base::Value(true));
+      } else {
+        return Status(kUnsupportedOperation,
+                      extension_string + kUnrecognizedExtension);
+      }
+    }
+  }
+
+  // Large blobs require CTAP 2.1. At the moment webdriver does not allow
+  // specifying the CTAP version. Since there is no other web visible
+  // difference between the versions until credProps is introduced, force the
+  // virtual authenticator to CTAP 2.1.
+  mapped_params.SetPath("options.ctap2Version", base::Value("ctap2_1"));
+
   // The spec calls u2f "ctap1/u2f", convert the value here since devtools does
   // not support slashes on enums.
   std::string* protocol = mapped_params.FindStringPath("options.protocol");
@@ -156,11 +183,12 @@ Status ExecuteAddCredential(WebView* web_view,
           {"credential.privateKey", "privateKey"},
           {"credential.userHandle", "userHandle"},
           {"credential.signCount", "signCount"},
+          {"credential.largeBlob", "largeBlob"},
       },
       params);
-  Status status =
-      ConvertBase64UrlToBase64(mapped_params.FindKey("credential"),
-                               {"credentialId", "privateKey", "userHandle"});
+  Status status = ConvertBase64UrlToBase64(
+      mapped_params.FindKey("credential"),
+      {"credentialId", "privateKey", "userHandle", "largeBlob"});
   if (status.IsError())
     return status;
 
@@ -183,8 +211,8 @@ Status ExecuteGetCredentials(WebView* web_view,
     return Status(kUnknownError, kDevToolsDidNotReturnExpectedValue);
 
   for (base::Value& credential : credentials->GetList()) {
-    ConvertBase64ToBase64Url(&credential,
-                             {"credentialId", "privateKey", "userHandle"});
+    ConvertBase64ToBase64Url(
+        &credential, {"credentialId", "privateKey", "userHandle", "largeBlob"});
   }
   *value = std::make_unique<base::Value>(std::move(*credentials));
   return status;

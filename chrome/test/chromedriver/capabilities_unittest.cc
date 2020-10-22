@@ -665,3 +665,20 @@ TEST(ParseCapabilities, VirtualAuthenticatorsNotBool) {
   caps.SetStringKey("webauthn:virtualAuthenticators", "not a bool");
   EXPECT_FALSE(capabilities.Parse(caps).IsOk());
 }
+
+TEST(ParseCapabilities, VirtualAuthenticatorsLargeBlobBool) {
+  Capabilities capabilities;
+  base::DictionaryValue caps;
+  caps.SetBoolKey("webauthn:extension:largeBlob", true);
+  EXPECT_TRUE(capabilities.Parse(caps).IsOk());
+
+  caps.SetBoolKey("webauthn:extension:largeBlob", false);
+  EXPECT_TRUE(capabilities.Parse(caps).IsOk());
+}
+
+TEST(ParseCapabilities, VirtualAuthenticatorsLargeBlobNotBool) {
+  Capabilities capabilities;
+  base::DictionaryValue caps;
+  caps.SetStringKey("webauthn:extension:largeBlob", "not a bool");
+  EXPECT_FALSE(capabilities.Parse(caps).IsOk());
+}

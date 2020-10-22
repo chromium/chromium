@@ -835,6 +835,8 @@ Status Capabilities::Parse(const base::DictionaryValue& desired_caps,
   // See https://w3c.github.io/webauthn/#sctn-automation-webdriver-capability
   parser_map["webauthn:virtualAuthenticators"] =
       base::BindRepeating(&ParseBoolean, nullptr);
+  parser_map["webauthn:extension:largeBlob"] =
+      base::BindRepeating(&ParseBoolean, nullptr);
 
   // ChromeDriver specific capabilities.
   // Vendor-prefixed is the current spec conformance, but unprefixed is

@@ -190,7 +190,9 @@ std::unique_ptr<base::DictionaryValue> CreateCapabilities(
 
   // Extensions defined by the W3C.
   // See https://w3c.github.io/webauthn/#sctn-automation-webdriver-capability
-  caps->SetBoolean("webauthn:virtualAuthenticators", !capabilities.IsAndroid());
+  caps->SetBoolPath("webauthn:virtualAuthenticators",
+                    !capabilities.IsAndroid());
+  caps->SetBoolPath("webauthn:extension:largeBlob", !capabilities.IsAndroid());
 
   // Chrome-specific extensions.
   const std::string chromedriverVersionKey = base::StringPrintf(
@@ -437,8 +439,8 @@ bool MergeCapabilities(const base::DictionaryValue* always_match,
 // Implementation of "matching capabilities", as defined in W3C spec at
 // https://www.w3.org/TR/webdriver/#dfn-matching-capabilities.
 // It checks some requested capabilities and make sure they are supported.
-// Currently, we only check "browserName", "platformName", and
-// "webauthn:virtualAuthenticators" but more can be added as necessary.
+// Currently, we only check "browserName", "platformName", and webauthn
+// capabilities but more can be added as necessary.
 bool MatchCapabilities(const base::DictionaryValue* capabilities) {
   const base::Value* name;
   if (capabilities->Get("browserName", &name) && !name->is_none()) {
@@ -489,12 +491,20 @@ bool MatchCapabilities(const base::DictionaryValue* capabilities) {
     }
   }
 
-  const base::Value* virtual_authenticators_value;
-  if (capabilities->Get("webauthn:virtualAuthenticators",
-                        &virtual_authenticators_value) &&
-      !virtual_authenticators_value->is_none()) {
+  const base::Value* virtual_authenticators_value =
+      capabilities->FindPath("webauthn:virtualAuthenticators");
+  if (virtual_authenticators_value) {
     if (!virtual_authenticators_value->is_bool() ||
         (virtual_authenticators_value->GetBool() && is_android)) {
+      return false;
+    }
+  }
+
+  const base::Value* large_blob_value =
+      capabilities->FindPath("webauthn:extension:largeBlob");
+  if (large_blob_value) {
+    if (!large_blob_value->is_bool() ||
+        (large_blob_value->GetBool() && is_android)) {
       return false;
     }
   }

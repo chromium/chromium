@@ -379,7 +379,7 @@ TEST(SessionCommandsTest, MatchCapabilities) {
 TEST(SessionCommandsTest, MatchCapabilitiesVirtualAuthenticators) {
   // Match webauthn:virtualAuthenticators on desktop.
   base::DictionaryValue merged;
-  merged.SetBoolean("webauthn:virtualAuthenticators", true);
+  merged.SetBoolPath("webauthn:virtualAuthenticators", true);
   EXPECT_TRUE(MatchCapabilities(&merged));
 
   // Don't match webauthn:virtualAuthenticators on android.
@@ -388,7 +388,23 @@ TEST(SessionCommandsTest, MatchCapabilitiesVirtualAuthenticators) {
 
   // Don't match values other than bools.
   merged.Clear();
-  merged.SetString("webauthn:virtualAuthenticators", "not a bool");
+  merged.SetStringPath("webauthn:virtualAuthenticators", "not a bool");
+  EXPECT_FALSE(MatchCapabilities(&merged));
+}
+
+TEST(SessionCommandsTest, MatchCapabilitiesVirtualAuthenticatorsLargeBlob) {
+  // Match webauthn:extension:largeBlob on desktop.
+  base::DictionaryValue merged;
+  merged.SetBoolPath("webauthn:extension:largeBlob", true);
+  EXPECT_TRUE(MatchCapabilities(&merged));
+
+  // Don't match webauthn:extension:largeBlob on android.
+  merged.SetStringPath("goog:chromeOptions.androidPackage", "packageName");
+  EXPECT_FALSE(MatchCapabilities(&merged));
+
+  // Don't match values other than bools.
+  merged.Clear();
+  merged.SetStringPath("webauthn:extension:largeBlob", "not a bool");
   EXPECT_FALSE(MatchCapabilities(&merged));
 }
 

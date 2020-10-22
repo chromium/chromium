@@ -2809,13 +2809,16 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self._driver.SwitchToWindow(different_domain)
     self.CheckPermission(self.GetPermission('geolocation'), 'denied')
 
-  # Tests that the webauthn:virtualAuthenticators capability is true on desktop
-  # and false on android.
+  # Tests that the webauthn capabilities are true on desktop and false on
+  # android.
   def testWebauthnVirtualAuthenticatorsCapability(self):
     is_desktop = _ANDROID_PACKAGE_KEY is None
     self.assertEqual(
         is_desktop,
         self._driver.capabilities['webauthn:virtualAuthenticators'])
+    self.assertEqual(
+        is_desktop,
+        self._driver.capabilities['webauthn:extension:largeBlob'])
 
 # Tests that require a secure context.
 class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
@@ -2850,26 +2853,57 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
   def setUp(self):
     self._driver = self.CreateDriver(
         accept_insecure_certs=True,
-        chrome_switches=['host-resolver-rules=MAP * 127.0.0.1'])
+        chrome_switches=['host-resolver-rules=MAP * 127.0.0.1',
+            'enable-experimental-web-platform-features'])
 
   def testAddVirtualAuthenticator(self):
     script = """
       let done = arguments[0];
-      registerCredential().then(done);
+      registerCredential({
+        authenticatorSelection: {
+          requireResidentKey: true,
+        },
+        extensions: {
+          largeBlob: {
+            support: 'preferred',
+          },
+        },
+      }).then(done);
     """
     self._driver.Load(self.GetHttpsUrlForFile(
         '/chromedriver/webauthn_test.html', 'chromedriver.test'))
     self._driver.AddVirtualAuthenticator(
         protocol = 'ctap2',
         transport = 'usb',
-        hasResidentKey = False,
-        hasUserVerification = False,
+        hasResidentKey = True,
+        hasUserVerification = True,
         isUserConsenting = True,
         isUserVerified = True,
+        extensions = ['largeBlob']
     )
     result = self._driver.ExecuteAsyncScript(script)
     self.assertEquals('OK', result['status'])
     self.assertEquals(['usb'], result['credential']['transports'])
+    self.assertEquals(True, result['extensions']['largeBlob']['supported'])
+
+  def testAddVirtualBadExtensions(self):
+    self.assertRaisesRegexp(
+        chromedriver.InvalidArgument,
+        'extensions must be a list of strings',
+        self._driver.AddVirtualAuthenticator, protocol = 'ctap2', transport =
+        'usb', extensions = 'invalid')
+
+    self.assertRaisesRegexp(
+        chromedriver.InvalidArgument,
+        'extensions must be a list of strings',
+        self._driver.AddVirtualAuthenticator, protocol = 'ctap2', transport =
+        'usb', extensions = [42])
+
+    self.assertRaisesRegexp(
+        chromedriver.UnsupportedOperation,
+        'smolBlowbs is not a recognized extension',
+        self._driver.AddVirtualAuthenticator, protocol = 'ctap2', transport =
+        'usb', extensions = ['smolBlowbs'])
 
   def testAddVirtualAuthenticatorDefaultParams(self):
     script = """
@@ -2912,7 +2946,6 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
         self._driver.RemoveVirtualAuthenticator, authenticatorId)
 
   def testAddCredential(self):
-
     script = """
       let done = arguments[0];
       getCredential({
@@ -2943,6 +2976,49 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
 
     result = self._driver.ExecuteAsyncScript(script)
     self.assertEquals('OK', result['status'])
+
+  def testAddCredentialLargeBlob(self):
+    script = """
+      let done = arguments[0];
+      getCredential({
+        type: "public-key",
+        id: new TextEncoder().encode("cred-1"),
+        transports: ["usb"],
+      }, {
+        extensions: {
+          largeBlob: {
+            read: true,
+          },
+        },
+      }).then(done);
+    """
+    self._driver.Load(self.GetHttpsUrlForFile(
+        '/chromedriver/webauthn_test.html', 'chromedriver.test'))
+
+    authenticatorId = self._driver.AddVirtualAuthenticator(
+        protocol = 'ctap2',
+        transport = 'usb',
+        hasResidentKey = True,
+        hasUserVerification = True,
+        isUserVerified = True,
+        extensions = ['largeBlob']
+    )
+
+    # Register a credential with a large blob and try reading it.
+    self._driver.AddCredential(
+      authenticatorId = authenticatorId,
+      credentialId = self.URLSafeBase64Encode('cred-1'),
+      userHandle = self.URLSafeBase64Encode('erina'),
+      largeBlob = self.URLSafeBase64Encode('large blob contents'),
+      isResidentCredential = True,
+      rpId = "chromedriver.test",
+      privateKey = self.privateKey,
+      signCount = 1,
+    )
+
+    result = self._driver.ExecuteAsyncScript(script)
+    self.assertEquals('OK', result['status'])
+    self.assertEquals('large blob contents', result['blob'])
 
   def testAddCredentialBase64Errors(self):
     # Test that AddCredential checks UrlBase64 parameteres.
@@ -2979,7 +3055,23 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
         authenticatorSelection: {
           requireResidentKey: true,
         },
-      }).then(done);
+        extensions: {
+          largeBlob: {
+            support: "required",
+          },
+        },
+      }).then(attestation =>
+          getCredential({
+            type: "public-key",
+            id: Uint8Array.from(attestation.credential.rawId),
+            transports: ["usb"],
+          }, {
+            extensions: {
+              largeBlob: {
+                write: new TextEncoder().encode("large blob contents"),
+              },
+            },
+          })).then(done);
     """
     self._driver.Load(self.GetHttpsUrlForFile(
         '/chromedriver/webauthn_test.html', 'chromedriver.test'))
@@ -2989,12 +3081,14 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
         hasResidentKey = True,
         hasUserVerification = True,
         isUserVerified = True,
+        extensions = ['largeBlob']
     )
 
-    # Register a credential via the webauthn API.
+    # Register a credential via the webauthn API and set a large blob on it.
     result = self._driver.ExecuteAsyncScript(script)
     self.assertEquals('OK', result['status'])
-    credentialId = result['credential']['id']
+    self.assertEquals(True, result['extensions']['largeBlob']['written'])
+    credentialId = result['attestation']['id']
 
     # GetCredentials should return the credential that was just created.
     credentials = self._driver.GetCredentials(authenticatorId)
@@ -3004,8 +3098,10 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
     self.assertEquals('chromedriver.test', credentials[0]['rpId'])
     self.assertEquals(chr(1),
                       self.UrlSafeBase64Decode(credentials[0]['userHandle']))
-    self.assertEquals(1, credentials[0]['signCount'])
+    self.assertEquals(2, credentials[0]['signCount'])
     self.assertTrue(credentials[0]['privateKey'])
+    self.assertEquals('large blob contents',
+            self.UrlSafeBase64Decode(credentials[0]['largeBlob']))
 
   def testRemoveCredential(self):
     script = """
