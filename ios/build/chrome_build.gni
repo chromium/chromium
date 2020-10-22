@@ -11,6 +11,9 @@ declare_args() {
   ios_enable_content_widget_extension = true
   ios_enable_search_widget_extension = true
 
+  # Enable iOS 14, WidgetKit extension.
+  ios_enable_widget_kit_extension = false
+
   # Enable share extension.
   ios_enable_share_extension = true
 

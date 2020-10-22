@@ -384,6 +384,9 @@ ios_app_bundle("chrome") {
     if (ios_enable_credential_provider_extension) {
       deps += [ ":credential_provider_extension_bundle" ]
     }
+    if (ios_enable_widget_kit_extension) {
+      deps += [ ":widget_kit_extension_bundle" ]
+    }
   }
 
   extra_substitutions = [
@@ -448,6 +451,16 @@ if (current_toolchain == default_toolchain) {
     bundle_data("credential_provider_extension_bundle") {
       public_deps = [ "//ios/chrome/credential_provider_extension" ]
       sources = [ "$root_out_dir/credential_provider_extension.appex" ]
+      outputs = [ "{{bundle_contents_dir}}/PlugIns/{{source_file_part}}" ]
+    }
+  }
+
+  if (ios_enable_widget_kit_extension) {
+    bundle_data("widget_kit_extension_bundle") {
+      _widget_extension_target = "//ios/chrome/widget_kit_extension"
+      public_deps = [ _widget_extension_target ]
+      sources = [ get_label_info(_widget_extension_target, "root_out_dir") +
+                  "/widget_kit_extension.appex" ]
       outputs = [ "{{bundle_contents_dir}}/PlugIns/{{source_file_part}}" ]
     }
   }
