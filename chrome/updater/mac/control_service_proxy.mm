@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/mac/control_service_out_of_process.h"
+#include "chrome/updater/mac/control_service_proxy.h"
 
 #import <Foundation/Foundation.h>
 
@@ -16,13 +16,13 @@
 #include "chrome/updater/service_scope.h"
 
 // Interface to communicate with the XPC Control Service.
-@interface CRUControlServiceOutOfProcessImpl : NSObject <CRUControlling>
+@interface CRUControlServiceProxyImpl : NSObject <CRUControlling>
 
 - (instancetype)initPrivileged;
 
 @end
 
-@implementation CRUControlServiceOutOfProcessImpl {
+@implementation CRUControlServiceProxyImpl {
   base::scoped_nsobject<NSXPCConnection> _controlXPCConnection;
 }
 
@@ -88,19 +88,19 @@
 
 namespace updater {
 
-ControlServiceOutOfProcess::ControlServiceOutOfProcess(ServiceScope scope)
+ControlServiceProxy::ControlServiceProxy(ServiceScope scope)
     : callback_runner_(base::SequencedTaskRunnerHandle::Get()) {
   switch (scope) {
     case ServiceScope::kSystem:
-      client_.reset([[CRUControlServiceOutOfProcessImpl alloc] initPrivileged]);
+      client_.reset([[CRUControlServiceProxyImpl alloc] initPrivileged]);
       break;
     case ServiceScope::kUser:
-      client_.reset([[CRUControlServiceOutOfProcessImpl alloc] init]);
+      client_.reset([[CRUControlServiceProxyImpl alloc] init]);
       break;
   }
 }
 
-void ControlServiceOutOfProcess::Run(base::OnceClosure callback) {
+void ControlServiceProxy::Run(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   __block base::OnceClosure block_callback = std::move(callback);
@@ -112,8 +112,7 @@ void ControlServiceOutOfProcess::Run(base::OnceClosure callback) {
   [client_ performControlTasksWithReply:reply];
 }
 
-void ControlServiceOutOfProcess::InitializeUpdateService(
-    base::OnceClosure callback) {
+void ControlServiceProxy::InitializeUpdateService(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   __block base::OnceClosure block_callback = std::move(callback);
@@ -125,11 +124,11 @@ void ControlServiceOutOfProcess::InitializeUpdateService(
   [client_ performInitializeUpdateServiceWithReply:reply];
 }
 
-void ControlServiceOutOfProcess::Uninitialize() {
+void ControlServiceProxy::Uninitialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-ControlServiceOutOfProcess::~ControlServiceOutOfProcess() {
+ControlServiceProxy::~ControlServiceProxy() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 

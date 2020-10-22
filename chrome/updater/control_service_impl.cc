@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/control_service_in_process.h"
+#include "chrome/updater/control_service_impl.h"
 
 #include <string>
 #include <vector>
@@ -18,33 +18,32 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
-#include "chrome/updater/update_service_in_process.h"
+#include "chrome/updater/update_service_impl.h"
 #include "components/prefs/pref_service.h"
 
 namespace updater {
 
-ControlServiceInProcess::ControlServiceInProcess(
+ControlServiceImpl::ControlServiceImpl(
     scoped_refptr<updater::Configurator> config)
     : config_(config),
       persisted_data_(
           base::MakeRefCounted<PersistedData>(config_->GetPrefService())),
       main_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
 
-void ControlServiceInProcess::Run(base::OnceClosure callback) {
+void ControlServiceImpl::Run(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   UnregisterMissingApps();
   MaybeCheckForUpdates(std::move(callback));
 }
 
-void ControlServiceInProcess::InitializeUpdateService(
-    base::OnceClosure callback) {
+void ControlServiceImpl::InitializeUpdateService(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
   std::move(callback).Run();
 }
 
-void ControlServiceInProcess::MaybeCheckForUpdates(base::OnceClosure callback) {
+void ControlServiceImpl::MaybeCheckForUpdates(base::OnceClosure callback) {
   const base::Time lastUpdateTime =
       config_->GetPrefService()->GetTime(kPrefUpdateTime);
 
@@ -59,8 +58,8 @@ void ControlServiceInProcess::MaybeCheckForUpdates(base::OnceClosure callback) {
     return;
   }
 
-  scoped_refptr<UpdateServiceInProcess> update_service =
-      base::MakeRefCounted<UpdateServiceInProcess>(config_);
+  scoped_refptr<UpdateServiceImpl> update_service =
+      base::MakeRefCounted<UpdateServiceImpl>(config_);
 
   update_service->UpdateAll(
       base::BindRepeating([](UpdateService::UpdateState) {}),
@@ -79,7 +78,7 @@ void ControlServiceInProcess::MaybeCheckForUpdates(base::OnceClosure callback) {
           base::BindOnce(std::move(callback)), config_));
 }
 
-void ControlServiceInProcess::UnregisterMissingApps() {
+void ControlServiceImpl::UnregisterMissingApps() {
   for (const auto& app_id : persisted_data_->GetAppIds()) {
     // Skip if app_id is equal to updater app id.
     if (app_id == kUpdaterAppId)
@@ -93,12 +92,12 @@ void ControlServiceInProcess::UnregisterMissingApps() {
   }
 }
 
-void ControlServiceInProcess::Uninitialize() {
+void ControlServiceImpl::Uninitialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PrefsCommitPendingWrites(config_->GetPrefService());
 }
 
-ControlServiceInProcess::~ControlServiceInProcess() {
+ControlServiceImpl::~ControlServiceImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   config_->GetPrefService()->SchedulePendingLossyWrites();
 }

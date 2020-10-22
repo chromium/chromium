@@ -20,9 +20,9 @@
 #include "chrome/updater/app/server/win/com_classes.h"
 #include "chrome/updater/app/server/win/com_classes_legacy.h"
 #include "chrome/updater/configurator.h"
-#include "chrome/updater/control_service_in_process.h"
+#include "chrome/updater/control_service_impl.h"
 #include "chrome/updater/prefs.h"
-#include "chrome/updater/update_service_in_process.h"
+#include "chrome/updater/update_service_impl.h"
 #include "chrome/updater/win/constants.h"
 #include "chrome/updater/win/wrl_module.h"
 #include "components/prefs/pref_service.h"
@@ -162,8 +162,8 @@ void ComServerApp::ActiveDuty() {
     return;
   }
   main_task_runner_ = base::SequencedTaskRunnerHandle::Get();
-  update_service_ = base::MakeRefCounted<UpdateServiceInProcess>(config_);
-  control_service_ = base::MakeRefCounted<ControlServiceInProcess>(config_);
+  update_service_ = base::MakeRefCounted<UpdateServiceImpl>(config_);
+  control_service_ = base::MakeRefCounted<ControlServiceImpl>(config_);
   CreateWRLModule();
   HRESULT hr = RegisterClassObjects();
   if (FAILED(hr))

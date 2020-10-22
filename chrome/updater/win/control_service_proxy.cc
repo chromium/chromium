@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/win/control_service_out_of_process.h"
+#include "chrome/updater/win/control_service_proxy.h"
 
 #include <windows.h>
 #include <wrl/client.h>
@@ -118,19 +118,19 @@ void UpdaterControlObserver::OnCompleteOnSTA() {
 
 }  // namespace
 
-ControlServiceOutOfProcess::ControlServiceOutOfProcess(ServiceScope /*scope*/)
+ControlServiceProxy::ControlServiceProxy(ServiceScope /*scope*/)
     : com_task_runner_(
           base::ThreadPool::CreateCOMSTATaskRunner(kComClientTraits)) {}
 
-ControlServiceOutOfProcess::~ControlServiceOutOfProcess() {
+ControlServiceProxy::~ControlServiceProxy() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void ControlServiceOutOfProcess::Uninitialize() {
+void ControlServiceProxy::Uninitialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void ControlServiceOutOfProcess::Run(base::OnceClosure callback) {
+void ControlServiceProxy::Run(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Reposts the call to the COM task runner. Adapts |callback| so that
@@ -138,7 +138,7 @@ void ControlServiceOutOfProcess::Run(base::OnceClosure callback) {
   com_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &ControlServiceOutOfProcess::RunOnSTA, this,
+          &ControlServiceProxy::RunOnSTA, this,
           base::BindOnce(
               [](scoped_refptr<base::SequencedTaskRunner> taskrunner,
                  base::OnceClosure callback) {
@@ -148,7 +148,7 @@ void ControlServiceOutOfProcess::Run(base::OnceClosure callback) {
               base::SequencedTaskRunnerHandle::Get(), std::move(callback))));
 }
 
-void ControlServiceOutOfProcess::RunOnSTA(base::OnceClosure callback) {
+void ControlServiceProxy::RunOnSTA(base::OnceClosure callback) {
   DCHECK(com_task_runner_->BelongsToCurrentThread());
 
   Microsoft::WRL::ComPtr<IUnknown> server;
@@ -194,14 +194,13 @@ void ControlServiceOutOfProcess::RunOnSTA(base::OnceClosure callback) {
   }
 }
 
-void ControlServiceOutOfProcess::InitializeUpdateService(
-    base::OnceClosure callback) {
+void ControlServiceProxy::InitializeUpdateService(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   com_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &ControlServiceOutOfProcess::InitializeUpdateServiceOnSTA, this,
+          &ControlServiceProxy::InitializeUpdateServiceOnSTA, this,
           base::BindOnce(
               [](scoped_refptr<base::SequencedTaskRunner> taskrunner,
                  base::OnceClosure callback) {
@@ -211,7 +210,7 @@ void ControlServiceOutOfProcess::InitializeUpdateService(
               base::SequencedTaskRunnerHandle::Get(), std::move(callback))));
 }
 
-void ControlServiceOutOfProcess::InitializeUpdateServiceOnSTA(
+void ControlServiceProxy::InitializeUpdateServiceOnSTA(
     base::OnceClosure callback) {
   DCHECK(com_task_runner_->BelongsToCurrentThread());
 

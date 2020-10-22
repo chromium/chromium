@@ -21,11 +21,11 @@
 #include "chrome/updater/app/server/mac/service_delegate.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/control_service_in_process.h"
+#include "chrome/updater/control_service_impl.h"
 #include "chrome/updater/mac/setup/setup.h"
 #import "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/prefs.h"
-#include "chrome/updater/update_service_in_process.h"
+#include "chrome/updater/update_service_impl.h"
 
 namespace updater {
 
@@ -58,7 +58,7 @@ void AppServerMac::ActiveDuty() {
     @autoreleasepool {
       // Sets up a listener and delegate for the CRUControlling XPC connection.
       control_service_delegate_.reset([[CRUControlServiceXPCDelegate alloc]
-          initWithControlService:base::MakeRefCounted<ControlServiceInProcess>(
+          initWithControlService:base::MakeRefCounted<ControlServiceImpl>(
                                      config_)
                        appServer:scoped_refptr<AppServerMac>(this)]);
 
@@ -74,8 +74,7 @@ void AppServerMac::ActiveDuty() {
       // Sets up a listener and delegate for the CRUUpdateChecking XPC
       // connection.
       update_check_delegate_.reset([[CRUUpdateCheckServiceXPCDelegate alloc]
-          initWithUpdateService:base::MakeRefCounted<UpdateServiceInProcess>(
-                                    config_)
+          initWithUpdateService:base::MakeRefCounted<UpdateServiceImpl>(config_)
                       appServer:scoped_refptr<AppServerMac>(this)]);
 
       update_check_listener_.reset([[NSXPCListener alloc]

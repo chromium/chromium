@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/mac/update_service_out_of_process.h"
+#include "chrome/updater/mac/update_service_proxy.h"
 
 #import <Foundation/Foundation.h>
 
@@ -274,11 +274,11 @@ UpdateService::StateChangeCallback StateChangeTestEngine::Watch() {
 
 #pragma mark Test fixture
 
-class MacUpdateServiceOutOfProcessTest : public ::testing::Test {
+class MacUpdateServiceProxyTest : public ::testing::Test {
  protected:
   void SetUp() override;
 
-  // Create an UpdateServiceOutOfProcess and store in service_. Must be
+  // Create an UpdateServiceProxy and store in service_. Must be
   // called only on the task_environment_ sequence. SetUp() posts it.
   void InitializeUpdateService();
 
@@ -286,15 +286,15 @@ class MacUpdateServiceOutOfProcessTest : public ::testing::Test {
       base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
   ScopedXPCServiceMock mock_driver_ { @protocol (CRUUpdateChecking) };
   std::unique_ptr<base::RunLoop> run_loop_;
-  scoped_refptr<UpdateServiceOutOfProcess> service_;
+  scoped_refptr<UpdateServiceProxy> service_;
 };  // class MacUpdateOutOfProcessTest
 
-void MacUpdateServiceOutOfProcessTest::SetUp() {
+void MacUpdateServiceProxyTest::SetUp() {
   run_loop_ = std::make_unique<base::RunLoop>();
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([this]() {
-        service_ = base::MakeRefCounted<UpdateServiceOutOfProcess>(
-            ServiceScope::kUser);
+        service_ =
+            base::MakeRefCounted<UpdateServiceProxy>(ServiceScope::kUser);
       }));
 }
 
@@ -445,7 +445,7 @@ StateChangeTestEngine::StatePair UpdatedStates(const std::string& app_id,
 
 #pragma mark Test cases
 
-TEST_F(MacUpdateServiceOutOfProcessTest, NoProductsUpdateAll) {
+TEST_F(MacUpdateServiceProxyTest, NoProductsUpdateAll) {
   ScopedXPCServiceMock::ConnectionMockRecord* conn_rec =
       mock_driver_.PrepareNewMockConnection();
   ScopedXPCServiceMock::RemoteObjectMockRecord* mock_rec =
@@ -485,7 +485,7 @@ TEST_F(MacUpdateServiceOutOfProcessTest, NoProductsUpdateAll) {
   mock_driver_.VerifyAll();
 }
 
-TEST_F(MacUpdateServiceOutOfProcessTest, SimpleProductUpdate) {
+TEST_F(MacUpdateServiceProxyTest, SimpleProductUpdate) {
   ScopedXPCServiceMock::ConnectionMockRecord* conn_rec =
       mock_driver_.PrepareNewMockConnection();
   ScopedXPCServiceMock::RemoteObjectMockRecord* mock_rec =

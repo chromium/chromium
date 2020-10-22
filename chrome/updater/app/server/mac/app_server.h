@@ -18,7 +18,7 @@
 #import "chrome/updater/configurator.h"
 #import "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/prefs.h"
-#include "chrome/updater/update_service_in_process.h"
+#include "chrome/updater/update_service_impl.h"
 
 namespace base {
 class SequencedTaskRunner;

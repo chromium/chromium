@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_WIN_UPDATE_SERVICE_OUT_OF_PROCESS_H_
-#define CHROME_UPDATER_WIN_UPDATE_SERVICE_OUT_OF_PROCESS_H_
+#ifndef CHROME_UPDATER_WIN_UPDATE_SERVICE_PROXY_H_
+#define CHROME_UPDATER_WIN_UPDATE_SERVICE_PROXY_H_
 
 #include <string>
 
@@ -33,9 +33,9 @@ namespace updater {
 // through the task runner.
 
 // All public functions and callbacks must be called on the same sequence.
-class UpdateServiceOutOfProcess : public UpdateService {
+class UpdateServiceProxy : public UpdateService {
  public:
-  explicit UpdateServiceOutOfProcess(ServiceScope service_scope);
+  explicit UpdateServiceProxy(ServiceScope service_scope);
 
   // Overrides for updater::UpdateService.
   void GetVersion(
@@ -51,7 +51,7 @@ class UpdateServiceOutOfProcess : public UpdateService {
   void Uninitialize() override;
 
  private:
-  ~UpdateServiceOutOfProcess() override;
+  ~UpdateServiceProxy() override;
 
   // These functions runs on the |com_task_runner_|.
   void GetVersionOnSTA(
@@ -74,4 +74,4 @@ class UpdateServiceOutOfProcess : public UpdateService {
 
 }  // namespace updater
 
-#endif  // CHROME_UPDATER_WIN_UPDATE_SERVICE_OUT_OF_PROCESS_H_
+#endif  // CHROME_UPDATER_WIN_UPDATE_SERVICE_PROXY_H_

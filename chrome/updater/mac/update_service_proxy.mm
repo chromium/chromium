@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/mac/update_service_out_of_process.h"
+#include "chrome/updater/mac/update_service_proxy.h"
 
 #import <Foundation/Foundation.h>
 
@@ -29,13 +29,13 @@
 using base::SysUTF8ToNSString;
 
 // Interface to communicate with the XPC Updater Service.
-@interface CRUUpdateServiceOutOfProcessImpl : NSObject <CRUUpdateChecking>
+@interface CRUUpdateServiceProxyImpl : NSObject <CRUUpdateChecking>
 
 - (instancetype)initPrivileged;
 
 @end
 
-@implementation CRUUpdateServiceOutOfProcessImpl {
+@implementation CRUUpdateServiceProxyImpl {
   base::scoped_nsobject<NSXPCConnection> _updateCheckXPCConnection;
 }
 
@@ -144,19 +144,19 @@ using base::SysUTF8ToNSString;
 
 namespace updater {
 
-UpdateServiceOutOfProcess::UpdateServiceOutOfProcess(ServiceScope scope) {
+UpdateServiceProxy::UpdateServiceProxy(ServiceScope scope) {
   switch (scope) {
     case ServiceScope::kSystem:
-      client_.reset([[CRUUpdateServiceOutOfProcessImpl alloc] initPrivileged]);
+      client_.reset([[CRUUpdateServiceProxyImpl alloc] initPrivileged]);
       break;
     case ServiceScope::kUser:
-      client_.reset([[CRUUpdateServiceOutOfProcessImpl alloc] init]);
+      client_.reset([[CRUUpdateServiceProxyImpl alloc] init]);
       break;
   }
   callback_runner_ = base::SequencedTaskRunnerHandle::Get();
 }
 
-void UpdateServiceOutOfProcess::GetVersion(
+void UpdateServiceProxy::GetVersion(
     base::OnceCallback<void(const base::Version&)> callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -171,7 +171,7 @@ void UpdateServiceOutOfProcess::GetVersion(
   [client_ getVersionWithReply:reply];
 }
 
-void UpdateServiceOutOfProcess::RegisterApp(
+void UpdateServiceProxy::RegisterApp(
     const RegistrationRequest& request,
     base::OnceCallback<void(const RegistrationResponse&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -196,8 +196,8 @@ void UpdateServiceOutOfProcess::RegisterApp(
                             reply:reply];
 }
 
-void UpdateServiceOutOfProcess::UpdateAll(StateChangeCallback state_update,
-                                          Callback callback) {
+void UpdateServiceProxy::UpdateAll(StateChangeCallback state_update,
+                                   Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   __block base::OnceCallback<void(UpdateService::Result)> block_callback =
@@ -215,10 +215,10 @@ void UpdateServiceOutOfProcess::UpdateAll(StateChangeCallback state_update,
   [client_ checkForUpdatesWithUpdateState:stateObserver.get() reply:reply];
 }
 
-void UpdateServiceOutOfProcess::Update(const std::string& app_id,
-                                       UpdateService::Priority priority,
-                                       StateChangeCallback state_update,
-                                       Callback callback) {
+void UpdateServiceProxy::Update(const std::string& app_id,
+                                UpdateService::Priority priority,
+                                StateChangeCallback state_update,
+                                Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   __block base::OnceCallback<void(UpdateService::Result)> block_callback =
@@ -242,11 +242,11 @@ void UpdateServiceOutOfProcess::Update(const std::string& app_id,
                              reply:reply];
 }
 
-void UpdateServiceOutOfProcess::Uninitialize() {
+void UpdateServiceProxy::Uninitialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-UpdateServiceOutOfProcess::~UpdateServiceOutOfProcess() {
+UpdateServiceProxy::~UpdateServiceProxy() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 

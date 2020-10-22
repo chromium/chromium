@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/update_service_in_process.h"
+#include "chrome/updater/update_service_impl.h"
 
 #include <string>
 #include <utility>
@@ -145,7 +145,7 @@ std::vector<base::Optional<update_client::CrxComponent>> GetComponents(
 
 }  // namespace
 
-UpdateServiceInProcess::UpdateServiceInProcess(
+UpdateServiceImpl::UpdateServiceImpl(
     scoped_refptr<update_client::Configurator> config)
     : config_(config),
       persisted_data_(
@@ -153,7 +153,7 @@ UpdateServiceInProcess::UpdateServiceInProcess(
       main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       update_client_(update_client::UpdateClientFactory(config)) {}
 
-void UpdateServiceInProcess::GetVersion(
+void UpdateServiceImpl::GetVersion(
     base::OnceCallback<void(const base::Version&)> callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   main_task_runner_->PostTask(
@@ -161,7 +161,7 @@ void UpdateServiceInProcess::GetVersion(
                                 base::Version(UPDATER_VERSION_STRING)));
 }
 
-void UpdateServiceInProcess::RegisterApp(
+void UpdateServiceImpl::RegisterApp(
     const RegistrationRequest& request,
     base::OnceCallback<void(const RegistrationResponse&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -178,8 +178,8 @@ void UpdateServiceInProcess::RegisterApp(
       FROM_HERE, base::BindOnce(std::move(callback), RegistrationResponse(0)));
 }
 
-void UpdateServiceInProcess::UpdateAll(StateChangeCallback state_update,
-                                       Callback callback) {
+void UpdateServiceImpl::UpdateAll(StateChangeCallback state_update,
+                                  Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const auto app_ids = persisted_data_->GetAppIds();
@@ -191,10 +191,10 @@ void UpdateServiceInProcess::UpdateAll(StateChangeCallback state_update,
       MakeUpdateClientCallback(std::move(callback)));
 }
 
-void UpdateServiceInProcess::Update(const std::string& app_id,
-                                    Priority priority,
-                                    StateChangeCallback state_update,
-                                    Callback callback) {
+void UpdateServiceImpl::Update(const std::string& app_id,
+                               Priority priority,
+                               StateChangeCallback state_update,
+                               Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   update_client_->Update(
@@ -204,12 +204,12 @@ void UpdateServiceInProcess::Update(const std::string& app_id,
       MakeUpdateClientCallback(std::move(callback)));
 }
 
-void UpdateServiceInProcess::Uninitialize() {
+void UpdateServiceImpl::Uninitialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PrefsCommitPendingWrites(config_->GetPrefService());
 }
 
-UpdateServiceInProcess::~UpdateServiceInProcess() {
+UpdateServiceImpl::~UpdateServiceImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   config_->GetPrefService()->SchedulePendingLossyWrites();
 }

@@ -6,8 +6,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "chrome/updater/service_scope.h"
-#include "chrome/updater/win/control_service_out_of_process.h"
-#include "chrome/updater/win/update_service_out_of_process.h"
+#include "chrome/updater/win/control_service_proxy.h"
+#include "chrome/updater/win/update_service_proxy.h"
 #include "chrome/updater/win/wrl_module.h"
 
 namespace updater {
@@ -32,12 +32,12 @@ class WRLModuleInitializer {
 
 scoped_refptr<UpdateService> CreateUpdateService() {
   WRLModuleInitializer::Get();
-  return base::MakeRefCounted<UpdateServiceOutOfProcess>(GetProcessScope());
+  return base::MakeRefCounted<UpdateServiceProxy>(GetProcessScope());
 }
 
 scoped_refptr<ControlService> CreateControlService() {
   WRLModuleInitializer::Get();
-  return base::MakeRefCounted<ControlServiceOutOfProcess>(GetProcessScope());
+  return base::MakeRefCounted<ControlServiceProxy>(GetProcessScope());
 }
 
 }  // namespace updater

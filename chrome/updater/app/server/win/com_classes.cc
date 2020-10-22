@@ -94,7 +94,7 @@ HRESULT UpdaterImpl::GetVersion(BSTR* version) {
   DCHECK(version);
 
   // Return the hardcoded version instead of calling the corresponding
-  // non-blocking function of `UpdateServiceInProcess`. This results in some
+  // non-blocking function of `UpdateServiceImpl`. This results in some
   // code duplication but it avoids the complexities of making this function
   // non-blocking.
   *version =

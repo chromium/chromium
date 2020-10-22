@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_CONTROL_SERVICE_IN_PROCESS_H_
-#define CHROME_UPDATER_CONTROL_SERVICE_IN_PROCESS_H_
+#ifndef CHROME_UPDATER_CONTROL_SERVICE_IMPL_H_
+#define CHROME_UPDATER_CONTROL_SERVICE_IMPL_H_
 
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
@@ -20,9 +20,9 @@ class Configurator;
 class PersistedData;
 
 // All functions and callbacks must be called on the same sequence.
-class ControlServiceInProcess : public ControlService {
+class ControlServiceImpl : public ControlService {
  public:
-  explicit ControlServiceInProcess(scoped_refptr<updater::Configurator> config);
+  explicit ControlServiceImpl(scoped_refptr<updater::Configurator> config);
 
   // Overrides for updater::ControlService.
   void Run(base::OnceClosure callback) override;
@@ -31,7 +31,7 @@ class ControlServiceInProcess : public ControlService {
   void Uninitialize() override;
 
  private:
-  ~ControlServiceInProcess() override;
+  ~ControlServiceImpl() override;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -50,4 +50,4 @@ class ControlServiceInProcess : public ControlService {
 
 }  // namespace updater
 
-#endif  // CHROME_UPDATER_CONTROL_SERVICE_IN_PROCESS_H_
+#endif  // CHROME_UPDATER_CONTROL_SERVICE_IMPL_H_

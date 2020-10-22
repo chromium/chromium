@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/win/update_service_out_of_process.h"
+#include "chrome/updater/win/update_service_proxy.h"
 
 #include <windows.h>
 #include <wrl/client.h>
@@ -271,23 +271,23 @@ void UpdaterObserver::OnCompleteOnSTA(const UpdateService::Result& result) {
                              base::BindOnce(std::move(callback_), result));
 }
 
-UpdateServiceOutOfProcess::UpdateServiceOutOfProcess(ServiceScope service_scope)
+UpdateServiceProxy::UpdateServiceProxy(ServiceScope service_scope)
     : main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       com_task_runner_(
           base::ThreadPool::CreateCOMSTATaskRunner(kComClientTraits)) {
   DCHECK_EQ(service_scope, ServiceScope::kUser);
 }
 
-UpdateServiceOutOfProcess::~UpdateServiceOutOfProcess() = default;
+UpdateServiceProxy::~UpdateServiceProxy() = default;
 
-void UpdateServiceOutOfProcess::GetVersion(
+void UpdateServiceProxy::GetVersion(
     base::OnceCallback<void(const base::Version&)> callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   com_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &UpdateServiceOutOfProcess::GetVersionOnSTA, this,
+          &UpdateServiceProxy::GetVersionOnSTA, this,
           base::BindOnce(
               [](scoped_refptr<base::SequencedTaskRunner> taskrunner,
                  base::OnceCallback<void(const base::Version&)> callback,
@@ -298,15 +298,15 @@ void UpdateServiceOutOfProcess::GetVersion(
               base::SequencedTaskRunnerHandle::Get(), std::move(callback))));
 }
 
-void UpdateServiceOutOfProcess::RegisterApp(
+void UpdateServiceProxy::RegisterApp(
     const RegistrationRequest& request,
     base::OnceCallback<void(const RegistrationResponse&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NOTREACHED();
 }
 
-void UpdateServiceOutOfProcess::UpdateAll(StateChangeCallback state_update,
-                                          Callback callback) {
+void UpdateServiceProxy::UpdateAll(StateChangeCallback state_update,
+                                   Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Reposts the call to the COM task runner. Adapts |callback| so that
@@ -314,7 +314,7 @@ void UpdateServiceOutOfProcess::UpdateAll(StateChangeCallback state_update,
   com_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &UpdateServiceOutOfProcess::UpdateAllOnSTA, this, state_update,
+          &UpdateServiceProxy::UpdateAllOnSTA, this, state_update,
           base::BindOnce(
               [](scoped_refptr<base::SequencedTaskRunner> taskrunner,
                  Callback callback, Result result) {
@@ -324,10 +324,10 @@ void UpdateServiceOutOfProcess::UpdateAll(StateChangeCallback state_update,
               base::SequencedTaskRunnerHandle::Get(), std::move(callback))));
 }
 
-void UpdateServiceOutOfProcess::Update(const std::string& app_id,
-                                       UpdateService::Priority /*priority*/,
-                                       StateChangeCallback state_update,
-                                       Callback callback) {
+void UpdateServiceProxy::Update(const std::string& app_id,
+                                UpdateService::Priority /*priority*/,
+                                StateChangeCallback state_update,
+                                Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Reposts the call to the COM task runner. Adapts |callback| so that
@@ -335,7 +335,7 @@ void UpdateServiceOutOfProcess::Update(const std::string& app_id,
   com_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &UpdateServiceOutOfProcess::UpdateOnSTA, this, app_id,
+          &UpdateServiceProxy::UpdateOnSTA, this, app_id,
           base::BindRepeating(
               [](scoped_refptr<base::SequencedTaskRunner> taskrunner,
                  StateChangeCallback state_update, UpdateState update_state) {
@@ -352,11 +352,11 @@ void UpdateServiceOutOfProcess::Update(const std::string& app_id,
               base::SequencedTaskRunnerHandle::Get(), std::move(callback))));
 }
 
-void UpdateServiceOutOfProcess::Uninitialize() {
+void UpdateServiceProxy::Uninitialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void UpdateServiceOutOfProcess::GetVersionOnSTA(
+void UpdateServiceProxy::GetVersionOnSTA(
     base::OnceCallback<void(const base::Version&)> callback) const {
   DCHECK(com_task_runner_->BelongsToCurrentThread());
 
@@ -379,8 +379,8 @@ void UpdateServiceOutOfProcess::GetVersionOnSTA(
   std::move(callback).Run(base::Version(base::WideToUTF8(version.Get())));
 }
 
-void UpdateServiceOutOfProcess::UpdateAllOnSTA(StateChangeCallback state_update,
-                                               Callback callback) {
+void UpdateServiceProxy::UpdateAllOnSTA(StateChangeCallback state_update,
+                                        Callback callback) {
   DCHECK(com_task_runner_->BelongsToCurrentThread());
 
   Microsoft::WRL::ComPtr<IUpdater> updater;
@@ -414,9 +414,9 @@ void UpdateServiceOutOfProcess::UpdateAllOnSTA(StateChangeCallback state_update,
   }
 }
 
-void UpdateServiceOutOfProcess::UpdateOnSTA(const std::string& app_id,
-                                            StateChangeCallback state_update,
-                                            Callback callback) {
+void UpdateServiceProxy::UpdateOnSTA(const std::string& app_id,
+                                     StateChangeCallback state_update,
+                                     Callback callback) {
   DCHECK(com_task_runner_->BelongsToCurrentThread());
 
   Microsoft::WRL::ComPtr<IUpdater> updater;

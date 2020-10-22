@@ -17,7 +17,7 @@ class ControlService : public base::RefCountedThreadSafe<ControlService> {
   // Runs the ControlService and checks for updates if needed.
   virtual void Run(base::OnceClosure callback) = 0;
 
-  // When ControlServiceOutOfProcess::InitializeUpdateService is invoked, the
+  // When ControlServiceProxy::InitializeUpdateService is invoked, the
   // server will wake and do its ModeCheck. As a result, the candidate can be
   // qualified and promoted (thus initializing the UpdateService for this
   // candidate). This is intended as a way for --install and --register to have
