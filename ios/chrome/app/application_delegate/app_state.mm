@@ -28,8 +28,7 @@
 #import "ios/chrome/app/main_application_delegate.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/browsing_data/browsing_data_remover.h"
-#include "ios/chrome/browser/browsing_data/browsing_data_remover_factory.h"
+#import "ios/chrome/browser/browsing_data/sessions_storage_util.h"
 #include "ios/chrome/browser/chrome_constants.h"
 #include "ios/chrome/browser/crash_report/breakpad_helper.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
@@ -460,14 +459,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   for (UISceneSession* session in sceneSessions) {
     [sessionIDs addObject:session.persistentIdentifier];
   }
-  ChromeBrowserState* browserState =
-      _browserLauncher.interfaceProvider.mainInterface.browserState;
-  BrowsingDataRemoverFactory::GetForBrowserState(browserState)
-      ->RemoveSessionsData(sessionIDs);
-  ChromeBrowserState* incognitoBrowserState =
-      _browserLauncher.interfaceProvider.incognitoInterface.browserState;
-  BrowsingDataRemoverFactory::GetForBrowserState(incognitoBrowserState)
-      ->RemoveSessionsData(sessionIDs);
+  sessions_storage_util::MarkSessionsForRemoval(sessionIDs);
 }
 
 - (void)willResignActiveTabModel {

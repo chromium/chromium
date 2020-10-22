@@ -46,6 +46,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state_removal_controller.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_remover.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_remover_factory.h"
+#import "ios/chrome/browser/browsing_data/sessions_storage_util.h"
 #include "ios/chrome/browser/chrome_paths.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
@@ -123,6 +124,9 @@ NSString* const kStartupAttemptReset = @"StartupAttempReset";
 
 // Constants for deferring memory debugging tools startup.
 NSString* const kMemoryDebuggingToolsStartup = @"MemoryDebuggingToolsStartup";
+
+// Constant for deferring the cleanup of discarded sessions on disk.
+NSString* const kCleanupDiscardedSessions = @"CleanupDiscardedSessions";
 
 // Constants for deferring mailto handling initialization.
 NSString* const kMailtoHandlingInitialization = @"MailtoHandlingInitialization";
@@ -273,6 +277,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 - (bool)mustShowRestoreInfobar;
 // Cleanup snapshots on disk.
 - (void)cleanupSnapshots;
+// Cleanup discarded sessions on disk.
+- (void)cleanupDiscardedSessions;
 // Sets a LocalState pref marking the TOS EULA as accepted.
 - (void)markEulaAsAccepted;
 // Sends any feedback that happens to still be on local storage.
@@ -296,6 +302,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 - (void)scheduleStartupAttemptReset;
 // Asynchronously schedules the cleanup of crash reports.
 - (void)scheduleCrashReportCleanup;
+// Asynchronously schedules the cleanup of discarded session files on disk.
+- (void)scheduleDiscardedSessionsCleanup;
 // Asynchronously schedules the cleanup of snapshots on disk.
 - (void)scheduleSnapshotsCleanup;
 // Schedules various cleanup tasks that are performed after launch.
@@ -832,6 +840,14 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
                   }];
 }
 
+- (void)scheduleDiscardedSessionsCleanup {
+  [[DeferredInitializationRunner sharedInstance]
+      enqueueBlockNamed:kCleanupDiscardedSessions
+                  block:^{
+                    [self cleanupDiscardedSessions];
+                  }];
+}
+
 - (void)scheduleSnapshotsCleanup {
   [[DeferredInitializationRunner sharedInstance]
       enqueueBlockNamed:kCleanupSnapshots
@@ -855,6 +871,9 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
           self.appState.mainBrowserState->GetOffTheRecordChromeBrowserState());
     }
   }
+
+  // Remove all discarded sessions from disk.
+  [self scheduleDiscardedSessionsCleanup];
 
   // If the user chooses to restore their session, some cached snapshots may
   // be needed. Otherwise, cleanup the snapshots.
@@ -1132,6 +1151,20 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   for (Browser* browser : browser_list->AllIncognitoBrowsers()) {
     SnapshotBrowserAgent::FromBrowser(browser)->PerformStorageMaintenance();
   }
+}
+
+- (void)cleanupDiscardedSessions {
+  NSArray<NSString*>* sessionIDs =
+      sessions_storage_util::GetDiscardedSessions();
+  if (!sessionIDs)
+    return;
+  BrowsingDataRemoverFactory::GetForBrowserState(
+      self.appState.mainBrowserState->GetOriginalChromeBrowserState())
+      ->RemoveSessionsData(sessionIDs);
+  BrowsingDataRemoverFactory::GetForBrowserState(
+      self.appState.mainBrowserState->GetOffTheRecordChromeBrowserState())
+      ->RemoveSessionsData(sessionIDs);
+  sessions_storage_util::ResetDiscardedSessions();
 }
 
 - (void)markEulaAsAccepted {
