@@ -26,7 +26,7 @@ const CLSID CLSID_UpdaterServiceClass = {
     {0x93, 0xAC, 0x1B, 0xA6, 0xE5, 0xFD, 0x4E, 0x93}};
 
 // {1F87FE2F-D6A9-4711-9D11-8187705F8457}
-const CLSID CLSID_UpdaterControlServiceClass{
+const CLSID CLSID_UpdaterControlClass{
     0x1f87fe2f,
     0xd6a9,
     0x4711,

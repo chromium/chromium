@@ -152,7 +152,7 @@ void ControlServiceProxy::RunOnSTA(base::OnceClosure callback) {
   DCHECK(com_task_runner_->BelongsToCurrentThread());
 
   Microsoft::WRL::ComPtr<IUnknown> server;
-  HRESULT hr = ::CoCreateInstance(CLSID_UpdaterControlServiceClass, nullptr,
+  HRESULT hr = ::CoCreateInstance(CLSID_UpdaterControlClass, nullptr,
                                   CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&server));
   if (FAILED(hr)) {
     DVLOG(2) << "Failed to instantiate the updater control server. " << std::hex
@@ -215,7 +215,7 @@ void ControlServiceProxy::InitializeUpdateServiceOnSTA(
   DCHECK(com_task_runner_->BelongsToCurrentThread());
 
   Microsoft::WRL::ComPtr<IUnknown> server;
-  HRESULT hr = ::CoCreateInstance(CLSID_UpdaterControlServiceClass, nullptr,
+  HRESULT hr = ::CoCreateInstance(CLSID_UpdaterControlClass, nullptr,
                                   CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&server));
   if (FAILED(hr)) {
     DVLOG(2) << "Failed to instantiate the updater control server. " << std::hex

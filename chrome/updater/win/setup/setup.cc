@@ -48,9 +48,8 @@ void AddComServerWorkItems(HKEY root,
     return;
   }
 
-  for (const auto& clsid :
-       {__uuidof(UpdaterClass), CLSID_UpdaterControlServiceClass,
-        CLSID_GoogleUpdate3WebUserClass}) {
+  for (const auto& clsid : {__uuidof(UpdaterClass), CLSID_UpdaterControlClass,
+                            CLSID_GoogleUpdate3WebUserClass}) {
     const base::string16 clsid_reg_path = GetComServerClsidRegistryPath(clsid);
 
     // Delete any old registrations first.
