@@ -117,7 +117,7 @@ DCLayerResult ValidateYUVQuad(
     return DC_LAYER_FAILED_TOO_MANY_OVERLAYS;
 
   // Rounded corner on overlays are not supported.
-  if (!quad->shared_quad_state->rounded_corner_bounds.IsEmpty())
+  if (quad->shared_quad_state->mask_filter_info.HasRoundedCorners())
     return DC_LAYER_FAILED_ROUNDED_CORNERS;
 
   auto quad_target_rect = gfx::ToEnclosingRect(ClippedQuadRectangle(quad));
@@ -185,7 +185,7 @@ DCLayerResult ValidateTextureQuad(
   }
 
   // Rounded corner on overlays are not supported.
-  if (!quad->shared_quad_state->rounded_corner_bounds.IsEmpty())
+  if (quad->shared_quad_state->mask_filter_info.HasRoundedCorners())
     return DC_LAYER_FAILED_ROUNDED_CORNERS;
 
   auto quad_target_rect = gfx::ToEnclosingRect(ClippedQuadRectangle(quad));

@@ -34,7 +34,6 @@ EffectNode::EffectNode()
       has_masking_child(false),
       effect_changed(false),
       subtree_has_copy_request(false),
-      is_fast_rounded_corner(false),
       node_or_ancestor_has_filters(false),
       affected_by_backdrop_filter(false),
       render_surface_reason(RenderSurfaceReason::kNone),
@@ -60,8 +59,7 @@ bool EffectNode::operator==(const EffectNode& other) const {
          backdrop_filters == other.backdrop_filters &&
          backdrop_filter_bounds == other.backdrop_filter_bounds &&
          backdrop_mask_element_id == other.backdrop_mask_element_id &&
-         rounded_corner_bounds == other.rounded_corner_bounds &&
-         is_fast_rounded_corner == other.is_fast_rounded_corner &&
+         mask_filter_info == other.mask_filter_info &&
          node_or_ancestor_has_filters == other.node_or_ancestor_has_filters &&
          affected_by_backdrop_filter == other.affected_by_backdrop_filter &&
          // The specific reason is just for tracing/testing/debugging, so just
@@ -158,12 +156,18 @@ void EffectNode::AsValueInto(base::trace_event::TracedValue* value) const {
   if (!backdrop_filters.IsEmpty())
     value->SetString("backdrop_filters", backdrop_filters.ToString());
   value->SetDouble("backdrop_filter_quality", backdrop_filter_quality);
-  value->SetBoolean("is_fast_rounded_corner", is_fast_rounded_corner);
   value->SetBoolean("node_or_ancestor_has_filters",
                     node_or_ancestor_has_filters);
-  if (!rounded_corner_bounds.IsEmpty()) {
-    MathUtil::AddToTracedValue("rounded_corner_bounds", rounded_corner_bounds,
+  if (!mask_filter_info.IsEmpty()) {
+    MathUtil::AddToTracedValue("mask_filter_bounds", mask_filter_info.bounds(),
                                value);
+    if (mask_filter_info.HasRoundedCorners()) {
+      MathUtil::AddCornerRadiiToTracedValue(
+          "mask_filter_rounded_corner_raii",
+          mask_filter_info.rounded_corner_bounds(), value);
+      value->SetBoolean("mask_filter_is_fast_rounded_corner",
+                        mask_filter_info.is_fast_rounded_corner());
+    }
   }
   value->SetString("blend_mode", SkBlendMode_Name(blend_mode));
   value->SetBoolean("cache_render_surface", cache_render_surface);

@@ -29,7 +29,6 @@
 
 namespace gfx {
 class Rect;
-class RRectF;
 class Transform;
 }  // namespace gfx
 
@@ -44,6 +43,10 @@ class RasterContextProvider;
 class CompositorRenderPass;
 class SharedBitmapReporter;
 }  // namespace viz
+
+namespace gfx {
+class MaskFilterInfo;
+}
 
 namespace media {
 class PaintCanvasVideoRenderer;
@@ -120,7 +123,7 @@ class MEDIA_EXPORT VideoResourceUpdater
                    gfx::Transform transform,
                    gfx::Rect quad_rect,
                    gfx::Rect visible_quad_rect,
-                   const gfx::RRectF& rounded_corner_bounds,
+                   const gfx::MaskFilterInfo& mask_filter_info,
                    gfx::Rect clip_rect,
                    bool is_clipped,
                    bool context_opaque,

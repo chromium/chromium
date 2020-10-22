@@ -20,6 +20,7 @@
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/mask_filter_info.h"
 #include "ui/gfx/transform.h"
 
 namespace cc {
@@ -54,11 +55,11 @@ class CC_EXPORT RenderSurfaceImpl {
   }
   float draw_opacity() const { return draw_properties_.draw_opacity; }
 
-  void SetRoundedCornerRRect(const gfx::RRectF& rounded_corner_bounds) {
-    draw_properties_.rounded_corner_bounds = rounded_corner_bounds;
+  void SetMaskFilterInfo(const gfx::MaskFilterInfo& mask_filter_info) {
+    draw_properties_.mask_filter_info = mask_filter_info;
   }
-  const gfx::RRectF& rounded_corner_bounds() const {
-    return draw_properties_.rounded_corner_bounds;
+  const gfx::MaskFilterInfo& mask_filter_info() const {
+    return draw_properties_.mask_filter_info;
   }
 
   SkBlendMode BlendMode() const;
@@ -241,10 +242,10 @@ class CC_EXPORT RenderSurfaceImpl {
     // True if the surface needs to be clipped by clip_rect.
     bool is_clipped : 1;
 
-    // Contains a rounded corner rect to clip this render surface by when
-    // drawing. This rrect is in the target space of the render surface.  The
-    // root render surface will never have this set.
-    gfx::RRectF rounded_corner_bounds;
+    // Contains a mask information applied to the layer. The coordinates is in
+    // the target space of the render surface. The root render surface will
+    // never have this set.
+    gfx::MaskFilterInfo mask_filter_info;
   };
 
   DrawProperties draw_properties_;

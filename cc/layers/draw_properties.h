@@ -11,7 +11,7 @@
 
 #include "cc/trees/occlusion.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/rrect_f.h"
+#include "ui/gfx/mask_filter_info.h"
 #include "ui/gfx/transform.h"
 
 namespace cc {
@@ -45,10 +45,6 @@ struct CC_EXPORT DrawProperties {
   // True if the layer needs to be clipped by clip_rect.
   bool is_clipped = false;
 
-  // If set, it makes the layer's rounded corner not trigger a render surface if
-  // possible.
-  bool is_fast_rounded_corner = false;
-
   // This rect is a bounding box around what part of the layer is visible, in
   // the layer's coordinate space.
   gfx::Rect visible_layer_rect;
@@ -61,9 +57,9 @@ struct CC_EXPORT DrawProperties {
   // value is used to avoid unnecessarily changing GL scissor state.
   gfx::Rect clip_rect;
 
-  // Contains a rounded corner rect to clip this layer when drawing. This rrect
-  // is in the target space of the layer.
-  gfx::RRectF rounded_corner_bounds;
+  // Contains a mask information applied to the layer. The coordinates is in the
+  // target space of the layer.
+  gfx::MaskFilterInfo mask_filter_info;
 };
 
 }  // namespace cc

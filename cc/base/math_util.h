@@ -16,6 +16,7 @@
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/scroll_offset.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/transform.h"
@@ -303,6 +304,9 @@ class CC_BASE_EXPORT MathUtil {
   static void AddToTracedValue(const char* name,
                                const gfx::RRectF& rect,
                                base::trace_event::TracedValue* res);
+  static void AddCornerRadiiToTracedValue(const char* name,
+                                          const gfx::RRectF& rect,
+                                          base::trace_event::TracedValue* res);
 
   // Returns a base::Value representation of the floating point value.
   // If the value is inf, returns max double/float representation.

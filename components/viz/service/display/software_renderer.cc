@@ -259,7 +259,8 @@ void SoftwareRenderer::DoDrawQuad(const DrawQuad* quad,
   }
 
   if (should_apply_rounded_corner)
-    SetClipRRect(quad->shared_quad_state->rounded_corner_bounds);
+    SetClipRRect(
+        quad->shared_quad_state->mask_filter_info.rounded_corner_bounds());
 
   gfx::Transform quad_rect_matrix;
   QuadRectTransform(&quad_rect_matrix,

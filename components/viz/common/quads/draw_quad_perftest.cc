@@ -42,9 +42,9 @@ SharedQuadState* CreateSharedQuadState(CompositorRenderPass* render_pass) {
   SkBlendMode blend_mode = SkBlendMode::kSrcOver;
 
   SharedQuadState* state = render_pass->CreateAndAppendSharedQuadState();
-  state->SetAll(quad_transform, content_rect, visible_layer_rect, gfx::RRectF(),
-                clip_rect, is_clipped, are_contents_opaque, opacity, blend_mode,
-                sorting_context_id);
+  state->SetAll(quad_transform, content_rect, visible_layer_rect,
+                gfx::MaskFilterInfo(), clip_rect, is_clipped,
+                are_contents_opaque, opacity, blend_mode, sorting_context_id);
   return state;
 }
 

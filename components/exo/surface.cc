@@ -1108,7 +1108,7 @@ void Surface::AppendContentsToFrame(const gfx::Point& origin,
   quad_state->SetAll(
       quad_to_target_transform, quad_rect /*quad_layer_rect=*/,
       quad_rect /*visible_quad_layer_rect=*/,
-      gfx::RRectF() /*rounded_corner_bounds=*/, gfx::Rect() /*clip_rect=*/,
+      gfx::MaskFilterInfo() /*mask_filter_info=*/, gfx::Rect() /*clip_rect=*/,
       false /*is_clipped=*/, are_contents_opaque, state_.alpha /*opacity=*/,
       SkBlendMode::kSrcOver /*blend_mode=*/, 0 /*sorting_context_id=*/);
   quad_state->no_damage = damage_rect.IsEmpty();
