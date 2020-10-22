@@ -42,9 +42,10 @@ if (crashpad_is_standalone) {
 }
 
 if (current_os == "win") {
-  set_default_toolchain("$_mini_chromium_dir/build:msvc_toolchain_$current_cpu")
+  set_default_toolchain(
+      "$_mini_chromium_dir/build/config:msvc_toolchain_$current_cpu")
 } else {
-  set_default_toolchain("$_mini_chromium_dir/build:gcc_like_toolchain")
+  set_default_toolchain("$_mini_chromium_dir/build/config:gcc_like_toolchain")
 }
 
 declare_args() {
@@ -59,18 +60,18 @@ declare_args() {
 }
 
 _default_configs = [
-  "$_mini_chromium_dir/build:default",
-  "$_mini_chromium_dir/build:Wexit_time_destructors",
-  "$_mini_chromium_dir/build:Wimplicit_fallthrough",
+  "$_mini_chromium_dir/build/config:default",
+  "$_mini_chromium_dir/build/config:Wexit_time_destructors",
+  "$_mini_chromium_dir/build/config:Wimplicit_fallthrough",
 ]
 
 if (crashpad_use_libfuzzer) {
-  _default_configs += [ "//build:crashpad_fuzzer_flags" ]
+  _default_configs += [ "//build/config:crashpad_fuzzer_flags" ]
 }
 
 _default_executable_configs = _default_configs + [
-                                "$_mini_chromium_dir/build:executable",
-                                "$_mini_chromium_dir/build:win_console",
+                                "$_mini_chromium_dir/build/config:executable",
+                                "$_mini_chromium_dir/build/config:win_console",
                               ]
 
 set_defaults("source_set") {

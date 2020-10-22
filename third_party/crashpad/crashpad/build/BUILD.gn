@@ -52,7 +52,7 @@ if (crashpad_is_ios) {
       public_configs = [ "//build/config/compiler:enable_arc" ]
     } else if (crashpad_is_standalone) {
       public_configs =
-          [ "//third_party/mini_chromium/mini_chromium/build:ios_enable_arc" ]
+          [ "//third_party/mini_chromium/mini_chromium/build/config:ios_enable_arc" ]
     }
   }
 

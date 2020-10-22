@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "base/logging.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "test/main_arguments.h"
@@ -98,6 +99,12 @@ int main(int argc, char* argv[]) {
   }
 
 #endif  // CRASHPAD_IS_IN_CHROMIUM
+
+  // base::TestSuite initializes logging when using Chromium's test launcher.
+  logging::LoggingSettings settings;
+  settings.logging_dest =
+      logging::LOG_TO_STDERR | logging::LOG_TO_SYSTEM_DEBUG_LOG;
+  logging::InitLogging(settings);
 
 #if defined(CRASHPAD_TEST_LAUNCHER_GOOGLEMOCK)
   testing::InitGoogleMock(&argc, argv);

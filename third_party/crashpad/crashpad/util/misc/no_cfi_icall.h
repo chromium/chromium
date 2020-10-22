@@ -50,7 +50,7 @@ template <typename Functor>
 struct FunctorTraits;
 
 template <typename R, typename... Args>
-struct FunctorTraits<R (*)(Args...)> {
+struct FunctorTraits<R (*)(Args...) noexcept> {
   template <typename Function, typename... RunArgs>
   DISABLE_CFI_ICALL static R Invoke(Function&& function, RunArgs&&... args) {
     return std::forward<Function>(function)(std::forward<RunArgs>(args)...);
@@ -58,7 +58,7 @@ struct FunctorTraits<R (*)(Args...)> {
 };
 
 template <typename R, typename... Args>
-struct FunctorTraits<R (*)(Args..., ...)> {
+struct FunctorTraits<R (*)(Args..., ...) noexcept> {
   template <typename Function, typename... RunArgs>
   DISABLE_CFI_ICALL static R Invoke(Function&& function, RunArgs&&... args) {
     return std::forward<Function>(function)(std::forward<RunArgs>(args)...);
@@ -67,7 +67,7 @@ struct FunctorTraits<R (*)(Args..., ...)> {
 
 #if defined(OS_WIN) && defined(ARCH_CPU_X86)
 template <typename R, typename... Args>
-struct FunctorTraits<R(__stdcall*)(Args...)> {
+struct FunctorTraits<R(__stdcall*)(Args...) noexcept> {
   template <typename... RunArgs>
   DISABLE_CFI_ICALL static R Invoke(R(__stdcall* function)(Args...),
                                     RunArgs&&... args) {

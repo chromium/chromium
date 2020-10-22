@@ -427,7 +427,8 @@ TEST_P(StartHandlerForSelfTest, StartHandlerInChild) {
     // TODO(jperaza): test first chance handlers with real crashes.
     return;
   }
-#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
+    defined(UNDEFINED_SANITIZER)
   if (Options().crash_type == CrashType::kInfiniteRecursion) {
     GTEST_SKIP();
   }

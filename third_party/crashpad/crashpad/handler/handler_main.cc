@@ -504,16 +504,26 @@ class ScopedStoppable {
   DISALLOW_COPY_AND_ASSIGN(ScopedStoppable);
 };
 
+void InitCrashpadLogging() {
+  logging::LoggingSettings settings;
+#if defined(OS_CHROMEOS)
+  settings.logging_dest = logging::LOG_TO_FILE;
+  settings.log_file_path = "/var/log/chrome/chrome";
+#elif defined(OS_WIN)
+  settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
+#else
+  settings.logging_dest =
+      logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
+#endif
+  logging::InitLogging(settings);
+}
+
 }  // namespace
 
 int HandlerMain(int argc,
                 char* argv[],
                 const UserStreamDataSources* user_stream_sources) {
-#if defined(OS_CHROMEOS)
-  if (freopen("/var/log/chrome/chrome", "a", stderr) == nullptr) {
-    PLOG(ERROR) << "Failed to redirect stderr to /var/log/chrome/chrome";
-  }
-#endif
+  InitCrashpadLogging();
 
   InstallCrashHandler();
   CallMetricsRecordNormalExit metrics_record_normal_exit;

@@ -369,21 +369,23 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
   g_log_format = settings.log_format;
 #endif
 
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  // Don't bother initializing |g_vlog_info| unless we use one of the
-  // vlog switches.
-  if (command_line->HasSwitch(switches::kV) ||
-      command_line->HasSwitch(switches::kVModule)) {
-    // NOTE: If |g_vlog_info| has already been initialized, it might be in use
-    // by another thread. Don't delete the old VLogInfo, just create a second
-    // one. We keep track of both to avoid memory leak warnings.
-    CHECK(!g_vlog_info_prev);
-    g_vlog_info_prev = g_vlog_info;
+  if (base::CommandLine::InitializedForCurrentProcess()) {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    // Don't bother initializing |g_vlog_info| unless we use one of the
+    // vlog switches.
+    if (command_line->HasSwitch(switches::kV) ||
+        command_line->HasSwitch(switches::kVModule)) {
+      // NOTE: If |g_vlog_info| has already been initialized, it might be in use
+      // by another thread. Don't delete the old VLogInfo, just create a second
+      // one. We keep track of both to avoid memory leak warnings.
+      CHECK(!g_vlog_info_prev);
+      g_vlog_info_prev = g_vlog_info;
 
-    g_vlog_info =
-        new VlogInfo(command_line->GetSwitchValueASCII(switches::kV),
-                     command_line->GetSwitchValueASCII(switches::kVModule),
-                     &g_min_log_level);
+      g_vlog_info =
+          new VlogInfo(command_line->GetSwitchValueASCII(switches::kV),
+                       command_line->GetSwitchValueASCII(switches::kVModule),
+                       &g_min_log_level);
+    }
   }
 
   g_logging_destination = settings.logging_dest;
@@ -394,7 +396,10 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
     config.min_severity = FX_LOG_INFO;
     config.console_fd = -1;
     config.log_service_channel = ZX_HANDLE_INVALID;
-    std::string log_tag = command_line->GetProgram().BaseName().AsUTF8Unsafe();
+    std::string log_tag = base::CommandLine::ForCurrentProcess()
+                              ->GetProgram()
+                              .BaseName()
+                              .AsUTF8Unsafe();
     const char* log_tag_data = log_tag.data();
     config.tags = &log_tag_data;
     config.num_tags = 1;

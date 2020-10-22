@@ -113,12 +113,9 @@ if (zlib_source == "external") {
     }
 
     if (crashpad_is_standalone) {
-      configs -= [
-        "//third_party/mini_chromium/mini_chromium/build:Wimplicit_fallthrough",
-      ]
+      configs -= [ "//third_party/mini_chromium/mini_chromium/build/config:Wimplicit_fallthrough" ]
     } else if (crashpad_is_external) {
-      configs -=
-          [ "//../../mini_chromium/mini_chromium/build:Wimplicit_fallthrough" ]
+      configs -= [ "//../../mini_chromium/mini_chromium/build/config:Wimplicit_fallthrough" ]
     }
 
     if (zlib_source == "embedded") {

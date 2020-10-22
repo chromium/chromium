@@ -91,7 +91,7 @@ if (crashpad_is_in_chromium) {
     ]
     sources -= [ "$googletest_dir/googletest/src/gtest-all.cc" ]
     public_configs = [ ":googletest_public_config" ]
-    configs -= [ "$mini_chromium_dir/build:Wexit_time_destructors" ]
+    configs -= [ "$mini_chromium_dir/build/config:Wexit_time_destructors" ]
     configs += [ ":googletest_private_config" ]
     if (crashpad_is_fuchsia) {
       deps = [ "../fuchsia" ]
@@ -127,7 +127,7 @@ if (crashpad_is_in_chromium) {
       "$googletest_dir/googletest/test/production.cc",
       "$googletest_dir/googletest/test/production.h",
     ]
-    configs -= [ "$mini_chromium_dir/build:Wexit_time_destructors" ]
+    configs -= [ "$mini_chromium_dir/build/config:Wexit_time_destructors" ]
     configs += [ ":googletest_private_config" ]
     deps = [
       ":googletest",
@@ -166,7 +166,7 @@ if (crashpad_is_in_chromium) {
       "$googletest_dir/googletest/test/googletest-param-test-test.h",
       "$googletest_dir/googletest/test/googletest-param-test2-test.cc",
     ]
-    configs -= [ "$mini_chromium_dir/build:Wexit_time_destructors" ]
+    configs -= [ "$mini_chromium_dir/build/config:Wexit_time_destructors" ]
     configs += [ ":googletest_private_config" ]
     deps = [ ":googletest" ]
 
@@ -282,7 +282,7 @@ if (crashpad_is_in_chromium) {
     ]
     sources -= [ "$googletest_dir/googlemock/src/gmock-all.cc" ]
     public_configs = [ ":googlemock_public_config" ]
-    configs -= [ "$mini_chromium_dir/build:Wexit_time_destructors" ]
+    configs -= [ "$mini_chromium_dir/build/config:Wexit_time_destructors" ]
     configs += [ ":googlemock_private_config" ]
     deps = [ ":googletest" ]
   }
@@ -350,7 +350,7 @@ if (crashpad_is_in_chromium) {
 
   test("gmock_stress_test") {
     sources = [ "$googletest_dir/googlemock/test/gmock_stress_test.cc" ]
-    configs -= [ "$mini_chromium_dir/build:Wexit_time_destructors" ]
+    configs -= [ "$mini_chromium_dir/build/config:Wexit_time_destructors" ]
     configs += [ ":googlemock_private_config" ]
     deps = [
       ":googlemock",

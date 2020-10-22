@@ -34,13 +34,16 @@ namespace test {
 namespace {
 
 TEST(NoCfiIcall, NullptrIsFalse) {
-  NoCfiIcall<void (*)(void)> call(nullptr);
+  NoCfiIcall<void (*)(void) noexcept> call(nullptr);
   ASSERT_FALSE(call);
 }
 
+int TestFunc() noexcept {
+  return 42;
+}
+
 TEST(NoCfiIcall, SameDSOICall) {
-  static int (*func)() = []() { return 42; };
-  NoCfiIcall<decltype(func)> call(func);
+  NoCfiIcall<decltype(TestFunc)*> call(&TestFunc);
   ASSERT_TRUE(call);
   ASSERT_EQ(call(), 42);
 }

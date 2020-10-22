@@ -637,10 +637,9 @@ if (!crashpad_is_android && !crashpad_is_ios) {
     ]
 
     if (crashpad_is_standalone) {
-      remove_configs = [ "//third_party/mini_chromium/mini_chromium/build:Wexit_time_destructors" ]
+      remove_configs = [ "//third_party/mini_chromium/mini_chromium/build/config:Wexit_time_destructors" ]
     } else if (crashpad_is_external) {
-      remove_configs =
-          [ "//../../mini_chromium/mini_chromium/build:Wexit_time_destructors" ]
+      remove_configs = [ "//../../mini_chromium/mini_chromium/build/config:Wexit_time_destructors" ]
     }
 
     if (crashpad_is_win) {
