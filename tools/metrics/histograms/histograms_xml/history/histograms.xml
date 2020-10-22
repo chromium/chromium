@@ -597,12 +597,33 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="History.InMemoryURLIndexingTime" units="ms"
-    expires_after="2021-03-30">
+    expires_after="2021-06-30">
   <owner>mpearson@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
     Time to rebuild in-memory url index from main history database. Recorded
     once shortly after profile open.
+  </summary>
+</histogram>
+
+<histogram name="History.InMemoryURLIndexRestoreCacheTime" units="ms"
+    expires_after="2021-06-30">
+  <owner>tommycli@chromium.org</owner>
+  <owner>mpearson@chromium.org</owner>
+  <summary>
+    Time to restore the in-memory url index from disk cache. Recorded on profile
+    open.
+  </summary>
+</histogram>
+
+<histogram name="History.InMemoryURLIndexSaveCacheTime" units="ms"
+    expires_after="2021-06-30">
+  <owner>tommycli@chromium.org</owner>
+  <owner>mpearson@chromium.org</owner>
+  <summary>
+    Time to write in-memory url index to disk cache. Recorded once shortly after
+    profile open (after rebuilding the in-memory url index from history) and
+    again upon (clean) shutdown.
   </summary>
 </histogram>
 
