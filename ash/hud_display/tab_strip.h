@@ -9,6 +9,7 @@
 #include "base/strings/string16.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/view.h"
 
 namespace gfx {
 class Canvas;
@@ -36,7 +37,6 @@ class HUDTabButton : public views::LabelButton {
   METADATA_HEADER(HUDTabButton);
 
   HUDTabButton(Style style,
-               HUDTabStrip* tab_strip,
                const DisplayMode display_mode,
                const base::string16& text);
   HUDTabButton(const HUDTabButton&) = delete;
@@ -59,7 +59,7 @@ class HUDTabButton : public views::LabelButton {
   DisplayMode display_mode_;
 };
 
-class HUDTabStrip : public views::View, public views::ButtonListener {
+class HUDTabStrip : public views::View {
  public:
   METADATA_HEADER(HUDTabStrip);
 
@@ -70,12 +70,8 @@ class HUDTabStrip : public views::View, public views::ButtonListener {
 
   ~HUDTabStrip() override;
 
-  HUDTabButton* AddTabButton(HUDDisplayView* hud,
-                             const DisplayMode display_mode,
+  HUDTabButton* AddTabButton(const DisplayMode display_mode,
                              const base::string16& label);
-
-  // views::ButtonListener
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // Mark tabs around the active one need repaint to modify borders.
   void ActivateTab(DisplayMode mode);

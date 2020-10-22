@@ -9,9 +9,11 @@
 #include "ash/hud_display/hud_properties.h"
 #include "ash/hud_display/legend.h"
 #include "ash/hud_display/solid_source_background.h"
+#include "base/bind.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -31,8 +33,8 @@ class MinMaxButton : public views::ImageButton {
  public:
   METADATA_HEADER(MinMaxButton);
 
-  explicit MinMaxButton(views::ButtonListener* listener)
-      : views::ImageButton(listener) {
+  explicit MinMaxButton(views::Button::PressedCallback callback)
+      : views::ImageButton(callback) {
     SetBorder(views::CreateEmptyBorder(gfx::Insets(kMinMaxButtonBorder)));
     SetBackground(std::make_unique<SolidSourceBackground>(kHUDLegendBackground,
                                                           /*radius=*/0));
@@ -109,8 +111,9 @@ GraphPageViewBase::GraphPageViewBase() {
       views::CreateEmptyBorder(gfx::Insets(kLegendPositionOffset)));
   legend_container_->SetVisible(false);
 
-  legend_min_max_button_ =
-      legend_container_->AddChildView(std::make_unique<MinMaxButton>(this));
+  legend_min_max_button_ = legend_container_->AddChildView(
+      std::make_unique<MinMaxButton>(base::BindRepeating(
+          &GraphPageViewBase::OnButtonPressed, base::Unretained(this))));
   SetMinimizeIconToButton(legend_min_max_button_);
 }
 
@@ -118,7 +121,7 @@ GraphPageViewBase::~GraphPageViewBase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
 }
 
-void GraphPageViewBase::ButtonPressed(views::Button*, ui::Event const&) {
+void GraphPageViewBase::OnButtonPressed() {
   if (legend_->GetVisible()) {
     legend_->SetVisible(false);
     SetRestoreIconToButton(legend_min_max_button_);

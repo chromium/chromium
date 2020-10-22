@@ -6,7 +6,7 @@
 #define ASH_HUD_DISPLAY_HUD_DISPLAY_H_
 
 #include "base/sequence_checker.h"
-#include "ui/views/controls/button/button.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace ash {
@@ -18,8 +18,7 @@ class HUDHeaderView;
 class HUDSettingsView;
 
 // HUDDisplayView class can be used to display a system monitoring overview.
-class HUDDisplayView : public views::WidgetDelegateView,
-                       public views::ButtonListener {
+class HUDDisplayView : public views::WidgetDelegateView {
  public:
   METADATA_HEADER(HUDDisplayView);
 
@@ -33,9 +32,6 @@ class HUDDisplayView : public views::WidgetDelegateView,
   views::ClientView* CreateClientView(views::Widget* widget) override;
   void OnWidgetInitialized() override;
 
-  // views::ButtonListener
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // Destroys global instance.
   static void Destroy();
 
@@ -48,6 +44,9 @@ class HUDDisplayView : public views::WidgetDelegateView,
 
   // Changes UI display mode.
   void SetDisplayMode(const DisplayMode display_mode);
+
+  // Callback from SettingsButton.
+  void OnSettingsToggle();
 
  private:
   HUDHeaderView* header_view_ = nullptr;             // not owned

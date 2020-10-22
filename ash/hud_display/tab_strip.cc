@@ -8,6 +8,7 @@
 
 #include "ash/hud_display/hud_display.h"
 #include "ash/hud_display/hud_properties.h"
+#include "base/bind.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/text_constants.h"
@@ -76,10 +77,9 @@ BEGIN_METADATA(HUDTabButton, views::LabelButton)
 END_METADATA
 
 HUDTabButton::HUDTabButton(Style style,
-                           HUDTabStrip* tab_strip,
                            const DisplayMode display_mode,
                            const base::string16& text)
-    : views::LabelButton(tab_strip, text),
+    : views::LabelButton(nullptr, text),
       style_(style),
       display_mode_(display_mode) {
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
@@ -169,27 +169,26 @@ HUDTabStrip::HUDTabStrip(HUDDisplayView* hud) : hud_(hud) {
 
 HUDTabStrip::~HUDTabStrip() = default;
 
-HUDTabButton* HUDTabStrip::AddTabButton(HUDDisplayView* hud,
-                                        const DisplayMode display_mode,
+HUDTabButton* HUDTabStrip::AddTabButton(const DisplayMode display_mode,
                                         const base::string16& label) {
   CHECK_NE(static_cast<int>(display_mode), 0);
   // Make first tab active by default.
   HUDTabButton* tab_button = AddChildView(std::make_unique<HUDTabButton>(
       tabs_.size() ? HUDTabButton::Style::RIGHT : HUDTabButton::Style::ACTIVE,
-      this, display_mode, label));
+      display_mode, label));
+  tab_button->SetCallback(base::BindRepeating(
+      [](HUDTabButton* sender, HUDTabStrip* tab_strip) {
+        for (const auto* tab : tab_strip->tabs_) {
+          if (tab == sender) {
+            tab_strip->hud_->SetDisplayMode(tab->display_mode());
+            return;
+          }
+        }
+        NOTREACHED();
+      },
+      base::Unretained(tab_button), base::Unretained(this)));
   tabs_.push_back(tab_button);
   return tab_button;
-}
-
-void HUDTabStrip::ButtonPressed(views::Button* sender,
-                                const ui::Event& /*event*/) {
-  for (const auto* tab : tabs_) {
-    if (tab == sender) {
-      hud_->SetDisplayMode(tab->display_mode());
-      return;
-    }
-  }
-  NOTREACHED();
 }
 
 void HUDTabStrip::ActivateTab(const DisplayMode mode) {

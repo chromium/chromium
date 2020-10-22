@@ -135,9 +135,9 @@ HUDDisplayView::HUDDisplayView() {
   // Setup header.
 
   // TODO: Add tab buttons via:
-  header_view_->tab_strip()->AddTabButton(this, DisplayMode::CPU_DISPLAY,
+  header_view_->tab_strip()->AddTabButton(DisplayMode::CPU_DISPLAY,
                                           base::ASCIIToUTF16("CPU"));
-  header_view_->tab_strip()->AddTabButton(this, DisplayMode::MEMORY_DISPLAY,
+  header_view_->tab_strip()->AddTabButton(DisplayMode::MEMORY_DISPLAY,
                                           base::ASCIIToUTF16("RAM"));
 
   // Setup data.
@@ -189,8 +189,7 @@ void HUDDisplayView::OnWidgetInitialized() {
 }
 
 // There is only one button.
-void HUDDisplayView::ButtonPressed(views::Button* /*sender*/,
-                                   const ui::Event& /*event*/) {
+void HUDDisplayView::OnSettingsToggle() {
   settings_view_->ToggleVisibility();
   graphs_container_->SetVisible(!settings_view_->GetVisible());
 }

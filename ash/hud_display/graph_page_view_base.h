@@ -8,7 +8,6 @@
 #include "ash/hud_display/data_source.h"
 #include "ash/hud_display/legend.h"
 #include "base/sequence_checker.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -22,7 +21,7 @@ class Grid;
 class Legend;
 
 // Interface for a single graph page.
-class GraphPageViewBase : public views::View, public views::ButtonListener {
+class GraphPageViewBase : public views::View {
  public:
   METADATA_HEADER(GraphPageViewBase);
 
@@ -30,9 +29,6 @@ class GraphPageViewBase : public views::View, public views::ButtonListener {
   GraphPageViewBase(const GraphPageViewBase&) = delete;
   GraphPageViewBase& operator=(const GraphPageViewBase&) = delete;
   ~GraphPageViewBase() override;
-
-  // views::ButtonListener
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // Update page data from the new snapshot.
   virtual void UpdateData(const DataSource::Snapshot& snapshot) = 0;
@@ -54,6 +50,8 @@ class GraphPageViewBase : public views::View, public views::ButtonListener {
   void RefreshLegendValues();
 
  private:
+  void OnButtonPressed();
+
   // Container for the Grid object.
   views::View* grid_container_ = nullptr;  // not owned
 
