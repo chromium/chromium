@@ -333,8 +333,10 @@ void TestReportingService::QueueReport(
                                type, std::move(body), depth));
 }
 
-void TestReportingService::ProcessHeader(const GURL& url,
-                                         const std::string& header_value) {
+void TestReportingService::ProcessHeader(
+    const GURL& url,
+    const NetworkIsolationKey& network_isolation_key,
+    const std::string& header_value) {
   NOTREACHED();
 }
 

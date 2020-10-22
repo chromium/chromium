@@ -1340,7 +1340,9 @@ void HttpNetworkTransaction::ProcessReportToHeader() {
   if (IsCertStatusError(response_.ssl_info.cert_status))
     return;
 
-  service->ProcessHeader(url_.GetOrigin(), value);
+  // TODO(https://crbug.com/993805):  Pass in the NetworkIsolationKey.
+  service->ProcessHeader(url_.GetOrigin(), net::NetworkIsolationKey::Todo(),
+                         value);
 }
 
 void HttpNetworkTransaction::ProcessNetworkErrorLoggingHeader() {

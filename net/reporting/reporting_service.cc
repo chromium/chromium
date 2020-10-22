@@ -80,6 +80,7 @@ class ReportingServiceImpl : public ReportingService {
   }
 
   void ProcessHeader(const GURL& url,
+                     const NetworkIsolationKey& network_isolation_key,
                      const std::string& header_string) override {
     if (header_string.size() > kMaxJsonSize)
       return;
@@ -91,10 +92,9 @@ class ReportingServiceImpl : public ReportingService {
       return;
 
     DVLOG(1) << "Received Reporting policy for " << url.GetOrigin();
-    // TODO(chlily): Get the proper NetworkIsolationKey from the caller.
     DoOrBacklogTask(base::BindOnce(
         &ReportingServiceImpl::DoProcessHeader, base::Unretained(this),
-        NetworkIsolationKey::Todo(), url, std::move(header_value)));
+        network_isolation_key, url, std::move(header_value)));
   }
 
   void RemoveBrowsingData(uint64_t data_type_mask,

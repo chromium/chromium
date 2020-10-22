@@ -883,6 +883,7 @@ class MockReportingService : public net::ReportingService {
   }
 
   void ProcessHeader(const GURL& url,
+                     const net::NetworkIsolationKey& network_isolation_key,
                      const std::string& header_value) override {
     NOTREACHED();
   }
