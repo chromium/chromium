@@ -138,13 +138,7 @@ bool IdentifiabilityStudySettings::IsTypeAllowed(
 
 bool IdentifiabilityStudySettings::IsWebFeatureAllowed(
     mojom::WebFeature feature) const {
-  if (LIKELY(!is_enabled_))
-    return false;
-
-  if (LIKELY(!is_any_surface_or_type_blocked_))
-    return true;
-
-  return provider_->IsSurfaceAllowed(IdentifiableSurface::FromTypeAndToken(
+  return IsSurfaceAllowed(IdentifiableSurface::FromTypeAndToken(
       IdentifiableSurface::Type::kWebFeature, feature));
 }
 
