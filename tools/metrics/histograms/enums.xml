@@ -3101,6 +3101,9 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <enum name="AppSeedRequestState">
+  <obsolete>
+    Removed from code October 2020.
+  </obsolete>
   <int value="0" label="Unknown seed state"/>
   <int value="1" label="Current seed fresh"/>
   <int value="2" label="New seed requested from the service"/>
