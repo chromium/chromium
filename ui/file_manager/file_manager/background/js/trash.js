@@ -168,6 +168,8 @@ class Trash {
     const trashFiles = await this.getDirectory_(trashRoot, 'files');
     const trashInfo = await this.getDirectory_(trashRoot, 'info');
     trashDirs = new TrashDirs(trashFiles, trashInfo);
+    // Check and remove old items max once per session.
+    this.removeOldItems_(trashDirs, Date.now());
     this.trashDirs_[key] = trashDirs;
     return trashDirs;
   }
@@ -249,7 +251,6 @@ class Trash {
     // Write trashinfo first, then only move file if info write succeeds.
     // If any step fails, the file will be unchanged, and any partial trashinfo
     // file created will be cleaned up when we remove old items.
-    // TODO(crbug.com/953310): Remove old items.
     const infoEntry = await this.writeTrashInfoFile_(
         trashDirs.info, name, config.pathPrefix + entry.fullPath);
     const filesEntry = await this.moveTo_(entry, trashDirs.files, name);
@@ -292,13 +293,114 @@ class Trash {
     // If any step fails, then either we still have the file in trash with a
     // valid trashinfo, or file is restored and trashinfo will be cleaned up
     // when we remove old items.
-    // TODO(crbug.com/953310): Remove old items.
     const name =
         await fileOperationUtil.deduplicatePath(dir, parts[parts.length - 1]);
     await this.moveTo_(trashItem.filesEntry, dir, name);
     await this.permanentlyDeleteFileOrDirectory_(trashItem.infoEntry);
   }
+
+  /**
+   * Remove any items from trash older than 30d.
+   * @param {!TrashDirs} trashDirs
+   * @param {number} now Current time in milliseconds from epoch.
+   */
+  async removeOldItems_(trashDirs, now) {
+    const ls = (reader) => {
+      return new Promise((resolve, reject) => {
+        reader.readEntries(results => resolve(results), error => reject(error));
+      });
+    };
+    const rm = (entry, log, desc) => {
+      if (entry) {
+        log(`Deleting ${entry.toURL()}: ${desc}`);
+        return this.permanentlyDeleteFileOrDirectory_(entry).catch(
+            e => console.error(`Error deleting ${entry.toURL()}: ${desc}`, e));
+      }
+    };
+
+    // Get all entries in trash/files. Read files first before info in case
+    // trash or restore operations happen during this.
+    const filesEntries = {};
+    const filesReader = trashDirs.files.createReader();
+    try {
+      while (true) {
+        const entries = await ls(filesReader);
+        if (!entries.length) {
+          break;
+        }
+        entries.forEach(entry => filesEntries[entry.name] = entry);
+      }
+    } catch (e) {
+      console.error('Error reading old files entries', e);
+      return;
+    }
+
+    // Check entries in trash/info and delete items older than 30d.
+    const infoReader = trashDirs.info.createReader();
+    try {
+      while (true) {
+        const entries = await ls(infoReader);
+        if (!entries.length) {
+          break;
+        }
+        for (const entry of entries) {
+          if (!entry.isFile) {
+            rm(entry, console.error, 'Unexpected trash info directory');
+            continue;
+          }
+
+          if (!entry.name.endsWith('.trashinfo')) {
+            rm(entry, console.error, 'Unexpected trash info file');
+            continue;
+          }
+
+          const name = entry.name.substring(0, entry.name.length - 10);
+          const filesEntry = filesEntries[name];
+          delete filesEntries[name];
+
+          const file = await new Promise(
+              (resolve, reject) => entry.file(resolve, reject));
+          const text = await file.text();
+          const found = text.match(/^DeletionDate=(.*)/m);
+          if (!found) {
+            rm(entry, console.error, 'Could not find DeletionDate in ' + text);
+            rm(filesEntry, console.error, 'Invalid matching trashinfo');
+            continue;
+          }
+
+          const d = Date.parse(found[1]);
+          if (!d) {
+            rm(entry, console.error, 'Could not parse DeletionDate in ' + text);
+            rm(filesEntry, console.error, 'Invalid matching trashinfo');
+            continue;
+          }
+
+          const ago30d = now - Trash.AUTO_DELETE_INTERVAL_MS;
+          const ago30dStr = new Date(ago30d).toISOString();
+          if (d < ago30d) {
+            const msg = `Older than ${ago30dStr}, DeletionDate=${found[1]}`;
+            rm(entry, console.log, msg);
+            rm(filesEntry, console.log, msg);
+          }
+        }
+      }
+    } catch (e) {
+      console.error('Error reading old info entries', e);
+      return;
+    }
+
+    // Any entries left in filesEntries have no matching *.trashinfo file.
+    for (const entry of Object.values(filesEntries)) {
+      rm(entry, console.error, 'No matching *.trashinfo file');
+    }
+  }
 }
+
+/**
+ * Interval (ms) until items in trash are permanently deleted. 30 days.
+ * @const
+ */
+Trash.AUTO_DELETE_INTERVAL_MS = 30 * 24 * 60 * 60 * 1000;
 
 /**
  * Volumes supported for Trash, and location of Trash dir. Items will be
