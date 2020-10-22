@@ -43,6 +43,18 @@ import {ToolbarManager} from './toolbar_manager.js';
 /**
  * @typedef {{
  *   type: string,
+ *   to: string,
+ *   cc: string,
+ *   bcc: string,
+ *   subject: string,
+ *   body: string,
+ * }}
+ */
+let EmailMessageData;
+
+/**
+ * @typedef {{
+ *   type: string,
  *   url: string,
  *   disposition: !WindowOpenDisposition,
  * }}
@@ -800,6 +812,13 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       case 'documentDimensions':
         this.setDocumentDimensions(
             /** @type {!DocumentDimensionsMessageData} */ (data));
+        return;
+      case 'email':
+        const emailData = /** @type {!EmailMessageData} */ (data);
+        const href = 'mailto:' + emailData.to + '?cc=' + emailData.cc +
+            '&bcc=' + emailData.bcc + '&subject=' + emailData.subject +
+            '&body=' + emailData.body;
+        this.handleNavigate_(href, WindowOpenDisposition.CURRENT_TAB);
         return;
       case 'getPassword':
         this.handlePasswordRequest_();
