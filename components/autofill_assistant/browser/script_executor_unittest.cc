@@ -1164,30 +1164,6 @@ TEST_F(ScriptExecutorTest, StartWaitForDomWhileNavigating) {
   EXPECT_FALSE(processed_actions_capture[0].navigation_info().ended());
 }
 
-TEST_F(ScriptExecutorTest, ReportErrorAsNavigationError) {
-  ActionsResponseProto actions_response;
-  *actions_response.add_actions()->mutable_click()->mutable_element_to_click() =
-      ToSelectorProto("will fail");
-
-  EXPECT_CALL(mock_service_, OnGetActions(_, _, _, _, _, _))
-      .WillOnce(RunOnceCallback<5>(net::HTTP_OK, Serialize(actions_response)));
-  std::vector<ProcessedActionProto> processed_actions_capture;
-  EXPECT_CALL(mock_service_, OnGetNextActions(_, _, _, _, _, _))
-      .WillOnce(DoAll(SaveArg<3>(&processed_actions_capture),
-                      RunOnceCallback<5>(net::HTTP_OK, "")));
-
-  delegate_.UpdateNavigationState(/* navigating= */ false, /* error= */ true);
-  EXPECT_CALL(executor_callback_, Run(_));
-  executor_->Run(&user_data_, executor_callback_.Get());
-
-  ASSERT_EQ(1u, processed_actions_capture.size());
-
-  // The original error is overwritten; a navigation error is reported.
-  EXPECT_EQ(NAVIGATION_ERROR, processed_actions_capture[0].status());
-  EXPECT_EQ(ELEMENT_RESOLUTION_FAILED,
-            processed_actions_capture[0].status_details().original_status());
-}
-
 TEST_F(ScriptExecutorTest, NavigateWhileRunningInterrupt) {
   SetupInterruptibleScript(kScriptPath, "element");
   RegisterInterrupt("interrupt", "interrupt_trigger");
