@@ -90,12 +90,13 @@ IdentifiableToken FontGlobalContext::GetOrComputePostScriptNameDigest(
 }
 
 void FontGlobalContext::ClearMemory() {
-  if (!Get(kDoNotCreate))
+  FontGlobalContext* context = Get(kDoNotCreate);
+  if (!context)
     return;
 
-  GetFontCache().Invalidate();
-  Get()->typeface_digest_cache_.Clear();
-  Get()->postscript_name_digest_cache_.Clear();
+  context->font_cache_.Invalidate();
+  context->typeface_digest_cache_.Clear();
+  context->postscript_name_digest_cache_.Clear();
 }
 
 }  // namespace blink

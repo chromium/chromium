@@ -21,8 +21,6 @@ class FontCache;
 class FontUniqueNameLookup;
 class HarfBuzzFontCache;
 
-enum CreateIfNeeded { kDoNotCreate, kCreate };
-
 // FontGlobalContext contains non-thread-safe, thread-specific data used for
 // font formatting.
 class PLATFORM_EXPORT FontGlobalContext {
@@ -31,7 +29,10 @@ class PLATFORM_EXPORT FontGlobalContext {
  public:
   static FontGlobalContext* Get(CreateIfNeeded = kCreate);
 
-  static inline FontCache& GetFontCache() { return Get()->font_cache_; }
+  static inline FontCache* GetFontCache(CreateIfNeeded create = kCreate) {
+    FontGlobalContext* context = Get(create);
+    return context ? &context->font_cache_ : nullptr;
+  }
 
   static HarfBuzzFontCache* GetHarfBuzzFontCache();
 

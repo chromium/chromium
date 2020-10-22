@@ -18,8 +18,11 @@ bool FontCacheMemoryDumpProvider::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs&,
     base::trace_event::ProcessMemoryDump* memory_dump) {
   DCHECK(IsMainThread());
-  FontCache::GetFontCache()->DumpFontPlatformDataCache(memory_dump);
-  FontCache::GetFontCache()->DumpShapeResultCache(memory_dump);
+  FontCache* cache = FontCache::GetFontCache(kDoNotCreate);
+  if (cache) {
+    cache->DumpFontPlatformDataCache(memory_dump);
+    cache->DumpShapeResultCache(memory_dump);
+  }
   return true;
 }
 

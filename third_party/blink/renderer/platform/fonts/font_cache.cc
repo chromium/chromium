@@ -90,8 +90,8 @@ bool FontCache::lcd_text_enabled_ = false;
 bool FontCache::use_skia_font_fallback_ = false;
 #endif  // defined(OS_WIN)
 
-FontCache* FontCache::GetFontCache() {
-  return &FontGlobalContext::GetFontCache();
+FontCache* FontCache::GetFontCache(CreateIfNeeded create) {
+  return FontGlobalContext::GetFontCache(create);
 }
 
 FontCache::FontCache()

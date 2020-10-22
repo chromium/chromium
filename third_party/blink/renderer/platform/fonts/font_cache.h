@@ -91,6 +91,8 @@ enum class AlternateFontName {
   kLastResort
 };
 
+enum CreateIfNeeded { kDoNotCreate, kCreate };
+
 typedef HashMap<unsigned,
                 std::unique_ptr<FontPlatformData>,
                 WTF::IntHash<unsigned>,
@@ -113,7 +115,11 @@ class PLATFORM_EXPORT FontCache {
   USING_FAST_MALLOC(FontCache);
 
  public:
-  static FontCache* GetFontCache();
+  // FontCache initialisation on Windows depends on a global FontMgr being
+  // configured through a call from the browser process. CreateIfNeeded helps
+  // avoid early creation of a font cache when these globals have not yet
+  // been set.
+  static FontCache* GetFontCache(CreateIfNeeded = kCreate);
 
   void ReleaseFontData(const SimpleFontData*);
 
