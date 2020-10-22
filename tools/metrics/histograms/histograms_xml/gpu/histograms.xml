@@ -426,6 +426,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="GPU.DirectComposition.HardwareOverlaysSupported"
+    enum="BooleanOverlaySupported" expires_after="2021-10-01">
+  <owner>magchen@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    True if the GPU driver supports hardware overlays. Recorded during Chrome
+    GPU initialization and each time the overlay caps change.
+  </summary>
+</histogram>
+
 <histogram name="GPU.DirectComposition.IsUnderlay" enum="BooleanUnderlay"
     expires_after="2020-12-31">
   <owner>magchen@chromium.org</owner>

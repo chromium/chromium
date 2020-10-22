@@ -256,6 +256,9 @@ void GetGpuDriverOverlayInfo(bool* supports_overlays,
       break;
   }
 
+  base::UmaHistogramBoolean("GPU.DirectComposition.HardwareOverlaysSupported",
+                            *supports_overlays);
+
   if (*supports_overlays || !base::FeatureList::IsEnabled(
                                 features::kDirectCompositionSoftwareOverlays)) {
     return;
