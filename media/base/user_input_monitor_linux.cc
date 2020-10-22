@@ -115,9 +115,10 @@ void UserInputMonitorLinuxCore::DispatchXEvent(x11::Event* event) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
 
   auto* raw = event->As<x11::Input::RawDeviceEvent>();
-  DCHECK(raw);
-  DCHECK(raw->opcode == x11::Input::RawDeviceEvent::RawKeyPress ||
-         raw->opcode == x11::Input::RawDeviceEvent::RawKeyRelease);
+  if (!raw || (raw->opcode != x11::Input::RawDeviceEvent::RawKeyPress &&
+               raw->opcode != x11::Input::RawDeviceEvent::RawKeyRelease)) {
+    return;
+  }
 
   ui::EventType type = raw->opcode == x11::Input::RawDeviceEvent::RawKeyPress
                            ? ui::ET_KEY_PRESSED
