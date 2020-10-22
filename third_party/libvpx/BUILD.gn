@@ -375,8 +375,10 @@ static_library("libvp9rc") {
     configs += [ "//build/config/compiler:optimize_max" ]
   }
 
-  sources = [ "//third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.cc",
-              "//third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.h" ]
+  sources = [
+    "//third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.cc",
+    "//third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.h",
+  ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
