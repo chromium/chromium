@@ -42,12 +42,11 @@ import java.util.UUID;
  */
 public class AddressEditor
         extends EditorBase<AutofillAddress> implements GetSubKeysRequestDelegate {
-    @IntDef({Purpose.PAYMENT_REQUEST, Purpose.AUTOFILL_SETTINGS, Purpose.AUTOFILL_ASSISTANT})
+    @IntDef({Purpose.PAYMENT_REQUEST, Purpose.AUTOFILL_SETTINGS})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Purpose {
         int PAYMENT_REQUEST = 1;
         int AUTOFILL_SETTINGS = 2;
-        int AUTOFILL_ASSISTANT = 3;
     }
 
     private final Handler mHandler = new Handler();
@@ -80,8 +79,8 @@ public class AddressEditor
     /**
      * Builds an address editor.
      *
-     * @param purpose    The purpose of this address editor. One of Purpose.PAYMENT_REQUEST,
-     *                   Purpose.AUTOFILL_SETTINGS, or Purpose.AUTOFILL_ASSISTANT.
+     * @param purpose    The purpose of this address editor. One of
+     *                   Purpose.PAYMENT_REQUEST or Purpose.AUTOFILL_SETTINGS.
      * @param saveToDisk Whether to save changes to disk after editing.
      */
     public AddressEditor(@Purpose int purpose, boolean saveToDisk) {
@@ -150,13 +149,14 @@ public class AddressEditor
     /**
      * Builds and shows an editor model with the following fields.
      *
-     * [ country dropdown   ] <----- country dropdown is always present.
-     * [ an address field   ] \
-     * [ an address field   ]  \
-     *         ...               <-- field order, presence, required, and labels depend on country.
-     * [ an address field   ]  /
-     * [ an address field   ] /
-     * [ phone number field ] <----- phone is always present and required.
+     * [ country dropdown    ] <----- country dropdown is always present.
+     * [ an address field    ] \
+     * [ an address field    ]  \
+     *         ...                <-- field order, presence, required, and labels depend on country.
+     * [ an address field    ]  /
+     * [ an address field    ] /
+     * [ phone number field  ] <----- phone is always present and required.
+     * [ email address field ] <----- only present if purpose is Purpose.AUTOFILL_SETTINGS.
      */
     @Override
     public void edit(@Nullable final AutofillAddress toEdit,
@@ -263,8 +263,8 @@ public class AddressEditor
         // that's being edited.
         mPhoneField.setValue(mProfile.getPhoneNumber());
 
-        // Email address is present for autofill settings and autofill assistant.
-        if (mPurpose != Purpose.PAYMENT_REQUEST) {
+        // Email address is present only for autofill settings.
+        if (mPurpose == Purpose.AUTOFILL_SETTINGS) {
             if (mEmailField == null) {
                 mEmailField = EditorFieldModel.createTextInput(
                         EditorFieldModel.INPUT_TYPE_HINT_EMAIL,
