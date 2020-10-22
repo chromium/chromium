@@ -41,7 +41,7 @@ class MEDIA_EXPORT AudioManagerChromeOS : public AudioManagerCrasBase {
   std::string GetGroupIDInput(const std::string& input_device_id) override;
   bool Shutdown() override;
 
-  // AudioManagerCras implementation.
+  // AudioManagerCrasBase implementation.
   bool IsDefault(const std::string& device_id, bool is_input) override;
 
  protected:
