@@ -52,7 +52,25 @@ python_library("devil_chromium_py") {
     "devil_chromium.json",
     "//third_party/catapult/third_party/gsutil/",
     "//third_party/catapult/devil/devil/devil_dependencies.json",
+
+    # Read by gn_helpers.BuildWithChromium()
+    "//build/config/gclient_args.gni",
   ]
+}
+
+# Contains runtime deps for installing apks.
+# E.g. from test_runner.py or from apk_operations.py.
+group("apk_installer_data") {
+  # Other //build users let devil library fetch these from Google Storage.
+  if (build_with_chromium) {
+    data_deps = [
+      "//build/android/pylib/device/commands",
+      "//tools/android/md5sum",
+    ]
+    data = [
+      "//third_party/android_build_tools/bundletool/bundletool-all-1.2.0.jar",
+    ]
+  }
 }
 
 python_library("test_runner_py") {
@@ -69,14 +87,17 @@ python_library("test_runner_py") {
     "${android_sdk_root}/platform-tools/adb",
     "//third_party/requests/",
   ]
-  data_deps = [ ":devil_chromium_py" ]
+  data_deps = [
+    ":apk_installer_data",
+    ":devil_chromium_py",
+    ":logdog_wrapper_py",
+    ":stack_tools",
+  ]
+
+  # Other //build users let devil library fetch these from Google Storage.
   if (build_with_chromium) {
-    data += [
-      "//third_party/android_build_tools/bundletool/bundletool-all-1.2.0.jar",
-      "//tools/android/avd/proto/",
-    ]
-    data_deps +=
-        [ "//third_party/android_platform/development/scripts:stack_py" ]
+    data_deps += [ "//tools/android/forwarder2" ]
+    data += [ "//tools/android/avd/proto/" ]
     if (is_asan) {
       data_deps += [ "//tools/android/asan/third_party:asan_device_setup" ]
     }
@@ -104,19 +125,14 @@ python_library("resource_sizes_py") {
   ]
 }
 
-python_library("bundle_wrapper_script_py") {
-  pydeps_file = "gyp/create_bundle_wrapper_script.pydeps"
-  data = [
-    "//third_party/android_build_tools/bundletool/bundletool-all-1.2.0.jar",
-  ]
-}
-
 # Tools necessary for symbolizing tombstones or stack traces that are output to
 # logcat.
 # Hidden behind build_with_chromium because some third party repos that use
 # //build don't pull in //third_party/android_platform.
-if (build_with_chromium) {
-  group("stack_tools") {
+# TODO(crbug.com/1120190): Move stack script into //build/third_party
+#     and enable unconditionally.
+group("stack_tools") {
+  if (build_with_chromium) {
     data = [
       "tombstones.py",
       "pylib/symbols/",

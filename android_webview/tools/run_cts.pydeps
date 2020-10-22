@@ -13,6 +13,7 @@
 //build/android/pylib/local/emulator/proto/avd_pb2.py
 //build/android/pylib/utils/__init__.py
 //build/android/pylib/utils/test_filter.py
+//build/gn_helpers.py
 //third_party/catapult/common/py_utils/py_utils/__init__.py
 //third_party/catapult/common/py_utils/py_utils/cloud_storage.py
 //third_party/catapult/common/py_utils/py_utils/cloud_storage_global_lock.py
