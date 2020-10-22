@@ -113,6 +113,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Compositing.CompositorFrameSinkSupport.ShouldSendBeginFrame"
     enum="SendBeginFrameResult" expires_after="2020-10-04">
+  <obsolete>
+    Expired Oct 2020
+  </obsolete>
   <owner>kylechar@chromium.org</owner>
   <owner>sadrul@chromium.org</owner>
   <summary>

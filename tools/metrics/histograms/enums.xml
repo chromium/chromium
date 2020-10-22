@@ -65371,6 +65371,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="SendBeginFrameResult">
+  <obsolete>
+    Expired Oct 2020
+  </obsolete>
   <int value="0" label="Sent for frame timing"/>
   <int value="1" label="Stopped by client request"/>
   <int value="2" label="Stopped for unresponsive client"/>
