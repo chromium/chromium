@@ -5,6 +5,8 @@
 #ifndef BASE_PROFILER_THREAD_DELEGATE_POSIX_H_
 #define BASE_PROFILER_THREAD_DELEGATE_POSIX_H_
 
+#include <memory>
+
 #include "base/base_export.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/profiler/thread_delegate.h"
