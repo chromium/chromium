@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import android.content.ComponentName;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -21,13 +23,16 @@ public class BookmarkPage extends BasicNativePage {
 
     /**
      * Create a new instance of the bookmarks page.
+     * @param componentName The current activity component, used to open bookmarks.
+     * @param snackbarManager Allows control over the app snackbar.
      * @param activity The activity to get context and manage fragments.
      * @param host A NativePageHost to load urls.
      */
-    public BookmarkPage(ChromeActivity activity, NativePageHost host) {
+    public BookmarkPage(
+            ComponentName componentName, SnackbarManager snackbarManager, NativePageHost host) {
         super(host);
 
-        mManager = new BookmarkManager(activity, false, activity.getSnackbarManager());
+        mManager = new BookmarkManager(host.getContext(), componentName, false, snackbarManager);
         mManager.setBasicNativePage(this);
         mTitle = host.getContext().getResources().getString(R.string.bookmarks);
 

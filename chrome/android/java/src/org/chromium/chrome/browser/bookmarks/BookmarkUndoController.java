@@ -16,8 +16,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import java.util.Locale;
 
 /**
- * Shows an undo bar when the user modifies bookmarks,
- * allowing them to undo their changes.
+ * Shows an undo bar when the user modifies bookmarks, allowing them to undo their changes.
  */
 public class BookmarkUndoController extends BookmarkModelObserver implements
         SnackbarManager.SnackbarController, BookmarkDeleteObserver {

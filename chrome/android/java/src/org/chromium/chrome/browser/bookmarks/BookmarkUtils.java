@@ -15,7 +15,6 @@ import android.text.TextUtils;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
-import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -245,32 +244,22 @@ public class BookmarkUtils {
 
     /**
      * Opens a bookmark and reports UMA.
+     * @param context The current context used to launch the intent.
+     * @param openBookmarkComponentName The component to use when opening a bookmark.
      * @param model Bookmarks model to manage the bookmark.
-     * @param activity Activity requesting to open the bookmark.
      * @param bookmarkId ID of the bookmark to be opened.
      * @return Whether the bookmark was successfully opened.
      */
-    public static boolean openBookmark(
-            BookmarkModel model, Activity activity, BookmarkId bookmarkId) {
+    public static boolean openBookmark(Context context, ComponentName openBookmarkComponentName,
+            BookmarkModel model, BookmarkId bookmarkId) {
         if (model.getBookmarkById(bookmarkId) == null) return false;
-
-        String url = model.getBookmarkById(bookmarkId).getUrl();
 
         RecordUserAction.record("MobileBookmarkManagerEntryOpened");
         RecordHistogram.recordEnumeratedHistogram(
                 "Bookmarks.OpenBookmarkType", bookmarkId.getType(), BookmarkType.LAST + 1);
 
-        if (activity instanceof BookmarkActivity) {
-            // For phones, the bookmark manager is a separate activity. When the activity is
-            // launched, an intent extra is set specifying the parent component.
-            ComponentName parentComponent = IntentUtils.safeGetParcelableExtra(
-                activity.getIntent(), IntentHandler.EXTRA_PARENT_COMPONENT);
-            openUrl(activity, url, parentComponent);
-        } else {
-            // For tablets, the bookmark manager is open in a tab in the ChromeActivity. Use
-            // the ComponentName of the ChromeActivity passed into this method.
-            openUrl(activity, url, activity.getComponentName());
-        }
+        String url = model.getBookmarkById(bookmarkId).getUrl();
+        openUrl(context, url, openBookmarkComponentName);
 
         return true;
     }
@@ -291,10 +280,10 @@ public class BookmarkUtils {
         return R.color.default_icon_color_tint_list;
     }
 
-    private static void openUrl(Activity activity, String url, ComponentName componentName) {
+    private static void openUrl(Context context, String url, ComponentName componentName) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        intent.putExtra(Browser.EXTRA_APPLICATION_ID,
-                activity.getApplicationContext().getPackageName());
+        intent.putExtra(
+                Browser.EXTRA_APPLICATION_ID, context.getApplicationContext().getPackageName());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(IntentHandler.EXTRA_PAGE_TRANSITION_TYPE, PageTransition.AUTO_BOOKMARK);
 
@@ -304,7 +293,7 @@ public class BookmarkUtils {
             // If the bookmark manager is shown in a tab on a phone (rather than in a separate
             // activity) the component name may be null. Send the intent through
             // ChromeLauncherActivity instead to avoid crashing. See crbug.com/615012.
-            intent.setClass(activity, ChromeLauncherActivity.class);
+            intent.setClass(context.getApplicationContext(), ChromeLauncherActivity.class);
         }
 
         IntentHandler.startActivityForTrustedIntent(intent);
