@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_UNIFIED_COLLAPSE_BUTTON_H_
 
 #include "ash/system/unified/custom_shape_button.h"
-#include "base/bind.h"
 
 namespace ash {
 
@@ -29,16 +28,7 @@ class CollapseButton : public CustomShapeButton {
   const char* GetClassName() const override;
 
  private:
-  // Update the vector icon on initializing CollapseButton or when the |Enabled|
-  // property of CollapseButton changes. The vector icon will have different
-  // colors on the |Enabled| property.
-  void UpdateVectorIcon();
-
   double expanded_amount_ = 1.0;
-  views::PropertyChangedSubscription enabled_changed_subscription_ =
-      AddEnabledChangedCallback(
-          base::BindRepeating(&CollapseButton::UpdateVectorIcon,
-                              base::Unretained(this)));
 
   DISALLOW_COPY_AND_ASSIGN(CollapseButton);
 };
