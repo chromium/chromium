@@ -7815,24 +7815,6 @@
             ]
         }
     ],
-    "WebRTC-Pacer-BlockAudio": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "chromeos",
-                "linux",
-                "ios",
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled"
-                }
-            ]
-        }
-    ],
     "WebRTC-SendSideBwe-WithOverhead": [
         {
             "platforms": [
