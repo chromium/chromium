@@ -20,11 +20,14 @@ core_config_remove = []
 
 # Compute the optimization level. `optimize_max` ensures that speed is preferred
 # over size on all platforms.
-# TODO: It's unclear if the perf vs size win here is a good trade-off for
-# Android. Investigate that.
-if (!is_debug && !is_android) {
+# TODO(crbug.com/1125115): It's unclear if the perf vs size win here is a good
+# trade-off for Android. Investigate that.
+if (!is_debug && !optimize_for_size) {
   core_config_remove += [ "//build/config/compiler:default_optimization" ]
   core_config_add += [ "//build/config/compiler:optimize_max" ]
+}
+if (using_mismatched_sample_profile) {
+  core_config_remove += [ "//build/config/compiler:afdo_optimize_size" ]
 }
 
 core_config_remove += [ "//build/config/compiler:default_symbols" ]
