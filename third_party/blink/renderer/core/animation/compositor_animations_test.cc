@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/filter_operations.h"
 #include "third_party/blink/renderer/core/style/style_generated_image.h"
+#include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/animation/compositor_color_animation_curve.h"
@@ -2205,6 +2206,61 @@ TEST_P(AnimationCompositorAnimationsTest,
   EXPECT_NE(
       CheckCanStartElementOnCompositor(*target, *keyframe_animation_effect2_),
       CompositorAnimations::kNoFailure);
+}
+
+TEST_P(AnimationCompositorAnimationsTest,
+       CanStartTransformAnimationOnCompositorForSVG) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .animate {
+        width: 100px;
+        height: 100px;
+        animation: wave 1s infinite;
+      }
+      @keyframes wave {
+        0% { transform: rotate(-5deg); }
+        100% { transform: rotate(5deg); }
+      }
+      .animate-mixed {
+        width: 100px;
+        height: 100px;
+        animation: mixed 1s infinite;
+      }
+      @keyframes mixed {
+        0% { transform: rotate(-5deg); stroke-dashoffset: 0; }
+        100% { transform: rotate(5deg); stroke-dashoffset: 180; }
+      }
+    </style>
+    <svg id="svg" class="animate">
+      <rect id="rect" class="animate"/>
+      <rect id="rect-smil" class="animate">
+        <animateMotion dur="10s" repeatCount="indefinite"
+                       path="M0,0 L100,100 z"/>
+      </rect>
+      <rect id="rect-mixed" class="animate-mixed"/>
+      <svg id="embedded-svg" class="animate"/>
+      <foreignObject id="foreign" class="animate"/>
+      <foreignObject id="foreign-zoomed" class="animate"
+                     style="zoom: 1.5; will-change: opacity"/>
+      <use id="use" href="#rect" class="animate"/>
+      <use id="use-offset" href="#rect" x="10" class="animate"/>
+    </svg>
+  )HTML");
+
+  auto CanStartAnimation = [&](const char* id) -> bool {
+    return CompositorAnimations::CanStartTransformAnimationOnCompositorForSVG(
+        To<SVGElement>(*GetDocument().getElementById(id)));
+  };
+
+  EXPECT_TRUE(CanStartAnimation("svg"));
+  EXPECT_TRUE(CanStartAnimation("rect"));
+  EXPECT_FALSE(CanStartAnimation("rect-smil"));
+  EXPECT_FALSE(CanStartAnimation("rect-mixed"));
+  EXPECT_FALSE(CanStartAnimation("embedded-svg"));
+  EXPECT_TRUE(CanStartAnimation("foreign"));
+  EXPECT_FALSE(CanStartAnimation("foreign-zoomed"));
+  EXPECT_TRUE(CanStartAnimation("use"));
+  EXPECT_FALSE(CanStartAnimation("use-offset"));
 }
 
 }  // namespace blink

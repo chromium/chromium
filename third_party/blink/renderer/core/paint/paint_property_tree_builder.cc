@@ -721,24 +721,33 @@ void FragmentPaintPropertyTreeBuilder::SetTransformNodeStateForSVGChild(
     TransformPaintPropertyNode::State& state) {
   if (full_context_.direct_compositing_reasons &
       CompositingReason::kActiveTransformAnimation) {
-    // For composited transform animation to work, we need to store transform
-    // origin separately. It's baked in object_.LocalToSVGParentTransform().
-    DCHECK(!To<SVGElement>(object_.GetNode())->HasMainThreadAnimations());
-    // Composited transform animation works only if LocalToSVGParentTransform()
-    // reflect the CSS transform properties. If this fails, we need to exclude
-    // the case in CompositingReasonFinder for kActiveTransformAnimation.
-    DCHECK_EQ(TransformHelper::ComputeTransform(
-                  object_, ComputedStyle::kIncludeTransformOrigin),
-              object_.LocalToSVGParentTransform());
-    state.transform_and_origin = {
-        TransformationMatrix(TransformHelper::ComputeTransform(
-            object_, ComputedStyle::kExcludeTransformOrigin)),
-        FloatPoint3D(TransformHelper::ComputeTransformOrigin(object_))};
-    return;
+    if (CompositorAnimations::CanStartTransformAnimationOnCompositorForSVG(
+            *To<SVGElement>(object_.GetNode()))) {
+      // For composited transform animation to work, we need to store transform
+      // origin separately. It's baked in object_.LocalToSVGParentTransform().
+      state.transform_and_origin = {
+          TransformationMatrix(TransformHelper::ComputeTransform(
+              object_, ComputedStyle::kExcludeTransformOrigin)),
+          FloatPoint3D(TransformHelper::ComputeTransformOrigin(object_))};
+      // Composited transform animation works only if
+      // LocalToSVGParentTransform() reflects the CSS transform properties.
+      // If this fails, we need to exclude the case in
+      // CompositorAnimations::CanStartTransformAnimationOnCompositorForSVG().
+      DCHECK_EQ(TransformHelper::ComputeTransform(
+                    object_, ComputedStyle::kIncludeTransformOrigin),
+                object_.LocalToSVGParentTransform());
+    } else {
+      // We composite the object but can't start composited animation. Still
+      // keep the compositing reason because it still improves performance of
+      // main thread animation, but avoid the 2d translation optimization to
+      // meet the requirement of TransformPaintPropertyNode.
+      state.transform_and_origin = {
+          TransformationMatrix(object_.LocalToSVGParentTransform())};
+    }
+  } else {
+    SetTransformNodeStateFromAffineTransform(
+        state, object_.LocalToSVGParentTransform());
   }
-
-  SetTransformNodeStateFromAffineTransform(state,
-                                           object_.LocalToSVGParentTransform());
 }
 
 // SVG does not use the general transform update of |UpdateTransform|, instead

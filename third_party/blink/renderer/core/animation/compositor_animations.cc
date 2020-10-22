@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_transformable_container.h"
 #include "third_party/blink/renderer/core/paint/filter_effect_builder.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/platform/animation/animation_translation_util.h"
@@ -217,6 +218,10 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
       if (layout_object && !layout_object->IsTransformApplicable()) {
         reasons |= kTransformRelatedPropertyCannotBeAcceleratedOnTarget;
       }
+      if (const auto* svg_element = DynamicTo<SVGElement>(target_element)) {
+        reasons |=
+            CheckCanStartTransformAnimationOnCompositorForSVG(*svg_element);
+      }
       transform_property_count++;
     }
 
@@ -373,6 +378,9 @@ CompositorAnimations::CheckCanStartElementOnCompositor(
       !Platform::Current()->IsThreadedAnimationEnabled()) {
     reasons |= kAcceleratedAnimationsDisabled;
   }
+
+  if (const auto* svg_element = DynamicTo<SVGElement>(target_element))
+    reasons |= CheckCanStartSVGElementOnCompositor(*svg_element);
 
   if (const auto* layout_object = target_element.GetLayoutObject()) {
     // We query paint property tree state below to determine whether the
@@ -795,6 +803,48 @@ bool CompositorAnimations::CheckUsesCompositedScrolling(Node* target) {
   if (!layout_box_model_object)
     return false;
   return layout_box_model_object->UsesCompositedScrolling();
+}
+
+CompositorAnimations::FailureReasons
+CompositorAnimations::CheckCanStartSVGElementOnCompositor(
+    const SVGElement& svg_element) {
+  FailureReasons reasons = kNoFailure;
+  if (svg_element.HasMainThreadAnimations())
+    reasons |= kTargetHasIncompatibleAnimations;
+  return reasons;
+}
+
+CompositorAnimations::FailureReasons
+CompositorAnimations::CheckCanStartTransformAnimationOnCompositorForSVG(
+    const SVGElement& svg_element) {
+  FailureReasons reasons = kNoFailure;
+  if (const auto* layout_object = svg_element.GetLayoutObject()) {
+    if (layout_object->IsSVGViewportContainer()) {
+      // Nested SVG doesn't support transforms for now.
+      reasons |= kTransformRelatedPropertyCannotBeAcceleratedOnTarget;
+    } else if (layout_object->IsSVGForeignObject() &&
+               layout_object->StyleRef().EffectiveZoom() != 1) {
+      // TODO(crbug.com/1134775): If a foreignObject's effect zoom is not 1,
+      // its transform node contains an additional scale which would be removed
+      // by composited animation.
+      reasons |= kTransformRelatedPropertyCannotBeAcceleratedOnTarget;
+    } else if (layout_object->IsSVGTransformableContainer() &&
+               !ToLayoutSVGTransformableContainer(layout_object)
+                    ->AdditionalTranslation()
+                    .IsZero()) {
+      // TODO(crbug.com/1134775): Similarly, composited animation would also
+      // remove the additional translation of LayoutSVGTransformableContainer.
+      reasons |= kTransformRelatedPropertyCannotBeAcceleratedOnTarget;
+    }
+  }
+  return reasons;
+}
+
+bool CompositorAnimations::CanStartTransformAnimationOnCompositorForSVG(
+    const SVGElement& svg_element) {
+  return CheckCanStartSVGElementOnCompositor(svg_element) == kNoFailure &&
+         CheckCanStartTransformAnimationOnCompositorForSVG(svg_element) ==
+             kNoFailure;
 }
 
 }  // namespace blink
