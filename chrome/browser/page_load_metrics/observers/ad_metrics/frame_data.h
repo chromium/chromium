@@ -229,10 +229,6 @@ class FrameData : public base::SupportsWeakPtr<FrameData> {
 
   int peak_windowed_cpu_percent() const { return peak_windowed_cpu_percent_; }
 
-  base::Optional<base::TimeTicks> peak_window_start_time() const {
-    return peak_window_start_time_;
-  }
-
   FrameTreeNodeId root_frame_tree_node_id() const {
     return root_frame_tree_node_id_;
   }
@@ -364,9 +360,6 @@ class FrameData : public base::SupportsWeakPtr<FrameData> {
 
   // The peak windowed cpu load during the unactivated period.
   int peak_windowed_cpu_percent_ = 0;
-
-  // The time that the peak cpu usage window started at.
-  base::Optional<base::TimeTicks> peak_window_start_time_;
 
   // The depth of this FrameData's root frame.
   unsigned int root_frame_depth_ = 0;

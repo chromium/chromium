@@ -176,11 +176,8 @@ void FrameData::UpdateCpuUsage(base::TimeTicks update_time,
   int current_windowed_cpu_percent =
       100 * cpu_total_for_current_window_.InMilliseconds() /
       kCpuWindowSize.InMilliseconds();
-  if (current_windowed_cpu_percent > peak_windowed_cpu_percent_) {
+  if (current_windowed_cpu_percent > peak_windowed_cpu_percent_)
     peak_windowed_cpu_percent_ = current_windowed_cpu_percent;
-    peak_window_start_time_ =
-        cpu_updates_for_current_window_.front().update_time;
-  }
 }
 
 FrameData::HeavyAdAction FrameData::MaybeTriggerHeavyAdIntervention() {

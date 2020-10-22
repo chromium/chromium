@@ -266,9 +266,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </suffix>
   <suffix name="AdFrames.PerFrame.PeakWindowStartTime2"
       label="The start time of the 30 second window associated with the
-             PeakWindowedPercent of the frame, relative to navigation start
-             of the page. Measured in milliseconds. Frames with no CPU usage
-             do not record a start time."/>
+             PeakWindowedPercent of the frame, relative to navigation start of
+             the page. Measured in milliseconds. Frames with no CPU usage do
+             not record a start time.">
+    <obsolete>
+      Removed 10/2020.
+    </obsolete>
+  </suffix>
   <suffix name="AdFrames.PerFrame.PercentUsage"
       label="The average load of an ad creative across the life of the page.
              This is measured as percentage of a cpu core used and capped at
@@ -360,7 +364,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="The start time of the 30 second window associated with the
              PeakWindowedPercent of the page, relative to navigation start of
              the page. Measured in milliseconds. Pages with no CPU usage do
-             not record a start time."/>
+             not record a start time.">
+    <obsolete>
+      Removed 10/2020.
+    </obsolete>
+  </suffix>
   <suffix name="FullPage.PercentUsage"
       label="The average load of the page across its lifetime. This is
              measured as percentage of a cpu core used and capped at 100% for
