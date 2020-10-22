@@ -1,0 +1,33 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_CHROMEOS_CROSAPI_FILE_MANAGER_ASH_H_
+#define CHROME_BROWSER_CHROMEOS_CROSAPI_FILE_MANAGER_ASH_H_
+
+#include "chromeos/crosapi/mojom/file_manager.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+
+namespace crosapi {
+
+// Implements the crosapi file manager interface. Lives in ash-chrome on the UI
+// thread. Allows lacros-chrome to make UI requests to the Chrome OS file
+// manager, for example to open a folder or highlight a file.
+class FileManagerAsh : public mojom::FileManager {
+ public:
+  explicit FileManagerAsh(mojo::PendingReceiver<mojom::FileManager> receiver);
+  FileManagerAsh(const FileManagerAsh&) = delete;
+  FileManagerAsh& operator=(const FileManagerAsh&) = delete;
+  ~FileManagerAsh() override;
+
+  // crosapi::mojom::FileManager:
+  void ShowItemInFolder(const base::FilePath& path) override;
+
+ private:
+  mojo::Receiver<mojom::FileManager> receiver_;
+};
+
+}  // namespace crosapi
+
+#endif  // CHROME_BROWSER_CHROMEOS_CROSAPI_FILE_MANAGER_ASH_H_

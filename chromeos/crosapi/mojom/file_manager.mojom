@@ -1,0 +1,17 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+
+// Interacts with the file manager (the Chrome OS equivalent of macOS Finder or
+// Windows Explorer). Implemented in ash-chrome.
+[Stable, Uuid="61e61690-fb13-40c8-a167-d7fc18a8fe6b"]
+interface FileManager {
+  // Opens the folder containing the item specified by |full_path| and selects
+  // the item. If the path is invalid or the file doesn't exist, an error dialog
+  // is shown.
+  ShowItemInFolder@0(mojo_base.mojom.FilePath path);
+};

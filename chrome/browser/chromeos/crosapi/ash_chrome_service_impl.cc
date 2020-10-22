@@ -14,6 +14,7 @@
 #include "chrome/browser/chromeos/crosapi/account_manager_ash.h"
 #include "chrome/browser/chromeos/crosapi/browser_manager.h"
 #include "chrome/browser/chromeos/crosapi/feedback_ash.h"
+#include "chrome/browser/chromeos/crosapi/file_manager_ash.h"
 #include "chrome/browser/chromeos/crosapi/keystore_service_ash.h"
 #include "chrome/browser/chromeos/crosapi/message_center_ash.h"
 #include "chrome/browser/chromeos/crosapi/screen_manager_ash.h"
@@ -24,6 +25,7 @@
 #include "chromeos/components/account_manager/account_manager.h"
 #include "chromeos/components/account_manager/account_manager_factory.h"
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
+#include "chromeos/crosapi/mojom/file_manager.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
@@ -73,6 +75,12 @@ void AshChromeServiceImpl::BindAccountManager(
           ->GetAccountManager(/* profile_path = */ profile->GetPath().value());
   account_manager_ash_ = std::make_unique<crosapi::AccountManagerAsh>(
       account_manager, std::move(receiver));
+}
+
+void AshChromeServiceImpl::BindFileManager(
+    mojo::PendingReceiver<crosapi::mojom::FileManager> receiver) {
+  file_manager_ash_ =
+      std::make_unique<crosapi::FileManagerAsh>(std::move(receiver));
 }
 
 void AshChromeServiceImpl::BindKeystoreService(

@@ -145,6 +145,16 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
     return account_manager_remote_;
   }
 
+  // file_manager_remote() can only be used if this method returns true.
+  bool IsFileManagerAvailable();
+
+  // Must be called on the affine sequence.
+  mojo::Remote<crosapi::mojom::FileManager>& file_manager_remote() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
+    DCHECK(IsFileManagerAvailable());
+    return file_manager_remote_;
+  }
+
   // --------------------------------------------------------------------------
   // Some clients will want to use mojo::Remotes on arbitrary sequences (e.g.
   // background threads). The following methods allow the client to construct a
@@ -196,23 +206,15 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // Parameters passed from ash-chrome.
   crosapi::mojom::LacrosInitParamsPtr init_params_;
 
-  // This member allows lacros-chrome to use the SelectFile interface. This
-  // member is affine to the affine sequence. It is initialized in the
-  // constructor and it is immediately available for use.
+  // These members are affine to the affine sequence. They are initialized in
+  // the constructor and are immediately available for use.
   mojo::Remote<crosapi::mojom::MessageCenter> message_center_remote_;
   mojo::Remote<crosapi::mojom::SelectFile> select_file_remote_;
   mojo::Remote<device::mojom::HidManager> hid_manager_remote_;
   mojo::Remote<crosapi::mojom::Feedback> feedback_remote_;
-
-  // This member allows lacros-chrome to use the KeystoreService interface. This
-  // member is affine to the affine sequence. It is initialized in the
-  // constructor and it is immediately available for use.
   mojo::Remote<crosapi::mojom::KeystoreService> keystore_service_remote_;
-
-  // This member allows lacros-chrome to use the AccountManager interface. This
-  // member is affine to the affine sequence. It is initialized in the
-  // constructor and it is immediately available for use.
   mojo::Remote<crosapi::mojom::AccountManager> account_manager_remote_;
+  mojo::Remote<crosapi::mojom::FileManager> file_manager_remote_;
 
   // This member is instantiated on the affine sequence alongside the
   // constructor. All subsequent invocations of this member, including

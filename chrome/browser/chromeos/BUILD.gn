@@ -1010,6 +1010,8 @@ source_set("chromeos") {
     "crosapi/fake_browser_manager.h",
     "crosapi/feedback_ash.cc",
     "crosapi/feedback_ash.h",
+    "crosapi/file_manager_ash.cc",
+    "crosapi/file_manager_ash.h",
     "crosapi/keystore_service_ash.cc",
     "crosapi/keystore_service_ash.h",
     "crosapi/message_center_ash.cc",

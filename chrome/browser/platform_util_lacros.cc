@@ -4,8 +4,11 @@
 
 #include "chrome/browser/platform_util.h"
 
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "chrome/browser/platform_util_internal.h"
+#include "chromeos/crosapi/mojom/file_manager.mojom.h"
+#include "chromeos/lacros/lacros_chrome_service_impl.h"
 
 namespace platform_util {
 namespace internal {
@@ -17,8 +20,12 @@ void PlatformOpenVerifiedItem(const base::FilePath& path, OpenItemType type) {
 }  // namespace internal
 
 void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
-  // TODO(https://crbug.com/1139128): Add crosapi to show item in file manager.
-  NOTIMPLEMENTED();
+  auto* service = chromeos::LacrosChromeServiceImpl::Get();
+  if (!service->IsFileManagerAvailable()) {
+    DLOG(ERROR) << "Unsupported ash version.";
+    return;
+  }
+  service->file_manager_remote()->ShowItemInFolder(full_path);
 }
 
 void OpenExternal(Profile* profile, const GURL& url) {

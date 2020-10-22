@@ -6,6 +6,7 @@ module crosapi.mojom;
 
 import "chromeos/crosapi/mojom/account_manager.mojom";
 import "chromeos/crosapi/mojom/feedback.mojom";
+import "chromeos/crosapi/mojom/file_manager.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
 import "chromeos/crosapi/mojom/message_center.mojom";
 import "chromeos/crosapi/mojom/screen_manager.mojom";
@@ -33,14 +34,19 @@ struct LacrosInfo {
 // milestone when you added it, to help us reason about compatibility between
 // lacros-chrome and older ash-chrome binaries.
 //
-// Next version: 5
-// Next method id: 8
+// Next version: 6
+// Next method id: 9
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e"]
 interface AshChromeService {
   // Binds Chrome OS Account Manager for Identity management.
   // Added in M87.
   [MinVersion=4]
   BindAccountManager@7(pending_receiver<AccountManager> receiver);
+
+  // Binds the FileManager interface for showing files, folders, etc.
+  // Added in M88.
+  [MinVersion=5]
+  BindFileManager@8(pending_receiver<FileManager> receiver);
 
   // Binds the KeystoreService interface for challenging keys.
   // Added in M87.

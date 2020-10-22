@@ -10,6 +10,7 @@ mojom("mojom") {
     "bitmap.mojom",
     "crosapi.mojom",
     "feedback.mojom",
+    "file_manager.mojom",
     "keystore_service.mojom",
     "message_center.mojom",
     "notification.mojom",

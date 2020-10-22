@@ -159,6 +159,12 @@ class LacrosChromeServiceNeverBlockingState
     ash_chrome_service_->BindAccountManager(std::move(pending_receiver));
   }
 
+  void BindFileManagerReceiver(
+      mojo::PendingReceiver<crosapi::mojom::FileManager> pending_receiver) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    ash_chrome_service_->BindFileManager(std::move(pending_receiver));
+  }
+
   base::WeakPtr<LacrosChromeServiceNeverBlockingState> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -327,6 +333,16 @@ void LacrosChromeServiceImpl::BindReceiver(
     LOG(WARNING) << "Connected to an older version of ash. Account consistency "
                     "will not be available";
   }
+
+  if (IsFileManagerAvailable()) {
+    mojo::PendingReceiver<crosapi::mojom::FileManager> pending_receiver =
+        file_manager_remote_.BindNewPipeAndPassReceiver();
+    never_blocking_sequence_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &LacrosChromeServiceNeverBlockingState::BindFileManagerReceiver,
+            weak_sequenced_state_, std::move(pending_receiver)));
+  }
 }
 
 // static
@@ -350,16 +366,20 @@ bool LacrosChromeServiceImpl::IsHidManagerAvailable() {
   return AshChromeServiceVersion() >= 0;
 }
 
+bool LacrosChromeServiceImpl::IsFeedbackAvailable() {
+  return AshChromeServiceVersion() >= 3;
+}
+
 bool LacrosChromeServiceImpl::IsAccountManagerAvailable() {
   return AshChromeServiceVersion() >= 4;
 }
 
-bool LacrosChromeServiceImpl::IsScreenManagerAvailable() {
-  return AshChromeServiceVersion() >= 0;
+bool LacrosChromeServiceImpl::IsFileManagerAvailable() {
+  return AshChromeServiceVersion() >= 5;
 }
 
-bool LacrosChromeServiceImpl::IsFeedbackAvailable() {
-  return AshChromeServiceVersion() >= 3;
+bool LacrosChromeServiceImpl::IsScreenManagerAvailable() {
+  return AshChromeServiceVersion() >= 0;
 }
 
 bool LacrosChromeServiceImpl::IsOnLacrosStartupAvailable() {
