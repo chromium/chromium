@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/editing/set_selection_options.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -52,68 +53,52 @@
 
 namespace blink {
 
-static Node* SelectionShadowAncestor(LocalFrame* frame) {
-  Node* node = frame->Selection()
-                   .ComputeVisibleSelectionInDOMTreeDeprecated()
-                   .Base()
-                   .AnchorNode();
-  if (!node)
-    return nullptr;
-
-  if (!node->IsInShadowTree())
-    return nullptr;
-
-  return frame->GetDocument()->AncestorInThisScope(node);
-}
-
 DOMSelection::DOMSelection(const TreeScope* tree_scope)
-    : ExecutionContextClient(tree_scope->RootNode().GetDocument().GetFrame()),
+    : ExecutionContextClient(tree_scope->RootNode().GetExecutionContext()),
       tree_scope_(tree_scope) {}
 
 void DOMSelection::ClearTreeScope() {
   tree_scope_ = nullptr;
 }
 
+FrameSelection& DOMSelection::Selection() const {
+  DCHECK(DomWindow());
+  return DomWindow()->GetFrame()->Selection();
+}
+
 // TODO(editing-dev): The behavior after loosing browsing context is not
 // specified. https://github.com/w3c/selection-api/issues/82
 bool DOMSelection::IsAvailable() const {
-  return GetFrame() && GetFrame()->Selection().IsAvailable();
+  return DomWindow() && Selection().IsAvailable();
 }
 
 void DOMSelection::UpdateFrameSelection(
     const SelectionInDOMTree& selection,
     Range* new_cached_range,
     const SetSelectionOptions& passed_options) const {
-  DCHECK(GetFrame());
-  FrameSelection& frame_selection = GetFrame()->Selection();
+  DCHECK(DomWindow());
   SetSelectionOptions::Builder builder(passed_options);
   builder.SetShouldCloseTyping(true).SetShouldClearTypingStyle(true);
   SetSelectionOptions options = builder.Build();
   // TODO(tkent): Specify FrameSelection::DoNotSetFocus. crbug.com/690272
-  const bool did_set =
-      frame_selection.SetSelectionDeprecated(selection, options);
+  const bool did_set = Selection().SetSelectionDeprecated(selection, options);
   CacheRangeIfSelectionOfDocument(new_cached_range);
   if (!did_set)
     return;
-  Element* focused_element = GetFrame()->GetDocument()->FocusedElement();
-  frame_selection.DidSetSelectionDeprecated(selection, options);
-  if (GetFrame() && GetFrame()->GetDocument() &&
-      focused_element != GetFrame()->GetDocument()->FocusedElement()) {
-    UseCounter::Count(GetFrame()->GetDocument(),
-                      WebFeature::kSelectionFuncionsChangeFocus);
+  Element* focused_element = DomWindow()->document()->FocusedElement();
+  Selection().DidSetSelectionDeprecated(selection, options);
+  if (DomWindow() &&
+      focused_element != DomWindow()->document()->FocusedElement()) {
+    UseCounter::Count(DomWindow(), WebFeature::kSelectionFuncionsChangeFocus);
   }
 }
 
 VisibleSelection DOMSelection::GetVisibleSelection() const {
-  DCHECK(GetFrame());
-  return GetFrame()->Selection().ComputeVisibleSelectionInDOMTreeDeprecated();
+  return Selection().ComputeVisibleSelectionInDOMTreeDeprecated();
 }
 
 bool DOMSelection::IsBaseFirstInSelection() const {
-  DCHECK(GetFrame());
-  const SelectionInDOMTree& selection =
-      GetFrame()->Selection().GetSelectionInDOMTree();
-  return selection.IsBaseFirst();
+  return Selection().GetSelectionInDOMTree().IsBaseFirst();
 }
 
 // TODO(tkent): Following four functions based on VisibleSelection should be
@@ -132,7 +117,7 @@ static Position FocusPosition(const VisibleSelection& selection) {
 
 Node* DOMSelection::anchorNode() const {
   if (Range* range = PrimaryRangeOrNull()) {
-    if (!GetFrame() || IsBaseFirstInSelection())
+    if (!DomWindow() || IsBaseFirstInSelection())
       return range->startContainer();
     return range->endContainer();
   }
@@ -141,7 +126,7 @@ Node* DOMSelection::anchorNode() const {
 
 unsigned DOMSelection::anchorOffset() const {
   if (Range* range = PrimaryRangeOrNull()) {
-    if (!GetFrame() || IsBaseFirstInSelection())
+    if (!DomWindow() || IsBaseFirstInSelection())
       return range->startOffset();
     return range->endOffset();
   }
@@ -150,7 +135,7 @@ unsigned DOMSelection::anchorOffset() const {
 
 Node* DOMSelection::focusNode() const {
   if (Range* range = PrimaryRangeOrNull()) {
-    if (!GetFrame() || IsBaseFirstInSelection())
+    if (!DomWindow() || IsBaseFirstInSelection())
       return range->endContainer();
     return range->startContainer();
   }
@@ -159,7 +144,7 @@ Node* DOMSelection::focusNode() const {
 
 unsigned DOMSelection::focusOffset() const {
   if (Range* range = PrimaryRangeOrNull()) {
-    if (!GetFrame() || IsBaseFirstInSelection())
+    if (!DomWindow() || IsBaseFirstInSelection())
       return range->endOffset();
     return range->startOffset();
   }
@@ -183,8 +168,17 @@ unsigned DOMSelection::extentOffset() const {
 }
 
 bool DOMSelection::isCollapsed() const {
-  if (!IsAvailable() || SelectionShadowAncestor(GetFrame()))
+  if (!IsAvailable())
     return true;
+  Node* node = Selection()
+                   .ComputeVisibleSelectionInDOMTreeDeprecated()
+                   .Base()
+                   .AnchorNode();
+  if (node && node->IsInShadowTree() &&
+      DomWindow()->document()->AncestorInThisScope(node)) {
+    return true;
+  }
+
   if (Range* range = PrimaryRangeOrNull())
     return range->collapsed();
   return true;
@@ -200,7 +194,7 @@ String DOMSelection::type() const {
     return "None";
   // Do not use isCollapsed() here. We'd like to return "Range" for
   // range-selection in text control elements.
-  if (GetFrame()->Selection().GetSelectionInDOMTree().IsCaret())
+  if (Selection().GetSelectionInDOMTree().IsCaret())
     return "Caret";
   return "Range";
 }
@@ -210,10 +204,7 @@ unsigned DOMSelection::rangeCount() const {
     return 0;
   if (DocumentCachedRange())
     return 1;
-  if (GetFrame()
-          ->Selection()
-          .ComputeVisibleSelectionInDOMTreeDeprecated()
-          .IsNone())
+  if (Selection().ComputeVisibleSelectionInDOMTreeDeprecated().IsNone())
     return 0;
   // Any selection can be adjusted to Range for Document.
   if (IsSelectionOfDocument())
@@ -234,9 +225,8 @@ void DOMSelection::collapse(Node* node,
   // 1. If node is null, this method must behave identically as
   // removeAllRanges() and abort these steps.
   if (!node) {
-    UseCounter::Count(GetFrame()->GetDocument(),
-                      WebFeature::kSelectionCollapseNull);
-    GetFrame()->Selection().Clear();
+    UseCounter::Count(DomWindow(), WebFeature::kSelectionCollapseNull);
+    Selection().Clear();
     return;
   }
 
@@ -252,7 +242,7 @@ void DOMSelection::collapse(Node* node,
     return;
 
   // 4. Otherwise, let newRange be a new range.
-  Range* new_range = Range::Create(*GetFrame()->GetDocument());
+  Range* new_range = Range::Create(*DomWindow()->document());
 
   // 5. Set ([DOM4]) the start and the end of newRange to (node, offset).
   new_range->setStart(node, offset, exception_state);
@@ -268,12 +258,10 @@ void DOMSelection::collapse(Node* node,
 
   // 6. Set the context object's range to newRange.
   UpdateFrameSelection(
-      SelectionInDOMTree::Builder()
-          .Collapse(Position(node, offset))
-          .Build(),
+      SelectionInDOMTree::Builder().Collapse(Position(node, offset)).Build(),
       new_range,
       SetSelectionOptions::Builder()
-          .SetIsDirectional(GetFrame()->Selection().IsDirectional())
+          .SetIsDirectional(Selection().IsDirectional())
           .Build());
 }
 
@@ -304,8 +292,7 @@ void DOMSelection::collapseToEnd(ExceptionState& exception_state) {
     // TODO(tkent): The Selection API doesn't define this behavior. We should
     // discuss this on https://github.com/w3c/selection-api/issues/83.
     SelectionInDOMTree::Builder builder;
-    builder.Collapse(
-        GetFrame()->Selection().GetSelectionInDOMTree().ComputeEndPosition());
+    builder.Collapse(Selection().GetSelectionInDOMTree().ComputeEndPosition());
     UpdateFrameSelection(builder.Build(), nullptr, SetSelectionOptions());
   }
 }
@@ -338,15 +325,14 @@ void DOMSelection::collapseToStart(ExceptionState& exception_state) {
     // discuss this on https://github.com/w3c/selection-api/issues/83.
     SelectionInDOMTree::Builder builder;
     builder.Collapse(
-        GetFrame()->Selection().GetSelectionInDOMTree().ComputeStartPosition());
+        Selection().GetSelectionInDOMTree().ComputeStartPosition());
     UpdateFrameSelection(builder.Build(), nullptr, SetSelectionOptions());
   }
 }
 
 void DOMSelection::empty() {
-  if (!IsAvailable())
-    return;
-  GetFrame()->Selection().Clear();
+  if (IsAvailable())
+    Selection().Clear();
 }
 
 void DOMSelection::setBaseAndExtent(Node* base_node,
@@ -360,14 +346,12 @@ void DOMSelection::setBaseAndExtent(Node* base_node,
   // TODO(editing-dev): Behavior on where base or extent is null is still
   // under discussion: https://github.com/w3c/selection-api/issues/72
   if (!base_node) {
-    UseCounter::Count(GetFrame()->GetDocument(),
-                      WebFeature::kSelectionSetBaseAndExtentNull);
-    GetFrame()->Selection().Clear();
+    UseCounter::Count(DomWindow(), WebFeature::kSelectionSetBaseAndExtentNull);
+    Selection().Clear();
     return;
   }
   if (!extent_node) {
-    UseCounter::Count(GetFrame()->GetDocument(),
-                      WebFeature::kSelectionSetBaseAndExtentNull);
+    UseCounter::Count(DomWindow(), WebFeature::kSelectionSetBaseAndExtentNull);
     extent_offset = 0;
   }
 
@@ -455,16 +439,14 @@ void DOMSelection::modify(const String& alter_string,
 
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
-  GetFrame()->GetDocument()->UpdateStyleAndLayout(
+  DomWindow()->document()->UpdateStyleAndLayout(
       DocumentUpdateReason::kSelection);
 
-  Element* focused_element = GetFrame()->GetDocument()->FocusedElement();
-  GetFrame()->Selection().Modify(alter, direction, granularity,
-                                 SetSelectionBy::kSystem);
-  if (GetFrame() && GetFrame()->GetDocument() &&
-      focused_element != GetFrame()->GetDocument()->FocusedElement()) {
-    UseCounter::Count(GetFrame()->GetDocument(),
-                      WebFeature::kSelectionFuncionsChangeFocus);
+  Element* focused_element = DomWindow()->document()->FocusedElement();
+  Selection().Modify(alter, direction, granularity, SetSelectionBy::kSystem);
+  if (DomWindow() &&
+      focused_element != DomWindow()->document()->FocusedElement()) {
+    UseCounter::Count(DomWindow(), WebFeature::kSelectionFuncionsChangeFocus);
   }
 }
 
@@ -503,7 +485,7 @@ void DOMSelection::extend(Node* node,
   ClearCachedRangeIfSelectionOfDocument();
 
   // 4. Let newRange be a new range.
-  Range* new_range = Range::Create(*GetFrame()->GetDocument());
+  Range* new_range = Range::Create(*DomWindow()->document());
 
   // 5. If node's root is not the same as the context object's range's root, set
   // newRange's start and end to newFocus.
@@ -592,35 +574,29 @@ bool DOMSelection::IsSelectionOfDocument() const {
 void DOMSelection::CacheRangeIfSelectionOfDocument(Range* range) const {
   if (!IsSelectionOfDocument())
     return;
-  if (!GetFrame())
+  if (!DomWindow())
     return;
-  GetFrame()->Selection().CacheRangeOfDocument(range);
+  Selection().CacheRangeOfDocument(range);
 }
 
 Range* DOMSelection::DocumentCachedRange() const {
-  if (!IsSelectionOfDocument())
-    return nullptr;
-  return GetFrame()->Selection().DocumentCachedRange();
+  return IsSelectionOfDocument() ? Selection().DocumentCachedRange() : nullptr;
 }
 
 void DOMSelection::ClearCachedRangeIfSelectionOfDocument() {
-  if (!IsSelectionOfDocument())
-    return;
-  GetFrame()->Selection().ClearDocumentCachedRange();
+  if (IsSelectionOfDocument())
+    Selection().ClearDocumentCachedRange();
 }
 
 void DOMSelection::removeRange(Range* range) {
   DCHECK(range);
-  if (!IsAvailable())
-    return;
-  if (range == PrimaryRangeOrNull())
-    GetFrame()->Selection().Clear();
+  if (IsAvailable() && range == PrimaryRangeOrNull())
+    Selection().Clear();
 }
 
 void DOMSelection::removeAllRanges() {
-  if (!IsAvailable())
-    return;
-  GetFrame()->Selection().Clear();
+  if (IsAvailable())
+    Selection().Clear();
 }
 
 void DOMSelection::addRange(Range* new_range) {
@@ -629,7 +605,7 @@ void DOMSelection::addRange(Range* new_range) {
   if (!IsAvailable())
     return;
 
-  if (new_range->OwnerDocument() != GetFrame()->GetDocument())
+  if (new_range->OwnerDocument() != DomWindow()->document())
     return;
 
   if (!new_range->IsConnected()) {
@@ -637,9 +613,7 @@ void DOMSelection::addRange(Range* new_range) {
     return;
   }
 
-  FrameSelection& selection = GetFrame()->Selection();
-
-  if (new_range->OwnerDocument() != selection.GetDocument()) {
+  if (new_range->OwnerDocument() != Selection().GetDocument()) {
     // "editing/selection/selection-in-iframe-removed-crash.html" goes here.
     return;
   }
@@ -691,7 +665,7 @@ void DOMSelection::deleteFromDocument() {
 
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
-  GetFrame()->GetDocument()->UpdateStyleAndLayout(
+  DomWindow()->document()->UpdateStyleAndLayout(
       DocumentUpdateReason::kSelection);
 
   // The following code is necessary for
@@ -699,14 +673,12 @@ void DOMSelection::deleteFromDocument() {
   // deleteFromDocument() for text selection in a TEXTAREA deletes the TEXTAREA
   // value.
 
-  FrameSelection& selection = GetFrame()->Selection();
-
-  if (selection.ComputeVisibleSelectionInDOMTree().IsNone())
+  if (Selection().ComputeVisibleSelectionInDOMTree().IsNone())
     return;
 
-  Range* selected_range =
-      CreateRange(selection.ComputeVisibleSelectionInDOMTree()
-                      .ToNormalizedEphemeralRange());
+  Range* selected_range = CreateRange(Selection()
+                                          .ComputeVisibleSelectionInDOMTree()
+                                          .ToNormalizedEphemeralRange());
   if (!selected_range)
     return;
 
@@ -720,7 +692,7 @@ bool DOMSelection::containsNode(const Node* n, bool allow_partial) const {
   if (!IsAvailable())
     return false;
 
-  if (GetFrame()->GetDocument() != n->GetDocument())
+  if (DomWindow()->document() != n->GetDocument())
     return false;
 
   unsigned node_index = n->NodeIndex();
@@ -728,12 +700,12 @@ bool DOMSelection::containsNode(const Node* n, bool allow_partial) const {
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
   // |VisibleSelection::toNormalizedEphemeralRange| requires clean layout.
-  GetFrame()->GetDocument()->UpdateStyleAndLayout(
+  DomWindow()->document()->UpdateStyleAndLayout(
       DocumentUpdateReason::kSelection);
 
-  FrameSelection& selection = GetFrame()->Selection();
   const EphemeralRange selected_range =
-      selection.ComputeVisibleSelectionInDOMTreeDeprecated()
+      Selection()
+          .ComputeVisibleSelectionInDOMTreeDeprecated()
           .ToNormalizedEphemeralRange();
   if (selected_range.IsNull())
     return false;
@@ -789,14 +761,13 @@ String DOMSelection::toString() {
 
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
-  GetFrame()->GetDocument()->UpdateStyleAndLayout(
+  DomWindow()->document()->UpdateStyleAndLayout(
       DocumentUpdateReason::kSelection);
 
   DocumentLifecycle::DisallowTransitionScope disallow_transition(
-      GetFrame()->GetDocument()->Lifecycle());
+      DomWindow()->document()->Lifecycle());
 
-  const EphemeralRange range = GetFrame()
-                                   ->Selection()
+  const EphemeralRange range = Selection()
                                    .ComputeVisibleSelectionInDOMTreeDeprecated()
                                    .ToNormalizedEphemeralRange();
   return PlainText(
@@ -838,11 +809,10 @@ unsigned DOMSelection::ShadowAdjustedOffset(const Position& position) const {
 }
 
 bool DOMSelection::IsValidForPosition(Node* node) const {
-  DCHECK(GetFrame());
+  DCHECK(DomWindow());
   if (!node)
     return true;
-  return node->GetDocument() == GetFrame()->GetDocument() &&
-         node->isConnected();
+  return node->GetDocument() == DomWindow()->document() && node->isConnected();
 }
 
 void DOMSelection::AddConsoleWarning(const String& message) {

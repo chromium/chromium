@@ -40,6 +40,7 @@
 namespace blink {
 
 class ExceptionState;
+class FrameSelection;
 class Node;
 class Range;
 class SetSelectionOptions;
@@ -102,6 +103,7 @@ class CORE_EXPORT DOMSelection final : public ScriptWrappable,
   void Trace(Visitor*) const override;
 
  private:
+  FrameSelection& Selection() const;
   bool IsAvailable() const;
 
   void UpdateFrameSelection(const SelectionInDOMTree&,
