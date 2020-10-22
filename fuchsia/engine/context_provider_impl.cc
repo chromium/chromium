@@ -127,17 +127,6 @@ bool SetContentDirectoriesInCommandLine(
   return true;
 }
 
-base::Value LoadConfig() {
-  const base::Optional<base::Value>& config = cr_fuchsia::LoadPackageConfig();
-  if (!config) {
-    DLOG(WARNING) << "Configuration data not found. Using default "
-                     "WebEngine configuration.";
-    return base::Value(base::Value::Type::DICTIONARY);
-  }
-
-  return config->Clone();
-}
-
 void AppendFeature(base::StringPiece features_flag,
                    base::StringPiece feature_string,
                    base::CommandLine* command_line) {
@@ -297,9 +286,15 @@ void ContextProviderImpl::Create(
   base::CommandLine launch_command = *base::CommandLine::ForCurrentProcess();
   std::vector<zx::channel> devtools_listener_channels;
 
-  base::Value web_engine_config =
-      config_for_test_.is_none() ? LoadConfig() : std::move(config_for_test_);
-
+  // Process command-line settings specified in our package config-data.
+  base::Value web_engine_config;
+  if (config_for_test_.is_none()) {
+    const base::Optional<base::Value>& config = cr_fuchsia::LoadPackageConfig();
+    web_engine_config =
+        config ? config->Clone() : base::Value(base::Value::Type::DICTIONARY);
+  } else {
+    web_engine_config = std::move(config_for_test_);
+  }
   if (!MaybeAddCommandLineArgsFromConfig(web_engine_config, &launch_command)) {
     context_request.Close(ZX_ERR_INTERNAL);
     return;

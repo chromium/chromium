@@ -154,6 +154,14 @@ void WebEngineContentBrowserClient::
   }
 }
 
+bool WebEngineContentBrowserClient::ShouldEnableStrictSiteIsolation() {
+  constexpr base::Feature kSitePerProcess{"site-per-process",
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
+  static bool enable_strict_isolation =
+      base::FeatureList::IsEnabled(kSitePerProcess);
+  return enable_strict_isolation;
+}
+
 void WebEngineContentBrowserClient::AppendExtraCommandLineSwitches(
     base::CommandLine* command_line,
     int child_process_id) {
