@@ -72,7 +72,7 @@ base::OnceClosure ClosureFromTwoClosures(base::OnceClosure one,
 // This function triggers the static and lazy construction of objects that need
 // to be created before imposing the sandbox.
 static void ZygotePreSandboxInit() {
-  base::RandUint64();
+  base::GetUrandomFD();
 
   base::SysInfo::AmountOfPhysicalMemory();
   base::SysInfo::NumberOfProcessors();
