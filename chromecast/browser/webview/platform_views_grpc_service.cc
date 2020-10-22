@@ -18,7 +18,7 @@ PlatformViewsAsyncService::PlatformViewsAsyncService(
     std::unique_ptr<webview::PlatformViewsService::AsyncService> service,
     std::unique_ptr<grpc::ServerCompletionQueue> cq,
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-    WebContentsProvider* web_contents_provider,
+    base::WeakPtr<WebContentsProvider> web_contents_provider,
     bool enabled_for_dev)
     : ui_task_runner_(std::move(ui_task_runner)),
       cq_(std::move(cq)),

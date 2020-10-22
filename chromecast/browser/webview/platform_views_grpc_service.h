@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromecast/browser/webview/proto/webview.grpc.pb.h"
@@ -26,7 +27,7 @@ class PlatformViewsAsyncService : public base::PlatformThread::Delegate {
       std::unique_ptr<webview::PlatformViewsService::AsyncService> service,
       std::unique_ptr<grpc::ServerCompletionQueue> cq,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-      WebContentsProvider* web_contents_provider,
+      base::WeakPtr<WebContentsProvider> web_contents_provider,
       bool enabled_for_dev);
   ~PlatformViewsAsyncService() override;
 
@@ -44,7 +45,7 @@ class PlatformViewsAsyncService : public base::PlatformThread::Delegate {
   std::unique_ptr<webview::PlatformViewsService::AsyncService> service_;
 
   WebviewWindowManager window_manager_;
-  WebContentsProvider* web_contents_provider_;
+  base::WeakPtr<WebContentsProvider> web_contents_provider_;
   bool enabled_for_dev_;
 
   DISALLOW_COPY_AND_ASSIGN(PlatformViewsAsyncService);

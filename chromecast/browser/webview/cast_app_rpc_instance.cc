@@ -21,7 +21,7 @@ CastAppRpcInstance::CastAppRpcInstance(
     grpc::ServerCompletionQueue* cq,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     WebviewWindowManager* window_manager,
-    WebContentsProvider* web_contents_provider)
+    base::WeakPtr<WebContentsProvider> web_contents_provider)
     : PlatformViewsRpcInstance(cq, task_runner, window_manager),
       service_(service),
       web_contents_provider_(web_contents_provider) {
@@ -51,8 +51,12 @@ bool CastAppRpcInstance::Initialize() {
 
 void CastAppRpcInstance::CreateCastAppWindowLink(int platform_view_id,
                                                  int app_window_id) {
-  app_id_ = platform_view_id;
+  if (!web_contents_provider_) {
+    OnError("web_contents_provider_ is null");
+    return;
+  }
 
+  app_id_ = platform_view_id;
   content::WebContents* web_contents =
       web_contents_provider_->GetWebContents(app_window_id);
   if (!web_contents) {
