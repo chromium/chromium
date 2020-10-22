@@ -1,0 +1,39 @@
+<html>
+<title>create service worker</title>
+<script>
+async function register(worker_url, scope) {
+  try {
+    const init = scope ? {scope} : {};
+    await navigator.serviceWorker.register(worker_url, init);
+    await navigator.serviceWorker.ready;
+    return 'DONE';
+  } catch (error) {
+    return `${error}`;
+  }
+}
+
+async function registerWithoutAwaitingReady(worker_url, scope) {
+  try {
+    const init = scope ? {scope} : {};
+    await navigator.serviceWorker.register(worker_url, init);
+    // Don't await for navigator.serviceWorker.ready.
+    return 'DONE';
+  } catch (error) {
+    return `${error}`;
+  }
+}
+
+async function update(scope) {
+  try {
+    const registration =
+        scope ?
+            await navigator.serviceWorker.getRegistration(scope) :
+            await navigator.serviceWorker.ready;
+    await registration.update();
+    return 'DONE';
+  } catch (error) {
+    return `${error}`;
+  }
+}
+</script>
+</html>

@@ -223,10 +223,6 @@ void ServiceWorkerNewScriptLoader::OnReceiveResponse(
       return;
     }
 
-    // TODO(arthursonzogni): Make the Cross-Origin-Embedder-Policy to be parsed
-    // when it reached this line, not matter what URLLoader it is coming from.
-    // The same mechanism as the one in NavigationURLLoader must be provided.
-    // Instead of being a "document", the main resource here is a "script".
     version_->set_cross_origin_embedder_policy(
         response_head->parsed_headers
             ? response_head->parsed_headers->cross_origin_embedder_policy
