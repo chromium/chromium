@@ -3,7 +3,3 @@ haraken@chromium.org
 lizeb@chromium.org
 palmer@chromium.org
 tsepez@chromium.org
-
-# TEAM: platform-architecture-dev@chromium.org
-#       Also: security-dev@chromium.org
-# COMPONENT: Blink>MemoryAllocator>Partition

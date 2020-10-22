@@ -1,0 +1,6 @@
+monorail {
+  component: "Blink>MemoryAllocator>Partition"
+}
+
+# Also security-dev@chromium.org
+team_email: "platform-architecture-dev@chromium.org"

@@ -1,7 +1,4 @@
 file://build/fuchsia/OWNERS
-# COMPONENT: Fuchsia
-# OS: Fuchsia
-# TEAM: cr-fuchsia@chromium.org
 
 # FilteredServiceDirectory is part of the Fuchsia sandbox.
 per-file filtered_service_directory.*=set noparent
@@ -9,4 +6,3 @@ per-file filtered_service_directory.*=file://fuchsia/SECURITY_OWNERS
 
 per-file *.cmx=set noparent
 per-file *.cmx=file://fuchsia/SECURITY_OWNERS
-

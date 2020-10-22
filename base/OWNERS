@@ -34,5 +34,3 @@ per-file safe_numerics_unittest.cc=file://base/numerics/OWNERS
 
 # For TCMalloc tests:
 per-file security_unittest.cc=jln@chromium.org
-
-# COMPONENT: Internals>Core

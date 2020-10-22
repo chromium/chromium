@@ -8,5 +8,3 @@ yfriedman@chromium.org
 
 per-file *.aidl=set noparent
 per-file *.aidl=file://ipc/SECURITY_OWNERS
-
-# OS: Android
