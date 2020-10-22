@@ -4686,8 +4686,8 @@
   },
   {
     "name": "use-search-click-for-right-click",
-    "owners": [ "khorimoto", "zentaro" ],
-    "expiry_milestone": 85
+    "owners": [ "zentaro", "cros-peripherals@google.com" ],
+    "expiry_milestone": 95
   },
   {
     "name": "use-serial-bus-enumerator",
