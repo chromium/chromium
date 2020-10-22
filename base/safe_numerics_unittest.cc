@@ -1535,6 +1535,11 @@ TEST(SafeNumerics, IsValueInRangeForNumericType) {
   EXPECT_FALSE(IsValueInRangeForNumericType<uint32_t>(
       std::numeric_limits<int64_t>::lowest()));
 
+  // Converting to integer types will discard the fractional part first, so -0.9
+  // will be truncated to -0.0.
+  EXPECT_TRUE(IsValueInRangeForNumericType<uint32_t>(-0.9));
+  EXPECT_FALSE(IsValueInRangeForNumericType<uint32_t>(-1.0));
+
   EXPECT_TRUE(IsValueInRangeForNumericType<int32_t>(0));
   EXPECT_TRUE(IsValueInRangeForNumericType<int32_t>(1));
   EXPECT_TRUE(IsValueInRangeForNumericType<int32_t>(2));
@@ -1568,6 +1573,11 @@ TEST(SafeNumerics, IsValueInRangeForNumericType) {
   EXPECT_FALSE(IsValueInRangeForNumericType<uint64_t>(INT64_C(-1)));
   EXPECT_FALSE(IsValueInRangeForNumericType<uint64_t>(
       std::numeric_limits<int64_t>::lowest()));
+
+  // Converting to integer types will discard the fractional part first, so -0.9
+  // will be truncated to -0.0.
+  EXPECT_TRUE(IsValueInRangeForNumericType<uint64_t>(-0.9));
+  EXPECT_FALSE(IsValueInRangeForNumericType<uint64_t>(-1.0));
 
   EXPECT_TRUE(IsValueInRangeForNumericType<int64_t>(0));
   EXPECT_TRUE(IsValueInRangeForNumericType<int64_t>(1));
