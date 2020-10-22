@@ -116,6 +116,15 @@
                                            animated:YES];
 }
 
+- (void)stop {
+  // If the Google Services Settings page was accessed through the Safe Browsing
+  // row of the safety check, we need to explicity stop the
+  // googleServicesSettingsCoordinator before closing the settings window.
+  [self.googleServicesSettingsCoordinator stop];
+  self.googleServicesSettingsCoordinator.delegate = nil;
+  self.googleServicesSettingsCoordinator = nil;
+}
+
 #pragma mark - SafetyCheckTableViewControllerPresentationDelegate
 
 - (void)safetyCheckTableViewControllerDidRemove:
