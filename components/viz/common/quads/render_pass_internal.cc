@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/viz/common/quads/render_pass_internal.h"
+#include "components/viz/common/quads/solid_color_draw_quad.h"
 
 #include <stddef.h>
 
@@ -32,6 +33,26 @@ RenderPassInternal::~RenderPassInternal() = default;
 
 SharedQuadState* RenderPassInternal::CreateAndAppendSharedQuadState() {
   return shared_quad_state_list.AllocateAndConstruct<SharedQuadState>();
+}
+
+void RenderPassInternal::ReplaceExistingQuadWithOpaqueTransparentSolidColor(
+    QuadList::Iterator at) {
+  // In order to fill the backbuffer with transparent black, the replacement
+  // solid color quad needs to set |needs_blending| to false, and
+  // ShouldDrawWithBlending() returns false so it is drawn without blending.
+  const gfx::Rect rect = at->rect;
+  bool needs_blending = false;
+  const SharedQuadState* shared_quad_state = at->shared_quad_state;
+  if (shared_quad_state->are_contents_opaque) {
+    auto* new_shared_quad_state =
+        shared_quad_state_list.AllocateAndCopyFrom(shared_quad_state);
+    new_shared_quad_state->are_contents_opaque = false;
+    shared_quad_state = new_shared_quad_state;
+  }
+
+  auto* replacement = quad_list.ReplaceExistingElement<SolidColorDrawQuad>(at);
+  replacement->SetAll(shared_quad_state, rect, rect /* visible_rect */,
+                      needs_blending, SK_ColorTRANSPARENT, true);
 }
 
 }  // namespace viz

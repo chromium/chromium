@@ -34,19 +34,6 @@ QuadList::QuadList(size_t default_size_to_reserve)
                               LargestDrawQuadSize(),
                               default_size_to_reserve) {}
 
-void QuadList::ReplaceExistingQuadWithOpaqueTransparentSolidColor(Iterator at) {
-  // In order to fill the backbuffer with transparent black, the replacement
-  // solid color quad needs to set |needs_blending| to false, and
-  // ShouldDrawWithBlending() returns false so it is drawn without blending.
-  const gfx::Rect rect = at->rect;
-  bool needs_blending = false;
-  const SharedQuadState* shared_quad_state = at->shared_quad_state;
-
-  auto* replacement = QuadList::ReplaceExistingElement<SolidColorDrawQuad>(at);
-  replacement->SetAll(shared_quad_state, rect, rect /* visible_rect */,
-                      needs_blending, SK_ColorTRANSPARENT, true);
-}
-
 QuadList::Iterator QuadList::InsertCopyBeforeDrawQuad(Iterator at,
                                                       size_t count) {
   DCHECK(at->shared_quad_state);

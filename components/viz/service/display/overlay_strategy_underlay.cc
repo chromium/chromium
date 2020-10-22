@@ -79,7 +79,8 @@ bool OverlayStrategyUnderlay::Attempt(
     if (new_candidate_list.back().overlay_handled) {
       new_candidate_list.back().is_unoccluded =
           !OverlayCandidate::IsOccluded(candidate, quad_list.cbegin(), it);
-      quad_list.ReplaceExistingQuadWithOpaqueTransparentSolidColor(it);
+
+      render_pass->ReplaceExistingQuadWithOpaqueTransparentSolidColor(it);
       candidate_list->swap(new_candidate_list);
 
       return true;

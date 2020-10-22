@@ -28,9 +28,6 @@ class VIZ_COMMON_EXPORT QuadList : public cc::ListContainer<DrawQuad> {
   inline ConstBackToFrontIterator BackToFrontBegin() const { return rbegin(); }
   inline ConstBackToFrontIterator BackToFrontEnd() const { return rend(); }
 
-  // This function is used by overlay algorithm to fill the backbuffer with
-  // transparent black.
-  void ReplaceExistingQuadWithOpaqueTransparentSolidColor(Iterator at);
   Iterator InsertCopyBeforeDrawQuad(Iterator at, size_t count);
 };
 

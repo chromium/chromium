@@ -295,14 +295,25 @@ TEST(CompositorRenderPassTest, CopyAllWithCulledQuads) {
 }
 
 TEST(CompositorRenderPassTest, ReplacedQuadsShouldntMove) {
-  auto quad_state = std::make_unique<SharedQuadState>();
-  QuadList quad_list;
-  auto* quad = quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
+  auto pass = CompositorRenderPass::Create();
+  SharedQuadState* quad_state = pass->CreateAndAppendSharedQuadState();
+  auto* quad = pass->quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
   gfx::Rect quad_rect(1, 2, 3, 4);
-  quad->SetNew(quad_state.get(), quad_rect, quad_rect, SkColor(), false);
-  quad_list.ReplaceExistingQuadWithOpaqueTransparentSolidColor(
-      quad_list.begin());
-  EXPECT_EQ(quad_list.begin()->rect, quad_rect);
+  quad->SetNew(quad_state, quad_rect, quad_rect, SkColor(), false);
+  pass->ReplaceExistingQuadWithOpaqueTransparentSolidColor(
+      pass->quad_list.begin());
+  EXPECT_EQ(pass->quad_list.begin()->rect, quad_rect);
+}
+
+TEST(CompositorRenderPassTest, ReplacedQuadsShouldntBeOpaque) {
+  auto pass = CompositorRenderPass::Create();
+  SharedQuadState* quad_state = pass->CreateAndAppendSharedQuadState();
+  auto* quad = pass->quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
+  gfx::Rect quad_rect(1, 2, 3, 4);
+  quad->SetNew(quad_state, quad_rect, quad_rect, SkColor(), false);
+  pass->ReplaceExistingQuadWithOpaqueTransparentSolidColor(
+      pass->quad_list.begin());
+  EXPECT_FALSE(pass->quad_list.begin()->shared_quad_state->are_contents_opaque);
 }
 
 }  // namespace

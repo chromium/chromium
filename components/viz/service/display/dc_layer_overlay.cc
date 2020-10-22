@@ -873,12 +873,12 @@ void DCLayerOverlayProcessor::ProcessForUnderlay(
   //    SrcOver_quad uses opacity of source quad (V_alpha)
   //    SrcOver_premul uses alpha channel and assumes premultipled alpha
   bool is_opaque = false;
-  SharedQuadState* new_shared_quad_state =
-      render_pass->shared_quad_state_list.AllocateAndCopyFrom(
-          shared_quad_state);
 
   if (it->ShouldDrawWithBlending() &&
       shared_quad_state->blend_mode == SkBlendMode::kSrcOver) {
+    SharedQuadState* new_shared_quad_state =
+        render_pass->shared_quad_state_list.AllocateAndCopyFrom(
+            shared_quad_state);
     new_shared_quad_state->blend_mode = SkBlendMode::kDstOut;
 
     auto* replacement =
@@ -888,16 +888,10 @@ void DCLayerOverlayProcessor::ProcessForUnderlay(
     replacement->SetAll(new_shared_quad_state, rect, rect, needs_blending,
                         SK_ColorBLACK, true /* force_anti_aliasing_off */);
   } else {
-    // Set |are_contents_opaque| true so SkiaRenderer draws the replacement quad
-    // with SkBlendMode::kSrc.
-    new_shared_quad_state->are_contents_opaque = false;
-    it->shared_quad_state = new_shared_quad_state;
-
     // When the opacity == 1.0, drawing with transparent will be done without
     // blending and will have the proper effect of completely clearing the
     // layer.
-    render_pass->quad_list.ReplaceExistingQuadWithOpaqueTransparentSolidColor(
-        it);
+    render_pass->ReplaceExistingQuadWithOpaqueTransparentSolidColor(it);
     is_opaque = true;
   }
 
