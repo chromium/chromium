@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/prerender/isolated/isolated_prerender_features.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/google_api_keys.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -114,8 +115,6 @@ TEST_F(IsolatedPrerenderProxyConfiguratorTest, ExperimentOverrides) {
   base::RunLoop().RunUntilIdle();
 
   net::HttpRequestHeaders headers;
-  headers.SetHeader(
-      "test-header",
-      "key=" + IsolatedPrerenderProxyConfigurator::GetGoogleAPIKey());
+  headers.SetHeader("test-header", "key=" + google_apis::GetAPIKey());
   VerifyLatestProxyConfig(proxy_url, headers);
 }

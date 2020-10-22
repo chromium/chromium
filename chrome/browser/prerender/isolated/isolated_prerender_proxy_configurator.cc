@@ -6,28 +6,14 @@
 
 #include "chrome/browser/prerender/isolated/isolated_prerender_params.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
+#include "google_apis/google_api_keys.h"
 #include "net/base/host_port_pair.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "url/gurl.h"
 
-#if defined(USE_GOOGLE_API_KEYS)
-#include "google_apis/google_api_keys.h"
-#endif
-
-// static
-std::string IsolatedPrerenderProxyConfigurator::GetGoogleAPIKey() {
-#if defined(USE_GOOGLE_API_KEYS)
-  std::string api_key = google_apis::GetAPIKey();
-  if (google_apis::HasAPIKeyConfigured() && !api_key.empty()) {
-    return api_key;
-  }
-#endif
-  return std::string();
-}
-
 IsolatedPrerenderProxyConfigurator::IsolatedPrerenderProxyConfigurator() {
   connect_tunnel_headers_.SetHeader(IsolatedPrerenderProxyHeaderKey(),
-                                    "key=" + GetGoogleAPIKey());
+                                    "key=" + google_apis::GetAPIKey());
 }
 
 IsolatedPrerenderProxyConfigurator::~IsolatedPrerenderProxyConfigurator() =
