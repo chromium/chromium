@@ -9,8 +9,10 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/tick_clock.h"
 #include "base/values.h"
+#include "net/base/features.h"
 #include "net/base/network_isolation_key.h"
 #include "net/reporting/mock_persistent_reporting_store.h"
 #include "net/reporting/reporting_browsing_data_remover.h"
@@ -51,6 +53,13 @@ class ReportingServiceTest : public ::testing::TestWithParam<bool>,
       ReportingEndpointGroupKey(kNik2_, kOrigin2_, kGroup_);
 
   ReportingServiceTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kPartitionNelAndReportingByNetworkIsolationKey);
+    Init();
+  }
+
+  // Initializes, or re-initializes, |service_| and its dependencies.
+  void Init() {
     if (GetParam())
       store_ = std::make_unique<MockPersistentReportingStore>();
     else
@@ -75,6 +84,8 @@ class ReportingServiceTest : public ::testing::TestWithParam<bool>,
   ReportingService* service() { return service_.get(); }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
+
   base::SimpleTestClock clock_;
   base::SimpleTestTickClock tick_clock_;
 
@@ -127,6 +138,32 @@ TEST_P(ReportingServiceTest, DontQueueReportInvalidUrl) {
   ASSERT_EQ(0u, reports.size());
 }
 
+TEST_P(ReportingServiceTest, QueueReportNetworkIsolationKeyDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kPartitionNelAndReportingByNetworkIsolationKey);
+
+  // Re-create the store, so it reads the new feature value.
+  Init();
+
+  service()->QueueReport(kUrl_, kNik_, kUserAgent_, kGroup_, kType_,
+                         std::make_unique<base::DictionaryValue>(), 0);
+  FinishLoading(true /* load_success */);
+
+  std::vector<const ReportingReport*> reports;
+  context()->cache()->GetReports(&reports);
+  ASSERT_EQ(1u, reports.size());
+
+  // NetworkIsolationKey should be empty, instead of kNik_;
+  EXPECT_EQ(NetworkIsolationKey(), reports[0]->network_isolation_key);
+  EXPECT_NE(kNik_, reports[0]->network_isolation_key);
+
+  EXPECT_EQ(kUrl_, reports[0]->url);
+  EXPECT_EQ(kUserAgent_, reports[0]->user_agent);
+  EXPECT_EQ(kGroup_, reports[0]->group);
+  EXPECT_EQ(kType_, reports[0]->type);
+}
+
 TEST_P(ReportingServiceTest, ProcessHeader) {
   service()->ProcessHeader(kUrl_, kNik_,
                            "{\"endpoints\":[{\"url\":\"" + kEndpoint_.spec() +
@@ -138,6 +175,8 @@ TEST_P(ReportingServiceTest, ProcessHeader) {
   FinishLoading(true /* load_success */);
 
   EXPECT_EQ(1u, context()->cache()->GetEndpointCount());
+  EXPECT_TRUE(context()->cache()->GetEndpointForTesting(
+      ReportingEndpointGroupKey(kNik_, kOrigin_, kGroup_), kEndpoint_));
 }
 
 TEST_P(ReportingServiceTest, ProcessHeaderPathAbsolute) {
@@ -182,6 +221,31 @@ TEST_P(ReportingServiceTest, ProcessHeader_TooDeep) {
   service()->ProcessHeader(kUrl_, kNik_, header_too_deep);
 
   EXPECT_EQ(0u, context()->cache()->GetEndpointCount());
+}
+
+TEST_P(ReportingServiceTest, ProcessHeaderNetworkIsolationKeyDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kPartitionNelAndReportingByNetworkIsolationKey);
+
+  // Re-create the store, so it reads the new feature value.
+  Init();
+
+  service()->ProcessHeader(kUrl_, kNik_,
+                           "{\"endpoints\":[{\"url\":\"" + kEndpoint_.spec() +
+                               "\"}],"
+                               "\"group\":\"" +
+                               kGroup_ +
+                               "\","
+                               "\"max_age\":86400}");
+  FinishLoading(true /* load_success */);
+
+  EXPECT_EQ(1u, context()->cache()->GetEndpointCount());
+  EXPECT_FALSE(context()->cache()->GetEndpointForTesting(
+      ReportingEndpointGroupKey(kNik_, kOrigin_, kGroup_), kEndpoint_));
+  EXPECT_TRUE(context()->cache()->GetEndpointForTesting(
+      ReportingEndpointGroupKey(NetworkIsolationKey(), kOrigin_, kGroup_),
+      kEndpoint_));
 }
 
 TEST_P(ReportingServiceTest, WriteToStore) {

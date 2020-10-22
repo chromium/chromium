@@ -7,12 +7,14 @@
 #include <vector>
 
 #include "base/json/json_reader.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
 #include "base/values.h"
 #include "net/base/backoff_entry.h"
+#include "net/base/features.h"
 #include "net/base/network_isolation_key.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_report.h"
@@ -28,6 +30,12 @@ namespace {
 class ReportingDeliveryAgentTest : public ReportingTestBase {
  protected:
   ReportingDeliveryAgentTest() {
+    // This is a private API of the reporting service, so no need to test the
+    // case kPartitionNelAndReportingByNetworkIsolationKey is disabled - the
+    // feature is only applied at the entry points of the service.
+    feature_list_.InitAndEnableFeature(
+        features::kPartitionNelAndReportingByNetworkIsolationKey);
+
     ReportingPolicy policy;
     policy.endpoint_backoff_policy.num_errors_to_ignore = 0;
     policy.endpoint_backoff_policy.initial_delay_ms = 60000;
@@ -68,6 +76,8 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
     EXPECT_TRUE(delivery_timer()->IsRunning());
   }
 
+  base::test::ScopedFeatureList feature_list_;
+
   base::Value report_body_{base::Value::Type::DICTIONARY};
   const GURL kUrl_ = GURL("https://origin/path");
   const GURL kOtherUrl_ = GURL("https://other-origin/path");
@@ -75,9 +85,9 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
   const url::Origin kOrigin_ = url::Origin::Create(GURL("https://origin/"));
   const url::Origin kOtherOrigin_ =
       url::Origin::Create(GURL("https://other-origin/"));
-  const NetworkIsolationKey kNik_;
+  const NetworkIsolationKey kNik_ = NetworkIsolationKey(kOrigin_, kOrigin_);
   const NetworkIsolationKey kOtherNik_ =
-      NetworkIsolationKey(kOrigin_, kOtherOrigin_);
+      NetworkIsolationKey(kOtherOrigin_, kOtherOrigin_);
   const GURL kEndpoint_ = GURL("https://endpoint/");
   const std::string kUserAgent_ = "Mozilla/1.0";
   const std::string kGroup_ = "group";

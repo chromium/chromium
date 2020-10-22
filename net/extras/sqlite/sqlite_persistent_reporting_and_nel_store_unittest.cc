@@ -17,9 +17,11 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "net/base/features.h"
 #include "net/base/network_isolation_key.h"
 #include "net/network_error_logging/network_error_logging_service.h"
 #include "net/reporting/reporting_test_util.h"
@@ -86,7 +88,10 @@ const std::vector<TestCase> kCoalescingTestcasesForUpdateDetails = {
 class SQLitePersistentReportingAndNelStoreTest
     : public TestWithTaskEnvironment {
  public:
-  SQLitePersistentReportingAndNelStoreTest() {}
+  SQLitePersistentReportingAndNelStoreTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kPartitionNelAndReportingByNetworkIsolationKey);
+  }
 
   void CreateStore() {
     store_ = std::make_unique<SQLitePersistentReportingAndNelStore>(
@@ -225,6 +230,8 @@ class SQLitePersistentReportingAndNelStoreTest
   }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
+
   // Use origins distinct from those used in origin fields of keys, to avoid any
   // risk of tests passing due to comparing origins that are the same but come
   // from different sources.
@@ -602,6 +609,58 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest,
   std::vector<NetworkErrorLoggingService::NelPolicy> policies;
   LoadNelPolicies(&policies);
   EXPECT_EQ(0u, policies.size());
+}
+
+TEST_F(SQLitePersistentReportingAndNelStoreTest,
+       NelPoliciesRestoredWithNetworkIsolationKeysDisabled) {
+  CreateStore();
+  InitializeStore();
+
+  base::Time now = base::Time::Now();
+  // Policy with non-empty NetworkIsolationKey.
+  NetworkErrorLoggingService::NelPolicy policy = MakeNelPolicy(
+      kNik1_, url::Origin::Create(GURL("https://www.foo.test")), now);
+
+  base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
+                            base::WaitableEvent::InitialState::NOT_SIGNALED);
+
+  // Wedge the background thread to make sure it doesn't start consuming the
+  // queue.
+  background_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SQLitePersistentReportingAndNelStoreTest::WaitOnEvent,
+                     base::Unretained(this), &event));
+
+  store_->AddNelPolicy(policy);
+  EXPECT_EQ(1u, store_->GetQueueLengthForTesting());
+
+  event.Signal();
+  RunUntilIdle();
+
+  // Close the database, disable kPartitionNelAndReportingByNetworkIsolationKey,
+  // and re-open it.
+  DestroyStore();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kPartitionNelAndReportingByNetworkIsolationKey);
+  CreateStore();
+  std::vector<NetworkErrorLoggingService::NelPolicy> policies;
+  LoadNelPolicies(&policies);
+
+  // No entries should be restored.
+  ASSERT_EQ(0u, policies.size());
+
+  // Now reload the store with kPartitionNelAndReportingByNetworkIsolationKey
+  // enabled again.
+  DestroyStore();
+  feature_list.Reset();
+  CreateStore();
+  LoadNelPolicies(&policies);
+
+  // The entry is back!
+  ASSERT_EQ(1u, policies.size());
+  EXPECT_EQ(policy.key, policies[0].key);
+  EXPECT_TRUE(WithinOneMicrosecond(policy.expires, policies[0].expires));
 }
 
 // These tests test that a SQLitePersistentReportingAndNelStore
@@ -1497,6 +1556,120 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest,
   std::vector<CachedReportingEndpointGroup> groups;
   LoadReportingClients(&endpoints, &groups);
   ASSERT_EQ(0u, groups.size());
+}
+
+TEST_F(SQLitePersistentReportingAndNelStoreTest,
+       ReportingEndpointsRestoredWithNetworkIsolationKeysDisabled) {
+  CreateStore();
+  InitializeStore();
+
+  // Endpoint with non-empty NetworkIsolationKey.
+  ReportingEndpoint endpoint = MakeReportingEndpoint(
+      kNik1_, url::Origin::Create(GURL("https://www.foo.test")), kGroupName1,
+      GURL("https://endpoint.test/"));
+
+  base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
+                            base::WaitableEvent::InitialState::NOT_SIGNALED);
+
+  // Wedge the background thread to make sure it doesn't start consuming the
+  // queue.
+  background_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SQLitePersistentReportingAndNelStoreTest::WaitOnEvent,
+                     base::Unretained(this), &event));
+
+  store_->AddReportingEndpoint(endpoint);
+  EXPECT_EQ(1u, store_->GetQueueLengthForTesting());
+
+  event.Signal();
+  RunUntilIdle();
+
+  // Close the database, disable kPartitionNelAndReportingByNetworkIsolationKey,
+  // and re-open it.
+  DestroyStore();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kPartitionNelAndReportingByNetworkIsolationKey);
+  CreateStore();
+
+  std::vector<ReportingEndpoint> endpoints;
+  std::vector<CachedReportingEndpointGroup> groups;
+  LoadReportingClients(&endpoints, &groups);
+  // No entries should be restored.
+  ASSERT_EQ(0u, endpoints.size());
+
+  // Now reload the store with kPartitionNelAndReportingByNetworkIsolationKey
+  // enabled again.
+  DestroyStore();
+  feature_list.Reset();
+  CreateStore();
+  LoadReportingClients(&endpoints, &groups);
+
+  // The entry is back!
+  ASSERT_EQ(1u, endpoints.size());
+  EXPECT_EQ(endpoint.group_key, endpoints[0].group_key);
+  EXPECT_EQ(endpoint.info.url, endpoints[0].info.url);
+  EXPECT_EQ(endpoint.info.priority, endpoints[0].info.priority);
+  EXPECT_EQ(endpoint.info.weight, endpoints[0].info.weight);
+}
+
+TEST_F(SQLitePersistentReportingAndNelStoreTest,
+       ReportingEndpointGroupsRestoredWithNetworkIsolationKeysDisabled) {
+  CreateStore();
+  InitializeStore();
+
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://www.foo.test"));
+
+  CreateStore();
+  InitializeStore();
+  base::Time now = base::Time::Now();
+  // Group with non-empty NetworkIsolationKey.
+  CachedReportingEndpointGroup group =
+      MakeReportingEndpointGroup(kNik1_, kOrigin, kGroupName1, now);
+
+  base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
+                            base::WaitableEvent::InitialState::NOT_SIGNALED);
+
+  // Wedge the background thread to make sure it doesn't start consuming the
+  // queue.
+  background_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SQLitePersistentReportingAndNelStoreTest::WaitOnEvent,
+                     base::Unretained(this), &event));
+
+  store_->AddReportingEndpointGroup(group);
+  EXPECT_EQ(1u, store_->GetQueueLengthForTesting());
+
+  event.Signal();
+  RunUntilIdle();
+
+  // Close the database, disable kPartitionNelAndReportingByNetworkIsolationKey,
+  // and re-open it.
+  DestroyStore();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kPartitionNelAndReportingByNetworkIsolationKey);
+  CreateStore();
+
+  std::vector<ReportingEndpoint> endpoints;
+  std::vector<CachedReportingEndpointGroup> groups;
+  // No entries should be restored.
+  LoadReportingClients(&endpoints, &groups);
+  EXPECT_TRUE(groups.empty());
+
+  // Now reload the store with kPartitionNelAndReportingByNetworkIsolationKey
+  // enabled again.
+  DestroyStore();
+  feature_list.Reset();
+  CreateStore();
+  LoadReportingClients(&endpoints, &groups);
+
+  // The entry is back!
+  ASSERT_EQ(1u, groups.size());
+  EXPECT_EQ(group.group_key, groups[0].group_key);
+  EXPECT_EQ(group.include_subdomains, groups[0].include_subdomains);
+  EXPECT_TRUE(WithinOneMicrosecond(group.expires, groups[0].expires));
+  EXPECT_TRUE(WithinOneMicrosecond(group.last_used, groups[0].last_used));
 }
 
 }  // namespace net

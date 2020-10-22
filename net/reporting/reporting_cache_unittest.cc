@@ -11,10 +11,12 @@
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "net/base/features.h"
 #include "net/base/network_isolation_key.h"
 #include "net/reporting/mock_persistent_reporting_store.h"
 #include "net/reporting/reporting_cache_impl.h"
@@ -57,7 +59,13 @@ class TestReportingCacheObserver : public ReportingCacheObserver {
 class ReportingCacheTest : public ReportingTestBase,
                            public ::testing::WithParamInterface<bool> {
  protected:
-  ReportingCacheTest() : ReportingTestBase() {
+  ReportingCacheTest() {
+    // This is a private API of the reporting service, so no need to test the
+    // case kPartitionNelAndReportingByNetworkIsolationKey is disabled - the
+    // feature is only applied at the entry points of the service.
+    feature_list_.InitAndEnableFeature(
+        features::kPartitionNelAndReportingByNetworkIsolationKey);
+
     ReportingPolicy policy;
     policy.max_report_count = 5;
     policy.max_endpoints_per_origin = 3;
@@ -169,6 +177,8 @@ class ReportingCacheTest : public ReportingTestBase,
     EXPECT_EQ(exist,
               EndpointGroupExistsInCache(group, OriginSubdomains::DEFAULT));
   }
+
+  base::test::ScopedFeatureList feature_list_;
 
   const GURL kUrl1_ = GURL("https://origin1/path");
   const GURL kUrl2_ = GURL("https://origin2/path");

@@ -10,10 +10,12 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
 #include "net/network_error_logging/mock_persistent_nel_store.h"
@@ -40,6 +42,9 @@ class NetworkErrorLoggingServiceTest : public ::testing::TestWithParam<bool> {
   using NelPolicyKey = NetworkErrorLoggingService::NelPolicyKey;
 
   NetworkErrorLoggingServiceTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kPartitionNelAndReportingByNetworkIsolationKey);
+
     if (GetParam()) {
       store_ = std::make_unique<MockPersistentNelStore>();
     } else {
@@ -155,6 +160,8 @@ class NetworkErrorLoggingServiceTest : public ::testing::TestWithParam<bool> {
     if (store())
       store()->FinishLoading(load_success);
   }
+
+  base::test::ScopedFeatureList feature_list_;
 
   const GURL kUrl_ = GURL("https://example.com/path");
   const GURL kUrlDifferentPort_ = GURL("https://example.com:4433/path");
@@ -320,6 +327,33 @@ TEST_P(NetworkErrorLoggingServiceTest,
   EXPECT_EQ(kUserAgent_, reports()[1].user_agent);
   EXPECT_EQ(kGroup_, reports()[1].group);
   EXPECT_EQ(kType_, reports()[1].type);
+}
+
+TEST_P(NetworkErrorLoggingServiceTest, NetworkIsolationKeyDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kPartitionNelAndReportingByNetworkIsolationKey);
+
+  // Need to re-create the service, since it caches the feature value on
+  // creation.
+  service_ = NetworkErrorLoggingService::Create(store_.get());
+  reporting_service_ = std::make_unique<TestReportingService>();
+  service_->SetReportingService(reporting_service_.get());
+
+  service()->OnHeader(kNik_, kOrigin_, kServerIP_, kHeader_);
+
+  // Make the rest of the test run synchronously.
+  FinishLoading(true /* load_success */);
+
+  // Wrong NIK, but a report should be generated anyways.
+  service()->OnRequest(
+      MakeRequestDetails(kOtherNik_, kUrl_, ERR_CONNECTION_REFUSED));
+  EXPECT_EQ(1u, reports().size());
+  EXPECT_EQ(kUrl_, reports()[0].url);
+  EXPECT_EQ(NetworkIsolationKey(), reports()[0].network_isolation_key);
+  EXPECT_EQ(kUserAgent_, reports()[0].user_agent);
+  EXPECT_EQ(kGroup_, reports()[0].group);
+  EXPECT_EQ(kType_, reports()[0].type);
 }
 
 TEST_P(NetworkErrorLoggingServiceTest, JsonTooLong) {
@@ -1293,6 +1327,36 @@ TEST_P(NetworkErrorLoggingServiceTest, MismatchingIPAddress_SignedExchange) {
       MakeSignedExchangeReportDetails(kNik_, false, "sxg.failed", kUrl_,
                                       kInnerUrl_, kCertUrl_, kOtherServerIP_));
   EXPECT_TRUE(reports().empty());
+}
+
+TEST_P(NetworkErrorLoggingServiceTest,
+       SignedExchangeNetworkIsolationKeyDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kPartitionNelAndReportingByNetworkIsolationKey);
+
+  // Need to re-create the service, since it caches the feature value on
+  // creation.
+  service_ = NetworkErrorLoggingService::Create(store_.get());
+  reporting_service_ = std::make_unique<TestReportingService>();
+  service_->SetReportingService(reporting_service_.get());
+
+  service()->OnHeader(kNik_, kOrigin_, kServerIP_, kHeaderSuccessFraction1_);
+
+  // Make the rest of the test run synchronously.
+  FinishLoading(true /* load_success */);
+
+  // Wrong NIK, but a report should be generated anyways.
+  service()->QueueSignedExchangeReport(MakeSignedExchangeReportDetails(
+      kOtherNik_, true, "ok", kUrl_, kInnerUrl_, kCertUrl_, kServerIP_));
+
+  ASSERT_EQ(1u, reports().size());
+  EXPECT_EQ(kUrl_, reports()[0].url);
+  EXPECT_EQ(NetworkIsolationKey(), reports()[0].network_isolation_key);
+  EXPECT_EQ(kUserAgent_, reports()[0].user_agent);
+  EXPECT_EQ(kGroup_, reports()[0].group);
+  EXPECT_EQ(kType_, reports()[0].type);
+  EXPECT_EQ(0, reports()[0].depth);
 }
 
 // When the max number of policies is exceeded, first try to remove expired

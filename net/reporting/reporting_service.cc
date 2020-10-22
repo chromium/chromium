@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -14,6 +15,7 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "net/base/features.h"
 #include "net/reporting/reporting_browsing_data_remover.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_context.h"
@@ -75,8 +77,9 @@ class ReportingServiceImpl : public ReportingService {
     // |task_backlog_| which will not outlive |this|.
     DoOrBacklogTask(base::BindOnce(
         &ReportingServiceImpl::DoQueueReport, base::Unretained(this),
-        network_isolation_key, std::move(sanitized_url), user_agent, group,
-        type, std::move(body), depth, queued_ticks));
+        FixupNetworkIsolationKey(network_isolation_key),
+        std::move(sanitized_url), user_agent, group, type, std::move(body),
+        depth, queued_ticks));
   }
 
   void ProcessHeader(const GURL& url,
@@ -94,7 +97,8 @@ class ReportingServiceImpl : public ReportingService {
     DVLOG(1) << "Received Reporting policy for " << url.GetOrigin();
     DoOrBacklogTask(base::BindOnce(
         &ReportingServiceImpl::DoProcessHeader, base::Unretained(this),
-        network_isolation_key, url, std::move(header_value)));
+        FixupNetworkIsolationKey(network_isolation_key), url,
+        std::move(header_value)));
   }
 
   void RemoveBrowsingData(uint64_t data_type_mask,
@@ -221,11 +225,29 @@ class ReportingServiceImpl : public ReportingService {
     ExecuteBacklog();
   }
 
+  // Returns either |network_isolation_key| or an empty NetworkIsolationKey,
+  // based on |respect_network_isolation_key_|. Should be used on all
+  // NetworkIsolationKeys passed in through public API calls.
+  const NetworkIsolationKey& FixupNetworkIsolationKey(
+      const NetworkIsolationKey& network_isolation_key) {
+    if (respect_network_isolation_key_)
+      return network_isolation_key;
+    return empty_nik_;
+  }
+
   std::unique_ptr<ReportingContext> context_;
   bool shut_down_;
   bool started_loading_from_store_;
   bool initialized_;
   std::vector<base::OnceClosure> task_backlog_;
+
+  bool respect_network_isolation_key_ = base::FeatureList::IsEnabled(
+      features::kPartitionNelAndReportingByNetworkIsolationKey);
+
+  // Allows returning a NetworkIsolationKey by reference when
+  // |respect_network_isolation_key_| is false.
+  NetworkIsolationKey empty_nik_;
+
   base::WeakPtrFactory<ReportingServiceImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ReportingServiceImpl);

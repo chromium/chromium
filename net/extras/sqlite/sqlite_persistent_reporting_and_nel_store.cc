@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
@@ -21,6 +22,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/thread_annotations.h"
+#include "net/base/features.h"
 #include "net/base/network_isolation_key.h"
 #include "net/extras/sqlite/sqlite_persistent_store_backend_base.h"
 #include "net/reporting/reporting_endpoint.h"
@@ -104,7 +106,23 @@ NetworkIsolationKeyFromString(const std::string& string,
   base::Optional<base::Value> value = base::JSONReader::Read(string);
   if (!value)
     return false;
-  return NetworkIsolationKey::FromValue(*value, out_network_isolation_key);
+
+  if (!NetworkIsolationKey::FromValue(*value, out_network_isolation_key))
+    return false;
+
+  // If NetworkIsolationKeys are disabled for reporting and NEL, but the
+  // NetworkIsolationKey is non-empty, ignore the entry. The entry will
+  // still be in the on-disk database, in case NIKs are re-enabled, it just
+  // won't be loaded into memory. The entry could still be loaded with an empty
+  // NetworkIsolationKey, but that would require logic to resolve conflicts.
+  if (!out_network_isolation_key->IsEmpty() &&
+      !base::FeatureList::IsEnabled(
+          features::kPartitionNelAndReportingByNetworkIsolationKey)) {
+    *out_network_isolation_key = NetworkIsolationKey();
+    return false;
+  }
+
+  return true;
 }
 
 class SQLitePersistentReportingAndNelStore::Backend
@@ -1286,9 +1304,9 @@ void SQLitePersistentReportingAndNelStore::Backend::
 
   sql::Statement smt(db()->GetUniqueStatement(
       "SELECT nik, origin_scheme, origin_host, origin_port, "
-      "received_ip_address, "
-      "group_name, expires_us_since_epoch, success_fraction, failure_fraction, "
-      "is_include_subdomains, last_access_us_since_epoch FROM nel_policies"));
+      "received_ip_address, group_name, expires_us_since_epoch, "
+      "success_fraction, failure_fraction, is_include_subdomains, "
+      "last_access_us_since_epoch FROM nel_policies"));
   if (!smt.is_valid()) {
     Reset();
     PostClientTask(

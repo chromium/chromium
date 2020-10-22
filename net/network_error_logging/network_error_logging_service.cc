@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -20,6 +21,7 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -177,10 +179,11 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     base::Time header_received_time = clock_->Now();
     // base::Unretained is safe because the callback gets stored in
     // task_backlog_, so the callback will not outlive |*this|.
-    DoOrBacklogTask(
-        base::BindOnce(&NetworkErrorLoggingServiceImpl::DoOnHeader,
-                       base::Unretained(this), network_isolation_key, origin,
-                       received_ip_address, value, header_received_time));
+    DoOrBacklogTask(base::BindOnce(
+        &NetworkErrorLoggingServiceImpl::DoOnHeader, base::Unretained(this),
+        respect_network_isolation_key_ ? network_isolation_key
+                                       : NetworkIsolationKey(),
+        origin, received_ip_address, value, header_received_time));
   }
 
   void OnRequest(RequestDetails details) override {
@@ -189,6 +192,9 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
 
     if (!reporting_service_)
       return;
+
+    if (!respect_network_isolation_key_)
+      details.network_isolation_key = NetworkIsolationKey();
 
     base::Time request_received_time = clock_->Now();
     // base::Unretained is safe because the callback gets stored in
@@ -209,6 +215,9 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
           RequestOutcome::kDiscardedInsecureOrigin);
       return;
     }
+
+    if (!respect_network_isolation_key_)
+      details.network_isolation_key = NetworkIsolationKey();
 
     base::Time request_received_time = clock_->Now();
     // base::Unretained is safe because the callback gets stored in
@@ -328,6 +337,11 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
   // Backlog of tasks waiting on initialization.
   std::vector<base::OnceClosure> task_backlog_;
 
+  // Set based on features::kPartitionNelAndReportingByNetworkIsolationKey on
+  // construction.
+  bool respect_network_isolation_key_ = base::FeatureList::IsEnabled(
+      features::kPartitionNelAndReportingByNetworkIsolationKey);
+
   base::WeakPtrFactory<NetworkErrorLoggingServiceImpl> weak_factory_{this};
 
   bool PoliciesArePersisted() const { return store_ != nullptr; }
@@ -407,6 +421,9 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
   void DoOnRequest(RequestDetails details, base::Time request_received_time) {
     DCHECK(reporting_service_);
     DCHECK(initialized_);
+
+    if (!respect_network_isolation_key_)
+      details.network_isolation_key = NetworkIsolationKey();
 
     auto report_origin = url::Origin::Create(details.uri);
     const NelPolicy* policy =

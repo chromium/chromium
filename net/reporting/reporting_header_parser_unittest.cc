@@ -12,9 +12,11 @@
 #include "base/json/json_reader.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "net/base/features.h"
 #include "net/reporting/mock_persistent_reporting_store.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_endpoint.h"
@@ -33,7 +35,13 @@ using CommandType = MockPersistentReportingStore::Command::Type;
 class ReportingHeaderParserTest : public ReportingTestBase,
                                   public ::testing::WithParamInterface<bool> {
  protected:
-  ReportingHeaderParserTest() : ReportingTestBase() {
+  ReportingHeaderParserTest() {
+    // This is a private API of the reporting service, so no need to test the
+    // case kPartitionNelAndReportingByNetworkIsolationKey is disabled - the
+    // feature is only applied at the entry points of the service.
+    feature_list_.InitAndEnableFeature(
+        features::kPartitionNelAndReportingByNetworkIsolationKey);
+
     ReportingPolicy policy;
     policy.max_endpoints_per_origin = 10;
     policy.max_endpoint_count = 20;
@@ -137,6 +145,8 @@ class ReportingHeaderParserTest : public ReportingTestBase,
                                          std::move(value));
     }
   }
+
+  base::test::ScopedFeatureList feature_list_;
 
   const GURL kUrl1_ = GURL("https://origin1.test/path");
   const url::Origin kOrigin1_ = url::Origin::Create(kUrl1_);
