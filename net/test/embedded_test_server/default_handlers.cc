@@ -18,11 +18,15 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/hash/md5.h"
+#include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -794,6 +798,132 @@ std::unique_ptr<HttpResponse> HandleSelfPac(const HttpRequest& request) {
   return http_response;
 }
 
+// A chunked HTTP response, with optional delays between chunks. See
+// HandleChunks() for argument details.
+class DelayedChunkedHttpResponse : public HttpResponse {
+ public:
+  DelayedChunkedHttpResponse(base::TimeDelta delay_before_headers,
+                             base::TimeDelta delay_between_chunks,
+                             int chunk_size,
+                             int num_chunks)
+      : delay_before_headers_(delay_before_headers),
+        delay_between_chunks_(delay_between_chunks),
+        chunk_size_(chunk_size),
+        remaining_chunks_(num_chunks) {}
+
+  ~DelayedChunkedHttpResponse() override = default;
+
+  DelayedChunkedHttpResponse(const DelayedChunkedHttpResponse&) = delete;
+  DelayedChunkedHttpResponse& operator=(const DelayedChunkedHttpResponse&) =
+      delete;
+
+  void SendResponse(const SendBytesCallback& send,
+                    SendCompleteCallback done) override {
+    send_bytes_callback_ = send;
+    send_complete_callback_ = std::move(done);
+
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&DelayedChunkedHttpResponse::SendHeaders,
+                       weak_ptr_factory_.GetWeakPtr()),
+        delay_before_headers_);
+  }
+
+ private:
+  void SendHeaders() {
+    send_bytes_callback_.Run(
+        "HTTP/1.1 200 OK\r\n"
+        "Content-Type: text/plain\r\n"
+        "Connection: close\r\n"
+        "Transfer-Encoding: chunked\r\n\r\n",
+        base::BindOnce(&DelayedChunkedHttpResponse::PrepateToSendNextChunk,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void PrepateToSendNextChunk() {
+    if (remaining_chunks_ == 0) {
+      send_bytes_callback_.Run(CreateChunk(0 /* chunk_size */),
+                               std::move(send_complete_callback_));
+      return;
+    }
+
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&DelayedChunkedHttpResponse::SendNextChunk,
+                       weak_ptr_factory_.GetWeakPtr()),
+        delay_between_chunks_);
+  }
+
+  void SendNextChunk() {
+    DCHECK_GT(remaining_chunks_, 0);
+    remaining_chunks_--;
+    send_bytes_callback_.Run(
+        CreateChunk(chunk_size_),
+        base::BindOnce(&DelayedChunkedHttpResponse::PrepateToSendNextChunk,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  static std::string CreateChunk(int chunk_size) {
+    return base::StringPrintf(
+        "%x\r\n"
+        "%s"
+        "\r\n",
+        chunk_size, std::string(chunk_size, '*').c_str());
+  }
+
+  base::TimeDelta delay_before_headers_;
+  base::TimeDelta delay_between_chunks_;
+  int chunk_size_;
+  int remaining_chunks_;
+
+  SendBytesCallback send_bytes_callback_;
+  SendCompleteCallback send_complete_callback_;
+
+  base::WeakPtrFactory<DelayedChunkedHttpResponse> weak_ptr_factory_{this};
+};
+
+// /chunked
+// Returns a chunked response.
+//
+// Optional query parameters:
+// * waitBeforeHeaders: Delays the specified number milliseconds before sending
+// a response header. Defaults to 0.
+// * waitBetweenChunks: Delays the specified number milliseconds before sending
+// each chunk, except the last. Defaults to 0.
+// * chunkSize: Size of each chunk, in bytes. Defaults to 5.
+// * chunksNumber: Number of non-empty chunks. Defaults to 5.
+std::unique_ptr<HttpResponse> HandleChunked(const HttpRequest& request) {
+  GURL request_url = request.GetURL();
+
+  RequestQuery query = ParseQuery(request_url);
+  base::TimeDelta delay_before_headers;
+  base::TimeDelta delay_between_chunks;
+  int chunk_size = 5;
+  int num_chunks = 5;
+
+  for (QueryIterator query(request_url); !query.IsAtEnd(); query.Advance()) {
+    int value;
+    CHECK(base::StringToInt(query.GetValue(), &value));
+    CHECK_GE(value, 0);
+    if (query.GetKey() == "waitBeforeHeaders") {
+      delay_before_headers = base::TimeDelta::FromMilliseconds(value);
+    } else if (query.GetKey() == "waitBetweenChunks") {
+      delay_between_chunks = base::TimeDelta::FromMilliseconds(value);
+    } else if (query.GetKey() == "chunkSize") {
+      // A 0-size chunk indicates completion.
+      CHECK_LT(0, value);
+      chunk_size = value;
+    } else if (query.GetKey() == "chunksNumber") {
+      num_chunks = value;
+    } else {
+      NOTREACHED() << query.GetKey() << "Is not a valid argument of /chunked";
+    }
+  }
+
+  return std::make_unique<DelayedChunkedHttpResponse>(
+      delay_before_headers, delay_between_chunks, chunk_size, num_chunks);
+}
+
 }  // anonymous namespace
 
 #define PREFIXED_HANDLER(prefix, handler)             \
@@ -873,12 +1003,12 @@ void RegisterDefaultHandlers(EmbeddedTestServer* server) {
   server->RegisterDefaultHandler(
       PREFIXED_HANDLER("/gzip-body", &HandleGzipBody));
   server->RegisterDefaultHandler(PREFIXED_HANDLER("/self.pac", &HandleSelfPac));
+  server->RegisterDefaultHandler(PREFIXED_HANDLER("/chunked", &HandleChunked));
 
   // TODO(svaldez): HandleDownload
   // TODO(svaldez): HandleDownloadFinish
   // TODO(svaldez): HandleZipFile
   // TODO(svaldez): HandleSSLManySmallRecords
-  // TODO(svaldez): HandleChunkedServer
   // TODO(svaldez): HandleGetSSLSessionCache
   // TODO(svaldez): HandleGetChannelID
   // TODO(svaldez): HandleGetClientCert

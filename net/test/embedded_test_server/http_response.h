@@ -34,7 +34,7 @@ class HttpResponse{
 
   // |send| will send the specified data to the network socket, and invoke
   // |write_done| when complete. When the entire response has been sent,
-  // |done| must be called.
+  // |done| must be called. Invoking |done| will delete the HttpResponse object.
   virtual void SendResponse(const SendBytesCallback& send,
                             SendCompleteCallback done) = 0;
 };

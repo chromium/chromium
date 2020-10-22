@@ -4442,14 +4442,9 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateInfoRedirect) {
                                              NetLogEventType::DELEGATE_INFO));
 }
 
-// TODO(svaldez): Update tests to use EmbeddedTestServer.
-#if !defined(OS_IOS)
 // Tests handling of delegate info from a URLRequest::Delegate.
 TEST_F(URLRequestTestHTTP, URLRequestDelegateInfo) {
-  SpawnedTestServer test_server(SpawnedTestServer::TYPE_HTTP,
-                                base::FilePath(kTestFilePath));
-
-  ASSERT_TRUE(test_server.Start());
+  ASSERT_TRUE(http_test_server()->Start());
 
   AsyncLoggingUrlRequestDelegate request_delegate(
       AsyncLoggingUrlRequestDelegate::NO_CANCEL);
@@ -4465,8 +4460,8 @@ TEST_F(URLRequestTestHTTP, URLRequestDelegateInfo) {
     // the possibility of multiple reads being combined in the unlikely event
     // that it occurs.
     std::unique_ptr<URLRequest> r(context.CreateRequest(
-        test_server.GetURL("/chunked?waitBetweenChunks=20"), DEFAULT_PRIORITY,
-        &request_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+        http_test_server()->GetURL("/chunked?waitBetweenChunks=20"),
+        DEFAULT_PRIORITY, &request_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
     LoadStateWithParam load_state = r->GetLoadState();
     r->Start();
     request_delegate.RunUntilComplete();
@@ -4502,7 +4497,6 @@ TEST_F(URLRequestTestHTTP, URLRequestDelegateInfo) {
       entries, log_position + 1,
       NetLogEventType::URL_REQUEST_DELEGATE_RESPONSE_STARTED));
 }
-#endif  // !defined(OS_IOS)
 
 // Tests handling of delegate info from a URLRequest::Delegate in the case of
 // an HTTP redirect.

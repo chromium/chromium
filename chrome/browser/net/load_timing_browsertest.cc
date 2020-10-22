@@ -114,8 +114,8 @@ class LoadTimingBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, HTTP) {
-  ASSERT_TRUE(spawned_test_server()->Start());
-  GURL url = spawned_test_server()->GetURL("chunked?waitBeforeHeaders=100");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/chunked?waitBeforeHeaders=100");
   ui_test_utils::NavigateToURL(browser(), url);
 
   TimingDeltas navigation_deltas;
@@ -132,11 +132,10 @@ IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, HTTP) {
 }
 
 IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, HTTPS) {
-  net::SpawnedTestServer https_server(net::SpawnedTestServer::TYPE_HTTPS,
-                                      net::BaseTestServer::SSLOptions(),
-                                      base::FilePath());
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.AddDefaultHandlers();
   ASSERT_TRUE(https_server.Start());
-  GURL url = https_server.GetURL("chunked?waitBeforeHeaders=100");
+  GURL url = https_server.GetURL("/chunked?waitBeforeHeaders=100");
   ui_test_utils::NavigateToURL(browser(), url);
 
   TimingDeltas navigation_deltas;

@@ -675,7 +675,8 @@ void EmbeddedTestServer::HandleRequest(HttpConnection* connection,
       base::BindRepeating(&HttpConnection::SendResponseBytes,
                           connection->GetWeakPtr()),
       base::BindOnce(&EmbeddedTestServer::OnResponseCompleted,
-                     weak_factory_.GetWeakPtr(), connection));
+                     weak_factory_.GetWeakPtr(), connection,
+                     std::move(response)));
 }
 
 GURL EmbeddedTestServer::GetURL(const std::string& relative_url) const {
@@ -825,6 +826,10 @@ void EmbeddedTestServer::ServeFilesFromSourceDirectory(
 
 void EmbeddedTestServer::AddDefaultHandlers(const base::FilePath& directory) {
   ServeFilesFromSourceDirectory(directory);
+  AddDefaultHandlers();
+}
+
+void EmbeddedTestServer::AddDefaultHandlers() {
   RegisterDefaultHandlers(this);
 }
 
@@ -953,7 +958,9 @@ bool EmbeddedTestServer::HandleReadResult(HttpConnection* connection, int rv) {
   return true;
 }
 
-void EmbeddedTestServer::OnResponseCompleted(HttpConnection* connection) {
+void EmbeddedTestServer::OnResponseCompleted(
+    HttpConnection* connection,
+    std::unique_ptr<HttpResponse> response) {
   DCHECK(io_thread_->task_runner()->BelongsToCurrentThread());
   DCHECK(connection);
   DCHECK_EQ(1u, connections_.count(connection->socket_.get()));

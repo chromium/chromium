@@ -338,7 +338,6 @@ class TestPageHandler(testserver_base.BasePageHandler):
       self.AuthBasicHandler,
       self.AuthDigestHandler,
       self.SlowServerHandler,
-      self.ChunkedServerHandler,
       self.NoContentHandler,
       self.ServerRedirectHandler,
       self.CrossSiteRedirectHandler,
@@ -1321,48 +1320,6 @@ class TestPageHandler(testserver_base.BasePageHandler):
     self.send_header('Content-Type', 'text/plain')
     self.end_headers()
     self.wfile.write("waited %.1f seconds" % wait_sec)
-    return True
-
-  def ChunkedServerHandler(self):
-    """Send chunked response. Allows to specify chunks parameters:
-     - waitBeforeHeaders - ms to wait before sending headers
-     - waitBetweenChunks - ms to wait between chunks
-     - chunkSize - size of each chunk in bytes
-     - chunksNumber - number of chunks
-    Example: /chunked?waitBeforeHeaders=1000&chunkSize=5&chunksNumber=5
-    waits one second, then sends headers and five chunks five bytes each."""
-
-    if not self._ShouldHandleRequest("/chunked"):
-      return False
-    query_char = self.path.find('?')
-    chunkedSettings = {'waitBeforeHeaders' : 0,
-                       'waitBetweenChunks' : 0,
-                       'chunkSize' : 5,
-                       'chunksNumber' : 5}
-    if query_char >= 0:
-      params = self.path[query_char + 1:].split('&')
-      for param in params:
-        keyValue = param.split('=')
-        if len(keyValue) == 2:
-          try:
-            chunkedSettings[keyValue[0]] = int(keyValue[1])
-          except ValueError:
-            pass
-    time.sleep(0.001 * chunkedSettings['waitBeforeHeaders'])
-    self.protocol_version = 'HTTP/1.1' # Needed for chunked encoding
-    self.send_response(200)
-    self.send_header('Content-Type', 'text/plain')
-    self.send_header('Connection', 'close')
-    self.send_header('Transfer-Encoding', 'chunked')
-    self.end_headers()
-    # Chunked encoding: sending all chunks, then final zero-length chunk and
-    # then final CRLF.
-    for i in range(0, chunkedSettings['chunksNumber']):
-      if i > 0:
-        time.sleep(0.001 * chunkedSettings['waitBetweenChunks'])
-      self.sendChunkHelp('*' * chunkedSettings['chunkSize'])
-      self.wfile.flush() # Keep in mind that we start flushing only after 1kb.
-    self.sendChunkHelp('')
     return True
 
   def NoContentHandler(self):
