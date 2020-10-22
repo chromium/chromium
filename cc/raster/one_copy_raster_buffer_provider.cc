@@ -42,11 +42,11 @@ const int kMaxBytesPerCopyOperation = 1024 * 1024 * 4;
 
 // When enabled, OneCopyRasterBufferProvider::RasterBufferImpl::Playback() runs
 // at normal thread priority.
-// TODO(https://crbug.com/1072756): Enable by default and remove the feature
-// once experiments confirm that this prevents priority inversions.
+// TODO(crbug.com/1072756): Cleanup the feature when the Stable experiment is
+// complete, on November 25, 2020.
 const base::Feature kOneCopyRasterBufferPlaybackNormalThreadPriority{
     "OneCopyRasterBufferPlaybackNormalThreadPriority",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace
 
