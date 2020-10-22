@@ -938,10 +938,6 @@ void OverviewItem::HandleGestureEvent(ui::GestureEvent* event) {
   }
 }
 
-bool OverviewItem::ShouldIgnoreGestureEvents() {
-  return IsSlidingOutOverviewFromShelf();
-}
-
 void OverviewItem::OnHighlightedViewActivated() {
   overview_session_->OnHighlightedItemActivated(this);
 }
@@ -953,9 +949,6 @@ void OverviewItem::OnHighlightedViewClosed() {
 void OverviewItem::ButtonPressed(views::Button* sender,
                                  const ui::Event& event) {
   DCHECK_EQ(sender, overview_item_view_->close_button());
-  if (IsSlidingOutOverviewFromShelf())
-    return;
-
   base::RecordAction(
       base::UserMetricsAction("WindowSelector_OverviewCloseButton"));
   if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {

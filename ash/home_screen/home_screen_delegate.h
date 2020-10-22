@@ -35,17 +35,12 @@ class HomeScreenDelegate {
     kHideForWindow,
 
     // Launcher animation is triggered by entering/exiting overview mode where
-    // overview UI slides up/down.
-    kOverviewModeSlide,
-
-    // Launcher animation is triggered by entering/exiting overview mode where
     // overview UI fades in/out.
     kOverviewModeFade
   };
 
   // Information used to configure animation metrics reporter when animating
-  // home screen using UpdateYPositionAndOpacityForHomeLauncher() or
-  // UpdateScaleAndOpacityForHomeLauncher().
+  // home screen using UpdateScaleAndOpacityForHomeLauncher().
   struct AnimationInfo {
     AnimationInfo(AnimationTrigger trigger, bool showing)
         : trigger(trigger), showing(showing) {}
@@ -67,17 +62,6 @@ class HomeScreenDelegate {
   // window is being hidden for effects (e.g. when dragging windows or
   // previewing the wallpaper).
   virtual aura::Window* GetHomeScreenWindow() = 0;
-
-  // Updates the y position and opacity of the home launcher view. If |callback|
-  // is non-null, it should be called with animation settings.
-  // |animation_info| - Information about the transition trigger that will be
-  // used to report animation metrics. Should be set only if |callback| is
-  // not null (otherwise the transition will not be animated).
-  virtual void UpdateYPositionAndOpacityForHomeLauncher(
-      int y_position_in_screen,
-      float opacity,
-      base::Optional<AnimationInfo> animation_info,
-      UpdateAnimationSettingsCallback callback) = 0;
 
   // Scales the home launcher view maintaining the view center point, and
   // updates its opacity. If |callback| is non-null, the update should be
@@ -111,12 +95,6 @@ class HomeScreenDelegate {
   // If the home screen is not yet shown, returns an empty rect.
   virtual gfx::Rect GetInitialAppListItemScreenBoundsForWindow(
       aura::Window* window) = 0;
-
-  // Triggered when dragging launcher in tablet mode starts/proceeds/ends. They
-  // cover both dragging launcher to show and hide.
-  virtual void OnHomeLauncherDragStart() {}
-  virtual void OnHomeLauncherDragInProgress() {}
-  virtual void OnHomeLauncherDragEnd() {}
 
   // Called when the HomeLauncher has changed its position on the screen,
   // during either an animation or a drag.

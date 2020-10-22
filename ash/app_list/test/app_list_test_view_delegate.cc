@@ -139,11 +139,6 @@ void AppListTestViewDelegate::ShowWallpaperContextMenu(
   ++show_wallpaper_context_menu_count_;
 }
 
-bool AppListTestViewDelegate::ProcessHomeLauncherGesture(
-    ui::GestureEvent* event) {
-  return false;
-}
-
 bool AppListTestViewDelegate::CanProcessEventsOnApplistViews() {
   return true;
 }

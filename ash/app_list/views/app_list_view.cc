@@ -88,10 +88,6 @@ constexpr int kAppInfoDialogHeight = 384;
 // enabled.
 constexpr int kAppListAnimationDurationImmediateMs = 0;
 
-// Events within this threshold from the top of the view will be reserved for
-// home launcher gestures, if they can be processed.
-constexpr int kAppListHomeLaucherGesturesThreshold = 32;
-
 // Quality of the shield background blur.
 constexpr float kAppListBlurQuality = 0.33f;
 
@@ -104,12 +100,6 @@ constexpr char kAppListDragInClamshellHistogram[] =
     "Apps.StateTransition.Drag.PresentationTime.ClamshellMode";
 constexpr char kAppListDragInClamshellMaxLatencyHistogram[] =
     "Apps.StateTransition.Drag.PresentationTime.MaxLatency.ClamshellMode";
-
-// Histogram for the app list dragging in tablet mode.
-constexpr char kAppListDragInTabletHistogram[] =
-    "Apps.StateTransition.Drag.PresentationTime.TabletMode";
-constexpr char kAppListDragInTabletMaxLatencyHistogram[] =
-    "Apps.StateTransition.Drag.PresentationTime.MaxLatency.TabletMode";
 
 // The number of minutes that must pass for the current app list page to reset
 // to the first page.
@@ -325,16 +315,6 @@ void AppListView::StateAnimationMetricsReporter::RecordMetricsInTablet(
       UMA_HISTOGRAM_PERCENTAGE(
           "Apps.HomeLauncherTransition.AnimationSmoothness."
           "HideLauncherForWindow",
-          value);
-      break;
-    case TabletModeAnimationTransition::kEnterOverviewMode:
-      UMA_HISTOGRAM_PERCENTAGE(
-          "Apps.HomeLauncherTransition.AnimationSmoothness.EnterOverview",
-          value);
-      break;
-    case TabletModeAnimationTransition::kExitOverviewMode:
-      UMA_HISTOGRAM_PERCENTAGE(
-          "Apps.HomeLauncherTransition.AnimationSmoothness.ExitOverview",
           value);
       break;
     case TabletModeAnimationTransition::kEnterFullscreenAllApps:
@@ -1445,15 +1425,6 @@ void AppListView::OnGestureEvent(ui::GestureEvent* event) {
       if (search_box_view_->is_search_box_active())
         search_box_view_->NotifyGestureEvent();
 
-      if (event->location().y() < kAppListHomeLaucherGesturesThreshold) {
-        if (delegate_->ProcessHomeLauncherGesture(event)) {
-          SetIsInDrag(false);
-          event->SetHandled();
-          HandleClickOrTap(event);
-          return;
-        }
-      }
-
       // Avoid scrolling events for the app list in tablet mode.
       if (is_side_shelf_ || delegate_->IsInTabletMode())
         return;
@@ -1468,12 +1439,6 @@ void AppListView::OnGestureEvent(ui::GestureEvent* event) {
       break;
     }
     case ui::ET_GESTURE_SCROLL_UPDATE: {
-      if (delegate_->ProcessHomeLauncherGesture(event)) {
-        SetIsInDrag(true);
-        event->SetHandled();
-        return;
-      }
-
       // Avoid scrolling events for the app list in tablet mode.
       if (is_side_shelf_ || delegate_->IsInTabletMode())
         return;
@@ -1484,12 +1449,6 @@ void AppListView::OnGestureEvent(ui::GestureEvent* event) {
       break;
     }
     case ui::ET_GESTURE_END: {
-      if (delegate_->ProcessHomeLauncherGesture(event)) {
-        SetIsInDrag(false);
-        event->SetHandled();
-        return;
-      }
-
       if (!is_in_drag_)
         break;
       // Avoid scrolling events for the app list in tablet mode.
@@ -1845,8 +1804,6 @@ gfx::Rect AppListView::GetAppInfoDialogBounds() const {
 }
 
 void AppListView::SetIsInDrag(bool is_in_drag) {
-  // In tablet mode, |presentation_time_recorder_| is constructed/reset by
-  // HomeLauncherGestureHandler.
   if (!is_in_drag && !delegate_->IsInTabletMode())
     presentation_time_recorder_.reset();
 
@@ -2007,22 +1964,6 @@ metrics_util::SmoothnessCallback
 AppListView::GetStateTransitionMetricsReportCallback() {
   return state_animation_metrics_reporter_->GetReportCallback(
       delegate_->IsInTabletMode());
-}
-
-void AppListView::OnHomeLauncherDragStart() {
-  DCHECK(!presentation_time_recorder_);
-  presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
-      GetWidget()->GetCompositor(), kAppListDragInTabletHistogram,
-      kAppListDragInTabletMaxLatencyHistogram);
-}
-
-void AppListView::OnHomeLauncherDragInProgress() {
-  DCHECK(presentation_time_recorder_);
-  presentation_time_recorder_->RequestNext();
-}
-
-void AppListView::OnHomeLauncherDragEnd() {
-  presentation_time_recorder_.reset();
 }
 
 void AppListView::ResetTransitionMetricsReporter() {

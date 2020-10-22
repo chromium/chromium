@@ -23,18 +23,7 @@ class ASH_EXPORT HomeScreenPresenter {
  public:
   // The type of transition that should be applied to home screen view in
   // reaction to overview session ending or starting.
-  // NOTE: kSlideHomeIn and kScaleHomeIn are conceptually the same, but assume
-  // different starting state.
   enum class TransitionType {
-    // Resets home screen vertical translation to 0 (i.e. moves the view into
-    // full-screen bounds). Changes opacity to 1.0.
-    kSlideHomeIn,
-
-    // Vertically translates home screen down by a predetermined amount into
-    // full
-    // screen home bounds. Changes opacity to 0.0.
-    kSlideHomeOut,
-
     // Resets home screen scale to 1.0 (i.e. move the view into fullscreen
     // bounds).
     // Changes opacity to 1.0.

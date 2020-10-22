@@ -228,8 +228,6 @@ ASH_PUBLIC_EXPORT bool IsSwapSideVolumeButtonsForOrientationEnabled();
 
 ASH_PUBLIC_EXPORT bool IsBackgroundBlurEnabled();
 
-ASH_PUBLIC_EXPORT bool IsDragFromShelfToHomeOrOverviewEnabled();
-
 ASH_PUBLIC_EXPORT bool IsReduceDisplayNotificationsEnabled();
 
 ASH_PUBLIC_EXPORT bool IsHideShelfControlsInTabletModeEnabled();

@@ -198,7 +198,6 @@ class ASH_EXPORT AppListControllerImpl
       AppListViewState target_state) override;
   void ShowWallpaperContextMenu(const gfx::Point& onscreen_location,
                                 ui::MenuSourceType source_type) override;
-  bool ProcessHomeLauncherGesture(ui::GestureEvent* event) override;
   bool KeyboardTraversalEngaged() override;
   bool CanProcessEventsOnApplistViews() override;
   bool ShouldDismissImmediately() override;
@@ -281,11 +280,6 @@ class ASH_EXPORT AppListControllerImpl
   // HomeScreenDelegate:
   void ShowHomeScreenView() override;
   aura::Window* GetHomeScreenWindow() override;
-  void UpdateYPositionAndOpacityForHomeLauncher(
-      int y_position_in_screen,
-      float opacity,
-      base::Optional<AnimationInfo> animation_info,
-      UpdateAnimationSettingsCallback callback) override;
   void UpdateScaleAndOpacityForHomeLauncher(
       float scale,
       float opacity,
@@ -361,11 +355,6 @@ class ASH_EXPORT AppListControllerImpl
   void RecordAppListState();
 
  private:
-  // HomeScreenDelegate:
-  void OnHomeLauncherDragStart() override;
-  void OnHomeLauncherDragInProgress() override;
-  void OnHomeLauncherDragEnd() override;
-
   syncer::StringOrdinal GetOemFolderPos();
   std::unique_ptr<AppListItem> CreateAppListItem(
       std::unique_ptr<AppListItemMetadata> metadata);

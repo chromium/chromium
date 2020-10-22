@@ -2746,18 +2746,6 @@ TEST_P(ShelfLayoutManagerTest, HomeToInAppAndBackHomeDrag) {
   }
 }
 
-// Tests that the always shown shelf forwards the appropriate events to the home
-// launcher gesture handler to handle.
-TEST_P(ShelfLayoutManagerTest, HomeLauncherGestureHandler) {
-  TestHomeLauncherGestureHandler(/*autohide_shelf=*/false);
-}
-
-// Tests that the auto-hide shelf keeps visible and forwards the appropriate
-// events to the home launcher gesture handler to handle.
-TEST_P(ShelfLayoutManagerTest, HomeLauncherGestureHandlerAutoHideShelf) {
-  TestHomeLauncherGestureHandler(/*autohide_shelf=*/true);
-}
-
 class ShelfLayoutManagerWindowDraggingTest : public ShelfLayoutManagerTestBase {
  public:
   ShelfLayoutManagerWindowDraggingTest() = default;

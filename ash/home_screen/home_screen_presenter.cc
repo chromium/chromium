@@ -26,15 +26,6 @@
 namespace ash {
 namespace {
 
-// The y offset for home screen animation when overview mode toggles using slide
-// animation.
-constexpr int kOverviewSlideAnimationYOffset = 100;
-
-// The duration in milliseconds for home screen animation when overview mode
-// toggles using fade animation.
-constexpr base::TimeDelta kOverviewSlideAnimationDuration =
-    base::TimeDelta::FromMilliseconds(250);
-
 // The target scale to which (or from which) the home screen will animate when
 // overview is being shown (or hidden) using fade transitions while home screen
 // is shown.
@@ -48,9 +39,6 @@ constexpr base::TimeDelta kOverviewFadeAnimationDuration =
 base::TimeDelta GetAnimationDurationForTransition(
     HomeScreenPresenter::TransitionType transition) {
   switch (transition) {
-    case HomeScreenPresenter::TransitionType::kSlideHomeIn:
-    case HomeScreenPresenter::TransitionType::kSlideHomeOut:
-      return kOverviewSlideAnimationDuration;
     case HomeScreenPresenter::TransitionType::kScaleHomeIn:
     case HomeScreenPresenter::TransitionType::kScaleHomeOut:
       return kOverviewFadeAnimationDuration;
@@ -60,10 +48,6 @@ base::TimeDelta GetAnimationDurationForTransition(
 HomeScreenPresenter::TransitionType GetOppositeTransition(
     HomeScreenPresenter::TransitionType transition) {
   switch (transition) {
-    case HomeScreenPresenter::TransitionType::kSlideHomeIn:
-      return HomeScreenPresenter::TransitionType::kSlideHomeOut;
-    case HomeScreenPresenter::TransitionType::kSlideHomeOut:
-      return HomeScreenPresenter::TransitionType::kSlideHomeIn;
     case HomeScreenPresenter::TransitionType::kScaleHomeIn:
       return HomeScreenPresenter::TransitionType::kScaleHomeOut;
     case HomeScreenPresenter::TransitionType::kScaleHomeOut:
@@ -73,15 +57,11 @@ HomeScreenPresenter::TransitionType GetOppositeTransition(
 
 HomeScreenDelegate::AnimationTrigger GetAnimationTrigger(
     HomeScreenPresenter::TransitionType transition) {
-  return (transition == HomeScreenPresenter::TransitionType::kSlideHomeIn ||
-          transition == HomeScreenPresenter::TransitionType::kSlideHomeOut)
-             ? HomeScreenDelegate::AnimationTrigger::kOverviewModeSlide
-             : HomeScreenDelegate::AnimationTrigger::kOverviewModeFade;
+  return HomeScreenDelegate::AnimationTrigger::kOverviewModeFade;
 }
 
 bool IsShowingHomeTransition(HomeScreenPresenter::TransitionType transition) {
-  return transition == HomeScreenPresenter::TransitionType::kSlideHomeIn ||
-         transition == HomeScreenPresenter::TransitionType::kScaleHomeIn;
+  return transition == HomeScreenPresenter::TransitionType::kScaleHomeIn;
 }
 
 void UpdateOverviewSettings(base::TimeDelta duration,
@@ -155,17 +135,6 @@ void HomeScreenPresenter::SetFinalHomeTransformForTransition(
           : base::nullopt;
 
   switch (transition) {
-    case TransitionType::kSlideHomeIn:
-      controller_->delegate()->UpdateYPositionAndOpacityForHomeLauncher(
-          0 /*y_position_in_screen*/, 1.0 /*opacity*/,
-          std::move(animation_info), animation_settings_updater);
-      break;
-    case TransitionType::kSlideHomeOut:
-      controller_->delegate()->UpdateYPositionAndOpacityForHomeLauncher(
-          kOverviewSlideAnimationYOffset /*y_position_in_screen*/,
-          0.0 /*opacity*/, std::move(animation_info),
-          animation_settings_updater);
-      break;
     case TransitionType::kScaleHomeIn:
       controller_->delegate()->UpdateScaleAndOpacityForHomeLauncher(
           1.0 /*scale*/, 1.0 /*opacity*/, std::move(animation_info),

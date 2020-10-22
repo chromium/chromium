@@ -240,20 +240,11 @@ bool IsBackgroundBlurEnabled() {
 #endif
 }
 
-bool IsDragFromShelfToHomeOrOverviewEnabled() {
-  // The kDragFromShelfToHomeOrOverview feature is only enabled on the devices
-  // that have hotseat enabled.
-  return chromeos::switches::ShouldShowShelfHotseat();
-}
-
 bool IsReduceDisplayNotificationsEnabled() {
   return base::FeatureList::IsEnabled(kReduceDisplayNotifications);
 }
 
 bool IsHideShelfControlsInTabletModeEnabled() {
-  if (!IsDragFromShelfToHomeOrOverviewEnabled())
-    return false;
-
   return base::FeatureList::IsEnabled(kHideShelfControlsInTabletMode);
 }
 

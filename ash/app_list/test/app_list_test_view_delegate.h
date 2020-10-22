@@ -93,7 +93,6 @@ class AppListTestViewDelegate : public AppListViewDelegate,
       ash::AppListViewState target_state) override;
   void ShowWallpaperContextMenu(const gfx::Point& onscreen_location,
                                 ui::MenuSourceType source_type) override;
-  bool ProcessHomeLauncherGesture(ui::GestureEvent* event) override;
   bool CanProcessEventsOnApplistViews() override;
   bool ShouldDismissImmediately() override;
   int GetTargetYForAppListHide(aura::Window* root_window) override;

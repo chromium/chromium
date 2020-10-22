@@ -84,10 +84,6 @@ views::View* GetExpandArrowView() {
   return GetContentsView()->expand_arrow_view();
 }
 
-bool GetExpandArrowViewVisibility() {
-  return GetExpandArrowView()->GetVisible();
-}
-
 SearchBoxView* GetSearchBoxView() {
   return GetContentsView()->GetSearchBoxView();
 }
@@ -729,57 +725,6 @@ TEST_F(AppListControllerImplTestWithNotificationBadging,
   EXPECT_FALSE(item_view->IsNotificationIndicatorShownForTest());
 }
 
-class AppListControllerImplTestWithoutHotseat
-    : public AppListControllerImplTest {
- public:
-  AppListControllerImplTestWithoutHotseat() = default;
-  ~AppListControllerImplTestWithoutHotseat() override = default;
-  // AshTestBase:
-  void SetUp() override {
-    // The feature verified by this test is only enabled if drag from shelf to
-    // home or overview (which is controlled by hotseat flag) is disabled.
-    scoped_features_.InitWithFeatures({}, {chromeos::features::kShelfHotseat});
-    AppListControllerImplTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_features_;
-  DISALLOW_COPY_AND_ASSIGN(AppListControllerImplTestWithoutHotseat);
-};
-
-// Hide the expand arrow view in tablet mode when there is no activatable window
-// (see https://crbug.com/923089).
-TEST_F(AppListControllerImplTestWithoutHotseat,
-       UpdateExpandArrowViewVisibility) {
-  // Turn on the tablet mode.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_TRUE(IsTabletMode());
-
-  // No activatable windows. So hide the expand arrow view.
-  EXPECT_FALSE(GetExpandArrowViewVisibility());
-
-  std::unique_ptr<aura::Window> w1(CreateTestWindow());
-  std::unique_ptr<aura::Window> w2(CreateTestWindow());
-
-  // Activate w1 then press home launcher button. Expand arrow view should show
-  // because w1 still exists.
-  wm::ActivateWindow(w1.get());
-  Shell::Get()->home_screen_controller()->GoHome(
-      display::Screen::GetScreen()->GetPrimaryDisplay().id());
-  EXPECT_EQ(chromeos::WindowStateType::kMinimized,
-            WindowState::Get(w1.get())->GetStateType());
-  EXPECT_TRUE(GetExpandArrowViewVisibility());
-
-  // Activate w2 then close w1. w2 still exists so expand arrow view shows.
-  wm::ActivateWindow(w2.get());
-  w1.reset();
-  EXPECT_TRUE(GetExpandArrowViewVisibility());
-
-  // No activatable windows. Hide the expand arrow view.
-  w2.reset();
-  EXPECT_FALSE(GetExpandArrowViewVisibility());
-}
-
 class HotseatAppListControllerImplTest : public base::test::WithFeatureOverride,
                                          public AppListControllerImplTest {
  public:
@@ -1303,87 +1248,6 @@ TEST_F(AppListControllerImplMetricsTest,
 
   histogram_tester_.ExpectTotalCount(
       "Apps.StateTransition.Drag.PresentationTime.MaxLatency.ClamshellMode", 1);
-}
-
-class AppListControllerImplMetricsTestWithoutHotseat
-    : public AppListControllerImplMetricsTest {
- public:
-  AppListControllerImplMetricsTestWithoutHotseat() = default;
-  ~AppListControllerImplMetricsTestWithoutHotseat() override = default;
-  void SetUp() override {
-    // The feature verified by this test is only enabled if drag from shelf to
-    // home or overview (which is controlled by hotseat flag) is disabled.
-    scoped_features_.InitWithFeatures({}, {chromeos::features::kShelfHotseat});
-    AppListControllerImplMetricsTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_features_;
-  DISALLOW_COPY_AND_ASSIGN(AppListControllerImplMetricsTestWithoutHotseat);
-};
-
-// Verifies that the PresentationTimeRecorder works correctly for the home
-// launcher gesture drag in tablet mode (https://crbug.com/947105).
-TEST_F(AppListControllerImplMetricsTestWithoutHotseat,
-       PresentationTimeRecordedForDragInTabletMode) {
-  // Turn on the tablet mode.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_TRUE(IsTabletMode());
-
-  // Create a window then press the home launcher button. Expect that |w| is
-  // hidden.
-  std::unique_ptr<aura::Window> w(
-      AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400)));
-  Shell::Get()->home_screen_controller()->GoHome(
-      display::Screen::GetScreen()->GetPrimaryDisplay().id());
-  EXPECT_FALSE(w->IsVisible());
-  EXPECT_EQ(AppListViewState::kFullscreenAllApps,
-            GetAppListView()->app_list_state());
-
-  int delta_y = 1;
-  gfx::Point start =
-      GetAppListView()->GetWidget()->GetWindowBoundsInScreen().top_right();
-  base::TimeTicks timestamp = base::TimeTicks::Now();
-
-  // Emulate to drag the launcher downward.
-  // Send SCROLL_START event. Check the presentation metrics values.
-  ui::GestureEvent start_event = ui::GestureEvent(
-      start.x(), start.y(), ui::EF_NONE, timestamp,
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN, 0, delta_y));
-  GetAppListView()->OnGestureEvent(&start_event);
-  histogram_tester_.ExpectTotalCount(
-      "Apps.StateTransition.Drag.PresentationTime.TabletMode", 0);
-  histogram_tester_.ExpectTotalCount(
-      "Apps.StateTransition.Drag.PresentationTime.MaxLatency.TabletMode", 0);
-
-  // Send SCROLL_UPDATE event. Check the presentation metrics values.
-  timestamp += base::TimeDelta::FromMilliseconds(25);
-  delta_y += 20;
-  start.Offset(0, 1);
-  ui::GestureEvent update_event = ui::GestureEvent(
-      start.x(), start.y(), ui::EF_NONE, timestamp,
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE, 0, delta_y));
-  GetAppListView()->OnGestureEvent(&update_event);
-  histogram_tester_.ExpectTotalCount(
-      "Apps.StateTransition.Drag.PresentationTime.TabletMode", 1);
-  histogram_tester_.ExpectTotalCount(
-      "Apps.StateTransition.Drag.PresentationTime.MaxLatency.TabletMode", 0);
-
-  // Send SCROLL_END event. Check the presentation metrics values.
-  timestamp += base::TimeDelta::FromMilliseconds(25);
-  start.Offset(0, 1);
-  ui::GestureEvent end_event =
-      ui::GestureEvent(start.x(), start.y() + delta_y, ui::EF_NONE, timestamp,
-                       ui::GestureEventDetails(ui::ET_GESTURE_END));
-  GetAppListView()->OnGestureEvent(&end_event);
-  histogram_tester_.ExpectTotalCount(
-      "Apps.StateTransition.Drag.PresentationTime.TabletMode", 1);
-  histogram_tester_.ExpectTotalCount(
-      "Apps.StateTransition.Drag.PresentationTime.MaxLatency.TabletMode", 1);
-
-  // After the gesture scroll event ends, the window shows.
-  EXPECT_TRUE(w->IsVisible());
-  ASSERT_TRUE(IsTabletMode());
 }
 
 }  // namespace ash

@@ -192,7 +192,6 @@ class ASH_EXPORT OverviewItem : public views::ButtonListener,
   // Handles events forwarded from |overview_item_view_|.
   void HandleMouseEvent(const ui::MouseEvent& event);
   void HandleGestureEvent(ui::GestureEvent* event);
-  bool ShouldIgnoreGestureEvents();
   void OnHighlightedViewActivated();
   void OnHighlightedViewClosed();
 

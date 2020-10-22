@@ -268,12 +268,6 @@ enum TabletModeAnimationTransition {
   // Activate a window from shelf to hide the launcher in tablet mode.
   kHideHomeLauncherForWindow,
 
-  // Enter the overview mode in tablet
-  kEnterOverviewMode,
-
-  // Exit the overview mode in tablet
-  kExitOverviewMode,
-
   // Enter the kFullscreenAllApps state (usually by deactivating the search box)
   kEnterFullscreenAllApps,
 

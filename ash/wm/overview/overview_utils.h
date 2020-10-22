@@ -62,9 +62,6 @@ gfx::RectF GetTargetBoundsInScreen(aura::Window* window);
 ASH_EXPORT void SetTransform(aura::Window* window,
                              const gfx::Transform& transform);
 
-// Checks if we are currently in sliding up on the shelf to hide overview mode.
-bool IsSlidingOutOverviewFromShelf();
-
 // Maximize the window if it is snapped without animation.
 void MaximizeIfSnapped(aura::Window* window);
 

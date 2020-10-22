@@ -877,11 +877,6 @@ void OverviewSession::OnWindowActivating(
     return;
   }
 
-  // Do not cancel overview mode if the window activation was caused while
-  // dragging overview mode offscreen.
-  if (IsSlidingOutOverviewFromShelf())
-    return;
-
   // Do not cancel overview mode while a window or overview item is being
   // dragged as evidenced by the presence of a drop target. (Dragging to close
   // does not count; canceling overview mode is okay then.)

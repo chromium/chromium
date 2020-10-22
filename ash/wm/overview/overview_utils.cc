@@ -171,20 +171,6 @@ void SetTransform(aura::Window* window, const gfx::Transform& transform) {
   }
 }
 
-bool IsSlidingOutOverviewFromShelf() {
-  if (!Shell::Get()->overview_controller()->InOverviewSession())
-    return false;
-
-  if (Shell::Get()
-          ->home_screen_controller()
-          ->home_launcher_gesture_handler()
-          ->mode() == HomeLauncherGestureHandler::Mode::kSlideUpToShow) {
-    return true;
-  }
-
-  return false;
-}
-
 void MaximizeIfSnapped(aura::Window* window) {
   auto* window_state = WindowState::Get(window);
   if (window_state && window_state->IsSnapped()) {

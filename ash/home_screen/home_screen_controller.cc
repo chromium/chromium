@@ -143,37 +143,6 @@ bool HomeScreenController::GoHome(int64_t display_id) {
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
   const bool split_view_active = split_view_controller->InSplitViewMode();
 
-  if (!features::IsDragFromShelfToHomeOrOverviewEnabled()) {
-    if (home_launcher_gesture_handler_->ShowHomeLauncher(
-            Shell::Get()->display_manager()->GetDisplayForId(display_id))) {
-      return true;
-    }
-
-    if (overview_controller->InOverviewSession()) {
-      // End overview mode.
-      overview_controller->EndOverview(OverviewEnterExitType::kFadeOutExit);
-      return true;
-    }
-
-    if (split_view_active) {
-      // End split view mode.
-      split_view_controller->EndSplitView(
-          SplitViewController::EndReason::kHomeLauncherPressed);
-      return true;
-    }
-
-    // The home screen opens for the current active desk, there's no need to
-    // minimize windows in the inactive desks.
-    if (MinimizeAllWindows(
-            Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(
-                kActiveDesk),
-            {} /*windows_to_ignore*/)) {
-      return true;
-    }
-
-    return false;
-  }
-
   // The home screen opens for the current active desk, there's no need to
   // minimize windows in the inactive desks.
   aura::Window::Windows windows =

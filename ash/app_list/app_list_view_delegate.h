@@ -23,7 +23,6 @@
 #include "ui/gfx/geometry/rect.h"
 
 namespace ui {
-class GestureEvent;
 class ImplicitAnimationObserver;
 class SimpleMenuModel;
 }  // namespace ui
@@ -140,10 +139,6 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   // Show wallpaper context menu from the specified onscreen location.
   virtual void ShowWallpaperContextMenu(const gfx::Point& onscreen_location,
                                         ui::MenuSourceType source_type) = 0;
-
-  // Forwards events to the home launcher gesture handler and returns true if
-  // they have been processed.
-  virtual bool ProcessHomeLauncherGesture(ui::GestureEvent* event) = 0;
 
   // Returns True if the last event passing through app list was a key event.
   // This is stored in the controller and managed by the presenter.

@@ -102,19 +102,6 @@ class APP_LIST_EXPORT AppListPresenterImpl
   // Passes a MouseWheelEvent from the shelf to the AppListView.
   void ProcessMouseWheelOffset(const gfx::Vector2d& scroll_offset_vector);
 
-  // Updates the y position and opacity of the full screen app list. The changes
-  // are slightly different than UpdateYPositionAndOpacity. If |callback| is non
-  // null the this will animate using the animation settings in |callback|.
-  // |transition| - The tablet mode animation type. Used to report animation
-  // metrics if the home launcher change is animated. Should be set only if
-  // |callback| is non-null. If not set, the animation smoothness metrics will
-  // not be reported.
-  void UpdateYPositionAndOpacityForHomeLauncher(
-      float y_position_in_screen,
-      float opacity,
-      base::Optional<TabletModeAnimationTransition> transition,
-      UpdateHomeLauncherAnimationSettingsCallback callback);
-
   // Scales the home launcher view maintaining the view center point, and
   // updates its opacity. If |callback| is non-null, the update should be
   // animated, and the |callback| should be called with the animation settings.

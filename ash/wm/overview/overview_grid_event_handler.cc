@@ -163,26 +163,21 @@ void OverviewGridEventHandler::OnCompositingShuttingDown(
 void OverviewGridEventHandler::HandleClickOrTap(ui::Event* event) {
   CHECK_EQ(ui::EP_PRETARGET, event->phase());
 
-  // Events that happen while app list is sliding out during overview should
-  // be ignored to prevent overview from disappearing out from under the user.
-  if (!IsSlidingOutOverviewFromShelf()) {
-    if (Shell::Get()->tablet_mode_controller()->InTabletMode() &&
-        features::IsDragFromShelfToHomeOrOverviewEnabled()) {
-      aura::Window* window = static_cast<views::View*>(event->target())
-                                 ->GetWidget()
-                                 ->GetNativeWindow();
+  if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+    aura::Window* window = static_cast<views::View*>(event->target())
+                               ->GetWidget()
+                               ->GetNativeWindow();
 
-      // In tablet mode, clicking on tapping on the wallpaper background will
-      // head back to home launcher screen if not in split view (in which case
-      // the event should be ignored).
-      if (!SplitViewController::Get(window)->InSplitViewMode()) {
-        int64_t display_id =
-            display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
-        Shell::Get()->home_screen_controller()->GoHome(display_id);
-      }
-    } else {
-      Shell::Get()->overview_controller()->EndOverview();
+    // In tablet mode, clicking on tapping on the wallpaper background will
+    // head back to home launcher screen if not in split view (in which case
+    // the event should be ignored).
+    if (!SplitViewController::Get(window)->InSplitViewMode()) {
+      int64_t display_id =
+          display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+      Shell::Get()->home_screen_controller()->GoHome(display_id);
     }
+  } else {
+    Shell::Get()->overview_controller()->EndOverview();
   }
   event->StopPropagation();
 }

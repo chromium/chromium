@@ -173,15 +173,14 @@ int GetOffset(int offset, bool from_touchpad) {
 // gestures.
 ash::HomeLauncherGestureHandler::Mode
 GetHomeLauncherGestureHandlerModeForDrag() {
-  if (features::IsDragFromShelfToHomeOrOverviewEnabled() &&
-      IsHotseatEnabled() && Shell::Get()->home_screen_controller() &&
+  if (IsHotseatEnabled() && Shell::Get()->home_screen_controller() &&
       Shell::Get()->home_screen_controller()->IsHomeScreenVisible() &&
       Shell::Get()->overview_controller() &&
       !Shell::Get()->overview_controller()->InOverviewSession()) {
     return HomeLauncherGestureHandler::Mode::kSwipeHomeToOverview;
   }
 
-  return HomeLauncherGestureHandler::Mode::kSlideUpToShow;
+  return HomeLauncherGestureHandler::Mode::kNone;
 }
 
 // Returns the |WorkspaceWindowState| of the currently active desk on the root
@@ -844,11 +843,7 @@ ShelfBackgroundType ShelfLayoutManager::GetShelfBackgroundType() const {
   const bool maximized =
       in_split_view_mode ||
       state_.window_state == WorkspaceWindowState::kFullscreen ||
-      (state_.window_state == WorkspaceWindowState::kMaximized &&
-       !Shell::Get()
-            ->home_screen_controller()
-            ->home_launcher_gesture_handler()
-            ->GetActiveWindow());
+      state_.window_state == WorkspaceWindowState::kMaximized;
   const bool app_list_is_visible =
       Shell::Get()->app_list_controller() &&
       Shell::Get()->app_list_controller()->IsVisible(display_.id());
@@ -2073,11 +2068,10 @@ bool ShelfLayoutManager::ShouldHomeGestureHandleEvent(float scroll_y) const {
   }
 
   if (IsHotseatEnabled()) {
-    if (features::IsDragFromShelfToHomeOrOverviewEnabled() &&
-        hotseat_state() != HotseatState::kShownHomeLauncher &&
+    if (hotseat_state() != HotseatState::kShownHomeLauncher &&
         hotseat_state() != HotseatState::kNone) {
       // If hotseat is hidden or extended (in-app or in-overview), do not let
-      // HomeLauncherGestureHandler to handle the events.
+      // HomeLauncherGestureHandler handle the events.
       return false;
     }
 
@@ -2114,10 +2108,7 @@ bool ShelfLayoutManager::StartGestureDrag(
         Shell::Get()->home_screen_controller()->home_launcher_gesture_handler();
     const HomeLauncherGestureHandler::Mode target_mode =
         GetHomeLauncherGestureHandlerModeForDrag();
-    drag_status_ =
-        target_mode == HomeLauncherGestureHandler::Mode::kSwipeHomeToOverview
-            ? kDragHomeToOverviewInProgress
-            : kDragAppListInProgress;
+    drag_status_ = kDragHomeToOverviewInProgress;
     if (home_launcher_handler->OnPressEvent(target_mode,
                                             gesture_in_screen.location_f())) {
       return true;
@@ -2649,8 +2640,6 @@ void ShelfLayoutManager::SendA11yAlertForFullscreenWorkspaceState(
 bool ShelfLayoutManager::MaybeStartDragWindowFromShelf(
     const ui::LocatedEvent& event_in_screen,
     const gfx::Vector2dF& scroll) {
-  if (!features::IsDragFromShelfToHomeOrOverviewEnabled())
-    return false;
   if (!Shell::Get()->IsInTabletMode())
     return false;
   if (drag_status_ != kDragInProgress)

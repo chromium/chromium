@@ -400,11 +400,6 @@ void OverviewItemView::OnGestureEvent(ui::GestureEvent* event) {
   if (!overview_item_)
     return;
 
-  if (overview_item_->ShouldIgnoreGestureEvents()) {
-    event->SetHandled();
-    return;
-  }
-
   overview_item_->HandleGestureEvent(event);
   event->SetHandled();
 }
