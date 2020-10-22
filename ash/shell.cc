@@ -882,7 +882,7 @@ Shell::~Shell() {
   // Destroys the MessageCenter singleton, so must happen late.
   message_center_controller_.reset();
 
-  // HoldingSpaceController observes SessionController and must be
+  // `HoldingSpaceController` observes `SessionController` and must be
   // destructed before it.
   holding_space_controller_.reset();
 
@@ -1033,6 +1033,13 @@ void Shell::Init(
     clipboard_history_controller_ =
         std::make_unique<ClipboardHistoryControllerImpl>();
   }
+
+  // `HoldingSpaceController` must be instantiated before the shelf.
+  if (features::IsTemporaryHoldingSpaceEnabled()) {
+    holding_space_controller_ = std::make_unique<HoldingSpaceController>(
+        std::make_unique<HoldingSpaceColorProviderImpl>());
+  }
+
   shelf_config_ = std::make_unique<ShelfConfig>();
   shelf_controller_ = std::make_unique<ShelfController>();
 
@@ -1257,11 +1264,6 @@ void Shell::Init(
   if (features::IsDisplayAlignmentAssistanceEnabled()) {
     display_alignment_controller_ =
         std::make_unique<DisplayAlignmentController>();
-  }
-
-  if (features::IsTemporaryHoldingSpaceEnabled()) {
-    holding_space_controller_ = std::make_unique<HoldingSpaceController>(
-        std::make_unique<HoldingSpaceColorProviderImpl>());
   }
 
   for (auto& observer : shell_observers_)

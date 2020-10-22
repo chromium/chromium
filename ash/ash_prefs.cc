@@ -18,6 +18,7 @@
 #include "ash/magnifier/docked_magnifier_controller_impl.h"
 #include "ash/media/media_controller_impl.h"
 #include "ash/public/cpp/ash_pref_names.h"
+#include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/shelf/contextual_tooltip.h"
 #include "ash/shelf/shelf_controller.h"
 #include "ash/style/ash_color_provider.h"
@@ -61,6 +62,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   DockedMagnifierControllerImpl::RegisterProfilePrefs(registry);
   GestureEducationNotificationController::RegisterProfilePrefs(registry,
                                                                for_test);
+  holding_space_prefs::RegisterProfilePrefs(registry);
   LoginScreenController::RegisterProfilePrefs(registry, for_test);
   LogoutButtonTray::RegisterProfilePrefs(registry);
   KeyboardControllerImpl::RegisterProfilePrefs(registry);

@@ -72,13 +72,18 @@ HoldingSpaceKeyedService::HoldingSpaceKeyedService(Profile* profile,
   profile_manager_observer_.Add(profile_manager);
 }
 
-HoldingSpaceKeyedService::~HoldingSpaceKeyedService() = default;
+HoldingSpaceKeyedService::~HoldingSpaceKeyedService() {
+  if (HoldingSpaceController::Get()) {
+    // For BrowserWithTestWindowTest that releases profile and its keyed
+    // services before ash Shell.
+    HoldingSpaceController::Get()->RegisterClientAndModelForUser(
+        account_id_, /*client=*/nullptr, /*model=*/nullptr);
+  }
+}
 
 // static
 void HoldingSpaceKeyedService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  holding_space_prefs::RegisterProfilePrefs(registry);
-
   // TODO(crbug.com/1131266): Move to `ash::holding_space_prefs`.
   HoldingSpacePersistenceDelegate::RegisterProfilePrefs(registry);
 }

@@ -6,7 +6,7 @@
 
 #include "base/time/time.h"
 #include "base/util/values/values_util.h"
-#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -26,7 +26,7 @@ constexpr char kTimeOfFirstPin[] = "ash.holding_space.time_of_first_pin";
 
 }  // namespace
 
-void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
+void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kTimeOfFirstAvailability, base::Time::UnixEpoch());
   registry->RegisterTimePref(kTimeOfFirstEntry, base::Time::UnixEpoch());
   registry->RegisterTimePref(kTimeOfFirstPin, base::Time::UnixEpoch());

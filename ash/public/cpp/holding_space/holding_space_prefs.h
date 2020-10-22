@@ -8,22 +8,18 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/optional.h"
 
+class PrefRegistrySimple;
 class PrefService;
 
 namespace base {
 class Time;
 }  // namespace base
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}  // namespace user_prefs
-
 namespace ash {
 namespace holding_space_prefs {
 
 // Registers holding space profile preferences to `registry`.
-ASH_PUBLIC_EXPORT void RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry);
+ASH_PUBLIC_EXPORT void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 // Returns the time when holding space first became available. Note that if the
 // time of first availability is unmarked, `base::nullopt` is returned.

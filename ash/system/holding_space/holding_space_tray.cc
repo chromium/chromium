@@ -8,9 +8,11 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
+#include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -26,6 +28,9 @@
 namespace ash {
 
 HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
+  controller_observer_.Add(HoldingSpaceController::Get());
+  SetVisible(false);
+
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   icon_ = tray_container()->AddChildView(std::make_unique<views::ImageView>());
@@ -58,8 +63,7 @@ void HoldingSpaceTray::AnchorUpdated() {
 }
 
 void HoldingSpaceTray::UpdateAfterLoginStatusChange() {
-  SetVisiblePreferred(shelf()->GetStatusAreaWidget()->login_status() ==
-                      LoginStatus::USER);
+  UpdateVisibility();
 }
 
 bool HoldingSpaceTray::PerformAction(const ui::Event& event) {
@@ -124,6 +128,28 @@ const char* HoldingSpaceTray::GetClassName() const {
   return "HoldingSpaceTray";
 }
 
+void HoldingSpaceTray::UpdateVisibility() {
+  HoldingSpaceModel* model = HoldingSpaceController::Get()->model();
+
+  bool logged_in =
+      shelf()->GetStatusAreaWidget()->login_status() == LoginStatus::USER;
+
+  if (!model || !logged_in) {
+    SetVisiblePreferred(false);
+    return;
+  }
+
+  PrefService* active_pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  bool has_ever_pinned_item =
+      active_pref_service
+          ? holding_space_prefs::GetTimeOfFirstPin(active_pref_service)
+                .has_value()
+          : false;
+
+  SetVisiblePreferred(!model->items().empty() || !has_ever_pinned_item);
+}
+
 base::string16 HoldingSpaceTray::GetAccessibleNameForBubble() {
   return GetAccessibleNameForTray();
 }
@@ -134,6 +160,24 @@ bool HoldingSpaceTray::ShouldEnableExtraKeyboardAccessibility() {
 
 void HoldingSpaceTray::HideBubble(const TrayBubbleView* bubble_view) {
   CloseBubble();
+}
+
+void HoldingSpaceTray::OnHoldingSpaceModelAttached(HoldingSpaceModel* model) {
+  model_observer_.Add(model);
+  UpdateVisibility();
+}
+
+void HoldingSpaceTray::OnHoldingSpaceModelDetached(HoldingSpaceModel* model) {
+  model_observer_.Remove(model);
+  UpdateVisibility();
+}
+
+void HoldingSpaceTray::OnHoldingSpaceItemAdded(const HoldingSpaceItem* item) {
+  UpdateVisibility();
+}
+
+void HoldingSpaceTray::OnHoldingSpaceItemRemoved(const HoldingSpaceItem* item) {
+  UpdateVisibility();
 }
 
 void HoldingSpaceTray::OnWidgetDragWillStart(views::Widget* widget) {
