@@ -17,10 +17,11 @@ import contextlib
 import json
 import os
 import re
-import requests
 import shutil
 import subprocess
 import tempfile
+import urllib
+from urllib import request
 
 _ANDROIDX_PATH = os.path.normpath(os.path.join(__file__, '..'))
 
@@ -90,15 +91,16 @@ def _build_dir():
 def _download_and_parse_build_info():
     """Downloads and parses BUILD_INFO file."""
     with _build_dir() as build_dir:
-        androidx_build_info_response = requests.get(
+        androidx_build_info_response = request.urlopen(
             _ANDROIDX_LATEST_SNAPSHOT_BUILD_INFO_URL)
         androidx_build_info_path = os.path.join(build_dir, 'BUILD_INFO')
         with open(androidx_build_info_path, 'w') as f:
-            f.write(androidx_build_info_response.text)
+            f.write(androidx_build_info_response.read().decode('utf-8'))
 
         # Compute repository URL from resolved BUILD_INFO url in case 'latest' redirect changes.
-        androidx_snapshot_repository_url = androidx_build_info_response.url.rsplit(
-            '/', 1)[0] + '/repository'
+        androidx_snapshot_repository_url = (
+            androidx_build_info_response.geturl().rsplit('/', 1)[0] +
+            '/repository')
 
         with open(androidx_build_info_path, 'r') as f:
             build_info_dict = json.loads(f.read())
