@@ -381,7 +381,7 @@ ci.console_view(
 ci.builder(
     name = "android-androidx-packager",
     executable = "recipe:android/androidx_packager",
-    schedule = "0 7 * * * *",
+    schedule = "0 7,14,22 * * * *",
     service_account = "chromium-cipd-builder@chops-service-accounts.iam.gserviceaccount.com",
     triggered_by = [],
 )
