@@ -71,6 +71,10 @@ AddressNormalizer* TestAutofillClient::GetAddressNormalizer() {
   return &test_address_normalizer_;
 }
 
+AutofillOfferManager* TestAutofillClient::GetAutofillOfferManager() {
+  return autofill_offer_manager_.get();
+}
+
 const GURL& TestAutofillClient::GetLastCommittedURL() {
   return last_committed_url_;
 }

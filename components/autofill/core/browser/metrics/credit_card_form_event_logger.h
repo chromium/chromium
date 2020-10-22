@@ -50,6 +50,8 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
     has_server_nickname_ = has_server_nickname;
   }
 
+  void set_suggestions(std::vector<Suggestion> suggestions);
+
   void OnDidSelectCardSuggestion(const CreditCard& credit_card,
                                  const FormStructure& form,
                                  AutofillSyncSigninState sync_state);
@@ -90,6 +92,7 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   FormEvent GetCardNumberStatusFormEvent(const CreditCard& credit_card);
   void RecordCardUnmaskFlowEvent(UnmaskAuthFlowType flow,
                                  UnmaskAuthFlowEvent event);
+  bool DoesCardHaveOffer(const CreditCard& credit_card);
 
   bool is_context_secure_ = false;
   UnmaskAuthFlowType current_authentication_flow_;
@@ -97,6 +100,9 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   bool has_logged_suggestion_selected_timestamp_ = false;
   bool logged_suggestion_filled_was_masked_server_card_ = false;
   base::TimeTicks first_suggestion_shown_timestamp_;
+  std::vector<Suggestion> suggestions_;
+  bool has_eligible_offer_ = false;
+  bool card_selected_has_offer_ = false;
 
   // True when ANY of the masked server cards has a nickname. Note that,
   // depending on the experimental setup, the user may not be shown the

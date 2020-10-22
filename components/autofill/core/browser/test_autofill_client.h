@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
+#include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/test_payments_client.h"
 #include "components/autofill/core/browser/payments/test_strike_database.h"
@@ -53,6 +54,7 @@ class TestAutofillClient : public AutofillClient {
   ukm::UkmRecorder* GetUkmRecorder() override;
   ukm::SourceId GetUkmSourceId() override;
   AddressNormalizer* GetAddressNormalizer() override;
+  AutofillOfferManager* GetAutofillOfferManager() override;
   const GURL& GetLastCommittedURL() override;
   security_state::SecurityLevel GetSecurityLevelForUmaHistograms() override;
   translate::LanguageState* GetLanguageState() override;
@@ -223,6 +225,11 @@ class TestAutofillClient : public AutofillClient {
     migration_card_selection_ = migration_card_selection;
   }
 
+  void set_autofill_offer_manager(
+      std::unique_ptr<AutofillOfferManager> autofill_offer_manager) {
+    autofill_offer_manager_ = std::move(autofill_offer_manager);
+  }
+
   GURL form_origin() { return form_origin_; }
 
   ukm::TestUkmRecorder* GetTestUkmRecorder();
@@ -234,6 +241,7 @@ class TestAutofillClient : public AutofillClient {
   TestAddressNormalizer test_address_normalizer_;
   TestPersonalDataManager test_personal_data_manager_;
   MockAutocompleteHistoryManager mock_autocomplete_history_manager_;
+  std::unique_ptr<AutofillOfferManager> autofill_offer_manager_;
 
   // NULL by default.
   std::unique_ptr<PrefService> prefs_;

@@ -750,6 +750,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </details>
 </histogram>
 
+<histogram name="Autofill.FormEvents.CreditCard.WithOffer"
+    enum="AutofillFormEvent" expires_after="M95">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Autofill form events for credit card forms. These are recorded when the user
+    interacts with a form requesting a credit card, a dropdown of suggestions is
+    shown and at least one of the suggestions has a linked credit card offer.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.FormEvents.CreditCard.WithServerNickname"
     enum="AutofillFormEvent" expires_after="2021-04-01">
   <owner>sujiezhu@google.com</owner>
@@ -1182,6 +1193,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Autofill.Offer.SelectedCardHasOffer"
+    enum="AutofillCreditCardOfferSelection" expires_after="M95">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    When at least one of the cards in the Autofill suggestions list has a linked
+    offer and the user selects a suggestion, this metric records whether or not
+    the selected suggestion had a linked offer. Nothing is recorded if none of
+    the cards suggested have linked offers.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Offer.StoredOfferCount" units="offers"
     expires_after="2021-08-01">
   <owner>siyua@chromium.org</owner>
@@ -1209,6 +1232,29 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Tracks the number of the merchants an autofill offer data is related to,
     measured at Chrome profile launch time.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Offer.SubmittedCardHasOffer"
+    enum="AutofillCreditCardOfferSubmission" expires_after="M95">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    When at least one of the cards in the Autofill suggestions list has a linked
+    offer and the user submits the form, this metric records whether or not the
+    form was submitted using the card with a linked offer. Nothing is recorded
+    if none of the cards suggested have linked offers.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Offer.SuggestedCardsHaveOffer"
+    enum="AutofillCreditCardOfferSuggestion" expires_after="M95">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    When the user is shown the Autofill suggestions list, this metric records
+    whether or not a credit card that is linked to an offer is shown as part of
+    the suggestions.
   </summary>
 </histogram>
 
