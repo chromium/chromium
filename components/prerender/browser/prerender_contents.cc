@@ -190,7 +190,8 @@ void PrerenderContents::StartPrerendering(
   DCHECK(!prerender_contents_);
   DCHECK_EQ(1U, alias_urls_.size());
 
-  session_storage_namespace_id_ = session_storage_namespace->id();
+  if (session_storage_namespace)
+    session_storage_namespace_id_ = session_storage_namespace->id();
   bounds_ = bounds;
 
   DCHECK(load_start_time_.is_null());

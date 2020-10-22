@@ -40,6 +40,7 @@
 #include "weblayer/browser/cookie_manager_impl.h"
 #include "weblayer/browser/favicon/favicon_service_impl.h"
 #include "weblayer/browser/favicon/favicon_service_impl_factory.h"
+#include "weblayer/browser/no_state_prefetch/prerender_controller_impl.h"
 #include "weblayer/browser/persistence/browser_persister_file_utils.h"
 #include "weblayer/browser/tab_impl.h"
 
@@ -314,6 +315,13 @@ CookieManager* ProfileImpl::GetCookieManager() {
   return cookie_manager_.get();
 }
 
+PrerenderController* ProfileImpl::GetPrerenderController() {
+  if (!prerender_controller_)
+    prerender_controller_ =
+        std::make_unique<PrerenderControllerImpl>(GetBrowserContext());
+  return prerender_controller_.get();
+}
+
 void ProfileImpl::GetBrowserPersistenceIds(
     base::OnceCallback<void(base::flat_set<std::string>)> callback) {
   DCHECK(!browser_context_->IsOffTheRecord());
@@ -509,6 +517,10 @@ void ProfileImpl::SetDownloadDirectory(
 
 jlong ProfileImpl::GetCookieManager(JNIEnv* env) {
   return reinterpret_cast<jlong>(GetCookieManager());
+}
+
+jlong ProfileImpl::GetPrerenderController(JNIEnv* env) {
+  return reinterpret_cast<jlong>(GetPrerenderController());
 }
 
 void ProfileImpl::EnsureBrowserContextInitialized(JNIEnv* env) {
