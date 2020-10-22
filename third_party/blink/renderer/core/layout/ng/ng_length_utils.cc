@@ -956,7 +956,7 @@ NGBoxStrut ComputeBorders(const NGConstraintSpace& constraint_space,
     return constraint_space.TableCellBorders();
 
   if (node.IsNGTable())
-    return node.GetTableBorders();
+    return node.GetTableBorders()->TableBorder();
 
   return ComputeBordersInternal(node.Style());
 }

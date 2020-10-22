@@ -8,6 +8,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_input_node.h"
+#include "third_party/blink/renderer/core/layout/ng/table/ng_table_borders.h"
+#include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_types.h"
 #include "third_party/blink/renderer/platform/fonts/font_baseline.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -99,8 +101,13 @@ class CORE_EXPORT NGBlockNode final : public NGLayoutInputNode {
     return box_->IsTableCell() && !box_->IsTableCellLegacy();
   }
 
-  bool IsFixedTableLayout() const;
-  const NGBoxStrut& GetTableBorders() const;
+  // TODO(atotic) Move table-specific calls to NGTableNode
+  const NGBoxStrut& GetTableBordersStrut() const;
+  scoped_refptr<const NGTableBorders> GetTableBorders() const;
+  scoped_refptr<const NGTableTypes::Columns> GetColumnConstraints(
+      const NGTableGroupedChildren&,
+      const NGBoxStrut& border_padding) const;
+
   LayoutUnit ComputeTableInlineSize(const NGConstraintSpace&,
                                     const NGBoxStrut& border_padding) const;
 

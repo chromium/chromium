@@ -377,6 +377,8 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
     if (new_space.AreSizesEqual(old_space))
       return NGLayoutCacheStatus::kHit;
 
+    // TODO(ikilpatrick): Always miss the cache for tables whose block
+    // size-constraints change.
     if (!SizeMayChange(node, new_space, old_space, cached_layout_result))
       return NGLayoutCacheStatus::kHit;
   }

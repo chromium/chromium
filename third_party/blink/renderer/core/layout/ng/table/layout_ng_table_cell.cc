@@ -26,9 +26,12 @@ LayoutNGTableCell::LayoutNGTableCell(Element* element)
 
 void LayoutNGTableCell::InvalidateLayoutResultCacheAfterMeasure() const {
   if (LayoutBox* row = ParentBox()) {
+    DCHECK(row->IsTableRow());
     row->ClearLayoutResults();
-    if (LayoutBox* section = ParentBox())
+    if (LayoutBox* section = row->ParentBox()) {
+      DCHECK(section->IsTableSection());
       section->ClearLayoutResults();
+    }
   }
 }
 

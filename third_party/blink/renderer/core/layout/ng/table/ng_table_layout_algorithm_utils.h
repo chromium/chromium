@@ -25,22 +25,11 @@ class NGTableAlgorithmUtils {
            align == EVerticalAlign::kLength;
   }
 
-  static void ComputeColumnInlineConstraints(
-      const Vector<NGBlockNode>& columns,
-      bool is_fixed_layout,
-      NGTableTypes::Columns* column_constraints);
-
-  // Populate cell inline size constraints for a single section.
-  static void ComputeSectionInlineConstraints(
-      const NGBlockNode& section,
-      bool is_fixed_layout,
-      bool is_first_section,
-      WritingMode table_writing_mode,
+  static scoped_refptr<NGTableTypes::Columns> ComputeColumnConstraints(
+      const NGBlockNode& table,
+      const NGTableGroupedChildren&,
       const NGTableBorders& table_borders,
-      wtf_size_t section_index,
-      wtf_size_t* row_index,
-      NGTableTypes::CellInlineConstraints* cell_inline_constraints,
-      NGTableTypes::ColspanCells* colspan_cell_inline_constraints);
+      const NGBoxStrut& border_padding);
 
   static void ComputeSectionMinimumRowBlockSizes(
       const NGBlockNode& section,

@@ -17,6 +17,16 @@ class NGTableFragmentData {
   // COLGROUP/COL geometry information. Used for painting column backgrounds.
   // Only present if column has a background.
   struct ColumnGeometry {
+    ColumnGeometry(wtf_size_t start_column,
+                   wtf_size_t span,
+                   LayoutUnit inline_offset,
+                   LayoutUnit inline_size,
+                   NGLayoutInputNode node)
+        : start_column(start_column),
+          span(span),
+          inline_offset(inline_offset),
+          inline_size(inline_size),
+          node(node) {}
     wtf_size_t start_column;
     wtf_size_t span;
     LayoutUnit inline_offset;

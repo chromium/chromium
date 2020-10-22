@@ -51,14 +51,6 @@ class CORE_EXPORT NGTableTypes {
         : cell_inline_constraint(cell_inline_constraint),
           start_column(start_column),
           span(span) {}
-    // ColspanCells are distributed in column order.
-    bool operator<(const NGTableTypes::ColspanCell& rhs) const {
-      // '<' means left to right sort.
-      // Legacy sorts right-to-left, FF, Edge left-to-right.
-      if (span == rhs.span)
-        return start_column < rhs.start_column;
-      return span < rhs.span;
-    }
   };
 
   // Constraint for a column.

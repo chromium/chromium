@@ -60,6 +60,8 @@
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_borders.h"
+#include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm.h"
+#include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_row_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_section_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_outside_info.h"
@@ -164,6 +166,8 @@ NOINLINE void DetermineAlgorithmAndRun(const NGLayoutAlgorithmParams& params,
   const LayoutBox& box = *params.node.GetLayoutBox();
   if (box.IsLayoutNGFlexibleBox()) {
     CreateAlgorithmAndRun<NGFlexLayoutAlgorithm>(params, callback);
+  } else if (box.IsTable()) {
+    CreateAlgorithmAndRun<NGTableLayoutAlgorithm>(params, callback);
   } else if (box.IsTableRow()) {
     CreateAlgorithmAndRun<NGTableRowLayoutAlgorithm>(params, callback);
   } else if (box.IsTableSection()) {
@@ -532,6 +536,20 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
   UpdateShapeOutsideInfoIfNeeded(
       *layout_result, constraint_space.PercentageResolutionInlineSize());
 
+#if DCHECK_IS_ON()
+  // DCHECK can only be turned on for LayoutNGTable because it
+  // fails with Legacy table implementation.
+  if (RuntimeEnabledFeatures::LayoutNGTableEnabled() &&
+      layout_result->Status() == NGLayoutResult::kSuccess) {
+    LogicalSize size =
+        layout_result->PhysicalFragment().Size().ConvertToLogical(
+            constraint_space.GetWritingMode());
+    if (constraint_space.IsFixedInlineSize())
+      DCHECK_EQ(size.inline_size, constraint_space.AvailableSize().inline_size);
+    if (constraint_space.IsFixedBlockSize())
+      DCHECK_EQ(size.block_size, constraint_space.AvailableSize().block_size);
+  }
+#endif
   return layout_result;
 }
 
@@ -772,7 +790,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
       (input.percentage_resolution_block_size ==
            box_->IntrinsicLogicalWidthsPercentageResolutionBlockSize() ||
        !box_->IntrinsicLogicalWidthsChildDependsOnPercentageBlockSize())) {
-    MinMaxSizes sizes = box_->IsTable()
+    MinMaxSizes sizes = box_->IsTable() && !box_->IsLayoutNGMixin()
                             ? box_->PreferredLogicalWidths()
                             : box_->IntrinsicLogicalWidths(input.type);
     bool depends_on_percentage_block_size =
@@ -802,7 +820,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
   // depend on the *input* %-block-size.
   if (can_use_cached_intrinsic_inline_sizes &&
       !cache_depends_on_percentage_block_size) {
-    MinMaxSizes sizes = box_->IsTable()
+    MinMaxSizes sizes = box_->IsTable() && !box_->IsLayoutNGMixin()
                             ? box_->PreferredLogicalWidths()
                             : box_->IntrinsicLogicalWidths(input.type);
     return {sizes, cache_depends_on_percentage_block_size};
@@ -970,12 +988,11 @@ NGBlockNode NGBlockNode::GetFieldsetContent() const {
   return NGBlockNode(ToLayoutBox(child));
 }
 
-bool NGBlockNode::IsFixedTableLayout() const {
-  DCHECK(IsNGTable());
-  return To<LayoutNGTable>(box_)->IsFixedTableLayout();
+const NGBoxStrut& NGBlockNode::GetTableBordersStrut() const {
+  return GetTableBorders()->TableBorder();
 }
 
-const NGBoxStrut& NGBlockNode::GetTableBorders() const {
+scoped_refptr<const NGTableBorders> NGBlockNode::GetTableBorders() const {
   DCHECK(IsTable());
   DCHECK(box_->IsLayoutNGMixin());
   LayoutNGTable* layout_table = To<LayoutNGTable>(box_);
@@ -985,15 +1002,30 @@ const NGBoxStrut& NGBlockNode::GetTableBorders() const {
     table_borders = NGTableBorders::ComputeTableBorders(*this);
     layout_table->SetCachedTableBorders(table_borders.get());
   }
-  return table_borders->TableBorder();
+  return table_borders;
+}
+
+scoped_refptr<const NGTableTypes::Columns> NGBlockNode::GetColumnConstraints(
+    const NGTableGroupedChildren& grouped_children,
+    const NGBoxStrut& border_padding) const {
+  DCHECK(IsTable());
+  LayoutNGTable* layout_table = To<LayoutNGTable>(box_);
+  scoped_refptr<const NGTableTypes::Columns> column_constraints =
+      layout_table->GetCachedTableColumnConstraints();
+  if (!column_constraints) {
+    column_constraints = NGTableAlgorithmUtils::ComputeColumnConstraints(
+        *this, grouped_children, *GetTableBorders().get(), border_padding);
+    layout_table->SetCachedTableColumnConstraints(column_constraints.get());
+  }
+  return column_constraints;
 }
 
 LayoutUnit NGBlockNode::ComputeTableInlineSize(
     const NGConstraintSpace& space,
     const NGBoxStrut& border_padding) const {
   DCHECK(IsNGTable());
-  return LayoutUnit();
-  // TODO(atotic) call NGTableLayoutAlgorithm::ComputeTableInlineSize
+  return NGTableLayoutAlgorithm::ComputeTableInlineSize(*this, space,
+                                                        border_padding);
 }
 
 bool NGBlockNode::CanUseNewLayout(const LayoutBox& box) {

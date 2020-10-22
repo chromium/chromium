@@ -815,15 +815,13 @@ void DistributeExcessBlockSizeToRows(
 
 }  // namespace
 
-void NGTableAlgorithmHelpers::ComputeGridInlineMinmax(
+MinMaxSizes NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
     const NGTableTypes::Columns& column_constraints,
     LayoutUnit undistributable_space,
     bool is_fixed_layout,
     bool containing_block_expects_minmax_without_percentages,
-    bool skip_collapsed_columns,
-    MinMaxSizes* minmax) {
-  DCHECK_EQ(minmax->min_size, LayoutUnit());
-  DCHECK_EQ(minmax->max_size, LayoutUnit());
+    bool skip_collapsed_columns) {
+  MinMaxSizes minmax;
   // https://www.w3.org/TR/css-tables-3/#computing-the-table-width
   // Compute standard GRID_MIN/GRID_MAX. They are sum of column_constraints.
   //
@@ -853,9 +851,9 @@ void NGTableAlgorithmHelpers::ComputeGridInlineMinmax(
       // In fixed layout, constrained cells minimum inline size is their
       // maximum.
       if (is_fixed_layout && column.IsFixed()) {
-        minmax->min_size += *column.max_inline_size;
+        minmax.min_size += *column.max_inline_size;
       } else {
-        minmax->min_size += *column.min_inline_size;
+        minmax.min_size += *column.min_inline_size;
       }
       if (column.percent) {
         if (*column.max_inline_size > LayoutUnit() && *column.percent > 0) {
@@ -870,7 +868,7 @@ void NGTableAlgorithmHelpers::ComputeGridInlineMinmax(
       }
     }
     if (column.max_inline_size)
-      minmax->max_size += *column.max_inline_size;
+      minmax.max_size += *column.max_inline_size;
     if (column.percent)
       percent_sum += *column.percent;
   }
@@ -890,28 +888,32 @@ void NGTableAlgorithmHelpers::ComputeGridInlineMinmax(
             LayoutUnit((100 / (100 - percent_sum)) * non_percent_maxsize_sum);
       }
     }
-    minmax->max_size = std::max(minmax->max_size, size_from_percent_and_fixed);
-    minmax->max_size = std::max(minmax->max_size, percent_maxsize_estimate);
+    minmax.max_size = std::max(minmax.max_size, size_from_percent_and_fixed);
+    minmax.max_size = std::max(minmax.max_size, percent_maxsize_estimate);
   }
 
-  minmax->max_size = std::max(minmax->min_size, minmax->max_size);
-  *minmax += undistributable_space;
+  minmax.max_size = std::max(minmax.min_size, minmax.max_size);
+  minmax += undistributable_space;
+  return minmax;
 }
 
-void NGTableAlgorithmHelpers::DistributeColspanCellToColumns(
-    const NGTableTypes::ColspanCell& colspan_cell,
+void NGTableAlgorithmHelpers::DistributeColspanCellsToColumns(
+    const NGTableTypes::ColspanCells& colspan_cells,
     LayoutUnit inline_border_spacing,
     bool is_fixed_layout,
     NGTableTypes::Columns* column_constraints) {
-  // Clipped colspanned cells can end up having a span of 1 (which is not wide).
-  DCHECK_GT(colspan_cell.span, 1u);
+  for (const NGTableTypes::ColspanCell& colspan_cell : colspan_cells) {
+    // Clipped colspanned cells can end up having a span of 1 (which is not
+    // wide).
+    DCHECK_GT(colspan_cell.span, 1u);
 
-  if (is_fixed_layout) {
-    DistributeColspanCellToColumnsFixed(colspan_cell, inline_border_spacing,
-                                        column_constraints);
-  } else {
-    DistributeColspanCellToColumnsAuto(colspan_cell, inline_border_spacing,
-                                       column_constraints);
+    if (is_fixed_layout) {
+      DistributeColspanCellToColumnsFixed(colspan_cell, inline_border_spacing,
+                                          column_constraints);
+    } else {
+      DistributeColspanCellToColumnsAuto(colspan_cell, inline_border_spacing,
+                                         column_constraints);
+    }
   }
 }
 

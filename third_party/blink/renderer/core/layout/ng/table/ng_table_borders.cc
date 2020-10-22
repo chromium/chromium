@@ -216,7 +216,7 @@ scoped_refptr<NGTableBorders> NGTableBorders::ComputeTableBorders(
         table_column_count = std::max(
             table_column_count, NGTableAlgorithmHelpers::ComputeMaxColumn(
                                     tabulator.CurrentColumn(), cell_colspan,
-                                    table.IsFixedTableLayout()));
+                                    table.Style().IsFixedTableLayout()));
         if (!found_multispan_cells) {
           table_borders->MergeBorders(
               table_row_index, tabulator.CurrentColumn(),

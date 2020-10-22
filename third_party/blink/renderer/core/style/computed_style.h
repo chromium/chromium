@@ -2231,6 +2231,13 @@ class ComputedStyle : public ComputedStyleBase,
     return TableLayout() == ETableLayout::kFixed && !LogicalWidth().IsAuto();
   }
 
+  LogicalSize TableBorderSpacing() const {
+    if (BorderCollapse() == EBorderCollapse::kCollapse)
+      return LogicalSize();
+    return LogicalSize(LayoutUnit(HorizontalBorderSpacing()),
+                       LayoutUnit(VerticalBorderSpacing()));
+  }
+
   // Returns true if the computed style contains a 3D transform operation. This
   // can be individual operations from the transform property, or individual
   // values from translate/rotate/scale properties. Perspective is omitted since
