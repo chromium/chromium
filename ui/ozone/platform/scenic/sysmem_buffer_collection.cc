@@ -28,6 +28,12 @@ VkFormat VkFormatForBufferFormat(gfx::BufferFormat buffer_format) {
     case gfx::BufferFormat::YUV_420_BIPLANAR:
       return VK_FORMAT_G8_B8R8_2PLANE_420_UNORM;
 
+    case gfx::BufferFormat::R_8:
+      return VK_FORMAT_R8_UNORM;
+
+    case gfx::BufferFormat::RG_88:
+      return VK_FORMAT_R8G8_UNORM;
+
     case gfx::BufferFormat::BGRA_8888:
     case gfx::BufferFormat::BGRX_8888:
       return VK_FORMAT_B8G8R8A8_UNORM;
@@ -49,6 +55,8 @@ bool SysmemBufferCollection::IsNativePixmapConfigSupported(
     gfx::BufferFormat format,
     gfx::BufferUsage usage) {
   bool format_supported = format == gfx::BufferFormat::YUV_420_BIPLANAR ||
+                          format == gfx::BufferFormat::R_8 ||
+                          format == gfx::BufferFormat::RG_88 ||
                           format == gfx::BufferFormat::RGBA_8888 ||
                           format == gfx::BufferFormat::RGBX_8888 ||
                           format == gfx::BufferFormat::BGRA_8888 ||
