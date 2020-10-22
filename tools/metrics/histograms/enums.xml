@@ -10992,6 +10992,12 @@ histogram as enum -->
   <int value="30" label="More Than 30"/>
 </enum>
 
+<enum name="ColorGamut">
+  <int value="0" label="sRGB"/>
+  <int value="1" label="Wide Color Gamut"/>
+  <int value="2" label="HDR"/>
+</enum>
+
 <enum name="ColorSpaceExtractedRawDataResult">
   <int value="0" label="Failed to extract."/>
   <int value="1" label="Successfully extracted."/>

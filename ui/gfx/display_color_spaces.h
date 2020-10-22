@@ -24,6 +24,9 @@ class DisplayColorSpacesDataView;
 
 // The values are set so std::max() can be used to find the widest.
 enum class ContentColorUsage : uint8_t {
+  // These values are histogrammed over time; do not change their ordinal
+  // values.  When deleting a color usage replace it with a dummy value; when
+  // adding a color usage, do so at the bottom (and update kMaxValue).
   kSRGB = 0,
   kWideColorGamut = 1,
   kHDR = 2,

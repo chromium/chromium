@@ -668,6 +668,9 @@ bool Display::DrawAndSwap(base::TimeTicks expected_display_time) {
     renderer_->SetDelegatedInkMetadata(std::move(frame.delegated_ink_metadata));
   }
 
+  UMA_HISTOGRAM_ENUMERATION("Compositing.ColorGamut",
+                            frame.content_color_usage);
+
 #if defined(OS_ANDROID)
   bool wide_color_enabled =
       display_color_spaces_.GetOutputColorSpace(
