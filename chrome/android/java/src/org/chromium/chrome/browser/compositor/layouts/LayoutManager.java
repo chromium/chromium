@@ -21,6 +21,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
@@ -172,6 +173,9 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
     /** The supplier used to supply the LayoutStateProvider. */
     private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderOneshotSupplier;
 
+    /** A cache of title textures to use in different layouts. */
+    protected Supplier<LayerTitleCache> mLayerTitleCacheSupplier;
+
     /**
      * Protected class to handle {@link TabModelObserver} related tasks. Extending classes will
      * need to override any related calls to add new functionality */
@@ -248,11 +252,13 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
      * @param host A {@link LayoutManagerHost} instance.
      * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
+     * @param layerTitleCacheSupplier A supplier of the cache of title textures.
      * @param layoutStateProviderOneshotSupplier Supplier used to supply the {@link
      *         LayoutStateProvider}.
      */
     public LayoutManager(LayoutManagerHost host, ViewGroup contentContainer,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
+            Supplier<LayerTitleCache> layerTitleCacheSupplier,
             OneshotSupplierImpl<LayoutStateProvider> layoutStateProviderOneshotSupplier) {
         mHost = host;
         mPxToDp = 1.f / mHost.getContext().getResources().getDisplayMetrics().density;
@@ -260,6 +266,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
         mAndroidViewShownSupplier.set(true);
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mLayoutStateProviderOneshotSupplier = layoutStateProviderOneshotSupplier;
+        mLayerTitleCacheSupplier = layerTitleCacheSupplier;
 
         mContext = host.getContext();
         LayoutRenderHost renderHost = host.getLayoutRenderHost();
@@ -592,15 +599,14 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
     }
 
     @Override
-    public SceneLayer getUpdatedActiveSceneLayer(LayerTitleCache layerTitleCache,
-            TabContentManager tabContentManager, ResourceManager resourceManager,
-            BrowserControlsManager browserControlsManager) {
+    public SceneLayer getUpdatedActiveSceneLayer(TabContentManager tabContentManager,
+            ResourceManager resourceManager, BrowserControlsManager browserControlsManager) {
         updateControlsHidingState(browserControlsManager);
         getViewportPixel(mCachedVisibleViewport);
         mHost.getWindowViewport(mCachedWindowViewport);
         SceneLayer layer = mActiveLayout.getUpdatedSceneLayer(mCachedWindowViewport,
-                mCachedVisibleViewport, layerTitleCache, tabContentManager, resourceManager,
-                browserControlsManager);
+                mCachedVisibleViewport, mLayerTitleCacheSupplier.get(), tabContentManager,
+                resourceManager, browserControlsManager);
 
         float offsetPx = mBrowserControlsStateProviderSupplier.get() == null
                 ? 0
@@ -611,7 +617,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
             if (!mSceneOverlays.get(i).isSceneOverlayTreeShowing()) continue;
 
             SceneOverlayLayer overlayLayer = mSceneOverlays.get(i).getUpdatedSceneOverlayTree(
-                    mCachedWindowViewport, mCachedVisibleViewport, layerTitleCache, resourceManager,
+                    mCachedWindowViewport, mCachedVisibleViewport, resourceManager,
                     offsetPx * mPxToDp);
 
             overlayLayer.setContentTree(layer);

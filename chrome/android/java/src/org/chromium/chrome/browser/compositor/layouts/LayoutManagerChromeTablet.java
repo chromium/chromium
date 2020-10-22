@@ -8,7 +8,9 @@ import android.view.ViewGroup;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -37,13 +39,15 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      */
     public LayoutManagerChromeTablet(LayoutManagerHost host, ViewGroup contentContainer,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
+            Supplier<LayerTitleCache> layerTitleCacheSupplier,
             OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier,
             OneshotSupplierImpl<LayoutStateProvider> layoutStateProviderOneshotSupplier) {
         super(host, contentContainer, false, null, tabContentManagerSupplier,
-                overviewModeBehaviorSupplier, layoutStateProviderOneshotSupplier);
+                layerTitleCacheSupplier, overviewModeBehaviorSupplier,
+                layoutStateProviderOneshotSupplier);
 
-        mTabStripLayoutHelperManager = new StripLayoutHelperManager(
-                host.getContext(), this, mHost.getLayoutRenderHost(), () -> mTitleCache);
+        mTabStripLayoutHelperManager = new StripLayoutHelperManager(host.getContext(), this,
+                mHost.getLayoutRenderHost(), () -> mTitleCache, layerTitleCacheSupplier);
         addSceneOverlay(mTabStripLayoutHelperManager);
 
         setNextLayout(null);

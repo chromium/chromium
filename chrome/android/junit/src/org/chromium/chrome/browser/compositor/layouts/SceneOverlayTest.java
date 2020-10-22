@@ -71,7 +71,7 @@ public class SceneOverlayTest {
         doNothing().when(mLayoutStateProviderOneshotSupplier).set(any());
 
         mLayoutManager = new LayoutManager(mLayoutManagerHost, mContainerView,
-                mTabContentManagerSupplier, mLayoutStateProviderOneshotSupplier);
+                mTabContentManagerSupplier, null, mLayoutStateProviderOneshotSupplier);
     }
 
     @Test

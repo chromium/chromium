@@ -71,7 +71,6 @@ public class CompositorView
     // Lazily populated as it is needed.
     private View mRootActivityView;
     private WindowAndroid mWindowAndroid;
-    private LayerTitleCache mLayerTitleCache;
     private TabContentManager mTabContentManager;
 
     private View mRootView;
@@ -281,7 +280,6 @@ public class CompositorView
         mWindowAndroid = windowAndroid;
         mWindowAndroid.addSelectionHandlesObserver(this);
 
-        mLayerTitleCache = layerTitleCache;
         mTabContentManager = tabContentManager;
 
         mNativeCompositorView = CompositorViewJni.get().init(CompositorView.this, lowMemDevice,
@@ -535,8 +533,8 @@ public class CompositorView
 
         CompositorViewJni.get().setLayoutBounds(mNativeCompositorView, CompositorView.this);
 
-        SceneLayer sceneLayer = provider.getUpdatedActiveSceneLayer(mLayerTitleCache,
-                mTabContentManager, mResourceManager, provider.getBrowserControlsManager());
+        SceneLayer sceneLayer = provider.getUpdatedActiveSceneLayer(mTabContentManager,
+                mResourceManager, provider.getBrowserControlsManager());
 
         CompositorViewJni.get().setSceneLayer(
                 mNativeCompositorView, CompositorView.this, sceneLayer);

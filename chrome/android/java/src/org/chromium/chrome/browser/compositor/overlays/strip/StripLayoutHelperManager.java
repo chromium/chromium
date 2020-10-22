@@ -97,6 +97,7 @@ public class StripLayoutHelperManager implements SceneOverlay {
 
     private final String mDefaultTitle;
     private final Supplier<TitleCache> mTitleCacheSupplier;
+    private final Supplier<LayerTitleCache> mLayerTitleCacheSupplier;
 
     private class TabStripEventHandler implements GestureHandler {
         @Override
@@ -158,11 +159,14 @@ public class StripLayoutHelperManager implements SceneOverlay {
      * @param updateHost The parent {@link LayoutUpdateHost}.
      * @param renderHost The {@link LayoutRenderHost}.
      * @param titleCacheSupplier A supplier of the title cache.
+     * @param layerTitleCacheSupplier A supplier of the cache that holds the title textures.
      */
     public StripLayoutHelperManager(Context context, LayoutUpdateHost updateHost,
-            LayoutRenderHost renderHost, Supplier<TitleCache> titleCacheSupplier) {
+            LayoutRenderHost renderHost, Supplier<TitleCache> titleCacheSupplier,
+            Supplier<LayerTitleCache> layerTitleCacheSupplier) {
         mUpdateHost = updateHost;
         mTitleCacheSupplier = titleCacheSupplier;
+        mLayerTitleCacheSupplier = layerTitleCacheSupplier;
         mTabStripTreeProvider = new TabStripSceneLayer(context);
         mTabStripEventHandler = new TabStripEventHandler();
         mDefaultTitle = context.getString(R.string.tab_loading_default_title);
@@ -233,15 +237,15 @@ public class StripLayoutHelperManager implements SceneOverlay {
     }
 
     @Override
-    public SceneOverlayLayer getUpdatedSceneOverlayTree(RectF viewport, RectF visibleViewport,
-            LayerTitleCache layerTitleCache, ResourceManager resourceManager, float yOffset) {
+    public SceneOverlayLayer getUpdatedSceneOverlayTree(
+            RectF viewport, RectF visibleViewport, ResourceManager resourceManager, float yOffset) {
         assert mTabStripTreeProvider != null;
 
         Tab selectedTab = mTabModelSelector.getCurrentModel().getTabAt(
                 mTabModelSelector.getCurrentModel().index());
         int selectedTabId = selectedTab == null ? TabModel.INVALID_TAB_INDEX : selectedTab.getId();
-        mTabStripTreeProvider.pushAndUpdateStrip(this, layerTitleCache, resourceManager,
-                getActiveStripLayoutHelper().getStripLayoutTabsToRender(), yOffset,
+        mTabStripTreeProvider.pushAndUpdateStrip(this, mLayerTitleCacheSupplier.get(),
+                resourceManager, getActiveStripLayoutHelper().getStripLayoutTabsToRender(), yOffset,
                 selectedTabId);
         return mTabStripTreeProvider;
     }

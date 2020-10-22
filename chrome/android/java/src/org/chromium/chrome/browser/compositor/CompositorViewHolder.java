@@ -1413,6 +1413,11 @@ public class CompositorViewHolder extends FrameLayout
         return mLayerTitleCache;
     }
 
+    /** @return A cache responsible for title textures. */
+    public LayerTitleCache getLayerTitleCache() {
+        return mLayerTitleCache;
+    }
+
     @Override
     public void deferInvalidate(Runnable clientInvalidator) {
         if (mPendingFrameCount <= 0) {

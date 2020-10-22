@@ -191,7 +191,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         }
 
         mManagerPhone = new LayoutManagerChromePhone(layoutManagerHost, container, null,
-                tabContentManagerSupplier, overviewModeBehaviorSupplier,
+                tabContentManagerSupplier, null, overviewModeBehaviorSupplier,
                 mLayoutStateProviderSupplier);
         tabContentManagerSupplier.set(tabContentManager);
         mManager = mManagerPhone;

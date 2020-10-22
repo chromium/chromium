@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.gesturenav;
 import android.graphics.RectF;
 import android.view.ViewGroup;
 
-import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.components.VirtualView;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.EventFilter;
 import org.chromium.chrome.browser.compositor.overlays.SceneOverlay;
@@ -75,8 +74,8 @@ class OverscrollGlowOverlay extends NavigationGlow implements SceneOverlay {
     // SceneOverlay implementation
 
     @Override
-    public SceneOverlayLayer getUpdatedSceneOverlayTree(RectF viewport, RectF visibleViewport,
-            LayerTitleCache layerTitleCache, ResourceManager resourceManager, float yOffset) {
+    public SceneOverlayLayer getUpdatedSceneOverlayTree(
+            RectF viewport, RectF visibleViewport, ResourceManager resourceManager, float yOffset) {
         if (!mSceneLayer.update(resourceManager, mOffset)) setIsShowing(false);
         return mSceneLayer;
     }

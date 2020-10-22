@@ -69,7 +69,12 @@ public class CustomTabCompositorContentInitializer implements NativeInitObserver
     public void onFinishNativeInitialization() {
         ViewGroup contentContainer = mActivity.findViewById(android.R.id.content);
         LayoutManager layoutDriver = new LayoutManager(mCompositorViewHolder.get(),
-                contentContainer, mTabContentManagerSupplier, new OneshotSupplierImpl<>());
+                contentContainer, mTabContentManagerSupplier,
+                () -> {
+                    if (mCompositorViewHolder.get() == null) return null;
+                    return mCompositorViewHolder.get().getLayerTitleCache();
+                },
+                new OneshotSupplierImpl<>());
 
         mCompositorViewHolderInitializer.initializeCompositorContent(layoutDriver,
                 mActivity.findViewById(org.chromium.chrome.R.id.url_bar), contentContainer,
