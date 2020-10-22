@@ -37,7 +37,7 @@ gfx::ImageSkia GetPlaceholderImage(HoldingSpaceItem::Type type,
       size = gfx::Size(kHoldingSpaceChipIconSize, kHoldingSpaceChipIconSize);
       break;
     case HoldingSpaceItem::Type::kScreenshot:
-      size = kHoldingSpaceScreenshotSize;
+      size = kHoldingSpaceScreenCaptureSize;
       break;
   }
 

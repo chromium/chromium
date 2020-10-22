@@ -159,8 +159,8 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, DragAndDrop) {
   std::vector<views::View*> pinned_file_chips = GetPinnedFileChips();
   ASSERT_EQ(1u, pinned_file_chips.size());
 
-  std::vector<views::View*> screenshot_views = GetScreenshotViews();
-  ASSERT_EQ(1u, screenshot_views.size());
+  std::vector<views::View*> screen_capture_views = GetScreenCaptureViews();
+  ASSERT_EQ(1u, screen_capture_views.size());
 
   auto* drop_target_view = DropTargetView::Create(GetRootWindowForNewWindows());
   drop_target_view->GetWidget()->SetBounds(gfx::Rect(0, 0, 100, 100));
@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, DragAndDrop) {
   MouseDrag(/*from=*/pinned_file_chips[0], /*to=*/drop_target_view);
   EXPECT_EQ(pinned_file->file_path(), drop_target_view->copied_file_path());
 
-  MouseDrag(/*from=*/screenshot_views[0], /*to=*/drop_target_view);
+  MouseDrag(/*from=*/screen_capture_views[0], /*to=*/drop_target_view);
   EXPECT_EQ(screenshot_file->file_path(), drop_target_view->copied_file_path());
 
   drop_target_view->GetWidget()->Close();
@@ -214,11 +214,11 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, OpenItem) {
     // Show holding space UI and verify a holding space item view exists.
     Show();
     ASSERT_TRUE(IsShowing());
-    std::vector<views::View*> screenshot_views = GetScreenshotViews();
-    ASSERT_EQ(1u, screenshot_views.size());
+    std::vector<views::View*> screen_capture_views = GetScreenCaptureViews();
+    ASSERT_EQ(1u, screen_capture_views.size());
 
     // Attempt to open the holding space item via user interaction on its view.
-    std::move(user_interaction).Run(screenshot_views[0]);
+    std::move(user_interaction).Run(screen_capture_views[0]);
 
     // Expect and wait for a `Gallery` window to be activated since the holding
     // space item that we attempted to open was a screenshot.
@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiScreenshotBrowserTest, AddScreenshot) {
   // Verify that no screenshots exist in holding space UI.
   Show();
   ASSERT_TRUE(IsShowing());
-  EXPECT_TRUE(GetScreenshotViews().empty());
+  EXPECT_TRUE(GetScreenCaptureViews().empty());
 
   Close();
   ASSERT_FALSE(IsShowing());
@@ -294,7 +294,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiScreenshotBrowserTest, AddScreenshot) {
   // Verify that the screenshot appears in holding space UI.
   Show();
   ASSERT_TRUE(IsShowing());
-  EXPECT_EQ(1u, GetScreenshotViews().size());
+  EXPECT_EQ(1u, GetScreenCaptureViews().size());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -20,7 +20,8 @@ namespace ash {
 class HoldingSpaceItem;
 class HoldingSpaceItemViewDelegate;
 
-// Base class for HoldingSpaceItemChipView and HoldingSpaceItemScreenshotView.
+// Base class for HoldingSpaceItemChipView and
+// HoldingSpaceItemScreenCaptureView.
 class ASH_EXPORT HoldingSpaceItemView : public views::InkDropHostView {
  public:
   METADATA_HEADER(HoldingSpaceItemView);

@@ -71,9 +71,9 @@ class HoldingSpaceBrowserTestBase : public InProcessBrowserTest {
   // If holding space UI is not visible, an empty collection is returned.
   std::vector<views::View*> GetPinnedFileChips();
 
-  // Returns the collection of screenshot views in holding space UI.
+  // Returns the collection of screen capture views in holding space UI.
   // If holding space UI is not visible, an empty collection is returned.
-  std::vector<views::View*> GetScreenshotViews();
+  std::vector<views::View*> GetScreenCaptureViews();
 
   // Requests lock screen, waiting to return until session state is locked.
   void RequestAndAwaitLockScreen();

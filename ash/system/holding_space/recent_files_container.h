@@ -18,7 +18,7 @@ namespace ash {
 class HoldingSpaceItemChipsContainer;
 class HoldingSpaceItemViewDelegate;
 
-// Container for the recent files (e.g. screenshots, downloads, etc).
+// Container for the recent files (e.g. screen captures, downloads, etc).
 class RecentFilesContainer : public HoldingSpaceItemViewsContainer {
  public:
   explicit RecentFilesContainer(HoldingSpaceItemViewDelegate* delegate);
@@ -34,19 +34,19 @@ class RecentFilesContainer : public HoldingSpaceItemViewsContainer {
   void RemoveHoldingSpaceItemView(const HoldingSpaceItem* item) override;
 
  private:
-  void AddHoldingSpaceScreenshotView(const HoldingSpaceItem* item);
-  void RemoveHoldingSpaceScreenshotView(const HoldingSpaceItem* item);
+  void AddHoldingSpaceScreenCaptureView(const HoldingSpaceItem* item);
+  void RemoveHoldingSpaceScreenCaptureView(const HoldingSpaceItem* item);
   void AddHoldingSpaceDownloadView(const HoldingSpaceItem* item);
   void RemoveHoldingSpaceDownloadView(const HoldingSpaceItem* item);
-  void OnScreenshotsContainerViewHierarchyChanged(
+  void OnScreenCapturesContainerViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details);
   void OnDownloadsContainerViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details);
 
   HoldingSpaceItemViewDelegate* const delegate_;
 
-  views::View* screenshots_container_ = nullptr;
-  views::Label* screenshots_label_ = nullptr;
+  views::View* screen_captures_container_ = nullptr;
+  views::Label* screen_captures_label_ = nullptr;
   HoldingSpaceItemChipsContainer* downloads_container_ = nullptr;
   views::View* downloads_header_ = nullptr;
 

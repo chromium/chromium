@@ -196,8 +196,8 @@ std::vector<views::View*> HoldingSpaceBrowserTestBase::GetPinnedFileChips() {
   return test_api_->GetPinnedFileChips();
 }
 
-std::vector<views::View*> HoldingSpaceBrowserTestBase::GetScreenshotViews() {
-  return test_api_->GetScreenshotViews();
+std::vector<views::View*> HoldingSpaceBrowserTestBase::GetScreenCaptureViews() {
+  return test_api_->GetScreenCaptureViews();
 }
 
 void HoldingSpaceBrowserTestBase::RequestAndAwaitLockScreen() {
