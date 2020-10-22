@@ -276,6 +276,8 @@ source_set("audio") {
       sources += [
         "cras/audio_manager_cras.cc",
         "cras/audio_manager_cras.h",
+        "cras/cras_util.cc",
+        "cras/cras_util.h",
       ]
     }
   }

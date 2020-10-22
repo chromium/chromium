@@ -24,6 +24,7 @@
 #include "media/audio/audio_features.h"
 #include "media/audio/cras/cras_input.h"
 #include "media/audio/cras/cras_unified.h"
+#include "media/audio/cras/cras_util.h"
 #include "media/base/channel_layout.h"
 #include "media/base/limits.h"
 #include "media/base/localized_strings.h"
@@ -47,7 +48,7 @@ bool AudioManagerCras::HasAudioOutputDevices() {
 }
 
 bool AudioManagerCras::HasAudioInputDevices() {
-  return true;
+  return !CrasGetAudioDevices(DeviceType::kInput).empty();
 }
 
 AudioManagerCras::AudioManagerCras(
@@ -64,11 +65,17 @@ AudioManagerCras::~AudioManagerCras() = default;
 void AudioManagerCras::GetAudioInputDeviceNames(
     AudioDeviceNames* device_names) {
   device_names->push_back(AudioDeviceName::CreateDefault());
+  for (const auto& device : CrasGetAudioDevices(DeviceType::kInput)) {
+    device_names->emplace_back(device.name, base::NumberToString(device.id));
+  }
 }
 
 void AudioManagerCras::GetAudioOutputDeviceNames(
     AudioDeviceNames* device_names) {
   device_names->push_back(AudioDeviceName::CreateDefault());
+  for (const auto& device : CrasGetAudioDevices(DeviceType::kOutput)) {
+    device_names->emplace_back(device.name, base::NumberToString(device.id));
+  }
 }
 
 AudioParameters AudioManagerCras::GetInputStreamParameters(
@@ -135,7 +142,7 @@ uint64_t AudioManagerCras::GetPrimaryActiveOutputNode() {
 }
 
 bool AudioManagerCras::IsDefault(const std::string& device_id, bool is_input) {
-  return true;
+  return device_id == AudioDeviceDescription::kDefaultDeviceId;
 }
 
 }  // namespace media
