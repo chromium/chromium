@@ -2048,7 +2048,7 @@
     ],
 
     'ios_cronet_xctest': [
-      'additional_target_cpus_x86', 'cronet_ios', 'debug_static_bot', 'ios_deployment_target_10_0', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest',
+      'cronet_ios', 'debug_static_bot', 'ios_deployment_target_10_0', 'ios', 'ios_simulator', 'ios_cpu_x64_x86', 'xctest',
     ],
 
     'ios_device_release_compile_only': [
@@ -2476,10 +2476,6 @@
   # This is a dict mapping a given 'mixin' name to a dict of settings that
   # mb should use. See //tools/mb/docs/user_guide.md for more information.
   'mixins': {
-    'additional_target_cpus_x86': {
-      'gn_args': 'additional_target_cpus=[\"x86\"]'
-    },
-
     'afl': { 'gn_args': 'use_afl=true' },
 
     'amd64-generic': {
@@ -2837,6 +2833,10 @@
 
     'ios_cpu_x64': {
       'gn_args': 'target_cpu="x64"',
+    },
+
+    'ios_cpu_x64_x86': {
+      'gn_args': 'target_cpu="x64" additional_target_cpus=["x86"]',
     },
 
     'ios_cpu_arm64': {
