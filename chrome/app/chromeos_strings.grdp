@@ -1097,24 +1097,6 @@
   <message name="IDS_DISABLED_ADD_USER_TOOLTIP_ENTERPRISE" desc="Tooltip over disabled Add user button">
     The administrator of this device has disabled new users from being added
   </message>
-  <message name="IDS_DISCOVER_WELCOME_TITLE" desc="A title of the dialog that starts initial device setup process.">
-    Welcome to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>!
-  </message>
-  <message name="IDS_DISCOVER_WELCOME_SUBTITLE" desc="A subtitle title of the dialog that starts initial device setup process, explaining the benefits of going through this process.">
-    Set up your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> just as you want it and discover all the amazing capabilities at your fingertips.
-  </message>
-  <message name="IDS_DISCOVER_REDEEM_YOUR_OFFERS" desc="A label on the button that leads to the new web page where happy owner of the new device can redeem exclusive Google offers.">
-    Redeem your offers
-  </message>
-  <message name="IDS_DISCOVER_SYNC_MY_FILES" desc="A label on the button that leads to the new web page where owner of the new device can sync their data with other devices.">
-    Sync my files
-  </message>
-  <message name="IDS_DISCOVER_SET_WALLPAPER" desc="A label on the button that leads to the new web page where owner of the new device can set their desktop wallpaper.">
-    Set Wallpaper
-  </message>
-  <message name="IDS_DISCOVER_GET_HELP" desc="A label on the button that opens Help App.">
-    Get Help
-  </message>
   <message name="IDS_DISCOVER_PIN_SETUP_TITLE1" desc="A title of the dialog that starts 'PIN-unlock' setup process, and asks user to type their pin.">
     Choose your PIN
   </message>
@@ -4573,9 +4555,6 @@
   </message>
   <message name="IDS_INTERNAL_APP_CONTINUOUS_READING" desc="The default title of Chrome browser to allow users to seamlessly continue reading a web page when they switch from phones or tablets to Chromebook.">
     Continue reading in Chrome
-  </message>
-  <message name="IDS_INTERNAL_APP_DISCOVER" desc="Name for the Discover app in the app list.">
-    Discover
   </message>
 
   <!-- Launcher Settings shortcuts -->

@@ -108,12 +108,6 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps() {
   // to logs and should not be renamed.
   // If new names are added, update tool/metrics/histograms/histograms.xml:
   // "SystemWebAppName"
-  if (SystemWebAppManager::IsAppEnabled(SystemAppType::DISCOVER)) {
-    infos.emplace(
-        SystemAppType::DISCOVER,
-        SystemAppInfo("Discover", GURL(chrome::kChromeUIDiscoverURL)));
-  }
-
   if (SystemWebAppManager::IsAppEnabled(SystemAppType::CAMERA)) {
     infos.emplace(SystemAppType::CAMERA,
                   SystemAppInfo("Camera", GURL("chrome://camera-app"),
@@ -328,8 +322,6 @@ bool SystemWebAppManager::IsAppEnabled(SystemAppType type) {
   switch (type) {
     case SystemAppType::SETTINGS:
       return true;
-    case SystemAppType::DISCOVER:
-      return base::FeatureList::IsEnabled(chromeos::features::kDiscoverApp);
     case SystemAppType::CAMERA:
       return base::FeatureList::IsEnabled(
           chromeos::features::kCameraSystemWebApp);

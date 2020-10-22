@@ -216,7 +216,6 @@ ChromeLauncherController::ChromeLauncherController(Profile* profile,
 
   if (chrome::SettingsWindowManager::UseDeprecatedSettingsWindow(profile)) {
     settings_window_observer_ = std::make_unique<SettingsWindowObserver>();
-    discover_window_observer_ = std::make_unique<DiscoverWindowObserver>();
   }
 
   if (!profile) {

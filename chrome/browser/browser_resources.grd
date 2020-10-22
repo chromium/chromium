@@ -29,9 +29,6 @@
         <structure name="IDR_OOBE_HTML" file="resources\chromeos\login\oobe.html" flattenhtml="true" type="chrome_html" variables="OOBE=oobe" expand_variables="true" />
         <structure name="IDR_OOBE_JS" file="resources\chromeos\login\oobe.js" flattenhtml="true" type="chrome_html" />
         <structure name="IDR_KEYBOARD_UTILS_JS" file="resources\chromeos\keyboard\keyboard_utils.js" flattenhtml="true" type="chrome_html" />
-        <structure name="IDR_CHROMEOS_DISCOVER_APP_HTML" file="resources\chromeos\login\discover\discover_app.html" flattenhtml="true" type="chrome_html" />
-        <structure name="IDR_CHROMEOS_DISCOVER_APP_JS" file="resources\chromeos\login\discover\discover_app.js" flattenhtml="true" type="chrome_html" />
-        <structure name="IDR_CHROMEOS_DISCOVER_MANIFEST" file="resources\chromeos\login\discover\manifest.json" flattenhtml="true" type="chrome_html" />
         <structure name="IDR_CUSTOM_ELEMENTS_OOBE_HTML" file="resources\chromeos\login\structure\components_common.html" flattenhtml="true" type="chrome_html" variables="OOBE=oobe" expand_variables="true" />
         <structure name="IDR_CUSTOM_ELEMENTS_OOBE_JS" file="resources\chromeos\login\structure\components_common.js" flattenhtml="true" type="chrome_html" variables="OOBE=oobe" expand_variables="true" />
         <structure name="IDR_CUSTOM_ELEMENTS_LOGIN_HTML" file="resources\chromeos\login\structure\components_common.html" flattenhtml="true" type="chrome_html" variables="OOBE=login" expand_variables="true" />

@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/chromeos/login/discover/discover_window_manager.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -127,10 +126,6 @@ void BuiltInChromeOsApps::Launch(const std::string& app_id,
                                  int64_t display_id) {
   if (app_id == ash::kInternalAppIdKeyboardShortcutViewer) {
     ash::ToggleKeyboardShortcutViewer();
-  } else if (app_id == ash::kInternalAppIdDiscover) {
-    base::RecordAction(base::UserMetricsAction("ShowDiscover"));
-    chromeos::DiscoverWindowManager::GetInstance()
-        ->ShowChromeDiscoverPageForProfile(profile_);
   } else if (app_id == ash::kReleaseNotesAppId) {
     base::RecordAction(
         base::UserMetricsAction("ReleaseNotes.SuggestionChipLaunched"));

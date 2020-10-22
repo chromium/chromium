@@ -2268,9 +2268,6 @@ extern const char kMultiDisplayOverviewAndSplitViewDescription[];
 extern const char kEnableCrOSActionRecorderName[];
 extern const char kEnableCrOSActionRecorderDescription[];
 
-extern const char kEnableDiscoverAppName[];
-extern const char kEnableDiscoverAppDescription[];
-
 extern const char kEnableEncryptionMigrationName[];
 extern const char kEnableEncryptionMigrationDescription[];
 

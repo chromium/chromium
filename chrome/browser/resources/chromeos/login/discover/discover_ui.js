@@ -45,8 +45,6 @@ function initializeDiscoverAPI() {
 }
 
 {
-  const DISCOVER_WELCOME_MODULE = 'discoverWelcome';
-
   Polymer({
     is: 'discover-ui',
 
@@ -66,7 +64,6 @@ function initializeDiscoverAPI() {
     updateLocalizedContent() {
       this.i18nUpdateLocale();
       this.propagateUpdateLocalizedContent('.card');
-      this.propagateUpdateLocalizedContent('#discoverWelcome');
       this.propagateUpdateLocalizedContent('.module');
     },
 
@@ -80,17 +77,9 @@ function initializeDiscoverAPI() {
       let modules = Polymer.dom(this.root).querySelectorAll('.module');
       for (let i = 0; i < modules.length; ++i) {
         let module = modules[i];
-        let handlerBack = this.showModule_.bind(
-            this,
-            (i > 0 ? modules[i - 1].getAttribute('module') :
-                     'discoverWelcome'));
-        let handlerContinue;
-        if (i < modules.length - 1) {
-          handlerContinue = this.showModule_.bind(
-              this, modules[i + 1].getAttribute('module'));
-        } else {
-          handlerContinue = this.end_.bind(this);
-        }
+        let handlerBack =
+            this.showModule_.bind(this, module.getAttribute('module'));
+        let handlerContinue = this.end_.bind(this);
         module.addEventListener('module-back', handlerBack);
         module.addEventListener('module-continue', handlerContinue);
       }
@@ -101,14 +90,8 @@ function initializeDiscoverAPI() {
      * @override
      */
     onBeforeShow() {
-      this.propagateOnBeforeShow('#discoverWelcome');
       this.propagateOnBeforeShow('.module');
-
-      if (this.firstRun) {
-        this.showModule_('pinSetup');
-      } else {
-        this.showModule_(DISCOVER_WELCOME_MODULE);
-      }
+      this.showModule_('pinSetup');
     },
 
     /*
@@ -116,7 +99,6 @@ function initializeDiscoverAPI() {
      * @private
      */
     hideAll_() {
-      this.$.discoverWelcome.hidden = true;
       let modules = Polymer.dom(this.root).querySelectorAll('.module');
       for (let module of modules)
         module.hidden = true;
@@ -128,13 +110,8 @@ function initializeDiscoverAPI() {
      * @private
      */
     showModule_(moduleId) {
-      let module;
-      if (moduleId === DISCOVER_WELCOME_MODULE) {
-        module = this.$.discoverWelcome;
-      } else {
-        module = Polymer.dom(this.root).querySelector(
-            '.module[module="' + moduleId + '"]');
-      }
+      let module = Polymer.dom(this.root).querySelector(
+          '.module[module="' + moduleId + '"]');
       if (module) {
         this.hideAll_();
         cr.ui.login.invokePolymerMethod(module, 'onBeforeShow');

@@ -8,12 +8,7 @@
 
 #include "base/check_op.h"
 #include "chrome/browser/ui/webui/chromeos/login/discover/discover_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/discover/modules/discover_module_launch_help_app.h"
 #include "chrome/browser/ui/webui/chromeos/login/discover/modules/discover_module_pin_setup.h"
-#include "chrome/browser/ui/webui/chromeos/login/discover/modules/discover_module_redeem_offers.h"
-#include "chrome/browser/ui/webui/chromeos/login/discover/modules/discover_module_set_wallpaper.h"
-#include "chrome/browser/ui/webui/chromeos/login/discover/modules/discover_module_sync_files.h"
-#include "chrome/browser/ui/webui/chromeos/login/discover/modules/discover_module_welcome.h"
 
 namespace chromeos {
 namespace {
@@ -49,18 +44,8 @@ bool DiscoverManager::IsCompleted() const {
 }
 
 void DiscoverManager::CreateModules() {
-  modules_[DiscoverModuleLaunchHelpApp::kModuleName] =
-      std::make_unique<DiscoverModuleLaunchHelpApp>();
-  modules_[DiscoverModuleRedeemOffers::kModuleName] =
-      std::make_unique<DiscoverModuleRedeemOffers>();
-  modules_[DiscoverModuleSyncFiles::kModuleName] =
-      std::make_unique<DiscoverModuleSyncFiles>();
-  modules_[DiscoverModuleWelcome::kModuleName] =
-      std::make_unique<DiscoverModuleWelcome>();
   modules_[DiscoverModulePinSetup::kModuleName] =
       std::make_unique<DiscoverModulePinSetup>();
-  modules_[DiscoverModuleSetWallpaper::kModuleName] =
-      std::make_unique<DiscoverModuleSetWallpaper>();
 }
 
 std::vector<std::unique_ptr<DiscoverHandler>>

@@ -3920,10 +3920,6 @@ const char kEnableCrOSActionRecorderDescription[] =
     "visiting will be logged locally into an encrypted file. Should not be "
     "enabled. Be aware that hash option only provides a thin layer of privacy.";
 
-const char kEnableDiscoverAppName[] = "Enable Discover App";
-const char kEnableDiscoverAppDescription[] =
-    "Enable Discover App icon in launcher.";
-
 const char kEnableEncryptionMigrationName[] =
     "Enable encryption migration of user data";
 const char kEnableEncryptionMigrationDescription[] =

@@ -43,7 +43,6 @@ class OobeUI : public ui::MojoWebUIController {
   // List of known types of OobeUI. Type added as path in chrome://oobe url, for
   // example chrome://oobe/user-adding.
   static const char kAppLaunchSplashDisplay[];
-  static const char kDiscoverDisplay[];
   static const char kGaiaSigninDisplay[];
   static const char kLockDisplay[];
   static const char kLoginDisplay[];

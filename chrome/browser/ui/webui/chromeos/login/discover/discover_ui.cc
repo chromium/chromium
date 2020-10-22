@@ -7,7 +7,6 @@
 #include "base/check_op.h"
 #include "chrome/browser/ui/webui/chromeos/login/discover/discover_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/discover/discover_manager.h"
-#include "chrome/browser/ui/webui/chromeos/login/discover/discover_window_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 

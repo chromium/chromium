@@ -21,7 +21,7 @@ enum class BuiltInAppName {
   kSettings = 1,
   kContinueReading = 2,
   kCameraDeprecated = 3,
-  kDiscover = 4,
+  // kDiscover = 4, obsolete
   kPluginVm = 5,
   kReleaseNotes = 6,
   kMaxValue = kReleaseNotes,

@@ -122,7 +122,6 @@ namespace chromeos {
 namespace {
 
 const char* kKnownDisplayTypes[] = {OobeUI::kAppLaunchSplashDisplay,
-                                    OobeUI::kDiscoverDisplay,
                                     OobeUI::kGaiaSigninDisplay,
                                     OobeUI::kLoginDisplay,
                                     OobeUI::kOobeDisplay,
@@ -138,7 +137,6 @@ constexpr char kArcSupervisionIconPath[] = "supervision_icon.png";
 constexpr char kCustomElementsHTMLPath[] = "custom_elements.html";
 constexpr char kCustomElementsJSPath[] = "custom_elements.js";
 constexpr char kDebuggerJSPath[] = "debug.js";
-constexpr char kDiscoverJSPath[] = "discover_app.js";
 constexpr char kKeyboardUtilsJSPath[] = "keyboard_utils.js";
 constexpr char kLoginJSPath[] = "login.js";
 constexpr char kOobeJSPath[] = "oobe.js";
@@ -285,15 +283,6 @@ void AddOobeDisplayTypeDefaultResources(content::WebUIDataSource* source) {
   source->AddResourcePath(kCustomElementsJSPath, IDR_CUSTOM_ELEMENTS_OOBE_JS);
 }
 
-// Default and non-shared resource definition for kDiscoverDisplay display type.
-// chrome://oobe/discover
-void AddDiscoverDisplayTypeDefaultResources(content::WebUIDataSource* source) {
-  source->SetDefaultResource(IDR_CHROMEOS_DISCOVER_APP_HTML);
-  source->AddResourcePath(kDiscoverJSPath, IDR_CHROMEOS_DISCOVER_APP_JS);
-  source->AddResourcePath("manifest.json", IDR_CHROMEOS_DISCOVER_MANIFEST);
-  source->AddResourcePath("logo.png", IDR_DISCOVER_APP_192);
-}
-
 // Default and non-shared resource definition for kLoginDisplay display type.
 // chrome://oobe/login
 void AddLoginDisplayTypeDefaultResources(content::WebUIDataSource* source) {
@@ -321,8 +310,6 @@ content::WebUIDataSource* CreateOobeUIDataSource(
     AddOobeDisplayTypeDefaultResources(source);
   } else if (display_type == OobeUI::kLockDisplay) {
     NOTREACHED();
-  } else if (display_type == OobeUI::kDiscoverDisplay) {
-    AddDiscoverDisplayTypeDefaultResources(source);
   } else {
     AddLoginDisplayTypeDefaultResources(source);
   }
@@ -368,7 +355,6 @@ std::string GetDisplayType(const GURL& url) {
 
 // static
 const char OobeUI::kAppLaunchSplashDisplay[] = "app-launch-splash";
-const char OobeUI::kDiscoverDisplay[] = "discover";
 const char OobeUI::kGaiaSigninDisplay[] = "gaia-signin";
 const char OobeUI::kLockDisplay[] = "lock";
 const char OobeUI::kLoginDisplay[] = "login";
@@ -584,8 +570,7 @@ OobeUI::OobeUI(content::WebUI* web_ui, const GURL& url)
 
   AddWebUIHandler(std::move(core_handler));
 
-  if (display_type_ != OobeUI::kDiscoverDisplay)
-    ConfigureOobeDisplay();
+  ConfigureOobeDisplay();
 
   AddScreenHandler(
       std::make_unique<DiscoverScreenHandler>(js_calls_container_.get()));

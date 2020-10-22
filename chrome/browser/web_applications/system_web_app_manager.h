@@ -47,7 +47,6 @@ class AppRegistryController;
 // retrieve the App ID from the underlying Web App system.
 enum class SystemAppType {
   SETTINGS,
-  DISCOVER,
   CAMERA,
   TERMINAL,
   MEDIA,

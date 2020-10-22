@@ -5092,12 +5092,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     "SharingDeviceExpiration")},
 
 #if defined(OS_CHROMEOS)
-    {"discover-app", flag_descriptions::kEnableDiscoverAppName,
-     flag_descriptions::kEnableDiscoverAppDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kDiscoverApp)},
-#endif  // defined(OS_CHROMEOS)
-
-#if defined(OS_CHROMEOS)
     {"ash-enable-pip-rounded-corners",
      flag_descriptions::kAshEnablePipRoundedCornersName,
      flag_descriptions::kAshEnablePipRoundedCornersDescription, kOsCrOS,

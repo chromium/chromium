@@ -18,7 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/app_icon_loader_delegate.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
-#include "chrome/browser/ui/ash/launcher/discover_window_observer.h"
 #include "chrome/browser/ui/ash/launcher/launcher_app_updater.h"
 #include "chrome/browser/ui/ash/launcher/settings_window_observer.h"
 #include "components/account_id/account_id.h"
@@ -417,12 +416,6 @@ class ChromeLauncherController
   // default.
   // An observer that manages the shelf title and icon for settings windows.
   std::unique_ptr<SettingsWindowObserver> settings_window_observer_;
-
-  // TODO(crbug.com/836128): Remove this once SystemWebApps are enabled by
-  // default.
-  // An observer that manages the shelf title and icon for Chrome OS Discover
-  // windows.
-  std::unique_ptr<DiscoverWindowObserver> discover_window_observer_;
 
   // Used to load the images for app items.
   std::map<Profile*, std::vector<std::unique_ptr<AppIconLoader>>>

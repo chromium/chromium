@@ -88,18 +88,6 @@ const std::vector<InternalApp>& GetInternalAppListImpl(bool get_all,
          /*searchable_string_resource_id=*/0});
   }
 
-  const bool add_discover_app =
-      get_all || !chromeos::ProfileHelper::IsEphemeralUserProfile(profile);
-  if (base::FeatureList::IsEnabled(chromeos::features::kDiscoverApp) &&
-      add_discover_app) {
-    internal_app_list->push_back(
-        {ash::kInternalAppIdDiscover, IDS_INTERNAL_APP_DISCOVER,
-         IDR_DISCOVER_APP_192,
-         /*recommendable=*/false,
-         /*searchable=*/true,
-         /*show_in_launcher=*/true, apps::BuiltInAppName::kDiscover,
-         /*searchable_string_resource_id=*/IDS_INTERNAL_APP_DISCOVER});
-  }
   if (chrome::SettingsWindowManager::UseDeprecatedSettingsWindow(profile)) {
     internal_app_list->push_back(
         {ash::kInternalAppIdSettings, IDS_INTERNAL_APP_SETTINGS,
