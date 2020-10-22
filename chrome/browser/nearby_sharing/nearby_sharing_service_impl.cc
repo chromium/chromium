@@ -901,34 +901,7 @@ void NearbySharingServiceImpl::OnEndpointLost(const std::string& endpoint_id) {
     return;
   }
 
-  // Remove the share target with this endpoint id.
-  auto it = outgoing_share_target_map_.find(endpoint_id);
-  if (it == outgoing_share_target_map_.end()) {
-    NS_LOG(VERBOSE) << __func__
-                    << ": Ignoring lost endpoint because we don't have an "
-                       "associated ShareTarget";
-    return;
-  }
-
-  ShareTarget share_target = std::move(it->second);
-  outgoing_share_target_map_.erase(it);
-
-  auto info_it = outgoing_share_target_info_map_.find(share_target.id);
-  if (info_it != outgoing_share_target_info_map_.end()) {
-    file_handler_.ReleaseFilePayloads(info_it->second.ExtractFilePayloads());
-    outgoing_share_target_info_map_.erase(info_it);
-  }
-
-  for (ShareTargetDiscoveredCallback& discovery_callback :
-       foreground_send_discovery_callbacks_) {
-    discovery_callback.OnShareTargetLost(share_target);
-  }
-  for (ShareTargetDiscoveredCallback& discovery_callback :
-       background_send_discovery_callbacks_) {
-    discovery_callback.OnShareTargetLost(share_target);
-  }
-
-  NS_LOG(VERBOSE) << __func__ << ": Reported onShareTargetLost";
+  RemoveOutgoingShareTargetWithEndpointId(endpoint_id);
 }
 
 void NearbySharingServiceImpl::OnLockStateChanged(bool locked) {
@@ -1609,6 +1582,36 @@ void NearbySharingServiceImpl::OnRotateBackgroundAdvertisementTimerFired() {
     StopAdvertising();
     InvalidateSurfaceState();
   }
+}
+
+void NearbySharingServiceImpl::RemoveOutgoingShareTargetWithEndpointId(
+    const std::string& endpoint_id) {
+  auto it = outgoing_share_target_map_.find(endpoint_id);
+  if (it == outgoing_share_target_map_.end())
+    return;
+
+  NS_LOG(VERBOSE) << __func__ << ": Removing (endpoint_id=" << it->first
+                  << ", share_target.id=" << it->second.id
+                  << ") from outgoing share target map";
+  ShareTarget share_target = std::move(it->second);
+  outgoing_share_target_map_.erase(it);
+
+  auto info_it = outgoing_share_target_info_map_.find(share_target.id);
+  if (info_it != outgoing_share_target_info_map_.end()) {
+    file_handler_.ReleaseFilePayloads(info_it->second.ExtractFilePayloads());
+    outgoing_share_target_info_map_.erase(info_it);
+  }
+
+  for (ShareTargetDiscoveredCallback& discovery_callback :
+       foreground_send_discovery_callbacks_) {
+    discovery_callback.OnShareTargetLost(share_target);
+  }
+  for (ShareTargetDiscoveredCallback& discovery_callback :
+       background_send_discovery_callbacks_) {
+    discovery_callback.OnShareTargetLost(share_target);
+  }
+
+  NS_LOG(VERBOSE) << __func__ << ": Reported OnShareTargetLost";
 }
 
 void NearbySharingServiceImpl::OnTransferComplete() {
@@ -3189,7 +3192,18 @@ ShareTargetInfo& NearbySharingServiceImpl::GetOrCreateShareTargetInfo(
     info.set_endpoint_id(endpoint_id);
     return info;
   } else {
-    outgoing_share_target_map_.emplace(endpoint_id, share_target);
+    // We need to explicitly remove any previous share target for |endpoint_id|
+    // if one exists, notifying observers that a share target is lost.
+    const auto it = outgoing_share_target_map_.find(endpoint_id);
+    if (it != outgoing_share_target_map_.end() &&
+        it->second.id != share_target.id) {
+      RemoveOutgoingShareTargetWithEndpointId(endpoint_id);
+    }
+
+    NS_LOG(VERBOSE) << __func__ << ": Adding (endpoint_id=" << endpoint_id
+                    << ", share_target_id=" << share_target.id
+                    << ") to outgoing share target map";
+    outgoing_share_target_map_.insert_or_assign(endpoint_id, share_target);
     auto& info = outgoing_share_target_info_map_[share_target.id];
     info.set_endpoint_id(endpoint_id);
     return info;
@@ -3251,11 +3265,13 @@ NearbySharingServiceImpl::GetBluetoothMacAddress(
 }
 
 void NearbySharingServiceImpl::ClearOutgoingShareTargetInfoMap() {
-  for (auto& entry : outgoing_share_target_info_map_)
-    file_handler_.ReleaseFilePayloads(entry.second.ExtractFilePayloads());
-
-  outgoing_share_target_info_map_.clear();
-  outgoing_share_target_map_.clear();
+  NS_LOG(VERBOSE) << __func__ << ": Clearing outgoing share target map.";
+  while (!outgoing_share_target_map_.empty()) {
+    RemoveOutgoingShareTargetWithEndpointId(
+        /*endpoint_id=*/outgoing_share_target_map_.begin()->first);
+  }
+  DCHECK(outgoing_share_target_map_.empty());
+  DCHECK(outgoing_share_target_info_map_.empty());
 }
 
 void NearbySharingServiceImpl::SetAttachmentPayloadId(

@@ -187,6 +187,7 @@ class NearbySharingServiceImpl
   StatusCodes StopScanning();
   void ScheduleRotateBackgroundAdvertisementTimer();
   void OnRotateBackgroundAdvertisementTimerFired();
+  void RemoveOutgoingShareTargetWithEndpointId(const std::string& endpoint_id);
 
   void OnTransferComplete();
   void OnTransferStarted(bool is_incoming);

@@ -1313,6 +1313,11 @@ TEST_F(NearbySharingServiceImplTest,
       service_->RegisterSendSurface(&transfer_callback2, &discovery_callback2,
                                     SendSurfaceState::kForeground));
   run_loop2.Run();
+
+  // Shut down the service while the discovery callbacks are still in scope.
+  // OnShareTargetLost() will be invoked during shutdown.
+  service_->Shutdown();
+  service_.reset();
 }
 
 TEST_F(NearbySharingServiceImplTest, RegisterSendSurfaceEmptyCertificate) {
@@ -1370,6 +1375,11 @@ TEST_F(NearbySharingServiceImplTest, RegisterSendSurfaceEmptyCertificate) {
       service_->RegisterSendSurface(&transfer_callback2, &discovery_callback2,
                                     SendSurfaceState::kForeground));
   run_loop2.Run();
+
+  // Shut down the service while the discovery callbacks are still in scope.
+  // OnShareTargetLost() will be invoked during shutdown.
+  service_->Shutdown();
+  service_.reset();
 }
 
 TEST_P(NearbySharingServiceImplValidSendTest,
