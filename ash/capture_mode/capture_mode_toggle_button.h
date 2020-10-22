@@ -7,7 +7,9 @@
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/view_with_ink_drop.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -21,14 +23,15 @@ namespace ash {
 class ASH_EXPORT CaptureModeToggleButton
     : public ViewWithInkDrop<views::ToggleImageButton> {
  public:
-  CaptureModeToggleButton(views::ButtonListener* listener,
+  METADATA_HEADER(CaptureModeToggleButton);
+
+  CaptureModeToggleButton(views::Button::PressedCallback callback,
                           const gfx::VectorIcon& icon);
   CaptureModeToggleButton(const CaptureModeToggleButton&) = delete;
   CaptureModeToggleButton& operator=(const CaptureModeToggleButton&) = delete;
   ~CaptureModeToggleButton() override = default;
 
   // views::ToggleImageButton:
-  const char* GetClassName() const override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 

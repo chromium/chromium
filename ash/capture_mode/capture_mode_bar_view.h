@@ -7,7 +7,8 @@
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
-#include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/view.h"
 
 namespace views {
 class Separator;
@@ -38,9 +39,10 @@ class CaptureModeTypeView;
 //   |
 //   CaptureModeBarView
 //
-class ASH_EXPORT CaptureModeBarView : public views::View,
-                                      public views::ButtonListener {
+class ASH_EXPORT CaptureModeBarView : public views::View {
  public:
+  METADATA_HEADER(CaptureModeBarView);
+
   CaptureModeBarView();
   CaptureModeBarView(const CaptureModeBarView&) = delete;
   CaptureModeBarView& operator=(const CaptureModeBarView&) = delete;
@@ -60,13 +62,9 @@ class ASH_EXPORT CaptureModeBarView : public views::View,
   void OnCaptureSourceChanged(CaptureModeSource new_source);
   void OnCaptureTypeChanged(CaptureModeType new_type);
 
-  // views::View:
-  const char* GetClassName() const override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
  private:
+  void OnButtonPressed();
+
   // Owned by the views hierarchy.
   CaptureModeTypeView* capture_type_view_;
   views::Separator* separator_1_;

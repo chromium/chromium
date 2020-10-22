@@ -12,10 +12,12 @@
 #include "ash/capture_mode/capture_mode_source_view.h"
 #include "ash/capture_mode/capture_mode_type_view.h"
 #include "ash/style/ash_color_provider.h"
+#include "base/bind.h"
 #include "ui/aura/window.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/platform_style.h"
 
 namespace ash {
@@ -43,8 +45,9 @@ CaptureModeBarView::CaptureModeBarView()
       capture_source_view_(
           AddChildView(std::make_unique<CaptureModeSourceView>())),
       separator_2_(AddChildView(std::make_unique<views::Separator>())),
-      close_button_(
-          AddChildView(std::make_unique<CaptureModeCloseButton>(this))) {
+      close_button_(AddChildView(std::make_unique<CaptureModeCloseButton>(
+          base::BindRepeating(&CaptureModeBarView::OnButtonPressed,
+                              base::Unretained(this))))) {
   SetPaintToLayer();
   auto* color_provider = AshColorProvider::Get();
   SkColor background_color = color_provider->GetBaseLayerColor(
@@ -90,14 +93,11 @@ void CaptureModeBarView::OnCaptureTypeChanged(CaptureModeType new_type) {
   capture_type_view_->OnCaptureTypeChanged(new_type);
 }
 
-const char* CaptureModeBarView::GetClassName() const {
-  return "CaptureModeBarView";
-}
-
-void CaptureModeBarView::ButtonPressed(views::Button* sender,
-                                       const ui::Event& event) {
-  DCHECK_EQ(sender, close_button_);
+void CaptureModeBarView::OnButtonPressed() {
   CaptureModeController::Get()->Stop();
 }
+
+BEGIN_METADATA(CaptureModeBarView, views::View)
+END_METADATA
 
 }  // namespace ash

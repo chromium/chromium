@@ -9,6 +9,7 @@
 #include "ash/capture_mode/view_with_ink_drop.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace ash {
 
@@ -16,13 +17,12 @@ namespace ash {
 class ASH_EXPORT CaptureModeCloseButton
     : public ViewWithInkDrop<views::ImageButton> {
  public:
-  explicit CaptureModeCloseButton(views::ButtonListener* listener);
+  METADATA_HEADER(CaptureModeCloseButton);
+
+  explicit CaptureModeCloseButton(views::Button::PressedCallback callback);
   CaptureModeCloseButton(const CaptureModeCloseButton&) = delete;
   CaptureModeCloseButton& operator=(const CaptureModeCloseButton&) = delete;
   ~CaptureModeCloseButton() override = default;
-
-  // views::ImageButton:
-  const char* GetClassName() const override;
 };
 
 }  // namespace ash

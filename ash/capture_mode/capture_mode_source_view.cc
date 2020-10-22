@@ -9,21 +9,28 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_toggle_button.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "base/bind.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
 CaptureModeSourceView::CaptureModeSourceView()
     : fullscreen_toggle_button_(
           AddChildView(std::make_unique<CaptureModeToggleButton>(
-              this,
+              base::BindRepeating(&CaptureModeSourceView::OnFullscreenToggle,
+                                  base::Unretained(this)),
               kCaptureModeFullscreenIcon))),
-      region_toggle_button_(AddChildView(
-          std::make_unique<CaptureModeToggleButton>(this,
-                                                    kCaptureModeRegionIcon))),
-      window_toggle_button_(AddChildView(
-          std::make_unique<CaptureModeToggleButton>(this,
-                                                    kCaptureModeWindowIcon))) {
+      region_toggle_button_(
+          AddChildView(std::make_unique<CaptureModeToggleButton>(
+              base::BindRepeating(&CaptureModeSourceView::OnRegionToggle,
+                                  base::Unretained(this)),
+              kCaptureModeRegionIcon))),
+      window_toggle_button_(
+          AddChildView(std::make_unique<CaptureModeToggleButton>(
+              base::BindRepeating(&CaptureModeSourceView::OnWindowToggle,
+                                  base::Unretained(this)),
+              kCaptureModeWindowIcon))) {
   auto* box_layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
       capture_mode::kBetweenChildSpacing));
@@ -42,21 +49,19 @@ void CaptureModeSourceView::OnCaptureSourceChanged(
   window_toggle_button_->SetToggled(new_source == CaptureModeSource::kWindow);
 }
 
-const char* CaptureModeSourceView::GetClassName() const {
-  return "CaptureModeSourceView";
+void CaptureModeSourceView::OnFullscreenToggle() {
+  CaptureModeController::Get()->SetSource(CaptureModeSource::kFullscreen);
 }
 
-void CaptureModeSourceView::ButtonPressed(views::Button* sender,
-                                          const ui::Event& event) {
-  auto* controller = CaptureModeController::Get();
-  if (sender == fullscreen_toggle_button_) {
-    controller->SetSource(CaptureModeSource::kFullscreen);
-  } else if (sender == region_toggle_button_) {
-    controller->SetSource(CaptureModeSource::kRegion);
-  } else {
-    DCHECK_EQ(sender, window_toggle_button_);
-    controller->SetSource(CaptureModeSource::kWindow);
-  }
+void CaptureModeSourceView::OnRegionToggle() {
+  CaptureModeController::Get()->SetSource(CaptureModeSource::kRegion);
 }
+
+void CaptureModeSourceView::OnWindowToggle() {
+  CaptureModeController::Get()->SetSource(CaptureModeSource::kWindow);
+}
+
+BEGIN_METADATA(CaptureModeSourceView, views::View)
+END_METADATA
 
 }  // namespace ash

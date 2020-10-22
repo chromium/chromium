@@ -10,8 +10,10 @@
 #include "ash/capture_mode/capture_mode_toggle_button.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
+#include "base/bind.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -26,12 +28,16 @@ constexpr int kButtonSpacing = 2;
 }  // namespace
 
 CaptureModeTypeView::CaptureModeTypeView()
-    : image_toggle_button_(AddChildView(
-          std::make_unique<CaptureModeToggleButton>(this,
-                                                    kCaptureModeImageIcon))),
-      video_toggle_button_(AddChildView(
-          std::make_unique<CaptureModeToggleButton>(this,
-                                                    kCaptureModeVideoIcon))) {
+    : image_toggle_button_(
+          AddChildView(std::make_unique<CaptureModeToggleButton>(
+              base::BindRepeating(&CaptureModeTypeView::OnImageToggle,
+                                  base::Unretained(this)),
+              kCaptureModeImageIcon))),
+      video_toggle_button_(
+          AddChildView(std::make_unique<CaptureModeToggleButton>(
+              base::BindRepeating(&CaptureModeTypeView::OnVideoToggle,
+                                  base::Unretained(this)),
+              kCaptureModeVideoIcon))) {
   auto* color_provider = AshColorProvider::Get();
   const SkColor bg_color = color_provider->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
@@ -55,19 +61,15 @@ void CaptureModeTypeView::OnCaptureTypeChanged(CaptureModeType new_type) {
             video_toggle_button_->GetToggled());
 }
 
-const char* CaptureModeTypeView::GetClassName() const {
-  return "CaptureModeTypeView";
+void CaptureModeTypeView::OnImageToggle() {
+  CaptureModeController::Get()->SetType(CaptureModeType::kImage);
 }
 
-void CaptureModeTypeView::ButtonPressed(views::Button* sender,
-                                        const ui::Event& event) {
-  auto* controller = CaptureModeController::Get();
-  if (sender == image_toggle_button_) {
-    controller->SetType(CaptureModeType::kImage);
-  } else {
-    DCHECK_EQ(sender, video_toggle_button_);
-    controller->SetType(CaptureModeType::kVideo);
-  }
+void CaptureModeTypeView::OnVideoToggle() {
+  CaptureModeController::Get()->SetType(CaptureModeType::kVideo);
 }
+
+BEGIN_METADATA(CaptureModeTypeView, views::View)
+END_METADATA
 
 }  // namespace ash

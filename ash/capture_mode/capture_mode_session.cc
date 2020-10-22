@@ -243,7 +243,6 @@ class CaptureModeSession::ScopedCursorSetter {
 CaptureModeSession::CaptureModeSession(CaptureModeController* controller)
     : controller_(controller),
       current_root_(GetPreferredRootWindow()),
-      capture_mode_bar_view_(new CaptureModeBarView()),
       magnifier_glass_(kMagnifierParams) {
   Shell::Get()->AddPreTargetHandler(this);
 
@@ -257,8 +256,8 @@ CaptureModeSession::CaptureModeSession(CaptureModeController* controller)
   capture_mode_bar_widget_.Init(
       CreateWidgetParams(parent, CaptureModeBarView::GetBounds(current_root_),
                          "CaptureModeBarWidget"));
-  capture_mode_bar_widget_.SetContentsView(
-      base::WrapUnique(capture_mode_bar_view_));
+  capture_mode_bar_view_ = capture_mode_bar_widget_.SetContentsView(
+      std::make_unique<CaptureModeBarView>());
   capture_mode_bar_widget_.Show();
 
   UpdateCaptureLabelWidget();

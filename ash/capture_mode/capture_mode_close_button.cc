@@ -9,11 +9,13 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
-CaptureModeCloseButton::CaptureModeCloseButton(views::ButtonListener* listener)
-    : ViewWithInkDrop(listener) {
+CaptureModeCloseButton::CaptureModeCloseButton(
+    views::Button::PressedCallback callback)
+    : ViewWithInkDrop(callback) {
   SetPreferredSize(capture_mode::kButtonSize);
   SetBorder(views::CreateEmptyBorder(capture_mode::kButtonPadding));
   auto* color_provider = AshColorProvider::Get();
@@ -39,8 +41,7 @@ CaptureModeCloseButton::CaptureModeCloseButton(views::ButtonListener* listener)
                                              capture_mode::kButtonPadding);
 }
 
-const char* CaptureModeCloseButton::GetClassName() const {
-  return "CaptureModeCloseButton";
-}
+BEGIN_METADATA(CaptureModeCloseButton, ViewWithInkDrop<views::ImageButton>)
+END_METADATA
 
 }  // namespace ash

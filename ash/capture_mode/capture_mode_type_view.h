@@ -7,7 +7,8 @@
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
-#include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -15,9 +16,10 @@ class CaptureModeToggleButton;
 
 // A view that is part of the CaptureBarView, from which the user can toggle
 // between the two available capture types (image, and video).
-class ASH_EXPORT CaptureModeTypeView : public views::View,
-                                       public views::ButtonListener {
+class ASH_EXPORT CaptureModeTypeView : public views::View {
  public:
+  METADATA_HEADER(CaptureModeTypeView);
+
   CaptureModeTypeView();
   CaptureModeTypeView(const CaptureModeTypeView&) = delete;
   CaptureModeTypeView& operator=(const CaptureModeTypeView&) = delete;
@@ -33,13 +35,10 @@ class ASH_EXPORT CaptureModeTypeView : public views::View,
   // Called when the capture type changes.
   void OnCaptureTypeChanged(CaptureModeType new_type);
 
-  // views::View:
-  const char* GetClassName() const override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
  private:
+  void OnImageToggle();
+  void OnVideoToggle();
+
   // Owned by the views hierarchy.
   CaptureModeToggleButton* image_toggle_button_;
   CaptureModeToggleButton* video_toggle_button_;

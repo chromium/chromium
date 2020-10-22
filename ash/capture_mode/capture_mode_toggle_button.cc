@@ -10,13 +10,14 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
 CaptureModeToggleButton::CaptureModeToggleButton(
-    views::ButtonListener* listener,
+    views::Button::PressedCallback callback,
     const gfx::VectorIcon& icon)
-    : ViewWithInkDrop(listener) {
+    : ViewWithInkDrop(callback) {
   SetPreferredSize(capture_mode::kButtonSize);
   SetBorder(views::CreateEmptyBorder(capture_mode::kButtonPadding));
   SetImageHorizontalAlignment(ALIGN_CENTER);
@@ -40,10 +41,6 @@ CaptureModeToggleButton::CaptureModeToggleButton(
   SetIcon(icon);
   toggled_background_color_ = color_provider->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kControlBackgroundColorActive);
-}
-
-const char* CaptureModeToggleButton::GetClassName() const {
-  return "CaptureModeToggleButton";
 }
 
 void CaptureModeToggleButton::OnPaintBackground(gfx::Canvas* canvas) {
@@ -78,5 +75,9 @@ void CaptureModeToggleButton::SetIcon(const gfx::VectorIcon& icon) {
   const auto toggled_icon = gfx::CreateVectorIcon(icon, toggled_color);
   SetToggledImage(views::Button::STATE_NORMAL, &toggled_icon);
 }
+
+BEGIN_METADATA(CaptureModeToggleButton,
+               ViewWithInkDrop<views::ToggleImageButton>)
+END_METADATA
 
 }  // namespace ash
