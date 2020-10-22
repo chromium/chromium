@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_DISCOVER_SCREEN_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_DISCOVER_SCREEN_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_PIN_SETUP_SCREEN_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_PIN_SETUP_SCREEN_HANDLER_H_
 
 #include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
@@ -11,18 +11,18 @@
 
 namespace chromeos {
 
-class DiscoverScreen;
+class PinSetupScreen;
 
-// Interface for dependency injection between DiscoverScreen and its
+// Interface for dependency injection between PinSetupScreen and its
 // WebUI representation.
-class DiscoverScreenView {
+class PinSetupScreenView {
  public:
   constexpr static StaticOobeScreenId kScreenId{"discover"};
 
-  virtual ~DiscoverScreenView() = default;
+  virtual ~PinSetupScreenView() = default;
 
   // Sets screen this view belongs to.
-  virtual void Bind(DiscoverScreen* screen) = 0;
+  virtual void Bind(PinSetupScreen* screen) = 0;
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
@@ -31,14 +31,14 @@ class DiscoverScreenView {
   virtual void Hide() = 0;
 };
 
-// The sole implementation of the DiscoverScreenView, using WebUI.
-class DiscoverScreenHandler : public BaseScreenHandler,
-                              public DiscoverScreenView {
+// The sole implementation of the PinSetupScreenView, using WebUI.
+class PinSetupScreenHandler : public BaseScreenHandler,
+                              public PinSetupScreenView {
  public:
-  using TView = DiscoverScreenView;
+  using TView = PinSetupScreenView;
 
-  explicit DiscoverScreenHandler(JSCallsContainer* js_calls_container);
-  ~DiscoverScreenHandler() override;
+  explicit PinSetupScreenHandler(JSCallsContainer* js_calls_container);
+  ~PinSetupScreenHandler() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
@@ -46,20 +46,20 @@ class DiscoverScreenHandler : public BaseScreenHandler,
   void GetAdditionalParameters(base::DictionaryValue* dict) override;
   void RegisterMessages() override;
 
-  // DiscoverScreenView:
-  void Bind(DiscoverScreen* screen) override;
+  // PinSetupScreenView:
+  void Bind(PinSetupScreen* screen) override;
   void Hide() override;
   void Initialize() override;
   void Show() override;
 
  private:
-  DiscoverScreen* screen_ = nullptr;
+  PinSetupScreen* screen_ = nullptr;
 
   DiscoverUI discover_ui_;
 
-  DISALLOW_COPY_AND_ASSIGN(DiscoverScreenHandler);
+  DISALLOW_COPY_AND_ASSIGN(PinSetupScreenHandler);
 };
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_DISCOVER_SCREEN_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_PIN_SETUP_SCREEN_HANDLER_H_

@@ -26,7 +26,7 @@ login.createScreen('DiscoverScreen', 'discover', function() {
      */
     onBeforeShow(data) {
       $('discover-impl').addEventListener('discover-done', function() {
-        chrome.send('login.DiscoverScreen.userActed', ['finished']);
+        chrome.send('login.PinSetupScreen.userActed', ['finished']);
       });
     },
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/screens/discover_screen.h"
+#include "chrome/browser/chromeos/login/screens/pin_setup_screen.h"
 
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/bind.h"
@@ -18,18 +18,18 @@
 #include "chrome/browser/chromeos/login/test/user_policy_mixin.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
-#include "chrome/browser/ui/webui/chromeos/login/discover_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/pin_setup_screen_handler.h"
 #include "chromeos/login/auth/stub_authenticator_builder.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
 
 namespace chromeos {
 
-class DiscoverScreenTest
+class PinSetupScreenTest
     : public OobeBaseTest,
       public testing::WithParamInterface<user_manager::UserType> {
  public:
-  DiscoverScreenTest() {
+  PinSetupScreenTest() {
     if (GetParam() == user_manager::USER_TYPE_CHILD) {
       fake_gaia_ =
           std::make_unique<FakeGaiaMixin>(&mixin_host_, embedded_test_server());
@@ -39,15 +39,15 @@ class DiscoverScreenTest
           &mixin_host_, test_child_user_.account_id, policy_server_.get());
     }
   }
-  ~DiscoverScreenTest() override = default;
+  ~PinSetupScreenTest() override = default;
 
   void SetUpOnMainThread() override {
-    DiscoverScreen* screen = static_cast<DiscoverScreen*>(
+    PinSetupScreen* screen = static_cast<PinSetupScreen*>(
         WizardController::default_controller()->screen_manager()->GetScreen(
-            DiscoverScreenView::kScreenId));
+            PinSetupScreenView::kScreenId));
     original_callback_ = screen->get_exit_callback_for_testing();
     screen->set_exit_callback_for_testing(base::BindRepeating(
-        &DiscoverScreenTest::HandleScreenExit, base::Unretained(this)));
+        &PinSetupScreenTest::HandleScreenExit, base::Unretained(this)));
 
     OobeBaseTest::SetUpOnMainThread();
   }
@@ -78,17 +78,17 @@ class DiscoverScreenTest
     }
   }
 
-  void ShowDiscoverScreen() {
+  void ShowPinSetupScreen() {
     LogIn();
     OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
     if (!screen_exited_) {
       LoginDisplayHost::default_host()->StartWizard(
-          DiscoverScreenView::kScreenId);
+          PinSetupScreenView::kScreenId);
     }
   }
 
   void WaitForScreenShown() {
-    OobeScreenWaiter(DiscoverScreenView::kScreenId).Wait();
+    OobeScreenWaiter(PinSetupScreenView::kScreenId).Wait();
   }
 
   void WaitForScreenExit() {
@@ -99,11 +99,11 @@ class DiscoverScreenTest
     run_loop.Run();
   }
 
-  base::Optional<DiscoverScreen::Result> screen_result_;
+  base::Optional<PinSetupScreen::Result> screen_result_;
   base::HistogramTester histogram_tester_;
 
  private:
-  void HandleScreenExit(DiscoverScreen::Result result) {
+  void HandleScreenExit(PinSetupScreen::Result result) {
     screen_exited_ = true;
     screen_result_ = result;
     original_callback_.Run(result);
@@ -111,7 +111,7 @@ class DiscoverScreenTest
       std::move(screen_exit_callback_).Run();
   }
 
-  DiscoverScreen::ScreenExitCallback original_callback_;
+  PinSetupScreen::ScreenExitCallback original_callback_;
   bool screen_exited_ = false;
   base::RepeatingClosure screen_exit_callback_;
 
@@ -127,30 +127,30 @@ class DiscoverScreenTest
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         DiscoverScreenTest,
+                         PinSetupScreenTest,
                          ::testing::Values(user_manager::USER_TYPE_REGULAR,
                                            user_manager::USER_TYPE_CHILD));
 
-IN_PROC_BROWSER_TEST_P(DiscoverScreenTest, Skipped) {
-  ShowDiscoverScreen();
+IN_PROC_BROWSER_TEST_P(PinSetupScreenTest, Skipped) {
+  ShowPinSetupScreen();
 
   WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), DiscoverScreen::Result::NOT_APPLICABLE);
+  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::NOT_APPLICABLE);
   histogram_tester_.ExpectTotalCount(
       "OOBE.StepCompletionTimeByExitReason.Discover.Next", 0);
   histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Discover", 0);
 }
 
-IN_PROC_BROWSER_TEST_P(DiscoverScreenTest, BasicFlow) {
+IN_PROC_BROWSER_TEST_P(PinSetupScreenTest, BasicFlow) {
   ash::ShellTestApi().SetTabletModeEnabledForTest(true);
-  ShowDiscoverScreen();
+  ShowPinSetupScreen();
   WaitForScreenShown();
 
   test::OobeJS().TapOnPath(
       {"discover-impl", "pin-setup-impl", "setupSkipButton"});
 
   WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), DiscoverScreen::Result::NEXT);
+  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::NEXT);
   histogram_tester_.ExpectTotalCount(
       "OOBE.StepCompletionTimeByExitReason.Discover.Next", 1);
   histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Discover", 1);

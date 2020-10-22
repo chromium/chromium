@@ -57,7 +57,6 @@
 #include "chrome/browser/chromeos/login/screens/demo_preferences_screen.h"
 #include "chrome/browser/chromeos/login/screens/demo_setup_screen.h"
 #include "chrome/browser/chromeos/login/screens/device_disabled_screen.h"
-#include "chrome/browser/chromeos/login/screens/discover_screen.h"
 #include "chrome/browser/chromeos/login/screens/edu_coexistence_login_screen.h"
 #include "chrome/browser/chromeos/login/screens/enable_adb_sideloading_screen.h"
 #include "chrome/browser/chromeos/login/screens/enable_debugging_screen.h"
@@ -77,6 +76,7 @@
 #include "chrome/browser/chromeos/login/screens/network_error.h"
 #include "chrome/browser/chromeos/login/screens/network_screen.h"
 #include "chrome/browser/chromeos/login/screens/packaged_license_screen.h"
+#include "chrome/browser/chromeos/login/screens/pin_setup_screen.h"
 #include "chrome/browser/chromeos/login/screens/recommend_apps_screen.h"
 #include "chrome/browser/chromeos/login/screens/reset_screen.h"
 #include "chrome/browser/chromeos/login/screens/signin_fatal_error_screen.h"
@@ -118,7 +118,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/demo_preferences_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/demo_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/device_disabled_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/discover_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/enable_debugging_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/encryption_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/enrollment_screen_handler.h"
@@ -137,6 +136,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/packaged_license_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/pin_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/recommend_apps_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
@@ -214,7 +214,7 @@ const chromeos::StaticOobeScreenId kResumableScreens[] = {
     chromeos::AutoEnrollmentCheckScreenView::kScreenId,
     chromeos::RecommendAppsScreenView::kScreenId,
     chromeos::AppDownloadingScreenView::kScreenId,
-    chromeos::DiscoverScreenView::kScreenId,
+    chromeos::PinSetupScreenView::kScreenId,
     chromeos::MarketingOptInScreenView::kScreenId,
     chromeos::MultiDeviceSetupScreenView::kScreenId,
 };
@@ -620,9 +620,9 @@ std::vector<std::unique_ptr<BaseScreen>> WizardController::CreateScreens() {
       oobe_ui->GetView<MultiDeviceSetupScreenHandler>(),
       base::BindRepeating(&WizardController::OnMultiDeviceSetupScreenExit,
                           weak_factory_.GetWeakPtr())));
-  append(std::make_unique<DiscoverScreen>(
-      oobe_ui->GetView<DiscoverScreenHandler>(),
-      base::BindRepeating(&WizardController::OnDiscoverScreenExit,
+  append(std::make_unique<PinSetupScreen>(
+      oobe_ui->GetView<PinSetupScreenHandler>(),
+      base::BindRepeating(&WizardController::OnPinSetupScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<FingerprintSetupScreen>(
       oobe_ui->GetView<FingerprintSetupScreenHandler>(),
@@ -863,8 +863,8 @@ void WizardController::ShowGestureNavigationScreen() {
   SetCurrentScreen(GetScreen(GestureNavigationScreenView::kScreenId));
 }
 
-void WizardController::ShowDiscoverScreen() {
-  SetCurrentScreen(GetScreen(DiscoverScreenView::kScreenId));
+void WizardController::ShowPinSetupScreen() {
+  SetCurrentScreen(GetScreen(PinSetupScreenView::kScreenId));
 }
 
 void WizardController::ShowPackagedLicenseScreen() {
@@ -1330,12 +1330,12 @@ void WizardController::OnFingerprintSetupScreenExit(
   OnScreenExit(FingerprintSetupScreenView::kScreenId,
                FingerprintSetupScreen::GetResultString(result));
 
-  ShowDiscoverScreen();
+  ShowPinSetupScreen();
 }
 
-void WizardController::OnDiscoverScreenExit(DiscoverScreen::Result result) {
-  OnScreenExit(DiscoverScreenView::kScreenId,
-               DiscoverScreen::GetResultString(result));
+void WizardController::OnPinSetupScreenExit(PinSetupScreen::Result result) {
+  OnScreenExit(PinSetupScreenView::kScreenId,
+               PinSetupScreen::GetResultString(result));
 
   ShowArcTermsOfServiceScreen();
 }
@@ -1773,8 +1773,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowMultiDeviceSetupScreen();
   } else if (screen_id == GestureNavigationScreenView::kScreenId) {
     ShowGestureNavigationScreen();
-  } else if (screen_id == DiscoverScreenView::kScreenId) {
-    ShowDiscoverScreen();
+  } else if (screen_id == PinSetupScreenView::kScreenId) {
+    ShowPinSetupScreen();
   } else if (screen_id == FingerprintSetupScreenView::kScreenId) {
     ShowFingerprintSetupScreen();
   } else if (screen_id == MarketingOptInScreenView::kScreenId) {
@@ -1914,7 +1914,7 @@ void WizardController::SkipPostLoginScreensForTesting() {
       current_screen_id == SyncConsentScreenView::kScreenId ||
       current_screen_id == FingerprintSetupScreenView::kScreenId ||
       current_screen_id == ArcTermsOfServiceScreenView::kScreenId ||
-      current_screen_id == DiscoverScreenView::kScreenId ||
+      current_screen_id == PinSetupScreenView::kScreenId ||
       current_screen_id == MarketingOptInScreenView::kScreenId) {
     default_controller()->OnOobeFlowFinished();
   } else {

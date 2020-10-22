@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_SCREENS_DISCOVER_SCREEN_H_
-#define CHROME_BROWSER_CHROMEOS_LOGIN_SCREENS_DISCOVER_SCREEN_H_
+#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_SCREENS_PIN_SETUP_SCREEN_H_
+#define CHROME_BROWSER_CHROMEOS_LOGIN_SCREENS_PIN_SETUP_SCREEN_H_
 
 #include <string>
 
@@ -13,9 +13,9 @@
 
 namespace chromeos {
 
-class DiscoverScreenView;
+class PinSetupScreenView;
 
-class DiscoverScreen : public BaseScreen {
+class PinSetupScreen : public BaseScreen {
  public:
   enum class Result { NEXT, NOT_APPLICABLE };
 
@@ -23,9 +23,9 @@ class DiscoverScreen : public BaseScreen {
   static bool ShouldSkip();
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  DiscoverScreen(DiscoverScreenView* view,
+  PinSetupScreen(PinSetupScreenView* view,
                  const ScreenExitCallback& exit_callback);
-  ~DiscoverScreen() override;
+  ~PinSetupScreen() override;
 
   void set_exit_callback_for_testing(const ScreenExitCallback& exit_callback) {
     exit_callback_ = exit_callback;
@@ -43,12 +43,12 @@ class DiscoverScreen : public BaseScreen {
   void OnUserAction(const std::string& action_id) override;
 
  private:
-  DiscoverScreenView* const view_;
+  PinSetupScreenView* const view_;
   ScreenExitCallback exit_callback_;
 
-  DISALLOW_COPY_AND_ASSIGN(DiscoverScreen);
+  DISALLOW_COPY_AND_ASSIGN(PinSetupScreen);
 };
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_SCREENS_DISCOVER_SCREEN_H_
+#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_SCREENS_PIN_SETUP_SCREEN_H_

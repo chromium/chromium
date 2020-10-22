@@ -198,7 +198,7 @@ void RunFingerprintScreenChecks() {
   EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
 }
 
-void RunDiscoverScreenChecks() {
+void RunPinSetupScreenChecks() {
   test::OobeJS().ExpectVisible("discover");
   test::OobeJS().ExpectVisible("discover-impl");
   test::OobeJS().ExpectVisiblePath({"discover-impl", "pin-setup-impl"});
@@ -746,8 +746,8 @@ void OobeInteractiveUITest::PerformSessionSignInSteps(
   }
 
   if (test_setup()->is_tablet()) {
-    test::WaitForDiscoverScreen();
-    RunDiscoverScreenChecks();
+    test::WaitForPinSetupScreen();
+    RunPinSetupScreenChecks();
 
     EXPECT_TRUE(get_auth_token_observer.get_auth_token_password().has_value());
     EXPECT_EQ(get_auth_token_observer.get_auth_token_password().value(),
@@ -1083,8 +1083,8 @@ IN_PROC_BROWSER_TEST_P(EphemeralUserOobeTest, DISABLED_RegularEphemeralUser) {
   }
 
   if (test_setup()->is_tablet()) {
-    test::WaitForDiscoverScreen();
-    RunDiscoverScreenChecks();
+    test::WaitForPinSetupScreen();
+    RunPinSetupScreenChecks();
 
     EXPECT_TRUE(get_auth_token_observer.get_auth_token_password().has_value());
     EXPECT_EQ("", get_auth_token_observer.get_auth_token_password().value());

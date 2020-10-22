@@ -13,12 +13,12 @@
 #include "chrome/browser/chromeos/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/chromeos/login/test/test_condition_waiter.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
-#include "chrome/browser/ui/webui/chromeos/login/discover_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/enrollment_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/eula_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/fingerprint_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/marketing_opt_in_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/pin_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/update_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
@@ -101,8 +101,8 @@ void ExitFingerprintPinSetupScreen() {
   WaitForExit(FingerprintSetupScreenView::kScreenId);
 }
 
-void WaitForDiscoverScreen() {
-  WaitFor(DiscoverScreenView::kScreenId);
+void WaitForPinSetupScreen() {
+  WaitFor(PinSetupScreenView::kScreenId);
 }
 
 void ExitDiscoverPinSetupScreen() {
@@ -112,7 +112,7 @@ void ExitDiscoverPinSetupScreen() {
   test::OobeJS().ExecuteAsync(
       "$('discover-impl').root.querySelector('discover-pin-setup-module')."
       "$.setupSkipButton.click()");
-  WaitForExit(DiscoverScreenView::kScreenId);
+  WaitForExit(PinSetupScreenView::kScreenId);
 }
 
 void SkipToEnrollmentOnRecovery() {

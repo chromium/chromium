@@ -20,7 +20,7 @@ void WaitForUpdateScreen();
 void ExitUpdateScreenNoUpdate();
 void WaitForFingerprintScreen();
 void ExitFingerprintPinSetupScreen();
-void WaitForDiscoverScreen();
+void WaitForPinSetupScreen();
 void ExitDiscoverPinSetupScreen();
 void SkipToEnrollmentOnRecovery();
 void WaitForEnrollmentScreen();

@@ -4,7 +4,7 @@
 -ActiveDirectoryJoinTest.*
 -ActiveDirectoryLoginAutocompleteTest.*
 -ActiveDirectoryLoginTest.*
--All/DiscoverScreenTest.*
+-All/PinSetupScreenTest.*
 -All/EphemeralUserOobeTest.*
 -All/GestureNavigationScreenTest.*
 -All/MergeSessionTest.*
