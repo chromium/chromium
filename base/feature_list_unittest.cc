@@ -311,7 +311,11 @@ TEST_F(FeatureListTest, IsFeatureOverriddenFromCommandLine) {
 
   // No features are overridden from the command line yet
   EXPECT_FALSE(feature_list->IsFeatureOverridden(kFeatureOnByDefaultName));
+  EXPECT_FALSE(feature_list->IsFeatureOverriddenFromCommandLine(
+      kFeatureOnByDefaultName));
   EXPECT_FALSE(feature_list->IsFeatureOverridden(kFeatureOffByDefaultName));
+  EXPECT_FALSE(feature_list->IsFeatureOverriddenFromCommandLine(
+      kFeatureOffByDefaultName));
   EXPECT_FALSE(feature_list->IsFeatureOverriddenFromCommandLine(
       kFeatureOnByDefaultName, FeatureList::OVERRIDE_DISABLE_FEATURE));
   EXPECT_FALSE(feature_list->IsFeatureOverriddenFromCommandLine(
@@ -326,6 +330,8 @@ TEST_F(FeatureListTest, IsFeatureOverriddenFromCommandLine) {
 
   // It should now be overridden for the enabled group.
   EXPECT_TRUE(feature_list->IsFeatureOverridden(kFeatureOffByDefaultName));
+  EXPECT_TRUE(feature_list->IsFeatureOverriddenFromCommandLine(
+      kFeatureOffByDefaultName));
   EXPECT_FALSE(feature_list->IsFeatureOverriddenFromCommandLine(
       kFeatureOffByDefaultName, FeatureList::OVERRIDE_DISABLE_FEATURE));
   EXPECT_TRUE(feature_list->IsFeatureOverriddenFromCommandLine(
@@ -337,6 +343,8 @@ TEST_F(FeatureListTest, IsFeatureOverriddenFromCommandLine) {
       kFeatureOffByDefaultName, FeatureList::OVERRIDE_ENABLE_FEATURE,
       FieldTrialList::CreateFieldTrial("Trial1", "A"));
   EXPECT_TRUE(feature_list->IsFeatureOverridden(kFeatureOffByDefaultName));
+  EXPECT_TRUE(feature_list->IsFeatureOverriddenFromCommandLine(
+      kFeatureOffByDefaultName));
   EXPECT_FALSE(feature_list->IsFeatureOverriddenFromCommandLine(
       kFeatureOffByDefaultName, FeatureList::OVERRIDE_DISABLE_FEATURE));
   EXPECT_TRUE(feature_list->IsFeatureOverriddenFromCommandLine(
@@ -348,6 +356,8 @@ TEST_F(FeatureListTest, IsFeatureOverriddenFromCommandLine) {
       kFeatureOnByDefaultName, FeatureList::OVERRIDE_DISABLE_FEATURE,
       FieldTrialList::CreateFieldTrial("Trial2", "A"));
   EXPECT_TRUE(feature_list->IsFeatureOverridden(kFeatureOnByDefaultName));
+  EXPECT_FALSE(feature_list->IsFeatureOverriddenFromCommandLine(
+      kFeatureOnByDefaultName));
   EXPECT_FALSE(feature_list->IsFeatureOverriddenFromCommandLine(
       kFeatureOnByDefaultName, FeatureList::OVERRIDE_DISABLE_FEATURE));
   EXPECT_FALSE(feature_list->IsFeatureOverriddenFromCommandLine(

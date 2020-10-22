@@ -262,11 +262,17 @@ bool FeatureList::IsFeatureOverridden(const std::string& feature_name) const {
 }
 
 bool FeatureList::IsFeatureOverriddenFromCommandLine(
+    const std::string& feature_name) const {
+  auto it = overrides_.find(feature_name);
+  return it != overrides_.end() && !it->second.overridden_by_field_trial;
+}
+
+bool FeatureList::IsFeatureOverriddenFromCommandLine(
     const std::string& feature_name,
     OverrideState state) const {
   auto it = overrides_.find(feature_name);
-  return it != overrides_.end() && it->second.overridden_state == state &&
-         !it->second.overridden_by_field_trial;
+  return it != overrides_.end() && !it->second.overridden_by_field_trial &&
+         it->second.overridden_state == state;
 }
 
 void FeatureList::AssociateReportingFieldTrial(

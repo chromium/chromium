@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
+#include "chrome/browser/ui/views/frame/webui_tab_strip_field_trial.h"
 #include "chrome/browser/ui/views/in_product_help/feature_promo_colors.h"
 #include "chrome/browser/ui/views/in_product_help/feature_promo_controller_views.h"
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
@@ -511,6 +512,11 @@ bool WebUITabStripContainerView::SupportsTouchableTabStrip(
 
 // static
 bool WebUITabStripContainerView::UseTouchableTabStrip(const Browser* browser) {
+  // This is called at Browser start to check which mode to use. It is a
+  // good place to check the feature state and set up a synthetic field
+  // trial.
+  WebUITabStripFieldTrial::RegisterFieldTrialIfNecessary();
+
   return browser->is_type_normal() &&
          base::FeatureList::IsEnabled(features::kWebUITabStrip) &&
          ui::TouchUiController::Get()->touch_ui();

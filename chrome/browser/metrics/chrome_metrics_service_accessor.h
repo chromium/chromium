@@ -121,6 +121,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class ChromeBrowserMainExtraPartsGpu;
   friend class Browser;
   friend class OptimizationGuideKeyedService;
+  friend class WebUITabStripFieldTrial;
 
 #if defined(OS_CHROMEOS)
   friend class ChromeCameraAppUIDelegate;

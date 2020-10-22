@@ -168,6 +168,11 @@ class BASE_EXPORT FeatureList {
   // |InitializeFromCommandLine()|. This includes features explicitly
   // disabled/enabled with --disable-features and --enable-features, as well as
   // any extra feature overrides that depend on command line switches.
+  bool IsFeatureOverriddenFromCommandLine(
+      const std::string& feature_name) const;
+
+  // Returns true if the state |feature_name| has been overridden by
+  // |InitializeFromCommandLine()| and the state matches |state|.
   bool IsFeatureOverriddenFromCommandLine(const std::string& feature_name,
                                           OverrideState state) const;
 

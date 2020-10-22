@@ -4510,6 +4510,8 @@ static_library("ui") {
     sources += [
       "views/frame/webui_tab_strip_container_view.cc",
       "views/frame/webui_tab_strip_container_view.h",
+      "views/frame/webui_tab_strip_field_trial.cc",
+      "views/frame/webui_tab_strip_field_trial.h",
       "views/toolbar/webui_tab_counter_button.cc",
       "views/toolbar/webui_tab_counter_button.h",
       "webui/tab_strip/chrome_content_browser_client_tab_strip_part.cc",
