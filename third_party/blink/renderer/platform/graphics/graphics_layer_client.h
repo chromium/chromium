@@ -66,13 +66,7 @@ class PLATFORM_EXPORT GraphicsLayerClient {
                              GraphicsLayerPaintingPhase,
                              const IntRect& interest_rect) const = 0;
 
-  // Returns true if the GraphicsLayer is under a frame that should not render
-  // (see LocalFrameView::ShouldThrottleRendering()).
-  virtual bool ShouldThrottleRendering() const { return false; }
-
-  // Content under a LayoutSVGHiddenContainer is an auxiliary resource for
-  // painting and hit testing.
-  virtual bool IsUnderSVGHiddenContainer() const { return false; }
+  virtual bool ShouldSkipPaintingSubtree() const { return false; }
 
   virtual bool IsTrackingRasterInvalidations() const { return false; }
 
@@ -83,13 +77,6 @@ class PLATFORM_EXPORT GraphicsLayerClient {
   virtual const ScrollableArea* GetScrollableAreaForTesting(
       const GraphicsLayer*) const {
     return nullptr;
-  }
-
-  // Returns true if this client is prevented from painting by its own
-  // display-lock (in case of target = kSelf) or by any of its ancestors (in
-  // case of target = kSelf or kChildren).
-  virtual bool PaintBlockedByDisplayLockIncludingAncestors() const {
-    return false;
   }
 
 #if DCHECK_IS_ON()

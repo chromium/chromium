@@ -1998,12 +1998,11 @@ bool CompositedLayerMapping::IsScrollableAreaLayerWhichNeedsRepaint(
   return false;
 }
 
-bool CompositedLayerMapping::ShouldThrottleRendering() const {
-  return GetLayoutObject().GetFrame()->ShouldThrottleRendering();
-}
-
-bool CompositedLayerMapping::IsUnderSVGHiddenContainer() const {
-  return owning_layer_.IsUnderSVGHiddenContainer();
+bool CompositedLayerMapping::ShouldSkipPaintingSubtree() const {
+  return GetLayoutObject().GetFrame()->ShouldThrottleRendering() ||
+         owning_layer_.IsUnderSVGHiddenContainer() ||
+         DisplayLockUtilities::NearestLockedExclusiveAncestor(
+             GetLayoutObject());
 }
 
 bool CompositedLayerMapping::IsTrackingRasterInvalidations() const {
@@ -2014,12 +2013,6 @@ void CompositedLayerMapping::GraphicsLayersDidChange() {
   LocalFrameView* frame_view = GetLayoutObject().GetFrameView();
   DCHECK(frame_view);
   frame_view->SetPaintArtifactCompositorNeedsUpdate();
-}
-
-bool CompositedLayerMapping::PaintBlockedByDisplayLockIncludingAncestors()
-    const {
-  return DisplayLockUtilities::NearestLockedExclusiveAncestor(
-      GetLayoutObject());
 }
 
 #if DCHECK_IS_ON()

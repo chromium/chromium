@@ -175,11 +175,9 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
                      GraphicsContext&,
                      GraphicsLayerPaintingPhase,
                      const IntRect& interest_rect) const override;
-  bool ShouldThrottleRendering() const override;
-  bool IsUnderSVGHiddenContainer() const override;
+  bool ShouldSkipPaintingSubtree() const override;
   bool IsTrackingRasterInvalidations() const override;
   void GraphicsLayersDidChange() override;
-  bool PaintBlockedByDisplayLockIncludingAncestors() const override;
 
 #if DCHECK_IS_ON()
   void VerifyNotPainting() override;

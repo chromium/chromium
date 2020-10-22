@@ -1812,7 +1812,6 @@ static_library("test_support") {
     "testing/scoped_mocked_url.h",
     "testing/scoped_scheduler_overrider.cc",
     "testing/scoped_scheduler_overrider.h",
-    "testing/stub_graphics_layer_client.h",
     "testing/test_paint_artifact.cc",
     "testing/test_paint_artifact.h",
     "testing/testing_platform_support.cc",

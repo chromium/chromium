@@ -268,16 +268,32 @@ IntRect GraphicsLayer::InterestRect() {
   return previous_interest_rect_;
 }
 
+void GraphicsLayer::ClearPaintStateRecursively() {
+  ForAllGraphicsLayers(
+      *this,
+      [](GraphicsLayer& layer) -> bool {
+        layer.paint_controller_ = nullptr;
+        layer.raster_invalidator_ = nullptr;
+        return true;
+      },
+      [](GraphicsLayer&, const cc::Layer&) {});
+}
+
 bool GraphicsLayer::PaintRecursively(
     GraphicsContext& context,
     Vector<PreCompositedLayerInfo>& pre_composited_layers,
     PaintBenchmarkMode benchmark_mode) {
   bool repainted = false;
-  ForAllActiveGraphicsLayers(
+  ForAllGraphicsLayers(
       *this,
-      [&](GraphicsLayer& layer) {
+      [&](GraphicsLayer& layer) -> bool {
+        if (layer.Client().ShouldSkipPaintingSubtree()) {
+          layer.ClearPaintStateRecursively();
+          return false;
+        }
         layer.Paint(pre_composited_layers, benchmark_mode);
         repainted |= layer.repainted_;
+        return true;
       },
       [&](const GraphicsLayer& layer, cc::Layer& contents_layer) {
         PaintChunkSubsetRecorder subset_recorder(context.GetPaintController());
@@ -309,19 +325,15 @@ void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
                           const IntRect* interest_rect) {
   repainted_ = false;
 
-  DCHECK(!client_.ShouldThrottleRendering());
-  DCHECK(!client_.IsUnderSVGHiddenContainer());
+  DCHECK(!client_.ShouldSkipPaintingSubtree());
 
   if (!PaintsContentOrHitTest()) {
-    pre_composited_layers.push_back(
-        PreCompositedLayerInfo{PaintChunkSubset(), this});
+    if (IsHitTestable()) {
+      pre_composited_layers.push_back(
+          PreCompositedLayerInfo{PaintChunkSubset(), this});
+    }
     return;
   }
-
-  IntRect new_interest_rect =
-      interest_rect
-          ? *interest_rect
-          : client_.ComputeInterestRect(this, previous_interest_rect_);
 
 #if !DCHECK_IS_ON()
   // TODO(crbug.com/853096): Investigate why we can ever reach here without
@@ -334,6 +346,11 @@ void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
     return;
 #endif
   DCHECK(layer_state_) << "No layer state for GraphicsLayer: " << DebugName();
+
+  IntRect new_interest_rect =
+      interest_rect
+          ? *interest_rect
+          : client_.ComputeInterestRect(this, previous_interest_rect_);
 
   auto& paint_controller = GetPaintController();
   PaintController::ScopedBenchmarkMode scoped_benchmark_mode(paint_controller,

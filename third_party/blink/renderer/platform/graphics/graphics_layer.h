@@ -247,6 +247,7 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
   scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() final;
   bool FillsBoundsCompletely() const override { return false; }
 
+  void ClearPaintStateRecursively();
   void Paint(Vector<PreCompositedLayerInfo>&,
              PaintBenchmarkMode,
              const IntRect* interest_rect = nullptr);
@@ -325,8 +326,29 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
 };
 
 // Iterates all graphics layers that should be seen by the compositor in
-// pre-order. |GraphicsLayerType| matches |GraphicsLayer&| or
-// |const GraphicsLayer&|.
+// pre-order. |GraphicsLayerType&| matches |GraphicsLayer&| or
+// |const GraphicsLayer&|. |GraphicsLayerFunction| accepts a GraphicsLayerType
+// parameter, and returns a bool to indicate if the recursion should continue.
+template <typename GraphicsLayerType,
+          typename GraphicsLayerFunction,
+          typename ContentsLayerFunction>
+void ForAllGraphicsLayers(
+    GraphicsLayerType& layer,
+    const GraphicsLayerFunction& graphics_layer_function,
+    const ContentsLayerFunction& contents_layer_function) {
+  if (!graphics_layer_function(layer))
+    return;
+
+  if (auto* contents_layer = layer.ContentsLayer())
+    contents_layer_function(layer, *contents_layer);
+
+  for (auto* child : layer.Children()) {
+    ForAllGraphicsLayers(*child, graphics_layer_function,
+                         contents_layer_function);
+  }
+}
+
+// Unlike ForAllGraphicsLayers, here |GraphicsLayerFunction| should return void.
 template <typename GraphicsLayerType,
           typename GraphicsLayerFunction,
           typename ContentsLayerFunction>
@@ -334,26 +356,16 @@ void ForAllActiveGraphicsLayers(
     GraphicsLayerType& layer,
     const GraphicsLayerFunction& graphics_layer_function,
     const ContentsLayerFunction& contents_layer_function) {
-  if (layer.Client().ShouldThrottleRendering() ||
-      layer.Client().IsUnderSVGHiddenContainer()) {
-    return;
-  }
-
-  if (layer.Client().PaintBlockedByDisplayLockIncludingAncestors())
-    return;
-
-  DCHECK(layer.HasLayerState());
-
-  if (layer.PaintsContentOrHitTest() || layer.IsHitTestable())
-    graphics_layer_function(layer);
-
-  if (auto* contents_layer = layer.ContentsLayer())
-    contents_layer_function(layer, *contents_layer);
-
-  for (auto* child : layer.Children()) {
-    ForAllActiveGraphicsLayers(*child, graphics_layer_function,
-                               contents_layer_function);
-  }
+  ForAllGraphicsLayers(
+      layer,
+      [&graphics_layer_function](GraphicsLayerType& layer) -> bool {
+        if (layer.Client().ShouldSkipPaintingSubtree())
+          return false;
+        if (layer.PaintsContentOrHitTest() || layer.IsHitTestable())
+          graphics_layer_function(layer);
+        return true;
+      },
+      contents_layer_function);
 }
 
 template <typename GraphicsLayerType, typename Function>
