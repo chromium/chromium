@@ -11,6 +11,7 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -18,7 +19,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareHelper;
@@ -169,7 +169,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         mChromeProvidedSharingOptionsProvider = new ChromeProvidedSharingOptionsProvider(activity,
                 mTabProvider, mBottomSheetController, mBottomSheet, shareParams, chromeShareExtras,
                 mPrintTabCallback, mSettingsLauncher, mIsSyncEnabled, mShareStartTime, this);
-        mIsMultiWindow = MultiWindowUtils.getInstance().isInMultiWindowMode(activity);
+        mIsMultiWindow = ApiCompatibilityUtils.isInMultiWindowMode(activity);
 
         return mChromeProvidedSharingOptionsProvider.getPropertyModels(
                 contentTypes, mIsMultiWindow);
@@ -217,7 +217,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         if (mActivity == null) {
             return;
         }
-        boolean isMultiWindow = MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
+        boolean isMultiWindow = ApiCompatibilityUtils.isInMultiWindowMode(mActivity);
         // mContentTypes is null if Chrome features should not be shown.
         if (mIsMultiWindow == isMultiWindow || mContentTypes == null) {
             return;
