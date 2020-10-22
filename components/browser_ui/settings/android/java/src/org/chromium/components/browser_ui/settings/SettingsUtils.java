@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnScrollChangedListener;
 import android.widget.ImageView;
 
+import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.XmlRes;
@@ -68,10 +69,17 @@ public class SettingsUtils {
      * Creates a {@link Drawable} for the given resource id with the default icon color applied.
      */
     public static Drawable getTintedIcon(Context context, @DrawableRes int resId) {
+        return getTintedIcon(context, resId, R.color.default_icon_color);
+    }
+
+    /**
+     * Creates a {@link Drawable} for the given resource id with provided color id applied.
+     */
+    public static Drawable getTintedIcon(
+            Context context, @DrawableRes int resId, @ColorRes int colorId) {
         Drawable icon = AppCompatResources.getDrawable(context, resId);
         // DrawableCompat.setTint() doesn't work well on BitmapDrawables on older versions.
-        icon.setColorFilter(
-                ApiCompatibilityUtils.getColor(context.getResources(), R.color.default_icon_color),
+        icon.setColorFilter(ApiCompatibilityUtils.getColor(context.getResources(), colorId),
                 PorterDuff.Mode.SRC_IN);
         return icon;
     }

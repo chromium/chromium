@@ -11,6 +11,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -40,6 +41,9 @@ public class ChromeImageViewPreference extends Preference {
     // The image resource ID to use for the ImageView widget source.
     @DrawableRes
     private int mImageRes;
+    // The color resource ID for tinting of ImageView widget.
+    @ColorRes
+    private int mColorRes;
     // The string resource ID to use for the ImageView widget content description.
     @StringRes
     private int mContentDescriptionRes;
@@ -61,6 +65,7 @@ public class ChromeImageViewPreference extends Preference {
 
         setWidgetLayoutResource(R.layout.preference_chrome_image_view);
         setSingleLineTitle(false);
+        setImageColor(R.color.default_icon_color);
     }
 
     /**
@@ -79,8 +84,7 @@ public class ChromeImageViewPreference extends Preference {
         View view = holder.itemView;
 
         if (mImageRes != 0) {
-            Drawable buttonImg = SettingsUtils.getTintedIcon(getContext(), mImageRes);
-
+            Drawable buttonImg = SettingsUtils.getTintedIcon(getContext(), mImageRes, mColorRes);
             button.setImageDrawable(buttonImg);
             button.setBackgroundColor(Color.TRANSPARENT);
             button.setVisibility(View.VISIBLE);
@@ -111,6 +115,14 @@ public class ChromeImageViewPreference extends Preference {
         mContentDescriptionRes = contentDescriptionRes;
         mListener = listener;
         notifyChanged();
+    }
+
+    /**
+     * Sets the Color resource ID which will be used to set the color of the image.
+     * @param colorRes
+     */
+    public void setImageColor(@ColorRes int colorRes) {
+        mColorRes = colorRes;
     }
 
     /**

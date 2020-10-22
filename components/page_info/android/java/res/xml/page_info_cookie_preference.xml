@@ -16,11 +16,7 @@
         android:persistent="false"
         android:title="@string/page_info_cookies_block" />
 
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+    <org.chromium.components.browser_ui.settings.ChromeImageViewPreference
         android:key="cookie_in_use" />
-
-    <org.chromium.components.browser_ui.settings.ButtonPreference
-        android:key="clear_button"
-        android:title="@string/page_info_cookies_clear"/>
 
 </PreferenceScreen>

@@ -11,8 +11,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.Callback;
-import org.chromium.components.browser_ui.settings.ButtonPreference;
-import org.chromium.components.browser_ui.settings.ChromeBasePreference;
+import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.content_settings.CookieControlsStatus;
@@ -29,7 +28,7 @@ public class PageInfoCookiesPreference extends PreferenceFragmentCompat {
     private static final String CLEAR_BUTTON_PREFERENCE = "clear_button";
 
     private ChromeSwitchPreference mCookieSwitch;
-    private ChromeBasePreference mCookieInUse;
+    private ChromeImageViewPreference mCookieInUse;
     private Runnable mOnClearCallback;
 
     /**  Parameters to configure the cookie controls view. */
@@ -66,16 +65,17 @@ public class PageInfoCookiesPreference extends PreferenceFragmentCompat {
 
         mCookieInUse.setIcon(
                 SettingsUtils.getTintedIcon(getContext(), R.drawable.permission_cookie));
+        if (!params.disableCookieDeletion) {
+            mCookieInUse.setImageView(
+                    R.drawable.ic_delete_white_24dp, R.string.page_info_cookies_clear, null);
+            mCookieInUse.setImageColor(R.color.default_icon_color_blue);
+            mCookieInUse.setOnPreferenceClickListener(preference -> {
+                showClearCookiesConfirmation();
+                return true;
+            });
+        }
 
         mOnClearCallback = params.onClearCallback;
-        ButtonPreference clearButton = findPreference(CLEAR_BUTTON_PREFERENCE);
-        clearButton.setOnPreferenceClickListener(preference -> {
-            showClearCookiesConfirmation();
-            return true;
-        });
-        if (params.disableCookieDeletion) {
-            clearButton.setEnabled(false);
-        }
     }
 
     private void showClearCookiesConfirmation() {
