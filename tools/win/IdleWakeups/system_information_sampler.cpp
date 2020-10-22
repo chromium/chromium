@@ -97,8 +97,8 @@ struct SYSTEM_PROCESS_INFORMATION {
   ULONGLONG KernelTime;
   UNICODE_STRING ImageName;
   KPRIORITY BasePriority;
-  HANDLE ProcessId;
-  HANDLE ParentProcessId;
+  HANDLE ProcessId;        // Actually process ID, not a handle
+  HANDLE ParentProcessId;  // Actually parent process ID, not a handle
   ULONG HandleCount;
   ULONG Reserved2[2];
   // Padding here in 64-bit
@@ -215,6 +215,14 @@ SystemInformationSampler::SystemInformationSampler(
   lstrcpyn(target_process_name_, process_name,
            sizeof(target_process_name_) / sizeof(wchar_t));
 
+  // If |target_process_name_| is numeric, treat it as a process ID.
+  errno = 0;
+  wchar_t* end_ptr;
+  target_process_id_ = wcstoul(target_process_name_, &end_ptr, 10);
+  // Discard result if error occurred, or if negative or only partially numeric.
+  if (errno != 0 || target_process_id_ < 0 || *end_ptr != L'\0')
+    target_process_id_ = 0;
+
   QueryPerformanceFrequency(&perf_frequency_);
   QueryPerformanceCounter(&initial_counter_);
 }
@@ -294,7 +302,16 @@ std::unique_ptr<ProcessDataSnapshot> SystemInformationSampler::TakeSnapshot() {
         break;
       }
 
-      if (pi->ImageName.Buffer) {
+      if (target_process_id_ > 0) {
+        // If |pi| or its parent has the targeted process ID, add its data to
+        // the snapshot.
+        if (reinterpret_cast<DWORD>(pi->ProcessId) == target_process_id_ ||
+            reinterpret_cast<DWORD>(pi->ParentProcessId) ==
+                target_process_id_) {
+          snapshot->processes.insert(
+              std::make_pair(pi->ProcessId, GetProcessData(pi)));
+        }
+      } else if (pi->ImageName.Buffer) {
         // Validate that the image name is within the buffer boundary.
         // ImageName.Length seems to be in bytes rather than characters.
         size_t image_name_offset =
@@ -302,7 +319,7 @@ std::unique_ptr<ProcessDataSnapshot> SystemInformationSampler::TakeSnapshot() {
         if (image_name_offset + pi->ImageName.Length > data_buffer.size())
           break;
 
-        // If |pi| is the targeted process, add its data to the snapshot.
+        // If |pi| has the targeted process name, add its data to the snapshot.
         if (wcsncmp(target_process_name_filter(), pi->ImageName.Buffer,
                     lstrlen(target_process_name_filter())) == 0) {
           snapshot->processes.insert(

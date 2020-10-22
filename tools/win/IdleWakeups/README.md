@@ -16,8 +16,11 @@ IdleWakeups.exe can then be found in src/tools/win/IdleWakeups/x64/Debug/.
 
 `IdleWakeups.exe msedge` to match all Edge processes.
 
+`IdleWakeups.exe 12345` to match process ID 12345 and its child processes.
+
 The process matching the provided parameter is identified by case-sensitive
-string prefix, e.g., `some_process` and `some_process.exe` would both work.
+string prefix, e.g., `some_process` and `some_process.exe` would both work. If
+the parameter is numeric and a valid process ID, it is treated as a process ID.
 
 When the tool starts it begins gathering and aggregating CPU usage, private
 working set size, number of context switches / sec, and power usage for all

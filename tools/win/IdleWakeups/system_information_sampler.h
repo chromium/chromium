@@ -51,6 +51,10 @@ class SystemInformationSampler {
 
  private:
   wchar_t target_process_name_[256] = {};
+  // Process ID of target process. If nonzero, |target_process_name| is a
+  // process ID, so filter to this ID and its child processes.
+  DWORD target_process_id_ = 0;
+
   LARGE_INTEGER perf_frequency_;
   LARGE_INTEGER initial_counter_;
   size_t previous_buffer_size_ = 0;
