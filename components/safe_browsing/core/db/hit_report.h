@@ -22,6 +22,7 @@ enum class ThreatSource {
   REMOTE,                 // From RemoteSafeBrowsingDatabaseManager
   CLIENT_SIDE_DETECTION,  // From ClientSideDetectionHost
   PASSWORD_PROTECTION_SERVICE,  // From PasswordProtectionService
+  REAL_TIME_CHECK,              // From RealTimeUrlLookupService
 };
 
 // Data to report about the contents of a particular threat (malware, phishing,

@@ -16322,6 +16322,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="Interstitial for a resource classified as unsafe by the Safe
              Browsing database version 4 via either
              {Local,Remote}SafeBrowsingDatabaseManager."/>
+  <suffix name="from_real_time_check"
+      label="Interstitial for a resource classified as unsafe by the Safe
+             Browsing real time API."/>
   <affected-histogram name="interstitial.harmful.decision"/>
   <affected-histogram name="interstitial.harmful.decision.repeat_visit"/>
   <affected-histogram name="interstitial.harmful.interaction"/>

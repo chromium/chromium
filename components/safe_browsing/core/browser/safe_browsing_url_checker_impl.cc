@@ -170,7 +170,8 @@ void SafeBrowsingUrlCheckerImpl::CheckUrl(const GURL& url,
 security_interstitials::UnsafeResource
 SafeBrowsingUrlCheckerImpl::MakeUnsafeResource(const GURL& url,
                                                SBThreatType threat_type,
-                                               const ThreatMetadata& metadata) {
+                                               const ThreatMetadata& metadata,
+                                               bool is_from_real_time_check) {
   security_interstitials::UnsafeResource resource;
   resource.url = url;
   resource.original_url = urls_[0].url;
@@ -191,7 +192,9 @@ SafeBrowsingUrlCheckerImpl::MakeUnsafeResource(const GURL& url,
       base::CreateSingleThreadTaskRunner(CreateTaskTraits(ThreadID::IO));
   resource.web_contents_getter = web_contents_getter_;
   resource.web_state_getter = web_state_getter_;
-  resource.threat_source = database_manager_->GetThreatSource();
+  resource.threat_source = is_from_real_time_check
+                               ? ThreatSource::REAL_TIME_CHECK
+                               : database_manager_->GetThreatSource();
   return resource;
 }
 
@@ -199,12 +202,13 @@ void SafeBrowsingUrlCheckerImpl::OnCheckBrowseUrlResult(
     const GURL& url,
     SBThreatType threat_type,
     const ThreatMetadata& metadata) {
-  OnUrlResult(url, threat_type, metadata);
+  OnUrlResult(url, threat_type, metadata, /*is_from_real_time_check=*/false);
 }
 
 void SafeBrowsingUrlCheckerImpl::OnUrlResult(const GURL& url,
                                              SBThreatType threat_type,
-                                             const ThreatMetadata& metadata) {
+                                             const ThreatMetadata& metadata,
+                                             bool is_from_real_time_check) {
   DCHECK_EQ(STATE_CHECKING_URL, state_);
   DCHECK_LT(next_index_, urls_.size());
   DCHECK_EQ(urls_[next_index_].url, url);
@@ -225,7 +229,8 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResult(const GURL& url,
       // happens. Create an interaction observer and continue like there wasn't
       // a warning. The observer will create the interstitial when necessary.
       security_interstitials::UnsafeResource unsafe_resource =
-          MakeUnsafeResource(url, threat_type, metadata);
+          MakeUnsafeResource(url, threat_type, metadata,
+                             is_from_real_time_check);
       unsafe_resource.is_delayed_warning = true;
       url_checker_delegate_
           ->StartObservingInteractionsForDelayedBlockingPageHelper(
@@ -271,7 +276,7 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResult(const GURL& url,
   UMA_HISTOGRAM_ENUMERATION("SB2.ResourceTypes2.Unsafe", resource_type_);
 
   security_interstitials::UnsafeResource resource =
-      MakeUnsafeResource(url, threat_type, metadata);
+      MakeUnsafeResource(url, threat_type, metadata, is_from_real_time_check);
 
   state_ = STATE_DISPLAYING_BLOCKING_PAGE;
   url_checker_delegate_->StartDisplayingBlockingPageHelper(
@@ -290,7 +295,7 @@ void SafeBrowsingUrlCheckerImpl::OnTimeout() {
   weak_factory_.InvalidateWeakPtrs();
 
   OnUrlResult(urls_[next_index_].url, safe_browsing::SB_THREAT_TYPE_SAFE,
-              ThreatMetadata());
+              ThreatMetadata(), /*is_from_real_time_check=*/false);
 }
 
 void SafeBrowsingUrlCheckerImpl::CheckUrlImpl(const GURL& url,
@@ -567,7 +572,8 @@ void SafeBrowsingUrlCheckerImpl::PerformHashBasedCheck(const GURL& url) {
           url, url_checker_delegate_->GetThreatTypes(), this)) {
     // No match found in the local database. Safe to call |OnUrlResult| here
     // directly.
-    OnUrlResult(url, SB_THREAT_TYPE_SAFE, ThreatMetadata());
+    OnUrlResult(url, SB_THREAT_TYPE_SAFE, ThreatMetadata(),
+                /*is_from_real_time_check=*/false);
   }
 }
 
@@ -618,10 +624,10 @@ void SafeBrowsingUrlCheckerImpl::OnRTLookupResponse(
             response->threat_info(0).threat_type());
   }
   if (is_cached_response && sb_threat_type == SB_THREAT_TYPE_SAFE) {
-    // TODO(vakh): Add a UMA metric.
     PerformHashBasedCheck(url);
   } else {
-    OnUrlResult(url, sb_threat_type, ThreatMetadata());
+    OnUrlResult(url, sb_threat_type, ThreatMetadata(),
+                /*is_from_real_time_check=*/true);
   }
 }
 

@@ -186,6 +186,9 @@ GURL PingManager::SafeBrowsingHitUrl(
     case safe_browsing::ThreatSource::PASSWORD_PROTECTION_SERVICE:
       threat_source = "pps";
       break;
+    case safe_browsing::ThreatSource::REAL_TIME_CHECK:
+      threat_source = "rt";
+      break;
     case safe_browsing::ThreatSource::UNKNOWN:
       NOTREACHED();
   }

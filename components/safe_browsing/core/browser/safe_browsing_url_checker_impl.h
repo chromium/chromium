@@ -149,7 +149,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
 
   void OnUrlResult(const GURL& url,
                    SBThreatType threat_type,
-                   const ThreatMetadata& metadata);
+                   const ThreatMetadata& metadata,
+                   bool is_from_real_time_check);
 
   void CheckUrlImpl(const GURL& url,
                     const std::string& method,
@@ -211,7 +212,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   security_interstitials::UnsafeResource MakeUnsafeResource(
       const GURL& url,
       SBThreatType threat_type,
-      const ThreatMetadata& metadata);
+      const ThreatMetadata& metadata,
+      bool is_from_real_time_check);
 
   enum State {
     // Haven't started checking or checking is complete.

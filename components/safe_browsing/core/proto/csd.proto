@@ -1312,6 +1312,8 @@ message ClientSafeBrowsingReportRequest {
     ANDROID_SAFETYNET = 3;
     // Flywheel (data compression service).
     FLYWHEEL = 4;
+    // Safe Browsing real time API.
+    REAL_TIME = 5;
   }
 
   // The information propagated from the client about various environment
