@@ -234,7 +234,11 @@ HangWatcher::HangWatcher()
     : monitor_period_(kMonitoringPeriod),
       should_monitor_(WaitableEvent::ResetPolicy::AUTOMATIC),
       thread_(this, kThreadName),
-      tick_clock_(base::DefaultTickClock::GetInstance()) {
+      tick_clock_(base::DefaultTickClock::GetInstance()),
+      memory_pressure_listener_(
+          FROM_HERE,
+          base::BindRepeating(&HangWatcher::OnMemoryPressure,
+                              base::Unretained(this))) {
   // |thread_checker_| should not be bound to the constructing thread.
   DETACH_FROM_THREAD(hang_watcher_thread_checker_);
 
@@ -242,6 +246,48 @@ HangWatcher::HangWatcher()
 
   DCHECK(!g_instance);
   g_instance = this;
+}
+
+#if not defined(OS_NACL)
+debug::ScopedCrashKeyString
+HangWatcher::GetTimeSinceLastCriticalMemoryPressureCrashKey() {
+  DCHECK_CALLED_ON_VALID_THREAD(hang_watcher_thread_checker_);
+
+  // The crash key size is large enough to hold the biggest possible return
+  // value from base::TimeDelta::InSeconds().
+  constexpr debug::CrashKeySize kCrashKeyContentSize =
+      debug::CrashKeySize::Size32;
+  DCHECK_GE(static_cast<uint64_t>(kCrashKeyContentSize),
+            base::NumberToString(std::numeric_limits<int64_t>::max()).size());
+
+  static debug::CrashKeyString* crash_key = AllocateCrashKeyString(
+      "seconds-since-last-memory-pressure", kCrashKeyContentSize);
+
+  if (last_critical_memory_pressure_.is_null()) {
+    constexpr char kNoMemoryPressureMsg[] = "No critical memory pressure";
+    static_assert(
+        base::size(kNoMemoryPressureMsg) <=
+            static_cast<uint64_t>(kCrashKeyContentSize),
+        "The crash key is too small to hold \"No critical memory pressure\".");
+    return debug::ScopedCrashKeyString(crash_key, kNoMemoryPressureMsg);
+  } else {
+    base::TimeDelta time_since_last_critical_memory_pressure =
+        base::TimeTicks::Now() - last_critical_memory_pressure_;
+    return debug::ScopedCrashKeyString(
+        crash_key, base::NumberToString(
+                       time_since_last_critical_memory_pressure.InSeconds()));
+  }
+}
+#endif
+
+void HangWatcher::OnMemoryPressure(
+    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+  DCHECK_CALLED_ON_VALID_THREAD(hang_watcher_thread_checker_);
+
+  if (memory_pressure_level ==
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    last_critical_memory_pressure_ = base::TimeTicks::Now();
+  }
 }
 
 HangWatcher::~HangWatcher() {
@@ -505,12 +551,18 @@ void HangWatcher::CaptureHang(base::TimeTicks capture_time) {
   }
 
 #if not defined(OS_NACL)
-  std::string list_of_hung_thread_ids =
+  const std::string list_of_hung_thread_ids =
       watch_state_snapshot.PrepareHungThreadListCrashKey();
+
   static debug::CrashKeyString* crash_key = AllocateCrashKeyString(
       "list-of-hung-threads", debug::CrashKeySize::Size256);
-  debug::ScopedCrashKeyString list_of_hung_threads_crash_key_string(
+
+  const debug::ScopedCrashKeyString list_of_hung_threads_crash_key_string(
       crash_key, list_of_hung_thread_ids);
+
+  const debug::ScopedCrashKeyString
+      time_since_last_critical_memory_pressure_crash_key_string =
+          GetTimeSinceLastCriticalMemoryPressureCrashKey();
 #endif
 
   // To avoid capturing more than one hang that blames a subset of the same

@@ -62,12 +62,20 @@ BASE_EXPORT void ClearCrashKeyString(CrashKeyString* crash_key);
 class BASE_EXPORT ScopedCrashKeyString {
  public:
   ScopedCrashKeyString(CrashKeyString* crash_key, base::StringPiece value);
+  ScopedCrashKeyString(ScopedCrashKeyString&& other);
   ~ScopedCrashKeyString();
 
- private:
-  CrashKeyString* const crash_key_;
+  // Disallow copy and assign.
+  ScopedCrashKeyString(const ScopedCrashKeyString&) = delete;
+  ScopedCrashKeyString& operator=(const ScopedCrashKeyString&) = delete;
 
-  DISALLOW_COPY_AND_ASSIGN(ScopedCrashKeyString);
+  // Disallow move assign to keep the time at which the crash key is cleared
+  // easy to reason about. Assigning over an existing instance would
+  // automatically clear the key instead of at the destruction of the object.
+  ScopedCrashKeyString& operator=(ScopedCrashKeyString&&) = delete;
+
+ private:
+  CrashKeyString* crash_key_;
 };
 
 // Helper macros for putting a local variable crash key on the stack before

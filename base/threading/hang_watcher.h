@@ -17,6 +17,8 @@
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
+#include "base/debug/crash_logging.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
@@ -25,6 +27,7 @@
 #include "base/threading/thread_local.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 
 namespace base {
 class HangWatchScopeEnabled;
@@ -216,6 +219,17 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   // Use to assert that functions are called on the constructing thread.
   THREAD_CHECKER(constructing_thread_checker_);
 
+  // Invoked on memory pressure signal.
+  void OnMemoryPressure(
+      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+
+#if not defined(OS_NACL)
+  // Returns a ScopedCrashKeyString that sets the crash key with the time since
+  // last critical memory pressure signal.
+  debug::ScopedCrashKeyString GetTimeSinceLastCriticalMemoryPressureCrashKey()
+      WARN_UNUSED_RESULT;
+#endif
+
   // Invoke base::debug::DumpWithoutCrashing() insuring that the stack frame
   // right under it in the trace belongs to HangWatcher for easier attribution.
   NOINLINE static void RecordHang();
@@ -315,6 +329,13 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   std::atomic<bool> capture_in_progress_{false};
 
   const base::TickClock* tick_clock_;
+
+  // Registration to receive memory pressure signals.
+  base::MemoryPressureListener memory_pressure_listener_;
+
+  // The last time at which a critical memory pressure signal was received, or
+  // null if no signal was ever received.
+  base::TimeTicks last_critical_memory_pressure_;
 
   // The time after which all deadlines in |watch_states_| need to be for a hang
   // to be reported.
