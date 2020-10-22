@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <video src="../tulip2.webm" />
+  </body>
+
+  <script>
+    const video = document.querySelector('video');
+
+    function addPictureInPictureEventListeners() {
+      video.addEventListener('enterpictureinpicture', () => {
+        document.title = 'enterpictureinpicture';
+      });
+      video.addEventListener('leavepictureinpicture', () => {
+        document.title = 'leavepictureinpicture';
+      });
+    }
+
+    function play() {
+      video.play()
+          .then(_ => window.domAutomationController.send(true))
+          .catch(e => window.domAutomationController.send(false));
+    }
+
+    function enterFullscreen() {
+      video.requestFullscreen()
+          .then(_ => window.domAutomationController.send(true))
+          .catch(e => window.domAutomationController.send(false));
+    }
+  </script>
+</html>

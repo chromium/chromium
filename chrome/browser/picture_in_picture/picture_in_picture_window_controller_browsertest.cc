@@ -2423,60 +2423,6 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWindowControllerBrowserTest,
   EXPECT_FALSE(in_picture_in_picture);
 }
 
-// Show/hide fullscreen page and check that Auto Picture-in-Picture is
-// triggered.
-
-// Crashes on Mac only.  http://crbug.com/1058087
-#if defined(OS_MAC)
-#define MAYBE_AutoPictureInPictureTriggeredWhenFullscreen \
-  DISABLED_AutoPictureInPictureTriggeredWhenFullscreen
-#else
-#define MAYBE_AutoPictureInPictureTriggeredWhenFullscreen \
-  AutoPictureInPictureTriggeredWhenFullscreen
-#endif
-IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWindowControllerBrowserTest,
-                       MAYBE_AutoPictureInPictureTriggeredWhenFullscreen) {
-  GURL test_page_url = ui_test_utils::GetTestUrl(
-      base::FilePath(base::FilePath::kCurrentDirectory),
-      base::FilePath(kPictureInPictureWindowSizePage));
-  ui_test_utils::NavigateToURL(browser(), test_page_url);
-
-  content::WebContents* active_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_NE(nullptr, active_web_contents);
-
-  ASSERT_TRUE(content::ExecuteScript(active_web_contents, "enterFullscreen()"));
-  base::string16 expected_title = base::ASCIIToUTF16("fullscreen");
-  EXPECT_EQ(expected_title,
-            content::TitleWatcher(active_web_contents, expected_title)
-                .WaitAndGetTitle());
-
-  EXPECT_TRUE(content::ExecuteScript(active_web_contents,
-                                     "addPictureInPictureEventListeners();"));
-  EXPECT_TRUE(content::ExecuteScript(active_web_contents, "video.play();"));
-  ASSERT_TRUE(content::ExecuteScript(active_web_contents,
-                                     "video.autoPictureInPicture = true;"));
-
-  SetUpWindowController(active_web_contents);
-  EXPECT_FALSE(window_controller()->GetWindowForTesting()->IsVisible());
-
-  // Hide page and check that video entered Picture-in-Picture automatically.
-  active_web_contents->WasHidden();
-  expected_title = base::ASCIIToUTF16("enterpictureinpicture");
-  EXPECT_EQ(expected_title,
-            content::TitleWatcher(active_web_contents, expected_title)
-                .WaitAndGetTitle());
-  EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
-
-  // Show page and check that video left Picture-in-Picture automatically.
-  active_web_contents->WasShown();
-  expected_title = base::ASCIIToUTF16("leavepictureinpicture");
-  EXPECT_EQ(expected_title,
-            content::TitleWatcher(active_web_contents, expected_title)
-                .WaitAndGetTitle());
-  EXPECT_FALSE(window_controller()->GetWindowForTesting()->IsVisible());
-}
-
 namespace {
 
 class ChromeContentBrowserClientOverrideWebAppScope
