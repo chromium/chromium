@@ -448,10 +448,7 @@ class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     PowerMeasurementIntegrationTest._LogResults(results_sum)
 
   def _RunTest_Video(self, test_path, params):
-    disabled_features = [
-        'D3D11VideoDecoder', 'DirectCompositionUseNV12DecodeSwapChain',
-        'DirectCompositionUnderlays'
-    ]
+    disabled_features = ['D3D11VideoDecoder']
 
     results_sum = {}
     for iteration in range(params.repeat):

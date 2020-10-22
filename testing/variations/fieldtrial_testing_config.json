@@ -2352,21 +2352,6 @@
             ]
         }
     ],
-    "DirectCompositionUseNV12DecodeSwapChain": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DirectCompositionUseNV12DecodeSwapChain"
-                    ]
-                }
-            ]
-        }
-    ],
     "DisableForceDeferInChildFrames": [
         {
             "platforms": [
