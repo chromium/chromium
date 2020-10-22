@@ -637,10 +637,6 @@ if (is_fuchsia) {
       "//fuchsia/engine:web_engine_shell",
       "//fuchsia/engine:web_engine_with_webui",
     ]
-
-    # TODO(crbug.com/1092729): Remove once Catapult is migrated to use
-    # `web_engine_with_webui`.
-    data_deps += [ "//fuchsia/engine:web_engine" ]
   }
 }
 

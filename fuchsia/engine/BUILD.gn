@@ -248,9 +248,7 @@ template("web_engine_package") {
 }
 
 web_engine_package("web_engine") {
-  # TODO(crbug.com/2424514): Set to "false" once telemetry tests are migrated to
-  # use `web_engine_with_webui`.
-  include_webui_resources_pak = !is_official_build
+  include_webui_resources_pak = false
 }
 
 fuchsia_package_runner("web_engine_installer") {
