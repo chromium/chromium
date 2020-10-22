@@ -29,7 +29,11 @@ SpeechMonitor::~SpeechMonitor() {
     CHECK(replay_called_) << "Expectation was made, but Replay() not called.";
 }
 
-bool SpeechMonitor::PlatformImplAvailable() {
+bool SpeechMonitor::PlatformImplSupported() {
+  return true;
+}
+
+bool SpeechMonitor::PlatformImplInitialized() {
   return true;
 }
 

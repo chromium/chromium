@@ -13,11 +13,16 @@
 
 TtsPlatformImplChromeOs::TtsPlatformImplChromeOs() = default;
 
-bool TtsPlatformImplChromeOs::PlatformImplAvailable() {
+bool TtsPlatformImplChromeOs::PlatformImplSupported() {
+  // TODO(1133813): Chrome OS Platform should support background initialisation.
   return arc::ArcServiceManager::Get() && arc::ArcServiceManager::Get()
                                               ->arc_bridge_service()
                                               ->tts()
                                               ->IsConnected();
+}
+
+bool TtsPlatformImplChromeOs::PlatformImplInitialized() {
+  return true;
 }
 
 bool TtsPlatformImplChromeOs::LoadBuiltInTtsEngine(

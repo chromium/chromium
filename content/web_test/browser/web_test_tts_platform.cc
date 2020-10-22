@@ -11,7 +11,11 @@ WebTestTtsPlatform* WebTestTtsPlatform::GetInstance() {
   return base::Singleton<WebTestTtsPlatform>::get();
 }
 
-bool WebTestTtsPlatform::PlatformImplAvailable() {
+bool WebTestTtsPlatform::PlatformImplSupported() {
+  return true;
+}
+
+bool WebTestTtsPlatform::PlatformImplInitialized() {
   return true;
 }
 

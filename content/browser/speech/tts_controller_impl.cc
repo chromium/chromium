@@ -128,6 +128,18 @@ void TtsControllerImpl::SpeakOrEnqueue(
     return;
   }
 
+  // If the TTS platform is still loading, queue or flush the utterance. The
+  // utterances can be sent to platform specific implementation or to the
+  // engine implementation. Every utterances are postponed until the platform
+  // specific implementation is loaded to avoid racy behaviors.
+  if (TtsPlatformLoading()) {
+    bool can_enqueue = utterance->GetCanEnqueue();
+    utterance_list_.emplace_back(std::move(utterance));
+    if (!can_enqueue)
+      ClearUtteranceQueue(true);
+    return;
+  }
+
   // If we're paused and we get an utterance that can't be queued,
   // flush the queue but stay in the paused state.
   if (paused_ && !utterance->GetCanEnqueue()) {
@@ -170,7 +182,7 @@ bool TtsControllerImpl::StopCurrentUtteranceIfMatches(const GURL& source_url) {
   if (current_utterance_ && !current_utterance_->GetEngineId().empty()) {
     if (engine_delegate_)
       engine_delegate_->Stop(current_utterance_.get());
-  } else if (GetTtsPlatform()->PlatformImplAvailable()) {
+  } else if (TtsPlatformReady()) {
     GetTtsPlatform()->ClearError();
     GetTtsPlatform()->StopSpeaking();
   }
@@ -192,6 +204,7 @@ void TtsControllerImpl::Pause() {
     if (engine_delegate_)
       engine_delegate_->Pause(current_utterance_.get());
   } else if (current_utterance_) {
+    DCHECK(TtsPlatformReady());
     GetTtsPlatform()->ClearError();
     GetTtsPlatform()->Pause();
   }
@@ -207,6 +220,7 @@ void TtsControllerImpl::Resume() {
     if (engine_delegate_)
       engine_delegate_->Resume(current_utterance_.get());
   } else if (current_utterance_) {
+    DCHECK(TtsPlatformReady());
     GetTtsPlatform()->ClearError();
     GetTtsPlatform()->Resume();
   } else {
@@ -280,7 +294,7 @@ void TtsControllerImpl::GetVoices(BrowserContext* browser_context,
   // Ensure we have all built-in voices loaded. This is a no-op if already
   // loaded.
   tts_platform->LoadBuiltInTtsEngine(browser_context);
-  if (tts_platform->PlatformImplAvailable())
+  if (TtsPlatformReady())
     tts_platform->GetVoices(out_voices);
 
   if (browser_context && engine_delegate_)
@@ -288,14 +302,21 @@ void TtsControllerImpl::GetVoices(BrowserContext* browser_context,
 }
 
 bool TtsControllerImpl::IsSpeaking() {
-  return current_utterance_ != nullptr || GetTtsPlatform()->IsSpeaking();
+  return current_utterance_ != nullptr ||
+         (TtsPlatformReady() && GetTtsPlatform()->IsSpeaking());
 }
 
 void TtsControllerImpl::VoicesChanged() {
+  if (TtsPlatformLoading())
+    return;
+
   // Existence of platform tts indicates explicit requests to tts. Since
   // |VoicesChanged| can occur implicitly, only send if needed.
   for (auto& delegate : voices_changed_delegates_)
     delegate.OnVoicesChanged();
+
+  if (!current_utterance_ && !utterance_list_.empty())
+    SpeakNextUtterance();
 }
 
 void TtsControllerImpl::AddVoicesChangedDelegate(
@@ -327,6 +348,7 @@ void TtsControllerImpl::RemoveUtteranceEventDelegate(
       if (engine_delegate_)
         engine_delegate_->Stop(current_utterance_.get());
     } else {
+      DCHECK(TtsPlatformReady());
       GetTtsPlatform()->ClearError();
       GetTtsPlatform()->StopSpeaking();
     }
@@ -390,7 +412,23 @@ int TtsControllerImpl::QueueSize() {
 TtsPlatform* TtsControllerImpl::GetTtsPlatform() {
   if (!tts_platform_)
     tts_platform_ = TtsPlatform::GetInstance();
+  DCHECK(tts_platform_);
   return tts_platform_;
+}
+
+bool TtsControllerImpl::TtsPlatformReady() {
+  TtsPlatform* tts_platform = GetTtsPlatform();
+  return tts_platform->PlatformImplSupported() &&
+         tts_platform->PlatformImplInitialized();
+}
+
+bool TtsControllerImpl::TtsPlatformLoading() {
+  // If the platform implementation is supported, it is considered to be in
+  // loading state until the platform is inititialized. Typically, that means
+  // the libraries are loaded and the voices are being loaded.
+  TtsPlatform* tts_platform = GetTtsPlatform();
+  return tts_platform->PlatformImplSupported() &&
+         !tts_platform->PlatformImplInitialized();
 }
 
 void TtsControllerImpl::SpeakNow(std::unique_ptr<TtsUtterance> utterance) {
@@ -449,13 +487,18 @@ void TtsControllerImpl::SpeakNow(std::unique_ptr<TtsUtterance> utterance) {
     // It's possible for certain platforms to send start events immediately
     // during |speak|.
     SetCurrentUtterance(std::move(utterance));
-    GetTtsPlatform()->ClearError();
-    GetTtsPlatform()->Speak(
-        current_utterance_->GetId(), current_utterance_->GetText(),
-        current_utterance_->GetLang(), voice,
-        current_utterance_->GetContinuousParameters(),
-        base::BindOnce(&TtsControllerImpl::OnSpeakFinished,
-                       base::Unretained(this), current_utterance_->GetId()));
+    if (TtsPlatformReady()) {
+      GetTtsPlatform()->ClearError();
+      GetTtsPlatform()->Speak(
+          current_utterance_->GetId(), current_utterance_->GetText(),
+          current_utterance_->GetLang(), voice,
+          current_utterance_->GetContinuousParameters(),
+          base::BindOnce(&TtsControllerImpl::OnSpeakFinished,
+                         base::Unretained(this), current_utterance_->GetId()));
+    } else {
+      // The TTS platform is not supported.
+      OnSpeakFinished(current_utterance_->GetId(), false);
+    }
   }
 }
 

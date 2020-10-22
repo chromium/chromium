@@ -37,7 +37,9 @@ class MockTtsPlatformImpl : public TtsPlatform {
   void set_is_speaking(bool value) { is_speaking_ = value; }
 
   // TtsPlatform:
-  bool PlatformImplAvailable() override { return true; }
+  bool PlatformImplSupported() override { return platform_supported_; }
+  bool PlatformImplInitialized() override { return platform_initialized_; }
+
   void Speak(
       int utterance_id,
       const std::string& utterance,
@@ -68,6 +70,9 @@ class MockTtsPlatformImpl : public TtsPlatform {
   void ClearError() override { error_.clear(); }
   void Shutdown() override {}
 
+  void SetPlatformImplSupported(bool state) { platform_supported_ = state; }
+  void SetPlatformImplInitialized(bool state) { platform_initialized_ = state; }
+
   // Returns the amount of calls to Mock API.
   int pause_called() const { return pause_called_; }
   int resume_called() const { return resume_called_; }
@@ -89,6 +94,8 @@ class MockTtsPlatformImpl : public TtsPlatform {
 
  private:
   TtsController* const controller_;
+  bool platform_supported_ = true;
+  bool platform_initialized_ = true;
   std::vector<VoiceData> voices_;
   int utterance_id_ = -1;
   bool is_speaking_ = false;
@@ -702,6 +709,31 @@ TEST_F(TtsControllerTest, StopMustResumeController) {
       CreateUtteranceImpl(web_contents.get());
   utterance->SetCanEnqueue(true);
 
+  // Speak an utterance while controller is paused. The utterance is queued.
+  controller()->SpeakOrEnqueue(std::move(utterance));
+  platform_impl()->StartSpeaking(true);
+  EXPECT_TRUE(IsUtteranceListEmpty());
+  EXPECT_TRUE(TtsControllerCurrentUtterance());
+
+  platform_impl()->SetError("dummy");
+
+  // Stop must resume the controller and clear the current utterance.
+  controller()->Stop();
+  platform_impl()->FinishSpeaking();
+
+  EXPECT_EQ(2, platform_impl()->stop_speaking_called());
+  EXPECT_TRUE(IsUtteranceListEmpty());
+  EXPECT_FALSE(TtsControllerCurrentUtterance());
+  EXPECT_TRUE(platform_impl()->GetError().empty());
+  EXPECT_FALSE(controller()->IsSpeaking());
+}
+
+TEST_F(TtsControllerTest, PauseAndStopMustResumeController) {
+  std::unique_ptr<WebContents> web_contents = CreateWebContents();
+  std::unique_ptr<TtsUtteranceImpl> utterance =
+      CreateUtteranceImpl(web_contents.get());
+  utterance->SetCanEnqueue(true);
+
   // Pause the controller.
   controller()->Pause();
   EXPECT_TRUE(controller()->IsPausedForTesting());
@@ -720,6 +752,57 @@ TEST_F(TtsControllerTest, StopMustResumeController) {
   EXPECT_TRUE(IsUtteranceListEmpty());
   EXPECT_FALSE(TtsControllerCurrentUtterance());
   EXPECT_TRUE(platform_impl()->GetError().empty());
+}
+
+TEST_F(TtsControllerTest, PlatformNotSupported) {
+  std::unique_ptr<WebContents> web_contents = CreateWebContents();
+  std::unique_ptr<TtsUtteranceImpl> utterance =
+      CreateUtteranceImpl(web_contents.get());
+
+  // The utterance is dropped when the platform is not available.
+  platform_impl()->SetPlatformImplSupported(false);
+  controller()->SpeakOrEnqueue(std::move(utterance));
+  EXPECT_FALSE(TtsControllerCurrentUtterance());
+  EXPECT_TRUE(IsUtteranceListEmpty());
+
+  // No methods are called on the platform when not available.
+  controller()->Pause();
+  controller()->Resume();
+  controller()->Stop();
+
+  EXPECT_EQ(0, platform_impl()->pause_called());
+  EXPECT_EQ(0, platform_impl()->resume_called());
+  EXPECT_EQ(0, platform_impl()->stop_speaking_called());
+}
+
+TEST_F(TtsControllerTest, SpeakWhenLoading) {
+  platform_impl()->SetPlatformImplInitialized(false);
+
+  std::unique_ptr<WebContents> web_contents = CreateWebContents();
+  std::unique_ptr<TtsUtteranceImpl> utterance =
+      CreateUtteranceImpl(web_contents.get());
+  utterance->SetCanEnqueue(true);
+
+  // Speak an utterance while platform is loading, the utterance should be
+  // queued.
+  controller()->SpeakOrEnqueue(std::move(utterance));
+  EXPECT_FALSE(IsUtteranceListEmpty());
+  EXPECT_FALSE(TtsControllerCurrentUtterance());
+
+  // Simulate the completion of the initialisation.
+  platform_impl()->SetPlatformImplInitialized(true);
+  controller()->VoicesChanged();
+
+  platform_impl()->StartSpeaking(true);
+  EXPECT_TRUE(IsUtteranceListEmpty());
+  EXPECT_TRUE(TtsControllerCurrentUtterance());
+  EXPECT_TRUE(controller()->IsSpeaking());
+
+  // Complete the playing utterance.
+  platform_impl()->FinishSpeaking();
+  EXPECT_TRUE(IsUtteranceListEmpty());
+  EXPECT_FALSE(TtsControllerCurrentUtterance());
+  EXPECT_FALSE(controller()->IsSpeaking());
 }
 
 }  // namespace content

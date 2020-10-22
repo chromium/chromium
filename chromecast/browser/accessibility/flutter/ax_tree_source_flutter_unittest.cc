@@ -39,7 +39,8 @@ class MockTtsPlatformImpl : public TtsPlatform {
   void set_is_speaking(bool value) { is_speaking_ = value; }
 
   // TtsPlatform:
-  bool PlatformImplAvailable() override { return true; }
+  bool PlatformImplSupported() override { return true; }
+  bool PlatformImplInitialized() override { return true; }
   void Speak(int utterance_id,
              const std::string& utterance,
              const std::string& lang,

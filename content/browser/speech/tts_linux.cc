@@ -25,9 +25,6 @@ namespace content {
 
 namespace {
 
-const char kNotSupportedError[] =
-    "Native speech synthesis not supported on this platform.";
-
 struct SPDChromeVoice {
   std::string name;
   std::string module;
@@ -40,7 +37,8 @@ class TtsPlatformImplLinux : public TtsPlatformImpl {
   TtsPlatformImplLinux(const TtsPlatformImplLinux&) = delete;
   TtsPlatformImplLinux& operator=(const TtsPlatformImplLinux&) = delete;
 
-  bool PlatformImplAvailable() override;
+  bool PlatformImplSupported() override;
+  bool PlatformImplInitialized() override;
   void Speak(int utterance_id,
              const std::string& utterance,
              const std::string& lang,
@@ -86,6 +84,8 @@ class TtsPlatformImplLinux : public TtsPlatformImpl {
 
   static SPDNotificationType current_notification_;
 
+  bool is_supported_ = false;
+
   base::Lock initialization_lock_;
   LibSpeechdLoader libspeechd_loader_;
   SPDConnection* conn_;
@@ -107,6 +107,11 @@ TtsPlatformImplLinux::TtsPlatformImplLinux() {
       *base::CommandLine::ForCurrentProcess();
   if (!command_line.HasSwitch(switches::kEnableSpeechDispatcher))
     return;
+
+  // The TTS platform is supported. The Tts platform initialisation will happen
+  // on a worker thread and it will be in the available state after the
+  // initialisation.
+  is_supported_ = true;
 
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
@@ -151,7 +156,11 @@ void TtsPlatformImplLinux::Reset() {
                                       SPD_MODE_THREADED);
 }
 
-bool TtsPlatformImplLinux::PlatformImplAvailable() {
+bool TtsPlatformImplLinux::PlatformImplSupported() {
+  return is_supported_;
+}
+
+bool TtsPlatformImplLinux::PlatformImplInitialized() {
   if (!initialization_lock_.Try())
     return false;
   bool result = libspeechd_loader_.loaded() && (conn_ != nullptr);
@@ -166,11 +175,7 @@ void TtsPlatformImplLinux::Speak(
     const VoiceData& voice,
     const UtteranceContinuousParameters& params,
     base::OnceCallback<void(bool)> on_speak_finished) {
-  if (!PlatformImplAvailable()) {
-    error_ = kNotSupportedError;
-    std::move(on_speak_finished).Run(false);
-    return;
-  }
+  DCHECK(PlatformImplSupported());
 
   // Parse SSML and process speech.
   TtsController::GetInstance()->StripSSML(
@@ -221,8 +226,7 @@ void TtsPlatformImplLinux::ProcessSpeech(
 }
 
 bool TtsPlatformImplLinux::StopSpeaking() {
-  if (!PlatformImplAvailable())
-    return false;
+  DCHECK(PlatformImplSupported());
   if (libspeechd_loader_.spd_stop(conn_) == -1) {
     Reset();
     return false;
@@ -231,14 +235,12 @@ bool TtsPlatformImplLinux::StopSpeaking() {
 }
 
 void TtsPlatformImplLinux::Pause() {
-  if (!PlatformImplAvailable())
-    return;
+  DCHECK(PlatformImplSupported());
   libspeechd_loader_.spd_pause(conn_);
 }
 
 void TtsPlatformImplLinux::Resume() {
-  if (!PlatformImplAvailable())
-    return;
+  DCHECK(PlatformImplSupported());
   libspeechd_loader_.spd_resume(conn_);
 }
 

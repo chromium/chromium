@@ -70,7 +70,8 @@ class SpeechMonitor : public content::TtsPlatform {
   typedef std::pair<std::function<bool()>, std::string> ReplayArgs;
 
   // TtsPlatform implementation.
-  bool PlatformImplAvailable() override;
+  bool PlatformImplSupported() override;
+  bool PlatformImplInitialized() override;
   void Speak(int utterance_id,
              const std::string& utterance,
              const std::string& lang,

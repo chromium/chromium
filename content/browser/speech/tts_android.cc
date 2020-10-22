@@ -41,7 +41,11 @@ TtsPlatformImplAndroid::~TtsPlatformImplAndroid() {
   Java_TtsPlatformImpl_destroy(env, java_ref_);
 }
 
-bool TtsPlatformImplAndroid::PlatformImplAvailable() {
+bool TtsPlatformImplAndroid::PlatformImplSupported() {
+  return true;
+}
+
+bool TtsPlatformImplAndroid::PlatformImplInitialized() {
   return true;
 }
 

@@ -50,7 +50,8 @@ class MockTtsPlatformImpl : public content::TtsPlatform {
  public:
   MockTtsPlatformImpl() : should_fake_get_voices_(false) {}
 
-  bool PlatformImplAvailable() override { return true; }
+  bool PlatformImplSupported() override { return true; }
+  bool PlatformImplInitialized() override { return true; }
 
   void WillSpeakUtteranceWithVoice(
       content::TtsUtterance* utterance,

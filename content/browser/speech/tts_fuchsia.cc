@@ -17,7 +17,8 @@ class TtsPlatformImplFuchsia : public TtsPlatformImpl {
   TtsPlatformImplFuchsia& operator=(const TtsPlatformImplFuchsia&) = delete;
 
   // TtsPlatform implementation.
-  bool PlatformImplAvailable() override { return false; }
+  bool PlatformImplSupported() override { return false; }
+  bool PlatformImplInitialized() override { return false; }
   void Speak(int utterance_id,
              const std::string& utterance,
              const std::string& lang,

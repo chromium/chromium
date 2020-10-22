@@ -18,7 +18,8 @@ class TtsEnvironmentAndroid;
 class TtsPlatformImplAndroid : public TtsPlatformImpl {
  public:
   // TtsPlatform overrides.
-  bool PlatformImplAvailable() override;
+  bool PlatformImplSupported() override;
+  bool PlatformImplInitialized() override;
   void Speak(
       int utterance_id,
       const std::string& utterance,
