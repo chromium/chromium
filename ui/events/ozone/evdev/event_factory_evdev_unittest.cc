@@ -5,12 +5,14 @@
 #include "ui/events/ozone/evdev/event_factory_evdev.h"
 
 #include "base/optional.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/ozone/device/device_manager.h"
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
+#include "ui/events/ozone/features.h"
 #include "ui/events/platform/platform_event_observer.h"
 #include "ui/events/platform_event.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -35,11 +37,13 @@ class MockPlatformEventObserver : public PlatformEventObserver {
 class EventFactoryEvdevTest : public testing::Test {
  protected:
   EventFactoryEvdevTest() : event_factory_(nullptr, &device_manager_, nullptr) {
+    scoped_feature_list_.InitAndEnableFeature(kEnableOrdinalMotion);
     event_factory_.Init();
     event_factory_.AddPlatformEventObserver(&event_observer_);
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   testing::StrictMock<MockDeviceManager> device_manager_;
   testing::NiceMock<MockPlatformEventObserver> event_observer_;
   EventFactoryEvdev event_factory_;
