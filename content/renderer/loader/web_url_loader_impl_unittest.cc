@@ -22,7 +22,6 @@
 #include "content/public/renderer/request_peer.h"
 #include "content/renderer/loader/request_extra_data.h"
 #include "content/renderer/loader/resource_dispatcher.h"
-#include "content/renderer/loader/sync_load_response.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/host_port_pair.h"
@@ -40,6 +39,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/public/platform/sync_load_response.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -71,7 +71,7 @@ class TestResourceDispatcher : public ResourceDispatcher {
       int routing_id,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       uint32_t loader_options,
-      SyncLoadResponse* response,
+      blink::SyncLoadResponse* response,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
       base::TimeDelta timeout,
@@ -120,7 +120,7 @@ class TestResourceDispatcher : public ResourceDispatcher {
   }
   bool defers_loading() const { return defers_loading_; }
 
-  void set_sync_load_response(SyncLoadResponse&& sync_load_response) {
+  void set_sync_load_response(blink::SyncLoadResponse&& sync_load_response) {
     sync_load_response_ = std::move(sync_load_response);
   }
 
@@ -130,7 +130,7 @@ class TestResourceDispatcher : public ResourceDispatcher {
   bool defers_loading_;
   GURL url_;
   GURL stream_url_;
-  SyncLoadResponse sync_load_response_;
+  blink::SyncLoadResponse sync_load_response_;
 
   DISALLOW_COPY_AND_ASSIGN(TestResourceDispatcher);
 };
@@ -650,10 +650,10 @@ TEST_F(WebURLLoaderImplTest, SyncLengths) {
   request->priority = net::HIGHEST;
 
   // Prepare a mock response
-  SyncLoadResponse sync_load_response;
+  blink::SyncLoadResponse sync_load_response;
   sync_load_response.error_code = net::OK;
   sync_load_response.url = url;
-  sync_load_response.data = kBodyData;
+  sync_load_response.data.Assign(blink::WebData(kBodyData));
   ASSERT_EQ(17u, sync_load_response.data.size());
   sync_load_response.head->encoded_body_length = kEncodedBodyLength;
   sync_load_response.head->encoded_data_length = kEncodedDataLength;

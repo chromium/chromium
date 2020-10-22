@@ -2,27 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_RENDERER_LOADER_SYNC_LOAD_RESPONSE_H_
-#define CONTENT_RENDERER_LOADER_SYNC_LOAD_RESPONSE_H_
-
-#include <string>
+#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_SYNC_LOAD_RESPONSE_H_
+#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_SYNC_LOAD_RESPONSE_H_
 
 #include "base/optional.h"
-#include "content/common/content_export.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
-#include "url/gurl.h"
+#include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/public/platform/web_data.h"
+#include "third_party/blink/public/platform/web_url.h"
 
-namespace content {
-
-class SyncLoadContext;
+namespace blink {
 
 // See the SyncLoad method. (The name of this struct is not
 // suffixed with "Info" because it also contains the response data.)
-struct CONTENT_EXPORT SyncLoadResponse {
+// TODO(crbug.com/1110032): Move this class to
+// blink/renderer/platform/loader/fetch/url_loader.
+struct BLINK_PLATFORM_EXPORT SyncLoadResponse {
   SyncLoadResponse();
   SyncLoadResponse(SyncLoadResponse&& other);
   ~SyncLoadResponse();
@@ -30,7 +29,6 @@ struct CONTENT_EXPORT SyncLoadResponse {
   SyncLoadResponse& operator=(SyncLoadResponse&& other);
 
   base::Optional<net::RedirectInfo> redirect_info;
-  SyncLoadContext* context_for_redirect = nullptr;
 
   network::mojom::URLResponseHeadPtr head =
       network::mojom::URLResponseHead::New();
@@ -49,15 +47,15 @@ struct CONTENT_EXPORT SyncLoadResponse {
 
   // The final URL of the response.  This may differ from the request URL in
   // the case of a server redirect.
-  GURL url;
+  WebURL url;
 
   // The response data.
-  std::string data;
+  WebData data;
 
   // Used for blob response type XMLHttpRequest.
-  blink::mojom::SerializedBlobPtr downloaded_blob;
+  mojom::SerializedBlobPtr downloaded_blob;
 };
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_RENDERER_LOADER_SYNC_LOAD_RESPONSE_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_SYNC_LOAD_RESPONSE_H_

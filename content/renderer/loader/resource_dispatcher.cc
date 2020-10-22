@@ -27,7 +27,6 @@
 #include "content/public/renderer/resource_dispatcher_delegate.h"
 #include "content/renderer/loader/request_extra_data.h"
 #include "content/renderer/loader/sync_load_context.h"
-#include "content/renderer/loader/sync_load_response.h"
 #include "content/renderer/loader/url_loader_client_impl.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
@@ -48,6 +47,7 @@
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
+#include "third_party/blink/public/platform/sync_load_response.h"
 
 namespace content {
 
@@ -433,7 +433,7 @@ void ResourceDispatcher::StartSync(
     int routing_id,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     uint32_t loader_options,
-    SyncLoadResponse* response,
+    blink::SyncLoadResponse* response,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
     base::TimeDelta timeout,
@@ -458,17 +458,18 @@ void ResourceDispatcher::StartSync(
 
   // A task is posted to a separate thread to execute the request so that
   // this thread may block on a waitable event. It is safe to pass raw
-  // pointers to |sync_load_response| and |event| as this stack frame will
+  // pointers to on-stack objects as this stack frame will
   // survive until the request is complete.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       base::ThreadPool::CreateSingleThreadTaskRunner({});
+  SyncLoadContext* context_for_redirect = nullptr;
   task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(
           &SyncLoadContext::StartAsyncWithWaitableEvent, std::move(request),
           routing_id, task_runner, traffic_annotation, loader_options,
           std::move(pending_factory), std::move(throttles),
-          base::Unretained(response),
+          base::Unretained(response), base::Unretained(&context_for_redirect),
           base::Unretained(&redirect_or_response_event),
           base::Unretained(terminate_sync_load_event_), timeout,
           std::move(download_to_blob_registry), cors_exempt_header_list_,
@@ -478,7 +479,7 @@ void ResourceDispatcher::StartSync(
   // when the final response is complete.
   redirect_or_response_event.Wait();
 
-  while (response->context_for_redirect) {
+  while (context_for_redirect) {
     DCHECK(response->redirect_info);
     bool follow_redirect = peer->OnReceivedRedirect(
         *response->redirect_info, response->head.Clone(),
@@ -486,14 +487,12 @@ void ResourceDispatcher::StartSync(
     redirect_or_response_event.Reset();
     if (follow_redirect) {
       task_runner->PostTask(
-          FROM_HERE,
-          base::BindOnce(&SyncLoadContext::FollowRedirect,
-                         base::Unretained(response->context_for_redirect)));
+          FROM_HERE, base::BindOnce(&SyncLoadContext::FollowRedirect,
+                                    base::Unretained(context_for_redirect)));
     } else {
       task_runner->PostTask(
-          FROM_HERE,
-          base::BindOnce(&SyncLoadContext::CancelRedirect,
-                         base::Unretained(response->context_for_redirect)));
+          FROM_HERE, base::BindOnce(&SyncLoadContext::CancelRedirect,
+                                    base::Unretained(context_for_redirect)));
     }
     redirect_or_response_event.Wait();
   }

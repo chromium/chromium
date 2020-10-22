@@ -38,7 +38,6 @@
 #include "content/public/renderer/request_peer.h"
 #include "content/renderer/loader/request_extra_data.h"
 #include "content/renderer/loader/resource_dispatcher.h"
-#include "content/renderer/loader/sync_load_response.h"
 #include "content/renderer/variations_render_thread_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/filename_util.h"
@@ -77,6 +76,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
+#include "third_party/blink/public/platform/sync_load_response.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_http_load_info.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -384,7 +384,7 @@ class WebURLLoaderImpl::Context : public base::RefCounted<Context> {
              bool pass_response_pipe_to_client,
              bool no_mime_sniffing,
              base::TimeDelta timeout_interval,
-             SyncLoadResponse* sync_load_response,
+             blink::SyncLoadResponse* sync_load_response,
              std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
                  resource_load_info_notifier_wrapper);
 
@@ -543,7 +543,7 @@ void WebURLLoaderImpl::Context::Start(
     bool pass_response_pipe_to_client,
     bool no_mime_sniffing,
     base::TimeDelta timeout_interval,
-    SyncLoadResponse* sync_load_response,
+    blink::SyncLoadResponse* sync_load_response,
     std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper) {
   DCHECK(request_id_ == -1);
@@ -1015,7 +1015,7 @@ void WebURLLoaderImpl::LoadSynchronously(
     std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper) {
   TRACE_EVENT0("loading", "WebURLLoaderImpl::loadSynchronously");
-  SyncLoadResponse sync_load_response;
+  blink::SyncLoadResponse sync_load_response;
 
   DCHECK(!context_->client());
   context_->set_client(client);
@@ -1062,7 +1062,7 @@ void WebURLLoaderImpl::LoadSynchronously(
         std::move(sync_load_response.downloaded_blob->blob));
   }
 
-  data.Assign(sync_load_response.data.data(), sync_load_response.data.size());
+  data.Assign(sync_load_response.data);
 }
 
 void WebURLLoaderImpl::LoadAsynchronously(

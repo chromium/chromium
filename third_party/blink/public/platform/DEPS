@@ -53,7 +53,9 @@ include_rules = [
     "+services/network/public/mojom/ip_address_space.mojom-shared.h",
     "+services/network/public/mojom/referrer_policy.mojom-shared.h",
     "+services/network/public/mojom/trust_tokens.mojom-shared.h",
+    "+services/network/public/mojom/url_loader.mojom-forward.h",
     "+services/network/public/mojom/url_loader_factory.mojom-shared.h",
+    "+services/network/public/mojom/url_response_head.mojom.h",
     "+services/network/public/mojom/url_response_head.mojom-forward.h",
     "+services/network/public/mojom/web_client_hints_types.mojom-shared.h",
 

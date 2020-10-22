@@ -43,6 +43,7 @@ class WaitableEvent;
 namespace blink {
 class ResourceLoadInfoNotifierWrapper;
 class ThrottlingURLLoader;
+struct SyncLoadResponse;
 }
 
 namespace net {
@@ -60,7 +61,6 @@ class URLLoaderFactory;
 namespace content {
 class RequestPeer;
 class ResourceDispatcherDelegate;
-struct SyncLoadResponse;
 class URLLoaderClientImpl;
 
 // This class serves as a communication interface to the ResourceDispatcherHost
@@ -99,7 +99,7 @@ class CONTENT_EXPORT ResourceDispatcher {
       int routing_id,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       uint32_t loader_options,
-      SyncLoadResponse* response,
+      blink::SyncLoadResponse* response,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
       base::TimeDelta timeout,

@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/loader/sync_load_response.h"
+#include "third_party/blink/public/platform/sync_load_response.h"
 
-namespace content {
+namespace blink {
 
-SyncLoadResponse::SyncLoadResponse() {}
+SyncLoadResponse::SyncLoadResponse() = default;
 
 SyncLoadResponse::SyncLoadResponse(SyncLoadResponse&& other) = default;
 
-SyncLoadResponse::~SyncLoadResponse() {}
+SyncLoadResponse::~SyncLoadResponse() = default;
 
 SyncLoadResponse& SyncLoadResponse::operator=(SyncLoadResponse&& other) =
     default;
 
-}  // namespace content
+}  // namespace blink
