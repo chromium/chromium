@@ -80,7 +80,8 @@ void SendTabToSelfBubbleController::OnDeviceSelected(
     const std::string& target_device_guid) {
   RecordSendTabToSelfClickResult(kOmniboxIcon,
                                  SendTabToSelfClickResult::kClickItem);
-  CreateNewEntry(web_contents_, target_device_name, target_device_guid, GURL());
+  CreateNewEntry(web_contents_, target_device_name, target_device_guid, GURL(),
+                 false);
 }
 
 void SendTabToSelfBubbleController::OnBubbleClosed() {

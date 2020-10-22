@@ -9,6 +9,9 @@
 
 namespace send_tab_to_self {
 
+const base::Feature kSendTabToSelfOmniboxSendingAnimation{
+    "SendTabToSelfOmniboxSendingAnimation", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kSendTabToSelfWhenSignedIn{
     "SendTabToSelfWhenSignedIn", base::FEATURE_DISABLED_BY_DEFAULT};
 

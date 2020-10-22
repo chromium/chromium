@@ -58,6 +58,8 @@ void SendTabToSelfIconView::UpdateImpl() {
   if (!is_animating_label() && !omnibox_view->model()->has_focus()) {
     sending_animation_state_ = AnimationState::kNotShown;
   }
+  if (GetVisible() ||
+      base::FeatureList::IsEnabled(kSendTabToSelfOmniboxSendingAnimation)) {
     SendTabToSelfBubbleController* controller = GetController();
     if (controller && controller->show_message()) {
       if (!GetVisible()) {
@@ -74,6 +76,7 @@ void SendTabToSelfIconView::UpdateImpl() {
       }
       sending_animation_state_ = AnimationState::kShowing;
     }
+  }
   if (!GetVisible() && omnibox_view->model()->has_focus() &&
       !omnibox_view->model()->user_input_in_progress()) {
     SendTabToSelfBubbleController* controller = GetController();
@@ -87,7 +90,8 @@ void SendTabToSelfIconView::UpdateImpl() {
       initial_animation_state_ = AnimationState::kShowing;
       controller->SetInitialSendAnimationShown(true);
     }
-    if (sending_animation_state_ == AnimationState::kNotShown) {
+    if (!base::FeatureList::IsEnabled(kSendTabToSelfOmniboxSendingAnimation) ||
+        sending_animation_state_ == AnimationState::kNotShown) {
       SetVisible(true);
     }
   }
@@ -120,7 +124,8 @@ SendTabToSelfBubbleController* SendTabToSelfIconView::GetController() const {
 
 void SendTabToSelfIconView::AnimationProgressed(
     const gfx::Animation* animation) {
-  if (sending_animation_state_ == AnimationState::kShowing) {
+  if (base::FeatureList::IsEnabled(kSendTabToSelfOmniboxSendingAnimation) &&
+      sending_animation_state_ == AnimationState::kShowing) {
     UpdateOpacity();
   }
   return PageActionIconView::AnimationProgressed(animation);
@@ -129,7 +134,8 @@ void SendTabToSelfIconView::AnimationProgressed(
 void SendTabToSelfIconView::AnimationEnded(const gfx::Animation* animation) {
   PageActionIconView::AnimationEnded(animation);
   initial_animation_state_ = AnimationState::kShown;
-  if (sending_animation_state_ == AnimationState::kShowing) {
+  if (base::FeatureList::IsEnabled(kSendTabToSelfOmniboxSendingAnimation) &&
+      sending_animation_state_ == AnimationState::kShowing) {
     UpdateOpacity();
     SetVisible(false);
     sending_animation_state_ = AnimationState::kShown;

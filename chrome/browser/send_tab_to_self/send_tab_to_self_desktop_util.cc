@@ -25,7 +25,8 @@ namespace send_tab_to_self {
 void CreateNewEntry(content::WebContents* tab,
                     const std::string& target_device_name,
                     const std::string& target_device_guid,
-                    const GURL& link_url) {
+                    const GURL& link_url,
+                    bool show_notification) {
   DCHECK(tab);
 
   GURL shared_url = link_url;
@@ -57,11 +58,23 @@ void CreateNewEntry(content::WebContents* tab,
     return;
   }
 
-  model->AddEntry(shared_url, title, navigation_time, target_device_guid);
+  const SendTabToSelfEntry* entry =
+      model->AddEntry(shared_url, title, navigation_time, target_device_guid);
 
-  SendTabToSelfBubbleController* controller = send_tab_to_self::
-      SendTabToSelfBubbleController::CreateOrGetFromWebContents(tab);
-  controller->ShowConfirmationMessage();
+  if (!show_notification ||
+      base::FeatureList::IsEnabled(kSendTabToSelfOmniboxSendingAnimation)) {
+    SendTabToSelfBubbleController* controller = send_tab_to_self::
+        SendTabToSelfBubbleController::CreateOrGetFromWebContents(tab);
+    controller->ShowConfirmationMessage();
+    return;
+  }
+
+  if (entry) {
+    DesktopNotificationHandler(profile).DisplaySendingConfirmation(
+        *entry, target_device_name);
+  } else {
+    DesktopNotificationHandler(profile).DisplayFailureMessage(shared_url);
+  }
 }
 
 void ShareToSingleTarget(content::WebContents* tab, const GURL& link_url) {

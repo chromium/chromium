@@ -1184,6 +1184,9 @@ extern const char kScrollUnificationDescription[];
 extern const char kSecurePaymentConfirmationDebugName[];
 extern const char kSecurePaymentConfirmationDebugDescription[];
 
+extern const char kSendTabToSelfOmniboxSendingAnimationName[];
+extern const char kSendTabToSelfOmniboxSendingAnimationDescription[];
+
 extern const char kServiceWorkerOnUIName[];
 extern const char kServiceWorkerOnUIDescription[];
 
