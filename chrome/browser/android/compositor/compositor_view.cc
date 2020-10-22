@@ -47,13 +47,10 @@ jlong JNI_CompositorView_Init(
     const JavaParamRef<jobject>& obj,
     jboolean low_mem_device,
     const JavaParamRef<jobject>& jwindow_android,
-    const JavaParamRef<jobject>& jlayer_title_cache,
     const JavaParamRef<jobject>& jtab_content_manager) {
   CompositorView* view;
   ui::WindowAndroid* window_android =
       ui::WindowAndroid::FromJavaWindowAndroid(jwindow_android);
-  LayerTitleCache* layer_title_cache =
-      LayerTitleCache::FromJavaObject(jlayer_title_cache);
   TabContentManager* tab_content_manager =
       TabContentManager::FromJavaObject(jtab_content_manager);
 
@@ -64,10 +61,6 @@ jlong JNI_CompositorView_Init(
                             tab_content_manager);
 
   ui::UIResourceProvider* ui_resource_provider = view->GetUIResourceProvider();
-  // TODO(dtrainor): Pass the ResourceManager on the Java side to the tree
-  // builders instead.
-  if (layer_title_cache)
-    layer_title_cache->SetResourceManager(view->GetResourceManager());
   if (tab_content_manager)
     tab_content_manager->SetUIResourceProvider(ui_resource_provider);
 

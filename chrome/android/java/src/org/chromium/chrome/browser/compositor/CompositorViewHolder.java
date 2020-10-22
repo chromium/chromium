@@ -570,15 +570,11 @@ public class CompositorViewHolder extends FrameLayout
             WindowAndroid windowAndroid, TabContentManager tabContentManager) {
         assert mLayerTitleCache == null : "Should be called once";
 
-        if (DeviceClassManager.enableLayerDecorationCache()) {
-            mLayerTitleCache = new LayerTitleCache(getContext());
-        }
-
         mCompositorView.initNativeCompositor(
-                SysUtils.isLowEndDevice(), windowAndroid, mLayerTitleCache, tabContentManager);
+                SysUtils.isLowEndDevice(), windowAndroid, tabContentManager);
 
-        if (mLayerTitleCache != null) {
-            mLayerTitleCache.setResourceManager(getResourceManager());
+        if (DeviceClassManager.enableLayerDecorationCache()) {
+            mLayerTitleCache = new LayerTitleCache(getContext(), getResourceManager());
         }
 
         if (mControlContainer != null) {

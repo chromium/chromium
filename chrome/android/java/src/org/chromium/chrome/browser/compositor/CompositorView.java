@@ -270,11 +270,10 @@ public class CompositorView
      * Initializes the {@link CompositorView}'s native parts (e.g. the rendering parts).
      * @param lowMemDevice         If this is a low memory device.
      * @param windowAndroid        A {@link WindowAndroid} instance.
-     * @param layerTitleCache      A {@link LayerTitleCache} instance.
      * @param tabContentManager    A {@link TabContentManager} instance.
      */
     public void initNativeCompositor(boolean lowMemDevice, WindowAndroid windowAndroid,
-            LayerTitleCache layerTitleCache, TabContentManager tabContentManager) {
+            TabContentManager tabContentManager) {
         // https://crbug.com/802160. We can't call setWindowAndroid here because updating the window
         // visibility here breaks exiting Reader Mode somehow.
         mWindowAndroid = windowAndroid;
@@ -282,8 +281,8 @@ public class CompositorView
 
         mTabContentManager = tabContentManager;
 
-        mNativeCompositorView = CompositorViewJni.get().init(CompositorView.this, lowMemDevice,
-                windowAndroid, layerTitleCache, tabContentManager);
+        mNativeCompositorView = CompositorViewJni.get().init(
+                CompositorView.this, lowMemDevice, windowAndroid, tabContentManager);
 
         // compositor_impl_android.cc will use 565 EGL surfaces if and only if we're using a low
         // memory device, and no alpha channel is desired.  Otherwise, it will use 8888.  Since
@@ -634,7 +633,7 @@ public class CompositorView
     @NativeMethods
     interface Natives {
         long init(CompositorView caller, boolean lowMemDevice, WindowAndroid windowAndroid,
-                LayerTitleCache layerTitleCache, TabContentManager tabContentManager);
+                TabContentManager tabContentManager);
         void destroy(long nativeCompositorView, CompositorView caller);
         ResourceManager getResourceManager(long nativeCompositorView, CompositorView caller);
         void surfaceCreated(long nativeCompositorView, CompositorView caller);
