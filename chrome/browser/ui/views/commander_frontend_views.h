@@ -11,7 +11,10 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/webui/commander/commander_handler.h"
+#include "content/public/browser/notification_observer.h"
+#include "content/public/browser/notification_registrar.h"
 
 class CommanderWebView;
 
@@ -30,21 +33,32 @@ struct CommanderViewModel;
 // WebUI in its own widget and mediating between the WebUI implementation and
 // the controller.
 class CommanderFrontendViews : public commander::CommanderFrontend,
-                               public CommanderHandler::Delegate {
+                               public CommanderHandler::Delegate,
+                               public BrowserListObserver,
+                               public content::NotificationObserver {
  public:
   explicit CommanderFrontendViews(commander::CommanderBackend* backend);
   ~CommanderFrontendViews() override;
 
   // commander::CommanderFrontend overrides
+  void ToggleForBrowser(Browser* browser) override;
   void Show(Browser* browser) override;
   void Hide() override;
 
-  // CommanderHandler::Delegate overrides;
+  // CommanderHandler::Delegate overrides
   void OnTextChanged(const base::string16& text) override;
   void OnOptionSelected(size_t option_index, int result_set_id) override;
   void OnDismiss() override;
   void OnHeightChanged(int new_height) override;
   void OnHandlerEnabled(bool is_enabled) override;
+
+  // BrowserListObserver overrides
+  void OnBrowserClosing(Browser* browser) override;
+
+  // content::NotificationObserver overrides
+  void Observe(int type,
+               const content::NotificationSource& source,
+               const content::NotificationDetails& details) override;
 
  private:
   // Receives view model updates from |backend_|.
@@ -55,9 +69,6 @@ class CommanderFrontendViews : public commander::CommanderFrontend,
   // Creates a web_view_ to host the WebUI interface for |profile|. Should only
   // be called once when the system profile becomes available.
   void CreateWebView(Profile* profile);
-
-  // Called by widget delegate when widget closes.
-  void OnWindowClosing();
 
   bool is_showing() { return widget_ != nullptr; }
   bool is_web_view_created() {
@@ -79,9 +90,12 @@ class CommanderFrontendViews : public commander::CommanderFrontend,
   // |web_view_ptr_| is held here when the widget is *not* showing.
   std::unique_ptr<CommanderWebView> web_view_;
   // The browser |widget_| is attached to.
-  Browser* browser_;
+  Browser* browser_ = nullptr;
   // Whether the web UI interface is loaded and ready to accept view models.
   bool is_handler_enabled_ = false;
+  // Registrar for observing app termination.
+  content::NotificationRegistrar registrar_;
+
   base::WeakPtrFactory<CommanderFrontendViews> weak_ptr_factory_{this};
 };
 
