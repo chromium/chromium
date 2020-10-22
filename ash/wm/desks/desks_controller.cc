@@ -27,6 +27,7 @@
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
+#include "ash/wm/switchable_windows.h"
 #include "ash/wm/window_cycle_controller.h"
 #include "ash/wm/window_util.h"
 #include "base/auto_reset.h"
@@ -133,6 +134,11 @@ void MaybeUpdateShelfItems(
     add_shelf_item_update(window, /*is_on_active_desk=*/true);
 
   shelf_model->UpdateItemsForDeskChange(shelf_items_updates);
+}
+
+bool IsParentSwitchableContainer(const aura::Window* window) {
+  DCHECK(window);
+  return window->parent() && IsSwitchableContainer(window->parent());
 }
 
 }  // namespace
@@ -300,9 +306,21 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
     return;
   }
 
+  // When switching desks we want to update window activation when leaving
+  // overview or if nothing was active prior to switching desks. This will
+  // ensure that after switching desks, we will try to focus a candidate window.
+  // We will also update window activation if the currently active window is one
+  // in a switchable container. Otherwise, do not update the window activation.
+  // This will prevent some system UI windows like the app list from closing
+  // when switching desks.
+  aura::Window* active_window = window_util::GetActiveWindow();
+  const bool update_window_activation =
+      in_overview || !active_window ||
+      IsParentSwitchableContainer(active_window);
   const int starting_desk_index = GetDeskIndex(active_desk());
   animation_ = std::make_unique<DeskActivationAnimation>(
-      this, starting_desk_index, target_desk_index, source);
+      this, starting_desk_index, target_desk_index, source,
+      update_window_activation);
   animation_->Launch();
 }
 

@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/multi_user/multi_user_window_manager_impl.h"
@@ -1230,6 +1231,28 @@ TEST_F(DesksTest, MinimizedWindow) {
   ActivateDesk(desk_1);
   EXPECT_TRUE(window_state->IsMinimized());
   EXPECT_NE(win0.get(), window_util::GetActiveWindow());
+}
+
+// Tests that the app list stays open when switching desks. Regression test for
+// http://crbug.com/1138982.
+TEST_F(DesksTest, AppListStaysOpen) {
+  auto* controller = DesksController::Get();
+  NewDesk();
+  ASSERT_EQ(2u, controller->desks().size());
+
+  // Create one app window on each desk.
+  auto win0 = CreateAppWindow(gfx::Rect(400, 400));
+  ActivateDesk(controller->desks()[1].get());
+  auto win1 = CreateAppWindow(gfx::Rect(400, 400));
+
+  // Open the app list.
+  auto* app_list_controller = Shell::Get()->app_list_controller();
+  app_list_controller->ShowAppList();
+  ASSERT_TRUE(app_list_controller->IsVisible(base::nullopt));
+
+  // Switch back to desk 1. Test that the app list is still open.
+  ActivateDesk(controller->desks()[0].get());
+  EXPECT_TRUE(app_list_controller->IsVisible(base::nullopt));
 }
 
 TEST_P(DesksTest, DragWindowToDesk) {

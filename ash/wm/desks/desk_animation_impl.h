@@ -19,7 +19,8 @@ class DeskActivationAnimation : public DeskAnimationBase {
   DeskActivationAnimation(DesksController* controller,
                           int starting_desk_index,
                           int ending_desk_index,
-                          DesksSwitchSource source);
+                          DesksSwitchSource source,
+                          bool update_window_activation);
   DeskActivationAnimation(const DeskActivationAnimation&) = delete;
   DeskActivationAnimation& operator=(const DeskActivationAnimation&) = delete;
   ~DeskActivationAnimation() override;
@@ -40,6 +41,10 @@ class DeskActivationAnimation : public DeskAnimationBase {
 
   // The switch source that requested this animation.
   const DesksSwitchSource switch_source_;
+
+  // True if we should pass window activation to a window on the target desk
+  // when the desk is switched.
+  const bool update_window_activation_;
 
   // Used to measure the presentation time of a continuous gesture swipe.
   std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;

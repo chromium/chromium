@@ -51,11 +51,13 @@ bool IsForContinuousGestures(DesksSwitchSource source) {
 DeskActivationAnimation::DeskActivationAnimation(DesksController* controller,
                                                  int starting_desk_index,
                                                  int ending_desk_index,
-                                                 DesksSwitchSource source)
+                                                 DesksSwitchSource source,
+                                                 bool update_window_activation)
     : DeskAnimationBase(controller,
                         ending_desk_index,
                         IsForContinuousGestures(source)),
       switch_source_(source),
+      update_window_activation_(update_window_activation),
       presentation_time_recorder_(CreatePresentationTimeHistogramRecorder(
           desks_util::GetSelectedCompositorForPerformanceMetrics(),
           kDeskUpdateGestureHistogramName,
@@ -188,7 +190,7 @@ void DeskActivationAnimation::OnDeskSwitchAnimationFinishedInternal() {
   // proper desk here.
   controller_->ActivateDeskInternal(
       controller_->desks()[ending_desk_index_].get(),
-      /*update_window_activation=*/true);
+      update_window_activation_);
 }
 
 metrics_util::ReportCallback DeskActivationAnimation::GetReportCallback()
@@ -224,7 +226,7 @@ void DeskActivationAnimation::PrepareDeskForScreenshot(int index) {
 
   controller_->ActivateDeskInternal(
       controller_->desks()[ending_desk_index_].get(),
-      /*update_window_activation=*/true);
+      update_window_activation_);
 
   MaybeRestoreSplitView(/*refresh_snapped_windows=*/true);
 }
