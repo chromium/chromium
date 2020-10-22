@@ -347,6 +347,8 @@ def _optimize(in_folder, args):
       bundled_paths = _bundle_v3(tmp_out_dir, in_path, out_path,
                                  manifest_out_path, args, excludes)
     else:
+      # Ensure Polymer 2 and Polymer 3 request lists don't collide.
+      manifest_out_path = _request_list_path(out_path, args.host + '-v2')
       pcb_out_paths = [os.path.join(out_path, f) for f in args.html_out_files]
       bundled_paths = _bundle_v2(tmp_out_dir, in_path, out_path,
                                  manifest_out_path, args, excludes)
