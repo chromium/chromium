@@ -963,6 +963,44 @@ TEST_F(WebSocketSpdyStreamAdapterTest, WriteCallbackDestroysAdapter) {
   EXPECT_TRUE(data.AllWriteDataConsumed());
 }
 
+TEST_F(WebSocketSpdyStreamAdapterTest,
+       OnCloseOkShouldBeTranslatedToConnectionClose) {
+  spdy::SpdySerializedFrame response_headers(
+      spdy_util_.ConstructSpdyResponseHeaders(1, ResponseHeaders(), false));
+  spdy::SpdySerializedFrame close(
+      spdy_util_.ConstructSpdyRstStream(1, spdy::ERROR_CODE_NO_ERROR));
+  MockRead reads[] = {CreateMockRead(response_headers, 1),
+                      CreateMockRead(close, 2), MockRead(ASYNC, 0, 3)};
+  spdy::SpdySerializedFrame request_headers(spdy_util_.ConstructSpdyHeaders(
+      1, RequestHeaders(), DEFAULT_PRIORITY, false));
+  MockWrite writes[] = {CreateMockWrite(request_headers, 0)};
+  SequencedSocketData data(reads, writes);
+  AddSocketData(&data);
+  AddSSLSocketData();
+
+  EXPECT_CALL(mock_delegate_, OnHeadersSent());
+  EXPECT_CALL(mock_delegate_, OnHeadersReceived(_));
+
+  base::WeakPtr<SpdySession> session = CreateSpdySession();
+  base::WeakPtr<SpdyStream> stream = CreateSpdyStream(session);
+  WebSocketSpdyStreamAdapter adapter(stream, &mock_delegate_,
+                                     NetLogWithSource());
+  EXPECT_TRUE(adapter.is_initialized());
+
+  EXPECT_CALL(mock_delegate_, OnClose(ERR_CONNECTION_CLOSED));
+
+  int rv = stream->SendRequestHeaders(RequestHeaders(), MORE_DATA_TO_SEND);
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  const int kReadBufSize = 1024;
+  auto read_buf = base::MakeRefCounted<IOBuffer>(kReadBufSize);
+  TestCompletionCallback callback;
+  rv = adapter.Read(read_buf.get(), kReadBufSize, callback.callback());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  rv = callback.WaitForResult();
+  ASSERT_EQ(ERR_CONNECTION_CLOSED, rv);
+}
+
 }  // namespace test
 
 }  // namespace net

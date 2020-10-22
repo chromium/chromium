@@ -154,7 +154,12 @@ void WebSocketSpdyStreamAdapter::OnTrailers(
     const spdy::SpdyHeaderBlock& trailers) {}
 
 void WebSocketSpdyStreamAdapter::OnClose(int status) {
-  DCHECK_GT(ERR_IO_PENDING, status);
+  DCHECK_NE(ERR_IO_PENDING, status);
+  DCHECK_LE(status, 0);
+
+  if (status == OK) {
+    status = ERR_CONNECTION_CLOSED;
+  }
 
   stream_error_ = status;
   stream_ = nullptr;
