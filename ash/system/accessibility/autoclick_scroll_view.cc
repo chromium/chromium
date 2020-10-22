@@ -10,8 +10,8 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/accessibility/autoclick_menu_bubble_controller.h"
+#include "ash/system/accessibility/floating_menu_button.h"
 #include "ash/system/unified/custom_shape_button.h"
-#include "ash/system/unified/top_shortcut_button.h"
 #include "base/macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/timer/timer.h"
@@ -44,21 +44,19 @@ SkColor HoveredButtonColor() {
 }  // namespace
 
 // The close button for the automatic clicks scroll bubble.
-class AutoclickScrollCloseButton : public TopShortcutButton,
+class AutoclickScrollCloseButton : public FloatingMenuButton,
                                    public views::ButtonListener {
  public:
-  explicit AutoclickScrollCloseButton()
-      : TopShortcutButton(this, IDS_ASH_AUTOCLICK_SCROLL_CLOSE) {
+  AutoclickScrollCloseButton()
+      : FloatingMenuButton(this,
+                           kAutoclickCloseIcon,
+                           IDS_ASH_AUTOCLICK_SCROLL_CLOSE,
+                           /*flip_for_rtl=*/false,
+                           kScrollButtonCloseSizeDips,
+                           /*draw_highlight=*/false,
+                           /*is_a11y_togglable=*/false) {
     views::View::SetID(
         static_cast<int>(AutoclickScrollView::ButtonId::kCloseScroll));
-    EnableCanvasFlippingForRTLUI(false);
-    SetPreferredSize(
-        gfx::Size(kScrollButtonCloseSizeDips, kScrollButtonCloseSizeDips));
-    SetImage(
-        views::Button::STATE_NORMAL,
-        gfx::CreateVectorIcon(kAutoclickCloseIcon,
-                              AshColorProvider::Get()->GetContentLayerColor(
-                                  ContentLayerType::kIconColorPrimary)));
   }
 
   ~AutoclickScrollCloseButton() override = default;
@@ -82,7 +80,7 @@ class AutoclickScrollCloseButton : public TopShortcutButton,
     SchedulePaint();
   }
 
-  // TopShortcutButton:
+  // FloatingMenuButton:
   void PaintButtonContents(gfx::Canvas* canvas) override {
     if (hovered_) {
       gfx::Rect rect(GetContentsBounds());

@@ -156,16 +156,18 @@ views::View* CreateUserAvatarView(int user_index) {
 
   if (user_session->user_info.type == user_manager::USER_TYPE_GUEST) {
     // In guest mode, the user avatar is just a disabled button pod.
-    return new TopShortcutButton(kSystemMenuGuestIcon,
-                                 IDS_ASH_STATUS_TRAY_GUEST_LABEL);
-  } else {
-    auto* image_view = new RoundedImageView(
-        kTrayItemSize / 2, RoundedImageView::Alignment::kLeading);
-    image_view->SetCanProcessEventsWithinSubtree(false);
-    image_view->SetImage(user_session->user_info.avatar.image,
-                         gfx::Size(kTrayItemSize, kTrayItemSize));
+    auto* image_view =
+        new TopShortcutButton(/*listener=*/nullptr, kSystemMenuGuestIcon,
+                              IDS_ASH_STATUS_TRAY_GUEST_LABEL);
+    image_view->SetEnabled(false);
     return image_view;
   }
+  auto* image_view = new RoundedImageView(
+      kTrayItemSize / 2, RoundedImageView::Alignment::kLeading);
+  image_view->SetCanProcessEventsWithinSubtree(false);
+  image_view->SetImage(user_session->user_info.avatar.image,
+                       gfx::Size(kTrayItemSize, kTrayItemSize));
+  return image_view;
 }
 
 base::string16 GetUserItemAccessibleString(int user_index) {
