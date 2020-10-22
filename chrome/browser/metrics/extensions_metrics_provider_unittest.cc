@@ -134,7 +134,8 @@ TEST(ExtensionsMetricsProvider, SystemProtoEncoding) {
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager(
       metrics::MetricsStateManager::Create(
           &local_state, &enabled_state_provider, base::string16(),
-          base::Bind(&StoreNoClientInfoBackup), base::Bind(&ReturnNoBackup)));
+          base::BindRepeating(&StoreNoClientInfoBackup),
+          base::BindRepeating(&ReturnNoBackup)));
   TestExtensionsMetricsProvider extension_metrics(metrics_state_manager.get());
   extension_metrics.ProvideSystemProfileMetrics(&system_profile);
   ASSERT_EQ(2, system_profile.occupied_extension_bucket_size());

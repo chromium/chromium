@@ -18,10 +18,9 @@ void OnThreadWatcherTask(base::WaitableEvent* event) {
 }
 
 void PostAndWaitForWatchdogThread(base::WaitableEvent* event) {
-  WatchDogThread::PostDelayedTask(
-      FROM_HERE,
-      base::Bind(&OnThreadWatcherTask, event),
-      base::TimeDelta::FromSeconds(0));
+  WatchDogThread::PostDelayedTask(FROM_HERE,
+                                  base::BindOnce(&OnThreadWatcherTask, event),
+                                  base::TimeDelta::FromSeconds(0));
 
   EXPECT_TRUE(event->TimedWait(base::TimeDelta::FromSeconds(1)));
 }

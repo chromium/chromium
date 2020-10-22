@@ -193,7 +193,7 @@ class ThreadWatcher {
   // Watched thread does nothing except post callback_task to the WATCHDOG
   // Thread. This method is called on watched thread.
   static void OnPingMessage(const content::BrowserThread::ID& thread_id,
-                            const base::Closure& callback_task);
+                            base::OnceClosure callback_task);
 
   // This method resets |unresponsive_count_| to zero because watched thread is
   // responding to the ping message with a pong message.
@@ -474,10 +474,9 @@ class WatchDogThread : public base::Thread {
   // They return true iff the watchdog thread existed and the task was posted.
   // Note that even if the task is posted, there's no guarantee that it will
   // run, since the target thread may already have a Quit message in its queue.
-  static bool PostTask(const base::Location& from_here,
-                       const base::Closure& task);
+  static bool PostTask(const base::Location& from_here, base::OnceClosure task);
   static bool PostDelayedTask(const base::Location& from_here,
-                              const base::Closure& task,
+                              base::OnceClosure task,
                               base::TimeDelta delay);
 
  protected:
@@ -489,7 +488,7 @@ class WatchDogThread : public base::Thread {
   bool Started() const;
 
   static bool PostTaskHelper(const base::Location& from_here,
-                             const base::Closure& task,
+                             base::OnceClosure task,
                              base::TimeDelta delay);
 
   DISALLOW_COPY_AND_ASSIGN(WatchDogThread);

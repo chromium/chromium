@@ -921,8 +921,9 @@ bool ChromeMetricsServiceClient::RegisterForNotifications() {
 
   omnibox_url_opened_subscription_ =
       OmniboxEventGlobalTracker::GetInstance()->RegisterCallback(
-          base::Bind(&ChromeMetricsServiceClient::OnURLOpenedFromOmnibox,
-                     base::Unretained(this)));
+          base::BindRepeating(
+              &ChromeMetricsServiceClient::OnURLOpenedFromOmnibox,
+              base::Unretained(this)));
 
 #if !defined(OS_ANDROID)
   browser_activity_watcher_ = std::make_unique<BrowserActivityWatcher>(

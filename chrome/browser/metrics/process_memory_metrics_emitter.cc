@@ -651,16 +651,16 @@ void ProcessMemoryMetricsEmitter::FetchAndEmitProcessMemoryMetrics() {
 
   // The callback keeps this object alive until the callback is invoked.
   auto callback =
-      base::Bind(&ProcessMemoryMetricsEmitter::ReceivedMemoryDump, this);
+      base::BindOnce(&ProcessMemoryMetricsEmitter::ReceivedMemoryDump, this);
   std::vector<std::string> mad_list;
   for (const auto& metric : kAllocatorDumpNamesForMetrics)
     mad_list.push_back(metric.dump_name);
   if (pid_scope_ != base::kNullProcessId) {
     memory_instrumentation::MemoryInstrumentation::GetInstance()
-        ->RequestGlobalDumpForPid(pid_scope_, mad_list, callback);
+        ->RequestGlobalDumpForPid(pid_scope_, mad_list, std::move(callback));
   } else {
     memory_instrumentation::MemoryInstrumentation::GetInstance()
-        ->RequestGlobalDump(mad_list, callback);
+        ->RequestGlobalDump(mad_list, std::move(callback));
   }
 
   // Use a lambda adapter to post the results back to this sequence.

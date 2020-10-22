@@ -245,7 +245,7 @@ bool ChromeMetricsServicesManagerClient::GetSamplingRatePerMille(int* rate) {
 void ChromeMetricsServicesManagerClient::OnCrosSettingsCreated() {
   reporting_setting_observer_ =
       chromeos::StatsReportingController::Get()->AddObserver(
-          base::Bind(&OnCrosMetricsReportingSettingChange));
+          base::BindRepeating(&OnCrosMetricsReportingSettingChange));
   // Invoke the callback once initially to set the metrics reporting state.
   OnCrosMetricsReportingSettingChange();
 }
@@ -260,7 +260,7 @@ std::unique_ptr<rappor::RapporServiceImpl>
 ChromeMetricsServicesManagerClient::CreateRapporServiceImpl() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return std::make_unique<rappor::RapporServiceImpl>(
-      local_state_, base::Bind(&chrome::IsOffTheRecordSessionActive));
+      local_state_, base::BindRepeating(&chrome::IsOffTheRecordSessionActive));
 }
 
 std::unique_ptr<variations::VariationsService>
@@ -285,8 +285,8 @@ ChromeMetricsServicesManagerClient::GetMetricsStateManager() {
   if (!metrics_state_manager_) {
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
         local_state_, enabled_state_provider_.get(), GetRegistryBackupKey(),
-        base::Bind(&PostStoreMetricsClientInfo),
-        base::Bind(&GoogleUpdateSettings::LoadMetricsClientInfo));
+        base::BindRepeating(&PostStoreMetricsClientInfo),
+        base::BindRepeating(&GoogleUpdateSettings::LoadMetricsClientInfo));
   }
   return metrics_state_manager_.get();
 }

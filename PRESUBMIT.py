@@ -333,7 +333,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^chrome/browser/lifetime/',
   '^chrome/browser/media_galleries/',
   '^chrome/browser/media/',
-  '^chrome/browser/metrics/',
   '^chrome/browser/net/',
   '^chrome/browser/notifications/',
   '^chrome/browser/ntp_tiles/ntp_tiles_browsertest.cc',
