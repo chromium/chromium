@@ -13,7 +13,7 @@ const wchar_t kGCPWExtensionServiceDisplayName[] = L"GCPW Extension Service";
 
 const wchar_t kEnableGCPWExtension[] = L"enable_gcpw_extension";
 
-const wchar_t kLastPeriodicSyncTimeRegKey[] = L"last_periodic_sync";
+const wchar_t kLastPeriodicSyncTimeRegKey[] = L"extension_last_periodic_sync";
 
 }  // namespace extension
 }  // namespace credential_provider
