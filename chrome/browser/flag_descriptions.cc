@@ -3198,6 +3198,10 @@ const char kUseChimeAndroidSdkName[] = "Use Chime SDK";
 
 const char kVideoTutorialsName[] = "Enable video tutorials";
 const char kVideoTutorialsDescription[] = "Show video tutorials in Chrome";
+const char kVideoTutorialsInstantFetchName[] =
+    "Video tutorials fetch on startup";
+const char kVideoTutorialsInstantFetchDescription[] =
+    "Fetch video tutorials on startup";
 
 const char kInlineUpdateFlowName[] = "Enable Google Play inline update flow";
 const char kInlineUpdateFlowDescription[] =

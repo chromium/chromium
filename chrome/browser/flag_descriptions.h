@@ -1828,6 +1828,8 @@ extern const char kUpdateNotificationServiceImmediateShowOptionDescription[];
 
 extern const char kVideoTutorialsName[];
 extern const char kVideoTutorialsDescription[];
+extern const char kVideoTutorialsInstantFetchName[];
+extern const char kVideoTutorialsInstantFetchDescription[];
 
 extern const char kPrefetchNotificationSchedulingIntegrationName[];
 extern const char kPrefetchNotificationSchedulingIntegrationDescription[];

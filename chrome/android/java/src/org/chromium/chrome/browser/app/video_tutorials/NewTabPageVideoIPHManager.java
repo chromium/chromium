@@ -68,6 +68,8 @@ public class NewTabPageVideoIPHManager {
     }
 
     private void onFetchTutorials(List<Tutorial> tutorials) {
+        if (tutorials.isEmpty()) return;
+
         // Make a copy of the list before adding summary card.
         List<Tutorial> tutorialsCopy = new ArrayList<>(tutorials);
         addSyntheticSummaryTutorial(tutorialsCopy);

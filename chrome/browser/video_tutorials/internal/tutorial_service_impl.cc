@@ -8,9 +8,11 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "base/command_line.h"
 #include "chrome/browser/video_tutorials/internal/config.h"
 #include "chrome/browser/video_tutorials/internal/proto_conversions.h"
 #include "chrome/browser/video_tutorials/prefs.h"
+#include "chrome/browser/video_tutorials/switches.h"
 
 namespace video_tutorials {
 
@@ -53,6 +55,8 @@ void TutorialServiceImpl::OnGetTutorials(SingleItemCallback callback,
 void TutorialServiceImpl::StartFetchIfNecessary() {
   base::Time last_update_time = pref_service_->GetTime(kLastUpdatedTimeKey);
   bool needs_update =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kVideoTutorialsInstantFetch) ||
       ((base::Time::Now() - last_update_time) > Config::GetFetchFrequency());
   if (needs_update) {
     tutorial_fetcher_->StartFetchForTutorials(base::BindOnce(

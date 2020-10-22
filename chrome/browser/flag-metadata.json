@@ -4728,6 +4728,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "video-tutorials-instant-fetch",
+    "owners": [ "shaktisahu"],
+    "expiry_milestone": 90
+  },
+  {
     "name": "videotoolbox-vp9-decoding",
     "owners": [ "dalecurtis", "videostack-eng" ],
     "expiry_milestone": 90
