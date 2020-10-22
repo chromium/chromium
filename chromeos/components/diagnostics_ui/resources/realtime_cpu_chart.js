@@ -9,6 +9,7 @@ import './strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
@@ -246,4 +247,13 @@ Polymer({
         .transition()
         .on('start', this.drawChartArea_.bind(this, areaClass));
   },
+
+  /**
+   * @param {number} value of percentage.
+   * @return {string} i18n string for the percentage value.
+   * @private
+   */
+  getPercentageLabel_(value) {
+    return loadTimeData.getStringF('percentageLabel', value);
+  }
 });

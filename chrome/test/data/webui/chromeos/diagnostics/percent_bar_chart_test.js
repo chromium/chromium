@@ -7,6 +7,7 @@ import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://diagnostics/percent_bar_chart.js';
 
 import {flushTasks} from 'chrome://test/test_util.m.js';
+import * as diagnostics_test_utils from './diagnostics_test_utils.js';
 
 suite('PercentBarChartTest', () => {
   /** @type {?HTMLElement} */
@@ -54,9 +55,8 @@ suite('PercentBarChartTest', () => {
 
       assertEquals(
           header, percentBarChartElement.$$('#chartName').textContent.trim());
-      assertEquals(
-          `${percent}`,
-          percentBarChartElement.$$('#percentageLabel').textContent.trim());
+      diagnostics_test_utils.assertElementContainsText(
+          percentBarChartElement.$$('#percentageLabel'), `${percent}`);
     });
   });
 });

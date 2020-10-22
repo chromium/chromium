@@ -4,8 +4,10 @@
 
 import './diagnostics_fonts_css.js';
 import './diagnostics_shared_css.js';
+import './strings.m.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
@@ -39,10 +41,11 @@ Polymer({
    * whole number.
    * @param {number} currentValue
    * @param {number} maxValue
-   * @return {number}
+   * @return {string} i18n string for the percentage value.
    * @private
    */
   computePercentage_(currentValue, maxValue) {
-    return Math.round(100 * currentValue / maxValue);
+    return loadTimeData.getStringF(
+        'percentageLabel', Math.round(100 * currentValue / maxValue));
   }
 });

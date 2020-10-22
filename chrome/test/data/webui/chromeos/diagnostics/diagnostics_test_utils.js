@@ -41,3 +41,13 @@ export function getRealtimeCpuChartElement(element) {
 export function getResultEntries(element) {
   return element.shadowRoot.querySelectorAll('routine-result-entry');
 }
+
+/**
+ * Helper function to check if a substring exists in an element.
+ * @param {!HTMLElement} element
+ * @param {string} substring to check
+ * @throws {Error}
+ */
+export function assertElementContainsText(element, text) {
+  assertTrue(element.textContent.trim().indexOf(text) !== -1);
+}

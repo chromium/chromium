@@ -7,6 +7,7 @@ import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://diagnostics/realtime_cpu_chart.js';
 
 import {flushTasks} from 'chrome://test/test_util.m.js';
+import * as diagnostics_test_utils from './diagnostics_test_utils.js';
 
 suite('RealtimeCpuChartTest', () => {
   /** @type {?HTMLElement} */
@@ -61,12 +62,10 @@ suite('RealtimeCpuChartTest', () => {
     const user = 10;
     const system = 30;
     return initializeRealtimeCpuChart(user, system).then(() => {
-      assertEquals(
-          `${user}`,
-          realtimeCpuChartElement.$$('#legend-user>span').textContent.trim());
-      assertEquals(
-          `${system}`,
-          realtimeCpuChartElement.$$('#legend-system>span').textContent.trim());
+      diagnostics_test_utils.assertElementContainsText(
+          realtimeCpuChartElement.$$('#legend-user>span'), `${user}`);
+      diagnostics_test_utils.assertElementContainsText(
+          realtimeCpuChartElement.$$('#legend-system>span'), `${system}`);
 
       assertEquals(user, realtimeCpuChartElement.user);
       assertEquals(system, realtimeCpuChartElement.system);

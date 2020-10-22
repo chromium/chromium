@@ -528,6 +528,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_DIAGNOSTICS_MEMORY_AVAILABLE_LABEL" desc="The label for the amount of memory available on a device." translateable="false">
         Memory available
       </message>
+      <message name="IDS_DIAGNOSTICS_PERCENTAGE_LABEL" desc="The label displaying localized percentage." translateable="true">
+        <ph name="PERCENTAGE_VALUE">$1<ex>50</ex></ph>%
+      </message>
       <message name="IDS_DIAGNOSTICS_POWER_LABEL" desc="The label for the power adapter status." translateable="false">
         Power
       </message>

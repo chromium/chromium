@@ -50,13 +50,12 @@
   </g>
 </svg>
 <div id="chart-legend">
-  <!-- TODO(joonbug): Add i18n string for percent number format -->
   <div id="legend-user">
     <label>[[i18n('cpuUsageUser')]]</label>
-    <span>[[user]]</span>
+    <span>[[getPercentageLabel_(user)]]</span>
   </div>
   <div id="legend-system">
     <label>[[i18n('cpuUsageSystem')]]</label>
-    <span>[[system]]</span>
+    <span>[[getPercentageLabel_(system)]]</span>
   </div>
 </div>

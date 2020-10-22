@@ -43,6 +43,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"diagnosticsTitle", IDS_DIAGNOSTICS_TITLE},
       {"memoryAvailable", IDS_DIAGNOSTICS_MEMORY_AVAILABLE_LABEL},
       {"memoryTitle", IDS_DIAGNOSTICS_MEMORY_TITLE},
+      {"percentageLabel", IDS_DIAGNOSTICS_PERCENTAGE_LABEL},
       {"powerTime", IDS_DIAGNOSTICS_POWER_TIME_LABEL},
       {"remainingCharge", IDS_DIAGNOSTICS_REMAINING_CHARGE_LABEL},
       {"sessionLog", IDS_DIAGNOSTICS_SESSION_LOG_LABEL},
