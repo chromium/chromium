@@ -590,6 +590,7 @@ crbug.com/678850 [ android android-nexus-5 ] conformance/more/functions/vertexAt
 crbug.com/678850 [ android android-nexus-5 ] conformance/attribs/gl-vertexattribpointer.html [ Failure ]
 crbug.com/709704 [ android android-nexus-5 ] conformance/glsl/bugs/varying-arrays-should-not-be-reversed.html [ Failure ]
 crbug.com/1098311 [ android android-nexus-5 ] conformance/glsl/misc/shader-with-non-reserved-words.html [ Failure ]
+crbug.com/891456 [ android android-nexus-5 ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
 
 # Nexus 5X
 # Was timing out randomly on android_optional_gpu_tests_rel, but became so
