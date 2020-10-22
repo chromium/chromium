@@ -25,8 +25,10 @@
 #include "url/origin.h"
 
 SearchPrefetchService::PrefetchRequest::PrefetchRequest(
-    const GURL& prefetch_url)
-    : prefetch_url_(prefetch_url) {}
+    const GURL& prefetch_url,
+    base::OnceClosure report_error_callback)
+    : prefetch_url_(prefetch_url),
+      report_error_callback_(std::move(report_error_callback)) {}
 
 SearchPrefetchService::PrefetchRequest::~PrefetchRequest() = default;
 
@@ -103,12 +105,14 @@ void SearchPrefetchService::PrefetchRequest::LoadDone(
   // error. https://crbug.com/1138641
   if (!success || response_body->empty()) {
     current_status_ = SearchPrefetchStatus::kRequestFailed;
+    std::move(report_error_callback_).Run();
     return;
   }
   if (simple_loader_->ResponseInfo() && simple_loader_->ResponseInfo()->headers)
     response_code = simple_loader_->ResponseInfo()->headers->response_code();
   if (response_code != net::HTTP_OK) {
     current_status_ = SearchPrefetchStatus::kRequestFailed;
+    std::move(report_error_callback_).Run();
     return;
   }
   current_status_ = SearchPrefetchStatus::kSuccessfullyCompleted;
@@ -149,6 +153,11 @@ bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {
   if (search_terms.size() == 0)
     return false;
 
+  if (last_error_time_ticks_ + SearchPrefetchErrorBackoffDuration() >
+      base::TimeTicks::Now()) {
+    return false;
+  }
+
   if (prefetches_.size() >= SearchPrefetchMaxAttemptsPerCachingDuration())
     return false;
 
@@ -157,7 +166,10 @@ bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {
     return false;
   }
 
-  prefetches_.emplace(search_terms, std::make_unique<PrefetchRequest>(url));
+  prefetches_.emplace(
+      search_terms, std::make_unique<PrefetchRequest>(
+                        url, base::BindOnce(&SearchPrefetchService::ReportError,
+                                            base::Unretained(this))));
   prefetches_[search_terms]->StartPrefetchRequest(profile_);
   prefetch_expiry_timers_.emplace(search_terms,
                                   std::make_unique<base::OneShotTimer>());
@@ -230,4 +242,8 @@ void SearchPrefetchService::DeletePrefetch(base::string16 search_terms) {
 
   prefetches_.erase(search_terms);
   prefetch_expiry_timers_.erase(search_terms);
+}
+
+void SearchPrefetchService::ReportError() {
+  last_error_time_ticks_ = base::TimeTicks::Now();
 }

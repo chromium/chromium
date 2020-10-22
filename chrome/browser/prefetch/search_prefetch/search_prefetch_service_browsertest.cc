@@ -116,6 +116,13 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
     should_hang_requests_ = should_hang_requests;
   }
 
+  void WaitForDuration(base::TimeDelta duration) {
+    base::RunLoop run_loop;
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), duration);
+    run_loop.Run();
+  }
+
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleSearchRequest(
       const net::test_server::HttpRequest& request) {
@@ -462,6 +469,31 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
 }
 
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
+                       ErrorCausesNoFetch) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "502_on_prefetch";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  WaitUntilStatusChanges(base::ASCIIToUTF16(search_terms));
+
+  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
+      base::ASCIIToUTF16(search_terms));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kRequestFailed, prefetch_status.value());
+
+  EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(
+      GetSearchServerQueryURL("other_query")));
+}
+
 class SearchPrefetchServiceZeroCacheTimeBrowserTest
     : public SearchPrefetchBaseBrowserTest {
  public:
@@ -527,4 +559,46 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceZeroCacheTimeBrowserTest,
 
   EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(
       GetSearchServerQueryURL("prefetch_4")));
+}
+
+class SearchPrefetchServiceZeroErrorTimeBrowserTest
+    : public SearchPrefetchBaseBrowserTest {
+ public:
+  SearchPrefetchServiceZeroErrorTimeBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kSearchPrefetchServicePrefetching,
+          {{"error_backoff_duration_ms", "10"}}},
+         {{kSearchPrefetchService}, {}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceZeroErrorTimeBrowserTest,
+                       ErrorClearedAfterDuration) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "502_on_prefetch";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  WaitUntilStatusChanges(base::ASCIIToUTF16(search_terms));
+
+  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
+      base::ASCIIToUTF16(search_terms));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kRequestFailed, prefetch_status.value());
+
+  WaitForDuration(base::TimeDelta::FromMilliseconds(30));
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(
+      GetSearchServerQueryURL("other_query")));
 }

@@ -51,12 +51,16 @@ class SearchPrefetchService : public KeyedService {
   // Removes the prefetch and prefetch timers associated with |search_terms|.
   void DeletePrefetch(base::string16 search_terms);
 
+  // Records the current time to prevent prefetches for a set duration.
+  void ReportError();
+
   // Internal class to represent an ongoing or completed prefetch.
   class PrefetchRequest {
    public:
     // |service| must outlive this class and be able to manage this class's
     // lifetime.
-    explicit PrefetchRequest(const GURL& prefetch_url);
+    PrefetchRequest(const GURL& prefetch_url,
+                    base::OnceClosure report_error_callback);
     ~PrefetchRequest();
 
     PrefetchRequest(const PrefetchRequest&) = delete;
@@ -88,6 +92,9 @@ class SearchPrefetchService : public KeyedService {
     // Once a prefetch is completed successfully, the associated prefetch data
     // and metadata about the request.
     std::unique_ptr<PrefetchedResponseContainer> prefetch_response_container_;
+
+    // Called when there is a network/server error on the prefetch request.
+    base::OnceClosure report_error_callback_;
   };
 
   // Prefetches that are started are stored using search terms as a key. Only
@@ -98,6 +105,9 @@ class SearchPrefetchService : public KeyedService {
   // A group of timers to expire |prefetches_| based on the same key.
   std::map<base::string16, std::unique_ptr<base::OneShotTimer>>
       prefetch_expiry_timers_;
+
+  // The time of the last prefetch network/server error.
+  base::TimeTicks last_error_time_ticks_;
 
   Profile* profile_;
 };

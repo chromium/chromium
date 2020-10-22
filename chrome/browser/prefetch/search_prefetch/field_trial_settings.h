@@ -24,4 +24,8 @@ base::TimeDelta SearchPrefetchCachingLimit();
 // period as long as |SearchPrefetchCachingLimit()|
 size_t SearchPrefetchMaxAttemptsPerCachingDuration();
 
+// The amount of time that a network error will cause the search prefetch
+// service to stop prefetching responses.
+base::TimeDelta SearchPrefetchErrorBackoffDuration();
+
 #endif  // CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_FIELD_TRIAL_SETTINGS_H_
