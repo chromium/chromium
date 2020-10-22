@@ -407,7 +407,7 @@ QUIC_FLAG(
 // for TCP.
 QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_bbr2_use_tcp_inflight_hi_headroom,
-          false)
+          true)
 
 // If true, HTTP/3 will treat HTTP/2 specific SETTINGS as error.
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_reject_spdy_settings, false)
@@ -510,3 +510,17 @@ QUIC_FLAG(
     bool,
     FLAGS_quic_reloadable_flag_quic_process_undecryptable_packets_after_async_decrypt_callback,
     false)
+
+// When true, QUIC server will send version negotiation packets even if the
+// original connection ID was under 64bits in length.
+QUIC_FLAG(
+    bool,
+    FLAGS_quic_reloadable_flag_quic_send_version_negotiation_for_short_connection_ids,
+    false)
+
+// If true, use one of the 12 QPACK encoder stream error codes and 5 QPACK
+// decoder stream error codes and QUIC_INTERNAL_ERROR instead of the two generic
+// ones.
+QUIC_FLAG(bool,
+          FLAGS_quic_reloadable_flag_quic_granular_qpack_error_codes,
+          false)

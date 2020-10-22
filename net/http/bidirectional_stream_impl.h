@@ -15,15 +15,12 @@
 #include "net/base/load_timing_info.h"
 #include "net/base/net_export.h"
 #include "net/socket/next_proto.h"
+#include "net/third_party/quiche/src/spdy/core/spdy_header_block.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace base {
 class OneShotTimer;
 }  // namespace base
-
-namespace spdy {
-class SpdyHeaderBlock;
-}  // namespace spdy
 
 namespace net {
 

@@ -15,7 +15,6 @@
 #include <string>
 
 #include "base/notreached.h"
-#include "net/third_party/quiche/src/common/platform/api/quiche_arraysize.h"
 #include "net/third_party/quiche/src/quic/core/quic_packets.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_bug_tracker.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_flags.h"
@@ -222,9 +221,9 @@ int QuicSocketUtils::ReadPacket(int fd,
   hdr.msg_flags = 0;
 
   struct cmsghdr* cmsg = reinterpret_cast<struct cmsghdr*>(cbuf);
-  cmsg->cmsg_len = QUICHE_ARRAYSIZE(cbuf);
+  cmsg->cmsg_len = sizeof(cbuf);
   hdr.msg_control = cmsg;
-  hdr.msg_controllen = QUICHE_ARRAYSIZE(cbuf);
+  hdr.msg_controllen = sizeof(cbuf);
 
   int bytes_read = recvmsg(fd, &hdr, 0);
 
@@ -239,7 +238,7 @@ int QuicSocketUtils::ReadPacket(int fd,
 
   if (hdr.msg_flags & MSG_CTRUNC) {
     QUIC_BUG << "Incorrectly set control length: " << hdr.msg_controllen
-             << ", expected " << QUICHE_ARRAYSIZE(cbuf);
+             << ", expected " << sizeof(cbuf);
     return -1;
   }
 

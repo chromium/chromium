@@ -10,10 +10,8 @@
 
 #include "net/http/http_stream.h"
 #include "net/spdy/multiplexed_session.h"
+#include "net/third_party/quiche/src/spdy/core/spdy_header_block.h"
 
-namespace spdy {
-class SpdyHeaderBlock;
-}  // namespace spdy
 namespace net {
 
 // Base class for SPDY and QUIC HttpStream subclasses.
