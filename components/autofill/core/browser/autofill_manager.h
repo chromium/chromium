@@ -217,7 +217,7 @@ class AutofillManager : public AutofillHandler,
   void DidSuppressPopup(const FormData& form, const FormFieldData& field);
 
   // AutofillHandler:
-  void OnFocusNoLongerOnForm() override;
+  void OnFocusNoLongerOnForm(bool had_interacted_form) override;
   void OnFocusOnFormFieldImpl(const FormData& form,
                               const FormFieldData& field,
                               const gfx::RectF& bounding_box) override;
@@ -387,6 +387,9 @@ class AutofillManager : public AutofillHandler,
 
   // Exposed for testing.
   bool is_rich_query_enabled() const { return is_rich_query_enabled_; }
+
+  // Exposed for testing.
+  FormData* pending_form_data() { return pending_form_data_.get(); }
 
  private:
   // Keeps track of the filling context for a form, used to make refill attemps.

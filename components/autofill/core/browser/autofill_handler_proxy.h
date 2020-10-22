@@ -20,7 +20,7 @@ class AutofillHandlerProxy : public AutofillHandler {
                        AutofillProvider* provider);
   ~AutofillHandlerProxy() override;
 
-  void OnFocusNoLongerOnForm() override;
+  void OnFocusNoLongerOnForm(bool had_interacted_form) override;
 
   void OnDidFillAutofillFormData(const FormData& form,
                                  const base::TimeTicks timestamp) override;

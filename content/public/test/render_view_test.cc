@@ -736,6 +736,12 @@ void RenderViewTest::SetFocused(const blink::WebElement& element) {
     frame->FocusedElementChanged(element);
 }
 
+void RenderViewTest::ChangeFocusToNull(const blink::WebDocument& document) {
+  auto* frame = RenderFrameImpl::FromWebFrame(document.GetFrame());
+  if (frame)
+    frame->FocusedElementChanged(blink::WebElement());
+}
+
 void RenderViewTest::Reload(const GURL& url) {
   auto common_params = mojom::CommonNavigationParams::New(
       url, base::nullopt, blink::mojom::Referrer::New(),

@@ -128,7 +128,7 @@ class ContentAutofillDriver : public AutofillDriver,
                               const gfx::RectF& bounding_box,
                               bool autoselect_first_suggestion) override;
   void HidePopup() override;
-  void FocusNoLongerOnForm() override;
+  void FocusNoLongerOnForm(bool had_interacted_form) override;
   void FocusOnFormField(const FormData& form,
                         const FormFieldData& field,
                         const gfx::RectF& bounding_box) override;

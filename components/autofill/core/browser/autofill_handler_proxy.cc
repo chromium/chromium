@@ -74,8 +74,8 @@ void AutofillHandlerProxy::OnFormsParsed(
     const std::vector<const FormData*>& form_structures,
     const base::TimeTicks timestamp) {}
 
-void AutofillHandlerProxy::OnFocusNoLongerOnForm() {
-  provider_->OnFocusNoLongerOnForm(this);
+void AutofillHandlerProxy::OnFocusNoLongerOnForm(bool had_interacted_form) {
+  provider_->OnFocusNoLongerOnForm(this, had_interacted_form);
 }
 
 void AutofillHandlerProxy::OnDidFillAutofillFormData(

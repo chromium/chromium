@@ -255,7 +255,8 @@ void AutofillProviderAndroid::OnFormSubmitted(AutofillHandlerProxy* handler,
 }
 
 void AutofillProviderAndroid::OnFocusNoLongerOnForm(
-    AutofillHandlerProxy* handler) {
+    AutofillHandlerProxy* handler,
+    bool had_interacted_form) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!IsCurrentlyLinkedHandler(handler))
     return;

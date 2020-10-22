@@ -1137,7 +1137,13 @@ void AutofillManager::FillProfileForm(const autofill::AutofillProfile& profile,
                            /*query_id=*/-1, form, field, profile);
 }
 
-void AutofillManager::OnFocusNoLongerOnForm() {
+void AutofillManager::OnFocusNoLongerOnForm(bool had_interacted_form) {
+  // For historical reasons, Chrome takes action on this message only if focus
+  // was previously on a form with which the user had interacted.
+  // TODO(crbug.com/1140473): Remove need for this short-circuit.
+  if (!had_interacted_form)
+    return;
+
   ProcessPendingFormForUpload();
 
 #if defined(OS_CHROMEOS)

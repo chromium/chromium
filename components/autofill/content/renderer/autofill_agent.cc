@@ -216,11 +216,9 @@ void AutofillAgent::FocusedElementChanged(const WebElement& element) {
   HidePopup();
 
   if (element.IsNull()) {
-    if (!last_interacted_form_.IsNull()) {
-      // Focus moved away from the last interacted form to somewhere else on
-      // the page.
-      GetAutofillDriver()->FocusNoLongerOnForm();
-    }
+    // Focus moved away from the last interacted form (if any) to somewhere else
+    // on the page.
+    GetAutofillDriver()->FocusNoLongerOnForm(!last_interacted_form_.IsNull());
     return;
   }
 
@@ -231,7 +229,7 @@ void AutofillAgent::FocusedElementChanged(const WebElement& element) {
       (!input || last_interacted_form_ != input->Form())) {
     // The focused element is not part of the last interacted form (could be
     // in a different form).
-    GetAutofillDriver()->FocusNoLongerOnForm();
+    GetAutofillDriver()->FocusNoLongerOnForm(/*had_interacted_form=*/true);
     focus_moved_to_new_form = true;
   }
 

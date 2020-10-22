@@ -2125,6 +2125,25 @@ TEST_P(AutofillManagerStructuredProfileTest,
   EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
 }
 
+// Tests that AutofillManager ignores loss of focus events sent from the
+// renderer if the renderer did not have a previously-interacted form.
+// TODO(crbug.com/1140473): Remove this test when workaround is no longer
+// needed.
+TEST_F(AutofillManagerTest,
+       ShouldIgnoreLossOfFocusWithNoPreviouslyInteractedForm) {
+  FormData form;
+  test::CreateTestAddressFormData(&form);
+
+  autofill_manager_->UpdatePendingForm(form);
+  ASSERT_TRUE(autofill_manager_->pending_form_data()->SameFormAs(form));
+
+  // Receiving a notification that focus is no longer on the form *without* the
+  // renderer having a previously-interacted form should not result in
+  // any changes to the pending form.
+  autofill_manager_->OnFocusNoLongerOnForm(/*had_interacted_form=*/false);
+  EXPECT_TRUE(autofill_manager_->pending_form_data()->SameFormAs(form));
+}
+
 TEST_F(AutofillManagerTest,
        ShouldNotShowCreditCardsSuggestionsIfCreditCardAutofillDisabled) {
   DisableCreditCardAutofill();
@@ -6486,7 +6505,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
       form, form.fields.front(), gfx::RectF(), AutofillTickClock::NowTicks());
 
   // Simulate lost of focus on the form.
-  autofill_manager_->OnFocusNoLongerOnForm();
+  autofill_manager_->OnFocusNoLongerOnForm(true);
 }
 
 // Test that navigating with a filled form sends an upload with types matching
@@ -6591,7 +6610,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
                                                AutofillTickClock::NowTicks());
 
   // Simulate lost of focus on the form.
-  autofill_manager_->OnFocusNoLongerOnForm();
+  autofill_manager_->OnFocusNoLongerOnForm(true);
 }
 
 // Test that suggestions are returned for credit card fields with an

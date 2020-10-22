@@ -162,6 +162,9 @@ class RenderViewTest : public testing::Test {
   // Simulates |element| being focused.
   void SetFocused(const blink::WebElement& element);
 
+  // Simulates a null element being focused in |document|.
+  void ChangeFocusToNull(const blink::WebDocument& document);
+
   // Simulates a navigation with a type of reload to the given url.
   void Reload(const GURL& url);
 

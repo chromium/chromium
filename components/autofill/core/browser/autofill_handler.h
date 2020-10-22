@@ -89,8 +89,9 @@ class AutofillHandler {
   void OnFormsSeen(const std::vector<FormData>& forms,
                    const base::TimeTicks timestamp);
 
-  // Invoked when focus is no longer on form.
-  virtual void OnFocusNoLongerOnForm() = 0;
+  // Invoked when focus is no longer on form. |had_interacted_form| indicates
+  // whether focus was previously on a form with which the user had interacted.
+  virtual void OnFocusNoLongerOnForm(bool had_interacted_form) = 0;
 
   // Invoked when |form| has been filled with the value given by
   // SendFormDataToRenderer.

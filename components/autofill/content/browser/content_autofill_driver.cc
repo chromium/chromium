@@ -287,8 +287,8 @@ void ContentAutofillDriver::HidePopup() {
   autofill_handler_->OnHidePopup();
 }
 
-void ContentAutofillDriver::FocusNoLongerOnForm() {
-  autofill_handler_->OnFocusNoLongerOnForm();
+void ContentAutofillDriver::FocusNoLongerOnForm(bool had_interacted_form) {
+  autofill_handler_->OnFocusNoLongerOnForm(had_interacted_form);
 }
 
 void ContentAutofillDriver::FocusOnFormField(const FormData& form,

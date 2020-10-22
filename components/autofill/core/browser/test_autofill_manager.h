@@ -72,6 +72,7 @@ class TestAutofillManager : public AutofillManager {
   void SetCallParentUploadFormData(bool value);
 
   using AutofillManager::is_rich_query_enabled;
+  using AutofillManager::pending_form_data;
 
  private:
   TestPersonalDataManager* personal_data_;  // Weak reference.

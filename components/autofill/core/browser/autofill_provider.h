@@ -52,7 +52,8 @@ class AutofillProvider {
                                bool known_success,
                                mojom::SubmissionSource source) = 0;
 
-  virtual void OnFocusNoLongerOnForm(AutofillHandlerProxy* handler) = 0;
+  virtual void OnFocusNoLongerOnForm(AutofillHandlerProxy* handler,
+                                     bool had_interacted_form) = 0;
 
   virtual void OnFocusOnFormField(AutofillHandlerProxy* handler,
                                   const FormData& form,
