@@ -10,7 +10,7 @@ import {fakeCpuUsage} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {flushTasks} from 'chrome://test/test_util.m.js';
-import * as diagnostics_test_utils from './diagnostics_test_utils.js';
+import * as dx_utils from './diagnostics_test_utils.js';
 
 suite('CpuCardTest', () => {
   /** @type {?HTMLElement} */
@@ -56,16 +56,14 @@ suite('CpuCardTest', () => {
 
   test('CpuCardPopulated', () => {
     return initializeCpuCard(fakeCpuUsage).then(() => {
-      const dataPoints =
-          diagnostics_test_utils.getDataPointElements(cpuElement);
+      const dataPoints = dx_utils.getDataPointElements(cpuElement);
       const currentlyUsingValue = fakeCpuUsage[0].percent_usage_user +
           fakeCpuUsage[0].percent_usage_system;
       assertEquals(currentlyUsingValue, dataPoints[0].value);
       assertEquals(
           fakeCpuUsage[0].cpu_temp_degrees_celcius, dataPoints[1].value);
 
-      const cpuChart =
-          diagnostics_test_utils.getRealtimeCpuChartElement(cpuElement);
+      const cpuChart = dx_utils.getRealtimeCpuChartElement(cpuElement);
       assertEquals(fakeCpuUsage[0].percent_usage_user, cpuChart.user);
       assertEquals(fakeCpuUsage[0].percent_usage_system, cpuChart.system);
     });

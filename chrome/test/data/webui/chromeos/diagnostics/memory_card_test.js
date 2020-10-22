@@ -10,7 +10,7 @@ import {fakeMemoryUsage} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {flushTasks} from 'chrome://test/test_util.m.js';
-import * as diagnostics_test_utils from './diagnostics_test_utils.js';
+import * as dx_utils from './diagnostics_test_utils.js';
 
 suite('MemoryCardTest', () => {
   /** @type {?HTMLElement} */
@@ -56,14 +56,12 @@ suite('MemoryCardTest', () => {
 
   test('MemoryCardPopulated', () => {
     return initializeMemoryCard(fakeMemoryUsage).then(() => {
-      const dataPoints =
-          diagnostics_test_utils.getDataPointElements(memoryElement);
+      const dataPoints = dx_utils.getDataPointElements(memoryElement);
       assertEquals(fakeMemoryUsage[0].total_memory_kib, dataPoints[0].value);
       assertEquals(
           fakeMemoryUsage[0].available_memory_kib, dataPoints[1].value);
 
-      const barChart =
-          diagnostics_test_utils.getPercentBarChartElement(memoryElement);
+      const barChart = dx_utils.getPercentBarChartElement(memoryElement);
       const memInUse = fakeMemoryUsage[0].total_memory_kib -
           fakeMemoryUsage[0].available_memory_kib;
       assertEquals(fakeMemoryUsage[0].total_memory_kib, barChart.max);

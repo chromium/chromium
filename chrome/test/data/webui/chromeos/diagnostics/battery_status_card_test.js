@@ -10,7 +10,7 @@ import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo} from 'chrom
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {flushTasks} from 'chrome://test/test_util.m.js';
-import * as diagnostics_test_utils from './diagnostics_test_utils.js';
+import * as dx_utils from './diagnostics_test_utils.js';
 
 suite('BatteryStatusCardTest', () => {
   /** @type {?HTMLElement} */
@@ -64,7 +64,7 @@ suite('BatteryStatusCardTest', () => {
                fakeBatteryInfo, fakeBatteryChargeStatus, fakeBatteryHealth)
         .then(() => {
           const dataPoints =
-              diagnostics_test_utils.getDataPointElements(batteryStatusElement);
+              dx_utils.getDataPointElements(batteryStatusElement);
           assertEquals(
               fakeBatteryChargeStatus[0].current_now_milliamps,
               dataPoints[0].value);
@@ -84,8 +84,8 @@ suite('BatteryStatusCardTest', () => {
               dataPoints[5].value);
           assertEquals(fakeBatteryHealth[0].cycle_count, dataPoints[6].value);
 
-          const barChart = diagnostics_test_utils.getPercentBarChartElement(
-              batteryStatusElement);
+          const barChart =
+              dx_utils.getPercentBarChartElement(batteryStatusElement);
           assertEquals(
               fakeBatteryChargeStatus[0].charge_full_now_milliamp_hours,
               barChart.max);

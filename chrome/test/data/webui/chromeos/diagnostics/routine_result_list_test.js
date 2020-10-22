@@ -10,7 +10,7 @@ import {RoutineName} from 'chrome://diagnostics/diagnostics_types.js';
 import {ExecutionProgress, ResultStatusItem} from 'chrome://diagnostics/routine_list_executor.js';
 import {flushTasks} from 'chrome://test/test_util.m.js';
 
-import * as diagnostics_test_utils from './diagnostics_test_utils.js';
+import * as dx_utils from './diagnostics_test_utils.js';
 
 suite('RoutineResultListTest', () => {
   /** @type {?HTMLElement} */
@@ -60,7 +60,7 @@ suite('RoutineResultListTest', () => {
    * @return {!Array<!RoutineResultEntry>}
    */
   function getEntries() {
-    return diagnostics_test_utils.getResultEntries(routineResultListElement);
+    return dx_utils.getResultEntries(routineResultListElement);
   }
 
   test('ElementRendered', () => {
