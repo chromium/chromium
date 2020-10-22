@@ -351,7 +351,9 @@ void BluetoothTestWin::SimulateStatusChangeToDisconnect(
 
 void BluetoothTestWin::SimulateGattServicesDiscovered(
     BluetoothDevice* device,
-    const std::vector<std::string>& uuids) {
+    const std::vector<std::string>& uuids,
+    const std::vector<std::string>& blocked_uuids) {
+  DCHECK(blocked_uuids.empty());
   std::string address =
       device ? device->GetAddress() : remembered_device_address_;
 
@@ -988,14 +990,16 @@ void BluetoothTestWinrt::SimulateDeviceBreaksConnection(
 
 void BluetoothTestWinrt::SimulateGattServicesDiscovered(
     BluetoothDevice* device,
-    const std::vector<std::string>& uuids) {
+    const std::vector<std::string>& uuids,
+    const std::vector<std::string>& blocked_uuids) {
   if (!UsesNewBleImplementation() || !PlatformSupportsLowEnergy())
-    return BluetoothTestWin::SimulateGattServicesDiscovered(device, uuids);
+    return BluetoothTestWin::SimulateGattServicesDiscovered(device, uuids,
+                                                            blocked_uuids);
 
   auto* const ble_device =
       static_cast<TestBluetoothDeviceWinrt*>(device)->ble_device();
   DCHECK(ble_device);
-  ble_device->SimulateGattServicesDiscovered(uuids);
+  ble_device->SimulateGattServicesDiscovered(uuids, blocked_uuids);
 }
 
 void BluetoothTestWinrt::SimulateGattServicesChanged(BluetoothDevice* device) {

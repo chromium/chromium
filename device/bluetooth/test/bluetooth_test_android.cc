@@ -163,7 +163,9 @@ void BluetoothTestAndroid::SimulateGattDisconnection(BluetoothDevice* device) {
 
 void BluetoothTestAndroid::SimulateGattServicesDiscovered(
     BluetoothDevice* device,
-    const std::vector<std::string>& uuids) {
+    const std::vector<std::string>& uuids,
+    const std::vector<std::string>& blocked_uuids) {
+  DCHECK(blocked_uuids.empty()) << "Setting blocked_uuids unsupported.";
   BluetoothDeviceAndroid* device_android = nullptr;
   if (device) {
     device_android = static_cast<BluetoothDeviceAndroid*>(device);

@@ -325,14 +325,23 @@ void FakeBluetoothLEDeviceWinrt::SimulateGattNameChange(
 }
 
 void FakeBluetoothLEDeviceWinrt::SimulateGattServicesDiscovered(
-    const std::vector<std::string>& uuids) {
+    const std::vector<std::string>& uuids,
+    const std::vector<std::string>& blocked_uuids) {
   for (const auto& uuid : uuids) {
     // Attribute handles need to be unique for a given BLE device. Increasing by
     // a large number ensures enough address space for the contained
     // characteristics and descriptors.
-    fake_services_.push_back(
-        Make<FakeGattDeviceServiceWinrt>(bluetooth_test_winrt_, this, uuid,
-                                         service_attribute_handle_ += 0x0400));
+    fake_services_.push_back(Make<FakeGattDeviceServiceWinrt>(
+        bluetooth_test_winrt_, this, uuid, service_attribute_handle_ += 0x0400,
+        /*allowed=*/true));
+  }
+  for (const auto& uuid : blocked_uuids) {
+    // Attribute handles need to be unique for a given BLE device. Increasing by
+    // a large number ensures enough address space for the contained
+    // characteristics and descriptors.
+    fake_services_.push_back(Make<FakeGattDeviceServiceWinrt>(
+        bluetooth_test_winrt_, this, uuid, service_attribute_handle_ += 0x0400,
+        /*allowed=*/false));
   }
 
   DCHECK(gatt_services_callback_);

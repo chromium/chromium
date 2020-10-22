@@ -357,12 +357,14 @@ class BluetoothTestBase : public testing::Test {
   // Simulates a connection status change to disconnect.
   virtual void SimulateStatusChangeToDisconnect(BluetoothDevice* device) {}
 
-  // Simulates success of discovering services. |uuids| is used to create a
-  // service for each UUID string. Multiple UUIDs with the same value produce
-  // multiple service instances.
+  // Simulates success of discovering services. |uuids| and |blocked_uuids| are
+  // used to create a service for each UUID string. Multiple UUIDs with the same
+  // value produce multiple service instances. UUIDs in the |blocked_uuids| list
+  // create services which cannot be accessed (WinRT-only).
   virtual void SimulateGattServicesDiscovered(
       BluetoothDevice* device,
-      const std::vector<std::string>& uuids) {}
+      const std::vector<std::string>& uuids,
+      const std::vector<std::string>& blocked_uuids = {}) {}
 
   // Simulates a GATT Services changed event.
   virtual void SimulateGattServicesChanged(BluetoothDevice* device) {}

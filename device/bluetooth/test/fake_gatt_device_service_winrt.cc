@@ -34,6 +34,8 @@ using ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::
     GattDeviceServicesResult;
 using ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::GattOpenStatus;
 using ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::
+    GattOpenStatus_AccessDenied;
+using ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::
     GattOpenStatus_AlreadyOpened;
 using ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::
     GattOpenStatus_Success;
@@ -55,11 +57,13 @@ FakeGattDeviceServiceWinrt::FakeGattDeviceServiceWinrt(
     BluetoothTestWinrt* bluetooth_test_winrt,
     ComPtr<FakeBluetoothLEDeviceWinrt> fake_device,
     base::StringPiece uuid,
-    uint16_t attribute_handle)
+    uint16_t attribute_handle,
+    bool allowed)
     : bluetooth_test_winrt_(bluetooth_test_winrt),
       fake_device_(std::move(fake_device)),
       uuid_(BluetoothUUID::GetCanonicalValueAsGUID(uuid)),
       attribute_handle_(attribute_handle),
+      allowed_(allowed),
       characteristic_attribute_handle_(attribute_handle_) {
   fake_device_->AddReference();
 }
@@ -118,9 +122,13 @@ HRESULT FakeGattDeviceServiceWinrt::OpenAsync(
   if (sharing_mode != GattSharingMode_SharedReadAndWrite)
     return E_NOTIMPL;
 
-  GattOpenStatus status =
-      opened_ ? GattOpenStatus_AlreadyOpened : GattOpenStatus_Success;
-  opened_ = true;
+  GattOpenStatus status;
+  if (allowed_) {
+    status = opened_ ? GattOpenStatus_AlreadyOpened : GattOpenStatus_Success;
+    opened_ = true;
+  } else {
+    status = GattOpenStatus_AccessDenied;
+  }
 
   auto async_op = Make<base::win::AsyncOperation<GattOpenStatus>>();
   base::ThreadTaskRunnerHandle::Get()->PostTask(

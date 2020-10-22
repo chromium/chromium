@@ -54,7 +54,8 @@ class BluetoothTestMac : public BluetoothTestBase {
   void SimulateGattDisconnectionError(BluetoothDevice* device) override;
   void SimulateGattServicesDiscovered(
       BluetoothDevice* device,
-      const std::vector<std::string>& uuids) override;
+      const std::vector<std::string>& uuids,
+      const std::vector<std::string>& blocked_uuids = {}) override;
   void SimulateGattServicesChanged(BluetoothDevice* device) override;
   void SimulateGattServiceRemoved(BluetoothRemoteGattService* service) override;
   void SimulateGattCharacteristic(BluetoothRemoteGattService* service,

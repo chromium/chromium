@@ -44,7 +44,8 @@ class BluetoothTestWin : public BluetoothTestBase,
   void SimulateStatusChangeToDisconnect(BluetoothDevice* device) override;
   void SimulateGattServicesDiscovered(
       BluetoothDevice* device,
-      const std::vector<std::string>& uuids) override;
+      const std::vector<std::string>& uuids,
+      const std::vector<std::string>& blocked_uuids = {}) override;
   void SimulateGattServiceRemoved(BluetoothRemoteGattService* service) override;
   void SimulateGattCharacteristic(BluetoothRemoteGattService* service,
                                   const std::string& uuid,
@@ -204,7 +205,8 @@ class BluetoothTestWinrt
   void SimulateStatusChangeToDisconnect(BluetoothDevice* device) override;
   void SimulateGattServicesDiscovered(
       BluetoothDevice* device,
-      const std::vector<std::string>& uuids) override;
+      const std::vector<std::string>& uuids,
+      const std::vector<std::string>& blocked_uuids = {}) override;
   void SimulateGattServicesChanged(BluetoothDevice* device) override;
   void SimulateGattServiceRemoved(BluetoothRemoteGattService* service) override;
   void SimulateGattServicesDiscoveryError(BluetoothDevice* device) override;

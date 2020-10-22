@@ -344,7 +344,9 @@ void BluetoothTestMac::SimulateGattDisconnectionError(BluetoothDevice* device) {
 
 void BluetoothTestMac::SimulateGattServicesDiscovered(
     BluetoothDevice* device,
-    const std::vector<std::string>& uuids) {
+    const std::vector<std::string>& uuids,
+    const std::vector<std::string>& blocked_uuids) {
+  DCHECK(blocked_uuids.empty()) << "Setting blocked_uuids unsupported.";
   AddServicesToDeviceMac(device, uuids);
   [GetMockCBPeripheral(device) mockDidDiscoverEvents];
 }

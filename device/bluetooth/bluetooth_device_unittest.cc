@@ -2020,6 +2020,36 @@ TEST_F(BluetoothTest, MAYBE_GetGattServices_DiscoveryError) {
   EXPECT_EQ(0u, device->GetGattServices().size());
 }
 
+#if defined(OS_WIN)
+TEST_P(BluetoothTestWinrtOnly, GattServicesDiscovered_SomeServicesBlocked) {
+#else
+TEST_F(BluetoothTest, DISABLED_GattServicesDiscovered_SomeServicesBlocked) {
+#endif
+  if (!PlatformSupportsLowEnergy()) {
+    LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
+    return;
+  }
+  InitWithFakeAdapter();
+  StartLowEnergyDiscoverySession();
+  TestBluetoothAdapterObserver observer(adapter_);
+  BluetoothDevice* device = SimulateLowEnergyDevice(3);
+  ResetEventCounts();
+  ASSERT_TRUE(ConnectGatt(device));
+  EXPECT_EQ(1, gatt_discovery_attempts_);
+  EXPECT_EQ(0, observer.gatt_services_discovered_count());
+
+  SimulateGattServicesDiscovered(
+      device,
+      /*uuids=*/{kTestUUIDGenericAccess, kTestUUIDHeartRate},
+      /*blocked_uuids=*/{kTestUUIDU2f});
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(device->IsGattServicesDiscoveryComplete());
+  EXPECT_EQ(1, observer.gatt_services_discovered_count());
+  // Even though some services are blocked they should still appear in the list.
+  EXPECT_EQ(3u, device->GetGattServices().size());
+}
+
 #if defined(OS_CHROMEOS) || defined(OS_LINUX)
 TEST_F(BluetoothTest, GetDeviceTransportType) {
   if (!PlatformSupportsLowEnergy()) {

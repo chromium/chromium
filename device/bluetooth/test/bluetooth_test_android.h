@@ -36,7 +36,8 @@ class BluetoothTestAndroid : public BluetoothTestBase {
   void SimulateGattDisconnection(BluetoothDevice* device) override;
   void SimulateGattServicesDiscovered(
       BluetoothDevice* device,
-      const std::vector<std::string>& uuids) override;
+      const std::vector<std::string>& uuids,
+      const std::vector<std::string>& blocked_uuids = {}) override;
   void SimulateGattServicesDiscoveryError(BluetoothDevice* device) override;
   void SimulateGattCharacteristic(BluetoothRemoteGattService* service,
                                   const std::string& uuid,

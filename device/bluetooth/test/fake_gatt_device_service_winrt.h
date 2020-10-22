@@ -35,7 +35,8 @@ class FakeGattDeviceServiceWinrt
       BluetoothTestWinrt* bluetooth_test_winrt,
       Microsoft::WRL::ComPtr<FakeBluetoothLEDeviceWinrt> fake_device,
       base::StringPiece uuid,
-      uint16_t attribute_handle);
+      uint16_t attribute_handle,
+      bool allowed);
   ~FakeGattDeviceServiceWinrt() override;
 
   // IGattDeviceService:
@@ -117,10 +118,11 @@ class FakeGattDeviceServiceWinrt
   void SimulateGattCharacteristic(base::StringPiece uuid, int proporties);
 
  private:
-  BluetoothTestWinrt* bluetooth_test_winrt_;
-  Microsoft::WRL::ComPtr<FakeBluetoothLEDeviceWinrt> fake_device_;
-  GUID uuid_;
-  uint16_t attribute_handle_;
+  BluetoothTestWinrt* const bluetooth_test_winrt_;
+  const Microsoft::WRL::ComPtr<FakeBluetoothLEDeviceWinrt> fake_device_;
+  const GUID uuid_;
+  const uint16_t attribute_handle_;
+  const bool allowed_;
   bool opened_ = false;
 
   std::vector<Microsoft::WRL::ComPtr<FakeGattCharacteristicWinrt>>
