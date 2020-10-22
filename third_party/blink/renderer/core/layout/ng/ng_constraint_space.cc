@@ -98,6 +98,10 @@ NGConstraintSpace NGConstraintSpace::CreateFromLayoutObject(
         !cell_style.LogicalHeight().IsAuto() ||
         !table_style.LogicalHeight().IsAuto());
     const LayoutBlock& cell_block = To<LayoutBlock>(*cell.ToLayoutObject());
+    if (RuntimeEnabledFeatures::TableCellNewPercentsEnabled() && fixed_block) {
+      fixed_block_is_definite = cell_block.HasDefiniteLogicalHeight() ||
+                                !table_style.LogicalHeight().IsAuto();
+    }
     builder.SetTableCellBorders(
         {cell_block.BorderStart(), cell_block.BorderEnd(),
          cell_block.BorderBefore(), cell_block.BorderAfter()});

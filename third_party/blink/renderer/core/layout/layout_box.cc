@@ -4947,7 +4947,8 @@ LayoutUnit LayoutBox::ComputePercentageLogicalHeight(
   // at the child's computed height.
   bool subtract_border_and_padding =
       IsTable() ||
-      (cb->IsTableCell() && !skipped_auto_height_containing_block &&
+      (!RuntimeEnabledFeatures::TableCellNewPercentsEnabled() &&
+       cb->IsTableCell() && !skipped_auto_height_containing_block &&
        cb->HasOverrideLogicalHeight() &&
        StyleRef().BoxSizing() == EBoxSizing::kContentBox);
   if (subtract_border_and_padding) {
@@ -5177,7 +5178,8 @@ LayoutUnit LayoutBox::ComputeReplacedLogicalHeightUsing(
         while (!IsA<LayoutView>(cb) &&
                (cb->StyleRef().LogicalHeight().IsAuto() ||
                 cb->StyleRef().LogicalHeight().IsPercentOrCalc())) {
-          if (cb->IsTableCell()) {
+          if (!RuntimeEnabledFeatures::TableCellNewPercentsEnabled() &&
+              cb->IsTableCell()) {
             // Don't let table cells squeeze percent-height replaced elements
             // <http://bugs.webkit.org/show_bug.cgi?id=15359>
             available_height =
@@ -5191,8 +5193,12 @@ LayoutUnit LayoutBox::ComputeReplacedLogicalHeightUsing(
           cb = cb->ContainingBlock();
         }
       }
+
       return AdjustContentBoxLogicalHeightForBoxSizing(
-          ValueForLength(logical_height, available_height));
+          (RuntimeEnabledFeatures::TableCellNewPercentsEnabled() &&
+           available_height == kIndefiniteSize)
+              ? IntrinsicLogicalHeight()
+              : ValueForLength(logical_height, available_height));
     }
     case Length::kMinContent:
     case Length::kMaxContent:

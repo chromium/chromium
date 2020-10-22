@@ -189,7 +189,8 @@ LayoutUnit ResolveBlockLengthInternal(
       // TODO(crbug.com/285744): FF/Edge don't do this. Determine if there
       // would be compat issues for matching their behavior.
       if (style.BoxSizing() == EBoxSizing::kBorderBox ||
-          (length.IsPercentOrCalc() &&
+          (!RuntimeEnabledFeatures::TableCellNewPercentsEnabled() &&
+           length.IsPercentOrCalc() &&
            constraint_space.TableCellChildLayoutMode() ==
                NGTableCellChildLayoutMode::kLayout)) {
         value = std::max(border_padding.BlockSum(), value);
@@ -577,8 +578,8 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
   if (logical_height.IsPercentOrCalc() &&
       constraint_space.TableCellChildLayoutMode() ==
           NGTableCellChildLayoutMode::kMeasureRestricted &&
-      (style.OverflowY() == EOverflow::kAuto ||
-       style.OverflowY() == EOverflow::kScroll))
+      (style.OverflowBlockDirection() == EOverflow::kAuto ||
+       style.OverflowBlockDirection() == EOverflow::kScroll))
     return min_max.min_size;
 
   // TODO(cbiesinger): Audit callers of ResolveMainBlockLength to see whether

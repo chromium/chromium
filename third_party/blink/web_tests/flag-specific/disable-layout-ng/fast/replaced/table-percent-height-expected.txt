@@ -12,24 +12,24 @@ PASS successfullyParsed is true
 
 TEST COMPLETE
 
-PASS getWidth('canvas-75') is '300px'
-PASS getHeight('canvas-75') is '150px'
+FAIL getWidth('canvas-75') should be 300px. Was 225px.
+FAIL getHeight('canvas-75') should be 150px. Was 112.5px.
 PASS getWidth('canvas-100') is '300px'
 PASS getHeight('canvas-100') is '150px'
 PASS getWidth('embed-75') is '300px'
-PASS getHeight('embed-75') is '150px'
+FAIL getHeight('embed-75') should be 150px. Was 112.5px.
 PASS getWidth('embed-100') is '300px'
 PASS getHeight('embed-100') is '150px'
-PASS getWidth('img-75') is '100px'
-PASS getHeight('img-75') is '100px'
+FAIL getWidth('img-75') should be 100px. Was 75px.
+FAIL getHeight('img-75') should be 100px. Was 75px.
 PASS getWidth('img-100') is '100px'
 PASS getHeight('img-100') is '100px'
-PASS getWidth('img-75-nested') is '100px'
-PASS getHeight('img-75-nested') is '100px'
+FAIL getWidth('img-75-nested') should be 100px. Was 75px.
+FAIL getHeight('img-75-nested') should be 100px. Was 75px.
 PASS getWidth('img-100-nested') is '100px'
 PASS getHeight('img-100-nested') is '100px'
 PASS getWidth('object-75') is '300px'
-PASS getHeight('object-75') is '150px'
+FAIL getHeight('object-75') should be 150px. Was 112.5px.
 PASS getWidth('object-100') is '300px'
 PASS getHeight('object-100') is '150px'
 PASS getWidth('button-75') is getWidth('button-100')
@@ -44,8 +44,8 @@ PASS getHeight('input-checkbox-75') is getHeight('input-checkbox-100')
 PASS getWidth('input-file-75') is getWidth('input-file-100')
 PASS getHeight('input-file-75') != '0px' is true
 PASS getHeight('input-file-75') is getHeight('input-file-100')
-PASS getWidth('input-image-75') is '100px'
-PASS getHeight('input-image-75') is '100px'
+FAIL getWidth('input-image-75') should be 100px. Was 75px.
+FAIL getHeight('input-image-75') should be 100px. Was 75px.
 PASS getWidth('input-image-100') is '100px'
 PASS getHeight('input-image-100') is '100px'
 PASS getWidth('input-radio-75') is getWidth('input-radio-100')

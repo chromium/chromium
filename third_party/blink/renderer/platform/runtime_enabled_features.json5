@@ -1849,6 +1849,11 @@
       name: "SystemWakeLock",
       status: "experimental",
     },
+    {
+      name: "TableCellNewPercents",
+      depends_on: ["LayoutNG"],
+      status: "stable",
+    },
     // For unit tests.
     {
       name: "TestFeature",

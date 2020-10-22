@@ -1,4 +1,4 @@
-FAIL document.getElementById('cell-contents').offsetHeight should be 78. Was 88.
+PASS document.getElementById('cell-contents').offsetHeight is 78
 FAIL document.getElementById('cell-contents').offsetWidth should be 88. Was 98.
 PASS successfullyParsed is true
 
