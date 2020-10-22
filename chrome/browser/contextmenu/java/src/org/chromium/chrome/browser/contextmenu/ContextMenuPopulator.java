@@ -42,4 +42,9 @@ public interface ContextMenuPopulator {
      * Determines whether the the containing browser is switched to incognito mode.
      */
     boolean isIncognito();
+
+    /**
+     * @return The title of current web page.
+     */
+    String getPageTitle();
 }

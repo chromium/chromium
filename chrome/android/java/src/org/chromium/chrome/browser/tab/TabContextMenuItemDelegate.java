@@ -75,6 +75,11 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     }
 
     @Override
+    public String getPageTitle() {
+        return mTab.getTitle();
+    }
+
+    @Override
     public WebContents getWebContents() {
         return mTab.getWebContents();
     }

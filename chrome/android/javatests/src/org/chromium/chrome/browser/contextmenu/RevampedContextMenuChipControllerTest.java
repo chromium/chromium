@@ -21,6 +21,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.lens.LensQueryResult;
+import org.chromium.chrome.browser.share.LensUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DummyUiActivity;
@@ -68,10 +70,11 @@ public class RevampedContextMenuChipControllerTest extends DummyUiActivityTestCa
     @SmallTest
     public void testChipNotShownWhenCallbackReturnsFalse() {
         RevampedContextMenuChipController chipController = new RevampedContextMenuChipController(
-                getActivity(), mAnchorView, mLensAsyncManager, () -> {});
+                getActivity(), mAnchorView, mLensAsyncManager);
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { chipController.handleImageClassification(false); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            chipController.handleImageClassification((new LensQueryResult.Builder()).build());
+        });
 
         assertNotNull("Anchor view was not initialized.", mAnchorView);
         assertNull("Popup window was initialized unexpectedly.",
@@ -82,9 +85,14 @@ public class RevampedContextMenuChipControllerTest extends DummyUiActivityTestCa
     @SmallTest
     public void testChipShownWhenCallbackReturnsTrue() {
         RevampedContextMenuChipController chipController = new RevampedContextMenuChipController(
-                getActivity(), mAnchorView, mLensAsyncManager, () -> {});
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { chipController.handleImageClassification(true); });
+                getActivity(), mAnchorView, mLensAsyncManager);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            chipController.handleImageClassification(
+                    (new LensQueryResult.Builder())
+                            .withIsShoppyIntent(true)
+                            .withLensIntentType(LensUtils.getLensShoppingIntentType())
+                            .build());
+        });
 
         assertNotNull("Anchor view was not initialized.", mAnchorView);
         assertNotNull("Popup window was not initialized.",
@@ -97,7 +105,7 @@ public class RevampedContextMenuChipControllerTest extends DummyUiActivityTestCa
     @SmallTest
     public void testDismissChipWhenNotShownBeforeClassificationReturned() {
         RevampedContextMenuChipController chipController = new RevampedContextMenuChipController(
-                getActivity(), mAnchorView, mLensAsyncManager, () -> {});
+                getActivity(), mAnchorView, mLensAsyncManager);
         TestThreadUtils.runOnUiThreadBlocking(() -> { chipController.dismissLensChipIfShowing(); });
 
         assertNotNull("Anchor view was not initialized.", mAnchorView);
@@ -109,9 +117,13 @@ public class RevampedContextMenuChipControllerTest extends DummyUiActivityTestCa
     @SmallTest
     public void testDismissChipWhenShown() {
         RevampedContextMenuChipController chipController = new RevampedContextMenuChipController(
-                getActivity(), mAnchorView, mLensAsyncManager, () -> {});
+                getActivity(), mAnchorView, mLensAsyncManager);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            chipController.handleImageClassification(true);
+            chipController.handleImageClassification(
+                    (new LensQueryResult.Builder())
+                            .withIsShoppyIntent(true)
+                            .withLensIntentType(LensUtils.getLensShoppingIntentType())
+                            .build());
             chipController.dismissLensChipIfShowing();
         });
 
@@ -126,7 +138,7 @@ public class RevampedContextMenuChipControllerTest extends DummyUiActivityTestCa
     @SmallTest
     public void testExpectedVerticalPxNeededForChip() {
         RevampedContextMenuChipController chipController = new RevampedContextMenuChipController(
-                getActivity(), mAnchorView, mLensAsyncManager, () -> {});
+                getActivity(), mAnchorView, mLensAsyncManager);
         assertEquals("Vertical px is not matching the expectation",
                 (int) (EXPECTED_VERTICAL_DP * mMeasuredDeviceDensity),
                 chipController.getVerticalPxNeededForChip());
@@ -136,7 +148,7 @@ public class RevampedContextMenuChipControllerTest extends DummyUiActivityTestCa
     @SmallTest
     public void testExpectedChipTextMaxWidthPx() {
         RevampedContextMenuChipController chipController = new RevampedContextMenuChipController(
-                getActivity(), mAnchorView, mLensAsyncManager, () -> {});
+                getActivity(), mAnchorView, mLensAsyncManager);
         assertEquals("Vertical px is not matching the expectation",
                 (int) (EXPECTEED_CHIP_WIDTH_DP * mMeasuredDeviceDensity),
                 chipController.getChipTextMaxWidthPx());

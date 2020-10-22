@@ -57,4 +57,9 @@ public class TabContextMenuPopulator implements ContextMenuPopulator {
     public boolean isIncognito() {
         return mPopulator.isIncognito();
     }
+
+    @Override
+    public String getPageTitle() {
+        return mPopulator.getPageTitle();
+    }
 }

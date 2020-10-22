@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gsa.GSAState;
+import org.chromium.chrome.browser.lens.LensQueryResult;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.metrics.UkmRecorder;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
@@ -85,6 +86,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
     private final ExternalAuthUtils mExternalAuthUtils;
     private final ContextMenuParams mParams;
+    // A predefined LensQueryResult used for Lens Shopping context menu item selection.
+    private final LensQueryResult mLensQueryResultWithShoppingItent =
+            (new LensQueryResult.Builder()).withIsShoppyIntent(true).build();
     private boolean mEnableLensWithSearchByImageText;
     private @Nullable UkmRecorder.Bridge mUkmRecorderBridge;
     private ContextMenuNativeDelegate mNativeDelegate;
@@ -585,6 +589,11 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     }
 
     @Override
+    public String getPageTitle() {
+        return mItemDelegate.getPageTitle();
+    }
+
+    @Override
     public boolean onItemSelected(int itemId) {
         if (itemId == R.id.contextmenu_open_in_new_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_NEW_TAB);
@@ -680,35 +689,33 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             ShareHelper.shareWithLastUsedComponent(shareParams);
         } else if (itemId == R.id.contextmenu_search_with_google_lens) {
             recordContextMenuSelection(ContextMenuUma.Action.SEARCH_WITH_GOOGLE_LENS);
-            searchWithGoogleLens(mItemDelegate.isIncognito());
+            searchWithGoogleLens(/*requiresConfirmation=*/false, /*lensQueryResult=*/null);
             SharedPreferencesManager prefManager = SharedPreferencesManager.getInstance();
             prefManager.writeBoolean(
                     ChromePreferenceKeys.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS_CLICKED, true);
         } else if (itemId == R.id.contextmenu_search_by_image) {
             if (mEnableLensWithSearchByImageText) {
                 recordContextMenuSelection(ContextMenuUma.Action.SEARCH_WITH_GOOGLE_LENS);
-                searchWithGoogleLens(mItemDelegate.isIncognito());
+                searchWithGoogleLens(/*requiresConfirmation=*/false, /*lensQueryResult=*/null);
             } else {
                 recordContextMenuSelection(ContextMenuUma.Action.SEARCH_BY_IMAGE);
                 mNativeDelegate.searchForImage();
             }
         } else if (itemId == R.id.contextmenu_shop_similar_products) {
             recordContextMenuSelection(ContextMenuUma.Action.SHOP_SIMILAR_PRODUCTS);
-            shopWithGoogleLens(mItemDelegate.isIncognito(),
-                    /*requiresConfirmation=*/true);
+            searchWithGoogleLens(/*requiresConfirmation=*/true, mLensQueryResultWithShoppingItent);
             SharedPreferencesManager prefManager = SharedPreferencesManager.getInstance();
             prefManager.writeBoolean(
                     ChromePreferenceKeys.CONTEXT_MENU_SHOP_SIMILAR_PRODUCTS_CLICKED, true);
         } else if (itemId == R.id.contextmenu_shop_image_with_google_lens) {
             recordContextMenuSelection(ContextMenuUma.Action.SHOP_IMAGE_WITH_GOOGLE_LENS);
-            shopWithGoogleLens(mItemDelegate.isIncognito(), /*requiresConfirmation=*/false);
+            searchWithGoogleLens(/*requiresConfirmation=*/false, mLensQueryResultWithShoppingItent);
             SharedPreferencesManager prefManager = SharedPreferencesManager.getInstance();
             prefManager.writeBoolean(
                     ChromePreferenceKeys.CONTEXT_MENU_SHOP_IMAGE_WITH_GOOGLE_LENS_CLICKED, true);
         } else if (itemId == R.id.contextmenu_search_similar_products) {
             recordContextMenuSelection(ContextMenuUma.Action.SEARCH_SIMILAR_PRODUCTS);
-            shopWithGoogleLens(mItemDelegate.isIncognito(),
-                    /*requiresConfirmation=*/true);
+            searchWithGoogleLens(/*requiresConfirmation=*/true, mLensQueryResultWithShoppingItent);
             SharedPreferencesManager prefManager = SharedPreferencesManager.getInstance();
             prefManager.writeBoolean(
                     ChromePreferenceKeys.CONTEXT_MENU_SEARCH_SIMILAR_PRODUCTS_CLICKED, true);
@@ -768,31 +775,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     }
 
     /**
-     * Search for the image by intenting to the lens app with the image data attached.
-     * @param isIncognito Whether the image to search came from an incognito context.
-     */
-    private void searchWithGoogleLens(boolean isIncognito) {
-        mNativeDelegate.retrieveImageForShare(ContextMenuImageFormat.PNG, (Uri imageUri) -> {
-            ShareHelper.shareImageWithGoogleLens(getWindow(), imageUri, isIncognito,
-                    mParams.getSrcUrl(), mParams.getTitleText(),
-                    /* isShoppyImage*/ false, /* requiresConfirmation*/ false);
-        });
-    }
-
-    /**
-     * Search for the image by intenting to the lens app with the image data attached.
-     * @param isIncognito Whether the image to search came from an incognito context.
-     * @param requiresConfirmation Whether the request requires an account dialog.
-     */
-    private void shopWithGoogleLens(boolean isIncognito, boolean requiresConfirmation) {
-        mNativeDelegate.retrieveImageForShare(ContextMenuImageFormat.PNG, (Uri imageUri) -> {
-            ShareHelper.shareImageWithGoogleLens(getWindow(), imageUri, isIncognito,
-                    mParams.getSrcUrl(), mParams.getTitleText(), /* isShoppyImage*/ true,
-                    requiresConfirmation);
-        });
-    }
-
-    /**
      * Share the image that triggered the current context menu.
      * Package-private, allowing access only from the context menu item to ensure that
      * it will use the right activity set when the menu was displayed.
@@ -824,6 +806,20 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
      */
     protected TemplateUrlService getTemplateUrlService() {
         return TemplateUrlServiceFactory.get();
+    }
+
+    /**
+     * Search for the image by intenting to the lens app with the image data attached.
+     * @param requiresConfirmation Whether the request requires an account dialog.
+     * @param lensQueryResult A wrapper object which contains the results for the Lens image query.
+     */
+    protected void searchWithGoogleLens(
+            boolean requiresConfirmation, @Nullable LensQueryResult lensQueryResult) {
+        mNativeDelegate.retrieveImageForShare(ContextMenuImageFormat.PNG, (Uri imageUri) -> {
+            ShareHelper.shareImageWithGoogleLens(getWindow(), imageUri, mItemDelegate.isIncognito(),
+                    mParams.getSrcUrl(), mParams.getTitleText(), lensQueryResult,
+                    requiresConfirmation);
+        });
     }
 
     /**

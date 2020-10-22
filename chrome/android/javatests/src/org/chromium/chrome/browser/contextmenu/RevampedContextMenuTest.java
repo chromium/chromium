@@ -422,19 +422,16 @@ public class RevampedContextMenuTest implements DownloadTestRule.CustomMainActiv
         RevampedContextMenuCoordinator menuCoordinator =
                 RevampedContextMenuUtils.openContextMenu(tab, "testImage");
         // Needs to run on UI thread so creation happens on same thread as dismissal.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> menuCoordinator.simulateShoppyImageClassificationForTesting());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            menuCoordinator.simulateShoppyImageClassificationForTesting();
+            Assert.assertTrue("Chip popoup not showing.",
+                    menuCoordinator.getCurrentPopupWindowForTesting().isShowing());
+            menuCoordinator.clickChipForTesting();
+        });
 
-        Assert.assertTrue("Chip popoup not showing.",
-                menuCoordinator.getCurrentPopupWindowForTesting().isShowing());
-
-        RevampedContextMenuUtils.selectAlreadyOpenedContextMenuChipWithExpectedIntent(
-                InstrumentationRegistry.getInstrumentation(), mDownloadTestRule.getActivity(),
-                menuCoordinator, "testImage", R.id.contextmenu_shop_image_with_google_lens,
-                "com.google.android.googlequicksearchbox");
         Assert.assertEquals("Selection histogram pings not equal to one", 1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "ContextMenu.SelectedOptionAndroid.Image"));
+                RecordHistogram.getHistogramValueCountForTesting("ContextMenu.LensChip.Event",
+                        RevampedContextMenuChipController.ChipEvent.CLICKED));
         Assert.assertFalse("Chip popoup still showing.",
                 menuCoordinator.getCurrentPopupWindowForTesting().isShowing());
     }

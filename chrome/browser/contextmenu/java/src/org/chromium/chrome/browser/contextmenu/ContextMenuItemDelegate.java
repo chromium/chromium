@@ -33,6 +33,11 @@ public interface ContextMenuItemDelegate {
     void onDestroy();
 
     /**
+     * @return The title of the current tab associated with this delegate..
+     */
+    String getPageTitle();
+
+    /**
      * @return The web contents of the current tab owned by this delegate.
      */
     WebContents getWebContents();

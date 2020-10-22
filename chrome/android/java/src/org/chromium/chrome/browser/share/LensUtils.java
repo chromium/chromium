@@ -13,7 +13,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
@@ -21,6 +20,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensController;
+import org.chromium.chrome.browser.lens.LensQueryResult;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.IdentityServicesProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -61,7 +61,7 @@ public class LensUtils {
             "orderShareImageBeforeLens";
     private static final String MIN_AGSA_VERSION_NAME_FOR_LENS_POSTCAPTURE = "10.65";
     private static final String MIN_AGSA_VERSION_NAME_FOR_LENS_CHROME_SHOPPING_INTENT = "11.16";
-    private static final String LENS_INTENT_TYPE_LENS_CHROME_SHOPPING = "18";
+    private static final int LENS_INTENT_TYPE_LENS_CHROME_SHOPPING = 18;
     private static final String LENS_SHOPPING_FEATURE_FLAG_VARIANT_NAME = "lensShopVariation";
     private static final String LENS_DEFAULT_SHOPPING_URL_PATTERNS =
             "^https://www.google.com/shopping/.*|^https://www.google.com/.*tbm=shop.*";
@@ -72,15 +72,6 @@ public class LensUtils {
     private static boolean sFakePassableLensEnvironmentForTesting;
     private static boolean sFakeImageUrlInShoppingAllowlistForTesting;
     private static String sFakeVariationsForTesting;
-    /** Supported Lens intent types. */
-    @IntDef({
-            IntentType.DEFAULT,
-            IntentType.SHOPPING,
-    })
-    public @interface IntentType {
-        int DEFAULT = 0;
-        int SHOPPING = 1;
-    }
 
     /*
      * If true, short-circuit the version name intent check to always return a high enough version.
@@ -133,7 +124,7 @@ public class LensUtils {
                 final Intent lensIntent =
                         getShareWithGoogleLensIntent(Uri.EMPTY, /* isIncognito= */ false,
                                 /* currentTimeNanos= */ 0L, /* srcUrl */ "",
-                                /* titleOrAltText */ "", /* intentType */ IntentType.DEFAULT,
+                                /* titleOrAltText */ "", /* lensQueryResult */ null,
                                 /* requiresConfirmation */ false);
                 final ComponentName lensActivity = lensIntent.resolveActivity(pm);
                 if (lensActivity == null) return "";
@@ -242,14 +233,14 @@ public class LensUtils {
      * @param srcUrl           The 'src' attribute of the image.
      * @param titleOrAltText   The 'title' or, if empty, the 'alt' attribute of the
      *                         image.
-     * @param intentType The type of the intent.
+     * @param LensQueryResult The image query result returned from Lens Prime API.
      * @param requiresConfirmation Whether the request requires an confirmation dialog.
      * @return The intent to Google Lens.
      */
 
     public static Intent getShareWithGoogleLensIntent(final Uri imageUri, final boolean isIncognito,
             final long currentTimeNanos, final String srcUrl, final String titleOrAltText,
-            @IntentType final int intentType, final boolean requiresConfirmation) {
+            LensQueryResult lensQueryResult, final boolean requiresConfirmation) {
         final CoreAccountInfo coreAccountInfo =
                 IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
@@ -270,9 +261,11 @@ public class LensUtils {
                             .appendQueryParameter(
                                     LAUNCH_TIMESTAMP_URI_KEY, Long.toString(currentTimeNanos));
 
-            if (intentType == IntentType.SHOPPING) {
+            if (lensQueryResult != null
+                    && (lensQueryResult.getIsShoppyIntent()
+                            || isLensShoppingIntentType(lensQueryResult.getLensIntentType()))) {
                 lensUriBuilder.appendQueryParameter(
-                        LENS_INTENT_TYPE_KEY, LENS_INTENT_TYPE_LENS_CHROME_SHOPPING);
+                        LENS_INTENT_TYPE_KEY, Integer.toString(getLensShoppingIntentType()));
             }
 
             if (requiresConfirmation) {
@@ -496,6 +489,21 @@ public class LensUtils {
         }
 
         return false;
+    }
+
+    /**
+     * @return the Lens shopping intent type integer.
+     */
+    public static int getLensShoppingIntentType() {
+        return LENS_INTENT_TYPE_LENS_CHROME_SHOPPING;
+    }
+
+    /**
+     * Check if the the intent type is Lens shopping intent type.
+     * @return true if the intent type is shopping.
+     */
+    public static boolean isLensShoppingIntentType(int intentType) {
+        return intentType == getLensShoppingIntentType();
     }
 
     /**

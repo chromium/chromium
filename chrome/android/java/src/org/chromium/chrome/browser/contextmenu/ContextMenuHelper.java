@@ -15,6 +15,8 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.lens.LensController;
+import org.chromium.chrome.browser.lens.LensQueryParams;
+import org.chromium.chrome.browser.lens.LensQueryResult;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
 import org.chromium.chrome.browser.share.LensUtils;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
@@ -48,6 +50,7 @@ public class ContextMenuHelper {
     private long mMenuShownTimeMs;
     private boolean mSelectedItemBeforeDismiss;
     private boolean mIsIncognito;
+    private String mPageTitle;
 
     private ContextMenuHelper(long nativeContextMenuHelper, WebContents webContents) {
         mNativeContextMenuHelper = nativeContextMenuHelper;
@@ -106,6 +109,7 @@ public class ContextMenuHelper {
         mCurrentPopulator = mPopulatorFactory.createContextMenuPopulator(
                 windowAndroid.getActivity().get(), params, mCurrentNativeDelegate);
         mIsIncognito = mCurrentPopulator.isIncognito();
+        mPageTitle = mCurrentPopulator.getPageTitle();
         mCurrentContextMenuParams = params;
         mWindow = windowAndroid;
         mCallback = (result) -> {
@@ -148,9 +152,18 @@ public class ContextMenuHelper {
         // latency impact.
         if (LensUtils.enableShoppyImageMenuItem()) {
             Callback<Uri> callback = (Uri uri) -> {
-                LensController.getInstance().classifyImage(uri,
-                        (Boolean isShoppyImage)
-                                -> displayRevampedContextMenu(topContentOffsetPx, isShoppyImage));
+                LensQueryParams lensQueryParams =
+                        (new LensQueryParams.Builder())
+                                .withImageUri(uri)
+                                .withPageUrl(mCurrentContextMenuParams.getPageUrl())
+                                .withImageTitleOrAltText(mCurrentContextMenuParams.getTitleText())
+                                .build();
+                LensController.getInstance().queryImage(lensQueryParams,
+                        (LensQueryResult lensQueryResult)
+                                -> displayRevampedContextMenu(topContentOffsetPx,
+                                        (lensQueryResult.getIsShoppyIntent()
+                                                || LensUtils.isLensShoppingIntentType(
+                                                        lensQueryResult.getLensIntentType()))));
             };
             mCurrentNativeDelegate.retrieveImageForShare(ContextMenuImageFormat.ORIGINAL, callback);
         } else {
@@ -171,8 +184,8 @@ public class ContextMenuHelper {
         mCurrentContextMenu = menuCoordinator;
 
         if (LensUtils.enableImageChip(mIsIncognito)) {
-            LensAsyncManager lensAsyncManager =
-                    new LensAsyncManager(mCurrentContextMenuParams, mCurrentNativeDelegate);
+            LensAsyncManager lensAsyncManager = new LensAsyncManager(mCurrentContextMenuParams,
+                    mCurrentNativeDelegate, mWindow, mIsIncognito, mPageTitle);
             menuCoordinator.displayMenuWithLensChip(mWindow, mWebContents,
                     mCurrentContextMenuParams, items, mCallback, mOnMenuShown, mOnMenuClosed,
                     lensAsyncManager);

@@ -116,11 +116,7 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
         if (params.isImage() && lensShoppingFeatureEnabled && !isPopup) {
             View chipAnchorView = layout.findViewById(R.id.context_menu_chip_anchor_point);
             mChipController = new RevampedContextMenuChipController(
-                    activity, chipAnchorView, lensAsyncManager, () -> {
-                        // A chip selection should trigger the lens shopping action.
-                        clickItem((int) R.id.contextmenu_shop_image_with_google_lens, activity,
-                                onItemClicked);
-                    });
+                    activity, chipAnchorView, lensAsyncManager);
             dialogBottomMarginPx = mChipController.getVerticalPxNeededForChip();
             // Allow dialog to get close to the top of the screen.
             dialogTopMarginPx = dialogBottomMarginPx / 2;
@@ -286,7 +282,8 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
     void simulateShoppyImageClassificationForTesting() {
         // Don't need to initialize controller because that should be triggered by
         // forcing feature flags.
-        mChipController.handleImageClassification(true);
+        mChipController.setFakeLensQueryResultForTesting(); // IN-TEST
+        mChipController.handleImageClassification(null);
     }
 
     // Public only to allow references from RevampedContextMenuUtils.java

@@ -11,10 +11,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.lens.LensQueryResult;
+import org.chromium.chrome.browser.share.LensUtils;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.widget.AnchoredPopupWindow;
@@ -27,9 +30,9 @@ import java.lang.annotation.RetentionPolicy;
  * A controller to handle chip construction and cross-app communication.
  */
 class RevampedContextMenuChipController implements View.OnClickListener {
+    private boolean mFakeLensQueryResultForTesting;
     private View mAnchorView;
     private LensAsyncManager mLensAsyncManager;
-    private Runnable mChipClickedCallback;
     private ChipView mChipView;
     private AnchoredPopupWindow mPopupWindow;
     private Context mContext;
@@ -55,14 +58,13 @@ class RevampedContextMenuChipController implements View.OnClickListener {
      * @param lensAsyncManager The object responsible for making Lens requests.
      * @param chipClickedCallback The callback to fire after a user clicks a lens chip.
      */
-    RevampedContextMenuChipController(Context context, View anchorView,
-            LensAsyncManager lensAsyncManager, Runnable chipClickedCallback) {
+    RevampedContextMenuChipController(
+            Context context, View anchorView, LensAsyncManager lensAsyncManager) {
         mContext = context;
         mLensAsyncManager = lensAsyncManager;
-        mChipClickedCallback = chipClickedCallback;
         mAnchorView = anchorView;
-        mLensAsyncManager.classifyImageAsync(
-                (isShoppingIntent) -> { handleImageClassification(isShoppingIntent); });
+        mLensAsyncManager.queryImageAsync(
+                (lensQueryResult) -> { handleImageClassification(lensQueryResult); });
     }
 
     /**
@@ -101,9 +103,24 @@ class RevampedContextMenuChipController implements View.OnClickListener {
                                 R.dimen.context_menu_chip_icon_size));
     }
 
+    // This method should only be used in test files.  It is not marked
+    // @VisibleForTesting to allow the Coordinator to reference it in its
+    // own testing methods.
+    void setFakeLensQueryResultForTesting() {
+        mFakeLensQueryResultForTesting = true;
+    }
+
     @VisibleForTesting
-    void handleImageClassification(boolean isShoppingIntent) {
-        if (isShoppingIntent) {
+    void handleImageClassification(@Nullable LensQueryResult lensQueryResult) {
+        if (mFakeLensQueryResultForTesting) {
+            lensQueryResult = (new LensQueryResult.Builder())
+                                      .withIsShoppyIntent(true)
+                                      .withLensIntentType(LensUtils.getLensShoppingIntentType())
+                                      .build();
+        }
+
+        if (lensQueryResult != null && lensQueryResult.getIsShoppyIntent()
+                || LensUtils.isLensShoppingIntentType(lensQueryResult.getLensIntentType())) {
             showChip(mAnchorView);
         };
     }
@@ -112,7 +129,7 @@ class RevampedContextMenuChipController implements View.OnClickListener {
     public void onClick(View v) {
         if (v == mChipView) {
             recordChipEvent(ChipEvent.CLICKED);
-            mChipClickedCallback.run();
+            mLensAsyncManager.searchWithGoogleLens();
             dismissLensChipIfShowing();
         }
     }
