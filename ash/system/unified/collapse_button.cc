@@ -16,7 +16,7 @@ namespace ash {
 
 CollapseButton::CollapseButton(views::ButtonListener* listener)
     : CustomShapeButton(listener) {
-  OnEnabledChanged();
+  UpdateVectorIcon();
 }
 
 CollapseButton::~CollapseButton() = default;
@@ -58,7 +58,7 @@ const char* CollapseButton::GetClassName() const {
   return "CollapseButton";
 }
 
-void CollapseButton::OnEnabledChanged() {
+void CollapseButton::UpdateVectorIcon() {
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kIconColorPrimary);
   SetImage(views::Button::STATE_NORMAL,

@@ -29,12 +29,15 @@ class CollapseButton : public CustomShapeButton {
   const char* GetClassName() const override;
 
  private:
-  void OnEnabledChanged();
+  // Update the vector icon on initializing CollapseButton or when the |Enabled|
+  // property of CollapseButton changes. The vector icon will have different
+  // colors on the |Enabled| property.
+  void UpdateVectorIcon();
 
   double expanded_amount_ = 1.0;
   views::PropertyChangedSubscription enabled_changed_subscription_ =
       AddEnabledChangedCallback(
-          base::BindRepeating(&CollapseButton::OnEnabledChanged,
+          base::BindRepeating(&CollapseButton::UpdateVectorIcon,
                               base::Unretained(this)));
 
   DISALLOW_COPY_AND_ASSIGN(CollapseButton);

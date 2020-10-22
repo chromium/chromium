@@ -110,7 +110,6 @@ aggregate_vector_icons2("ash_vector_icons") {
     "notification_capslock.icon",
     "notification_center_all_done.icon",
     "notification_center_clear_all.icon",
-    "notification_center_collapse.icon",
     "notification_center_do_not_disturb_off.icon",
     "notification_center_do_not_disturb_on.icon",
     "notification_center_empty.icon",
