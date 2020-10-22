@@ -183,40 +183,40 @@ void QuicConnectionLogger::OnStreamFrameCoalesced(
 }
 
 void QuicConnectionLogger::OnPacketSent(
-    const quic::SerializedPacket& serialized_packet,
+    quic::QuicPacketNumber packet_number,
+    quic::QuicPacketLength packet_length,
+    bool has_crypto_handshake,
     quic::TransmissionType transmission_type,
+    quic::EncryptionLevel encryption_level,
+    const quic::QuicFrames& retransmittable_frames,
+    const quic::QuicFrames& nonretransmittable_frames,
     quic::QuicTime sent_time) {
   // 4.4.1.4.  Minimum Packet Size
   // The payload of a UDP datagram carrying the Initial packet MUST be
   // expanded to at least 1200 octets
   const quic::QuicPacketLength kMinClientInitialPacketLength = 1200;
-  const quic::QuicPacketLength encrypted_length =
-      serialized_packet.encrypted_length;
-  switch (serialized_packet.encryption_level) {
+  switch (encryption_level) {
     case quic::ENCRYPTION_INITIAL:
       UMA_HISTOGRAM_CUSTOM_COUNTS("Net.QuicSession.SendPacketSize.Initial",
-                                  encrypted_length, 1, kMaxOutgoingPacketSize,
-                                  50);
-      if (encrypted_length < kMinClientInitialPacketLength) {
+                                  packet_length, 1, kMaxOutgoingPacketSize, 50);
+      if (packet_length < kMinClientInitialPacketLength) {
         UMA_HISTOGRAM_CUSTOM_COUNTS(
             "Net.QuicSession.TooSmallInitialSentPacket",
-            kMinClientInitialPacketLength - encrypted_length, 1,
+            kMinClientInitialPacketLength - packet_length, 1,
             kMinClientInitialPacketLength, 50);
       }
       break;
     case quic::ENCRYPTION_HANDSHAKE:
       UMA_HISTOGRAM_CUSTOM_COUNTS("Net.QuicSession.SendPacketSize.Hanshake",
-                                  encrypted_length, 1, kMaxOutgoingPacketSize,
-                                  50);
+                                  packet_length, 1, kMaxOutgoingPacketSize, 50);
       break;
     case quic::ENCRYPTION_ZERO_RTT:
       UMA_HISTOGRAM_CUSTOM_COUNTS("Net.QuicSession.SendPacketSize.0RTT",
-                                  encrypted_length, 1, kMaxOutgoingPacketSize,
-                                  50);
+                                  packet_length, 1, kMaxOutgoingPacketSize, 50);
       break;
     case quic::ENCRYPTION_FORWARD_SECURE:
       UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "Net.QuicSession.SendPacketSize.ForwardSecure", encrypted_length, 1,
+          "Net.QuicSession.SendPacketSize.ForwardSecure", packet_length, 1,
           kMaxOutgoingPacketSize, 50);
       break;
     case quic::NUM_ENCRYPTION_LEVELS:
@@ -224,7 +224,22 @@ void QuicConnectionLogger::OnPacketSent(
       break;
   }
 
-  event_logger_.OnPacketSent(serialized_packet, transmission_type, sent_time);
+  event_logger_.OnPacketSent(packet_number, packet_length, has_crypto_handshake,
+                             transmission_type, encryption_level,
+                             retransmittable_frames, nonretransmittable_frames,
+                             sent_time);
+}
+
+void QuicConnectionLogger::OnPacketSent(
+    const quic::SerializedPacket& serialized_packet,
+    quic::TransmissionType transmission_type,
+    quic::QuicTime sent_time) {
+  OnPacketSent(serialized_packet.packet_number,
+               serialized_packet.encrypted_length,
+               serialized_packet.has_crypto_handshake != quic::NOT_HANDSHAKE,
+               transmission_type, serialized_packet.encryption_level,
+               serialized_packet.retransmittable_frames,
+               serialized_packet.nonretransmittable_frames, sent_time);
 }
 
 void QuicConnectionLogger::OnPacketLoss(

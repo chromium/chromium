@@ -24,20 +24,19 @@ base::Value NetLogQuicPacketParams(const quic::QuicSocketAddress& self_address,
   return dict;
 }
 
-base::Value NetLogQuicPacketSentParams(
-    const quic::SerializedPacket& serialized_packet,
-    quic::TransmissionType transmission_type,
-    quic::QuicTime sent_time) {
+base::Value NetLogQuicPacketSentParams(quic::QuicPacketNumber packet_number,
+                                       quic::QuicPacketLength packet_length,
+                                       quic::TransmissionType transmission_type,
+                                       quic::EncryptionLevel encryption_level,
+                                       quic::QuicTime sent_time) {
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetStringKey("transmission_type",
                     quic::TransmissionTypeToString(transmission_type));
-  dict.SetKey("packet_number",
-              NetLogNumberValue(serialized_packet.packet_number.ToUint64()));
-  dict.SetIntKey("size", serialized_packet.encrypted_length);
+  dict.SetKey("packet_number", NetLogNumberValue(packet_number.ToUint64()));
+  dict.SetIntKey("size", packet_length);
   dict.SetKey("sent_time_us", NetLogNumberValue(sent_time.ToDebuggingValue()));
-  dict.SetStringKey(
-      "encryption_level",
-      quic::EncryptionLevelToString(serialized_packet.encryption_level));
+  dict.SetStringKey("encryption_level",
+                    quic::EncryptionLevelToString(encryption_level));
   return dict;
 }
 
@@ -547,15 +546,33 @@ void QuicEventLogger::OnStreamFrameCoalesced(
 }
 
 void QuicEventLogger::OnPacketSent(
-    const quic::SerializedPacket& serialized_packet,
+    quic::QuicPacketNumber packet_number,
+    quic::QuicPacketLength packet_length,
+    bool /*has_crypto_handshake*/,
     quic::TransmissionType transmission_type,
+    quic::EncryptionLevel encryption_level,
+    const quic::QuicFrames& /*retransmittable_frames*/,
+    const quic::QuicFrames& /*nonretransmittable_frames*/,
     quic::QuicTime sent_time) {
   if (!net_log_.IsCapturing())
     return;
   net_log_.AddEvent(NetLogEventType::QUIC_SESSION_PACKET_SENT, [&] {
-    return NetLogQuicPacketSentParams(serialized_packet, transmission_type,
+    return NetLogQuicPacketSentParams(packet_number, packet_length,
+                                      transmission_type, encryption_level,
                                       sent_time);
   });
+}
+
+void QuicEventLogger::OnPacketSent(
+    const quic::SerializedPacket& serialized_packet,
+    quic::TransmissionType transmission_type,
+    quic::QuicTime sent_time) {
+  OnPacketSent(serialized_packet.packet_number,
+               serialized_packet.encrypted_length,
+               serialized_packet.has_crypto_handshake != quic::NOT_HANDSHAKE,
+               transmission_type, serialized_packet.encryption_level,
+               serialized_packet.retransmittable_frames,
+               serialized_packet.nonretransmittable_frames, sent_time);
 }
 
 void QuicEventLogger::OnIncomingAck(

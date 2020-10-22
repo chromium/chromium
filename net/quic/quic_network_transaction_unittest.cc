@@ -1205,6 +1205,12 @@ TEST_P(QuicNetworkTransactionTest, ForceQuic) {
       NetLogEventPhase::NONE);
   EXPECT_LT(0, pos);
 
+  // ... and also a TYPE_QUIC_SESSION_PACKET_SENT.
+  pos = ExpectLogContainsSomewhere(entries, 0,
+                                   NetLogEventType::QUIC_SESSION_PACKET_SENT,
+                                   NetLogEventPhase::NONE);
+  EXPECT_LT(0, pos);
+
   // ... and also a TYPE_QUIC_SESSION_UNAUTHENTICATED_PACKET_HEADER_RECEIVED.
   pos = ExpectLogContainsSomewhere(
       entries, 0,

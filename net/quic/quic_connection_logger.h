@@ -46,9 +46,17 @@ class NET_EXPORT_PRIVATE QuicConnectionLogger
   void OnFrameAddedToPacket(const quic::QuicFrame& frame) override;
   void OnStreamFrameCoalesced(const quic::QuicStreamFrame& frame) override;
 
-  // QuicConnectionDebugVisitor Interface
+  // quic::QuicConnectionDebugVisitor Interface
   void OnPacketSent(const quic::SerializedPacket& serialized_packet,
                     quic::TransmissionType transmission_type,
+                    quic::QuicTime sent_time) override;
+  void OnPacketSent(quic::QuicPacketNumber packet_number,
+                    quic::QuicPacketLength packet_length,
+                    bool has_crypto_handshake,
+                    quic::TransmissionType transmission_type,
+                    quic::EncryptionLevel encryption_level,
+                    const quic::QuicFrames& retransmittable_frames,
+                    const quic::QuicFrames& nonretransmittable_frames,
                     quic::QuicTime sent_time) override;
   void OnIncomingAck(quic::QuicPacketNumber ack_packet_number,
                      quic::EncryptionLevel ack_decrypted_level,
