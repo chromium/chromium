@@ -29,9 +29,10 @@ data:
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/size
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/size-classic
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/strip
-  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libtapi.dylib
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libLTO.dylib
+  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libcodedirectory.dylib
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libswiftDemangle.dylib
+  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libtapi.dylib
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/libexec/migcom
   - file: Contents/Developer/usr/bin/atos
   - file: Contents/Resources/English.lproj/License.rtf
