@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.homepage;
 
+import android.content.Context;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -12,10 +13,14 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomepageLocationType;
+import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.settings.SettingsLauncher;
+import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 
@@ -40,12 +45,14 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
 
     private final SharedPreferencesManager mSharedPreferencesManager;
     private final ObserverList<HomepageStateListener> mHomepageStateListeners;
+    private SettingsLauncher mSettingsLauncher;
 
     private HomepageManager() {
         mSharedPreferencesManager = SharedPreferencesManager.getInstance();
         mHomepageStateListeners = new ObserverList<>();
         HomepagePolicyManager.getInstance().addListener(this);
         PartnerBrowserCustomizations.getInstance().setPartnerHomepageListener(this);
+        mSettingsLauncher = new SettingsLauncherImpl();
     }
 
     /**
@@ -71,6 +78,19 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
      */
     public void removeListener(HomepageStateListener listener) {
         mHomepageStateListeners.removeObserver(listener);
+    }
+
+    /**
+     * Menu click handler on home button.
+     * @param context {@link Context} used for launching a settings activity.
+     */
+    public void onMenuClick(Context context) {
+        assert ChromeFeatureList.isInitialized();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.HOMEPAGE_SETTINGS_UI_CONVERSION)) {
+            mSettingsLauncher.launchSettingsActivity(context, HomepageSettings.class);
+        } else {
+            setPrefHomepageEnabled(false);
+        }
     }
 
     /**
@@ -294,5 +314,10 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
     @Override
     public void onHomepageUpdate() {
         notifyHomepageUpdated();
+    }
+
+    @VisibleForTesting
+    public void setSettingsLauncherForTesting(SettingsLauncher launcher) {
+        mSettingsLauncher = launcher;
     }
 }

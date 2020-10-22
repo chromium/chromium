@@ -151,10 +151,6 @@ public class ToolbarTablet extends ToolbarLayout
 
     @Override
     void destroy() {
-        if (mHomeButton != null) {
-            mHomeButton.destroy();
-            mHomeButton = null;
-        }
         if (mLocationBar != null) {
             mLocationBar.destroy();
             mLocationBar = null;

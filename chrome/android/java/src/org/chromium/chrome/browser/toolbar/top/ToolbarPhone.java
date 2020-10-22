@@ -365,10 +365,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
     @Override
     void destroy() {
-        if (mHomeButton != null) {
-            mHomeButton.destroy();
-            mHomeButton = null;
-        }
         if (mLocationBar != null) {
             mLocationBar.destroy();
             mLocationBar = null;
