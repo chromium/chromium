@@ -144,6 +144,21 @@ SecurityOrigin::SecurityOrigin(const KURL& url)
   can_load_local_resources_ = IsLocal();
 }
 
+SecurityOrigin::SecurityOrigin(const String& protocol,
+                               const String& host,
+                               uint16_t port)
+    : protocol_(protocol),
+      host_(host),
+      domain_(host_),
+      port_(IsDefaultPortForProtocol(port, protocol_) ? kInvalidPort : port),
+      effective_port_(port_ ? port_ : DefaultPortForProtocol(protocol_)) {
+  DCHECK(url::SchemeHostPort(protocol.Utf8(), host.Utf8(), port,
+                             url::SchemeHostPort::CHECK_CANONICALIZATION)
+             .IsValid());
+  DCHECK(!IsOpaque());
+  can_load_local_resources_ = IsLocal();
+}
+
 SecurityOrigin::SecurityOrigin(const url::Origin::Nonce& nonce,
                                const SecurityOrigin* precursor)
     : nonce_if_opaque_(nonce), precursor_origin_(precursor) {}
@@ -238,14 +253,9 @@ scoped_refptr<SecurityOrigin> SecurityOrigin::CreateFromUrlOrigin(
 
   scoped_refptr<SecurityOrigin> tuple_origin;
   if (tuple.IsValid()) {
-    String scheme = String::FromUTF8(tuple.scheme());
-    String host = String::FromUTF8(tuple.host());
-    uint16_t port = tuple.port();
-
-    // url::Origin is percent encoded and SecurityOrigin is percent decoded.
-    host = DecodeURLEscapeSequences(host, DecodeURLMode::kUTF8OrIsomorphic);
-
-    tuple_origin = Create(scheme, host, port);
+    tuple_origin =
+        CreateFromValidTuple(String::FromUTF8(tuple.scheme()),
+                             String::FromUTF8(tuple.host()), tuple.port());
   }
   base::Optional<base::UnguessableToken> nonce_if_opaque =
       origin.GetNonceForSerialization();
@@ -536,14 +546,11 @@ scoped_refptr<SecurityOrigin> SecurityOrigin::CreateFromString(
   return SecurityOrigin::Create(KURL(NullURL(), origin_string));
 }
 
-scoped_refptr<SecurityOrigin> SecurityOrigin::Create(const String& protocol,
-                                                     const String& host,
-                                                     uint16_t port) {
-  DCHECK_EQ(host,
-            DecodeURLEscapeSequences(host, DecodeURLMode::kUTF8OrIsomorphic));
-
-  String port_part = port ? ":" + String::Number(port) : String();
-  return Create(KURL(NullURL(), protocol + "://" + host + port_part + "/"));
+scoped_refptr<SecurityOrigin> SecurityOrigin::CreateFromValidTuple(
+    const String& protocol,
+    const String& host,
+    uint16_t port) {
+  return base::AdoptRef(new SecurityOrigin(protocol, host, port));
 }
 
 bool SecurityOrigin::IsSameOriginWith(const SecurityOrigin* other) const {

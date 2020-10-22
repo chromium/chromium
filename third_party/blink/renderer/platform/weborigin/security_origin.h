@@ -88,9 +88,17 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
   static scoped_refptr<SecurityOrigin> CreateUniqueOpaque();
 
   static scoped_refptr<SecurityOrigin> CreateFromString(const String&);
-  static scoped_refptr<SecurityOrigin> Create(const String& protocol,
-                                              const String& host,
-                                              uint16_t port);
+
+  // Constructs a non-opaque tuple origin, analogously to
+  // url::Origin::Origin(url::SchemeHostPort).
+  //
+  // REQUIRES: The tuple be valid: |protocol| must contain a standard scheme and
+  // |host| must be canonicalized and (except for "file" URLs) nonempty.
+  static scoped_refptr<SecurityOrigin> CreateFromValidTuple(
+      const String& protocol,
+      const String& host,
+      uint16_t port);
+
   static scoped_refptr<SecurityOrigin> CreateFromUrlOrigin(const url::Origin&);
   url::Origin ToUrlOrigin() const;
 
@@ -384,6 +392,10 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
 
   // Create a tuple SecurityOrigin, with parameters via KURL
   explicit SecurityOrigin(const KURL& url);
+
+  // Constructs a non-opaque tuple origin, analogously to
+  // url::Origin::Origin(url::SchemeHostPort).
+  SecurityOrigin(const String& protocol, const String& host, uint16_t port);
 
   enum class ConstructIsolatedCopy { kConstructIsolatedCopyBit };
   // Clone a SecurityOrigin which is safe to use on other threads.

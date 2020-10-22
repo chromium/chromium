@@ -76,7 +76,7 @@ TEST(KURLSecurityOriginStructTraitsTest, Basic) {
 
   // Test basic Origin serialization.
   scoped_refptr<const SecurityOrigin> non_unique =
-      SecurityOrigin::Create("http", "www.google.com", 80);
+      SecurityOrigin::CreateFromValidTuple("http", "www.google.com", 80);
   scoped_refptr<const SecurityOrigin> output;
   EXPECT_TRUE(proxy->BounceOrigin(non_unique, &output));
   EXPECT_TRUE(non_unique->IsSameOriginWith(output.get()));

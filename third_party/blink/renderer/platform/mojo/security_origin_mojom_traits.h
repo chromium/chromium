@@ -25,13 +25,9 @@ struct UrlOriginAdapter {
       const base::Optional<base::UnguessableToken>& nonce_if_opaque) {
     scoped_refptr<blink::SecurityOrigin> tuple_origin;
     if (tuple.IsValid()) {
-      // url::SchemeHostPort is percent encoded and SecurityOrigin is percent
-      // decoded.
-      String host = blink::DecodeURLEscapeSequences(
-          String::FromUTF8(tuple.host()),
-          url::DecodeURLMode::kUTF8OrIsomorphic);
-      tuple_origin = blink::SecurityOrigin::Create(
-          String::FromUTF8(tuple.scheme()), host, tuple.port());
+      tuple_origin = blink::SecurityOrigin::CreateFromValidTuple(
+          String::FromUTF8(tuple.scheme()), String::FromUTF8(tuple.host()),
+          tuple.port());
     }
 
     if (nonce_if_opaque) {

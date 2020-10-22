@@ -108,7 +108,7 @@ TEST_F(SourceListDirectiveTest, StarallowsSelf) {
 
   // With a protocol of 'file', '*' allows 'file:':
   scoped_refptr<const SecurityOrigin> origin =
-      SecurityOrigin::Create("file", "", 0);
+      SecurityOrigin::CreateFromValidTuple("file", "", 0);
   csp->SetupSelf(*origin);
   EXPECT_TRUE(source_list.Allows(KURL(base, "file:///etc/hosts")));
 

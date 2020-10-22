@@ -63,7 +63,7 @@ TEST_F(SecurityOriginTest, ValidPortsCreateTupleOrigins) {
 
   for (size_t i = 0; i < base::size(ports); ++i) {
     scoped_refptr<const SecurityOrigin> origin =
-        SecurityOrigin::Create("http", "example.com", ports[i]);
+        SecurityOrigin::CreateFromValidTuple("http", "example.com", ports[i]);
     EXPECT_FALSE(origin->IsOpaque())
         << "Port " << ports[i] << " should have generated a tuple origin.";
   }
@@ -584,7 +584,7 @@ TEST_F(SecurityOriginTest, CreateFromTuple) {
 
   for (const auto& test : cases) {
     scoped_refptr<const SecurityOrigin> origin =
-        SecurityOrigin::Create(test.scheme, test.host, test.port);
+        SecurityOrigin::CreateFromValidTuple(test.scheme, test.host, test.port);
     EXPECT_EQ(test.origin, origin->ToString()) << test.origin;
   }
 }
@@ -752,8 +752,8 @@ TEST_F(SecurityOriginTest, UrlOriginConversions) {
 
     if (!test_case.opaque) {
       scoped_refptr<const SecurityOrigin> security_origin =
-          SecurityOrigin::Create(test_case.scheme, test_case.host,
-                                 test_case.port);
+          SecurityOrigin::CreateFromValidTuple(test_case.scheme, test_case.host,
+                                               test_case.port);
       EXPECT_TRUE(
           security_origin->IsSameOriginWith(security_origin_via_gurl.get()));
       EXPECT_TRUE(
@@ -1167,6 +1167,18 @@ TEST_F(SecurityOriginTest, IsSameOriginDomainWithWithLocalScheme) {
   a->GrantUniversalAccess();
   EXPECT_FALSE(a->IsSameOriginDomainWith(b.get()));
   EXPECT_FALSE(b->IsSameOriginDomainWith(a.get()));
+}
+
+// Non-canonical hosts provided to the string constructor should end up
+// canonicalized:
+TEST_F(SecurityOriginTest, PercentEncodesHost) {
+  EXPECT_EQ(
+      SecurityOrigin::CreateFromString("http://foo,.example.test/")->Host(),
+      "foo%2C.example.test");
+
+  EXPECT_EQ(
+      SecurityOrigin::CreateFromString("http://foo%2C.example.test/")->Host(),
+      "foo%2C.example.test");
 }
 
 }  // namespace blink
