@@ -6,12 +6,18 @@
 #define CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_FIELD_TRIAL_SETTINGS_H_
 
 #include "base/feature_list.h"
+#include "base/time/time.h"
 
 extern const base::Feature kSearchPrefetchService;
 extern const base::Feature kSearchPrefetchServicePrefetching;
 
+// Whether the search prefetch service and other objects should be created.
 bool SearchPrefetchServiceIsEnabled();
 
+// Whether the search prefetch service actually initiates prefetches.
 bool SearchPrefetchServicePrefetchingIsEnabled();
+
+// The amount of time a response is considered valid after the prefetch starts.
+base::TimeDelta SearchPrefetchCachingLimit();
 
 #endif  // CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_FIELD_TRIAL_SETTINGS_H_

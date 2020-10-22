@@ -28,3 +28,10 @@ bool SearchPrefetchServicePrefetchingIsEnabled() {
              kSearchPrefetchServiceCommandLineFlag) ||
          base::FeatureList::IsEnabled(kSearchPrefetchServicePrefetching);
 }
+
+base::TimeDelta SearchPrefetchCachingLimit() {
+  return base::TimeDelta::FromMilliseconds(
+      base::GetFieldTrialParamByFeatureAsInt(kSearchPrefetchServicePrefetching,
+                                             "prefetch_caching_limit_ms",
+                                             60000));
+}

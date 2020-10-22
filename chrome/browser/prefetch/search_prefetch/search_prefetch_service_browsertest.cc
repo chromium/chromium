@@ -5,6 +5,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service_factory.h"
@@ -111,11 +112,18 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
         .ExtractString();
   }
 
+  void set_should_hang_requests(bool should_hang_requests) {
+    should_hang_requests_ = should_hang_requests;
+  }
+
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleSearchRequest(
       const net::test_server::HttpRequest& request) {
     if (request.GetURL().spec().find("favicon") != std::string::npos)
       return nullptr;
+
+    if (should_hang_requests_)
+      return std::make_unique<net::test_server::HungResponse>();
 
     bool is_prefetch =
         request.headers.find("Purpose") != request.headers.end() &&
@@ -158,9 +166,10 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
     }
   }
 
+  std::vector<net::test_server::HttpRequest> search_server_requests_;
   std::unique_ptr<net::EmbeddedTestServer> search_server_;
 
-  std::vector<net::test_server::HttpRequest> search_server_requests_;
+  bool should_hang_requests_ = false;
 
   size_t search_server_request_count_ = 0;
   size_t search_server_prefetch_request_count_ = 0;
@@ -422,4 +431,52 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
 
   EXPECT_TRUE(base::Contains(inner_html, "regular"));
   EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
+}
+
+class SearchPrefetchServiceZeroCacheTimeBrowserTest
+    : public SearchPrefetchBaseBrowserTest {
+ public:
+  SearchPrefetchServiceZeroCacheTimeBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kSearchPrefetchServicePrefetching,
+          {{"prefetch_caching_limit_ms", "10"}}},
+         {{kSearchPrefetchService}, {}}},
+        {});
+
+    // Hang responses so the status will stay as InFlight until the entry is
+    // removed.
+    set_should_hang_requests(true);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceZeroCacheTimeBrowserTest,
+                       ExpireAfterDuration) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+
+  // Make sure a new fetch doesn't happen before expiry.
+  EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  EXPECT_TRUE(prefetch_status.has_value());
+
+  WaitUntilStatusChanges(base::ASCIIToUTF16(search_terms));
+  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
+      base::ASCIIToUTF16(search_terms));
+
+  // Prefetch should be gone now.
+  EXPECT_FALSE(prefetch_status.has_value());
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
 }

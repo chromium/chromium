@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
+#include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
@@ -45,6 +46,10 @@ class SearchPrefetchService : public KeyedService {
   // Reports the status of a prefetch for a given search term.
   base::Optional<SearchPrefetchStatus> GetSearchPrefetchStatusForTesting(
       base::string16 search_terms);
+
+ private:
+  // Removes the prefetch and prefetch timers associated with |search_terms|.
+  void DeletePrefetch(base::string16 search_terms);
 
   // Internal class to represent an ongoing or completed prefetch.
   class PrefetchRequest {
@@ -89,6 +94,10 @@ class SearchPrefetchService : public KeyedService {
   // one prefetch should be started for a given search term until the old
   // prefetch expires.
   std::map<base::string16, std::unique_ptr<PrefetchRequest>> prefetches_;
+
+  // A group of timers to expire |prefetches_| based on the same key.
+  std::map<base::string16, std::unique_ptr<base::OneShotTimer>>
+      prefetch_expiry_timers_;
 
   Profile* profile_;
 };

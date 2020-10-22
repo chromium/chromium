@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/location.h"
 #include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/prefetch/search_prefetch/prefetched_response_container.h"
 #include "chrome/browser/profiles/profile.h"
@@ -155,8 +156,13 @@ bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {
 
   prefetches_.emplace(search_terms, std::make_unique<PrefetchRequest>(url));
   prefetches_[search_terms]->StartPrefetchRequest(profile_);
+  prefetch_expiry_timers_.emplace(search_terms,
+                                  std::make_unique<base::OneShotTimer>());
+  prefetch_expiry_timers_[search_terms]->Start(
+      FROM_HERE, SearchPrefetchCachingLimit(),
+      base::BindOnce(&SearchPrefetchService::DeletePrefetch,
+                     base::Unretained(this), search_terms));
   return true;
-  // TODO(ryansturm): Expire entries after 60 seconds. https://crbug.com/1138639
 }
 
 base::Optional<SearchPrefetchStatus>
@@ -209,7 +215,16 @@ SearchPrefetchService::TakePrefetchResponse(const GURL& url) {
   // moved to the correct tab helper object, for now, the object can be deleted
   // entirely. Alternatively, the object can remain here with a new timeout in
   // a set of currently being served requests.
-  prefetches_.erase(iter);
+  DeletePrefetch(search_terms);
 
   return response;
+}
+
+void SearchPrefetchService::DeletePrefetch(base::string16 search_terms) {
+  DCHECK(prefetches_.find(search_terms) != prefetches_.end());
+  DCHECK(prefetch_expiry_timers_.find(search_terms) !=
+         prefetch_expiry_timers_.end());
+
+  prefetches_.erase(search_terms);
+  prefetch_expiry_timers_.erase(search_terms);
 }
