@@ -1529,8 +1529,6 @@ void RenderWidgetHostInputEventRouter::DispatchTouchscreenGestureEvent(
     //
     // For now, we do a synchronous-only hit test here, which even though
     // incorrect is not likely to have a large effect in the short term.
-    UMA_HISTOGRAM_BOOLEAN("Event.FrameEventRouting.NoGestureTarget", true);
-    LOG(ERROR) << "Gesture sequence start detected with no target available.";
     // It is still safe to continue; we will recalculate the target.
     gfx::PointF transformed_point;
     gfx::PointF original_point(gesture_event.PositionInWidget());
