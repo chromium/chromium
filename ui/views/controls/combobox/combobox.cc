@@ -544,9 +544,8 @@ bool Combobox::HandleAccessibleAction(const ui::AXActionData& action_data) {
   // |this|. However, mouse events for Combobox are handled by |arrow_button_|,
   // which is hidden from the a11y tree (so can't expose actions). Rather than
   // forwarding ax::mojom::Action::kDoDefault to View and then forwarding the
-  // mouse event it generates to |arrow_button_| to have it forward back to
-  // |this| (as its ButtonListener), just handle the action explicitly here and
-  // bypass View.
+  // mouse event it generates to |arrow_button_| to have it forward back to the
+  // callback on |this|, just handle the action explicitly here and bypass View.
   if (GetEnabled() && action_data.action == ax::mojom::Action::kDoDefault) {
     ShowDropDownMenu(ui::MENU_SOURCE_KEYBOARD);
     return true;

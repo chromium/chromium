@@ -148,11 +148,11 @@ TEST_F(HoverButtonTest, ActivatesOnMouseReleased) {
   button->SetBoundsRect(gfx::Rect(100, 100, 200, 200));
   widget()->Show();
 
-  // ButtonListener should not be activated on press.
+  // Button callback should not be called on press.
   generator()->PressLeftButton();
   EXPECT_FALSE(clicked);
 
-  // ButtonListener should be activated on release.
+  // Button callback should be called on release.
   generator()->ReleaseLeftButton();
   EXPECT_TRUE(clicked);
 

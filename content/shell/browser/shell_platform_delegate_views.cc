@@ -70,9 +70,7 @@ struct ShellPlatformDelegate::PlatformData {
 namespace {
 
 // Maintain the UI controls and web view for content shell
-class ShellView : public views::View,
-                  public views::TextfieldController,
-                  public views::ButtonListener {
+class ShellView : public views::View, public views::TextfieldController {
  public:
   enum UIControl { BACK_BUTTON, FORWARD_BUTTON, STOP_BUTTON };
 
@@ -156,8 +154,13 @@ class ShellView : public views::View,
 
       views::ColumnSet* toolbar_column_set = toolbar_layout->AddColumnSet(0);
       // Back button
+      // Using Unretained (here and below) is safe since the View itself has the
+      // same lifetime as |shell_| (both are torn down implicitly during
+      // destruction).
       auto back_button = std::make_unique<views::MdTextButton>(
-          this, base::ASCIIToUTF16("Back"));
+          base::BindRepeating(&Shell::GoBackOrForward,
+                              base::Unretained(shell_.get()), -1),
+          base::ASCIIToUTF16("Back"));
       gfx::Size back_button_size = back_button->GetPreferredSize();
       toolbar_column_set->AddColumn(
           views::GridLayout::CENTER, views::GridLayout::CENTER, 0,
@@ -165,7 +168,9 @@ class ShellView : public views::View,
           back_button_size.width() / 2);
       // Forward button
       auto forward_button = std::make_unique<views::MdTextButton>(
-          this, base::ASCIIToUTF16("Forward"));
+          base::BindRepeating(&Shell::GoBackOrForward,
+                              base::Unretained(shell_.get()), 1),
+          base::ASCIIToUTF16("Forward"));
       gfx::Size forward_button_size = forward_button->GetPreferredSize();
       toolbar_column_set->AddColumn(
           views::GridLayout::CENTER, views::GridLayout::CENTER, 0,
@@ -173,7 +178,8 @@ class ShellView : public views::View,
           forward_button_size.width() / 2);
       // Refresh button
       auto refresh_button = std::make_unique<views::MdTextButton>(
-          this, base::ASCIIToUTF16("Refresh"));
+          base::BindRepeating(&Shell::Reload, base::Unretained(shell_.get())),
+          base::ASCIIToUTF16("Refresh"));
       gfx::Size refresh_button_size = refresh_button->GetPreferredSize();
       toolbar_column_set->AddColumn(
           views::GridLayout::CENTER, views::GridLayout::CENTER, 0,
@@ -181,7 +187,8 @@ class ShellView : public views::View,
           refresh_button_size.width() / 2);
       // Stop button
       auto stop_button = std::make_unique<views::MdTextButton>(
-          this, base::ASCIIToUTF16("Stop"));
+          base::BindRepeating(&Shell::Stop, base::Unretained(shell_.get())),
+          base::ASCIIToUTF16("Stop"));
       gfx::Size stop_button_size = stop_button->GetPreferredSize();
       toolbar_column_set->AddColumn(
           views::GridLayout::CENTER, views::GridLayout::CENTER, 0,
@@ -248,18 +255,6 @@ class ShellView : public views::View,
       return true;
     }
     return false;
-  }
-
-  // Overridden from ButtonListener
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override {
-    if (sender == back_button_)
-      shell_->GoBackOrForward(-1);
-    else if (sender == forward_button_)
-      shell_->GoBackOrForward(1);
-    else if (sender == refresh_button_)
-      shell_->Reload();
-    else if (sender == stop_button_)
-      shell_->Stop();
   }
 
   // Overridden from View
