@@ -201,6 +201,9 @@ void DedicatedWorkerHost::StartScriptLoad(
       appcache_host ? appcache_host->GetWeakPtr() : nullptr,
       std::move(blob_url_loader_factory), nullptr, storage_partition_impl,
       partition_domain,
+
+      // TODO(crbug.com/1138622): Propagate dedicated worker ukm::SourceId here.
+      ukm::kInvalidSourceId,
       base::BindOnce(&DedicatedWorkerHost::DidStartScriptLoad,
                      weak_factory_.GetWeakPtr()));
 }

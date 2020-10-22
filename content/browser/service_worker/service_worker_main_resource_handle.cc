@@ -49,7 +49,8 @@ void ServiceWorkerMainResourceHandle::OnBeginNavigationCommit(
     const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
-    blink::mojom::ServiceWorkerContainerInfoForClientPtr* out_container_info) {
+    blink::mojom::ServiceWorkerContainerInfoForClientPtr* out_container_info,
+    ukm::SourceId document_ukm_source_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // We may have failed to pre-create the container host.
   if (!container_info_)
@@ -59,7 +60,8 @@ void ServiceWorkerMainResourceHandle::OnBeginNavigationCommit(
       base::BindOnce(
           &ServiceWorkerMainResourceHandleCore::OnBeginNavigationCommit,
           base::Unretained(core_), render_process_id, render_frame_id,
-          cross_origin_embedder_policy, std::move(coep_reporter)));
+          cross_origin_embedder_policy, std::move(coep_reporter),
+          document_ukm_source_id));
   *out_container_info = std::move(container_info_);
 }
 
@@ -73,12 +75,14 @@ void ServiceWorkerMainResourceHandle::OnEndNavigationCommit() {
 }
 
 void ServiceWorkerMainResourceHandle::OnBeginWorkerCommit(
-    const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy) {
+    const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+    ukm::SourceId worker_ukm_source_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ServiceWorkerContextWrapper::RunOrPostTaskOnCoreThread(
       FROM_HERE,
       base::BindOnce(&ServiceWorkerMainResourceHandleCore::OnBeginWorkerCommit,
-                     base::Unretained(core_), cross_origin_embedder_policy));
+                     base::Unretained(core_), cross_origin_embedder_policy,
+                     worker_ukm_source_id));
 }
 
 }  // namespace content

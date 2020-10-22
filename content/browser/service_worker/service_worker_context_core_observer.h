@@ -16,6 +16,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/service_worker_context_observer.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_client.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container_type.mojom.h"
 #include "url/gurl.h"
 
@@ -30,6 +31,7 @@ class ServiceWorkerContextCoreObserver {
   virtual void OnNewLiveRegistration(int64_t registration_id,
                                      const GURL& scope) {}
   virtual void OnNewLiveVersion(const ServiceWorkerVersionInfo& version_info) {}
+  virtual void OnLiveVersionDestroyed(int64_t version_id) {}
   virtual void OnStarting(int64_t version_id) {}
   virtual void OnStarted(int64_t version_id,
                          const GURL& scope,
@@ -103,6 +105,18 @@ class ServiceWorkerContextCoreObserver {
   // Notified when the storage corruption recovery is completed and all stored
   // data is wiped out.
   virtual void OnStorageWiped() {}
+
+  // Called when a container host representing a client is execution ready. See
+  // https://html.spec.whatwg.org/multipage/webappapis.html#concept-environment-execution-ready-flag
+  virtual void OnClientIsExecutionReady(
+      ukm::SourceId source_id,
+      const GURL& url,
+      blink::mojom::ServiceWorkerClientType type) {}
+
+  // Called when a container host representing a client is destroyed.
+  virtual void OnClientDestroyed(ukm::SourceId source_id,
+                                 const GURL& url,
+                                 blink::mojom::ServiceWorkerClientType type) {}
 
  protected:
   virtual ~ServiceWorkerContextCoreObserver() {}
