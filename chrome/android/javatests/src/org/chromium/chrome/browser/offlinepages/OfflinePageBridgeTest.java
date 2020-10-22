@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.offlinepages;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
 import android.util.Base64;
@@ -16,7 +15,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -24,20 +22,15 @@ import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.OfflinePageModelObserver;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.SavePageCallback;
 import org.chromium.chrome.browser.offlinepages.downloads.OfflinePageDownloadBridge;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.offlinepages.DeletePageResult;
 import org.chromium.components.offlinepages.SavePageResult;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -67,13 +60,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class OfflinePageBridgeTest {
     @Rule
-    public TestRule mProcessor = new Features.InstrumentationProcessor();
-
-    @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
-    @Rule
-    public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
 
     private static final String TEST_PAGE = "/chrome/test/data/android/about.html";
     private static final int TIMEOUT_MS = 5000;
@@ -226,12 +213,10 @@ public class OfflinePageBridgeTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
     public void testOfflinePageBridgeDisabled_InIncognitoCCT() throws Exception {
-        prepareAndLaunchIncognitoCCT();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
-            mProfile = Profile.fromWebContents(tab.getWebContents());
+            OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
+            mProfile = Profile.getLastUsedRegularProfile().getOffTheRecordProfile(otrProfileID);
             Assert.assertTrue(mProfile.isOffTheRecord());
             Assert.assertFalse(mProfile.isPrimaryOTRProfile());
         });
@@ -241,12 +226,10 @@ public class OfflinePageBridgeTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
     public void testOfflinePageBridgeForProfileKeyDisabled_InIncognitoCCT() throws Exception {
-        prepareAndLaunchIncognitoCCT();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
-            mProfile = Profile.fromWebContents(tab.getWebContents());
+            OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
+            mProfile = Profile.getLastUsedRegularProfile().getOffTheRecordProfile(otrProfileID);
             Assert.assertTrue(mProfile.isOffTheRecord());
             Assert.assertFalse(mProfile.isPrimaryOTRProfile());
         });
@@ -590,12 +573,5 @@ public class OfflinePageBridgeTest {
             inputChannel.close();
             outputChannel.close();
         }
-    }
-
-    private void prepareAndLaunchIncognitoCCT() throws TimeoutException {
-        Intent intent = CustomTabsTestUtils.createMinimalIncognitoCustomTabIntent(
-                InstrumentationRegistry.getContext(), "about:blank");
-        IncognitoDataTestUtils.fireAndWaitForCctWarmup();
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
     }
 }

@@ -7,6 +7,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import android.annotation.TargetApi;
 import android.app.NotificationChannel;
@@ -30,6 +32,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.notifications.NotificationChannelStatus;
 import org.chromium.chrome.browser.notifications.NotificationSettingsBridge;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
@@ -195,14 +198,30 @@ public class SiteChannelsManagerTest {
     @Test
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @SmallTest
-    public void testBlockingPermissionInIncognitoCreatesNoChannels() {
+    public void testBlockingPermissionInIncognitoTabbedActivityCreatesNoChannels() {
         PermissionInfo info = new PermissionInfo(
                 ContentSettingsType.NOTIFICATIONS, "https://example-incognito.com", null, true);
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> info.setContentSetting(
-                                Profile.getLastUsedRegularProfile().getOffTheRecordProfile(),
-                                ContentSettingValues.BLOCK));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            info.setContentSetting(Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(),
+                    ContentSettingValues.BLOCK);
+        });
+        assertThat(Arrays.asList(mSiteChannelsManager.getSiteChannels()), hasSize(0));
+    }
+
+    @Test
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    @SmallTest
+    public void testBlockingPermissionInIncognitoCCTCreatesNoChannels() {
+        PermissionInfo info = new PermissionInfo(
+                ContentSettingsType.NOTIFICATIONS, "https://example-incognito.com", null, true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
+            Profile nonPrimaryOTRProfile =
+                    Profile.getLastUsedRegularProfile().getOffTheRecordProfile(otrProfileID);
+            assertNotNull(nonPrimaryOTRProfile);
+            assertTrue(nonPrimaryOTRProfile.isOffTheRecord());
+            info.setContentSetting(nonPrimaryOTRProfile, ContentSettingValues.BLOCK);
+        });
         assertThat(Arrays.asList(mSiteChannelsManager.getSiteChannels()), hasSize(0));
     }
 
