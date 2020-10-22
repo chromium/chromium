@@ -9,24 +9,25 @@
 module chrome.mojom;
 
 import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/read_only_file.mojom";
 
 interface SafeArchiveAnalyzer {
   // Build flag FULL_SAFE_BROWSING: Analyze the |zip_file| for malicious
   // download protection, given a |temporary_file| used to extract files
   // from the |zip_file| archive.
-  AnalyzeZipFile(mojo_base.mojom.File zip_file,
+  AnalyzeZipFile(mojo_base.mojom.ReadOnlyFile zip_file,
                  mojo_base.mojom.File temporary_file)
       => (SafeArchiveAnalyzerResults results);
 
   // Build flag FULL_SAFE_BROWSING, on OS_MAC: Analyze the |dmg_file|
   // for malicious download protection.
-  AnalyzeDmgFile(mojo_base.mojom.File dmg_file)
+  AnalyzeDmgFile(mojo_base.mojom.ReadOnlyFile dmg_file)
       => (SafeArchiveAnalyzerResults results);
 
   // Build flag FULL_SAFE_BROWSING: Analyze the |rar_file| for malicious
   // download protection. Uses the |temporary_file| to extract files from the
   // |rar_file| archive.
-  AnalyzeRarFile(mojo_base.mojom.File rar_file,
+  AnalyzeRarFile(mojo_base.mojom.ReadOnlyFile rar_file,
                  mojo_base.mojom.File temporary_file)
       => (SafeArchiveAnalyzerResults results);
 };
