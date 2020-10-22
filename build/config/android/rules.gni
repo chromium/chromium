@@ -3189,7 +3189,8 @@ if (enable_java_templates) {
 
         deps = _deps + [ ":$_build_config_target" ]
 
-        if (!_proguard_enabled && enable_jdk_library_desugaring) {
+        if ((!_proguard_enabled || _incremental_apk) &&
+            enable_jdk_library_desugaring) {
           _all_jdk_libs = "//build/android:all_jdk_libs"
           deps += [ _all_jdk_libs ]
           jdk_libs_dex = get_label_info(_all_jdk_libs, "target_out_dir") +
