@@ -96,8 +96,7 @@ class MostVisitedElement extends PolymerElement {
       /** @private */
       columnCount_: {
         type: Number,
-        computed: `computeColumnCount_(tiles_, screenWidth_, maxTiles_,
-            visible_)`,
+        computed: `computeColumnCount_(tiles_, screenWidth_, maxTiles_)`,
       },
 
       /** @private */
@@ -141,14 +140,21 @@ class MostVisitedElement extends PolymerElement {
       /** @private */
       maxTiles_: {
         type: Number,
-        computed: 'computeMaxTiles_(visible_, customLinksEnabled_)',
+        computed: 'computeMaxTiles_(customLinksEnabled_)',
+      },
+
+      /** @private */
+      maxVisibleTiles_: {
+        type: Number,
+        computed: 'computeMaxVisibleTiles_(columnCount_, rowCount_)',
       },
 
       /** @private */
       showAdd_: {
         type: Boolean,
         value: false,
-        computed: 'computeShowAdd_(tiles_, columnCount_, customLinksEnabled_)',
+        computed:
+            'computeShowAdd_(tiles_, maxVisibleTiles_, customLinksEnabled_)',
       },
 
       /** @private */
@@ -215,7 +221,7 @@ class MostVisitedElement extends PolymerElement {
           performance.measure('most-visited-mojo', 'most-visited-mojo-start');
           this.visible_ = info.visible;
           this.customLinksEnabled_ = info.customLinksEnabled;
-          this.tiles_ = info.tiles.slice(0, 10);
+          this.tiles_ = info.tiles.slice(0, assert(this.maxTiles_));
         });
     performance.mark('most-visited-mojo-start');
     this.eventTracker_.add(document, 'visibilitychange', () => {
@@ -279,10 +285,6 @@ class MostVisitedElement extends PolymerElement {
    * @private
    */
   computeColumnCount_() {
-    if (!this.visible_) {
-      return 0;
-    }
-
     let maxColumns = 3;
     if (this.screenWidth_ === ScreenWidth.WIDE) {
       maxColumns = 5;
@@ -318,7 +320,15 @@ class MostVisitedElement extends PolymerElement {
    * @private
    */
   computeMaxTiles_() {
-    return !this.visible_ ? 0 : (this.customLinksEnabled_ ? 10 : 8);
+    return this.customLinksEnabled_ ? 10 : 8;
+  }
+
+  /**
+   * @return {number}
+   * @private
+   */
+  computeMaxVisibleTiles_() {
+    return this.columnCount_ * this.rowCount_;
   }
 
   /**
@@ -327,7 +337,7 @@ class MostVisitedElement extends PolymerElement {
    */
   computeShowAdd_() {
     return this.customLinksEnabled_ && this.tiles_ &&
-        this.tiles_.length < this.columnCount_ * 2;
+        this.tiles_.length < this.maxVisibleTiles_;
   }
 
   /**
@@ -502,7 +512,7 @@ class MostVisitedElement extends PolymerElement {
    * @private
    */
   isHidden_(index) {
-    return index >= this.columnCount_ * 2;
+    return index >= this.maxVisibleTiles_;
   }
 
   /** @private */
@@ -814,7 +824,8 @@ class MostVisitedElement extends PolymerElement {
   onTilesRendered_() {
     performance.measure('most-visited-rendered');
     this.pageHandler_.onMostVisitedTilesRendered(
-        this.tiles_, BrowserProxy.getInstance().now());
+        this.tiles_.slice(0, assert(this.maxVisibleTiles_)),
+        BrowserProxy.getInstance().now());
   }
 
   /**

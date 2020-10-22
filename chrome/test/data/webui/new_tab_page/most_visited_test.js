@@ -239,8 +239,8 @@ suite('NewTabPageMostVisitedTest', () => {
     assertEquals(0, queryAll('.tile[hidden]').length);
     assertAddShortcutHidden();
     await addTiles(11, /* customLinksEnabled */ false);
-    assertEquals(10, queryTiles().length);
-    assertEquals(2, queryAll('.tile[hidden]').length);
+    assertEquals(8, queryTiles().length);
+    assertEquals(0, queryAll('.tile[hidden]').length);
     assertAddShortcutHidden();
     await addTiles(11, /* customLinksEnabled */ true);
     assertEquals(10, queryTiles().length);
@@ -260,12 +260,15 @@ suite('NewTabPageMostVisitedTest', () => {
     await addTiles(1);
     assertEquals(1, queryTiles().length);
     assertEquals(0, queryAll('.tile[hidden]').length);
+    assertTrue(mostVisited.visible_);
     await addTiles(1, /* customLinksEnabled */ true, /* visible */ false);
     assertEquals(1, queryTiles().length);
-    assertEquals(1, queryAll('.tile[hidden]').length);
+    assertEquals(0, queryAll('.tile[hidden]').length);
+    assertFalse(mostVisited.visible_);
     await addTiles(1, /* customLinksEnabled */ true, /* visible */ true);
     assertEquals(1, queryTiles().length);
     assertEquals(0, queryAll('.tile[hidden]').length);
+    assertTrue(mostVisited.visible_);
   });
 
   test('dialog opens when add shortcut clicked', () => {
