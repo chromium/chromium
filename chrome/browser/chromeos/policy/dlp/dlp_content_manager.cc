@@ -36,6 +36,11 @@ DlpContentManager* DlpContentManager::Get() {
   return g_dlp_content_manager;
 }
 
+void DlpContentManager::OnWindowOcclusionChanged(aura::Window* window) {
+  // Stop video captures that now might include restricted content.
+  CheckRunningVideoCapture();
+}
+
 DlpContentRestrictionSet DlpContentManager::GetConfidentialRestrictions(
     content::WebContents* web_contents) const {
   if (!base::Contains(confidential_web_contents_, web_contents))
@@ -110,12 +115,11 @@ void DlpContentManager::OnConfidentialityChanged(
     RemoveFromConfidential(web_contents);
   } else {
     confidential_web_contents_[web_contents] = restriction_set;
+    window_observers_[web_contents] = std::make_unique<DlpWindowObserver>(
+        web_contents->GetNativeView(), this);
     if (web_contents->GetVisibility() == content::Visibility::VISIBLE) {
       MaybeChangeOnScreenRestrictions();
     }
-    // TODO(crbug.com/1133324): Track the corresponding window position for
-    // video capture. It might appear that some confidential content will become
-    // visible in the video capture area and it should be stopped.
   }
 }
 
@@ -158,6 +162,7 @@ void DlpContentManager::OnVisibilityChanged(
 void DlpContentManager::RemoveFromConfidential(
     content::WebContents* web_contents) {
   confidential_web_contents_.erase(web_contents);
+  window_observers_.erase(web_contents);
   MaybeChangeOnScreenRestrictions();
 }
 
@@ -241,6 +246,10 @@ bool DlpContentManager::IsAreaRestricted(
       continue;
     }
     aura::Window* web_contents_window = entry.first->GetNativeView();
+    if (web_contents_window->occlusion_state() ==
+        aura::Window::OcclusionState::OCCLUDED) {
+      continue;
+    }
     aura::Window* root_window = web_contents_window->GetRootWindow();
     // If no root window, then the WebContent shouldn't be visible.
     if (!root_window)

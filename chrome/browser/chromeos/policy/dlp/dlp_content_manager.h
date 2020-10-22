@@ -5,16 +5,23 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CONTENT_MANAGER_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CONTENT_MANAGER_H_
 
+#include <memory>
+
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_window_observer.h"
 #include "chrome/browser/ui/ash/screenshot_area.h"
 
 class GURL;
 struct ScreenshotArea;
+
+namespace aura {
+class Window;
+}  // namespace aura
 
 namespace content {
 class WebContents;
@@ -26,11 +33,14 @@ namespace policy {
 // WebContents and whether any of them are currently visible.
 // If any confidential WebContents is visible, the corresponding restrictions
 // will be enforced according to the current enterprise policy.
-class DlpContentManager {
+class DlpContentManager : public DlpWindowObserver::Delegate {
  public:
   // Creates the instance if not yet created.
   // There will always be a single instance created on the first access.
   static DlpContentManager* Get();
+
+  // DlpWindowObserver::Delegate overrides:
+  void OnWindowOcclusionChanged(aura::Window* window) override;
 
   // Returns which restrictions are applied to the |web_contents| according to
   // the policy.
@@ -66,12 +76,18 @@ class DlpContentManager {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(DlpContentManagerBrowserTest, ScreenshotsRestricted);
+  FRIEND_TEST_ALL_PREFIXES(DlpContentManagerBrowserTest,
+                           VideoCaptureStoppedWhenConfidentialWindowResized);
+  FRIEND_TEST_ALL_PREFIXES(DlpContentManagerBrowserTest,
+                           VideoCaptureStoppedWhenNonConfidentialWindowResized);
+  FRIEND_TEST_ALL_PREFIXES(DlpContentManagerBrowserTest,
+                           VideoCaptureNotStoppedWhenConfidentialWindowHidden);
   friend class DlpContentManagerTest;
   friend class DlpContentTabHelper;
   friend class MockDlpContentManager;
 
   DlpContentManager();
-  virtual ~DlpContentManager();
+  ~DlpContentManager() override;
   DlpContentManager(const DlpContentManager&) = delete;
   DlpContentManager& operator=(const DlpContentManager&) = delete;
 
@@ -119,6 +135,10 @@ class DlpContentManager {
   // Map from currently known confidential WebContents to the restrictions.
   base::flat_map<content::WebContents*, DlpContentRestrictionSet>
       confidential_web_contents_;
+
+  // Map of window observers for the current confidential WebContents.
+  base::flat_map<content::WebContents*, std::unique_ptr<DlpWindowObserver>>
+      window_observers_;
 
   // Set of restriction applied to the currently visible content.
   DlpContentRestrictionSet on_screen_restrictions_;

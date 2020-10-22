@@ -2175,6 +2175,8 @@ source_set("chromeos") {
     "policy/dlp/dlp_notification_helper.h",
     "policy/dlp/dlp_rules_manager.cc",
     "policy/dlp/dlp_rules_manager.h",
+    "policy/dlp/dlp_window_observer.cc",
+    "policy/dlp/dlp_window_observer.h",
     "policy/dlp/enterprise_clipboard_dlp_controller.cc",
     "policy/dlp/enterprise_clipboard_dlp_controller.h",
     "policy/dm_token_storage.cc",
