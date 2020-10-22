@@ -8063,6 +8063,64 @@ TEST_P(AXPositionTextNavigationTestWithParam,
   }
 }
 
+TEST_F(AXPositionTest, TextPositionComparisonTextField) {
+  // ++1 kRootWebArea
+  // ++++2 kTextField editable
+  // ++++++3 kGenericContainer editable
+  // ++++++++4 kStaticText editable "Hello"
+  // ++++++++++5 kInlineTextBox "Hello"
+  AXNodeData root_1;
+  AXNodeData text_field_2;
+  AXNodeData generic_container_3;
+  AXNodeData static_text_4;
+  AXNodeData inline_box_5;
+
+  root_1.id = 1;
+  text_field_2.id = 2;
+  generic_container_3.id = 3;
+  static_text_4.id = 4;
+  inline_box_5.id = 5;
+
+  root_1.role = ax::mojom::Role::kRootWebArea;
+  root_1.child_ids = {text_field_2.id};
+
+  text_field_2.role = ax::mojom::Role::kTextField;
+  text_field_2.AddState(ax::mojom::State::kEditable);
+  text_field_2.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot, true);
+  text_field_2.child_ids = {generic_container_3.id};
+
+  generic_container_3.role = ax::mojom::Role::kGenericContainer;
+  generic_container_3.AddState(ax::mojom::State::kEditable);
+  generic_container_3.child_ids = {static_text_4.id};
+
+  static_text_4.role = ax::mojom::Role::kStaticText;
+  static_text_4.SetName("Hello");
+  static_text_4.child_ids = {inline_box_5.id};
+
+  inline_box_5.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_5.SetName("Hello");
+
+  SetTree(CreateAXTree({root_1, text_field_2, generic_container_3,
+                        static_text_4, inline_box_5}));
+
+  // TextPosition anchor_id=5 anchor_role=inlineTextBox text_offset=4
+  // annotated_text=hell<o>
+  TestPositionType inline_text_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_box_5.id, 4, ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, inline_text_position);
+
+  // TextPosition anchor_id=2 anchor_role=textField text_offset=4
+  // annotated_text=hell<o>
+  TestPositionType text_field_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), text_field_2.id, 4, ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_field_position);
+
+  // Validate that two positions in the text field with the same text offsets
+  // but different anchors are logically equal.
+  EXPECT_EQ(*inline_text_position, *text_field_position);
+  EXPECT_EQ(*text_field_position, *inline_text_position);
+}
+
 //
 // Instantiations of parameterized tests.
 //

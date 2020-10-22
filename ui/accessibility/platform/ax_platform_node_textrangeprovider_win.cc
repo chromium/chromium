@@ -1390,7 +1390,7 @@ bool AXPlatformNodeTextRangeProviderWin::HasCaretOrSelectionInPlainTextField(
   if (delegate && delegate->HasVisibleCaretOrSelection()) {
     if (!delegate->GetData().HasState(ax::mojom::State::kEditable) ||
         (delegate->GetData().IsPlainTextField() ||
-         delegate->IsChildOfPlainTextField())) {
+         delegate->IsDescendantOfPlainTextField())) {
       return true;
     }
   }

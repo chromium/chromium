@@ -261,6 +261,7 @@ bool AXNodePosition::IsEmbeddedObjectInParent() const {
       // nodes and nodes that are invisible to platform APIs. Textual nodes are
       // represented by their actual text.
       return !IsNullPosition() && !GetAnchor()->IsText() &&
+             !GetAnchor()->IsDescendantOfPlainTextField() &&
              GetAnchor()->IsChildOfLeaf();
   }
 }

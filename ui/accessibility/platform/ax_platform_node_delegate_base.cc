@@ -164,7 +164,7 @@ bool AXPlatformNodeDelegateBase::IsToplevelBrowserWindow() {
   return false;
 }
 
-bool AXPlatformNodeDelegateBase::IsChildOfPlainTextField() const {
+bool AXPlatformNodeDelegateBase::IsDescendantOfPlainTextField() const {
   return false;
 }
 

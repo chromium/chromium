@@ -460,6 +460,9 @@ class AX_EXPORT AXNode final {
   // Returns the text field ancestor of this current node if any.
   AXNode* GetTextFieldAncestor() const;
 
+  // Returns true if the ancestor of the current node is a plain text field.
+  bool IsDescendantOfPlainTextField() const;
+
   // Finds and returns a pointer to ordered set containing node.
   AXNode* GetOrderedSet() const;
 

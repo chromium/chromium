@@ -1310,4 +1310,9 @@ AXNode* AXNode::GetTextFieldAncestor() const {
   return nullptr;
 }
 
+bool AXNode::IsDescendantOfPlainTextField() const {
+  AXNode* textfield_node = GetTextFieldAncestor();
+  return textfield_node && textfield_node->data().IsPlainTextField();
+}
+
 }  // namespace ui

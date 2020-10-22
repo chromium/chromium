@@ -145,7 +145,7 @@ class AX_EXPORT AXPlatformNodeDelegate {
 
   // Returns true if this current node is editable and the root editable node is
   // a plain text field.
-  virtual bool IsChildOfPlainTextField() const = 0;
+  virtual bool IsDescendantOfPlainTextField() const = 0;
 
   // Returns true if this is a leaf node, meaning all its
   // children should not be exposed to any platform's native accessibility

@@ -1513,9 +1513,8 @@ bool BrowserAccessibility::IsToplevelBrowserWindow() {
   return false;
 }
 
-bool BrowserAccessibility::IsChildOfPlainTextField() const {
-  ui::AXNode* textfield_node = node()->GetTextFieldAncestor();
-  return textfield_node && textfield_node->data().IsPlainTextField();
+bool BrowserAccessibility::IsDescendantOfPlainTextField() const {
+  return node()->IsDescendantOfPlainTextField();
 }
 
 gfx::NativeViewAccessible BrowserAccessibility::GetClosestPlatformObject()

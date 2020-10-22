@@ -422,7 +422,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   gfx::NativeViewAccessible GetPreviousSibling() override;
 
   bool IsChildOfLeaf() const override;
-  bool IsChildOfPlainTextField() const override;
+  bool IsDescendantOfPlainTextField() const override;
   bool IsLeaf() const override;
   bool IsToplevelBrowserWindow() override;
   gfx::NativeViewAccessible GetClosestPlatformObject() const override;
