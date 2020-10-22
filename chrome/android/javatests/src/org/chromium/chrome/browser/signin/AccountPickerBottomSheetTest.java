@@ -26,7 +26,6 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-import android.support.test.InstrumentationRegistry;
 import android.view.View;
 
 import androidx.test.espresso.ViewInteraction;
@@ -270,7 +269,11 @@ public class AccountPickerBottomSheetTest {
         buildAndShowCollapsedBottomSheet();
         mAccountManagerTestRule.removeAccountAndWaitForSeeding(PROFILE_DATA1.getAccountName());
         mAccountManagerTestRule.removeAccountAndWaitForSeeding(PROFILE_DATA2.getAccountName());
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        CriteriaHelper.pollUiThread(() -> {
+            return !mCoordinator.getBottomSheetViewForTesting()
+                            .findViewById(R.id.account_picker_selected_account)
+                            .isShown();
+        });
         checkZeroAccountBottomSheet();
     }
 
@@ -280,7 +283,11 @@ public class AccountPickerBottomSheetTest {
         buildAndShowExpandedBottomSheet();
         mAccountManagerTestRule.removeAccountAndWaitForSeeding(PROFILE_DATA1.getAccountName());
         mAccountManagerTestRule.removeAccountAndWaitForSeeding(PROFILE_DATA2.getAccountName());
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        CriteriaHelper.pollUiThread(() -> {
+            return !mCoordinator.getBottomSheetViewForTesting()
+                            .findViewById(R.id.account_picker_account_list)
+                            .isShown();
+        });
         checkZeroAccountBottomSheet();
     }
 
