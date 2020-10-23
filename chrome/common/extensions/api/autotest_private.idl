@@ -558,10 +558,6 @@ namespace autotestPrivate {
   };
   callback WindowBoundsCallback = void (SetWindowBoundsResult result);
 
-  // Callback invoked to report the smoothness after StopSmoothnessTracking is
-  // called. |smoothness| is a percentage number between 0 to 100.
-  callback StopSmoothnessTrackingCallback = void (long smoothness);
-
   // Collected ui::ThroughputTracker data for one animation. It is based on
   // cc::FrameSequenceMetrics::ThroughputData.
   dictionary ThroughputTrackerAnimationData {
@@ -573,6 +569,11 @@ namespace autotestPrivate {
     // frame latency is larger than previous ones.
     long jankCount;
   };
+
+  // Callback invoked to report the smoothness after StopSmoothnessTracking is
+  // called.
+  callback StopSmoothnessTrackingCallback = void
+      (ThroughputTrackerAnimationData data);
 
   // Callback invoked to report the collection ui::ThroughputTracker data
   // after stopThroughputTrackerDataCollection is called.

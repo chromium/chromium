@@ -890,9 +890,11 @@ var defaultTests = [
       // Wait for a few frames.
       await raf();
 
-      chrome.autotestPrivate.stopSmoothnessTracking(function(smoothness) {
+      chrome.autotestPrivate.stopSmoothnessTracking(function(data) {
         chrome.test.assertNoLastError();
-        chrome.test.assertTrue(smoothness >= 0 && smoothness <= 100);
+        chrome.test.assertTrue(data.hasOwnProperty('framesExpected') ||
+                               data.hasOwnProperty('framesProduced') ||
+                               data.hasOwnProperty('jankCount'));
         chrome.test.succeed();
       });
     });
@@ -912,14 +914,16 @@ var defaultTests = [
           await raf();
 
           chrome.autotestPrivate.stopSmoothnessTracking(badDisplay,
-                                                        function(smoothness) {
+                                                        function(data) {
             chrome.test.assertEq(chrome.runtime.lastError.message,
                 'Smoothness is not tracked for display: -1');
 
             chrome.autotestPrivate.stopSmoothnessTracking(displayId,
-                                                          function(smoothness) {
+                                                          function(data) {
               chrome.test.assertNoLastError();
-              chrome.test.assertTrue(smoothness >= 0 && smoothness <= 100);
+              chrome.test.assertTrue(data.hasOwnProperty('framesExpected') ||
+                                     data.hasOwnProperty('framesProduced') ||
+                                     data.hasOwnProperty('jankCount'));
               chrome.test.succeed();
             });
           });

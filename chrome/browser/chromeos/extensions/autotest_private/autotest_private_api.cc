@@ -4718,8 +4718,14 @@ AutotestPrivateStopSmoothnessTrackingFunction::Run() {
 
 void AutotestPrivateStopSmoothnessTrackingFunction::OnReportData(
     const cc::FrameSequenceMetrics::CustomReportData& data) {
-  Respond(
-      OneArgument(base::Value(ash::metrics_util::CalculateSmoothness(data))));
+  api::autotest_private::ThroughputTrackerAnimationData result_data;
+  result_data.frames_expected = data.frames_expected;
+  result_data.frames_produced = data.frames_produced;
+  result_data.jank_count = data.jank_count;
+
+  Respond(ArgumentList(
+      api::autotest_private::StopSmoothnessTracking::Results::Create(
+          result_data)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
