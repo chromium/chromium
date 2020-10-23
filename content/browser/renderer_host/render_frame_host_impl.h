@@ -1457,6 +1457,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojo::PendingReceiver<blink::mojom::ScreenEnumeration> receiver);
 
   void BindPrerenderProcessor(
+      RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::PrerenderProcessor> pending_receiver);
 
   // https://mikewest.github.io/corpp/#initialize-embedder-policy-for-global
