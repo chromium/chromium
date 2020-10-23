@@ -56,6 +56,7 @@ public class LanguagePickerMediator {
 
     private void populateList(List<String> supportedLanguages) {
         List<ListItem> listItems = new ArrayList<>();
+        boolean hasPreferredLanguage = false;
         for (String locale : supportedLanguages) {
             Language language = mLanguageInfoProvider.getLanguageInfo(locale);
             if (language == null) continue;
@@ -63,8 +64,10 @@ public class LanguagePickerMediator {
             ListItem listItem = new ListItem(
                     LanguageItemProperties.ITEM_VIEW_TYPE, buildListItemModelFromLocale(language));
             listItems.add(listItem);
+            hasPreferredLanguage |= listItem.model.get(LanguageItemProperties.IS_SELECTED);
         }
         mListModel.set(listItems);
+        mModel.set(LanguagePickerProperties.IS_ENABLED_WATCH_BUTTON, hasPreferredLanguage);
     }
 
     private PropertyModel buildListItemModelFromLocale(Language language) {

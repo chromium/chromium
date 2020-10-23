@@ -68,6 +68,9 @@ class LanguagePickerView {
             View closeButton = view.findViewById(R.id.close_button);
             closeButton.setOnClickListener(
                     v -> { model.get(LanguagePickerProperties.CLOSE_CALLBACK).run(); });
+        } else if (propertyKey == LanguagePickerProperties.IS_ENABLED_WATCH_BUTTON) {
+            View watchButton = view.findViewById(R.id.watch);
+            watchButton.setEnabled(model.get(LanguagePickerProperties.IS_ENABLED_WATCH_BUTTON));
         }
     }
 }

@@ -113,9 +113,6 @@ if (is_android) {
     create_srcjar = false
     sources = [
       "android/java/res/drawable/circular_media_button_background.xml",
-      "android/java/res/drawable/radio_button.xml",
-      "android/java/res/drawable/radio_button_default.xml",
-      "android/java/res/drawable/radio_button_selected.xml",
       "android/java/res/layout/language_card.xml",
       "android/java/res/layout/language_picker.xml",
       "android/java/res/layout/video_player_controls.xml",
