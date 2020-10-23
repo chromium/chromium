@@ -14,6 +14,7 @@
 #include "cc/paint/paint_flags.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -89,6 +90,11 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
 
   DISALLOW_COPY_AND_ASSIGN(Checkbox);
 };
+
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Checkbox, LabelButton)
+VIEW_BUILDER_PROPERTY(bool, Checked)
+VIEW_BUILDER_PROPERTY(bool, MultiLine)
+END_VIEW_BUILDER(VIEWS_EXPORT, Checkbox)
 
 }  // namespace views
 

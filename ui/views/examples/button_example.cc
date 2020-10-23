@@ -47,6 +47,9 @@ void ButtonExample::CreateExampleView(View* container) {
   container->SetLayoutManager(std::make_unique<FillLayout>());
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
 
+  auto start_throbber_cb = [](MdTextButton* button) {
+    button->StartThrobbing(5);
+  };
   auto view =
       Builder<BoxLayoutView>()
           .SetOrientation(BoxLayout::Orientation::kVertical)
@@ -59,36 +62,35 @@ void ButtonExample::CreateExampleView(View* container) {
                    .CopyAddressTo(&label_button_)
                    .SetText(ASCIIToUTF16(kLabelButton))
                    .SetFocusForPlatform()
-                   .SetRequestFocusOnPress(true),
+                   .SetRequestFocusOnPress(true)
+                   .SetCallback(base::BindRepeating(
+                       &ButtonExample::LabelButtonPressed,
+                       base::Unretained(this), label_button_)),
                Builder<MdTextButton>()
                    .CopyAddressTo(&md_button_)
-                   .SetText(base::ASCIIToUTF16("Material Design")),
+                   .SetText(base::ASCIIToUTF16("Material Design"))
+                   .SetCallback(
+                       base::BindRepeating(start_throbber_cb, md_button_)),
                Builder<MdTextButton>()
                    .CopyAddressTo(&md_disabled_button_)
                    .SetText(ASCIIToUTF16("Material Design Disabled Button"))
-                   .SetState(Button::STATE_DISABLED),
+                   .SetState(Button::STATE_DISABLED)
+                   .SetCallback(base::BindRepeating(start_throbber_cb,
+                                                    md_disabled_button_)),
                Builder<MdTextButton>()
                    .CopyAddressTo(&md_default_button_)
                    .SetText(base::ASCIIToUTF16("Default"))
-                   .SetIsDefault(true),
+                   .SetIsDefault(true)
+                   .SetCallback(base::BindRepeating(start_throbber_cb,
+                                                    md_default_button_)),
                Builder<ImageButton>()
                    .CopyAddressTo(&image_button_)
                    .SetFocusForPlatform()
-                   .SetRequestFocusOnPress(true)})
+                   .SetRequestFocusOnPress(true)
+                   .SetCallback(
+                       base::BindRepeating(&ButtonExample::ImageButtonPressed,
+                                           base::Unretained(this)))})
           .Build();
-
-  auto start_throbber_cb = [](Button* button) { button->StartThrobbing(5); };
-  label_button_->SetCallback(
-      base::BindRepeating(&ButtonExample::LabelButtonPressed,
-                          base::Unretained(this), label_button_));
-  md_button_->SetCallback(base::BindRepeating(start_throbber_cb, md_button_));
-  md_disabled_button_->SetCallback(
-      base::BindRepeating(&ButtonExample::LabelButtonPressed,
-                          base::Unretained(this), md_disabled_button_));
-  md_default_button_->SetCallback(
-      base::BindRepeating(start_throbber_cb, md_default_button_));
-  image_button_->SetCallback(base::BindRepeating(
-      &ButtonExample::ImageButtonPressed, base::Unretained(this)));
 
   image_button_->SetImage(ImageButton::STATE_NORMAL,
                           rb.GetImageNamed(IDR_CLOSE).ToImageSkia());
@@ -123,9 +125,9 @@ void ButtonExample::LabelButtonPressed(LabelButton* label_button,
   } else if (event.IsShiftDown()) {
     if (event.IsAltDown()) {
       // Toggle focusability.
-      label_button_->IsAccessibilityFocusable()
-          ? label_button_->SetFocusBehavior(View::FocusBehavior::NEVER)
-          : label_button_->SetFocusForPlatform();
+      label_button->IsAccessibilityFocusable()
+          ? label_button->SetFocusBehavior(View::FocusBehavior::NEVER)
+          : label_button->SetFocusForPlatform();
     }
   } else if (event.IsAltDown()) {
     label_button->SetIsDefault(!label_button->GetIsDefault());

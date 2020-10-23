@@ -715,6 +715,7 @@ DEFINE_ENUM_CONVERTERS(
 
 BEGIN_METADATA(Button, InkDropHostView)
 ADD_PROPERTY_METADATA(base::string16, AccessibleName)
+ADD_PROPERTY_METADATA(PressedCallback, Callback)
 ADD_PROPERTY_METADATA(bool, AnimateOnStateChange)
 ADD_PROPERTY_METADATA(bool, HasInkDropActionOnClick)
 ADD_PROPERTY_METADATA(bool, HideInkDropWhenShowingContextMenu)

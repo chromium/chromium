@@ -24,9 +24,7 @@ class VIEWS_EXAMPLES_EXPORT CheckboxExample : public ExampleBase {
   void CreateExampleView(View* container) override;
 
  private:
-  // The only control in this test.
-  Checkbox* button_ = nullptr;
-
+  // The number of times the contained checkbox has been clicked.
   int count_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(CheckboxExample);
