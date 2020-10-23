@@ -190,18 +190,26 @@ class MediaVideoTaskWrapper {
         std::move(external_decoder_factory));
   }
 
+  void OnRequestOverlayInfo(bool decoder_requires_restart_for_overlay,
+                            media::ProvideOverlayInfoCB overlay_info_cb) {
+    DVLOG(2) << __func__;
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    // Android overlays are not supported.
+    if (overlay_info_cb)
+      std::move(overlay_info_cb).Run(media::OverlayInfo());
+  }
+
   std::vector<std::unique_ptr<media::VideoDecoder>> OnCreateDecoders() {
     DVLOG(2) << __func__;
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    // TODO(chcunningham): Add plumbing to enable overlays on Android. See
-    // handling in WebMediaPlayerImpl.
-    media::RequestOverlayInfoCB request_overlay_info_cb;
-
     std::vector<std::unique_ptr<media::VideoDecoder>> video_decoders;
     decoder_factory_->CreateVideoDecoders(
         media_task_runner_, gpu_factories_, &null_media_log_,
-        request_overlay_info_cb, target_color_space_, &video_decoders);
+        WTF::BindRepeating(&MediaVideoTaskWrapper::OnRequestOverlayInfo,
+                           weak_factory_.GetWeakPtr()),
+        target_color_space_, &video_decoders);
 
     return video_decoders;
   }
