@@ -728,7 +728,9 @@ base::Optional<ModelError> NigoriSyncBridgeImpl::MergeSyncData(
   }
   DCHECK(data->specifics.has_nigori());
 
-  if (!data->specifics.nigori().encryption_keybag().blob().empty()) {
+  const NigoriSpecifics& specifics = data->specifics.nigori();
+  if (specifics.passphrase_type() != NigoriSpecifics::IMPLICIT_PASSPHRASE ||
+      !specifics.encryption_keybag().blob().empty()) {
     // We received regular Nigori.
     return UpdateLocalState(data->specifics.nigori());
   }

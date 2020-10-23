@@ -615,6 +615,27 @@ TEST_F(NigoriSyncBridgeImplTest,
   EXPECT_THAT(cryptographer, HasDefaultKeyDerivedFrom(kKeystoreKeyParams));
 }
 
+// Tests that upon receiving Nigori corrupted due to absence of
+// |encryption_keybag|, bridge respect its passphrase type and doesn't attempt
+// to trigger keystore initialization.
+TEST_F(NigoriSyncBridgeImplTest,
+       ShouldNotTriggerKeystoreInitializationForCorruptedCustomPassphrase) {
+  const KeyParams kKeystoreKeyParams = KeystoreKeyParams(kRawKeystoreKey);
+
+  EntityData entity_data;
+  *entity_data.specifics.mutable_nigori() =
+      sync_pb::NigoriSpecifics::default_instance();
+  entity_data.specifics.mutable_nigori()->set_passphrase_type(
+      sync_pb::NigoriSpecifics::CUSTOM_PASSPHRASE);
+  EXPECT_TRUE(bridge()->SetKeystoreKeys({kRawKeystoreKey}));
+
+  // There should be no commits.
+  EXPECT_CALL(*processor(), Put(_)).Times(0);
+  // Model error should be reported, because there is no |encryption_keybag|.
+  EXPECT_THAT(bridge()->MergeSyncData(std::move(entity_data)),
+              Ne(base::nullopt));
+}
+
 TEST_F(NigoriSyncBridgeImplTest, ShouldRotateKeystoreKey) {
   const std::vector<uint8_t> kRawKeystoreKey1{kRawKeystoreKey};
   const KeyParams kKeystoreKeyParams1 = KeystoreKeyParams(kRawKeystoreKey1);
