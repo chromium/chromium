@@ -17,6 +17,7 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/base/sync_base_switches.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/data_type_activation_response.h"
@@ -578,8 +579,9 @@ void ClientTagBasedModelTypeProcessor::GetLocalChanges(
       entity_tracker_->GetAllEntitiesIncludingTombstones();
   std::vector<std::string> entities_requiring_data;
   for (const ProcessorEntity* entity : entities) {
-    if (entity->RequiresCommitData())
+    if (entity->RequiresCommitData()) {
       entities_requiring_data.push_back(entity->storage_key());
+    }
   }
   if (!entities_requiring_data.empty()) {
     // Make a copy for the callback so that we can check if everything was
@@ -684,6 +686,14 @@ bool HasClearAllDirective(const sync_pb::ModelTypeState& model_type_state) {
 void ClientTagBasedModelTypeProcessor::OnCommitFailed(
     SyncCommitError commit_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (base::FeatureList::IsEnabled(
+          switches::kSyncResetEntitiesStateOnCommitFailure)) {
+    // Entities weren't committed. Reset their
+    // |commit_requested_sequence_number| to commit them again on next sync
+    // cycle.
+    entity_tracker_->ClearTransientSyncState();
+  }
   bridge_->OnCommitAttemptFailed(commit_error);
 }
 

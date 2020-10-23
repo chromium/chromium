@@ -270,6 +270,11 @@ void MockModelTypeWorker::FailOneCommit() {
       /*committed_response_list=*/CommitResponseDataList(), list);
 }
 
+void MockModelTypeWorker::FailFullCommitRequest() {
+  pending_commits_.pop_front();
+  processor_->OnCommitFailed(SyncCommitError::kBadServerResponse);
+}
+
 CommitResponseData MockModelTypeWorker::SuccessfulCommitResponse(
     const CommitRequestData& request_data,
     int64_t version_offset) {

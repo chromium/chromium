@@ -6,8 +6,9 @@
 #include "base/test/bind_test_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
-#include "chrome/browser/sync/test/integration/passwords_helper.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
+#include "chrome/browser/sync/test/integration/session_hierarchy_match_checker.h"
+#include "chrome/browser/sync/test/integration/sessions_helper.h"
 #include "chrome/browser/sync/test/integration/sync_disabled_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
@@ -23,6 +24,7 @@
 using bookmarks::BookmarkNode;
 using bookmarks_helper::AddFolder;
 using bookmarks_helper::SetTitle;
+using sessions_helper::OpenTab;
 using syncer::ProfileSyncService;
 
 namespace {
@@ -54,6 +56,43 @@ class TypeDisabledChecker : public SingleClientStatusChangeChecker {
 
  private:
   syncer::ModelType type_;
+};
+
+bool HasSessionURLInEntity(const sync_pb::SyncEntity& entity, const GURL& url) {
+  for (const sync_pb::TabNavigation& navigation :
+       entity.specifics().session().tab().navigation()) {
+    if (navigation.virtual_url() == url.spec()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+class LastSessionsCommitChecker : public SingleClientStatusChangeChecker {
+ public:
+  LastSessionsCommitChecker(ProfileSyncService* service,
+                            fake_server::FakeServer* fake_server,
+                            const GURL& expected_url)
+      : SingleClientStatusChangeChecker(service),
+        fake_server_(fake_server),
+        expected_url_(expected_url) {}
+
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for sessions url " << expected_url_ << " to be committed";
+
+    sync_pb::ClientToServerMessage message;
+    fake_server_->GetLastCommitMessage(&message);
+    for (const sync_pb::SyncEntity& entity : message.commit().entries()) {
+      if (HasSessionURLInEntity(entity, expected_url_)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+ private:
+  fake_server::FakeServer* const fake_server_ = nullptr;
+  const GURL expected_url_;
 };
 
 class SyncErrorTest : public SyncTest {
@@ -274,6 +313,33 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, DisableDatatypeWhileRunning) {
   SetTitle(0, node1, "new_title1");
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
   // TODO(lipalani): Verify initial sync ended for typed url is false.
+}
+
+// Tests that the unsynced entity will be eventually committed even after failed
+// commit request.
+IN_PROC_BROWSER_TEST_F(SyncErrorTest,
+                       ShouldResendUncommittedEntitiesOnCommitFailure) {
+  const GURL kURL{"data:text/html,<html><title>Test</title></html>"};
+
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  GetFakeServer()->SetHttpError(net::HTTP_INTERNAL_SERVER_ERROR);
+  ASSERT_TRUE(OpenTab(0, kURL));
+
+  ASSERT_TRUE(
+      LastSessionsCommitChecker(GetSyncService(0), GetFakeServer(), kURL)
+          .Wait());
+
+  // Check that the server doesn't have this session yet.
+  for (const sync_pb::SyncEntity& entity :
+       GetFakeServer()->GetSyncEntitiesByModelType(syncer::SESSIONS)) {
+    ASSERT_FALSE(HasSessionURLInEntity(entity, kURL));
+  }
+
+  GetFakeServer()->ClearHttpError();
+  EXPECT_TRUE(SessionHierarchyMatchChecker({{kURL.spec()}}, GetSyncService(0),
+                                           GetFakeServer())
+                  .Wait());
 }
 
 }  // namespace

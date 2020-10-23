@@ -123,6 +123,9 @@ class MockModelTypeWorker : public CommitQueue {
   // that commit failed for requested entities.
   void FailOneCommit();
 
+  // Simulates commit failure like HTTP error.
+  void FailFullCommitRequest();
+
   // Set the encryption key to |ekn| and inform the processor with an update
   // containing the data in |update|, which defaults to an empty list.
   void UpdateWithEncryptionKey(const std::string& ekn);

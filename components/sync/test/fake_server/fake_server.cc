@@ -216,10 +216,6 @@ net::HttpStatusCode FakeServer::HandleCommand(const std::string& request,
 
   request_counter_++;
 
-  if (http_error_status_code_) {
-    return *http_error_status_code_;
-  }
-
   sync_pb::ClientToServerMessage message;
   bool parsed = message.ParseFromString(request);
   DCHECK(parsed) << "Unable to parse the ClientToServerMessage.";
@@ -247,6 +243,23 @@ net::HttpStatusCode FakeServer::HandleParsedCommand(
   DCHECK(response);
   response->Clear();
 
+  // Store last message from the client in any case.
+  switch (message.message_contents()) {
+    case sync_pb::ClientToServerMessage::GET_UPDATES:
+      last_getupdates_message_ = message;
+      break;
+    case sync_pb::ClientToServerMessage::COMMIT:
+      last_commit_message_ = message;
+      break;
+    default:
+      // Don't care.
+      break;
+  }
+
+  if (http_error_status_code_) {
+    return *http_error_status_code_;
+  }
+
   if (message.message_contents() == sync_pb::ClientToServerMessage::COMMIT &&
       commit_error_type_ != sync_pb::SyncEnums::SUCCESS &&
       ShouldSendTriggeredError()) {
@@ -266,18 +279,6 @@ net::HttpStatusCode FakeServer::HandleParsedCommand(
     *response->mutable_error() = *triggered_actionable_error_;
     response->set_store_birthday(loopback_server_->GetStoreBirthday());
     return net::HTTP_OK;
-  }
-
-  switch (message.message_contents()) {
-    case sync_pb::ClientToServerMessage::GET_UPDATES:
-      last_getupdates_message_ = message;
-      break;
-    case sync_pb::ClientToServerMessage::COMMIT:
-      last_commit_message_ = message;
-      break;
-    default:
-      break;
-      // Don't care.
   }
 
   // The loopback server does not know how to handle Wallet or Offer requests

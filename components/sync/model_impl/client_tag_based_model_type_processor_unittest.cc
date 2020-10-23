@@ -15,10 +15,12 @@
 #include "base/callback.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/base/sync_base_switches.h"
 #include "components/sync/base/sync_mode.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
@@ -120,7 +122,7 @@ class TestModelTypeSyncBridge : public FakeModelTypeSyncBridge {
   }
 
   void OnCommitDataLoaded() {
-    ASSERT_TRUE(data_callback_);
+    ASSERT_TRUE(data_callback_) << "GetData() wasn't called before";
     std::move(data_callback_).Run();
   }
 
@@ -1331,6 +1333,35 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   // Fail commit from worker side indicating this entity was not committed.
   // Processor should include it in consecutive GetLocalChanges responses.
   worker()->FailOneCommit();
+  type_processor()->GetLocalChanges(
+      INT_MAX, base::BindOnce(&CaptureCommitRequest, &commit_request));
+  OnCommitDataLoaded();
+  EXPECT_EQ(1U, commit_request.size());
+  EXPECT_EQ(GetHash(kKey1), commit_request[0]->entity->client_tag_hash);
+}
+
+// Tests that after committing entity fails, processor includes this entity in
+// consecutive commits. This test differs from the above one for the case when
+// there is an HTTP error.
+TEST_F(ClientTagBasedModelTypeProcessorTest,
+       ShouldRetryCommitAfterFullCommitFailure) {
+  base::test::ScopedFeatureList override_features_;
+  override_features_.InitAndEnableFeature(
+      switches::kSyncResetEntitiesStateOnCommitFailure);
+
+  InitializeToReadyState();
+  bridge()->WriteItem(kKey1, kValue1);
+  worker()->VerifyPendingCommits({{GetHash(kKey1)}});
+
+  // Entity is sent to server. Processor shouldn't include it in local changes.
+  CommitRequestDataList commit_request;
+  type_processor()->GetLocalChanges(
+      INT_MAX, base::BindOnce(&CaptureCommitRequest, &commit_request));
+  EXPECT_TRUE(commit_request.empty());
+
+  // Fail commit from worker side indicating this entity was not committed.
+  // Processor should include it in consecutive GetLocalChanges responses.
+  worker()->FailFullCommitRequest();
   type_processor()->GetLocalChanges(
       INT_MAX, base::BindOnce(&CaptureCommitRequest, &commit_request));
   OnCommitDataLoaded();
@@ -2570,6 +2601,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
 }
 
 TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldPropagateFullCommitFailure) {
+  InitializeToReadyState();
   ASSERT_EQ(0, bridge()->commit_failures_count());
 
   type_processor()->OnCommitFailed(syncer::SyncCommitError::kNetworkError);
