@@ -214,7 +214,7 @@ class Combobox::ComboboxMenuModel : public ui::MenuModel {
   }
 
   void ActivatedAt(int index) override {
-    owner_->selected_index_ = index;
+    owner_->SetSelectedIndex(index);
     owner_->OnPerformAction();
   }
 
@@ -279,7 +279,8 @@ const gfx::FontList& Combobox::GetFontList() const {
 }
 
 void Combobox::SetSelectedIndex(int index) {
-  // TODO(http://crbug.com/1132465): No-op when selected_index_ == index.
+  if (selected_index_ == index)
+    return;
   selected_index_ = index;
   if (size_to_largest_label_) {
     OnPropertyChanged(&selected_index_, kPropertyEffectsPaint);
@@ -316,7 +317,7 @@ void Combobox::SetModel(ui::ComboboxModel* model) {
   if (model_) {
     menu_model_ = std::make_unique<ComboboxMenuModel>(this, model_);
     observer_.Add(model_);
-    selected_index_ = model_->GetDefaultIndex();
+    SetSelectedIndex(model_->GetDefaultIndex());
     OnComboboxModelChanged(model_);
   }
 }
@@ -430,7 +431,7 @@ bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
   DCHECK_GE(selected_index_, 0);
   DCHECK_LT(selected_index_, GetModel()->GetItemCount());
   if (selected_index_ < 0 || selected_index_ > GetModel()->GetItemCount())
-    selected_index_ = 0;
+    SetSelectedIndex(0);
 
   bool show_menu = false;
   int new_index = kNoSelection;
@@ -490,7 +491,7 @@ bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
     ShowDropDownMenu(ui::MENU_SOURCE_KEYBOARD);
   } else if (new_index != selected_index_ && new_index != kNoSelection) {
     DCHECK(!GetModel()->IsItemSeparatorAt(new_index));
-    selected_index_ = new_index;
+    SetSelectedIndex(new_index);
     OnPerformAction();
   }
 
@@ -561,7 +562,7 @@ void Combobox::OnComboboxModelChanged(ui::ComboboxModel* model) {
   if (selected_index_ >= model_->GetItemCount() ||
       model_->GetItemCount() == 0 ||
       model_->IsItemSeparatorAt(selected_index_)) {
-    selected_index_ = model_->GetDefaultIndex();
+    SetSelectedIndex(model_->GetDefaultIndex());
   }
 
   content_size_ = GetContentSize();
@@ -615,10 +616,10 @@ void Combobox::PaintIconAndText(gfx::Canvas* canvas) {
 
   // Draw the text.
   SkColor text_color = GetTextColorForEnableState(*this, GetEnabled());
-  DCHECK_GE(selected_index_, 0);
-  DCHECK_LT(selected_index_, GetModel()->GetItemCount());
-  if (selected_index_ < 0 || selected_index_ > GetModel()->GetItemCount())
-    selected_index_ = 0;
+  if (selected_index_ < 0 || selected_index_ > GetModel()->GetItemCount()) {
+    NOTREACHED();
+    SetSelectedIndex(0);
+  }
   base::string16 text = GetModel()->GetItemAt(selected_index_);
 
   int disclosure_arrow_offset = width() - kComboboxArrowContainerWidth;

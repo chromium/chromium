@@ -29,6 +29,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/text_utils.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/combobox_test_api.h"
@@ -684,6 +685,35 @@ TEST_F(ComboboxTest, ConsumingPressKeyEvents) {
     EXPECT_FALSE(combobox_->OnKeyPressed(return_press));
     EXPECT_EQ(1, menu_show_count_);
   }
+}
+
+// Test that ensures that the combobox is resized correctly when selecting
+// between indices of different label lengths.
+TEST_F(ComboboxTest, ContentSizeUpdateOnSetSelectedIndex) {
+  const gfx::FontList& font_list =
+      style::GetFont(Combobox::kDefaultComboboxTextContext,
+                     Combobox::kDefaultComboboxTextStyle);
+  InitCombobox(nullptr);
+  combobox_->SetSizeToLargestLabel(false);
+  test_api_->PerformActionAt(1);
+  EXPECT_EQ(gfx::GetStringWidth(model_->GetItemAt(1), font_list),
+            test_api_->content_size().width());
+  combobox_->SetSelectedIndex(1);
+  EXPECT_EQ(gfx::GetStringWidth(model_->GetItemAt(1), font_list),
+            test_api_->content_size().width());
+
+  // Avoid selected_index_ == index optimization and start with index 1 selected
+  // to test resizing from a an index with a shorter label to an index with a
+  // longer label.
+  combobox_->SetSelectedIndex(0);
+  combobox_->SetSelectedIndex(1);
+
+  test_api_->PerformActionAt(0);
+  EXPECT_EQ(gfx::GetStringWidth(model_->GetItemAt(0), font_list),
+            test_api_->content_size().width());
+  combobox_->SetSelectedIndex(0);
+  EXPECT_EQ(gfx::GetStringWidth(model_->GetItemAt(0), font_list),
+            test_api_->content_size().width());
 }
 
 TEST_F(ComboboxTest, ContentWidth) {
