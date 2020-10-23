@@ -8,18 +8,18 @@
 
 namespace media {
 
-H264BitstreamBuffer::H264BitstreamBuffer() : data_(NULL) {
+H264BitstreamBuffer::H264BitstreamBuffer() : data_(nullptr) {
   Reset();
 }
 
 H264BitstreamBuffer::~H264BitstreamBuffer() {
   free(data_);
-  data_ = NULL;
+  data_ = nullptr;
 }
 
 void H264BitstreamBuffer::Reset() {
   free(data_);
-  data_ = NULL;
+  data_ = nullptr;
 
   capacity_ = 0;
   pos_ = 0;
