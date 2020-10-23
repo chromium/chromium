@@ -843,6 +843,10 @@ try_.chromium_linux_builder(
 )
 
 try_.chromium_linux_builder(
+    name = "fuchsia-deterministic-dbg",
+)
+
+try_.chromium_linux_builder(
     name = "fuchsia-fyi-arm64-dbg",
 )
 
