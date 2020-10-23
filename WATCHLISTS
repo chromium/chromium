@@ -1083,17 +1083,22 @@
       'filepath': 'chrome/browser/apps/guest_view|'\
                   'chrome/browser/extensions/api/web_view|'\
                   'chrome/browser/guest_view|'\
-                  'chrome/common/extensions/api/webview*.json|'\
-                  'chrome/common/extensions/docs|'\
+                  'chrome/common/extensions/api/(app|web)view_tag\.(json|idl)|'\
+                  'chrome/common/extensions/docs/.*(app|web)view|'\
                   'chrome/renderer/resources/extensions/web_view|'\
+                  'chrome/test/data/extensions/platform_apps/(app|web)_view|'\
                   'components/guest_view|'\
                   'content/browser/browser_plugin|'\
                   'extensions/browser/api/guest_view|'\
                   'extensions/browser/guest_view|'\
+                  'extensions/common/api/(app|guest|web)_view.*\.(json|idl)|'\
+                  'extensions/common/api/extension_options.*\.(json|idl)|'\
+                  'extensions/common/api/mime_handler.*\.(json|idl|mojom)|'\
                   'extensions/common/guest_view|'\
-                  'extensions/common/mojom/guest_view.mojom|'\
-                  'extensions/common/api/*view*.json|'\
-                  'extensions/renderer/guest_view',
+                  'extensions/common/mojom/guest_view\.mojom|'\
+                  'extensions/renderer/guest_view|'\
+                  'extensions/renderer/resources/guest_view|'\
+                  'extensions/test/data/(app|web)_view',
     },
     'hats': {
       'filepath': 'chrome/browser/chromeos/hats/',
