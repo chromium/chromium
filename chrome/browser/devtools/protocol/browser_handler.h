@@ -29,6 +29,8 @@ class BrowserHandler : public protocol::Browser::Backend {
   protocol::Response SetDockTile(
       protocol::Maybe<std::string> label,
       protocol::Maybe<protocol::Binary> image) override;
+  protocol::Response ExecuteBrowserCommand(
+      const protocol::Browser::BrowserCommandId& command_id) override;
 
  private:
   base::flat_set<std::string> contexts_with_overridden_permissions_;

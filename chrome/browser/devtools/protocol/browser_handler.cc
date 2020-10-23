@@ -9,9 +9,11 @@
 
 #include "base/bind.h"
 #include "base/memory/ref_counted_memory.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_dock_tile.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
@@ -190,5 +192,22 @@ protocol::Response BrowserHandler::SetDockTile(
     reps.emplace_back(image.fromJust().bytes(), 1);
   DevToolsDockTile::Update(label.fromMaybe(std::string()),
                            !reps.empty() ? gfx::Image(reps) : gfx::Image());
+  return Response::Success();
+}
+
+protocol::Response BrowserHandler::ExecuteBrowserCommand(
+    const protocol::Browser::BrowserCommandId& command_id) {
+  static auto& command_id_map =
+      *new std::map<protocol::Browser::BrowserCommandId, int>{
+          {protocol::Browser::BrowserCommandIdEnum::OpenTabSearch,
+           IDC_TAB_SEARCH}};
+  if (command_id_map.count(command_id) == 0) {
+    return Response::InvalidParams("Invalid BrowserCommandId: " + command_id);
+  }
+  if (!chrome::ExecuteCommand(BrowserList::GetInstance()->GetLastActive(),
+                              command_id_map[command_id])) {
+    return Response::InvalidRequest(
+        "Browser command not supported. BrowserCommandId: " + command_id);
+  }
   return Response::Success();
 }

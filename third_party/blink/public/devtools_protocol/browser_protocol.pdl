@@ -855,6 +855,11 @@ domain Browser
       # For "camera" permission, may specify panTiltZoom.
       optional boolean panTiltZoom
 
+  # Browser command ids used by executeBrowserCommand.
+  experimental type BrowserCommandId extends string
+    enum
+      openTabSearch
+
   # Set permission settings for given origin.
   experimental command setPermission
     parameters
@@ -1013,6 +1018,11 @@ domain Browser
       optional string badgeLabel
       # Png encoded image.
       optional binary image
+
+  # Invoke custom browser commands used by telemetry.
+  experimental command executeBrowserCommand
+    parameters
+      BrowserCommandId commandId
 
 # This domain exposes CSS read/write operations. All CSS objects (stylesheets, rules, and styles)
 # have an associated `id` used in subsequent operations on the related object. Each object type has
