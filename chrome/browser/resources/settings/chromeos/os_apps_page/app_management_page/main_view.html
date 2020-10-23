@@ -5,6 +5,7 @@
 <link rel="import" href="store_client.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
+<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
 
 <dom-module id="app-management-main-view">
   <template>
@@ -23,6 +24,7 @@
       <template is="dom-repeat" items="[[appList_]]" as="app">
         <app-management-app-item app="[[app]]">
           <cr-icon-button slot="right-content"
+              id$="app-subpage-button-[[app.id]]"
               class="subpage-arrow app-management-item-arrow"
               aria-label$="[[app.title]]"
               role="link"

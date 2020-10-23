@@ -62,6 +62,7 @@ js_library("app_management_page") {
     ":main_view",
     ":store",
     ":store_client",
+    "//ui/webui/resources/js/cr/ui:focus_without_ink",
   ]
 }
 
