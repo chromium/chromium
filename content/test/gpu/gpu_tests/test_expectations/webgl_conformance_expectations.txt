@@ -241,7 +241,7 @@ crbug.com/1141040 [ fuchsia ] conformance/textures/misc/tex-image-and-sub-image-
 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-upload-size.html [ Skip ]
 
 # Flaky tests
-crbug.com/1136414 [ fuchsia ] conformance/glsl/functions/glsl-function-ceil.html [ Skip ]
+crbug.com/1136414 [ fuchsia ] conformance/glsl/functions/glsl-function* [ Skip ]
 crbug.com/1136414 [ fuchsia ] conformance/ogles/GL/fract/fract_001_to_006.html [ Skip ]
 crbug.com/1136414 [ fuchsia ] conformance/ogles/GL/build/build_009_to_016.html [ Skip ]
 crbug.com/1136414 [ fuchsia ] conformance/ogles/GL/mat/mat_009_to_016.html [ Skip ]
