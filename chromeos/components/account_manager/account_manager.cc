@@ -388,6 +388,7 @@ void AccountManager::GetAccountEmailInternal(
   auto it = accounts_.find(account_key);
   if (it == accounts_.end()) {
     std::move(callback).Run(std::string());
+    return;
   }
 
   std::move(callback).Run(it->second.raw_email);
