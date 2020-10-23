@@ -51,13 +51,15 @@ class FrameWindowTreeHost::WindowParentingClientImpl
 
 FrameWindowTreeHost::FrameWindowTreeHost(
     fuchsia::ui::views::ViewToken view_token,
-    scenic::ViewRefPair view_ref_pair) {
+    scenic::ViewRefPair view_ref_pair,
+    content::WebContents* web_contents)
+    : view_ref_(DupViewRef(view_ref_pair.view_ref)),
+      web_contents_(web_contents) {
   CreateCompositor();
 
   ui::PlatformWindowInitProperties properties;
   properties.view_token = std::move(view_token);
   properties.view_ref_pair = std::move(view_ref_pair);
-  view_ref_ = DupViewRef(properties.view_ref_pair.view_ref);
   CreateAndSetPlatformWindow(std::move(properties));
 
   window_parenting_client_ =
@@ -87,7 +89,9 @@ void FrameWindowTreeHost::OnWindowStateChanged(
   // Tell the root aura::Window whether it is shown or hidden.
   if (new_state == ui::PlatformWindowState::kMinimized) {
     Hide();
+    web_contents_->WasOccluded();
   } else {
     Show();
+    web_contents_->WasShown();
   }
 }

@@ -799,7 +799,7 @@ void FrameImpl::InitWindowTreeHost(fuchsia::ui::views::ViewToken view_token,
   DCHECK(!window_tree_host_);
 
   window_tree_host_ = std::make_unique<FrameWindowTreeHost>(
-      std::move(view_token), std::move(view_ref_pair));
+      std::move(view_token), std::move(view_ref_pair), web_contents_.get());
   window_tree_host_->InitHost();
   root_window()->AddPreTargetHandler(&event_filter_);
 

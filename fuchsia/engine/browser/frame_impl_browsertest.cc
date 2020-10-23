@@ -2,15 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <fuchsia/ui/policy/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
+#include <lib/sys/cpp/component_context.h>
 #include <lib/ui/scenic/cpp/view_token_pair.h>
 
 #include "base/bind.h"
 #include "base/containers/span.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/process_context.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -64,6 +68,7 @@ const char kDynamicTitlePath[] = "/dynamic_title.html";
 const char kPopupPath[] = "/popup_parent.html";
 const char kPopupRedirectPath[] = "/popup_child.html";
 const char kPopupMultiplePath[] = "/popup_multiple.html";
+const char kVisibilityPath[] = "/visibility.html";
 const char kPage1Title[] = "title 1";
 const char kPage2Title[] = "title 2";
 const char kPage3Title[] = "websql not available";
@@ -142,8 +147,23 @@ std::string GetDocumentVisibilityState(fuchsia::web::Frame* frame) {
   return visibility->data;
 }
 
-// Verifies that Frames are initially "hidden".
-IN_PROC_BROWSER_TEST_F(FrameImplTest, VisibilityState) {
+// Verifies that Frames are initially "hidden", changes to "visible" once the
+// View is attached to a Presenter and back to "hidden" when the View is
+// detached from the Presenter.
+// TODO(crbug.com/1058247): Re-enable this test on Arm64 when femu is available
+// for that architecture. This test requires Vulkan and Scenic to properly
+// signal the Views visibility.
+#if defined(ARCH_CPU_ARM_FAMILY)
+#define MAYBE_VisibilityState DISABLED_VisibilityState
+#else
+#define MAYBE_VisibilityState VisibilityState
+#endif
+IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_VisibilityState) {
+  net::test_server::EmbeddedTestServerHandle test_server_handle;
+  ASSERT_TRUE(test_server_handle =
+                  embedded_test_server()->StartAndReturnHandle());
+  GURL page_url(embedded_test_server()->GetURL(kVisibilityPath));
+
   fuchsia::web::FramePtr frame = CreateFrame();
   FrameImpl* frame_impl = context_impl()->GetFrameImplForTest(&frame);
 
@@ -155,9 +175,8 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, VisibilityState) {
 
   // Navigate to a page and wait for it to finish loading.
   ASSERT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      controller.get(), fuchsia::web::LoadUrlParams(), url::kAboutBlankURL));
-  navigation_listener_.RunUntilUrlAndTitleEquals(GURL(url::kAboutBlankURL),
-                                                 url::kAboutBlankURL);
+      controller.get(), fuchsia::web::LoadUrlParams(), page_url.spec()));
+  navigation_listener_.RunUntilUrlEquals(page_url);
 
   // Query the document.visibilityState before creating a View.
   EXPECT_EQ(GetDocumentVisibilityState(frame.get()), "\"hidden\"");
@@ -167,8 +186,24 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, VisibilityState) {
   auto view_tokens = scenic::ViewTokenPair::New();
   frame->CreateView(std::move(view_tokens.view_token));
   base::RunLoop().RunUntilIdle();
-
   EXPECT_EQ(GetDocumentVisibilityState(frame.get()), "\"hidden\"");
+
+  // Attach the View to a Presenter, the page should be visible.
+  auto presenter = base::ComponentContextForProcess()
+                       ->svc()
+                       ->Connect<::fuchsia::ui::policy::Presenter>();
+  presenter.set_error_handler(
+      [](zx_status_t) { ADD_FAILURE() << "Presenter disconnected."; });
+  presenter->PresentOrReplaceView(std::move(view_tokens.view_holder_token),
+                                  nullptr);
+  navigation_listener_.RunUntilTitleEquals("visible");
+
+  // Attach a new View to the Presenter, the page should be hidden again.
+  // This part of the test is a regression test for crbug.com/1141093.
+  auto view_tokens2 = scenic::ViewTokenPair::New();
+  presenter->PresentOrReplaceView(std::move(view_tokens2.view_holder_token),
+                                  nullptr);
+  navigation_listener_.RunUntilTitleEquals("hidden");
 }
 
 void VerifyCanGoBackAndForward(fuchsia::web::NavigationController* controller,
