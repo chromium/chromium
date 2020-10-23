@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/core/style/filter_operations.h"
 #include "third_party/blink/renderer/core/style/style_generated_image.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
+#include "third_party/blink/renderer/core/svg/svg_length.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/animation/compositor_color_animation_curve.h"
@@ -2221,15 +2222,6 @@ TEST_P(AnimationCompositorAnimationsTest,
         0% { transform: rotate(-5deg); }
         100% { transform: rotate(5deg); }
       }
-      .animate-mixed {
-        width: 100px;
-        height: 100px;
-        animation: mixed 1s infinite;
-      }
-      @keyframes mixed {
-        0% { transform: rotate(-5deg); stroke-dashoffset: 0; }
-        100% { transform: rotate(5deg); stroke-dashoffset: 180; }
-      }
     </style>
     <svg id="svg" class="animate">
       <rect id="rect" class="animate"/>
@@ -2238,10 +2230,9 @@ TEST_P(AnimationCompositorAnimationsTest,
         <animateMotion dur="10s" repeatCount="indefinite"
                        path="M0,0 L100,100 z"/>
       </rect>
-      <rect id="rect-mixed" class="animate-mixed"/>
       <rect id="rect-effect" class="animate"
             vector-effect="non-scaling-stroke"/>
-      <svg id="embedded-svg" class="animate"/>
+      <svg id="nested-svg" class="animate"/>
       <foreignObject id="foreign" class="animate"/>
       <foreignObject id="foreign-zoomed" class="animate"
                      style="zoom: 1.5; will-change: opacity"/>
@@ -2259,13 +2250,41 @@ TEST_P(AnimationCompositorAnimationsTest,
   EXPECT_TRUE(CanStartAnimation("rect"));
   EXPECT_FALSE(CanStartAnimation("rect-useref"));
   EXPECT_FALSE(CanStartAnimation("rect-smil"));
-  EXPECT_FALSE(CanStartAnimation("rect-mixed"));
   EXPECT_FALSE(CanStartAnimation("rect-effect"));
-  EXPECT_FALSE(CanStartAnimation("embedded-svg"));
+  EXPECT_FALSE(CanStartAnimation("nested-svg"));
   EXPECT_TRUE(CanStartAnimation("foreign"));
   EXPECT_FALSE(CanStartAnimation("foreign-zoomed"));
   EXPECT_TRUE(CanStartAnimation("use"));
   EXPECT_FALSE(CanStartAnimation("use-offset"));
+
+  To<SVGElement>(GetDocument().getElementById("rect"))
+      ->SetWebAnimatedAttribute(
+          svg_names::kXAttr,
+          MakeGarbageCollected<SVGLength>(SVGLength::Initial::kPercent50,
+                                          SVGLengthMode::kOther));
+  EXPECT_FALSE(CanStartAnimation("rect"));
+}
+
+TEST_P(AnimationCompositorAnimationsTest, UnsupportedSVGCSSProperty) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes mixed {
+        0% { transform: rotate(-5deg); stroke-dashoffset: 0; }
+        100% { transform: rotate(5deg); stroke-dashoffset: 180; }
+      }
+    </style>
+    <svg>
+      <rect id="rect"
+            style="width: 100px; height: 100px; animation: mixed 1s infinite"/>
+    </svg>
+  )HTML");
+
+  Element* element = GetDocument().getElementById("rect");
+  const Animation& animation =
+      *element->GetElementAnimations()->Animations().begin()->key;
+  EXPECT_EQ(CompositorAnimations::kUnsupportedCSSProperty,
+            animation.CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()));
 }
 
 }  // namespace blink

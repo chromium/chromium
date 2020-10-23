@@ -107,7 +107,7 @@ class CORE_EXPORT SVGElement : public Element {
   void SetAnimatedAttribute(const QualifiedName&, SVGPropertyBase*);
   void ClearAnimatedAttribute(const QualifiedName&);
 
-  bool HasMainThreadAnimations() const;
+  bool HasNonCSSPropertyAnimations() const;
 
   SVGSVGElement* ownerSVGElement() const;
   SVGElement* viewportElement() const;

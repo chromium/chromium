@@ -810,7 +810,7 @@ CompositorAnimations::FailureReasons
 CompositorAnimations::CheckCanStartSVGElementOnCompositor(
     const SVGElement& svg_element) {
   FailureReasons reasons = kNoFailure;
-  if (svg_element.HasMainThreadAnimations())
+  if (svg_element.HasNonCSSPropertyAnimations())
     reasons |= kTargetHasIncompatibleAnimations;
   if (!svg_element.InstancesForElement().IsEmpty()) {
     // TODO(crbug.com/785246): Currently when an SVGElement has svg:use
