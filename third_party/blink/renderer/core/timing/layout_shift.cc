@@ -47,11 +47,9 @@ void LayoutShift::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.Add("hadRecentInput", had_recent_input_);
   builder.Add("lastInputTime", most_recent_input_timestamp_);
 
-  if (RuntimeEnabledFeatures::LayoutShiftAttributionEnabled()) {
-    ScriptState* script_state = builder.GetScriptState();
-    builder.Add("sources", FreezeV8Object(ToV8(sources_, script_state),
-                                          script_state->GetIsolate()));
-  }
+  ScriptState* script_state = builder.GetScriptState();
+  builder.Add("sources", FreezeV8Object(ToV8(sources_, script_state),
+                                        script_state->GetIsolate()));
 }
 
 void LayoutShift::Trace(Visitor* visitor) const {

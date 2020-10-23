@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // https://wicg.github.io/layout-instability/#sec-layout-shift-attribution
-[Exposed=Window, RuntimeEnabled=LayoutShiftAttribution]
+[Exposed=Window]
 interface LayoutShiftAttribution {
     readonly attribute Node? node;
     readonly attribute DOMRectReadOnly previousRect;

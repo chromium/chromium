@@ -1068,12 +1068,6 @@
       status: "stable",
     },
     {
-      // Adds the "sources" attribute to the LayoutShift interface for the
-      // Layout Instability API (bit.ly/cls-sources).
-      name: "LayoutShiftAttribution",
-      status: "stable",
-    },
-    {
       name: "LazyFrameLoading",
       status: "stable",
     },
