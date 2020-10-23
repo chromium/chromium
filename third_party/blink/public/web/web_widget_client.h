@@ -125,11 +125,6 @@ class WebWidgetClient {
   // perform actual painting work.
   virtual void WillBeginMainFrame() {}
 
-  // Notification that the output of a BeginMainFrame was committed to the
-  // compositor (thread), though would not be submitted to the display
-  // compositor yet (see DidCommitAndDrawCompositorFrame()).
-  virtual void DidCommitCompositorFrame(base::TimeTicks commit_start_time) {}
-
   // Notifies that the layer tree host has completed a call to
   // RequestMainFrameUpdate in response to a BeginMainFrame.
   virtual void DidBeginMainFrame() {}

@@ -21,10 +21,6 @@ class CONTENT_EXPORT RenderWidgetDelegate {
   // Returns whether multiple windows are allowed for the widget. If true, then
   // Show() may be called more than once.
   virtual bool SupportsMultipleWindowsForWidget() = 0;
-
-  // Called when the RenderWidget handles
-  // LayerTreeViewDelegate::DidCommitCompositorFrame().
-  virtual void DidCommitCompositorFrameForWidget() = 0;
 };
 
 }  // namespace content

@@ -251,11 +251,6 @@ void RenderWidget::RequestPresentation(PresentationTimeCallback callback) {
   layer_tree_host_->SetNeedsCommitWithForcedRedraw();
 }
 
-void RenderWidget::DidCommitCompositorFrame(base::TimeTicks commit_start_time) {
-  if (delegate())
-    delegate()->DidCommitCompositorFrameForWidget();
-}
-
 void RenderWidget::ScheduleAnimation() {
   // This call is not needed in single thread mode for tests without a
   // scheduler, but they override this method in order to schedule a synchronous

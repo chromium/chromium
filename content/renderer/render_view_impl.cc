@@ -314,14 +314,6 @@ bool RenderViewImpl::SupportsMultipleWindowsForWidget() {
   return webview_->GetWebPreferences().supports_multiple_windows;
 }
 
-void RenderViewImpl::DidCommitCompositorFrameForWidget() {
-  for (auto& observer : observers_)
-    observer.DidCommitCompositorFrame();
-
-  if (GetWebView())
-    GetWebView()->UpdatePreferredSize();
-}
-
 // IPC message handlers -----------------------------------------
 
 void RenderViewImpl::OnSetHistoryOffsetAndLength(int history_offset,
@@ -601,6 +593,12 @@ void RenderViewImpl::PrintPage(WebLocalFrame* frame) {
 void RenderViewImpl::ZoomLevelChanged() {
   for (auto& observer : observers_)
     observer.OnZoomLevelChanged();
+}
+
+void RenderViewImpl::DidCommitCompositorFrameForLocalMainFrame(
+    base::TimeTicks commit_start_time) {
+  for (auto& observer : observers_)
+    observer.DidCommitCompositorFrame();
 }
 
 void RenderViewImpl::PropagatePageZoomToNewlyAttachedFrame(

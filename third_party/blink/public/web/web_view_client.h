@@ -135,6 +135,12 @@ class WebViewClient {
   // Called when the View's zoom has changed.
   virtual void ZoomLevelChanged() {}
 
+  // Notification that the output of a BeginMainFrame was committed to the
+  // compositor (thread), though would not be submitted to the display
+  // compositor yet. This will only be called for local main frames.
+  virtual void DidCommitCompositorFrameForLocalMainFrame(
+      base::TimeTicks commit_start_time) {}
+
   // Session history -----------------------------------------------------
 
   // Returns the number of history items before/after the current

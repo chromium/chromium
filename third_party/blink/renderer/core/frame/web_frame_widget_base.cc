@@ -663,11 +663,6 @@ void WebFrameWidgetBase::RequestBeginMainFrameNotExpected(bool request) {
   widget_base_->LayerTreeHost()->RequestBeginMainFrameNotExpected(request);
 }
 
-void WebFrameWidgetBase::EndCommitCompositorFrame(
-    base::TimeTicks commit_start_time) {
-  Client()->DidCommitCompositorFrame(commit_start_time);
-}
-
 void WebFrameWidgetBase::DidCommitAndDrawCompositorFrame() {
   ForEachLocalFrameControlledByWidget(
       local_root_->GetFrame(),

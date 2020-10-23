@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_autofill_client.h"
+#include "third_party/blink/public/web/web_view_client.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
@@ -103,7 +104,10 @@ void WebViewFrameWidget::EndCommitCompositorFrame(
     base::TimeTicks commit_start_time) {
   DCHECK(commit_compositor_frame_start_time_.has_value());
 
-  WebFrameWidgetBase::EndCommitCompositorFrame(commit_start_time);
+  web_view_->Client()->DidCommitCompositorFrameForLocalMainFrame(
+      commit_start_time);
+  web_view_->UpdatePreferredSize();
+
   web_view_->MainFrameImpl()
       ->GetFrame()
       ->View()

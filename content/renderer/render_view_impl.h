@@ -210,6 +210,8 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   void OnPageVisibilityChanged(PageVisibilityState visibility) override;
   void OnPageFrozenChanged(bool frozen) override;
   void ZoomLevelChanged() override;
+  void DidCommitCompositorFrameForLocalMainFrame(
+      base::TimeTicks commit_start_time) override;
   void OnSetHistoryOffsetAndLength(int history_offset,
                                    int history_length) override;
 
@@ -314,7 +316,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // RenderWidgetDelegate implementation ----------------------------------
 
   bool SupportsMultipleWindowsForWidget() override;
-  void DidCommitCompositorFrameForWidget() override;
 
   // Old WebLocalFrameClient implementations
   // ----------------------------------------

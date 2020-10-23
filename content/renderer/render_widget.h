@@ -201,7 +201,6 @@ class CONTENT_EXPORT RenderWidget
   void SetWindowRect(const gfx::Rect&) override;
   viz::FrameSinkId GetFrameSinkId() override;
   void RecordTimeToFirstActivePaint(base::TimeDelta duration) override;
-  void DidCommitCompositorFrame(base::TimeTicks commit_start_time) override;
 
   void ConvertViewportToWindow(blink::WebRect* rect);
   void UpdateTextInputState();
