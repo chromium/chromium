@@ -159,6 +159,49 @@ serial_test(async (t, fake) => {
   const data = new Uint8Array(1024);  // Much larger than bufferSize above.
   for (let i = 0; i < data.byteLength; ++i)
     data[i] = i & 0xff;
+  let writePromise = writer.write(data).catch(reason => {
+    assert_equals(reason, 'Aborting.');
+  });
+
+  await writer.abort('Aborting.');
+  await writePromise;
+  await port.close();
+  assert_equals(port.writable, null);
+}, 'abort() does not wait for the write buffer to be cleared');
+
+serial_test(async (t, fake) => {
+  const {port, fakePort} = await getFakeSerialPort(fake);
+  // Select a buffer size smaller than the amount of data transferred.
+  await port.open({baudRate: 9600, bufferSize: 64});
+
+  const writer = port.writable.getWriter();
+  const data = new Uint8Array(1024);  // Much larger than bufferSize above.
+  for (let i = 0; i < data.byteLength; ++i)
+    data[i] = i & 0xff;
+  let closed = (async () => {
+    try {
+      await writer.write(data);
+    } catch (reason) {
+      assert_equals(reason, 'Aborting.');
+      writer.releaseLock();
+      await port.close();
+      assert_equals(port.writable, null);
+    }
+  })();
+
+  await writer.abort('Aborting.');
+  await closed;
+}, 'Can close while aborting');
+
+serial_test(async (t, fake) => {
+  const {port, fakePort} = await getFakeSerialPort(fake);
+  // Select a buffer size smaller than the amount of data transferred.
+  await port.open({baudRate: 9600, bufferSize: 64});
+
+  const writer = port.writable.getWriter();
+  const data = new Uint8Array(1024);  // Much larger than bufferSize above.
+  for (let i = 0; i < data.byteLength; ++i)
+    data[i] = i & 0xff;
   writer.write(data);
 
   let readComplete = false;

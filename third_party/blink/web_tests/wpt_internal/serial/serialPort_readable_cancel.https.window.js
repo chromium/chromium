@@ -25,6 +25,24 @@ serial_test(async (t, fake) => {
   await port.open({baudRate: 9600, bufferSize: 64});
 
   const reader = port.readable.getReader();
+  const closed = (async () => {
+    const {value, done} = await reader.read();
+    assert_true(done);
+    assert_equals(undefined, value);
+    reader.releaseLock();
+    await port.close();
+    assert_equals(port.readable, null);
+  })();
+
+  await reader.cancel();
+  await closed;
+}, 'Can close while canceling');
+
+serial_test(async (t, fake) => {
+  const {port, fakePort} = await getFakeSerialPort(fake);
+  await port.open({baudRate: 9600, bufferSize: 64});
+
+  const reader = port.readable.getReader();
 
   await fakePort.writable();
   const data = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]);

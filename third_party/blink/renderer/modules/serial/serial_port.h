@@ -60,6 +60,7 @@ class SerialPort final : public ScriptWrappable,
 
   ScriptPromise ContinueClose(ScriptState*);
   void AbortClose();
+  void StreamsClosed();
 
   void Flush(device::mojom::blink::SerialPortFlushMode mode,
              device::mojom::blink::SerialPort::FlushCallback callback);

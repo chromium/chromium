@@ -428,21 +428,33 @@ ScriptPromise SerialPort::close(ScriptState* script_state,
 
 ScriptPromise SerialPort::ContinueClose(ScriptState* script_state) {
   DCHECK(closing_);
-  DCHECK(!readable_);
-  DCHECK(!writable_);
   DCHECK(!close_resolver_);
 
   if (!port_.is_bound())
     return ScriptPromise::CastUndefined(script_state);
 
   close_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  port_->Close(WTF::Bind(&SerialPort::OnClose, WrapPersistent(this)));
+
+  // readable.cancel() and writable.abort() can resolve before |readable_| or
+  // |writable_| are set to null if the streams were already erroring. Wait
+  // until UnderlyingSourceClosed() and UnderlyingSinkClosed() have been called
+  // before continuing.
+  if (!readable_ && !writable_) {
+    StreamsClosed();
+  }
+
   return close_resolver_->Promise();
 }
 
 void SerialPort::AbortClose() {
   DCHECK(closing_);
   closing_ = false;
+}
+
+void SerialPort::StreamsClosed() {
+  DCHECK(!readable_);
+  DCHECK(!writable_);
+  port_->Close(WTF::Bind(&SerialPort::OnClose, WrapPersistent(this)));
 }
 
 void SerialPort::Flush(
@@ -462,12 +474,20 @@ void SerialPort::UnderlyingSourceClosed() {
   DCHECK(readable_);
   readable_ = nullptr;
   underlying_source_ = nullptr;
+
+  if (close_resolver_ && !writable_) {
+    StreamsClosed();
+  }
 }
 
 void SerialPort::UnderlyingSinkClosed() {
   DCHECK(writable_);
   writable_ = nullptr;
   underlying_sink_ = nullptr;
+
+  if (close_resolver_ && !readable_) {
+    StreamsClosed();
+  }
 }
 
 void SerialPort::ContextDestroyed() {
