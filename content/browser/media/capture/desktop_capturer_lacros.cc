@@ -130,6 +130,11 @@ void DesktopCapturerLacros::Start(Callback* callback) {
 void DesktopCapturerLacros::CaptureFrame() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+#if DCHECK_IS_ON()
+  DCHECK(!capturing_frame_);
+  capturing_frame_ = true;
+#endif
+
   if (snapshot_capturer_) {
     snapshot_capturer_->TakeSnapshot(
         selected_source_,
@@ -162,6 +167,10 @@ void DesktopCapturerLacros::DidTakeSnapshot(bool success,
                                             const SkBitmap& snapshot) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+#if DCHECK_IS_ON()
+  capturing_frame_ = false;
+#endif
+
   if (!success) {
     callback_->OnCaptureResult(Result::ERROR_PERMANENT,
                                std::unique_ptr<webrtc::DesktopFrame>());
@@ -176,6 +185,10 @@ void DesktopCapturerLacros::DeprecatedDidTakeSnapshot(
     bool success,
     crosapi::Bitmap snapshot) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+#if DCHECK_IS_ON()
+  capturing_frame_ = false;
+#endif
 
   if (!success) {
     callback_->OnCaptureResult(Result::ERROR_PERMANENT,

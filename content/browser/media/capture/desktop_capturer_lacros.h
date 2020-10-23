@@ -80,6 +80,10 @@ class DesktopCapturerLacros : public webrtc::DesktopCapturer {
   // the deprecated methods.
   mojo::Remote<crosapi::mojom::SnapshotCapturer> snapshot_capturer_;
 
+#if DCHECK_IS_ON()
+  bool capturing_frame_ = false;
+#endif
+
   base::WeakPtrFactory<DesktopCapturerLacros> weak_factory_{this};
 };
 

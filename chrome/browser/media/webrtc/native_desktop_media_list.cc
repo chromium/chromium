@@ -12,6 +12,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/grit/generated_resources.h"
@@ -38,6 +39,15 @@ namespace {
 
 // Update the list every second.
 const int kDefaultNativeDesktopMediaListUpdatePeriod = 1000;
+
+bool IsFrameValid(webrtc::DesktopFrame* frame) {
+  // These checks ensure invalid data isn't passed along, potentially leading to
+  // crashes, e.g. when we calculate the hash which assumes a positive height
+  // and stride.
+  // TODO(crbug.com/1085230): figure out why the height is sometimes negative.
+  return frame && frame->data() && frame->stride() >= 0 &&
+         frame->size().height() >= 0;
+}
 
 // Returns a hash of a DesktopFrame content to detect when image for a desktop
 // media source has changed.
@@ -91,13 +101,21 @@ class NativeDesktopMediaList::Worker
   void Start();
   void Refresh(const DesktopMediaID::Id& view_dialog_id, bool update_thumnails);
 
-  void RefreshThumbnails(const std::vector<DesktopMediaID>& native_ids,
+  void RefreshThumbnails(std::vector<DesktopMediaID> native_ids,
                          const gfx::Size& thumbnail_size);
 
  private:
   typedef std::map<DesktopMediaID, uint32_t> ImageHashesMap;
 
-  bool IsCurrentFrameValid() const;
+  // Used to hold state associated with a call to RefreshThumbnails.
+  struct RefreshThumbnailsState {
+    std::vector<DesktopMediaID> source_ids;
+    gfx::Size thumbnail_size;
+    ImageHashesMap new_image_hashes;
+    size_t next_source_index = 0;
+  };
+
+  void RefreshNextThumbnail();
 
   // webrtc::DesktopCapturer::Callback interface.
   void OnCaptureResult(webrtc::DesktopCapturer::Result result,
@@ -111,9 +129,13 @@ class NativeDesktopMediaList::Worker
   DesktopMediaID::Type type_;
   std::unique_ptr<webrtc::DesktopCapturer> capturer_;
 
-  std::unique_ptr<webrtc::DesktopFrame> current_frame_;
-
+  // Stores hashes of snapshots previously captured.
   ImageHashesMap image_hashes_;
+
+  // Non-null when RefreshThumbnails hasn't yet completed.
+  std::unique_ptr<RefreshThumbnailsState> refresh_thumbnails_state_;
+
+  base::WeakPtrFactory<Worker> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(Worker);
 };
@@ -186,38 +208,50 @@ void NativeDesktopMediaList::Worker::Refresh(
 }
 
 void NativeDesktopMediaList::Worker::RefreshThumbnails(
-    const std::vector<DesktopMediaID>& native_ids,
+    std::vector<DesktopMediaID> native_ids,
     const gfx::Size& thumbnail_size) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  ImageHashesMap new_image_hashes;
 
-  // Get a thumbnail for each native source.
-  for (const auto& id : native_ids) {
-    if (!capturer_->SelectSource(id.id))
-      continue;
-    capturer_->CaptureFrame();
+  // Ignore if refresh is already in progress.
+  if (refresh_thumbnails_state_)
+    return;
 
-    // Expect that DesktopCapturer to always captures frames synchronously.
-    // |current_frame_| may be NULL if capture failed (e.g. because window has
-    // been closed).
-    if (IsCurrentFrameValid()) {
-      uint32_t frame_hash = GetFrameHash(current_frame_.get());
-      new_image_hashes[id] = frame_hash;
+  // To refresh thumbnails, a snapshot of each window is captured and scaled
+  // down to the specified size. Snapshotting can be asynchronous, and so
+  // the process looks like the following steps:
+  //
+  // 1) RefreshNextThumbnail
+  // 2) OnCaptureResult
+  // 3) UpdateSourceThumbnail (if the snapshot changed)
+  // [repeat 1, 2 and 3 until all thumbnails are refreshed]
+  // 4) RefreshNextThumbnail
+  // 5) UpdateNativeThumbnailsFinished
+  //
+  // |image_hashes_| is used to help avoid updating thumbnails that haven't
+  // changed since the last refresh.
 
-      // Scale the image only if it has changed.
-      auto it = image_hashes_.find(id);
-      if (it == image_hashes_.end() || it->second != frame_hash) {
-        gfx::ImageSkia thumbnail =
-            ScaleDesktopFrame(std::move(current_frame_), thumbnail_size);
-        content::GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE,
-            base::BindOnce(&NativeDesktopMediaList::UpdateSourceThumbnail,
-                           media_list_, id, thumbnail));
-      }
+  refresh_thumbnails_state_ = std::make_unique<RefreshThumbnailsState>();
+  refresh_thumbnails_state_->source_ids = std::move(native_ids);
+  refresh_thumbnails_state_->thumbnail_size = thumbnail_size;
+  RefreshNextThumbnail();
+}
+
+void NativeDesktopMediaList::Worker::RefreshNextThumbnail() {
+  DCHECK(refresh_thumbnails_state_);
+
+  for (size_t index = refresh_thumbnails_state_->next_source_index;
+       index < refresh_thumbnails_state_->source_ids.size(); ++index) {
+    refresh_thumbnails_state_->next_source_index = index + 1;
+    DesktopMediaID source_id = refresh_thumbnails_state_->source_ids[index];
+    if (capturer_->SelectSource(source_id.id)) {
+      capturer_->CaptureFrame();  // Completes with OnCaptureResult.
+      return;
     }
   }
 
-  image_hashes_.swap(new_image_hashes);
+  // Done capturing thumbnails.
+  image_hashes_.swap(refresh_thumbnails_state_->new_image_hashes);
+  refresh_thumbnails_state_.reset();
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -225,19 +259,36 @@ void NativeDesktopMediaList::Worker::RefreshThumbnails(
                      media_list_));
 }
 
-bool NativeDesktopMediaList::Worker::IsCurrentFrameValid() const {
-  // These checks ensure invalid data isn't passed along, potentially leading to
-  // crashes, e.g. when we calculate the hash which assumes a positive height
-  // and stride.
-  // TODO(crbug.com/1085230): figure out why the height is sometimes negative.
-  return current_frame_ && current_frame_->data() &&
-         current_frame_->stride() >= 0 && current_frame_->size().height() >= 0;
-}
-
 void NativeDesktopMediaList::Worker::OnCaptureResult(
     webrtc::DesktopCapturer::Result result,
     std::unique_ptr<webrtc::DesktopFrame> frame) {
-  current_frame_ = std::move(frame);
+  auto index = refresh_thumbnails_state_->next_source_index - 1;
+  DCHECK(index < refresh_thumbnails_state_->source_ids.size());
+  DesktopMediaID id = refresh_thumbnails_state_->source_ids[index];
+
+  // |frame| may be null if capture failed (e.g. because window has been
+  // closed).
+  if (IsFrameValid(frame.get())) {
+    uint32_t frame_hash = GetFrameHash(frame.get());
+    refresh_thumbnails_state_->new_image_hashes[id] = frame_hash;
+
+    // Scale the image only if it has changed.
+    auto it = image_hashes_.find(id);
+    if (it == image_hashes_.end() || it->second != frame_hash) {
+      gfx::ImageSkia thumbnail = ScaleDesktopFrame(
+          std::move(frame), refresh_thumbnails_state_->thumbnail_size);
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&NativeDesktopMediaList::UpdateSourceThumbnail,
+                         media_list_, id, thumbnail));
+    }
+  }
+
+  // Protect against possible re-entrancy since OnCaptureResult can be invoked
+  // from within the call to CaptureFrame.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&Worker::RefreshNextThumbnail,
+                                weak_factory_.GetWeakPtr()));
 }
 
 NativeDesktopMediaList::NativeDesktopMediaList(
@@ -351,8 +402,8 @@ void NativeDesktopMediaList::RefreshForAuraWindows(
 #endif
     thread_.task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&Worker::RefreshThumbnails,
-                                  base::Unretained(worker_.get()), native_ids,
-                                  thumbnail_size_));
+                                  base::Unretained(worker_.get()),
+                                  std::move(native_ids), thumbnail_size_));
   }
 }
 
