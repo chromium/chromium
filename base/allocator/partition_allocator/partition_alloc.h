@@ -127,6 +127,22 @@ ALWAYS_INLINE bool RandomPeriod() {
 }
 #endif
 
+// This is a `memset` that resists being optimized away. Adapted from
+// boringssl/src/crypto/mem.c. (Copying and pasting is bad, but //base can't
+// depend on //third_party, and this is small enough.)
+ALWAYS_INLINE void SecureZero(void* p, size_t size) {
+#if defined(OS_WIN)
+  SecureZeroMemory(p, size);
+#else
+  memset(p, 0, size);
+
+  // As best as we can tell, this is sufficient to break any optimisations that
+  // might try to eliminate "superfluous" memsets. If there's an easy way to
+  // detect memset_s, it would be better to use that.
+  __asm__ __volatile__("" : : "r"(p) : "memory");
+#endif
+}
+
 }  // namespace
 
 namespace base {
@@ -576,12 +592,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   // `memset` only once in a while: we're trading off safety for time
   // efficiency.
   if (UNLIKELY(RandomPeriod()) && !slot_span->bucket->is_direct_mapped()) {
-#if defined(OS_WIN)
-    SecureZeroMemory(ptr, utilized_slot_size);
-#else
-    // TODO(palmer): Use an equivalent of memset_s.
-    memset(ptr, 0, utilized_slot_size);
-#endif
+    SecureZero(ptr, utilized_slot_size);
   }
 #endif
 
