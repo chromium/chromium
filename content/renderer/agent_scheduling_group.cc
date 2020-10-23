@@ -152,12 +152,9 @@ void AgentSchedulingGroup::DestroyView(int32_t view_id,
   // process, and is used to release ownership of the corresponding
   // RenderViewImpl instance. https://crbug.com/1000035.
   base::ThreadTaskRunnerHandle::Get()->PostNonNestableTask(
-      FROM_HERE, base::BindOnce(
-                     [](RenderViewImpl* view, DestroyViewCallback callback) {
-                       view->Destroy();
-                       std::move(callback).Run();
-                     },
-                     base::Unretained(view), std::move(callback)));
+      FROM_HERE,
+      base::BindOnce(&RenderViewImpl::Destroy, base::Unretained(view))
+          .Then(std::move(callback)));
 }
 
 void AgentSchedulingGroup::CreateFrame(mojom::CreateFrameParamsPtr params) {
