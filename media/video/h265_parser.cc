@@ -699,11 +699,11 @@ H265Parser::Result H265Parser::ParseScalingListData(
               dst = scaling_list_data->scaling_list_8x8[matrix_id];
               break;
             case 2:
-              dst = scaling_list_data->scaling_list_16x16[ref_matrix_id];
+              src = scaling_list_data->scaling_list_16x16[ref_matrix_id];
               dst = scaling_list_data->scaling_list_16x16[matrix_id];
               break;
             case 3:
-              dst = scaling_list_data->scaling_list_32x32[ref_matrix_id];
+              src = scaling_list_data->scaling_list_32x32[ref_matrix_id];
               dst = scaling_list_data->scaling_list_32x32[matrix_id];
               break;
           }

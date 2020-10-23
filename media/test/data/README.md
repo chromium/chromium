@@ -880,6 +880,15 @@ Created using "avconv -i bear-vp9.webm -vcodec copy -an -f ivf bear-vp9.ivf".
 Manually dumped from libvpx with bear-vp9.ivf and test-25fps.vp9. See
 vp9_parser_unittest.cc for description of their format.
 
+### HEVC parser test files:
+
+#### bear.hevc
+Used by h265_parser_unittest.cc.
+
+#### bbb.hevc
+Used by h265_parser_unittest.cc. Copied from bbb_hevc_176x144_176kbps_60fps.hevc
+in Android repo.
+
 ###  WebM files for testing multiple tracks.
 
 #### green-a300hz.webm

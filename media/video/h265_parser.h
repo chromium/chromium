@@ -10,9 +10,9 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-#include <map>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "media/base/media_export.h"
 #include "media/base/ranges.h"
@@ -181,7 +181,6 @@ struct MEDIA_EXPORT H265SPS {
 
   // Syntax elements.
   int sps_max_sub_layers_minus1;
-  bool sps_temporal_id_nesting_flag;
   H265ProfileTierLevel profile_tier_level;
   int sps_seq_parameter_set_id;
   int chroma_format_idc;
@@ -321,7 +320,7 @@ class MEDIA_EXPORT H265Parser {
   H264BitReader br_;
 
   // SPSes stored for future reference.
-  std::map<int, std::unique_ptr<H265SPS>> active_sps_;
+  base::flat_map<int, std::unique_ptr<H265SPS>> active_sps_;
 
   // Ranges of encrypted bytes in the buffer passed to SetEncryptedStream().
   Ranges<const uint8_t*> encrypted_ranges_;
