@@ -3712,8 +3712,8 @@
       },
       'GPU FYI Fuchsia Builder' : {
         'additional_compile_targets': [
-          'angle_end2end_tests',
-          'angle_unittests',
+          'standalone_angle_end2end_tests',
+          'standalone_angle_unittests',
         ],
       },
       'GPU FYI Linux Builder' : {},

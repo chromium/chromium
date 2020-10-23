@@ -116,19 +116,10 @@
     "label": "//third_party/angle:angle_apks",
     "type": "additional_compile_target",
   },
-  "angle_end2end_tests": {
-    "args": [],
-    "label": "//third_party/angle/src/tests:angle_end2end_tests",
-    "type": "windowed_test_launcher",
-  },
   "angle_restricted_trace_gold_tests": {
     "type": "script",
     "label": "//third_party/angle/src/tests/restricted_traces:angle_restricted_trace_gold_tests",
     "script": "//third_party/angle/src/tests/restricted_traces/restricted_trace_gold_tests.py",
-  },
-  "angle_unittests": {
-    "label": "//third_party/angle/src/tests:angle_unittests",
-    "type": "console_test_launcher",
   },
   "app_list_unittests": {
     "label": "//ash/app_list:app_list_unittests",
