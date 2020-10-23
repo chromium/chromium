@@ -287,7 +287,8 @@ TEST_F(CaptureModeTest, ChangeTypeAndSourceFromUI) {
   EXPECT_EQ(controller->source(), CaptureModeSource::kFullscreen);
 }
 
-TEST_F(CaptureModeTest, VideoRecordingUiBehavior) {
+// TODO(https://crbug.com/1141927): test is flakey.
+TEST_F(CaptureModeTest, DISABLED_VideoRecordingUiBehavior) {
   // We need a non-zero duration to avoid infinite loop on countdown.
   ui::ScopedAnimationDurationScaleMode animatin_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
