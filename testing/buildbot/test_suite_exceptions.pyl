@@ -2598,18 +2598,6 @@
           'shards': 6,
         },
       },
-      # TODO(crbug.com/1124829) Remove swarming config after
-      # version is moved to 1909.
-      'Win10 Tests x64': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'cpu': 'x86-64',
-              'os': 'Windows-10-18363',
-            },
-          ],
-        },
-      },
       'Win10 Tests x64 (dbg)': {
         'experiment_percentage': 100, # https://crbug.com/840369
       },
