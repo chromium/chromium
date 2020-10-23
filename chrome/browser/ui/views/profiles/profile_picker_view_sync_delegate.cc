@@ -18,16 +18,6 @@ void OpenSettingsInBrowser(Browser* browser) {
   chrome::ShowSettingsSubPage(browser, chrome::kSyncSetupSubPage);
 }
 
-void OpenSyncConfirmationDialogInBrowser(Browser* browser) {
-  // This is a very rare corner case (e.g. the user manages to close the only
-  // browser window in a very short span of time between enterprise
-  // confirmation and this callback), not worth handling fully. Instead, the
-  // flow is aborted.
-  if (!browser)
-    return;
-  browser->signin_view_controller()->ShowModalSyncConfirmationDialog();
-}
-
 }  // namespace
 
 ProfilePickerViewSyncDelegate::ProfilePickerViewSyncDelegate(
@@ -81,25 +71,18 @@ void ProfilePickerViewSyncDelegate::ShowSyncConfirmation(
       LoginUIServiceFactory::GetForProfile(profile_));
 
   if (enterprise_confirmation_shown_) {
-    OpenSyncConfirmationDialogInBrowser(
-        chrome::FindLastActiveWithProfile(profile_));
+    Browser* browser = chrome::FindLastActiveWithProfile(profile_);
+    // This is a very rare corner case (e.g. the user manages to close the only
+    // browser window in a very short span of time between enterprise
+    // confirmation and this callback), not worth handling fully. Instead, the
+    // flow is aborted.
+    if (!browser)
+      return;
+    browser->signin_view_controller()->ShowModalSyncConfirmationDialog();
     return;
   }
 
   ProfilePicker::SwitchToSyncConfirmation();
-}
-
-void ProfilePickerViewSyncDelegate::ShowSyncDisabledConfirmation(
-    base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
-        callback) {
-  DCHECK(callback);
-  sync_confirmation_callback_ = std::move(callback);
-  scoped_login_ui_service_observer_.Add(
-      LoginUIServiceFactory::GetForProfile(profile_));
-
-  // Open the browser and when it's done, show the confirmation dialog.
-  std::move(open_browser_callback_)
-      .Run(base::BindOnce(&OpenSyncConfirmationDialogInBrowser));
 }
 
 void ProfilePickerViewSyncDelegate::ShowSyncSettings() {

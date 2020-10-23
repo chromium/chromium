@@ -528,15 +528,9 @@ void DiceTurnSyncOnHelper::SyncStartupFailed() {
 }
 
 void DiceTurnSyncOnHelper::ShowSyncConfirmationUI() {
-  if (GetSyncService()) {
-    delegate_->ShowSyncConfirmation(
-        base::BindOnce(&DiceTurnSyncOnHelper::FinishSyncSetupAndDelete,
-                       weak_pointer_factory_.GetWeakPtr()));
-  } else {
-    delegate_->ShowSyncDisabledConfirmation(
-        base::BindOnce(&DiceTurnSyncOnHelper::FinishSyncSetupAndDelete,
-                       weak_pointer_factory_.GetWeakPtr()));
-  }
+  delegate_->ShowSyncConfirmation(
+      base::BindOnce(&DiceTurnSyncOnHelper::FinishSyncSetupAndDelete,
+                     weak_pointer_factory_.GetWeakPtr()));
 }
 
 void DiceTurnSyncOnHelper::FinishSyncSetupAndDelete(
