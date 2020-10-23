@@ -121,7 +121,9 @@ class MockMojoVideoCaptureHost : public media::mojom::blink::VideoCaptureHost {
 class VideoCaptureImplTest : public ::testing::Test {
  public:
   VideoCaptureImplTest()
-      : video_capture_impl_(new VideoCaptureImpl(session_id_)) {
+      : video_capture_impl_(
+            new VideoCaptureImpl(session_id_,
+                                 base::ThreadTaskRunnerHandle::Get())) {
     params_small_.requested_format = media::VideoCaptureFormat(
         gfx::Size(176, 144), 30, media::PIXEL_FORMAT_I420);
     params_large_.requested_format = media::VideoCaptureFormat(

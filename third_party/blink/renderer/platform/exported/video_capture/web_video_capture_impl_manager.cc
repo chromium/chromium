@@ -101,8 +101,10 @@ base::OnceClosure WebVideoCaptureImplManager::UseDevice(
     it = devices_.end() - 1;
     it->session_id = id;
     it->impl = CreateVideoCaptureImplForTesting(id);
-    if (!it->impl)
-      it->impl.reset(new VideoCaptureImpl(id));
+    if (!it->impl) {
+      it->impl =
+          std::make_unique<VideoCaptureImpl>(id, render_main_task_runner_);
+    }
   }
   ++it->client_count;
 
