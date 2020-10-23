@@ -484,10 +484,6 @@ const base::Feature kPrintSaveToDrive{"PrintSaveToDrive",
 const base::Feature kQuickAnswers{"QuickAnswers",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether to enable quick answers rich ui.
-const base::Feature kQuickAnswersRichUi{"QuickAnswersRichUi",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Controls whether dogfood version of quick answers.
 const base::Feature kQuickAnswersDogfood{"QuickAnswersDogfood",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
@@ -761,12 +757,8 @@ bool IsQuickAnswersEnabled() {
   return base::FeatureList::IsEnabled(kQuickAnswers);
 }
 
-bool IsQuickAnswersRichUiEnabled() {
-  return base::FeatureList::IsEnabled(kQuickAnswersRichUi);
-}
-
 bool IsQuickAnswersSettingToggleEnabled() {
-  return IsQuickAnswersEnabled() && IsQuickAnswersRichUiEnabled() &&
+  return IsQuickAnswersEnabled() &&
          base::FeatureList::IsEnabled(kQuickAnswersSubToggle);
 }
 

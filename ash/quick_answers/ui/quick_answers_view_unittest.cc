@@ -28,10 +28,8 @@ constexpr gfx::Rect kDefaultAnchorBoundsInScreen =
 class QuickAnswersViewsTest : public AshTestBase {
  protected:
   QuickAnswersViewsTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kQuickAnswers,
-         chromeos::features::kQuickAnswersRichUi},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        chromeos::features::kQuickAnswers);
   }
   QuickAnswersViewsTest(const QuickAnswersViewsTest&) = delete;
   QuickAnswersViewsTest& operator=(const QuickAnswersViewsTest&) = delete;

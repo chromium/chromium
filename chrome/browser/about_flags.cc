@@ -4993,11 +4993,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableQuickAnswersDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kQuickAnswers)},
 
-    {"enable-quick-answers-rich-ui",
-     flag_descriptions::kEnableQuickAnswersRichUiName,
-     flag_descriptions::kEnableQuickAnswersRichUiDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kQuickAnswersRichUi)},
-
     {"enable-quick-answers-text-annotator",
      flag_descriptions::kEnableQuickAnswersTextAnnotatorName,
      flag_descriptions::kEnableQuickAnswersTextAnnotatorDescription, kOsCrOS,

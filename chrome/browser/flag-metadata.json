@@ -2013,11 +2013,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "enable-quick-answers-rich-ui",
-    "owners": [ "croissant-eng" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "enable-quick-answers-text-annotator",
     "owners": [ "croissant-eng" ],
     "expiry_milestone": 90
