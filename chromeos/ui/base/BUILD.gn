@@ -28,7 +28,7 @@ component("base") {
   deps = [
     "//base",
     "//skia",
-    "//ui/aura",
     "//ui/base",
+    "//ui/gfx/geometry",
   ]
 }

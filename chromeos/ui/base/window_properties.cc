@@ -6,7 +6,8 @@
 
 #include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/base/window_state_type.h"
-#include "ui/aura/window.h"
+#include "ui/base/class_property.h"
+#include "ui/gfx/geometry/rect.h"
 
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(CHROMEOS_UI_BASE),
                                        chromeos::WindowPinType)
