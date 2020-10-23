@@ -19,6 +19,7 @@ class ToggleButton;
 namespace ash {
 
 class TriView;
+class TrayInfoLabel;
 
 namespace tray {
 
@@ -107,6 +108,7 @@ class BluetoothDetailedView : public TrayDetailedView {
 
   TriView* paired_devices_heading_ = nullptr;
   TriView* unpaired_devices_heading_ = nullptr;
+  TrayInfoLabel* bluetooth_discovering_label_ = nullptr;
 
   // The container of the message "Bluetooth is disabled" and an icon. It should
   // be shown instead of Bluetooth device list when Bluetooth is disabled.
